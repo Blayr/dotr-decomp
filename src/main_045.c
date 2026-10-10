@@ -19,7 +19,31 @@ s32 func_001E0110(s32 arg0) {
     return temp_s0 + func_001E01F0(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0150);
+void *func_001DD130();
+
+static inline u8 *check_001E0150(s32 a0, s32 a1) {
+    u8 *p = func_001DD130(a0, a1);
+    if (p == NULL) {
+        return NULL;
+    }
+    if (p[0x45] >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+s32 func_001E0150(s32 arg0) {
+    s32 count;
+    s32 i;
+
+    count = 0;
+    for (i = 1; i < 6; i++) {
+        if (check_001E0150(arg0, i) != NULL) {
+            count++;
+        }
+    }
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E01F0);
 
