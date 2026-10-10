@@ -111,4 +111,6 @@ void func_0015A320(u16 *);
 s32 func_001E0C00(s32, s32, s32, s32);
 s32 func_00266F70(s32, s32);
 
+void func_0027DE20(s32, s32, s32, s32, s32, s32, s32, s32, s32, u16, s32, s32, u8, s32, s32, s32);
+
 #endif
