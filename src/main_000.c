@@ -39,7 +39,25 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00100BA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100C60);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100D00);
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_00100D00;
+
+void func_001F5F90(s32, void *);
+
+s32 func_00100D00(s32 arg0) {
+    Vec3_00100D00 v;
+    s32 ret;
+
+    ret = 1;
+    func_001F5F90(arg0, &v);
+    if (v.z < 0.0f) {
+        ret = -1;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100D50);
 
