@@ -2,6 +2,7 @@
 #define FUNCTIONS_H
 
 /* Prototypes of every decompiled function. dk rewrites this file. */
+static inline u8 *check(s32 a0, s32 a1);
 s32 func_00100820(void);
 f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2);
 f32 func_001018E0(f32 fparg0, f32 fparg1);
@@ -74,6 +75,7 @@ s32 func_001D9E70(s32 arg0);
 void func_001DA7A0(s32 arg0, s32 arg1);
 void func_001DBCF0(s32 arg0);
 s32 func_001E0110(s32 arg0);
+s32 func_001E16A0(s32 a0, s32 a1, s8 arg2);
 void func_001E7890(void);
 void func_001E7A50(void);
 void func_001EDF90(s32 arg0);

@@ -89,7 +89,29 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E15E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1640);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E16A0);
+void *func_001DD130();
+
+static inline u8 *check(s32 a0, s32 a1) {
+    u8 *p = func_001DD130(a0, a1);
+    if (p == NULL) {
+        return NULL;
+    }
+    if (p[0x45] >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+s32 func_001E16A0(s32 a0, s32 a1, s8 arg2) {
+    u8 *p;
+
+    p = check(a0, a1);
+    if (p == NULL) {
+        return 0;
+    }
+    p[0x4B] = arg2;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1700);
 
