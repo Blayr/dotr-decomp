@@ -38,19 +38,7 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_0010EE00);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F030);
 
-s32 func_0010F220(s32 arg0) {
-    if ((func_0026FCE0() >> 5) != 0) {
-        /* Duplicate return node #9. Try simplifying control flow for better match */
-        return 0;
-    }
-    if (func_00248F60(arg0, 0x31E) >= 0) {
-        return 1;
-    }
-    if (arg0 == 0x18E) {
-        return 1;
-    }
-    return 0;
-}
+INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F220);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F290);
 
