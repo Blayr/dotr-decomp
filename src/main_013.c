@@ -106,7 +106,15 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00159F80);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00159FE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_0015A120);
+void func_0015A120(s32 a0, s32 a1, u16 *buf) {
+    s32 i;
+
+    for (i = 0; i < 0x31; i++) {
+        buf[i] = 0xFFFF;
+    }
+    func_0015A180(a0, a1, buf);
+    func_0015A320(buf);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_0015A180);
 
