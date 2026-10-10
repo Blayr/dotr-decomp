@@ -36,6 +36,7 @@ if [[ "$DK_GCC" == mwcps2-* ]]; then
         --as-path "$(command -v mipsel-none-elf-as)" --as-march r5900 --as-mabi eabi --as-flags "-G$G" \
         --macro-inc-path include/mwccgap.inc \
         -nostdinc -stderr "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS < /dev/null)
+    python3 "$ROOT/tools/pad_functions.py" "$OUT_ABS"
     mv "$TMP/deps" "$OUT.d"
     exit 0
 fi
