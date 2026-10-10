@@ -120,4 +120,13 @@ void func_001F66A0(s32, s32);
 f32 func_001F67C0(s32, s32);
 void func_001F6840(s32, f32);
 
+s64 func_001A22C0(f32);
+void func_001D89F0(s32, s32, s32, s32, s32, s32, s32);
+s32 func_001DED30(s32);
+s32 func_001DF0C0(s32, s32);
+void func_001DF130(s32, s32);
+void func_001DF1E0(void);
+s32 func_0026F690(s32, u16 *, s16 *, s32);
+extern u8 D_00317490[];
+
 #endif

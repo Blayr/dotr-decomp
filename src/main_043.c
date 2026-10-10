@@ -1,6 +1,87 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D7D10);
+void func_001D7D10(s32 arg0, s32 arg1) {
+    u16 ids[4];
+    s16 w[4];
+    u8 *g = D_00317490;
+    u8 *p;
+    s32 i;
+    s32 x;
+    s32 cnt;
+    s32 flag;
+    s32 ok;
+    s32 id;
+    s32 n;
+    s32 have;
+    s32 v;
+    s16 r;
+    s32 idx;
+
+    p = D_00317490 + arg0 * 0x350;
+    func_001DF1E0();
+    func_001D89F0(arg0, 0, 999, 0, 0, 0, 0);
+    x = -250;
+    for (i = 0; i < g[0xD49]; i++) {
+        v = func_001DF0C0(arg0, i);
+        if (v < 0) {
+            v = 999;
+        } else {
+            v &= 0xFFF;
+        }
+        func_001D89F0(arg0, i + 1, v, x, 0x1C0, x, -8);
+        x += 0x7D;
+    }
+    if (arg1 != 0) {
+        have = func_001DF110(arg0);
+        n = func_001DE9C0(arg0);
+        cnt = have + n;
+        cnt = cnt < 5 ? cnt : 5;
+        ok = n > 0;
+        flag = 0;
+        if (ok) {
+            ok = p[0x344] > 0;
+        }
+        if (ok && !(p[0x344] & 0x80)) {
+            flag = 1;
+        }
+        if (flag) {
+            cnt = cnt + 1 < 5 ? cnt + 1 : 5;
+        }
+        for (; i < cnt; i++) {
+            id = 999;
+            if (flag && i + 1 >= cnt) {
+                if (func_0026F690(arg0, ids, w, 0) >= 0) {
+                    r = func_001A22C0(100.0f * ((f32)func_0019A5C8() / 2147483648.0f));
+                    idx = 2;
+                    if (r < w[0]) {
+                        idx = 0;
+                    } else if (r < w[0] + w[1]) {
+                        idx = 1;
+                    } else {
+                    }
+                    id = ids[idx];
+                }
+            }
+            if (id == 999) {
+                id = func_001DED30(arg0);
+            }
+            func_001DF130(arg0, id);
+            func_001D89F0(arg0, i + 1, id, 0x2EE, 0x1C0, 0x2EE, -8);
+        }
+        for (; i < 5; i++) {
+            func_001DF130(arg0, 999);
+            func_001D89F0(arg0, i + 1, 999, 0, 0, 0, 0);
+        }
+    } else {
+        for (; i < 5; i++) {
+            func_001D89F0(arg0, i + 1, 999, 0, 0, 0, 0);
+        }
+    }
+    g[0xD4A] = func_001DF110(arg0);
+    for (i = 0; i < g[0xD4A]; i++) {
+        g[0xD2C + i] = i + 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D8080);
 
