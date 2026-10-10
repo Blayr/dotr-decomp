@@ -1,16 +1,24 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017BFD0);
+s32 func_0017BFD0(void) {
+    return -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017BFD8);
+s32 func_0017BFD8(void) {
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017BFE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C090);
+s32 func_0017C090(void) {
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C098);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C0B0);
+s32 func_0017C0B0(void) {
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C0B8);
 
