@@ -76,6 +76,7 @@ void func_001DA7A0(s32 arg0, s32 arg1);
 void func_001DBCF0(s32 arg0);
 s32 func_001E0110(s32 arg0);
 s32 func_001E16A0(s32 a0, s32 a1, s8 arg2);
+void func_001E4E60(s64 arg0);
 void func_001E7890(void);
 void func_001E7A50(void);
 void func_001EDF90(s32 arg0);

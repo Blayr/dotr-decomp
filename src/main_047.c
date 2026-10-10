@@ -4,7 +4,17 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4570);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4E50);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4E60);
+typedef struct {
+    s8 pad0 : 5;
+    s8 flag : 1;
+    s8 pad1 : 2;
+} Flags;
+
+extern Flags D_003181F7;
+
+void func_001E4E60(s64 arg0) {
+    D_003181F7.flag = arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4E90);
 
