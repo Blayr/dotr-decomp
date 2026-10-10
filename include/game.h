@@ -99,4 +99,6 @@ s32 func_0010F220(s32 arg0);
 
 s32 func_00155520(s32, s32);
 
+void func_001F6D00(s32);
+
 #endif

@@ -5,6 +5,7 @@
 s32 func_00100820(void);
 f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2);
 f32 func_001018E0(f32 fparg0, f32 fparg1);
+void func_001031C0(u16 *arg0, s32 arg1);
 s32 func_00103260(s32 *arg0);
 s32 func_00103290(s32 *arg0);
 s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1);

@@ -1,6 +1,24 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001031C0);
+void func_001031C0(u16 *arg0, s32 arg1) {
+    s32 d;
+    s32 e;
+
+    d = ((arg1 - arg0[0]) + 1) & 0xFFFF;
+    if (d != 0) {
+        e = d & 0xFFFF;
+        if (e < 6) {
+            func_001F6D00((0x80 - (e * 0x10)) & 0xFF);
+        }
+    }
+    d = ((arg1 - arg0[1]) + 1) & 0xFFFF;
+    if (d != 0) {
+        e = d & 0xFFFF;
+        if (e < 6) {
+            func_001F6D00(((e * 0x10) + 0x30) & 0xFF);
+        }
+    }
+}
 
 s32 func_00103260(s32 *arg0) {
     *arg0 = func_00202BF0(4);
