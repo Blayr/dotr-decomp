@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2530);
+void func_001C2530(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2540);
 
@@ -38,7 +40,9 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5D70);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5DB8);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C6120);
+void func_001C6120(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C6130);
 
@@ -76,7 +80,9 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC380);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC4B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC610);
+void func_001CC610(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC620);
 

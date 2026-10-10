@@ -6,7 +6,9 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00153F30);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00154040);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00154210);
+void func_00154210(void) {
+    func_00172370();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00154220);
 
@@ -66,7 +68,9 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00158780);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_001587E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00158800);
+void func_00158800(void) {
+    func_00158810();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00158810);
 
