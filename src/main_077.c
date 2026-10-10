@@ -38,7 +38,7 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FC10);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FC90);
 
-u8 func_0026FCE0(s32 arg0) {
+s32 func_0026FCE0(s32 arg0) {
     u8 *temp_v0;
 
     if (arg0 == 0x3E7) {
