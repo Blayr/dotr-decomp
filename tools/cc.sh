@@ -21,7 +21,9 @@ G="${DK_G:-0}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-CPP_FLAGS="-I$ROOT/include -I$ROOT/src"
+# DK_EXTRA_INCLUDE (from dk try) shadows headers, e.g. a game.h without a guessed
+# prototype of the function being tried.
+CPP_FLAGS="${DK_EXTRA_INCLUDE:+-I$DK_EXTRA_INCLUDE} -I$ROOT/include -I$ROOT/src"
 mkdir -p "$(dirname "$OUT")"
 "$PRE/bin/ee-gcc" -B"$PRE_LIB/" -M $CPP_FLAGS "$IN" 2>/dev/null | sed "1s|^[^:]*:|$OUT:|" > "$TMP/deps" || true
 "$PRE/bin/ee-gcc" -B"$PRE_LIB/" -E $CPP_FLAGS "$IN" -o "$TMP/in.i"
@@ -31,11 +33,14 @@ if [[ "$DK_GCC" == mwcps2-* ]]; then
     # from stdin whenever stdin isn't a terminal, so stdin must be empty.
     IN_ABS="$(cd "$(dirname "$IN")" && pwd)/$(basename "$IN")"
     OUT_ABS="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")"
+    MW="$TC/mwcps2/${DK_GCC#mwcps2-}/mwccps2.exe"
+    [ -f "$MW" ] || MW="${MW%/*}/mwccmips.exe"  # 2.3 (1999) has the older name
     (cd "$ROOT" && python3 "$TC/src/mwccgap/mwccgap.py" "$IN_ABS" "$OUT_ABS" \
-        --mwcc-path "$TC/mwcps2/${DK_GCC#mwcps2-}/mwccps2.exe" --use-wibo --wibo-path "$(command -v wibo)" \
+        --mwcc-path "$MW" --use-wibo --wibo-path "$(command -v wibo)" \
         --as-path "$(command -v mipsel-none-elf-as)" --as-march r5900 --as-mabi eabi --as-flags "-G$G" \
         --macro-inc-path include/mwccgap.inc \
-        -nostdinc -stderr "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS < /dev/null)
+        -nostdinc -stderr ${DK_EXTRA_INCLUDE:+"-I$DK_EXTRA_INCLUDE"} "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS \
+        < /dev/null)
     python3 "$ROOT/tools/pad_functions.py" "$OUT_ABS"
     mv "$TMP/deps" "$OUT.d"
     exit 0
