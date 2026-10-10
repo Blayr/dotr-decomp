@@ -101,4 +101,8 @@ s32 func_00155520(s32, s32);
 
 void func_001F6D00(s32);
 
+extern s32 *D_0030FF40;
+void func_0017BB60(s32);
+s32 func_0017BCA0(s32 *, s32);
+
 #endif
