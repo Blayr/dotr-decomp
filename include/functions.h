@@ -108,6 +108,7 @@ void func_001F6DD0(s32 arg0);
 void func_001F7260(s32 arg0);
 s32 func_001F74B0(void);
 void func_001FCF30(s32 arg0, s32 arg1, s32 arg2);
+s32 func_001FD1B0(s32 arg0);
 s32 func_001FD2D0(s32 arg0, s32 arg1);
 s32 func_001FF300(void);
 s32 func_00200210(void);
