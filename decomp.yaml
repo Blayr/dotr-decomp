@@ -11,3 +11,4 @@ versions:
     map: build/main.map
     compiled_target: build/SLUS_205.15
     elf: build/main.elf
+    asm: asm/nonmatchings
