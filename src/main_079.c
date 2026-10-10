@@ -68,7 +68,9 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E360);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E5B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E770);
+void func_0027E770(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E780);
 
@@ -80,7 +82,9 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F0D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F110);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F160);
+s32 func_0027F160(s32 arg0, s32 arg1) {
+    return !(arg0 & (1 << arg1)) ? 0 : 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F180);
 
@@ -94,7 +98,9 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F3E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F480);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F5A0);
+void func_0027F5A0(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F5B0);
 

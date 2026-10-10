@@ -2,9 +2,15 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001031C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103260);
+s32 func_00103260(s32 *arg0) {
+    *arg0 = func_00202BF0(4);
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103290);
+s32 func_00103290(s32 *arg0) {
+    *arg0 = func_00202BF0(5);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001032C0);
 
@@ -12,17 +18,57 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00103300);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103350);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103390);
+s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1) {
+    f32 temp_f1;
+
+    temp_f1 = *arg0;
+    if (temp_f1 <= (fparg0 - fparg1)) {
+        *arg0 = temp_f1 + fparg1;
+        return 1;
+    }
+    *arg0 = fparg0;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001033D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103470);
+s32 func_00103470(u8 *arg0, u8 arg1, s32 arg2) {
+    u8 temp_a3;
+
+    temp_a3 = *arg0;
+    if ((s32) temp_a3 >= ((arg1 & 0xFF) + (arg2 & 0xFF))) {
+        *arg0 = temp_a3 - arg2;
+        return 1;
+    }
+    *arg0 = arg1;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001034B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103500);
+s32 func_00103500(s32 *arg0, s32 arg1, s32 arg2) {
+    s32 temp_v1;
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103540);
+    temp_v1 = *arg0;
+    if (temp_v1 >= (arg1 + arg2)) {
+        *arg0 = temp_v1 - arg2;
+        return 1;
+    }
+    *arg0 = arg1;
+    return 0;
+}
+
+s32 func_00103540(f32 *arg0, f32 fparg0, f32 fparg1) {
+    f32 temp_f1;
+
+    temp_f1 = *arg0;
+    if (!(temp_f1 < (fparg0 + fparg1))) {
+        *arg0 = temp_f1 - fparg1;
+        return 1;
+    }
+    *arg0 = fparg0;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103580);
 
@@ -62,7 +108,9 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_001043F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00104490);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00104520);
+s32 func_00104520(s32 arg0, s32 arg1) {
+    return !(arg0 & (1 << arg1)) ? 0 : 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00104540);
 

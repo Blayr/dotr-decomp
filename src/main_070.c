@@ -26,7 +26,9 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00245630);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245770);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002457C0);
+void func_002457C0(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002457D0);
 
@@ -60,11 +62,15 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00246340);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00246450);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00246490);
+void func_00246490(void) {
+    func_00209D30(func_00246340(func_00209D20()));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002464C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002464E0);
+void func_002464E0(void) {
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002464F0);
 

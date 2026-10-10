@@ -64,7 +64,16 @@ INCLUDE_ASM("asm/nonmatchings/main_010", func_00141F30);
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00142040);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00142220);
+s32 func_00142220(s32 arg0) {
+    if (func_001DF470() < 0x4B0) {
+        /* Duplicate return node #6. Try simplifying control flow for better match */
+        return 0;
+    }
+    if (func_001E0150(arg0) >= 4) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00142280);
 

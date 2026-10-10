@@ -72,11 +72,18 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_00217230);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002172D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002173D0);
+s32 func_002173D0(void) {
+    func_00193808();
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002173F0);
+s32 func_002173F0(void) {
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00217400);
+s32 func_00217400(void) {
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217410);
 

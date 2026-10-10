@@ -88,7 +88,17 @@ INCLUDE_ASM("asm/nonmatchings/main_006", func_00123010);
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00123500);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00123670);
+s32 func_00123670(s32 arg0) {
+    switch (arg0) {                                 /* irregular */
+    case 0:
+        return 0x303;
+    case 1:
+        return 0x304;
+    default:
+    case 2:
+        return 0x302;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_001236C0);
 

@@ -44,7 +44,9 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DBE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DDB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DEE0);
+s32 func_0020DEE0(void) {
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DEF0);
 

@@ -4,7 +4,13 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_00109CA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_00109D50);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_00109D70);
+void func_00109D70(s32 arg0) {
+    if (arg0 != 0) {
+        func_0010A160(0, 0);
+        func_0010C720(0x5004, 0x7FFF);
+    }
+    func_0010C720(0xF006, arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_00109DC0);
 

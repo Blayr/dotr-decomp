@@ -24,7 +24,12 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00100610);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100780);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100820);
+s32 func_00100820(void) {
+    func_0019A5C8();
+    func_002038F0();
+    func_001A86F0();
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100850);
 
@@ -44,7 +49,15 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00100E40);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100F60);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100FF0);
+f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2) {
+    f32 var_f0;
+
+    var_f0 = 1.0f;
+    if (!(fparg0 <= fparg2)) {
+        var_f0 = (fparg0 - fparg1) / (fparg2 - fparg1);
+    }
+    return var_f0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101020);
 
@@ -58,7 +71,9 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00101600);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101770);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_001018E0);
+f32 func_001018E0(f32 fparg0, f32 fparg1) {
+    return (fparg0 / (fparg1 / 256.0f)) * (func_001F9A20(0) / 800.0f);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101940);
 

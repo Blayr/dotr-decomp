@@ -96,7 +96,9 @@ void func_001AC6F0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC700);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001ACC50);
+void func_001ACC50(void) {
+    func_00209D30(func_001ACC80(func_00209D20()));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001ACC80);
 

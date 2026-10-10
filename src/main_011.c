@@ -44,7 +44,20 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_00147B90);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00147E00);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00147E50);
+s32 func_00147E50(s32 arg0, s32 arg1) {
+    s32 var_s0;
+
+    var_s0 = 0;
+loop_1:
+    if (((arg1 << 8) | arg0) == func_00147EB0(var_s0)) {
+        return 1;
+    }
+    var_s0 += 1;
+    if (var_s0 >= 5) {
+        return 0;
+    }
+    goto loop_1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00147EB0);
 
