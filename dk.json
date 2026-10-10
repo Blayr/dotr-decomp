@@ -14,8 +14,8 @@
   "text_start": 1048576,
   "data_start": 2648420,
   "overlays": 833,
-  "gcc": "2.96",
-  "cflags": "-O2",
+  "gcc": "mwcps2-2.3.3-000906",
+  "cflags": "-O3",
   "g": 0,
   "maspsx": "",
   "chunks": [

@@ -19,7 +19,7 @@ root = Path(__file__).resolve().parent.parent
 names = [ln.strip() for ln in (root / "config/asm_words.txt").read_text().splitlines() if ln.strip()]
 exact = {n for n in names if not n.endswith("*")}
 prefixes = tuple(n[:-1] for n in names if n.endswith("*"))
-line_re = re.compile(r"^(\s*/\* [0-9A-F]+ [0-9A-F]{8} ([0-9A-F]{8}) \*/\s+)([a-z][\w.]*)(.*)$", re.M)
+line_re = re.compile(r"^([ \t]*/\* [0-9A-F]+ [0-9A-F]{8} ([0-9A-F]{8}) \*/[ \t]+)([a-z][\w.]*)([^\n]*)$", re.M)
 
 
 def fix(m):
@@ -39,6 +39,33 @@ for path, text in files.items():
         files[path] = new
         changed.add(path)
 print(f"fix_asm: {len(changed)} files use .word for instructions GNU as lacks", file=sys.stderr)
+
+# 3. An alternate entry (alabel) is global, so branches to it from its own
+#    function become relocations, and mwccgap drops globals its own function
+#    references. Internal branches get a local twin: .L labels lose alabel,
+#    named entries gain a .Lalias_ label beside them.
+for path, text in files.items():
+    new = re.sub(r"^(\s*)alabel (\.L[0-9A-F]{8})[ \t]*$", r"\1\2:", text, flags=re.M)
+    for name in re.findall(r"^\s*alabel (\w+)[ \t]*$", new, re.M):
+        new = re.sub(rf"(?<![\w.]){name}\b(?!:)", f".Lalias_{name}", new)
+        new = re.sub(rf"^(\s*)alabel \.Lalias_{name}[ \t]*$", rf"\1alabel {name}\n\1.Lalias_{name}:",
+                     new, flags=re.M)
+    if new != text:
+        files[path] = new
+        changed.add(path)
+
+# 4. Non-branch instructions that name a local label (j/jal, lui/addiu of its
+#    address) need relocations against local symbols, which mwccgap maps to
+#    the wrong symbol. The code never moves in a matching build, so their
+#    original bytes are exact. Branches are PC-relative and stay.
+local_ref = re.compile(r"^([ \t]*/\* [0-9A-F]+ [0-9A-F]{8} ([0-9A-F]{8}) \*/[ \t]+)((?!b)[a-z][\w.]*)"
+                       r"([ \t][^\n]*\.L(?:alias_\w+|[0-9A-F]{8})\b[^\n]*)$", re.M)
+for path, text in files.items():
+    new = local_ref.sub(lambda m: f"{m.group(1)}.word 0x{int.from_bytes(bytes.fromhex(m.group(2)), 'little'):08X}"
+                                  f" /* {m.group(3)}{m.group(4)} */", text)
+    if new != text:
+        files[path] = new
+        changed.add(path)
 
 label_def = re.compile(r"^\s*(?:jlabel\s+)?(\.L[0-9A-F]{8})\b:?", re.M)
 defined = {}

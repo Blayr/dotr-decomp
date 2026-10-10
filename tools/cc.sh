@@ -27,14 +27,15 @@ mkdir -p "$(dirname "$OUT")"
 "$PRE/bin/ee-gcc" -B"$PRE_LIB/" -E $CPP_FLAGS "$IN" -o "$TMP/in.i"
 
 if [[ "$DK_GCC" == mwcps2-* ]]; then
-    # mwccgap swaps each INCLUDE_ASM line for its assembled function.
+    # mwccgap swaps each INCLUDE_ASM line for its assembled function. It reads C
+    # from stdin whenever stdin isn't a terminal, so stdin must be empty.
     IN_ABS="$(cd "$(dirname "$IN")" && pwd)/$(basename "$IN")"
     OUT_ABS="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")"
     (cd "$ROOT" && python3 "$TC/src/mwccgap/mwccgap.py" "$IN_ABS" "$OUT_ABS" \
         --mwcc-path "$TC/mwcps2/${DK_GCC#mwcps2-}/mwccps2.exe" --use-wibo --wibo-path "$(command -v wibo)" \
         --as-path "$(command -v mipsel-none-elf-as)" --as-march r5900 --as-mabi eabi --as-flags "-G$G" \
-        --macro-inc-path include/macro.inc \
-        -nostdinc -stderr "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS)
+        --macro-inc-path include/mwccgap.inc \
+        -nostdinc -stderr "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS < /dev/null)
     mv "$TMP/deps" "$OUT.d"
     exit 0
 fi
