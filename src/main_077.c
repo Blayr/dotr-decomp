@@ -34,7 +34,24 @@ s32 func_0026FB60(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FBB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FC10);
+s32 func_0026FC10(s32 arg0) {
+    u8 *p;
+
+    if (arg0 == 0x3E7) {
+        return 0;
+    }
+    p = func_001DD0E0(arg0);
+    if (p == NULL) {
+        return 0;
+    }
+    if ((p[0] >> 5) == 0) {
+        if (*(u16 *)(p + 4) == 0xFFFF) {
+            return 2;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FC90);
 
