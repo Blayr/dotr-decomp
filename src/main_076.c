@@ -76,7 +76,64 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026BF50);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026C170);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026CD80);
+void func_0026CD80(s32 arg0) {
+    f32 v[4];
+    f32 *p;
+
+    if (arg0 < 0) {
+        func_001F1E10(1, v);
+        if (v[0] - 0.08f < 0.0f) {
+            v[0] = 0.0f;
+        } else {
+            v[0] -= 0.08f;
+        }
+        p = &v[1];
+        if (*p - 0.08f < 0.0f) {
+            *p = 0.0f;
+        } else {
+            *p -= 0.08f;
+        }
+        func_001F1EE0(1, v);
+        func_001F1E10(5, v);
+        if (v[0] - 0.08f < 0.0f) {
+            v[0] = 0.0f;
+        } else {
+            v[0] -= 0.08f;
+        }
+        if (*p - 0.08f < 0.0f) {
+            *p = 0.0f;
+        } else {
+            *p -= 0.08f;
+        }
+        func_001F1EE0(5, v);
+        func_001F1E10(6, v);
+        if (v[0] - 0.08f < 0.0f) {
+            v[0] = 0.0f;
+        } else {
+            v[0] -= 0.08f;
+        }
+        if (*p - 0.08f < 0.0f) {
+            *p = 0.0f;
+        } else {
+            *p -= 0.08f;
+        }
+        func_001F1EE0(6, v);
+    } else {
+        func_001F1E10(1, v);
+        v[0] = 0.8f;
+        p = &v[1];
+        *p = 0.8f;
+        func_001F1EE0(1, v);
+        func_001F1E10(5, v);
+        v[0] = 0.8f;
+        *p = 0.8f;
+        func_001F1EE0(5, v);
+        func_001F1E10(6, v);
+        v[0] = 0.8f;
+        *p = 0.8f;
+        func_001F1EE0(6, v);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026CFC0);
 

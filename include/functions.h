@@ -148,6 +148,7 @@ s32 func_0024EA60(void);
 void func_0024FDA0(void);
 void func_00250360(void);
 void func_00261680(s32 arg0);
+void func_0026CD80(s32 arg0);
 s32 func_0026FB10(s32 arg0, s32 arg1);
 s32 func_0026FB60(s32 arg0, s32 arg1);
 s32 func_0026FC10(s32 arg0);

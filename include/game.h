@@ -129,4 +129,7 @@ void func_001DF1E0(void);
 s32 func_0026F690(s32, u16 *, s16 *, s32);
 extern u8 D_00317490[];
 
+void func_001F1E10(s32, f32 *);
+void func_001F1EE0(s32, f32 *);
+
 #endif
