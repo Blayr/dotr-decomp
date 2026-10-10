@@ -22,7 +22,17 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00155070);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00155230);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_001554B0);
+s32 func_001554B0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 i = 0;
+
+    do {
+        if (func_00155520(i, arg2) == ((arg1 << 8) | arg0)) {
+            return 1;
+        }
+        i++;
+    } while (i < 7);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00155520);
 

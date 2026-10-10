@@ -24,6 +24,7 @@ s32 func_0014C970(s32 arg0, s32 arg1);
 void func_0014DA30(void);
 s32 func_00153AB0(void);
 void func_00154210(void);
+s32 func_001554B0(s32 arg0, s32 arg1, s32 arg2);
 void func_00158800(void);
 s32 func_0015ED30(s32 arg0, s32 arg1);
 void func_001604A0(void);
