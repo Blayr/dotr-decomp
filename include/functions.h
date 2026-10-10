@@ -21,6 +21,7 @@ void func_0011A4C0(void);
 void func_0011F530(void);
 s32 func_00123670(s32 arg0);
 void func_00124F50(void);
+s32 func_00128AE0(s32 arg0);
 s32 func_00142220(s32 arg0);
 s32 func_00147E50(s32 arg0, s32 arg1);
 s32 func_0014C970(s32 arg0, s32 arg1);
