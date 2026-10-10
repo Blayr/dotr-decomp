@@ -1,0 +1,7 @@
+/asm/
+/assets/
+/build/
+/linker/
+/work/
+/nonmatchings/
+__pycache__/
