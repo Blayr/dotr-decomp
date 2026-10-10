@@ -115,4 +115,9 @@ void func_0027DE20(s32, s32, s32, s32, s32, s32, s32, s32, s32, u16, s32, s32, u
 s32 func_00197BC0(s32);
 extern u8 D_1FE0000;
 
+s32 func_001F6620();
+void func_001F66A0(s32, s32);
+f32 func_001F67C0(s32, s32);
+void func_001F6840(s32, f32);
+
 #endif
