@@ -1,0 +1,13 @@
+# Written by dk from dk.json, for tools that read decomp.yaml (coddog).
+name: dotr
+platform: ps2
+versions:
+- name: main
+  fullname: SLUS_205.15
+  sha1: 077ac97a878d1bc3b7eb1c3e09bc7fef7becdf68
+  paths:
+    target: assets/SLUS_205.15
+    build_dir: build
+    map: build/main.map
+    compiled_target: build/SLUS_205.15
+    elf: build/main.elf

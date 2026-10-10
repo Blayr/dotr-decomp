@@ -27,7 +27,8 @@ for index, section in enumerate(elf.sections):
     name = names.get(index)
     if not isinstance(section, TextSection) or name is None:
         continue
-    asm = next(Path("asm").glob(f"**/nonmatchings/**/{name}.s"), None)
+    # A split made after the function was decompiled files it under matchings/.
+    asm = next(Path("asm").glob(f"**/{name}.s"), None)
     if asm is None:
         continue
     slot = 4 * len(WORD_RE.findall(asm.read_text()))
