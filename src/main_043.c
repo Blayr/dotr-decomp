@@ -364,7 +364,42 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD990);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDAC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDD80);
+void func_001E7F70(s32, s32, s32);
+void func_001E8780(s32, s32, s32, s32);
+s32 func_002159D0(s32, s32);
+extern u8 D_002BF080[];
+
+static inline u8 *lookup_001DDD80(s32 index) {
+    if (index < 0 || index >= 0x356) {
+        return NULL;
+    }
+    return D_002BF080 + index * 0x14;
+}
+
+void func_001DDD80(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    s32 var_a0;
+    s32 var_s0;
+    s32 var_s1;
+    u8 *var_v1;
+
+    func_001F3910(0, 0x26C, 0, arg3);
+    func_001E7F70(6, 0, 0);
+    func_001E7F70(0, 0, 0);
+    var_s0 = 0;
+    var_s1 = 0;
+    do {
+        var_a0 = func_002159D0(var_s0, func_002158B0(var_s0));
+        if (var_a0 == 0x29F) {
+            var_a0 = 0x3E7;
+        }
+        var_v1 = lookup_001DDD80(var_a0);
+        if (var_v1 != NULL) {
+            func_001E8780(var_s0 + 5, -1, (*var_v1 & 0x1F) + var_s1, 1);
+        }
+        var_s0 += 1;
+        var_s1 += 0x64;
+    } while (var_s0 < 2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDE80);
 

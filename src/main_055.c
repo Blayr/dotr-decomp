@@ -385,7 +385,32 @@ s32 func_00206030(s32 count, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002060F0);
+s32 func_002060F0(f32 *origin, s32 count, f32 *points, f32 *out) {
+    s32 i;
+    f32 divisor;
+
+    out[0] = 0.0f;
+    out[1] = 0.0f;
+    out[2] = 0.0f;
+    out[3] = 0.0f;
+    if (count == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < count; i++) {
+        out[0] += (origin != NULL ? origin[0] : 0.0f) - points[0];
+        out[1] += (origin != NULL ? origin[1] : 0.0f) - points[1];
+        out[2] += (origin != NULL ? origin[2] : 0.0f) - points[2];
+        points += 4;
+    }
+
+    divisor = (f32) count;
+    out[0] /= divisor;
+    out[1] /= divisor;
+    out[2] /= divisor;
+    func_0020D070(out);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002061F0);
 
