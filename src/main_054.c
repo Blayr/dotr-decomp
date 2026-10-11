@@ -21,7 +21,16 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF350);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF360);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF3D0);
+void func_001FF3D0(void) {
+    s32 start;
+
+    start = *(s32 *)0x10000800;
+    do {
+        if (func_001FF420() == 0) {
+            break;
+        }
+    } while (*(s32 *)0x10000800 - start <= 0x40);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF420);
 
