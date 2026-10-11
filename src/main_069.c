@@ -413,7 +413,33 @@ void func_002441F0(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244250);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244530);
+s32 func_00244530(u8 *arg0) {
+    func_0017B920(*(s32 *)(arg0 + 0x40));
+    *(s32 *)(arg0 + 0x44) = 0;
+    func_001843E0();
+    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
+    *(volatile u32 *)0x1000B400 = 5;
+    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    *(s32 *)(arg0 + 0x1C) = *(volatile u32 *)0x1000B410;
+    *(s32 *)(arg0 + 0x20) = *(volatile u32 *)0x1000B430;
+    *(s32 *)(arg0 + 0x24) = *(volatile u32 *)0x1000B420;
+    *(s32 *)(arg0 + 0x28) = *(volatile u32 *)0x1000B400;
+    do {
+    } while (*(volatile u32 *)0x10002010 & 0xF0);
+    func_001843E0();
+    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
+    *(volatile u32 *)0x1000B000 = 0;
+    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    *(s32 *)(arg0 + 0x2C) = *(volatile u32 *)0x1000B010;
+    *(s32 *)(arg0 + 0x30) = *(volatile u32 *)0x1000B020;
+    *(s32 *)(arg0 + 0x34) = *(volatile u32 *)0x1000B000;
+    *(s32 *)(arg0 + 0x38) = *(volatile u32 *)0x10002020;
+    *(s32 *)(arg0 + 0x3C) = *(volatile u32 *)0x10002010;
+    func_0017B900(*(s32 *)(arg0 + 0x40));
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244680);
 
