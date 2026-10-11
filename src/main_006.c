@@ -56,7 +56,17 @@ INCLUDE_ASM("asm/nonmatchings/main_006", func_001211B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_001214E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_001215E0);
+void func_001215E0(void *arg0, u8 arg1) {
+    if (arg1 < 2) {
+        if (arg1 == 1) {
+            *(u32 *)((u8 *)arg0 + 8) =
+                (*(u32 *)((u8 *)arg0 + 8) & 0xFFFF) | 0xFFFF0000;
+        } else {
+            *(u32 *)((u8 *)arg0 + 8) =
+                (*(u32 *)((u8 *)arg0 + 8) & 0xFFFF0000) | 0xFFFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00121630);
 
