@@ -102,7 +102,19 @@ s32 func_001F27A0(s32 arg0) {
     return temp_v0->pad040[0xEF];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2800);
+s32 func_001F2800(s32 arg0, u8 arg1) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    temp_v0->pad040[0xEF] = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2860);
 
@@ -119,7 +131,22 @@ s16 func_001F2920(s32 arg0) {
     return *(s16 *)((u8 *)temp_v0 + 0x1F4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2980);
+s8 func_001F2980(s32 arg0) {
+    Obj_0031ABB0 *obj;
+    s8 ret;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        ret = -1;
+    } else {
+        obj = D_0031ABB0[arg0];
+        if (obj == NULL) {
+            ret = -1;
+        } else {
+            ret = *(s8 *)((u8 *)obj + 0x1F3);
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F29E0);
 
@@ -151,13 +178,52 @@ INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2DD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2EC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2FF0);
+s32 func_001F2FF0(s32 arg0, s16 arg1) {
+    Obj_0031ABB0 *temp_v0;
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3050);
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    *(s16 *)((u8 *)temp_v0 + 0x20A) = arg1;
+    return 1;
+}
+
+s32 func_001F3050(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return -1;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return -1;
+    }
+    return *(u16 *)((u8 *)temp_v0 + 0x20A);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F30B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3130);
+typedef struct {
+    s8 unused : 1;
+    s8 enabled : 1;
+} Flags_001F3130;
+
+s32 func_001F3130(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    return ((Flags_001F3130 *)((u8 *)temp_v0 + 0x20C))->enabled ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3190);
 

@@ -146,7 +146,27 @@ s32 func_001F1240(s32 arg0) {
     return ((Flags_001F1240 *)((u8 *)obj + 0x20C))->active ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F12A0);
+typedef struct {
+    s8 : 3;
+    s8 active : 1;
+} Flags_001F12A0;
+
+s32 func_001F12A0(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+    s32 ret;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        ret = 0;
+    } else {
+        temp_v0 = D_0031ABB0[arg0];
+        if (temp_v0 == NULL) {
+            ret = 0;
+        } else {
+            ret = ((Flags_001F12A0 *)((u8 *)temp_v0 + 0x20C))->active ? 1 : 0;
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1300);
 

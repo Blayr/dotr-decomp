@@ -291,7 +291,6 @@ void func_001AAFA0(s32);
 void func_001F30B0(s32, s32);
 void func_001CDD90(u8 *);
 s32 func_001AE5F0(s32);
-s32 func_001F3130(s32);
 
 s32 func_00136060(void *arg0);
 extern s32 D_0030FF48;
