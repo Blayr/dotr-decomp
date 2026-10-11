@@ -55,7 +55,66 @@ s32 func_001C32B0(void) {
     return var_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C33A0);
+typedef struct {
+    u32 id : 31;
+    u32 flag : 1;
+    u32 position : 30;
+    u32 state : 2;
+} Entry_001C33A0;
+
+typedef struct {
+    u8 padding[0x6E0];
+    u8 *counts0;
+    u8 *counts1;
+} State_001C33A0;
+
+void *func_00214F00(s32, s32, s32);
+s32 func_00215060(s32, u32, u32, s32);
+void func_00216280(s32, u32, u32, s32);
+s32 func_00216AC0(s32, s32, s32);
+
+void func_001C33A0(s32 player) {
+    s32 id;
+    s32 slot;
+    Entry_001C33A0 *entry;
+    u8 *counts;
+    u8 *count;
+    s32 opponent;
+    State_001C33A0 *state;
+
+    state = (State_001C33A0 *)D_00317490;
+    if (player != 0) {
+        counts = state->counts1;
+    } else {
+        counts = state->counts0;
+    }
+    id = 0;
+    opponent = player ^ 1;
+    do {
+        count = counts + id;
+        while (*count != 0) {
+            if (func_00216AC0(opponent, id, -1) >= 9) {
+                break;
+            }
+            slot = 0;
+            do {
+                entry = func_00214F00(player, id, slot);
+                if (entry->id != 0 && entry->state == 3 &&
+                    func_00215060(opponent, entry->id, entry->position, id) == 0) {
+                    break;
+                }
+                slot++;
+            } while (slot < 9);
+            if (slot >= 9) {
+                break;
+            }
+            func_00216280(opponent, entry->id, entry->position, id);
+            func_00214FD0(entry);
+            (*count)--;
+        }
+        id++;
+    } while (id < 0x356);
+}
 
 typedef struct {
     u8 pad_000[0x6D8];
