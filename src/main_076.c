@@ -10,7 +10,43 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_00266910);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00266A80);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00266C70);
+s32 func_00266C70(s32 arg0, s32 arg1) {
+    s32 count;
+    s32 index;
+    u32 *data;
+
+    index = 1;
+    count = 0;
+    do {
+        if (func_001E2100(0, index, 4) != 0 &&
+            func_001E2100(0, index, 3) != 0 &&
+            func_001E2100(0, index, 5) != 0) {
+            data = func_00250740(0, index, 2);
+            if (data != NULL && (*data >> 8) == arg0) {
+                if (count++ == arg1) {
+                    return index;
+                }
+            }
+        }
+        index++;
+    } while (index < 11);
+
+    index = 1;
+    do {
+        if (func_001E2100(1, index, 4) != 0 &&
+            func_001E2100(1, index, 3) != 0 &&
+            func_001E2100(1, index, 5) != 0) {
+            data = func_00250740(1, index, 2);
+            if (data != NULL && (*data >> 8) == arg0) {
+                if (count++ == arg1) {
+                    return index | 0x100;
+                }
+            }
+        }
+        index++;
+    } while (index < 11);
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00266DF0);
 
