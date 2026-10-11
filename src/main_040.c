@@ -379,7 +379,63 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB940);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BC350);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BCCE0);
+typedef struct Entry_001BCCE0 {
+    u16 id;
+    u8 progress;
+    struct {
+        u8 index : 5;
+        s8 swap : 1;
+        s8 mode : 1;
+        s8 reverse : 1;
+    } flags;
+} Entry_001BCCE0;
+
+s32 func_001BD8A0(s32, s32, s32, s32, s32, u8);
+extern struct Entry_001BA520 *D_00317B60;
+
+s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2) {
+    Entry_001BCCE0 *entry;
+    s32 lower;
+    s32 upper;
+    s32 i;
+    s32 result;
+    s32 to;
+    s32 from;
+    s32 remaining;
+    u8 progress;
+    u8 amount;
+
+    result = arg0;
+    entry = (Entry_001BCCE0 *)D_00317B60;
+    lower = arg1 + 8;
+    upper = arg1 + 0x148;
+    i = 0;
+    do {
+        progress = entry->progress;
+        if (progress != 0) {
+            amount = progress;
+            if (entry->flags.reverse != 0) {
+                amount = 0x80 - progress;
+            }
+            if (entry->flags.swap != 0) {
+                to = lower;
+                from = upper;
+            } else {
+                to = upper;
+                from = lower;
+            }
+            result = func_001BD8A0(result, entry->id,
+                from + (((progress & 0xFF) * (to - from)) >> 7),
+                arg2 + 0x70 + entry->flags.index * 0x36,
+                entry->flags.mode, amount);
+            remaining = entry->progress - 0x10;
+            entry->progress = remaining > 0 ? remaining : 0;
+        }
+        i++;
+        entry++;
+    } while (i < 8);
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BCE20);
 
