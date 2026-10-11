@@ -1406,6 +1406,7 @@ s32 func_002760E0(u16 value, u16 *entries);
 void func_002761D0(void *arg0);
 s32 func_00276C80(u16 *arg0, s32 arg1);
 void func_00276EC0(u16 *arg0, s32 arg1, void *arg2);
+s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9);
 void func_002770E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10, s32 arg11, s32 arg12);
 s32 func_00277C60(void *arg0, s32 arg1, s32 arg2);
 s32 func_00278150(s32 arg0, s32 arg1);

@@ -80,7 +80,52 @@ void func_00276EC0(u16 *arg0, s32 arg1, void *arg2) {
     dest->field_10 = 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00276F10);
+typedef struct {
+    u16 position;
+    u8 flag;
+    u8 pad;
+} Slot_00276F10;
+
+s32 func_00277160(void *arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, u8 arg6, u8 arg7, u8 arg8,
+                  s32 arg9, s32 arg10);
+
+s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
+                  s32 arg9) {
+    s32 state;
+    s32 i;
+    s32 result;
+    u8 work[112];
+    Slot_00276F10 slots[22];
+    s16 c;
+    s16 b;
+    u16 a;
+    extern s32 func_002770E0();
+    extern void func_0027E770();
+
+    if ((u32)func_001A8710() > 12000) {
+        return -1;
+    }
+    for (i = 0; i < 22; i++) {
+        slots[i].position = 0xFFFF;
+        slots[i].flag = 0xFF;
+    }
+    func_0027E770(work);
+    a = 0;
+    b = 0;
+    c = 0;
+    state = 0;
+    for (i = 1; i <= (u8)arg4; i++) {
+        state = func_002770E0(state, arg0, arg1, arg2, arg3, (u8)i, arg8, arg9, slots, &a, &c, &b, work);
+        result = func_00277160(arg0, arg1, arg2, slots, arg4, arg5, arg6, arg7, arg8, arg9, a);
+        if (result >= 0) {
+            return result;
+        }
+        if ((u32)func_001A8710() > 12000) {
+            return -1;
+        }
+    }
+    return -1;
+}
 
 void func_002777F0(s32, s32, s32, s32, s32, s32, s32, s32,
                    s64, s64, s64, s64, s64, s64, s64);
