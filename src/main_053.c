@@ -63,7 +63,30 @@ s32 func_001FD1B0(s32 arg0) {
     return e->hi - e->lo;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD220);
+static inline s32 calc_001FD220(s32 idx) {
+    Entry_0031C050 *e;
+
+    if (idx < 0 || idx >= 2) {
+        return -1;
+    }
+    e = &D_0031C050[idx];
+    if (e->flag) {
+        return -1;
+    }
+    return e->hi - e->lo;
+}
+
+s32 func_001FD220(s32 arg0) {
+    s32 i;
+    s32 want = arg0 ? 1 : 0;
+
+    for (i = 0; i < 2; i++) {
+        if (calc_001FD220(i) >= want) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD2B0);
 
