@@ -149,7 +149,20 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0C70);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0C80);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1030);
+s32 func_001E1030(void) {
+    u8 *entry;
+
+    entry = func_001DD130();
+    if (entry == NULL) {
+        entry = NULL;
+    } else if (entry[0x45] >= 11) {
+        entry = NULL;
+    }
+    if (entry != NULL) {
+        return *(u16 *)(entry + 0x3C);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1090);
 

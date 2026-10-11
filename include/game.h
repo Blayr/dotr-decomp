@@ -295,7 +295,6 @@ s32 func_001AE5F0(s32);
 s32 func_001F3130(s32);
 
 s32 func_00136060(void *arg0);
-s32 func_001E1030(void);
 extern s32 D_0030FF48;
 
 s32 func_001E55E0(s32);
@@ -330,5 +329,7 @@ s32 func_00205630(s32, s32, s32, s32, f32 *);
 
 s32 func_00254890(s32 *, s32);
 void func_00254C90(s32 *, s32);
+
+void *func_001DD130(void);
 
 #endif

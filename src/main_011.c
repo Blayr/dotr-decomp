@@ -19,7 +19,15 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_00145400);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_001459E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_001461C0);
+s32 func_001461C0(s32 arg0) {
+    if (func_001DF470() > 2000) {
+        if (func_001E0150(arg0) >= 4) {
+            return 0;
+        }
+        return 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00146220);
 

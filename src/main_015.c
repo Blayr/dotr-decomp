@@ -1,6 +1,14 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00162580);
+s32 func_00162580(s32 arg0) {
+    if (func_001DF470() > 0x4B0) {
+        if (func_001E0150(arg0) >= 4) {
+            return 0x1F4;
+        }
+        return 0x3E8;
+    }
+    return 0x7D0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001625E0);
 
