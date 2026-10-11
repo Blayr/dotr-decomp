@@ -149,6 +149,7 @@ void func_00241AC0(void);
 void func_00242CD0(void);
 void func_00243A40(s32 arg0);
 s32 func_002450B0(void);
+s32 func_002451A0(void *arg0);
 s32 func_00245550(void);
 void func_002457C0(void);
 void func_00246490(void);

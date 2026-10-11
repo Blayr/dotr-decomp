@@ -4,7 +4,43 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00245150);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245160);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002451A0);
+typedef struct {
+    u8 pad00[0x48];
+    u8 unk48[0x60];
+    s32 unkA8;
+} Obj_002451A0;
+
+typedef struct {
+    f32 v;
+} Flt_002451A0;
+
+void func_002440F0(void *, s32 *, s32 *, s32 *, s32 *);
+void func_002441F0(void *, s32);
+void func_00244B20(void *);
+s32 func_00245630(s32, s32, s32, s32, void *, s32, s32, s32);
+extern Flt_002451A0 D_0029B300;
+extern u8 D_003506C8[];
+
+s32 func_002451A0(void *arg0) {
+    Obj_002451A0 *p = (Obj_002451A0 *)arg0;
+    s32 sp2C;
+    s32 sp30;
+    Flt_002451A0 sp34;
+    s32 sp38;
+    s32 sp3C;
+
+    sp34 = D_0029B300;
+    func_002440F0(p->unk48, &sp2C, &sp38, &sp30, &sp3C);
+    if ((sp38 + sp3C) < 4) {
+        return 0;
+    }
+    func_002441F0(D_003506C8, func_00245630((sp2C & 0xFFFFFFF) | 0x20000000, sp38, (sp30 & 0xFFFFFFF) | 0x20000000, sp3C, &sp34, 4, 0, 0));
+    func_00244B20(p->unk48);
+    if (p->unkA8 == 0) {
+        p->unkA8 = 2;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245280);
 
