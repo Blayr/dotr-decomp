@@ -273,7 +273,87 @@ s32 func_001DA4C0(s32 mode, void *dst) {
     return 4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA5E0);
+typedef struct Vertex_001DA5E0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+    u8 pad10[8];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    f32 u;
+    f32 v;
+    u8 pad28[8];
+} Vertex_001DA5E0;
+
+s32 func_001DA5E0(s32 arg0, f32 x, f32 y, void *arg1, void *arg2) {
+    f32 *scale = arg2;
+    f32 width;
+    f32 height;
+    f32 halfWidth;
+    f32 halfHeight;
+    f32 z;
+    Vertex_001DA5E0 *vertex;
+
+    width = arg0 ? 256 : 120;
+    height = arg0 ? 368 : 180;
+    vertex = arg1;
+    halfWidth = (scale ? width * scale[0] : width) / 2.0f;
+    halfHeight = (scale ? height * scale[1] : height) / 2.0f;
+    z = func_001F9A20(0);
+
+    vertex[0].r = 0x80;
+    vertex[0].g = 0x80;
+    vertex[0].b = 0x80;
+    vertex[0].a = 0x80;
+    vertex[0].q = 1.0f;
+    vertex[0].x = x - halfWidth;
+    vertex[0].y = y - halfHeight;
+    vertex[0].z = z;
+    vertex[0].w = 1.0f;
+    vertex[0].u = 0.0f;
+    vertex[0].v = 0.0f;
+
+    vertex[1].r = 0x80;
+    vertex[1].g = 0x80;
+    vertex[1].b = 0x80;
+    vertex[1].a = 0x80;
+    vertex[1].q = 1.0f;
+    vertex[1].x = x - halfWidth;
+    vertex[1].y = y + halfHeight;
+    vertex[1].z = z;
+    vertex[1].w = 1.0f;
+    vertex[1].u = 0.0f;
+    vertex[1].v = height / 512.0f;
+
+    vertex[2].r = 0x80;
+    vertex[2].g = 0x80;
+    vertex[2].b = 0x80;
+    vertex[2].a = 0x80;
+    vertex[2].q = 1.0f;
+    vertex[2].x = x + halfWidth;
+    vertex[2].y = y + halfHeight;
+    vertex[2].z = z;
+    vertex[2].w = 1.0f;
+    vertex[2].u = width / 512.0f;
+    vertex[2].v = height / 512.0f;
+
+    vertex[3].r = 0x80;
+    vertex[3].g = 0x80;
+    vertex[3].b = 0x80;
+    vertex[3].a = 0x80;
+    vertex[3].q = 1.0f;
+    vertex[3].x = x + halfWidth;
+    vertex[3].y = y - halfHeight;
+    vertex[3].z = z;
+    vertex[3].w = 1.0f;
+    vertex[3].u = width / 512.0f;
+    vertex[3].v = 0.0f;
+    return 4;
+}
 
 void func_001DA7A0(s32 arg0, s32 arg1) {
     func_00209D30(func_001DA7F0(func_00209D20(), arg0, arg1));
