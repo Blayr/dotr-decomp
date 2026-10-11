@@ -529,7 +529,40 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_001095D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00109830);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_001098E0);
+typedef struct Vec4_001098E0 {
+    f32 x, y, z, w;
+} Vec4_001098E0;
+
+void func_001098E0(void *out, f32 *offset, f32 *point, f32 *a, f32 *b) {
+    Vec4_001098E0 result;
+    f32 zero;
+    f32 dx, dy, dz;
+    f32 lengthSquared;
+    f32 startX, startY, startZ;
+    f32 pointY;
+    f32 t;
+
+    result.x = 0.0f;
+    startX = a[0] + offset[0];
+    startY = a[1];
+    startZ = a[2] + offset[2];
+    pointY = point[1];
+    dx = (b[0] + offset[0]) - startX;
+    dy = b[1] - startY;
+    dz = (b[2] + offset[2]) - startZ;
+    lengthSquared = dx * dx + dy * dy + dz * dz;
+    zero = 0.0f;
+    if (lengthSquared == 0.0f) {
+        *(Vec4_001098E0 *)out = result;
+    } else {
+        t = (dx * (zero - startX) + dy * (pointY - startY) +
+             dz * (zero - startZ)) / lengthSquared;
+        result.x = startX + dx * t;
+        result.y = 0.0f;
+        result.z = startZ + dz * t;
+        *(Vec4_001098E0 *)out = result;
+    }
+}
 
 typedef struct Vec4_001099E0 {
     f32 x, y, z, w;
