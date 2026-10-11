@@ -232,4 +232,7 @@ extern s16 D_00322990;
 extern u16 D_00322992;
 extern s16 D_00322994;
 
+extern u8 D_00325CC0[];
+void func_00206D30(s32, void *, s32, s32, s32, s32, s32);
+
 #endif
