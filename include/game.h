@@ -205,4 +205,6 @@ extern s32 D_00326190;
 extern s32 D_003261B0;
 extern s32 D_003261B4;
 
+f32 func_001A6C60(f32);
+
 #endif
