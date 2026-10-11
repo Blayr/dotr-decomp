@@ -199,4 +199,7 @@ extern s32 D_0031BE98;
 void func_0020B400(void *, s32, s32);
 extern u8 D_003259C0[];
 
+extern s32 D_0032618C;
+extern s32 D_00326190;
+
 #endif

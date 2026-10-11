@@ -19,7 +19,11 @@ f32 func_00209D40(s32 *arg0) {
     return data->field_244;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D60);
+s32 func_00209D60(s32 *arg0, s32 *arg1) {
+    *arg0 = D_0032618C;
+    *arg1 = D_00326190;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D80);
 
