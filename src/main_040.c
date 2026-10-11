@@ -317,7 +317,38 @@ s32 func_001BAC90(u16 *arg0, u16 *arg1) {
     return (var_s2 < var_v0) ? -1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAD40);
+s32 func_001BAD40(u16 *arg0, u16 *arg1) {
+    s32 type0;
+    s32 type1;
+    s32 id1;
+    u8 *card0;
+    u8 *card1;
+    s32 result;
+
+    id1 = *arg1;
+    card0 = func_001DD0E0(*arg0);
+    card1 = func_001DD0E0(id1);
+
+    type0 = card0 != NULL ? card0[0] >> 5 : 0x7FFFFFFFLL;
+    type1 = card1 != NULL ? card1[0] >> 5 : 0x7FFFFFFFLL;
+
+    if (type0 != 0x7FFFFFFFLL) {
+        if (type0 != 0 || *(u16 *)(card0 + 4) == 0xFFFF) {
+            type0 += 6;
+        }
+    }
+    if (type1 != 0x7FFFFFFFLL) {
+        if (type1 != 0 || *(u16 *)(card1 + 4) == 0xFFFF) {
+            type1 += 6;
+        }
+    }
+    if (type1 < type0) {
+        result = 1;
+    } else {
+        result = type0 < type1 ? -1 : 0;
+    }
+    return result;
+}
 
 s32 func_001BAE40(u16 *arg0, u16 *arg1) {
     u16 temp_v1;

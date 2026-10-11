@@ -232,7 +232,48 @@ s32 func_001F9310(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F93F0);
+typedef struct Vec4_001F93F0 {
+    f32 x, y, z, w;
+} Vec4_001F93F0;
+
+s32 func_001F93F0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    u8 *base;
+    s32 row;
+    s32 offset;
+    f32 value;
+    Vec4_001F93F0 *dst;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    base = (u8 *)D_0031BEB0[arg0];
+    if (base == NULL) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    if (arg2 < 0 || arg2 >= 3) {
+        return 0;
+    }
+    row = (s32)base + arg1 * 0x90 + 0x60;
+    if (arg3 != NULL) {
+        dst = (Vec4_001F93F0 *)(row + arg2 * 0x30);
+        *dst = *(Vec4_001F93F0 *)arg3;
+    } else {
+        offset = arg2 * 0x30;
+        if (arg2 > 0) {
+            value = 0.0f;
+        } else {
+            value = 0.5f;
+        }
+        dst = (Vec4_001F93F0 *)(offset + row);
+        dst->w = value;
+        dst->z = value;
+        dst->y = value;
+    }
+    return 1;
+}
 
 typedef struct Vec4_001F9500 {
     f32 x, y, z, w;
