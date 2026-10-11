@@ -403,6 +403,7 @@ void func_001D99F0(void);
 void func_001D9DD0(void);
 s32 func_001D9E00(s32 arg0);
 s32 func_001D9E70(s32 arg0);
+s32 func_001DA4C0(s32 mode, void *dst);
 void func_001DA7A0(s32 arg0, s32 arg1);
 s32 func_001DBC40(s32 arg0, s32 arg1, void *arg2);
 void func_001DBCF0(s32 arg0);

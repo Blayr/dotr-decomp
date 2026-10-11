@@ -181,7 +181,77 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9F00);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA2B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA4C0);
+s32 func_001DA4C0(s32 mode, void *dst) {
+    f32 negativeHalfWidth;
+    f32 negativeHalfHeight;
+    f32 halfHeight;
+    f32 uMax;
+    f32 vMax;
+    f32 halfWidth;
+    f32 width;
+    f32 height;
+
+    width = 120.0f;
+    height = 180.0f;
+    if (mode != 0) {
+        width = 256.0f;
+        height = 368.0f;
+    }
+    halfWidth = width / 2.0f;
+    halfHeight = height / 2.0f;
+    vMax = height / 512.0f;
+    uMax = width / 512.0f;
+    *(u8 *)((u8 *)dst + 0x18) = 0x80;
+    *(u8 *)((u8 *)dst + 0x19) = 0x80;
+    *(u8 *)((u8 *)dst + 0x1A) = 0x80;
+    *(u8 *)((u8 *)dst + 0x1B) = 0x80;
+    *(s32 *)((u8 *)dst + 0x1C) = 0x3F800000;
+    negativeHalfWidth = -halfWidth;
+    *(f32 *)((u8 *)dst + 0x0) = negativeHalfWidth;
+    *(f32 *)((u8 *)dst + 0x4) = halfHeight;
+    *(s32 *)((u8 *)dst + 0x8) = 0;
+    *(s32 *)((u8 *)dst + 0xC) = 0x3F800000;
+    *(s32 *)((u8 *)dst + 0x20) = 0;
+    *(s32 *)((u8 *)dst + 0x24) = 0;
+
+    *(u8 *)((u8 *)dst + 0x48) = 0x80;
+    *(u8 *)((u8 *)dst + 0x49) = 0x80;
+    *(u8 *)((u8 *)dst + 0x4A) = 0x80;
+    *(u8 *)((u8 *)dst + 0x4B) = 0x80;
+    *(s32 *)((u8 *)dst + 0x4C) = 0x3F800000;
+    *(f32 *)((u8 *)dst + 0x30) = negativeHalfWidth;
+    negativeHalfHeight = -halfHeight;
+    *(f32 *)((u8 *)dst + 0x34) = negativeHalfHeight;
+    *(s32 *)((u8 *)dst + 0x38) = 0;
+    *(s32 *)((u8 *)dst + 0x3C) = 0x3F800000;
+    *(s32 *)((u8 *)dst + 0x50) = 0;
+    *(f32 *)((u8 *)dst + 0x54) = vMax;
+
+    *(u8 *)((u8 *)dst + 0x78) = 0x80;
+    *(u8 *)((u8 *)dst + 0x79) = 0x80;
+    *(u8 *)((u8 *)dst + 0x7A) = 0x80;
+    *(u8 *)((u8 *)dst + 0x7B) = 0x80;
+    *(s32 *)((u8 *)dst + 0x7C) = 0x3F800000;
+    *(f32 *)((u8 *)dst + 0x60) = halfWidth;
+    *(f32 *)((u8 *)dst + 0x64) = negativeHalfHeight;
+    *(s32 *)((u8 *)dst + 0x68) = 0;
+    *(s32 *)((u8 *)dst + 0x6C) = 0x3F800000;
+    *(f32 *)((u8 *)dst + 0x80) = uMax;
+    *(f32 *)((u8 *)dst + 0x84) = vMax;
+
+    *(u8 *)((u8 *)dst + 0xA8) = 0x80;
+    *(u8 *)((u8 *)dst + 0xA9) = 0x80;
+    *(u8 *)((u8 *)dst + 0xAA) = 0x80;
+    *(u8 *)((u8 *)dst + 0xAB) = 0x80;
+    *(s32 *)((u8 *)dst + 0xAC) = 0x3F800000;
+    *(f32 *)((u8 *)dst + 0x90) = halfWidth;
+    *(f32 *)((u8 *)dst + 0x94) = halfHeight;
+    *(s32 *)((u8 *)dst + 0x98) = 0;
+    *(s32 *)((u8 *)dst + 0x9C) = 0x3F800000;
+    *(f32 *)((u8 *)dst + 0xB0) = uMax;
+    *(s32 *)((u8 *)dst + 0xB4) = 0;
+    return 4;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA5E0);
 
