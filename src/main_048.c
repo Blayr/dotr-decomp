@@ -394,7 +394,56 @@ s32 func_001F1490(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1550);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1560);
+typedef struct {
+    f32 x, y, z;
+} Vec3_001F1560;
+
+typedef struct {
+    s8 unused : 6;
+    s8 direction : 2;
+} Flags_001F1560;
+
+s32 func_001F1560(s32 arg0, s32 arg1, s32 arg2) {
+    Obj_0031ABB0 *obj;
+    Vec3_001F1560 *current;
+    Vec3_001F1560 *previous;
+    s8 *current_slot;
+    s8 *previous_slot;
+    f32 last_frame;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 8) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    current = (Vec3_001F1560 *)&obj->slots[8];
+    previous = (Vec3_001F1560 *)&obj->slots[11];
+    current_slot = &obj->lv[0];
+    previous_slot = &obj->lv[1];
+    if (obj->slots[arg1] != NULL) {
+        last_frame = (f32)(u32)obj->vals[arg1] - 1.0f;
+        *previous = *current;
+        *previous_slot = *current_slot;
+        *current_slot = arg1;
+        if ((s64)((Flags_001F1560 *)((u8 *)obj + 0x1F7))->direction == -1) {
+            current->y = last_frame;
+        } else {
+            current->y = 1.0f;
+        }
+        current->z = 0.0f;
+        previous->z = 1.0f - current->z;
+        *(s8 *)((u8 *)obj + 0x1FB) = arg2;
+        *(s8 *)((u8 *)obj + 0x1FD) = 0;
+    } else {
+        return 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16B0);
 
