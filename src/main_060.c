@@ -105,7 +105,52 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_00216EC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216F80);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002170A0);
+typedef struct Entry_002170A0 {
+    u8 id;
+    u8 x : 4;
+    u8 y : 4;
+    u16 value;
+} Entry_002170A0;
+
+extern Entry_002170A0 D_002D08D0[];
+extern u16 D_002D08D2[];
+
+u16 func_002170A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 i;
+    Entry_002170A0 *entry;
+    s32 dx;
+    s32 dy;
+
+    if (arg3 <= 0) {
+        return 999;
+    }
+    if (arg0 < 0 || arg0 >= 22) {
+        return 999;
+    }
+    if (arg1 < 0 || arg1 >= 7 || arg2 < 0 || arg2 >= 7) {
+        return 999;
+    }
+
+    entry = D_002D08D0;
+    i = 0;
+    do {
+        if (arg0 == entry->id) {
+            dx = entry->x - arg1;
+            dx = dx >= 0 ? dx : -dx;
+            if (dx < arg3) {
+                dy = entry->y - arg2;
+                dy = dy >= 0 ? dy : -dy;
+                if (dy < arg3) {
+                    return D_002D08D2[i * 2];
+                }
+            }
+        }
+        i++;
+        entry++;
+    } while (i < 22);
+
+    return 999;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002171B0);
 
