@@ -108,7 +108,15 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_0014B240);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_0014B330);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_0014B390);
+s32 func_0014B390(void) {
+    s32 value;
+
+    value = func_001E1030();
+    if (value == 0x111 || value == 0x1E || value == 0xB) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_0014B3E0);
 

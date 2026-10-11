@@ -126,7 +126,22 @@ INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C140);
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C2E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C3E0);
+typedef struct {
+    u8 pad[8];
+    u32 value;
+} Data_0011C3E0;
+
+void func_0011C3E0(void *arg0, u8 arg1) {
+    Data_0011C3E0 *data = arg0;
+
+    if (arg1 < 2) {
+        if (arg1 == 1) {
+            data->value = (data->value & 0xFFFF) | 0xFFFF0000;
+        } else {
+            data->value = (data->value & 0xFFFF0000) | 0xFFFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C430);
 

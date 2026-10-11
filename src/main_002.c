@@ -61,7 +61,30 @@ s32 func_00107710(u8 *arg0, u8 *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107740);
+typedef struct {
+    f32 x;
+    f32 y;
+} FloatPair_00107740;
+
+typedef union {
+    struct {
+        u8 bytes[4];
+        f32 value;
+    } packed;
+    FloatPair_00107740 pair;
+} PackedPair_00107740;
+
+void func_00107740(void *arg0, void *arg1) {
+    PackedPair_00107740 temp;
+    u8 *src = arg1;
+
+    temp.packed.bytes[0] = src[0];
+    temp.packed.bytes[1] = src[1];
+    temp.packed.bytes[2] = src[2];
+    temp.packed.bytes[3] = src[3];
+    temp.packed.value = 1.0f;
+    *(FloatPair_00107740 *)arg0 = temp.pair;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107790);
 

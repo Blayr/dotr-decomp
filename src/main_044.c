@@ -6,7 +6,13 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE130);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE1A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE210);
+s32 func_001DE210(s32 arg0) {
+    func_00214D00(0, 0);
+    if (arg0 < 0 || arg0 >= 0x356) {
+        return -1;
+    }
+    return arg0 + 0x140;
+}
 
 s32 func_001DE260(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x356) {
@@ -172,7 +178,21 @@ void func_001DE820(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE860);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE970);
+void func_001DE970(s32 arg0) {
+    s16 *temp_a1;
+    s32 var_a2;
+    s16 *var_a3;
+
+    var_a2 = 0;
+    temp_a1 = (s16 *)(D_00317490 + (arg0 * 0x350) + 0x1E0);
+    var_a3 = temp_a1;
+    do {
+        var_a2 += 1;
+        *var_a3 = 0x3E7;
+        var_a3++;
+    } while (var_a2 < 0x28);
+    *(u8 *)((u8 *)temp_a1 + 0x50) = 0;
+}
 
 typedef struct Record_001DE9C0 {
     u8 padding[0x230];
