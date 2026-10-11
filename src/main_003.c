@@ -129,7 +129,17 @@ s32 func_0010A0F0(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A160);
+void func_0010A160(s32 arg0, s32 arg1) {
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    if ((D_0030FF40[1] & 2) && (D_0030FF40[0] & 1)) {
+        if (arg1 < 0) {
+            arg1 = -arg1;
+        }
+        func_0010C720(0x5005, arg0, arg1);
+    }
+}
 
 void func_0010A1D0(s32 arg0, s32 arg1, s32 arg2) {
     if (D_0030FF40 == NULL || D_0030FF48 == 0) {

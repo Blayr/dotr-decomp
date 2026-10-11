@@ -230,7 +230,27 @@ s32 func_0027C5A0(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C670);
+s32 func_0027C670(u16 *values) {
+    s32 count;
+    s32 iteration;
+    s32 index;
+
+    count = 0;
+    index = 0;
+    iteration = 0;
+
+    do {
+        if (index >= 22) {
+            return count;
+        }
+        if (values[index++] < 0xFFFF) {
+            count++;
+        }
+        iteration++;
+    } while (iteration < 22);
+
+    return count;
+}
 
 s32 func_0027C6D0(s32 arg0) {
     s32 column;
