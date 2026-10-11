@@ -23,7 +23,12 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00202CB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202D60);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202E00);
+u16 func_00202E00(s16 arg0, s32 arg1) {
+    D_00322990 = arg0;
+    D_00322992 = (u16) ((s32) ((s32) (arg1 << 0xD) >> 6) >> 2);
+    D_00322994 = 0;
+    return D_00322992;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202E30);
 

@@ -228,4 +228,8 @@ extern volatile s32 D_00351170;
 
 extern u8 D_0029D1F0[];
 
+extern s16 D_00322990;
+extern u16 D_00322992;
+extern s16 D_00322994;
+
 #endif
