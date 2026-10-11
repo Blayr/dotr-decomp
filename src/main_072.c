@@ -570,4 +570,57 @@ void func_002503B0(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_00250430);
+typedef struct {
+    u8 kind;
+    u8 pad1[2];
+    u8 level;
+    u8 pad4[5];
+    u8 pad9 : 7;
+    u8 flag : 1;
+} Card_00250430;
+
+s32 func_00250620(s32, s32);
+
+s32 func_00250430(s32 arg0, s32 arg1) {
+    s32 list[0x356];
+    Card_00250430 *card;
+    s32 count;
+    s32 level;
+    s32 flag;
+    s32 done;
+    s32 i;
+
+    for (i = 0; i < 0x356; i++) {
+        list[i] = 999;
+    }
+    card = (Card_00250430 *)func_001DD0E0(arg1);
+    if ((card->kind >> 5) == 0) {
+        flag = (func_0019A5C8() % 10 < 8) ? 1 : 0;
+    } else {
+        flag = (func_0019A5C8() % 10 < 4) ? 0 : 1;
+    }
+    done = 0;
+    count = 0;
+    level = func_00250620(arg0, card->level);
+    if (level > 0) {
+        do {
+            for (i = flag ? 0 : 0x2AB; i < (flag ? 0x2AB : 0x356); i++) {
+                if (i != arg1) {
+                    card = (Card_00250430 *)func_001DD0E0(i);
+                    if (card != NULL && card->level == level && card->flag) {
+                        list[count++] = i;
+                    }
+                }
+            }
+            if (count > 0 || --level == 0) {
+                done = 1;
+            } else {
+                count = 0;
+            }
+        } while (!done);
+    }
+    if (count == 0) {
+        return 0x334;
+    }
+    return list[func_0019A5C8() % count];
+}
