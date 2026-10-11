@@ -631,4 +631,10 @@ s64 func_001A0660(s64, s64);
 
 s32 func_00271C90(s32, s32);
 
+extern char D_002BEF98[];
+extern char D_002BEF6F[];
+extern char D_002BEF73[];
+extern char D_002BE944[];
+extern u8 D_003181C6;
+
 #endif

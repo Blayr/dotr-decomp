@@ -169,7 +169,30 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5550);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5870);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5980);
+void func_001C5980(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    u8 *state = D_00317490;
+    s32 text = (s32)D_002BEF98;
+    s8 *text2 = D_002BEF6F;
+    s8 *text3 = D_002BEF73;
+    s32 id;
+    s32 *size;
+
+    arg0 = func_001B0CE0(arg0, 2, -1, 0x7E, arg1 + 0x140, arg2 + 0x83, 0x140, 0xBA,
+                         func_0019BEF0((char *)text), text, 0);
+    id = func_0020F290(func_001FD680(arg0, 1, 0x7F, 0, 0x16));
+    size = func_001FEAB0(1);
+    id = func_001FE7D0(id, 1, arg1 + 0x140 - (size[3] >> 1), arg2 + 0x119 - (size[4] + 12), 0,
+                       func_001FDFE0);
+    func_001FEAF0(1);
+    id = func_001B6F70(id, arg1 + 0xF0, arg2 + 0x119, 2, 3, func_0019BEF0((char *)text2), text2,
+                       D_003181C6 != 0 ? 0 : (s32)D_002BE944);
+    func_001B6F70(id, arg1 + 0x190, arg2 + 0x119, 2, 3, func_0019BEF0((char *)text3), text3,
+                  state[0xD36] != 0 ? (s32)D_002BE944 : 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5B30);
 
