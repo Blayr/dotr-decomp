@@ -199,4 +199,52 @@ INCLUDE_ASM("asm/nonmatchings/main_061", func_00218FB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00219180);
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_002194B0);
+typedef union {
+    u64 value;
+    struct {
+        u16 x;
+        u16 y;
+        u8 z[3];
+        u8 fog;
+    } coords;
+    struct {
+        u64 xy : 32;
+        u64 z : 24;
+        u64 fog : 8;
+    } bits;
+} XYZ_002194B0;
+
+typedef struct {
+    u8 header[0x20];
+    XYZ_002194B0 v0;
+    u8 pad28[0x10];
+    XYZ_002194B0 v1;
+    u8 pad40[0x10];
+    XYZ_002194B0 v2;
+    u8 pad58[0x10];
+    XYZ_002194B0 v3;
+} Packet_002194B0;
+
+void func_002194B0(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0,
+                   u16 x1, u16 y1, s32 z1, u8 fog1,
+                   u16 x2, u16 y2, s32 z2, u8 fog2,
+                   u16 x3, u16 y3, s32 z3, u8 fog3) {
+    Packet_002194B0 *packet = arg0;
+
+    packet->v0.coords.x = (x0 + 0x6C0) * 0x10;
+    packet->v0.coords.y = (y0 + 0x720) * 0x10;
+    packet->v1.coords.x = (x1 + 0x6C0) * 0x10;
+    packet->v1.coords.y = (y1 + 0x720) * 0x10;
+    packet->v2.coords.x = (x2 + 0x6C0) * 0x10;
+    packet->v2.coords.y = (y2 + 0x720) * 0x10;
+    packet->v3.coords.x = (x3 + 0x6C0) * 0x10;
+    packet->v3.coords.y = (y3 + 0x720) * 0x10;
+    packet->v0.bits.z = z0;
+    packet->v1.bits.z = z1;
+    packet->v2.bits.z = z2;
+    packet->v3.bits.z = z3;
+    packet->v0.coords.fog = fog0;
+    packet->v1.coords.fog = fog1;
+    packet->v2.coords.fog = fog2;
+    packet->v3.coords.fog = fog3;
+}

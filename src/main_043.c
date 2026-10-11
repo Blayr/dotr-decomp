@@ -430,7 +430,58 @@ s32 func_001DD890(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD990);
+typedef struct Flags_001DD990 {
+    s8 unused : 1;
+    s8 facing : 1;
+    s8 remaining : 6;
+} Flags_001DD990;
+
+typedef struct State_001DD990 {
+    u8 pad00[0x30];
+    s32 angle;
+    u8 pad34[0x23];
+    Flags_001DD990 flags;
+} State_001DD990;
+
+s32 func_001DD990(s32 arg0, s32 arg1) {
+    State_001DD990 *state;
+    s32 result;
+    s32 target;
+    s32 delta;
+
+    state = (State_001DD990 *)func_001DF540();
+    result = 0;
+    if (state != 0) {
+        target = state->flags.facing ? 0x8000 : 0;
+        if (state->angle != target) {
+            delta = (target - state->angle) % 0x10000;
+            if (delta < -0x7FFF) {
+                delta += 0x10000;
+            } else if (delta > 0x8000) {
+                delta -= 0x10000;
+            }
+            if (delta != 0) {
+                if (delta > 0) {
+                    if (delta > 0x800) {
+                        delta = 0x800;
+                    }
+                    state->angle += delta;
+                } else {
+                    if (delta < -0x800) {
+                        delta = -0x800;
+                    }
+                    state->angle += delta;
+                }
+                state->angle = (state->angle + 0x10000) % 0x10000;
+                if (state->angle > 0x8000) {
+                    state->angle -= 0x10000;
+                }
+            }
+        }
+        result = 1;
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDAC0);
 

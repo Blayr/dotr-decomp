@@ -16,7 +16,39 @@ void func_0010D820(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D880);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DB00);
+void func_0010DB00(void *arg0, s32 arg1, s32 arg2) {
+    s32 i;
+    s32 position;
+    s32 occupant;
+    s32 count;
+    s32 mode;
+    u16 *record = arg0;
+
+    if (func_001DF540((s32) record[0] >> 8, record[0] & 0xFF) != 0) {
+        func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF);
+        func_001E1090((s32) record[0] >> 8, record[0] & 0xFF);
+        func_001DF540((s32) record[0] >> 8, record[0] & 0xFF);
+        if ((arg2 & 0xFF) == 1) {
+            mode = 3;
+        } else {
+            mode = 6;
+        }
+        record[2] = (mode << 8) | 0xFF;
+        if ((arg1 & 0xFF) == 1) {
+            count = 6;
+        } else {
+            count = 4;
+        }
+        for (i = 0; i < count; i++) {
+            position = (u16) func_0010F850(arg1, i & 0xFF);
+            occupant = func_001E3790(position & 0xFF, position >> 8);
+            if (occupant == record[0] || occupant < 0) {
+                *(u32 *) (record + 4) = (position << 16) | record[4];
+                return;
+            }
+        }
+    }
+}
 
 typedef struct {
     u16 coordinate;
