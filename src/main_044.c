@@ -194,7 +194,19 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF1E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF2C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF330);
+s32 func_001DF330(s32 arg0) {
+    s32 var_a0;
+    u16 *var_a1;
+
+    var_a1 = (u16 *)(D_00317490 + (arg0 * 0x350) + 0x324);
+    var_a0 = 0;
+    do {
+        var_a0 += 1;
+        *var_a1 &= 0xFFF;
+        var_a1++;
+    } while (var_a0 < 5);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF370);
 
