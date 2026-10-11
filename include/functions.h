@@ -94,6 +94,7 @@ void func_001E7890(void);
 void func_001E7A50(void);
 void func_001EDF90(s32 arg0);
 s32 func_001EFA80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
+void func_001F0830(void *arg0, s32 arg1);
 s32 func_001F25D0(s32 idx, void *src);
 s32 func_001F5D70(s32 arg0, void *arg1);
 void func_001F68D0(s32 arg0);
