@@ -305,7 +305,6 @@ typedef struct {
     s32 wC;
 } Req_00268FA0;
 
-void func_001DF490(s32, s32, s32);
 void func_001E42C0(s32, s32, s32, s32);
 s32 func_001F51D0(s32);
 void func_00250CA0(s32, s32, s32, u32);

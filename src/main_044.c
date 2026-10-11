@@ -623,4 +623,35 @@ s32 func_001DF370(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF470);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF490);
+s32 func_001DF490(s32 index, s32 operation, s32 value) {
+    s32 current;
+    s32 result;
+    u8 *entry;
+
+    entry = D_00317490 + index * 0x350;
+    current = *(u16 *)(entry + 0x33A);
+    switch (operation) {
+    case 0:
+        result = current + value;
+        break;
+    case 1:
+        result = current - value;
+        break;
+    case 2:
+        result = current * value;
+        break;
+    case 3:
+        result = current / value;
+        break;
+    case 4:
+        result = value;
+        break;
+    default:
+        return 0;
+    }
+
+    value = result;
+    value = (value > 0 ? value : 0) < 0x270F ? (value > 0 ? value : 0) : 0x270F;
+    *(u16 *)(entry + 0x33A) = value;
+    return 1;
+}
