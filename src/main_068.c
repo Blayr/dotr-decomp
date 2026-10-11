@@ -4,7 +4,57 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_0023B1F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023B920);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BB00);
+void func_0023BB00(s32 arg0) {
+    s32 var_s0;
+    s32 var_s1;
+    s32 var_s2;
+
+    switch (D_0034F700) {
+    case 0:
+        var_s0 = 0x20;
+        var_s1 = 0x11;
+        var_s2 = 0x12;
+        break;
+    case 1:
+        var_s0 = 0x21;
+        var_s1 = 0x13;
+        var_s2 = 0x14;
+        break;
+    case 2:
+        var_s0 = 0x22;
+        var_s1 = 0x15;
+        var_s2 = 0x16;
+        break;
+    case 3:
+        var_s0 = 0x23;
+        var_s1 = 0x17;
+        var_s2 = 0x18;
+        break;
+    case 4:
+        var_s0 = 0x24;
+        var_s1 = 0x19;
+        var_s2 = 0x1A;
+        break;
+    }
+    func_001A8320(1, 0);
+    func_001A8320(2, 0);
+    func_001A8320(3, var_s0);
+    func_001A8320(4, var_s0);
+    func_00214990(0, var_s1);
+    func_00214990(1, var_s2);
+    if (D_0034F700 < 3) {
+        D_0034F700 += 1;
+        if (D_0034F700 > 2) {
+            D_0034F700 = 0;
+            D_0034F708 = 1;
+        }
+    }
+    if (arg0 != 0) {
+        func_001A87C0(1, 0);
+    } else {
+        func_001A8870(1, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BC80);
 
