@@ -296,7 +296,11 @@ f32 func_001018E0(f32 fparg0, f32 fparg1) {
     return (fparg0 / (fparg1 / 256.0f)) * (func_001F9A20(0) / 800.0f);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101940);
+void func_00101940(f32 *arg0, s32 *arg1) {
+    arg1[0] = (u16) func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(arg0[0] * arg0[0] + arg0[2] * arg0[2]), arg0[1]) / 6.2831855f));
+    arg1[1] = (u16) func_001A22C0(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f));
+    arg1[2] = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101A00);
 
