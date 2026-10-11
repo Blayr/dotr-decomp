@@ -786,6 +786,7 @@ void func_00217B50(void);
 char *func_00217B60(char *arg0);
 void func_00217CB0(s32 arg0, void *arg1, s16 x, s16 y);
 void func_00217F90(void *arg0, s32 x, s32 y, s32 width, s32 height, s32 z, s32 f);
+void func_00218840(void *arg0, u16 x0, u16 y0, s32 z0, u8 f0, u16 x1, u16 y1, s32 z1, u8 f1, u16 x2, u16 y2, s32 z2, u8 f2, u16 x3, u16 y3, s32 z3, u8 f3);
 void func_00218E80(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0, u16 x1, u16 y1, s32 z1, u8 fog1, u16 x2, u16 y2, s32 z2, u8 fog2, u16 x3, u16 y3, s32 z3, u8 fog3);
 void func_0021BAE0(void *arg0);
 void func_0021BB20(u8 *arg0);

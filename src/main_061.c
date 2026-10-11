@@ -121,7 +121,42 @@ INCLUDE_ASM("asm/nonmatchings/main_061", func_00218340);
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_002185E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218840);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+    u64 pad;
+} Vertex_00218840;
+
+typedef struct {
+    u8 pad[0x20];
+    Vertex_00218840 vertices[4];
+} Packet_00218840;
+
+void func_00218840(void *arg0, u16 x0, u16 y0, s32 z0, u8 f0,
+                   u16 x1, u16 y1, s32 z1, u8 f1,
+                   u16 x2, u16 y2, s32 z2, u8 f2,
+                   u16 x3, u16 y3, s32 z3, u8 f3) {
+    Packet_00218840 *p = arg0;
+
+    p->vertices[0].x = (x0 + 0x6C0) * 0x10;
+    p->vertices[0].y = (y0 + 0x720) * 0x10;
+    p->vertices[1].x = (x1 + 0x6C0) * 0x10;
+    p->vertices[1].y = (y1 + 0x720) * 0x10;
+    p->vertices[2].x = (x2 + 0x6C0) * 0x10;
+    p->vertices[2].y = (y2 + 0x720) * 0x10;
+    p->vertices[3].x = (x3 + 0x6C0) * 0x10;
+    p->vertices[3].y = (y3 + 0x720) * 0x10;
+    p->vertices[0].z = z0;
+    p->vertices[1].z = z1;
+    p->vertices[2].z = z2;
+    p->vertices[3].z = z3;
+    p->vertices[0].f = f0;
+    p->vertices[1].f = f1;
+    p->vertices[2].f = f2;
+    p->vertices[3].f = f3;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00218970);
 
