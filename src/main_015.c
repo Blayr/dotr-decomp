@@ -220,7 +220,83 @@ s32 func_00162D10(s32 arg0) {
     return ((u16)bestPos << 16) | (u16)found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00162F60);
+typedef struct {
+    u16 unk0;
+    u8 unk2;
+    u8 pad3;
+    u16 unk4;
+    u8 unk6[5];
+    u8 padB;
+    s32 unkC;
+    u8 unk10;
+} Req_00162F60;
+
+typedef struct {
+    u8 pad0[0x160];
+    u16 list[32];    /* 0x160 */
+    u8 idx : 5;      /* 0x1A0 */
+    u8 pad1A0 : 3;
+    u8 pad1A1;
+    u16 count;       /* 0x1A2 */
+} Work_00162F60;
+
+s32 func_0015D350(void *, void *, s32);
+s32 func_00276290(void *, void *, s32);
+
+s32 func_00162F60(s32 arg0, void *arg1) {
+    Req_00162F60 req;
+    Work_00162F60 *w;
+    s32 i;
+    s32 ret;
+
+    w = arg1;
+    req.unk0 = 0xFFFF;
+    req.unk2 = 0xFF;
+    req.unk4 = 0xFFFF;
+    req.unkC = 0;
+    req.unk10 = 0xFF;
+    if (w == NULL) {
+        return 0x800;
+    }
+    for (i = 0; i < 5; i++) {
+        req.unk6[i] = 0xFF;
+    }
+    w->count++;
+    if (w->count == 600) {
+        return 0x20;
+    }
+    if (w->count == 601) {
+        return 0x20;
+    }
+    if (w->count == 602) {
+        return 0x20;
+    }
+    if (!(w->count < 603)) {
+        return 0x800;
+    }
+    if (w->idx == 0) {
+        func_00275E80(w);
+        if (func_0015D350(w, &req, arg0) == 0) {
+            return 0x800;
+        }
+        if (func_00276290(w, &req, arg0) < 0) {
+            return 0;
+        }
+    }
+    ret = w->list[w->idx - 1];
+    if (ret == 0xFFFF) {
+        return 0;
+    }
+    if (w->list[w->idx] == 0xFFFF) {
+        w->idx = 0;
+        for (i = 0; i < 32; i++) {
+            w->list[i] = 0xFFFF;
+        }
+    } else {
+        w->idx++;
+    }
+    return (u16)ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00163130);
 
@@ -605,7 +681,83 @@ s32 func_001676D0(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001676E0);
+typedef struct {
+    u16 unk0;
+    u8 unk2;
+    u8 pad3;
+    u16 unk4;
+    u8 unk6[5];
+    u8 padB;
+    s32 unkC;
+    u8 unk10;
+} Req_001676E0;
+
+typedef struct {
+    u8 pad0[0x160];
+    u16 list[32];    /* 0x160 */
+    u8 idx : 5;      /* 0x1A0 */
+    u8 pad1A0 : 3;
+    u8 pad1A1;
+    u16 count;       /* 0x1A2 */
+} Work_001676E0;
+
+s32 func_00163130(void *, void *, s32);
+s32 func_00276290(void *, void *, s32);
+
+s32 func_001676E0(s32 arg0, void *arg1) {
+    Req_001676E0 req;
+    Work_001676E0 *w;
+    s32 i;
+    s32 ret;
+
+    w = arg1;
+    req.unk0 = 0xFFFF;
+    req.unk2 = 0xFF;
+    req.unk4 = 0xFFFF;
+    req.unkC = 0;
+    req.unk10 = 0xFF;
+    if (w == NULL) {
+        return 0x800;
+    }
+    for (i = 0; i < 5; i++) {
+        req.unk6[i] = 0xFF;
+    }
+    w->count++;
+    if (w->count == 600) {
+        return 0x20;
+    }
+    if (w->count == 601) {
+        return 0x20;
+    }
+    if (w->count == 602) {
+        return 0x20;
+    }
+    if (!(w->count < 603)) {
+        return 0x800;
+    }
+    if (w->idx == 0) {
+        func_00275E80(w);
+        if (func_00163130(w, &req, arg0) == 0) {
+            return 0x800;
+        }
+        if (func_00276290(w, &req, arg0) < 0) {
+            return 0;
+        }
+    }
+    ret = w->list[w->idx - 1];
+    if (ret == 0xFFFF) {
+        return 0;
+    }
+    if (w->list[w->idx] == 0xFFFF) {
+        w->idx = 0;
+        for (i = 0; i < 32; i++) {
+            w->list[i] = 0xFFFF;
+        }
+    } else {
+        w->idx++;
+    }
+    return (u16)ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001678B0);
 
