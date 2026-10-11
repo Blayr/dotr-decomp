@@ -157,7 +157,54 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001CB6B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC380);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC4B0);
+typedef struct {
+    u8 enabled : 1;
+} Flags_001CC4B0;
+
+typedef struct {
+    f32 data[4];
+} Vec4_001CC4B0;
+
+extern Vec4_001CC4B0 D_002914B0;
+extern Vec4_001CC4B0 D_002914C0;
+
+void func_001CC4B0(s32 arg0) {
+    u8 *state = D_00317490;
+    s32 i;
+    Vec4_001CC4B0 vector0;
+    Vec4_001CC4B0 vector1;
+
+    vector0 = D_002914B0;
+    vector1 = D_002914C0;
+    i = 0;
+    do {
+        func_001F30B0(i, 0);
+        i++;
+    } while (i < 0x54);
+    i = 0;
+    do {
+        func_001F30B0(i, 1);
+        i++;
+    } while (i < 5);
+    i = 0;
+    do {
+        func_001F30B0(i + 0x4A, 1);
+        i++;
+    } while (i < 0xA);
+    func_001F9D80(0, vector0.data);
+    func_001FB360(0, vector1.data);
+    *(s8 *)0xA9C08F = 3;
+    *(s8 *)0xA9C090 = 3;
+    *(s8 *)0xA9C091 = 0;
+    ((Flags_001CC4B0 *)0xA9C092)->enabled = 0;
+    func_001E2FC0(0, 0, 1, 0);
+    state[0xD57] = 0x63;
+    if (arg0 != 0) {
+        *(u8 *)0xA9C08D = 5;
+        *(u8 *)0xA9C08C = *(u8 *)0xA9C08D - 2;
+    }
+    state[0xD63] = 0;
+}
 
 void func_001CC610(void) {
 
