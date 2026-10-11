@@ -481,7 +481,55 @@ s32 func_002051F0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205210);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205440);
+typedef struct {
+    f32 x, y, z, w;
+} Vec4_00205440;
+
+typedef union {
+    struct {
+        u16 x;
+        u16 y;
+    } xy;
+    struct {
+        u64 xy : 32;
+        u64 z : 24;
+        u64 f : 8;
+    } bits;
+} Xyz_00205440;
+
+void func_0020EB40(void *);
+
+s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
+    extern s64 func_001A23B0(f32);
+    f32 mtx[16];
+    Vec4_00205440 v;
+    f32 inv;
+
+    v = *(Vec4_00205440 *)arg0;
+    if (arg1 == NULL) {
+        func_0020EB40(mtx);
+        arg1 = mtx;
+    }
+    func_0020BAF0((s32)arg1);
+    v.w = 1.0f;
+    func_0020CDD0(&v, NULL, &v);
+    func_0020BB50();
+    inv = 1.0f / v.w;
+    v.x *= inv;
+    v.y *= inv;
+    v.z *= inv;
+    if (v.z < 1.0f || !(v.z <= 16777215.0f) || v.x < 0.0f || !(v.x <= 4095.0f) ||
+        v.y < 0.0f || !(v.y <= 4095.0f)) {
+        return 0;
+    }
+    ((Xyz_00205440 *)arg2)->xy.x = func_001A23B0(16.0f * v.x);
+    ((Xyz_00205440 *)arg2)->xy.y = func_001A23B0(16.0f * v.y);
+    ((Xyz_00205440 *)arg2)->bits.z = func_001A23B0(v.z);
+    if (arg3 != NULL) {
+        *(f32 *)arg3 = v.w;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205630);
 
