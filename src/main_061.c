@@ -129,7 +129,36 @@ INCLUDE_ASM("asm/nonmatchings/main_061", func_00218AB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00218C10);
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218E80);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_00218E80;
+
+void func_00218E80(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0,
+                   u16 x1, u16 y1, s32 z1, u8 fog1,
+                   u16 x2, u16 y2, s32 z2, u8 fog2,
+                   u16 x3, u16 y3, s32 z3, u8 fog3) {
+    Vertex_00218E80 *vertices = (Vertex_00218E80 *)((u8 *)arg0 + 0x18);
+
+    vertices[0].x = (x0 + 0x6C0) * 0x10;
+    vertices[0].y = (y0 + 0x720) * 0x10;
+    vertices[2].x = (x1 + 0x6C0) * 0x10;
+    vertices[2].y = (y1 + 0x720) * 0x10;
+    vertices[4].x = (x2 + 0x6C0) * 0x10;
+    vertices[4].y = (y2 + 0x720) * 0x10;
+    vertices[6].x = (x3 + 0x6C0) * 0x10;
+    vertices[6].y = (y3 + 0x720) * 0x10;
+    vertices[0].z = z0;
+    vertices[2].z = z1;
+    vertices[4].z = z2;
+    vertices[6].z = z3;
+    vertices[0].fog = fog0;
+    vertices[2].fog = fog1;
+    vertices[4].fog = fog2;
+    vertices[6].fog = fog3;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00218FB0);
 
