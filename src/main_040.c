@@ -227,7 +227,29 @@ s32 func_001BAA30(u16 *arg0, u16 *arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAAA0);
+s32 func_001BAAA0(u16 *arg0, u16 *arg1) {
+    u8 *card0;
+    u8 *card1;
+    s32 rank0;
+    s32 rank1;
+    s32 cardId1;
+
+    cardId1 = *arg1;
+    card0 = func_001DD0E0(*arg0);
+    card1 = func_001DD0E0(cardId1);
+    rank0 = 0x7FFFFFFF;
+    rank1 = 0x7FFFFFFF;
+    if (card0 != NULL) {
+        rank0 = func_001DE0B0((s32) card0[0] >> 5, card0[2] & 0xF);
+    }
+    if (card1 != NULL) {
+        rank1 = func_001DE0B0((s32) card1[0] >> 5, card1[2] & 0xF);
+    }
+    if (rank1 < rank0) {
+        return 1;
+    }
+    return (rank0 < rank1) ? -1 : 0;
+}
 
 typedef struct Info_001BAB60 {
     u8 padding[2];

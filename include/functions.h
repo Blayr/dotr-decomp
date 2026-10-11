@@ -441,6 +441,7 @@ s32 func_001BA8A0(u16 *arg0, u16 *arg1);
 s32 func_001BA930(u16 *arg0, u16 *arg1);
 s32 func_001BA9C0(u16 *arg0, u16 *arg1);
 s32 func_001BAA30(u16 *arg0, u16 *arg1);
+s32 func_001BAAA0(u16 *arg0, u16 *arg1);
 s32 func_001BAB60(u16 *arg0, u16 *arg1);
 s32 func_001BAC00(u16 *arg0, u16 *arg1);
 s32 func_001BAC90(u16 *arg0, u16 *arg1);
