@@ -446,6 +446,7 @@ void func_001BAE70(void);
 s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2);
 void func_001C0EE0(s32 arg0, s32 arg1, s32 arg2);
 void func_001C0F70(s32 arg0, s32 arg1, s32 arg2);
+void func_001C1000(s32 arg0, s32 arg1, s32 arg2);
 void func_001C1270(void);
 void func_001C1AD0(void);
 void func_001C2530(void);

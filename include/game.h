@@ -610,4 +610,6 @@ void func_001E8780(s32, s32, s32, s32);
 
 f32 func_001A6C00(f32);
 
+extern char D_002BEF67[];
+
 #endif
