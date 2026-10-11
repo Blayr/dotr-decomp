@@ -128,7 +128,20 @@ void func_0027F0D0(void *arg0) {
     values[8] = values[9] = values[10] = values[11] = 0.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F110);
+void func_0020C940(void *, void *, void *, void *);
+void func_0020EB40(void *);
+
+typedef struct {
+    f32 values[4][4];
+} Matrix_0027F110;
+
+void func_0027F110(u8 *arg0) {
+    Matrix_0027F110 matrix;
+
+    func_0020EB40(arg0 + 0x30);
+    func_0020C940(&matrix, arg0, arg0 + 0x10, arg0 + 0x20);
+    func_0020BC00((s32)(arg0 + 0x30), &matrix);
+}
 
 s32 func_0027F160(s32 arg0, s32 arg1) {
     return !(arg0 & (1 << arg1)) ? 0 : 1;

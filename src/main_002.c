@@ -108,7 +108,22 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00107CB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107DD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107E40);
+typedef struct Fields_00107E40 {
+    u8 padding[0xA0];
+    f32 value;
+    u8 padding_a4[4];
+    s16 first;
+    s16 second;
+} Fields_00107E40;
+
+s32 func_00107E40(f32 fparg0, f32 fparg1, f32 fparg2, void *arg0) {
+    Fields_00107E40 *fields = arg0;
+
+    fields->first = func_001A22C0(fparg0);
+    fields->second = func_001A22C0(fparg1);
+    fields->value = fparg2;
+    return 0;
+}
 
 s32 func_00107EA0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
     *(f32 *)((u8 *)arg0 + 0x449C) = fparg0;
@@ -189,7 +204,14 @@ s32 func_00108F90(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108FF0);
+s32 func_00108FF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    f32 depth[4];
+
+    if (func_00205630(arg0, 0x70000000, arg2, arg1, depth) != 0) {
+        func_002075F0(arg1, arg3, func_001A23B0(depth[0]));
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00109050);
 

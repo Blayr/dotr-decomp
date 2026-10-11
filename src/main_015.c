@@ -22,7 +22,11 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_00163870);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00163C50);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00163EC0);
+void func_00163EC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
+    func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+                 arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
+                 1, 3000, arg_sp28);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00163F20);
 
@@ -48,7 +52,15 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_00164CE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00164EC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001650A0);
+s32 func_001650A0(s32 arg0) {
+    if ((func_0026FCE0(arg0) >> 5) != 0) {
+        return 1;
+    }
+    if (func_0026FC10(arg0) == 1) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00165100);
 
@@ -84,7 +96,11 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_00167E80);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00168260);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001684D0);
+void func_001684D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
+    func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+                  arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
+                  1, 3000, arg_sp28);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00168530);
 
@@ -100,4 +116,12 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_00169000);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001691E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001693C0);
+s32 func_001693C0(s32 arg0) {
+    if ((func_0026FCE0(arg0) >> 5) != 0) {
+        return 1;
+    }
+    if (func_0026FC10(arg0) == 1) {
+        return 1;
+    }
+    return 0;
+}

@@ -76,7 +76,15 @@ void func_0010ED90(void) {
     func_0024E410();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010EDA0);
+s32 func_0010EDA0(s32 arg0) {
+    if (func_001DF470() > 0x5DC) {
+        if (func_001E0150(arg0) >= 4) {
+            return 0;
+        }
+        return 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010EE00);
 

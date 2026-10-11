@@ -328,4 +328,7 @@ s32 func_0024DF80(s32 arg0, void *arg1);
 s32 func_001A23B0(f32);
 s32 func_00205630(s32, s32, s32, s32, f32 *);
 
+s32 func_00254890(s32 *, s32);
+void func_00254C90(s32 *, s32);
+
 #endif
