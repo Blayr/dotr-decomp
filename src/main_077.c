@@ -310,7 +310,36 @@ u32 func_00272210(s32 arg0, s32 arg1) {
     return (u32) result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00272330);
+u32 func_00272330(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 remaining;
+    s32 card;
+    s32 position;
+    s32 y;
+    s32 x;
+    s32 count;
+    s32 packed;
+
+    count = func_0024E910(arg0);
+    remaining = arg0;
+    for (i = 0; i < count; i++) {
+            packed = func_0024EC50(arg0, i);
+            x = packed >> 8;
+            y = packed & 0xFF;
+            card = func_0024DE70(x, y);
+            position = func_001E1090(card, 0);
+            if (func_00271E40(x, y, 0xB) != 0 && card != arg1) {
+                func_001E42C0(0, -0x78, 0x50, 0x10E);
+                func_00260490(position & 0xFF, position >> 8, 0,
+                             func_00271740(9, card), 1, 1, 0xB);
+                remaining = func_0024C7D0((u32) remaining, x, y);
+            } else if (func_00267700(x, y) != 0 && card != arg1) {
+                func_001E42C0(0, 0, 0x50, func_001DE210(0x53));
+                remaining = func_0024C7D0((u32) remaining, x, y);
+            }
+    }
+    return (u32) remaining;
+}
 
 s32 func_002724C0(s32 arg0) {
     return func_00271740(9, arg0) ? 5 : 3;

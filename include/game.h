@@ -535,7 +535,6 @@ f32 func_001A6898(f32);
 
 extern f32 D_00294050[];
 
-s32 func_00266DF0(s32);
 
 void func_001ADD00(s32, s32, s32);
 extern u8 D_00318280[];
@@ -575,5 +574,8 @@ void func_001A87C0(s32, s32);
 void func_00214990(s32, s32);
 extern s8 D_0034F700;
 extern s8 D_0034F708;
+
+void func_001E42C0(s32, s32, s32, s32);
+void func_00260490(s32, s32, s32, s32, s32, s32, s32);
 
 #endif

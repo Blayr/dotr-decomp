@@ -48,7 +48,29 @@ s32 func_00266C70(s32 arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00266DF0);
+s32 func_00266DF0(s32 arg0) {
+    s32 var_s2;
+    s32 var_s0;
+    u32 *temp_v0;
+    u32 *temp_v0_2;
+
+    var_s2 = 1;
+    var_s0 = 0;
+    do {
+        if ((func_001DF540(0, var_s2) != 0) && ((temp_v0 = func_00250740(0, var_s2, 2)) != NULL) && (func_001E2100(0, var_s2, 4) != 0) && (func_001E2100(0, var_s2, 3) != 0) && (func_001E2100(0, var_s2, 5) != 0) && (((u32) *temp_v0 >> 8) == arg0)) {
+            var_s0 += 1;
+        }
+        var_s2 += 1;
+    } while (var_s2 < 0xB);
+    var_s2 = 1;
+    do {
+        if ((func_001DF540(1, var_s2) != 0) && ((temp_v0_2 = func_00250740(1, var_s2, 2)) != NULL) && (func_001E2100(1, var_s2, 4) != 0) && (func_001E2100(1, var_s2, 3) != 0) && (func_001E2100(1, var_s2, 5) != 0) && (((u32) *temp_v0_2 >> 8) == arg0)) {
+            var_s0 += 1;
+        }
+        var_s2 += 1;
+    } while (var_s2 < 0xB);
+    return var_s0;
+}
 
 s32 func_00266F70(s32 arg0, s32 arg1) {
     s32 var_s0;
