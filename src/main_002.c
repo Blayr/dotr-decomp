@@ -81,7 +81,6 @@ s32 func_00107130(void *arg0, void *arg1, s32 arg2) {
     return 0;
 }
 
-void func_001F6340(s32, f32 *);
 
 static inline void reduce_00107180(f32 *value) {
     *value -= 0.18f;
@@ -135,7 +134,6 @@ s32 func_00107310(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-void func_001F6340(s32, f32 *);
 
 static inline void add_clamped_00107370(f32 *value, f32 amount) {
     *value += amount;
@@ -157,7 +155,6 @@ s32 func_00107370(s32 arg0, f32 fparg0) {
     return 0;
 }
 
-void func_001F6340(s32, f32 *);
 
 static inline void subtract_00107450(f32 *value, f32 amount) {
     *value -= amount;
