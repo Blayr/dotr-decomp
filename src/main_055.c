@@ -123,7 +123,33 @@ void func_00202F50(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202FB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002031F0);
+void func_00192588(s32);
+void func_001927E8(s32, s32, u8 *);
+
+typedef struct {
+    s8 low : 4;
+    s8 high : 4;
+} Flags_002031F0;
+
+typedef struct {
+    s8 type;
+    Flags_002031F0 mode;
+    u8 pad[0x5A];
+} Port_002031F0;
+
+extern u8 D_00325AC0;
+extern Port_002031F0 D_00325C75[];
+
+void func_002031F0(void) {
+    func_0020B3C0((s8 *) D_003259C0, 0, 0x2C0);
+    D_00325C75[-1].type = 0xA;
+    D_00325C75[0].type = 0xA;
+    D_00325C75[-1].mode.low = 4;
+    D_00325C75[0].mode.low = 4;
+    func_00192588(0);
+    func_001927E8(0, 0, D_003259C0);
+    func_001927E8(1, 0, &D_00325AC0);
+}
 
 void func_002032A0(void) {
     func_0020B400(D_003259C0, 0, 0xB0);
