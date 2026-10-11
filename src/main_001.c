@@ -113,7 +113,11 @@ s32 func_00103540(f32 *arg0, f32 fparg0, f32 fparg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103580);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103620);
+void func_00103620(void *arg0, void *arg1) {
+    ((f32 *)arg0)[0] += ((f32 *)arg1)[0];
+    ((f32 *)arg0)[1] += ((f32 *)arg1)[1];
+    ((f32 *)arg0)[2] += ((f32 *)arg1)[2];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103660);
 
