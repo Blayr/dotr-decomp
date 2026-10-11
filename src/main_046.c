@@ -1,6 +1,26 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E19D0);
+static inline u8 *lookup_001E19D0(void) {
+    u8 *entry = func_001DD130();
+
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry[0x45] >= 11) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E19D0(s32 arg0, s32 arg1, s8 arg2) {
+    u8 *entry = lookup_001E19D0();
+
+    if (entry == NULL) {
+        return 0;
+    }
+    entry[0x51] = arg2;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1A30);
 

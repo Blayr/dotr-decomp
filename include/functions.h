@@ -253,6 +253,7 @@ s32 func_001E0760(s32 a0, s32 a1, s8 arg2);
 s32 func_001E0830(s32 arg0, s32 arg1);
 s32 func_001E1030(void);
 s32 func_001E16A0(s32 a0, s32 a1, s8 arg2);
+s32 func_001E19D0(s32 arg0, s32 arg1, s8 arg2);
 void func_001E4E60(s64 arg0);
 void func_001E5210(void *arg0, s32 arg1);
 s32 func_001E5590(s32 arg0);
@@ -476,6 +477,7 @@ void func_0027F3A0(void *arg0, void *arg1);
 void func_0027F5A0(void);
 void func_00286900(void);
 void func_00286910(void *arg0, void *arg1);
+static inline u8 *lookup_001E19D0(void);
 static inline s32 nonnegative_001DE570(s32 value);
 
 #endif
