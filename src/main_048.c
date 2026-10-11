@@ -96,7 +96,18 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0E50);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0F40);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0FA0);
+u8 *func_001F0FA0(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return NULL;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return NULL;
+    }
+    return &temp_v0->pad040[0x104];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0FF0);
 

@@ -30,7 +30,17 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCA70);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCAB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCC20);
+void func_001FCC20(void) {
+    Entry_0031C050 *entry;
+    s32 count;
+
+    entry = D_0031C050;
+    count = 2;
+    while (count--) {
+        entry->flag = 1;
+        entry++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCC70);
 
