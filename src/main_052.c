@@ -66,7 +66,22 @@ void func_001F7260(s32 arg0) {
     func_001FA770(-1, -1, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F72C0);
+s32 func_001F72C0(s32 arg0, s64 arg1) {
+    extern s32 func_001E1360(s32, s32);
+    s32 hi;
+    s32 lo;
+
+    hi = arg0 >> 8;
+    lo = arg0 & 0xFF;
+    if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
+        return 0;
+    }
+    arg0 = func_001E1360(hi, lo);
+    if (arg0 < 0) {
+        return 0;
+    }
+    return func_001F32F0(arg0, arg1);
+}
 
 s32 func_001F7350(s32 arg0, s32 arg1) {
     extern s32 func_001F2980(s32);
