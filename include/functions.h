@@ -99,6 +99,7 @@ void func_001B83C0(void);
 void func_001B8830(void);
 void func_001BA5F0(void);
 void func_001BA610(void);
+s32 func_001BAE40(u16 *arg0, u16 *arg1);
 void func_001BAE70(void);
 void func_001C1270(void);
 void func_001C1AD0(void);

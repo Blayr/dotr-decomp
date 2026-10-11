@@ -38,7 +38,20 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAC90);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAD40);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAE40);
+s32 func_001BAE40(u16 *arg0, u16 *arg1) {
+    u16 temp_v1;
+    u16 temp_v0;
+    s32 result;
+
+    temp_v1 = *arg0;
+    temp_v0 = *arg1;
+    if ((s32) temp_v1 > (s32) temp_v0) {
+        result = 1;
+    } else {
+        result = ((s32) temp_v1 < (s32) temp_v0) ? -1 : 0;
+    }
+    return result;
+}
 
 void func_001BAE70(void) {
     func_00209D30(func_001BAEA0(func_00209D20()));
