@@ -549,4 +549,7 @@ extern f32 D_00294050[];
 s32 func_00266C70(s32, s32);
 s32 func_00266DF0(s32);
 
+void func_001ADD00(s32, s32, s32);
+extern u8 D_00318280[];
+
 #endif
