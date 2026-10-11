@@ -301,4 +301,6 @@ extern s32 D_0030FF48;
 
 s32 func_001E55E0(s32);
 
+extern s32 D_0031BEB0[];
+
 #endif

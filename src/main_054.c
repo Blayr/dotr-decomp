@@ -74,7 +74,18 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_00200220);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_00200230);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200300);
+void func_00200300(s8 *arg0) {
+    s8 *var_a0;
+    s32 temp_a1;
+
+    var_a0 = arg0;
+    while ((temp_a1 = *var_a0) != 0) {
+        if ((temp_a1 >= 0x61) && (temp_a1 < 0x7B)) {
+            *var_a0 = temp_a1 - 0x20;
+        }
+        var_a0 += 1;
+    }
+}
 
 void func_00200350(void) {
 
