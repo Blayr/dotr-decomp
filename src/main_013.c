@@ -61,7 +61,45 @@ s32 func_001555F0(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155670);
+s32 func_00155670(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 side;
+    s32 otherSide;
+    s32 position;
+    s32 candidate;
+
+    func_001E1090(arg0, arg1);
+    func_00250360(arg0, arg1);
+    side = func_001E0700(arg0, arg1) >> 5;
+    otherSide = side != 0 ? 0 : side + 1;
+    arg0 = (arg0 << 8) | arg1;
+
+    i = 0;
+    do {
+        position = func_00155520(i, side);
+        candidate = func_001E3790(position & 0xFF, position >> 8);
+        if (candidate < 0) {
+            return 0;
+        }
+        if (candidate == arg0) {
+            return 1;
+        }
+    } while (++i < 7);
+
+    i = 0;
+    do {
+        position = func_00155520(i, otherSide);
+        candidate = func_001E3790(position & 0xFF, position >> 8);
+        if (candidate < 0) {
+            return 0;
+        }
+        if (candidate == arg0) {
+            return 1;
+        }
+    } while (++i < 7);
+
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00155770);
 
