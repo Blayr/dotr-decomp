@@ -74,7 +74,20 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_00241840);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241A00);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241A90);
+typedef struct Buffer_00241A90 {
+    u8 data[0x50000];
+    s32 field_50000;
+    s32 field_50004;
+    s32 field_50008;
+} Buffer_00241A90;
+
+void func_00241A90(void *arg0) {
+    Buffer_00241A90 *buffer = arg0;
+
+    buffer->field_50004 = 0;
+    buffer->field_50000 = 0;
+    buffer->field_50008 = 0x50000;
+}
 
 void func_00241AC0(void) {
 
