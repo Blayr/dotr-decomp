@@ -400,7 +400,9 @@ void func_00261420(void *arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_002614C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261570);
+void func_00261570(s32 arg0, s32 arg1, u8 arg2, u8 arg3) {
+    func_00260AF0(arg0, arg1, arg2, arg3);
+}
 
 void func_00261580(void) {
     s32 params[4];

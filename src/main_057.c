@@ -1,8 +1,12 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D20);
+s32 func_00209D20(void) {
+    return D_003261D0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D30);
+void func_00209D30(s32 arg0) {
+    D_003261D0 = arg0;
+}
 
 typedef struct {
     u8 padding[0x244];
@@ -229,7 +233,10 @@ f32 func_0020B730(f32 angle) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B840);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BA70);
+s32 func_0020BA70(void) {
+    D_0032A220 = 0;
+    return 1;
+}
 
 s32 func_0020BA80(void) {
     return 1;
@@ -243,7 +250,10 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BAF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BB50);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BBA0);
+s32 func_0020BBA0(void) {
+    D_0032A220 = 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BBB0);
 

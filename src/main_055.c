@@ -367,9 +367,13 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00203E20);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002047F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205150);
+s32 func_00205150(void) {
+    return D_00325C80;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205160);
+s32 func_00205160(void) {
+    return D_00325C84;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205170);
 
@@ -402,9 +406,13 @@ f32 func_00205C40(s32 arg0) {
     return *temp_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205C90);
+void func_00205C90(s32 arg0) {
+    func_001FB0B0(0, arg0);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205CA0);
+void func_00205CA0(s32 arg0) {
+    func_001FB1D0(0, arg0);
+}
 
 void func_00205CB0(void *arg0, f32 fparg0, f32 fparg1) {
     f32 matrix[4][4];

@@ -93,7 +93,9 @@ void func_002073A0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_002073D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00207500);
+u8 *func_00207500(void) {
+    return D_00325D38;
+}
 
 typedef struct Node_00207510 {
     u16 unused0;

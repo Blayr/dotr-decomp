@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245150);
+s32 func_00245150(void *arg0) {
+    return *(s32 *)((u8 *)arg0 + 0xA8);
+}
 
 typedef struct Values_00245160 {
     s64 first;
@@ -152,7 +154,10 @@ void func_002457C0(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002457D0);
+void func_002457D0(void *arg0) {
+    *(s32 *)((u8 *)arg0 + 0xC) = 0;
+    *(s32 *)((u8 *)arg0 + 0x8) = 0;
+}
 
 typedef struct {
     u8 pad[0xC];

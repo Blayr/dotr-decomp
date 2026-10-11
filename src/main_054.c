@@ -39,7 +39,9 @@ loop_1:
     goto loop_1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF350);
+s32 func_001FF350(s32 arg0) {
+    return func_001FF360(arg0, 0);
+}
 
 typedef struct Record_001FF360 {
     s32 status;
@@ -109,7 +111,9 @@ s32 func_001FFC50(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFCB0);
+void func_001FFCB0(void *arg0) {
+    func_001FFCC0(arg0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFCC0);
 
@@ -146,7 +150,9 @@ s32 func_00200210(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200220);
+void func_00200220(s32 arg0, s32 arg1) {
+    func_00200230(arg0, 0, 0, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_00200230);
 

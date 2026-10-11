@@ -26,7 +26,9 @@ void func_00217B00(void) {
     func_00197C18(func_00197BC0(0x01FFEFF0 - (s32)&D_1FE0000));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217B40);
+s32 func_00217B40(s32 arg0) {
+    return (s32)func_00197990(0x10, arg0);
+}
 
 void func_00217B50(void) {
     func_00197C18();

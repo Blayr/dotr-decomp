@@ -265,7 +265,9 @@ s32 func_001FD2D0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD320);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD4B0);
+void func_001FD4B0(s32 arg0) {
+    D_0031C2E4 = arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD4C0);
 

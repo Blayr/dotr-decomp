@@ -37,7 +37,9 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_0026F600);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026F690);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FA70);
+s32 func_0026FA70(s32 arg0, s32 arg1) {
+    return func_0026FA80(arg0 & 0xFFF, arg1);
+}
 
 typedef struct {
     u8 flags;

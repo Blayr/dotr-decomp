@@ -149,11 +149,17 @@ void func_001F6D00(s32 arg0) {
     D_0031BEA2 = (s8) arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6D10);
+u8 func_001F6D10(void) {
+    return D_0031BEA0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6D20);
+u8 func_001F6D20(void) {
+    return (u8)D_0031BEA1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6D30);
+u8 func_001F6D30(void) {
+    return D_0031BEA2;
+}
 
 void func_001F6D40(s32 arg0) {
     func_001F6E10(4, arg0);
