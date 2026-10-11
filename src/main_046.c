@@ -341,7 +341,30 @@ s32 func_001E3650(s32 arg0, s32 arg1, s8 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E36E0);
+static inline void **cell_001E36E0(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return (void **)(D_00318E60 + y * 0xC4 + x * 0x1C);
+}
+
+s32 func_001E36E0(s32 arg0, s32 arg1) {
+    void **cell;
+    void *result;
+
+    cell = cell_001E36E0(arg0, arg1);
+    if (cell == NULL) {
+        return 0;
+    }
+    result = *cell;
+    if (result == NULL) {
+        return 0;
+    }
+    if (*(u8 *)((u8 *)result + 0x45) >= 0xB) {
+        result = NULL;
+    }
+    return (s32)result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3790);
 

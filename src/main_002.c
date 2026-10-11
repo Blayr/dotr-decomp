@@ -290,7 +290,22 @@ s32 func_00108FF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00109050);
+typedef struct Color_00109050 {
+    u64 low : 32;
+    u64 rgb : 24;
+    u64 high : 8;
+} Color_00109050;
+
+s32 func_00109050(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
+    f32 result[4];
+
+    if (func_00205630(arg0, 0x70000000, arg2, (s32)arg1, result) != 0) {
+        ((Color_00109050 *)((u8 *)arg1 + 0x18))->rgb = 0xFFFFFF;
+        ((Color_00109050 *)((u8 *)arg1 + 0x28))->rgb = 0xFFFFFF;
+        func_002075F0((s32)arg1, arg3, 0);
+    }
+    return 0;
+}
 
 typedef struct Vec4_00109100 {
     f32 x;

@@ -291,7 +291,28 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00103B50);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103C40);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103D00);
+s32 func_00103D00(s32 arg0, s32 arg1) {
+    s32 result;
+
+    if (arg1 < arg0) {
+        if ((arg0 - arg1) % 0x10000 <= 0x8000) {
+            result = arg0 - arg1;
+        } else {
+            result = -((0x10000 - arg0) + arg1);
+        }
+    } else {
+        if (arg0 < arg1) {
+            if ((arg1 - arg0) % 0x10000 <= 0x8000) {
+                result = -(arg1 - arg0);
+            } else {
+                result = (0x10000 - arg1) + arg0;
+            }
+        } else {
+            result = 0;
+        }
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103DB0);
 
@@ -362,7 +383,22 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00105D00);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106080);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106A00);
+s32 func_00106A00(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 i;
+    s32 offset;
+    u8 *slot;
+
+    for (i = 0; i < arg2; i++) {
+        if ((arg3 == 0) && (*(s16 *)((u8 *)arg0 + i * 0xC0 + 0xD04) == 0)) {
+            offset = i * 0xC0;
+            slot = (u8 *)arg0 + offset + 0xC60;
+            func_00195108((s32)slot, 0xC0);
+            *(s16 *)(offset + (s32)arg0 + 0xD04) = i + 1;
+            return (s32)slot;
+        }
+    }
+    return 0;
+}
 
 void func_00106AB0(s16 *arg0, f32 *arg1, s32 arg2) {
     if (arg2 == 0) {

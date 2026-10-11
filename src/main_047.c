@@ -88,7 +88,29 @@ void func_001E77A0(void) {
     } while (i < 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E77E0);
+void func_001E77E0(s32 arg0) {
+    s32 var_s0;
+
+    func_001F9770(0, 9, 1);
+    var_s0 = 0;
+    do {
+        func_001F30B0(var_s0, 0);
+        var_s0 += 1;
+    } while (var_s0 < 0x54);
+    var_s0 = 0;
+    do {
+        func_001F30B0(var_s0 + 0x22, 1);
+        var_s0 += 1;
+    } while (var_s0 < 0x28);
+    var_s0 = 0;
+    do {
+        func_001F30B0(var_s0 + 0x1E, 1);
+        var_s0 += 1;
+    } while (var_s0 < 2);
+    if (arg0 != D_00292468) {
+        D_00292468 = arg0;
+    }
+}
 
 void func_001E7890(void) {
     func_00209D30(func_001E78C0(func_00209D20()));

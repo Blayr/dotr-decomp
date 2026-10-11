@@ -191,7 +191,45 @@ void func_001DA7A0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA7F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DBC40);
+typedef struct Packet_001DBC40 {
+    u8 pad00[0x18];
+    u8 red;
+    u8 green;
+    u8 blue;
+    u8 alpha;
+    u8 pad1C[0x14];
+} Packet_001DBC40;
+
+typedef struct Data_001DBC40 {
+    u8 pad00[0x40];
+    u8 blue;
+    u8 green;
+    u8 red;
+    u8 alpha;
+    u8 pad44[0x34];
+    Packet_001DBC40 *packets;
+    u8 pad7C[5];
+    s8 flags : 7;
+    s8 update : 1;
+    s16 count : 12;
+    s16 unused : 4;
+} Data_001DBC40;
+
+s32 func_001DBC40(s32 arg0, s32 arg1, void *arg2) {
+    s32 i;
+    Data_001DBC40 *data = arg2;
+
+    arg0 = func_001DA7F0(arg0, arg1, (s32)arg2);
+    if (data->update) {
+        for (i = 0; i < data->count; i++) {
+            data->packets[i].red = data->red;
+            data->packets[i].green = data->green;
+            data->packets[i].blue = data->blue;
+            data->packets[i].alpha = data->alpha;
+        }
+    }
+    return arg0;
+}
 
 void func_001DBCF0(s32 arg0) {
     func_00209D30(func_001DBD30(func_00209D20(), arg0));

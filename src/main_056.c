@@ -272,11 +272,80 @@ INCLUDE_ASM("asm/nonmatchings/main_056", func_00208F00);
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00209110);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00209270);
+typedef struct Vec4_00209270 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_00209270;
+
+extern Vec4_00209270 D_00325E00;
+extern Vec4_00209270 D_00325E10;
+extern f32 D_00325E20;
+extern f32 D_00325E24;
+extern f32 D_00325E28;
+extern s32 D_00325E2C;
+
+s32 func_00209270(void *arg0, void *arg1, f32 *arg2, f32 *arg3, f32 *arg4) {
+    if (arg0 != NULL) {
+        *(Vec4_00209270 *)arg0 = D_00325E00;
+    }
+    if (arg1 != NULL) {
+        *(Vec4_00209270 *)arg1 = D_00325E10;
+    }
+    if (arg2 != NULL) {
+        *arg2 = D_00325E20;
+    }
+    if (arg3 != NULL) {
+        *arg3 = D_00325E24;
+    }
+    if (arg4 != NULL) {
+        *arg4 = D_00325E28;
+    }
+    return D_00325E2C;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00209320);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002093E0);
+typedef struct Packet_002093E0 {
+    s32 tag[4];
+    f32 values[4];
+} Packet_002093E0;
+
+extern f32 D_00325DE0;
+extern f32 D_00325DE4;
+extern f32 D_00325DE8;
+extern f32 D_00325DEC;
+extern f32 D_00325DF0;
+extern f32 D_00325DF4;
+extern f32 D_00325DF8;
+extern f32 D_00325DFC;
+
+void *func_002093E0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3) {
+    Packet_002093E0 *packet = arg0;
+    f32 temp_f1;
+    f32 temp_f2;
+
+    packet->tag[0] = 0x10000001;
+    packet->tag[1] = 0;
+    packet->tag[2] = 0x10000000;
+    temp_f2 = 255.0f / (fparg3 - fparg2);
+    packet->tag[3] = 0x6C014053;
+    packet->values[0] = temp_f2;
+    temp_f1 = 255.0f / (fparg1 - fparg0);
+    packet->values[1] = fparg2 * temp_f2;
+    packet->values[2] = temp_f1;
+    packet->values[3] = fparg1 * temp_f1;
+    D_00325DE0 = packet->values[2];
+    D_00325DE4 = packet->values[3];
+    D_00325DE8 = packet->values[0];
+    D_00325DEC = packet->values[1];
+    D_00325DF0 = fparg0;
+    D_00325DF4 = fparg1;
+    D_00325DF8 = fparg2;
+    D_00325DFC = fparg3;
+    return packet + 1;
+}
 
 typedef struct {
     u32 header[4];

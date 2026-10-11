@@ -272,7 +272,6 @@ void func_0027ACB0(s32, s32 *, u8 *, s32, s32, s32, s32, s32);
 
 extern u8 D_003193C0[];
 
-s32 func_001E36E0(s32, s32);
 void func_001AAFA0(s32);
 void func_001CDD90(u8 *);
 s32 func_001AE5F0(s32);
@@ -473,5 +472,10 @@ void func_00278930(void *, s32, s32, s32);
 void func_0027A130(s32, s32, s32, s32, s32, s32, s32, s32, u8, u16);
 void func_00109A90(void);
 void *func_00198948(void *, s32, u32);
+
+extern s32 D_00292468;
+
+s32 func_00216920(s32, s32);
+extern u8 D_003181EC;
 
 #endif

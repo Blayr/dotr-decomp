@@ -137,7 +137,45 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_00278510);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_002785D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002787F0);
+typedef struct Info_002787F0 {
+    u32 packed;
+    u16 value;
+} Info_002787F0;
+
+typedef struct Object_002787F0 {
+    u8 pad00[8];
+    Info_002787F0 info;
+    u8 pad10[0x2E];
+    u8 flags;
+} Object_002787F0;
+
+u16 func_002787F0(void *arg0, void *arg1) {
+    Object_002787F0 *first = arg0;
+    Object_002787F0 *second = arg1;
+    Info_002787F0 *info = &second->info;
+    u32 packed = info->packed;
+    u8 flags;
+
+    switch (packed >> 8) {
+    case 0x1B:
+        flags = first->flags;
+        if (((packed & 0x3F) == (flags & 0x1F)) && (((s32) flags >> 5) == 0)) {
+            return info->value;
+        }
+        break;
+    }
+    info = &first->info;
+    packed = info->packed;
+    switch (packed >> 8) {
+    case 0x1B:
+        flags = second->flags;
+        if (((packed & 0x3F) == (flags & 0x1F)) && (((s32) flags >> 5) == 0)) {
+            return info->value;
+        }
+        break;
+    }
+    return 0;
+}
 
 void func_00278890(s32 arg0, s32 arg1) {
     if (arg1 == 1) {

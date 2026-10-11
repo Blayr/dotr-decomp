@@ -341,7 +341,30 @@ u8 func_001DEE50(s32 arg0) {
     return *(u8 *)(D_00317490 + (arg0 * 0x350) + 0x322);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEE70);
+typedef struct {
+    s16 cards[120];
+    u8 count;
+} CardList_001DEE70;
+
+s32 func_001DEF20(void);
+
+s32 func_001DEE70(s32 arg0, s32 arg1) {
+    CardList_001DEE70 *list;
+
+    list = (CardList_001DEE70 *)(D_00317490 + arg0 * 0x350 + 0x232);
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if (arg1 < 0 || arg1 >= 0x356) {
+        return -1;
+    }
+    if (list->count >= 120) {
+        return -1;
+    }
+    func_001DEF20();
+    list->cards[list->count] = arg1;
+    return list->count++;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEF20);
 
