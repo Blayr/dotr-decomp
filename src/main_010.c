@@ -172,9 +172,63 @@ s32 func_00141B30(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00141B90);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00141E30);
+static inline s32 max_00141E30(s32 a, s32 b) {
+    if (a < b) {
+        return b;
+    }
+    return a;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00141F30);
+s32 func_00141E30(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                  s32 arg4, s32 arg5) {
+    s32 min_y;
+    s32 min_x;
+
+    min_y = arg3 < arg5 ? arg3 : arg5;
+    arg5 = max_00141E30(arg5, arg3);
+    min_x = arg2 < arg4 ? arg2 : arg4;
+    arg4 = max_00141E30(arg4, arg2);
+    if ((arg4 - min_x) + (arg5 - min_y) != 2) {
+        return 0;
+    }
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    if (func_001E2100(arg0, arg1, 0) == 0) {
+        if (func_0024DF00(func_001E22B0(arg2, arg3), arg0, arg1) != 1) {
+            return 0;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_00141F30(s32 arg0) {
+    s32 index;
+    u8 count;
+    s32 list;
+    s32 low;
+    s32 high;
+    s32 entry;
+
+    count = 0;
+    list = func_0024CA40(0, 0, arg0, 3, 3, 14);
+    for (index = 0; index < func_0024E910(list); index++) {
+        entry = func_0024EC50(list, index);
+        high = entry >> 8;
+        low = entry & 0xFF;
+        if (arg0 == func_00250360(high, low)) {
+            return 0;
+        }
+        if (func_002781B0(high, low, 0) == 1) {
+            count++;
+        }
+    }
+    if (count > 0) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00142040);
 
