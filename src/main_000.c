@@ -106,7 +106,24 @@ void func_00100610(s32 arg0) {
     *(s64 *)0x120000D0 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100780);
+void func_00100780(void) {
+    extern s32 func_001F2980(s32);
+    s32 i;
+    s32 type;
+
+    for (i = 0; i < 0x54; i++) {
+        type = func_001F2980(i);
+        if (func_001F1240(i) == 0) {
+            continue;
+        }
+        if (type == 4 || type == 5) {
+            if (func_001DF540(-1, i) == 0) {
+                continue;
+            }
+        }
+        func_001E8780(i, -1, -1, 1);
+    }
+}
 
 s32 func_00100820(void) {
     func_0019A5C8();

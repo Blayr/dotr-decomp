@@ -198,7 +198,6 @@ void func_00244680(u8 *);
 
 extern u8 D_0029D586[];
 
-void func_00100780(void);
 void func_00209F60(void (*)(void));
 
 f32 func_001A1F18(s64);
@@ -609,5 +608,7 @@ void func_001A83E0(u8 *, s32, s32);
 s32 func_001C6170(s32);
 
 s32 func_00248370();
+
+void func_001E8780(s32, s32, s32, s32);
 
 #endif
