@@ -281,7 +281,32 @@ void func_001038D0(void *arg0) {
     func_0020BC00((s32)&camera->matrix, &matrix);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103920);
+void func_001039A0(void *);
+void func_0020C940(void *, void *, void *, void *);
+void func_0020EB40(s32);
+
+typedef struct Transform_00103920 {
+    f32 field0[4];
+    f32 field10[4];
+    f32 field20[4];
+    f32 field30[16];
+} Transform_00103920;
+
+s32 func_00103920(void *arg0, f32 fparg0, f32 fparg1) {
+    Transform_00103920 *transform = arg0;
+    f32 vector[4];
+    f32 matrix[16];
+
+    func_00205CB0(vector, fparg0, fparg1);
+    func_001039A0(arg0);
+    transform->field20[0] = vector[0];
+    transform->field20[1] = vector[1];
+    transform->field20[2] = vector[2];
+    func_0020EB40((s32)transform->field30);
+    func_0020C940(matrix, transform->field0, transform->field10, transform->field20);
+    func_0020BC00((s32)transform->field30, matrix);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001039A0);
 

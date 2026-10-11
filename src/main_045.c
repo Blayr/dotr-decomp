@@ -770,7 +770,36 @@ s32 func_001E1760(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E17D0);
+typedef struct {
+    u8 padding[0x40];
+    u8 x;
+    u8 y;
+    u8 padding_42[3];
+    u8 type;
+} Card_001E17D0;
+
+s32 func_002464F0(void *, u8, u8);
+
+static inline void *get_card_001E17D0(void) {
+    Card_001E17D0 *card = func_001DD130();
+
+    if (card == NULL) {
+        return NULL;
+    }
+    if (card->type >= 11) {
+        return NULL;
+    }
+    return card;
+}
+
+s32 func_001E17D0(void) {
+    Card_001E17D0 *card = get_card_001E17D0();
+
+    if (card == NULL) {
+        return 0;
+    }
+    return ((u32)func_002464F0(card, card->x, card->y) >> 4) != 0 ? 1 : 0;
+}
 
 s32 func_001E1840(s32 arg0, s32 arg1, s8 arg2) {
     void *var_v0;
