@@ -11,7 +11,43 @@ void func_0014C6C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_0014C720);
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014C870);
+typedef struct Entry_0014C870 {
+    u16 position;
+    u16 unk2;
+    u16 state;
+    u16 unk6;
+    u32 data;
+} Entry_0014C870;
+
+s32 func_0027C770(s32, s32, s32, s32, s32, s32);
+
+void func_0014C870(void *arg0) {
+    Entry_0014C870 *entry = arg0;
+    u32 *card;
+    s32 position;
+    s32 result;
+
+    func_00250360((s32)entry->position >> 8, entry->position & 0xFF);
+    card = func_00250740((s32)entry->position >> 8, entry->position & 0xFF, 0);
+    position = func_001E1090((s32)entry->position >> 8, entry->position & 0xFF);
+    if (card == NULL) {
+        entry->state = 0x5FF;
+    } else {
+        switch (*card >> 8) {
+        case 2:
+            if (func_0014F3A0() == 1) {
+                result = func_0027C770(func_001DF540((s32)entry->position >> 8, entry->position & 0xFF),
+                                      position & 0xFF, position >> 8, 4, 9, 2);
+                if (result >= 0) {
+                    entry->state = 0x6FF;
+                    entry->data = (result << 16) | (entry->data & 0xFFFF);
+                }
+            }
+            break;
+        }
+        entry->state = 0x5FF;
+    }
+}
 
 s32 func_0014C970(s32 arg0, s32 arg1) {
     s32 var_s0;

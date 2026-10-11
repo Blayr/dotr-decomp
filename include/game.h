@@ -513,4 +513,7 @@ extern s32 D_0030FFA8;
 extern s32 D_0030FFAC;
 extern s32 D_0030FFB0;
 
+s32 func_001DD990(s32, s32);
+s32 func_001DDAC0(s32, s32, u8, u8);
+
 #endif

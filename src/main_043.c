@@ -335,7 +335,30 @@ void func_001DD220(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD2D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD890);
+s32 func_001DD890(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u8 *first;
+    u8 *second;
+    s32 result;
+
+    first = (u8 *)func_001DF540(arg0, arg1);
+    second = (u8 *)func_001DF540(arg2, arg3);
+    result = 0;
+    if (first == second) {
+        second = 0;
+    }
+    if (first != 0 && second != 0) {
+        result |= func_001DDAC0(arg0, arg1, second[0x40], second[0x41]);
+        result |= func_001DDAC0(arg2, arg3, first[0x40], first[0x41]);
+    } else {
+        if (first != 0) {
+            result |= func_001DD990(arg0, arg1);
+        }
+        if (second != 0) {
+            result |= func_001DD990(arg2, arg3);
+        }
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD990);
 
