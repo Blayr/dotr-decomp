@@ -10,6 +10,7 @@ s32 func_00100820(void);
 s32 func_00100D00(s32 arg0);
 f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2);
 f32 func_00101020(f32 fparg0, f32 fparg1);
+s32 func_00101050(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00101770(void *arg0);
 f32 func_001018E0(f32 fparg0, f32 fparg1);
 void func_00101AD0(s8 *arg0, s8 arg1, s8 arg2, s8 arg3);
