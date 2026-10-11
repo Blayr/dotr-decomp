@@ -62,7 +62,14 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B1F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B270);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B330);
+void func_0010B330(void) {
+    s32 temp_a0;
+
+    temp_a0 = *D_0030FF40;
+    if (!(temp_a0 & 0x10)) {
+        *D_0030FF40 = temp_a0 | 0x10;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B360);
 
