@@ -140,7 +140,43 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E300);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E410);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E780);
+s32 func_0024E780(s32 arg0, u8 arg1) {
+    s32 count = 0;
+    s32 index;
+    s32 end;
+
+    switch (arg1) {
+    case 0:
+        index = 0;
+        end = 11;
+        break;
+    case 1:
+        index = 0;
+        end = 6;
+        break;
+    case 2:
+        index = 6;
+        end = 11;
+        break;
+    case 3:
+        index = 1;
+        end = 11;
+        break;
+    case 4:
+        index = 1;
+        end = 6;
+        break;
+    default:
+        return -1;
+    }
+
+    for (; index < end; index++) {
+        if (func_001DF540(arg0, index) != 0) {
+            count++;
+        }
+    }
+    return count;
+}
 
 typedef struct {
     s32 unused;

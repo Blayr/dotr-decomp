@@ -57,7 +57,22 @@ f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4) {
     return 3.0f * (((fparg4 * (fparg1 - fparg0)) / fparg3) + ((fparg3 * (fparg2 - fparg1)) / fparg4));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C350);
+void func_0021C350(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
+    f32 gamma[64];
+    f32 denominator;
+    s32 i;
+
+    denominator = b[0];
+    u[0] = r[0] / denominator;
+    for (i = 1; i < n; i++) {
+        gamma[i] = c[i - 1] / denominator;
+        denominator = b[i] - a[i] * gamma[i];
+        u[i] = (r[i] - a[i] * u[i - 1]) / denominator;
+    }
+    for (i = n - 2; i >= 0; i--) {
+        u[i] -= gamma[i + 1] * u[i + 1];
+    }
+}
 
 s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6) {
     s32 result;
