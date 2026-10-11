@@ -28,7 +28,21 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A280);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A340);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A3B0);
+void func_0020A3B0(s64 arg0) {
+    u8 *base = D_00325F50;
+    u16 *p;
+
+    func_00185578(0, 0);
+    if (D_003261BC & 1) {
+        p = (u16 *)(base + 0x60);
+    } else {
+        p = (u16 *)(base + 0x150);
+    }
+    func_00185890(D_00325E80, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
+    func_0017BB60(0);
+    func_001859D0(D_00325E80, arg0 & 0x0FFFFFFF);
+    func_00185578(0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A470);
 
