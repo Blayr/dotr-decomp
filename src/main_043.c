@@ -143,7 +143,54 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9420);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D95F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9820);
+typedef struct {
+    u8 pad0[0x1D0];
+    u8 f1D0[0x16D];
+    u8 x;
+    u8 z;
+    u8 pad33F[6];
+    s8 y;
+    s8 active : 1;
+    u8 pad347[9];
+} Player_001D9820;
+
+typedef struct {
+    Player_001D9820 players[4];
+    u8 padD40[0x26];
+    s8 : 7;
+    s8 flagD66 : 1;
+    s8 flagD67 : 1;
+} State_001D9820;
+
+void func_001D9820(s32 arg0, s32 arg1) {
+    extern s32 func_001A22C0(f32);
+    State_001D9820 *state = (State_001D9820 *)D_00317490;
+    Player_001D9820 *p;
+    s32 x;
+    s32 z;
+    Player_001D9820 *cur;
+    f32 pos[4];
+    f32 saved[4];
+
+    D_003181E4 = arg1;
+    p = (Player_001D9820 *)(D_00317490 + arg1 * 0x350);
+    z = func_001A22C0((f32)((p->z - 3) * 50));
+    x = func_001A22C0((f32)((p->x - 3) * 50));
+    cur = (Player_001D9820 *)(D_00317490 + D_003181E4 * 0x350);
+    func_001FC950(cur->f1D0, saved);
+    pos[0] = (f32)x;
+    pos[2] = (f32)z;
+    pos[1] = (f32)cur->y;
+    func_001FA8A0(0, 0, 3, 0x20, 0, pos);
+    func_001FA8A0(0, 0, 4, 0x20, 0, saved);
+    p->active = 1;
+    if (func_0027F830(arg1) != 0) {
+        p = state->players;
+    }
+    func_00275E30(p);
+    state->flagD66 = 1;
+    state->flagD67 = state->flagD66;
+}
 
 void func_001D99F0(void) {
     func_00209D30(func_001D9A20(func_00209D20()));
