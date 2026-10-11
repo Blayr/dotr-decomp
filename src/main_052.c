@@ -1,6 +1,46 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F6F50);
+typedef struct {
+    u8 pad00[0x40];
+    u8 x;
+    u8 y;
+    u8 alternateX;
+    u8 alternateY;
+    u8 pad44[0x13];
+    s8 : 6;
+    s8 alternate : 1;
+    s8 : 1;
+} Card_001F6F50;
+
+s32 func_001DE2B0(s32, s32, s32, s32, s32, s32, s32);
+s32 func_001E5240(s32);
+
+s32 func_001F6F50(s32 arg0) {
+    s32 temp_a0;
+    s32 temp_a1;
+    s32 temp_a2;
+    s32 temp_a3;
+    s32 temp_v0;
+    Card_001F6F50 *card;
+    u8 x;
+    u8 y;
+
+    temp_v0 = func_001E5240(1);
+    card = (Card_001F6F50 *)func_001DF540(temp_v0 >> 8, temp_v0 & 0xFF);
+    temp_a2 = (s32) D_0031BE98 >> 8;
+    temp_a3 = D_0031BE98 & 0xFF;
+    temp_a0 = (s32) D_0031BE9C >> 8;
+    temp_a1 = D_0031BE9C & 0xFF;
+    if (card == 0) {
+        return -1;
+    }
+    if ((temp_a0 < 0) || (temp_a0 >= 3) || (temp_a1 < 0) || (temp_a1 >= 0xB) || (temp_a2 < 0) || (temp_a2 >= 3) || (temp_a3 < 0) || (temp_a3 >= 0xB)) {
+        return -1;
+    }
+    x = card->alternate ? card->alternateX : card->x;
+    y = card->alternate ? card->alternateY : card->y;
+    return func_001DE2B0(temp_a0, temp_a1, temp_a2, temp_a3, x, y, arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7060);
 
