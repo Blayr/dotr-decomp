@@ -68,7 +68,16 @@ void func_001DE760(s32 arg0, s8 arg1) {
     *(s8 *)(D_00317490 + arg0 * 0x350 + 0x344) = arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE780);
+typedef struct {
+    s8 unused : 7;
+    s8 enabled : 1;
+} Flags_001DE780;
+
+extern Flags_001DE780 D_003181F6;
+
+s32 func_001DE780(void) {
+    return D_003181F6.enabled ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE7A0);
 
