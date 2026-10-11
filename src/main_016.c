@@ -293,7 +293,7 @@ s32 func_00172210(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 }
 
 s32 func_00172310(s32 arg0) {
-    if (func_001DF470() > 0x4B0) {
+    if (func_001DF470(arg0) > 0x4B0) {
         if (func_001E0150(arg0) >= 4) {
             return 0x3E8;
         } else {

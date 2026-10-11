@@ -145,7 +145,7 @@ void func_0010ED90(void) {
 }
 
 s32 func_0010EDA0(s32 arg0) {
-    if (func_001DF470() > 0x5DC) {
+    if (func_001DF470(arg0) > 0x5DC) {
         if (func_001E0150(arg0) >= 4) {
             return 0;
         }

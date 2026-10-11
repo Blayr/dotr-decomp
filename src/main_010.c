@@ -59,7 +59,7 @@ s32 func_0013D980(s32 arg0, s32 arg1) {
 }
 
 s32 func_0013DA70(s32 arg0) {
-    if (func_001DF470() > 1000) {
+    if (func_001DF470(arg0) > 1000) {
         if (func_001E0150(arg0) >= 5) {
             return 0;
         }
@@ -204,7 +204,7 @@ INCLUDE_ASM("asm/nonmatchings/main_010", func_00140E10);
 INCLUDE_ASM("asm/nonmatchings/main_010", func_001415F0);
 
 s32 func_00141B30(s32 arg0) {
-    if (func_001DF470() > 2000) {
+    if (func_001DF470(arg0) > 2000) {
         if (func_001E0150(arg0) >= 4) {
             return 0;
         }
@@ -276,7 +276,7 @@ s32 func_00141F30(s32 arg0) {
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00142040);
 
 s32 func_00142220(s32 arg0) {
-    if (func_001DF470() < 0x4B0) {
+    if (func_001DF470(arg0) < 0x4B0) {
         /* Duplicate return node #6. Try simplifying control flow for better match */
         return 0;
     }

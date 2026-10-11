@@ -1,7 +1,7 @@
 #include "common.h"
 
 s32 func_00153ED0(s32 arg0) {
-    if (func_001DF470() > 1200) {
+    if (func_001DF470(arg0) > 1200) {
         if (func_001E0150(arg0) >= 4) {
             return 500;
         } else {
@@ -178,7 +178,7 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00157A50);
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00158360);
 
 s32 func_00158780(s32 arg0) {
-    if (func_001DF470() > 0x4B0) {
+    if (func_001DF470(arg0) > 0x4B0) {
         if (func_001E0150(arg0) >= 5) {
             return 0x2EE;
         } else {

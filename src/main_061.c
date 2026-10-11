@@ -28,8 +28,8 @@ s32 func_00217B40(s32 arg0) {
     return (s32)func_00197990(0x10, arg0);
 }
 
-void func_00217B50(void) {
-    func_00197C18();
+void func_00217B50(s32 unused0) {
+    func_00197C18(unused0);
 }
 
 char *func_00217B60(char *arg0) {

@@ -44,7 +44,7 @@ s32 func_001173E0(s32 arg0) {
     u8 m;
     s32 j;
 
-    if (func_001DF470() < 0x5DC) {
+    if (func_001DF470(arg0) < 0x5DC) {
         return 0;
     }
     need = func_0027DD20(arg0, 3, 2) & 0xFF;
@@ -76,7 +76,7 @@ s32 func_001173E0(s32 arg0) {
 s32 func_00117550(s32 arg0) {
     s32 count;
 
-    if (func_001DF470() < 0x5DC) {
+    if (func_001DF470(arg0) < 0x5DC) {
         return 0;
     }
     count = func_0024CA40(0, 0, arg0, 1, 0x2001C, 14);

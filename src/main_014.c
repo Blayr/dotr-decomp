@@ -99,7 +99,7 @@ s32 func_0015D030(s32 arg0, s32 arg1) {
 }
 
 s32 func_0015D120(s32 arg0) {
-    if (func_001DF470() > 0x4B0) {
+    if (func_001DF470(arg0) > 0x4B0) {
         if (func_001E0150(arg0) >= 5) {
             return 0x2EE;
         } else {
@@ -418,8 +418,8 @@ s32 func_00160210(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_00160270);
 
-void func_001604A0(void) {
-    func_0024E410();
+void func_001604A0(s32 unused0, s32 unused1) {
+    func_0024E410(unused0, unused1);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_001604B0);

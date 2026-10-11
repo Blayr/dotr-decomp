@@ -132,7 +132,7 @@ void func_001FFF60(s32 arg0, s64 arg1) {
     D_00322980.enabled = (s8)arg1;
 }
 
-u8 *func_001FFF90(void) {
+u8 *func_001FFF90(s32 unused0) {
     u8 *ret;
 
     ret = func_00197548();

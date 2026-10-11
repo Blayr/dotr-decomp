@@ -84,7 +84,7 @@ void func_00124F50(void) {
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00124F60);
 
 s32 func_001254A0(s32 arg0) {
-    if (func_001DF470() > 0x3E8) {
+    if (func_001DF470(arg0) > 0x3E8) {
         if (func_001E0150(arg0) >= 3) {
             return 0x1F4;
         } else {
@@ -275,7 +275,7 @@ INCLUDE_ASM("asm/nonmatchings/main_007", func_0012AAC0);
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B000);
 
 s32 func_0012B1B0(s32 arg0) {
-    if (func_001DF470() > 0x4B0) {
+    if (func_001DF470(arg0) > 0x4B0) {
         if (func_001E0150(arg0) >= 4) {
             return 0x3E8;
         }

@@ -204,7 +204,7 @@ void func_0011F530(void) {
 INCLUDE_ASM("asm/nonmatchings/main_006", func_0011F540);
 
 s32 func_0011FA80(s32 arg0) {
-    if (func_001DF470() > 0x3E8) {
+    if (func_001DF470(arg0) > 0x3E8) {
         if (func_001E0150(arg0) >= 3) {
             return 0x1F4;
         } else {

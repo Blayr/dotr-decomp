@@ -12,7 +12,7 @@ s32 func_001F1B50(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1B60);
 
-void func_001F1C40(s32 arg0) {
+void func_001F1C40(s32 arg0, s32 unused1) {
     func_001F1C50(arg0, 0);
 }
 

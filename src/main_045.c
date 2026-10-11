@@ -198,7 +198,7 @@ static inline void *check_001E0570(void *ptr) {
 s32 func_001E0570(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *var_v0;
 
-    var_v0 = check_001E0570(func_001DD130());
+    var_v0 = check_001E0570(func_001DD130(arg0, arg1));
     return func_001E05E0(var_v0, arg2, arg3);
 }
 
@@ -261,7 +261,7 @@ static inline void *lookup_001E0690(void) {
     return entry;
 }
 
-s32 func_001E0690(void) {
+s32 func_001E0690(s32 unused0, s32 unused1) {
     Entry_001E0690 *entry = lookup_001E0690();
 
     if (entry == NULL) {

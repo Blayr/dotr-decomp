@@ -30,7 +30,7 @@ INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EA68);
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EB08);
 
-s32 func_0018ED10(void) {
+s32 func_0018ED10(s32 unused0) {
     return 1;
 }
 

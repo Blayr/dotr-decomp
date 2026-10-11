@@ -139,7 +139,7 @@ s32 func_0026FCE0(s32 arg0) {
     if (arg0 == 0x3E7) {
         return 0U;
     }
-    temp_v0 = func_001DD0E0();
+    temp_v0 = func_001DD0E0(arg0);
     if (temp_v0 == NULL) {
         return 0U;
     }
@@ -174,7 +174,7 @@ s32 func_0026FE20(s32 arg0) {
     s32 temp_s0;
     s32 var_v0;
 
-    temp_s0 = func_001DF110();
+    temp_s0 = func_001DF110(arg0);
     var_v0 = temp_s0 + func_001DE9C0(arg0);
     if (var_v0 >= 5) {
         var_v0 = 5;

@@ -477,7 +477,7 @@ void func_00261600(void) {
 void func_00261680(s32 arg0) {
     f32 temp_f0;
 
-    if (func_001F6620() != 4) {
+    if (func_001F6620(arg0) != 4) {
         func_001F66A0(arg0, 4);
         return;
     }
