@@ -51,7 +51,42 @@ s32 func_0024C870(s32 arg0) {
     return var_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C910);
+void func_0024C910(s32 arg0, s32 arg1, s16 *arg2) {
+    s16 *var_s0;
+    s32 criteria;
+    s32 player;
+    s32 var_s3;
+    u16 player_bits;
+    s32 var_v1;
+
+    var_s3 = 1;
+    var_s0 = arg2;
+    criteria = arg1;
+    player = arg0;
+    player_bits = (u16)(player << 8);
+    do {
+        if ((func_001DF540(player, var_s3) != 0) && (func_0024DD80(player, func_0024DE70(player, var_s3), criteria) == 1)) {
+            *var_s0 = player_bits | var_s3;
+            var_s0++;
+        }
+        var_s3 += 1;
+    } while (var_s3 < 0xB);
+    var_s3 = 1;
+    do {
+        if (func_001DF540((player == 0) ? 1 : 0, var_s3) != 0) {
+            if (func_0024DD80(player, func_0024DE70((player == 0) ? 1 : 0, var_s3), criteria) == 1) {
+                if (player == 0) {
+                    var_v1 = 1;
+                } else {
+                    var_v1 = 0;
+                }
+                *var_s0 = var_s3 | (var_v1 << 8);
+                var_s0++;
+            }
+        }
+        var_s3 += 1;
+    } while (var_s3 < 0xB);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024CA40);
 

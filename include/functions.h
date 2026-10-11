@@ -872,6 +872,7 @@ void func_0024C450(s32 *arg0, s32 arg1, s32 arg2);
 s32 func_0024C780(u32 arg0, s32 arg1, s32 arg2);
 s32 func_0024C7D0(u32 arg0, s32 arg1, s32 arg2);
 s32 func_0024C870(s32 arg0);
+void func_0024C910(s32 arg0, s32 arg1, s16 *arg2);
 s32 func_0024DD80(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0024DE20(s32 arg0, s32 arg1);
 s32 func_0024DE70(s32 arg0, s32 arg1);
