@@ -258,7 +258,29 @@ void func_001E2340(void) {
     } while (y < 7);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E23A0);
+static inline u8 *cell_001E23A0(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+}
+
+s32 func_001E23A0(s32 arg0, s32 arg1, s32 arg2) {
+    u8 *cell;
+
+    cell = cell_001E23A0(arg0, arg1);
+    if (cell == NULL) {
+        return -1;
+    }
+    if (arg2 < -0x80) {
+        arg2 = -0x80;
+    }
+    if (arg2 > 0x80) {
+        arg2 = 0x80;
+    }
+    *(s16 *)(cell + 0x14) = arg2;
+    return arg2;
+}
 
 static inline u8 *lookup_001E2450(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
