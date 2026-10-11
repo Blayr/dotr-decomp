@@ -164,6 +164,7 @@ s32 func_00117B10(s32 arg0);
 s32 func_00117BD0(s32 arg0, s32 arg1);
 s32 func_00117C30(s32 arg0);
 void func_00118B60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28);
+void func_00118BC0(void *arg0);
 s32 func_00118CE0(s32 arg0, s32 arg1);
 s32 func_00118DD0(s32 arg0);
 s32 func_00118E90(s32 arg0);

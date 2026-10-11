@@ -170,7 +170,61 @@ void func_00118B60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                  0, 0x5DC, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00118BC0);
+typedef struct {
+    u16 id;
+    u16 pad2;
+    u16 state;
+    u16 pad6;
+    union {
+        u32 word;
+        u16 low;
+    } data;
+} State_00118BC0;
+
+void func_00118BC0(void *arg0) {
+    State_00118BC0 *state = arg0;
+    s32 new_type;
+    s32 temp_a1;
+    s32 temp_a2;
+    s32 temp_s1;
+    s32 temp_s1_2;
+    s32 temp_s2;
+    s32 temp_v0_2;
+    u16 temp_v0;
+
+    temp_s1 = func_001DE540();
+    temp_v0 = state->id;
+    temp_s2 = func_001E1090((s32) temp_v0 >> 8, temp_v0 & 0xFF);
+    temp_s1_2 = func_00118DD0(temp_s1);
+    temp_v0_2 = func_00118E90(temp_s1);
+    temp_a2 = temp_s2 >> 8;
+    switch (temp_a2) {
+    case 0:
+        if (temp_s2 == temp_s1_2) {
+            state->state = 0xFFF;
+        } else {
+            state->state = 0x6FF;
+            state->data.word = (temp_s1_2 << 16) | state->data.low;
+        }
+        break;
+    case 6:
+        if (temp_s2 == temp_v0_2) {
+            state->state = 0x10FF;
+        } else {
+            state->state = 0x6FF;
+            state->data.word = (temp_v0_2 << 16) | state->data.low;
+        }
+        break;
+    default:
+        temp_a1 = ((s32) state->state >> 8) & 0xFF;
+        if ((temp_a1 != 0xF) && (temp_a1 != 0x10)) {
+            new_type = (temp_a2 < 4) ? 0xF : 0x10;
+            state->state = (new_type << 8) | 0xFF;
+            state->data.word = state->data.low | 0xFFFF0000;
+        }
+        break;
+    }
+}
 
 s32 func_00118CE0(s32 arg0, s32 arg1) {
     s32 index;
