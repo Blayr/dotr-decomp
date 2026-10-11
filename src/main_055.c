@@ -412,6 +412,39 @@ s32 func_002060F0(f32 *origin, s32 count, f32 *points, f32 *out) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002061F0);
+typedef struct Point_002061F0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 padding[0x24];
+} Point_002061F0;
+
+s32 func_002061F0(f32 *origin, s32 count, void *src, f32 *out) {
+    f32 divisor;
+    s32 i;
+    Point_002061F0 *point;
+
+    point = src;
+    out[0] = 0.0f;
+    out[1] = 0.0f;
+    out[2] = 0.0f;
+    out[3] = 0.0f;
+    if (count == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < count; i++, point++) {
+        out[0] += (origin != NULL ? origin[0] : 0.0f) - point->x;
+        out[1] += (origin != NULL ? origin[1] : 0.0f) - point->y;
+        out[2] += (origin != NULL ? origin[2] : 0.0f) - point->z;
+    }
+
+    divisor = (f32)count;
+    out[0] /= divisor;
+    out[1] /= divisor;
+    out[2] /= divisor;
+    func_0020D070(out);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002062F0);
