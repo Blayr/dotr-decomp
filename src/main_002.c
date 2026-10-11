@@ -265,7 +265,27 @@ void func_00107C10(f32 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107CB0);
+void func_00107CB0(void *arg0, s32 arg1, s32 arg2) {
+    s16 i;
+    s32 angle;
+    f32 *p;
+    f32 radians;
+
+    p = arg0;
+    i = 0;
+    angle = 0;
+    while (i < arg2) {
+        radians = (3.1415927f * (f32)angle) / 180.0f;
+        p[0] = func_001A6A88(radians);
+        p[20] = func_001A6898(radians);
+        radians = (3.1415927f * (f32)(arg1 + angle)) / 180.0f;
+        p[40] = func_001A6A88(radians);
+        p[60] = func_001A6898(radians);
+        angle += arg1;
+        p++;
+        i++;
+    }
+}
 
 s32 func_00107DD0(void *arg0, void *arg1, void *arg2) {
     f32 *dst = arg0;

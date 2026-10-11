@@ -101,6 +101,7 @@ s32 func_00107710(u8 *arg0, u8 *arg1);
 void func_00107740(void *arg0, void *arg1);
 void func_00107B90(f32 *arg0, f32 *arg1, void *arg2, void *arg3);
 void func_00107C10(f32 *arg0);
+void func_00107CB0(void *arg0, s32 arg1, s32 arg2);
 s32 func_00107DD0(void *arg0, void *arg1, void *arg2);
 s32 func_00107E40(f32 fparg0, f32 fparg1, f32 fparg2, void *arg0);
 s32 func_00107EA0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2);
