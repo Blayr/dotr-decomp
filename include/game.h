@@ -275,4 +275,15 @@ void func_001FECB0(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 
 extern s64 D_002D0830[];
 
+void func_0020BC00(s32, void *);
+void func_0020C750(void *);
+
+s32 func_0021DDA0(s32);
+extern s8 D_0034F710;
+extern s32 D_0029B2F0;
+extern u8 D_00350620[];
+
+void func_00182A28(s32);
+void func_002439D0(s32);
+
 #endif

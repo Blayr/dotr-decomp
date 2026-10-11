@@ -1,6 +1,21 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BAE0);
+void func_0021BAE0(void *arg0) {
+    f32 *values = arg0;
+
+    values[3] = 1.0f;
+    values[2] = 1.0f;
+    values[1] = 1.0f;
+    values[0] = 1.0f;
+    values[7] = 0.0f;
+    values[6] = 0.0f;
+    values[5] = 0.0f;
+    values[4] = 0.0f;
+    values[11] = 0.0f;
+    values[10] = 0.0f;
+    values[9] = 0.0f;
+    values[8] = 0.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BB20);
 
@@ -28,7 +43,11 @@ INCLUDE_ASM("asm/nonmatchings/main_062", func_0021D480);
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021D850);
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021DA60);
+void func_0021DA60(void) {
+    if (D_0034F710 == 0) {
+        func_00209D30(func_0021DDA0(func_00209D20()));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021DAA0);
 

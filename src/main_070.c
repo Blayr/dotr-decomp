@@ -2,7 +2,25 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245150);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245160);
+typedef struct Values_00245160 {
+    s64 first;
+    s64 second;
+    s32 offset;
+    s32 fourth;
+} Values_00245160;
+
+extern u8 D_003506C8[];
+void func_00244CB0(u8 *, void *);
+
+void func_00245160(void *arg0, s64 arg1, s64 arg2, s32 arg3, s32 arg4) {
+    Values_00245160 values;
+
+    values.first = arg1;
+    values.second = arg2;
+    values.offset = arg3 - *(s32 *)((u8 *)arg0 + 0x48);
+    values.fourth = arg4;
+    func_00244CB0(D_003506C8, &values);
+}
 
 typedef struct {
     u8 pad00[0x48];

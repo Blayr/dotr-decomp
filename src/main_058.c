@@ -4,7 +4,12 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CB20);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CB90);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CBD0);
+void func_0020CBD0(s32 arg0) {
+    f32 matrix[4][4];
+
+    func_0020C750(matrix);
+    func_0020BC00(arg0, matrix);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CC10);
 
@@ -18,7 +23,13 @@ f32 func_0020D0E0(f32 *arg0) {
     return func_001A6C60(arg0[0] * arg0[0] + arg0[1] * arg0[1] + arg0[2] * arg0[2]);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D100);
+f32 func_0020D100(f32 *arg0, f32 *arg1) {
+    f32 x = arg0[0] - arg1[0];
+    f32 y = arg0[1] - arg1[1];
+    f32 z = arg0[2] - arg1[2];
+
+    return func_001A6C60(x * x + y * y + z * z);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D140);
 

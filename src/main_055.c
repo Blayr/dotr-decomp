@@ -58,9 +58,30 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00203A40);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203B50);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203BC0);
+typedef struct {
+    u8 padding[0x25B];
+    s8 unused : 6;
+    s8 flag : 1;
+    s8 unused_high : 1;
+} Flags_00203BC0;
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203C00);
+extern u8 D_003259C0[];
+
+s32 func_00203BC0(s32 arg0) {
+    return ((Flags_00203BC0 *)(D_003259C0 + arg0 * 0x5C))->flag ? 1 : 0;
+}
+
+typedef struct {
+    u8 padding[0x25B];
+    s8 : 7;
+    s8 flag : 1;
+} Flags_00203C00;
+
+s32 func_00203C00(s32 arg0) {
+    Flags_00203C00 *flags = (Flags_00203C00 *)(D_003259C0 + arg0 * 0x5C);
+
+    return flags->flag ? 1 : 0;
+}
 
 typedef struct Entry_00203C40 {
     u8 pad[0x206];

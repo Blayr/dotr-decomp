@@ -139,9 +139,36 @@ void func_001DE7A0(s32 arg0) {
     flags->enabled = (s8) (arg0 ? 1 : 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE7E0);
+typedef struct {
+    s8 padding[0xD67];
+    s8 enabled : 1;
+    s8 reserved : 7;
+} Flags_001DE7E0;
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE820);
+void func_001DE7E0(s32 arg0) {
+    Flags_001DE7E0 *flags = (Flags_001DE7E0 *)D_00317490;
+
+    flags->enabled = (s8)(arg0 ? 1 : 0);
+}
+
+typedef struct Flags_001DE820 {
+    s8 unused : 1;
+    s8 enabled : 1;
+    s8 remaining : 6;
+} Flags_001DE820;
+
+typedef struct State_001DE820 {
+    u8 padding[0xD67];
+    Flags_001DE820 flags;
+} State_001DE820;
+
+extern u8 D_00317490[];
+
+void func_001DE820(s32 arg0) {
+    State_001DE820 *state = (State_001DE820 *)D_00317490;
+
+    state->flags.enabled = (s8)(arg0 ? 1 : 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE860);
 
