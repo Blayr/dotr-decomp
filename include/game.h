@@ -507,7 +507,6 @@ void func_0017B920(s32);
 s32 func_00100350(void);
 void func_001A6C80(void);
 void func_001A89C0(s32, s32);
-void func_001E7A60(void);
 void func_001FCC70(s32, s32, s32, s32, s32, s32);
 void func_001FD2B0(void);
 void func_00203CD0(void);

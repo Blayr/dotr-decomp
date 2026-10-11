@@ -143,7 +143,39 @@ void func_001E7A50(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7A60);
+typedef struct Entry_001E7A60 {
+    u8 padding[0x68];
+    s32 id : 27;
+    u32 flags : 5;
+    u32 padding_6C;
+} Entry_001E7A60;
+
+extern Entry_001E7A60 D_0031AD00[];
+extern s32 D_0031BB00;
+extern s32 D_0031BB18;
+extern u8 D_002CF9D0[];
+extern u8 D_002CF9D5[];
+
+s32 func_001E7A60(void) {
+    extern u8 *func_00197548();
+    s32 i;
+    Entry_001E7A60 *entry;
+    s32 j;
+
+    for (i = 0; i < 0x54; i++) {
+        D_0031ABB0[i] = NULL;
+    }
+    entry = D_0031AD00;
+    for (j = 0; j < 0x20; j++) {
+        entry->id = -1;
+        entry++;
+    }
+    D_0031BB00 = 0;
+    if (func_00197548(D_002CF9D0) != NULL || func_00197548(D_002CF9D5) != NULL) {
+        D_0031BB18 = 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7B20);
 
