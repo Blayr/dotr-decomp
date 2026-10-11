@@ -508,7 +508,69 @@ void func_001C1000(s32 arg0, s32 arg1, s32 arg2) {
                   0x140, 0x7A, func_0019BEF0((char *)text), text, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1090);
+typedef struct {
+    f32 x, y, z, w;
+} Quad_001C1090;
+
+typedef struct {
+    Quad_001C1090 v[9];
+} Block_001C1090;
+
+typedef struct {
+    f32 x, y, z;
+} Vec3_001C1090;
+
+extern Quad_001C1090 D_00291370;
+extern Block_001C1090 D_00291380;
+extern Quad_001C1090 D_00291410;
+extern Vec3_001C1090 D_00291420;
+
+void func_00217590(s32, s32, s32);
+
+void func_001C1090(s32 arg0) {
+    u8 *duel = D_00317490;
+    s32 i;
+    Quad_001C1090 a;
+    Block_001C1090 b;
+    Quad_001C1090 c;
+    Vec3_001C1090 d;
+    extern s32 func_001F1A80(s32, f32);
+    extern s32 func_001F9770();
+
+    if (arg0 >= 0) {
+        s32 id = func_001DE1A0(arg0);
+
+        func_001E8780(0x1D, -1, id, 1);
+        func_00217590(2, id, 0);
+        return;
+    }
+    a = D_00291370;
+    b = D_00291380;
+    c = D_00291410;
+    d = D_00291420;
+    for (i = 0; i < 0x54; i++) {
+        func_001F30B0(i, 0);
+    }
+    for (i = 0; i < 0x28; i++) {
+        func_001F30B0(i + 0x22, 1);
+    }
+    func_001F30B0(0x1D, 1);
+    func_001F25D0(0x1D, NULL);
+    func_001F2430(0x1D, &a);
+    func_001F24C0(0x1D, &a);
+    func_001F22B0(0x1D, &c);
+    func_001F29E0(0x1D, 0);
+    func_001F2AD0(0x1D, 0);
+    func_001F1830(0x1D, 0);
+    func_001F1A00(0x1D, 1);
+    func_001F1A80(0x1D, 1.0f);
+    func_001F26E0(0x1D, 0, NULL);
+    func_001F2860(0x1D, 1, NULL);
+    func_001F1EE0(0x1D, &d.x);
+    func_001F9770(0, 4, &b);
+    func_001F9D80(0, &c);
+    duel[0xD35] = 0;
+}
 
 void func_001C1270(void) {
     func_001E7E70(0x1D, -1, 0x3E7);
