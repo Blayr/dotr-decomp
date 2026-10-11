@@ -389,7 +389,76 @@ void func_001E08F0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0950);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E09E0);
+typedef struct Sub_001E09E0 {
+    u8 pad[4];
+    u16 id;
+} Sub_001E09E0;
+
+typedef struct Object_001E09E0 {
+    Sub_001E09E0 *data;
+    u8 pad04[0x38];
+    u16 id;
+    u8 pad3E[2];
+    u8 x;
+    u8 y;
+    u8 pad42[3];
+    u8 state;
+} Object_001E09E0;
+
+extern u8 D_002C3338[][5][8];
+extern u8 D_002C9DF0[][5][8];
+extern u8 D_002CC5F0[][8];
+
+void *func_001E09E0(void *arg0, s32 arg1) {
+    void *cell;
+    s32 on_board;
+    s32 x;
+    s32 y;
+    s32 card_id;
+    s32 data_id;
+    Sub_001E09E0 *data;
+    Object_001E09E0 *object = arg0;
+
+    on_board = 1;
+    if (object == NULL) {
+        return NULL;
+    }
+    data = object->data;
+    if (data == NULL) {
+        return NULL;
+    }
+    if (arg1 < 0 || arg1 >= 5) {
+        return NULL;
+    }
+    x = object->x;
+    y = object->y;
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        cell = NULL;
+    } else {
+        cell = (void *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+    }
+    if (cell == NULL || *(void **)cell != object) {
+        on_board = 0;
+    }
+    if (on_board != 0 && object->state == 0) {
+        card_id = object->id;
+        if (card_id >= 0x356) {
+            return NULL;
+        }
+        if (card_id == 0x29F) {
+            return NULL;
+        }
+        return D_002C3338[card_id][arg1];
+    }
+    data_id = data->id;
+    if (data_id == 0xFFFF) {
+        return NULL;
+    }
+    if (object->state < 6) {
+        return D_002C9DF0[data_id][arg1];
+    }
+    return D_002CC5F0[data_id];
+}
 
 static inline void *check_001E0B70(void) {
     void *record;
