@@ -156,7 +156,48 @@ s32 func_0010EDA0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010EE00);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F030);
+s32 func_0010F030(void) {
+    extern s32 func_001E1030();
+    u16 buf[22];
+    s32 id;
+    s32 i;
+    u16 kind;
+
+    id = func_001DE540();
+    for (i = 0; i < 22; i++) {
+        buf[i] = 0xFFFF;
+    }
+    func_0024C910(id, 1, buf);
+    for (i = 0; i < 22; i++) {
+        if (buf[i] != 0xFFFF) {
+            kind = func_001E1030(buf[i] >> 8, buf[i] & 0xFF);
+            if (kind == 0x192 || kind == 0x193 || kind == 0x1A6) {
+                return 1;
+            }
+        }
+    }
+    for (i = 0; i < 22; i++) {
+        if (buf[i] != 0xFFFF) {
+            kind = func_001E1030(buf[i] >> 8, buf[i] & 0xFF);
+            if (kind == 0x350 || kind == 0x31E) {
+                return 0;
+            }
+        }
+    }
+    for (i = 0; i < 5; i++) {
+        kind = func_001DF0C0(id, i) & 0xFFF;
+        if (kind == 0x350 || kind == 0x31E) {
+            return 0;
+        }
+    }
+    for (i = 0; i < func_001DE9C0(id); i++) {
+        kind = func_001DE9E0(id, i);
+        if (kind == 0x350 || kind == 0x31E) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 s32 func_0010F220(s32 arg0) {
     if ((func_0026FCE0(arg0) >> 5) != 0) {

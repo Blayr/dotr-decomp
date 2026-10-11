@@ -184,6 +184,7 @@ void func_0010DC40(void *arg0);
 s32 func_0010E540(s32 arg0, void *arg1, s32 arg2, s32 arg3);
 void func_0010ED90(void);
 s32 func_0010EDA0(s32 arg0);
+s32 func_0010F030(void);
 s32 func_0010F220(s32 arg0);
 s32 func_0010F6F0(s32 arg0);
 s32 func_00112960(s32 arg0);
