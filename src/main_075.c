@@ -16,7 +16,53 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F400);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F670);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F720);
+s32 func_0024EC50(s32, s32);
+s32 func_00255A30(void *, void *);
+
+typedef struct Source_0025F720 {
+    s32 pad[2];
+    s32 handle;
+} Source_0025F720;
+typedef struct Request_0025F720 {
+    s32 type, zero, value, flag;
+} Request_0025F720;
+typedef struct Result_0025F720 {
+    u8 pad[6];
+    u8 status[26];
+    s32 values[45];
+    u8 count;
+} Result_0025F720;
+
+void func_0025F720(void *arg0, void *arg1, void *arg2, s32 arg3) {
+    s32 index;
+    s32 count;
+    s32 value;
+    s64 flag;
+    u8 result;
+    Source_0025F720 *src = arg0;
+    Result_0025F720 *dst = arg1;
+    Request_0025F720 *req = arg2;
+
+    count = func_0024E910(src->handle);
+    for (index = 0; index < count; index++) {
+        value = func_0024EC50(src->handle, index);
+        req->type = arg3;
+        req->zero = 0;
+        req->value = value;
+        if (arg3 == 0x25B) {
+            flag = 1;
+        } else {
+            flag = 0;
+        }
+        req->flag = flag;
+        result = func_00255A30(req, dst);
+        dst->status[dst->count] = result;
+        if ((s32)result >= 0) {
+            dst->values[dst->count] = value;
+            dst->count++;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F820);
 
