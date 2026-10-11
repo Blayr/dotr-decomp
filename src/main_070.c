@@ -109,7 +109,16 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00245AE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245BE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245D80);
+typedef struct {
+    s32 value;
+    u8 padding[0x30];
+} Entry_00245D80;
+
+extern Entry_00245D80 D_00350FD0[];
+
+void func_00245D80(u8 *arg0) {
+    D_00350FD0[*arg0].value = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245DB0);
 
