@@ -64,7 +64,22 @@ loop_1:
     goto loop_1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014C9D0);
+s32 func_0014C9D0(s32 arg0) {
+    s32 func_0014DA30(s32, s32);
+    s32 id;
+
+    id = func_001DE540();
+    switch (arg0) {
+    case 0:
+        return func_0014DA30(id, 0);
+    case 1:
+        return func_0014DA30(id, 3);
+    case 2:
+        return func_0014DA30(id, 4);
+    default:
+        return -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_0014CA60);
 
