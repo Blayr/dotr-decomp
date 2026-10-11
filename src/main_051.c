@@ -177,7 +177,18 @@ void func_001F6DD0(s32 arg0) {
     func_001F6E10(3, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6E10);
+s32 func_001F6E10(s32 arg0, s32 arg1) {
+    extern s32 func_001F2980(s32);
+    s32 i;
+
+    i = 0;
+    do {
+        if (arg0 < 0 || arg0 == func_001F2980(i)) {
+            func_001F1EE0(i, (f32 *) arg1);
+        }
+        i += 1;
+    } while (i < 0x54);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6E80);
 
