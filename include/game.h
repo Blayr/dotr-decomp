@@ -150,4 +150,8 @@ extern u8 D_003506C8[];
 s32 func_0024CA40(s32, s32, s32, s32, s32, s32);
 s32 func_0024E910(s32);
 
+s32 func_001EE4B0(s32, s32, s32, s32, s32, s32, s32);
+void func_001F3190(s32, s32);
+s32 func_001F3210(s32);
+
 #endif
