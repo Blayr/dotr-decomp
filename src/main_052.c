@@ -603,7 +603,24 @@ f32 func_001F9A20(s32 arg0) {
     return *(f32 *)((u8 *)temp_v0 + 0x44);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9A80);
+typedef struct Object_001F9A80 {
+    u8 pad[0x44];
+    f32 value;
+} Object_001F9A80;
+
+s32 func_001F9A80(s32 arg0, f32 fparg0) {
+    Object_001F9A80 *object;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    object = (Object_001F9A80 *)D_0031BEB0[arg0];
+    if (object == NULL) {
+        return 0;
+    }
+    object->value = fparg0;
+    return 1;
+}
 
 s32 func_001F9AD0(s32 arg0) {
     s32 temp_v0;

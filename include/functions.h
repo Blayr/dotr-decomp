@@ -736,6 +736,7 @@ s32 func_001F96F0(s32 arg0, s32 arg1);
 s32 func_001F9770(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001F98C0(s32 arg0, s32 arg1);
 f32 func_001F9A20(s32 arg0);
+s32 func_001F9A80(s32 arg0, f32 fparg0);
 s32 func_001F9AD0(s32 arg0);
 s32 func_001F9D30(s32 arg0);
 s32 func_001F9F90(s32 arg0, s32 arg1);
