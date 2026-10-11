@@ -67,7 +67,9 @@ s32 func_001DE260(s32 arg0) {
     return D_002CE4A4[arg0];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE2A0);
+void func_001DE2A0(void) {
+    func_00214D00(0, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE2B0);
 

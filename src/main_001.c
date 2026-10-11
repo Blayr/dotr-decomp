@@ -489,4 +489,8 @@ s32 func_00106CF0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106D80);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106DD0);
+void func_00106DD0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
+    ((f32 *)arg0)[0] = fparg0;
+    ((f32 *)arg0)[1] = fparg1;
+    ((f32 *)arg0)[2] = fparg2;
+}
