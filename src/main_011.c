@@ -297,7 +297,73 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_0014AAB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_0014ACA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_0014AE60);
+s32 func_0014AE60(s32 arg0, s32 arg1) {
+    s32 kind;
+    s32 pos;
+    s32 slot;
+    u32 *card;
+    s32 found;
+
+    kind = func_001E1030();
+    pos = func_001E1090(arg0, arg1);
+    slot = func_00250360(arg0, arg1);
+    card = func_001E0B70(arg0, arg1, 0);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (kind) {
+        case 0x123:
+            if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 6, 0xE)) >= 3) {
+                return 1;
+            }
+            break;
+        case 0x110:
+        case 0x111:
+            if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 0x1E001C, 0xE)) > 0) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_0014B240(func_00250360(arg0, arg1), kind) == 1 &&
+            func_001E22B0(pos & 0xFF, pos >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (card == NULL) {
+            return 2;
+        }
+        switch (*card >> 8) {
+        case 0xD:
+            return 1;
+        case 2:
+            found = func_0027C770(func_001DF540(arg0, arg1), pos & 0xFF, pos >> 8, 2, 6, 2);
+            if (found >= 0 && found == pos) {
+                return 1;
+            }
+            break;
+        case 4:
+            if (func_0014B3E0(arg0, pos & 0xFF, pos >> 8) == 1) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_0014B140(s32 a, s32 b) {
     if (a < b) {
