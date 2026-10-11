@@ -494,4 +494,20 @@ s32 func_002061F0(f32 *origin, s32 count, void *src, f32 *out) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002062F0);
+void func_002062F0(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
+    arg3[0] = arg0[1] * (arg1[2] - arg2[2])
+            + arg1[1] * (arg2[2] - arg0[2])
+            + arg2[1] * (arg0[2] - arg1[2]);
+    arg3[1] = arg0[2] * (arg1[0] - arg2[0])
+            + arg1[2] * (arg2[0] - arg0[0])
+            + arg2[2] * (arg0[0] - arg1[0]);
+    arg3[2] = arg0[0] * (arg1[1] - arg2[1])
+            + arg1[0] * (arg2[1] - arg0[1])
+            + arg2[0] * (arg0[1] - arg1[1]);
+    arg3[3] = arg0[0] * (arg1[2] * arg2[1] - arg1[1] * arg2[2])
+            + arg0[1] * (arg1[0] * arg2[2] - arg1[2] * arg2[0])
+            + arg0[2] * (arg1[1] * arg2[0] - arg1[0] * arg2[1]);
+    arg3[4] = func_001A6C60(arg3[0] * arg3[0]
+                           + arg3[1] * arg3[1]
+                           + arg3[2] * arg3[2]);
+}
