@@ -14,7 +14,15 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE2A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE2B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE4E0);
+typedef struct {
+    u8 padding[0x33C];
+    u8 value;
+    u8 trailing_padding[0x13];
+} Record_001DE4E0;
+
+u8 func_001DE4E0(s32 arg0) {
+    return ((Record_001DE4E0 *)(D_00317490 + arg0 * 0x350))->value;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE500);
 
