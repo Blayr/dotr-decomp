@@ -24,7 +24,15 @@ void func_00136010(void *arg0) {
     *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00136060);
+s32 func_00136060(void *arg0) {
+    if (func_001E36E0(2, 2) == 0 && func_001E22B0(2, 2) != 8) {
+        return 0x202;
+    }
+    if (func_001E36E0(5, 2) == 0 && func_001E22B0(5, 2) != 8) {
+        return 0x205;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_001360E0);
 

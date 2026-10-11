@@ -64,7 +64,28 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_002406C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_002409E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241190);
+s32 func_00241190(u16 *arg0) {
+    u16 checksum;
+    u16 saved;
+    u16 i;
+    u16 *p;
+
+    saved = arg0[1];
+    checksum = 0;
+    i = 0;
+    p = arg0;
+    arg0[1] = 0;
+    while (i < 0x8078) {
+        checksum ^= *p++;
+        i++;
+    }
+    checksum ^= 0x4C6B;
+    arg0[1] = checksum;
+    if (checksum == saved) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241200);
 
@@ -109,7 +130,25 @@ s32 func_00241AD0(void *arg0, void **arg1) {
     return size;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241B10);
+typedef struct {
+    u8 padding[0x50000];
+    s32 position;
+    s32 count;
+    s32 capacity;
+} Buffer_00241B10;
+
+s32 func_00241B10(void *arg0, s32 arg1) {
+    Buffer_00241B10 *buffer = arg0;
+    s32 capacity;
+    s32 available;
+
+    capacity = buffer->capacity;
+    available = capacity - buffer->count;
+    arg1 = (arg1 < available) ? arg1 : available;
+    buffer->position = (buffer->position + arg1) % capacity;
+    buffer->count = buffer->count + arg1;
+    return arg1;
+}
 
 typedef struct {
     u8 data[0x50000];

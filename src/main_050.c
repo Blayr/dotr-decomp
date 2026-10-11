@@ -172,7 +172,31 @@ s32 func_001F5B70(s32 arg0, s32 arg1) {
     return func_001E3AB0(temp_v1, temp_a1, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5BD0);
+typedef struct Vec4_001F5BD0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001F5BD0;
+
+s32 func_001E3B50(s32, s32, void *);
+
+s32 func_001F5BD0(s32 arg0, void *arg1) {
+    s32 index;
+    s32 group;
+    Vec4_001F5BD0 *out = arg1;
+
+    group = arg0 >> 8;
+    index = arg0 & 0xFF;
+    out->z = 0.0f;
+    out->y = 0.0f;
+    out->x = 0.0f;
+    out->w = 1.0f;
+    if (group < 0 || group >= 3 || index < 0 || index >= 11) {
+        return 0;
+    }
+    return func_001E3B50(group, index, out);
+}
 
 s32 func_001F5C40(s32 arg0, s32 arg1) {
     s32 column;
@@ -246,7 +270,21 @@ s32 func_001F5DE0(s32 arg0, s32 arg1) {
     return func_001E3E70(row, column, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5E40);
+s32 func_001F5E40(s32 arg0, u8 *arg1) {
+    s32 index;
+    s32 bank;
+
+    bank = arg0 >> 8;
+    index = arg0 & 0xFF;
+    arg1[3] = 0x80;
+    arg1[0] = 0x80;
+    arg1[1] = 0x80;
+    arg1[2] = 0x80;
+    if (bank < 0 || bank >= 3 || index < 0 || index >= 11) {
+        return 0;
+    }
+    return func_001E3F10(bank, index, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5EB0);
 

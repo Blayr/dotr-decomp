@@ -6,11 +6,34 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_0025EE40);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025EF40);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F2A0);
+s32 func_0025F2A0(void) {
+    s32 row;
+    s32 column;
+    s32 result;
+
+    for (row = 0; row < 7; row++) {
+        for (column = 0; column < 7; column++) {
+            result = func_001E3790(row, column);
+            if (result < 0) {
+                return result;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F310);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F390);
+s32 func_0025F390(void *arg0) {
+    s32 i;
+
+    for (i = 0; i < ((u8 *)arg0)[0xD4]; i++) {
+        if (func_001F51D0(((u8 *)((u32)arg0 + i))[6]) != 0) {
+            return -1;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F400);
 
@@ -143,7 +166,16 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_00261F20);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00262190);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00262680);
+s32 func_00262680(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    switch (arg0) {
+    case 1:
+        return func_002626F0(arg1, arg2, arg3);
+    case 2:
+        return func_002626F0(arg1, arg4, arg5);
+    default:
+        return 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_002626F0);
 

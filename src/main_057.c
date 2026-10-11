@@ -60,7 +60,39 @@ s32 func_00209E50(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209E90);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209EF0);
+typedef struct State_00209EF0 {
+    u8 pad00[0x60];
+    u16 value60;
+    u8 pad62[0xEE];
+    u16 value150;
+    u8 pad152[0xFE];
+    s32 value250;
+    s32 pad254;
+    s32 value258;
+    u8 pad25C[0x10];
+    s32 flags26C;
+} State_00209EF0;
+
+s32 func_00209EF0(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
+    State_00209EF0 *state = (State_00209EF0 *)D_00325F50;
+    u16 *var_v0;
+
+    if (arg1 != NULL) {
+        if ((state->flags26C & 1) == (arg0 ? 1 : 0)) {
+            var_v0 = &state->value150;
+        } else {
+            var_v0 = &state->value60;
+        }
+        *arg1 = (*var_v0 & 0x1FF) << 5;
+    }
+    if (arg2 != NULL) {
+        *arg2 = state->value250;
+    }
+    if (arg3 != NULL) {
+        *arg3 = state->value258;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209F60);
 

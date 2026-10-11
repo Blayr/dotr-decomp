@@ -6,7 +6,18 @@ INCLUDE_ASM("asm/nonmatchings/main_007", func_00124810);
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00124A30);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00124C10);
+s32 func_00124C10(s32 arg0) {
+    s32 value;
+
+    if ((func_0026FCE0(arg0) >> 5) != 0) {
+        return 1;
+    }
+    value = func_0026FCE0(arg0) & 0x1F;
+    if ((value == 0) || (value == 0xF) || (value == 0x12)) {
+        return 1;
+    }
+    return 0;
+}
 
 void func_0026FD30(s32, s32 *);
 void func_00123D70(s32, s32 *);
@@ -93,7 +104,29 @@ INCLUDE_ASM("asm/nonmatchings/main_007", func_00126380);
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00126840);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00126940);
+typedef struct State_00126940 {
+    u8 pad0[4];
+    u16 field4;
+    u16 pad6;
+    u32 field8;
+} State_00126940;
+
+void func_00126940(void *arg0, u8 arg1) {
+    State_00126940 *state = (State_00126940 *)arg0;
+
+    if (arg1 < 2) {
+        if (arg1 == 1) {
+            state->field4 = (state->field4 & 0xFF) | 0xFF00;
+        } else {
+            state->field4 = (state->field4 & 0xFF00) | 0xFF;
+        }
+        if (arg1 == 1) {
+            state->field8 = (state->field8 & 0xFFFF) | 0xFFFF0000;
+        } else {
+            state->field8 = (state->field8 & 0xFFFF0000) | 0xFFFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_001269C0);
 
@@ -183,7 +216,29 @@ INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B210);
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B730);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B830);
+typedef struct {
+    u8 pad0[4];
+    u16 value4;
+    u8 pad6[2];
+    u32 value8;
+} Data_0012B830;
+
+void func_0012B830(void *arg0, u8 arg1) {
+    Data_0012B830 *data = arg0;
+
+    if (arg1 < 2) {
+        if (arg1 == 1) {
+            data->value4 = (data->value4 & 0xFF) | 0xFF00;
+        } else {
+            data->value4 = (data->value4 & 0xFF00) | 0xFF;
+        }
+        if (arg1 == 1) {
+            data->value8 = (data->value8 & 0xFFFF) | 0xFFFF0000;
+        } else {
+            data->value8 = (data->value8 & 0xFFFF0000) | 0xFFFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B8B0);
 

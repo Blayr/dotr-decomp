@@ -139,7 +139,20 @@ void func_0024FDA0(void) {
     func_0024FDD0(func_001DF540());
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FDD0);
+s32 func_0024FDD0(s32 arg0) {
+    u8 temp_v1;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    temp_v1 = *(u8 *)((u8 *)arg0 + 0x3E);
+    if ((((s32) temp_v1 >> 5) != 0) ||
+        (*(u8 *)((u8 *)arg0 + 0x45) == 0) ||
+        ((temp_v1 & 0x1F) == 0x14)) {
+        return 0;
+    }
+    return (func_00250A60(arg0, *(u8 *)((u8 *)arg0 + 0x40), *(u8 *)((u8 *)arg0 + 0x41)) < 0x5DC) ? 0 : 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FE40);
 

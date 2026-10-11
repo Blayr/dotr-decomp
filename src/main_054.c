@@ -19,7 +19,30 @@ loop_1:
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF350);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF360);
+typedef struct Record_001FF360 {
+    s32 status;
+    s16 id;
+    u8 padding[0x1E];
+} Record_001FF360;
+
+extern Record_001FF360 D_00320370[];
+
+s32 func_001FF360(s32 arg0, s32 arg1) {
+    Record_001FF360 *record;
+    s32 remaining;
+    s32 shift;
+
+    shift = arg1 ? 10 : 0;
+    record = D_00320370;
+    for (remaining = 0x100; remaining--; record++) {
+        if (record->status >= 0 &&
+            (arg0 < 0 || arg0 == (record->id >> shift))) {
+            return (s32) record;
+        }
+    }
+    record = NULL;
+    return (s32) record;
+}
 
 void func_001FF3D0(void) {
     s32 start;

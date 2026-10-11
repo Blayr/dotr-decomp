@@ -32,7 +32,19 @@ void func_00217B50(void) {
     func_00197C18();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217B60);
+char *func_00217B60(char *arg0) {
+    char *temp_v0;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    temp_v0 = func_00197990(0x10, func_0019BEF0(arg0) + 1);
+    if (temp_v0 == 0) {
+        return 0;
+    }
+    func_0019BDD8(temp_v0, arg0);
+    return temp_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00217BD0);
 

@@ -160,7 +160,26 @@ s32 func_00123670(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_001236C0);
+s32 func_001236C0(s32 arg0) {
+    s32 var_v0;
+
+    switch (arg0) {
+        case 0:
+            var_v0 = 0x303;
+            break;
+        case 1:
+            var_v0 = 0x304;
+            break;
+        case 2:
+        default:
+            var_v0 = 0x302;
+            break;
+    }
+    if ((var_v0 >= 0) && (func_001E36E0(var_v0 & 0xFF, var_v0 >> 8) == 0)) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00123740);
 

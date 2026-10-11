@@ -17,7 +17,15 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CDD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CF00);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D070);
+void func_0020D070(f32 *arg0) {
+    f32 length;
+
+    length = func_001A6C60(arg0[0] * arg0[0] + arg0[1] * arg0[1] + arg0[2] * arg0[2]);
+    arg0[0] /= length;
+    arg0[1] /= length;
+    arg0[2] /= length;
+    arg0[3] = arg0[3];
+}
 
 f32 func_0020D0E0(f32 *arg0) {
     return func_001A6C60(arg0[0] * arg0[0] + arg0[1] * arg0[1] + arg0[2] * arg0[2]);
