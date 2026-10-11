@@ -58,7 +58,17 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00155C90);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00155FB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_001562B0);
+void func_001562B0(s32 *arg0, s32 arg1, s32 arg2) {
+    s32 temp_a0;
+    s32 *temp_a1;
+    s32 *temp_a2;
+
+    temp_a1 = &arg0[arg1];
+    temp_a2 = &arg0[arg2];
+    temp_a0 = *temp_a1;
+    *temp_a1 = *temp_a2;
+    *temp_a2 = temp_a0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_001562E0);
 
