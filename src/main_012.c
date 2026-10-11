@@ -323,7 +323,80 @@ s32 func_00153AB0(void) {
     return (func_001E0110(func_001DE540()) < 3) ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_00153AE0);
+s32 func_00153AE0(s32 arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    u16 buf[22];
+    s32 kind;
+    u32 *info;
+    s32 c1;
+    s32 c2;
+    s32 player;
+    s32 y1;
+    s32 x1;
+    s32 y2;
+    s32 x2;
+    s32 pos;
+    s32 score;
+
+    kind = func_001E1030(arg0, arg1);
+    func_001E1090(arg0, arg1);
+    player = func_00250360(arg0, arg1);
+    info = func_001E0B70(arg0, arg1, 0);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    func_0024C910(player, 2, buf);
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (kind) {
+        case 0x24:
+            if (func_0024E910(func_0024CA40(0, 0, player, 1, 0x95F0037, 0xE)) >= 2) {
+                return 1;
+            }
+            break;
+        case 0xD5:
+            if (func_0024E910(func_0024CA40(0, 0, player, 1, 0x1D, 0x16)) >= 2) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (info == NULL) {
+            return 2;
+        }
+        switch (*info >> 8) {
+        case 0xD:
+            return 1;
+        case 0x21:
+            func_0027C2C0((player == 0) ? 1 : 0, buf, 0x1D, 0, 0);
+            pos = func_0027B650(buf);
+            x1 = pos >> 8;
+            y1 = pos & 0xFF;
+            c1 = func_001E1090(x1, y1);
+            func_0027C070(player, buf, 0x1D, 1);
+            pos = func_0027B650(buf);
+            x2 = pos >> 8;
+            y2 = pos & 0xFF;
+            c2 = func_001E1090(x2, y2);
+            func_0024C910(player, 1, buf);
+            if (func_002509E0(x1, y1, c1 & 0xFF, c1 >> 8) >= 2000) {
+                score = func_002509E0(x1, y1, c1 & 0xFF, c1 >> 8);
+                if (func_002509E0(x2, y2, c2 & 0xFF, c2 >> 8) < score) {
+                    return 1;
+                }
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_00153DD0(s32 a, s32 b) {
     if (a < b) {
