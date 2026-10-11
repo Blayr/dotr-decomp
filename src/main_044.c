@@ -64,7 +64,9 @@ u8 func_001DE740(s32 arg0) {
     return ((Entry_001DE740 *)(D_00317490 + arg0 * 0x350))->field_344;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE760);
+void func_001DE760(s32 arg0, s8 arg1) {
+    *(s8 *)(D_00317490 + arg0 * 0x350 + 0x344) = arg1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE780);
 
