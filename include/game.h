@@ -154,4 +154,7 @@ s32 func_001EE4B0(s32, s32, s32, s32, s32, s32, s32);
 void func_001F3190(s32, s32);
 s32 func_001F3210(s32);
 
+s32 func_0024E300(s32, s32, s32);
+s32 func_0027DD20(s32, s32, s32);
+
 #endif
