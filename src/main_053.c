@@ -50,20 +50,8 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD0B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD130);
 
-typedef struct {
-    u8 pad0[5];
-    u8 lo;
-    u8 hi;
-    s8 pad7 : 6;
-    s8 flag : 1;
-    s8 pad7b : 1;
-    u8 pad8[4];
-} Ent_001FD1B0;
-
-extern Ent_001FD1B0 D_0031C050[];
-
 s32 func_001FD1B0(s32 arg0) {
-    Ent_001FD1B0 *e;
+    Entry_0031C050 *e;
 
     if (arg0 < 0 || arg0 >= 2) {
         return -1;

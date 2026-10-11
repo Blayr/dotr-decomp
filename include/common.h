@@ -16,6 +16,7 @@ typedef float f32;
 #endif
 
 #include "dk_asm.h"
+#include "structs.h"
 #include "game.h"
 #include "functions.h"
 
