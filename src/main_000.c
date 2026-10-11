@@ -440,7 +440,45 @@ void func_00101C80(void *arg0, void *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101D20);
+typedef struct Coord_00101D20 {
+    u16 val : 14;
+    u16 hi : 2;
+} Coord_00101D20;
+
+typedef struct Vert_00101D20 {
+    u8 pad0[8];
+    Coord_00101D20 x;
+    Coord_00101D20 y;
+    u8 padC[4];
+} Vert_00101D20;
+
+typedef struct Sprite_00101D20 {
+    u16 pad0;
+    u16 flags;
+    u8 pad4[0xC];
+    Vert_00101D20 v[4];
+} Sprite_00101D20;
+
+void func_00101D20(void *arg0, void *arg1, void *arg2) {
+    Sprite_00101D20 *dst = arg0;
+    s32 *src = arg1;
+    u8 sp4C[4];
+
+    dst->flags |= 0x800;
+    dst->v[0].x.val = src[2] << 4;
+    dst->v[0].y.val = src[4] << 4;
+    dst->v[1].x.val = src[3] << 4;
+    dst->v[1].y.val = src[4] << 4;
+    dst->v[2].x.val = src[2] << 4;
+    dst->v[2].y.val = src[5] << 4;
+    dst->v[3].x.val = src[3] << 4;
+    dst->v[3].y.val = src[5] << 4;
+    func_00208CB0(arg0, 0xA | ((s64)src[2] << 4) | ((s64)(src[3] - 1) << 14) | ((s64)src[4] << 24) |
+                            ((s64)(src[5] - 1) << 34));
+    func_00208700(arg0, arg2, 1);
+    func_00101C80(arg1, sp4C);
+    func_002086D0(arg0, (s64)sp4C[0] | ((s64)sp4C[1] << 2) | ((s64)sp4C[2] << 4) | ((s64)sp4C[3] << 6));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101EE0);
 
