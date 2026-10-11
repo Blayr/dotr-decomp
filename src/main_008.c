@@ -236,7 +236,40 @@ INCLUDE_ASM("asm/nonmatchings/main_008", func_00133BE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_001341C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_001349A0);
+s32 func_001349A0(s32 arg0) {
+    s32 row;
+    s32 column;
+    s32 position;
+
+    for (row = 0; row < 7; row++) {
+        if (row % 2 == 1) {
+            column = 1;
+            do {
+                if (func_001E22B0(column, row) != 8) {
+                    return (row << 8) | column;
+                }
+                column++;
+            } while (column <= 5);
+        }
+    }
+
+    for (row = 0; row < 7; row++) {
+        column = 0;
+        do {
+            position = func_001E3790(row, column);
+            if (position >= 0 &&
+                arg0 != func_00250360(position >> 8, position & 0xFF) &&
+                column < 3 &&
+                func_001E22B0(6, 0) != 8 &&
+                func_001E22B0(5, 0) != 8) {
+                return 6;
+            }
+            column++;
+        } while (column <= 6);
+    }
+
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00134AE0);
 
