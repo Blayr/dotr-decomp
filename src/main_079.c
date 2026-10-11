@@ -241,7 +241,46 @@ s32 func_0027E150(s32 arg0) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E210);
+s32 func_0027BE10(s32, s32, s32, s32, s32);
+
+typedef struct Entry_0027E210 {
+    u16 id;
+    u16 unused2;
+    s16 status;
+    u16 unused6;
+    u32 position;
+} Entry_0027E210;
+
+void func_0027E210(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Entry_0027E210 *entry = arg0;
+    u16 id;
+
+    id = entry->id;
+    if (func_0027BBC0((s32) id >> 8, id & 0xFF, arg3) == 1) {
+        if (func_001DE6D0((s32) entry->id >> 8) == 1) {
+            entry->status = 0x50A;
+        } else {
+            entry->status = 0x5FF;
+        }
+    } else {
+        id = entry->id;
+        if (func_0027BE10((s32) id >> 8, id & 0xFF, arg1, arg2, arg3) == 0) {
+            if (func_001DE6D0((s32) entry->id >> 8) == 1) {
+                entry->status = 0x60A;
+                entry->position = *(u16 *)&entry->position | (((arg2 << 8) | arg1) << 16);
+            } else {
+                entry->status = 0x6FF;
+                entry->position = *(u16 *)&entry->position | (((arg2 << 8) | arg1) << 16);
+            }
+        } else {
+            if (func_001DE6D0((s32) entry->id >> 8) == 1) {
+                entry->status = 0x50A;
+            } else {
+                entry->status = 0x5FF;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E360);
 

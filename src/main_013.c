@@ -238,7 +238,28 @@ void func_0015A120(s32 a0, s32 a1, u16 *buf) {
     func_0015A320(buf);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_0015A180);
+static inline s32 upper_0015A180(s32 value) {
+    if (value >= 7) {
+        return 6;
+    }
+    return value;
+}
+
+void func_0015A180(s32 arg0, s32 arg1, u16 *arg2) {
+    s32 var_s0;
+    s32 var_s1;
+
+    if ((func_0015A2E0((arg1 << 8) | arg0, arg2) != 1) && (func_001E22B0(arg0, arg1) == 9)) {
+        arg2[func_0015A320(arg2)] = (arg1 << 8) | arg0;
+        for (var_s0 = func_00250860(0, arg0 - 1); var_s0 <= upper_0015A180(arg0 + 1); var_s0++) {
+            for (var_s1 = func_00250860(0, arg1 - 1); var_s1 <= upper_0015A180(arg1 + 1); var_s1++) {
+                if (((((arg0 < var_s0) ? var_s0 : arg0) - ((var_s0 < arg0) ? var_s0 : arg0)) + (((arg1 < var_s1) ? var_s1 : arg1) - ((var_s1 < arg1) ? var_s1 : arg1))) == 1) {
+                    func_0015A180(var_s0, var_s1, arg2);
+                }
+            }
+        }
+    }
+}
 
 s32 func_0015A2E0(s32 arg0, u16 *arg1) {
     s32 i;
