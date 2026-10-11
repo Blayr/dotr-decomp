@@ -249,4 +249,6 @@ extern char D_0030F8E9;
 
 void func_00244530(u8 *);
 
+void func_00244680(u8 *);
+
 #endif

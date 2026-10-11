@@ -64,7 +64,10 @@ s32 func_00245580(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002455B0);
+s32 func_002455B0(void) {
+    func_00244680(D_003506C8);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002455E0);
 
