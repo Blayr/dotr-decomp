@@ -44,7 +44,79 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_0015BE00);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015C670);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015CBB0);
+s32 func_0015CBB0(s32 arg0, s32 arg1) {
+    s32 kind;
+    s32 pos;
+    s32 slot;
+    u32 *card;
+
+    kind = func_001E1030();
+    pos = func_001E1090(arg0, arg1);
+    slot = func_00250360(arg0, arg1);
+    card = func_001E0B70(arg0, arg1, 0);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (kind) {
+        case 0xE0:
+            if (func_001DE5C0(slot) < 2) {
+                return 1;
+            }
+            break;
+        case 0x28C:
+            if (func_0024E910(func_0024CA40(pos & 0xFF, pos >> 8, slot, 1, 0x34, 0x14)) > 1) {
+                return 2;
+            }
+            if (func_0024E910(func_0024CA40(pos & 0xFF, pos >> 8, slot, 2, 0x34, 0x14)) > 5) {
+                return 1;
+            }
+            break;
+        case 0x28F:
+            if (func_0024E910(func_0024CA40(0, 0, arg0, 2, 0x34, 0xE)) > 5) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_0015D030(func_00250360(arg0, arg1), kind) == 1 &&
+            func_001E22B0(pos & 0xFF, pos >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (card == NULL) {
+            return 2;
+        }
+        switch (*card >> 8) {
+        case 0x18:
+            if (func_0024E910(func_0024CA40(0, 0, arg0, 2, 0x34, 0xE)) > 5) {
+                return 1;
+            }
+            break;
+        case 0x12:
+            if (func_0024E910(func_0024CA40(pos & 0xFF, pos >> 8, slot, 1, 0x1D, 0x1D)) > 0) {
+                return 2;
+            }
+            if (func_0024E910(func_0024CA40(0, 0, slot, 1, 0x13, 0xE)) > 2) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_0015CF30(s32 a, s32 b) {
     if (b < a) {
