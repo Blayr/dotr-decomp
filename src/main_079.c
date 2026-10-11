@@ -354,7 +354,56 @@ void func_0027E210(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E360);
+s32 func_0027E360(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 pos;
+    s32 result;
+    s32 y;
+    s32 x;
+    s32 count;
+
+    if (arg1 == 0) {
+        return 2;
+    }
+    pos = arg2 & 0xFFFF;
+    if (pos != func_001E1090(arg0, arg1)) {
+        return 2;
+    }
+    x = pos & 0xFF;
+    y = pos >> 8;
+    result = func_0027D830(arg0, arg1, x, y, 4, arg4);
+    func_0027D830(arg0, arg1, x, y, 5, arg4);
+    if (func_001E2100(arg0, arg1, 5) != 0) {
+        if ((func_001E0700(arg0, arg1) >> 5) != 0) {
+            if (result != 2 && result != 5) {
+                return 2;
+            }
+            return 0;
+        }
+        count = func_001E0290(arg0, arg1, 0);
+        if (func_001E0370(arg0, arg1, 0) < count && (arg3 & 0xFF) == 0) {
+            if (result != 2 && result != 5) {
+                return 2;
+            }
+            return 0;
+        }
+        if (result != 2 && result != 5) {
+            return 2;
+        }
+        return 0;
+    }
+    if ((func_001E0700(arg0, arg1) >> 5) != 0) {
+        if (result != 2 && result != 5) {
+            return 1;
+        }
+    }
+    count = func_001E0290(arg0, arg1, 0);
+    if (count < func_001E0370(arg0, arg1, 0) || (arg3 & 0xFF) == 1) {
+        if (result != 2 && result != 5) {
+            return 1;
+        }
+    }
+    return 2;
+}
 
 s32 func_0027E5B0(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_001E1030();
