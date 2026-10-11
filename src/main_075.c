@@ -199,7 +199,49 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FB00);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FC30);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FD90);
+s32 func_0025FD90(void) {
+    s32 row;
+    s32 col;
+    s32 total;
+    s32 done;
+    s32 cell;
+    s32 kind;
+    extern s32 func_001E1CB0();
+    extern s32 func_001E1A30();
+    extern s32 func_001E1D10();
+    extern s32 func_001E1A90();
+
+    total = 0;
+    done = 0;
+    for (row = 0; row < 7; row++) {
+        for (col = 0; col < 7; col++) {
+            cell = func_001E3790(row, col);
+            if (cell >= 0) {
+                total++;
+                if (func_001E1CB0(cell >> 8, cell & 0xFF) == func_001E1A30(cell >> 8, cell & 0xFF)) {
+                    if ((func_001E2100(cell >> 8, cell & 0xFF, 4) != 0 || (cell & 0xFF) == 0) && (cell & 0xFF) < 6) {
+                        kind = func_001E1D10(cell >> 8, cell & 0xFF);
+                        if (kind == 0 || kind == 0x80) {
+                            if (func_001E1A90(cell >> 8, cell & 0xFF) == 0x80) {
+                                func_0025FF30(cell >> 8, cell & 0xFF);
+                            }
+                            done++;
+                        }
+                    } else {
+                        if (func_001E1A30(cell >> 8, cell & 0xFF) == 0x80) {
+                            func_0025FF30(cell >> 8, cell & 0xFF);
+                        }
+                        done++;
+                    }
+                }
+            }
+        }
+    }
+    if (total == done) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FF30);
 
