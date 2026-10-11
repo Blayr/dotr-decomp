@@ -19,7 +19,22 @@ s32 func_001F5F00(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_051", func_001F5F90);
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6030);
+s32 func_001F6030(s32 arg0, void *arg1) {
+    extern s32 func_001E1360(s32, s32);
+    s32 hi;
+    s32 lo;
+
+    hi = arg0 >> 8;
+    lo = arg0 & 0xFF;
+    if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
+        return 0;
+    }
+    arg0 = func_001E1360(hi, lo);
+    if (arg0 < 0) {
+        return 0;
+    }
+    return func_001F2430(arg0, arg1);
+}
 
 void func_001F60C0(s32 arg0) {
     func_001F60D0(D_0031BE98, arg0);
