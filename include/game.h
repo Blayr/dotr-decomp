@@ -82,7 +82,6 @@ s32 func_00207650(s32, s32, s32, s32);              /* extern */
 s32 func_00278250(s32, s32, s32, s32);          /* extern */
 s32 func_00248F60(s32, s32);                    /* extern */
 
-s32 func_0010F220(s32 arg0);
 
 s32 func_00155520(s32, s32);
 
@@ -343,5 +342,19 @@ void func_0020BDE0(void *, void *);
 void func_0020CDD0(void *, void *, void *);
 
 s32 func_001E3A20(s32, s32, s32);
+
+s32 func_0018EE68(void *);
+
+void func_00245340(void *);
+void func_002457D0(void *);
+extern u8 D_00350600[];
+extern volatile s32 D_0035060C;
+
+s32 func_0010BCC0(void);
+
+s32 func_001E22B0(s32, s32);
+extern u16 D_002CD8A0[];
+extern u8 D_00318E60[];
+void func_001DF5F0(s32, s32, s32, void *, s32);
 
 #endif

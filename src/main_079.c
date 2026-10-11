@@ -1,6 +1,27 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027AF20);
+typedef struct Node_0027AF20 {
+    u8 value;
+    u8 padding[0x33];
+    struct Node_0027AF20 *next;
+} Node_0027AF20;
+
+u8 func_0027AF20(void *arg0, u8 depth) {
+    Node_0027AF20 *node = arg0;
+    Node_0027AF20 *next;
+
+    if (depth >= 7) {
+        return 0xFFU;
+    }
+    next = node->next;
+    if (next == NULL) {
+        return 0xFFU;
+    }
+    if (next->next == NULL) {
+        return node->value;
+    }
+    return func_0027AF20(next, depth + 1);
+}
 
 void func_0027AF80(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_a2;
@@ -40,7 +61,17 @@ s32 func_0027AFC0(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B010);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B150);
+u8 *func_0027B150(u16 *arg0, u16 *arg1) {
+    u16 temp_a2;
+
+    if ((s64) (u32) (*arg0 + 0x38) > 0x10000) {
+        return 0;
+    }
+    temp_a2 = *arg1;
+    *arg1 = temp_a2 + 1;
+    *arg0 += 0x38;
+    return (u8 *) 0x01ED0000 + temp_a2 * 0x38;
+}
 
 void func_0027B1B0(void *arg0, u8 arg1) {
     if (arg1 < 2) {

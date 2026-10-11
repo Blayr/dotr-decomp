@@ -33,7 +33,22 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A010);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A090);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A0F0);
+static inline u32 flags_0010A0F0(void) {
+    if (D_0030FF40 == NULL) {
+        return 0;
+    }
+    return *(u32 *)D_0030FF40;
+}
+
+s32 func_0010A0F0(void) {
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return 0;
+    }
+    if ((u64)flags_0010A0F0() & 0x100) {
+        return D_0030FF40[0x1EC / sizeof(s32)];
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A160);
 
@@ -90,7 +105,18 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B490);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B6C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BBC0);
+s32 func_0010BBC0(void) {
+    if (D_0030FF40 == NULL) {
+        return 0;
+    }
+    if (!(D_0030FF40[1] & 4)) {
+        return 0;
+    }
+    if (D_0030FF40[0] & 1) {
+        return func_0010BCC0();
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BC30);
 
@@ -137,7 +163,30 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BE60);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C110);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C220);
+typedef struct QueueEntry_0010C220 {
+    s32 value0;
+    s32 value1;
+    s32 value2;
+    s32 unused;
+} QueueEntry_0010C220;
+
+typedef struct Queue_0010C220 {
+    u8 padding[0x1720];
+    QueueEntry_0010C220 entries[16];
+    s32 count;
+    s32 write_index;
+} Queue_0010C220;
+
+void func_0010C220(s32 arg0, s32 arg1, s32 arg2) {
+    QueueEntry_0010C220 *entry;
+
+    entry = &((Queue_0010C220 *)D_0030FF40)->entries[((Queue_0010C220 *)D_0030FF40)->write_index];
+    entry->value0 = arg0;
+    entry->value1 = arg1;
+    entry->value2 = arg2;
+    ((Queue_0010C220 *)D_0030FF40)->write_index = (((Queue_0010C220 *)D_0030FF40)->write_index + 1) % 16;
+    ((Queue_0010C220 *)D_0030FF40)->count++;
+}
 
 s32 func_0010C290(void) {
     s32 var_v0;

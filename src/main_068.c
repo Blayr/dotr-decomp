@@ -111,7 +111,25 @@ s32 func_00241AD0(void *arg0, void **arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241B10);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241B80);
+typedef struct {
+    u8 data[0x50000];
+    s32 write_index;
+    s32 count;
+    s32 capacity;
+} Buffer_00241B80;
+
+s32 func_00241B80(void *arg0, void **arg1) {
+    Buffer_00241B80 *buffer = arg0;
+    s32 count;
+    s32 capacity;
+
+    count = buffer->count;
+    if (count != 0) {
+        capacity = buffer->capacity;
+        *arg1 = (u8 *)arg0 + ((capacity + (buffer->write_index - count)) % capacity);
+    }
+    return buffer->count;
+}
 
 s32 func_00241BE0(s32 *arg0, s32 arg1) {
     s32 remaining;

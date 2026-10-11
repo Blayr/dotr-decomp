@@ -106,7 +106,17 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00107C10);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107CB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107DD0);
+s32 func_00107DD0(void *arg0, void *arg1, void *arg2) {
+    f32 *dst = arg0;
+    f32 *src = arg1;
+    f32 *base = arg2;
+
+    dst[0] += src[0] - base[0];
+    dst[2] += src[2] - base[2];
+    dst[4] += src[0] - base[0];
+    dst[6] += src[2] - base[2];
+    return 0;
+}
 
 typedef struct Fields_00107E40 {
     u8 padding[0xA0];
@@ -219,7 +229,24 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00109100);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001091B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00109270);
+typedef struct Packet_00109270 {
+    s16 count;
+    u16 flags;
+    s32 reserved;
+    s64 registers;
+} Packet_00109270;
+
+s32 func_00109270(void *arg0) {
+    Packet_00109270 *packet = arg0;
+
+    packet->flags = 0x34;
+    packet->count = 0xC;
+    packet->registers = 0x421421421421LL;
+    packet->reserved = 0;
+    packet->flags |= 0x800;
+    func_002086D0(arg0, 0x8000000048LL);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001092E0);
 

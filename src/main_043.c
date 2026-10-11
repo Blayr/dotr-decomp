@@ -197,9 +197,38 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001DC560);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DC790);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DCC90);
+void func_001DCC90(void *arg0) {
+    *(s32 *)arg0 = 0;
+    ((u8 *)arg0)[6] = 0;
+    ((u8 *)arg0)[5] = 0;
+    ((u8 *)arg0)[4] = 0;
+    ((u8 *)arg0)[7] = 0;
+    ((u8 *)arg0)[0xA] = 0;
+    ((u8 *)arg0)[9] = 0;
+    ((u8 *)arg0)[8] = 0;
+    ((u8 *)arg0)[0xB] = 0;
+    ((u8 *)arg0)[0xE] = 0;
+    ((u8 *)arg0)[0xD] = 0;
+    ((u8 *)arg0)[0xC] = 0;
+    ((u8 *)arg0)[0xF] = 0;
+    ((u8 *)arg0)[0x12] = 0;
+    ((u8 *)arg0)[0x11] = 0;
+    ((u8 *)arg0)[0x10] = 0;
+    ((u8 *)arg0)[0x13] = 0;
+    ((u8 *)arg0)[0x16] = 0;
+    ((u8 *)arg0)[0x17] = 0;
+    ((u8 *)arg0)[0x18] = 0;
+    ((u8 *)arg0)[0x19] = 0;
+    ((u8 *)arg0)[0x1A] = 0x80;
+    *(s16 *)((u8 *)arg0 + 0x14) = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DCD00);
+void *func_001DCD00(s32 arg0, s32 arg1) {
+    if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
+        return NULL;
+    }
+    return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DCD70);
 

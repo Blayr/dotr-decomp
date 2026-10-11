@@ -2,7 +2,12 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF540);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF580);
+void func_001DF580(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    u8 buffer[0x60];
+
+    func_001DCD70(buffer, arg3);
+    func_001DF5F0(arg0, arg1, arg2, buffer, arg4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF5F0);
 
@@ -92,11 +97,43 @@ s32 func_001E0370(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E03D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0450);
+void func_001E04C0(void *, s32, s32);
+
+static inline void *get_001E0450(void) {
+    void *var_v0;
+
+    var_v0 = func_001DD130();
+    if (var_v0 == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)var_v0 + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return var_v0;
+}
+
+void func_001E0450(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    func_001E04C0(get_001E0450(), arg2, arg3);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E04C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0570);
+static inline void *check_001E0570(void *ptr) {
+    if (ptr == NULL) {
+        return NULL;
+    }
+    if (*((u8 *)ptr + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return ptr;
+}
+
+s32 func_001E0570(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    void *var_v0;
+
+    var_v0 = check_001E0570(func_001DD130());
+    return func_001E05E0(var_v0, arg2, arg3);
+}
 
 #define MAX_001E05E0(a, b) ((a) > (b) ? (a) : (b))
 #define MIN_001E05E0(a, b) ((a) < (b) ? (a) : (b))
@@ -139,7 +176,35 @@ s32 func_001E05E0(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0690);
+typedef struct Entry_001E0690 {
+    u8 *data;
+    u8 padding[0x41];
+    u8 kind;
+} Entry_001E0690;
+
+static inline void *lookup_001E0690(void) {
+    Entry_001E0690 *entry = func_001DD130();
+
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry->kind >= 0xB) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E0690(void) {
+    Entry_001E0690 *entry = lookup_001E0690();
+
+    if (entry == NULL) {
+        return -1;
+    }
+    if (entry->data != NULL) {
+        return *entry->data;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0700);
 
@@ -498,7 +563,17 @@ s32 func_001E18A0(s32 arg0, s32 arg1, s8 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1900);
+s32 func_001E1900(s32 arg0, s32 arg1, s8 arg2) {
+    s32 var_s0;
+
+    var_s0 = 0;
+    if (func_001E1970(arg0, arg1, arg2) != 0) {
+        if (func_001E19D0(arg0, arg1, arg2) != 0) {
+            var_s0 = 1;
+        }
+    }
+    return var_s0;
+}
 
 static inline void *get_001E1970(void) {
     void *p;

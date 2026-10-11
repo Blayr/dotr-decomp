@@ -36,7 +36,33 @@ void func_00163EC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                  1, 3000, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00163F20);
+s32 func_00163F90(s32, s32);
+
+typedef struct {
+    u16 location;
+    u16 padding2;
+    s16 field4;
+    u16 padding6;
+    union {
+        u16 low;
+        u32 word;
+    } field8;
+} State_00163F20;
+
+void func_00163F20(void *arg0) {
+    State_00163F20 *state = arg0;
+    s32 temp_v0_3;
+    u16 temp_v0;
+    u16 temp_v0_2;
+
+    temp_v0 = state->location;
+    func_00250360((s32) temp_v0 >> 8, temp_v0 & 0xFF);
+    temp_v0_2 = state->location;
+    temp_v0_3 = func_001E1090((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF);
+    state->field4 = 0x6FF;
+    state->field8.word = state->field8.low |
+        (func_00163F90(temp_v0_3 & 0xFF, temp_v0_3 >> 8) << 16);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00163F90);
 

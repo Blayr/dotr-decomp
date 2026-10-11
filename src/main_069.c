@@ -166,7 +166,26 @@ s32 func_00243F60(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002440F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_002441F0);
+typedef struct Counter_002441F0 {
+    u8 pad0[0x14];
+    s32 count;
+    u8 pad18[0x28];
+    s32 semaphore;
+    u8 pad44[4];
+    s64 total;
+} Counter_002441F0;
+
+void func_0017B900(s32);
+void func_0017B920(s32);
+
+void func_002441F0(void *arg0, s32 arg1) {
+    Counter_002441F0 *counter = arg0;
+
+    func_0017B920(counter->semaphore);
+    counter->count += arg1;
+    counter->total += arg1;
+    func_0017B900(counter->semaphore);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244250);
 

@@ -2,9 +2,41 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE0B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE130);
+s32 func_001DE130(s32 arg0) {
+    if (arg0 < 0 || arg0 >= 0x356) {
+        return 0x3E7;
+    }
+    arg0 = D_002CD8A0[arg0];
+    if (arg0 == 0x29F) {
+        arg0 = 0x3E7;
+    }
+    if (arg0 < 0 || arg0 >= 0x356) {
+        return 0x3E7;
+    }
+    return arg0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE1A0);
+s32 func_001DE1A0(s32 arg0) {
+    s32 i;
+    u16 *p;
+
+    p = D_002CD8A0;
+    if (arg0 == 0x29F) {
+        arg0 = 0x3E7;
+    }
+    if (arg0 < 0 || arg0 >= 0x356) {
+        return 0x3E7;
+    }
+    i = 0;
+    do {
+        if (*p == arg0) {
+            return i;
+        }
+        i++;
+        p++;
+    } while (i < 0x356);
+    return 0x3E7;
+}
 
 s32 func_001DE210(s32 arg0) {
     func_00214D00(0, 0);
@@ -227,7 +259,22 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEB20);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEC00);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DECC0);
+s32 func_001DECC0(s32 arg0, s32 arg1) {
+    u8 *temp_a0;
+    u16 *temp_a1;
+
+    temp_a0 = D_00317490 + (arg0 * 0x350) + 0x1E0;
+    if ((arg1 < 0) || (arg1 >= 0x28)) {
+        return 0;
+    }
+    temp_a1 = (u16 *)(temp_a0 + (arg1 * 2));
+    if (*temp_a1 == 0x3E7) {
+        return 0;
+    }
+    *temp_a1 = 0x3E7;
+    temp_a0[0x50]--;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DED30);
 
@@ -303,7 +350,22 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF130);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF1E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF2C0);
+s32 func_001DF2C0(s32 arg0, s32 arg1) {
+    u8 *temp_a0;
+    u16 *temp_a1;
+
+    temp_a0 = D_00317490 + (arg0 * 0x350) + 0x324;
+    if ((arg1 < 0) || (arg1 >= 5)) {
+        return 0;
+    }
+    temp_a1 = (u16 *)(temp_a0 + (arg1 * 2));
+    if ((*temp_a1 & 0xFFF) == 0x3E7) {
+        return 0;
+    }
+    *temp_a1 = 0x3E7;
+    temp_a0[0xA]--;
+    return 1;
+}
 
 s32 func_001DF330(s32 arg0) {
     s32 var_a0;

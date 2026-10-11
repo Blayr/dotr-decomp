@@ -286,7 +286,33 @@ s32 func_00106BF0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106C50);
+typedef struct Data_00106C50 {
+    u8 padding[3];
+    u8 value;
+} Data_00106C50;
+
+s32 func_00106C50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Data_00106C50 *data = arg0;
+    u8 temp_v1;
+    u8 temp_v1_2;
+
+    if (arg3 == 0) {
+        temp_v1 = data->value;
+        if ((s32) temp_v1 < (arg2 & 0xFF)) {
+            data->value = temp_v1 + arg1;
+        } else {
+            return 1;
+        }
+    } else {
+        temp_v1_2 = data->value;
+        if ((arg2 & 0xFF) < (s32) temp_v1_2) {
+            data->value = temp_v1_2 - arg1;
+        } else {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_00106CC0(s32 arg0, s32 arg1) {
     func_00195108(arg0, (s16)arg1);

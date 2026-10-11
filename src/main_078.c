@@ -57,7 +57,24 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_00277C60);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00277CD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278150);
+s32 func_00278150(s32 arg0, s32 arg1) {
+    switch (arg1) {
+    case 0:
+        if (arg0 == 0) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (arg0 == 1) {
+            return 1;
+        }
+        break;
+    case 2:
+    default:
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_002781B0(s32 arg0, s32 arg1, s32 arg2) {
     if (arg2 != 0) {

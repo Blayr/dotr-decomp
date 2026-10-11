@@ -127,7 +127,16 @@ void func_00143790(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_001437F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00143900);
+s32 func_00143900(void *arg0) {
+    s32 i;
+
+    for (i = 1; i <= 5; i++) {
+        if (func_0024DEB0(func_001E22B0(0, i), arg0) == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00143970);
 
