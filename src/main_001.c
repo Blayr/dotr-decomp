@@ -160,7 +160,11 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00106AB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106B50);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106B90);
+s32 func_00106B90(void *arg0, s32 arg1, s32 arg2) {
+    ((u8 *)arg0)[0xAF] = (u8)(((u8 *)arg0)[0xAF] - arg1);
+    ((u8 *)arg0)[0xB3] = (u8)(((u8 *)arg0)[0xB3] - arg1);
+    return (((u8 *)arg0)[0xAF] < (arg2 & 0xFF)) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106BC0);
 
