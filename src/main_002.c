@@ -454,7 +454,74 @@ s32 func_00108D20(void *dst, f32 x, f32 z) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108D60);
+s32 func_00108D60(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
+    f32 x;
+    f32 y;
+    f32 *coords = arg0;
+
+    if (arg3 == 0) {
+        x = (f32) -(s16) arg1;
+        y = (f32) arg2;
+        coords[0] = x;
+        coords[1] = y;
+        coords[2] = 0.0f;
+        coords[4] = 0.0f;
+        coords[5] = y;
+        coords[6] = 0.0f;
+        coords[8] = x;
+        coords[9] = 0.0f;
+        coords[10] = 0.0f;
+        coords[12] = 0.0f;
+        coords[13] = 0.0f;
+        coords[14] = 0.0f;
+    } else if (arg3 == 1) {
+        x = (f32) arg1;
+        y = (f32) arg2;
+        coords[0] = x;
+        coords[1] = y;
+        coords[2] = 0.0f;
+        coords[4] = 0.0f;
+        coords[5] = y;
+        coords[6] = 0.0f;
+        coords[8] = x;
+        coords[9] = 0.0f;
+        coords[10] = 0.0f;
+        coords[12] = 0.0f;
+        coords[13] = 0.0f;
+        coords[14] = 0.0f;
+    } else if (arg3 == 2) {
+        x = (f32) -(s16) arg1;
+        coords[0] = x;
+        y = (f32) -(s16) arg2;
+        coords[1] = y;
+        coords[2] = 0.0f;
+        coords[4] = 0.0f;
+        coords[5] = y;
+        coords[6] = 0.0f;
+        coords[8] = x;
+        coords[9] = 0.0f;
+        coords[10] = 0.0f;
+        coords[12] = 0.0f;
+        coords[13] = 0.0f;
+        coords[14] = 0.0f;
+    } else if (arg3 == 3) {
+        x = (f32) arg1;
+        coords[0] = x;
+        y = (f32) -(s16) arg2;
+        coords[1] = y;
+        coords[2] = 0.0f;
+        coords[4] = 0.0f;
+        coords[5] = y;
+        coords[6] = 0.0f;
+        coords[8] = x;
+        coords[9] = 0.0f;
+        coords[10] = 0.0f;
+        coords[12] = 0.0f;
+        coords[13] = 0.0f;
+        coords[14] = 0.0f;
+    }
+    return 0;
+}
 
 typedef struct {
     s32 data[16];

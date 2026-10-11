@@ -307,7 +307,38 @@ void func_00122530(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00122680);
+s32 func_00122680(s32 arg0, s32 arg1) {
+    s32 x;
+    s32 y;
+
+    x = func_001E1090(arg0, arg1) & 0xFF;
+    y = func_001E1090(arg0, arg1) >> 8;
+    if ((x >= 2) && (x < 6) && (y == 0)) {
+        return 0;
+    }
+    if ((x == 6) && (y >= 0) && (y < 4)) {
+        return 1;
+    }
+    if ((x > 4) && (x < 7) && (y == 4)) {
+        return 2;
+    }
+    if ((x == 4) && (y >= 4) && (y < 6)) {
+        return 3;
+    }
+    if ((x > 0) && (x < 5) && (y == 6)) {
+        return 4;
+    }
+    if ((x == 0) && (y > 2) && (y < 7)) {
+        return 5;
+    }
+    if ((x >= 0) && (x < 2) && (y == 2)) {
+        return 6;
+    }
+    if ((x == 2) && (y > 0) && (y < 3)) {
+        return 7;
+    }
+    return -1;
+}
 
 s32 func_00122810(s32 arg0, s32 arg1) {
     s32 var_s0;
