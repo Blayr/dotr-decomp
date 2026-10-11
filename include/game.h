@@ -191,4 +191,7 @@ void func_00199BC0(s32, s32, s32, void (*)(void));
 void func_001BA630(void);
 extern s32 D_00317B68;
 
+void func_001BA710(void);
+extern s32 D_00317B6C;
+
 #endif
