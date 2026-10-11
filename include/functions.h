@@ -144,6 +144,7 @@ s32 func_00109A70(void *arg0, void *arg1);
 s32 func_00109CA0(s32 arg0);
 void func_00109D50(void);
 void func_00109D70(s32 arg0);
+void func_00109DC0(void);
 s32 func_00109E80(s32 arg0, s32 arg1);
 s32 func_00109F10(void);
 void func_00109F60(s32 arg0);

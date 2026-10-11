@@ -29,7 +29,27 @@ void func_00109D70(s32 arg0) {
     func_0010C720(0xF006, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_00109DC0);
+void func_00109DC0(void) {
+    s32 temp_v0;
+
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    if (D_0030FF40[0] & 1) {
+        if (func_0010C720(0x5002) == 0) {
+            func_00198790((u8 *)D_0030FF40 + 0x54, (u8 *)D_0030FF40 + 0x180, 0x10);
+            D_0030FF40[0x1EC / 4] = D_0030FF40[0x60 / 4];
+            temp_v0 = D_0030FF40[0x5C / 4];
+            if (temp_v0 != 0) {
+                D_0030FF40[0x18 / 4] = temp_v0;
+            }
+        }
+        func_0010BE60();
+        func_0010ADB0();
+        func_0010B6C0();
+        func_0010A4D0();
+    }
+}
 
 s32 func_00109E80(s32 arg0, s32 arg1) {
     if (D_0030FF40 == NULL || D_0030FF48 == 0) {
