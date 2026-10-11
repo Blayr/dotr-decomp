@@ -145,7 +145,53 @@ void func_0027B200(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B290);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B360);
+typedef struct Entry_0027B360 {
+    u16 id;
+    u16 pad2;
+    u16 kind;
+    u16 pad6;
+    u8 pad8[8];
+} Entry_0027B360;
+
+s32 func_0027B520(void *, s32);
+
+s32 func_0027B360(s32 arg0, u16 *arg1, u16 *arg2) {
+    u16 cards[22];
+    s32 count;
+    s32 found;
+    s32 i;
+    s32 index;
+    Entry_0027B360 *entry;
+
+    found = 0;
+    for (i = 0; i < 22; i++) {
+        cards[i] = 0xFFFF;
+    }
+    for (i = 0, count = 0; i < func_0027C670(arg1); i++) {
+        if (func_001DF540(arg1[i] >> 8, arg1[i] & 0xFF) == 0) {
+            continue;
+        }
+        if (func_001E2100(arg1[i] >> 8, arg1[i] & 0xFF, 0) != 0) {
+            continue;
+        }
+        index = func_00276C80(arg2, arg1[i]);
+        if (index < 0) {
+            continue;
+        }
+        entry = (Entry_0027B360 *)arg2 + index;
+        if (((entry->kind >> 8) & 0xFF) == 2 && func_0027B520(entry, 1) == 1) {
+            found = 1;
+            cards[count++] = arg1[i];
+        } else if ((entry->kind & 0xFF) == 2 && func_0027B520(entry, 0) == 1) {
+            found = 1;
+            cards[count++] = arg1[i];
+        }
+    }
+    if (found == 1) {
+        return func_0027B650(cards);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B520);
 
