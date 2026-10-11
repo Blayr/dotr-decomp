@@ -930,6 +930,7 @@ s32 func_0022C3C0(s32 arg0);
 void func_002336F0(void);
 void func_00233F50(s8 arg0);
 void func_0023BB00(s32 arg0);
+void func_0023BC80(void);
 s8 func_0023C140(void);
 void func_0023C150(void);
 s32 func_0023C160(void);

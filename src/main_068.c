@@ -56,7 +56,19 @@ void func_0023BB00(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BC80);
+typedef struct Copy_0023BC80 {
+    s32 words[0x3FE8];
+} Copy_0023BC80;
+
+void func_001A8870(s32, s32);
+void *func_002145E0(s32);
+extern s8 D_0034F6F8;
+
+void func_0023BC80(void) {
+    D_0034F6F8 = 1;
+    *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)func_002145E0(0);
+    func_001A8870(1, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BCE0);
 
