@@ -25,7 +25,13 @@ s32 func_00250860(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_002508D0);
+s32 func_002508D0(s32 arg0) {
+    if (arg0 < 0) {
+        return 0;
+    }
+    arg0 = arg0 > 9999 ? 9999 : arg0;
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00250900);
 
