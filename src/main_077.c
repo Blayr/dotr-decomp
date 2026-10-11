@@ -4,7 +4,13 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EA80);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EB10);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EEA0);
+s32 func_0026EEA0(void *arg0, s32 arg1, s32 arg2) {
+    ((s32 *)arg0)[0] = 0x96;
+    ((s32 *)arg0)[1] = 0;
+    ((s32 *)arg0)[2] = (arg1 << 8) | arg2;
+    ((s32 *)arg0)[3] = 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EED0);
 
