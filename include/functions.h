@@ -35,6 +35,7 @@ void func_00109D70(s32 arg0);
 void func_0010A390(s32 arg0, s32 arg1, s32 arg2);
 void func_0010B330(void);
 void func_0010BDC0(void);
+s32 func_0010C290(void);
 s32 func_0010C3D0(s32 file, s32 destination, s32 position, s32 size);
 s32 func_0010C720(s32 cmd, ...);
 s32 func_0010C800(s32 arg0, s32 arg1, s32 arg2);

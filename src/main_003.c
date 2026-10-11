@@ -102,7 +102,15 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C110);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C220);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C290);
+s32 func_0010C290(void) {
+    s32 var_v0;
+
+    var_v0 = 1;
+    if ((D_0030FF40[0x5C4] == 0) && (D_0030FF40[0x5C7] == 0)) {
+        var_v0 = 0;
+    }
+    return var_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C2C0);
 
