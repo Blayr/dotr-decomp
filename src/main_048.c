@@ -173,7 +173,47 @@ void func_001EFD30(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     func_00209D30(func_001EFDC0(func_00209D20(), arg0, arg1, arg2, arg3, arg4, arg5));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EFDC0);
+typedef struct Bits_001EFDC0 {
+    u64 low : 5;
+    u64 flag : 1;
+    u64 kind : 3;
+    u64 rest : 55;
+} Bits_001EFDC0;
+
+typedef struct Word_001EFDC0 {
+    u64 value;
+} Word_001EFDC0;
+
+typedef struct Info_001EFDC0 {
+    u64 head;
+    u8 data[0x40];
+    Word_001EFDC0 word;
+    Bits_001EFDC0 bits;
+} Info_001EFDC0;
+
+s32 func_001EFDC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    extern s32 func_001EE6C0();
+    Info_001EFDC0 info;
+    s32 saved;
+    s32 ret;
+
+    saved = func_001F3210(arg1);
+    D_0031BB10 = 0;
+    arg0 = func_002085E0(arg0, 2);
+    arg0 = func_0020A0B0(arg0, 1);
+    func_001F3190(arg1, 0);
+    if (arg5 != 0 || arg6 != 0) {
+        arg0 = func_001EE6C0(arg0, arg1, 0, 0, 0, (s32)info.data, 0, arg5, arg6);
+    } else {
+        arg0 = func_001EE4B0(arg0, arg1, 0, 0, 0, (s32)info.data, 0);
+    }
+    func_001F3190(arg1, saved);
+    ret = func_002084D0(func_002085E0(func_0020A0B0(arg0, 0), 3), func_00208680(0, 4));
+    info.bits.flag = info.bits.kind = arg2;
+    *(Word_001EFDC0 *)arg3 = info.word;
+    *(Bits_001EFDC0 *)arg4 = info.bits;
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EFF70);
 

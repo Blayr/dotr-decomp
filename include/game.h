@@ -347,7 +347,6 @@ void func_0010B490(s32);
 
 s32 func_0017E8B0(void *, s32, s32);
 
-s32 func_001EFDC0(s32, s32, s32, s32, s32, s32, s32);
 
 void func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 extern char D_002BF002[];

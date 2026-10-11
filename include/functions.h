@@ -693,6 +693,7 @@ s32 func_001EFA80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
 s32 func_001EFB40(s32 arg0, s32 arg1, s32 *arg2);
 s32 func_001EFBD0(s32 target, s32 base, s32 node, s32 *index, s32 depthAddress, s32 *maxDepth, s32 callbackAddress);
 void func_001EFD30(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+s32 func_001EFDC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 void func_001F0830(void *arg0, s32 arg1);
 s32 func_001F0C10(s32 arg0, s32 arg1);
 f32 func_001F0F40(s32 arg0);
