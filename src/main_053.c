@@ -188,7 +188,54 @@ void func_001FCF30(s32 arg0, s32 arg1, s32 arg2) {
     func_00209D30(func_001FCF90(func_00209D20(), arg0, arg1, arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCF90);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 reserved : 8;
+} Vertex_001FCF90;
+
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 reserved;
+    u64 registers;
+} Header_001FCF90;
+
+typedef struct {
+    u64 tag[2];
+    u8 color[4];
+    f32 q;
+    Vertex_001FCF90 vertices[2];
+} Packet_001FCF90;
+
+static inline void init_001FCF90(void *tag) {
+    ((Header_001FCF90 *)tag)->flags = 6;
+    ((Header_001FCF90 *)tag)->count = 3;
+    ((Header_001FCF90 *)tag)->registers = 0x441;
+    ((Header_001FCF90 *)tag)->reserved = 0;
+}
+
+s32 func_001FCF90(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Packet_001FCF90 packet;
+
+    init_001FCF90((Header_001FCF90 *)packet.tag);
+    func_002086D0(&packet, func_00208D00(arg1));
+    packet.color[0] = ((u8 *)arg2)[2];
+    packet.color[1] = ((u8 *)arg2)[1];
+    packet.color[2] = ((u8 *)arg2)[0];
+    packet.color[3] = ((u8 *)arg2)[3];
+    packet.q = 1.0f;
+    packet.vertices[0].x = 0x6C00;
+    packet.vertices[0].y = 0x7200;
+    packet.vertices[0].z = (u32)arg3;
+    packet.vertices[0].reserved = 0;
+    packet.vertices[1].x = 0x9400;
+    packet.vertices[1].y = 0x8E00;
+    packet.vertices[1].z = (u32)arg3;
+    packet.vertices[1].reserved = 0;
+    return func_00207650(arg0, (s32)&packet, 0, 0);
+}
 
 s32 func_001FD0B0(s32 arg0) {
     Entry_0031C050 *entry;
