@@ -672,6 +672,7 @@ s32 func_001F2800(s32 arg0, u8 arg1);
 s32 func_001F2860(s32 arg0, s32 arg1, void *arg2);
 s16 func_001F2920(s32 arg0);
 s8 func_001F2980(s32 arg0);
+s32 func_001F29E0(s32 arg0, s32 arg1);
 s32 func_001F2A70(s32 arg0);
 s32 func_001F2AD0(s32 arg0, s8 arg1);
 s32 func_001F2B30(s32 index);

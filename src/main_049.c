@@ -494,7 +494,28 @@ s8 func_001F2980(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F29E0);
+typedef struct {
+    u8 pad000[0x20C];
+    s8 unused0 : 4;
+    s8 enabled : 1;
+    s8 unused1 : 3;
+} ObjView_001F29E0;
+
+s32 func_001F29E0(s32 arg0, s32 arg1) {
+    ObjView_001F29E0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = (ObjView_001F29E0 *) D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (obj->enabled != arg1) {
+        obj->enabled = (s8) arg1;
+    }
+    return 1;
+}
 
 typedef struct {
     s8 : 4;
