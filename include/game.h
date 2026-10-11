@@ -214,4 +214,6 @@ void func_00195108(s32 arg0, s16 arg1);
 
 void func_0020F250(s32);
 
+s32 func_001F64C0();                                /* extern */
+
 #endif

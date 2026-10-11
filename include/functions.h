@@ -146,6 +146,7 @@ void func_001F0830(void *arg0, s32 arg1);
 s8 func_001F1400(s32 arg0, s32 arg1);
 s32 func_001F25D0(s32 idx, void *src);
 s32 func_001F5D70(s32 arg0, void *arg1);
+s32 func_001F6490(void);
 void func_001F6560(s32 arg0);
 void func_001F68D0(s32 arg0);
 void func_001F6910(s32 arg0);
