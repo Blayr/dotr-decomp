@@ -22,7 +22,42 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_00267380);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00267560);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00267700);
+s32 func_00267700(s32 arg0, s32 arg1) {
+    s32 index;
+    s32 count;
+    s32 column;
+    s32 row;
+    s32 value;
+    s32 *data;
+
+    if (arg1 == 0) {
+        return 0;
+    }
+    if ((count = func_00266DF0(0xB)) > 0) {
+            for (index = 0; index < count; index++) {
+            value = func_00266C70(0xB, index);
+            row = value >> 8;
+            column = value & 0xFF;
+            if ((func_001E2100(row, column, 4) != 0) &&
+                (func_001E2100(row, column, 3) != 0) &&
+                (func_001E2100(row, column, 5) != 0)) {
+                data = func_00250740(row, column, 2);
+                if (data != NULL) {
+                    switch (*data & 0x3F) {
+                    case 0:
+                        if (!(func_001E0700(arg0, arg1) & 0x1F)) {
+                            if ((func_001E0700(arg0, arg1) >> 5) == 0) {
+                                return 1;
+                            }
+                        }
+                        return 0;
+                    }
+                }
+            }
+            }
+    }
+    return 0;
+}
 
 s32 func_00267860(s32 arg0, s32 arg1) {
     s32 i;

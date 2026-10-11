@@ -392,7 +392,6 @@ void func_0010B3C0(void);
 void func_0010B490(void);
 
 s32 func_0017E8B0(void *, s32, s32);
-s32 func_001EFBD0(s32, s32, s32, s32 *, s32, s32 *, s32);
 
 s32 func_001EFDC0(s32, s32, s32, s32, s32, s32, s32);
 
@@ -545,7 +544,6 @@ extern u8 D_00318280[];
 
 s32 func_0027C670(void *);
 
-s32 func_00267700(s32, s32);
 s32 func_00271E40(s32, s32, s32);
 
 s32 func_0010F850(s32, s32);

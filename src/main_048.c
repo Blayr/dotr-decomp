@@ -109,7 +109,53 @@ s32 func_001EFB40(s32 arg0, s32 arg1, s32 *arg2) {
     return func_001EFBD0(arg1, temp_a2, temp_a2, &sp1C, 0, arg2, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EFBD0);
+typedef struct Node_001EFBD0 {
+    u8 pad0[0x1C];
+    s32 child;
+    u8 pad20[0xC];
+    s32 sibling;
+} Node_001EFBD0;
+
+s32 func_001EFBD0(s32 target, s32 base, s32 node, s32 *index,
+                  s32 depthAddress, s32 *maxDepth, s32 callbackAddress) {
+    s32 nextDepth;
+    s32 result;
+    s32 currentDepth;
+
+    if (maxDepth != NULL && depthAddress != 0) {
+        if (*maxDepth < *(s32 *)depthAddress) {
+            *maxDepth = *(s32 *)depthAddress;
+        }
+    }
+
+    for (;;) {
+        if (callbackAddress != 0) {
+            ((void (*)(s32, s32))callbackAddress)(*index, node);
+        }
+        if (target >= 0 && *index == target) {
+            return node;
+        }
+        *index += 1;
+        if (*(s32 *)(node + 0x1C) != 0) {
+            currentDepth = depthAddress != 0 ? *(s32 *)depthAddress : 1;
+            nextDepth = currentDepth + 1;
+            result = func_001EFBD0(target, base,
+                base + (*(s32 *)(node + 0x1C) & 0x0FFFFFFF),
+                index, (s32)&nextDepth, maxDepth, callbackAddress);
+            if (result != 0) {
+                if (depthAddress != 0) {
+                    *(s32 *)depthAddress += 1;
+                }
+                return result;
+            }
+        }
+        if (((Node_001EFBD0 *)node)->sibling == 0) {
+            break;
+        }
+        node = base + (((Node_001EFBD0 *)node)->sibling & 0x0FFFFFFF);
+    }
+    return 0;
+}
 
 void func_001EFD30(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     func_00209D30(func_001EFDC0(func_00209D20(), arg0, arg1, arg2, arg3, arg4, arg5));
