@@ -68,7 +68,19 @@ void func_001F7260(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F72C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7350);
+s32 func_001F7350(s32 arg0, s32 arg1) {
+    extern s32 func_001F2980(s32);
+    extern s32 func_001F32F0(s32, s32);
+    s32 i;
+
+    i = 0;
+    do {
+        if (arg0 < 0 || arg0 == func_001F2980(i)) {
+            func_001F32F0(i, arg1);
+        }
+        i += 1;
+    } while (i < 0x54);
+}
 
 void func_001F73C0(void) {
     s32 temp_v0;
