@@ -138,7 +138,32 @@ s32 func_0020E4F0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E520);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E970);
+typedef struct {
+    u8 padding[0x44];
+    s32 ready;
+} State_0020E970;
+
+typedef struct {
+    __int128 data[9];
+} Buffer_0020E970;
+
+extern State_0020E970 D_0032A250;
+extern s32 D_0032A294;
+extern u8 D_0032A360[];
+
+s32 func_0020E970(void *arg0) {
+    State_0020E970 *state = &D_0032A250;
+
+    if (D_0032A294 == 0) {
+        return 0;
+    }
+    if (D_0032A240 > 0) {
+        D_0032A240 -= 1;
+    }
+    state->ready = 0;
+    *(Buffer_0020E970 *)arg0 = *(Buffer_0020E970 *)D_0032A360;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E9F0);
 
