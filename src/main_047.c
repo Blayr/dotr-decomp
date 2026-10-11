@@ -168,7 +168,43 @@ s32 func_001E7D00(s32 index) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7DE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7E70);
+typedef struct {
+    s8 unused0 : 2;
+    s8 pending : 1;
+    s8 busy : 1;
+    s8 unused4 : 4;
+} Flags_001E7E70;
+
+void func_001F08D0(s32);
+
+static inline s64 busy_001E7E70(Obj_0031ABB0 *obj) {
+    return (s64) ((u64) obj->lv[0x2C] << 60) >> 63;
+}
+
+s32 func_001E7E70(s32 arg0, s32 arg1, s32 arg2) {
+    Obj_0031ABB0 *temp_s0;
+
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        return 0;
+    }
+    temp_s0 = D_0031ABB0[arg0];
+    if (temp_s0 == NULL) {
+        return 0;
+    }
+    if (busy_001E7E70(temp_s0)) {
+        while (busy_001E7E70(temp_s0)) {
+            func_001FF420();
+        }
+    }
+    func_001F08D0(arg0);
+    *(s8 *) ((u8 *) temp_s0 + 0x1F2) = -1;
+    if (arg1 >= 0) {
+        *(s8 *) ((u8 *) temp_s0 + 0x1F3) = (s8) arg1;
+    }
+    *(s16 *) ((u8 *) temp_s0 + 0x1F4) = (s16) arg2;
+    ((Flags_001E7E70 *) &temp_s0->lv[0x2C])->pending = 1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7F70);
 

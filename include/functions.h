@@ -3,6 +3,7 @@
 
 /* Prototypes of every decompiled function. dk rewrites this file. */
 static inline void add_clamped_00107370(f32 *value, f32 amount);
+static inline s64 busy_001E7E70(Obj_0031ABB0 *obj);
 static inline s32 calc_001FD220(s32 idx);
 static inline u8 *cell_001DD220(s32 x, s32 y, u8 *cell);
 static inline u8 *cell_001E24E0(s32 x, s32 y);
@@ -512,6 +513,7 @@ void func_001E77E0(s32 arg0);
 void func_001E7890(void);
 void func_001E7A50(void);
 s32 func_001E7D00(s32 index);
+s32 func_001E7E70(s32 arg0, s32 arg1, s32 arg2);
 void func_001E9280(void *arg0, s32 arg1);
 void func_001EA270(void *arg0, s32 arg1);
 void func_001EDF20(s32 arg0);
