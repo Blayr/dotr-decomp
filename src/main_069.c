@@ -162,7 +162,13 @@ s32 func_00243170(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002431B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243230);
+void func_00243230(void *arg0) {
+    s32 *p = (s32 *)arg0;
+    s32 func_00190810(s32, s32, s32, s32, s32, s32, s32);
+    func_00243A40(0x7FFF);
+    func_00190810(1, 0x80E0, 0, 0x13, p[0x11], (p[0x12] >> 10) << 10, p[0x11] + p[0x14]);
+    *(s32 *)arg0 = 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00243290);
 
