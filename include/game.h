@@ -245,4 +245,6 @@ extern s32 D_0032F784;
 extern s32 D_0032F788;
 extern s32 D_0032F78C;
 
+extern char D_0030F8E9;
+
 #endif
