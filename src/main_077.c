@@ -309,7 +309,21 @@ s32 func_00271F00(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00271F90);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00272050);
+s32 func_00272050(s32 arg0, s32 arg1) {
+    extern s32 func_001E0690(s32, s32);
+
+    switch (func_001E0690(arg0, 0) & 0x1F) {
+    case 8:
+        return (arg1 == 2) ? 1 : 0;
+    case 11:
+        return (arg1 == 0x10) ? 1 : 0;
+    case 17:
+        return ((u32)(arg1 - 5) < 2U) ? 1 : 0;
+    case 19:
+        return (arg1 == 0) ? 1 : 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_002720F0);
 
