@@ -403,7 +403,26 @@ s32 func_0024EFB0(s32 mask) {
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F060);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F150);
+s32 func_0024F150(s32 mask) {
+    extern s32 func_001E13C0(s32, s32);
+    s32 i;
+    s32 best;
+    s32 bestPair;
+    s32 pair;
+    s32 value;
+
+    best = -1;
+    bestPair = -1;
+    for (i = 0; i < func_0024E910(mask); i++) {
+        pair = func_0024EC50(mask, i);
+        value = func_001E13C0(pair >> 8, pair & 0xFF);
+        if (best < value) {
+            bestPair = pair;
+            best = value;
+        }
+    }
+    return bestPair;
+}
 
 u32 func_0024F200(s32 arg0) {
     s32 i;
