@@ -126,7 +126,9 @@ s32 func_001A8710(void) {
     return *(s32 *)0x10000800;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8720);
+s32 func_001A8720(void) {
+    return D_00317254;
+}
 
 s32 func_001A8730(void) {
     return ++D_00317254;

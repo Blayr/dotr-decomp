@@ -580,4 +580,6 @@ void func_00260490(s32, s32, s32, s32, s32, s32, s32);
 
 s32 func_0024EFB0(s32);
 
+extern s32 D_003180E8;
+
 #endif
