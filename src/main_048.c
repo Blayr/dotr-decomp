@@ -128,7 +128,23 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1130);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F11B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1240);
+typedef struct {
+    s8 : 2;
+    s8 active : 1;
+} Flags_001F1240;
+
+s32 func_001F1240(s32 arg0) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    return ((Flags_001F1240 *)((u8 *)obj + 0x20C))->active ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F12A0);
 
@@ -168,7 +184,19 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1830);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1940);
+s32 func_001F1940(s32 arg0, s8 arg1) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    *(s8 *)((u8 *)obj + 0x1FD) = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F19A0);
 

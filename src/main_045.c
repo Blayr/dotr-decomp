@@ -285,7 +285,29 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1420);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E14B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1520);
+void *func_001DD130();
+
+static inline void *lookup_001E1520(void) {
+    void *entry = func_001DD130();
+
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)entry + 0x45) >= 11) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E1520(s32 arg0, s32 arg1, s8 arg2) {
+    void *entry = lookup_001E1520();
+
+    if (entry == NULL) {
+        return 0;
+    }
+    *(s8 *)((u8 *)entry + 0x49) = arg2;
+    return 1;
+}
 
 void *func_001DD130(void);
 
@@ -406,7 +428,21 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1760);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E17D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1840);
+s32 func_001E1840(s32 arg0, s32 arg1, s8 arg2) {
+    void *var_v0;
+
+    var_v0 = func_001DD130();
+    if (var_v0 == NULL) {
+        var_v0 = NULL;
+    } else if (*(u8 *)((u8 *)var_v0 + 0x45) >= 0xB) {
+        var_v0 = NULL;
+    }
+    if (var_v0 == NULL) {
+        return 0;
+    }
+    *(s8 *)((u8 *)var_v0 + 0x4E) = arg2;
+    return 1;
+}
 
 static inline void *check_001E18A0(void) {
     void *p = func_001DD130();
