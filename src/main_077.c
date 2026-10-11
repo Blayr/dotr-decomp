@@ -169,7 +169,57 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_00270260);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00270C30);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00271630);
+typedef struct State_00271630 {
+    u8 pad[4];
+    u16 count;
+    u8 handle;
+} State_00271630;
+
+void func_001E4530(void);
+void func_0024F430(u32, s32);
+void func_00255960(void *);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+
+s32 func_00271630(void *arg0, void *arg1, s32 arg2) {
+    s32 values[4];
+    State_00271630 *state = arg1;
+    s32 *packet = values;
+    u32 value;
+
+    values[0] = 0x3E7;
+    values[1] = 0;
+    values[2] = 0;
+    values[3] = 0;
+
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00255AC0(state, 0x25B);
+        return 1;
+    }
+
+    switch (state->count) {
+    case 0:
+        if (func_00255B50(state) == 1) {
+            packet[0] = 0x25B;
+            packet[1] = 0;
+            packet[2] = *(u32 *)((u8 *)arg0 + 8);
+            packet[3] = 0;
+            state->handle = func_00255A30(packet, state);
+            state->count++;
+        }
+        break;
+    default:
+        if (func_001F51D0(state->handle) != 0) {
+            return 1;
+        }
+        value = *(u32 *)((u8 *)arg0 + 8);
+        func_0024F430(value >> 8, value & 0xFF);
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_00271740(s32 arg0, s32 arg1) {
     if (func_00266F70(0x58, (arg1 == 0) ? 1 : 0) > 0) {

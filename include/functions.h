@@ -932,6 +932,7 @@ void *func_0026FC90(s32 arg0, s32 arg1);
 s32 func_0026FCE0(s32 arg0);
 void func_0026FD30(s32 arg0, s32 *arg1);
 s32 func_0026FE20(s32 arg0);
+s32 func_00271630(void *arg0, void *arg1, s32 arg2);
 s32 func_00271740(s32 arg0, s32 arg1);
 s32 func_002717A0(s32 arg0);
 s32 func_00271A40(s32 arg0, s32 arg1, s32 arg2);
