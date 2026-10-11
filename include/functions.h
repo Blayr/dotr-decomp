@@ -29,6 +29,7 @@ void func_00103660(void *arg0, void *arg1);
 void func_001036A0(void *arg0, void *arg1);
 void func_00103890(void *arg0);
 s32 func_00104520(s32 arg0, s32 arg1);
+void func_00106B50(void *arg0, void *arg1);
 s32 func_00106B90(void *arg0, s32 arg1, s32 arg2);
 s32 func_00106BC0(void *arg0, s32 arg1, s32 arg2);
 s32 func_00106CC0(s32 arg0, s32 arg1);
