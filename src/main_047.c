@@ -2,7 +2,9 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4570);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4E50);
+void func_001E4E50(void) {
+    D_00318144 = 0x18;
+}
 
 typedef struct {
     s8 pad0 : 5;

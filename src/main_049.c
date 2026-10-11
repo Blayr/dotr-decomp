@@ -1,14 +1,20 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1A80);
+s32 func_001F1A80(s32 arg0) {
+    return func_001F1A90(arg0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1A90);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1B50);
+s32 func_001F1B50(s32 arg0) {
+    return func_001F1B60(arg0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1B60);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1C40);
+void func_001F1C40(s32 arg0) {
+    func_001F1C50(arg0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1C50);
 

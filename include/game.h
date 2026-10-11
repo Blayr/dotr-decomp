@@ -70,7 +70,6 @@ s32 func_00278250(s32, s32, s32, s32);          /* extern */
 
 s32 func_00155520(s32, s32);
 
-void func_001F6D00(s32);
 
 extern s32 *D_0030FF40;
 void func_0017BB60(s32);
@@ -378,8 +377,6 @@ f32 func_00108030(s32, s32, s32);
 s32 func_00205440(s32, void *, u16 *, s32 *);
 extern u8 D_00299F90[];
 
-s32 func_001F5380(u8);
-s32 func_001F53A0(u8);
 void func_001F5620(s32, u8, s32);
 
 void func_0019B648(void *, void *, s32);
@@ -597,5 +594,23 @@ extern s8 D_00318144;
 extern s8 D_00318145;
 extern s32 D_0031AB90;
 extern s8 D_00318142;
+
+extern s32 D_0031BB10;
+
+s32 func_001F16C0(s32 arg0, s32 arg1);
+void func_001F1C50(s32 arg0, s32 arg1);
+
+void func_001F4900(s32, s32, s32, s32, s32, s32, s32);
+void func_001F5860(s32);
+void func_001F57C0(s32 arg0, s32 arg1);
+s32 func_001F1A90(s32 arg0, s32 arg1);
+void func_001F63F0(s32, s32, s32);
+s32 func_001F1B60(s32, s32);
+
+void func_001F6210(s32, s32);
+void func_001F53C0(s32, s32, s32);
+void func_001F60D0(s32, s32);
+
+extern s8 D_0031BEA2;
 
 #endif

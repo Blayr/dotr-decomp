@@ -319,7 +319,9 @@ void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     } while (row < 7);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3060);
+void func_001E3060(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    func_001E3070(arg0, arg1, arg2, arg3, arg4, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3070);
 

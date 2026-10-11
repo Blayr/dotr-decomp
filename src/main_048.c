@@ -42,7 +42,9 @@ void func_001EDF90(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDFD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE4A0);
+void func_001EE4A0(s32 arg0) {
+    D_0031BB10 = arg0;
+}
 
 s32 func_001EE4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     Obj_0031ABB0 *temp_v1;
@@ -393,7 +395,9 @@ s32 func_001F1300(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1370);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F13F0);
+s8 func_001F13F0(s32 arg0) {
+    return func_001F1400(arg0, 0);
+}
 
 s8 func_001F1400(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *base;
@@ -411,7 +415,9 @@ s8 func_001F1400(s32 arg0, s32 arg1) {
     return base->lv[arg1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1480);
+s32 func_001F1480(s32 arg0, s32 arg1) {
+    return func_001F1490(arg0, arg1, 3);
+}
 
 s32 func_001F1490(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
@@ -438,7 +444,9 @@ s32 func_001F1490(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1550);
+s32 func_001F1550(s32 arg0, s32 arg1) {
+    return func_001F1560(arg0, arg1, 6);
+}
 
 typedef struct {
     f32 x, y, z;
@@ -491,7 +499,9 @@ s32 func_001F1560(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16B0);
+s32 func_001F16B0(s32 arg0) {
+    return func_001F16C0(arg0, 6);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16C0);
 
