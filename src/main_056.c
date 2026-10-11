@@ -286,7 +286,44 @@ s64 func_00208D00(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208D40);
+void *func_00208D40(void *arg0, s32 arg1) {
+    s32 *packet = arg0;
+
+    packet[0] = 0x10000001;
+    packet[1] = 0;
+    packet[2] = 0x10000000;
+    packet[3] = 0x68014000;
+    if (!(arg1 & 2) || !D_00325E2C) {
+        if (arg1 & 0x40) {
+            if (arg1 & 0x20) {
+                packet[4] = 0x274;
+            } else if (arg1 & 0x10) {
+                packet[4] = 0xE8;
+            } else {
+                packet[4] = 0xE8;
+            }
+        } else {
+            if (arg1 & 0x20) {
+                packet[4] = 0x1A4;
+            } else if (arg1 & 0x10) {
+                packet[4] = 0x30;
+            } else {
+                packet[4] = 0x30;
+            }
+        }
+    } else {
+        if (arg1 & 0x20) {
+            packet[4] = 0x6D4;
+        } else {
+            packet[4] = 0x580;
+        }
+    }
+    packet[5] = 0;
+    packet[6] = 0;
+    packet[7] = 0x10000000;
+    D_00325DD0 = arg1;
+    return packet + 8;
+}
 
 typedef struct {
     s32 flags;

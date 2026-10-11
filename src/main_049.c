@@ -62,7 +62,52 @@ s32 func_001F1FD0(s32 arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2050);
+typedef struct {
+    s8 unused0 : 5;
+    s8 ready : 1;
+    s8 unused1 : 2;
+} Flags_001F2050;
+
+static inline s32 check_001F2050(s32 index) {
+    Obj_0031ABB0 *obj;
+
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_001F2050(s32 index, void *out) {
+    Obj_0031ABB0 *obj;
+
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (check_001F2050(index) == 0) {
+        return 0;
+    }
+    if ((s32)*(u8 *)((u8 *)obj + 0x1FE) <= 0) {
+        return 0;
+    }
+    if (((Flags_001F2050 *)((u8 *)obj + 0x20C))->ready == 0) {
+        return 0;
+    }
+    if (out != NULL) {
+        *(Vec4f *)out = *(Vec4f *)((u8 *)obj + 0x80);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2150);
 

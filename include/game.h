@@ -521,4 +521,7 @@ void func_0016E0E0(u16 *, s32);
 
 s32 func_00203A40(s32, s32, s32);
 
+extern s32 D_00325DD0;
+extern s32 D_00325E2C;
+
 #endif
