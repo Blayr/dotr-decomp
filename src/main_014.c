@@ -46,7 +46,33 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_0015C670);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015CBB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015CF30);
+static inline s32 max_0015CF30(s32 a, s32 b) {
+    if (b < a) {
+        return a;
+    }
+    return b;
+}
+
+s32 func_0015CF30(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    s32 minY;
+    s32 minX;
+
+    minY = (arg3 < arg5) ? arg3 : arg5;
+    arg5 = max_0015CF30(arg3, arg5);
+    minX = (arg2 < arg4) ? arg2 : arg4;
+    arg4 = max_0015CF30(arg2, arg4);
+
+    if (((arg4 - minX) + (arg5 - minY)) != 2) {
+        return 0;
+    }
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    if (func_001E2100(arg0, arg1, 0) == 0) {
+        return (func_0024DF00(func_001E22B0(arg2, arg3), arg0, arg1) != 1) ? 0 : 1;
+    }
+    return 0;
+}
 
 s32 func_0015D030(s32 arg0, s32 arg1) {
     s32 data[4];

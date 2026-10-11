@@ -1,6 +1,27 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00206430);
+void func_00206430(void *arg0, void *arg1, void *arg2, void *arg3) {
+    f32 *plane = arg0;
+    f32 *start = arg1;
+    f32 *end = arg2;
+    f32 *out = arg3;
+    f32 numerator;
+    f32 denominator;
+    f32 magnitude;
+    f32 t;
+
+    numerator = -plane[3] - (plane[0] * start[0] + plane[1] * start[1] + plane[2] * start[2]);
+    denominator = plane[0] * (end[0] - start[0]) + plane[1] * (end[1] - start[1]) + plane[2] * (end[2] - start[2]);
+    magnitude = denominator >= 0.0f ? denominator : -denominator;
+    if (magnitude < 0.000001f) {
+        denominator = 0.000001f;
+    }
+    t = numerator / denominator;
+    out[0] = start[0] + t * (end[0] - start[0]);
+    out[1] = start[1] + t * (end[1] - start[1]);
+    out[2] = start[2] + t * (end[2] - start[2]);
+    out[3] = 1.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00206530);
 

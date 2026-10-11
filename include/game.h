@@ -523,4 +523,8 @@ s32 func_00203A40(s32, s32, s32);
 extern s32 D_00325DD0;
 extern s32 D_00325E2C;
 
+s32 func_0018EB08(void *, s32, s32);
+s32 func_0018EF20(void *, s32, s32 (*)(), s32);
+s32 func_002450F0(void *);
+
 #endif
