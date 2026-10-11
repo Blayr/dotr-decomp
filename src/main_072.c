@@ -4,7 +4,17 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024B310);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C330);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C450);
+void func_0024C450(s32 *arg0, s32 arg1, s32 arg2) {
+    s32 temp_a0;
+    s32 *temp_a1;
+    s32 *temp_a2;
+
+    temp_a1 = arg0 + arg1;
+    temp_a2 = arg0 + arg2;
+    temp_a0 = *temp_a1;
+    *temp_a1 = *temp_a2;
+    *temp_a2 = temp_a0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C480);
 
