@@ -89,7 +89,63 @@ s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00242F20);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243060);
+typedef struct {
+    s32 unk0;
+    u8 pad4[0x28];
+    s32 unk2C;
+    s32 unk30;
+    s32 unk34;
+    s32 unk38;
+    s32 unk3C;
+    s32 unk40;
+    s32 unk44;
+    s32 unk48;
+    s32 unk4C;
+    s32 unk50;
+    s32 unk54;
+    s32 unk58;
+} State_00243060;
+
+s32 func_001828C0(s32);
+extern char D_0030F600[];
+extern char D_0030F61C[];
+extern u8 D_003507C0[];
+
+s32 func_00243060(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    State_00243060 *state = arg0;
+    s32 temp_a1;
+    s32 temp_a1_2;
+
+    state->unk0 = 0;
+    state->unk2C = 0;
+    state->unk30 = arg1;
+    state->unk34 = 0;
+    state->unk38 = 0;
+    state->unk3C = arg2;
+    state->unk40 = 0;
+    state->unk54 = 0;
+    state->unk48 = arg3;
+    state->unk4C = 0;
+    state->unk50 = 0;
+    state->unk44 = func_001828C0(arg3);
+    temp_a1 = state->unk44;
+    if (temp_a1 < 0) {
+        func_00199B50(D_0030F600, temp_a1);
+        return 0;
+    }
+    func_00199B50(D_0030F61C, temp_a1, arg3);
+    state->unk58 = func_001828C0(0x800);
+    temp_a1_2 = state->unk58;
+    if (temp_a1_2 < 0) {
+        func_00199B50(D_0030F600, temp_a1_2);
+        return 0;
+    }
+    func_00199B50(D_0030F61C, temp_a1_2, 0x800);
+    func_00198948(D_003507C0, 0, 0x800U);
+    func_00243950(state->unk58, (s32) D_003507C0, 0x800);
+    func_002439D0(0x3FFF);
+    return 1;
+}
 
 s32 func_00243170(void *arg0) {
     func_00182A28(*(s32 *)((u8 *)arg0 + 0x44));
