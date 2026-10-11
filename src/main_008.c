@@ -600,7 +600,92 @@ INCLUDE_ASM("asm/nonmatchings/main_008", func_00131F80);
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00132280);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00132460);
+typedef struct {
+    s16 id;
+    u8 unk2;
+    u8 pad3;
+    s16 unk4;
+    u8 pad6[6];
+    s32 unkC;
+} Ctx_00132460;
+
+typedef struct {
+    u8 pad0[0x3C];
+    u16 unk3C;
+    u8 pad3E[0x22];
+} Work_00132460;
+
+s32 func_001326F0(s32 arg0, void *arg1);
+s32 func_00133320(s32 arg0, u8 arg1, void *arg2, s32 arg3);
+s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
+                  s32 arg9);
+
+s32 func_00132460(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_00278890(s32, s32);
+    Work_00132460 work;
+    s32 ret;
+    s32 res;
+    s32 pos;
+    s32 kind;
+    Ctx_00132460 *ctx = (Ctx_00132460 *)arg2;
+
+    ctx->id = arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+        return -1;
+    }
+    kind = func_001326F0(arg1, &work);
+    if (kind < 0) {
+        return -1;
+    }
+    ctx->unk2 = 10;
+    ctx->unkC = 0;
+    pos = func_001E1090(arg0 >> 8, arg0 & 0xFF);
+    if (kind == 0) {
+        if (func_00132D00(arg1, (u8 *)ctx, &work) >= 0) {
+            ret = func_00276F10(&work, pos & 0xFF, pos >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, func_00134AE0(arg1));
+            if (ret < 0) {
+                if (func_001E0150(arg1) < 5) {
+                    res = func_00133320(arg1, kind, &work, ret);
+                    if (res < 0) {
+                        return -1;
+                    }
+                    ctx->unk4 = res;
+                    return 1;
+                }
+            } else {
+                res = func_00133320(arg1, kind, &work, ret);
+                if (res < 0) {
+                    return -1;
+                }
+                ctx->unk4 = res;
+                return 1;
+            }
+        }
+    } else {
+        ret = func_00276F10(&work, pos & 0xFF, pos >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, func_00134AE0(arg1));
+    }
+    if (kind == 2) {
+        func_00133130(arg1, ctx, &work);
+        res = func_00133320(arg1, kind, &work, ret);
+        if (res < 0) {
+            return -1;
+        }
+        ctx->unk4 = res;
+        return 1;
+    }
+    if (func_00132B00(arg1, (u8 *)ctx, &work, work.unk3C) < 0) {
+        return -1;
+    }
+    res = func_00133320(arg1, kind, &work, ret);
+    if (res < 0) {
+        return -1;
+    }
+    ctx->unk4 = res;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_001326F0);
 
