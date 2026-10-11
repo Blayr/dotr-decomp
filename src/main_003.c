@@ -71,7 +71,17 @@ void func_00109FC0(void) {
     func_0010A450();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A010);
+void func_0010A010(void) {
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    if (D_0030FF40[1] & 2) {
+        if (D_0030FF40[0] & 1) {
+            func_0010B270();
+        }
+        D_0030FF40[0] &= ~0x200;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A090);
 
