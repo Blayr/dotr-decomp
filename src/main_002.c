@@ -85,9 +85,52 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00108950);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108BE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108CE0);
+typedef struct Vec4_00108CE0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_00108CE0;
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108D20);
+s32 func_00108CE0(void *arg0, f32 fparg0, f32 fparg1) {
+    Vec4_00108CE0 *vertices = arg0;
+    f32 negative_x;
+    f32 negative_y;
+
+    negative_x = -fparg0;
+    vertices[0].x = negative_x;
+    vertices[0].y = fparg1;
+    vertices[0].z = 0.0f;
+    vertices[1].x = fparg0;
+    vertices[1].y = fparg1;
+    vertices[1].z = 0.0f;
+    vertices[2].x = negative_x;
+    negative_y = -fparg1;
+    vertices[2].y = negative_y;
+    vertices[2].z = 0.0f;
+    vertices[3].x = fparg0;
+    vertices[3].y = negative_y;
+    vertices[3].z = 0.0f;
+    return 0;
+}
+
+s32 func_00108D20(void *dst, f32 x, f32 z) {
+    f32 (*vertices)[4] = dst;
+
+    vertices[0][0] = -x;
+    vertices[0][1] = 0.0f;
+    vertices[0][2] = z;
+    vertices[1][0] = x;
+    vertices[1][1] = 0.0f;
+    vertices[1][2] = z;
+    vertices[2][0] = -x;
+    vertices[2][1] = 0.0f;
+    vertices[2][2] = -z;
+    vertices[3][0] = x;
+    vertices[3][1] = 0.0f;
+    vertices[3][2] = -z;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108D60);
 

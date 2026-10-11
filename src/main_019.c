@@ -1,6 +1,14 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B340);
+f32 func_0017B340(u64 arg0) {
+    f32 result;
+
+    if ((s64) arg0 > 0) {
+        return func_001A1F18(arg0);
+    }
+    result = func_001A1F18((arg0 >> 1) | (arg0 & 1));
+    return result + result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B380);
 

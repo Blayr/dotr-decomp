@@ -12,9 +12,37 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6FF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A7380);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A82E0);
+typedef struct {
+    u8 padding[0x138];
+    s32 entries[0x25];
+} Table_001A82E0;
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8320);
+s32 func_001A82E0(s32 arg0) {
+    Table_001A82E0 *table = (Table_001A82E0 *)&D_00317250;
+    s32 result;
+
+    if ((arg0 < 0) || (arg0 >= 0x25)) {
+        result = -1;
+    } else {
+        result = table->entries[arg0];
+    }
+    return result;
+}
+
+typedef struct State_001A8320 {
+    u8 padding[0x138];
+    s32 values[0x25];
+} State_001A8320;
+
+s32 func_001A8320(s32 arg0, s32 arg1) {
+    State_001A8320 *state = (State_001A8320 *)&D_00317250;
+
+    if ((arg0 < 0) || (arg0 >= 0x25)) {
+        return 0;
+    }
+    state->values[arg0] = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8360);
 
@@ -100,7 +128,28 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAAF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAD50);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAF60);
+typedef struct {
+    u8 pad[0x1F1];
+    s8 values[0x2D];
+    s8 negative;
+    s8 zero;
+    u8 pad220[2];
+    u8 selected;
+} State_001AAF60;
+
+s64 func_001AAF60(s32 arg0) {
+    s8 value;
+    State_001AAF60 *state = (State_001AAF60 *)&D_00317250;
+
+    if (arg0 > 0) {
+        value = state->values[state->selected];
+    } else if (arg0 < 0) {
+        value = state->negative;
+    } else {
+        value = state->zero;
+    }
+    return value;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAFA0);
 

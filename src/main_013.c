@@ -143,6 +143,32 @@ void func_0015A120(s32 a0, s32 a1, u16 *buf) {
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_0015A180);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_0015A2E0);
+s32 func_0015A2E0(s32 arg0, u16 *arg1) {
+    s32 i;
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_0015A320);
+    i = 0;
+    do {
+        if (arg0 == *arg1) {
+            return 1;
+        }
+        i++;
+        arg1++;
+    } while (i < 0x31);
+    return 0;
+}
+
+s32 func_0015A320(u16 *arg0) {
+    s32 i;
+    u8 count;
+
+    count = 0;
+    i = 0;
+    do {
+        if (*arg0 != 0xFFFF) {
+            count++;
+        }
+        i++;
+        arg0++;
+    } while (i < 0x31);
+    return count;
+}

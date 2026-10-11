@@ -92,9 +92,35 @@ void func_0010BDC0(void) {
     *((s8 *)D_0030FF40 + 0x20C4) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BDE0);
+s32 func_0010BDE0(void) {
+    s32 temp_v0;
+    s32 temp_v0_2;
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BE20);
+    temp_v0_2 = D_0030FF40[0x1710 / sizeof(s32)];
+    if (temp_v0_2 != 0) {
+        return temp_v0_2;
+    }
+    temp_v0 = D_0030FF40[0x171C / sizeof(s32)];
+    if (temp_v0 != 0) {
+        return temp_v0;
+    }
+    return 0;
+}
+
+s32 func_0010BE20(void) {
+    s32 temp_v0;
+    s32 temp_v0_2;
+
+    temp_v0_2 = *(s32 *)((u8 *)D_0030FF40 + 0x1820);
+    if (temp_v0_2 != 0) {
+        return temp_v0_2;
+    }
+    temp_v0 = *(s32 *)((u8 *)D_0030FF40 + 0x182C);
+    if (temp_v0 != 0) {
+        return temp_v0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BE60);
 

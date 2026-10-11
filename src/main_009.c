@@ -96,7 +96,12 @@ INCLUDE_ASM("asm/nonmatchings/main_009", func_0013C430);
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013CA10);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013D280);
+s32 func_0013D280(void) {
+    if (func_0013A870(func_001DE540()) < 0) {
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_0013D2C0(s32 arg0) {
     u16 buf[0x16];

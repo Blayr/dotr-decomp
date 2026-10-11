@@ -69,7 +69,22 @@ s32 func_00100D00(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100D50);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100E00);
+typedef struct {
+    u32 values[4];
+} Config_00100E00;
+
+void func_0020CB90(s32, u32 *);
+extern Config_00100E00 D_0028C210;
+
+void func_00100E00(s32 arg0, s32 arg1, s32 arg2) {
+    Config_00100E00 values;
+    u32 *words = (u32 *)&values;
+
+    values = D_0028C210;
+    arg1 &= 0xFFFF;
+    words[arg2] = arg1;
+    func_0020CB90(arg0, words);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100E40);
 
