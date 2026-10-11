@@ -393,7 +393,26 @@ s32 func_001F1300(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1370);
+typedef struct {
+    s8 unused : 1;
+    s8 enabled : 1;
+} Flags_001F1370;
+
+s32 func_001F1370(s32 arg0) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)obj + 0x1F2) < 0) {
+        return 0;
+    }
+    return ((Flags_001F1370 *)((u8 *)obj + 0x20C))->enabled ? 1 : 0;
+}
 
 s8 func_001F13F0(s32 arg0) {
     return func_001F1400(arg0, 0);

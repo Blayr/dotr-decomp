@@ -615,6 +615,7 @@ s32 func_001F11B0(s32 arg0, s32 arg1);
 s32 func_001F1240(s32 arg0);
 s32 func_001F12A0(s32 arg0);
 s32 func_001F1300(s32 arg0);
+s32 func_001F1370(s32 arg0);
 s8 func_001F13F0(s32 arg0);
 s8 func_001F1400(s32 arg0, s32 arg1);
 s32 func_001F1480(s32 arg0, s32 arg1);
