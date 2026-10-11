@@ -544,4 +544,6 @@ s32 func_0026AC90(s32, s32, s32);
 
 f32 func_001A6898(f32);
 
+extern f32 D_00294050[];
+
 #endif
