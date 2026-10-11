@@ -333,7 +333,64 @@ s32 func_001123C0(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00112600);
+s32 func_00112600(s32 arg0, s32 *arg1) {
+    u16 cells[0x16];
+    s32 first;
+    s32 second;
+    s32 pos;
+    s32 y;
+    s32 i;
+    s32 list;
+    s32 x;
+    u8 count;
+    s32 cell;
+    s32 col;
+    s32 row;
+    s32 j;
+
+    for (j = 0; j < 0x16; j++) {
+        cells[j] = 0xFFFF;
+    }
+    switch (*arg1 & 0x3F) {
+    case 0x1D:
+        func_0027C2C0((arg0 == 0) ? 1 : 0, cells, 0x1D, 0, 0);
+        first = func_0027B650(cells);
+        for (j = 0; j < 0x16; j++) {
+            cells[j] = 0xFFFF;
+        }
+        func_0027C070(arg0, cells, 0x1D, 1);
+        second = func_0027B650(cells);
+        if (first >= 0 && second >= 0) {
+            pos = func_001E1090(first >> 8, first & 0xFF);
+            if (func_002781F0(first, second, pos & 0xFF, pos >> 8) >= 0) {
+                return pos;
+            }
+        }
+        break;
+    case 0x1E:
+        for (x = 0; x < 7; x++) {
+            for (y = 0; y < 7; y++) {
+                count = 0;
+                list = func_0024CA40(x, y, arg0, 1, 0x34, 0x12);
+                for (i = 0; i < func_0024E910(list); i++) {
+                    cell = func_0024EC50(list, i);
+                    row = cell >> 8;
+                    col = cell & 0xFF;
+                    if (func_001E2100(row, col, 4) == 0) {
+                        count++;
+                    } else if ((func_001E0700(row, col) >> 5) != 0) {
+                        count++;
+                    }
+                }
+                if (count > 2) {
+                    return (y << 8) | x;
+                }
+            }
+        }
+        break;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00112850);
 
