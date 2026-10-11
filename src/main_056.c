@@ -90,7 +90,22 @@ INCLUDE_ASM("asm/nonmatchings/main_056", func_00208D00);
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208D40);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208E40);
+typedef struct {
+    s32 flags;
+    void *data;
+    s32 field8;
+    s32 fieldC;
+} Header_00208E40;
+
+void *func_00208E40(void *arg0) {
+    Header_00208E40 *header = arg0;
+
+    header->flags = 0x20000000;
+    header->data = (u8 *)arg0 + 0x20;
+    header->field8 = 0;
+    header->fieldC = 0;
+    return (u8 *)arg0 + 0x20;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208E60);
 
