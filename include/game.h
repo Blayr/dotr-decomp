@@ -675,4 +675,7 @@ void func_00139D90(void *, s32);
 s32 func_0013AB70(s32, s32, void *);
 void func_00146EC0(void *, s32);
 
+void func_0010CE20(u16 *, u16 *);
+s32 func_0010DD50(s32, s32, s32);
+
 #endif
