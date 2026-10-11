@@ -50,4 +50,14 @@ void func_00286900(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00286910);
+void func_00286910(void *arg0, void *arg1) {
+    Callback_00286910 *current = arg0;
+    Callback_00286910 *end = arg1;
+
+    if (current < end) {
+        do {
+            (*current)();
+            current++;
+        } while (current < end);
+    }
+}

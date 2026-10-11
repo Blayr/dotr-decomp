@@ -23,7 +23,25 @@ s32 func_00276C80(u16 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00276CC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00276EC0);
+typedef struct {
+    u16 field_0;
+    u8 field_2;
+    u8 pad_3;
+    s16 field_4;
+    u8 pad_6[10];
+    u8 field_10;
+} Data_00276EC0;
+
+void func_00276EC0(u16 *arg0, s32 arg1, void *arg2) {
+    Data_00276EC0 *dest = arg2;
+    u16 temp_v0;
+
+    dest->field_0 = *arg0;
+    dest->field_2 = 6;
+    temp_v0 = *arg0;
+    dest->field_4 = func_001E1090((s32) temp_v0 >> 8, temp_v0 & 0xFF);
+    dest->field_10 = 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00276F10);
 

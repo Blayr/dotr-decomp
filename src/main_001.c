@@ -162,7 +162,11 @@ void func_001036A0(void *arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001036E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103760);
+void func_00103760(void *arg0) {
+    f32 *vector = arg0;
+
+    func_001A22C0(90.0f + (360.0f / (6.2831855f / func_001A6C18(vector[1], vector[0]))));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001037C0);
 
@@ -269,7 +273,18 @@ s32 func_00106BC0(void *arg0, s32 arg1, s32 arg2) {
     return *((u8 *)arg0 + 0xAF) > (arg2 & 0xFF) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106BF0);
+s32 func_00106BF0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    if (arg3 == 0) {
+        arg0[0] += arg1;
+        arg0[1] += arg1;
+        arg0[2] += arg1;
+    } else {
+        arg0[0] -= arg1;
+        arg0[1] -= arg1;
+        arg0[2] -= arg1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106C50);
 

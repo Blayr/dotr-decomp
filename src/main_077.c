@@ -59,7 +59,15 @@ s32 func_0026FC10(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FC90);
+void *func_0026FC90(s32 arg0, s32 arg1) {
+    u8 data[0x60];
+
+    if (arg0 == 0x3E7) {
+        return NULL;
+    }
+    func_001DCD70(data, arg0);
+    return data + 8 + arg1 * 8;
+}
 
 s32 func_0026FCE0(s32 arg0) {
     u8 *temp_v0;
@@ -155,7 +163,13 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_002759D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00275D00);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00275E30);
+s32 func_00275E30(void *arg0) {
+    if (func_0027F830(func_001DE540()) == 1) {
+        return 1;
+    }
+    *(s16 *)((u8 *)arg0 + 0x1A2) = 0;
+    return func_00275E80(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00275E80);
 

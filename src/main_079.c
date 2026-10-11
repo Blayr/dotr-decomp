@@ -17,13 +17,42 @@ void func_0027AF80(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     *(s32 *)((u8 *)arg0 + 0x34) = arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027AFC0);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0027AFC0;
+
+s32 func_0027AFC0(u8 *arg0) {
+    s32 i;
+    s32 count;
+    Nibbles_0027AFC0 *entries = (Nibbles_0027AFC0 *)arg0;
+
+    i = 0;
+    count = 0;
+    do {
+        if (entries[i].low != 0xF && entries[i].high != 0xF) {
+            count++;
+        }
+        i++;
+    } while (i < 0xC);
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B010);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B150);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B1B0);
+void func_0027B1B0(void *arg0, u8 arg1) {
+    if (arg1 < 2) {
+        if (arg1 == 1) {
+            *(u32 *)((u8 *)arg0 + 8) =
+                (*(u32 *)((u8 *)arg0 + 8) & 0xFFFF) | 0xFFFF0000;
+        } else {
+            *(u32 *)((u8 *)arg0 + 8) =
+                (*(u32 *)((u8 *)arg0 + 8) & 0xFFFF0000) | 0xFFFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B200);
 

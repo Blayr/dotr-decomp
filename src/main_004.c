@@ -8,7 +8,11 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D080);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D490);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D820);
+void func_0010D820(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
+    func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+                  arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
+                  0, 0x960, arg_sp28);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D880);
 
@@ -127,7 +131,11 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_00113370);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00113760);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00113A00);
+void func_00113A00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
+    func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+                  arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
+                  0, 3000, arg_sp28);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00113A60);
 

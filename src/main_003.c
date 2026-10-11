@@ -76,7 +76,13 @@ void func_0010B330(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B360);
+void func_0010B360(void) {
+    if (!(D_0030FF40[0] & 0x40)) {
+        func_0010C720(0x5000);
+        D_0030FF40[0] |= 0x40;
+        D_0030FF40[0x7A] = -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B3C0);
 

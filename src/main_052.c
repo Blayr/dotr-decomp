@@ -147,7 +147,18 @@ s32 func_001FAD10(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FAD60);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FAF60);
+f32 *func_001FAF60(s32 arg0) {
+    f32 *var_v0;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return NULL;
+    }
+    var_v0 = (f32 *)D_0031BEB0[arg0];
+    if (var_v0 == NULL) {
+        var_v0 = NULL;
+    }
+    return var_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FAFB0);
 

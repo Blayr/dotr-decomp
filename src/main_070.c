@@ -87,11 +87,48 @@ s32 func_002455B0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002455E0);
+typedef struct Entry_002455E0 {
+    s64 values[2];
+    s32 offset;
+    s32 size;
+} Entry_002455E0;
+
+s32 func_00244DE0(u8 *, void *);
+
+s32 func_002455E0(s32 arg0, void *arg1) {
+    Entry_002455E0 entry;
+
+    func_00244DE0(D_003506C8, &entry);
+    *(s64 *)((u8 *)arg1 + 8) = entry.values[0];
+    *(s64 *)((u8 *)arg1 + 0x10) = entry.values[1];
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245630);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245770);
+typedef struct State_00245770 {
+    s32 value;
+    u8 *entries;
+    s32 field8;
+    s32 fieldC;
+    s32 count;
+} State_00245770;
+
+void func_00245770(void *arg0, s32 arg1, void *arg2, s32 arg3) {
+    State_00245770 *state = arg0;
+    s32 *temp_a2;
+    s32 var_t0;
+
+    state->value = arg1;
+    state->entries = arg2;
+    state->count = arg3;
+    state->fieldC = 0;
+    state->field8 = 0;
+    for (var_t0 = 0; var_t0 < arg3; var_t0++) {
+        temp_a2 = (s32 *)(state->entries + var_t0 * 0x4CE40);
+        *temp_a2 = 0;
+    }
+}
 
 void func_002457C0(void) {
 

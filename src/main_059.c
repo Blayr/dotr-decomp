@@ -215,7 +215,30 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_00213A40);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00213D00);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00213F10);
+void func_00213F10(u8 *start, u8 *end) {
+    s32 *field;
+    s32 previous;
+    s32 value;
+    u8 *cursor;
+
+    cursor = start;
+    previous = 0;
+    if (cursor < end) {
+        do {
+            field = (s32 *)(cursor + 4);
+            value = *field;
+            if (value == previous) {
+                *(s32 *)(cursor + 0) = 0x10000000;
+                *field = 0;
+                *(s32 *)(cursor + 8) = 0;
+                *(s32 *)(cursor + 0xC) = 0;
+            } else {
+                previous = value;
+            }
+            cursor += 0x80;
+        } while (cursor < end);
+    }
+}
 
 void func_00213F60(s32 arg0, s32 arg1) {
     D_0032F780 = arg0;

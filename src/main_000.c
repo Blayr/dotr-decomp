@@ -14,7 +14,18 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_001001D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100350);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_001004C0);
+void func_001004C0(void) {
+    s32 i;
+
+    func_001F7720(0);
+    i = 0;
+    do {
+        func_001E7DE0(i);
+        i += 1;
+    } while (i < 0x54);
+    func_00209870();
+    func_002032A0();
+}
 
 void func_00100520(void) {
     func_00209F60(func_001F73C0);
@@ -225,7 +236,16 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00102210);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_001022D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102330);
+void func_00102330(s8 *arg0, s32 arg1) {
+    s8 *var_s0;
+    s32 var_s1;
+
+    var_s0 = arg0;
+    for (var_s1 = 0; var_s1 < arg1; var_s1 += 1) {
+        *var_s0 = (s8) (func_0019A5C8() >> 4);
+        var_s0 += 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00102390);
 

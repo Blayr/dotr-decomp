@@ -63,7 +63,17 @@ s32 func_0020DEE0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DEF0);
+typedef struct {
+    __int128 data[9];
+} Copy_0020DEF0;
+
+extern u8 D_0032A360[];
+
+s32 func_0020DEF0(void *arg0) {
+    *(Copy_0020DEF0 *)arg0 =
+        *(Copy_0020DEF0 *)(D_0032A360 + D_0032A240 * 0x1A0);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DF40);
 
