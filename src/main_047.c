@@ -39,7 +39,9 @@ void func_001E5210(void *arg0, s32 arg1) {
     state->field8 = var_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5230);
+s32 func_001E5230(void) {
+    return D_0031AB90;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5240);
 

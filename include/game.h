@@ -592,4 +592,10 @@ void func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern u8 D_003181E4;
 extern u8 D_003181E2;
 
+extern u8 D_003181E3;
+extern s8 D_00318144;
+extern s8 D_00318145;
+extern s32 D_0031AB90;
+extern s8 D_00318142;
+
 #endif

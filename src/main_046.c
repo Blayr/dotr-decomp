@@ -300,7 +300,9 @@ INCLUDE_ASM("asm/nonmatchings/main_046", func_001E27D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2A60);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2FB0);
+void func_001E2FB0(s32 arg0, s32 arg1, s32 arg2) {
+    func_001E2FC0(arg0, arg1, arg2, 1);
+}
 
 void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 column;
@@ -651,13 +653,17 @@ s32 func_001E3F10(s32 arg0, s32 arg1, void *arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3FB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3FE0);
+void func_001E3FE0(void) {
+    D_00318144 = 0x18;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3FF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E40A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E42B0);
+void func_001E42B0(void) {
+    D_00318142 = 0x18;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E42C0);
 
@@ -688,6 +694,8 @@ s32 func_001E4430(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E4530);
+void func_001E4530(void) {
+    D_00318145 = 0x18;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E4540);

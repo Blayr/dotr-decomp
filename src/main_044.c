@@ -101,7 +101,9 @@ u8 func_001DE550(void) {
     return D_003181E2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE560);
+u8 func_001DE560(void) {
+    return D_003181E3;
+}
 
 static inline s32 nonnegative_001DE570(s32 value) {
     return value > 0 ? value : 0;
