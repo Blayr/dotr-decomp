@@ -722,7 +722,12 @@ s32 func_001E3F10(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3FB0);
+void func_001E3FB0(s32 arg0, s32 arg1, s32 arg2) {
+    *(s8 *)0x00318144 = 0x12;
+    *(s16 *)0x0031813E = arg0;
+    *(s16 *)0x00318132 = arg1;
+    *(s16 *)0x00318134 = arg2;
+}
 
 void func_001E3FE0(void) {
     D_00318144 = 0x18;

@@ -517,7 +517,6 @@ s32 func_00271E40(s32, s32, s32);
 
 s32 func_0010F850(s32, s32);
 
-void func_001E3FB0(s32, s32, s32);
 
 s32 func_00122970(s32);                             /* extern */
 
