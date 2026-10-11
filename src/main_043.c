@@ -139,7 +139,69 @@ void func_001D90E0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D91B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9420);
+typedef struct {
+    u8 pad0[0x40];
+    u8 x;
+    u8 y;
+    u8 pad42[2];
+    u8 owner;
+    u8 slot;
+    u8 pad46[0x11];
+    s8 pad57 : 4;
+    s8 flag : 1;
+    s8 pad57b : 3;
+} Card_001D9420;
+
+s32 func_001D9420(void *arg0) {
+    u8 *duel = D_00317490;
+    s32 result;
+    void **cell;
+    s32 me;
+    s32 other;
+    s32 flag;
+    Card_001D9420 *card = arg0;
+    s32 target;
+    s32 bits;
+    extern s32 func_001DE4E0();
+
+    result = 0;
+    if (card != NULL) {
+        cell = func_001DCD00(card->x, card->y);
+        bits = func_001A82E0(0x1D);
+        flag = (bits & (1 << card->owner)) ? 1 : 0;
+        me = duel[0xD3C];
+        other = duel[0xD3C] ^ 1;
+        if (card->owner >= 2) {
+            return 0;
+        }
+        if (cell == NULL || *cell != card) {
+            if (flag) {
+                if (func_001DE4E0(me) < 0x20 && func_001DE4E0(other) >= 0x64) {
+                    result = 1;
+                }
+            } else if ((u16) func_00203A40(duel[0xD3C], 1, 2) == 0) {
+                result = 1;
+            }
+        } else {
+            result = func_00267380((s32) card, duel[0xD3C]);
+            if (result == 0 && card->flag == 0) {
+                target = func_00250360(card->owner, card->slot);
+                if (flag) {
+                    if (func_001DE4E0(me) < 0x20 && func_001DE4E0(other) >= 0x64 && func_001DE4E0(target) < 0x20) {
+                        result = 1;
+                    }
+                } else if (duel[0xD3C] == target) {
+                    if ((u16) func_00203A40(duel[0xD3C], 1, 2) == 0) {
+                        result = 1;
+                    }
+                } else {
+                    result = 1;
+                }
+            }
+        }
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D95F0);
 
