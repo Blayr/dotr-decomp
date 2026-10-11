@@ -92,7 +92,69 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C3F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C560);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C770);
+typedef struct State_0023C770 {
+    u8 pad_00[0x30];
+    s16 state;
+    u8 pad_32[2];
+    s16 field_34;
+    u8 pad_36[0xA];
+    s16 field_40;
+    u8 pad_42[0x27C];
+    s16 result;
+} State_0023C770;
+
+void func_0023C170(s32);
+s32 func_0023F130(s32);
+s32 func_0023F340(void);
+s32 func_0023F5A0(void);
+extern struct State_0023E610 D_0034FB00;
+
+s32 func_0023C770(s32 arg0) {
+    State_0023C770 *data = (State_0023C770 *)&D_0034FB00;
+    s32 var_s1;
+
+    var_s1 = 0;
+    if (arg0 == 1) {
+        func_0023C170(0);
+        data->result = 0;
+    }
+    switch (data->state) {
+    case 0:
+        var_s1 = func_0023F130(arg0);
+        if (var_s1 == 2) {
+            data->state = 0;
+        }
+        break;
+    case 1:
+        var_s1 = func_0023F340();
+        break;
+    case 2:
+        var_s1 = func_0023F5A0();
+        break;
+    case 3:
+        var_s1 = func_0023F130(arg0);
+        if (var_s1 == 2) {
+            var_s1 = 0xA;
+        }
+        break;
+    }
+    if (arg0 == 1) {
+        data->field_34 = 0;
+        data->field_40 = 0;
+        var_s1 = 0x10;
+        data->state = 0;
+    }
+    if (var_s1 == 3) {
+        var_s1 = 7;
+    }
+    if (var_s1 != 0) {
+        data->result = var_s1;
+    }
+    if (var_s1 == 0x100) {
+        return 0x100;
+    }
+    return data->result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C8B0);
 

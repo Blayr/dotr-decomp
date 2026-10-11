@@ -966,6 +966,7 @@ void func_0023BC80(void);
 s8 func_0023C140(void);
 void func_0023C150(void);
 s32 func_0023C160(void);
+s32 func_0023C770(s32 arg0);
 s32 func_0023E610(void);
 s32 func_00241190(u16 *arg0);
 s32 func_00241A00(s32 arg0, s32 arg1);
