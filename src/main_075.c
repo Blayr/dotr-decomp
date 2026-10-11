@@ -144,7 +144,75 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_00260020);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260200);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260320);
+typedef struct {
+    u8 padding[8];
+    s32 id;
+    u32 duration;
+} Config_00260320;
+
+typedef struct {
+    u16 ticks;
+    u16 padding2;
+    u16 phase;
+    u8 padding6[0xFC];
+    u16 fade;
+} State_00260320;
+
+void func_001E42C0(s32, s32, s32, s32);
+void func_001E4530(void);
+void func_00255960(void *);
+void func_00260A70(void *, s32);
+void func_00260AF0(s32, s32, s32, s32);
+
+s32 func_00260320(void *arg0, void *arg1, s32 arg2) {
+    State_00260320 *state = arg1;
+    Config_00260320 *config = arg0;
+    s32 id;
+    u16 fade;
+
+    if (config->id != 0xFFFF) {
+        func_001DE7E0(0);
+    }
+    if (arg2 >= 0) {
+        func_00255960(state);
+        id = config->id;
+        if (id != 0xFFFF) {
+            func_00260AF0(0, id, 0x12C, 0x12C);
+            func_001E42C0(0, -0x78, 0x50, 0x10E);
+        }
+        state->ticks++;
+    } else {
+        switch (state->phase) {
+        case 0:
+            if (state->ticks++ <= config->duration) {
+                return 1;
+            }
+            func_001E4530();
+            if (config->id != 0xFFFF) {
+                func_00260A70(state, 0x10);
+            }
+            state->phase++;
+            break;
+        default:
+            if (config->id != 0xFFFF) {
+                fade = state->fade;
+                state->fade = fade + 1;
+                if (fade > 0x10) {
+                    if (func_001DE780() != 0) {
+                        func_001DE7E0(1);
+                    }
+                    func_001E4530();
+                    return 0;
+                }
+            } else {
+                func_001E4530();
+                return 0;
+            }
+            break;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260490);
 
