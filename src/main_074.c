@@ -136,7 +136,27 @@ s32 func_00255C30(void *arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00255CD0);
+typedef struct {
+    u8 padding[0x80];
+    s8 active : 1;
+    u8 count : 5;
+    u8 reserved : 2;
+    u8 padding81;
+    u16 entries[0x18];
+    u8 states[0x18];
+} State_00255CD0;
+
+void func_00255CD0(void *arg0) {
+    State_00255CD0 *state = arg0;
+    s32 i;
+
+    state->active = 0;
+    state->count = 0;
+    for (i = 0; i < 0x18; i++) {
+        state->entries[i] = 0xFFFF;
+        state->states[i] = 0;
+    }
+}
 
 void func_00255D40(s32 *arg0) {
     if (func_001DE540() == 0) {
