@@ -29,7 +29,62 @@ s32 func_001461C0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00146220);
+s32 func_00146220(s32 arg0, s32 arg1) {
+    s32 pos;
+    s32 kind;
+    s32 slot;
+    u8 count;
+    s32 i;
+    s32 list;
+    s32 pair;
+    extern s32 func_001E1030();
+
+    pos = func_001E1090(arg0, arg1);
+    kind = func_001E1030(arg0, arg1);
+    slot = func_00250360(arg0, arg1);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (kind) {
+    case 0x145:
+        list = func_0024CA40(0, 0, arg0, 2, 0x34, 0xE);
+        for (i = 0; i < func_0024E910(list); i++) {
+            pair = func_0024EC50(list, i);
+            if (func_001E2100(pair >> 8, pair & 0xFF, 3) != 0) {
+                count++;
+            }
+        }
+        if (count >= 3) {
+            return 1;
+        }
+        break;
+    case 0xC0:
+        if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 5, 0xE)) >= 3) {
+            return 1;
+        }
+        break;
+    case 0x2DB:
+    case 0x2EF:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_001465A0(slot) == 1) {
+            return 1;
+        }
+        break;
+    case 0x34E:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_001466A0(func_00250360(arg0, arg1), 0x34E) == 1 &&
+            func_001E22B0(pos & 0xFF, pos >> 8) != 9) {
+            return 1;
+        }
+        break;
+    }
+    return 2;
+}
 
 static inline s32 max_001464A0(s32 a, s32 b) {
     if (a < b) {

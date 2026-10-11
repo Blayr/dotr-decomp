@@ -615,4 +615,7 @@ s32 func_0016B0F0();                            /* extern */
 
 s32 func_002494D0();
 
+s32 func_001465A0(s32);
+s32 func_0027D830(s32, s32, s32, s32, s32, s32);
+
 #endif
