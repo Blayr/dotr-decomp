@@ -69,7 +69,48 @@ s32 func_001626F0(s32 arg0) {
     return count < 5 ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001627D0);
+s32 func_001627D0(s32 arg0) {
+    extern s32 func_001DEE50(s32);
+    s32 i;
+
+    if (func_001E0150(arg0) >= 5) {
+        return -1;
+    }
+    if (func_0027DD20(arg0, 3, 0x3C) > 0 || func_0027DD20(arg0, 3, 0x57) > 0 ||
+        func_0027DD20(arg0, 3, 0x2B) > 0) {
+        for (i = 0; i < func_001DEE50(arg0); i++) {
+            if (func_001DEE00(arg0, i) == 0x57) {
+                return (arg0 << 16) | i;
+            }
+        }
+        for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
+            if (func_001DEE00(arg0 == 0 ? 1 : 0, i) == 0x57) {
+                return ((arg0 == 0 ? 1 : 0) << 16) | i;
+            }
+        }
+        for (i = 0; i < func_001DEE50(arg0); i++) {
+            if (func_001DEE00(arg0, i) == 0x2B) {
+                return (arg0 << 16) | i;
+            }
+        }
+        for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
+            if (func_001DEE00(arg0 == 0 ? 1 : 0, i) == 0x2B) {
+                return ((arg0 == 0 ? 1 : 0) << 16) | i;
+            }
+        }
+        for (i = 0; i < func_001DEE50(arg0); i++) {
+            if (func_001DEE00(arg0, i) == 0x3C) {
+                return (arg0 << 16) | i;
+            }
+        }
+        for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
+            if (func_001DEE00(arg0 == 0 ? 1 : 0, i) == 0x3C) {
+                return ((arg0 == 0 ? 1 : 0) << 16) | i;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00162A70);
 
