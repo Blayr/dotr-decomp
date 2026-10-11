@@ -104,6 +104,7 @@ void func_001DE6B0(s32 arg0, s8 arg1);
 u8 func_001DE740(s32 arg0);
 void func_001DE760(s32 arg0, s8 arg1);
 s32 func_001DE780(void);
+s32 func_001DE9C0(s32 arg0);
 s32 func_001E0110(s32 arg0);
 s32 func_001E0150(s32 arg0);
 s32 func_001E05E0(void *arg0, s32 arg1, s32 arg2);
