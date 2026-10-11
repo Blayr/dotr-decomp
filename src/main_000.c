@@ -149,11 +149,49 @@ void func_00101AD0(s8 *arg0, s8 arg1, s8 arg2, s8 arg3) {
     arg0[3] = arg3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101AF0);
+typedef struct Timer_00101AF0 {
+    u8 count;
+    u8 delay;
+} Timer_00101AF0;
+
+s32 func_00101AF0(void *arg0) {
+    Timer_00101AF0 *timer = arg0;
+    u8 temp_v0;
+    u8 temp_v1;
+
+    temp_v1 = timer->count;
+    if (temp_v1 == 0) {
+        return 0;
+    }
+    temp_v0 = timer->delay;
+    if (temp_v0 != 0) {
+        timer->delay = (u8) (temp_v0 - 1);
+        return 0;
+    }
+    timer->count = (u8) (temp_v1 - 1);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101B40);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101B50);
+typedef struct Counter_00101B50 {
+    u8 count;
+    u8 delay;
+} Counter_00101B50;
+
+s32 func_00101B50(void *arg0) {
+    Counter_00101B50 *counter = arg0;
+
+    if (counter->count == 0) {
+        return 0;
+    }
+    if (counter->delay != 0) {
+        counter->delay--;
+        return 0;
+    }
+    counter->count--;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101BA0);
 

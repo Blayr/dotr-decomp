@@ -109,7 +109,25 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8FA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E90B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E9280);
+typedef struct Object_001E9280 {
+    u8 pad_00[0x14];
+    s32 value;
+    u8 pad_18[4];
+    s32 packed;
+} Object_001E9280;
+
+void func_001E9280(void *arg0, s32 arg1) {
+    Object_001E9280 *object = arg0;
+    s32 packed = object->packed;
+    s32 *entry = (s32 *)(packed & 0x03FFFFFF);
+
+    packed >>= 26;
+    if (arg1 != 0) {
+        entry = (s32 *)((u8 *)entry + packed * 0x10);
+        *entry = object->value;
+        func_0020F250(*entry);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E92C0);
 

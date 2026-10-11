@@ -37,7 +37,12 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DD80);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DE20);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DE70);
+s32 func_0024DE70(s32 arg0, s32 arg1) {
+    if (func_001E2100(arg0, arg1, 1) != 0) {
+        return (arg0 == 0) ? 1 : 0;
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DEB0);
 
@@ -55,7 +60,18 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E780);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E880);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E910);
+s32 func_0024E910(s32 arg0) {
+    s32 count = 0;
+    s32 bit = 0;
+
+    do {
+        if ((((u32) arg0 >> bit) & 1) == 1) {
+            count += 1;
+        }
+        bit += 1;
+    } while (bit < 0x16);
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E950);
 
@@ -115,7 +131,30 @@ s32 func_00250360(s32 arg0, s32 arg1) {
     return func_0024DE70(arg0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_00250370);
+typedef struct {
+    s8 unused : 1;
+    s8 inverted : 1;
+    s8 reserved : 6;
+} Flags_00250370;
+
+typedef struct {
+    u8 pad_00[0x44];
+    u8 value;
+    u8 pad_45[0x12];
+    Flags_00250370 flags;
+} Data_00250370;
+
+s32 func_00250370(void *arg0) {
+    Data_00250370 *data = arg0;
+
+    if (arg0 == NULL) {
+        return -1;
+    }
+    if (data->flags.inverted == 0) {
+        return data->value;
+    }
+    return (data->value == 0) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_002503B0);
 

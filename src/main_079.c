@@ -2,7 +2,20 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027AF20);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027AF80);
+void func_0027AF80(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 var_a2;
+    s32 *var_a3;
+
+    *(s8 *)arg0 = (s8) ((arg3 << 4) | arg2);
+    var_a2 = 0;
+    var_a3 = arg0;
+    do {
+        var_a2 += 1;
+        var_a3[1] = 0;
+        var_a3++;
+    } while (var_a2 < 0xC);
+    *(s32 *)((u8 *)arg0 + 0x34) = arg1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027AFC0);
 
@@ -78,7 +91,13 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E840);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027EB00);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F0D0);
+void func_0027F0D0(void *arg0) {
+    f32 *values = arg0;
+
+    values[0] = values[1] = values[2] = values[3] = 1.0f;
+    values[4] = values[5] = values[6] = values[7] = 0.0f;
+    values[8] = values[9] = values[10] = values[11] = 0.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F110);
 
@@ -90,9 +109,23 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F180);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F290);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F360);
+void func_0027F360(void *arg0, void *arg1) {
+    f32 *dst = arg0;
+    f32 *src = arg1;
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F3A0);
+    dst[0] += src[0];
+    dst[1] += src[1];
+    dst[2] += src[2];
+}
+
+void func_0027F3A0(void *arg0, void *arg1) {
+    f32 *dst = arg0;
+    f32 *src = arg1;
+
+    dst[0] -= src[0];
+    dst[1] -= src[1];
+    dst[2] -= src[2];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F3E0);
 

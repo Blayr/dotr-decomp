@@ -159,4 +159,16 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_00275E30);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00275E80);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002760E0);
+s32 func_002760E0(u16 value, u16 *entries) {
+    s32 i = 0;
+
+    do {
+        if (value == *entries) {
+            return 1;
+        }
+        i++;
+        entries += 8;
+    } while (i < 22);
+
+    return 0;
+}

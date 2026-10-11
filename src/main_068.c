@@ -93,13 +93,34 @@ void func_00241AC0(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241AD0);
+typedef struct Header_00241AD0 {
+    u8 padding[0x50000];
+    s32 offset;
+    s32 start;
+    s32 end;
+} Header_00241AD0;
+
+s32 func_00241AD0(void *arg0, void **arg1) {
+    s32 size = ((Header_00241AD0 *)arg0)->end - ((Header_00241AD0 *)arg0)->start;
+
+    if (size != 0) {
+        *arg1 = (u8 *)arg0 + ((Header_00241AD0 *)arg0)->offset;
+    }
+    return size;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241B10);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241B80);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241BE0);
+s32 func_00241BE0(s32 *arg0, s32 arg1) {
+    s32 remaining;
+
+    remaining = arg0[0x14001];
+    arg1 = (arg1 < remaining) ? arg1 : remaining;
+    arg0[0x14001] -= arg1;
+    return arg1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241C20);
 
