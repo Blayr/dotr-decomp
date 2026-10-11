@@ -193,7 +193,55 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027BBC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027BE10);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C070);
+void func_0027C070(s32 arg0, u16 *arg1, s32 arg2, u8 arg3) {
+    void *card;
+    s32 i;
+    s32 end;
+    u8 count;
+    s32 start;
+
+    count = 0;
+    switch (arg2) {
+    case 0x22:
+        end = 1;
+        start = 0;
+        break;
+    case 0x1F:
+        end = 11;
+        start = 0;
+        break;
+    case 0x34:
+        start = 1;
+        end = 11;
+        break;
+    default:
+        start = 1;
+        end = 6;
+        break;
+    }
+    for (i = start; i < end; i++) {
+        if (count >= 22) {
+            return;
+        }
+        if ((card = (void *)func_001DF540(arg0, i)) != 0 && arg0 == func_00250370(card)) {
+            if (func_002781B0(arg0, i, arg3) != 0 || func_0027C5A0(arg0, i, arg2) == 1) {
+                arg1[count] = (u16)(arg0 << 8) | i;
+                count++;
+            }
+        }
+    }
+    for (i = start; i < end; i++) {
+        if (count >= 22) {
+            return;
+        }
+        if ((card = (void *)func_001DF540((arg0 == 0) ? 1 : 0, i)) != 0 && arg0 == func_00250370(card)) {
+            if (func_002781B0((arg0 == 0) ? 1 : 0, i, arg3) != 0 || func_0027C5A0((arg0 == 0) ? 1 : 0, i, arg2) == 1) {
+                arg1[count] = i | (((arg0 == 0) ? 1 : 0) << 8);
+                count++;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C2C0);
 

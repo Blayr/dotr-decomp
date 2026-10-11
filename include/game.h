@@ -104,7 +104,6 @@ s32 func_0024CA40(s32, s32, s32, s32, s32, s32);
 s32 func_0027DD20(s32, s32, s32);
 
 s32 func_0027B650(u16 *);
-void func_0027C070(s32, u16 *, s32, s32);
 void func_0027C2C0(s32, u16 *, s32, s32, s32);
 
 void func_00185578(s32, s32);
