@@ -578,4 +578,6 @@ extern s8 D_0034F708;
 void func_001E42C0(s32, s32, s32, s32);
 void func_00260490(s32, s32, s32, s32, s32, s32, s32);
 
+s32 func_0024EFB0(s32);
+
 #endif

@@ -2,7 +2,47 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00254890);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00254B20);
+s32 func_00254B20(void *arg0, s32 arg1) {
+    s32 result;
+    s32 *src;
+    s32 selections[3];
+    s32 *selection;
+    u32 selector;
+    s32 i;
+    s32 j;
+    s32 mask;
+    s32 card;
+    s32 count;
+
+    selection = selections;
+    selector = arg1;
+    src = arg0;
+    i = 0;
+    result = 0;
+    do {
+        if ((mask = func_0024CA40(0, 0, selector, 1, *src, 14)) > 0) {
+            for (j = 0; j < func_0024E910(result); j++) {
+                card = func_0024EC50(result, j);
+                if (func_0024EA10(card, mask) != 0) {
+                    mask = func_0024C7D0(mask, card >> 8, card & 0xFF);
+                }
+            }
+            count = func_0024F200(mask);
+            if (count > 0) {
+                if ((*selection = func_0024EFB0(count)) >= 0) {
+                    result = func_0024C780(result, *selection >> 8, *selection & 0xFF);
+                }
+            }
+        }
+        i++;
+        src++;
+        selection++;
+    } while (i < 3);
+    if (func_0024E910(result) != 3) {
+        return -1;
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00254C90);
 
