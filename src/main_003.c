@@ -111,7 +111,14 @@ s32 func_0010A0F0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A160);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A1D0);
+void func_0010A1D0(s32 arg0, s32 arg1, s32 arg2) {
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    if ((D_0030FF40[1] & 4) && (D_0030FF40[0] & 1) && ((s64)func_0010A8A0() & 0x80)) {
+        func_0010C720(0x5210, arg0, arg1, arg2, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A280);
 
