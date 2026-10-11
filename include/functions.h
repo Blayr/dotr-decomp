@@ -33,6 +33,7 @@ static inline s32 decode_0013AA40(s32 position);
 static inline s32 dispatch_0014F3A0(s32 index, s32 id);
 static inline s32 distance_00117B10(s32 x, s32 y);
 static inline u32 flags_0010A0F0(void);
+s32 func_001001D0(void);
 void func_001004C0(void);
 void func_00100520(void);
 void func_00100560(void);
