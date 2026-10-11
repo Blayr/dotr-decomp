@@ -4,7 +4,20 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D20);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D40);
+typedef struct {
+    u8 padding[0x244];
+    f32 field_244;
+    s32 field_248;
+} Data_00209D40;
+
+f32 func_00209D40(s32 *arg0) {
+    Data_00209D40 *data = (Data_00209D40 *)D_00325F50;
+
+    if (arg0 != NULL) {
+        *arg0 = data->field_248;
+    }
+    return data->field_244;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D60);
 
