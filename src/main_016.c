@@ -100,7 +100,52 @@ INCLUDE_ASM("asm/nonmatchings/main_016", func_0016B3C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016B610);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016C6B0);
+s32 func_0016C6B0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 best_other;
+    s32 best_own;
+    s32 list;
+    s32 i;
+    s32 card;
+    s32 lo;
+    s32 hi;
+    s32 value;
+
+    for (i = 0; i < 22; i++) {
+    }
+    best_own = -1;
+    best_other = -1;
+    list = func_0024CA40(0, 0, arg0, arg1, arg2, 14);
+    for (i = 0; i < func_0024E910(list); i++) {
+        card = func_0024EC50(list, i);
+        hi = card >> 8;
+        lo = card & 0xFF;
+        if (arg0 == func_00250360(hi, lo)) {
+            value = func_002509E0(hi, lo, func_001E1090(hi, lo) & 0xFF, func_001E1090(hi, lo) >> 8);
+            if (best_own < value) {
+                best_own = value;
+            }
+        } else {
+            value = func_002509E0(hi, lo, func_001E1090(hi, lo) & 0xFF, func_001E1090(hi, lo) >> 8);
+            if (best_other < value) {
+                best_other = value;
+            }
+        }
+    }
+    if (best_own < best_other && best_other > 2500) {
+        return 1;
+    }
+    if (arg1 & 1) {
+        if (func_0024E910(func_0024CA40(0, 0, arg0, 1, arg2, 14)) > 0) {
+            return 0;
+        }
+    }
+    if (arg1 >> 1) {
+        if (func_0024E910(func_0024CA40(0, 0, arg0, 2, arg2, 14)) > 3) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016C8F0);
 
