@@ -667,4 +667,7 @@ s32 func_001643F0(s32, s32, s32);
 void func_0016D6A0(void *);
 s32 func_0016F4D0(s32, s32, s32);
 
+void func_0012C1A0(void *, s32);
+s32 func_0012D270(s32, s32, s32, s32);
+
 #endif
