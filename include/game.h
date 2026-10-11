@@ -212,4 +212,6 @@ extern s32 D_003505F8;
 
 void func_00195108(s32 arg0, s16 arg1);
 
+void func_0020F250(s32);
+
 #endif
