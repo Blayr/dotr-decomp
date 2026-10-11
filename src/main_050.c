@@ -91,9 +91,30 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5860);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F58E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5970);
+s32 func_001F5970(s32 arg0, s32 arg1) {
+    s32 temp_a1;
+    s32 temp_v1;
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F59D0);
+    temp_v1 = arg0 >> 8;
+    temp_a1 = arg0 & 0xFF;
+    if ((temp_v1 < 0) || (temp_v1 >= 3) ||
+        (temp_a1 < 0) || (temp_a1 >= 0xB)) {
+        return 0;
+    }
+    return func_001E3850(temp_v1, temp_a1, arg1);
+}
+
+s32 func_001F59D0(s32 arg0, s32 arg1) {
+    s32 column;
+    s32 row;
+
+    row = arg0 >> 8;
+    column = arg0 & 0xFF;
+    if (row < 0 || row >= 3 || column < 0 || column >= 11) {
+        return 0;
+    }
+    return func_001E3900(row, column, arg1);
+}
 
 s32 func_001F5A30(s32 arg0, s32 arg1) {
     s32 row;
@@ -129,15 +150,45 @@ s32 func_001F5B30(s32 arg0) {
     return temp_v0[1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5B70);
+s32 func_001F5B70(s32 arg0, s32 arg1) {
+    s32 temp_a1;
+    s32 temp_v1;
+
+    temp_v1 = arg0 >> 8;
+    temp_a1 = arg0 & 0xFF;
+    if (temp_v1 < 0 || temp_v1 >= 3 || temp_a1 < 0 || temp_a1 >= 0xB) {
+        return 0;
+    }
+    return func_001E3AB0(temp_v1, temp_a1, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5BD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5C40);
+s32 func_001F5C40(s32 arg0, s32 arg1) {
+    s32 column;
+    s32 row;
+
+    row = arg0 >> 8;
+    column = arg0 & 0xFF;
+    if ((row < 0) || (row >= 3) || (column < 0) || (column >= 11)) {
+        return 0;
+    }
+    return func_001E3BF0(row, column, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5CA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5D10);
+s32 func_001F5D10(s32 arg0, s32 arg1) {
+    s32 temp_a1;
+    s32 temp_v1;
+
+    temp_v1 = arg0 >> 8;
+    temp_a1 = arg0 & 0xFF;
+    if (temp_v1 < 0 || temp_v1 >= 3 || temp_a1 < 0 || temp_a1 >= 0xB) {
+        return 0;
+    }
+    return func_001E3D30(temp_v1, temp_a1, arg1);
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -160,7 +211,17 @@ s32 func_001F5D70(s32 arg0, void *arg1) {
     return func_001E3DD0(a, b, out);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5DE0);
+s32 func_001F5DE0(s32 arg0, s32 arg1) {
+    s32 row;
+    s32 column;
+
+    row = arg0 >> 8;
+    column = arg0 & 0xFF;
+    if (row < 0 || row >= 3 || column < 0 || column >= 11) {
+        return 0;
+    }
+    return func_001E3E70(row, column, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5E40);
 

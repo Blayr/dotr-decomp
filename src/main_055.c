@@ -166,7 +166,18 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00205C90);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205CA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205CB0);
+void func_00205CB0(void *arg0, f32 fparg0, f32 fparg1) {
+    f32 matrix[4][4];
+    f32 *vector = arg0;
+
+    vector[0] = fparg0;
+    vector[1] = fparg1;
+    vector[2] = func_001F9A20(0);
+    vector[3] = 1.0f;
+    func_0020EBA0(matrix);
+    func_0020BDE0(matrix, matrix);
+    func_0020CDD0(vector, matrix, vector);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205D10);
 

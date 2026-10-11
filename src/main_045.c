@@ -47,7 +47,26 @@ s32 func_001E0150(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E01F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0290);
+void *func_001DD130();
+s32 func_001E02F0(void *arg0, s32 arg1);
+
+static inline void *lookup_001E0290(s32 arg0, s32 arg1)
+{
+    void *object = func_001DD130(arg0, arg1);
+
+    if (object == 0) {
+        return 0;
+    }
+    if (*((u8 *)object + 0x45) >= 11) {
+        return 0;
+    }
+    return object;
+}
+
+s32 func_001E0290(s32 arg0, s32 arg1, s32 arg2)
+{
+    return func_001E02F0(lookup_001E0290(arg0, arg1), arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E02F0);
 

@@ -40,7 +40,29 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF9C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFAC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFC50);
+typedef struct Entry_001FFC50 {
+    s32 key;
+    s32 value;
+} Entry_001FFC50;
+
+extern Entry_001FFC50 D_00322770[];
+
+s32 func_001FFC50(s32 arg0, s32 arg1) {
+    Entry_001FFC50 *entry;
+    s32 remaining;
+
+    entry = D_00322770;
+    remaining = 0x40;
+    while (remaining--) {
+        if (entry->key < 0) {
+            entry->key = arg0;
+            entry->value = arg1;
+            return 1;
+        }
+        entry++;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFCB0);
 

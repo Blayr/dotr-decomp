@@ -49,7 +49,15 @@ s32 func_001FC840(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC890);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC950);
+void func_001FC950(void *arg0, void *arg1) {
+    s32 *src = arg0;
+    f32 *dst = arg1;
+
+    dst[0] = (f32) src[0];
+    dst[1] = (3.1415927f * (f32) src[1]) / 32768.0f;
+    dst[2] = (3.1415927f * (f32) src[2]) / 32768.0f;
+    dst[3] = (f32) src[3];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC9B0);
 

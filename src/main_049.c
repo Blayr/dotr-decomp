@@ -150,7 +150,24 @@ s8 func_001F2980(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F29E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2A70);
+typedef struct {
+    s8 : 4;
+    s8 active : 1;
+    s8 : 3;
+} Flags_001F2A70;
+
+s32 func_001F2A70(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    return ((Flags_001F2A70 *) ((u8 *) temp_v0 + 0x20C))->active ? 1 : 0;
+}
 
 s32 func_001F2AD0(s32 arg0, s8 arg1) {
     Obj_0031ABB0 *obj;
@@ -227,13 +244,45 @@ s32 func_001F3130(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3190);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3210);
+typedef struct {
+    s8 : 6;
+    s8 active : 1;
+    s8 : 1;
+} Flags_001F3210;
+
+s32 func_001F3210(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    return ((Flags_001F3210 *)((u8 *)temp_v0 + 0x20C))->active ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3270);
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F32F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3360);
+typedef struct {
+    s8 active : 1;
+} Flags_001F3360;
+
+s32 func_001F3360(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    return ((Flags_001F3360 *)((u8 *)temp_v0 + 0x20D))->active ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F33C0);
 
