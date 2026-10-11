@@ -1,6 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00153ED0);
+s32 func_00153ED0(s32 arg0) {
+    if (func_001DF470() > 1200) {
+        if (func_001E0150(arg0) >= 4) {
+            return 500;
+        } else {
+            return 1000;
+        }
+    } else {
+        return 1500;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00153F30);
 
