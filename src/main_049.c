@@ -605,7 +605,25 @@ s32 func_001F3130(s32 arg0) {
     return ((Flags_001F3130 *)((u8 *)temp_v0 + 0x20C))->enabled ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3190);
+typedef struct {
+    s8 low : 6;
+    s8 flag : 1;
+    s8 high : 1;
+} Flags_001F3190;
+
+s32 func_001F3190(s32 arg0, s32 arg1) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    ((Flags_001F3190 *)((u8 *)obj + 0x20C))->flag = arg1;
+    return 1;
+}
 
 typedef struct {
     s8 : 6;
