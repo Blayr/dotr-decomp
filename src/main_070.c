@@ -122,7 +122,32 @@ s32 func_002455E0(s32 arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245630);
+s32 func_00245630(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                  void *arg4, s32 arg5, s32 arg6, s32 arg7) {
+    s32 temp_fp;
+    s32 temp_s0;
+
+    temp_s0 = arg5 + arg7;
+    if ((arg1 + arg3) < temp_s0) {
+        return 0;
+    }
+    if (arg5 >= arg1) {
+        func_00198790((u8 *)arg0, arg4, arg1);
+        func_00198790((u8 *)arg2, (u8 *)arg4 + arg1, arg5 - arg1);
+        func_00198790(((u8 *)arg2 + arg5) - arg1, (u8 *)arg6, arg7);
+    } else {
+        temp_fp = arg1 - arg5;
+        if (arg7 >= temp_fp) {
+            func_00198790((u8 *)arg0, arg4, arg5);
+            func_00198790((u8 *)arg0 + arg5, (u8 *)arg6, temp_fp);
+            func_00198790((u8 *)arg2, ((u8 *)arg6 + arg1) - arg5, arg7 - temp_fp);
+        } else {
+            func_00198790((u8 *)arg0, arg4, arg5);
+            func_00198790((u8 *)arg0 + arg5, (u8 *)arg6, arg7);
+        }
+    }
+    return temp_s0;
+}
 
 typedef struct State_00245770 {
     s32 value;

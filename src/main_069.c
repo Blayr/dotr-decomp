@@ -93,7 +93,30 @@ s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242F20);
+s32 func_00242F20(void *arg0, s32 arg1, void *arg2, s32 arg3,
+                  void *arg4, s32 arg5, void *arg6, s32 arg7) {
+    s32 gap;
+
+    if ((arg1 + arg3) < (arg5 + arg7)) {
+        return 0;
+    }
+    if (arg5 >= arg1) {
+        func_00198790(arg0, arg4, arg1);
+        func_00198790(arg2, (const u8 *)arg4 + arg1, arg5 - arg1);
+        func_00198790((u8 *)arg2 + arg5 - arg1, arg6, arg7);
+    } else {
+        gap = arg1 - arg5;
+        if (arg7 >= gap) {
+            func_00198790(arg0, arg4, arg5);
+            func_00198790((u8 *)arg0 + arg5, arg6, gap);
+            func_00198790(arg2, (const u8 *)arg6 + arg1 - arg5, arg7 - gap);
+        } else {
+            func_00198790(arg0, arg4, arg5);
+            func_00198790((u8 *)arg0 + arg5, arg6, arg7);
+        }
+    }
+    return arg5 + arg7;
+}
 
 typedef struct {
     s32 unk0;
