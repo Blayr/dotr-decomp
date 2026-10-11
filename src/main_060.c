@@ -122,7 +122,31 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_00215D30);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215DE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215F00);
+typedef struct {
+    u8 padding[0x52];
+    u16 value;
+} Entry_00215F00;
+
+extern u8 D_0034F6D0;
+
+static inline s32 side_00215F00(s32 player) {
+    if (D_0034F6D0 == player) {
+        return 0;
+    }
+    return 1;
+}
+
+s32 func_00215F00(s32 arg0, s32 arg1) {
+    u8 *side;
+    Entry_00215F00 *entry;
+
+    side = (u8 *)D_0032F790 + side_00215F00(arg0) * 0xFFA0;
+    entry = (Entry_00215F00 *)(side + arg1 * sizeof(Entry_00215F00) + 0xFD94);
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return -1;
+    }
+    return entry->value;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215F90);
 
