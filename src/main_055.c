@@ -77,7 +77,16 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00205170);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002051C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002051F0);
+typedef struct {
+    s8 : 2;
+    s8 flag : 1;
+} Flags_002051F0;
+
+extern Flags_002051F0 D_00325CAC;
+
+s32 func_002051F0(void) {
+    return D_00325CAC.flag ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205210);
 
