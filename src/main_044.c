@@ -118,7 +118,38 @@ s32 func_001DE5C0(s32 arg0) {
     return ((Entry_001DE5C0 *)(D_00317490 + arg0 * 0x350))->value;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE5E0);
+s32 func_001DE5E0(s32 index, s32 operation, s32 value) {
+    s32 current;
+    s32 result;
+    u8 *entry;
+
+    entry = D_00317490 + index * 0x350;
+    current = entry[0x341];
+    switch (operation) {
+    case 0:
+        result = current + value;
+        break;
+    case 1:
+        result = current - value;
+        break;
+    case 2:
+        result = current * value;
+        break;
+    case 3:
+        result = current / value;
+        break;
+    case 4:
+        result = value;
+        break;
+    default:
+        return 0;
+    }
+
+    value = result;
+    value = (value > 0 ? value : 0) < 12 ? (value > 0 ? value : 0) : 12;
+    entry[0x341] = value;
+    return 1;
+}
 
 typedef struct Entry_001DE690 {
     u8 padding[0x342];
@@ -271,7 +302,36 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEA30);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEB20);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEC00);
+typedef struct {
+    u16 slots[40];
+    u8 count;
+} SlotList_001DEC00;
+
+s32 func_001DEC00(s32 arg0, s32 arg1, s32 arg2) {
+    SlotList_001DEC00 *list;
+    u16 *slot;
+
+    list = (SlotList_001DEC00 *)(D_00317490 + (arg0 * 0x350) + 0x1E0);
+    if ((arg1 < 0) || (arg1 >= 0x28)) {
+        return 0;
+    }
+    if (arg2 == 0x29F) {
+        arg2 = 0x3E7;
+    }
+    if ((arg2 < 0) || (arg2 >= 0x356)) {
+        return 0;
+    }
+    if (list->count >= 0x28) {
+        return 0;
+    }
+    slot = &list->slots[arg1];
+    if (*slot != 0x3E7) {
+        return 0;
+    }
+    *slot = arg2;
+    list->count++;
+    return 1;
+}
 
 s32 func_001DECC0(s32 arg0, s32 arg1) {
     u8 *temp_a0;

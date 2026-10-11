@@ -305,7 +305,54 @@ s32 func_00209270(void *arg0, void *arg1, f32 *arg2, f32 *arg3, f32 *arg4) {
     return D_00325E2C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00209320);
+typedef struct Packet_00209320 {
+    s32 tag0;
+    s32 zero0;
+    s32 zero1;
+    s32 command0;
+    f32 right;
+    f32 left;
+    f32 near_value;
+    f32 far_value;
+    s32 tag1;
+    s32 zero2;
+    s32 zero3;
+    s32 command1;
+    s32 enabled;
+    s32 zero4;
+    s32 zero5;
+    s32 zero6;
+} Packet_00209320;
+
+void *func_00209320(void *arg0, s32 arg1, f32 fparg0, f32 fparg1, f32 fparg2) {
+    f32 temp_f2;
+    s32 enabled;
+    Packet_00209320 *packet = arg0;
+
+    packet->tag0 = 0x10000001;
+    packet->zero0 = 0;
+    packet->zero1 = 0;
+    packet->command0 = 0x6C014052;
+    temp_f2 = 2.0f * fparg0;
+    packet->right = 645.0f / temp_f2;
+    packet->left = -645.0f / temp_f2;
+    packet->near_value = 0.01f + fparg1;
+    packet->far_value = fparg2 - 0.01f;
+    packet->tag1 = 0x10000001;
+    packet->zero2 = 0;
+    packet->zero3 = 0;
+    packet->command1 = 0x6C01405A;
+    if (arg1 == 1) {
+        enabled = 1;
+    } else {
+        enabled = 0;
+    }
+    packet->enabled = enabled;
+    packet->zero4 = 0;
+    packet->zero5 = 0;
+    packet->zero6 = 0;
+    return (u8 *)arg0 + 0x40;
+}
 
 typedef struct Packet_002093E0 {
     s32 tag[4];

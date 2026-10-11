@@ -366,7 +366,32 @@ s32 func_001E36E0(s32 arg0, s32 arg1) {
     return (s32)result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3790);
+static inline void **lookup_001E3790(s32 arg0, s32 arg1) {
+    if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
+        return NULL;
+    }
+    return (void **)(D_00318E60 + (arg1 * 0xC4) + (arg0 * 0x1C));
+}
+
+s32 func_001E3790(s32 arg0, s32 arg1) {
+    u8 temp_v1;
+    void **var_v0;
+    void *temp_a0;
+
+    var_v0 = lookup_001E3790(arg0, arg1);
+    if (var_v0 == NULL) {
+        return -1;
+    }
+    temp_a0 = *var_v0;
+    if (temp_a0 == NULL) {
+        return -1;
+    }
+    temp_v1 = *((u8 *)temp_a0 + 0x45);
+    if ((s32) temp_v1 >= 0xB) {
+        return -1;
+    }
+    return (*((u8 *)temp_a0 + 0x44) << 8) | temp_v1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3850);
 

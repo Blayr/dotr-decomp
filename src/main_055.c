@@ -299,7 +299,37 @@ f32 func_00205DF0(void *arg0, f32 fparg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205E70);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00206030);
+typedef struct Vec4_00206030 {
+    f32 x, y, z, w;
+} Vec4_00206030;
+
+s32 func_00206030(s32 count, void *arg1, void *arg2) {
+    Vec4_00206030 *src = arg1;
+    Vec4_00206030 *dst = arg2;
+    s32 i;
+    f32 divisor;
+
+    dst->x = 0.0f;
+    dst->y = 0.0f;
+    dst->z = 0.0f;
+    dst->w = 0.0f;
+    if (count == 0) {
+        return 0;
+    }
+    for (i = 0; i < count; i++) {
+        dst->x += src->x;
+        dst->y += src->y;
+        dst->z += src->z;
+        dst->w += src->w;
+        src++;
+    }
+    divisor = (f32) count;
+    dst->x /= divisor;
+    dst->y /= divisor;
+    dst->z /= divisor;
+    dst->w /= divisor;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002060F0);
 

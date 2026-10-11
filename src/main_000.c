@@ -88,7 +88,23 @@ void func_00100B00(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 a
     func_002058D0(vertices, D_0030FF00, arg3, arg4, arg5);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100BA0);
+typedef struct Vec4_00100BA0 {
+    f32 x, y, z, w;
+} Vec4_00100BA0;
+
+void func_002058D0(void *, void *, s32, s32, s32);
+extern f32 D_0030FF00[];
+
+void func_00100BA0(void *arg0, void *arg1, void *arg2, void *arg3,
+                   s32 arg4, s32 arg5, s32 arg6) {
+    Vec4_00100BA0 vectors[4];
+
+    vectors[0] = *(Vec4_00100BA0 *)arg0;
+    vectors[1] = *(Vec4_00100BA0 *)arg1;
+    vectors[2] = *(Vec4_00100BA0 *)arg2;
+    vectors[3] = *(Vec4_00100BA0 *)arg3;
+    func_002058D0(vectors, D_0030FF00, arg4, arg5, arg6);
+}
 
 typedef struct {
     u16 x : 14;

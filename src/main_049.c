@@ -226,7 +226,39 @@ s32 func_001F2660(s32 arg0, void *arg1) {
     return *(u8 *)((u8 *)obj + 0x1F8) & 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F26E0);
+typedef struct {
+    u8 mode : 2;
+    u8 reserved : 6;
+} Flags_001F26E0;
+
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_001F26E0;
+
+s32 func_001F26E0(s32 arg0, s32 arg1, void *arg2) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (arg1 >= 0 && arg1 < 4) {
+        ((Flags_001F26E0 *)((u8 *)obj + 0x1F8))->mode = arg1;
+    }
+    if (arg2 != NULL) {
+        *(Color_001F26E0 *)&obj->pad040[0xEC] = *(Color_001F26E0 *)arg2;
+    } else {
+        obj->pad040[0xEC] = obj->pad040[0xED] = obj->pad040[0xEE] = 0x80;
+        obj->pad040[0xEF] = 0x80;
+    }
+    return 1;
+}
 
 s32 func_001F27A0(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
@@ -255,7 +287,37 @@ s32 func_001F2800(s32 arg0, u8 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2860);
+typedef struct {
+    u8 low : 2;
+    u8 mode : 2;
+    u8 high : 4;
+} Flags_001F2860;
+
+typedef struct {
+    u8 r, g, b, a;
+} Color_001F2860;
+
+s32 func_001F2860(s32 arg0, s32 arg1, void *arg2) {
+    Obj_0031ABB0 *temp_a3;
+
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        return 0;
+    }
+    temp_a3 = D_0031ABB0[arg0];
+    if (temp_a3 == NULL) {
+        return 0;
+    }
+    if ((arg1 >= 0) && (arg1 < 4)) {
+        ((Flags_001F2860 *)((u8 *)temp_a3 + 0x1F8))->mode = arg1;
+    }
+    if (arg2 != NULL) {
+        *(Color_001F2860 *)&temp_a3->pad040[0xF0] = *(Color_001F2860 *)arg2;
+    } else {
+        temp_a3->pad040[0xF0] = temp_a3->pad040[0xF1] = temp_a3->pad040[0xF2] = 0;
+        temp_a3->pad040[0xF3] = 0;
+    }
+    return 1;
+}
 
 s16 func_001F2920(s32 arg0) {
     Obj_0031ABB0 *temp_v0;

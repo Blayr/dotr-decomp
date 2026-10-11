@@ -6,7 +6,44 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FA10);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FAF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FED0);
+typedef struct Header_0020FED0 {
+    u8 pad[0x30];
+    s32 offset0;
+    s32 pad34;
+    s32 offset1;
+} Header_0020FED0;
+
+void func_0020FED0(void *arg0, void *arg1, void *arg2, s32 arg3) {
+    Header_0020FED0 *header;
+    s32 i;
+    s32 value;
+    s32 *table;
+    s32 *entry;
+    s32 tagged;
+
+    header = (Header_0020FED0 *)((u8 *)arg0 + 0x10);
+    if (arg3 != 0) {
+        table = (s32 *)((u8 *)arg0 + header->offset1);
+    } else {
+        table = (s32 *)((u8 *)arg0 + header->offset0);
+    }
+    for (i = 0; (value = *table) != -1; i++) {
+        switch (value & ~0x0FFFFFFF) {
+        case 0x20000000:
+        case 0x40000000:
+            entry = (s32 *)((u32)arg2 + (value & 0x0FFFFFFF));
+            tagged = *entry;
+            switch (tagged & ~0x0FFFFFFF) {
+            case 0x20000000:
+            case 0x40000000:
+                *entry = (u32)arg1 + (tagged & 0x0FFFFFFF);
+                break;
+            }
+            break;
+        }
+        table++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FF80);
 

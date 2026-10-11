@@ -42,7 +42,46 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_0023D920);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023DE90);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E610);
+typedef struct State_0023E610 {
+    s32 result;
+    u8 pad04[0x1C];
+    s32 command;
+    s32 status;
+    u8 pad28[8];
+    s16 field30;
+    u8 pad32[2];
+    s16 field34;
+    u8 pad36[0xA];
+    s16 field40;
+} State_0023E610;
+
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_001948A8(s32, s32);
+extern State_0023E610 D_0034FB00;
+extern s32 D_0034FB04;
+extern s32 D_0034FB08;
+extern s32 D_0034FB0C;
+extern s32 D_0034FB20;
+extern s32 D_0034FB24;
+
+s32 func_0023E610(void) {
+    State_0023E610 *state = &D_0034FB00;
+
+    D_0034FB00.result = func_001948A8(D_0034FB08, D_0034FB0C);
+    D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
+    if (D_0034FB04 == 1) {
+        if (state->command == 0x10) {
+            if (state->status == 0) {
+                state->field30 = 0xE;
+                state->field40 = 0;
+                state->field34 = 0;
+                return 0xC;
+            }
+            return 0xD;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E6D0);
 

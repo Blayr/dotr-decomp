@@ -435,7 +435,20 @@ s32 func_001E1090(s32 arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E10F0);
+void func_001E10F0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    f32 *out = arg3;
+
+    out[2] = 0.0f;
+    out[0] = 0.0f;
+    if ((arg0 >= 0) && (arg0 < 7)) {
+        out[0] = (f32) ((arg0 - 3) * 50);
+    }
+    if ((arg1 >= 0) && (arg1 < 7)) {
+        out[2] = (f32) ((arg1 - 3) * 50);
+    }
+    out[1] = (f32) (arg2 * 35) / 128.0f;
+    out[3] = 1.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E11B0);
 

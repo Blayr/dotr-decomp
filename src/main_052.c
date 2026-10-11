@@ -89,7 +89,40 @@ s32 func_001F90E0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9170);
+typedef struct Color_001F9170 {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_001F9170;
+
+typedef struct Palette_001F9170 {
+    u8 padding[0x880];
+    Color_001F9170 colors[10];
+} Palette_001F9170;
+
+s32 func_001F9170(s32 arg0, s32 arg1, s32 arg2) {
+    Palette_001F9170 *palette;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    palette = (Palette_001F9170 *)D_0031BEB0[arg0];
+    if (palette == 0) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        palette->colors[arg1] = *(Color_001F9170 *)arg2;
+    } else {
+        palette->colors[arg1].r = 0xFF;
+        palette->colors[arg1].g = 0xFF;
+        palette->colors[arg1].b = 0xFF;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9230);
 

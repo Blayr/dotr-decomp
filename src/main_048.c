@@ -191,7 +191,29 @@ s32 func_001F0FF0(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1070);
+s32 func_001F1070(s32 arg0) {
+    Obj_0031ABB0 *temp_a1;
+    s8 temp_v1;
+    void *temp_a3;
+
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        return 0;
+    }
+    temp_a1 = D_0031ABB0[arg0];
+    if (temp_a1 == NULL) {
+        return 0;
+    }
+    temp_a3 = *(void **)((u8 *)temp_a1 + 0x138);
+    if (temp_a3 == NULL) {
+        return 0;
+    }
+    temp_v1 = *(s8 *)((u8 *)temp_a1 + 0x1F3);
+    if ((temp_v1 != 4) && (temp_v1 != 5) && (temp_v1 != 6)) {
+        return 1;
+    }
+    *(s32 *)((u8 *)temp_a3 + 4) &= ~0x400;
+    return (func_001F3910(1, *(s16 *)((u8 *)temp_a1 + 0x1F4), 0, temp_a3) != 0) ? 1 : 0;
+}
 
 s32 func_001F1130(s32 arg0) {
     Obj_0031ABB0 *obj;
@@ -318,7 +340,30 @@ s8 func_001F1400(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1480);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1490);
+s32 func_001F1490(s32 arg0, s32 arg1, s32 arg2) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    if (arg2 < 0 || arg2 >= 4) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 8) {
+        return 0;
+    }
+
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (obj->slots[arg1] == NULL) {
+        return 0;
+    }
+
+    obj->lv[arg2] = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1550);
 
