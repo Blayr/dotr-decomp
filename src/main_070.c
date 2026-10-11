@@ -322,7 +322,44 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00248FD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00249040);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00249200);
+s32 func_00249200(s32 arg0) {
+    u8 temp_v1;
+    s32 result;
+
+    temp_v1 = D_0029D1F0[arg0];
+    switch (temp_v1) {
+    case 0:
+        switch (D_0029CF32[arg0]) {
+        case 0:
+            result = 0x219;
+            break;
+        default:
+            result = 0x218;
+            break;
+        }
+        break;
+    case 3:
+        result = 0x21D;
+        break;
+    case 2:
+        result = 0x21E;
+        break;
+    case 1:
+        switch (D_0029CF32[arg0]) {
+        case 5:
+            result = 0x21C;
+            break;
+        default:
+            result = 0x218;
+            break;
+        }
+        break;
+    default:
+        result = 0x218;
+        break;
+    }
+    return result;
+}
 
 s32 func_002492F0(s32 arg0) {
     return ((s32) D_0029D586[arg0 * 7] >> 1) & 1;
