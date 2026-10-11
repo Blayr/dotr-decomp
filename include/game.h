@@ -196,4 +196,7 @@ void func_0010A280(s32, s32, s32, s32, s32, s32);
 void func_001F6590(s32, s32, s32);
 extern s32 D_0031BE98;
 
+void func_0020B400(void *, s32, s32);
+extern u8 D_003259C0[];
+
 #endif
