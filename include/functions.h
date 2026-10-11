@@ -1043,6 +1043,7 @@ s32 func_00243170(void *arg0);
 void func_002431B0(void *arg0);
 void func_00243230(void *arg0);
 void func_00243290(void *arg0);
+void func_002432F0(void *arg0);
 void func_00243390(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4);
 s32 func_00243580(void *arg0);
 void func_00243750(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 offset);
