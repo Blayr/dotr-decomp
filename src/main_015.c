@@ -10,7 +10,44 @@ s32 func_00162580(s32 arg0) {
     return 0x7D0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001625E0);
+s32 func_001625E0(s32 arg0) {
+    u16 sp40[22];
+    s32 temp_s0;
+    s32 temp_s2;
+    s32 temp_v0;
+    s32 var_a0;
+    s32 var_a0_2;
+    u16 *var_a1;
+    u16 *var_s0;
+
+    var_s0 = sp40;
+    var_a0 = 0;
+    var_a1 = var_s0;
+    do {
+        var_a0 += 1;
+        *var_a1 = 0xFFFF;
+        var_a1++;
+    } while (var_a0 < 0x16);
+    func_0027C2C0((arg0 == 0) ? 1 : 0, sp40, 0x1D, 0, 0);
+    temp_s2 = func_0027B650(sp40);
+    var_a0_2 = 0;
+    do {
+        var_a0_2 += 1;
+        *var_s0 = 0xFFFF;
+        var_s0++;
+    } while (var_a0_2 < 0x16);
+    func_0027C070(arg0, sp40, 0x1D, 1);
+    temp_s0 = func_0027B650(sp40);
+    if (temp_s2 >= 0) {
+        if (temp_s0 >= 0) {
+            temp_v0 = func_001E1090(temp_s2 >> 8, temp_s2 & 0xFF);
+            if (func_002781F0(temp_s0, temp_s2, temp_v0 & 0xFF, temp_v0 >> 8) < 0) {
+                return temp_s2;
+            }
+        }
+    }
+    return -1;
+}
 
 s32 func_001626F0(s32 arg0) {
     s32 i;
