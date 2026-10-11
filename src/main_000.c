@@ -204,7 +204,21 @@ s32 func_00101B50(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101BA0);
+void func_00101BA0(void *arg0, s32 arg1) {
+    u8 temp_a0;
+
+    temp_a0 = *((u8 *)arg0 + 5);
+    switch (temp_a0) {
+    case 0:
+        return;
+    case 1:
+        func_001F5620(func_001F53A0(temp_a0), *((u8 *)arg0 + 6), arg1);
+        return;
+    case 2:
+        func_001F5620(func_001F5380(temp_a0), *((u8 *)arg0 + 6), arg1);
+        return;
+    }
+}
 
 s32 func_00101C30(u8 *arg0, s32 arg1, s32 arg2) {
     s32 offset;

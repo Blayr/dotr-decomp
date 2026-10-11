@@ -22,7 +22,38 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA7F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA8A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA930);
+typedef struct {
+    u8 pad[0x6D4];
+    u16 *values;
+} Data_001BA930;
+
+s32 func_001BA930(u16 *arg0, u16 *arg1) {
+    Data_001BA930 *data = (Data_001BA930 *)D_00317490;
+    s32 temp_a1;
+    s64 var_a2;
+    s64 var_v0;
+    s32 temp_v1;
+    s32 ret;
+
+    temp_v1 = *arg0;
+    temp_a1 = *arg1;
+    if (temp_v1 == 0x3E7) {
+        var_a2 = 0x7FFFFFFF;
+    } else {
+        var_a2 = (s32) data->values[temp_v1];
+    }
+    if (temp_a1 == 0x3E7) {
+        var_v0 = 0x7FFFFFFF;
+    } else {
+        var_v0 = (s32) data->values[temp_a1];
+    }
+    if (var_v0 < var_a2) {
+        ret = 1;
+    } else {
+        ret = (var_a2 < var_v0) ? -1 : 0;
+    }
+    return ret;
+}
 
 s32 func_001BA9C0(u16 *arg0, u16 *arg1) {
     s32 var_v0;
@@ -79,7 +110,31 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAAA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAB60);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAC00);
+s32 func_001BAC00(u16 *arg0, u16 *arg1) {
+    s64 var_v0;
+    s64 var_v1;
+    s32 temp_s0;
+    u8 *temp_s0_2;
+    u8 *temp_v0;
+
+    temp_s0 = *arg1;
+    temp_s0_2 = func_001DD0E0(*arg0);
+    temp_v0 = func_001DD0E0(temp_s0);
+    if (temp_s0_2 != NULL) {
+        var_v1 = (s32) temp_s0_2[3];
+    } else {
+        var_v1 = 0x7FFFFFFF;
+    }
+    if (temp_v0 != NULL) {
+        var_v0 = (s32) temp_v0[3];
+    } else {
+        var_v0 = 0x7FFFFFFF;
+    }
+    if (var_v0 < var_v1) {
+        return 1;
+    }
+    return (var_v1 < var_v0) ? -1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAC90);
 
@@ -144,7 +199,12 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0A30);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0CE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0EE0);
+void func_001C0EE0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 text = (s32)D_002BF002;
+
+    func_001B0CE0(arg0, 2, -1, 0x96, arg1 + 0x140, arg2 + 0x8D,
+                  0x1CC, 0xA6, func_0019BEF0((char *)text), text, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0F70);
 

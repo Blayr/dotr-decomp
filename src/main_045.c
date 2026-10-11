@@ -348,7 +348,31 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0950);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E09E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0B70);
+static inline void *check_001E0B70(void) {
+    void *record;
+
+    record = func_001DD130();
+    if (record == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)record + 0x45) >= 11) {
+        return NULL;
+    }
+    return record;
+}
+
+void *func_001E0B70(s32 arg0, s32 arg1, s32 index) {
+    void *record;
+
+    record = check_001E0B70();
+    if (record == NULL) {
+        return NULL;
+    }
+    if (index < 0 || index >= 5) {
+        return NULL;
+    }
+    return (u8 *)record + index * 8 + 8;
+}
 
 s32 func_001E0C70(void *, s32, s32);                /* extern */
 
@@ -463,7 +487,33 @@ s32 func_001E13C0(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1420);
+typedef struct Flags_001E1420 {
+    s8 : 3;
+    s8 enabled : 1;
+    s8 : 4;
+} Flags_001E1420;
+
+static inline void *check_001E1420(void) {
+    void *ptr = func_001DD130();
+
+    if (ptr == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)ptr + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return ptr;
+}
+
+s32 func_001E1420(s32 arg0, s32 arg1, s32 arg2) {
+    void *ptr = check_001E1420();
+
+    if (ptr == NULL) {
+        return 0;
+    }
+    ((Flags_001E1420 *)((u8 *)ptr + 0x58))->enabled = (s8)(arg2 != 0 ? 1 : 0);
+    return 1;
+}
 
 typedef struct {
     s8 reserved : 3;

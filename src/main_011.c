@@ -79,7 +79,22 @@ loop_1:
     goto loop_1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00147EB0);
+s32 func_00147EB0(s32 arg0) {
+    switch (arg0) {
+    case 0:
+        return 0x403;
+    case 1:
+        return 0x402;
+    case 2:
+        return 0x404;
+    case 3:
+        return 0x401;
+    case 4:
+        return 0x405;
+    default:
+        return -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00147F40);
 

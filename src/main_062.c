@@ -38,7 +38,18 @@ void func_0021BB70(void *arg0, void *arg1) {
     ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BB90);
+void func_0021BB90(s32 *arg0, s32 *arg1, s32 arg2) {
+    u16 projected[6];
+    s32 depth;
+
+    if (func_00205440(arg2, D_00299F90, projected, &depth) != 0) {
+        *arg0 = ((s32) projected[0] >> 4) - 0x6C0;
+        *arg1 = ((s32) projected[1] >> 4) - 0x720;
+    } else {
+        *arg0 = -1;
+        *arg1 = -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BC10);
 

@@ -309,4 +309,18 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E610);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E950);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026EA00);
+s32 func_0026EA00(s32 *arg0) {
+    s32 temp_v1;
+
+    temp_v1 = *arg0;
+    switch (temp_v1) {
+    case 0:
+        return func_00270030();
+    case 1:
+        return func_00270260();
+    case 2:
+        return func_0026FE70();
+    default:
+        return 0;
+    }
+}

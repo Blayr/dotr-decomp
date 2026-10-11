@@ -82,7 +82,25 @@ s32 func_001F22B0(s32 index, void *src) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2330);
+s32 func_001F2330(s32 arg0, void *arg1) {
+    s32 result;
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        result = 0;
+    } else {
+        temp_v0 = D_0031ABB0[arg0];
+        if (temp_v0 == NULL) {
+            result = 0;
+        } else {
+            if (arg1 != NULL) {
+                *(Vec4f *)arg1 = *(Vec4f *)((u8 *)temp_v0 + 0x10);
+            }
+            result = 1;
+        }
+    }
+    return result;
+}
 
 s32 func_001F23B0(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_v0;
@@ -100,7 +118,32 @@ s32 func_001F23B0(s32 arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2430);
+typedef struct {
+    f32 x, y, z, w;
+} Vec4_001F2430;
+
+/* needs shared field: D_0031ABB0 +0x10 f32[4] */
+
+s32 func_001F2430(s32 arg0, void *arg1) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (arg1 != NULL) {
+        *(Vec4_001F2430 *)((u8 *)obj + 0x10) = *(Vec4_001F2430 *)arg1;
+    } else {
+        *(f32 *)((u8 *)obj + 0x10) = 0.0f;
+        *(f32 *)((u8 *)obj + 0x14) = 0.0f;
+        *(f32 *)((u8 *)obj + 0x18) = 0.0f;
+        *(f32 *)((u8 *)obj + 0x1C) = 0.0f;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F24C0);
 
@@ -487,4 +530,39 @@ s32 func_001F3690(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3700);
+typedef struct Table_001F3700 {
+    s32 *values;
+    s32 unused;
+    s32 count;
+} Table_001F3700;
+
+void func_001F3790(void);
+void func_001F6CE0(s32);
+void func_001F6CF0(s32);
+extern Table_001F3700 D_00292FF0[3];
+extern s8 D_0031BB50;
+
+void func_001F3700(void) {
+    s32 i;
+    s32 *values;
+    s32 *count;
+    Table_001F3700 *table;
+
+    table = D_00292FF0;
+    i = 0;
+    do {
+        values = table->values;
+        count = &table->count;
+        table->count = 0;
+        while (*values++ != 0) {
+            (*count)++;
+        }
+        i++;
+        table++;
+    } while (i < 3);
+    func_0020B3C0(&D_0031BB50, 0, 0x354);
+    func_001F3790();
+    func_001F6CE0(0x80);
+    func_001F6CF0(0x80);
+    func_001F6D00(0x80);
+}

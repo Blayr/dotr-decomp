@@ -64,13 +64,52 @@ void func_00163F20(void *arg0) {
         (func_00163F90(temp_v0_3 & 0xFF, temp_v0_3 >> 8) << 16);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00163F90);
+s32 func_00163F90(s32 arg0, s32 arg1) {
+    if (arg1 == 0) {
+        if (arg0 >= 3) {
+            return 0x106;
+        }
+        if (arg0 < 3) {
+            return 0x100;
+        }
+    }
+    if (arg1 < 6) {
+        if (arg0 >= 3) {
+            return 0x605;
+        }
+        if (arg0 < 3) {
+            return 0x601;
+        }
+    }
+    if (arg0 >= 3) {
+        return 0x601;
+    }
+    return 0x605;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00164020);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00164260);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00164360);
+s32 func_00164360(s32 arg0) {
+    s32 temp_v1;
+
+    temp_v1 = arg0 & 0xFF;
+    switch (temp_v1) {
+    case 0:
+        return 0x203;
+    case 1:
+        return 0x301;
+    case 2:
+        return 0x305;
+    case 3:
+        return 0x202;
+    case 4:
+        return 0x204;
+    default:
+        return 0x203;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001643F0);
 

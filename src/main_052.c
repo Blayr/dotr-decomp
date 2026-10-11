@@ -34,7 +34,21 @@ s32 func_001F74B0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F74C0);
+s32 func_001F74C0(s32 arg0) {
+    s32 temp_v0;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    temp_v0 = func_00217B40(0x8C0);
+    if (temp_v0 == 0) {
+        return 0;
+    }
+    D_0031BEB0[arg0] = temp_v0;
+    func_0020B400((void *) temp_v0, 0, 0x230);
+    func_001F7550(arg0);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7550);
 
@@ -50,7 +64,30 @@ INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8D30);
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8F80);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F90E0);
+typedef struct {
+    u8 pad[0x10];
+    f32 direction[4];
+    f32 origin[4];
+    f32 target[4];
+} Direction_001F90E0;
+
+s32 func_001F90E0(s32 arg0) {
+    Direction_001F90E0 *entry;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    entry = (Direction_001F90E0 *)D_0031BEB0[arg0];
+    if (entry == 0) {
+        return 0;
+    }
+    entry->direction[0] = entry->target[0] - entry->origin[0];
+    entry->direction[1] = entry->target[1] - entry->origin[1];
+    entry->direction[2] = entry->target[2] - entry->origin[2];
+    entry->direction[3] = 0.0f;
+    func_0020D070(entry->direction);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9170);
 

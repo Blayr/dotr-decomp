@@ -22,7 +22,23 @@ s32 func_0025F2A0(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F310);
+void func_0025F310(void) {
+    s32 var_s0;
+    s32 var_s1;
+
+    var_s0 = 0;
+    var_s1 = 0;
+    do {
+        do {
+            if (func_001E22B0(var_s0, var_s1) == 8) {
+                func_001E2220(var_s0, var_s1, 7);
+            }
+            var_s1 += 1;
+        } while (var_s1 < 7);
+        var_s0 += 1;
+        var_s1 = 0;
+    } while (var_s0 < 7);
+}
 
 s32 func_0025F390(void *arg0) {
     s32 i;
@@ -137,9 +153,31 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_002614C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00261570);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261580);
+void func_00261580(void) {
+    s32 params[4];
+    s32 position[4];
+    s32 converted[4];
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261600);
+    func_001FA810(0, 0);
+    func_001E10F0(3, 3, 0x3E8, params);
+    func_00255FE0(position);
+    func_001FC950(position, converted);
+    func_001FA8A0(0, 0, 3, 0, 0, params);
+    func_001FA8A0(0, 0, 4, 0, 0, converted);
+}
+
+void func_00261600(void) {
+    s32 sp10[4];
+    s32 sp20[4];
+    s32 sp30[4];
+
+    func_001FA810(0, 0);
+    func_001E10F0(3, 3, 0x3E8, sp10);
+    func_00256050(sp20);
+    func_001FC950(sp20, sp30);
+    func_001FA8A0(0, 0, 3, 0, 0, sp10);
+    func_001FA8A0(0, 0, 4, 0, 0, sp30);
+}
 
 void func_00261680(s32 arg0) {
     f32 temp_f0;

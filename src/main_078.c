@@ -45,7 +45,16 @@ void func_00276EC0(u16 *arg0, s32 arg1, void *arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00276F10);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002770E0);
+void func_002777F0(s32, s32, s32, s32, s32, s32, s32, s32,
+                   s64, s64, s64, s64, s64, s64, s64);
+
+void func_002770E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                   s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                   s32 arg8, s32 arg9, s32 arg10, s32 arg11, s32 arg12) {
+    func_002777F0(arg0, 0, arg1, arg2, arg3, arg4, arg5, arg6,
+                   (u16) arg7, 0, (s64) arg10, (s64) arg11,
+                   (s64) arg8, (s64) arg9, (s64) arg12);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00277160);
 
@@ -244,7 +253,11 @@ void func_00279850(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_002798C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00279C40);
+void func_00279C40(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                   s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+    func_00279CC0(func_001DF540(arg0, arg1), arg2, arg3,
+                  arg4, arg5, arg6, arg7);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00279CC0);
 

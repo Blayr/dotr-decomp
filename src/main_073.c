@@ -51,13 +51,28 @@ INCLUDE_ASM("asm/nonmatchings/main_073", func_002509E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00250A60);
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250AC0);
+s32 func_00250AC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 temp_s0;
+    s32 result;
+
+    temp_s0 = func_002660E0(func_001DF540(arg0, arg1), arg2, arg3, 1);
+    result = func_001E0290(arg0, arg1, 0);
+    result += temp_s0;
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00250B40);
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00250BC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250C20);
+s32 func_00250C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 temp_s0;
+    s32 result;
+
+    temp_s0 = func_002660E0(func_001DF540(arg0, arg1), arg2, arg3, 0);
+    result = func_001E0370(arg0, arg1, 0);
+    return result + temp_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00250CA0);
 

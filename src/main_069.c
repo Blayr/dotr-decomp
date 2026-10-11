@@ -74,7 +74,24 @@ INCLUDE_ASM("asm/nonmatchings/main_069", func_00243750);
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002437F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243950);
+s32 func_00243950(s32 arg0, s32 arg1, s32 arg2) {
+    s32 request[4];
+    s32 id;
+
+    if (arg2 <= 0) {
+        return 0;
+    }
+    request[0] = arg1;
+    request[1] = arg0;
+    request[2] = arg2;
+    request[3] = 0;
+    func_0017BB60(0);
+    id = func_0017BCA0(request, 1);
+    do {
+
+    } while (func_0017BC80(id) >= 0);
+    return arg2;
+}
 
 void func_002439D0(s32 arg0) {
     s32 var_s0;
@@ -119,7 +136,33 @@ s32 func_00243D90(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00243DE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243EE0);
+typedef struct {
+    s32 count;
+    s32 max_count;
+    s32 init_count;
+    s32 wait_threads;
+    u32 attr;
+    u32 option;
+} Sema_00243EE0;
+
+s32 func_0017B8E0(void *);
+
+s32 func_00243EE0(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    Sema_00243EE0 sema;
+
+    *(s32 *)arg0 = arg1;
+    *(s32 *)((u8 *)arg0 + 4) = (arg2 & 0x0FFFFFFF) | 0x20000000;
+    *(s32 *)((u8 *)arg0 + 8) = arg3;
+    *(s32 *)((u8 *)arg0 + 0x18) = arg3 << 11;
+    *(s32 *)((u8 *)arg0 + 0x50) = arg4;
+    *(s32 *)((u8 *)arg0 + 0x54) = arg5;
+    sema.init_count = 1;
+    sema.max_count = 1;
+    *(s32 *)((u8 *)arg0 + 0x40) = func_0017B8E0(&sema);
+    func_00243F60(arg0);
+    *(s64 *)((u8 *)arg0 + 0x48) = 0;
+    return 1;
+}
 
 typedef struct {
     s64 a;

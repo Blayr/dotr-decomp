@@ -300,7 +300,30 @@ s32 func_00214190(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214210);
+s32 func_00214210(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 i;
+    s32 j;
+    s32 *p;
+
+    if (arg3 != 0) {
+        *(s32 *)(arg0 - 4) = arg1 + *(s32 *)(arg0 - 4);
+    }
+    for (i = 0; i < arg2; i++, arg0 += 0x18) {
+        j = 0;
+        p = (s32 *)arg0;
+        do {
+            if (*p != 0) {
+                *p = arg1 + *p;
+                if (arg3 != 0) {
+                    *(s32 *)(*p - 4) = arg1 + *(s32 *)(*p - 4);
+                }
+            }
+            j++;
+            p++;
+        } while (j < 3);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214290);
 
@@ -310,7 +333,15 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_002145E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214620);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214910);
+s32 func_00214910(s32 arg0, s32 arg1) {
+    if (arg0 < 0 || arg0 >= 51) {
+        return -1;
+    }
+    if (arg1 < 0 || arg1 >= 41) {
+        return -1;
+    }
+    return D_002D0970[arg0][arg1] & 0xFFF;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214990);
 

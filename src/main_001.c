@@ -246,7 +246,30 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00103EC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001043F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00104490);
+void func_00104490(f32 *arg0, f32 *arg1, s32 arg2) {
+    f32 x;
+    f32 y;
+    f32 z;
+
+    if (arg2 != 0) {
+        x = arg1[0];
+        y = arg1[1];
+        z = arg1[2];
+        x -= arg0[0];
+        y -= arg0[1];
+        z -= arg0[2];
+        x /= (f32)arg2;
+        arg0[0] += x;
+        y /= (f32)arg2;
+        arg0[1] += y;
+        z /= (f32)arg2;
+        arg0[2] += z;
+    } else {
+        arg0[0] = arg1[0];
+        arg0[1] = arg1[1];
+        arg0[2] = arg1[2];
+    }
+}
 
 s32 func_00104520(s32 arg0, s32 arg1) {
     return !(arg0 & (1 << arg1)) ? 0 : 1;
@@ -337,7 +360,11 @@ s32 func_00106CC0(s32 arg0, s32 arg1) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106CF0);
+s32 func_00106CF0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    ((f32 *)arg0)[0] = (f32)arg2 * func_00108030(arg3, arg1, 1);
+    ((f32 *)arg0)[2] = (f32)arg2 * func_00108030(arg3, arg1, 0);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106D80);
 

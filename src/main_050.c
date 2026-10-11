@@ -32,7 +32,44 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5090);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F51D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5240);
+typedef struct Entry_001F5240 {
+    u8 state : 3;
+    u8 : 5;
+    u8 unk1;
+    u16 kind : 3;
+    u16 value : 10;
+    u16 : 3;
+    u8 padding[0x14];
+} Entry_001F5240;
+
+extern Entry_001F5240 D_0031BC50[];
+
+s32 func_001F5240(s32 arg0, s32 arg1) {
+    Entry_001F5240 *entry;
+    s32 result;
+    s32 i;
+    s32 state;
+
+    entry = D_0031BC50;
+    result = 0;
+    i = 0;
+    do {
+        if (arg0 < 0 || entry->kind == arg0) {
+            if (arg1 < 0 || entry->value == arg1) {
+                state = entry->state;
+                if (state == 1) {
+                    result |= 1;
+                }
+                if (state == 2) {
+                    result |= 2;
+                }
+            }
+        }
+        i++;
+        entry++;
+    } while (i < 0x18);
+    return result;
+}
 
 typedef struct {
     u8 unk00[0x10];

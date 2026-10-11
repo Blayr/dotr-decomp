@@ -148,9 +148,40 @@ INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1E70);
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2100);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2220);
+static inline u8 *get_001E2220(s32 arg0, s32 arg1) {
+    if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
+        return NULL;
+    }
+    return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E22B0);
+s32 func_001E2220(s32 arg0, s32 arg1, s8 arg2) {
+    u8 *var_v0;
+
+    var_v0 = get_001E2220(arg0, arg1);
+    if (var_v0 == NULL) {
+        return 0;
+    }
+    var_v0[0x16] = arg2;
+    return 1;
+}
+
+static inline u8 *get_001E22B0(s32 arg0, s32 arg1) {
+    if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
+        return NULL;
+    }
+    return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
+}
+
+s32 func_001E22B0(s32 arg0, s32 arg1) {
+    u8 *var_v0;
+
+    var_v0 = get_001E22B0(arg0, arg1);
+    if (var_v0 == NULL) {
+        return -1;
+    }
+    return var_v0[0x16];
+}
 
 void func_001E2340(void) {
     s32 x;
@@ -169,9 +200,39 @@ void func_001E2340(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E23A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2450);
+static inline u8 *lookup_001E2450(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E24E0);
+s16 func_001E2450(s32 arg0, s32 arg1) {
+    u8 *entry;
+
+    entry = lookup_001E2450(arg0, arg1);
+    if (entry == NULL) {
+        return 0;
+    }
+    return *(s16 *)(entry + 0x14);
+}
+
+static inline u8 *cell_001E24E0(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+}
+
+u8 func_001E24E0(s32 x, s32 y) {
+    u8 *cell;
+
+    cell = cell_001E24E0(x, y);
+    if (cell == NULL) {
+        return 0xFFU;
+    }
+    return cell[0x17];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2570);
 
@@ -189,7 +250,23 @@ INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3070);
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3230);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3650);
+static inline u8 *lookup_001E3650(s32 x, s32 y) {
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return NULL;
+    }
+    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+}
+
+s32 func_001E3650(s32 arg0, s32 arg1, s8 arg2) {
+    u8 *var_v0;
+
+    var_v0 = lookup_001E3650(arg0, arg1);
+    if (var_v0 == NULL) {
+        return 0;
+    }
+    *(s8 *)(var_v0 + 0x1A) = arg2;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E36E0);
 
@@ -197,9 +274,68 @@ INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3790);
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3850);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3900);
+typedef struct Flags_001E3900 {
+    s8 other : 7;
+    s8 enabled : 1;
+} Flags_001E3900;
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3990);
+typedef struct Entry_001E3900 {
+    u8 pad0[0x45];
+    u8 kind;
+    u8 pad46[0x11];
+    Flags_001E3900 flags;
+} Entry_001E3900;
+
+static inline void *get_001E3900(void) {
+    Entry_001E3900 *entry = func_001DD130();
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry->kind >= 0xB) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E3900(s32 arg0, s32 arg1, s32 arg2) {
+    Entry_001E3900 *entry = get_001E3900();
+    if (entry == NULL) {
+        return 0;
+    }
+    entry->flags.enabled = (s8)((arg2 != 0) ? 1 : 0);
+    return 1;
+}
+
+typedef struct Object_001E3990 {
+    u8 pad0[0x45];
+    u8 type;
+    u8 pad46[0x12];
+    s8 bit0 : 1;
+    s8 enabled : 1;
+    s8 rest : 6;
+} Object_001E3990;
+
+static inline void *check_001E3990(void) {
+    Object_001E3990 *object = func_001DD130();
+
+    if (object == NULL) {
+        return NULL;
+    }
+    if (object->type >= 11) {
+        return NULL;
+    }
+    return object;
+}
+
+s32 func_001E3990(s32 arg0, s32 arg1, s32 arg2) {
+    Object_001E3990 *object = check_001E3990();
+
+    if (object == NULL) {
+        return 0;
+    }
+    object->enabled = arg2 ? 1 : 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3A20);
 

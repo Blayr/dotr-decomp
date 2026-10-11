@@ -34,7 +34,25 @@ s32 func_00107130(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107180);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107280);
+s32 func_00107280(s32 arg0) {
+    u8 data[4];
+    u8 temp_v0;
+
+    if (func_001F5AF0(arg0) != 0) {
+        func_001F5E40(arg0, data);
+        temp_v0 = data[3];
+        if (temp_v0 > 0x14) {
+            data[3] = temp_v0 - 0x13;
+        } else {
+            data[3] = 0;
+        }
+        func_001F5DE0(arg0, (s32) data);
+        if (data[3] == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_00107310(s32 arg0, s32 arg1, s32 arg2) {
     f32 scale[3];
@@ -270,7 +288,19 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00109830);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001098E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_001099E0);
+typedef struct Vec4_001099E0 {
+    f32 x, y, z, w;
+} Vec4_001099E0;
+
+void func_001099E0(void *arg0, void *arg1, void *arg2, f32 fparg0) {
+    Vec4_001099E0 delta;
+
+    delta.x = (((f32 *)arg1)[0] - (((f32 *)arg2)[0] + ((f32 *)arg2)[4])) / fparg0;
+    delta.z = (((f32 *)arg1)[2] - (((f32 *)arg2)[2] + ((f32 *)arg2)[6])) / fparg0;
+    delta.y = (((f32 *)arg1)[1] - (((f32 *)arg2)[1] + ((f32 *)arg2)[5])) / fparg0;
+    delta.w = 0.0f;
+    *(Vec4_001099E0 *)arg0 = delta;
+}
 
 s32 func_00109A70(void *arg0, void *arg1) {
     ((f32 *)arg0)[0] = ((f32 *)arg1)[0];

@@ -61,7 +61,12 @@ s32 func_0024DEB0(s32 arg0, void *arg1) {
     return func_0024DF80(arg0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DF00);
+s32 func_0024DF00(s32 arg0, s32 arg1, s32 arg2) {
+    if ((func_001E0700(arg1, arg2) >> 5) != 0 || arg2 == 0) {
+        return 0;
+    }
+    return func_0024DF80(arg0, (void *)func_001DF540(arg1, arg2));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DF80);
 
@@ -122,7 +127,27 @@ s32 func_0024EBD0(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024EC50);
+s32 func_0024EC50(s32 mask, s32 ordinal) {
+    s32 index;
+    s32 count;
+
+    index = 0;
+    count = 0;
+    do {
+        if (((mask >> (21 - index)) & 1) == 1) {
+            if (count == ordinal) {
+                if (index < 11) {
+                    return index;
+                } else {
+                    return (index - 11) | 0x100;
+                }
+            }
+            count++;
+        }
+        index++;
+    } while (index < 22);
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024ECD0);
 
