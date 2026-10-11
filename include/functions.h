@@ -171,6 +171,7 @@ s32 func_001DE210(s32 arg0);
 s32 func_001DE260(s32 arg0);
 u8 func_001DE4E0(s32 arg0);
 void func_001DE500(s32 arg0, s32 arg1);
+void func_001DE570(s32 arg0);
 s32 func_001DE5C0(s32 arg0);
 u8 func_001DE690(s32 arg0);
 void func_001DE6B0(s32 arg0, s8 arg1);
@@ -185,6 +186,7 @@ void func_001DE820(s32 arg0);
 void func_001DE970(s32 arg0);
 s32 func_001DE9C0(s32 arg0);
 s32 func_001DE9E0(s32 arg0, s32 arg1);
+void func_001DEDB0(s32 arg0);
 s32 func_001DEE00(s32 arg0, s32 arg1);
 u8 func_001DEE50(s32 arg0);
 void func_001DF070(s32 arg0);
@@ -197,6 +199,7 @@ s32 func_001E0830(s32 arg0, s32 arg1);
 s32 func_001E16A0(s32 a0, s32 a1, s8 arg2);
 void func_001E4E60(s64 arg0);
 void func_001E5210(void *arg0, s32 arg1);
+s32 func_001E5590(s32 arg0);
 void func_001E77A0(void);
 void func_001E7890(void);
 void func_001E7A50(void);
@@ -207,6 +210,7 @@ s32 func_001EFA80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
 void func_001F0830(void *arg0, s32 arg1);
 s8 func_001F1400(s32 arg0, s32 arg1);
 s32 func_001F25D0(s32 idx, void *src);
+s32 func_001F52D0(s32 arg0);
 s32 func_001F5AF0(s32 arg0);
 s32 func_001F5B30(s32 arg0);
 s32 func_001F5D70(s32 arg0, void *arg1);
@@ -381,5 +385,6 @@ void func_0027F360(void *arg0, void *arg1);
 void func_0027F3A0(void *arg0, void *arg1);
 void func_0027F5A0(void);
 void func_00286900(void);
+static inline s32 nonnegative_001DE570(s32 value);
 
 #endif

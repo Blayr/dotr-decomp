@@ -51,7 +51,16 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE550);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE560);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE570);
+static inline s32 nonnegative_001DE570(s32 value) {
+    return value > 0 ? value : 0;
+}
+
+void func_001DE570(s32 arg0) {
+    u8 *dest = D_00317490;
+
+    dest[0xD53] = nonnegative_001DE570(arg0) < 0xFF
+        ? nonnegative_001DE570(arg0) : 0xFF;
+}
 
 typedef struct {
     u8 padding[0x341];
@@ -222,7 +231,21 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DECC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DED30);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEDB0);
+void func_001DEDB0(s32 arg0) {
+    u8 *base;
+    s32 count;
+    s16 *cursor;
+
+    count = 0;
+    base = D_00317490 + (arg0 * 0x350) + 0x232;
+    cursor = (s16 *)base;
+    do {
+        count += 1;
+        *cursor = 0x3E7;
+        cursor++;
+    } while (count < 0x78);
+    base[0xF0] = 0;
+}
 
 s32 func_001DEE00(s32 arg0, s32 arg1) {
     u16 *entries = (u16 *)(D_00317490 + (arg0 * 0x350) + 0x232);

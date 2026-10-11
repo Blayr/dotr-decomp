@@ -34,7 +34,30 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F51D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5240);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F52D0);
+typedef struct {
+    u8 unk00[0x10];
+    s32 unk10;
+    s32 unk14;
+} Entry_001F52D0;
+
+typedef struct {
+    u8 unk00[0x100];
+    Entry_001F52D0 entries[0x18];
+} Data_001F52D0;
+
+extern Data_001F52D0 D_0031BB50;
+
+s32 func_001F52D0(s32 arg0) {
+    Entry_001F52D0 *entry = &D_0031BB50.entries[arg0];
+    s32 ret;
+
+    if ((arg0 < 0) || (arg0 >= 0x18)) {
+        ret = -1;
+    } else {
+        ret = entry->unk10;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5320);
 

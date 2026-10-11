@@ -299,4 +299,6 @@ s32 func_00136060(void *arg0);
 s32 func_001E1030(void);
 extern s32 D_0030FF48;
 
+s32 func_001E55E0(s32);
+
 #endif
