@@ -118,7 +118,50 @@ INCLUDE_ASM("asm/nonmatchings/main_010", func_0013EEE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F170);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F3B0);
+s32 func_0013F3B0(s32 arg0, void *arg1, void *arg2) {
+    s32 cards[8];
+    s32 index;
+    s32 found;
+    s32 *first;
+    s32 *second;
+    s32 secondIndex;
+
+    found = 0;
+    func_0026FD30(arg0, cards);
+    index = 0;
+    if (index < func_0026FE20(arg0)) {
+        first = cards;
+        do {
+            if (*first == 0x320) {
+                *((s8 *)arg1 + 7) = index;
+                func_001DCD70(arg2, *first);
+                found = 1;
+            }
+            first++;
+            index++;
+        } while (index < func_0026FE20(arg0));
+    }
+    if (found == 1) {
+        secondIndex = 0;
+        if (secondIndex < func_0026FE20(arg0)) {
+            second = cards;
+            do {
+                if (((func_0026FCE0(*second) >> 5) == 0) &&
+                    (func_00248F60(*second, 0x320) >= 0) &&
+                    (func_0026FB60(arg0, *second) == 1)) {
+                    if ((*second != 0x31B) && (*second != 0x31C)) {
+                        *((s8 *)arg1 + 6) = secondIndex;
+                        func_001DCD70(arg2, cards[secondIndex]);
+                        return func_0026FCE0(cards[secondIndex]) >> 5;
+                    }
+                }
+                second++;
+                secondIndex++;
+            } while (secondIndex < func_0026FE20(arg0));
+        }
+    }
+    return -1;
+}
 
 s32 func_0013F540(s32 arg0, s32 *arg1, void *arg2, void *arg3, s32 arg4) {
     s32 i;
