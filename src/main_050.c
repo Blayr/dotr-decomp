@@ -95,7 +95,17 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5970);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F59D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5A30);
+s32 func_001F5A30(s32 arg0, s32 arg1) {
+    s32 row;
+    s32 column;
+
+    row = arg0 >> 8;
+    column = arg0 & 0xFF;
+    if (row < 0 || row >= 3 || column < 0 || column >= 11) {
+        return 0;
+    }
+    return func_001E3990(row, column, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5A90);
 
