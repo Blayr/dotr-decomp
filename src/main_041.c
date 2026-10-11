@@ -8,7 +8,52 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2540);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2720);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C32B0);
+typedef struct {
+    u8 padding[0x6E0];
+    u8 *first;
+    u8 *second;
+} State_001C32B0;
+
+void func_001C33A0(s32);
+
+s32 func_001C32B0(void) {
+    State_001C32B0 *state = (State_001C32B0 *)D_00317490;
+    s32 var_s1;
+    s32 var_a1;
+    s32 var_a2;
+    u8 *temp_a3;
+    u8 *temp_t0;
+    u8 temp_a0;
+    u8 temp_a1;
+
+    var_s1 = 0;
+    var_a2 = 0;
+    do {
+        temp_a3 = state->first + var_a2;
+        temp_a1 = *temp_a3;
+        if (temp_a1 != 0) {
+            temp_t0 = state->second + var_a2;
+            temp_a0 = *temp_t0;
+            if (temp_a0 != 0) {
+                if ((temp_a1 & 0xFF) > (temp_a0 & 0xFF)) {
+                    *temp_a3 = temp_a1 - temp_a0;
+                    state->second[var_a2] = 0;
+                } else {
+                    *temp_t0 = temp_a0 - temp_a1;
+                    state->first[var_a2] = 0;
+                }
+            }
+        }
+        var_a2 += 1;
+    } while (var_a2 < 0x356);
+    func_001C33A0(0);
+    func_001C33A0(1);
+    for (var_a1 = 0; var_a1 < 0x356; var_a1++) {
+        var_s1 += state->first[var_a1];
+        var_s1 += state->second[var_a1];
+    }
+    return var_s1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C33A0);
 

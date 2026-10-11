@@ -81,7 +81,27 @@ s32 func_00107130(void *arg0, void *arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107180);
+void func_001F6340(s32, f32 *);
+
+static inline void reduce_00107180(f32 *value) {
+    *value -= 0.18f;
+    if (*value < 0.0f) {
+        *value = 0.0f;
+    }
+}
+
+s32 func_00107180(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    f32 values[3];
+
+    if ((func_001F5EC0(arg0) != 0) && (arg3 != 0)) {
+        func_001F6340(arg0, values);
+        reduce_00107180(values);
+        reduce_00107180(&values[1]);
+        reduce_00107180(&values[2]);
+        func_001F62B0(arg0, values);
+    }
+    return 0;
+}
 
 s32 func_00107280(s32 arg0) {
     u8 data[4];
