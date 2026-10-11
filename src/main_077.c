@@ -285,7 +285,30 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_00272050);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_002720F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00272210);
+u32 func_00272210(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 count;
+    s32 result;
+    s32 owner;
+    s32 y;
+    s32 x;
+    s32 position;
+
+    count = func_0024E910(arg0);
+    result = arg0;
+    for (i = 0; i < count; i++) {
+            position = func_0024EC50(arg0, i);
+            x = position >> 8;
+            y = position & 0xFF;
+            owner = func_0024DE70(x, y);
+            if ((func_00271E40(x, y, 0xB) != 0) && (owner != arg1)) {
+                result = func_0024C7D0((u32) result, x, y);
+            } else if ((func_00267700(x, y) != 0) && (owner != arg1)) {
+                result = func_0024C7D0((u32) result, x, y);
+            }
+    }
+    return (u32) result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00272330);
 

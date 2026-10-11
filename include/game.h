@@ -553,4 +553,7 @@ extern u8 D_00318280[];
 
 s32 func_0027C670(void *);
 
+s32 func_00267700(s32, s32);
+s32 func_00271E40(s32, s32, s32);
+
 #endif

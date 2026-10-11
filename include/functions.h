@@ -940,6 +940,7 @@ s32 func_00271630(void *arg0, void *arg1, s32 arg2);
 s32 func_00271740(s32 arg0, s32 arg1);
 s32 func_002717A0(s32 arg0);
 s32 func_00271A40(s32 arg0, s32 arg1, s32 arg2);
+u32 func_00272210(s32 arg0, s32 arg1);
 s32 func_002724C0(s32 arg0);
 s32 func_00275E30(void *arg0);
 s32 func_002760E0(u16 value, u16 *entries);
