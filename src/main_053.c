@@ -172,7 +172,27 @@ void func_001FEAF0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEB40);
+typedef struct {
+    s8 pad0[3];
+    s8 unused : 7;
+    s8 active : 1;
+    s8 pad4[16];
+} Entry_001FEB40;
+
+extern Entry_001FEB40 D_0031C08C[30];
+
+void func_001FEB40(void) {
+    Entry_001FEB40 *entry;
+    s32 i;
+
+    entry = D_0031C08C;
+    i = 0;
+    do {
+        i += 1;
+        entry->active = 0;
+        entry++;
+    } while (i < 30);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEB80);
 

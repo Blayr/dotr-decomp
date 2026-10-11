@@ -33,7 +33,30 @@ s32 func_00209E30(s32 *arg0, s32 *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209E50);
+typedef struct {
+    u8 pad[0x10];
+    s32 index;
+} State_00209E50;
+
+typedef struct {
+    s8 enabled : 1;
+} Flags_00209E50;
+
+extern State_00209E50 D_00325F20;
+extern Flags_00209E50 D_00325F40;
+
+s32 func_00209E50(void) {
+    u8 *base = D_00325F50;
+    State_00209E50 *state = &D_00325F20;
+    s32 var_v0;
+
+    if (D_00325F40.enabled != 0) {
+        var_v0 = state->index;
+    } else {
+        var_v0 = 0;
+    }
+    return *(s32 *)(base + 0x268) + (var_v0 << 5);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209E90);
 
@@ -99,7 +122,16 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B340);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B380);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B3C0);
+s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2) {
+    if (arg2 > 0) {
+        do {
+            *arg0 = arg1;
+            arg2 -= 1;
+            arg0 += 1;
+        } while (arg2 > 0);
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B400);
 

@@ -273,4 +273,6 @@ void func_001FCDE0(s32);
 
 void func_001FECB0(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 
+extern s64 D_002D0830[];
+
 #endif

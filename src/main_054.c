@@ -88,7 +88,21 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_002004C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_00200510);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200680);
+typedef struct CallbackTable_00200680 {
+    u8 pad[0x6680];
+    void (*callback)(s32, void *);
+} CallbackTable_00200680;
+
+extern CallbackTable_00200680 D_0031C2F0;
+extern s32 D_00322970;
+
+void func_00200680(void *arg0) {
+    CallbackTable_00200680 *table = &D_0031C2F0;
+
+    if (D_00322970 != 0) {
+        table->callback(*(s32 *)((u8 *)arg0 + 0x1C), table);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_002006C0);
 
