@@ -512,7 +512,13 @@ s32 func_00106CF0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106D80);
+s32 func_00106D80(s32 arg0, s16 *arg1) {
+    *arg1 += arg0;
+    if (*arg1 >= 360 || *arg1 < -359) {
+        *arg1 %= 360;
+    }
+    return 0;
+}
 
 void func_00106DD0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
     ((f32 *)arg0)[0] = fparg0;
