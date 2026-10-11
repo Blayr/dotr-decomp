@@ -469,7 +469,81 @@ void func_00244B20(void *arg0) {
     func_0017B900(state->field_40);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244B70);
+typedef struct Entry_00244B70 {
+    s64 first;
+    s64 second;
+    s32 position;
+    s32 length;
+} Entry_00244B70;
+
+typedef struct Queue_00244B70 {
+    u8 pad0[8];
+    s32 blocks;
+    u8 padC[0x44];
+    Entry_00244B70 *entries;
+    s32 capacity;
+    s32 count;
+    s32 tail;
+} Queue_00244B70;
+
+static inline s32 clamp_00244B70(s32 count) {
+    if (count < 0) {
+        return 0;
+    }
+    return count;
+}
+
+s32 func_00244B70(void *arg0, void *arg1) {
+    Queue_00244B70 *queue = arg0;
+    Entry_00244B70 *request = arg1;
+    s32 index;
+    s32 repeat;
+    s32 bufferSize;
+    Entry_00244B70 *entry;
+    s32 requestLength;
+    s32 requestPosition;
+    s32 position;
+    s32 amount;
+    s32 end;
+
+    repeat = 1;
+    index = (queue->capacity + (queue->tail - queue->count)) % queue->capacity;
+    bufferSize = queue->blocks << 11;
+    if (queue->count > 0) {
+        do {
+            entry = &queue->entries[index];
+            amount = entry->length;
+            if (amount == 0) {
+                break;
+            }
+            requestLength = request->length;
+            if (requestLength == 0) {
+                break;
+            }
+            position = entry->position;
+            requestPosition = request->position;
+            if ((position + bufferSize - requestPosition) % bufferSize < requestLength) {
+                end = requestPosition + requestLength - position;
+                amount = amount < end ? amount : end;
+                entry->position = (position + amount) % bufferSize;
+                entry->length -= amount;
+                if (entry->length == 0) {
+                    if (entry->first >= 0) {
+                        entry->first = -1;
+                        entry->second = -1;
+                        entry->position = 0;
+                        entry->length = 0;
+                    }
+                    queue->count = clamp_00244B70(queue->count - 1);
+                }
+            } else {
+                repeat = 0;
+            }
+            index = (index + 1) % queue->capacity;
+        } while (repeat != 0);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244CB0);
 

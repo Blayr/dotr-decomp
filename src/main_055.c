@@ -190,7 +190,62 @@ void func_00203840(void) {
     } while (var_a2 < 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002038F0);
+typedef struct Flags_002038F0 {
+    s8 mode : 6;
+    s8 axes : 1;
+    s8 pressure : 1;
+} Flags_002038F0;
+
+extern u8 D_003259C0[];
+s32 func_00192B38(s32, s32, void *);
+s32 func_00192BB8(s32, s32);
+
+s32 func_002038F0(void) {
+    u8 data[20];
+    u8 *pressure;
+    s32 axisIndex;
+    s32 state;
+    u8 *axes;
+    s32 pressureIndex;
+    s32 port;
+    u8 *pad;
+    u8 *entry;
+
+    entry = D_003259C0;
+    port = 0;
+    do {
+        pad = entry + 0x200;
+        if (((Flags_002038F0 *)(entry + 0x25B))->mode == 5) {
+            state = func_00192BB8(port, 0);
+            if (state == 2 || state == 6) {
+                if (func_00192B38(port, 0, data) != 0) {
+                    if (((Flags_002038F0 *)(pad + 0x5B))->axes) {
+                        axes = data;
+                        axisIndex = 0;
+                        do {
+                            pad[6 + axisIndex] = axes[4];
+                            axisIndex++;
+                            axes++;
+                        } while (axisIndex < 4);
+                    }
+                    if (((Flags_002038F0 *)(pad + 0x5B))->pressure) {
+                        pressure = data;
+                        pressureIndex = 0;
+                        do {
+                            pad[0xA + pressureIndex] = pressure[8];
+                            pressureIndex++;
+                            pressure++;
+                        } while (pressureIndex < 12);
+                    }
+                    *(u16 *)(pad + 4) |= ((data[2] << 8) | data[3]) ^ 0xFFFF;
+                }
+            }
+        }
+        port++;
+        entry += 0x5C;
+    } while (port < 2);
+    return 1;
+}
 
 typedef struct State_00203A40 {
     u16 flags;
