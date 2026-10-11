@@ -40,7 +40,74 @@ void func_001F48F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4900);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4CB0);
+typedef struct {
+    u64 state : 3;
+    u64 source : 3;
+    u64 target : 10;
+    u64 reserved : 48;
+} Entry_001F4CB0;
+
+typedef struct {
+    u8 state : 3;
+    u8 : 5;
+    u8 unk1;
+    u16 kind : 3;
+    u16 value : 10;
+    u16 : 3;
+    u16 unk4;
+    u16 unk6;
+    void (*callback)(s32);
+    s32 arg;
+    s32 unk10;
+    s32 unk14;
+} Slot_001F4CB0;
+
+typedef struct {
+    Entry_001F4CB0 entries[32];
+    Slot_001F4CB0 slots[24];
+} Data_001F4CB0;
+
+void func_001F56D0(s32, s32);
+
+static inline void *find_001F4CB0(s32 source, s32 target) {
+    extern Data_001F4CB0 D_0031BB50;
+    Entry_001F4CB0 *entry;
+    s32 i;
+
+    entry = D_0031BB50.entries;
+    for (i = 0; (s64)i < 32; i++, entry++) {
+        if ((source < 0 || entry->source == source) && (target < 0 || entry->target == target)) {
+            return entry;
+        }
+    }
+    return NULL;
+}
+
+s32 func_001F4CB0(s32 arg0) {
+    extern Data_001F4CB0 D_0031BB50;
+    Slot_001F4CB0 *slot = &D_0031BB50.slots[arg0];
+    Entry_001F4CB0 *entry;
+
+    if (arg0 < 0 || arg0 >= 24) {
+        return 0;
+    }
+    if (slot->kind == 1 || slot->kind == 2) {
+        func_001F56D0(slot->unk6, slot->kind);
+        func_001F56D0(slot->unk4, slot->kind);
+    }
+    slot->state = 0;
+    if (slot->callback != NULL) {
+        slot->callback(slot->arg);
+    }
+    entry = find_001F4CB0(slot->kind, slot->value);
+    if (entry == NULL) {
+        return 1;
+    }
+    if (entry->state == 2 && func_001F5240(entry->source, entry->target) == 0) {
+        entry->state = 3;
+    }
+    return 1;
+}
 
 typedef struct Entry_001F4E50 {
     u8 pad0[2];
@@ -50,7 +117,6 @@ typedef struct Entry_001F4E50 {
     u8 pad4[0x14];
 } Entry_001F4E50;
 
-s32 func_001F4CB0(s32);
 extern struct Entry_001F5240 D_0031BC50[];
 
 s32 func_001F4E50(s32 arg0, s32 arg1) {
