@@ -30,7 +30,17 @@ s32 func_00103290(s32 *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001032C0);
+s32 func_001032C0(u8 *arg0, u8 arg1, u8 arg2) {
+    u8 temp_a3;
+
+    temp_a3 = *arg0;
+    if (temp_a3 <= (arg1 - arg2)) {
+        *arg0 = temp_a3 + arg2;
+        return 1;
+    }
+    *arg0 = arg1;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103300);
 
