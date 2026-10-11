@@ -232,6 +232,7 @@ void func_00246490(void);
 void func_002464C0(void);
 void func_002464E0(void);
 s32 func_00249560(s32 arg0);
+u8 func_00249580(s32 arg0);
 s32 func_0024C780(u32 arg0, s32 arg1, s32 arg2);
 s32 func_0024EA60(void);
 void func_0024FDA0(void);
