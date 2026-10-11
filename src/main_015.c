@@ -835,7 +835,68 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_001678B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00167D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00167E80);
+s32 func_00167E80(u16 *arg0, s32 arg1, s32 arg2) {
+    s32 i;
+    s32 pos;
+    s32 ret;
+    s32 idx;
+    u16 list[22];
+
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    func_0027C070(arg1, list, 0x1D, 1);
+    ret = func_0027B360(arg1, list, arg0);
+    if (ret >= 0) {
+        return ret;
+    }
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    func_0027C070(arg1, list, 0x1E, 1);
+    for (i = 0; i < func_0027C670(list); i++) {
+        if ((func_001E0700(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
+            func_0027B9B0(list[i]) == 1 && func_0027C6D0(list[i]) == 1) {
+            return list[i];
+        }
+    }
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    func_0027C070(arg1, list, 0x1F, 1);
+    for (i = 0; i < func_0027C670(list); i++) {
+        if (func_0027B9B0(list[i]) == 1 && func_0027C6D0(list[i]) == 1) {
+            return list[i];
+        }
+    }
+    pos = arg1 << 8;
+    idx = func_00276C80(arg0, pos);
+    func_00167D30(arg0 + idx * 8);
+    if (((arg0[idx * 8 + 2] >> 8) & 0xFF) == 10) {
+        if (func_001DE6D0(arg1) == 1 && func_001687A0(pos, arg1, arg2) >= 0) {
+            return pos | 0x10000;
+        }
+        if (func_0027B9B0(pos & 0xFFFF) == 1) {
+            return pos;
+        }
+    } else if (func_001E2100(arg1, 0, 0) == 0) {
+        if (func_0027B9B0(pos & 0xFFFF) == 1) {
+            return pos;
+        }
+    } else if (func_001DE6D0(arg1) == 1 && func_001687A0(pos, arg1, arg2) >= 0) {
+        return pos | 0x10000;
+    }
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    func_0027C070(arg1, list, 0x1F, 1);
+    for (i = 0; i < func_0027C670(list); i++) {
+        if (func_001E2100(list[i] >> 8, list[i] & 0xFF, 0) == 0 && func_0027C6D0(list[i]) == 1) {
+            return list[i];
+        }
+    }
+    return -1;
+}
 
 typedef struct {
     u16 coordinates;
