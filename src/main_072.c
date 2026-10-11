@@ -136,7 +136,42 @@ s32 func_0024E220(s32 arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E300);
+s32 func_0024E300(s32 arg0, s32 arg1, s32 arg2) {
+    s32 index;
+    s32 count;
+    s32 value;
+    s32 mode;
+    s32 high;
+    s32 low;
+
+    mode = arg2 & 0xFF;
+    index = 0;
+    count = 0;
+    do {
+        if ((value = func_0024E410(arg0, index)) < 0) {
+            continue;
+        }
+        if (mode == 0) {
+            if (func_001E3790(value & 0xFF, value >> 8) >= 0) {
+                continue;
+            }
+            if (arg1 == count) {
+                return value;
+            }
+            count++;
+        } else {
+            low = value & 0xFF;
+            high = value >> 8;
+            if ((func_001E22B0(low, high) != 8) && (func_001E3790(low, high) < 0)) {
+                if (arg1 == count) {
+                    return value;
+                }
+                count++;
+            }
+        }
+    } while (++index < 8);
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E410);
 
