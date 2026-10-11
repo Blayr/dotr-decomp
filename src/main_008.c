@@ -146,7 +146,55 @@ s32 func_00130BB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00130CB0);
+s32 func_00130CB0(void) {
+    /* both really take (player, slot); the headers say (void) */
+    s32 func_001E1580();
+    s32 func_001E1640();
+    s32 player;
+    u8 count3;
+    s32 i;
+    u8 count1;
+    u8 count2;
+    s32 j;
+
+    player = func_001DE540();
+    count1 = 0;
+    count3 = 0;
+    for (i = 0; i < 11; i++) {
+        if (func_001E1580(player, i) > 0 || func_001E1640(player, i) > 0 ||
+            func_00250360(player, i) != player) {
+            count1++;
+        }
+        if (func_001E1580(player == 0 ? 1 : 0, i) > 0 || func_001E1640(player == 0 ? 1 : 0, i) > 0 ||
+            func_00250360(player == 0 ? 1 : 0, i) != player) {
+            count1++;
+        }
+    }
+    if (count1 >= 4) {
+        return 0;
+    }
+    count2 = 0;
+    for (j = 0; j < 11; j++) {
+        if (func_00250360(player, j) != player) {
+            count2++;
+        }
+        if (func_00250360(player == 0 ? 1 : 0, j) != player) {
+            count2++;
+        }
+    }
+    for (j = 0; j < 11; j++) {
+        if (func_00250360(player, j) == player) {
+            count3++;
+        }
+        if (func_00250360(player == 0 ? 1 : 0, j) == player) {
+            count3++;
+        }
+    }
+    if (count2 < 2 && count3 >= 4) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00130E90);
 
