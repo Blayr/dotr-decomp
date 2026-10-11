@@ -128,7 +128,89 @@ s32 func_0011D940(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_0011D9B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011DC00);
+typedef struct {
+    u16 position;
+    u8 flag;
+    u8 pad;
+} Slot_0011DC00;
+
+s32 func_00277CD0(s32, s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, s32, s32);
+s32 func_002774F0(s32, s32, void *, s32, s32, s32, s32, s32);
+
+void func_0011DC00(void *arg0) {
+    u8 work[112];
+    Slot_0011DC00 slots[22];
+    s16 c;
+    s16 b;
+    u16 a;
+    s32 i;
+    s32 player;
+    s32 position;
+    s32 owner;
+    s32 state;
+    s32 result;
+    u16 *record = arg0;
+    extern s32 func_002770E0();
+    extern void func_0027E770();
+
+    if (func_001DF540((s32) record[0] >> 8, record[0] & 0xFF) != 0) {
+        player = func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF);
+        position = func_001E1090((s32) record[0] >> 8, record[0] & 0xFF);
+        owner = func_001DF540((s32) record[0] >> 8, record[0] & 0xFF);
+        record[2] = 0xBFF;
+        for (i = 0; i < 22; i++) {
+            slots[i].position = 0xFFFF;
+            slots[i].flag = 0xFF;
+        }
+        func_0027E770(work);
+        a = 0;
+        b = 0;
+        c = 0;
+        state = 0;
+        for (i = 1; i < 4; i++) {
+            state = func_002770E0(state, owner, position & 0xFF, position >> 8,
+                                  func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF) == 0 ? 1 : 0, (u8) i, 0,
+                                  func_0011FA80(player), slots, &a, &c, &b, work);
+            result = func_00277CD0((s32) record[0] >> 8, record[0] & 0xFF, position & 0xFF, position >> 8,
+                                   slots, 4, 0x1F, 1, 2, 0, func_0011FA80(player), a, 1);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+            result = func_00277CD0((s32) record[0] >> 8, record[0] & 0xFF, position & 0xFF, position >> 8,
+                                   slots, 4, 0x1F, 0, 2, 0, func_0011FA80(player), a, 1);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+        }
+        a = 0;
+        b = 0;
+        c = 0;
+        state = 0;
+        for (i = 1; i < 4; i++) {
+            state = func_002770E0(state, owner, position & 0xFF, position >> 8,
+                                  func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF), (u8) i, 0,
+                                  func_0011FA80(player), slots, &a, &c, &b, work);
+            result = func_002774F0(position & 0xFF, position >> 8, slots, 4, 0x22, 2, 2, a);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+            result = func_002774F0(position & 0xFF, position >> 8, slots, 4, 0x1F, 1, 2, a);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+            result = func_002774F0(position & 0xFF, position >> 8, slots, 4, 0x1F, 0, 2, a);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+        }
+        record[2] = 0x5FF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_0011DFB0);
 
