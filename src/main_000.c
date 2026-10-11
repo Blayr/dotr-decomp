@@ -204,7 +204,6 @@ typedef struct {
     f32 z;
 } Vec3_00100D00;
 
-void func_001F5F90(s32, void *);
 
 s32 func_00100D00(s32 arg0) {
     Vec3_00100D00 v;
