@@ -187,7 +187,51 @@ s32 func_0027B740(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B860);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B9B0);
+s32 func_002464F0(s32, s32, s32);
+s32 func_0024FE40(s32, s32, s32);
+
+static inline s32 min_0027B9B0(s32 a, s32 b) {
+    return (a >= b + 1) ? b : a;
+}
+
+s32 func_0027B9B0(s32 arg0) {
+    s32 i;
+    s32 j;
+    s32 yMax;
+    s32 x;
+    s32 y;
+    s32 pos;
+    s32 flags;
+    s32 xMax;
+    s32 yMin;
+
+    x = arg0 & 0xFF;
+    y = (arg0 & 0xFFFF) >> 8;
+    if ((pos = func_001E1090(y, x)) < 0) {
+        return 0;
+    }
+    if (func_001E2100(y, x, 0) != 0) {
+        return 0;
+    }
+    flags = func_002464F0(func_001DF540(y, x), (pos & 0xFF), (pos >> 8));
+    i = func_00250860(0, (pos & 0xFF) - 1);
+    yMin = (pos >> 8) - 1;
+    yMax = (pos >> 8) + 1;
+    xMax = (pos & 0xFF) + 1;
+    for (; i <= min_0027B9B0(xMax, 6); i++) {
+        for (j = func_00250860(0, yMin); j <= min_0027B9B0(yMax, 6); j++) {
+            if ((((pos & 0xFF) > i ? (pos & 0xFF) : i) - ((pos & 0xFF) < i ? (pos & 0xFF) : i)) + (((pos >> 8) > j ? (pos >> 8) : j) - ((pos >> 8) < j ? (pos >> 8) : j)) == 1 &&
+                func_001E36E0(i, j) == 0) {
+                if (func_001E22B0(i, j) != 8 || (flags & 0x10)) {
+                    if (func_001E22B0(i, j) != 9 || func_0024FE40(func_001DF540(y, x), i, j) != 1) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027BBC0);
 
