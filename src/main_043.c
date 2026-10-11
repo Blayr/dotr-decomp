@@ -18,7 +18,7 @@ void func_001D7D10(s32 arg0, s32 arg1) {
     s32 idx;
 
     p = D_00317490 + arg0 * 0x350;
-    func_001DF1E0();
+    func_001DF1E0(arg0);
     func_001D89F0(arg0, 0, 999, 0, 0, 0, 0);
     x = -250;
     for (i = 0; i < g[0xD49]; i++) {

@@ -135,7 +135,7 @@ void func_001FFF60(s32 arg0, s64 arg1) {
 u8 *func_001FFF90(s32 unused0) {
     u8 *ret;
 
-    ret = func_00197548();
+    ret = func_00197548(unused0);
     if (ret == NULL) {
         ret = D_002D0655;
     }
@@ -206,7 +206,6 @@ typedef struct State_002004C0 {
 
 s32 func_002004C0(s32 arg0) {
     extern State_002004C0 D_0031C2F0;
-    void func_00217B50(s32);
     State_002004C0 *state = &D_0031C2F0;
 
     if (arg0 < 0) {

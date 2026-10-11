@@ -60,9 +60,9 @@ s32 func_00109E80(s32 arg0, s32 arg1) {
     }
     if (D_0030FF40[0] & 1) {
         if (arg1 != 0) {
-            func_0010B490();
+            func_0010B490(arg0);
         } else {
-            func_0010B3C0();
+            func_0010B3C0(arg0);
         }
     }
     return 1;

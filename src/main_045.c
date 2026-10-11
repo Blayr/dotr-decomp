@@ -602,7 +602,7 @@ static inline void *lookup_001E1360(void) {
     return ptr;
 }
 
-s32 func_001E1360(void) {
+s32 func_001E1360(s32 unused0, s32 unused1) {
     void *ptr;
 
     ptr = lookup_001E1360();
@@ -621,7 +621,7 @@ typedef struct Entry_001E13C0 {
 
 void *func_001DD130(void);
 
-s32 func_001E13C0(void) {
+s32 func_001E13C0(s32 unused0, s32 unused1) {
     Entry_001E13C0 *entry;
 
     entry = func_001DD130();

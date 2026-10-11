@@ -100,7 +100,6 @@ void func_001FC950(void *arg0, void *arg1) {
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC9B0);
 
 void func_001FCA70(void) {
-    void func_00217B50(s32);
 
     if (D_0031C048 != 0) {
         func_00217B50(D_0031C048);

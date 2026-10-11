@@ -154,7 +154,6 @@ s32 func_001F74C0(s32 arg0) {
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7550);
 
 s32 func_001F7720(s32 arg0) {
-    void func_00217B50(s32);
     s32 *slot;
 
     if (arg0 < 0 || arg0 > 0) {
