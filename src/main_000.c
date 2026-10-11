@@ -104,7 +104,12 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00101940);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101A00);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101AD0);
+void func_00101AD0(s8 *arg0, s8 arg1, s8 arg2, s8 arg3) {
+    arg0[2] = arg1;
+    arg0[0] = arg1;
+    arg0[1] = arg2;
+    arg0[3] = arg3;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101AF0);
 
