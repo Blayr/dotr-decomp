@@ -125,7 +125,35 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_001562E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_001564E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_001566D0);
+void func_001566D0(s32 arg0, u16 *arg1, s32 *arg2) {
+    s32 count;
+    s32 i;
+    s32 id;
+    u8 limit;
+    u8 buf[5];
+
+    if (arg1 == NULL) {
+        return;
+    }
+    limit = func_0026FA80(*arg1, arg0);
+    for (i = 0; i < 5; i++) {
+        buf[i] = 0xFF;
+    }
+    for (i = 0, count = 0; i < func_0026FE20(arg0); i++) {
+        if ((u8)func_00278E00(i, (u8 *)(arg1 + 1)) == 0) {
+            buf[count++] = i;
+        }
+    }
+    if (count != 0) {
+        for (i = 0; i < (u8)func_00278D90(buf); i++) {
+            id = arg2[buf[i]];
+            if (id != 999 && func_00156870(id) == 0 && limit >= func_0026FA80(id, arg0) &&
+                (u16)func_002789F0(*arg1, (u16)id) == 999) {
+                func_00278D20((u8 *)(arg1 + 1), buf[i]);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00156870);
 

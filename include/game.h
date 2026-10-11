@@ -637,4 +637,6 @@ extern char D_002BEF73[];
 extern char D_002BE944[];
 extern u8 D_003181C6;
 
+s32 func_00156870(s32);
+
 #endif
