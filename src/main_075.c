@@ -206,7 +206,54 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FF30);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260020);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260200);
+void func_001E42C0(s32, s32, s32, s32);
+void func_001E4530(void);
+void func_00255960(void *);
+s32 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+
+typedef struct State_00260200 {
+    u32 unknown;
+    u16 phase;
+    u8 handles[0xCE];
+    u8 index;
+} State_00260200;
+
+s32 func_00260200(void *arg0, void *arg1, s32 arg2) {
+    s32 request[4];
+    s32 *p = request;
+    State_00260200 *state = arg1;
+
+    request[0] = 0x3E7;
+    request[1] = 0;
+    request[2] = 0;
+    request[3] = 0;
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x201);
+    } else {
+        switch (state->phase) {
+        case 0:
+            if (func_00255B50(arg1) == 1) {
+                state->phase++;
+                func_001E42C0(0, -0x78, 0x50, 0x104);
+                p[0] = 0x201;
+                p[1] = 0;
+                p[2] = *(s32 *)((u8 *)arg0 + 8);
+                p[3] = 0;
+                state->handles[state->index] = func_00255A30(p, arg1);
+            }
+            break;
+        default:
+            if (func_001F51D0(state->handles[0]) == 0) {
+                func_001E4530();
+                return 0;
+            }
+            break;
+        }
+    }
+    return 1;
+}
 
 typedef struct {
     u8 padding[8];
