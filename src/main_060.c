@@ -125,7 +125,39 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_00216C70);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216DF0);
+typedef struct {
+    u8 pad[0x49];
+    u8 other_flags : 7;
+    u8 enabled : 1;
+    u8 pad_4A[2];
+} Card_00216DF0;
+
+extern u8 D_0034F6D0;
+
+s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 side;
+    u8 *table;
+    Card_00216DF0 *card;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    table = (u8 *)D_0032F790 + side * 0xFFA0;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    card = (Card_00216DF0 *)(table + arg1 * 0x4C);
+    card->enabled = arg2 ? 1 : 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216EC0);
 
