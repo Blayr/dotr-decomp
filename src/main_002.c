@@ -323,7 +323,54 @@ s32 func_00107EA0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107EC0);
+s32 func_00107EC0(u8 *arg0, s32 arg1, s16 arg2) {
+    if (arg2 == 0) {
+        arg0[0] = 0xFF;
+        arg0[1] = 0xFF;
+        arg0[2] = 0xFF;
+    } else if (arg2 == 1) {
+        arg0[0] = 0xFF;
+        arg0[1] = 0;
+        arg0[2] = 0;
+    } else if (arg2 == 2) {
+        arg0[0] = 0;
+        arg0[1] = 0xFF;
+        arg0[2] = 0;
+    } else if (arg2 == 3) {
+        arg0[0] = 0;
+        arg0[1] = 0;
+        arg0[2] = 0xFF;
+    } else if (arg2 == 4) {
+        arg0[0] = 0xFF;
+        arg0[1] = 0xFF;
+        arg0[2] = 0;
+    } else if (arg2 == 5) {
+        arg0[0] = 0xFF;
+        arg0[1] = 0;
+        arg0[2] = 0xFF;
+    } else if (arg2 == 6) {
+        arg0[0] = 0;
+        arg0[1] = 0xFF;
+        arg0[2] = 0xFF;
+    } else if (arg2 == 7) {
+        arg0[0] = 0xFF;
+        arg0[1] = 0x80;
+        arg0[2] = 0xFF;
+    } else if (arg2 == 8) {
+        arg0[0] = 0x80;
+        arg0[1] = 0;
+        arg0[2] = 0xFF;
+    } else if (arg2 == 9) {
+        arg0[0] = 0xFF;
+        arg0[1] = 0x80;
+        arg0[2] = 0;
+    } else {
+        arg0[0] = 0xFF;
+        arg0[1] = 0xFF;
+        arg0[2] = 0xFF;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108030);
 
