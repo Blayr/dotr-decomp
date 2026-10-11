@@ -200,6 +200,7 @@ void func_00228940(s16 arg0, s16 arg1);
 void func_00241AC0(void);
 void func_00242450(void);
 void func_00242CD0(void);
+s32 func_00243580(void *arg0);
 void func_00243A40(s32 arg0);
 s32 func_00243D90(void *arg0);
 s32 func_00243F60(void *arg0);
