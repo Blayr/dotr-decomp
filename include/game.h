@@ -305,7 +305,6 @@ void *func_0019C2B8(void *, const void *, u32);
 
 s32 func_001E1B70();                                /* extern */
 
-void func_001DFBB0(s32, s32);
 void func_001CDEB0(void *arg0);
 
 

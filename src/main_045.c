@@ -13,7 +13,71 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF5F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001DFAF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001DFBB0);
+void *func_001DD130();
+void func_001CD560();
+
+static inline u8 *check_001DFBB0(s32 a0, s32 a1) {
+    u8 *p = func_001DD130(a0, a1);
+    if (p == NULL) {
+        return NULL;
+    }
+    if (p[0x45] >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+static inline s32 release_001DFBB0(void *p) {
+    if (p == NULL) {
+        return 0;
+    }
+    func_001CD560(p);
+    *(s32 *)((u8 *)p + 0x90) = 0;
+    return 1;
+}
+
+static inline u8 *cell_001DFBB0(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+}
+
+static inline u8 *slot_001DFBB0(s32 i) {
+    if (i < 0 || i >= 6) {
+        return NULL;
+    }
+    return &D_0031A7C0[i * 0xA0];
+}
+
+s32 func_001DFBB0(s32 arg0, s32 arg1) {
+    u8 *obj;
+    u8 *slot;
+
+    obj = check_001DFBB0(arg0, arg1);
+    if (obj == NULL) {
+        return 0;
+    }
+    if (arg0 < 2) {
+        if (obj[0x45] < 6) {
+            func_001E7E70(obj[0x46], -1, 0x3E7);
+        }
+        if (*(void **)(obj + 4) != NULL) {
+            release_001DFBB0(*(void **)(obj + 4));
+        }
+        *(s32 *)cell_001DFBB0(obj[0x40], obj[0x41]) = 0;
+    } else if (arg1 > 0) {
+        slot = slot_001DFBB0(arg1);
+        if (slot != NULL) {
+            if (*(void **)slot != NULL) {
+                release_001DFBB0(*(void **)slot);
+            }
+            func_001CDD90(slot);
+        }
+    }
+    func_001DCD70(obj, -1);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001DFD50);
 
