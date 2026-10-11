@@ -20,7 +20,25 @@ INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1C50);
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1D50);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1E10);
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_001F1E10;
+
+s32 func_001F1E10(s32 arg0, f32 *arg1) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    *(Vec3_001F1E10 *)arg1 = *(Vec3_001F1E10 *)((u8 *)obj + 0x120);
+    return 1;
+}
 
 s32 func_001F1E80(s32 arg0, f32 *arg1) {
     Obj_0031ABB0 *temp_v0;

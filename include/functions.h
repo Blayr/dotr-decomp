@@ -640,6 +640,7 @@ s32 func_001F1A00(s32 arg0, s64 arg1);
 s32 func_001F1A80(s32 arg0);
 s32 func_001F1B50(s32 arg0);
 void func_001F1C40(s32 arg0);
+s32 func_001F1E10(s32 arg0, f32 *arg1);
 s32 func_001F1E80(s32 arg0, f32 *arg1);
 s32 func_001F1F70(s32 arg0, f32 fparg0);
 s32 func_001F1FD0(s32 arg0, void *arg1);
