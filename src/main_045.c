@@ -325,7 +325,31 @@ s32 func_001E0830(s32 arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0890);
+void *func_001DD130();
+
+static inline void *lookup_001E0890(s32 arg0, s32 arg1) {
+    void *entry;
+
+    entry = func_001DD130(arg0, arg1);
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)entry + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E0890(s32 arg0, s32 arg1, s8 arg2) {
+    void *entry;
+
+    entry = lookup_001E0890(arg0, arg1);
+    if (entry == NULL) {
+        return 0;
+    }
+    *(s8 *)((u8 *)entry + 0x3F) = arg2;
+    return 1;
+}
 
 void *func_001DD130();
 void func_001E0950(void *, s32);
