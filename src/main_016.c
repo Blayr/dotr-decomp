@@ -10,7 +10,51 @@ INCLUDE_ASM("asm/nonmatchings/main_016", func_00169FE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016A5C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016AE30);
+s32 func_0016AE30(s32 arg0, s32 arg1) {
+    s32 kind;
+    u32 *info;
+
+    kind = func_001E1030();
+    func_00250360(arg0, arg1);
+    info = func_001E0B70(arg0, arg1, 0);
+    func_001E1090(arg0, arg1);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 1) == 5) {
+            return 2;
+        }
+        if (info == NULL) {
+            return 2;
+        }
+        switch (*info >> 8) {
+        case 0x27:
+            if (func_001DE5C0(arg0) < 4) {
+                return 1;
+            }
+            break;
+        case 4:
+            if (func_0016B0F0(arg0) == 1) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    case 0:
+        switch (kind) {
+        case 0xE0:
+        case 0x16C:
+            if (func_001DE5C0(arg0) < 4) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    }
+    return 2;
+}
 
 s32 func_0016AFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 minY;
