@@ -228,7 +228,26 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00101080);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101430);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101600);
+s32 func_00101600(void *arg0) {
+    u16 x;
+    u16 y;
+
+    x = ((u16 *)arg0)[0];
+    if ((f32)x < 22528.0f) {
+        return 0;
+    }
+    if (!((f32)x <= 43008.0f)) {
+        return 0;
+    }
+    y = ((u16 *)arg0)[1];
+    if ((f32)y < 25600.0f) {
+        return 0;
+    }
+    if ((f32)y > 39936.0f) {
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_00101770(void *arg0) {
     u16 *p = (u16 *)arg0;
