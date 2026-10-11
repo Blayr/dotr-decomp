@@ -51,7 +51,25 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0290);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E02F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0370);
+void *func_001DD130();
+s32 func_001E03D0(void *, s32);
+
+static inline void *lookup_001E0370(s32 arg0, s32 arg1) {
+    void *ptr;
+
+    ptr = func_001DD130(arg0, arg1);
+    if (ptr == NULL) {
+        return NULL;
+    }
+    if (*((u8 *)ptr + 0x45) >= 11) {
+        return NULL;
+    }
+    return ptr;
+}
+
+s32 func_001E0370(s32 arg0, s32 arg1, s32 arg2) {
+    return func_001E03D0(lookup_001E0370(arg0, arg1), arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E03D0);
 
@@ -186,7 +204,30 @@ s32 func_001E1030(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1090);
+void *func_001DD130();
+
+static inline u8 *get_001E1090(void) {
+    u8 *data;
+
+    data = func_001DD130();
+    if (data == NULL) {
+        return NULL;
+    }
+    if (data[0x45] >= 0xB) {
+        return NULL;
+    }
+    return data;
+}
+
+s32 func_001E1090(s32 arg0, s32 arg1) {
+    u8 *data;
+
+    data = get_001E1090();
+    if (data != NULL) {
+        return (data[0x41] << 8) | data[0x40];
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E10F0);
 
@@ -216,7 +257,29 @@ s32 func_001E1360(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E13C0);
+typedef struct Entry_001E13C0 {
+    u8 padding[0x45];
+    u8 type;
+    u8 padding46;
+    u8 value;
+} Entry_001E13C0;
+
+void *func_001DD130(void);
+
+s32 func_001E13C0(void) {
+    Entry_001E13C0 *entry;
+
+    entry = func_001DD130();
+    if (entry == NULL) {
+        entry = NULL;
+    } else if (entry->type >= 0xB) {
+        entry = NULL;
+    }
+    if (entry != NULL) {
+        return entry->value;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1420);
 
@@ -228,7 +291,30 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1580);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E15E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1640);
+void *func_001DD130(void);
+
+static inline u8 *check_001E1640(void) {
+    u8 *entry;
+
+    entry = func_001DD130();
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry[0x45] >= 11) {
+        entry = NULL;
+    }
+    return entry;
+}
+
+s32 func_001E1640(void) {
+    u8 *entry;
+
+    entry = check_001E1640();
+    if (entry != NULL) {
+        return entry[0x4A];
+    }
+    return -1;
+}
 
 void *func_001DD130();
 
