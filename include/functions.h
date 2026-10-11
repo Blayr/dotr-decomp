@@ -1120,6 +1120,7 @@ void func_00218840(void *arg0, u16 x0, u16 y0, s32 z0, u8 f0, u16 x1, u16 y1, s3
 void func_00218970(void *arg0, void *src, s16 x, s16 y);
 void func_00218AB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy);
 void func_00218E80(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0, u16 x1, u16 y1, s32 z1, u8 fog1, u16 x2, u16 y2, s32 z2, u8 fog2, u16 x3, u16 y3, s32 z3, u8 fog3);
+void func_00218FB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy);
 void func_002194B0(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0, u16 x1, u16 y1, s32 z1, u8 fog1, u16 x2, u16 y2, s32 z2, u8 fog2, u16 x3, u16 y3, s32 z3, u8 fog3);
 void func_0021BAE0(void *arg0);
 void func_0021BB20(u8 *arg0);

@@ -287,7 +287,59 @@ void func_00218E80(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0,
     vertices[6].fog = fog3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218FB0);
+typedef struct {
+    s16 x0;
+    s16 y0;
+    s16 x1;
+    s16 y1;
+    s16 x2;
+    s16 y2;
+    s16 x3;
+    s16 y3;
+    u8 data[17];
+    u8 field21;
+    s16 field22;
+    u16 index;
+} Quad_00218FB0;
+
+typedef struct {
+    s16 u0;
+    s16 v0;
+    s16 u1;
+    s16 v1;
+    s16 u2;
+    s16 v2;
+    s16 u3;
+    s16 v3;
+    u16 texture;
+    u8 pad12[2];
+} Entry_00218FB0;
+
+void func_00219180(void *, s16, s16, s16, s16, s16, s16, s16, s16,
+                   s16, s16, s16, s16, s16, s16, s16, s16,
+                   u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8,
+                   u16, u8, s16);
+
+struct Sprite_00217CB0;
+extern struct Sprite_00217CB0 D_002950A0[];
+
+void func_00218FB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
+    Quad_00218FB0 *quad = (Quad_00218FB0 *)src;
+    Entry_00218FB0 *entry = &((Entry_00218FB0 *)D_002950A0)[quad->index];
+
+    func_00219180(arg0,
+        quad->x0 + x, quad->y0 + y,
+        dx + (quad->x1 + x), dy + (quad->y1 + y),
+        quad->x2 + x, quad->y2 + y,
+        dx + (quad->x3 + x), dy + (quad->y3 + y),
+        entry->u0, entry->v0, entry->u1, entry->v1,
+        entry->u2, entry->v2, entry->u3, entry->v3,
+        quad->data[0], quad->data[1], quad->data[2], quad->data[3],
+        quad->data[4], quad->data[5], quad->data[6], quad->data[7],
+        quad->data[8], quad->data[9], quad->data[10], quad->data[11],
+        quad->data[12], quad->data[13], quad->data[14], quad->data[15],
+        quad->data[16], entry->texture, quad->field21, quad->field22);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00219180);
 
