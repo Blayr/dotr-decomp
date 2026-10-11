@@ -79,6 +79,7 @@ void func_001B1190(void);
 void func_001B81E0(void);
 void func_001B83C0(void);
 void func_001B8830(void);
+void func_001BA5F0(void);
 void func_001BAE70(void);
 void func_001C1270(void);
 void func_001C1AD0(void);
