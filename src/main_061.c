@@ -190,7 +190,37 @@ void func_00218970(void *arg0, void *src, s16 x, s16 y) {
         quad->data[16], quad->field22);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218AB0);
+typedef struct {
+    s16 x0;
+    s16 y0;
+    s16 x1;
+    s16 y1;
+    s16 x2;
+    s16 y2;
+    s16 x3;
+    s16 y3;
+    u8 data[17];
+    s16 field22;
+} Quad_00218AB0;
+
+void func_00218C10(void *, s16, s16, s16, s16, s16, s16, s16, s16,
+                  u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8,
+                  s16);
+
+void func_00218AB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
+    Quad_00218AB0 *quad = (Quad_00218AB0 *)src;
+
+    func_00218C10(arg0,
+        quad->x0 + x, quad->y0 + y,
+        dx + (quad->x1 + x), dy + (quad->y1 + y),
+        quad->x2 + x, quad->y2 + y,
+        dx + (quad->x3 + x), dy + (quad->y3 + y),
+        quad->data[0], quad->data[1], quad->data[2], quad->data[3],
+        quad->data[4], quad->data[5], quad->data[6], quad->data[7],
+        quad->data[8], quad->data[9], quad->data[10], quad->data[11],
+        quad->data[12], quad->data[13], quad->data[14], quad->data[15],
+        quad->data[16], quad->field22);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00218C10);
 

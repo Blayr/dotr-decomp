@@ -234,7 +234,41 @@ void func_00243750(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 o
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_002437F0);
+s32 func_002437F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                  s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+    s32 temp_s0;
+    s32 temp_v0;
+    s32 temp_v1;
+    s32 temp_v1_2;
+
+    temp_v0 = arg1 + arg3;
+    temp_v1 = arg5 + arg7;
+    if (temp_v0 < temp_v1) {
+        temp_v1_2 = temp_v1 - temp_v0;
+        if (temp_v1_2 >= arg7) {
+            arg5 -= temp_v1_2 - arg7;
+            arg7 = 0;
+        } else {
+            arg7 -= temp_v1_2;
+        }
+    }
+    if (arg5 >= arg1) {
+        func_00243950(arg0, arg4, arg1);
+        func_00243950(arg2, arg4 + arg1, arg5 - arg1);
+        func_00243950((arg2 + arg5) - arg1, arg6, arg7);
+    } else {
+        temp_s0 = arg1 - arg5;
+        if (arg7 >= temp_s0) {
+            func_00243950(arg0, arg4, arg5);
+            func_00243950(arg0 + arg5, arg6, temp_s0);
+            func_00243950(arg2, (arg6 + arg1) - arg5, arg7 - temp_s0);
+        } else {
+            func_00243950(arg0, arg4, arg5);
+            func_00243950(arg0 + arg5, arg6, arg7);
+        }
+    }
+    return arg5 + arg7;
+}
 
 s32 func_00243950(s32 arg0, s32 arg1, s32 arg2) {
     s32 request[4];

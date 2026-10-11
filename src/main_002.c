@@ -588,7 +588,51 @@ s32 func_001092E0(void *arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00109380);
+typedef struct {
+    u64 command : 32;
+    u64 rgb : 24;
+    u64 alpha : 8;
+} Color_00109380;
+
+typedef struct {
+    Color_00109380 color;
+    u64 texture;
+    u64 position;
+} TexturedVertex_00109380;
+
+typedef struct {
+    Color_00109380 color;
+    u64 position;
+} Vertex_00109380;
+
+typedef struct {
+    u8 header[0x20];
+    TexturedVertex_00109380 vertices[4];
+} TexturedPacket_00109380;
+
+typedef struct {
+    u8 header[0x18];
+    Vertex_00109380 vertices[4];
+} Packet_00109380;
+
+s32 func_00109380(void *arg0, s32 arg1) {
+    if (arg1 == 0) {
+        TexturedPacket_00109380 *packet = (TexturedPacket_00109380 *)arg0;
+
+        packet->vertices[0].color.rgb =
+            packet->vertices[1].color.rgb =
+            packet->vertices[2].color.rgb =
+            packet->vertices[3].color.rgb = 0xFFFFFF;
+    } else {
+        Packet_00109380 *packet = (Packet_00109380 *)arg0;
+
+        packet->vertices[0].color.rgb =
+            packet->vertices[1].color.rgb =
+            packet->vertices[2].color.rgb =
+            packet->vertices[3].color.rgb = 0xFFFFFF;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001094F0);
 
