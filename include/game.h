@@ -224,4 +224,6 @@ s32 func_001F71A0(s32, s32, s32, s32, s32, s32);
 u8 *func_00197548(void);
 extern u8 D_002D0655[];
 
+extern volatile s32 D_00351170;
+
 #endif
