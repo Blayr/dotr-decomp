@@ -184,7 +184,6 @@ INCLUDE_ASM("asm/nonmatchings/main_016", func_001700D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_001702B0);
 
-void func_0026FD30(s32, s32 *);
 s64 func_002493A0(s32);
 
 typedef struct {

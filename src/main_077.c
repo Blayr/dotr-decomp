@@ -177,7 +177,6 @@ typedef struct State_00271630 {
     u8 handle;
 } State_00271630;
 
-void func_001E4530(void);
 void func_0024F430(u32, s32);
 void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);

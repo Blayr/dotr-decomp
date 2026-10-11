@@ -130,7 +130,6 @@ typedef struct Action_0015DED0 {
 } Action_0015DED0;
 
 void func_0015E030(void *);
-s32 func_0015E2E0(s32, s32);
 void func_0015E520(void *, s32);
 
 void func_0015DED0(void *arg0) {
@@ -261,7 +260,6 @@ typedef struct {
     } field8;
 } Item_0015EC60;
 
-void func_0015DED0(void *);
 s32 func_0015EE40(void);
 
 static inline void set_index_0015EC60(void *arg, s32 index) {

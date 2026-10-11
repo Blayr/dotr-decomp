@@ -228,7 +228,6 @@ typedef struct Record_002007D0 {
 } Record_002007D0;
 
 extern struct Entry_002008A0 D_003229A0[];
-s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2);
 
 void func_002007D0(void) {
     Record_002007D0 *record;

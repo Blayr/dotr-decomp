@@ -79,7 +79,6 @@ typedef struct Record_001CECF0 {
     u8 tail[0x11];
 } Record_001CECF0;
 
-void func_0023BB00(s32);
 extern s32 (*D_002BAEB0[])(u16, void *);
 extern s8 D_0034F700;
 extern s8 D_0034F708;

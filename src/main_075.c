@@ -80,7 +80,6 @@ s32 func_0025F670(void *arg0, void *arg1) {
     return 0;
 }
 
-s32 func_0024EC50(s32, s32);
 s32 func_00255A30(void *, void *);
 
 typedef struct Source_0025F720 {
@@ -207,7 +206,6 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FF30);
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260020);
 
 void func_001E42C0(s32, s32, s32, s32);
-void func_001E4530(void);
 void func_00255960(void *);
 s32 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
@@ -270,7 +268,6 @@ typedef struct {
 } State_00260320;
 
 void func_001E42C0(s32, s32, s32, s32);
-void func_001E4530(void);
 void func_00255960(void *);
 void func_00260A70(void *, s32);
 void func_00260AF0(s32, s32, s32, s32);

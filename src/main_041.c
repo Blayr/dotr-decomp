@@ -14,7 +14,6 @@ typedef struct {
     u8 *second;
 } State_001C32B0;
 
-void func_001C33A0(s32);
 
 s32 func_001C32B0(void) {
     State_001C32B0 *state = (State_001C32B0 *)D_00317490;
@@ -319,6 +318,29 @@ s32 func_001CDA60(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CDAA0);
+void func_001CD560();
+
+typedef struct {
+    u8 pad_00[0x90];
+    s32 in_use;
+    u8 pad_94[0xC];
+} Slot_001CDAA0;
+
+u8 *func_001CDAA0(void) {
+    s32 i;
+    Slot_001CDAA0 *slot;
+
+    slot = (Slot_001CDAA0 *)D_003193C0;
+    i = 0;
+    do {
+        if (slot->in_use == 0) {
+            func_001CD560(slot);
+            return (u8 *)slot;
+        }
+        i += 1;
+        slot++;
+    } while (i < 0x20);
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CDB00);

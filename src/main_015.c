@@ -91,7 +91,6 @@ void func_00163EC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                  1, 3000, arg_sp28);
 }
 
-s32 func_00163F90(s32, s32);
 
 typedef struct {
     u16 location;

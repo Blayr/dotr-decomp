@@ -35,8 +35,6 @@ typedef struct {
 } Flt_002451A0;
 
 void func_002440F0(void *, s32 *, s32 *, s32 *, s32 *);
-void func_002441F0(void *, s32);
-void func_00244B20(void *);
 s32 func_00245630(s32, s32, s32, s32, void *, s32, s32, s32);
 extern Flt_002451A0 D_0029B300;
 extern u8 D_003506C8[];
@@ -314,8 +312,6 @@ typedef struct Entry_00248EA0 {
     u32 value;
 } Entry_00248EA0;
 
-s32 func_00266C70(s32, s32);
-s32 func_00266DF0(s32);
 
 s32 func_00248EA0(void) {
     s32 index;

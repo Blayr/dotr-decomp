@@ -267,8 +267,6 @@ typedef struct {
     } data;
 } Entry_00122530;
 
-s32 func_00122680(s32, s32);
-s32 func_00122810(s32, s32);
 s32 func_00122970(s32);
 void func_00123500(s32, s32, s32, s32 *);
 
