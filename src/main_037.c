@@ -304,7 +304,30 @@ void func_001AC510(void) {
     func_001AAFA0(6);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC560);
+typedef struct Block_001AC560 {
+    u8 entries[0x26];
+    s8 mode;
+    s8 selected;
+    s8 previous;
+    u8 index;
+} Block_001AC560;
+
+void func_001AAAF0(s32, s32);
+s32 func_001AB1D0(void);
+extern s32 D_003173B0;
+extern Block_001AC560 D_00317449;
+
+void func_001AC560(void) {
+    if (func_001AB1D0() < 0) {
+        D_003173B0 = 0;
+        func_001FCC70(0, 1, 1, 0, 60, 0);
+        D_00317449.mode = -2;
+        D_00317449.selected = 10;
+        D_00317449.previous = 0;
+        D_00317449.entries[D_00317449.index + D_00317449.previous] = 0;
+        func_001AAAF0(-2, 1);
+    }
+}
 
 void func_001AC600(void) {
 
