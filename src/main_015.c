@@ -202,7 +202,36 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_00166EE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001670A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00167570);
+static inline s32 max_00167570(s32 a, s32 b) {
+    if (a < b) {
+        return b;
+    }
+    return a;
+}
+
+s32 func_00167570(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                  s32 arg4, s32 arg5) {
+    s32 min_y;
+    s32 min_x;
+
+    min_y = arg3 < arg5 ? arg3 : arg5;
+    arg5 = max_00167570(arg5, arg3);
+    min_x = arg2 < arg4 ? arg2 : arg4;
+    arg4 = max_00167570(arg4, arg2);
+    if ((arg4 - min_x) + (arg5 - min_y) != 2) {
+        return 0;
+    }
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    if (func_001E2100(arg0, arg1, 0) == 0) {
+        if (func_0024DF00(func_001E22B0(arg2, arg3), arg0, arg1) != 1) {
+            return 0;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_00167670(s32 arg0, s32 arg1) {
     s32 sp20[4];
