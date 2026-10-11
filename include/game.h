@@ -394,7 +394,6 @@ s32 func_001F5380(u8);
 s32 func_001F53A0(u8);
 void func_001F5620(s32, u8, s32);
 
-void func_0010C110(void *, void *, s32, s32);
 void func_0019B648(void *, void *, s32);
 extern u8 D_002B90B0[];
 s32 func_0017BC80(s32);

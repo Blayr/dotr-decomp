@@ -236,7 +236,36 @@ s32 func_0010BE20(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BE60);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C110);
+typedef struct {
+    char name[0x40];
+    u8 *data;
+    s32 offset;
+    s32 size;
+} Request_0010C110;
+
+typedef struct {
+    u8 padding[0x1250];
+    Request_0010C110 requests[16];
+    s32 count;
+    s32 index;
+} Queue_0010C110;
+
+void func_0010C110(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+    Request_0010C110 *request;
+
+    request = &((Queue_0010C110 *)D_0030FF40)->requests[((Queue_0010C110 *)D_0030FF40)->index];
+    func_0019BDD8(request->name, (const char *)arg0);
+    request->data = arg1;
+    request->offset = arg2;
+    request->size = arg3;
+    request->offset &= ~0x7FF;
+    request->data -= arg2 - request->offset;
+    request->size += arg2 - request->offset;
+    request->size += 0x7FF;
+    request->size &= ~0x7FF;
+    ((Queue_0010C110 *)D_0030FF40)->index = (((Queue_0010C110 *)D_0030FF40)->index + 1) % 16;
+    ((Queue_0010C110 *)D_0030FF40)->count++;
+}
 
 typedef struct QueueEntry_0010C220 {
     s32 value0;
