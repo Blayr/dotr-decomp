@@ -197,7 +197,47 @@ INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8B50);
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8F80);
+typedef struct Vec4_001F8F80 {
+    f32 x, y, z, w;
+} Vec4_001F8F80;
+
+typedef struct Camera_001F8F80 {
+    Vec4_001F8F80 result;
+    u8 pad10[0x10];
+    Vec4_001F8F80 position;
+    Vec4_001F8F80 target;
+} Camera_001F8F80;
+
+f32 func_001A6C30(f32, f32);
+
+s32 func_001F8F80(s32 arg0) {
+    Vec4_001F8F80 result;
+    Camera_001F8F80 *camera;
+    Vec4_001F8F80 *position;
+    Vec4_001F8F80 *target;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    camera = (Camera_001F8F80 *) D_0031BEB0[arg0];
+    if (camera == 0) {
+        return 0;
+    }
+    position = &camera->position;
+    target = &camera->target;
+    result.x = func_001A6C60(
+        (position->x - target->x) * (position->x - target->x) +
+        (position->z - target->z) * (position->z - target->z));
+    result.y = func_001A6C18(position->z - target->z, position->x - target->x);
+    result.y = func_001A6C30(6.2831855f + result.y, 6.2831855f);
+    result.z = func_001A6C18(position->y - target->y, result.x);
+    result.x = func_001A6C60(
+        (position->x - target->x) * (position->x - target->x) +
+        (position->y - target->y) * (position->y - target->y) +
+        (position->z - target->z) * (position->z - target->z));
+    camera->result = result;
+    return 1;
+}
 
 typedef struct {
     u8 pad[0x10];

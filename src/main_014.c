@@ -316,7 +316,53 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_0015F300);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015F5E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015FA00);
+s32 func_0015FA00(s32 arg0, void *arg1, void *arg2) {
+    s32 cards[8];
+    s32 i;
+    s32 found;
+    s32 *entry;
+    s32 *entry2;
+    s32 j;
+    s32 found2;
+    s32 card;
+
+    func_0026FD30(arg0, cards);
+    i = 0;
+    found = 0;
+    if (0 < func_0026FE20(arg0)) {
+        entry = cards;
+        do {
+            if (*entry == 0x316) {
+                found = 1;
+                ((u8 *)arg1)[6] = i;
+            }
+            entry++;
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    if (found == 0) {
+        return -1;
+    }
+    j = 0;
+    found2 = 0;
+    if (0 < func_0026FE20(arg0)) {
+        entry2 = cards;
+        do {
+            card = *entry2;
+            if ((card == 0x129) && (func_0026FB10(arg0, card) == 1)) {
+                ((u8 *)arg1)[7] = j;
+                found2 = 1;
+            }
+            entry2++;
+            j++;
+        } while (j < func_0026FE20(arg0));
+    }
+    if (found2 == 0) {
+        return -1;
+    }
+    func_001DCD70(arg2, 0x129);
+    return 1;
+}
 
 s32 func_0015FB60(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 entries[8];

@@ -207,7 +207,37 @@ s32 func_0014F9B0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014FA10);
+s32 func_0014FA10(s32 arg0, s32 arg1) {
+    s32 index;
+    u8 count;
+    s32 mask;
+    s32 entry;
+
+    count = 0;
+    switch (arg1) {
+    case 0x264:
+        if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 0x10, 0xE)) <= 3) {
+            break;
+        }
+        return 1;
+    case 0x227:
+        if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 0xF, 0xE)) > 0) {
+            return 0;
+        }
+        mask = func_0024CA40(0, 0, arg0, 2, 0xF, 0xE);
+        for (index = 0; index < func_0024E910(mask); index++) {
+            entry = func_0024EC50(mask, index);
+            if (func_002781B0(entry >> 8, entry & 0xFF, 0) == 1) {
+                count++;
+            }
+        }
+        if (count >= 2) {
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_0014FB70);
 

@@ -109,7 +109,61 @@ s32 func_001F2050(s32 index, void *out) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2150);
+static inline s32 ready_001F2150(s32 index) {
+    Obj_0031ABB0 *obj;
+
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_001F2150(s32 arg0, f32 *arg1) {
+    s32 sp3C;
+    Obj_0031ABB0 *temp_s1;
+    f32 temp_f1;
+    s32 temp_a1;
+    s32 temp_a1_2;
+    s32 var_v0_2;
+
+    if ((arg0 < 0) || (temp_a1 = arg0 < 0x54, (temp_a1 == 0))) {
+        return 0;
+    }
+    temp_s1 = D_0031ABB0[arg0];
+    if (temp_s1 == NULL) {
+        return 0;
+    }
+    if (ready_001F2150(arg0) == 0) {
+        return 0;
+    }
+    if ((s32)*(u8 *)((u8 *)temp_s1 + 0x1FE) <= 0) {
+        return 0;
+    }
+    sp3C = 0;
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        var_v0_2 = 0;
+    } else if (temp_s1 == NULL) {
+        var_v0_2 = 0;
+    } else {
+        temp_a1_2 = *(s32 *)((u8 *)temp_s1 + 0x134);
+        var_v0_2 = func_001EFBD0(1, temp_a1_2, temp_a1_2, &sp3C, 0, NULL, 0);
+    }
+    if (var_v0_2 != 0) {
+        temp_f1 = *(f32 *)(*(u8 **)((u8 *)temp_s1 + 0x13C) + 0x54);
+        arg1[0] = *(f32 *)((u8 *)var_v0_2 + 0x20) / temp_f1;
+        arg1[1] = *(f32 *)((u8 *)var_v0_2 + 0x24) / temp_f1;
+        arg1[2] = *(f32 *)((u8 *)var_v0_2 + 0x28) / temp_f1;
+        arg1[3] = 1.0f;
+    }
+    return 1;
+}
 
 s32 func_001F22B0(s32 index, void *src) {
     Obj_0031ABB0 *dst;
