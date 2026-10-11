@@ -417,7 +417,28 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00105260);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00105830);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00105C40);
+s32 func_00105C40(void *arg0) {
+    Vec4f *v = arg0;
+    f32 x_ratio;
+    f32 y_ratio;
+    f32 inverse;
+    f32 packed_x;
+    s32 func_001A22C0(f32);
+
+    if (v->x == 0.0f) {
+        x_ratio = 0.0f;
+    } else {
+        x_ratio = v->x / v->z;
+    }
+    inverse = 1.0f / v->w;
+    if (v->y == 0.0f) {
+        y_ratio = 0.0f;
+    } else {
+        y_ratio = v->y / v->w;
+    }
+    packed_x = (f32)func_001A22C0(x_ratio);
+    return func_001A22C0(y_ratio + packed_x * inverse);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00105D00);
 
