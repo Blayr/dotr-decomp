@@ -148,4 +148,7 @@ void func_00242900(void);
 void func_00244250(void *);
 extern u8 D_003506C8[];
 
+s32 func_0024CA40(s32, s32, s32, s32, s32, s32);
+s32 func_0024E910(s32);
+
 #endif
