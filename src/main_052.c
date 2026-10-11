@@ -698,9 +698,71 @@ void *func_001FA6F0(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA770);
+typedef struct Entry_001FA770 {
+    s8 active : 1;
+    s8 unused0 : 7;
+    s8 flag : 1;
+    s8 unused1 : 7;
+    s8 field2;
+    s8 field3;
+    u8 padding[0x2C];
+} Entry_001FA770;
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA810);
+extern struct Entry_001FA6F0 D_0031BEC0[];
+
+s32 func_001FA770(s32 arg0, s32 arg1, s32 arg2) {
+    Entry_001FA770 *var_t1;
+    s32 var_t2;
+    s32 var_v0;
+
+    var_t1 = (Entry_001FA770 *) D_0031BEC0;
+    var_v0 = 0;
+    var_t2 = 0;
+    do {
+        if (var_t1->active) {
+            if (arg0 < 0 || var_t1->field2 == arg0) {
+                if (arg1 < 0 || var_t1->field3 == arg1) {
+                    var_t1->flag = (s8) (arg2 ? 1 : 0);
+                    var_v0 = 1;
+                }
+            }
+        }
+        var_t2 += 1;
+        var_t1++;
+    } while (var_t2 < 8);
+    return var_v0;
+}
+
+typedef struct Entry_001FA810 {
+    s8 active : 1;
+    s8 : 7;
+    s8 unk1;
+    s8 x;
+    s8 y;
+    u8 padding[0x2C];
+} Entry_001FA810;
+
+extern struct Entry_001FA6F0 D_0031BEC0[];
+
+s32 func_001FA810(s32 arg0, s32 arg1) {
+    Entry_001FA810 *entry;
+    s32 found;
+    s32 i;
+
+    entry = (Entry_001FA810 *)D_0031BEC0;
+    found = 0;
+    i = 0;
+    do {
+        if (entry->active && (arg0 < 0 || entry->x == arg0) &&
+            (arg1 < 0 || entry->y == arg1)) {
+            found = 1;
+            entry->active = 0;
+        }
+        i++;
+        entry++;
+    } while (i < 8);
+    return found;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA8A0);
 

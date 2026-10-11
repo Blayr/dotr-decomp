@@ -462,7 +462,29 @@ s32 func_001E3990(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3A20);
+struct ObjectFields_001E3A20 {
+    u8 pad0[0x45];
+    u8 kind;
+    u8 pad1[0x12];
+    s8 enabled : 1;
+    s8 : 7;
+};
+
+s32 func_001E3A20(s32 arg0, s32 arg1, s32 arg2) {
+    struct ObjectFields_001E3A20 *object = func_001DD130();
+
+    if (object == NULL) {
+        object = NULL;
+    } else if (object->kind >= 11) {
+        object = NULL;
+    }
+
+    if (object == NULL) {
+        return 0;
+    }
+    object->enabled = (s8)(arg2 ? 1 : 0);
+    return 1;
+}
 
 typedef struct Vec4_001E3AB0 {
     f32 x, y, z, w;
@@ -575,7 +597,54 @@ s32 func_001E3C90(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3D30);
+typedef struct Vec4_001E3D30 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001E3D30;
+
+typedef struct Object_001E3D30 {
+    u8 padding[0x30];
+    Vec4_001E3D30 position;
+} Object_001E3D30;
+
+typedef struct Entry_001E3D30 {
+    u8 padding0[4];
+    Object_001E3D30 *object;
+    u8 padding8[0x3D];
+    u8 type;
+} Entry_001E3D30;
+
+static inline void *check_001E3D30(void) {
+    Entry_001E3D30 *entry = func_001DD130();
+
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry->type >= 11) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E3D30(s32 arg0, s32 arg1, s32 arg2) {
+    Entry_001E3D30 *entry;
+    Object_001E3D30 *object;
+
+    entry = check_001E3D30();
+    if (entry == NULL) {
+        return 0;
+    }
+    object = entry->object;
+    if (object == NULL) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        object->position = *(Vec4_001E3D30 *)arg2;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3DD0);
 

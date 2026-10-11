@@ -55,7 +55,6 @@ s32 func_002084D0(s32, s32);                        /* extern */
 s32 func_00208680(s32, s32);                /* extern */
 s32 func_0020A9E0();                            /* extern */
 
-s32 func_001FA770(s32, s32, s32);       /* extern */
 s32 func_001FCF90(s32, s32, s32, s32);              /* extern */
 s32 func_00202FB0(s32, s32, s32, s32);              /* extern */
 s32 func_00207650(s32, s32, s32, s32);              /* extern */
@@ -283,13 +282,11 @@ void func_001E23A0(s32, s32, s32);
 
 
 s32 func_001E3850(s32, s32, s32);
-s32 func_001E3D30(s32, s32, s32);
 
 
 void func_0020BDE0(void *, void *);
 void func_0020CDD0(void *, void *, void *);
 
-s32 func_001E3A20(s32, s32, s32);
 
 s32 func_0018EE68(void *);
 
@@ -358,7 +355,6 @@ void func_00279CC0(s32, s32, s32, s32, s32, s32, s32);
 extern u16 D_002D0970[51][41];
 s32 func_002660E0(s32, s32, s32, s32);
 
-void func_001FA810(s32, s32);
 void func_001FA8A0(s32, s32, s32, s32, s32, void *);
 f32 func_00108030(s32, s32, s32);
 s32 func_00205440(s32, void *, u16 *, s32 *);
