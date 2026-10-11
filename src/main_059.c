@@ -98,7 +98,40 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_00214990);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214BB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214D00);
+typedef struct {
+    u8 pad[0xFF9C];
+    u8 lo : 2;
+    u8 flag2 : 1;
+    u8 flag3 : 1;
+    u8 flag4 : 1;
+    u8 hi : 3;
+    u8 pad2[3];
+} Side_00214D00;
+
+extern Side_00214D00 D_0032F790[];
+extern u8 D_0034F6D0;
+
+s32 func_00214D00(s32 arg0, s32 arg1) {
+    Side_00214D00 *side;
+    s32 idx;
+
+    if (D_0034F6D0 == arg0) {
+        idx = 0;
+    } else {
+        idx = 1;
+    }
+    side = &D_0032F790[idx];
+    switch (arg1) {
+    case 0:
+        return side->flag2 ? 1 : 0;
+    case 1:
+        return side->flag3 ? 1 : 0;
+    case 2:
+        return side->flag4 ? 1 : 0;
+    default:
+        return -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214DD0);
 
