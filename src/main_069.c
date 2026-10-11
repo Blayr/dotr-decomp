@@ -39,7 +39,53 @@ INCLUDE_ASM("asm/nonmatchings/main_069", func_00242D00);
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00242D10);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242E40);
+typedef struct Buffer_00242E40 {
+    s32 unk0;
+    s32 unk4;
+    u8 *data;
+    s32 size;
+} Buffer_00242E40;
+
+typedef struct Ring_00242E40 {
+    u8 pad[0x50008];
+    s32 capacity;
+} Ring_00242E40;
+
+s32 func_00242F20(void *, s32, void *, s32, void *, s32, void *, s32);
+void func_00243450(void *, s32);
+
+s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
+    u8 *data;
+    s32 size;
+    s32 firstSize;
+    void *dst1;
+    void *dst2;
+    s32 dstSize1;
+    s32 dstSize2;
+    s32 capacity;
+    u8 *end;
+    s32 result;
+
+    data = ((Buffer_00242E40 *)arg1)->data + 4;
+    capacity = ((Ring_00242E40 *)arg2)->capacity;
+    end = arg2 + capacity;
+    if (data >= end) {
+        data -= capacity;
+    }
+    size = ((Buffer_00242E40 *)arg1)->size - 4;
+    firstSize = end - data;
+    if (size < firstSize) {
+        firstSize = size;
+    }
+    func_00243390(D_00350620, &dst1, &dstSize1, &dst2, &dstSize2);
+    result = func_00242F20(dst1, dstSize1, dst2, dstSize2,
+                          data, firstSize, arg2, size - firstSize);
+    func_00243450(D_00350620, result);
+    if (result > 0) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00242F20);
 

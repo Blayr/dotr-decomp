@@ -30,7 +30,55 @@ INCLUDE_ASM("asm/nonmatchings/main_056", func_002073D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00207500);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00207510);
+typedef struct Node_00207510 {
+    u16 unused0;
+    u8 unused2;
+    u8 tag;
+    struct Node_00207510 *next;
+} Node_00207510;
+
+typedef struct Context_00207510 {
+    Node_00207510 *table;
+    s32 unused4;
+    Node_00207510 *head;
+    s32 depth;
+} Context_00207510;
+
+void func_00207510(void *arg0) {
+    Node_00207510 *tail;
+    Node_00207510 *node;
+    Node_00207510 *next;
+    Context_00207510 *ctx = arg0;
+
+    tail = NULL;
+    node = ctx->table + ((1 << ctx->depth) - 1);
+    do {
+        next = node->next;
+        if (*(u16 *)((u8 *)node + 2) != 7) {
+            if (tail != NULL) {
+                if (tail->tag == 0x50) {
+                    tail->next = (Node_00207510 *)((u8 *)tail + 0x20);
+                    tail = (Node_00207510 *)((u8 *)tail + 0x10);
+                }
+                tail->tag = 0x20;
+                tail->next = node;
+            } else {
+                ctx->head->tag = 0x20;
+                ctx->head->next = node;
+            }
+            tail = node;
+        }
+        node = next;
+    } while (next != (Node_00207510 *)-1);
+    if (tail != NULL) {
+        if (tail->tag == 0x50) {
+            tail->next = (Node_00207510 *)((u8 *)tail + 0x20);
+            tail = (Node_00207510 *)((u8 *)tail + 0x10);
+        }
+        tail->tag = 0x20;
+        tail->next = (Node_00207510 *)func_00209D20();
+    }
+}
 
 void func_002075F0(s32 arg0, s32 arg1, s32 arg2) {
     func_00209D30(func_00207650(func_00209D20(), arg0, arg1, arg2));

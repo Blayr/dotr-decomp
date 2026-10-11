@@ -300,7 +300,43 @@ s32 func_001DE9E0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEA30);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEB20);
+typedef struct {
+    s16 cards[40];
+    u8 count;
+} CardList_001DEB20;
+
+void func_001DEB20(s32 arg0) {
+    CardList_001DEB20 list;
+    s16 *fill;
+    CardList_001DEB20 *dest;
+    s32 i;
+    u16 *src;
+    u16 card;
+    s32 count;
+
+    dest = (CardList_001DEB20 *)(D_00317490 + arg0 * 0x350 + 0x1E0);
+    list.count = 0;
+    i = 0;
+    src = (u16 *)dest;
+    do {
+        card = *src;
+        if (card != 999) {
+            list.cards[list.count++] = card;
+        }
+        i++;
+        src++;
+    } while (i < 40);
+    count = list.count;
+    if (count < 40) {
+        fill = &list.cards[count];
+        do {
+            count++;
+            *fill = 999;
+            fill++;
+        } while (count < 40);
+    }
+    *dest = list;
+}
 
 typedef struct {
     u16 slots[40];

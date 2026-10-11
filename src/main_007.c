@@ -128,7 +128,30 @@ void func_00126940(void *arg0, u8 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_001269C0);
+s32 func_001269C0(s32 arg0, s32 arg1) {
+    s32 data[4];
+    s32 i;
+    s32 mask;
+    s32 y;
+    s32 x;
+    s32 cell;
+    s32 coords;
+
+    func_00254C90(data, *(s32 *)((u8 *)func_0026FC90(arg1, 0) + 4));
+    if ((mask = func_00254890(data, arg0)) < 0) {
+        return 0;
+    }
+    for (i = 0; i < func_0024E910(mask); i++) {
+        cell = func_0024EC50(mask, i);
+        x = cell >> 8;
+        y = cell & 0xFF;
+        coords = func_001E1090(x, y);
+        if (func_002509E0(x, y, coords & 0xFF, coords >> 8) >= 0xA28) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00126AB0);
 

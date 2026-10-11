@@ -317,7 +317,25 @@ void func_00205CB0(void *arg0, f32 fparg0, f32 fparg1) {
     func_0020CDD0(vector, matrix, vector);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205D10);
+s32 func_00205D10(void *arg0, f32 fparg0) {
+    f32 vector[4];
+    f32 matrix1[4][4];
+    f32 matrix2[4][4];
+
+    func_0020EBA0(matrix1);
+    func_0020EC00(matrix2);
+    ((f32 *)arg0)[3] = 1.0f;
+    func_0020CDD0(vector, matrix1, arg0);
+    vector[2] -= fparg0;
+    func_0020CDD0(vector, matrix2, vector);
+    if (vector[3] <= 0.0f) {
+        return 0xFFFFF6;
+    }
+    if (vector[2] <= 0.0f) {
+        return 0;
+    }
+    return func_001A23B0(vector[2] / vector[3]);
+}
 
 f32 func_00205DF0(void *arg0, f32 fparg0) {
     f32 vector[4];

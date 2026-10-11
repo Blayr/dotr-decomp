@@ -171,7 +171,39 @@ void func_002608F0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260990);
+typedef struct {
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 w;
+} Vec4_00260990;
+
+void func_001FC890(f32 *, void *);
+
+void func_00260990(s32 arg0, s32 arg1) {
+    Vec4_00260990 *rotation;
+    Vec4_00260990 sp40;
+    f32 sp50[4];
+    s32 var_v0;
+    s32 var_v1;
+
+    rotation = &sp40;
+    func_001FA810(0, 0);
+    func_001FC890(func_001FAF60(0), rotation);
+    if ((rotation->y + arg1) >= 0) {
+        var_v1 = rotation->y + arg1;
+    } else {
+        var_v1 = -(rotation->y + arg1);
+    }
+    if (var_v1 >= 0xFFFF) {
+        var_v0 = ((rotation->y + arg1) - 0x8000) - 0x7FFF;
+    } else {
+        var_v0 = rotation->y + arg1;
+    }
+    rotation->y = var_v0;
+    func_001FC950(rotation, sp50);
+    func_001FA8A0(0, 0, 4, arg0 & 0xFF, 0, sp50);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260A70);
 

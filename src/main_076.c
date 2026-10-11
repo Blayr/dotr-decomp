@@ -314,7 +314,40 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026CFC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D3C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D600);
+s32 func_0026D600(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+    s32 i;
+    s32 *p;
+    s32 result;
+    s32 retry;
+    s32 j;
+
+    result = func_0026D6E0(arg0, arg1, arg2, 0);
+    if (result >= 0) {
+        i = 0;
+        p = arg3;
+        do {
+            if (result == *p) {
+                retry = func_0026D6E0(arg0, arg1, arg2, 1);
+                if (retry >= 0) {
+                    j = 0;
+                    do {
+                        if (retry == *arg3) {
+                            return -1;
+                        }
+                        j++;
+                        arg3++;
+                    } while (j < 22);
+                    return retry;
+                }
+                return -1;
+            }
+            i++;
+            p++;
+        } while (i < 22);
+        return result;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D6E0);
 

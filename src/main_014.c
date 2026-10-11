@@ -54,7 +54,37 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E030);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E2E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E440);
+s32 func_0015E440(s32 arg0, s32 arg1, s32 arg2) {
+    s32 otherType;
+    s32 card;
+    s32 i;
+    s32 mode;
+    s32 key;
+
+    if ((arg2 & 0xFF) == 1) {
+        mode = 3;
+    } else {
+        mode = 4;
+    }
+    key = (arg0 << 8) | arg1;
+    i = 1;
+    do {
+        card = func_001E3790(i, mode);
+        if (card != 0) {
+            if (card == key) {
+                return 1;
+            }
+            otherType = func_00250360(card >> 8, card & 0xFF);
+            if (otherType == func_00250360(arg0, arg1)) {
+                return 0;
+            }
+        }
+        i++;
+        if (i > 5) {
+            return 1;
+        }
+    } while (1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E520);
 
@@ -66,7 +96,48 @@ void func_0015E8F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E950);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EC60);
+typedef struct {
+    u32 field0;
+    u16 field4;
+    u16 field6;
+    union {
+        u32 word;
+        struct {
+            u32 lower : 16;
+            u32 upper : 16;
+        } bits;
+    } field8;
+} Item_0015EC60;
+
+void func_0015DED0(void *);
+s32 func_0015EE40(void);
+
+static inline void set_index_0015EC60(void *arg, s32 index) {
+    Item_0015EC60 *item = arg;
+
+    item->field4 = 0x3FF;
+    item->field8.word = (index << 16) | item->field8.bits.lower;
+}
+
+void func_0015EC60(s32 arg0, s32 arg1, void *arg2) {
+    Item_0015EC60 *item = arg2;
+    s32 index;
+    s32 next;
+
+    func_00250360(arg0, arg1);
+    index = func_001E1090(arg0, arg1);
+    if (func_0015ED30(index & 0xFF, index >> 8) == 1) {
+        set_index_0015EC60(item, index);
+    } else {
+        set_index_0015EC60(item, index);
+    }
+    next = func_0015EE40();
+    if (next >= 0) {
+        set_index_0015EC60(item, next);
+    } else {
+        func_0015DED0(item);
+    }
+}
 
 s32 func_0015ED30(s32 arg0, s32 arg1) {
     s32 var_s0;

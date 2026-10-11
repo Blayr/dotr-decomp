@@ -113,7 +113,38 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C070);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C2C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C5A0);
+s32 func_0027C5A0(s32 arg0, s32 arg1, s32 arg2) {
+    switch (arg2) {
+    case 0x22:
+        if (arg1 != 0) {
+            break;
+        }
+        return 1;
+    case 0x1D:
+        if ((arg1 > 0) && (arg1 < 6)) {
+            return 1;
+        }
+        break;
+    case 0x1E:
+        if ((arg1 > 5) && (arg1 < 0xC)) {
+            return 1;
+        }
+        break;
+    case 0x1F:
+        return 1;
+    case 0x34:
+        if (arg1 != 0) {
+            return 1;
+        }
+        break;
+    default:
+        if (arg1 != 0) {
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C670);
 

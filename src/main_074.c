@@ -14,7 +14,55 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00255A30);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00255AC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00255B50);
+typedef struct {
+    s8 ready : 1;
+    u8 count : 5;
+    u8 reserved : 2;
+} Flags_00255B50;
+
+typedef struct {
+    u8 pad[0x80];
+    Flags_00255B50 flags;
+    u8 pad81;
+    u16 ids[24];
+    s8 types[24];
+} Data_00255B50;
+
+u8 *func_001F3EA0(s32, u16);
+
+s32 func_00255B50(void *arg0) {
+    s32 i;
+    Data_00255B50 *cursor;
+    Data_00255B50 *data;
+    u16 id;
+    u8 *entry;
+    s32 type;
+
+    data = arg0;
+    i = 0;
+    cursor = data;
+    for (; i < data->flags.count; i++) {
+        id = cursor->ids[0];
+        if (id != 0xFFFF) {
+            entry = func_001F3EA0(0, id);
+            if (entry != NULL) {
+                type = *entry & 7;
+                if (type < 2) {
+                    if (type == 0) {
+                        data->types[i] = 0;
+                    } else {
+                        return -1;
+                    }
+                } else {
+                    data->types[i] = type;
+                }
+            }
+        }
+        cursor = (Data_00255B50 *)((u8 *)cursor + 2);
+    }
+    data->flags.ready = 1;
+    return 1;
+}
 
 typedef struct Slots_00255C30 {
     u8 pad[0x82];

@@ -124,13 +124,116 @@ s32 func_001F9170(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9230);
+typedef struct Bounds_001F9230 {
+    f32 min;
+    f32 max;
+} Bounds_001F9230;
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9310);
+typedef struct State_001F9230 {
+    u8 pad[0x7E0];
+    Bounds_001F9230 bounds[10];
+    u8 pad830[0x7C];
+    u16 flags;
+} State_001F9230;
+
+s32 func_001F9230(s32 arg0, s32 arg1, s32 arg2) {
+    State_001F9230 *state;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    state = (State_001F9230 *)D_0031BEB0[arg0];
+    if (state == 0) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        if (arg2 != 1) {
+            state->bounds[arg1] = *(Bounds_001F9230 *)arg2;
+        }
+        state->flags |= 1 << arg1;
+    } else {
+        state->bounds[arg1].min = 2000.0f;
+        state->bounds[arg1].max = 4000.0f;
+        state->flags &= ~(1 << arg1);
+    }
+    return 1;
+}
+
+typedef struct Pair_001F9310 {
+    f32 x;
+    f32 y;
+} Pair_001F9310;
+
+typedef struct Object_001F9310 {
+    u8 pad0[0x830];
+    Pair_001F9310 pairs[10];
+    u8 pad1[0x2E];
+    u16 flags;
+} Object_001F9310;
+
+s32 func_001F9310(s32 arg0, s32 arg1, s32 arg2) {
+    Object_001F9310 *object;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    object = (Object_001F9310 *)D_0031BEB0[arg0];
+    if (object == 0) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        if (arg2 != 1) {
+            object->pairs[arg1] = *(Pair_001F9310 *)arg2;
+        }
+        object->flags |= 1 << arg1;
+    } else {
+        object->pairs[arg1].x = 2000.0f;
+        object->pairs[arg1].y = 4000.0f;
+        object->flags &= ~(1 << arg1);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F93F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9500);
+typedef struct Vec4_001F9500 {
+    f32 x, y, z, w;
+} Vec4_001F9500;
+
+typedef struct Entry_001F9500 {
+    u8 padding[0x20];
+    Vec4_001F9500 value;
+} Entry_001F9500;
+
+s32 func_001F9500(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    u8 *base;
+    Entry_001F9500 *entries;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    base = (u8 *)D_0031BEB0[arg0];
+    if (base == NULL) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    if (arg2 < 0 || arg2 >= 3) {
+        return 0;
+    }
+    entries = (Entry_001F9500 *)(base + arg1 * 0x90 + 0x60);
+    if (arg3 != NULL) {
+        *(Vec4_001F9500 *)arg3 = entries[arg2].value;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F95E0);
 

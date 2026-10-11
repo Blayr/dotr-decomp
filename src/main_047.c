@@ -126,7 +126,45 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7A60);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7B20);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7D00);
+typedef struct {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bits2_4 : 3;
+    s8 bit5 : 1;
+    s8 bits6_7 : 2;
+} Flags_001E7D00;
+
+void func_001F2C60(s32, s32, s32);
+
+s32 func_001E7D00(s32 index) {
+    Obj_0031ABB0 *object;
+
+    if ((index < 0) || (index >= 0x54)) {
+        return 0;
+    }
+    object = D_0031ABB0[index];
+    if (object == NULL) {
+        return 0;
+    }
+    *(f32 *)((u8 *)object + 0x198) = 1.0f;
+    *(f32 *)((u8 *)object + 0x19C) = 1.0f;
+    *(f32 *)((u8 *)object + 0x1A0) = 1.0f;
+    *(f32 *)((u8 *)object + 0x1A4) = 1.0f;
+    *(f32 *)((u8 *)object + 0x1A8) = 1.0f;
+    *(f32 *)((u8 *)object + 0x1AC) = 0.0f;
+    object->lv[1] = -1;
+    object->lv[0] = 0;
+    ((Flags_001E7D00 *)((u8 *)object + 0x20D))->bit1 = 0;
+    *(s8 *)((u8 *)object + 0x200) = 0;
+    *(s16 *)((u8 *)object + 0x20A) = 0;
+    *(s8 *)((u8 *)object + 0x1FB) = 6;
+    *(s8 *)((u8 *)object + 0x1FC) = 0;
+    *(s8 *)((u8 *)object + 0x1FD) = 0;
+    ((Flags_001E7D00 *)((u8 *)object + 0x20C))->bit5 = 0;
+    func_001F2C60(index, -1, 1);
+    *(s16 *)((u8 *)object + 0x1F0) = 0x7FFF;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7DE0);
 
