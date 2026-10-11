@@ -115,7 +115,26 @@ INCLUDE_ASM("asm/nonmatchings/main_056", func_00208800);
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208870);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208CB0);
+typedef struct Buffer_00208CB0 {
+    u16 index;
+    u16 flags;
+    u8 padding[0xC];
+    s64 values[1];
+} Buffer_00208CB0;
+
+s32 func_00208CB0(void *arg0, s64 arg1) {
+    Buffer_00208CB0 *buffer = arg0;
+    u16 index = buffer->index;
+    s64 *values = buffer->values;
+    u16 *flags = &buffer->flags;
+
+    if (!(*flags & 0x20)) {
+        return 0;
+    }
+    *flags |= 0x4000;
+    *(s64 *)((u8 *)values + (index & 0xFFFF) * 8 + 0x18) = arg1;
+    return 1;
+}
 
 s64 func_00208D00(s32 arg0) {
     s64 ret;

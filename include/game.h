@@ -307,4 +307,9 @@ s32 func_001FF420(void);
 
 void func_0020B380(void *, void *, s32);
 
+extern s32 func_001A1E70(u64);
+extern s32 func_001A2858(s32, s32);
+
+void *func_00250740(s32, s32, s32);
+
 #endif

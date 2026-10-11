@@ -10,7 +10,18 @@ f32 func_0017B340(u64 arg0) {
     return result + result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B380);
+void func_0017B380(u32 arg0) {
+    s32 temp_v0;
+    u64 value;
+
+    value = arg0;
+    if ((s64) value > 0) {
+        func_001A1E70(value);
+        return;
+    }
+    temp_v0 = func_001A1E70((value >> 1) | (value & 1));
+    func_001A2858(temp_v0, temp_v0);
+}
 
 s32 func_0017B3D0(void) {
     return func_001A2E60() < 0;

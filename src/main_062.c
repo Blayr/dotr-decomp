@@ -17,7 +17,20 @@ void func_0021BAE0(void *arg0) {
     values[8] = 0.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BB20);
+void func_0020C940(void *, void *, void *, void *);
+void func_0020EB40(void *);
+
+typedef struct {
+    f32 m[4][4];
+} Matrix_0021BB20;
+
+void func_0021BB20(u8 *arg0) {
+    Matrix_0021BB20 matrix;
+
+    func_0020EB40(arg0 + 0x30);
+    func_0020C940(&matrix, arg0, arg0 + 0x10, arg0 + 0x20);
+    func_0020BC00((s32)(arg0 + 0x30), &matrix);
+}
 
 void func_0021BB70(void *arg0, void *arg1) {
     ((f32 *)arg0)[0] = ((f32 *)arg1)[0];

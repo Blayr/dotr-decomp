@@ -176,9 +176,44 @@ INCLUDE_ASM("asm/nonmatchings/main_069", func_00244680);
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244A40);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244AD0);
+typedef struct Data_00244AD0 {
+    u8 pad_00[0x10];
+    s32 field_10;
+    s32 field_14;
+    u8 pad_18[0x28];
+    s32 field_40;
+} Data_00244AD0;
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244B20);
+void func_0017B900(s32);
+void func_0017B920(s32);
+
+s32 func_00244AD0(void *arg0) {
+    Data_00244AD0 *data = arg0;
+    s32 temp_s0;
+
+    func_0017B920(data->field_40);
+    temp_s0 = data->field_14 + (data->field_10 << 11);
+    func_0017B900(data->field_40);
+    return temp_s0;
+}
+
+void func_0017B900(s32);
+void func_0017B920(s32);
+
+typedef struct State_00244B20 {
+    u8 pad_00[0x14];
+    s32 field_14;
+    u8 pad_18[0x28];
+    s32 field_40;
+} State_00244B20;
+
+void func_00244B20(void *arg0) {
+    State_00244B20 *state = arg0;
+
+    func_0017B920(state->field_40);
+    state->field_14 = ((state->field_14 + 0x7FF) >> 11) << 11;
+    func_0017B900(state->field_40);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244B70);
 

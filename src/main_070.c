@@ -117,7 +117,18 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_002458E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245960);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245980);
+typedef struct Quad_00245980 {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 w;
+} Quad_00245980;
+
+extern Quad_00245980 **D_0029D488[];
+
+void func_00245980(s32 arg0, s32 arg1, void *arg2) {
+    *(Quad_00245980 *)arg2 = (*D_0029D488[(u8)arg0])[(u8)arg1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002459D0);
 

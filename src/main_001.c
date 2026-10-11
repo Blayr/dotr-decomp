@@ -183,7 +183,28 @@ void func_00103890(void *arg0) {
     values[8] = 0.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001038D0);
+void func_0020C940(void *, void *, void *, void *);
+void func_0020EB40(s32);
+
+typedef struct {
+    f32 values[4][4];
+} Matrix_001038D0;
+
+typedef struct {
+    f32 eye[4];
+    f32 target[4];
+    f32 up[4];
+    Matrix_001038D0 matrix;
+} Camera_001038D0;
+
+void func_001038D0(void *arg0) {
+    Camera_001038D0 *camera = arg0;
+    Matrix_001038D0 matrix;
+
+    func_0020EB40((s32)&camera->matrix);
+    func_0020C940(&matrix, camera->eye, camera->target, camera->up);
+    func_0020BC00((s32)&camera->matrix, &matrix);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103920);
 
