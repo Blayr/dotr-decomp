@@ -62,7 +62,14 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00203BC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203C00);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203C40);
+typedef struct Entry_00203C40 {
+    u8 pad[0x206];
+    u8 value;
+} Entry_00203C40;
+
+u8 func_00203C40(s32 arg0, s32 arg1) {
+    return ((Entry_00203C40 *)(D_003259C0 + arg0 * 0x5C + arg1))->value;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203C70);
 

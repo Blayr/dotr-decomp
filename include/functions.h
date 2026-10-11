@@ -185,6 +185,7 @@ s32 func_00202AB0(s32 arg0, s32 arg1);
 u16 func_00202E00(s16 arg0, s32 arg1);
 void func_00202F50(s32 arg0, s32 arg1, s32 arg2);
 void func_002032A0(void);
+u8 func_00203C40(s32 arg0, s32 arg1);
 s32 func_002051F0(void);
 f32 func_00205C40(s32 arg0);
 void func_002075F0(s32 arg0, s32 arg1, s32 arg2);
