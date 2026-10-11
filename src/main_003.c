@@ -275,7 +275,25 @@ s32 func_0010C290(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C2C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C2D0);
+s32 func_0010C2D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    if (!(arg1 & 0xF)) {
+        if ((arg2 % 2048) == 0) {
+            if ((arg3 % 2048) == 0) {
+                D_0030FFA0 = 0;
+                D_0030FFA4 = 0;
+                D_0030FFA8 = 0;
+                D_0030FFAC = 0;
+                D_0030FFB0 = 0;
+                func_00199B50(D_002B90C0, arg0, arg1);
+                if (func_00200510(arg0, arg2, arg3, arg1, func_0010C580, 0, 0x20) == 0) {
+                    return -1;
+                }
+            }
+        }
+    }
+    D_0030FF58 = 1;
+    return 1;
+}
 
 s32 func_0010C3D0(s32 file, s32 destination, s32 position, s32 size) {
     s32 handle;

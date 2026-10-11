@@ -8,7 +8,29 @@ INCLUDE_ASM("asm/nonmatchings/main_008", func_0012D520);
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_0012D960);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_0012DAE0);
+s32 func_0012DAE0(s32 arg0, s32 *arg1, void *arg2, void *arg3, s32 arg4) {
+    s32 i;
+    s32 *entry;
+    s32 wanted;
+
+    i = 0;
+    if (i < func_0026FE20(arg0)) {
+        wanted = arg4 & 0xFFFF;
+        entry = arg1;
+        do {
+            if (func_0026FB10(arg0, *entry) == 1) {
+                if (wanted == *entry && func_0026FB10(arg0, *entry) == 1) {
+                    *((u8 *)arg3 + 6) = i;
+                    func_001DCD70(arg2, arg1[i]);
+                    return func_0026FCE0(arg1[i]) >> 5;
+                }
+            }
+            entry++;
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_0012DBE0);
 

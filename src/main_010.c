@@ -95,7 +95,20 @@ INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F170);
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F3B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F540);
+s32 func_0013F540(s32 arg0, s32 *arg1, void *arg2, void *arg3, s32 arg4) {
+    s32 i;
+
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (func_0026FB10(arg0, arg1[i]) == 1 &&
+            (arg4 & 0xFFFF) == arg1[i] &&
+            func_0026FB10(arg0, arg1[i]) == 1) {
+            *((s8 *)arg3 + 6) = i;
+            func_001DCD70(arg2, arg1[i]);
+            return func_0026FCE0(arg1[i]) >> 5;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F640);
 

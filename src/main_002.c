@@ -313,7 +313,32 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00108500);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108950);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108BE0);
+typedef struct Vec4_00108BE0 {
+    f32 x, y, z, w;
+} Vec4_00108BE0;
+
+void func_00108BE0(void *arg0, void *arg1, s64 arg2, f32 arg3, f32 arg4) {
+    Vec4_00108BE0 input;
+    Vec4_00108BE0 output;
+
+    input = *(Vec4_00108BE0 *)arg1;
+    if (arg2 == 0) {
+        output.x = arg3 * input.x + -arg4 * input.z;
+        output.z = arg4 * input.x + arg3 * input.z;
+        output.y = input.y;
+    }
+    if ((s16)arg2 == 1) {
+        output.x = input.x;
+        output.y = arg4 * input.y + arg3 * input.z;
+        output.z = -arg3 * input.y + arg4 * input.z;
+    }
+    if ((s16)arg2 == 2) {
+        output.x = arg3 * input.x + arg4 * input.y;
+        output.y = -arg4 * input.x + arg3 * input.y;
+        output.z = input.z;
+    }
+    *(Vec4_00108BE0 *)arg0 = output;
+}
 
 typedef struct Vec4_00108CE0 {
     f32 x;
