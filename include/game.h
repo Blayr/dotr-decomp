@@ -235,7 +235,6 @@ void func_0020BAF0(s32);
 
 s32 func_001F1370(u8);
 
-void func_001FCDE0(s32);
 
 void func_001FECB0(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 

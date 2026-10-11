@@ -175,7 +175,59 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F290);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F450);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F6F0);
+s32 func_0010F6F0(s32 arg0) {
+    s32 temp_s2;
+    s32 temp_s2_2;
+    s32 var_s3;
+    s32 temp_s3;
+    s32 temp_s4;
+    u16 temp_v0;
+    s32 temp_v0_2;
+    u16 temp_v0_3;
+    s32 temp_v0_4;
+    s32 var_s0;
+    s32 var_s4;
+
+    var_s0 = 0;
+    if ((arg0 & 0xFF) == 1) {
+        var_s3 = 0;
+        do {
+            temp_v0 = func_0010F850(arg0, var_s3 & 0xFF);
+            temp_v0_2 = func_001E3790(temp_v0 & 0xFF, temp_v0 >> 8);
+            if (temp_v0_2 >= 0) {
+                temp_s4 = temp_v0_2 & 0xFF;
+                temp_s2 = func_00250360(temp_v0_2 >> 8, temp_s4);
+                if ((temp_s2 == func_001DE540()) && (temp_s4 != 0)) {
+                    var_s0 += 1;
+                }
+            }
+            var_s3 += 1;
+        } while (var_s3 < 6);
+        if (var_s0 >= 2) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    var_s4 = 0;
+    do {
+        temp_v0_3 = func_0010F850(arg0, var_s4 & 0xFF);
+        temp_v0_4 = func_001E3790(temp_v0_3 & 0xFF, temp_v0_3 >> 8);
+        if (temp_v0_4 >= 0) {
+            temp_s3 = temp_v0_4 & 0xFF;
+            temp_s2_2 = func_00250360(temp_v0_4 >> 8, temp_s3);
+            if ((temp_s2_2 == func_001DE540()) && (temp_s3 != 0)) {
+                var_s0 += 1;
+            }
+        }
+        var_s4 += 1;
+    } while (var_s4 < 4);
+    if (var_s0 > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F850);
 

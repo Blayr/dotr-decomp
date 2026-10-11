@@ -118,11 +118,93 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_0015D8E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015DAF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015DED0);
+typedef struct Action_0015DED0 {
+    u16 location;
+    u16 unk2;
+    s16 state;
+    u16 unk6;
+    union {
+        u32 value;
+        u16 low;
+    } data;
+} Action_0015DED0;
+
+void func_0015E030(void *);
+s32 func_0015E2E0(s32, s32);
+void func_0015E520(void *, s32);
+
+void func_0015DED0(void *arg0) {
+    s32 other;
+    s32 result;
+    Action_0015DED0 *action = arg0;
+
+    if (func_001DF540(action->location >> 8, action->location & 0xFF) != 0) {
+        other = (func_0024DE70(action->location >> 8, action->location & 0xFF) == 0 ? 1 : 0) << 8;
+        func_001E1090(action->location >> 8, action->location & 0xFF);
+        func_001E1090(other >> 8, other & 0xFF);
+        func_001DF540(action->location >> 8, action->location & 0xFF);
+        if (func_001E0290(action->location >> 8, action->location & 0xFF, 0) >= 2500) {
+            func_0015E030(arg0);
+            return;
+        }
+        if (func_0015E440(action->location >> 8, action->location & 0xFF, 1) == 1) {
+            func_0015E520(arg0, 1);
+            return;
+        }
+        result = func_0015E2E0(action->location >> 8, action->location & 0xFF);
+        if (result >= 0) {
+            action->state = 0x6FF;
+            action->data.value = (result << 16) | action->data.low;
+            return;
+        }
+        if (func_0015E440(action->location >> 8, action->location & 0xFF, 2) == 1) {
+            func_0015E520(arg0, 2);
+            return;
+        }
+        func_0015E030(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E030);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E2E0);
+s32 func_0015E2E0(s32 arg0, s32 arg1) {
+    s32 temp_s0;
+    s32 temp_s2;
+    s32 temp_v0;
+    s32 temp_v0_2;
+    s32 temp_v0_3;
+
+    temp_v0 = func_00250360(arg0, arg1);
+    if (func_0024CA40(0, 0, temp_v0, 1, 0x033B001C, 14) != 0) {
+        temp_v0_2 = func_001E3790(0, 5);
+        if (temp_v0_2 >= 0) {
+            if (temp_v0_2 == ((arg0 << 8) | arg1)) {
+                return 0x500;
+            }
+            temp_s2 = func_00250360(temp_v0_2 >> 8, temp_v0_2 & 0xFF);
+            if (temp_s2 != func_00250360(arg0, arg1)) {
+                return 0x500;
+            }
+        } else {
+            return 0x500;
+        }
+    }
+    if (func_0024CA40(0, 0, temp_v0, 1, 0x02ED001C, 14) != 0) {
+        temp_v0_3 = func_001E3790(6, 3);
+        if (temp_v0_3 >= 0) {
+            if (temp_v0_3 == ((arg0 << 8) | arg1)) {
+                return 0x306;
+            }
+            temp_s0 = func_00250360(temp_v0_3 >> 8, temp_v0_3 & 0xFF);
+            if (temp_s0 != func_00250360(arg0, arg1)) {
+                return 0x306;
+            }
+        } else {
+            return 0x306;
+        }
+    }
+    return -1;
+}
 
 s32 func_0015E440(s32 arg0, s32 arg1, s32 arg2) {
     s32 otherType;

@@ -135,7 +135,47 @@ void func_001FCDA0(void) {
     } while (i < 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCDE0);
+typedef struct {
+    s8 paused : 1;
+    s8 unused : 7;
+} Flags_001FCDE0;
+
+s32 func_001FCDE0(s32 arg0) {
+    u8 color[4];
+    Entry_0031C050 *entry;
+    s32 next;
+    u8 amount;
+
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    entry = &D_0031C050[arg0];
+    if (entry->flag != 0) {
+        return 0;
+    }
+    amount = entry->lo;
+    if (!(*(u8 *)((u8 *)entry + 7) & 0x3F)) {
+        amount = entry->hi - amount;
+    }
+    color[2] = entry->pad0[2];
+    color[1] = entry->pad0[1];
+    color[0] = entry->pad0[0];
+    color[3] = (entry->pad0[3] * (amount & 0xFF)) / entry->hi;
+    func_001FCF30(0, (s32)color, 0xFFFFFF);
+    if (entry->lo >= entry->hi) {
+        if (entry->pad7b != 0) {
+            entry->flag = 1;
+        }
+    } else if (((Flags_001FCDE0 *)&entry->pad8[0])->paused == 0) {
+        next = entry->lo + entry->pad0[4];
+        if (entry->hi < next) {
+            entry->lo = entry->hi;
+        } else {
+            entry->lo = next;
+        }
+    }
+    return 1;
+}
 
 void func_001FCF30(s32 arg0, s32 arg1, s32 arg2) {
     func_00209D30(func_001FCF90(func_00209D20(), arg0, arg1, arg2));

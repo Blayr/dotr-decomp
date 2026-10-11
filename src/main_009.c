@@ -184,7 +184,57 @@ void func_0013A6B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 2500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013A710);
+typedef struct Packet_0013A710 {
+    u16 location;
+    u16 unk2;
+    s16 mode;
+    u16 unk6;
+    union {
+        u32 word;
+        u16 lower;
+    } value;
+} Packet_0013A710;
+
+void func_0013A710(void *arg0, s32 arg1) {
+    Packet_0013A710 *packet = arg0;
+    s32 item;
+    s32 encoded;
+    s32 result;
+    u16 location;
+
+    location = packet->location;
+    item = func_00250360(location >> 8, location & 0xFF);
+    location = packet->location;
+    encoded = func_001E1090(location >> 8, location & 0xFF);
+    if ((arg1 & 0xFF) == 1) {
+        item = encoded & 0xFF;
+        encoded = (encoded >> 8) + 1;
+        result = func_001E3790(item, encoded);
+        if (result >= 0) {
+            packet->mode = 0x2FF;
+            packet->value.word = (result << 16) | packet->value.lower;
+        } else {
+            packet->mode = 0x6FF;
+            packet->value.word = packet->value.lower | (((encoded << 8) | item) << 16);
+        }
+        return;
+    } else {
+        arg1 = encoded >> 8;
+        if (arg1 != func_0013A9A0(item)) {
+            result = func_0013A870(item);
+            if (result >= 0) {
+                packet->mode = 0x6FF;
+                packet->value.word = (result << 16) | packet->value.lower;
+            } else {
+                packet->mode = 0x6FF;
+                packet->value.word = packet->value.lower | ((((arg1 + 1) << 8) | (encoded & 0xFF)) << 16);
+            }
+        } else {
+            packet->mode = 0x6FF;
+            packet->value.word = (encoded << 16) | packet->value.lower;
+        }
+    }
+}
 
 s32 func_0013A870(s32 arg0) {
     s32 var_s0;
