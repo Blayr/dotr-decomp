@@ -18,7 +18,24 @@ void func_001E4E60(s64 arg0) {
     D_003181F7.flag = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4E90);
+typedef struct {
+    s32 entries[2];
+    s32 count;
+} State_001E4E90;
+
+void func_001E4E90(void) {
+    extern State_001E4E90 D_0031AB88;
+    State_001E4E90 *state = &D_0031AB88;
+    s32 i;
+
+    func_0020B3C0((s8 *)&D_0031AB88, 0, 0xC);
+    i = 0;
+    do {
+        state->entries[i] = -1;
+        i++;
+    } while (i < 2);
+    state->count = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4F00);
 
