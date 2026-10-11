@@ -145,7 +145,6 @@ extern s32 D_00317B6C;
 
 void func_0010A280(s32, s32, s32, s32, s32, s32);
 
-void func_001F6590(s32, s32, s32);
 extern s32 D_0031BE98;
 
 extern u8 D_003259C0[];
