@@ -79,7 +79,9 @@ s32 func_00208030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return arg0 + 0x10;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208090);
+void func_00208090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    func_00209D30(func_00208110(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208110);
 
@@ -234,7 +236,42 @@ INCLUDE_ASM("asm/nonmatchings/main_056", func_00209320);
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_002093E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00209490);
+typedef struct {
+    u32 header[4];
+    f32 value_10;
+    f32 value_14;
+    f32 value_18;
+    f32 value_1C;
+} Packet_00209490;
+
+extern f32 D_00325DE0;
+extern f32 D_00325DE4;
+extern f32 D_00325DE8;
+extern f32 D_00325DEC;
+
+void *func_00209490(void *arg0, s32 arg1, s32 arg2) {
+    Packet_00209490 *packet = arg0;
+
+    packet->header[0] = 0x10000001;
+    packet->header[1] = 0;
+    packet->header[2] = 0x10000000;
+    packet->header[3] = 0x6C014053;
+    if (arg1 != 0) {
+        packet->value_18 = D_00325DE0;
+        packet->value_1C = D_00325DE4;
+    } else {
+        packet->value_18 = 0.0f;
+        packet->value_1C = 255.0f;
+    }
+    if (arg2 != 0) {
+        packet->value_10 = D_00325DE8;
+        packet->value_14 = D_00325DEC;
+    } else {
+        packet->value_10 = 0.0f;
+        packet->value_14 = 0.0f;
+    }
+    return (u8 *)arg0 + 0x20;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00209510);
 

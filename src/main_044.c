@@ -1,6 +1,20 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE0B0);
+static inline s32 convert_001DE0B0(s32 value) {
+    return value == 1 ? 1 :
+           value == 2 ? 1 :
+           value == 3 ? 2 :
+           value == 4 ? 2 :
+           value == 5 ? 3 : value;
+}
+
+s32 func_001DE0B0(s32 arg0, s32 arg1) {
+    s32 result = arg1;
+
+    arg0 = convert_001DE0B0(arg0);
+    result = arg0 > 0 ? arg0 + 5 : result;
+    return result;
+}
 
 s32 func_001DE130(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x356) {
@@ -276,7 +290,24 @@ s32 func_001DECC0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DED30);
+s32 func_001DED30(s32 arg0) {
+    s32 value;
+    u8 *field;
+    u8 *entry;
+
+    entry = D_00317490 + (arg0 * 0x350);
+    value = *(u16 *)(entry + 0x1E0);
+    field = entry + 0x1E0;
+    if (value < 0 || value >= 0x3E7) {
+        return 0x3E7;
+    }
+    if (*(u16 *)field != 0x3E7) {
+        *(u16 *)field = 0x3E7;
+        field[0x50]--;
+    }
+    func_001DEB20(arg0);
+    return value;
+}
 
 void func_001DEDB0(s32 arg0) {
     u8 *base;

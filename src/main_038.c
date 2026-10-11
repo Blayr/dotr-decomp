@@ -2,7 +2,23 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001ADD00);
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AE520);
+void func_001AE520(void) {
+    u8 *data = D_00317490;
+    s32 var_a1;
+    s32 var_s0;
+
+    var_a1 = 0;
+    do {
+        data[var_a1 + 0xCB2] = 0x18;
+        var_a1 += 1;
+    } while (var_a1 < 4);
+    var_s0 = 1;
+    do {
+        func_001DFBB0(0, var_s0);
+        func_001DFBB0(1, var_s0);
+        var_s0 += 1;
+    } while (var_s0 < 0xB);
+}
 
 s32 func_001AE5A0(s32 arg0) {
     if (func_001F3130(0) != 0) {

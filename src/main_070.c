@@ -275,7 +275,22 @@ s32 func_002492F0(s32 arg0) {
     return ((s32) D_0029D586[arg0 * 7] >> 1) & 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00249320);
+s32 func_00249320(s32 arg0) {
+    u8 temp_v1;
+
+    temp_v1 = D_0029D1F0[arg0];
+    switch (temp_v1) {
+    case 2:
+    case 3:
+        return -1;
+    case 4:
+        if (D_0029CF32[arg0] == 9) {
+            return -1;
+        }
+    default:
+        return 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002493A0);
 

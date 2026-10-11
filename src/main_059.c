@@ -274,7 +274,31 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_00214090);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214100);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214190);
+s32 func_00214190(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 i;
+    s32 j;
+    s32 *p;
+
+    if (arg3 != 0) {
+        *(s32 *)(arg0 - 4) = arg1 + *(s32 *)(arg0 - 4);
+    }
+    for (i = 0; i < arg2; i++) {
+        j = 0;
+        p = (s32 *)arg0;
+        do {
+            if (*p != 0) {
+                *p = arg1 + *p;
+                if (arg3 != 0) {
+                    *(s32 *)(*p - 4) = arg1 + *(s32 *)(*p - 4);
+                }
+            }
+            j++;
+            p++;
+        } while (j < 2);
+        arg0 += 0x10;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214210);
 

@@ -146,11 +146,53 @@ u8 *func_001F0FA0(s32 arg0) {
     return &temp_v0->pad040[0x104];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0FF0);
+s32 func_001F0FF0(s32 arg0) {
+    Obj_0031ABB0 *obj;
+    void *data;
+    s32 ret;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        ret = 0;
+    } else {
+        obj = D_0031ABB0[arg0];
+        if (obj == NULL) {
+            ret = 0;
+        } else {
+            data = *(void **)((u8 *)obj + 0x138);
+            if (data == NULL) {
+                ret = 0;
+            } else if (!(*(s32 *)((u8 *)data + 4) & 0x100)) {
+                ret = 0;
+            } else {
+                ret = *(s32 *)((u8 *)obj + 0x164);
+            }
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1070);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1130);
+s32 func_001F1130(s32 arg0) {
+    Obj_0031ABB0 *obj;
+    void *state;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    state = *(void **)((u8 *)obj + 0x138);
+    if (state == NULL) {
+        return 0;
+    }
+    if ((*(s32 *)((u8 *)state + 4) & 0x400) == 0) {
+        return 0;
+    }
+    return *(s32 *)((u8 *)obj + 0x168);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F11B0);
 
@@ -277,4 +319,22 @@ s64 func_001F19A0(s32 arg0) {
     return ((Flags_001F19A0 *)((u8 *)obj + 0x1F7))->value;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1A00);
+typedef struct {
+    s8 low : 6;
+    s8 mode : 2;
+} Flags_001F1A00;
+
+s32 func_001F1A00(s32 arg0, s64 arg1) {
+    Obj_0031ABB0 *temp_a2;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    } else {
+        temp_a2 = D_0031ABB0[arg0];
+        if (temp_a2 == NULL) {
+            return 0;
+        }
+        ((Flags_001F1A00 *)((u8 *)temp_a2 + 0x1F7))->mode = (s8)arg1;
+        return 1;
+    }
+}

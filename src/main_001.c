@@ -160,7 +160,25 @@ void func_001036A0(void *arg0, void *arg1) {
     dst[2] *= src[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001036E0);
+void func_001036E0(f32 *arg0, f32 *arg1, f32 *arg2) {
+    f32 delta[3];
+
+    delta[0] = arg1[0];
+    delta[1] = arg1[1];
+    delta[2] = arg1[2];
+    delta[0] -= arg0[0];
+    delta[1] -= arg0[1];
+    delta[2] -= arg0[2];
+    delta[0] /= 2.0f;
+    delta[1] /= 2.0f;
+    delta[2] /= 2.0f;
+    arg2[0] = arg0[0];
+    arg2[1] = arg0[1];
+    arg2[2] = arg0[2];
+    arg2[0] += delta[0];
+    arg2[1] += delta[1];
+    arg2[2] += delta[2];
+}
 
 void func_00103760(void *arg0) {
     f32 *vector = arg0;

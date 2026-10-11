@@ -65,7 +65,17 @@ s32 func_001E1A90(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1AF0);
+s32 func_001E1AF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 var_s0;
+
+    var_s0 = 0;
+    if (func_001E1B70() != 0) {
+        if (func_001E1C10(arg0, arg1, arg2, arg3) != 0) {
+            var_s0 = 1;
+        }
+    }
+    return var_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1B70);
 

@@ -1,6 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242580);
+s32 func_00242580(s32 arg0) {
+    s32 temp_a1;
+
+    temp_a1 = D_003503B8;
+    D_003503B8 = temp_a1 + 1;
+    func_00199B50(D_0030F354, temp_a1);
+    func_00242950(arg0);
+    func_00242600(D_00350680, D_00350788, D_00350740);
+    func_00242C20();
+    return D_003505F0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00242600);
 

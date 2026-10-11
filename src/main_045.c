@@ -73,7 +73,26 @@ s32 func_001E0290(s32 arg0, s32 arg1, s32 arg2)
     return func_001E02F0(lookup_001E0290(arg0, arg1), arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E02F0);
+#define MAX_001E02F0(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_001E02F0(a, b) ((a) < (b) ? (a) : (b))
+
+s32 func_001E02F0(void *arg0, s32 arg1) {
+    s32 value;
+    void *data;
+
+    if (arg0 == NULL) {
+        return -1;
+    }
+    data = *(void **)arg0;
+    if (data == NULL) {
+        return -1;
+    }
+    value = *(u16 *)((u8 *)data + 8) & 0x1FFF;
+    if (arg1 == 0) {
+        value += *(s16 *)((u8 *)arg0 + 0x38);
+    }
+    return MIN_001E02F0(MAX_001E02F0(value, 0), 9999);
+}
 
 void *func_001DD130();
 s32 func_001E03D0(void *, s32);
@@ -95,7 +114,33 @@ s32 func_001E0370(s32 arg0, s32 arg1, s32 arg2) {
     return func_001E03D0(lookup_001E0370(arg0, arg1), arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E03D0);
+static inline s32 lower_bound_001E03D0(s32 value) {
+    if (value > 0) {
+        return value;
+    }
+    return 0;
+}
+
+s32 func_001E03D0(void *arg0, s32 arg1) {
+    s32 value;
+    void *data;
+
+    if (arg0 == NULL) {
+        return -1;
+    }
+    data = *(void **)arg0;
+    if (data == NULL) {
+        return -1;
+    }
+    value = *(u16 *)((u8 *)data + 0xA) & 0x1FFF;
+    if (arg1 == 0) {
+        value += *(s16 *)((u8 *)arg0 + 0x3A);
+    }
+    if (lower_bound_001E03D0(value) < 9999) {
+        return lower_bound_001E03D0(value);
+    }
+    return 9999;
+}
 
 void func_001E04C0(void *, s32, s32);
 

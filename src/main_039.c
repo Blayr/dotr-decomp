@@ -14,7 +14,20 @@ INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6EA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6F70);
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B7660);
+s32 func_001B7660(s8 character) {
+    s32 result = -1;
+
+    if (character >= 'A' && character <= 'Z') {
+        result = character - 'A';
+    } else if (character >= 'a' && character <= 'z') {
+        result = character - 'a';
+    } else if (character >= '0' && character <= '9') {
+        result = character - '0' + 26;
+    } else if (character == '?') {
+        result = 36;
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B76E0);
 

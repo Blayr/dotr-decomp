@@ -105,9 +105,38 @@ void func_001FCF30(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCF90);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD0B0);
+s32 func_001FD0B0(s32 arg0) {
+    Entry_0031C050 *entry;
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD130);
+    if (arg0 < 0 || arg0 >= 2) {
+        return 0;
+    }
+    entry = &D_0031C050[arg0];
+    if (entry->flag) {
+        return 0;
+    }
+    entry->pad7b = -1;
+    return 1;
+}
+
+typedef struct {
+    s8 enabled : 1;
+    s8 pad : 7;
+} Flags_001FD130;
+
+s32 func_001FD130(s32 arg0, s64 arg1) {
+    Entry_0031C050 *temp_a2;
+
+    if (arg0 < 0 || arg0 >= 2) {
+        return 0;
+    }
+    temp_a2 = &D_0031C050[arg0];
+    if (temp_a2->flag != 0) {
+        return 0;
+    }
+    ((Flags_001FD130 *) temp_a2->pad8)->enabled = (s8) arg1;
+    return 1;
+}
 
 s32 func_001FD1B0(s32 arg0) {
     Entry_0031C050 *e;
@@ -178,7 +207,9 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE290);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE660);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE750);
+void func_001FE750(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    func_00209D30(func_001FE7D0(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE7D0);
 

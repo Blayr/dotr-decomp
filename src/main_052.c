@@ -64,11 +64,39 @@ INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9500);
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F95E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F96F0);
+s32 func_001F96F0(s32 arg0, s32 arg1) {
+    u8 *data;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    data = (u8 *)D_0031BEB0[arg0];
+    if (data == NULL) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    return (*(u16 *)(data + 0x8A8) & (1 << arg1)) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9770);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F98C0);
+s32 func_001F98C0(s32 arg0, s32 arg1) {
+    s32 temp_v1;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    temp_v1 = D_0031BEB0[arg0];
+    if (temp_v1 == 0) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 0xA) {
+        return 0;
+    }
+    return (*(u16 *)((u8 *)temp_v1 + 0x8AA) & (1 << arg1)) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9940);
 
@@ -135,7 +163,33 @@ INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9FE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA220);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA6F0);
+typedef struct Entry_001FA6F0 {
+    s8 active : 1;
+    s8 : 7;
+    s8 unk_01;
+    s8 field_02;
+    s8 field_03;
+    u8 pad_04[0x2C];
+} Entry_001FA6F0;
+
+extern Entry_001FA6F0 D_0031BEC0[];
+
+void *func_001FA6F0(s32 arg0, s32 arg1) {
+    Entry_001FA6F0 *entry;
+    s32 i;
+
+    entry = D_0031BEC0;
+    i = 0;
+    do {
+        if (entry->active && (arg0 < 0 || entry->field_02 == arg0) &&
+            (arg1 < 0 || entry->field_03 == arg1)) {
+            return entry;
+        }
+        i++;
+        entry++;
+    } while (i < 8);
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA770);
 
