@@ -194,7 +194,18 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00245890);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002458E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245960);
+typedef struct Counter_00245960 {
+    u8 pad[0xC];
+    volatile s32 count;
+} Counter_00245960;
+
+void func_00245960(void *arg0) {
+    Counter_00245960 *counter = arg0;
+
+    if (counter->count > 0) {
+        counter->count--;
+    }
+}
 
 typedef struct Quad_00245980 {
     s16 x;

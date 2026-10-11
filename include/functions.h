@@ -975,6 +975,7 @@ void func_002457C0(void);
 void func_002457D0(void *arg0);
 s32 func_002457E0(void *arg0);
 void func_00245800(void *arg0);
+void func_00245960(void *arg0);
 void func_00245980(s32 arg0, s32 arg1, void *arg2);
 void func_00245D80(u8 *arg0);
 void func_00246490(void);
