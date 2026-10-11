@@ -33,7 +33,17 @@ s32 func_002508D0(s32 arg0) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250900);
+s32 func_00250900(void *arg0) {
+    u8 state;
+
+    if (*((u8 *)arg0 + 0x45) == 0) {
+        state = *((u8 *)arg0 + 0x44);
+        if (state == 0 || state == 1) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00250940);
 
