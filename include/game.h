@@ -628,4 +628,6 @@ void func_0010A450(void);
 
 extern u8 D_003181CA;
 
+s32 func_001854E0(s32);
+
 #endif
