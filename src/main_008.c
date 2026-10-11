@@ -313,7 +313,17 @@ s32 func_001349A0(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00134AE0);
+s32 func_00134AE0(s32 arg0) {
+    if (func_001DF470() > 0x3E8) {
+        if (func_001E0150(arg0) >= 4) {
+            return 0x2EE;
+        } else {
+            return 0x5DC;
+        }
+    } else {
+        return 0x6A4;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00134B40);
 
