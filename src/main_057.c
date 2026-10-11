@@ -27,7 +27,11 @@ s32 func_00209D60(s32 *arg0, s32 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D80);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209E30);
+s32 func_00209E30(s32 *arg0, s32 *arg1) {
+    *arg0 = D_003261B0;
+    *arg1 = D_003261B4;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209E50);
 

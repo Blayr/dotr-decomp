@@ -202,4 +202,7 @@ extern u8 D_003259C0[];
 extern s32 D_0032618C;
 extern s32 D_00326190;
 
+extern s32 D_003261B0;
+extern s32 D_003261B4;
+
 #endif
