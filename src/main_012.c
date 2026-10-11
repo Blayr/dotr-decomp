@@ -673,7 +673,63 @@ s32 func_0014FB70(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_0014FD40);
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_00150270);
+typedef struct {
+    u16 pos;
+    u16 unk2;
+    u16 unk4;
+    u16 unk6;
+    s32 unk8;
+} Unit_00150270;
+
+void func_00150850(void *);
+void func_0027CA50(void *, s32, s32, s32);
+
+s32 func_00150270(void *arg0) {
+    Unit_00150270 *unit = arg0;
+    s32 handle;
+
+    func_001E1090(unit->pos >> 8, unit->pos & 0xFF);
+    handle = func_00250360(unit->pos >> 8, unit->pos & 0xFF);
+    if (func_001DF540(unit->pos >> 8, unit->pos & 0xFF) != 0 &&
+        func_001E2100(unit->pos >> 8, unit->pos & 0xFF, 0) == 0 && unit->pos != 0xFFFF) {
+        if ((unit->pos & 0xFF) == 0) {
+            if (unit->unk8 == -1) {
+                if (func_00153AB0() == 1) {
+                    func_0027E210(unit, 3, 3, 0);
+                } else if (func_0027BBC0(unit->pos >> 8, unit->pos & 0xFF, 0) == 1) {
+                    if (func_001DE6D0(unit->pos >> 8) == 1) {
+                        unit->unk4 = 0x50A;
+                    } else {
+                        unit->unk4 = 0x5FF;
+                    }
+                } else {
+                    if (func_001DE6D0(unit->pos >> 8) == 1) {
+                        unit->unk4 = 0xA05;
+                    } else {
+                        unit->unk4 = 0x5FF;
+                    }
+                }
+            }
+        } else {
+            switch (func_001E0700(unit->pos >> 8, unit->pos & 0xFF) >> 5) {
+            case 0:
+            case 1:
+            case 3:
+            case 4:
+                func_00150850(unit);
+                break;
+            case 2:
+                func_0027CA50(unit, 5, 0, (u8)func_00153ED0(handle));
+                break;
+            default:
+                unit->unk4 = 0x5FF;
+                break;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_00150470(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
