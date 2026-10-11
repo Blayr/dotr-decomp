@@ -71,4 +71,59 @@ INCLUDE_ASM("asm/nonmatchings/main_042", func_001CE430);
 
 INCLUDE_ASM("asm/nonmatchings/main_042", func_001CEA50);
 
-INCLUDE_ASM("asm/nonmatchings/main_042", func_001CECF0);
+typedef struct Record_001CECF0 {
+    u8 padding[0x33C];
+    u8 kind;
+    u8 low;
+    u8 high;
+    u8 tail[0x11];
+} Record_001CECF0;
+
+void func_0023BB00(s32);
+extern s32 (*D_002BAEB0[])(u16, void *);
+extern s8 D_0034F700;
+extern s8 D_0034F708;
+
+s32 func_001CECF0(s32 arg0, s32 arg1) {
+    u8 *base = D_00317490;
+    s32 ret = 0;
+    Record_001CECF0 *record = (Record_001CECF0 *)(D_00317490 + arg0 * 0x350);
+    void *selected;
+    s32 result;
+
+    switch (record->kind) {
+    case 0x64:
+        ret = func_00203A40(0, arg1, 0xFFFF) & 0xFFFF;
+        break;
+    case 0x65:
+        ret = func_00203A40(1, arg1, 0xFFFF) & 0xFFFF;
+        break;
+    default:
+        if (record->kind < 0x64) {
+            selected = record;
+            if (func_0027F830(arg0) != 0) {
+                selected = base;
+            }
+            if (func_001FA6F0(-1, -1) == NULL) {
+                result = D_002BAEB0[record->kind]((u16)((record->high << 8) | record->low), selected);
+                if (result < 0) {
+                    if (D_0034F700 != 0) {
+                        if (result == -1) {
+                            func_0023BB00(1);
+                        } else {
+                            D_0034F700 = 0;
+                            D_0034F708 = 1;
+                            func_001A8920();
+                        }
+                    } else {
+                        func_001A8920();
+                    }
+                } else {
+                    ret = result & 0xFFFF;
+                }
+            }
+        }
+        break;
+    }
+    return ret;
+}
