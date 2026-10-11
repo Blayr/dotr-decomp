@@ -642,7 +642,13 @@ void func_002450F0(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0xA8) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00245100);
+s32 func_00245100(u8 *arg0) {
+    s32 func_0018ED10(void *);
+
+    func_00244A40(arg0 + 0x48);
+    func_0018ED10(arg0);
+    return 1;
+}
 
 void func_00245140(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0xA8) = 1;
