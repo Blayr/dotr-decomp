@@ -156,7 +156,39 @@ void func_00113A00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 3000, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00113A60);
+typedef struct {
+    u16 position;
+    u8 pad2[2];
+    u16 state;
+    u8 pad6[2];
+    union {
+        u16 low;
+        u32 value;
+    } flags;
+} Data_00113A60;
+
+void func_00113A60(void *arg0) {
+    Data_00113A60 *data = arg0;
+    s32 pair;
+    s32 low;
+
+    func_00250360(data->position >> 8, data->position & 0xFF);
+    pair = func_001E1090(data->position >> 8, data->position & 0xFF);
+    if (func_0024DF00(3, data->position >> 8, data->position & 0xFF) == 1) {
+        data->state = 0x6FF;
+        data->flags.value = data->flags.low | (func_00113B60(pair & 0xFF, pair >> 8) << 16);
+    } else {
+        low = pair & 0xFF;
+        data->state = 0x6FF;
+        if (low < 3 && (pair >> 8) < 3) {
+            data->flags.value = data->flags.low | 0x03030000;
+        } else if (low >= (pair >> 8)) {
+            data->flags.value = data->flags.low | 0x03050000;
+        } else {
+            data->flags.value = data->flags.low | 0x05030000;
+        }
+    }
+}
 
 s32 func_00113B60(s32 arg0, s32 arg1) {
     s32 result;
