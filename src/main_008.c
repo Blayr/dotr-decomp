@@ -122,7 +122,63 @@ INCLUDE_ASM("asm/nonmatchings/main_008", func_00131B30);
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00131DE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00131E40);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00131E40;
+
+typedef struct {
+    u16 position;
+    u16 pad2;
+    u16 state;
+    u16 pad6;
+    union {
+        u32 value;
+        u16 low;
+    } data;
+} State_00131E40;
+
+s32 func_00131F80(s32, s32, s32);
+
+void func_00131E40(void *arg0) {
+    s32 occupied;
+    s32 destination;
+    State_00131E40 *state = arg0;
+    Nibbles_00131E40 entries[12];
+    s32 i;
+    Nibbles_00131E40 *entry;
+    u32 *kind;
+    s32 result;
+    u16 position;
+
+    position = state->position;
+    occupied = func_00250360(position >> 8, position & 0xFF);
+    position = state->position;
+    destination = func_001E1090(position >> 8, position & 0xFF);
+    position = state->position;
+    kind = func_001E0B70(position >> 8, position & 0xFF, 1);
+    entry = entries;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+    if (kind != NULL && (*kind >> 8) == 8) {
+        state->state = 0x2FF;
+        state->data.value = state->data.low | ((occupied != 0 ? 0 : 1) << 24);
+    } else {
+        state->state = 0x6FF;
+        position = state->position;
+        result = func_00131F80(func_001DF540(position >> 8, position & 0xFF),
+                              destination & 0xFF, destination >> 8);
+        if (result >= 0) {
+            state->data.value = (result << 16) | state->data.low;
+        } else {
+            state->state = 0x5FF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00131F80);
 
