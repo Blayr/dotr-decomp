@@ -305,4 +305,6 @@ extern s32 D_0031BEB0[];
 
 s32 func_001FF420(void);
 
+void func_0020B380(void *, void *, s32);
+
 #endif

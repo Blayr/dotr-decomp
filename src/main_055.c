@@ -32,7 +32,23 @@ u16 func_00202E00(s16 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202E30);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202F00);
+typedef struct {
+    u16 base;
+    u16 capacity;
+    u16 used;
+} Buffer_00202F00;
+
+s32 func_00202F00(s32 arg0) {
+    s32 temp_v0;
+    Buffer_00202F00 *buffer = (Buffer_00202F00 *)&D_00322990;
+
+    if (((u16) D_00322994 + arg0) > (s32) D_00322992) {
+        return -1;
+    }
+    temp_v0 = buffer->base + buffer->used;
+    buffer->used += arg0;
+    return temp_v0;
+}
 
 void func_00202F50(s32 arg0, s32 arg1, s32 arg2) {
     func_00209D30(func_00202FB0(func_00209D20(), arg0, arg1, arg2));

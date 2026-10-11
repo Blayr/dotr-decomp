@@ -106,7 +106,19 @@ s32 func_001F9D30(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9D80);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9F90);
+s32 func_001F9F90(s32 arg0, s32 arg1) {
+    void *temp_v0;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    temp_v0 = (void *)D_0031BEB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    *(s32 *)((u8 *)temp_v0 + 0x40) = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9FE0);
 

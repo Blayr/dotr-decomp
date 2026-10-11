@@ -182,6 +182,20 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C630);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C750);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C8F0);
+typedef struct {
+    f32 rotation[12];
+    f32 translation[3];
+} Matrix_0020C8F0;
+
+void func_0020BBB0(void *arg0);
+
+void func_0020C8F0(void *arg0, f32 *arg1) {
+    Matrix_0020C8F0 *matrix = arg0;
+
+    func_0020BBB0(arg0);
+    matrix->translation[0] = arg1[0];
+    matrix->translation[1] = arg1[1];
+    matrix->translation[2] = arg1[2];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C940);
