@@ -143,7 +143,6 @@ extern s32 D_003261BC;
 
 void func_0010F290(s32, void *, s32, s32);
 s32 func_0023C160(void);
-void func_0026FD30(s32, s32 *);
 
 void func_00198790(void *, const void *, s32);
 void func_00199B50(const char *, ...);

@@ -125,7 +125,29 @@ s32 func_0026FCE0(s32 arg0) {
     return *temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FD30);
+void func_0026FD30(s32 arg0, s32 *arg1) {
+    s32 index;
+    s32 count;
+    s32 value;
+
+    index = 0;
+    count = 0;
+    do {
+        value = func_001DF0C0(arg0, index) & 0xFFF;
+        if (value != 0x3E7) {
+            arg1[count] = value;
+            count++;
+        }
+        index++;
+    } while (index < 5);
+    index = func_001DF110(arg0);
+    count = 0;
+    while (index < func_0026FE20(arg0)) {
+        arg1[index] = func_001DE9E0(arg0, count);
+        index++;
+        count++;
+    }
+}
 
 s32 func_0026FE20(s32 arg0) {
     s32 temp_s0;
