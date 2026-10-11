@@ -60,7 +60,6 @@ typedef struct Copy_0023BC80 {
     s32 words[0x3FE8];
 } Copy_0023BC80;
 
-void func_001A8870(s32, s32);
 void *func_002145E0(s32);
 extern s8 D_0034F6F8;
 

@@ -187,7 +187,35 @@ void func_001A87C0(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8870);
+void func_001AAAF0(s32, s32);
+void func_001FCC70(s32, s32, s32, s32, s32, s32);
+extern u8 D_00317472;
+
+typedef struct State_001A8870 {
+    u8 pad_000[0x1F9];
+    s8 entries[0x26];
+    s8 field_21F;
+    s8 field_220;
+    s8 field_221;
+    u8 field_222;
+} State_001A8870;
+
+void func_001A8870(s32 arg0, s32 arg1) {
+    State_001A8870 *state = (State_001A8870 *)&D_00317250;
+    s8 *entry;
+
+    if ((D_00317472 + 1) < 8) {
+        func_001FCC70(0, 1, 1, 0, 60, 0);
+        state->field_21F = -2;
+        state->field_220 = arg0;
+        state->field_221 = 1;
+        entry = (s8 *)(state->field_222 + (u32)state);
+        entry[state->field_221 + 0x1F9] = arg1;
+        if (arg1 < 2) {
+            func_001AAAF0(-2, 1);
+        }
+    }
+}
 
 typedef struct {
     u8 padding[0x1F0];

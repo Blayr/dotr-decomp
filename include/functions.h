@@ -395,6 +395,7 @@ s32 func_001A8730(void);
 void func_001A8750(s32 arg0);
 u8 func_001A8760(void);
 void func_001A87C0(s32 arg0, s32 arg1);
+void func_001A8870(s32 arg0, s32 arg1);
 void func_001A8920(void);
 s64 func_001AAF60(s32 arg0);
 void func_001AC510(void);
