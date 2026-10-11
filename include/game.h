@@ -289,4 +289,11 @@ void func_0027ACB0(s32, s32 *, u8 *, s32, s32, s32, s32, s32);
 
 extern u8 D_003193C0[];
 
+s32 func_001E36E0(s32, s32);
+void func_001AAFA0(s32);
+void func_001F30B0(s32, s32);
+void func_001CDD90(u8 *);
+s32 func_001AE5F0(s32);
+s32 func_001F3130(s32);
+
 #endif

@@ -1,6 +1,17 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_042", func_001CDD40);
+void func_001CDD40(void) {
+    u8 *p;
+    s32 i;
+
+    p = D_0031A7C0;
+    i = 0;
+    do {
+        func_001CDD90(p);
+        i += 1;
+        p += 0xA0;
+    } while (i < 6);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_042", func_001CDD90);
 

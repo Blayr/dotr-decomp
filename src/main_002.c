@@ -19,7 +19,18 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00106FA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107070);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107130);
+s32 func_00107130(void *arg0, void *arg1, s32 arg2) {
+    if (arg2 == 0) {
+        ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
+        ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
+        ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
+    } else {
+        ((f32 *)arg1)[0] = ((f32 *)arg0)[0];
+        ((f32 *)arg1)[1] = ((f32 *)arg0)[1];
+        ((f32 *)arg1)[2] = ((f32 *)arg0)[2];
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107180);
 

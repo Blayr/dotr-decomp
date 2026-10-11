@@ -157,7 +157,16 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001AB1D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC290);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC510);
+void func_001AC510(void) {
+    s32 i;
+
+    i = 0;
+    do {
+        func_001F30B0(i, 0);
+        i += 1;
+    } while (i < 0x54);
+    func_001AAFA0(6);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC560);
 
