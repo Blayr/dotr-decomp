@@ -1,6 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001ED460);
+void func_001ED460(s32 arg0) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj != NULL) {
+        *(s32 *)((u8 *)obj + 0x1EC) = -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001ED4A0);
 
