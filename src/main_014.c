@@ -506,7 +506,73 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_00161BF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_00161EA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_001620B0);
+s32 func_001620B0(s32 arg0, s32 arg1) {
+    s32 s0;
+    s32 s1;
+    s32 s2;
+    u32 *s3;
+    s32 a;
+    s32 b;
+
+    s0 = func_001E1030();
+    s1 = func_001E1090(arg0, arg1);
+    s2 = func_00250360(arg0, arg1);
+    s3 = func_001E0B70(arg0, arg1, 0);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_00162490(func_00250360(arg0, arg1), s0) == 1) {
+            if (func_001E22B0(s1 & 0xFF, s1 >> 8) != 9) {
+                return 1;
+            }
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (s3 == NULL) {
+            return 2;
+        }
+        switch (*s3 >> 8) {
+        case 4:
+            a = func_001625E0(s2);
+            s1 = func_001E1090(arg0, arg1);
+            b = func_001E1090(a >> 8, a & 0xFF);
+            if ((s1 & 0xFF) == (b & 0xFF) || (s1 >> 8) == (b >> 8)) {
+                return 1;
+            }
+            break;
+        case 0x49:
+            if (func_001626F0(s2) == 1) {
+                return 1;
+            }
+            break;
+        case 0x25:
+            if (s0 == 0x2ED && func_0027BBC0(arg0, 0, 0) == 1) {
+                return 1;
+            }
+            if (s0 == 0x2EA && func_0027BBC0(arg0, arg1, 0) == 1) {
+                return 1;
+            }
+            break;
+        case 0x1F:
+            if (s0 == 0x2DD && func_00162D10(s2) == 1) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_00162390(s32 a, s32 b) {
     if (a < b) {
