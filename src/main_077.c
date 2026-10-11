@@ -321,7 +321,19 @@ s32 func_00271F00(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00271F90);
+s32 func_00271F90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    extern s32 func_001E0690(s32, s32);
+    s32 temp_s0;
+    s32 temp_s1;
+
+    temp_s1 = func_0024DE70(arg0, arg1);
+    temp_s0 = func_001E0700(arg0, arg1) & 0x1F;
+    if (func_00271A40(temp_s1, arg2, arg3) != 0 && func_00271740(arg4, temp_s1) != 0 &&
+        temp_s0 == (func_001E0690(temp_s1, 0) & 0x1F)) {
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_00272050(s32 arg0, s32 arg1) {
     extern s32 func_001E0690(s32, s32);
