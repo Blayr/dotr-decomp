@@ -41,7 +41,16 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFD30);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFE00);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFF60);
+typedef struct Flags_001FFF60 {
+    s8 enabled : 1;
+    s8 reserved : 7;
+} Flags_001FFF60;
+
+extern Flags_001FFF60 D_00322980;
+
+void func_001FFF60(s32 arg0, s64 arg1) {
+    D_00322980.enabled = (s8)arg1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFF90);
 
