@@ -219,7 +219,30 @@ void func_001F0830(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F08D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0C10);
+s32 func_001F0C10(s32 arg0, s32 arg1) {
+    void func_00217B50(void *);
+    Obj_0031ABB0 *obj;
+    ObjSlot_0031ABB0 *slot;
+
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        return 0;
+    }
+    if ((arg1 < 0) || (arg1 >= 8)) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    slot = obj->slots[arg1];
+    if (slot == NULL) {
+        return 1;
+    }
+    func_00217B50(slot);
+    obj->slots[arg1] = NULL;
+    obj->vals[arg1] = 1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0CD0);
 
