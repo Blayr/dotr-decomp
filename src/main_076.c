@@ -132,7 +132,55 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_002670F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00267380);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00267560);
+typedef struct {
+    u8 pad00[0x3E];
+    u8 value3E;
+    u8 pad3F[5];
+    u8 side;
+    u8 active;
+    u8 pad46[0x11];
+    s8 flag0 : 1;
+    s8 swapped : 1;
+} Obj_00267560;
+
+s32 func_00267560(s32 arg0) {
+    Obj_00267560 *obj = (Obj_00267560 *)arg0;
+    s32 player;
+    s32 i;
+    s32 count;
+    s32 x;
+    s32 y;
+    s32 pos;
+    u32 *card;
+
+    if (obj == NULL) {
+        return 0;
+    }
+    player = func_001DE540();
+    if (player == ((obj->swapped == 0) ? obj->side : ((obj->side == 0) ? 1 : 0))) {
+        return 0;
+    }
+    if (obj->active == 0) {
+        return 0;
+    }
+    if ((count = func_00266DF0(0x44)) > 0) {
+        for (i = 0; i < count; i++) {
+            pos = func_00266C70(0x44, i);
+            y = pos >> 8;
+            x = pos & 0xFF;
+            if (func_001E2100(y, x, 4) && func_001E2100(y, x, 3) && func_001E2100(y, x, 5) &&
+                (card = func_00250740(y, x, 2)) != NULL) {
+                switch (*card & 0x3F) {
+                case 29:
+                    return ((obj->value3E >> 5) == 0) ? 1 : 0;
+                case 30:
+                    return ((obj->value3E >> 5) != 0) ? 1 : 0;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00267700(s32 arg0, s32 arg1) {
     s32 index;
