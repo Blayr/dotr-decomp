@@ -136,7 +136,45 @@ s32 func_0010E540(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E6B0);
+typedef struct {
+    u16 id;
+    u8 values[5];
+} Info_0010E6B0;
+
+void func_0010E6B0(s32 arg0, void *arg1, s32 *arg2) {
+    Info_0010E6B0 *info = arg1;
+    u8 buf[5];
+    s32 count;
+    s32 i;
+    s32 card;
+    u8 level;
+    u32 cost;
+    extern u32 func_0026FBB0();
+
+    if (info != NULL) {
+        level = func_0026FA80(info->id, arg0);
+        for (i = 0; i < 5; i++) {
+            buf[i] = 0xFF;
+        }
+        for (i = 0, count = 0; i < func_0026FE20(arg0); i++) {
+            if ((u8)func_00278E00(i, info->values) == 0) {
+                buf[count++] = i;
+            }
+        }
+        if (count != 0) {
+            for (i = 0; i < (u8)func_00278D90(buf); i++) {
+                card = arg2[buf[i]];
+                if (card != 0x3E7 && func_0010F220(card) == 0 && level >= func_0026FA80(card, arg0)) {
+                    cost = func_0026FBB0(card);
+                    if ((cost & 0xFFFF) + (cost >> 16) * 2 < 0xDAD && func_0026FC10(card) == 2 &&
+                        (u16)func_002789F0(info->id, (u16)card) == 0x3E7) {
+                        func_00278D20(info->values, buf[i]);
+                    }
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E890);
 
