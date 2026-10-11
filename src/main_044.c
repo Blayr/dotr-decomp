@@ -93,9 +93,13 @@ void func_001DE500(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE540);
+s32 func_001DE540(void) {
+    return (s32) D_003181E4;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE550);
+u8 func_001DE550(void) {
+    return D_003181E2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE560);
 
