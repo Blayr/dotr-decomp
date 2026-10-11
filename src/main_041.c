@@ -189,7 +189,14 @@ void func_001C6120(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C6130);
+s32 func_001C6130(void) {
+    s32 result = func_001C6170(0);
+
+    if (result != 0 || *(u8 *)0xA9C088 != 0) {
+        return result;
+    }
+    return func_001C6170(1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C6170);
 
