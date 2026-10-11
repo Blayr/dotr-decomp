@@ -108,7 +108,12 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_00112600);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00112850);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00112960);
+s32 func_00112960(s32 arg0) {
+    s32 result;
+
+    result = (u32) (arg0 - 0x36) < 4U ? 1 : 0;
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00112980);
 
