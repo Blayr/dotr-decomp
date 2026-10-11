@@ -251,7 +251,28 @@ s32 func_001E0690(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0700);
+static inline u8 *get_entry_bytes_001E0700(void) {
+    u8 *entry;
+
+    entry = func_001DD130();
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry[0x45] >= 11) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E0700(s32 arg0, s32 arg1) {
+    u8 *entry;
+
+    entry = get_entry_bytes_001E0700();
+    if (entry != NULL) {
+        return entry[0x3E];
+    }
+    return -1;
+}
 
 void *func_001DD130();
 

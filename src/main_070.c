@@ -190,7 +190,28 @@ void func_00245800(void *arg0) {
     func_00184428();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245890);
+typedef struct State_00245890 {
+    s32 base;
+    s32 unk4;
+    s32 index;
+    s32 current;
+    s32 end;
+} State_00245890;
+
+static inline u8 empty_00245890(void *arg0) {
+    State_00245890 *state = arg0;
+
+    return state->current == state->end;
+}
+
+s32 func_00245890(void *arg0) {
+    State_00245890 *state = arg0;
+
+    if (empty_00245890(state)) {
+        return 0;
+    }
+    return state->base + (state->index * 0x195000);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002458E0);
 
