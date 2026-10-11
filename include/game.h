@@ -529,4 +529,18 @@ s32 func_002450F0(void *);
 void func_001F9D80(s32, f32 *);
 void func_001FB360(s32, f32 *);
 
+void func_001851E8(void *, s32, s32, s32, s32, s32, s32);
+void func_00241C20(s32, s32, s32, s32, s32);
+extern s32 D_00350368;
+extern s32 D_00350370;
+extern s32 D_00350378;
+extern s32 D_00350380;
+extern s32 D_00350388;
+extern s32 D_00350390;
+extern s32 D_00350398;
+extern s32 D_003503A0;
+extern s32 D_003503A8;
+extern s32 D_003503B0;
+extern u8 D_003503C0[];
+
 #endif
