@@ -47,7 +47,53 @@ s32 func_00144810(s32 arg0) {
     return (func_0026FC10(arg0) != 0) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00144860);
+typedef struct {
+    u8 pad0[6];
+    u8 slot[5];
+} Obj1_00144860;
+
+typedef struct {
+    u8 pad0[0x3C];
+    u16 id;
+    u8 f3E;
+} Obj2_00144860;
+
+s32 func_00144860(s32 arg0, void *arg1, void *arg2) {
+    Obj1_00144860 *o1 = arg1;
+    Obj2_00144860 *o2 = arg2;
+    s32 list[8];
+    s32 i;
+    u8 k;
+
+    for (i = 0; i < 5; i++) {
+        o1->slot[i] = 0xFF;
+    }
+    func_0026FD30(arg0, list);
+    if (o2 == NULL) {
+        return -1;
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (i != o1->slot[0] && i != o1->slot[1]) {
+            if (o2->id == list[i] && func_0026FB10(arg0, list[i]) == 1) {
+                o1->slot[0] = i;
+            }
+        }
+    }
+    k = 1;
+    if ((func_0026FCE0(list[o1->slot[0]]) >> 5) == 0) {
+        for (i = 0; i < func_0026FE20(arg0); i++) {
+            if (i != o1->slot[0] && i != o1->slot[1]) {
+                if (func_00248F60(list[o1->slot[0]], list[i]) >= 0 && (func_0026FCE0(list[i]) >> 5) == 2) {
+                    if (list[i] != 0x31B && list[i] != 0x31C) {
+                        o1->slot[k] = i;
+                        k++;
+                    }
+                }
+            }
+        }
+    }
+    return o2->f3E >> 5;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00144A60);
 
