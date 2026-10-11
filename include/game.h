@@ -546,4 +546,7 @@ f32 func_001A6898(f32);
 
 extern f32 D_00294050[];
 
+s32 func_00266C70(s32, s32);
+s32 func_00266DF0(s32);
+
 #endif
