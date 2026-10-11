@@ -245,7 +245,54 @@ s32 func_0013A9A0(s32 arg0) {
     return maximum;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013AA40);
+typedef struct State_0013AA40 {
+    u16 position;
+    u16 unk2;
+    s16 mode;
+    u16 unk6;
+    union {
+        u16 halves[2];
+        u32 word;
+    } info;
+} State_0013AA40;
+
+static inline s32 decode_0013AA40(s32 position) {
+    return func_001E1090(position >> 8, position & 0xFF);
+}
+
+void func_0013AA40(void *arg0) {
+    State_0013AA40 *state = arg0;
+    s32 temp_s0;
+    s32 temp_s2;
+    s32 temp_a0;
+    s32 temp_v0_4;
+    u16 temp_v0;
+    u16 temp_v0_2;
+    u16 temp_v0_3;
+
+    temp_v0 = state->position;
+    temp_s2 = func_00250360((s32) temp_v0 >> 8, temp_v0 & 0xFF);
+    temp_v0_2 = state->position;
+    temp_s0 = decode_0013AA40(temp_v0_2);
+    temp_v0_3 = state->position;
+    temp_a0 = func_001E0700((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF) >> 5;
+    switch (temp_a0) {
+    case 1:
+        temp_v0_4 = func_0013D2C0(temp_s2);
+        if (temp_v0_4 >= 0) {
+            state->mode = 0x6FF;
+            state->info.word = state->info.halves[0] | ((((temp_s0 >> 8) << 8) | (func_001E1090(temp_v0_4 >> 8, temp_v0_4 & 0xFF) & 0xFF)) << 0x10);
+            return;
+        }
+        state->mode = 0x5FF;
+        break;
+    case 3:
+        state->mode = 0x3FF;
+        state->info.word = state->info.halves[0] | (((temp_s0 & 0xFF) | ((func_001E1090(temp_s2, 0) >> 8) << 8)) << 0x10);
+        return;
+    }
+    state->mode = 0x5FF;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013AB70);
 
