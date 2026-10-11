@@ -62,7 +62,23 @@ void func_002032A0(void) {
     func_0020B400(D_003259C0, 0, 0xB0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002032C0);
+extern s8 D_00325C19[];
+
+typedef struct {
+    u8 pad[0x25A];
+    s8 low : 4;
+    s8 high : 4;
+} Flags_002032C0;
+
+void func_002032C0(s32 arg0, s8 arg1, s64 arg2) {
+    s32 offset;
+    Flags_002032C0 *entry;
+
+    offset = arg0 * 0x5C;
+    D_00325C19[offset] = arg1;
+    entry = (Flags_002032C0 *)(D_003259C0 + offset);
+    entry->low = arg2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203320);
 

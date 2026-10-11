@@ -31,7 +31,12 @@ f32 func_0020D100(f32 *arg0, f32 *arg1) {
     return func_001A6C60(x * x + y * y + z * z);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D140);
+void func_0020D140(f32 *arg0, f32 *arg1, f32 *arg2) {
+    arg0[0] = arg1[1] * arg2[2] - arg1[2] * arg2[1];
+    arg0[1] = arg1[2] * arg2[0] - arg1[0] * arg2[2];
+    arg0[2] = arg1[0] * arg2[1] - arg1[1] * arg2[0];
+    arg0[3] = arg1[3];
+}
 
 f32 func_0020D1A0(f32 *arg0, f32 *arg1) {
     return arg0[0] * arg1[0] + arg0[1] * arg1[1] + arg0[2] * arg1[2];
@@ -131,9 +136,30 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E9F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EB40);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EBA0);
+typedef struct {
+    s32 words[16];
+} Block_0020EBA0;
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EC00);
+extern u8 D_0032A2E0[][0x1A0];
+
+void func_0020EBA0(void *arg0) {
+    *(Block_0020EBA0 *)arg0 = *(Block_0020EBA0 *)D_0032A2E0[D_0032A240];
+}
+
+typedef struct {
+    s32 words[16];
+} Block_0020EC00;
+
+typedef struct {
+    Block_0020EC00 block;
+    u8 padding[0x160];
+} Entry_0020EC00;
+
+extern Entry_0020EC00 D_0032A320[];
+
+void func_0020EC00(void *dst) {
+    *(Block_0020EC00 *)dst = D_0032A320[D_0032A240].block;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EC60);
 

@@ -1,6 +1,24 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217A10);
+typedef struct {
+    s8 enabled : 1;
+} Flags_00217A10;
+
+void func_0010A010(void);
+void func_0010A090(s16);
+extern Flags_00217A10 D_0034F6E8;
+
+s32 func_00217A10(s64 arg0) {
+    if (D_0034F6E8.enabled == 0) {
+        return 0;
+    }
+    if (arg0 > 0) {
+        func_0010A090((s16) arg0);
+    } else {
+        func_0010A010();
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00217A70);
 

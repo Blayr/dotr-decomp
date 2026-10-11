@@ -62,7 +62,22 @@ void func_00207FD0(s32 arg0, s32 arg1, s32 arg2) {
     func_00209D30(func_00208030(func_00209D20(), arg0, arg1, arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208030);
+s32 func_00208030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 var_t0;
+    u32 temp_v0;
+
+    temp_v0 = (1 << *(s32 *)(arg2 + 0xC)) - 2;
+    if (temp_v0 < (u32) arg3) {
+        arg3 = temp_v0;
+    }
+    var_t0 = arg3 * 8;
+    *(s32 *)(arg1 + 4) = *(s32 *)(*(s32 *)arg2 + var_t0 + 4);
+    *(s32 *)(*(s32 *)arg2 + var_t0 + 4) = arg1;
+    *(s64 *)(arg0 + 8) = 0;
+    *(s64 *)arg0 = 0;
+    *(s8 *)(arg0 + 3) = 0x60;
+    return arg0 + 0x10;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208090);
 
@@ -109,7 +124,27 @@ s32 func_002086D0(void *arg0, s64 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208700);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002087A0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u8 padding[12];
+    u8 data[1];
+} Header_002087A0;
+
+void func_00208870(s32, s32, s32, void *, void *);
+
+s32 func_002087A0(void *arg0, s32 arg1) {
+    Header_002087A0 *header = arg0;
+    u16 count = header->count;
+    u8 *data = header->data;
+
+    if (!(header->flags & 0x20)) {
+        return 0;
+    }
+    func_00208870(0, 0, arg1, data + (count & 0xFFFF) * 8 + 8,
+                 data + (count & 0xFFFF) * 8 + 0x10);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208800);
 
