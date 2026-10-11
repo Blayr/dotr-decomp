@@ -12,7 +12,37 @@ INCLUDE_ASM("asm/nonmatchings/main_016", func_0016A5C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016AE30);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016AFE0);
+s32 func_0016AFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    s32 minY;
+    s32 maxY;
+    s32 minX;
+    s32 maxX;
+    s32 result;
+
+    minY = arg3 < arg5 ? arg3 : arg5;
+    if (arg5 < arg3) {
+        maxY = arg3;
+    } else {
+        maxY = arg5;
+    }
+    minX = arg2 < arg4 ? arg2 : arg4;
+    if (arg4 < arg2) {
+        maxX = arg2;
+    } else {
+        maxX = arg4;
+    }
+    if ((maxX - minX) + (maxY - minY) != 2) {
+        return 0;
+    }
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    if (func_001E2100(arg0, arg1, 0) == 0) {
+        result = func_0024DF00(func_001E22B0(arg2, arg3), arg0, arg1);
+        return result != 1 ? 0 : 1;
+    }
+    return 0;
+}
 
 s32 func_0016B0E0(void) {
     return 0;
