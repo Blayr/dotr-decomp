@@ -382,7 +382,45 @@ INCLUDE_ASM("asm/nonmatchings/main_005", func_0011B0E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011B680);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C140);
+s32 func_0011C140(s32 arg0, s32 arg1, u32 *arg2) {
+    /* really takes (arg0, arg1); the header says (void) */
+    s32 func_001E1030();
+    u8 info[32];
+    u32 *entry;
+
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        return 2;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        entry = func_00250740(arg0, arg1, 0);
+        if (entry == NULL) {
+            return 2;
+        }
+        switch (*entry >> 8) {
+        case 2:
+            if ((u16)(arg2[2] >> 16) == func_001E1090(arg0, arg1)) {
+                return 1;
+            }
+            break;
+        case 0xD:
+            return 1;
+        default:
+            if (func_001E1030(arg0, arg1) ==
+                func_00119F30(func_00250360(arg0, arg1), info, func_001DF540(arg0, arg1))) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    }
+    return 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C2E0);
 
