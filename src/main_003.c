@@ -55,7 +55,13 @@ s32 func_00109F10(void) {
     return (*D_0030FF40 & 0x2000) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_00109F60);
+void func_00109F60(s32 arg0) {
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    func_0010C720(0xF003, arg0);
+    *(s32 *)((u8 *)D_0030FF40 + 0x2A6C) = arg0;
+}
 
 void func_00109FC0(void) {
     if (D_0030FF40 == NULL || D_0030FF48 == 0) {
