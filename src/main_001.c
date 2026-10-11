@@ -143,7 +143,22 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00103760);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001037C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103890);
+void func_00103890(void *arg0) {
+    f32 *values = arg0;
+
+    values[3] = 1.0f;
+    values[2] = 1.0f;
+    values[1] = 1.0f;
+    values[0] = 1.0f;
+    values[7] = 0.0f;
+    values[6] = 0.0f;
+    values[5] = 0.0f;
+    values[4] = 0.0f;
+    values[11] = 0.0f;
+    values[10] = 0.0f;
+    values[9] = 0.0f;
+    values[8] = 0.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001038D0);
 
