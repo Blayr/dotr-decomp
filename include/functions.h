@@ -6,6 +6,7 @@ static inline s32 calc_001FD220(s32 idx);
 static inline u8 *check_001E0150(s32 a0, s32 a1);
 static inline u8 *check_001E0830(s32 a0, s32 a1);
 static inline u8 *check_001E16A0(s32 a0, s32 a1);
+void func_00100520(void);
 s32 func_00100820(void);
 s32 func_00100D00(s32 arg0);
 f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2);

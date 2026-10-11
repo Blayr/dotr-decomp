@@ -253,4 +253,10 @@ void func_00244680(u8 *);
 
 extern u8 D_0029D586[];
 
+void func_00100560(void);
+void func_00100780(void);
+s32 func_001AAF60(s32);
+void func_001F73C0(void);
+void func_00209F60(void (*)(void));
+
 #endif
