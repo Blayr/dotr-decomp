@@ -213,7 +213,70 @@ s32 func_00141B30(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00141B90);
+s32 func_00141B90(s32 arg0, s32 arg1) {
+    s32 id;
+    s32 val;
+    u32 *p;
+
+    id = func_001E1030();
+    val = func_00250360(arg0, arg1);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (id) {
+        case 0x184:
+            if (func_001DF470(arg0) < func_001DF470(arg0 == 0 ? 1 : 0)) {
+                return 1;
+            }
+            break;
+        case 0x170:
+            if (func_00142280(val) == 1) {
+                return 1;
+            }
+            break;
+        case 0x17F:
+            if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 0x14, 0xE)) >= 3) {
+                return 1;
+            }
+            break;
+        case 0x182:
+            if (func_00141F30(val) == 1) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        p = func_00250740(arg0, arg1, 0);
+        if (p == NULL) {
+            return 2;
+        }
+        switch (*p >> 8) {
+        case 0xD:
+            if (func_001DF470(val) < 2000) {
+                return 1;
+            }
+            break;
+        case 0x12:
+            if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 8, 0xE)) >= 4) {
+                return 1;
+            }
+            break;
+        case 0x25:
+            if (func_0027BBC0(val, 0, 0) == 1) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_00141E30(s32 a, s32 b) {
     if (a < b) {
