@@ -45,7 +45,25 @@ s32 func_001E1A30(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1A90);
+static inline void *check_001E1A90(void *p) {
+    if (p == NULL) {
+        return NULL;
+    }
+    if (((u8 *)p)[0x45] >= 11) {
+        return NULL;
+    }
+    return p;
+}
+
+s32 func_001E1A90(void) {
+    u8 *p;
+
+    p = check_001E1A90(func_001DD130());
+    if (p != NULL) {
+        return p[0x51];
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1AF0);
 

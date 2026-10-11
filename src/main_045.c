@@ -175,7 +175,22 @@ s32 func_001E0830(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0890);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E08F0);
+void *func_001DD130();
+void func_001E0950(void *, s32);
+
+static inline void *check_001E08F0(void *var_v0) {
+    if (var_v0 == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)var_v0 + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return var_v0;
+}
+
+void func_001E08F0(s32 arg0, s32 arg1, s32 arg2) {
+    func_001E0950(check_001E08F0(func_001DD130()), arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0950);
 
