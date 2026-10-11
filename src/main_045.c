@@ -287,9 +287,46 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E14B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1520);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1580);
+void *func_001DD130(void);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E15E0);
+static inline void *get_001E1580(void) {
+    void *entry;
+
+    entry = func_001DD130();
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)entry + 0x45) >= 11) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E1580(void) {
+    void *entry;
+
+    entry = get_001E1580();
+    if (entry != NULL) {
+        return *(u8 *)((u8 *)entry + 0x49);
+    }
+    return -1;
+}
+
+s32 func_001E15E0(s32 arg0, s32 arg1, s8 arg2) {
+    void *var_v0;
+
+    var_v0 = func_001DD130();
+    if (var_v0 == NULL) {
+        var_v0 = NULL;
+    } else if (*(u8 *)((u8 *)var_v0 + 0x45) >= 0xB) {
+        var_v0 = NULL;
+    }
+    if (var_v0 == NULL) {
+        return 0;
+    }
+    *(s8 *)((u8 *)var_v0 + 0x4A) = arg2;
+    return 1;
+}
 
 void *func_001DD130(void);
 
@@ -393,4 +430,26 @@ s32 func_001E18A0(s32 arg0, s32 arg1, s8 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1900);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1970);
+static inline void *get_001E1970(void) {
+    void *p;
+
+    p = func_001DD130();
+    if (p == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)p + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+s32 func_001E1970(s32 arg0, s32 arg1, s8 arg2) {
+    void *p;
+
+    p = get_001E1970();
+    if (p == NULL) {
+        return 0;
+    }
+    *(s8 *)((u8 *)p + 0x50) = arg2;
+    return 1;
+}
