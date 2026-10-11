@@ -49,7 +49,12 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_00147AC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00147B90);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00147E00);
+s32 func_00147E00(s32 arg0, s32 arg1, s32 arg2) {
+    if (arg2 < 3) {
+        return (arg1 >= 3) ? 0x306 : 0x300;
+    }
+    return func_001E1090((arg0 == 0) ? 1 : 0, 0);
+}
 
 s32 func_00147E50(s32 arg0, s32 arg1) {
     s32 var_s0;

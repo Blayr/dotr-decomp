@@ -12,7 +12,31 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C32B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C33A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C3520);
+typedef struct {
+    u8 pad_000[0x6D8];
+    s32 values[2];
+    u8 pad_6E0[0x67C];
+    s8 selection;
+} State_001C3520;
+
+void func_001C3520(s32 arg0) {
+    State_001C3520 *state = (State_001C3520 *)D_00317490;
+    s32 var_a1;
+    void (*var_a3)(void);
+
+    if (arg0 != 0) {
+        var_a1 = state->values[1];
+    } else {
+        var_a1 = state->values[0];
+    }
+    if (arg0 != 0) {
+        var_a3 = func_001BA710;
+    } else {
+        var_a3 = func_001BA630;
+    }
+    state->selection = arg0;
+    func_00199BC0(var_a1, 0x356, 2, var_a3);
+}
 
 void func_001C3570(void) {
     func_00209D30(func_001C35A0(func_00209D20()));

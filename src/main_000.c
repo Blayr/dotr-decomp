@@ -195,7 +195,23 @@ s32 func_00101B50(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101BA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101C30);
+s32 func_00101C30(u8 *arg0, s32 arg1, s32 arg2) {
+    s32 offset;
+    s32 i;
+
+    i = 0;
+    if (i < arg2) {
+        offset = 0;
+        do {
+            if (arg0[offset] == 0) {
+                return i;
+            }
+            i++;
+            offset += arg1;
+        } while (i < arg2);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101C80);
 
