@@ -23,7 +23,6 @@ s32 func_001ACC80(s32);                             /* extern */
 s32 func_001AEEB0(s32);                             /* extern */
 s32 func_001AF7E0(s32);                             /* extern */
 s32 func_001B11C0(s32);                             /* extern */
-s32 func_001B8210(s32);                             /* extern */
 s32 func_001B83F0(s32);                             /* extern */
 s32 func_001BAEA0(s32);                             /* extern */
 s32 func_001C1B00(s32);                             /* extern */
@@ -627,5 +626,7 @@ extern s32 D_0031C048;
 
 void func_0010A010(void);
 void func_0010A450(void);
+
+extern u8 D_003181CA;
 
 #endif

@@ -70,7 +70,14 @@ void func_001B81E0(void) {
     func_00209D30(func_001B8210(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B8210);
+s32 func_001B8210(s32 arg0) {
+    u8 *state = D_00317490;
+
+    if (D_003181CA == 0) {
+        return arg0;
+    }
+    func_001B8260(arg0, 0, 0, 0x280, 0x1C0, state[0xD3A]);
+}
 
 typedef struct {
     u16 count;

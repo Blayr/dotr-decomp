@@ -402,6 +402,7 @@ void func_001B6C90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 flags, s32 width, s32 number);
 s32 func_001B7660(s8 character);
 void func_001B81E0(void);
+s32 func_001B8210(s32 arg0);
 void func_001B8260(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_001B83C0(void);
 void func_001B8830(void);
