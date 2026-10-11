@@ -327,7 +327,45 @@ void func_001E9280(void *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E92C0);
+typedef struct Slot_001E92C0 {
+    s32 key;
+    s32 unk04;
+    u8 *data;
+    s32 unk0C;
+} Slot_001E92C0;
+
+typedef struct State_001E92C0 {
+    u8 unk00[8];
+    signed int length : 31;
+    unsigned int flag : 1;
+    u8 unk0C[8];
+    u8 *data;
+    u8 unk18[4];
+    s32 packed;
+} State_001E92C0;
+
+u8 *func_001E9340(s32, u8 *);
+
+void func_001E92C0(void *arg0, s32 arg1) {
+    void func_00217B50(u8 *);
+    Slot_001E92C0 *slot;
+    u8 *buffer;
+    s32 index;
+    State_001E92C0 *state = arg0;
+
+    slot = (Slot_001E92C0 *)(state->packed & 0x3FFFFFF);
+    index = state->packed >> 26;
+    if (arg1 != 0) {
+        slot += index;
+        slot->data = state->data;
+        buffer = slot->data;
+        if (buffer != NULL) {
+            buffer[state->length - 1] = 0;
+            slot->data = func_001E9340(slot->key, buffer);
+            func_00217B50(buffer);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E9340);
 
