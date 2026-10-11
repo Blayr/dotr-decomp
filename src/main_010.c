@@ -312,7 +312,41 @@ s32 func_00143900(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00143970);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00143A80);
+s32 func_00143A80(s32 arg0, s32 arg1) {
+    u8 data[0x60];
+    u8 flags;
+    s32 key;
+    u8 count;
+    s32 i;
+    s32 value;
+    s32 delay;
+
+    flags = func_0026FCE0(arg0);
+    func_001DCD70(data, arg0);
+    if (((s32) flags >> 5) != 0) {
+        return 0;
+    }
+    key = func_001DE540();
+    delay = 0;
+    do {
+        delay++;
+    } while (delay < 7);
+    count = 0;
+    i = 0;
+    do {
+        value = func_001E3790(i, arg1);
+        if ((value >= 0) && (key == func_00250360(value >> 8, value & 0xFF))) {
+            count++;
+        }
+        i++;
+    } while (i < 7);
+    if (count == 0) {
+        if (func_0024DEB0(func_001E22B0(0, arg1), data) == 1) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00143BA0);
 

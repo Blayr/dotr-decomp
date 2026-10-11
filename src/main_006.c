@@ -45,7 +45,50 @@ s32 func_0011D6D0(s32 arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011D7B0);
+s32 func_0011D7B0(s32 arg0, u8 arg1) {
+    s32 row;
+    s32 column;
+    s32 last_column;
+    s32 low;
+    s32 high;
+    s32 value;
+
+    switch (arg1) {
+    case 0:
+        column = 2;
+        last_column = 4;
+        row = 2;
+        break;
+    case 1:
+        column = 2;
+        row = 4;
+        last_column = 4;
+        break;
+    case 2:
+        column = 1;
+        last_column = 5;
+        row = 0;
+        break;
+    case 3:
+    default:
+        row = 6;
+        column = 1;
+        last_column = 5;
+        break;
+    }
+    for (; column <= last_column; column++) {
+        value = func_001E3790(row, column);
+        if (value >= 0) {
+            high = value >> 8;
+            low = value & 0xFF;
+            if ((arg0 == func_00250360(high, low)) &&
+                ((func_001E0700(high, low) >> 5) == 0)) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 s32 func_0011D8D0(s32 arg0, s32 arg1) {
     s32 result;
