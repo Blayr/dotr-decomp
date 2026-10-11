@@ -1165,6 +1165,7 @@ s32 func_0026E950(void);
 s32 func_0026EA00(s32 *arg0);
 s32 func_0026EA80(s32 arg0, s32 arg1);
 s32 func_0026EEA0(void *arg0, s32 arg1, s32 arg2);
+s32 func_0026F600(s32 arg0, s32 *arg1);
 s32 func_0026FA70(s32 arg0, s32 arg1);
 s32 func_0026FA80(s32 arg0, s32 arg1);
 s32 func_0026FB10(s32 arg0, s32 arg1);
