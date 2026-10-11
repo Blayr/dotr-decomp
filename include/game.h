@@ -240,4 +240,9 @@ extern u8 D_00325D38[];
 
 extern s32 D_0032A240;
 
+extern s32 D_0032F780;
+extern s32 D_0032F784;
+extern s32 D_0032F788;
+extern s32 D_0032F78C;
+
 #endif

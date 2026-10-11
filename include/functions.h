@@ -214,6 +214,7 @@ s32 func_0020E010(f32 *arg0, f32 *arg1);
 s32 func_0020E4F0(void);
 s32 func_0020F290(s32 arg0);
 s32 func_00211530(void *arg0, s32 depth, void *arg2);
+void func_00213F60(s32 arg0, s32 arg1);
 void func_00213F90(void);
 s32 func_00214080(s32 *arg0, s32 *arg1);
 s32 func_00214D00(s32 arg0, s32 arg1);

@@ -217,7 +217,12 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_00213D00);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00213F10);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00213F60);
+void func_00213F60(s32 arg0, s32 arg1) {
+    D_0032F780 = arg0;
+    D_0032F784 = arg1;
+    D_0032F78C = arg1;
+    D_0032F788 = 1;
+}
 
 void func_00213F90(void) {
     func_00209D30(func_00213FC0(func_00209D20()));
