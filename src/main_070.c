@@ -269,7 +269,65 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00245A30);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245AE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245BE0);
+typedef struct Request_00245BE0 {
+    u8 slot;
+    u8 a;
+    u8 b;
+    u8 c;
+    u16 d;
+    u16 e;
+} Request_00245BE0;
+
+typedef struct Slot_00245BE0 {
+    s32 value;
+    u8 a;
+    u8 b;
+    u8 c;
+    u8 pad7[4];
+    u8 x[16];
+    u8 y[16];
+    u8 pad2B;
+    u16 d;
+    u16 e;
+    u8 pad30[4];
+} Slot_00245BE0;
+
+s32 func_00245BE0(void *arg0) {
+    Request_00245BE0 *req = arg0;
+    Slot_00245BE0 *entry;
+    s32 i;
+    extern Slot_00245BE0 D_00350FD0[];
+
+    if (req->slot == 0xFF) {
+        for (i = 0; i < 8; i++) {
+            if (D_00350FD0[i].value == 0) {
+                break;
+            }
+        }
+        if (i == 8) {
+            return 0;
+        }
+        req->slot = i;
+        D_00350FD0[req->slot].value = 1;
+        D_00350FD0[req->slot].b = 0xFF;
+    }
+    entry = &D_00350FD0[req->slot];
+    if (entry->value == 0) {
+        return 0;
+    }
+    if (entry->b != req->b) {
+        for (i = 0; i < 16; i++) {
+            D_00350FD0[req->slot].y[i] = 0;
+            D_00350FD0[req->slot].x[i] = 0;
+        }
+    }
+    entry->a = req->a;
+    entry->b = req->b;
+    entry->c = req->c;
+    entry->d = req->d;
+    entry->e = req->e;
+    return 1;
+}
 
 typedef struct {
     s32 value;
