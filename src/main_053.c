@@ -1,6 +1,66 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FB500);
+f32 func_001A6C30(f32, f32);
+void func_0020C630(void *, void *);
+extern f32 D_00293040[4][4];
+
+typedef struct Vec4_001FB500 {
+    f32 x, y, z, w;
+} Vec4_001FB500;
+
+typedef struct Camera_001FB500 {
+    Vec4_001FB500 param;
+    f32 direction[4];
+    f32 origin[4];
+    f32 target[4];
+} Camera_001FB500;
+
+static inline s32 aim_001FB500(s32 index) {
+    Camera_001FB500 *entry;
+
+    if ((index < 0) || (index > 0)) {
+        return 0;
+    }
+    entry = (Camera_001FB500 *)D_0031BEB0[index];
+    if (entry == 0) {
+        return 0;
+    }
+    entry->direction[0] = entry->target[0] - entry->origin[0];
+    entry->direction[1] = entry->target[1] - entry->origin[1];
+    entry->direction[2] = entry->target[2] - entry->origin[2];
+    entry->direction[3] = 0.0f;
+    func_0020D070(entry->direction);
+    return 1;
+}
+
+s32 func_001FB500(s32 index, f32 *src) {
+    Camera_001FB500 *entry;
+    f32 matrix[4][4];
+    f32 angles[4];
+
+    if ((index < 0) || (index > 0)) {
+        return 0;
+    }
+    entry = (Camera_001FB500 *)D_0031BEB0[index];
+    if (entry == 0) {
+        return 0;
+    }
+    if (src == NULL) {
+        return 0;
+    }
+    entry->param = *(Vec4_001FB500 *)src;
+    entry->param.y = func_001A6C30(6.2831855f + entry->param.y, 6.2831855f);
+    if (func_001FAFB0(index, (s32)angles) != 0) {
+        func_0020C630(matrix, angles);
+    }
+    func_0020CDD0(entry->direction, matrix, D_00293040);
+    entry->target[0] = entry->origin[0] - entry->direction[0] * entry->param.x;
+    entry->target[1] = entry->origin[1] - entry->direction[1] * entry->param.x;
+    entry->target[2] = entry->origin[2] - entry->direction[2] * entry->param.x;
+    entry->target[3] = 0.0f;
+    aim_001FB500(index);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FB6A0);
 
