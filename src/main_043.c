@@ -171,7 +171,23 @@ void func_001DBCF0(s32 arg0) {
     func_00209D30(func_001DBD30(func_00209D20(), arg0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DBD30);
+typedef struct {
+    u8 pad_00[0x48];
+    u8 data[0x30];
+    s32 value;
+    u8 pad_7C[6];
+    s16 index : 12;
+    s16 unused : 4;
+} Params_001DBD30;
+
+s32 func_00207AA0(s32, void *, s32, s32, s32, s32);
+
+s32 func_001DBD30(s32 arg0, s32 arg1) {
+    Params_001DBD30 *params = (Params_001DBD30 *)arg1;
+
+    return func_00207AA0(arg0, params->data, params->index,
+                        params->value, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DBD50);
 
