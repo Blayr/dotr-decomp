@@ -349,7 +349,74 @@ void func_0027F3E0(u8 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F480);
+typedef struct Entry_0027F480 {
+    u16 field_0;
+    u16 field_2;
+    u16 field_4;
+    u16 field_6;
+    s32 field_8;
+    u8 flags : 2;
+    u8 reserved : 6;
+    u8 padding[3];
+} Entry_0027F480;
+
+typedef struct State_0027F480 {
+    Entry_0027F480 entries[22];
+    u16 indices[32];
+    u8 flags : 5;
+    u8 reserved : 3;
+    u8 padding_1a1;
+    u16 field_1a2;
+    u16 field_1a4;
+    u8 padding_1a6[10];
+    f32 position[4];
+    f32 rotation[4];
+} State_0027F480;
+
+void func_0027F480(s32 arg0) {
+    f32 *rotation;
+    f32 *position;
+    u8 *cursor;
+    s32 j;
+    s32 i;
+    Entry_0027F480 *entry;
+    State_0027F480 *state = (State_0027F480 *)arg0;
+
+    position = (f32 *)func_001F9D30(0);
+    rotation = func_001FAF60(0);
+    if (state != 0) {
+        state->field_1a2 = 0;
+        state->field_1a4 = 0;
+        i = 0;
+        entry = state->entries;
+        do {
+            entry->field_0 = 0xFFFF;
+            entry->field_2 = 0xFF;
+            entry->field_8 = -1;
+            entry->field_4 = 0xFFFF;
+            i += 1;
+            entry->flags = 0;
+            entry++;
+        } while (i < 22);
+        j = 0;
+        cursor = (u8 *)state;
+        do {
+            j += 1;
+            *(u16 *)(cursor + 0x160) = 0xFFFF;
+            cursor += 2;
+        } while (j < 32);
+        state->flags = 0;
+        state->position[0] = position[0];
+        state->position[1] = position[1];
+        state->position[2] = position[2];
+        state->position[3] = position[3];
+        state->rotation[0] = rotation[0];
+        state->rotation[1] = rotation[1];
+        state->rotation[2] = rotation[2];
+        state->rotation[3] = rotation[3];
+        state->indices[1] = 0;
+    }
+}
 
 void func_0027F5A0(void) {
 

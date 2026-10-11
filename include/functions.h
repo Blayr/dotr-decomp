@@ -989,6 +989,7 @@ void func_0027F290(void *arg0, void *arg1, s32 arg2);
 void func_0027F360(void *arg0, void *arg1);
 void func_0027F3A0(void *arg0, void *arg1);
 void func_0027F3E0(u8 arg0, s32 arg1);
+void func_0027F480(s32 arg0);
 void func_0027F5A0(void);
 void func_00286900(void);
 void func_00286910(void *arg0, void *arg1);
