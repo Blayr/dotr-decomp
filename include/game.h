@@ -625,4 +625,9 @@ s32 func_0027C770(s32, s32, s32, s32, s32, s32);
 
 void func_0025FF30(s32, s32);
 
+void func_001F6CE0(s32);
+void func_001F6CF0(s32);
+void func_001F9FE0(s32, s32, s32);
+void func_001FB6A0(s32, s32, s32, f32, f32, f32);
+
 #endif
