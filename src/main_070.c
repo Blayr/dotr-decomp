@@ -375,7 +375,14 @@ s32 func_00248F60(s32 arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00248FD0);
+s32 func_00248FD0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E1030();
+
+    if (func_00248370() != 0) {
+        return func_00249040(func_001E1030(arg0, arg1), arg2);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00249040);
 

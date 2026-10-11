@@ -612,4 +612,6 @@ void func_001A83E0(u8 *, s32, s32);
 
 s32 func_001C6170(s32);
 
+s32 func_00248370();
+
 #endif
