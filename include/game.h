@@ -652,16 +652,13 @@ s32 func_0013EEE0(s32, s32, s32);
 void func_001429B0(void *);
 s32 func_00143BA0(s32, s32, s32);
 void func_0014BDE0(void *);
-s32 func_0014CBA0(s32, s32, s32);
 void func_00150270(void *);
 void func_001591B0(void *);
-s32 func_0015A360(s32, s32, s32);
 void func_0015D8E0(void *);
 s32 func_0015F300(s32, s32, s32);
 void func_00163660(void *);
 s32 func_001643F0(s32, s32, s32);
 void func_0016D6A0(void *);
-s32 func_0016F4D0(s32, s32, s32);
 
 void func_0012C1A0(void *, s32);
 s32 func_0012D270(s32, s32, s32, s32);
