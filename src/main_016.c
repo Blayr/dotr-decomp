@@ -892,7 +892,102 @@ void func_00170610(void) {
     func_0024E410();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00170620);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00170620;
+
+typedef struct {
+    u8 pad[0x3E];
+    u8 f3E;
+} Card_00170620;
+
+s32 func_0024FE40(void *, s32, s32);
+
+s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern s32 func_00278510();
+    extern s32 func_0027A130(s32, void *, s32, s32, s32, s32, s32, s32, u8, u16);
+    extern s32 func_002792C0(s32, void *, s32, s32, s32, s32, u16, u8);
+    Card_00170620 *card = arg2;
+    Nibbles_00170620 entries[12];
+    s32 id;
+    s32 hi;
+    s32 lo;
+    s32 i;
+    Nibbles_00170620 *entry;
+    s32 pos;
+    s32 cost;
+    s32 bestId;
+    s32 best;
+    s32 y;
+    s32 x;
+    s32 j;
+    s32 slot;
+
+    if (card == NULL) {
+        return -1;
+    }
+    entry = entries;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+    if ((u8)(card->f3E >> 5) == 0 && arg3 >= 0) {
+        best = 0xFF;
+        bestId = 0xFFFF;
+        pos = func_001E1090(arg3 >> 8, arg3 & 0xFF);
+        for (i = 0; i < 8; i++) {
+            id = func_0024E410(arg0, i);
+            if (id < 0) {
+                continue;
+            }
+            lo = id & 0xFF;
+            hi = id >> 8;
+            if (func_001E22B0(lo, hi) == 8) {
+                continue;
+            }
+            if (func_001E22B0(lo, hi) == 9 && func_0024FE40(card, lo, hi) == 1) {
+                continue;
+            }
+            if (func_001E36E0(lo, hi) != 0) {
+                continue;
+            }
+            if (func_00278510(card, arg3, func_00172310(arg0), pos & 0xFF, pos >> 8, 0) > 0) {
+                cost = func_0027A130((s32)card, entries, lo, hi, pos & 0xFF, pos >> 8, arg3, 0, 3,
+                                     func_00172310(arg0));
+            } else {
+                cost = func_002792C0((s32)card, entries, lo, hi, pos & 0xFF, pos >> 8, arg3, 3);
+            }
+            if (func_0027AFC0((u8 *)entries) > 0 && cost < best) {
+                best = cost;
+                bestId = id;
+            }
+        }
+        if (bestId != 0xFFFF) {
+            return bestId;
+        }
+    }
+    for (j = 0; j < 8; j++) {
+        slot = func_0024E410(arg0, j);
+        if (slot < 0) {
+            continue;
+        }
+        x = slot & 0xFF;
+        y = slot >> 8;
+        if (func_001E22B0(x, y) == 8) {
+            continue;
+        }
+        if (func_001E22B0(x, y) == 9 && func_0024FE40(card, x, y) == 1) {
+            continue;
+        }
+        if (func_001E3790(x, y) < 0) {
+            return slot;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_00170940);
 
