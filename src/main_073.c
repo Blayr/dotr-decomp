@@ -108,7 +108,55 @@ INCLUDE_ASM("asm/nonmatchings/main_073", func_00250E80);
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00251060);
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00251370);
+s32 func_00251370(s32 count, u16 *src, void *dst) {
+    u16 buffer[120];
+    s32 row;
+    s32 i;
+    s32 result;
+    u16 *read;
+    u16 *write;
+
+    for (i = 0; i < 120; i++) {
+        buffer[i] = 999;
+    }
+    result = 0;
+    if (count < 16) {
+        if (count < 9) {
+            for (; count < 8; count++) {
+                src[count] = 820;
+            }
+        }
+        for (i = 0; src[i] != 999; i++) {
+            result++;
+        }
+        i = 0;
+        do {
+            row = 0;
+            read = src;
+            write = dst;
+            do {
+                write[4] = *read;
+                row++;
+                read++;
+                write++;
+            } while (row < 21);
+            i++;
+            dst = (u8 *)dst + 42;
+        } while (i < 3);
+    } else {
+        result = 16;
+        for (i = 0; i < 3; i++) {
+            for (row = 0; row < count; row++) {
+                buffer[row] = src[row];
+            }
+            for (row = 0; row < 16; row++) {
+                ((u16 *)dst)[row + 4] = buffer[row];
+            }
+            dst = (u8 *)dst + 42;
+        }
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_002514F0);
 
