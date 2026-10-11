@@ -527,4 +527,7 @@ s32 func_0018EB08(void *, s32, s32);
 s32 func_0018EF20(void *, s32, s32 (*)(), s32);
 s32 func_002450F0(void *);
 
+void func_001F9D80(s32, f32 *);
+void func_001FB360(s32, f32 *);
+
 #endif

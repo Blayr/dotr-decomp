@@ -262,7 +262,25 @@ void func_001DE820(s32 arg0) {
     state->flags.enabled = (s8)(arg0 ? 1 : 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE860);
+s32 func_001DE860(s32 arg0, s32 arg1, s32 arg2) {
+    u8 *entity;
+    f32 saved[4];
+    f32 position[3];
+
+    entity = D_00317490 + arg0 * 0x350;
+    if (arg1 < 0 || arg1 >= 7 || arg2 < 0 || arg2 >= 7) {
+        return 0;
+    }
+    func_001FC950(entity + 0x1D0, saved);
+    entity[0x33D] = arg1;
+    entity[0x33E] = arg2;
+    position[0] = (f32)((arg1 - 3) * 50);
+    position[2] = (f32)((arg2 - 3) * 50);
+    position[1] = (f32)*(s8 *)(entity + 0x345);
+    func_001F9D80(0, position);
+    func_001FB360(0, saved);
+    return 1;
+}
 
 void func_001DE970(s32 arg0) {
     s16 *temp_a1;
