@@ -123,7 +123,19 @@ s32 func_001D9030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D90E0);
+void func_001D90E0(s32 arg0, s32 arg1, s32 arg2) {
+    f32 sp50[4];
+    f32 sp60[4];
+    u8 *temp_s3;
+
+    temp_s3 = D_00317490 + (D_003181E4 * 0x350);
+    func_001FC950(temp_s3 + 0x1D0, sp50);
+    sp60[0] = (f32) arg1;
+    sp60[2] = (f32) arg2;
+    sp60[1] = (f32) *(s8 *)(temp_s3 + 0x345);
+    func_001FA8A0(0, 0, 3, (u16)arg0, 0, sp60);
+    func_001FA8A0(0, 0, 4, arg0 & 0xFFFF, 0, sp50);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D91B0);
 
