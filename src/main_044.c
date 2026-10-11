@@ -66,7 +66,15 @@ void func_001DE6B0(s32 arg0, s8 arg1) {
     ((Entry_001DE6B0 *)(D_00317490 + arg0 * 0x350))->value = arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE6D0);
+typedef struct {
+    u8 padding[0x346];
+    s8 flag : 1;
+    u8 tail[9];
+} Entry_001DE6D0;
+
+s32 func_001DE6D0(s32 arg0) {
+    return ((Entry_001DE6D0 *) (D_00317490 + arg0 * 0x350))->flag ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE700);
 
