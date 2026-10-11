@@ -8,7 +8,33 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_00266500);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00266910);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00266A80);
+s32 func_00266A80(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 key;
+    u32 *p;
+    u32 v;
+
+    key = (arg0 << 8) | arg1;
+    for (i = 0; i < 11; i++) {
+        if (func_001DF540(0, i)) {
+            if ((p = func_00250740(0, i, 2)) != NULL && func_001E2100(0, i, 4) && func_001E2100(0, i, 3) && func_001E2100(0, i, 5)) {
+                v = *p;
+                if ((v >> 8) == 0x17 && func_0024EA10(key, func_0024CA40(0, 0, func_0024DE70(0, i), (v >> 6) & 3, v & 0x3F, 0xE))) {
+                    return 1;
+                }
+            }
+        }
+        if (func_001DF540(1, i)) {
+            if ((p = func_00250740(1, i, 2)) != NULL && func_001E2100(1, i, 4) && func_001E2100(1, i, 3) && func_001E2100(1, i, 5)) {
+                v = *p;
+                if ((v >> 8) == 0x17 && func_0024EA10(key, func_0024CA40(0, 0, func_0024DE70(1, i), (v >> 6) & 3, v & 0x3F, 0xE))) {
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00266C70(s32 arg0, s32 arg1) {
     s32 count;
