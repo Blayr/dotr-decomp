@@ -57,37 +57,20 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0500);
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0760);
 
 typedef struct {
-    u8 pad00[4];
-    s32 f4;
-} Inner_001F0830;
-
-typedef struct {
     u8 pad00[0x14];
-    Inner_001F0830 *f14;
-} Item_001F0830;
-
-typedef struct {
-    u8 pad00[0x14];
-    Item_001F0830 *f14;
+    ObjSlot_0031ABB0 *f14;
     u8 pad18[4];
     s32 f1C;
 } Arg_001F0830;
 
-typedef struct {
-    u8 pad00[0x178];
-    Item_001F0830 *slots[18];
-    s32 vals[18];
-} Base_001F0830;
-
-void func_00214090(Item_001F0830 *);
-extern Base_001F0830 *D_0031ABB0[];
+void func_00214090(ObjSlot_0031ABB0 *);
 
 void func_001F0830(void *arg0, s32 arg1) {
     Arg_001F0830 *a = (Arg_001F0830 *)arg0;
     s32 v;
     s32 idx;
     s32 sub;
-    Base_001F0830 *base;
+    Obj_0031ABB0 *base;
 
     v = a->f1C;
     idx = v >> 8;

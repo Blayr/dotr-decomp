@@ -40,19 +40,8 @@ INCLUDE_ASM("asm/nonmatchings/main_049", func_001F24C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2550);
 
-typedef struct {
-    f32 x, y, z, w;
-} Vec4_001F25D0;
-
-typedef struct {
-    u8 pad[0x30];
-    Vec4_001F25D0 v;
-} Obj_001F25D0;
-
-extern Obj_001F25D0 *D_0031ABB0[];
-
 s32 func_001F25D0(s32 idx, void *src) {
-    Obj_001F25D0 *obj;
+    Obj_0031ABB0 *obj;
 
     if (idx < 0 || idx >= 0x54) {
         return 0;
@@ -62,7 +51,7 @@ s32 func_001F25D0(s32 idx, void *src) {
         return 0;
     }
     if (src != NULL) {
-        obj->v = *(Vec4_001F25D0 *)src;
+        obj->v = *(Vec4f *)src;
     } else {
         obj->v.x = 1.0f;
         obj->v.y = 1.0f;
