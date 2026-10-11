@@ -296,7 +296,6 @@ void func_0020BCF0(s32, s32);
 s32 func_002670F0(s32, s32);
 s32 func_002626F0(s32, s32, s32);
 
-s32 func_00249040(s32, s32);
 extern u8 D_0029D580[];
 s32 func_00250A60(s32, u8, u8);
 
@@ -613,5 +612,7 @@ void func_0010B6C0(void);
 void func_0010BE60(void);
 
 s32 func_0016B0F0();                            /* extern */
+
+s32 func_002494D0();
 
 #endif

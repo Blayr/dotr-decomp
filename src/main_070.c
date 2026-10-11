@@ -384,7 +384,57 @@ s32 func_00248FD0(s32 arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00249040);
+s32 func_00249040(s32 arg0, s32 arg1) {
+    s32 result;
+
+    switch (D_0029CF32[arg1]) {
+    case 6:
+        result = 0x111;
+        break;
+    case 7:
+        result = 0x1AB;
+        break;
+    case 8:
+        switch (arg0) {
+        case 0x156:
+            result = 0x1E8;
+            break;
+        case 7:
+            result = 0x1F5;
+            break;
+        default:
+            result = -1;
+            break;
+        }
+        break;
+    case 9:
+        switch (arg0) {
+        case 0x10:
+            result = func_0019A5C8() % 5 + 0xD;
+            break;
+        case 0x11:
+            result = func_0019A5C8() % 5 + 0xD;
+            break;
+        case 0xA7:
+            result = func_0019A5C8() % 15 + 0xD1;
+            break;
+        case 0x14C:
+            result = func_0019A5C8() % 32 + 0x65;
+            break;
+        case 0x17B:
+            result = (u16)func_002494D0();
+            break;
+        default:
+            result = -1;
+            break;
+        }
+        break;
+    default:
+        result = arg0 | 0x10000;
+        break;
+    }
+    return result;
+}
 
 s32 func_00249200(s32 arg0) {
     u8 temp_v1;
