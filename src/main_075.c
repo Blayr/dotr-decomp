@@ -245,7 +245,51 @@ s32 func_0025FD90(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FF30);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260020);
+typedef struct {
+    u8 pad00[8];
+    u32 bits;
+} Owner_00260020;
+
+typedef struct {
+    u8 pad00[0xCC];
+    u32 bits;
+} Field_00260020;
+
+void func_002500C0(s32, s32, s32, s32, s32);
+
+void func_00260020(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    Owner_00260020 *owner = arg0;
+    Field_00260020 *field = arg1;
+    s32 i;
+    extern s32 func_001E1A30();
+    extern s32 func_001E1A90();
+
+    for (i = 0; i < 22; i++) {
+        if (((owner->bits >> (21 - i)) & 1) == 1) {
+            if (i < 11) {
+                func_001F5970(i, arg4);
+            } else {
+                func_001F5970((i - 11) | 0x100, arg4);
+            }
+        } else if (arg3 < 0) {
+            if (i < 11) {
+                if (func_001E1A90(0, i) > 0 && func_001E1A30(0, i) > 0) {
+                    func_002500C0(0, i, arg3, arg5, 1);
+                    field->bits = func_0024C780(field->bits, 0, i);
+                }
+            } else if (func_001E1A90(1, i - 11) > 0 && func_001E1A30(1, i - 11) > 0) {
+                func_002500C0(1, i - 11, arg3, arg5, 1);
+                field->bits = func_0024C780(field->bits, 1, i - 11);
+            }
+        } else if (((field->bits >> (21 - i)) & 1) == 1) {
+            if (i < 11) {
+                func_002500C0(0, i, arg3, arg5, 1);
+            } else {
+                func_002500C0(1, i - 11, arg3, arg5, 1);
+            }
+        }
+    }
+}
 
 void func_001E42C0(s32, s32, s32, s32);
 void func_00255960(void *);
