@@ -479,7 +479,6 @@ extern s32 D_003503A8;
 extern s32 D_003503B0;
 extern u8 D_003503C0[];
 
-s32 func_0026AC90(s32, s32, s32);
 
 f32 func_001A6898(f32);
 

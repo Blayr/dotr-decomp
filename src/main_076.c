@@ -486,7 +486,44 @@ s32 func_0026AB80(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AC90);
+s32 func_0026AC90(s32 arg0, s32 arg1, s32 arg2) {
+    s32 i;
+    s32 best;
+    s32 result;
+    u32 *entry;
+
+    best = 0xFF;
+    result = 0xFF;
+    if (func_00266DF0(0xF) > 0) {
+        return -1;
+    }
+    if (arg1 & 1) {
+        for (i = 6; i < 11; i++) {
+            if ((entry = func_00250740(arg0, i, 0)) != NULL) {
+                if ((func_001E0700(arg0, i) >> 5) == 4 && (*entry >> 8) == arg2 &&
+                    func_001E13C0(arg0, i) < best) {
+                    best = func_001E13C0(arg0, i);
+                    result = (arg0 << 8) | i;
+                }
+            }
+        }
+    }
+    if (arg1 >> 1) {
+        for (i = 6; i < 11; i++) {
+            if ((entry = func_00250740(arg0 == 0 ? 1 : 0, i, 0)) != NULL) {
+                if ((func_001E0700(arg0 == 0 ? 1 : 0, i) >> 5) == 4 && (*entry >> 8) == arg2 &&
+                    func_001E13C0(arg0 == 0 ? 1 : 0, i) < best) {
+                    best = func_001E13C0(arg0 == 0 ? 1 : 0, i);
+                    result = i | ((arg0 == 0 ? 1 : 0) << 8);
+                }
+            }
+        }
+    }
+    if (result != 0xFF) {
+        return result;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AE70);
 
