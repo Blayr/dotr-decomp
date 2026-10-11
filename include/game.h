@@ -87,7 +87,6 @@ void func_001DF1E0(void);
 s32 func_0026F690(s32, u16 *, s16 *, s32);
 extern u8 D_00317490[];
 
-void func_001F1EE0(s32, f32 *);
 
 typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];

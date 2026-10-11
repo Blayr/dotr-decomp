@@ -54,7 +54,29 @@ s32 func_001F1E80(s32 arg0, f32 *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1EE0);
+typedef struct {
+    f32 x, y, z;
+} Vec3_001F1EE0;
+
+s32 func_001F1EE0(s32 arg0, f32 *arg1) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (arg1 != NULL) {
+        *(Vec3_001F1EE0 *) ((u8 *) obj + 0x120) = *(Vec3_001F1EE0 *) arg1;
+    } else {
+        ((Vec3_001F1EE0 *) ((u8 *) obj + 0x120))->x = 0.8f;
+        ((Vec3_001F1EE0 *) ((u8 *) obj + 0x120))->y = 0.8f;
+        ((Vec3_001F1EE0 *) ((u8 *) obj + 0x120))->z = 1.0f;
+    }
+    return 1;
+}
 
 s32 func_001F1F70(s32 arg0, f32 fparg0) {
     Obj_0031ABB0 *temp_v0;
