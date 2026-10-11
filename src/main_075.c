@@ -128,7 +128,71 @@ void func_0025F720(void *arg0, void *arg1, void *arg2, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F820);
+typedef struct Source_0025F820 {
+    u8 pad[0xC];
+    u32 flags;
+} Source_0025F820;
+
+typedef struct Results_0025F820 {
+    u8 pad[6];
+    u8 results[0x1A];
+    s32 slots[45];
+    u8 count;
+} Results_0025F820;
+
+typedef struct Request_0025F820 {
+    s32 id;
+    s32 mode;
+    s32 slot;
+    u32 special;
+} Request_0025F820;
+
+s32 func_00255A30(void *, void *);
+
+void func_0025F820(void *arg0, void *arg1, void *arg2, s32 arg3) {
+    Source_0025F820 *source = arg0;
+    Results_0025F820 *results = arg1;
+    Request_0025F820 *request = arg2;
+    s32 special;
+    s32 i;
+
+    i = 0;
+    do {
+        special = 1;
+        if (((source->flags >> (0x15 - i)) & 1) == 1) {
+            if (i < 0xB) {
+                request->id = arg3;
+                request->mode = 0;
+                request->slot = i;
+                if (arg3 == 0x25B) {
+                    special = 1;
+                } else {
+                    special = 0;
+                }
+                request->special = special;
+                if ((results->results[results->count] = func_00255A30(request, results)) >= 0) {
+                    results->slots[results->count] = i;
+                    results->count++;
+                }
+            } else {
+                request->id = arg3;
+                request->mode = 0;
+                request->slot = (i - 0xB) | 0x100;
+                if (arg3 == 0x25B) {
+                    special = 1;
+                } else {
+                    special = 0;
+                }
+                request->special = special;
+                if ((results->results[results->count] = func_00255A30(request, results)) >= 0) {
+                    results->slots[results->count] = ((u32)i - 0xB) | 0x100;
+                    results->count++;
+                }
+            }
+        }
+        i++;
+    } while (i < 0x16);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F990);
 
