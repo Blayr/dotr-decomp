@@ -22,6 +22,7 @@ s32 func_00104520(s32 arg0, s32 arg1);
 void func_00109D70(s32 arg0);
 s32 func_0010C720(s32 cmd, ...);
 s32 func_0010C800(s32 arg0, s32 arg1, s32 arg2);
+s32 func_0010E540(s32 arg0, void *arg1, s32 arg2, s32 arg3);
 void func_0010ED90(void);
 s32 func_001173E0(s32 arg0);
 void func_0011A4C0(void);

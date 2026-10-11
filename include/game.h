@@ -169,4 +169,8 @@ extern u8 D_00325E80[];
 extern u8 D_00325F50[];
 extern s32 D_003261BC;
 
+void func_0010F290(s32, void *, s32, s32);
+s32 func_0023C160(void);
+void func_0026FD30(s32, s32 *);
+
 #endif

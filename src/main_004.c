@@ -22,7 +22,47 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DFC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E320);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E540);
+s32 func_0010E540(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
+    s32 count;
+    s32 *p;
+    s32 i;
+    s32 values[8];
+    s32 j;
+    s32 value;
+    u8 *slot;
+    u8 *out = (u8 *)arg1;
+
+    if (arg2 == 0) return -1;
+    j = 0;
+    do {
+        out[j + 6] = 255;
+        j++;
+    } while (j < 5);
+    func_0026FD30(arg0, values);
+    if (!(arg3 & 255)) {
+        func_0010F290(arg0, arg1, arg2, 0);
+        count = 2;
+        if (func_0023C160() > 3) {
+            i = 0;
+            if (i < func_0026FE20(arg0)) {
+                p = values;
+                do {
+                    if (i != out[6] && i != out[7] && func_00248F60(427, *p) >= 0 && (func_0026FCE0(*p) >> 5) == 2) {
+                        value = *p;
+                        if (value != 795 && value != 796) {
+                            slot = out + count;
+                            count++;
+                            slot[6] = i;
+                        }
+                    }
+                    p++;
+                    i++;
+                } while (i < func_0026FE20(arg0));
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E6B0);
 
