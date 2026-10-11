@@ -495,7 +495,6 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDAC0);
 
 void func_001E7F70(s32, s32, s32);
 void func_001E8780(s32, s32, s32, s32);
-s32 func_002159D0(s32, s32);
 extern u8 D_002BF080[];
 
 static inline u8 *lookup_001DDD80(s32 index) {
