@@ -472,7 +472,12 @@ void func_001C0EE0(s32 arg0, s32 arg1, s32 arg2) {
                   0x1CC, 0xA6, func_0019BEF0((char *)text), text, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0F70);
+void func_001C0F70(s32 arg0, s32 arg1, s32 arg2) {
+    s32 text = (s32)D_002BF002;
+
+    func_001B0CE0(arg0, 2, -1, 0x97, arg1 + 0x140, arg2 + 0x8D,
+                  0x1CC, 0xA6, func_0019BEF0((char *)text), text, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1000);
 
