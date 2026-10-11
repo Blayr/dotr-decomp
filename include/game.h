@@ -332,4 +332,6 @@ void func_00254C90(s32 *, s32);
 
 void *func_001DD130(void);
 
+void func_001E23A0(s32, s32, s32);
+
 #endif
