@@ -761,7 +761,6 @@ typedef struct {
 } Card_00150C40;
 
 s32 func_00150F10(s32 arg0, void *arg1);
-s32 func_00151170(s32 arg0, void *arg1, void *arg2);
 s32 func_001516A0(s32 arg0, void *arg1, void *arg2);
 s32 func_00151CF0(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
@@ -845,7 +844,62 @@ s32 func_00150C40(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_00150F10);
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_00151170);
+typedef struct {
+    u8 pad0[6];
+    u8 slot[5];
+} Obj1_00151170;
+
+typedef struct {
+    u8 pad0[0x38];
+    s16 attack;
+    s16 defense;
+} Obj2_00151170;
+
+s64 func_002493A0(s32);
+
+s32 func_00151170(s32 arg0, void *arg1, void *arg2) {
+    Obj2_00151170 *o2 = arg2;
+    Obj1_00151170 *o1 = arg1;
+    s32 list[8];
+    s32 i;
+    s32 found;
+    u8 k;
+
+    func_0026FD30(arg0, list);
+    for (i = 0, found = 0; i < func_0026FE20(arg0); i++) {
+        if (list[i] == 0x31F) {
+            found = 1;
+            o1->slot[0] = i;
+        }
+    }
+    if (found == 0) {
+        return -1;
+    }
+    for (i = 0, found = 0; i < func_0026FE20(arg0); i++) {
+        if (list[i] == 7 && func_0026FB10(arg0, list[i]) == 1) {
+            o1->slot[1] = i;
+            found = 1;
+        }
+    }
+    if (found == 0) {
+        return -1;
+    }
+    k = 2;
+    func_001DCD70(o2, 0x1F5);
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (i != o1->slot[0] && i != o1->slot[1]) {
+            if (func_00248F60(0x1F5, list[i]) >= 0 && (func_0026FCE0(list[i]) >> 5) == 2) {
+                if (list[i] != 0x31B && list[i] != 0x31C) {
+                    o1->slot[k] = i;
+                    k++;
+                    o2->attack += (s16)func_002493A0(list[i]);
+                    o2->defense += (s16)func_002493A0(list[i]);
+                }
+            }
+        }
+    }
+    return 1;
+}
 
 s32 func_001513B0(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 i;
