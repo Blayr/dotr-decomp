@@ -48,7 +48,21 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_002787F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278890);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002788D0);
+typedef struct {
+    u8 b[0x18];
+} Ent_002788D0;
+
+void *func_002788D0(u16 *arg0, u16 *arg1) {
+    u16 idx;
+
+    if ((s64)(u32)(*arg0 + 0x38) > 0x10000) {
+        return 0;
+    }
+    idx = *arg1;
+    *arg1 = idx + 1;
+    *arg0 += 0x18;
+    return &((Ent_002788D0 *)0x01ED0000)[idx];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278930);
 
