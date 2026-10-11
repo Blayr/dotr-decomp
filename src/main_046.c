@@ -397,7 +397,36 @@ s32 func_001E3790(s32 arg0, s32 arg1) {
     return (*((u8 *)temp_a0 + 0x44) << 8) | temp_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3850);
+typedef struct Flags_001E3850 {
+    u8 padding0[0x57];
+    s8 reserved57 : 7;
+    s8 flag57 : 1;
+    s8 flag58 : 1;
+    s8 reserved58 : 7;
+} Flags_001E3850;
+
+static inline void *get_001E3850(void) {
+    u8 *card = func_001DD130();
+
+    if (card == NULL) {
+        return NULL;
+    }
+    if (card[0x45] >= 0xB) {
+        return NULL;
+    }
+    return card;
+}
+
+s32 func_001E3850(s32 arg0, s32 arg1, s32 arg2) {
+    u8 *card = get_001E3850();
+
+    if (card == NULL) {
+        return 0;
+    }
+    ((Flags_001E3850 *)card)->flag57 = (s8) (arg2 ? 1 : 0);
+    ((Flags_001E3850 *)card)->flag58 = (s8) (arg2 ? 1 : 0);
+    return 1;
+}
 
 typedef struct Flags_001E3900 {
     s8 other : 7;

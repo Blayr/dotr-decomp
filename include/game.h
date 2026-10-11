@@ -280,7 +280,6 @@ void *func_001DD130(void);
 void func_001E23A0(s32, s32, s32);
 
 
-s32 func_001E3850(s32, s32, s32);
 
 
 void func_0020BDE0(void *, void *);
