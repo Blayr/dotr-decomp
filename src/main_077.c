@@ -381,7 +381,6 @@ typedef struct {
     s32 z;
 } Params_002755D0;
 
-void func_001E4530(void);
 void func_0024F370(s32, s32);
 void func_002500C0(s32, s32, s32, s32, s32);
 void func_00255960(void *);

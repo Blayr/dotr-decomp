@@ -263,7 +263,6 @@ void func_001DCD70(void *, s32);
 
 typedef void (*Callback_00286910)(void);
 f32 func_001A6C18(f32, f32);                        /* extern */
-void func_001F62B0(s32, f32 *);
 
 s32 func_0024DF80(s32 arg0, void *arg1);
 s32 func_001A23B0(f32);
