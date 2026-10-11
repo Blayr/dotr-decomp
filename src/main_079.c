@@ -356,7 +356,35 @@ void func_0027E210(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E360);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E5B0);
+s32 func_0027E5B0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E1030();
+    s32 x;
+    s32 y;
+    s32 kind;
+    s32 lo;
+    s32 hi;
+    s32 pos;
+
+    kind = func_00250360(arg0 >> 8, arg0 & 0xFF);
+    if (func_0026AB80(kind, 4) >= 0) {
+        return 1;
+    }
+    for (x = func_00250860(0, arg1 - 1); x <= func_00250860(0, arg1 + 1); x++) {
+        for (y = func_00250860(0, arg2 - 1); y <= func_00250860(0, arg2 + 1); y++) {
+            if (((((x < arg1) ? arg1 : x) - ((arg1 < x) ? arg1 : x)) + (((y < arg2) ? arg2 : y) - ((arg2 < y) ? arg2 : y))) == 1) {
+                pos = func_001E3790(x, y);
+                hi = pos >> 8;
+                if (pos >= 0) {
+                    lo = pos & 0xFF;
+                    if ((func_001E0700(hi, lo) >> 5) == 3 && func_001E1030(hi, lo) != 0x32D && kind == func_00250360(hi, lo)) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 void func_0027E770(void) {
 
