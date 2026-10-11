@@ -272,7 +272,9 @@ INCLUDE_ASM("asm/nonmatchings/main_007", func_0012A2E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012AAC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B000);
+void func_0012B000(void) {
+    func_0016B0F0();
+}
 
 s32 func_0012B1B0(s32 arg0) {
     if (func_001DF470(arg0) > 0x4B0) {
