@@ -79,7 +79,6 @@ void func_0017BB60(s32);
 s32 func_0017BCA0(s32 *, s32);
 
 
-s32 func_00266F70(s32, s32);
 
 void func_0027DE20(s32, s32, s32, s32, s32, s32, s32, s32, s32, u16, s32, s32, u8, s32, s32, s32);
 

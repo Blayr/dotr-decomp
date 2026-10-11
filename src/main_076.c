@@ -50,7 +50,35 @@ s32 func_00266C70(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00266DF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00266F70);
+s32 func_00266F70(s32 arg0, s32 arg1) {
+    s32 var_s0;
+    s32 var_s3;
+    u32 *temp_v0;
+    u32 *temp_v0_2;
+
+    var_s3 = 1;
+    var_s0 = 0;
+    do {
+        if ((func_001E2100(0, var_s3, 4) != 0) && (func_001E2100(0, var_s3, 3) != 0) && (func_001E2100(0, var_s3, 5) != 0) && (arg1 == func_0024DE70(0, var_s3))) {
+            temp_v0 = func_00250740(0, var_s3, 2);
+            if ((temp_v0 != NULL) && (((u32) *temp_v0 >> 8) == arg0)) {
+                var_s0 += 1;
+            }
+        }
+        var_s3 += 1;
+    } while (var_s3 < 0xB);
+    var_s3 = 1;
+    do {
+        if ((func_001E2100(1, var_s3, 4) != 0) && (func_001E2100(1, var_s3, 3) != 0) && (func_001E2100(1, var_s3, 5) != 0) && (arg1 == func_0024DE70(1, var_s3))) {
+            temp_v0_2 = func_00250740(1, var_s3, 2);
+            if ((temp_v0_2 != NULL) && (((u32) *temp_v0_2 >> 8) == arg0)) {
+                var_s0 += 1;
+            }
+        }
+        var_s3 += 1;
+    } while (var_s3 < 0xB);
+    return var_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_002670F0);
 

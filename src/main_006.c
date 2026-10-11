@@ -155,7 +155,47 @@ s32 func_0011F330(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011F3C0);
+typedef struct {
+    u8 pad[6];
+    u8 indices[5];
+} CardState_0011F3C0;
+
+void func_0011EB10(s32, s32, s32, s32);
+
+s32 func_0011F3C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 cards[5];
+    s32 *card;
+    s32 i;
+    s32 card_id;
+
+    if (arg2 == 0) {
+        return -1;
+    }
+    for (i = 0; i < 5; i++) {
+        ((CardState_0011F3C0 *)(arg1 + i))->indices[0] = 0xFF;
+    }
+    func_0026FD30(arg0, cards);
+    if ((arg3 & 0xFF) == 0) {
+        func_0011EB10(arg0, arg1, arg2, 0);
+        i = 0;
+        if (0 < func_0026FE20(arg0)) {
+            card = cards;
+            do {
+                if ((i != ((CardState_0011F3C0 *)arg1)->indices[0]) && (i != ((CardState_0011F3C0 *)arg1)->indices[1]) && (func_00248F60(0x1E8, *card) >= 0) && ((func_0026FCE0(*card) >> 5) == 2)) {
+                    card_id = *card;
+                    if ((card_id != 0x31B) && (card_id != 0x31C)) {
+                        ((CardState_0011F3C0 *)arg1)->indices[2] = i;
+                    }
+                }
+                card++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+    } else if ((arg3 & 0xFF) == 1) {
+        func_0011EB10(arg0, arg1, arg2, 0);
+    }
+    return 0;
+}
 
 void func_0011F530(void) {
     func_0024E410();
