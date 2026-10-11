@@ -237,7 +237,23 @@ INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3360);
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F33C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F3440);
+typedef struct {
+    s8 bit0 : 1;
+    s8 enabled : 1;
+} Flags_001F3440;
+
+s32 func_001F3440(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    return ((Flags_001F3440 *)((u8 *)temp_v0 + 0x20D))->enabled ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F34A0);
 
