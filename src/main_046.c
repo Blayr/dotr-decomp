@@ -571,7 +571,46 @@ s32 func_001E3AB0(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3B50);
+typedef struct Vec4_001E3B50 {
+    f32 x, y, z, w;
+} Vec4_001E3B50;
+
+typedef struct Object_001E3B50 {
+    u8 pad0[4];
+    Vec4_001E3B50 *position;
+    u8 pad8[0x3D];
+    u8 kind;
+} Object_001E3B50;
+
+static inline void *get_001E3B50(void) {
+    void *object = func_001DD130();
+
+    if (object == NULL) {
+        return NULL;
+    }
+    if (((Object_001E3B50 *)object)->kind >= 11) {
+        return NULL;
+    }
+    return object;
+}
+
+s32 func_001E3B50(s32 arg0, s32 arg1, void *arg2) {
+    Object_001E3B50 *object;
+    Vec4_001E3B50 *position;
+
+    object = get_001E3B50();
+    if (object == NULL) {
+        return 0;
+    }
+    position = object->position;
+    if (position == NULL) {
+        return 0;
+    }
+    if (arg2 != NULL) {
+        *(Vec4_001E3B50 *)arg2 = *position;
+    }
+    return 1;
+}
 
 typedef struct Vec4_001E3BF0 {
     f32 x;

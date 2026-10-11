@@ -387,7 +387,6 @@ typedef struct Vec4_001F5BD0 {
     f32 w;
 } Vec4_001F5BD0;
 
-s32 func_001E3B50(s32, s32, void *);
 
 s32 func_001F5BD0(s32 arg0, void *arg1) {
     s32 index;
