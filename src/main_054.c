@@ -177,7 +177,25 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_00200360);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_002003E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_002004C0);
+typedef struct State_002004C0 {
+    u8 pad[0x6684];
+    s32 handle;
+} State_002004C0;
+
+s32 func_002004C0(s32 arg0) {
+    extern State_002004C0 D_0031C2F0;
+    void func_00217B50(s32);
+    State_002004C0 *state = &D_0031C2F0;
+
+    if (arg0 < 0) {
+        return 0;
+    }
+    if (state->handle != 0) {
+        func_00217B50(state->handle);
+        state->handle = 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_00200510);
 
