@@ -155,7 +155,70 @@ s32 func_00162A70(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00162D10);
+#define MAX_00162D10(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_00162D10(a, b) ((a) < (b) ? (a) : (b))
+
+s32 func_00162D10(s32 arg0) {
+    extern s32 func_001E1580(s32, s32);
+    extern s32 func_001E1640(s32, s32);
+    s32 pos;
+    s32 x0;
+    s32 y0;
+    u16 *p;
+    s32 x;
+    s32 y;
+    s32 bestPos;
+    s32 i;
+    s32 best;
+    u32 obj;
+    s32 score;
+    s32 cur;
+    s32 found;
+    u16 list[22];
+
+    pos = func_001E1090(arg0 == 0 ? 1 : 0, 0);
+    if (func_00266DF0(0x39) > 0) {
+        return -1;
+    }
+    obj = func_00272210(func_0024CA40(0, 0, arg0, 2, 0x21, 0xE), arg0);
+    p = list;
+    for (i = 0; i < 22; i++) {
+        p[i] = 0xFFFF;
+    }
+    func_0027C070(arg0 == 0 ? 1 : 0, list, 0x34, 0);
+    found = -1;
+    bestPos = found;
+    best = 1;
+    i = 0;
+    if (i < func_0027C670(list)) {
+        x0 = pos >> 8;
+        y0 = pos & 0xFF;
+        do {
+            cur = func_001E1090(*p >> 8, *p & 0xFF);
+            x = cur >> 8;
+            y = cur & 0xFF;
+            if (MAX_00162D10(y0, y) - MIN_00162D10(y0, y) + (MAX_00162D10(x0, x) - MIN_00162D10(x0, x)) == 1) {
+                if (func_001E2100(*p >> 8, *p & 0xFF, 1) == 0 &&
+                    func_001E1580(*p >> 8, *p & 0xFF) == 0 &&
+                    func_001E1640(*p >> 8, *p & 0xFF) == 0) {
+                    if ((score = func_002509E0(*p >> 8, *p & 0xFF, y, x)) >= best) {
+                        bestPos = *p;
+                        if (bestPos == func_0024EC50(obj, 0)) {
+                            found = bestPos;
+                        }
+                        best = score;
+                    }
+                }
+            }
+            p++;
+            i++;
+        } while (i < func_0027C670(list));
+    }
+    if (bestPos < 0) {
+        return -1;
+    }
+    return ((u16)bestPos << 16) | (u16)found;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00162F60);
 
