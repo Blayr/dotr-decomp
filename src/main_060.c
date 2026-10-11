@@ -57,7 +57,33 @@ s32 func_002158B0(s32 arg0) {
     return state->flags & 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215920);
+extern u8 D_0034F6D0;
+
+typedef struct {
+    u8 padding[0xFF9C];
+    u8 mode : 2;
+    u8 : 6;
+} Flags_00215920;
+
+s32 func_00215920(s32 arg0, s32 arg1) {
+    s32 var_v1;
+    u8 *temp_a2;
+
+    if (D_0034F6D0 == arg0) {
+        var_v1 = 0;
+    } else {
+        var_v1 = 1;
+    }
+    temp_a2 = (u8 *)D_0032F790 + (var_v1 * 0xFFA0);
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if ((arg1 < 0) || (arg1 >= 3)) {
+        return 0;
+    }
+    ((Flags_00215920 *)temp_a2)->mode = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002159D0);
 

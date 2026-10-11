@@ -24,7 +24,35 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4900);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4CB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4E50);
+typedef struct Entry_001F4E50 {
+    u8 pad0[2];
+    u16 category : 3;
+    u16 kind : 10;
+    u16 reserved : 3;
+    u8 pad4[0x14];
+} Entry_001F4E50;
+
+s32 func_001F4CB0(s32);
+extern struct Entry_001F5240 D_0031BC50[];
+
+s32 func_001F4E50(s32 arg0, s32 arg1) {
+    Entry_001F4E50 *var_s0;
+    s32 var_s1;
+    s32 var_s2;
+
+    var_s0 = (Entry_001F4E50 *)D_0031BC50;
+    var_s1 = 0;
+    var_s2 = 0;
+    do {
+        if ((arg0 < 0 || var_s0->category == arg0) &&
+            (arg1 < 0 || var_s0->kind == arg1)) {
+            var_s1 |= func_001F4CB0(var_s2);
+        }
+        var_s2 += 1;
+        var_s0++;
+    } while (var_s2 < 0x18);
+    return var_s1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4F10);
 
