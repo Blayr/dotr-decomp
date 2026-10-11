@@ -803,4 +803,9 @@ void func_001E4530(void) {
     D_00318145 = 0x18;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E4540);
+void func_001E4540(s32 arg0, s32 arg1, s32 arg2) {
+    *(s8 *)0x00318144 = 0x17;
+    *(s16 *)0x0031813E = arg0;
+    *(s16 *)0x00318132 = arg1;
+    *(s16 *)0x00318134 = arg2;
+}

@@ -589,6 +589,7 @@ void func_001E3FE0(void);
 void func_001E42B0(void);
 s32 func_001E4430(s32 arg0);
 void func_001E4530(void);
+void func_001E4540(s32 arg0, s32 arg1, s32 arg2);
 void func_001E4E50(void);
 void func_001E4E60(s64 arg0);
 void func_001E4E90(void);
