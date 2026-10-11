@@ -80,7 +80,10 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BCC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BD40);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BDC0);
+void func_0010BDC0(void) {
+    *((s8 *)D_0030FF40 + 0x20C5) = 0;
+    *((s8 *)D_0030FF40 + 0x20C4) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BDE0);
 
