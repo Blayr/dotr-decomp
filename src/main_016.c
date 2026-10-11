@@ -545,7 +545,113 @@ s32 func_0016E000(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016E0E0);
+typedef struct {
+    u16 position;
+    u8 flag;
+    u8 pad;
+} Slot_0016E0E0;
+
+void func_0016E0E0(u16 *arg0, s32 arg1) {
+    u8 work[112];
+    Slot_0016E0E0 slots[22];
+    s16 b;
+    s16 a;
+    s32 i;
+    s32 target;
+    s32 player;
+    s32 enemy;
+    s32 position;
+    s32 enemyPos;
+    s32 owner;
+    u16 *record = arg0;
+    extern s32 func_0027B200();
+    extern s32 func_0016E4B0();
+    extern void func_0027E770();
+
+    if ((arg1 & 0xFF) == 1) {
+        target = 3;
+    } else {
+        target = 4;
+    }
+    func_001E1090((s32) record[0] >> 8, record[0] & 0xFF);
+    if (func_001DF540((s32) record[0] >> 8, record[0] & 0xFF) != 0) {
+        player = func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF);
+        enemy = (player == 0 ? 1 : 0) << 8;
+        position = func_001E1090((s32) record[0] >> 8, record[0] & 0xFF);
+        enemyPos = func_001E1090(enemy >> 8, enemy & 0xFF);
+        owner = func_001DF540((s32) record[0] >> 8, record[0] & 0xFF);
+        func_0027E770(work);
+        for (i = 0; i < 22; i++) {
+            slots[i].position = 0xFFFF;
+            slots[i].flag = 0xFF;
+        }
+        if (func_0027B200((s32) record[0] >> 8, record[0] & 0xFF, position & 0xFF, position >> 8,
+                          enemy >> 8, enemy & 0xFF, enemyPos & 0xFF, enemyPos >> 8, 2) > 0) {
+            record[2] = 0x2FF;
+            *(u32 *) (record + 4) = (enemy << 16) | record[4];
+            return;
+        }
+        a = 0;
+        b = 0;
+        i = 1;
+        while (1) {
+            switch (func_0016E4B0(record, 0, owner, position & 0xFF, position >> 8,
+                                  func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF) == 0 ? 1 : 0, (u8) i,
+                                  func_00172310(player), slots, 0, &b, &a, 2, work)) {
+            case 3:
+                record[2] = 0x6FF;
+                *(u32 *) (record + 4) = (position << 16) | record[4];
+                return;
+            case 2:
+                record[2] = 0x3FF;
+                *(u32 *) (record + 4) = (position << 16) | record[4];
+                return;
+            case 1:
+                return;
+            case 0:
+                record[2] = 0x3FF;
+                *(u32 *) (record + 4) = (position << 16) | record[4];
+                return;
+            }
+            i++;
+            if (i > 2) {
+                break;
+            }
+        }
+        if ((position >> 8) == target) {
+            switch ((u8) (record[2] >> 8)) {
+            case 16:
+                if ((position & 0xFF) > 1) {
+                    *(u32 *) (record + 4) = ((position >> 8) << 24) | record[4];
+                } else {
+                    record[2] = 0xFFF;
+                    *(u32 *) (record + 4) = ((((position >> 8) << 8) | 5) << 16) | record[4];
+                }
+                break;
+            case 15:
+                if ((position & 0xFF) < 5) {
+                    *(u32 *) (record + 4) = ((((position >> 8) << 8) | 5) << 16) | record[4];
+                } else {
+                    record[2] = 0x10FF;
+                    *(u32 *) (record + 4) = ((((position >> 8) << 8) | 1) << 16) | record[4];
+                }
+                break;
+            default:
+                if (func_0019A5C8() % 2 == 0) {
+                    record[2] = 0x10FF;
+                    *(u32 *) (record + 4) = ((((position >> 8) << 8) | 1) << 16) | record[4];
+                } else {
+                    record[2] = 0xFFF;
+                    *(u32 *) (record + 4) = ((((position >> 8) << 8) | 5) << 16) | record[4];
+                }
+                break;
+            }
+            return;
+        }
+        record[2] = 0x6FF;
+        *(u32 *) (record + 4) = record[4] | (((target << 8) | (position & 0xFF)) << 16);
+    }
+}
 
 void func_0016E4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
