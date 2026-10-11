@@ -133,7 +133,20 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_001643F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00164680);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00164910);
+s32 func_00164910(s32 arg0, void *arg1, void *arg2, s32 arg3) {
+    s32 i;
+    s32 ids[8];
+
+    func_0026FD30(arg0, ids);
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((arg3 & 0xFFFF) == ids[i] && func_0026FB10(arg0, ids[i]) == 1) {
+            *((s8 *)arg1 + 6) = i;
+            func_001DCD70(arg2, ids[i]);
+            return func_0026FCE0(ids[i]) >> 5;
+        }
+    }
+    return -1;
+}
 
 s32 func_00164A00(s32 arg0, void *arg1, void *arg2) {
     s32 values[8];

@@ -40,7 +40,29 @@ INCLUDE_ASM("asm/nonmatchings/main_009", func_00136210);
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00136490);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00136890);
+s32 func_00136890(s32 arg0, void *arg1, void *arg2, s32 arg3) {
+    s32 entries[8];
+    s32 i;
+    s32 *entry;
+    s32 wanted;
+
+    func_0026FD30(arg0, entries);
+    i = 0;
+    if (i < func_0026FE20(arg0)) {
+        wanted = arg3 & 0xFFFF;
+        entry = entries;
+        do {
+            if (wanted == *entry && func_0026FB10(arg0, *entry) == 1) {
+                *((s8 *)arg1 + 6) = i;
+                func_001DCD70(arg2, entries[i]);
+                return func_0026FCE0(entries[i]) >> 5;
+            }
+            entry++;
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00136980);
 
@@ -85,7 +107,34 @@ s32 func_00138DB0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00138EA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00138F90);
+s32 func_00138F90(s32 arg0, s32 arg1) {
+    s32 index;
+    s32 mask;
+    s32 low;
+    s32 high;
+    s32 packed;
+    s32 value;
+    s32 data[4];
+
+    func_00254C90(data, *(s32 *)((u8 *)func_0026FC90(arg1, 0) + 4));
+    if ((mask = func_00254890(data, arg0)) < 0) {
+        return 0;
+    }
+    index = 0;
+    if (index < func_0024E910(mask)) {
+        do {
+            packed = func_0024EC50(mask, index);
+            high = packed >> 8;
+            low = packed & 0xFF;
+            value = func_001E1090(high, low);
+            if (func_002509E0(high, low, value & 0xFF, value >> 8) >= 0xA28) {
+                return 0;
+            }
+            index++;
+        } while (index < func_0024E910(mask));
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00139080);
 
@@ -137,7 +186,27 @@ INCLUDE_ASM("asm/nonmatchings/main_009", func_0013AB70);
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013AE00);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013B130);
+s32 func_0013B130(s32 arg0, void *arg1, void *arg2, s32 arg3) {
+    s32 entries[8];
+    s32 i;
+    s32 *entry;
+
+    func_0026FD30(arg0, entries);
+    i = 0;
+    if (0 < func_0026FE20(arg0)) {
+        entry = entries;
+        do {
+            if ((arg3 & 0xFFFF) == *entry && func_0026FB10(arg0, *entry) == 1) {
+                *((u8 *)arg1 + 6) = i;
+                func_001DCD70(arg2, entries[i]);
+                return func_0026FCE0(entries[i]) >> 5;
+            }
+            entry++;
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013B220);
 

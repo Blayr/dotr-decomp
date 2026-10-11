@@ -108,7 +108,33 @@ s32 func_0024DF00(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DF80);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E220);
+s32 func_0024E220(s32 arg0, s32 arg1) {
+    s32 index;
+    s32 result;
+    u8 filter;
+    s32 high;
+    s32 low;
+
+    filter = arg1;
+    for (index = 0; index < 8; index++) {
+        if ((result = func_0024E410(arg0, index)) < 0) {
+            continue;
+        }
+        if (!filter) {
+            if (func_001E3790(result & 0xFF, result >> 8) < 0) {
+                return result;
+            }
+        } else {
+            low = result & 0xFF;
+            high = result >> 8;
+            if (func_001E22B0(low, high) != 8 &&
+                func_001E3790(low, high) < 0) {
+                return result;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E300);
 

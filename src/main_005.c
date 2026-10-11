@@ -172,7 +172,45 @@ void func_00118B60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00118BC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00118CE0);
+s32 func_00118CE0(s32 arg0, s32 arg1) {
+    s32 index;
+    s32 row;
+    s32 low;
+    s32 high;
+    s32 slot;
+
+    switch ((u8)arg1) {
+    case 0:
+        row = 2;
+        break;
+    case 1:
+        row = 4;
+        break;
+    case 2:
+        row = 0;
+        break;
+    case 3:
+    default:
+        row = 6;
+        break;
+    }
+    index = 1;
+    while (1) {
+        slot = func_001E3790(row, index);
+        if (slot >= 0) {
+            high = slot >> 8;
+            low = slot & 0xFF;
+            if (arg0 == func_00250360(high, low) &&
+                (func_001E0700(high, low) >> 5) == 0) {
+                return 0;
+            }
+        }
+        index++;
+        if (index > 5) {
+            return 1;
+        }
+    }
+}
 
 s32 func_00118DD0(s32 arg0) {
     s32 i;

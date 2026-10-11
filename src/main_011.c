@@ -35,7 +35,30 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_001464A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_001465A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_001466A0);
+s32 func_001466A0(s32 arg0, s32 arg1) {
+    s32 data[4];
+    s32 index;
+    s32 mask;
+    s32 low;
+    s32 high;
+    s32 pair;
+    s32 value;
+
+    func_00254C90(data, *(s32 *)((u8 *)func_0026FC90(arg1, 0) + 4));
+    if ((mask = func_00254890(data, arg0)) < 0) {
+        return 0;
+    }
+    for (index = 0; index < func_0024E910(mask); index++) {
+        pair = func_0024EC50(mask, index);
+        high = pair >> 8;
+        low = pair & 0xFF;
+        value = func_001E1090(high, low);
+        if (func_002509E0(high, low, value & 0xFF, value >> 8) >= 0x9C4) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00146790);
 
@@ -138,7 +161,27 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_001482F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00148630);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00148870);
+s32 func_00148870(s32 arg0, void *arg1, void *arg2, s32 arg3) {
+    s32 entries[8];
+    s32 index;
+    s32 *entry;
+
+    func_0026FD30(arg0, entries);
+    index = 0;
+    if (index < func_0026FE20(arg0)) {
+        entry = entries;
+        do {
+            if (((arg3 & 0xFFFF) == *entry) && (func_0026FB10(arg0, *entry) == 1)) {
+                *((s8 *)arg1 + 6) = index;
+                func_001DCD70(arg2, entries[index]);
+                return func_0026FCE0(entries[index]) >> 5;
+            }
+            entry++;
+            index++;
+        } while (index < func_0026FE20(arg0));
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00148960);
 

@@ -312,7 +312,59 @@ void func_001FEB40(void) {
     } while (i < 30);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEB80);
+typedef struct Flags_001FEB80 {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bits2_7 : 6;
+} Flags_001FEB80;
+
+typedef struct State_001FEB80 {
+    u8 pad[0x6688];
+    s32 field_6688;
+    s16 field_668C;
+    s16 field_668E;
+    Flags_001FEB80 field_6690;
+} State_001FEB80;
+
+typedef struct Entry36_001FEB80 {
+    s32 field0;
+    u8 pad[0x20];
+} Entry36_001FEB80;
+
+typedef struct Entry8_001FEB80 {
+    s32 field0;
+    s32 field4;
+} Entry8_001FEB80;
+
+extern State_001FEB80 D_0031C2F0;
+extern Entry36_001FEB80 D_00320370[];
+extern Entry8_001FEB80 D_00322770[];
+
+void func_001FEB80(void) {
+    State_001FEB80 *state;
+    Entry8_001FEB80 *small;
+    Entry36_001FEB80 *large;
+    s32 count;
+
+    state = &D_0031C2F0;
+    large = D_00320370;
+    small = D_00322770;
+    count = 0x100;
+    func_0020B3C0((s8 *)&D_0031C2F0, 0, 0x66A0);
+    while (count--) {
+        large->field0 = -1;
+        large++;
+    }
+    count = 0x40;
+    while (count--) {
+        small->field0 = -1;
+        small++;
+    }
+    state->field_668C = 0;
+    state->field_668E = 0;
+    state->field_6688 = -1;
+    state->field_6690.bit1 = 0;
+}
 
 void func_001FEC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s64 arg5) {
     func_001FECB0(arg0, 0, arg1, arg2, arg3, 0, -1, arg4, arg5);

@@ -18,7 +18,35 @@ void func_002336F0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_066", func_002337A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_066", func_00233F50);
+void func_00233F50(s8 arg0) {
+    *(s16 *)0x01ED001C = 0;
+    switch (arg0) {
+    case 0:
+        *(s16 *)0x01ED001A = 0;
+        *(s16 *)0x01ED001E = 0;
+        *(s16 *)0x01ED0020 = 0;
+        *(s16 *)0x01ED0022 = 0;
+        break;
+    case 1:
+        *(s16 *)0x01ED001A = 1;
+        *(s16 *)0x01ED001E = 0x40;
+        *(s16 *)0x01ED0020 = 0;
+        *(s16 *)0x01ED0022 = 0;
+        break;
+    case 2:
+        *(s16 *)0x01ED001A = 2;
+        *(s16 *)0x01ED001E = 0x40;
+        *(s16 *)0x01ED0020 = 0x40;
+        *(s16 *)0x01ED0022 = 0;
+        break;
+    case 3:
+        *(s16 *)0x01ED001A = 3;
+        *(s16 *)0x01ED001E = 0x40;
+        *(s16 *)0x01ED0020 = 0x40;
+        *(s16 *)0x01ED0022 = 0x74;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_066", func_00234040);
 
