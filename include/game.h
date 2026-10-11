@@ -627,7 +627,6 @@ void func_001F6CF0(s32);
 void func_001F9FE0(s32, s32, s32);
 void func_001FB6A0(s32, s32, s32, f32, f32, f32);
 
-s32 func_00119F30(s32, void *, s32);
 
 s32 func_00195070(s32);
 s64 func_001A0660(s64, s64);

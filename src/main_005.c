@@ -353,7 +353,57 @@ INCLUDE_ASM("asm/nonmatchings/main_005", func_00119A40);
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00119D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00119F30);
+typedef struct Info_00119F30 {
+    u8 pad0[6];
+    u8 slots[5];
+} Info_00119F30;
+
+s32 func_00119F30(s32 arg0, void *arg1, s32 arg2) {
+    Info_00119F30 *info = arg1;
+    u16 cards[22];
+    s32 ids[8];
+    s32 i;
+    s32 card;
+    s32 type;
+
+    for (i = 0; i < 22; i++) {
+        cards[i] = 0xFFFF;
+    }
+    func_0024C910(arg0, 2, cards);
+    func_0026FD30(arg0, ids);
+    if (arg2 == 0) {
+        return -1;
+    }
+    for (i = 0; i < 5; i++) {
+        info->slots[i] = 0xFF;
+    }
+    card = func_0027B650(cards);
+    if (card >= 0) {
+        switch (func_001E0700(card >> 8, card & 0xFF) & 0x1F) {
+        case 0xE:
+            type = 0x2D2;
+            break;
+        case 2:
+            type = 0x2D1;
+            break;
+        case 0x12:
+            type = 0x2D4;
+            break;
+        default:
+            type = 0x3E7;
+            break;
+        }
+        if (type != 0x3E7) {
+            for (i = 0; i < func_0026FE20(arg0); i++) {
+                if (type == ids[i]) {
+                    info->slots[0] = i;
+                }
+            }
+            return type;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011A0D0);
 
