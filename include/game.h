@@ -343,7 +343,6 @@ f32 func_00108030(s32, s32, s32);
 s32 func_00205440(s32, void *, u16 *, s32 *);
 extern u8 D_00299F90[];
 
-void func_001F5620(s32, u8, s32);
 
 void func_0019B648(void *, void *, s32);
 extern u8 D_002B90B0[];
@@ -611,5 +610,7 @@ f32 func_001A6C00(f32);
 extern char D_002BEF67[];
 
 s32 func_002151D0(s32, s32, s32);
+
+s32 func_001F2EC0(s32, u8, s32);
 
 #endif
