@@ -158,7 +158,11 @@ INCLUDE_ASM("asm/nonmatchings/main_008", func_00131750);
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00131B30);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00131DE0);
+void func_00131DE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
+    func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+                  arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
+                  0, 0x708, arg_sp28);
+}
 
 typedef struct {
     u8 low : 4;
