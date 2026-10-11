@@ -488,7 +488,6 @@ s32 func_0027BBC0(s32, s32, s32);
 
 s32 func_001DE020(s32);
 
-s32 func_0026D6E0(s32, s32, s32, s32);
 
 void func_001F34A0(s32, s32);
 

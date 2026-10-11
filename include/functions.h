@@ -2,6 +2,7 @@
 #define FUNCTIONS_H
 
 /* Prototypes of every decompiled function. dk rewrites this file. */
+static inline s32 absolute_0027B010(s32 value);
 static inline void add_clamped_00107370(f32 *value, f32 amount);
 static inline s64 busy_001E7E70(Obj_0031ABB0 *obj);
 static inline s32 calc_001FD220(s32 idx);
@@ -953,6 +954,7 @@ s32 func_0026AB80(s32 arg0, s32 arg1);
 s32 func_0026B430(void *arg0);
 void func_0026CD80(s32 arg0);
 s32 func_0026D600(s32 arg0, s32 arg1, s32 arg2, s32 *arg3);
+s32 func_0026D6E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0026D840(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0026E950(void);
 s32 func_0026EA00(s32 *arg0);
@@ -1005,6 +1007,7 @@ void func_0027AC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 u8 func_0027AF20(void *arg0, u8 depth);
 void func_0027AF80(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0027AFC0(u8 *arg0);
+s32 func_0027B010(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5);
 u8 *func_0027B150(u16 *arg0, u16 *arg1);
 void func_0027B1B0(void *arg0, u8 arg1);
 void func_0027B200(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8);

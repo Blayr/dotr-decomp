@@ -59,7 +59,59 @@ s32 func_0027AFC0(u8 *arg0) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B010);
+static inline s32 absolute_0027B010(s32 value) {
+    if (value >= 0) {
+        return value;
+    }
+    return -value;
+}
+
+s32 func_0027B010(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5) {
+    s32 var_t1;
+    s32 var_t2;
+    s32 var_t3;
+    s32 min_x;
+    s32 max_x;
+    u8 temp_t4;
+
+    if (arg5 <= 0) {
+        return 0;
+    }
+    if (arg0 == NULL) {
+        return 0;
+    }
+    temp_t4 = *(u8 *)arg0;
+    if (arg1 == (temp_t4 & 0xF)) {
+        if (arg2 == ((s32) temp_t4 >> 4)) {
+            return 1;
+        }
+    }
+    var_t2 = (arg2 < arg4) ? arg2 : arg4;
+    var_t3 = (arg4 < arg2) ? arg2 : arg4;
+    min_x = (arg1 < arg3) ? arg1 : arg3;
+    max_x = (arg3 < arg1) ? arg1 : arg3;
+    if (((max_x - min_x) + (var_t3 - var_t2)) == 2) {
+        var_t1 = absolute_0027B010(arg1 - arg3);
+        switch (var_t1) {
+        case 0:
+            if ((arg1 == (temp_t4 & 0xF)) && (((s32) temp_t4 >> 4) == ((arg2 + arg4) >> 1))) {
+                return 1;
+            }
+            break;
+        case 1:
+            if ((arg3 == (temp_t4 & 0xF)) || (arg4 == ((s32) temp_t4 >> 4))) {
+                return 1;
+            }
+            break;
+        case 2:
+            if (((temp_t4 & 0xF) == ((arg1 + arg3) >> 1)) && (arg2 == ((s32) temp_t4 >> 4))) {
+                return 1;
+            }
+            break;
+        }
+    }
+    return func_0027B010(*(void **)((u8 *)arg0 + 0x34), arg1, arg2, arg3, arg4, arg5 - 1);
+}
 
 u8 *func_0027B150(u16 *arg0, u16 *arg1) {
     u16 temp_a2;
