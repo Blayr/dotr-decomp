@@ -128,7 +128,70 @@ INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7720);
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7790);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8A30);
+typedef struct Vec4_001F8A30 {
+    f32 x, y, z, w;
+} Vec4_001F8A30;
+
+typedef struct Object_001F8A30 {
+    u8 pad00[0x10];
+    Vec4_001F8A30 vector10;
+    Vec4_001F8A30 vector20;
+    u8 pad30[0x10];
+    s32 flags40;
+    f32 value44;
+    f32 value48;
+    f32 value4C;
+    f32 value50;
+    f32 value54;
+    u8 pad58[0x7D0];
+    f32 value828;
+    f32 value82C;
+    u8 pad830[0x48];
+    f32 value878;
+    f32 value87C;
+    u8 pad880[0x24];
+    f32 matrix8A4[16];
+} Object_001F8A30;
+
+typedef struct Render_001F8A30 {
+    f32 matrix[16];
+    Vec4_001F8A30 vector40;
+    Vec4_001F8A30 vector50;
+    u8 pad60[0x20];
+    s32 flags80;
+} Render_001F8A30;
+
+void func_00206830(void);
+void func_0020DF40(f32, f32, f32, f32, f32);
+void func_0020DF90(f32, f32);
+void func_0020DFD0(f32, f32);
+void func_0020E0D0(void *, f32, f32, f32, f32);
+void func_0020E260(void *);
+s32 func_0020EC60(s32);
+
+s32 func_001F8A30(s32 arg0, s32 arg1) {
+    Render_001F8A30 render;
+    Object_001F8A30 *object;
+
+    if ((arg1 < 0) || (arg1 > 0)) {
+        return arg0;
+    }
+    object = (Object_001F8A30 *)D_0031BEB0[arg1];
+    if (object == 0) {
+        return arg0;
+    }
+    func_0020DF40(object->value44, 640.0f, 448.0f, 320.0f, 224.0f);
+    func_0020DF90(object->value48, object->value4C);
+    func_0020DFD0(object->value50, object->value54);
+    func_00206830();
+    func_0020E0D0(object->matrix8A4, object->value828, object->value82C,
+                 object->value878, object->value87C);
+    render.vector40 = object->vector20;
+    render.vector50 = object->vector10;
+    render.flags80 = object->flags40;
+    func_0020E260(&render);
+    return func_0020EC60(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8B50);
 
