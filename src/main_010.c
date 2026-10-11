@@ -84,7 +84,6 @@ void func_0013EA20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 0x708, arg_sp28);
 }
 
-s32 func_0013EB20(s32, s32, s32);
 
 typedef struct {
     u16 code;
@@ -110,7 +109,39 @@ void func_0013EA80(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013EB20);
+s32 func_0013EB20(s32 arg0, s32 arg1, s32 arg2) {
+    s32 x;
+    s32 y;
+    s32 card;
+    s32 best;
+    s32 dist;
+    s32 result;
+    extern s32 func_00278510();
+
+    best = 14;
+    for (x = 0; x < 7; x++) {
+        for (y = 0; y < 7; y++) {
+            if (func_001E22B0(x, y) == 2) {
+                if ((card = func_001E3790(x, y)) < 0) {
+                    dist = (((arg1 < x) ? x : arg1) - ((x < arg1) ? x : arg1)) + (((arg2 < y) ? y : arg2) - ((y < arg2) ? y : arg2));
+                    if (dist >= 0 && dist < best) {
+                        best = dist;
+                        result = (y << 8) | x;
+                    }
+                } else if (func_00250360(card >> 8, card & 0xFF) != func_00250370((void *)arg0)) {
+                    if (func_00278510(arg0, card, func_00141B30(func_00250370((void *)arg0)), x, y, 0) > 0) {
+                        dist = (((arg1 < x) ? x : arg1) - ((x < arg1) ? x : arg1)) + (((arg2 < y) ? y : arg2) - ((y < arg2) ? y : arg2));
+                        if (dist >= 0 && dist < best) {
+                            best = dist;
+                            result = (y << 8) | x;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013ECF0);
 
