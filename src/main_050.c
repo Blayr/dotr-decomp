@@ -2,7 +2,25 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3790);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3870);
+typedef struct Entry_001F3870 {
+    u64 state : 3;
+    u64 source : 3;
+    u64 target : 10;
+    u64 reserved : 48;
+} Entry_001F3870;
+
+void func_001F3870(void) {
+    extern Entry_001F3870 D_0031BB50[];
+    Entry_001F3870 *entry;
+    s32 i;
+
+    entry = D_0031BB50;
+    for (i = 0; (s64)i < 32; i++, entry++) {
+        if (entry->state == 2 && func_001F5240(entry->source, entry->target) == 0) {
+            entry->state = 3;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3910);
 
