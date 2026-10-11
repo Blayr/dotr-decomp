@@ -330,7 +330,11 @@ s32 func_00101AF0(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101B40);
+void func_00101B40(void *arg0, s8 arg1, s8 arg2) {
+    ((s8 *)arg0)[2] = arg1;
+    ((s8 *)arg0)[0] = arg1;
+    ((s8 *)arg0)[1] = arg2;
+}
 
 typedef struct Counter_00101B50 {
     u8 count;

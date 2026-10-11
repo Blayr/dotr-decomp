@@ -88,7 +88,9 @@ void func_001A8520(s64 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s64 arg5) {
     func_00185578(0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8690);
+s8 func_001A8690(void) {
+    return D_0031747B;
+}
 
 typedef struct {
     u8 pad00[0xF4];
@@ -134,9 +136,13 @@ s32 func_001A8730(void) {
     return ++D_00317254;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8750);
+void func_001A8750(s32 arg0) {
+    D_0031747A = (s8) arg0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8760);
+u8 func_001A8760(void) {
+    return D_0031747A;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8770);
 
