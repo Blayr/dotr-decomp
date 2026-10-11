@@ -1,6 +1,67 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00135790);
+typedef struct {
+    u16 pos;
+    u16 unk2;
+    u16 unk4;
+    u16 unk6;
+    s32 unk8;
+} Unit_00135790;
+
+void func_00135D50(void *, s32);
+void func_001360E0(void *);
+void func_0027CA50(void *, s32, s32, s32);
+
+s32 func_00135790(void *arg0) {
+    extern s32 func_001E1030();
+    Unit_00135790 *unit = arg0;
+
+    func_00250360(unit->pos >> 8, unit->pos & 0xFF);
+    if (func_001DF540(unit->pos >> 8, unit->pos & 0xFF) != 0 &&
+        func_001E2100(unit->pos >> 8, unit->pos & 0xFF, 0) == 0 && unit->pos != 0xFFFF) {
+        if ((unit->pos & 0xFF) == 0) {
+            if (unit->unk8 == -1) {
+                if (func_0027BBC0(unit->pos >> 8, unit->pos & 0xFF, 1) == 1) {
+                    if (func_001DE6D0(unit->pos >> 8) == 1) {
+                        unit->unk4 = 0x50A;
+                    } else {
+                        unit->unk4 = 0x5FF;
+                    }
+                } else {
+                    if (func_001DE6D0(unit->pos >> 8) == 1) {
+                        unit->unk4 = 0xA05;
+                    } else {
+                        unit->unk4 = 0x5FF;
+                    }
+                }
+            }
+        } else {
+            switch (func_001E0700(unit->pos >> 8, unit->pos & 0xFF) >> 5) {
+            case 0:
+                if (func_001E1030(unit->pos >> 8, unit->pos & 0xFF) == 0xBD) {
+                    func_00136010(unit);
+                } else {
+                    func_00135D50(unit, 1);
+                }
+                break;
+            case 2:
+                func_0027CA50(unit, 2, 1, 0);
+                break;
+            case 1:
+                func_001360E0(unit);
+                break;
+            case 3:
+                func_00136010(unit);
+                break;
+            default:
+                unit->unk4 = 0x5FF;
+                break;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_00135970(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
