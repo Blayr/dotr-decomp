@@ -528,7 +528,6 @@ void func_001FD2B0(void);
 void func_002031F0(void);
 void func_00203CD0(void);
 s32 func_00209510(s32, s32, s32, s32, s32, s32, s32);
-void func_00209E90(s32, s32, s32, s32);
 void func_00214290(void);
 void func_00217410(void);
 

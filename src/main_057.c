@@ -62,7 +62,30 @@ s32 func_00209E50(void) {
     return *(s32 *)(base + 0x268) + (var_v0 << 5);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209E90);
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    s32 timer;
+    u8 pad08[0xE8];
+} Slot_00209E90;
+
+extern Slot_00209E90 D_00326050[2];
+
+s32 func_00209E90(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
+    D_00326050[0].r = arg0;
+    D_00326050[0].g = arg1;
+    D_00326050[0].b = arg2;
+    D_00326050[0].a = arg3;
+    D_00326050[0].timer = 0;
+    D_00326050[1].r = arg0;
+    D_00326050[1].g = arg1;
+    D_00326050[1].b = arg2;
+    D_00326050[1].a = arg3;
+    D_00326050[1].timer = 0;
+    return 1;
+}
 
 typedef struct State_00209EF0 {
     u8 pad00[0x60];
