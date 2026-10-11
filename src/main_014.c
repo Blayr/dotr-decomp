@@ -304,7 +304,23 @@ loop_1:
     goto loop_1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015ED90);
+s32 func_0015ED90(s32 arg0) {
+    extern s32 func_001604A0();
+    s32 temp;
+
+    temp = func_001DE540();
+    switch (arg0) {
+    case 0:
+        return func_001604A0(temp, 0);
+    case 1:
+        return func_001604A0(temp, 3);
+    case 2:
+        return func_001604A0(temp, 4);
+    case 3:
+        return func_001604A0(temp, 5);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EE40);
 
