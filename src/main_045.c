@@ -61,7 +61,46 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E04C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0570);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E05E0);
+#define MAX_001E05E0(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_001E05E0(a, b) ((a) < (b) ? (a) : (b))
+
+typedef struct {
+    u8 pad_00[0x3A];
+    s16 value;
+} Obj_001E05E0;
+
+s32 func_001E05E0(void *arg0, s32 arg1, s32 arg2) {
+    Obj_001E05E0 *obj = arg0;
+    s32 cur;
+    s32 val;
+
+    val = arg2;
+    if (obj == NULL) {
+        return 0;
+    }
+    cur = obj->value;
+    switch (arg1) {
+    case 0:
+        val = cur + val;
+        break;
+    case 1:
+        val = cur - val;
+        break;
+    case 2:
+        val = cur * val;
+        break;
+    case 3:
+        val = cur / val;
+        break;
+    case 4:
+        break;
+    default:
+        return 0;
+    }
+    val = MIN_001E05E0(MAX_001E05E0(val, -9999), 9999);
+    obj->value = val;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0690);
 
