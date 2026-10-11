@@ -251,4 +251,6 @@ void func_00244530(u8 *);
 
 void func_00244680(u8 *);
 
+extern u8 D_0029D586[];
+
 #endif
