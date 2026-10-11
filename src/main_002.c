@@ -106,6 +106,11 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_001098E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001099E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00109A70);
+s32 func_00109A70(void *arg0, void *arg1) {
+    ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
+    ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
+    ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00109A90);
