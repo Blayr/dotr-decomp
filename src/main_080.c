@@ -42,7 +42,15 @@ INCLUDE_ASM("asm/nonmatchings/main_080", func_00284D30);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00285880);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00285EE0);
+#pragma optimization_level 0
+
+s32 func_00284D30(s32);                             /* extern */
+
+void func_00285EE0(void) {
+    func_00209D30(func_00284D30(func_00209D20()));
+}
+
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00285F20);
 
