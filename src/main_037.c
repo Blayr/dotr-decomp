@@ -48,7 +48,45 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8360);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A83E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8520);
+typedef union {
+    u32 words[4];
+    u64 halves[2];
+    __int128 quad;
+} Packet_001A8520;
+
+s32 func_00184E10(void *, s64, s64, s64, s64, s64);
+s32 func_00184FF8(void *, s64, s64, s64, s64, s64, s32, s32, s64, s64, s64);
+s32 func_00186120(s32);
+void func_00186470(s32, void *);
+
+void func_001A8520(s64 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s64 arg5) {
+    Packet_001A8520 packet[20];
+    s32 channel;
+    u8 *cursor;
+
+    channel = func_00186120(2);
+    cursor = (u8 *)packet;
+    *(u32 *)(cursor + 0) = 0x10000010;
+    *(u32 *)(cursor + 4) = 0;
+    *(u32 *)(cursor + 8) = 0;
+    *(u32 *)(cursor + 12) = 0;
+    *(u64 *)(cursor + 16) = 0x1000000000000008ULL;
+    *(u64 *)(cursor + 24) = 0xE;
+    cursor += 32;
+    cursor += func_00184E10(cursor, (s16)arg0, (s16)arg4, (s16)arg5, 0, 0) * 16;
+    *(u64 *)(cursor + 0) = 0x1000000000008006ULL;
+    *(u64 *)(cursor + 8) = 0xE;
+    cursor += 16;
+    cursor += func_00184FF8(cursor, 2, 0, 0, 0xFFF, 0xFFF, arg1, arg2, arg3, 0, 0) * 16;
+    *(u32 *)(cursor + 0) = 0x70000000;
+    *(u32 *)(cursor + 4) = 0;
+    *(u32 *)(cursor + 8) = 0;
+    *(u32 *)(cursor + 12) = 0;
+    func_0017BB60(0);
+    func_00185578(0, 0);
+    func_00186470(channel, packet);
+    func_00185578(0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8690);
 

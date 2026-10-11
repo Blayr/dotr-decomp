@@ -204,6 +204,54 @@ s32 func_0020F290(s32 arg0) {
     return func_00187608(D_0032A5E0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020F370);
+s32 func_0020F370(void *arg0) {
+    s32 *sections;
+    s32 i;
+    u32 *entries;
+    u32 value;
+    u32 *target;
+    u8 *resolved;
+
+    sections = (s32 *)((u8 *)arg0 + 0x10);
+    entries = (u32 *)((u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x50));
+    for (i = 0; entries[i] != 0xFFFFFFFF; i++) {
+        value = entries[i];
+        switch (value & 0xF0000000) {
+        case 0x20000000:
+            target = (u32 *)((u8 *)arg0 + sections[2] + (value & 0x0FFFFFFF));
+            break;
+        case 0x30000000:
+            target = (u32 *)((u8 *)arg0 + sections[4] + (value & 0x0FFFFFFF));
+            break;
+        case 0x40000000:
+            target = (u32 *)((u8 *)arg0 + sections[6] + (value & 0x0FFFFFFF));
+            break;
+        case 0x50000000:
+            target = (u32 *)((u8 *)arg0 + sections[8] + (value & 0x0FFFFFFF));
+            break;
+        default:
+            continue;
+        }
+        value = *target;
+        switch (value & 0xF0000000) {
+        case 0x20000000:
+            resolved = (u8 *)arg0 + sections[2] + (value & 0x0FFFFFFF);
+            break;
+        case 0x30000000:
+            resolved = (u8 *)arg0 + sections[4] + (value & 0x0FFFFFFF);
+            break;
+        case 0x40000000:
+            resolved = (u8 *)arg0 + sections[6] + (value & 0x0FFFFFFF);
+            break;
+        case 0x50000000:
+            resolved = (u8 *)arg0 + sections[8] + (value & 0x0FFFFFFF);
+            break;
+        default:
+            continue;
+        }
+        *target = (u32)resolved;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020F4E0);
