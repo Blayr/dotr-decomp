@@ -240,7 +240,11 @@ s32 func_00279130(s32 arg0, u16 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00279170);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00279230);
+void func_00279230(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                   s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8) {
+    func_002792C0(func_001DF540(arg0, arg1), arg2, arg3, arg4,
+                  arg5, arg6, arg7, arg8);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_002792C0);
 

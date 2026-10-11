@@ -145,7 +145,26 @@ s32 func_001F2430(s32 arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F24C0);
+s32 func_001F24C0(s32 index, void *src) {
+    Obj_0031ABB0 *obj;
+
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (src != NULL) {
+        *(Vec4f *)((u8 *)obj + 0x20) = *(Vec4f *)src;
+    } else {
+        ((Vec4f *)((u8 *)obj + 0x20))->x = 0.0f;
+        ((Vec4f *)((u8 *)obj + 0x20))->y = 0.0f;
+        ((Vec4f *)((u8 *)obj + 0x20))->z = 0.0f;
+        ((Vec4f *)((u8 *)obj + 0x20))->w = 0.0f;
+    }
+    return 1;
+}
 
 s32 func_001F2550(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_v0;

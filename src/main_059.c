@@ -272,7 +272,30 @@ s32 func_00214080(s32 *arg0, s32 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214090);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214100);
+s32 func_00214100(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 temp_v1;
+    s32 temp_v0;
+    s32 temp_v0_2;
+
+    if (arg3 != 0) {
+        *(s32 *)((u8 *)arg0 - 4) = arg1 + *(s32 *)((u8 *)arg0 - 4);
+    }
+    temp_v1 = *(u16 *)((u8 *)arg0 + 8) & 0x3F;
+    if (temp_v1 == 3) {
+        temp_v0 = *(s32 *)arg0;
+        if (temp_v0 != 0) {
+            *(s32 *)arg0 = arg1 + temp_v0;
+            func_00214190((u8 *)*(s32 *)arg0, arg1, arg2, arg3);
+        }
+    } else if (temp_v1 == 7) {
+        temp_v0_2 = *(s32 *)arg0;
+        if (temp_v0_2 != 0) {
+            *(s32 *)arg0 = arg1 + temp_v0_2;
+            func_00214210((u8 *)*(s32 *)arg0, arg1, arg2, arg3);
+        }
+    }
+    return 1;
+}
 
 s32 func_00214190(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 i;

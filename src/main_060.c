@@ -1,6 +1,24 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00214FD0);
+typedef struct {
+    u32 value0 : 31;
+    u8 flag : 1;
+    u32 value4 : 30;
+    u8 flags : 2;
+} Flags_00214FD0;
+
+s32 func_00214FD0(void *arg0) {
+    Flags_00214FD0 *flags = arg0;
+
+    if (arg0 == NULL) {
+        return 0;
+    }
+    flags->value0 = 0;
+    flags->value4 = 0;
+    flags->flags = 3;
+    flags->flag = 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215060);
 

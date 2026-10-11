@@ -20,7 +20,30 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA710);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA7F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA8A0);
+static inline s64 value_001BA8A0(u8 *entry) {
+    if (entry != NULL) {
+        return (s32)*entry;
+    }
+    return 0x7FFFFFFF;
+}
+
+s32 func_001BA8A0(u16 *arg0, u16 *arg1) {
+    s64 var_v0;
+    s64 var_v1;
+    s32 temp_s0;
+    u8 *temp_s0_2;
+    u8 *temp_v0;
+
+    temp_s0 = *arg1;
+    temp_s0_2 = func_001DD0E0(*arg0);
+    temp_v0 = func_001DD0E0(temp_s0);
+    var_v1 = value_001BA8A0(temp_s0_2);
+    var_v0 = value_001BA8A0(temp_v0);
+    if (var_v0 < var_v1) {
+        return 1;
+    }
+    return (var_v1 < var_v0) ? -1 : 0;
+}
 
 typedef struct {
     u8 pad[0x6D4];

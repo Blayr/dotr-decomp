@@ -52,7 +52,24 @@ s32 func_00100820(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100850);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100B00);
+typedef struct Vec4_00100B00 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_00100B00;
+
+void func_002058D0(void *, void *, s32, s32, s32);
+extern f32 D_0030FF00[];
+
+void func_00100B00(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5) {
+    Vec4_00100B00 vertices[3];
+
+    vertices[0] = *(Vec4_00100B00 *)arg0;
+    vertices[1] = *(Vec4_00100B00 *)arg1;
+    vertices[2] = *(Vec4_00100B00 *)arg2;
+    func_002058D0(vertices, D_0030FF00, arg3, arg4, arg5);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100BA0);
 
@@ -238,7 +255,36 @@ s32 func_00101C30(u8 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101C80);
+void func_00101C80(void *arg0, void *arg1) {
+    s8 *out = (s8 *)arg1;
+
+    switch (((u8 *)arg0)[5]) {
+    case 1:
+        out[0] = 0;
+        out[1] = 1;
+        out[2] = 0;
+        out[3] = 1;
+        break;
+    case 2:
+        out[0] = 0;
+        out[1] = 2;
+        out[2] = 0;
+        out[3] = 1;
+        break;
+    case 3:
+        out[0] = 1;
+        out[1] = 0;
+        out[2] = 0;
+        out[3] = 1;
+        break;
+    case 4:
+        out[0] = 2;
+        out[1] = 0;
+        out[2] = 0;
+        out[3] = 1;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101D20);
 

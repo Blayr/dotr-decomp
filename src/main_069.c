@@ -255,7 +255,18 @@ INCLUDE_ASM("asm/nonmatchings/main_069", func_00244530);
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244680);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244A40);
+s32 func_00244A40(void *arg0) {
+    func_001843E0();
+    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
+    *(volatile u32 *)0x1000B400 = 5;
+    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    *(volatile u32 *)0x1000B420 = 0;
+    *(volatile u32 *)0x1000B410 = 0;
+    *(volatile u32 *)0x1000B430 = 0;
+    func_0017B8F0(*(s32 *)((u8 *)arg0 + 0x40));
+    return 1;
+}
 
 typedef struct Data_00244AD0 {
     u8 pad_00[0x10];

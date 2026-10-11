@@ -32,7 +32,31 @@ void func_0013EA20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 0x708, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013EA80);
+s32 func_0013EB20(s32, s32, s32);
+
+typedef struct {
+    u16 code;
+    u16 unknown2;
+    u16 state;
+    u16 unknown6;
+    u32 data;
+} Entry_0013EA80;
+
+void func_0013EA80(void *arg0) {
+    Entry_0013EA80 *entry = arg0;
+    s32 packed;
+    s32 result;
+
+    packed = func_001E1090(entry->code >> 8, entry->code & 0xFF);
+    func_00250360(entry->code >> 8, entry->code & 0xFF);
+    result = func_0013EB20(func_001DF540(entry->code >> 8, entry->code & 0xFF), packed & 0xFF, packed >> 8);
+    if (result >= 0) {
+        entry->state = 0x6FF;
+        entry->data = (result << 16) | (entry->data & 0xFFFF);
+    } else {
+        entry->state = 0x5FF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013EB20);
 

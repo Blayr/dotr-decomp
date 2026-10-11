@@ -60,7 +60,13 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5980);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5B30);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5CE0);
+void func_001C5CE0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 text = (s32) &D_002BF040;
+    s32 length = func_0019BEF0((const char *) text);
+
+    func_001B0CE0(arg0, 2, -1, 0x80, arg1 + 0x140, arg2 + 0xA3,
+                  0x140, 0x7A, length, text, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5D70);
 

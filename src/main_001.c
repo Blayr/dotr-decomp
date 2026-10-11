@@ -84,7 +84,33 @@ s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001033D0);
+s32 func_001033D0(f32 *values, f32 target, f32 step) {
+    f32 limit = target - step;
+    s32 flags = 0;
+
+    if (values[0] <= limit) {
+        values[0] += step;
+        flags |= 1;
+    } else {
+        values[0] = target;
+        flags &= ~1;
+    }
+    if (values[1] <= limit) {
+        values[1] += step;
+        flags |= 2;
+    } else {
+        values[1] = target;
+        flags &= ~2;
+    }
+    if (values[2] <= limit) {
+        values[2] += step;
+        flags |= 4;
+    } else {
+        values[2] = target;
+        flags &= ~4;
+    }
+    return flags;
+}
 
 s32 func_00103470(u8 *arg0, u8 arg1, s32 arg2) {
     u8 temp_a3;
@@ -134,7 +160,34 @@ s32 func_00103540(f32 *arg0, f32 fparg0, f32 fparg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103580);
+s32 func_00103580(void *arg0, f32 fparg0, f32 fparg1) {
+    f32 *values = (f32 *)arg0;
+    f32 threshold = fparg0 + fparg1;
+    s32 flags = 0;
+
+    if (!(values[0] < threshold)) {
+        flags |= 1;
+        values[0] -= fparg1;
+    } else {
+        values[0] = fparg0;
+        flags &= ~1;
+    }
+    if (!(values[1] < threshold)) {
+        flags |= 2;
+        values[1] -= fparg1;
+    } else {
+        values[1] = fparg0;
+        flags &= ~2;
+    }
+    if (!(values[2] < threshold)) {
+        flags |= 4;
+        values[2] -= fparg1;
+    } else {
+        values[2] = fparg0;
+        flags &= ~4;
+    }
+    return flags;
+}
 
 void func_00103620(void *arg0, void *arg1) {
     ((f32 *)arg0)[0] += ((f32 *)arg1)[0];
@@ -244,7 +297,27 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00103DB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103EC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001043F0);
+typedef struct {
+    f32 x, y, z, w;
+} Vec4_001043F0;
+
+void func_0020C630(void *, s32 *);
+extern Vec4_001043F0 D_0028C220;
+
+s32 func_001043F0(void *arg0, f32 fparg0) {
+    f32 matrix[4][4];
+    Vec4_001043F0 vector;
+    s32 angles[3];
+
+    vector = D_0028C220;
+    vector.y = fparg0;
+    angles[0] = func_0019A5C8() % 0x10000;
+    angles[1] = func_0019A5C8() % 0x10000;
+    angles[2] = 0;
+    func_0020C630(matrix, angles);
+    func_0020CDD0(arg0, matrix, &vector);
+    return 0;
+}
 
 void func_00104490(f32 *arg0, f32 *arg1, s32 arg2) {
     f32 x;
@@ -291,7 +364,19 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00106080);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106A00);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00106AB0);
+void func_00106AB0(s16 *arg0, f32 *arg1, s32 arg2) {
+    if (arg2 == 0) {
+        arg0[0] = func_001A22C0(arg1[0]);
+        arg0[1] = func_001A22C0(arg1[1]);
+        arg0[2] = func_001A22C0(arg1[2]);
+        arg0[3] = func_001A22C0(arg1[3]);
+    } else {
+        arg0[4] = func_001A22C0(arg1[0]);
+        arg0[5] = func_001A22C0(arg1[1]);
+        arg0[6] = func_001A22C0(arg1[2]);
+        arg0[7] = func_001A22C0(arg1[3]);
+    }
+}
 
 void func_00106B50(void *arg0, void *arg1) {
     f32 *dst = arg0;

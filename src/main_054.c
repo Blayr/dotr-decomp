@@ -173,6 +173,36 @@ INCLUDE_ASM("asm/nonmatchings/main_054", func_002006C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_002007D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_002008A0);
+typedef struct Entry_002008A0 {
+    s32 occupied;
+    s32 unknown;
+    s16 flags : 3;
+    s16 category : 13;
+    s16 id;
+} Entry_002008A0;
+
+extern Entry_002008A0 D_003229A0[];
+
+void *func_002008A0(s32 arg0, s32 arg1) {
+    Entry_002008A0 *entry;
+    s32 i;
+
+    entry = D_003229A0;
+    if ((arg0 < 0) || (arg0 >= 10)) {
+        return NULL;
+    }
+    if (arg1 < 0) {
+        return NULL;
+    }
+    i = 0;
+    do {
+        if (entry->occupied && (entry->category == arg0) && (entry->id == arg1)) {
+            return entry;
+        }
+        i++;
+        entry++;
+    } while (i < 1024);
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_00200930);

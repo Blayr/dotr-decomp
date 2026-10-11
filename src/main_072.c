@@ -78,7 +78,30 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E410);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E780);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E880);
+typedef struct {
+    s32 unused;
+    s32 first;
+    s32 second;
+} Masks_0024E880;
+
+void func_0024E880(void *arg0, s32 *arg1) {
+    Masks_0024E880 *masks = arg0;
+    s32 temp_v1;
+    s32 var_t3;
+
+    masks->first = 0;
+    masks->second = 0;
+    var_t3 = 0;
+    while ((temp_v1 = *arg1) < 0) {
+        if (((temp_v1 & 0xFF) + ((temp_v1 >> 8) * 7)) < 0x1D) {
+            masks->first |= 1 << (0x1C - var_t3);
+        } else {
+            masks->second |= 1 << (0x15 - (var_t3 - 0x1D));
+        }
+        arg1++;
+        var_t3 += 1;
+    }
+}
 
 s32 func_0024E910(s32 arg0) {
     s32 count = 0;

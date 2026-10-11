@@ -52,7 +52,32 @@ INCLUDE_ASM("asm/nonmatchings/main_061", func_00217CB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00217D70);
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217F90);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vertex_00217F90;
+
+typedef struct {
+    u8 pad0[0x20];
+    Vertex_00217F90 first;
+    u64 pad1;
+    Vertex_00217F90 second;
+} Packet_00217F90;
+
+void func_00217F90(void *arg0, s32 x, s32 y, s32 width, s32 height, s32 z, s32 f) {
+    Packet_00217F90 *packet = arg0;
+
+    packet->first.x = (x + 0x6C0) * 0x10;
+    packet->first.y = (y + 0x720) * 0x10;
+    packet->second.x = packet->first.x + width * 0x10;
+    packet->second.y = packet->first.y + height * 0x10;
+    packet->first.z = z;
+    packet->second.z = z;
+    packet->first.f = f;
+    packet->second.f = f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00218020);
 

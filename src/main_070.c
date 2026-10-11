@@ -164,7 +164,26 @@ s32 func_002457E0(void *arg0) {
     return ((Fields_002457E0 *)arg0)->field_C == ((Fields_002457E0 *)arg0)->field_10;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245800);
+typedef struct {
+    s32 unk0;
+    u8 *data;
+    s32 index;
+    s32 count;
+    s32 capacity;
+} Queue_00245800;
+
+void func_001843E0(void);
+void func_00184428(void);
+
+void func_00245800(void *arg0) {
+    Queue_00245800 *queue = (Queue_00245800 *)arg0;
+
+    func_001843E0();
+    *(s32 *)(queue->data + queue->index * 0x4CE40) = 2;
+    queue->count++;
+    queue->index = (queue->index + 1) % queue->capacity;
+    func_00184428();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245890);
 

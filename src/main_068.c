@@ -93,7 +93,17 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_002413F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241840);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241A00);
+s32 func_00241A00(s32 arg0, s32 arg1) {
+    u8 color[4];
+    s32 temp_v1;
+
+    temp_v1 = arg0 & 0xFFFF;
+    if (!(temp_v1 & 0xFFFF7FFF)) {
+        return arg0;
+    }
+    func_00241840(color, temp_v1 & 0x1F, (temp_v1 >> 5) & 0x1F, (temp_v1 >> 0xA) & 0x1F, arg1, 0x1F);
+    return (arg0 & 0x8000) | (((color[2] & 0x1F) << 0xA) | ((color[0] & 0x1F) | ((color[1] & 0x1F) << 5)));
+}
 
 typedef struct Buffer_00241A90 {
     u8 data[0x50000];

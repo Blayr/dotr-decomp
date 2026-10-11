@@ -106,7 +106,32 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A87C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8870);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8920);
+typedef struct {
+    u8 padding[0x1F0];
+    s8 entries[0x2F];
+    s8 state;
+    s8 selected;
+    s8 previous;
+    u8 index;
+} State_001A8920;
+
+void func_001AAAF0(s32, s32);
+void func_001FCC70(s32, s32, s32, s32, s32, s32);
+extern u8 D_00317472;
+
+void func_001A8920(void) {
+    State_001A8920 *state = (State_001A8920 *)&D_00317250;
+
+    if ((D_00317472 - 1) >= 0) {
+        func_001FCC70(0, 1, 1, 0, 60, 0);
+        state->state = -2;
+        state->selected = state->entries[state->index];
+        state->previous = -1;
+        if (state->entries[state->index + 1] < 2) {
+            func_001AAAF0(-2, 1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A89C0);
 

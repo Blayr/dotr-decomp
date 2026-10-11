@@ -1,6 +1,23 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EA80);
+s32 func_0026EA80(s32 arg0, s32 arg1) {
+    s32 temp_s0;
+    u8 *temp_v0;
+    u8 temp_s1;
+
+    temp_v0 = func_001DD0E0(arg1);
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    temp_s1 = *temp_v0;
+    temp_s0 = temp_s1 & 0x1F;
+    if (temp_s0 == (func_001E0700(arg0, 0) & 0x1F)) {
+        if (((s32) temp_s1 >> 5) == 0) {
+            return func_00271830(arg0);
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EB10);
 
@@ -22,7 +39,33 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_0026F690);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FA70);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FA80);
+typedef struct {
+    u8 flags;
+    u8 pad;
+    u8 unused : 4;
+    u8 value : 4;
+} Flags_0026FA80;
+
+s32 func_00271830(s32);
+
+s32 func_0026FA80(s32 arg0, s32 arg1) {
+    s32 owner;
+    s32 value;
+    Flags_0026FA80 *data;
+
+    data = (Flags_0026FA80 *)func_001DD0E0(arg0);
+    if (data == NULL) {
+        return 0xFF;
+    }
+    value = data->value;
+    if ((data->flags >> 5) == 0) {
+        owner = data->flags & 0x1F;
+        if (owner == (func_001E0700(arg1, 0) & 0x1F)) {
+            value -= func_00271830(arg1);
+        }
+    }
+    return value;
+}
 
 s32 func_0026FB10(s32 arg0, s32 arg1) {
     s32 temp_s0;
@@ -113,7 +156,33 @@ s32 func_00271740(s32 arg0, s32 arg1) {
     return func_001E0C00(arg1, 0, arg0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002717A0);
+s32 func_002717A0(s32 arg0) {
+    s32 ret;
+
+    switch (arg0) {
+    case 1:
+    case 7:
+        ret = 5;
+        break;
+    case 9:
+        ret = 0;
+        break;
+    case 10:
+        ret = 1;
+        break;
+    case 16:
+        ret = 4;
+        break;
+    case 20:
+        ret = 9;
+        break;
+    default:
+        ret = 7;
+        break;
+    }
+
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00271830);
 

@@ -94,7 +94,25 @@ INCLUDE_ASM("asm/nonmatchings/main_009", func_0013A710);
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013A870);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013A9A0);
+s32 func_0013A9A0(s32 arg0) {
+    s32 i;
+    u8 maximum;
+    s32 value;
+
+    maximum = 0;
+    for (i = 1; i <= 5; i++) {
+        if (func_001DF540(arg0, i) != 0) {
+            value = (func_001E1090(arg0, i) >> 8) & 0xFF;
+            if (maximum < value) {
+                maximum = value;
+            }
+        }
+    }
+    if (maximum < 2) {
+        maximum = 2;
+    }
+    return maximum;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013AA40);
 
