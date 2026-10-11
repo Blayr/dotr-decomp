@@ -106,7 +106,18 @@ void func_001CD6E0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CD710);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CDA10);
+void func_001CDA10(void) {
+    u8 *entry;
+    s32 i;
+
+    entry = D_003193C0;
+    i = 0;
+    do {
+        func_001CDA60(entry);
+        i += 1;
+        entry += 0xA0;
+    } while (i < 0x20);
+}
 
 s32 func_001CDA60(void *arg0) {
     if (arg0 == NULL) {
