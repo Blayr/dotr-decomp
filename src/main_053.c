@@ -129,7 +129,26 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEA80);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEAB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEAF0);
+typedef struct {
+    u8 pad00[0x13];
+    s8 low_001FEAF0 : 7;
+    s8 flag_001FEAF0 : 1;
+} Entry_001FEAF0;
+
+typedef struct {
+    u8 pad00[0xC];
+    Entry_001FEAF0 entries[30];
+} Table_001FEAF0;
+
+extern Table_001FEAF0 D_0031C070;
+
+void func_001FEAF0(s32 arg0) {
+    Table_001FEAF0 *t = &D_0031C070;
+
+    if (arg0 >= 0 && arg0 < 0x1E) {
+        t->entries[arg0].flag_001FEAF0 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEB40);
 
