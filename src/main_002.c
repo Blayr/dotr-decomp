@@ -235,9 +235,100 @@ void func_00107740(void *arg0, void *arg1) {
     *(FloatPair_00107740 *)arg0 = temp.pair;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107790);
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+} Rgbaq_00107790;
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107990);
+typedef struct {
+    Rgbaq_00107790 rgbaq;
+    u64 st;
+    u64 xyz;
+} Vertex_00107790;
+
+typedef struct {
+    u8 tag[0x10];
+    Vertex_00107790 v[4];
+} Packet_00107790;
+
+static inline Rgbaq_00107790 rgbaq_00107790(u8 *color) {
+    Rgbaq_00107790 c;
+
+    c.r = color[0];
+    c.g = color[1];
+    c.b = color[2];
+    c.a = color[3];
+    c.q = 1.0f;
+    return c;
+}
+
+s32 func_00107790(void *arg0, u8 *arg1, s32 arg2) {
+    Packet_00107790 *packet = arg0;
+
+    if (arg2 == 0) {
+        packet->v[0].rgbaq = rgbaq_00107790(arg1);
+        packet->v[1].rgbaq = rgbaq_00107790(arg1);
+        packet->v[2].rgbaq = rgbaq_00107790(arg1);
+        packet->v[3].rgbaq = rgbaq_00107790(arg1);
+    } else if (arg2 == 1) {
+        packet->v[0].rgbaq = rgbaq_00107790(arg1);
+        packet->v[1].rgbaq = rgbaq_00107790(arg1);
+    } else if (arg2 == 2) {
+        packet->v[2].rgbaq = rgbaq_00107790(arg1);
+        packet->v[3].rgbaq = rgbaq_00107790(arg1);
+    }
+    return 0;
+}
+
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+} Rgbaq_00107990;
+
+typedef struct {
+    Rgbaq_00107990 rgbaq;
+    u64 xyz;
+} Vertex_00107990;
+
+typedef struct {
+    u8 tag[0x10];
+    Vertex_00107990 v[4];
+} Packet_00107990;
+
+static inline Rgbaq_00107990 rgbaq_00107990(u8 *color) {
+    Rgbaq_00107990 c;
+
+    c.r = color[0];
+    c.g = color[1];
+    c.b = color[2];
+    c.a = color[3];
+    c.q = 1.0f;
+    return c;
+}
+
+s32 func_00107990(void *arg0, u8 *arg1, s32 arg2) {
+    Packet_00107990 *packet = arg0;
+
+    if (arg2 == 0) {
+        packet->v[0].rgbaq = rgbaq_00107990(arg1);
+        packet->v[1].rgbaq = rgbaq_00107990(arg1);
+        packet->v[2].rgbaq = rgbaq_00107990(arg1);
+        packet->v[3].rgbaq = rgbaq_00107990(arg1);
+    } else if (arg2 == 1) {
+        packet->v[0].rgbaq = rgbaq_00107990(arg1);
+        packet->v[1].rgbaq = rgbaq_00107990(arg1);
+    } else if (arg2 == 2) {
+        packet->v[2].rgbaq = rgbaq_00107990(arg1);
+        packet->v[3].rgbaq = rgbaq_00107990(arg1);
+    }
+    return 0;
+}
 
 void func_00107B90(f32 *arg0, f32 *arg1, void *arg2, void *arg3) {
     f32 temp_f0;
