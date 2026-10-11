@@ -44,7 +44,20 @@ s32 func_001032C0(u8 *arg0, u8 arg1, u8 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103300);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103350);
+s32 func_00103350(s32 *arg0, s32 arg1, s32 arg2) {
+    s32 temp_v1;
+    s32 result;
+
+    temp_v1 = *arg0;
+    if (temp_v1 <= (arg1 - arg2)) {
+        *arg0 = temp_v1 + arg2;
+        result = 1;
+    } else {
+        *arg0 = arg1;
+        result = 0;
+    }
+    return result;
+}
 
 s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1) {
     f32 temp_f1;

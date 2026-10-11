@@ -19,6 +19,7 @@ void func_001031C0(u16 *arg0, s32 arg1);
 s32 func_00103260(s32 *arg0);
 s32 func_00103290(s32 *arg0);
 s32 func_001032C0(u8 *arg0, u8 arg1, u8 arg2);
+s32 func_00103350(s32 *arg0, s32 arg1, s32 arg2);
 s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1);
 s32 func_00103470(u8 *arg0, u8 arg1, s32 arg2);
 s32 func_00103500(s32 *arg0, s32 arg1, s32 arg2);
