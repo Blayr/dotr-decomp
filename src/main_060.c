@@ -316,7 +316,37 @@ s32 func_00217400(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00217410);
+typedef struct State_00217410 {
+    s16 slots[4];
+    s8 enabled : 1;
+    s8 reserved : 7;
+    u8 padding[3];
+} State_00217410;
+
+void func_00217A70(s32);
+extern State_00217410 D_0034F6E0;
+extern u8 D_002D0930[];
+
+void func_00217410(void) {
+    extern u8 *func_00197548();
+    State_00217410 *state = &D_0034F6E0;
+    s16 *slot;
+    s32 i;
+
+    func_0020B3C0((s8 *)&D_0034F6E0, 0, 0xC);
+    state->enabled = func_00197548(D_002D0930) ? 1 : 0;
+    if (state->enabled) {
+        func_00109CA0(0x400000);
+        func_0010A160(0x80, 0x80);
+        slot = state->slots;
+        i = 0;
+        do {
+            i += 1;
+            *slot++ = -1;
+        } while (i < 4);
+        func_00217A70(1);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002174D0);
 

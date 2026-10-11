@@ -512,7 +512,6 @@ void func_001FD2B0(void);
 void func_00203CD0(void);
 s32 func_00209510(s32, s32, s32, s32, s32, s32, s32);
 void func_00214290(void);
-void func_00217410(void);
 
 s32 func_0024EA70(s32, s32);                        /* extern */
 s32 func_00267560(s32);                             /* extern */
