@@ -295,7 +295,29 @@ INCLUDE_ASM("asm/nonmatchings/main_011", func_0014A240);
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_0014AAB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_0014ACA0);
+s32 func_0014ACA0(void) {
+    s32 player;
+    s32 i;
+    s32 list;
+    s32 pair;
+
+    player = func_001DE540();
+    list = func_0024CA40(0, 0, player, 1, 0x111001C, 0xE);
+    for (i = 0; i < func_0024E910(list); i++) {
+        pair = func_0024EC50(list, i);
+        if (func_001E0290(pair >> 8, pair & 0xFF, 0) > func_001E0290(pair >> 8, pair & 0xFF, 1)) {
+            return 1;
+        }
+    }
+    list = func_0024CA40(0, 0, player, 1, 0x1E001C, 0xE);
+    for (i = 0; i < func_0024E910(list); i++) {
+        pair = func_0024EC50(list, i);
+        if (func_001E0290(pair >> 8, pair & 0xFF, 0) > func_001E0290(pair >> 8, pair & 0xFF, 1)) {
+            return 1;
+        }
+    }
+    return func_0024CA40(0, 0, player, 1, 0xB001C, 0xE) != 0 ? 1 : 0;
+}
 
 s32 func_0014AE60(s32 arg0, s32 arg1) {
     s32 kind;
