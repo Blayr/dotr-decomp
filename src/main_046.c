@@ -675,7 +675,38 @@ s32 func_001E3D30(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3DD0);
+typedef struct Vec4_001E3DD0 {
+    f32 x, y, z, w;
+} Vec4_001E3DD0;
+
+static inline void *get_001E3DD0(void) {
+    void *object = func_001DD130();
+
+    if (object == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)object + 0x45) >= 11) {
+        return NULL;
+    }
+    return object;
+}
+
+s32 func_001E3DD0(s32 arg0, s32 arg1, void *arg2) {
+    void *object = get_001E3DD0();
+    void *data;
+
+    if (object == NULL) {
+        return 0;
+    }
+    data = *(void **)((u8 *)object + 4);
+    if (data == NULL) {
+        return 0;
+    }
+    if (arg2 != NULL) {
+        *(Vec4_001E3DD0 *)arg2 = *(Vec4_001E3DD0 *)((u8 *)data + 0x30);
+    }
+    return 1;
+}
 
 typedef struct {
     u8 r;

@@ -397,7 +397,6 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_001F5D70;
 
-s32 func_001E3DD0(s32, s32, void *);
 
 s32 func_001F5D70(s32 arg0, void *arg1) {
     Vec4_001F5D70 *out = (Vec4_001F5D70 *)arg1;
