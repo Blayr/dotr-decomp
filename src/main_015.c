@@ -351,7 +351,40 @@ s32 func_00164A00(s32 arg0, void *arg1, void *arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00164AE0);
+s32 func_00164AE0(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
+    s32 buf[8];
+    s32 i;
+
+    func_0026FD30(arg0, buf);
+    if (arg2 == NULL) {
+        return -1;
+    }
+    for (i = 0; i < 5; i++) {
+        arg1[i + 6] = 0xFF;
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (arg3 == buf[i] && arg3 != 999) {
+            arg1[6] = i;
+            func_001DCD70(arg2, buf[i]);
+            return 1;
+        }
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(buf[i]) >> 5) != 0 && (func_0026FCE0(buf[i]) >> 5) != 2) {
+            arg1[6] = i;
+            func_001DCD70(arg2, buf[i]);
+            return 1;
+        }
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(buf[i]) >> 5) != 0) {
+            arg1[6] = i;
+            func_001DCD70(arg2, buf[i]);
+            return 1;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00164CE0);
 
@@ -503,7 +536,40 @@ s32 func_00168D10(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00168E00);
+s32 func_00168E00(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
+    s32 buf[8];
+    s32 i;
+
+    func_0026FD30(arg0, buf);
+    if (arg2 == NULL) {
+        return -1;
+    }
+    for (i = 0; i < 5; i++) {
+        arg1[i + 6] = 0xFF;
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (arg3 == buf[i] && arg3 != 999) {
+            arg1[6] = i;
+            func_001DCD70(arg2, buf[i]);
+            return 1;
+        }
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(buf[i]) >> 5) != 0 && (func_0026FCE0(buf[i]) >> 5) != 2) {
+            arg1[6] = i;
+            func_001DCD70(arg2, buf[i]);
+            return 1;
+        }
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(buf[i]) >> 5) != 0) {
+            arg1[6] = i;
+            func_001DCD70(arg2, buf[i]);
+            return 1;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00169000);
 
