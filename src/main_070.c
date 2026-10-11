@@ -72,7 +72,15 @@ void func_002457C0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002457D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002457E0);
+typedef struct {
+    u8 pad[0xC];
+    s32 field_C;
+    s32 field_10;
+} Fields_002457E0;
+
+s32 func_002457E0(void *arg0) {
+    return ((Fields_002457E0 *)arg0)->field_C == ((Fields_002457E0 *)arg0)->field_10;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245800);
 
