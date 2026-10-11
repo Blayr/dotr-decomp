@@ -83,7 +83,14 @@ void func_0010A010(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A090);
+void func_0010A090(s16 arg0) {
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    if (D_0030FF40[1] & 2) {
+        func_0010C720(0x5003, arg0);
+    }
+}
 
 static inline u32 flags_0010A0F0(void) {
     if (D_0030FF40 == NULL) {
