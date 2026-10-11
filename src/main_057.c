@@ -83,7 +83,17 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B000);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B1E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B300);
+u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2) {
+    if (arg2 > 0) {
+        do {
+            arg2 -= 1;
+            *arg0 = *arg1;
+            arg1 += 1;
+            arg0 += 1;
+        } while (arg2 > 0);
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B340);
 
