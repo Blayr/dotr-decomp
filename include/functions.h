@@ -211,6 +211,7 @@ f32 func_0020D0E0(f32 *arg0);
 f32 func_0020D1A0(f32 *arg0, f32 *arg1);
 s32 func_0020DEE0(void);
 s32 func_0020E010(f32 *arg0, f32 *arg1);
+s32 func_0020E4F0(void);
 s32 func_0020F290(s32 arg0);
 s32 func_00211530(void *arg0, s32 depth, void *arg2);
 void func_00213F90(void);
