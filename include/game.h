@@ -617,4 +617,9 @@ s32 func_001B4780(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 s32 func_001B62F0(s32, s32, s32, s32, s32);
 extern char D_002BF00B;
 
+extern s32 D_0028FF10[];
+extern u8 D_002BE809[];
+extern u8 D_002BE80F[];
+void func_001A83E0(u8 *, s32, s32);
+
 #endif

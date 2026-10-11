@@ -57,7 +57,6 @@ typedef struct Ring_00242E40 {
     s32 capacity;
 } Ring_00242E40;
 
-s32 func_00242F20(void *, s32, void *, s32, void *, s32, void *, s32);
 void func_00243450(void *, s32);
 
 s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
