@@ -4,7 +4,70 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00202220);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002024D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202810);
+typedef struct {
+    s32 data;
+    char *name;
+    s8 flag0 : 1;
+    s8 flag1 : 1;
+    s8 flag2 : 1;
+    s16 category : 13;
+    s16 id;
+} Slot_00202810;
+
+void func_002029B0(s32, s32);
+
+static inline void *find_00202810(s32 arg0, s32 arg1) {
+    Slot_00202810 *entry = func_002008A0(arg0, arg1);
+    if (entry != NULL && !(entry->data & 0x80000000)) {
+        return entry;
+    }
+    return NULL;
+}
+
+static inline void *alloc_00202810(void) {
+    extern Slot_00202810 D_003229A0[];
+    Slot_00202810 *entry;
+    s32 i;
+
+    entry = D_003229A0;
+    i = 0;
+    do {
+        if (entry->data == 0) {
+            return entry;
+        }
+        i++;
+        entry++;
+    } while (i < 0x400);
+    return NULL;
+}
+
+s32 func_00202810(s32 arg0, s32 arg1, char *arg2, s32 arg3) {
+    Slot_00202810 *entry;
+
+    if (arg0 < 0 || arg0 >= 10) {
+        return 0;
+    }
+    if (arg1 < 0) {
+        return 0;
+    }
+    entry = find_00202810(arg0, arg1);
+    if (entry == NULL) {
+        entry = alloc_00202810();
+        if (entry == NULL) {
+            return 0;
+        }
+    } else {
+        func_002029B0(arg0, arg1);
+    }
+    entry->name = (arg2 != NULL) ? func_00217B60(arg2) : NULL;
+    entry->data = arg3;
+    entry->flag0 = 0;
+    entry->flag1 = 0;
+    entry->flag2 = 0;
+    entry->category = arg0;
+    entry->id = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002029B0);
 
