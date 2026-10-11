@@ -291,7 +291,30 @@ s32 func_00271A40(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00271AF0);
+s32 func_00271AF0(void *arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E08F0();
+    s32 score;
+    s32 kind;
+    s32 player;
+    s32 other;
+
+    score = 0;
+    if (arg0 == NULL) {
+        return 0;
+    }
+    player = func_00250370(arg0);
+    kind = ((u8 *)arg0)[0x3E] & 0x1F;
+    other = player == 0 ? 1 : 0;
+    if (func_00271F00((arg2 << 8) | arg1, player, kind, 10)) {
+        score += func_001E08F0(player, 0, 0) * 100 >= 500 ? 500 : func_001E08F0(player, 0, 0) * 100;
+    }
+    if (func_00271A40(other, arg1, arg2)) {
+        if (func_00271740(14, other) && func_00271C90(other, kind)) {
+            score -= func_001E08F0(other, 0, 0) * 100 >= 500 ? 500 : func_001E08F0(other, 0, 0) * 100;
+        }
+    }
+    return score;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00271C90);
 
