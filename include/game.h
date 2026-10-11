@@ -226,4 +226,6 @@ extern u8 D_002D0655[];
 
 extern volatile s32 D_00351170;
 
+extern u8 D_0029D1F0[];
+
 #endif
