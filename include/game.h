@@ -564,7 +564,6 @@ s32 func_001F16C0(s32 arg0, s32 arg1);
 void func_001F1C50(s32 arg0, s32 arg1);
 
 void func_001F4900(s32, s32, s32, s32, s32, s32, s32);
-void func_001F57C0(s32 arg0, s32 arg1);
 s32 func_001F1A90(s32 arg0, s32 arg1);
 s32 func_001F1B60(s32, s32);
 

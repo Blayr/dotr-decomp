@@ -206,7 +206,23 @@ void func_001F57B0(s32 arg0) {
     func_001F57C0(D_0031BE9C, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F57C0);
+s32 func_001F57C0(s32 arg0, s32 arg1) {
+    s32 func_001E1360(s32, s32);
+    s32 func_001F2FF0(s32, s32);
+    s32 row;
+    s32 column;
+
+    row = arg0 >> 8;
+    column = arg0 & 0xFF;
+    if (row < 0 || row >= 3 || column < 0 || column >= 0xB) {
+        return 0;
+    }
+    arg0 = func_001E1360(row, column);
+    if (arg0 < 0) {
+        return 0;
+    }
+    return func_001F2FF0(arg0, arg1);
+}
 
 void func_001F5850(void) {
     func_001F5860(D_0031BE98);
