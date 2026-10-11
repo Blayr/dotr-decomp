@@ -90,7 +90,67 @@ INCLUDE_ASM("asm/nonmatchings/main_069", func_00243DE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00243EE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243F60);
+typedef struct {
+    s64 a;
+    s64 b;
+    s32 c;
+    s32 d;
+} Ent_00243F60;
+
+typedef struct {
+    u64 tag;
+    u64 pad;
+} Tag_00243F60;
+
+typedef struct {
+    u32 base;
+    Tag_00243F60 *tags;
+    s32 nTags;
+    s32 f0C;
+    s32 f10;
+    s32 f14;
+    u8 pad18[0x2C];
+    s32 f44;
+    u8 pad48[8];
+    Ent_00243F60 *ents;
+    s32 nEnts;
+    s32 f58;
+    s32 f5C;
+} Obj_00243F60;
+
+void func_001843E0(void);
+void func_00184428(void);
+
+s32 func_00243F60(void *arg0) {
+    Obj_00243F60 *obj = arg0;
+    s32 i;
+
+    obj->f0C = 0;
+    obj->f10 = 0;
+    obj->f14 = 0;
+    obj->f44 = 1;
+    obj->f58 = 0;
+    obj->f5C = 0;
+    for (i = 0; i < obj->nEnts; i++) {
+        obj->ents[i].a = -1;
+        obj->ents[i].b = -1;
+        obj->ents[i].c = 0;
+        obj->ents[i].d = 0;
+    }
+    for (i = 0; i < obj->nTags; i++) {
+        obj->tags[i].tag = ((u64)((obj->base + i * 0x800) & 0x0FFFFFFF) << 32) | 0x30000080;
+    }
+    obj->tags[i].tag = ((u64)((u32)obj->tags & 0x0FFFFFFF) << 32) | 0x20000000;
+    *(u32 *)0x1000B420 = 0;
+    *(u32 *)0x1000B410 = obj->base & 0x0FFFFFFF;
+    *(u32 *)0x1000B430 = (u32)obj->tags & 0x0FFFFFFF;
+    func_001843E0();
+    *(u32 *)0x1000F590 = *(u32 *)0x1000F520 | 0x10000;
+    *(u32 *)0x1000B400 = 5;
+    *(u32 *)0x1000F590 = *(u32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002440F0);
 
