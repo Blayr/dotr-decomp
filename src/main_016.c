@@ -46,7 +46,37 @@ INCLUDE_ASM("asm/nonmatchings/main_016", func_0016D6A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016D8C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016DCA0);
+void func_0016DCA0(u16 *arg0) {
+    s32 temp_s1;
+    u16 temp_v0;
+    u16 temp_v0_2;
+    u16 temp_v0_3;
+    u16 temp_v0_4;
+    u16 temp_v0_5;
+    u16 temp_v1;
+
+    temp_v0 = *arg0;
+    if (func_001DF540((s32) temp_v0 >> 8, temp_v0 & 0xFF) != 0) {
+        temp_v0_2 = *arg0;
+        temp_s1 = ((func_0024DE70((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF) == 0) ? 1 : 0) << 8;
+        temp_v1 = *arg0;
+        func_001E1090((s32) temp_v1 >> 8, temp_v1 & 0xFF);
+        func_001E1090(temp_s1 >> 8, temp_s1 & 0xFF);
+        temp_v0_3 = *arg0;
+        func_001DF540((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF);
+        temp_v0_4 = *arg0;
+        if (func_001E0290((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 0) >= 0x9C4) {
+            func_0016DDA0(arg0);
+            return;
+        }
+        temp_v0_5 = *arg0;
+        if (func_0016E000((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, 1) == 1) {
+            func_0016E0E0(arg0, 1);
+            return;
+        }
+        func_0016DDA0(arg0, 1);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016DDA0);
 
