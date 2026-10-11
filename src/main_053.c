@@ -125,7 +125,15 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE880);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE8F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEA80);
+typedef struct Vec4_001FEA80 {
+    f32 x, y, z, w;
+} Vec4_001FEA80;
+
+extern Vec4_001FEA80 D_002CFCD0;
+
+void func_001FEA80(void *arg0) {
+    *(Vec4_001FEA80 *)arg0 = D_002CFCD0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEAB0);
 
