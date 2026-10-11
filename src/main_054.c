@@ -142,7 +142,94 @@ u8 *func_001FFF90(s32 unused0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFFC0);
+typedef struct Module_001FFFC0 {
+    s32 name;
+    s32 arg;
+} Module_001FFFC0;
+
+typedef struct File_001FFFC0 {
+    s32 name;
+    s32 unk4;
+    s32 sector;
+    s32 unkC[3];
+    s32 size;
+    s32 unk1C;
+} File_001FFFC0;
+
+typedef struct Stat_001FFFC0 {
+    s32 sector;
+    u32 size;
+    s32 unk8[10];
+} Stat_001FFFC0;
+
+extern char D_002D0657[];
+extern Module_001FFFC0 D_002CFCE0[];
+extern char D_002D0638[];
+extern File_001FFFC0 D_00293090[];
+extern char D_002D066F[];
+
+void func_0017E240(s32);
+void func_00191778(s32);
+s32 func_00183A38(char *);
+s32 func_00183A00(void);
+void func_00182838(void);
+void func_00182CC8(void);
+void func_00191C50(s32);
+void func_0017FA60(void);
+s32 func_00191A58(s32);
+s32 func_00190FF0(Stat_001FFFC0 *, s32);
+void func_00190C48(s32, u8 *, s32);
+void func_00190A90(void (*)(void));
+void func_00200170(void);
+
+s32 func_001FFFC0(void) {
+    extern s32 func_00200220(s32, s32);
+    extern u8 D_0031C2F0[];
+    u8 *buf = D_0031C2F0;
+    s32 i;
+    Module_001FFFC0 *mod;
+    File_001FFFC0 *file;
+    u32 j;
+    Stat_001FFFC0 stat;
+
+    func_0017E240(0);
+    func_00191778(0);
+    while (func_00183A38(D_002D0657) == 0) {
+    }
+    while (func_00183A00() == 0) {
+    }
+    func_0017E240(0);
+    func_00182838();
+    func_00182CC8();
+    func_00191778(0);
+    func_00191C50(2);
+    func_0017FA60();
+    while (func_00191A58(0) != 2) {
+    }
+    for (i = 0, mod = D_002CFCE0; mod->name != 0; i++) {
+        if (func_00200220(mod->name, mod->arg) == 0) {
+            return 0;
+        }
+        mod++;
+    }
+    if (func_00197548((s32)D_002D0638) != NULL) {
+        file = D_00293090;
+        for (j = 0; j < 0x61; j++) {
+            while (func_00191A58(0) != 2) {
+            }
+            if (func_00190FF0(&stat, file->name) != 0) {
+                file->sector = stat.sector;
+                file->size = stat.size >> 11;
+            } else {
+                file->name = (s32)D_002D066F;
+            }
+            file++;
+        }
+    }
+    func_00190C48(0, buf + 0x80, 0x4000);
+    func_00190A90(func_00200170);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_00200170);
 
