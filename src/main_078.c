@@ -76,7 +76,15 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_00278D20);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278D90);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278DD0);
+void func_00278DD0(u8 *src, u8 *dst) {
+    s32 i;
+
+    i = 0;
+    do {
+        dst[i] = src[i];
+        i++;
+    } while (i < 5);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278E00);
 
