@@ -400,7 +400,49 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1830);
+typedef struct {
+    u8 unused : 6;
+    s8 mode : 2;
+} Flags_001F1830;
+
+s32 func_001F1830(s32 arg0, s32 arg1) {
+    Obj_0031ABB0 *obj;
+    f32 *state;
+    s8 *next;
+    s8 *selected;
+    f32 value;
+    f32 start;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 8) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    state = (f32 *)&obj->slots[8];
+    next = &obj->lv[1];
+    selected = &obj->lv[0];
+    if (obj->slots[arg1] != NULL) {
+        value = (f32)(u32)obj->vals[arg1];
+        start = value - 1.0f;
+        *next = -1;
+        *selected = arg1;
+        if (((Flags_001F1830 *)((u8 *)obj + 0x1F7))->mode == -1) {
+            state[1] = start;
+        } else {
+            state[1] = 1.0f;
+        }
+        state[2] = 1.0f;
+        *(s8 *)((u8 *)obj + 0x1FD) = 0;
+    } else {
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_001F1940(s32 arg0, s8 arg1) {
     Obj_0031ABB0 *obj;

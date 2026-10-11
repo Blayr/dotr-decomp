@@ -216,7 +216,53 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8BF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8E90);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8FA0);
+typedef struct {
+    s32 data;
+    s32 unk04;
+    s32 additional;
+    s32 resolved;
+} Entry_001E8FA0;
+
+s32 func_001E8FA0(s32 arg0) {
+    Obj_0031ABB0 *obj;
+    Entry_001E8FA0 *entry;
+    s32 count;
+    s32 i;
+    void *directory;
+    s32 base;
+    u8 *table;
+
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    base = *(s32 *)&obj->pad040[0xF8];
+    if (base == 0) {
+        return 1;
+    }
+    directory = *(void **)&obj->pad040[0xFC];
+    if (*(s32 *)((u8 *)directory + 0x2C) == 0) {
+        return 1;
+    }
+    i = 0;
+    table = (u8 *)(base + *(s32 *)((u8 *)directory + 0x28));
+    count = *(s32 *)table;
+    entry = (Entry_001E8FA0 *)(table + 0x10);
+    for (; i < count; i++, entry++) {
+        if (entry->data != 0) {
+            entry->data = *(s32 *)&obj->pad040[0xF8] + entry->data;
+            func_0020F250(entry->data);
+            if (entry->additional != 0) {
+                entry->additional = *(s32 *)&obj->pad040[0xF8] + entry->additional;
+            }
+            entry->resolved = 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E90B0);
 

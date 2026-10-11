@@ -225,7 +225,30 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_00269EC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026A0A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AB80);
+s32 func_0026AB80(s32 arg0, s32 arg1) {
+    switch (arg1) {
+    case 0x29:
+    case 0x2A:
+    case 0x2C:
+    case 0x23:
+    case 0x4A:
+    case 0x4B:
+    case 0xE:
+    case 0x4:
+    case 0x30:
+    case 0x31:
+        return func_0026AC90(arg0, 2, arg1);
+    case 0x50:
+    case 0x4C:
+    case 0x2D:
+    case 0x11:
+    case 0x2E:
+    case 0x2B:
+        return func_0026AC90(arg0, 3, arg1);
+    default:
+        return -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AC90);
 
