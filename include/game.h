@@ -185,4 +185,6 @@ extern char D_002B9135[];
 
 extern s32 D_00317250;
 
+extern s32 D_00317254;
+
 #endif

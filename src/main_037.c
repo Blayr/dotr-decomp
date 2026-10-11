@@ -39,7 +39,9 @@ s32 func_001A8710(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8720);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8730);
+s32 func_001A8730(void) {
+    return ++D_00317254;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8750);
 
