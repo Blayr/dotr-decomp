@@ -211,7 +211,51 @@ s32 func_002781F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return func_00278250(func_001DF540(arg0 >> 8, arg0 & 0xFF), arg1, arg2, arg3);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278250);
+typedef struct {
+    u8 pad0[0x3E];
+    u8 unk3E;
+    u8 pad3F;
+    u8 unk40;
+    u8 unk41;
+    u8 pad42[0x15];
+    s8 low : 3;
+    s8 flag : 1;
+    s8 high : 4;
+} Obj_00278250;
+
+s32 func_00278250(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_00250BC0(s32, s32, s32);
+    extern s32 func_00250A60();
+    extern s32 func_002787F0(void *, void *);
+    Obj_00278250 *obj = (Obj_00278250 *)arg0;
+    s32 mine;
+    s32 theirs;
+
+    if (obj == NULL) {
+        return 0;
+    }
+    if (func_00250900(obj) == 1) {
+        mine = 0;
+    } else if ((obj->unk3E >> 5) != 0) {
+        mine = 0;
+    } else if (obj->unk40 == arg2 && obj->unk41 == arg3 && obj->flag) {
+        mine = func_00250BC0(arg0, arg2, arg3);
+    } else {
+        mine = func_00250A60(arg0, arg2, arg3);
+    }
+    mine += func_002787F0(obj, (void *)func_001DF540(arg1 >> 8, arg1 & 0xFF));
+    if (func_00250900((void *)func_001DF540(arg1 >> 8, arg1 & 0xFF)) == 1) {
+        theirs = 0;
+    } else if ((func_001E0700(arg1 >> 8, arg1 & 0xFF) >> 5) != 0) {
+        theirs = 0;
+    } else if (func_001E2100(arg1 >> 8, arg1 & 0xFF, 5) != 0) {
+        theirs = func_00250B40(arg1 >> 8, arg1 & 0xFF, arg2, arg3);
+    } else {
+        theirs = func_002509E0(arg1 >> 8, arg1 & 0xFF, arg2, arg3);
+    }
+    theirs += func_002787F0((void *)func_001DF540(arg1 >> 8, arg1 & 0xFF), obj);
+    return mine - theirs;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278420);
 
