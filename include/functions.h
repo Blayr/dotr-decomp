@@ -194,6 +194,7 @@ s32 func_00217400(void);
 s32 func_00217530(void);
 void func_00217B00(void);
 void func_00217B50(void);
+void func_0021BB70(void *arg0, void *arg1);
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4);
 void func_00228940(s16 arg0, s16 arg1);
 void func_00241AC0(void);

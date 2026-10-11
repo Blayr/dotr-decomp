@@ -4,7 +4,11 @@ INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BAE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BB20);
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BB70);
+void func_0021BB70(void *arg0, void *arg1) {
+    ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
+    ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
+    ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BB90);
 
