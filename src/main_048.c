@@ -44,7 +44,34 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDFD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE4A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE4B0);
+s32 func_001EE4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    Obj_0031ABB0 *temp_v1;
+    s8 temp_v1_2;
+    void *temp_t4;
+    void (*callback)(void) = NULL;
+
+    if ((arg1 < 0) || (arg1 >= 0x54)) {
+        return arg0;
+    }
+    temp_v1 = D_0031ABB0[arg1];
+    if (temp_v1 == NULL) {
+        return arg0;
+    }
+    if (*(s32 *)((u8 *)temp_v1 + 0x138) == 0) {
+        return arg0;
+    }
+    temp_t4 = *(void **)((u8 *)temp_v1 + 0x13C);
+    if (temp_t4 == NULL) {
+        return arg0;
+    }
+    temp_v1_2 = *(s8 *)((u8 *)temp_v1 + 0x1F3);
+    if ((temp_v1_2 == 4) || (temp_v1_2 == 5U) || (temp_v1_2 == 6)) {
+        if (*(s32 *)((u8 *)temp_t4 + 0x1C) != 0) {
+            callback = func_001EE570;
+        }
+    }
+    return func_001EE6C0(arg0, arg1, arg2, arg3, arg4, arg5, arg6, callback, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE570);
 

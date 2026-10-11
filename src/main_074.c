@@ -248,7 +248,20 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_0025E200);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025E710);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025EBE0);
+void func_0025EBE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 temp_s0;
+    s32 temp_s1;
+    s32 temp_v0;
+
+    temp_v0 = func_0025ECB0();
+    if (temp_v0 >= 0) {
+        temp_s0 = func_001E1090(arg0, arg1);
+        temp_s1 = func_001E1090(arg2, arg3);
+        func_001DFD50(arg0, arg1, temp_v0 & 0xFF, temp_v0 >> 8);
+        func_001DFD50(arg2, arg3, temp_s0 & 0xFF, temp_s0 >> 8);
+        func_001DFD50(arg0, arg1, temp_s1 & 0xFF, temp_s1 >> 8);
+    }
+}
 
 s32 func_0025ECB0(void) {
     s32 var_s0;

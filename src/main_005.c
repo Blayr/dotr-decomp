@@ -100,7 +100,37 @@ INCLUDE_ASM("asm/nonmatchings/main_005", func_00117680);
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00117870);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00117B10);
+static inline s32 min_00117B10(s32 a, s32 b) {
+    return (a < b) ? a : b;
+}
+
+static inline s32 max_00117B10(s32 a, s32 b) {
+    return (a > b) ? a : b;
+}
+
+static inline s32 distance_00117B10(s32 x, s32 y) {
+    return (max_00117B10(y, 3) - min_00117B10(y, 3)) +
+           (max_00117B10(x, 3) - min_00117B10(x, 3));
+}
+
+s32 func_00117B10(s32 arg0) {
+    s32 temp_s0;
+    s32 temp_v0;
+
+    if (arg0 == 0x303) {
+        return 1;
+    }
+    temp_v0 = func_001E36E0(3, 3);
+    if (temp_v0 != 0) {
+        temp_s0 = func_00250370((void *) temp_v0);
+        if (temp_s0 != func_001DE540()) {
+            if (distance_00117B10(arg0 >> 8, arg0 & 0xFF) == 1) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00117BD0(s32 arg0, s32 arg1) {
     s32 sp20[3];

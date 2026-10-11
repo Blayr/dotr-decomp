@@ -157,7 +157,26 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DD20);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DE20);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E150);
+s32 func_0027E150(s32 arg0) {
+    s32 index;
+    s32 count;
+    s32 result;
+    s32 low;
+    s32 high;
+    s32 value;
+
+    count = func_0024E910(arg0);
+    result = arg0;
+    for (index = 0; index < count; index++) {
+        value = func_0024EC50(arg0, index);
+        high = value >> 8;
+        low = value & 0xFF;
+        if (func_001E2100(high, low, 4) == 0) {
+            result = func_0024C7D0((u32) high, low, result);
+        }
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E210);
 
@@ -169,7 +188,41 @@ void func_0027E770(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E780);
+typedef struct State_0027E780 {
+    u16 position;
+    u16 pad2;
+    u16 flags;
+    u16 pad6;
+    u32 destination;
+} State_0027E780;
+
+s32 func_0027D830(s32, s32, s32, s32, s32, s32);
+
+void func_0027E780(void *arg0, s32 arg1, s32 arg2) {
+    State_0027E780 *state = arg0;
+    s32 destination;
+    s32 result;
+    u32 packed_destination;
+    u16 position;
+
+    destination = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+    position = state->position;
+    result = func_0027D830(position >> 8, position & 0xFF,
+                         destination & 0xFF, destination >> 8, 0, arg2);
+    switch (result) {
+    case 1:
+    case 2:
+        state->flags = 0x6FF;
+        packed_destination = state->destination & 0xFFFF;
+        state->destination = (destination << 16) | packed_destination;
+        break;
+    default:
+        state->flags = 0x2FF;
+        packed_destination = state->destination & 0xFFFF;
+        state->destination = (arg1 << 16) | packed_destination;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E840);
 

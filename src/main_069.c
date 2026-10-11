@@ -60,7 +60,43 @@ INCLUDE_ASM("asm/nonmatchings/main_069", func_00243290);
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002432F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243390);
+typedef struct {
+    s32 mode;
+    u8 data[0x28];
+    s32 offset;
+    u8 *buffer;
+    s32 start;
+    s32 end;
+    s32 capacity;
+} Buffer_00243390;
+
+void func_00243390(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4) {
+    s32 available;
+    s32 capacity;
+    s32 start;
+    Buffer_00243390 *buffer = arg0;
+
+    if (buffer->mode == 0) {
+        *arg1 = (void *)((u32)buffer->data + buffer->offset);
+        *arg2 = 0x28 - buffer->offset;
+        *arg3 = buffer->buffer;
+        *arg4 = buffer->capacity;
+    } else {
+        available = (capacity = buffer->capacity) - buffer->end;
+        start = buffer->start;
+        if ((capacity - start) >= available) {
+            *arg1 = buffer->buffer + start;
+            *arg2 = available;
+            *arg3 = 0;
+            *arg4 = 0;
+        } else {
+            *arg1 = buffer->buffer + start;
+            *arg2 = buffer->capacity - buffer->start;
+            *arg3 = buffer->buffer;
+            *arg4 = available - (buffer->capacity - buffer->start);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00243450);
 

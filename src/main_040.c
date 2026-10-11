@@ -4,7 +4,38 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA3B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA420);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA520);
+typedef struct Entry_001BA520 {
+    s16 id;
+    u8 state;
+    u8 value : 5;
+    s8 flag5 : 1;
+    s8 flag6 : 1;
+    s8 flag7 : 1;
+} Entry_001BA520;
+
+extern Entry_001BA520 *D_00317B60;
+
+s32 func_001BA520(s16 arg0, s32 arg1, s64 arg2, s64 arg3, s64 arg4) {
+    Entry_001BA520 *entry;
+    s32 i;
+
+    entry = D_00317B60;
+    i = 0;
+    do {
+        if (entry->state == 0) {
+            entry->id = arg0;
+            entry->value = arg1;
+            entry->flag5 = (s8)arg2;
+            entry->flag6 = (s8)arg3;
+            entry->flag7 = (s8)arg4;
+            entry->state = 0x80;
+            return 1;
+        }
+        i++;
+        entry++;
+    } while (i < 8);
+    return 0;
+}
 
 void func_001BA5F0(void) {
     func_00199BC0(D_00317B68, 0x356, 2, func_001BA630);

@@ -59,7 +59,16 @@ f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4) {
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C350);
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C450);
+s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6) {
+    s32 result;
+    s32 object;
+
+    object = func_0020F290(func_001FD680(arg0, arg1, arg2, 0, arg1 * 22));
+    func_001FEAB0(arg1);
+    result = func_001FE660(object, arg1, (s16)arg3, (s16)arg4, 1.0f, 1.0f, arg6, func_001FDFE0);
+    func_001FEAF0(arg1);
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C510);
 

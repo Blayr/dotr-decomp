@@ -272,7 +272,41 @@ s32 func_00248E30(s32 arg0, s32 arg1) {
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00248EA0);
+typedef struct Entry_00248EA0 {
+    u32 unk0;
+    u32 value;
+} Entry_00248EA0;
+
+s32 func_00266C70(s32, s32);
+s32 func_00266DF0(s32);
+
+s32 func_00248EA0(void) {
+    s32 index;
+    s32 total;
+    s32 count;
+    s32 id;
+    u32 kind;
+    Entry_00248EA0 *entry;
+
+    total = 0;
+    count = func_00266DF0(0x34);
+    for (index = 0; index < count; index++) {
+            id = func_00266C70(0x34, index);
+            if (id >= 0) {
+                entry = func_00250740(id >> 8, id & 0xFF, 2);
+                kind = entry->value >> 16;
+                switch (kind) {
+                case 0:
+                    total += *(u16 *)((u8 *)entry + 4);
+                    break;
+                case 1:
+                    total -= *(u16 *)((u8 *)entry + 4);
+                    break;
+                }
+            }
+    }
+    return total;
+}
 
 s32 func_00248F60(s32 arg0, s32 arg1) {
     s32 temp_a2;

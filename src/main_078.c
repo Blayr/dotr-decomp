@@ -2,7 +2,44 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00276120);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002761D0);
+typedef struct {
+    u16 id;
+    s16 field_02;
+    u16 field_04;
+    u16 field_06;
+    s32 field_08;
+    u8 state : 2;
+    u8 flags : 6;
+    u8 padding[3];
+} Entry_002761D0;
+
+void func_002761D0(void *arg0) {
+    s32 i;
+    s32 j;
+    Entry_002761D0 *dst;
+    Entry_002761D0 *src;
+
+    i = 0;
+    dst = arg0;
+    do {
+        if (dst->id == 0xFFFF) {
+            for (j = i + 1; j < 22; j++) {
+                src = &((Entry_002761D0 *)arg0)[j];
+                if (src->id != 0xFFFF) {
+                    j = 22;
+                    *dst = *src;
+                    src->id = 0xFFFF;
+                    src->field_02 = 0xFF;
+                    src->field_08 = -1;
+                    src->field_04 = 0xFFFF;
+                    src->state = 0;
+                }
+            }
+        }
+        i++;
+        dst++;
+    } while (i < 22);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00276290);
 
@@ -133,7 +170,17 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_00278250);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278420);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278510);
+void func_00278510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    if (arg1 == -1) {
+        func_00278420(arg0, arg2, arg3, arg4);
+        return;
+    }
+    if (func_002781B0(arg1 >> 8, arg1 & 0xFF, arg5 & 0xFF) == 0) {
+        func_00278420(arg0, arg2, arg3, arg4);
+        return;
+    }
+    func_00278250(arg0, arg1, arg3, arg4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_002785D0);
 
@@ -201,7 +248,38 @@ void *func_002788D0(u16 *arg0, u16 *arg1) {
     return &((Ent_002788D0 *)0x01ED0000)[idx];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278930);
+typedef struct Entry_00278930 {
+    s16 id;
+    u8 slots[5];
+    u8 pad;
+    s32 values[4];
+} Entry_00278930;
+
+void func_00278930(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Entry_00278930 *entry = arg0;
+    s32 i;
+    u8 *p;
+
+    entry->id = arg1;
+    i = 0;
+    do {
+        entry->slots[i] = 0xFF;
+        i++;
+    } while (i < 5);
+    i = 0;
+    p = arg0;
+    do {
+        i++;
+        *(s32 *)(p + 8) = 0;
+        p += 4;
+    } while (i < 4);
+    if (arg2 == 0) {
+        ((u8 *)arg0)[2] = arg3;
+        return;
+    }
+    func_00278DD0((u8 *)arg2, (u8 *)arg0 + 2);
+    entry->slots[(u8)func_00278D90((u8 *)arg2)] = arg3;
+}
 
 s32 func_002789F0(s32 arg0, s32 arg1) {
     s32 temp_v0;
@@ -306,7 +384,35 @@ s32 func_00279130(s32 arg0, u16 *arg1) {
     return (temp_s0 << 0x10) | (func_0026FBB0(*arg1) & 0xFFFF);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00279170);
+typedef struct Condition_00279170 {
+    u16 id;
+    u16 operation;
+    u32 value;
+} Condition_00279170;
+
+s32 func_00279170(void *arg0, s32 arg1, u16 arg2) {
+    Condition_00279170 *condition = arg0;
+
+    if (condition == NULL) {
+        return 1;
+    }
+    if (arg1 != condition->id) {
+        return 1;
+    }
+    switch (condition->operation) {
+    case 36:
+        if ((func_0026FBB0(arg2) >> 16) >= condition->value) {
+            return 1;
+        }
+        break;
+    case 37:
+        if ((func_0026FBB0(arg2) >> 16) <= condition->value) {
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 void func_00279230(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                    s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8) {

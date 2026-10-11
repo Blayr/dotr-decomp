@@ -154,7 +154,43 @@ s32 func_0024E910(s32 arg0) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E950);
+s32 func_0024E950(s32 arg0, s32 arg1, s32 arg2) {
+    s32 x;
+    s32 y;
+    s32 nextY;
+
+    x = arg0 & 0xFF;
+    y = arg0 >> 8;
+    switch (arg2) {
+    case 0:
+        x -= arg1;
+        if (x >= 0) {
+            return (y << 8) | x;
+        }
+        break;
+    case 1:
+        nextY = y - arg1;
+        if (nextY < 0) {
+            break;
+        }
+        return x | (nextY << 8);
+    case 2:
+        x += arg1;
+        if (x >= 7) {
+            break;
+        }
+        return (y << 8) | x;
+    case 3:
+        nextY = y + arg1;
+        if (nextY >= 7) {
+            break;
+        }
+        return x | (nextY << 8);
+    default:
+        return -1;
+    }
+    return -1;
+}
 
 s32 func_0024EA10(s32 arg0, u32 arg1) {
     u32 var_v0;

@@ -48,7 +48,43 @@ char *func_00217B60(char *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00217BD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217CB0);
+typedef struct Sprite_00217CB0 {
+    s16 u;
+    s16 v;
+    s16 width;
+    s16 height;
+    u8 pad08[8];
+    u16 texture;
+    u8 pad12[2];
+} Sprite_00217CB0;
+
+typedef struct Source_00217CB0 {
+    u8 pad00[0x10];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 pad14[0xC];
+    u8 flags0;
+    u8 flags1;
+    s16 z;
+    u16 sprite;
+} Source_00217CB0;
+
+extern Sprite_00217CB0 D_002950A0[];
+
+void func_00217D70(s32, s16, s16, s16, s16, s16, s16, s16, s16,
+                   u8, u8, u8, u8, u8, u16, u8, s16);
+
+void func_00217CB0(s32 arg0, void *arg1, s16 x, s16 y) {
+    Source_00217CB0 *src = arg1;
+    Sprite_00217CB0 *sprite = &D_002950A0[src->sprite];
+
+    func_00217D70(arg0, x, y, (s16)(x + sprite->width),
+                   (s16)(y + sprite->height), sprite->u, sprite->v,
+                   sprite->width, sprite->height, src->r, src->g, src->b,
+                   src->a, src->flags0, sprite->texture, src->flags1, src->z);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00217D70);
 

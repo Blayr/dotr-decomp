@@ -13,9 +13,38 @@ void func_00106E90(void *arg0, void *arg1) {
     dst[2] *= src[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00106ED0);
+void func_00106ED0(void *arg0, void *arg1) {
+    f32 *matrix = (f32 *)arg0;
+    f32 *scale = (f32 *)arg1;
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00106FA0);
+    matrix[0] *= scale[0];
+    matrix[1] *= scale[1];
+    matrix[2] *= scale[2];
+    matrix[4] *= scale[0];
+    matrix[5] *= scale[1];
+    matrix[6] *= scale[2];
+    matrix[8] *= scale[0];
+    matrix[9] *= scale[1];
+    matrix[10] *= scale[2];
+    matrix[12] *= scale[0];
+    matrix[13] *= scale[1];
+    matrix[14] *= scale[2];
+}
+
+void func_00106FA0(f32 *dst, f32 *src) {
+    dst[0] += src[0];
+    dst[1] += src[1];
+    dst[2] += src[2];
+    dst[4] += src[0];
+    dst[5] += src[1];
+    dst[6] += src[2];
+    dst[8] += src[0];
+    dst[9] += src[1];
+    dst[10] += src[2];
+    dst[12] += src[0];
+    dst[13] += src[1];
+    dst[14] += src[2];
+}
 
 s32 func_00107070(void *arg0, s64 arg1, f32 fparg0) {
     f32 (*matrix)[4] = (f32 (*)[4])arg0;

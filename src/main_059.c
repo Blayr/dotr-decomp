@@ -247,13 +247,57 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_00212DF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00212E60);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00212FD0);
+u8 *func_00212FD0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u8 *temp_s1;
+    u8 *temp_v0;
+
+    func_002130A0(arg3);
+    *(s32 *)(arg0 + 0) = 0x10000002;
+    *(s32 *)(arg0 + 4) = 0;
+    *(s32 *)(arg0 + 8) = 0x11000000;
+    *(s32 *)(arg0 + 0xC) = 0x51000002;
+    *(s64 *)(arg0 + 0x10) = 0x1000000000008001LL;
+    *(s64 *)(arg0 + 0x18) = 0xE;
+    *(s64 *)(arg0 + 0x20) = 0x73;
+    temp_s1 = arg0 + 0x30;
+    *(s64 *)(arg0 + 0x28) = 0;
+    temp_v0 = func_002131D0(temp_s1, arg1, arg2);
+    if (temp_v0 == NULL) {
+        return arg0;
+    }
+    func_00213D00(temp_s1, temp_v0);
+    func_00213F10(temp_s1, temp_v0);
+    return temp_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002130A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002131D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00213410);
+s32 func_00213410(s32 arg0, u32 cursor, s32 size) {
+    u32 end = cursor + size;
+    u32 *scratchpad = (u32 *)0x70000000;
+    u32 packet;
+
+    if (cursor < end) {
+        do {
+        packet = cursor;
+        if (!(*(u32 *)(cursor + 0xC) & 0x8000)) {
+            arg0 = func_002134D0(arg0, (s32 *)cursor);
+        } else {
+            arg0 = func_002138D0(arg0, (s32 *)cursor);
+        }
+        cursor = scratchpad[0x3F];
+        if (*(u32 *)(packet + 4) & 0x8000) {
+            cursor += 4;
+        }
+        while (*(s32 *)cursor == 0) {
+            cursor += 4;
+        }
+        } while (cursor < end);
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002134D0);
 
@@ -301,7 +345,43 @@ void func_00213F90(void) {
     func_00209D30(func_00213FC0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00213FC0);
+typedef struct {
+    s32 key;
+    s32 value;
+} Record_00213FC0;
+
+typedef struct {
+    s32 *output;
+    Record_00213FC0 *end;
+    s32 ready;
+    Record_00213FC0 *begin;
+} State_00213FC0;
+
+void func_0020B840(void *, s32, s32, s32 (*)(s32 *, s32 *));
+
+s32 func_00213FC0(s32 arg0) {
+    State_00213FC0 *state = (State_00213FC0 *)&D_0032F780;
+    s32 *output = (s32 *)arg0;
+    Record_00213FC0 *record;
+
+    if (D_0032F78C == D_0032F784) {
+        return arg0;
+    }
+
+    func_0020B840(state->begin, state->end - state->begin, 8, func_00214080);
+    for (record = state->begin; record < state->end; record++) {
+        output[0] = 0x50000000;
+        output[1] = record->value;
+        output[2] = 0;
+        output[3] = 0;
+        output += 4;
+    }
+
+    state->output = output;
+    state->begin = state->end;
+    state->ready = 1;
+    return (s32)output;
+}
 
 s32 func_00214080(s32 *arg0, s32 *arg1) {
     return *arg0 - *arg1;
