@@ -187,7 +187,27 @@ s32 func_001E7D00(s32 index) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7DE0);
+s32 func_001E7DE0(s32 arg0) {
+    s32 func_001F08D0(s32);
+    void func_00217B50(void *);
+    Obj_0031ABB0 *obj;
+    Obj_0031ABB0 **slot;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    slot = &D_0031ABB0[arg0];
+    obj = *slot;
+    if (obj == NULL) {
+        return 0;
+    }
+    if (func_001F08D0(arg0) == 0) {
+        return 0;
+    }
+    func_00217B50(obj);
+    *slot = NULL;
+    return 1;
+}
 
 typedef struct {
     s8 unused0 : 2;
