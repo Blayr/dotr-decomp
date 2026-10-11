@@ -815,7 +815,31 @@ void func_001E3FE0(void) {
     D_00318144 = 0x18;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3FF0);
+void func_001E3FF0(s32 arg0, s16 arg1, s16 arg2) {
+    u8 *state = D_00317490;
+    s32 i;
+    s32 bit;
+
+    *(s8 *)0x00318142 = 7;
+    *(s16 *)0x0031813A = 0;
+    *(s16 *)0x0031812A = arg1;
+    *(s16 *)0x0031812C = arg2;
+    if (arg0 >= 0) {
+        state[0xD54] = arg0;
+        state[0xD35] = 0;
+        state[0xD36] = 0;
+        i = 0;
+        do {
+            if (func_00214D00(0, i) != 0) {
+                bit = 1;
+            } else {
+                bit = 0;
+            }
+            state[0xD36] |= bit << i;
+            i++;
+        } while (i < 3);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E40A0);
 
