@@ -469,7 +469,40 @@ s32 func_001F96F0(s32 arg0, s32 arg1) {
     return (*(u16 *)(data + 0x8A8) & (1 << arg1)) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9770);
+typedef struct {
+    __int128 data[9];
+} Block_001F9770;
+
+s32 func_001F9770(s32 arg0, s32 arg1, s32 arg2) {
+    s32 offset;
+    u8 *state;
+    u8 *slot;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    state = (u8 *)D_0031BEB0[arg0];
+    if (state == NULL) {
+        return 0;
+    }
+    if ((arg1 < 0) || (arg1 >= 10)) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        if (arg2 != 1) {
+            offset = arg1 * 0x90;
+            *(Block_001F9770 *)(offset + (s32)state + 0x60) = *(Block_001F9770 *)arg2;
+            slot = state + offset;
+            func_001F95E0(arg0, arg1, 0, slot + 0x70);
+            func_001F95E0(arg0, arg1, 1, slot + 0xA0);
+            func_001F95E0(arg0, arg1, 2, slot + 0xD0);
+        }
+        *(u16 *)(state + 0x8A8) |= 1 << arg1;
+    } else {
+        *(u16 *)(state + 0x8A8) &= ~(1 << arg1);
+    }
+    return 1;
+}
 
 s32 func_001F98C0(s32 arg0, s32 arg1) {
     s32 temp_v1;
