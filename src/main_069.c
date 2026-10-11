@@ -63,7 +63,28 @@ void func_00243A40(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00243A90);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243D90);
+typedef struct {
+    s32 unk00;
+    u8 pad04[0x28];
+    s32 unk2C;
+    s32 unk30;
+} Obj_00243D90;
+
+void func_0017FD20(s32);
+void func_00182A28(s32);
+void func_00192058(void);
+
+s32 func_00243D90(void *arg0) {
+    Obj_00243D90 *p = (Obj_00243D90 *)arg0;
+
+    if (p->unk00 != 0) {
+        func_00192058();
+        func_00182A28(p->unk2C);
+    } else {
+        func_0017FD20(p->unk30);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00243DE0);
 
