@@ -207,7 +207,79 @@ s32 func_0014D1E0(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014D3E0);
+typedef struct Info_0014D3E0 {
+    u8 pad00[8];
+    u16 x;
+    s16 y;
+} Info_0014D3E0;
+
+typedef struct Sprite_0014D3E0 {
+    Info_0014D3E0 *info;
+    u8 pad04[0x34];
+    s16 x;
+    s16 y;
+} Sprite_0014D3E0;
+
+u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
+s32 func_00278F10(s32, u16 *, s32, s32);
+
+s32 func_0014D3E0(s32 arg0, u8 *arg1, void *arg2) {
+    u16 *nodes[8];
+    s32 entries[7];
+    s16 a;
+    s16 b;
+    s32 i;
+    s32 card;
+    s32 value;
+    s32 best;
+
+    if (arg2 == NULL) {
+        return -1;
+    } else {
+        s32 top;
+        s32 *entry;
+        u16 **node;
+
+        func_0026FD30(arg0, entries);
+        best = -1;
+        top = -1;
+        i = 0;
+        if (i < func_0026FE20(arg0)) {
+            entry = entries;
+            node = nodes;
+            do {
+                b = 0;
+                a = 0;
+                card = *entry;
+                *node = NULL;
+                if ((func_0026FCE0(card) >> 5) == 0) {
+                    *node = func_00278A90(arg0, *node, i & 0xFF, card & 0xFFFF, 0, &a, &b);
+                    *node = func_00278E40(*node);
+                    value = func_00278F10(arg0, *node, 0, 0);
+                    if (func_0026FB10(arg0, card) == 1) {
+                        if (best < value) {
+                            func_0014D5C0(arg0, *node, entries);
+                            func_00278DD0((u8 *)*node + 2, arg1 + 6);
+                            func_001DCD70(arg2, **node);
+                            ((Sprite_0014D3E0 *)arg2)->x = (value >> 16) - (((Sprite_0014D3E0 *)arg2)->info->x & 0x1FFF);
+                            ((Sprite_0014D3E0 *)arg2)->y = (value & 0xFFFF) - (((Sprite_0014D3E0 *)arg2)->info->y & 0x1FFF);
+                            best = value;
+                            if (top < value) {
+                                top = value;
+                            }
+                        }
+                    } else if (top < value) {
+                        top = value;
+                    }
+                }
+                entry++;
+                node++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+        return top;
+    }
+}
 
 typedef struct {
     u16 id;
