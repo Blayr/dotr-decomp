@@ -84,7 +84,66 @@ INCLUDE_ASM("asm/nonmatchings/main_009", func_00138780);
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00138950);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00138B60);
+s32 func_00138B60(s32 arg0) {
+    extern s32 func_001E1580(s32, s32);
+    extern s32 func_001E1640(s32, s32);
+    u16 cells[0x16];
+    s32 target;
+    s32 row;
+    s32 col;
+    u16 *p;
+    s32 y;
+    s32 x;
+    s32 best;
+    s32 i;
+    s32 bestScore;
+    u32 handle;
+    s32 pos;
+    s32 score;
+    s32 j;
+
+    pos = func_001E1090((arg0 == 0) ? 1 : 0, 0);
+    if (func_00266DF0(0x39) > 0) {
+        return -1;
+    }
+    handle = func_00272210(func_0024CA40(0, 0, arg0, 2, 0x21, 0xE), arg0);
+    p = cells;
+    for (j = 0; j < 0x16; j++) {
+        cells[j] = 0xFFFF;
+    }
+    func_0027C070((arg0 == 0) ? 1 : 0, cells, 0x34, 1);
+    target = -1;
+    best = target;
+    bestScore = 1;
+    i = 0;
+    if (i < func_0027C670(cells)) {
+        row = pos >> 8;
+        col = pos & 0xFF;
+        do {
+        pos = func_001E1090(*p >> 8, *p & 0xFF);
+        y = pos >> 8;
+        x = pos & 0xFF;
+        if ((((x < col) ? col : x) - ((col < x) ? col : x)) +
+                (((y < row) ? row : y) - ((row < y) ? row : y)) == 1 &&
+            func_001E2100(*p >> 8, *p & 0xFF, 1) == 0 &&
+            func_001E1580(*p >> 8, *p & 0xFF) == 0 &&
+            func_001E1640(*p >> 8, *p & 0xFF) == 0) {
+            if ((score = func_002509E0(*p >> 8, *p & 0xFF, x, y)) >= bestScore) {
+                best = *p;
+                if (best == func_0024EC50(handle, 0)) {
+                    target = best;
+                }
+                bestScore = score;
+            }
+        }
+        p++;
+        } while (++i < func_0027C670(cells));
+    }
+    if (best < 0) {
+        return -1;
+    }
+    return ((best & 0xFFFF) << 16) | (target & 0xFFFF);
+}
 
 s32 func_00138DB0(s32 arg0) {
     s32 temp_s0;
