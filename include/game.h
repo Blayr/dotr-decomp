@@ -670,4 +670,11 @@ s32 func_0016F4D0(s32, s32, s32);
 void func_0012C1A0(void *, s32);
 s32 func_0012D270(s32, s32, s32, s32);
 
+void func_00113140(void *, s32);
+s32 func_00114080(s32, s32, void *);
+void func_00139D90(void *, s32);
+s32 func_0013AB70(s32, s32, void *);
+void func_00146EC0(void *, s32);
+s32 func_00148020(s32, s32, void *);
+
 #endif
