@@ -35,7 +35,13 @@ s32 func_001076F0(void *arg0, s8 arg1, s8 arg2, s8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107710);
+s32 func_00107710(u8 *arg0, u8 *arg1) {
+    arg0[0] = arg1[0];
+    arg0[1] = arg1[1];
+    arg0[2] = arg1[2];
+    arg0[3] = arg1[3];
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107740);
 
