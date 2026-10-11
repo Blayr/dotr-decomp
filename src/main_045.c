@@ -232,7 +232,30 @@ s32 func_001E0760(s32 a0, s32 a1, s8 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E07C0);
+static inline void *check_001E07C0(void *ptr) {
+    if (ptr == NULL) {
+        return NULL;
+    }
+    if (((u8 *)ptr)[0x45] >= 11) {
+        return NULL;
+    }
+    return ptr;
+}
+
+s32 func_001E07C0(void) {
+    void **ptr;
+    void *data;
+
+    ptr = check_001E07C0(func_001DD130());
+    if (ptr == NULL) {
+        return -1;
+    }
+    data = *ptr;
+    if (data != NULL) {
+        return ((u8 *)data)[1];
+    }
+    return -1;
+}
 
 void *func_001DD130();
 
@@ -382,7 +405,38 @@ s32 func_001E13C0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1420);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E14B0);
+typedef struct {
+    s8 reserved : 3;
+    s8 active : 1;
+    s8 reserved2 : 4;
+} Flags_001E14B0;
+
+typedef struct {
+    u8 reserved[0x45];
+    u8 type;
+    u8 reserved2[0x12];
+    Flags_001E14B0 flags;
+} Entry_001E14B0;
+
+static inline void *lookup_001E14B0(void) {
+    void *entry = func_001DD130();
+
+    if (entry == NULL) {
+        entry = NULL;
+    } else if (((Entry_001E14B0 *)entry)->type >= 0xB) {
+        entry = NULL;
+    }
+    return entry;
+}
+
+s32 func_001E14B0(void) {
+    void *entry = lookup_001E14B0();
+
+    if (entry == NULL) {
+        return 0;
+    }
+    return ((Entry_001E14B0 *)entry)->flags.active != 0 ? 1 : 0;
+}
 
 void *func_001DD130();
 
@@ -523,7 +577,30 @@ s32 func_001E1700(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1760);
+typedef struct Card_001E1760 {
+    u8 pad00[0x40];
+    u8 x;
+    u8 y;
+    u8 pad42[3];
+    u8 type;
+} Card_001E1760;
+
+s32 func_002464F0(void *, u8, u8);
+
+s32 func_001E1760(void) {
+    Card_001E1760 *card;
+
+    card = func_001DD130();
+    if (card == NULL) {
+        card = NULL;
+    } else if (card->type >= 11) {
+        card = NULL;
+    }
+    if (card != NULL) {
+        return func_002464F0(card, card->x, card->y) & 0xF;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E17D0);
 

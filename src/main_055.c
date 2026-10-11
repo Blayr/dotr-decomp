@@ -88,7 +88,23 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_002038F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203A40);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203B50);
+s32 func_00203B50(s32 arg0, s32 arg1) {
+    u8 *temp_a0;
+    s32 var_a1;
+    u8 *var_a2;
+
+    temp_a0 = D_003259C0 + (arg0 * 0x5C) + 0x200;
+    var_a1 = 0;
+    var_a2 = temp_a0;
+    do {
+        if (arg1 & 0xFFFF & (1 << var_a1)) {
+            *(s32 *)(var_a2 + 0x18) = -*(s8 *)(temp_a0 + 0x59);
+        }
+        var_a1 += 1;
+        var_a2 += 4;
+    } while (var_a1 < 0x10);
+    return 0;
+}
 
 typedef struct {
     u8 padding[0x25B];

@@ -8,7 +8,33 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDA40);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDCB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDF20);
+typedef struct Entry_001EDF20 {
+    u8 padding[0x68];
+    s32 id : 27;
+    u32 flags : 5;
+    u32 padding_6C;
+} Entry_001EDF20;
+
+extern Entry_001EDF20 D_0031AD70[];
+
+void func_001EDF20(s32 arg0) {
+    s32 var_a3;
+    Entry_001EDF20 *var_t0;
+    s32 temp_v1;
+
+    var_a3 = 1;
+    var_t0 = D_0031AD70;
+    do {
+        temp_v1 = var_t0->id;
+        if (temp_v1 >= 0) {
+            if (arg0 < 0 || temp_v1 == arg0) {
+                var_t0->id = -1;
+            }
+        }
+        var_a3 += 1;
+        var_t0++;
+    } while (var_a3 < 0x20);
+}
 
 void func_001EDF90(s32 arg0) {
     func_00209D30(func_001EDFD0(func_00209D20(), arg0));
@@ -168,7 +194,22 @@ s32 func_001F12A0(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1300);
+s32 func_001F1300(s32 arg0) {
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)temp_v0 + 0x1F2) >= 0) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1370);
 

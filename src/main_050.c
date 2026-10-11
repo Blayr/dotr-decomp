@@ -186,7 +186,20 @@ s32 func_001F5C40(s32 arg0, s32 arg1) {
     return func_001E3BF0(row, column, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5CA0);
+s32 func_001F5CA0(s32 arg0, void *arg1) {
+    s32 row = arg0 >> 8;
+    s32 column = arg0 & 0xFF;
+    s32 *out = arg1;
+
+    out[3] = 0;
+    out[2] = 0;
+    out[1] = 0;
+    out[0] = 0;
+    if (row < 0 || row >= 3 || column < 0 || column >= 11) {
+        return 0;
+    }
+    return func_001E3C90(row, column, arg1);
+}
 
 s32 func_001F5D10(s32 arg0, s32 arg1) {
     s32 temp_a1;

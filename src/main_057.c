@@ -70,7 +70,18 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A0B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A280);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A340);
+void *func_0020A340(void *arg0, void *arg1) {
+    *(s32 *)((u8 *)arg0 + 0) = 0x10000002;
+    *(s32 *)((u8 *)arg0 + 4) = 0;
+    *(s32 *)((u8 *)arg0 + 8) = 0;
+    *(s32 *)((u8 *)arg0 + 0xC) = 0x51000002;
+    *(s64 *)((u8 *)arg0 + 0x10) = ((s64)0x10000000 << 32) | 0x8001;
+    *(s64 *)((u8 *)arg0 + 0x18) = 0xE;
+    *(s64 *)((u8 *)arg0 + 0x20) = ((s64)((u8 *)arg1)[0] << 16) |
+        ((s64)((u8 *)arg1)[2] | ((s64)((u8 *)arg1)[1] << 8));
+    *(s64 *)((u8 *)arg0 + 0x28) = 0x3D;
+    return (u8 *)arg0 + 0x30;
+}
 
 void func_0020A3B0(s64 arg0) {
     u8 *base = D_00325F50;

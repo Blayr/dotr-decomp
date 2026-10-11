@@ -314,7 +314,24 @@ INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEE70);
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEF20);
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF000);
+s32 func_001DF000(s32 arg0, s32 arg1) {
+    s32 offset;
+    u8 *temp_a0;
+    u16 *temp_a1;
+
+    offset = arg0 * 0x350;
+    temp_a0 = D_00317490 + offset + 0x232;
+    if ((arg1 < 0) || (arg1 >= 0x78)) {
+        return 0;
+    }
+    temp_a1 = (u16 *)(temp_a0 + (arg1 * 2));
+    if (*temp_a1 == 0x3E7) {
+        return 0;
+    }
+    *temp_a1 = 0x3E7;
+    temp_a0[0xF0]--;
+    return 1;
+}
 
 void func_001DF070(s32 arg0) {
     s16 *temp_a1;
