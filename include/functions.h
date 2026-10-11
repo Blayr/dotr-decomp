@@ -1113,6 +1113,7 @@ void func_00245D80(u8 *arg0);
 void func_00246490(void);
 void func_002464C0(void);
 void func_002464E0(void);
+s32 func_00248AF0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00248E30(s32 arg0, s32 arg1);
 s32 func_00248EA0(void);
 s32 func_00248F60(s32 arg0, s32 arg1);

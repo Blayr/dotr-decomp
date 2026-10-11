@@ -316,7 +316,69 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00248460);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002487A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00248AF0);
+s32 func_00248AF0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 kind;
+    extern s32 func_001E1030();
+
+    kind = func_001E1030(arg0, arg1);
+    if (func_00248370(arg0, arg1, arg2) != 0) {
+        switch (D_0029D1F0[arg2]) {
+        case 4:
+            switch (D_0029CF32[arg2]) {
+            case 6:
+                return arg2 | 0x40444000;
+            case 7:
+                return arg2 | 0x406AC000;
+            case 8:
+                switch (kind) {
+                case 0x156:
+                    return arg2 | 0x407A0000;
+                case 7:
+                    return arg2 | 0x407D4000;
+                }
+                break;
+            case 9:
+                switch (kind) {
+                case 0x10:
+                    return arg2 | (((func_0019A5C8() % 5 + 0xD) << 14) | 0x40000000);
+                case 0x11:
+                    return arg2 | (((func_0019A5C8() % 5 + 0xD) << 14) | 0x40000000);
+                case 0xA7:
+                    return arg2 | (((func_0019A5C8() % 15 + 0xD1) << 14) | 0x40000000);
+                case 0x14C:
+                    return arg2 | (((func_0019A5C8() % 32 + 0x65) << 14) | 0x40000000);
+                case 0x17B:
+                    return arg2 | (((u16)func_002494D0() << 14) | 0x40000000);
+                }
+                break;
+            }
+            break;
+        case 0:
+            switch (D_0029CF32[arg2]) {
+            case 0:
+                return arg2 | 0x864000;
+            default:
+                return arg2 | 0x860000;
+            }
+        case 3:
+            return arg2 | 0x874000;
+        case 2:
+            return arg2 | 0x878000;
+        case 1:
+            switch (D_0029CF32[arg2]) {
+            case 5:
+                return arg2 | 0x870000;
+            default:
+                return arg2 | 0x860000;
+            }
+        default:
+            return arg2 | 0x860000;
+        }
+    } else {
+        return 0x3E7;
+    }
+    return 0x3E7;
+}
 
 s32 func_00248E30(s32 arg0, s32 arg1) {
     s32 var_v0;
