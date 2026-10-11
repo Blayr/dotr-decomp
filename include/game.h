@@ -628,4 +628,7 @@ void func_002435A0(void *);
 
 extern s32 D_0031C048;
 
+void func_0010A010(void);
+void func_0010A450(void);
+
 #endif
