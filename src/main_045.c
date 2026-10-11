@@ -192,7 +192,29 @@ INCLUDE_ASM("asm/nonmatchings/main_045", func_001E10F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E11B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E1360);
+void *func_001DD130(void);
+
+static inline void *lookup_001E1360(void) {
+    void *ptr;
+
+    ptr = func_001DD130();
+    if (ptr == NULL) {
+        ptr = NULL;
+    } else if (*((u8 *)ptr + 0x45) >= 11) {
+        ptr = NULL;
+    }
+    return ptr;
+}
+
+s32 func_001E1360(void) {
+    void *ptr;
+
+    ptr = lookup_001E1360();
+    if (ptr != NULL) {
+        return *((u8 *)ptr + 0x46);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E13C0);
 
