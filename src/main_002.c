@@ -17,7 +17,27 @@ INCLUDE_ASM("asm/nonmatchings/main_002", func_00106ED0);
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00106FA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107070);
+s32 func_00107070(void *arg0, s64 arg1, f32 fparg0) {
+    f32 (*matrix)[4] = (f32 (*)[4])arg0;
+
+    if (arg1 == 0) {
+        matrix[0][0] += fparg0;
+        matrix[1][0] += fparg0;
+        matrix[2][0] += fparg0;
+        matrix[3][0] += fparg0;
+    } else if ((s16)arg1 == 1) {
+        matrix[0][1] += fparg0;
+        matrix[1][1] += fparg0;
+        matrix[2][1] += fparg0;
+        matrix[3][1] += fparg0;
+    } else {
+        matrix[0][2] += fparg0;
+        matrix[1][2] += fparg0;
+        matrix[2][2] += fparg0;
+        matrix[3][2] += fparg0;
+    }
+    return 0;
+}
 
 s32 func_00107130(void *arg0, void *arg1, s32 arg2) {
     if (arg2 == 0) {
@@ -68,7 +88,27 @@ s32 func_00107310(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107370);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107450);
+void func_001F6340(s32, f32 *);
+
+static inline void subtract_00107450(f32 *value, f32 amount) {
+    *value -= amount;
+    if (*value < 0.0f) {
+        *value = 0.0f;
+    }
+}
+
+s32 func_00107450(s32 arg0, f32 fparg0) {
+    f32 values[3];
+
+    if (func_001F5EC0(arg0) != 0) {
+        func_001F6340(arg0, values);
+        subtract_00107450(&values[0], fparg0);
+        subtract_00107450(&values[1], fparg0);
+        subtract_00107450(&values[2], fparg0);
+        func_001F62B0(arg0, values);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00107510);
 
@@ -326,7 +366,26 @@ s32 func_00109100(u8 *arg0, void *arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_001091B0);
+s32 func_001091B0(void *arg0, void *arg1, void *arg2) {
+    *(s16 *)((u8 *)arg0 + 2) = 0x11;
+    *(s16 *)arg0 = 4;
+    *(s64 *)((u8 *)arg0 + 8) = 0x4141;
+    *(s32 *)((u8 *)arg0 + 4) = 0;
+    func_002086D0(arg0, 0x48 | ((s64)0x80 << 32));
+    ((u8 *)arg0)[0x10] = ((u8 *)arg1)[0];
+    ((u8 *)arg0)[0x11] = ((u8 *)arg1)[1];
+    ((u8 *)arg0)[0x12] = ((u8 *)arg1)[2];
+    ((u8 *)arg0)[0x13] = ((u8 *)arg1)[3];
+    ((u8 *)arg0)[0x20] = ((u8 *)arg2)[0];
+    ((u8 *)arg0)[0x21] = ((u8 *)arg2)[1];
+    ((u8 *)arg0)[0x22] = ((u8 *)arg2)[2];
+    ((u8 *)arg0)[0x23] = ((u8 *)arg2)[3];
+    *(s32 *)((u8 *)arg0 + 0x24) = 0x3F800000;
+    *(s32 *)((u8 *)arg0 + 0x14) = 0x3F800000;
+    ((u8 *)arg0)[0x1F] = 0;
+    ((u8 *)arg0)[0x2F] = 0;
+    return 0;
+}
 
 typedef struct Packet_00109270 {
     s16 count;

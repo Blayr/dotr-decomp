@@ -1,6 +1,28 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF250);
+void func_001FF250(s8 *p) {
+    s32 network;
+    s32 first;
+    s32 c;
+
+    first = p[0];
+    network = 0;
+    if ((first == '/' && p[1] == '/') ||
+        (first == '\\' && p[1] == '\\')) {
+        network = 1;
+    }
+    func_00200300(p);
+    while ((c = *p) != 0) {
+        if (network != 0) {
+            if (c == '/') {
+                *p = '\\';
+            }
+        } else if (c == '\\') {
+            *p = '/';
+        }
+        p++;
+    }
+}
 
 s32 func_001FF300(void) {
     s32 var_s0;

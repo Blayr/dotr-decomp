@@ -113,7 +113,46 @@ void func_002032C0(s32 arg0, s8 arg1, s64 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203320);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203840);
+typedef struct Flags_00203840 {
+    s8 status : 6;
+    s8 unused : 2;
+} Flags_00203840;
+
+void func_00203840(void) {
+    s32 var_a2;
+    s32 var_a3;
+    u8 *temp_t0;
+    s32 temp_t1;
+    u8 *var_t2;
+    u8 *var_t3;
+    s32 temp_t4;
+
+    var_t3 = D_003259C0;
+    var_a2 = 0;
+    do {
+        temp_t0 = var_t3 + 0x200;
+        if (((Flags_00203840 *)(var_t3 + 0x25B))->status == 5) {
+            var_a3 = 0;
+            var_t2 = temp_t0;
+            do {
+                temp_t1 = 1 << var_a3;
+                temp_t4 = *(u16 *)temp_t0 & temp_t1;
+                if ((temp_t4 != 0) && (temp_t4 == (*(u16 *)(temp_t0 + 2) & temp_t1))) {
+                    *(s32 *)(var_t2 + 0x18) += 1;
+                } else {
+                    *(s32 *)(var_t2 + 0x18) = -*(s8 *)(temp_t0 + 0x59);
+                }
+                var_a3 += 1;
+                var_t2 += 4;
+            } while (var_a3 < 0x10);
+            *(u16 *)(temp_t0 + 2) = *(u16 *)temp_t0;
+            *(u16 *)temp_t0 = *(u16 *)(temp_t0 + 4);
+            *(u16 *)(temp_t0 + 4) = 0;
+        }
+        var_a2 += 1;
+        var_t3 += 0x5C;
+    } while (var_a2 < 2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002038F0);
 

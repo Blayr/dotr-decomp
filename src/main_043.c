@@ -300,7 +300,38 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD0E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD130);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD220);
+void func_001DD2D0(u8 *, s32);
+extern u8 D_00318E60[];
+
+static inline u8 *cell_001DD220(s32 x, s32 y, u8 *cell) {
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return NULL;
+    }
+    return cell;
+}
+
+void func_001DD220(void) {
+    s32 var_s0;
+    s32 var_s1;
+    u8 *var_a0;
+    u8 *var_s2;
+    u8 *var_s3;
+
+    var_s3 = D_00318E60;
+    var_s1 = 0;
+    do {
+        var_s0 = 0;
+        var_s2 = var_s3;
+        do {
+            var_a0 = cell_001DD220(var_s0, var_s1, var_s2);
+            func_001DD2D0(var_a0, *(s32 *)var_a0);
+            var_s0 += 1;
+            var_s2 += 0x1C;
+        } while (var_s0 < 7);
+        var_s1 += 1;
+        var_s3 += 0xC4;
+    } while (var_s1 < 7);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD2D0);
 

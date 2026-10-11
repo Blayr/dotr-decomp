@@ -144,7 +144,28 @@ INCLUDE_ASM("asm/nonmatchings/main_005", func_00118BC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00118CE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00118DD0);
+s32 func_00118DD0(s32 arg0) {
+    s32 i;
+
+    i = 0;
+    do {
+        if (func_00118CE0(arg0, (u8)i) != 0) {
+            switch (i) {
+            case 0:
+                return 0x102;
+            case 1:
+                return 0x104;
+            case 2:
+                return 0x100;
+            case 3:
+            default:
+                return 0x106;
+            }
+        }
+        i++;
+    } while (i < 4);
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00118E90);
 

@@ -220,7 +220,31 @@ s32 func_001BAC00(u16 *arg0, u16 *arg1) {
     return (var_v1 < var_v0) ? -1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAC90);
+s32 func_001BAC90(u16 *arg0, u16 *arg1) {
+    u8 temp_s0;
+    s32 temp_s1;
+    s32 var_s2;
+    s32 var_v0;
+    s32 temp_v1;
+
+    temp_v1 = *arg0;
+    temp_s0 = D_003181EC;
+    temp_s1 = *arg1;
+    if ((s32) temp_v1 >= 0x2AB) {
+        var_s2 = 0x7FFFFFFF;
+    } else {
+        var_s2 = (s32) func_00215D30(temp_s0, temp_v1);
+    }
+    if ((s32) temp_s1 >= 0x2AB) {
+        var_v0 = 0x7FFFFFFF;
+    } else {
+        var_v0 = (s32) func_00215D30(temp_s0, temp_s1);
+    }
+    if (var_v0 < var_s2) {
+        return 1;
+    }
+    return (var_s2 < var_v0) ? -1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAD40);
 

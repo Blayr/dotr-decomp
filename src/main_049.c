@@ -324,7 +324,31 @@ s32 func_001F2AD0(s32 arg0, s8 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2B30);
+static inline s32 check_001F2B30(s32 index) {
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    if (D_0031ABB0[index] == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)D_0031ABB0[index] + 0x1F2) >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_001F2B30(s32 index) {
+    if (index < 0 || index >= 0x54) {
+        return -1;
+    }
+    if (D_0031ABB0[index] == NULL) {
+        return -1;
+    }
+    if (check_001F2B30(index)) {
+        return *(u8 *)((u8 *)D_0031ABB0[index] + 0x1FE);
+    }
+    return -1;
+}
 
 s32 func_001F2BE0(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *obj;

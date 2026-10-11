@@ -237,7 +237,14 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F430);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F520);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F780);
+s32 func_0024F780(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    if (func_001E22B0(arg2, arg3) == 9) {
+        if (func_0024FD10(arg0, arg1, arg4) == 1) {
+            return 0x10001;
+        }
+    }
+    return func_0024F830(arg0, arg1, arg2, arg3, arg4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F830);
 

@@ -53,7 +53,32 @@ s32 func_0025F390(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F400);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F670);
+void func_0024F370(s32, s32);
+
+typedef struct {
+    u8 pad[8];
+    u32 flags;
+} Flags_0025F670;
+
+s32 func_0025F670(void *arg0, void *arg1) {
+    s32 var_s1;
+
+    if (func_0025F390(arg1) == 1) {
+        var_s1 = 0;
+        do {
+            if (((((Flags_0025F670 *)arg0)->flags >> (0x15 - var_s1)) & 1) == 1) {
+                if (var_s1 < 0xB) {
+                    func_0024F370(0, var_s1);
+                } else {
+                    func_0024F370(1, var_s1 - 0xB);
+                }
+            }
+            var_s1 += 1;
+        } while (var_s1 < 0x16);
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_0024EC50(s32, s32);
 s32 func_00255A30(void *, void *);

@@ -198,7 +198,28 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_002695D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00269D60);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00269E10);
+void func_00269E10(void *arg0) {
+    u32 temp_v1;
+
+    temp_v1 = *(u32 *)((u8 *)arg0 + 0xC) >> 0xE;
+    switch (temp_v1) {
+    case 0x218:
+        func_00217710(1, 0x3B);
+        return;
+    case 0x21C:
+        func_00217710(1, 0x4B);
+        return;
+    case 0x21D:
+        func_00217710(1, 0x4E);
+        return;
+    case 0x21E:
+        func_00217710(1, 0x4F);
+        return;
+    default:
+        func_00217710(1, 0x4A);
+        return;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00269EC0);
 
@@ -297,7 +318,23 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D600);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D6E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D840);
+s32 func_0026D840(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    if (arg3 < arg1) {
+        if (func_001E3790(arg2, arg3 + 1) < 0) {
+            return ((arg3 + 1) << 8) | arg2;
+        } else {
+            return -1;
+        }
+    } else if (arg1 < arg3) {
+        if (func_001E3790(arg2, arg3 - 1) < 0) {
+            return ((arg3 - 1) << 8) | arg2;
+        } else {
+            return -1;
+        }
+    } else {
+        return -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D8F0);
 
@@ -307,7 +344,28 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E1F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E610);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E950);
+s32 func_0026E950(void) {
+    s32 var_s0;
+    s32 temp_v0;
+    s32 temp_v0_2;
+    s32 var_s3;
+    s32 temp_v0_3;
+    s32 temp_v0_4;
+
+    temp_v0 = func_001DE540();
+    temp_v0_2 = func_001DF110(temp_v0);
+    var_s3 = 0;
+    for (var_s0 = 0; var_s0 < temp_v0_2; var_s0++) {
+            temp_v0_3 = func_001DF0C0(temp_v0, var_s0);
+            if (((s32) (temp_v0_3 & 0xF000) >> 0xC) > 0) {
+                temp_v0_4 = func_0026FA70(temp_v0_3, temp_v0);
+                if (var_s3 < temp_v0_4) {
+                    var_s3 = temp_v0_4;
+                }
+            }
+    }
+    return var_s3;
+}
 
 s32 func_0026EA00(s32 *arg0) {
     s32 temp_v1;
