@@ -371,7 +371,56 @@ s32 func_00107EC0(u8 *arg0, s32 arg1, s16 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108030);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_001082B0);
+s32 func_001082B0(s64 x, s64 y) {
+    s64 ax;
+    s64 ay;
+
+    if (x == 0 && y == 0) {
+        return 0;
+    }
+    ax = func_00195070(x);
+    ay = func_00195070(y);
+    if (ax + ay == 0) {
+        return 0;
+    }
+    if (y >= 0) {
+        if (x > 0) {
+            if (ax == ay) {
+                return 45;
+            } else if (ay < ax) {
+                return func_001A0660(ay * 45, ax);
+            } else {
+                return 90 - func_001A0660(ax * 45, ay);
+            }
+        } else {
+            if (ax == ay) {
+                return 135;
+            } else if (ay < ax) {
+                return 180 - func_001A0660(ay * 45, ax);
+            } else {
+                return func_001A0660(ax * 45, ay) + 90;
+            }
+        }
+    } else {
+        if (x > 0) {
+            if (ax == ay) {
+                return 315;
+            } else if (ay < ax) {
+                return 360 - func_001A0660(ay * 45, ax);
+            } else {
+                return func_001A0660(ax * 45, ay) + 270;
+            }
+        } else {
+            if (ax == ay) {
+                return 225;
+            } else if (ay < ax) {
+                return func_001A0660(ay * 45, ax) + 180;
+            } else {
+                return 270 - func_001A0660(ax * 45, ay);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108500);
 
