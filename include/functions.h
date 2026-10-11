@@ -21,6 +21,7 @@ s32 func_00103500(s32 *arg0, s32 arg1, s32 arg2);
 s32 func_00103540(f32 *arg0, f32 fparg0, f32 fparg1);
 s32 func_00104520(s32 arg0, s32 arg1);
 void func_00109D70(s32 arg0);
+s32 func_0010C3D0(s32 file, s32 destination, s32 position, s32 size);
 s32 func_0010C720(s32 cmd, ...);
 s32 func_0010C800(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0010E540(s32 arg0, void *arg1, s32 arg2, s32 arg3);

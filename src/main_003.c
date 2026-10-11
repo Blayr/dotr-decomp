@@ -94,7 +94,42 @@ INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C2C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C2D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C3D0);
+s32 func_0010C3D0(s32 file, s32 destination, s32 position, s32 size) {
+    s32 handle;
+    s32 blockStart;
+    s32 blockOffset;
+    s32 blockSize;
+    s32 totalSize;
+    s32 copySize;
+
+    func_00199B50(D_002B90DA, file, destination, position, size);
+    func_00199B50(D_002B9102);
+    if ((handle = func_00200360(file)) < 0) {
+        return 0;
+    }
+    if ((destination & 0xF) || (position % 0x800) || (size % 0x800)) {
+        while (size > 0) {
+            blockStart = (position >> 11) << 11;
+            totalSize = position - blockStart;
+            totalSize += size;
+            blockSize = totalSize < 0x80001 ? totalSize : 0x80000;
+            blockOffset = position - blockStart;
+            size = totalSize - blockSize;
+            position = blockStart + blockSize;
+            func_00199B50(D_002B9112, file, handle);
+            func_002003E0(handle, blockStart, ((blockSize + 0x7FF) >> 11) << 11, 0x04000000);
+            copySize = blockSize - blockOffset;
+            func_00198790((void *)destination, (u8 *)0x04000000 + blockOffset, copySize);
+            destination += copySize;
+        }
+    } else {
+        func_00199B50(D_002B9127);
+        func_002003E0(handle, position, size, destination);
+    }
+    func_00199B50(D_002B9135);
+    func_002004C0(handle);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C580);
 

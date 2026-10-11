@@ -173,4 +173,15 @@ void func_0010F290(s32, void *, s32, s32);
 s32 func_0023C160(void);
 void func_0026FD30(s32, s32 *);
 
+void func_00198790(void *, const void *, s32);
+void func_00199B50(const char *, ...);
+s32 func_00200360(s32);
+void func_002003E0(s32, s32, s32, s32);
+void func_002004C0(s32);
+extern char D_002B90DA[];
+extern char D_002B9102[];
+extern char D_002B9112[];
+extern char D_002B9127[];
+extern char D_002B9135[];
+
 #endif
