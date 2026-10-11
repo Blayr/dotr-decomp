@@ -650,7 +650,53 @@ void func_001E10F0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     out[3] = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E11B0);
+void *func_001DD130();
+
+static inline u8 *check_001E11B0(s32 a0, s32 a1) {
+    u8 *p = func_001DD130(a0, a1);
+    if (p == NULL) {
+        return NULL;
+    }
+    if (p[0x45] >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+static inline u8 *cell_001E11B0(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+}
+
+static inline void place_001E11B0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    f32 *out = arg3;
+
+    out[2] = 0.0f;
+    out[0] = 0.0f;
+    if ((arg0 >= 0) && (arg0 < 7)) {
+        out[0] = (f32) ((arg0 - 3) * 50);
+    }
+    if ((arg1 >= 0) && (arg1 < 7)) {
+        out[2] = (f32) ((arg1 - 3) * 50);
+    }
+    out[1] = (f32) (arg2 * 35) / 128.0f;
+    out[3] = 1.0f;
+}
+
+s32 func_001E11B0(s32 arg0, s32 arg1, f32 *arg2) {
+    u8 *p;
+
+    p = check_001E11B0(arg0, arg1);
+    if (p == NULL) {
+        return 0;
+    }
+    place_001E11B0(p[0x40], p[0x41], *(s16 *)(cell_001E11B0(p[0x40], p[0x41]) + 0x14), arg2);
+    arg2[0] += (f32) *(s16 *)(p + 0x34);
+    arg2[2] += (f32) *(s16 *)(p + 0x36);
+    return 1;
+}
 
 void *func_001DD130(void);
 
