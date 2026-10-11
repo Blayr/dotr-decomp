@@ -2,7 +2,47 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA3B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA420);
+typedef struct Data_001BA420 {
+    u8 padding0[9];
+    u8 unused0 : 6;
+    u8 valid : 1;
+    u8 unused1 : 1;
+    u8 paddingA[2];
+    u8 bytes[8];
+} Data_001BA420;
+
+extern s8 D_002BEF79[];
+
+s32 func_001BA420(u8 *arg0) {
+    s8 *offsets = D_002BEF79;
+    s32 index;
+    u8 decoded[8];
+    s32 byte;
+    Data_001BA420 *entry;
+    u8 *out;
+
+    index = 0;
+    do {
+        entry = (Data_001BA420 *)func_001DD0E0(index);
+        if (entry != NULL && entry->valid) {
+            out = decoded;
+            byte = 0;
+            do {
+                *out = (entry->bytes[byte] + offsets[(index + byte) % 8] + 256) % 256;
+                if (*out != arg0[byte]) {
+                    break;
+                }
+                byte++;
+                out++;
+            } while (byte < 8);
+            if (byte >= 8) {
+                return index;
+            }
+        }
+        index++;
+    } while (index < 0x356);
+    return -1;
+}
 
 typedef struct Entry_001BA520 {
     s16 id;

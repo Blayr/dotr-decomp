@@ -287,7 +287,43 @@ s32 func_0012B1B0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B210);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B730);
+static inline s32 max_0012B730(s32 a, s32 b) {
+    s32 maximum;
+
+    if (a < b) {
+        maximum = b;
+    } else {
+        maximum = a;
+    }
+    return maximum;
+}
+
+s32 func_0012B730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    s32 min_y;
+    s32 min_x;
+    s32 result;
+    s32 status;
+
+    min_y = arg3 < arg5 ? arg3 : arg5;
+    arg5 = max_0012B730(arg5, arg3);
+    min_x = arg2 < arg4 ? arg2 : arg4;
+    arg4 = max_0012B730(arg4, arg2);
+    if ((arg4 - min_x) + (arg5 - min_y) != 2) {
+        return 0;
+    }
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    if (func_001E2100(arg0, arg1, 0) == 0) {
+        status = func_0024DF00(func_001E22B0(arg2, arg3), arg0, arg1);
+        result = 1;
+        if (status != 1) {
+            return 0;
+        }
+        return result;
+    }
+    return 0;
+}
 
 typedef struct {
     u8 pad0[4];
