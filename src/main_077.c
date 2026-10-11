@@ -358,7 +358,91 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_00273E60);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_002747A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002755D0);
+typedef struct {
+    u32 unknown;
+    u16 first;
+    u16 padding6;
+    u16 second;
+    u16 paddingA;
+    u32 flags;
+} Source_002755D0;
+
+typedef struct {
+    u16 first;
+    u16 second;
+    u8 padding[0xFE];
+    u16 counter;
+} State_002755D0;
+
+typedef struct {
+    s32 id;
+    s32 x;
+    s32 y;
+    s32 z;
+} Params_002755D0;
+
+void func_001E4530(void);
+void func_0024F370(s32, s32);
+void func_002500C0(s32, s32, s32, s32, s32);
+void func_00255960(void *);
+void func_00260490(s32, s32, s32, s32, s32, s32, s32);
+
+static inline s32 update_002755D0(void *arg0, void *arg1, void *params_arg, s32 arg2) {
+    State_002755D0 *state = arg1;
+    Source_002755D0 *source = arg0;
+    Params_002755D0 *values = params_arg;
+    s32 card;
+    s32 position;
+    u16 counter;
+
+    if (source == NULL || state == NULL || values == NULL) {
+        func_001E4530();
+        return 0;
+    }
+    if (arg2 >= 0) {
+        func_00255960(state);
+        if ((source->flags & 1) == 1) {
+            state->first = source->second;
+            state->second = source->first;
+        } else {
+            state->first = source->first;
+            state->second = source->second;
+        }
+        if ((source->flags >> 1) != 0) {
+            card = func_0024DE70((s32) state->second >> 8, state->second & 0xFF);
+            position = func_001E1090(card, 0);
+            func_00260490(position & 0xFF, position >> 8, 0,
+                         func_00271740(9, card), 1, 1, 11);
+        }
+        func_002500C0((s32) state->first >> 8, state->first & 0xFF, -1, 1, 3);
+        return 1;
+    }
+    counter = state->counter;
+    state->counter = counter + 1;
+    if ((s32) counter < 16) {
+        return 1;
+    }
+    func_0024F370((s32) state->first >> 8, state->first & 0xFF);
+    func_001E4530();
+    return 0;
+}
+
+static inline void init_params_002755D0(void *params_arg) {
+    Params_002755D0 *values = params_arg;
+
+    values->id = 999;
+    values->x = 0;
+    values->y = 0;
+    values->z = 0;
+}
+
+s32 func_002755D0(void *arg0, void *arg1, s32 arg2) {
+    Params_002755D0 values;
+    Params_002755D0 *params = &values;
+
+    init_params_002755D0(params);
+    return update_002755D0(arg0, arg1, params, arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00275740);
 

@@ -88,7 +88,69 @@ s32 func_0023C160(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C170);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C3F0);
+typedef struct State_0023C3F0 {
+    u8 pad0[0x30];
+    s16 mode;
+    u8 pad32[2];
+    s16 field34;
+    u8 pad36[0xA];
+    s16 field40;
+    u8 pad42[0x27C];
+    s16 result;
+} State_0023C3F0;
+
+void func_0023C170(s32);
+s32 func_0023CE40(s32);
+s32 func_0023D170(s32);
+extern struct State_0023E610 D_0034FB00;
+
+s32 func_0023C3F0(s32 arg0) {
+    State_0023C3F0 *state = (State_0023C3F0 *)&D_0034FB00;
+    s32 var_s1;
+
+    var_s1 = 0;
+    if (arg0 == 1) {
+        func_0023C170(0);
+        state->result = 0;
+    }
+    switch (state->mode) {
+    case 0:
+    case 14:
+    case 11:
+        var_s1 = func_0023CE40(1);
+        break;
+    case 1:
+        var_s1 = func_0023D170(1);
+        break;
+    case 3:
+        var_s1 = func_0023CE40(1);
+        break;
+    }
+    if (arg0 == 1) {
+        state->field34 = 0;
+        state->field40 = 0;
+        state->mode = 0;
+    }
+    switch (var_s1) {
+    case 2:
+    case 3:
+    case 14:
+    case 6:
+    case 8:
+    case 10:
+        var_s1 = 0x100;
+        break;
+    case 0:
+        break;
+    }
+    if (var_s1 != 0) {
+        state->result = var_s1;
+    }
+    if (var_s1 == 0x100) {
+        return 0x100;
+    }
+    return state->result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C560);
 
@@ -156,7 +218,76 @@ s32 func_0023C770(s32 arg0) {
     return data->result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C8B0);
+typedef struct State_0023C8B0 {
+    u8 pad0[8];
+    s32 field8;
+    s32 fieldC;
+    u8 pad10[0x20];
+    s16 field30;
+    u8 pad32[2];
+    s16 field34;
+    u8 pad36[0xA];
+    s16 field40;
+    u8 pad42[0x27C];
+    s16 field2BE;
+} State_0023C8B0;
+
+void func_0023C170(s32);
+s32 func_0023F130(s32);
+s32 func_0023F340(void);
+s32 func_0023FF30(void);
+extern struct State_0023E610 D_0034FB00;
+
+s32 func_0023C8B0(s32 arg0) {
+    State_0023C8B0 *state = (State_0023C8B0 *)&D_0034FB00;
+    s32 var_s1;
+
+    var_s1 = 0;
+    if (arg0 == 1) {
+        func_0023C170(0);
+        state->field2BE = 0;
+    }
+    switch (state->field30) {
+    case 0:
+        var_s1 = func_0023F130(arg0);
+        if (var_s1 == 2) {
+            state->field30 = 0;
+        }
+        break;
+    case 1:
+        var_s1 = func_0023F340();
+        break;
+    case 2:
+        var_s1 = func_0023FF30();
+        break;
+    case 3:
+        var_s1 = func_0023F130(arg0);
+        if (var_s1 == 2) {
+            var_s1 = 0xA;
+        }
+        break;
+    }
+    if (arg0 == 1) {
+        state->field34 = 0;
+        state->field40 = 0;
+        state->field30 = 0;
+        var_s1 = 0x10;
+        state->fieldC = 0;
+    }
+    if (var_s1 == 3) {
+        var_s1 = 7;
+    }
+    if (var_s1 != 0) {
+        state->field2BE = var_s1;
+    }
+    if (var_s1 == 0x100) {
+        return 0x100;
+    }
+    if (state->field8 == 1) {
+        state->field2BE = state->field2BE | 0x80;
+    }
+    return state->field2BE;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CA10);
 
