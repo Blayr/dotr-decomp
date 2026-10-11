@@ -77,7 +77,15 @@ f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2) {
     return var_f0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101020);
+f32 func_00101020(f32 fparg0, f32 fparg1) {
+    f32 var_f0;
+
+    var_f0 = 1.0f;
+    if (fparg0 < fparg1) {
+        var_f0 = fparg0 / fparg1;
+    }
+    return var_f0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101050);
 
