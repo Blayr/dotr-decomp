@@ -280,7 +280,34 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F060);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F150);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F200);
+u32 func_0024F200(s32 arg0) {
+    s32 i;
+    s32 best;
+    s32 mask;
+    s32 score;
+    s32 low;
+    s32 high;
+    s32 value;
+
+    best = 0xFFFF;
+    mask = 0;
+    i = 0;
+    if (i < func_0024E910(arg0)) {
+        do {
+            value = func_0024EC50(arg0, i);
+            high = value >> 8;
+            low = value & 0xFF;
+            if ((score = func_0024F2F0(high, low)) < best) {
+                mask = func_0024C780(0U, high, low);
+                best = score;
+            } else if (score == best) {
+                mask = func_0024C780((u32) mask, high, low);
+            }
+            i += 1;
+        } while (i < func_0024E910(arg0));
+    }
+    return (u32) mask;
+}
 
 s32 func_0024F2F0(s32 arg0, s32 arg1) {
     s32 temp_v0;
