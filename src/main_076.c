@@ -490,7 +490,56 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AC90);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AE70);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026B1F0);
+s32 func_0026B1F0(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
+    s32 s1;
+    s32 card;
+    s32 pos;
+
+    s1 = func_001E1090(arg0, arg1);
+    card = func_0024DE70(arg0, arg1);
+    if (arg1 == 0) {
+        return 0;
+    }
+    if (func_00271F90(arg0, arg1, s1 & 0xFF, s1 >> 8, 0xB) != 0) {
+        s1 = func_00250360(arg0, arg1) == 0 ? 1 : 0;
+        if (func_00267380(func_001DF540(arg0, arg1), s1) == 0) {
+            return 1;
+        }
+    }
+    if (func_00267700(arg0, arg1) != 0) {
+        return 0;
+    }
+    switch (arg2) {
+    case 0:
+        pos = func_0026AB80(card, 0x2C);
+        if (pos >= 0 && (arg3 != 0 || func_001E2100(pos >> 8, pos & 0xFF, 4) != 0)) {
+            if (func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
+                return 0;
+            }
+            return 0x10001;
+        }
+        return 0;
+    default:
+        pos = func_0026AB80(card, 0x4A);
+        if (pos >= 0) {
+            if (arg3 != 0 || func_001E2100(pos >> 8, pos & 0xFF, 4) != 0) {
+                if (func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
+                    return 0;
+                }
+                return 0x10001;
+            }
+        } else {
+            pos = func_0026AB80(card, 0x23);
+            if (pos >= 0 && (arg3 != 0 || func_001E2100(pos >> 8, pos & 0xFF, 4) != 0)) {
+                if (func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
+                    return 0;
+                }
+                return 1;
+            }
+        }
+        return 0;
+    }
+}
 
 s32 func_0026B430(void *arg0) {
     ((s32 *)arg0)[0] = 0x66;
