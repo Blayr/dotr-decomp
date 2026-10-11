@@ -199,6 +199,7 @@ s32 func_00117340(void);
 s32 func_001173E0(s32 arg0);
 s32 func_00117550(s32 arg0);
 s32 func_00117600(s32 arg0);
+s32 func_00117680(s32 arg0);
 s32 func_00117B10(s32 arg0);
 s32 func_00117BD0(s32 arg0, s32 arg1);
 s32 func_00117C30(s32 arg0);
