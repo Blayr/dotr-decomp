@@ -235,4 +235,8 @@ extern s16 D_00322994;
 extern u8 D_00325CC0[];
 void func_00206D30(s32, void *, s32, s32, s32, s32, s32);
 
+void func_00207510(void *);
+void func_0020BB50(void);
+extern u8 D_00325D38[];
+
 #endif
