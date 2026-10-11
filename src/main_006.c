@@ -241,7 +241,58 @@ INCLUDE_ASM("asm/nonmatchings/main_006", func_00121630);
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00121800);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00121CE0);
+typedef struct Unit_00121CE0 {
+    u16 pos;
+    u16 unk2;
+    u16 unk4;
+    u16 unk6;
+    s32 unk8;
+} Unit_00121CE0;
+
+void func_001229F0(void *, s32);
+void func_00122270(void *);
+void func_00122B50(void *);
+void func_0027CA50(void *, s32, s32, s32);
+
+s32 func_00121CE0(void *arg0) {
+    Unit_00121CE0 *unit = arg0;
+    s32 handle;
+
+    handle = func_00250360(unit->pos >> 8, unit->pos & 0xFF);
+    if (func_001DF540(unit->pos >> 8, unit->pos & 0xFF) != 0 &&
+        func_001E2100(unit->pos >> 8, unit->pos & 0xFF, 0) == 0 && unit->pos != 0xFFFF) {
+    if ((unit->pos & 0xFF) == 0) {
+        if (unit->unk8 == -1) {
+            func_0027E210(unit, 3, 2, 0);
+        }
+    } else {
+        switch (func_001E0700(unit->pos >> 8, unit->pos & 0xFF) >> 5) {
+        case 0:
+            if (func_002507D0(unit->pos >> 8, unit->pos & 0xFF) == 1) {
+                func_001229F0(unit, 1);
+            } else {
+                func_00122270(unit);
+            }
+            break;
+        case 1:
+        case 5:
+            unit->unk4 = 0x5FF;
+            break;
+        case 2:
+            func_0027CA50(unit, 2, 0, (u8)func_001254A0(handle));
+            break;
+        case 4:
+            func_00122B50(unit);
+            break;
+        default:
+            unit->unk4 = 0x5FF;
+            break;
+        }
+    }
+    return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00121E90);
 
