@@ -30,7 +30,26 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00255E90);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00255F00);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00255F70);
+typedef struct {
+    s32 f0;
+    s32 f4;
+    s32 f8;
+    s32 fC;
+} Block_00255F70;
+
+void func_00255F70(void *arg0, s32 arg1) {
+    if (func_001DE540() == 0) {
+        ((Block_00255F70 *)arg0)->f0 = arg1;
+        ((Block_00255F70 *)arg0)->f4 = 0x4FFF;
+        ((Block_00255F70 *)arg0)->f8 = 0x1800;
+        ((Block_00255F70 *)arg0)->fC = 0;
+    } else {
+        ((Block_00255F70 *)arg0)->f0 = arg1;
+        ((Block_00255F70 *)arg0)->f4 = 0xCFFF;
+        ((Block_00255F70 *)arg0)->f8 = 0x1800;
+        ((Block_00255F70 *)arg0)->fC = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00255FE0);
 
