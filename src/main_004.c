@@ -18,7 +18,43 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D880);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DB00);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DC40);
+typedef struct {
+    u16 coordinate;
+    u16 pad2;
+    u16 status;
+    u16 pad6;
+    u32 value;
+} State_0010DC40;
+
+s32 func_0027C770(s32, s32, s32, s32, s32, s32);
+
+void func_0010DC40(void *arg0) {
+    State_0010DC40 *state = arg0;
+    s32 coordinate;
+    s32 result;
+    u32 *record;
+
+    if (func_001DF540((s32) state->coordinate >> 8, state->coordinate & 0xFF) != 0) {
+        record = func_00250740((s32) state->coordinate >> 8, state->coordinate & 0xFF, 0);
+        if (record != NULL) {
+            switch (*record >> 8) {
+        case 13:
+            state->status = 0x5FF;
+            return;
+        case 2:
+            coordinate = func_001E1090((s32) state->coordinate >> 8, state->coordinate & 0xFF) & 0xFFFF;
+            result = func_0027C770(func_001DF540((s32) state->coordinate >> 8, state->coordinate & 0xFF), coordinate & 0xFF, coordinate >> 8, 0, 6, 2) & 0xFFFF;
+            state->status = 0x6FF;
+            if (result < 0) {
+                state->value = ((coordinate & 0xFFFF) << 16) | *(u16 *) &state->value;
+                return;
+            }
+            state->value = ((result & 0xFFFF) << 16) | *(u16 *) &state->value;
+            break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DD50);
 
