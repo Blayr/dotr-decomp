@@ -216,4 +216,7 @@ void func_0020F250(s32);
 
 s32 func_001F64C0();                                /* extern */
 
+s32 func_001F70A0(s32, s32, s32, s32, s32, s32);
+extern s32 D_0031BE9C;
+
 #endif
