@@ -173,7 +173,29 @@ void func_00200350(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200360);
+typedef struct State_00200360 {
+    u8 pad[0x6684];
+    char *file;
+} State_00200360;
+
+s32 func_00200360(s32 arg0) {
+    extern State_00200360 D_0031C2F0;
+    extern char D_002D0680[];
+    extern char D_002D0686[];
+    extern u8 *func_00197548();
+    extern void func_0019B648(void *, void *, ...);
+    State_00200360 *state = &D_0031C2F0;
+    char path[128];
+    u8 *directory;
+
+    directory = func_00197548(D_002D0680);
+    if (directory == NULL) {
+        directory = D_002D0655;
+    }
+    func_0019B648(path, D_002D0686, directory, arg0);
+    state->file = func_00217B60(path);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_002003E0);
 
