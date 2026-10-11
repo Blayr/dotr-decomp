@@ -121,9 +121,77 @@ s32 func_00250C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return result + temp_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250CA0);
+s32 func_00250CA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    switch (arg2) {
+    case 0:
+        if (arg3 + func_001E0290(arg0, arg1, 0) > 9999) {
+            func_001E0450(arg0, arg1, 4, 9999 - func_001E0290(arg0, arg1, 1));
+        } else {
+            func_001E0450(arg0, arg1, 0, arg3);
+        }
+        break;
+    case 1:
+        if (func_001E0290(arg0, arg1, 0) - arg3 < 0) {
+            func_001E0450(arg0, arg1, 4, -func_001E0290(arg0, arg1, 1));
+        } else {
+            func_001E0450(arg0, arg1, 1, arg3);
+        }
+        break;
+    case 2:
+        if (arg3 * func_001E0290(arg0, arg1, 0) > 9999) {
+            func_001E0450(arg0, arg1, 4, 9999 - func_001E0290(arg0, arg1, 1));
+        } else {
+            func_001E0450(arg0, arg1, 2, arg3);
+        }
+        break;
+    case 3:
+        if (arg3 == 0) {
+            return -1;
+        }
+        func_001E0450(arg0, arg1, 3, arg3);
+        break;
+    case 4:
+        func_001E0450(arg0, arg1, 4, arg3);
+        break;
+    }
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250E80);
+s32 func_00250E80(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    switch (arg2) {
+    case 0:
+        if (arg3 + func_001E0370(arg0, arg1, 0) > 9999) {
+            func_001E0570(arg0, arg1, 4, 9999 - func_001E0370(arg0, arg1, 1));
+        } else {
+            func_001E0570(arg0, arg1, 0, arg3);
+        }
+        break;
+    case 1:
+        if (func_001E0370(arg0, arg1, 0) - arg3 < 0) {
+            func_001E0570(arg0, arg1, 4, -func_001E0370(arg0, arg1, 1));
+        } else {
+            func_001E0570(arg0, arg1, 1, arg3);
+        }
+        break;
+    case 2:
+        if (arg3 * func_001E0370(arg0, arg1, 0) > 9999) {
+            func_001E0570(arg0, arg1, 4, 9999 - func_001E0370(arg0, arg1, 1));
+        } else {
+            func_001E0570(arg0, arg1, 2, arg3);
+        }
+        break;
+    case 3:
+        if (arg3 == 0) {
+            return -1;
+        }
+        func_001E0570(arg0, arg1, 3, arg3);
+        break;
+    case 4:
+        func_001E0570(arg0, arg1, 4, arg3);
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_00251060);
 
