@@ -24,7 +24,20 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8520);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8690);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A86A0);
+typedef struct {
+    u8 pad00[0xF4];
+    u32 count;
+    u8 padF8[0x133];
+    s8 selected;
+} State_001A86A0;
+
+void func_001A86A0(s32 arg0) {
+    State_001A86A0 *state = (State_001A86A0 *)&D_00317250;
+
+    if ((arg0 >= 0) && ((u32)arg0 < state->count)) {
+        state->selected = arg0;
+    }
+}
 
 typedef struct Flags_001A86D0 {
     s8 reserved0 : 5;
