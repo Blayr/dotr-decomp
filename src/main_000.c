@@ -276,7 +276,44 @@ s32 func_00101050(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00101080);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101430);
+typedef struct Point_00101430 {
+    u16 x;
+    u16 y;
+} Point_00101430;
+
+typedef struct Vec4_00101430 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_00101430;
+
+s32 func_00101430(void *arg0, void *arg1, void *arg2) {
+    Point_00101430 *a = arg0;
+    Point_00101430 *b = arg1;
+    Point_00101430 *c = arg2;
+    s32 result = 1;
+    f32 normal[4];
+    Vec4_00101430 verts[3];
+
+    verts[0].x = (u32)a->x;
+    verts[0].y = (u32)a->y;
+    verts[0].z = 0.0f;
+    verts[0].w = 1.0f;
+    verts[1].x = (u32)b->x;
+    verts[1].y = (u32)b->y;
+    verts[1].z = 0.0f;
+    verts[1].w = 1.0f;
+    verts[2].x = (u32)c->x;
+    verts[2].y = (u32)c->y;
+    verts[2].z = 0.0f;
+    verts[2].w = 1.0f;
+    func_00205E70(3, verts, normal);
+    if (!(normal[2] < 0.0f)) {
+        result = 0;
+    }
+    return result;
+}
 
 s32 func_00101600(void *arg0) {
     u16 x;
