@@ -948,6 +948,7 @@ void func_00205CA0(s32 arg0);
 void func_00205CB0(void *arg0, f32 fparg0, f32 fparg1);
 s32 func_00205D10(void *arg0, f32 fparg0);
 f32 func_00205DF0(void *arg0, f32 fparg0);
+s32 func_00205E70(s32 count, void *arg1, f32 *normal);
 s32 func_00206030(s32 count, void *arg1, void *arg2);
 s32 func_002060F0(f32 *origin, s32 count, f32 *points, f32 *out);
 s32 func_002061F0(f32 *origin, s32 count, void *src, f32 *out);

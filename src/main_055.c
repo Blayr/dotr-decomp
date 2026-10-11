@@ -550,7 +550,53 @@ f32 func_00205DF0(void *arg0, f32 fparg0) {
     return vector[3];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205E70);
+typedef struct Vec4_00205E70 {
+    f32 x, y, z, w;
+} Vec4_00205E70;
+
+extern Vec4_00205E70 D_00293D60;
+extern Vec4_00205E70 D_00293D70;
+
+s32 func_00205E70(s32 count, void *arg1, f32 *normal) {
+    Vec4_00205E70 *points = arg1;
+    s32 i;
+    Vec4_00205E70 *p0;
+    Vec4_00205E70 *p1;
+    Vec4_00205E70 *p2;
+    Vec4_00205E70 a;
+    Vec4_00205E70 b;
+    Vec4_00205E70 c;
+
+    normal[0] = 0.0f;
+    normal[1] = 0.0f;
+    normal[2] = 0.0f;
+    normal[3] = 0.0f;
+    if (count < 3) {
+        return 0;
+    }
+    for (i = 0; i < count; i++) {
+        p0 = &points[i % count];
+        p1 = &points[(i + 1) % count];
+        p2 = &points[(i + 2) % count];
+        a = D_00293D60;
+        a.x = p1->x - p0->x;
+        a.y = p1->y - p0->y;
+        a.z = p1->z - p0->z;
+        b = D_00293D70;
+        b.x = p2->x - p1->x;
+        b.y = p2->y - p1->y;
+        b.z = p2->z - p1->z;
+        func_0020D140(&c.x, &a.x, &b.x);
+        normal[0] += c.x;
+        normal[1] += c.y;
+        normal[2] += c.z;
+    }
+    normal[0] /= (f32)count;
+    normal[1] /= (f32)count;
+    normal[2] /= (f32)count;
+    func_0020D070(normal);
+    return 1;
+}
 
 typedef struct Vec4_00206030 {
     f32 x, y, z, w;
