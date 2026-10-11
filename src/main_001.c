@@ -128,7 +128,14 @@ void func_00103660(void *arg0, void *arg1) {
     dst[2] -= src[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001036A0);
+void func_001036A0(void *arg0, void *arg1) {
+    f32 *dst = arg0;
+    const f32 *src = arg1;
+
+    dst[0] *= src[0];
+    dst[1] *= src[1];
+    dst[2] *= src[2];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_001036E0);
 
