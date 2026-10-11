@@ -541,7 +541,44 @@ void func_001DDD80(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     } while (var_s0 < 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDE80);
+extern u8 D_002CEE5C[][7][7];
+void *func_002145E0(s32);
+
+typedef struct {
+    u8 pad[0xFEA3];
+    u8 maps[5][7][7];
+} Maps_001DDE80;
+
+void func_001DDE80(s32 arg0) {
+    s32 y;
+    s32 x;
+    Maps_001DDE80 *maps;
+    extern s32 func_001E2220();
+
+    if (arg0 >= 0 && arg0 < 0x2E) {
+        for (y = 0; y < 7; y++) {
+            for (x = 0; x < 7; x++) {
+                func_001E2220(x, y, D_002CEE5C[arg0][y][x]);
+            }
+        }
+    } else if (arg0 < 0x33) {
+        maps = func_002145E0(0);
+        arg0 -= 0x2E;
+        for (y = 0; y < 7; y++) {
+            for (x = 0; x < 7; x++) {
+                func_001E2220(x, y, maps->maps[arg0][y][x]);
+            }
+        }
+    } else if (arg0 < 0x38) {
+        maps = func_002145E0(1);
+        arg0 -= 0x33;
+        for (y = 0; y < 7; y++) {
+            for (x = 0; x < 7; x++) {
+                func_001E2220(x, y, maps->maps[arg0][y][x]);
+            }
+        }
+    }
+}
 
 s32 func_001DE020(s32 arg0) {
     return arg0 == 1 ? 1
