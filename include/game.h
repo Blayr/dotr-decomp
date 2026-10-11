@@ -517,7 +517,6 @@ s32 func_001DDAC0(s32, s32, u8, u8);
 void func_0016DDA0(u16 *, ...);
 void func_0016E0E0(u16 *, s32);
 
-s32 func_00203A40(s32, s32, s32);
 
 extern s32 D_00325DD0;
 extern s32 D_00325E2C;

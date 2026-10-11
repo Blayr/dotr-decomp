@@ -192,7 +192,54 @@ void func_00203840(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002038F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203A40);
+typedef struct State_00203A40 {
+    u16 flags;
+    u16 disabled;
+    u8 padding04[0x14];
+    s32 counters[16];
+    u8 padding58[2];
+    s8 interval : 4;
+    s8 other : 4;
+    u8 padding5B;
+} State_00203A40;
+
+s32 func_00203A40(s32 arg0, s32 arg1, s32 arg2) {
+    s32 var_a1;
+    State_00203A40 *temp_a3;
+    s32 temp_t0;
+    u8 *var_t1;
+    s32 mask;
+    s32 temp_t3;
+    s32 var_s0;
+    u8 *temp_v0;
+
+    temp_v0 = D_003259C0 + (arg0 * 0x5C);
+    temp_a3 = (State_00203A40 *)(temp_v0 + 0x200);
+    switch (arg1) {
+    case 0:
+        return arg2 & (temp_a3->flags & ~temp_a3->disabled);
+    case 2:
+        var_s0 = 0;
+        var_a1 = 0;
+        var_t1 = (u8 *)temp_a3;
+        mask = arg2 & 0xFFFF;
+        do {
+            temp_t0 = 1 << var_a1;
+            if (mask & temp_t0) {
+                temp_t3 = *(s32 *)(var_t1 + 0x18);
+                if ((temp_t3 >= 0) && ((temp_t3 % temp_a3->interval) == 0)) {
+                    var_s0 = (var_s0 | temp_t0) & 0xFFFF;
+                }
+            }
+            var_a1 += 1;
+            var_t1 += 4;
+        } while (var_a1 < 0x10);
+        return var_s0 | func_00203A40(arg0, 0, arg2);
+    case 1:
+        return temp_a3->flags & arg2;
+    }
+    return 0;
+}
 
 s32 func_00203B50(s32 arg0, s32 arg1) {
     u8 *temp_a0;
