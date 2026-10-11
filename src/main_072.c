@@ -517,6 +517,19 @@ s32 func_00250370(void *arg0) {
     return (data->value == 0) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_002503B0);
+void func_002503B0(s32 arg0, s32 arg1, s32 arg2) {
+    /* called unprototyped: the byte goes out zero-extended, not as s8 */
+    s32 func_001E1520();
+    u8 value = arg2;
+
+    if (value > 0) {
+        if (func_001E1580() <= value) {
+            func_001E1520(arg0, arg1, value);
+            func_001E1420(arg0, arg1, 1);
+        }
+    } else {
+        func_001E1520(arg0, arg1, value);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_00250430);
