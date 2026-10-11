@@ -48,7 +48,39 @@ char *func_00217B60(char *arg0) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217BD0);
+typedef struct {
+    s16 x0, y0, x1, y1;
+    u8 pad08[8];
+    u8 r, g, b, a;
+    u8 pad14[12];
+    u8 field20, field21;
+    s16 field22;
+    u16 index;
+} Sprite_00217BD0;
+
+typedef struct {
+    s16 x, y, width, height;
+    u8 pad08[8];
+    u16 field10;
+    u8 pad12[2];
+} Entry_00217BD0;
+
+void func_00217D70(s32, s16, s16, s16, s16, s16, s16, s16, s16,
+                   u8, u8, u8, u8, u8, u16, u8, s16);
+struct Sprite_00217CB0;
+extern struct Sprite_00217CB0 D_002950A0[];
+
+void func_00217BD0(s32 arg0, void *src, s16 dx, s16 dy) {
+    Sprite_00217BD0 *sprite = src;
+    Entry_00217BD0 *entry = &((Entry_00217BD0 *)D_002950A0)[sprite->index];
+
+    func_00217D70(arg0, (s16)(sprite->x0 + dx), (s16)(sprite->y0 + dy),
+                   (s16)(sprite->x1 + dx), (s16)(sprite->y1 + dy),
+                   entry->x, entry->y, entry->width, entry->height,
+                   sprite->r, sprite->g, sprite->b, sprite->a,
+                   sprite->field20, entry->field10, sprite->field21,
+                   sprite->field22);
+}
 
 typedef struct Sprite_00217CB0 {
     s16 u;

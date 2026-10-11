@@ -217,7 +217,37 @@ void func_00200680(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_002006C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_002007D0);
+typedef struct Record_002007D0 {
+    s32 value0;
+    s32 value4;
+    s8 flag0 : 1;
+    s8 flag1 : 1;
+    s8 flag2 : 1;
+    s16 index : 13;
+    s16 valueA;
+} Record_002007D0;
+
+extern struct Entry_002008A0 D_003229A0[];
+s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2);
+
+void func_002007D0(void) {
+    Record_002007D0 *record;
+    s32 i;
+
+    record = (Record_002007D0 *)D_003229A0;
+    func_0020B3C0((s8 *)&D_00322990, 0, 6);
+    i = 0;
+    do {
+        record->value0 = 0;
+        record->value4 = 0;
+        record->flag0 = 0;
+        record->flag1 = 0;
+        record->flag2 = 0;
+        record->index = record->valueA = -1;
+        record++;
+        i++;
+    } while (i < 0x400);
+}
 
 typedef struct Entry_002008A0 {
     s32 occupied;

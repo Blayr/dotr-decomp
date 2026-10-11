@@ -105,7 +105,45 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_00216040);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216280);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216490);
+typedef struct Flags_00216490 {
+    u32 value0 : 31;
+    u32 flag0 : 1;
+    u32 value1 : 30;
+    u32 flag1 : 2;
+} Flags_00216490;
+
+void *func_00214DD0(s32, s32, s32, s32);
+
+static inline void clear_00216490(void *src) {
+    Flags_00216490 *entry = (Flags_00216490 *)src;
+
+    if (entry != NULL) {
+        entry->value0 = 0;
+        entry->value1 = 0;
+        entry->flag1 = 3;
+        entry->flag0 = 0;
+    }
+}
+
+s32 func_00216490(s32 arg0, s32 arg1) {
+    Flags_00216490 *entry;
+
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    entry = func_00214DD0(arg0, arg1, 3, 0);
+    if (entry == NULL) {
+        return 0;
+    }
+    clear_00216490(entry);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216580);
 
