@@ -586,4 +586,6 @@ extern s32 D_0031810C;
 extern s8 D_0031747B;
 s32 func_001D9A30(s32, s32);
 
+void func_001B6CA0(s32, s32, s32, s32, s32, s32, s32, s32);
+
 #endif

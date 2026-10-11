@@ -401,7 +401,9 @@ s32 func_0010C800(s32 arg0, s32 arg1, s32 arg2) {
     return D_0030FF40[0x19];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C8A0);
+s32 func_0010C8A0(void) {
+    return func_0017BC80(D_0030FF40[0x64 / sizeof(s32)]);
+}
 
 s32 func_0010C8B0(void) {
     s32 count;
