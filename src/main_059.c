@@ -57,7 +57,157 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_002106E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002108C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00210940);
+typedef f32 Vec4_00210940[4] __attribute__((aligned(16)));
+
+typedef struct {
+    Vec4_00210940 v;
+} Quad_00210940;
+
+typedef struct {
+    f32 v[4];
+} Plain4_00210940;
+
+typedef struct {
+    u8 pad0[0xC];
+    u16 flags;
+    u16 idx;
+    u8 pad10[0xC];
+    u32 child;
+    u8 pad20[0xC];
+    u32 sibling;
+    Quad_00210940 pos;
+} Node_00210940;
+
+typedef struct {
+    f32 v00[4];
+    f32 v10[4];
+    f32 v20[4];
+    u8 pad30[0x60];
+    u8 *base90;
+    u8 *tbl94;
+    f32 f98;
+    s32 cnt9C;
+    u8 padA0[0x10];
+    u32 flagsB0;
+    u8 *ptrB4;
+    Plain4_00210940 *outB8;
+    f32 fBC;
+    u8 padC0[0x20];
+    u16 flagsE0;
+} Spr_00210940;
+
+typedef struct {
+    s32 id;
+    s32 used;
+    u8 pad8[8];
+    u8 data[0x40];
+} Slot_00210940;
+
+extern u32 D_0032A728;
+extern s32 D_0032A770;
+
+void func_0020B340(void *, void *, s32);
+void func_0020BAD0(void *);
+void func_0020CB20(void *, void *);
+void func_0020DB00(void *);
+void func_0020DB20(void);
+void func_0020DB80(void);
+void func_0020DBE0(void *, void *, void *);
+s32 func_0020EDE0(void *, f32);
+s32 func_00210CF0(void *, u16, f32, void *, void *, void *, f32);
+
+s32 func_00210940(void *arg0, s32 depth, void *arg2) {
+    extern Slot_00210940 D_0032A780[];
+    Spr_00210940 *spr = (Spr_00210940 *)0x70000000;
+    u8 buf[32];
+    f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
+    u32 flags;
+    s32 mode;
+    u8 *p;
+    f32 f;
+    f32 max;
+    u32 i;
+
+    for (;;) {
+        Node_00210940 *node = arg0;
+
+        func_0020B380(vec, arg2, 1);
+        flags = node->flags;
+        func_0020B380(spr, node, 3);
+        if (depth < spr->cnt9C) {
+            p = spr->tbl94;
+            if (spr->flagsE0 & 4) {
+                p += depth * 0x18;
+            } else {
+                p += depth * 0x10;
+            }
+            flags = func_00210CF0(p, node->flags, spr->f98, spr->v20, spr->v10, spr,
+                                  depth == 0 ? 1.0f : spr->fBC);
+            if (depth == 0 && (spr->flagsE0 & 4)) {
+                func_0020B340(spr, node, 3);
+            }
+        }
+        if (depth == 0) {
+            if (spr->outB8 != NULL) {
+                *spr->outB8 = *(Plain4_00210940 *)spr->v20;
+            }
+        }
+        mode = flags & 3;
+        depth++;
+        if (mode != 3) {
+            spr->v20[0] *= ((f32 *)arg2)[0];
+            spr->v20[1] *= ((f32 *)arg2)[1];
+            spr->v20[2] *= ((f32 *)arg2)[2];
+            func_0020DB20();
+            func_0020DBE0(NULL, (flags & 2) ? NULL : spr->v10, (flags & 1) ? NULL : spr->v20);
+        }
+        if (!(flags & 4)) {
+            vec[0] *= spr->v00[0];
+            vec[1] *= spr->v00[1];
+            vec[2] *= spr->v00[2];
+        }
+        if (node->idx != 0) {
+            p = spr->ptrB4 + node->idx * 0x10;
+            func_0020DB00(p);
+            func_0020CB20(p, vec);
+        }
+        if (!(node->flags & 0x8000)) {
+            f = node->pos.v[3];
+            max = vec[0];
+            if (max < vec[1]) {
+                max = vec[1];
+            }
+            if (max < vec[2]) {
+                max = vec[2];
+            }
+            f = f * (spr->fBC * max);
+            *(Quad_00210940 *)spr->v20 = node->pos;
+            spr->v20[3] = 1.0f;
+            func_0020DB20();
+            func_0020CB20(NULL, vec);
+            spr->flagsB0 |= func_0020EDE0(spr->v20, f);
+            func_0020DB80();
+        }
+        for (i = 0; i < D_0032A728; i++) {
+            if (D_0032A770 == D_0032A780[i].id) {
+                D_0032A780[i].used = 1;
+                func_0020BAD0(D_0032A780[i].data);
+                break;
+            }
+        }
+        D_0032A770++;
+        if (node->child != 0) {
+            depth = func_00210940(spr->base90 + (node->child & 0x0FFFFFFF), depth, vec);
+        }
+        if (mode != 3) {
+            func_0020DB80();
+        }
+        if (node->sibling == 0) {
+            return depth;
+        }
+        arg0 = spr->base90 + (node->sibling & 0x0FFFFFFF);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00210CF0);
 
