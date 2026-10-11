@@ -213,7 +213,59 @@ void func_001224D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 1500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00122530);
+typedef struct {
+    u16 coordinates;
+    u16 unk02;
+    s16 state;
+    u16 unk06;
+    union {
+        u32 word;
+        struct {
+            u16 low;
+            u16 high;
+        } halves;
+    } data;
+} Entry_00122530;
+
+s32 func_00122680(s32, s32);
+s32 func_00122810(s32, s32);
+s32 func_00122970(s32);
+void func_00123500(s32, s32, s32, s32 *);
+
+void func_00122530(void *arg0) {
+    Entry_00122530 *entry = arg0;
+    s32 packed;
+    s32 position;
+    s32 result[2];
+    u16 coordinates;
+
+    coordinates = entry->coordinates;
+    if (func_001DF540((s32) coordinates >> 8, coordinates & 0xFF) != 0) {
+        coordinates = entry->coordinates;
+        func_0024DE70((s32) coordinates >> 8, coordinates & 0xFF);
+        coordinates = entry->coordinates;
+        packed = func_001E1090((s32) coordinates >> 8, coordinates & 0xFF);
+        entry->state = 0x6FF;
+        coordinates = entry->coordinates;
+        if (func_001E0290((s32) coordinates >> 8, coordinates & 0xFF, 0) >= 0x5DC) {
+            coordinates = entry->coordinates;
+            position = func_00122680((s32) coordinates >> 8, coordinates & 0xFF);
+            if (position >= 0) {
+                entry->data.word = entry->data.halves.low | (func_00122970((position + 1) % 8) << 16);
+                return;
+            }
+            entry->data.word = entry->data.halves.low | (func_00122810(packed & 0xFF, packed >> 8) << 16);
+            return;
+        }
+        coordinates = entry->coordinates;
+        func_00123500(func_001DF540((s32) coordinates >> 8, coordinates & 0xFF), packed & 0xFF, packed >> 8, result);
+        if (result[0] >= 0) {
+            entry->data.word = (result[0] << 16) | entry->data.halves.low;
+            return;
+        }
+        entry->state = 0x5FF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00122680);
 
