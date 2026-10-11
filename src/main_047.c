@@ -20,7 +20,24 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4E90);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4F00);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5210);
+typedef struct {
+    u8 padding[8];
+    s32 field8;
+} State_001E5210;
+
+extern State_001E5210 D_0031AB88;
+
+void func_001E5210(void *arg0, s32 arg1) {
+    State_001E5210 *state = &D_0031AB88;
+    s32 var_v1;
+
+    if (arg1 != 0) {
+        var_v1 = *(s32 *)((u8 *)arg0 + 0x14);
+    } else {
+        var_v1 = 0;
+    }
+    state->field8 = var_v1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5230);
 
