@@ -850,6 +850,7 @@ void *func_0020A340(void *arg0, void *arg1);
 void func_0020A3B0(s64 arg0);
 u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2);
 s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2);
+void *func_0020B400(void *dst, s32 val, s32 count);
 s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2);
 f32 func_0020B730(f32 angle);
 s32 func_0020BA70(void);

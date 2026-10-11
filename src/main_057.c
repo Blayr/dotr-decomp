@@ -180,7 +180,15 @@ s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B400);
+void *func_0020B400(void *dst, s32 val, s32 count) {
+    s32 *p = dst;
+
+    while (count > 0) {
+        *p++ = val;
+        count--;
+    }
+    return p;
+}
 
 s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2) {
     while (arg2 > 0) {
