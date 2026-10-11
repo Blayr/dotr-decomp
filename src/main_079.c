@@ -99,7 +99,39 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B520);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B650);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B740);
+s32 func_0027B740(void *arg0, s32 arg1) {
+    s32 index;
+    s32 best;
+    s32 selected;
+    s32 packed;
+    u16 *entry;
+    s32 score;
+    u16 value;
+
+    best = -1;
+    index = 1;
+    selected = -1;
+    if (index < func_0027C670(arg0)) {
+        entry = (u16 *)arg0 + 1;
+        do {
+            value = *entry;
+            packed = func_001E1090((s32)value >> 8, value & 0xFF);
+            value = *entry;
+            if (func_001E2100((s32)value >> 8, value & 0xFF, 4) != 0 ||
+                (value = *entry, arg1 == func_00250360((s32)value >> 8, value & 0xFF))) {
+                value = *entry;
+                score = func_002509E0((s32)value >> 8, value & 0xFF, packed & 0xFF, packed >> 8);
+                if (best < score) {
+                    selected = *entry;
+                    best = score;
+                }
+            }
+            entry++;
+            index++;
+        } while (index < func_0027C670(arg0));
+    }
+    return selected;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B860);
 
