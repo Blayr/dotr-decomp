@@ -532,7 +532,14 @@ void func_001DDD80(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDE80);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DE020);
+s32 func_001DE020(s32 arg0) {
+    return arg0 == 1 ? 1
+         : arg0 == 2 ? 1
+         : arg0 == 3 ? 2
+         : arg0 == 4 ? 2
+         : arg0 == 5 ? 3
+         : arg0;
+}
 
 s32 func_001DE090(s64 arg0, s32 arg1) {
     return arg0 > 0 ? (s32)arg0 + 5 : arg1;
