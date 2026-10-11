@@ -199,7 +199,50 @@ void func_001AC600(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC610);
+typedef struct State_001AC610 {
+    s32 pad0[2];
+    s32 counter;
+    u8 padC[0x218];
+    u8 red;
+    u8 green;
+    u8 blue;
+    u8 alpha;
+    u8 pad228[4];
+    s8 mode : 2;
+    s8 pad22C : 6;
+    u8 pad22D[2];
+    s8 pad22F : 1;
+    s8 enabled : 1;
+    s8 pad22FHigh : 6;
+} State_001AC610;
+
+extern s32 D_003173B0;
+
+void func_001AC610(s32 arg0) {
+    State_001AC610 *state = (State_001AC610 *)&D_00317250;
+    s32 i;
+
+    i = 0;
+    do {
+        func_001F30B0(i, 0);
+        i += 1;
+    } while (i < 0x54);
+    i = 0;
+    do {
+        func_001F30B0(i + 0x22, 1);
+        i += 1;
+    } while (i < 0x28);
+    if (arg0 < 2) {
+        D_003173B0 = 2;
+        state->red = 0;
+        state->green = 0;
+        state->blue = 0;
+        state->alpha = 0x80;
+        state->mode = 1;
+        state->enabled = 1;
+        state->counter = 0;
+    }
+}
 
 void func_001AC6F0(void) {
 

@@ -115,7 +115,27 @@ s32 func_00107310(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107370);
+void func_001F6340(s32, f32 *);
+
+static inline void add_clamped_00107370(f32 *value, f32 amount) {
+    *value += amount;
+    if (!(*value <= 1.0f)) {
+        *value = 1.0f;
+    }
+}
+
+s32 func_00107370(s32 arg0, f32 fparg0) {
+    f32 color[3];
+
+    if (func_001F5EC0(arg0) != 0) {
+        func_001F6340(arg0, color);
+        add_clamped_00107370(&color[0], fparg0);
+        add_clamped_00107370(&color[1], fparg0);
+        add_clamped_00107370(&color[2], fparg0);
+        func_001F62B0(arg0, color);
+    }
+    return 0;
+}
 
 void func_001F6340(s32, f32 *);
 

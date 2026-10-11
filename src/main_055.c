@@ -61,7 +61,43 @@ u16 func_00202E00(s16 arg0, s32 arg1) {
     return D_00322992;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202E30);
+typedef struct Fields_00202E30 {
+    u8 padding[0x40];
+    u16 field40;
+    u16 field42;
+} Fields_00202E30;
+
+s32 func_00202E30(void *arg0) {
+    s32 multiplier;
+    s32 shift;
+    s32 result;
+
+    switch (((Fields_00202E30 *)arg0)->field40) {
+    case 0x14:
+        shift = 4;
+        break;
+    case 0x13:
+        shift = 8;
+        break;
+    default:
+        return 0;
+    }
+
+    switch (((Fields_00202E30 *)arg0)->field42) {
+    case 0:
+        multiplier = 4;
+        break;
+    case 2:
+    case 0xA:
+        multiplier = 2;
+        break;
+    default:
+        return 0;
+    }
+
+    result = ((1 << shift) * multiplier / 64) / 4;
+    return result <= 0 ? 1 : result;
+}
 
 typedef struct {
     u16 base;

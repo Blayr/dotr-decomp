@@ -12,7 +12,25 @@ s32 func_00162580(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001625E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001626F0);
+s32 func_001626F0(s32 arg0) {
+    s32 i;
+    u8 count;
+    s32 handle;
+    s32 card;
+
+    count = 0;
+    if (func_0027BBC0(arg0, 0, 0) == 1) {
+        return 1;
+    }
+    handle = func_0024CA40(0, 0, arg0, 2, 0x34, 0xE);
+    for (i = 0; i < func_0024E910(handle); i++) {
+        card = func_0024EC50(handle, i);
+        if (func_001E2100(card >> 8, card & 0xFF, 4) == 0) {
+            count++;
+        }
+    }
+    return count < 5 ? 0 : 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001627D0);
 

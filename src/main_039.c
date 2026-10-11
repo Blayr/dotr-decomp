@@ -10,7 +10,31 @@ INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6C90);
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6CA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6EA0);
+void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                   s32 flags, s32 width, s32 number) {
+    s8 text[16];
+    s32 padded;
+    s32 power;
+    s32 i;
+
+    power = 1;
+    padded = 0;
+    if (flags & 0x20) {
+        padded = 1;
+    }
+    for (i = 0; i < width; i++) {
+        text[i] = ' ';
+    }
+    for (i = 0; i < width;) {
+        text[width - i - 1] = (number / power) % 10 + '0';
+        power *= 10;
+        i++;
+        if (!padded && number < power) {
+            break;
+        }
+    }
+    func_001B6F70(arg0, arg1, arg2, arg3, flags, width, text, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6F70);
 

@@ -96,7 +96,41 @@ s32 func_00147EB0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00147F40);
+s32 func_00147F40(void) {
+    s32 i;
+    s32 value;
+    s32 result;
+
+    i = 0;
+    do {
+        value = func_00147EB0(i);
+        if (((func_001E36E0(value & 0xFF, value >> 8) == 0) ? 1 : 0) == 1) {
+            switch (i) {
+            case 0:
+                result = 0x403;
+                break;
+            case 1:
+                result = 0x402;
+                break;
+            case 2:
+                result = 0x404;
+                break;
+            case 3:
+                result = 0x401;
+                break;
+            case 4:
+                result = 0x405;
+                break;
+            default:
+                result = -1;
+                break;
+            }
+            return result;
+        }
+        i++;
+    } while (i < 5);
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00148020);
 

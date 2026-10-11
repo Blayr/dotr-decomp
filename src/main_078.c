@@ -373,7 +373,32 @@ s32 func_00278E00(u8 value, u8 *values) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278E40);
+u16 *func_00278E40(u16 *arg0) {
+    s32 var_s3;
+    u16 *temp_v0;
+    s32 var_s5;
+    u8 *var_s0;
+    u16 *var_s1;
+
+    var_s1 = arg0;
+    if (var_s1 != NULL) {
+        var_s5 = (func_0026FBB0(*var_s1) >> 0x10) & 0xFFFF;
+        var_s3 = 0;
+        var_s0 = (u8 *) var_s1;
+        do {
+            temp_v0 = func_00278E40(*(u16 **)(var_s0 + 8));
+            if ((temp_v0 != NULL) && ((u32) (var_s5 & 0xFFFF) < (u32) (func_0026FBB0(*temp_v0) >> 0x10))) {
+                var_s5 = (func_0026FBB0(*temp_v0) >> 0x10) & 0xFFFF;
+                var_s1 = temp_v0;
+            }
+            var_s3 += 1;
+            var_s0 += 4;
+        } while (var_s3 < 4);
+    } else {
+        return NULL;
+    }
+    return var_s1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278F10);
 

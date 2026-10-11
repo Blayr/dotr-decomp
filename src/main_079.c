@@ -257,7 +257,32 @@ s32 func_0027F160(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F180);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F290);
+typedef struct Vec3_0027F290 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_0027F290;
+
+void func_0027F290(void *arg0, void *arg1, s32 arg2) {
+    Vec3_0027F290 vec;
+    f32 temp_f1;
+
+    if (arg2 != 0) {
+        vec.x = ((Vec3_0027F290 *)arg1)->x;
+        vec.y = ((Vec3_0027F290 *)arg1)->y;
+        vec.z = ((Vec3_0027F290 *)arg1)->z;
+        func_0027F3A0(&vec, arg0);
+        temp_f1 = (f32) arg2;
+        vec.x /= temp_f1;
+        vec.y /= temp_f1;
+        vec.z /= temp_f1;
+        func_0027F360(arg0, &vec);
+        return;
+    }
+    ((Vec3_0027F290 *)arg0)->x = ((Vec3_0027F290 *)arg1)->x;
+    ((Vec3_0027F290 *)arg0)->y = ((Vec3_0027F290 *)arg1)->y;
+    ((Vec3_0027F290 *)arg0)->z = ((Vec3_0027F290 *)arg1)->z;
+}
 
 void func_0027F360(void *arg0, void *arg1) {
     f32 *dst = arg0;
