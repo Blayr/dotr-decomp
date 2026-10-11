@@ -76,7 +76,6 @@ s32 func_00197BC0(s32);
 extern u8 D_1FE0000;
 
 s32 func_001F6620();
-void func_001F66A0(s32, s32);
 
 s64 func_001A22C0(f32);
 void func_001D89F0(s32, s32, s32, s32, s32, s32, s32);
