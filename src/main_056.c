@@ -35,7 +35,51 @@ INCLUDE_ASM("asm/nonmatchings/main_056", func_00206D30);
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_002070F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00207230);
+typedef union PackedXYZ_00207230 {
+    struct {
+        s16 x;
+        s16 y;
+        u8 depth[3];
+        u8 flags;
+    } components;
+    struct {
+        u64 xy : 32;
+        u64 z : 24;
+        u64 flags : 8;
+    } bits;
+} PackedXYZ_00207230;
+
+typedef struct Vertex_00207230 {
+    f32 position[4];
+    PackedXYZ_00207230 xyz;
+    u8 padding[0x18];
+} Vertex_00207230;
+
+void func_00207230(void *matrix, s32 count, void *vertices) {
+    f32 identity[16];
+    s32 i;
+    PackedXYZ_00207230 *xyz;
+    Vertex_00207230 *vertex;
+    f32 reciprocal;
+
+    vertex = vertices;
+    if (matrix == NULL) {
+        func_0020EC00(identity);
+        matrix = identity;
+    }
+    func_0020BAF0((s32)matrix);
+    for (i = 0; i < count; i++, vertex++) {
+        xyz = &vertex->xyz;
+        vertex->position[3] = 1.0f;
+        func_0020CDD0(vertex, NULL, vertex);
+        reciprocal = 1.0f / vertex->position[3];
+        xyz->components.x = func_001A23B0(16.0f * (vertex->position[0] * reciprocal));
+        xyz->components.y = func_001A23B0(16.0f * (vertex->position[1] * reciprocal));
+        xyz->bits.z = (u32)func_001A23B0(vertex->position[2] * reciprocal);
+        xyz->components.flags = 0;
+    }
+    func_0020BB50();
+}
 
 void func_00207360(void) {
     func_0020BAF0(0);
