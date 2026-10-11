@@ -461,7 +461,30 @@ void func_00102330(s8 *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102390);
+void func_00102390(s32 n, f32 *x, f32 *y, f32 *y2) {
+    f32 h[8];
+    f32 d[8];
+    s32 i;
+    f32 m;
+
+    y2[n - 1] = 0.0f;
+    y2[0] = 0.0f;
+    for (i = 0; i < n - 1; i++) {
+        h[i] = x[i + 1] - x[i];
+        d[i + 1] = (y[i + 1] - y[i]) / h[i];
+    }
+    y2[1] = (d[2] - d[1]) - h[0] * y2[0];
+    d[1] = 2.0f * (x[2] - x[0]);
+    for (i = 1; i < n - 2; i++) {
+        m = h[i] / d[i];
+        y2[i + 1] = (d[i + 2] - d[i + 1]) - m * y2[i];
+        d[i + 1] = 2.0f * (x[i + 2] - x[i]) - m * h[i];
+    }
+    y2[n - 2] -= h[n - 2] * y2[n - 1];
+    for (i = n - 2; i > 0; i--) {
+        y2[i] = (y2[i] - h[i] * y2[i + 1]) / d[i];
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00102550);
 

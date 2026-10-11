@@ -75,6 +75,7 @@ void func_00101BA0(void *arg0, s32 arg1);
 s32 func_00101C30(u8 *arg0, s32 arg1, s32 arg2);
 void func_00101C80(void *arg0, void *arg1);
 void func_00102330(s8 *arg0, s32 arg1);
+void func_00102390(s32 n, f32 *x, f32 *y, f32 *y2);
 void func_001031C0(u16 *arg0, s32 arg1);
 s32 func_00103260(s32 *arg0);
 s32 func_00103290(s32 *arg0);
