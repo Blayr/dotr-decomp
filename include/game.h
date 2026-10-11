@@ -461,7 +461,6 @@ s32 func_0018EB08(void *, s32, s32);
 s32 func_0018EF20(void *, s32, s32 (*)(), s32);
 
 void func_001F9D80(s32, f32 *);
-void func_001FB360(s32, f32 *);
 
 void func_001851E8(void *, s32, s32, s32, s32, s32, s32);
 void func_00241C20(s32, s32, s32, s32, s32);
