@@ -70,7 +70,31 @@ s32 func_00243580(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002435A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243750);
+typedef struct Range_00243750 {
+    u8 padding[0x44];
+    s32 start;
+    s32 length;
+    s32 cursor;
+} Range_00243750;
+
+void func_00243750(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 offset) {
+    Range_00243750 *range = arg4;
+    s32 length = range->length;
+    s32 cursor = range->cursor;
+
+    offset = (((offset + length - cursor - 0x400) % length) >> 10) << 10;
+    if (length - cursor >= offset) {
+        *arg0 = range->start + cursor;
+        *arg1 = offset;
+        *arg2 = 0;
+        *arg3 = 0;
+    } else {
+        *arg0 = range->start + cursor;
+        *arg1 = range->length - range->cursor;
+        *arg2 = range->start;
+        *arg3 = offset - (range->length - range->cursor);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_002437F0);
 

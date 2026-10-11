@@ -37,7 +37,24 @@ void func_00100520(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100560);
+void func_00100560(void) {
+    func_00203320();
+    func_00217550();
+    func_001FF3D0();
+    func_001AA260();
+    func_001FA220(-1, -1);
+    func_001DD220();
+    func_00100850();
+    func_001A8750(func_002099D0());
+    if (func_001A87A0() != 0) {
+        func_001A8750(1);
+    } else {
+        func_001A8770(1);
+    }
+    func_00100820();
+    func_001A8730();
+    func_00203840();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100610);
 
@@ -73,7 +90,32 @@ void func_00100B00(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 a
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100BA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100C60);
+typedef struct {
+    u16 x : 14;
+    u16 flags_x : 2;
+    u16 y : 14;
+    u16 flags_y : 2;
+} PackedCoordinates_00100C60;
+
+void func_00100C60(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+    s32 var_a1;
+    s32 var_a2;
+
+    var_a1 = ((s32) ((u16 *) arg1)[0] >> 4) - 0x6C0 + arg2;
+    var_a2 = ((s32) ((u16 *) arg1)[1] >> 4) - 0x720 + arg3;
+    if (var_a1 <= 0) {
+        var_a1 = 1;
+    } else if (var_a1 > 0x27F) {
+        var_a1 = 0x27F;
+    }
+    if (var_a2 <= 0) {
+        var_a2 = 1;
+    } else if (var_a2 > 0x1BF) {
+        var_a2 = 0x1BF;
+    }
+    ((PackedCoordinates_00100C60 *) arg0)->x = var_a1 << 4;
+    ((PackedCoordinates_00100C60 *) arg0)->y = var_a2 << 4;
+}
 
 typedef struct {
     f32 x;
@@ -95,7 +137,12 @@ s32 func_00100D00(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100D50);
+f32 func_00100D50(s32 arg0, s32 arg1, s32 arg2) {
+    f32 temp_f20;
+
+    temp_f20 = func_001A6B70(6.2831855f * ((f32) ((s32) ((arg1 - arg0) << 0x10) / (s32) (arg1 * 5)) / 65536.0f));
+    return 1.0f - func_001A6C48(temp_f20 / func_001A6B70(1.2566179f), (f32) arg2);
+}
 
 typedef struct {
     u32 values[4];

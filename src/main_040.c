@@ -131,7 +131,41 @@ s32 func_001BAA30(u16 *arg0, u16 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAAA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAB60);
+typedef struct Info_001BAB60 {
+    u8 padding[2];
+    u8 low : 4;
+    u8 rank : 4;
+} Info_001BAB60;
+
+static inline s64 rank_001BAB60(void *entry) {
+    if (entry != NULL) {
+        return (s32)((Info_001BAB60 *)entry)->rank;
+    }
+    return 0x7FFFFFFF;
+}
+
+s32 func_001BAB60(u16 *arg0, u16 *arg1) {
+    s64 var_v0;
+    s64 var_v1;
+    s32 temp_s0;
+    u8 *temp_s0_2;
+    u8 *temp_v0;
+    s32 result;
+
+    temp_s0 = *arg1;
+    temp_s0_2 = func_001DD0E0(*arg0);
+    temp_v0 = func_001DD0E0(temp_s0);
+    var_v1 = rank_001BAB60(temp_s0_2);
+    var_v0 = rank_001BAB60(temp_v0);
+    if (var_v0 < var_v1) {
+        result = 1;
+    } else if (var_v1 < var_v0) {
+        result = -1;
+    } else {
+        result = 0;
+    }
+    return result;
+}
 
 s32 func_001BAC00(u16 *arg0, u16 *arg1) {
     s64 var_v0;

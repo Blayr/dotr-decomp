@@ -16,7 +16,37 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00255AC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00255B50);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00255C30);
+typedef struct Slots_00255C30 {
+    u8 pad[0x82];
+    u16 ids[24];
+} Slots_00255C30;
+
+u8 *func_001F3EA0(s32, u16);
+
+s32 func_00255C30(void *arg0, s32 arg1) {
+    s32 state;
+    s32 i;
+    u8 *entry;
+    Slots_00255C30 *slots = arg0;
+
+    if (arg0 == NULL) {
+        return 0;
+    }
+
+    for (i = 0; i < 24; i++) {
+        if (arg1 == slots->ids[i]) {
+            entry = func_001F3EA0(0, slots->ids[i]);
+            if (entry != NULL) {
+                state = *entry & 7;
+                if (state < 2) {
+                    return state == 0 ? 0 : -1;
+                }
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00255CD0);
 

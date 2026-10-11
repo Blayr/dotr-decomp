@@ -56,7 +56,17 @@ s32 func_001E5590(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E55E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5D30);
+s32 func_001E5D30(s32 arg0, s32 arg1, s32 arg2) {
+    s32 parameters[4];
+
+    arg0 = func_001EFA80(arg0, arg1, 0, 0, 0, 0, 0);
+    if (arg2 < 9) {
+        func_001F2330(arg1, parameters);
+        parameters[1] = 0x8000;
+        arg0 = func_001EFA80(arg0, arg1, 0, (s32) parameters, 0, 0, 0);
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5DD0);
 

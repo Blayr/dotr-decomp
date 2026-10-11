@@ -165,11 +165,41 @@ void *func_002788D0(u16 *arg0, u16 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278930);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002789F0);
+s32 func_002789F0(s32 arg0, s32 arg1) {
+    s32 temp_v0;
+    s32 temp_s1;
+    s32 temp_s2;
+
+    temp_s2 = arg0 & 0xFFFF;
+    if ((temp_s2 == 0x3E7) || (temp_s1 = arg1 & 0xFFFF, (temp_s1 == 0x3E7))) {
+        return 0x3E7;
+    }
+    temp_v0 = func_00248F60(temp_s2, temp_s1);
+    if ((temp_v0 >> 0x10) == 0) {
+        if (func_00249320(temp_s1) == 1) {
+            return temp_v0 & 0xFFFF;
+        }
+    }
+    return func_002495A0(temp_s2, temp_s1) & 0xFFFF;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00278A90);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278C80);
+void *func_00278C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                    s32 arg4, u16 *arg5, u16 *arg6) {
+    s32 sp60[8];
+    void *temp_v0;
+
+    func_0026FD30(arg0, sp60);
+    if (arg4 != 0) {
+        return NULL;
+    }
+    if ((temp_v0 = func_002788D0(arg5, arg6)) == NULL) {
+        return NULL;
+    }
+    func_00278930(temp_v0, arg3 & 0xFFFF, arg4, arg2);
+    return temp_v0;
+}
 
 void func_00278D20(u8 *arg0, u8 arg1) {
     s32 var_a0;
@@ -265,7 +295,11 @@ void func_00279C40(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00279CC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A090);
+void func_0027A090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
+                   s32 arg5, s32 arg6, s32 arg7, s32 arg8, u8 arg9, u16 arg10) {
+    func_0027A130(func_001DF540(arg0, arg1), arg2, arg3, arg4, arg5,
+                  arg6, arg7, arg8, arg9, arg10);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A130);
 
@@ -273,7 +307,30 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A360);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A710);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_0027ABD0);
+s32 func_0027ABD0(void *arg0, u8 arg1, u8 arg2) {
+    s32 i;
+    void **children;
+    s32 nextDepth;
+    s32 result;
+
+    if (arg0 != NULL) {
+        if (arg1 == arg2) {
+            return 1;
+        }
+        nextDepth = arg1 + 1;
+        children = arg0;
+        i = 0;
+        do {
+            result = func_0027ABD0(children[1], nextDepth, arg2);
+            if (result == 1) {
+                return result;
+            }
+            i++;
+            children++;
+        } while (i < 12);
+    }
+    return 0;
+}
 
 void func_0027AC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 sp18;

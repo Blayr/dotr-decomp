@@ -115,7 +115,26 @@ void func_002085A0(s32 arg0) {
     func_00209D30(func_002085E0(func_00209D20(), arg0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002085E0);
+s32 func_002085E0(s32 arg0, s32 arg1) {
+    u64 value;
+
+    if (arg1 < 0 || arg1 >= 4) {
+        return arg0;
+    }
+
+    value = D_00293EE0[arg1];
+    *(u64 *)(arg0 + 8) = 0;
+    *(u64 *)arg0 = 0;
+    *(u8 *)(arg0 + 3) = 0x10;
+    *(u64 *)(arg0 + 0x10) = 0x1000000000008001ULL;
+    *(u64 *)(arg0 + 0x18) = 0xE;
+    *(u64 *)(arg0 + 0x20) = value;
+    *(u64 *)(arg0 + 0x28) = 0x44;
+    *(u16 *)arg0 = 2;
+    *(u32 *)(arg0 + 8) = 0x11000000;
+    *(u32 *)(arg0 + 0xC) = 0x51000002;
+    return arg0 + 0x30;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208680);
 
@@ -136,7 +155,30 @@ s32 func_002086D0(void *arg0, s64 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208700);
+typedef struct {
+    u64 reserved0 : 5;
+    u64 flag : 1;
+    u64 mode : 3;
+    u64 reserved9 : 55;
+} Flags_00208700;
+
+s32 func_00208700(void *arg0, void *arg1, s32 arg2) {
+    u8 *base = (u8 *)arg0 + 0x10;
+    u16 count = *(u16 *)arg0;
+    u64 *dst;
+
+    if (!(*(u16 *)((u8 *)arg0 + 2) & 0x20)) {
+        return 0;
+    }
+    if (arg1 == NULL) {
+        return 0;
+    }
+    dst = (u64 *)(base + count * 8);
+    dst[1] = *(u64 *)((u8 *)arg1 + 0x30);
+    dst[2] = *(u64 *)((u8 *)arg1 + 0x40);
+    ((Flags_00208700 *)(dst + 2))->flag = (((Flags_00208700 *)(dst + 2))->mode = arg2);
+    return 1;
+}
 
 typedef struct {
     u16 count;

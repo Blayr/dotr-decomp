@@ -52,7 +52,6 @@ s32 func_001F9310(s32, s32, s32);       /* extern */
 s32 func_001F9770(s32, s32, s32);       /* extern */
 s32 func_001F6E10(s32, s32);                /* extern */
 s32 func_0020A0B0(s32, s32);                        /* extern */
-s32 func_002085E0(s32, s32);                        /* extern */
 s32 func_0010A160(s32, s32);            /* extern */
 s32 func_001DA7F0(s32, s32, s32);                   /* extern */
 s32 func_001FD320(s32, s32, s32, s32 *);            /* extern */
@@ -235,7 +234,6 @@ void func_00244680(u8 *);
 
 extern u8 D_0029D586[];
 
-void func_00100560(void);
 void func_00100780(void);
 void func_001F73C0(void);
 void func_00209F60(void (*)(void));
@@ -319,10 +317,8 @@ void func_001E23A0(s32, s32, s32);
 
 
 s32 func_001E3850(s32, s32, s32);
-s32 func_001E3AB0(s32, s32, s32);
 s32 func_001E3D30(s32, s32, s32);
 
-s32 func_001E3BF0(s32, s32, s32);
 
 void func_0020BDE0(void *, void *);
 void func_0020CDD0(void *, void *, void *);
@@ -367,7 +363,6 @@ s32 func_001F51D0(s32 arg0);
 void *func_0019C2B8(void *, const void *, u32);
 
 s32 func_001E1B70();                                /* extern */
-s32 func_001E1C10(s32, s32, s32, s32);              /* extern */
 
 void func_001DFBB0(s32, s32);
 void func_001CDEB0(void *arg0);
@@ -446,5 +441,37 @@ s32 func_00271830(s32);
 f32 func_001A6A88(f32);
 
 void func_0027B290(s32, s32, s32, s32, s32, s32, s32, u8);
+
+void func_001E3070(s32, s32, s32, s32, s32, s32);
+
+
+extern u64 D_00293EE0[];
+
+void func_001F6160(s32, void *);
+
+s32 func_001A2EB0(s32);                             /* extern */
+s32 func_001A2F68(s32);                             /* extern */
+s32 func_001A6BE8(s64, s32);                        /* extern */
+
+void func_001DE5E0(s32, s32, s32);
+void func_0027F480(s32);
+void func_0027F5B0(void);
+f32 func_001A6B70(f32);
+f32 func_001A6C48(f32, f32);
+void func_00100850(void);
+void func_001A8750(s32);
+void func_001A8770(s32);
+s32 func_001A87A0(void);
+void func_001AA260(void);
+void func_001DD220(void);
+void func_001FA220(s32, s32);
+void func_00203320(void);
+void func_00203840(void);
+s32 func_002099D0(void);
+void func_00217550(void);
+void func_00278930(void *, s32, s32, s32);
+void func_0027A130(s32, s32, s32, s32, s32, s32, s32, s32, u8, u16);
+void func_00109A90(void);
+void *func_00198948(void *, s32, u32);
 
 #endif

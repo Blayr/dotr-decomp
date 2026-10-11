@@ -21,7 +21,38 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00202BF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202CB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202D60);
+typedef struct {
+    s32 data;
+    s32 unknown;
+    s16 active : 1;
+    s16 flags : 2;
+    s16 category : 13;
+    s16 id;
+} Entry_00202D60;
+
+extern Entry_00202D60 D_003229A0[];
+
+s32 func_00202D60(s32 arg0, s32 arg1) {
+    Entry_00202D60 *var_t0;
+    s32 var_t1;
+    s32 var_v0;
+
+    var_t0 = D_003229A0;
+    var_v0 = 0;
+    var_t1 = 0;
+    do {
+        if (var_t0->data != 0 && var_t0->active != 0) {
+            if ((arg0 < 0 || var_t0->category == arg0) &&
+                (arg1 < 0 || var_t0->id == arg1)) {
+                var_v0 = 1;
+                var_t0->active = 0;
+            }
+        }
+        var_t1 += 1;
+        var_t0++;
+    } while (var_t1 < 0x400);
+    return var_v0;
+}
 
 u16 func_00202E00(s16 arg0, s32 arg1) {
     D_00322990 = arg0;

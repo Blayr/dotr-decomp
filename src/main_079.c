@@ -117,7 +117,27 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C5A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C670);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C6D0);
+s32 func_0027C6D0(s32 arg0) {
+    s32 column;
+    s32 row;
+    s32 terrain;
+
+    column = arg0 & 0xFF;
+    row = arg0 >> 8;
+    if (func_001E2100(row, column, 0) != 0) {
+        return 1;
+    }
+    terrain = func_001E0700(row, column) >> 5;
+    switch (terrain) {
+    case 3:
+    case 4:
+        if (func_001E2100(row, column, 4) != 0) {
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C770);
 
@@ -204,7 +224,21 @@ void func_0027F3A0(void *arg0, void *arg1) {
     dst[2] -= src[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F3E0);
+void func_0027F3E0(u8 arg0, s32 arg1) {
+    func_0027F480(arg1);
+    switch (arg0) {
+    case 32:
+        func_0027F5A0();
+        break;
+    case 35:
+        func_001DE5E0(0, 4, 8);
+        func_001DE5E0(1, 4, 8);
+        break;
+    case 36:
+        func_0027F5B0();
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F480);
 

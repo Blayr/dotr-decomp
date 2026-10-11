@@ -79,7 +79,35 @@ s32 func_001E1AF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1B70);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1C10);
+typedef struct Flags_001E1C10 {
+    s8 unused0 : 2;
+    s8 direction : 2;
+    s8 unused1 : 4;
+} Flags_001E1C10;
+
+static inline void *check_001E1C10(void *p) {
+    if (p == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)p + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+s32 func_001E1C10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    void *var_v0;
+
+    var_v0 = check_001E1C10(func_001DD130());
+    if (var_v0 == NULL) {
+        return 0;
+    }
+    ((Flags_001E1C10 *)((u8 *)var_v0 + 0x56))->direction = arg2 & 3;
+    if (arg3 >= 0) {
+        *(s8 *)((u8 *)var_v0 + 0x53) = arg3;
+    }
+    return 1;
+}
 
 static inline void *get_entry_001E1CB0(void) {
     void *entry;
@@ -274,7 +302,20 @@ INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2A60);
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2FB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2FC0);
+void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 column;
+    s32 row;
+
+    row = 0;
+    do {
+        column = 0;
+        do {
+            func_001E3070(column, row, arg0, arg1, arg2, arg3);
+            column++;
+        } while (column < 7);
+        row++;
+    } while (row < 7);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3060);
 
@@ -371,11 +412,79 @@ s32 func_001E3990(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3A20);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3AB0);
+typedef struct Vec4_001E3AB0 {
+    f32 x, y, z, w;
+} Vec4_001E3AB0;
+
+static inline void *get_001E3AB0(void) {
+    void *entry = func_001DD130();
+
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)entry + 0x45) >= 11) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E3AB0(s32 arg0, s32 arg1, s32 arg2) {
+    void *entry;
+    Vec4_001E3AB0 *data;
+
+    entry = get_001E3AB0();
+    if (entry == NULL) {
+        return 0;
+    }
+    data = *(Vec4_001E3AB0 **)((u8 *)entry + 4);
+    if (data == NULL) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        *data = *(Vec4_001E3AB0 *)arg2;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3B50);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3BF0);
+typedef struct Vec4_001E3BF0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001E3BF0;
+
+static inline void *lookup_001E3BF0(void) {
+    void *object;
+
+    object = func_001DD130();
+    if (object == NULL) {
+        return NULL;
+    }
+    if (*(u8 *)((u8 *)object + 0x45) >= 0xB) {
+        return NULL;
+    }
+    return object;
+}
+
+s32 func_001E3BF0(s32 arg0, s32 arg1, s32 arg2) {
+    void *temp_v0;
+    void *var_v0;
+
+    var_v0 = lookup_001E3BF0();
+    if (var_v0 == NULL) {
+        return 0;
+    }
+    temp_v0 = *(void **)((u8 *)var_v0 + 4);
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        *(Vec4_001E3BF0 *)((u8 *)temp_v0 + 0x10) = *(Vec4_001E3BF0 *)arg2;
+    }
+    return 1;
+}
 
 typedef struct Vec4_001E3C90 {
     f32 x;

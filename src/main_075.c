@@ -129,7 +129,22 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_002607D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260860);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_002608F0);
+void func_002608F0(s32 arg0) {
+    f32 sp20[4];
+    f32 sp30[4];
+    f32 sp40[4];
+
+    func_001FA810(0, 0);
+    switch ((u8)arg0) {
+    case 0:
+        func_001E10F0(3, 3, 0x190, &sp20);
+        func_00255E90(&sp30);
+        func_001FC950(&sp30, &sp40);
+        func_001FA8A0(0, 0, 3, 0, 0, &sp20);
+        func_001FA8A0(0, 0, 4, 0, 0, &sp40);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260990);
 
@@ -143,11 +158,56 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_00260EB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_002610D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_002612E0);
+void func_002612E0(void *arg0, s32 arg1, s32 arg2) {
+    s32 temp_a0;
+    s32 temp_s1;
+    s32 var_a1;
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261380);
+    temp_s1 = func_001DF540(arg1 >> 8, arg1 & 0xFF);
+    func_001F6160(arg1, arg0);
+    ((s32 *)arg0)[0] += arg2;
+    temp_a0 = *(s32 *)((u8 *)temp_s1 + 0x30);
+    var_a1 = 0x47FF - temp_a0;
+    if (var_a1 < 0) {
+        var_a1 = 0x147FE - temp_a0;
+    }
+    ((s32 *)arg0)[1] += var_a1;
+    ((s32 *)arg0)[2] += 0x2000;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261420);
+void func_00261380(void *arg0, s32 arg1, s32 arg2) {
+    s32 temp_a0;
+    s32 temp_s1;
+    s32 var_a1;
+
+    temp_s1 = func_001DF540(arg1 >> 8, arg1 & 0xFF);
+    func_001F6160(arg1, arg0);
+    ((s32 *)arg0)[0] += arg2;
+    temp_a0 = *(s32 *)((u8 *)temp_s1 + 0x30);
+    var_a1 = 0x3FFF - temp_a0;
+    if (var_a1 < 0) {
+        var_a1 = 0x13FFE - temp_a0;
+    }
+    ((s32 *)arg0)[1] += var_a1;
+    ((s32 *)arg0)[2] += 0x1000;
+}
+
+void func_00261420(void *arg0, s32 arg1, s32 arg2) {
+    s32 temp_a0;
+    s32 *temp_s1;
+    s32 var_a1;
+
+    temp_s1 = (s32 *)func_001DF540(arg1 >> 8, arg1 & 0xFF);
+    func_001F6160(arg1, arg0);
+    ((s32 *)arg0)[0] += arg2;
+    temp_a0 = temp_s1[12];
+    var_a1 = 0xC7FF - temp_a0;
+    if (var_a1 < 0) {
+        var_a1 = 0x1C7FE - temp_a0;
+    }
+    ((s32 *)arg0)[1] += var_a1;
+    ((s32 *)arg0)[2] += 0x2000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_002614C0);
 

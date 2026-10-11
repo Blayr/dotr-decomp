@@ -292,7 +292,24 @@ s32 func_00108FF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00109050);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00109100);
+typedef struct Vec4_00109100 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_00109100;
+
+s32 func_00108950(void *, void *, s32, s32);
+
+s32 func_00109100(u8 *arg0, void *arg1, s32 arg2, s32 arg3) {
+    Vec4_00109100 sp40 = *(Vec4_00109100 *)arg1;
+
+    func_00108950(arg0, &sp40, arg2, arg3);
+    func_00108950(arg0 + 0x10, &sp40, arg2, arg3);
+    func_00108950(arg0 + 0x20, &sp40, arg2, arg3);
+    func_00108950(arg0 + 0x30, &sp40, arg2, arg3);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001091B0);
 

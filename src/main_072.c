@@ -25,15 +25,53 @@ s32 func_0024C780(u32 arg0, s32 arg1, s32 arg2) {
     return arg0 | (1 << (0xA - arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C7D0);
+s32 func_0024C7D0(u32 arg0, s32 arg1, s32 arg2) {
+    s32 temp_a0;
+    s32 temp_s2;
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C870);
+    if (arg1 == 0) {
+        temp_a0 = 0x15 - arg2;
+        return ((((u32) (arg0 >> 0xB) >> (0xA - arg2)) & ~1) << temp_a0) | (arg0 & func_0024C870(temp_a0));
+    }
+    temp_s2 = arg0 & ~func_0024C870(0xB - arg2);
+    return temp_s2 | (arg0 & func_0024C870(0xA - arg2));
+}
+
+s32 func_0024C870(s32 arg0) {
+    s32 temp_s0;
+    s32 var_s0;
+    s32 var_s1;
+
+    var_s1 = 0;
+    var_s0 = 0;
+    for (; var_s1 < arg0; var_s1++) {
+        temp_s0 = func_001A6BE8(0x4000000000000000LL, func_001A2EB0(var_s1));
+        var_s0 = func_001A2F68(func_001A2858(func_001A2EB0(var_s0), temp_s0));
+    }
+    return var_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C910);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024CA40);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DD80);
+s32 func_0024DD80(s32 arg0, s32 arg1, s32 arg2) {
+    switch (arg2) {
+    case 0:
+        return 0;
+    case 1:
+        return (arg0 == arg1) ? 1 : 0;
+    case 2:
+        if (arg0 == ((arg1 == 0) ? 1 : 0)) {
+            return 1;
+        }
+        return 0;
+    case 3:
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 s32 func_0024DE20(s32 arg0, s32 arg1) {
     switch (arg1) {

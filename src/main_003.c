@@ -1,6 +1,21 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_00109CA0);
+s32 func_00109CA0(s32 arg0) {
+    D_0030FF40 = (s32 *)arg0;
+    D_0030FF48 = arg0 + 0x2A80;
+    func_00198948(D_0030FF40, 0, 0x2A80);
+    *(s32 *)((u8 *)D_0030FF40 + 0x1DC) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x1F4) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x2248) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x2254) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x224C) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x2258) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x2250) = -1;
+    *(s32 *)((u8 *)D_0030FF40 + 0x225C) = -1;
+    func_0010BDC0();
+    func_00109A90();
+    return 1;
+}
 
 void func_00109D50(void) {
     func_0010C720(0xF004, D_0030FF40[5]);
