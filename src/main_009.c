@@ -141,7 +141,52 @@ void func_00136D60(s32 arg0, void *arg1, s32 *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00136F30);
+typedef struct {
+    u8 pad0[6];
+    u8 slot[5];
+} Obj1_00136F30;
+
+typedef struct {
+    u8 pad0[0x3C];
+    u16 id;
+} Obj2_00136F30;
+
+s32 func_00136F30(s32 arg0, void *arg1, void *arg2) {
+    Obj1_00136F30 *o1 = arg1;
+    Obj2_00136F30 *o2 = arg2;
+    s32 list[8];
+    s32 i;
+    u8 k;
+
+    for (i = 0; i < 5; i++) {
+        o1->slot[i] = 0xFF;
+    }
+    func_0026FD30(arg0, list);
+    if (o2 == NULL) {
+        return -1;
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (i != o1->slot[0] && i != o1->slot[1]) {
+            if (o2->id == list[i] && func_0026FB10(arg0, list[i]) == 1) {
+                o1->slot[0] = i;
+            }
+        }
+    }
+    k = 1;
+    if ((func_0026FCE0(list[o1->slot[0]]) >> 5) == 0) {
+        for (i = 0; i < func_0026FE20(arg0); i++) {
+            if (i != o1->slot[0] && i != o1->slot[1]) {
+                if (func_00248F60(list[o1->slot[0]], list[i]) >= 0 && (func_0026FCE0(list[i]) >> 5) == 2) {
+                    if (list[i] != 0x31B && list[i] != 0x31C) {
+                        o1->slot[k] = i;
+                        k++;
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00137120);
 
@@ -587,7 +632,52 @@ s32 func_0013B7E0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013B840);
+typedef struct {
+    u8 pad0[6];
+    u8 slot[5];
+} Obj1_0013B840;
+
+typedef struct {
+    u8 pad0[0x3C];
+    u16 id;
+} Obj2_0013B840;
+
+s32 func_0013B840(s32 arg0, void *arg1, void *arg2) {
+    Obj1_0013B840 *o1 = arg1;
+    Obj2_0013B840 *o2 = arg2;
+    s32 list[8];
+    s32 i;
+    u8 k;
+
+    for (i = 0; i < 5; i++) {
+        o1->slot[i] = 0xFF;
+    }
+    func_0026FD30(arg0, list);
+    if (o2 == NULL) {
+        return -1;
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (i != o1->slot[0] && i != o1->slot[1]) {
+            if (o2->id == list[i] && func_0026FB10(arg0, list[i]) == 1) {
+                o1->slot[0] = i;
+            }
+        }
+    }
+    k = 1;
+    if ((func_0026FCE0(list[o1->slot[0]]) >> 5) == 0) {
+        for (i = 0; i < func_0026FE20(arg0); i++) {
+            if (i != o1->slot[0] && i != o1->slot[1]) {
+                if (func_00248F60(list[o1->slot[0]], list[i]) >= 0 && (func_0026FCE0(list[i]) >> 5) == 2) {
+                    if (list[i] != 0x31B && list[i] != 0x31C) {
+                        o1->slot[k] = i;
+                        k++;
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_0013BA30);
 
