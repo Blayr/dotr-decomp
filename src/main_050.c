@@ -30,7 +30,83 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3E40);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3EA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3F20);
+typedef struct Entry_001F3F20 {
+    u64 kind : 3;
+    u64 time : 13;
+    u64 source : 3;
+    u64 target : 10;
+    u64 rest : 35;
+    u8 pad[0x10];
+} Entry_001F3F20;
+
+typedef struct Link_001F3F20 {
+    u64 status : 3;
+    u64 from : 3;
+    u64 to : 10;
+    u64 extra : 48;
+} Link_001F3F20;
+
+typedef struct Cue_001F3F20 {
+    u16 end : 4;
+    u16 time : 12;
+    u16 id;
+} Cue_001F3F20;
+
+static inline Link_001F3F20 *find_001F3F20(s32 source, s32 target) {
+    extern Link_001F3F20 D_0031BB50[];
+    Link_001F3F20 *slot;
+    s32 i;
+
+    slot = D_0031BB50;
+    for (i = 0; (s64)i < 32; i++, slot++) {
+        if ((source < 0 || slot->from == source) && (target < 0 || slot->to == target)) {
+            return slot;
+        }
+    }
+    return NULL;
+}
+
+void func_001F3F20(void) {
+    extern Entry_001F3F20 D_0031BC50[];
+    extern s32 func_001A8760();
+    Entry_001F3F20 *entry;
+    s32 i;
+    s32 j;
+    s32 start;
+    s32 now;
+    Link_001F3F20 *slot;
+    s32 delta;
+    Cue_001F3F20 *cue;
+
+    entry = D_0031BC50;
+    for (i = 0; i < 24; i++, entry++) {
+        if (entry->source != 0) {
+            continue;
+        }
+        if (entry->kind != 1) {
+            continue;
+        }
+        slot = find_001F3F20(entry->source, entry->target);
+        if (slot == NULL || slot->status != 2) {
+            continue;
+        }
+        cue = *(Cue_001F3F20 **)((u8 *)slot + 4);
+        if (cue == NULL) {
+            continue;
+        }
+        delta = func_001A8760();
+        now = (u16)entry->time;
+        start = (u16)(now - delta);
+        for (j = 0; j < 64; j++) {
+            if (cue[j].end == 0xF) {
+                break;
+            }
+            if (cue[j].time >= start && cue[j].time < now) {
+                func_00217710(1, cue[j].id);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F40D0);
 
