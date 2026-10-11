@@ -198,6 +198,22 @@ s32 func_001F1940(s32 arg0, s8 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F19A0);
+typedef struct {
+    s8 unused : 6;
+    s8 value : 2;
+} Flags_001F19A0;
+
+s64 func_001F19A0(s32 arg0) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return -1;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return -1;
+    }
+    return ((Flags_001F19A0 *)((u8 *)obj + 0x1F7))->value;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F1A00);

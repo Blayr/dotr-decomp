@@ -93,7 +93,28 @@ s32 func_001E1D10(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1D70);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1E10);
+static inline u8 *lookup_001E1E10(void) {
+    u8 *entry;
+
+    entry = func_001DD130();
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (entry[0x45] >= 0xB) {
+        return NULL;
+    }
+    return entry;
+}
+
+s32 func_001E1E10(void) {
+    u8 *entry;
+
+    entry = lookup_001E1E10();
+    if (entry != NULL) {
+        return entry[0x54];
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1E70);
 
