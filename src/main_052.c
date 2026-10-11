@@ -267,7 +267,47 @@ s32 func_001F9500(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F95E0);
+typedef struct {
+    f32 x, y, z, w;
+} Vec4_001F95E0;
+
+typedef struct {
+    u8 pad[0x10];
+    Vec4_001F95E0 rotation;
+    Vec4_001F95E0 result;
+} Entry_001F95E0;
+
+void func_0020C630(void *, void *);
+extern f32 D_00293040[4][4];
+
+s32 func_001F95E0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    f32 matrix[4][4];
+    Entry_001F95E0 *entry;
+    u8 *base;
+    Entry_001F95E0 *row;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    base = (u8 *)D_0031BEB0[arg0];
+    if (base == NULL) {
+        return 0;
+    }
+    if ((arg1 < 0) || (arg1 >= 10)) {
+        return 0;
+    }
+    if ((arg2 < 0) || (arg2 >= 3)) {
+        return 0;
+    }
+    row = (Entry_001F95E0 *)(base + arg1 * 0x90 + 0x60);
+    if (arg3 != NULL) {
+        row[arg2].rotation = *(Vec4_001F95E0 *)arg3;
+    }
+    entry = &row[arg2];
+    func_0020C630(matrix, &entry->rotation);
+    func_0020CDD0(&entry->result, matrix, D_00293040);
+    return 1;
+}
 
 s32 func_001F96F0(s32 arg0, s32 arg1) {
     u8 *data;
