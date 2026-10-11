@@ -2,7 +2,9 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_00109CA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_00109D50);
+void func_00109D50(void) {
+    func_0010C720(0xF004, D_0030FF40[5]);
+}
 
 void func_00109D70(s32 arg0) {
     if (arg0 != 0) {
