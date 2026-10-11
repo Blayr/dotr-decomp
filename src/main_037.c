@@ -28,7 +28,10 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A86A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A86D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A86F0);
+s32 func_001A86F0(void) {
+    D_00317250 += 1;
+    return 1;
+}
 
 s32 func_001A8710(void) {
     return *(s32 *)0x10000800;

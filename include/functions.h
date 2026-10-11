@@ -66,6 +66,7 @@ void func_00184700(void);
 s32 func_0018ED10(void);
 void func_001966E8(void);
 void func_001966F0(void);
+s32 func_001A86F0(void);
 s32 func_001A8710(void);
 void func_001AC600(void);
 void func_001AC6F0(void);
