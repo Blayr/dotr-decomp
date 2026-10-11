@@ -223,4 +223,6 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDE80);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DE020);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DE090);
+s32 func_001DE090(s64 arg0, s32 arg1) {
+    return arg0 > 0 ? (s32)arg0 + 5 : arg1;
+}
