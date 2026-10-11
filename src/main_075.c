@@ -560,7 +560,70 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_00263180);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00263500);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00263790);
+void func_00255960(void *);
+s32 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+
+typedef struct Config_00263790 {
+    u8 padding[8];
+    u32 id;
+    s32 duration;
+} Config_00263790;
+
+typedef struct State_00263790 {
+    u32 unknown;
+    u16 phase;
+    u8 handle;
+} State_00263790;
+
+s32 func_00263790(void *arg0, void *arg1, s32 arg2) {
+    s32 request[4];
+    s32 *p = request;
+    State_00263790 *state = arg1;
+    Config_00263790 *config = arg0;
+
+    request[0] = 0x3E7;
+    request[1] = 0;
+    request[2] = 0;
+    request[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x216);
+        return 1;
+    }
+    switch (state->phase) {
+    case 0:
+        if (func_00255B50(arg1) != 1) {
+            break;
+        }
+        if (func_001DE5C0(config->id) <= (u32)config->duration) {
+            p[0] = 0x216;
+            p[1] = 0;
+            p[2] = 0;
+            p[3] = config->duration - func_001DE5C0(config->id);
+        } else {
+            p[0] = 0x216;
+            p[1] = 0;
+            p[2] = 1;
+            p[3] = func_001DE5C0(config->id) - config->duration;
+        }
+        state->handle = func_00255A30(p, arg1);
+        state->phase++;
+        break;
+    default:
+        if (func_001F51D0(state->handle) == 1) {
+            return 1;
+        }
+        func_001DE5E0(config->id, 4, config->duration);
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00263930);
 
