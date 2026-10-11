@@ -52,7 +52,15 @@ void func_001FFF60(s32 arg0, s64 arg1) {
     D_00322980.enabled = (s8)arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFF90);
+u8 *func_001FFF90(void) {
+    u8 *ret;
+
+    ret = func_00197548();
+    if (ret == NULL) {
+        ret = D_002D0655;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFFC0);
 
