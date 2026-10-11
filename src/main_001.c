@@ -314,7 +314,22 @@ INCLUDE_ASM("asm/nonmatchings/main_001", func_00103A30);
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103B50);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103C40);
+s32 func_00103C40(Vec4f *arg0, void *arg1) {
+    Vec4f sp20;
+    Vec4f sp30;
+    Vec4f sp40;
+    void func_0020C750();
+
+    sp20 = *arg0;
+    func_0020D070(&sp20.x);
+    sp30.z = 0.0f;
+    sp30.x = 0.0f;
+    sp30.y = 1.0f;
+    func_0020D070(&sp30.x);
+    func_0020D140(&sp40.x, &sp30.x, &sp20.x);
+    func_0020C750(arg1, &sp40, func_001A22C0(65536.0f * (func_001A6C00(func_0020D0E0(&sp40.x)) / 6.2831855f)));
+    return 0;
+}
 
 s32 func_00103D00(s32 arg0, s32 arg1) {
     s32 result;

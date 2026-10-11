@@ -86,6 +86,7 @@ void func_00103760(void *arg0);
 void func_00103890(void *arg0);
 void func_001038D0(void *arg0);
 s32 func_00103920(void *arg0, f32 fparg0, f32 fparg1);
+s32 func_00103C40(Vec4f *arg0, void *arg1);
 s32 func_00103D00(s32 arg0, s32 arg1);
 s32 func_001043F0(void *arg0, f32 fparg0);
 void func_00104490(f32 *arg0, f32 *arg1, s32 arg2);
