@@ -25,8 +25,9 @@ trap 'rm -rf "$TMP"' EXIT
 # prototype of the function being tried.
 CPP_FLAGS="${DK_EXTRA_INCLUDE:+-I$DK_EXTRA_INCLUDE} -I$ROOT/include -I$ROOT/src"
 mkdir -p "$(dirname "$OUT")"
-"$PRE/bin/ee-gcc" -B"$PRE_LIB/" -M $CPP_FLAGS "$IN" 2>/dev/null | sed "1s|^[^:]*:|$OUT:|" > "$TMP/deps" || true
-"$PRE/bin/ee-gcc" -B"$PRE_LIB/" -E $CPP_FLAGS "$IN" -o "$TMP/in.i"
+# Dependencies for make come from the system cpp. It is 64-bit, so Metrowerks
+# builds also run inside sandboxes that ban 32-bit programs (Codex on Linux).
+cpp -M -nostdinc $CPP_FLAGS "$IN" 2>/dev/null | sed "1s|^[^:]*:|$OUT:|" > "$TMP/deps" || true
 
 if [[ "$DK_GCC" == mwcps2-* ]]; then
     # mwccgap swaps each INCLUDE_ASM line for its assembled function. It reads C
@@ -45,6 +46,7 @@ if [[ "$DK_GCC" == mwcps2-* ]]; then
     mv "$TMP/deps" "$OUT.d"
     exit 0
 fi
+"$PRE/bin/ee-gcc" -B"$PRE_LIB/" -E $CPP_FLAGS "$IN" -o "$TMP/in.i"
 if [ -x "$EE/bin/ee-gcc" ]; then
     LIB="$(dirname "$(find "$EE/lib" -name cc1 | head -1)")"
     (cd "$TMP" && "$EE/bin/ee-gcc" -B"$LIB/" -S "-G$G" $DK_CFLAGS in.i -o out.s)
