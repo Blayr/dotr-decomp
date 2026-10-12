@@ -671,7 +671,43 @@ s32 func_00243F60(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_002440F0);
+typedef struct Buffer_002440F0 {
+    s32 base;
+    s32 unknown04;
+    s32 blockCount;
+    s32 blockOffset;
+    s32 reservedBlocks;
+    s32 byteOffset;
+    s32 capacity;
+    u8 padding1C[0x24];
+    s32 semaphore;
+} Buffer_002440F0;
+
+void func_002440F0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
+    Buffer_002440F0 *buffer = arg0;
+    s32 byteOffset;
+    s32 start;
+    s32 offset;
+    s32 length;
+
+    func_0017B920(buffer->semaphore);
+    byteOffset = buffer->byteOffset;
+    start = (buffer->blockOffset + buffer->reservedBlocks) << 11;
+    offset = (start + byteOffset) % buffer->capacity;
+    length = ((buffer->blockCount - 2 - buffer->reservedBlocks) << 11) - byteOffset;
+    if (buffer->capacity - offset >= length) {
+        *arg1 = buffer->base + offset;
+        *arg2 = length;
+        *arg3 = 0;
+        *arg4 = 0;
+    } else {
+        *arg1 = buffer->base + offset;
+        *arg2 = buffer->capacity - offset;
+        *arg3 = buffer->base;
+        *arg4 = length - (buffer->capacity - offset);
+    }
+    func_0017B900(buffer->semaphore);
+}
 
 typedef struct Counter_002441F0 {
     u8 pad0[0x14];

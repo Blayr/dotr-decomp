@@ -34,7 +34,6 @@ typedef struct {
     f32 v;
 } Flt_002451A0;
 
-void func_002440F0(void *, s32 *, s32 *, s32 *, s32 *);
 extern Flt_002451A0 D_0029B300;
 extern u8 D_003506C8[];
 
