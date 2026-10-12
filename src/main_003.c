@@ -150,7 +150,28 @@ void func_0010A1D0(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A280);
+void func_0010A280(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    s32 sp78;
+    s32 sp7C;
+    u8 *bytes;
+
+    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+        return;
+    }
+    if ((D_0030FF40[1] & 4) && (D_0030FF40[0] & 1) && ((s64)func_0010A8A0() & 0x80)) {
+        bytes = (u8 *)&sp78;
+        bytes[0] = arg0;
+        bytes[1] = arg1;
+        bytes[2] = arg1;
+        bytes[3] = arg4;
+        bytes = (u8 *)&sp7C;
+        bytes[0] = (arg2 == 0) ? 0 : 1;
+        bytes[1] = arg2 & 0x7F;
+        bytes[2] = arg3 & 0x7F;
+        bytes[3] = arg5;
+        func_0010C720(0x5220, sp78, sp7C);
+    }
+}
 
 void func_0010A390(s32 arg0, s32 arg1, s32 arg2) {
     func_0010A280(arg0, arg1, 0, 0, 0, arg2);

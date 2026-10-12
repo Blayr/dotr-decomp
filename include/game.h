@@ -121,7 +121,6 @@ extern s32 D_00317B68;
 
 extern s32 D_00317B6C;
 
-void func_0010A280(s32, s32, s32, s32, s32, s32);
 
 extern s32 D_0031BE98;
 
