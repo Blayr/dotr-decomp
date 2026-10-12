@@ -10,7 +10,36 @@ f32 func_001F1B50(s32 arg0) {
     return func_001F1B60(arg0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1B60);
+typedef struct View_001F1B60 {
+    u8 pad[0x19C];
+    f32 m[4][3];
+} View_001F1B60;
+
+f32 func_001F1B60(s32 arg0, s32 arg1) {
+    Obj_0031ABB0 *obj;
+    View_001F1B60 *view;
+    s8 slot;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return -1.0f;
+    }
+    if (arg1 < 0 || arg1 >= 4) {
+        return -1.0f;
+    }
+    obj = D_0031ABB0[arg0];
+    view = (View_001F1B60 *)obj;
+    if (obj == NULL) {
+        return -1.0f;
+    }
+    slot = obj->lv[arg1];
+    if (slot < 0) {
+        return -1.0f;
+    }
+    if (obj->slots[slot] == NULL) {
+        return -1.0f;
+    }
+    return view->m[arg1][0];
+}
 
 void func_001F1C40(s32 arg0, s32 unused1) {
     func_001F1C50(arg0, 0);
