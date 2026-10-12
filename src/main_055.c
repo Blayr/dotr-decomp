@@ -82,7 +82,48 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00202B00);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202BF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202CB0);
+typedef struct Flags_00202CB0 {
+    s8 active : 1;
+    s8 enabled : 1;
+    s8 unused : 6;
+} Flags_00202CB0;
+
+typedef struct Filter_00202CB0 {
+    s16 unused : 3;
+    s16 category : 13;
+} Filter_00202CB0;
+
+typedef struct Entry_00202CB0 {
+    s32 handle;
+    s32 unused;
+    union {
+        Flags_00202CB0 flags;
+        Filter_00202CB0 filter;
+    } state;
+    s16 id;
+} Entry_00202CB0;
+
+s32 func_00202CB0(s32 category, s32 id, s32 enabled) {
+    extern Entry_00202CB0 D_003229A0[];
+    Entry_00202CB0 *entry;
+    s32 i;
+    s32 result;
+
+    entry = D_003229A0;
+    result = 0;
+    i = 0;
+    do {
+        if (entry->handle != 0 && entry->state.flags.active != 0 &&
+            (category < 0 || entry->state.filter.category == category) &&
+            (id < 0 || entry->id == id)) {
+            entry->state.flags.enabled = (s8)(enabled ? 1 : 0);
+            result = 1;
+        }
+        i++;
+        entry++;
+    } while (i < 0x400);
+    return result;
+}
 
 typedef struct {
     s32 data;

@@ -1163,6 +1163,7 @@ void func_002007D0(void);
 void *func_002008A0(s32 arg0, s32 arg1);
 s32 func_00202810(s32 arg0, s32 arg1, char *arg2, s32 arg3);
 s32 func_00202AB0(s32 arg0, s32 arg1);
+s32 func_00202CB0(s32 category, s32 id, s32 enabled);
 s32 func_00202D60(s32 arg0, s32 arg1);
 u16 func_00202E00(s16 arg0, s32 arg1);
 s32 func_00202E30(void *arg0);
