@@ -1,6 +1,91 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_0012CE50);
+typedef struct {
+    u16 position;
+    u8 flag;
+    u8 pad;
+} Slot_0012CE50;
+
+void func_0012CE50(void *arg0) {
+    u8 work[112];
+    Slot_0012CE50 slots[22];
+    s16 c;
+    s16 b;
+    u16 a;
+    s32 i;
+    s32 player;
+    s32 position;
+    s32 owner;
+    s32 state;
+    s32 result;
+    u16 *record = arg0;
+    extern s32 func_002770E0();
+    extern void func_0027E770();
+    extern s32 func_001E1580();
+    extern s32 func_001E1640();
+
+    if (func_001DF540((s32) record[0] >> 8, record[0] & 0xFF) != 0) {
+        player = func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF);
+        position = func_001E1090((s32) record[0] >> 8, record[0] & 0xFF);
+        owner = func_001DF540((s32) record[0] >> 8, record[0] & 0xFF);
+        record[2] = 0xBFF;
+        func_0027E770(work);
+        for (i = 0; i < 22; i++) {
+            slots[i].position = 0xFFFF;
+            slots[i].flag = 0xFF;
+        }
+        a = 0;
+        b = 0;
+        c = 0;
+        state = 0;
+        for (i = 1; i < 3; i++) {
+            state = func_002770E0(state, owner, position & 0xFF, position >> 8,
+                                  func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF) == 0 ? 1 : 0, (u8) i, 0,
+                                  func_00130780(player), slots, &a, &c, &b, work);
+            if ((result = func_00277CD0((s32) record[0] >> 8, record[0] & 0xFF, position & 0xFF, position >> 8,
+                                        slots, 5, 0x1F, 1, 2, 0, func_00130780(player), a, 1)) >= 0) {
+                if (func_001E1580(result >> 8, result & 0xFF) == 0 &&
+                    func_001E1640(result >> 8, result & 0xFF) == 0) {
+                    *(u32 *) (record + 4) = (result << 16) | record[4];
+                    return;
+                }
+            }
+            if ((result = func_00277CD0((s32) record[0] >> 8, record[0] & 0xFF, position & 0xFF, position >> 8,
+                                        slots, 5, 0x1F, 0, 2, 0, func_00130780(player), a, 1)) >= 0) {
+                if (func_001E1580(result >> 8, result & 0xFF) == 0 &&
+                    func_001E1640(result >> 8, result & 0xFF) == 0) {
+                    *(u32 *) (record + 4) = (result << 16) | record[4];
+                    return;
+                }
+            }
+        }
+        a = 0;
+        b = 0;
+        c = 0;
+        state = 0;
+        for (i = 1; i < 3; i++) {
+            state = func_002770E0(state, owner, position & 0xFF, position >> 8,
+                                  func_0024DE70((s32) record[0] >> 8, record[0] & 0xFF), (u8) i, 0,
+                                  func_00130780(player), slots, &a, &c, &b, work);
+            result = func_002774F0(position & 0xFF, position >> 8, slots, 5, 0x22, 2, 2, a);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+            result = func_002774F0(position & 0xFF, position >> 8, slots, 5, 0x1F, 1, 2, a);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+            result = func_002774F0(position & 0xFF, position >> 8, slots, 5, 0x1F, 0, 2, a);
+            if (result >= 0) {
+                *(u32 *) (record + 4) = (result << 16) | record[4];
+                return;
+            }
+        }
+        *(u32 *) (record + 4) = (player << 24) | record[4];
+    }
+}
 
 typedef struct Result_0012D270 {
     s16 position;

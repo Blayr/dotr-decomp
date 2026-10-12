@@ -1777,7 +1777,6 @@ typedef struct {
     s32 flags;
 } Object_0012C1A0;
 
-extern void func_0012CE50(void *);
 
 s32 func_0012C1A0(void *arg0, s32 arg1) {
     Object_0012C1A0 *obj = arg0;
