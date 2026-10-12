@@ -100,7 +100,6 @@ typedef struct State_0023C3F0 {
 
 void func_0023C170(s32);
 s32 func_0023CE40(s32);
-s32 func_0023D170(s32);
 extern struct State_0023E610 D_0034FB00;
 
 s32 func_0023C3F0(s32 arg0) {
@@ -362,7 +361,121 @@ s16 func_0023CC50(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CE40);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023D170);
+struct State_0023E610;
+
+typedef struct State_0023D170 {
+    s32 result;
+    s32 sync;
+    s32 port;
+    s32 slot;
+    u8 pad10[0x10];
+    s32 command;
+    s32 status;
+    u8 pad28[8];
+    s16 error;
+    s16 pad32;
+    s16 state;
+    u8 pad36[0xA];
+    s16 retries;
+    u8 pad42[0x1E];
+    s32 mode;
+    u8 pad64[0x1C];
+    u8 entries[0x240];
+    u8 info[1];
+} State_0023D170;
+
+
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194578(s32, s32, void *, u32, s32, void *);
+s32 func_00194758(s32, s32, void *, void *);
+extern u8 D_0029B100[];
+extern u8 D_0029B1BE[];
+extern s16 D_0034FB34;
+
+s32 func_0023D170(s32 arg0) {
+    extern struct State_0023E610 D_0034FB00;
+    State_0023D170 *s = (State_0023D170 *)&D_0034FB00;
+
+    switch (D_0034FB34) {
+    case 0:
+        s->result = func_00194758(s->port, s->slot, D_0029B100, s->info);
+        s->sync = func_00194248(1, &s->command, &s->status);
+        if (s->sync == 1 && s->command == 0xC) {
+                switch (s->status) {
+                case 0:
+                    s->state = 1;
+                    s->retries = 0;
+                    return 0;
+                case -2:
+                    s->retries++;
+                    if (s->retries >= 3) {
+                        s->state = 0;
+                        s->retries = 3;
+                        s->error = 0xB;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    s->error = 3;
+                    s->state = 0;
+                    s->retries = 0;
+                    return 0x11;
+                default:
+                    s->state = 0;
+                    s->error = 0xE;
+                    s->retries = 0;
+                    return 2;
+                }
+        } else {
+            return 0;
+        }
+        break;
+    case 1:
+        s->result = func_00194578(s->port, s->slot, D_0029B1BE, s->mode, 1, s->entries);
+        s->sync = func_00194248(1, &s->command, &s->status);
+        if (s->sync == 1 && s->command == 0xD) {
+                if (s->status < 0) {
+                    switch (s->status) {
+                    case -2:
+                        s->retries++;
+                        if (s->retries >= 3) {
+                            s->state = 0;
+                            s->retries = 3;
+                            s->error = 0xB;
+                            return 3;
+                        }
+                        return 0;
+                    case -4:
+                        s->error = 0xE;
+                        s->state = 0;
+                        s->retries = 0;
+                        return 0xA;
+                    default:
+                        s->state = 0;
+                        s->error = 0xE;
+                        s->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    if (arg0 == 1) {
+                        s->state = 0;
+                        s->retries = 0;
+                        s->error = 0;
+                        return 0x100;
+                    }
+                    s->retries = 0;
+                    s->state = 0;
+                    s->error = 2;
+                    return 0x10;
+                }
+        } else {
+            return 0;
+        }
+        break;
+    default:
+        return 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023D400);
 
