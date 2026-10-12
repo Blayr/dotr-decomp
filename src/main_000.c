@@ -386,7 +386,44 @@ s32 func_00101050(s32 arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101080);
+void func_001878E0(void *, void *, void *);
+void func_00187B48(void *, void *, f32);
+extern f32 D_0028BC10[4][32][3];
+
+static inline void rotate_00101080(void *matrix, s32 angle, s32 axis) {
+    Config_00100E00 values;
+    u32 *words = (u32 *)&values;
+
+    values = D_0028C210;
+    angle &= 0xFFFF;
+    words[axis] = angle;
+    func_0020CB90((s32)matrix, words);
+}
+
+void func_00101080(f32 *vector, f32 scale) {
+    f32 matrix[16];
+    f32 *value;
+    f32 sign;
+
+    value = &D_0028BC10[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
+    sign = 2.0f * (f32)((func_0019A5C8() >> 23) % 2) - 1.0f;
+    vector[0] = sign * *value;
+
+    value = &D_0028BC10[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
+    sign = 2.0f * (f32)((func_0019A5C8() >> 23) % 2) - 1.0f;
+    vector[1] = sign * *value;
+
+    value = &D_0028BC10[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
+    sign = 2.0f * (f32)((func_0019A5C8() >> 23) % 2) - 1.0f;
+    vector[2] = sign * *value;
+    vector[3] = 1.0f;
+    func_00187B48(vector, vector, scale);
+    func_0020BBB0(matrix);
+    rotate_00101080(matrix, (((func_0019A5C8() >> 23) % 256) << 16) >> 8, 0);
+    rotate_00101080(matrix, (((func_0019A5C8() >> 23) % 256) << 16) >> 8, 1);
+    rotate_00101080(matrix, (((func_0019A5C8() >> 23) % 256) << 16) >> 8, 2);
+    func_001878E0(vector, matrix, vector);
+}
 
 typedef struct Point_00101430 {
     u16 x;
