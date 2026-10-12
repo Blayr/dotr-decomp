@@ -298,7 +298,80 @@ s32 func_00155A00(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00155C90);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155FB0);
+void func_00155FB0(u16 *indices, s32 first, s32 last, s32 key, s32 *values) {
+    s32 pivot;
+    s32 i;
+    u16 *scan;
+    s32 score;
+
+    if (first < last) {
+        func_001562B0((s32 *)indices, first, (first + last) >> 1);
+        i = first + 1;
+        pivot = first;
+        if (i <= last) {
+            scan = &indices[i];
+            do {
+                score = func_0026FA80(values[*scan], key);
+                if (func_0026FA80(values[indices[first]], key) < score) {
+                    pivot++;
+                    func_001562B0((s32 *)indices, pivot, i);
+                }
+                i++;
+                scan++;
+            } while (i <= last);
+        }
+        func_001562B0((s32 *)indices, first, pivot);
+        if (first < pivot) {
+            s32 leftPivot;
+            s32 j;
+            u16 *leftScan;
+
+            func_001562B0((s32 *)indices, first, (first + pivot) >> 1);
+            j = first + 1;
+            leftPivot = first;
+            if (j <= pivot) {
+                leftScan = &indices[j];
+                do {
+                    if (func_0026FA80(values[*leftScan], key) >
+                        func_0026FA80(values[indices[first]], key)) {
+                        leftPivot++;
+                        func_001562B0((s32 *)indices, leftPivot, j);
+                    }
+                    j++;
+                    leftScan++;
+                } while (j <= pivot);
+            }
+            func_001562B0((s32 *)indices, first, leftPivot);
+            func_00155FB0(indices, first, leftPivot, key, values);
+            func_00155FB0(indices, leftPivot + 1, pivot, key, values);
+        }
+        if (pivot + 1 < last) {
+            s32 rightPivot;
+            s32 k;
+            u16 *rightScan;
+            s32 rightScore;
+
+            func_001562B0((s32 *)indices, pivot + 1, (pivot + 1 + last) >> 1);
+            k = pivot + 2;
+            rightPivot = pivot + 1;
+            if (k <= last) {
+                rightScan = &indices[k];
+                do {
+                    rightScore = func_0026FA80(values[*rightScan], key);
+                    if (func_0026FA80(values[indices[pivot + 1]], key) < rightScore) {
+                        rightPivot++;
+                        func_001562B0((s32 *)indices, rightPivot, k);
+                    }
+                    k++;
+                    rightScan++;
+                } while (k <= last);
+            }
+            func_001562B0((s32 *)indices, pivot + 1, rightPivot);
+            func_00155FB0(indices, pivot + 1, rightPivot, key, values);
+            func_00155FB0(indices, rightPivot + 1, last, key, values);
+        }
+    }
+}
 
 void func_001562B0(s32 *arg0, s32 arg1, s32 arg2) {
     s32 temp_a0;
