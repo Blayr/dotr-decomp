@@ -147,7 +147,154 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5DD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5EB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E60E0);
+typedef union {
+    __int128 q;
+    f32 f[4];
+    s32 i[4];
+} Quad_001E60E0;
+
+s32 func_001E6F90(s32, s32, s32, f32, f32);
+extern Quad_001E60E0 D_002922B0;
+extern Quad_001E60E0 D_002922C0;
+extern Quad_001E60E0 D_002922D0;
+extern Quad_001E60E0 D_002922E0;
+extern Quad_001E60E0 D_002922F0;
+extern Quad_001E60E0 D_00292300;
+
+s32 func_001E60E0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 i;
+    s32 j;
+    s32 *entry = (s32 *)&D_0031AB88;
+    Quad_001E60E0 scale;
+
+    scale = D_002922B0;
+    switch (arg2) {
+    case 1: {
+        Quad_001E60E0 rotation;
+        rotation = D_002922C0;
+        i = 0;
+        do {
+            arg0 = func_001EFA80(arg0, arg1, 0, (s32)&rotation, (s32)&scale, 0, 0);
+            rotation.i[1] += 0x4000;
+            i++;
+        } while (i < 4);
+        break;
+    }
+    case 3: {
+        Quad_001E60E0 rotation;
+        rotation = D_002922D0;
+        i = 0;
+        do {
+            arg0 = func_001EFA80(arg0, arg1, 0, (s32)&rotation, (s32)&scale, 0, 0);
+            rotation.i[1] += 0x8000;
+            i++;
+        } while (i < 2);
+        break;
+    }
+    case 5: {
+        Quad_001E60E0 rotation;
+        Quad_001E60E0 position;
+        f32 signZ;
+        f32 baseX;
+        f32 baseZ;
+        f32 signX;
+
+        rotation = D_002922E0;
+        func_001F1FD0(arg1, &position);
+        i = 0;
+        do {
+            if (i % 2 == 0) {
+                signX = -1.0f;
+            } else {
+                signX = 1.0f;
+            }
+            if (i >> 1 == 0) {
+                signZ = -1.0f;
+            } else {
+                signZ = 1.0f;
+            }
+            baseX = 275.0f * signX;
+            position.f[0] = baseX * scale.f[0];
+            baseZ = 275.0f * signZ;
+            position.f[2] = baseZ * scale.f[2];
+            arg0 = func_001EFA80(arg0, arg1, (s32)&position, (s32)&rotation, (s32)&scale, 0, 0);
+            position.f[0] = scale.f[0] * (baseX - 100.0f * signX);
+            position.f[2] = baseZ * scale.f[2];
+            arg0 = func_001EFA80(arg0, arg1, (s32)&position, (s32)&rotation, (s32)&scale, 0, 0);
+            position.f[0] = baseX * scale.f[0];
+            position.f[2] = scale.f[2] * (baseZ - 100.0f * signZ);
+            arg0 = func_001EFA80(arg0, arg1, (s32)&position, (s32)&rotation, (s32)&scale, 0, 0);
+            i++;
+        } while (i < 4);
+        break;
+    }
+    case 6: {
+        Quad_001E60E0 rotation;
+        Quad_001E60E0 position;
+        f32 signX;
+        f32 signZ;
+        f32 baseX;
+        f32 baseZ;
+        f32 distance;
+
+        rotation = D_002922F0;
+        func_001F1FD0(arg1, &position);
+        i = 0;
+        do {
+            if (i % 2 == 0) {
+                signX = -1.0f;
+            } else {
+                signX = 1.0f;
+            }
+            if (i >> 1 == 0) {
+                signZ = -1.0f;
+            } else {
+                signZ = 1.0f;
+            }
+            baseX = 425.0f * signX;
+            position.f[0] = baseX * scale.f[0];
+            baseZ = 425.0f * signZ;
+            position.f[2] = baseZ * scale.f[2];
+            arg0 = func_001EFA80(arg0, arg1, (s32)&position, (s32)&rotation, (s32)&scale, 0, 0);
+            j = 0;
+            do {
+                distance = 100.0f * (f32)(j + 1);
+                position.f[0] = scale.f[0] * (baseX - distance * signX);
+                position.f[2] = baseZ * scale.f[2];
+                arg0 = func_001EFA80(arg0, arg1, (s32)&position, 0, (s32)&scale, 0, 0);
+                position.f[0] = baseX * scale.f[0];
+                position.f[2] = scale.f[2] * (baseZ - distance * signZ);
+                arg0 = func_001EFA80(arg0, arg1, (s32)&position, 0, (s32)&scale, 0, 0);
+                j++;
+            } while (j < 3);
+            i++;
+        } while (i < 4);
+        break;
+    }
+    default: {
+        Quad_001E60E0 rotation;
+        rotation = D_00292300;
+        arg0 = func_001EFA80(arg0, arg1, 0, (s32)&rotation, (s32)&scale, 0, 0);
+        break;
+    }
+    }
+    if (arg2 == 0) {
+        arg0 = func_001E6F90(arg0, 7, -1, -13.5f, 400.0f);
+        i = 0;
+        do {
+            s32 value = *entry;
+            if (value >= 0) {
+                u8 *card = (u8 *)func_001DF540(value >> 8, value & 0xFF);
+                if (card != NULL) {
+                    arg0 = func_001E6F90(arg0, card[0x46], -1, -13.5f, 400.0f);
+                }
+            }
+            i++;
+            entry++;
+        } while (i < 2);
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E6650);
 
