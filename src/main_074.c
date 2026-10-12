@@ -44,7 +44,138 @@ s32 func_00254B20(void *arg0, s32 arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00254C90);
+void func_00254C90(s32 *arg0, s32 arg1) {
+    arg0[2] = -1;
+    arg0[1] = -1;
+    arg0[0] = -1;
+    switch (arg1) {
+    case 0xBD:
+        arg0[0] = 0x07D00039;
+        arg0[1] = 0x07D00039;
+        arg0[2] = 0x07D00039;
+        break;
+    case 0xD:
+        arg0[0] = 4;
+        arg0[1] = 0;
+        arg0[2] = 0x11;
+        break;
+    case 0x91:
+        arg0[0] = 0x63001C;
+        arg0[1] = 0x023D001C;
+        arg0[2] = 0x0216001C;
+        break;
+    case 0x8F:
+        arg0[0] = 0x9B001C;
+        arg0[1] = 0x05DC0025;
+        arg0[2] = 0x05DC0025;
+        break;
+    case 0x151:
+        arg0[0] = 0x012C001C;
+        arg0[1] = 7;
+        arg0[2] = 7;
+        break;
+    case 0xF8:
+        arg0[0] = 0xF9001C;
+        arg0[1] = 5;
+        arg0[2] = 5;
+        break;
+    case 0x152:
+        arg0[0] = 0x0149001C;
+        arg0[1] = 0x0121001C;
+        arg0[2] = 7;
+        break;
+    case 0x2:
+        arg0[0] = 0x1C;
+        arg0[1] = 0x1C;
+        arg0[2] = 0x1C;
+        break;
+    case 0xC3:
+        arg0[0] = 0x0236001C;
+        arg0[1] = 6;
+        arg0[2] = 3;
+        break;
+    case 0x93:
+        arg0[0] = 0xD2001C;
+        arg0[1] = 0x0150001C;
+        arg0[2] = 0x0295001C;
+        break;
+    case 0xDC:
+        arg0[0] = 0x0279001C;
+        arg0[1] = 4;
+        arg0[2] = 4;
+        break;
+    case 0x87:
+        arg0[0] = 0x23001C;
+        arg0[1] = 3;
+        arg0[2] = 3;
+        break;
+    case 0xA:
+        arg0[0] = 0x5001C;
+        arg0[1] = 0x0125001C;
+        arg0[2] = 0x6001C;
+        break;
+    case 0xB:
+        arg0[0] = 0x8001C;
+        arg0[1] = 3;
+        arg0[2] = 6;
+        break;
+    case 0x254:
+        arg0[0] = 0x0248001C;
+        arg0[1] = 0x10;
+        arg0[2] = 0x10;
+        break;
+    case 0x4D:
+        arg0[0] = 0x0131001C;
+        arg0[1] = 1;
+        arg0[2] = 1;
+        break;
+    case 0x160:
+        arg0[0] = 0x014A001C;
+        arg0[1] = 0x03E80025;
+        arg0[2] = 0x03E80025;
+        break;
+    case 0x161:
+        arg0[0] = 0xAD001C;
+        arg0[1] = 0xE;
+        arg0[2] = 0xE;
+        break;
+    case 0x1A6:
+        arg0[0] = 0x018E001C;
+        arg0[1] = 9;
+        arg0[2] = 9;
+        break;
+    case 0x94:
+        arg0[0] = 0x92001C;
+        arg0[1] = 3;
+        arg0[2] = 3;
+        break;
+    case 0x4C:
+        arg0[0] = 0x029B001C;
+        arg0[1] = 0xCC001C;
+        arg0[2] = 0x4F001C;
+        break;
+    case 0x80:
+        arg0[0] = 2;
+        arg0[1] = 0xE;
+        arg0[2] = 9;
+        break;
+    case 0x1D8:
+        arg0[0] = 0x0214001C;
+        arg0[1] = 0xC;
+        arg0[2] = 0xC;
+        break;
+    case 0x4E:
+        arg0[0] = 0x3C001C;
+        arg0[1] = 0x05DC0025;
+        arg0[2] = 0x05DC0025;
+        break;
+    default:
+        arg0[0] = -1;
+        arg0[1] = -1;
+        arg0[2] = -1;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_002550C0);
 
