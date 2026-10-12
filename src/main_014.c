@@ -734,7 +734,6 @@ typedef struct Action_0015DED0 {
     } data;
 } Action_0015DED0;
 
-void func_0015E030(void *);
 
 void func_0015DED0(void *arg0) {
     s32 other;
@@ -768,7 +767,118 @@ void func_0015DED0(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E030);
+typedef struct Command_0015E030 {
+    u16 position;
+    u16 pad2;
+    u16 action;
+    u16 pad6;
+    union {
+        u32 value;
+        struct {
+            u16 low;
+            u16 high;
+        } halves;
+    } data;
+} Command_0015E030;
+
+typedef struct Entry_0015E030 {
+    u16 position;
+    u8 state;
+    u8 pad;
+} Entry_0015E030;
+
+void func_0015E030(void *arg0) {
+    u8 scratch[0x70];
+    Entry_0015E030 entries[23];
+    s16 count;
+    s16 otherCount;
+    Command_0015E030 *command = arg0;
+    s32 position;
+    s32 destination;
+    s32 side;
+    s32 card;
+    s32 destinationColumn;
+    s32 destinationRow;
+    s32 row;
+    s32 column;
+    s32 otherPosition;
+    s32 otherRow;
+    s32 attempt;
+    s32 i;
+    Entry_0015E030 *entry;
+
+    extern void func_0027E770();
+    extern s32 func_0027B200();
+    extern s32 func_0015E8F0();
+
+    if (func_001DF540(command->position >> 8, command->position & 0xFF) == 0) {
+        return;
+    }
+
+    side = func_0024DE70(command->position >> 8, command->position & 0xFF);
+    destination = (side == 0 ? 1 : 0) << 8;
+    position = func_001E1090(command->position >> 8, command->position & 0xFF);
+    destinationRow = destination >> 8;
+    destinationColumn = destination & 0xFF;
+    otherPosition = func_001E1090(destinationRow, destinationColumn);
+    card = func_001DF540(command->position >> 8, command->position & 0xFF);
+    func_0027E770(scratch);
+
+    entry = entries;
+    i = 0;
+    do {
+        i++;
+        entry->position = 0xFFFF;
+        entry->state = 0xFF;
+        entry++;
+    } while (i < 22);
+
+    if (func_0027B200(command->position >> 8, command->position & 0xFF,
+                     column = position & 0xFF, row = position >> 8,
+                     destinationRow, destinationColumn,
+                     otherPosition & 0xFF, otherRow = otherPosition >> 8, 5) > 0) {
+        command->action = 0x2FF;
+        command->data.value = (destination << 16) | command->data.halves.low;
+        return;
+    }
+
+    attempt = 1;
+    otherCount = 0;
+    count = 0;
+    while (1) {
+        switch (func_0015E8F0(command, 0, card, column, row,
+                             side == 0 ? 1 : 0, (u8) attempt,
+                             func_00162580(side), entries, 0,
+                             &count, &otherCount, 5, scratch)) {
+        case 3:
+            command->action = 0x6FF;
+            command->data.value = (position << 16) | command->data.halves.low;
+            return;
+        case 2:
+            command->action = 0x3FF;
+            command->data.value = (position << 16) | command->data.halves.low;
+            return;
+        case 1:
+            return;
+        case 0:
+            command->action = 0x3FF;
+            command->data.value = (position << 16) | command->data.halves.low;
+            return;
+        }
+        attempt++;
+        if (attempt > 5) {
+            break;
+        }
+    }
+
+    command->action = 0x6FF;
+    if (((row <= 3) && (otherRow <= 3)) || ((row > 3) && (otherRow > 3))) {
+        command->data.value = (otherPosition << 16) | command->data.halves.low;
+    } else {
+        command->data.value = (((position & 0xFF) | 0x300) << 16) |
+                              command->data.halves.low;
+    }
+}
 
 s32 func_0015E2E0(s32 arg0, s32 arg1) {
     s32 temp_s0;
@@ -961,7 +1071,6 @@ typedef struct Entry_0015E950 {
     u8 pad;
 } Entry_0015E950;
 
-void func_0015E030(void *);
 s32 func_00277160(s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, u16);
 
 void func_0015E950(void *arg0) {
