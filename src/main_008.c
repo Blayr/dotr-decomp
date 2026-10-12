@@ -17,7 +17,6 @@ typedef struct Work_0012D270 {
     u8 pad3E[0x22];
 } Work_0012D270;
 
-s32 func_0012D520(s32, void *, s32);
 s32 func_0012E3F0(s32, s32, void *, s32);
 
 s32 func_0012D270(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -99,7 +98,125 @@ s32 func_0012D270(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_0012D520);
+s32 func_0012D520(s32 arg0, void *arg1, s32 arg2) {
+    s32 cards[8];
+    u8 scratch[32];
+    s32 result;
+    u8 status0;
+    u8 status1;
+    u8 count;
+    extern s32 func_00278890();
+
+    status0 = func_00278890(arg0, 0);
+    status1 = func_00278890(arg0, 1);
+    count = 0;
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (status0 == 5) {
+        if (func_0012DBE0(arg0, scratch, arg1, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (status1 == 5) {
+        s32 i;
+        s32 *p;
+
+        i = 0;
+        if (i < func_0026FE20(arg0)) {
+            p = cards;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    func_001DCD70(arg1, cards[i]);
+                    return 0;
+                }
+                p++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+    if ((u8)arg2 == 0) {
+        s32 i;
+
+        if ((result = func_0012D960(arg0, cards, arg1, scratch)) >= 0) {
+            return 2;
+        }
+        if (func_001307E0(arg0, 0x342) == 1) {
+            if ((result = func_0012DAE0(arg0, cards, arg1, scratch, 0x342)) >= 0) {
+                return 2;
+            }
+        }
+        i = 0;
+        do {
+            if (func_001DF540(0, i) != 0) {
+                if (arg0 != func_00250360(0, i)) {
+                    count++;
+                }
+            }
+            if (func_001DF540(1, i) != 0 && arg0 != func_00250360(1, i)) {
+                count++;
+            }
+            i++;
+        } while (i < 11);
+        if (result >= 4) {
+            if (func_0012DAE0(arg0, cards, arg1, scratch, 0x146) >= 0) {
+                return 2;
+            }
+        }
+        if (func_00130660(arg0) >= 0) {
+            if (func_0012DAE0(arg0, cards, arg1, scratch, 0x131) >= 0) {
+                return 2;
+            }
+        }
+    } else {
+        s32 i;
+
+        if (func_001307E0(arg0, 0x342) == 1) {
+            if ((result = func_0012DAE0(arg0, cards, arg1, scratch, 0x342)) >= 0) {
+                return 2;
+            }
+        }
+        i = 0;
+        do {
+            if (func_001DF540(0, i) != 0) {
+                if (arg0 != func_00250360(0, i)) {
+                    count++;
+                }
+            }
+            if (func_001DF540(1, i) != 0 && arg0 != func_00250360(1, i)) {
+                count++;
+            }
+            i++;
+        } while (i < 11);
+        if (result >= 4 && func_0012DAE0(arg0, cards, arg1, scratch, 0x146) >= 0) {
+            return 2;
+        }
+    }
+    {
+        s32 *p;
+        s32 i;
+
+        i = 0;
+        if (i < func_0026FE20(arg0)) {
+            p = cards;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    return 0;
+                }
+                p++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+    }
+    result = func_0012DBE0(arg0, scratch, arg1, 999);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 s32 func_0012D960(s32 arg0, s32 *arg1, void *arg2, void *arg3) {
     s32 i;
