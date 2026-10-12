@@ -466,7 +466,189 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_00272CC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00273460);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002738B0);
+typedef struct Masks_002738B0 {
+    u32 unknown;
+    u32 first : 22;
+    u32 firstFlags : 10;
+    s32 second;
+    u32 third : 22;
+    u32 thirdFlags : 9;
+    u32 inverted : 1;
+} Masks_002738B0;
+
+typedef struct State_002738B0 {
+    u16 player;
+    u16 unknown02;
+    u16 step;
+    u8 handles[0x1A];
+    s32 counter;
+    u8 unknown24[0xB0];
+    u8 count;
+    u8 unknownD5[0x2D];
+    u16 ticks;
+} State_002738B0;
+
+typedef struct Command_002738B0 {
+    s32 id;
+    s32 flags;
+    s32 position;
+    s32 argument;
+} Command_002738B0;
+
+void func_001E1E70(u32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(u32, s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+s32 func_0025F990(void *, void *, s32 *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_002738B0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E15E0();
+    Command_002738B0 command;
+    Command_002738B0 *cmd = &command;
+    Masks_002738B0 *masks = arg0;
+    State_002738B0 *state = arg1;
+    s32 position;
+    s32 player;
+    s32 position0;
+    s32 i;
+    s32 ready;
+    s32 column;
+    s32 row;
+    s32 secondIndex;
+    s32 secondCount;
+    s32 thirdIndex;
+    s32 thirdCount;
+    s32 firstCount;
+    s32 firstIndex;
+    s32 packed;
+
+    command.id = 999;
+    command.flags = 0;
+    command.position = 0;
+    command.argument = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        if (((u32 *)masks)[3] >> 31) {
+            player = (func_001DE540() == 0) ? 1 : 0;
+        } else {
+            player = func_001DE540();
+        }
+        state->player = player;
+        position = func_001E1090(state->player, 0);
+        func_00260AF0(0, state->player << 8, 300, 300);
+        func_001E42C0(0, -120, 80, 270);
+        if (masks->first) {
+            func_00260490(position & 0xFF, position >> 8, 0,
+                         func_00271740(9, state->player), 1, 1, 16);
+        } else if (masks->second) {
+            func_00260490(position & 0xFF, position >> 8, 0,
+                         func_00271740(9, state->player), 1, 1, 15);
+        } else if (masks->third) {
+            func_00260490(position & 0xFF, position >> 8, 0,
+                         func_00271740(9, state->player), 1, 1, 13);
+        }
+        func_00255AC0(state, 0x265);
+        if (masks->first) {
+            func_00255AC0(state, 0x25B);
+        }
+        if (masks->second) {
+            func_00255AC0(state, 0x1F4);
+        }
+        if (masks->third) {
+            func_00255AC0(state, 0x201);
+        }
+        return 1;
+    }
+
+    switch (state->step) {
+    case 0:
+        if (func_00255B50(state) == 1) {
+            position0 = func_001E1090(state->player, 0);
+            func_00260490(position0 & 0xFF, position0 >> 8, 0,
+                         func_00271740(9, state->player), 0, -1, 16);
+            cmd->id = 0x265;
+            cmd->flags = 0;
+            cmd->position = state->player << 8;
+            cmd->argument = 0;
+            state->handles[0] = func_00255A30((s32 *)cmd, state);
+            state->counter = 0;
+            state->step++;
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->handles[0]) == 1) {
+            return 1;
+        }
+        func_00260740(16);
+        state->step++;
+        return 1;
+    case 2:
+        if (state->ticks++ >= 16) {
+            if (masks->first) {
+                func_0025F990(masks, state, (s32 *)cmd, 0x25B);
+            }
+            if (masks->second) {
+                func_0025F720(masks, state, (s32 *)cmd, 0x1F4);
+            }
+            if (masks->third) {
+                func_0025F820(masks, state, (s32 *)cmd, 0x201);
+            }
+            state->step++;
+        }
+        return 1;
+    case 3:
+        i = 0;
+        ready = 0;
+        while (i < state->count) {
+            if (func_001F51D0(state->handles[i]) == 0) {
+                ready++;
+            }
+            i++;
+        }
+        if (state->count == ready) {
+            state->step++;
+        }
+        return 1;
+    case 4:
+        firstCount = func_0024E910(masks->first);
+        for (firstIndex = 0; firstIndex < firstCount; firstIndex++) {
+            packed = func_0024EC50(masks->first, firstIndex);
+            func_0024F370(packed >> 8, packed & 0xFF);
+        }
+        secondCount = func_0024E910(masks->second);
+        for (secondIndex = 0; secondIndex < secondCount; secondIndex++) {
+            packed = func_0024EC50(masks->second, secondIndex);
+            row = packed >> 8;
+            column = packed & 0xFF;
+            func_001E15E0(row, column, 255);
+            func_001E1E70(row, column, 0, 1);
+        }
+        thirdCount = func_0024E910(masks->third);
+        for (thirdIndex = 0; thirdIndex < thirdCount; thirdIndex++) {
+            packed = func_0024EC50(masks->third, thirdIndex);
+            func_002516D0(packed >> 8, packed & 0xFF, 1);
+        }
+        func_001E4530();
+        func_00260A70(state, 16);
+        state->ticks = 0;
+        state->step++;
+        break;
+    default:
+        if (state->ticks++ > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00273E60);
 
