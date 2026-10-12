@@ -372,7 +372,190 @@ s32 func_0015AF30(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015B250);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015B820);
+typedef struct Input_0015B820 {
+    u16 pos;
+    u8 pad2[6];
+    u32 target;
+} Input_0015B820;
+
+typedef struct Output_0015B820 {
+    u16 pos;
+    u8 command;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 special;
+    u8 result;
+} Output_0015B820;
+
+typedef struct Cell_0015B820 {
+    u8 x : 4;
+    u8 y : 4;
+} Cell_0015B820;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 target_0015B820(Input_0015B820 *input, u8 mode) {
+    if (mode == 1) {
+        return (u16)(input->target >> 16);
+    }
+    return (u16)input->target;
+}
+
+s32 func_0015B820(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern s32 func_0015CBB0();
+    extern void func_0027A090();
+    s32 source;
+    s32 count;
+    s32 source_y;
+    s32 source_x;
+    s32 special;
+    u8 mode;
+    Cell_0015B820 cells[12];
+    s32 target;
+    s32 pos;
+    s32 target_y;
+    s32 target_x;
+    Cell_0015B820 *candidate;
+    s32 initial_special;
+    s32 i;
+    s32 best_cost;
+    s32 best;
+    s32 cost;
+    s32 unit;
+    s32 init_i;
+    u32 target_low;
+    u32 target_high;
+    Cell_0015B820 *cell;
+    Input_0015B820 *input = arg0;
+    Output_0015B820 *output = arg2;
+
+    mode = arg3;
+    target_low = target_0015B820(input, arg3);
+    target_high = target_0015B820(input, arg3);
+    if (func_001DF540(target_high >> 8, target_low & 0xFF) == 0) {
+        func_0027B1B0(input, 1);
+        return -1;
+    }
+
+    initial_special = func_0015CBB0(input->pos >> 8, input->pos & 0xFF, input);
+    source = func_001E1090(input->pos >> 8, input->pos & 0xFF);
+    target_low = target_0015B820(input, arg3);
+    target_high = target_0015B820(input, arg3);
+    target = func_001E1090(target_high >> 8, target_low & 0xFF);
+    cell = cells;
+    init_i = 0;
+    do {
+        init_i++;
+        cell->x = cell->y = 0xF;
+        cell++;
+    } while (init_i < 12);
+
+    unit = func_001DF540(input->pos >> 8, input->pos & 0xFF);
+    source_x = source & 0xFF;
+    source_y = source >> 8;
+    if (func_002464F0(unit, source_x, source_y) == 0) {
+        output->pos = input->pos;
+        output->command = 6;
+        output->target = source;
+        cost = func_00276CC0(source_x, source_y, arg1, 3, 1,
+                            (u8)func_0015D120(arg1));
+        if (cost >= func_001E0290(input->pos >> 8, input->pos & 0xFF, 0)) {
+            output->result = func_0027E360(input->pos >> 8, input->pos & 0xFF,
+                                         output->target, 1, 0);
+        } else {
+            output->result = func_0027E360(input->pos >> 8, input->pos & 0xFF,
+                                         output->target, 0, 0);
+        }
+        func_0027B1B0(input, mode);
+        return 0;
+    } else {
+        u16 limit;
+        pos = input->pos;
+        limit = func_0015D120(arg1);
+        func_0027A090(pos >> 8, pos & 0xFF, cells, source_x, source_y,
+                     target_x = target & 0xFF, target_y = target >> 8,
+                     target_0015B820(input, arg3), 0, 30, limit);
+        count = func_0027AFC0((u8 *)cells);
+        best = 0xFF;
+        if (count > 0) {
+            special = 0;
+            best_cost = 0xFFFF;
+            for (i = 0; i < count; i++) {
+                if (func_0015CF30(input->pos >> 8, input->pos & 0xFF,
+                                 source_x, source_y, target_x, target_y) == 1) {
+                    Cell_0015B820 *chosen = &cells[i];
+                    best = i;
+                    special = 1;
+                    i = count;
+                    chosen->x = target_x;
+                    chosen->y = target_y;
+                } else {
+                    u8 limit;
+                    candidate = &cells[i];
+                    limit = func_0015D120(arg1);
+                    cost = func_00276CC0(candidate->x, candidate->y, arg1, 3, 1, limit);
+                    if (cost < best_cost) {
+                        best_cost = cost;
+                        best = i;
+                    } else if (cost == best_cost) {
+                        Cell_0015B820 *chosen = &cells[best];
+                        s32 old_y_min;
+                        s32 old_y_max;
+                        s32 old_x_min;
+                        s32 old_x_max;
+                        s32 new_y_min;
+                        s32 new_y_max;
+                        s32 new_x_min;
+                        s32 new_x_max;
+
+                        old_y_min = chosen->y < target_y ? chosen->y : target_y;
+                        old_y_max = target_y < chosen->y ? chosen->y : target_y;
+                        old_x_min = chosen->x < target_x ? chosen->x : target_x;
+                        old_x_max = target_x < chosen->x ? chosen->x : target_x;
+                        new_y_min = candidate->y < target_y ? candidate->y : target_y;
+                        new_y_max = target_y < candidate->y ? candidate->y : target_y;
+                        new_x_min = candidate->x < target_x ? candidate->x : target_x;
+                        new_x_max = target_x < candidate->x ? candidate->x : target_x;
+                        if ((new_x_max - new_x_min) + (new_y_max - new_y_min) <
+                            (old_x_max - old_x_min) + (old_y_max - old_y_min)) {
+                            best_cost = cost;
+                            best = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            output->pos = input->pos;
+            output->command = 6;
+            output->target = source;
+            output->special = initial_special;
+            output->result = func_0027E360(input->pos >> 8, input->pos & 0xFF,
+                                         output->target, 0, 0);
+            func_0027B1B0(input, mode);
+            return 0;
+        }
+        if (best != 0xFF) {
+            output->pos = input->pos;
+            output->command = 6;
+            output->target = (cells[best].y << 8) | cells[best].x;
+            output->special = special;
+            output->result = func_0027E360(input->pos >> 8, input->pos & 0xFF,
+                                         output->target, 0, 0);
+        } else {
+            output->pos = input->pos;
+            output->command = 6;
+            output->target = source;
+            output->special = special;
+            output->result = func_0027E360(input->pos >> 8, input->pos & 0xFF,
+                                         output->target, 0, 0);
+            func_0027B1B0(input, mode);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015BE00);
 
