@@ -2,7 +2,161 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00265890);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_002660E0);
+typedef struct Stats_002660E0 {
+    u8 pad[8];
+    u16 attack;
+    u16 defense;
+} Stats_002660E0;
+
+typedef struct Flags_002660E0 {
+    s8 unused : 3;
+    s8 side : 1;
+    s8 remaining : 4;
+} Flags_002660E0;
+
+typedef struct Card_002660E0 {
+    Stats_002660E0 *stats;
+    u8 pad04[0x34];
+    s16 attack;
+    s16 defense;
+    u16 id;
+    u8 pad3E[0x19];
+    Flags_002660E0 flags;
+} Card_002660E0;
+
+typedef struct Effect_002660E0 {
+    u32 flags;
+    u16 amount;
+} Effect_002660E0;
+
+static inline s32 attack_002660E0(Card_002660E0 *card) {
+    s32 value = card->attack + (card->stats->attack & 0x1FFF);
+    if (value > 9999) {
+        return 9999;
+    }
+    return value;
+}
+
+static inline s32 defense_002660E0(Card_002660E0 *card) {
+    s32 value = card->defense + (card->stats->defense & 0x1FFF);
+    if (value > 9999) {
+        return 9999;
+    }
+    return value;
+}
+
+s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 i;
+    s32 side;
+    s32 total;
+    Effect_002660E0 *effect;
+    u32 flags;
+    u32 otherFlags;
+    Effect_002660E0 *otherEffect;
+    s32 j;
+    s32 result;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    total = 0;
+    side = func_00250370((void *)arg0);
+    i = 1;
+    if (((Card_002660E0 *)arg0)->id == 0x2A3) {
+        if (arg3 == 0) {
+            total -= defense_002660E0((Card_002660E0 *)arg0);
+        } else {
+            total -= attack_002660E0((Card_002660E0 *)arg0);
+        }
+        if (((Card_002660E0 *)arg0)->flags.side) {
+            if (arg3 == 0) {
+                total += func_001E0370(side, 0, 1);
+            } else {
+                total += func_001E0290(side, 0, 1);
+            }
+        } else {
+            if (arg3 == 0) {
+                total += func_001E0370(side == 0 ? 1 : 0, 0, 1);
+            } else {
+                total += func_001E0290(side == 0 ? 1 : 0, 0, 1);
+            }
+        }
+        i = 1;
+    }
+    while (1) {
+        if (func_001DF540(side, i) != 0 &&
+            func_001E2100(side, i, 4) != 0 &&
+            func_001E2100(side, i, 3) != 0 &&
+            func_001E2100(side, i, 5) != 0) {
+            if ((effect = func_00250740(side, i, 2)) != NULL) {
+                flags = effect->flags;
+                if (func_0024ECD0((void *)arg0, func_00250360(side, i),
+                                 (flags >> 6) & 3, flags & 0x3F) != 0) {
+                    switch (effect->flags >> 8) {
+                    case 19:
+                        total -= effect->amount;
+                        break;
+                    case 18:
+                        total += effect->amount;
+                        break;
+                    case 34:
+                        if (arg3 == 0) {
+                            total += effect->amount;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        i++;
+        if (i > 5) {
+            break;
+        }
+    }
+    j = 1;
+    while (1) {
+        if (func_001DF540(side == 0 ? 1 : 0, j) != 0 &&
+            func_001E2100(side == 0 ? 1 : 0, j, 4) != 0 &&
+            func_001E2100(side == 0 ? 1 : 0, j, 3) != 0 &&
+            func_001E2100(side == 0 ? 1 : 0, j, 5) != 0) {
+            if ((otherEffect = func_00250740(side == 0 ? 1 : 0, j, 2)) != NULL) {
+                otherFlags = otherEffect->flags;
+                if (func_0024ECD0((void *)arg0,
+                                 func_00250360(side == 0 ? 1 : 0, j),
+                                 (otherFlags >> 6) & 3, otherFlags & 0x3F) != 0) {
+                    switch (otherEffect->flags >> 8) {
+                    case 19:
+                        total -= otherEffect->amount;
+                        break;
+                    case 18:
+                        total += otherEffect->amount;
+                        break;
+                    case 34:
+                        if (arg3 == 0) {
+                            total += otherEffect->amount;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        j++;
+        if (j > 5) {
+            break;
+        }
+    }
+    result = func_0024DEB0(func_001E22B0(arg1, arg2), (void *)arg0);
+    switch (result) {
+    case 1:
+        total += 500;
+        break;
+    case 2:
+        total -= 500;
+        break;
+    }
+    total += func_00271AF0((void *)arg0, arg1, arg2);
+    return total;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00266500);
 
