@@ -353,7 +353,99 @@ void func_00202F50(s32 arg0, s32 arg1, s32 arg2) {
     func_00209D30(func_00202FB0(func_00209D20(), arg0, arg1, arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202FB0);
+typedef struct Tex0_00202FB0 {
+    u64 base : 14;
+    u64 reserved0 : 23;
+    u64 clut : 14;
+    u64 reserved1 : 13;
+} Tex0_00202FB0;
+
+typedef struct Header_00202FB0 {
+    s32 dataOffset;
+    s32 dataSize;
+    u8 reserved0[0x18];
+    Tex0_00202FB0 tex0;
+    u8 reserved1[0x20];
+    s32 packetCount;
+} Header_00202FB0;
+
+typedef struct Packet_00202FB0 {
+    u8 reserved0[0x24];
+    u16 base : 14;
+    u16 reserved1 : 2;
+    u8 reserved2[0xA];
+} Packet_00202FB0;
+
+typedef struct Range_00202FB0 {
+    u16 base;
+    u16 size;
+    u16 used;
+} Range_00202FB0;
+
+/* D_00322990 starts a {base, size, used} record of three shorts. */
+static inline s32 allocate_00202FB0(s32 size) {
+    Range_00202FB0 *range = (Range_00202FB0 *)&D_00322990;
+    s32 base;
+
+    if ((u16)(&D_00322990)[2] + size > (u16)(&D_00322990)[1]) {
+        return -1;
+    }
+    base = range->base + range->used;
+    range->used += size;
+    return base;
+}
+
+static inline u16 reset_00202FB0(s16 base) {
+    D_00322990 = base;
+    (&D_00322990)[1] = 0x20;
+    (&D_00322990)[2] = 0;
+    return (u16)(&D_00322990)[1];
+}
+
+s32 func_00202FB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_0020B380();
+    Header_00202FB0 *header = (Header_00202FB0 *)(arg1 + 0x10);
+    Packet_00202FB0 *packet = (Packet_00202FB0 *)arg0;
+    s32 clutSize;
+    s32 clutBase;
+    s32 start = arg2;
+    s32 count;
+
+    clutBase = 0;
+    if (arg3 != 0) {
+        *(s32 *)arg3 = 0;
+    }
+    if (arg1 == 0) {
+        return arg0;
+    }
+
+    if ((clutSize = func_00202E30(header)) > 0) {
+        clutBase = allocate_00202FB0(clutSize);
+        if (clutBase < 0) {
+            arg2 += reset_00202FB0(arg2);
+            clutBase = allocate_00202FB0(clutSize);
+        }
+    }
+
+    arg0 = func_0020B380((void *)arg0, (void *)(arg1 + header->dataOffset), header->dataSize >> 4);
+    header->tex0.base = arg2;
+    header->tex0.clut = clutBase;
+    count = header->packetCount;
+    if (clutSize != 0) {
+        count--;
+        packet->base = clutBase;
+        packet++;
+    }
+    while (count--) {
+        packet->base = arg2;
+        arg2 += 0x20;
+        packet++;
+    }
+    if (arg3 != 0) {
+        *(s32 *)arg3 = arg2 - start;
+    }
+    return arg0;
+}
 
 void func_00192588(s32);
 void func_001927E8(s32, s32, u8 *);
