@@ -660,6 +660,7 @@ void func_001CD6E0(void);
 void func_001CDA10(void);
 s32 func_001CDA60(void *arg0);
 u8 *func_001CDAA0(void);
+s32 func_001CDB00(s32 arg0);
 void func_001CDD40(void);
 s32 func_001CDD90(u8 *arg0);
 void *func_001CDE70(s32 arg0);

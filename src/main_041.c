@@ -396,4 +396,99 @@ u8 *func_001CDAA0(void) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CDB00);
+typedef struct {
+    s8 unused : 4;
+    u8 mode : 2;
+    s8 unused6 : 1;
+    s8 set : 1;
+} Flags_001CDB00;
+
+typedef struct {
+    u8 r, g, b, a;
+} Color_001CDB00;
+
+typedef struct {
+    f32 value;
+} PackedColor_001CDB00;
+
+typedef union {
+    struct {
+        f32 x, y, z, w;
+    } value;
+    __int128 quad;
+} Vector_001CDB00;
+
+typedef struct {
+    Vector_001CDB00 position;
+    u8 pad10[0x33];
+    u8 visible;
+    Color_001CDB00 color;
+    u8 pad48[0x39];
+    Flags_001CDB00 flags81;
+    u8 pad82;
+    Flags_001CDB00 flags83;
+    u8 pad84[0xC];
+} Draw_001CDB00;
+
+typedef struct {
+    u8 pad00[0x34];
+    s16 x, z;
+    u8 pad38[8];
+    u8 index40, index41;
+    u8 pad42[7];
+    u8 color49, color4A;
+    u8 pad4B[0xC];
+    Flags_001CDB00 flags57;
+} Unit_001CDB00;
+
+typedef struct {
+    Draw_001CDB00 draw;
+    Unit_001CDB00 *unit;
+    u8 pad94[0xC];
+} Entry_001CDB00;
+
+s32 func_001D9F00(void *, s32);
+extern f32 D_002914D8;
+
+s32 func_001CDB00(s32 arg0) {
+    Draw_001CDB00 draw;
+    PackedColor_001CDB00 color;
+    Entry_001CDB00 *entry;
+    s32 i;
+    void *position;
+    s32 height;
+
+    entry = (Entry_001CDB00 *)D_003193C0;
+    i = 0;
+    color = *(PackedColor_001CDB00 *)&D_002914D8;
+    do {
+        if (entry->unit != NULL) {
+            Unit_001CDB00 *unit = entry->unit;
+
+            position = func_001DCD00(unit->index40, unit->index41);
+            draw = entry->draw;
+            if (!draw.flags83.set && (!draw.flags81.set || draw.visible != 0)) {
+                if (!unit->flags57.set) {
+                    if (position != NULL) {
+                        height = *(s16 *)((u8 *)position + 0x14);
+                        height = height > 0 ? height : 0;
+                        draw.position.value.y = (f32)(height * 35) / 128.0f;
+                        if (unit->color49 != 0 || unit->color4A != 0) {
+                            draw.flags83.mode = 3;
+                            draw.color = *(Color_001CDB00 *)&color;
+                        }
+                    }
+                    draw.position.value.x += (f32)unit->x;
+                    draw.position.value.z += (f32)unit->z;
+                }
+                arg0 = func_001DBC40(arg0, (s32)(func_001D9F00(&draw, 1) ? unit : NULL), &draw);
+                arg0 = func_0020A0B0(arg0, 1);
+                arg0 = func_001DBD30(arg0, (s32)&draw);
+                arg0 = func_0020A0B0(arg0, 0);
+            }
+        }
+        i++;
+        entry++;
+    } while (i < 32);
+    return arg0;
+}
