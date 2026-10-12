@@ -693,7 +693,107 @@ void func_001C1270(void) {
     func_001F9940(0, 4, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C12B0);
+typedef struct Vec4_001C12B0 {
+    f32 x, y, z, w;
+} Vec4_001C12B0;
+
+void func_001EDA40(s32, s32);
+f32 func_001A6C30(f32, f32);
+
+static inline s32 abs_001C12B0(s32 value) {
+    return value >= 0 ? value : -value;
+}
+
+static inline s32 deadzone_001C12B0(s32 value) {
+    if (abs_001C12B0(value) >= 48) {
+        value -= value > 0 ? 48 : -48;
+    } else {
+        value = 0;
+    }
+    return value;
+}
+
+static inline f32 absf_001C12B0(f32 value) {
+    return value >= 0.0f ? value : -value;
+}
+
+static inline f32 max_001C12B0(f32 a, f32 b) {
+    return a > b ? a : b;
+}
+
+static inline f32 clamp_001C12B0(f32 value, f32 minimum, f32 maximum) {
+    return max_001C12B0(value, minimum) < maximum ?
+           max_001C12B0(value, minimum) : maximum;
+}
+
+void func_001C12B0(void) {
+    extern u32 func_00203CA0();
+    extern s32 func_001F2920();
+    extern Vec4_001C12B0 D_00291440;
+    extern f32 D_00291430[];
+    f32 yaw = 0.0f;
+    f32 pitch = 0.0f;
+    f32 distance = 0.0f;
+    Vec4_001C12B0 camera;
+
+    func_001EDA40(2, 0x1D);
+    if (func_00203A40(0, 0, 0x20)) {
+        func_00217710(0, 5);
+        func_001A8920();
+    }
+    if (func_00203BC0(0)) {
+        s32 x = (u8)func_00203C40(0, 3) - 128;
+        s32 y = (u8)func_00203C40(0, 2) - 128;
+        s32 z = (u8)func_00203C40(0, 1) - 128;
+        func_00203C40(0, 0);
+        x = deadzone_001C12B0(x);
+        y = deadzone_001C12B0(y);
+        z = deadzone_001C12B0(z);
+        yaw -= 0.024543693f * (f32)y / 40.0f;
+        pitch -= 0.024543693f * (f32)x / 40.0f;
+        distance += 2.0f * (f32)z / 40.0f;
+    }
+    if (func_00203C00(0)) {
+        yaw += 0.024543693f * (f32)func_00203CA0(0, 1) / 64.0f;
+        yaw -= 0.024543693f * (f32)func_00203CA0(0, 0) / 64.0f;
+        pitch += 0.024543693f * (f32)func_00203CA0(0, 2) / 64.0f;
+        pitch -= 0.024543693f * (f32)func_00203CA0(0, 3) / 64.0f;
+        distance += 2.0f * (f32)func_00203CA0(0, 8) / 64.0f;
+        distance -= 2.0f * (f32)func_00203CA0(0, 9) / 64.0f;
+    } else {
+        if (func_00203A40(0, 1, 0x8000)) {
+            yaw += 0.024543693f;
+        }
+        if (func_00203A40(0, 1, 0x2000)) {
+            yaw -= 0.024543693f;
+        }
+        if (func_00203A40(0, 1, 0x1000)) {
+            pitch += 0.024543693f;
+        }
+        if (func_00203A40(0, 1, 0x4000)) {
+            pitch -= 0.024543693f;
+        }
+        if (func_00203A40(0, 1, 4)) {
+            distance += 2.0f;
+        }
+        if (func_00203A40(0, 1, 8)) {
+            distance -= 2.0f;
+        }
+    }
+    if (!(absf_001C12B0(yaw) <= 0.000001f &&
+          absf_001C12B0(pitch) <= 0.000001f &&
+          absf_001C12B0(distance) <= 0.000001f)) {
+        f32 minimum;
+        camera = *(Vec4_001C12B0 *)func_001FAF60(0);
+        minimum = (f32)func_001DE260(func_001DE130(func_001F2920(0x1D)));
+        camera.x = clamp_001C12B0(camera.x + distance, minimum, 300.0f);
+        camera.y = func_001A6C30(6.2831855f + (camera.y + yaw), 6.2831855f);
+        camera.z = clamp_001C12B0(camera.z + pitch, -0.3926991f, 1.3744469f);
+        func_001FB360(0, (f32 *)&camera);
+        D_00291440 = *(Vec4_001C12B0 *)func_001F9AD0(0);
+        func_001F9940(0, 4, (s32)D_00291430);
+    }
+}
 
 void func_001C1AD0(void) {
     func_00209D30(func_001C1B00(func_00209D20()));
