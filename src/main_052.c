@@ -205,7 +205,6 @@ typedef struct Render_001F8A30 {
 
 void func_00206830(void);
 void func_0020DF40(f32, f32, f32, f32, f32);
-void func_0020DF90(f32, f32);
 void func_0020DFD0(f32, f32);
 void func_0020E0D0(void *, f32, f32, f32, f32);
 void func_0020E260(void *);

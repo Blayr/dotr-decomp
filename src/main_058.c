@@ -90,7 +90,22 @@ s32 func_0020DEF0(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DF40);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DF90);
+typedef struct State_0020DF90 {
+    u8 pad0[0x158];
+    f32 field158;
+    f32 field15C;
+    u8 pad160[0x40];
+} State_0020DF90;
+
+s32 func_0020DF90(f32 fparg0, f32 fparg1) {
+    extern State_0020DF90 D_0032A2A0[];
+    State_0020DF90 *state;
+
+    state = &D_0032A2A0[D_0032A240];
+    state->field158 = fparg0;
+    state->field15C = fparg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DFD0);
 
