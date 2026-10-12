@@ -617,7 +617,109 @@ s32 func_00268FA0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_002692D0);
+typedef struct {
+    u16 alpha;
+    u16 id;
+    u16 state;
+    u8 handle;
+    u8 pad07[0x19];
+    s32 processed;
+    u8 pad24[0xDE];
+    u16 timer;
+} State_002692D0;
+
+typedef struct {
+    u8 pad00[8];
+    s32 mask;
+    s32 value;
+} Context_002692D0;
+
+void func_0024F370(s32, s32);
+void func_00255960(void *);
+u8 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+
+s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
+    s32 data[4];
+    s32 *params = data;
+    State_002692D0 *state = (State_002692D0 *)arg1;
+    Context_002692D0 *context = (Context_002692D0 *)arg0;
+
+    params[0] = 999;
+    params[1] = 0;
+    params[2] = 0;
+    params[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->alpha = 0x80;
+        state->id = func_0024EFB0(context->mask);
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        func_00260AF0(0x1E, state->id, 0x64, 0xB4);
+        func_00255AC0(arg1, 0x230);
+    } else {
+        switch (state->state) {
+        case 0:
+            state->timer++;
+            if (state->alpha > 0x30) {
+                state->alpha -= 0xF;
+            } else {
+                state->alpha = 0x30;
+                if (func_00255B50(arg1) == 1 && state->timer >= 0x1E) {
+                    params[0] = 0x230;
+                    params[1] = 0;
+                    params[2] = state->id;
+                    params[3] = 0;
+                    state->handle = func_00255A30(params, arg1);
+                    state->processed = 0;
+                    state->state++;
+                }
+            }
+            if (state->alpha < 0x30) {
+                state->alpha = 0x30;
+            }
+            func_001F6CF0((u8)state->alpha);
+            return 1;
+        case 1:
+            if (func_001F51D0(state->handle) == 1) {
+                if (func_001F52D0(state->handle) == 2 && state->processed == 0) {
+                    s32 position;
+
+                    position = func_001E1090(state->id >> 8, state->id & 0xFF);
+                    func_0024F370(state->id >> 8, state->id & 0xFF);
+                    func_001DF580(func_00250360(state->id >> 8, state->id & 0xFF),
+                                 position & 0xFF, position >> 8, context->value, 0);
+                    func_001F5970(state->id, 0);
+                    state->processed = 1;
+                }
+            } else {
+                func_00260020(arg0, arg1, arg2, 1, 0, 1);
+                func_00260A70(arg1, 0x10);
+                state->timer = 0;
+                state->state++;
+            }
+            break;
+        default:
+            state->alpha += 0xF;
+            if (state->alpha > 0x80) {
+                state->alpha = 0x80;
+            }
+            func_001F6CF0((u8)state->alpha);
+            if (state->alpha == 0x80) {
+                if (state->timer++ > 0x10 && func_0025FD90() == 1) {
+                    if (func_001DE780() != 0) {
+                        func_001DE7E0(1);
+                    }
+                    func_001E4530();
+                    return 0;
+                }
+            }
+            break;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_002695D0);
 
