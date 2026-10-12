@@ -661,7 +661,78 @@ void func_0016E4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_0016E510);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016F240);
+void func_0016F240(u16 *arg0) {
+    extern s32 func_001E1030();
+    extern s32 func_001F9FE0();
+    s32 id;
+    s32 value;
+    s32 *effect;
+    s32 position;
+    s32 result;
+    u32 action;
+
+    func_001E0700(arg0[0] >> 8, arg0[0] & 0xFF);
+    id = func_001E1030(arg0[0] >> 8, arg0[0] & 0xFF);
+    value = func_00250360(arg0[0] >> 8, arg0[0] & 0xFF);
+    effect = func_00250740(arg0[0] >> 8, arg0[0] & 0xFF, 0);
+    position = func_001E1090(arg0[0] >> 8, arg0[0] & 0xFF);
+    action = *(u32 *)effect;
+    switch (action >> 8) {
+    case 0x14:
+        arg0[2] = 0xCFF;
+        return;
+    case 4:
+        result = func_0016CBB0(value, effect);
+        if (result >= 0) {
+            arg0[2] = 0x6FF;
+            if (!(effect[0] & 0x3F)) {
+                *(u32 *)&arg0[4] = arg0[4] | ((((position >> 8) << 8) | (result & 0xFF)) << 16);
+            } else {
+                *(u32 *)&arg0[4] = (result << 16) | arg0[4];
+            }
+            return;
+        }
+        break;
+    case 2:
+        result = func_0027C770(func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF),
+            position & 0xFF, position >> 8, *((u8 *)effect + 4), 8, 2);
+        if (result >= 0) {
+            arg0[2] = 0x6FF;
+            *(u32 *)&arg0[4] = (result << 16) | arg0[4];
+            return;
+        }
+        break;
+    case 0x25:
+        if ((action & 0x3F) == 0x21) {
+            if (func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF) != 0) {
+                id = ((func_0024DE70(arg0[0] >> 8, arg0[0] & 0xFF) == 0) ? 1 : 0) << 8;
+                func_001E1090(arg0[0] >> 8, arg0[0] & 0xFF);
+                func_001E1090(id >> 8, id & 0xFF);
+                func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF);
+                if (func_001E0290(arg0[0] >> 8, arg0[0] & 0xFF, 0) >= 0x9C4) {
+                    func_0016DDA0(arg0);
+                } else {
+                    if (func_0016E000(arg0[0] >> 8, arg0[0] & 0xFF, 1) == 1) {
+                        func_0016E0E0(arg0, 1);
+                    } else {
+                        func_0016DDA0(arg0);
+                    }
+                }
+            }
+            return;
+        }
+        break;
+    case 0x1F:
+        if (id == 0x2DC) {
+            arg0[2] = 0xDFF;
+            return;
+        }
+        break;
+    default:
+        break;
+    }
+    arg0[2] = 0x5FF;
+}
 
 typedef struct {
     s16 id;
