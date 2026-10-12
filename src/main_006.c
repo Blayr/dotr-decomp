@@ -1187,7 +1187,6 @@ typedef struct Unit_00121CE0 {
 
 void func_001229F0(void *, s32);
 void func_00122270(void *);
-void func_00122B50(void *);
 void func_0027CA50(void *, s32, s32, s32);
 
 s32 func_00121CE0(void *arg0) {
@@ -1429,7 +1428,71 @@ INCLUDE_ASM("asm/nonmatchings/main_006", func_00122970);
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_001229F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00122B50);
+typedef struct Data_00122B50 {
+    u16 id;
+    u16 pad2;
+    s16 field4;
+    u16 pad6;
+    u32 field8;
+} Data_00122B50;
+
+void func_00122B50(void *arg0) {
+    Data_00122B50 *p;
+    s32 var_s1;
+    s32 temp_s2;
+    s32 var_s3;
+    s32 temp_v0_4;
+    s32 var_s4;
+    u16 temp_v0;
+
+    extern s32 func_001E1030();
+
+    p = arg0;
+    temp_v0 = p->id;
+    if (func_001DF540((s32)temp_v0 >> 8, temp_v0 & 0xFF) != 0) {
+        func_0024DE70((s32)p->id >> 8, p->id & 0xFF);
+        temp_s2 = func_001E1090((s32)p->id >> 8, p->id & 0xFF);
+        temp_v0_4 = func_001E1030((s32)p->id >> 8, p->id & 0xFF);
+        var_s4 = -1;
+        switch (temp_v0_4) {
+        case 0x33D:
+            p->field4 = 0x3FF;
+            p->field8 = (s32)(u16)p->field8;
+            break;
+        case 0x332:
+            p->field4 = 0x3FF;
+            p->field8 = (s32)((u16)p->field8 | 0x01000000);
+            break;
+        case 0x334:
+            {
+                s32 var_s5;
+                s32 var_s2;
+
+                var_s3 = var_s4;
+                p->field4 = 0x3FF;
+                for (var_s1 = 0; var_s1 < 7; var_s1++) {
+                    for (var_s5 = 0, var_s2 = 0; var_s5 < 7; var_s5++, var_s2 += 0x100) {
+                        if ((func_001E22B0(var_s1, var_s5) == 1) &&
+                            (func_001E36E0(var_s1, var_s5) == 0) &&
+                            (((((var_s1 < (temp_s2 & 0xFF)) ? (temp_s2 & 0xFF) : var_s1) -
+                               (((temp_s2 & 0xFF) < var_s1) ? (temp_s2 & 0xFF) : var_s1)) +
+                              (((var_s5 < (temp_s2 >> 8)) ? (temp_s2 >> 8) : var_s5) -
+                               (((temp_s2 >> 8) < var_s5) ? (temp_s2 >> 8) : var_s5))) > var_s3)) {
+                            var_s4 = var_s2 | var_s1;
+                        }
+                    }
+                }
+                if (var_s4 >= 0) {
+                    p->field8 = (s32)((u16)p->field8 | 0x01000000);
+                } else {
+                    p->field4 = 0x5FF;
+                }
+            }
+            break;
+        }
+        p->field4 = 0x5FF;
+    }
+}
 
 typedef struct {
     s16 card;
