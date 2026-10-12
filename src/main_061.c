@@ -430,10 +430,10 @@ typedef struct {
     XYZ_002194B0 v3;
 } Packet_002194B0;
 
-void func_002194B0(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0,
-                   u16 x1, u16 y1, s32 z1, u8 fog1,
-                   u16 x2, u16 y2, s32 z2, u8 fog2,
-                   u16 x3, u16 y3, s32 z3, u8 fog3) {
+void func_002194B0(void *arg0, s16 x0, s16 y0, s32 z0, u8 fog0,
+                   s16 x1, s16 y1, s32 z1, u8 fog1,
+                   s16 x2, s16 y2, s32 z2, u8 fog2,
+                   s16 x3, s16 y3, s32 z3, u8 fog3) {
     Packet_002194B0 *packet = arg0;
 
     packet->v0.coords.x = (x0 + 0x6C0) * 0x10;
