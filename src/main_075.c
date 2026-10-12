@@ -1033,7 +1033,178 @@ s32 func_00262680(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_002626F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00262BE0);
+typedef struct {
+    s32 kind;
+    u32 source;
+    u32 target;
+    s32 value;
+} Command_00262BE0;
+
+typedef struct {
+    u16 sourceActive;
+    u16 targetActive;
+    u16 stage;
+    u8 effect;
+    u8 pad07[0x19];
+    s32 applied;
+    u8 pad24[0xAC];
+    s32 timer;
+} State_00262BE0;
+
+s32 func_001DFAF0(u32, s32, s32);
+void func_0024F370(s32, s32);
+s32 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+
+s32 func_00262BE0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1D10();
+    extern s32 func_001E1A90();
+    extern s32 func_001E1030();
+    extern s32 func_001E1840();
+    extern s32 func_001E1970();
+    s32 scratch[4];
+    s32 *command = scratch;
+    State_00262BE0 *state = arg1;
+    Command_00262BE0 *input = arg0;
+    s32 status;
+
+    command[0] = 999;
+    command[1] = 0;
+    command[2] = 0;
+    command[3] = 0;
+
+    if (arg2 >= 0) {
+        func_00255960(state);
+        if (func_001E1D10(input->source >> 8, input->source & 0xFF) > 0) {
+            func_002500C0(input->source >> 8, input->source & 0xFF, -1, 1, 1);
+            state->sourceActive = 1;
+        }
+        if (func_001E1D10(input->target >> 8, input->target & 0xFF) > 0) {
+            func_002500C0(input->target >> 8, input->target & 0xFF, -1, 1, 1);
+            state->targetActive = 1;
+        }
+        if (input->value == 999) {
+            func_00255AC0(state, 0x21A);
+        } else if (input->kind == 0x2B) {
+            func_00255AC0(state, 0x21F);
+        } else {
+            func_00255AC0(state, 0x258);
+        }
+        return 1;
+    }
+
+    switch (state->stage) {
+        case 0:
+        if (func_00255B50(state) != 1) {
+            return 1;
+        }
+        if (state->sourceActive != 0) {
+            status = func_001E1D10(input->source >> 8, input->source & 0xFF);
+            if (status != func_001E1A90(input->source >> 8, input->source & 0xFF)) {
+                return 1;
+            }
+        }
+        if (state->targetActive != 0) {
+            status = func_001E1D10(input->target >> 8, input->target & 0xFF);
+            if (status != func_001E1A90(input->target >> 8, input->target & 0xFF)) {
+                return 1;
+            }
+        }
+        if (input->value == 999) {
+            command[0] = 0x21A;
+            command[1] = input->source;
+            command[2] = input->target;
+            command[3] = 1;
+        } else if (input->kind == 0x2B) {
+            command[0] = 0x21F;
+            command[1] = input->source;
+            command[2] = input->target;
+            command[3] = 1;
+        } else {
+            command[0] = 0x258;
+            command[1] = input->source;
+            command[2] = input->target;
+            command[3] = 1;
+        }
+        state->effect = func_00255A30(command, state);
+        state->applied = 0;
+        state->stage++;
+        return 1;
+        default:
+        if (input->value == 999) {
+            if (func_001F51D0(state->effect) != 0) {
+                switch (state->timer++) {
+                    case 0:
+                        func_00217710(1, 0x38);
+                        break;
+                    case 20:
+                        func_00217710(1, 0x39);
+                        break;
+                    case 30:
+                        func_00217710(1, 0x4C);
+                        break;
+                    case 36:
+                        func_00217710(1, 0x4A);
+                        break;
+                    case 48:
+                        func_00217710(1, 0x3C);
+                        break;
+                }
+                return 1;
+            }
+            func_0024F370(input->source >> 8, input->source & 0xFF);
+            if (state->targetActive != 0) {
+                func_002500C0(input->target >> 8, input->target & 0xFF, 1, 1, 1);
+            }
+            func_001E4530();
+            return 0;
+        }
+
+        if (func_001F51D0(state->effect) != 0) {
+            switch (state->timer++) {
+                case 0:
+                    func_00217710(1, 0x38);
+                    break;
+                case 20:
+                    func_00217710(1, 0x39);
+                    break;
+                case 30:
+                    func_00217710(1, 0x4C);
+                    break;
+                case 40:
+                    func_00217710(1, 0x3A);
+                    break;
+                case 100:
+                    func_00217710(1, 0x3B);
+                    break;
+                case 120:
+                    func_00217710(1, 0x3C);
+                    break;
+            }
+            if (func_001F52D0(state->effect) != 2) {
+                return 1;
+            }
+            if (state->applied == 0) {
+                func_001DEE70(input->target >> 8,
+                             func_001E1030(input->target >> 8, input->target & 0xFF));
+                func_001DFAF0(input->target >> 8, input->target & 0xFF, input->value);
+                func_0024F370(input->source >> 8, input->source & 0xFF);
+                func_001E1840(input->target >> 8, input->target & 0xFF, 1);
+                func_001E1970(input->target >> 8, input->target & 0xFF, 0);
+                func_001E1B70(input->target >> 8, input->target & 0xFF, -1, 0);
+                state->applied = 1;
+            }
+            return 1;
+        }
+
+        func_001E1840(input->target >> 8, input->target & 0xFF, 1);
+        func_001E1970(input->target >> 8, input->target & 0xFF, 0x80);
+        func_001E1B70(input->target >> 8, input->target & 0xFF, 1, 0x80);
+        func_00217710(0, 2);
+        func_001E4530();
+        return 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00263180);
 
