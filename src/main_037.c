@@ -6,7 +6,152 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6C48);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6C60);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6C80);
+void func_00214BB0(s32, s32, s32);
+
+typedef struct Flags2C_001A6C80 {
+    u8 low : 2;
+    s8 mode : 2;
+    u8 value : 2;
+    u8 high : 2;
+} Flags2C_001A6C80;
+
+typedef struct Flags2D_001A6C80 {
+    u8 first : 3;
+    u8 second : 3;
+    u8 high : 2;
+} Flags2D_001A6C80;
+
+typedef struct Flags2E_001A6C80 {
+    u8 value : 3;
+    u8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Flags2E_001A6C80;
+
+void func_001A6C80(void) {
+    s8 *data = (s8 *)&D_00317250;
+    s32 i;
+    s32 *p;
+
+    func_0020B3C0((s8 *) &D_00317250, 0, 0x230);
+    D_00317250 = 0;
+    D_00317254 = 0;
+    D_0031747A = 1;
+    i = 0;
+    p = (s32 *)data;
+    do {
+        p[0x138 / 4] = 0;
+        p[0xA4 / 4] = 0;
+        p[0x10 / 4] = 0;
+        data[0x1CC + i] = 10;
+        i++;
+        p++;
+    } while (i < 0x25);
+    *(s32 *)(data + 0x14) = 2;
+    *(s32 *)(data + 0xA8) = 0x38;
+    *(s32 *)(data + 0x18) = 1;
+    *(s32 *)(data + 0xAC) = 2;
+    *(s32 *)(data + 0x1C) = 4;
+    *(s32 *)(data + 0xB0) = 0x66;
+    *(s32 *)(data + 0x144) = 0x64;
+    *(s32 *)(data + 0x20) = 4;
+    *(s32 *)(data + 0xB4) = 0x66;
+    *(s32 *)(data + 0x148) = 0x64;
+    *(s32 *)(data + 0x24) = 2;
+    *(s32 *)(data + 0xB8) = 0xA;
+    *(s32 *)(data + 0x28) = 1;
+    *(s32 *)(data + 0xBC) = 2;
+    *(s32 *)(data + 0x2C) = 3;
+    *(s32 *)(data + 0xC0) = 0x2AB;
+    *(s32 *)(data + 0x34) = 1;
+    *(s32 *)(data + 0xC8) = 5;
+    *(s32 *)(data + 0x38) = 1;
+    *(s32 *)(data + 0xCC) = 3;
+    *(s32 *)(data + 0x3C) = 2;
+    *(s32 *)(data + 0xD0) = 0x64;
+    *(s32 *)(data + 0x40) = 1;
+    *(s32 *)(data + 0xD4) = 5;
+    *(s32 *)(data + 0x54) = 4;
+    *(s32 *)(data + 0xE8) = 0x2710;
+    *(s32 *)(data + 0x5C) = 4;
+    *(s32 *)(data + 0xF0) = 0x2710;
+    *(s32 *)(data + 0x60) = 1;
+    *(s32 *)(data + 0xF4) = 7;
+    *(s32 *)(data + 0x64) = 1;
+    *(s32 *)(data + 0xF8) = 2;
+    *(s32 *)(data + 0x18C) = 1;
+    *(s32 *)(data + 0x68) = 4;
+    *(s32 *)(data + 0xFC) = 0x2710;
+    *(s32 *)(data + 0x190) = 0x63;
+    *(s32 *)(data + 0x6C) = 5;
+    *(s32 *)(data + 0x100) = 0x186A0;
+    *(s32 *)(data + 0x70) = 4;
+    *(s32 *)(data + 0x104) = 0x10000;
+    *(s8 *)(data + 0x1E4) = 0x10;
+    *(s32 *)(data + 0x74) = 1;
+    *(s32 *)(data + 0x108) = 2;
+    *(s32 *)(data + 0x19C) = 1;
+    *(s32 *)(data + 0x78) = 2;
+    *(s32 *)(data + 0x10C) = 0x81;
+    *(s32 *)(data + 0x1A0) = 0x80;
+    *(s8 *)(data + 0x1E6) = 0x10;
+    *(s32 *)(data + 0x7C) = 2;
+    *(s32 *)(data + 0x110) = 0xD;
+    *(s32 *)(data + 0x1A4) = 1;
+    *(s32 *)(data + 0x80) = 1;
+    *(s32 *)(data + 0x114) = 4;
+    *(s32 *)(data + 0x1A8) = 3;
+    *(s32 *)(data + 0x84) = 1;
+    *(s32 *)(data + 0x118) = 4;
+    *(s32 *)(data + 0x1AC) = 3;
+    *(s32 *)(data + 0x88) = 1;
+    *(s32 *)(data + 0x11C) = 2;
+    *(s32 *)(data + 0x1B0) = 1;
+    *(s32 *)(data + 0x8C) = 1;
+    *(s32 *)(data + 0x120) = 2;
+    *(s32 *)(data + 0x90) = 1;
+    *(s32 *)(data + 0x124) = 2;
+    *(s32 *)(data + 0x50) = 1;
+    *(s32 *)(data + 0xE4) = 4;
+    *(s32 *)(data + 0x94) = 2;
+    *(s32 *)(data + 0x128) = 0x12;
+    *(s8 *)(data + 0x21E) = -3;
+    *(s8 *)(data + 0x21F) = -3;
+    *(s8 *)(data + 0x220) = -3;
+    *(s8 *)(data + 0x221) = 0;
+    *(s8 *)(data + 0x1F1) = -3;
+    *(s8 *)(data + 0x1F9) = 0;
+    *(s8 *)(data + 0x222) = 0;
+    *(s8 *)(data + 0x223) = 0;
+    *(s8 *)(data + 0x22B) = *(s8 *)(data + 0x188);
+    ((Flags2D_001A6C80 *)(data + 0x22D))->first = 0;
+    *(s16 *)(data + 0x21C) = 0;
+    ((Flags2D_001A6C80 *)(data + 0x22D))->second = 0;
+    ((Flags2E_001A6C80 *)(data + 0x22E))->value = 0;
+    ((Flags2E_001A6C80 *)(data + 0x22E))->bit3 = 0;
+    ((Flags2E_001A6C80 *)(data + 0x22E))->bit5 = *(s8 *)(data + 0x18C);
+    func_00214BB0(0, 0, *(s32 *)(data + 0x1B8));
+    func_00214BB0(0, 1, *(s32 *)(data + 0x1B4));
+    func_00214BB0(0, 2, *(s32 *)(data + 0x19C));
+    ((Flags2E_001A6C80 *)(data + 0x22E))->bit6 = 1;
+    ((Flags2E_001A6C80 *)(data + 0x22E))->bit7 = 0;
+    ((Flags2C_001A6C80 *)(data + 0x22C))->value = 0;
+    ((Flags2E_001A6C80 *)(data + 0x22E))->bit4 = 0;
+    *(s32 *)(data + 0xC) = 0;
+    *(s8 *)(data + 0x229) = 0;
+    *(s8 *)(data + 0x228) = 0;
+    ((Flags2C_001A6C80 *)(data + 0x22C))->mode = 1;
+    *(s32 *)(data + 0x204) = 0;
+    *(s32 *)(data + 0x208) = 0;
+    *(s8 *)(data + 0x20E) = 0;
+    *(s8 *)(data + 0x20D) = 0;
+    *(s8 *)(data + 0x20C) = 0;
+    *(u8 *)(data + 0x20F) = 0x80;
+    *(s32 *)(data + 0x214) = 0;
+    *(s32 *)(data + 0x218) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6FF0);
 
