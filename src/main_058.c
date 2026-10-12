@@ -249,7 +249,108 @@ s32 func_0020E4F0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E520);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+extern unsigned char D_0032A2A0[];
+#endif
+
+
+typedef struct Vec4_0020E520 {
+    f32 x, y, z, w;
+} Vec4_0020E520;
+
+typedef struct State_0020E520 {
+    Vec4_0020E520 point;
+    Vec4_0020E520 normal;
+    Vec4_0020E520 direction;
+    Vec4_0020E520 displacement;
+    f32 distance;
+    s32 active;
+} State_0020E520;
+
+typedef struct Object_0020E520 {
+    __int128 reserved0[4];
+    Vec4_0020E520 point;
+    Vec4_0020E520 direction;
+    u8 reserved1[0x20];
+    s32 angle;
+    u8 reserved2[0xC];
+} Object_0020E520;
+
+typedef struct Block_0020E520 {
+    __int128 data[26];
+} Block_0020E520;
+
+extern s32 D_0032A294;
+extern u8 D_0032A360[];
+extern u8 D_0032A440[];
+void func_0020D5E0(void *, void *, void *, s32);
+
+static inline void reflect_0020E520(Vec4_0020E520 *v, Vec4_0020E520 *normal) {
+    f32 twiceDot = 2.0f * (normal->x * v->x + normal->y * v->y + normal->z * v->z);
+    v->x = twiceDot * normal->x - v->x;
+    v->y = twiceDot * normal->y - v->y;
+    v->z = twiceDot * normal->z - v->z;
+}
+
+s32 func_0020E520(f32 *point, f32 *normal, void *output) {
+    extern State_0020E520 D_0032A250;
+    extern s32 func_001A22C0(f32);
+    State_0020E520 *state = &D_0032A250;
+    Object_0020E520 *original = (Object_0020E520 *)D_0032A360;
+    u8 scratch[0xA0 + 0xF];
+    Vec4_0020E520 *up;
+    f32 *cross;
+    void *matrix;
+    void *inverse;
+    Object_0020E520 *object = (Object_0020E520 *)output;
+
+    up = (Vec4_0020E520 *)(((u32)scratch + 0xF) & ~0xF);
+    up->x = 0.0f;
+    up->y = 1.0f;
+    up->z = 0.0f;
+    cross = (f32 *)((u8 *)up + 0x10);
+    matrix = (u8 *)cross + 0x40;
+    up->w = 0.0f;
+    inverse = (u8 *)matrix + 0x40;
+    if (D_0032A294 != 0) {
+        return 0;
+    }
+    *object = *original;
+    state->point = *(Vec4_0020E520 *)point;
+    state->normal = *(Vec4_0020E520 *)normal;
+    state->direction.x = -original->direction.x;
+    state->direction.y = -original->direction.y;
+    state->direction.z = -original->direction.z;
+    state->displacement.x = original->point.x - state->point.x;
+    state->displacement.y = original->point.y - state->point.y;
+    state->displacement.z = original->point.z - state->point.z;
+    state->distance = func_0020D0E0(&state->displacement.x);
+    func_0020D070(&state->normal.x);
+    func_0020D070(&state->direction.x);
+    func_0020D070(&state->displacement.x);
+    reflect_0020E520(&state->direction, &state->normal);
+    reflect_0020E520(&state->displacement, &state->normal);
+    object->direction = state->direction;
+    object->point.x = point[0] - state->displacement.x * state->distance;
+    object->point.y = point[1] - state->displacement.y * state->distance;
+    object->point.z = point[2] - state->displacement.z * state->distance;
+    object->point.w = 0.0f;
+    func_0020EBA0(matrix);
+    func_0020BDE0(inverse, matrix);
+    func_0020CDD0(up, inverse, up);
+    reflect_0020E520(up, &state->normal);
+    func_0020D140(cross, (f32 *)up, &object->direction.x);
+    func_0020D5E0(matrix, &object->point, &object->direction, 0);
+    func_0020CDD0(cross, matrix, cross);
+    object->angle = (s32)func_001A22C0(65536.0f * (func_001A6C18(cross[1], cross[0]) / 6.2831855f)) + 0x8000;
+    if (D_0032A240 + 1 < 2) {
+        ((Block_0020E520 *)D_0032A440)[D_0032A240] = ((Block_0020E520 *)D_0032A2A0)[D_0032A240];
+        D_0032A240++;
+    }
+    state->active = 1;
+    return 1;
+}
 
 typedef struct {
     u8 padding[0x44];
