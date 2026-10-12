@@ -333,7 +333,58 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_002171B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217230);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002172D0);
+#ifndef INCLUDE_ASM
+#define DECLARE_STATE_002172D0
+#endif
+
+
+typedef struct {
+    u8 pad[0x48];
+    u16 flags : 14;
+    u16 status : 2;
+    u16 value;
+} Card_002172D0;
+
+#ifdef DECLARE_STATE_002172D0
+typedef struct {
+    u8 pad[0xFF9C];
+    u8 flags;
+    u8 tail[3];
+} State_002158B0;
+#endif
+
+extern u16 D_002D0850[];
+extern u8 D_0034F6D0;
+
+s32 func_002172D0(s32 arg0, s32 arg1, s32 arg2) {
+    extern State_002158B0 D_0032F790[];
+    s32 side;
+    Card_002172D0 *base;
+    Card_002172D0 *card;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    base = (Card_002172D0 *)((u8 *)D_0032F790 + side * 0xFFA0);
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return -1;
+    }
+    if ((arg2 < 0) || (arg2 >= 0xD)) {
+        return -1;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x2AB)) {
+        return -1;
+    }
+    card = &base[arg1];
+    card->flags = arg2;
+    card->value = D_002D0850[arg2];
+    return card->flags;
+}
 
 s32 func_002173D0(void) {
     func_00193808();
