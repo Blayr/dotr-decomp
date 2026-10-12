@@ -480,7 +480,62 @@ void func_00278510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     func_00278250(arg0, arg1, arg3, arg4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002785D0);
+s32 func_002785D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 func_00278420();
+    extern s32 func_00250A60();
+    extern s32 func_00250BC0();
+    extern s32 func_002787F0();
+    s32 damage;
+    s32 defense;
+    s32 item;
+    s32 card;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    card = arg1 >> 8;
+    if (arg1 == -1) {
+        return func_00278420(arg0, arg2, arg3, arg4);
+    }
+    item = arg1 & 0xFF;
+    if (func_002781B0(card, item, arg5 & 0xFF) == 0) {
+        damage = func_00250A60(arg0, arg3, arg4);
+        defense = func_00250BC0(arg0, arg3, arg4);
+    } else {
+        if (func_00250900((void *)arg0) == 1) {
+            defense = 0;
+            damage = 0;
+        } else if ((*(u8 *)((u8 *)arg0 + 0x3E) >> 5) != 0) {
+            defense = 0;
+            damage = 0;
+        } else {
+            damage = func_00250A60(arg0, arg3, arg4);
+            defense = func_00250BC0(arg0, arg3, arg4);
+            damage += func_002787F0((void *)arg0, (void *)func_001DF540(card, item));
+            defense += func_002787F0((void *)arg0, (void *)func_001DF540(card, item));
+        }
+
+        if (func_00250900((void *)func_001DF540(card, item)) == 1) {
+            arg2 = 0;
+        } else if ((func_001E0700(card, item) >> 5) != 0) {
+            arg2 = 0;
+        } else {
+            arg2 = func_002509E0(card, item, arg3, arg4);
+            arg2 += func_002787F0((void *)func_001DF540(card, item), (void *)arg0);
+        }
+    }
+
+    if (defense < damage) {
+        if (damage >= arg2) {
+            return 3;
+        }
+        return 0;
+    }
+    if (damage <= defense) {
+        return (arg2 < defense) ? 2 : 0;
+    }
+    return 0;
+}
 
 typedef struct Info_002787F0 {
     u32 packed;
