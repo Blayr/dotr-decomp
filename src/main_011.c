@@ -252,7 +252,146 @@ failure:
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00144EC0);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Flags_00144EC0;
+
+typedef struct {
+    u16 id;
+    u8 action;
+    u8 pad3;
+    u16 position;
+    u8 pad6[6];
+    s32 value;
+    u8 mode;
+} Output_00144EC0;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, u16, s32, u16, s32);
+s32 func_0027BE10(s32, s32, s32, s32, s32);
+
+s32 func_00144EC0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
+    extern s32 func_00146220();
+    s32 position;
+    u8 upperX;
+    u8 flag;
+    Flags_00144EC0 cells[12];
+    s32 i;
+    s32 result;
+    s32 y;
+    s32 score;
+    s32 packedY;
+    s32 originalY;
+    s32 originalX;
+    s32 x;
+    s32 bestPosition;
+    s32 bestScore;
+    Output_00144EC0 *out = arg2;
+
+    position = func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+    i = 0;
+    do {
+        cells[i].low = cells[i].high = 15;
+        i++;
+    } while (i < 12);
+
+    {
+        u16 value = (u16)func_001461C0(arg1);
+        originalX = position & 0xFF;
+        originalY = position >> 8;
+        if (func_00276CC0(originalX, originalY, *arg0, 3, value, 0) == 0) {
+            out->id = *arg0;
+            out->action = 6;
+            out->position = position;
+            out->mode = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 0);
+            out->value = func_00146220(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        } else {
+            result = func_002464F0(func_001DF540(*arg0 >> 8, *arg0 & 0xFF), originalX, originalY);
+            if (result == 0) {
+                out->id = *arg0;
+                out->action = 6;
+                out->position = position;
+                out->mode = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 0);
+                out->value = func_00146220(*arg0 >> 8, *arg0 & 0xFF, arg0);
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            } else {
+                u8 startY;
+                u8 endY;
+                u8 startX;
+                s32 end;
+                bestPosition = 0xFF;
+                bestScore = 0xFFFF;
+                startX = func_00250860(0, originalX - (result & 15)) & 0xFF;
+                if (originalX + (result & 15) >= 7) {
+                    end = 6;
+                } else {
+                    end = originalX + (result & 15);
+                }
+                upperX = end & 0xFF;
+                startY = func_00250860(0, originalY - (result & 15)) & 0xFF;
+                end = originalY + (result & 15);
+                if (end >= 7) {
+                    end = 6;
+                }
+                endY = end & 0xFF;
+                if ((*arg0 & 0xFF) == 0) {
+                    flag = func_0027BBC0(*arg0 >> 8, *arg0 & 0xFF, 0) & 0xFF;
+                } else {
+                    flag = 0;
+                }
+                for (x = startX; x <= upperX; x++) {
+                    y = startY;
+                    packedY = y << 8;
+                    for (; y <= endY; packedY += 0x100, y++) {
+                        if ((((x < originalX ? originalX : x) -
+                              (originalX < x ? originalX : x)) +
+                             ((y < originalY ? originalY : y) -
+                              (originalY < y ? originalY : y))) <= (result & 15)) {
+                            if (func_00279C40(*arg0 >> 8, *arg0 & 0xFF, originalX, originalY, x, y, arg0, flag) == 1 &&
+                                (func_0027BE10(*arg0 >> 8, *arg0 & 0xFF, x, y, 0) == 0 || (u8)*arg0 == 0)) {
+                                value = (u16)func_001461C0(arg1);
+                                score = func_00276CC0(x, y, *arg0, 3, value, 0);
+                                if (score < bestScore) {
+                                    bestScore = score;
+                                    bestPosition = packedY | x;
+                                } else if (score == bestScore &&
+                                           func_001E36E0(x, y) == 0 &&
+                                           func_001E36E0(bestPosition & 0xFF, bestPosition >> 8) != 0) {
+                                    bestScore = score;
+                                    bestPosition = packedY | x;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (bestPosition != 0xFF) {
+                    out->id = *arg0;
+                    out->action = 6;
+                    out->position = bestPosition;
+                    if (bestPosition == position) {
+                        out->mode = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 0);
+                    } else {
+                        out->mode = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, out->position, 0, 0);
+                    }
+                    out->value = func_00146220(*arg0 >> 8, *arg0 & 0xFF, arg0);
+                } else {
+                    out->id = *arg0;
+                    out->action = 6;
+                    out->position = position;
+                    out->mode = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 0);
+                    out->value = func_00146220(*arg0 >> 8, *arg0 & 0xFF, arg0);
+                }
+                func_0027B1B0(arg0, arg3);
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00145400);
 
