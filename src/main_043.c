@@ -306,7 +306,138 @@ s32 func_001D9EF0(void) {
     return D_0031810C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9F00);
+typedef union {
+    __int128 q;
+    s32 i[4];
+    f32 f[4];
+} Vec_001D9F00;
+
+typedef struct {
+    s16 value : 12;
+    s16 flags : 4;
+} Count_001D9F00;
+
+typedef struct {
+    s8 unused : 4;
+    s8 mode : 1;
+    s8 split : 1;
+    s8 rotation : 1;
+    s8 flag7 : 1;
+} Flags_001D9F00;
+
+typedef struct {
+    u64 lower : 32;
+    u64 color : 24;
+    u64 upper : 8;
+} Packet_001D9F00;
+
+typedef struct {
+    u8 pad00[0x10];
+    s32 position[4];
+    u8 rotation[0x10];
+    u8 orientation[0x10];
+    u8 pad40[8];
+    s16 field48;
+    s16 field4A;
+    s32 field4C;
+    s64 field50;
+    u8 pad58[0x20];
+    u8 *vertices;
+    s32 field7C;
+    union {
+        Count_001D9F00 count;
+        struct {
+            u8 low;
+            Flags_001D9F00 flags;
+        } bytes;
+    } control80;
+    Count_001D9F00 count82;
+} Object_001D9F00;
+
+extern Vec_001D9F00 D_00291540;
+extern Vec_001D9F00 D_00291550;
+extern Vec_001D9F00 D_00291560;
+extern Vec_001D9F00 D_00291570;
+extern Vec_001D9F00 D_00291580;
+
+void func_0020C630(void *, void *);
+void func_0020C940(void *, void *, void *, void *);
+
+s32 func_001D9F00(void *arg0, s32 arg1) {
+    Vec_001D9F00 point;
+    Vec_001D9F00 transformed;
+    __int128 matrix[4];
+    __int128 projection[4];
+    u8 *state = D_00317490;
+    s32 mode;
+    Object_001D9F00 *object = arg0;
+    s32 i;
+    s32 offset;
+    extern s64 func_001DA4C0();
+    extern s64 func_002070F0(void *, s32, void *, s32, s32, s32, s32);
+
+    point = D_00291540;
+    mode = arg1 ? 15 : -1;
+    func_0020BAF0(0);
+    if (object->control80.bytes.flags.split) {
+        __int128 rotationMatrix[4];
+        __int128 translationMatrix[4];
+        Vec_001D9F00 position;
+        Vec_001D9F00 height;
+        void *orientation;
+
+        position = D_00291550;
+        position.i[0] = object->position[0];
+        position.i[2] = object->position[2];
+        height = D_00291560;
+        height.i[1] = object->position[1];
+        orientation = object->control80.bytes.flags.rotation ? object->orientation : NULL;
+        func_0020C940(rotationMatrix, NULL, object->rotation, object);
+        func_0020C630(translationMatrix, &height);
+        func_0020BCF0((s32)translationMatrix, (s32)rotationMatrix);
+        func_0020C940(matrix, orientation, &position, NULL);
+        func_0020BCF0((s32)matrix, (s32)translationMatrix);
+    } else {
+        __int128 rotationMatrix[4];
+        Vec_001D9F00 position;
+        Vec_001D9F00 height;
+        void *orientation;
+
+        position = D_00291570;
+        position.i[0] = object->position[0];
+        position.i[2] = object->position[2];
+        height = D_00291580;
+        height.i[1] = object->position[1];
+        orientation = object->control80.bytes.flags.rotation ? object->orientation : NULL;
+        func_0020C940(rotationMatrix, NULL, &height, object);
+        func_0020C940(matrix, orientation, &position, NULL);
+        func_0020BCF0((s32)matrix, (s32)rotationMatrix);
+    }
+    func_0020EBA0(projection);
+    func_0020BC00((s32)projection, matrix);
+    func_0020CDD0(&point, projection, &point);
+    object->field4A = 0x35;
+    object->field48 = 0;
+    object->field50 = 0;
+    object->field4C = 0;
+    func_002086D0(&object->field48, 0x8000000044LL);
+    if (object->control80.bytes.flags.mode) {
+        func_00208CB0(&object->field48, 0x5C00040000ALL);
+    } else {
+        func_00208CB0(&object->field48, 0x2D0001E000ALL);
+    }
+    object->count82.value = (s16)func_001DA4C0(object->control80.bytes.flags.mode, object->vertices);
+    object->count82.value = (s16)func_002070F0(projection, object->count82.value, object->vertices, object->control80.count.value, object->field7C, mode, 0);
+    func_002061F0(NULL, object->count82.value, object->vertices, transformed.f);
+    func_00207230(NULL, object->count82.value, object->vertices);
+    if (*(s32 *)(state + 0xC54) != 0) {
+        for (i = 0, offset = 0; i < object->count82.value; i++, offset += 0x30) {
+            ((Packet_001D9F00 *)(object->vertices + offset + 0x10))->color = *(u32 *)(state + 0xC54);
+        }
+    }
+    func_0020BB50();
+    return func_0020D1A0(transformed.f, point.f) <= 0.0f ? 0 : 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA2B0);
 

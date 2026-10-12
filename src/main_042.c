@@ -362,7 +362,6 @@ typedef struct Draw_001CEA50 {
     u8 pad82[0xE];
 } Draw_001CEA50;
 
-s32 func_001D9F00(void *, s32);
 void func_001DA2B0(void *, s32, f32, f32);
 extern Vec4_001CEA50 D_0031825C;
 extern s32 D_00318270;
