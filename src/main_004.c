@@ -247,7 +247,109 @@ void func_0010DC40(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DD50);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DFC0);
+s32 func_0010DFC0(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    extern s32 func_0010F290();
+    s32 entries[8];
+    u8 buffer[32];
+    u8 first;
+    u8 second;
+    s32 first_index;
+    s32 *first_entry;
+    s32 *zero_entry;
+    s32 zero_index;
+    s32 *check_entry;
+    s32 check_index;
+    s32 *last_entry;
+    s32 last_index;
+    s32 result;
+
+    first = func_00278890(arg0, 0);
+    second = func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, entries);
+    if (first == 5) {
+        if (func_0010F450(arg0, buffer, arg1) >= 0) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    if (second == 5) {
+        first_index = 0;
+        if (0 < func_0026FE20(arg0)) {
+            first_entry = entries;
+            do {
+                if ((func_0026FCE0(*first_entry) >> 5) == 0 &&
+                    func_0026FB10(arg0, *first_entry) == 1) {
+                    func_001DCD70(arg1, entries[first_index]);
+                    return 0;
+                }
+                first_entry++;
+                first_index++;
+            } while (first_index < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+    if (func_0010F290(arg0, buffer, arg1, 0) >= 0) {
+        return 2;
+    }
+    if (first == 0) {
+        zero_index = 0;
+        if (0 < func_0026FE20(arg0)) {
+            zero_entry = entries;
+            do {
+                if ((func_0026FCE0(*zero_entry) >> 5) == 0 &&
+                    func_0026FB10(arg0, *zero_entry) == 1) {
+                    return 0;
+                }
+                zero_entry++;
+                zero_index++;
+            } while (zero_index < func_0026FE20(arg0));
+        }
+        return func_0010F450(arg0, buffer, arg1);
+    }
+    if (func_0010F6F0(1) == 0) {
+        check_index = 0;
+        if (0 < func_0026FE20(arg0)) {
+            check_entry = entries;
+            do {
+                if ((func_0026FCE0(*check_entry) >> 5) == 0 &&
+                    func_0026FB10(arg0, *check_entry) == 1) {
+                    return 0;
+                }
+                check_entry++;
+                check_index++;
+            } while (check_index < func_0026FE20(arg0));
+        }
+    }
+    if (func_0010F6F0(2) == 0) {
+        result = func_0010F450(arg0, buffer, arg1);
+        if (result >= 0) {
+            return result;
+        }
+    }
+    last_index = 0;
+    if (0 < func_0026FE20(arg0)) {
+        last_entry = entries;
+        do {
+            if ((func_0026FCE0(*last_entry) >> 5) == 0 &&
+                func_0026FB10(arg0, *last_entry) == 1) {
+                func_001DCD70(arg1, entries[last_index]);
+                return 0;
+            }
+            last_entry++;
+            last_index++;
+        } while (last_index < func_0026FE20(arg0));
+    }
+    result = func_0010F450(arg0, buffer, arg1);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 typedef struct Info_0010E320 {
     u8 pad00[8];
