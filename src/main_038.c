@@ -136,7 +136,228 @@ s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001B22F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B3100);
+typedef struct {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Flags_001B3100;
+
+typedef struct {
+    u8 pad[0x44];
+    u8 x;
+    u8 y;
+    u8 pad46[0x11];
+    Flags_001B3100 flags;
+} Card_001B3100;
+
+typedef struct {
+    u8 pad[0x33D];
+    u8 x;
+    u8 y;
+    u8 pad33F[7];
+    Flags_001B3100 flags;
+    u8 pad347[0x381];
+    Card_001B3100 *card;
+    Card_001B3100 *other;
+    u8 pad6D0[0x66C];
+    u8 player;
+    u8 padD3D[0x29];
+    Flags_001B3100 state;
+} State_001B3100;
+
+typedef struct {
+    u16 graphic : 10;
+    u16 x : 3;
+    u16 y : 3;
+    u16 text;
+} Entry_001B3100;
+
+typedef struct {
+    u8 pad[0xC];
+    s32 width;
+} Text_001B3100;
+
+extern u8 D_00290080[];
+extern Entry_001B3100 D_00291180[];
+extern u8 D_003181E7;
+
+s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
+    extern s32 func_001B3C80();
+    extern s32 func_001B4780();
+    extern void *func_001FEAB0();
+    extern s32 func_001E24E0();
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    State_001B3100 *state;
+    State_001B3100 *player;
+    s32 choice;
+    s32 x;
+    s32 y;
+    s32 renderX;
+    s32 count;
+    s32 text;
+    Entry_001B3100 *entry;
+    s32 value;
+    s32 otherValue;
+    Text_001B3100 *info;
+    s32 graphic;
+    s32 entryX;
+    s32 entryY;
+    f32 scale;
+
+    state = (State_001B3100 *)D_00317490;
+    player = (State_001B3100 *)(D_00317490 + D_003181CC * 0x350);
+    x = (s32)arg2 + 4;
+    y = (s32)arg3 + 4;
+    choice = -1;
+    arg0 = func_001B4780(arg0, arg1, 2, 3, arg2, arg3, 9, 0x12, 1);
+    switch (D_003181E7) {
+    case 0x18:
+        if (state->card != NULL) {
+            value = func_00250360(state->card->x, state->card->y);
+            if (state->player == value) {
+                if (state->card->y == 0) {
+                    value = func_001DE9C0(state->player);
+                    otherValue = func_001DF110(state->player);
+                    if (player->flags.bit0 && value + otherValue > 0) {
+                        if (state->card->flags.bit0) {
+                            choice = 3;
+                        } else {
+                            choice = 1;
+                        }
+                    } else if (otherValue != 0) {
+                        if (state->card->flags.bit0) {
+                            choice = 4;
+                        } else {
+                            choice = 2;
+                        }
+                    } else {
+                        if (state->card->flags.bit0) {
+                            choice = 11;
+                        } else {
+                            choice = 10;
+                        }
+                    }
+                } else {
+                    if (state->card->flags.bit0) {
+                        choice = 11;
+                    } else {
+                        choice = 10;
+                    }
+                }
+            } else {
+                value = 0;
+                if (state->card->y > 0) {
+                    value = func_00267380((s32)state->card, state->player);
+                }
+                choice = value == 0 ? 11 : 0;
+            }
+        } else {
+            choice = 0;
+        }
+        break;
+    case 0x1D:
+        if (state->card->y == 0) {
+            choice = 5;
+            if (state->other != NULL && state->other != state->card) {
+                value = func_00250360(state->other->x, state->other->y);
+                if (state->player == value) {
+                    choice = 6;
+                }
+            }
+        } else {
+            if (state->other != NULL) {
+                if (state->other == state->card) {
+                    if (state->card->flags.bit4) {
+                        choice = 13;
+                    } else {
+                        choice = 12;
+                    }
+                } else {
+                    value = func_00250360(state->other->x, state->other->y);
+                    if (state->player == value) {
+                        choice = 14;
+                    } else {
+                        choice = 15;
+                    }
+                }
+            } else {
+                choice = 5;
+            }
+        }
+        break;
+    case 0x3E:
+        if (func_001E24E0(player->x, player->y) == 0) {
+            choice = 7;
+        }
+        break;
+    case 0x43:
+        choice = 8;
+        break;
+    case 0x53:
+        choice = 17;
+        break;
+    case 0x46:
+        choice = 9;
+        break;
+    case 0x29:
+    case 0x25:
+        choice = 18;
+        break;
+    case 0x2D:
+        if (state->state.bit3) {
+            choice = 16;
+        } else {
+            choice = 17;
+        }
+        break;
+    case 0x30:
+        if (func_001FA6F0(-1, -1) == NULL) {
+            choice = 19;
+        }
+        break;
+    case 0x63:
+        choice = 20;
+        break;
+    }
+    if (choice < 0) {
+        return arg0;
+    }
+    renderX = x + 10;
+    entry = D_00291180 + choice * 4;
+    count = 0;
+    do {
+        graphic = entry->graphic;
+        entryX = entry->x;
+        entryY = entry->y;
+        text = entry->text;
+        if (graphic < 0x3FF) {
+            arg0 = func_001B3C80(arg0, D_00290080 + graphic * 10,
+                                  renderX + 0x6C0 + entryX, y + 0x720 + entryY,
+                                  0, 1, 0, 0, 1, 0, -1);
+        }
+        if (text < 0xFFFF) {
+            arg0 = func_0020F290(func_001FD680(arg0, 1, text, 0, 0x16));
+            info = func_001FEAB0(1);
+            if (info->width >= 0x2D) {
+                scale = 44.0f / (f32)info->width;
+            } else {
+                scale = 1.0f;
+            }
+            arg0 = func_001FE660(arg0, 1, renderX + 0x1A, y, scale, 1.0f, 0,
+                                  func_001FDFE0);
+            func_001FEAF0(1);
+        }
+        count++;
+        y += 0x16;
+        entry++;
+    } while (count < 4);
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001B3640);
 
