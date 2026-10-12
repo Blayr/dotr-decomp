@@ -474,7 +474,126 @@ s32 func_0025A940(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     return var_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025AA80);
+typedef struct State_0025AA80 {
+    u8 pad0[4];
+    u16 step;
+    u8 handles[26];
+    s32 entries[45];
+    u8 count;
+    u8 padD5[0x2B];
+    u8 phase;
+    u8 pad101;
+    u16 timer;
+} State_0025AA80;
+
+typedef struct Mask_0025AA80 {
+    u8 pad0[8];
+    u32 mask;
+} Mask_0025AA80;
+
+void func_00255960(void *);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_002607D0(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025AA80(void *arg0, void *arg1, s32 arg2) {
+    s32 descriptor[4];
+    s32 i;
+    u8 flags;
+    s32 *request = descriptor;
+    State_0025AA80 *state = arg1;
+    Mask_0025AA80 *source = arg0;
+    s32 mode = arg2;
+    u8 handle;
+    u8 phase;
+
+    descriptor[0] = 999;
+    descriptor[1] = 0;
+    descriptor[2] = 0;
+    descriptor[3] = 0;
+    i = 0;
+    flags = 0;
+    func_001DE7E0(0);
+    if (mode >= 0) {
+        func_00255960(arg1);
+        func_002607D0(0);
+        func_00255AC0(arg1, 15);
+        return 1;
+    }
+    switch (state->step) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            do {
+                if ((source->mask >> (21 - i) & 1) == 1) {
+                    if (i < 11) {
+                        request[0] = 15;
+                        request[1] = 0;
+                        request[2] = i;
+                        request[3] = func_001E0700(0, i) >> 5;
+                        handle = func_00255A30(request, arg1);
+                        state->handles[state->count] = handle;
+                        if (handle >= 0) {
+                            state->entries[state->count] = i;
+                            state->count++;
+                        }
+                    } else {
+                        s32 entry;
+                        request[0] = 15;
+                        entry = i - 11;
+                        request[1] = 0;
+                        request[2] = entry | 0x100;
+                        request[3] = func_001E0700(1, entry) >> 5;
+                        handle = func_00255A30(request, arg1);
+                        state->handles[state->count] = handle;
+                        if (handle >= 0) {
+                            state->entries[state->count] = (i - 11) | 0x100;
+                            state->count++;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 22);
+            state->step++;
+        }
+        break;
+    default: {
+        s32 j;
+        for (j = 0; j < state->count; j++) {
+            if (func_001F51D0(state->handles[j]) == 0) {
+                i++;
+            }
+        }
+        if (i >= state->count) {
+            flags = 1;
+        }
+        break;
+    }
+    }
+    phase = state->phase;
+    switch (phase) {
+    case 0:
+        if (flags & 1) {
+            state->phase = phase + 1;
+            state->timer = 0;
+            func_00260A70(arg1, 30);
+        }
+        break;
+    default:
+        if (state->timer++ > 30) {
+            flags |= 2;
+        }
+        break;
+    }
+    if (flags == 3) {
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025AD60);
 
