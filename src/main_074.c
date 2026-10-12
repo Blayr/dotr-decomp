@@ -1025,7 +1025,118 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C9E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025D230);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025D640);
+typedef struct Command_0025D640 {
+    s32 unk0;
+    s32 kind;
+    u32 flags;
+    u32 values;
+} Command_0025D640;
+
+typedef struct State_0025D640 {
+    u16 value;
+    u16 unk2;
+    u16 stage;
+    u8 ids[0xCE];
+    u8 count;
+    u8 padding[0x2D];
+    u16 timer;
+} State_0025D640;
+
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025D640(void *arg0, void *arg1, s32 arg2) {
+    s32 data[4];
+    s32 completed;
+    s32 *params = data;
+    s32 i;
+    Command_0025D640 *command = arg0;
+    State_0025D640 *state = arg1;
+
+    params[0] = 999;
+    params[1] = 0;
+    params[2] = 0;
+    params[3] = 0;
+    completed = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->value = 0x80;
+        if (func_0024E910(command->flags) == 1) {
+            func_00260AF0(0x10, func_0024EC50(command->flags, 0), 100, 180);
+        } else {
+            func_00260740(0x10);
+        }
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        func_00255AC0(arg1, 0x211);
+        return 1;
+    }
+
+    switch (state->stage) {
+    case 0:
+        if (state->value > 0x30) {
+            state->value -= 15;
+        } else {
+            state->value = 0x30;
+            if (func_00255B50(arg1) == 1) {
+                func_001E42C0(0, -120, 80, 0x106);
+                func_0025F720(arg0, arg1, params, 0x211);
+                state->stage++;
+            }
+        }
+        if (state->value < 0x30) {
+            state->value = 0x30;
+        }
+        func_001F6CF0((u8)state->value);
+        break;
+    case 1:
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->ids[i]) == 0) {
+                completed++;
+            }
+        }
+        if (completed >= state->count) {
+            func_001E4530();
+            completed = 0;
+            do {
+                if ((command->flags >> (21 - completed)) & 1) {
+                    if (completed < 11) {
+                        func_00250E80(0, completed, command->values >> 16, command->values & 0xFFFF);
+                        if (command->kind == 1) {
+                            func_00250CA0(0, completed, command->values >> 16, command->values & 0xFFFF);
+                        }
+                    } else {
+                        func_00250E80(1, completed - 11, command->values >> 16, command->values & 0xFFFF);
+                        if (command->kind == 1) {
+                            func_00250CA0(1, completed - 11, command->values >> 16, command->values & 0xFFFF);
+                        }
+                    }
+                }
+                completed++;
+            } while (completed < 22);
+            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            func_00260A70(arg1, 0x10);
+            state->stage++;
+        }
+        break;
+    default:
+        state->value += 15;
+        if (state->value > 0x80) {
+            state->value = 0x80;
+        }
+        func_001F6CF0((u8)state->value);
+        if (state->value == 0x80 && state->timer++ > 16 && func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025D9D0);
 
