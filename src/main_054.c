@@ -148,7 +148,6 @@ s32 func_001800D8(s32, s32, s32);
 s32 func_00180608(s32, s32, s32 *);
 s32 func_00191A58(s32);
 s32 func_00191D18(s32, s32, s32, void *);
-void func_001FFAC0(s32, s32);
 extern Progress_001FF480 D_00293CB0;
 extern char D_002D0648[];
 extern char D_002D064D[];
@@ -320,7 +319,87 @@ check:
     return bestIndex;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFAC0);
+typedef struct Flags_001FFAC0 {
+    s8 unused : 7;
+    s8 set : 1;
+} Flags_001FFAC0;
+
+typedef struct Entry_001FFAC0 {
+    s32 handle;
+    s16 id;
+    u8 pad06[9];
+    Flags_001FFAC0 flags0F;
+    u8 pad10[3];
+    Flags_001FFAC0 flags13;
+    void *allocation;
+    void (*callback)(void *, s32);
+    s32 unused1C;
+    void *extra;
+} Entry_001FFAC0;
+
+typedef struct Callback_001FFAC0 {
+    s32 handle;
+    void (*callback)(s32);
+} Callback_001FFAC0;
+
+typedef struct StateFlags_001FFAC0 {
+    s8 unused0 : 1;
+    s8 active : 1;
+    s8 unused2 : 6;
+} StateFlags_001FFAC0;
+
+typedef struct State_001FFAC0 {
+    u8 pad0000[0x4080];
+    Entry_001FFAC0 entries[256];
+    u8 pad6480[0x20C];
+    u16 index;
+    u16 count;
+    StateFlags_001FFAC0 flags;
+} State_001FFAC0;
+
+void func_0017FD20(s32);
+
+void func_001FFAC0(s32 arg0, s32 arg1) {
+    extern State_001FFAC0 D_0031C2F0;
+    extern void *func_001FFCB0();
+    extern void func_00217B50();
+    State_001FFAC0 *state;
+    Entry_001FFAC0 *entry;
+    Callback_001FFAC0 *callback;
+
+    state = &D_0031C2F0;
+    entry = &D_0031C2F0.entries[arg0];
+    if (entry->callback != NULL) {
+        entry->callback(entry, arg1);
+    }
+    if (entry->handle >= 0) {
+        if (entry->flags13.set == 0) {
+            func_0017FD20(entry->handle);
+        }
+        entry->handle = -1;
+    }
+    if (entry->extra != NULL) {
+        func_00217B50(entry->extra);
+        entry->extra = NULL;
+    }
+    if (arg1 == 0 && entry->flags0F.set != 0 && entry->allocation != NULL) {
+        func_00217B50(entry->allocation);
+    }
+    if (func_001FF360(entry->id, 0) == 0) {
+        if ((callback = func_001FFCB0(entry->id)) != NULL) {
+            if (callback->callback != NULL) {
+                callback->callback(entry->id);
+            }
+            callback->handle = -1;
+        }
+    }
+    if (state->index == arg0 && state->count != 0) {
+        if (--state->count > 0) {
+            state->index = (state->index + 1) % 256;
+        }
+    }
+    state->flags.active = 0;
+}
 
 typedef struct Entry_001FFC50 {
     s32 key;
