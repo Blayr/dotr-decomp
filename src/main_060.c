@@ -22,7 +22,44 @@ s32 func_00214FD0(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215060);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002151D0);
+typedef struct {
+    u16 entries[40];
+    u8 pad_50[4];
+} EntryList_002151D0;
+
+typedef struct {
+    u8 pad_0[0xFD94];
+    EntryList_002151D0 lists[6];
+    u8 pad_FF8C[0x14];
+} SideData_002151D0;
+
+extern u8 D_0034F6D0;
+
+s32 func_002151D0(s32 arg0, s32 arg1, s32 arg2) {
+    extern SideData_002151D0 D_0032F790[];
+    s32 i;
+    s32 side;
+    u16 *entries;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    entries = (u16 *)(arg1 * 0x54 + (u8 *)&D_0032F790[side] + 0xFD94);
+    if (arg0 < 0 || arg0 >= 2) {
+        return -1;
+    }
+    i = 0;
+    do {
+        if (arg2 == *entries) {
+            return i;
+        }
+        i++;
+        entries++;
+    } while (i < 40);
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215280);
 
