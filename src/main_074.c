@@ -1090,7 +1090,209 @@ s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00258760);
+void func_001E1E70(s32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+typedef struct Request_00258760 {
+    s32 command;
+    s32 field4;
+    s32 coord;
+    s32 fieldC;
+} Request_00258760;
+
+typedef struct Input_00258760 {
+    s32 command;
+    u32 value;
+    u32 field8;
+    s32 fieldC;
+} Input_00258760;
+
+typedef struct State_00258760 {
+    u16 coord;
+    u16 next;
+    u16 step;
+    u8 handles[0x1A];
+    s32 coords[0x2C];
+    u32 flags;
+    u8 count;
+    u8 padding[0x2D];
+    u16 timer;
+} State_00258760;
+
+s32 func_00258760(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1E10();
+    Request_00258760 requestData;
+    s32 i;
+    Request_00258760 *request = &requestData;
+    s32 second;
+    s32 first;
+    s32 j;
+    s32 k;
+    State_00258760 *walk;
+    s32 object;
+    s32 coord;
+    u8 handle;
+    Input_00258760 *input = arg0;
+    State_00258760 *state = arg1;
+
+    request->command = 999;
+    request->field4 = 0;
+    request->coord = 0;
+    request->fieldC = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->flags = func_00272210(input->field8, (u16)input->fieldC);
+        if ((first = func_0026AB80(input->fieldC, 0x4B)) >= 0) {
+            if ((second = func_0026AB80(input->fieldC == 0 ? 1 : 0, 0x2E)) >= 0) {
+                func_00260AF0(0, first, 0xB4, 0xB4);
+                func_002516D0(second >> 8, second & 0xFF, 1);
+                state->step = 0x20;
+                state->coord = second;
+                state->next = 0x24;
+                func_00255AC0(state, 0x25A);
+                func_00255AC0(state, 0x1FB);
+            } else {
+                func_00260AF0(0, second, 0xB4, 0xB4);
+                func_002516D0(first >> 8, first & 0xFF, 1);
+                state->step = 0x20;
+                state->coord = first;
+                state->next = 0x22;
+                func_00255AC0(state, 0x25A);
+                func_00255AC0(state, 0x25B);
+            }
+        } else {
+            func_00260490(input->value & 0xFF, input->value >> 8, 0, 0, 1, 0x12, 0xFF);
+            func_00260740(0x1E);
+            func_00255AC0(state, 0x1FB);
+            func_00255AC0(state, 0x25B);
+        }
+        return 1;
+    }
+    if (func_00255B50(state) != 1) {
+        return 1;
+    }
+    switch (state->step) {
+    case 0:
+        func_0025F720(input, state, request, 0x1FB);
+        state->step++;
+        break;
+    case 1:
+        for (i = 0, walk = state; i < state->count; walk = (State_00258760 *)((u8 *)walk + 4), i++) {
+            if (func_001F51D0(state->handles[i]) == 1 && func_001F52D0(state->handles[i]) == 2 && walk->coords[0] >= 0) {
+                if (func_0024EA10(walk->coords[0], state->flags) != 0) {
+                    request->command = 0x25B;
+                    request->field4 = 0;
+                    request->coord = walk->coords[0];
+                    request->fieldC = 1;
+                    handle = func_00255A30((s32 *)request, state);
+                    state->handles[state->count + i] = handle;
+                    if (handle >= 0) {
+                        state->coords[state->count + i] = walk->coords[0];
+                        state->next++;
+                        walk->coords[0] = -1;
+                    }
+                } else {
+                    object = func_0024DE70(walk->coords[0] >> 8, walk->coords[0] & 0xFF);
+                    coord = func_001E1090(object, 0);
+                    if (func_00271E40(walk->coords[0] >> 8, walk->coords[0] & 0xFF, 0xB) == 1) {
+                        func_00260490(coord & 0xFF, coord >> 8, 0, func_00271740(9, object), 1, 1, 0xB);
+                        func_001E42C0(0, -0x78, 0x50, 0x10E);
+                    }
+                    walk->coords[0] = -1;
+                }
+            }
+        }
+        for (j = 0; j < state->count + state->next; j++) {
+            if (func_001F51D0(state->handles[j]) == 1) {
+                return 1;
+            }
+        }
+        k = 0;
+        do {
+            if (((state->flags >> (0x15 - k)) & 1) == 1) {
+                if (k < 0xB) {
+                    func_0024F370(0, k);
+                } else {
+                    func_0024F370(1, k - 0xB);
+                }
+            }
+            k++;
+        } while (k < 0x16);
+        func_001E4530();
+        func_00260A70(state, 0x10);
+        state->timer = 0;
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        state->step++;
+        break;
+    case 2:
+        if (state->timer++ > 0x10) {
+            func_001E4530();
+            return 0;
+        }
+        break;
+    case 0x20:
+        if (func_001E1E10(state->coord >> 8, state->coord & 0xFF) != 0xFF) {
+            return 1;
+        }
+        if (state->next == 0x24) {
+            func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+        } else {
+            func_001E42C0(0, -0x78, 0x50, func_001DE210(0x334));
+        }
+        request->command = 0x25A;
+        request->field4 = 0;
+        request->coord = state->coord;
+        request->fieldC = 0;
+        state->handles[state->count] = func_00255A30((s32 *)request, state);
+        state->count++;
+        state->step++;
+        break;
+    case 0x21:
+        if (func_001F51D0(state->handles[state->count - 1]) == 1) {
+            return 1;
+        }
+        func_001E1E70(state->coord >> 8, state->coord & 0xFF, 0, 1);
+        func_001E4530();
+        state->step = state->next;
+        break;
+    case 0x22:
+        request->command = 0x25B;
+        request->field4 = 0;
+        request->coord = state->coord;
+        request->fieldC = 0;
+        state->handles[state->count] = func_00255A30((s32 *)request, state);
+        state->count++;
+        state->next = 0x23;
+        state->step = 0x21;
+        break;
+    case 0x23:
+        func_0024F370(state->coord >> 8, state->coord & 0xFF);
+        func_00260A70(state, 0x10);
+        state->timer = 0;
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        state->step = 2;
+        break;
+    case 0x24:
+        state->count = 0;
+        state->next = 0;
+        func_00260740(0x1E);
+        func_0025F720(input, state, request, 0x1FB);
+        state->step = 1;
+        return 1;
+    default:
+        return 1;
+    }
+    return 1;
+}
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_002516D0(s32, s32, s32);
