@@ -90,7 +90,6 @@ typedef struct Flags_001FF420 {
     s8 remaining : 6;
 } Flags_001FF420;
 
-s32 func_001FF9C0(void);
 
 s32 func_001FF420(void) {
     extern State_001FF420 D_0031C2F0;
@@ -264,7 +263,62 @@ s32 func_001FF480(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF9C0);
+typedef struct {
+    s32 state;
+    s16 unknown;
+    s16 priority;
+    u8 padding[0x1C];
+} Entry_001FF9C0;
+
+typedef struct {
+    u8 padding[0x4080];
+    Entry_001FF9C0 entries[256];
+    u8 padding2[0x20C];
+    u16 head;
+    u16 count;
+} Queue_001FF9C0;
+
+s32 func_001FF9C0(void) {
+    extern Queue_001FF9C0 D_0031C2F0;
+    Queue_001FF9C0 *queue = &D_0031C2F0;
+    s32 bestIndex = -1;
+    s32 bestPriority = -1;
+    s32 i;
+    s32 index;
+    s32 count;
+
+    while (queue->count != 0) {
+        if (queue->entries[queue->head].state >= 0) {
+            break;
+        }
+        if (--queue->count > 0) {
+            queue->head = (queue->head + 1) % 256;
+        }
+    }
+
+    count = queue->count & 0xFFFF;
+    i = 0;
+    goto check;
+loop:
+    {
+        Entry_001FF9C0 *entry;
+
+        index = (queue->head + i) % 256;
+        entry = &queue->entries[index];
+        if (entry->state >= 0) {
+            if (bestPriority < entry->priority) {
+                bestPriority = entry->priority;
+                bestIndex = index;
+            }
+        }
+        i++;
+    }
+check:
+    if (i < count) {
+        goto loop;
+    }
+    return bestIndex;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFAC0);
 
