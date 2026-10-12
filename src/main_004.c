@@ -693,7 +693,209 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F940);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010FA60);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010FFF0);
+typedef struct Source_0010FFF0 {
+    u16 position;
+    u8 pad2[6];
+    u32 targets;
+} Source_0010FFF0;
+
+typedef struct Result_0010FFF0 {
+    u16 position;
+    u8 kind;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 action;
+    u8 valid;
+} Result_0010FFF0;
+
+typedef struct Coord_0010FFF0 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_0010FFF0;
+
+s32 func_0010EE00(s32, s32, void *);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+
+static inline u32 target_0010FFF0(void *src, u8 mode) {
+    if (mode == 1) {
+        return (u16)(((Source_0010FFF0 *)src)->targets >> 16);
+    }
+    return *(u16 *)((u8 *)src + 8);
+}
+
+static inline s32 flag_0010FFF0(s32 card) {
+    if (func_001DF470(card) > 0x5DC) {
+        if (func_001E0150(card) >= 4) {
+            return 0;
+        } else {
+            return 0;
+        }
+    } else {
+        return 0;
+    }
+}
+
+static inline s32 distance_0010FFF0(s32 x1, s32 y1, s32 x2, s32 y2) {
+    return ((x2 < x1 ? x1 : x2) - (x1 < x2 ? x1 : x2)) +
+           ((y2 < y1 ? y1 : y2) - (y1 < y2 ? y1 : y2));
+}
+
+static inline s32 closer_0010FFF0(Coord_0010FFF0 *candidate, Coord_0010FFF0 *best, s32 x, s32 y) {
+    s32 bestMinY = best->y < y ? best->y : y;
+    s32 bestMaxY = y < best->y ? best->y : y;
+    s32 bestMinX = best->x < x ? best->x : x;
+    s32 bestMaxX = x < best->x ? best->x : x;
+    s32 candidateMinY = candidate->y < y ? candidate->y : y;
+    s32 candidateMaxY = y < candidate->y ? candidate->y : y;
+    s32 candidateMinX = candidate->x < x ? candidate->x : x;
+    s32 candidateMaxX = x < candidate->x ? candidate->x : x;
+
+    return (candidateMaxX - candidateMinX) + (candidateMaxY - candidateMinY) <
+           (bestMaxX - bestMinX) + (bestMaxY - bestMinY);
+}
+
+static inline s32 special_0010FFF0(void *src, s32 x1, s32 y1, s32 x2, s32 y2) {
+    s32 x;
+    s32 y;
+    extern s32 func_001E1030();
+
+    x = ((Source_0010FFF0 *)src)->position & 0xFF;
+    y = (s32)((Source_0010FFF0 *)src)->position >> 8;
+    if (distance_0010FFF0(x1, y1, x2, y2) != 2) {
+        return 0;
+    } else if (func_001DF540(y, x) == 0) {
+        return 0;
+    } else if (func_001E1030(y, x) == 0x1A1) {
+        return 0;
+    } else if (func_001E2100(y, x, 0) == 0 &&
+               func_0024DF00(func_001E22B0(x1, y1), y, x) == 1) {
+    } else {
+        return 0;
+    }
+    return 1;
+}
+
+s32 func_0010FFF0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    s32 start;
+    s32 best;
+    s32 count;
+    s32 action;
+    s32 bestCost;
+    Coord_0010FFF0 coords[12];
+    s32 initial;
+    s32 end;
+    s32 i;
+    Coord_0010FFF0 *p;
+    u32 targetPosition;
+    extern void func_0027A090();
+    extern s32 func_0027AFC0();
+
+    targetPosition = target_0010FFF0(arg0, arg3);
+    if (func_001DF540(target_0010FFF0(arg0, arg3) >> 8,
+                     targetPosition & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    }
+    initial = func_0010EE00((s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                          ((Source_0010FFF0 *)arg0)->position & 0xFF, arg0);
+    start = func_001E1090((s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                         ((Source_0010FFF0 *)arg0)->position & 0xFF);
+    targetPosition = target_0010FFF0(arg0, arg3);
+    end = func_001E1090(target_0010FFF0(arg0, arg3) >> 8,
+                       targetPosition & 0xFF);
+    p = coords;
+    i = 0;
+    do {
+        p->x = p->y = 15;
+        i++;
+        p++;
+    } while (i < 12);
+    if (func_002464F0(func_001DF540((s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                                   ((Source_0010FFF0 *)arg0)->position & 0xFF),
+                     (start & 0xFF), (start >> 8)) == 0) {
+        s32 cost;
+        ((Result_0010FFF0 *)arg2)->position = ((Source_0010FFF0 *)arg0)->position;
+        ((Result_0010FFF0 *)arg2)->kind = 6;
+        ((Result_0010FFF0 *)arg2)->destination = start;
+        cost = func_00276CC0((start & 0xFF), (start >> 8), arg1, 3, 1, (u8)flag_0010FFF0(arg1));
+        if (cost >= func_002509E0((s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                                 ((Source_0010FFF0 *)arg0)->position & 0xFF, (start & 0xFF), (start >> 8))) {
+            ((Result_0010FFF0 *)arg2)->valid = 1;
+        } else {
+            ((Result_0010FFF0 *)arg2)->valid = 0;
+        }
+        return 0;
+    } else {
+        s32 flag;
+        flag = flag_0010FFF0(arg1);
+        func_0027A090((s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                     ((Source_0010FFF0 *)arg0)->position & 0xFF, coords,
+                     (start & 0xFF), (start >> 8), (end & 0xFF), (end >> 8), target_0010FFF0(arg0, arg3),
+                     0, 30, (u16)flag);
+        count = func_0027AFC0(coords);
+        if (count > 0) {
+            bestCost = 0xFFFF;
+            best = 0xFF;
+            action = 0;
+            for (i = 0; i < count; i++) {
+                if (special_0010FFF0(arg0, (start & 0xFF), (start >> 8), (end & 0xFF), (end >> 8)) == 1) {
+                    action = 1;
+                    p = &coords[i];
+                    best = i;
+                    i = count;
+                    p->x = (end & 0xFF);
+                    p->y = (end >> 8);
+                } else {
+                    s32 cost;
+                    cost = func_00276CC0(coords[i].x, coords[i].y, arg1, 2, 1,
+                                        (u8)flag_0010FFF0(arg1));
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        best = i;
+                    } else if (cost == bestCost) {
+                        if (closer_0010FFF0(&coords[i], &coords[best], (end & 0xFF), (end >> 8))) {
+                            bestCost = cost;
+                            best = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            ((Result_0010FFF0 *)arg2)->position = ((Source_0010FFF0 *)arg0)->position;
+            ((Result_0010FFF0 *)arg2)->kind = 6;
+            ((Result_0010FFF0 *)arg2)->destination = start;
+            ((Result_0010FFF0 *)arg2)->action = initial;
+            ((Result_0010FFF0 *)arg2)->valid = func_0027E360(
+                (s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                ((Source_0010FFF0 *)arg0)->position & 0xFF,
+                ((Result_0010FFF0 *)arg2)->destination, 0, 0);
+            return 0;
+        }
+        if (best != 0xFF) {
+            ((Result_0010FFF0 *)arg2)->position = ((Source_0010FFF0 *)arg0)->position;
+            ((Result_0010FFF0 *)arg2)->kind = 6;
+            ((Result_0010FFF0 *)arg2)->destination = (coords[best].y << 8) | coords[best].x;
+            ((Result_0010FFF0 *)arg2)->action = action;
+            ((Result_0010FFF0 *)arg2)->valid = func_0027E360(
+                (s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                ((Source_0010FFF0 *)arg0)->position & 0xFF,
+                ((Result_0010FFF0 *)arg2)->destination, 0, 0);
+        } else {
+            ((Result_0010FFF0 *)arg2)->position = ((Source_0010FFF0 *)arg0)->position;
+            ((Result_0010FFF0 *)arg2)->kind = 6;
+            ((Result_0010FFF0 *)arg2)->destination = start;
+            ((Result_0010FFF0 *)arg2)->action = action;
+            ((Result_0010FFF0 *)arg2)->valid = func_0027E360(
+                (s32)((Source_0010FFF0 *)arg0)->position >> 8,
+                ((Source_0010FFF0 *)arg0)->position & 0xFF,
+                ((Result_0010FFF0 *)arg2)->destination, 0, 0);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_001106F0);
 
