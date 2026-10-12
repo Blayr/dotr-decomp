@@ -287,7 +287,6 @@ void func_0020BCF0(s32, s32);
 s32 func_002626F0(s32, s32, s32);
 
 extern u8 D_0029D580[];
-s32 func_00250A60(s32, u8, u8);
 
 void func_002798C0(s32, s32, s32, s32, s32, s32);
 
