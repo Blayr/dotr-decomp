@@ -1091,6 +1091,7 @@ s32 func_00205150(void);
 s32 func_00205160(void);
 s32 func_002051F0(void);
 s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3);
+s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4);
 f32 func_00205C40(s32 arg0);
 void func_00205C90(s32 arg0);
 void func_00205CA0(s32 arg0);

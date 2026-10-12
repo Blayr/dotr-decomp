@@ -531,7 +531,75 @@ s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205630);
+typedef union Vertex_00205630 {
+    struct {
+        u16 x;
+        u16 y;
+        u32 zflags;
+    } coords;
+    struct {
+        u64 x : 16;
+        u64 y : 16;
+        u64 z : 24;
+        u64 flags : 8;
+    } bits;
+} Vertex_00205630;
+
+void func_0020CF00(s32, s32, s32, s32);
+void func_0020EB40(void *);
+
+s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
+    extern s64 func_001A23B0(f32);
+    f32 matrix[4][4];
+    f32 *input = (f32 *)arg0;
+    Vertex_00205630 *vertex = (Vertex_00205630 *)(arg3 + 0x10);
+    u64 *tags = (u64 *)(arg3 + 8);
+    u64 flags = *tags;
+    s32 count = 0;
+    u16 length = *(u16 *)arg3;
+    f32 sum = 0.0f;
+    s32 i;
+
+    if (arg2 == 0) {
+        func_0020EB40(matrix);
+        arg2 = (s32)matrix;
+    }
+    for (i = 0; i < length; i++, flags >>= 4) {
+        if ((flags & 0xF) == 4) {
+            input[3] = 1.0f;
+            input += 4;
+            count++;
+        }
+    }
+    func_0020BAF0(arg2);
+    func_0020CF00(arg1, 0, arg0, count);
+    func_0020BB50();
+
+    flags = *tags;
+    for (i = 0; i < length; i++, vertex++, flags >>= 4) {
+        if ((flags & 0xF) == 4) {
+            f32 *output = (f32 *)arg1;
+            f32 reciprocal = 1.0f / output[3];
+            output[0] *= reciprocal;
+            output[1] *= reciprocal;
+            output[2] *= reciprocal;
+            if (output[2] < 1.0f || !(output[2] <= 16777215.0f) ||
+                output[0] < 0.0f || !(output[0] <= 4095.0f) ||
+                output[1] < 0.0f || !(output[1] <= 4095.0f)) {
+                return 0;
+            }
+            vertex->coords.x = func_001A23B0(16.0f * output[0]);
+            vertex->coords.y = func_001A23B0(16.0f * output[1]);
+            vertex->bits.z = func_001A23B0(output[2]);
+            sum += output[3];
+            arg1 += 0x10;
+        }
+    }
+    if (arg4 != NULL) {
+        *arg4 = sum / (f32)count;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002058D0);
 
