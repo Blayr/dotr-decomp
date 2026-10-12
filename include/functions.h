@@ -16,6 +16,7 @@ void func_00100C60(void *arg0, void *arg1, s32 arg2, s32 arg3);
 s32 func_00100D00(s32 arg0);
 f32 func_00100D50(s32 arg0, s32 arg1, s32 arg2);
 void func_00100E00(s32 arg0, s32 arg1, s32 arg2);
+void func_00100E40(void *matrix, f32 *vector);
 f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2);
 f32 func_00101020(f32 fparg0, f32 fparg1);
 s32 func_00101050(s32 arg0, s32 arg1, s32 arg2);

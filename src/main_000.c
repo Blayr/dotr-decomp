@@ -323,7 +323,37 @@ void func_00100E00(s32 arg0, s32 arg1, s32 arg2) {
     func_0020CB90(arg0, words);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100E40);
+#ifndef GAME_H
+/* The game translation unit already declares this global with its local type. */
+typedef struct {
+    unsigned int values[4];
+} Config_00100E00;
+
+extern Config_00100E00 D_0028C210;
+#endif
+
+
+void func_0020BBB0(void *);
+void func_0020CB90(s32, u32 *);
+
+void func_00100E40(void *matrix, f32 *vector) {
+    Config_00100E00 rotationZ;
+    Config_00100E00 rotationY;
+    f32 xSquared;
+    s64 angleZ;
+    s64 angleY;
+
+    func_0020BBB0(matrix);
+    angleZ = func_001A22C0(65536.0f * (func_001A6C18(vector[1], vector[0]) / 6.2831855f));
+    rotationZ = D_0028C210;
+    ((s32 *)&rotationZ)[2] = angleZ & 0xFFFF;
+    func_0020CB90((s32)matrix, (u32 *)&rotationZ);
+    xSquared = func_001A6C48(vector[0], 2.0f);
+    angleY = func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(xSquared + func_001A6C48(vector[1], 2.0f)), vector[2]) / 6.2831855f));
+    rotationY = D_0028C210;
+    ((s32 *)&rotationY)[1] = angleY & 0xFFFF;
+    func_0020CB90((s32)matrix, (u32 *)&rotationY);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100F60);
 
