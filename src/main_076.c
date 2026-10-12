@@ -976,7 +976,101 @@ s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026BE20);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026BF50);
+typedef struct {
+    u8 pad0[4];
+    s32 field_4;
+    u32 field_8;
+    s32 field_C;
+} Object_0026BF50;
+
+typedef struct {
+    u8 pad0[4];
+    u16 state;
+    u8 id;
+    u8 pad7;
+    u8 pad8[0xFA];
+    u16 counter;
+} State_0026BF50;
+
+typedef struct {
+    s32 field_0;
+    s32 field_4;
+    u32 field_8;
+    s32 field_C;
+} Temp_0026BF50;
+
+void func_001E1E70();
+void func_0024F370();
+void func_002516D0();
+u8 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+
+s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1030();
+    extern s32 func_001E1E10();
+    Temp_0026BF50 tempStorage;
+    Temp_0026BF50 *temp = &tempStorage;
+    State_0026BF50 *state;
+    Object_0026BF50 *obj = (Object_0026BF50 *)arg0;
+
+    temp->field_0 = 0x3E7;
+    temp->field_4 = 0;
+    temp->field_8 = 0;
+    temp->field_C = 0;
+
+    state = (State_0026BF50 *)arg1;
+
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_002516D0(obj->field_8 >> 8, obj->field_8 & 0xFF, 1);
+        func_00260AF0(0, obj->field_8, 0xB4, 0xB4);
+        func_00255AC0(state, 0x25A);
+        return 1;
+    }
+
+    switch (state->state) {
+    case 0:
+        if (func_001E1E10(obj->field_8 >> 8, obj->field_8 & 0xFF) == 0xFF) {
+            if (func_00255B50(state) == 1) {
+                if (obj->field_4 == 1) {
+                    s32 value = func_001E1030(obj->field_8 >> 8, obj->field_8 & 0xFF);
+                    func_001E42C0(0, -0x78, 0x50, func_001DE210(value));
+                } else {
+                    func_001E42C0(0, -0x78, 0x50, 0x10D);
+                }
+                temp->field_0 = 0x25A;
+                temp->field_4 = 0;
+                temp->field_8 = obj->field_8;
+                temp->field_C = 0;
+                state->id = func_00255A30((s32 *)temp, state);
+                state->state++;
+            }
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->id) != 0) {
+            return 1;
+        }
+        func_001E1E70(obj->field_8 >> 8, obj->field_8 & 0xFF, 0, 1);
+        func_001E4530();
+        func_00260A70(state, 0x10);
+        if (obj->field_C != 0) {
+            func_0024F370(obj->field_8 >> 8, obj->field_8 & 0xFF);
+        } else {
+            func_001F5970(obj->field_8, 0);
+        }
+        state->state++;
+        return 1;
+    default:
+        if (state->counter++ > 0x10) {
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026C170);
 
