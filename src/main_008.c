@@ -1644,7 +1644,180 @@ INCLUDE_ASM("asm/nonmatchings/main_008", func_00133320);
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_001336A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00133BE0);
+s32 func_00134B40(s32, s32, void *);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+typedef struct Input_00133BE0 {
+    u16 position;
+    u8 pad2[6];
+    u32 destinations;
+} Input_00133BE0;
+
+typedef struct Output_00133BE0 {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 flag;
+    u8 result;
+} Output_00133BE0;
+
+typedef struct Position_00133BE0 {
+    u8 x : 4;
+    u8 y : 4;
+} Position_00133BE0;
+
+static inline u32 destination_00133BE0(void *input, s32 mode) {
+    if (mode == 1) {
+        return (u16)(((Input_00133BE0 *)input)->destinations >> 16);
+    }
+    return (u16)((Input_00133BE0 *)input)->destinations;
+}
+
+static inline s32 minimum_00133BE0(s32 a, s32 b) {
+    return a > b ? b : a;
+}
+
+static inline s32 maximum_00133BE0(s32 a, s32 b) {
+    return b < a ? a : b;
+}
+
+s32 func_00133BE0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_0027A090();
+    Position_00133BE0 positions[12];
+    s32 start;
+    s32 card;
+    s32 count;
+    s32 startY;
+    s32 startX;
+    s32 flag;
+    s32 target;
+    s32 targetX;
+    Position_00133BE0 *current;
+    s32 initialFlag;
+    s32 sourcePosition;
+    s32 mode = arg3;
+    s32 candidate;
+    s32 i;
+    s32 bestScore;
+    s32 bestIndex;
+    u32 positionX;
+    u32 positionY;
+    Input_00133BE0 *input = arg0;
+    Output_00133BE0 *output = arg2;
+
+    positionX = destination_00133BE0(arg0, mode);
+    positionY = destination_00133BE0(arg0, mode);
+    if (func_001DF540(positionY >> 8, positionX & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    }
+    initialFlag = func_00134B40(input->position >> 8, input->position & 0xFF, arg0);
+    start = func_001E1090(input->position >> 8, input->position & 0xFF);
+    positionX = destination_00133BE0(arg0, mode);
+    positionY = destination_00133BE0(arg0, mode);
+    target = func_001E1090(positionY >> 8, positionX & 0xFF);
+    for (i = 0; i < 12; i++) {
+        positions[i].x = positions[i].y = 15;
+    }
+    card = func_001DF540(input->position >> 8, input->position & 0xFF);
+    startX = start & 0xFF;
+    startY = start >> 8;
+    if (func_002464F0(card, startX, startY) == 0) {
+        s32 score;
+        output->position = input->position;
+        output->action = 6;
+        output->destination = start;
+        score = func_00276CC0(startX, startY, arg1, 3, 1, (u8)func_00134AE0(arg1));
+        if (score >= func_001E0290(input->position >> 8, input->position & 0xFF, 0)) {
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF, output->destination, 1, 0);
+        } else {
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF, output->destination, 0, 0);
+        }
+        func_0027B1B0(arg0, arg3);
+    } else {
+        s32 sourceX;
+        s32 sourceY;
+        u16 leader;
+        sourcePosition = input->position;
+        leader = (u16)func_00134AE0(arg1);
+        sourceY = sourcePosition >> 8;
+        sourceX = sourcePosition & 0xFF;
+        targetX = target & 0xFF;
+        func_0027A090(sourceY, sourceX, positions,
+                     startX, startY, targetX, target >>= 8, destination_00133BE0(arg0, mode),
+                     0, 30, leader);
+        count = func_0027AFC0((u8 *)positions);
+        bestIndex = 0xFF;
+        if (count > 0) {
+            flag = 0;
+            bestScore = 0xFFFF;
+            for (candidate = 0; candidate < count; candidate++) {
+                if (func_00134F00(input->position >> 8, input->position & 0xFF,
+                                 startX, startY, targetX, target) == 1) {
+                    bestIndex = candidate;
+                    flag = 1;
+                    positions[candidate].x = targetX;
+                    positions[candidate].y = target;
+                    candidate = count;
+                } else {
+                    s32 score;
+                    current = &positions[candidate];
+                    score = func_00276CC0(current->x, current->y, arg1,
+                                         4, 1, (u8)func_00134AE0(arg1));
+                    if (score < bestScore) {
+                        bestScore = score;
+                        bestIndex = candidate;
+                    } else if (score == bestScore) {
+                        Position_00133BE0 *best = &positions[bestIndex];
+                        s32 bestMinY = (best->y < target ? best->y : target);
+                        s32 bestMaxY = maximum_00133BE0(best->y, target);
+                        s32 bestMinX = (best->x < targetX ? best->x : targetX);
+                        s32 bestMaxX = maximum_00133BE0(best->x, targetX);
+                        s32 currentMinY = (current->y < target ? current->y : target);
+                        s32 currentMaxY = maximum_00133BE0(current->y, target);
+                        s32 currentMinX = (current->x < targetX ? current->x : targetX);
+                        s32 currentMaxX = maximum_00133BE0(current->x, targetX);
+                        if ((currentMaxX - currentMinX) + (currentMaxY - currentMinY) <
+                            (bestMaxX - bestMinX) + (bestMaxY - bestMinY)) {
+                            bestScore = score;
+                            bestIndex = candidate;
+                        }
+                    }
+                }
+            }
+        } else {
+            output->position = input->position;
+            output->action = 6;
+            output->destination = start;
+            output->flag = initialFlag;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                          output->destination, 0, 0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+        if (bestIndex != 0xFF) {
+            output->position = input->position;
+            output->action = 6;
+            output->destination = (positions[bestIndex].y << 8) | positions[bestIndex].x;
+            output->flag = flag;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                          output->destination, 0, 0);
+        } else {
+            output->position = input->position;
+            output->action = 6;
+            output->destination = start;
+            output->flag = flag;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                          output->destination, 0, 0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_001341C0);
 
