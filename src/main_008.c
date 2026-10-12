@@ -560,7 +560,70 @@ s32 func_00130E90(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00131060);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00131540);
+void func_0027CA50(void *arg0, s32 arg1, s32 arg2, s32 arg3);
+
+typedef struct {
+    u16 card;
+    u8 pad2[2];
+    u16 result;
+    u8 pad6[2];
+    s32 flags;
+} Data_00131540;
+
+s32 func_00131540(void *arg0) {
+    Data_00131540 *data = (Data_00131540 *)arg0;
+    s32 temp = func_00250360((s32)data->card >> 8, data->card & 0xFF);
+    u16 value = data->card;
+
+    if (func_001DF540((s32)value >> 8, value & 0xFF) != 0) {
+        value = data->card;
+        if (func_001E2100((s32)value >> 8, value & 0xFF, 0) == 0) {
+            value = data->card;
+            if (value != 0xFFFF) {
+                if ((value & 0xFF) == 0) {
+                    if (data->flags == -1) {
+                        if (func_0027BBC0((s32)value >> 8, value & 0xFF, 0) == 1) {
+                            if (func_001DE6D0((s32)data->card >> 8) == 1) {
+                                data->result = 0x50A;
+                            } else {
+                                data->result = 0x5FF;
+                            }
+                        } else if (func_001DE6D0((s32)data->card >> 8) == 1) {
+                            data->result = 0xA06;
+                            data->flags = (data->flags & 0xFFFF0000) |
+                                (func_001E1090(temp == 0 ? 1 : 0, 0) & 0xFF);
+                        } else {
+                            data->result = 0x6FF;
+                            data->flags = *(u16 *)&data->flags |
+                                ((func_001E1090(temp == 0 ? 1 : 0, 0) & 0xFF) << 16);
+                        }
+                    }
+                } else {
+                    s32 type = func_001E0700((s32)value >> 8, value & 0xFF) >> 5;
+
+                    switch (type) {
+                    case 0:
+                        func_00131B30(arg0, 1);
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 4, 0, func_00134AE0(temp) & 0xFF);
+                        break;
+                    case 1:
+                    case 3:
+                        func_00132280(arg0);
+                        break;
+                    default:
+                        data->result = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
 
 s32 func_00131750(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
