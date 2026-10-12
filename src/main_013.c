@@ -98,7 +98,103 @@ void func_00154210(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00154220);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_001547A0);
+typedef struct State_001547A0 {
+    u16 id;
+    u16 pad2;
+    u16 action;
+    u16 pad6;
+    union {
+        s32 all;
+        struct {
+            u16 lo;
+            u16 hi;
+        } h;
+    } data;
+} State_001547A0;
+
+void func_00154EB0(void *);
+void func_00155070(void *);
+void func_00155230(void *);
+
+s32 func_001547A0(void *arg0) {
+    extern s32 func_001E1030();
+    State_001547A0 *state = arg0;
+    s32 card;
+    s32 other;
+
+    func_001E1090((s32)state->id >> 8, state->id & 0xFF);
+    card = func_00250360((s32)state->id >> 8, state->id & 0xFF);
+    if (func_001DF540((s32)state->id >> 8, state->id & 0xFF) != 0) {
+        if (func_001E2100((s32)state->id >> 8, state->id & 0xFF, 0) == 0) {
+            if (state->id != 0xFFFF) {
+                if ((state->id & 0xFF) == 0) {
+                    if (state->data.all == -1) {
+                        if (func_0027BBC0((s32)state->id >> 8, state->id & 0xFF, 0) == 1) {
+                            if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                                state->action = 0x50A;
+                            } else {
+                                state->action = 0x5FF;
+                            }
+                        } else {
+                            if ((other = func_001E3790(3, 5)) < 0) {
+                                if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                                    state->action = 0xA06;
+                                    state->data.all = (state->data.all & 0xFFFF0000) | 0x403;
+                                } else {
+                                    state->action = 0x6FF;
+                                    state->data.all = (u16)state->data.all | 0x04030000;
+                                }
+                            } else {
+                                if (func_001E1090((s32)state->id >> 8, state->id & 0xFF) == 0x403 &&
+                                    card == func_00250360(other >> 8, other & 0xFF) && other != state->id) {
+                                    if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                                        state->action = 0x20A;
+                                        state->data.all = (other << 16) | state->data.h.lo;
+                                    } else {
+                                        state->action = 0x2FF;
+                                        state->data.all = (other << 16) | state->data.h.lo;
+                                    }
+                                } else {
+                                    if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                                        state->action = 0xA06;
+                                        state->data.all = (state->data.all & 0xFFFF0000) | 0x403;
+                                    } else {
+                                        state->action = 0x6FF;
+                                        state->data.all = (u16)state->data.all | 0x04030000;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    other = func_001E0700((s32)state->id >> 8, state->id & 0xFF);
+                    card = func_001E1030((s32)state->id >> 8, state->id & 0xFF);
+                    switch (other >> 5) {
+                    case 0:
+                        if (func_002507D0((s32)state->id >> 8, state->id & 0xFF) == 1 ||
+                            func_001587E0(card) == 1) {
+                            func_00155070(arg0);
+                        } else {
+                            func_00154EB0(arg0);
+                        }
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        func_00155230(arg0);
+                        break;
+                    default:
+                        state->action = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00154AD0(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;

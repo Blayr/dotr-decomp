@@ -598,7 +598,6 @@ extern Q128_0020F290 D_00325EF0;
 extern u64 D_00326180;
 void func_00187810(void *, s32);
 
-void func_001547A0(void *);
 s32 func_00155770(s32 arg0, s32 arg1, s32 arg2);
 void func_00167D30(void *);
 
