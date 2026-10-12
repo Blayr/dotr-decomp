@@ -277,7 +277,52 @@ s32 func_00215C40(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215DE0);
+typedef struct Card_00215DE0 {
+    u8 padding[0x48];
+    u16 rank : 14;
+    u16 flags : 2;
+    u16 experience;
+} Card_00215DE0;
+
+extern u16 D_002D0868;
+extern u8 D_0034F6D0;
+
+s32 func_00215DE0(s32 player, s32 index) {
+    s32 side;
+    u8 *base;
+    Card_00215DE0 *card;
+    s32 rank;
+    u16 *threshold;
+
+    if (D_0034F6D0 == player) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    base = (u8 *)D_0032F790 + side * 0xFFA0;
+    if (player < 0 || player >= 2) {
+        return -1;
+    }
+    if (index == 0x29F) {
+        index = 0x3E7;
+    }
+    if (index < 0 || index >= 0x2AB) {
+        return -1;
+    }
+    card = (Card_00215DE0 *)(base + index * sizeof(Card_00215DE0));
+    rank = 12;
+    threshold = &D_002D0868;
+    for (; rank >= 0; rank--, threshold--) {
+        if (card->experience >= *threshold) {
+            break;
+        }
+    }
+    if (card->rank != 0) {
+        rank = rank > 1 ? rank : 1;
+    }
+    card->rank = rank;
+    return card->rank;
+}
 
 typedef struct {
     u8 padding[0x52];
