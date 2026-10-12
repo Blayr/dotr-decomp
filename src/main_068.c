@@ -165,7 +165,6 @@ typedef struct State_0023C770 {
 
 void func_0023C170(s32);
 s32 func_0023F130(s32);
-s32 func_0023F340(void);
 s32 func_0023F5A0(void);
 extern struct State_0023E610 D_0034FB00;
 
@@ -232,7 +231,6 @@ typedef struct State_0023C8B0 {
 
 void func_0023C170(s32);
 s32 func_0023F130(s32);
-s32 func_0023F340(void);
 s32 func_0023FF30(void);
 extern struct State_0023E610 D_0034FB00;
 
@@ -530,7 +528,115 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E7A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023F130);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023F340);
+typedef struct {
+    s32 result;
+    s32 status;
+    s32 input0;
+    s32 input1;
+    u8 pad_10[0x10];
+    s32 event;
+    s32 value;
+    u8 pad_28[8];
+    s16 action;
+    u8 pad_32[2];
+    s16 mode;
+    u8 pad_36[0xA];
+    s16 attempts;
+    u8 pad_42[0x1E];
+    s32 input2;
+    u8 pad_64[0x1C];
+    u8 pad_80[0x240];
+} State_0023F340;
+
+extern s16 D_0034FB34;
+extern u8 D_0029B100[];
+extern u8 D_0029B1BE[];
+
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194578(s32, s32, void *, u32, s32, void *);
+s32 func_00194758(s32, s32, void *, void *);
+
+s32 func_0023F340(void) {
+    extern struct State_0023E610 D_0034FB00;
+    State_0023F340 *state = (State_0023F340 *)&D_0034FB00;
+
+    switch (D_0034FB34) {
+    case 0:
+    state->result = func_00194758(state->input0, state->input1,
+                                 D_0029B100, (u8 *)state + 0x2C0);
+    state->status = func_00194248(1, &state->event, &state->value);
+    if (state->status == 1 && state->event == 0xC) {
+        switch (state->value) {
+        case 0:
+            state->mode = 1;
+            state->attempts = 0;
+            return 0;
+        case -2:
+            state->attempts++;
+            if (state->attempts >= 3) {
+                state->action = 3;
+                state->mode = 0;
+                state->attempts = 3;
+                return 3;
+            }
+            return 0;
+        case -4:
+            state->action = 3;
+            state->mode = 0;
+            state->attempts = 0;
+            return 7;
+        default:
+            state->action = 3;
+            state->mode = 0;
+            state->attempts = 0;
+            return 2;
+        }
+    } else {
+        return 0;
+    }
+    break;
+
+    case 1:
+    state->result = func_00194578(state->input0, state->input1,
+                                 D_0029B1BE, state->input2, 1,
+                                 (u8 *)state + 0x80);
+    state->status = func_00194248(1, &state->event, &state->value);
+    if (state->status == 1 && state->event == 0xD) {
+            if (state->value < 0) {
+                switch (state->value) {
+                case -2:
+                    state->attempts++;
+                    if (state->attempts >= 3) {
+                        state->action = 3;
+                        state->mode = 0;
+                        state->attempts = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    state->action = 3;
+                    state->mode = 0;
+                    state->attempts = 0;
+                    return 10;
+                default:
+                    state->action = 3;
+                    state->attempts = 0;
+                    state->mode = 0;
+                    return 2;
+                }
+            }
+            state->action = 2;
+            state->mode = 0;
+            return 9;
+    } else {
+        return 0;
+    }
+    break;
+
+    default:
+        return 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023F5A0);
 
