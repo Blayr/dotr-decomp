@@ -391,7 +391,51 @@ s32 func_0010F220(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F290);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F450);
+s32 func_0010F450(s32 arg0, u8 *arg1, void *arg2) {
+    s32 entries[5];
+    s32 i;
+
+    func_0026FD30(arg0, entries);
+    if (arg2 == NULL) {
+        return -1;
+    }
+    for (i = 0; i < 5; i++) {
+        arg1[i + 6] = 0xFF;
+    }
+
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(entries[i]) >> 5) == 5 && func_0010F940(arg0, entries[i]) == 1) {
+            arg1[6] = i;
+            func_001DCD70(arg2, entries[i]);
+            return 1;
+        }
+    }
+
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(entries[i]) >> 5) == 3 || (func_0026FCE0(entries[i]) >> 5) == 4) {
+            arg1[6] = i;
+            func_001DCD70(arg2, entries[i]);
+            return 1;
+        }
+    }
+
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(entries[i]) >> 5) != 0 && (func_0026FCE0(entries[i]) >> 5) != 2) {
+            arg1[6] = i;
+            func_001DCD70(arg2, entries[i]);
+            return 1;
+        }
+    }
+
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(entries[i]) >> 5) != 0) {
+            arg1[6] = i;
+            func_001DCD70(arg2, entries[i]);
+            return 1;
+        }
+    }
+    return -1;
+}
 
 s32 func_0010F6F0(s32 arg0) {
     s32 temp_s2;
