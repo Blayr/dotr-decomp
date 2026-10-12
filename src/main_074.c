@@ -622,7 +622,242 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00256520);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00256AB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00256D80);
+typedef struct Command_00256D80 {
+    s32 type;
+    union {
+        u32 word;
+        struct {
+            u16 id;
+            u16 options;
+        } parts;
+        struct {
+            u32 id : 16;
+            u32 copy : 1;
+            u32 remove : 1;
+            u32 unused : 14;
+        } bits;
+    } flags;
+    u32 position;
+    u32 card;
+} Command_00256D80;
+
+typedef struct State_00256D80 {
+    s32 unused0;
+    u16 step;
+    u8 slot;
+    u8 unused7[0x19];
+    union {
+        u32 word;
+        u8 byte;
+    } pending;
+    u8 unused24[0xA8];
+    u32 position;
+    u8 unusedD0[4];
+    u8 count;
+    u8 unusedD5[0x2B];
+    u8 phase;
+    u8 unused101;
+    u16 timer;
+} State_00256D80;
+
+typedef struct Card_00256D80 {
+    u8 unused0[0x3E];
+    u8 kind;
+    u8 unused3F[5];
+    u8 x;
+    u8 y;
+    u8 unused46[0x11];
+    struct {
+        s8 marked : 1;
+        s8 unused : 7;
+    } flags;
+} Card_00256D80;
+
+extern void func_001DEF20(u32);
+extern void func_002516D0(s32, s32, s32);
+extern u8 func_00255A30(s32 *, void *);
+extern void func_00255AC0(void *, s32);
+extern void func_00260A70(void *, s32);
+extern void func_002614C0(s32, u32, s32);
+
+s32 func_00256D80(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001DEE50();
+    extern void *func_001DF580();
+    s32 packet[4];
+    s32 *p;
+    Command_00256D80 *command = arg0;
+    State_00256D80 *state = arg1;
+    s32 i;
+    s32 count;
+    u32 card;
+
+    packet[0] = 999;
+    packet[1] = 0;
+    packet[2] = 0;
+    packet[3] = 0;
+    p = packet;
+
+    if (arg2 >= 0) {
+        func_00255960(state);
+        if (command->card == 999) {
+            func_001E4530();
+            return 0;
+        }
+        switch (func_0026FCE0(command->card & 0xFFFF) >> 5) {
+        case 0:
+            if (func_001E0150(command->flags.parts.id) >= 5) {
+                command->card = 999;
+                func_001E4530();
+                return 0;
+            }
+            break;
+        default:
+            if (func_001E01F0(command->flags.parts.id) >= 5) {
+                command->card = 999;
+                func_001E4530();
+                return 0;
+            }
+            break;
+        }
+        func_001DE7E0(0);
+        func_00255AC0(state, 501);
+        func_002614C0(16, command->position, 180);
+        return 1;
+    }
+
+    switch (state->step) {
+    case 0:
+        if (command->card == 999) {
+            func_001E4530();
+            return 0;
+        }
+        switch (func_0026FCE0(command->card & 0xFFFF) >> 5) {
+        case 0:
+            if (func_001E0150(command->flags.parts.id) >= 5) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+            break;
+        default:
+            if (func_001E01F0(command->flags.parts.id) >= 5) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+            break;
+        }
+        func_001DE7E0(0);
+        if (func_00255B50(state) != 1) {
+            return 1;
+        }
+        state->step++;
+        break;
+    case 1:
+        func_001DE7E0(0);
+        p[0] = 501;
+        p[1] = 0;
+        p[2] = command->position;
+        p[3] = 0;
+        if ((s32)(state->slot = func_00255A30(p, state)) >= 0) {
+            state->count++;
+        }
+        state->step++;
+        break;
+    case 2:
+        func_001DE7E0(0);
+        if (func_001F51D0(state->slot) != 0) {
+            if (func_001F52D0(state->slot) == 2) {
+                if (state->pending.byte != 0xFFFF) {
+                    if (command->card == 999) {
+                        u32 position = command->position;
+                        Card_00256D80 *result;
+                        result = func_001DF580(command->flags.parts.id,
+                            position & 0xFF, position >> 8,
+                            func_001DEE00(command->flags.parts.id,
+                                func_001DEE50(command->flags.parts.id) - 1), 0);
+                        if (result != 0) {
+                            if (((s32)result->kind >> 5) != 0) {
+                                result->flags.marked = 1;
+                            }
+                            if (((command->flags.word >> 16) & 1) == 1) {
+                                state->position = (result->x << 8) | result->y;
+                            }
+                        }
+                        if ((command->flags.word >> 17) & 1) {
+                            func_001DF000(command->card >> 16,
+                                func_001DEE50(command->flags.word & 0xFFFF) - 1);
+                            func_001DEF20(command->card >> 16);
+                        }
+                    } else {
+                        Card_00256D80 *result;
+                        result = func_001DF580(command->flags.parts.id,
+                            command->position & 0xFF, command->position >> 8,
+                            command->card & 0xFFFF, 0);
+                        if (result != 0) {
+                            if (((s32)result->kind >> 5) != 0) {
+                                result->flags.marked = 1;
+                            }
+                            if (((command->flags.word >> 16) & 1) == 1) {
+                                state->position = (result->x << 8) | result->y;
+                            }
+                        }
+                        if ((command->flags.word >> 17) & 1) {
+                            count = func_001DEE50(command->card >> 16);
+                            for (i = 0; i < count; i++) {
+                                card = command->card;
+                                if ((card & 0xFFFF) == func_001DEE00(card >> 16, i)) {
+                                    func_001DF000(card / 0x10000, i);
+                                    i = count;
+                                }
+                            }
+                            func_001DEF20(command->card >> 16);
+                        }
+                    }
+                    state->pending.word = 0xFFFF;
+                }
+            }
+            return 1;
+        }
+        state->step++;
+        break;
+    case 3:
+        func_001DE7E0(0);
+        if (state->position != 0) {
+            func_002516D0(state->position >> 8, state->position & 0xFF, 1);
+            state->step++;
+        } else {
+            state->step++;
+        }
+        break;
+    default:
+        func_001DE7E0(0);
+        switch (state->phase) {
+        case 0:
+            func_00260A70(state, 16);
+            state->timer = 0;
+            state->phase++;
+            break;
+        default: {
+            u16 timer = state->timer++;
+            if (timer > 16) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+            break;
+        }
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00257340);
 
