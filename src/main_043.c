@@ -83,7 +83,85 @@ void func_001D7D10(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D8080);
+extern s32 D_00317B5C;
+
+typedef struct {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Flags_001D8080;
+
+static inline u8 *lookup_001D8080(s32 index) {
+    if (index < 0 || index >= 6) {
+        return NULL;
+    }
+    return D_0031A7C0 + index * 0xA0;
+}
+
+static inline void releaseModel_001D8080(u8 *model) {
+    extern void func_001CD560();
+
+    if (model != NULL) {
+        func_001CD560(model);
+        *(s32 *)(model + 0x90) = 0;
+    }
+}
+
+static inline void freeSlot_001D8080(u8 *slot) {
+    if (slot != NULL) {
+        if (*(u8 **)slot != NULL) {
+            releaseModel_001D8080(*(u8 **)slot);
+        }
+        func_001CDD90(slot);
+    }
+}
+
+s32 func_001D8080(s32 arg0) {
+    u8 *base;
+    u8 *slot;
+    s32 index;
+    s32 step;
+    s32 result;
+    u8 *candidate;
+
+    base = D_00317490;
+    if (D_00317B5C != 0 && *(void **)(*(u8 **)(base + 0x6CC) + 4) != NULL) {
+        if ((slot = D_0031A7C0) != NULL && *(u8 **)slot != NULL) {
+            freeSlot_001D8080(slot);
+        }
+        ((Flags_001D8080 *)(*(u8 **)(base + 0x6CC) + 0x57))->bit7 = 0;
+        ((Flags_001D8080 *)(*(u8 **)(base + 0x6CC) + 0x58))->bit0 = 0;
+        ((Flags_001D8080 *)(*(u8 **)(base + 0x6CC) + 0x58))->bit2 = 0;
+        ((Flags_001D8080 *)(*(u8 **)(*(u8 **)(base + 0x6CC) + 4) + 0x83))->bit7 = 0;
+    }
+
+    step = -0xFA;
+    index = 0;
+    do {
+        result = func_001DF0C0(arg0, index);
+        if (result >= 0 && (result & 0xFFF) != 999) {
+            candidate = lookup_001D8080(index + 1);
+            if (candidate != NULL && *(s32 *)candidate != 0) {
+                ((Flags_001D8080 *)(candidate + 0x9F))->bit2 = 1;
+                ((Flags_001D8080 *)(candidate + 0x9F))->bit4 = 0;
+                func_001D8FB0(candidate, step, 0x1C0, step, -8, 0x80, 0x80);
+            }
+        }
+        index++;
+        step += 0x7D;
+    } while (index < 5);
+
+    base[0xD4A] = func_001DF110(arg0);
+    for (index = 0; index < base[0xD4A]; index++) {
+        base[0xD2C + index] = index + 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D82C0);
 
