@@ -20,7 +20,6 @@ typedef struct {
     u8 pad;
 } Slot_0011D110;
 
-void func_0011D3E0(void *);
 
 void func_0011D110(void *arg0, s32 arg1) {
     extern void func_0027E770();
@@ -93,7 +92,44 @@ void func_0011D380(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 1500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011D3E0);
+typedef struct {
+    u16 coordinates;
+    u16 pad2;
+    u16 state;
+    u16 pad6;
+    u32 value;
+} Entry_0011D3E0;
+
+s32 func_0011D4E0(s32, s32, s32, s32 *);
+
+void func_0011D3E0(void *arg0) {
+    Entry_0011D3E0 *entry = arg0;
+    s32 value;
+    s32 index[2];
+    s32 state;
+    u16 coordinates;
+
+    func_001DE540();
+    coordinates = entry->coordinates;
+    value = func_001E1090((s32) coordinates >> 8, coordinates & 0xFF);
+    coordinates = entry->coordinates;
+    if (func_0011D6D0((s32) coordinates >> 8, coordinates & 0xFF) < 0) {
+        coordinates = entry->coordinates;
+        func_0011D4E0(func_001DF540((s32) coordinates >> 8, coordinates & 0xFF), value & 0xFF, value >> 8, index);
+        if (index[0] >= 0) {
+            entry->state = 0x6FF;
+            entry->value = (index[0] << 16) | (entry->value & 0xFFFF);
+        } else {
+            entry->state = 0x5FF;
+        }
+    } else {
+        state = ((s32) entry->state >> 8) & 0xFF;
+        if (state != 0xF && state != 0x10) {
+            entry->state = (((value >> 8) < 4 ? 0xF : 0x10) << 8) | 0xFF;
+            entry->value = *(u16 *)&entry->value | 0xFFFF0000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_0011D4E0);
 
