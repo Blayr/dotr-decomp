@@ -534,7 +534,70 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001C02E0);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C05F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C07E0);
+s32 func_001C07E0(s32 arg0, s32 arg1, s32 arg2) {
+    u8 *state;
+    char *text;
+    u16 *cards;
+    s32 icon;
+    s32 color0;
+    s32 color1;
+    s32 result;
+    extern char D_002BEF9D;
+    extern struct Entry_001BA520 *D_00317B60;
+    extern s32 func_001B0CE0();
+    extern s32 func_001B7D60();
+    extern s32 func_002084D0();
+    extern s64 func_00208680();
+
+    state = D_00317490;
+    text = &D_002BEF9D;
+    cards = (u16 *)((u8 *)D_00317B60 + 0x20);
+    icon = -1;
+    if ((s32) D_003181C6 >= 0x80) {
+        icon = 0x93;
+        if ((s32)state[0xD57] < 3) {
+            icon = func_001DE210(cards[(u8)state[0xD57]]);
+        }
+    }
+    arg0 = func_001B0CE0(arg0, 2, -1, icon, arg1 + 0x140, arg2 + 0x5D,
+                         -0x1CC, 0x106, func_0019BEF0(text),
+                         text, (s32)state[0xD36] < 0x80 ? 0 : 1);
+    if (state[0xD57] == 0) {
+        arg0 = func_002084D0(arg0, ((s64)state[0xD36] << 14) | 0xA |
+                                   ((s64)state[0xD36] << 34));
+        color0 = color1 = state[0xD36];
+    } else {
+        color1 = color0 = 0x80;
+    }
+    arg0 = func_001B7D60(arg0, cards[0], arg1 + 0x74, arg2 + 0xBB,
+                         color0, color1, *(s32 *)(state + 0xC58));
+    if ((s32)state[0xD57] <= 0) {
+        color0 = color1 = 0;
+    } else if (state[0xD57] == 1) {
+        arg0 = func_002084D0(arg0, ((s64)state[0xD36] << 14) | 0xA |
+                                   ((s64)state[0xD36] << 34));
+        color0 = color1 = state[0xD36];
+    } else {
+        color1 = color0 = 0x80;
+    }
+    arg0 = func_001B7D60(arg0, cards[1], arg1 + 0x100, arg2 + 0xBB,
+                         color0, color1, *(s32 *)(state + 0xC58));
+    if ((s32)state[0xD57] < 2) {
+        color0 = color1 = 0;
+    } else if (state[0xD57] == 2) {
+        arg0 = func_002084D0(arg0, ((s64)state[0xD36] << 14) | 0xA |
+                                   ((s64)state[0xD36] << 34));
+        color0 = color1 = state[0xD36];
+    } else {
+        color1 = color0 = 0x80;
+    }
+    result = func_001B7D60(arg0, cards[2], arg1 + 0x18C, arg2 + 0xBB,
+                           color0, color1, *(s32 *)(state + 0xC58));
+    if ((s32)state[0xD57] < 3) {
+        result = func_002084D0(result, func_00208680(0, 4));
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0A30);
 
