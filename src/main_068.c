@@ -290,7 +290,75 @@ s32 func_0023C8B0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CA10);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CC50);
+s16 func_0023CC50(s32 arg0) {
+    extern struct State_0023E610 D_0034FB00;
+    u8 *state = (u8 *)&D_0034FB00;
+    s32 result;
+
+    result = 0;
+    if (arg0 == 1) {
+        func_0023C170(0);
+        *(s16 *)(state + 0x2BE) = 0;
+    }
+
+    switch (*(s16 *)(state + 0x30)) {
+    case 0:
+        result = func_0023FCE0(arg0);
+        if (result == 2) {
+            *(s16 *)(state + 0x30) = 0;
+        }
+        break;
+    case 1:
+        result = func_0023F340();
+        break;
+    case 2:
+        result = func_0023FF30();
+        break;
+    case 3:
+        result = func_0023FCE0(arg0);
+        if (result == 2) {
+            result = 0xA;
+        }
+        break;
+    }
+
+    if (arg0 == 1) {
+        *(s16 *)(state + 0x34) = 0;
+        *(s16 *)(state + 0x40) = 0;
+        *(s16 *)(state + 0x30) = 0;
+        result = 0x10;
+        *(s32 *)(state + 0xC) = 0;
+    }
+
+    if (result != 0) {
+        if (*(s32 *)(state + 8) == 1) {
+            switch (result) {
+            case 2:
+                result = 0x200;
+                break;
+            case 3:
+            case 5:
+            case 6:
+            case 8:
+            case 10:
+            case 7:
+                result = 0x300;
+                break;
+            }
+        } else if (result == 3) {
+            result = 7;
+        }
+        *(s16 *)(state + 0x2BE) = result;
+    }
+
+    if (result == 0x100) {
+        return 0x100;
+    }
+    if (*(s32 *)(state + 8) == 1) {
+        *(s16 *)(state + 0x2BE) |= 0x80;
+    }
+    return *(s16 *)(state + 0x2BE);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CE40);
 
