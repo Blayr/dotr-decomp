@@ -1414,7 +1414,146 @@ s32 func_00259D90(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025A060);
+typedef struct Request_0025A060 {
+    s32 command;
+    s32 kind;
+    s32 mask;
+    s32 value;
+} Request_0025A060;
+
+typedef struct State_0025A060 {
+    u16 alpha;
+    u16 unused;
+    u16 phase;
+    u8 handles[0x1A];
+    s32 cards[0x2D];
+    u8 count;
+    u8 padding[0x2D];
+    u16 timer;
+} State_0025A060;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_002516D0(s32, s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025A060(void *arg0, void *arg1, s32 arg2) {
+    State_0025A060 *state = arg1;
+    Request_0025A060 *request = arg0;
+    Request_0025A060 task;
+    s32 i;
+    s32 finished;
+    s32 total;
+    s32 card;
+    u8 handle;
+    u8 *cursor;
+    Request_0025A060 *next = &task;
+
+    next->command = 999;
+    next->kind = 0;
+    next->mask = 0;
+    next->value = 0;
+    i = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->alpha = 0x80;
+        func_00260020(request, state, arg2, -1, 1, 1);
+        if (func_0024E910(request->mask) == 1) {
+            func_00260AF0(0, func_0024EC50(request->mask, 0), 100, 180);
+        } else {
+            func_00260740(0x10);
+        }
+        func_00255AC0(state, 0x201);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if ((s32)state->alpha > 0x3F) {
+            state->alpha -= 0xF;
+        } else {
+            state->alpha = 0x30;
+            if (func_00255B50(state) == 1) {
+                if ((s32)state->timer++ > 0x10) {
+                    if ((request->kind == 2 || request->kind == 4) && request->value == 0) {
+                        total = func_0024E910(request->mask);
+                        for (finished = 0; finished < total; finished++) {
+                            card = func_0024EC50(request->mask, finished);
+                            next->command = 0x201;
+                            next->kind = 0;
+                            next->mask = card;
+                            next->value = 1;
+                            handle = func_00255A30((s32 *)next, state);
+                            state->handles[state->count] = handle;
+                            if ((s32)handle >= 0) {
+                                state->cards[state->count] = card;
+                                state->count++;
+                            }
+                        }
+                    } else {
+                        func_0025F720(request, state, next, 0x201);
+                    }
+                    state->phase++;
+                    state->timer = 0;
+                }
+            }
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+    case 1:
+        finished = 0;
+        cursor = (u8 *)state;
+        while (finished < state->count) {
+            if (func_001F51D0(state->handles[finished]) != 0) {
+                if (func_001F52D0(state->handles[finished]) == 2) {
+                    if (*(s32 *)(cursor + 0x20) >= 0) {
+                        func_001F5970(*(s32 *)(cursor + 0x20), 0);
+                        if (request->kind == 3 || request->kind == 5) {
+                            func_001E1E70(*(s32 *)(cursor + 0x20) >> 8, *(s32 *)(cursor + 0x20) & 0xFF, 5, request->value);
+                            func_001E1E70(*(s32 *)(cursor + 0x20) >> 8, *(s32 *)(cursor + 0x20) & 0xFF, 3, request->value);
+                        }
+                        if (request->kind == 2 || request->kind == 4) {
+                            func_002516D0(*(s32 *)(cursor + 0x20) >> 8, *(s32 *)(cursor + 0x20) & 0xFF, request->value);
+                        }
+                        *(s32 *)(cursor + 0x20) = -1;
+                    }
+                }
+            } else {
+                i++;
+            }
+            cursor += 4;
+            finished++;
+        }
+        if (i < state->count) {
+            break;
+        }
+        if ((s32)state->timer++ > 0x10) {
+            func_00260A70(state, 0x10);
+            state->timer = 0;
+            func_00260020(request, state, arg2, 1, 0, 1);
+            state->phase++;
+        }
+        break;
+    default:
+        state->alpha += 0xF;
+        if ((s32)state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80 && (s32)state->timer++ > 0x10 && func_0025FD90() == 1) {
+            func_001E4530();
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct Context_0025A4C0 {
     u8 pad0[8];
