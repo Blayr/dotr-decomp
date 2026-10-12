@@ -63,7 +63,59 @@ s32 func_002151D0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215280);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002153D0);
+typedef struct Slot_002153D0 {
+    u8 pad[0x50];
+    u16 card;
+    u8 pad52[2];
+} Slot_002153D0;
+
+typedef struct Side_002153D0 {
+    u8 pad0[0xFD94];
+    Slot_002153D0 slots[6];
+    u8 pad_end[0x14];
+} Side_002153D0;
+
+typedef struct Card_002153D0 {
+    u8 pad0[3];
+    u8 flags3 : 7;
+    u8 flag : 1;
+    u8 pad4[3];
+    u8 flags7 : 6;
+    u8 state : 2;
+} Card_002153D0;
+
+void *func_00214DD0(s32, s32, s32, s32);
+extern u8 D_0034F6D0;
+
+s32 func_002153D0(s32 arg0, s32 arg1) {
+    extern Side_002153D0 D_0032F790[];
+    s32 side;
+    u16 card;
+    Slot_002153D0 *slot;
+    Card_002153D0 *entry;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    slot = (Slot_002153D0 *)((u8 *)&D_0032F790[side] + arg1 * 0x54 + 0xFD94);
+    if (arg0 < 0 || arg0 >= 2) {
+        return 0;
+    }
+    card = slot->card;
+    if (card == 999) {
+        return 0;
+    }
+    entry = func_00214DD0(arg0, card, arg1, 1);
+    if (entry == NULL) {
+        return 0;
+    }
+    slot->card = 999;
+    entry->state = 3;
+    entry->flag = 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002154E0);
 
