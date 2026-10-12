@@ -90,7 +90,6 @@ typedef struct Flags_001FF420 {
     s8 remaining : 6;
 } Flags_001FF420;
 
-s32 func_001FF480(s32);
 s32 func_001FF9C0(void);
 
 s32 func_001FF420(void) {
@@ -109,7 +108,161 @@ s32 func_001FF420(void) {
     return func_001FF480(state->current);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF480);
+typedef struct Word_001FF480 {
+    s32 value : 31;
+    s32 flag : 1;
+} Word_001FF480;
+
+typedef struct Flags_001FF480 {
+    s8 bit0 : 1;
+    s8 busy : 1;
+    s8 rest : 6;
+} Flags_001FF480;
+
+typedef struct Entry_001FF480 {
+    s32 handle;
+    s32 unknown04;
+    Word_001FF480 size;
+    Word_001FF480 offset;
+    Word_001FF480 length;
+    s32 buffer;
+    s32 unknown18;
+    s32 unknown1C;
+    s32 name;
+} Entry_001FF480;
+
+typedef struct State_001FF480 {
+    u8 unknown0000[0x4080];
+    Entry_001FF480 entries[256];
+    u8 unknown6480[0x210];
+    Flags_001FF480 flags;
+} State_001FF480;
+
+typedef struct Progress_001FF480 {
+    f32 value;
+} Progress_001FF480;
+
+s32 func_0017FA98(void *, s32);
+void func_0017FD20(s32);
+s32 func_0017FEA0(s32, s32, s32);
+s32 func_001800D8(s32, s32, s32);
+s32 func_00180608(s32, s32, s32 *);
+s32 func_00191A58(s32);
+s32 func_00191D18(s32, s32, s32, void *);
+void func_001FFAC0(s32, s32);
+extern Progress_001FF480 D_00293CB0;
+extern char D_002D0648[];
+extern char D_002D064D[];
+
+s32 func_001FF480(s32 arg0) {
+    extern State_001FF480 D_0031C2F0;
+    extern s32 func_0019B648();
+    char path[0x88];
+    s32 status;
+    Progress_001FF480 progress;
+    State_001FF480 *state;
+    Entry_001FF480 *entry;
+    s32 sector;
+    s32 count;
+
+    state = &D_0031C2F0;
+    if (arg0 < 0) {
+        return 0;
+    }
+    entry = &state->entries[arg0];
+    if (entry->length.flag) {
+        if (state->flags.busy) {
+            return 0;
+        }
+        if (!entry->size.flag) {
+            entry->size.flag = 1;
+        }
+        if (func_00191A58(1) != 2) {
+            return 0;
+        }
+        progress = D_00293CB0;
+        if (entry->size.value != 0 && entry->buffer == 0) {
+            if ((entry->buffer = func_00217B40(entry->size.value)) == 0) {
+                func_001FFAC0(arg0, 0);
+                return 0;
+            }
+            entry->offset.flag = 1;
+        }
+        if (entry->length.value < 0) {
+            entry->length.value = entry->size.value - entry->offset.value;
+        }
+        sector = entry->handle + (entry->offset.value >> 11);
+        count = entry->length.value >> 11;
+        func_0017BB60(0);
+        if (func_00191D18(sector, count, entry->buffer, &progress) == 0) {
+            return 0;
+        }
+        state->flags.busy = 1;
+    } else {
+        state->flags.busy = 1;
+        if (!entry->size.flag) {
+            func_0019B648(path, D_002D0648, D_002D064D, entry->name);
+            if (entry->size.value < 0) {
+                if ((entry->handle = func_0017FA98(path, 1)) < 0) {
+                    func_001FFAC0(arg0, 0);
+                    return 0;
+                }
+                if ((entry->size.value = func_0017FEA0(entry->handle, 0, 2)) < 0) {
+                    func_001FFAC0(arg0, 0);
+                    return 0;
+                }
+                func_0017FD20(entry->handle);
+            }
+            entry->handle = func_0017FA98(path, 0x8001);
+            if (entry->handle < 0) {
+                func_001FFAC0(arg0, 0);
+                return 0;
+            }
+            if (entry->size.value != 0) {
+                entry->size.value = (entry->size.value + 15) & ~15;
+                if (entry->buffer == 0) {
+                    if ((entry->buffer = func_00217B40(entry->size.value)) == 0) {
+                        func_001FFAC0(arg0, 0);
+                        return 0;
+                    }
+                    entry->offset.flag = 1;
+                }
+            }
+            if (entry->length.value < 0) {
+                entry->length.value = entry->size.value - entry->offset.value;
+            }
+            entry->length.value = (entry->length.value + 15) & ~15;
+            if (entry->offset.value != 0) {
+                if (func_0017FEA0(entry->handle, entry->offset.value, 0) < 0) {
+                    func_001FFAC0(arg0, 0);
+                    return 0;
+                }
+                do {
+                    if (func_00180608(entry->handle, 1, &status) < 0) {
+                        func_001FFAC0(arg0, 0);
+                        return 0;
+                    }
+                } while (status != 0);
+            }
+            func_0017BB60(0);
+            if (func_001800D8(entry->handle, entry->buffer, entry->length.value) < 0) {
+                func_001FFAC0(arg0, 0);
+                return 0;
+            }
+            entry->size.flag = 1;
+        }
+        if (func_00180608(entry->handle, 1, &status) < 0) {
+            func_001FFAC0(arg0, 0);
+            return 0;
+        }
+        if (status == 0) {
+            func_0017BB60(0);
+            func_001FFAC0(arg0, 1);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF9C0);
 
