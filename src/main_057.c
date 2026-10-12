@@ -239,7 +239,30 @@ s32 func_0020B000(s32 arg0) {
     return func_00187608(D_00325F00);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B1E0);
+void func_0020B1E0(s32 arg0) {
+    extern void func_00187828();
+    u8 buffer[0x40];
+    u8 *packet;
+    u64 *tag;
+    s32 shift;
+
+    packet = (u8 *) (((u32) buffer + 0xF) & ~0xF);
+    tag = (u64 *) (packet + 0x20);
+    shift = (func_0019A5C8() % 16) * 4;
+    D_00326180 = (D_00326180 >> shift) | (D_00326180 << (0x40 - shift));
+    func_001875F8(packet, arg0);
+    func_00187660(packet, 0);
+    func_00187778(packet, 2, 3);
+    func_00187858(packet, 0);
+    tag[0] = 0x1000000000008000ULL;
+    tag[1] = 0xE;
+    func_001876B8(packet, *(__int128 *) tag);
+    func_00187828(packet, 0x45, 1);
+    func_00187828(packet, 0x44, D_00326180);
+    func_001876D0(packet);
+    func_001878B0(packet);
+    func_00187608(packet);
+}
 
 u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2) {
     if (arg2 > 0) {
