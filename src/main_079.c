@@ -416,7 +416,154 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C770);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027CA50);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027D020);
+typedef struct Position_0027D020 {
+    u8 x : 4;
+    u8 y : 4;
+} Position_0027D020;
+
+typedef struct Source_0027D020 {
+    u16 position;
+    u8 pad2[6];
+    u32 targets;
+} Source_0027D020;
+
+typedef struct Result_0027D020 {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 type;
+    u8 flags;
+} Result_0027D020;
+
+s32 func_00276CC0(s32, s32, s32, u8, u16, u8);
+
+static inline u32 target_word_0027D020(void *src) {
+    return ((Source_0027D020 *)src)->targets;
+}
+
+static inline u32 target_half_0027D020(void *src) {
+    return (u16)((Source_0027D020 *)src)->targets;
+}
+
+#define target_0027D020(src, side) \
+    ((side) == 1 ? (u32)(u16)(target_word_0027D020(src) >> 16) : target_half_0027D020(src))
+
+s32 func_0027D020(void *arg0, s32 arg1, void *arg2, u8 arg3,
+                  s32 arg4, s32 cost, s32 arg6, u8 arg7) {
+    extern void func_0027A090();
+    Position_0027D020 positions[12];
+    s32 origin;
+    s32 destination;
+    s32 count;
+    s32 best;
+    s32 side;
+    Position_0027D020 *p;
+    s32 index;
+
+    origin = func_001E1090(((Source_0027D020 *)arg0)->position >> 8, ((Source_0027D020 *)arg0)->position & 0xFF);
+    side = arg3;
+    destination = func_001E1090(target_0027D020(((Source_0027D020 *)arg0), side) >> 8,
+                               target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF);
+    if (target_0027D020(((Source_0027D020 *)arg0), side) == 0xFFFF &&
+        origin == target_0027D020(((Source_0027D020 *)arg0), side)) {
+        ((Result_0027D020 *)arg2)->position = ((Source_0027D020 *)arg0)->position;
+        ((Result_0027D020 *)arg2)->action = 6;
+        ((Result_0027D020 *)arg2)->destination = origin;
+        ((Result_0027D020 *)arg2)->flags = 2;
+        ((Result_0027D020 *)arg2)->type = 2;
+        func_0027B1B0(((Source_0027D020 *)arg0), arg3);
+        return 0;
+    }
+
+    p = positions;
+    {
+        s32 i = 0;
+        Position_0027D020 *q = p;
+        do {
+            q->x = q->y = 0xF;
+            i++;
+            q++;
+        } while (i < 12);
+    }
+    func_0027A090(((Source_0027D020 *)arg0)->position >> 8, ((Source_0027D020 *)arg0)->position & 0xFF,
+                  positions, origin & 0xFF, origin >> 8,
+                  destination & 0xFF, destination >> 8, ((Source_0027D020 *)arg0)->targets,
+                  (u8)arg4, 3, (u16)cost);
+    count = func_0027AFC0((u8 *)positions);
+    if (count > 0) {
+        best = 0xFF;
+        cost = 0xFFFF;
+        index = 0;
+
+        for (; index < count; index++, p++) {
+            if (func_001E36E0(p->x, p->y) == 0) {
+                s32 value;
+                value = func_00276CC0(p->x, p->y, arg1,
+                                      (u8)cost, (u16)arg7, (u8)cost);
+                if (value < cost) {
+                    cost = value;
+                    best = index;
+                } else if (value == cost) {
+                    u32 bestMinY;
+                    u32 bestY;
+                    u32 bestMinX;
+                    u32 bestX;
+                    u32 currentMinY;
+                    u32 currentY;
+                    u32 currentMinX;
+                    u32 currentX;
+
+                    bestMinY = (u8)positions[best].y < (target_0027D020(((Source_0027D020 *)arg0), side) >> 8)
+                        ? (u8)positions[best].y : (target_0027D020(((Source_0027D020 *)arg0), side) >> 8);
+                    bestY = (target_0027D020(((Source_0027D020 *)arg0), side) >> 8) < (u8)positions[best].y
+                        ? (u8)positions[best].y : (target_0027D020(((Source_0027D020 *)arg0), side) >> 8);
+                    bestMinX = (u8)positions[best].x < (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF)
+                        ? (u8)positions[best].x : (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF);
+                    bestX = (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF) < (u8)positions[best].x
+                        ? (u8)positions[best].x : (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF);
+                    currentMinY = (u8)(*p).y < (target_0027D020(((Source_0027D020 *)arg0), side) >> 8)
+                        ? (u8)(*p).y : (target_0027D020(((Source_0027D020 *)arg0), side) >> 8);
+                    currentY = (target_0027D020(((Source_0027D020 *)arg0), side) >> 8) < (u8)(*p).y
+                        ? (u8)(*p).y : (target_0027D020(((Source_0027D020 *)arg0), side) >> 8);
+                    currentMinX = (u8)(*p).x < (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF)
+                        ? (u8)(*p).x : (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF);
+                    currentX = (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF) < (u8)(*p).x
+                        ? (u8)(*p).x : (target_0027D020(((Source_0027D020 *)arg0), side) & 0xFF);
+                    if ((currentX - currentMinX) + (currentY - currentMinY) <
+                        (bestX - bestMinX) + (bestY - bestMinY)) {
+                        cost = value;
+                        best = index;
+                    }
+                }
+            }
+        }
+    } else {
+        ((Result_0027D020 *)arg2)->position = ((Source_0027D020 *)arg0)->position;
+        ((Result_0027D020 *)arg2)->action = 6;
+        ((Result_0027D020 *)arg2)->destination = origin;
+        ((Result_0027D020 *)arg2)->flags = 2;
+        ((Result_0027D020 *)arg2)->type = 2;
+        func_0027B1B0(((Source_0027D020 *)arg0), arg3);
+        return 0;
+    }
+    if (best != 0xFF) {
+        ((Result_0027D020 *)arg2)->position = ((Source_0027D020 *)arg0)->position;
+        ((Result_0027D020 *)arg2)->action = 6;
+        ((Result_0027D020 *)arg2)->destination = (positions[best].y << 8) | positions[best].x;
+        ((Result_0027D020 *)arg2)->flags = 2;
+        ((Result_0027D020 *)arg2)->type = 2;
+    } else {
+        ((Result_0027D020 *)arg2)->position = ((Source_0027D020 *)arg0)->position;
+        ((Result_0027D020 *)arg2)->action = 6;
+        ((Result_0027D020 *)arg2)->destination = origin;
+        ((Result_0027D020 *)arg2)->flags = 2;
+        ((Result_0027D020 *)arg2)->type = 2;
+    }
+    func_0027B1B0(((Source_0027D020 *)arg0), arg3);
+    return 0;
+}
 
 s32 func_0027D720(u16 *arg0, s32 arg1) {
     u16 candidates[22];
