@@ -184,7 +184,109 @@ s32 func_0026FE20(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FE70);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00270030);
+typedef struct {
+    u32 unused;
+    u32 value1;
+    u32 value2;
+    s32 flags;
+} Input_00270030;
+
+typedef struct {
+    u8 pad0[4];
+    u16 state;
+    u8 type;
+    u8 pad7;
+    u8 pad8[0x18];
+    s32 once;
+    u8 pad24[0xAC];
+    s32 count;
+} Object_00270030;
+
+extern void func_0024F430(u32, s32);
+extern u8 func_00255A30(s32 *, void *);
+
+s32 func_00270030(void *src, void *obj, s32 mode) {
+    s32 words[4];
+    s32 *message = words;
+    Input_00270030 *input = src;
+    Object_00270030 *target = obj;
+    s32 count;
+    u32 color;
+
+    message[0] = 0x3E7;
+    message[1] = 0;
+    message[2] = 0;
+    message[3] = 0;
+
+    if (mode >= 0) {
+        func_00255960(obj);
+        func_00255AC0(obj, 0x258);
+        message[0] = 0x25A;
+        message[1] = input->value1;
+        message[2] = input->value2;
+        message[3] = 0;
+        func_0027EB00((u8 *)obj + 0x110, message, 0);
+        goto common_return;
+    }
+
+    switch (target->state) {
+    case 0:
+        goto no_state;
+    default:
+        goto active;
+    }
+
+no_state:
+    if (func_00255B50(obj) == 1) {
+        message[0] = 0x258;
+        message[1] = input->value1;
+        message[2] = input->value2;
+        message[3] = 0;
+        *(u8 *)((u8 *)obj + 6) = func_00255A30(message, obj);
+        target->once = 0;
+        target->state = target->state + 1;
+    }
+
+    message[0] = 0x25A;
+    message[1] = input->value1;
+    message[2] = input->value2;
+    message[3] = 0;
+    func_0027EB00((u8 *)obj + 0x110, message, -1);
+    return 1;
+
+active:
+    if (func_001F51D0(target->type) != 0) {
+        count = target->count;
+        target->count = count + 1;
+        switch (count) {
+        case 1:
+            func_00217710(1, 0x4C);
+            break;
+        case 0x12:
+            func_00217710(1, 0x3A);
+            break;
+        case 0x50:
+            func_00217710(1, 0x3B);
+            break;
+        }
+
+        if (func_001F52D0(target->type) == 2 && target->once == 0) {
+            target->once = 1;
+            color = input->value1;
+            func_0024F430(color >> 8, color & 0xFF);
+            color = input->value2;
+            func_0024F430(color >> 8, color & 0xFF);
+            return (input->flags << 16) | 2;
+        }
+        return 1;
+    } else {
+        func_001E4530();
+        return 0;
+    }
+
+common_return:
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00270260);
 
