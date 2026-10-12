@@ -256,6 +256,7 @@ s32 func_00122810(s32 arg0, s32 arg1);
 s32 func_00122D30(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00123670(s32 arg0);
 s32 func_001236C0(s32 arg0);
+s32 func_00123740(s32 player, void *output);
 s32 func_00123D70(s32 arg0, s32 *arg1);
 s32 func_00124040(s32 arg0, void *arg1, void *arg2);
 s32 func_00124520(s32 arg0, void *arg1, void *arg2, s32 arg3);

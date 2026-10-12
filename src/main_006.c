@@ -1048,7 +1048,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Card_00122D30;
 
-s32 func_00123740(s32 arg0, void *arg1);
 s32 func_00123010(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 
 s32 func_00122D30(s32 arg0, s32 arg1, s32 arg2) {
@@ -1163,7 +1162,187 @@ s32 func_001236C0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00123740);
+s32 func_00123740(s32 player, void *output) {
+    s32 cards[8];
+    u8 scratch[32];
+    s32 count;
+    u8 state0;
+    u8 state1;
+    s32 *card;
+    s32 *card2;
+    s32 index;
+    s32 slot;
+    u8 count2;
+    s32 slot2;
+    u8 count3;
+    s32 slot3;
+    u8 count4;
+    s32 slot4;
+    s32 *finalCard;
+    s32 finalIndex;
+    s32 result;
+    extern s32 func_00278890();
+    extern s32 func_001E1030();
+
+    state0 = (u8)func_00278890(player, 0);
+    state1 = (u8)func_00278890(player, 1);
+    count = 0;
+    if (output == NULL) {
+        return -1;
+    }
+    func_0026FD30(player, cards);
+    if (state0 == 5) {
+        if (func_00124610(player, scratch, output, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (state1 == 5) {
+        if (count < func_0026FE20(player)) {
+            card = cards;
+            do {
+                if ((func_0026FCE0(*card) >> 5) == 0 &&
+                    func_0026FB10(player, *card) == 1) {
+                    func_001DCD70(output, cards[count]);
+                    return 0;
+                }
+                card++;
+                count++;
+            } while (count < func_0026FE20(player));
+        }
+        return -1;
+    }
+    if (func_0024E910((u8)func_00123D70(player, cards)) == 3) {
+        if (func_00124C90(player, scratch, output, 1) >= 0) {
+            return 3;
+        }
+    }
+    if (func_00124040(player, scratch, output) >= 0) {
+        return 2;
+    }
+    if (state0 == 0) {
+        index = 0;
+        if (index < func_0026FE20(player)) {
+            card2 = cards;
+            do {
+                if ((func_0026FCE0(*card2) >> 5) == 0 &&
+                    func_0026FB10(player, *card2) == 1 &&
+                    func_00123F90(player, cards, (u16)*card2) == 0) {
+                    return 0;
+                }
+                card2++;
+                index++;
+            } while (index < func_0026FE20(player));
+        }
+    }
+    slot = 6;
+    do {
+        if (func_001E2100(player, slot, 4) != 0) {
+            if (player == func_00250360(player, slot)) {
+                count = (u8)(count + 1);
+            }
+        }
+        if (func_001E2100((player == 0) ? 1 : 0, slot, 4) != 0 &&
+            player == func_00250360((player == 0) ? 1 : 0, slot)) {
+            count = (u8)(count + 1);
+        }
+        slot++;
+    } while (slot < 11);
+    if ((u8)count > 0) {
+        if (func_00124520(player, scratch, output, 0x235) >= 0) {
+            return 2;
+        }
+    }
+    slot2 = 1;
+    count2 = 0;
+    while (1) {
+        if ((func_001E0700(player, slot2) & 0x1F) == 0x10) {
+            if (player == func_00250360(player, slot2)) {
+                count2++;
+            }
+        }
+        if ((func_001E0700((player == 0) ? 1 : 0, slot2) & 0x1F) == 0x10 &&
+            player == func_00250360((player == 0) ? 1 : 0, slot2)) {
+            count2++;
+        }
+        slot2++;
+        if (slot2 > 5) {
+            break;
+        }
+    }
+    if (count2 >= 3) {
+        if (func_00124520(player, scratch, output, 0x251) >= 0) {
+            return 2;
+        }
+    }
+    slot3 = 1;
+    count3 = 0;
+    while (1) {
+        if (func_001E1030(player, slot3) == 0x258) {
+            if (player == func_00250360(player, slot3)) {
+                count3++;
+            }
+        }
+        if (func_001E1030((player == 0) ? 1 : 0, slot3) == 0x258 &&
+            player == func_00250360((player == 0) ? 1 : 0, slot3)) {
+            count3++;
+        }
+        slot3++;
+        if (slot3 > 5) {
+            break;
+        }
+    }
+    if (count3 >= 2) {
+        if (func_00124520(player, scratch, output, 0x230) >= 0) {
+            return 2;
+        }
+    }
+    slot4 = 1;
+    count4 = 0;
+    while (1) {
+        if (func_001E1030(player, slot4) == 0x230) {
+            if (player == func_00250360(player, slot4)) {
+                count4++;
+            }
+        }
+        if (func_001E1030((player == 0) ? 1 : 0, slot4) == 0x230 &&
+            player == func_00250360((player == 0) ? 1 : 0, slot4)) {
+            count4++;
+        }
+        slot4++;
+        if (slot4 > 5) {
+            break;
+        }
+    }
+    if (count4 >= 2) {
+        if (func_00124520(player, scratch, output, 0x258) >= 0) {
+            return 2;
+        }
+    }
+    if (func_0027BBC0(player, 0, 0) == 1) {
+        if (func_00124520(player, scratch, output, 0x54) >= 0) {
+            return 2;
+        }
+    }
+    finalIndex = 0;
+    if (finalIndex < func_0026FE20(player)) {
+        finalCard = cards;
+        do {
+            if ((func_0026FCE0(*finalCard) >> 5) == 0 &&
+                func_0026FB10(player, *finalCard) == 1) {
+                func_001DCD70(output, cards[finalIndex]);
+                return 0;
+            }
+            finalCard++;
+            finalIndex++;
+        } while (finalIndex < func_0026FE20(player));
+    }
+    result = func_00124610(player, scratch, output, 999);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 s32 func_00123D70(s32 arg0, s32 *arg1) {
     s32 i;
