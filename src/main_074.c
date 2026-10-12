@@ -461,7 +461,109 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00258E20);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_002594D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00259D90);
+void func_001E1E70(s32, s32, s32, s32);
+void func_002516D0(s32, s32, s32);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+typedef struct Task_00259D90 {
+    u8 pad0[4];
+    u16 active;
+    u8 ids[0x1A];
+    s32 positions[0x2D];
+    u8 count;
+    u8 padD5[0x2B];
+    u8 state;
+    u8 pad101;
+    u16 timer;
+} Task_00259D90;
+
+s32 func_00259D90(void *arg0, void *arg1, s32 arg2) {
+    s32 setupData[4];
+    s32 *setup = setupData;
+    Task_00259D90 *task = arg1;
+    s32 i;
+    s32 complete;
+    u8 flags;
+    u8 *position;
+    u8 *id;
+
+    setup[0] = 999;
+    setup[1] = 0;
+    setup[2] = 0;
+    setup[3] = 0;
+    complete = 0;
+    flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00261580();
+        func_00255AC0(arg1, 0x200);
+        return 1;
+    }
+
+    switch (task->active) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            func_001E42C0(0, -120, 80, 0x108);
+            func_0025F720(arg0, arg1, setup, 0x200);
+            task->active++;
+        }
+        break;
+    default:
+        for (i = 0, position = arg1; i < task->count; position += 4, i++) {
+            id = &task->ids[i];
+            if (func_001F51D0(*id) == 1) {
+                if (func_001F52D0(*id) == 2 && *(s32 *)(position + 0x20) >= 0) {
+                    func_002516D0(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, 1);
+                    func_001E1E70(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, 0, 1);
+                    func_002503B0(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, *((u8 *)arg0 + 0xC));
+                    *(s32 *)(position + 0x20) = -1;
+                }
+            } else {
+                complete++;
+            }
+        }
+        func_001E4530();
+        if (complete >= task->count) {
+            flags = 1;
+        }
+        break;
+    }
+
+    switch (task->state) {
+    case 0:
+        if (task->timer++ > 10) {
+            func_00260740(16);
+            task->state++;
+            task->timer = 0;
+        }
+        break;
+    case 1:
+        if (flags & 1) {
+            if (task->timer++ > 16) {
+                task->state++;
+                task->timer = 0;
+                func_00260A70(arg1, 16);
+            }
+        }
+        break;
+    default:
+        if (task->timer++ > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            flags |= 2;
+        }
+        break;
+    }
+    if (flags == 3) {
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025A060);
 
