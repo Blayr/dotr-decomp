@@ -895,7 +895,92 @@ s32 func_001F9F90(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9FE0);
+typedef struct Vec4_001F9FE0 {
+    f32 x, y, z, w;
+} Vec4_001F9FE0;
+
+typedef struct Camera_001F9FE0 {
+    Vec4_001F9FE0 result;
+    Vec4_001F9FE0 direction;
+    Vec4_001F9FE0 position;
+    Vec4_001F9FE0 target;
+} Camera_001F9FE0;
+
+f32 func_001A6C30(f32, f32);
+
+static inline s32 direction_001F9FE0(s32 arg0) {
+    Camera_001F9FE0 *camera;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    camera = (Camera_001F9FE0 *)D_0031BEB0[arg0];
+    if (camera == 0) {
+        return 0;
+    }
+    camera->direction.x = camera->target.x - camera->position.x;
+    camera->direction.y = camera->target.y - camera->position.y;
+    camera->direction.z = camera->target.z - camera->position.z;
+    camera->direction.w = 0.0f;
+    func_0020D070(&camera->direction.x);
+    return 1;
+}
+
+static inline s32 polar_001F9FE0(s32 arg0) {
+    Vec4_001F9FE0 result;
+    Camera_001F9FE0 *camera;
+    Vec4_001F9FE0 *position;
+    Vec4_001F9FE0 *target;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    camera = (Camera_001F9FE0 *)D_0031BEB0[arg0];
+    if (camera == 0) {
+        return 0;
+    }
+    position = &camera->position;
+    target = &camera->target;
+    result.x = func_001A6C60(
+        (position->x - target->x) * (position->x - target->x) +
+        (position->z - target->z) * (position->z - target->z));
+    result.y = func_001A6C18(position->z - target->z, position->x - target->x);
+    result.y = func_001A6C30(6.2831855f + result.y, 6.2831855f);
+    result.z = func_001A6C18(position->y - target->y, result.x);
+    result.x = func_001A6C60(
+        (position->x - target->x) * (position->x - target->x) +
+        (position->y - target->y) * (position->y - target->y) +
+        (position->z - target->z) * (position->z - target->z));
+    camera->result = result;
+    return 1;
+}
+
+s32 func_001F9FE0(s32 arg0, void *arg1, void *arg2) {
+    extern struct Vec4_001F9B20 D_00293020;
+    extern struct Vec4_001F9D80 D_00293030;
+    Vec4_001F9FE0 *position = arg1;
+    Vec4_001F9FE0 *target = arg2;
+    Camera_001F9FE0 *camera;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    camera = (Camera_001F9FE0 *)D_0031BEB0[arg0];
+    if (camera == 0) {
+        return 0;
+    }
+    if (position == NULL) {
+        position = (Vec4_001F9FE0 *)&D_00293020;
+    }
+    if (target == NULL) {
+        target = (Vec4_001F9FE0 *)&D_00293030;
+    }
+    camera->position = *position;
+    camera->target = *target;
+    direction_001F9FE0(arg0);
+    polar_001F9FE0(arg0);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA220);
 
