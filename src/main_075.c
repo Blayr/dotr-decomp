@@ -581,7 +581,83 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_00261760);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00261B70);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261F20);
+typedef struct Flags_00261F20 {
+    u8 pad0:5;
+    u8 field5:1;
+    u8 field6:1;
+    u8 pad7:1;
+} Flags_00261F20;
+
+typedef struct Result_00261F20 {
+    u8 pad0[0xC];
+    s32 value;
+    Flags_00261F20 flags;
+} Result_00261F20;
+
+s32 func_00262190(s32, s32, void *, s32, s32, s32, s32, s32);
+
+s32 func_00261F20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
+    s32 temp_a0;
+    s32 temp_a0_2;
+    s32 temp_v0_2;
+    s32 temp_v0_4;
+    s32 var_fp;
+    s32 var_s0;
+    s32 var_s1;
+    s32 var_s7;
+    Result_00261F20 *temp_s2;
+    void *temp_v0;
+    void *temp_v0_3;
+
+    temp_s2 = (Result_00261F20 *)arg4;
+    var_s7 = 0;
+    var_fp = 0;
+    var_s1 = 0;
+    var_s0 = 0;
+    temp_s2->value = func_0024EA70(func_001E0830(arg0, arg1), func_001E0830(arg2, arg3));
+    temp_v0 = func_00250740(arg0, arg1, 0);
+    if (temp_v0 != NULL) {
+        temp_v0_2 = func_00262190(*(s32 *)temp_v0, *(s32 *)((u8 *)temp_v0 + 4), temp_s2, arg0, arg1, arg2, arg3, 0);
+        var_s0 = temp_v0_2;
+        var_fp = 1;
+        temp_s2->flags.field5 = ((temp_v0_2 >> 0x18) & 1);
+    }
+    temp_v0_3 = func_00250740(arg2, arg3, 0);
+    if (temp_v0_3 != NULL) {
+        temp_v0_4 = func_00262190(*(s32 *)temp_v0_3, *(s32 *)((u8 *)temp_v0_3 + 4), temp_s2, arg2, arg3, arg0, arg1, 1);
+        var_s1 = temp_v0_4;
+        var_s7 = 1;
+        temp_s2->flags.field6 = ((temp_v0_4 >> 0x18) & 1);
+    }
+    if ((var_fp == 0) && (var_s7 == 0) && (temp_s2->value == 0)) {
+        return 0;
+    }
+    temp_a0 = var_s0 & 0xFF;
+    if ((temp_a0 == 1) && ((var_s1 & 0xFF) == 1)) {
+        return 0x01010001;
+    }
+    if (temp_a0 == 1) {
+        return 0x01000001;
+    }
+    if ((var_s1 & 0xFF) == 1) {
+        return 0x10001;
+    }
+    temp_a0_2 = (var_s0 >> 0x10) & 1;
+    if ((temp_a0_2 == 1) && (((var_s1 >> 0x10) & 1) == 1)) {
+        return 0x01010000;
+    }
+    if (temp_a0_2 == 0) {
+        if (((var_s1 >> 0x10) & 1) == 1) {
+            return 0x10000;
+        }
+    }
+    if (temp_a0_2 == 1) {
+        if (((var_s1 >> 0x10) & 1) == 0) {
+            return 0x01000000;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00262190);
 
