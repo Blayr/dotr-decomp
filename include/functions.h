@@ -659,6 +659,7 @@ void func_001CC4B0(s32 arg0);
 void func_001CC610(void);
 void func_001CCB80(void);
 void func_001CD6E0(void);
+s32 func_001CD710(s32 arg0);
 void func_001CDA10(void);
 s32 func_001CDA60(void *arg0);
 u8 *func_001CDAA0(void);

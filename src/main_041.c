@@ -347,7 +347,105 @@ void func_001CD6E0(void) {
     func_00209D30(func_001CD710(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CD710);
+typedef struct Vec4_001CD710 {
+    f32 x, y, z, w;
+} Vec4_001CD710;
+
+typedef struct Command_001CD710 {
+    __int128 position;
+    u8 pad10[0x33];
+    u8 flags;
+    u8 pad44[0x4C];
+} Command_001CD710;
+
+typedef struct Flags_001CD710 {
+    s8 low : 6;
+    s8 active : 1;
+    s8 high : 1;
+} Flags_001CD710;
+
+typedef struct Object_001CD710 {
+    u8 pad00[4];
+    Command_001CD710 *command;
+    u8 pad08[0x3C];
+    u8 field44;
+    u8 field45;
+    u8 pad46[0x11];
+    Flags_001CD710 flags;
+} Object_001CD710;
+
+s32 func_001AF180(s32);
+s32 func_001D9F00(void *, s32);
+s32 func_001DC790(s32, s32, f32 *, s32, s32);
+
+s32 func_001CD710(s32 arg0) {
+    Vec4_001CD710 position;
+    Command_001CD710 command;
+    u8 *base = D_00317490;
+    u8 *selected = D_00317490 + D_003181E4 * 0x350;
+    s32 original;
+    s64 mode;
+    s32 special;
+    s32 value;
+    s32 final_value;
+    Object_001CD710 *object;
+    extern s32 func_001F9D30();
+    extern s32 func_001DBD30();
+    extern s32 func_00208030();
+
+    mode = func_001AAF60(1);
+    original = arg0;
+    switch (mode) {
+    case 1:
+    case 0:
+        if (func_001F3130(0) == 0) {
+            return original;
+        }
+        arg0 = func_00207FA0(arg0);
+        arg0 = func_001D9A20(arg0);
+        arg0 = func_001CDB00(arg0);
+        arg0 = func_0020A0B0(arg0, 1);
+        func_001E11B0(0, 0, &position.x);
+        position.y = 0.0f;
+        arg0 = func_001DC790(arg0, 0, &position.x, 0x80, 1);
+        func_001E11B0(1, 0, &position.x);
+        position.y = 0.0f;
+        value = func_0020A0B0(func_001DC790(arg0, 1, &position.x, 0x80, 1), 0);
+        if (*(Object_001CD710 **)(base + 0x6C8) != NULL) {
+            if ((*(Object_001CD710 **)(base + 0x6C8))->flags.active != 0) {
+                special = 0;
+                if (base[0xD57] == 0x1D && func_001FA6F0(-1, -1) != NULL) {
+                    special = 1;
+                }
+                if (special != 0) {
+                    position = *(Vec4_001CD710 *)func_001F9D30(0);
+                } else {
+                    func_001E10F0(selected[0x33D], selected[0x33E], 0, &position);
+                }
+                position.y = 1.0f;
+                object = *(Object_001CD710 **)(base + 0x6C8);
+                if (object->field45 == 0) {
+                    value = func_0020A0B0(value, 1);
+                    value = func_001DC790(value, (*(Object_001CD710 **)(base + 0x6C8))->field44, &position.x, 0x40, 0);
+                    value = func_0020A0B0(value, 0);
+                } else if (object->command != NULL) {
+                    command = *object->command;
+                    command.flags = ((s32)command.flags << 6) >> 7;
+                    *(__int128 *)&command = *(__int128 *)&position;
+                    object = func_001D9F00(&command, 1) ? object : NULL;
+                    value = func_001DBC40(value, (s32)object, &command);
+                    value = func_0020A0B0(value, 1);
+                    value = func_001DBD30(value, &command);
+                    value = func_0020A0B0(value, 0);
+                }
+            }
+        }
+        final_value = func_001D9E00(func_001AF180(value));
+        return func_00208030(final_value, original, func_00207500(), 0xFFFFFF);
+    default:
+        return original;
+    }
+}
 
 void func_001CDA10(void) {
     u8 *entry;
