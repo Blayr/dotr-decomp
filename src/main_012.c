@@ -816,7 +816,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Card_00150C40;
 
-s32 func_00150F10(s32 arg0, void *arg1);
 s32 func_00151CF0(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
@@ -897,7 +896,84 @@ s32 func_00150C40(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_00150F10);
+s32 func_00150F10(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    s32 ids[8];
+    s32 data[8];
+    u8 type = (u8)func_00278890(arg0, 0);
+    u8 attr = (u8)func_00278890(arg0, 1);
+
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, ids);
+    if (type == 5) {
+        s32 result = func_001514A0(arg0, (u8 *)data, arg1, 0x3E7);
+        if (result >= 0) {
+            result = 1;
+        } else {
+            result = -1;
+        }
+        return result;
+    }
+    if (attr == 5) {
+        s32 i;
+        s32 *p;
+        s32 count;
+
+        i = 0;
+        count = func_0026FE20(arg0);
+        if (i < count) {
+            p = ids;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    func_001DCD70(arg1, ids[i]);
+                    return 0;
+                }
+                p++;
+                i++;
+                count = func_0026FE20(arg0);
+            } while (i < count);
+        }
+        return -1;
+    }
+    if (func_00151170(arg0, (u8 *)data, arg1) == 1) {
+        return 3;
+    }
+    if (func_00153F30(arg0) == 1) {
+        s32 result = func_001513B0(arg0, (u8 *)data, arg1, 0x2AE);
+        if (result >= 0) {
+            return 2;
+        }
+    }
+    {
+        s32 *p;
+        s32 i;
+        s32 count;
+
+        i = 0;
+        count = func_0026FE20(arg0);
+        if (i < count) {
+            p = ids;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    func_001DCD70(arg1, ids[i]);
+                    return 0;
+                }
+                p++;
+                i++;
+                count = func_0026FE20(arg0);
+            } while (i < count);
+        }
+    }
+    {
+        s32 result = func_001514A0(arg0, (u8 *)data, arg1, 0x3E7);
+        if (result >= 0) {
+            return result;
+        }
+        return -1;
+    }
+}
 
 typedef struct {
     u8 pad0[6];
