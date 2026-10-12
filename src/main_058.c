@@ -50,7 +50,20 @@ f32 func_0020D1A0(f32 *arg0, f32 *arg1) {
     return arg0[0] * arg1[0] + arg0[1] * arg1[1] + arg0[2] * arg1[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D1D0);
+s64 func_0020D1D0(s32 arg0, s32 arg1, f32 weight0, f32 weight1) {
+    extern s64 func_001A22C0(s32, s32, f32);
+    s32 end = arg1 & 0xFFFF;
+    s32 start = arg0 & 0xFFFF;
+    s32 delta = end - start;
+
+    if (delta > 0x8000) {
+        end -= 0x10000;
+    } else if (delta < -0x8000) {
+        end += 0x10000;
+    }
+
+    return func_001A22C0(arg0, arg1, (f32)start * weight0 + (f32)end * weight1 + 0.5f);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D240);
 
