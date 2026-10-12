@@ -346,7 +346,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Card_0011DFB0;
 
-s32 func_0011E6E0(s32 arg0, void *arg1);
 s32 func_0011E270(s32 arg0, u8 arg1, void *arg2);
 
 s32 func_0011DFB0(s32 arg0, s32 arg1, s32 arg2) {
@@ -427,7 +426,118 @@ s32 func_0011DFB0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_0011E270);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011E6E0);
+s32 func_0011E6E0(s32 arg0, void *arg1) {
+    s32 cards[8];
+    u8 scratch[32];
+    s32 count;
+    s32 index;
+    s32 result;
+    u8 status0;
+    u8 status1;
+    extern s32 func_00278890();
+    extern s32 func_001E1030();
+    extern s32 func_0011EB10();
+
+    status0 = func_00278890(arg0, 0);
+    status1 = func_00278890(arg0, 1);
+    count = 0;
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (status0 == 5) {
+        if (func_0011ED50(arg0, scratch, arg1, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (status1 == 5) {
+        if (count < func_0026FE20(arg0)) {
+            s32 *card = cards;
+            do {
+                if ((func_0026FCE0(*card) >> 5) == 0 &&
+                    func_0026FB10(arg0, *card) == 1) {
+                    func_001DCD70(arg1, cards[count]);
+                    return 0;
+                }
+                card++;
+                count++;
+            } while (count < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+    if (func_0011EB10(arg0, scratch, arg1, 0) >= 0) {
+        return 2;
+    }
+    index = 1;
+    do {
+        if ((func_001E0700(arg0, index) & 0x1F) == 14 &&
+            arg0 == func_00250360(arg0, index)) {
+            count = (u8)(count + 1);
+        }
+        if ((func_001E0700(arg0 == 0 ? 1 : 0, index) & 0x1F) == 14 &&
+            arg0 == func_00250360(arg0 == 0 ? 1 : 0, index)) {
+            count = (u8)(count + 1);
+        }
+        index++;
+    } while (index < 5);
+    if ((u8)count >= 3) {
+        if (func_0011EB10(arg0, scratch, arg1, 1) >= 0) {
+            return 3;
+        }
+        result = func_0011ED50(arg0, scratch, arg1, 0x2E2);
+        if (result >= 0) {
+            return result;
+        }
+    }
+    if ((result = func_0011ED50(arg0, scratch, arg1, 0x337)) >= 0) {
+        index = 1;
+        count = 0;
+        do {
+            if (arg0 == func_00250360(arg0, index)) {
+                if (func_001E1030(arg0, index) == 0x337) {
+                    index = 11;
+                    count = 0;
+                }
+            } else if (func_001E2100(arg0, index, 4) == 0) {
+                count = (u8)(count + 1);
+            }
+            if (arg0 != func_00250360(arg0 == 0 ? 1 : 0, index)) {
+                if (func_001E1030(arg0 == 0 ? 1 : 0, index) == 0x337) {
+                    index = 11;
+                    count = 0;
+                }
+            } else if (func_001E2100(arg0 == 0 ? 1 : 0, index, 4) == 0) {
+                count = (u8)(count + 1);
+            }
+            index++;
+        } while (index < 11);
+        if ((u8)count >= 6) {
+            return result;
+        }
+    }
+    {
+        s32 *card;
+        s32 i = 0;
+        if (i < func_0026FE20(arg0)) {
+            card = cards;
+            do {
+                if ((func_0026FCE0(*card) >> 5) == 0 &&
+                    func_0026FB10(arg0, *card) == 1 && *card != 0x156) {
+                    func_001DCD70(arg1, cards[i]);
+                    return 0;
+                }
+                card++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+    }
+    result = func_0011ED50(arg0, scratch, arg1, 999);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_0011EB10);
 
