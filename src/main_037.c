@@ -477,4 +477,87 @@ void func_001AD960(void) {
     func_001ADD00(0, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001ADA80);
+void func_001ADA80(s32 arg0) {
+    extern s32 func_001AAF60();
+    s32 mode;
+    s32 i;
+
+    mode = func_001AAF60(1);
+    func_001F9770(0, 9, 1);
+    i = 0;
+    do {
+        func_001F30B0(i, 0);
+        i++;
+    } while (i < 0x54);
+    i = 0;
+    do {
+        func_001F30B0(i, 1);
+        i++;
+    } while (i < 5);
+    i = 0;
+    do {
+        func_001F30B0(i + 5, 1);
+        i++;
+    } while (i < 2);
+    i = 0;
+    do {
+        func_001F30B0(i + 0x14, 1);
+        i++;
+    } while (i < 0xA);
+    i = 0;
+    do {
+        func_001F30B0(i + 0x1E, 1);
+        i++;
+    } while (i < 2);
+    i = 0;
+    do {
+        func_001F30B0(i + 0x20, 1);
+        i++;
+    } while (i < 2);
+    i = 0;
+    do {
+        func_001F30B0(i + 0x4A, 1);
+        i++;
+    } while (i < 0xA);
+    if (mode == 1) {
+        s32 j = 0;
+        do {
+            func_001F29E0(j + 0x14, 1);
+            func_001F2AD0(j + 0x14, 0x20);
+            j++;
+        } while (j < 0xA);
+        j = 0;
+        do {
+            func_001F29E0(j + 0x1E, 1);
+            func_001F2AD0(j + 0x1E, 0x20);
+            j++;
+        } while (j < 2);
+    }
+    if (arg0 != 0) {
+        s32 color = (s32) &D_00291000;
+        s32 ambient = (s32) &D_0029100C;
+        s32 matrix = (s32) &D_00291020;
+        s32 range = (s32) &D_002910B0;
+        s32 position = (s32) &D_002910B8;
+
+        func_001F68D0((s32) position);
+        func_001F6910((s32) position);
+        func_001F69A0(0);
+        func_001F69E0(0);
+        if (((f32 *) range)[0] == ((f32 *) range)[1]) {
+            func_001F6A70(0);
+            func_001F6AB0(0);
+        } else {
+            func_001F6A70((s32) range);
+            func_001F6AB0((s32) range);
+        }
+        func_001F6B40((s32) matrix);
+        func_001F6B80((s32) matrix);
+        func_001F6C10(0);
+        func_001F6C50(0);
+        func_001F6D40((s32) ambient);
+        func_001F6D80((s32) color);
+        func_001F6CE0(0x80);
+        func_001F6CF0(0x80);
+    }
+}

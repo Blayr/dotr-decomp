@@ -691,4 +691,10 @@ s32 func_00209110(s32, void *, void *, f32, f32, f32);
 
 s32 func_00155C90(s32, u8 *, void *);
 
+extern f32 D_00291000;
+extern f32 D_0029100C;
+extern f32 D_00291020;
+extern f32 D_002910B0;
+extern f32 D_002910B8;
+
 #endif
