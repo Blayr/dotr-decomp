@@ -1223,7 +1223,77 @@ s32 func_00214910(s32 arg0, s32 arg1) {
     return D_002D0970[arg0][arg1] & 0xFFF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214990);
+typedef struct {
+    u8 entries[0xFD88];
+    s16 values[5];
+    u8 pad_fd92[0x206];
+    s32 count;
+    u8 flags;
+    u8 pad_ff9d[3];
+} State_00214990;
+
+extern s32 D_002D19D8;
+extern u16 D_002D49D4[];
+extern u8 D_0034F6D0;
+void func_002029B0(s32, s32);
+s32 func_00215280(s32, s32, s32);
+
+void func_00214990(s32 arg0, s32 arg1) {
+    extern State_00214990 D_0032F790[2];
+    u16 *deck;
+    s32 sum;
+    s32 i;
+    u16 *src;
+    u16 *card;
+    u16 value;
+    State_00214990 *state;
+
+    state = &D_0032F790[D_0034F6D0 == arg0 ? 0 : 1];
+    deck = D_002D0970[arg1];
+    if (!(arg1 >= 0 && arg1 < 51)) {
+        return;
+    }
+    func_00214620(arg0);
+    if (arg1 < 17) {
+        sum = 0;
+        src = &D_002D49D4[D_002D19D8] + 2;
+        while (1) {
+            value = *src;
+            sum += value & 0x1FFF;
+            if (value & 0x8000) {
+                break;
+            }
+            src++;
+        }
+        do {
+            state->count = (sum + func_0019A5C8()) & 0x7FFFFFFF;
+        } while (state->count == 0);
+    } else {
+        state->count = arg1 + 0x40000000;
+    }
+    i = 0;
+    card = deck;
+    do {
+        func_00216040(arg0, 0, *card & 0xFFF);
+        i++;
+        card++;
+    } while (i < 41);
+    for (i = 0; i < 5; i++) {
+        state->values[i] = 999;
+    }
+    func_002172D0(arg0, *deck & 0xFFF, *deck >> 12);
+    func_00215280(arg0, 0, *deck & 0xFFF);
+    deck++;
+    i = 1;
+    do {
+        func_002154E0(arg0, 0, *deck & 0xFFF);
+        i++;
+        deck++;
+    } while (i < 41);
+    func_002029B0(0, 1);
+    func_002029B0(0, 0);
+    func_002029B0(1, -1);
+}
 
 typedef struct State_00214BB0 {
     u8 pad[0xFF9C];
