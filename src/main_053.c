@@ -155,7 +155,153 @@ s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fpar
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FB940);
+typedef struct Vec4_001FB940 {
+    f32 x, y, z, w;
+} Vec4_001FB940;
+
+typedef struct Camera_001FB940 {
+    Vec4_001FB940 polar;
+    Vec4_001FB940 direction;
+    Vec4_001FB940 eye;
+    Vec4_001FB940 target;
+    s32 angle;
+    f32 distance;
+    f32 pad48[2];
+    f32 minimum;
+} Camera_001FB940;
+
+typedef struct Motion_001FB940 {
+    s32 magic;
+    s32 pad04[2];
+    u32 frames;
+    u16 eyeOffset, eyeCount;
+    u16 targetOffset, targetCount;
+    u16 angleOffset, angleCount;
+    u16 fovOffset, fovCount;
+} Motion_001FB940;
+
+void func_001FBE50(void *, void *, u16, f32);
+f32 func_001FC050(void *, u16, f32);
+f32 func_0020B620(f32);
+f32 func_001A6C30(f32, f32);
+void func_0020C630(void *, void *);
+
+static inline void direction_001FB940(s32 index) {
+    Camera_001FB940 *camera;
+    if (index >= 0 && index <= 0) {
+        camera = (Camera_001FB940 *)D_0031BEB0[index];
+        if (camera != NULL) {
+            camera->direction.x = camera->target.x - camera->eye.x;
+            camera->direction.y = camera->target.y - camera->eye.y;
+            camera->direction.z = camera->target.z - camera->eye.z;
+            camera->direction.w = 0.0f;
+            func_0020D070(&camera->direction.x);
+        }
+    }
+}
+
+static inline void polar_001FB940(s32 index) {
+    Camera_001FB940 *camera;
+    Vec4_001FB940 *eye;
+    Vec4_001FB940 *target;
+    Vec4_001FB940 polar;
+    if (index >= 0) {
+        if (index <= 0) {
+            camera = (Camera_001FB940 *)D_0031BEB0[index];
+            if (camera != NULL) {
+                eye = &camera->eye;
+                target = &camera->target;
+                polar.x = func_001A6C60((eye->x - target->x) * (eye->x - target->x) +
+                                      (eye->z - target->z) * (eye->z - target->z));
+                polar.y = func_001A6C18(eye->z - target->z, eye->x - target->x);
+                polar.y = func_001A6C30(6.2831855f + polar.y, 6.2831855f);
+                polar.z = func_001A6C18(eye->y - target->y, polar.x);
+                polar.x = func_001A6C60((eye->x - target->x) * (eye->x - target->x) +
+                                      (eye->y - target->y) * (eye->y - target->y) +
+                                      (eye->z - target->z) * (eye->z - target->z));
+                camera->polar = polar;
+            }
+        }
+    }
+}
+
+s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, s32 mirror) {
+    extern s32 func_001A22C0(f32);
+    Vec4_001FB940 translation;
+    Vec4_001FB940 rotation;
+    f32 matrix[4][4];
+    Camera_001FB940 *camera;
+    void *targetData;
+    s32 *slot;
+    void *angleData;
+    void *fovData;
+    f32 time;
+    f32 angle;
+    f32 fov;
+    f32 halfFov;
+    f32 sine;
+
+    if ((index < 0) || (index > 0)) {
+        return 0;
+    }
+    if (duration == 0) {
+        return 0;
+    }
+    if (motion == NULL) {
+        return 0;
+    }
+    if (((Motion_001FB940 *)motion)->magic != 0x544F4D43) {
+        return 0;
+    }
+    slot = &D_0031BEB0[index];
+    camera = (Camera_001FB940 *)*slot;
+    if (camera == NULL) {
+        return 0;
+    }
+    targetData = (u8 *)motion + ((Motion_001FB940 *)motion)->targetOffset * 8 + 0x20;
+    angleData = (u8 *)motion + ((Motion_001FB940 *)motion)->angleOffset * 8 + 0x20;
+    fovData = (u8 *)motion + ((Motion_001FB940 *)motion)->fovOffset * 8 + 0x20;
+    time = ((f32)(((Motion_001FB940 *)motion)->frames - 1) * (f32)frame) / (f32)duration;
+    func_001FBE50(&camera->eye, (u8 *)motion + ((Motion_001FB940 *)motion)->eyeOffset * 8 + 0x20, ((Motion_001FB940 *)motion)->eyeCount, time);
+    func_001FBE50(&camera->target, targetData, ((Motion_001FB940 *)motion)->targetCount, time);
+    angle = func_001FC050(angleData, ((Motion_001FB940 *)motion)->angleCount, time);
+    fov = func_001FC050(fovData, ((Motion_001FB940 *)motion)->fovCount, time);
+    camera->angle = func_001A22C0((32768.0f * angle) / 180.0f);
+    halfFov = ((3.1415927f * fov) / 180.0f) / 2.0f;
+    if (halfFov < 0.000001f) {
+        halfFov = 0.000001f;
+    }
+    sine = func_0020B620(halfFov);
+    camera->distance = 224.0f * (sine / func_0020B730(halfFov));
+    if (camera->distance < camera->minimum) {
+        camera->distance = camera->minimum;
+    }
+    if (mirror != 0) {
+        camera->eye.x = -camera->eye.x;
+        camera->target.x = -camera->target.x;
+        camera->angle = -camera->angle;
+    }
+    if (parent >= 0) {
+        if (func_001F2330(parent, &rotation) != 0) {
+            func_0020C630(matrix, &rotation);
+            func_0020BAF0((s32)matrix);
+            func_0020CDD0(&camera->eye, NULL, &camera->eye);
+            func_0020CDD0(&camera->target, NULL, &camera->target);
+            func_0020BB50();
+        }
+        if (func_001F1FD0(parent, &translation) != 0) {
+            camera->eye.x += translation.x;
+            camera->eye.y += translation.y;
+            camera->eye.z += translation.z;
+            camera->target.x += translation.x;
+            camera->target.y += translation.y;
+            camera->target.z += translation.z;
+        }
+    }
+    direction_001FB940(index);
+    polar_001FB940(index);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FBE50);
 
