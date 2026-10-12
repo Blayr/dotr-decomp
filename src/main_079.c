@@ -428,7 +428,78 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DBC0);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DD20);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DE20);
+s32 func_0027DE20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
+                  s32 arg5, s32 arg6, s32 arg7, s32 arg8, u16 arg9,
+                  s32 arg10, s32 arg11, s32 arg12, s32 arg13,
+                  s32 arg14, s32 arg15) {
+    extern s32 func_00277160();
+    extern s32 func_002785D0();
+    extern s32 func_00278510();
+    extern s32 func_001E1580();
+    extern s32 func_001E1640();
+    s32 candidate;
+
+    arg12 = (u8)arg12;
+    arg13 = (u8)arg13;
+    func_002770E0(arg1, arg2, arg3, arg4, arg5, arg6, arg13, arg7,
+                  arg8, (s32)&arg9, arg10, arg11, arg15);
+    if ((candidate = func_00277160(arg2, arg3, arg4, arg8, arg12, 30, 1, 2,
+                                  arg13, arg7, arg9)) >= 0 &&
+        func_00250A60(arg2, arg3, arg4) <= arg14) {
+        *(s16 *)((u8 *)arg0 + 4) = 0x2FF;
+        *(u32 *)((u8 *)arg0 + 8) = (candidate << 16) | *(u16 *)((u8 *)arg0 + 8);
+        return 1;
+    }
+    if ((candidate = func_00277160(arg2, arg3, arg4, arg8, arg12, 29, 1, 2,
+                                  arg13, arg7, arg9)) >= 0) {
+        s32 y;
+        s32 x;
+        s32 position;
+        s32 row;
+        s32 column;
+
+        x = candidate >> 8;
+        y = candidate & 0xFF;
+        position = func_001E1090(x, y);
+        *(u32 *)((u8 *)arg0 + 8) = (candidate << 16) | *(u16 *)((u8 *)arg0 + 8);
+        row = position >> 8;
+        column = position & 0xFF;
+        if (func_00278510(arg2, candidate, arg7, column, row, arg13) > 0) {
+            func_0027E780((void *)arg0, candidate, arg13);
+            return 1;
+        }
+        if (func_001E1580(x, y) < 2) {
+            if (func_001E1640(x, y) == 0) {
+                return func_002785D0(arg2, candidate, arg7, column, row, arg13);
+            }
+        }
+    } else {
+        s32 y;
+        s32 x;
+        s32 row;
+        s32 column;
+        s32 alternate;
+        s32 position;
+        if ((alternate = func_00277160(arg2, arg3, arg4, arg8, arg12, 52, 0, 2,
+                                      arg13, arg7, arg9)) >= 0) {
+            x = alternate >> 8;
+            y = alternate & 0xFF;
+            position = func_001E1090(x, y);
+
+            *(u32 *)((u8 *)arg0 + 8) = (alternate << 16) | *(u16 *)((u8 *)arg0 + 8);
+            row = position >> 8;
+            column = position & 0xFF;
+            if (func_00278510(arg2, alternate, arg7, column, row, arg13) > 0) {
+                func_0027E780((void *)arg0, alternate, arg13);
+                return 1;
+            }
+            if (func_001E1580(x, y) < 2 && func_001E1640(x, y) == 0) {
+                return func_002785D0(arg2, alternate, arg7, column, row, arg13);
+            }
+        }
+    }
+    return -1;
+}
 
 s32 func_0027E150(s32 arg0) {
     s32 index;
