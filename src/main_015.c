@@ -508,7 +508,108 @@ s32 func_00163F90(s32 arg0, s32 arg1) {
     return 0x605;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00164020);
+typedef struct Entry_00164020 {
+    u16 position;
+    u8 flag;
+    u8 padding;
+} Entry_00164020;
+
+typedef struct Record_00164020 {
+    u16 position;
+    u16 unused2;
+    u16 mode;
+    u16 unused6;
+    union {
+        u32 value;
+        struct {
+            u16 low;
+            u16 high;
+        } parts;
+    } result;
+} Record_00164020;
+
+s32 func_00277160(s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, u16);
+
+void func_00164020(s32 arg0) {
+    extern void func_0027E770();
+    extern s32 func_001E1030();
+    extern s32 func_001676D0();
+    extern s32 func_002770E0();
+    u8 work[112];
+    Entry_00164020 entries[22];
+    u16 first;
+    u16 second;
+    u16 count;
+    s32 attempt;
+    Record_00164020 *record = (Record_00164020 *)arg0;
+    s32 kind;
+    u16 coordinate;
+
+    coordinate = record->position;
+    if (func_001DF540((s32)coordinate >> 8, coordinate & 0xFF) != 0) {
+        s32 owner;
+        s32 position;
+        s32 state;
+        s32 card;
+        s32 x;
+        coordinate = record->position;
+        owner = func_0024DE70((s32)coordinate >> 8, coordinate & 0xFF);
+        coordinate = record->position;
+        position = func_001E1090((s32)coordinate >> 8, coordinate & 0xFF);
+        count = 0;
+        second = 0;
+        first = 0;
+        coordinate = record->position;
+        card = func_001DF540((s32)coordinate >> 8, coordinate & 0xFF);
+        {
+            s32 i = 0;
+            Entry_00164020 *entry = entries;
+            do {
+                i++;
+                entry->position = 0xFFFF;
+                entry->flag = 0xFF;
+                entry++;
+            } while (i < 22);
+        }
+        func_0027E770(work);
+        state = 0;
+        coordinate = record->position;
+        kind = func_001E1030((s32)coordinate >> 8, coordinate & 0xFF);
+        switch (kind) {
+        case 0x129:
+            x = position >> 8;
+                attempt = 1;
+                position &= 0xFF;
+                while (1) {
+                    s32 result;
+                    result = func_001676D0(owner);
+                    state = func_002770E0(state, card, position, x, owner == 0 ? 1 : 0,
+                                         (u8)attempt, 1, result, entries, &count,
+                                         &first, &second, work);
+                    result = func_00277160(card, position, x, entries, 5, 0x34, 0, 2,
+                                          1, func_001676D0(owner), count);
+                    if (result >= 0) {
+                        record->mode = 0x2FF;
+                        record->result.value = (result << 16) | record->result.parts.low;
+                        return;
+                    }
+                    attempt++;
+                    if (attempt <= 5) {
+                        continue;
+                    }
+                    break;
+                }
+            break;
+        case 0x4F:
+            if (func_001DF470(owner) < 2000) {
+                record->mode = 0x2FF;
+                record->result.value = (position << 16) | record->result.parts.low;
+            }
+            break;
+        }
+        func_00163C50(record, 1);
+    }
+}
 
 typedef struct {
     u16 location;
