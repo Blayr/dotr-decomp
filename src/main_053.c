@@ -392,7 +392,73 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD680);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FDB90);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FDD70);
+typedef struct {
+    u64 TBP0 : 14;
+    u64 TBW : 6;
+    u64 PSM : 6;
+    u64 TW : 4;
+    u64 TH : 4;
+    u64 TCC : 1;
+    u64 TFX : 2;
+    u64 CBP : 14;
+    u64 CPSM : 4;
+    u64 CSM : 1;
+    u64 CSA : 5;
+    u64 CLD : 3;
+} Tex0_001FDD70;
+
+typedef struct {
+    u64 LCM : 1;
+    u64 : 1;
+    u64 MXL : 3;
+    u64 MMAG : 1;
+    u64 MMIN : 3;
+    u64 MTBA : 1;
+    u64 : 9;
+    u64 L : 2;
+    u64 : 11;
+    u64 K : 12;
+    u64 : 20;
+} Tex1_001FDD70;
+
+typedef struct {
+    s32 width;
+    s32 height;
+    s32 tw;
+    s32 th;
+    s32 cbp;
+    s32 tbp;
+    s32 cbpOffset;
+} TexInfo_001FDD70;
+
+void func_001FDD70(void *arg0, void *arg1) {
+    extern TexInfo_001FDD70 D_0031C070;
+    TexInfo_001FDD70 *texture = &D_0031C070;
+
+    if (arg0 != NULL) {
+        ((Tex0_001FDD70 *)arg0)->TBP0 = texture->tbp;
+        ((Tex0_001FDD70 *)arg0)->TBW = texture->width >> 6;
+        ((Tex0_001FDD70 *)arg0)->PSM = 20;
+        ((Tex0_001FDD70 *)arg0)->TW = texture->tw;
+        ((Tex0_001FDD70 *)arg0)->TH = texture->th;
+        ((Tex0_001FDD70 *)arg0)->TCC = 1;
+        ((Tex0_001FDD70 *)arg0)->TFX = 0;
+        ((Tex0_001FDD70 *)arg0)->CBP = texture->cbp + texture->cbpOffset;
+        ((Tex0_001FDD70 *)arg0)->CPSM = 0;
+        ((Tex0_001FDD70 *)arg0)->CSM = 0;
+        ((Tex0_001FDD70 *)arg0)->CSA = 0;
+        ((Tex0_001FDD70 *)arg0)->CLD = 1;
+    }
+    if (arg1 != NULL) {
+        ((Tex1_001FDD70 *)arg1)->LCM = 0;
+        ((Tex1_001FDD70 *)arg1)->MXL = 0;
+        ((Tex1_001FDD70 *)arg1)->MMAG = 0;
+        ((Tex1_001FDD70 *)arg1)->MMIN = 0;
+        ((Tex1_001FDD70 *)arg1)->MTBA = 0;
+        ((Tex1_001FDD70 *)arg1)->L = 0;
+        ((Tex1_001FDD70 *)arg1)->K = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FDFE0);
 
