@@ -475,7 +475,197 @@ s32 func_0023D170(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023D400);
+typedef struct State_0023D400 {
+    s32 request;
+    s32 ready;
+    s32 slot;
+    s32 mode;
+    u8 pad10[0x10];
+    s32 command;
+    s32 result;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 phase;
+    u8 pad36[0xA];
+    s16 retries;
+    u8 pad42[6];
+    s32 handles[2];
+    u8 pad50[0x266];
+    s16 field2B6;
+    s16 field2B8;
+} State_0023D400;
+
+s32 func_00193BA8(s32, s32, void *, s32);
+s32 func_00193D18(s32);
+s32 func_00193DD0(s32, s16, s16, s32);
+s32 func_00193F38(s32, void *, s32);
+s32 func_00194248(s32, s32 *, s32 *);
+extern u8 D_0029B1BE[];
+extern s16 D_0034FB34;
+extern struct State_0023E610 D_0034FB00;
+
+s32 func_0023D400(void) {
+    State_0023D400 *p = (State_0023D400 *)&D_0034FB00;
+
+    switch (D_0034FB34) {
+    case 0:
+        p->request = func_00193BA8(p->slot, p->mode, D_0029B1BE, 1);
+        p->ready = func_00194248(1, &p->command, &p->result);
+        if ((p->ready == 1) && (p->command == 2)) {
+                if (p->result < 0) {
+                    switch (p->result) {
+                    case -2:
+                        p->retries++;
+                        if (p->retries >= 3) {
+                            p->phase = 0;
+                            p->retries = 3;
+                            p->state = 11;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        p->state = 14;
+                        p->phase = 0;
+                        p->retries = 0;
+                        return 5;
+                    case -4:
+                        p->state = 14;
+                        p->phase = 0;
+                        p->retries = 0;
+                        return 10;
+                    case -5:
+                        p->state = 14;
+                        p->phase = 0;
+                        p->retries = 0;
+                        return 10;
+                    case -7:
+                        p->state = 14;
+                        p->phase = 0;
+                        p->retries = 0;
+                        return 10;
+                    default:
+                        p->phase = 0;
+                        p->state = 14;
+                        p->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    p->handles[p->slot] = p->result;
+                    p->retries = 0;
+                    p->phase = 1;
+                    return 0;
+                }
+        } else {
+            return 0;
+        }
+        break;
+    case 1:
+        p->request = func_00193DD0(p->handles[p->slot], p->field2B6, p->field2B8, 1);
+        p->ready = func_00194248(1, &p->command, &p->result);
+        if ((p->ready == 1) && (p->command == 4)) {
+                switch (p->result) {
+                case 0:
+                    p->retries = 0;
+                    p->phase = 2;
+                    return 0;
+                case -2:
+                    p->retries++;
+                    if (p->retries >= 3) {
+                        p->phase = 0;
+                        p->retries = 3;
+                        p->state = 11;
+                        return 3;
+                    }
+                    break;
+                case -4:
+                    p->state = 14;
+                    p->phase = 0;
+                    p->retries = 0;
+                    return 10;
+                default:
+                    p->phase = 0;
+                    p->state = 14;
+                    p->retries = 0;
+                    return 2;
+                }
+        } else {
+            return 0;
+        }
+        break;
+    case 2:
+        func_0017BB60(0);
+        p->request = func_00193F38(p->handles[p->slot], (u8 *)0x1E10000 + p->slot * 0x100F0, 0x100F0);
+        p->ready = func_00194248(1, &p->command, &p->result);
+        if ((p->ready == 1) && (p->command == 5)) {
+                if (p->result < 0) {
+                    switch (p->result) {
+                    case -2:
+                        p->retries++;
+                        if (p->retries >= 3) {
+                            p->phase = 0;
+                            p->retries = 3;
+                            p->state = 11;
+                            return 3;
+                        }
+                        return 0;
+                    case -4:
+                        p->state = 14;
+                        p->phase = 0;
+                        p->retries = 0;
+                        return 10;
+                    default:
+                        p->phase = 0;
+                        p->state = 14;
+                        p->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    p->retries = 0;
+                    p->phase = 3;
+                    return 0;
+                }
+        } else {
+            return 0;
+        }
+        break;
+    case 3:
+        p->request = func_00193D18(p->handles[p->slot]);
+        p->ready = func_00194248(1, &p->command, &p->result);
+        if ((p->ready == 1) && (p->command == 3)) {
+            switch (p->result) {
+            case 0:
+                p->phase = 0;
+                p->retries = 0;
+                p->state = 13;
+                return 1;
+            case -2:
+                p->retries++;
+                if (p->retries >= 3) {
+                    p->state = 11;
+                    p->phase = 0;
+                    p->retries = 3;
+                    return 3;
+                }
+                break;
+            case -4:
+                p->state = 14;
+                p->phase = 0;
+                p->retries = 0;
+                return 10;
+            default:
+                p->state = 14;
+                p->phase = 0;
+                p->retries = 0;
+                return 2;
+            }
+        } else {
+            return 0;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023D920);
 
