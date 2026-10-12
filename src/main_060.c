@@ -1260,7 +1260,6 @@ typedef struct State_00217410 {
     u8 padding[3];
 } State_00217410;
 
-void func_00217A70(s32);
 extern State_00217410 D_0034F6E0;
 extern u8 D_002D0930[];
 

@@ -18,7 +18,28 @@ s32 func_00217A10(s64 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217A70);
+typedef struct {
+    s8 active : 1;
+    s8 mode : 1;
+} Flags_00217A70;
+
+typedef struct {
+    u8 pad[8];
+    Flags_00217A70 flags;
+} State_00217A70;
+
+extern State_00217A70 D_0034F6E0;
+
+s32 func_00217A70(s32 arg0) {
+    State_00217A70 *state = &D_0034F6E0;
+
+    if (D_0034F6E8.enabled == 0) {
+        return 0;
+    }
+    state->flags.mode = (s8)(arg0 ? 1 : 0);
+    func_00109F60(state->flags.mode ? 0 : 1);
+    return 1;
+}
 
 void func_00217B00(void) {
     func_00197C18(func_00197BC0(0x01FFEFF0 - (s32)&D_1FE0000));

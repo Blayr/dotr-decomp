@@ -1461,7 +1461,6 @@ typedef struct State_00214BB0 {
     u8 tail[3];
 } State_00214BB0;
 
-void func_00217A70(u64);
 extern u8 D_0034F6D0;
 
 s32 func_00214BB0(s32 arg0, s32 arg1, s32 arg2) {
