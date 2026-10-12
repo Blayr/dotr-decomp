@@ -482,7 +482,33 @@ s32 func_00216C70(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216D30);
+s32 func_00216D30(s32 arg0, s32 arg1) {
+    typedef struct {
+        u8 pad[0x49];
+        u8 unused : 7;
+        u8 enabled : 1;
+        u8 tail[2];
+    } Card_00216D30;
+    s32 side;
+    Card_00216D30 *cards;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    cards = (Card_00216D30 *)&D_0032F790[side];
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    return cards[arg1].enabled ? 1 : 0;
+}
 
 typedef struct {
     u8 pad[0x49];
