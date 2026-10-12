@@ -778,7 +778,78 @@ s32 func_001DD990(s32 arg0, s32 arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DDAC0);
+typedef struct Unit_001DDAC0 {
+    u8 pad00[0x30];
+    s32 rotation;
+    s16 x;
+    s16 y;
+    u8 pad38[8];
+    u8 grid_x;
+    u8 grid_y;
+    u8 pad42[2];
+    u8 reversed;
+} Unit_001DDAC0;
+
+s32 func_001DDAC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001A22C0(f32);
+    Unit_001DDAC0 *self;
+    Unit_001DDAC0 *target;
+    s32 x;
+    s32 result;
+    s32 y;
+    s32 difference;
+
+    self = (Unit_001DDAC0 *)func_001DF540(arg0, arg1);
+    target = (Unit_001DDAC0 *)func_001E36E0(arg2, arg3);
+    x = func_001A22C0((f32)((arg2 - 3) * 50));
+    y = func_001A22C0((f32)((arg3 - 3) * 50));
+    result = 0;
+    if (self == target) {
+        return func_001DD990(arg0, arg1);
+    }
+    if (target != 0) {
+        x += target->x;
+        y += target->y;
+    }
+    if (self != 0) {
+        f32 dx;
+        f32 dy;
+        s32 desired_angle;
+
+        dx = (f32)x - ((f32)self->x + (f32)((self->grid_x - 3) * 50));
+        dy = (f32)y - ((f32)self->y + (f32)((self->grid_y - 3) * 50));
+        desired_angle = ((((self->reversed == 0 ? 0 : 0x8000) +
+            func_001A22C0(65536.0f * (func_001A6C18(
+                dy, dx) /
+                6.2831855f)) + 0x400) >> 11) << 11);
+        desired_angle += self->rotation;
+        difference = -((desired_angle + 0x14000) % 0x10000);
+        if (difference < -0x7FFF) {
+            difference += 0x10000;
+        } else if (difference > 0x8000) {
+            difference -= 0x10000;
+        }
+        if (difference != 0) {
+            if (difference > 0) {
+                if (difference > 0x800) {
+                    difference = 0x800;
+                }
+                self->rotation += difference;
+            } else {
+                if (difference < -0x800) {
+                    difference = -0x800;
+                }
+                self->rotation += difference;
+            }
+            self->rotation = (self->rotation + 0x10000) % 0x10000;
+            if (self->rotation > 0x8000) {
+                self->rotation -= 0x10000;
+            }
+            result = 1;
+        }
+    }
+    return result;
+}
 
 void func_001E7F70(s32, s32, s32);
 void func_001E8780(s32, s32, s32, s32);
