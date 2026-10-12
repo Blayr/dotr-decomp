@@ -638,6 +638,7 @@ s32 func_0016D8C0(u16 *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_0016DCA0(u16 *arg0) {
+    extern s32 func_0016DDA0();
     s32 temp_s1;
     u16 temp_v0;
     u16 temp_v0_2;
