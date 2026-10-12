@@ -280,7 +280,42 @@ s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216EC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216F80);
+#ifndef GAME_H
+extern unsigned char D_0032F790[];
+#endif
+
+
+typedef struct PlayerState_00216F80 {
+    u8 pad[0xFEA0];
+    u8 flags[0x100];
+} PlayerState_00216F80;
+
+extern u8 D_0034F6D0;
+
+static inline s32 player_index_00216F80(s32 player) {
+    if (D_0034F6D0 == player) {
+        return 0;
+    }
+    return 1;
+}
+
+s32 func_00216F80(s32 player, s32 flag, s32 enabled) {
+    PlayerState_00216F80 *state;
+
+    state = &((PlayerState_00216F80 *)D_0032F790)[player_index_00216F80(player)];
+    if (player < 0 || player >= 2) {
+        return 0;
+    }
+    if (flag < 0 || flag >= 22) {
+        return 0;
+    }
+    if (enabled != 0) {
+        state->flags[flag >> 3] |= (u8)(1 << (flag % 8));
+    } else {
+        state->flags[flag >> 3] &= (u8)~(1 << (flag % 8));
+    }
+    return 1;
+}
 
 typedef struct Entry_002170A0 {
     u8 id;
