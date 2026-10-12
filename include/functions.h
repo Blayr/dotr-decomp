@@ -674,6 +674,7 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3);
 void func_001B3C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10);
 void func_001B65E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 void func_001B6C90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+s32 func_001B6CA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
 void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 flags, s32 width, s32 number);
 s32 func_001B7660(s8 character);
 void func_001B81E0(void);

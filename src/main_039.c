@@ -13,7 +13,52 @@ void func_001B6C90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     func_001B6CA0(arg0, arg1, arg2, arg3, arg4, arg5, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6CA0);
+typedef struct Result_001B6CA0 {
+    s32 unk0;
+    s32 unk4;
+} Result_001B6CA0;
+
+s32 func_001B6CA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+    extern s32 func_001FEAB0();
+    extern s32 func_001FE7D0();
+    Result_001B6CA0 *spA8;
+    s32 stride;
+    s32 digit;
+
+    spA8 = (Result_001B6CA0 *) func_001FEAB0(0);
+    stride = 0x14 - (arg5 ? 4 : 0);
+    {
+        s32 power = 1;
+
+        if (arg4 == 0x7FFFFFFF) {
+            digit = 0;
+            spA8->unk4 = 0x108;
+            if (0 < arg3) {
+                do {
+                    arg0 = func_001FE7D0(arg0, 0, arg1 + (stride * (arg3 - digit - 1)), arg2, arg7, func_001FDFE0);
+                    digit += 1;
+                } while (digit < arg3);
+            }
+            return arg0;
+        }
+        digit = 0;
+        if (0 < arg3) {
+            do {
+                spA8->unk4 = (((arg4 / power) % 10) * 0x16);
+                arg0 = func_001FE7D0(arg0, 0, arg1 + (stride * (arg3 - digit - 1)), arg2, arg7, func_001FDFE0);
+                power *= 10;
+                digit += 1;
+            } while ((arg6 != 0 || arg4 >= power) && digit < arg3);
+        }
+        if (digit < arg3) {
+            if (arg4 < 0) {
+                spA8->unk4 = 0xF2;
+                arg0 = func_001FE7D0(arg0, 0, arg1 + (stride * (arg3 - digit - 1)), arg2, arg7, func_001FDFE0);
+            }
+        }
+    }
+    return arg0;
+}
 
 void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                    s32 flags, s32 width, s32 number) {
