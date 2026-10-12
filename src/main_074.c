@@ -2817,7 +2817,266 @@ s32 func_0025C0B0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C330);
+void func_0024F370(s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+typedef struct Command_0025C330 {
+    s32 kind;
+    s32 value;
+    s32 position;
+    s32 flags;
+} Command_0025C330;
+
+typedef struct Owner_0025C330 {
+    u8 pad0[12];
+    s32 entity;
+} Owner_0025C330;
+
+typedef struct State_0025C330 {
+    u16 fade;
+    u16 count;
+    u16 phase;
+    u8 primary[10];
+    u8 secondary[10];
+    u8 pad1A[6];
+    s32 positions[10];
+    s32 targets[10];
+    u8 pad70[0x64];
+    u8 allocated;
+    u8 padD5[0x2B];
+    u8 stage;
+    u8 pad101;
+    u16 timer;
+} State_0025C330;
+
+static inline u8 *primary_0025C330(u8 *bytes) {
+    return bytes + 6;
+}
+
+s32 func_0025C330(void *arg0, void *arg1, s32 arg2) {
+    s32 complete;
+    u8 flags;
+    Command_0025C330 command;
+    s32 randomX;
+    s32 entity;
+    s32 index;
+    s32 cleanupIndex;
+    u8 handle;
+    u16 oldTimer;
+    u8 *entry;
+    u8 *cleanupEntry;
+    State_0025C330 *state = arg1;
+    Command_0025C330 *cmd = &command;
+
+    cmd->kind = 999;
+    cmd->value = 0;
+    cmd->position = 0;
+    cmd->flags = 0;
+    complete = 0;
+    flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        index = 0;
+        entry = (u8 *)state;
+        do {
+            randomX = (func_0019A5C8() % 7) << 8;
+            *(s32 *)(entry + 0x20) = randomX | (func_0019A5C8() % 7);
+            index++;
+            entry += 4;
+        } while (index < 10);
+        state->fade = 0x80;
+        func_00255AC0(state, 0x20D);
+        func_00255AC0(state, 0x25B);
+        return 1;
+    }
+
+    switch (state->stage) {
+    case 0:
+        if (state->phase > 0) {
+            oldTimer = state->timer++;
+            if (oldTimer == 0) {
+                func_00260740(0x10);
+            } else if (state->timer >= 0x10) {
+                state->timer = 0;
+                state->stage++;
+            }
+        }
+        break;
+    case 1:
+        if (state->phase < 2) {
+            oldTimer = state->timer++;
+            if (oldTimer == 0) {
+                func_00260990(0x3C, 0x3FFF);
+            } else if (state->timer >= 0x3C) {
+                state->timer = 0;
+            }
+        } else {
+            func_001E4530();
+            func_00260A70(state, 0x10);
+            state->timer = 0;
+            state->stage++;
+        }
+        break;
+    default:
+        oldTimer = state->timer++;
+        if (oldTimer >= 0x10) {
+            flags = 2;
+        }
+        break;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (state->fade > 0x30) {
+            state->fade -= 15;
+        } else {
+            state->fade = 0x30;
+            if (func_00255B50(state) == 1) {
+                func_00261600();
+                state->phase++;
+            }
+        }
+        if (state->fade < 0x30) {
+            state->fade = 0x30;
+        }
+        func_001F6CF0((u8)state->fade);
+        break;
+    case 1: {
+        s32 resolvedPosition;
+        u8 *primary;
+        u8 *activeEntry;
+        s32 x;
+        s32 y;
+        if ((s32)state->fade % 8 == 0) {
+            if (state->count < 10) {
+                u8 *scanEntry;
+                s32 position;
+                s32 scanIndex;
+                cmd->kind = 0x20D;
+                cmd->value = 0;
+                cmd->position = state->positions[state->count];
+                cmd->flags = 0;
+                handle = func_00255A30((s32 *)cmd, state);
+                state->primary[state->allocated] = handle;
+                if ((s32)handle >= 0) {
+                    state->allocated++;
+                }
+                scanIndex = 0;
+                scanEntry = (u8 *)state;
+                while (scanIndex < state->count) {
+                    position = *(s32 *)(scanEntry + 0x20);
+                    if (state->positions[(u16)state->count] == position) {
+                        *(s32 *)(scanEntry + 0x20) = position | 0x10000;
+                    }
+                    scanEntry += 4;
+                    scanIndex++;
+                }
+                state->count++;
+            }
+        }
+        index = 0;
+        activeEntry = (u8 *)state;
+        while (index < state->count) {
+            s32 position;
+            primary = &state->primary[index];
+            if (func_001F51D0(state->primary[index]) == 1 &&
+                func_001F52D0(*primary) == 2) {
+                position = *(s32 *)(activeEntry + 0x20);
+                if (position >> 16 == 0) {
+                    if ((resolvedPosition = func_001E3790(position & 0xFF, position >> 8)) >= 0 &&
+                        (x = resolvedPosition & 0xFF) > 0) {
+                            y = resolvedPosition >> 8;
+                            entity = func_0024DE70(y, x);
+                            if (func_00271E40(y, x, 11)) {
+                                func_001E42C0(0, -120, 80, 270);
+                                resolvedPosition = func_001E1090(entity, 0);
+                                func_00260490(resolvedPosition & 0xFF, resolvedPosition >> 8, 0,
+                                    func_00271740(9, entity), 1, 1, 11);
+                            } else if (func_00267700(y, x) && entity != ((Owner_0025C330 *)arg0)->entity) {
+                                func_001E42C0(0, 0, 0, func_001DE210(0x53));
+                            } else {
+                                cmd->kind = 0x25B;
+                                cmd->value = 0;
+                                cmd->position = resolvedPosition;
+                                cmd->flags = 1;
+                                handle = func_00255A30((s32 *)cmd, state);
+                                state->secondary[index] = handle;
+                                if ((s32)handle >= 0) {
+                                    *(s32 *)(activeEntry + 0x48) = resolvedPosition;
+                                }
+                            }
+                    }
+                    *(s32 *)(activeEntry + 0x20) |= 0x10000;
+                }
+            }
+            activeEntry += 4;
+            index++;
+        }
+
+        cleanupIndex = 0;
+        cleanupEntry = (u8 *)state;
+        do {
+            s32 position;
+            primary = &state->primary[cleanupIndex];
+            if (func_001F51D0(state->primary[cleanupIndex]) == 0 &&
+                func_001F51D0(state->secondary[cleanupIndex]) == 0) {
+                position = *(s32 *)(cleanupEntry + 0x48);
+                if (position > 0) {
+                    func_0024F370(position >> 8, position & 0xFF);
+                    *(s32 *)(cleanupEntry + 0x48) = 0;
+                }
+            }
+            if (state->count > 0 && func_001F51D0(*primary) == 0 && func_001F51D0(*primary) == 0) {
+                complete++;
+            }
+            cleanupIndex++;
+            cleanupEntry += 4;
+        } while (cleanupIndex < 10);
+
+        if (complete >= 10) {
+            state->fade = 0x30;
+            state->phase++;
+        } else {
+            u8 *releaseEntry;
+            s32 releaseIndex;
+            releaseIndex = 10;
+            releaseEntry = (u8 *)state + 0x28;
+            do {
+                s32 position = *(s32 *)(releaseEntry + 0x20);
+                if (position > 0) {
+                    func_0024F370(position >> 8, position & 0xFF);
+                }
+                releaseIndex++;
+                releaseEntry += 4;
+            } while (releaseIndex < 20);
+            state->fade++;
+        }
+        break;
+    }
+    default:
+        state->fade += 15;
+        if (state->fade > 0x80) {
+            state->fade = 0x80;
+        }
+        func_001F6CF0((u8)state->fade);
+        if (state->fade == 0x80) {
+            flags |= 1;
+        }
+        break;
+    }
+    if (flags == 3) {
+        if (func_001DE780()) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C9E0);
 
