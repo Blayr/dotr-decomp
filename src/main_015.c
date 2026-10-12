@@ -510,7 +510,45 @@ s32 func_00163F90(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00164020);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00164260);
+typedef struct {
+    u16 location;
+    u16 unk02;
+    u16 flags;
+    u16 unk06;
+    union {
+        u32 word;
+        u16 low;
+    } destination;
+} Entry_00164260;
+
+void func_00164260(void *arg0) {
+    Entry_00164260 *entry = arg0;
+    s32 i;
+    s32 location;
+    s32 result;
+
+    if (func_001DF540(entry->location >> 8, entry->location & 0xFF) == 0) {
+        return;
+    }
+    func_0024DE70(entry->location >> 8, entry->location & 0xFF);
+    func_001E1090(entry->location >> 8, entry->location & 0xFF);
+    if (*(u16 *)((u8 *)func_001DF540(entry->location >> 8, entry->location & 0xFF) + 0x3C) == 0x2B0) {
+        entry->flags = 0xCFF;
+    } else {
+        entry->flags = 0x3FF;
+    }
+    i = 0;
+    do {
+        result = func_00164360(i & 0xFF);
+        location = result & 0xFFFF;
+        result = func_001E3790(result & 0xFF, location >> 8);
+        if (result == entry->location || result < 0) {
+            entry->destination.word = (location << 16) | entry->destination.low;
+            return;
+        }
+    } while (++i < 5);
+    return;
+}
 
 s32 func_00164360(s32 arg0) {
     s32 temp_v1;
