@@ -310,7 +310,6 @@ s32 func_001FE7D0(s32, s32, s32, s32, s32, s32);
 s32 func_00208110(s32, s32, s32, s32, s32, s32);
 
 void func_00242600(void *, s32, void *);
-void func_00242950(s32);
 void func_00242C20(void);
 extern char D_0030F354[];
 extern s32 D_003503B8;

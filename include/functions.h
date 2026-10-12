@@ -1253,6 +1253,7 @@ void func_00242470(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00242580(s32 arg0);
 void func_00242900(void);
 s32 func_00242910(void);
+void func_00242950(s32 arg0);
 void func_00242CD0(void);
 void func_00242CF0(s8 *arg0);
 void func_00242D00(void);

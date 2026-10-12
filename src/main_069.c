@@ -25,7 +25,86 @@ s32 func_00242910(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242950);
+typedef struct ThreadParams_00242950 {
+    s32 attr;
+    void (*entry)();
+    s32 stack;
+    s32 stack_size;
+    void *gp;
+    s32 priority;
+    s32 current_priority;
+    s32 status;
+    s32 option;
+} ThreadParams_00242950;
+
+extern s32 func_0017B5C0(s32, void (*)(), s32);
+extern s32 func_0017B5F0(s32, void (*)(), s32);
+extern s32 func_0017B6E0(void *);
+extern void func_0017B700(s32, void *);
+extern void func_0017C428(s32);
+extern void func_0017C4F8(s32);
+extern void func_0018EA68(void);
+extern void func_001906D0(void);
+extern s32 func_00243A90(void *, s32);
+extern void func_00242190(void);
+extern void func_002423A0(void);
+extern s32 func_00242D10();
+extern char D_0030F39A[];
+extern u8 D_00317EF0[];
+extern s32 D_00350730;
+extern s32 D_00350734;
+extern s32 D_00350778;
+extern s32 D_00350780;
+
+void func_00242950(s32 arg0) {
+    ThreadParams_00242950 thread;
+    extern s32 func_00190810();
+    extern s32 func_00244FB0();
+    extern s32 func_002450B0(void *, s32, s32, void (*)(), s32);
+    extern void func_00245770();
+
+    *(s32 *)0x1000E000 |= 3;
+    *(s32 *)0x1000E010 = 4;
+    func_00241A90((void *)D_00350788);
+    func_0018EA68();
+    func_00244FB0(D_00350680, D_00350380, 0x1C9168, D_00350398,
+                 D_00350378, 0x100, D_003503A8, 0x200);
+    func_001906D0();
+    func_00190810(1, 0x8000, 0);
+    func_00243060(D_00350620, D_00350390, 0xC000, 0x6000);
+    func_002450B0(D_00350680, 0, 0, (void (*)())func_00242D10, D_00350788);
+    if (D_0029B2F0 != 0) {
+        func_002450B0(D_00350680, 2, 0, (void (*)())func_00242E40, D_00350788);
+    }
+    func_00245770(D_00350600,
+                 ((u64)((s64)D_00350368 << 36) >> 36) | 0x20000000,
+                 (void *)D_00350370, 2);
+    thread.entry = func_00242CD0;
+    thread.stack = D_00350388;
+    thread.stack_size = 0x800;
+    thread.priority = 0x20;
+    thread.gp = D_00317EF0;
+    thread.option = 0;
+    D_00350778 = func_0017B6E0(&thread);
+    func_0017B700(D_00350778, NULL);
+    thread.entry = (void (*)())func_002452E0;
+    thread.stack = D_003503A0;
+    thread.stack_size = 0x4000;
+    thread.priority = 0x20;
+    thread.gp = D_00317EF0;
+    thread.option = 0;
+    D_00350780 = func_0017B6E0(&thread);
+    func_0017B700(D_00350780, D_00350680);
+    if (func_00243A90(D_00350740, arg0) == 0) {
+        do {
+            func_00199B50(D_0030F39A, arg0);
+        } while (func_00243A90(D_00350740, arg0) == 0);
+    }
+    D_00350734 = func_0017B5C0(2, func_00242190, 0);
+    func_0017C428(2);
+    D_00350730 = func_0017B5F0(2, func_002423A0, 0);
+    func_0017C4F8(2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00242C20);
 
