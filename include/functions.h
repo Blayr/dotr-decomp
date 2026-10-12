@@ -438,6 +438,7 @@ void func_0015A180(s32 arg0, s32 arg1, u16 *arg2);
 s32 func_0015A2E0(s32 arg0, u16 *arg1);
 s32 func_0015A320(u16 *arg0);
 s32 func_0015A360(s32 arg0, s32 arg1, s32 arg2);
+s32 func_0015A5F0(s32 arg0, void *arg1);
 s32 func_0015A820(s32 arg0, void *arg1, void *arg2, s32 arg3);
 s32 func_0015A910(s32 arg0, u8 *arg1, void *arg2, s32 arg3);
 s32 func_0015AD00(s32 arg0, void *arg1, void *arg2);
