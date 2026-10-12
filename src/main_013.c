@@ -615,7 +615,167 @@ s32 func_00156F70(void) {
     return (func_001E36E0(4, 3) == 0) ? 0x304 : -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00156FC0);
+typedef struct {
+    u16 id;
+    u8 pad2[6];
+    u32 position;
+} Record_00156FC0;
+
+typedef struct {
+    u16 id;
+    u8 kind;
+    u8 pad3;
+    u16 position;
+    u8 pad6[6];
+    s32 action;
+    u8 status;
+} Result_00156FC0;
+
+typedef struct {
+    u8 x : 4;
+    u8 y : 4;
+} Position_00156FC0;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 position_00156FC0(void *src, u8 mode) {
+    if (mode == 1) {
+        return (u16)(((Record_00156FC0 *)src)->position >> 16);
+    }
+    return (u16)((Record_00156FC0 *)src)->position;
+}
+
+static inline s32 closer_00156FC0(Position_00156FC0 *best, Position_00156FC0 *current,
+                                 s32 x, s32 y) {
+    s32 bestLowY = best->y < y ? best->y : y;
+    s32 bestHighY = y < best->y ? best->y : y;
+    s32 bestLowX = best->x < x ? best->x : x;
+    s32 bestHighX = x < best->x ? best->x : x;
+    s32 currentLowY = current->y < y ? current->y : y;
+    s32 currentHighY = y < current->y ? current->y : y;
+    s32 currentLowX = current->x < x ? current->x : x;
+    s32 currentHighX = x < current->x ? current->x : x;
+    return ((currentHighX - currentLowX) + (currentHighY - currentLowY)) <
+           ((bestHighX - bestLowX) + (bestHighY - bestLowY));
+}
+
+s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_0027A090();
+    s32 sourcePosition;
+    s32 targetPosition;
+    s32 count;
+    Position_00156FC0 positions[12];
+    s32 i;
+    Position_00156FC0 *p;
+    Position_00156FC0 *candidate;
+    s32 sourceY;
+    s32 sourceX;
+    u32 lowPosition;
+    u32 highPosition;
+    s32 card;
+
+    lowPosition = position_00156FC0(arg0, arg3);
+    highPosition = position_00156FC0(arg0, arg3);
+    if (func_001DF540(highPosition >> 8, lowPosition & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    }
+    sourcePosition = func_001E1090(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF);
+    lowPosition = position_00156FC0(arg0, arg3);
+    highPosition = position_00156FC0(arg0, arg3);
+    targetPosition = func_001E1090(highPosition >> 8, lowPosition & 0xFF);
+    candidate = positions;
+    i = 0;
+    p = candidate;
+    do {
+        p->x = p->y = 15;
+        i++;
+        p++;
+    } while (i < 12);
+
+    card = func_001DF540(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF);
+    sourceX = sourcePosition & 0xFF;
+    sourceY = sourcePosition >> 8;
+    if (func_002464F0(card, sourceX, sourceY) == 0) {
+        s32 value;
+        ((Result_00156FC0 *)arg2)->id = ((Record_00156FC0 *)arg0)->id;
+        ((Result_00156FC0 *)arg2)->kind = 6;
+        ((Result_00156FC0 *)arg2)->position = sourcePosition;
+        value = func_00276CC0(sourceX, sourceY, arg1, 3, 1,
+                             (u8)func_00158780(arg1));
+        if (value >= func_001E0290(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF, 0)) {
+            ((Result_00156FC0 *)arg2)->status = 1;
+        } else {
+            ((Result_00156FC0 *)arg2)->status = 0;
+        }
+        func_0027B1B0(arg0, arg3);
+        return 0;
+    } else {
+        s32 id;
+        u16 flags;
+        s32 targetY;
+        s32 targetX;
+        s32 bestIndex;
+        s32 index;
+        s32 bestValue;
+
+        id = ((Record_00156FC0 *)arg0)->id;
+        flags = (u16)func_00158780(arg1);
+        func_0027A090(id >> 8, id & 0xFF, positions, sourceX, sourceY,
+                     targetX = targetPosition & 0xFF, targetY = targetPosition >> 8,
+                     position_00156FC0(arg0, arg3),
+                     (s64)0, (s64)30, (s64)flags);
+        count = func_0027AFC0((u8 *)positions);
+        bestIndex = 0xFF;
+        if (count > 0) {
+            bestValue = 0xFFFF;
+            index = 0;
+            if (index < count) {
+            do {
+                s32 value;
+                value = func_00276CC0(candidate->x, candidate->y, arg1, 2, 1,
+                                     (u8)func_00158780(arg1));
+                if (value < bestValue) {
+                    bestValue = value;
+                    bestIndex = index;
+                } else if (value == bestValue) {
+                    if (closer_00156FC0(&positions[bestIndex], candidate, targetX, targetY)) {
+                        bestValue = value;
+                        bestIndex = index;
+                    }
+                }
+                index++;
+                candidate++;
+            } while (index < count);
+            }
+        } else {
+            ((Result_00156FC0 *)arg2)->id = ((Record_00156FC0 *)arg0)->id;
+            ((Result_00156FC0 *)arg2)->kind = 6;
+            ((Result_00156FC0 *)arg2)->position = sourcePosition;
+            ((Result_00156FC0 *)arg2)->action = 2;
+            ((Result_00156FC0 *)arg2)->status = 2;
+            func_0027B1B0(arg0, arg3);
+            return -1;
+        }
+        if (bestIndex != 0xFF) {
+            ((Result_00156FC0 *)arg2)->id = ((Record_00156FC0 *)arg0)->id;
+            ((Result_00156FC0 *)arg2)->kind = 6;
+            ((Result_00156FC0 *)arg2)->position = (positions[bestIndex].y << 8) | positions[bestIndex].x;
+            ((Result_00156FC0 *)arg2)->action = 2;
+            ((Result_00156FC0 *)arg2)->status = 2;
+        } else {
+            ((Result_00156FC0 *)arg2)->id = ((Record_00156FC0 *)arg0)->id;
+            ((Result_00156FC0 *)arg2)->kind = 6;
+            ((Result_00156FC0 *)arg2)->position = sourcePosition;
+            ((Result_00156FC0 *)arg2)->action = 2;
+            ((Result_00156FC0 *)arg2)->status = 2;
+            func_0027B1B0(arg0, arg3);
+            return -1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00157480);
 
