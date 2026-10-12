@@ -1273,7 +1273,168 @@ INCLUDE_ASM("asm/nonmatchings/main_007", func_00128D40);
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_001291C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00129700);
+typedef struct Coord_00129700 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_00129700;
+
+typedef struct Result_00129700 {
+    u16 card;
+    u8 action;
+    u8 pad03;
+    u16 position;
+    u8 pad06[6];
+    s32 count;
+    u8 flags;
+} Result_00129700;
+
+s32 func_0012B210(s32, s32, void *);
+void func_001E1E70(s32, s32, s32, s32);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+s32 func_0027BE10(s32, s32, s32, s32, s32);
+s32 func_0027DBC0(s32, s32, s32);
+
+s32 func_00129700(void *arg0, s32 arg1, s32 arg2, u8 arg3) {
+    extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
+    Coord_00129700 positions[12];
+    s32 i;
+    Coord_00129700 *p;
+    s32 position;
+
+    position = func_001E1090(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+    p = positions;
+    i = 0;
+    do {
+        p->x = p->y = 15;
+        i++;
+        p++;
+    } while (i < 12);
+    if (func_0012B210(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, arg0) == 1) {
+        s32 data;
+        s32 card;
+        s32 player;
+
+        data = func_0027DA40(arg1, 3);
+        player = data >> 24;
+        card = func_0027DBC0(player & 0xFF, (data >> 16) & 0xFF, 29);
+        ((Result_00129700 *)arg2)->card = *(u16 *)arg0;
+        ((Result_00129700 *)arg2)->action = 12;
+        ((Result_00129700 *)arg2)->flags = func_0027E360(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, *(u16 *)(arg2 + 4), 1, 0);
+        ((Result_00129700 *)arg2)->count = 1;
+        *(u16 *)(arg2 + 4) = ((player & 15) << 8) | card;
+        func_0012B830(arg0, arg3);
+        return 0;
+    }
+    if (func_001E2100(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, 4) != 0) {
+        func_001E1E70(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, 0, 1);
+        ((Result_00129700 *)arg2)->card = *(u16 *)arg0;
+        ((Result_00129700 *)arg2)->action = 14;
+        return 0;
+    }
+    {
+        s32 y;
+        s32 cost;
+        s32 packedY;
+        s32 minY;
+        s32 minX;
+        s32 maxY;
+        s32 centerY;
+        s32 centerX;
+        s32 x;
+        s32 bestPosition;
+        s32 bestCost;
+        u8 maxX;
+        u8 flags;
+        s32 bound;
+        s32 rangeResult;
+        u16 card;
+
+        card = func_0012B1B0(arg1);
+        centerX = position & 0xFF;
+        centerY = position >> 8;
+        if (func_00276CC0(centerX, centerY, *(u16 *)arg0, 3, card, 0) == 0) {
+            ((Result_00129700 *)arg2)->card = *(u16 *)arg0;
+            ((Result_00129700 *)arg2)->action = 6;
+            *(u16 *)(arg2 + 4) = position;
+            ((Result_00129700 *)arg2)->flags = func_0027E360(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, *(u16 *)(arg2 + 4), 1, 0);
+            ((Result_00129700 *)arg2)->count = 2;
+            func_0012B830(arg0, arg3);
+        } else {
+            rangeResult = func_002464F0(func_001DF540(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF), centerX, centerY);
+            if (rangeResult == 0) {
+                ((Result_00129700 *)arg2)->card = *(u16 *)arg0;
+                ((Result_00129700 *)arg2)->action = 6;
+                *(u16 *)(arg2 + 4) = position;
+                ((Result_00129700 *)arg2)->flags = func_0027E360(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, *(u16 *)(arg2 + 4), 1, 0);
+                ((Result_00129700 *)arg2)->count = 2;
+                func_0012B830(arg0, arg3);
+                return 0;
+            } else {
+                bestPosition = 0xFF;
+                bestCost = 0xFFFF;
+                minX = (u8)func_00250860(0, centerX - (rangeResult & 15));
+                bound = centerX + (rangeResult & 15);
+                if (bound >= 7) {
+                    maxX = 6;
+                } else {
+                    maxX = (u8)bound;
+                }
+                minY = (u8)func_00250860(0, centerY - (rangeResult & 15));
+                bound = centerY + (rangeResult & 15);
+                if (bound >= 7) {
+                    bound = 6;
+                }
+                maxY = (u8)bound;
+                if ((*(u16 *)arg0 & 0xFF) == 0) {
+                    flags = (u8)func_0027BBC0(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, 0);
+                } else {
+                    flags = 0;
+                }
+                for (x = (u8)minX; x <= (u8)maxX; x++) {
+                    for (y = (u8)minY, packedY = y << 8; y <= (u8)maxY; packedY += 0x100, y++) {
+                        if (((x < centerX ? centerX : x) - (centerX < x ? centerX : x)) +
+                            ((y < centerY ? centerY : y) - (centerY < y ? centerY : y)) <= (rangeResult & 15)) {
+                            if (func_00279C40(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, centerX, centerY, x, y, arg0, (u8)flags) == 1 &&
+                                (func_0027BE10(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, x, y, 0) == 0 || (u8)*(u16 *)arg0 == 0)) {
+                                card = func_0012B1B0(arg1);
+                                cost = func_00276CC0(x, y, *(u16 *)arg0, 3, card, 0);
+                                if (cost < bestCost) {
+                                    bestCost = cost;
+                                    bestPosition = packedY | x;
+                                } else if (cost == bestCost && func_001E36E0(x, y) == 0 &&
+                                           func_001E36E0(bestPosition & 0xFF, bestPosition >> 8) != 0) {
+                                    bestCost = cost;
+                                    bestPosition = packedY | x;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (bestPosition != 0xFF) {
+                    ((Result_00129700 *)arg2)->card = *(u16 *)arg0;
+                    ((Result_00129700 *)arg2)->action = 6;
+                    *(u16 *)(arg2 + 4) = bestPosition;
+                    if (bestPosition == position) {
+                        ((Result_00129700 *)arg2)->flags = func_0027E360(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, *(u16 *)(arg2 + 4), 1, 0);
+                    } else {
+                        ((Result_00129700 *)arg2)->flags = func_0027E360(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, *(u16 *)(arg2 + 4), 0, 0);
+                    }
+                    ((Result_00129700 *)arg2)->count = 2;
+                } else {
+                    ((Result_00129700 *)arg2)->card = *(u16 *)arg0;
+                    ((Result_00129700 *)arg2)->action = 6;
+                    *(u16 *)(arg2 + 4) = position;
+                    ((Result_00129700 *)arg2)->flags = func_0027E360(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF, *(u16 *)(arg2 + 4), 1, 0);
+                    ((Result_00129700 *)arg2)->count = 2;
+                }
+                func_0012B830(arg0, arg3);
+
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00129D00);
 
