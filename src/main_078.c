@@ -599,4 +599,62 @@ void func_0027AC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_0027ACB0(arg0, &sp18, &sp1F, arg1, arg2, arg3, arg0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_0027ACB0);
+typedef struct Position_0027ACB0 {
+    u8 x : 4;
+    u8 y : 4;
+    u8 nextX : 4;
+    u8 nextY : 4;
+} Position_0027ACB0;
+
+void func_0027ACB0(s32 first, s32 *count, u8 *bestDepth, s32 node,
+                   s32 x, s32 y, s32 closest, u8 depth) {
+    s32 i;
+
+    if (node != 0) {
+        if (((Position_0027ACB0 *)node)->x == x &&
+            (*(u8 *)node >> 4) == y) {
+            s32 currentDepth = (u8)depth;
+
+            if (currentDepth < *bestDepth) {
+                s32 position;
+
+                *count = 0;
+                *bestDepth = depth;
+                position = (u8)func_0027AF20((void *)node, 0);
+                if (position < 0) {
+                    ((Position_0027ACB0 *)closest)->x = x;
+                    ((Position_0027ACB0 *)closest)->y = y;
+                } else {
+                    ((Position_0027ACB0 *)closest)->x = (u8)position & 0xF;
+                    ((Position_0027ACB0 *)closest)->y = (u8)position >> 4;
+                }
+                ((Position_0027ACB0 *)closest)->nextX = 0xF;
+                ((Position_0027ACB0 *)closest)->nextY = 0xF;
+            } else if (*bestDepth == currentDepth) {
+                s32 position;
+
+                *count += 1;
+                position = (u8)func_0027AF20((void *)node, 0);
+                if (position < 0) {
+                    ((Position_0027ACB0 *)first)->nextX = x;
+                    ((Position_0027ACB0 *)first)->nextY = y;
+                } else {
+                    ((Position_0027ACB0 *)first)->nextX = (u8)position & 0xF;
+                    ((Position_0027ACB0 *)first)->nextY = (u8)position >> 4;
+                }
+            }
+            return;
+        } else {
+            s32 *child = (s32 *)node;
+            s32 nextDepth = (u8)depth + 1;
+
+            i = 0;
+            do {
+                func_0027ACB0(first, count, bestDepth, child[1], x, y,
+                              closest, nextDepth);
+                i++;
+                child++;
+            } while (i < 12);
+        }
+    }
+}

@@ -221,7 +221,6 @@ void func_00182A28(s32);
 
 s32 func_001E2100(s32, s32, s32);
 u32 func_0026FBB0(u16);
-void func_0027ACB0(s32, s32 *, u8 *, s32, s32, s32, s32, s32);
 
 extern u8 D_003193C0[];
 
