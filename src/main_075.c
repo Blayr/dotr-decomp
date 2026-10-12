@@ -1062,6 +1062,126 @@ s32 func_00263790(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00263930);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00265050);
+typedef struct State_00265050 {
+    u32 unk0;
+    u16 state;
+    u8 handle;
+    u8 handle2;
+    u8 pad8[0xFA];
+    u16 timer;
+} State_00265050;
+
+typedef struct Request_00265050 {
+    s32 id;
+    s32 unk4;
+    u32 position;
+    s32 flag;
+} Request_00265050;
+
+void func_001E1E70(u32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(u32, s32, s32);
+s32 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+
+s32 func_00265050(void *arg0, void *arg1, s32 arg2) {
+    Request_00265050 packet;
+    Request_00265050 *request = &packet;
+    State_00265050 *state = arg1;
+    u32 *data = arg0;
+    extern s32 func_001E1E10();
+    extern s32 func_001E1CB0();
+
+    packet.id = 999;
+    packet.unk4 = 0;
+    packet.position = 0;
+    packet.flag = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_002516D0(data[1] >> 8, data[1] & 0xFF, 1);
+        func_002516D0(data[2] >> 8, data[2] & 0xFF, 1);
+        func_00260AF0(0, data[1], 100, 180);
+        func_00255AC0(arg1, 0x221);
+        func_00255AC0(arg1, 0x259);
+        func_00255AC0(arg1, 0x25A);
+        func_00255AC0(arg1, 0x25B);
+        return 1;
+    }
+    switch (state->state) {
+    case 0:
+        if (func_001E1E10(data[1] >> 8, data[1] & 0xFF) < 255 ||
+            func_001E1E10(data[2] >> 8, data[2] & 0xFF) < 255 ||
+            func_001E1CB0(data[2] >> 8, data[2] & 0xFF) < 128) {
+            return 1;
+        }
+        if ((func_001E0700(data[2] >> 8, data[2] & 0xFF) >> 5) == 0 &&
+            func_001F5EC0(data[2]) == 0) {
+            return 1;
+        }
+        if (func_00255B50(arg1) == 1) {
+            state->state++;
+        }
+        return 1;
+    case 1:
+        func_001E42C0(0, -120, 80, 0x103);
+        request->id = 0x25A;
+        request->unk4 = 0;
+        request->position = data[1];
+        request->flag = 0;
+        state->handle = func_00255A30(request, arg1);
+        state->state++;
+        return 1;
+    case 2:
+        if (func_001F51D0(state->handle) == 0) {
+            func_001E1E70(data[1] >> 8, data[1] & 0xFF, 0, 1);
+            request->id = 0x259;
+            request->unk4 = 0;
+            request->position = data[1];
+            request->flag = 1;
+            state->handle = func_00255A30(request, arg1);
+            state->state++;
+        }
+        return 1;
+    case 3:
+        if (func_001F51D0(state->handle) == 0) {
+            func_00260AF0(16, data[2], 100, 180);
+            func_0024F370(data[1] >> 8, data[1] & 0xFF);
+            request->id = 0x25B;
+            request->unk4 = 0;
+            request->position = data[2];
+            request->flag = 0;
+            state->handle = func_00255A30(request, arg1);
+            request->id = 0x221;
+            request->unk4 = 0;
+            request->position = data[2];
+            request->flag = 0;
+            state->handle2 = func_00255A30(request, arg1);
+            state->state++;
+        }
+        return 1;
+    case 4:
+        if (func_001F51D0(state->handle) != 0 ||
+            func_001F51D0(state->handle2) != 0) {
+            return 1;
+        }
+        func_0024F370(data[2] >> 8, data[2] & 0xFF);
+        func_001E4530();
+        func_00260A70(arg1, 16);
+        state->state++;
+        break;
+    default:
+        if (state->timer++ > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00265440);
