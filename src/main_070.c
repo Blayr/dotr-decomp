@@ -262,7 +262,13 @@ void func_00245980(s32 arg0, s32 arg1, void *arg2) {
     *(Quad_00245980 *)arg2 = (*D_0029D488[(u8)arg0])[(u8)arg1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002459D0);
+typedef struct Name_002459D0 {
+    u8 text[8];
+} Name_002459D0;
+
+void func_002459D0(u8 arg0, u8 arg1, void *arg2) {
+    *(Name_002459D0 *)arg2 = ((Name_002459D0 **)D_0029D488[arg0])[1][arg1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245A30);
 
