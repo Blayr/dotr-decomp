@@ -775,7 +775,78 @@ void func_00118F50(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00119300);
+typedef struct Temp_00119300 {
+    u8 data[0x3C];
+    u16 value;
+    u8 padding[0x20];
+} Temp_00119300;
+
+extern s32 func_00119A40(s32, void *);
+extern s32 func_00119520();
+
+s32 func_00119300(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_00278890();
+    Temp_00119300 temp;
+    s32 color;
+    s32 index;
+
+    *(s16 *) (u8 *) arg2 = (s16) arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+
+    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+        return -1;
+    }
+
+    if ((index = func_00119A40(arg1, &temp)) < 0) {
+        return -1;
+    } else {
+        ((u8 *) arg2)[2] = 10;
+        *(s32 *) ((u8 *) arg2 + 0xC) = 0;
+        color = func_001E1090(arg0 >> 8, arg0 & 0xFF);
+
+        if (index == 0) {
+            if (func_0011A0D0(arg1, (u8 *) arg2, &temp) >= 0) {
+                if (func_00276F10(&temp, color & 0xFF, color >> 8,
+                        arg1 == 0 ? 1 : 0,
+                        3, 0x1F, 2, 2, 0, func_0011AA10(arg1)) < 0) {
+                    if (func_001E0150(arg1) >= 6) {
+                        goto fallback;
+                    }
+                    index = func_00119520(arg1, index & 0xFF, &temp);
+                    if (index < 0) {
+                        return -1;
+                    }
+                    *(s16 *) ((u8 *) arg2 + 4) = (s16) index;
+                    return 1;
+                }
+
+                index = func_00119520(arg1, index & 0xFF, &temp);
+                if (index < 0) {
+                    return -1;
+                }
+                *(s16 *) ((u8 *) arg2 + 4) = (s16) index;
+                return 1;
+            }
+        } else {
+            func_00276F10(&temp, color & 0xFF, color >> 8,
+                    arg1 == 0 ? 1 : 0,
+                    3, 0x1F, 2, 2, 0, func_0011AA10(arg1));
+        }
+
+    fallback:
+        if (func_00119D30(arg1, (u8 *) arg2, &temp, temp.value) < 0) {
+            return -1;
+        }
+        index = func_00119520(arg1, index & 0xFF, &temp);
+        if (index < 0) {
+            return -1;
+        }
+        *(s16 *) ((u8 *) arg2 + 4) = (s16) index;
+        return 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00119520);
 
