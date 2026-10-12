@@ -171,7 +171,13 @@ s32 func_0020E050(f32 *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E090);
+s32 func_0020E090(f32 *arg0, f32 *arg1) {
+    Entry_0020DFD0 *entry = (Entry_0020DFD0 *)&D_0032A2A0[D_0032A240];
+
+    *arg0 = entry->x;
+    *arg1 = entry->y;
+    return 1;
+}
 
 s32 func_0020E0D0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3) {
     typedef struct {
