@@ -583,7 +583,22 @@ s32 func_001F0500(s32 arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0760);
+s32 func_001F0760(s32 arg0, s32 arg1, s32 arg2) {
+    extern void func_001FEC70();
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 8) {
+        return 0;
+    }
+    if (D_0031ABB0[arg0] == NULL) {
+        return 0;
+    }
+    func_001F0C10(arg0, arg1);
+    func_001FEC70(arg0, arg2, 0, -1, func_001F0830, (arg0 << 8) | arg1);
+    return 1;
+}
 
 typedef struct {
     u8 pad00[0x14];
