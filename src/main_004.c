@@ -76,7 +76,102 @@ void func_0010D820(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 0x960, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D880);
+typedef struct Entry_0010D880 {
+    u16 id;
+    u8 index;
+    u8 pad;
+} Entry_0010D880;
+
+void func_0010D490(void *, s32, s32);
+s32 func_0027D720(void *, s32);
+
+void func_0010D880(void *arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E1030();
+    extern void func_0027E770();
+    extern s32 func_0027DE20();
+    u8 context[0x70];
+    Entry_0010D880 entries[23];
+    s16 count;
+    s16 otherCount;
+    s32 i;
+    Entry_0010D880 *entry;
+    s32 owner;
+    s32 location;
+    s32 data;
+    s32 type;
+    s32 x;
+    s32 y;
+    s32 attempt;
+    s32 result;
+    u16 id;
+
+    id = *(u16 *)arg0;
+    if ((data = func_001DF540(id >> 8, id & 0xFF)) != 0) {
+        id = *(u16 *)arg0;
+        owner = func_0024DE70(id >> 8, id & 0xFF);
+        id = *(u16 *)arg0;
+        location = func_001E1090(id >> 8, id & 0xFF);
+        otherCount = 0;
+        count = 0;
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->id = 0xFFFF;
+            entry->index = 0xFF;
+            entry++;
+        } while (i < 22);
+        func_0027E770(context);
+        id = *(u16 *)arg0;
+        type = func_001E1030(id >> 8, id & 0xFF);
+        switch (type) {
+        case 0x192:
+        case 0x193:
+            attempt = 1;
+            x = location >> 8;
+            y = location & 0xFF;
+            while (1) {
+                result = func_0027DE20(arg0, 0, data, y, x,
+                    owner == 0 ? 1 : 0, (u8)attempt, func_0010EDA0(owner),
+                    entries, 0, &count, &otherCount, 2, 0, 0x960, context);
+                switch (result) {
+                case 3:
+                case 2:
+                    *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
+                    *(u32 *)((u8 *)arg0 + 8) = (location << 16) | *(u16 *)((u8 *)arg0 + 8);
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
+                    *(u32 *)((u8 *)arg0 + 8) = (location << 16) | *(u16 *)((u8 *)arg0 + 8);
+                    return;
+                }
+                attempt++;
+                if (attempt > 2) {
+                    break;
+                }
+            }
+            *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
+            *(u32 *)((u8 *)arg0 + 8) = (location << 16) | *(u16 *)((u8 *)arg0 + 8);
+            break;
+        case 0x1A1:
+            if (func_0027D720(arg0, 0) != 1) {
+                func_0010D490(arg0, 1, arg2);
+            }
+            break;
+        case 0x198:
+            if (func_001DF470(owner) < 1000) {
+                func_0010DB00(arg0, 0, 0);
+            }
+            func_0010D490(arg0, 1, arg2);
+            break;
+        default:
+            func_0010D490(arg0, 1, arg2);
+            break;
+        }
+    }
+}
 
 void func_0010DB00(void *arg0, s32 arg1, s32 arg2) {
     s32 i;
