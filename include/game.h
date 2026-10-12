@@ -676,4 +676,9 @@ extern f32 D_00298BA4;
 
 s32 func_00123F90(s32, s32 *, u16);
 
+void func_0020BA90(void *);
+void func_0020BAD0(void *);
+void func_0020E9F0(void);
+extern u8 D_0032A730[];
+
 #endif

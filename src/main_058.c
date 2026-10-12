@@ -204,7 +204,38 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E130);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E1A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E260);
+s32 func_0020E260(void *arg0) {
+    typedef struct {
+        u8 pad0[0x40];
+        u8 unk40[0x80];
+        u8 unkC0[0x90];
+        f32 x;
+        f32 y;
+        u8 pad158[8];
+        f32 radius;
+        f32 width;
+        f32 height;
+        u8 pad16C[0x1C];
+        f32 radius_squared;
+        f32 width_squared;
+        f32 height_squared;
+        u8 pad194[0xC];
+    } State_0020E260;
+    State_0020E260 *state;
+
+    state = (State_0020E260 *)&D_0032A2A0[D_0032A240];
+    func_0020B380(state->unkC0, arg0, 9);
+    func_0020E9F0();
+    func_0020BBA0();
+    func_0020BA90(state->unk40);
+    state->radius_squared = 4186116.0f + state->radius * state->radius;
+    state->width_squared = (state->width * state->width) / 4.0f + state->radius * state->radius;
+    state->height_squared = (state->height * state->height) / 4.0f + state->radius * state->radius;
+    func_0020BAD0(arg0);
+    func_0020EBA0(D_0032A730);
+    func_0020BDE0(D_0032A730, D_0032A730);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E360);
 
