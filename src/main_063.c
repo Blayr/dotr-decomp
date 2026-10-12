@@ -85,7 +85,106 @@ s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_063", func_00223600);
 
-INCLUDE_ASM("asm/nonmatchings/main_063", func_00224A40);
+typedef struct Tables_00224A40 {
+    s32 pad[8];
+    s32 normal[3];
+    s32 type0[3];
+    s32 type1[3];
+} Tables_00224A40;
+
+typedef struct State_00224A40 {
+    u8 pad[0x53CE];
+    s8 selected;
+    s8 types[12];
+    s8 cards[12];
+    s8 locations[12];
+    u8 pad2[3];
+    u16 checksum;
+    u16 codes[3];
+    u16 values[3];
+} State_00224A40;
+
+void func_00224A40(void) {
+    extern u16 D_00299CE0[];
+    extern u16 D_00299D00[][6];
+    extern Tables_00224A40 D_002D19D0;
+    extern s32 D_002D19D8;
+    extern u16 D_002D49D4[];
+    State_00224A40 *state;
+    s16 i;
+    s16 group;
+    s16 slot;
+    u16 *dest;
+    s32 offset;
+    u8 *out;
+    u8 *sum_ptr;
+    s32 sum;
+    s16 sum_index;
+    u16 code_index;
+    s32 shift;
+    u8 *code_ptr;
+
+    state = (State_00224A40 *)0x01ED0000;
+    sum_ptr = (u8 *)&D_00299E10;
+    i = 0;
+    offset = 0;
+    out = sum_ptr;
+    while (i < 12) {
+        group = state->cards[i] / 5;
+        slot = (s16)(state->cards[i] % 5) + state->locations[i] * 6;
+        if (i == 0) {
+            dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset);
+            switch (state->types[i]) {
+            case 0:
+                *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
+                break;
+            case 1:
+                *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type1[group] * 2 + slot * 2) & 0x1FFF;
+                break;
+            default:
+                *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
+                break;
+            }
+        }
+        dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset + 4);
+        switch (state->types[i]) {
+        case 0:
+            *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
+            break;
+        case 1:
+            *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type1[group] * 2 + slot * 2) & 0x1FFF;
+            break;
+        default:
+            *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
+            break;
+        }
+        if (i == 12 || i == state->selected) {
+            *dest |= 0x8000;
+        }
+        i++;
+        offset += 2;
+        *(s16 *)(out + 0x24) = *(s16 *)dest;
+        out += 2;
+    }
+    sum_index = 0;
+    sum = 0;
+    while (sum_index < 12) {
+        sum += (s32)*(u16 *)(sum_ptr + 0x24) % 16;
+        sum_index++;
+        sum_ptr += 2;
+    }
+    state->checksum = sum & 0xF;
+    code_index = 0;
+    shift = 0;
+    code_ptr = (u8 *)state;
+    while (code_index < 3) {
+        *(u16 *)(code_ptr + 0x53F8) = ((s32)D_00299CE0[state->checksum] >> shift) & 0x1F;
+        shift += 5;
+        *(u16 *)(code_ptr + 0x53FE) = D_00299D00[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
+        code_index++;
+        code_ptr += 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_063", func_00224E40);
 
