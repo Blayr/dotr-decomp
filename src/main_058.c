@@ -206,7 +206,28 @@ s32 func_0020E0D0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E130);
+typedef struct Color_0020E130 {
+    u8 r, g, b, a;
+} Color_0020E130;
+
+typedef struct Entry_0020E130 {
+    u8 pad0[0x174];
+    f32 values[4];
+    Color_0020E130 color;
+    u8 pad188[0x18];
+} Entry_0020E130;
+
+s32 func_0020E130(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3, u8 *arg4) {
+    Entry_0020E130 *entry;
+
+    entry = (Entry_0020E130 *)&D_0032A2A0[D_0032A240];
+    *arg0 = entry->values[0];
+    *arg1 = entry->values[1];
+    *arg2 = entry->values[2];
+    *arg3 = entry->values[3];
+    *(Color_0020E130 *)arg4 = entry->color;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E1A0);
 
