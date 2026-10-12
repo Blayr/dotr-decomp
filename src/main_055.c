@@ -78,7 +78,47 @@ s32 func_00202AB0(s32 arg0, s32 arg1) {
     return sp3C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202B00);
+typedef struct Record_00202B00 {
+    s32 data;
+    s32 unused;
+    union {
+        struct {
+            s8 active : 1;
+            s8 excluded : 1;
+            s8 unused : 6;
+        } flags;
+        struct {
+            s16 unused : 3;
+            s16 category : 13;
+        } category;
+    } state;
+    s16 padding;
+} Record_00202B00;
+
+s32 func_00202B00(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+    extern Record_00202B00 D_003229A0[];
+    Record_00202B00 *entry;
+    s32 start;
+    s32 i;
+    s32 size;
+
+    entry = D_003229A0;
+    start = arg2;
+    i = 0;
+    do {
+        if (entry->data != 0 && entry->state.flags.active && !entry->state.flags.excluded &&
+            (arg1 < 0 || entry->state.category.category == arg1)) {
+            arg0 = func_00202FB0(arg0, entry->data, arg2, (s32) &size);
+            arg2 += size;
+        }
+        i++;
+        entry++;
+    } while (i < 0x400);
+    if (arg3 != NULL) {
+        *arg3 = arg2 - start;
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00202BF0);
 
