@@ -1302,7 +1302,46 @@ s32 func_001146C0(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_001147B0);
+static inline s32 search_001147B0(s32 arg0, void *arg1, void *arg2, s32 card) {
+    s32 cards[8];
+    s32 i;
+
+    func_0026FD30(arg0, cards);
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (cards[i] == card && func_0026FB10(arg0, cards[i]) == 1) {
+            *((s8 *)arg1 + 6) = i;
+            func_001DCD70(arg2, cards[i]);
+            return func_0026FCE0(cards[i]) >> 5;
+        }
+    }
+    return -1;
+}
+
+s32 func_001147B0(s32 arg0, void *arg1, void *arg2) {
+    s32 result;
+
+    result = search_001147B0(arg0, arg1, arg2, 0x337);
+    if (result >= 0) {
+        return result;
+    }
+    result = search_001147B0(arg0, arg1, arg2, 0x335);
+    if (result >= 0) {
+        return result;
+    }
+    result = search_001147B0(arg0, arg1, arg2, 0x338);
+    if (result >= 0) {
+        return result;
+    }
+    result = search_001147B0(arg0, arg1, arg2, 0x33C);
+    if (result >= 0) {
+        return result;
+    }
+    result = search_001147B0(arg0, arg1, arg2, 0x339);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 s32 func_00114B40(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     s32 buf[8];
