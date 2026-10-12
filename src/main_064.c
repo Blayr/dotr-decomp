@@ -128,7 +128,155 @@ INCLUDE_ASM("asm/nonmatchings/main_064", func_002297C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_0022A020);
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022A140);
+extern s16 D_00299ED2;
+void func_001DA2B0(void *, s32, f32, f32);
+
+typedef struct State_0022A140 {
+    u8 pad_0000[0x53A6];
+    s8 mode;
+    u8 pad_53A7;
+    s8 selection;
+    s8 transition;
+    s8 direction;
+    u8 pad_53AB[0x53];
+    s16 ids[3];
+    u8 pad_5404[0x90];
+    s8 phase;
+    s8 completed;
+    s8 sound[3];
+    u8 pad_5499;
+    s16 value;
+} State_0022A140;
+
+s32 func_0022A140(s32 arg0) {
+    s32 texture[24];
+    s32 draw[36];
+    State_0022A140 *progress;
+    s32 index;
+    s32 packet;
+    State_0022A140 *state = (State_0022A140 *)0x01ED0000;
+    s16 i;
+    s16 id;
+    s16 offset;
+    s16 slot;
+    s8 *context = &D_00299E10;
+
+    extern s32 func_001D9A20();
+    extern void func_001CD560();
+
+    if (D_00299ED2 >= 0x2756 &&
+        *(s16 *)(context + 0xC2) < 0x2761 &&
+        state->phase < 4) {
+        packet = func_001D9A20();
+        func_001D9ED0(0xFFFFF8);
+        func_001CD560(draw);
+        draw[12] = 0x3EF00000;
+        draw[13] = 0x3EFA6F4E;
+        draw[14] = 0x3F800000;
+        draw[15] = 0;
+        i = 0;
+        progress = state;
+        for (; (index = i) < 3; i++) {
+            s8 selection = state->selection;
+            s8 direction = state->direction;
+            slot = (selection + 2 - index) % 3;
+            if (direction != 0) {
+                if ((s8)direction == 1) {
+                    switch (index) {
+                    case 0:
+                        slot = selection % 3;
+                        offset = state->transition * 36 / 100;
+                        break;
+                    case 1:
+                        slot = (selection + 2) % 3;
+                        offset = 36 - state->transition * 18 / 100;
+                        break;
+                    case 2:
+                        slot = (selection + 1) % 3;
+                        offset = 18 - state->transition * 18 / 100;
+                        break;
+                    }
+                } else {
+                    switch (index) {
+                    case 0:
+                        offset = 36 - state->transition * 36 / 100;
+                        break;
+                    case 1:
+                        offset = 18 + state->transition * 18 / 100;
+                        break;
+                    case 2:
+                        offset = state->transition * 18 / 100;
+                        break;
+                    }
+                }
+            } else {
+                switch (index) {
+                case 0:
+                    offset = 36;
+                    break;
+                case 1:
+                    offset = 18;
+                    break;
+                case 2:
+                    offset = 0;
+                    break;
+                }
+            }
+            id = state->ids[slot];
+            func_001DA2B0(draw, 0,
+                         -10.0f + (f32)offset +
+                             (f32)(progress->value * 640 / 100 - 640),
+                         10.0f);
+            func_001DCD70(texture, id);
+            packet = func_001DBD30(func_001DBC40(packet, (s32)texture, draw), (s32)draw);
+            if (state->mode < 2) {
+                state->completed = 0;
+            }
+            if (state->mode == 2 && state->phase == 0) {
+                progress->value += 18;
+                if (0 < progress->value &&
+                    state->sound[index] == 0) {
+                    func_00217710(0, 9);
+                    state->sound[index] = 1;
+                }
+                if (progress->value >= 100) {
+                    state->completed = i;
+                    progress->value = 100;
+                    if (index == 2) {
+                        state->phase = 1;
+                    }
+                }
+            } else if (state->mode == 2) {
+                progress->value = 100;
+            } else if (state->mode >= 3) {
+                if (index == 2) {
+                    if (state->phase == 3) {
+                        progress->value -= 6;
+                        if (progress->value <= 0) {
+                            progress->value = 0;
+                            if (state->phase < 4) {
+                                state->phase = 4;
+                            }
+                        }
+                    } else {
+                        progress->value = 100;
+                    }
+                } else {
+                    progress->value += 6;
+                    if (progress->value >= 400) {
+                        progress->value = 400;
+                        if (state->phase < 3) {
+                            state->phase = 3;
+                        }
+                    }
+                }
+            }
+            progress = (State_0022A140 *)((u8 *)progress + 2);
+        }
+        arg0 = func_001D9E70(packet);
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_0022A710);
 
