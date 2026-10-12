@@ -85,6 +85,7 @@ typedef struct {
 
 typedef struct {
     s8 enabled : 1;
+    s8 flag1 : 1;
 } Flags_00209E50;
 
 extern State_00209E50 D_00325F20;
