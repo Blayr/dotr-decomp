@@ -359,7 +359,22 @@ void func_0020EC00(void *dst) {
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EC60);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020ED30);
+typedef struct {
+    f32 x, y, z, w;
+} Vec4_0020ED30;
+
+void func_0020ED30(void *arg0, f32 fparg0) {
+    u8 buffer[31];
+    Vec4_0020ED30 *vector;
+    void *matrix;
+
+    matrix = (u8 *)&D_0032A2A0[D_0032A240] + 0x80;
+    vector = (Vec4_0020ED30 *) (((u32) buffer + 15) & ~15);
+    *vector = *(Vec4_0020ED30 *) arg0;
+    vector->z -= fparg0;
+    func_0020CDD0(vector, matrix, vector);
+    func_001A23B0(vector->z / vector->w);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EDE0);
 
