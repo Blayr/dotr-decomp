@@ -1121,7 +1121,6 @@ typedef struct {
     s32 unkC;
 } Ctx_0013AB70;
 
-s32 func_0013AE00(s32 arg0, Work_0013AB70 *arg1);
 s32 func_0013BA30(s32 arg0, u8 arg1, Work_0013AB70 *arg2, s32 arg3);
 
 s32 func_0013AB70(s32 arg0, s32 arg1, void *arg2) {
@@ -1195,7 +1194,82 @@ s32 func_0013AB70(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013AE00);
+s32 func_0013AE00(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    extern s32 func_001E1580();
+    s32 cards[8];
+    u8 work[32];
+    u8 status0;
+    u8 status1;
+    s32 *categoryCard;
+    s32 categoryIndex;
+    s32 i;
+    s32 result;
+
+    status0 = func_00278890(arg0, 0);
+    status1 = func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (status0 == 5) {
+        if (func_0013B220(arg0, work, arg1, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (status1 == 5) {
+        s32 j;
+        for (j = 0; j < func_0026FE20(arg0); j++) {
+            if ((func_0026FCE0(cards[j]) >> 5) == 0 &&
+                func_0026FB10(arg0, cards[j]) == 1) {
+                func_001DCD70(arg1, cards[j]);
+                return 0;
+            }
+        }
+        return -1;
+    }
+    if (func_0013B130(arg0, work, arg1, 0x348) >= 0) {
+        if (func_0013D980(arg0, 0x348) == 1) {
+            return 2;
+        }
+    }
+    if (func_0013D2C0(arg0) >= 0) {
+        if (func_0013B130(arg0, work, arg1, 0x2BC) >= 0) {
+            return 2;
+        }
+    }
+    categoryIndex = 0;
+    if (categoryIndex < func_0026FE20(arg0)) {
+        categoryCard = cards;
+        do {
+            if (func_001DE020(func_0026FCE0(*categoryCard) >> 5) == 2) {
+                func_001DCD70(arg1, cards[categoryIndex]);
+                return 1;
+            }
+            categoryCard++;
+            categoryIndex++;
+        } while (categoryIndex < func_0026FE20(arg0));
+    }
+    for (i = 0; i < 11; i++) {
+        if (func_001E1580(arg0, i) != 0 &&
+            func_0013B130(arg0, work, arg1, 0x31C) >= 0) {
+            return 2;
+        }
+    }
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if ((func_0026FCE0(cards[i]) >> 5) == 0 &&
+            func_0026FB10(arg0, cards[i]) == 1) {
+            func_001DCD70(arg1, cards[i]);
+            return 0;
+        }
+    }
+    result = func_0013B220(arg0, work, arg1, 999);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 s32 func_0013B130(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 entries[8];
