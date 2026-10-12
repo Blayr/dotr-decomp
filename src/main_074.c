@@ -620,7 +620,120 @@ s32 func_002560C0(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00256520);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00256AB0);
+typedef struct State_00256AB0 {
+    u8 pad0[4];
+    u16 state;
+    u8 ids[0x1A];
+    s32 values[0x2D];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_00256AB0;
+
+typedef struct Input_00256AB0 {
+    s32 unused;
+    s32 first;
+    s32 second;
+} Input_00256AB0;
+
+typedef struct Request_00256AB0 {
+    s32 id;
+    s32 flags;
+    s32 value;
+    s32 kind;
+} Request_00256AB0;
+
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_0025FC30(void *, void *, s32, s32, s32, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_00256AB0(void *arg0, void *arg1, s32 arg2) {
+    Request_00256AB0 request;
+    State_00256AB0 *state = arg1;
+    Input_00256AB0 *input = arg0;
+    {
+    Request_00256AB0 *p = &request;
+    s32 complete;
+    s32 i;
+    u8 *walk;
+
+    request.id = 999;
+    request.flags = 0;
+    request.value = 0;
+    request.kind = 0;
+    complete = 0;
+
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_0025FC30(arg0, arg1, arg2, -1, 1, 3);
+        func_00260740(30);
+        func_00255AC0(arg1, 503);
+        func_00255AC0(arg1, 502);
+        return 1;
+    } else {
+        switch (state->state) {
+        case 0: {
+            if (state->timer++ > 30) {
+              if (func_00255B50(arg1) == 1) {
+                u8 id;
+                p->id = 503;
+                p->flags = 1;
+                p->value = input->second;
+                p->kind = 8;
+                id = func_00255A30((s32 *)p, arg1);
+                state->ids[state->count] = id;
+                if ((s32)id >= 0) {
+                    state->values[state->count] = input->second;
+                    state->count++;
+                }
+                p->id = 502;
+                p->flags = 0;
+                p->value = input->first;
+                p->kind = 7;
+                id = func_00255A30((s32 *)p, arg1);
+                state->ids[state->count] = id;
+                if ((s32)id >= 0) {
+                    state->values[state->count] = input->first;
+                    state->count++;
+                }
+                state->state++;
+              }
+            }
+            return 1;
+        }
+        case 1: {
+            i = 0;
+            walk = arg1;
+            for (; i < state->count; walk += 4, i++) {
+                if (func_001F51D0(state->ids[i]) != 0) {
+                    if (func_001F52D0(state->ids[i]) == 2 && *(u16 *)(walk + 0x20) != 0xFFFF) {
+                        *(s32 *)(walk + 0x20) = 0xFFFF;
+                    }
+                } else {
+                    complete++;
+                }
+            }
+            if (complete >= state->count) {
+                state->state++;
+                func_00260A70(arg1, 30);
+                state->timer = 0;
+                func_0025FC30(arg0, arg1, arg2, 1, 1, 3);
+            }
+            return 1;
+        }
+        default: {
+            if (state->timer++ > 30 && func_0025FD90() == 1) {
+                return 0;
+            }
+            break;
+        }
+        }
+    }
+    return 1;
+    }
+}
 
 typedef struct Command_00256D80 {
     s32 type;
