@@ -1295,6 +1295,7 @@ s32 func_0020E050(f32 *arg0);
 s32 func_0020E090(f32 *arg0, f32 *arg1);
 s32 func_0020E0D0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3);
 s32 func_0020E260(void *arg0);
+s32 func_0020E460(void);
 s32 func_0020E4F0(void);
 s32 func_0020E520(f32 *point, f32 *normal, void *output);
 s32 func_0020E970(void *arg0);

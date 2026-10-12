@@ -245,7 +245,20 @@ s32 func_0020E260(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E360);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E460);
+typedef struct Copy_0020E460 {
+    __int128 data[26];
+} Copy_0020E460;
+
+s32 func_0020E460(void) {
+    extern u8 D_0032A440[];
+
+    if (D_0032A240 + 1 >= 2) {
+        return 0;
+    }
+    ((Copy_0020E460 *)D_0032A440)[D_0032A240] = ((Copy_0020E460 *)D_0032A2A0)[D_0032A240];
+    D_0032A240 += 1;
+    return 1;
+}
 
 s32 func_0020E4F0(void) {
     if (D_0032A240 <= 0) {
