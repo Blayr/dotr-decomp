@@ -1297,6 +1297,7 @@ void *func_002093E0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3);
 void *func_00209490(void *arg0, s32 arg1, s32 arg2);
 s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 s32 func_00209870(void);
+void func_002098B0(s32 arg0);
 s32 func_002099D0(void);
 s32 func_00209D20(void);
 void func_00209D30(s32 arg0);

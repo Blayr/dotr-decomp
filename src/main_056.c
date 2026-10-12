@@ -949,7 +949,34 @@ s32 func_00209870(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002098B0);
+void func_002098B0(s32 arg0) {
+    extern void func_001869C0(u8 *, s32, s32);
+    extern void func_001885C8(void);
+    extern u8 D_00293F1C[];
+    extern u8 D_00293F20[];
+    extern u8 *D_003261C4;
+    s32 *packet;
+
+    func_001869C0(D_003261C4, 0, 0);
+    func_00186148(1);
+    func_00185578(0, 0);
+    func_001849B0();
+    func_001885C8();
+    func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
+                    *(s16 *)(D_00293F14 + arg0 * 0x28),
+                    *(s16 *)(D_00293F18 + arg0 * 0x28));
+    D_0032618C = *(s32 *)(D_00293F1C + arg0 * 0x28);
+    D_00326190 = *(s32 *)(D_00293F20 + arg0 * 0x28);
+    packet = (s32 *)func_0020B000(*(s32 *)0x003261CC);
+    packet[0] = 0x70000000;
+    packet[1] = 0;
+    packet[2] = 0;
+    packet[3] = 0;
+    func_0017BB60(0);
+    func_00185578(0, 0);
+    func_00186470(D_003261C4, *(s32 *)0x003261CC);
+    func_00185578(0, 0);
+}
 
 typedef struct State_002099D0 {
     u8 pad0[0x240];
@@ -975,7 +1002,6 @@ typedef struct State_002099D0 {
 
 void func_00185480(u8 *, s32);
 void func_00186060(u8 *, s16, s16, s64);
-void func_002098B0(s32);
 
 s32 func_002099D0(void) {
     extern s32 func_00185578();
