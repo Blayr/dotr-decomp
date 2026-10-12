@@ -62,7 +62,98 @@ s32 func_001FB500(s32 index, f32 *src) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FB6A0);
+typedef struct Camera_001FB6A0 {
+    f32 radius;
+    f32 yaw;
+    f32 pitch;
+    f32 pad0C;
+    f32 direction[4];
+    f32 eye[4];
+    f32 target[4];
+    u8 pad40[0x870];
+    s32 mode;
+} Camera_001FB6A0;
+
+f32 func_001A6C30(f32, f32);
+f32 func_0020B620(f32);
+
+s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
+    Camera_001FB6A0 *camera;
+    f32 *source;
+    f32 *destination;
+    s32 *slot;
+    f32 horizontal;
+    f32 vertical;
+    f32 depth;
+    f32 minimum;
+    f32 radius;
+    f32 pitch;
+    f32 scale;
+    s32 mode;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    slot = &D_0031BEB0[arg0];
+    camera = (Camera_001FB6A0 *)*slot;
+    if (camera == 0) {
+        return 0;
+    }
+    if (arg2 > 0) {
+        source = camera->target;
+        destination = camera->eye;
+    } else {
+        source = camera->eye;
+        destination = camera->target;
+    }
+    mode = camera->mode;
+    switch (mode) {
+    case 0:
+    case 2:
+        minimum = 50.0f;
+        if (mode == 2) {
+            minimum = 10.0f;
+        }
+        if (arg1 == 0) {
+            radius = camera->radius + fparg2;
+            if (radius < minimum) {
+                func_001FB6A0(arg0, 1, -arg2, 0.0f, 0.0f, minimum - radius);
+            }
+        }
+        pitch = camera->pitch;
+        if (!((pitch + fparg1) <= 1.5706217f)) {
+            fparg1 = 1.5706217f - pitch;
+        }
+        if ((pitch + fparg1) < -1.5706217f) {
+            fparg1 = -1.5706217f - pitch;
+        }
+        break;
+    }
+    camera->radius += fparg2;
+    camera->yaw = func_001A6C30(6.2831855f + (camera->yaw + fparg0), 6.2831855f);
+    camera->pitch = func_001A6C30(camera->pitch + fparg1, 6.2831855f);
+    horizontal = camera->radius * func_0020B620(camera->pitch);
+    vertical = camera->radius * func_0020B730(camera->pitch);
+    depth = horizontal * func_0020B730(camera->yaw);
+    horizontal *= func_0020B620(camera->yaw);
+    scale = (f32)arg2;
+    destination[0] = source[0] + horizontal * scale;
+    destination[1] = source[1] + vertical * scale;
+    destination[2] = source[2] + depth * scale;
+    if (arg0 >= 0) {
+        if (arg0 <= 0) {
+            camera = (Camera_001FB6A0 *)*slot;
+            if (camera != 0) {
+                camera->direction[0] = camera->target[0] - camera->eye[0];
+                camera->direction[1] = camera->target[1] - camera->eye[1];
+                camera->direction[2] = camera->target[2] - camera->eye[2];
+                camera->direction[3] = 0.0f;
+                func_0020D070(camera->direction);
+            }
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FB940);
 
