@@ -230,7 +230,126 @@ s32 func_0010A8A0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A8B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A8D0);
+extern u8 D_002B90A0[];
+
+typedef struct Entry_0010A8D0 {
+    s32 size;
+    s32 id;
+    s32 start;
+    s32 end;
+} Entry_0010A8D0;
+
+typedef struct Table_0010A8D0 {
+    u8 header[0x210];
+    Entry_0010A8D0 entries[0x100];
+} Table_0010A8D0;
+
+static inline s32 find_0010A8D0(s32 id) {
+    s32 i = 0;
+    do {
+        if (((Table_0010A8D0 *) D_0030FF40)->entries[i].id == id) {
+            return i;
+        }
+        i++;
+    } while (i < 0x100);
+    return -1;
+}
+
+static inline void clear_0010A8D0(s32 count, s32 offset) {
+    __int128 *ptr;
+
+    if (count > 0x20000) {
+        count = 0x20000;
+    }
+    ptr = (__int128 *) ((u8 *) D_0030FF48 + 0x800);
+    count >>= 4;
+    ptr = (__int128 *) ((u8 *) ptr + (*(s32 *) ((u8 *) D_0030FF40 + 0x1D0) + offset));
+    if (count != 0) {
+        do {
+            *ptr = 0;
+            ptr++;
+            if ((u8 *) ptr >= (u8 *) D_0030FF48 + 0x100800) {
+                ptr = (__int128 *) ((u8 *) ptr - 0x100000);
+            }
+            count--;
+        } while (count != 0);
+    }
+}
+
+void func_0010A8D0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 temp_a1;
+    s32 temp_a1_2;
+    s32 temp_s2;
+    s32 temp_s3;
+    s32 temp_s3_2;
+    s32 temp_s4;
+    s32 temp_s5;
+    s32 temp_s6;
+    s32 var_a0;
+    s32 var_a0_2;
+    s32 var_s0;
+    s32 var_s1;
+    s32 var_s2;
+    s32 var_s3;
+    s32 var_s7;
+
+    var_s0 = arg2;
+    var_s1 = arg1;
+    var_a0 = find_0010A8D0(arg0);
+    if (var_a0 >= 0) {
+        temp_s3 = D_0030FF40[var_a0 * 4 + 0x84];
+        temp_s4 = D_0030FF40[var_a0 * 4 + 0x86] * 4;
+        temp_s5 = D_0030FF40[var_a0 * 4 + 0x87] * 4;
+        temp_s3 &= ~0xF;
+        temp_s4 &= ~0xF;
+        temp_s5 &= ~0xF;
+        if (var_s1 < temp_s3) {
+            func_0019B648((u8 *) D_0030FF40 + 0x1210, D_002B90A0, arg0);
+            if (temp_s5 != 0) {
+                while (var_s1 + var_s0 > temp_s5) {
+                    temp_s3_2 = temp_s5 - var_s1;
+                    var_s7 = temp_s3_2;
+                    func_0019B648((u8 *) D_0030FF40 + 0x1210, D_002B90A0, arg0);
+                    temp_a1 = *(s32 *) ((u8 *) D_0030FF40 + 0x1D0);
+                    if ((temp_a1 + temp_s3_2) >= 0x100000) {
+                        temp_s6 = 0x100000 - temp_a1;
+                        func_0010C110((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + temp_a1 + 0x800), var_s1 + 0x800, temp_s6);
+                        var_s1 += temp_s6;
+                        var_s7 -= temp_s6;
+                        *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) = 0;
+                    }
+                    if (var_s7 != 0) {
+                        func_0010C110((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) + 0x800), var_s1 + 0x800, var_s7);
+                        *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) += var_s7;
+                    }
+                    var_s0 -= temp_s3_2;
+                    var_s1 = temp_s4;
+                }
+            } else if (temp_s3 < var_s1 + var_s0) {
+                var_a0_2 = var_s1 + var_s0 - temp_s3;
+                var_s0 -= var_a0_2;
+                clear_0010A8D0(var_a0_2, var_s0);
+            }
+            var_s3 = var_s0;
+            var_s2 = var_s1;
+            func_0019B648((u8 *) D_0030FF40 + 0x1210, D_002B90A0, arg0);
+            temp_a1_2 = *(s32 *) ((u8 *) D_0030FF40 + 0x1D0);
+            if ((temp_a1_2 + var_s0) >= 0x100000) {
+                temp_s2 = 0x100000 - temp_a1_2;
+                func_0010C110((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + temp_a1_2 + 0x800), var_s1 + 0x800, temp_s2);
+                var_s3 = var_s0 - temp_s2;
+                var_s2 = var_s1 + temp_s2;
+                *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) = 0;
+            }
+            if (var_s3 != 0) {
+                func_0010C110((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) + 0x800), var_s2 + 0x800, var_s3);
+                *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) += var_s3;
+            }
+            var_s1 += var_s0;
+            *(s32 *) ((u8 *) D_0030FF40 + 0x1CC) = var_s1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010AC20);
 
