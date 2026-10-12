@@ -657,7 +657,41 @@ s32 func_001F98C0(s32 arg0, s32 arg1) {
     return (*(u16 *)((u8 *)temp_v1 + 0x8AA) & (1 << arg1)) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F9940);
+typedef struct {
+    __int128 rows[3];
+} Matrix_001F9940;
+
+typedef struct {
+    u8 pad[0x600];
+    Matrix_001F9940 matrices[10];
+    u8 pad_7E0[0xCA];
+    u16 flags;
+} Object_001F9940;
+
+s32 func_001F9940(s32 arg0, s32 arg1, s32 arg2) {
+    Object_001F9940 *object;
+
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    }
+    object = (Object_001F9940 *)D_0031BEB0[arg0];
+    if (object == 0) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 10) {
+        return 0;
+    }
+    if (arg2 != 0) {
+        if (arg2 != 1) {
+            object->matrices[arg1] = *(Matrix_001F9940 *)arg2;
+            *(f32 *)((u8 *)&object->matrices[arg1] + 0x1C) = 1.0f;
+        }
+        object->flags |= 1 << arg1;
+    } else {
+        object->flags &= ~(1 << arg1);
+    }
+    return 1;
+}
 
 f32 func_001F9A20(s32 arg0) {
     s32 temp_v0;
