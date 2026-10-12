@@ -45,7 +45,6 @@ extern void func_0017C428(s32);
 extern void func_0017C4F8(s32);
 extern void func_0018EA68(void);
 extern void func_001906D0(void);
-extern s32 func_00243A90(void *, s32);
 extern void func_00242190(void);
 extern void func_002423A0(void);
 extern s32 func_00242D10();
@@ -448,7 +447,114 @@ void func_00243A40(s32 arg0) {
     func_00190810(1, 0x8010, 0x1080, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243A90);
+typedef struct File_00243A90 {
+    s32 disc;
+    s32 size;
+    s32 handle;
+    s32 disc_size;
+    u8 pad10[0x1C];
+    u32 allocation;
+    s32 fd;
+} File_00243A90;
+
+s32 func_0017FA98(const char *, s32);
+void func_0017FD20(s32);
+s32 func_0017FEA0(s32, s32, s32);
+s32 func_001828C0(s32);
+s32 func_00190FF0(void *, const char *);
+s32 func_00191A58(s32);
+void func_00191F90(s32, s32, u32);
+void func_00191FC0(s32, u8 *);
+char *func_001976D8(char *, s32);
+s32 func_0019BC90(const char *, const char *);
+s32 func_0019D9E0(s32);
+extern char D_0030F7F0[];
+extern char D_0030F7F7[];
+extern char D_0030F7F8[];
+extern char D_0030F800[];
+extern char D_0030F806[];
+extern char D_0030F80C[];
+extern char D_0030F816[];
+extern char D_0030F839[];
+extern char D_0030F854[];
+extern char D_0030F86F[];
+
+s32 func_00243A90(void *arg0, s32 arg1) {
+    extern void func_0019B648();
+    char path[256];
+    char prefix[76];
+    u8 mode[3];
+    char *separator;
+    File_00243A90 *file = arg0;
+
+    separator = func_001976D8((char *)arg1, ':');
+    if (separator != NULL) {
+        s32 prefix_length;
+
+        prefix_length = separator - (char *)arg1;
+        func_0019C2B8(prefix, (char *)arg1, prefix_length);
+        prefix[prefix_length] = 0;
+        if (func_0019BC90(prefix, D_0030F7F0) == 0) {
+            s32 i;
+            s32 length;
+            char *current;
+            char *suffix;
+
+            length = func_0019BEF0(separator + 1);
+            file->disc = 1;
+            for (i = 0; i < length; i++) {
+                current = separator + i + 1;
+                if (*current == '/') {
+                    *current = '\\';
+                }
+                *current = func_0019D9E0(*current);
+            }
+            suffix = func_001976D8((char *)arg1, ';') ? D_0030F7F7 : D_0030F7F8;
+            func_0019B648(path, D_0030F7F8 + 3, separator + 1, suffix);
+        } else {
+            file->disc = 0;
+            func_0019B648(path, D_0030F800, prefix, separator + 1);
+        }
+    } else {
+        func_0019BDD8(prefix, D_0030F806);
+        file->disc = 0;
+        func_0019B648(path, D_0030F800, prefix, arg1);
+    }
+    func_00199B50(D_0030F80C, path);
+    if (file->disc != 0) {
+        do {
+        } while (func_00191A58(0) != 2);
+        file->allocation = func_001828C0(0x28010);
+        func_00191F90(0x50, 5, ((file->allocation + 0xF) >> 4) << 4);
+        if (func_00190FF0(&file->handle, path) == 0) {
+            func_00199B50(D_0030F816, path);
+            return 0;
+        }
+        file->size = file->disc_size;
+        mode[0] = 0;
+        mode[1] = 0;
+        mode[2] = 0;
+        func_00191FC0(file->handle, mode);
+    } else {
+        file->fd = func_0017FA98(path, 1);
+        if (file->fd < 0) {
+            func_00199B50(D_0030F839, path);
+            return 0;
+        }
+        file->size = func_0017FEA0(file->fd, 0, 2);
+        if (file->size < 0) {
+            func_00199B50(D_0030F854, path, file->size);
+            func_0017FD20(file->fd);
+            return 0;
+        }
+        if (func_0017FEA0(file->fd, 0, 0) < 0) {
+            func_00199B50(D_0030F86F, path);
+            func_0017FD20(file->fd);
+            return 0;
+        }
+    }
+    return 1;
+}
 
 typedef struct {
     s32 unk00;

@@ -1432,6 +1432,7 @@ s32 func_002437F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
 s32 func_00243950(s32 arg0, s32 arg1, s32 arg2);
 void func_002439D0(s32 arg0);
 void func_00243A40(s32 arg0);
+s32 func_00243A90(void *arg0, s32 arg1);
 s32 func_00243D90(void *arg0);
 s32 func_00243EE0(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_00243F60(void *arg0);
