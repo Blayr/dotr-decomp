@@ -1375,7 +1375,183 @@ INCLUDE_ASM("asm/nonmatchings/main_012", func_00151CF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_00152100);
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_001526D0);
+typedef struct Input_001526D0 {
+    u16 position;
+    u8 pad2[6];
+    u32 destinations;
+} Input_001526D0;
+
+typedef struct Output_001526D0 {
+    u16 position;
+    u8 command;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 state;
+    u8 result;
+} Output_001526D0;
+
+typedef struct Point_001526D0 {
+    u8 x : 4;
+    u8 y : 4;
+} Point_001526D0;
+
+static inline u32 destination_001526D0(void *src, u8 mode) {
+    if (mode == 1) {
+        return (u16)(((Input_001526D0 *)src)->destinations >> 16);
+    }
+    return *(u16 *)((u8 *)src + 8);
+}
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+
+s32 func_001526D0(void *src, s32 arg1, u16 *out, u8 arg3) {
+    extern s32 func_00153AE0();
+    extern void func_0027A090();
+    s32 state;
+    s32 current;
+    s32 count;
+    u8 mode;
+    s32 target;
+    s32 currentY;
+    s32 currentX;
+    s32 forced;
+    s32 i;
+    s32 unit;
+    u32 destinationX;
+    u32 destinationY;
+    Point_001526D0 points[12];
+
+    mode = func_00153AB0();
+    destinationX = destination_001526D0(src, arg3);
+    destinationY = destination_001526D0(src, arg3);
+    if (func_001DF540(destinationY >> 8, destinationX & 0xFF) == 0) {
+        func_0027B1B0(src, 1);
+        return -1;
+    }
+    state = func_00153AE0(((Input_001526D0 *)src)->position >> 8,
+                         ((Input_001526D0 *)src)->position & 0xFF, src);
+    current = func_001E1090(((Input_001526D0 *)src)->position >> 8,
+                           ((Input_001526D0 *)src)->position & 0xFF);
+    destinationX = destination_001526D0(src, arg3);
+    destinationY = destination_001526D0(src, arg3);
+    target = func_001E1090(destinationY >> 8, destinationX & 0xFF);
+    for (i = 0; i < 12; i++) {
+        points[i].x = points[i].y = 0xF;
+    }
+    unit = func_001DF540(((Input_001526D0 *)src)->position >> 8,
+                        ((Input_001526D0 *)src)->position & 0xFF);
+    currentX = current & 0xFF;
+    currentY = current >> 8;
+    if (func_002464F0(unit, currentX, currentY) == 0) {
+        s32 cost;
+        ((Output_001526D0 *)out)->position = ((Input_001526D0 *)src)->position;
+        ((Output_001526D0 *)out)->command = 6;
+        ((Output_001526D0 *)out)->destination = current;
+        cost = func_00276CC0(currentX, currentY, arg1, 3, 1,
+                            (u8)func_00153ED0(arg1));
+        if (cost >= func_001E0290(((Input_001526D0 *)src)->position >> 8,
+                                 ((Input_001526D0 *)src)->position & 0xFF, 0)) {
+            ((Output_001526D0 *)out)->result = func_0027E360(
+                ((Input_001526D0 *)src)->position >> 8,
+                ((Input_001526D0 *)src)->position & 0xFF,
+                out[2], 1, 0);
+        } else {
+            ((Output_001526D0 *)out)->result = func_0027E360(
+                ((Input_001526D0 *)src)->position >> 8,
+                ((Input_001526D0 *)src)->position & 0xFF,
+                out[2], 0, 0);
+        }
+        func_0027B1B0(src, arg3);
+    } else {
+        s32 y;
+        s32 x;
+        Point_001526D0 *point;
+        s32 index;
+        s32 bestCost;
+        s32 selected;
+        s32 position = ((Input_001526D0 *)src)->position;
+        func_0027A090(position >> 8, position & 0xFF, points, currentX, currentY,
+                      x = target & 0xFF, y = target >> 8,
+                      destination_001526D0(src, arg3), 0, 30,
+                      (u16)func_00153ED0(arg1));
+        count = func_0027AFC0((u8 *)points);
+        selected = 0xFF;
+        if (count > 0) {
+            forced = 0;
+            bestCost = 0xFFFF;
+            for (index = 0; index < count; index++) {
+                s32 hit = func_00153DD0(((Input_001526D0 *)src)->position >> 8,
+                                      ((Input_001526D0 *)src)->position & 0xFF,
+                                      currentX, currentY, x, y);
+                if (hit == 1) {
+                    Point_001526D0 *forcedPoint = &points[index];
+                    selected = index;
+                    forced = 1;
+                    index = count;
+                    forcedPoint->x = x;
+                    forcedPoint->y = y;
+                } else {
+                    s32 cost;
+                    point = &points[index];
+                    cost = func_00276CC0(point->x, point->y, arg1,
+                                        (u8)(mode ? 5 : 2), 1,
+                                        (u8)func_00153ED0(arg1));
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        selected = index;
+                    } else if (cost == bestCost) {
+                        if (((x < point->x ? point->x : x) -
+                             (point->x < x ? point->x : x)) +
+                            ((y < point->y ? point->y : y) -
+                             (point->y < y ? point->y : y)) <
+                            ((x < points[selected].x ? points[selected].x : x) -
+                             (points[selected].x < x ? points[selected].x : x)) +
+                            ((y < points[selected].y ? points[selected].y : y) -
+                             (points[selected].y < y ? points[selected].y : y))) {
+                            bestCost = cost;
+                            selected = index;
+                        }
+                    }
+                }
+            }
+        } else {
+            ((Output_001526D0 *)out)->position = ((Input_001526D0 *)src)->position;
+            ((Output_001526D0 *)out)->command = 6;
+            ((Output_001526D0 *)out)->destination = current;
+            ((Output_001526D0 *)out)->state = state;
+            ((Output_001526D0 *)out)->result = func_0027E360(
+                ((Input_001526D0 *)src)->position >> 8,
+                ((Input_001526D0 *)src)->position & 0xFF,
+                ((Output_001526D0 *)out)->destination, 0, 0);
+            func_0027B1B0(src, arg3);
+            return 0;
+        }
+        if (selected != 0xFF) {
+            ((Output_001526D0 *)out)->position = ((Input_001526D0 *)src)->position;
+            ((Output_001526D0 *)out)->command = 6;
+            ((Output_001526D0 *)out)->destination = (points[selected].y << 8) | points[selected].x;
+            ((Output_001526D0 *)out)->state = forced;
+            ((Output_001526D0 *)out)->result = func_0027E360(
+                ((Input_001526D0 *)src)->position >> 8,
+                ((Input_001526D0 *)src)->position & 0xFF,
+                ((Output_001526D0 *)out)->destination, 0, 0);
+        } else {
+            ((Output_001526D0 *)out)->position = ((Input_001526D0 *)src)->position;
+            ((Output_001526D0 *)out)->command = 6;
+            ((Output_001526D0 *)out)->destination = current;
+            ((Output_001526D0 *)out)->state = forced;
+            ((Output_001526D0 *)out)->result = func_0027E360(
+                ((Input_001526D0 *)src)->position >> 8,
+                ((Input_001526D0 *)src)->position & 0xFF,
+                ((Output_001526D0 *)out)->destination, 0, 0);
+            func_0027B1B0(src, arg3);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_00152CD0);
 
