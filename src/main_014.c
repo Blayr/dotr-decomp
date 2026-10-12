@@ -955,7 +955,131 @@ void func_0015E8F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 2500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015E950);
+typedef struct Entry_0015E950 {
+    u16 position;
+    u8 kind;
+    u8 pad;
+} Entry_0015E950;
+
+void func_0015E030(void *);
+s32 func_00277160(s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, u16);
+
+void func_0015E950(void *arg0) {
+    extern s32 func_001E1030();
+    extern s32 func_002770E0();
+    extern void func_0027E770();
+    s32 destination;
+    u8 buffer[112];
+    Entry_0015E950 entries[22];
+    u16 outputA;
+    u16 outputB;
+    u16 count;
+    s32 checkOwner;
+    s32 retryX;
+    s32 value;
+    s32 owner;
+    s32 card;
+    s32 cursor;
+    s32 index;
+    s32 retryY;
+    s32 attempt;
+    s32 x;
+    s32 y;
+    s32 position;
+    s32 other;
+    s32 same;
+    s32 i;
+    s32 result;
+    Entry_0015E950 *entry;
+    u16 location;
+
+    location = *(u16 *)arg0;
+    owner = func_00250360(location >> 8, location & 0xFF);
+    location = *(u16 *)arg0;
+    value = func_001E1030(location >> 8, location & 0xFF);
+    location = *(u16 *)arg0;
+    card = func_001DF540(location >> 8, location & 0xFF);
+    location = *(u16 *)arg0;
+    destination = func_001E1090(location >> 8, location & 0xFF);
+    entry = entries;
+    count = 0;
+    outputB = 0;
+    outputA = 0;
+    i = 0;
+    do {
+        i++;
+        entry->position = 0xFFFF;
+        entry->kind = 0xFF;
+        entry++;
+    } while (i < 22);
+    func_0027E770(buffer);
+    cursor = 0;
+    switch (value) {
+    case 0x2B:
+        location = *(u16 *)arg0;
+        if (func_001E2100(location >> 8, location & 0xFF, 4) != 0) {
+            break;
+        }
+        *(u16 *)((u8 *)arg0 + 4) = 0xCFF;
+        *(u32 *)((u8 *)arg0 + 8) = (destination << 16) | *(u16 *)((u8 *)arg0 + 8);
+        return;
+    case 0x57:
+        func_0015E030(arg0);
+        return;
+    case 0x129:
+        location = *(u16 *)arg0;
+        index = 1;
+        y = location & 0xFF;
+        x = location >> 8;
+        position = (x << 8) | y;
+        while (1) {
+            other = func_001E3790(index, 3);
+            if (other != 0) {
+                if (other == position) {
+                    same = 1;
+                    break;
+                }
+                checkOwner = func_00250360(other >> 8, other & 0xFF);
+                if (checkOwner == func_00250360(x, y)) {
+                    same = 0;
+                    break;
+                }
+            }
+            index++;
+            if (index > 5) {
+                same = 1;
+                break;
+            }
+        }
+        if (same == 1) {
+            func_0015E520(arg0, 1);
+            return;
+        }
+        retryX = destination >> 8;
+        retryY = destination & 0xFF;
+        attempt = 1;
+        while (1) {
+            result = func_00162580(owner);
+            cursor = func_002770E0(cursor, card, retryY, retryX, owner == 0 ? 1 : 0, (u8)attempt, 0, result,
+                                  entries, &count, &outputA, &outputB, buffer);
+            result = func_00277160(card, retryY, retryX, entries, 2, 0x34, 0, 2, 0,
+                                  func_00162580(owner), count);
+            if (result >= 0) {
+                *(u16 *)((u8 *)arg0 + 4) = 0x2FF;
+                *(u32 *)((u8 *)arg0 + 8) = (result << 16) | *(u16 *)((u8 *)arg0 + 8);
+                return;
+            }
+            attempt++;
+            if (attempt > 2) {
+                break;
+            }
+        }
+        location = *(u16 *)arg0;
+        func_0015EC60(location >> 8, location & 0xFF, arg0);
+        return;
+    }
+    func_0015DED0(arg0);
+}
 
 typedef struct {
     u32 field0;
