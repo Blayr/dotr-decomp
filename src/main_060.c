@@ -541,7 +541,41 @@ u16 func_002170A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 999;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002171B0);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+typedef struct {
+    unsigned char pad[0xFF9C];
+    unsigned char flags;
+    unsigned char tail[3];
+} State_002158B0;
+extern State_002158B0 D_0032F790[];
+#endif
+
+
+typedef struct Flags_002171B0 {
+    u8 padding[0xFF9C];
+    u8 : 5;
+    u8 active : 1;
+    u8 : 2;
+} Flags_002171B0;
+
+extern u8 D_0034F6D0;
+
+s32 func_002171B0(s32 arg0) {
+    s32 index;
+    State_002158B0 *state;
+
+    if (D_0034F6D0 == arg0) {
+        index = 0;
+    } else {
+        index = 1;
+    }
+    state = &D_0032F790[index];
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    return ((Flags_002171B0 *)state)->active ? 1 : 0;
+}
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */

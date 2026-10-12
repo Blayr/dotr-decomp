@@ -1315,6 +1315,7 @@ s32 func_00216BC0(s32 arg0, s32 arg1);
 s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00216F80(s32 player, s32 flag, s32 enabled);
 u16 func_002170A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_002171B0(s32 arg0);
 s32 func_00217230(s32 arg0, s32 arg1);
 s32 func_002172D0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_002173D0(void);
