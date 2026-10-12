@@ -667,7 +667,215 @@ s32 func_0023D400(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023D920);
+struct State_0023E610;
+
+typedef struct State_0023D920 {
+    s32 result;
+    s32 status;
+    s32 port;
+    s32 slot;
+    u8 pad10[0x10];
+    s32 command;
+    s32 code;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 phase;
+    u8 pad36[0xA];
+    s16 retries;
+    u8 pad42[6];
+    s32 handles[158];
+    u8 buffer[1];
+} State_0023D920;
+
+s32 func_00193BA8(s32, s32, void *, s32);
+s32 func_00193CE0(s32, s32, void *);
+s32 func_00193D18(s32);
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194758(s32, s32, void *, void *);
+s32 func_0023E7A0(void);
+extern s16 D_0034FB34;
+extern u8 D_0029B100[];
+extern u8 D_0029B1BE[];
+
+s32 func_0023D920(void) {
+    extern struct State_0023E610 D_0034FB00;
+    State_0023D920 *state = (State_0023D920 *)&D_0034FB00;
+    s32 result;
+
+    switch (D_0034FB34) {
+    case 0:
+        state->result = func_00193CE0(state->port, state->slot, D_0029B100);
+        state->status = func_00194248(1, &state->command, &state->code);
+        if (state->status == 1) {
+            if (state->command == 0xB) {
+                if (state->code != 0) {
+                    switch (state->code) {
+                    case -2:
+                        state->retries++;
+                        if (state->retries >= 3) {
+                            state->state = 0xB;
+                            state->phase = 0;
+                            state->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 5;
+                    case -4:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    default:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    state->phase = 1;
+                    state->retries = 0;
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 1:
+        state->result = func_00194758(state->port, state->slot, D_0029B100, state->buffer);
+        state->status = func_00194248(1, &state->command, &state->code);
+        if (state->status == 1) {
+            if (state->command == 0xC) {
+                switch (state->code) {
+                case 0:
+                    state->phase = 2;
+                    state->retries = 0;
+                    return 0;
+                case -2:
+                    state->retries++;
+                    if (state->retries >= 3) {
+                        state->state = 0xB;
+                        state->phase = 0;
+                        state->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    state->state = 0xE;
+                    state->phase = 0;
+                    state->retries = 0;
+                    return 0xA;
+                default:
+                    state->state = 0xE;
+                    state->phase = 0;
+                    state->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    case 2:
+        result = func_0023E7A0();
+        if (result == 1) {
+            state->retries = 0;
+            state->phase = 3;
+        } else if (result == 0xA) {
+            return 0xA;
+        }
+        break;
+    case 3:
+        state->result = func_00193BA8(state->port, state->slot, D_0029B1BE, 0x200);
+        state->status = func_00194248(1, &state->command, &state->code);
+        if (state->status == 1) {
+            if (state->command == 2) {
+                if (state->code < 0) {
+                    switch (state->code) {
+                    case -2:
+                        state->retries++;
+                        if (state->retries >= 3) {
+                            state->state = 0xB;
+                            state->phase = 0;
+                            state->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 5;
+                    case -4:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    case -5:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    case -7:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    default:
+                        state->state = 0xE;
+                        state->phase = 0;
+                        state->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    state->handles[state->port] = state->code;
+                    state->phase = 4;
+                    state->retries = 0;
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 4:
+        state->result = func_00193D18(state->handles[state->port]);
+        state->status = func_00194248(1, &state->command, &state->code);
+        if (state->status == 1) {
+            if (state->command == 3) {
+                switch (state->code) {
+                case 0:
+                    state->state = 5;
+                    state->retries = 0;
+                    state->phase = 0;
+                    return 9;
+                case -2:
+                    state->retries++;
+                    if (state->retries >= 3) {
+                        state->state = 0xB;
+                        state->phase = 0;
+                        state->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    state->state = 0xE;
+                    state->phase = 0;
+                    state->retries = 0;
+                    return 0xA;
+                default:
+                    state->state = 0xE;
+                    state->phase = 0;
+                    state->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    default:
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023DE90);
 
