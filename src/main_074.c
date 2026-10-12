@@ -463,7 +463,98 @@ s32 func_0025BE50(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C0B0);
+typedef struct Obj_0025C0B0 {
+    u16 amount;
+    u16 pad2;
+    u16 mode;
+    u8 pad6[0x102 - 6];
+    u16 timer;
+} Obj_0025C0B0;
+
+extern void func_00255960(void *);
+extern void func_00255AC0(void *, s32);
+extern s32 func_0025F400(void *, void *, s32 *);
+extern void func_00260860(s32);
+extern void func_00260A70(void *, s32);
+
+s32 func_0025C0B0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_0025F670();
+    s32 work[4];
+    s32 *workp;
+    Obj_0025C0B0 *obj;
+
+    workp = work;
+    obj = arg1;
+    work[0] = 0x3E7;
+    work[1] = 0;
+    work[2] = 0;
+    work[3] = 0;
+    func_001DE7E0(0);
+
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        obj->amount = 0x80;
+        func_00260860(0x10);
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        func_00255AC0(arg1, 0x20B);
+        func_00255AC0(arg1, 0x25B);
+        return 1;
+    }
+
+    switch (obj->mode) {
+    case 0: {
+        u16 amount;
+
+        obj->timer++;
+        amount = obj->amount;
+        if (amount > 0x3F) {
+            amount -= 0xF;
+            obj->amount = amount;
+        } else {
+            amount = 0x30;
+            obj->amount = amount;
+            if (obj->timer >= 0x10 && func_00255B50(arg1) == 1) {
+                func_0025F720(arg0, arg1, workp, 0x20B);
+                obj->mode++;
+            }
+        }
+        func_001F6CF0((u8)obj->amount);
+        break;
+    }
+    case 1:
+        if (func_0025F400(arg0, arg1, workp) != 0) {
+            obj->mode++;
+        }
+        break;
+    case 2:
+        if (func_0025F670(arg0, arg1, workp) != 0) {
+            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            func_00260A70(arg1, 0x10);
+            obj->timer = 0;
+            obj->mode++;
+        }
+        break;
+    default:
+        obj->amount += 0xF;
+        if (obj->amount > 0x80) {
+            obj->amount = 0x80;
+        }
+        func_001F6CF0((u8)obj->amount);
+        if (obj->amount == 0x80) {
+            u16 oldTimer = obj->timer;
+            obj->timer = oldTimer + 1;
+            if (oldTimer > 0x10 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C330);
 
