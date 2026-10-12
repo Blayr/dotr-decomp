@@ -163,7 +163,108 @@ void func_0020FED0(void *arg0, void *arg1, void *arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FF80);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00210010);
+typedef struct Vec3_00210010 {
+    f32 x, y, z;
+} Vec3_00210010;
+
+typedef struct Node_00210010 {
+    Vec3_00210010 scale;
+    u16 flags;
+    u16 matrix;
+    Vec3_00210010 rotation;
+    u32 child;
+    Vec3_00210010 translation;
+    u32 next;
+} Node_00210010;
+
+typedef struct Model_00210010 {
+    u8 pad0[0x90];
+    u8 *nodes;
+    u8 pad94[0x20];
+    f32 (*matrices)[4];
+} Model_00210010;
+
+typedef struct Entry_00210010 {
+    s32 id;
+    s32 active;
+    u8 pad8[8];
+    f32 matrix[16];
+} Entry_00210010;
+
+extern Vec3_00210010 D_00295080;
+extern u32 D_0032A728;
+extern s32 D_0032A770;
+
+void func_0020DB20(void);
+void func_0020DBE0(void *, void *, void *);
+void func_0020DB00(void *);
+void func_0020CB20(void *, void *);
+void func_0020BAD0(void *);
+void func_0020DB80(void);
+
+void func_00210010(void *arg0, void *arg1, void *arg2) {
+    extern Entry_00210010 D_0032A780[];
+    u8 buffer[0x20];
+    Vec3_00210010 translation;
+    Vec3_00210010 *scale;
+    s32 flags;
+    s32 mode;
+    f32 *matrix;
+    s32 matrixIndex;
+    Entry_00210010 *entry;
+    u32 i;
+    u32 offset;
+    Model_00210010 *model = arg0;
+    Vec3_00210010 *parentScale = arg2;
+
+    scale = (Vec3_00210010 *)(((u32)buffer + 15) & ~15);
+    for (;;) {
+        func_0020B380(scale, parentScale, 1);
+        flags = ((Node_00210010 *)arg1)->flags;
+        mode = flags & 3;
+        if (mode != 3) {
+            translation = D_00295080;
+            translation.x = ((Node_00210010 *)arg1)->translation.x * parentScale->x;
+            translation.y = ((Node_00210010 *)arg1)->translation.y * parentScale->y;
+            translation.z = ((Node_00210010 *)arg1)->translation.z * parentScale->z;
+            func_0020DB20();
+            func_0020DBE0(NULL, (flags & 2) ? NULL : &((Node_00210010 *)arg1)->rotation,
+                         (flags & 1) ? NULL : &translation);
+        }
+        if (!(flags & 4)) {
+            scale->x *= ((Node_00210010 *)arg1)->scale.x;
+            scale->y *= ((Node_00210010 *)arg1)->scale.y;
+            scale->z *= ((Node_00210010 *)arg1)->scale.z;
+        }
+        matrixIndex = ((Node_00210010 *)arg1)->matrix;
+        if (matrixIndex != 0) {
+            matrix = model->matrices[matrixIndex];
+            func_0020DB00(matrix);
+            func_0020CB20(matrix, scale);
+        }
+        entry = D_0032A780;
+        for (i = 0; i < D_0032A728; entry++, i++) {
+            if (D_0032A770 == entry->id) {
+                D_0032A780[i].active = 1;
+                func_0020BAD0(D_0032A780[i].matrix);
+                break;
+            }
+        }
+        D_0032A770++;
+        offset = ((Node_00210010 *)arg1)->child;
+        if (offset != 0) {
+            func_00210010(model, model->nodes + (offset & 0x0FFFFFFF), scale);
+        }
+        if (mode != 3) {
+            func_0020DB80();
+        }
+        offset = ((Node_00210010 *)arg1)->next;
+        if (offset == 0) {
+            break;
+        }
+        arg1 = model->nodes + (offset & 0x0FFFFFFF);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00210260);
 
