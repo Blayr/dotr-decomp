@@ -373,7 +373,6 @@ void *func_00198948(void *, s32, u32);
 
 extern s32 D_00292468;
 
-s32 func_00216920(s32, s32);
 extern u8 D_003181EC;
 
 extern s8 D_00299E10;

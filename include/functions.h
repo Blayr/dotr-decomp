@@ -1305,6 +1305,7 @@ s32 func_00215920(s32 arg0, s32 arg1);
 s32 func_002159D0(s32 arg0, s32 arg1);
 s32 func_00215F00(s32 arg0, s32 arg1);
 s32 func_00216490(s32 arg0, s32 arg1);
+s32 func_00216920(s32 arg0, s32 arg1);
 s32 func_002169F0(s32 arg0);
 s32 func_00216BC0(s32 arg0, s32 arg1);
 s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2);
