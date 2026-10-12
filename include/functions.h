@@ -1244,6 +1244,7 @@ f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4);
 void func_0021C350(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n);
 s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6);
 void func_0021DA60(void);
+s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00228940(s16 arg0, s16 arg1);
 s32 func_00228970(void);
 s32 func_0022C3C0(s32 arg0);
