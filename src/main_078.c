@@ -140,7 +140,126 @@ void func_002770E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00277160);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002774F0);
+s32 func_002774F0(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u8 arg6, u16 arg7) {
+    extern s32 func_001E1030();
+    s32 var_s0;
+    s32 temp_s1;
+    s32 temp_s2;
+    u16 var_s3;
+    u8 *var_s4;
+    s32 spA0;
+    s32 temp_v0_6;
+
+    u8 var_fp;
+    s32 var_v0;
+    s32 var_v0_2;
+    s32 var_v1;
+    s32 var_a0;
+    s32 var_a1;
+    s32 var_v0_3;
+    s32 var_v1_2;
+    s32 var_a0_2;
+    s32 var_a1_2;
+    s32 y;
+    s32 x;
+    s32 y2;
+    s32 x2;
+    u16 temp_v0;
+    u16 temp_v0_2;
+    u16 temp_v0_3;
+    u16 temp_v0_4;
+    u16 temp_v0_5;
+    s32 temp_v0_7;
+
+    var_s4 = arg2;
+    var_fp = 7;
+    var_s3 = 0xFFFF & 0xFFFF;
+    for (var_s0 = 0; var_s0 < arg7; var_s0++) {
+        temp_v0 = *(u16 *)var_s4;
+        if (func_001DF540((s32) temp_v0 >> 8, temp_v0 & 0xFF) != 0) {
+            temp_v0_2 = *(u16 *)var_s4;
+            temp_s1 = func_001E1090((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF);
+            temp_v0_3 = *(u16 *)var_s4;
+            if (func_00278150(func_001E2100((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF, 2), arg5) == 1) {
+                temp_v0_4 = *(u16 *)var_s4;
+                if (func_00278150(func_001E2100((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 5), arg6) == 1) {
+                    temp_v0_5 = *(u16 *)var_s4;
+                    if (func_0027C5A0((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, arg4) == 1) {
+                        temp_s2 = var_s4[2];
+                        if (temp_s2 <= (u8) arg3) {
+                          if ((s32) temp_s2 > 0) {
+                            temp_v0_6 = var_fp & 0xFF;
+                            if ((s32) temp_s2 < temp_v0_6) {
+                                y = temp_s1 >> 8;
+                                if (arg1 < y) {
+                                    var_v0_2 = arg1;
+                                } else {
+                                    var_v0_2 = y;
+                                }
+                                if (y < arg1) {
+                                    var_a0 = arg1;
+                                } else {
+                                    var_a0 = y;
+                                }
+                                x = temp_s1 & 0xFF;
+                                if (arg0 < x) {
+                                    var_v1 = arg0;
+                                } else {
+                                    var_v1 = x;
+                                }
+                                if (x < arg0) {
+                                    var_a1 = arg0;
+                                } else {
+                                    var_a1 = x;
+                                }
+                                var_s3 = *(u16 *)var_s4;
+                                var_fp = ((var_a1 - var_v1) + (var_a0 - var_v0_2)) & 0xFF;
+                                arg3 = temp_s2 & 0xFF;
+                            } else if (temp_s2 == temp_v0_6) {
+                                temp_v0_7 = func_001DD0E0(func_001E1030(*(u16 *)var_s4 >> 8, *(u16 *)var_s4 & 0xFF))[3];
+                                spA0 = (s32) temp_v0_7;
+                                if ((s32) func_001DD0E0(func_001E1030(var_s3 >> 8, var_s3 & 0xFF))[3] < spA0) {
+                                    y2 = temp_s1 >> 8;
+                                    var_s3 = *(u16 *)var_s4;
+                                    if (arg1 < y2) {
+                                        var_v0_3 = arg1;
+                                    } else {
+                                        var_v0_3 = y2;
+                                    }
+                                    if (y2 < arg1) {
+                                        var_a0_2 = arg1;
+                                    } else {
+                                        var_a0_2 = y2;
+                                    }
+                                    x2 = temp_s1 & 0xFF;
+                                    if (arg0 < x2) {
+                                        var_v1_2 = arg0;
+                                    } else {
+                                        var_v1_2 = x2;
+                                    }
+                                    if (x2 < arg0) {
+                                        var_a1_2 = arg0;
+                                    } else {
+                                        var_a1_2 = x2;
+                                    }
+                                    var_fp = ((var_a1_2 - var_v1_2) + (var_a0_2 - var_v0_3)) & 0xFF;
+                                    arg3 = temp_s2 & 0xFF;
+                                }
+                            }
+                          }
+                        }
+                    }
+                }
+            }
+        }
+        var_s4 += 4;
+    }
+    var_v0 = var_s3 & 0xFFFF;
+    if (var_v0 == 0xFFFF) {
+        var_v0 = -1;
+    }
+    return var_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_002777F0);
 

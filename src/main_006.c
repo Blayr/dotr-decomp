@@ -220,7 +220,6 @@ typedef struct {
 } Slot_0011DC00;
 
 s32 func_00277CD0(s32, s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, s32, s32);
-s32 func_002774F0(s32, s32, void *, s32, s32, s32, s32, s32);
 
 void func_0011DC00(void *arg0) {
     u8 work[112];
