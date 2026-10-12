@@ -813,7 +813,6 @@ typedef struct Result_00261F20 {
     Flags_00261F20 flags;
 } Result_00261F20;
 
-s32 func_00262190(s32, s32, void *, s32, s32, s32, s32, s32);
 
 s32 func_00261F20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     s32 temp_a0;
@@ -878,7 +877,148 @@ s32 func_00261F20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00262190);
+typedef struct Flags_00262190 {
+    u8 bit0 : 1;
+    u8 bit1 : 1;
+    u8 bit2 : 1;
+    u8 bit3 : 1;
+    u8 bit4 : 1;
+    u8 unused : 3;
+} Flags_00262190;
+
+typedef struct State_00262190 {
+    Flags_00262190 flags;
+    u8 pad1[3];
+    s32 value0;
+    s32 value1;
+    u8 padC[4];
+    Flags_00262190 flags10;
+} State_00262190;
+
+s32 func_00262190(u32 arg0, u32 arg1, void *arg2, s32 arg3, s32 arg4,
+                  s32 arg5, s32 arg6, s32 arg7) {
+    extern s32 func_001E2220();
+
+    switch (arg0 >> 8) {
+    case 4:
+        if (func_00262680((arg0 >> 6) & 3, arg0 & 0x3F, arg3, arg4, arg5, arg6) == 1) {
+            if (arg6 != 0 && arg4 != 0) {
+                ((State_00262190 *)arg2)->flags.bit0 = 0;
+                if (arg7 == 1) {
+                    ((State_00262190 *)arg2)->flags.bit1 = 1;
+                } else {
+                    ((State_00262190 *)arg2)->flags.bit2 = 1;
+                }
+                return 0x10001;
+            }
+        }
+        return 0;
+    case 2: {
+        s32 row;
+        s32 y;
+        s32 x;
+        s32 col;
+        u32 range;
+        u32 value;
+
+        if (arg7 == 0) {
+            y = func_001E1090(arg3, arg4) & 0xFF;
+            x = func_001E1090(arg3, arg4) >> 8;
+        } else {
+            y = func_001E1090(arg5, arg6) & 0xFF;
+            x = func_001E1090(arg5, arg6) >> 8;
+        }
+        row = 0;
+        range = arg1 >> 16;
+        value = arg1 & 0xFFFF;
+        do {
+            col = 0;
+            do {
+                if ((u32)(((row < y ? y : row) - (y < row ? y : row)) +
+                          ((col < x ? x : col) - (x < col ? x : col))) <= range &&
+                    func_001E22B0(row, col) != 8) {
+                    func_001E2220(row, col, value);
+                }
+                col++;
+            } while (col < 7);
+            row++;
+        } while (row < 7);
+        return 0x10000;
+    }
+    case 27:
+        if (func_00262680(2, arg1 >> 16, arg3, arg4, arg5, arg6) == 1) {
+            if (arg6 != 0 && arg4 != 0) {
+                if (arg7 == 0) {
+                    ((State_00262190 *)arg2)->value0 += arg1 & 0xFFFF;
+                } else {
+                    ((State_00262190 *)arg2)->value1 += arg1 & 0xFFFF;
+                }
+                return 0x10000;
+            }
+        }
+        return 0;
+    case 5:
+        if (arg6 != 0) {
+            if (arg4 != 0) {
+                if (arg7 == 0) {
+                    ((State_00262190 *)arg2)->flags10.bit0 = 1;
+                } else {
+                    ((State_00262190 *)arg2)->flags10.bit1 = 1;
+                }
+                return 0x10000;
+            }
+        }
+        break;
+    case 13: {
+        s32 value = arg1 & 0xFFFF;
+        arg1 >>= 16;
+        switch (arg1) {
+        case 0:
+            value = func_002670F0(0x2B, value);
+            break;
+        case 1:
+            value = func_002670F0(0x2C, value);
+            break;
+        }
+        func_001DF490(arg3, arg1, value);
+        return 0x10000;
+    }
+    case 0x3A:
+        if (arg6 != 0 && arg4 != 0) {
+            ((State_00262190 *)arg2)->flags10.bit2 = 1;
+            return 0x10000;
+        }
+        break;
+    case 1:
+        if (arg6 != 0 && arg4 != 0) {
+            if (arg7 == 0) {
+                ((State_00262190 *)arg2)->flags10.bit4 = 1;
+            } else {
+                ((State_00262190 *)arg2)->flags10.bit3 = 1;
+            }
+            return 0x10000;
+        }
+        break;
+    case 0x3F:
+        if (arg7 == 0) {
+            u32 first;
+            u32 divisor;
+            divisor = ((arg1 & 0xFFFF) / 100) + 1;
+            first = (u32)func_0019A5C8() % divisor;
+            ((State_00262190 *)arg2)->value0 = (first - (u32)func_0019A5C8() % divisor) * 100;
+        } else {
+            u32 first;
+            u32 divisor;
+            divisor = ((arg1 & 0xFFFF) / 100) + 1;
+            first = (u32)func_0019A5C8() % divisor;
+            ((State_00262190 *)arg2)->value1 = (first - (u32)func_0019A5C8() % divisor) * 100;
+        }
+        return 0x10000;
+    default:
+        return 0;
+    }
+    return 0;
+}
 
 s32 func_00262680(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     switch (arg0) {
