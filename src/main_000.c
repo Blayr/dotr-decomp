@@ -605,6 +605,61 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00102550);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00102A50);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102CB0);
+typedef struct Vec3_00102CB0 {
+    f32 x, y, z;
+} Vec3_00102CB0;
+
+typedef struct Curve_00102CB0 {
+    s32 count;
+    f32 radius;
+    f32 angle;
+    f32 angleStep;
+    Vec3_00102CB0 start;
+    Vec3_00102CB0 end;
+    Vec3_00102CB0 *points;
+} Curve_00102CB0;
+
+extern void func_0020C630(void *, s32 *);
+
+void func_00102CB0(void *arg0) {
+    extern s32 func_001A22C0(f32);
+    f32 matrix[16];
+    Vec3_00102CB0 delta;
+    Vec3_00102CB0 point;
+    s32 angles[3];
+    Vec3_00102CB0 *p;
+    Vec3_00102CB0 *end;
+    s32 i;
+    f32 step;
+    f32 angle;
+    f32 horizontalDistance;
+    Curve_00102CB0 *curve = arg0;
+
+    p = curve->points;
+    *p = curve->start;
+    end = p + curve->count;
+    *end = curve->end;
+    p++;
+    delta.x = curve->end.x - curve->start.x;
+    delta.y = curve->end.y - curve->start.y;
+    delta.z = curve->end.z - curve->start.z;
+    step = func_0020D0E0(&delta.x) / (f32)curve->count;
+    horizontalDistance = func_001A6C60(delta.x * delta.x + delta.z * delta.z);
+    angles[0] = (u16)func_001A22C0(65536.0f * (func_001A6C18(horizontalDistance, delta.y) / 6.2831855f));
+    angles[1] = (u16)func_001A22C0(65536.0f * (func_001A6C18(delta.x, delta.z) / 6.2831855f));
+    angles[2] = 0;
+    func_0020C630(matrix, angles);
+    for (i = 1; i < curve->count; i++) {
+        angle = (3.1415927f * (curve->angle + curve->angleStep * (f32)i)) / 180.0f;
+        point.x = curve->radius * func_001A6898(angle);
+        point.z = curve->radius * func_001A6A88(angle);
+        point.y = step * (f32)i;
+        func_0020CDD0(p, matrix, &point);
+        p->x += curve->start.x;
+        p->y += curve->start.y;
+        p->z += curve->start.z;
+        p++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00102F20);
