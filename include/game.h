@@ -476,7 +476,6 @@ extern u8 D_0031747A;
 extern s32 D_003180E4;
 extern s32 D_0031810C;
 extern s8 D_0031747B;
-s32 func_001D9A30(s32, s32);
 
 
 s32 func_001AEFD0(s32, s32);

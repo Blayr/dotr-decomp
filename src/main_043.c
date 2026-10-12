@@ -500,7 +500,67 @@ s32 func_001D9A20(s32 arg0) {
     return func_001D9A30(arg0, 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9A30);
+typedef struct {
+    s8 low : 5;
+    s8 bit5 : 1;
+    s8 high : 2;
+} Flags_001D9A30;
+
+s32 func_0020A470(s32, s32, s32);
+s32 func_0020A870(s32, s32);
+
+s32 func_001D9A30(s32 arg0, s32 arg1) {
+    extern s32 func_00202E00();
+    extern s32 func_00202BF0();
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_0020A610();
+    extern s32 func_0020A760();
+    extern u8 D_00317490[];
+    u8 *base = D_00317490;
+    s32 sprite;
+    s32 length;
+    s32 i;
+    s32 result;
+
+    func_0020A470(3, 2, 0x32);
+    arg0 = func_0020A610(arg0);
+    arg0 = func_0020A870(arg0, 0);
+    sprite = func_0020A760(arg0);
+    arg0 = func_00209E50();
+    arg0 += func_00202E00(arg0, 2);
+    sprite = func_001FD320(sprite, arg1, arg0, &length);
+    i = 0;
+    arg0 += length;
+    do {
+        *(s32 *)(base + i * 4 + 0x6A0) = 0;
+        i++;
+    } while (i < 9);
+    *(s32 *)(base + 0x6B0) = func_00202BF0(3, 4);
+    *(s32 *)(base + 0x6B4) = func_00202BF0(3, 5);
+    *(s32 *)(base + 0x6B8) = func_00202BF0(3, 6);
+    sprite = func_00202B00(sprite, 3, arg0, &length);
+    arg0 += length;
+    func_00202D60(3, -1);
+    *(s32 *)(base + 0xC80) = arg0;
+    arg0 += func_00202E00(arg0, 1);
+    *(s32 *)(base + 0x6A0) = func_00202BF0(3, 0);
+    sprite = func_00202B00(sprite, 3, arg0, &length);
+    arg0 += length;
+    func_00202D60(3, 0);
+    {
+        s32 *info;
+
+        sprite = func_001FD680(sprite, 0, 0x15, 0, 0);
+        info = func_001FEAB0(0);
+        info[3] = 0x16;
+        sprite = func_001FD680(sprite, 1, 0xA1, 0, 0x16);
+        result = func_0020F290(func_001FD680(sprite, 2, 0xA2, 0, 0x2C));
+    }
+    *(s32 *)(base + 0xC7C) = arg0;
+    *(s32 *)(base + 0xC54) = 0;
+    ((Flags_001D9A30 *)(base + 0xD64))->bit5 = 0;
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9C40);
 
