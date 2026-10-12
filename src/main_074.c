@@ -2032,7 +2032,126 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C330);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C9E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025D230);
+typedef struct State_0025D230 {
+    u16 alpha;
+    u16 unused2;
+    u16 phase;
+    u8 handles[0xCE];
+    u8 count;
+    u8 unusedD5[0x2D];
+    u16 timer;
+} State_0025D230;
+
+typedef struct Mask_0025D230 {
+    u8 unused0[8];
+    u32 mask;
+} Mask_0025D230;
+
+typedef struct Command_0025D230 {
+    s32 id;
+    s32 x;
+    s32 y;
+    s32 z;
+} Command_0025D230;
+
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025D230(void *arg0, void *arg1, s32 arg2) {
+    s32 i = 0;
+    Command_0025D230 data;
+    Command_0025D230 *command = &data;
+    s32 j;
+    State_0025D230 *state = arg1;
+    Mask_0025D230 *input = arg0;
+
+    command->id = 999;
+    command->x = 0;
+    command->y = 0;
+    command->z = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->alpha = 0x80;
+        if (func_0024E910(input->mask) == 1) {
+            func_00260AF0(0x10, func_0024EC50(input->mask, 0), 100, 180);
+        } else {
+            func_00260740(0x10);
+        }
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        func_00255AC0(arg1, 0x211);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (state->alpha > 0x30) {
+            state->alpha -= 15;
+        } else {
+            state->alpha = 0x30;
+            if (func_00255B50(arg1) == 1) {
+                func_001E42C0(0, -120, 80, func_001DE210(0x2E0));
+                func_0025F720(arg0, arg1, command, 0x211);
+                state->phase++;
+            }
+        }
+        if (state->alpha < 0x30) {
+            state->alpha = 0x30;
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+    case 1:
+        for (j = 0; j < state->count; j++) {
+            if (func_001F51D0(state->handles[j]) == 0) {
+                i++;
+            }
+        }
+        if (i >= state->count) {
+            func_001E4530();
+            i = 0;
+            do {
+                if ((input->mask >> (21 - i)) & 1) {
+                    s32 attackDelta;
+                    s32 defenseDelta;
+                    if (i < 11) {
+                        attackDelta = func_001E0370(0, i, 0) - func_001E0290(0, i, 0);
+                        defenseDelta = func_001E0290(0, i, 0) - func_001E0370(0, i, 0);
+                        func_00250CA0(0, i, 0, attackDelta);
+                        func_00250E80(0, i, 0, defenseDelta);
+                    } else {
+                        attackDelta = func_001E0370(1, i - 11, 0) - func_001E0290(1, i - 11, 0);
+                        defenseDelta = func_001E0290(1, i - 11, 0) - func_001E0370(1, i - 11, 0);
+                        func_00250CA0(1, i - 11, 0, attackDelta);
+                        func_00250E80(1, i - 11, 0, defenseDelta);
+                    }
+                }
+                i++;
+            } while (i < 22);
+            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            func_00260A70(arg1, 0x10);
+            state->phase++;
+        }
+        break;
+    default:
+        state->alpha += 15;
+        if (state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80) {
+            if (state->timer++ > 16 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct Command_0025D640 {
     s32 unk0;
