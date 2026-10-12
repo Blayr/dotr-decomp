@@ -48,7 +48,40 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00254C90);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_002550C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00255960);
+void func_00255960(void *arg0) {
+    f32 *temp_v0_2;
+    f32 *temp_s0;
+    s32 var_a0;
+    u8 *var_a1;
+
+    *(s16 *)((u8 *)arg0 + 0) = 0;
+    *(s16 *)((u8 *)arg0 + 2) = 0;
+    *(s16 *)((u8 *)arg0 + 4) = 0;
+    *(s8 *)((u8 *)arg0 + 0xD4) = 0;
+    func_00255CD0(arg0);
+    var_a0 = 0;
+    var_a1 = arg0;
+    do {
+        *(u8 *)((u32)arg0 + var_a0 + 6) = 0xFF;
+        *(s32 *)(var_a1 + 0x20) = 0;
+        var_a0 += 1;
+        var_a1 += 4;
+    } while (var_a0 < 0x18);
+    temp_s0 = (f32 *)func_001F9D30(0);
+    temp_v0_2 = func_001FAF60(0);
+    *(s32 *)((u8 *)arg0 + 0xD0) = 0;
+    *(s32 *)((u8 *)arg0 + 0xCC) = 0;
+    *(s8 *)((u8 *)arg0 + 0x100) = 0;
+    *(s16 *)((u8 *)arg0 + 0x102) = 0;
+    *(f32 *)((u8 *)arg0 + 0xE0) = temp_s0[0];
+    *(f32 *)((u8 *)arg0 + 0xE4) = temp_s0[1];
+    *(f32 *)((u8 *)arg0 + 0xE8) = temp_s0[2];
+    *(f32 *)((u8 *)arg0 + 0xEC) = temp_s0[3];
+    *(f32 *)((u8 *)arg0 + 0xF0) = temp_v0_2[0];
+    *(f32 *)((u8 *)arg0 + 0xF4) = temp_v0_2[1];
+    *(f32 *)((u8 *)arg0 + 0xF8) = temp_v0_2[2];
+    *(f32 *)((u8 *)arg0 + 0xFC) = temp_v0_2[3];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00255A30);
 
@@ -326,7 +359,6 @@ typedef struct State_00258490 {
 } State_00258490;
 
 void func_0024F370(s32, s32);
-void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
@@ -491,7 +523,6 @@ typedef struct Mask_0025AA80 {
     u32 mask;
 } Mask_0025AA80;
 
-void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_002607D0(s32);
@@ -618,7 +649,6 @@ typedef struct Source_0025B610 {
 } Source_0025B610;
 
 void func_0024F370(s32, s32);
-void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
@@ -714,7 +744,6 @@ typedef struct Obj_0025BE50 {
     u16 timer;
 } Obj_0025BE50;
 
-extern void func_00255960(void *);
 extern void func_00255AC0(void *, s32);
 extern void func_00260740(s32);
 extern void func_00260A70(void *, s32);
@@ -804,7 +833,6 @@ typedef struct Obj_0025C0B0 {
     u16 timer;
 } Obj_0025C0B0;
 
-extern void func_00255960(void *);
 extern void func_00255AC0(void *, s32);
 extern s32 func_0025F400(void *, void *, s32 *);
 extern void func_00260860(s32);

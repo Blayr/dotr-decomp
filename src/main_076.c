@@ -525,7 +525,6 @@ typedef struct {
 
 void func_001E42C0(s32, s32, s32, s32);
 s32 func_001F51D0(s32);
-void func_00255960(void *);
 u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
@@ -635,7 +634,6 @@ typedef struct {
 } Context_002692D0;
 
 void func_0024F370(s32, s32);
-void func_00255960(void *);
 u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
@@ -896,7 +894,6 @@ typedef struct State_0026BB80 {
 
 void func_0024F370(s32, s32);
 void func_002516D0(s32, s32, s32);
-void func_00255960(void *);
 u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);

@@ -197,7 +197,6 @@ typedef struct State_00271630 {
 } State_00271630;
 
 void func_0024F430(u32, s32);
-void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 
@@ -469,7 +468,6 @@ typedef struct {
 
 void func_0024F370(s32, s32);
 void func_002500C0(s32, s32, s32, s32, s32);
-void func_00255960(void *);
 void func_00260490(s32, s32, s32, s32, s32, s32, s32);
 
 static inline s32 update_002755D0(void *arg0, void *arg1, void *params_arg, s32 arg2) {
@@ -547,7 +545,6 @@ typedef struct Request_00275740 {
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(u32, s32, s32);
-void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
@@ -652,7 +649,6 @@ typedef struct {
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_002516D0(u32, s32, s32);
-void func_00255960(void *);
 u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
