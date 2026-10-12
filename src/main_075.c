@@ -255,7 +255,6 @@ typedef struct {
     u32 bits;
 } Field_00260020;
 
-void func_002500C0(s32, s32, s32, s32, s32);
 
 void func_00260020(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     Owner_00260020 *owner = arg0;
