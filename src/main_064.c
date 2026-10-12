@@ -392,7 +392,63 @@ s32 func_0022C3C0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022C450);
+typedef struct PointList_0022C450 {
+    s16 coordinates[32];
+    s16 count;
+    s16 mode;
+    u8 padding[8];
+} PointList_0022C450;
+
+void func_0022C450(void) {
+    f32 positions[64][2];
+    f32 weights[64];
+    s32 item;
+    s32 bank;
+    PointList_0022C450 *list;
+    u8 *output;
+    PointList_0022C450 *bankLists;
+    u8 *bankOutput;
+    s32 count;
+    s32 point;
+    s16 *source;
+    f32 *position;
+    f32 *weight;
+
+    bankLists = (PointList_0022C450 *)D_00299020;
+    bank = 0;
+    bankOutput = (u8 *)0x1ED0000;
+    do {
+        item = 0;
+        list = bankLists;
+        output = bankOutput;
+        do {
+            count = list->count;
+            point = 0;
+            if (point < count) {
+                position = &positions[0][0];
+                weight = weights;
+                source = list->coordinates;
+                do {
+                    position[0] = (f32)source[0];
+                    position[1] = (f32)source[1];
+                    *weight = 1.0f;
+                    source += 2;
+                    position += 2;
+                    weight++;
+                    point++;
+                } while (point < count);
+            }
+            func_0021BC10((f32 *)(output + 0x22C), (f32 *)(output + 0x32C), (s16 *)(output + 0x42C),
+                          &positions[0][0], weights, count, list->mode, 4.0f);
+            item++;
+            list++;
+            output += 0x204;
+        } while (item < 16);
+        bank++;
+        bankLists += 16;
+        bankOutput += 0x2040;
+    } while (bank < 2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_0022C570);
 
