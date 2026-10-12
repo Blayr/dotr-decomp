@@ -900,7 +900,156 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_002145D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002145E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214620);
+typedef struct {
+    u8 values[9][8];
+    u16 id : 14;
+    u16 flag1 : 1;
+    u16 flag2 : 1;
+    s16 count;
+} Entry_00214620;
+
+typedef struct {
+    s16 values[40];
+    s16 active;
+    s16 count;
+} Deck_00214620;
+
+typedef struct {
+    u8 mode : 2;
+    u8 flag2 : 1;
+    u8 flag3 : 1;
+    u8 flag4 : 1;
+    u8 flag5 : 1;
+    u8 unused : 2;
+} Flags_00214620;
+
+typedef union {
+    u8 zeroes[22];
+    struct {
+        u8 prefix[3];
+        u8 values[5][7][7];
+    } map;
+} Region_00214620;
+
+typedef struct {
+    Entry_00214620 entries[854];
+    s16 values[5];
+    s16 padding_fd92;
+    Deck_00214620 decks[3];
+    u8 bytes_fe90[16];
+    Region_00214620 region;
+    s32 count;
+    Flags_00214620 flags;
+    u8 padding_ff9d[3];
+} State_00214620;
+
+extern u8 D_0034F6D0;
+
+void func_00214620(s32 arg0) {
+    extern State_00214620 D_0032F790[2];
+    s32 i;
+    State_00214620 *state;
+    Entry_00214620 *entry;
+    s32 j;
+    u8 *value;
+    s16 *value_base;
+    s32 n_values;
+    Deck_00214620 *deck;
+    s16 *card;
+    u8 *deck_base;
+    s32 n_decks;
+    s32 n_cards;
+    s32 n_bytes1;
+    s32 n_bytes2;
+    s32 n_layers;
+    u8 *cell;
+    u8 *row;
+    u8 *layer;
+    s32 n_rows;
+    s32 n_cells;
+
+    state = &D_0032F790[D_0034F6D0 == arg0 ? 0 : 1];
+    i = 0;
+    entry = state->entries;
+    do {
+        j = 0;
+        value = entry->values[0];
+        do {
+            func_00214FD0(value);
+            j++;
+            value += 8;
+        } while (j < 9);
+        entry->id = 0;
+        entry->count = 0;
+        entry->flag1 = 0;
+        entry->flag2 = 0;
+        i++;
+        entry++;
+    } while (i < 854);
+
+    n_values = 0;
+    value_base = (s16 *)state;
+    do {
+        value_base[0x7EC4] = 999;
+        n_values++;
+        value_base++;
+    } while (n_values < 5);
+
+    n_decks = 0;
+    deck_base = (u8 *)state;
+    do {
+        deck = (Deck_00214620 *)(deck_base + 0xFD94);
+        n_cards = 0;
+        card = deck->values;
+        do {
+            *card = 999;
+            n_cards++;
+            card++;
+        } while (n_cards < 40);
+        deck->active = 999;
+        deck->count = 0;
+        n_decks++;
+        deck_base += 0x54;
+    } while (n_decks < 3);
+
+    n_bytes1 = 0;
+    do {
+        state->bytes_fe90[n_bytes1] = 0;
+        n_bytes1++;
+    } while (n_bytes1 < 16);
+
+    n_bytes2 = 0;
+    do {
+        state->region.zeroes[n_bytes2] = 0;
+        n_bytes2++;
+    } while (n_bytes2 < 22);
+
+    n_layers = 0;
+    layer = (u8 *)state;
+    do {
+        n_rows = 0;
+        row = layer;
+        do {
+            n_cells = 0;
+            cell = row;
+            do {
+                cell[0xFEA3] = 7;
+                n_cells++;
+                cell++;
+            } while (n_cells < 7);
+            n_rows++;
+            row += 7;
+        } while (n_rows < 7);
+        n_layers++;
+        layer += 49;
+    } while (n_layers < 5);
+    state->count = 0;
+    state->flags.mode = 0;
+    state->flags.flag2 = 1;
+    state->flags.flag3 = 1;
+    state->flags.flag4 = 1;
+    state->flags.flag5 = 0;
+}
 
 s32 func_00214910(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 >= 51) {
