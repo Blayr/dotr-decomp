@@ -69,7 +69,75 @@ void func_001CE400(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_042", func_001CE430);
 
-INCLUDE_ASM("asm/nonmatchings/main_042", func_001CEA50);
+typedef struct Vec4_001CEA50 {
+    f32 x, y, z, w;
+} Vec4_001CEA50;
+
+typedef struct Flags_001CEA50 {
+    s8 unused : 4;
+    s8 horizontal : 1;
+    s8 enabled : 1;
+    s8 colored : 1;
+    s8 reserved : 1;
+} Flags_001CEA50;
+
+typedef struct Draw_001CEA50 {
+    u8 pad00[0x10];
+    Vec4_001CEA50 position;
+    u8 bounds[0x10];
+    Vec4_001CEA50 color;
+    u8 pad40[0x41];
+    Flags_001CEA50 flags;
+    u8 pad82[0xE];
+} Draw_001CEA50;
+
+s32 func_001D9F00(void *, s32);
+void func_001DA2B0(void *, s32, f32, f32);
+extern Vec4_001CEA50 D_0031825C;
+extern s32 D_00318270;
+
+void func_001CEA50(void) {
+    extern void func_001CD560();
+    u8 matrix[0x60];
+    Draw_001CEA50 draw;
+
+    func_001CD560(&draw);
+    draw.flags.enabled = 1;
+    draw.flags.colored = 0;
+    draw.flags.reserved = 0;
+    func_001DCD70(matrix, func_001DE130(D_00318270));
+    func_00205C40((s32) draw.bounds);
+    draw.position = D_0031825C;
+    func_001D99F0();
+    draw.flags.horizontal = 1;
+    func_001DA2B0(&draw, 0, -192.0f, 0.0f);
+    func_001DA7A0((s32) matrix, (s32) &draw);
+    func_001DBCF0((s32) &draw);
+    draw.flags.horizontal = 0;
+    func_001DA2B0(&draw, 0, 0.0f, -96.0f);
+    func_001DA7A0((s32) matrix, (s32) &draw);
+    func_001DBCF0((s32) &draw);
+    draw.flags.horizontal = 1;
+    func_00205CB0(&draw, 192.0f, 0.0f);
+    func_001DA7A0((s32) (func_001D9F00(&draw, 1) ? matrix : NULL), (s32) &draw);
+    func_001DBCF0((s32) &draw);
+    draw.flags.horizontal = 0;
+    func_00205CB0(&draw, 0.0f, 96.0f);
+    func_001DA7A0((s32) (func_001D9F00(&draw, 1) ? matrix : NULL), (s32) &draw);
+    func_001DBCF0((s32) &draw);
+    if (func_00203A40(0, 1, 0x80) != 0) {
+        draw.flags.colored = 1;
+        draw.color.x = 0.46875f;
+        draw.color.y = 0.489130437f;
+        draw.color.z = 1.0f;
+        draw.color.w = 0.0f;
+        draw.flags.horizontal = 1;
+        func_00205CB0(&draw, 0.0f, 96.0f);
+        func_001DA7A0((s32) (func_001D9F00(&draw, 1) ? matrix : NULL), (s32) &draw);
+        func_001DBCF0((s32) &draw);
+    }
+    func_001D9DD0();
+}
 
 typedef struct Record_001CECF0 {
     u8 padding[0x33C];
