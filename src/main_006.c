@@ -1050,7 +1050,166 @@ s32 func_0011FAE0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00120150);
+typedef struct Input_00120150 {
+    u16 position;
+    u16 pad2;
+    u32 pad4;
+    union {
+        u32 pair;
+        u16 position;
+    } target;
+} Input_00120150;
+
+typedef struct Output_00120150 {
+    u16 position;
+    u8 type;
+    u8 pad3;
+    u16 target;
+    u8 pad6[10];
+    u8 value;
+} Output_00120150;
+
+typedef struct Position_00120150 {
+    u8 x : 4;
+    u8 y : 4;
+} Position_00120150;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 target_00120150(Input_00120150 *src, u8 kind) {
+    u32 target;
+    if (kind == 1) {
+        target = (u16)(src->target.pair >> 16);
+    } else {
+        target = src->target.position;
+    }
+    return target;
+}
+
+static inline s32 power_00120150(s32 card) {
+    if (func_001DF470(card) > 1000) {
+        if (func_001E0150(card) >= 3) {
+            return 500;
+        } else {
+            return 1000;
+        }
+    } else {
+        return 2000;
+    }
+}
+
+static inline void output_00120150(Input_00120150 *src, Output_00120150 *out, s32 target, s32 flag) {
+    out->position = src->position;
+    out->type = 6;
+    out->target = target;
+    out->value = func_0027E360(src->position >> 8, src->position & 0xFF,
+                             out->target, flag, 0);
+}
+
+s32 func_00120150(void *arg0, s32 card, void *arg2, u8 kind) {
+    extern void func_0027A090();
+    Position_00120150 positions[12];
+    s32 start;
+    Input_00120150 *src = arg0;
+    Output_00120150 *out = arg2;
+    u32 lowTarget;
+    u32 highTarget;
+
+    lowTarget = target_00120150(src, kind);
+    highTarget = target_00120150(src, kind);
+    if (func_001DF540(highTarget >> 8, lowTarget & 0xFF) == 0) {
+        func_0027B1B0(src, 1);
+        return -1;
+    }
+    start = func_001E1090(src->position >> 8, src->position & 0xFF);
+    {
+        Position_00120150 *p;
+        s32 target;
+        s32 targetY;
+        s32 targetX;
+        s32 startY;
+        s32 startX;
+        s32 count;
+        s32 best;
+        s32 score;
+        s32 i;
+        s32 value;
+        s32 power;
+        Position_00120150 *q;
+
+        lowTarget = target_00120150(src, kind);
+        highTarget = target_00120150(src, kind);
+        target = func_001E1090(highTarget >> 8, lowTarget & 0xFF);
+        if (target_00120150(src, kind) == 0xFFFF) {
+            output_00120150(src, out, start, 1);
+            return 0;
+        }
+        value = func_001DF540(src->position >> 8, src->position & 0xFF);
+        startX = start & 0xFF;
+        startY = start >> 8;
+        if (func_002464F0(value, startX, startY) == 0 ||
+            func_0027BBC0(src->position >> 8, src->position & 0xFF, 0) == 1) {
+            output_00120150(src, out, start, 1);
+            return 0;
+        }
+        p = positions;
+        i = 0;
+        q = p;
+        do {
+            q->x = q->y = 15;
+            ++i;
+            ++q;
+        } while (i < 12);
+        power = power_00120150(card);
+        targetX = target & 0xFF;
+        targetY = target >> 8;
+        func_0027A090(src->position >> 8, src->position & 0xFF, positions,
+                     startX, startY, targetX, targetY, target_00120150(src, kind),
+                     0, 30, (u16)power);
+        count = func_0027AFC0((u8 *)positions);
+        best = 0xFF;
+        if (count > 0) {
+            score = 0;
+            for (i = 0; i < count; ++i, ++p) {
+                if (func_001E36E0(p->x, p->y) == 0) {
+                    value = func_00276CC0(p->x, p->y, card, 4, 1,
+                                          (u8)power_00120150(card));
+                    if (score < value) {
+                        score = value;
+                        best = i;
+                    } else if (value == score) {
+                        if (((targetX < p->x ? p->x : targetX) -
+                             (p->x < targetX ? p->x : targetX)) +
+                            ((targetY < p->y ? p->y : targetY) -
+                             (p->y < targetY ? p->y : targetY)) <
+                            ((targetX < positions[best].x ? positions[best].x : targetX) -
+                             (positions[best].x < targetX ? positions[best].x : targetX)) +
+                            ((targetY < positions[best].y ? positions[best].y : targetY) -
+                             (positions[best].y < targetY ? positions[best].y : targetY))) {
+                            score = value;
+                            best = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            output_00120150(src, out, start, 1);
+            return 0;
+        }
+        if (best != 0xFF) {
+            out->position = src->position;
+            out->type = 6;
+            out->target = (positions[best].y << 8) | positions[best].x;
+            out->value = func_0027E360(src->position >> 8, src->position & 0xFF,
+                                      out->target, 0, 0);
+        } else {
+            output_00120150(src, out, start, 0);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_001206F0);
 
