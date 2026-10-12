@@ -749,7 +749,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_0016F4D0;
 
-s32 func_0016F760(s32 arg0, void *arg1);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
 
@@ -819,7 +818,157 @@ s32 func_0016F4D0(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016F760);
+static inline s32 check_0016F760(s32 mask, u32 threshold) {
+    s32 high;
+    s32 low;
+    s32 j;
+    s32 packed;
+    s32 target;
+
+    for (j = 0; j < func_0024E910(mask); j++) {
+            packed = func_0024EC50(mask, j);
+            high = packed >> 8;
+            low = packed & 0xFF;
+            target = func_001E1090(high, low);
+            if ((u32)func_002509E0(high, low, target & 0xFF, target >> 8) >= threshold) {
+                return 0;
+            }
+    }
+    return 1;
+}
+
+s32 func_0016F760(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    extern u32 func_0026FBB0();
+    extern s32 func_001E1580();
+    s32 cards[8];
+    u8 scratch[32];
+    s32 criteria[4];
+    u8 mode0;
+    u8 mode1;
+    s32 outer;
+    s32 *p;
+    s32 *q;
+    s32 scan;
+    s32 i;
+    s32 *last;
+    s32 last_index;
+    s32 ret;
+
+    mode0 = func_00278890(arg0, 0);
+    mode1 = func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (mode0 == 5) {
+        if (func_0016FCF0(arg0, scratch, arg1, 999) >= 0) {
+            ret = 1;
+        } else {
+            ret = -1;
+        }
+        return ret;
+    }
+    if (mode1 == 5) {
+        s32 index;
+        s32 *card;
+
+        index = 0;
+        if (index < func_0026FE20(arg0)) {
+            card = cards;
+            do {
+                if ((func_0026FCE0(*card) >> 5) == 0 &&
+                    func_0026FB10(arg0, *card) == 1) {
+                    func_001DCD70(arg1, cards[index]);
+                    return 0;
+                }
+                card++;
+                index++;
+            } while (index < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+
+    outer = 0;
+    if (outer < func_0026FE20(arg0)) {
+        p = cards;
+        do {
+            if ((func_0026FCE0(*p) >> 5) == 5) {
+                s32 *record;
+                u32 threshold;
+                s32 mask;
+                s32 ok;
+
+                record = func_0026FC90(*p, 0);
+                func_00254C90(criteria, record[1]);
+                threshold = func_0026FBB0(record[1]) >> 16;
+                if ((mask = func_00254890(criteria, arg0)) < 0) {
+                    ok = 0;
+                } else {
+                    ok = check_0016F760(mask, threshold);
+                }
+                if (ok == 1 &&
+                    func_0016FC00(arg0, scratch, arg1, (u16)*p) >= 0) {
+                    return 2;
+                }
+            }
+            p++;
+            outer++;
+        } while (outer < func_0026FE20(arg0));
+    }
+
+    scan = 0;
+    if (scan < func_0026FE20(arg0)) {
+        q = cards;
+        do {
+            if (*q == 700 || *q == 702) {
+                if (func_0016CBB0(arg0, func_0026FC90(*q, 0)) >= 0 &&
+                    func_0016FC00(arg0, scratch, arg1, (u16)*q) >= 0) {
+                    return 2;
+                }
+            }
+            q++;
+            scan++;
+        } while (scan < func_0026FE20(arg0));
+    }
+
+    i = 0;
+    do {
+        if (func_001E1580(arg0, i) != 0 &&
+            func_0016FC00(arg0, scratch, arg1, 796) >= 0) {
+            return 2;
+        }
+        i++;
+    } while (i < 11);
+
+    i = 0;
+    do {
+        if (func_001E1580(arg0, i) != 0 &&
+            func_0016FC00(arg0, scratch, arg1, 795) >= 0) {
+            return 2;
+        }
+        i++;
+    } while (i < 11);
+
+    last_index = 0;
+    if (last_index < func_0026FE20(arg0)) {
+        last = cards;
+        do {
+            if ((func_0026FCE0(*last) >> 5) == 0 &&
+                func_0026FB10(arg0, *last) == 1) {
+                func_001DCD70(arg1, cards[last_index]);
+                return 0;
+            }
+            last++;
+            last_index++;
+        } while (last_index < func_0026FE20(arg0));
+    }
+    ret = func_0016FCF0(arg0, scratch, arg1, 999);
+    if (ret >= 0) {
+        return ret;
+    }
+    return -1;
+}
 
 s32 func_0016FC00(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 entries[8];
