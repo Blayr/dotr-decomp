@@ -79,7 +79,35 @@ void func_001FF3D0(void) {
     } while (*(s32 *)0x10000800 - start <= 0x40);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF420);
+typedef struct State_001FF420 {
+    u8 pad[0x6688];
+    s32 current;
+} State_001FF420;
+
+typedef struct Flags_001FF420 {
+    s8 reserved : 1;
+    s8 active : 1;
+    s8 remaining : 6;
+} Flags_001FF420;
+
+s32 func_001FF480(s32);
+s32 func_001FF9C0(void);
+
+s32 func_001FF420(void) {
+    extern State_001FF420 D_0031C2F0;
+    extern Flags_001FF420 D_00322980;
+    State_001FF420 *state = &D_0031C2F0;
+    s32 temp_v0;
+
+    if (D_00322980.active == 0) {
+        temp_v0 = func_001FF9C0();
+        state->current = temp_v0;
+        if (temp_v0 < 0) {
+            return 0;
+        }
+    }
+    return func_001FF480(state->current);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FF480);
 
