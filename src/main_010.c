@@ -498,7 +498,83 @@ void func_0013ECF0(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013EEE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F170);
+s32 func_0013F170(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    s32 ids[8];
+    s32 data[8];
+    u8 type = (u8)func_00278890(arg0, 0);
+    u8 attr = (u8)func_00278890(arg0, 1);
+
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, ids);
+    if (type == 5) {
+        s32 result = func_0013F640(arg0, (u8 *)data, arg1, 0x3E7);
+        if (result >= 0) {
+            result = 1;
+        } else {
+            result = -1;
+        }
+        return result;
+    }
+    if (attr == 5) {
+        s32 i;
+        s32 *p;
+        s32 count;
+
+        i = 0;
+        count = func_0026FE20(arg0);
+        if (i < count) {
+            p = ids;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    func_001DCD70(arg1, ids[i]);
+                    return 0;
+                }
+                p++;
+                i++;
+                count = func_0026FE20(arg0);
+            } while (i < count);
+        }
+        return -1;
+    }
+    if (func_00142280(arg0) == 1) {
+        if (func_0013F540(arg0, ids, arg1, data, 0x170) >= 0) {
+            return 2;
+        }
+    }
+    if (func_0013F3B0(arg0, (u8 *)data, arg1) >= 0) {
+        return 3;
+    }
+    {
+        s32 *p;
+        s32 i;
+        s32 count;
+
+        i = 0;
+        count = func_0026FE20(arg0);
+        if (i < count) {
+            p = ids;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    return 0;
+                }
+                p++;
+                i++;
+                count = func_0026FE20(arg0);
+            } while (i < count);
+        }
+    }
+    {
+        s32 result = func_0013F640(arg0, (u8 *)data, arg1, 0x3E7);
+        if (result >= 0) {
+            return result;
+        } else {
+            return -1;
+        }
+    }
+}
 
 s32 func_0013F3B0(s32 arg0, void *arg1, void *arg2) {
     s32 cards[8];
