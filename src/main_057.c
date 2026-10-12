@@ -203,7 +203,75 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A470);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A610);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A760);
+#ifndef GAME_H
+/* The game translation unit already declares this global with its local type. */
+extern unsigned char D_00325F20[];
+#endif
+
+
+typedef struct Flags_0020A760 {
+    u8 padding[0x20];
+    s8 enabled : 1;
+    s8 pending : 1;
+    s8 unused : 6;
+} Flags_0020A760;
+
+typedef struct Packet_0020A760 {
+    s32 dmaTag;
+    s32 dmaAddress;
+    s32 vifCode0;
+    s32 vifCode1;
+    s64 gifTag;
+    s64 gifRegisters;
+    s64 environment[4];
+    s64 frameMask;
+    s64 frameMaskRegister;
+    s64 scissor;
+    s64 scissorRegister;
+} Packet_0020A760;
+
+typedef struct Context_0020A760 {
+    u8 padding0[0x60];
+    s64 environment0[4];
+    u8 padding1[0xD0];
+    s64 environment1[4];
+    u8 padding2[0xCC];
+    s32 width;
+    s32 height;
+} Context_0020A760;
+
+void *func_0020A760(void *arg0) {
+    Context_0020A760 *context = (Context_0020A760 *)D_00325F50;
+    Flags_0020A760 *flags = (Flags_0020A760 *)&D_00325F20;
+    s64 *environment;
+    Packet_0020A760 *packet = arg0;
+
+    if (D_003261BC & 1) {
+        environment = context->environment1;
+    } else {
+        environment = context->environment0;
+    }
+    if (!flags->enabled) {
+        return arg0;
+    }
+    packet->dmaTag = 0x10000005;
+    packet->dmaAddress = 0;
+    packet->vifCode0 = 0x11000000;
+    packet->vifCode1 = 0x51000005;
+    packet->gifTag = ((s64)0x10000000 << 32) | 0x8004;
+    packet->gifRegisters = 0xE;
+    packet->environment[0] = environment[0];
+    packet->environment[1] = environment[1];
+    packet->environment[2] = environment[2];
+    packet->environment[3] = environment[3];
+    packet->frameMask = 0;
+    packet->frameMaskRegister = 0x4A;
+    packet->scissor = ((s64)(context->width - 1) << 16)
+                    | ((s64)(context->height - 1) << 48);
+    packet->scissorRegister = 0x40;
+    flags->pending = 0;
+    return packet + 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A870);
 
