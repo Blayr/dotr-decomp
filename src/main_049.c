@@ -41,8 +41,8 @@ f32 func_001F1B60(s32 arg0, s32 arg1) {
     return view->m[arg1][0];
 }
 
-void func_001F1C40(s32 arg0, s32 unused1) {
-    func_001F1C50(arg0, 0);
+void func_001F1C40(s32 arg0, f32 value) {
+    func_001F1C50(arg0, 0, value);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1C50);
