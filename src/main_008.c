@@ -2,7 +2,102 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_0012CE50);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_0012D270);
+typedef struct Result_0012D270 {
+    s16 position;
+    s8 kind;
+    u8 pad3;
+    s16 value;
+    u8 pad6[6];
+    s32 flags;
+} Result_0012D270;
+
+typedef struct Work_0012D270 {
+    u8 pad0[0x3C];
+    u16 field3C;
+    u8 pad3E[0x22];
+} Work_0012D270;
+
+s32 func_0012D520(s32, void *, s32);
+s32 func_0012E3F0(s32, s32, void *, s32);
+
+s32 func_0012D270(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_00278890();
+    extern s32 func_00276F10();
+    extern s64 func_00130780();
+    Work_0012D270 work;
+    s32 packed;
+    s32 x;
+    s32 mode;
+    s32 selection;
+    s32 value;
+
+    ((Result_0012D270 *)arg2)->position = arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+    if (func_00278890(arg1, 0) == 5) {
+        if (func_00278890(arg1, 1) == 5) {
+            return -1;
+        }
+    }
+    mode = func_0012D520(arg1, &work, arg3);
+    if (mode < 0) {
+        return -1;
+    }
+    {
+        s32 y = arg0 >> 8;
+        x = arg0 & 0xFF;
+        ((Result_0012D270 *)arg2)->kind = 10;
+        ((Result_0012D270 *)arg2)->flags = 0;
+        packed = func_001E1090(y, x);
+        selection = func_00276F10(&work, packed & 0xFF, packed >> 8,
+                                arg1 == 0 ? 1 : 0, 3, 31, 2, 2,
+                                (s64)0, (s64)func_00130780(arg1));
+        if (mode == 0) {
+            if (func_0012DDE0(arg1, (u8 *)arg2, &work) >= 0) {
+                s32 packed2 = func_001E1090(y, x);
+                selection = func_00276F10(&work, packed2 & 0xFF, packed2 >> 8,
+                                        arg1 == 0 ? 1 : 0, 3, 31, 2, 2,
+                                        (s64)0, (s64)func_00130780(arg1));
+                if (selection < 0) {
+                    if (func_001E0150(arg1) < 6) {
+                        value = func_0012E3F0(arg1, 0, &work, selection);
+                        if (value < 0) {
+                            return -1;
+                        }
+                        ((Result_0012D270 *)arg2)->value = value;
+                        return 1;
+                    }
+                } else {
+                    value = func_0012E3F0(arg1, 0, &work, selection);
+                    if (value < 0) {
+                        return -1;
+                    }
+                    ((Result_0012D270 *)arg2)->value = value;
+                    return 1;
+                }
+            }
+        } else if (mode == 2) {
+            func_0012E1F0(arg1, (void *)arg2, &work);
+            value = func_0012E3F0(arg1, mode & 0xFF, &work, selection);
+            if (value < 0) {
+                return -1;
+            }
+            ((Result_0012D270 *)arg2)->value = value;
+            return 1;
+        }
+        value = func_0012DBE0(arg1, (u8 *)arg2, &work, work.field3C);
+        if (value < 0) {
+            return -1;
+        }
+        value = func_0012E3F0(arg1, value & 0xFF, &work, selection);
+        if (value < 0) {
+            return -1;
+        }
+        ((Result_0012D270 *)arg2)->value = value;
+        return 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_0012D520);
 
