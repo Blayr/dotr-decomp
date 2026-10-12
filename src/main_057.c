@@ -310,7 +310,31 @@ s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B480);
+f32 func_0020B480(s32 arg0) {
+    f32 sign;
+    f32 *samples;
+    f32 sample0;
+    f32 sample1;
+    s32 fraction;
+
+    arg0 = (s16)(arg0 + 0x4000);
+    sign = 1.0f;
+    if (arg0 < 0) {
+        sign = -1.0f;
+        arg0 = -arg0;
+    }
+    if (arg0 > 0x4000) {
+        arg0 = 0x8000 - arg0;
+    }
+    if ((arg0 & 0x3FFF) == 0) {
+        return arg0 == 0x4000 ? sign : 0.0f;
+    }
+    fraction = arg0 & 0xF;
+    samples = &D_00294050[arg0 >> 4];
+    sample0 = samples[0];
+    sample1 = samples[1];
+    return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B550);
 
