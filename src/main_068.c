@@ -1980,7 +1980,80 @@ s32 func_00241BE0(s32 *arg0, s32 arg1) {
     return arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241C20);
+typedef struct {
+    u16 nloop : 15;
+    u16 eop : 1;
+    u8 reserved[5];
+    u8 pad7 : 4;
+    u8 nreg : 4;
+    u8 reg : 4;
+    u8 pad8 : 4;
+    u8 tail[7];
+} GifTag_00241C20;
+
+typedef struct {
+    void *base;
+    s32 size;
+    void *current;
+    void *giftag;
+} Packet_00241C20;
+
+typedef struct {
+    __int128 value;
+} Quad_00241C20;
+
+
+void func_00184E10(void *, s32, s64, s64, s32, s32);
+void func_00185100(void *);
+s32 func_00186120(s32);
+void func_00186470(s32, s32);
+void func_00187308(void *);
+void func_00187318(void *);
+void func_00187480(void *, s32, s32, s32);
+void func_00187510(void *, __int128);
+void func_00187528(void *);
+void func_001875D0(void *, s32, u64);
+
+void func_00241C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    extern void func_001872F8();
+    extern Quad_00241C20 D_0029B2C0;
+    extern GifTag_00241C20 D_00350410;
+    extern u8 D_00350420[];
+    extern u8 D_00350440[];
+    Quad_00241C20 tag;
+    Packet_00241C20 packet;
+    u32 data[24];
+    s32 channel;
+
+    tag = D_0029B2C0;
+    channel = func_00186120(2);
+    *(__int128 *)&D_00350410 = 0;
+    D_00350410.nloop = 8;
+    D_00350410.eop = 1;
+    D_00350410.nreg = 1;
+    D_00350410.reg = 14;
+    func_00184E10(D_00350420, 0, (s64)(s16)arg3,
+                 (s64)(s16)(((((arg4 >> 1) + 31) >> 5) + ((arg4 + 31) >> 5)) << 6),
+                 0, 0);
+    *(s64 *)D_00350440 = 0;
+    func_0017BB60(0);
+    func_00185578(0, 0);
+    func_00185100(&D_00350410);
+    func_001872F8(&packet, (__int128 *)data);
+    func_00187308(&packet);
+    func_00187480(&packet, 0, 0, 0);
+    func_00187510(&packet, *(__int128 *)&tag);
+    func_001875D0(&packet, 0, 6);
+    func_001875D0(&packet, 1, ((s64)arg2 << 16) | ((s64)arg0 | ((s64)arg1 << 8)));
+    func_001875D0(&packet, 5, 0);
+    func_001875D0(&packet, 5, ((s64)0xB400 << 16) | 0x2D00);
+    func_00187528(&packet);
+    func_00187318(&packet);
+    func_0017BB60(0);
+    func_00185578(0, 0);
+    func_00186470(channel, packet.size);
+    func_00185578(0, 0);
+}
 
 typedef struct {
     u32 words[4];
