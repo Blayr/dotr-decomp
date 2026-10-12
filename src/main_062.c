@@ -89,7 +89,51 @@ INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C510);
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021D480);
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021D850);
+typedef struct Coord_0021D850 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Coord_0021D850;
+
+extern u8 D_00298BA0[];
+extern u8 D_00298BA8[];
+extern s8 D_00299ED6;
+extern s8 D_00299ED7;
+extern u8 D_00299F60;
+
+void func_0021D850(void) {
+    s16 var_s0;
+    u8 *var_s1;
+    s32 *var_s2;
+    Coord_0021D850 pos;
+
+    func_0021BB20(&D_00299F60);
+    *(f32 *)0x01ED0040 = *(f32 *)(D_00298BA0 + D_00299ED6 * 0x34);
+    *(f32 *)0x01ED0044 = 0.0f;
+    *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
+    *(f32 *)0x01ED0040 = *(f32 *)(D_00298BA0 + D_00299ED7 * 0x34);
+    *(f32 *)0x01ED0044 = 0.0f;
+    *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED7 * 0x34);
+    *(f32 *)0x01ED0030 = *(f32 *)0x01ED0040;
+    *(f32 *)0x01ED0034 = 96.0f + *(f32 *)0x01ED0044;
+    *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
+    *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
+    func_001F9FE0(0, (void *)0x01ED0030, (void *)0x01ED0040);
+    var_s1 = D_00298BA0;
+    var_s0 = 0;
+    var_s2 = (s32 *)0x01ED0000;
+    while (var_s0 <= 0x15) {
+        pos.x = *(f32 *)var_s1;
+        pos.y = 8.65f + *(f32 *)(var_s1 + 4);
+        pos.z = *(f32 *)(var_s1 + 8);
+        func_0021BB90((s32 *)((u8 *)var_s2 + 0x8C), (s32 *)((u8 *)var_s2 + 0x10C), (s32)&pos);
+        var_s1 += 0x34;
+        var_s2++;
+        var_s0++;
+    }
+    *(s16 *)0x01ED0000 = 0x140;
+    *(s16 *)0x01ED0002 = 0xBE;
+}
 
 void func_0021DA60(void) {
     if (D_0034F710 == 0) {
