@@ -18,7 +18,28 @@ void func_001F1C40(s32 arg0, s32 unused1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1C50);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1D50);
+s32 func_001F1D50(s32 arg0, s32 arg1) {
+    extern s32 func_001F1400();
+    Obj_0031ABB0 *temp_v0;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return -1;
+    }
+    if (arg1 < 0) {
+        arg1 = func_001F1400(arg0, 0);
+    }
+    if (arg1 < 0 || arg1 >= 8) {
+        return -1;
+    }
+    temp_v0 = D_0031ABB0[arg0];
+    if (temp_v0 == NULL) {
+        return -1;
+    }
+    if (temp_v0->slots[arg1] == NULL) {
+        return -1;
+    }
+    return temp_v0->vals[arg1] - 1;
+}
 
 typedef struct {
     f32 x;
