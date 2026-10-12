@@ -346,7 +346,6 @@ f32 func_001A6A88(f32);
 
 void func_0027B290(s32, s32, s32, s32, s32, s32, s32, u8);
 
-void func_001E3070(s32, s32, s32, s32, s32, s32);
 
 
 extern u64 D_00293EE0[];

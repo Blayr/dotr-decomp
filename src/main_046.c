@@ -447,7 +447,98 @@ void func_001E3060(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_001E3070(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3070);
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_001E3070;
+
+typedef struct {
+    u8 pad[0x44];
+    u8 kind;
+    u8 pad45[0x12];
+    s8 unused : 1;
+    s8 highlighted : 1;
+} Entity_001E3070;
+
+typedef struct {
+    Entity_001E3070 *entity;
+    Color_001E3070 color;
+    Color_001E3070 savedColor;
+    Color_001E3070 glow;
+    Color_001E3070 savedGlow;
+    u8 pad14[4];
+    s8 value;
+    u8 pad19[3];
+} Cell_001E3070;
+
+extern u16 D_00318118;
+
+s32 func_001E3070(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    Cell_001E3070 *cell;
+    u8 inverse;
+    u8 channel;
+    s32 lit;
+    s32 dim;
+    Entity_001E3070 *entity;
+
+    if (arg0 < 0 || arg0 >= 7 || arg1 < 0 || arg1 >= 7) {
+        cell = NULL;
+    } else {
+        cell = (Cell_001E3070 *)(D_00318E60 + arg1 * 0xC4 + arg0 * 0x1C);
+    }
+
+    channel = (D_00318118 >> 8) & 0xFF;
+    inverse = (0x80 - channel) & 0xFF;
+    if (cell == NULL) {
+        return 0;
+    }
+
+    cell->value = arg2;
+    if (arg3 != 0) {
+        cell->color = *(Color_001E3070 *)arg3;
+    } else {
+        cell->color.b = 0;
+        cell->color.g = 0;
+        cell->color.r = 0;
+        cell->color.a = 0;
+    }
+
+    cell->glow.b = 0;
+    cell->glow.g = 0;
+    cell->glow.r = 0;
+    cell->glow.a = 0;
+
+    if (arg5 != 0) {
+        entity = cell->entity;
+        if (entity != NULL) {
+            if (entity->highlighted) {
+                lit = (channel * 0xFF) >> 7;
+                dim = (inverse * 0xFF) >> 7;
+                cell->glow.b = lit + dim;
+                cell->glow.g = dim;
+                cell->glow.r = dim;
+            } else if (entity->kind == 0) {
+                cell->glow.b = 0xFF;
+                cell->glow.g = 0;
+                cell->glow.r = 0;
+            } else {
+                cell->glow.b = 0xFF;
+                cell->glow.g = 0xFF;
+                cell->glow.r = 0xFF;
+            }
+            cell->glow.a = 0x80;
+        }
+    }
+
+    if (arg4 != 0) {
+        cell->savedColor = cell->color;
+        cell->savedGlow = cell->glow;
+    }
+
+    return 1;
+}
 
 static inline s32 clamp_001E3230(s32 value) {
     if (value < 8) {

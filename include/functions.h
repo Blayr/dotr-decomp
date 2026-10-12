@@ -873,6 +873,7 @@ void func_001E27D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 void func_001E2FB0(s32 arg0, s32 arg1, s32 arg2);
 void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_001E3060(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+s32 func_001E3070(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_001E3230(s32 x, s32 y);
 s32 func_001E3650(s32 arg0, s32 arg1, s8 arg2);
 s32 func_001E36E0(s32 arg0, s32 arg1);
