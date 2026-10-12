@@ -458,7 +458,75 @@ s32 func_00216580(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002166D0);
+#ifndef GAME_H
+/* The game translation unit already declares these globals with its local types. */
+typedef struct {
+    unsigned char pad[0xFF9C];
+    unsigned char flags;
+    unsigned char tail[3];
+} State_002158B0;
+
+typedef struct {
+    unsigned short card;
+    unsigned short field_2;
+    unsigned short field_4;
+} Entry_00216580;
+
+extern State_002158B0 D_0032F790[];
+extern Entry_00216580 D_002D0870[];
+#endif
+
+
+typedef struct State_002166D0 {
+    u8 unk_0000[0xFE90];
+    u8 replacements[16];
+    u8 unk_FEA0[0x100];
+} State_002166D0;
+
+extern u8 D_0034F6D0;
+
+s32 func_002166D0(s32 arg0, s32 arg1) {
+    State_002166D0 *state;
+    Entry_00216580 *entry;
+    s32 side;
+    s32 replacement;
+    s32 resolved;
+
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return arg1;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return arg1;
+    }
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    {
+        s32 i;
+
+        state = (State_002166D0 *)D_0032F790 + side;
+        entry = D_002D0870;
+        i = 0;
+        do {
+            resolved = func_001DE130(entry->card & 0x3FFF);
+            if (resolved == arg1) {
+                replacement = state->replacements[i];
+                if (replacement != 0) {
+                    arg1 = (&D_002D0870[i].card)[replacement];
+                }
+                break;
+            }
+            i++;
+            entry++;
+        } while (i < 16);
+    }
+    return arg1;
+}
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
