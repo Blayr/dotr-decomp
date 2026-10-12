@@ -1001,4 +1001,9 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_002178C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217980);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002179C0);
+s32 func_002179C0(void) {
+    if (D_0034F6E8.active == 0) {
+        return 0;
+    }
+    return (func_00109F10() != 0) ? 1 : 0;
+}
