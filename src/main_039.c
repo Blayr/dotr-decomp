@@ -140,7 +140,91 @@ void func_001B83C0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B83F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B8520);
+void func_001B8520(s32 arg0) {
+    extern s32 func_00216AC0();
+    extern s32 func_00215A60();
+    extern s32 func_00215C40();
+    u8 *state;
+    s32 temp_s1;
+    s16 *var_s2;
+    s16 *var_s3;
+    u8 *var_s4;
+    s32 var_s5;
+    s32 var_s2_2;
+    s32 var_v1;
+    u8 *var_v0;
+
+    state = D_00317490;
+    temp_s1 = func_002158B0(arg0);
+    var_s2 = (s16 *)0x01ED0000;
+    var_s3 = (s16 *)0x01ED06AC;
+    var_s4 = (u8 *)0x01ED06FE;
+    var_v1 = func_00214D00(0, 0);
+    D_003180E8 = 0xFFFFF8;
+    if (var_v1 != 0) {
+        var_v0 = D_002CD1F4;
+    } else {
+        var_v0 = D_002CCB48;
+    }
+    *(u8 **)(state + 0x6D4) = var_v0;
+    *(s32 *)(state + 0x6D8) = 0x01ED0000;
+    *(s32 *)(state + 0x6DC) = 0x01ED06AC;
+    *(s32 *)(state + 0x6D0) = 0x01ED06FE;
+    *(u16 *)(state + 0xC8C) = 0;
+    var_s5 = 0;
+    do {
+        if (func_00216AC0(arg0, var_s5, -1) > 0) {
+            *var_s2 = var_s5;
+            *(u16 *)(state + 0xC8C) = (u16)(*(u16 *)(state + 0xC8C) + 1);
+        } else {
+            *var_s2 = 0x3E7;
+        }
+        var_s5 += 1;
+        var_s2++;
+    } while (var_s5 < 0x356);
+    *(u16 *)(state + 0xC90) = 0;
+    *(s16 *)0x01ED06AC = func_002159D0(arg0, temp_s1);
+    var_s3++;
+    var_s2_2 = 0;
+    *(u16 *)(state + 0xC90) = (u16)(*(u16 *)(state + 0xC90) + 1);
+    do {
+        *var_s3 = func_00215A60(arg0, temp_s1, var_s2_2);
+        var_s2_2 += 1;
+        var_s3++;
+        *(u16 *)(state + 0xC90) = (u16)(*(u16 *)(state + 0xC90) + 1);
+    } while (var_s2_2 < 0x28);
+    var_v1 = 0;
+    do {
+        var_v1 += 1;
+        *(s8 *)(var_s4 + 2) = 0;
+        var_s4 += 4;
+    } while (var_v1 < 8);
+    *(u16 *)(state + 0xC92) = 0;
+    *(u16 *)(state + 0xC94) = 0;
+    *(s8 *)(state + 0xCB6) = 0;
+    *(s8 *)(state + 0xCB7) = 4;
+    *(s8 *)(state + 0xCB8) = 0xA;
+    *(s8 *)(state + 0xCB9) = 0;
+    *(s8 *)(state + 0xCBA) = 4;
+    *(s8 *)(state + 0xCBB) = 0xA;
+    *(s8 *)(state + 0xD5D) = 3;
+    *(s8 *)(state + 0xD5E) = 0;
+    *(s8 *)(state + 0xD5F) = 0;
+    *(u16 *)(state + 0xC8A) = 0;
+    *(u16 *)(state + 0xC8E) = 0;
+    *(u16 *)(state + 0xC96) = 0;
+    *(u16 *)(state + 0xC98) = 0;
+    *(s8 *)(state + 0xD60) = 0;
+    *(s8 *)(state + 0xD61) = 0;
+    *(s8 *)(state + 0xD62) = 0;
+    *(s8 *)(state + 0xCBC) = 0;
+    *(s8 *)(state + 0xCBD) = 0;
+    *(s8 *)(state + 0xD5C) = (s8)arg0;
+    func_001BA5F0();
+    func_001BA610();
+    func_00215C40(arg0, temp_s1);
+    *(s8 *)(state + 0xD32) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B8720);
 

@@ -423,7 +423,117 @@ INCLUDE_ASM("asm/nonmatchings/main_068", func_0023F5A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023FBE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023FCE0);
+typedef struct State_0023FCE0 {
+    s32 field_0;
+    s32 field_4;
+    s32 field_8;
+    s32 field_C;
+    s32 field_10;
+    s32 field_14;
+    s32 field_18;
+    s32 field_1C;
+    s32 field_20;
+    s32 field_24;
+    u8 pad_28[8];
+    s16 field_30;
+    s16 field_32;
+    s16 field_34;
+    u8 pad_36[10];
+    s16 field_40;
+} State_0023FCE0;
+
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
+extern s32 D_0034FB04;
+extern s32 D_0034FB08;
+extern s32 D_0034FB0C;
+extern s32 D_0034FB10;
+extern s32 D_0034FB14;
+extern s32 D_0034FB18;
+extern s32 D_0034FB20;
+extern s32 D_0034FB24;
+
+static inline void reset_0023FCE0(State_0023FCE0 *state, s32 value) {
+    state->field_30 = value;
+    state->field_34 = 0;
+    state->field_40 = 0;
+}
+
+s32 func_0023FCE0(s32 arg0) {
+    extern struct State_0023E610 D_0034FB00;
+    State_0023FCE0 *state = (State_0023FCE0 *)&D_0034FB00;
+    s32 var_v0;
+    s32 var_v0_2;
+
+    *(s32 *)0x0034FB00 = func_00194380(D_0034FB08, D_0034FB0C, &D_0034FB10, &D_0034FB14, &D_0034FB18);
+    D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
+    if (D_0034FB04 == 1) {
+        if (state->field_20 == 1) {
+            switch (state->field_24) { /* switch 1; irregular */
+            case 0:
+                break;
+            case -1:
+                reset_0023FCE0(state, 3);
+                return 0x700;
+            case -2:                                /* switch 1 */
+                reset_0023FCE0(state, 3);
+                return 0x700;
+            default:                                /* switch 1 */
+                reset_0023FCE0(state, 3);
+                break;
+            }
+                switch (state->field_10) {
+                case 0:                             /* switch 2 */
+                    reset_0023FCE0(state, 3);
+                    return 2;
+                case 1:                             /* switch 2 */
+                    reset_0023FCE0(state, 3);
+                    if (state->field_8 == 1) {
+                        var_v0 = 0x400;
+                    } else {
+                        var_v0 = 4;
+                    }
+                    return var_v0;
+                case 2:
+                    break;
+                case 3:
+                    reset_0023FCE0(state, 3);
+                    if (state->field_8 == 1) {
+                        var_v0_2 = 0x500;
+                    } else {
+                        var_v0_2 = 4;
+                    }
+                    return var_v0_2;
+                default:                            /* switch 2 */
+                    reset_0023FCE0(state, 3);
+                    return 2;
+                }
+                    if (state->field_10 == 2) {
+                        switch (state->field_18) { /* switch 3; irregular */
+                        case 0:                     /* switch 3 */
+                            state->field_40 = (s16) (state->field_40 + 1);
+                            if (state->field_40 >= 3) {
+                                state->field_30 = 3;
+                                state->field_34 = 0;
+                                state->field_40 = 3;
+                                return 3;
+                            }
+                            break;
+                        case 1:                     /* switch 3 */
+                            if (state->field_30 == 0) {
+                                reset_0023FCE0(state, 1);
+                                return 0x10;
+                            }
+                            break;
+                        default:                    /* switch 3 */
+                            reset_0023FCE0(state, 3);
+                            return 2;
+                        }
+                    }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023FF30);
 

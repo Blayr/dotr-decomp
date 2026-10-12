@@ -646,7 +646,6 @@ void func_00167D30(void *);
 
 extern void func_0023C170(s32);
 extern s32 func_0023F340(void);
-extern s32 func_0023FCE0(s32);
 extern s32 func_0023FF30(void);
 
 
@@ -683,5 +682,8 @@ s32 func_0012B8B0(s32, s32);
 s32 func_0027DA40(s32, s32);
 
 extern s32 (*D_00291330[])(s32, s32);
+
+extern u8 D_002CCB48[];
+extern u8 D_002CD1F4[];
 
 #endif
