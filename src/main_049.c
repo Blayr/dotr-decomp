@@ -683,7 +683,57 @@ INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2C60);
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2DD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2EC0);
+typedef struct {
+    s8 unused : 5;
+    s8 available : 1;
+    s8 remaining : 2;
+} Flags_001F2EC0;
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec4_001F2EC0;
+
+static inline s32 active_001F2EC0(s32 index) {
+    Obj_0031ABB0 *obj;
+
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_001F2EC0(s32 arg0, s32 arg1, s32 arg2) {
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (!active_001F2EC0(arg0)) {
+        return 0;
+    }
+    if (!((Flags_001F2EC0 *)((u8 *)obj + 0x20C))->available) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 8) {
+        return 0;
+    }
+    if (!(*(u16 *)((arg1 << 1) + (s32)obj + 0x1B0) & 0x8000)) {
+        return 0;
+    }
+    *(Vec4_001F2EC0 *)arg2 = *(Vec4_001F2EC0 *)((arg1 << 4) + (s32)obj + 0xA0);
+    return 1;
+}
 
 s32 func_001F2FF0(s32 arg0, s16 arg1) {
     Obj_0031ABB0 *temp_v0;

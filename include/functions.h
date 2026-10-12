@@ -1000,6 +1000,7 @@ s32 func_001F2A70(s32 arg0);
 s32 func_001F2AD0(s32 arg0, s8 arg1);
 s32 func_001F2B30(s32 index);
 s32 func_001F2BE0(s32 arg0, s32 arg1);
+s32 func_001F2EC0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001F2FF0(s32 arg0, s16 arg1);
 s32 func_001F3050(s32 arg0);
 s32 func_001F30B0(s32 arg0, s32 arg1);
