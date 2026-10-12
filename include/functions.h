@@ -1147,6 +1147,7 @@ s32 func_001FD1B0(s32 arg0);
 s32 func_001FD220(s32 arg0);
 s32 func_001FD2D0(s32 arg0, s32 arg1);
 void func_001FD4B0(s32 arg0);
+void func_001FD4C0(u64 *arg0, s32 arg1, s32 arg2);
 void func_001FD610(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_001FDD70(void *arg0, void *arg1);
 void func_001FE750(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);

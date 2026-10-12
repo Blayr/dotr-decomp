@@ -711,7 +711,55 @@ void func_001FD4B0(s32 arg0) {
     D_0031C2E4 = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD4C0);
+typedef union Packet_001FD4C0 {
+    u64 words[14];
+    struct {
+        u16 count;
+        u8 pad02;
+        u8 flag;
+        u32 pad04;
+        u32 dma0;
+        u32 dma1;
+    } header;
+} Packet_001FD4C0;
+
+void func_001FD4C0(u64 *arg0, s32 arg1, s32 arg2) {
+    extern void *func_0020B340(void *, void *, s32);
+    extern u8 D_002CFC70[][16];
+    extern u8 D_002CFCA0[][16];
+    Packet_001FD4C0 *packet = (Packet_001FD4C0 *)arg0;
+    u8 colors[16][4];
+    s32 i;
+    u64 *end;
+    s32 count;
+
+    for (i = 0; i < 16; i++) {
+        colors[i][0] = colors[i][1] = colors[i][2] = D_002CFCA0[arg1][i];
+        colors[i][3] = D_002CFC70[arg1][i];
+    }
+
+    arg0[1] = 0;
+    arg0[0] = 0;
+    ((Packet_001FD4C0 *)arg0)->header.flag = 0x10;
+    arg0[2] = 4 | ((u64)0x10000000 << 32);
+    arg0[3] = 0xE;
+    arg0[4] = ((s64)arg2 << 32) | ((u64)0x10000 << 32);
+    arg0[5] = 0x50;
+    arg0[6] = 0;
+    arg0[7] = 0x51;
+    arg0[8] = 8 | ((u64)2 << 32);
+    arg0[9] = 0x52;
+    arg0[10] = 0;
+    arg0[11] = 0x53;
+    arg0[12] = 0x8004 | ((u64)0x08000000 << 32);
+    arg0[13] = 0;
+    arg0 += 14;
+    end = func_0020B340(arg0, colors, 16);
+    count = ((end - packet->words) >> 1) - 1;
+    packet->header.count = count;
+    packet->header.dma0 = 0x11000000;
+    packet->header.dma1 = (count & 0xFFFF) | 0x51000000;
+}
 
 void func_001FD610(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_00209D30(func_001FD680(func_00209D20(), arg0, arg1, arg2, arg3));
