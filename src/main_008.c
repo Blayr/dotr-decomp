@@ -915,7 +915,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_00132460;
 
-s32 func_001326F0(s32 arg0, void *arg1);
 s32 func_00133320(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
@@ -987,7 +986,82 @@ s32 func_00132460(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_001326F0);
+s32 func_001326F0(s32 arg0, void *arg1) {
+    s32 cards[8];
+    u8 work[32];
+    u8 first;
+    u8 second;
+    s32 i;
+    s32 slot;
+    s32 *q;
+    s32 j;
+    s32 ret;
+    extern s32 func_00278890();
+    extern s32 func_001E1030();
+
+    first = func_00278890(arg0, 0);
+    second = func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (first == 5) {
+        if (func_00132B00(arg0, work, arg1, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (second == 5) {
+        for (i = 0; i < func_0026FE20(arg0); i++) {
+            if ((func_0026FCE0(cards[i]) >> 5) == 0 && func_0026FB10(arg0, cards[i]) == 1) {
+                func_001DCD70(arg1, cards[i]);
+                return 0;
+            }
+        }
+        return -1;
+    }
+    if (func_00132A10(arg0, work, arg1, 0x340) >= 0) {
+        if (func_00135000(arg0, 0x340) == 1) {
+            return 2;
+        }
+    }
+    slot = 1;
+    while (1) {
+        if (func_001DF540(arg0, slot) != 0 &&
+            func_001E1030(arg0, slot) == 0x91 &&
+            arg0 == func_00250360(arg0, slot) &&
+            func_00132A10(arg0, work, arg1, 0x2EA) >= 0) {
+            return 2;
+        }
+        if (func_001DF540(arg0 == 0 ? 1 : 0, slot) != 0 &&
+            func_001E1030(arg0 == 0 ? 1 : 0, slot) == 0x91 &&
+            arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot) &&
+            func_00132A10(arg0 == 0 ? 1 : 0, work, arg1, 0x2EA) >= 0) {
+            return 2;
+        }
+        slot++;
+        if (slot > 5) {
+            break;
+        }
+    }
+    j = 0;
+    if (j < func_0026FE20(arg0)) {
+        q = cards;
+        do {
+            if ((func_0026FCE0(*q) >> 5) == 0 && func_0026FB10(arg0, *q) == 1) {
+                func_001DCD70(arg1, cards[j]);
+                return 0;
+            }
+            q++;
+            j++;
+        } while (j < func_0026FE20(arg0));
+    }
+    ret = func_00132B00(arg0, work, arg1, 999);
+    if (ret >= 0) {
+        return ret;
+    }
+    return -1;
+}
 
 s32 func_00132A10(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 values[8];
