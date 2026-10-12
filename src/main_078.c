@@ -908,7 +908,86 @@ void func_0027A090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A130);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A360);
+u8 *func_0027A360(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38) {
+    extern s32 func_002464F0();
+    s32 spE0;
+    s32 spFC;
+    u8 sp100;
+    u32 sp110;
+    u32 sp120;
+    u8 *sp130;
+    u32 sp140;
+    s32 sp150;
+    u8 sp167;
+    s32 sp168;
+    s32 sp16C;
+    s32 temp_s0;
+    s32 temp_s1;
+    s32 var_s0;
+    s32 var_s1;
+    u8 *var_s2;
+    u8 *var_s6;
+
+    var_s6 = arg0;
+    sp16C = arg5;
+    sp168 = arg6;
+    sp167 = arg7;
+    temp_s1 = func_002464F0(arg2, arg3, arg4);
+    if (arg2 == NULL) {
+        return NULL;
+    }
+    if (var_s6 == NULL) {
+        if ((s32) arg_sp20 > (s32) sp167) {
+            return NULL;
+        }
+        if ((var_s6 = func_0027B150(arg_sp28, arg_sp30)) == NULL) {
+            return NULL;
+        }
+        func_0027AF80(var_s6, arg1, arg3, arg4);
+        if ((arg3 == sp16C) && (arg4 == sp168)) {
+            *arg_sp0 = 1;
+            return var_s6;
+        }
+    }
+    temp_s0 = temp_s1 & 0xF;
+    spE0 = 0;
+    var_s1 = func_00250860(0, arg3 - temp_s0);
+    if ((u32)(arg3 + temp_s0) >= 7U) {
+        sp110 = 6;
+    } else {
+        sp110 = arg3 + temp_s0;
+    }
+    spFC = func_00250860(0, arg4 - temp_s0);
+    sp120 = arg4 + temp_s0;
+    if (sp120 >= 7U) {
+        sp120 = 6;
+    }
+    sp100 = (arg_sp20 != 0) ? 0U : 1U;
+    if (var_s1 <= (s32) sp110) {
+        sp140 = temp_s0 + 1;
+        sp150 = arg_sp20 + 1;
+        sp130 = var_s6;
+        do {
+            var_s0 = spFC;
+            if (var_s0 <= (s32) sp120) {
+                var_s2 = sp130;
+                do {
+                    if ((var_s1 >= 0) && (var_s0 >= 0) && (var_s1 < 7) && (var_s0 < 7) && ((u32) ((((var_s1 < arg3) ? arg3 : var_s1) - ((arg3 < var_s1) ? arg3 : var_s1)) + (((var_s0 < arg4) ? arg4 : var_s0) - ((arg4 < var_s0) ? arg4 : var_s0))) < sp140) && (((((var_s1 < arg3) ? arg3 : var_s1) - ((arg3 < var_s1) ? arg3 : var_s1)) + (((var_s0 < arg4) ? arg4 : var_s0) - ((arg4 < var_s0) ? arg4 : var_s0))) != 0)) {
+                        if ((func_0027A710(arg2, arg3, arg4, var_s1, var_s0, arg_sp8, arg_sp10, sp100, arg_sp18) == 1) && (func_0027B010(var_s6, var_s1, var_s0, arg3, arg4, arg_sp20) == 0)) {
+                            *(u8 **)(var_s2 + 4) = func_0027A360(*(u8 **)(var_s2 + 4), (s32)var_s6, arg2, var_s1, var_s0, sp16C, sp168, sp167, arg_sp0, arg_sp8, arg_sp10, arg_sp18, (u8)sp150, arg_sp28, arg_sp30, arg_sp38);
+                        }
+                        var_s2 += 4;
+                        sp130 += 4;
+                        spE0 += 1;
+                    }
+                    var_s0 += 1;
+                } while (var_s0 <= (s32) sp120);
+            }
+            var_s1 += 1;
+        } while (var_s1 <= (s32) sp110);
+    }
+    return var_s6;
+}
 
 s32 func_002464F0();
 s32 func_0024FE40(void *, s32, s32);
