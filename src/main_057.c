@@ -256,7 +256,62 @@ void func_0020A3B0(s64 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A470);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A610);
+typedef struct Flags_0020A610 {
+    s8 enabled : 1;
+    s8 built : 1;
+    s8 reserved : 6;
+} Flags_0020A610;
+
+typedef struct State_0020A610 {
+    s32 texture;
+    s32 width;
+    s32 height;
+    s32 base;
+    s32 unused10;
+    s32 format;
+    s32 nextFormat;
+    s32 endOffset;
+    Flags_0020A610 flags;
+} State_0020A610;
+
+typedef struct Texture_0020A610 {
+    s32 address;
+    s32 unused[9];
+} Texture_0020A610;
+
+typedef struct Packet_0020A610 {
+    s32 tag[4];
+    s64 registers[10];
+} Packet_0020A610;
+
+void *func_0020A610(void *arg0) {
+    extern Texture_0020A610 D_00293F1C[];
+    State_0020A610 *state = (State_0020A610 *)&D_00325F20;
+    Packet_0020A610 *packet = arg0;
+
+    if (!D_00325F40.enabled) {
+        return arg0;
+    }
+    packet->tag[0] = 0x10000005;
+    packet->tag[1] = 0;
+    packet->tag[2] = 0x11000000;
+    packet->tag[3] = 0x51000005;
+    packet->registers[0] = 0x1000000000008004LL;
+    packet->registers[1] = 0xE;
+    packet->registers[2] = ((s64) state->format << 24) |
+        (state->base | ((s64) (D_00293F1C[state->texture].address >> 6) << 16));
+    packet->registers[3] = 0x4C;
+    packet->registers[4] = ((s64) state->nextFormat << 24) |
+        (s64) (state->base + state->endOffset);
+    packet->registers[5] = 0x4E;
+    packet->registers[6] = 1;
+    packet->registers[7] = 0x4A;
+    packet->registers[8] = ((s64) (state->width - 1) << 16) |
+        ((s64) (state->height - 1) << 48);
+    packet->registers[9] = 0x40;
+    state->flags.built = 1;
+    return (u8 *) arg0 + 0x60;
+}
 
 #ifndef GAME_H
 /* The game translation unit already declares this global with its local type. */
