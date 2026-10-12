@@ -295,7 +295,97 @@ s32 func_00277C60(void *arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00277CD0);
+s32 func_0024C480(s32, s32, s32, s32, s32, s32);
+
+typedef struct Entry_00277CD0 {
+    u16 id;
+    u8 cost;
+    u8 pad;
+} Entry_00277CD0;
+
+s32 func_00277CD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4,
+                  u8 range, s32 arg6, u8 arg7, u8 arg8, s32 arg9,
+                  s32 fallback, u16 count, u8 arg12) {
+    s32 cost;
+    Entry_00277CD0 *p = arg4;
+    u8 mode = (u8)arg9;
+    s32 i;
+    s32 newScore;
+    u8 bestDistance = 7;
+    u16 best = 0xFFFF;
+    u16 bestPos = best;
+
+    i = 0;
+
+    while (i < count) {
+        s32 pos;
+        s32 minY;
+        s32 minX;
+        s32 oldScore;
+
+        if (func_001DF540(p->id >> 8, p->id & 0xFF) != 0) {
+            pos = func_001E1090(p->id >> 8, p->id & 0xFF);
+            if ((((pos & 0xFF) < arg2 ? arg2 : (pos & 0xFF)) - (arg2 < (pos & 0xFF) ? arg2 : (pos & 0xFF))) +
+                (((pos >> 8) < arg3 ? arg3 : (pos >> 8)) - (arg3 < (pos >> 8) ? arg3 : (pos >> 8))) <= range &&
+                func_00278150(func_001E2100(p->id >> 8, p->id & 0xFF, 2), arg7) == 1 &&
+                func_00278150(func_001E2100(p->id >> 8, p->id & 0xFF, 5), arg8) == 1 &&
+                func_0027C5A0(p->id >> 8, p->id & 0xFF, arg6) == 1 &&
+                ((func_002781B0(p->id >> 8, p->id & 0xFF, mode) == 1 &&
+                  func_0024C480(arg0, arg1, p->id >> 8, p->id & 0xFF, (pos & 0xFF), (pos >> 8)) == 1) ||
+                 (func_002781B0(p->id >> 8, p->id & 0xFF, mode) == 1 && arg12 == 1))) {
+                cost = p->cost;
+                if (cost <= range && cost > 0) {
+                    if (cost < bestDistance) {
+                        s32 maxY;
+                        s32 maxX;
+                        if (arg3 < (pos >> 8)) minY = arg3;
+                        else minY = pos >> 8;
+                        if ((pos >> 8) < arg3) maxY = arg3;
+                        else maxY = pos >> 8;
+                        if (arg2 < (pos & 0xFF)) minX = arg2;
+                        else minX = pos & 0xFF;
+                        if ((pos & 0xFF) < arg2) maxX = arg2;
+                        else maxX = pos & 0xFF;
+                        best = p->id;
+                        bestDistance = (maxX - minX) + (maxY - minY);
+                        bestPos = (u16)pos;
+                        range = (u8)cost;
+                    } else if (cost == bestDistance) {
+                        if (func_002781B0(p->id >> 8, p->id & 0xFF, mode) == 1) {
+                            newScore = func_00278250(func_001DF540(arg0, arg1), p->id, (pos & 0xFF), (pos >> 8));
+                        } else {
+                            newScore = fallback;
+                        }
+                        if (func_002781B0(best >> 8, best & 0xFF, mode) == 1) {
+                            oldScore = func_00278250(func_001DF540(arg0, arg1), best, bestPos & 0xFF, bestPos >> 8);
+                        } else {
+                            oldScore = fallback;
+                        }
+                        if (newScore < oldScore) {
+                            s32 maxY;
+                            s32 maxX;
+                            best = p->id;
+                            if (arg3 < (pos >> 8)) minY = arg3;
+                            else minY = pos >> 8;
+                            if ((pos >> 8) < arg3) maxY = arg3;
+                            else maxY = pos >> 8;
+                            if (arg2 < (pos & 0xFF)) minX = arg2;
+                            else minX = pos & 0xFF;
+                            if ((pos & 0xFF) < arg2) maxX = arg2;
+                            else maxX = pos & 0xFF;
+                            bestDistance = (maxX - minX) + (maxY - minY);
+                            bestPos = (u16)pos;
+                            range = (u8)cost;
+                        }
+                    }
+                }
+            }
+        }
+        p++;
+        i++;
+    }
+    return best == 0xFFFF ? -1 : best;
+}
 
 s32 func_00278150(s32 arg0, s32 arg1) {
     switch (arg1) {
