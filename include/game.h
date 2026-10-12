@@ -240,7 +240,6 @@ s32 func_00275E80(void *);                          /* extern */
 s32 func_0027F830(s32);                             /* extern */
 
 
-void func_001DCD70(void *, s32);
 
 typedef void (*Callback_00286910)(void);
 f32 func_001A6C18(f32, f32);                        /* extern */

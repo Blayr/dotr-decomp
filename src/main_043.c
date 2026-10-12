@@ -659,7 +659,165 @@ void *func_001DCD00(s32 arg0, s32 arg1) {
     return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DCD70);
+typedef struct Pair_001DCD70 {
+    f32 x;
+    f32 y;
+} Pair_001DCD70;
+
+typedef union Slot_001DCD70 {
+    Pair_001DCD70 value;
+    struct {
+        s32 x;
+        s32 y;
+    } bits;
+} Slot_001DCD70;
+
+typedef struct State_001DCD70 {
+    u8 *record;
+    s32 field04;
+    Slot_001DCD70 slots[5];
+    s32 field30;
+    s16 field34;
+    s16 field36;
+    s16 field38;
+    s16 field3A;
+    s16 id;
+    u8 field3E;
+    u8 field3F;
+    u8 field40;
+    u8 field41;
+    u8 field42;
+    u8 field43;
+    u8 field44;
+    u8 field45;
+    u8 field46;
+    u8 field47;
+    u8 field48;
+    u8 field49;
+    u8 field4A;
+    u8 field4B;
+    u8 field4C;
+    u8 field4D;
+    u8 field4E;
+    u8 field4F;
+    u8 field50;
+    u8 field51;
+    u8 field52;
+    u8 field53;
+    u8 field54;
+    u8 field55;
+    s8 flag56_0 : 2;
+    s8 flag56_1 : 2;
+    s8 flag56_2 : 2;
+    s8 flag56_3 : 2;
+    s8 flag57_0 : 1;
+    s8 flag57_1 : 1;
+    s8 flag57_2 : 1;
+    s8 flag57_3 : 1;
+    s8 flag57_4 : 1;
+    s8 flag57_5 : 1;
+    s8 flag57_6 : 1;
+    s8 flag57_7 : 1;
+    s8 flag58_0 : 1;
+    s8 flag58_1 : 1;
+    s8 flag58_2 : 1;
+    s8 flag58_3 : 1;
+    s16 flag58_4 : 6;
+} State_001DCD70;
+
+extern Pair_001DCD70 D_002C9DF0[][5];
+extern Pair_001DCD70 D_002CC5F0[];
+
+void func_001DCD70(void *arg0, s32 arg1) {
+    State_001DCD70 *state;
+    s32 i;
+    s32 *words;
+    Pair_001DCD70 *source;
+    s32 index;
+
+    state = arg0;
+    state->record = NULL;
+    state->field04 = 0;
+    i = 0;
+    words = (s32 *)state;
+    do {
+        i++;
+        words[2] = -1;
+        words[3] = -1;
+        words += 2;
+    } while (i < 5);
+    state->field30 = 0;
+    state->field34 = 0;
+    state->field36 = 0;
+    state->field38 = 0;
+    state->field3A = 0;
+    state->id = 999;
+    state->field3E = 0xFF;
+    state->field3F = 0xFF;
+    state->field40 = 7;
+    state->field41 = 7;
+    state->field42 = 7;
+    state->field43 = 7;
+    state->field44 = 2;
+    state->field45 = 11;
+    state->field46 = 84;
+    state->field47 = 0;
+    state->field48 = 0;
+    state->field49 = 0;
+    state->field4A = 0;
+    state->field4B = 0;
+    state->field4C = 0;
+    state->field4D = 0x80;
+    state->field4E = 1;
+    state->field4F = 7;
+    state->field50 = 0x80;
+    state->field51 = 0x80;
+    state->field52 = 0x80;
+    state->field53 = 0;
+    state->field54 = 0;
+    state->field55 = 0;
+    state->flag56_0 = 0;
+    state->flag56_1 = 0;
+    state->flag56_2 = 0;
+    state->flag56_3 = 0;
+    state->flag57_0 = 0;
+    state->flag57_1 = 0;
+    state->flag57_2 = 0;
+    state->flag57_3 = 0;
+    state->flag57_4 = 0;
+    state->flag57_5 = 0;
+    state->flag57_6 = 0;
+    state->flag57_7 = 0;
+    state->flag58_0 = 0;
+    state->flag58_1 = 0;
+    state->flag58_2 = 0;
+    state->flag58_3 = 0;
+    state->flag58_4 = 63;
+    if (arg1 == 0x29F) {
+        arg1 = 999;
+    }
+    if (arg1 >= 0 && arg1 < 0x356) {
+        state->id = arg1;
+        state->record = func_001DD0E0(arg1);
+        state->field3E = state->record[0];
+        state->field3F = state->record[2] & 0xF;
+        index = *(u16 *)(state->record + 4);
+        if (index != 0xFFFF) {
+            if (arg1 >= 0x2AB) {
+                state->slots[0].value = D_002CC5F0[index];
+            } else {
+                source = D_002C9DF0[index];
+                i = 0;
+                do {
+                    state->slots[0].value = *source;
+                    i++;
+                    source++;
+                    state = (State_001DCD70 *)((u8 *)state + 8);
+                } while (i < 5);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD0E0);
 
