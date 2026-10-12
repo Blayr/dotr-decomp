@@ -1,6 +1,142 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013D3D0);
+s32 func_0013D3D0(s32 arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    s32 card;
+    s32 owner;
+    s32 position;
+    u8 count;
+    s32 slot;
+    s32 other;
+    s32 otherPosition;
+
+    card = func_001E1030(arg0, arg1);
+    owner = func_00250360(arg0, arg1);
+    position = func_001E1090(arg0, arg1);
+    func_001E0B70(arg0, arg1, 0);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (card) {
+        case 0xC5:
+            slot = 1;
+            while (1) {
+                if (func_001E1030(arg0, slot) == 0x99) {
+                    if (arg0 == func_00250360(arg0, slot)) {
+                        count++;
+                    }
+                }
+                if (func_001E1030(arg0 == 0 ? 1 : 0, slot) == 0x99) {
+                    if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot)) {
+                        count++;
+                    }
+                }
+                slot++;
+                if (slot > 5) {
+                    break;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        case 0x99:
+            slot = 1;
+            while (1) {
+                if (func_001E1030(arg0, slot) == 0xC5) {
+                    if (arg0 == func_00250360(arg0, slot)) {
+                        count++;
+                    }
+                }
+                if (func_001E1030(arg0 == 0 ? 1 : 0, slot) == 0xC5) {
+                    if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot)) {
+                        count++;
+                    }
+                }
+                slot++;
+                if (slot > 5) {
+                    break;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        case 0xAA:
+            slot = 1;
+            while (1) {
+                if (func_001E1030(arg0, slot) == 0xAB) {
+                    if (arg0 == func_00250360(arg0, slot)) {
+                        count++;
+                    }
+                }
+                if (func_001E1030(arg0 == 0 ? 1 : 0, slot) == 0xAB) {
+                    if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot)) {
+                        count++;
+                    }
+                }
+                slot++;
+                if (slot > 5) {
+                    break;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        case 0xAB:
+            slot = 1;
+            while (1) {
+                if (func_001E1030(arg0, slot) == 0xAA) {
+                    if (arg0 == func_00250360(arg0, slot)) {
+                        count++;
+                    }
+                }
+                if (func_001E1030(arg0 == 0 ? 1 : 0, slot) == 0xAA) {
+                    if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot)) {
+                        count++;
+                    }
+                }
+                slot++;
+                if (slot > 5) {
+                    break;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_0013D980(func_00250360(arg0, arg1), card) == 1) {
+            if (func_001E22B0(position & 0xFF, position >> 8) != 9) {
+                return 1;
+            }
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        other = func_0013D2C0(owner);
+        otherPosition = func_001E1090(other >> 8, other & 0xFF);
+        if ((position & 0xFF) == (otherPosition & 0xFF) ||
+            (position >> 8) == (otherPosition >> 8)) {
+            return 1;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_0013D880(s32 a, s32 b) {
     if (b < a) {
