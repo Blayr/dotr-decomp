@@ -1139,6 +1139,41 @@ s32 func_00214D00(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214DD0);
+void *func_00214DD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    typedef struct {
+        u32 id : 31;
+        u32 active : 1;
+        u32 value : 30;
+        u32 type : 2;
+    } Entry_00214DD0;
+    s32 side;
+    Entry_00214DD0 *entry;
+    s32 count;
+
+    if (arg0 < 0 || arg0 >= 2) {
+        return NULL;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if (arg1 < 0 || arg1 >= 0x356) {
+        return NULL;
+    }
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    entry = (Entry_00214DD0 *)((u8 *)D_0032F790 + side * 0xFFA0 + arg1 * 0x4C);
+    count = 9;
+    while (count--) {
+        if (entry->id != 0 && entry->type == arg2 &&
+            (entry->active != 0) == (arg3 == 1)) {
+            return entry;
+        }
+        entry++;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214F00);

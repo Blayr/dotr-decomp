@@ -84,7 +84,6 @@ typedef struct Card_002153D0 {
     u8 state : 2;
 } Card_002153D0;
 
-void *func_00214DD0(s32, s32, s32, s32);
 extern u8 D_0034F6D0;
 
 s32 func_002153D0(s32 arg0, s32 arg1) {
@@ -283,7 +282,6 @@ typedef struct Flags_00216490 {
     u32 flag1 : 2;
 } Flags_00216490;
 
-void *func_00214DD0(s32, s32, s32, s32);
 
 static inline void clear_00216490(void *src) {
     Flags_00216490 *entry = (Flags_00216490 *)src;
