@@ -1256,6 +1256,7 @@ void *func_00209F70(void *arg0, u32 arg1);
 void *func_0020A340(void *arg0, void *arg1);
 void func_0020A3B0(s64 arg0);
 void *func_0020A760(void *arg0);
+s32 func_0020AA30(void *arg0, void *arg1);
 s32 func_0020B000(s32 arg0);
 void func_0020B1E0(s32 arg0);
 u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2);

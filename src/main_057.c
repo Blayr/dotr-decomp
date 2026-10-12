@@ -332,7 +332,94 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A870);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A9E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020AA30);
+s32 func_0020AA30(void *arg0, void *arg1) {
+    typedef struct {
+        s32 index;
+        s32 unk4;
+        s32 unk8;
+        s32 position;
+        s32 unk10;
+        s32 value;
+    } State_0020AA30;
+    typedef struct {
+        s32 value;
+        s32 padding[9];
+    } Entry_0020AA30;
+    typedef struct {
+        u64 position : 14;
+        u64 quotient : 6;
+        u64 value : 6;
+        u64 kind : 4;
+        u64 otherKind : 4;
+        u64 enabled : 1;
+        u64 mode : 2;
+        u64 number : 14;
+        u64 extra : 4;
+        u64 flag : 1;
+        u64 count : 5;
+        u64 state : 3;
+    } Record_0020AA30;
+    typedef struct {
+        u64 flag0 : 1;
+        u64 flag1 : 1;
+        u64 mode : 3;
+        u64 enabled : 1;
+        u64 state : 3;
+        u64 flag9 : 1;
+        u64 padding0 : 9;
+        u64 extra : 2;
+        u64 padding1 : 11;
+        u64 number : 12;
+    } Extra_0020AA30;
+    extern Entry_0020AA30 D_00293F1C[];
+    extern Entry_0020AA30 D_00293F20[];
+    State_0020AA30 *state = (State_0020AA30 *)&D_00325F20;
+    s32 first;
+    s32 second;
+    s32 kind;
+    Record_0020AA30 *record = arg0;
+    Extra_0020AA30 *extra = arg1;
+
+    if (D_00325F40.enabled == 0) {
+        return 0;
+    }
+    if (record != NULL) {
+        first = D_00293F1C[state->index].value;
+        second = D_00293F20[state->index].value;
+        record->position = state->position << 5;
+        record->quotient = first >> 6;
+        record->value = state->value;
+        if (first < 0x141) {
+            kind = 9;
+        } else {
+            kind = 10;
+        }
+        record->kind = kind;
+        if (second < 0xE1) {
+            kind = 8;
+        } else {
+            kind = 9;
+        }
+        record->otherKind = kind;
+        record->enabled = 1;
+        record->mode = 0;
+        record->number = 0;
+        record->extra = 0;
+        record->flag = 0;
+        record->count = 0;
+        record->state = 1;
+    }
+    if (extra != NULL) {
+        extra->flag0 = 0;
+        extra->mode = 0;
+        extra->enabled = 1;
+        extra->state = 1;
+        extra->flag9 = 0;
+        extra->extra = 0;
+        extra->number = 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020AD10);
 
