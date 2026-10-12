@@ -1303,6 +1303,7 @@ s32 func_00210310(void *arg0, s32 depth, void *arg2);
 s32 func_00210940(void *arg0, s32 depth, void *arg2);
 s32 func_00211530(void *arg0, s32 depth, void *arg2);
 void func_00212D70(s32 arg0, s32 arg1, s32 arg2);
+s32 func_00212E60(s32 arg0, void *arg1);
 u8 *func_00212FD0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00213410(s32 arg0, u32 cursor, s32 size);
 void func_00213F10(u8 *start, u8 *end);

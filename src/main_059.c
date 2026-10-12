@@ -775,7 +775,43 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_00212DE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00212DF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00212E60);
+s32 func_00212E60(s32 arg0, void *arg1) {
+    u32 i;
+    s32 *state;
+    s32 offset;
+    void *payload;
+    Slot_00211530 *record;
+    u8 temporary[0x40];
+
+    if ((D_0032A728 == 0) || (arg0 <= 0) || (arg1 == NULL)) {
+        return 0;
+    }
+    record = D_0032A780;
+    for (i = 0; i < D_0032A728; record++, i++) {
+        if (arg0 == record->id) {
+            offset = i * 0x50;
+            state = (s32 *)(D_0032A784 + offset);
+            if (*state == -1) {
+                return 0;
+            }
+            if (*state == 1) {
+                *state = 0;
+                func_00198790(temporary, D_0032A730, 0x40);
+                payload = (u8 *)D_0032A780 + offset + 0x10;
+                func_0020BC00((s32)temporary, payload);
+                func_00198790(payload, temporary, 0x40);
+            }
+            if (*state == 0) {
+                func_00198790(arg1, (u8 *)D_0032A780 + offset + 0x10, 0x40);
+            }
+            break;
+        }
+    }
+    if (i == D_0032A728) {
+        return 0;
+    }
+    return 1;
+}
 
 u8 *func_00212FD0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     u8 *temp_s1;

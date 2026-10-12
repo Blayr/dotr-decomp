@@ -675,4 +675,6 @@ extern u8 D_0032A730[];
 
 void func_00255AC0(void *, s32);
 
+extern u8 D_0032A784[];
+
 #endif
