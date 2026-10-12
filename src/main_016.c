@@ -1149,7 +1149,92 @@ INCLUDE_ASM("asm/nonmatchings/main_016", func_00170F10);
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_001714F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00171D60);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00171D60;
+
+typedef struct {
+    u16 source;
+    s8 command;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 count;
+    s8 value;
+} Output_00171D60;
+
+s32 func_0016C8F0(s32, s32, s32);
+s32 func_00170940(u16 *, s32, void *, s32);
+void func_001E1E70(s32, s32, s32, s32);
+s32 func_0027DBC0(s32, s32, s32);
+
+s32 func_00171D60(u16 *arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern void func_0027B1B0();
+    s32 address;
+    s32 result;
+    s32 index;
+    Nibbles_00171D60 buffer[12];
+    Nibbles_00171D60 *p;
+    Output_00171D60 *out = arg2;
+
+    {
+    u32 *item;
+    s32 state;
+
+    state = (func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5) & 0xFF;
+    if (state == 0) {
+        item = func_001E0B70(*arg0 >> 8, *arg0 & 0xFF, 3);
+    } else {
+        item = func_001E0B70(*arg0 >> 8, *arg0 & 0xFF, 0);
+    }
+    address = func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+    p = buffer;
+    index = 0;
+    do {
+        p->low = p->high = 15;
+        p++;
+        index++;
+    } while (index < 12);
+
+    if (item != NULL) {
+        result = func_0016C8F0(arg1, (*item >> 6) & 3, *item & 0x3F);
+        if (state != 0) {
+            if (func_001E22B0(address & 0xFF, address >> 8) == 9) {
+                result = -1;
+            }
+            if (func_0027D830(*arg0 >> 8, *arg0 & 0xFF, 0, 0, 6, 0) == 5) {
+                result = -1;
+            }
+        }
+        if (result >= 0) {
+            address = (result >> 16) & 0xFFFF;
+            state = func_0027DBC0(address, result & 0xFF, *item & 0x3F);
+            out->source = *arg0;
+            out->command = 12;
+            out->value = func_0027E360(*arg0 >> 8, *arg0 & 0xFF,
+                out->target, 1, 0);
+            out->count = 1;
+            if (((*item >> 6) & 3) != 3) {
+                out->target = (arg1 << 8) | state;
+            } else {
+                out->target = (address << 8) | state;
+            }
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+    }
+    if (state != 0) {
+        if (func_001E2100(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
+            func_001E1E70(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
+            out->source = *arg0;
+            out->command = 14;
+            return 0;
+        }
+    }
+    return func_00170940(arg0, arg1, arg2, arg3);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_00172000);
 
