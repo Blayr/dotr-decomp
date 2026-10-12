@@ -1326,7 +1326,112 @@ fallback:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00143DE0);
+s32 func_00143DE0(s32 arg0, void *arg1) {
+    s32 cards[8];
+    u8 scratch[32];
+    s32 *fallback;
+    s32 result;
+    s32 score;
+    s32 firstIndex;
+    s32 *first;
+    s32 level;
+    s32 selected;
+    s32 fallbackIndex;
+    s32 best;
+    u8 firstType;
+    s32 *entry;
+    s32 index;
+    u8 secondType;
+    extern s32 func_00278890();
+
+    firstType = func_00278890(arg0, 0);
+    secondType = func_00278890(arg0, 1);
+    best = -1;
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (firstType == 5) {
+        if (func_00144250(arg0, scratch, arg1, 999) >= 0) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+    if (secondType == 5) {
+        firstIndex = 0;
+        if (firstIndex < func_0026FE20(arg0)) {
+            first = cards;
+            do {
+                if ((func_0026FCE0(*first) >> 5) == 0 &&
+                    func_0026FB10(arg0, *first) == 1) {
+                    func_001DCD70(arg1, cards[firstIndex]);
+                    return 0;
+                }
+                first++;
+                firstIndex++;
+            } while (firstIndex < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+    if (func_00144150(arg0, cards, arg1, scratch, 0x34E) >= 0) {
+        if (func_001466A0(arg0, 0x34E) == 1) {
+            return 2;
+        }
+    }
+    if (func_001465A0(arg0) == 1) {
+        if (func_00144150(arg0, cards, arg1, scratch, 0x2DB) >= 0) {
+            return 2;
+        }
+        if (func_00144150(arg0, cards, arg1, scratch, 0x2EF) >= 0) {
+            return 2;
+        }
+    }
+    index = 0;
+    if (index < func_0026FE20(arg0)) {
+        entry = cards;
+        do {
+            level = 1;
+            while (1) {
+                if (func_00143A80(*entry, level) == 1 &&
+                    func_00144150(arg0, cards, arg1, scratch, *(u16 *)entry) >= 0) {
+                    score = func_001E02F0(arg1, 0);
+                    if (best < score) {
+                        selected = *entry;
+                        best = score;
+                    }
+                }
+                level++;
+                if (level > 5) {
+                    break;
+                }
+            }
+            entry++;
+            index++;
+        } while (index < func_0026FE20(arg0));
+    }
+    if (best >= 0) {
+        func_001DCD70(arg1, selected);
+        return 2;
+    }
+    fallbackIndex = 0;
+    if (fallbackIndex < func_0026FE20(arg0)) {
+        fallback = cards;
+        do {
+            if ((func_0026FCE0(*fallback) >> 5) == 0 &&
+                func_0026FB10(arg0, *fallback) == 1) {
+                return 0;
+            }
+            fallback++;
+            fallbackIndex++;
+        } while (fallbackIndex < func_0026FE20(arg0));
+    }
+    result = func_00144250(arg0, scratch, arg1, 999);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 s32 func_00144150(s32 arg0, s32 *arg1, void *arg2, void *arg3, s32 arg4) {
     s32 index;
