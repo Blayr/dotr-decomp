@@ -147,7 +147,198 @@ void func_001CE400(void) {
     func_00209D30(func_001CE430(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_042", func_001CE430);
+typedef union Color_001CE430 {
+    f32 value;
+    struct { u8 r, g, b, a; } channels;
+} Color_001CE430;
+
+typedef struct Flags57_001CE430 {
+    s8 unused : 6;
+    s8 selected : 1;
+    s8 unused7 : 1;
+} Flags57_001CE430;
+
+typedef struct Flags58_001CE430 {
+    s8 hidden : 1;
+    s8 unused : 7;
+} Flags58_001CE430;
+
+typedef struct Object_001CE430 {
+    u8 pad0[0x30];
+    s32 render;
+    s16 x, z;
+    u8 pad38[8];
+    u8 cardX, cardZ;
+    u8 pad42[2];
+    u8 owner, state, model;
+    u8 pad47[2];
+    u8 moving, turning;
+    u8 pad4B[4];
+    u8 flags4F;
+    u8 pad50;
+    u8 status51;
+    u8 pad52;
+    u8 progress;
+    u8 pad54[3];
+    Flags57_001CE430 flags57;
+    Flags58_001CE430 flags58;
+} Object_001CE430;
+
+typedef struct Info_001CE430 {
+    u8 pad[0x14];
+    s16 height;
+} Info_001CE430;
+
+typedef union Render_001CE430 {
+    __int128 value;
+    s32 words[4];
+} Render_001CE430;
+
+s32 func_001EF8A0(s32, s32, void *, void *, s32, s32, s32);
+extern Color_001CE430 D_002914E0;
+extern Color_001CE430 D_002914E8;
+extern Color_001CE430 D_002914F0;
+extern Render_001CE430 D_00291500;
+extern u16 D_00318116;
+
+s32 func_001CE430(s32 arg0) {
+    extern f32 func_001F1B50();
+    extern s32 func_001AAF60();
+    u32 mode;
+    Color_001CE430 *tint;
+    f32 position[4];
+    Render_001CE430 render;
+    Color_001CE430 ownColor, otherColor, warningColor;
+    u8 *game;
+    f32 *pos;
+    u8 *player;
+    s32 row, column;
+    Object_001CE430 *object;
+    s32 selected;
+    s32 model;
+    Info_001CE430 *info;
+    s32 extraModel, extra;
+    u8 alpha;
+    f32 fade;
+
+    game = D_00317490;
+    player = D_00317490 + D_003181E4 * 0x350;
+    mode = func_001AAF60(1);
+    alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
+    ownColor = D_002914E0;
+    ownColor.channels.r = D_003181E4 == 0 ? 0 : 0x60;
+    ownColor.channels.g = game[0xD54] == 0 ? 0 : 0x60;
+    ownColor.channels.b = game[0xD54] == 0 ? 0x80 : 0x60;
+    ownColor.channels.a = alpha;
+    otherColor = D_002914E8;
+    otherColor.channels.r = game[0xD54] == 0 ? 0x60 : 0;
+    otherColor.channels.g = game[0xD54] == 0 ? 0x60 : 0;
+    otherColor.channels.b = game[0xD54] == 0 ? 0x60 : 0x80;
+    otherColor.channels.a = alpha;
+    warningColor = D_002914F0;
+    warningColor.channels.r = game[0xD54] == 0 ? 0x60 : 0x60;
+    warningColor.channels.g = game[0xD54] == 0 ? 0 : 0x80;
+    warningColor.channels.b = game[0xD54] == 0 ? 0x80 : 0;
+    warningColor.channels.a = alpha;
+    tint = NULL;
+    pos = NULL;
+    fade = (f32)(u32)(u8)func_001F6D10() / 128.0f;
+    func_001F6E80(4, fade);
+    func_001F6E80(5, fade);
+    if (mode == 1) {
+        Object_001CE430 *target;
+        target = (Object_001CE430 *)func_001E36E0(player[0x33D], player[0x33E]);
+        if (target != NULL && target->owner != game[0xD54]) {
+            tint = &otherColor;
+        } else {
+            tint = &ownColor;
+        }
+        if (game[0xD57] >= 0x1D) {
+            tint = &warningColor;
+        }
+    }
+    if (mode < 2U) {
+        pos = position;
+    }
+    row = 0;
+    do {
+        column = 0;
+        do {
+            object = (Object_001CE430 *)func_001DF540(row, column);
+            selected = 0;
+            render = D_00291500;
+            if (object != NULL) {
+                model = object->model;
+                if (func_001F1370(model) != 0 &&
+                    (object->state == 0 || object->status51 != 0 || object->progress != 0)) {
+                    info = (Info_001CE430 *)func_001DCD00(object->cardX, object->cardZ);
+                    if (mode == 1 && game[0xD38] == 0) {
+                        Object_001CE430 *target;
+                        if (object->moving != 0 || object->turning != 0) {
+                            if ((u32)func_001A23B0(func_001F1B50(model)) < 2U) {
+                                func_001F1A00(model, 0);
+                            }
+                        } else {
+                            func_001F1A00(model, 1);
+                        }
+                        target = *(Object_001CE430 **)(game + 0x6C8);
+                        if (target != NULL) {
+                            if (target == object) {
+                                selected = 1;
+                            } else if (target->flags57.selected &&
+                                       *(Object_001CE430 **)(game + 0x6CC) != NULL &&
+                                       *(Object_001CE430 **)(game + 0x6CC) == object) {
+                                selected = 1;
+                            }
+                        }
+                        if (selected == 0) {
+                            func_001DD990(object->owner, object->state);
+                        }
+                        render.words[1] = object->render;
+                    }
+                    if (pos != NULL) {
+                        if (object->flags58.hidden) {
+                            pos[2] = 0.0f;
+                            pos[1] = 0.0f;
+                            pos[0] = 0.0f;
+                        } else {
+                            s32 height;
+                            u32 remaining;
+                            height = info->height;
+                            height = height > 0 ? height : 0;
+                            pos[0] = (f32)object->x;
+                            pos[1] = (f32)(height * 35) / 128.0f;
+                            pos[2] = (f32)object->z;
+                            if (object->flags4F & 4) {
+                                remaining = 128 - object->progress;
+                                remaining = (s32)remaining > 0 ? remaining : 0;
+                                pos[1] -= (50.0f * (f32)remaining) / 128.0f;
+                            }
+                        }
+                    }
+                    if (selected) {
+                        func_001F2860(model, 1, tint);
+                    }
+                    arg0 = func_001EF8A0(arg0, model, pos, &render, 0, 0, 0x80FFFFF6);
+                    if (selected) {
+                        func_001F2860(model, 1, NULL);
+                    }
+                }
+            }
+            column++;
+        } while (column < 6);
+        row++;
+    } while (row < 2);
+    extra = 0;
+    do {
+        extraModel = extra + 0x20;
+        if (func_001F1370(extraModel)) {
+            arg0 = func_001EF8A0(arg0, extraModel, NULL, NULL, 0, 0, 0x80FFFFF6);
+        }
+        extra++;
+    } while (extra < 2);
+    return arg0;
+}
 
 typedef struct Vec4_001CEA50 {
     f32 x, y, z, w;
