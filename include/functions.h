@@ -903,6 +903,7 @@ void func_001E9280(void *arg0, s32 arg1);
 void func_001E92C0(void *arg0, s32 arg1);
 void func_001EA270(void *arg0, s32 arg1);
 void func_001ED460(s32 arg0);
+s32 func_001ED4A0(s32 index);
 void func_001EDF20(s32 arg0);
 void func_001EDF90(s32 arg0);
 void func_001EE4A0(s32 arg0);

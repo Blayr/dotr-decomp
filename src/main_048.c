@@ -12,7 +12,188 @@ void func_001ED460(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001ED4A0);
+typedef struct {
+    f32 speed;
+    f32 frame;
+    f32 blend;
+} Animation_001ED4A0;
+
+typedef struct {
+    s8 b0 : 1;
+    s8 b1 : 1;
+    s8 b2 : 1;
+    s8 b3 : 1;
+    s8 b4 : 1;
+    s8 b5 : 1;
+    s8 b6 : 1;
+    s8 b7 : 1;
+} Flags_001ED4A0;
+
+typedef struct {
+    s8 reserved : 6;
+    s8 direction : 2;
+} Direction_001ED4A0;
+
+/* View used only for fields absent from Obj_0031ABB0. */
+typedef struct {
+    u8 pad000[0x1F2];
+    s8 status;
+    u8 pad1F3[4];
+    Direction_001ED4A0 control;
+    u8 pad1F8[3];
+    u8 duration;
+    u8 progress;
+    u8 pause;
+    u8 pad1FE;
+    u8 fade;
+    u8 pad200[12];
+    Flags_001ED4A0 flags;
+    Flags_001ED4A0 options;
+} Fields_001ED4A0;
+
+s32 func_001ED4A0(s32 index)
+{
+    Fields_001ED4A0 *fields;
+    Obj_0031ABB0 *obj;
+    Animation_001ED4A0 *animation;
+    Animation_001ED4A0 *previous;
+    s8 *current_slot;
+    s8 *previous_slot;
+    s8 *next_slot;
+    f32 ticks;
+    extern s32 func_001A8760();
+
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    fields = (Fields_001ED4A0 *)obj;
+    animation = (Animation_001ED4A0 *)&obj->slots[8];
+    previous = (Animation_001ED4A0 *)&obj->slots[11];
+    current_slot = &obj->lv[0];
+    previous_slot = &obj->lv[1];
+    next_slot = &obj->lv[3];
+    ticks = (f32)func_001A8760();
+    if (fields->status < 0) {
+        return 0;
+    }
+    if (((s32 *)obj)[0x138 / 4] == 0) {
+        return 0;
+    }
+    if (fields->flags.b3) {
+        return 0;
+    }
+    if (!fields->flags.b1) {
+        return 0;
+    }
+    if (fields->options.b0) {
+        return 1;
+    }
+
+    if (*previous_slot >= 0 && obj->slots[*previous_slot] != NULL) {
+        f32 end = (f32)(u32)obj->vals[*previous_slot] - 1.0f;
+        f32 advance = previous->speed * ticks;
+        s32 direction = fields->control.direction;
+        if (direction == 1) {
+            if (!(previous->frame < end)) {
+                previous->frame = 1.0f;
+            } else {
+                previous->frame += advance;
+                if (!(previous->frame <= end)) {
+                    previous->frame = end;
+                }
+            }
+        } else if (direction == -1) {
+            if (previous->frame <= 1.0f) {
+                previous->frame = end;
+            } else {
+                previous->frame -= advance;
+                if (previous->frame < 1.0f) {
+                    previous->frame = 1.0f;
+                }
+            }
+        }
+        animation->blend = (f32)(u32)fields->progress /
+                           (f32)(u32)fields->duration;
+        {
+            u8 progress = (u32)fields->progress + 1;
+            fields->progress = progress;
+            if (progress >= (s32)fields->duration) {
+                *previous_slot = -1;
+                animation->blend = 1.0f;
+                fields->progress = 0;
+            }
+        }
+        previous->blend = 1.0f - animation->blend;
+    }
+
+    if (obj->slots[*current_slot] != NULL) {
+        f32 end = (f32)(u32)obj->vals[*current_slot] - 1.0f;
+        f32 advance = animation->speed * ticks;
+        if (fields->control.direction != 0) {
+            switch (*current_slot) {
+            case 6:
+                if (!(animation->frame < 10.0f)) {
+                    if (fields->pause < 15) {
+                        ++fields->pause;
+                        advance = 0.0f;
+                    }
+                }
+                break;
+            case 3:
+            case 4:
+                if (!(animation->frame < end)) {
+                    fields->control.direction = 0;
+                }
+                break;
+            }
+        }
+        if (fields->control.direction == 1) {
+            if (!(animation->frame < end)) {
+                animation->frame = 1.0f;
+                if (*next_slot >= 0 && *current_slot != *next_slot) {
+                    *previous = *animation;
+                    *previous_slot = -1;
+                    *current_slot = *next_slot;
+                    fields->pause = 0;
+                }
+            } else {
+                animation->frame += advance;
+                if (!(animation->frame <= end)) {
+                    animation->frame = end;
+                }
+            }
+        } else if (fields->control.direction == -1) {
+            if (animation->frame <= 1.0f) {
+                animation->frame = end;
+                if (*next_slot >= 0 && *current_slot != *next_slot) {
+                    *previous = *animation;
+                    *previous_slot = -1;
+                    *current_slot = *next_slot;
+                    animation->frame = (f32)(u32)obj->vals[*current_slot] - 1.0f;
+                    fields->pause = 0;
+                }
+            } else {
+                animation->frame -= advance;
+                if (animation->frame < 1.0f) {
+                    animation->frame = 1.0f;
+                }
+            }
+        }
+    }
+
+    if (fields->flags.b4) {
+        if (fields->fade < 32) {
+            ++fields->fade;
+        }
+    } else if (fields->fade > 0) {
+        --fields->fade;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDA40);
 
