@@ -415,7 +415,52 @@ s32 func_00216580(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002166D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216800);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+extern unsigned char D_0032F790[];
+#endif
+
+
+typedef struct Record_00216800 {
+    u8 pad[0xFD88];
+    u16 entries[5];
+    u8 pad_end[0x20E];
+} Record_00216800;
+
+extern u8 D_0034F6D0;
+
+s32 func_00216800(s32 arg0, s32 arg1) {
+    s32 record_index;
+    s32 i;
+    Record_00216800 *record;
+
+    if (D_0034F6D0 == arg0) {
+        record_index = 0;
+    } else {
+        record_index = 1;
+    }
+    record = &((Record_00216800 *)D_0032F790)[record_index];
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    for (i = 0; i < 5; i++) {
+        if ((record->entries[i] == arg1) || (i + 1 >= 5)) {
+            while (i > 0) {
+                record->entries[i] = record->entries[i - 1];
+                i--;
+            }
+            break;
+        }
+    }
+    record->entries[0] = arg1;
+    return 1;
+}
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
