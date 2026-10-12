@@ -1284,7 +1284,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_00114080;
 
-s32 func_00114310(s32 arg0, void *arg1);
 s32 func_00115340(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
@@ -1356,7 +1355,100 @@ s32 func_00114080(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00114310);
+s32 func_00114310(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    extern s32 func_001E1580();
+    s32 cards[8];
+    u8 buffer[32];
+    u8 primary;
+    u8 secondary;
+    s32 i;
+    s32 result;
+
+    primary = (u8)func_00278890(arg0, 0);
+    secondary = (u8)func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, cards);
+    if (primary == 5) {
+        if (func_00114B40(arg0, buffer, arg1, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (secondary == 5) {
+        s32 index = 0;
+        s32 *p;
+        if (index < func_0026FE20(arg0)) {
+            p = cards;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    func_001DCD70(arg1, cards[index]);
+                    return 0;
+                }
+                p++;
+                index++;
+            } while (index < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+    if (func_001146C0(arg0, buffer, arg1, 0x345) >= 0) {
+        if (func_00117BD0(arg0, 0x345) == 1) {
+            return 2;
+        }
+    }
+    if (func_00117600(arg0) == 1) {
+        if (func_0024CA40(0, 0, arg0, 1, 0x53001C, 14) == 0) {
+            if (func_001146C0(arg0, buffer, arg1, 0x53) >= 0) {
+                return 2;
+            }
+            if (func_001147B0(arg0, buffer, arg1) >= 0) {
+                return 2;
+            }
+        }
+    }
+    if (func_001173E0(arg0) == 1) {
+        if (func_001146C0(arg0, buffer, arg1, 0x179) >= 0) {
+            return 2;
+        }
+    }
+    if (func_00117550(arg0) == 1) {
+        if (func_001146C0(arg0, buffer, arg1, 0x186) >= 0) {
+            return 2;
+        }
+    }
+    if (func_00117680(arg0) >= 0) {
+        if (func_001146C0(arg0, buffer, arg1, 0x2AD) >= 0) {
+            return 2;
+        }
+    }
+    for (i = 0; i < 11; i++) {
+        if (func_001E1580(arg0, i) != 0 && func_001146C0(arg0, buffer, arg1, 0x31C) >= 0) {
+            return 2;
+        }
+    }
+    {
+        s32 *p;
+        s32 index = 0;
+        if (index < func_0026FE20(arg0)) {
+            p = cards;
+            do {
+                if ((func_0026FCE0(*p) >> 5) == 0 && func_0026FB10(arg0, *p) == 1) {
+                    func_001DCD70(arg1, cards[index]);
+                    return 0;
+                }
+                p++;
+                index++;
+            } while (index < func_0026FE20(arg0));
+        }
+    }
+    result = func_00114B40(arg0, buffer, arg1, 999);
+    if (result >= 0) {
+        return result;
+    }
+    return -1;
+}
 
 s32 func_001146C0(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 entries[8];
