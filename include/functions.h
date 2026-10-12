@@ -995,6 +995,7 @@ void func_001F48F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001F4CB0(s32 arg0);
 s32 func_001F4E50(s32 arg0, s32 arg1);
 s32 func_001F4FD0(s32 arg0, s32 arg1, s32 arg2);
+s32 func_001F51D0(s32 arg0);
 s32 func_001F5240(s32 arg0, s32 arg1);
 s32 func_001F52D0(s32 arg0);
 void func_001F5370(s32 arg0);

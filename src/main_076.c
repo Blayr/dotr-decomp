@@ -678,7 +678,6 @@ typedef struct {
 } Req_00268FA0;
 
 void func_001E42C0(s32, s32, s32, s32);
-s32 func_001F51D0(s32);
 u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);

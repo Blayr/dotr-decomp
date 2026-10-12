@@ -249,7 +249,36 @@ s32 func_001F4FD0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5090);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F51D0);
+typedef struct Entry_001F51D0 {
+    u8 flags;
+    u8 pad[0x17];
+} Entry_001F51D0;
+
+typedef struct State_001F51D0 {
+    u8 pad[0x100];
+    Entry_001F51D0 entries[0x18];
+} State_001F51D0;
+
+s32 func_001F51D0(s32 arg0) {
+    extern State_001F51D0 D_0031BB50;
+    Entry_001F51D0 *entry;
+    s32 temp_a0;
+    s32 var_v0;
+
+    entry = &D_0031BB50.entries[arg0];
+    var_v0 = 0;
+    if ((arg0 < 0) || (arg0 >= 0x18)) {
+        return 0;
+    }
+    temp_a0 = entry->flags & 7;
+    if (temp_a0 == 1) {
+        var_v0 |= 1;
+    }
+    if (temp_a0 == 2) {
+        var_v0 |= 2;
+    }
+    return var_v0;
+}
 
 typedef struct Entry_001F5240 {
     u8 state : 3;
