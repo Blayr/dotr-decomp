@@ -1144,7 +1144,6 @@ typedef struct {
     u8 pad;
 } Slot_00168260;
 
-void func_00168530(void *);
 
 void func_00168260(void *arg0, s32 arg1) {
     extern void func_0027E770();
@@ -1218,7 +1217,67 @@ void func_001684D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   1, 3000, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00168530);
+void func_00168530(u16 *arg0) {
+    s32 owner;
+    s32 result;
+    s32 mode;
+    s32 index;
+    u16 id;
+
+    id = arg0[0];
+    owner = func_00250360(id >> 8, id & 0xFF);
+    id = arg0[0];
+    result = func_001E1090(id >> 8, id & 0xFF);
+    mode = (arg0[2] >> 8) & 0xFF;
+    if (mode == 0x10) {
+        if ((result >> 8) == 6) {
+            arg0[2] = 0xFFF;
+            *(u32 *)(arg0 + 4) = ((result & 0xFF) << 16) | arg0[4];
+        } else {
+            arg0[2] = 0x10FF;
+            *(u32 *)(arg0 + 4) = (((result & 0xFF) | 0x600) << 16) | arg0[4];
+        }
+    } else {
+        if (mode == 0xF) {
+            if ((result >> 8) == 0) {
+                arg0[2] = 0x10FF;
+                *(u32 *)(arg0 + 4) = (((result & 0xFF) | 0x600) << 16) | arg0[4];
+            } else {
+                arg0[2] = 0xFFF;
+                *(u32 *)(arg0 + 4) = ((result & 0xFF) << 16) | arg0[4];
+            }
+        } else if ((result >> 8) < 4) {
+            if ((result >> 8) == 0) {
+                arg0[2] = 0x10FF;
+                *(u32 *)(arg0 + 4) = ((result & 0xFF) << 16) | arg0[4];
+            } else {
+                index = result & 0xFF;
+                if (index == 3) {
+                    arg0[2] = 0x6FF;
+                    *(u32 *)(arg0 + 4) = arg0[4] | 0x30000;
+                } else if (index > 3) {
+                    arg0[2] = 0x6FF;
+                    *(u32 *)(arg0 + 4) = arg0[4] | 0x60000;
+                } else {
+                    arg0[2] = 0x6FF;
+                    *(u32 *)(arg0 + 4) = arg0[4];
+                }
+            }
+        } else if (func_001E36E0(3, 3) == 0) {
+            arg0[2] = 0x6FF;
+            *(u32 *)(arg0 + 4) = arg0[4] | 0x03030000;
+        } else if (func_001E36E0(2, 3) == 0) {
+            arg0[2] = 0x6FF;
+            *(u32 *)(arg0 + 4) = arg0[4] | 0x03020000;
+        } else if (func_001E36E0(2, 3) == 0) {
+            arg0[2] = 0x6FF;
+            *(u32 *)(arg0 + 4) = arg0[4] | 0x03040000;
+        } else {
+            arg0[2] = 0x6FF;
+            *(u32 *)(arg0 + 4) = arg0[4] | (func_001E1090((owner == 0) ? 1 : 0, 0) << 16);
+        }
+    }
+}
 
 typedef struct {
     u8 pad00[0x3C];
