@@ -89,9 +89,247 @@ INCLUDE_ASM("asm/nonmatchings/main_043", func_001D82C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D8880);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D89F0);
+typedef struct Flags81_001D89F0 {
+    s8 : 4;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 : 1;
+} Flags81_001D89F0;
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D8CD0);
+typedef struct FlagsHigh_001D89F0 {
+    s8 : 7;
+    s8 enabled : 1;
+} FlagsHigh_001D89F0;
+
+typedef struct Flags58_001D89F0 {
+    s8 bit0 : 1;
+    s8 : 1;
+    s8 bit2 : 1;
+    s8 : 5;
+} Flags58_001D89F0;
+
+typedef struct Model_001D89F0 {
+    u8 pad00[0x10];
+    f32 position[4];
+    f32 rotation[4];
+    f32 scale[4];
+    u8 pad40[0x41];
+    Flags81_001D89F0 flags81;
+    u8 pad82;
+    FlagsHigh_001D89F0 flags83;
+    u8 pad84[0xC];
+    void *owner;
+    u8 pad94[0xC];
+} Model_001D89F0;
+
+typedef struct Entry_001D89F0 {
+    u8 pad00[4];
+    Model_001D89F0 *model;
+    u8 pad08[0x34];
+    u16 id;
+    u8 pad3E[2];
+    u8 field40;
+    u8 field41;
+    u8 pad42[2];
+    s8 player;
+    s8 slot;
+    u8 pad46[2];
+    s8 field48;
+    u8 pad49[0xE];
+    FlagsHigh_001D89F0 flags57;
+    Flags58_001D89F0 flags58;
+} Entry_001D89F0;
+
+typedef union Status_001D89F0 {
+    struct {
+        u32 slot : 26;
+        u32 : 6;
+    } index;
+    struct {
+        u8 pad[3];
+        s8 : 2;
+        s8 bit2 : 1;
+        s8 bit3 : 1;
+        s8 : 4;
+    } flags;
+} Status_001D89F0;
+
+typedef struct Slot_001D89F0 {
+    Model_001D89F0 *model;
+    u8 pad04[0x98];
+    Status_001D89F0 status;
+} Slot_001D89F0;
+
+static inline Slot_001D89F0 *lookupSlot_001D89F0(s32 index) {
+    if (index < 0 || index >= 6) {
+        return NULL;
+    }
+    return (Slot_001D89F0 *)(D_0031A7C0 + index * 0xA0);
+}
+
+static inline Model_001D89F0 *allocateModel_001D89F0(void) {
+    extern void func_001CD560();
+    Model_001D89F0 *candidate;
+    s32 i;
+
+    candidate = (Model_001D89F0 *)D_003193C0;
+    i = 0;
+    do {
+        if (candidate->owner == NULL) {
+            func_001CD560(candidate);
+            return candidate;
+        }
+        i++;
+        candidate++;
+    } while (i < 32);
+    return NULL;
+}
+
+s32 func_001D89F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    extern void *func_001DD130();
+    u8 *player;
+    Entry_001D89F0 *entry;
+    Slot_001D89F0 *slot;
+    Model_001D89F0 *model;
+
+    player = D_00317490 + arg0 * 0x350;
+    entry = func_001DD130(2, arg1);
+    if (entry == NULL) {
+        return 0;
+    }
+    func_001DCD70(entry, arg2);
+    entry->player = arg0;
+    entry->slot = arg1;
+    entry->field40 = player[0x33D];
+    entry->field41 = player[0x33E];
+    if (entry->id != 999) {
+        slot = lookupSlot_001D89F0(arg1);
+        entry->field48 = func_0026EA80(arg0, entry->id);
+        if (slot != NULL) {
+            if (slot->model == NULL) {
+                slot->model = allocateModel_001D89F0();
+            }
+            model = slot->model;
+            if (model != NULL) {
+                entry->model = model;
+                entry->model->owner = entry;
+                model->scale[0] = 0.46875f;
+                model->scale[1] = 0.489130437f;
+                model->scale[2] = 1.0f;
+                model->scale[3] = 0.0f;
+                model->position[0] = 0.0f;
+                model->position[1] = 0.0f;
+                model->position[2] = 0.0f;
+                model->position[3] = 0.0f;
+                model->flags83.enabled = 1;
+                model->flags81.bit4 = 0;
+                model->flags81.bit6 = 0;
+                model->flags81.bit5 = 1;
+                func_00205C40((s32)model->rotation);
+                slot->status.flags.bit2 = 1;
+                slot->status.flags.bit3 = 1;
+                func_001D8FB0(slot, arg3, arg4, arg5, arg6, 0, 0x80);
+                slot->status.index.slot = arg1;
+            }
+        }
+    }
+    entry->flags57.enabled = 1;
+    entry->flags58.bit0 = 1;
+    entry->flags58.bit2 = 1;
+    return 1;
+}
+
+typedef struct Flags_001D8CD0 {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Flags_001D8CD0;
+
+typedef struct Index_001D8CD0 {
+    u32 index : 26;
+    u32 flags : 6;
+} Index_001D8CD0;
+
+static inline u8 *allocate_001D8CD0(void) {
+    extern void func_001CD560();
+    u8 *p = D_003193C0;
+    s32 i = 0;
+
+    do {
+        if (*(s32 *)(p + 0x90) == 0) {
+            func_001CD560(p);
+            return p;
+        }
+        i++;
+        p += 0xA0;
+    } while (i < 32);
+    return NULL;
+}
+
+s32 func_001D8CD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    extern void *func_001DD130();
+    u8 *player;
+    u8 *object;
+    u8 *entry;
+    u8 *resource;
+
+    player = D_00317490 + arg0 * 0x350;
+    object = func_001DD130(2, arg1);
+    if (object == NULL) {
+        return 0;
+    }
+    func_001DCD70(object, arg2);
+    *(s8 *)(object + 0x44) = arg0;
+    *(s8 *)(object + 0x45) = arg1;
+    *(u8 *)(object + 0x40) = *(u8 *)(player + 0x33D);
+    *(u8 *)(object + 0x41) = *(u8 *)(player + 0x33E);
+    if (*(u16 *)(object + 0x3C) != 999) {
+        if (arg1 < 0 || arg1 >= 6) {
+            entry = NULL;
+        } else {
+            entry = D_0031A7C0 + arg1 * 0xA0;
+        }
+        if (entry != NULL) {
+            if (*(u8 **)entry == NULL) {
+                *(u8 **)entry = allocate_001D8CD0();
+            }
+            resource = *(u8 **)entry;
+            if (resource != NULL) {
+                *(u8 **)(object + 4) = resource;
+                *(u8 **)(*(u8 **)(object + 4) + 0x90) = object;
+                *(s32 *)(resource + 0x30) = 0x3EF00000;
+                *(s32 *)(resource + 0x34) = 0x3EFA6F4E;
+                *(s32 *)(resource + 0x38) = 0x3F800000;
+                *(s32 *)(resource + 0x3C) = 0;
+                *(s32 *)(resource + 0x10) = 0;
+                *(s32 *)(resource + 0x14) = 0;
+                *(s32 *)(resource + 0x18) = 0;
+                *(s32 *)(resource + 0x1C) = 0;
+                ((Flags_001D8CD0 *)(resource + 0x83))->bit6 = 1;
+                ((Flags_001D8CD0 *)(resource + 0x83))->bit7 = 1;
+                ((Flags_001D8CD0 *)(resource + 0x81))->bit4 = 1;
+                ((Flags_001D8CD0 *)(resource + 0x81))->bit6 = 1;
+                ((Flags_001D8CD0 *)(resource + 0x81))->bit5 = 1;
+                func_00205C40((s32)(resource + 0x20));
+                ((Flags_001D8CD0 *)(entry + 0x9F))->bit2 = 0;
+                ((Flags_001D8CD0 *)(entry + 0x9F))->bit3 = 1;
+                func_001D9030(entry, arg3, arg4, arg3, arg4, 128, 128);
+                ((Index_001D8CD0 *)(entry + 0x9C))->index = arg1;
+            }
+        }
+        *(s8 *)(object + 0x48) = func_0026EA80(arg0, *(u16 *)(object + 0x3C));
+    }
+    ((Flags_001D8CD0 *)(object + 0x57))->bit7 = 1;
+    ((Flags_001D8CD0 *)(object + 0x58))->bit0 = 1;
+    ((Flags_001D8CD0 *)(object + 0x58))->bit2 = 1;
+    return 1;
+}
 
 s32 func_001D8FB0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     if (arg0 == NULL) {
