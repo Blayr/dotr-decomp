@@ -578,7 +578,65 @@ s32 func_001082B0(s64 x, s64 y) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108500);
+typedef struct UV_00108500 {
+    u64 u : 14;
+    u64 : 2;
+    u64 v : 14;
+    u64 : 34;
+} UV_00108500;
+
+typedef struct Rect_00108500 {
+    s16 x;
+    s16 y;
+    s16 width;
+    s16 height;
+} Rect_00108500;
+
+static inline s32 edge_uv_00108500(s32 extent, s32 origin) {
+    return (origin + extent) << 4;
+}
+
+void func_00108500(void *arg0, void *arg1, s32 arg2) {
+    Rect_00108500 *rect = arg1;
+
+    if (arg2 == 0) {
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
+    } else if (arg2 == 1) {
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = (rect->y << 4);
+    } else if (arg2 == 10) {
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = edge_uv_00108500(rect->height, rect->y);
+    } else {
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00108950);
 
