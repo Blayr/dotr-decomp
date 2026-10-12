@@ -8,7 +8,6 @@ typedef struct {
     s32 unk8;
 } Unit_00135790;
 
-void func_00135D50(void *, s32);
 void func_001360E0(void *);
 void func_0027CA50(void *, s32, s32, s32);
 
@@ -126,7 +125,96 @@ s32 func_00135970(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00135D50);
+typedef union {
+    u32 word;
+    struct {
+        u16 low;
+        u16 high;
+    } halves;
+} Data_00135D50;
+
+typedef struct {
+    u16 coordinates;
+    u16 unk2;
+    s16 state;
+    u16 unk6;
+    Data_00135D50 data;
+} Entry_00135D50;
+
+typedef struct {
+    u16 card;
+    u8 flag;
+    u8 pad;
+} Slot_00135D50;
+
+void func_00135D50(void *arg0, s32 arg1) {
+    extern void func_0027E770();
+    extern s32 func_0027B200();
+    extern s32 func_00135FB0();
+    Entry_00135D50 *entry = arg0;
+    s32 pos;
+    s32 otherPos;
+    s32 other;
+    s32 player;
+    s32 i;
+    u8 work[0x70];
+    Slot_00135D50 list[22];
+    s16 countA;
+    s16 countB;
+    Slot_00135D50 *slot;
+
+    if (func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        other = (func_0024DE70(entry->coordinates >> 8, entry->coordinates & 0xFF) == 0 ? 1 : 0) << 8;
+        pos = func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        otherPos = func_001E1090(other >> 8, other & 0xFF);
+        player = func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        slot = list;
+        i = 0;
+        do {
+            i++;
+            slot->card = 0xFFFF;
+            slot->flag = 0xFF;
+            slot++;
+        } while (i < 22);
+        func_0027E770(work);
+        if (arg1 != 0) {
+            if (func_0027B200(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
+                              other >> 8, other & 0xFF, otherPos & 0xFF, otherPos >> 8, 2) > 0) {
+                entry->state = 0x2FF;
+                entry->data.word = (other << 16) | entry->data.halves.low;
+                return;
+            }
+        }
+        countB = 0;
+        countA = 0;
+        i = 1;
+        while (1) {
+            switch (func_00135FB0(entry, 0, player, pos & 0xFF, pos >> 8,
+                                  func_0024DE70(entry->coordinates >> 8, entry->coordinates & 0xFF) == 0 ? 1 : 0,
+                                  i & 0xFF, 0, list, 0, &countA, &countB, 2, work)) {
+            case 3:
+                entry->state = 0x6FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            case 2:
+                entry->state = 0x3FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            case 1:
+                return;
+            case 0:
+                entry->state = 0x5FF;
+                return;
+            }
+            i++;
+            if (i > 2) {
+                break;
+            }
+        }
+        entry->state = 0x5FF;
+        return;
+    }
+}
 
 void func_00135FB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
