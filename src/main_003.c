@@ -176,7 +176,53 @@ void func_0010A450(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A4D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A780);
+s32 func_0010A780(s32 arg0) {
+    s16 left;
+    s16 *src;
+    s16 *dst;
+    s32 row;
+    u32 column;
+    s16 *dst2;
+    s16 right;
+
+    func_0017BB60(0);
+    row = 0;
+    src = (s16 *)(D_0030FF48 + 0x800);
+    src += arg0 >> 1;
+    dst = (s16 *)((u8 *)D_0030FF48 + 0x181800);
+    do {
+        dst2 = dst + 0x100;
+        column = 0;
+        do {
+            s16 *end;
+
+            left = src[0];
+            right = src[1];
+            src += 2;
+            if (D_0030FF40[0x2A6C / 4] != 0) {
+                right = (left + right) >> 1;
+                left = right;
+            }
+            dst[0] = left;
+            dst[1] = left;
+            dst2[0] = right;
+            dst2[1] = right;
+            dst += 2;
+            dst2 += 2;
+            end = (s16 *)(D_0030FF48 + 0x800);
+            end = (s16 *)((s32)end + 0x100000);
+            if ((s32)src >= (s32)end) {
+                src = (s16 *)((s32)src - 0x100000);
+            }
+            column++;
+        } while (column < 0x80U);
+        arg0 += 0x200;
+        dst = dst2;
+        arg0 %= 0x100000;
+        row++;
+    } while (row < 0x80);
+    return arg0;
+}
 
 s32 func_0010A8A0(void) {
     return *D_0030FF40;
