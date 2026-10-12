@@ -914,7 +914,46 @@ s32 func_00214910(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00214990);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214BB0);
+typedef struct State_00214BB0 {
+    u8 pad[0xFF9C];
+    u8 unused0 : 2;
+    u8 flag2 : 1;
+    u8 flag3 : 1;
+    u8 flag4 : 1;
+    u8 unused5 : 3;
+    u8 tail[3];
+} State_00214BB0;
+
+void func_00217A70(u64);
+extern u8 D_0034F6D0;
+
+s32 func_00214BB0(s32 arg0, s32 arg1, s32 arg2) {
+    extern State_00214BB0 D_0032F790[];
+    s32 index;
+    State_00214BB0 *state;
+
+    if (D_0034F6D0 == arg0) {
+        index = 0;
+    } else {
+        index = 1;
+    }
+    state = &D_0032F790[index];
+    switch (arg1) {
+    case 0:
+        state->flag2 = arg2 ? 1 : 0;
+        break;
+    case 1:
+        state->flag3 = arg2 ? 1 : 0;
+        break;
+    case 2:
+        state->flag4 = arg2 ? 1 : 0;
+        func_00217A70(state->flag4);
+        break;
+    default:
+        return 0;
+    }
+    return 1;
+}
 
 typedef struct {
     u8 pad[0xFF9C];
