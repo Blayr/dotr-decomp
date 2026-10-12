@@ -107,7 +107,22 @@ s32 func_0020DF90(f32 fparg0, f32 fparg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DFD0);
+typedef struct {
+    u8 pad_000[0x16C];
+    f32 x;
+    f32 y;
+    u8 pad_174[0x2C];
+} Entry_0020DFD0;
+
+s32 func_0020DFD0(f32 fparg0, f32 fparg1) {
+    extern Entry_0020DFD0 D_0032A2A0[];
+    Entry_0020DFD0 *entry;
+
+    entry = &D_0032A2A0[D_0032A240];
+    entry->x = fparg0;
+    entry->y = fparg1;
+    return 1;
+}
 
 typedef struct {
     u8 pad0[0x150];

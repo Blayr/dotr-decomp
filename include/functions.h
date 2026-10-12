@@ -1263,6 +1263,7 @@ f32 func_0020D1A0(f32 *arg0, f32 *arg1);
 s32 func_0020DEE0(void);
 s32 func_0020DEF0(void *arg0);
 s32 func_0020DF90(f32 fparg0, f32 fparg1);
+s32 func_0020DFD0(f32 fparg0, f32 fparg1);
 s32 func_0020E010(f32 *arg0, f32 *arg1);
 s32 func_0020E4F0(void);
 s32 func_0020E970(void *arg0);
