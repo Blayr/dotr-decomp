@@ -402,7 +402,94 @@ void func_00218FB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
         quad->data[16], entry->texture, quad->field21, quad->field22);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00219180);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    f32 s, t;
+    s64 xyz;
+} Vertex_00219180;
+
+typedef struct {
+    s16 count;
+    s16 flags;
+    s32 zero;
+    s64 regs;
+    Vertex_00219180 vertex[4];
+    u8 padding[0x20];
+} Packet_00219180;
+
+static inline void init_00219180(void *packet) {
+    *(s16 *)((u8 *)packet + 2) = 0x34;
+    *(s16 *)packet = 0xC;
+    *(s64 *)((u8 *)packet + 8) = 0x421421421421LL;
+    *(s32 *)((u8 *)packet + 4) = 0;
+}
+
+void func_00219180(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+                   s16 x2, s16 y2, s16 x3, s16 y3,
+                   s16 u0, s16 v0, s16 u1, s16 v1,
+                   s16 u2, s16 v2, s16 u3, s16 v3,
+                   u8 r0, u8 g0, u8 b0, u8 a0,
+                   u8 r1, u8 g1, u8 b1, u8 a1,
+                   u8 r2, u8 g2, u8 b2, u8 a2,
+                   u8 r3, u8 g3, u8 b3, u8 a3,
+                   u8 unused0, u16 texture, u8 unused1, s16 z) {
+    extern void *D_00299DD0[];
+    extern s32 func_001DDAC0();
+    void **textures;
+    Packet_00219180 packet;
+    f32 width;
+    f32 height;
+    s32 depth;
+
+    textures = D_00299DD0;
+    func_00207500();
+    init_00219180(&packet);
+    packet.vertex[0].r = r0;
+    packet.vertex[0].g = g0;
+    packet.vertex[0].b = b0;
+    packet.vertex[0].a = a0;
+    packet.vertex[0].q = 1.0f;
+    packet.vertex[1].r = r1;
+    packet.vertex[1].g = g1;
+    packet.vertex[1].b = b1;
+    packet.vertex[1].a = a1;
+    packet.vertex[1].q = 1.0f;
+    packet.vertex[2].r = r2;
+    packet.vertex[2].g = g2;
+    packet.vertex[2].b = b2;
+    packet.vertex[2].a = a2;
+    packet.vertex[2].q = 1.0f;
+    packet.vertex[3].r = r3;
+    packet.vertex[3].g = g3;
+    packet.vertex[3].b = b3;
+    packet.vertex[3].a = a3;
+    packet.vertex[3].q = 1.0f;
+    depth = z + 0xFFFFF8;
+    func_002194B0(&packet, x0, y0, depth, 0, x1, y1, depth,
+                  0, x2, y2, depth, 0, x3, y3, depth, 0);
+    if ((u1 - (s16)u0) < 0x101) {
+        width = 256.0f;
+    } else {
+        width = 512.0f;
+    }
+    if ((v2 - v0) < 0x101) {
+        height = 256.0f;
+    } else {
+        height = 512.0f;
+    }
+    packet.vertex[0].s = (0.5f + (f32)u0) / width;
+    packet.vertex[0].t = (0.5f + (f32)v0) / height;
+    packet.vertex[1].s = (0.5f + (f32)u1) / width;
+    packet.vertex[1].t = (0.5f + (f32)v1) / height;
+    packet.vertex[2].s = (0.5f + (f32)u2) / width;
+    packet.vertex[2].t = (0.5f + (f32)v2) / height;
+    packet.vertex[3].s = (0.5f + (f32)u3) / width;
+    packet.vertex[3].t = (0.5f + (f32)v3) / height;
+    func_00208700(&packet, textures[texture], 0);
+    func_002086D0(&packet, func_00208D00(0));
+    func_00207650((s32)arg0, (s32)&packet, 0, 0);
+}
 
 typedef union {
     u64 value;
