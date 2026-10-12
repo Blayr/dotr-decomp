@@ -85,9 +85,62 @@ void func_001BA610(void) {
     func_00199BC0(D_00317B6C + 2, 0x28, 2, func_001BA710);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA630);
+extern s32 (*D_00291330[])(s32, s32);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA710);
+static inline s32 check_001BA630(u8 *data, s32 i) {
+    s32 j;
+
+    for (j = 0; j < i; j++) {
+        if (data[i + 0xCB6] == data[j + 0xCB6]) {
+            break;
+        }
+    }
+    return j < i;
+}
+
+s32 func_001BA630(s32 arg0, s32 arg1) {
+    u8 *data = D_00317490;
+    s32 i;
+    s32 result = 0;
+
+    i = 0;
+    do {
+        if (i == 0 || !check_001BA630(data, i)) {
+            result = D_00291330[data[i + 0xCB6]](arg0, arg1);
+            if (result != 0) {
+                break;
+            }
+        }
+        i++;
+    } while (i < 3);
+    return result;
+}
+
+s32 func_001BA710(s32 arg0, s32 arg1) {
+    u8 *base = D_00317490;
+    s32 i;
+    s32 j;
+    s32 result = 0;
+
+    i = 0;
+    do {
+        if (i != 0) {
+            for (j = 0; j < i; j++) {
+                if ((base + i)[0xCB9] == (base + j)[0xCB9]) {
+                    break;
+                }
+            }
+            if (j < i) {
+                continue;
+            }
+        }
+        result = D_00291330[(base + i)[0xCB9]](arg0, arg1);
+        if (result != 0) {
+            break;
+        }
+    } while (++i < 3);
+    return result;
+}
 
 s32 func_001BA7F0(u16 *arg0, u16 *arg1) {
     s32 temp_s0;
