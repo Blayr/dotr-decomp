@@ -440,7 +440,97 @@ s32 func_00105C40(void *arg0) {
     return func_001A22C0(y_ratio + packed_x * inverse);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00105D00);
+typedef struct Rect_00105D00 {
+    s16 x;
+    s16 y;
+    s16 w;
+    s16 h;
+    s32 padding[2];
+} Rect_00105D00;
+
+void func_00105D00(void *dst, s16 kind, s16 index) {
+    Rect_00105D00 rect;
+
+    if (kind == 0) {
+        rect.x = 0x40;
+        rect.y = 0;
+        rect.w = 0x3F;
+        rect.h = 0x3F;
+        *(Rect_00105D00 *)dst = rect;
+        return;
+    } else if (kind == 1) {
+        rect.x = 0xF0;
+        rect.y = index * 0x10;
+        rect.w = 0x10;
+        rect.h = 0x10;
+        *(Rect_00105D00 *)dst = rect;
+        return;
+    } else if (kind == 2) {
+        rect.w = 0x1F;
+        rect.h = 0x40;
+        if (index == 0) {
+            rect.x = 0x8F;
+            rect.y = 0;
+            *(Rect_00105D00 *)dst = rect;
+            return;
+        } else {
+            rect.x = 0x8F;
+            rect.y = 0x3F;
+            *(Rect_00105D00 *)dst = rect;
+            return;
+        }
+    } else if (kind == 3) {
+        rect.x = 0x80;
+        rect.y = 0x80;
+        rect.w = 0x7F;
+        rect.h = 0x3F;
+        *(Rect_00105D00 *)dst = rect;
+        return;
+    } else if (kind == 4) {
+        rect.w = 0x3F;
+        rect.h = 0x20;
+        if (index == 0) {
+            rect.x = 0x80;
+            rect.y = 0x80;
+            *(Rect_00105D00 *)dst = rect;
+            return;
+        } else if (index == 1) {
+            rect.x = 0x80;
+            rect.y = 0xA0;
+            *(Rect_00105D00 *)dst = rect;
+            return;
+        } else if (index == 2) {
+            rect.x = 0xC0;
+            rect.y = 0x80;
+            *(Rect_00105D00 *)dst = rect;
+            return;
+        } else if (index == 3) {
+            rect.x = 0xC0;
+            rect.y = 0xA0;
+            *(Rect_00105D00 *)dst = rect;
+            return;
+        }
+    } else if (kind == 5) {
+        rect.x = 0x8F;
+        rect.y = 0;
+        rect.w = 0x1F;
+        rect.h = 0x7F;
+        *(Rect_00105D00 *)dst = rect;
+        return;
+    } else if (kind == 6) {
+        rect.x = 0xB0;
+        rect.y = 0;
+        rect.w = 0x3B;
+        rect.h = 0x1F;
+        *(Rect_00105D00 *)dst = rect;
+        return;
+    }
+    rect.x = 0;
+    rect.y = 0;
+    rect.w = 0x60;
+    rect.h = 0x60;
+    *(Rect_00105D00 *)dst = rect;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00106080);
 
