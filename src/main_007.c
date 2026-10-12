@@ -1435,7 +1435,148 @@ s32 func_00129700(void *arg0, s32 arg1, s32 arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00129D00);
+typedef struct {
+    u16 position;
+    u8 pad2[6];
+    u32 targets;
+} Input_00129D00;
+
+typedef struct {
+    u16 position;
+    s8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 result;
+    s8 status;
+} Output_00129D00;
+
+typedef struct {
+    u8 x : 4;
+    u8 y : 4;
+} Point_00129D00;
+
+s32 func_0012B210(s32, s32, void *);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+#define TARGET_00129D00(in, mode) ((mode) == 1 ? (u16)((in)->targets >> 16) : (in)->targets & 0xFFFF)
+
+s32 func_00129D00(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_0027A090();
+    Input_00129D00 *in = arg0;
+    Output_00129D00 *out = arg2;
+    s32 sourcePosition;
+    s32 count;
+    s32 sourceY;
+    s32 sourceX;
+    s32 found;
+    Point_00129D00 points[12];
+    s32 targetPosition;
+    s32 i;
+    Point_00129D00 *p;
+
+    if (func_001DF540(TARGET_00129D00(in, arg3) >> 8, TARGET_00129D00(in, arg3) & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    } else {
+        s32 initialResult;
+        initialResult = func_0012B210(in->position >> 8, in->position & 0xFF, arg0);
+        sourcePosition = func_001E1090(in->position >> 8, in->position & 0xFF);
+        targetPosition = func_001E1090(TARGET_00129D00(in, arg3) >> 8, TARGET_00129D00(in, arg3) & 0xFF);
+        p = points;
+        i = 0;
+        do {
+            p->x = p->y = 15;
+            p++;
+            i++;
+        } while (i < 12);
+        if (func_002464F0(func_001DF540(in->position >> 8, in->position & 0xFF),
+                          sourceX = sourcePosition & 0xFF, sourceY = sourcePosition >> 8) == 0) {
+            s32 score;
+            out->position = in->position;
+            out->action = 6;
+            out->destination = sourcePosition;
+            score = func_00276CC0(sourceX, sourceY, arg1, 3, 1, (u8)func_0012B1B0(arg1));
+            if (score >= func_001E0290(in->position >> 8, in->position & 0xFF, 0)) {
+                out->status = func_0027E360(in->position >> 8, in->position & 0xFF, out->destination, 1, 0);
+            } else {
+                out->status = func_0027E360(in->position >> 8, in->position & 0xFF, out->destination, 0, 0);
+            }
+            func_0012B830(arg0, arg3);
+            return 0;
+        } else {
+            s32 targetY;
+            s32 targetX;
+            Point_00129D00 *candidate;
+            s32 index;
+            s32 bestScore;
+            s32 bestIndex;
+            s32 position = in->position;
+            u16 value = func_0012B1B0(arg1);
+            func_0027A090(position >> 8, position & 0xFF, points, sourceX, sourceY,
+                           targetX = targetPosition & 0xFF, targetY = targetPosition >> 8,
+                           TARGET_00129D00(in, arg3), 0, 30, value);
+            count = func_0027AFC0((u8 *)points);
+            bestIndex = 0xFF;
+            if (count > 0) {
+                found = 0;
+                bestScore = 0xFFFF;
+                for (index = 0; index < count; index++) {
+                    if (func_0012B730(in->position >> 8, in->position & 0xFF,
+                                      sourceX, sourceY, targetX, targetY) == 1) {
+                        bestIndex = index;
+                        found = 1;
+                        points[index].x = targetX;
+                        points[index].y = targetY;
+                        index = count;
+                    } else {
+                        s32 score;
+                        candidate = &points[index];
+                        score = func_00276CC0(candidate->x, candidate->y, arg1, 5, 1,
+                                              (u8)func_0012B1B0(arg1));
+                        if (score < bestScore) {
+                            bestScore = score;
+                            bestIndex = index;
+                        } else if (score == bestScore) {
+                            if ((((targetX < candidate->x ? candidate->x : targetX) - (candidate->x < targetX ? candidate->x : targetX)) +
+                                 ((targetY < candidate->y ? candidate->y : targetY) - (candidate->y < targetY ? candidate->y : targetY))) <
+                                (((targetX < points[bestIndex].x ? points[bestIndex].x : targetX) - (points[bestIndex].x < targetX ? points[bestIndex].x : targetX)) +
+                                 ((targetY < points[bestIndex].y ? points[bestIndex].y : targetY) - (points[bestIndex].y < targetY ? points[bestIndex].y : targetY)))) {
+                                bestScore = score;
+                                bestIndex = index;
+                            }
+                        }
+                    }
+                }
+            } else {
+                out->position = in->position;
+                out->action = 6;
+                out->destination = sourcePosition;
+                out->result = initialResult;
+                out->status = func_0027E360(in->position >> 8, in->position & 0xFF, out->destination, 0, 0);
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+            if (bestIndex != 0xFF) {
+                out->position = in->position;
+                out->action = 6;
+                out->destination = (points[bestIndex].y << 8) | points[bestIndex].x;
+                out->result = found;
+                out->status = func_0027E360(in->position >> 8, in->position & 0xFF, out->destination, 0, 0);
+            } else {
+                out->position = in->position;
+                out->action = 6;
+                out->destination = sourcePosition;
+                out->result = found;
+                out->status = func_0027E360(in->position >> 8, in->position & 0xFF, out->destination, 0, 0);
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012A2E0);
 
