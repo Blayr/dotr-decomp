@@ -243,7 +243,23 @@ s32 func_0025FD90(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FF30);
+void func_0025FF30(s32 arg0, s32 arg1) {
+    extern s32 func_001E19D0();
+    extern s32 func_001E1970();
+
+    func_001E1840(arg0, arg1, 1);
+    if (func_001E2100(arg0, arg1, 4) != 0 || arg1 == 0) {
+        func_001E18A0(arg0, arg1, 7);
+        func_001E19D0(arg0, arg1, 0x80);
+        func_001E1C10(arg0, arg1, 1, 0x80);
+    } else {
+        func_001E18A0(arg0, arg1, 7);
+        func_001E19D0(arg0, arg1, 0x80);
+        func_001E1C10(arg0, arg1, 0, 0);
+    }
+    func_001E1970(arg0, arg1, 0x80);
+    func_001E1B70(arg0, arg1, 1, 0x80);
+}
 
 typedef struct {
     u8 pad00[8];
