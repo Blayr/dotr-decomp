@@ -574,7 +574,6 @@ s32 func_002151D0(s32, s32, s32);
 s32 func_001F2EC0(s32, u8, s32);
 
 void func_0010A4D0(void);
-void func_0010B6C0(void);
 
 s32 func_0016B0F0();                            /* extern */
 

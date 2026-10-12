@@ -442,7 +442,117 @@ s32 func_0010B490(s32 id) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B6C0);
+void func_0010B6C0(void) {
+    u8 request[0x1C];
+    s32 command;
+
+    if (D_0030FF40 != NULL && (D_0030FF40[1] & 4)) {
+        switch (D_0030FF40[0x82C]) {
+        case 1:
+            if (func_0010C2C0() == 0) {
+                func_0010C220((s32)((u8 *)D_0030FF48 + 0x101800),
+                             D_0030FF40[5] + 0x40000, 0x80800);
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 2:
+            if (func_0010BE20() == 0) {
+                func_0010C720(0x5100, D_0030FF40[0x82D],
+                             D_0030FF40[5] + 0x40000);
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 3:
+            if (((u8 *)D_0030FF40)[0x5A] == 0) {
+                D_0030FF40[0x82C] = 0;
+                D_0030FF40[0] &= ~0x4000;
+            }
+            break;
+        case 20:
+            if (func_0010C290() == 0) {
+                D_0030FF40[0x82C] = 1;
+            }
+            break;
+        case 30:
+            if (func_0010C290() == 0) {
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 31:
+            if (func_0010C2C0() == 0) {
+                D_0030FF40[0x82E] = *(s32 *)((u8 *)D_0030FF48 + 0x101804) + 0x800;
+                D_0030FF40[0x82F] = 0;
+                if (D_0030FF40[0x82E] <= 0x80800) {
+                    D_0030FF40[0x830] = D_0030FF40[0x82E];
+                } else {
+                    D_0030FF40[0x830] = 0x80800;
+                }
+                func_0010C220((s32)((u8 *)D_0030FF48 + 0x101800),
+                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830]);
+                D_0030FF40[0x82E] -= D_0030FF40[0x830];
+                *(u32 *)&D_0030FF40[0x82F] += D_0030FF40[0x830];
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 32:
+            if (func_0010BE20() == 0) {
+                func_0010C720(0x5102, D_0030FF40[0x82D],
+                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830], 0);
+                if (D_0030FF40[0x82E] > 0) {
+                    D_0030FF40[0x82C]++;
+                } else {
+                    D_0030FF40[0x82C] = 3;
+                }
+            }
+            break;
+        case 33:
+            if (((u8 *)D_0030FF40)[0x5A] == 0) {
+                if (D_0030FF40[0x82E] <= 0x80800) {
+                    D_0030FF40[0x830] = D_0030FF40[0x82E];
+                } else {
+                    D_0030FF40[0x830] = 0x80800;
+                }
+                func_0010C110(D_0030FF40 + 0x81C,
+                             (u8 *)D_0030FF48 + 0x101800,
+                             D_0030FF40[0x82F], D_0030FF40[0x830]);
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 34:
+            if (func_0010C290() == 0) {
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 35:
+            if (func_0010C2C0() == 0) {
+                func_0010C220((s32)((u8 *)D_0030FF48 + 0x101800),
+                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830]);
+                D_0030FF40[0x82E] -= D_0030FF40[0x830];
+                *(u32 *)&D_0030FF40[0x82F] += D_0030FF40[0x830];
+                D_0030FF40[0x82C]++;
+            }
+            break;
+        case 36:
+            if (func_0010BE20() == 0) {
+                func_0010C720(0x5102, D_0030FF40[0x82D],
+                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830],
+                             D_0030FF40[0x82F] - D_0030FF40[0x830] - 0x800);
+                if (D_0030FF40[0x82E] > 0) {
+                    D_0030FF40[0x82C] = 33;
+                } else {
+                    D_0030FF40[0x82C] = 3;
+                }
+            }
+            break;
+        default:
+            D_0030FF40[0x82C] = 0;
+            if (func_0010BD40(&command, request) != 0) {
+                func_0010BC30(command, (s32)request);
+            }
+            break;
+        }
+    }
+}
 
 s32 func_0010BBC0(void) {
     if (D_0030FF40 == NULL) {
