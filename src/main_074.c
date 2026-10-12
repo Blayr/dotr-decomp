@@ -482,7 +482,108 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B050);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B330);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B610);
+typedef struct State_0025B610 {
+    u16 fade;
+    u16 unk2;
+    u16 phase;
+    u8 ids[0x1A];
+    s32 flags[0x2D];
+    u8 count;
+    u8 padding[0x2D];
+    u16 timer;
+} State_0025B610;
+
+typedef struct Source_0025B610 {
+    u8 padding[8];
+    u32 mask;
+} Source_0025B610;
+
+void func_0024F370(s32, s32);
+void func_00255960(void *);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025B610(void *arg0, void *arg1, s32 arg2) {
+    s32 event[4];
+    s32 *command = event;
+    State_0025B610 *state = arg1;
+    s32 i;
+    u8 id;
+
+    event[0] = 0x3E7;
+    event[1] = 0;
+    event[2] = 0;
+    event[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        func_00260740(0x10);
+        state->fade = 0x80;
+        func_00255AC0(arg1, 0x38);
+    } else if (state->phase == 0) {
+        if (state->fade > 0x3F) {
+            state->fade -= 0xF;
+        } else {
+            state->fade = 0x30;
+            if (func_00255B50(arg1) == 1) {
+                command[0] = 0x38;
+                command[1] = 0;
+                command[2] = ((Source_0025B610 *)arg0)->mask;
+                command[3] = 0;
+                state->flags[state->count] = 1;
+                id = func_00255A30(command, arg1);
+                state->ids[state->count] = id;
+                if (id >= 0) {
+                    state->count++;
+                }
+                state->phase++;
+            }
+        }
+        func_001F6CF0((u8)state->fade);
+        return 1;
+    } else if (state->phase == 1) {
+        if (func_001F51D0(state->ids[0]) == 1) {
+            if (func_001F52D0(state->ids[0]) == 2) {
+                if (state->flags[0] == 1) {
+                    i = 0;
+                    do {
+                        if ((((Source_0025B610 *)arg0)->mask >> (0x15 - i) & 1) == 1) {
+                            if (i < 0xB) {
+                                func_0024F370(0, i);
+                            } else {
+                                func_0024F370(1, i - 0xB);
+                            }
+                        }
+                        i++;
+                    } while (i < 0x16);
+                    state->flags[0] = 0;
+                }
+            }
+            return 1;
+        }
+        func_00260020(arg0, arg1, arg2, 1, 0, 1);
+        func_00260A70(arg1, 0x10);
+        state->timer = 0;
+        state->phase++;
+    } else {
+        state->fade += 0xF;
+        if (state->fade > 0x80) {
+            state->fade = 0x80;
+        }
+        func_001F6CF0((u8)state->fade);
+        if (state->fade == 0x80 && state->timer++ > 0x10 && func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B900);
 
