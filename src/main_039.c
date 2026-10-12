@@ -103,7 +103,76 @@ static s32 func_001B7660(s8 character) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B76E0);
+typedef struct Glyph_001B76E0 {
+    u16 unk0;
+    u16 left;
+    u16 unk4;
+    u16 right;
+    u16 unk8;
+} Glyph_001B76E0;
+
+extern u8 D_002BE950[];
+extern u8 D_002BE951[];
+extern Glyph_001B76E0 D_00290B70[];
+
+void func_001B76E0(s32 arg0, s32 arg1, s32 arg2, s8 *arg3, s32 *arg4, s32 *arg5) {
+    s32 width;
+    s32 lineHeight;
+    s32 proportional;
+    s32 maxWidth;
+    s32 lineWidth;
+    s32 height;
+    s32 i;
+    s32 halfWidth;
+    s32 glyphBase;
+    s8 *character;
+    s32 glyph;
+    Glyph_001B76E0 *entry;
+
+    width = D_002BE950[arg0 * 2];
+    lineHeight = D_002BE951[arg0 * 2];
+    proportional = 0;
+    maxWidth = 0;
+    lineWidth = 0;
+    height = 0;
+    if (arg1 & 1) {
+        proportional = 1;
+    }
+    for (i = 0; i < arg2; i++) {
+        halfWidth = width >> 1;
+        glyphBase = arg0 * 37;
+        character = arg3 + i;
+        glyph = func_001B7660(*character);
+        if (glyph < 0) {
+            if (*character == '\n') {
+                if (maxWidth < lineWidth) {
+                    maxWidth = lineWidth;
+                }
+                height += lineHeight;
+                lineWidth = 0;
+            } else {
+                lineWidth += proportional ? halfWidth : width;
+            }
+        } else {
+            entry = &D_00290B70[glyph + glyphBase];
+            if (proportional) {
+                lineWidth += entry->right - entry->left;
+            } else {
+                lineWidth += width;
+            }
+        }
+    }
+    if (maxWidth < lineWidth) {
+        maxWidth = lineWidth;
+    }
+    height += lineHeight;
+    if (arg4 != 0) {
+        *arg4 = maxWidth;
+    }
+    if (arg5 != 0) {
+        *arg5 = height;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B7820);
 
