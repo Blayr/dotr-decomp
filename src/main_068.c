@@ -230,6 +230,19 @@ typedef struct State_0023C3F0 {
     s16 result;
 } State_0023C3F0;
 
+typedef struct State_0023E610 {
+    s32 result;
+    u8 pad04[0x1C];
+    s32 command;
+    s32 status;
+    u8 pad28[8];
+    s16 field30;
+    u8 pad32[2];
+    s16 field34;
+    u8 pad36[0xA];
+    s16 field40;
+} State_0023E610;
+
 s32 func_0023CE40(s32);
 extern struct State_0023E610 D_0034FB00;
 
@@ -1006,19 +1019,6 @@ s32 func_0023D920(void) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023DE90);
-
-typedef struct State_0023E610 {
-    s32 result;
-    u8 pad04[0x1C];
-    s32 command;
-    s32 status;
-    u8 pad28[8];
-    s16 field30;
-    u8 pad32[2];
-    s16 field34;
-    u8 pad36[0xA];
-    s16 field40;
-} State_0023E610;
 
 s32 func_00194248(s32, s32 *, s32 *);
 s32 func_001948A8(s32, s32);
