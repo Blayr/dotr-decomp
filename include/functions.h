@@ -1008,6 +1008,7 @@ s32 func_001F1940(s32 arg0, s8 arg1);
 s64 func_001F19A0(s32 arg0);
 s32 func_001F1A00(s32 arg0, s64 arg1);
 s32 func_001F1A80(s32 arg0, f32 value);
+s32 func_001F1A90(s32 arg0, s32 arg1, f32 value);
 f32 func_001F1B50(s32 arg0);
 f32 func_001F1B60(s32 arg0, s32 arg1);
 void func_001F1C40(s32 arg0, f32 value);

@@ -4,7 +4,37 @@ s32 func_001F1A80(s32 arg0, f32 value) {
     return func_001F1A90(arg0, 0, value);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1A90);
+typedef struct View_001F1A90 {
+    u8 pad[0x198];
+    f32 m[4][3];
+} View_001F1A90;
+
+s32 func_001F1A90(s32 arg0, s32 arg1, f32 value) {
+    Obj_0031ABB0 *obj;
+    View_001F1A90 *view;
+    s32 slot;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    if (arg1 < 0 || arg1 >= 4) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    view = (View_001F1A90 *)obj;
+    if (obj == NULL) {
+        return 0;
+    }
+    slot = obj->lv[arg1];
+    if (slot < 0) {
+        return 0;
+    }
+    if (obj->slots[slot] == NULL) {
+        return 0;
+    }
+    view->m[arg1][0] = value;
+    return 1;
+}
 
 f32 func_001F1B50(s32 arg0) {
     return func_001F1B60(arg0, 0);
