@@ -205,7 +205,40 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_00215A60);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215B10);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215C40);
+s32 func_00215C40(s32 arg0, s32 arg1) {
+    typedef struct {
+        u16 cards[40];
+        u16 unk50;
+        u16 total;
+    } Deck_00215C40;
+    Deck_00215C40 *deck;
+    s32 i;
+    u16 *card;
+    s32 side;
+    u8 *data;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    deck = (Deck_00215C40 *)((u8 *)D_0032F790 + side * 0xFFA0 + arg1 * sizeof(Deck_00215C40) + 0xFD94);
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return -1;
+    }
+    deck->total = 0;
+    i = 0;
+    card = deck->cards;
+    do {
+        data = func_001DD0E0(*card);
+        if (data != NULL) {
+            deck->total += data[3];
+        }
+        i++;
+        card++;
+    } while (i < 40);
+    return deck->total;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215D30);
 
