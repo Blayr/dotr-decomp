@@ -1196,7 +1196,78 @@ s32 func_00113B60(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00113BB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00113ED0);
+typedef struct {
+    u16 key;
+    u16 unk2;
+    s16 status;
+    u16 unk6;
+    union {
+        u16 low;
+        u32 word;
+    } value;
+} Data_00113ED0;
+
+s32 func_0027D720(void *, s32);
+
+void func_00113ED0(void *arg0) {
+    Data_00113ED0 *arg;
+    s32 search_key;
+    s32 compare_key;
+    s32 *object;
+    s32 result;
+    u32 kind;
+    s32 status;
+
+    arg = (Data_00113ED0 *)arg0;
+    search_key = func_00250360(arg->key >> 8, arg->key & 0xFF);
+    compare_key = func_001E1090(arg->key >> 8, arg->key & 0xFF);
+    object = func_00250740(arg->key >> 8, arg->key & 0xFF, 0);
+    if (object == NULL) {
+        arg->status = 0x5FF;
+        return;
+    }
+    switch (func_001E0700(arg->key >> 8, arg->key & 0xFF) >> 5) {
+    case 1:
+        kind = (u32)*object >> 8;
+        if (kind != 4) {
+            status = 0xCFF;
+            switch (kind) {
+            case 2:
+                arg->status = 0x6FF;
+                arg->value.word = arg->value.low | 0x03030000;
+                return;
+            case 20:
+                arg->status = 0xCFF;
+                return;
+            }
+        } else {
+            result = func_00112600(search_key, object);
+            if (result >= 0) {
+                arg->status = 0x6FF;
+                if ((*object & 0x3F) == 0) {
+                    arg->value.word = arg->value.low | (((compare_key >> 8) << 8 | (result & 0xFF)) << 16);
+                } else {
+                    arg->value.word = (result << 16) | arg->value.low;
+                }
+                return;
+            }
+        }
+        goto fail_status;
+    case 3:
+        if (func_0027D720(arg0, 0) == 1) {
+            arg->status = 0xBFF;
+            return;
+        }
+        goto fail_status;
+    default:
+fail_status:
+        status = 0x5FF;
+        goto store_status;
+    }
+store_status:
+    arg->status = status;
+    return;
+}
 
 typedef struct {
     s16 id;
