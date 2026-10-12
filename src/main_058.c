@@ -278,7 +278,57 @@ s32 func_0020E970(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E9F0);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+extern unsigned char D_0032A2A0[][0x1A0];
+#endif
+
+
+typedef struct Object_0020E9F0 {
+    u8 unk0[0x40];
+    f32 matrix40[16];
+    f32 matrix80[16];
+    u8 unkC0[0x80];
+    s32 unk140;
+    u8 unk144[0xC];
+    f32 unk150;
+    f32 unk154;
+    f32 unk158;
+    f32 unk15C;
+    f32 unk160;
+    f32 unk164;
+    f32 unk168;
+    f32 unk16C;
+    f32 unk170;
+    u8 unk174[0x2C];
+} Object_0020E9F0;
+
+void func_0020D5E0(void *, void *, void *, s32);
+void func_0020D8E0(void *, f32, f32, f32, f32, f32, f32, f32, f32, f32);
+
+s32 func_0020E9F0(void) {
+    s32 sp50;
+    s32 sp54;
+    s32 sp58;
+    s32 sp5C;
+    f32 temp_f20;
+    f32 temp_f21;
+    Object_0020E9F0 *temp_s0;
+    u8 *temp_s1;
+
+    temp_s0 = (Object_0020E9F0 *)&D_0032A2A0[D_0032A240];
+    temp_s1 = (u8 *) temp_s0 + 0xC0;
+    func_00209E30(&sp50, &sp54);
+    temp_f20 = ((f32) sp50 + temp_s0->unk150) - (temp_s0->unk164 / 2.0f);
+    temp_f21 = ((f32) sp54 + temp_s0->unk154) - (temp_s0->unk168 / 2.0f);
+    func_00209D80(&sp58, &sp5C);
+    func_0020D5E0(temp_s0->matrix40, temp_s1 + 0x40, temp_s1 + 0x50, *(s32 *) (temp_s1 + 0x80));
+    func_0020D8E0(temp_s0->matrix80, temp_s0->unk160, temp_s0->unk158, temp_s0->unk15C * func_00209D40(NULL), temp_f20, temp_f21, (f32) sp58, (f32) sp5C, temp_s0->unk16C, 2.0f * temp_s0->unk170);
+    func_0020B380(temp_s0, temp_s0->matrix80, 4);
+    func_0020BC00((s32) temp_s0, temp_s0->matrix40);
+    func_0020B380(temp_s1, temp_s0, 4);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EB40);
 
