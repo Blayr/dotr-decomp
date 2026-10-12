@@ -6,7 +6,7 @@ s32 func_001F1A80(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1A90);
 
-s32 func_001F1B50(s32 arg0) {
+f32 func_001F1B50(s32 arg0) {
     return func_001F1B60(arg0, 0);
 }
 
