@@ -1520,7 +1520,89 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_00160DA0);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_00161380);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_00161BF0);
+typedef struct Nibbles_00161BF0 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00161BF0;
+
+typedef struct Result_00161BF0 {
+    u16 id;
+    u8 type;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 state;
+    u8 outcome;
+} Result_00161BF0;
+
+s32 func_001607D0(u16 *, s32, void *, s32);
+s32 func_001E1E70(s32, s32, s32, s32);
+s32 func_0027DBC0(s32, s32, s32);
+
+s32 func_00161BF0(u16 *arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern void func_0027B1B0();
+    Nibbles_00161BF0 entries[12];
+    s32 value;
+    s32 selection;
+    s32 index;
+    Result_00161BF0 *result = arg2;
+
+    {
+        u32 *card;
+        s32 mode;
+
+        mode = (u8)(func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5);
+        if (mode == 0) {
+            card = func_001E0B70(*arg0 >> 8, *arg0 & 0xFF, 3);
+        } else {
+            card = func_001E0B70(*arg0 >> 8, *arg0 & 0xFF, 0);
+        }
+        value = func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+        index = 0;
+        do {
+            entries[index].low = entries[index].high = -1;
+            index++;
+        } while (index < 12);
+
+        if (card != NULL) {
+            if (mode != 0) {
+                selection = func_001627D0(arg1);
+                if (func_001E22B0(value & 0xFF, value >> 8) == 9) {
+                    selection = -1;
+                }
+                if (func_0027D830(*arg0 >> 8, *arg0 & 0xFF, 0, 0, 6, 0) == 5) {
+                    selection = -1;
+                }
+            } else {
+                selection = func_00162A70(arg1);
+            }
+            if (selection >= 0) {
+                value = (selection >> 16) & 0xFFFF;
+                mode = func_0027DBC0(value, selection & 0xFF, *card & 0x3F);
+                result->id = *arg0;
+                result->type = 12;
+                result->outcome = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, result->target, 1, 0);
+                result->state = 1;
+                if (((*card >> 6) & 3) != 3) {
+                    result->target = (arg1 << 8) | mode;
+                } else {
+                    result->target = (value << 8) | mode;
+                }
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+        }
+        if (mode != 0) {
+            if (func_001E2100(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
+                func_001E1E70(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
+                result->id = *arg0;
+                result->type = 14;
+                return 0;
+            }
+        }
+        return func_001607D0(arg0, arg1, arg2, arg3);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_00161EA0);
 
