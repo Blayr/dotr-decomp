@@ -646,7 +646,6 @@ void func_001429B0(void *);
 s32 func_00143BA0(s32, s32, s32);
 void func_0014BDE0(void *);
 void func_001591B0(void *);
-void func_0015D8E0(void *);
 s32 func_0015F300(s32, s32, s32);
 void func_00163660(void *);
 s32 func_001643F0(s32, s32, s32);
@@ -684,5 +683,8 @@ void func_001188F0(void *, s32);
 void func_0027CA50(void *, s32, s32, s32);
 
 extern s32 func_0011D9B0();
+
+extern void func_0015E950(void *);
+extern void func_0015EF40(void *);
 
 #endif

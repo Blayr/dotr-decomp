@@ -525,7 +525,69 @@ s32 func_0015D180(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015D350);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015D8E0);
+s32 func_0015D8E0(void *arg0) {
+    u16 card;
+    s32 low;
+    s32 temp_s0;
+    s32 type;
+
+    card = *(u16 *)arg0;
+    func_001E1090(card >> 8, card & 0xFF);
+    card = *(u16 *)arg0;
+    temp_s0 = func_00250360(card >> 8, card & 0xFF);
+    card = *(u16 *)arg0;
+    if (func_001DF540(card >> 8, card & 0xFF) != 0) {
+        card = *(u16 *)arg0;
+        if (func_001E2100(card >> 8, card & 0xFF, 0) == 0) {
+            card = *(u16 *)arg0;
+            if (card != 0xFFFF) {
+                low = card & 0xFF;
+                if (low == 0) {
+                    if (*(s32 *)((u8 *)arg0 + 8) == -1) {
+                        if (func_0027BBC0(card >> 8, low, 0) == 1) {
+                            if (func_001DE6D0(*(u16 *)arg0 >> 8) == 1) {
+                                *(s16 *)((u8 *)arg0 + 4) = 0x50A;
+                            } else {
+                                *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+                            }
+                        } else {
+                            if (func_001DE6D0(*(u16 *)arg0 >> 8) == 1) {
+                                *(s16 *)((u8 *)arg0 + 4) = 0xA05;
+                            } else {
+                                *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+                            }
+                        }
+                    }
+                } else {
+                    type = func_001E0700(card >> 8, low) >> 5;
+                    switch (type) {
+                    case 0:
+                        card = *(u16 *)arg0;
+                        if (func_002507D0(card >> 8, card & 0xFF) == 1) {
+                            func_0015E950(arg0);
+                        } else {
+                            func_0015DED0(arg0);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 5, 0, func_00162580(temp_s0) & 0xFF);
+                        break;
+                    case 1:
+                    case 3:
+                    case 4:
+                        func_0015EF40(arg0);
+                        break;
+                    default:
+                        *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_0015DAF0(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
