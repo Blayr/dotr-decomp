@@ -872,7 +872,213 @@ s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_002695D0);
+typedef struct Command_002695D0 {
+    s32 id;
+    u32 source;
+    u32 target;
+    s32 value;
+} Command_002695D0;
+
+typedef struct State_002695D0 {
+    u16 flag;
+    u16 position;
+    u16 mode;
+    u8 handles[0x16];
+    union {
+        s32 flags[0x19];
+        u8 flagBytes[0x64];
+        struct {
+            s32 pad;
+            s32 timers[0x18];
+        } delayed;
+    } entries;
+    u8 pad80[2];
+    u16 ids[0x25];
+    s32 side;
+    u8 padD0[4];
+    u8 cursor;
+} State_002695D0;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_00248460(s32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+u8 func_00255A30(void *, void *);
+void func_00260A70(void *, s32);
+void func_00269EC0(void *, void *);
+
+s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1030();
+    extern s32 func_001E1E10();
+    Command_002695D0 storage;
+    Command_002695D0 *command = &storage;
+    Command_002695D0 *src = arg0;
+    State_002695D0 *state = arg1;
+
+    storage.id = 999;
+    storage.source = 0;
+    storage.target = 0;
+    storage.value = 0;
+    if (arg2 >= 0) {
+        s32 source;
+        s32 first;
+        s32 target;
+        s32 second;
+
+        func_00255960(state);
+        if (func_001E2100(src->target >> 8, src->target & 0xFF, 2)) {
+            func_001E1E70(src->target >> 8, src->target & 0xFF, 4, 1);
+        }
+        if (func_001E2100(src->source >> 8, src->source & 0xFF, 2)) {
+            func_001E1E70(src->source >> 8, src->source & 0xFF, 4, 1);
+        }
+        if ((func_001E0700(src->source >> 8, src->source & 0xFF) >> 5) == 0) {
+            state->side = 1;
+            func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 1);
+        } else {
+            state->side = 2;
+            func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 1);
+        }
+        if (src->value == 999) {
+            func_00255AC0(state, 0x21A);
+            state->side = 1;
+        } else {
+            if (state->side == 1) {
+                source = src->source;
+            } else {
+                source = src->target;
+            }
+            if (state->side == 1) {
+                target = src->target;
+            } else {
+                target = src->source;
+            }
+            if ((first = func_0026AB80(src->source >> 8, 0x2B)) < 0 ||
+                !func_00249560(func_001E1030(target >> 8, target & 0xFF) & 0xFFFF) ||
+                func_00271F90(source >> 8, source & 0xFF,
+                    func_001E1090(source >> 8, source & 0xFF) & 0xFF,
+                    func_001E1090(source >> 8, source & 0xFF) >> 8, 0xB) == 1) {
+                state->flag = 0;
+                func_00269D60(src, state);
+            } else {
+                func_00255AC0(state, 0x25A);
+                if ((second = func_0026AB80(src->target >> 8, 0x2E)) >= 0) {
+                    func_00260AF0(0, second, 0xB4, 0xB4);
+                    func_001F5970(second, 0);
+                    func_002516D0(second >> 8, second & 0xFF, 1);
+                    state->mode = 16;
+                    state->flag = 0;
+                    state->position = second;
+                    return 1;
+                }
+                func_00260AF0(0, first, 0xB4, 0xB4);
+                func_001F5970(first, 0);
+                func_002516D0(first >> 8, first & 0xFF, 1);
+                state->mode = 16;
+                state->flag = 1;
+                state->position = first;
+                return 1;
+            }
+        }
+        return 1;
+    }
+
+    switch (state->mode) {
+    case 0:
+        if (func_00255B50(state) == 1) {
+            if (src->value == 999) {
+                command->id = 0x21A;
+                command->source = src->source;
+                command->target = src->target;
+                command->value = 1;
+            }
+            if (state->flag != 0) {
+                func_001E42C0(0, 0, -0xA0, func_001DE210(0x330));
+            } else {
+                s32 target;
+                if (state->side == 1) {
+                    target = src->target;
+                } else {
+                    target = src->source;
+                }
+                if (func_00249560(func_001E1030(target >> 8, target & 0xFF) & 0xFFFF)) {
+                    func_001E42C0(0, 0, -0xA0, 0x106);
+                }
+            }
+            command->id = state->ids[state->cursor];
+            command->source = src->source;
+            command->target = src->target;
+            command->value = state->side;
+            state->handles[state->cursor] = func_00255A30(command, state);
+            state->entries.delayed.timers[state->cursor] = 0;
+            state->cursor++;
+            state->mode++;
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->handles[state->cursor - 1])) {
+            func_00269EC0(src, state);
+            if (func_001F52D0(state->handles[state->cursor - 1]) == 2) {
+                if (state->entries.flagBytes[state->cursor * 4] == 0 && src->value != 999) {
+                    if ((func_001E0700(src->source >> 8, src->source & 0xFF) >> 5) == 0) {
+                        func_00248460(src->source >> 8, src->source & 0xFF, (state->flag << 16) | (src->value & 0x3FFF), 0);
+                        func_0024F370(src->target >> 8, src->target & 0xFF);
+                        if (!func_001E2100(src->source >> 8, src->source & 0xFF, 4)) {
+                            func_001E1E70(src->source >> 8, src->source & 0xFF, 2, 0);
+                        }
+                    } else {
+                        func_00248460(src->target >> 8, src->target & 0xFF, (state->flag << 16) | (src->value & 0x3FFF), 0);
+                        func_0024F370(src->source >> 8, src->source & 0xFF);
+                        if (!func_001E2100(src->target >> 8, src->target & 0xFF, 4)) {
+                            func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 0);
+                        }
+                    }
+                    state->entries.flags[state->cursor] = 0xFFFF;
+                }
+            }
+            return 1;
+        }
+        func_001E4530();
+        if (src->value == 999) {
+            func_0024F370(src->source >> 8, src->source & 0xFF);
+            if (!func_001E2100(src->target >> 8, src->target & 0xFF, 4)) {
+                func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 0);
+            }
+        }
+        func_00217710(0, 2);
+        func_001E4530();
+        return 0;
+    case 16:
+        if (func_001E1E10((s32)state->position >> 8, state->position & 0xFF) == 0xFF && func_00255B50(state) == 1) {
+            if (state->flag != 0) {
+                func_001E42C0(0, -0x78, 0x50, 0x103);
+            } else {
+                func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+            }
+            command->id = 0x25A;
+            command->source = 0;
+            command->target = state->position;
+            command->value = 0;
+            state->mode++;
+            state->handles[state->cursor] = func_00255A30(command, state);
+            state->entries.delayed.timers[state->cursor] = 0;
+            state->cursor++;
+        }
+        break;
+    case 17:
+        if (func_001F51D0(state->handles[state->cursor - 1]) == 1) {
+            return 1;
+        }
+        func_001E1E70((s32)state->position >> 8, state->position & 0xFF, 0, 1);
+        func_00269D60(src, state);
+        func_00260A70(state, 0);
+        state->mode = 0;
+        break;
+    default:
+        return 1;
+    }
+    return 1;
+}
 
 void func_00269D60(void *arg0, void *arg1) {
     u32 temp_v1;
