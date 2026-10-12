@@ -449,7 +449,133 @@ void func_001E3060(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3070);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E3230);
+static inline s32 clamp_001E3230(s32 value) {
+    if (value < 8) {
+        return value;
+    }
+    return 8;
+}
+
+static inline u8 *lookup_001E3230(s32 x, s32 y) {
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return NULL;
+    }
+    return D_00318E60 + y * 0xC4 + x * 0x1C;
+}
+
+s32 func_001E3230(s32 x, s32 y) {
+    u8 *p;
+    s32 step;
+    u8 current;
+    u8 target;
+
+    p = lookup_001E3230(x, y);
+    if (p == NULL) {
+        return 0;
+    }
+    current = p[0x18];
+    if (current != p[0x19]) {
+        target = p[0xB];
+        if (target != 0) {
+            step = target & 0xFF;
+            step = clamp_001E3230(step);
+            p[0xB] -= step;
+        } else {
+            p[0x19] = current;
+        }
+        return 1;
+    } else {
+        current = p[0xA];
+        target = p[0x6];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0xA] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0xA] += step;
+        }
+        current = p[0x9];
+        target = p[0x5];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0x9] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0x9] += step;
+        }
+        current = p[0x8];
+        target = p[0x4];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0x8] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0x8] += step;
+        }
+        current = p[0xB];
+        target = p[0x7];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0xB] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0xB] += step;
+        }
+        current = p[0x12];
+        target = p[0xE];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0x12] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0x12] += step;
+        }
+        current = p[0x11];
+        target = p[0xD];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0x11] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0x11] += step;
+        }
+        current = p[0x10];
+        target = p[0xC];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0x10] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0x10] += step;
+        }
+        current = p[0x13];
+        target = p[0xF];
+        if (current > target) {
+            step = current - target;
+            step = clamp_001E3230(step);
+            p[0x13] -= step;
+        } else {
+            step = target - current;
+            step = clamp_001E3230(step);
+            p[0x13] += step;
+        }
+    }
+    return 1;
+}
 
 static inline u8 *lookup_001E3650(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
