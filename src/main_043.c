@@ -532,7 +532,93 @@ s32 func_001DBD30(s32 arg0, s32 arg1) {
                         params->value, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DBD50);
+typedef struct Vertex_001DBD50 {
+    f32 x, y, z;
+    u8 pad0C[0xC];
+    u8 r, g, b, a;
+    f32 q;
+    u8 pad20[0x10];
+} Vertex_001DBD50;
+
+typedef struct Prim_001DBD50 {
+    u16 flags;
+    u16 kind;
+    u32 pad;
+    u64 value;
+    u64 alpha;
+    u64 tex0;
+    u64 tex1;
+    u64 clamp;
+} Prim_001DBD50;
+
+s32 func_002070F0(s32, s32, void *, s32, void *, s32, s32);
+s32 func_00207AA0(s32, void *, s32, s32, s32, s32);
+
+static inline void initPrim_001DBD50(s32 kind, void *prim) {
+    ((Prim_001DBD50 *)prim)->kind = kind;
+    ((Prim_001DBD50 *)prim)->flags = 0;
+    ((Prim_001DBD50 *)prim)->value = 0;
+    ((Prim_001DBD50 *)prim)->pad = 0;
+}
+
+void func_001DBD50(s32 arg0, f32 *position, f32 width, f32 height,
+                   s32 arg2, u8 *color, s32 arg4) {
+    void *scratchpad = (void *)0x70000000;
+    Vertex_001DBD50 *vertices = (Vertex_001DBD50 *)((u8 *)scratchpad + 0x2000);
+    s32 repeats = 2;
+    s32 count;
+    s32 original = arg0;
+    Prim_001DBD50 prim;
+    u8 *end;
+
+    arg0 = func_00207FA0(arg0);
+    do {
+        vertices[0].r = 0x80;
+        vertices[0].g = 0x80;
+        vertices[0].b = 0x80;
+        vertices[0].a = 0x80;
+        if (color != NULL) {
+            vertices[0].r = color[2];
+            vertices[0].g = color[1];
+            vertices[0].b = color[0];
+            vertices[0].a = color[3];
+        }
+        vertices[0].q = 1.0f;
+        vertices[0].x = position[0] - width;
+        vertices[0].y = position[1];
+        vertices[0].z = position[2] - height;
+        vertices[1].x = position[0] + width;
+        vertices[1].y = position[1];
+        vertices[1].z = position[2] - height;
+        vertices[2].x = position[0] + width;
+        vertices[2].y = position[1];
+        vertices[2].z = position[2] + height;
+        vertices[3].x = position[0] - width;
+        vertices[3].y = position[1];
+        vertices[3].z = position[2] + height;
+        vertices[4].x = position[0] - width;
+        vertices[4].y = position[1];
+        vertices[4].z = position[2] - height;
+        count = func_002070F0(0, 5, vertices, 0xAA, scratchpad, 0, 0);
+        func_00207230(NULL, count, vertices);
+        if (arg4 != 0) {
+            initPrim_001DBD50(5, &prim);
+        } else {
+            initPrim_001DBD50(0x402, &prim);
+        }
+        if (vertices[0].a < 0xFF) {
+            func_002086D0(&prim, func_00208D00(arg2));
+        }
+        arg0 = func_00207AA0(arg0, &prim, count, (s32)vertices, 0, 0);
+        if (arg4 != 0 || repeats-- <= 0) {
+            break;
+        }
+        width -= 0.2f;
+        height -= 0.2f;
+    } while (1);
+    end = func_00207500();
+    func_00208030(arg0, original, (s32)end, func_00205D10(position, 0.0f));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DBFE0);
 
