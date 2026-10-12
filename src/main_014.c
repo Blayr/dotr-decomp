@@ -1267,7 +1267,134 @@ s32 func_0015ED90(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EE40);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EF40);
+typedef struct {
+    u16 id;
+    u16 unk2;
+    s16 action;
+    u16 unk6;
+    u32 data;
+} Command_0015EF40;
+
+s32 func_0027D720(void *, s32);
+
+static inline s32 check_0015EF40(u16 source, s32 mode) {
+    s32 id;
+    s32 low;
+    s32 high;
+    s32 i;
+    s32 other_card;
+    s32 other;
+
+    i = 1;
+    low = source & 0xFF;
+    high = (s32)source >> 8;
+    id = (high << 8) | low;
+    while (1) {
+        other = func_001E3790(i, mode);
+        if (other != 0) {
+            if (other == id) {
+                return 1;
+            }
+            other_card = func_00250360(other >> 8, other & 0xFF);
+            if (other_card == func_00250360(high, low)) {
+                return 0;
+            }
+        }
+        i++;
+        if (i > 5) {
+            break;
+        }
+    }
+    return 1;
+}
+
+void func_0015EF40(void *arg0) {
+    extern s32 func_001E1030();
+    Command_0015EF40 *cmd = arg0;
+    s32 flags;
+    s32 card_id;
+    s32 card;
+    u32 *effect;
+    s32 position;
+    s32 result;
+
+    flags = func_001E0700((s32)cmd->id >> 8, cmd->id & 0xFF) & 0xFF;
+    card_id = func_001E1030((s32)cmd->id >> 8, cmd->id & 0xFF);
+    card = func_00250360((s32)cmd->id >> 8, cmd->id & 0xFF);
+    effect = func_00250740((s32)cmd->id >> 8, cmd->id & 0xFF, 0);
+    position = func_001E1090((s32)cmd->id >> 8, cmd->id & 0xFF);
+    if (effect == NULL) {
+        cmd->action = 0x5FF;
+        return;
+    }
+
+    switch ((flags & 0xFF) >> 5) {
+    case 1:
+        switch (*effect >> 8) {
+        case 20:
+            cmd->action = 0xCFF;
+            return;
+        case 4:
+            result = func_001625E0(card);
+            if (result >= 0) {
+                cmd->action = 0x6FF;
+                cmd->data = *(u16 *)&cmd->data |
+                    ((((position >> 8) << 8) |
+                      (func_001E1090(result >> 8, result & 0xFF) & 0xFF)) << 16);
+                return;
+            }
+            cmd->action = 0x5FF;
+            return;
+        case 37:
+            if (card_id == 0x2ED) {
+                cmd->action = 0x6FF;
+                cmd->data = *(u16 *)&cmd->data | 0x04060000;
+                return;
+            }
+            if (func_0027D720(arg0, 0) == 1) {
+                cmd->action = 0xBFF;
+                return;
+            }
+            break;
+        case 31:
+            if (card_id == 0x2DC) {
+                cmd->action = 0xDFF;
+                return;
+            }
+            break;
+        }
+        break;
+    case 3:
+    case 4:
+        if (card_id == 0x2ED) {
+            cmd->action = 0x6FF;
+            cmd->data = *(u16 *)&cmd->data | 0x06000000;
+            return;
+        }
+        if (check_0015EF40(cmd->id, 3) == 1) {
+            func_0015E520(arg0, 1);
+            return;
+        }
+        result = func_0015E2E0((s32)cmd->id >> 8, cmd->id & 0xFF);
+        if (result >= 0) {
+            u32 low;
+            cmd->action = 0x6FF;
+            low = *(u16 *)&cmd->data;
+            cmd->data = (result << 16) | low;
+            return;
+        }
+        if (check_0015EF40(cmd->id, 4) == 1) {
+            func_0015E520(arg0, 2);
+            return;
+        }
+        if (func_0027D720(arg0, 0) == 1) {
+            cmd->action = 0xBFF;
+            return;
+        }
+        break;
+    }
+    cmd->action = 0x5FF;
+}
 
 typedef struct {
     s16 card;
