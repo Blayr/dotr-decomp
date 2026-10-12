@@ -70,7 +70,99 @@ INCLUDE_ASM("asm/nonmatchings/main_053", func_001FBE50);
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC050);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC210);
+typedef struct Vec4_001FC210 {
+    f32 x, y, z, w;
+} Vec4_001FC210;
+
+typedef struct Camera_001FC210 {
+    Vec4_001FC210 polar;
+    Vec4_001FC210 direction;
+    Vec4_001FC210 position;
+    Vec4_001FC210 target;
+} Camera_001FC210;
+
+f32 func_001A6C30(f32, f32);
+
+static inline void direction_001FC210(s32 index) {
+    if (index >= 0 && index <= 0) {
+        Camera_001FC210 *camera = (Camera_001FC210 *)D_0031BEB0[index];
+        if (camera != NULL) {
+        camera->direction.x = camera->target.x - camera->position.x;
+        camera->direction.y = camera->target.y - camera->position.y;
+        camera->direction.z = camera->target.z - camera->position.z;
+        camera->direction.w = 0.0f;
+        func_0020D070(&camera->direction.x);
+        }
+    }
+}
+
+static inline void polar_001FC210(s32 index) {
+    if (index >= 0 && index <= 0) {
+        Camera_001FC210 *camera = (Camera_001FC210 *)D_0031BEB0[index];
+        if (camera != NULL) {
+        Vec4_001FC210 polar;
+        Vec4_001FC210 *position = &camera->position;
+        Vec4_001FC210 *target = &camera->target;
+
+        polar.x = func_001A6C60(
+            (position->x - target->x) * (position->x - target->x) +
+            (position->z - target->z) * (position->z - target->z));
+        polar.y = func_001A6C18(position->z - target->z, position->x - target->x);
+        polar.y = func_001A6C30(6.2831855f + polar.y, 6.2831855f);
+        polar.z = func_001A6C18(position->y - target->y, polar.x);
+        polar.x = func_001A6C60(
+            (position->x - target->x) * (position->x - target->x) +
+            (position->y - target->y) * (position->y - target->y) +
+            (position->z - target->z) * (position->z - target->z));
+        camera->polar = polar;
+        }
+    }
+}
+
+s32 func_001FC210(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight) {
+    f32 inverse = 1.0f - weight;
+    Camera_001FC210 *camera;
+    Vec4_001FC210 newTarget;
+    Vec4_001FC210 oldPolar;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    camera = (Camera_001FC210 *)D_0031BEB0[index];
+    if (camera == NULL) {
+        return 0;
+    }
+    if (target == NULL) {
+        target = &camera->target.x;
+    }
+    newTarget = camera->target;
+    switch (mode) {
+    case 1:
+        func_001F2050(otherIndex, &newTarget);
+        camera->target.x = newTarget.x * weight + target[0] * inverse;
+        camera->target.y = newTarget.y * weight + target[1] * inverse;
+        camera->target.z = newTarget.z * weight + target[2] * inverse;
+        camera->target.w = 1.0f;
+        direction_001FC210(index);
+        polar_001FC210(index);
+        break;
+    case 2:
+        oldPolar = camera->polar;
+        func_001F2050(otherIndex, &newTarget);
+        camera->target.x = newTarget.x * weight + target[0] * inverse;
+        camera->target.y = newTarget.y * weight + target[1] * inverse;
+        camera->target.z = newTarget.z * weight + target[2] * inverse;
+        camera->target.w = 1.0f;
+        direction_001FC210(index);
+        polar_001FC210(index);
+        oldPolar.y -= camera->polar.y;
+        oldPolar.z -= camera->polar.z;
+        oldPolar.x -= camera->polar.x;
+        func_001FB6A0(index, 0, 1, oldPolar.y, oldPolar.z, oldPolar.x);
+        break;
+    }
+    return 1;
+}
 
 s32 func_001FC6D0(s32 arg0, s32 arg1) {
     s32 entry;
