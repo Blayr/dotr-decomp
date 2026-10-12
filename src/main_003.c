@@ -316,7 +316,106 @@ s32 func_0010BE20(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BE60);
+typedef struct {
+    u8 data[0x40];
+    s32 arg1;
+    s32 arg2;
+    s32 arg3;
+} Request_0010BE60;
+
+typedef struct {
+    s32 arg0;
+    s32 arg1;
+    s32 arg2;
+    s32 reserved;
+} Request2_0010BE60;
+
+typedef struct {
+    s32 flags;
+    u8 padding[0x124C];
+    Request_0010BE60 requests[16];
+    s32 pending;
+    s32 write;
+    s32 read;
+    s32 state;
+    Request2_0010BE60 requests2[16];
+    s32 pending2;
+    s32 write2;
+    s32 read2;
+    s32 state2;
+} Queues_0010BE60;
+
+void func_0010BE60(void) {
+    extern s32 D_0030FF50;
+    Queues_0010BE60 *queues;
+    Queues_0010BE60 *queues2;
+    s32 state2;
+    s32 state;
+    Request_0010BE60 *request;
+    Request2_0010BE60 *request2;
+    s32 *stateField;
+    s32 *state2Field;
+
+    queues = (Queues_0010BE60 *)D_0030FF40;
+    stateField = &queues->state;
+    state = *stateField;
+    if (state != 0) {
+        request = &queues->requests[queues->read];
+        switch (state) {
+        case 1:
+            if (func_0010C2C0() == 0) {
+                func_0010C2D0((s32)request, request->arg1, request->arg2, request->arg3);
+                ((Queues_0010BE60 *)D_0030FF40)->state++;
+                ((Queues_0010BE60 *)D_0030FF40)->flags |= 0x800000;
+            }
+            break;
+        case 2:
+            if (func_0010C2C0() == 0) {
+                D_0030FF50++;
+                ((Queues_0010BE60 *)D_0030FF40)->flags &= 0xFF7FFFFF;
+                ((Queues_0010BE60 *)D_0030FF40)->read = (((Queues_0010BE60 *)D_0030FF40)->read + 1) % 16;
+                ((Queues_0010BE60 *)D_0030FF40)->state++;
+            }
+            break;
+        default:
+            *stateField = 0;
+            break;
+        }
+    } else if (queues->pending != 0) {
+        *stateField = 1;
+        ((Queues_0010BE60 *)D_0030FF40)->pending--;
+    }
+    queues2 = (Queues_0010BE60 *)D_0030FF40;
+    state2Field = &queues2->state2;
+    state2 = *state2Field;
+    if (state2 != 0) {
+        request2 = &queues2->requests2[queues2->read2];
+        switch (state2) {
+        case 1:
+            if (func_0010C8A0() < 0) {
+                func_0010C800(request2->arg0, request2->arg1, request2->arg2);
+                ((Queues_0010BE60 *)D_0030FF40)->state2++;
+                ((Queues_0010BE60 *)D_0030FF40)->flags |= 0x08000000;
+                return;
+            }
+            break;
+        case 2:
+            if (func_0010C8A0() < 0) {
+                ((Queues_0010BE60 *)D_0030FF40)->flags &= 0xF7FFFFFF;
+                ((Queues_0010BE60 *)D_0030FF40)->read2 = (((Queues_0010BE60 *)D_0030FF40)->read2 + 1) % 16;
+                ((Queues_0010BE60 *)D_0030FF40)->state2++;
+                return;
+            }
+            break;
+        default:
+            *state2Field = 0;
+            return;
+        }
+    } else if (queues2->pending2 != 0) {
+        *state2Field = 1;
+        ((Queues_0010BE60 *)D_0030FF40)->pending2--;
+    }
+}
 
 typedef struct {
     char name[0x40];

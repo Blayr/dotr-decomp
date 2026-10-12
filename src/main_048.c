@@ -223,7 +223,98 @@ INCLUDE_ASM("asm/nonmatchings/main_048", func_001F01A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0390);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0500);
+typedef struct {
+    u32 header[2];
+    u8 data[0x7FF8];
+} FixedBlock_001F0500;
+
+void func_001E8BF0(s32);
+void func_00214090(ObjSlot_0031ABB0 *);
+
+s32 func_001F0500(s32 arg0, void *arg1) {
+    Obj_0031ABB0 *temp_s0;
+    u8 *var_s1;
+    s32 var_s2;
+    Obj_0031ABB0 *var_s3;
+    Obj_0031ABB0 *var_s2_2;
+    s32 var_s3_2;
+    u8 *temp_v1;
+
+    temp_s0 = D_0031ABB0[arg0];
+    if (temp_s0 == NULL) {
+        return 0;
+    }
+    *(u8 **)&temp_s0->pad040[0xF8] = arg1;
+    *(u8 **)((u8 *)temp_s0 + 0x13C) = *(u8 **)&temp_s0->pad040[0xF8] + 0x10;
+    func_0020F370(*(u8 **)&temp_s0->pad040[0xF8]);
+    func_001E8FA0(arg0);
+    temp_v1 = *(u8 **)&temp_s0->pad040[0xF8];
+    var_s2 = 0;
+    var_s3 = temp_s0;
+    var_s1 = temp_v1 + *(s32 *)(temp_v1 + 0xC);
+    do {
+        if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & (1 << var_s2)) {
+            var_s3->slots[0] = (ObjSlot_0031ABB0 *)var_s1;
+            func_00214090(var_s3->slots[0]);
+            var_s3->vals[0] = var_s3->slots[0]->f14->f4;
+            var_s1 += *(s32 *)(var_s1 + 4);
+        } else {
+            var_s3->vals[0] = 1;
+            var_s3->slots[0] = NULL;
+        }
+        var_s2 += 1;
+        var_s3 = (Obj_0031ABB0 *)((u8 *)var_s3 + 4);
+    } while (var_s2 < 8);
+    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x100) {
+        *(u8 **)((u8 *)temp_s0 + 0x164) = var_s1;
+        var_s1 = ((FixedBlock_001F0500 *)var_s1)->data + 0x7FF8;
+    } else {
+        *(u8 **)((u8 *)temp_s0 + 0x164) = NULL;
+    }
+    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x200) {
+        func_0020F250((s32) var_s1);
+        *(u8 **)((u8 *)temp_s0 + 0x140) = var_s1;
+        var_s1 += *(s32 *)(var_s1 + 8);
+    } else {
+        *(u8 **)((u8 *)temp_s0 + 0x140) = NULL;
+    }
+    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x400) {
+        *(u8 **)((u8 *)temp_s0 + 0x168) = var_s1;
+        var_s1 = ((FixedBlock_001F0500 *)var_s1)->data + 0x7FF8;
+    } else {
+        *(u8 **)((u8 *)temp_s0 + 0x168) = NULL;
+    }
+    var_s3_2 = 0;
+    var_s2_2 = temp_s0;
+    do {
+        if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & (1 << (var_s3_2 + 0xB))) {
+            func_0020F250((s32) var_s1);
+            *(u8 **)((u8 *)var_s2_2 + 0x144) = var_s1;
+            var_s1 += *(s32 *)(var_s1 + 8);
+        } else {
+            *(u8 **)((u8 *)var_s2_2 + 0x144) = NULL;
+        }
+        var_s3_2 += 1;
+        var_s2_2 = (Obj_0031ABB0 *)((u8 *)var_s2_2 + 4);
+    } while (var_s3_2 < 8);
+    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x80000) {
+        s32 size = (*(s32 *)(var_s1 + 8) + 0xF) & ~0xF;
+        *(u8 **)((u8 *)temp_s0 + 0x16C) = var_s1;
+        var_s1 += size;
+    }
+    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x100000) {
+        s32 size = (*(s32 *)(var_s1 + 8) + 0xF) & ~0xF;
+        *(u8 **)((u8 *)temp_s0 + 0x170) = var_s1;
+        var_s1 += size;
+    }
+    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x200000) {
+        *(u8 **)((u8 *)temp_s0 + 0x174) = var_s1;
+    } else {
+        *(u8 **)((u8 *)temp_s0 + 0x174) = NULL;
+    }
+    func_001E8BF0(arg0);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0760);
 
