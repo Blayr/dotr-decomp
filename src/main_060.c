@@ -116,7 +116,116 @@ s32 func_002153D0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002154E0);
+typedef struct {
+    u16 cards[40];
+    u16 unknown;
+    u16 cost;
+} Deck_002154E0;
+
+typedef struct {
+    u8 pad[0xFD94];
+    Deck_002154E0 decks[6];
+    u8 pad_end[0x14];
+} Side_002154E0;
+
+typedef struct {
+    u8 pad[7];
+    u8 flags7 : 6;
+    u8 deck : 2;
+} Entry_002154E0;
+
+extern u8 D_0034F6D0;
+
+static inline s32 count_002154E0(s32 player, s32 deck_index, s32 card_id) {
+    extern Side_002154E0 D_0032F790[];
+    s32 side;
+    u16 *cards;
+    s32 count;
+    s32 i;
+
+    if (D_0034F6D0 == player) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    cards = (u16 *)((u8 *)&D_0032F790[side] + deck_index * 0x54 + 0xFD94);
+    count = 0;
+    if (player < 0 || player >= 2) {
+        return -1;
+    }
+    for (i = 0; i < 40; i++, cards++) {
+        if (card_id == *cards) {
+            count++;
+        }
+    }
+    return count;
+}
+
+static inline s32 find_002154E0(s32 player, s32 deck_index, s32 card_id) {
+    extern Side_002154E0 D_0032F790[];
+    s32 side;
+    u16 *cards;
+    s32 i;
+
+    if (D_0034F6D0 == player) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    cards = (u16 *)((u8 *)&D_0032F790[side] + deck_index * 0x54 + 0xFD94);
+    if (player < 0 || player >= 2) {
+        return -1;
+    }
+    for (i = 0; i < 40; i++, cards++) {
+        if (*cards == card_id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+s32 func_002154E0(s32 player, s32 deck_index, s32 card_id) {
+    extern Side_002154E0 D_0032F790[];
+    s32 side;
+    Deck_002154E0 *deck;
+    Entry_002154E0 *entry;
+    u8 *card;
+    s32 slot;
+
+    if (D_0034F6D0 == player) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    deck = (Deck_002154E0 *)((u8 *)&D_0032F790[side] + deck_index * 0x54 + 0xFD94);
+    if (player < 0 || player >= 2) {
+        return 0;
+    }
+    if (card_id == 0x29F) {
+        card_id = 999;
+    }
+    if (card_id < 0 || card_id >= 0x356) {
+        return 0;
+    }
+    if (count_002154E0(player, deck_index, card_id) >= 3) {
+        return 0;
+    }
+    slot = find_002154E0(player, deck_index, 999);
+    if (slot < 0) {
+        return 0;
+    }
+    if ((entry = func_00214DD0(player, card_id, 3, 0)) == NULL) {
+        return 0;
+    }
+    card = func_001DD0E0(card_id);
+    if (card == NULL) {
+        return 0;
+    }
+    deck->cost += card[3];
+    deck->cards[slot] = card_id;
+    entry->deck = deck_index;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215770);
 
