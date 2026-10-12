@@ -2,7 +2,13 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_00106DE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00106E40);
+void func_00106E40(s32 *dst, f32 *src) {
+    extern s32 func_001A22C0(f32);
+
+    dst[0] = func_001A22C0(src[0]);
+    dst[1] = func_001A22C0(src[1]);
+    dst[2] = func_001A22C0(src[2]);
+}
 
 void func_00106E90(void *arg0, void *arg1) {
     f32 *dst = arg0;
