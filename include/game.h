@@ -414,7 +414,6 @@ extern s32 D_0030FFAC;
 extern s32 D_0030FFB0;
 
 
-void func_0016DDA0(u16 *, ...);
 
 
 extern s32 D_00325DD0;
