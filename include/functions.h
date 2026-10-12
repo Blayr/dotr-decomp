@@ -1790,6 +1790,7 @@ s32 func_0027B360(s32 arg0, u16 *arg1, u16 *arg2);
 s32 func_0027B740(void *arg0, s32 arg1);
 s32 func_0027B9B0(s32 arg0);
 void func_0027C070(s32 arg0, u16 *arg1, s32 arg2, u8 arg3);
+void func_0027C2C0(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, u8 arg4);
 s32 func_0027C5A0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0027C670(u16 *values);
 s32 func_0027C6D0(s32 arg0);
