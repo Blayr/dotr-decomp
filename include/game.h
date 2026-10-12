@@ -690,4 +690,6 @@ s32 func_00144A60(s32, s32, void *, s32);
 s32 func_00208F00(s32, void *, void *, s32);
 s32 func_00209110(s32, void *, void *, f32, f32, f32);
 
+s32 func_00155C90(s32, u8 *, void *);
+
 #endif
