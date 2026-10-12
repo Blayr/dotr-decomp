@@ -143,7 +143,30 @@ void func_001FFCB0(void *arg0) {
     func_001FFCC0(arg0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFCC0);
+typedef struct Entry_001FFCC0 {
+    s32 value;
+    s32 unknown;
+} Entry_001FFCC0;
+
+void *func_001FFCC0(void *arg0, s32 arg1) {
+    extern struct Entry_001FFC50 D_00322770[];
+    s32 shift;
+    s32 count;
+    Entry_001FFCC0 *entry;
+
+    shift = arg1 ? 10 : 0;
+    count = 64;
+    entry = (Entry_001FFCC0 *)D_00322770;
+    while (count--) {
+        if (entry->value >= 0) {
+            if ((s32)arg0 < 0 || (s32)arg0 == (entry->value >> shift)) {
+                return entry;
+            }
+        }
+        entry++;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFD30);
 
