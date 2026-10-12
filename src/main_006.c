@@ -261,7 +261,6 @@ typedef struct Entry_0011D9B0 {
     u8 padding;
 } Entry_0011D9B0;
 
-s32 func_0027D720(void *, s32);
 
 void func_0011D9B0(void *arg0, s32 arg1) {
     u8 context[112];

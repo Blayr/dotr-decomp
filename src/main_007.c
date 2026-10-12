@@ -770,7 +770,6 @@ typedef struct {
     u8 flag;
 } Entry_00127B00;
 
-s32 func_0027D720(void *, s32);
 
 void func_00127B00(void *arg0) {
     extern void func_0027E770();

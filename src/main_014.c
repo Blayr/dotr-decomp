@@ -1275,7 +1275,6 @@ typedef struct {
     u32 data;
 } Command_0015EF40;
 
-s32 func_0027D720(void *, s32);
 
 static inline s32 check_0015EF40(u16 source, s32 mode) {
     s32 id;

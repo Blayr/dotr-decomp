@@ -293,7 +293,6 @@ typedef struct {
 } Record_0013E1D0;
 
 extern void func_0027CA50(void *, s32, s32, s32);
-extern s32 func_0027D720(void *, s32);
 
 s32 func_0013E1D0(u8 *arg0) {
     s32 category;

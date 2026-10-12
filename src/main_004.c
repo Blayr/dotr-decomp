@@ -83,7 +83,6 @@ typedef struct Entry_0010D880 {
 } Entry_0010D880;
 
 void func_0010D490(void *, s32, s32);
-s32 func_0027D720(void *, s32);
 
 void func_0010D880(void *arg0, s32 arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -1207,7 +1206,6 @@ typedef struct {
     } value;
 } Data_00113ED0;
 
-s32 func_0027D720(void *, s32);
 
 void func_00113ED0(void *arg0) {
     Data_00113ED0 *arg;

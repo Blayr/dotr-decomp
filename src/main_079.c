@@ -418,7 +418,39 @@ INCLUDE_ASM("asm/nonmatchings/main_079", func_0027CA50);
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027D020);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027D720);
+s32 func_0027D720(u16 *arg0, s32 arg1) {
+    u16 candidates[22];
+    s32 side;
+    s32 target;
+    s32 i;
+    u16 *p;
+    u16 position;
+
+    position = *arg0;
+    side = func_0024DE70((s32) position >> 8, position & 0xFF);
+    p = candidates;
+    i = 0;
+    do {
+        i += 1;
+        *p++ = 0xFFFF;
+    } while (i < 22);
+    position = *arg0;
+    switch (func_001E0700((s32) position >> 8, position & 0xFF) >> 5) {
+    case 0:
+        position = *arg0;
+        if (func_001E2100((s32) position >> 8, position & 0xFF, 4) != 0) {
+            return 0;
+        }
+        break;
+    }
+    func_0027C2C0((side == 0) ? 1 : 0, candidates, 0x34, 0, 0);
+    target = func_0027B860(candidates, (side == 0) ? 1 : 0);
+    if (target < 0) {
+        return 0;
+    }
+    func_0027E780(arg0, target, arg1);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027D830);
 
