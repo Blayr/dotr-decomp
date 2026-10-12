@@ -3496,7 +3496,129 @@ s32 func_0025D9D0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025DE70);
+typedef struct State_0025DE70 {
+    u16 alpha;
+    u16 unk2;
+    u16 phase;
+    u8 cards[0xCE];
+    u8 card_count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_0025DE70;
+
+typedef struct Context_0025DE70 {
+    u8 pad0[8];
+    u32 mask;
+} Context_0025DE70;
+
+typedef struct Selection_0025DE70 {
+    s32 field0;
+    s32 field4;
+    s32 field8;
+    s32 fieldC;
+} Selection_0025DE70;
+
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025DE70(void *arg0, void *arg1, s32 arg2) {
+    s32 count;
+    Selection_0025DE70 selection_data;
+    Selection_0025DE70 *selection = &selection_data;
+    State_0025DE70 *state = arg1;
+    Context_0025DE70 *context = arg0;
+    extern s32 func_001E1030();
+
+    selection->field0 = 999;
+    selection->field4 = 0;
+    selection->field8 = 0;
+    selection->fieldC = 0;
+    count = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->alpha = 0x80;
+        if (func_0024E910(context->mask) == 1) {
+            func_00260AF0(0x10, func_0024EC50(context->mask, 0), 0x64, 0xB4);
+        } else {
+            func_00260740(0x10);
+        }
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        func_00255AC0(arg1, 0x1E);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if ((s32)state->alpha > 0x3F) {
+            state->alpha -= 0xF;
+        } else {
+            state->alpha = 0x30;
+            if (func_00255B50(arg1) == 1) {
+                if ((s32)state->timer++ > 0x10) {
+                    func_0025F720(arg0, arg1, selection, 0x1E);
+                    state->phase++;
+                    state->timer = 0;
+                }
+            }
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+    case 1: {
+        s32 i;
+
+        for (i = 0; i < state->card_count; i++) {
+            if (func_001F51D0(state->cards[i]) == 0) {
+                count++;
+            }
+        }
+        if (count < state->card_count) {
+            return 1;
+        }
+        count = 0;
+        do {
+            if ((context->mask >> (0x15 - count)) & 1) {
+                if (count < 0xB) {
+                    func_001DEA30(0, func_001E1030(0, count));
+                    func_001DEB20(0);
+                    func_001DFBB0(0, count);
+                } else {
+                    func_001DEA30(1, func_001E1030(1, count - 0xB));
+                    func_001DEB20(0);
+                    func_001DFBB0(1, count - 0xB);
+                }
+            }
+            count++;
+        } while (count < 0x16);
+        state->phase++;
+        break;
+    }
+    case 2:
+        if ((s32)state->timer++ > 0x10) {
+            func_00260A70(arg1, 0x10);
+            state->timer = 0;
+            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            state->phase++;
+        }
+        break;
+    default:
+        state->alpha += 0xF;
+        if ((s32)state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80 && (s32)state->timer++ > 0x10 && func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct {
     u32 unk0;
