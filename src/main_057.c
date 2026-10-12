@@ -386,7 +386,10 @@ void *func_0020A760(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A870);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A9E0);
+void func_0020A9E0(void) {
+    D_00325F40.enabled = 0;
+    D_00325F40.flag1 = 0;
+}
 
 s32 func_0020AA30(void *arg0, void *arg1) {
     typedef struct {
