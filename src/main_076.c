@@ -128,7 +128,100 @@ s32 func_00266F70(s32 arg0, s32 arg1) {
     return var_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_002670F0);
+typedef struct Effect_002670F0 {
+    u32 flags;
+    union {
+        u32 word;
+        struct {
+            u16 amount;
+            u16 operation;
+        } parts;
+    } data;
+} Effect_002670F0;
+
+s32 func_002670F0(s32 arg0, s32 arg1) {
+    s32 var_s0;
+    s32 var_s0_2;
+    s32 var_s1;
+    u32 temp_a0;
+    u32 temp_a0_2;
+    u32 temp_a1;
+    u32 temp_a1_2;
+    u32 temp_a1_3;
+    u32 temp_a1_4;
+    u32 temp_v0_2;
+    u32 temp_v0_4;
+    Effect_002670F0 *temp_v0;
+    Effect_002670F0 *temp_v0_3;
+
+    var_s1 = arg1;
+    if (arg1 == 0) {
+        return 0;
+    }
+    var_s0 = 0;
+    do {
+        if ((func_001E2100(0, var_s0, 4) != 0) && (func_001E2100(0, var_s0, 3) != 0) && (func_001E2100(0, var_s0, 5) != 0)) {
+            temp_v0 = func_00250740(0, var_s0, 2);
+            if (temp_v0 != NULL) {
+                temp_a1 = temp_v0->flags;
+                if (((temp_a1 >> 8) == 0x3B) && ((temp_a1 & 0x3F) == arg0)) {
+                    temp_a1_2 = temp_v0->data.word;
+                    temp_a0 = temp_a1_2 >> 0x10;
+                    switch (temp_a0) {
+                    case 0:
+                        var_s1 += temp_v0->data.parts.amount;
+                        break;
+                    case 1:
+                        var_s1 -= temp_v0->data.parts.amount;
+                        break;
+                    case 2:
+                        var_s1 += var_s1 * (temp_v0->data.parts.amount - 1);
+                        break;
+                    case 3:
+                        temp_v0_2 = temp_a1_2 & 0xFFFF;
+                        if (temp_v0_2 != 0) {
+                            var_s1 -= (u32) var_s1 / temp_v0_2;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        var_s0 += 1;
+    } while (var_s0 < 0xB);
+    var_s0_2 = 1;
+    do {
+        if ((func_001E2100(1, var_s0_2, 4) != 0) && (func_001E2100(1, var_s0_2, 3) != 0) && (func_001E2100(1, var_s0_2, 5) != 0)) {
+            temp_v0_3 = func_00250740(1, var_s0_2, 2);
+            if (temp_v0_3 != NULL) {
+                temp_a1_3 = temp_v0_3->flags;
+                if (((temp_a1_3 >> 8) == 0x3B) && ((temp_a1_3 & 0x3F) == arg0)) {
+                    temp_a1_4 = temp_v0_3->data.word;
+                    temp_a0_2 = temp_a1_4 >> 0x10;
+                    switch (temp_a0_2) {
+                    case 0:
+                        var_s1 += temp_v0_3->data.parts.amount;
+                        break;
+                    case 1:
+                        var_s1 -= temp_v0_3->data.parts.amount;
+                        break;
+                    case 2:
+                        var_s1 += var_s1 * (temp_v0_3->data.parts.amount - 1);
+                        break;
+                    case 3:
+                        temp_v0_4 = temp_a1_4 & 0xFFFF;
+                        if (temp_v0_4 != 0) {
+                            var_s1 -= (u32) var_s1 / temp_v0_4;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        var_s0_2 += 1;
+    } while (var_s0_2 < 0xB);
+    return func_002508D0(var_s1);
+}
 
 typedef struct {
     u8 pad00[0x3E];
@@ -437,7 +530,6 @@ u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
-s32 func_002670F0(s32, s32);
 
 s32 func_00268FA0(void *arg0, void *arg1, s32 arg2) {
     Src_00268FA0 *src = (Src_00268FA0 *)arg0;

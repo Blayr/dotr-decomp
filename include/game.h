@@ -291,7 +291,6 @@ s32 func_0019BEF0(const char *);
 void func_0020BCF0(s32, s32);
 
 
-s32 func_002670F0(s32, s32);
 s32 func_002626F0(s32, s32, s32);
 
 extern u8 D_0029D580[];
