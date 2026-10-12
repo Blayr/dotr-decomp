@@ -953,7 +953,32 @@ s32 func_00214080(s32 *arg0, s32 *arg1) {
     return *arg0 - *arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214090);
+typedef struct Flags_00214090 {
+    u8 unused : 7;
+    u8 enabled : 1;
+} Flags_00214090;
+
+typedef struct Header_00214090 {
+    s32 magic;
+    u8 padding[0xC];
+    u16 count;
+    u8 unknown;
+    Flags_00214090 flags;
+    u32 data;
+    u32 extra;
+} Header_00214090;
+
+s32 func_00214090(void *arg0) {
+    Header_00214090 *header = arg0;
+
+    if (header->magic != 0x1A544F4D) {
+        return 0;
+    }
+    header->data = (u32)header + header->data;
+    header->extra = (u32)header + header->extra;
+    func_00214100((void *)header->data, (s32)header, header->count, header->flags.enabled);
+    return 1;
+}
 
 s32 func_00214100(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_v1;

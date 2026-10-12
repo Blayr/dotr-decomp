@@ -497,7 +497,6 @@ typedef struct {
 } FixedBlock_001F0500;
 
 void func_001E8BF0(s32);
-void func_00214090(ObjSlot_0031ABB0 *);
 
 s32 func_001F0500(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_s0;
@@ -593,7 +592,6 @@ typedef struct {
     s32 f1C;
 } Arg_001F0830;
 
-void func_00214090(ObjSlot_0031ABB0 *);
 
 void func_001F0830(void *arg0, s32 arg1) {
     Arg_001F0830 *a = (Arg_001F0830 *)arg0;
