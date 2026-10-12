@@ -173,7 +173,32 @@ s32 func_0020E050(f32 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E090);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E0D0);
+s32 func_0020E0D0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3) {
+    typedef struct {
+        u8 r;
+        u8 g;
+        u8 b;
+        u8 a;
+    } Color_0020E0D0;
+    typedef struct {
+        u8 pad[0x174];
+        f32 x;
+        f32 y;
+        f32 z;
+        f32 w;
+        Color_0020E0D0 color;
+        u8 pad188[0x18];
+    } Entry_0020E0D0;
+    Entry_0020E0D0 *entry;
+
+    entry = (Entry_0020E0D0 *)&D_0032A2A0[D_0032A240];
+    entry->x = fparg0;
+    entry->y = fparg1;
+    entry->z = fparg2;
+    entry->w = fparg3;
+    entry->color = *(Color_0020E0D0 *)arg0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E130);
 
