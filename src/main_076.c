@@ -1133,7 +1133,158 @@ void func_0026CD80(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026CFC0);
+typedef struct {
+    u16 fade;
+    u16 phase;
+    u16 state;
+    u8 handles[0x1A];
+    s32 values[45];
+    u8 count;
+    u8 padding[0x2D];
+    u16 timer;
+} State_0026CFC0;
+
+typedef struct {
+    s32 kind;
+    s32 flags;
+    s32 value;
+    s32 extra;
+} Command_0026CFC0;
+
+typedef struct {
+    s32 unused;
+    s32 value;
+} Input_0026CFC0;
+
+u8 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+s32 func_0026D3C0(void *, void *, u16);
+
+s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
+    Command_0026CFC0 command;
+    Command_0026CFC0 *cmd = &command;
+    Input_0026CFC0 *input = arg0;
+    State_0026CFC0 *state = arg1;
+    s32 i;
+
+    cmd->kind = 999;
+    cmd->flags = 0;
+    cmd->value = 0;
+    cmd->extra = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->fade = 0x80;
+        i = 0;
+        do {
+            func_001F5970(i, 1);
+            func_001F5970(i | 0x100, 1);
+            i++;
+        } while (i < 11);
+        func_00260AF0(30, input->value, 100, 180);
+        func_00255AC0(state, 0x201);
+        func_00255AC0(state, 0x23C);
+        func_00260740(30);
+        state->phase = 2;
+        func_001A86A0(4);
+    } else {
+    switch (state->state) {
+    case 0:
+        state->timer++;
+        if (state->fade > 0x30) {
+            state->fade -= 15;
+        } else {
+            state->fade = 0x30;
+            if (state->timer >= 30 && func_00255B50(state) == 1) {
+                cmd->kind = 0x201;
+                cmd->flags = 0;
+                cmd->value = input->value;
+                cmd->extra = 0;
+                state->handles[0] = func_00255A30((s32 *)cmd, state);
+                state->values[0] = input->value;
+                state->state++;
+            }
+        }
+        if (state->fade < 0x30) {
+            state->fade = 0x30;
+        }
+        func_001F6CF0((u8)state->fade);
+        break;
+    case 1:
+        if (func_001F51D0(state->handles[0]) != 0) {
+            return 1;
+        }
+        func_00260740(0);
+        state->state++;
+        break;
+    case 2: {
+        u16 phase;
+        state->count = 0;
+        phase = state->phase;
+        if (phase >= 14) {
+            func_00260A70(state, 16);
+            func_001A86A0(0);
+            state->timer = 0;
+            state->state = 4;
+        } else if (func_0026D3C0(input, state, phase) > 0) {
+            state->state++;
+        } else {
+            state->phase++;
+        }
+        break;
+    }
+    case 3: {
+        u8 *cursor;
+        s32 j;
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->handles[i]) != 0) {
+                return 1;
+            }
+        }
+        j = 0;
+        cursor = (u8 *)state;
+        for (; j < state->count; j++) {
+            s32 value = *(s32 *)(cursor + 0x20);
+            func_001DFD50(value >> 24, (value >> 16) & 0xFF,
+                         value & 0xFF, (value & 0xFFFF) >> 8);
+            cursor += 4;
+        }
+        if (state->phase >= 14) {
+            state->state++;
+            break;
+        }
+        state->state = 2;
+        state->phase++;
+        return 1;
+    }
+    case 4:
+        state->fade += 15;
+        if (state->fade > 0x80) {
+            state->fade = 0x80;
+        }
+        func_001F6CF0((u8)state->fade);
+        if (state->fade == 0x80 && state->timer++ > 16) {
+            i = 0;
+            do {
+                func_001F5970(i, 0);
+                func_001F5970(i | 0x100, 0);
+                i++;
+            } while (i < 11);
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    default:
+        break;
+    }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D3C0);
 

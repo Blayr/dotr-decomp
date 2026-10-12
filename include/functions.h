@@ -1530,6 +1530,7 @@ s32 func_0026B430(void *arg0);
 s32 func_0026BB80(void *arg0, void *arg1, s32 arg2);
 s32 func_0026BF50(void *arg0, void *arg1, s32 arg2);
 void func_0026CD80(s32 arg0);
+s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2);
 s32 func_0026D600(s32 arg0, s32 arg1, s32 arg2, s32 *arg3);
 s32 func_0026D6E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0026D840(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
