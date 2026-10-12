@@ -776,4 +776,130 @@ void func_001FEC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s64 arg5) {
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FECB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEDA0);
+s32 func_0019C028(const char *, const char *, s32);
+char *func_0019C478(const char *, s32);
+extern char *D_00293090[];
+extern s64 D_00293098[];
+extern s32 D_002930A8[];
+extern char D_002D0638[];
+extern char D_002D063D[];
+
+typedef struct Record_001FEDA0 {
+    s32 id;
+    s16 type;
+    s16 count;
+    u32 size : 31;
+    s32 sizeFlag : 1;
+    u32 offset : 31;
+    s32 offsetFlag : 1;
+    u32 limit : 31;
+    s32 discFlag : 1;
+    s32 mode;
+    s32 arg8;
+    s32 arg9;
+    char *file;
+} Record_001FEDA0;
+
+static inline void initialize_001FEDA0(Record_001FEDA0 *record,
+                                      s32 type, s32 count, s32 mode,
+                                      s32 size, s32 offset, s32 limit,
+                                      s32 arg8, s32 arg9) {
+    record->type = type;
+    record->count = count > 0 ? count : 0;
+    record->size = size;
+    record->offset = offset;
+    record->limit = limit;
+    record->sizeFlag = 0;
+    record->offsetFlag = 0;
+    record->mode = mode;
+    record->arg8 = arg8;
+    record->arg9 = arg9;
+}
+
+s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3,
+                 s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                 s32 arg8, s32 arg9) {
+    char buffer[128];
+    Record_001FEDA0 *record = arg0;
+
+    if (record == NULL) {
+        return 0;
+    }
+    if (arg3 == 0) {
+        return 0;
+    }
+    if (func_00197548((s32)D_002D0638) != NULL) {
+        if (!((u32)arg3 & 0x80000000)) {
+            s32 name;
+            u32 i;
+            s32 length;
+            char **entry;
+            s32 digit1;
+            s32 digit2;
+            s32 digit3;
+
+            func_0019BDD8(buffer, (char *)arg3);
+            if ((name = (s32)func_0019C478(buffer, '/')) != NULL ||
+                (name = (s32)func_0019C478(buffer, '\\')) != NULL) {
+                length = func_0019BEF0((char *)(name + 1));
+                if (length >= 8 && arg1 == 0x1400 &&
+                    (((char *)name)[1] == 'M' || ((char *)name)[1] == 'm') &&
+                    (digit1 = ((char *)name)[2]) >= '0' && digit1 <= '9' &&
+                    (digit2 = ((char *)name)[3]) >= '0' && digit2 <= '9' &&
+                    (digit3 = ((char *)name)[4]) >= '0' && digit3 <= '9' &&
+                    ((char *)name)[5] == '.' &&
+                    (((char *)name)[6] == 'G' || ((char *)name)[6] == 'g') &&
+                    (((char *)name)[7] == 'R' || ((char *)name)[7] == 'r') &&
+                    (((char *)name)[8] == 'P' || ((char *)name)[8] == 'p')) {
+                    arg6 += func_001DE130(digit3 - '0' +
+                                         ((digit1 - '0') * 100 +
+                                          (digit2 - '0') * 10)) * 0x80800;
+                    name = (s32)D_002D063D;
+                    length = func_0019BEF0((char *)(name + 1));
+                }
+                entry = D_00293090;
+                i = 0;
+                do {
+                    char *path = func_0019C478(*entry, '\\');
+                    if (path != NULL && func_0019C028((char *)(name + 1), path + 1, length) == 0) {
+                        arg3 = (void *)(D_00293098[i * 4] | 0x80000000);
+                        if (arg5 < 0) {
+                            arg5 = D_002930A8[i * 8] << 11;
+                        }
+                        break;
+                    }
+                    i++;
+                    entry += 8;
+                } while (i < 97U);
+            }
+        }
+    }
+    if ((u32)arg3 & 0x80000000) {
+        if (arg5 < 0) {
+            return 0;
+        }
+        if (arg5 > 0 && arg5 % 2048 != 0) {
+            return 0;
+        }
+        if (arg6 % 2048 != 0) {
+            return 0;
+        }
+        if (arg7 > 0 && arg7 % 2048 != 0) {
+            return 0;
+        }
+        record->file = NULL;
+        record->discFlag = 1;
+        record->id = (u32)arg3 & 0x7FFFFFFF;
+    } else {
+        char *file = func_00217B60((char *)arg3);
+        record->file = file;
+        if (file == NULL) {
+            return 0;
+        }
+        func_001FF250((s8 *)record->file);
+        record->discFlag = 0;
+        record->id = 0;
+    }
+    initialize_001FEDA0(record, arg1, arg2, arg4, arg5, arg6, arg7, arg8, arg9);
+    return 1;
+}
