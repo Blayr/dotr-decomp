@@ -1175,7 +1175,6 @@ typedef struct {
 } Object_0012C1A0;
 
 extern void func_0012C7F0(void *, s32, s32);
-extern void func_0012CBE0(void *, s32);
 extern void func_0012CE50(void *);
 
 s32 func_0012C1A0(void *arg0, s32 arg1) {
@@ -1311,4 +1310,106 @@ void func_0012CB80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 2500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012CBE0);
+typedef struct State_0012CBE0 {
+    u16 id;
+    u16 pad2;
+    u16 flags;
+    u16 pad6;
+    u32 position;
+} State_0012CBE0;
+
+typedef struct Entry_0012CBE0 {
+    u16 id;
+    u8 kind;
+    u8 pad;
+} Entry_0012CBE0;
+
+static inline void update_state_0012CBE0(void *arg0, u16 flags, s32 position) {
+    State_0012CBE0 *state = arg0;
+    u32 value;
+
+    state->flags = flags;
+    value = state->position & 0xFFFF;
+    state->position = (position << 16) | value;
+}
+
+void func_0012C7F0(void *, s32, s32);
+
+void func_0012CBE0(void *arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    extern void func_0027E770();
+    extern s32 func_0027DE20();
+    u8 buffer[0x70];
+    Entry_0012CBE0 entries[23];
+    s16 count;
+    s16 limit;
+    State_0012CBE0 *state = arg0;
+    s32 owner;
+    s32 position;
+    s32 card;
+    s32 row;
+    s32 column;
+    s32 attempt;
+    s32 i;
+    Entry_0012CBE0 *entry;
+    s32 type;
+    s32 result;
+
+    if ((card = func_001DF540(state->id >> 8, state->id & 0xFF)) != 0) {
+        owner = func_0024DE70(state->id >> 8, state->id & 0xFF);
+        position = func_001E1090(state->id >> 8, state->id & 0xFF);
+        entry = entries;
+        limit = 0;
+        count = 0;
+        i = 0;
+        do {
+            i++;
+            entry->id = 0xFFFF;
+            entry->kind = 0xFF;
+            entry++;
+        } while (i < 22);
+        func_0027E770(buffer);
+        type = func_001E1030(state->id >> 8, state->id & 0xFF);
+        switch (type) {
+        case 0x12A:
+        case 0x142: {
+            row = position >> 8;
+            column = position & 0xFF;
+
+            attempt = 1;
+            while (1) {
+                result = func_0027DE20(state, 0, card, column, row, owner == 0 ? 1 : 0,
+                                      (u8)attempt, func_00130780(owner), entries, 0,
+                                      &count, &limit, 2, 0, 2500, buffer);
+                switch (result) {
+                case 3:
+                case 2:
+                    update_state_0012CBE0(state, 0x3FF, position);
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    update_state_0012CBE0(state, 0x3FF, position);
+                    return;
+                }
+                attempt++;
+                if (attempt > 2) {
+                    break;
+                }
+            }
+            update_state_0012CBE0(state, 0x3FF, position);
+            return;
+        }
+        case 0x131:
+            if (func_001E2100(state->id >> 8, state->id & 0xFF, 4) == 0) {
+                update_state_0012CBE0(state, 0xCFF, position);
+                return;
+            }
+            break;
+        case 0x146:
+            update_state_0012CBE0(state, 0x3FF, position);
+            return;
+        }
+        func_0012C7F0(state, 1, arg1);
+    }
+}
