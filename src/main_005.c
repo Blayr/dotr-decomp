@@ -1292,7 +1292,154 @@ s32 func_0011AA10(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011AA70);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_0011B0E0);
+typedef struct Input_0011B0E0 {
+    u16 position;
+    u8 pad2[6];
+    u32 destination;
+} Input_0011B0E0;
+
+typedef struct Output_0011B0E0 {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[10];
+    s8 result;
+} Output_0011B0E0;
+
+typedef struct Position_0011B0E0 {
+    u8 y : 4;
+    u8 x : 4;
+} Position_0011B0E0;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 destination_0011B0E0(Input_0011B0E0 *input, u8 mode) {
+    return mode == 1 ? (u32)(u16)(input->destination >> 16) :
+                      (u32)*(u16 *)&input->destination;
+}
+
+static inline u16 flags_0011B0E0(s32 card) {
+    if (func_001DF470(card) > 0x5DC) {
+        if (func_001E0150(card) >= 3) {
+            return 0;
+        }
+        return 0;
+    }
+    return 0;
+}
+
+static inline s32 closer_0011B0E0(Position_0011B0E0 *position,
+                                 Position_0011B0E0 *previous, s32 x, s32 y) {
+    s32 oldMinX = previous->x < x ? previous->x : x;
+    s32 oldMaxX = x < previous->x ? previous->x : x;
+    s32 oldMinY = previous->y < y ? previous->y : y;
+    s32 oldMaxY = y < previous->y ? previous->y : y;
+    s32 minX = position->x < x ? position->x : x;
+    s32 maxX = x < position->x ? position->x : x;
+    s32 minY = position->y < y ? position->y : y;
+    s32 maxY = y < position->y ? position->y : y;
+    return (maxY - minY) + (maxX - minX) <
+           (oldMaxY - oldMinY) + (oldMaxX - oldMinX);
+}
+
+static inline void fallback_0011B0E0(Input_0011B0E0 *input, Output_0011B0E0 *output, s32 position) {
+    output->position = input->position;
+    output->action = 6;
+    output->destination = position;
+    output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                 output->destination, 1, 0);
+}
+
+s32 func_0011B0E0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_0027A090();
+    Position_0011B0E0 positions[12];
+    Position_0011B0E0 *position;
+    Input_0011B0E0 *input = arg0;
+    Output_0011B0E0 *output = arg2;
+    s32 origin;
+    s32 target;
+    s32 targetY;
+    s32 originX;
+    s32 originY;
+    s32 sourceCard;
+    s32 count;
+    s32 best;
+    s32 bestScore;
+    s32 i;
+
+    if (func_001DF540(destination_0011B0E0(input, arg3) >> 8,
+                     destination_0011B0E0(input, arg3) & 0xFF) == 0) {
+        func_0027B1B0(input, 1);
+        return -1;
+    }
+    origin = func_001E1090(input->position >> 8, input->position & 0xFF);
+    target = func_001E1090(destination_0011B0E0(input, arg3) >> 8,
+                          destination_0011B0E0(input, arg3) & 0xFF);
+    if (destination_0011B0E0(input, arg3) == 0xFFFF) {
+        fallback_0011B0E0(input, output, origin);
+        return 0;
+    }
+    sourceCard = func_001DF540(input->position >> 8, input->position & 0xFF);
+    originY = origin & 0xFF;
+    originX = origin >> 8;
+    if (func_002464F0(sourceCard, originY, originX) == 0 ||
+        func_0027BBC0(input->position >> 8, input->position & 0xFF, 0) == 1) {
+        fallback_0011B0E0(input, output, origin);
+        return 0;
+    }
+    position = positions;
+    {
+        s32 j = 0;
+        Position_0011B0E0 *p = position;
+        for (; j < 12; j++) {
+            p->y = p->x = 15;
+            p++;
+        }
+    }
+    {
+        u16 flags = flags_0011B0E0(arg1);
+        targetY = target & 0xFF;
+        target >>= 8;
+        func_0027A090(input->position >> 8, input->position & 0xFF, positions,
+                     originY, originX, targetY, target,
+                     destination_0011B0E0(input, arg3), 0, 30, flags);
+    }
+    count = func_0027AFC0((u8 *)positions);
+    best = 0xFF;
+    if (count > 0) {
+        bestScore = 0;
+        for (i = 0; i < count; i++, position++) {
+            if (func_001E36E0(position->y, position->x) == 0) {
+                s32 score = func_00276CC0(position->y, position->x, arg1,
+                                         3, 1, (u8)flags_0011B0E0(arg1));
+                if (bestScore < score) {
+                    bestScore = score;
+                    best = i;
+                } else if (score == bestScore &&
+                           closer_0011B0E0(position, &positions[best], target, targetY)) {
+                    bestScore = score;
+                    best = i;
+                }
+            }
+        }
+    } else {
+        fallback_0011B0E0(input, output, origin);
+        return 0;
+    }
+    if (best != 0xFF) {
+        output->position = input->position;
+        output->action = 6;
+        output->destination = (positions[best].x << 8) | positions[best].y;
+        output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                     output->destination, 0, 0);
+    } else {
+        fallback_0011B0E0(input, output, origin);
+        return 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_0011B680);
 
