@@ -923,7 +923,6 @@ typedef struct Temp_00119300 {
     u8 padding[0x20];
 } Temp_00119300;
 
-extern s32 func_00119520();
 
 s32 func_00119300(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_00278890();
@@ -989,7 +988,176 @@ s32 func_00119300(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00119520);
+typedef struct Nibbles_00119520 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00119520;
+
+s32 func_0024FE40(void *, s32, s32);
+
+static inline s32 direction_00119520(s32 player) {
+    s32 i = 0;
+    do {
+        if (func_00118CE0(player, (u8)i) != 0) {
+            switch (i) {
+            case 0: return 0x102;
+            case 1: return 0x104;
+            case 2: return 0x100;
+            case 3:
+            default: return 0x106;
+            }
+        }
+        i++;
+    } while (i < 4);
+    return -1;
+}
+
+s32 func_00119520(s32 arg0, s32 arg1, void *arg2) {
+    extern s32 func_0011A4C0();
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+    Nibbles_00119520 path[12];
+    s32 init;
+    Nibbles_00119520 *p;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = path;
+    init = 0;
+    do {
+        p->low = p->high = 15;
+        init++;
+        p++;
+    } while (init < 12);
+    if ((u8)(*((u8 *)arg2 + 0x3E) >> 5) == 0) {
+        s32 candidate;
+        s32 target;
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 ref_y;
+        s32 ref_x;
+        s32 best_candidate;
+        s32 best_cost;
+        s32 cost;
+        s32 position;
+
+        position = func_001E1090(arg0, 0);
+        target = func_00276F10(arg2, position & 0xFF, position >> 8,
+                             arg0 == 0 ? 1 : 0, 3, 31, 2, 2, 0,
+                             func_0011AA10(arg0));
+        if (target >= 0) {
+            best_cost = 255;
+            best_candidate = 65535;
+            position = func_001E1090(target >> 8, target & 0xFF);
+            i = 0;
+            ref_y = position >> 8;
+            ref_x = position & 0xFF;
+            do {
+                if ((candidate = func_0011A4C0(arg0, i)) >= 0) {
+                    x = candidate & 0xFF;
+                    y = candidate >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 ||
+                         func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510(arg2, target, func_0011AA10(arg0),
+                                          ref_x, ref_y, 0) > 0) {
+                            cost = func_0027A130(arg2, path, x, y,
+                                                ref_x, ref_y, target, 0, 3,
+                                                (u16)func_0011AA10(arg0));
+                        } else {
+                            cost = func_002792C0((s32)arg2, (s32)path, x, y,
+                                                ref_x, ref_y, target, 3);
+                        }
+                        if (func_0027AFC0((u8 *)path) > 0 &&
+                            cost < best_cost && cost >= 0) {
+                            best_cost = cost;
+                            best_candidate = candidate;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (best_candidate != 65535) {
+                return best_candidate;
+            }
+            best_candidate = -1;
+            return best_candidate;
+        } else {
+            s32 y2;
+            s32 x2;
+            s32 i2;
+            s32 best_cost2;
+            s32 candidate2;
+            s32 best_candidate2;
+            s32 direction;
+            s32 occupied;
+            s32 cost2;
+            s32 ref_y2;
+            s32 ref_x2;
+
+            direction = direction_00119520(arg0);
+            best_cost2 = 14;
+            best_candidate2 = -1;
+            i2 = 0;
+            ref_y2 = direction >> 8;
+            ref_x2 = direction & 0xFF;
+            do {
+                if ((candidate2 = func_0011A4C0(arg0, i2)) >= 0) {
+                    x2 = candidate2 & 0xFF;
+                    y2 = candidate2 >> 8;
+                    if (func_001E22B0(x2, y2) != 8 &&
+                        (func_001E22B0(x2, y2) != 9 ||
+                         func_0024FE40(arg2, x2, y2) != 1) &&
+                        func_001E3790(x2, y2) < 0) {
+                        occupied = func_001E3790(x2, y2);
+                        if (occupied < 0) {
+                            occupied = 65535;
+                        }
+                        cost2 = func_002792C0((s32)arg2, (s32)path, x2, y2,
+                                             ref_x2, ref_y2, occupied, 7);
+                        if (cost2 < best_cost2 && cost2 >= 0) {
+                            best_candidate2 = candidate2;
+                            best_cost2 = cost2;
+                        }
+                    }
+                }
+                i2++;
+            } while (i2 < 8);
+            if (best_cost2 < 14) {
+                return best_candidate2;
+            }
+        }
+    } else {
+        s32 y3;
+        s32 x3;
+        s32 i3;
+        s32 selected;
+        s32 candidate3;
+
+        selected = -1;
+        i3 = 0;
+        do {
+            if ((candidate3 = func_0011A4C0(arg0, i3)) >= 0) {
+                x3 = candidate3 & 0xFF;
+                y3 = candidate3 >> 8;
+                if (func_001E22B0(x3, y3) != 8 &&
+                    func_001E22B0(x3, y3) != 9 &&
+                    func_001E3790(x3, y3) < 0 && y3 < 8) {
+                    selected = candidate3;
+                }
+            }
+            i3++;
+        } while (i3 < 8);
+        if (selected >= 0) {
+            return selected;
+        }
+    }
+    return -1;
+}
 
 static inline s32 find_slot_00119A40(s32 arg0) {
     s32 i;
