@@ -1056,7 +1056,163 @@ s32 func_00214210(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214290);
+typedef struct Slot_00214290 {
+    u32 value : 31;
+    u32 flag : 1;
+    u32 other : 30;
+    u32 type : 2;
+} Slot_00214290;
+
+typedef struct Card_00214290 {
+    Slot_00214290 slots[9];
+    u16 value : 14;
+    u16 flag : 1;
+    u16 otherFlag : 1;
+    s16 count;
+} Card_00214290;
+
+typedef struct Deck_00214290 {
+    s16 cards[40];
+    s16 card;
+    s16 count;
+} Deck_00214290;
+
+typedef struct Flags_00214290 {
+    u8 mode : 2;
+    u8 bit2 : 1;
+    u8 bit3 : 1;
+    u8 bit4 : 1;
+    u8 bit5 : 1;
+    u8 unused : 2;
+} Flags_00214290;
+
+typedef struct Save_00214290 {
+    Card_00214290 cards[0x356];
+    s16 values[5];
+    u8 padding[2];
+    Deck_00214290 decks[3];
+    u8 bytes[16];
+    union {
+        u8 bytes[22];
+        struct {
+            u8 header[3];
+            u8 grid[5][7][7];
+        } board;
+    } data;
+    u8 padding2[4];
+    Flags_00214290 flags;
+    u8 padding3[3];
+} Save_00214290;
+
+void func_00214290(void) {
+    extern Save_00214290 D_0032F790[2];
+    s32 card;
+    s32 slot;
+    s32 profile;
+    Slot_00214290 *slotPtr;
+    Card_00214290 *cardPtr;
+    Save_00214290 *save;
+    s16 *valuePtr;
+    s32 value;
+    Deck_00214290 *currentDeck;
+    s16 *deckCardPtr;
+    u8 *deckBase;
+    s32 deck;
+    s32 deckCard;
+    s32 byte;
+    s32 dataByte;
+    s32 grid;
+    u8 *columnPtr;
+    u8 *rowBase;
+    u8 *gridBase;
+    s32 row;
+    s32 column;
+
+    func_0020B3C0((s8 *)D_0032F790, 0, 0x1FF40);
+    save = D_0032F790;
+    profile = 0;
+    do {
+        card = 0;
+        cardPtr = save->cards;
+        do {
+            slot = 0;
+            slotPtr = cardPtr->slots;
+            do {
+                slotPtr->value = 0;
+                slotPtr->other = 0;
+                slotPtr->type = 3;
+                slotPtr->flag = 0;
+                slot++;
+                slotPtr++;
+            } while (slot < 9);
+            cardPtr->value = 0;
+            cardPtr->count = 0;
+            cardPtr->flag = 0;
+            cardPtr->otherFlag = 0;
+            card++;
+            cardPtr++;
+        } while (card < 0x356);
+        value = 0;
+        valuePtr = (s16 *)save;
+        do {
+            valuePtr[0x7EC4] = 999;
+            value++;
+            valuePtr++;
+        } while (value < 5);
+        deck = 0;
+        deckBase = (u8 *)save;
+        do {
+            currentDeck = (Deck_00214290 *)(deckBase + 0xFD94);
+            deckCard = 0;
+            deckCardPtr = currentDeck->cards;
+            do {
+                *deckCardPtr = 999;
+                deckCard++;
+                deckCardPtr++;
+            } while (deckCard < 40);
+            currentDeck->card = 999;
+            currentDeck->count = 0;
+            deck++;
+            deckBase += 0x54;
+        } while (deck < 3);
+        byte = 0;
+        do {
+            save->bytes[byte] = 0;
+            byte++;
+        } while (byte < 16);
+        dataByte = 0;
+        do {
+            save->data.bytes[dataByte] = 0;
+            dataByte++;
+        } while (dataByte < 22);
+        grid = 0;
+        gridBase = (u8 *)save;
+        do {
+            row = 0;
+            rowBase = gridBase;
+            do {
+                column = 0;
+                columnPtr = rowBase;
+                do {
+                    columnPtr[0xFEA3] = 7;
+                    column++;
+                    columnPtr++;
+                } while (column < 7);
+                row++;
+                rowBase += 7;
+            } while (row < 7);
+            grid++;
+            gridBase += 0x31;
+        } while (grid < 5);
+        save->flags.mode = 0;
+        save->flags.bit2 = 1;
+        save->flags.bit3 = 1;
+        save->flags.bit4 = 1;
+        save->flags.bit5 = 1;
+        save++;
+        profile++;
+    } while (profile < 2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002145D0);
 
