@@ -3,6 +3,7 @@
 
 /* Prototypes of every decompiled function. dk rewrites this file. */
 s32 func_001001D0(void);
+s32 func_00100350(void);
 void func_001004C0(void);
 void func_00100520(void);
 void func_00100560(void);

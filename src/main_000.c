@@ -46,7 +46,51 @@ s32 func_001001D0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100350);
+typedef struct {
+    s32 type;
+    s32 data;
+    s32 arg1;
+    s32 arg2;
+    u8 position[0x10];
+    u8 rotation[0x10];
+} Entry_00100350;
+
+s32 func_001E1E70(s32, s32, s32, s32);
+s32 func_001E7B20(s32);
+extern Entry_00100350 D_0028A880[];
+
+s32 func_00100350(void) {
+    s32 index;
+
+    index = 0;
+    do {
+        if (func_001E7B20(index) == 0) {
+            return 0;
+        }
+        func_001F22B0(index, D_0028A880[index].position);
+        func_001F2430(index, D_0028A880[index].rotation);
+        func_001E7E70(index, D_0028A880[index].type, D_0028A880[index].data);
+        if (D_0028A880[index].type == 5) {
+            func_001DF580(index - 0x1E, D_0028A880[index].arg1, D_0028A880[index].arg2,
+                         func_001DE130(D_0028A880[index].data), 1);
+            func_001E1E70(-1, index, 4, 1);
+            func_001E1D70(-1, index, 0, 0xFF);
+            func_001E1C10(-1, index, 1, 0);
+        } else if (D_0028A880[index].type == 4) {
+            s32 mode;
+            s32 handle;
+
+            mode = (index - 0x14 < 5) ? 0 : 1;
+            handle = func_001DE130(D_0028A880[index].data);
+            func_001DF580(mode, D_0028A880[index].arg1, D_0028A880[index].arg2, handle, 0);
+            func_001E1E70(-1, index, 4, 1);
+            func_001E1D70(-1, index, 0, 0xFF);
+            func_001E1C10(-1, index, 1, 0);
+        }
+        index++;
+    } while (index < 0x54);
+    return 1;
+}
 
 void func_001004C0(void) {
     s32 i;
