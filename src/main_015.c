@@ -1017,7 +1017,126 @@ s32 func_00166D10(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00166EE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_001670A0);
+s32 func_001670A0(s32 arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    extern s32 func_0027D830();
+    extern s32 func_0024CA40();
+    u8 count;
+    s32 card;
+    s32 side;
+    u32 *effect;
+    s32 location;
+    s32 i;
+    s32 mask;
+    s32 mask2;
+    s32 j;
+    s32 position;
+    u32 fields;
+
+    count = 0;
+    card = func_001E1030();
+    side = func_00250360(arg0, arg1);
+    effect = func_001E0B70(arg0, arg1, 0);
+    location = func_001E1090(arg0, arg1);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 5:
+        if (func_00167670(func_00250360(arg0, arg1), card) == 1 &&
+            func_001E22B0(location & 0xFF, location >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 1) == 5) {
+            return 2;
+        }
+        if (effect == NULL) {
+            return 2;
+        }
+        fields = effect[0];
+        switch (fields >> 8) {
+        case 23:
+            position = func_0024EC50(func_00272210(func_0024C7D0(
+                func_0024CA40(0, 0, side, (fields >> 6) & 3, fields & 0x3F, 14),
+                arg0, arg1), side), 0);
+            if (position >= 0 && side != func_00250360(position >> 8, position & 0xFF)) {
+                return 1;
+            }
+            break;
+        case 4:
+            switch (effect[1] >> 16) {
+            case 18:
+                mask = func_0024C7D0(func_0024C7D0(func_0024C7D0(
+                    func_0024CA40(location & 0xFF, location >> 8, side,
+                        (fields >> 6) & 3, fields & 0x3F, 18),
+                    arg0, arg1), arg0, 0), arg0 == 0 ? 1 : 0, 0);
+                for (i = 0; i < func_0024E910(mask); i++) {
+                    position = func_0024EC50(mask, i);
+                    if (position >= 0) {
+                        if (side == func_00250360(position >> 8, position & 0xFF)) {
+                            return 2;
+                        }
+                        count++;
+                    }
+                }
+                if ((s32)(u8)count >= 0) {
+                    return 1;
+                }
+                break;
+            default:
+                mask2 = func_00272210(func_0024C7D0(
+                    func_0024CA40(0, 0, side, (fields >> 6) & 3, fields & 0x3F, 14),
+                    arg0, arg1), side);
+                for (j = 0; j < func_0024E910(mask2); j++) {
+                    position = func_0024EC50(mask2, j);
+                    if (position >= 0) {
+                        if (side == func_00250360(position >> 8, position & 0xFF)) {
+                            return 2;
+                        }
+                        count++;
+                    }
+                }
+                if ((s32)(u8)count >= 0) {
+                    return (u8)count;
+                }
+                break;
+            }
+            break;
+        case 13:
+            switch (func_001E1030(arg0, arg1)) {
+            case 0x2C3:
+                if (func_001DF470(side) < 2000) {
+                    return 1;
+                }
+                break;
+            case 0x2C9:
+                return 1;
+            case 0x2CA:
+                if (func_001E0110(side == 0 ? 1 : 0) >= 3) {
+                    return 1;
+                }
+                break;
+            }
+            break;
+        case 24:
+            if (func_0024E910(func_00272210(func_0024C7D0(
+                func_0024CA40(0, 0, side, (fields >> 6) & 3, fields & 0x3F, 14),
+                arg0, arg1), side)) >= 5) {
+                return 1;
+            }
+            break;
+        case 38:
+            if (func_001DE6D0(side) == 0) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    }
+    return 2;
+}
 
 static inline s32 max_00167570(s32 a, s32 b) {
     if (a < b) {

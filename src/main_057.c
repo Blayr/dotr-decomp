@@ -29,7 +29,48 @@ s32 func_00209D60(s32 *arg0, s32 *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209D80);
+s32 func_00209D80(s32 *arg0, s32 *arg1) {
+    typedef struct Flags_00209D80 {
+        s8 active : 1;
+        s8 useSaved : 1;
+    } Flags_00209D80;
+
+    typedef struct State_00209D80 {
+        u8 pad0[0x18];
+        s32 value;
+        u8 pad1[4];
+        Flags_00209D80 flags;
+    } State_00209D80;
+
+    extern State_00209D80 D_00325F20;
+    extern Flags_00209D80 D_00325F40;
+    extern s32 D_003261A8;
+
+    State_00209D80 *state;
+    s32 value;
+
+    value = D_003261A8;
+    state = &D_00325F20;
+    if (D_00325F40.active) {
+        if (state->flags.useSaved) {
+            value = state->value;
+        }
+    }
+    *arg0 = 0;
+    switch (value) {
+    case 0x30:
+        *arg1 = 0x7FFFFFFF;
+        break;
+    case 0x31:
+        *arg1 = 0xFFFFFF;
+        break;
+    case 0x32:
+    case 0x3A:
+        *arg1 = 0xFFFF;
+        break;
+    }
+    return 1;
+}
 
 s32 func_00209E30(s32 *arg0, s32 *arg1) {
     *arg0 = D_003261B0;
