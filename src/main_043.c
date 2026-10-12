@@ -163,7 +163,245 @@ s32 func_001D8080(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D82C0);
+extern u8 D_003181DE;
+
+typedef struct Flags_001D82C0 {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Flags_001D82C0;
+
+typedef struct Vec4_001D82C0 {
+    f32 x, y, z, w;
+} Vec4_001D82C0;
+
+typedef struct Model_001D82C0 {
+    Vec4_001D82C0 position;
+    Vec4_001D82C0 rotation;
+    u8 pad20[0x10];
+    Vec4_001D82C0 scale;
+    u8 color[4];
+    u8 pad44[0x3D];
+    Flags_001D82C0 flags81;
+    u8 pad82;
+    Flags_001D82C0 flags83;
+    u8 pad84[0xC];
+    void *owner;
+    u8 pad94[0xC];
+} Model_001D82C0;
+
+typedef struct Item_001D82C0 {
+    s32 unk0;
+    Model_001D82C0 *model;
+    u8 pad8[0x4B];
+    u8 unk53;
+    u8 pad54[3];
+    Flags_001D82C0 flags57;
+    Flags_001D82C0 flags58;
+    u8 pad59[3];
+} Item_001D82C0;
+
+typedef struct Copy90_001D82C0 {
+    __int128 words[9];
+} Copy90_001D82C0;
+
+typedef struct Node_001D82C0 {
+    Model_001D82C0 *model;
+    u8 pad4[0xC];
+    Vec4_001D82C0 position;
+    Vec4_001D82C0 target;
+    Vec4_001D82C0 rotation;
+    s32 values40[4];
+    s32 values50[4];
+    Vec4_001D82C0 values60;
+    Vec4_001D82C0 scale;
+    s32 values80[4];
+    u8 pad90[8];
+    s16 speed;
+    s16 unk9A;
+    s32 index : 26;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Node_001D82C0;
+
+typedef struct State_001D82C0 {
+    u8 pad0[0x6CC];
+    Item_001D82C0 *selected;
+    u8 pad6D0[0x65C];
+    s8 slots[0x1E];
+    u8 mode;
+    u8 padD4B[3];
+    u8 count;
+    u8 current;
+} State_001D82C0;
+
+static inline Model_001D82C0 *get_model_001D82C0(void) {
+    extern void func_001CD560();
+    Model_001D82C0 *model = (Model_001D82C0 *)D_003193C0;
+    s32 count = 0;
+    do {
+        if (model->owner == NULL) {
+            func_001CD560(model);
+            return model;
+        }
+        count++;
+        model++;
+    } while (count < 0x20);
+    return NULL;
+}
+
+s32 func_001D82C0(s32 arg0) {
+    extern void *func_001DD130();
+    extern void func_001CD560();
+    State_001D82C0 *state = (State_001D82C0 *)D_00317490;
+    s32 next;
+    Item_001D82C0 *copy;
+    Node_001D82C0 *primary;
+    Model_001D82C0 *model;
+    s32 i;
+    s32 slot;
+    s32 x;
+    s32 y;
+    Node_001D82C0 *node;
+    s32 baseX;
+    s32 initial;
+
+    if (D_003181DE > 1) {
+        initial = state->count;
+    } else {
+        initial = 1;
+    }
+    next = initial + 1;
+    state->slots[0] = 6;
+    if (state->selected != NULL) {
+        if (state->selected->model != NULL) {
+            primary = (Node_001D82C0 *)D_0031A7C0;
+            copy = func_001DD130(2, 0);
+            if (primary != NULL && copy != NULL) {
+                *copy = *state->selected;
+                copy->unk53 = 0;
+                primary->model = get_model_001D82C0();
+                model = primary->model;
+                if (model != NULL) {
+                    copy->model = model;
+                    copy->model->owner = copy;
+                    *(Copy90_001D82C0 *)model = *(Copy90_001D82C0 *)state->selected->model;
+                    model->color[3] = 0x80;
+                    model->color[0] = 0x80;
+                    model->color[1] = 0x80;
+                    model->color[2] = 0x80;
+                    model->flags83.bit7 = 1;
+                    model->flags81.bit5 = 1;
+                    primary->bit3 = 1;
+                    primary->position = model->position;
+                    func_00205CB0(&primary->target, -125.0f, -8.0f);
+                    primary->bit4 = 1;
+                    primary->rotation = model->rotation;
+                    primary->values40[0] = 0;
+                    primary->values40[1] = 0x10000;
+                    primary->values40[2] = 0x10000;
+                    primary->values40[3] = 0;
+                    primary->bit5 = 1;
+                    primary->values50[0] = 0;
+                    primary->values50[1] = 0;
+                    primary->values50[2] = 0;
+                    primary->values50[3] = 0;
+                    func_00205C40((s32)&primary->values60);
+                    primary->bit6 = 1;
+                    primary->scale = model->scale;
+                    primary->values80[0] = 0x3EF00000;
+                    primary->values80[1] = 0x3EFA6F4E;
+                    primary->values80[2] = 0x3F800000;
+                    primary->values80[3] = 0;
+                    primary->speed = 0x80;
+                    primary->unk9A = 0;
+                    func_001CDEB0(primary);
+                    state->slots[0] = primary->index = 0;
+                }
+            }
+            state->selected->flags58.bit0 = 1;
+            state->selected->flags57.bit7 = 1;
+            state->selected->flags58.bit2 = 1;
+            state->selected->model->flags83.bit7 = 1;
+        }
+    }
+    baseX = -250;
+    i = 0;
+    do {
+        s32 index = i + 1;
+        if (index < 0 || index >= 6) {
+            node = NULL;
+        } else {
+            node = (Node_001D82C0 *)(index * 0xA0 + D_0031A7C0);
+        }
+        if (node != NULL && node->model != NULL) {
+            s32 result = func_001DF0C0(arg0, i);
+            if (result >= 0 && (result & 0xFFF) != 999) {
+                slot = (result & 0xF000) >> 12;
+                y = 448;
+                x = baseX;
+                if (state->count == 0 && i == state->current) {
+                    slot = 1;
+                }
+                switch (state->mode) {
+                case 1:
+                    if (slot == 1) {
+                        y = -8;
+                        node->bit4 = 1;
+                        x = 0;
+                    }
+                    break;
+                default:
+                    if (slot != 0) {
+                        if (state->selected != NULL) {
+                            x = (slot - 1) * 16 + 125;
+                            y = -8;
+                        } else if (slot == 1) {
+                            x = -125;
+                            y = -8;
+                        } else {
+                            x = (slot - 2) * 16 + 125;
+                            y = -8;
+                        }
+                        node->bit4 = 1;
+                    }
+                    break;
+                }
+                node->bit2 = 0;
+                func_00205CB0(&node->position, (f32)baseX, -8.0f);
+                func_00205CB0(&node->target, (f32)x, (f32)y);
+                node->rotation.x = 0;
+                node->rotation.y = 0;
+                node->rotation.z = 0;
+                node->rotation.w = 0;
+                node->values40[0] = 0;
+                node->values40[1] = 0x10000;
+                node->values40[2] = 0;
+                node->values40[3] = 0;
+                node->speed = 0x80;
+                node->unk9A = 0;
+                func_001CDEB0(node);
+                if (slot == 0) {
+                    state->slots[next++] = node->index;
+                } else {
+                    state->slots[slot] = node->index;
+                }
+            }
+        }
+        i++;
+        baseX += 125;
+    } while (i < 5);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001D8880);
 
