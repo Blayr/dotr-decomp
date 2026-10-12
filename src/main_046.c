@@ -318,7 +318,109 @@ u8 func_001E24E0(s32 x, s32 y) {
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2570);
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E27D0);
+typedef struct {
+    u8 pad[0x17];
+    u8 index;
+    u8 pad18[4];
+} Cell_001E27D0;
+
+extern s32 func_001E2A60(s32, s32, s32, s32, s32, s32, u8 *, u8 *, s32, void *, void *, s32, s32);
+
+static inline Cell_001E27D0 *cell_001E27D0(s32 x, s32 y) {
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return NULL;
+    }
+    return (Cell_001E27D0 *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+}
+
+static inline void set_001E27D0(s32 x, s32 y, s32 value) {
+    Cell_001E27D0 *cell = cell_001E27D0(x, y);
+    if (cell != NULL) {
+        cell->index = value;
+    }
+}
+
+static inline s32 get_001E27D0(s32 x, s32 y) {
+    Cell_001E27D0 *cell = cell_001E27D0(x, y);
+    if (cell != NULL) {
+        return cell->index;
+    }
+    return 0xFF;
+}
+
+static inline Cell_001E27D0 *checked_001E27D0(s32 x, s32 y, Cell_001E27D0 *cell) {
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return NULL;
+    }
+    return cell;
+}
+
+static inline void set_walk_001E27D0(s32 x, s32 y, Cell_001E27D0 *p, s32 value) {
+    Cell_001E27D0 *cell = checked_001E27D0(x, y, p);
+    if (cell != NULL) {
+        cell->index = value;
+    }
+}
+
+static inline s32 get_walk_001E27D0(s32 x, s32 y, Cell_001E27D0 *p) {
+    Cell_001E27D0 *cell = checked_001E27D0(x, y, p);
+    if (cell != NULL) {
+        return cell->index;
+    }
+    return 0xFF;
+}
+
+void func_001E27D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 *arg7, u8 *arg8, s32 count) {
+    extern void func_0027ACB0();
+    u8 buffer0[0x40];
+    u8 buffer1[0x40];
+    s32 x;
+    s32 y;
+    Cell_001E27D0 *p;
+    Cell_001E27D0 *row;
+    s32 i;
+
+    if (arg0 != 0) {
+        row = (Cell_001E27D0 *)D_00318E60;
+        y = 0;
+        do {
+            x = 0;
+            p = row;
+            do {
+                set_walk_001E27D0(x, y, p, 0xFF);
+                x++;
+                p++;
+            } while (x < 7);
+            y++;
+            row += 7;
+        } while (y < 7);
+    } else {
+        Cell_001E27D0 *p;
+        Cell_001E27D0 *row;
+        s32 y;
+        s32 x;
+
+        row = (Cell_001E27D0 *)D_00318E60;
+        y = 0;
+        do {
+            x = 0;
+            p = row;
+            do {
+                if (get_walk_001E27D0(x, y, p) < 0xFF) {
+                    set_walk_001E27D0(x, y, p, 0xFE);
+                }
+                x++;
+                p++;
+            } while (x < 7);
+            y++;
+            row += 7;
+        } while (y < 7);
+    }
+    func_001E2A60(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, count, buffer0, buffer1, 0, 1);
+    for (i = 0; i < count; i++) {
+        set_001E27D0(arg7[i], arg8[i], i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2A60);
 

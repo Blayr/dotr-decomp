@@ -795,6 +795,7 @@ void func_001E2340(void);
 s32 func_001E23A0(s32 arg0, s32 arg1, s32 arg2);
 s16 func_001E2450(s32 arg0, s32 arg1);
 u8 func_001E24E0(s32 x, s32 y);
+void func_001E27D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 *arg7, u8 *arg8, s32 count);
 void func_001E2FB0(s32 arg0, s32 arg1, s32 arg2);
 void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_001E3060(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
