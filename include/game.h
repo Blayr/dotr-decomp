@@ -683,4 +683,7 @@ extern s32 (*D_00291330[])(s32, s32);
 extern u8 D_002CCB48[];
 extern u8 D_002CD1F4[];
 
+extern u8 D_002909B8[];
+extern u8 D_003181CC;
+
 #endif
