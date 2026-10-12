@@ -318,7 +318,67 @@ INCLUDE_ASM("asm/nonmatchings/main_009", func_001379F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00137FB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00138780);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00138780;
+
+typedef struct {
+    u16 pos;
+    u8 kind;
+    u8 unk03;
+    u16 target;
+    u8 pad06[6];
+    s32 flag;
+    u8 result;
+} Out_00138780;
+
+s32 func_00138EA0(s32 arg0);
+s32 func_0027DBC0(s32 arg0, s32 arg1, s32 arg2);
+void func_001E1E70(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_001374D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3);
+
+s32 func_00138780(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+    s32 card;
+    s32 col;
+    u16 row;
+    Out_00138780 *out = arg2;
+    Nibbles_00138780 entries[12];
+    s32 i;
+    Nibbles_00138780 *entry;
+
+    func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+    entry = entries;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+
+    card = func_00138EA0(arg1);
+    if (func_0027D830(*arg0 >> 8, *arg0 & 0xFF, 0, 0, 6, 1) == 5) {
+        card = -1;
+    }
+    if (card >= 0) {
+        row = card >> 16;
+        col = func_0027DBC0(row, card & 0xFF, 0);
+        out->pos = *arg0;
+        out->kind = 12;
+        out->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, out->target, 1, 1);
+        out->flag = 1;
+        out->target = (row << 8) | col;
+        func_0027B1B0(arg0, arg3);
+        return 0;
+    }
+    if (func_001E2100(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
+        func_001E1E70(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
+        out->pos = *arg0;
+        out->kind = 14;
+        return 0;
+    }
+    return func_001374D0(arg0, arg1, arg2, arg3);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00138950);
 
