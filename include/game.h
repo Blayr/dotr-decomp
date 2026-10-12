@@ -281,7 +281,6 @@ s32 func_002626F0(s32, s32, s32);
 
 extern u8 D_0029D580[];
 
-void func_002798C0(s32, s32, s32, s32, s32, s32);
 
 void *func_0019C2B8(void *, const void *, u32);
 
