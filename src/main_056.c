@@ -781,4 +781,127 @@ s32 func_00209870(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_002098B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002099D0);
+typedef struct State_002099D0 {
+    u8 pad0[0x240];
+    s32 width;
+    u8 pad244[8];
+    s32 display;
+    u8 pad250[0x10];
+    s16 x;
+    u8 pad262[2];
+    s16 y;
+    u8 pad266[6];
+    s32 frame;
+    u8 pad270[0xC];
+    s32 dmaAddress;
+    s32 dmaBuffer;
+    s32 dmaSize;
+    s32 currentBuffer;
+    s32 buffer0;
+    s32 buffer1;
+    void (*beforeDisplay)(void);
+    void (*beforeWait)(void);
+} State_002099D0;
+
+void func_00185480(u8 *, s32);
+void func_00186060(u8 *, s16, s16, s64);
+void func_002098B0(s32);
+
+s32 func_002099D0(void) {
+    extern s32 func_00185578();
+    extern s32 func_0020B1E0();
+    extern u8 D_00293F14[];
+    extern s32 D_00325E30;
+    extern s32 D_00326188;
+    State_002099D0 *state = (State_002099D0 *)D_00325F50;
+    s32 result;
+    s32 width;
+    s32 period;
+    s32 remaining;
+    s32 *packet;
+    u8 *display;
+
+    func_00213F90();
+    func_00200350();
+    func_00217400();
+    packet = (s32 *)D_003261D0;
+    packet[0] = 0x70000000;
+    packet[1] = 0;
+    packet[2] = 0;
+    packet[3] = 0;
+    (void)*(volatile u32 *)0x10000800;
+    if (func_00185578(0, 0) < 0) {
+        func_002098B0(D_00326188);
+    }
+    if (state->beforeWait != NULL) {
+        state->beforeWait();
+    }
+    remaining = D_00325E30;
+    if (*(s32 *)(D_00293F14 + D_00326188 * 0x28) == 2) {
+        width = 0x1C0;
+        period = 0x208;
+    } else {
+        width = 0x200;
+        period = 0x26C;
+    }
+    while (remaining-- >= 0) {
+        result = func_001854E0(0);
+        if (state->width == width) {
+            if (result != 0) {
+                result = func_001854E0(0);
+            }
+        }
+        if (*(volatile u32 *)0x10000800 > (u32)(period * (D_00325E30 + 1))) {
+            break;
+        }
+    }
+    D_00325E30 = 0;
+    if (state->beforeDisplay != NULL) {
+        state->beforeDisplay();
+    }
+    if (state->display != 0) {
+        if (state->frame & 1) {
+            display = (u8 *)state + 0x150;
+        } else {
+            display = (u8 *)state + 0x60;
+        }
+        func_00186060(display, state->x, state->y, (s16)result);
+    }
+    func_0017BB60(0);
+    func_00185480((u8 *)state, state->frame);
+    if (func_001A86D0() != 0) {
+        func_00100610(1);
+    }
+    func_00185578(0, 0);
+    *(volatile s32 *)0x10009020 = 0;
+    *(volatile s32 *)0x10009030 = (u32)state->dmaAddress & 0x0FFFFFFF;
+    *(volatile s32 *)0x1000E010 = 2;
+    func_0017BB60(0);
+    *(volatile s32 *)0x10009000 = 0x145;
+    if (state->currentBuffer != 0) {
+        state->dmaAddress = state->buffer1;
+        state->dmaBuffer = state->buffer1;
+        state->currentBuffer = 0;
+    } else {
+        state->dmaAddress = state->buffer0;
+        state->dmaBuffer = state->buffer0;
+        state->currentBuffer = 1;
+    }
+    state->frame++;
+    result = 1;
+    if (*(s32 *)(D_00293F14 + D_00326188 * 0x28) == 2) {
+        if (state->width == 0x1C0) {
+            if (*(volatile u32 *)0x10000800 > 0x21C) {
+                result = 2;
+            }
+        } else if (*(volatile u32 *)0x10000800 > 0x10E) {
+            result = 2;
+        }
+    } else if (*(volatile u32 *)0x10000800 > 0x280) {
+        result = 2;
+    }
+    *(volatile u32 *)0x10000800 = 0;
+    func_00213F60(state->dmaAddress, state->dmaAddress + state->dmaSize);
+    func_00209D30(func_0020B1E0(func_00209D20()));
+    return result;
+}
