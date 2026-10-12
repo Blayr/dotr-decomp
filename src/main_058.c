@@ -229,7 +229,44 @@ s32 func_0020E130(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3, u8 *arg4) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E1A0);
+typedef struct {
+    u8 pad[0x40];
+    f32 vector40[4];
+    f32 vector50[4];
+    f32 vector60[4];
+    f32 vector70[4];
+    f32 vector80[4];
+} State_0020E1A0;
+
+s32 func_0020BBB0(void *);
+
+s32 func_0020E1A0(void *state) {
+    if (state == NULL) {
+        state = (u8 *)&D_0032A2A0[D_0032A240] + 0xC0;
+    }
+    func_0020BBB0(state);
+    ((State_0020E1A0 *)state)->vector40[0] = 0.0f;
+    ((State_0020E1A0 *)state)->vector40[1] = 0.0f;
+    ((State_0020E1A0 *)state)->vector40[2] = 0.0f;
+    ((State_0020E1A0 *)state)->vector40[3] = 1.0f;
+    ((State_0020E1A0 *)state)->vector50[0] = 0.0f;
+    ((State_0020E1A0 *)state)->vector50[1] = 0.0f;
+    ((State_0020E1A0 *)state)->vector50[2] = -1.0f;
+    ((State_0020E1A0 *)state)->vector50[3] = 0.0f;
+    ((State_0020E1A0 *)state)->vector80[0] = 0.0f;
+    ((State_0020E1A0 *)state)->vector60[0] = 0.0f;
+    ((State_0020E1A0 *)state)->vector60[1] = 0.0f;
+    ((State_0020E1A0 *)state)->vector60[2] = 0.0f;
+    ((State_0020E1A0 *)state)->vector60[3] = 1.0f;
+    ((State_0020E1A0 *)state)->vector70[0] = 0.0f;
+    ((State_0020E1A0 *)state)->vector70[1] = 0.0f;
+    ((State_0020E1A0 *)state)->vector70[2] = -1.0f;
+    ((State_0020E1A0 *)state)->vector70[3] = 0.0f;
+    ((State_0020E1A0 *)state)->vector80[1] = 0.0f;
+    ((State_0020E1A0 *)state)->vector80[2] = 0.0f;
+    ((State_0020E1A0 *)state)->vector80[3] = 0.0f;
+    return 1;
+}
 
 s32 func_0020E260(void *arg0) {
     typedef struct {
@@ -264,7 +301,37 @@ s32 func_0020E260(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E360);
+typedef struct State_0020E360 {
+    u8 pad_000[0x40];
+    f32 matrix[4][4];
+    u8 pad_080[0xE0];
+    f32 radius;
+    f32 width;
+    f32 height;
+    u8 pad_16C[0x1C];
+    f32 radius_squared;
+    f32 width_squared;
+    f32 height_squared;
+    u8 pad_194[0xC];
+} State_0020E360;
+
+s32 func_0020E360(void *arg0) {
+    State_0020E360 *state;
+
+    state = (State_0020E360 *)&D_0032A2A0[D_0032A240];
+    func_0020B380((u8 *)state + 0xC0, arg0, 9);
+    func_0020E9F0();
+    func_0020BA90(&state->matrix);
+    func_0020B380(arg0, state->matrix, 4);
+    state->radius_squared = 4186116.0f + state->radius * state->radius;
+    state->width_squared = (state->width * state->width) / 4.0f +
+                           state->radius * state->radius;
+    state->height_squared = (state->height * state->height) / 4.0f +
+                            state->radius * state->radius;
+    func_0020EBA0(D_0032A730);
+    func_0020BDE0(D_0032A730, D_0032A730);
+    return 1;
+}
 
 typedef struct Copy_0020E460 {
     __int128 data[26];
