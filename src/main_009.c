@@ -1012,7 +1012,203 @@ s32 func_001379F0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00137FB0);
+typedef struct Unit_00137FB0 {
+    u16 position;
+    u8 pad2[6];
+    union {
+        u32 packed;
+        u16 halves[2];
+    } destination;
+} Unit_00137FB0;
+
+typedef struct Order_00137FB0 {
+    u16 position;
+    u8 kind;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 value;
+    u8 flags;
+} Order_00137FB0;
+
+typedef struct Point_00137FB0 {
+    u8 x : 4;
+    u8 y : 4;
+} Point_00137FB0;
+
+s32 func_00139180(s32, s32, void *);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 destination_00137FB0(void *unit, s32 side) {
+    if (side == 1) {
+        return (u16)(((Unit_00137FB0 *)unit)->destination.packed >> 16);
+    }
+    return ((Unit_00137FB0 *)unit)->destination.halves[0];
+}
+
+s32 func_00137FB0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
+    extern s32 func_0027E360(s32, s32, s32, u8, s32);
+    extern void func_00279230(s32, s32, void *, s32, s32, s32, s32, s32, u8);
+    s32 count;
+    s32 position;
+    Point_00137FB0 points[12];
+    s32 id;
+    s32 score;
+    u32 destinationValue;
+    Unit_00137FB0 *unit = arg0;
+    Order_00137FB0 *order = arg2;
+
+    {
+    s32 bestScore;
+    s32 bestIndex;
+    s32 side;
+    Point_00137FB0 *point;
+    s32 index;
+
+    position = func_001E1090((s32)unit->position >> 8, unit->position & 0xFF);
+    side = arg3;
+    if (destination_00137FB0(unit, side) == 0xFFFF) {
+        if (position == destination_00137FB0(unit, side)) {
+            order->position = unit->position;
+            order->kind = 6;
+            order->destination = position;
+            order->flags = func_0027E360((s32)unit->position >> 8, unit->position & 0xFF,
+                                       order->destination, arg4, 1);
+            order->value = func_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
+            func_0027B1B0(unit, arg3);
+            return 0;
+        }
+    }
+
+    point = points;
+    {
+        s32 i = 0;
+        Point_00137FB0 *p = point;
+        do {
+            p->x = p->y = 15;
+            i++;
+            p++;
+        } while (i < 12);
+    }
+
+    destinationValue = destination_00137FB0(unit, side);
+    id = func_001E3790(destination_00137FB0(unit, side) & 0xFF,
+                       destinationValue >> 8);
+    if (id < 0) {
+        id = 0xFFFF;
+    }
+    destinationValue = destination_00137FB0(unit, side);
+    func_00279230((s32)unit->position >> 8, unit->position & 0xFF, points,
+                  position & 0xFF, position >> 8,
+                  destination_00137FB0(unit, side) & 0xFF,
+                  destinationValue >> 8, (u16)id, 7);
+    count = func_0027AFC0((u8 *)points);
+    if (count > 0) {
+        bestIndex = 0xFF;
+        bestScore = 0xFFFF;
+        for (index = 0; index < count; index++, point++) {
+            if (func_001E36E0(point->x, point->y) == 0) {
+                score = func_00276CC0(point->x, point->y, arg1, 2, 0, 0);
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestIndex = index;
+                } else if (score == bestScore) {
+                    u32 oldYMin;
+                    u32 oldYMax;
+                    u32 oldXMin;
+                    u32 oldXMax;
+                    u8 oldY;
+                    u8 oldX;
+                    u32 currentYMin;
+                    u32 currentYMax;
+                    u32 currentXMin;
+                    u32 currentXMax;
+                    u8 currentY;
+                    u8 currentX;
+                    Point_00137FB0 *best = &points[bestIndex];
+
+                    oldY = best->y;
+                    if (oldY < (destination_00137FB0(unit, side) >> 8)) {
+                        oldYMin = (u8)oldY;
+                    } else {
+                        oldYMin = destination_00137FB0(unit, side) >> 8;
+                    }
+                    if ((destination_00137FB0(unit, side) >> 8) < oldY) {
+                        oldYMax = (u8)oldY;
+                    } else {
+                        oldYMax = destination_00137FB0(unit, side) >> 8;
+                    }
+                    oldX = best->x;
+                    if (oldX < (destination_00137FB0(unit, side) & 0xFF)) {
+                        oldXMin = (u8)oldX;
+                    } else {
+                        oldXMin = destination_00137FB0(unit, side) & 0xFF;
+                    }
+                    if ((destination_00137FB0(unit, side) & 0xFF) < oldX) {
+                        oldXMax = (u8)oldX;
+                    } else {
+                        oldXMax = destination_00137FB0(unit, side) & 0xFF;
+                    }
+
+                    currentY = point->y;
+                    if (currentY < (destination_00137FB0(unit, side) >> 8)) {
+                        currentYMin = (u8)currentY;
+                    } else {
+                        currentYMin = destination_00137FB0(unit, side) >> 8;
+                    }
+                    if ((destination_00137FB0(unit, side) >> 8) < currentY) {
+                        currentYMax = (u8)currentY;
+                    } else {
+                        currentYMax = destination_00137FB0(unit, side) >> 8;
+                    }
+                    currentX = point->x;
+                    if (currentX < (destination_00137FB0(unit, side) & 0xFF)) {
+                        currentXMin = (u8)currentX;
+                    } else {
+                        currentXMin = destination_00137FB0(unit, side) & 0xFF;
+                    }
+                    if ((destination_00137FB0(unit, side) & 0xFF) < currentX) {
+                        currentXMax = (u8)currentX;
+                    } else {
+                        currentXMax = destination_00137FB0(unit, side) & 0xFF;
+                    }
+                    if ((currentXMax - currentXMin) + (currentYMax - currentYMin) <
+                        (oldXMax - oldXMin) + (oldYMax - oldYMin)) {
+                        bestScore = score;
+                        bestIndex = index;
+                    }
+                }
+            }
+        }
+    } else {
+        order->position = unit->position;
+        order->kind = 6;
+        order->destination = position;
+        order->flags = func_0027E360((s32)unit->position >> 8, unit->position & 0xFF,
+                                   order->destination, arg4, 1);
+        order->value = func_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
+        func_0027B1B0(unit, arg3);
+        return 0;
+    }
+        if (bestIndex != 0xFF) {
+            order->position = unit->position;
+            order->kind = 6;
+            order->destination = (points[bestIndex].y << 8) | points[bestIndex].x;
+            order->flags = func_0027E360((s32)unit->position >> 8, unit->position & 0xFF,
+                                       order->destination, arg4, 1);
+            order->value = func_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
+        } else {
+            order->position = unit->position;
+            order->kind = 6;
+            order->destination = position;
+            order->flags = func_0027E360((s32)unit->position >> 8, unit->position & 0xFF,
+                                       order->destination, arg4, 1);
+            order->value = func_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
+        }
+        func_0027B1B0(unit, arg3);
+    }
+    return 0;
+}
 
 typedef struct {
     u8 low : 4;
