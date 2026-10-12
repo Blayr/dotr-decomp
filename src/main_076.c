@@ -1386,7 +1386,131 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D8F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026DCC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E1F0);
+void func_001E1E70(u32, s32, s32, s32);
+void func_0024F370(u32, s32);
+u8 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+
+typedef struct Context_0026E1F0 {
+    u32 unk0;
+    u32 source;
+    u32 target;
+    s32 cleanup_source;
+} Context_0026E1F0;
+
+typedef struct State_0026E1F0 {
+    u8 unk0[4];
+    u16 step;
+    u8 handles[0x1A];
+    s32 flags[0x2D];
+    u8 count;
+    u8 unkD5[0x2D];
+    u16 timer;
+} State_0026E1F0;
+
+s32 func_0026E1F0(void *arg0, void *arg1, s32 arg2) {
+    s32 completed;
+    s32 command[4];
+    s32 *request = command;
+    s32 i;
+    Context_0026E1F0 *context = arg0;
+    State_0026E1F0 *state = arg1;
+    extern s32 func_001E1030();
+
+    command[0] = 999;
+    command[1] = 0;
+    command[2] = 0;
+    command[3] = 0;
+    completed = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00260AF0(0, context->source, 180, 180);
+        func_00255AC0(state, 0x25A);
+        func_00255AC0(state, 0x33);
+        return 1;
+    }
+
+    switch (state->step) {
+    case 0:
+        if (func_00255B50(state) == 1) {
+            func_001E42C0(0, -120, 80, 0x103);
+            request[0] = 0x25A;
+            request[1] = 0;
+            request[2] = context->source;
+            request[3] = 0;
+            state->handles[state->count] = func_00255A30(request, state);
+            state->flags[state->count] = 0;
+            state->count++;
+            state->step++;
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->handles[0]) == 0) {
+            func_001E1E70(context->source >> 8, context->source & 0xFF, 0, 1);
+            func_001E42C0(0, -120, 80,
+                func_001DE210(func_001E1030(context->source >> 8, context->source & 0xFF)));
+            request[0] = 0x33;
+            request[1] = 0;
+            request[2] = context->source;
+            request[3] = 0;
+            state->handles[state->count] = func_00255A30(request, state);
+            state->flags[state->count] = 0;
+            state->count++;
+            state->step++;
+        }
+        break;
+    case 2:
+        if (func_001F51D0(state->handles[state->count - 1]) != 0) {
+            if (func_001F52D0(state->handles[state->count - 1]) == 2 &&
+                state->flags[state->count - 1] == 0) {
+                func_00260AF0(0, context->target, 100, 180);
+                request[0] = 0x33;
+                request[1] = 0;
+                request[2] = context->target;
+                request[3] = 0;
+                state->handles[state->count] = func_00255A30(request, state);
+                state->flags[state->count] = 0;
+                state->flags[state->count - 1] = 1;
+                state->step++;
+                state->count++;
+            }
+        }
+        return 1;
+    case 3:
+        func_00260AF0(16, context->target, 300, 300);
+        state->step++;
+        break;
+    case 4:
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->handles[i]) == 0) {
+                completed++;
+            }
+        }
+        if (completed >= state->count) {
+            if (context->cleanup_source == 1) {
+                func_0024F370(context->source >> 8, context->source & 0xFF);
+            }
+            func_0024F370(context->target >> 8, context->target & 0xFF);
+            func_001E4530();
+            func_00260A70(state, 16);
+            state->step++;
+            break;
+        }
+        return 1;
+    default:
+        if (state->timer++ > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E610);
 
