@@ -364,7 +364,72 @@ s32 func_0013EB20(s32 arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013ECF0);
+struct InitEntry_0013ECF0 {
+    u16 value;
+    u8 flag;
+    u8 pad;
+};
+
+void func_0013ECF0(void *arg0) {
+    extern s32 func_001E1030();
+    extern void func_0027E770();
+    u8 scratch[112];
+    struct InitEntry_0013ECF0 entries[22];
+    s32 i;
+    struct InitEntry_0013ECF0 *entry;
+    s32 card;
+    s32 color;
+    s32 code;
+    s32 value;
+
+    if (func_001DF540((s32)*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF) == 0) {
+        return;
+    }
+
+    card = func_0024DE70((s32)*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+    color = func_001E1090((s32)*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+    entry = entries;
+    i = 0;
+    do {
+        i++;
+        entry->value = 0xFFFF;
+        entry->flag = 0xFF;
+        entry++;
+    } while (i < 22);
+
+    func_0027E770(scratch);
+    code = func_001E1030((s32)*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+    switch (code) {
+    case 0x182:
+        if (func_00141F30(card) == 1) {
+            *(u16 *)((u8 *)arg0 + 4) = 0x6FF;
+            *(u32 *)((u8 *)arg0 + 8) = (color << 16) | *(u16 *)((u8 *)arg0 + 8);
+            return;
+        }
+        break;
+    case 0x184:
+        value = func_001DF470(card);
+        if (value < func_001DF470(card == 0 ? 1 : 0)) {
+            *(u16 *)((u8 *)arg0 + 4) = 0x6FF;
+            *(u32 *)((u8 *)arg0 + 8) = (color << 16) | *(u16 *)((u8 *)arg0 + 8);
+            return;
+        }
+        break;
+    case 0x179:
+        if ((func_00142040(card) == 1) && (func_0027D720(arg0, 0) == 1)) {
+            *(u16 *)((u8 *)arg0 + 4) = 0xBFF;
+            return;
+        }
+        break;
+    case 0x186:
+        if ((func_00142220(card) == 1) && (func_0027D720(arg0, 0) == 1)) {
+            *(u16 *)((u8 *)arg0 + 4) = 0xBFF;
+            return;
+        }
+        break;
+    }
+    func_0013E7B0(arg0, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013EEE0);
 
