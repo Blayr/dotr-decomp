@@ -3239,7 +3239,170 @@ s32 func_0025D9D0(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025DE70);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025E200);
+typedef struct {
+    u32 unk0;
+    u32 target;
+    s32 mask;
+    u32 position;
+} Command_0025E200;
+
+typedef struct {
+    s8 ready : 1;
+    s8 reserved : 7;
+} Flags_0025E200;
+
+typedef struct {
+    u16 alpha;
+    u16 unk2;
+    u16 phase;
+    u8 slots[0x7A];
+    Flags_0025E200 flags;
+    u8 unk81[0x53];
+    u8 count;
+    u8 unkD5[0x2D];
+    u16 timer;
+} State_0025E200;
+
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025E200(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1D10();
+    extern s32 func_001E19D0();
+    extern s32 func_00255A30(s32 *, void *);
+    s32 request[4];
+    s32 *data = request;
+    Command_0025E200 *command = arg0;
+    State_0025E200 *state = arg1;
+
+    request[0] = 999;
+    request[1] = 0;
+    request[2] = 0;
+    request[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->alpha = 0x80;
+        func_00255AC0(state, 0x213);
+        func_00255AC0(state, 0x214);
+        if (func_0024E910(command->mask) == 1) {
+            func_00260AF0(0, func_0024EC50(command->mask, 0), 100, 180);
+        } else {
+            func_00260740(0);
+        }
+        func_00260020(command, state, arg2, -1, 1, 1);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (state->alpha > 0x30) {
+            state->alpha -= 15;
+        } else {
+            state->alpha = 0x30;
+            if (state->flags.ready == 0) {
+                if (func_00255B50(state) == 1) {
+                    state->flags.ready = 1;
+                }
+            } else {
+                s32 result;
+                data[0] = 0x213;
+                data[1] = 0;
+                data[2] = (u16)command->target;
+                data[3] = 0;
+                result = func_00255A30(data, state);
+                if (result >= 0) {
+                    state->slots[state->count] = result;
+                    state->count++;
+                    state->phase++;
+                } else if ((u32)(result + 2) < 2) {
+                    func_001E4530();
+                    return 0;
+                }
+            }
+        }
+        if (state->alpha < 0x30) {
+            state->alpha = 0x30;
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+
+    case 1:
+        if (func_001F51D0(state->slots[state->count - 1]) == 1 &&
+            func_001F52D0(state->slots[state->count - 1]) == 2) {
+            if ((command->target >> 16) == 1) {
+                func_001F5970(command->target & 0xFFFF, 0);
+                func_001F66A0((u16)command->target, 0);
+                if (func_001E1D10((command->target & 0xFFFF) >> 8,
+                                  command->target & 0xFF) == 0) {
+                    func_001E19D0((command->target & 0xFFFF) >> 8,
+                                  command->target & 0xFF, 0x80);
+                    func_001E1C10((command->target & 0xFFFF) >> 8,
+                                  command->target & 0xFF, 1, 0x80);
+                }
+            }
+            func_001DFD50((command->target & 0xFFFF) >> 8, command->target & 0xFF,
+                          command->position & 0xFF, command->position >> 8);
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+
+    case 2:
+        if (state->timer == 0) {
+            if (func_0024E910(command->mask) == 1) {
+                func_00260AF0(30, func_0024EC50(command->mask, 0), 100, 180);
+            } else {
+                func_00260740(16);
+            }
+        }
+        if (state->timer++ >= 24 &&
+            func_001F51D0(state->slots[state->count - 1]) != 1) {
+            s32 result;
+            data[0] = 0x214;
+            data[1] = 0;
+            data[2] = (u16)command->target;
+            data[3] = 0;
+            result = func_00255A30(data, state);
+            if (result >= 0) {
+                state->slots[state->count] = result;
+                state->count++;
+                state->phase++;
+            } else if ((u32)(result + 2) < 2) {
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+
+    case 3:
+        if (func_001F51D0(state->slots[state->count - 1]) != 1) {
+            state->phase++;
+            func_00260A70(state, 16);
+            func_00260020(command, state, arg2, 1, 0, 1);
+        }
+        break;
+
+    default:
+        state->alpha += 15;
+        if (state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80) {
+            if (state->timer++ > 16 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025E710);
 
