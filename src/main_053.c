@@ -805,7 +805,76 @@ void func_001FE880(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_00209D30(func_001FE8F0(func_00209D20(), arg0, arg1, arg2, arg3));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE8F0);
+typedef struct Xyzf_001FE8F0 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyzf_001FE8F0;
+
+typedef struct Packet_001FE8F0 {
+    u16 count;
+    u16 size;
+    u32 flags;
+    u64 registers;
+    u8 r, g, b, a;
+    f32 q;
+    Xyzf_001FE8F0 first;
+    Xyzf_001FE8F0 second;
+} Packet_001FE8F0;
+
+typedef struct State_001FE8F0 {
+    u8 pad[0x274];
+    s32 depth;
+} State_001FE8F0;
+
+static inline void tag_001FE8F0(void *packet) {
+    *(u16 *)((u8 *)packet + 2) = 6;
+    *(u16 *)packet = 3;
+    *(u64 *)((u8 *)packet + 8) = 0x441;
+    *(u32 *)((u8 *)packet + 4) = 0;
+}
+
+s32 func_001FE8F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    extern u8 D_00293088[];
+    extern s32 D_002CFCD0[];
+    extern State_001FE8F0 D_0031C070;
+    Packet_001FE8F0 packet;
+    u8 *color = (u8 *)arg4;
+    State_001FE8F0 *state = &D_0031C070;
+    s32 x0;
+    s32 y0;
+    s32 x1;
+    s32 y1;
+    s32 *rect = (s32 *)arg3;
+
+    if (rect == NULL) {
+        rect = D_002CFCD0;
+    }
+    if (color == NULL) {
+        color = D_00293088;
+    }
+    x0 = rect[0] + arg1;
+    y0 = rect[1] + arg2;
+    x1 = rect[2] + x0;
+    y1 = rect[3] + y0;
+    tag_001FE8F0(&packet);
+    func_002086D0(&packet, 0x8000000044LL);
+    packet.r = color[2];
+    packet.g = color[1];
+    packet.b = color[0];
+    packet.a = color[3];
+    packet.q = 1.0f;
+    packet.first.x = x0 << 4;
+    packet.first.y = y0 << 4;
+    packet.first.z = state->depth;
+    packet.first.fog = 0;
+    packet.second.x = x1 << 4;
+    packet.second.y = y1 << 4;
+    packet.second.z = state->depth;
+    packet.second.fog = 0;
+    return func_00207650(arg0, (s32)&packet, 0, 0);
+}
 
 typedef struct Vec4_001FEA80 {
     f32 x, y, z, w;
