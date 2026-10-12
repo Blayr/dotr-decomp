@@ -536,7 +536,54 @@ s32 func_00208F00(s32 packet, void *arg1, void *arg2, s32 arg3) {
     return packet;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00209110);
+typedef struct Packet_00209110 {
+    u32 header[4];
+    f32 values[8];
+} Packet_00209110;
+
+s32 func_00209110(s32 arg0, void *arg1, void *arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
+    extern void func_0020B340(f32 *, void *, s32);
+    extern f32 D_00325E00[4];
+    extern f32 D_00325E10[4];
+    extern f32 D_00325E20;
+    extern f32 D_00325E24;
+    extern f32 D_00325E28;
+    Packet_00209110 *packet;
+    f32 temp_f2;
+
+    packet = (Packet_00209110 *)arg0;
+    if ((arg1 == NULL) || (arg2 == NULL)) {
+        packet->header[0] = 0x10000002;
+        packet->header[1] = 0;
+        packet->header[2] = 0x11000000;
+        packet->header[3] = 0x6C020054;
+        func_0020B440((s64 *)packet->values, 0, 4);
+        packet++;
+        D_00325E2C = 0;
+    } else {
+        packet->header[0] = 0x10000002;
+        packet->header[1] = 0;
+        temp_f2 = fparg1 - fparg0;
+        packet->header[2] = 0x11000000;
+        packet->header[3] = 0x6C020054;
+        packet->values[0] = ((f32 *)arg1)[1];
+        packet->values[1] = ((f32 *)arg1)[2];
+        packet->values[2] = ((f32 *)arg1)[3];
+        packet->values[3] = (fparg2 * fparg1) / temp_f2;
+        packet->values[4] = ((f32 *)arg2)[0];
+        packet->values[5] = ((f32 *)arg2)[1];
+        packet->values[6] = ((f32 *)arg2)[2];
+        packet->values[7] = fparg2 / temp_f2;
+        packet++;
+        func_0020B340(D_00325E00, arg1, 4);
+        func_0020B340(D_00325E10, arg2, 4);
+        D_00325E20 = fparg0;
+        D_00325E24 = fparg1;
+        D_00325E28 = fparg2;
+        D_00325E2C = 1;
+    }
+    return (s32)packet;
+}
 
 typedef struct Vec4_00209270 {
     f32 x;
