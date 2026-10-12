@@ -680,4 +680,6 @@ extern s32 func_0023F340(void);
 extern s32 func_0023FCE0(s32);
 extern s32 func_0023FF30(void);
 
+s32 func_00131F80(s32, s32, s32);
+
 #endif

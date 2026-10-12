@@ -598,7 +598,64 @@ void func_00131E40(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00131F80);
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00132280);
+void func_00132280(u16 *arg0) {
+    u16 value;
+    s32 temp_s0;
+    s32 temp_s3;
+    s32 temp_s1;
+    void *temp_v0;
+    s32 result;
+
+    value = arg0[0];
+    temp_s0 = func_00250360(value >> 8, value & 0xFF);
+    value = arg0[0];
+    temp_s3 = (func_001E0700(value >> 8, value & 0xFF) >> 5) & 0xFF;
+    value = arg0[0];
+    temp_s1 = func_001E1090(value >> 8, value & 0xFF);
+    value = arg0[0];
+    temp_v0 = func_001E0B70(value >> 8, value & 0xFF, 0);
+
+    switch (temp_s3 & 0xFF) {
+    case 3:
+        arg0[2] = 0x3FF;
+        value = arg0[0];
+        result = func_00131F80(func_001DF540(value >> 8, value & 0xFF), temp_s1 & 0xFF, temp_s1 >> 8);
+        if (result >= 0) {
+            *(u32 *)((u8 *)arg0 + 8) = (result << 16) | *(u16 *)((u8 *)arg0 + 8);
+            return;
+        }
+        arg0[2] = 0x5FF;
+        return;
+    case 1:
+        if (temp_v0 == NULL) {
+            return;
+        }
+        switch (*(u32 *)temp_v0 >> 8) {
+        case 2:
+        case 0x48:
+            arg0[2] = 0x6FF;
+            result = func_001349A0(temp_s0);
+            if (result >= 0) {
+            *(u32 *)(arg0 + 4) = (result << 16) | arg0[4];
+                return;
+            }
+            *(u32 *)(arg0 + 4) = arg0[4] | 0x60000;
+            return;
+        case 0x25:
+            arg0[2] = 0x3FF;
+            value = arg0[0];
+            result = func_00131F80(func_001DF540(value >> 8, value & 0xFF), temp_s1 & 0xFF, temp_s1 >> 8);
+            if (result >= 0) {
+                *(u32 *)(arg0 + 4) = (result << 16) | arg0[4];
+                return;
+            }
+            arg0[2] = 0x5FF;
+            return;
+        }
+        break;
+    }
+    arg0[2] = 0x5FF;
+}
 
 typedef struct {
     s16 id;
