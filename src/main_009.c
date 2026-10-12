@@ -844,7 +844,101 @@ s32 func_0013A010(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013A400);
+typedef struct Entry_0013A400 {
+    u16 id;
+    u8 flag;
+    u8 pad;
+} Entry_0013A400;
+
+void func_0013A400(void *arg0, s32 arg1, s32 arg2) {
+    extern s32 func_0027B200();
+    extern s32 func_0013A6B0();
+    extern void func_0027E770();
+    s32 position;
+    u8 workspace[0x70];
+    Entry_0013A400 entries[23];
+    s16 count;
+    s16 result;
+    u16 id;
+
+    id = *(u16 *)arg0;
+    if (func_001DF540(id >> 8, id & 0xFF) != 0) {
+        s32 side;
+        s32 target;
+        s32 otherPosition;
+        s32 targetLow;
+        s32 targetHigh;
+        s32 data;
+        s32 i;
+        Entry_0013A400 *entry;
+
+        id = *(u16 *)arg0;
+        side = func_0024DE70(id >> 8, id & 0xFF);
+        target = (side == 0 ? 1 : 0) << 8;
+        position = func_001E1090(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+        targetHigh = target >> 8;
+        targetLow = target & 0xFF;
+        otherPosition = func_001E1090(targetHigh, targetLow);
+        id = *(u16 *)arg0;
+        data = func_001DF540(id >> 8, id & 0xFF);
+        func_0027E770(workspace);
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->id = 0xFFFF;
+            entry->flag = 0xFF;
+            entry++;
+        } while (i < 22);
+
+        if (arg1 != 0) {
+            id = *(u16 *)arg0;
+            if (func_0027B200(id >> 8, id & 0xFF, position & 0xFF,
+                    position >> 8, targetHigh, targetLow, otherPosition & 0xFF,
+                    otherPosition >> 8, 2) > 0) {
+                *(u16 *)((u8 *)arg0 + 4) = 0x2FF;
+                *(u32 *)((u8 *)arg0 + 8) =
+                    (target << 16) | *(u16 *)((u8 *)arg0 + 8);
+                return;
+            }
+        }
+
+        result = 0;
+        count = 0;
+        for (i = 1; i <= (arg2 ? 1 : 3); i++) {
+            s32 limit;
+            s32 opposite;
+            s32 value;
+
+            limit = arg2 ? 1 : 3;
+            opposite = func_0024DE70(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF) == 0 ? 1 : 0;
+            value = func_0013DA70(side);
+            switch (func_0013A6B0((s32)arg0, 0, data, position & 0xFF,
+                        position >> 8, opposite, (u8)i, value,
+                        (s32)entries, 0, (s32)&count, (s32)&result,
+                        (u8)limit, (s32)workspace)) {
+            case 3:
+                *(u16 *)((u8 *)arg0 + 4) = 0x6FF;
+                *(u32 *)((u8 *)arg0 + 8) =
+                    (position << 16) | *(u16 *)((u8 *)arg0 + 8);
+                return;
+            case 2:
+                *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
+                *(u32 *)((u8 *)arg0 + 8) =
+                    (position << 16) | *(u16 *)((u8 *)arg0 + 8);
+                return;
+            case 1:
+                return;
+            case 0:
+                *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
+                *(u32 *)((u8 *)arg0 + 8) =
+                    (position << 16) | *(u16 *)((u8 *)arg0 + 8);
+                return;
+            }
+        }
+        func_0013A710(arg0, arg2);
+    }
+}
 
 void func_0013A6B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
