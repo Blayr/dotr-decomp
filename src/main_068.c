@@ -85,7 +85,139 @@ s32 func_0023C160(void) {
     return (s32) D_00299E4E;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C170);
+typedef struct State_0023C170 {
+    u8 pad00[0x8];
+    s32 field08;
+    s32 field0C;
+    s32 field10;
+    s32 field14;
+    s32 field18;
+    s32 field1C;
+    s32 field20;
+    s32 field24;
+    u8 pad28[4];
+    s16 field2C;
+    s16 field2E;
+    s16 field30;
+    u8 pad32[2];
+    s16 field34;
+    s16 field36;
+    s16 field38;
+    s16 field3A;
+    s16 field3C;
+    s16 field3E;
+    s16 field40;
+    s16 field42;
+    u8 pad44[4];
+    s32 field48;
+    s32 field4C;
+    s16 field50;
+    s16 field52;
+    s16 field54;
+    s16 field56;
+    u8 pad58[4];
+    s32 field5C;
+    s32 field60;
+    s32 field64;
+    s32 field68;
+    u8 pad6C[0x214];
+    s16 field280;
+    u8 pad282[2];
+    s32 field284;
+    s32 field288;
+    s32 field28C;
+    s32 field290;
+    s16 field294;
+    s16 field296;
+    u8 pad298[0x10];
+    s16 field2A8;
+    s16 field2AA;
+    s16 field2AC;
+    s16 field2AE;
+    s16 field2B0;
+    s16 field2B2;
+    s16 field2B4;
+    s16 field2B6;
+    s16 field2B8;
+    u8 pad2BA[0x586];
+} State_0023C170;
+
+void *func_002145E0(s32);
+
+s32 func_0023C170(s32 arg0) {
+    extern void *D_0034FAE8;
+    extern void *D_0034FAEC;
+    extern s8 D_0034FAF0;
+    extern State_0023C170 D_0034FB00;
+    extern s32 func_00194248(s32, s32 *, s32 *);
+    extern s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
+    s32 found[2];
+    State_0023C170 *state = &D_0034FB00;
+    s16 i;
+    s32 *out;
+
+    D_0034FAE8 = func_002145E0(0);
+    D_0034FAEC = func_002145E0(1);
+    D_0034FAF0 = 1;
+    func_00195108((s32)&D_0034FB00, 0x840);
+    D_0034FB00.field30 = 0;
+    D_0034FB00.field34 = 0;
+    D_0034FB00.field36 = 0;
+    D_0034FB00.field38 = 0;
+    D_0034FB00.field3A = 0;
+    D_0034FB00.field3C = 0;
+    D_0034FB00.field3E = 0;
+    D_0034FB00.field40 = 0;
+    D_0034FB00.field42 = 0;
+    D_0034FB00.field54 = 0;
+    D_0034FB00.field56 = 0;
+    D_0034FB00.field48 = 0;
+    D_0034FB00.field4C = 0;
+    D_0034FB00.field50 = 0;
+    D_0034FB00.field52 = 0;
+    D_0034FB00.field08 = 0;
+    D_0034FB00.field0C = 0;
+    D_0034FB00.field10 = 0;
+    D_0034FB00.field14 = 0;
+    D_0034FB00.field18 = 0;
+    D_0034FB00.field1C = 0;
+    D_0034FB00.field20 = 0;
+    D_0034FB00.field24 = 0;
+    D_0034FB00.field2C = 0;
+    D_0034FB00.field2E = 0;
+    D_0034FB00.field5C = 0;
+    D_0034FB00.field60 = 0;
+    D_0034FB00.field68 = 6;
+    D_0034FB00.field64 = 0;
+    D_0034FB00.field284 = 0;
+    D_0034FB00.field288 = 0;
+    D_0034FB00.field28C = 0;
+    D_0034FB00.field290 = 0;
+    D_0034FB00.field294 = 0;
+    D_0034FB00.field296 = 0;
+    D_0034FB00.field2B4 = 0;
+    D_0034FB00.field280 = 0;
+    D_0034FB00.field2A8 = 0;
+    D_0034FB00.field2AA = 0;
+    D_0034FB00.field2AC = 0;
+    D_0034FB00.field2AE = 0;
+    D_0034FB00.field2B0 = 0;
+    D_0034FB00.field2B2 = 0;
+    D_0034FB00.field2B6 = 0;
+    D_0034FB00.field2B8 = 0;
+
+    out = found;
+    for (i = 0; i < 2; i++) {
+        func_00194380(i, state->field0C, &state->field10, &state->field14, &state->field18);
+        func_00194248(0, &state->field20, out);
+        out++;
+    }
+
+    if (arg0 == 1 && (found[0] != 0 || found[1] != 0)) {
+        return 1;
+    }
+    return 0;
+}
 
 typedef struct State_0023C3F0 {
     u8 pad0[0x30];
@@ -98,7 +230,6 @@ typedef struct State_0023C3F0 {
     s16 result;
 } State_0023C3F0;
 
-void func_0023C170(s32);
 s32 func_0023CE40(s32);
 extern struct State_0023E610 D_0034FB00;
 
@@ -163,7 +294,6 @@ typedef struct State_0023C770 {
     s16 result;
 } State_0023C770;
 
-void func_0023C170(s32);
 s32 func_0023F130(s32);
 extern struct State_0023E610 D_0034FB00;
 
@@ -228,7 +358,6 @@ typedef struct State_0023C8B0 {
     s16 field2BE;
 } State_0023C8B0;
 
-void func_0023C170(s32);
 s32 func_0023F130(s32);
 s32 func_0023FF30(void);
 extern struct State_0023E610 D_0034FB00;

@@ -1413,6 +1413,7 @@ void func_0023BC80(void);
 s8 func_0023C140(void);
 void func_0023C150(void);
 s32 func_0023C160(void);
+s32 func_0023C170(s32 arg0);
 s32 func_0023C3F0(s32 arg0);
 s32 func_0023C770(s32 arg0);
 s32 func_0023C8B0(s32 arg0);
