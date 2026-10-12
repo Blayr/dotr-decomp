@@ -830,7 +830,75 @@ void func_00279C40(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                   arg4, arg5, arg6, arg7);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00279CC0);
+s32 func_00279CC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    extern s32 func_0024FE40();
+    s32 flags;
+    s32 delta;
+    s32 tile;
+    s32 owner;
+    s32 middle;
+    u16 current;
+
+    flags = func_002464F0(arg0, arg1, arg2);
+    if (arg0 == 0) {
+        return 0;
+    }
+    if (distance_002798C0(arg1, arg2, arg3, arg4) == 0) {
+        return 1;
+    }
+    if (distance_002798C0(arg1, arg2, arg3, arg4) == 1) {
+        if ((func_001E22B0(arg3, arg4) == 8 && !(flags & 0x10)) ||
+            (func_001E22B0(arg3, arg4) == 9 && func_0024FE40(arg0, arg3, arg4) == 1)) {
+            return 0;
+        } else {
+            if (func_001E36E0(arg3, arg4) != 0) {
+                current = *(u16 *)arg5;
+                if (current == func_001E3790(arg3, arg4)) {
+                    return 1;
+                }
+                if (!(arg6 & 0xFF)) {
+                    return 0;
+                }
+                tile = func_001E3790(arg3, arg4);
+                owner = func_00250360(tile >> 8, tile & 0xFF);
+                if (owner == func_00250370((void *)arg0)) {
+                    return 1;
+                }
+                return 0;
+            }
+            return 1;
+        }
+    } else if (distance_002798C0(arg1, arg2, arg3, arg4) == 2) {
+        delta = absolute_002798C0(arg1 - arg3);
+        switch (delta) {
+        case 0:
+            middle = (arg2 + arg4) >> 1;
+            if (func_002798C0(arg0, arg1, arg2, arg3, middle, arg5) == 1) {
+                return func_002798C0(arg0, arg1, middle, arg3, arg4, arg5);
+            }
+            break;
+        case 2:
+            middle = (arg1 + arg3) >> 1;
+            if (func_002798C0(arg0, arg1, arg2, middle, arg4, arg5) == 1) {
+                return func_002798C0(arg0, middle, arg2, arg3, arg4, arg5);
+            }
+            break;
+        case 1:
+            if (func_002798C0(arg0, arg1, arg2, arg3, arg2, arg5) == 1 &&
+                func_002798C0(arg0, arg3, arg2, arg3, arg4, arg5) == 1) {
+                return 1;
+            }
+            if (func_002798C0(arg0, arg1, arg2, arg1, arg4, arg5) == 1 &&
+                func_002798C0(arg0, arg1, arg4, arg3, arg4, arg5) == 1) {
+                return 1;
+            }
+            return 0;
+        default:
+            return 0;
+        }
+    }
+    return 0;
+}
 
 void func_0027A090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                    s32 arg5, s32 arg6, s32 arg7, s32 arg8, u8 arg9, u16 arg10) {

@@ -308,7 +308,6 @@ s32 func_00250B40(s32, s32, s32, s32);              /* extern */
 s32 func_0026FE70(void);
 s32 func_00270030(void);
 s32 func_00270260(void);
-void func_00279CC0(s32, s32, s32, s32, s32, s32, s32);
 extern u16 D_002D0970[51][41];
 
 void func_001FA8A0(s32, s32, s32, s32, s32, void *);
