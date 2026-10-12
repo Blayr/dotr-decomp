@@ -9,6 +9,7 @@ void func_00100560(void);
 void func_00100610(s32 arg0);
 void func_00100780(void);
 s32 func_00100820(void);
+void func_00100850(void);
 void func_00100B00(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_00100BA0(void *arg0, void *arg1, void *arg2, void *arg3, s32 arg4, s32 arg5, s32 arg6);
 void func_00100C60(void *arg0, void *arg1, s32 arg2, s32 arg3);

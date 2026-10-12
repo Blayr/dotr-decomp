@@ -132,7 +132,89 @@ s32 func_00100820(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100850);
+void func_001A9590(void);
+void func_001A9800(void);
+void func_001A98B0(void);
+void func_001F40D0(s32);
+
+typedef union {
+    f32 value;
+    struct {
+        u8 r, g, b, a;
+    } color;
+} Color_00100850;
+
+void func_00100850(void) {
+    extern s32 func_001A8690();
+    extern s32 func_00202E00();
+    extern s32 func_00208530();
+    extern s32 func_00208D00();
+    extern Color_00100850 D_0028B840;
+    Color_00100850 color;
+    s32 initial;
+    s32 allocation;
+    s32 i;
+    s32 level;
+
+    initial = func_00209D20();
+    func_00202E00(0, 0);
+    func_001EE4A0(0);
+    func_00209D30(func_00213FC0(func_001AE5A0(func_001E5590(func_001F8A30(func_002085E0(func_00208530(func_0020A0B0(initial, 1), 1), 1), 0)))));
+    func_002085A0(2);
+    func_001A9590();
+    func_001EE4A0(0);
+    func_00208490(0);
+    func_002085A0(3);
+    if (func_001F5240(0, -1) == 0) {
+        if ((func_001F5240(1, -1) == 0) && (func_001F5240(2, -1) == 0)) {
+            func_00202D60(4, -1);
+        }
+    }
+    if (func_001F5240(0, -1) == 0) {
+        if (func_001F5240(1, -1) == 0) {
+            func_00202D60(5, -1);
+            func_00202D60(8, -1);
+        }
+    }
+    if (func_001F5240(1, -1) == 0) {
+        if (func_001F5240(2, -1) == 0) {
+            func_00202D60(6, -1);
+        }
+    }
+    allocation = 0x3BC0;
+    allocation += func_00202E00(allocation, 2);
+    allocation += func_00202AB0(4, allocation);
+    allocation += func_00202AB0(5, allocation);
+    allocation += func_00202AB0(6, allocation);
+    func_00202AB0(8, allocation);
+    func_00208460();
+    func_00207360();
+    func_001AEE80();
+    func_001EDF90(-1);
+    func_001CE400();
+    i = 0;
+    do {
+        func_001F2FF0(i, 0);
+        i += 1;
+    } while (i < 0x54);
+    func_001F40D0(0);
+    func_001F40D0(1);
+    func_001F40D0(2);
+    func_001CD6E0();
+    func_002073A0();
+    func_00208490(1);
+    func_001A9800();
+    func_002085A0(2);
+    if ((level = func_001A8690()) > 0) {
+        s32 image = (s32)func_00208D00(0);
+        color = D_0028B840;
+        color.color.a = level << 4;
+        func_00208090(0, 0, 1, image, (s32)&color);
+    }
+    func_001FCDA0();
+    func_002085A0(3);
+    func_001A98B0();
+}
 
 typedef struct Vec4_00100B00 {
     f32 x;
