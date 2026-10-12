@@ -558,4 +558,91 @@ s32 func_0020F370(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020F4E0);
+typedef struct Flags_0020F4E0 {
+    u8 bit0 : 1;
+    u8 bit1 : 1;
+    u8 bit2 : 1;
+    u8 bit3 : 1;
+    u8 bit4 : 1;
+    u8 bit5 : 1;
+    u8 bit6 : 1;
+    u8 bit7 : 1;
+} Flags_0020F4E0;
+
+typedef struct Object_0020F4E0 {
+    u8 *data;
+    Flags_0020F4E0 flags4;
+    Flags_0020F4E0 flags5;
+    u8 pad6[0x26];
+    s32 result;
+} Object_0020F4E0;
+
+typedef struct Offset_0020F4E0 {
+    s32 unused;
+    u32 value : 28;
+    u32 flags : 4;
+} Offset_0020F4E0;
+
+typedef struct Transform_0020F4E0 {
+    u8 pad0[0x30];
+    union {
+        __int128 quad;
+        struct {
+            f32 x, y, z, w;
+        } values;
+    } vector;
+} Transform_0020F4E0;
+
+s32 func_0020EDE0(void *, f32);
+void *func_0020F780(void *, s32);
+void *func_0020FA10(void *);
+extern s32 D_0032A770;
+
+void *func_0020F4E0(void *arg0, void *arg1) {
+    extern s32 func_0020ED30(void *, f32);
+    s32 temp_v1;
+    Transform_0020F4E0 *temp_s0;
+    s32 var_s1;
+    Object_0020F4E0 *obj;
+
+    obj = arg1;
+    if (!obj->flags4.bit1 || !obj->flags5.bit2) {
+        arg0 = func_00209490(arg0, (u8)obj->flags4.bit1, obj->flags5.bit2);
+    }
+    *(void **)0x700000C0 = arg0;
+    *(u8 **)0x700000DC = obj->data + 0x10;
+    *(s32 *)0x700000D8 = ((Offset_0020F4E0 *)(obj->data + *(s32 *)(*(u8 **)0x700000DC + 8)))->value;
+    func_0020BAF0(0);
+    temp_s0 = (Transform_0020F4E0 *)(obj->data + *(s32 *)*(u8 **)0x700000DC);
+    *(__int128 *)0x70000020 = temp_s0->vector.quad;
+    *(s32 *)0x7000002C = 0x3F800000;
+    if (obj->flags5.bit4 != 0) {
+        func_0020B380((void *)0x70000000, (u8 *)arg1 + 0x50, 1);
+    } else {
+        func_0020CDD0((void *)0x70000000, NULL, (void *)0x70000020);
+    }
+    obj->result = func_0020ED30((void *)0x70000000, temp_s0->vector.values.w);
+    var_s1 = 0;
+    if (obj->flags4.bit0 && (func_00209270(NULL, (void *)0x70000050, (f32 *)0x70000030, (f32 *)0x70000034, (f32 *)0x70000038) != 0) && (func_0020D100((f32 *)0x70000050, (f32 *)0x70000000) <= (*(f32 *)0x70000034 + temp_s0->vector.values.w))) {
+        var_s1 = 1;
+    }
+    D_0032A770 = 0;
+    if (obj->flags4.bit2 != 0) {
+        arg0 = func_0020F780(arg1, var_s1);
+    } else {
+        *(s32 *)0x700000B0 = func_0020EDE0((void *)0x70000020, temp_s0->vector.values.w);
+        temp_v1 = *(s32 *)0x700000B0;
+        if (temp_v1 & 1) {
+            if ((temp_v1 & 4) || (*(s32 *)(*(u8 **)0x700000DC + 0x1C) > 0) || (var_s1 != 0)) {
+                arg0 = func_0020F780(arg1, var_s1);
+            } else {
+                arg0 = func_0020FA10(arg1);
+            }
+        }
+    }
+    func_0020BB50();
+    if ((obj->flags4.bit1 == 0) || (obj->flags5.bit2 == 0)) {
+        arg0 = func_00209490(arg0, 1, 1);
+    }
+    return arg0;
+}

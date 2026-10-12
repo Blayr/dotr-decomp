@@ -1300,6 +1300,7 @@ void func_0020ED30(void *arg0, f32 fparg0);
 void func_0020F250(s32 arg0);
 s32 func_0020F290(s32 arg0);
 s32 func_0020F370(void *arg0);
+void *func_0020F4E0(void *arg0, void *arg1);
 void func_0020FAF0(void *arg0);
 void func_0020FED0(void *arg0, void *arg1, void *arg2, s32 arg3);
 void func_00210010(void *arg0, void *arg1, void *arg2);
