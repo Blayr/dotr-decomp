@@ -773,7 +773,20 @@ s32 func_00217530(void) {
     return D_0034F6E8.active != 0 ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00217550);
+#ifndef GAME_H
+/* The game translation unit already declares this global with its local type. */
+typedef struct {
+    signed char active : 1;
+} Flags_00217530;
+
+extern Flags_00217530 D_0034F6E8;
+#endif
+
+void func_00217550(void) {
+    if (D_0034F6E8.active) {
+        func_00109DC0();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217590);
 

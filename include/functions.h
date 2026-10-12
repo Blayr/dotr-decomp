@@ -1326,6 +1326,7 @@ s32 func_00217400(void);
 void func_00217410(void);
 void func_002174D0(void);
 s32 func_00217530(void);
+void func_00217550(void);
 s32 func_00217A10(s64 arg0);
 void func_00217B00(void);
 s32 func_00217B40(s32 arg0);
