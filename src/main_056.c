@@ -647,7 +647,129 @@ void *func_00209490(void *arg0, s32 arg1, s32 arg2) {
     return (u8 *)arg0 + 0x20;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00209510);
+typedef struct Flags_00209510 {
+    u8 pad0 : 6;
+    u8 enabled : 1;
+    u8 pad7 : 1;
+} Flags_00209510;
+
+typedef struct State_00209510 {
+    u8 pad0[0x274];
+    u8 *decoder;
+    s32 option;
+    s32 base;
+    s32 current;
+    s32 size;
+    s32 ready;
+    s32 start;
+    s32 end;
+    s32 field294;
+    s32 field298;
+} State_00209510;
+
+typedef struct Env_00209510 {
+    u8 pad0[6];
+    s16 field6;
+    u8 pad8[20];
+} Env_00209510;
+
+typedef struct Mode_00209510 {
+    u32 clock : 2;
+    u32 gate : 1;
+    u32 gate_source : 1;
+    u32 gate_mode : 2;
+    u32 zero_return : 1;
+    u32 enable : 1;
+    u32 compare_interrupt : 1;
+    u32 overflow_interrupt : 1;
+    u32 compare_flag : 1;
+    u32 overflow_flag : 1;
+    u32 reserved : 20;
+} Mode_00209510;
+
+s32 func_0017B770(s32, s32);
+s32 func_0017B7D0(void);
+void func_00184810(s32, s16, s16, s16);
+void func_001849B0(void);
+u8 *func_00186120(s32);
+void func_00186148(s32);
+void func_00186238(void *);
+void func_00186410(void *);
+void func_00186470(u8 *, s32);
+void func_00186BD0(void);
+void func_00186FC8(void);
+void func_0020AD10(void *, s32, s32, s32);
+void func_0020DDB0(void);
+extern u8 D_00286980[];
+extern u8 D_00293F10[];
+extern u8 D_00293F14[];
+extern u8 D_00293F18[];
+extern s32 D_003261C8;
+
+s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    Env_00209510 env;
+    Mode_00209510 mode;
+    State_00209510 *state = (State_00209510 *)D_00325F50;
+    s32 *packet;
+
+    func_00198948(D_00325F50, 0, 0x2A0);
+    D_003261C8 = arg6;
+    if (func_001FFFC0() == 0) {
+        return 0;
+    }
+    func_00186FC8();
+    func_00186BD0();
+    func_001849B0();
+    func_00186148(1);
+    func_00186410(&env);
+    env.field6 = 0x100;
+    func_00186238(&env);
+    func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
+                    *(s16 *)(D_00293F14 + arg0 * 0x28),
+                    *(s16 *)(D_00293F18 + arg0 * 0x28));
+    state->decoder = func_00186120(1);
+    ((Flags_00209510 *)state->decoder)->enabled = 1;
+    func_0020AD10(state, arg0, arg1, arg2);
+    mode.clock = 3;
+    mode.gate = 0;
+    mode.gate_source = 0;
+    mode.gate_mode = 0;
+    mode.zero_return = 0;
+    mode.enable = 1;
+    mode.compare_interrupt = 0;
+    mode.overflow_interrupt = 0;
+    mode.compare_flag = 0;
+    mode.overflow_flag = 1;
+    mode.reserved = 0;
+    *(s32 *)0x10000810 = *(s32 *)&mode;
+    *(s32 *)0x10000800 = 0;
+    state->start = arg3;
+    state->end = arg4;
+    state->size = arg5;
+    state->ready = 1;
+    state->base = arg3;
+    state->current = arg3;
+    func_0017B770(func_0017B7D0(), 0x20);
+    state->field294 = 0;
+    state->field298 = 0;
+    packet = (s32 *)func_0020B000(state->base);
+    func_0020BA70();
+    func_0020DDB0();
+    func_002173D0();
+    packet[0] = 0x70000000;
+    packet[1] = 0;
+    packet[2] = 0;
+    packet[3] = 0;
+    func_0017BB60(0);
+    func_00185578(0, 0);
+    func_00186470(state->decoder, state->base);
+    func_00185578(0, 0);
+    func_00186470(state->decoder, (s32)D_00286980);
+    func_00185578(0, 0);
+    func_00213F60(state->base, state->base + state->size);
+    func_001854E0(0);
+    return 1;
+}
 
 s32 func_00209870(void) {
     func_0020DEE0();
