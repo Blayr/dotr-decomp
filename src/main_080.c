@@ -231,7 +231,140 @@ INCLUDE_ASM("asm/nonmatchings/main_080", func_002818A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_002825F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_002831A0);
+typedef struct {
+    u16 u : 14;
+    u16 : 2;
+    u16 v : 14;
+    u16 : 2;
+    u32 padding;
+} Texture_002831A0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Position_002831A0;
+
+typedef struct {
+    s16 id;
+    u16 flags;
+    s32 reserved;
+    s64 command;
+} Header_002831A0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_002831A0;
+
+typedef struct {
+    u64 texture;
+    Position_002831A0 position;
+} Vertex_002831A0;
+
+typedef struct {
+    u64 tag;
+    u64 header[2];
+    Color_002831A0 color;
+    Vertex_002831A0 v0, v1, v2, v3;
+    u64 reserved[4];
+} Packet_002831A0;
+
+typedef struct {
+    u8 padding[9];
+    u8 cells[3][3];
+} State_002831A0;
+
+#pragma optimization_level 0
+
+void func_002831A0(void) {
+    extern s32 func_00202BF0();
+    extern s32 func_00202E00();
+    extern s32 func_00207650();
+    extern u8 D_002B8740[];
+    extern State_002831A0 D_00351210;
+    extern s32 D_00351228;
+    Packet_002831A0 packet;
+    s32 y;
+    s32 x;
+    s32 k;
+    s32 handle;
+    s32 j;
+    s32 i;
+    s32 size;
+
+    handle = func_00202BF0(9, 1);
+    size = func_00209E50();
+    size += func_00202E00(size, 1);
+    D_00351228 = func_00202B00(D_00351228, 9, size, NULL);
+    D_00351228 = func_0020F290(D_00351228);
+    func_00202D60(9, -1);
+
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            if (D_00351210.cells[i][j]) {
+                x = i * 0x70 + 0x760;
+                y = 0x840 - j * 0x70;
+                ((Header_002831A0 *)&packet.header[0])->flags = 0x24;
+                ((Header_002831A0 *)&packet.header[0])->id = 9;
+                ((Header_002831A0 *)&packet.header[0])->command = 0x424242421LL;
+                ((Header_002831A0 *)&packet.header[0])->reserved = 0;
+                packet.color.r = packet.color.g = packet.color.b = D_002B8740[D_00351210.cells[i][j]];
+                packet.color.a = packet.color.r >> 1;
+                packet.color.q = 1.0f;
+                packet.v0.position.z = packet.v1.position.z = packet.v2.position.z = packet.v3.position.z = 0xFFFFF8;
+                packet.v0.position.fog = packet.v1.position.fog = packet.v2.position.fog = packet.v3.position.fog = 0;
+                ((Header_002831A0 *)&packet.header[0])->flags |= 0x800;
+                ((Texture_002831A0 *)&packet.v0.texture)->u = 0x440;
+                ((Texture_002831A0 *)&packet.v0.texture)->v = 0x390;
+                ((Texture_002831A0 *)&packet.v1.texture)->u = 0x7D0;
+                ((Texture_002831A0 *)&packet.v1.texture)->v = 0x390;
+                ((Texture_002831A0 *)&packet.v2.texture)->u = 0x440;
+                ((Texture_002831A0 *)&packet.v2.texture)->v = 0x720;
+                ((Texture_002831A0 *)&packet.v3.texture)->u = 0x7D0;
+                ((Texture_002831A0 *)&packet.v3.texture)->v = 0x720;
+
+                for (k = 0; k < 4; k++) {
+                    switch (k) {
+                    case 0:
+                        packet.v2.position.x = packet.v0.position.x = (x - 9) * 16;
+                        packet.v1.position.y = packet.v0.position.y = (y - 9) * 16;
+                        packet.v3.position.x = packet.v1.position.x = packet.v0.position.x + 0x390;
+                        packet.v3.position.y = packet.v2.position.y = packet.v0.position.y + 0x390;
+                        break;
+                    case 1:
+                        packet.v3.position.x = packet.v1.position.x = (x + 0x30) * 16;
+                        packet.v1.position.y = packet.v0.position.y = (y - 9) * 16;
+                        packet.v2.position.x = packet.v0.position.x = packet.v1.position.x + 0x390;
+                        packet.v3.position.y = packet.v2.position.y = packet.v0.position.y + 0x390;
+                        break;
+                    case 2:
+                        packet.v2.position.x = packet.v0.position.x = (x - 9) * 16;
+                        packet.v3.position.y = packet.v2.position.y = (y + 0x30) * 16;
+                        packet.v3.position.x = packet.v1.position.x = packet.v0.position.x + 0x390;
+                        packet.v1.position.y = packet.v0.position.y = packet.v2.position.y + 0x390;
+                        break;
+                    case 3:
+                        packet.v3.position.x = packet.v1.position.x = (x + 0x30) * 16;
+                        packet.v3.position.y = packet.v2.position.y = (y + 0x30) * 16;
+                        packet.v2.position.x = packet.v0.position.x = packet.v1.position.x + 0x390;
+                        packet.v1.position.y = packet.v0.position.y = packet.v2.position.y + 0x390;
+                        break;
+                    }
+                    func_00208CB0(&packet.header[0], 0x1C4391F044ALL);
+                    func_00208700(&packet.header[0], (void *)handle, 1);
+                    func_002086D0(&packet.header[0], 0x44);
+                    D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+                    func_002086D0(&packet.header[0], 0x49);
+                    D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+                }
+            }
+        }
+    }
+}
+
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00283880);
 
