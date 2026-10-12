@@ -200,7 +200,43 @@ s32 func_002159D0(s32 arg0, s32 arg1) {
     return entry->value;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215A60);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+extern unsigned char D_0032F790[];
+#endif
+
+
+typedef struct Row_00215A60 {
+    u16 values[40];
+    u8 pad[4];
+} Row_00215A60;
+
+typedef struct Side_00215A60 {
+    u8 pad[0xFD94];
+    Row_00215A60 rows[6];
+    u8 tail[0x14];
+} Side_00215A60;
+
+extern u8 D_0034F6D0;
+
+s32 func_00215A60(s32 arg0, s32 arg1, s32 arg2) {
+    s32 var_v1;
+    u16 *values;
+
+    if (D_0034F6D0 == arg0) {
+        var_v1 = 0;
+    } else {
+        var_v1 = 1;
+    }
+    values = ((Side_00215A60 *)D_0032F790)[var_v1].rows[arg1].values;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return -1;
+    }
+    if ((arg2 < 0) || (arg2 >= 0x28)) {
+        return -1;
+    }
+    return values[arg2];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00215B10);
 
