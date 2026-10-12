@@ -730,7 +730,95 @@ void func_002441F0(void *arg0, s32 arg1) {
     func_0017B900(counter->semaphore);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244250);
+typedef struct Ring_00244250 {
+    u8 *data;
+    u8 *tags;
+    s32 count;
+    s32 read;
+    s32 used;
+    s32 bytes;
+    u8 pad[0x28];
+    s32 sema;
+    s32 active;
+} Ring_00244250;
+
+extern s8 D_0030F890;
+
+static inline u64 tag_00244250(u32 address, u32 id) {
+    return ((u64)address << 32) | ((u64)id << 28) | 0x80;
+}
+
+s32 func_00244250(void *arg0) {
+    s32 chcr;
+    s32 patched;
+    u32 current;
+    s32 count;
+    s32 consumed;
+    s32 head;
+    s32 index;
+    s32 blocks;
+    s32 last;
+    s32 i;
+    s32 id;
+    Ring_00244250 *ring = arg0;
+
+    patched = 0;
+    func_0017B920(ring->sema);
+    if (ring->active == 0) {
+        func_00242CF0(&D_0030F890);
+        return 0;
+    }
+
+    func_001843E0();
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+    *(volatile s32 *)0x1000B400 = 5;
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    chcr = *(volatile s32 *)0x1000B400;
+    count = ring->count;
+    current = *(volatile s32 *)0x1000B410;
+    if (current == ((u32)(ring->tags + (count + 1) * 16) & 0x0FFFFFFF)) {
+        current = 0;
+    } else {
+        current = (u32)(current - (u32)ring->data) >> 11;
+    }
+    head = ring->read;
+    consumed = (s32)(current + count - head) % count;
+    ring->read = (head + consumed) % count;
+    ring->used -= consumed;
+    index = (ring->read + ring->used) % ring->count;
+    blocks = ring->bytes >> 11;
+    ring->bytes %= 2048;
+
+    if (blocks > 0) {
+        last = (ring->count + (ring->read + ring->used - 1)) % ring->count;
+        patched = 1;
+        *(u64 *)(ring->tags + last * 16) = tag_00244250((u32)ring->data + (last << 11), 3);
+    }
+    for (i = 0; i < blocks; i++) {
+        if (i == blocks - 1) {
+            id = 0;
+        } else {
+            id = 3;
+        }
+        *(u64 *)(ring->tags + index * 16) = tag_00244250((u32)ring->data + (index << 11), id);
+        index = (index + 1) % ring->count;
+    }
+
+    ring->used += blocks;
+    if (ring->used != 0) {
+        if (patched != 0) {
+            chcr = (chcr & 0x0FFFFFFF) | 0x30000000;
+        }
+        func_001843E0();
+        *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+        *(volatile s32 *)0x1000B400 = chcr | 0x100;
+        *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+        func_00184428();
+    }
+    func_0017B900(ring->sema);
+    return 1;
+}
 
 s32 func_00244530(u8 *arg0) {
     func_0017B920(*(s32 *)(arg0 + 0x40));

@@ -85,7 +85,6 @@ extern void func_00187828(void *, s32, s32);
 extern void func_00187858(void *, s32);
 extern void func_001878B0(void *);
 
-void func_00244250(void *);
 extern u8 D_003506C8[];
 
 s32 func_0024CA40(s32, s32, s32, s32, s32, s32);
