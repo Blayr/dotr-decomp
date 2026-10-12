@@ -578,7 +578,100 @@ void func_00127A90(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00127B00);
+typedef struct {
+    u16 value;
+    u8 flag;
+} Entry_00127B00;
+
+s32 func_0027D720(void *, s32);
+
+void func_00127B00(void *arg0) {
+    extern void func_0027E770();
+    extern s32 func_001E1030();
+    extern s32 func_0027DE20();
+    u8 scratch[0x70];
+    Entry_00127B00 entries[0x17];
+    s16 result_a;
+    s16 result_b;
+    s32 i;
+    Entry_00127B00 *entry;
+    s32 temp_s0;
+    s32 temp_s1;
+    s32 temp_v0_2;
+    s32 result;
+    s32 high;
+    s32 low;
+    s32 var_s5;
+    s32 code;
+
+    if ((temp_v0_2 = func_001DF540(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF)) != 0) {
+        temp_s0 = func_0024DE70(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+        temp_s1 = func_001E1090(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+        result_b = 0;
+        result_a = 0;
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->value = 0xFFFF;
+            entry->flag = 0xFF;
+            entry++;
+        } while (i < 0x16);
+        func_0027E770(scratch);
+        code = func_001E1030(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+        switch (code) {
+        case 0x6F:
+            if (func_0027D720(arg0, 0) == 1) {
+                *(s16 *)((u8 *)arg0 + 4) = 0xBFF;
+                return;
+            }
+            goto fallback_00127B00;
+        case 0x6C:
+            var_s5 = 1;
+            high = temp_s1 >> 8;
+            low = temp_s1 & 0xFF;
+            goto loop_00127B00;
+        default:
+            goto fallback_00127B00;
+        }
+loop_00127B00:
+                result = func_0012B1B0(temp_s0);
+                entry = entries;
+                result = func_0027DE20((s32)arg0, 0, temp_v0_2, low, high,
+                                      temp_s0 == 0 ? 1 : 0,
+                                      var_s5 & 0xFF, result, (s32)entry, 0,
+                                      (s32)&result_a, (s32)&result_b, 2, 0, 0x7D0,
+                                      (s32)scratch);
+                if (result != 0) {
+                    if (result != 1) {
+                        if (result != 2) {
+                            if (result != 3) {
+                                var_s5++;
+                                goto retry_00127B00;
+                            }
+                        }
+                        *(s16 *)((u8 *)arg0 + 4) = 0x3FF;
+                        *(u32 *)((u8 *)arg0 + 8) = (temp_s1 << 16) | *(u16 *)((u8 *)arg0 + 8);
+                        return;
+                    }
+                } else {
+                    *(s16 *)((u8 *)arg0 + 4) = 0x3FF;
+                    *(u32 *)((u8 *)arg0 + 8) = (temp_s1 << 16) | *(u16 *)((u8 *)arg0 + 8);
+                    return;
+                }
+                return;
+retry_00127B00:
+        if (var_s5 <= 2) {
+            goto loop_00127B00;
+        }
+        *(s16 *)((u8 *)arg0 + 4) = 0x3FF;
+        *(u32 *)((u8 *)arg0 + 8) = (temp_s1 << 16) | *(u16 *)((u8 *)arg0 + 8);
+        return;
+fallback_00127B00:
+        func_001277C0(arg0, 1);
+        return;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00127D20);
 
