@@ -781,7 +781,120 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00157480);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00157A50);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00158360);
+s32 func_00158360(s32 arg0, s32 arg1) {
+    u8 sp70[0x20];
+    u8 sp90[0x60];
+    s32 spF0[8];
+    u8 count;
+    s32 state;
+    s32 mask;
+    u32 *data;
+
+    extern s32 func_00158800();
+
+    count = 0;
+    state = func_001E1030();
+    func_001E1090(arg0, arg1);
+    mask = func_00250360(arg0, arg1);
+    data = func_001E0B70(arg0, arg1, 0);
+    func_0026FD30(arg0, spF0);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    if (func_001587E0(state) == 1) {
+        if (func_00158960(mask) == 4) {
+            return 1;
+        }
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (state) {
+        case 0x5F:
+            if (func_001DF470(arg0) < 0x4B0) {
+                return 1;
+            }
+            break;
+        case 0x40: {
+            s32 i;
+            s32 position;
+
+            mask = func_0024CA40(0, 0, mask, 2, 3, 14);
+            for (i = 0; i < func_0024E910(mask); i++) {
+                position = func_0024EC50(mask, i);
+                if (func_002781B0(position >> 8, position & 0xFF, 0) == 1) {
+                    count++;
+                }
+            }
+            if ((u8)count > 1) {
+                return 1;
+            }
+            break;
+        }
+        }
+        return 2;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (data == NULL) {
+            return 2;
+        }
+        switch (*data >> 8) {
+        case 0x22:
+            if (func_0024E910(func_0024CA40(0, 0, mask, 2, 0x1D, 14)) > 3) {
+                return 1;
+            }
+            break;
+        case 0x17: {
+            s32 list;
+            s32 i;
+            s32 position;
+
+            list = func_0024CA40(0, 0, mask, 2, 0x34, 14);
+            for (i = 0; i < func_0024E910(list); i++) {
+                position = func_0024EC50(list, i);
+                if ((func_001E1090(position >> 8, position & 0xFF) >> 8) >= 2) {
+                    return 1;
+                }
+            }
+            break;
+        }
+        case 0x26: {
+            s32 *p;
+            s32 i;
+
+            i = 0;
+            if (i < func_0026FE20(mask)) {
+                p = spF0;
+                do {
+                    if (func_001DE020(func_0026FCE0(*p) >> 5) == 2) {
+                        return 1;
+                    }
+                    p++;
+                    i++;
+                } while (i < func_0026FE20(mask));
+            }
+            if (func_00158800(mask) == 1 && func_00155C90(mask, sp70, sp90) >= 0) {
+                return 1;
+            }
+            break;
+        }
+        case 0xD:
+            if ((*data & 0x3F) == 0x32) {
+                if (func_0024E780(mask == 0 ? 1 : 0, 3) >= 3) {
+                    return 1;
+                }
+            } else {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 s32 func_00158780(s32 arg0) {
     if (func_001DF470(arg0) > 0x4B0) {
