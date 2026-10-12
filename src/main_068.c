@@ -1545,7 +1545,169 @@ s32 func_0023FCE0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023FF30);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_002406C0);
+typedef struct State_002406C0 {
+    s32 result;
+    s32 result4;
+    s32 index;
+    s32 slot;
+    s32 status;
+    s32 value;
+    s32 ready;
+    s32 unused1C;
+    s32 status20;
+    s32 status24;
+    u8 unused28[8];
+    s16 mode;
+    s16 unused32;
+    s16 count;
+    u8 unused36[10];
+    s16 retries;
+    s16 unused42;
+    s16 flags[2];
+} State_002406C0;
+
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
+extern s32 D_0034FB04;
+extern s32 D_0034FB08;
+extern s32 D_0034FB0C;
+extern s32 D_0034FB10;
+extern s32 D_0034FB14;
+extern s32 D_0034FB18;
+extern s32 D_0034FB20;
+extern s32 D_0034FB24;
+
+s32 func_002406C0(void) {
+    State_002406C0 *state = (State_002406C0 *)&D_0034FB00;
+    s32 ret;
+
+    D_0034FB00.result = func_00194380(D_0034FB08, D_0034FB0C,
+                                    &D_0034FB10, &D_0034FB14, &D_0034FB18);
+    D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
+    if ((D_0034FB04 == 1) && (state->status20 == 1)) {
+        switch (state->status24) {
+        case 0:
+            break;
+        case -1:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            ret = 0x700;
+            goto done;
+        case -2:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            ret = 0x700;
+            goto done;
+        default:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            break;
+        }
+        switch (state->status) {
+        case 0:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            ret = 2;
+            goto done;
+        case 1:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            ret = 4;
+            goto done;
+        case 2:
+            break;
+        case 3:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            ret = 4;
+            goto done;
+        default:
+            state->mode = 14;
+            state->count = 0;
+            state->retries = 0;
+            ret = 2;
+            goto done;
+        }
+        if (state->status == 2) {
+            switch (state->ready) {
+            case 0:
+                state->retries++;
+                if (state->retries >= 3) {
+                    state->mode = 11;
+                    state->count = 0;
+                    state->retries = 3;
+                    if (state->mode == 11) {
+                        ret = 14;
+                    } else {
+                        ret = 3;
+                    }
+                    return ret;
+                }
+                break;
+            case 1:
+                state->retries = 0;
+                if (state->mode == 0) {
+                    if (state->index == 0) {
+                        state->flags[state->index] = 1;
+                        state->index = 1;
+                        ret = 0;
+                        goto done;
+                    }
+                    state->flags[0] = 0;
+                    state->flags[1] = 0;
+                    state->index = 0;
+                    state->mode = 5;
+                    ret = 9;
+                    goto done;
+                }
+                if (state->mode == 3) {
+                    if (state->value < 250) {
+                        state->mode = 14;
+                        state->count = 0;
+                        state->retries = 0;
+                        ret = 5;
+                        goto done;
+                    }
+                    state->mode = 4;
+                    ret = 9;
+                    goto done;
+                }
+                break;
+            default:
+                state->mode = 14;
+                state->count = 0;
+                state->retries = 0;
+                ret = 2;
+                goto done;
+            }
+        }
+    }
+    switch (state->mode) {
+    case 0:
+        ret = 9;
+        break;
+    case 3:
+        ret = 17;
+        break;
+    case 11:
+        ret = 14;
+        break;
+    case 13:
+        ret = 1;
+        break;
+    default:
+        ret = 0;
+        break;
+    }
+done:
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_002409E0);
 
