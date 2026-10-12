@@ -1555,7 +1555,154 @@ s32 func_001526D0(void *src, s32 arg1, u16 *out, u8 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_012", func_00152CD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_00153550);
+typedef struct Input_00153550 {
+    u16 position;
+    u8 pad2[6];
+    u32 target;
+} Input_00153550;
+
+typedef struct Output_00153550 {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[10];
+    u8 result;
+} Output_00153550;
+
+typedef struct Point_00153550 {
+    u8 x : 4;
+    u8 y : 4;
+} Point_00153550;
+
+#define MIN_00153550(a, b) ((a) < (b) ? (a) : (b))
+#define MAX_00153550(a, b) ((b) < (a) ? (a) : (b))
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+
+static inline u32 target_00153550(void *src, s32 mode) {
+    if (mode == 1) {
+        return (u16)(((Input_00153550 *)src)->target >> 16);
+    } else {
+        return *(u16 *)((u8 *)src + 8);
+    }
+}
+
+static inline void stay_00153550(void *src, void *dst, s32 position, s32 flag) {
+    Input_00153550 *source = src;
+    Output_00153550 *out = dst;
+
+    out->position = source->position;
+    out->action = 6;
+    out->destination = position;
+    out->result = func_0027E360(source->position >> 8, source->position & 0xFF,
+                                out->destination, flag, 0);
+}
+
+s32 func_00153550(void *arg0, s32 arg1, void *arg2, s32 arg3) {
+    s32 start;
+    s32 count;
+    u8 flag;
+    s32 startY;
+    Point_00153550 points[12];
+    s32 bestScore;
+    Point_00153550 *p;
+    s32 targetY;
+    s32 targetX;
+    s32 i;
+    s32 bestIndex;
+    s32 mode;
+    s32 target;
+    s32 startX;
+    u32 xPosition;
+    u32 yPosition;
+    Input_00153550 *source = arg0;
+    Output_00153550 *out = arg2;
+    extern void func_0027A090();
+
+    flag = func_00153AB0();
+    mode = arg3 & 0xFF;
+    xPosition = target_00153550(arg0, mode);
+    yPosition = target_00153550(arg0, mode);
+    if (func_001DF540(yPosition >> 8, xPosition & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    }
+    start = func_001E1090(source->position >> 8, source->position & 0xFF);
+    xPosition = target_00153550(arg0, mode);
+    yPosition = target_00153550(arg0, mode);
+    target = func_001E1090(yPosition >> 8, xPosition & 0xFF);
+    if (target_00153550(arg0, mode) == 0xFFFF) {
+        stay_00153550(arg0, arg2, start, 1);
+        return 0;
+    } else {
+        s32 unit = func_001DF540(source->position >> 8, source->position & 0xFF);
+        startX = start & 0xFF;
+        startY = start >> 8;
+        if (func_002464F0(unit, startX, startY) == 0 ||
+                func_0027BBC0(source->position >> 8, source->position & 0xFF, 0) == 1) {
+            stay_00153550(arg0, arg2, start, 1);
+            return 0;
+        } else {
+            p = points;
+            {
+                s32 n = 0;
+                Point_00153550 *q = p;
+                do {
+                    q->x = q->y = 0xF;
+                    q++;
+                    n++;
+                } while (n < 12);
+            }
+            {
+                s32 position = source->position;
+                u16 card = (u16)func_00153ED0(arg1);
+                func_0027A090(position >> 8, position & 0xFF, points,
+                    startX, startY, targetX = target & 0xFF,
+                    targetY = target >> 8, target_00153550(arg0, mode),
+                    0, 30, card);
+            }
+            count = func_0027AFC0((u8 *)points);
+            bestIndex = 0xFF;
+            if (count > 0) {
+                bestScore = 0;
+                for (i = 0; i < count; i++, p++) {
+                    if (func_001E36E0(p->x, p->y) == 0) {
+                        s32 score = func_00276CC0(p->x, p->y, arg1, (u8)(flag ? 5 : 2), 1,
+                            (u8)func_00153ED0(arg1));
+                        if (bestScore < score) {
+                            bestScore = score;
+                            bestIndex = i;
+                        } else if (score == bestScore) {
+                            if (MAX_00153550(p->x, targetX) - MIN_00153550(p->x, targetX)
+                                    + (MAX_00153550(p->y, targetY) - MIN_00153550(p->y, targetY))
+                                    < MAX_00153550(points[bestIndex].x, targetX) - MIN_00153550(points[bestIndex].x, targetX)
+                                    + (MAX_00153550(points[bestIndex].y, targetY) - MIN_00153550(points[bestIndex].y, targetY))) {
+                                bestScore = score;
+                                bestIndex = i;
+                            }
+                        }
+                    }
+                }
+            } else {
+                stay_00153550(arg0, arg2, start, 1);
+                return 0;
+            }
+            if (bestIndex != 0xFF) {
+                out->position = source->position;
+                out->action = 6;
+                out->destination = (points[bestIndex].y << 8) | points[bestIndex].x;
+                out->result = func_0027E360(source->position >> 8,
+                    source->position & 0xFF, out->destination, 0, 0);
+            } else {
+                stay_00153550(arg0, arg2, start, 1);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00153AB0(void) {
     return (func_001E0110(func_001DE540()) < 3) ? 0 : 1;
