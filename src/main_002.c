@@ -460,7 +460,66 @@ s32 func_00107EC0(u8 *arg0, s32 arg1, s16 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108030);
+f32 func_00108030(s32 arg0, s32 arg1, s32 arg2) {
+    f32 result;
+    f32 *table = (f32 *)arg0;
+
+    if (arg2 == 0) {
+        if ((s16)arg1 >= 360) {
+            arg1 = (s16)(arg1 % 360);
+        }
+        if ((s16)arg1 <= -360) {
+            arg1 = (s16)(arg1 % 360);
+        }
+        if ((s16)arg1 < 0) {
+            arg1 = (s16)(arg1 + 360);
+        }
+
+        if ((s16)arg1 < 90) {
+            table += (s16)arg1;
+            result = *table;
+        } else if ((s16)arg1 < 180) {
+            table += 90 - (s16)(arg1 - 90);
+            result = *table;
+        } else if ((s16)arg1 < 270) {
+            table += (s16)(arg1 - 180);
+            result = *table;
+            result *= -1.0f;
+        } else {
+            table += 90 - (s16)(arg1 - 270);
+            result = *table;
+            result *= -1.0f;
+        }
+    } else {
+        if ((s16)arg1 >= 360) {
+            arg1 = (s16)(arg1 % 360);
+        }
+        if ((s16)arg1 <= -360) {
+            arg1 = (s16)(arg1 % 360);
+        }
+        if ((s16)arg1 < 0) {
+            arg1 = (s16)(arg1 + 360);
+        }
+
+        if ((s16)arg1 < 90) {
+            table += 90 - (s16)arg1;
+            result = *table;
+        } else if ((s16)arg1 < 180) {
+            table += (s16)(arg1 - 90);
+            result = *table;
+            result *= -1.0f;
+        } else if ((s16)arg1 < 270) {
+            table += 90 - (s16)(arg1 - 180);
+            result = *table;
+            result *= -1.0f;
+        } else {
+            table += (s16)(arg1 - 270);
+            result = *table;
+        }
+    }
+
+    return result;
+}
 
 s32 func_001082B0(s64 x, s64 y) {
     s64 ax;
