@@ -148,7 +148,72 @@ s32 func_0013DAD0(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_0013DCA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013E1D0);
+typedef struct {
+    u16 id;
+    u16 pad2;
+    u16 value;
+    u16 pad6;
+    s32 status;
+} Record_0013E1D0;
+
+extern void func_0027CA50(void *, s32, s32, s32);
+extern s32 func_0027D720(void *, s32);
+
+s32 func_0013E1D0(u8 *arg0) {
+    s32 category;
+    s32 temp_s0;
+
+    temp_s0 = func_00250360(((Record_0013E1D0 *)arg0)->id >> 8, ((Record_0013E1D0 *)arg0)->id & 0xFF);
+    if (func_001DF540(((Record_0013E1D0 *)arg0)->id >> 8, ((Record_0013E1D0 *)arg0)->id & 0xFF) != 0) {
+        if (func_001E2100(((Record_0013E1D0 *)arg0)->id >> 8, ((Record_0013E1D0 *)arg0)->id & 0xFF, 0) == 0) {
+            if (((Record_0013E1D0 *)arg0)->id != 0xFFFF) {
+                if ((((Record_0013E1D0 *)arg0)->id & 0xFF) == 0) {
+                    if (((Record_0013E1D0 *)arg0)->status == -1) {
+                        if (func_0027BBC0(((Record_0013E1D0 *)arg0)->id >> 8, ((Record_0013E1D0 *)arg0)->id & 0xFF, 0) == 1) {
+                            if (func_001DE6D0(((Record_0013E1D0 *)arg0)->id >> 8) == 1) {
+                                ((Record_0013E1D0 *)arg0)->value = 0x50A;
+                            } else {
+                                ((Record_0013E1D0 *)arg0)->value = 0x5FF;
+                            }
+                        } else {
+                            if (func_001DE6D0(((Record_0013E1D0 *)arg0)->id >> 8) == 1) {
+                                ((Record_0013E1D0 *)arg0)->value = 0xA05;
+                            } else {
+                                ((Record_0013E1D0 *)arg0)->value = 0x5FF;
+                            }
+                        }
+                    }
+                } else {
+                    category = func_001E0700(((Record_0013E1D0 *)arg0)->id >> 8, ((Record_0013E1D0 *)arg0)->id & 0xFF) >> 5;
+                    switch (category) {
+                    case 0:
+                        if (func_002507D0(((Record_0013E1D0 *)arg0)->id >> 8, ((Record_0013E1D0 *)arg0)->id & 0xFF) == 1) {
+                            func_0013ECF0(arg0);
+                        } else {
+                            func_0013E7B0(arg0, 1);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 2, 0, func_00141B30(temp_s0) & 0xFF);
+                        break;
+                    case 3:
+                        if (func_0027D720(arg0, 0) == 1) {
+                            ((Record_0013E1D0 *)arg0)->value = 0xBFF;
+                        } else {
+                            ((Record_0013E1D0 *)arg0)->value = 0x5FF;
+                        }
+                        break;
+                    default:
+                        ((Record_0013E1D0 *)arg0)->value = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_0013E3D0(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
