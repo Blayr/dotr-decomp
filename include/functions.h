@@ -1250,6 +1250,7 @@ void *func_00208D40(void *arg0, s32 arg1);
 void *func_00208E40(void *arg0);
 void *func_00208E60(void *arg0, void *arg1);
 void *func_00208EB0(void *arg0, void *arg1);
+s32 func_00208F00(s32 packet, void *arg1, void *arg2, s32 arg3);
 s32 func_00209270(void *arg0, void *arg1, f32 *arg2, f32 *arg3, f32 *arg4);
 void *func_00209320(void *arg0, s32 arg1, f32 fparg0, f32 fparg1, f32 fparg2);
 void *func_002093E0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3);

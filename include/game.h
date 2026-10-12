@@ -628,7 +628,6 @@ extern void func_00147AC0(void *);
 extern void func_00147B90(void *, s32);
 
 
-s32 func_00208F00(s32, void *, void *, s32);
 s32 func_00209110(s32, void *, void *, f32, f32, f32);
 
 s32 func_00155C90(s32, u8 *, void *);
@@ -675,5 +674,24 @@ void func_00255AC0(void *, s32);
 extern u8 D_0032A784[];
 
 s32 func_00194E90(s32, s32);
+
+extern f32 D_00325D50;
+extern f32 D_00325D54;
+extern f32 D_00325D58;
+extern f32 D_00325D60;
+extern f32 D_00325D64;
+extern f32 D_00325D68;
+extern f32 D_00325D70;
+extern f32 D_00325D74;
+extern f32 D_00325D78;
+extern f32 D_00325D90;
+extern f32 D_00325D94;
+extern f32 D_00325D98;
+extern f32 D_00325DA0;
+extern f32 D_00325DA4;
+extern f32 D_00325DA8;
+extern f32 D_00325DB0;
+extern f32 D_00325DB4;
+extern f32 D_00325DB8;
 
 #endif

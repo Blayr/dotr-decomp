@@ -484,7 +484,57 @@ void *func_00208EB0(void *arg0, void *arg1) {
     return (u8 *)arg0 + 0x50;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208F00);
+s32 func_00208F00(s32 packet, void *arg1, void *arg2, s32 arg3) {
+    u8 buffer[0x50];
+    s32 matrix;
+
+    matrix = ((u32)buffer + 0xF) & ~0xF;
+    if (arg3 >= 0 && arg3 < 3 && (arg1 == NULL || arg2 == NULL)) {
+        return packet;
+    }
+    switch (arg3) {
+    case 0:
+        D_00325D90 = ((f32 *)arg1)[1];
+        D_00325D94 = ((f32 *)arg1)[2];
+        D_00325D98 = ((f32 *)arg1)[3];
+        D_00325D50 = ((f32 *)arg2)[0];
+        D_00325D60 = ((f32 *)arg2)[1];
+        D_00325D70 = ((f32 *)arg2)[2];
+        break;
+    case 1:
+        D_00325DA0 = ((f32 *)arg1)[1];
+        D_00325DA4 = ((f32 *)arg1)[2];
+        D_00325DA8 = ((f32 *)arg1)[3];
+        D_00325D54 = ((f32 *)arg2)[0];
+        D_00325D64 = ((f32 *)arg2)[1];
+        D_00325D74 = ((f32 *)arg2)[2];
+        break;
+    case 2:
+        D_00325DB0 = ((f32 *)arg1)[1];
+        D_00325DB4 = ((f32 *)arg1)[2];
+        D_00325DB8 = ((f32 *)arg1)[3];
+        D_00325D58 = ((f32 *)arg2)[0];
+        D_00325D68 = ((f32 *)arg2)[1];
+        D_00325D78 = ((f32 *)arg2)[2];
+        break;
+    }
+    if (packet != 0) {
+        u32 *tag = (u32 *)packet;
+
+        func_0020B380((void *)matrix, &D_00325D90, 4);
+        func_0020BC00(matrix, &D_00325D50);
+        tag[0] = 0x10000004;
+        tag[1] = 0;
+        tag[2] = 0;
+        tag[3] = 0x6C04003F;
+        func_0020B380((void *)(packet + 0x10), (void *)matrix, 4);
+        packet = (s32)(tag + 4) + 0x40;
+    } else if (arg3 < 0) {
+        func_00198948(&D_00325D50, 0, 0x40);
+        func_00198948(&D_00325D90, 0, 0x40);
+    }
+    return packet;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00209110);
 
