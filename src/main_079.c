@@ -615,7 +615,236 @@ void func_0027E780(void *arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E840);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027EB00);
+typedef struct Vec4_0027EB00 {
+    f32 x, y, z, w;
+} Vec4_0027EB00;
+
+typedef union Scale_0027EB00 {
+    Vec4_0027EB00 vector;
+    struct { s32 x, y, z, w; } fixed;
+} Scale_0027EB00;
+
+typedef struct Flags_0027EB00 {
+    s8 low : 5;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 high : 1;
+} Flags_0027EB00;
+
+typedef union Record_0027EB00 {
+    __int128 data[10];
+    struct {
+        Vec4_0027EB00 position;
+        Scale_0027EB00 scale;
+        Vec4_0027EB00 transform;
+        Vec4_0027EB00 rotation;
+        u8 pad40[0x41];
+        Flags_0027EB00 flags;
+        u8 pad82[0x1E];
+    } fields;
+} Record_0027EB00;
+
+typedef struct History_0027EB00 {
+    Vec4_0027EB00 rotation;
+    Vec4_0027EB00 scale;
+    Vec4_0027EB00 position;
+    u8 pad30[0x40];
+} History_0027EB00;
+
+typedef struct State_0027EB00 {
+    History_0027EB00 history[5];
+    Record_0027EB00 first;
+    Record_0027EB00 second;
+    Vec4_0027EB00 firstPosition;
+    Vec4_0027EB00 firstScale;
+    s32 firstAngles[3];
+    s32 pad39C;
+    f32 firstSpeedX;
+    f32 firstSpeedY;
+    u8 pad3A8[8];
+    f32 firstX;
+    f32 firstY;
+    s32 firstActive;
+    s32 pad3BC;
+    Vec4_0027EB00 secondPosition;
+    Vec4_0027EB00 secondScale;
+    s32 secondAngles[3];
+    s32 pad3EC;
+    f32 secondSpeedX;
+    f32 secondSpeedY;
+    u8 pad3F8[8];
+    f32 secondX;
+    f32 secondY;
+    s32 secondActive;
+    s32 pad40C;
+    s32 timer;
+    s32 mode;
+    s32 flags;
+    s32 firstAlpha;
+    s32 secondAlpha;
+    s32 finish;
+    u8 pad428[8];
+} State_0027EB00;
+
+void func_0027F180(void *, s32, s32);
+
+s32 func_0027EB00(void *arg0, void *arg1, s32 arg2) {
+    s32 firstId;
+    s32 secondId;
+    Record_0027EB00 *first;
+    Record_0027EB00 *second;
+    s32 result;
+
+    func_00207500();
+    firstId = *(s32 *) ((u8 *) arg1 + 4);
+    secondId = *(s32 *) ((u8 *) arg1 + 8);
+    first = (Record_0027EB00 *) func_001F5B30(firstId);
+    second = (Record_0027EB00 *) func_001F5B30(secondId);
+    if (first == 0 && second == 0) {
+        return 8;
+    }
+    {
+        State_0027EB00 *state = (State_0027EB00 *) arg0;
+
+        if (arg2 >= 0) {
+            func_00195108((s32) state, 0x430);
+            func_0027F0D0(state);
+            if (first != 0) {
+                state->first = *first;
+            }
+            if (second != 0) {
+                state->second = *second;
+            }
+            if (first != 0) {
+                func_001F5970(firstId, 1);
+                state->first.fields.flags.bit6 = 1;
+                state->first.fields.flags.bit5 = 1;
+            }
+            if (second != 0) {
+                func_001F5970(secondId, 1);
+                state->second.fields.flags.bit6 = 1;
+                state->second.fields.flags.bit5 = 1;
+            }
+            state->flags = 0;
+            state->mode = arg2;
+            state->timer = 14;
+            state->finish = 0;
+            if (first != 0) {
+                *((u8 *) first + 0x43) = 0;
+            }
+            if (second != 0) {
+                *((u8 *) second + 0x43) = 0;
+            }
+            state->secondAlpha = 128;
+            state->firstAlpha = 128;
+            state->firstX = -125.0f;
+            state->firstY = -8.0f;
+            state->secondX = 125.0f;
+            state->secondY = -8.0f;
+            if (first != 0) {
+                state->flags |= 1;
+                state->firstActive = 1;
+                func_00205CB0(&state->first, state->firstX, state->firstY);
+                state->firstPosition = first->fields.position;
+                func_00205C40((s32) &state->first.fields.transform);
+                state->firstAngles[2] = 0;
+                state->firstAngles[1] = 0;
+                state->firstAngles[0] = 0;
+                state->first.fields.scale.fixed.x = 0;
+                state->first.fields.scale.fixed.y = 0x10000;
+                state->first.fields.scale.fixed.z = 0x10000;
+                state->firstScale = first->fields.scale.vector;
+                state->firstSpeedY = 0.1f;
+                state->firstSpeedX = 0.1f;
+                state->first.fields.rotation.x = 0.46875f;
+                state->first.fields.rotation.y = 0.4891299903392792f;
+            }
+            if (second != 0) {
+                s32 i;
+                History_0027EB00 *history;
+
+                state->flags |= 2;
+                state->secondActive = 1;
+                func_00205CB0(&state->second, state->secondX, state->secondY);
+                state->secondPosition = second->fields.position;
+                func_00205C40((s32) &state->second.fields.transform);
+                state->secondAngles[2] = 0;
+                state->secondAngles[1] = 0;
+                state->secondAngles[0] = 0;
+                state->second.fields.scale.fixed.x = 0;
+                state->second.fields.scale.fixed.y = 0x10000;
+                state->second.fields.scale.fixed.z = 0x10000;
+                state->secondScale = second->fields.scale.vector;
+                state->secondSpeedY = 0.1f;
+                state->secondSpeedX = 0.1f;
+                state->second.fields.rotation.x = 0.46875f;
+                state->second.fields.rotation.y = 0.4891299903392792f;
+                i = 0;
+                history = state->history;
+                do {
+                    ++i;
+                    history[1].position = state->second.fields.position;
+                    history[1].scale = state->second.fields.scale.vector;
+                    history[1].rotation = state->second.fields.rotation;
+                    ++history;
+                } while (i < 4);
+            }
+        }
+        result = 0;
+        func_0027F110((u8 *) state);
+        func_001D99F0();
+        if (state->mode == 0 && first != 0) {
+            func_0027F180(&state->first, state->firstAlpha, 0);
+        }
+        if (second != 0) {
+            func_0027F180(&state->second, state->secondAlpha, 0);
+        }
+        if (state->mode == 1) {
+            func_00205CB0(&state->first, state->firstX, state->firstY);
+            if (state->timer < 7) {
+                func_0027F290(&state->second, &state->first, state->timer);
+            }
+            if (state->timer != 0) {
+                --state->timer;
+            } else {
+                if (func_0027F160(state->flags, 31) == 0) {
+                    state->flags |= 0x80000000;
+                }
+                state->timer = 27;
+            }
+        }
+        func_001D9DD0();
+        {
+            History_0027EB00 *history;
+            s32 i;
+
+            i = 3;
+            history = &state->history[3];
+            do {
+                if (i != 0) {
+                    history[1].position = history->position;
+                    history[1].scale = history->scale;
+                    history[1].rotation = history->rotation;
+                } else {
+                    history[1].position = state->second.fields.position;
+                    history[1].scale = state->second.fields.scale.vector;
+                    history[1].rotation = state->second.fields.rotation;
+                }
+                --i;
+                --history;
+            } while (i >= 0);
+        }
+        if (func_0027F160(state->flags, 31) != 0) {
+            ++state->finish;
+            if (state->finish == 4) {
+                result = 2;
+            } else if (state->finish > 4) {
+                state->finish = 999;
+            }
+        }
+        return result;
+    }
+}
 
 void func_0027F0D0(void *arg0) {
     f32 *values = arg0;
