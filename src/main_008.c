@@ -2038,7 +2038,126 @@ s32 func_00133BE0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_001341C0);
+typedef struct Position_001341C0 {
+    u8 x : 4;
+    u8 y : 4;
+} Position_001341C0;
+
+typedef struct Source_001341C0 {
+    u16 id;
+    u8 pad2[6];
+    u32 target;
+} Source_001341C0;
+
+typedef struct Result_001341C0 {
+    u16 id;
+    u8 kind;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 value;
+    u8 flags;
+} Result_001341C0;
+
+s32 func_00134B40(s32, s32, void *);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+#define target_001341C0(src, side) ((side) == 1 ? ((((Source_001341C0 *)(src))->target >> 16) & 0xFFFF) : (u32)(u16)((Source_001341C0 *)(src))->target)
+
+#define min_001341C0(a, b) ((a) < (b) ? (a) : (b))
+#define max_001341C0(a, b) ((b) < (a) ? (a) : (b))
+#define distance_001341C0(pos, src, side) \
+    ((max_001341C0((u8)(pos).x, (u32)(u8)target_001341C0(src, side)) - \
+      min_001341C0((u8)(pos).x, (u32)(u8)target_001341C0(src, side))) + \
+     (max_001341C0((u8)(pos).y, (u32)target_001341C0(src, side) >> 8) - \
+      min_001341C0((u8)(pos).y, (u32)target_001341C0(src, side) >> 8)))
+
+s32 func_001341C0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
+    extern void func_00279230();
+    extern s32 func_0027E360(s32, s32, s32, u8, s32);
+    Position_001341C0 positions[12];
+    s32 start;
+    s32 count;
+
+    start = func_001E1090(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF);
+    {
+        s32 score;
+        s32 best;
+        s32 side = arg3;
+        Position_001341C0 *p;
+        s32 i;
+        if (target_001341C0(arg0, side) == 0xFFFF && start == target_001341C0(arg0, side)) {
+            ((Result_001341C0 *)arg2)->id = ((Source_001341C0 *)arg0)->id;
+            ((Result_001341C0 *)arg2)->kind = 6;
+            ((Result_001341C0 *)arg2)->target = start;
+            ((Result_001341C0 *)arg2)->flags = func_0027E360(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, ((Result_001341C0 *)arg2)->target, arg4, 0);
+            ((Result_001341C0 *)arg2)->value = func_00134B40(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+        p = positions;
+        {
+            s32 clear_count = 0;
+            Position_001341C0 *clear = p;
+            s32 terrain;
+            do {
+                clear->x = clear->y = 15;
+                clear_count++;
+                clear++;
+            } while (clear_count < 12);
+
+            terrain = func_001E3790(target_001341C0(arg0, side) & 0xFF, (u32)target_001341C0(arg0, side) >> 8);
+            if (terrain < 0) {
+                terrain = 0xFFFF;
+            }
+            func_00279230(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, positions,
+                          start & 0xFF, start >> 8, target_001341C0(arg0, side) & 0xFF,
+                          (u32)target_001341C0(arg0, side) >> 8, (u16)terrain, 7);
+            count = func_0027AFC0((u8 *)positions);
+        }
+        if (count > 0) {
+            best = 0xFF;
+            score = 0xFFFF;
+            for (i = 0; i < count; i++, p++) {
+                if (func_001E36E0(p->x, p->y) == 0) {
+                    s32 value = func_00276CC0(p->x, p->y, arg1, 4, 1, (u8)func_00134AE0(arg1));
+                    if (value < score) {
+                        score = value;
+                        best = i;
+                    } else if (value == score) {
+                        if (distance_001341C0(*p, arg0, side) < distance_001341C0(positions[best], arg0, side)) {
+                            score = value;
+                            best = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            ((Result_001341C0 *)arg2)->id = ((Source_001341C0 *)arg0)->id;
+            ((Result_001341C0 *)arg2)->kind = 6;
+            ((Result_001341C0 *)arg2)->target = start;
+            ((Result_001341C0 *)arg2)->flags = func_0027E360(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, ((Result_001341C0 *)arg2)->target, arg4, 0);
+            ((Result_001341C0 *)arg2)->value = func_00134B40(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+        if (best != 0xFF) {
+            ((Result_001341C0 *)arg2)->id = ((Source_001341C0 *)arg0)->id;
+            ((Result_001341C0 *)arg2)->kind = 6;
+            ((Result_001341C0 *)arg2)->target = (positions[best].y << 8) | positions[best].x;
+            ((Result_001341C0 *)arg2)->flags = func_0027E360(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, ((Result_001341C0 *)arg2)->target, arg4, 0);
+            ((Result_001341C0 *)arg2)->value = func_00134B40(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, arg0);
+        } else {
+            ((Result_001341C0 *)arg2)->id = ((Source_001341C0 *)arg0)->id;
+            ((Result_001341C0 *)arg2)->kind = 6;
+            ((Result_001341C0 *)arg2)->target = start;
+            ((Result_001341C0 *)arg2)->flags = func_0027E360(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, ((Result_001341C0 *)arg2)->target, arg4, 0);
+            ((Result_001341C0 *)arg2)->value = func_00134B40(((Source_001341C0 *)arg0)->id >> 8, ((Source_001341C0 *)arg0)->id & 0xFF, arg0);
+        }
+        func_0027B1B0(arg0, arg3);
+    }
+    return 0;
+}
 
 s32 func_001349A0(s32 arg0) {
     s32 row;
