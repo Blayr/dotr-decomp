@@ -1040,7 +1040,27 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_002176B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217710);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002177E0);
+s32 func_002177E0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s64 func_0010A8A0();
+    State_00217410 *state = &D_0034F6E0;
+
+    if (!D_0034F6E8.active) {
+        return 0;
+    }
+    if (arg0 < 0 || arg0 >= 4) {
+        return 0;
+    }
+    if (state->slots[arg0] < 0) {
+        return 0;
+    }
+    if ((s32) func_0010A8A0() & 0x4000) {
+        return 0;
+    }
+    arg1 &= 0x7FFF;
+    arg2 &= 0x7FFF;
+    func_0010A1D0(arg0, arg1, arg2);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002178C0);
 
