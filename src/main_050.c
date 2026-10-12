@@ -114,7 +114,122 @@ void func_001F48F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_001F4900(arg0, arg1, arg2, arg3, arg4, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4900);
+typedef struct Slot_001F4900 {
+    u16 state : 3;
+    u16 counter : 13;
+    u16 group : 3;
+    u16 entry : 10;
+    s16 flagA : 1;
+    s16 flagB : 1;
+    s16 flagC : 1;
+    s16 arg3;
+    s16 arg4;
+    s32 arg5;
+    s32 arg6;
+    s32 timer;
+    s32 arg2;
+} Slot_001F4900;
+
+typedef struct Cache_001F4900 {
+    u8 data[0x340];
+    s32 group;
+    s32 entry;
+} Cache_001F4900;
+
+typedef struct Dispatch_001F4900 {
+    s32 (**handlers)(void *, s32);
+    s32 unused;
+    s32 count;
+} Dispatch_001F4900;
+
+extern s32 D_0031BE90;
+extern Dispatch_001F4900 D_00292FF0[];
+extern s32 D_00292FF8[];
+void func_0017BB90(s32);
+void func_0017B410(s32, s32);
+
+s32 func_001F4900(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    extern Cache_001F4900 D_0031BB50;
+    extern Slot_001F4900 D_0031BC50[];
+    Slot_001F4900 *slot;
+    void *source;
+    u8 *buffer;
+    s32 index;
+    void *destination;
+    s32 result;
+    extern s32 func_001F3910();
+
+    buffer = (u8 *)&D_0031BB50;
+    slot = D_0031BC50;
+    source = 0;
+    if (arg0 < 0 || arg0 >= 3) {
+        return -1;
+    }
+    if (arg1 < 0 || arg1 >= D_00292FF8[arg0 * 3]) {
+        return -1;
+    }
+    if (arg0 == 1 && func_001F5240(1, -1) != 0) {
+        return -1;
+    }
+    switch (arg0) {
+    case 1:
+        source = (void *)func_001F1130(func_001E1360(arg4 >> 8, arg4 & 0xFF));
+        break;
+    case 2:
+        source = (void *)func_001F0FF0(func_001E1360(arg4 >> 8, arg4 & 0xFF));
+        break;
+    }
+    if (source == 0) {
+        s32 allocation = func_001F3910(arg0, arg1, 1);
+        if (allocation == 0) {
+            return -1;
+        }
+        source = (void *)(((s64)(((u8 *)allocation - buffer) >> 3) << 15) + 0x01EE0000);
+    }
+    index = 0;
+    do {
+        destination = (void *)0x01ED0000;
+        if (slot->state == 0) {
+            Cache_001F4900 *cache = &D_0031BB50;
+            if (D_0031BE90 != arg0 || cache->entry != arg1) {
+                func_0020B380((void *)0x01E00000, (void *)source, 0x800);
+                func_0017BB90(0);
+                func_0017B410(0x01E00000, *(s32 *)0x01E0001C + 0xFE200000);
+                cache->group = arg0;
+                cache->entry = arg1;
+            }
+            func_001F5370(arg3);
+            func_001F5390(arg4);
+            func_0020BAF0(0);
+            if (arg0 != 1) {
+                destination = (void *)(((s64)index << 15) + 0x01E10000);
+            }
+            result = D_00292FF0[arg0].handlers[arg1](destination, arg2);
+            func_0020BB50();
+            slot->state = 1;
+            slot->group = arg0;
+            slot->entry = arg1;
+            slot->arg2 = arg2;
+            slot->arg3 = arg3;
+            slot->arg4 = arg4;
+            slot->flagA = 0;
+            slot->flagB = 0;
+            slot->flagC = 0;
+            slot->counter = 0;
+            slot->timer = 0;
+            slot->arg5 = arg5;
+            slot->arg6 = arg6;
+            if (result == 8) {
+                func_001F4CB0(index);
+                index = -1;
+            }
+            return index;
+        }
+        index++;
+        slot++;
+    } while (index < 24);
+    return -1;
+}
 
 typedef struct {
     u64 state : 3;

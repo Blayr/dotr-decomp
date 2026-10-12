@@ -486,7 +486,6 @@ extern s32 D_0031BB10;
 
 s32 func_001F16C0(s32 arg0, s32 arg1);
 
-void func_001F4900(s32, s32, s32, s32, s32, s32, s32);
 s32 func_001F1A90(s32 arg0, s32 arg1);
 
 void func_001F53C0(s32, s32, s32);
