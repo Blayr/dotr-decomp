@@ -4,7 +4,123 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_0020F780);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FA10);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_0020FAF0);
+typedef struct {
+    u8 bit0 : 1;
+    u8 bit1 : 1;
+    u8 bit2 : 1;
+    u8 bit3 : 1;
+    u8 bit4 : 1;
+    u8 bit5 : 1;
+    u8 bit6 : 1;
+    u8 bit7 : 1;
+} Flags_0020FAF0;
+
+typedef struct {
+    u8 *data;
+    Flags_0020FAF0 flags4;
+    Flags_0020FAF0 flags5;
+    u8 pad6[2];
+    u8 *src8;
+    f32 valueC;
+    u8 *src10;
+    f32 value14;
+    f32 value18;
+    f32 value1C;
+    s32 value20;
+    s32 value24;
+    s32 value28;
+} Args_0020FAF0;
+
+typedef struct {
+    u8 pad0[8];
+    s32 offset8;
+    s32 sizeC;
+    u8 pad10[8];
+    s32 offset18;
+    s32 size1C;
+    u8 pad20[0x34];
+    f32 value54;
+    s32 value58;
+} Data_0020FAF0;
+
+void func_0020FF80(void *);
+void func_00210260(void *, void *, void *, f32, f32, f32, f32);
+void func_002108C0(void *, void *, f32);
+void func_002114B0(void *, void *, f32);
+void func_00211F70(void *, void *, void *, s32);
+void func_00212170(void *, void *, void *, s32, s32);
+void func_00212250(void *, void *, void *, void *, void *);
+
+void func_0020FAF0(void *arg0) {
+    Args_0020FAF0 *arg = arg0;
+    s32 value24;
+
+    if ((*(s32 *)0x700000D8 + ((*(Data_0020FAF0 **)0x700000DC)->value58 << 8)) > 0x3F10) {
+        *(u8 **)0x700000B4 = *(u8 **)0x700000C4;
+    } else {
+        *(u8 **)0x700000B4 = (u8 *)0x700000F0;
+    }
+
+    **(__int128 **)0x700000C4 = *(__int128 *)(arg->data + (*(Data_0020FAF0 **)0x700000DC)->offset8);
+    func_0020B380(*(u8 **)0x700000C4 + *(s32 *)0x700000D8,
+                 arg->data + (*(Data_0020FAF0 **)0x700000DC)->offset8 + *(s32 *)0x700000D8,
+                 ((*(Data_0020FAF0 **)0x700000DC)->sizeC - *(s32 *)0x700000D8) >> 4);
+    func_0020FED0(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000C4, 0);
+    *(u8 **)0x700000C8 = *(u8 **)0x700000C4 + (*(Data_0020FAF0 **)0x700000DC)->sizeC;
+
+    if ((*(Data_0020FAF0 **)0x700000DC)->size1C > 0) {
+        if (arg->flags5.bit3) {
+            *(u8 **)0x700000CC = (u8 *)func_0020A0B0((s32)*(u8 **)0x700000C8, 0);
+        } else {
+            **(s32 **)0x700000C8 = 0x20000000;
+            (*(s32 **)0x700000C8)[1] = (s32)(*(u8 **)0x700000C8 + (*(Data_0020FAF0 **)0x700000DC)->size1C + 0x10);
+            (*(s32 **)0x700000C8)[2] = 0;
+            (*(s32 **)0x700000C8)[3] = 0;
+            *(u8 **)0x700000CC = *(u8 **)0x700000C8 + 0x10;
+        }
+        func_0020B380(*(u8 **)0x700000CC,
+                     arg->data + (*(Data_0020FAF0 **)0x700000DC)->offset18,
+                     (*(Data_0020FAF0 **)0x700000DC)->size1C >> 4);
+        func_0020FED0(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000CC, 1);
+        *(u8 **)0x700000D0 = *(u8 **)0x700000CC + (*(Data_0020FAF0 **)0x700000DC)->size1C;
+        if (arg->flags5.bit3) {
+            *(u8 **)0x700000D0 = (u8 *)func_0020A0B0((s32)*(u8 **)0x700000D0, 1);
+        }
+    } else {
+        *(u8 **)0x700000CC = NULL;
+        *(u8 **)0x700000D0 = NULL;
+    }
+
+    if (arg->flags4.bit6) {
+        value24 = arg->value24;
+    } else {
+        value24 = -1;
+    }
+    func_00211F70(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000CC, value24);
+    func_00212170(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000CC, !arg->flags4.bit5, arg->value20);
+    if (arg->flags4.bit7 || arg->flags5.bit0 || arg->flags5.bit1) {
+        func_00212250(*(u8 **)0x700000C4,
+                     *(u8 **)0x700000C4 + (*(Data_0020FAF0 **)0x700000DC)->sizeC,
+                     *(u8 **)0x700000CC,
+                     *(u8 **)0x700000CC + (*(Data_0020FAF0 **)0x700000DC)->size1C,
+                     arg);
+    }
+    *(s32 *)0x700000B8 = arg->value28;
+    if (!arg->flags4.bit2) {
+        func_0020FF80(arg->data);
+    } else {
+        *(s32 *)0x700000B0 = 0;
+        *(f32 *)0x700000BC = (*(Data_0020FAF0 **)0x700000DC)->value54;
+        if (arg->flags4.bit3) {
+            func_00210260(arg->data, arg->src8 + 0xC, arg->src10 + 0xC,
+                         arg->valueC, arg->value14, arg->value18, arg->value1C);
+        } else if (arg->flags4.bit4) {
+            func_002108C0(arg->data, arg->src8 + 0xC, arg->valueC);
+        } else {
+            func_002114B0(arg->data, arg->src8 + 0xC, arg->valueC);
+        }
+    }
+}
 
 typedef struct Header_0020FED0 {
     u8 pad[0x30];
