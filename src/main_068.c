@@ -919,7 +919,27 @@ s32 func_0023E610(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E6D0);
+s32 func_0023E6D0(void) {
+    State_0023E610 *state = &D_0034FB00;
+
+    D_0034FB00.result = func_00194E90(D_0034FB08, D_0034FB0C);
+    D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
+    if (D_0034FB04 == 1) {
+        if (state->command == 0x11) {
+            if (state->status == 0) {
+                state->field30 = 0xE;
+                state->field40 = 0;
+                state->field34 = 0;
+                return 0xC;
+            }
+            state->field30 = 0xE;
+            state->field40 = 0;
+            state->field34 = 0;
+            return 0xD;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E7A0);
 

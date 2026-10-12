@@ -674,4 +674,6 @@ void func_00255AC0(void *, s32);
 
 extern u8 D_0032A784[];
 
+s32 func_00194E90(s32, s32);
+
 #endif
