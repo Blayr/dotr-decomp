@@ -158,4 +158,80 @@ INCLUDE_ASM("asm/nonmatchings/main_064", func_0022C450);
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_0022C570);
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022CC40);
+s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
+    extern s32 func_001A22C0(f32);
+    extern s16 D_00299066[][16][38];
+    f32 (*xData)[16][129] = (f32 (*)[16][129])0x01ED022C;
+    f32 (*zData)[16][129] = (f32 (*)[16][129])0x01ED032C;
+    s16 (*countData)[16][258] = (s16 (*)[16][258])0x01ED042C;
+    s32 rotation[3];
+    f32 dx1;
+    f32 dz1;
+    f32 dx0;
+    f32 dz0;
+    s16 point;
+    f32 *x;
+    f32 *z;
+    s32 angle;
+
+    point = *(s16 *)0x01ED01B0;
+    dx1 = xData[arg1][arg2][point + 2] - xData[arg1][arg2][point + 1];
+    dz1 = zData[arg1][arg2][point + 2] - zData[arg1][arg2][point + 1];
+    func_001A6C18(dx1, dz1);
+    dx0 = xData[arg1][arg2][point + 1] - xData[arg1][arg2][point];
+    dz0 = zData[arg1][arg2][point + 1] - zData[arg1][arg2][point];
+    x = &xData[arg1][arg2][point];
+    z = &zData[arg1][arg2][point];
+    angle = func_001A22C0(65536.0f * (func_001A6C18(dx0, dz0) / 6.2831855f)) % 65536;
+    *(f32 *)0x01ED01B8 = *x + dx0 * (f32)*(s16 *)0x01ED01A6 / 1024.0f;
+    *(f32 *)0x01ED01BC = D_00298BA4;
+    *(f32 *)0x01ED01C0 = *z + dz0 * (f32)*(s16 *)0x01ED01A6 / 1024.0f;
+    if (countData[arg1][arg2][0] <= point) {
+        s32 previousAngle = func_001A22C0(65536.0f * (func_001A6C18(
+            *x - xData[arg1][arg2][point - 1],
+            *z - zData[arg1][arg2][point - 1]) / 6.2831855f)) % 65536;
+        rotation[0] = 0;
+        rotation[1] = previousAngle;
+        rotation[2] = 0;
+    } else if (countData[arg1][arg2][0] - 1 <= point) {
+        rotation[0] = 0;
+        rotation[1] = angle;
+        rotation[2] = 0;
+    } else {
+        s16 progress = *(s16 *)0x01ED01A6;
+        rotation[0] = 0;
+        rotation[1] = func_001A22C0(65536.0f * (func_001A6C18(
+            dx0 * (f32)(1024 - progress) / 1024.0f
+                + dx1 * (f32)progress / 1024.0f,
+            dz0 * (f32)(1024 - progress) / 1024.0f
+                + dz1 * (f32)progress / 1024.0f) / 6.2831855f)) % 65536;
+        rotation[2] = 0;
+    }
+    *(s32 *)0x01ED01A8 = rotation[1];
+    if (*(s8 *)0x01ED01B4 != 0) {
+        arg0 = func_001EE4B0(arg0, arg3 + 0x22, 0x01ED01B8, (s32)rotation, 0, 0, 0);
+    }
+    if (*(s16 *)0x01ED01A4 > 0) {
+        if (*(s16 *)0x01ED01A6 < 1024 && *(s16 *)0x01ED01B0 < countData[arg1][arg2][0]) {
+            if (*(s16 *)0x01ED01A4 == 1) {
+                func_001F48F0(0, 0x193, 0, 0, 0);
+                *(s16 *)0x01ED01A4 = 2;
+            }
+            if (*(s16 *)0x01ED01A4 == 2) {
+                *(s16 *)0x01ED01A6 += 256;
+                if (*(s16 *)0x01ED01A6 >= 1024) {
+                    *(s16 *)0x01ED01B0 += 1;
+                    if (countData[arg1][arg2][0] <= *(s16 *)0x01ED01B0) {
+                        *(s16 *)0x01ED01A6 = 0;
+                        *(s16 *)0x01ED01A4 = 3;
+                        *(s16 *)0x01ED01B0 = countData[arg1][arg2][0];
+                        ((s16 *)0x01ED52EC)[D_00299066[arg1][arg2][0]] = 1;
+                    } else {
+                        *(s16 *)0x01ED01A6 = 0;
+                    }
+                }
+            }
+        }
+    }
+    return arg0;
+}

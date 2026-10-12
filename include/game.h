@@ -679,4 +679,6 @@ s32 func_0010AC20(s32);
 s32 func_00130660(s32);
 s32 func_001307E0(s32, s32);
 
+extern f32 D_00298BA4;
+
 #endif
