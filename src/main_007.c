@@ -1073,7 +1073,79 @@ s32 func_0012B9A0(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_0012BB70);
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012C1A0);
+typedef struct {
+    u16 id;
+    u8 pad2[2];
+    s16 status;
+    u8 pad6[2];
+    s32 flags;
+} Object_0012C1A0;
+
+extern void func_0012C7F0(void *, s32, s32);
+extern void func_0012CBE0(void *, s32);
+extern void func_0012CE50(void *);
+
+s32 func_0012C1A0(void *arg0, s32 arg1) {
+    Object_0012C1A0 *obj = arg0;
+    s32 temp_s0;
+    s32 kind;
+    u16 id;
+
+    id = obj->id;
+    temp_s0 = func_00250360((s32)(id >> 8), id & 0xFF);
+    id = obj->id;
+    if (func_001DF540((s32)(id >> 8), id & 0xFF) != 0) {
+        id = obj->id;
+        if (func_001E2100((s32)(id >> 8), id & 0xFF, 0) == 0) {
+            id = obj->id;
+            if (id != 0xFFFF) {
+                if ((id & 0xFF) == 0) {
+                    if (obj->flags == -1) {
+                    if ((func_0027BBC0((s32)(id >> 8), id & 0xFF, 0) == 1) ||
+                        ((func_001E1090((s32)(obj->id >> 8), obj->id & 0xFF) >> 8) >= 2)) {
+                        if (func_001DE6D0((s32)(obj->id >> 8)) == 1) {
+                            obj->status = 0x50A;
+                        } else {
+                            obj->status = 0x5FF;
+                        }
+                    } else {
+                        if (func_001DE6D0((s32)(obj->id >> 8)) == 1) {
+                            obj->status = 0x60A;
+                            obj->flags = (u16)obj->flags | (func_001E1090((temp_s0 == 0) ? 1 : 0, 0) << 16);
+                        } else {
+                            obj->status = 0x6FF;
+                            obj->flags = (u16)obj->flags | (func_001E1090((temp_s0 == 0) ? 1 : 0, 0) << 16);
+                        }
+                    }
+                    }
+                } else {
+                    kind = func_001E0700((s32)(id >> 8), id & 0xFF) >> 5;
+                    switch (kind) {
+                    case 0:
+                        id = obj->id;
+                        if (func_002507D0((s32)(id >> 8), id & 0xFF) == 1) {
+                            func_0012CBE0(obj, arg1);
+                        } else {
+                            func_0012C7F0(obj, 1, arg1);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(obj, 5, 0, func_00130780(temp_s0) & 0xFF);
+                        break;
+                    case 3:
+                        func_0012CE50(obj);
+                        break;
+                    default:
+                        obj->status = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_0012C3F0(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
