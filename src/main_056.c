@@ -23,7 +23,64 @@ void func_00206430(void *arg0, void *arg1, void *arg2, void *arg3) {
     out[3] = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00206530);
+typedef struct Vertex_00206530 {
+    f32 position[4];
+    u8 padding[8];
+    u8 color[4];
+    f32 weight;
+    f32 uv[2];
+} Vertex_00206530;
+
+typedef struct PackedUV_00206530 {
+    u16 u : 14;
+    u16 flags_u : 2;
+    u16 v : 14;
+    u16 flags_v : 2;
+} PackedUV_00206530;
+
+void func_00206530(void *arg0, void *arg1, s32 flags, void *arg3, f32 factor) {
+    ((Vertex_00206530 *)arg3)->position[0] = ((Vertex_00206530 *)arg0)->position[0] +
+        factor * (((Vertex_00206530 *)arg1)->position[0] - ((Vertex_00206530 *)arg0)->position[0]);
+    ((Vertex_00206530 *)arg3)->position[1] = ((Vertex_00206530 *)arg0)->position[1] +
+        factor * (((Vertex_00206530 *)arg1)->position[1] - ((Vertex_00206530 *)arg0)->position[1]);
+    ((Vertex_00206530 *)arg3)->position[2] = ((Vertex_00206530 *)arg0)->position[2] +
+        factor * (((Vertex_00206530 *)arg1)->position[2] - ((Vertex_00206530 *)arg0)->position[2]);
+    ((Vertex_00206530 *)arg3)->position[3] = ((Vertex_00206530 *)arg0)->position[3] +
+        factor * (((Vertex_00206530 *)arg1)->position[3] - ((Vertex_00206530 *)arg0)->position[3]);
+    if (flags & 1) {
+        ((Vertex_00206530 *)arg3)->color[0] = func_001A23B0(
+            (f32)(u32)((Vertex_00206530 *)arg0)->color[0] + factor *
+            (s32)(((Vertex_00206530 *)arg1)->color[0] - ((Vertex_00206530 *)arg0)->color[0]));
+        ((Vertex_00206530 *)arg3)->color[1] = func_001A23B0(
+            (f32)(u32)((Vertex_00206530 *)arg0)->color[1] + factor *
+            (s32)(((Vertex_00206530 *)arg1)->color[1] - ((Vertex_00206530 *)arg0)->color[1]));
+        ((Vertex_00206530 *)arg3)->color[2] = func_001A23B0(
+            (f32)(u32)((Vertex_00206530 *)arg0)->color[2] + factor *
+            (s32)(((Vertex_00206530 *)arg1)->color[2] - ((Vertex_00206530 *)arg0)->color[2]));
+        ((Vertex_00206530 *)arg3)->color[3] = func_001A23B0(
+            (f32)(u32)((Vertex_00206530 *)arg0)->color[3] + factor *
+            (s32)(((Vertex_00206530 *)arg1)->color[3] - ((Vertex_00206530 *)arg0)->color[3]));
+        ((Vertex_00206530 *)arg3)->weight = ((Vertex_00206530 *)arg0)->weight +
+            factor * (((Vertex_00206530 *)arg1)->weight - ((Vertex_00206530 *)arg0)->weight);
+    }
+    if (flags & 2) {
+        ((Vertex_00206530 *)arg3)->uv[0] = ((Vertex_00206530 *)arg0)->uv[0] +
+            factor * (((Vertex_00206530 *)arg1)->uv[0] - ((Vertex_00206530 *)arg0)->uv[0]);
+        ((Vertex_00206530 *)arg3)->uv[1] = ((Vertex_00206530 *)arg0)->uv[1] +
+            factor * (((Vertex_00206530 *)arg1)->uv[1] - ((Vertex_00206530 *)arg0)->uv[1]);
+    }
+    if (flags & 0x10) {
+        PackedUV_00206530 *src0 = (PackedUV_00206530 *)((u8 *)arg0 + 0x20);
+        PackedUV_00206530 *src1 = (PackedUV_00206530 *)((u8 *)arg1 + 0x20);
+        PackedUV_00206530 *dst = (PackedUV_00206530 *)((u8 *)arg3 + 0x20);
+        s32 u = src0->u;
+        s32 v;
+
+        dst->u = u + func_001A23B0(factor * (s32)(src1->u - u));
+        v = src0->v;
+        dst->v = v + func_001A23B0(factor * (s32)(src1->v - v));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00206830);
 
