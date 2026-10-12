@@ -558,7 +558,89 @@ s32 func_00241BE0(s32 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241C20);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241E80);
+typedef struct {
+    u32 words[4];
+} Tag_00241E80;
+
+void func_001872F8(void *, u64);
+void func_00187308(void *);
+void func_00187318(void *);
+void func_00187370(void *, s32, s32, s32);
+void func_001873E8(void *, u64, s32, s32, s32, s32);
+void func_00187480(void *, s32, s32, s32);
+void *func_001874F8(void *, s32);
+void func_00187510(void *, __int128);
+void func_00187528(void *);
+void func_001875D0(void *, s32, u64);
+extern Tag_00241E80 D_0029B2D0;
+extern Tag_00241E80 D_0029B2E0;
+
+void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    u8 spB0[16];
+    Tag_00241E80 spC0;
+    Tag_00241E80 spD0;
+    s32 temp_s0;
+    s32 temp_s7;
+    s32 var_s1;
+    s32 var_s2;
+    s32 var_s3;
+    u64 rowBits;
+    s32 var_s5;
+    u64 *temp_v0;
+
+    spC0 = D_0029B2D0;
+    temp_s7 = arg3 >> 4;
+    temp_s0 = arg4 >> 4;
+    spD0 = D_0029B2E0;
+    func_001872F8(&spB0, (arg0 & 0x0FFFFFFF) | 0x20000000);
+    func_00187308(&spB0);
+    if (arg2 == 0) {
+        func_00187370(&spB0, 0, 0, 0);
+        func_00187510(&spB0, *(__int128 *) &spC0);
+        func_001875D0(&spB0, 0x50, 0xC1B00ULL << 0x20);
+        func_001875D0(&spB0, 0x52, 0x10 | (0x10ULL << 0x20));
+        func_00187528(&spB0);
+        var_s1 = 0;
+        if (var_s1 < temp_s7) {
+            var_s5 = 0;
+            do {
+                var_s2 = 0;
+                if (var_s2 < temp_s0) {
+                    var_s3 = 0;
+                    rowBits = (u64) (u32) var_s5 << 0x20;
+                    do {
+                        func_00187370(&spB0, 0, 0, 0);
+                        func_00187510(&spB0, *(__int128 *) &spC0);
+                        func_001875D0(&spB0, 0x51, rowBits | ((u64) (u32) var_s3 << 0x30));
+                        func_001875D0(&spB0, 0x53, 0);
+                        func_00187528(&spB0);
+                        temp_v0 = func_001874F8(&spB0, 4);
+                        temp_v0[0] = 0x40 | (0x08000000ULL << 0x20);
+                        temp_v0[1] = 0;
+                        func_001873E8(&spB0, (u64) (u32) arg1 & 0x0FFFFFFF, 0x40, 0, 0, 0);
+                        var_s2 += 1;
+                        arg1 += 0x400;
+                        var_s3 += 0x10;
+                    } while (var_s2 < temp_s0);
+                }
+                var_s1 += 1;
+                var_s5 += 0x10;
+            } while (var_s1 < temp_s7);
+        }
+    }
+    func_00187480(&spB0, 0, 0, 0);
+    func_00187510(&spB0, *(__int128 *) &spD0);
+    func_001875D0(&spB0, 0x3F, 0);
+    func_001875D0(&spB0, 0x14, 0x60);
+    func_001875D0(&spB0, 6, (0xA803ULL << 0x10) | 0x1B00 | (0xAULL << 0x20));
+    func_001875D0(&spB0, 0, 0x116);
+    func_001875D0(&spB0, 3, 0x80008);
+    func_001875D0(&spB0, 5, 0x79006C00);
+    func_001875D0(&spB0, 3, (s64) ((arg3 * 0x10) + 8) | ((s64) ((arg4 * 0x10) + 8) << 0x10));
+    func_001875D0(&spB0, 5, (0x8700ULL << 0x10) | 0x9400);
+    func_00187528(&spB0);
+    func_00187318(&spB0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00242190);
 
