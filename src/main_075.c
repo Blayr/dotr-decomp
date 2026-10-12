@@ -421,7 +421,82 @@ s32 func_00260320(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260490);
+void func_00260490(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    u8 colorData[4];
+    s32 y;
+    s32 yMax;
+    s32 yMin;
+    u8 *color = colorData;
+    s32 xMax;
+    s32 x;
+    s32 i;
+
+    if (arg6 > 0) {
+        switch (arg6) {
+        case 0x10:
+            color[2] = 0;
+            color[1] = 0xFF;
+            color[0] = 0;
+            color[3] = 0x80;
+            break;
+        case 0xF:
+            color[2] = 0xFF;
+            color[1] = 0;
+            color[0] = 0x80;
+            color[3] = 0x80;
+            break;
+        case 0xD:
+            color[2] = 0;
+            color[1] = 0x80;
+            color[0] = 0xFF;
+            color[3] = 0x80;
+            break;
+        case 0xB:
+            color[2] = 0;
+            color[1] = 0xFF;
+            color[0] = 0xFF;
+            color[3] = 0x80;
+            break;
+        default:
+            color[2] = 0xFF;
+            color[1] = 0xFF;
+            color[0] = 0xFF;
+            color[3] = 0x80;
+            break;
+        }
+    } else {
+        color[2] = 0;
+        color[1] = 0;
+        color[0] = 0;
+        color[3] = 0xFF;
+    }
+    if (arg5 == 0x12) {
+        i = 0;
+        do {
+            func_001E3060(i, arg1, arg2, (s32) color, arg4);
+            func_001E3060(arg0, i, arg2, (s32) color, arg4);
+            i++;
+        } while (i < 7);
+    } else {
+        x = func_00250860(0, arg0 - (arg3 == 1 ? 2 : 1));
+        if (arg0 + (arg3 == 1 ? 2 : 1) >= 7) {
+            xMax = 6;
+        } else {
+            xMax = arg0 + (arg3 == 1 ? 2 : 1);
+        }
+        yMin = func_00250860(0, arg1 - (arg3 == 1 ? 2 : 1));
+        if (arg1 + (arg3 == 1 ? 2 : 1) >= 7) {
+            yMax = 6;
+        } else {
+            yMax = arg1 + (arg3 == 1 ? 2 : 1);
+        }
+        for (; x <= xMax; x++) {
+            for (y = yMin; y <= yMax; y++) {
+                func_001E3060(x, y, arg2, (s32) color, arg4);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00260740);
 

@@ -496,7 +496,6 @@ typedef struct {
 } Params_002755D0;
 
 void func_0024F370(s32, s32);
-void func_00260490(s32, s32, s32, s32, s32, s32, s32);
 
 static inline s32 update_002755D0(void *arg0, void *arg1, void *params_arg, s32 arg2) {
     State_002755D0 *state = arg1;
