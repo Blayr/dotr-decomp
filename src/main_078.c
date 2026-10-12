@@ -682,7 +682,99 @@ INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A130);
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A360);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A710);
+s32 func_002464F0();
+s32 func_0024FE40(void *, s32, s32);
+
+static inline s32 distance_0027A710(s32 y1, s32 x1, s32 y2, s32 x2) {
+    return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
+           (((x2 < x1) ? x1 : x2) - ((x1 < x2) ? x1 : x2));
+}
+
+s32 func_0027A710(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
+                  s32 *arg5, s32 arg6, u8 arg7, u16 arg8) {
+    s32 flags;
+    s32 dy;
+    extern s32 func_00278420();
+
+    flags = func_002464F0(arg0, arg1, arg2);
+    if (arg0 == NULL) {
+        return 0;
+    }
+    if (distance_0027A710(arg1, arg2, arg3, arg4) == 0) {
+        return 1;
+    }
+    if (distance_0027A710(arg1, arg2, arg3, arg4) == 1) {
+        s32 cell;
+        s32 y;
+        s32 x;
+        s32 result;
+
+        if ((func_001E22B0(arg3, arg4) == 8 && !(flags & 0x10)) ||
+            (func_001E22B0(arg3, arg4) == 9 &&
+             func_0024FE40(arg0, arg3, arg4) == 1)) {
+            return 0;
+        }
+        if (func_001E36E0(arg3, arg4) == 0) {
+            return 1;
+        }
+        cell = func_001E3790(arg3, arg4);
+        if (arg5 != NULL && cell == *arg5) {
+            return 1;
+        }
+        y = cell >> 8;
+        x = cell & 0xFF;
+        if (func_00250360(y, x) != func_00250370(arg0)) {
+            if (func_002781B0(y, x, arg6) != 0) {
+                result = func_00278250((s32)arg0, cell, arg3, arg4) > 0;
+            } else {
+                result = func_00278420((s32)arg0, arg8, arg3, arg4) > 0;
+            }
+            if (result) {
+                return 1;
+            }
+            return 2;
+        } else {
+            if (x != 0) {
+                return arg7 == 1 ? 0 : 1;
+            }
+            return 0;
+        }
+    }
+    if (distance_0027A710(arg1, arg2, arg3, arg4) == 2) {
+        dy = arg1 - arg3;
+        dy = dy >= 0 ? dy : -dy;
+        switch (dy) {
+        case 0: {
+            s32 midX = (arg2 + arg4) >> 1;
+            if (func_0027A710(arg0, arg1, arg2, arg3, midX, arg5, arg6, arg7, arg8) == 1) {
+                return func_0027A710(arg0, arg1, midX, arg3, arg4, arg5, arg6, arg7, arg8);
+            }
+            goto failed;
+        }
+        case 2: {
+            s32 midY = (arg1 + arg3) >> 1;
+            if (func_0027A710(arg0, arg1, arg2, midY, arg4, arg5, arg6, arg7, arg8) == 1) {
+                return func_0027A710(arg0, midY, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            }
+            goto failed;
+        }
+        case 1:
+            if (func_0027A710(arg0, arg1, arg2, arg3, arg2, arg5, arg6, arg7, arg8) == 1 &&
+                func_0027A710(arg0, arg3, arg2, arg3, arg4, arg5, arg6, arg7, arg8) == 1) {
+                return 1;
+            }
+            if (func_0027A710(arg0, arg1, arg2, arg1, arg4, arg5, arg6, arg7, arg8) == 1 &&
+                func_0027A710(arg0, arg1, arg4, arg3, arg4, arg5, arg6, arg7, arg8) == 1) {
+                return 1;
+            }
+            return 0;
+        default:
+            return 0;
+        }
+    }
+failed:
+    return 0;
+}
 
 s32 func_0027ABD0(void *arg0, u8 arg1, u8 arg2) {
     s32 i;
