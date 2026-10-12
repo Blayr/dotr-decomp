@@ -464,7 +464,151 @@ INCLUDE_ASM("asm/nonmatchings/main_077", func_002724F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00272CC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00273460);
+typedef struct Context_00273460 {
+    u8 pad0[8];
+    s32 cards;
+} Context_00273460;
+
+typedef struct State_00273460 {
+    u16 alpha;
+    u16 pad2;
+    u16 phase;
+    u8 ids[0x1A];
+    s32 cards[45];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_00273460;
+
+typedef struct Setup_00273460 {
+    s32 card;
+    s32 x;
+    s32 y;
+    s32 z;
+} Setup_00273460;
+
+void func_0024F370(s32, s32);
+void func_002516D0(u32, s32, s32);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_00273460(void *arg0, void *arg1, s32 arg2) {
+    Setup_00273460 setup;
+    s32 complete;
+    Setup_00273460 *config = &setup;
+    State_00273460 *walk;
+    u8 *id;
+    s32 index;
+    s32 card;
+    State_00273460 *state = arg1;
+    Context_00273460 *context = arg0;
+
+    setup.card = 999;
+    setup.x = 0;
+    setup.y = 0;
+    setup.z = 0;
+    complete = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00260020(context, state, arg2, -1, 1, 1);
+        state->alpha = 128;
+        func_00255AC0(state, 612);
+        for (arg2 = 0; arg2 < func_0024E910(context->cards); arg2++) {
+            card = func_0024EC50(context->cards, arg2);
+            func_001F5970(card, 0);
+            func_002516D0(card >> 8, card & 255, 1);
+        }
+        func_00260740(30);
+        return 1;
+    }
+    switch (state->phase) {
+    case 0:
+        arg2 = 0;
+        if (state->alpha > 48) {
+            state->alpha -= 15;
+        } else {
+            for (arg2 = 0; arg2 < func_0024E910(context->cards); arg2++) {
+                if (func_001F5EC0(func_0024EC50(context->cards, arg2)) != 0) {
+                    complete++;
+                }
+            }
+            if (complete == func_0024E910(context->cards)) {
+                if (func_00255B50(state) == 1) {
+                    if (state->timer++ >= 46) {
+                        if (complete == 1) {
+                            func_00260AF0(0, func_0024EC50(context->cards, 0), 100, 180);
+                        }
+                        func_001E42C0(0, -120, 80, 276);
+                        func_0025F720(context, state, config, 612);
+                        state->timer = 0;
+                        state->phase++;
+                    }
+                }
+            }
+            state->alpha = 48;
+        }
+        if (state->alpha < 48) {
+            state->alpha = 48;
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+    case 1:
+        index = 0;
+        walk = state;
+        for (; index < state->count; index++) {
+            id = &state->ids[index];
+            if (func_001F51D0(*id) == 1) {
+                func_00261680((u16)walk->cards[0]);
+                if ((walk->cards[0] >> 16) == 0) {
+                    if (state->timer++ >= 32) {
+                        card = walk->cards[0];
+                        func_002500C0((card & 65535) >> 8, card & 255, -1, 1, 3);
+                        walk->cards[0] |= 0x10000;
+                    }
+                }
+                if (func_001F52D0(*id) == 2) {
+                    card = walk->cards[0];
+                    if (card >= 0) {
+                        func_001F5970(card & 65535, 1);
+                        card = walk->cards[0];
+                        func_0024F370((card & 65535) >> 8, card & 255);
+                        walk->cards[0] = -1;
+                    }
+                }
+            } else {
+                complete++;
+            }
+            walk = (State_00273460 *)((u8 *)walk + 4);
+        }
+        if (complete >= state->count) {
+            func_00260020(context, state, arg2, 1, 0, 1);
+            state->timer = 0;
+            func_001E4530();
+            func_00260A70(state, 16);
+            state->phase++;
+        }
+        break;
+    default:
+        state->alpha += 15;
+        if (state->alpha > 128) {
+            state->alpha = 128;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 128) {
+            if (state->timer++ > 16 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct Masks_002738B0 {
     u32 unknown;
