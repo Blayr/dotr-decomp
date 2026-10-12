@@ -1879,7 +1879,104 @@ s32 func_0025AA80(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025AD60);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B050);
+typedef struct State_0025B050 {
+    u16 alpha;
+    u16 unk2;
+    u16 phase;
+    u8 slots[0xCE];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_0025B050;
+
+typedef struct Params_0025B050 {
+    s32 id;
+    s32 value1;
+    s32 value2;
+    s32 value3;
+} Params_0025B050;
+
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025B050(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_0025F670();
+    Params_0025B050 params;
+    Params_0025B050 *p = &params;
+    State_0025B050 *state = arg1;
+    s32 slot;
+
+    p->id = 999;
+    p->value1 = 0;
+    p->value2 = 0;
+    p->value3 = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00260740(0x10);
+        func_00255AC0(arg1, 0x14);
+        func_00255AC0(arg1, 0x1F);
+        func_00255AC0(arg1, 0x25B);
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+        state->alpha = 0x80;
+        return 1;
+    }
+    if (state->phase == 0) {
+        if (state->alpha > 0x3F) {
+            state->alpha -= 0xF;
+        } else {
+            state->alpha = 0x30;
+            if (func_00255B50(arg1) == 1) {
+                p->id = 0x14;
+                p->value1 = 0;
+                p->value2 = 0;
+                p->value3 = 0;
+                slot = func_00255A30((s32 *)p, arg1);
+                state->slots[state->count] = slot;
+                if (slot >= 0) {
+                    state->count++;
+                }
+                state->phase++;
+            }
+        }
+        func_001F6CF0((u8)state->alpha);
+    } else if (state->phase == 1) {
+        if (func_001F51D0(state->slots[0]) == 1) {
+            return 1;
+        }
+        func_0025F720(arg0, arg1, p, 0x1F);
+        state->phase++;
+    } else if (state->phase == 2) {
+        if (func_0025F400(arg0, arg1, p) != 0) {
+            state->phase++;
+        }
+    } else if (state->phase == 3) {
+        if (func_0025F670(arg0, arg1, p) != 0) {
+            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            func_00260A70(arg1, 0x10);
+            state->timer = 0;
+            state->phase++;
+        }
+    } else {
+        state->alpha += 0xF;
+        if (state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80) {
+            if (state->timer++ > 0x10 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B330);
 
