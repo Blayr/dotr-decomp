@@ -620,7 +620,118 @@ void func_001DBD50(s32 arg0, f32 *position, f32 width, f32 height,
     func_00208030(arg0, original, (s32)end, func_00205D10(position, 0.0f));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DBFE0);
+typedef struct Primitive_001DBFE0 {
+    u16 mode;
+    u16 flags;
+    s32 reserved;
+    s64 state;
+    s64 extra[4];
+} Primitive_001DBFE0;
+
+static inline void init_001DBFE0(void *prim, s32 flags) {
+    ((u16 *)prim)[1] = flags;
+    ((u16 *)prim)[0] = 0;
+    ((s64 *)prim)[1] = 0;
+    ((s32 *)prim)[1] = 0;
+}
+
+s32 func_002070F0(s32, s32, void *, s32, void *, s32, s32);
+s32 func_00207AA0(s32, void *, s32, s32, s32, s32);
+
+void func_001DBFE0(s32 arg0, f32 *arg1, u8 *arg2, s32 arg3) {
+    Primitive_001DBFE0 sp50;
+    f32 temp_f20;
+    f32 height = 35.0f;
+    f32 half_width = 24.0f;
+    s32 temp_s1;
+    s32 temp_s1_2;
+    s32 temp_v0;
+    s32 temp_v0_2;
+    s32 temp_v0_3;
+    s32 temp_v0_4;
+    s32 temp_s2;
+
+    *(u8 *)0x70002018 = 0;
+    *(u8 *)0x70002019 = 0;
+    *(u8 *)0x7000201A = 0;
+    *(u8 *)0x7000201B = 0xFF;
+    if (arg2 != NULL) {
+        *(u8 *)0x70002018 = arg2[2];
+        *(u8 *)0x70002019 = arg2[1];
+        *(u8 *)0x7000201A = arg2[0];
+        *(u8 *)0x7000201B = arg2[3];
+    }
+    *(s32 *)0x7000201C = 0x3F800000;
+    if (arg3 != 0) {
+        init_001DBFE0(&sp50, 5);
+    } else {
+        init_001DBFE0(&sp50, 2);
+    }
+    if (*(u8 *)0x7000201B != 0xFF) {
+        func_002086D0(&sp50, 0x48 | ((s64)0x80 << 32));
+    }
+    *(f32 *)0x70002000 = arg1[0] - half_width;
+    temp_f20 = -height;
+    *(f32 *)0x70002004 = arg1[1] - height;
+    *(f32 *)0x70002008 = arg1[2] - half_width;
+    *(f32 *)0x70002030 = arg1[0] - half_width;
+    *(f32 *)0x70002034 = temp_f20;
+    *(f32 *)0x70002038 = arg1[2] - half_width;
+    *(f32 *)0x70002060 = arg1[0] + half_width;
+    *(f32 *)0x70002064 = temp_f20;
+    *(f32 *)0x70002068 = arg1[2] - half_width;
+    *(f32 *)0x70002090 = arg1[0] + half_width;
+    *(f32 *)0x70002094 = arg1[1] - height;
+    *(f32 *)0x70002098 = arg1[2] - half_width;
+    temp_v0 = func_002070F0(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    func_00207230(NULL, temp_v0, (void *)0x70002000);
+    temp_s1 = func_00207AA0(arg0, &sp50, temp_v0, 0x70002000, 0, 0);
+    *(f32 *)0x70002000 = (arg1[0] - half_width);
+    *(f32 *)0x70002004 = (arg1[1] - height);
+    *(f32 *)0x70002008 = (arg1[2] + half_width);
+    *(f32 *)0x70002030 = (arg1[0] - half_width);
+    *(f32 *)0x70002034 = temp_f20;
+    *(f32 *)0x70002038 = (arg1[2] + half_width);
+    *(f32 *)0x70002060 = (arg1[0] + half_width);
+    *(f32 *)0x70002064 = temp_f20;
+    *(f32 *)0x70002068 = (arg1[2] + half_width);
+    *(f32 *)0x70002090 = (arg1[0] + half_width);
+    *(f32 *)0x70002094 = (arg1[1] - height);
+    *(f32 *)0x70002098 = (arg1[2] + half_width);
+    temp_v0_2 = func_002070F0(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    func_00207230(NULL, temp_v0_2, (void *)0x70002000);
+    temp_s2 = func_00207AA0(temp_s1, &sp50, temp_v0_2, 0x70002000, 0, 0);
+    *(f32 *)0x70002000 = (arg1[0] - half_width);
+    *(f32 *)0x70002004 = (arg1[1] - height);
+    *(f32 *)0x70002008 = (arg1[2] - half_width);
+    *(f32 *)0x70002030 = (arg1[0] - half_width);
+    *(f32 *)0x70002034 = temp_f20;
+    *(f32 *)0x70002038 = (arg1[2] - half_width);
+    *(f32 *)0x70002060 = (arg1[0] - half_width);
+    *(f32 *)0x70002064 = temp_f20;
+    *(f32 *)0x70002068 = (arg1[2] + half_width);
+    *(f32 *)0x70002090 = (arg1[0] - half_width);
+    *(f32 *)0x70002094 = (arg1[1] - height);
+    *(f32 *)0x70002098 = (arg1[2] + half_width);
+    temp_v0_3 = func_002070F0(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    func_00207230(NULL, temp_v0_3, (void *)0x70002000);
+    temp_s1_2 = func_00207AA0(temp_s2, &sp50, temp_v0_3, 0x70002000, 0, 0);
+    *(f32 *)0x70002000 = (arg1[0] + half_width);
+    *(f32 *)0x70002004 = (arg1[1] - height);
+    *(f32 *)0x70002008 = (arg1[2] - half_width);
+    *(f32 *)0x70002030 = (arg1[0] + half_width);
+    *(f32 *)0x70002034 = temp_f20;
+    *(f32 *)0x70002038 = (arg1[2] - half_width);
+    *(f32 *)0x70002060 = (arg1[0] + half_width);
+    *(f32 *)0x70002064 = temp_f20;
+    *(f32 *)0x70002068 = (arg1[2] + half_width);
+    *(f32 *)0x70002090 = (arg1[0] + half_width);
+    *(f32 *)0x70002094 = (arg1[1] - height);
+    *(f32 *)0x70002098 = (arg1[2] + half_width);
+    temp_v0_4 = func_002070F0(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    func_00207230(NULL, temp_v0_4, (void *)0x70002000);
+    func_00207AA0(temp_s1_2, &sp50, temp_v0_4, 0x70002000, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DC560);
 

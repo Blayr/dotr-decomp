@@ -742,6 +742,7 @@ s32 func_001DBC40(s32 arg0, s32 arg1, void *arg2);
 void func_001DBCF0(s32 arg0);
 s32 func_001DBD30(s32 arg0, s32 arg1);
 void func_001DBD50(s32 arg0, f32 *position, f32 width, f32 height, s32 arg2, u8 *color, s32 arg4);
+void func_001DBFE0(s32 arg0, f32 *arg1, u8 *arg2, s32 arg3);
 void func_001DCC90(void *arg0);
 void *func_001DCD00(s32 arg0, s32 arg1);
 void func_001DCD70(void *arg0, s32 arg1);
