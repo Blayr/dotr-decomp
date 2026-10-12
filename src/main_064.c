@@ -4,7 +4,97 @@ INCLUDE_ASM("asm/nonmatchings/main_064", func_00228150);
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_00228460);
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_00228660);
+typedef struct {
+    u8 pad[0x46];
+    s16 normal;
+    s16 pad48;
+    s16 special;
+} Card_00228660;
+
+typedef struct {
+    u8 pad[0x26];
+    s16 slots[7];
+} Side_00228660;
+
+typedef struct {
+    f32 x[64];
+    f32 z[64];
+    s16 count;
+    s16 value;
+} Path_00228660;
+
+typedef struct {
+    u8 pad0[0x22C];
+    Path_00228660 paths[2][16];
+    s16 values[2][16];
+    s16 rows[2][16][64];
+    s16 countA[32];
+    s16 countB[32];
+    u8 pad536C[4];
+    s16 saved;
+} Work_00228660;
+
+extern Card_00228660 D_00299020[][16];
+extern s8 D_00299E13[];
+extern s8 D_00299ED7;
+
+void func_00228660(s16 player, s16 side, s8 state, s16 *items, s16 count) {
+    extern Side_00228660 D_00298BA0[];
+    Work_00228660 *work = (Work_00228660 *)0x01ED0000;
+    s8 *status = &D_00299E10;
+    s16 i;
+    s16 item;
+    s16 id;
+
+    *(s16 *)0x01ED0060 = 0;
+    *(s8 *)0x01ED5372 = 1;
+    *(s8 *)0x01ED5373 = 0;
+    *(s8 *)0x01ED537B = 0;
+    *(s8 *)0x01ED53A0 = 0;
+    *(s8 *)0x01ED5375 = 1;
+    D_00299ED7 = side;
+    *(s16 *)0x01ED01DA = 0;
+    *(s16 *)0x01ED01DE = 0;
+    *(s16 *)0x01ED01D8 = 0;
+    *(s8 *)0x01ED546C = 0;
+    D_00299E13[side] = state;
+
+    for (i = 0; i < count; i++) {
+        item = items[i];
+        if (player == 0 && D_00298BA0[side].slots[i] == 2) {
+            id = D_00299020[player][item].special;
+        } else {
+            id = D_00299020[player][item].normal;
+        }
+        if (status[id + 3] == 0) {
+            s16 j;
+
+            work->countA[id] = 0;
+            work->countB[id] = 0;
+            status[id + 3] = 0;
+            work->paths[player][item].value = 0;
+            work->values[player][item] = 0;
+            for (j = 0; j < 64; j++) {
+                work->rows[player][item][j] = 0;
+            }
+        }
+    }
+
+    if (player == 0 && work->paths[player][12].value == 0) {
+        s16 total = 0;
+        s16 index;
+
+        for (index = 2; index <= 10; index++) {
+            if (status[index + 3] >= 3) {
+                total++;
+                if (total >= 8) {
+                    work->saved = *(s16 *)(status + 0xC2);
+                    *(s16 *)(status + 0xC2) = 0x2B70;
+                }
+            }
+        }
+    }
+}
 
 void func_00228940(s16 arg0, s16 arg1) {
     *(s16 *)0x01ED01A4 = arg0;
