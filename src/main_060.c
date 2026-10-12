@@ -314,7 +314,68 @@ s32 func_00216490(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216580);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+typedef struct {
+    unsigned char pad[0xFF9C];
+    unsigned char flags;
+    unsigned char tail[3];
+} State_002158B0;
+extern State_002158B0 D_0032F790[];
+#endif
+
+
+typedef struct {
+    u16 card;
+    u16 field_2;
+    u16 field_4;
+} Entry_00216580;
+
+typedef struct {
+    u8 unused : 6;
+    u8 count : 2;
+} Flags_00216580;
+
+extern Entry_00216580 D_002D0870[];
+extern u8 D_0034F6D0;
+
+s32 func_00216580(s32 arg0, s32 arg1) {
+    s32 i;
+    State_002158B0 *player;
+    Entry_00216580 *entry;
+    s32 side;
+    s32 decodedCard;
+    u8 *count;
+
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    player = &D_0032F790[side];
+    entry = D_002D0870;
+    i = 0;
+    do {
+        decodedCard = func_001DE130(entry->card & 0x3FFF);
+        if (decodedCard == arg1) {
+            count = (u8 *)(i + (u32)player) + 0xFE90;
+            *count = (*count + 1) % (((Flags_00216580 *)&D_002D0870[i])[1].count + 1);
+            return 1;
+        }
+        i++;
+        entry++;
+    } while (i < 16);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_002166D0);
 
