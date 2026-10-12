@@ -663,7 +663,6 @@ void func_00187810(void *, s32);
 void func_001547A0(void *);
 s32 func_00155770(s32 arg0, s32 arg1, s32 arg2);
 void func_00167D30(void *);
-s32 func_001687A0(s32 arg0, s32 arg1, s32 arg2);
 
 extern void func_0023C170(s32);
 extern s32 func_0023F340(void);
