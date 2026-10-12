@@ -88,7 +88,7 @@ void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6F70);
 
-s32 func_001B7660(s8 character) {
+static s32 func_001B7660(s8 character) {
     s32 result = -1;
 
     if (character >= 'A' && character <= 'Z') {
