@@ -781,7 +781,6 @@ typedef struct Temp_00119300 {
     u8 padding[0x20];
 } Temp_00119300;
 
-extern s32 func_00119A40(s32, void *);
 extern s32 func_00119520();
 
 s32 func_00119300(s32 arg0, s32 arg1, s32 arg2) {
@@ -850,7 +849,81 @@ s32 func_00119300(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00119520);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00119A40);
+static inline s32 find_slot_00119A40(s32 arg0) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (func_00118CE0(arg0, (u8)i) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+s32 func_00119A40(s32 arg0, void *arg1) {
+    s32 cards[8];
+    u8 scratch[32];
+    u8 type0;
+    u8 type1;
+    s32 i;
+    s32 result;
+
+    extern s32 func_00278890();
+
+    type0 = func_00278890(arg0, 0);
+    type1 = func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+
+    func_0026FD30(arg0, cards);
+    if (type0 == 5) {
+        if (func_00119D30(arg0, scratch, arg1, 999) >= 0) {
+            return 1;
+        } else {
+            return -1;
+        }
+    } else if (type1 == 5) {
+        for (i = 0; i < func_0026FE20(arg0); i++) {
+            if ((func_0026FCE0(cards[i]) >> 5) == 0 &&
+                func_0026FB10(arg0, cards[i]) == 1) {
+                func_001DCD70(arg1, cards[i]);
+                return 0;
+            }
+        }
+        return -1;
+    } else {
+        result = func_00119F30(arg0, scratch, (s32)arg1);
+        if (result >= 0) {
+            return func_00119D30(arg0, scratch, arg1, result);
+        }
+
+        i = find_slot_00119A40(arg0);
+
+        if (i >= 0) {
+            for (i = 0; i < func_0026FE20(arg0); i++) {
+                if ((func_0026FCE0(cards[i]) >> 5) == 0 &&
+                    func_0026FB10(arg0, cards[i]) == 1) {
+                    return 0;
+                }
+            }
+            return func_00119D30(arg0, scratch, arg1, 999);
+        } else {
+            for (i = 0; i < func_0026FE20(arg0); i++) {
+                if ((func_0026FCE0(cards[i]) >> 5) == 0 &&
+                    func_0026FB10(arg0, cards[i]) == 1) {
+                    func_001DCD70(arg1, cards[i]);
+                    return 0;
+                }
+            }
+            result = func_00119D30(arg0, scratch, arg1, 999);
+            if (result >= 0) {
+                return result;
+            }
+            return -1;
+        }
+    }
+}
 
 s32 func_00119D30(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     s32 buf[8];
