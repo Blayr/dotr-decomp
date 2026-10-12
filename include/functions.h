@@ -1446,6 +1446,7 @@ void func_0021BC10(f32 *outX, f32 *outY, s16 *outCount, f32 *points, f32 *interv
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4);
 void func_0021C350(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n);
 s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6);
+void func_0021D480(void);
 void func_0021D850(void);
 void func_0021DA60(void);
 void func_0021DAA0(void);

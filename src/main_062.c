@@ -209,7 +209,160 @@ s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s3
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C510);
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021D480);
+typedef struct Buffer_0021D480 {
+    u32 data[0x3FE8];
+} Buffer_0021D480;
+
+typedef struct Entry_0021D480 {
+    u16 value;
+    u16 other[5];
+} Entry_0021D480;
+
+extern u16 D_00299CE0[];
+extern Entry_0021D480 D_00299D00[];
+extern s8 D_0034F6F8;
+void *func_002145E0();
+
+void func_0021D480(void) {
+    u8 *base = (u8 *)0x01ED0000;
+    u8 *record = (u8 *)&D_00299E10;
+    f32 eye[4];
+    f32 target[4];
+    f32 up[4];
+    s32 i;
+    s32 inner;
+    s32 k;
+    s16 *cell;
+    u8 *row;
+    s16 *count;
+    s16 *block;
+    u8 *rows;
+    u8 *counts;
+    u8 *data;
+    s32 outer;
+    s16 n;
+    s32 total;
+    u16 j;
+    s32 shift;
+    u32 *words;
+    u16 *halves;
+
+    func_00195108((s32)base, 0x54B0);
+    eye[0] = 0.0f;
+    eye[1] = 8.65f;
+    eye[2] = 100.0f;
+    target[0] = 0.0f;
+    target[1] = 8.65f;
+    target[2] = 0.0f;
+    up[0] = 100.0f;
+    up[1] = 8.65f;
+    up[2] = 0.0f;
+    func_002062F0(eye, target, up, (f32 *)0x01ED0190);
+    i = 0;
+    do {
+        base[0x53CF + i] = 0;
+        base[0x53DB + i] = 6;
+        base[0x53E7 + i] = 1;
+        i++;
+    } while (i < 12);
+    *(s16 *)0x01ED547C = 0x80;
+    *(s16 *)0x01ED0000 = 0x140;
+    *(s16 *)0x01ED0002 = 0xBE;
+    *(s16 *)0x01ED0004 = 0;
+    *(s16 *)0x01ED001A = 0;
+    *(s16 *)0x01ED001C = 0;
+    *(s16 *)0x01ED001E = 0;
+    *(s16 *)0x01ED536E = *(s16 *)(record + 0xC2);
+    *(s16 *)0x01ED536C = 0;
+    *(s8 *)0x01ED5372 = 0;
+    *(s8 *)0x01ED006E = 0;
+    *(f32 *)0x01ED0040 = 0.0f;
+    *(f32 *)0x01ED0044 = 0.0f;
+    *(f32 *)0x01ED0048 = 0.0f;
+    *(f32 *)0x01ED004C = 0.0f;
+    *(f32 *)0x01ED0030 = *(f32 *)0x01ED0040;
+    *(f32 *)0x01ED0034 = 96.0f + *(f32 *)0x01ED0044;
+    *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
+    *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
+    func_001F9FE0(0, (void *)0x01ED0030, (void *)0x01ED0040);
+
+    i = 0;
+    words = (u32 *)0x01ED0000;
+    do {
+        words[0x8C / 4] = 0;
+        words[0x10C / 4] = 0;
+        words++;
+        i++;
+    } while (i < 32);
+    *(s16 *)0x01ED01A6 = 0;
+    *(s16 *)0x01ED01AE = 0;
+    *(s16 *)0x01ED01B0 = 0;
+    *(s16 *)0x01ED01B2 = 0;
+    *(s16 *)0x01ED0224 = 0x80;
+    rows = (u8 *)0x01ED0000;
+    *(s16 *)0x01ED0226 = 0x80;
+    *(s16 *)0x01ED0228 = 0x80;
+    outer = 0;
+    counts = (u8 *)0x01ED0000;
+    data = (u8 *)0x01ED0000;
+    do {
+        inner = 0;
+        row = rows;
+        count = (s16 *)counts;
+        block = (s16 *)data;
+        do {
+            *(s16 *)(row + 0x42E) = 0;
+            count[0x42AC / 2] = 0;
+            k = 0;
+            cell = block;
+            do {
+                k++;
+                cell[0x42EC / 2] = 0;
+                cell++;
+            } while (k < 64);
+            inner++;
+            row += 0x204;
+            count++;
+            block += 64;
+        } while (inner < 16);
+        outer++;
+        rows += 0x2040;
+        counts += 0x20;
+        data += 0x800;
+    } while (outer < 2);
+    {
+        u16 *clear;
+        s32 clear_count = 0;
+        clear = (u16 *)0x01ED0000;
+        do {
+            clear_count++;
+            clear[0x52EC / 2] = 0;
+            clear[0x532C / 2] = 0;
+            clear++;
+        } while (clear_count < 32);
+    }
+
+    if (D_0034F6F8 != 0) {
+        *(Buffer_0021D480 *)func_002145E0(0) = *(Buffer_0021D480 *)0x01E301E0;
+        D_0034F6F8 = 0;
+    }
+    n = 0;
+    total = 0;
+    for (; n < 12; n++) {
+        total += (s32)*(u16 *)(record + 0x24) % 16;
+        record += 2;
+    }
+    *(u16 *)0x01ED53F6 = total & 0xF;
+    j = 0;
+    shift = 0;
+    halves = (u16 *)0x01ED0000;
+    for (; j < 3; j++) {
+        halves[0x53F8 / 2] = ((s32)D_00299CE0[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
+        shift += 5;
+        halves[0x53FE / 2] = D_00299D00[halves[0x53F8 / 2]].value & 0x3FF;
+        halves++;
+    }
+}
 
 typedef struct Coord_0021D850 {
     f32 x;
