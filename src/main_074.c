@@ -2763,7 +2763,187 @@ s32 func_0025D640(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025D9D0);
+typedef struct Input_0025D9D0 {
+    s32 unused;
+    s32 selection;
+    u32 mask;
+} Input_0025D9D0;
+
+typedef struct State_0025D9D0 {
+    u16 alpha;
+    u16 unused;
+    u16 step;
+    u8 effects[0xCE];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_0025D9D0;
+
+typedef struct Packet_0025D9D0 {
+    s32 type;
+    s32 unused;
+    s32 position;
+    s32 flag;
+} Packet_0025D9D0;
+
+void func_0024F370(s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025D9D0(void *arg0, void *arg1, s32 arg2) {
+    Packet_0025D9D0 data;
+    s32 done;
+    Packet_0025D9D0 *packet = &data;
+    s32 i;
+    s32 j;
+    u8 effect;
+    Input_0025D9D0 *input = arg0;
+    State_0025D9D0 *state = arg1;
+
+    data.type = 999;
+    data.unused = 0;
+    data.position = 0;
+    data.flag = 0;
+    done = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->alpha = 0x80;
+        func_00260740(0x10);
+        func_00255AC0(state, 0x16);
+        func_00255AC0(state, 0x25B);
+        return 1;
+    }
+
+    switch (state->step) {
+    case 0:
+        if (state->alpha > 0x30) {
+            state->alpha -= 15;
+        } else {
+            state->alpha = 0x30;
+            if (func_00255B50(state) == 1) {
+                packet->type = 0x16;
+                packet->unused = 0;
+                packet->position = 0;
+                packet->flag = 0;
+                effect = func_00255A30((s32 *)packet, state);
+                state->effects[state->count] = effect;
+                if (effect >= 0) {
+                    state->count++;
+                }
+                state->step++;
+            }
+        }
+        if (state->alpha < 0x30) {
+            state->alpha = 0x30;
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+
+    case 1: {
+        s32 selection;
+        s32 y;
+        s32 x;
+        s32 position;
+
+        if (func_001F51D0(state->effects[0]) == 1) {
+            return 1;
+        }
+        selection = func_0024CA40(0, 0, 0, 3, 0x34, 0xE);
+        func_00272330(selection, input->selection);
+        if (0 < func_0024E910(selection)) {
+            do {
+                position = func_0024EC50(selection, done);
+                x = position >> 8;
+                y = position & 0xFF;
+                func_002503B0(x, y, 0);
+                func_001E15E0(x, y, 0);
+                func_00250CA0(x, y, 4, 0);
+                func_00250E80(x, y, 4, 0);
+                done++;
+            } while (done < func_0024E910(selection));
+        }
+        state->step++;
+        break;
+    }
+
+    case 2:
+        i = 0;
+        do {
+            if (((input->mask >> (21 - i)) & 1) == 1) {
+                if (i < 11) {
+                    packet->type = 0x25B;
+                    packet->unused = 0;
+                    packet->position = i;
+                    packet->flag = 1;
+                    effect = func_00255A30((s32 *)packet, state);
+                    *((u8 *)state + state->count + 6) = effect;
+                    if (effect >= 0) {
+                        state->count++;
+                    }
+                } else {
+                    packet->type = 0x25B;
+                    packet->unused = 0;
+                    packet->position = (i - 11) | 0x100;
+                    packet->flag = 1;
+                    effect = func_00255A30((s32 *)packet, state);
+                    *((u8 *)state + state->count + 6) = effect;
+                    if (effect >= 0) {
+                        state->count++;
+                    }
+                }
+            }
+            i++;
+        } while (i < 22);
+        state->alpha = 0;
+        state->step++;
+
+    case 3:
+        for (j = 0; j < state->count; j++) {
+            if (func_001F51D0(state->effects[j]) == 0) {
+                done++;
+            }
+        }
+        if (done < state->count) {
+            return 1;
+        }
+        i = 0;
+        do {
+            if ((input->mask >> (21 - i)) & 1) {
+                if (i < 11) {
+                    func_0024F370(0, i);
+                } else {
+                    func_0024F370(1, i - 11);
+                }
+            }
+            i++;
+        } while (i < 22);
+        state->step++;
+        func_00260A70(state, 0x10);
+        state->timer = 0;
+        break;
+
+    default:
+        state->alpha += 15;
+        if (state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80) {
+            if (state->timer++ > 16) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025DE70);
 
