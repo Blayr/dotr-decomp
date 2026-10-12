@@ -854,7 +854,168 @@ s32 func_00259D90(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_0025A060);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025A4C0);
+typedef struct Context_0025A4C0 {
+    u8 pad0[8];
+    s32 side;
+    s32 mode;
+} Context_0025A4C0;
+
+typedef struct State_0025A4C0 {
+    u16 counter;
+    u16 field2;
+    u16 step;
+    u8 handle;
+    u8 pad7[0x19];
+    s32 side;
+    u8 pad24[0xA8];
+    s32 fieldCC;
+} State_0025A4C0;
+
+typedef struct Command_0025A4C0 {
+    s32 id;
+    s32 field4;
+    s32 field8;
+    s32 fieldC;
+} Command_0025A4C0;
+
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+
+s32 func_0025A4C0(void *arg0, u16 *arg1, s32 arg2) {
+    Command_0025A4C0 command;
+    Command_0025A4C0 *packet = &command;
+    Context_0025A4C0 *context = arg0;
+    State_0025A4C0 *state = (State_0025A4C0 *)arg1;
+
+    command.id = 999;
+    command.field4 = 0;
+    command.field8 = 0;
+    command.fieldC = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x202);
+        if (context->mode != 0) {
+            func_00255AC0(arg1, 0x263);
+        }
+        return 1;
+    }
+    switch (state->step) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            packet->id = 0x202;
+            packet->field4 = 0;
+            packet->field8 = 0;
+            packet->fieldC = 0;
+            state->handle = func_00255A30((s32 *)packet, arg1);
+            state->step++;
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->handle) == 1) {
+            return 1;
+        }
+        if (context->mode == 0) {
+            if (func_001DF110(context->side) == 0) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+            if (state->counter < 150) {
+                func_0025A940((s32)arg0, arg1, 1, context->side, 1);
+                state->counter++;
+                return 1;
+            }
+            if (func_0025A940((s32)arg0, arg1, 1, context->side, 0) == 0) {
+                func_001E3FE0();
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                return 0;
+            }
+        } else {
+            if (func_001DF110(context->side == 0 ? 1 : 0) == 0) {
+                state->step++;
+                return 1;
+            }
+            if (func_0025A940((s32)arg0, arg1, 0, context->side == 0 ? 1 : 0, 1) == 0) {
+                return 1;
+            }
+            packet->id = 0x263;
+            packet->field4 = 0;
+            packet->field8 = 0;
+            packet->fieldC = 0;
+            state->handle = func_00255A30((s32 *)packet, arg1);
+            state->step++;
+            state->side = context->side;
+        }
+        break;
+    case 2:
+        if (func_001F51D0(state->handle) != 0) {
+            if (state->counter++ == 6) {
+                func_001E3FE0();
+                state->fieldCC = 0;
+                state->field2 = 0;
+            }
+            return 1;
+        }
+        state->counter = 0;
+        if (func_001DF110(context->side) == 0) {
+            state->step = 16;
+            return 1;
+        }
+        if (func_0025A940((s32)arg0, arg1, 1, context->side, 1) == 0) {
+            return 1;
+        }
+        packet->id = 0x263;
+        packet->field4 = 0;
+        packet->field8 = 0;
+        packet->fieldC = 0;
+        state->handle = func_00255A30((s32 *)packet, arg1);
+        state->side = context->side;
+        state->step++;
+        break;
+    case 3:
+        if (func_001F51D0(state->handle) != 0) {
+            if (state->counter++ == 6) {
+                func_001E3FE0();
+            }
+            return 1;
+        }
+        state->step++;
+        break;
+    default:
+        {
+            s32 i = 0;
+            s32 card;
+            do {
+                card = func_001DF0C0(0, i) & 0xFFF;
+                if (card >= 0 && card != 999) {
+                    func_001DF2C0(0, i);
+                    func_001DEE70(0, card);
+                }
+                i++;
+            } while (i < 5);
+            i = 0;
+            do {
+                card = func_001DF0C0(1, i) & 0xFFF;
+                if (card >= 0 && card != 999) {
+                    func_001DF2C0(1, i);
+                    func_001DEE70(1, card);
+                }
+                i++;
+            } while (i < 5);
+        }
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_0025A940(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 temp_a1;
