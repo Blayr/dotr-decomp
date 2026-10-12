@@ -308,7 +308,120 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_00257340);
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00257AA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00258490);
+typedef struct Command_00258490 {
+    s32 kind;
+    s32 arg;
+    u32 mask;
+    s32 extra;
+} Command_00258490;
+
+typedef struct State_00258490 {
+    u8 pad0[4];
+    u16 state;
+    u8 handle;
+    u8 pad7[0xF9];
+    u8 phase;
+    u8 pad101;
+    u16 timer;
+} State_00258490;
+
+void func_0024F370(s32, s32);
+void func_00255960(void *);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
+    Command_00258490 request;
+    {
+    Command_00258490 *command = &request;
+    u8 flags = 0;
+    State_00258490 *state = arg1;
+    Command_00258490 *src = arg0;
+    s32 i;
+
+    request.kind = 999;
+    request.arg = 0;
+    request.mask = 0;
+    request.extra = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00255AC0(state, 6);
+        return 1;
+    }
+    switch (state->state) {
+    case 0:
+        if (func_00255B50(state) == 1) {
+            command->kind = 6;
+            command->arg = 0;
+            command->mask = src->mask;
+            command->extra = 0;
+            state->handle = func_00255A30((s32 *)command, state);
+            state->state++;
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->handle) != 1) {
+            i = 0;
+            do {
+                if ((src->mask >> (21 - i) & 1) == 1) {
+                    if (i < 11) {
+                        func_0024F370(0, i);
+                    } else {
+                        func_0024F370(1, i - 11);
+                    }
+                }
+                i++;
+            } while (i < 22);
+            state->state++;
+        }
+        break;
+    default:
+        flags = 1;
+        break;
+    }
+    switch (state->phase) {
+    case 0:
+        func_00260740(30);
+        state->phase++;
+        break;
+    case 1:
+        if (state->timer++ >= 30) {
+            state->phase++;
+            state->timer = 0;
+        }
+        break;
+    case 2:
+        if (!(flags & 1)) {
+            if (state->timer++ == 0) {
+                func_00260990(60, 0x3FFF);
+            } else if (state->timer >= 60) {
+                state->timer = 0;
+            }
+        } else {
+            func_00260A70(state, 16);
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+    default:
+        if (state->timer++ >= 16) {
+            flags |= 2;
+        }
+        break;
+    }
+    if (flags == 3) {
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00258760);
 

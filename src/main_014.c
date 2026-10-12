@@ -1036,7 +1036,98 @@ INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EE40);
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EF40);
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015F300);
+typedef struct {
+    s16 card;
+    u8 f2;
+    u8 pad3;
+    s16 f4;
+    u8 pad6[6];
+    s32 fC;
+} Act_0015F300;
+
+typedef struct {
+    u8 pad0[0x3C];
+    u16 id;
+    u8 pad3E[0x22];
+} Card_0015F300;
+
+s32 func_0015F5E0(s32 arg0, void *arg1);
+
+s32 func_0015F300(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_00278890();
+    Card_0015F300 buf;
+    s32 res;
+    s32 type;
+    Act_0015F300 *act = (Act_0015F300 *)arg2;
+    s32 card;
+    s32 r;
+
+    act->card = arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+        return -1;
+    }
+    type = func_0015F5E0(arg1, &buf);
+    if (type < 0) {
+        return -1;
+    }
+    act->f2 = 10;
+    act->fC = 2;
+    card = func_001E1090(arg0 >> 8, arg0 & 0xFF);
+    if (type == 0) {
+        if (func_0015FE50(arg1, (u8 *)act, &buf) >= 0) {
+            res = func_00276F10(&buf, card & 0xFF, card >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, func_00162580(arg1));
+            if (res < 0) {
+                if (func_001E0150(arg1) < 5) {
+                    r = func_001604B0(arg1, (u8)type, &buf, res);
+                    if (r < 0) {
+                        return -1;
+                    }
+                    act->f4 = r;
+                    return 1;
+                }
+            } else {
+                r = func_001604B0(arg1, (u8)type, &buf, res);
+                if (r < 0) {
+                    return -1;
+                }
+                act->f4 = r;
+                return 1;
+            }
+        }
+    } else {
+        res = func_00276F10(&buf, card & 0xFF, card >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, func_00162580(arg1));
+    }
+    if (type == 2) {
+        func_00160270(arg1, act, &buf);
+        r = func_001604B0(arg1, (u8)type, &buf, res);
+        if (r < 0) {
+            return -1;
+        }
+        act->f4 = r;
+        return 1;
+    } else if (type == 3) {
+        func_0015FA00(arg1, act, &buf);
+        r = func_001604B0(arg1, (u8)type, &buf, res);
+        if (r < 0) {
+            return -1;
+        }
+        act->f4 = r;
+        return 1;
+    } else {
+        if (func_0015FC50(arg1, (u8 *)act, &buf, buf.id) < 0) {
+            return -1;
+        }
+        r = func_001604B0(arg1, (u8)type, &buf, res);
+        if (r < 0) {
+            return -1;
+        }
+        act->f4 = r;
+        return 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015F5E0);
 
