@@ -324,7 +324,33 @@ s32 func_001DE9E0(s32 arg0, s32 arg1) {
     return values[arg1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEA30);
+typedef struct CardSlots_001DEA30 {
+    u16 cards[40];
+    u8 count;
+} CardSlots_001DEA30;
+
+s32 func_001DEA30(s32 player, s32 card) {
+    extern s32 func_001A22C0(f32);
+    CardSlots_001DEA30 *slots;
+    s32 index;
+
+    slots = (CardSlots_001DEA30 *)(D_00317490 + player * 0x350 + 0x1E0);
+    if (card == 0x29F) {
+        card = 0x3E7;
+    }
+    if (card < 0 || card >= 0x356) {
+        return -1;
+    }
+    if (slots->count >= 40) {
+        return -1;
+    }
+    do {
+        index = (s32)func_001A22C0(40.0f * ((f32)func_0019A5C8() / 2147483648.0f));
+    } while (slots->cards[index] != 0x3E7);
+    slots->cards[index] = card;
+    slots->count++;
+    return index;
+}
 
 typedef struct {
     s16 cards[40];

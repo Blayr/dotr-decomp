@@ -761,6 +761,7 @@ s32 func_001DE860(s32 arg0, s32 arg1, s32 arg2);
 void func_001DE970(s32 arg0);
 s32 func_001DE9C0(s32 arg0);
 s32 func_001DE9E0(s32 arg0, s32 arg1);
+s32 func_001DEA30(s32 player, s32 card);
 void func_001DEB20(s32 arg0);
 s32 func_001DEC00(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001DECC0(s32 arg0, s32 arg1);
