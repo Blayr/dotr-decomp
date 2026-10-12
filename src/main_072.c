@@ -468,7 +468,55 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F370);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F430);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F520);
+s32 func_0024F520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
+    extern s32 func_0024FD10();
+    s32 temp_s0;
+    s32 temp_s1;
+    s32 var_s1;
+    s32 var_s2;
+    s32 var_s3;
+
+    temp_s0 = func_00250360(arg0, arg1);
+    temp_s1 = func_001E0700(arg0, arg1);
+    var_s2 = var_s3 = 0;
+    if (func_001DF540(arg0, arg1) == 0 || arg1 == 0) {
+        return 0;
+    }
+    if (func_001E22B0(arg2, arg3) == 9) {
+        if (func_0024FD10(arg0, arg1, arg4) == 1) {
+            return 1;
+        }
+    }
+    if (func_00271A40((temp_s0 == 0) ? 1 : 0, arg2, arg3) != 0) {
+        if (func_00271740(0x10, (temp_s0 == 0) ? 1 : 0) != 0) {
+            if ((func_002720F0((temp_s0 == 0) ? 1 : 0, temp_s1 & 0x1F) != 0) && ((temp_s1 >> 5) == 0)) {
+                var_s2 = func_0024C780(var_s2, arg0, arg1);
+            }
+        }
+        if ((func_00271740(0xF, (temp_s0 == 0) ? 1 : 0) != 0) && (func_00272050((temp_s0 == 0) ? 1 : 0, temp_s1 & 0x1F) != 0) && ((temp_s1 >> 5) == 0)) {
+            var_s3 = func_0024C780(0U, arg0, arg1);
+        }
+        if (var_s2 > 0 || var_s3 > 0) {
+            ((s32 *)arg4)[0] = 0x71;
+            ((s32 *)arg4)[1] = var_s2;
+            ((s32 *)arg4)[2] = var_s3;
+            ((s32 *)arg4)[3] = 0x80000000;
+            return 1;
+        }
+        var_s1 = 0;
+        if ((func_00271740(0xD, (temp_s0 == 0) ? 1 : 0) != 0) && (func_001E2100(arg0, arg1, 4) == 0)) {
+            var_s1 = func_0024C780(0U, arg0, arg1);
+        }
+        if (var_s1 > 0) {
+            ((s32 *)arg4)[0] = 0x71;
+            ((s32 *)arg4)[1] = 0;
+            ((s32 *)arg4)[2] = 0;
+            ((s32 *)arg4)[3] = (s32) (var_s1 | 0x80000000);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_0024F780(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (func_001E22B0(arg2, arg3) == 9) {

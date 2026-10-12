@@ -1353,6 +1353,7 @@ s32 func_0024EFB0(s32 mask);
 s32 func_0024F150(s32 mask);
 u32 func_0024F200(s32 arg0);
 s32 func_0024F2F0(s32 arg0, s32 arg1);
+s32 func_0024F520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4);
 s32 func_0024F780(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_0024FDA0(void);
 s32 func_0024FDD0(s32 arg0);
