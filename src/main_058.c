@@ -164,7 +164,12 @@ s32 func_0020E010(f32 *arg0, f32 *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E050);
+s32 func_0020E050(f32 *arg0) {
+    Entry_0020E010 *e = &D_0032A2A0[D_0032A240];
+
+    *arg0 = *(f32 *)&e->pad158[8];
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020E090);
 
