@@ -1846,7 +1846,177 @@ s32 func_0025B610(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025B900);
+typedef struct State_0025B900 {
+    u16 alpha;
+    u16 pad2;
+    u16 phase;
+    u8 events[0x1A];
+    s32 handle;
+    u8 pad24[0xAC];
+    s32 target;
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_0025B900;
+
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260860(s32);
+void func_00260A70(void *, s32);
+extern char D_002B86E8[];
+
+s32 func_0025B900(s32 arg0, void *arg1, s32 arg2) {
+    s32 data[4];
+    State_0025B900 *state = arg1;
+    s32 i;
+    s32 position;
+    u32 pool;
+    s32 *command = data;
+    s32 y;
+    s32 x;
+    s32 result;
+
+    extern s32 func_0025F670();
+    extern s32 func_001E1A90();
+    extern s32 func_001E1A30();
+    extern s32 func_001E1D10();
+    extern s32 func_001E1CB0();
+
+    command[0] = 999;
+    command[1] = 0;
+    command[2] = 0;
+    command[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x11);
+        func_00255AC0(arg1, 0x18);
+        func_00255AC0(arg1, 0x25B);
+        func_00260020((void *)arg0, arg1, arg2, -1, 1, 1);
+        func_00260860(0x10);
+        state->alpha = 0x80;
+        return 1;
+    }
+
+    if (state->phase == 0) {
+        state->timer++;
+        if (state->alpha > 0x3F) {
+            state->alpha -= 0xF;
+        } else {
+            state->alpha = 0x30;
+            if (state->timer >= 0x10 && func_00255B50(arg1) == 1) {
+                command[0] = 0x11;
+                command[1] = 0;
+                command[2] = 0;
+                command[3] = 0;
+                result = (u8)func_00255A30(command, arg1);
+                state->events[state->count] = result;
+                if (result >= 0) {
+                    state->count++;
+                }
+                state->phase++;
+            }
+        }
+        func_001F6CF0((u8)state->alpha);
+    } else if (state->phase == 1) {
+        if (func_001F51D0(state->events[0]) == 1) {
+            return 1;
+        }
+        pool = 0;
+        for (i = 0; i < func_0024E910(*(s32 *)(arg0 + 8)); i++) {
+            position = func_0024EC50(*(s32 *)(arg0 + 8), i);
+            x = position >> 8;
+            y = position & 0xFF;
+            if (func_001E2100(x, y, 4) != 0 &&
+                (func_001E0700(x, y) >> 5) == 0) {
+                pool = func_0024C780(pool, x, y);
+            }
+        }
+        if (func_0024E910(pool) == 0) {
+            pool = *(s32 *)(arg0 + 8);
+        }
+        state->target = func_0024EBD0(pool);
+        func_00260AF0(0, state->target, 100, 180);
+        func_001E1090(position >> 8, position & 0xFF);
+        command[0] = 0x18;
+        command[1] = 0;
+        command[2] = state->target;
+        command[3] = 0;
+        result = (u8)func_00255A30(command, arg1);
+        state->events[0] = result;
+        if (result >= 0) {
+            state->count++;
+            state->handle = state->target;
+        }
+        {
+            s32 otherY;
+            s32 otherX;
+            s32 j;
+            s32 other;
+
+            for (j = 0; j < func_0024E910(*(s32 *)(arg0 + 8)); j++) {
+                other = func_0024EC50(*(s32 *)(arg0 + 8), j);
+                if (other != position) {
+                    otherX = other >> 8;
+                    otherY = other & 0xFF;
+                    func_002500C0(otherX, otherY, -1, 7, 3);
+                    func_001E1AF0(otherX, otherY, -1, 0);
+                }
+            }
+        }
+        state->phase++;
+    } else if (state->phase == 2) {
+        if (func_001F51D0(state->events[0]) != 0 &&
+            func_001F52D0(state->events[0]) == 2 && state->handle >= 0) {
+            state->handle = -1;
+            command[0] = 0x25B;
+            command[1] = 0;
+            command[2] = state->target;
+            command[3] = 0;
+            result = (u8)func_00255A30(command, arg1);
+            state->events[state->count] = result;
+            if (result >= 0) {
+                state->count++;
+            }
+            state->phase++;
+        }
+    } else if (state->phase == 3) {
+        if (func_0025F670((void *)arg0, arg1, command) != 0) {
+            func_00260020((void *)arg0, arg1, arg2, 1, 0, 1);
+            func_00260A70(arg1, 0x10);
+            state->timer = 0;
+            state->phase++;
+        }
+    } else {
+        {
+            s32 c;
+            s32 b;
+            s32 a;
+            s32 d;
+
+            a = func_001E1A90(0, 0);
+            b = func_001E1A30(0, 0);
+            c = func_001E1D10(0, 0);
+            d = func_001E1CB0(0, 0);
+            func_00199B50(D_002B86E8, a, b, c, d);
+        }
+        state->alpha += 0xF;
+        if (state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80) {
+            if (state->timer++ > 0x10 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 typedef struct Obj_0025BE50 {
     u16 amount;
