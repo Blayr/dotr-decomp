@@ -777,7 +777,103 @@ s32 func_0026B430(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026B480);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026BB80);
+typedef struct Command_0026BB80 {
+    s32 id;
+    s32 mask;
+    s32 x;
+    s32 y;
+} Command_0026BB80;
+
+typedef struct State_0026BB80 {
+    u8 pad0[4];
+    u16 state;
+    u8 handle;
+    u8 pad7[0xFB];
+    u16 timer;
+} State_0026BB80;
+
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+void func_00255960(void *);
+u8 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1E10();
+    Command_0026BB80 request;
+    Command_0026BB80 *command = &request;
+    State_0026BB80 *state = arg1;
+    Command_0026BB80 *source = arg0;
+    s32 count;
+    s32 i;
+    s32 index;
+    s32 position;
+
+    request.id = 999;
+    request.mask = 0;
+    request.x = 0;
+    request.y = 0;
+    count = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        for (i = 0; i < func_0024E910(source->mask); i++) {
+            position = func_0024EC50(source->mask, i);
+            func_002516D0(position >> 8, position & 0xFF, 1);
+        }
+        func_00255AC0(arg1, 0x3B);
+        func_00260740(0x10);
+        return 1;
+    }
+
+    switch (state->state) {
+    case 0:
+        for (index = 0; index < func_0024E910(source->mask); index++) {
+            position = func_0024EC50(source->mask, index);
+            if (func_001E1E10(position >> 8, position & 0xFF) == 0xFF) {
+                count++;
+            }
+        }
+        if (count >= 3) {
+            if (func_00255B50(arg1) == 1) {
+                state->state = 1;
+                func_001E42C0(0, -0x78, 0x50, 0x105);
+                command->id = 0x3B;
+                command->mask = source->mask;
+                command->x = source->x;
+                command->y = source->y;
+                state->handle = func_00255A30(command, arg1);
+            }
+        }
+        return 1;
+    case 1:
+        if (func_001F51D0(state->handle) == 1) {
+            if (func_001F52D0(state->handle) == 2) {
+                for (i = 0; i < func_0024E910(source->mask); i++) {
+                    position = func_0024EC50(source->mask, i);
+                    func_0024F370(position >> 8, position & 0xFF);
+                }
+            }
+            return 1;
+        }
+        func_001E4530();
+        func_00260A70(arg1, 0x10);
+        state->state++;
+        break;
+    default:
+        if (state->timer++ > 0x10) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026BE20);
 
