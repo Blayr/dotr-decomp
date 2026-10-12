@@ -1384,7 +1384,6 @@ typedef struct Obj_0025C0B0 {
 } Obj_0025C0B0;
 
 extern void func_00255AC0(void *, s32);
-extern s32 func_0025F400(void *, void *, s32 *);
 extern void func_00260860(s32);
 extern void func_00260A70(void *, s32);
 

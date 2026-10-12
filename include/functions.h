@@ -1565,6 +1565,7 @@ s32 func_0025ECB0(void);
 s32 func_0025F2A0(void);
 void func_0025F310(void);
 s32 func_0025F390(void *arg0);
+s32 func_0025F400(void *arg0, void *arg1, void *arg2);
 s32 func_0025F670(void *arg0, void *arg1);
 void func_0025F720(void *arg0, void *arg1, void *arg2, s32 arg3);
 void func_0025F820(void *arg0, void *arg1, void *arg2, s32 arg3);

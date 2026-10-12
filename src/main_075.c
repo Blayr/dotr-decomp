@@ -51,7 +51,101 @@ s32 func_0025F390(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F400);
+typedef struct State_0025F400 {
+    u16 unknown0;
+    u16 timer;
+    u16 unknown4;
+    u8 ids[0x1A];
+    s32 entries[0x2D];
+    u8 count;
+} State_0025F400;
+
+typedef struct Source_0025F400 {
+    u8 padding[8];
+    s32 mask;
+} Source_0025F400;
+
+typedef struct Command_0025F400 {
+    s32 kind;
+    s32 flags;
+    s32 position;
+    s32 extra;
+} Command_0025F400;
+
+s32 func_00255A30(void *, void *);
+
+s32 func_0025F400(void *arg0, void *arg1, void *arg2) {
+    s32 i;
+    u32 mask;
+    Source_0025F400 *source = arg0;
+    State_0025F400 *state = arg1;
+    Command_0025F400 *command = arg2;
+    u16 timer;
+
+    mask = 0;
+    for (i = 0; i < state->count; i++) {
+        if (func_001F51D0(state->ids[i]) != 0 &&
+            func_001F52D0(state->ids[i]) == 2 &&
+            state->entries[i] >= 0) {
+            state->entries[i] = -1;
+            state->timer = 1;
+        }
+    }
+    timer = state->timer;
+    if (timer > 0) {
+        state->timer = timer + 1;
+        if (timer > 0x10) {
+            s32 position;
+            u8 id;
+            s32 final_y;
+            s32 final_x;
+            s32 j;
+
+            for (i = 0; i < func_0024E910(source->mask); i++) {
+                s32 value = func_0024EC50(source->mask, i);
+                s32 y;
+                s32 x;
+
+                x = value >> 8;
+                y = value & 0xFF;
+
+                if (func_001E2100(x, y, 4) != 0 &&
+                    (func_001E0700(x, y) >> 5) == 0) {
+                    mask = func_0024C780(mask, x, y);
+                }
+            }
+            if (func_0024E910(mask) == 0) {
+                mask = source->mask;
+            }
+            position = func_0024EBD0(mask);
+            func_001E1090(position >> 8, position & 0xFF);
+            command->kind = 0x25B;
+            command->flags = 0;
+            command->position = position;
+            command->extra = 0;
+            id = func_00255A30(command, state);
+            state->ids[state->count] = id;
+            if (id >= 0) {
+                state->count++;
+            }
+            func_00260AF0(0, position, 0x64, 0xB4);
+            for (j = 0; j < func_0024E910(source->mask); j++) {
+                s32 value = func_0024EC50(source->mask, j);
+
+                if (value != position) {
+                    final_x = value >> 8;
+                    final_y = value & 0xFF;
+
+                    func_002500C0(final_x, final_y, -1, 7, 3);
+                    func_001E1AF0(final_x, final_y, -1, 0);
+                }
+            }
+            state->timer = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_0024F370(s32, s32);
 
