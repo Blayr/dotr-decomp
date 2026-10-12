@@ -243,7 +243,6 @@ typedef struct State_0023E610 {
     s16 field40;
 } State_0023E610;
 
-s32 func_0023CE40(s32);
 extern struct State_0023E610 D_0034FB00;
 
 s32 func_0023C3F0(s32 arg0) {
@@ -498,7 +497,152 @@ s16 func_0023CC50(s32 arg0) {
     return *(s16 *)(state + 0x2BE);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CE40);
+typedef struct State_0023CE40 {
+    s32 result;
+    s32 status;
+    s32 arg0;
+    s32 arg1;
+    s32 mode;
+    s32 size;
+    s32 connected;
+    u8 pad1C[4];
+    s32 ready;
+    s32 error;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 timer;
+    u8 pad36[10];
+    s16 retries;
+} State_0023CE40;
+
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
+
+s32 func_0023CE40(s32 arg0) {
+    extern struct State_0023E610 D_0034FB00;
+    extern s32 D_0034FB04;
+    extern s32 D_0034FB08;
+    extern s32 D_0034FB0C;
+    extern s32 D_0034FB10;
+    extern s32 D_0034FB14;
+    extern s32 D_0034FB18;
+    extern s32 D_0034FB20;
+    extern s32 D_0034FB24;
+
+    s32 result;
+    State_0023CE40 *state = (State_0023CE40 *)&D_0034FB00;
+
+    D_0034FB00.result = func_00194380(D_0034FB08, D_0034FB0C, &D_0034FB10, &D_0034FB14, &D_0034FB18);
+    D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
+    if (D_0034FB04 == 1 && state->ready == 1) {
+        switch (state->error) {
+        case 0:
+            break;
+        case -1:
+            state->state = 14;
+            state->timer = 0;
+            state->retries = 0;
+            return 0x700;
+        case -2:
+            state->state = 14;
+            state->timer = 0;
+            state->retries = 0;
+            return 0x700;
+        default:
+            if (arg0 != 1) {
+                state->state = 14;
+                state->timer = 0;
+                state->retries = 0;
+            }
+            break;
+        }
+        switch (state->mode) {
+        case 0:
+            if (arg0 == 1 && state->state == 14) {
+                state->state = 14;
+                state->timer = 0;
+                state->retries = 0;
+                return 0;
+            }
+            state->state = 14;
+            state->timer = 0;
+            state->retries = 0;
+            return 2;
+        case 1:
+            state->state = 14;
+            state->timer = 0;
+            state->retries = 0;
+            return 4;
+        case 2:
+            break;
+        case 3:
+            state->state = 14;
+            state->timer = 0;
+            state->retries = 0;
+            return 4;
+        default:
+            state->state = 14;
+            state->timer = 0;
+            state->retries = 0;
+            return 2;
+        }
+        if (state->mode == 2) {
+                switch (state->connected) {
+                case 0:
+                    state->retries++;
+                    if (state->retries >= 3) {
+                        state->state = 11;
+                        state->timer = 0;
+                        state->retries = 3;
+                        if (state->state == 11) {
+                            result = 14;
+                        } else {
+                            result = 3;
+                        }
+                        return result;
+                    }
+                    break;
+                case 1:
+                    state->retries = 0;
+                    if (state->state == 0) {
+                        state->state = 1;
+                    } else if (state->state == 3) {
+                        if (state->size < 250) {
+                            state->state = 14;
+                            state->timer = 0;
+                            state->retries = 0;
+                            return 5;
+                        }
+                        if (arg0 == 1) {
+                            state->timer = 0;
+                            state->retries = 0;
+                            state->state = 0;
+                            return 0x100;
+                        }
+                        state->state = 4;
+                        return 9;
+                    }
+                    break;
+                default:
+                    state->state = 14;
+                    state->timer = 0;
+                    state->retries = 0;
+                    return 2;
+                }
+        }
+    }
+    switch (state->state) {
+    case 3:
+        return 17;
+    case 11:
+        return 14;
+    case 13:
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 struct State_0023E610;
 
