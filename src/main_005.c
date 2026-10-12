@@ -175,7 +175,151 @@ INCLUDE_ASM("asm/nonmatchings/main_005", func_00115340);
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_00115850);
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00115E20);
+typedef struct Input_00115E20 {
+    u16 position;
+    u8 pad2[6];
+    u32 targets;
+} Input_00115E20;
+
+typedef struct Output_00115E20 {
+    u16 position;
+    s8 action;
+    u8 pad3;
+    s16 target;
+    u8 pad6[6];
+    s32 kind;
+    s8 result;
+} Output_00115E20;
+
+typedef struct Candidate_00115E20 {
+    u8 x : 4;
+    u8 y : 4;
+} Candidate_00115E20;
+
+static inline u32 target_00115E20(void *src, u8 mode) {
+    Input_00115E20 *input = src;
+    if (mode == 1) {
+        return (input->targets >> 16) & 0xFFFF;
+    }
+    return (u16)input->targets;
+}
+
+void func_00117870(s32, s32, void *);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+s32 func_00115E20(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_0027A090();
+    s32 origin;
+    s32 destination;
+    s32 count;
+    Candidate_00115E20 candidates[12];
+    Candidate_00115E20 *point;
+    s32 originY;
+    s32 originX;
+    s32 i;
+    u32 selected;
+    Input_00115E20 *input = arg0;
+    Output_00115E20 *output = arg2;
+
+    selected = target_00115E20(input, arg3);
+    if (func_001DF540(target_00115E20(input, arg3) >> 8,
+                     selected & 0xFF) == 0) {
+        func_0027B1B0(input, 1);
+        return -1;
+    }
+    func_00117870(input->position >> 8, input->position & 0xFF, input);
+    origin = func_001E1090(input->position >> 8, input->position & 0xFF);
+    selected = target_00115E20(input, arg3);
+    destination = func_001E1090(target_00115E20(input, arg3) >> 8,
+                               selected & 0xFF);
+    point = candidates;
+    for (i = 0; i < 12; i++) {
+        candidates[i].x = candidates[i].y = 15;
+    }
+    if (func_002464F0(func_001DF540(input->position >> 8, input->position & 0xFF),
+                      originX = origin & 0xFF, originY = origin >> 8) == 0) {
+        s32 score;
+        output->position = input->position;
+        output->action = 6;
+        output->target = origin;
+        score = func_00276CC0(originX, originY, arg1, 3, 1,
+                             (u8)func_00117C30(arg1));
+        if (score >= func_001E0290(input->position >> 8, input->position & 0xFF, 0)) {
+            output->result = 1;
+        } else {
+            output->result = 0;
+        }
+        func_0027B1B0(input, arg3);
+        return 0;
+    } else {
+        s32 position;
+        s32 destinationY;
+        s32 destinationX;
+        s32 index;
+        s32 bestScore;
+        s32 bestIndex;
+        u16 random;
+
+        position = input->position;
+        random = func_00117C30(arg1);
+        func_0027A090(position >> 8, position & 0xFF, candidates,
+                      originX, originY, destinationX = destination & 0xFF,
+                      destinationY = destination >> 8,
+                      target_00115E20(input, arg3), (s64)0, (s64)30,
+                      (s64)random);
+        count = func_0027AFC0((u8 *)candidates);
+        bestIndex = 255;
+        if (count > 0) {
+            bestScore = 65535;
+            for (index = 0; index < count; index++, point++) {
+                s32 score = func_00276CC0(point->x, point->y, arg1, 2, 1,
+                                         (u8)func_00117C30(arg1));
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestIndex = index;
+                } else if (score == bestScore) {
+                    Candidate_00115E20 *best = &candidates[bestIndex];
+                    if (((destinationX < point->x ? point->x : destinationX) -
+                         (point->x < destinationX ? point->x : destinationX)) +
+                        ((destinationY < point->y ? point->y : destinationY) -
+                         (point->y < destinationY ? point->y : destinationY)) <
+                        ((destinationX < best->x ? best->x : destinationX) -
+                         (best->x < destinationX ? best->x : destinationX)) +
+                        ((destinationY < best->y ? best->y : destinationY) -
+                         (best->y < destinationY ? best->y : destinationY))) {
+                        bestScore = score;
+                        bestIndex = index;
+                    }
+                }
+            }
+        } else {
+            output->position = input->position;
+            output->action = 6;
+            output->target = origin;
+            output->kind = 2;
+            output->result = 2;
+            func_0027B1B0(input, arg3);
+            return -1;
+        }
+        if (bestIndex != 255) {
+            output->position = input->position;
+            output->action = 6;
+            output->target = (candidates[bestIndex].y << 8) | candidates[bestIndex].x;
+            output->kind = 2;
+            output->result = 2;
+        } else {
+            output->position = input->position;
+            output->action = 6;
+            output->target = origin;
+            output->kind = 2;
+            output->result = 2;
+            func_0027B1B0(input, arg3);
+            return -1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_005", func_001162F0);
 
