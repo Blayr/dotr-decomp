@@ -587,7 +587,6 @@ void func_00163660(void *);
 void func_0016D6A0(void *);
 
 
-void func_00113140(void *, s32);
 
 void func_0010CE20(u16 *, u16 *);
 s32 func_0010DD50(s32, s32, s32);

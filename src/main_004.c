@@ -1174,7 +1174,82 @@ INCLUDE_ASM("asm/nonmatchings/main_004", func_00112A40);
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_00112B90);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00113140);
+typedef struct {
+    u16 card;       /* 0x0 */
+    u8 pad2[2];
+    s16 target;     /* 0x4 */
+    u8 pad6[2];
+    s32 f8;         /* 0x8 */
+} Action_00113140;
+
+s32 func_00113140(void *arg0, s32 arg1) {
+    extern s32 func_00113760();
+    extern s32 func_00113BB0();
+    extern s32 func_00113ED0();
+    Action_00113140 *act = arg0;
+    u16 card;
+    s32 low;
+    s32 temp_s0;
+    s32 type;
+
+    card = act->card;
+    func_001E1090(card >> 8, card & 0xFF);
+    card = act->card;
+    temp_s0 = func_00250360(card >> 8, card & 0xFF);
+    card = act->card;
+    if (func_001DF540(card >> 8, card & 0xFF) != 0) {
+        card = act->card;
+        if (func_001E2100(card >> 8, card & 0xFF, 0) == 0) {
+            card = act->card;
+            if (card != 0xFFFF) {
+                low = card & 0xFF;
+                if (low == 0) {
+                    if (act->f8 == -1) {
+                        if (func_0027BBC0(card >> 8, low, 0) == 1) {
+                            if (func_001DE6D0(act->card >> 8) == 1) {
+                                act->target = 0x50A;
+                            } else {
+                                act->target = 0x5FF;
+                            }
+                        } else {
+                            if (func_001DE6D0(act->card >> 8) == 1) {
+                                act->target = 0xA06;
+                                act->f8 = (act->f8 & 0xFFFF0000) | 0x101;
+                            } else {
+                                act->target = 0x6FF;
+                                act->f8 = (act->f8 & 0xFFFF) | 0x01010000;
+                            }
+                        }
+                    }
+                } else {
+                    type = func_001E0700(card >> 8, low) >> 5;
+                    switch (type) {
+                    case 0:
+                        card = act->card;
+                        if (func_002507D0(card >> 8, card & 0xFF) == 1) {
+                            func_00113BB0(arg0, arg1);
+                        } else {
+                            func_00113760(arg0, 1, arg1);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 5, 0, func_00117C30(temp_s0) & 0xFF);
+                        break;
+                    case 1:
+                    case 3:
+                        func_00113ED0(arg0, arg1);
+                        break;
+                    default:
+                        act->target = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00113370(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 i;
