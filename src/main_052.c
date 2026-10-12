@@ -953,7 +953,66 @@ s32 func_001FAD10(s32 arg0) {
     return temp_v0 + 0x10;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FAD60);
+typedef struct Vec4_001FAD60 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001FAD60;
+
+typedef struct Camera_001FAD60 {
+    Vec4_001FAD60 polar;
+    Vec4_001FAD60 rotation;
+    Vec4_001FAD60 direction;
+    Vec4_001FAD60 position;
+} Camera_001FAD60;
+
+extern f32 func_001A6C30(f32, f32);
+
+s32 func_001FAD60(s32 arg0, void *arg1) {
+    Camera_001FAD60 *camera;
+    s32 *entry;
+    Vec4_001FAD60 *position;
+    Vec4_001FAD60 *direction;
+    Camera_001FAD60 *camera2;
+    Vec4_001FAD60 result;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    entry = &D_0031BEB0[arg0];
+    camera = (Camera_001FAD60 *)*entry;
+    if (camera == NULL) {
+        return 0;
+    }
+    if (arg1 == NULL) {
+        return 0;
+    }
+    camera->rotation = *(Vec4_001FAD60 *)arg1;
+    func_0020D070(&camera->rotation);
+    camera->direction.x = camera->position.x - (((Vec4_001FAD60 *)arg1)->x * camera->polar.x);
+    camera->direction.y = camera->position.y - (((Vec4_001FAD60 *)arg1)->y * camera->polar.x);
+    camera->direction.z = camera->position.z - (((Vec4_001FAD60 *)arg1)->z * camera->polar.x);
+    camera->direction.w = 0.0f;
+    if ((arg0 >= 0) && (arg0 <= 0)) {
+        camera2 = (Camera_001FAD60 *)*entry;
+        if (camera2 != NULL) {
+            direction = &camera2->direction;
+            position = &camera2->position;
+
+            result.x = func_001A6C60(((direction->x - position->x) * (direction->x - position->x)) +
+                                     ((direction->z - position->z) * (direction->z - position->z)));
+            result.y = func_001A6C18(direction->z - position->z, direction->x - position->x);
+            result.y = func_001A6C30(6.2831855f + result.y, 6.2831855f);
+            result.z = func_001A6C18(direction->y - position->y, result.x);
+            result.x = func_001A6C60(((direction->x - position->x) * (direction->x - position->x)) +
+                                     ((direction->y - position->y) * (direction->y - position->y)) +
+                                     ((direction->z - position->z) * (direction->z - position->z)));
+            camera2->polar = result;
+        }
+    }
+    return 1;
+}
 
 f32 *func_001FAF60(s32 arg0) {
     f32 *var_v0;
