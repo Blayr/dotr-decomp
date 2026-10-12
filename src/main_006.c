@@ -1223,7 +1223,132 @@ s32 func_00123D70(s32 arg0, s32 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00123F90);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00124040);
+s32 func_00124040(s32 arg0, void *arg1, void *arg2) {
+    s32 cards[8];
+    s32 i;
+    s32 count;
+    extern s32 func_001E1580();
+    extern s32 func_001E1030();
+
+    count = 0;
+    func_0026FD30(arg0, cards);
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (cards[i] == 0x33D) {
+            *((s8 *)arg1 + 6) = i;
+            func_001DCD70(arg2, cards[i]);
+            return func_0026FCE0(cards[i]) >> 5;
+        }
+    }
+
+    if (func_001269C0(arg0, 0x34C) == 1) {
+        for (i = 0; i < func_0026FE20(arg0); i++) {
+            if (cards[i] == 0x34C) {
+                *((s8 *)arg1 + 6) = i;
+                func_001DCD70(arg2, cards[i]);
+                return func_0026FCE0(cards[i]) >> 5;
+            }
+        }
+    }
+
+    for (i = 0; i < func_0026FE20(arg0); i++) {
+        if (cards[i] == 0x332) {
+            *((s8 *)arg1 + 6) = i;
+            func_001DCD70(arg2, cards[i]);
+            return func_0026FCE0(cards[i]) >> 5;
+        }
+    }
+
+    i = 0;
+    while (1) {
+        if (arg0 == func_00250360(arg0, i)) {
+            if (func_001E0830(arg0, i) == 4) {
+                count++;
+            }
+        }
+        if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, i)) {
+            if (func_001E0830(arg0 == 0 ? 1 : 0, i) == 4) {
+                count++;
+            }
+        }
+        i++;
+        if (i > 5) {
+            break;
+        }
+    }
+
+    if (count >= 3) {
+        for (count = 0; count < func_0026FE20(arg0); count++) {
+            if (cards[count] == 0x2E6) {
+                *((s8 *)arg1 + 6) = count;
+                func_001DCD70(arg2, cards[count]);
+                return func_0026FCE0(cards[count]) >> 5;
+            }
+        }
+    }
+
+    {
+        s32 facedown;
+        s32 slot;
+
+        facedown = 0;
+        slot = 0;
+        do {
+            if (arg0 == func_00250360(arg0, slot)) {
+                if (func_001E1580(arg0, slot) == 0xFF) {
+                    facedown++;
+                }
+            }
+            if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot)) {
+                if (func_001E1580(arg0 == 0 ? 1 : 0, slot) == 0xFF) {
+                    facedown++;
+                }
+            }
+            slot++;
+        } while (slot < 11);
+
+        if (facedown > 0) {
+            for (count = 0; count < func_0026FE20(arg0); count++) {
+                if (cards[count] == 0x31C) {
+                    *((s8 *)arg1 + 6) = count;
+                    func_001DCD70(arg2, cards[count]);
+                    return func_0026FCE0(cards[count]) >> 5;
+                }
+            }
+        }
+    }
+
+    {
+        s32 special;
+        s32 slot;
+
+        slot = 6;
+        special = 0;
+        do {
+            if (arg0 == func_00250360(arg0, slot)) {
+                if (func_001E1030(arg0, slot) == 0x33D) {
+                    special++;
+                }
+            }
+            if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, slot)) {
+                if (func_001E1030(arg0 == 0 ? 1 : 0, slot) == 0x33D) {
+                    special++;
+                }
+            }
+            slot++;
+        } while (slot < 11);
+
+        if (special > 0) {
+            for (count = 0; count < func_0026FE20(arg0); count++) {
+                if (cards[count] == 0x334) {
+                    *((s8 *)arg1 + 6) = count;
+                    func_001DCD70(arg2, cards[count]);
+                    return func_0026FCE0(cards[count]) >> 5;
+                }
+            }
+        }
+    }
+    return -1;
+}
 
 s32 func_00124520(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     s32 entries[8];
