@@ -466,7 +466,28 @@ void func_00217410(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002174D0);
+typedef struct Flags_002174D0 {
+    s8 active : 1;
+} Flags_002174D0;
+
+typedef struct State_002174D0 {
+    u8 pad[8];
+    Flags_002174D0 flags;
+} State_002174D0;
+
+struct State_00217410;
+
+
+void func_002174D0(void) {
+    extern struct State_00217410 D_0034F6E0;
+    extern Flags_002174D0 D_0034F6E8;
+    State_002174D0 *state = (State_002174D0 *)&D_0034F6E0;
+
+    if (D_0034F6E8.active) {
+        func_00109D50();
+        state->flags.active = 0;
+    }
+}
 
 typedef struct {
     s8 active : 1;
