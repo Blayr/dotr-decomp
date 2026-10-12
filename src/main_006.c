@@ -247,7 +247,107 @@ s32 func_0011D940(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011D9B0);
+typedef struct Data_0011D9B0 {
+    u16 position;
+    u16 unk2;
+    u16 state;
+    u16 unk6;
+    u32 details;
+} Data_0011D9B0;
+
+typedef struct Entry_0011D9B0 {
+    u16 id;
+    u8 kind;
+    u8 padding;
+} Entry_0011D9B0;
+
+s32 func_0027D720(void *, s32);
+
+void func_0011D9B0(void *arg0, s32 arg1) {
+    u8 context[112];
+    Entry_0011D9B0 entries[23];
+    s16 count;
+    s16 total;
+    s32 card;
+    s32 position;
+    s32 available;
+    s32 row;
+    s32 column;
+    s32 attempt;
+    Data_0011D9B0 *data = arg0;
+    s32 i;
+    Entry_0011D9B0 *entry;
+    s32 type;
+    s32 result;
+    u16 packed;
+    extern void func_0027E770();
+    extern s32 func_001E1030();
+    extern s32 func_0027DE20();
+
+    packed = data->position;
+    if ((available = func_001DF540((s32) packed >> 8, packed & 0xFF)) != 0) {
+        packed = data->position;
+        card = func_0024DE70((s32) packed >> 8, packed & 0xFF);
+        packed = data->position;
+        position = func_001E1090((s32) packed >> 8, packed & 0xFF);
+        entry = entries;
+        total = 0;
+        count = 0;
+        i = 0;
+        do {
+            i++;
+            entry->id = 0xFFFF;
+            entry->kind = 0xFF;
+            entry++;
+        } while (i < 22);
+        func_0027E770(context);
+        packed = data->position;
+        type = func_001E1030((s32) packed >> 8, packed & 0xFF);
+        if (type != 0x1FD) {
+            attempt = 1;
+            switch (type) {
+            case 0x1F0:
+            case 0x1FE:
+                row = position >> 8;
+                column = position & 0xFF;
+                while (1) {
+                    result = func_0027DE20(data, 0, available, column, row,
+                        card == 0 ? 1 : 0, (u8) attempt, func_0011FA80(card), entries, 0,
+                        &count, &total, 2, 0, 1500, context);
+                    switch (result) {
+                    case 3:
+                    case 2:
+                        data->state = 0x3FF;
+                        data->details = (position << 16) | (data->details & 0xFFFF);
+                        return;
+                    case 1:
+                        return;
+                    case 0:
+                        data->state = 0x3FF;
+                        data->details = (position << 16) | (data->details & 0xFFFF);
+                        return;
+                    }
+                    attempt++;
+                    if (attempt > 2) {
+                        break;
+                    }
+                }
+                if (func_0024E910(func_0024CA40(0, 0, card, 1, 14, 14)) > 3) {
+                    data->state = 0x3FF;
+                    data->details = (position << 16) | (data->details & 0xFFFF);
+                    return;
+                }
+                break;
+            }
+        } else {
+            if (func_0027D720(data, 0) == 1) {
+                data->state = 0xBFF;
+                return;
+            }
+        }
+        func_0011D110(data, 0);
+    }
+}
 
 typedef struct {
     u16 position;
