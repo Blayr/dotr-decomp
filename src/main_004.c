@@ -936,7 +936,106 @@ s32 func_00113370(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00113760);
+typedef struct Event_00113760 {
+    u16 id;
+    u16 pad2;
+    u16 state;
+    u16 pad6;
+    union {
+        u32 word;
+        u16 low;
+    } data;
+} Event_00113760;
+
+typedef struct Entry_00113760 {
+    u16 id;
+    u8 state;
+    u8 pad;
+} Entry_00113760;
+
+void func_00113760(void *arg0, s32 arg1, s32 arg2) {
+    extern void func_0027E770();
+    extern s32 func_0027B200();
+    extern s32 func_00113A00();
+    extern void func_00113A60();
+    s32 position;
+    u8 buffer[0x70];
+    Entry_00113760 entries[22];
+    s16 countA;
+    s16 countB;
+
+    if (func_001DF540(((Event_00113760 *)arg0)->id >> 8,
+                       ((Event_00113760 *)arg0)->id & 0xFF) != 0) {
+        s32 player;
+        s32 other;
+        s32 step;
+        s32 card;
+        s32 i;
+        Entry_00113760 *p;
+
+        player = func_0024DE70(((Event_00113760 *)arg0)->id >> 8,
+                              ((Event_00113760 *)arg0)->id & 0xFF);
+        other = (player == 0 ? 1 : 0) << 8;
+        position = func_001E1090(((Event_00113760 *)arg0)->id >> 8,
+                                ((Event_00113760 *)arg0)->id & 0xFF);
+        step = func_001E1090(other >> 8, other & 0xFF);
+        card = func_001DF540(((Event_00113760 *)arg0)->id >> 8,
+                            ((Event_00113760 *)arg0)->id & 0xFF);
+        p = entries;
+        i = 0;
+        do {
+            ++i;
+            p->id = 0xFFFF;
+            p->state = 0xFF;
+            ++p;
+        } while (i < 22);
+        func_0027E770(buffer);
+        if (arg1 != 0) {
+            if (func_0027B200(((Event_00113760 *)arg0)->id >> 8,
+                             ((Event_00113760 *)arg0)->id & 0xFF,
+                             position & 0xFF, position >> 8,
+                             other >> 8, other & 0xFF,
+                             step & 0xFF, step >> 8, 2) > 0) {
+                ((Event_00113760 *)arg0)->state = 0x2FF;
+                ((Event_00113760 *)arg0)->data.word = (other << 16) |
+                    ((Event_00113760 *)arg0)->data.low;
+                return;
+            }
+        }
+        step = 1;
+        countB = 0;
+        countA = 0;
+        for (; step <= (arg2 != 0 ? 5 : 2); ++step) {
+            s32 limit = arg2 != 0 ? 5 : 2;
+            s32 side;
+            s32 result;
+
+            side = func_0024DE70(((Event_00113760 *)arg0)->id >> 8,
+                                ((Event_00113760 *)arg0)->id & 0xFF) == 0 ? 1 : 0;
+            result = func_00113A00(arg0, 0, card, position & 0xFF, position >> 8,
+                                  side, step & 0xFF, func_00117C30(player),
+                                  entries, 0, &countA, &countB, limit & 0xFF, buffer);
+            switch (result) {
+                case 3:
+                    ((Event_00113760 *)arg0)->state = 0x6FF;
+                    ((Event_00113760 *)arg0)->data.word = (position << 16) |
+                        ((Event_00113760 *)arg0)->data.low;
+                    return;
+                case 2:
+                    ((Event_00113760 *)arg0)->state = 0x3FF;
+                    ((Event_00113760 *)arg0)->data.word = (position << 16) |
+                        ((Event_00113760 *)arg0)->data.low;
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    ((Event_00113760 *)arg0)->state = 0x5FF;
+                    return;
+            }
+        }
+        func_00113A60(arg0, arg2);
+    }
+}
 
 void func_00113A00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
