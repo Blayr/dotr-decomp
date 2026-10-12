@@ -237,7 +237,62 @@ s32 func_001F8A30(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8B50);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8D30);
+s32 func_001F8D30(s32 arg0, s32 arg1, s32 arg2) {
+    u32 sp70[4];
+    u8 *var_s0;
+    u8 *var_s1;
+    s32 var_s2;
+    s32 var_s3;
+    u8 *temp_s4;
+
+    if ((arg1 < 0) || (arg1 > 0)) {
+        return arg0;
+    }
+    temp_s4 = (u8 *)D_0031BEB0[arg1];
+    if (temp_s4 == NULL) {
+        return arg0;
+    }
+    if ((arg2 < 0) || (arg2 >= 0xA)) {
+        return arg0;
+    }
+    var_s0 = temp_s4 + (arg2 * 0x90) + 0x60;
+    var_s1 = temp_s4 + (arg2 * 0x30) + 0x600;
+    var_s3 = arg2;
+    var_s2 = arg2;
+    if (arg2 != 9) {
+        if (!(*(u16 *)(temp_s4 + 0x8A8) & (1 << arg2))) {
+            var_s0 = temp_s4 + 0x570;
+            var_s2 = 9;
+        }
+        if (!(*(u16 *)(temp_s4 + 0x8AA) & (1 << arg2)) ||
+            (*(u16 *)(temp_s4 + 0x8AE) & (1 << arg2))) {
+            var_s1 = temp_s4 + 0x7B0;
+            var_s3 = 9;
+        }
+    }
+    func_00208F00(0, NULL, NULL, -1);
+    if (*(u16 *)(temp_s4 + 0x8A8) & (1 << var_s2)) {
+        *(s32 *)(var_s0 + 0x2C) = 0;
+        func_0020CDD0(sp70, NULL, var_s0 + 0x20);
+        func_00208F00(0, var_s0, sp70, 0);
+        *(s32 *)(var_s0 + 0x5C) = 0;
+        func_0020CDD0(sp70, NULL, var_s0 + 0x50);
+        func_00208F00(0, var_s0 + 0x30, sp70, 1);
+        *(s32 *)(var_s0 + 0x8C) = 0;
+        func_0020CDD0(sp70, NULL, var_s0 + 0x80);
+        func_00208F00(0, var_s0 + 0x60, sp70, 2);
+    }
+    arg0 = func_00208F00(arg0, NULL, NULL, -1);
+    if (*(u16 *)(temp_s4 + 0x8AA) & (1 << var_s3)) {
+        func_0020CDD0(sp70, NULL, var_s1 + 0x10);
+        sp70[3] = 0x3F800000;
+        return func_00209110(arg0, var_s1, sp70,
+                             *(f32 *)(var_s1 + 0x20),
+                             *(f32 *)(var_s1 + 0x24),
+                             *(f32 *)(var_s1 + 0x28));
+    }
+    return func_00209110(arg0, NULL, NULL, 0.0f, 0.0f, 0.0f);
+}
 
 typedef struct Vec4_001F8F80 {
     f32 x, y, z, w;
