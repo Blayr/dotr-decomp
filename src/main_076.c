@@ -874,7 +874,28 @@ s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_002695D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00269D60);
+void func_00269D60(void *arg0, void *arg1) {
+    u32 temp_v1;
+
+    temp_v1 = *(u32 *)((u8 *)arg0 + 0xC) >> 14;
+    switch (temp_v1) {
+    case 0x218:
+        func_00255AC0(arg1, 0x218);
+        return;
+    case 0x21C:
+        func_00255AC0(arg1, 0x21C);
+        return;
+    case 0x21D:
+        func_00255AC0(arg1, 0x21D);
+        return;
+    case 0x21E:
+        func_00255AC0(arg1, 0x21E);
+        return;
+    default:
+        func_00255AC0(arg1, 0x218);
+        return;
+    }
+}
 
 void func_00269E10(void *arg0) {
     u32 temp_v1;
