@@ -628,7 +628,134 @@ s32 func_00275740(u32 *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002759D0);
+typedef struct {
+    u32 unused;
+    u32 source;
+    u32 destination;
+    s32 flag;
+} Data_002759D0;
+
+typedef struct {
+    u8 unused[4];
+    u16 phase;
+    u8 id;
+    u8 padding[0xFB];
+    u16 timer;
+} State_002759D0;
+
+typedef struct {
+    s32 code;
+    s32 unused;
+    s32 position;
+    s32 flags;
+} Command_002759D0;
+
+void func_001E1E70(u32, s32, s32, s32);
+void func_002516D0(u32, s32, s32);
+void func_00255960(void *);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+
+s32 func_002759D0(void *arg0, void *arg1, s32 arg2) {
+    Command_002759D0 storage;
+    Command_002759D0 *command = &storage;
+    Data_002759D0 *data = arg0;
+    State_002759D0 *state = arg1;
+    u32 position;
+    u16 timer;
+    extern s32 func_001DDAC0();
+    extern s32 func_001E1E10();
+    extern s32 func_001E1030();
+
+    command->code = 0x3E7;
+    command->unused = 0;
+    command->position = 0;
+    command->flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        position = data->source;
+        func_002516D0(position >> 8, position & 0xFF, 1);
+        func_00260AF0(0, data->source, 0x64, 0xB4);
+        func_00255AC0(arg1, 0x25A);
+        if (data->flag != 0) {
+            func_00255AC0(arg1, 0x1F4);
+        } else {
+            func_00255AC0(arg1, 0x201);
+        }
+        return 1;
+    }
+    switch (state->phase) {
+    case 0:
+        position = data->source;
+        if (func_001E1E10(position >> 8, position & 0xFF) == 0xFF) {
+            if (func_00255B50(arg1) == 1) {
+                func_001E42C0(0, -0x78, 0x50, 0x103);
+                command->code = 0x25A;
+                command->unused = 0;
+                command->position = data->source;
+                command->flags = 0;
+                state->id = func_00255A30((s32 *)command, arg1);
+                state->phase++;
+            }
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->id) == 1) {
+            return 1;
+        }
+        position = data->source;
+        func_001E1E70(position >> 8, position & 0xFF, 0, 1);
+        func_00260AF0(0, data->destination, 0x64, 0xB4);
+        if (data->flag != 0) {
+            command->code = 0x1F4;
+            command->unused = 0;
+            command->position = data->destination;
+            command->flags = 0;
+        } else {
+            command->code = 0x201;
+            command->unused = 0;
+            command->position = data->destination;
+            command->flags = 0;
+        }
+        position = data->source;
+        func_001E42C0(0, -0x78, 0x50,
+            func_001DE210(func_001E1030(position >> 8, position & 0xFF)));
+        state->id = func_00255A30((s32 *)command, arg1);
+        state->phase++;
+        return 1;
+    case 2:
+        if (func_001F51D0(state->id) == 1) {
+            return 1;
+        }
+        if (data->flag != 0) {
+            position = data->destination;
+            func_002503B0(position >> 8, position & 0xFF, 0xFF);
+        } else {
+            position = data->destination;
+            func_001E1E70(position >> 8, position & 0xFF, 3, 0);
+            position = data->destination;
+            func_001E1E70(position >> 8, position & 0xFF, 5, 0);
+        }
+        state->phase++;
+        func_001E4530();
+        func_00260A70(arg1, 0x10);
+        break;
+    default:
+        timer = state->timer;
+        state->timer = timer + 1;
+        if (timer > 0x10) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00275D00);
 
