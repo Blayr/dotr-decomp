@@ -164,7 +164,62 @@ s32 func_00209EF0(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_00209F60);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_00209F70);
+void *func_00209F70(void *arg0, u32 arg1) {
+    typedef struct {
+        s8 active : 1;
+        s8 custom : 1;
+        s8 unused : 6;
+    } Flags_00209F70;
+    typedef struct {
+        s32 index;
+        s32 unknown4;
+        s32 unknown8;
+        s32 base;
+        s32 unknown10;
+        s32 format;
+        u8 unknown18[8];
+        Flags_00209F70 flags;
+    } State_00209F70;
+    typedef struct {
+        s32 base;
+        u8 unknown4[0x24];
+    } Entry_00209F70;
+    typedef struct {
+        u16 base;
+        u8 width;
+        u8 format;
+    } Texture_00209F70;
+    extern Entry_00209F70 D_00293F1C[];
+    u8 *textureBase = D_00325F50;
+    State_00209F70 *state = (State_00209F70 *)&D_00325F20;
+    Texture_00209F70 *texture;
+    u64 *packet = arg0;
+
+    if (D_003261BC & 1) {
+        texture = (Texture_00209F70 *)(textureBase + 0x150);
+    } else {
+        texture = (Texture_00209F70 *)(textureBase + 0x60);
+    }
+    ((u32 *)packet)[0] = 0x10000002;
+    ((u32 *)packet)[1] = 0;
+    ((u32 *)packet)[2] = 0x11000000;
+    ((u32 *)packet)[3] = 0x51000002;
+    packet[2] = ((u64)0x10000000 << 32) | 0x8001;
+    packet[3] = 0xE;
+    if (state->flags.active && state->flags.custom) {
+        packet[4] = ((u64)arg1 << 32) |
+            (((s64)state->format << 24) |
+             (state->base | ((s64)(D_00293F1C[state->index].base >> 6) << 16)));
+        packet += 5;
+    } else {
+        packet[4] = ((u64)arg1 << 32) |
+            ((((u64)texture->format & 0x3F) << 24) |
+             (((u64)texture->base & 0x1FF) | (((u64)texture->width & 0x3F) << 16)));
+        packet += 5;
+    }
+    *packet++ = 0x4C;
+    return packet;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A0B0);
 
