@@ -88,7 +88,80 @@ void func_00206D00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_00206D30(6, D_00325CC0, arg0, arg1, arg2, arg3, arg4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00206D30);
+typedef union {
+    f32 f[12];
+    __int128 q[3];
+} Vertex_00206D30;
+
+typedef struct {
+    f32 u;
+    f32 v;
+} UV_00206D30;
+
+s32 func_00206D30(s32 planeCount, void *planeArg, s32 count, s32 verticesArg,
+                  s32 unused, s32 outputArg, s32 flags) {
+    f32 *plane = planeArg;
+    Vertex_00206D30 intersection;
+    UV_00206D30 saved;
+    s32 textured;
+    s32 planeIndex;
+    s32 i;
+    u32 outputCount;
+
+    if (count < 2) {
+        return count;
+    }
+    textured = flags & 1;
+    if (textured == 0) {
+        saved = *(UV_00206D30 *)&((Vertex_00206D30 *)verticesArg)[0].f[6];
+    }
+    if ((u32)count > 0x155U) {
+        count = 0x155;
+    }
+
+    for (planeIndex = 0; planeIndex < planeCount; planeIndex++, plane += 5) {
+        outputCount = 0;
+        for (i = 0; i < count; i++) {
+            Vertex_00206D30 *current = &((Vertex_00206D30 *)verticesArg)[i];
+            Vertex_00206D30 *next = &((Vertex_00206D30 *)verticesArg)[(i + 1) % count];
+            f32 distance = (plane[3] + (plane[0] * current->f[0] +
+                            plane[1] * current->f[1] + plane[2] * current->f[2])) / plane[4];
+            f32 nextDistance = (plane[3] + (plane[0] * next->f[0] +
+                                plane[1] * next->f[1] + plane[2] * next->f[2])) / plane[4];
+
+            if (distance < 0.0f && nextDistance < 0.0f) {
+                continue;
+            }
+            if (!(distance < 0.0f) && !(nextDistance < 0.0f)) {
+                ((Vertex_00206D30 *)outputArg)[outputCount++] = *current;
+            } else {
+                func_00206530(current, next, flags, &intersection,
+                    (distance >= 0.0f ? distance : -distance) /
+                    ((distance >= 0.0f ? distance : -distance) +
+                     (nextDistance >= 0.0f ? nextDistance : -nextDistance)));
+                if (!(distance < 0.0f)) {
+                    ((Vertex_00206D30 *)outputArg)[outputCount++] = *current;
+                }
+                ((Vertex_00206D30 *)outputArg)[outputCount++] = intersection;
+            }
+            if (outputCount >= 0x155U) {
+                outputCount = 0x155;
+                break;
+            }
+        }
+        if (count < 3 && count < (s32)outputCount) {
+            outputCount = count;
+        }
+        for (i = 0; i < (s32)outputCount; i++) {
+            ((Vertex_00206D30 *)verticesArg)[i] = ((Vertex_00206D30 *)outputArg)[i];
+        }
+        count = outputCount;
+    }
+    if (textured == 0) {
+        *(UV_00206D30 *)&((Vertex_00206D30 *)verticesArg)[0].f[6] = saved;
+    }
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_002070F0);
 

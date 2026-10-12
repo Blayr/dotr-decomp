@@ -1250,6 +1250,7 @@ void func_002062F0(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3);
 void func_00206430(void *arg0, void *arg1, void *arg2, void *arg3);
 void func_00206530(void *arg0, void *arg1, s32 flags, void *arg3, f32 factor);
 void func_00206D00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+s32 func_00206D30(s32 planeCount, void *planeArg, s32 count, s32 verticesArg, s32 unused, s32 outputArg, s32 flags);
 void func_00207230(void *matrix, s32 count, void *vertices);
 void func_00207360(void);
 void func_002073A0(void);
