@@ -51,7 +51,129 @@ void func_0021BB90(s32 *arg0, s32 *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021BC10);
+void func_0021BC10(f32 *outX, f32 *outY, s16 *outCount, f32 *points,
+                   f32 *intervals, s32 count, s16 mode, f32 spacing) {
+    f32 lower[64];
+    f32 diagonal[64];
+    f32 upper[64];
+    f32 slopes[2][64];
+    f32 rhs[2][64];
+    f32 cubic[2];
+    f32 quadratic[2];
+    f32 linear[2];
+    f32 constant[2];
+    s32 i;
+    s32 dimension;
+    s32 written;
+
+    diagonal[0] = 2.0f * intervals[0];
+    upper[0] = intervals[0];
+    lower[count - 1] = intervals[count - 2];
+    diagonal[count - 1] = 2.0f * intervals[count - 2];
+    for (i = 1; i <= count - 2; i++) {
+        lower[i] = intervals[i];
+        diagonal[i] = 2.0f * (intervals[i - 1] + intervals[i]);
+        upper[i] = intervals[i - 1];
+    }
+
+    {
+        dimension = 0;
+        while (1) {
+            rhs[dimension][0] = 3.0f * (points[dimension + 2] - points[dimension]);
+            rhs[dimension][count - 1] = 3.0f *
+                ((points + dimension)[2 * count - 2] - (points + dimension)[2 * count - 4]);
+            for (i = 1; i <= count - 2; i++) {
+                rhs[dimension][i] = func_0021C320((points + dimension)[2 * i - 2],
+                    (points + dimension)[2 * i], (points + dimension)[2 * i + 2],
+                    intervals[i - 1], intervals[i]);
+            }
+            func_0021C350(lower, diagonal, upper, rhs[dimension], slopes[dimension], count);
+            dimension++;
+            if (dimension > 1) {
+                break;
+            }
+        }
+    }
+
+    {
+    dimension = 0;
+    written = 0;
+    for (; dimension < count - 1; dimension++) {
+        i = 0;
+        while (1) {
+            cubic[i] = (slopes[i][dimension] + slopes[i][dimension + 1]) /
+                (intervals[0] * intervals[0]) +
+                (2.0f * (points[i] - points[i + 2])) /
+                func_001A6C48(intervals[0], 3.0f);
+            quadratic[i] = (3.0f * (points[i + 2] - points[i])) /
+                (intervals[0] * intervals[0]) -
+                (2.0f * slopes[i][dimension] + slopes[i][dimension + 1]) / intervals[0];
+            linear[i] = slopes[i][dimension];
+            constant[i] = points[i];
+            i++;
+            if (i > 1) {
+                break;
+            }
+        }
+        if (mode == 1) {
+            if (dimension < count - 2) {
+                f32 t;
+                for (t = 0.0f; t <= intervals[0] - 0.1f; t += 0.1f) {
+                    outX[written] = constant[0] + t *
+                        (linear[0] + t * (quadratic[0] + cubic[0] * t));
+                    outY[written] = constant[1] + t *
+                        (linear[1] + t * (quadratic[1] + cubic[1] * t));
+                    written++;
+                }
+            } else {
+                f32 t;
+                for (t = 0.0f; t <= intervals[0]; t += 0.1f) {
+                    outX[written] = constant[0] + t *
+                        (linear[0] + t * (quadratic[0] + cubic[0] * t));
+                    outY[written] = constant[1] + t *
+                        (linear[1] + t * (quadratic[1] + cubic[1] * t));
+                    written++;
+                }
+            }
+        } else {
+            s16 samples;
+            f32 dx;
+            f32 dySquared;
+
+            dx = points[2] - points[0];
+            dySquared = func_001A6C48(points[3] - points[1], 2.0f);
+            dx = func_001A6C48(dx, 2.0f);
+            samples = func_001A22C0(func_001A6C60(dx + dySquared) / spacing);
+            if (dimension < count - 2) {
+                f32 t;
+                for (i = 0; i < samples;) {
+                    t = ((f32)i * intervals[0]) / (f32)samples;
+                    i++;
+                    outX[written] = constant[0] + t *
+                        (linear[0] + t * (quadratic[0] + cubic[0] * t));
+                    outY[written] = constant[1] + t *
+                        (linear[1] + t * (quadratic[1] + cubic[1] * t));
+                    written++;
+                }
+            } else {
+                f32 t;
+                for (i = 0; i <= samples;) {
+                    t = ((f32)i * intervals[0]) / (f32)samples;
+                    i++;
+                    outX[written] = constant[0] + t *
+                        (linear[0] + t * (quadratic[0] + cubic[0] * t));
+                    outY[written] = constant[1] + t *
+                        (linear[1] + t * (quadratic[1] + cubic[1] * t));
+                    written++;
+                }
+            }
+        }
+        *outCount = written - 1;
+        points += 2;
+        intervals++;
+    }
+    }
+}
 
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4) {
     return 3.0f * (((fparg4 * (fparg1 - fparg0)) / fparg3) + ((fparg3 * (fparg2 - fparg1)) / fparg4));
