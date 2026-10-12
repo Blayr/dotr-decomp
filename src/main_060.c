@@ -412,7 +412,55 @@ s32 func_002169F0(s32 arg0) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216AC0);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+extern unsigned char D_0032F790[];
+#endif
+
+
+typedef struct {
+    u32 value : 31;
+    u32 flag : 1;
+    u8 padding[3];
+    u8 unused : 6;
+    u8 category : 2;
+} Entry_00216AC0;
+
+extern u8 D_0034F6D0;
+
+s32 func_00216AC0(s32 player, s32 card, s32 category) {
+    Entry_00216AC0 *entry;
+    s32 remaining;
+    s32 count;
+
+    count = 0;
+    if ((player < 0) || (player >= 2)) {
+        return -1;
+    }
+    if (card == 0x29F) {
+        card = 0x3E7;
+    }
+    if ((card < 0) || (card >= 0x356)) {
+        return -1;
+    }
+    if (D_0034F6D0 == player) {
+        player = 0;
+    } else {
+        player = 1;
+    }
+    entry = (Entry_00216AC0 *)((u8 *)D_0032F790 + (player * 0xFFA0));
+    entry = (Entry_00216AC0 *)((u8 *)entry + (card * 0x4C));
+    remaining = 9;
+    while (remaining--) {
+        if (entry->value != 0) {
+            if ((category < 0) || (entry->category == category)) {
+                count += 1;
+            }
+        }
+        entry++;
+    }
+    return count;
+}
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */

@@ -70,7 +70,6 @@ typedef struct {
 void *func_00214F00(s32, s32, s32);
 s32 func_00215060(s32, u32, u32, s32);
 void func_00216280(s32, u32, u32, s32);
-s32 func_00216AC0(s32, s32, s32);
 
 void func_001C33A0(s32 player) {
     s32 id;

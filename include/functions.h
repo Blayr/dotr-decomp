@@ -1317,6 +1317,7 @@ s32 func_00215F00(s32 arg0, s32 arg1);
 s32 func_00216490(s32 arg0, s32 arg1);
 s32 func_00216920(s32 arg0, s32 arg1);
 s32 func_002169F0(s32 arg0);
+s32 func_00216AC0(s32 player, s32 card, s32 category);
 s32 func_00216BC0(s32 arg0, s32 arg1);
 s32 func_00216C70(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00216D30(s32 arg0, s32 arg1);
