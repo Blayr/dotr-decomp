@@ -26,7 +26,6 @@ s32 func_001B11C0(s32);                             /* extern */
 s32 func_001B83F0(s32);                             /* extern */
 s32 func_001BAEA0(s32);                             /* extern */
 s32 func_001C1B00(s32);                             /* extern */
-s32 func_001C35A0(s32);                             /* extern */
 s32 func_001C7460(s32);                             /* extern */
 s32 func_001CCBB0(s32);                             /* extern */
 s32 func_001CE430(s32);                             /* extern */

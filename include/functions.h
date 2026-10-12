@@ -659,6 +659,7 @@ s32 func_001C32B0(void);
 void func_001C33A0(s32 player);
 void func_001C3520(s32 arg0);
 void func_001C3570(void);
+s32 func_001C35A0(s32 arg0);
 void func_001C3D50(s32 arg0, s32 arg1, s32 arg2);
 void func_001C5980(s32 arg0, s32 arg1, s32 arg2);
 void func_001C5B30(s32 arg0, s32 arg1, s32 arg2);

@@ -145,7 +145,87 @@ void func_001C3570(void) {
     func_00209D30(func_001C35A0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C35A0);
+typedef struct State_001C35A0 {
+    u8 pad0[0x6D8];
+    u16 *values0;
+    u16 *values1;
+    u8 pad1[0x5AA];
+    u16 index0;
+    u16 condition0;
+    u16 index1;
+    u16 condition1;
+    s16 amount0;
+    s16 amount1;
+    u8 pad2[0x28];
+    u8 mode0;
+    u8 mode1;
+    u8 pad3[0x9C];
+    u8 side;
+    u8 pad4;
+    u8 selection0;
+    u8 selection1;
+} State_001C35A0;
+
+s32 func_001C38E0(s32);
+s32 func_001C3E20(s32, s32, s32, s32);
+s32 func_001C5550(s32, s32, s32, s32, s32);
+s32 func_001C5870(s32, s32, s32);
+s32 func_001BDAF0(s32, s32, s32, s32, s32, s32, s32, s32);
+extern u16 D_0031811C;
+
+s32 func_001C35A0(s32 arg0) {
+    State_001C35A0 *state = (State_001C35A0 *)D_00317490;
+    s32 result;
+    s32 next;
+    extern s32 func_001C3D50();
+    extern s32 func_001B8260();
+    extern s32 func_001C5980();
+    extern s32 func_001C5B30();
+    extern s32 func_001C5CE0();
+
+    next = func_001C3D50(func_001C38E0(func_001AEFD0(arg0, 2)), 0, 0);
+    next = func_001C3E20(next, 0, 0, 0);
+    if (D_0031811C != 0) {
+        next = func_001C5550(next, 0, 0, 0, state->selection0);
+    }
+    if (state->amount0 != 0) {
+        next = func_001B8260(next, 0, 0, 320, 448,
+                            (u8)(((s16)state->amount0 << 6) / 320));
+        state->side = 0;
+        next = func_001BDAF0(next, state->values0[state->index0 + state->selection0],
+                            state->amount0, 0, 0, 1, 1, 0);
+    }
+    if (!(state->mode0 != 4 && state->mode0 != 6 && state->mode0 != 7)) {
+        next = func_001B8260(next, 0, 0, 320, 448, 64);
+        next = func_001C5870(next, -160, 0);
+    }
+    result = func_001C3E20(next, 1, 0, 0);
+    if (state->condition1 != 0) {
+        result = func_001C5550(result, 1, 0, 0, state->selection1);
+    }
+    if (state->amount1 != 0) {
+        result = func_001B8260(result, 320, 0, 320, 448,
+                              (u8)(((s16)state->amount1 << 6) / 320));
+        state->side = 1;
+        result = func_001BDAF0(result, state->values1[state->index1 + state->selection1],
+                              -state->amount1, 0, 1, 1, 1, 0);
+    }
+    if (!(state->mode1 != 4 && state->mode1 != 6 && state->mode1 != 7)) {
+        result = func_001B8260(result, 320, 0, 320, 448, 64);
+        result = func_001C5870(result, 160, 0);
+    }
+    if (state->mode0 == 5 || state->mode1 == 5) {
+        result = func_001C5980(result, 0, 0);
+    }
+    if (state->mode0 == 6 || state->mode1 == 6) {
+        result = func_001C5B30(result, 0, 0);
+    }
+    if (state->mode0 == 8 || state->mode1 == 8) {
+        result = func_001C5CE0(result, 0, 0);
+    }
+    func_001FEAF0(0);
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C38E0);
 
