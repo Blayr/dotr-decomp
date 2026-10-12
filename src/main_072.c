@@ -378,7 +378,122 @@ s32 func_0024EC50(s32 mask, s32 ordinal) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024ECD0);
+typedef struct {
+    s8 unused0 : 1;
+    s8 invert : 1;
+    s8 unused2 : 6;
+} Flags_0024ECD0;
+
+s32 func_0024ECD0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_0024DD80();
+    s32 temp_s0;
+    s32 temp_s1;
+    s32 var_v1;
+    s32 var_a0;
+
+    temp_s0 = *(u8 *)((u8 *)arg0 + 0x3E);
+    if (((s32)temp_s0 >> 5) != 0) {
+        return 0;
+    }
+    if (((Flags_0024ECD0 *)((u8 *)arg0 + 0x57))->invert == 0) {
+        var_a0 = *(u8 *)((u8 *)arg0 + 0x44);
+    } else {
+        var_a0 = (*(u8 *)((u8 *)arg0 + 0x44) == 0) ? 1 : 0;
+    }
+    temp_s1 = func_0024DD80(var_a0);
+    switch (arg3) {
+    case 21:
+        if (*(u8 *)((u8 *)arg0 + 0x3F) == 1) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 20:
+        var_v1 = (*(u8 *)((u8 *)arg0 + 0x3F) == 0) ? 1 : 0;
+        break;
+    case 29:
+        var_v1 = 1;
+        break;
+    case 49:
+        if (func_002487A0(*(u16 *)((u8 *)arg0 + 0x3C), 0x2FF) != 0x3E7) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 14:
+        if ((temp_s0 & 0x1F) == 14) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 15:
+        if ((temp_s0 & 0x1F) == 15) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 2:
+        if ((temp_s0 & 0x1F) == 2) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 6:
+        if ((temp_s0 & 0x1F) == 6) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 7:
+        if ((temp_s0 & 0x1F) == 7) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 25:
+        if (*(u8 *)((u8 *)arg0 + 0x3F) == 5) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 16:
+        if ((temp_s0 & 0x1F) == 16) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 17:
+        if ((temp_s0 & 0x1F) == 17) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    case 19:
+        if ((temp_s0 & 0x1F) == 19) {
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+        break;
+    default:
+        var_v1 = 0;
+        break;
+    }
+    if (temp_s1 != 0 && var_v1 != 0) {
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_0024EFB0(s32 mask) {
     extern s32 func_001E13C0(s32, s32);

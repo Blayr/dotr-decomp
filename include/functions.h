@@ -1357,6 +1357,7 @@ s32 func_0024EA10(s32 arg0, u32 arg1);
 s32 func_0024EA60(void);
 s32 func_0024EBD0(s32 arg0);
 s32 func_0024EC50(s32 mask, s32 ordinal);
+s32 func_0024ECD0(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0024EFB0(s32 mask);
 s32 func_0024F150(s32 mask);
 u32 func_0024F200(s32 arg0);
