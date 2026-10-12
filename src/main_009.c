@@ -262,7 +262,6 @@ typedef struct {
 } Ctx_00136210;
 
 s32 func_00136B80(s32, void *, void *);
-s32 func_00137120(s32, s32, void *, s32);
 
 s32 func_00136210(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_00278890();
@@ -585,7 +584,122 @@ s32 func_00136F30(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00137120);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00137120;
+
+s32 func_0024FE40(void *, s32, s32);
+
+s32 func_00137120(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+    Nibbles_00137120 path[12];
+    s32 n;
+    Nibbles_00137120 *p;
+    s32 originY;
+    s32 originX;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = path;
+    n = 0;
+    do {
+        p->low = p->high = 15;
+        n++;
+        p++;
+    } while (n < 12);
+    if ((u8)(*((u8 *)arg2 + 0x3E) >> 5) == 0) {
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 result;
+        s32 position;
+        if (arg3 >= 0) {
+            s32 position;
+            s32 y;
+            s32 cost;
+            s32 x;
+            s32 i;
+            s32 bestPosition;
+            s32 bestCost;
+            s32 origin;
+
+            bestCost = 255;
+            bestPosition = 65535;
+            origin = func_001E1090(arg3 >> 8, arg3 & 255);
+            i = 0;
+            originY = origin >> 8;
+            originX = origin & 255;
+            do {
+                position = func_0024E410(arg0, i);
+                if (position >= 0) {
+                    x = position & 255;
+                    y = position >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510(arg2, arg3, 0, originX, originY, 1) > 0) {
+                            cost = func_0027A130(arg2, path, x, y, originX, originY, arg3, 1, (s64)2, (s64)0);
+                        } else {
+                            cost = func_002792C0((s32)arg2, (s32)path, x, y, originX, originY, arg3, 2);
+                        }
+                        if (func_0027AFC0((u8 *)path) > 0 && cost < bestCost) {
+                            bestCost = cost;
+                            bestPosition = position;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (bestPosition != 65535) {
+                return bestPosition;
+            }
+        }
+        result = -1;
+        {
+            i = 0;
+            do {
+                position = func_0024E410(arg0, i);
+                if (position >= 0) {
+                    x = position & 255;
+                    y = position >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E3790(x, y) < 0) {
+                        result = position;
+                    }
+                }
+                i++;
+            } while (i < 8);
+        }
+        return result;
+    } else {
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 result;
+        s32 position;
+        result = -1;
+        i = 0;
+        do {
+            position = func_0024E410(arg0, i);
+            if (position >= 0) {
+                x = position & 255;
+                y = position >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0) {
+                    result = position;
+                }
+            }
+            i++;
+        } while (i < 8);
+        return result;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_001374D0);
 
