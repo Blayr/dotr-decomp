@@ -1088,7 +1088,183 @@ INCLUDE_ASM("asm/nonmatchings/main_015", func_001652F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001658F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00165EC0);
+typedef struct Coord_00165EC0 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_00165EC0;
+
+typedef struct Input_00165EC0 {
+    u16 position;
+    u8 pad[6];
+    u32 targets;
+} Input_00165EC0;
+
+typedef struct Output_00165EC0 {
+    u16 position;
+    u8 command;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 flag;
+    u8 result;
+} Output_00165EC0;
+
+static inline u32 target_00165EC0(void *input, u8 mode) {
+    Input_00165EC0 *p = input;
+    if (mode == 1) {
+        return (u16)(p->targets >> 16);
+    }
+    return *(u16 *)&p->targets;
+}
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+
+s32 func_00165EC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern s32 func_001670A0();
+    extern s32 func_001676D0();
+    extern void func_0027A090();
+    Input_00165EC0 *input = arg0;
+    Output_00165EC0 *output = arg2;
+    s32 fallback;
+    s32 source;
+    s32 count;
+    s32 target;
+    s32 sourceY;
+    s32 sourceX;
+    s32 targetY;
+    s32 targetX;
+    Coord_00165EC0 *candidate;
+    s32 flag;
+    s32 i;
+    s32 bestCost;
+    s32 bestIndex;
+    Coord_00165EC0 coords[12];
+    s32 cost;
+    s32 position;
+    u32 low;
+    u32 high;
+
+    low = target_00165EC0(input, arg3);
+    high = target_00165EC0(input, arg3);
+    if (func_001DF540((u32)high >> 8, low & 0xFF) == 0) {
+        func_0027B1B0(input, 1);
+        return -1;
+    }
+    fallback = func_001670A0(input->position >> 8, input->position & 0xFF, input);
+    source = func_001E1090(input->position >> 8, input->position & 0xFF);
+    low = target_00165EC0(input, arg3);
+    high = target_00165EC0(input, arg3);
+    target = func_001E1090((u32)high >> 8, low & 0xFF);
+    {
+        s32 j = 0;
+        Coord_00165EC0 *cursor = coords;
+        do {
+            cursor->x = cursor->y = 15;
+            cursor++;
+            j++;
+        } while (j < 12);
+    }
+    cost = func_001DF540(input->position >> 8, input->position & 0xFF);
+    sourceX = source & 0xFF;
+    sourceY = source >> 8;
+    if (func_002464F0(cost, sourceX, sourceY) == 0) {
+        output->position = input->position;
+        output->command = 6;
+        output->destination = source;
+        cost = func_00276CC0(sourceX, sourceY, arg1, 2, 0,
+                           (u8)func_001676D0(arg1));
+        if (cost >= func_001E0290(input->position >> 8, input->position & 0xFF, 0)) {
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                         output->destination, 1, 1);
+        } else {
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                         output->destination, 0, 1);
+        }
+        func_0027B1B0(input, arg3);
+    } else {
+        position = input->position;
+        cost = (u16)func_001676D0(arg1);
+        func_0027A090(position >> 8, position & 0xFF, coords, sourceX, sourceY,
+                     targetX = target & 0xFF, targetY = target >> 8,
+                     target_00165EC0(input, arg3), 1, 30, cost);
+        count = func_0027AFC0((u8 *)coords);
+        bestIndex = 0xFF;
+        if (count > 0) {
+            flag = 0;
+            bestCost = 0xFFFF;
+            for (i = 0; i < count; i++) {
+                if (func_00167570(input->position >> 8, input->position & 0xFF,
+                                 sourceX, sourceY, targetX, targetY) == 1) {
+                    bestIndex = i;
+                    flag = 1;
+                    coords[i].x = targetX;
+                    coords[i].y = targetY;
+                    i = count;
+                } else {
+                    candidate = &coords[i];
+                    cost = func_00276CC0(candidate->x, candidate->y, arg1, 5, 0,
+                                       (u8)func_001676D0(arg1));
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        bestIndex = i;
+                    } else if (cost == bestCost) {
+                        Coord_00165EC0 *selected = &coords[bestIndex];
+                        s32 oldMinY;
+                        s32 oldMaxY;
+                        s32 oldMinX;
+                        s32 oldMaxX;
+                        s32 newMinY;
+                        s32 newMaxY;
+                        s32 newMinX;
+                        s32 newMaxX;
+                        oldMinY = selected->y < targetY ? selected->y : targetY;
+                        oldMaxY = targetY < selected->y ? selected->y : targetY;
+                        oldMinX = selected->x < targetX ? selected->x : targetX;
+                        oldMaxX = targetX < selected->x ? selected->x : targetX;
+                        newMinY = candidate->y < targetY ? candidate->y : targetY;
+                        newMaxY = targetY < candidate->y ? candidate->y : targetY;
+                        newMinX = candidate->x < targetX ? candidate->x : targetX;
+                        newMaxX = targetX < candidate->x ? candidate->x : targetX;
+                        if ((newMaxX - newMinX) + (newMaxY - newMinY) <
+                            (oldMaxX - oldMinX) + (oldMaxY - oldMinY)) {
+                            bestCost = cost;
+                            bestIndex = i;
+                        }
+                    }
+                }
+            }
+
+        } else {
+            output->position = input->position;
+            output->command = 6;
+            output->destination = source;
+            output->flag = fallback;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                         output->destination, 0, 1);
+            func_0027B1B0(input, arg3);
+            return 0;
+        }
+        if (bestIndex != 0xFF) {
+            output->position = input->position;
+            output->command = 6;
+            output->destination = (coords[bestIndex].y << 8) | coords[bestIndex].x;
+            output->flag = flag;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                         output->destination, 0, 1);
+        } else {
+            output->position = input->position;
+            output->command = 6;
+            output->destination = source;
+            output->flag = flag;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                         output->destination, 0, 1);
+            func_0027B1B0(input, arg3);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001664A0);
 
