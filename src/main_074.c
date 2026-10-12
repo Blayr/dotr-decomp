@@ -460,7 +460,163 @@ void func_00256050(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_002560C0);
+typedef struct Flags_002560C0 {
+    s8 ready : 1;
+    s8 unused : 7;
+} Flags_002560C0;
+
+typedef struct Context_002560C0 {
+    s32 unused;
+    s32 mode;
+    s32 handle;
+    s32 option;
+} Context_002560C0;
+
+typedef struct State_002560C0 {
+    u16 alpha;
+    u16 unused2;
+    u16 phase;
+    u8 handles[0x1A];
+    s32 positions[24];
+    Flags_002560C0 flags;
+    u8 unused81[0x53];
+    u8 count;
+    u8 unusedD5[0x2B];
+    u8 active;
+    u8 unused101;
+    u16 timer;
+} State_002560C0;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_002560C0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_0024EA60();
+    extern s32 func_001E15E0();
+    s32 effect[4];
+    Context_002560C0 *context = arg0;
+    State_002560C0 *state = arg1;
+    s32 *effectData = effect;
+    s32 i;
+    s32 count;
+    u8 flags;
+    u8 *cursor;
+    s32 position;
+
+    effect[0] = 999;
+    effect[1] = 0;
+    effect[2] = 0;
+    effect[3] = 0;
+    count = 0;
+    flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_0024E910(context->handle);
+        state->alpha = 0x80;
+        func_00260020(context, state, arg2, -1, 1, 1);
+        func_00255AC0(state, 500);
+        if (func_0024E910(context->handle) == 1) {
+            func_00260AF0(0x20, func_0024EC50(context->handle, 0), 100, 180);
+        } else {
+            func_00260740(0x20);
+        }
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (state->alpha > 0x30) {
+            state->alpha -= 15;
+        } else {
+            state->alpha = 0x30;
+            if (state->timer++ >= 0x30) {
+                if (state->flags.ready == 0) {
+                    if (func_00255B50(state) == 1) {
+                        state->flags.ready = 1;
+                    }
+                } else {
+                    if (context->option != 0) {
+                        func_001E42C0(func_0024EA60(context->handle), -120, 80, 0x108);
+                    } else {
+                        func_001E42C0(func_0024EA60(context->handle), -120, 80, 0x118);
+                    }
+                    func_0025F720(context, state, effectData, 500);
+                    state->phase++;
+                }
+            }
+        }
+        if (state->alpha < 0x30) {
+            state->alpha = 0x30;
+        }
+        func_001F6CF0((u8)state->alpha);
+        break;
+    case 1:
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->handles[i]) == 0) {
+                count++;
+            }
+        }
+        if (count >= state->count) {
+            func_001E4530();
+            for (count = 0, cursor = (u8 *)state; count < state->count; cursor += 4, count++) {
+                if (context->mode == 1) {
+                    position = *(s32 *)(cursor + 0x20);
+                    func_001E15E0(position >> 8, position & 0xFF, 0xFF);
+                } else {
+                    position = *(s32 *)(cursor + 0x20);
+                    func_002503B0(position >> 8, position & 0xFF, (u8)context->option);
+                    if (context->option != 0) {
+                        position = *(s32 *)(cursor + 0x20);
+                        func_001E1E70(position >> 8, position & 0xFF, 0, 1);
+                    }
+                }
+            }
+            state->phase++;
+            func_00260020(context, state, arg2, 1, 0, 1);
+        }
+        break;
+    default:
+        state->alpha += 15;
+        if (state->alpha > 0x80) {
+            state->alpha = 0x80;
+        }
+        func_001F6CF0((u8)state->alpha);
+        if (state->alpha == 0x80) {
+            flags = 1;
+        }
+        break;
+    }
+
+    switch (state->active) {
+    case 0:
+        if (flags & 1) {
+            if (state->timer++ > 0x10) {
+                state->active++;
+                state->timer = 0;
+                func_00260A70(state, 0x20);
+            }
+        }
+        break;
+    default:
+        if (state->timer++ > 0x20) {
+            flags |= 2;
+        }
+        break;
+    }
+    if (flags == 3) {
+        if (func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00256520);
 
