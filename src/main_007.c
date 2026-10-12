@@ -1262,7 +1262,6 @@ typedef struct {
     s32 flags;
 } Object_0012C1A0;
 
-extern void func_0012C7F0(void *, s32, s32);
 extern void func_0012CE50(void *);
 
 s32 func_0012C1A0(void *arg0, s32 arg1) {
@@ -1390,7 +1389,131 @@ s32 func_0012C3F0(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012C7F0);
+typedef struct Command_0012C7F0 {
+    u16 position;
+    u16 pad2;
+    u16 action;
+    u16 pad6;
+    u16 target;
+    u16 padA;
+} Command_0012C7F0;
+
+typedef struct Entry_0012C7F0 {
+    u16 position;
+    u8 value;
+    u8 pad;
+} Entry_0012C7F0;
+
+void func_0012C7F0(void *arg0, s32 arg1, s32 arg2) {
+    extern void func_0027E770();
+    extern s32 func_0027B200();
+    extern s32 func_0012CB80();
+    Command_0012C7F0 *command = arg0;
+
+    if (func_001DF540(command->position >> 8, command->position & 0xFF) != 0) {
+        s32 position;
+        s32 side;
+        s32 data;
+        s32 other;
+        s32 otherPosition;
+        u8 workspace[112];
+        Entry_0012C7F0 entries[23];
+        s16 count;
+        s16 total;
+        s32 i;
+        Entry_0012C7F0 *entry;
+
+        side = func_0024DE70(command->position >> 8, command->position & 0xFF);
+        other = (side == 0 ? 1 : 0) << 8;
+        position = func_001E1090(command->position >> 8, command->position & 0xFF);
+        otherPosition = func_001E1090(other >> 8, other & 0xFF);
+        data = func_001DF540(command->position >> 8, command->position & 0xFF);
+        func_0027E770(workspace);
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->position = 0xFFFF;
+            entry->value = 0xFF;
+            entry++;
+        } while (i < 22);
+
+        if (arg1 != 0) {
+            u8 mode;
+            if ((arg2 & 0xFF) == 1) {
+                mode = 5;
+            } else {
+                mode = 2;
+            }
+            if (func_0027B200(command->position >> 8, command->position & 0xFF,
+                    position & 0xFF, position >> 8, other >> 8, other & 0xFF,
+                    otherPosition & 0xFF, otherPosition >> 8, mode) > 0) {
+                command->action = 0x2FF;
+                *(u32 *)&command->target = (other << 16) | command->target;
+                return;
+            }
+        }
+
+        total = 0;
+        count = 0;
+        if ((arg2 & 0xFF) == 0) {
+            arg2 = 1;
+            while (1) {
+                s32 result;
+                other = func_0024DE70(command->position >> 8, command->position & 0xFF) == 0 ? 1 : 0;
+                result = func_0012CB80(command, 0, data, position & 0xFF, position >> 8,
+                    other, (u8)arg2, func_00130780(side), entries, 0,
+                    &count, &total, 2, workspace);
+                switch (result) {
+                case 3:
+                    command->action = 0x6FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 2:
+                    command->action = 0x3FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    command->action = 0x5FF;
+                    return;
+                }
+                arg2++;
+                if (arg2 > 2) {
+                    break;
+                }
+            }
+            command->action = 0x5FF;
+        } else {
+            arg2 = 1;
+            do {
+                s32 result;
+                other = func_0024DE70(command->position >> 8, command->position & 0xFF) == 0 ? 1 : 0;
+                result = func_0012CB80(command, 0, data, position & 0xFF, position >> 8,
+                    other, (u8)arg2, func_00130780(side), entries, 0,
+                    &count, &total, 5, workspace);
+                switch (result) {
+                case 3:
+                    command->action = 0x6FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 2:
+                    command->action = 0x3FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    command->action = 0x5FF;
+                    return;
+                }
+                arg2++;
+            } while (arg2 < 5);
+            command->action = 0x5FF;
+        }
+    }
+}
 
 void func_0012CB80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
@@ -1421,7 +1544,6 @@ static inline void update_state_0012CBE0(void *arg0, u16 flags, s32 position) {
     state->position = (position << 16) | value;
 }
 
-void func_0012C7F0(void *, s32, s32);
 
 void func_0012CBE0(void *arg0, s32 arg1) {
     extern s32 func_001E1030();
