@@ -679,4 +679,33 @@ s32 func_00249320(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002493A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00249410);
+s32 func_00249410(u16 arg0, u16 *arg1) {
+    s32 i;
+    u16 card;
+    s32 count;
+    u8 *flags;
+
+    card = 0x2F0;
+    count = 0;
+    i = 0;
+    flags = D_0029D580 + arg0 * 7;
+
+    do {
+        s32 offset;
+
+        if (count >= 0xC) {
+            return count;
+        }
+        offset = card - 0x2F0;
+        if ((flags[offset >> 3] >> (offset % 8)) & 1) {
+            if (card != 0x315 && card != 0x30C && card != 0x31C) {
+                *arg1++ = card;
+                count++;
+            }
+        }
+        card++;
+        i++;
+    } while (i < 0x31);
+
+    return count;
+}
