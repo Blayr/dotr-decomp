@@ -1090,7 +1090,79 @@ s32 func_00143A80(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_00143BA0);
+s32 func_00143BA0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_00278890();
+    struct Data_00143BA0 {
+        u8 bytes[0x3C];
+        u16 value;
+        u8 pad[0x22];
+    } data;
+    s32 coordinate;
+    s32 status;
+    s32 value;
+
+    *(s16 *)arg2 = (s16)arg0;
+    coordinate = arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+        return -1;
+    }
+    status = func_00143DE0(arg1, &data);
+    if (status < 0) {
+        return -1;
+    }
+    *(u8 *)((u8 *)arg2 + 2) = 10;
+    *(s32 *)((u8 *)arg2 + 0xC) = 0;
+    coordinate = func_001E1090(coordinate >> 8, coordinate & 0xFF);
+    value = func_001461C0(arg1);
+    coordinate = func_00276F10(&data, coordinate & 0xFF, coordinate >> 8,
+                                (arg1 == 0 ? 1 : 0), 3, 0x1F, 2, 2, 0,
+                                value);
+    if (status == 0) {
+        if (func_00144450(arg1, (u8 *)arg2, &data) < 0) {
+            goto fallback;
+        }
+        if (coordinate < 0) {
+            if (func_001E0150(arg1) >= 4) {
+                goto fallback;
+            }
+            coordinate = func_00144A60(arg1, 0, &data, coordinate);
+            if (coordinate < 0) {
+                return -1;
+            }
+            *(s16 *)((u8 *)arg2 + 4) = (s16)coordinate;
+            return 1;
+        }
+        coordinate = func_00144A60(arg1, 0, &data, coordinate);
+        if (coordinate < 0) {
+            return -1;
+        }
+        *(s16 *)((u8 *)arg2 + 4) = (s16)coordinate;
+        return 1;
+    }
+    if (status == 2) {
+        func_00144860(arg1, (void *)arg2, &data);
+        coordinate = func_00144A60(arg1, status & 0xFF, &data, coordinate);
+        if (coordinate < 0) {
+            return -1;
+        }
+        *(s16 *)((u8 *)arg2 + 4) = (s16)coordinate;
+        return 1;
+    }
+fallback:
+    coordinate = func_00144250(arg1, (u8 *)arg2, &data, data.value);
+    if (coordinate < 0) {
+        return -1;
+    }
+    coordinate = func_00144A60(arg1, coordinate & 0xFF, &data, -1);
+    if (coordinate < 0) {
+        return -1;
+    }
+    *(s16 *)((u8 *)arg2 + 4) = (s16)coordinate;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_010", func_00143DE0);
 
