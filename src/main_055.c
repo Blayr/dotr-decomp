@@ -466,7 +466,15 @@ s32 func_00205160(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00205170);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002051C0);
+typedef struct {
+    s8 enabled : 1;
+} Flags_002051C0;
+
+void func_002051C0(s64 arg0) {
+    extern Flags_002051C0 D_00325CAC;
+
+    D_00325CAC.enabled = (s8)arg0;
+}
 
 typedef struct {
     s8 : 2;
