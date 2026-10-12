@@ -167,7 +167,6 @@ s32 func_00124C10(s32 arg0) {
     return 0;
 }
 
-void func_00123D70(s32, s32 *);
 
 typedef struct {
     u8 pad0[6];

@@ -922,7 +922,61 @@ s32 func_001236C0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00123740);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00123D70);
+s32 func_00123D70(s32 arg0, s32 *arg1) {
+    s32 i;
+    s32 result;
+    s32 *entry;
+
+    result = 0;
+    i = 0;
+    if (0 < func_0026FE20(arg0)) {
+        do {
+            entry = &arg1[i];
+            if ((func_0026FB10(arg0, *entry) == 1) && ((func_0026FCE0(*entry) >> 5) == 0)) {
+                result = (result + (1 << (4 - i))) & 0xFF;
+                i = func_0026FE20(arg0);
+            }
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    {
+        s32 resultCheck;
+        resultCheck = result & 0xFF;
+        if (resultCheck == 0) {
+            return 0;
+        }
+    }
+    i = 0;
+    if (0 < func_0026FE20(arg0)) {
+        do {
+            entry = &arg1[i];
+            if ((func_0026FB10(arg0, *entry) == 1) && ((func_0026FCE0(*entry) >> 5) == 0x12)) {
+                result = (result + (1 << (4 - i))) & 0xFF;
+                i = func_0026FE20(arg0);
+            }
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    {
+        s32 resultCheck;
+        resultCheck = result & 0xFF;
+        if (resultCheck == 2) {
+            i = 0;
+            if (0 < func_0026FE20(arg0)) {
+                do {
+                    entry = &arg1[i];
+                    if ((func_0026FB10(arg0, *entry) == 1) && ((func_0026FCE0(*entry) >> 5) == 0xF)) {
+                        result = (result + (1 << (4 - i))) & 0xFF;
+                        i = func_0026FE20(arg0);
+                    }
+                    i++;
+                } while (i < func_0026FE20(arg0));
+            }
+            return result & 0xFF;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00123F90);
 
