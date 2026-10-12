@@ -201,7 +201,30 @@ s32 func_001464A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_001465A0);
+s32 func_001465A0(s32 arg0)
+{
+    s32 i;
+    s32 mask;
+    s32 entry;
+
+    if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 0x34, 0xE)) > 2) {
+        return 0;
+    }
+
+    mask = func_0024CA40(0, 0, arg0, 2, 0x34, 0xE);
+    if (func_0024E910(mask) < 5) {
+        return 0;
+    }
+
+    for (i = 0; i < func_0024E910(mask); i++) {
+        entry = func_0024EC50(mask, i);
+        if ((func_001E1090(entry >> 8, entry & 0xFF) >> 8) < 3) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 s32 func_001466A0(s32 arg0, s32 arg1) {
     s32 data[4];
