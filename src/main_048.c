@@ -197,7 +197,94 @@ s32 func_001ED4A0(s32 index)
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDA40);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDCB0);
+typedef struct {
+    f32 x, y, z;
+} Vec3_001EDCB0;
+
+typedef struct {
+    u8 r, g, b, a;
+} Color_001EDCB0;
+
+typedef struct {
+    u8 unused : 3;
+    u8 mode : 2;
+    u8 unused2 : 2;
+    s8 enabled : 1;
+} Flags_001EDCB0;
+
+typedef struct {
+    u8 mode : 2;
+    u8 unused : 6;
+} ObjFlags_001EDCB0;
+
+typedef struct {
+    u8 pad00[0x40];
+    Vec3_001EDCB0 position[2];
+    s8 lv[2];
+    Color_001EDCB0 color0, color1;
+    s16 duration;
+    s16 counter;
+    u8 pad66[2];
+    s32 owner : 27;
+    u32 unused : 5;
+    u8 pad6C[4];
+} Entry_001EDCB0;
+
+s32 func_001EDCB0(s32 index, s16 duration, s32 mode, void *color0, void *color1, s32 enabled) {
+    extern Entry_001EDCB0 D_0031AD70[];
+    Obj_0031ABB0 *obj;
+    Entry_001EDCB0 *entry;
+    s32 i;
+    s32 j;
+
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (*(s8 *)((u8 *)obj + 0x1F3) != 4 && *(s8 *)((u8 *)obj + 0x1F3) != 5) {
+        return 0;
+    }
+    i = 1;
+    entry = D_0031AD70;
+    for (; i < 32; i++, entry++) {
+        if (entry->owner < 0) {
+            u8 *source;
+            u8 *destination;
+            j = 0;
+            source = (u8 *)obj;
+            destination = (u8 *)entry;
+            do {
+                *(Vec3_001EDCB0 *)(destination + 0x40) = *(Vec3_001EDCB0 *)(source + 0x198);
+                entry->lv[j] = obj->lv[j];
+                source += sizeof(Vec3_001EDCB0);
+                destination += sizeof(Vec3_001EDCB0);
+                j++;
+            } while (j < 2);
+            func_0020B380(entry, obj, 4);
+            if (color0 != NULL) {
+                entry->color0 = *(Color_001EDCB0 *)color0;
+            } else {
+                entry->color0 = *(Color_001EDCB0 *)&obj->pad040[0xEC];
+                entry->color1.a = 0x80;
+            }
+            if (color1 != NULL) {
+                entry->color1 = *(Color_001EDCB0 *)color1;
+            } else {
+                entry->color1 = *(Color_001EDCB0 *)&obj->pad040[0xEC];
+                entry->color1.a = 0;
+            }
+            ((Flags_001EDCB0 *)((u8 *)entry + 0x6B))->mode = mode >= 0
+                ? mode
+                : (mode = ((ObjFlags_001EDCB0 *)((u8 *)obj + 0x1F8))->mode);
+            entry->duration = duration;
+            entry->counter = 0;
+            ((Flags_001EDCB0 *)((u8 *)entry + 0x6B))->enabled = enabled;
+            entry->owner = index;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 typedef struct Entry_001EDF20 {
     u8 padding[0x68];
