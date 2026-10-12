@@ -89,4 +89,131 @@ INCLUDE_ASM("asm/nonmatchings/main_063", func_00224A40);
 
 INCLUDE_ASM("asm/nonmatchings/main_063", func_00224E40);
 
-INCLUDE_ASM("asm/nonmatchings/main_063", func_00226120);
+typedef struct Packet_00226120 {
+    s16 x0, y0, x1, y1, x2, y2, x3, y3;
+    u8 r0, g0, b0, a0;
+    u8 r1, g1, b1, a1;
+    u8 r2, g2, b2, a2;
+    u8 r3, g3, b3, a3;
+    s16 field20;
+    s16 depth;
+    s16 field24;
+} Packet_00226120;
+
+extern s16 D_00299ED2;
+extern u8 D_00299F60;
+extern Packet_00226120 D_0029AB80;
+
+void *func_00226120(void *arg0) {
+    extern void *func_00218970();
+    s8 *context = &D_00299E10;
+    u8 *slot = &D_00299F60;
+    Packet_00226120 packet = D_0029AB80;
+    s16 state;
+    s16 i;
+
+    if (D_00299ED2 == 0x2724 && *(s16 *)0x01ED536C < 6) {
+        packet.depth = -10;
+    } else if (*(s16 *)(context + 0xC2) == 0x2BB0) {
+        packet.depth = -10;
+    } else if (*(s16 *)(context + 0xC2) == 0x2F7C) {
+        packet.depth = -10;
+    }
+
+    state = *(s16 *)0x01ED53A2;
+    if (state != 0) {
+        switch ((s16)state) {
+        case 2:
+            break;
+        case 3:
+            if (0 <= *(s16 *)0x01ED53A4) {
+                *(s16 *)0x01ED53A4 -= 0x10;
+                if (*(s16 *)0x01ED53A4 <= 0) {
+                    *(s16 *)0x01ED53A4 = 0;
+                    *(s16 *)0x01ED53A2 = 0;
+                }
+            }
+            break;
+        case 4:
+            if (*(s16 *)0x01ED53A4 <= 0x1000) {
+                *(s16 *)0x01ED53A4 += 0x20;
+                if (*(s16 *)0x01ED53A4 >= 0x1000) {
+                    *(s16 *)0x01ED53A4 = 0x1000;
+                    *(s16 *)0x01ED53A2 = 4;
+                }
+            }
+            break;
+        case 10:
+            *(s16 *)0x01ED53A4 += 0x400;
+            if (*(s16 *)0x01ED53A4 >= 0x1000) {
+                *(s16 *)0x01ED53A4 = 0x1000;
+                *(s16 *)0x01ED53A2 = 11;
+            }
+            break;
+        case 20:
+            *(s16 *)0x01ED53A4 -= 0x100;
+            if (*(s16 *)0x01ED53A4 <= 0) {
+                *(s16 *)0x01ED53A4 = 0;
+                *(s16 *)0x01ED53A2 = 21;
+            }
+            break;
+        case 22:
+            *(s16 *)0x01ED53A4 += 0x100;
+            if (*(s16 *)0x01ED53A4 >= 0x1000) {
+                *(s16 *)0x01ED53A4 = 0x1000;
+                *(s16 *)0x01ED53A2 = 23;
+            }
+            break;
+        case 30:
+            *(s16 *)0x01ED53A4 += 0x400;
+            if (*(s16 *)0x01ED53A4 >= 0x1000) {
+                *(s16 *)0x01ED53A4 = 0x1000;
+                *(s16 *)0x01ED53A2 = 31;
+            }
+            break;
+        case 32:
+            *(s16 *)0x01ED53A4 -= 0x20;
+            if (*(s16 *)0x01ED53A4 <= 0) {
+                *(s16 *)0x01ED53A4 = 0;
+                *(s16 *)0x01ED53A2 = 33;
+            }
+            break;
+        }
+
+        state = *(s16 *)0x01ED53A2;
+        if (state >= 30) {
+            packet.r0 = packet.r1 = packet.r2 = packet.r3 = 255;
+            packet.g0 = packet.g1 = packet.g2 = packet.g3 = 255;
+            packet.b0 = packet.b1 = packet.b2 = packet.b3 = 255;
+        } else if (state >= 20) {
+            packet.r0 = packet.r1 = packet.r2 = packet.r3 = 0;
+            packet.g0 = packet.g1 = packet.g2 = packet.g3 = 0;
+            packet.b0 = packet.b1 = packet.b2 = packet.b3 = 0;
+        } else if (state >= 10) {
+            packet.r0 = packet.r1 = packet.r2 = packet.r3 = 0;
+            packet.g0 = packet.g1 = packet.g2 = packet.g3 = 0;
+            packet.b0 = packet.b1 = packet.b2 = packet.b3 = 32;
+        }
+
+        packet.x0 = packet.x2 = 0;
+        packet.x1 = packet.x3 = 640;
+        packet.y0 = packet.y1 = 0;
+        packet.y2 = packet.y3 = 448;
+
+        if (*(s16 *)(context + 0xC2) == 0x2738 && *(s16 *)0x01ED536C > 1) {
+            packet.a0 = packet.a1 = packet.a2 = packet.a3 = 0;
+        } else if (*(s16 *)(context + 0xC2) == 0x2B9A ||
+                   *(s16 *)(context + 0xC2) == 0x2F64) {
+            packet.a0 = packet.a1 = packet.a2 = packet.a3 = 0;
+        } else {
+            packet.a0 = packet.a1 = packet.a2 = packet.a3 =
+                (*(s16 *)0x01ED53A4 << 7) >> 12;
+            arg0 = func_00218970(arg0, &packet, 0, 0);
+        }
+    }
+
+    func_0021BB20(slot);
+    for (i = 0; i < 16; i++) {
+    }
+    return arg0;
+}
