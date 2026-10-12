@@ -64,7 +64,61 @@ s32 func_001E5230(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5240);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5260);
+#ifndef GAME_H
+/* The game translation unit already declares this global with its local type. */
+typedef struct {
+    unsigned char padding[8];
+    int field8;
+} State_001E5210;
+
+extern State_001E5210 D_0031AB88;
+#endif
+
+
+void func_00217590(s32, s16, s32);
+
+typedef union {
+    __int128 value;
+    s32 axis[4];
+} Rotation_001E5260;
+
+extern Rotation_001E5260 D_002921C0;
+
+void func_001E5260(s32 arg0, s32 arg1) {
+    s32 *states = (s32 *)&D_0031AB88;
+    s32 x = arg1 >> 8;
+    s32 y = arg1 & 0xFF;
+    void *card;
+    s32 model;
+    Rotation_001E5260 rotation;
+    f32 position[4];
+    f32 offset;
+
+    card = (void *)func_001DF540(x, y);
+    rotation = D_002921C0;
+    rotation.axis[1] = (arg0 != 0) ? 0 : 0x8000;
+    if (card != NULL && *(s32 *)card != 0) {
+        func_001E3850(x, y, 1);
+        model = *((u8 *)card + 0x46);
+        func_00217590(arg0 + 2, func_001F2920(model), 0);
+        func_001F2430(model, &rotation);
+        func_001F1FD0(model, position);
+        position[0] = 0.0f;
+        if (arg0 != 0) {
+            offset = -80.0f;
+        } else {
+            offset = 80.0f;
+        }
+        position[2] = offset;
+        func_001F22B0(model, position);
+        func_001F30B0(model, 1);
+        func_001F29E0(model, 0);
+        func_001F2AD0(model, 0);
+        func_001F1830(model, 0);
+        func_001F1A00(model, 1);
+        states[arg0] = arg1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E53C0);
 

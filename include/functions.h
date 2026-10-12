@@ -898,6 +898,7 @@ void func_001E4E60(s64 arg0);
 void func_001E4E90(void);
 void func_001E5210(void *arg0, s32 arg1);
 s32 func_001E5230(void);
+void func_001E5260(s32 arg0, s32 arg1);
 s32 func_001E5590(s32 arg0);
 s32 func_001E5D30(s32 arg0, s32 arg1, s32 arg2);
 void func_001E77A0(void);
