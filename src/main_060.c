@@ -206,7 +206,39 @@ INCLUDE_ASM("asm/nonmatchings/main_060", func_002169F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216AC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216BC0);
+#ifndef GAME_H
+/* The game translation unit already declares this array with its local type. */
+extern unsigned char D_0032F790[];
+#endif
+
+
+typedef struct Flags_00216BC0 {
+    u8 unused : 6;
+    u8 active : 1;
+    u8 unused2 : 1;
+} Flags_00216BC0;
+
+extern u8 D_0034F6D0;
+
+s32 func_00216BC0(s32 arg0, s32 arg1) {
+    extern s32 func_0010B3C0();
+    s32 var_v1;
+    u8 *cards;
+
+    if (D_0034F6D0 == arg0) {
+        var_v1 = 0;
+    } else {
+        var_v1 = 1;
+    }
+    cards = (u8 *)D_0032F790 + var_v1 * 0xFFA0;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    return ((Flags_00216BC0 *)(cards + arg1 * 0x4C + 0x49))->active ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00216C70);
 
