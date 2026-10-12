@@ -684,7 +684,112 @@ void func_0027E780(void *arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027E840);
+typedef struct State_0027E840 {
+    u16 value;
+    u8 pad2[2];
+    u16 state;
+    u8 id;
+    u8 pad7[0xFB];
+    u16 ticks;
+} State_0027E840;
+
+typedef struct Message_0027E840 {
+    s32 code;
+    s32 kind;
+    s32 text;
+    s32 flags;
+} Message_0027E840;
+
+s32 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+void func_002610D0(s32, s32, s32, s32);
+
+s32 func_0027E840(void *arg0, void *arg1, s32 arg2) {
+    Message_0027E840 messageData;
+    State_0027E840 *state = arg1;
+    u16 value;
+    Message_0027E840 *message;
+
+    messageData.code = 999;
+    messageData.kind = 0;
+    messageData.text = 0;
+    messageData.flags = 0;
+    message = &messageData;
+
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->value = 0x80;
+        func_00255AC0(arg1, 0x271);
+        func_001E3FE0();
+        func_002608F0(0);
+        func_001F5970(*(s32 *)((u8 *)arg0 + 4) << 8, 1);
+        return 1;
+    }
+
+    func_001DE7E0(0);
+    switch (state->state) {
+    case 0:
+        value = func_00250300(state->value, 15, -1);
+        state->value = value;
+        if (value > 0) {
+            func_001F6D00(*(u8 *)state);
+            func_001F6CF0(*(u8 *)state);
+        } else {
+            func_001F6D00(*(u8 *)state);
+            func_001F6CF0(*(u8 *)state);
+            if (func_00255B50(arg1) == 1) {
+                state->state++;
+            }
+        }
+        break;
+    case 1:
+        func_001E42C0(0, -120, 80, 0x115);
+        message->code = 0x271;
+        message->kind = 0;
+        message->text = func_001E1090(*(s32 *)((u8 *)arg0 + 4), 0);
+        message->flags = 0;
+        state->id = func_00255A30((s32 *)message, arg1);
+        state->state++;
+        break;
+    case 2:
+        if (func_001F51D0(state->id) != 0) {
+            if (state->ticks == 0) {
+                func_00217710(0, 0x22);
+            }
+            if (state->ticks++ == 19) {
+                func_002610D0(0, *(s32 *)((u8 *)arg0 + 4) << 8, 300, 300);
+                func_00217710(0, 0x25);
+                func_00217710(0, 0x24);
+            }
+            return 1;
+        } else {
+            func_001E4530();
+            func_00260A70(arg1, 16);
+            state->ticks = 0;
+            state->value = 0;
+            state->state++;
+        }
+        break;
+    default:
+        state->ticks++;
+        value = func_00250300(state->value, 15, 1);
+        state->value = value;
+        if (value < 128) {
+            func_001F6D00(*(u8 *)state);
+            func_001F6CF0(*(u8 *)state);
+        } else if ((s32)state->ticks > 16) {
+            func_001F5970(*(s32 *)((u8 *)arg0 + 4) << 8, 0);
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct Vec4_0027EB00 {
     f32 x, y, z, w;
