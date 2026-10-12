@@ -472,7 +472,84 @@ s32 func_00116B60(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_001170A0);
+typedef struct Nibbles_001170A0 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_001170A0;
+
+typedef struct Output_001170A0 {
+    u16 position;
+    s8 command;
+    u8 pad3;
+    u16 value;
+    u8 pad6[6];
+    s32 count;
+    s8 result;
+} Output_001170A0;
+
+s32 func_00115850(u16 *, s32, void *, u8);
+void func_001E1E70(s32, s32, s32, s32);
+s32 func_0027DBC0(s32, s32, s32);
+
+s32 func_001170A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+    Nibbles_001170A0 flags[12];
+    s32 card;
+    s32 selected;
+    s32 index;
+    Output_001170A0 *output = arg2;
+
+    {
+        s32 state;
+        u32 *data;
+
+        if ((func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 0) {
+            data = func_001E0B70(*arg0 >> 8, *arg0 & 0xFF, 3);
+        } else {
+            data = func_001E0B70(*arg0 >> 8, *arg0 & 0xFF, 0);
+        }
+        card = func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+        state = func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5;
+        index = 0;
+        do {
+            flags[index].low = flags[index].high = 15;
+            index++;
+        } while (index < 12);
+
+        if (data != NULL) {
+            selected = func_00117680(arg1);
+            if (state != 0) {
+                if (func_001E22B0(card & 0xFF, card >> 8) == 9) {
+                    selected = -1;
+                }
+                if (func_0027D830(*arg0 >> 8, *arg0 & 0xFF, 0, 0, 6, 0) == 5) {
+                    selected = -1;
+                }
+            }
+            if (selected >= 0) {
+                state = (selected >> 16) & 0xFFFF;
+                card = func_0027DBC0(state, selected & 0xFF, *data & 0x3F);
+                output->position = *arg0;
+                output->command = 12;
+                output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->value, 1, 0);
+                output->count = 1;
+                if (((*data >> 6) & 3) != 3) {
+                    output->value = (arg1 << 8) | card;
+                } else {
+                    output->value = (state << 8) | card;
+                }
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+        }
+        if (func_001E2100(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
+            func_001E1E70(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
+            output->position = *arg0;
+            output->command = 14;
+            return 0;
+        }
+        return func_00115850(arg0, arg1, arg2, arg3);
+    }
+}
 
 s32 func_00117340(void) {
     if (func_0027DD20(func_001DE540(), 3, 2) != 0 ||
