@@ -147,7 +147,68 @@ void func_00217F90(void *arg0, s32 x, s32 y, s32 width, s32 height, s32 z, s32 f
     packet->second.f = f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218020);
+typedef struct {
+    s16 x0, y0, x1, y1, x2, y2, x3, y3;
+    u8 r, g, b, a;
+    u8 pad14[12];
+    u8 mode, flag;
+    s16 depth;
+    u16 texture;
+} Sprite_00218020;
+
+typedef struct {
+    s16 u0, v0, u1, v1, u2, v2, u3, v3;
+    u16 texture;
+    u16 pad12;
+} Texture_00218020;
+
+void *func_00218340(void *, s16, s16, s16, s16, s16, s16, s16, s16,
+                   s16, s16, s16, s16, s16, s16, s16, s16,
+                   u8, u8, u8, u8, u8, u16, u8, s16);
+void *func_002185E0(void *, s16, s16, s16, s16, s16, s16, s16, s16,
+                   s16, s16, s16, s16, s16, s16, s16, s16,
+                   u8, u8, u8, u8, u8, u16, u8, s16);
+
+void *func_00218020(void *packet, void *src, s16 x, s16 y, u16 flip) {
+    extern struct Sprite_00217CB0 D_002950A0[];
+    Sprite_00218020 *sprite = src;
+    Texture_00218020 *texture = &((Texture_00218020 *)D_002950A0)[sprite->texture];
+    s32 flip_u = 0;
+    s32 flip_v = 0;
+
+    if (flip == 0) {
+        packet = func_00218340(packet,
+            sprite->x0 + x, sprite->y0 + y,
+            sprite->x1 + x, sprite->y1 + y,
+            sprite->x2 + x, sprite->y2 + y,
+            sprite->x3 + x, sprite->y3 + y,
+            texture->u0, texture->v0, texture->u1, texture->v1,
+            texture->u2, texture->v2, texture->u3, texture->v3,
+            sprite->r, sprite->g, sprite->b, sprite->a,
+            sprite->mode, texture->texture, sprite->flag, sprite->depth);
+    } else {
+        if (flip == 1) {
+            flip_u = 1;
+        } else if (flip == 2) {
+            flip_v = 1;
+        } else if (flip == 3) {
+            flip_u = 1;
+            flip_v = 1;
+        }
+        packet = func_002185E0(packet,
+            sprite->x0 + x, sprite->y0 + y,
+            sprite->x1 + x, sprite->y1 + y,
+            sprite->x2 + x, sprite->y2 + y,
+            sprite->x3 + x, sprite->y3 + y,
+            texture->u0 - flip_u, texture->v0 - flip_v,
+            texture->u1 - flip_u, texture->v1 - flip_v,
+            texture->u2 - flip_u, texture->v2 - flip_v,
+            texture->u3 - flip_u, texture->v3 - flip_v,
+            sprite->r, sprite->g, sprite->b, sprite->a,
+            sprite->mode, texture->texture, sprite->flag, sprite->depth);
+    }
+    return packet;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_00218340);
 
