@@ -1,6 +1,94 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202220);
+typedef struct Entry_00202220 {
+    s32 state;
+    char *name;
+    s8 flag0 : 1;
+    s8 flag1 : 1;
+    s8 flag2 : 1;
+    s16 group : 13;
+    s16 index;
+} Entry_00202220;
+
+extern s8 D_002BD0C1[];
+extern char D_002D074B[];
+extern char D_002D0760[];
+extern s32 func_002024D0();
+
+static inline Entry_00202220 *find_00202220(s32 group, s32 index) {
+    extern Entry_00202220 D_003229A0[];
+    Entry_00202220 *entry = D_003229A0;
+    s32 i;
+
+    if (group < 0 || group >= 10) {
+        return NULL;
+    }
+    if (index < 0) {
+        return NULL;
+    }
+    i = 0;
+    do {
+        if (entry->state != 0 && entry->group == group && entry->index == index) {
+            return entry;
+        }
+        i++;
+        entry++;
+    } while (i < 1024);
+    return NULL;
+}
+
+static inline Entry_00202220 *empty_00202220(void) {
+    extern Entry_00202220 D_003229A0[];
+    Entry_00202220 *entry = D_003229A0;
+    s32 i = 0;
+
+    do {
+        if (entry->state == 0) {
+            return entry;
+        }
+        i++;
+        entry++;
+    } while (i < 1024);
+    return NULL;
+}
+
+s32 func_00202220(s32 arg0, s32 arg1, char *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    Entry_00202220 *entry;
+    char path[128];
+    extern s32 func_001FECB0();
+    extern void func_0019B648();
+
+    if (arg0 < 0 || arg0 >= 10) {
+        return 0;
+    }
+    if (arg1 < 0) {
+        return 0;
+    }
+    if (find_00202220(arg0, arg1) != NULL) {
+        return 0;
+    }
+    entry = empty_00202220();
+    if (entry == NULL) {
+        return 0;
+    }
+    if ((D_002BD0C1[*(s8 *)arg2] & 3) && ((s8 *)arg2)[1] == ':') {
+        func_0019BDD8(path, arg2);
+    } else {
+        func_0019B648(path, D_002D0760, func_001FFF90((s32)D_002D074B), arg2);
+    }
+    if (func_001FECB0(arg0 | 0x1000, 0, (s32)path, arg3, arg4, arg5, arg6,
+                     (s32)func_002024D0, entry) == 0) {
+        return 0;
+    }
+    entry->name = func_00217B60(arg2);
+    entry->state = 0x80000000;
+    entry->flag0 = 0;
+    entry->flag1 = 0;
+    entry->flag2 = (s8)(arg3 != 0 ? 0 : 1);
+    entry->group = (s16)arg0;
+    entry->index = arg1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002024D0);
 
