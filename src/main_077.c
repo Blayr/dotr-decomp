@@ -277,7 +277,36 @@ s32 func_002717A0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00271830);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00271950);
+s32 func_00271950(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 x;
+    s32 half;
+    s32 xEnd;
+    s32 yStart;
+    s32 yEnd;
+    s32 y;
+
+    half = arg4 >> 1;
+    x = func_00250860(0, arg0 - half);
+    if (arg0 + half >= 7) {
+        xEnd = 6;
+    } else {
+        xEnd = arg0 + half;
+    }
+    yStart = func_00250860(0, arg1 - half);
+    if (arg1 + half >= 7) {
+        yEnd = 6;
+    } else {
+        yEnd = arg1 + half;
+    }
+    for (; x <= xEnd; x++) {
+        for (y = yStart; y <= yEnd; y++) {
+            if (x == arg2 && y == arg3) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00271A40(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_s0;
