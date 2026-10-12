@@ -356,7 +356,88 @@ s32 func_00103D00(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103DB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103EC0);
+void func_0020C630(void *, s32 *);
+
+static inline s32 angle_00103EC0(f32 a, f32 b) {
+    extern s32 func_001A22C0(f32);
+    return func_001A22C0(65536.0f * (func_001A6C18(a, b) / 6.2831855f)) % 65536;
+}
+
+static inline s32 difference_00103EC0(s32 target, s32 current) {
+    s32 difference;
+
+    if (current < target) {
+        difference = target - current;
+        if (difference % 65536 <= 32768) {
+            return difference;
+        } else {
+            return -((65536 - target) + current);
+        }
+    } else if (target < current) {
+        difference = current - target;
+        if (difference % 65536 <= 32768) {
+            return -difference;
+        } else {
+            return (65536 - current) + target;
+        }
+    } else {
+        return 0;
+    }
+}
+
+s32 func_00103EC0(f32 *position, f32 *target, f32 *velocity, s32 limit) {
+    f32 matrix[4][4];
+    s32 rotation[4];
+    f32 movement[4];
+    s32 targetYaw;
+    s32 targetPitch;
+    s32 targetRoll;
+    s32 currentYaw;
+    s32 currentPitch;
+    s32 currentRoll;
+
+    target[0] -= position[0];
+    target[1] -= position[1];
+    target[2] -= position[2];
+    targetYaw = angle_00103EC0(target[0], target[2]);
+    targetPitch = angle_00103EC0(target[2], target[1]);
+    targetRoll = angle_00103EC0(target[1], target[0]);
+    currentYaw = angle_00103EC0(velocity[0], velocity[2]);
+    currentPitch = angle_00103EC0(velocity[2], velocity[1]);
+    currentRoll = angle_00103EC0(velocity[1], velocity[0]);
+
+    rotation[0] = difference_00103EC0(targetPitch, currentPitch);
+    rotation[1] = difference_00103EC0(targetYaw, currentYaw);
+    rotation[2] = difference_00103EC0(targetRoll, currentRoll);
+    rotation[3] = 0;
+
+    if (rotation[0] >= limit) {
+        rotation[0] = limit;
+    } else if (rotation[0] <= -limit) {
+        rotation[0] = -limit;
+    }
+    if (rotation[1] >= limit) {
+        rotation[1] = limit;
+    } else if (rotation[1] <= -limit) {
+        rotation[1] = -limit;
+    }
+    if (rotation[2] >= limit) {
+        rotation[2] = limit;
+    } else if (rotation[2] <= -limit) {
+        rotation[2] = -limit;
+    }
+
+    func_0020C630(matrix, rotation);
+    func_0020CDD0(movement, matrix, velocity);
+    position[0] += movement[0];
+    position[1] += movement[1];
+    position[2] += movement[2];
+    velocity[0] = movement[0];
+    velocity[1] = movement[1];
+    velocity[2] = movement[2];
+    velocity[3] = 0.0f;
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;
