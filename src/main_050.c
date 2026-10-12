@@ -387,7 +387,7 @@ s32 func_001F54E0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5560);
 
-s32 func_001F5620(s32 arg0, u8 arg1, s32 arg2) {
+s32 func_001F5620(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_001E1360(s32, s32);
     s32 hi = arg0 >> 8;
     s32 lo = arg0 & 0xFF;
