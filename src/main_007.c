@@ -431,7 +431,180 @@ s32 func_00125500(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00125B70);
+typedef struct Coord_00125B70 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_00125B70;
+
+typedef struct Unit_00125B70 {
+    u16 position;
+    u8 pad2[6];
+    union {
+        u32 packed;
+        u16 low;
+    } target;
+} Unit_00125B70;
+
+typedef struct Output_00125B70 {
+    u16 position;
+    u8 kind;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 value;
+    u8 flag;
+} Output_00125B70;
+
+s32 func_00126380(s32, s32, void *);
+
+static inline u32 target_00125B70(void *unit, s32 side) {
+    return side == 1 ? (u32)(u16)(((Unit_00125B70 *)unit)->target.packed >> 16) : (u32)((Unit_00125B70 *)unit)->target.low;
+}
+
+static inline u32 minY_00125B70(void *unit, s32 side, u8 coord) {
+    return coord < (target_00125B70(unit, side) >> 8) ? coord : (target_00125B70(unit, side) >> 8);
+}
+
+static inline u32 maxY_00125B70(void *unit, s32 side, u8 coord) {
+    return (target_00125B70(unit, side) >> 8) < coord ? coord : (target_00125B70(unit, side) >> 8);
+}
+
+static inline u32 minX_00125B70(void *unit, s32 side, u8 coord) {
+    return coord < (target_00125B70(unit, side) & 0xFF) ? coord : (target_00125B70(unit, side) & 0xFF);
+}
+
+static inline u32 maxX_00125B70(void *unit, s32 side, u8 coord) {
+    return (target_00125B70(unit, side) & 0xFF) < coord ? coord : (target_00125B70(unit, side) & 0xFF);
+}
+
+static inline s32 scoreLimit_00125B70(s32 unit) {
+    if (func_001DF470(unit) > 1000) {
+        if (func_001E0150(unit) >= 3) {
+            return 500;
+        }
+        return 1000;
+    }
+    return 2000;
+}
+
+s32 func_00125B70(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
+    extern s32 func_00276CC0();
+    extern void func_00279230();
+    extern s32 func_0027E360(s32, s32, s32, u8, s32);
+    Coord_00125B70 coords[12];
+    s32 initial;
+    s32 cell;
+    s32 count;
+
+    initial = func_001E1090(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF);
+    {
+    s32 bestScore;
+    s32 best;
+    s32 side = arg3;
+    Coord_00125B70 *candidate;
+    s32 index;
+    if (target_00125B70(arg0, side) == 0xFFFF) {
+        if (initial == target_00125B70(arg0, side)) {
+            ((Output_00125B70 *)arg2)->position = ((Unit_00125B70 *)arg0)->position;
+            ((Output_00125B70 *)arg2)->kind = 6;
+            ((Output_00125B70 *)arg2)->target = initial;
+            ((Output_00125B70 *)arg2)->flag = func_0027E360(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, ((Output_00125B70 *)arg2)->target, arg4, 0);
+            ((Output_00125B70 *)arg2)->value = func_00126380(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, arg0);
+            func_00126940(arg0, arg3);
+            return 0;
+        }
+    }
+
+    candidate = coords;
+    {
+        s32 i = 0;
+        Coord_00125B70 *entry = candidate;
+        do {
+            entry->x = entry->y = 0xF;
+            i++;
+            entry++;
+        } while (i < 12);
+    }
+
+    cell = func_001E3790(target_00125B70(arg0, side) & 0xFF, ((u32)target_00125B70(arg0, side)) >> 8);
+    if (cell < 0) {
+        cell = 0xFFFF;
+    }
+    func_00279230(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF,
+                 coords, initial & 0xFF, initial >> 8, target_00125B70(arg0, side) & 0xFF,
+                 ((u32)target_00125B70(arg0, side)) >> 8, (u16)cell, 7);
+    count = func_0027AFC0((u8 *)coords);
+    {
+        if (count > 0) {
+        best = 0xFF;
+        bestScore = 0xFFFF;
+        for (index = 0; index < count; index++) {
+                if (func_001E36E0(candidate->x, candidate->y) == 0) {
+                    s32 score = func_00276CC0(candidate->x, candidate->y, arg1, 2, 1, (u8)scoreLimit_00125B70(arg1));
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best = index;
+                    } else if (score == bestScore) {
+                        u32 bestMinY;
+                        u32 bestMaxY;
+                        u32 bestMinX;
+                        u32 bestMaxX;
+                        u32 currentMinY;
+                        u32 currentMaxY;
+                        u32 currentMinX;
+                        u32 currentMaxX;
+                        u32 bestY;
+                        u32 bestX;
+                        u32 currentY;
+                        u32 currentX;
+                        bestY = (u8)(&coords[best])->y;
+                        bestMinY = minY_00125B70(arg0, side, bestY);
+                        bestMaxY = maxY_00125B70(arg0, side, bestY);
+                        bestX = (&coords[best])->x;
+                        bestMinX = minX_00125B70(arg0, side, bestX);
+                        bestMaxX = maxX_00125B70(arg0, side, bestX);
+                        currentY = (u8)candidate->y;
+                        currentMinY = minY_00125B70(arg0, side, currentY);
+                        currentMaxY = maxY_00125B70(arg0, side, currentY);
+                        currentX = candidate->x;
+                        currentMinX = minX_00125B70(arg0, side, currentX);
+                        currentMaxX = maxX_00125B70(arg0, side, currentX);
+                        if ((currentMaxX - currentMinX) + (currentMaxY - currentMinY) < (bestMaxX - bestMinX) + (bestMaxY - bestMinY)) {
+                            bestScore = score;
+                            best = index;
+                        }
+                    }
+                }
+            candidate++;
+        }
+    } else {
+        ((Output_00125B70 *)arg2)->position = ((Unit_00125B70 *)arg0)->position;
+            ((Output_00125B70 *)arg2)->kind = 6;
+            ((Output_00125B70 *)arg2)->target = initial;
+            ((Output_00125B70 *)arg2)->flag = func_0027E360(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, ((Output_00125B70 *)arg2)->target, arg4, 0);
+            ((Output_00125B70 *)arg2)->value = func_00126380(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, arg0);
+        func_00126940(arg0, arg3);
+        return 0;
+    }
+
+        if (best != 0xFF) {
+            ((Output_00125B70 *)arg2)->position = ((Unit_00125B70 *)arg0)->position;
+            ((Output_00125B70 *)arg2)->kind = 6;
+            ((Output_00125B70 *)arg2)->target = (coords[best].y << 8) | coords[best].x;
+            ((Output_00125B70 *)arg2)->flag = func_0027E360(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, ((Output_00125B70 *)arg2)->target, arg4, 0);
+            ((Output_00125B70 *)arg2)->value = func_00126380(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, arg0);
+        } else {
+            ((Output_00125B70 *)arg2)->position = ((Unit_00125B70 *)arg0)->position;
+            ((Output_00125B70 *)arg2)->kind = 6;
+            ((Output_00125B70 *)arg2)->target = initial;
+            ((Output_00125B70 *)arg2)->flag = func_0027E360(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, ((Output_00125B70 *)arg2)->target, arg4, 0);
+            ((Output_00125B70 *)arg2)->value = func_00126380(((Unit_00125B70 *)arg0)->position >> 8, ((Unit_00125B70 *)arg0)->position & 0xFF, arg0);
+        }
+        func_00126940(arg0, arg3);
+    }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_007", func_00126380);
 
