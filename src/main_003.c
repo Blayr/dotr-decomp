@@ -269,7 +269,73 @@ s32 func_0010B3C0(s32 value) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B490);
+static inline s32 find_0010B490(s32 id) {
+    s32 *entry;
+    s32 i;
+
+    i = 0;
+    entry = &D_0030FF40[i * 4];
+
+    do {
+        if (entry[0x85] == id) {
+            return i;
+        }
+        i++;
+        entry += 4;
+    } while (i < 0x100);
+    return -1;
+}
+
+s32 func_0010B490(s32 id) {
+    s32 i;
+    s32 current;
+
+    if ((D_0030FF40[1] & 2) == 0) {
+        return 0;
+    }
+
+    i = find_0010B490(id);
+    if (i < 0 && id != 0x23A7) {
+        return 0;
+    }
+
+    D_0030FF40[0x892] = id;
+    current = D_0030FF40[0x77];
+    if (current == id && (D_0030FF40[0] & 0x100) != 0) {
+        if (D_0030FF40[0x7B] < 0x7FFF) {
+            func_0010C720(0x5004, 0x100);
+        }
+        if ((D_0030FF40[0] & 0x2000) != 0) {
+            D_0030FF40[0] &= ~0x2000;
+        }
+        return 1;
+    }
+
+    if (D_0030FF40[0x7F] == 4 && current == id) {
+        D_0030FF40[0] |= 0x100;
+        D_0030FF40[0x7F] &= ~4;
+        D_0030FF40[0x75] = 0;
+        D_0030FF40[0x895] = D_0030FF40[0x77];
+        func_0010C720(0x1020, D_0030FF40[5], 0x40000, 1);
+        return 1;
+    }
+
+    if ((D_0030FF40[1] & 2) != 0) {
+        s32 j;
+
+        func_0010A090(0x100);
+        D_0030FF40[0x892] = id;
+        j = find_0010B490(id);
+        if (j >= 0 || id == 0x23A7) {
+            D_0030FF40[0x7F] = 1;
+            D_0030FF40[0x79] = 0x64;
+            D_0030FF40[0] |= 0x2000;
+        }
+    }
+
+    D_0030FF40[0x7F] |= 2;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_003", func_0010B6C0);
 
