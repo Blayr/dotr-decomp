@@ -1453,7 +1453,176 @@ s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_00170940);
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00170F10);
+typedef struct Source_00170F10 {
+    u16 position;
+    u8 pad2[6];
+    u32 targets;
+} Source_00170F10;
+
+typedef struct Output_00170F10 {
+    u16 position;
+    u8 mode;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 flag;
+    u8 value;
+} Output_00170F10;
+
+typedef struct Position_00170F10 {
+    u8 x : 4;
+    u8 y : 4;
+} Position_00170F10;
+
+s32 func_0016B610(s32, s32, void *);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+
+static inline u32 target_00170F10(void *arg0, u8 which) {
+    Source_00170F10 *source = arg0;
+    if (which == 1) {
+        return (u16)(source->targets >> 16);
+    }
+    return *(u16 *)&source->targets;
+}
+
+s32 func_00170F10(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_0027A090();
+    s32 sourceTarget;
+    s32 count;
+    s32 sourceY;
+    s32 sourceX;
+    s32 selectedFlag;
+    Position_00170F10 positions[12];
+    s32 flag;
+    s32 otherTarget;
+    s32 j;
+    Position_00170F10 *walk;
+    s32 object;
+    u32 targetXWord;
+    u32 targetYWord;
+    Source_00170F10 *source = arg0;
+    Output_00170F10 *output = arg2;
+
+    targetXWord = target_00170F10(arg0, arg3);
+    targetYWord = target_00170F10(arg0, arg3);
+    if (func_001DF540(targetYWord >> 8, targetXWord & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    }
+
+    flag = func_0016B610(source->position >> 8, source->position & 0xFF, arg0);
+    sourceTarget = func_001E1090(source->position >> 8, source->position & 0xFF);
+    targetXWord = target_00170F10(arg0, arg3);
+    targetYWord = target_00170F10(arg0, arg3);
+    otherTarget = func_001E1090(targetYWord >> 8, targetXWord & 0xFF);
+    walk = positions;
+    j = 0;
+    do {
+        walk->x = walk->y = 15;
+        j++;
+        walk++;
+    } while (j < 12);
+
+    object = func_001DF540(source->position >> 8, source->position & 0xFF);
+    sourceX = sourceTarget & 0xFF;
+    sourceY = sourceTarget >> 8;
+    if (func_002464F0(object, sourceX, sourceY) == 0) {
+        s32 cost;
+        output->position = source->position;
+        output->mode = 6;
+        output->target = sourceTarget;
+        cost = func_00276CC0(sourceX, sourceY, arg1, 3, 1,
+                            (u8)func_00172310(arg1));
+        if (cost >= func_001E0290(source->position >> 8, source->position & 0xFF, 0)) {
+            output->value = func_0027E360(source->position >> 8, source->position & 0xFF,
+                                        output->target, 1, 0);
+        } else {
+            output->value = func_0027E360(source->position >> 8, source->position & 0xFF,
+                                        output->target, 0, 0);
+        }
+        func_0027B1B0(arg0, arg3);
+    } else {
+        s32 targetY;
+        s32 targetX;
+        Position_00170F10 *current;
+        s32 i;
+        s32 bestCost;
+        s32 selected;
+        u16 position = source->position;
+
+        func_0027A090(position >> 8, position & 0xFF, positions,
+                      sourceX, sourceY, targetX = otherTarget & 0xFF,
+                      targetY = otherTarget >> 8,
+                      target_00170F10(arg0, arg3), 0, 30, (u16)func_00172310(arg1));
+        count = func_0027AFC0((u8 *)positions);
+        selected = 0xFF;
+        if (count > 0) {
+            selectedFlag = 0;
+            bestCost = 0xFFFF;
+            for (i = 0; i < count; i++) {
+                s32 state = func_00172210(source->position >> 8, source->position & 0xFF,
+                                          sourceX, sourceY, targetX, targetY);
+                if (state == 1) {
+                    Position_00170F10 *forcedPosition = &positions[i];
+                    selected = i;
+                    selectedFlag = 1;
+                    i = count;
+                    forcedPosition->x = targetX;
+                    forcedPosition->y = targetY;
+                } else {
+                    s32 cost;
+                    current = &positions[i];
+                    cost = func_00276CC0(current->x, current->y, arg1, 2, 1,
+                                        (u8)func_00172310(arg1));
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        selected = i;
+                    } else if (cost == bestCost) {
+                        if (((targetX < current->x ? current->x : targetX) -
+                             (current->x < targetX ? current->x : targetX)) +
+                            ((targetY < current->y ? current->y : targetY) -
+                             (current->y < targetY ? current->y : targetY)) <
+                            ((targetX < positions[selected].x ? positions[selected].x : targetX) -
+                             (positions[selected].x < targetX ? positions[selected].x : targetX)) +
+                            ((targetY < positions[selected].y ? positions[selected].y : targetY) -
+                             (positions[selected].y < targetY ? positions[selected].y : targetY))) {
+                            bestCost = cost;
+                            selected = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            output->position = source->position;
+            output->mode = 6;
+            output->target = sourceTarget;
+            output->flag = flag;
+            output->value = func_0027E360(source->position >> 8, source->position & 0xFF,
+                                        output->target, 0, 0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+        if (selected != 0xFF) {
+            output->position = source->position;
+            output->mode = 6;
+            output->target = (positions[selected].y << 8) | positions[selected].x;
+            output->flag = selectedFlag;
+            output->value = func_0027E360(source->position >> 8, source->position & 0xFF,
+                                        output->target, 0, 0);
+        } else {
+            output->position = source->position;
+            output->mode = 6;
+            output->target = sourceTarget;
+            output->flag = selectedFlag;
+            output->value = func_0027E360(source->position >> 8, source->position & 0xFF,
+                                        output->target, 0, 0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_001714F0);
 
