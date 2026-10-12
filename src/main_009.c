@@ -880,7 +880,84 @@ s32 func_001396C0(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_009", func_00139890);
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00139D90);
+typedef struct Halves_00139D90 {
+    u16 low;
+    u16 high;
+} Halves_00139D90;
+
+typedef struct Record_00139D90 {
+    u16 id;
+    u16 pad2;
+    s16 code;
+    u16 pad6;
+    union {
+        s32 word;
+        Halves_00139D90 halves;
+    } data;
+} Record_00139D90;
+
+
+s32 func_00139D90(void *arg0, s32 arg1) {
+    extern void func_0013AA40();
+    Record_00139D90 *record = arg0;
+    s32 value;
+    s32 state;
+
+    value = func_001E1090((s32) record->id >> 8, record->id & 0xFF);
+    state = func_00250360((s32) record->id >> 8, record->id & 0xFF);
+    if (func_001DF540((s32) record->id >> 8, record->id & 0xFF) != 0) {
+        if (func_001E2100((s32) record->id >> 8, record->id & 0xFF, 0) == 0) {
+            if (record->id != 0xFFFF) {
+
+                if ((record->id & 0xFF) == 0) {
+                    if (record->data.word == -1) {
+                        if (func_0027BBC0((s32) record->id >> 8, record->id & 0xFF, 0) == 1) {
+                            if (func_001DE6D0((s32) record->id >> 8) == 1) {
+                                record->code = 0x50A;
+                            } else {
+                                record->code = 0x5FF;
+                            }
+                        } else if (func_001DE6D0((s32) record->id >> 8) == 1) {
+                            record->code = 0xA06;
+                            if ((arg1 & 0xFF) == 1) {
+                                record->data.word = (record->data.word & 0xFFFF0000) |
+                                    (((((value >> 8) + 1) << 8) | (value & 0xFF)) & 0xFFFF);
+                            } else {
+                                record->data.word = (record->data.word & 0xFFFF0000) | (value & 0xFFFF);
+                            }
+                        } else {
+                            record->code = 0x6FF;
+                            if ((arg1 & 0xFF) == 1) {
+                                record->data.word = (u16) record->data.word |
+                                    (((((value >> 8) + 1) << 8) | (value & 0xFF)) << 16);
+                            } else {
+                                record->data.word = (value << 16) | record->data.halves.low;
+                            }
+                        }
+                    }
+                } else {
+                    switch (func_001E0700((s32) record->id >> 8, record->id & 0xFF) >> 5) {
+                    case 0:
+                        func_0013A400(arg0, 1, arg1);
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 2, 0, func_0013DA70(state) & 0xFF);
+                        break;
+                    case 1:
+                    case 3:
+                        func_0013AA40(arg0, arg1);
+                        break;
+                    default:
+                        record->code = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_0013A010(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 i;
