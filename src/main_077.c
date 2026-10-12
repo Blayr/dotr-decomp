@@ -529,7 +529,104 @@ s32 func_002755D0(void *arg0, void *arg1, s32 arg2) {
     return update_002755D0(arg0, arg1, params, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00275740);
+typedef struct State_00275740 {
+    u8 pad0[4];
+    u16 phase;
+    u8 handle;
+    u8 pad7[0xFB];
+    u16 timer;
+} State_00275740;
+
+typedef struct Request_00275740 {
+    s32 command;
+    s32 value;
+    u32 cell;
+    s32 flag;
+} Request_00275740;
+
+void func_001E1E70(u32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(u32, s32, s32);
+void func_00255960(void *);
+u8 func_00255A30(s32 *, void *);
+void func_00255AC0(void *, s32);
+void func_00260A70(void *, s32);
+
+s32 func_00275740(u32 *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1E10();
+    extern s32 func_001E1030();
+    Request_00275740 data;
+    Request_00275740 *request = &data;
+    State_00275740 *state = arg1;
+    u32 cell;
+
+    data.command = 999;
+    data.value = 0;
+    data.cell = 0;
+    data.flag = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x259);
+        func_00255AC0(arg1, 0x25A);
+        cell = arg0[1];
+        func_002516D0(cell >> 8, cell & 0xFF, 1);
+        func_00260AF0(0, arg0[1], 100, 180);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            cell = arg0[1];
+            if (func_001E1E10(cell >> 8, cell & 0xFF) == 0xFF) {
+                func_001E42C0(0, -120, 80, 0x103);
+                request->command = 0x25A;
+                request->value = 0;
+                request->cell = arg0[1];
+                request->flag = 0;
+                state->handle = func_00255A30((s32 *)request, arg1);
+                state->phase++;
+            }
+        }
+        break;
+    case 1:
+        if (func_001F51D0(state->handle) == 1) {
+            return 1;
+        }
+        cell = arg0[1];
+        func_001E1E70(cell >> 8, cell & 0xFF, 0, 1);
+        cell = arg0[1];
+        func_001E42C0(0, -120, 80, func_001DE210(func_001E1030(cell >> 8, cell & 0xFF)));
+        request->command = 0x259;
+        request->value = 0;
+        request->cell = arg0[1];
+        request->flag = 1;
+        state->handle = func_00255A30((s32 *)request, arg1);
+        state->phase++;
+        break;
+    case 2:
+        if (func_001F51D0(state->handle) == 1) {
+            return 1;
+        }
+        cell = arg0[1];
+        func_0024F370(cell >> 8, cell & 0xFF);
+        state->phase++;
+        func_001E4530();
+        func_00260A70(arg1, 16);
+        break;
+    default:
+        if (state->timer++ > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_002759D0);
 
