@@ -1558,7 +1558,158 @@ s32 func_0026D840(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_0026D8F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026DCC0);
+typedef struct Context_0026DCC0 {
+    s32 unk0;
+    u32 source;
+    u32 destination;
+    s32 mode;
+} Context_0026DCC0;
+
+typedef struct State_0026DCC0 {
+    u8 pad0[4];
+    u16 state;
+    u8 handles[0xCE];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_0026DCC0;
+
+typedef struct Command_0026DCC0 {
+    s32 command;
+    u32 source;
+    u32 destination;
+    s32 flags;
+} Command_0026DCC0;
+
+u8 func_00255A30(void *, void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
+    Command_0026DCC0 storage;
+    Command_0026DCC0 *command = &storage;
+    Context_0026DCC0 *context = arg0;
+    State_0026DCC0 *state = arg1;
+    s32 i;
+    extern void func_001E1E70();
+    extern s32 func_001E1D10();
+    extern s32 func_001E1A90();
+    extern s32 func_001E1580();
+    extern s32 func_001E1640();
+
+    storage.command = 999;
+    storage.source = 0;
+    storage.destination = 0;
+    storage.flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00255AC0(state, 0x201);
+        if (context->mode == 0) {
+            func_00260020(context, state, arg2, -1, 1, 1);
+            if (func_0024E910(context->destination) == 1) {
+                func_00260AF0(30, func_0024EC50(context->destination, 0), 100, 180);
+            } else {
+                func_00260740(30);
+            }
+        } else {
+            func_00255AC0(state, 0x262);
+            func_00255AC0(state, 0x23C);
+        }
+        return 1;
+    }
+
+    switch (state->state) {
+    case 0:
+        if (func_00255B50(state) == 1) {
+            if (context->mode == 0) {
+                if (state->timer++ >= 30) {
+                    func_001E42C0(0, -120, 80, 0x113);
+                    func_0025F720(context, state, command, 0x201);
+                    state->state++;
+                }
+            } else {
+                command->command = 0x201;
+                command->source = 0;
+                command->destination = context->source;
+                command->flags = 0;
+                state->handles[state->count] = func_00255A30(command, state);
+                state->count++;
+                state->state++;
+            }
+        }
+        break;
+    case 1:
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->handles[i]) != 0) {
+                return 1;
+            }
+        }
+        if (context->mode == 1) {
+            s32 value = func_001E1D10(context->source >> 8, context->source & 0xFF);
+            if (value != func_001E1A90(context->source >> 8, context->source & 0xFF)) {
+                return 1;
+            }
+            func_001E42C0(0, -120, 80, 0x112);
+            command->command = 0x262;
+            command->source = context->source;
+            command->destination = context->destination;
+            command->flags = 0;
+            state->handles[state->count] = func_00255A30(command, state);
+            state->count++;
+            state->state++;
+            return 1;
+        }
+        state->state = 4;
+        state->timer = 0;
+        func_001E4530();
+        func_00260A70(state, 16);
+        func_00260020(context, state, arg2, 1, 0, 1);
+        break;
+    case 2:
+        if (func_001F51D0(state->handles[state->count - 1]) == 1) {
+            return 1;
+        }
+        func_001F5970(context->source, 0);
+        func_002500C0(context->source >> 8, context->source & 0xFF, -1, 1, 1);
+        func_001E1970(context->source >> 8, context->source & 0xFF, 0);
+        func_001E1B70(context->source >> 8, context->source & 0xFF, -1, 0);
+        func_002500C0(context->source >> 8, context->source & 0xFF, -1, 1, 1);
+        state->state++;
+        break;
+    case 3:
+        if (func_0025FD90() != 1) {
+            return 1;
+        }
+        func_001DFBB0(context->source >> 8, context->source & 0xFF);
+        if (func_001E2100(context->destination >> 8, context->destination & 0xFF, 1) != 0) {
+            func_001E1E70(context->destination >> 8, context->destination & 0xFF, 1, 0);
+        } else {
+            func_001E1E70(context->destination >> 8, context->destination & 0xFF, 1, 1);
+        }
+        if (func_001E1580(context->destination >> 8, context->destination & 0xFF) == 0) {
+            if (func_001E1640(context->destination >> 8, context->destination & 0xFF) == 0) {
+                func_001E1E70(context->destination >> 8, context->destination & 0xFF, 0, 0);
+            }
+        }
+        state->timer = 0;
+        func_00260A70(state, 16);
+        func_001E4530();
+        state->state++;
+        break;
+    default:
+        if (state->timer++ > 16 && func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(u32, s32);
