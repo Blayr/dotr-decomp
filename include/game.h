@@ -690,4 +690,14 @@ extern f32 D_00325DB0;
 extern f32 D_00325DB4;
 extern f32 D_00325DB8;
 
+extern s16 D_00298260[];
+extern s16 D_002982F8[];
+extern s16 D_00298B50[];
+extern s16 D_00298B76[];
+extern s8 D_0030F102[];
+extern s8 D_0030F107[];
+extern s8 D_0030F10C[];
+extern s8 D_0030F113[];
+extern s8 D_0030F118[];
+
 #endif
