@@ -979,7 +979,221 @@ s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00258760);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00258E20);
+void func_001E1E70(s32, s32, s32, s32);
+void func_002516D0(s32, s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00260A70(void *, s32);
+
+typedef struct Input_00258E20 {
+    s32 unused[2];
+    s32 index;
+    u32 value;
+} Input_00258E20;
+
+typedef struct State_00258E20 {
+    s16 active;
+    u16 position;
+    u16 phase;
+    u8 entries[0xCE];
+    u8 count;
+    u8 padding[0x2D];
+    u16 timer;
+} State_00258E20;
+
+typedef struct Command_00258E20 {
+    s32 type;
+    s32 flags;
+    s32 position;
+    s32 amount;
+} Command_00258E20;
+
+s32 func_00258E20(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1E10();
+    Input_00258E20 *input = arg0;
+    State_00258E20 *state = arg1;
+    s32 var_s0;
+    Command_00258E20 command;
+    Command_00258E20 *action = &command;
+    s32 temp_v0;
+    s32 temp_v0_2;
+    u16 temp_v0_3;
+    u16 temp_v0_4;
+    u16 temp_v0_5;
+    u16 temp_v0_6;
+    u16 temp_v0_7;
+    u16 temp_v0_8;
+    u16 temp_v1;
+    u32 temp_a0;
+
+    action->type = 0x3E7;
+    action->flags = 0;
+    action->position = 0;
+    action->amount = 0;
+    temp_a0 = input->value;
+    if ((temp_a0 >> 0x10) == 4) {
+        s32 currentValue = func_001DF470(input->index);
+        var_s0 = (u16) input->value - currentValue;
+    } else {
+        var_s0 = func_002670F0(0x2B, temp_a0 & 0xFFFF);
+    }
+    if (var_s0 < 0) {
+        var_s0 = 0;
+    }
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x1FC);
+        if ((temp_v0 = func_0026AB80(input->index, 0x2A)) < 0) {
+            state->phase = 0x20U;
+        } else {
+            if ((temp_v0_2 = func_0026AB80(input->index, 0x2E)) < 0) {
+                state->position = (u16) temp_v0;
+                func_00255AC0(arg1, 0x25A);
+                func_00255AC0(arg1, 0x224);
+                state->phase = 0x40U;
+            } else {
+                func_00255AC0(arg1, 0x25A);
+                func_00260AF0(0, temp_v0_2, 0xB4, 0xB4);
+                state->position = (u16) temp_v0_2;
+                func_002516D0(temp_v0_2 >> 8, temp_v0_2 & 0xFF, 1);
+                state->phase = 0x10U;
+                state->active = 1;
+            }
+        }
+        return 1;
+    }
+    if (func_00255B50(arg1) == 1) {
+        temp_v1 = state->phase;
+        switch (temp_v1) {                          
+        case 0x0:
+            if (func_001F51D0((s32) *(u8 *)(state->count + (u32)state + 5)) == 1) {
+                return 1;
+            }
+            func_001DF490(input->index, 0, var_s0);
+            func_001E4530();
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        case 0x1:
+            if (func_001E1E10((s32) state->position >> 8, state->position & 0xFF) != 0xFF) {
+                temp_v0_3 = state->position;
+                if (func_001E2100((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF, 4) == 0) {
+                    temp_v0_4 = state->position;
+                    func_002516D0((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 1);
+                }
+                return 1;
+            }
+            func_00260AF0(0, (s32) state->position, 0xB4, 0xB4);
+            func_001E42C0(0, -0x78, 0x50, func_001DE210(0x32F));
+            action->type = 0x25A;
+            action->flags = 0;
+            action->position = (s32) state->position;
+            action->amount = 0;
+            state->entries[state->count] = func_00255A30((s32 *)action, arg1);
+            state->count = (u8) (state->count + 1);
+            state->phase = (u16) (state->phase + 1);
+            return 1;
+        case 0x2:
+        case 0x4:
+        case 0x11:
+            if (func_001F51D0((s32) *(u8 *)(state->count + (u32)state + 5)) == 0) {
+                if (state->phase != 4) {
+                    temp_v0_5 = state->position;
+                    func_001E1E70((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, 0, 1);
+                }
+                state->phase = (u16) (state->phase + 1);
+            }
+            break;
+        case 0x3:
+            func_001E42C0(0, -0x78, 0x50, 0x10B);
+            action->type = 0x224;
+            action->flags = 0;
+            action->position = 0;
+            action->amount = var_s0;
+            state->entries[state->count] = func_00255A30((s32 *)action, arg1);
+            state->count = (u8) (state->count + 1);
+            state->phase = (u16) (state->phase + 1);
+            return 1;
+        case 0x5:
+            func_001E4530();
+            temp_v0_6 = state->position;
+            func_001E1E70((s32) temp_v0_6 >> 8, temp_v0_6 & 0xFF, 0, 1);
+            func_001DF490(input->index, 1, var_s0);
+            state->phase = (u16) (state->phase + 1);
+            func_00260A70(arg1, 0x10);
+            state->timer = 0U;
+            break;
+        case 0x6:
+            if (state->timer++ > 0x10) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+            break;
+        case 0x10:
+            if (func_001E1E10((s32) state->position >> 8, state->position & 0xFF) != 0xFF) {
+                temp_v0_7 = state->position;
+                if (func_001E2100((s32) temp_v0_7 >> 8, temp_v0_7 & 0xFF, 4) == 0) {
+                    temp_v0_8 = state->position;
+                    func_002516D0((s32) temp_v0_8 >> 8, temp_v0_8 & 0xFF, 1);
+                }
+                return 1;
+            }
+            func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+            action->type = 0x25A;
+            action->flags = 0;
+            action->position = (s32) state->position;
+            action->amount = 0;
+            state->entries[state->count] = func_00255A30((s32 *)action, arg1);
+            state->count = (u8) (state->count + 1);
+            state->phase = (u16) (state->phase + 1);
+            break;
+        case 0x12:
+            func_001E42C0(0, -0x78, 0x50, 0x10A);
+            action->type = 0x1FC;
+            action->flags = 0;
+            action->position = 0;
+            action->amount = var_s0;
+            state->entries[state->count] = func_00255A30((s32 *)action, arg1);
+            state->count = (u8) (state->count + 1);
+            state->phase = 0U;
+            return 1;
+        case 0x20:
+            action->type = 0x1FC;
+            action->flags = 0;
+            action->position = 0;
+            action->amount = var_s0;
+            state->entries[state->count] = func_00255A30((s32 *)action, arg1);
+            state->count = (u8) (state->count + 1);
+            func_001E42C0(0, -0x78, 0x50, 0x10A);
+            state->phase = 0U;
+            break;
+        case 0x40:
+            action->type = 0x1FC;
+            action->flags = 0;
+            action->position = 0;
+            action->amount = (s32) (var_s0 | 0x10000);
+            func_001E42C0(0, -0x78, 0x50, 0x10A);
+            state->phase = (u16) (state->phase + 1);
+            state->entries[state->count] = func_00255A30((s32 *)action, arg1);
+            state->count = (u8) (state->count + 1);
+            break;
+        case 0x41:
+            if (func_001F51D0((s32) *(u8 *)(state->count + (u32)state + 5)) == 1) {
+                return 1;
+            }
+            state->phase = 1U;
+            break;
+        default:
+            return 1;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_002594D0);
 
