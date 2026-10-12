@@ -678,7 +678,105 @@ INCLUDE_ASM("asm/nonmatchings/main_075", func_00262BE0);
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_00263180);
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00263500);
+typedef struct {
+    u8 pad0[8];
+    s32 mask;
+    s32 owner;
+} Context_00263500;
+
+typedef struct {
+    u8 pad0[4];
+    u16 state;
+    u8 ids[0x1A];
+    u8 pad20[0xB4];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_00263500;
+
+void func_0024F370(s32, s32);
+void func_00255960(void *);
+void func_00255AC0(void *, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_00263500(void *arg0, void *arg1, s32 arg2) {
+    s32 data[4];
+    s32 *data_ptr = data;
+    s32 i;
+    s32 inactive;
+    Context_00263500 *context = arg0;
+    State_00263500 *state = arg1;
+
+    data[0] = 999;
+    data[1] = 0;
+    data[2] = 0;
+    data[3] = 0;
+    inactive = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x230);
+        if (func_0024E910(context->mask) == 1) {
+            func_00260AF0(0x1E, func_0024EC50(context->mask, 0), 0x64, 0xB4);
+        } else {
+            func_00260740(0x1E);
+        }
+        return 1;
+    }
+
+    switch (state->state) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            if (state->timer++ >= 0x1E) {
+                func_0025F720(arg0, arg1, data_ptr, 0x230);
+                state->state++;
+            }
+        }
+        break;
+    case 1: {
+        u8 *entry;
+        s32 target;
+        s32 location;
+
+        for (i = 0, entry = arg1; i < state->count; entry += 4, i++) {
+            if (func_001F51D0(state->ids[i]) == 1) {
+                if (func_001F52D0(state->ids[i]) == 2) {
+                    target = *(s32 *)(entry + 0x20);
+                    if ((target & 0xFFFF) != 0xFFFF) {
+                        location = func_001E1090(target >> 8, target & 0xFF);
+                        target = *(s32 *)(entry + 0x20);
+                        func_0024F370(target >> 8, target & 0xFF);
+                        func_001DF580(*(s32 *)(entry + 0x20) >> 8,
+                                     location & 0xFF, location >> 8, context->owner, 0);
+                        *(s32 *)(entry + 0x20) = 0xFFFF;
+                    }
+                }
+            } else {
+                inactive++;
+            }
+        }
+        if (inactive < state->count) {
+            return 1;
+        } else {
+            state->state++;
+            state->timer = 0;
+            func_00260A70(arg1, 0x10);
+        }
+        break;
+    }
+    default:
+        if (state->timer++ > 0x10) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 void func_00255960(void *);
 s32 func_00255A30(void *, void *);
