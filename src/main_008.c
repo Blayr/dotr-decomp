@@ -738,7 +738,6 @@ typedef struct {
     } data;
 } State_00131E40;
 
-s32 func_00131F80(s32, s32, s32);
 
 void func_00131E40(void *arg0) {
     s32 occupied;
@@ -780,7 +779,67 @@ void func_00131E40(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00131F80);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00131F80;
+
+s32 func_00131F80(s32 arg0, s32 arg1, s32 arg2) {
+    Nibbles_00131F80 buffer[12];
+    s32 result;
+    s32 owner;
+    s32 i;
+    Nibbles_00131F80 *p;
+    extern s32 func_0027A130();
+    extern s32 func_00250A60();
+
+    result = -1;
+    owner = func_00250370((void *)arg0);
+    p = buffer;
+    i = 0;
+    do {
+        i++;
+        p->low = p->high = 15;
+        p++;
+    } while (i < 12);
+
+    if (arg0 == 0) {
+        return -1;
+    }
+    if (arg1 >= 3 && (arg2 == 0 || arg2 == 1 || (u32)(arg2 - 4) < 2)) {
+        result = ((arg2 % 2 == 0 ? arg2 + 2 : arg2 + 1) << 8) | 6;
+    } else if (arg1 < 3 && (u32)(arg2 - 2) < 2) {
+        result = 0x400;
+    }
+    if (result >= 0) {
+        if (func_0027A130(arg0, buffer, arg1, arg2, result & 0xFF,
+                         result >> 8, -1, 0, 7, (u16)func_00134AE0(owner)) >= 0) {
+            return result;
+        }
+    }
+
+    if (arg1 < 3 && (arg2 == 0 || arg2 == 1 || (u32)(arg2 - 4) < 2) &&
+        func_00250A60(arg0, 0, arg2 % 2 ? arg2 + 1 : arg2) < 1500) {
+        result = (arg2 % 2 == 0 ? arg2 + 2 : arg2 + 1) << 8;
+    } else if (arg1 >= 3 && arg2 == 2 && func_00250A60(arg0, 6, 3) < 1500) {
+        result = 0x406;
+    }
+    if (result >= 0) {
+        if (func_0027A130(arg0, buffer, arg1, arg2, result & 0xFF,
+                         result >> 8, -1, 0, 7, (u16)func_00134AE0(owner)) >= 0) {
+            return result;
+        }
+    }
+
+    result = func_001E1090(func_00250370((void *)arg0) == 0 ? 1 : 0, 0);
+    if (result >= 0) {
+        if (func_0027A130(arg0, buffer, arg1, arg2, result & 0xFF,
+                         result >> 8, -1, 0, 7, (u16)func_00134AE0(owner)) >= 0) {
+            return result;
+        }
+    }
+    return ((result >> 8) << 8) | arg1;
+}
 
 void func_00132280(u16 *arg0) {
     u16 value;
