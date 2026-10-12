@@ -95,7 +95,162 @@ s32 func_00144860(s32 arg0, void *arg1, void *arg2) {
     return o2->f3E >> 5;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00144A60);
+typedef struct Nibbles_00144A60 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00144A60;
+
+s32 func_0024FE40(void *, s32, s32);
+
+static inline s32 findrow_00144A60(void *arg2) {
+    s32 row = 1;
+
+    while (1) {
+        if (func_0024DEB0(func_001E22B0(0, row), arg2) == 1) {
+            return row;
+        }
+        row++;
+        if (row > 5) {
+            break;
+        }
+    }
+    return -1;
+}
+
+s32 func_00144A60(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+    s32 bestPosition;
+    s32 bestScore;
+    Nibbles_00144A60 path[12];
+    s32 initIndex;
+    Nibbles_00144A60 *p;
+    u8 type;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = path;
+    initIndex = 0;
+    do {
+        p->low = p->high = 15;
+        initIndex++;
+        p++;
+    } while (initIndex < 12);
+    type = (u8)(((u8 *)arg2)[0x3E] >> 5);
+    if (type == 0 || type == 3) {
+        if (arg3 >= 0) {
+            s32 position;
+            s32 y;
+            s32 x;
+            s32 i;
+            s32 targetY;
+            s32 targetX;
+            s32 target;
+            s32 score;
+
+            bestScore = 255;
+            bestPosition = 65535;
+            target = func_001E1090(arg3 >> 8, arg3 & 255);
+            i = 0;
+            targetY = target >> 8;
+            targetX = target & 255;
+            do {
+                position = func_0024E410(arg0, i);
+                if (position >= 0) {
+                    x = position & 255;
+                    y = position >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510((s32)arg2, arg3, func_001461C0(arg0), targetX, targetY, 0) > 0) {
+                            score = func_0027A130((s32)arg2, (s32)path, x, y, targetX, targetY,
+                                                 arg3, 0, 3, (u16)func_001461C0(arg0));
+                        } else {
+                            score = func_002792C0((s32)arg2, (s32)path, x, y, targetX, targetY, arg3, 3);
+                        }
+                        if (func_0027AFC0((u8 *)path) > 0 && score < bestScore) {
+                            bestScore = score;
+                            bestPosition = position;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (bestPosition != 65535) {
+                return bestPosition;
+            }
+            bestPosition = -1;
+            return bestPosition;
+        } else {
+            s32 i;
+            s32 bestDistance;
+            s32 best;
+            s32 position;
+            s32 x;
+            s32 y;
+            s32 row;
+            s32 lower;
+            s32 distance;
+
+            bestDistance = 14;
+            best = -1;
+            i = 0;
+            do {
+                position = func_0024E410(arg0, i);
+                if (position >= 0) {
+                    x = position & 255;
+                    y = position >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E3790(x, y) < 0) {
+                        row = findrow_00144A60(arg2);
+                        lower = y < row ? y : row;
+                        y = row < y ? y : row;
+                        distance = y - lower;
+                        if (distance < bestDistance && distance >= 0) {
+                            best = position;
+                            bestDistance = distance;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (bestDistance < 14) {
+                return best;
+            }
+            goto failure;
+        }
+    } else {
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 best;
+        s32 position;
+
+        best = -1;
+        i = 0;
+        do {
+            position = func_0024E410(arg0, i);
+            if (position >= 0) {
+                x = position & 255;
+                y = position >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0 && y < 8) {
+                    best = position;
+                }
+            }
+            i++;
+        } while (i < 8);
+        if (best >= 0) {
+            return best;
+        }
+    }
+failure:
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00144EC0);
 
