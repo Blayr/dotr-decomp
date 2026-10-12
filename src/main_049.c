@@ -681,7 +681,34 @@ s32 func_001F2BE0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2C60);
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2DD0);
+s32 func_001F2DD0(s32 arg0, s32 arg1, s32 arg2) {
+    Obj_0031ABB0 *obj;
+    s32 group;
+    u16 current;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (arg2 < 0 || arg2 >= 8) {
+        return 0;
+    }
+    if (arg1 >= 0) {
+        group = (arg1 & 0x7F00) >> 8;
+        if ((arg1 & 0xFF) >= *(u8 *)((u8 *)obj + 0x1FE)) {
+            return 0;
+        }
+        current = *(u16 *)((arg2 << 1) + (s32)obj + 0x1B0);
+        if ((current & 0x7FFF) < 0x7FFF && ((current & 0x7F00) >> 8) != group) {
+            return 0;
+        }
+    }
+    *(u16 *)((arg2 << 1) + (s32)obj + 0x1B0) = (arg1 < 0) ? 0x7FFF : arg1;
+    return 1;
+}
 
 typedef struct {
     s8 unused : 5;
