@@ -528,7 +528,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Card_00148020;
 
-s32 func_001482F0(s32 arg0, void *arg1);
 s32 func_001491B0(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
@@ -609,7 +608,97 @@ s32 func_00148020(s32 arg0, s32 arg1, void *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_001482F0);
+s32 func_001482F0(s32 arg0, void *arg1) {
+    extern s32 func_00278890();
+    extern s32 func_001E1580();
+    s32 entries[8];
+    u8 scratch[32];
+    u8 kind0;
+    u8 kind1;
+
+    kind0 = (u8)func_00278890(arg0, 0);
+    kind1 = (u8)func_00278890(arg0, 1);
+    if (arg1 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, entries);
+    if (kind0 == 5) {
+        if (func_00148960(arg0, scratch, arg1, 999) >= 0) {
+            return 1;
+        }
+        return -1;
+    }
+    if (kind1 == 5) {
+        s32 i = 0;
+        s32 *entry;
+
+        if (i < func_0026FE20(arg0)) {
+            entry = entries;
+            do {
+                if ((func_0026FCE0(*entry) >> 5) == 0 &&
+                    func_0026FB10(arg0, *entry) == 1) {
+                    func_001DCD70(arg1, entries[i]);
+                    return 0;
+                }
+                entry++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+        return -1;
+    }
+    if (func_00148870(arg0, scratch, arg1, 0x34B) >= 0) {
+        if (func_0014B240(arg0, 0x34B) == 1) {
+            return 2;
+        }
+    }
+    if (func_00148630(arg0, scratch, arg1) == 1) {
+        return 3;
+    }
+    if (func_0024E910(func_0024CA40(0, 0, arg0, 1, 0x1E001C, 14)) > 0) {
+        if (func_00148870(arg0, scratch, arg1, 30) >= 0) {
+            return 2;
+        }
+    }
+    if (func_0014B490(arg0) >= 0) {
+        if (func_00148870(arg0, scratch, arg1, 0x2AD) >= 0) {
+            return 2;
+        }
+    }
+    {
+        s32 i = 0;
+        do {
+            if (func_001E1580(arg0, i) != 0 &&
+                func_00148870(arg0, scratch, arg1, 0x31C) >= 0) {
+                return 2;
+            }
+            i++;
+        } while (i < 11);
+    }
+    {
+        s32 *entry;
+        s32 i = 0;
+
+        if (i < func_0026FE20(arg0)) {
+            entry = entries;
+            do {
+                if ((func_0026FCE0(*entry) >> 5) == 0 &&
+                    func_0026FB10(arg0, *entry) == 1 && *entry != 0x110) {
+                    func_001DCD70(arg1, entries[i]);
+                    return 0;
+                }
+                entry++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+    }
+    {
+        s32 result = func_00148960(arg0, scratch, arg1, 999);
+        if (result >= 0) {
+            return result;
+        }
+    }
+    return -1;
+}
 
 typedef struct {
     u8 pad0[6];
