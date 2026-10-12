@@ -61,7 +61,87 @@ void *func_001CDE70(s32 arg0) {
     return &D_0031A7C0[arg0 * 0xA0];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_042", func_001CDEB0);
+typedef struct Flags_001CDEB0 {
+    s8 unused : 3;
+    s8 position : 1;
+    s8 rotation : 1;
+    s8 rotation2 : 1;
+    s8 scale : 1;
+    s8 color : 1;
+} Flags_001CDEB0;
+
+typedef struct Output_001CDEB0 {
+    f32 position[4];
+    s32 rotation[4];
+    s32 rotation2[4];
+    f32 scale[4];
+    u8 color[4];
+} Output_001CDEB0;
+
+typedef struct Blend_001CDEB0 {
+    Output_001CDEB0 *output;
+    u8 padding04[12];
+    f32 position0[4];
+    f32 position1[4];
+    s32 rotation0[4];
+    s32 rotation1[4];
+    s32 rotation20[4];
+    s32 rotation21[4];
+    f32 scale0[4];
+    f32 scale1[4];
+    u8 color0[4];
+    u8 color1[4];
+    u16 duration;
+    u16 progress;
+    u8 padding9C[3];
+    Flags_001CDEB0 flags;
+} Blend_001CDEB0;
+
+s32 func_001CDEB0(void *arg0) {
+    extern s32 func_001A22C0(f32);
+    Output_001CDEB0 *output;
+    f32 blend;
+    f32 inverse;
+    Blend_001CDEB0 *src = arg0;
+
+    output = src->output;
+    if (output != NULL) {
+        blend = (f32)src->progress / (f32)src->duration;
+        inverse = 1.0f - blend;
+        if (src->flags.position) {
+            output->position[0] = src->position0[0] * inverse + src->position1[0] * blend;
+            output->position[1] = src->position0[1] * inverse + src->position1[1] * blend;
+            output->position[2] = src->position0[2] * inverse + src->position1[2] * blend;
+            output->position[3] = src->position0[3] * inverse + src->position1[3] * blend;
+        }
+        if (src->flags.rotation) {
+            output->rotation[0] = func_001A22C0((f32)src->rotation0[0] * inverse + (f32)src->rotation1[0] * blend) % 0x10000;
+            output->rotation[1] = func_001A22C0((f32)src->rotation0[1] * inverse + (f32)src->rotation1[1] * blend) % 0x10000;
+            output->rotation[2] = func_001A22C0((f32)src->rotation0[2] * inverse + (f32)src->rotation1[2] * blend) % 0x10000;
+            output->rotation[3] = func_001A22C0((f32)src->rotation0[3] * inverse + (f32)src->rotation1[3] * blend) % 0x10000;
+        }
+        if (src->flags.rotation2) {
+            output->rotation2[0] = func_001A22C0((f32)src->rotation20[0] * inverse + (f32)src->rotation21[0] * blend) % 0x10000;
+            output->rotation2[1] = func_001A22C0((f32)src->rotation20[1] * inverse + (f32)src->rotation21[1] * blend) % 0x10000;
+            output->rotation2[2] = func_001A22C0((f32)src->rotation20[2] * inverse + (f32)src->rotation21[2] * blend) % 0x10000;
+            output->rotation2[3] = func_001A22C0((f32)src->rotation20[3] * inverse + (f32)src->rotation21[3] * blend) % 0x10000;
+        }
+        if (src->flags.scale) {
+            output->scale[0] = src->scale0[0] * inverse + src->scale1[0] * blend;
+            output->scale[1] = src->scale0[1] * inverse + src->scale1[1] * blend;
+            output->scale[2] = src->scale0[2] * inverse + src->scale1[2] * blend;
+            output->scale[3] = src->scale0[3] * inverse + src->scale1[3] * blend;
+        }
+        if (src->flags.color) {
+            output->color[2] = func_001A22C0((f32)src->color0[2] * inverse + (f32)src->color1[2] * blend);
+            output->color[1] = func_001A22C0((f32)src->color0[1] * inverse + (f32)src->color1[1] * blend);
+            output->color[0] = func_001A22C0((f32)src->color0[0] * inverse + (f32)src->color1[0] * blend);
+            output->color[3] = func_001A22C0((f32)src->color0[3] * inverse + (f32)src->color1[3] * blend);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 void func_001CE400(void) {
     func_00209D30(func_001CE430(func_00209D20()));

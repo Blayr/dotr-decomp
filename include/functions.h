@@ -716,6 +716,7 @@ s32 func_001CDB00(s32 arg0);
 void func_001CDD40(void);
 s32 func_001CDD90(u8 *arg0);
 void *func_001CDE70(s32 arg0);
+s32 func_001CDEB0(void *arg0);
 void func_001CE400(void);
 void func_001CEA50(void);
 s32 func_001CECF0(s32 arg0, s32 arg1);
