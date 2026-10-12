@@ -45,7 +45,42 @@ void func_001F1C40(s32 arg0, f32 value) {
     func_001F1C50(arg0, 0, value);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F1C50);
+typedef struct View_001F1C50 {
+    u8 pad[0x19C];
+    f32 m[4][3];
+} View_001F1C50;
+
+s32 func_001F1C50(s32 arg0, s32 arg1, f32 value) {
+    s32 slot;
+    f32 maximum;
+    Obj_0031ABB0 *obj;
+    View_001F1C50 *view;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    view = (View_001F1C50 *)obj;
+    if (obj == NULL) {
+        return 0;
+    }
+    slot = obj->lv[arg1];
+    if (slot < 0) {
+        return 0;
+    }
+    if (obj->slots[slot] == NULL) {
+        return 0;
+    }
+    maximum = (f32) (u32) obj->vals[slot] - 1.0f;
+    if (value < 1.0f) {
+        value = 1.0f;
+    }
+    if (!(value <= maximum)) {
+        value = maximum;
+    }
+    view->m[arg1][0] = value;
+    return 1;
+}
 
 s32 func_001F1D50(s32 arg0, s32 arg1) {
     extern s32 func_001F1400();
