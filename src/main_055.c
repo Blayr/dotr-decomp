@@ -479,7 +479,114 @@ s32 func_002051F0(void) {
     return D_00325CAC.flag ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205210);
+#pragma pack(2)
+typedef struct BitmapFileHeader_00205210 {
+    s16 type;
+    u16 sizeLow;
+    u16 sizeHigh;
+    s16 reserved1;
+    s16 reserved2;
+    u16 offsetLow;
+    u16 offsetHigh;
+} BitmapFileHeader_00205210;
+#pragma pack()
+
+typedef struct BitmapInfo_00205210 {
+    s32 size;
+    s32 width;
+    s32 height;
+    s16 planes;
+    s16 bits;
+    s32 compression;
+    s32 imageSize;
+    s32 horizontalResolution;
+    s32 verticalResolution;
+    s32 colorsUsed;
+    s32 colorsImportant;
+} BitmapInfo_00205210;
+
+s32 func_0017FA98(void *, s32);
+s32 func_0017FD20(s32);
+s32 func_00180348(s32, void *, s32);
+extern u8 D_002D07FA[];
+extern u8 D_002D0806[];
+extern s32 D_00325CB0;
+
+void func_00205210(void) {
+    u8 buffer[0x780];
+    BitmapInfo_00205210 info;
+    BitmapFileHeader_00205210 fileHeader;
+    s32 fd;
+    u32 fileSize;
+    extern s32 func_0019B648();
+
+    while (func_001FF350(-1) != 0) {
+        func_001FF420();
+    }
+    func_0020A3B0(0x04000000);
+    fileHeader.type = 0x4D42;
+    fileSize = 0x280 * 0x1C0 * 3 + 0x36;
+    fileHeader.sizeLow = fileSize;
+    fileHeader.sizeHigh = fileSize >> 16;
+    fileHeader.reserved1 = 0;
+    fileHeader.reserved2 = 0;
+    fileHeader.offsetLow = 0x36;
+    fileHeader.offsetHigh = 0;
+    info.size = 0x28;
+    info.width = 0x280;
+    info.height = 0x1C0;
+    info.planes = 1;
+    info.bits = 0x18;
+    info.compression = 0;
+    info.imageSize = 0xD2000;
+    info.horizontalResolution = 1;
+    info.verticalResolution = 1;
+    info.colorsUsed = 0;
+    info.colorsImportant = 0;
+
+    for (;;) {
+        func_0019B648(buffer, D_002D0806,
+                     func_001FFF90((s32)D_002D07FA), D_00325CB0);
+        fd = func_0017FA98(buffer, 1);
+        if (fd < 0) {
+            break;
+        }
+        func_0017FD20(fd);
+        D_00325CB0 += 1;
+    }
+    D_00325CB0 += 1;
+    fd = func_0017FA98(buffer, 0x202);
+    if (fd >= 0) {
+        s32 y;
+        u16 *row;
+
+        func_00180348(fd, &fileHeader, 0xE);
+        func_00180348(fd, &info, 0x28);
+        y = 0x1BF;
+        row = (u16 *)0x0408BB00;
+        do {
+            s32 x;
+            u16 *src;
+            u8 *dst;
+
+            dst = buffer;
+            x = 0;
+            src = row;
+            do {
+                x += 1;
+                dst[0] = ((*src >> 7) & 0xF8) | ((*src >> 12) & 7);
+                dst[1] = ((*src >> 2) & 0xF8) | ((*src >> 7) & 7);
+                dst[2] = ((*src << 3) & 0xF8) | ((*src >> 2) & 7);
+                src++;
+                dst += 3;
+            } while (x < 0x280);
+            func_00180348(fd, buffer, 0x780);
+            y -= 1;
+            row -= 0x280;
+        } while (y >= 0);
+        func_0017FD20(fd);
+    }
+}
 
 typedef struct {
     f32 x, y, z, w;
