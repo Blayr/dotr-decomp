@@ -1339,6 +1339,7 @@ s32 func_00202810(s32 arg0, s32 arg1, char *arg2, s32 arg3);
 s32 func_002029B0(s32 arg0, s32 arg1);
 s32 func_00202AB0(s32 arg0, s32 arg1);
 s32 func_00202B00(s32 arg0, s32 arg1, s32 arg2, s32 *arg3);
+s32 func_00202BF0(s32 arg0, s32 arg1);
 s32 func_00202CB0(s32 category, s32 id, s32 enabled);
 s32 func_00202D60(s32 arg0, s32 arg1);
 u16 func_00202E00(s16 arg0, s32 arg1);

@@ -245,7 +245,41 @@ s32 func_00202B00(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00202BF0);
+typedef struct Entry_00202BF0 {
+    s32 value;
+    s32 unk4;
+    s8 enabled : 1;
+    s8 pending : 1;
+    s8 other : 6;
+} Entry_00202BF0;
+
+static inline Entry_00202BF0 *lookup_00202BF0(s32 arg0, s32 arg1) {
+    Entry_00202BF0 *entry;
+
+    entry = func_002008A0(arg0, arg1);
+    if ((entry != NULL) && !(entry->value & 0x80000000)) {
+        return entry;
+    }
+    return NULL;
+}
+
+s32 func_00202BF0(s32 arg0, s32 arg1) {
+    Entry_00202BF0 *entry;
+
+    if ((arg0 < 0) || (arg0 >= 0xA)) {
+        return 0;
+    }
+    if (arg1 < 0) {
+        return 0;
+    }
+    entry = lookup_00202BF0(arg0, arg1);
+    if (entry == NULL) {
+        return 0;
+    }
+    entry->enabled = 1;
+    entry->pending = 0;
+    return entry->value;
+}
 
 typedef struct Flags_00202CB0 {
     s8 active : 1;
