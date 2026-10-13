@@ -2,7 +2,83 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010C940);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010CE20);
+typedef struct Entry_0010CE20 {
+    u16 coordinates;
+    u16 pad2;
+    s16 action;
+    u16 pad6;
+    s32 target;
+} Entry_0010CE20;
+
+typedef struct State_0010CE20 {
+    u8 pad0[0x1A1];
+    u8 level : 4;
+    u8 high : 4;
+} State_0010CE20;
+
+s32 func_0010CE20(u16 *arg0, u16 *arg1) {
+    s32 card;
+    Entry_0010CE20 *entry;
+    State_0010CE20 *state;
+    u16 coordinates;
+
+    state = (State_0010CE20 *)arg0;
+    entry = (Entry_0010CE20 *)arg1;
+    card = func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    state->level = func_0010F030();
+    if (func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        if (func_001E2100(entry->coordinates >> 8, entry->coordinates & 0xFF, 0) == 0) {
+            coordinates = entry->coordinates;
+            if (coordinates != 0xFFFF) {
+                if ((coordinates & 0xFF) == 0) {
+                    if (entry->target == -1) {
+                        if (func_0027BBC0(coordinates >> 8, coordinates & 0xFF, 0) == 1) {
+                            if (func_001DE6D0(entry->coordinates >> 8) == 1) {
+                                entry->action = 0x50A;
+                            } else {
+                                entry->action = 0x5FF;
+                            }
+                        } else if (func_001DE6D0(entry->coordinates >> 8) == 1) {
+                            entry->action = 0xA06;
+                            entry->target = (entry->target & 0xFFFF0000) | 1;
+                        } else {
+                            entry->action = 0x6FF;
+                            entry->target = (u16)entry->target | 0x10000;
+                        }
+                    }
+                } else {
+                    switch (func_001E0700(coordinates >> 8, coordinates & 0xFF) >> 5) {
+                    case 0:
+                        if (func_002507D0(entry->coordinates >> 8, entry->coordinates & 0xFF) == 1) {
+                            func_0010D880(entry, 1, state->level);
+                        } else {
+                            func_0010D490(entry, 1, state->level);
+                        }
+                        break;
+                    case 3:
+                    case 4:
+                        func_0010DB00(entry, 2, 0);
+                        break;
+                    case 5:
+                        func_0010DB00(entry, 1, 0);
+                        break;
+                    case 1:
+                        func_0010DC40(entry);
+                        break;
+                    case 2:
+                        func_0027CA50(entry, 2, 0, func_0010EDA0(card) & 0xFF);
+                        break;
+                    default:
+                        entry->action = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_0010D080(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
