@@ -1194,6 +1194,8 @@ void func_001F6BD0(s32 arg0);
 void func_001F6C10(s32 arg0);
 void func_001F6C50(s32 arg0);
 void func_001F6CA0(s32 arg0);
+void func_001F6CE0(s32 arg0);
+void func_001F6CF0(s32 arg0);
 void func_001F6D00(s32 arg0);
 u8 func_001F6D10(void);
 u8 func_001F6D20(void);

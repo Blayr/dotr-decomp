@@ -344,9 +344,13 @@ void func_001F6CA0(s32 arg0) {
     func_001F9940(0, 3, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6CE0);
+void func_001F6CE0(s32 arg0) {
+    D_0031BEA0 = arg0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6CF0);
+void func_001F6CF0(s32 arg0) {
+    D_0031BEA1 = arg0;
+}
 
 void func_001F6D00(s32 arg0) {
     D_0031BEA2 = (s8) arg0;

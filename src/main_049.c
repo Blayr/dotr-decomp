@@ -1018,8 +1018,6 @@ typedef struct Table_001F3700 {
 } Table_001F3700;
 
 void func_001F3790(void);
-void func_001F6CE0(s32);
-void func_001F6CF0(s32);
 extern Table_001F3700 D_00292FF0[3];
 extern s8 D_0031BB50;
 
