@@ -1,6 +1,55 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025ED20);
+typedef struct {
+    s32 unk0;
+    s32 index1;
+    s32 index2;
+    s32 value;
+} Context_0025ED20;
+
+typedef struct {
+    s32 unk0;
+    u16 count;
+    u8 handle;
+    u8 pad;
+} State_0025ED20;
+
+s32 func_0025ED20(void *arg0, void *arg1, s32 arg2) {
+    s32 requestData[4];
+    s32 *request = requestData;
+    Context_0025ED20 *context = arg0;
+    State_0025ED20 *state = arg1;
+
+    requestData[0] = 0x3E7;
+    requestData[1] = 0;
+    requestData[2] = 0;
+    requestData[3] = 0;
+
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00255AC0(state, 0x216);
+        return 1;
+    }
+    if (func_00255B50(state) == 1) {
+        if (state->count == 0) {
+            request[0] = 0x216;
+            request[1] = 0;
+            request[2] = 0;
+            request[3] = context->value;
+            state->handle = func_00255A30(request, state);
+            state->count++;
+        } else {
+            if (func_001F51D0(state->handle) == 1) {
+                return 1;
+            }
+            func_001DE5E0(context->index1, 4, 0);
+            func_001DE5E0(context->index2, 0, context->value);
+            func_001E4530();
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025EE40);
 
