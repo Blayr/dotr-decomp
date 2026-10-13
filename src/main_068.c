@@ -1999,7 +1999,292 @@ done:
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_002409E0);
+typedef struct IOState_002409E0 {
+    s32 call_result;
+    s32 sync_result;
+    s32 slot;
+    s32 path;
+    u8 pad10[0x10];
+    s32 command;
+    s32 result;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 step;
+    u8 pad36[0xA];
+    s16 retries;
+    u8 pad42[6];
+    s32 handles[2];
+    u8 pad50[0x266];
+    s16 first_block;
+    s16 block_count;
+} IOState_002409E0;
+
+s32 func_00193BA8(s32, s32, void *, s32);
+s32 func_00193D18(s32);
+s32 func_00194058(s32, void *, s32);
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194A98(s32);
+extern u8 D_0029B1BE[];
+extern s16 D_0034FB34;
+
+s32 func_002409E0(void) {
+    extern s32 func_00193DD0();
+    extern s32 *D_0034FAE8;
+    extern struct State_0023E610 D_0034FB00;
+    s32 second;
+    s32 first;
+    s32 count;
+    s32 *dest;
+    s32 *source;
+    IOState_002409E0 *io = (IOState_002409E0 *)&D_0034FB00;
+
+    switch (D_0034FB34) {
+    case 0:
+        io->call_result = func_00193BA8(io->slot, io->path, D_0029B1BE, 2);
+        io->sync_result = func_00194248(1, &io->command, &io->result);
+        if (io->sync_result == 1) {
+            if (io->command == 2) {
+                if (io->result < 0) {
+                    switch (io->result) {
+                    case -2:
+                        io->retries = (s16) (io->retries + 1);
+                        if (io->retries >= 3) {
+                            io->state = 0xB;
+                            io->step = 0;
+                            io->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 5;
+                    case -4:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 0xA;
+                    case -5:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 0xA;
+                    case -7:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 0xA;
+                    default:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    io->handles[io->slot] = (s32) io->result;
+                    io->step = 1;
+                    io->retries = 0;
+                    io->step = 0;
+                    io->retries = 0;
+                    if (io->slot == 0) {
+                        io->slot = 1;
+                    } else {
+                        io->slot = 0;
+                        io->step = 1;
+                    }
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 1:
+        io->call_result = func_00193DD0(io->handles[io->slot], io->first_block, io->block_count);
+        io->sync_result = func_00194248(1, &io->command, &io->result);
+        if (io->sync_result == 1) {
+            if (io->command == 4) {
+                switch (io->result) {
+                case 0:
+                    io->step = 2;
+                    io->retries = 0;
+                    io->step = 1;
+                    io->retries = 0;
+                    if (io->slot == 0) {
+                        io->slot = 1;
+                    } else {
+                        io->slot = 0;
+                        io->step = 2;
+                    }
+                    return 0;
+                case -2:
+                    io->retries = (s16) (io->retries + 1);
+                    if (io->retries >= 3) {
+                        io->state = 0xB;
+                        io->step = 0;
+                        io->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    io->state = 0xE;
+                    io->step = 0;
+                    io->retries = 0;
+                    return 0xA;
+                default:
+                    io->state = 0xE;
+                    io->step = 0;
+                    io->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    case 2:
+        source = (&D_0034FAE8)[io->slot];
+        count = 0x1FF4;
+        dest = (s32 *)((u8 *)0x01E10004 + io->slot * 0x100F0);
+        do {
+            first = *source++;
+            second = *source++;
+            count--;
+            dest[0] = first;
+            dest[1] = second;
+            dest += 2;
+        } while (count > 0);
+        func_00241190((u16 *)((u8 *)0x01E10000 + io->slot * 0x100F0));
+        func_0017BB60(0);
+        io->call_result = func_00194058(io->handles[io->slot], (u8 *)0x01E10000 + io->slot * 0x100F0, 0x100F0);
+        io->sync_result = func_00194248(1, &io->command, &io->result);
+        if (io->sync_result == 1) {
+            if (io->command == 6) {
+                if (io->result < 0) {
+                    switch (io->result) {
+                    case -2:
+                        io->retries = (s16) (io->retries + 1);
+                        if (io->retries >= 3) {
+                            io->state = 0xB;
+                            io->step = 0;
+                            io->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 5;
+                    case -4:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 0xA;
+                    case -5:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 0xA;
+                    default:
+                        io->state = 0xE;
+                        io->step = 0;
+                        io->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    io->step = 4;
+                    io->retries = 0;
+                    io->step = 2;
+                    io->retries = 0;
+                    if (io->slot == 0) {
+                        io->slot = 1;
+                    } else {
+                        io->slot = 0;
+                        io->step = 4;
+                    }
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 3:
+        io->call_result = func_00194A98(io->handles[io->slot]);
+        io->sync_result = func_00194248(1, &io->command, &io->result);
+        if (io->sync_result == 1) {
+            if (io->command == 0xA) {
+                switch (io->result) {
+                case 0:
+                    io->step = 4;
+                    io->retries = 0;
+                    return 0;
+                case -2:
+                    io->retries = (s16) (io->retries + 1);
+                    if (io->retries >= 3) {
+                        io->state = 0xB;
+                        io->step = 0;
+                        io->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    io->state = 0xE;
+                    io->step = 0;
+                    io->retries = 0;
+                    return 0xA;
+                default:
+                    io->state = 0xE;
+                    io->step = 0;
+                    io->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    case 4:
+        io->call_result = func_00193D18(io->handles[io->slot]);
+        io->sync_result = func_00194248(1, &io->command, &io->result);
+        if (io->sync_result == 1) {
+            if (io->command == 3) {
+                switch (io->result) {
+                case 0:
+                    io->step = 0;
+                    io->retries = 0;
+                    io->state = 0;
+                    io->step = 4;
+                    io->retries = 0;
+                    io->state = 5;
+                    if (io->slot == 0) {
+                        io->slot = 1;
+                        return 0;
+                    }
+                    io->slot = 0;
+                    io->step = 0;
+                    return 0x100;
+                case -2:
+                    io->retries = (s16) (io->retries + 1);
+                    if (io->retries >= 3) {
+                        io->state = 0xB;
+                        io->step = 0;
+                        io->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    io->state = 0xE;
+                    io->retries = 0;
+                    io->step = 0;
+                    return 0xA;
+                default:
+                    io->state = 0xE;
+                    io->retries = 0;
+                    io->step = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    }
+    return 0;
+}
 
 s32 func_00241190(u16 *arg0) {
     u16 checksum;
