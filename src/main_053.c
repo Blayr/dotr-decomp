@@ -1265,7 +1265,35 @@ void func_001FEC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s64 arg5) {
     func_001FECB0(arg0, 0, arg1, arg2, arg3, 0, -1, arg4, arg5);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FECB0);
+typedef struct Request_001FECB0 {
+    u8 data[0x24];
+} Request_001FECB0;
+
+typedef struct Queue_001FECB0 {
+    u8 pad0[0x4080];
+    Request_001FECB0 requests[0x100];
+    u8 pad1[0x20C];
+    u16 head;
+    u16 count;
+} Queue_001FECB0;
+
+s32 func_001FECB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s64 arg8) {
+    Queue_001FECB0 *queue = (Queue_001FECB0 *)&D_0031C2F0;
+    Request_001FECB0 *request;
+
+    if (arg2 == 0) {
+        return 0;
+    }
+    if (queue->count >= 0x100) {
+        return 0;
+    }
+    request = &queue->requests[(queue->head + queue->count) % 0x100];
+    if (func_001FEDA0(request, arg0, arg1, (void *)arg2, arg3, arg4, arg5, arg6, arg7, arg8) == 0) {
+        return 0;
+    }
+    queue->count++;
+    return (s32)request;
+}
 
 s32 func_0019C028(const char *, const char *, s32);
 char *func_0019C478(const char *, s32);

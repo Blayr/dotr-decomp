@@ -1323,6 +1323,7 @@ void func_001FEAF0(s32 arg0);
 void func_001FEB40(void);
 void func_001FEB80(void);
 void func_001FEC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s64 arg5);
+s32 func_001FECB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s64 arg8);
 s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9);
 void func_001FF250(s8 *p);
 s32 func_001FF300(void);
