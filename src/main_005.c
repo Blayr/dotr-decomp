@@ -2244,7 +2244,6 @@ typedef struct Position_0011AA70 {
     u8 y : 4;
 } Position_0011AA70;
 
-s32 func_0011C2E0(s32, s32, s32, s32, s32, s32);
 s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
@@ -2803,7 +2802,35 @@ s32 func_0011C140(s32 arg0, s32 arg1, u32 *arg2) {
     return 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_0011C2E0);
+static inline s32 max_0011C2E0(s32 a, s32 b) {
+    if (a < b) {
+        return b;
+    }
+    return a;
+}
+
+s32 func_0011C2E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    s32 minY;
+    s32 minX;
+
+    minY = arg3 < arg5 ? arg3 : arg5;
+    arg5 = max_0011C2E0(arg5, arg3);
+    minX = arg2 < arg4 ? arg2 : arg4;
+    arg4 = max_0011C2E0(arg4, arg2);
+    if ((arg4 - minX) + (arg5 - minY) != 2) {
+        return 0;
+    }
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    if (func_001E2100(arg0, arg1, 0) == 0) {
+        if (func_0024DF00(func_001E22B0(arg2, arg3), arg0, arg1) != 1) {
+            return 0;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 typedef struct {
     u8 pad[8];
