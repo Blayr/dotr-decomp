@@ -188,7 +188,25 @@ s32 func_00107450(s32 arg0, f32 fparg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00107510);
+static inline void add_limited_00107510(f32 *value, f32 amount) {
+    *value += amount;
+    if (*value > 0.1) {
+        *value = 0.1f;
+    }
+}
+
+s32 func_00107510(s32 arg0, f32 fparg0) {
+    f32 values[3];
+
+    if (func_001F5AF0(arg0) != 0) {
+        func_001F5D10(arg0, (s32)values);
+        add_limited_00107510(&values[0], fparg0);
+        add_limited_00107510(&values[1], fparg0);
+        add_limited_00107510(&values[2], fparg0);
+        func_001F5D10(arg0, (s32)values);
+    }
+    return 0;
+}
 
 s32 func_00107650(s32 arg0, s32 arg1) {
     u8 color[4];
