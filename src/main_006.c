@@ -2158,7 +2158,22 @@ s32 func_00123D70(s32 arg0, s32 *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00123F90);
+s32 func_00123F90(s32 arg0, s32 *arg1, s32 arg2) {
+    s32 temp_s0;
+
+    temp_s0 = func_0026FCE0(arg2 & 0xFFFF) >> 5;
+    if (func_0024E910(func_00123D70(arg0, arg1) & 0xFF) == 3) {
+        return 0;
+    }
+    switch (temp_s0) {
+    case 18:
+    case 15:
+        return 1;
+    case 0:
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_00124040(s32 arg0, void *arg1, void *arg2) {
     s32 cards[8];
