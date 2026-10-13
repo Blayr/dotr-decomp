@@ -162,7 +162,6 @@ typedef struct Ring_00242E40 {
     s32 capacity;
 } Ring_00242E40;
 
-void func_00243450(void *, s32);
 
 s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
     u8 *data;
@@ -369,7 +368,54 @@ void func_00243390(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243450);
+typedef struct State_00243450 {
+    s32 printed;
+    s8 byteParams[4];
+    s32 wordParams[7];
+    s8 moreByteParams[4];
+    s32 moreWordParam;
+    u32 delay;
+    s32 unused;
+    s32 position;
+    s32 elapsed;
+    s32 period;
+    s32 total;
+} State_00243450;
+
+extern char D_0030F645[];
+extern char D_0030F676[];
+extern char D_0030F7B1[];
+
+void func_00243450(void *arg0, u32 arg1) {
+    u32 amount;
+    State_00243450 *state;
+
+    state = arg0;
+    if (state->printed == 0) {
+        amount = 0x28 - state->delay;
+        amount = amount < arg1 ? amount : arg1;
+        state->delay += amount;
+        if (state->delay >= 0x28U) {
+            state->printed = 1;
+            func_00199B50(D_0030F645);
+            func_00199B50(D_0030F676,
+                state->byteParams[0], state->byteParams[1],
+                state->byteParams[2], state->byteParams[3],
+                state->wordParams[0], state->wordParams[1],
+                state->wordParams[2], (s64)state->wordParams[3],
+                (s64)state->wordParams[4], (s64)state->wordParams[5],
+                (s64)state->wordParams[6]);
+            func_00199B50(D_0030F7B1,
+                state->moreByteParams[0], state->moreByteParams[1],
+                state->moreByteParams[2], state->moreByteParams[3],
+                state->moreWordParam);
+        }
+        arg1 -= amount;
+    }
+    state->position = (s32)(state->position + arg1) % state->period;
+    state->elapsed += arg1;
+    state->total += arg1;
+}
 
 s32 func_00243580(void *arg0) {
     return *(s32 *)((u8 *)arg0 + 0x54) >= *(s32 *)((u8 *)arg0 + 0x48);
