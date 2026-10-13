@@ -8,7 +8,6 @@ typedef struct {
     s32 unk8;
 } Unit_00135790;
 
-void func_001360E0(void *);
 void func_0027CA50(void *, s32, s32, s32);
 
 s32 func_00135790(void *arg0) {
@@ -244,7 +243,51 @@ s32 func_00136060(void *arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_001360E0);
+typedef union {
+    u32 word;
+    struct {
+        u16 low;
+        u16 high;
+    } halves;
+} Data_001360E0;
+
+typedef struct {
+    u16 coordinates;
+    u16 unk2;
+    s16 state;
+    u16 unk6;
+    Data_001360E0 data;
+} Entry_001360E0;
+
+void func_001360E0(void *arg0) {
+    extern s32 func_001E1030();
+    Entry_001360E0 *entry = arg0;
+    s32 pos;
+    s32 ret;
+
+    func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    pos = func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    switch (func_001E1030(entry->coordinates >> 8, entry->coordinates & 0xFF)) {
+    case 0x2B7:
+        ret = func_0027C770(func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF),
+                            pos & 0xFF, pos >> 8, 6, 5, 2);
+        if (ret >= 0 && (ret >> 8) < 4) {
+            entry->state = 0x6FF;
+            entry->data.word = (ret << 16) | entry->data.halves.low;
+            return;
+        }
+        break;
+    case 0x2AF:
+        entry->state = 0xCFF;
+        entry->data.word = entry->data.halves.low | 0xFFFF0000;
+        return;
+    case 0x2DC:
+        entry->state = 0xDFF;
+        entry->data.word = entry->data.halves.low | 0xFFFF0000;
+        return;
+    }
+    entry->state = 0x5FF;
+}
 
 typedef struct {
     u8 data[0x3C];
