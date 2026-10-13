@@ -1125,7 +1125,367 @@ void func_00269E10(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00269EC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026A0A0);
+typedef struct Packet_0026A0A0 {
+    u32 command;
+    u32 source;
+    u32 target;
+    u32 data;
+} Packet_0026A0A0;
+
+typedef struct State_0026A0A0 {
+    u16 id;
+    u16 mode;
+    u16 phase;
+    u8 handle;
+    u8 pad07[0x19];
+    u32 done;
+    u8 pad24[0xA8];
+    s32 card;
+    s32 frame;
+    u8 children;
+    u8 padD5[0x2D];
+    u16 ticks;
+} State_0026A0A0;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_00248460(s32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+void func_00260A70(void *, s32);
+s32 func_002610D0(s32, s32, s32, s32);
+
+s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
+    Packet_0026A0A0 packet_data;
+    Packet_0026A0A0 *packet = &packet_data;
+    Packet_0026A0A0 *request = arg0;
+    State_0026A0A0 *state = arg1;
+    s32 temp_a0_2;
+    s32 temp_s3;
+    s32 temp_s4;
+    s32 temp_s5;
+    s32 temp_v0_10;
+    s32 temp_v0_11;
+    s32 temp_v0_12;
+    s32 temp_v0_26;
+    s32 temp_v0_27;
+    s32 temp_v0_9;
+    s32 var_a2;
+    s32 var_s0;
+    s32 var_v0_2;
+    u16 temp_a0;
+    u16 temp_v1;
+    u16 temp_v1_2;
+    u32 temp_a1;
+    u32 temp_a1_2;
+    u32 temp_v0;
+    u32 temp_v0_13;
+    u32 temp_v0_14;
+    u32 temp_v0_15;
+    u32 temp_v0_16;
+    u32 temp_v0_17;
+    u32 temp_v0_18;
+    u32 temp_v0_19;
+    u32 temp_v0_20;
+    u32 temp_v0_21;
+    u32 temp_v0_22;
+    u32 temp_v0_23;
+    u32 temp_v0_24;
+    u32 temp_v0_25;
+    u32 temp_v0_2;
+    u32 temp_v0_3;
+    u32 temp_v0_4;
+    u32 temp_v0_5;
+    u32 temp_v0_6;
+    u32 temp_v0_7;
+    u32 temp_v0_8;
+    u32 var_v0;
+
+    extern s32 func_001E1E10();
+
+    packet_data.command = 0x3E7;
+    packet_data.source = 0;
+    packet_data.target = 0;
+    packet_data.data = 0;
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        temp_v0 = request->target;
+        if (func_001E2100((s32) (temp_v0 >> 8), temp_v0 & 0xFF, 2) != 0) {
+            temp_v0_2 = request->target;
+            func_001E1E70(temp_v0_2 >> 8, temp_v0_2 & 0xFF, 4, 1);
+        }
+        temp_v0_3 = request->source;
+        if (func_001E2100((s32) (temp_v0_3 >> 8), temp_v0_3 & 0xFF, 2) != 0) {
+            temp_v0_4 = request->source;
+            func_001E1E70(temp_v0_4 >> 8, temp_v0_4 & 0xFF, 4, 1);
+        }
+        temp_v0_5 = request->source;
+        if ((func_001E0700((s32) (temp_v0_5 >> 8), temp_v0_5 & 0xFF) >> 5) == 0) {
+            state->card = 1;
+            temp_v0_6 = request->target;
+            func_001E1E70(temp_v0_6 >> 8, temp_v0_6 & 0xFF, 2, 1);
+        } else {
+            state->card = 2;
+            temp_v0_7 = request->target;
+            func_001E1E70(temp_v0_7 >> 8, temp_v0_7 & 0xFF, 2, 1);
+        }
+        var_s0 = func_00248E30((s32) ((u32) request->source >> 8), func_00248EA0());
+        temp_v0_8 = request->source;
+        if ((((func_001E0700((s32) (temp_v0_8 >> 8), temp_v0_8 & 0xFF) >> 5) == 0) ? 1 : 2) == 1) {
+            var_v0 = request->source;
+        } else {
+            var_v0 = request->target;
+        }
+        temp_s4 = var_v0 & 0xFF;
+        temp_s5 = (s32) var_v0 >> 8;
+        temp_s3 = func_001E1090(temp_s5, temp_s4) & 0xFF;
+        if (func_00271F90(temp_s5, temp_s4, temp_s3, func_001E1090(temp_s5, temp_s4) >> 8, 0xB) == 0) {
+            if ((temp_v0_9 = func_0026AB80((s32) ((u32) request->data >> 0x10), 0x29)) >= 0) {
+                func_00255AC0(arg1, 0x25A);
+                if ((temp_v0_10 = func_0026AB80((s32) request->target, 0x2E)) >= 0) {
+                    func_00255AC0(arg1, 0x219);
+                    func_00260AF0(0, temp_v0_10, 0xB4, 0xB4);
+                    func_001F5970(temp_v0_10, 0);
+                    func_002516D0(temp_v0_10 >> 8, temp_v0_10 & 0xFF, 1);
+                    state->card = temp_v0_10;
+                    state->phase = 0x10U;
+                    state->mode = 0U;
+                    state->id = (u16) var_s0;
+                    return 1;
+                }
+                func_00255AC0(arg1, 0x223);
+                func_001DE7E0(0);
+                func_00260AF0(0, temp_v0_9, 0xB4, 0xB4);
+                state->phase = 0x20U;
+                func_001F5970(temp_v0_9, 0);
+                func_002516D0(temp_v0_9 >> 8, temp_v0_9 & 0xFF, 1);
+                state->card = temp_v0_9;
+                state->mode = 0U;
+                state->id = (u16) var_s0;
+                return 1;
+            }
+            if ((temp_v0_11 = func_0026AB80((s32) ((u32) request->target >> 8), 0x2B)) >= 0) {
+                func_00255AC0(arg1, 0x219);
+                func_00255AC0(arg1, 0x25A);
+                if ((temp_v0_12 = func_0026AB80((s32) request->target, 0x2E)) >= 0) {
+                    func_00260AF0(0, temp_v0_12, 0xB4, 0xB4);
+                    func_001F5970(temp_v0_12, 0);
+                    func_002516D0(temp_v0_12 >> 8, temp_v0_12 & 0xFF, 1);
+                    state->card = temp_v0_12;
+                    state->phase = 0x10U;
+                    state->mode = 0U;
+                    state->id = (u16) var_s0;
+                    return 1;
+                }
+                func_00260AF0(0, temp_v0_11, 0xB4, 0xB4);
+                func_001F5970(temp_v0_11, 0);
+                func_002516D0(temp_v0_11 >> 8, temp_v0_11 & 0xFF, 1);
+                state->card = temp_v0_11;
+                state->phase = 0x10U;
+                state->mode = 1U;
+                state->id = (u16) var_s0;
+                return 1;
+            }
+        }
+        func_00255AC0(arg1, 0x219);
+        if (var_s0 < 0) {
+            var_s0 = 0;
+        }
+        state->phase = 2U;
+        state->id = (u16) var_s0;
+        state->mode = 0U;
+        return 1;
+    }
+    if (func_00255B50(arg1) != 1) {
+        return 1;
+    }
+    temp_v1 = state->phase;
+    switch (temp_v1) {
+    case 0:
+        func_001DE7E0(0);
+        func_001E42C0(0, -0x78, 0x50, 0x10B);
+        packet->command = 0x223;
+        if (((u32) request->target >> 8) == 0) {
+            var_v0_2 = 1;
+        } else {
+            var_v0_2 = 0;
+        }
+        packet->source = (u32) (var_v0_2 << 8);
+        packet->target = (u32) (((u32) request->target >> 8) << 8);
+        packet->data = (s32) state->id;
+        state->handle = func_00255A30(packet, arg1);
+        state->children = (u8) (state->children + 1);
+        state->phase = (u16) (state->phase + 1);
+        return 1;
+    case 1:
+        func_001DE7E0(0);
+        if (func_001F51D0((s32) state->handle) != 0) {
+            temp_a0 = state->ticks;
+            state->ticks = (u16) (temp_a0 + 1);
+            if (temp_a0 == 6) {
+                func_00261570(0x1E, ((request->target == 0) ? 1 : 0) << 8, 0x64U, 0xB4U);
+            }
+        } else {
+            func_001E4530();
+            temp_v0_13 = request->source;
+            if ((func_001E0700((s32) (temp_v0_13 >> 8), temp_v0_13 & 0xFF) >> 5) == 0) {
+                temp_v0_14 = request->target;
+                func_0024F370(temp_v0_14 >> 8, temp_v0_14 & 0xFF);
+            } else {
+                temp_v0_15 = request->source;
+                func_0024F370(temp_v0_15 >> 8, temp_v0_15 & 0xFF);
+            }
+            func_001DF490((s32) ((u32) request->source >> 8), 1, (s32) state->id);
+            func_00260A70(arg1, 0x10);
+            state->ticks = 0U;
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            state->phase = 0x40U;
+        }
+        return 1;
+    case 2:
+        if (state->mode == 1) {
+            func_001E42C0(0, 0, -0xA0, func_001DE210(0x330));
+        } else {
+            func_001E42C0(0, 0, -0xA0, 0x10C);
+        }
+        packet->command = 0x219;
+        packet->source = (u32) request->source;
+        packet->target = (u32) request->target;
+        temp_v0_16 = request->source;
+        if ((func_001E0700((s32) (temp_v0_16 >> 8), temp_v0_16 & 0xFF) >> 5) == 0) {
+            var_a2 = 1;
+        } else {
+            var_a2 = 2;
+        }
+        packet->data = (s32) ((state->id << 0x10) | ((state->mode << 8) | var_a2));
+        state->handle = func_00255A30(packet, arg1);
+        state->phase = (u16) (state->phase + 1);
+        break;
+    case 3:
+        if (func_001F51D0((s32) state->handle) != 0) {
+            temp_a0_2 = state->frame;
+            state->frame = (s32) (temp_a0_2 + 1);
+            switch (temp_a0_2) {
+            case 0x0:
+                func_00217710(1, 0x38);
+                break;
+            case 0x14:
+                func_00217710(1, 0x39);
+                break;
+            case 0x1E:
+                func_00217710(1, 0x4C);
+                break;
+            case 0x24:
+                func_00217710(1, 0x4D);
+                break;
+            case 0x25:
+                func_00217710(1, 0x3B);
+                break;
+            case 0x40:
+                func_00217710(1, 0x3C);
+                break;
+            }
+            if (func_001F52D0((s32) state->handle) == 2) {
+                if (*(u8 *)&state->done != 0xFFFF) {
+                    temp_v0_17 = request->source;
+                    if ((func_001E0700((s32) (temp_v0_17 >> 8), temp_v0_17 & 0xFF) >> 5) == 0) {
+                        temp_v0_18 = request->data;
+                        temp_a1 = request->source;
+                        func_00248460(temp_a1 >> 8, temp_a1 & 0xFF, (state->mode << 0x10) | (temp_v0_18 & 0x3FFF), (temp_v0_18 >> 0x10) & 0xFF);
+                        temp_v0_19 = request->target;
+                        func_0024F370(temp_v0_19 >> 8, temp_v0_19 & 0xFF);
+                        temp_v0_20 = request->source;
+                        if (func_001E2100((s32) (temp_v0_20 >> 8), temp_v0_20 & 0xFF, 4) == 0) {
+                            temp_v0_21 = request->source;
+                            func_001E1E70(temp_v0_21 >> 8, temp_v0_21 & 0xFF, 2, 0);
+                        }
+                    } else {
+                        temp_v0_22 = request->data;
+                        temp_a1_2 = request->target;
+                        func_00248460(temp_a1_2 >> 8, temp_a1_2 & 0xFF, (state->mode << 0x10) | (temp_v0_22 & 0x3FFF), (temp_v0_22 >> 0x10) & 0xFF);
+                        temp_v0_23 = request->source;
+                        func_0024F370(temp_v0_23 >> 8, temp_v0_23 & 0xFF);
+                        temp_v0_24 = request->target;
+                        if (func_001E2100((s32) (temp_v0_24 >> 8), temp_v0_24 & 0xFF, 4) == 0) {
+                            temp_v0_25 = request->target;
+                            func_001E1E70(temp_v0_25 >> 8, temp_v0_25 & 0xFF, 2, 0);
+                        }
+                    }
+                    state->done = 0xFFFF;
+                }
+            }
+            return 1;
+        }
+        func_001E4530();
+        func_00217710(0, 2);
+        func_001E4530();
+        return 0;
+    case 16:
+        if (func_001E1E10((u32)state->card >> 8, state->card & 0xFF) == 0xFF) {
+            if (state->mode == 1) {
+                func_001E42C0(0, -0x78, 0x50, 0x103);
+            } else {
+                func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+            }
+            packet->command = 0x25A;
+            packet->source = 0U;
+            packet->target = (u32) state->card;
+            packet->data = 0;
+            state->handle = func_00255A30(packet, arg1);
+            state->done = 0;
+            state->children = (u8) (state->children + 1);
+            state->phase = 0x11U;
+        }
+
+        break;
+    case 17:
+        if (func_001F51D0((s32) state->handle) == 1) {
+            return 1;
+        }
+        temp_v0_26 = state->card;
+        func_001E1E70((u32) temp_v0_26 >> 8, temp_v0_26 & 0xFF, 0, 1);
+        func_001E4530();
+        func_00260A70(arg1, 0);
+        state->phase = 2U;
+        break;
+    case 32:
+        func_001DE7E0(0);
+        if (func_001E1E10((u32)state->card >> 8, state->card & 0xFF) == 0xFF) {
+            func_001E42C0(0, -0x78, 0x50, 0x32E);
+            packet->command = 0x25A;
+            packet->source = 0U;
+            packet->target = (u32) state->card;
+            packet->data = 0;
+            state->handle = func_00255A30(packet, arg1);
+            state->done = 0;
+            state->children = (u8) (state->children + 1);
+            state->phase = (u16) (state->phase + 1);
+            break;
+        }
+        break;
+    case 33:
+        func_001DE7E0(0);
+        if (func_001F51D0((s32) state->handle) != 0) {
+            return 1;
+        }
+        temp_v0_27 = state->card;
+        func_001E1E70((u32) temp_v0_27 >> 8, temp_v0_27 & 0xFF, 0, 1);
+        func_002610D0(0, ((u32) state->card >> 8) << 8, 0x64, 0xB4);
+        state->phase = 0U;
+        break;
+    default:
+        temp_v1_2 = state->ticks;
+        state->ticks = (u16) (temp_v1_2 + 1);
+        if ((s32) temp_v1_2 > 0x10) {
+            func_00217710(0, 2);
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 s32 func_0026AB80(s32 arg0, s32 arg1) {
     switch (arg1) {
