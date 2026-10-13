@@ -1431,6 +1431,7 @@ void func_00207FD0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00208030(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00208090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_00208110(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+s32 func_00208280(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 *arg6);
 void func_00208460(void);
 void func_00208490(s32 arg0);
 s32 func_002084D0(s32 arg0, s64 arg1);

@@ -495,7 +495,96 @@ s32 func_00208110(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return func_00207650(arg0, (s32)&packet, arg1, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208280);
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_00208280;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyzf_00208280;
+
+typedef struct {
+    u16 count;
+    u16 kind;
+    u32 flags;
+    u64 regs;
+} Header_00208280;
+
+typedef struct {
+    Header_00208280 header;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    f32 s0;
+    f32 t0;
+    Xyzf_00208280 v0;
+    f32 s1;
+    f32 t1;
+    Xyzf_00208280 v1;
+    u64 extra[1];
+} Packet_00208280;
+
+typedef struct {
+    u8 pad0[4];
+    u8 : 2;
+    u8 tcc : 1;
+    u8 : 5;
+    u8 pad5[3];
+} Tex0_00208280;
+
+typedef struct {
+    Tex0_00208280 tex0;
+    u64 tex1;
+    u64 clamp;
+} Regs_00208280;
+
+s32 func_00208280(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 *arg6) {
+    extern Color_00208280 D_00293ED8;
+    extern s32 func_00208870();
+    Color_00208280 def;
+    Packet_00208280 packet;
+    Regs_00208280 regs;
+    s32 obj;
+
+    def = D_00293ED8;
+    ((Header_00208280 *)&packet)->kind = 0x26;
+    ((Header_00208280 *)&packet)->count = 5;
+    ((Header_00208280 *)&packet)->regs = 0x42421;
+    ((Header_00208280 *)&packet)->flags = 0;
+    func_002086D0(&packet, 0x44 | ((s64)0x80 << 32));
+    if (arg6 == NULL) {
+        arg6 = (u8 *)&def;
+    }
+    packet.r = arg6[2];
+    packet.g = arg6[1];
+    packet.b = arg6[0];
+    packet.a = arg6[3];
+    packet.q = 1.0f;
+    packet.v0.x = arg4 + 0x6BF8;
+    packet.v0.y = arg5 + 0x71F8;
+    packet.v0.z = 0xFFFFFF;
+    packet.v0.fog = 0;
+    packet.v1.x = arg4 + 0x93F8;
+    packet.v1.y = arg5 + 0x8DF8;
+    packet.v1.z = 0xFFFFFF;
+    packet.v1.fog = 0;
+    packet.s0 = 0.0f;
+    packet.t0 = 0.0f;
+    packet.s1 = 0.625f;
+    packet.t1 = 0.875f;
+    arg0 = func_0020F290(arg0);
+    obj = func_0020F290(func_00208870(arg0, func_00209E50(), arg3, &regs.tex0, &regs.tex1));
+    regs.tex0.tcc = 1;
+    return func_00207650(obj, (s32)&packet, arg1, arg2);
+}
 
 void func_00208460(void) {
     func_00209D30(func_0020F290(func_00209D20()));
