@@ -418,7 +418,6 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_0021DAA0;
 
-void *func_0021DFF0(void *, s32, s32, s32, f32, s32, s32, s32);
 void *func_002297C0(s32);
 extern s16 D_00298AD0;
 extern s16 D_00298AD2;
@@ -496,4 +495,130 @@ void func_0021DAA0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_062", func_0021DDA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021DFF0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_0021DFF0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_0021DFF0;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_0021DFF0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_0021DFF0;
+
+typedef struct {
+    u64 tag[2];
+    Color_0021DFF0 color;
+    u64 uv0;
+    Vertex_0021DFF0 vertex0;
+    u64 uv1;
+    Vertex_0021DFF0 vertex1;
+    u64 test;
+    s64 texture0;
+    s64 texture1;
+    u64 clamp;
+} Packet_0021DFF0;
+
+typedef struct {
+    u8 pad00[0x40];
+    f32 eyeX;
+    f32 eyeY;
+    f32 eyeZ;
+    u8 pad4C[4];
+    f32 targetX;
+    f32 targetY;
+    f32 targetZ;
+    u8 pad5C[0x24];
+    s32 roll;
+    u8 pad84[0xC];
+} View_0021DFF0;
+
+static inline void set_uv_0021DFF0(UV_0021DFF0 *p, s32 u, s32 v) {
+    p->u = u;
+    p->v = v;
+}
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_0021DFF0;
+
+void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha) {
+    extern s32 func_0020A470(s32, s32, s32);
+    View_0021DFF0 view;
+    Vec4_0021DFF0 position;
+    Packet_0021DFF0 sprite __attribute__((aligned(8)));
+    s32 output;
+    s32 half;
+
+    x -= 0x140;
+    y -= 0xE0;
+    ((Tag_0021DFF0 *)sprite.tag)->flags = 0x26;
+    ((Tag_0021DFF0 *)sprite.tag)->count = 5;
+    ((Tag_0021DFF0 *)sprite.tag)->registers = 0x42421;
+    ((Tag_0021DFF0 *)sprite.tag)->padding = 0;
+    ((Tag_0021DFF0 *)sprite.tag)->flags |= 0x800;
+    func_002086D0(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    sprite.color.r = 0x80;
+    sprite.color.g = 0x80;
+    sprite.color.b = 0x80;
+    sprite.color.a = alpha;
+    sprite.color.q = 1.0f;
+    sprite.vertex0.z = 0xFFFFFA;
+    sprite.vertex0.fog = 0;
+    sprite.vertex1.z = 0xFFFFFA;
+    sprite.vertex1.fog = 0;
+    func_0020DEF0(&view);
+    if (func_0020E460() != 0) {
+        func_0020A470(0, 0xA, 0x31);
+        packet = func_0020A610(packet);
+        packet = func_0020A870(packet, 0);
+        func_001F2050(id, &position);
+        view.eyeX = 0.0f;
+        view.eyeY = position.y;
+        view.eyeZ = -depth;
+        view.targetX = 0.0f;
+        view.targetY = 0.0f;
+        view.targetZ = 1.0f;
+        view.roll = 0;
+        func_0020DFD0(1.0f, 512.0f);
+        func_0020E360(&view);
+        packet = (void *)func_0020EC60((s32)packet);
+        func_001F30B0(id, 1);
+        packet = (void *)func_001EE4B0((s32)packet, id, 0, 0, 0, 0, 0);
+        func_001ED4A0(id);
+        func_001F30B0(id, 0);
+        func_0020AA30(&sprite.texture0, &sprite.texture1);
+        output = func_0020F290((s32)func_0020A760(packet));
+        half = ((width * 448) / height) >> 1;
+        set_uv_0021DFF0((UV_0021DFF0 *)&sprite.uv0, (0x140 - half) << 4, 0);
+        set_uv_0021DFF0((UV_0021DFF0 *)&sprite.uv1, (half + 0x140) << 4, 0x1C0 << 4);
+        sprite.vertex0.x = (x + 0x800) << 4;
+        sprite.vertex0.y = (y + 0x800) << 4;
+        sprite.vertex1.x = (x + 0x800 + width) << 4;
+        sprite.vertex1.y = (y + 0x800 + height) << 4;
+        func_0020E4F0();
+        func_0020DEF0(&view);
+        func_0020E360(&view);
+        packet = (void *)func_00207650(func_0020EC60(output), (s32)&sprite, 0, 0);
+        func_0020A9E0();
+    }
+    return packet;
+}
