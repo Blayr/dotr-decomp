@@ -100,7 +100,116 @@ s32 func_0025EE40(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025EF40);
+typedef struct State_0025EF40 {
+    u8 pad0[4];
+    u16 count;
+    u8 cards[0x16];
+    union {
+        s32 flags[0x2E];
+        struct {
+            s32 first;
+            s32 following[0x2D];
+        } shifted;
+    } data;
+    u8 index;
+    u8 padD5[0x2B];
+    u8 initialized;
+    u8 pad101;
+    u16 timer;
+} State_0025EF40;
+
+s32 func_0025EF40(s32 arg0, void *arg1, s32 arg2) {
+    extern void func_00255AC0(void *, s32);
+    extern void func_00260740(s32);
+    extern void func_00260A70(void *, s32);
+    s32 command[4];
+    s32 *params = command;
+    s32 i;
+    s32 pending;
+    s32 old;
+    s32 high;
+    State_0025EF40 *state = arg1;
+
+    command[0] = 999;
+    command[1] = 0;
+    command[2] = 0;
+    command[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        func_00255AC0(arg1, 0x23);
+        func_00260740(0x10);
+        return 1;
+    }
+    switch (state->count) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            params[0] = 0x23;
+            params[1] = 0;
+            params[2] = 0;
+            params[3] = 0;
+            state->cards[state->index] = func_00255A30(params, arg1);
+            state->data.shifted.following[state->index] = 0;
+            state->index++;
+            state->count++;
+        }
+        break;
+    default:
+        if (func_001F51D0(state->cards[state->index - 1]) == 1) {
+            if (func_001F52D0(state->cards[0]) == 2) {
+                if (state->data.flags[1] == 0) {
+                    s32 x;
+                    s32 y;
+                    s32 player;
+                    s32 slot;
+                    s32 low;
+                    s32 location;
+
+                    func_0025F310();
+                    i = 0;
+                    do {
+                        x = func_0019A5C8() % 7;
+                        y = func_0019A5C8() % 7;
+                        if (func_0019A5C8() % 2 == 0) player = 0; else player = 1;
+                        slot = func_0019A5C8() % 10 + 1;
+                        location = func_001E3790(x, y);
+                        if (location >= 0) {
+                            high = location >> 8;
+                            low = location & 0xFF;
+                            if (func_00271F90(high, low, x, y, 0xB) == 0 && low > 0) {
+                                if ((pending = func_0025F2A0()) >= 0) {
+                                    old = func_001E1090(player, slot);
+                                    func_001DFD50(player, slot, pending & 0xFF, pending >> 8);
+                                    func_001DFD50(high, low, old & 0xFF, old >> 8);
+                                    func_001DFD50(player, slot, x, y);
+                                }
+                            }
+                        } else {
+                            func_001DFD50(player, slot, x, y);
+                        }
+                        i++;
+                    } while (i < 100);
+                    state->data.flags[state->index] = 1;
+                }
+            }
+            return 1;
+        }
+        if (state->initialized == 0) {
+            state->initialized++;
+            func_00260A70(arg1, 0x10);
+        } else {
+            if (state->timer++ > 0x10) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        return 1;
+    }
+    return 1;
+}
 
 s32 func_0025F2A0(void) {
     s32 row;
