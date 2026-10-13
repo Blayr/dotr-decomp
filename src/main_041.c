@@ -220,7 +220,6 @@ typedef struct State_001C35A0 {
     u8 selection1;
 } State_001C35A0;
 
-s32 func_001C38E0(s32);
 s32 func_001C3E20(s32, s32, s32, s32);
 s32 func_001C5550(s32, s32, s32, s32, s32);
 s32 func_001C5870(s32, s32, s32);
@@ -281,7 +280,82 @@ s32 func_001C35A0(s32 arg0) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C38E0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001C38E0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001C38E0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001C38E0;
+
+typedef struct {
+    Color_001C38E0 color;
+    Vertex_001C38E0 xyz;
+} Point_001C38E0;
+
+typedef struct {
+    u64 tag[2];
+    Point_001C38E0 points[4];
+    u64 end;
+} Packet_001C38E0;
+
+typedef struct {
+    u8 b, g, r, a;
+} Source_001C38E0;
+
+static inline void set_color_001C38E0(Color_001C38E0 *a, Color_001C38E0 *b,
+                                      Source_001C38E0 *src) {
+    a->r = b->r = src->r;
+    a->g = b->g = src->g;
+    a->b = b->b = src->b;
+    a->a = b->a = src->a;
+    a->q = b->q = 1.0f;
+}
+
+static inline void set_xyz_001C38E0(Vertex_001C38E0 *v, s32 x, s32 y) {
+    v->x = (x + 0x6C0) << 4;
+    v->y = (y + 0x720) << 4;
+    v->z = D_003180E8;
+    v->fog = 0;
+}
+
+s32 func_001C38E0(s32 arg0) {
+    extern u8 D_002BE858[];
+    Source_001C38E0 *colors = (Source_001C38E0 *)D_002BE858;
+    s32 width = 0x140;
+    s32 height = 0x1C0;
+    Packet_001C38E0 packet __attribute__((aligned(8)));
+
+    ((Tag_001C38E0 *)packet.tag)->flags = 0x14;
+    ((Tag_001C38E0 *)packet.tag)->count = 8;
+    ((Tag_001C38E0 *)packet.tag)->registers = 0x41414141;
+    ((Tag_001C38E0 *)packet.tag)->padding = 0;
+    set_color_001C38E0(&packet.points[0].color, &packet.points[2].color, &colors[0]);
+    set_color_001C38E0(&packet.points[1].color, &packet.points[3].color, &colors[1]);
+    set_xyz_001C38E0(&packet.points[0].xyz, 0, 0);
+    set_xyz_001C38E0(&packet.points[1].xyz, width, 0);
+    set_xyz_001C38E0(&packet.points[2].xyz, 0, height);
+    set_xyz_001C38E0(&packet.points[3].xyz, width, height);
+    arg0 = func_00207650(arg0, (s32)packet.tag, 0, 0);
+    set_color_001C38E0(&packet.points[0].color, &packet.points[2].color, &colors[1]);
+    set_color_001C38E0(&packet.points[1].color, &packet.points[3].color, &colors[0]);
+    set_xyz_001C38E0(&packet.points[0].xyz, width, 0);
+    set_xyz_001C38E0(&packet.points[1].xyz, width * 2, 0);
+    set_xyz_001C38E0(&packet.points[2].xyz, width, height);
+    set_xyz_001C38E0(&packet.points[3].xyz, width * 2, height);
+    return func_00207650(arg0, (s32)packet.tag, 0, 0);
+}
 
 void func_001C3D50(s32 arg0, s32 arg1, s32 arg2) {
     s32 text = (s32)&D_002BF00B;
@@ -386,7 +460,82 @@ void func_001C7430(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7460);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7790);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001C7790;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001C7790;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001C7790;
+
+typedef struct {
+    Color_001C7790 color;
+    Vertex_001C7790 xyz;
+} Point_001C7790;
+
+typedef struct {
+    u64 tag[2];
+    Point_001C7790 points[4];
+    u64 end;
+} Packet_001C7790;
+
+typedef struct {
+    u8 b, g, r, a;
+} Source_001C7790;
+
+static inline void set_color_001C7790(Color_001C7790 *a, Color_001C7790 *b,
+                                      Source_001C7790 *src) {
+    a->r = b->r = src->r;
+    a->g = b->g = src->g;
+    a->b = b->b = src->b;
+    a->a = b->a = src->a;
+    a->q = b->q = 1.0f;
+}
+
+static inline void set_xyz_001C7790(Vertex_001C7790 *v, s32 x, s32 y) {
+    v->x = (x + 0x6C0) << 4;
+    v->y = (y + 0x720) << 4;
+    v->z = D_003180E8;
+    v->fog = 0;
+}
+
+s32 func_001C7790(s32 arg0) {
+    extern u8 D_002BE860[];
+    Source_001C7790 *colors = (Source_001C7790 *)D_002BE860;
+    s32 width = 0x140;
+    s32 height = 0x1C0;
+    Packet_001C7790 packet __attribute__((aligned(8)));
+
+    ((Tag_001C7790 *)packet.tag)->flags = 0x14;
+    ((Tag_001C7790 *)packet.tag)->count = 8;
+    ((Tag_001C7790 *)packet.tag)->registers = 0x41414141;
+    ((Tag_001C7790 *)packet.tag)->padding = 0;
+    set_color_001C7790(&packet.points[0].color, &packet.points[2].color, &colors[0]);
+    set_color_001C7790(&packet.points[1].color, &packet.points[3].color, &colors[1]);
+    set_xyz_001C7790(&packet.points[0].xyz, 0, 0);
+    set_xyz_001C7790(&packet.points[1].xyz, width, 0);
+    set_xyz_001C7790(&packet.points[2].xyz, 0, height);
+    set_xyz_001C7790(&packet.points[3].xyz, width, height);
+    arg0 = func_00207650(arg0, (s32)packet.tag, 0, 0);
+    set_color_001C7790(&packet.points[0].color, &packet.points[2].color, &colors[1]);
+    set_color_001C7790(&packet.points[1].color, &packet.points[3].color, &colors[0]);
+    set_xyz_001C7790(&packet.points[0].xyz, width, 0);
+    set_xyz_001C7790(&packet.points[1].xyz, width * 2, 0);
+    set_xyz_001C7790(&packet.points[2].xyz, width, height);
+    set_xyz_001C7790(&packet.points[3].xyz, width * 2, height);
+    return func_00207650(arg0, (s32)packet.tag, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7C00);
 
