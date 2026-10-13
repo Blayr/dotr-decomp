@@ -501,7 +501,6 @@ void func_001271F0(void *);
 s32 func_0013EEE0(s32, s32, s32);
 void func_001429B0(void *);
 void func_0014BDE0(void *);
-void func_001591B0(void *);
 void func_00163660(void *);
 
 

@@ -1711,7 +1711,59 @@ s32 func_00158AB0(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00158C80);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_001591B0);
+s32 func_001591B0(u16 *arg0) {
+    extern void func_00159760();
+    s32 temp_a1;
+    s32 temp_v1_2;
+    s32 temp_v1_4;
+    u32 temp_v1_3;
+    u16 temp_v1;
+    s32 temp_s0;
+
+    func_001E1090((s32) arg0[0] >> 8, arg0[0] & 0xFF);
+    temp_s0 = func_00250360((s32) arg0[0] >> 8, arg0[0] & 0xFF);
+    if (func_001DF540((s32) arg0[0] >> 8, arg0[0] & 0xFF) != 0) {
+        if (func_001E2100((s32) arg0[0] >> 8, arg0[0] & 0xFF, 0) == 0) {
+            temp_v1 = arg0[0];
+            if (temp_v1 != 0xFFFF) {
+                temp_a1 = temp_v1 & 0xFF;
+                if (temp_a1 == 0) {
+                    if (*(s32 *)(arg0 + 4) == -1) {
+                        func_00159760(arg0, temp_a1);
+                    }
+                } else {
+                    temp_v1_2 = func_001E0700((s32) temp_v1 >> 8, temp_a1) >> 5;
+                    switch (temp_v1_2) {
+                    case 0:
+                        if (func_002507D0((s32) arg0[0] >> 8, arg0[0] & 0xFF) == 1) {
+                            func_00159FE0(arg0);
+                        } else {
+                            func_00159D00(arg0);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 3, 0, func_0015D120(temp_s0) & 0xFF);
+                        break;
+                    case 5:
+                        func_00159D00(arg0);
+                        if ((((s32) arg0[2] >> 8) & 0xFF) == 2) {
+                            temp_v1_3 = (u32) *(s32 *)(arg0 + 4) >> 0x10;
+                            temp_v1_4 = func_001E1090((s32) ((temp_v1_3 & 0xFFFF) >> 8), temp_v1_3 & 0xFF) << 0x10;
+                            arg0[2] = 0x6FF;
+                            *(s32 *)(arg0 + 4) = temp_v1_4 | arg0[4];
+                        }
+                        break;
+                    default:
+                        arg0[2] = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00159380(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
