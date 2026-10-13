@@ -1649,6 +1649,7 @@ void func_00217BD0(s32 arg0, void *src, s16 dx, s16 dy);
 void func_00217CB0(s32 arg0, void *arg1, s16 x, s16 y);
 void func_00217F90(void *arg0, s32 x, s32 y, s32 width, s32 height, s32 z, s32 f);
 void *func_00218020(void *packet, void *src, s16 x, s16 y, u16 flip);
+void *func_00218340(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1, s16 x2, s16 y2, s16 x3, s16 y3, s16 u0, s16 v0, s16 u1, s16 v1, s16 u2, s16 v2, s16 u3, s16 v3, u8 r, u8 g, u8 b, u8 a, u8 mode, u16 texture, u8 flag, s16 depth);
 void func_00218840(void *arg0, u16 x0, u16 y0, s32 z0, u8 f0, u16 x1, u16 y1, s32 z1, u8 f1, u16 x2, u16 y2, s32 z2, u8 f2, u16 x3, u16 y3, s32 z3, u8 f3);
 void func_00218970(void *arg0, void *src, s16 x, s16 y);
 void func_00218AB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy);

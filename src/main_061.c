@@ -231,7 +231,67 @@ void *func_00218020(void *packet, void *src, s16 x, s16 y, u16 flip) {
     return packet;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218340);
+typedef struct {
+    u16 u : 14;
+    u16 reserved_u : 2;
+    u16 v : 14;
+    u16 reserved_v : 2;
+    u8 pad[12];
+} Vertex_00218340;
+
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 pad;
+    u64 registers;
+} Header_00218340;
+
+typedef struct {
+    u8 tag[0x10];
+    u8 r, g, b, a;
+    f32 q;
+    u8 vertices[0x40];
+    u8 state[0x20];
+} Packet_00218340;
+
+void *func_00218340(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+                    s16 x2, s16 y2, s16 x3, s16 y3,
+                    s16 u0, s16 v0, s16 u1, s16 v1,
+                    s16 u2, s16 v2, s16 u3, s16 v3,
+                    u8 r, u8 g, u8 b, u8 a, u8 mode,
+                    u16 texture, u8 flag, s16 depth) {
+    extern void func_00218840(void *, s16, s16, s32, u8, s16, s16, s32, u8,
+                              s16, s16, s32, u8, s16, s16, s32, u8);
+    extern void *D_00299DD0[];
+    Packet_00218340 packet __attribute__((aligned(8)));
+    s32 z;
+
+    func_00207500();
+    ((Header_00218340 *)packet.tag)->flags = 0x24;
+    ((Header_00218340 *)packet.tag)->count = 9;
+    ((Header_00218340 *)packet.tag)->registers = 0x0000000424242421ULL;
+    ((Header_00218340 *)packet.tag)->pad = 0;
+    packet.r = r;
+    packet.g = g;
+    packet.b = b;
+    packet.a = a;
+    packet.q = 1.0f;
+    z = depth + 0xFFFFF8;
+    func_00218840(packet.tag, x0, y0, z, 0, x1, y1, z, 0,
+                 x2, y2, z, 0, x3, y3, z, 0);
+    ((Header_00218340 *)packet.tag)->flags |= 0x800;
+    ((Vertex_00218340 *)packet.vertices)->u = (u0 * 16) + 8;
+    ((Vertex_00218340 *)packet.vertices)->v = (v0 * 16) + 8;
+    ((Vertex_00218340 *)(packet.vertices + 0x10))->u = (u1 * 16) + 8;
+    ((Vertex_00218340 *)(packet.vertices + 0x10))->v = (v1 * 16) + 8;
+    ((Vertex_00218340 *)(packet.vertices + 0x20))->u = (u2 * 16) + 8;
+    ((Vertex_00218340 *)(packet.vertices + 0x20))->v = (v2 * 16) + 8;
+    ((Vertex_00218340 *)(packet.vertices + 0x30))->u = (u3 * 16) + 8;
+    ((Vertex_00218340 *)(packet.vertices + 0x30))->v = (v3 * 16) + 8;
+    func_00208700(packet.tag, D_00299DD0[texture], 0);
+    func_002086D0(packet.tag, 0x0000008000000088ULL);
+    return (void *)func_00207650((s32)arg0, (s32) packet.tag, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_061", func_002185E0);
 
