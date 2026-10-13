@@ -547,7 +547,15 @@ void func_00101940(f32 *arg0, s32 *arg1) {
     arg1[2] = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00101A00);
+void func_00101A00(f32 *src, void *dst) {
+    extern void func_0020C630(void *, s32 *);
+    s32 angles[3];
+
+    angles[0] = (u16)func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(src[0] * src[0] + src[2] * src[2]), src[1]) / 6.2831855f));
+    angles[1] = (u16)func_001A22C0(65536.0f * (func_001A6C18(src[0], src[2]) / 6.2831855f));
+    angles[2] = 0;
+    func_0020C630(dst, angles);
+}
 
 void func_00101AD0(s8 *arg0, s8 arg1, s8 arg2, s8 arg3) {
     arg0[2] = arg1;
