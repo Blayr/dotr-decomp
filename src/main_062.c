@@ -493,7 +493,78 @@ void func_0021DAA0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021DDA0);
+s32 func_0021DDA0(s32 arg0) {
+    extern s16 D_00299ED2;
+    extern s32 func_0022A710();
+    extern s32 func_00226120();
+    u8 *rec;
+    s32 v;
+
+    rec = (u8 *)&D_00299E10;
+    if (D_00299ED2 >= 0x2710) {
+        v = *(s16 *)(rec + 0xC2);
+        switch (v) {
+        case 0x2B98:
+            if (*(s16 *)0x01ED536C < 2) {
+                arg0 = func_0022A710(arg0);
+            } else {
+                arg0 = func_0022A020(arg0);
+            }
+            break;
+        case 0x2B9A:
+            if (*(s16 *)0x01ED536C >= 9) {
+                arg0 = func_0022A710(arg0);
+            } else {
+                arg0 = func_0022A020(arg0);
+            }
+            break;
+        case 0x2BAC:
+            if (*(s16 *)0x01ED536C >= 2) {
+                arg0 = func_0022A020(arg0);
+            } else {
+                arg0 = func_0022A710(arg0);
+            }
+            break;
+        case 0x2F64:
+            if (*(s16 *)0x01ED536C < 0xA) {
+                arg0 = func_0022A020(arg0);
+            } else {
+                arg0 = func_0022A710(arg0);
+            }
+            break;
+        case 0x2F76:
+            if (*(s16 *)0x01ED536C > 1) {
+                arg0 = func_0022A020(arg0);
+            } else {
+                arg0 = func_0022A710(arg0);
+            }
+            break;
+        case 0x2AF8:
+        case 0x2BAE:
+        case 0x2BB0:
+        case 0x2EE0:
+        case 0x2F62:
+        case 0x2F78:
+        case 0x2F7A:
+        case 0x2F7C:
+            arg0 = func_0022A020(arg0);
+            break;
+        default:
+            if (v < 0x2AF8) {
+                arg0 = func_0022A020(arg0);
+            } else {
+                arg0 = func_0022A710(arg0);
+            }
+            break;
+        }
+    } else {
+        arg0 = func_0022A710(arg0);
+    }
+    if (*(s16 *)(rec + 0xC2) >= 0x2710) {
+        arg0 = func_00226120(arg0);
+    }
+    return arg0;
+}
 
 typedef struct {
     u16 count;

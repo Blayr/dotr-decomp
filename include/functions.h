@@ -1725,6 +1725,7 @@ void func_0021D480(void);
 void func_0021D850(void);
 void func_0021DA60(void);
 void func_0021DAA0(void);
+s32 func_0021DDA0(s32 arg0);
 void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha);
 s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00224A40(void);
