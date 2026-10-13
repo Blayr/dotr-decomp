@@ -177,7 +177,260 @@ void func_00254C90(s32 *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_002550C0);
+s32 func_002550C0(u32 *arg0, u16 *arg1, s32 arg2) {
+    extern void func_001E1E70(s32, s32, s32, s32);
+    extern s32 func_00256520();
+    extern s32 func_002594D0();
+    extern s32 func_0025E710();
+    extern s32 func_0025EF40();
+    extern s32 func_00261760();
+    extern s32 func_00263180();
+    extern s32 func_00265440();
+    extern s32 func_00265890();
+    extern s32 func_00268AD0();
+    extern s32 func_0026C170();
+    extern s32 func_0026D8F0();
+    extern s32 func_00273E60();
+    extern s32 func_002747A0();
+    s32 temp_v0;
+    s32 var_s0;
+    s32 var_s1;
+
+    if ((arg0 == NULL) || (arg1 == NULL)) {
+        return 0;
+    }
+    temp_v0 = *arg0 & 0x7FFF;
+    var_s1 = 0;
+    switch (temp_v0) {
+    case 0x0:
+        var_s1 = func_002560C0(arg0, arg1, arg2);
+        break;
+    case 0x1:
+        var_s1 = func_00256D80(arg0, arg1, arg2);
+        break;
+    case 0x2:
+        var_s1 = func_00256520(arg0, arg1, arg2);
+        break;
+    case 0x3:
+        var_s1 = func_00256AB0(arg0, arg1, arg2);
+        break;
+    case 0x4:
+        var_s1 = func_00257340(arg0, arg1, arg2);
+        break;
+    case 0x5:
+        var_s1 = func_00257AA0(arg0, arg1, arg2);
+        break;
+    case 0x6:
+        var_s1 = func_00258490(arg0, arg1, arg2);
+        break;
+    case 0x7:
+        var_s1 = func_00258760(arg0, arg1, arg2);
+        break;
+    case 0x8:
+        var_s1 = func_00258E20(arg0, arg1, arg2);
+        break;
+    case 0x9:
+        var_s1 = func_002594D0(arg0, arg1, arg2);
+        break;
+    case 0xC:
+        var_s1 = func_00259D90(arg0, arg1, arg2);
+        break;
+    case 0xD:
+        var_s1 = func_0025A060(arg0, arg1, arg2);
+        break;
+    case 0xE:
+        var_s1 = func_0025A4C0(arg0, arg1, arg2);
+        break;
+    case 0xF:
+        var_s1 = func_0025AA80(arg0, arg1, arg2);
+        break;
+    case 0x10:
+        var_s1 = func_0025AD60(arg0, arg1, arg2);
+        break;
+    case 0x11:
+        var_s1 = func_0025B050(arg0, arg1, arg2);
+        break;
+    case 0x12:
+        var_s1 = func_0025B330(arg0, arg1, arg2);
+        break;
+    case 0x13:
+        var_s1 = func_0025B610(arg0, arg1, arg2);
+        break;
+    case 0x14:
+        var_s1 = func_0025B900((s32) arg0, arg1, arg2);
+        break;
+    case 0x15:
+        var_s1 = func_0025BE50(arg0, arg1, arg2);
+        break;
+    case 0x17:
+        var_s1 = func_0025C0B0(arg0, arg1, arg2);
+        break;
+    case 0x19:
+        var_s1 = func_0025C330(arg0, arg1, arg2);
+        break;
+    case 0x1A:
+        var_s1 = func_0025C9E0(arg0, arg1, arg2);
+        break;
+    case 0x1C:
+        var_s1 = func_0025D9D0(arg0, arg1, arg2);
+        break;
+    case 0x1D:
+        var_s1 = func_0025D640(arg0, arg1, arg2);
+        break;
+    case 0x5B:
+        var_s1 = func_0025D230(arg0, arg1, arg2);
+        break;
+    case 0x1E:
+        var_s1 = func_0025DE70(arg0, arg1, arg2);
+        break;
+    case 0x1F:
+        var_s1 = func_0025E200(arg0, arg1, arg2);
+        break;
+    case 0x20:
+        var_s1 = func_0025E710(arg0, arg1, arg2);
+        break;
+    case 0x21:
+        var_s1 = func_0025EE40(arg0, arg1, arg2);
+        break;
+    case 0x22:
+        var_s1 = func_0025ED20(arg0, arg1, arg2);
+        break;
+    case 0x23:
+        var_s1 = func_0025EF40(arg0, arg1, arg2);
+        break;
+    case 0x5A:
+        var_s1 = func_00261760(arg0, arg1, arg2);
+        break;
+    case 0x5C:
+        var_s1 = func_00261B70(arg0, arg1, arg2);
+        break;
+    case 0x5D:
+        var_s1 = func_00273E60(arg0, arg1, arg2);
+        break;
+    case 0x24:
+        var_s1 = func_002695D0(arg0, arg1, arg2);
+        break;
+    case 0x25:
+        var_s1 = func_0026A0A0(arg0, arg1, arg2);
+        break;
+    case 0x5E:
+        var_s1 = func_002747A0(arg0, arg1, arg2);
+        break;
+    case 0x5F:
+        var_s1 = func_002755D0(arg0, arg1, arg2);
+        break;
+    case 0x2B:
+        var_s1 = func_00262BE0(arg0, arg1, arg2);
+        break;
+    case 0x2C:
+        var_s1 = func_00265440(arg0, arg1, arg2);
+        break;
+    case 0x2D:
+        var_s1 = func_00265050(arg0, arg1, arg2);
+        break;
+    case 0x2E:
+        var_s1 = func_00265890(arg0, arg1, arg2);
+        break;
+    case 0x33:
+        var_s1 = func_0026E1F0(arg0, arg1, arg2);
+        break;
+    case 0x36:
+        var_s1 = func_0026B480(arg0, arg1, arg2);
+        break;
+    case 0x38:
+        var_s1 = func_0026BB80(arg0, arg1, arg2);
+        break;
+    case 0x39:
+        var_s1 = func_00268760(arg0, arg1, arg2);
+        break;
+    case 0x3A:
+        var_s1 = func_00268AD0(arg0, arg1, arg2);
+        break;
+    case 0x3B:
+        var_s1 = func_00268FA0(arg0, arg1, arg2);
+        break;
+    case 0x3C:
+        var_s1 = func_002692D0(arg0, arg1, arg2);
+        break;
+    case 0x3F:
+        var_s1 = func_00263500(arg0, arg1, arg2);
+        break;
+    case 0x40:
+        var_s1 = func_00263180(arg0, arg1, arg2);
+        break;
+    case 0x41:
+        var_s1 = func_00263790(arg0, arg1, arg2);
+        break;
+    case 0x42:
+        var_s1 = func_0026D8F0(arg0, arg1, arg2);
+        break;
+    case 0x43:
+        var_s1 = func_0026DCC0(arg0, arg1, arg2);
+        break;
+    case 0x46:
+        var_s1 = func_00275740(arg0, arg1, arg2);
+        break;
+    case 0x47:
+        var_s1 = func_002759D0(arg0, arg1, arg2);
+        break;
+    case 0x48:
+        var_s1 = func_0026CFC0(arg0, arg1, arg2);
+        break;
+    case 0x64:
+        var_s1 = func_00262BE0(arg0, arg1, arg2);
+        break;
+    case 0x65:
+        var_s1 = func_0026BE20(arg0, arg1, arg2);
+        break;
+    case 0x66:
+        var_s1 = func_0026BF50(arg0, arg1, arg2);
+        break;
+    case 0x6D:
+        var_s1 = func_0026C170(arg0, arg1, arg2);
+        break;
+    case 0x70:
+        var_s1 = func_00273460(arg0, arg1, arg2);
+        break;
+    case 0x71:
+        var_s1 = func_002738B0(arg0, arg1, arg2);
+        break;
+    case 0x72:
+        var_s1 = func_0027E840(arg0, arg1, arg2);
+        break;
+    case 0x96:
+        var_s1 = func_00271630(arg0, arg1, arg2);
+        break;
+    case 0xFF:
+        var_s1 = func_00260200(arg0, arg1, arg2);
+        break;
+    case 0xFE:
+        var_s1 = func_00260320(arg0, arg1, arg2);
+        break;
+    case 0x3E7:
+        var_s1 = 0;
+        break;
+    default:
+        var_s1 = 0;
+        break;
+    }
+    if (var_s1 == 0) {
+        var_s0 = 1;
+        do {
+            if (func_001DE020(func_001E0700(0, var_s0) >> 5) == 2) {
+                if (func_001E2100(0, var_s0, 4) != 0) {
+                    func_001F5970(var_s0, 0);
+                    func_001E1E70(0, var_s0, 0, 1);
+                }
+            }
+            if ((func_001DE020(func_001E0700(1, var_s0) >> 5) == 2) && (func_001E2100(1, var_s0, 4) != 0)) {
+                func_001E1E70(1, var_s0, 0, 1);
+                func_001F5970(var_s0 | 0x100, 0);
+            }
+            var_s0 += 1;
+        } while (var_s0 < 0xB);
+    }
+    return var_s1;
+}
 
 void func_00255960(void *arg0) {
     f32 *temp_v0_2;
