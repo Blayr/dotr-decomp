@@ -1269,6 +1269,7 @@ s32 func_001FC760(s32 arg0, s32 arg1);
 s32 func_001FC7F0(s32 arg0);
 s32 func_001FC840(s32 arg0, s32 arg1);
 void func_001FC950(void *arg0, void *arg1);
+s32 func_001FC9B0(s32 arg0);
 void func_001FCA70(void);
 void func_001FCC20(void);
 s32 func_001FCD60(s32 arg0);

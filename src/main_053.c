@@ -553,7 +553,42 @@ void func_001FC950(void *arg0, void *arg1) {
     dst[3] = (f32) src[3];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC9B0);
+typedef struct {
+    u8 pad00[0xC];
+    u16 unkC;
+} Data_001FC9B0;
+
+typedef struct {
+    u8 pad00[8];
+    s32 size : 31;
+    s32 flag : 1;
+    u8 pad0C[8];
+    Data_001FC9B0 *data;
+} Entry_001FC9B0;
+
+s32 func_001FC9B0(s32 arg0) {
+    extern char D_002CFC50[];
+    extern char D_002CFC67[];
+    extern u16 D_00293070;
+    extern void func_0019B648();
+    extern void *func_001FFE00();
+    char path[128];
+    Entry_001FC9B0 *entry;
+    Data_001FC9B0 *data;
+
+    func_001FCA70();
+    func_0019B648(path, D_002CFC50, func_001FFF90((s32)D_002CFC67), arg0, arg0);
+    entry = func_001FFE00(1, path, 0, -1, 0, -1);
+    if (entry == NULL) {
+        return 0;
+    }
+    if (entry->size == 0 || (data = entry->data) == NULL) {
+        return 0;
+    }
+    D_0031C048 = (s32)data;
+    D_00293070 = data->unkC;
+    return 1;
+}
 
 void func_001FCA70(void) {
 
