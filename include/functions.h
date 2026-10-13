@@ -1413,6 +1413,7 @@ s32 func_00206D30(s32 planeCount, void *planeArg, s32 count, s32 verticesArg, s3
 void func_00207230(void *matrix, s32 count, void *vertices);
 void func_00207360(void);
 void func_002073A0(void);
+void func_002073D0(u8 *arg0, s32 arg1, s32 arg2);
 u8 *func_00207500(void);
 void func_00207510(void *arg0);
 void func_002075F0(s32 arg0, s32 arg1, s32 arg2);

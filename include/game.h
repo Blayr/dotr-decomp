@@ -163,7 +163,6 @@ extern u8 D_0031A7C0[];
 extern u16 D_002CE4A4[];
 
 void func_001E53C0(s32, s32);
-void func_002073D0(u8 *, s32, s32);
 void func_0020BAF0(s32);
 
 

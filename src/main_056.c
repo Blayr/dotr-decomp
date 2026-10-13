@@ -221,7 +221,67 @@ void func_002073A0(void) {
     func_0020BB50();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002073D0);
+typedef struct Tag_002073D0 {
+    u16 qwc;
+    u8 pad2;
+    u8 id;
+    s32 next;
+    u32 vif0;
+    u32 vif1;
+} Tag_002073D0;
+
+typedef struct Node_002073D0 {
+    u16 qwc;
+    u16 mark;
+    struct Node_002073D0 *next;
+} Node_002073D0;
+
+typedef struct Context_002073D0 {
+    Node_002073D0 *table;
+    Tag_002073D0 *start;
+    Tag_002073D0 *head;
+    s32 depth;
+} Context_002073D0;
+
+void func_002073D0(u8 *arg0, s32 arg1, s32 arg2) {
+    extern u8 D_00293D80[];
+    s32 count;
+    Node_002073D0 *node;
+    u64 *packet;
+    Context_002073D0 *ctx;
+
+    packet = (u64 *)func_00209D20();
+    count = 1 << arg2;
+    packet[1] = 0;
+    packet[0] = 0;
+    ctx = (Context_002073D0 *)arg0;
+    ctx->start = (Tag_002073D0 *)packet;
+    packet[2] = 0x100000000000800EULL;
+    packet[3] = 0xE;
+    packet = func_0020B380(packet + 4, D_00293D80, 0xE);
+    ctx->start->qwc = 0xF;
+    ctx->start->id = 0x10;
+    ctx->start->vif0 = 0x11000000;
+    ctx->start->vif1 = ctx->start->qwc | 0x51000000;
+    packet[1] = 0;
+    packet[0] = 0;
+    ctx->head = (Tag_002073D0 *)packet;
+    ctx->head->id = 0x10;
+    func_00209D30((s32)(packet + 2));
+    ctx->depth = arg2;
+    ctx->table = (Node_002073D0 *)arg1;
+    node = (Node_002073D0 *)arg1;
+    node += count - 1;
+    while (--count != 0) {
+        node->next = node - 1;
+        node->mark = 7;
+        node->qwc = 0;
+        node--;
+    }
+    node->next = (Node_002073D0 *)-1;
+    node->mark = 7;
+    node->qwc = 0;
+}
 
 u8 *func_00207500(void) {
     return D_00325D38;
