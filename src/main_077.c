@@ -88,7 +88,6 @@ typedef struct {
     u8 value : 4;
 } Flags_0026FA80;
 
-s32 func_00271830(s32);
 
 s32 func_0026FA80(s32 arg0, s32 arg1) {
     s32 owner;
@@ -412,7 +411,30 @@ s32 func_002717A0(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00271830);
+s32 func_00271830(s32 arg0) {
+    extern s32 func_001E08F0(s32, s32, s32);
+
+    if (func_00271740(8, arg0) != 0) {
+        switch (func_001E0690(arg0, 0) & 0x1F) {
+        case 0:
+        case 6:
+        case 12:
+        case 14:
+            return func_001E08F0(arg0, 0, 0) > 6 ? 2 : 1;
+        case 4:
+        case 13:
+            if (func_001E08F0(arg0, 0, 0) > 5) {
+                return 2;
+            }
+            return 1;
+        case 20:
+            return 1;
+        default:
+            return 0;
+        }
+    }
+    return 0;
+}
 
 s32 func_00271950(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 x;

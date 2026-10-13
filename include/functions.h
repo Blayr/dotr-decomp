@@ -1955,6 +1955,7 @@ s32 func_00270030(void *src, void *obj, s32 mode);
 s32 func_00271630(void *arg0, void *arg1, s32 arg2);
 s32 func_00271740(s32 arg0, s32 arg1);
 s32 func_002717A0(s32 arg0);
+s32 func_00271830(s32 arg0);
 s32 func_00271950(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_00271A40(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00271AF0(void *arg0, s32 arg1, s32 arg2);
