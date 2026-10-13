@@ -1225,7 +1225,55 @@ s32 func_002759D0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00275D00);
+typedef struct Entry_00275D00 {
+    u16 id;
+    u16 value;
+    u16 other;
+    u16 pad6;
+    s32 index;
+    u8 flags : 2;
+    u8 rest : 6;
+    u8 padD[3];
+} Entry_00275D00;
+
+typedef struct Data_00275D00 {
+    Entry_00275D00 entries[22];
+    u16 list[32];
+    u8 idx : 5;
+    u8 pad1A0 : 3;
+    u8 sel : 4;
+    u8 pad1A1 : 4;
+    u16 count;
+} Data_00275D00;
+
+s32 func_00275D00(s32 arg0, void *arg1) {
+    Data_00275D00 *data = arg1;
+    s32 i;
+
+    if (func_0027F830(arg0) == 1) {
+        func_0027F3E0(func_001DE4E0(arg0) & 0xFF, (s32) arg1);
+        return 1;
+    }
+    if (data != NULL) {
+        for (i = 0; i < 22; i++) {
+            data->entries[i].id = 0xFFFF;
+            data->entries[i].value = 0xFF;
+            data->entries[i].index = -1;
+            data->entries[i].other = 0xFFFF;
+            data->entries[i].flags = 0;
+        }
+        for (i = 0; i < 32; i++) {
+            data->list[i] = 0xFFFF;
+        }
+        data->idx = 0;
+        data->sel = 0;
+        data->count = 0;
+        data->entries[0].id = arg0 << 8;
+        data->entries[0].value = func_001E13C0(arg0, 0);
+        return 1;
+    }
+    return -1;
+}
 
 s32 func_00275E30(void *arg0) {
     if (func_0027F830(func_001DE540()) == 1) {
