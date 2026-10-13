@@ -481,7 +481,6 @@ extern s32 D_00325C80;
 extern s32 D_00325C84;
 extern s32 D_003261D0;
 
-void func_00200230(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_001FB1D0(s32, s32);
 
 extern s8 D_0031BEA1;

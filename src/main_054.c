@@ -703,7 +703,27 @@ void func_00200220(s32 arg0, s32 arg1) {
     func_00200230(arg0, 0, 0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200230);
+s32 func_00200230(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern char D_0031C2F0[];
+    extern char D_002D0670[];
+    extern char D_002D067D[];
+    extern s32 func_00183538(char *, s32, s32);
+    extern char *func_0019B9D0(char *, const char *);
+    char *path = D_0031C2F0;
+
+    func_00200300((s8 *)arg0);
+    if (arg3 != 0) {
+        func_0019BDD8(path, D_002D0670);
+    } else {
+        func_0019BDD8(path, D_002D0670);
+    }
+    func_0019B9D0(path, (char *)arg0);
+    func_0019B9D0(path, D_002D067D);
+    do {
+
+    } while (func_00183538(path, arg1, arg2) < 0);
+    return 1;
+}
 
 void func_00200300(s8 *arg0) {
     s8 *var_a0;
@@ -920,4 +940,33 @@ void *func_002008A0(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200930);
+static inline Entry_002008A0 *find_00200930(s32 arg0, s32 arg1) {
+    Entry_002008A0 *entry;
+    s32 i;
+
+    entry = D_003229A0;
+    if ((arg0 < 0) || (arg0 >= 10)) {
+        return NULL;
+    }
+    if (arg1 < 0) {
+        return NULL;
+    }
+    i = 0;
+    do {
+        if (entry->occupied && (entry->category == arg0) && (entry->id == arg1)) {
+            return entry;
+        }
+        i++;
+        entry++;
+    } while (i < 1024);
+    return NULL;
+}
+
+void *func_00200930(s32 arg0, s32 arg1) {
+    Entry_002008A0 *entry = find_00200930(arg0, arg1);
+
+    if (entry != NULL && !(entry->occupied & 0x80000000)) {
+        return entry;
+    }
+    return NULL;
+}
