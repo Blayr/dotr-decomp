@@ -588,7 +588,28 @@ s32 func_001C7790(s32 arg0) {
     return func_00207650(arg0, (s32)packet.tag, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7C00);
+void func_001C7C00(s32 arg0, s32 arg1, s32 arg2) {
+    extern char D_002BF047[];
+    extern char D_002BF04E[];
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    s32 text = (s32)D_002BF047;
+    s32 text2 = (s32)D_002BF04E;
+    s32 hint = 0;
+    s32 x = arg1 + 0xE0;
+    s32 y = arg2 + 0x20;
+    s32 tx;
+    s32 ty;
+    s32 element;
+
+    arg0 = func_001B62F0(arg0, x, y, 6, 1);
+    element = func_001B4780(arg0, -1, 0x73, 4, x, y, 0x15, 2, 1);
+    tx = arg1 + 0x140;
+    ty = arg2 + 0x27;
+    element = func_001B6F70(element, tx, ty, 2, 3, func_0019BEF0((const char *)text), (s8 *)text,
+                            hint != 0 ? (s32)D_002BE944 : 0);
+    func_001B6F70(element, arg1 + 0x140, arg2 + 0x46, 2, 3, func_0019BEF0((const char *)text2),
+                  (s8 *)text2, hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7D20);
 
