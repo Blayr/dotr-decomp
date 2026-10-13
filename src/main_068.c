@@ -191,7 +191,9 @@ typedef struct State_0023C170 {
     s16 field2B4;
     s16 field2B6;
     s16 field2B8;
-    u8 pad2BA[0x586];
+    u8 pad2BA[4];
+    s16 field2BE;
+    u8 pad2C0[0x580];
 } State_0023C170;
 
 
