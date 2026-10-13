@@ -2120,6 +2120,7 @@ void func_00276EC0(u16 *arg0, s32 arg1, void *arg2);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9);
 void func_002770E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10, s32 arg11, s32 arg12);
 s32 func_002774F0(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u8 arg6, u16 arg7);
+u8 *func_002777F0(u8 *node, s32 parent, s32 card, s32 x, s32 y, s32 owner, u8 limit, s32 flags, u16 value, u8 depth, u16 *pool, u16 *poolCount, void *visited, u16 *visitCount, s32 context);
 s32 func_00277C60(void *arg0, s32 arg1, s32 arg2);
 s32 func_00277CD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, u8 range, s32 arg6, u8 arg7, u8 arg8, s32 arg9, s32 fallback, u16 count, u8 arg12);
 s32 func_00278150(s32 arg0, s32 arg1);

@@ -314,7 +314,117 @@ s32 func_002774F0(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002777F0);
+s32 func_002464F0(s32, s32, s32);
+
+typedef struct Visit_002777F0 {
+    u16 id;
+    u8 depth;
+    u8 pad;
+} Visit_002777F0;
+
+u8 *func_002777F0(u8 *node, s32 parent, s32 card, s32 x, s32 y,
+                  s32 owner, u8 limit, s32 flags, u16 value, u8 depth,
+                  u16 *pool, u16 *poolCount, void *visited, u16 *visitCount,
+                  s32 context) {
+    s32 count;
+    s32 minY;
+    u8 initial;
+    u32 maxX;
+    u32 maxY;
+    u8 *next;
+    u32 range;
+    s32 nextDepth;
+    s32 radius;
+    s32 col;
+    s32 row;
+    s32 reach;
+    u8 **child;
+    s32 allocated;
+
+    extern s32 func_00278510();
+    extern s32 func_0027B150();
+
+    reach = func_002464F0(card, x, y);
+    if (card == 0) {
+        return NULL;
+    }
+    if ((u32)func_001A8710() > 0x2EE0U) {
+        return NULL;
+    }
+    if (node == NULL) {
+        radius = depth;
+        if ((s32)limit < radius) {
+            return NULL;
+        }
+        allocated = func_0027B150(pool, poolCount);
+        if (allocated == 0) {
+            return NULL;
+        }
+        node = (u8 *)allocated;
+        func_0027AF80(node, parent, x, y);
+        if (func_001E36E0(x, y) != 0 &&
+            owner == func_00250370((void *)func_001E36E0(x, y))) {
+            radius = func_001E3790(x, y);
+            if (func_00277C60(visited, radius, (s32)depth) == 0) {
+                if ((s32)*visitCount < 0x16) {
+                    ((Visit_002777F0 *)visited)[*visitCount].id = func_001E3790(x, y);
+                    ((Visit_002777F0 *)(((u32)*visitCount << 2) + (u32)visited))->depth = depth;
+                    *visitCount = *visitCount + 1;
+                }
+            }
+            if (func_00278510(card, radius, value & 0xFFFF, x, y,
+                              flags & 0xFF) < 0) {
+                return node;
+            }
+        }
+    }
+    radius = reach & 0xF;
+    count = 0;
+    row = func_00250860(0, x - radius);
+    if ((u32)(x + radius) >= 7U) {
+        maxX = 6;
+    } else {
+        maxX = x + radius;
+    }
+    minY = func_00250860(0, y - radius);
+    maxY = y + radius;
+    if (maxY >= 7U) {
+        maxY = 6;
+    }
+    initial = depth != 0 ? 0U : 1U;
+    if (row <= (s32)maxX) {
+        range = radius + 1;
+        nextDepth = depth + 1;
+        next = node;
+        do {
+            col = minY;
+            if (col <= (s32)maxY) {
+                child = (u8 **)next;
+                do {
+                    if (row >= 0 && col >= 0 && row < 7 && col < 7 &&
+                        (u32)((((row < x) ? x : row) - ((x < row) ? x : row)) +
+                              (((col < y) ? y : col) - ((y < col) ? y : col))) < range &&
+                        ((((row < x) ? x : row) - ((x < row) ? x : row)) +
+                         (((col < y) ? y : col) - ((y < col) ? y : col))) != 0 &&
+                        func_0027A710((void *)card, x, y, row, col, NULL, flags,
+                                     initial, value) != 0 &&
+                        func_0027B010(node, row, col, x, y, depth) == 0) {
+                        child[1] = func_002777F0(child[1], (s32)node, card, row, col,
+                                                owner, limit, flags, value,
+                                                (u8)nextDepth, pool, poolCount,
+                                                visited, visitCount, context);
+                        child++;
+                        next += 4;
+                        count++;
+                    }
+                    col++;
+                } while ((s32)maxY >= col);
+            }
+            row++;
+        } while ((s32)maxX >= row);
+    }
+    return node;
+}
 
 typedef struct Entry_00277C60 {
     u16 key;
