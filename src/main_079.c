@@ -231,7 +231,39 @@ s32 func_0027B740(void *arg0, s32 arg1) {
     return selected;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B860);
+s32 func_0027B860(u16 *arg0, s32 arg1) {
+    extern s32 func_001E1580(s32, s32);
+    extern s32 func_001E1640(s32, s32);
+    s32 i;
+    s32 best;
+    s32 bestPos;
+    s32 cur;
+    u16 *p;
+    s32 score;
+
+    best = -1;
+    bestPos = best;
+    i = 1;
+    if (i < func_0027C670(arg0)) {
+        p = &arg0[1];
+        do {
+            cur = func_001E1090(*p >> 8, *p & 0xFF);
+            if (func_001E2100(*p >> 8, *p & 0xFF, 4) != 0 ||
+                (arg1 == func_00250360(*p >> 8, *p & 0xFF) &&
+                 func_001E1580(*p >> 8, *p & 0xFF) == 0 &&
+                 func_001E1640(*p >> 8, *p & 0xFF) == 0)) {
+                score = func_002509E0(*p >> 8, *p & 0xFF, cur & 0xFF, cur >> 8);
+                if (best < score) {
+                    bestPos = *p;
+                    best = score;
+                }
+            }
+            p++;
+            i++;
+        } while (i < func_0027C670(arg0));
+    }
+    return bestPos;
+}
 
 s32 func_002464F0(s32, s32, s32);
 

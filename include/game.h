@@ -627,7 +627,6 @@ extern s8 D_0030F10C[];
 extern s8 D_0030F113[];
 extern s8 D_0030F118[];
 
-s32 func_0027B860(u16 *, s32);
 
 
 s32 func_00112850(s32, s32);
