@@ -23,7 +23,37 @@ void func_001DF580(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF5F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001DFAF0);
+static inline u8 *check_001DFAF0(s32 a0, s32 a1) {
+    extern void *func_001DD130();
+    u8 *p = func_001DD130(a0, a1);
+
+    if (p == NULL) {
+        return NULL;
+    }
+    if (p[0x45] >= 0xB) {
+        return NULL;
+    }
+    return p;
+}
+
+s32 func_001DFAF0(s32 arg0, s32 arg1, s32 arg2) {
+    u8 buffer[0x60];
+    u8 *record;
+    s32 x;
+    s32 y;
+
+    record = check_001DFAF0(arg0, arg1);
+    if (record == NULL) {
+        return 0;
+    }
+    arg0 = record[0x44];
+    arg1 = record[0x45];
+    x = record[0x40];
+    y = record[0x41];
+    func_001DFBB0(arg0, arg1);
+    func_001DCD70(buffer, arg2);
+    func_001DF5F0(arg0, x, y, buffer, arg1 == 0 ? 1 : 0);
+}
 
 void *func_001DD130();
 void func_001CD560();

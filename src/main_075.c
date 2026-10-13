@@ -1203,7 +1203,6 @@ typedef struct {
     s32 timer;
 } State_00262BE0;
 
-s32 func_001DFAF0(u32, s32, s32);
 void func_0024F370(s32, s32);
 void func_00255AC0(void *, s32);
 
