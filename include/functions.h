@@ -528,6 +528,7 @@ s32 func_00151A60(s32 arg0);
 s32 func_00151AC0(s32 arg0, void *arg1, void *arg2);
 s32 func_00152100(u16 *arg0, s32 arg1, void *arg2, u8 arg3);
 s32 func_001526D0(void *src, s32 arg1, u16 *out, u8 arg3);
+s32 func_00152CD0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4);
 s32 func_00153550(void *arg0, s32 arg1, void *arg2, s32 arg3);
 s32 func_00153AB0(void);
 s32 func_00153AE0(s32 arg0, s32 arg1);
