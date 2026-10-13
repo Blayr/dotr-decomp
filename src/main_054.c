@@ -746,7 +746,44 @@ s32 func_00200360(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_002003E0);
+typedef struct {
+    u8 pad[0x6684];
+    s32 file;
+    s32 handle;
+    u16 head;
+    u16 count;
+    Flags_001FFE00 flags;
+} Queue_002003E0;
+
+static inline s32 wait_002003E0(s32 file, s32 arg1, s32 arg2, s32 arg3) {
+    extern Queue_002003E0 D_0031C2F0;
+    extern s32 func_001FECB0();
+    Queue_002003E0 *queue = &D_0031C2F0;
+    s32 result;
+
+    result = func_001FECB0(0x1400, 2, file, arg3, arg2, arg1, arg2, func_001FFF60, (s64)0);
+    if (result == 0) {
+        return 0;
+    }
+    goto check;
+loop:
+    poll_001FFE00();
+check:
+    if (func_001FF360(-1, 0) != 0) {
+        goto loop;
+    }
+    return queue->flags.completed ? result : 0;
+}
+
+s32 func_002003E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern Queue_002003E0 D_0031C2F0;
+    Queue_002003E0 *queue = &D_0031C2F0;
+
+    if (arg0 < 0) {
+        return 0;
+    }
+    return wait_002003E0(queue->file, arg1, arg2, arg3) ? 1 : 0;
+}
 
 typedef struct State_002004C0 {
     u8 pad[0x6684];
@@ -785,7 +822,40 @@ void func_00200680(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_002006C0);
+s32 func_002006C0(s32 arg0) {
+    extern char D_002D0680[];
+    extern char D_002D0686[];
+    extern u8 *func_00197548();
+    extern void func_0019B648(void *, void *, ...);
+    char path[128];
+    char full[128];
+    u8 *directory;
+    s32 handle;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    directory = func_00197548(D_002D0680);
+    if (directory == NULL) {
+        directory = D_002D0655;
+    }
+    func_0019B648(path, D_002D0686, directory, arg0);
+    goto check;
+loop:
+    poll_001FFE00();
+check:
+    if (func_001FF360(-1, 0) != 0) {
+        goto loop;
+    }
+    func_001FF250((s8 *)path);
+    func_0019B648(full, D_002D0648, D_002D064D, path);
+    handle = func_0017FA98(full, 1);
+    if (handle < 0) {
+        return 0;
+    }
+    func_0017FD20(handle);
+    return 1;
+}
 
 typedef struct Record_002007D0 {
     s32 value0;

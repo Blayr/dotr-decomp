@@ -105,7 +105,6 @@ void func_0010F290(s32, void *, s32, s32);
 
 void func_00198790(void *, const void *, s32);
 void func_00199B50(const char *, ...);
-void func_002003E0(s32, s32, s32, s32);
 extern char D_002B90DA[];
 extern char D_002B9102[];
 extern char D_002B9112[];
