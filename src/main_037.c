@@ -197,7 +197,37 @@ void func_001A8360(s32 arg0, s32 arg1, s32 arg2) {
     func_001A83E0(buf, arg1, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A83E0);
+s32 func_001A83E0(u8 *arg0, s32 arg1, s32 arg2) {
+    extern s32 func_00242470();
+    extern s32 func_001F2920(s32);
+    s32 flag;
+    s32 i;
+    s32 result;
+
+    flag = func_00217530();
+    while (func_001FF300() != 0) {
+        func_001FF420();
+    }
+    if (flag != 0) {
+        func_00109FC0();
+        func_00109D70(1);
+        func_002174D0();
+    }
+    for (i = 0; i < 10; i++) {
+        func_001E7E70(i + 0x14, -1, func_001F2920(i + 0x14));
+    }
+    func_002099D0();
+    func_002098B0(1);
+    result = func_00242470(arg0, arg1, arg2);
+    func_001854E0(0);
+    func_002098B0(0);
+    func_001A8520(10, 0, 0, 0, 0x400, 0x400);
+    if (flag != 0) {
+        func_00109D70(0);
+        func_00217410();
+    }
+    return result;
+}
 
 typedef union {
     u32 words[4];
