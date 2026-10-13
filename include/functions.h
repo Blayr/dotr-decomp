@@ -796,6 +796,7 @@ void func_001AC600(void);
 void func_001AC610(s32 arg0);
 void func_001AC6F0(void);
 void func_001ACC50(void);
+s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 depth);
 void func_001AD960(void);
 void func_001ADA80(s32 arg0);
 void func_001ADD00(s32 arg0, s32 arg1, s32 arg2);

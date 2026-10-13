@@ -1024,7 +1024,116 @@ void func_001ACC50(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001ACC80);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AD670);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001AD670;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001AD670;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001AD670;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001AD670;
+
+typedef struct {
+    u64 tag[2];
+    Color_001AD670 color;
+    u64 uv0;
+    Vertex_001AD670 vertex0;
+    u64 uv1;
+    Vertex_001AD670 vertex1;
+    u64 test;
+    s64 texture0;
+    s64 texture1;
+    u64 clamp;
+} Packet_001AD670;
+
+typedef struct {
+    u8 pad00[0x40];
+    f32 eyeX;
+    f32 eyeY;
+    f32 eyeZ;
+    u8 pad4C[4];
+    f32 targetX;
+    f32 targetY;
+    f32 targetZ;
+    u8 pad5C[0x24];
+    s32 roll;
+    u8 pad84[0xC];
+} View_001AD670;
+
+static inline void set_uv_001AD670(UV_001AD670 *p, s32 u, s32 v) {
+    p->u = u;
+    p->v = v;
+}
+
+s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 depth) {
+    extern u8 D_00317476;
+    extern s32 func_0020A470(s32, s32, s32);
+    View_001AD670 view;
+    Packet_001AD670 sprite __attribute__((aligned(8)));
+
+    ((Tag_001AD670 *)sprite.tag)->flags = 0x26;
+    ((Tag_001AD670 *)sprite.tag)->count = 5;
+    ((Tag_001AD670 *)sprite.tag)->registers = 0x42421;
+    ((Tag_001AD670 *)sprite.tag)->padding = 0;
+    ((Tag_001AD670 *)sprite.tag)->flags |= 0x800;
+    func_002086D0(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    sprite.color.r = 0x80;
+    sprite.color.g = 0x80;
+    sprite.color.b = 0x80;
+    sprite.color.a = D_00317476;
+    sprite.color.q = 1.0f;
+    sprite.vertex0.z = 0xFFFFF8;
+    sprite.vertex0.fog = 0;
+    sprite.vertex1.z = 0xFFFFF8;
+    sprite.vertex1.fog = 0;
+    func_0020DEF0(&view);
+    if (func_0020E460() != 0) {
+        func_0020A470(0, 2, 0x32);
+        packet = (s32)func_0020A610((void *)packet);
+        packet = (s32)func_0020A870((u8 *)packet, 0);
+        view.eyeX = 0.0f;
+        view.eyeY = 0.0f;
+        view.eyeZ = -depth;
+        view.targetX = 0.0f;
+        view.targetY = 0.0f;
+        view.targetZ = 1.0f;
+        view.roll = 0;
+        func_0020DFD0(1.0f, 512.0f);
+        func_0020E360(&view);
+        packet = func_001EFA80(func_0020EC60(packet), id, 0, 0, 0, 0, 0);
+        func_0020AA30(&sprite.texture0, &sprite.texture1);
+        packet = func_0020F290((s32)func_0020A760((void *)packet));
+        set_uv_001AD670((UV_001AD670 *)&sprite.uv0, 0, 0);
+        set_uv_001AD670((UV_001AD670 *)&sprite.uv1, 0x280 << 4, 0x1C0 << 4);
+        sprite.vertex0.x = (((x + 0x800) - (width >> 1)) << 4) - 8;
+        sprite.vertex0.y = (((y + 0x800) - (height >> 1)) << 4) - 8;
+        sprite.vertex1.x = (((x + 0x800) + (width >> 1)) << 4) - 8;
+        sprite.vertex1.y = (((y + 0x800) + (height >> 1)) << 4) - 8;
+        func_0020E4F0();
+        func_0020DEF0(&view);
+        func_0020E360(&view);
+        packet = func_00207650(func_0020EC60(packet), (s32)&sprite, 0, 0);
+        func_0020A9E0();
+    }
+    return packet;
+}
 
 void func_001AD960(void) {
     u8 *state = D_00317490;
