@@ -548,7 +548,59 @@ s32 func_001F0060(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F01A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0390);
+typedef struct Fields_001F0390 {
+    u8 pad000[0x1F3];
+    s8 kind;
+    s16 value;
+    u8 pad1F6[0x16];
+    s8 loaded : 1;
+    s8 unused1 : 2;
+    s8 busy : 1;
+    s8 unused4 : 4;
+} Fields_001F0390;
+
+typedef struct Request_001F0390 {
+    u8 pad00[0x14];
+    s32 *header;
+    u8 pad18[4];
+    s32 index;
+} Request_001F0390;
+
+void func_001F0390(s32 arg0, s32 arg1) {
+    extern void func_0019B648();
+    extern void func_001F01A0();
+    extern s32 func_001FEC70();
+    extern s32 D_00292480[];
+    extern u8 D_002CFA17[];
+    extern u8 D_002CFA1D[];
+    u8 format[128];
+    u8 path[128];
+    s32 index;
+    Fields_001F0390 *obj;
+    s32 base;
+
+    index = ((Request_001F0390 *)arg0)->index;
+    if (index < 0 || index >= 0x54) {
+        return;
+    }
+    obj = (Fields_001F0390 *)D_0031ABB0[index];
+    if (obj != NULL) {
+        if (arg1 != 0 && *((Request_001F0390 *)arg0)->header != 0x304852) {
+            arg1 = 0;
+        }
+        if (arg1 == 0) {
+            base = D_00292480[obj->kind];
+            func_0019B648(format, D_002CFA1D, func_001FFF90((s32)D_002CFA17), base, base);
+            func_0019B648(path, format, obj->value, obj->value);
+            obj->loaded = 1;
+            arg0 = func_001FEC70(index, path, 0, -1, func_001F01A0, index);
+            obj->busy = (arg0 != 0) ? 1 : 0;
+        } else {
+            func_001E7D00(index);
+            func_001F0500(index, ((Request_001F0390 *)arg0)->header);
+        }
+    }
+}
 
 typedef struct {
     u32 header[2];
