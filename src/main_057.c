@@ -423,7 +423,81 @@ void *func_0020A760(void *arg0) {
     return packet + 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A870);
+typedef struct Flags_0020A870 {
+    s8 enabled : 1;
+    s8 draw : 1;
+} Flags_0020A870;
+
+typedef struct State_0020A870 {
+    u8 pad[0x20];
+    Flags_0020A870 flags;
+} State_0020A870;
+
+typedef struct Packet_0020A870 {
+    u32 words[4];
+    u64 tag;
+    u64 registers;
+    u64 alpha;
+    u64 alphaRegister;
+} Packet_0020A870;
+
+typedef struct Color_0020A870 {
+    f32 value;
+} Color_0020A870;
+
+s32 func_00184FF8(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
+extern Color_0020A870 D_00293F00;
+
+static inline void default_color_0020A870(void *color, void *value) {
+    *(Color_0020A870 *)color = *(Color_0020A870 *)value;
+}
+
+static inline s32 draw_0020A870(void *state) {
+    return ((State_0020A870 *)state)->flags.draw;
+}
+
+static inline s32 color_0020A870(u8 *color, s32 component) {
+    if (color != NULL) {
+        return color[component];
+    }
+    return 0;
+}
+
+void *func_0020A870(u8 *packet, u8 *color) {
+    Color_0020A870 defaultColor;
+    State_0020A870 *state = (State_0020A870 *)&D_00325F20;
+    s32 alpha;
+    s32 red;
+    s32 green;
+
+    default_color_0020A870(&defaultColor, &D_00293F00);
+    if (!D_00325F40.enabled) {
+        return packet;
+    }
+    if (!draw_0020A870(state)) {
+        return packet;
+    }
+    if (color == NULL) {
+        color = (u8 *)&defaultColor;
+    }
+    ((Packet_0020A870 *)packet)->words[0] = 0x10000009;
+    ((Packet_0020A870 *)packet)->words[1] = 0;
+    ((Packet_0020A870 *)packet)->words[2] = 0x11000000;
+    ((Packet_0020A870 *)packet)->words[3] = 0x51000009;
+    ((Packet_0020A870 *)packet)->tag = 0x1000000000008008ULL;
+    ((Packet_0020A870 *)packet)->registers = 0xE;
+    ((Packet_0020A870 *)packet)->alpha = 0;
+    ((Packet_0020A870 *)packet)->alphaRegister = 0x4A;
+    packet += 0x30;
+    alpha = color_0020A870(color, 3);
+    red = color_0020A870(color, 0);
+    green = color_0020A870(color, 1);
+    packet += func_00184FF8(packet, 2, 0, 0, 0xFFF, 0xFFF,
+                           color_0020A870(color, 2), green, red, alpha, 0) * 0x10;
+    ((u64 *)packet)[0] = 1;
+    ((u64 *)packet)[1] = 0x4A;
+    return packet + 0x10;
+}
 
 void func_0020A9E0(void) {
     D_00325F40.enabled = 0;
