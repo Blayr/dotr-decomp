@@ -302,7 +302,242 @@ s32 func_001AE5A0(s32 arg0) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AE5F0);
+typedef struct Color_001AE5F0 {
+    u8 r, g, b, a;
+} Color_001AE5F0;
+
+typedef struct Vector_001AE5F0 {
+    s32 coord[4];
+} Vector_001AE5F0;
+
+extern Color_001AE5F0 D_002910E0;
+extern Color_001AE5F0 D_002910E8;
+extern Color_001AE5F0 D_002910F0;
+extern Color_001AE5F0 D_002910F8;
+extern Color_001AE5F0 D_00291100;
+extern Color_001AE5F0 D_00291108;
+extern Vector_001AE5F0 D_00291110;
+extern u16 D_00318116;
+
+s32 func_001AE5F0(s32 arg0) {
+    extern s32 func_001DBFE0();
+    extern void func_001E2FB0();
+    extern void func_001E3060();
+    extern s32 func_001E24E0();
+    extern s32 func_001E3650();
+    extern s32 func_001F6D20();
+    u8 *player;
+    u8 *state;
+    u32 opacity;
+    s32 x;
+    s32 y;
+    u8 alpha;
+    s64 mode;
+    Color_001AE5F0 *color;
+    f32 position[4];
+    Vector_001AE5F0 offset;
+    Color_001AE5F0 own;
+    Color_001AE5F0 other;
+    Color_001AE5F0 special;
+    Color_001AE5F0 board;
+    Color_001AE5F0 range;
+    Color_001AE5F0 background;
+    f32 scale;
+    s32 brightness;
+
+    state = D_00317490;
+    player = D_00317490 + D_003181E4 * 0x350;
+    mode = func_001AAF60(1);
+    alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
+    own = D_002910E0;
+    own.r = D_003181E4 == 1 ? 0x60 : 0;
+    own.g = state[0xD54] == 1 ? 0x60 : 0;
+    own.b = state[0xD54] == 1 ? 0x60 : 0x80;
+    own.a = alpha;
+    other = D_002910E8;
+    other.r = state[0xD54] == 0 ? 0x60 : 0;
+    other.g = state[0xD54] == 0 ? 0x60 : 0;
+    other.b = state[0xD54] == 0 ? 0x60 : 0x80;
+    other.a = alpha;
+    special = D_002910F0;
+    special.r = state[0xD54] == 0 ? 0x60 : 0x60;
+    special.g = state[0xD54] == 0 ? 0 : 0x80;
+    special.b = state[0xD54] == 0 ? 0x80 : 0;
+    special.a = alpha;
+    color = NULL;
+    opacity = (u8)func_001F6D20();
+    scale = (f32)opacity / 128.0f;
+    func_001F6E80(0, scale);
+    func_001F6E80(1, scale);
+    func_001F6E80(8, scale);
+    brightness = (u8)opacity;
+    y = 0;
+    do {
+        x = 0;
+        do {
+            func_001E3650(x, y, brightness);
+            x++;
+        } while (x < 7);
+        y++;
+    } while (y < 7);
+
+    if ((u64)mode < 2U) {
+        func_001E2FB0(0, 0, 0);
+    }
+    if (mode == 1 && state[0xD57] >= 0x13) {
+        s32 row;
+        s32 col;
+        u8 *tile;
+        board = D_002910F8;
+        range = D_00291100;
+        background = D_00291108;
+        tile = (u8 *)func_001E36E0(player[0x33D], player[0x33E]);
+        if (tile != NULL && tile[0x44] != state[0xD54]) {
+            color = &other;
+        } else {
+            color = &own;
+        }
+        if (state[0xD57] >= 0x1D) {
+            color = &special;
+        }
+        switch (state[0xD57]) {
+        case 0x16:
+        case 0x18:
+            own.a = 0x40;
+            for (row = 0; row < 7; row++) {
+                for (col = 0; col < 7; col++) {
+                    if (player[0x33D] != col && player[0x33E] != row) {
+                        continue;
+                    }
+                    func_001E3060(col, row, 1, &own, 0);
+                }
+            }
+            own.a = alpha;
+            break;
+        case 0x1D:
+            func_001E2FB0(2, &background, 0);
+            row = 0;
+            do {
+                col = 0;
+                do {
+                    s32 distance = func_001E24E0(col, row);
+                    if (distance < 0xFF) {
+                        range.a = distance <= state[0xD5A] ? 0xD0 : 0x40;
+                        func_001E3060(col, row, 1, &range, 0);
+                    }
+                    col++;
+                } while (col < 7);
+                row++;
+            } while (row < 7);
+            for (row = 0; row < state[0xD59]; row++) {
+                func_001E3060(state[0xCCA + row], state[0xCFB + row], 1, &special, 0);
+            }
+            break;
+        case 0x21:
+            break;
+        case 0x3E:
+            func_001E2FB0(2, &background, 0);
+            row = 0;
+            do {
+                col = 0;
+                do {
+                    if (func_001E24E0(col, row) < 0xFF) {
+                        func_001E3060(col, row, 1, &board, 0);
+                    }
+                    col++;
+                } while (col < 7);
+                row++;
+            } while (row < 7);
+            break;
+        }
+        func_001E3060(player[0x33D], player[0x33E], 1, color, 0);
+        row = 0;
+        do {
+            col = 0;
+            do {
+                func_001E3230(col, row);
+                col++;
+            } while (col < 7);
+            row++;
+        } while (row < 7);
+    }
+    {
+        u8 *tile;
+        s32 id;
+        tile = func_001DCD00(player[0x33D], player[0x33E]);
+        id = tile[0x16] + 0x4A;
+        if (func_001F1370(id) != 0 && color != NULL) {
+            func_001E10F0(player[0x33D], player[0x33E], *(s16 *)(tile + 0x14), position);
+            if (*(s16 *)(tile + 0x14) > 0) {
+                arg0 = func_001DBFE0(arg0, position, NULL, 1);
+            }
+            arg0 = func_001EFA80(arg0, id, (s32)position, 0, 0, 0, 0);
+            color->a = (alpha * tile[0x1A]) >> 7;
+            func_001F2860(id, -1, color);
+            arg0 = func_001EFA80(arg0, id, (s32)position, 0, 0, 0, 0x80FFFFF6);
+            func_001F2860(id, -1, NULL);
+            color->a = alpha;
+        }
+    }
+    {
+        s32 id;
+        u8 *tile;
+        s32 row;
+        s32 col;
+        s32 kind;
+        kind = 0;
+        do {
+            id = kind + 0x4A;
+            if (func_001F1370(id) != 0) {
+                row = 0;
+                do {
+                    col = 0;
+                    do {
+                        tile = func_001DCD00(col, row);
+                        if (tile[0x16] == kind) {
+                            if (color == NULL || player[0x33D] != col || player[0x33E] != row) {
+                                func_001E10F0(col, row, *(s16 *)(tile + 0x14), position);
+                                if (*(s16 *)(tile + 0x14) > 0) {
+                                    arg0 = func_001DBFE0(arg0, position, NULL, 1);
+                                }
+                                arg0 = func_001EFA80(arg0, id, (s32)position, 0, 0, 0, 0);
+                            }
+                        }
+                        col++;
+                    } while (col < 7);
+                    row++;
+                } while (row < 7);
+            }
+            kind++;
+        } while (kind < 10);
+    }
+    {
+        s32 id = 0;
+        do {
+            if (func_001F1370(id) != 0) {
+                arg0 = func_001EFA80(arg0, id, 0, 0, 0, 0, 0);
+            }
+            id++;
+        } while (id < 3);
+    }
+    {
+        s32 id;
+        x = 0;
+        do {
+            id = x + 5;
+            offset = D_00291110;
+            offset.coord[1] = x != 0 ? 0 : 0x8000;
+            if (func_001F1370(id) != 0) {
+                offset.coord[1] -= 0x2000;
+                arg0 = func_001EFA80(arg0, id, 0, (s32)&offset, 0, 0, 0);
+                offset.coord[1] += 0x4000;
+                arg0 = func_001EFA80(arg0, id, 0, (s32)&offset, 0, 0, 0);
+            }
+            x++;
+        } while (x < 2);
+    }
+    return arg0;
+}
 
 void func_001AEE80(void) {
     func_00209D30(func_001AEEB0(func_00209D20()));
