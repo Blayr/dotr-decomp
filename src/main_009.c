@@ -2441,7 +2441,189 @@ s32 func_0013BE60(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_0013C430);
+typedef struct Coord_0013C430 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_0013C430;
+
+typedef struct Input_0013C430 {
+    u16 position;
+    u8 pad02[6];
+    u32 destination;
+} Input_0013C430;
+
+typedef struct Output_0013C430 {
+    u16 position;
+    u8 action;
+    u8 pad03;
+    u16 destination;
+    u8 pad06[6];
+    s32 flag;
+    u8 result;
+} Output_0013C430;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 destination_0013C430(void *src, s32 mode) {
+    if (mode == 1) {
+        return (u16)(((Input_0013C430 *)src)->destination >> 16);
+    }
+    return *(u16 *)((u8 *)src + 8);
+}
+
+static inline s32 maximum_0013C430(s32 a, s32 b) {
+    return b < a ? a : b;
+}
+
+static inline s32 closer_0013C430(Coord_0013C430 *current, Coord_0013C430 *best, s32 x, s32 y) {
+    s32 bestLowY = best->y < y ? best->y : y;
+    s32 bestHighY = maximum_0013C430(best->y, y);
+    s32 bestLowX = best->x < x ? best->x : x;
+    s32 bestHighX = maximum_0013C430(best->x, x);
+    s32 nextLowY = current->y < y ? current->y : y;
+    s32 nextHighY = maximum_0013C430(current->y, y);
+    s32 nextLowX = current->x < x ? current->x : x;
+    s32 nextHighX = maximum_0013C430(current->x, x);
+    return (nextHighX - nextLowX) + (nextHighY - nextLowY) <
+           (bestHighX - bestLowX) + (bestHighY - bestLowY);
+}
+
+s32 func_0013C430(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern s32 func_0013D3D0();
+    extern void func_0027A090();
+    s32 source;
+    s32 count;
+    s32 sourceY;
+    s32 sourceX;
+    s32 flag;
+    Coord_0013C430 points[12];
+    s32 packedDestination;
+    s32 originalFlag;
+    s32 selected;
+    Input_0013C430 *input = arg0;
+    Output_0013C430 *output = arg2;
+
+    {
+    u32 low = destination_0013C430(arg0, arg3);
+    u32 high = destination_0013C430(arg0, arg3);
+    if (func_001DF540(high >> 8, low & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    } else {
+    originalFlag = func_0013D3D0(input->position >> 8, input->position & 0xFF, arg0);
+    source = func_001E1090(input->position >> 8, input->position & 0xFF);
+    {
+        u32 low = destination_0013C430(arg0, arg3);
+        u32 high = destination_0013C430(arg0, arg3);
+        packedDestination = func_001E1090(high >> 8, low & 0xFF);
+    }
+    {
+        s32 j = 0;
+        Coord_0013C430 *iter = points;
+        do {
+            iter->x = iter->y = 0xF;
+            iter++;
+            j++;
+        } while (j < 12);
+    }
+    {
+    s32 owner = func_001DF540(input->position >> 8, input->position & 0xFF);
+    sourceX = source & 0xFF;
+    sourceY = source >> 8;
+    if (func_002464F0(owner, sourceX, sourceY) == 0) {
+        s32 pathCost;
+        output->position = input->position;
+        output->action = 6;
+        output->destination = source;
+        pathCost = func_00276CC0(sourceX, sourceY, arg1, 2, 0, (u8)func_0013DA70(arg1));
+        if (pathCost >= func_001E0290(input->position >> 8, input->position & 0xFF, 0)) {
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                          output->destination, 1, 0);
+        } else {
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                          output->destination, 0, 0);
+        }
+        func_0027B1B0(arg0, arg3);
+    } else {
+        s32 position = input->position;
+        s32 destinationX;
+        Coord_0013C430 *point;
+        s32 i;
+        s32 score;
+        u16 limit;
+        s32 positionY;
+        s32 positionX;
+
+        limit = (u16)func_0013DA70(arg1);
+        positionY = position >> 8;
+        positionX = position & 0xFF;
+        destinationX = packedDestination & 0xFF;
+        func_0027A090(positionY, positionX, points, sourceX, sourceY,
+                      destinationX, packedDestination >>= 8, destination_0013C430(arg0, arg3),
+                      0, 30, limit);
+        count = func_0027AFC0((u8 *)points);
+        selected = 0xFF;
+        if (count > 0) {
+            flag = 0;
+            score = 0xFFFF;
+            for (i = 0; i < count; i++) {
+                if (func_0013D880(input->position >> 8, input->position & 0xFF,
+                                  sourceX, sourceY, destinationX, packedDestination) == 1) {
+                    selected = i;
+                    flag = 1;
+                    points[i].x = destinationX;
+                    points[i].y = packedDestination;
+                    i = count;
+                } else {
+                    s32 candidate;
+                    point = &points[i];
+                    candidate = func_00276CC0(point->x, point->y, arg1, 2, 0,
+                                              (u8)func_0013DA70(arg1));
+                    if (candidate < score) {
+                        score = candidate;
+                        selected = i;
+                    } else if (candidate == score) {
+                        if (closer_0013C430(point, &points[selected], destinationX, packedDestination)) {
+                            score = candidate;
+                            selected = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            output->position = input->position;
+            output->action = 6;
+            output->destination = source;
+            output->flag = originalFlag;
+            output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                          output->destination, 0, 0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+            if (selected != 0xFF) {
+                output->position = input->position;
+                output->action = 6;
+                output->destination = (points[selected].y << 8) | points[selected].x;
+                output->flag = flag;
+                output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                              output->destination, 0, 0);
+            } else {
+                output->position = input->position;
+                output->action = 6;
+                output->destination = source;
+                output->flag = flag;
+                output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                              output->destination, 0, 0);
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+    }
+    }
+    }
+    }
+    return 0;
+}
 
 typedef struct Coord_0013CA10 {
     u8 x : 4;
