@@ -575,7 +575,13 @@ s32 func_0020E9F0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EB40);
+typedef struct {
+    s32 words[16];
+} Block_0020EB40;
+
+void func_0020EB40(void *arg0) {
+    *(Block_0020EB40 *)arg0 = *(Block_0020EB40 *)&D_0032A2A0[D_0032A240];
+}
 
 typedef struct {
     s32 words[16];

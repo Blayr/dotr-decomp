@@ -964,7 +964,6 @@ typedef union {
     } bits;
 } Xyz_00205440;
 
-void func_0020EB40(void *);
 
 s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
     extern s64 func_001A23B0(f32);
@@ -1013,7 +1012,6 @@ typedef union Vertex_00205630 {
 } Vertex_00205630;
 
 void func_0020CF00(s32, s32, s32, s32);
-void func_0020EB40(void *);
 
 s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     extern s64 func_001A23B0(f32);

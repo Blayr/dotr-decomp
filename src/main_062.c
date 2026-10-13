@@ -18,7 +18,6 @@ void func_0021BAE0(void *arg0) {
 }
 
 void func_0020C940(void *, void *, void *, void *);
-void func_0020EB40(void *);
 
 typedef struct {
     f32 m[4][4];

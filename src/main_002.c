@@ -794,7 +794,6 @@ typedef struct {
 } Matrix_00108EF0;
 
 void func_0020C940(void *, s32, s32, s32);
-void func_0020EB40(void *);
 
 void func_00108EF0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     Matrix_00108EF0 sp50;
