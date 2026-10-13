@@ -923,6 +923,7 @@ s32 func_001E02F0(void *arg0, s32 arg1);
 s32 func_001E0370(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001E03D0(void *arg0, s32 arg1);
 void func_001E0450(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_001E04C0(void *arg0, s32 arg1, s32 arg2);
 s32 func_001E0570(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001E05E0(void *arg0, s32 arg1, s32 arg2);
 s32 func_001E0690(s32 unused0, s32 unused1);

@@ -384,7 +384,6 @@ s32 func_001E03D0(void *arg0, s32 arg1) {
     return 9999;
 }
 
-void func_001E04C0(void *, s32, s32);
 
 static inline void *get_001E0450(void) {
     void *var_v0;
@@ -403,7 +402,46 @@ void func_001E0450(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_001E04C0(get_001E0450(), arg2, arg3);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E04C0);
+#define MAX_001E04C0(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_001E04C0(a, b) ((a) < (b) ? (a) : (b))
+
+typedef struct {
+    u8 pad_00[0x38];
+    s16 value;
+} Obj_001E04C0;
+
+s32 func_001E04C0(void *arg0, s32 arg1, s32 arg2) {
+    Obj_001E04C0 *obj = arg0;
+    s32 cur;
+    s32 val;
+
+    val = arg2;
+    if (obj == NULL) {
+        return 0;
+    }
+    cur = obj->value;
+    switch (arg1) {
+    case 0:
+        val = cur + val;
+        break;
+    case 1:
+        val = cur - val;
+        break;
+    case 2:
+        val = cur * val;
+        break;
+    case 3:
+        val = cur / val;
+        break;
+    case 4:
+        break;
+    default:
+        return 0;
+    }
+    val = MIN_001E04C0(MAX_001E04C0(val, -9999), 9999);
+    obj->value = val;
+    return 1;
+}
 
 static inline void *check_001E0570(void *ptr) {
     if (ptr == NULL) {
