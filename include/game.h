@@ -484,7 +484,7 @@ void func_001429B0(void *);
 
 
 
-void func_0010CE20(u16 *, u16 *);
+s32 func_0010CE20(u16 *, u16 *);
 
 extern u8 D_00325F00[];
 extern Q128_0020F290 D_00325EF0;
