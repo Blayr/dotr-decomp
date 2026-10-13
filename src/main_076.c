@@ -158,7 +158,115 @@ s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return total;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00266500);
+s32 func_00266500(s32 arg0, s32 arg1, void *output) {
+    extern s32 func_001E1700();
+    extern s32 func_001DEE50();
+    s32 count;
+    void *data;
+    s32 target;
+    s32 value;
+    s32 index0;
+    s32 length0;
+    s32 length1;
+    s32 index1;
+    u32 packed;
+    u32 word;
+    s32 *out = output;
+
+    if ((data = func_00250740(arg0, arg1, 2)) == NULL) {
+        return 0;
+    }
+    word = *(u32 *)data;
+    switch (word >> 8) {
+    case 0xD:
+        out[0] = 8;
+        out[1] = 0;
+        out[2] = func_0024DE70(arg0, arg1);
+        packed = *(u32 *)((u8 *)data + 4);
+        out[3] = ((packed >> 16) << 16) | (packed & 0xFFFF);
+        return 1;
+    case 0x4D:
+        value = func_0024CA40(0, 0, func_0024DE70(arg0, arg1),
+                             (word >> 6) & 3, word & 0x3F, 0xE);
+        if (value == 0) {
+            return 0;
+        }
+        out[0] = 0x39;
+        out[1] = 0;
+        out[2] = value;
+        out[3] = *(u16 *)((u8 *)data + 4);
+        return 1;
+    case 0x4E:
+        value = func_0024CA40(0, 0, func_0024DE70(arg0, arg1),
+                             (word >> 6) & 3, word & 0x3F, 0xE);
+        if (value == 0) {
+            return 0;
+        }
+        out[0] = 0x1D;
+        out[1] = 1;
+        out[2] = value;
+        out[3] = *(u16 *)((u8 *)data + 4);
+        return 1;
+    case 0xC:
+        if (func_001E1700(arg0, arg1) == 1) {
+            func_001E16A0(arg0, arg1, 0);
+            value = func_0024C780(0, arg0, arg1);
+            out[0] = 0x3C;
+            out[1] = 0;
+            out[2] = value;
+            out[3] = *(u16 *)((u8 *)data + 4);
+            return 1;
+        }
+        return 0;
+    case 0x46:
+        if (func_001E1700(arg0, arg1) == 1) {
+            func_001E16A0(arg0, arg1, 0);
+            out[0] = 0x2E;
+            out[1] = (arg0 << 8) | arg1;
+            out[2] = 0;
+            out[3] = 1;
+            return 1;
+        }
+        return 0;
+    case 0x53:
+        target = func_0024C780(0, arg0, arg1);
+        count = 0;
+        length0 = func_001DEE50(0);
+        for (index0 = 0; index0 < length0; index0++) {
+            if ((func_0026FCE0(func_001DEE00(0, index0)) >> 5) == 0) {
+                func_001DF000(0, index0);
+                count++;
+            }
+        }
+        func_001DEF20(0);
+        length1 = func_001DEE50(1);
+        for (index1 = 0; index1 < length1; index1++) {
+            if ((func_0026FCE0(func_001DEE00(1, index1)) >> 5) == 0) {
+                func_001DF000(1, index1);
+                count++;
+            }
+        }
+        func_001DEF20(1);
+        out[0] = 0x1D;
+        out[1] = 1;
+        out[2] = target;
+        out[3] = count * *(u16 *)((u8 *)data + 4);
+        return 1;
+    case 0x54:
+        value = func_0024C7D0(func_0024CA40(0, 0, func_0024DE70(arg0, arg1),
+                                         (word >> 6) & 3, word & 0x3F, 0xE),
+                             arg0, arg1);
+        if (value == 0) {
+            return 0;
+        }
+        out[0] = 0x48;
+        out[1] = func_001E1090(arg0, arg1);
+        out[2] = value;
+        out[3] = func_0024DE70(arg0, arg1);
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00266910);
 

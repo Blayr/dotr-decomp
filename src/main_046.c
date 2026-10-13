@@ -1238,7 +1238,53 @@ void func_001E3FF0(s32 arg0, s16 arg1, s16 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E40A0);
+s32 func_001E40A0(s32 arg0) {
+    u8 *base;
+    s32 var_s1;
+    s32 temp_s1;
+    s32 temp_s1_2;
+
+    base = D_00317490;
+    if (func_00203A40(arg0, 2, 0x5000) != 0) {
+        temp_s1 = base[0xD35];
+        if (func_00203A40(arg0, 2, 0x1000) != 0) {
+            base[0xD35] = (base[0xD35] + 1) % 2;
+        } else {
+            base[0xD35] = (base[0xD35] + 3) % 2;
+        }
+        if (base[0xD35] != temp_s1) {
+            func_00217710(0, 3);
+        }
+        return 0;
+    }
+    if (func_00203A40(arg0, 0, 0xA000) != 0) {
+        temp_s1_2 = base[0xD36];
+        if (func_00203A40(arg0, 0, 0x8000) != 0) {
+            base[0xD36] = base[0xD36] | (1 << (base[0xD35] + 1));
+        } else {
+            base[0xD36] = base[0xD36] & ~(1 << (base[0xD35] + 1));
+        }
+        if (base[0xD36] != temp_s1_2) {
+            func_00217710(0, 3);
+        }
+        return 0;
+    }
+    if (func_00203A40(arg0, 0, 0xC0) != 0) {
+        var_s1 = 0;
+        do {
+            func_00214BB0(0, var_s1, base[0xD36] & (1 << var_s1));
+            func_00214BB0(1, var_s1, base[0xD36] & (1 << var_s1));
+            var_s1 += 1;
+        } while (var_s1 < 3);
+        func_00217710(0, 4);
+        return 1;
+    }
+    if (func_00203A40(arg0, 0, 0x20) != 0) {
+        func_00217710(0, 5);
+        return 2;
+    }
+    return 0;
+}
 
 void func_001E42B0(void) {
     D_00318142 = 0x18;
