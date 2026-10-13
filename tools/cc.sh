@@ -79,6 +79,8 @@ if [[ "$DK_GCC" == mwcps2-* ]]; then
         -nostdinc -stderr ${DK_EXTRA_INCLUDE:+"-I$DK_EXTRA_INCLUDE"} "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS \
         < /dev/null)
     python3 "$ROOT/tools/pad_functions.py" "$OUT_ABS"
+    # Switch tables: point them at the game's own tables in the data blob (see there).
+    (cd "$ROOT" && python3 tools/jtbl_fix.py "$OUT_ABS")
     mv "$TMP/deps" "$OUT.d"
     exit 0
 fi
