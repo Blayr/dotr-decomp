@@ -1,6 +1,195 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4570);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001E4570;
+
+typedef struct {
+    u8 texture;
+    u8 padding;
+    u16 left;
+    u16 top;
+    u16 right;
+    u16 bottom;
+} Texture_001E4570;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001E4570;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001E4570;
+
+typedef struct {
+    u64 uv;
+    Vertex_001E4570 xyz;
+} Corner_001E4570;
+
+typedef struct {
+    u64 tag[2];
+    u8 r, g, b, a;
+    f32 q;
+    Corner_001E4570 corners[4];
+    u64 extra[4];
+} Packet_001E4570;
+
+typedef struct {
+    f32 v[8][4];
+} Quad_001E4570;
+
+typedef struct {
+    s32 v[4];
+} Rotation_001E4570;
+
+typedef struct {
+    f32 m[4][4];
+} Matrix_001E4570;
+
+typedef struct {
+    u8 pad000[0x6A0];
+    void *textures[16];
+    u8 pad6E0[0x578];
+    s32 depth;
+} State_001E4570;
+
+static inline s32 abs_001E4570(s32 value) {
+    return value >= 0 ? value : -value;
+}
+
+void func_001E4570(s32 packet, s32 angle, s32 x, s32 y) {
+    extern Quad_001E4570 D_00291600;
+    extern Rotation_001E4570 D_00291680;
+    extern u8 D_00290814[];
+    extern u8 D_0029081E[];
+    extern void func_0020CF00(void *, s32, void *, s32);
+    State_001E4570 *state;
+    Texture_001E4570 *first;
+    Texture_001E4570 *second;
+    s32 originX;
+    s32 originY;
+    s32 halfWidth;
+    s32 halfHeight;
+    s32 width;
+    s32 height;
+    s32 du;
+    s32 dv;
+    s32 turn;
+    Quad_001E4570 corners;
+    Rotation_001E4570 rotation;
+    Matrix_001E4570 matrix;
+    Packet_001E4570 sprite __attribute__((aligned(8)));
+
+    state = (State_001E4570 *)D_00317490;
+    first = (Texture_001E4570 *)D_00290814;
+    second = (Texture_001E4570 *)D_0029081E;
+    halfWidth = abs_001E4570(first->right - first->left) >> 1;
+    halfHeight = abs_001E4570(first->bottom - first->top) >> 1;
+    width = abs_001E4570(second->right - second->left);
+    height = abs_001E4570(second->bottom - second->top);
+    corners = D_00291600;
+    corners.v[0][0] = -(f32)halfWidth;
+    corners.v[0][1] = -(f32)halfHeight;
+    corners.v[1][0] = (f32)halfWidth;
+    corners.v[1][1] = -(f32)halfHeight;
+    corners.v[2][0] = -(f32)halfWidth;
+    corners.v[2][1] = (f32)halfHeight;
+    corners.v[3][0] = (f32)halfWidth;
+    corners.v[3][1] = (f32)halfHeight;
+    corners.v[4][0] = (f32)-halfWidth;
+    corners.v[4][1] = (f32)-halfHeight;
+    corners.v[5][0] = (f32)(width - halfWidth);
+    corners.v[5][1] = (f32)-halfHeight;
+    corners.v[6][0] = (f32)-halfWidth;
+    corners.v[6][1] = (f32)(height - halfHeight);
+    corners.v[7][0] = (f32)(width - halfWidth);
+    corners.v[7][1] = (f32)(height - halfHeight);
+    turn = (angle + 0x10000) % 0x10000;
+    originY = y + 0x800;
+    rotation = D_00291680;
+    originX = x + 0x800;
+    rotation.v[2] = (turn << 16) >> 8;
+    dv = du = 8;
+    switch (turn >> 14) {
+    case 1:
+        dv = -8;
+        break;
+    case 2:
+        dv = du = -8;
+        break;
+    case 3:
+        du = -8;
+        break;
+    }
+    func_0020C630(&matrix, &rotation);
+    func_0020BAF0((s32)&matrix);
+    func_0020CF00((void *)0x70000000, 0, &corners, 8);
+    func_0020BB50();
+    ((Tag_001E4570 *)sprite.tag)->flags = 0x24;
+    ((Tag_001E4570 *)sprite.tag)->count = 9;
+    ((Tag_001E4570 *)sprite.tag)->registers = 0x424242421ULL;
+    ((Tag_001E4570 *)sprite.tag)->padding = 0;
+    ((Tag_001E4570 *)sprite.tag)->flags |= 0x800;
+    func_002086D0(&sprite, 0x8000000044ULL);
+    sprite.r = 0x80;
+    sprite.g = 0x80;
+    sprite.b = 0x80;
+    sprite.a = 0x80;
+    sprite.q = 1.0f;
+    sprite.corners[0].xyz.z = state->depth;
+    sprite.corners[0].xyz.fog = 0;
+    sprite.corners[1].xyz.z = state->depth;
+    sprite.corners[1].xyz.fog = 0;
+    sprite.corners[2].xyz.z = state->depth;
+    sprite.corners[2].xyz.fog = 0;
+    sprite.corners[3].xyz.z = state->depth;
+    sprite.corners[3].xyz.fog = 0;
+    func_00208700(&sprite, state->textures[first->texture], 0);
+    ((UV_001E4570 *)&sprite.corners[0].uv)->u = (first->left << 4) + du;
+    ((UV_001E4570 *)&sprite.corners[0].uv)->v = (first->top << 4) + dv;
+    ((UV_001E4570 *)&sprite.corners[1].uv)->u = (first->right << 4) - du;
+    ((UV_001E4570 *)&sprite.corners[1].uv)->v = (first->top << 4) + dv;
+    ((UV_001E4570 *)&sprite.corners[2].uv)->u = (first->left << 4) + du;
+    ((UV_001E4570 *)&sprite.corners[2].uv)->v = (first->bottom << 4) - dv;
+    ((UV_001E4570 *)&sprite.corners[3].uv)->u = (first->right << 4) - du;
+    ((UV_001E4570 *)&sprite.corners[3].uv)->v = (first->bottom << 4) - dv;
+    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[0]);
+    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[1]);
+    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[4]);
+    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[5]);
+    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[8]);
+    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[9]);
+    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[12]);
+    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[13]);
+    packet = func_00207650(packet, (s32)&sprite, 0, 0);
+    func_00208700(&sprite, state->textures[second->texture], 0);
+    ((UV_001E4570 *)&sprite.corners[0].uv)->u = (second->left << 4) + du;
+    ((UV_001E4570 *)&sprite.corners[0].uv)->v = (second->top << 4) + dv;
+    ((UV_001E4570 *)&sprite.corners[1].uv)->u = (second->right << 4) - du;
+    ((UV_001E4570 *)&sprite.corners[1].uv)->v = (second->top << 4) + dv;
+    ((UV_001E4570 *)&sprite.corners[2].uv)->u = (second->left << 4) + du;
+    ((UV_001E4570 *)&sprite.corners[2].uv)->v = (second->bottom << 4) - dv;
+    ((UV_001E4570 *)&sprite.corners[3].uv)->u = (second->right << 4) - du;
+    ((UV_001E4570 *)&sprite.corners[3].uv)->v = (second->bottom << 4) - dv;
+    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[16]);
+    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[17]);
+    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[20]);
+    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[21]);
+    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[24]);
+    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[25]);
+    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[28]);
+    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[29]);
+    func_00207650(packet, (s32)&sprite, 0, 0);
+}
 
 void func_001E4E50(void) {
     D_00318144 = 0x18;
