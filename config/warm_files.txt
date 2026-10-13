@@ -5,3 +5,4 @@
 # One path from the project root per line (src/main_0XX.c). Add a file only together with
 # a `make check` that stays OK. main_002.c calls fptodp/_dpfgt itself: leave it cold.
 src/main_039.c
+src/main_001.c
