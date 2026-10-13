@@ -3078,7 +3078,234 @@ s32 func_0025C330(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025C9E0);
+typedef struct Context_0025C9E0 {
+    s32 unk0;
+    s32 card;
+    u32 mask;
+    u32 target;
+} Context_0025C9E0;
+
+typedef struct State_0025C9E0 {
+    u16 counter;
+    u16 card;
+    u16 state;
+    u8 handle;
+    u8 padding[0xFB];
+    u16 timer;
+} State_0025C9E0;
+
+typedef struct Command_0025C9E0 {
+    s32 type;
+    s32 flags;
+    s32 value;
+    s32 unused;
+} Command_0025C9E0;
+
+void func_001E1E70(s32, s32, s32, s32);
+u8 func_00255A30(s32 *, void *);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+s32 func_0025C9E0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1580();
+    extern s32 func_001E1640();
+    Command_0025C9E0 storage;
+    s32 *command = (s32 *)&storage;
+    Context_0025C9E0 *ctx = arg0;
+    State_0025C9E0 *state = arg1;
+    s32 i;
+    s32 card;
+    s32 position;
+    s32 owner;
+
+    storage.type = 999;
+    storage.flags = 0;
+    storage.value = 0;
+    storage.unused = 0;
+
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        if (ctx->target == -1) {
+            func_001E4530();
+            return 0;
+        }
+        func_001DE7E0(0);
+        func_00260740(0x10);
+        func_00255AC0(arg1, 0x201);
+        func_00255AC0(arg1, 0x1A);
+        func_00255AC0(arg1, 0x1B);
+        return 1;
+    }
+    if (ctx->target == -1) {
+        func_001E4530();
+        return 0;
+    }
+    func_001DE7E0(0);
+    switch (state->state) {
+    case 0:
+        if (func_00255B50(arg1) == 1) {
+            command[0] = 0x1A;
+            command[1] = 0;
+            command[2] = 0;
+            command[3] = 0;
+            state->handle = func_00255A30(command, arg1);
+            state->state++;
+        }
+        break;
+    case 1:
+    case 3:
+        if (func_001F51D0(state->handle) == 0) {
+            if (state->state == 3) {
+                func_00260A70(arg1, 0x10);
+                state->timer = 0;
+            }
+            state->state++;
+        }
+        break;
+    case 2:
+        if (ctx->target == 0xFFFE) {
+            func_0025F720(arg0, arg1, command, 0x1B);
+            if (func_0024E910(ctx->mask) == 1) {
+                func_00260AF0(0, func_0024EC50(ctx->mask, 0), 100, 180);
+            }
+            state->state++;
+        } else {
+            command[0] = 0x1B;
+            command[1] = 0;
+            command[2] = ctx->target;
+            command[3] = 0;
+            func_00260AF0(0, ctx->target, 100, 180);
+            state->handle = func_00255A30(command, arg1);
+            state->state++;
+        }
+        break;
+    case 4:
+        state->state++;
+        if (ctx->target == 0xFFFE) {
+            i = 0;
+            do {
+                if ((ctx->mask >> (21 - i)) & 1) {
+                    if (i < 11) {
+                        card = func_0024DE70(0, i);
+                        if (func_00271E40(0, i, 11)) {
+                            position = func_001E1090(card, 0);
+                            func_00260490(position & 0xFF, position >> 8, 0,
+                                          func_00271740(9, card), 1, 1, 11);
+                            func_001E42C0(0, -120, 80, 270);
+                        } else {
+                            card = ctx->target;
+                            if (card != func_0024DE70(0, i)) {
+                                if (func_001E2100(0, i, 1)) {
+                                    func_001E1E70(0, i, 1, 0);
+                                } else {
+                                    func_001E1E70(0, i, 1, 1);
+                                }
+                                owner = func_001DE540();
+                                if (owner == func_00250360(0, i)) {
+                                    if (!func_001E1580(0, i) && !func_001E1640(0, i)) {
+                                        func_001E1E70(0, i, 0, 0);
+                                    }
+                                } else {
+                                    func_001E1E70(0, i, 0, 1);
+                                }
+                            }
+                        }
+                    } else {
+                        card = func_0024DE70(1, i - 11);
+                        if (func_00271E40(1, i - 11, 11)) {
+                            position = func_001E1090(card, 0);
+                            func_00260490(position & 0xFF, position >> 8, 0,
+                                          func_00271740(9, card), 1, 1, 11);
+                            func_001E42C0(0, -120, 80, 270);
+                        } else {
+                            card = ctx->target;
+                            if (card != func_0024DE70(1, i - 11)) {
+                                if (func_001E2100(1, i - 11, 1)) {
+                                    func_001E1E70(1, i - 11, 1, 0);
+                                } else {
+                                    func_001E1E70(1, i - 11, 1, 1);
+                                }
+                                owner = func_001DE540();
+                                if (owner == func_00250360(1, i - 11)) {
+                                    if (!func_001E1580(1, i - 11) && !func_001E1640(1, i - 11)) {
+                                        func_001E1E70(1, i - 11, 0, 0);
+                                    }
+                                } else {
+                                    func_001E1E70(1, i - 11, 0, 1);
+                                }
+                            }
+                        }
+                    }
+                }
+                i++;
+            } while (i < 22);
+            if (state->state > 4) {
+                return 1;
+            }
+            if (state->timer++ > 16) {
+                if (func_001DE780()) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        } else {
+            card = func_0024DE70(ctx->target >> 8, ctx->target & 0xFF);
+            if (func_00271E40(ctx->target >> 8, ctx->target & 0xFF, 11)) {
+                position = func_001E1090(card, 0);
+                func_00260490(position & 0xFF, position >> 8, 0,
+                              func_00271740(9, card), 1, 1, 11);
+                func_001E42C0(0, -120, 80, 270);
+            } else {
+                if (func_00267700(ctx->target >> 8, ctx->target & 0xFF) == 1) {
+                    state->card = func_00267860(ctx->target >> 8, ctx->target & 0xFF);
+                    func_00260AF0(0, state->card, 100, 180);
+                    command[0] = 0x201;
+                    command[1] = 0;
+                    command[2] = state->card;
+                    command[3] = 0;
+                    state->handle = func_00255A30(command, arg1);
+                    state->state = 16;
+                } else {
+                    card = ctx->card;
+                    if (card != func_0024DE70(ctx->target >> 8, ctx->target & 0xFF)) {
+                        if (func_001E2100(ctx->target >> 8, ctx->target & 0xFF, 1)) {
+                            func_001E1E70(ctx->target >> 8, ctx->target & 0xFF, 1, 0);
+                        } else {
+                            func_001E1E70(ctx->target >> 8, ctx->target & 0xFF, 1, 1);
+                        }
+                        if (!func_001E1580(ctx->target >> 8, ctx->target & 0xFF) &&
+                            !func_001E1640(ctx->target >> 8, ctx->target & 0xFF)) {
+                            func_001E1E70(ctx->target >> 8, ctx->target & 0xFF, 0, 0);
+                        }
+                    }
+                }
+            }
+        }
+        break;
+    case 16:
+        func_001E42C0(0, -120, 80, func_001DE210(0x53));
+        if (func_001F51D0(state->handle) == 0) {
+            if (state->counter++ < 31) {
+                func_001E4530();
+                func_00260A70(arg1, 16);
+                state->timer = 0;
+                state->state++;
+            }
+        }
+        break;
+    default:
+        if (state->timer++ > 16) {
+            func_001E4530();
+            if (func_001DE780()) {
+                func_001DE7E0(1);
+            }
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct State_0025D230 {
     u16 alpha;
