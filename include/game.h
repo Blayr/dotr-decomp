@@ -324,8 +324,6 @@ s32 func_001A6BE8(s64, s32);                        /* extern */
 void func_0027F5B0(void);
 f32 func_001A6B70(f32);
 f32 func_001A6C48(f32, f32);
-void func_001A8770(s32);
-s32 func_001A87A0(void);
 void func_001AA260(void);
 void func_001FA220(s32, s32);
 void func_00203320(void);

@@ -296,9 +296,13 @@ u8 func_001A8760(void) {
     return D_0031747A;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8770);
+void func_001A8770(s64 arg0) {
+    D_0031747E.flag6 = arg0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A87A0);
+s32 func_001A87A0(void) {
+    return D_0031747E.flag6 != 0 ? 1 : 0;
+}
 
 typedef struct {
     s8 padding[0x1F9];
