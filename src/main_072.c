@@ -740,7 +740,40 @@ s32 func_0024FE40(void *arg0, s32 arg1, s32 arg2) {
     return (func_00250A60((s32)arg0, arg1, arg2) < 0x5DC) ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FEB0);
+s32 func_0024FEB0(void *arg0) {
+    extern s32 func_0024FDA0(s32, s32);
+    extern void func_002516D0(s32, s32, s32);
+    u32 mask;
+    s32 *out = (s32 *)arg0;
+    s32 i;
+    s32 info;
+
+    mask = 0;
+    i = 1;
+    do {
+        info = func_001E1090(0, i);
+        if (func_0024FDA0(0, i) == 1) {
+            if (func_001E22B0(info & 0xFF, info >> 8) == 9) {
+                mask = func_0024C780(mask, 0, i);
+                func_002516D0(0, i, 1);
+            }
+        }
+        info = func_001E1090(1, i);
+        if (func_0024FDA0(1, i) == 1 && func_001E22B0(info & 0xFF, info >> 8) == 9) {
+            mask = func_0024C780(mask, 1, i);
+            func_002516D0(1, i, 1);
+        }
+        i++;
+    } while (i < 0xB);
+    if (func_0024E910((s32)mask) > 0) {
+        out[0] = 0x70;
+        out[1] = 0;
+        out[2] = mask;
+        out[3] = 0;
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_00250000(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_001DEE50(s32);
