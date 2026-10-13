@@ -175,7 +175,6 @@ void func_00244680(u8 *);
 
 extern u8 D_0029D586[];
 
-void func_00209F60(void (*)(void));
 
 f32 func_001A1F18(s64);
 void func_001CD560(void);
