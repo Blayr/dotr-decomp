@@ -1596,7 +1596,41 @@ s32 func_00158810(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00158960);
+s32 func_00158960(s32 arg0) {
+    extern s32 func_001E1030();
+    extern s32 func_001E1580();
+    extern s32 func_001E1640();
+    s32 i;
+    s32 count;
+    s32 j;
+    s32 type;
+    s32 v;
+    s32 found[4];
+
+    count = 0;
+    if (func_001E1030(arg0, 0) == 0x3A) {
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 8; j++) {
+                v = func_0024E410(arg0, j);
+                if (func_001E36E0(v & 0xFF, v >> 8) != 0) {
+                    v = func_001E3790(v & 0xFF, v >> 8);
+                    if (v >= 0) {
+                        type = func_001E1030(v >> 8, v & 0xFF);
+                        if (type == func_002686F0(i) &&
+                            func_001E1580(v >> 8, v & 0xFF) == 0 &&
+                            func_001E1640(v >> 8, v & 0xFF) == 0 &&
+                            (v >> 8) == arg0) {
+                            found[i] = 1;
+                        }
+                    }
+                }
+            }
+            count += found[i];
+        }
+        return count;
+    }
+    return 0;
+}
 
 typedef struct {
     u16 unk0;

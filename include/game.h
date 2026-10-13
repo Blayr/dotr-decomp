@@ -565,7 +565,6 @@ extern u8 D_002909B8[];
 extern u8 D_003181CC;
 
 
-s32 func_00158960(s32);
 
 
 
