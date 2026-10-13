@@ -29,7 +29,28 @@ s32 func_0026EEA0(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EED0);
+s32 func_0026EED0(s32 arg0) {
+    extern s32 func_001DE4E0();
+    extern s32 func_00215D30();
+    extern s32 func_0026EFD0(s32);
+    s32 state;
+    s32 value;
+
+    state = func_001DE4E0(func_001DE540());
+    if (state < 0x20 && state != 0x13 && state != 1) {
+        return -1;
+    }
+    value = func_00215D30(arg0, func_002159D0(arg0, func_002158B0(arg0)));
+    if (state > 99 && func_00271740(3, arg0) == 0) {
+        return -1;
+    }
+    if (func_001DF470(arg0) < 1000) {
+        if ((state = func_0026EFD0(arg0)) >= 0) {
+            return state | (func_00250860(0, value - 8) << 4);
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EFD0);
 
