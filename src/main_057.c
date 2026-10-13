@@ -770,7 +770,39 @@ f32 func_0020B550(s32 arg0) {
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B620);
+f32 func_0020B620(f32 angle) {
+    s32 phase;
+    f32 sign;
+    s32 fraction;
+    f32 weight;
+    f32 *entry;
+    f32 lower;
+    f32 upper;
+
+    phase = (s16)(s32)(16384.0f + (0.5f + ((65536.0f * angle) / 6.2831855f)));
+    sign = 1.0f;
+    if (phase < 0) {
+        sign = -1.0f;
+        phase = -phase;
+    }
+    if (phase > 0x4000) {
+        phase = 0x8000 - phase;
+    }
+    if ((phase & 0x3FFF) == 0) {
+        if (phase == 0x4000) {
+            return sign;
+        }
+        sign = 0.0f;
+    } else {
+        fraction = phase & 0xF;
+        weight = fraction;
+        entry = &D_00294050[phase >> 4];
+        lower = entry[0];
+        upper = entry[1];
+        sign = (sign * (lower * (16 - fraction) + upper * weight)) / 16.0f;
+    }
+    return sign;
+}
 
 f32 func_0020B730(f32 angle) {
     s32 phase;

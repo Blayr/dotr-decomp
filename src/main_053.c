@@ -74,7 +74,6 @@ typedef struct Camera_001FB6A0 {
 } Camera_001FB6A0;
 
 f32 func_001A6C30(f32, f32);
-f32 func_0020B620(f32);
 
 s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
     Camera_001FB6A0 *camera;
@@ -180,7 +179,6 @@ typedef struct Motion_001FB940 {
 } Motion_001FB940;
 
 void func_001FBE50(void *, void *, u16, f32);
-f32 func_0020B620(f32);
 f32 func_001A6C30(f32, f32);
 
 static inline void direction_001FB940(s32 index) {

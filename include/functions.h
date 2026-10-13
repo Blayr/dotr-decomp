@@ -1541,6 +1541,7 @@ void *func_0020B400(void *dst, s32 val, s32 count);
 s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2);
 f32 func_0020B480(s32 arg0);
 f32 func_0020B550(s32 arg0);
+f32 func_0020B620(f32 angle);
 f32 func_0020B730(f32 angle);
 s32 func_0020BA70(void);
 s32 func_0020BA80(void);
