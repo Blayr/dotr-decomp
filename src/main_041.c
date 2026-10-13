@@ -1241,7 +1241,79 @@ void func_001CCB80(void) {
     func_00209D30(func_001CCBB0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CCBB0);
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_001CCBB0;
+
+typedef struct {
+    u8 pad0[0x8F];
+    u8 x;
+    u8 y;
+} Cursor_001CCBB0;
+
+static inline s32 title_001CCBB0(s32 id, s32 text, s32 x, s32 y) {
+    extern s32 func_001B4780();
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    s32 width;
+    s32 result;
+    f32 scale;
+
+    scale = 1.0f;
+    id = func_0020F290(func_001FD680(id, 1, text + 0x47, 0, 0x16));
+    id = func_001B4780(id, -1, 2, 3, x, y, 9, 0x12, 1);
+    id = func_001B4780(id, 5, -1, 3, x, y + 0x40, 9, 2, 1);
+    width = ((s32 *)func_001FEAB0(1))[3];
+    if (width > 0x54) {
+        scale = 84.0f / (f32)width;
+    }
+    result = func_001FE660(id, 1, (x + 0x30) - (s32)((f32)(width >> 1) * scale), y + 0x43,
+                           scale, 1.0f, 0, func_001FDFE0);
+    func_001FEAF0(1);
+    return result;
+}
+
+s32 func_001CCBB0(s32 arg0) {
+    extern Color_001CCBB0 D_002914D0;
+    extern u16 D_00318116;
+    extern s32 func_001B3790(s32, s32, s32, s32, s32, f32);
+    extern s32 func_001CCEA0(s32, s32, s32);
+    extern s32 func_001E3070();
+    Cursor_001CCBB0 *cursor = (Cursor_001CCBB0 *)0xA9C000;
+    Color_001CCBB0 color;
+    s32 x;
+    s32 y;
+    s32 id;
+    s32 timer;
+    s32 hint = 0;
+
+    timer = D_00318116;
+    color = D_002914D0;
+    color.a = hint != 0 ? 0x80 : (u8)(((timer >> 8) & 0xFF) + 0x40);
+    func_001E2FC0(0, 0, 0, 0);
+    for (y = 0; y < 7; y++) {
+        for (x = 0; x < 7; x++) {
+            if (cursor->x == x || cursor->y == y) {
+                func_001E3070(x, y, 1, &color, 0, 0);
+            }
+        }
+    }
+    func_001E3070(cursor->x, cursor->y, 1, &color, 0, 0);
+    for (y = 0; y < 7; y++) {
+        for (x = 0; x < 7; x++) {
+            func_001E3230(x, y);
+        }
+    }
+    func_001D9EE0(0xFFFFF8);
+    arg0 = func_001B3790(arg0, 0, func_001E22B0(cursor->x, cursor->y), 6, 0x150, 100.0f);
+    id = func_001AEFD0(arg0, 0);
+    id = title_001CCBB0(id, func_001E22B0(cursor->x, cursor->y), 6, 0x150);
+    id = func_001CCEA0(func_001B3100(id, 0, 0x21A, 0x150), 6, 0x90);
+    func_001FEAF0(0);
+    return id;
+}
 
 typedef struct {
     u16 count;
