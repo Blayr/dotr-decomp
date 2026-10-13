@@ -491,9 +491,9 @@ void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
-s32 func_00210CF0(void *, u16, f32, void *, void *, void *, f32);
 
 s32 func_00210940(void *arg0, s32 depth, void *arg2) {
+    extern s32 func_00210CF0(void *, u16, f32, void *, void *, void *, f32);
     extern Slot_00210940 D_0032A780[];
     Spr_00210940 *spr = (Spr_00210940 *)0x70000000;
     u8 buf[32];
