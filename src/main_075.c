@@ -468,7 +468,39 @@ void func_0025FB00(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FC30);
+typedef struct Object_0025FC30 {
+    u8 pad00[0xCC];
+    u32 mask;
+} Object_0025FC30;
+
+void func_0025FC30(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 func_001E1A90();
+    Object_0025FC30 *object = arg1;
+    s32 i = 0;
+
+    do {
+        if (arg3 < 0) {
+            if (i < 11) {
+                if (func_001E1A90(0, i) > 0) {
+                    func_002500C0(0, i, arg3, arg4, arg5);
+                    object->mask = func_0024C780(object->mask, 0, i);
+                }
+            } else {
+                if (func_001E1A90(1, i - 11) > 0) {
+                    func_002500C0(1, i - 11, arg3, arg4, arg5);
+                    object->mask = func_0024C780(object->mask, 1, i - 11);
+                }
+            }
+        } else if (((object->mask >> (21 - i)) & 1) == 1) {
+            if (i < 11) {
+                func_002500C0(0, i, arg3, arg4, arg5);
+            } else {
+                func_002500C0(1, i - 11, arg3, arg4, arg5);
+            }
+        }
+        i++;
+    } while (i < 22);
+}
 
 s32 func_0025FD90(void) {
     s32 row;

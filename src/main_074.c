@@ -681,7 +681,6 @@ typedef struct Request_00256AB0 {
     s32 kind;
 } Request_00256AB0;
 
-void func_0025FC30(void *, void *, s32, s32, s32, s32);
 
 s32 func_00256AB0(void *arg0, void *arg1, s32 arg2) {
     Request_00256AB0 request;
