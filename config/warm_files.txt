@@ -6,3 +6,4 @@
 # a `make check` that stays OK. main_002.c calls fptodp/_dpfgt itself: leave it cold.
 src/main_039.c
 src/main_001.c
+src/main_047.c
