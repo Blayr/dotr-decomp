@@ -100,7 +100,6 @@ typedef struct {
     u32 value;
 } Entry_0011D3E0;
 
-s32 func_0011D4E0(s32, s32, s32, s32 *);
 
 void func_0011D3E0(void *arg0) {
     Entry_0011D3E0 *entry = arg0;
@@ -131,7 +130,56 @@ void func_0011D3E0(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011D4E0);
+typedef struct Pick_0011D4E0 {
+    s32 value;
+    u8 score;
+} Pick_0011D4E0;
+
+typedef struct Nibbles_0011D4E0 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0011D4E0;
+
+static inline void try_0011D4E0(s32 arg0, s32 arg1, s32 arg2, Pick_0011D4E0 *pick, Nibbles_0011D4E0 *entries, s32 value) {
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+    s32 score;
+    s32 cost;
+
+    score = func_001E3790(value & 0xFF, value >> 8);
+    if (score < 0) {
+        score = 0xFFFF;
+    }
+    cost = func_002792C0(arg0, (s32)entries, arg1, arg2, value & 0xFF, value >> 8, score, 7);
+    if (cost < pick->score && cost >= 0) {
+        pick->score = cost;
+        pick->value = value;
+    }
+}
+
+void func_0011D4E0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    Nibbles_0011D4E0 entries[12];
+    s32 i;
+    Nibbles_0011D4E0 *entry;
+    Pick_0011D4E0 *pick = arg3;
+
+    pick->value = -1;
+    pick->score = 0xFF;
+    entry = entries;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+    i = 0;
+    do {
+        if (func_0011D7B0(0, i) == 1) {
+            try_0011D4E0(arg0, arg1, arg2, pick, entries, func_0011D8D0(0, i));
+            try_0011D4E0(arg0, arg1, arg2, pick, entries, func_0011D940(0, i));
+        }
+        i++;
+    } while (i < 4);
+}
 
 s32 func_0011D6D0(s32 arg0, s32 arg1) {
     s32 value;
@@ -527,7 +575,6 @@ typedef struct Nibbles_0011E270 {
     u8 high : 4;
 } Nibbles_0011E270;
 
-s32 func_0011D4E0(s32, s32, s32, s32 *);
 
 s32 func_0011E270(s32 arg0, u8 arg1, void *arg2) {
     s32 bestLocation;
