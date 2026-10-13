@@ -612,7 +612,44 @@ void func_001FCC20(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCC70);
+typedef struct {
+    u8 r, g, b, a;
+} Color_001FCC70;
+
+typedef struct {
+    u8 value : 6;
+    u8 unused : 2;
+} Value_001FCC70;
+
+typedef struct {
+    s8 flag : 1;
+    s8 unused : 7;
+} Flags_001FCC70;
+
+s32 func_001FCC70(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5) {
+    Entry_0031C050 *entry;
+
+    entry = &D_0031C050[arg0];
+    if (entry->flag == 0) {
+        return 0;
+    }
+    ((Value_001FCC70 *)((u8 *)entry + 7))->value = arg1;
+    entry->pad0[4] = arg2;
+    entry->lo = arg3;
+    entry->hi = arg4;
+    entry->flag = 0;
+    entry->pad7b = 0;
+    ((Flags_001FCC70 *)entry->pad8)->flag = 0;
+    if (arg5 != 0) {
+        *(Color_001FCC70 *)entry->pad0 = *(Color_001FCC70 *)arg5;
+    } else {
+        entry->pad0[2] = 0;
+        entry->pad0[1] = 0;
+        entry->pad0[0] = 0;
+        entry->pad0[3] = 0x80;
+    }
+    return 1;
+}
 
 s32 func_001FCD60(s32 arg0) {
     Entry_0031C050 *temp_a2;

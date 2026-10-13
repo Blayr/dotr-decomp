@@ -313,7 +313,6 @@ typedef struct {
 } Tail_001A87C0;
 
 void func_001AAAF0(s32, s32);
-void func_001FCC70(s32, s32, s32, s32, s32, s32);
 extern Tail_001A87C0 D_0031746F;
 
 void func_001A87C0(s32 arg0, s32 arg1) {
@@ -332,7 +331,6 @@ void func_001A87C0(s32 arg0, s32 arg1) {
 }
 
 void func_001AAAF0(s32, s32);
-void func_001FCC70(s32, s32, s32, s32, s32, s32);
 extern u8 D_00317472;
 
 typedef struct State_001A8870 {
@@ -371,7 +369,6 @@ typedef struct {
 } State_001A8920;
 
 void func_001AAAF0(s32, s32);
-void func_001FCC70(s32, s32, s32, s32, s32, s32);
 extern u8 D_00317472;
 
 void func_001A8920(void) {
