@@ -174,7 +174,36 @@ void func_0014C6C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
         arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20, 0, 2500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014C720);
+void func_0014C720(void *arg0) {
+    extern s32 func_001E1030();
+    Entry_0014C3B0 *entry = arg0;
+    s32 slot;
+    s32 kind;
+
+    slot = func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    kind = func_001E1030(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    switch (kind) {
+    case 0x264:
+    case 0x227:
+        if (func_0014FA10(slot, kind) == 1) {
+            entry->state = 0x3FF;
+            entry->data.word = (func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF) << 16) | entry->data.halves.low;
+            return;
+        }
+        break;
+    case 0x23A:
+        if (func_0014F3A0() == 1 && func_0027D720(entry, 0) == 1) {
+            return;
+        }
+        break;
+    case 0x23F:
+        if (func_0014F3A0() == 1 && func_001E2100(entry->coordinates >> 8, entry->coordinates & 0xFF, 4) == 0 && func_0027D720(entry, 0) == 1) {
+            return;
+        }
+        break;
+    }
+    func_0014C3B0(entry);
+}
 
 typedef struct Entry_0014C870 {
     u16 position;
