@@ -711,7 +711,59 @@ s32 func_0010EDA0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010EE00);
+s32 func_0010EE00(s32 arg0, s32 arg1, u32 *arg2) {
+    extern s32 func_001E1030();
+    s32 card;
+    s32 position;
+    u32 *info;
+
+    position = func_001E1090(arg0, arg1);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    card = func_001E1030(arg0, arg1);
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        if (card == 0x1AB || card == 0x1AC || card == 0x192 || card == 0x193) {
+            return 1;
+        }
+        return 2;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        info = func_00250740(arg0, arg1, 0);
+        if (info == NULL) {
+            return 2;
+        }
+        switch (*info >> 8) {
+        case 13:
+            return 1;
+        case 2:
+            card = (arg2[2] >> 16) & 0xFFFF;
+            if (card == func_001E1090(arg0, arg1)) {
+                return 1;
+            }
+        default:
+            return 2;
+        }
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_0010F940(func_00250360(arg0, arg1), card) == 1) {
+            if (func_001E22B0(position & 0xFF, position >> 8) != 9) {
+                return 1;
+            }
+        }
+        return 2;
+    case 2:
+    case 3:
+    case 4:
+    default:
+        return 2;
+    }
+}
 
 s32 func_0010F030(void) {
     extern s32 func_001E1030();
@@ -1112,7 +1164,6 @@ typedef struct Coord_0010FFF0 {
     u8 y : 4;
 } Coord_0010FFF0;
 
-s32 func_0010EE00(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_0010FFF0(void *src, u8 mode) {
@@ -1315,7 +1366,6 @@ typedef struct Result_001106F0 {
     u8 flags;
 } Result_001106F0;
 
-s32 func_0010EE00(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 #define target_001106F0(src, side) ((side) == 1 ? ((((Source_001106F0 *)(src))->target >> 16) & 0xFFFF) : (u32)(u16)((Source_001106F0 *)(src))->target)
