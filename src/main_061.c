@@ -408,7 +408,7 @@ typedef struct Quad_00218970 {
 } Quad_00218970;
 
 void func_00218C10(void *, s16, s16, s16, s16, s16, s16, s16, s16,
-                  u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8,
+                  u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u16,
                   s16);
 
 void func_00218970(void *arg0, void *src, s16 x, s16 y) {
@@ -440,7 +440,7 @@ typedef struct {
 } Quad_00218AB0;
 
 void func_00218C10(void *, s16, s16, s16, s16, s16, s16, s16, s16,
-                  u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8,
+                  u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u16,
                   s16);
 
 void func_00218AB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
