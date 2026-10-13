@@ -1906,7 +1906,34 @@ void func_00159F80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 2500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00159FE0);
+void func_00159FE0(void *arg0) {
+    extern s32 func_001E1030();
+    Entry_00159D00 *entry = arg0;
+    s32 slot;
+
+    slot = func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    switch (func_001E1030(entry->coordinates >> 8, entry->coordinates & 0xFF)) {
+    case 0x293:
+        if (func_001E2100(entry->coordinates >> 8, entry->coordinates & 0xFF, 4) == 0 && func_0027D720(entry, 0) == 1) {
+            return;
+        }
+        break;
+    case 0x287:
+        if (func_0027D720(entry, 0) == 1) {
+            entry->state = 0xBFF;
+            return;
+        }
+        break;
+    case 0x28F:
+        if (func_0024E910(func_0024CA40(0, 0, slot, 2, 0x34, 0xE)) > 5) {
+            entry->state = 0x3FF;
+            entry->data.word = (func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF) << 16) | entry->data.halves.low;
+            return;
+        }
+        break;
+    }
+    func_00159D00(entry);
+}
 
 void func_0015A120(s32 a0, s32 a1, u16 *buf) {
     s32 i;
