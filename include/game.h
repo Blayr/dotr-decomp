@@ -47,7 +47,6 @@ extern u8 D_1FE0000;
 
 
 s64 func_001A22C0(f32);
-s32 func_0026F690(s32, u16 *, s16 *, s32);
 extern u8 D_00317490[];
 
 

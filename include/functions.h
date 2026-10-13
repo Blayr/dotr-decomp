@@ -2133,6 +2133,7 @@ s32 func_0026EA80(s32 arg0, s32 arg1);
 s32 func_0026EEA0(void *arg0, s32 arg1, s32 arg2);
 s32 func_0026EED0(s32 arg0);
 s32 func_0026F600(s32 arg0, s32 *arg1);
+s32 func_0026F690(s32 arg0, u16 *arg1, s16 *arg2, s32 arg3);
 s32 func_0026FA70(s32 arg0, s32 arg1);
 s32 func_0026FA80(s32 arg0, s32 arg1);
 s32 func_0026FB10(s32 arg0, s32 arg1);

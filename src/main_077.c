@@ -75,7 +75,155 @@ s32 func_0026F600(s32 arg0, s32 *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026F690);
+s32 func_0026F690(s32 arg0, u16 *arg1, s16 *arg2, s32 arg3) {
+    extern u16 D_002B8700[];
+    extern u16 D_002B8702[];
+    extern u16 D_002B8704[];
+    extern void func_001DE760(s32, u8);
+    extern s32 func_001DE740(s32);
+    s32 flags;
+    s32 kind;
+    s32 bonus;
+    s32 index;
+
+    flags = func_001DE740(arg0);
+    kind = func_001E0700(arg0, 0) & 0x1F;
+    bonus = (flags & 0xF0) * 5;
+    arg1[0] = 999;
+    arg1[1] = 999;
+    arg1[2] = 999;
+    switch (kind) {
+    case 0:
+        arg2[0] = 0;
+        arg2[1] = 0;
+        arg2[2] = 0;
+        break;
+    case 1:
+        arg2[0] = 2;
+        arg2[1] = 1;
+        arg2[2] = -3;
+        break;
+    case 2:
+        arg2[0] = 12;
+        arg2[1] = 6;
+        arg2[2] = -18;
+        break;
+    case 3:
+        arg2[0] = 2;
+        arg2[1] = 1;
+        arg2[2] = -3;
+        break;
+    case 4:
+        arg2[0] = 5;
+        arg2[1] = 3;
+        arg2[2] = -8;
+        break;
+    case 5:
+        arg2[0] = 8;
+        arg2[1] = 4;
+        arg2[2] = -12;
+        break;
+    case 6:
+        arg2[0] = 6;
+        arg2[1] = 3;
+        arg2[2] = -9;
+        break;
+    case 7:
+        arg2[0] = 0;
+        arg2[1] = 0;
+        arg2[2] = 0;
+        break;
+    case 8:
+        arg2[0] = 12;
+        arg2[1] = 6;
+        arg2[2] = -18;
+        break;
+    case 9:
+        arg2[0] = 10;
+        arg2[1] = 5;
+        arg2[2] = -15;
+        break;
+    case 10:
+        arg2[0] = 14;
+        arg2[1] = 7;
+        arg2[2] = -21;
+        break;
+    case 11:
+        arg2[0] = 15;
+        arg2[1] = 8;
+        arg2[2] = -23;
+        break;
+    case 12:
+        arg2[0] = 8;
+        arg2[1] = 4;
+        arg2[2] = -12;
+        break;
+    case 13:
+        arg2[0] = 14;
+        arg2[1] = 7;
+        arg2[2] = -21;
+        break;
+    case 14:
+        arg2[0] = 3;
+        arg2[1] = 1;
+        arg2[2] = -4;
+        break;
+    case 15:
+        arg2[0] = 10;
+        arg2[1] = 5;
+        arg2[2] = -15;
+        break;
+    case 16:
+        arg2[0] = 2;
+        arg2[1] = 1;
+        arg2[2] = -3;
+        break;
+    case 17:
+        arg2[0] = 13;
+        arg2[1] = 6;
+        arg2[2] = -19;
+        break;
+    case 18:
+        arg2[0] = 10;
+        arg2[1] = 5;
+        arg2[2] = -15;
+        break;
+    case 19:
+        arg2[0] = 10;
+        arg2[1] = 5;
+        arg2[2] = -15;
+        break;
+    case 20:
+        arg2[0] = -5;
+        arg2[1] = -2;
+        arg2[2] = 7;
+        break;
+    default:
+        return -1;
+    }
+    if (!(flags & 0x80)) {
+        index = (flags & 0xF) * 3;
+        arg1[0] = D_002B8700[index];
+        arg1[1] = D_002B8702[index];
+        arg1[2] = D_002B8704[index];
+        arg2[0] += bonus;
+        arg2[1] += (s16)(bonus >> 1);
+        arg2[2] = -(arg2[0] + arg2[1]);
+        arg2[0] += 10;
+        arg2[1] += 20;
+        arg2[2] += 70;
+        flags |= 0x80;
+        func_001DE760(arg0, flags);
+        if (arg3 != 0) {
+            ((s32 *)arg3)[0] = 0x72;
+            ((s32 *)arg3)[1] = func_001DE540();
+            ((s32 *)arg3)[2] = 0;
+            ((s32 *)arg3)[3] = 0;
+        }
+        return 1;
+    }
+    return -1;
+}
 
 s32 func_0026FA70(s32 arg0, s32 arg1) {
     return func_0026FA80(arg0 & 0xFFF, arg1);
