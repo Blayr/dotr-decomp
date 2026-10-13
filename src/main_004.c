@@ -871,7 +871,44 @@ s32 func_0010F6F0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F850);
+s32 func_0010F850(s32 arg0, s32 arg1) {
+    s32 temp_v1;
+    u32 temp_v0;
+
+    if ((arg0 & 0xFF) == 1) {
+        temp_v0 = arg1 & 0xFF;
+        switch (temp_v0) {                          /* switch 1 */
+        case 0:                                     /* switch 1 */
+            return 0x203;
+        case 1:                                     /* switch 1 */
+            return 0x302;
+        case 2:                                     /* switch 1 */
+            return 0x301;
+        case 3:                                     /* switch 1 */
+            return 0x300;
+        case 4:                                     /* switch 1 */
+            return 0x104;
+        case 6:                                     /* switch 1 */
+            return 4;
+        default:                                    /* switch 1 */
+            return 0x203;
+        }
+    } else {
+        temp_v1 = arg1 & 0xFF;
+        switch (temp_v1) {                          /* switch 2; irregular */
+        case 0:                                     /* switch 2 */
+            return 0x102;
+        case 1:                                     /* switch 2 */
+            return 0x201;
+        case 2:                                     /* switch 2 */
+            return 0x200;
+        case 3:                                     /* switch 2 */
+            return 2;
+        default:                                    /* switch 2 */
+            return 0x102;
+        }
+    }
+}
 
 s32 func_0010F940(s32 arg0, s32 arg1) {
     extern s32 func_001E1030();

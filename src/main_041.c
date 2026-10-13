@@ -613,7 +613,41 @@ void func_001C7C00(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7D20);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C8590);
+s32 func_001C8590(s32 arg0, u8 *arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001CB6B0(s32, u8 *, s32, s32);
+    u8 kind;
+
+    kind = arg1[0xA9C002];
+    if ((kind & 0xF0) == 0x10) {
+        switch (kind & 0xF) {
+        case 0:
+            arg0 = func_001C8DC0(arg0, arg1, arg2 + 0xE, arg3 + 0xB);
+            break;
+        case 1:
+            arg0 = func_001C92C0(arg0, (s32)arg1, arg2 + 0xE, arg3 + 0xB);
+            break;
+        case 2:
+            arg0 = func_001C9C60(arg0, arg1, arg2 + 0xE, arg3 + 0xB);
+            break;
+        case 3:
+            arg0 = func_001CA0E0(arg0, arg1, arg2 + 0xE, arg3 + 0xB);
+            break;
+        case 4:
+            arg0 = func_001CA450(arg0, arg1, arg2 + 0xE, arg3 + 0xB);
+            break;
+        case 5:
+        case 6:
+            arg0 = func_001C8690(arg0, arg1, arg2, arg3);
+            break;
+        case 7:
+            arg0 = func_001CB6B0(arg0, arg1, arg2 + 0xE, arg3 - 6);
+            break;
+        }
+    } else {
+        arg0 = func_001C8690(arg0, arg1, arg2, arg3);
+    }
+    return arg0;
+}
 
 s32 func_001C8690(s32 arg0, u8 *arg1, s32 x, s32 y) {
     extern s32 *func_001FEAB0(s32);

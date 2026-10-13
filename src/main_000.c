@@ -758,7 +758,45 @@ void func_00101EE0(void *arg0, void *arg1, void *arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_001020B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102210);
+void func_00102210(u32 arg0, s32 *arg1, s32 *arg2) {
+    switch (arg0) {
+    case 0:
+    case 4:
+        *arg1 = 0x43000000;
+        *arg2 = 0x42800000;
+        return;
+    case 1:
+        *arg1 = 0x42800000;
+        *arg2 = 0x43000000;
+        return;
+    case 2:
+    case 5:
+    case 8:
+        *arg2 = 0x43000000;
+        *arg1 = 0x43000000;
+        return;
+    case 3:
+        *arg1 = 0x43800000;
+        *arg2 = 0x42800000;
+        return;
+    case 6:
+        *arg1 = 0x42000000;
+        *arg2 = 0x43000000;
+        return;
+    case 7:
+        *arg1 = 0x43000000;
+        *arg2 = 0x42800000;
+        return;
+    case 9:
+        *arg2 = 0x42800000;
+        *arg1 = 0x42800000;
+        return;
+    default:
+        *arg2 = 0;
+        *arg1 = 0;
+        return;
+    }
+}
 
 s32 func_001022D0(u32 arg0, s32 arg1) {
     switch (arg0) {

@@ -389,7 +389,27 @@ s32 func_001554B0(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155520);
+s32 func_00155520(s32 arg0, s32 arg1) {
+    func_001DE540();
+    switch (arg0) {
+    case 0:
+        return (arg1 == 0) ? 0x200 : 0x206;
+    case 1:
+        return (arg1 == 0) ? 0x300 : 0x306;
+    case 2:
+        return (arg1 == 0) ? 0x400 : 0x406;
+    case 3:
+        return (arg1 == 0) ? 0x500 : 0x506;
+    case 4:
+        return (arg1 == 0) ? 0x600 : 0x606;
+    case 5:
+        return (arg1 == 0) ? 0x601 : 0x605;
+    case 6:
+        return (arg1 == 0) ? 0x602 : 0x604;
+    default:
+        return -1;
+    }
+}
 
 s32 func_001555F0(s32 arg0) {
     s32 i;
