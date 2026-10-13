@@ -806,7 +806,35 @@ typedef struct State_00203CD0 {
 
 extern State_00203CD0 D_00325C80;
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203CD0);
+void func_00203CD0(void) {
+    extern s32 func_0019B648();
+    extern u8 D_002D078C;
+    extern u8 D_002D07F4[];
+    extern u8 D_002D07FA[];
+    extern u8 D_002D07FF[];
+    State_00203CD0 *state = &D_00325C80;
+    u8 buffer[0x80];
+
+    func_0020B3C0((s8 *)&D_00325C80, 0, 0x30);
+    D_00325C80.f00 = 0;
+    D_00325C80.f04 = D_002D078C;
+    D_00325C80.f08 = 0;
+    D_00325C80.f0C = 0;
+    D_00325C80.f10 = 0;
+    D_00325C80.f14 = 0;
+    D_00325C80.f18 = 0;
+    D_00325C80.f1C = 0;
+    D_00325C80.f20 = 0;
+    D_00325C80.f24 = 0;
+    D_00325C80.f28 = 2;
+    D_00325C80.flags.flag0 = 0;
+    D_00325C80.flags.flag1 = 0;
+    D_00325C80.flags.flag2 = 0;
+    func_0019B648(buffer, D_002D07F4, func_001FFF90((s32)D_002D07FA), D_002D07FF);
+    if (func_00197548((s32)D_002D07FF) != 0) {
+        state->flags.flag1 = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203E20);
 

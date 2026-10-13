@@ -1403,6 +1403,7 @@ s32 func_00203C00(s32 arg0);
 u8 func_00203C40(s32 arg0, s32 arg1);
 void func_00203C70(s32 arg0, s32 arg1, s8 arg2);
 u8 func_00203CA0(s32 arg0, s32 arg1);
+void func_00203CD0(void);
 s32 func_00205150(void);
 s32 func_00205160(void);
 s32 func_00205170(void);
