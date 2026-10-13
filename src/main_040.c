@@ -521,7 +521,39 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BDAF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BE5F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BF180);
+s32 func_001BF180(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern char D_002BE940[];
+    s32 offset;
+    s32 id;
+    s32 *size;
+    s32 x;
+    s32 y;
+    s32 result;
+    f32 scaleX;
+    f32 scaleY;
+
+    if (arg4 != 0) {
+        offset = 0x280;
+    } else {
+        offset = -0x140;
+    }
+    scaleX = 1.0f;
+    scaleY = 1.0f;
+    id = func_0020F290(func_001FD680(arg0, 1, arg1 + 0x496, 0, 0x16));
+    size = func_001FEAB0(1);
+    x = arg2 + offset + 0x1C;
+    y = arg3 + 0x30;
+    if (size[3] > 0x106) {
+        scaleX = 262.0f / size[3];
+    }
+    if (size[4] > 0x100) {
+        scaleY = 256.0f / size[4];
+    }
+    result = func_001FE660(id, 1, x, y, scaleX, scaleY, (s32)D_002BE940, func_001FDFE0);
+    func_001FEAF0(1);
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BF2A0);
 
