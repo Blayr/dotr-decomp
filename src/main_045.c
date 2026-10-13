@@ -428,6 +428,7 @@ s32 func_001E03D0(void *arg0, s32 arg1) {
 
 
 static inline void *get_001E0450(void) {
+    extern void *func_001DD130();
     void *var_v0;
 
     var_v0 = func_001DD130();
@@ -550,6 +551,7 @@ typedef struct Entry_001E0690 {
 } Entry_001E0690;
 
 static inline void *lookup_001E0690(void) {
+    extern void *func_001DD130();
     Entry_001E0690 *entry = func_001DD130();
 
     if (entry == NULL) {
@@ -574,6 +576,7 @@ s32 func_001E0690(s32 unused0, s32 unused1) {
 }
 
 static inline u8 *get_entry_bytes_001E0700(void) {
+    extern void *func_001DD130();
     u8 *entry;
 
     entry = func_001DD130();
@@ -631,6 +634,7 @@ static inline void *check_001E07C0(void *ptr) {
 }
 
 s32 func_001E07C0(void) {
+    extern void *func_001DD130();
     void **ptr;
     void *data;
 
@@ -707,6 +711,7 @@ static inline void *check_001E08F0(void *var_v0) {
 }
 
 void func_001E08F0(s32 arg0, s32 arg1, s32 arg2) {
+    extern void *func_001DD130();
     func_001E0950(check_001E08F0(func_001DD130()), arg2);
 }
 
@@ -806,6 +811,7 @@ void *func_001E09E0(void *arg0, s32 arg1) {
 }
 
 static inline void *check_001E0B70(void) {
+    extern void *func_001DD130();
     void *record;
 
     record = func_001DD130();
@@ -834,6 +840,7 @@ void *func_001E0B70(s32 arg0, s32 arg1, s32 index) {
 s32 func_001E0C70(void *, s32, s32);                /* extern */
 
 static inline void *check_001E0C00(void) {
+    extern void *func_001DD130();
     void *ptr = func_001DD130();
     if (ptr == NULL) {
         return NULL;
@@ -857,6 +864,7 @@ s32 func_001E0C70(void *arg0, s32 arg1, s32 arg2) {
 INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0C80);
 
 s32 func_001E1030(void) {
+    extern void *func_001DD130();
     u8 *entry;
 
     entry = func_001DD130();
@@ -874,6 +882,7 @@ s32 func_001E1030(void) {
 void *func_001DD130();
 
 static inline u8 *get_001E1090(void) {
+    extern void *func_001DD130();
     u8 *data;
 
     data = func_001DD130();
@@ -962,6 +971,7 @@ s32 func_001E11B0(s32 arg0, s32 arg1, f32 *arg2) {
 void *func_001DD130(void);
 
 static inline void *lookup_001E1360(void) {
+    extern void *func_001DD130();
     void *ptr;
 
     ptr = func_001DD130();
@@ -993,6 +1003,7 @@ typedef struct Entry_001E13C0 {
 void *func_001DD130(void);
 
 s32 func_001E13C0(s32 unused0, s32 unused1) {
+    extern void *func_001DD130();
     Entry_001E13C0 *entry;
 
     entry = func_001DD130();
@@ -1014,6 +1025,7 @@ typedef struct Flags_001E1420 {
 } Flags_001E1420;
 
 static inline void *check_001E1420(void) {
+    extern void *func_001DD130();
     void *ptr = func_001DD130();
 
     if (ptr == NULL) {
@@ -1049,6 +1061,7 @@ typedef struct {
 } Entry_001E14B0;
 
 static inline void *lookup_001E14B0(void) {
+    extern void *func_001DD130();
     void *entry = func_001DD130();
 
     if (entry == NULL) {
@@ -1071,6 +1084,7 @@ s32 func_001E14B0(void) {
 void *func_001DD130();
 
 static inline void *lookup_001E1520(void) {
+    extern void *func_001DD130();
     void *entry = func_001DD130();
 
     if (entry == NULL) {
@@ -1095,6 +1109,7 @@ s32 func_001E1520(s32 arg0, s32 arg1, s8 arg2) {
 void *func_001DD130(void);
 
 static inline void *get_001E1580(void) {
+    extern void *func_001DD130();
     void *entry;
 
     entry = func_001DD130();
@@ -1118,6 +1133,7 @@ s32 func_001E1580(void) {
 }
 
 s32 func_001E15E0(s32 arg0, s32 arg1, s8 arg2) {
+    extern void *func_001DD130();
     void *var_v0;
 
     var_v0 = func_001DD130();
@@ -1136,6 +1152,7 @@ s32 func_001E15E0(s32 arg0, s32 arg1, s8 arg2) {
 void *func_001DD130(void);
 
 static inline u8 *check_001E1640(void) {
+    extern void *func_001DD130();
     u8 *entry;
 
     entry = func_001DD130();
@@ -1185,6 +1202,7 @@ s32 func_001E16A0(s32 a0, s32 a1, s8 arg2) {
 void *func_001DD130(void);
 
 static inline u8 *valid_001E1700(void) {
+    extern void *func_001DD130();
     u8 *ptr;
 
     ptr = func_001DD130();
@@ -1218,6 +1236,7 @@ typedef struct Card_001E1760 {
 s32 func_002464F0(void *, u8, u8);
 
 s32 func_001E1760(void) {
+    extern void *func_001DD130();
     Card_001E1760 *card;
 
     card = func_001DD130();
@@ -1243,6 +1262,7 @@ typedef struct {
 s32 func_002464F0(void *, u8, u8);
 
 static inline void *get_card_001E17D0(void) {
+    extern void *func_001DD130();
     Card_001E17D0 *card = func_001DD130();
 
     if (card == NULL) {
@@ -1264,6 +1284,7 @@ s32 func_001E17D0(void) {
 }
 
 s32 func_001E1840(s32 arg0, s32 arg1, s8 arg2) {
+    extern void *func_001DD130();
     void *var_v0;
 
     var_v0 = func_001DD130();
@@ -1280,6 +1301,7 @@ s32 func_001E1840(s32 arg0, s32 arg1, s8 arg2) {
 }
 
 static inline void *check_001E18A0(void) {
+    extern void *func_001DD130();
     void *p = func_001DD130();
     if (p == NULL) {
         return NULL;
@@ -1312,6 +1334,7 @@ s32 func_001E1900(s32 arg0, s32 arg1, s8 arg2) {
 }
 
 static inline void *get_001E1970(void) {
+    extern void *func_001DD130();
     void *p;
 
     p = func_001DD130();

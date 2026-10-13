@@ -1,6 +1,7 @@
 #include "common.h"
 
 static inline u8 *lookup_001E19D0(void) {
+    extern void *func_001DD130();
     u8 *entry = func_001DD130();
 
     if (entry == NULL) {
@@ -23,6 +24,7 @@ s32 func_001E19D0(s32 arg0, s32 arg1, s8 arg2) {
 }
 
 static inline u8 *get_entry_001E1A30(void) {
+    extern void *func_001DD130();
     u8 *entry;
 
     entry = func_001DD130();
@@ -56,6 +58,7 @@ static inline void *check_001E1A90(void *p) {
 }
 
 s32 func_001E1A90(void) {
+    extern void *func_001DD130();
     u8 *p;
 
     p = check_001E1A90(func_001DD130());
@@ -92,6 +95,7 @@ typedef struct {
 } Object_001E1B70;
 
 static inline void *check_001E1B70(void) {
+    extern void *func_001DD130();
     Object_001E1B70 *object;
 
     object = (Object_001E1B70 *) func_001DD130();
@@ -135,6 +139,7 @@ static inline void *check_001E1C10(void *p) {
 }
 
 s32 func_001E1C10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern void *func_001DD130();
     void *var_v0;
 
     var_v0 = check_001E1C10(func_001DD130());
@@ -149,6 +154,7 @@ s32 func_001E1C10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 static inline void *get_entry_001E1CB0(void) {
+    extern void *func_001DD130();
     void *entry;
 
     entry = func_001DD130();
@@ -172,6 +178,7 @@ s32 func_001E1CB0(void) {
 }
 
 s32 func_001E1D10(void) {
+    extern void *func_001DD130();
     u8 *ptr;
 
     ptr = func_001DD130();
@@ -202,6 +209,7 @@ typedef struct State_001E1D70 {
 } State_001E1D70;
 
 s32 func_001E1D70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern void *func_001DD130();
     State_001E1D70 *state;
 
     state = func_001DD130();
@@ -221,6 +229,7 @@ s32 func_001E1D70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 static inline u8 *lookup_001E1E10(void) {
+    extern void *func_001DD130();
     u8 *entry;
 
     entry = func_001DD130();
@@ -786,6 +795,7 @@ typedef struct Flags_001E3850 {
 } Flags_001E3850;
 
 static inline void *get_001E3850(void) {
+    extern void *func_001DD130();
     u8 *card = func_001DD130();
 
     if (card == NULL) {
@@ -821,6 +831,7 @@ typedef struct Entry_001E3900 {
 } Entry_001E3900;
 
 static inline void *get_001E3900(void) {
+    extern void *func_001DD130();
     Entry_001E3900 *entry = func_001DD130();
     if (entry == NULL) {
         return NULL;
@@ -850,6 +861,7 @@ typedef struct Object_001E3990 {
 } Object_001E3990;
 
 static inline void *check_001E3990(void) {
+    extern void *func_001DD130();
     Object_001E3990 *object = func_001DD130();
 
     if (object == NULL) {
@@ -880,6 +892,7 @@ struct ObjectFields_001E3A20 {
 };
 
 s32 func_001E3A20(s32 arg0, s32 arg1, s32 arg2) {
+    extern void *func_001DD130();
     struct ObjectFields_001E3A20 *object = func_001DD130();
 
     if (object == NULL) {
@@ -900,6 +913,7 @@ typedef struct Vec4_001E3AB0 {
 } Vec4_001E3AB0;
 
 static inline void *get_001E3AB0(void) {
+    extern void *func_001DD130();
     void *entry = func_001DD130();
 
     if (entry == NULL) {
@@ -941,6 +955,7 @@ typedef struct Object_001E3B50 {
 } Object_001E3B50;
 
 static inline void *get_001E3B50(void) {
+    extern void *func_001DD130();
     void *object = func_001DD130();
 
     if (object == NULL) {
@@ -978,6 +993,7 @@ typedef struct Vec4_001E3BF0 {
 } Vec4_001E3BF0;
 
 static inline void *lookup_001E3BF0(void) {
+    extern void *func_001DD130();
     void *object;
 
     object = func_001DD130();
@@ -1016,6 +1032,7 @@ typedef struct Vec4_001E3C90 {
 } Vec4_001E3C90;
 
 static inline void *lookup_001E3C90(void) {
+    extern void *func_001DD130();
     void *object = func_001DD130();
 
     if (object == NULL) {
@@ -1065,6 +1082,7 @@ typedef struct Entry_001E3D30 {
 } Entry_001E3D30;
 
 static inline void *check_001E3D30(void) {
+    extern void *func_001DD130();
     Entry_001E3D30 *entry = func_001DD130();
 
     if (entry == NULL) {
@@ -1099,6 +1117,7 @@ typedef struct Vec4_001E3DD0 {
 } Vec4_001E3DD0;
 
 static inline void *get_001E3DD0(void) {
+    extern void *func_001DD130();
     void *object = func_001DD130();
 
     if (object == NULL) {
@@ -1135,6 +1154,7 @@ typedef struct {
 } Color_001E3E70;
 
 static inline void *lookup_001E3E70(void) {
+    extern void *func_001DD130();
     void *object = func_001DD130();
 
     if (object == NULL) {
@@ -1172,6 +1192,7 @@ typedef struct Color_001E3F10 {
 } Color_001E3F10;
 
 static inline void *get_001E3F10(void) {
+    extern void *func_001DD130();
     void *object = func_001DD130();
 
     if (object == NULL) {
