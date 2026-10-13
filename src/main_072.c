@@ -2,7 +2,25 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024B310);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C330);
+void func_0024C330(s32 *list, s32 left, s32 right) {
+    s32 cost;
+    s32 i;
+    s32 last;
+
+    if (left < right) {
+        func_0024C450(list, left, (left + right) >> 1);
+        last = left;
+        for (i = left + 1; i <= right; i++) {
+            cost = func_001E13C0(list[i] >> 8, list[i] & 0xFF);
+            if (cost > func_001E13C0(list[left] >> 8, list[left] & 0xFF)) {
+                func_0024C450(list, ++last, i);
+            }
+        }
+        func_0024C450(list, left, last);
+        func_0024C330(list, left, last);
+        func_0024C330(list, last + 1, right);
+    }
+}
 
 void func_0024C450(s32 *arg0, s32 arg1, s32 arg2) {
     s32 temp_a0;
