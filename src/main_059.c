@@ -586,7 +586,167 @@ s32 func_00210940(void *arg0, s32 depth, void *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00210CF0);
+typedef struct FloatKey_00210CF0 {
+    u32 time;
+    f32 value[3];
+} FloatKey_00210CF0;
+
+typedef struct IntKey_00210CF0 {
+    u32 time;
+    s32 value[3];
+} IntKey_00210CF0;
+
+s32 func_00210CF0(void *src, f32 time, s32 flags, f32 *position,
+                  void *rotation, void *scale, f32 multiplier) {
+    extern s32 func_0020D1D0(s32, s32, f32, f32);
+    IntKey_00210CF0 *rotationLeft;
+    IntKey_00210CF0 *rotationRight;
+    void **tracks;
+    u32 *counts;
+
+    if (*(u16 *)0x700000E0 & 4) {
+        counts = (u32 *)((u8 *)src + 12);
+        tracks = src;
+    } else {
+        counts = (u32 *)((u8 *)src + 8);
+        tracks = src;
+    }
+
+    {
+        FloatKey_00210CF0 *keys = tracks[0];
+        if (keys != 0) {
+            s32 low;
+            s32 high = counts[0];
+            flags &= ~1;
+            if (high < 3) {
+                func_0020B340(position, keys[0].value, 3);
+                position[0] *= multiplier;
+                position[1] *= multiplier;
+                position[2] *= multiplier;
+            } else {
+                s32 middle = high >> 1;
+                FloatKey_00210CF0 *left;
+                low = 0;
+                while (low < middle) {
+                    FloatKey_00210CF0 *key = &keys[middle];
+                    if (!(time < (f32)key[1].time)) {
+                        low = middle;
+                    } else if (time < (f32)key->time) {
+                        high = middle;
+                    } else {
+                        break;
+                    }
+                    middle = (low + high) >> 1;
+                }
+                left = &keys[middle];
+                if ((u32)(middle + 1) >= counts[0]) {
+                    func_0020B340(position, left->value, 3);
+                    position[0] *= multiplier;
+                    position[1] *= multiplier;
+                    position[2] *= multiplier;
+                } else {
+                    FloatKey_00210CF0 *right = &keys[middle + 1];
+                    f32 duration = (f32)(right->time - left->time);
+                    f32 leftWeight = ((f32)right->time - time) / duration;
+                    f32 rightWeight = (time - (f32)left->time) / duration;
+                    position[0] = leftWeight * left->value[0] + rightWeight * right->value[0];
+                    position[1] = leftWeight * left->value[1] + rightWeight * right->value[1];
+                    position[2] = leftWeight * left->value[2] + rightWeight * right->value[2];
+                    position[0] *= multiplier;
+                    position[1] *= multiplier;
+                    position[2] *= multiplier;
+                }
+            }
+        }
+    }
+    {
+        IntKey_00210CF0 *keys = tracks[1];
+        if (keys != 0) {
+            IntKey_00210CF0 *key;
+            s32 high = counts[1];
+            flags &= ~2;
+            if (high < 3) {
+                func_0020B340(rotation, keys[0].value, 3);
+            } else {
+                s32 low = 0;
+                s32 middle = high >> 1;
+                while (low < middle) {
+                    key = &keys[middle];
+                    if (!(time < (f32)key[1].time)) {
+                        low = middle;
+                    } else if (time < (f32)key->time) {
+                        high = middle;
+                    } else {
+                        break;
+                    }
+                    middle = (low + high) >> 1;
+                }
+                rotationLeft = &keys[middle];
+                if ((u32)(middle + 1) >= counts[1]) {
+                    func_0020B340(rotation, rotationLeft->value, 3);
+                } else {
+                    f32 duration;
+                    f32 leftWeight;
+                    f32 rightWeight;
+                    rotationRight = &keys[middle + 1];
+                    duration = (f32)(rotationRight->time - rotationLeft->time);
+                    leftWeight = ((f32)rotationRight->time - time) / duration;
+                    rightWeight = (time - (f32)rotationLeft->time) / duration;
+                    ((s32 *)rotation)[0] = func_0020D1D0(rotationLeft->value[0], rotationRight->value[0], leftWeight, rightWeight);
+                    ((s32 *)rotation)[1] = func_0020D1D0(rotationLeft->value[1], rotationRight->value[1], leftWeight, rightWeight);
+                    ((s32 *)rotation)[2] = func_0020D1D0(rotationLeft->value[2], rotationRight->value[2], leftWeight, rightWeight);
+                }
+            }
+        }
+    }
+    if (*(u16 *)0x700000E0 & 4) {
+        FloatKey_00210CF0 *keys = tracks[2];
+        if (keys != 0) {
+            FloatKey_00210CF0 *key;
+            s32 high = counts[2];
+            flags &= ~4;
+            if (high < 3) {
+                func_0020B340(scale, keys[0].value, 3);
+            } else {
+                s32 low = 0;
+                s32 middle = high >> 1;
+                FloatKey_00210CF0 *left;
+                while (low < middle) {
+                    key = &keys[middle];
+                    if (!(time < (f32)key[1].time)) {
+                        low = middle;
+                    } else if (time < (f32)key->time) {
+                        high = middle;
+                    } else {
+                        break;
+                    }
+                    middle = (low + high) >> 1;
+                }
+                left = &keys[middle];
+                if ((u32)(middle + 1) >= counts[2]) {
+                    func_0020B340(scale, left->value, 3);
+                } else {
+                    u32 rightTime;
+                    u32 leftTime;
+                    FloatKey_00210CF0 *right;
+                    f32 duration;
+                    f32 leftWeight;
+                    f32 rightWeight;
+                    right = &keys[middle + 1];
+                    leftTime = left->time;
+                    rightTime = right->time;
+                    duration = (f32)(rightTime - leftTime);
+                    leftWeight = ((f32)rightTime - time) / duration;
+                    rightWeight = (time - (f32)leftTime) / duration;
+                    ((f32 *)scale)[0] = leftWeight * left->value[0] + rightWeight * right->value[0];
+                    ((f32 *)scale)[1] = leftWeight * left->value[1] + rightWeight * right->value[1];
+                    ((f32 *)scale)[2] = leftWeight * left->value[2] + rightWeight * right->value[2];
+                }
+            }
+        }
+    }
+    return flags;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002114B0);
 
