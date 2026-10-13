@@ -1069,7 +1069,6 @@ void func_001F7790(s32);
 void func_002009E0(s32, s32);
 void func_00203E20(void);
 void func_00237730(void);
-void func_00285F20(void);
 
 void func_001AA260(void) {
     extern void func_001AAAF0();

@@ -1331,7 +1331,167 @@ void func_00285EE0(void) {
 
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00285F20);
+static inline Object_00280670 *object_00285F20(s32 index) {
+    return &D_00351180[index];
+}
+
+static inline Flags_00280670 *row_00285F20(s32 index) {
+    return &D_00351240[index];
+}
+
+#pragma optimization_level 0
+
+void func_00285F20(void) {
+    extern s32 func_001E4530();
+    extern s32 func_001A8920();
+    extern s32 func_00101AD0();
+    extern s32 func_00217710();
+    extern s32 func_00280670();
+    extern s32 func_002817C0();
+    extern s32 func_00285880(s32);
+    extern s32 func_00203C40();
+    s32 i;
+    s32 remainder1;
+    s32 remainder2;
+    s32 remainder3;
+
+    if (D_00351244) {
+        if (func_00203A40(0, 0, 0x800) != 0) {
+            func_001E4530();
+            func_00285880(1);
+        }
+        if (func_00203A40(0, 0, 0x100) != 0) {
+            func_001A8920();
+        }
+    }
+    switch (D_00351240[0].state) {
+    case 0:
+        if (func_00203A40(0, 0, 0x4000) != 0 ||
+            (func_00203BC0(0) != 0 && (func_00203C40(0, 3) & 0xFF) > 0xF0)) {
+            func_00217710(0, 0x20);
+            func_00280670();
+        }
+        break;
+    case 1:
+        if (D_00351240[0].enabled == 2 && func_00203A40(0, 0, 0x80) != 0) {
+            func_00217710(0, 0x21);
+            func_00101AD0(object_00285F20(0), 0x10, 0, 0xFF);
+            object_00285F20(0)->width = 40.0f;
+            object_00285F20(0)->height = 1.0f;
+            row_00285F20(0)->enabled = 3;
+            remainder1 = row_00285F20(0)->position % 112;
+            row_00285F20(0)->countdown = (u8)((0x70 - remainder1) / row_00285F20(0)->velocity + 5);
+            if (D_00351230->flags & 2) {
+                row_00285F20(0)->countdown +=
+                    (u8)((0x70 / row_00285F20(0)->velocity) * ((func_0019A5C8() >> 4) % 3));
+            }
+        }
+        if (D_00351240[1].enabled == 2 && func_00203A40(0, 0, 0x10) != 0) {
+            func_00217710(0, 0x21);
+            func_00101AD0(object_00285F20(1), 0x10, 0, 0xFF);
+            object_00285F20(1)->width = 40.0f;
+            object_00285F20(1)->height = 1.0f;
+            row_00285F20(1)->enabled = 3;
+            remainder2 = row_00285F20(1)->position % 112;
+            row_00285F20(1)->countdown = (u8)((0x70 - remainder2) / row_00285F20(1)->velocity + 5);
+            if (D_00351230->flags & 2) {
+                row_00285F20(1)->countdown +=
+                    (u8)((0x70 / row_00285F20(1)->velocity) * ((func_0019A5C8() >> 4) % 3));
+            }
+        }
+        if (D_00351240[2].enabled == 2 && func_00203A40(0, 0, 0x20) != 0) {
+            func_00217710(0, 0x21);
+            func_00101AD0(object_00285F20(2), 0x10, 0, 0xFF);
+            object_00285F20(2)->width = 40.0f;
+            object_00285F20(2)->height = 1.0f;
+            row_00285F20(2)->enabled = 3;
+            remainder3 = row_00285F20(2)->position % 112;
+            row_00285F20(2)->countdown = (u8)((0x70 - remainder3) / row_00285F20(2)->velocity + 5);
+            if (D_00351230->flags & 2) {
+                row_00285F20(2)->countdown +=
+                    (u8)((0x70 / row_00285F20(2)->velocity) * ((func_0019A5C8() >> 4) % 3));
+            }
+        }
+        if (D_00351240[0].enabled == 4 && D_00351240[1].enabled == 4 && D_00351240[2].enabled == 4) {
+            D_00351240[0].state = 2;
+            func_002178C0(0, 0x1E);
+        }
+        break;
+    case 2:
+        if (func_002817C0() != 0) {
+            if ((D_00351242 & 0x1F) == 0) {
+                D_00351240[0].state = 3;
+                D_00351178 = 0;
+                D_00351179 = 0x10;
+            } else {
+                for (i = 0; i < 5; i++) {
+                    if (D_00351242 & (1 << i)) {
+                        switch (i) {
+                        case 0:
+                            D_00351210.state = 1;
+                            D_00351214 = D_00351210.rows[0][1] = D_00351210.rows[1][1] = D_00351210.rows[2][1] = 0x10;
+                            break;
+                        case 1:
+                            D_00351210.state = 1;
+                            D_00351215 = D_00351210.rows[0][2] = D_00351210.rows[1][2] = D_00351210.rows[2][2] = 0x10;
+                            break;
+                        case 2:
+                            D_00351210.state = 1;
+                            D_00351216 = D_00351210.rows[0][0] = D_00351210.rows[1][0] = D_00351210.rows[2][0] = 0x10;
+                            break;
+                        case 3:
+                            D_00351210.state = 1;
+                            D_00351217 = D_00351210.rows[0][2] = D_00351210.rows[1][1] = D_00351210.rows[2][0] = 0x10;
+                            break;
+                        case 4:
+                            D_00351210.state = 1;
+                            D_00351218 = D_00351210.rows[0][0] = D_00351210.rows[1][1] = D_00351210.rows[2][2] = 0x10;
+                            break;
+                        }
+                        D_00351242 &= (u8)~(1 << i);
+                        i = 5;
+                    }
+                }
+            }
+        }
+        break;
+    case 3:
+        switch (D_00351178) {
+        case 0:
+            if (D_00351179) {
+                D_00351179--;
+            } else {
+                D_00351178 = 1;
+                D_0035117A = 0;
+                D_00351179 = 8;
+            }
+            break;
+        case 1:
+            break;
+        case 2:
+            if (func_00203A40(0, 0, 0xF0) != 0) {
+                D_00351178 = 1;
+                D_00351179 = 8;
+            }
+            break;
+        case 6:
+            if (D_00351179) {
+                D_00351179--;
+            } else {
+                D_00351240[0].state = 4;
+            }
+            break;
+        }
+        break;
+    case 4:
+        if (!D_00351244) {
+            func_001A8920();
+        }
+        break;
+    }
+}
+
+#pragma optimization_level reset
 
 void func_00286900(void) {
 
