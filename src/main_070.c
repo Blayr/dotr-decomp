@@ -864,7 +864,30 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00247F40);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00248370);
+s32 func_00248370(u32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E1030();
+    s32 offset;
+    s32 row;
+
+    if (arg0 < 2U) {
+        if (arg1 == 0) {
+            return 0;
+        }
+    }
+
+    if (arg2 == 0x304) {
+        if ((func_001E0700((s32)arg0, arg1) >> 5) == 0) {
+            if ((func_001E0700((s32)arg0, arg1) & 0x1F) == 2) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    row = func_001E1030(arg0, arg1) * 7;
+    offset = arg2 - 0x2F0;
+    return ((D_0029D580 + (offset >> 3))[row] >> (offset % 8)) & 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00248460);
 
