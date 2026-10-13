@@ -2475,7 +2475,207 @@ s32 func_0011B0E0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_0011B680);
+typedef struct Input_0011B680 {
+    u16 position;
+    u16 unk2;
+    u16 command;
+    u16 unk6;
+    union {
+        u32 word;
+        u16 low;
+    } targets;
+} Input_0011B680;
+
+typedef struct Output_0011B680 {
+    u16 position;
+    u8 action;
+    u8 unk3;
+    u16 destination;
+    u8 unk6[6];
+    s32 value;
+    u8 state;
+} Output_0011B680;
+
+typedef struct Position_0011B680 {
+    u8 x : 4;
+    u8 y : 4;
+} Position_0011B680;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+#define target_0011B680(src, mode) ((mode) == 1 ? \
+    (u32)(u16)((src)->targets.word >> 16) : (u32)(src)->targets.low)
+
+static inline s32 option_0011B680(s32 card) {
+    if (func_001DF470(card) > 0x5DC) {
+        if (func_001E0150(card) >= 3) {
+            return 0;
+        }
+        return 0;
+    }
+    return 0;
+}
+
+#define min_0011B680(a, b) ((a) < (b) ? (u8)(a) : (b))
+#define max_0011B680(a, b) ((b) < (a) ? (u8)(a) : (b))
+#define distance_0011B680(pos, src, mode) ( \
+    (max_0011B680((pos)->x, target_0011B680(src, mode) & 0xFF) - \
+     min_0011B680((pos)->x, target_0011B680(src, mode) & 0xFF)) + \
+    (max_0011B680((u8)(pos)->y, target_0011B680(src, mode) >> 8) - \
+     min_0011B680((u8)(pos)->y, target_0011B680(src, mode) >> 8)))
+
+s32 func_0011B680(u32 *arg0, s32 arg1, u16 *arg2, u8 arg3, u8 arg4) {
+    extern s32 func_0027E360(s32, s32, s32, u8, s32);
+    extern void func_00279230(s32, s32, void *, s32, s32, s32, s32, s32, u8);
+    Position_0011B680 positions[12];
+    s32 y;
+    s32 bestScore;
+    s32 mode;
+    s32 current;
+    s32 command;
+
+    current = func_001E1090(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF);
+    mode = arg3;
+    if (target_0011B680((Input_0011B680 *)arg0, mode) == 0xFFFF && current == target_0011B680((Input_0011B680 *)arg0, mode)) {
+        arg2[0] = ((Input_0011B680 *)arg0)->position;
+        ((Output_0011B680 *)arg2)->action = 6;
+        arg2[2] = current;
+        ((Output_0011B680 *)arg2)->state = func_0027E360(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF,
+            arg2[2], arg4, 0);
+        ((Output_0011B680 *)arg2)->value = func_0011C140(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, arg0);
+        func_0011C3E0(arg0, arg3);
+        return 0;
+    } else {
+        command = (((Input_0011B680 *)arg0)->command >> 8) & 0xFF;
+        if (command == 15) {
+            s32 x = current & 0xFF;
+            s32 target;
+
+            y = current >> 8;
+            arg2[0] = ((Input_0011B680 *)arg0)->position;
+            ((Output_0011B680 *)arg2)->action = 6;
+            target = x | (func_00250860(7, y +
+                (func_002464F0(func_001DF540(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF), x, y) & 15)) << 8);
+            arg2[2] = target;
+            target = func_001E3790(target_0011B680((Input_0011B680 *)arg0, mode) & 0xFF,
+                target_0011B680((Input_0011B680 *)arg0, mode) >> 8);
+            if (target < 0) {
+                target = 0xFFFF;
+            }
+            func_00279230(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, positions, x, y,
+                arg2[2] & 0xFF, arg2[2] >> 8, (u16)target, 2);
+            if (func_0027AFC0((u8 *)positions) == 0) {
+                arg2[2] = current;
+            }
+            ((Output_0011B680 *)arg2)->state = func_0027E360(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF,
+                arg2[2], arg4, 0);
+            ((Output_0011B680 *)arg2)->value = func_0011C140(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, arg0);
+            func_0011C3E0(arg0, arg3);
+            return 0;
+        } else {
+            if (command == 16) {
+                s32 y2;
+                s32 x = current & 0xFF;
+                s32 target;
+
+                y2 = current >> 8;
+                arg2[0] = ((Input_0011B680 *)arg0)->position;
+                ((Output_0011B680 *)arg2)->action = 6;
+                target = x | (func_00250860(0, y2 -
+                    (func_002464F0(func_001DF540(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF), x, y2) & 15)) << 8);
+                arg2[2] = target;
+                target = func_001E3790(target_0011B680((Input_0011B680 *)arg0, mode) & 0xFF,
+                    target_0011B680((Input_0011B680 *)arg0, mode) >> 8);
+                if (target < 0) {
+                    target = 0xFFFF;
+                }
+                func_00279230(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, positions, x, y2,
+                    arg2[2] & 0xFF, arg2[2] >> 8, (u16)target, 2);
+                if (func_0027AFC0((u8 *)positions) == 0) {
+                    arg2[2] = current;
+                }
+                ((Output_0011B680 *)arg2)->state = func_0027E360(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF,
+                    arg2[2], arg4, 0);
+                ((Output_0011B680 *)arg2)->value = func_0011C140(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, arg0);
+                func_0011C3E0(arg0, arg3);
+                return 0;
+            } else {
+                Position_0011B680 *p = positions;
+                s32 count;
+                s32 i;
+                s32 best;
+                s32 target;
+                s32 j;
+                Position_0011B680 *init;
+
+                j = 0;
+                init = p;
+                do {
+                    init->x = init->y = 15;
+                    init++;
+                    j++;
+                } while (j < 12);
+                target = func_001E3790(target_0011B680((Input_0011B680 *)arg0, mode) & 0xFF,
+                    target_0011B680((Input_0011B680 *)arg0, mode) >> 8);
+                if (target < 0) {
+                    target = 0xFFFF;
+                }
+                func_00279230(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, positions,
+                    current & 0xFF, current >> 8, target_0011B680((Input_0011B680 *)arg0, mode) & 0xFF,
+                    target_0011B680((Input_0011B680 *)arg0, mode) >> 8, (u16)target, 7);
+                count = func_0027AFC0((u8 *)positions);
+                if (count > 0) {
+                    best = 0xFF;
+                    bestScore = 0xFFFF;
+                    for (i = 0; i < count; i++, p++) {
+                        s32 score;
+                        if (func_001E36E0(p->x, p->y) == 0) {
+                            score = func_00276CC0(p->x, p->y, arg1, 3, 1, (u8)option_0011B680(arg1));
+                            if (score < bestScore) {
+                                bestScore = score;
+                                best = i;
+                            } else if (score == bestScore) {
+                                if (distance_0011B680(p, (Input_0011B680 *)arg0, mode) <
+                                    distance_0011B680(&positions[best], (Input_0011B680 *)arg0, mode)) {
+                                    bestScore = score;
+                                    best = i;
+                                }
+                            }
+                        }
+                    }
+} else {
+                    arg2[0] = ((Input_0011B680 *)arg0)->position;
+                    ((Output_0011B680 *)arg2)->action = 6;
+                    arg2[2] = current;
+                    ((Output_0011B680 *)arg2)->state = func_0027E360(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF,
+                        arg2[2], arg4, 0);
+                    ((Output_0011B680 *)arg2)->value = func_0011C140(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, arg0);
+                    func_0011C3E0(arg0, arg3);
+                    return 0;
+                }
+                    if (best != 0xFF) {
+                        arg2[0] = ((Input_0011B680 *)arg0)->position;
+                        ((Output_0011B680 *)arg2)->action = 6;
+                        arg2[2] = (positions[best].y << 8) | positions[best].x;
+                        ((Output_0011B680 *)arg2)->state = func_0027E360(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF,
+                            arg2[2], arg4, 0);
+                        ((Output_0011B680 *)arg2)->value = func_0011C140(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, arg0);
+                    } else {
+                        arg2[0] = ((Input_0011B680 *)arg0)->position;
+                        ((Output_0011B680 *)arg2)->action = 6;
+                        arg2[2] = current;
+                        ((Output_0011B680 *)arg2)->state = func_0027E360(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF,
+                            arg2[2], arg4, 0);
+                        ((Output_0011B680 *)arg2)->value = func_0011C140(((Input_0011B680 *)arg0)->position >> 8, ((Input_0011B680 *)arg0)->position & 0xFF, arg0);
+                    }
+                    func_0011C3E0(arg0, arg3);
+                
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_0011C140(s32 arg0, s32 arg1, u32 *arg2) {
     /* really takes (arg0, arg1); the header says (void) */
