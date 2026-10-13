@@ -809,9 +809,9 @@ void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
-s32 func_002118F0(void *, s64, u16, void *, void *, void *, f32);
 
 s32 func_00211530(void *arg0, s32 depth, void *arg2) {
+    extern s32 func_002118F0(void *, s64, u16, void *, void *, void *, f32);
     Spr_00211530 *spr = (Spr_00211530 *)0x70000000;
     u8 buf[32];
     f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
