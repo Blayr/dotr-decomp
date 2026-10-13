@@ -1611,7 +1611,6 @@ typedef struct {
 } Entry_00122530;
 
 s32 func_00122970(s32);
-void func_00123500(s32, s32, s32, s32 *);
 
 void func_00122530(void *arg0) {
     Entry_00122530 *entry = arg0;
@@ -1929,7 +1928,52 @@ s32 func_00122D30(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00123010);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00123500);
+typedef struct Nibbles_00123500 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00123500;
+
+typedef struct Result_00123500 {
+    s32 packed;
+    u8 best;
+} Result_00123500;
+
+void func_00123500(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    extern s32 func_002792C0();
+    Result_00123500 *result = arg3;
+    Nibbles_00123500 buffer[12];
+    s32 j;
+    s32 value;
+    s32 hi;
+    s32 lo;
+    s32 score;
+    s32 i;
+
+    result->packed = -1;
+    result->best = 0xFF;
+    for (j = 0; j < 12; j++) {
+        buffer[j].low = buffer[j].high = 0xF;
+    }
+    i = 0;
+    do {
+        if (func_001236C0(i) == 1) {
+            value = func_00123670(i);
+            lo = value & 0xFF;
+            hi = value >> 8;
+            score = func_001E3790(lo, hi);
+            if (score < 0) {
+                score = 0xFFFF;
+            }
+            score = func_002792C0(arg0, buffer, arg1, arg2, lo, hi, (u16)score, 7);
+            if (score < result->best && score >= 0) {
+                result->best = score;
+                result->packed = value;
+                return;
+            }
+        }
+        i++;
+    } while (i < 3);
+}
 
 s32 func_00123670(s32 arg0) {
     switch (arg0) {                                 /* irregular */
