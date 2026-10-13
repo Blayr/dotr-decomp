@@ -652,7 +652,46 @@ s32 func_00243D90(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00243DE0);
+typedef struct {
+    f32 value;
+} Float_00243DE0;
+
+s32 func_001800D8(s32, s32, s32);
+s32 func_00191A58(s32);
+s32 func_00191FC0(s32, u8 *);
+void func_00192058(void);
+s32 func_00192090(s32, s32, s32, s32 *);
+extern Float_00243DE0 D_0029B2F8;
+
+s32 func_00243DE0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Float_00243DE0 sp48;
+    s32 sp4C;
+    s32 result;
+
+    if (*arg0 != 0) {
+        sp48 = D_0029B2F8;
+        while (1) {
+            func_0017BB60(0);
+            result = func_00192090(arg2 >> 11, arg1, 1, &sp4C);
+            if (sp4C == 0) {
+                break;
+            }
+            if (D_0029B2F0 != 0) {
+                func_002431B0(D_00350620);
+            }
+            func_00192058();
+            while (func_00191A58(0) != 2 || func_00191FC0(arg3, (u8 *)&sp48) == 0) {
+            }
+            if (D_0029B2F0 != 0) {
+                func_00243230(D_00350620);
+            }
+        }
+        result <<= 11;
+    } else {
+        result = func_001800D8(arg0[12], arg1, arg2);
+    }
+    return result;
+}
 
 typedef struct {
     s32 count;
