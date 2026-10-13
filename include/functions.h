@@ -1614,6 +1614,7 @@ void func_00210010(void *arg0, void *arg1, void *arg2);
 s32 func_00210310(void *arg0, s32 depth, void *arg2);
 s32 func_00210940(void *arg0, s32 depth, void *arg2);
 s32 func_00211530(void *arg0, s32 depth, void *arg2);
+void func_00211F70(void *arg0, void *arg1, void *arg2, s32 arg3);
 void func_00212D70(s32 arg0, s32 arg1, s32 arg2);
 void func_00212DE0(void);
 s32 func_00212DF0(s32 id);
