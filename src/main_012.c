@@ -810,7 +810,183 @@ s32 func_0014DF80(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014E550);
+typedef struct {
+    u16 position;
+    u8 pad2[6];
+    u32 targets;
+} Input_0014E550;
+
+typedef struct {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 flag;
+    u8 result;
+} Output_0014E550;
+
+typedef struct {
+    u8 x : 4;
+    u8 y : 4;
+} Point_0014E550;
+
+static inline u32 target_0014E550(void *src, u8 mode) {
+    Input_0014E550 *input = src;
+    if (mode == 1) {
+        return (input->targets >> 16) & 0xFFFF;
+    }
+    return *(u16 *)&input->targets;
+}
+
+static inline s32 max_0014E550(s32 a, s32 b) {
+    return a > b ? a : b;
+}
+
+s32 func_0014E550(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern s32 func_0014F490();
+    extern void func_0027A090();
+    extern s32 func_002464F0(s32, s32, s32);
+    extern s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+    s32 sourcePosition;
+    s32 count;
+    s32 sourceY;
+    s32 sourceX;
+    s32 flag;
+    Point_0014E550 points[12];
+    s32 destination;
+    s32 oldFlag;
+    s32 i;
+    s32 best;
+    u32 targetX;
+    u32 targetY;
+    Point_0014E550 *p;
+    Input_0014E550 *input = arg0;
+    Output_0014E550 *output = arg2;
+
+    targetX = target_0014E550(input, arg3);
+    targetY = target_0014E550(input, arg3);
+    if (func_001DF540(targetY >> 8, targetX & 0xFF) == 0) {
+        func_0027B1B0(input, 1);
+        return -1;
+    }
+    oldFlag = func_0014F490(input->position >> 8, input->position & 0xFF, input);
+    sourcePosition = func_001E1090(input->position >> 8, input->position & 0xFF);
+    targetX = target_0014E550(input, arg3);
+    targetY = target_0014E550(input, arg3);
+    destination = func_001E1090(targetY >> 8, targetX & 0xFF);
+    p = points;
+    i = 0;
+    do {
+        i++;
+        p->x = p->y = 15;
+        p++;
+    } while (i < 12);
+    {
+        s32 card = func_001DF540(input->position >> 8, input->position & 0xFF);
+        sourceX = sourcePosition & 0xFF;
+        sourceY = sourcePosition >> 8;
+        if (func_002464F0(card, sourceX, sourceY) == 0) {
+            s32 cost;
+            output->position = input->position;
+            output->action = 6;
+            output->destination = sourcePosition;
+            cost = func_00276CC0(sourceX, sourceY, arg1, 3, 1, (u8)func_0014F9B0(arg1));
+            if (cost >= func_001E0290(input->position >> 8, input->position & 0xFF, 0)) {
+                output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                             output->destination, 1, 0);
+            } else {
+                output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                             output->destination, 0, 0);
+            }
+            func_0027B1B0(input, arg3);
+            return 0;
+        } else {
+            s32 position = input->position;
+            s32 destinationX;
+            Point_0014E550 *candidate;
+            s32 n;
+            s32 minCost;
+            s32 identity;
+            s32 positionY;
+            s32 positionX;
+
+            identity = (u16)func_0014F9B0(arg1);
+            positionY = position >> 8;
+            positionX = position & 0xFF;
+            destinationX = destination & 0xFF;
+
+            func_0027A090(positionY, positionX, points,
+                         sourceX, sourceY, destinationX, destination >>= 8,
+                         target_0014E550(input, arg3), 0, 30, identity);
+            count = func_0027AFC0((u8 *)points);
+            best = 0xFF;
+            if (count > 0) {
+                flag = 0;
+                minCost = 0xFFFF;
+                for (n = 0; n < count; n++) {
+                    if (func_0014F7C0(input->position >> 8, input->position & 0xFF,
+                                     sourceX, sourceY, destinationX, destination) == 1) {
+                        best = n;
+                        flag = 1;
+                        points[n].x = destinationX;
+                        points[n].y = destination;
+                        n = count;
+                    } else {
+                        s32 cost;
+                        candidate = &points[n];
+                        cost = func_00276CC0(candidate->x, candidate->y, arg1,
+                                                3, 1, (u8)func_0014F9B0(arg1));
+                        if (cost < minCost) {
+                            minCost = cost;
+                            best = n;
+                        } else if (cost == minCost) {
+                            if ((max_0014E550(candidate->x, destinationX) -
+                                 (candidate->x < destinationX ? candidate->x : destinationX)) +
+                                (max_0014E550(candidate->y, destination) -
+                                 (candidate->y < destination ? candidate->y : destination)) <
+                                (max_0014E550(points[best].x, destinationX) -
+                                 (points[best].x < destinationX ? points[best].x : destinationX)) +
+                                (max_0014E550(points[best].y, destination) -
+                                 (points[best].y < destination ? points[best].y : destination))) {
+                                minCost = cost;
+                                best = n;
+                            }
+                        }
+                    }
+                }
+            } else {
+                output->position = input->position;
+                output->action = 6;
+                output->destination = sourcePosition;
+                output->flag = oldFlag;
+                output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                             output->destination, 0, 0);
+                func_0027B1B0(input, arg3);
+                return 0;
+            }
+                if (best != 0xFF) {
+                    output->position = input->position;
+                    output->action = 6;
+                    output->destination = (points[best].y << 8) | points[best].x;
+                    output->flag = flag;
+                    output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                                 output->destination, 0, 0);
+                } else {
+                    output->position = input->position;
+                    output->action = 6;
+                    output->destination = sourcePosition;
+                    output->flag = flag;
+                    output->result = func_0027E360(input->position >> 8, input->position & 0xFF,
+                                                 output->destination, 0, 0);
+                    func_0027B1B0(input, arg3);
+                    return 0;
+                }
+
+        }
+    }
+    return 0;
+}
 
 typedef struct Coord_0014EB30 {
     u8 x : 4;
