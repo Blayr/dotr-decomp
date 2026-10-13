@@ -1293,7 +1293,43 @@ s32 func_001FB0B0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FB1D0);
+typedef struct {
+    s32 x, y, z, w;
+} Vec4i_001FB1D0;
+
+extern Vec4i_001FB1D0 D_00293060;
+
+static inline s32 depth_001FB1D0(s32 index) {
+    void *object;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    object = (void *)D_0031BEB0[index];
+    if (object == NULL) {
+        return 0;
+    }
+    return *(s32 *)((u8 *)object + 0x40);
+}
+
+s32 func_001FB1D0(s32 arg0, s32 arg1) {
+    Vec4i_001FB1D0 translation;
+    s32 angles[4];
+    f32 matrix[4][4];
+
+    translation = D_00293060;
+    translation.z = -depth_001FB1D0(arg0);
+    if (arg1 == 0) {
+        return 0;
+    }
+    if (angles_001FB0B0(arg0, angles) == 0) {
+        return 0;
+    }
+    func_0020C630((void *)arg1, angles);
+    func_0020C630(matrix, &translation);
+    func_0020BC00(arg1, matrix);
+    return 1;
+}
 
 f32 func_001A6C30(f32, f32);
 extern f32 D_00293040[4][4];
