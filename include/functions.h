@@ -1000,6 +1000,7 @@ s32 func_001E7A60(void);
 s32 func_001E7D00(s32 index);
 s32 func_001E7DE0(s32 arg0);
 s32 func_001E7E70(s32 arg0, s32 arg1, s32 arg2);
+s32 func_001E8780(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001E8FA0(s32 arg0);
 void func_001E9280(void *arg0, s32 arg1);
 void func_001E92C0(void *arg0, s32 arg1);

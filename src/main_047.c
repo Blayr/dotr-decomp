@@ -484,7 +484,160 @@ INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7F70);
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E84D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8780);
+typedef struct {
+    s8 unused0 : 2;
+    s8 loading : 1;
+    s8 busy : 1;
+    s8 unused4 : 4;
+} Flags_001E8780;
+
+typedef struct {
+    Obj_0031ABB0 shared;
+    u8 pad1E4[0x1F2 - sizeof(Obj_0031ABB0)];
+    s8 state;
+    s8 kind;
+    s16 value;
+    u8 pad1F6[0x16];
+    s8 unused0 : 2;
+    s8 loading : 1;
+    s8 busy : 1;
+    s8 unused4 : 4;
+} Fields_001E8780;
+
+typedef struct {
+    s32 values[3];
+} Table_001E8780;
+
+s32 func_001EFF70(s32, void *);
+s32 func_001F0060(s32, void *, s32, s32, s32, s32);
+extern s32 D_00292480[];
+extern s32 D_00292A50[];
+extern s32 D_00292A54[];
+extern Table_001E8780 D_00292F20;
+extern Table_001E8780 D_00292F30;
+extern u16 D_002CF910[];
+extern u8 D_002CF9D5[];
+extern u8 D_002CF9DD[];
+extern u8 D_002CF9F0[];
+extern u8 D_002CF9F5[];
+extern u8 D_002CFA0A[];
+extern u8 D_002CFA17[];
+extern u8 D_002CFA1D[];
+extern s32 D_0031BB18;
+
+s32 func_001E8780(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u8 format[128];
+    u8 path[128];
+    Table_001E8780 slots;
+    Table_001E8780 starts;
+    Fields_001E8780 *obj;
+    s32 slot;
+    s32 base;
+    u8 *root;
+    s32 value;
+    s32 id;
+    s32 group;
+    s32 index;
+    s32 start;
+    s32 size;
+    s32 card;
+    s32 leader;
+    s32 kind;
+    s32 tableIndex;
+
+    extern void func_0019B648();
+
+    value = arg2;
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = (Fields_001E8780 *)D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (obj->busy) {
+        while (obj->busy) {
+            func_001FF420();
+        }
+    }
+    obj->state = -1;
+    if (arg1 >= 0) {
+        obj->kind = arg1;
+    }
+    if (value >= 0) {
+        obj->value = value;
+    } else {
+        value = obj->value;
+    }
+    obj->loading = 0;
+    if (value < 0 || value >= D_002CF910[obj->kind]) {
+        return 0;
+    }
+    base = D_00292480[obj->kind];
+    if (arg3 != 0 && D_0031BB18 != 0) {
+        if (func_00197548((s32)D_002CF9D5) != NULL) {
+            root = func_001FFF90((s32)D_002CF9F0);
+            kind = obj->kind;
+            card = 0;
+            leader = 0;
+            if (kind == 4) {
+                goto card_kind;
+            }
+            if (kind == 5) {
+                goto card_kind;
+            }
+            if (kind == 6) {
+            card_kind:
+                card = 1;
+            }
+            if (kind == 1) {
+                leader = 1;
+            }
+            if (card) {
+                if (value == 0x2E1) {
+                    id = 0x29F;
+                } else {
+                    id = func_001DE130(value);
+                }
+                if (id < 0x2AB) {
+                    slot = obj->kind - 4;
+                    slots = D_00292F20;
+                    starts = D_00292F30;
+                    func_0019B648(path, D_002CF9F5, root);
+                    if (func_001F0060(arg0, path, starts.values[slot] + ((arg0 - slots.values[slot]) << 20), 0x100000, id << 20, 0x100000)) {
+                        return 1;
+                    }
+                }
+                return 0;
+            } else if (leader) {
+                group = value / 100;
+                index = value % 100;
+                if (group >= 0 && group < 2 && index >= 0 && index < 21) {
+                    tableIndex = index + (group != 0 ? 0x3C : 0x27);
+                    start = D_00292A50[tableIndex];
+                    size = D_00292A54[tableIndex] - start;
+                    func_0019B648(path, D_002CF9DD, root);
+                    if (func_001F0060(arg0, path, (s32)((s64)group * 0xA000 + 0x010AA800), size, start, size)) {
+                        return 1;
+                    }
+                }
+                return 0;
+            }
+        }
+        func_0019B648(format, D_002CFA0A, func_001FFF90((s32)D_002CFA17), base, base);
+        func_0019B648(path, format, value, value);
+        if (func_001F0060(arg0, path, 0, -1, 0, -1) == 0) {
+            return 0;
+        }
+    } else {
+        func_0019B648(format, D_002CFA1D, func_001FFF90((s32)D_002CFA17), base, base);
+        func_0019B648(path, format, value, value);
+        if (func_001EFF70(arg0, path) == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8BF0);
 
