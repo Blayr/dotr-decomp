@@ -270,7 +270,6 @@ extern u8 D_0029D580[];
 
 void *func_0019C2B8(void *, const void *, u32);
 
-s32 func_001E1B70();                                /* extern */
 
 
 

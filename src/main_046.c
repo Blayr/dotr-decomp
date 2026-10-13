@@ -77,7 +77,46 @@ s32 func_001E1AF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return var_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1B70);
+typedef struct {
+    s8 value : 2;
+    s8 unused : 6;
+} Flags_001E1B70;
+
+typedef struct {
+    u8 pad0[0x45];
+    u8 kind;
+    u8 pad46[0xC];
+    s8 value52;
+    u8 pad53[3];
+    Flags_001E1B70 flags;
+} Object_001E1B70;
+
+static inline void *check_001E1B70(void) {
+    Object_001E1B70 *object;
+
+    object = (Object_001E1B70 *) func_001DD130();
+    if (object == NULL) {
+        return NULL;
+    }
+    if (object->kind >= 0xB) {
+        return NULL;
+    }
+    return object;
+}
+
+s32 func_001E1B70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Object_001E1B70 *object;
+
+    object = (Object_001E1B70 *) check_001E1B70();
+    if (object == NULL) {
+        return 0;
+    }
+    object->flags.value = (s8) (arg2 & 3);
+    if (arg3 >= 0) {
+        object->value52 = arg3;
+    }
+    return 1;
+}
 
 typedef struct Flags_001E1C10 {
     s8 unused0 : 2;

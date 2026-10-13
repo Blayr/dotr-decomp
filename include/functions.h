@@ -963,6 +963,7 @@ s32 func_001E19D0(s32 arg0, s32 arg1, s8 arg2);
 s32 func_001E1A30(void);
 s32 func_001E1A90(void);
 s32 func_001E1AF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_001E1B70(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001E1C10(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001E1CB0(void);
 s32 func_001E1D10(void);
