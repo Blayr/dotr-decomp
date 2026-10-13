@@ -814,6 +814,7 @@ void func_001AF7B0(void);
 void func_001B1190(void);
 s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3);
+s32 func_001B3640(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_001B3C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10);
 s32 func_001B62F0(s32 packet, s32 x, s32 y, s32 columns, s32 rows);
 void func_001B65E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
