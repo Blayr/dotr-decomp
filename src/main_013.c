@@ -873,7 +873,151 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00157480);
+typedef struct Nibbles_00157480 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00157480;
+
+typedef struct Output_00157480 {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 special;
+    u8 result;
+} Output_00157480;
+
+s32 func_001E1E70(s32, s32, s32, s32);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+s32 func_0027BE10(s32, s32, s32, s32, s32);
+
+s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+    Output_00157480 *output = arg2;
+    s32 target;
+    u8 endX;
+    u8 extra;
+    Nibbles_00157480 nibbles[12];
+    s32 bestScore;
+    s32 best;
+    s32 i;
+    Nibbles_00157480 *p;
+    extern s32 func_00158360();
+    extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
+
+    target = func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+    p = nibbles;
+    i = 0;
+    do {
+        i++;
+        p->low = p->high = 0xF;
+        p++;
+    } while (i < 12);
+    {
+        s32 range;
+        s32 y;
+        u8 minY;
+        u8 minX;
+        s32 candidateScore;
+        u8 maxY;
+        s32 packedY;
+        s32 centerY;
+        s32 centerX;
+        s32 x;
+        s32 limit;
+        u16 initialScore;
+
+        initialScore = func_00158780(arg1);
+        centerX = target & 0xFF;
+        centerY = target >> 8;
+        if (func_00276CC0(centerX, centerY, *arg0, 3, initialScore, 0) == 0) {
+            output->position = *arg0;
+            output->action = 6;
+            output->destination = target;
+            output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+        if ((range = func_002464F0(func_001DF540(*arg0 >> 8, *arg0 & 0xFF), centerX, centerY)) == 0) {
+            output->position = *arg0;
+            output->action = 6;
+            output->destination = target;
+            output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+        if (func_001E2100(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
+            if ((func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 1 ||
+                (func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 5) {
+                func_001E1E70(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
+                output->position = *arg0;
+                output->action = 0xE;
+                return 0;
+            }
+        }
+        best = 0xFF;
+        bestScore = 0xFFFF;
+        minX = (u8)func_00250860(0, centerX - (range & 0xF));
+        limit = centerX + (range & 0xF);
+        endX = limit >= 7 ? 6 : limit;
+        minY = (u8)func_00250860(0, centerY - (range & 0xF));
+        limit = centerY + (range & 0xF);
+        if (limit >= 7) {
+            limit = 6;
+        }
+        maxY = (u8)limit;
+        if ((*arg0 & 0xFF) == 0) {
+            extra = (u8)func_0027BBC0(*arg0 >> 8, *arg0 & 0xFF, 0);
+        } else {
+            extra = 0;
+        }
+        for (x = minX; x <= endX; x++) {
+            y = minY;
+            packedY = y << 8;
+            for (; y <= maxY; packedY += 0x100, y++) {
+                if ((((x < centerX ? centerX : x) - (centerX < x ? centerX : x)) +
+                    ((y < centerY ? centerY : y) - (centerY < y ? centerY : y))) > (range & 0xF)) {
+                    continue;
+                }
+                if (func_00279C40(*arg0 >> 8, *arg0 & 0xFF, centerX, centerY, x, y, arg0, extra) == 1) {
+                    if (func_0027BE10(*arg0 >> 8, *arg0 & 0xFF, x, y, 0) == 0 || (u8)*arg0 == 0) {
+                        candidateScore = func_00276CC0(x, y, *arg0, 3, (u16)func_00158780(arg1), 0);
+                        if (candidateScore < bestScore) {
+                            bestScore = candidateScore;
+                            best = packedY | x;
+                        } else if (candidateScore == bestScore && func_001E36E0(x, y) == 0 &&
+                            func_001E36E0(best & 0xFF, best >> 8) != 0) {
+                            bestScore = candidateScore;
+                            best = packedY | x;
+                        }
+                    }
+                }
+            }
+        }
+        if (best != 0xFF) {
+            output->position = *arg0;
+            output->action = 6;
+            output->destination = best;
+            if (best == target) {
+                output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            } else {
+                output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 0, 0);
+            }
+            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+        } else {
+            output->position = *arg0;
+            output->action = 6;
+            output->destination = target;
+            output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+        }
+        func_0027B1B0(arg0, arg3);
+        return 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00157A50);
 
