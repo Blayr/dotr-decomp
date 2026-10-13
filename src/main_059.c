@@ -903,7 +903,175 @@ s32 func_00211530(void *arg0, s32 depth, void *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_002118F0);
+typedef struct FloatKey_002118F0 {
+    u32 time;
+    f32 value[3];
+} FloatKey_002118F0;
+
+typedef struct IntKey_002118F0 {
+    u32 time;
+    s32 value[3];
+} IntKey_002118F0;
+
+typedef struct Tracks_002118F0 {
+    FloatKey_002118F0 *position;
+    IntKey_002118F0 *rotation;
+    FloatKey_002118F0 *scale;
+} Tracks_002118F0;
+
+s32 func_002118F0(void *src, u32 time, s32 flags, f32 *position,
+                  s32 *rotation, f32 *scale, f32 factor) {
+    extern s32 func_0020D1D0(s32, s32, f32, f32);
+    extern s32 func_00270030();
+    IntKey_002118F0 *rotation_next;
+    Tracks_002118F0 *tracks;
+    u32 *counts;
+    IntKey_002118F0 *rotation_previous;
+    FloatKey_002118F0 *scale_keys;
+    s32 low;
+    FloatKey_002118F0 *position_keys;
+    s32 high;
+    s32 middle;
+    FloatKey_002118F0 *previous;
+    FloatKey_002118F0 *next;
+
+    if (*(u16 *)0x700000E0 & 4) {
+        counts = (u32 *)((u8 *)src + 12);
+        tracks = src;
+    } else {
+        counts = (u32 *)((u8 *)src + 8);
+        tracks = src;
+    }
+ 
+    position_keys = tracks->position;
+    if (position_keys != NULL) {
+        high = counts[0];
+        flags &= ~1;
+        if (high < 3) {
+            func_0020B340(position, position_keys[0].value, 3);
+            position[0] *= factor;
+            position[1] *= factor;
+            position[2] *= factor;
+        } else {
+            f32 duration;
+            f32 before;
+            f32 after;
+
+            low = 0;
+            middle = high >> 1;
+            while (low < middle) {
+                if (time >= position_keys[middle + 1].time) {
+                    low = middle;
+                } else if (time < position_keys[middle].time) {
+                    high = middle;
+                } else {
+                    break;
+                }
+                middle = (low + high) >> 1;
+            }
+            previous = &position_keys[middle];
+            if (time == previous->time || (u32)(middle + 1) >= (u32)counts[0]) {
+                func_0020B340(position, previous->value, 3);
+            } else {
+                next = &position_keys[middle + 1];
+                duration = (f32)(next->time - previous->time);
+                before = (f32)(next->time - time);
+                after = (f32)(time - previous->time);
+                position[0] = (before * previous->value[0] + after * next->value[0]) / duration;
+                position[1] = (before * previous->value[1] + after * next->value[1]) / duration;
+                position[2] = (before * previous->value[2] + after * next->value[2]) / duration;
+            }
+            position[0] *= factor;
+            position[1] *= factor;
+            position[2] *= factor;
+        }
+    }
+
+    if (tracks->rotation != NULL) {
+        IntKey_002118F0 *keys = tracks->rotation;
+        high = counts[1];
+        flags &= ~2;
+        if (high < 3) {
+            func_0020B340(rotation, keys[0].value, 3);
+        } else {
+            f32 duration;
+            f32 before;
+            f32 after;
+
+            low = 0;
+            middle = high >> 1;
+            while (low < middle) {
+                if (time >= keys[middle + 1].time) {
+                    low = middle;
+                } else if (time < keys[middle].time) {
+                    high = middle;
+                } else {
+                    break;
+                }
+                middle = (low + high) >> 1;
+            }
+            rotation_previous = &keys[middle];
+            low = rotation_previous->time;
+            if (time == (u32)low || (u32)(middle + 1) >= (u32)counts[1]) {
+                func_0020B340(rotation, rotation_previous->value, 3);
+            } else {
+                rotation_next = &keys[middle + 1];
+                high = rotation_next->time;
+                duration = (f32)((u32)high - (u32)low);
+                before = (f32)((u32)high - time) / duration;
+                after = (f32)(time - (u32)low) / duration;
+                rotation[0] = func_0020D1D0(rotation_previous->value[0], rotation_next->value[0], before, after);
+                rotation[1] = func_0020D1D0(rotation_previous->value[1], rotation_next->value[1], before, after);
+                rotation[2] = func_0020D1D0(rotation_previous->value[2], rotation_next->value[2], before, after);
+            }
+        }
+    }
+
+    if (*(u16 *)0x700000E0 & 4) {
+        if (tracks->scale != NULL) {
+            scale_keys = tracks->scale;
+            high = counts[2];
+            flags &= ~4;
+            if (high < 3) {
+                func_0020B340(scale, scale_keys[0].value, 3);
+            } else {
+                u32 rightTime;
+                u32 leftTime;
+                f32 duration;
+                f32 before;
+                f32 after;
+
+                low = 0;
+                middle = high >> 1;
+                while (low < middle) {
+                    if (time >= scale_keys[middle + 1].time) {
+                        low = middle;
+                    } else if (time < scale_keys[middle].time) {
+                        high = middle;
+                    } else {
+                        break;
+                    }
+                    middle = (low + high) >> 1;
+                }
+                previous = &scale_keys[middle];
+                leftTime = previous->time;
+                if (time == leftTime || (u32)(middle + 1) >= (u32)counts[2]) {
+                    func_0020B340(scale, previous->value, 3);
+                } else {
+                    next = &scale_keys[middle + 1];
+                    rightTime = next->time;
+                    duration = (f32)(rightTime - leftTime);
+                    before = (f32)(rightTime - time) / duration;
+                    after = (f32)(time - leftTime) / duration;
+                    scale[0] = before * previous->value[0] + after * next->value[0];
+                    scale[1] = before * previous->value[1] + after * next->value[1];
+                    scale[2] = before * previous->value[2] + after * next->value[2];
+                }
+            }
+        }
+    }
+    return flags;
+}
 
 void func_00211F70(void *arg0, void *arg1, void *arg2, s32 arg3) {
     u8 *spA0;
