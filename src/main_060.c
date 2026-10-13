@@ -272,7 +272,49 @@ s32 func_002154E0(s32 player, s32 deck_index, s32 card_id) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215770);
+extern u8 D_0034F6D0;
+
+typedef struct {
+    u8 pad[7];
+    u8 flags : 6;
+    u8 state : 2;
+} Card_00215770;
+
+s32 func_00215770(s32 arg0, s32 arg1, s32 arg2) {
+    extern u8 D_0032F790[];
+    u8 *hand;
+    Card_00215770 *card;
+    u16 *slot;
+    s32 cardId;
+    s32 side;
+    u8 *info;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    hand = (u8 *)((u32)D_0032F790 + side * 0xFFA0 + arg1 * 0x54) + 0x7D9C + 0x7FF8;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if ((arg2 < 0) || (arg2 >= 0x28)) {
+        return 0;
+    }
+    slot = (u16 *)(hand + arg2 * 2);
+    cardId = *slot;
+    if ((card = func_00214DD0(arg0, cardId, arg1, 0)) == NULL) {
+        return 0;
+    }
+    info = func_001DD0E0(cardId);
+    if (info == NULL) {
+        return 0;
+    }
+    *(u16 *)(hand + 0x52) -= info[3];
+    *slot = 0x3E7;
+    card->state = 3;
+    return 1;
+}
 
 typedef struct {
     u8 pad[0xFF9C];
