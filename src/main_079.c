@@ -766,7 +766,29 @@ s32 func_0027DBC0(s32 arg0, s32 arg1, s32 arg2) {
     return arg1 & 0xFF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DD20);
+s32 func_0027DD20(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001DEE50();
+    extern s32 func_001DEE00();
+    s32 i;
+    u8 count;
+
+    count = 0;
+    if (arg1 & 1) {
+        for (i = 0; i < func_001DEE50(arg0); i++) {
+            if (arg2 == func_001DEE00(arg0, i)) {
+                count++;
+            }
+        }
+    }
+    if (arg1 >> 1) {
+        for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
+            if (arg2 == func_001DEE00(arg0 == 0 ? 1 : 0, i)) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
 
 s32 func_0027DE20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                   s32 arg5, s32 arg6, s32 arg7, s32 arg8, u16 arg9,
