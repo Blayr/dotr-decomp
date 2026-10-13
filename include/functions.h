@@ -1945,6 +1945,7 @@ s32 func_0024DEB0(s32 arg0, void *arg1);
 s32 func_0024DF00(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0024E220(s32 arg0, s32 arg1);
 s32 func_0024E300(s32 arg0, s32 arg1, s32 arg2);
+s32 func_0024E410(s32 arg0, u32 arg1);
 s32 func_0024E780(s32 arg0, u8 arg1);
 void func_0024E880(void *arg0, s32 *arg1);
 s32 func_0024E910(s32 arg0);

@@ -226,7 +226,81 @@ s32 func_0024E300(s32 arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024E410);
+s32 func_0024E410(s32 arg0, u32 arg1) {
+    u32 pos;
+    u32 next;
+    u32 row;
+
+    pos = func_001E1090(arg0, 0);
+    switch (arg0) {
+    case 0:
+        switch (arg1) {
+        case 0:
+            return (((pos >> 8) - 1) << 8) | (pos & 0xFF);
+        case 1:
+            next = (pos >> 8) + 1;
+            return (next < 7) ? ((next << 8) | (pos & 0xFF)) : -1;
+        case 2:
+            next = (pos & 0xFF) + 1;
+            return (next < 7) ? (((pos >> 8) << 8) | next) : -1;
+        case 3:
+            return ((pos >> 8) << 8) | ((pos & 0xFF) - 1);
+        case 4:
+            next = (pos & 0xFF) + 1;
+            return (next < 7) ? ((((pos >> 8) - 1) << 8) | next) : -1;
+        case 5:
+            return (((pos >> 8) - 1) << 8) | ((pos & 0xFF) - 1);
+        case 6:
+            next = (pos & 0xFF) + 1;
+            if (next < 7) {
+                row = (pos >> 8) + 1;
+                if (row < 7) {
+                    return (row << 8) | next;
+                }
+            }
+            return -1;
+        case 7:
+            next = (pos >> 8) + 1;
+            return (next < 7) ? ((next << 8) | ((pos & 0xFF) - 1)) : -1;
+        default:
+            return -1;
+        }
+    case 1:
+        switch (arg1) {
+        case 0:
+            next = (pos >> 8) + 1;
+            return (next < 7) ? ((next << 8) | (pos & 0xFF)) : -1;
+        case 1:
+            return (((pos >> 8) - 1) << 8) | (pos & 0xFF);
+        case 2:
+            return ((pos >> 8) << 8) | ((pos & 0xFF) - 1);
+        case 3:
+            next = (pos & 0xFF) + 1;
+            return (next < 7) ? (((pos >> 8) << 8) | next) : -1;
+        case 4:
+            next = (pos >> 8) + 1;
+            return (next < 7) ? ((next << 8) | ((pos & 0xFF) - 1)) : -1;
+        case 5:
+            next = (pos & 0xFF) + 1;
+            if (next < 7) {
+                row = (pos >> 8) + 1;
+                if (row < 7) {
+                    return (row << 8) | next;
+                }
+            }
+            return -1;
+        case 6:
+            return (((pos >> 8) - 1) << 8) | ((pos & 0xFF) - 1);
+        case 7:
+            next = (pos & 0xFF) + 1;
+            return (next < 7) ? ((((pos >> 8) - 1) << 8) | next) : -1;
+        default:
+            return -1;
+        }
+    default:
+        return -1;
+    }
+}
 
 s32 func_0024E780(s32 arg0, u8 arg1) {
     s32 count = 0;
