@@ -437,7 +437,40 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8DB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9590);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9800);
+typedef struct Flags_001A9800 {
+    u8 unused:4;
+    u8 state:2;
+    u8 unused2:2;
+} Flags_001A9800;
+
+extern Flags_001A9800 D_0031747C;
+
+void func_001A9800(void) {
+    u8 *data = (u8 *) &D_00317250;
+    s64 temp_v0;
+
+    temp_v0 = func_001AAF60(1);
+    if (D_0031747C.state < 3) {
+        switch (data[0x228]) {
+        default:
+            return;
+        case 0:
+            switch (temp_v0) {
+            case 1:
+                func_001B81E0();
+                func_001B83C0();
+                break;
+            case 11:
+                func_002085A0(2);
+                func_0021DAA0();
+                func_00246490();
+                break;
+            }
+            func_001AF7B0();
+            break;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A98B0);
 
