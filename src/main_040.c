@@ -447,7 +447,82 @@ void func_001BAE70(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAEA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB260);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001BB260;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001BB260;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001BB260;
+
+typedef struct {
+    Color_001BB260 color;
+    Vertex_001BB260 xyz;
+} Point_001BB260;
+
+typedef struct {
+    u64 tag[2];
+    Point_001BB260 points[4];
+    u64 end;
+} Packet_001BB260;
+
+typedef struct {
+    u8 b, g, r, a;
+} Source_001BB260;
+
+static inline void set_color_001BB260(Color_001BB260 *a, Color_001BB260 *b,
+                                      Source_001BB260 *src) {
+    a->r = b->r = src->r;
+    a->g = b->g = src->g;
+    a->b = b->b = src->b;
+    a->a = b->a = src->a;
+    a->q = b->q = 1.0f;
+}
+
+static inline void set_xyz_001BB260(Vertex_001BB260 *v, s32 x, s32 y) {
+    v->x = (x + 0x6C0) << 4;
+    v->y = (y + 0x720) << 4;
+    v->z = D_003180E8;
+    v->fog = 0;
+}
+
+s32 func_001BB260(s32 arg0) {
+    extern u8 D_002BE850[];
+    Source_001BB260 *colors = (Source_001BB260 *)D_002BE850;
+    s32 width = 0x140;
+    s32 height = 0x1C0;
+    Packet_001BB260 packet __attribute__((aligned(8)));
+
+    ((Tag_001BB260 *)packet.tag)->flags = 0x14;
+    ((Tag_001BB260 *)packet.tag)->count = 8;
+    ((Tag_001BB260 *)packet.tag)->registers = 0x41414141;
+    ((Tag_001BB260 *)packet.tag)->padding = 0;
+    set_color_001BB260(&packet.points[0].color, &packet.points[2].color, &colors[0]);
+    set_color_001BB260(&packet.points[1].color, &packet.points[3].color, &colors[1]);
+    set_xyz_001BB260(&packet.points[0].xyz, 0, 0);
+    set_xyz_001BB260(&packet.points[1].xyz, width, 0);
+    set_xyz_001BB260(&packet.points[2].xyz, 0, height);
+    set_xyz_001BB260(&packet.points[3].xyz, width, height);
+    arg0 = func_00207650(arg0, (s32)packet.tag, 0, 0);
+    set_color_001BB260(&packet.points[0].color, &packet.points[2].color, &colors[1]);
+    set_color_001BB260(&packet.points[1].color, &packet.points[3].color, &colors[0]);
+    set_xyz_001BB260(&packet.points[0].xyz, width, 0);
+    set_xyz_001BB260(&packet.points[1].xyz, width * 2, 0);
+    set_xyz_001BB260(&packet.points[2].xyz, width, height);
+    set_xyz_001BB260(&packet.points[3].xyz, width * 2, height);
+    return func_00207650(arg0, (s32)packet.tag, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB6D0);
 
