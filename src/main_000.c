@@ -756,7 +756,85 @@ void func_00101EE0(void *arg0, void *arg1, void *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_001020B0);
+void func_001020B0(s32 *rect, s32 index, u32 mode, s32 width) {
+    s32 height;
+    s32 cols;
+    s32 rows;
+
+    switch (mode) {
+    case 0:
+        height = 0x20;
+        width = 0x20;
+        cols = 4;
+        rows = 2;
+        break;
+    case 1:
+        height = 0x20;
+        width = 0x20;
+        cols = 2;
+        rows = 4;
+        break;
+    case 2:
+        height = 0x20;
+        width = 0x20;
+        rows = 4;
+        cols = 4;
+        break;
+    case 3:
+        width = 0x20;
+        height = 0x40;
+        cols = 8;
+        rows = 1;
+        break;
+    case 4:
+        height = 0x40;
+        width = 0x40;
+        cols = 2;
+        rows = 1;
+        break;
+    case 5:
+        height = 0x40;
+        width = 0x40;
+        rows = 2;
+        cols = 2;
+        break;
+    case 9:
+        height = 0x40;
+        width = 0x40;
+        rows = 1;
+        cols = 1;
+        break;
+    case 6:
+        rows = 1;
+        width = 0x20;
+        height = 0x80;
+        cols = 1;
+        break;
+    case 7:
+        rows = 1;
+        width = 0x80;
+        height = 0x40;
+        cols = 1;
+        break;
+    case 8:
+        height = 0x80;
+        width = 0x80;
+        rows = 1;
+        cols = 1;
+        break;
+    }
+    if (cols * rows - 1 < index) {
+        rect[5] = 0;
+        rect[4] = 0;
+        rect[3] = 0;
+        rect[2] = 0;
+        return;
+    }
+    rect[2] = width * (index % cols);
+    rect[3] = rect[2] + width;
+    rect[4] = height * (index / cols);
+    rect[5] = rect[4] + height;
+}
 
 void func_00102210(u32 arg0, s32 *arg1, s32 *arg2) {
     switch (arg0) {

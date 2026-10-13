@@ -1356,7 +1356,55 @@ void func_001E42B0(void) {
     D_00318142 = 0x18;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E42C0);
+void func_001E42C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u8 *state = D_00317490;
+
+    switch (arg0) {
+    case 0:
+        state[0xCB5] = 0x13;
+        break;
+    case 1:
+        state[0xCB5] = 0xF;
+        break;
+    case 2:
+        state[0xCB5] = 0xC;
+        if (func_001A82E0(0xF) == 0) {
+            func_00216040(state[0xD50], 0, arg3);
+        }
+        break;
+    case 3:
+        state[0xCB5] = 0xD;
+        if (func_001A82E0(0xF) == 0) {
+            func_00216040(state[0xD50], 0, arg3);
+            func_00216580(state[0xD50], arg3);
+        }
+        break;
+    case 5:
+        state[0xCB5] = 0x14;
+        break;
+    case 6:
+        state[0xCB5] = 0x15;
+        break;
+    case 7:
+        state[0xCB5] = 0x16;
+        if (arg3 >= 0) {
+            state[0xD35] = (arg3 & 0x8000) ? 1 : 0;
+            arg3 &= 0x7FFF;
+        }
+        break;
+    case 8:
+        state[0xCB5] = 0x10;
+        break;
+    default:
+        state[0xCB5] = 0x18;
+        return;
+    }
+    if (arg3 >= 0) {
+        *(s16 *)(state + 0xCB0) = arg3;
+    }
+    *(s16 *)(state + 0xCA6) = arg1;
+    *(s16 *)(state + 0xCA8) = arg2;
+}
 
 s32 func_001E4430(s32 arg0) {
     u8 *state = D_00317490;

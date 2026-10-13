@@ -834,7 +834,83 @@ s32 func_00271AF0(void *arg0, s32 arg1, s32 arg2) {
     return score;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00271C90);
+s32 func_00271C90(s32 arg0, s32 arg1) {
+    s32 result;
+
+    switch (func_001E0690(arg0, 0) & 0x1F) {
+    case 1:
+        if (arg1 == 7) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    case 2:
+        if (arg1 == 3) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    case 3:
+        return ((u32)arg1 < 2) ? 1 : 0;
+    case 5:
+        if (arg1 == 12) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    case 6:
+        if (arg1 == 9 || arg1 == 12) {
+            return 1;
+        }
+        return 0;
+    case 7:
+        if (arg1 == 1) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    case 9:
+        if (arg1 == 13) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    case 11:
+        return ((u32)(arg1 - 5) < 2) ? 1 : 0;
+    case 12:
+        if (arg1 == 15) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    case 15:
+        if (arg1 == 2 || arg1 == 14) {
+            return 1;
+        }
+        return 0;
+    case 16:
+        if (arg1 == 14 || arg1 == 17) {
+            return 1;
+        }
+        return 0;
+    case 17:
+        if (arg1 == 4) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    default:
+        return 0;
+    }
+    return result;
+}
 
 s32 func_00271E40(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_s0;

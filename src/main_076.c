@@ -1235,7 +1235,6 @@ typedef struct {
     s32 wC;
 } Req_00268FA0;
 
-void func_001E42C0(s32, s32, s32, s32);
 
 s32 func_00268FA0(void *arg0, void *arg1, s32 arg2) {
     Src_00268FA0 *src = (Src_00268FA0 *)arg0;

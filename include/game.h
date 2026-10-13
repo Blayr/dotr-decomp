@@ -385,12 +385,10 @@ void func_0017B920(s32);
 
 void func_001A89C0(s32, s32);
 
-s32 func_0024EA70(s32, s32);                        /* extern */
 
 extern s8 D_0034F700;
 extern s8 D_0034F708;
 
-void func_001E42C0(s32, s32, s32, s32);
 
 
 extern s32 D_003180E8;
@@ -474,7 +472,6 @@ s32 func_0027C770(s32, s32, s32, s32, s32, s32);
 s32 func_00195070(s32);
 s64 func_001A0660(s64, s64);
 
-s32 func_00271C90(s32, s32);
 
 extern char D_002BEF98[];
 extern char D_002BEF6F[];

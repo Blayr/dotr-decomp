@@ -357,7 +357,42 @@ s32 func_0024EA60(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024EA70);
+s32 func_0024EA70(s32 arg0, s32 arg1) {
+    switch (arg0) {
+    case 0:
+        if (arg1 == 1) {
+            return -1;
+        }
+        return (arg1 == 4) ? 1 : 0;
+    case 1:
+        if (arg1 == 5) {
+            return -1;
+        }
+        return (arg1 == 0) ? 1 : 0;
+    case 2:
+        if (arg1 == 4) {
+            return -1;
+        }
+        return (arg1 == 3) ? 1 : 0;
+    case 3:
+        if (arg1 == 2) {
+            return -1;
+        }
+        return (arg1 == 5) ? 1 : 0;
+    case 4:
+        if (arg1 == 0) {
+            return -1;
+        }
+        return (arg1 == 2) ? 1 : 0;
+    case 5:
+        if (arg1 == 3) {
+            return -1;
+        }
+        return (arg1 == 1) ? 1 : 0;
+    default:
+        return 0;
+    }
+}
 
 s32 func_0024EBD0(s32 arg0) {
     s32 count;

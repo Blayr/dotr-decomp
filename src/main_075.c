@@ -718,7 +718,6 @@ void func_00260020(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg
     }
 }
 
-void func_001E42C0(s32, s32, s32, s32);
 
 typedef struct State_00260200 {
     u32 unknown;
@@ -777,7 +776,6 @@ typedef struct {
     u16 fade;
 } State_00260320;
 
-void func_001E42C0(s32, s32, s32, s32);
 
 s32 func_00260320(void *arg0, void *arg1, s32 arg2) {
     State_00260320 *state = arg1;
