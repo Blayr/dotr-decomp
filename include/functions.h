@@ -896,6 +896,7 @@ s32 func_001C6130(void);
 void func_001C7430(void);
 s32 func_001C7790(s32 arg0);
 void func_001C7C00(s32 arg0, s32 arg1, s32 arg2);
+s32 func_001C8690(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001C8DC0(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001C92C0(s32 arg0, s32 player, s32 x, s32 y);
 s32 func_001C9C60(s32 arg0, u8 *arg1, s32 x, s32 y);

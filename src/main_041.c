@@ -615,7 +615,122 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C7D20);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C8590);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C8690);
+s32 func_001C8690(s32 arg0, u8 *arg1, s32 x, s32 y) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B4780();
+    extern u8 D_002BEAC0[2][10];
+    extern char D_002BF05B[];
+    extern char D_002BF03A[];
+    extern s32 D_00290A58;
+    extern s32 D_00290A62;
+    extern s32 D_00290A6C;
+    extern s32 D_00290A76;
+    u8 *cursor = (u8 *)0xA9C000;
+    s8 *text1 = D_002BF05B;
+    s8 *text2 = D_002BEF98;
+    s8 *text3 = D_002BF03A;
+    s32 row;
+    s32 enabled;
+    s32 width = 0x25A;
+    u8 *list;
+    s32 hint = 0;
+    s32 col;
+    s32 item;
+    s32 sel;
+    s32 w;
+    s32 *info;
+    f32 scale;
+    s32 px;
+    s32 py;
+
+    width = (*(u8 *)0xA9C088 != 0) ? width : 0x12A;
+    list = D_002BEAC0[(*(u8 *)0xA9C088 != 0) ? 1 : 0];
+    arg0 = func_001FD680(arg0, 1, 0x81, 0, 0x16);
+    arg0 = func_001FD680(arg0, 2, 0x82, 0, 0x2C);
+    arg0 = func_001FD680(arg0, 3, 0x83, 0, 0x42);
+    arg0 = func_001FD680(arg0, 4, 0x84, 0, 0x58);
+    arg0 = func_001FD680(arg0, 5, 0x85, 0, 0x6E);
+    arg0 = func_001FD680(arg0, 6, 0x86, 0, 0x84);
+    arg0 = func_001FD680(arg0, 7, 0x87, 0, 0x9A);
+    arg0 = func_001FD680(arg0, 8, 0x88, 0, 0xB0);
+    arg0 = func_001B4780(func_0020F290(arg0), (s32)arg1, (s32)arg1, 0, x, y, -(width - 0x14), -0xAE, 1);
+    for (row = 0; row < 2; row++) {
+        for (col = 0; col < 5; col++) {
+            item = list[row * 5 + col];
+            enabled = 1;
+            if (item == 0xFF) {
+                continue;
+            }
+            if (item == 7) {
+                if (func_002171B0((s32)arg1) == 0) {
+                    enabled = 0;
+                }
+            }
+            if (enabled) {
+                info = func_001FEAB0(item + 1);
+                if (cursor[0x88]) {
+                    w = info[3];
+                    scale = 1.0f;
+                    if (w > 0xAC) {
+                        scale = 172.0f / (f32)w;
+                    }
+                    arg0 = func_001FE660(arg0, item + 1, x + (width / 3) * (row + 1) - (s32)((f32)(w >> 1) * scale),
+                                         y + 0x20 + col * 0x20,
+                                         scale, 1.0f, 0, func_001FDFE0);
+                } else {
+                    w = info[3];
+                    scale = 1.0f;
+                    if (w > 0xAC) {
+                        scale = 172.0f / (f32)w;
+                    }
+                    arg0 = func_001FE660(arg0, item + 1, x + (width >> 1) - (s32)((f32)(w >> 1) * scale),
+                                         y + 0x1A + col * 0x14,
+                                         scale, 0.90909094f, 0, func_001FDFE0);
+                }
+                sel = cursor[(s32)arg1 + 2] & 0xF;
+                if (sel == item) {
+                    if (cursor[0x88]) {
+                        arg0 = func_001B4780(arg0, -1, -1, 6, x + (width / 3) * (row + 1) - 0x62,
+                                             y + 0x1C + col * 0x20, -0xBE, -0x1A, 1);
+                    } else {
+                        arg0 = func_001B4780(arg0, -1, -1, 6, x + (width >> 1) - 0x62,
+                                             y + 0x16 + col * 0x14, -0xBE, -0x18, 1);
+                    }
+                }
+            }
+            func_001FEAF0(item + 1);
+        }
+    }
+    arg0 = func_001B65F0(arg0, (s32)arg1, x + 0x20, y + 0x85, -(width - 0x3A), -0x34, -1, 0);
+    px = x + 0x6D0 + ((width - 0x3A) >> 2);
+    py = y + 0x7AC;
+    arg0 = func_001B3CC0(arg0, &D_00290A58, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x6E0 + ((width - 0x3A) >> 2);
+    py = y + 0x7AC;
+    arg0 = func_001B3CC0(arg0, &D_00290A62, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x20 + ((width - 0x3A) >> 2);
+    py = y + 0xA7;
+    arg0 = func_001B6F70(arg0, px, py, 1, 2, func_0019BEF0((char *)text1), text1,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+    px = x + 0x6D8 + (((width - 0x3A) * 2) >> 2);
+    py = y + 0x7AC;
+    arg0 = func_001B3CC0(arg0, &D_00290A6C, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x20 + (((width - 0x3A) * 2) >> 2);
+    py = y + 0xA7;
+    arg0 = func_001B6F70(arg0, px, py, 1, 2, func_0019BEF0((char *)text2), text2,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+    px = x + 0x6D8 + (((width - 0x3A) * 3) >> 2);
+    py = y + 0x7AC;
+    arg0 = func_001B3CC0(arg0, &D_00290A76, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x20 + (((width - 0x3A) * 3) >> 2);
+    py = y + 0xA7;
+    return func_001B6F70(arg0, px, py, 1, 2, func_0019BEF0((char *)text3), text3,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 static inline u8 *save_001C8DC0(u8 *save) {
     return save + 0xA9C000;
