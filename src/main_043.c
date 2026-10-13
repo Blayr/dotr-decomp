@@ -403,7 +403,67 @@ s32 func_001D82C0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D8880);
+typedef struct Model_001D8880 {
+    u8 pad0[0x40];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 pad43[0x4D];
+    void *unk90;
+} Model_001D8880;
+
+typedef struct Slot_001D8880 {
+    Model_001D8880 *model;
+} Slot_001D8880;
+
+static inline Slot_001D8880 *lookup_001D8880(s32 index) {
+    if (index < 0 || index >= 6) {
+        return NULL;
+    }
+    return (Slot_001D8880 *) (D_0031A7C0 + index * 0xA0);
+}
+
+s32 func_001D8880(s32 arg0, s32 arg1) {
+    extern s32 func_001DE4E0();
+    s32 i;
+    Slot_001D8880 *slot;
+    Model_001D8880 *model;
+    s32 level;
+    s32 limit;
+    s32 other;
+    s32 bits;
+    s32 flag;
+
+    bits = func_001A82E0(0x1D);
+    flag = (bits & (1 << arg0)) ? 1 : 0;
+    other = arg0 ^ 1;
+    if (flag) {
+        if (func_001DE4E0(arg0) < 0x20 && func_001DE4E0(other) >= 0x64) {
+            arg1 = 0;
+        }
+    } else if ((u16) func_00203A40(arg0, 1, 2) == 0) {
+        arg1 = 0;
+    }
+
+    for (i = 0; i < 6; i++) {
+        slot = lookup_001D8880(i);
+        if (slot != NULL && slot->model != NULL) {
+            model = slot->model;
+            level = func_001DE5C0(arg0);
+            limit = func_001E0950(slot->model->unk90, 0);
+            if (arg1 != 0 && level < limit) {
+                model->r = 0x40;
+                model->g = 0x40;
+                model->b = 0x40;
+            } else {
+                model->r = 0x80;
+                model->g = 0x80;
+                model->b = 0x80;
+            }
+        }
+    }
+    return 1;
+}
 
 typedef struct Flags81_001D89F0 {
     s8 : 4;
