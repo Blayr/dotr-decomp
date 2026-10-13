@@ -234,7 +234,28 @@ s32 func_00245890(void *arg0) {
     return state->base + (state->index * 0x195000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002458E0);
+typedef struct Buffer_002458E0 {
+    s32 unk0;
+    s32 base;
+    s32 index;
+    volatile s32 count;
+    s32 capacity;
+} Buffer_002458E0;
+
+static inline u8 is_empty_002458E0(void *arg0) {
+    return ((Buffer_002458E0 *)arg0)->count == 0;
+}
+
+s32 func_002458E0(void *arg0) {
+    s32 capacity;
+    Buffer_002458E0 *buffer = arg0;
+
+    if (is_empty_002458E0(arg0)) {
+        return 0;
+    }
+    capacity = buffer->capacity;
+    return buffer->base + ((capacity + (buffer->index - buffer->count)) % capacity) * 0x4CE40;
+}
 
 typedef struct Counter_00245960 {
     u8 pad[0xC];
