@@ -799,7 +799,86 @@ void func_00102390(s32 n, f32 *x, f32 *y, f32 *y2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102550);
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Point_00102550;
+
+typedef struct {
+    s32 count;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Point_00102550 out[28];
+} Spline_00102550;
+
+static inline f32 sample_00102550(s32 n, f32 *t, f32 *p, f32 *m, f32 u) {
+    s32 lo;
+    s32 hi;
+    s32 mid;
+    f32 d;
+    f32 h;
+
+    lo = 0;
+    hi = n - 1;
+    while (lo < hi) {
+        mid = (s32)((lo + hi) / 2.0f);
+        if (t[mid] < u) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    if (lo > 0) {
+        lo--;
+    }
+    h = t[lo + 1] - t[lo];
+    d = u - t[lo];
+    return p[lo] + d * ((p[lo + 1] - p[lo]) / h - h * (2.0f * m[lo] + m[lo + 1]) +
+                        d * (3.0f * m[lo] + d * (m[lo + 1] - m[lo]) / h));
+}
+
+s32 func_00102550(void *arg0) {
+    Spline_00102550 *s = arg0;
+    f32 t[8];
+    f32 mx[8];
+    f32 my[8];
+    f32 mz[8];
+    s32 i;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 u;
+    f32 step;
+
+    if (s->count < 3 || s->count > 8) {
+        return 0;
+    }
+    t[0] = 0.0f;
+    for (i = 1; i < s->count; i++) {
+        dx = s->x[i] - s->x[i - 1];
+        dy = s->y[i] - s->y[i - 1];
+        dz = s->z[i] - s->z[i - 1];
+        t[i] = t[i - 1] + func_001A6C60(dx * dx + dy * dy + dz * dz);
+    }
+    for (i = 1; i < s->count; i++) {
+        t[i] /= t[s->count - 1];
+    }
+    func_00102390(s->count, t, s->x, mx);
+    func_00102390(s->count, t, s->y, my);
+    func_00102390(s->count, t, s->z, mz);
+    step = 1.0f / (4.0f * (f32)(s->count - 1));
+    u = 0.0f;
+    for (i = 0; i < (s->count - 1) * 4; i++) {
+        s->out[i].x = sample_00102550(s->count, t, s->x, mx, u);
+        s->out[i].y = sample_00102550(s->count, t, s->y, my, u);
+        s->out[i].z = sample_00102550(s->count, t, s->z, mz, u);
+        u += step;
+    }
+    return 1;
+}
 
 typedef struct Vec3_00102A50 {
     f32 x;
