@@ -492,7 +492,26 @@ s32 func_00278250(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return mine - theirs;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278420);
+s32 func_00278420(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_00250BC0(s32, s32, s32);
+    Obj_00278250 *obj = (Obj_00278250 *)arg0;
+    s32 mine;
+
+    if (obj == NULL) {
+        return 0;
+    }
+    if (func_00250900(obj) == 1) {
+        mine = 0;
+    } else if (obj->unk40 == arg2 && obj->unk41 == arg3 && obj->flag) {
+        mine = func_00250BC0(arg0, arg2, arg3);
+    } else {
+        mine = func_00250A60(arg0, arg2, arg3);
+    }
+    if (func_001E22B0(arg2, arg3) == 9) {
+        arg1 = func_00250860(0x5DC, arg1);
+    }
+    return mine - arg1;
+}
 
 void func_00278510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     if (arg1 == -1) {

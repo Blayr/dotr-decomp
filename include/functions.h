@@ -1970,6 +1970,7 @@ s32 func_00278150(s32 arg0, s32 arg1);
 s32 func_002781B0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_002781F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00278250(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_00278420(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00278510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_002785D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 u16 func_002787F0(void *arg0, void *arg1);
