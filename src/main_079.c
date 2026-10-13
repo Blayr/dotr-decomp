@@ -178,7 +178,6 @@ typedef struct Entry_0027B360 {
     u8 pad8[8];
 } Entry_0027B360;
 
-s32 func_0027B520(void *, s32);
 
 s32 func_0027B360(s32 arg0, u16 *arg1, u16 *arg2) {
     u16 cards[22];
@@ -218,7 +217,40 @@ s32 func_0027B360(s32 arg0, u16 *arg1, u16 *arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B520);
+typedef union {
+    u32 word;
+    struct {
+        u16 low;
+        u16 high;
+    } halves;
+} Data_0027B520;
+
+typedef struct {
+    u16 id;
+    u16 pad2;
+    u16 kind;
+    u16 pad6;
+    Data_0027B520 data;
+} Entry_0027B520;
+
+#define TARGET_0027B520(entry, high) \
+    ((high) == 1 ? (entry)->data.word >> 16 & 0xFFFF : (entry)->data.halves.low)
+
+s32 func_0027B520(void *arg0, u8 arg1) {
+    extern s32 func_00279850();
+    extern s32 func_002464F0(s32, s32, s32);
+    Entry_0027B520 *entry = arg0;
+    u16 target;
+    s32 pos;
+    s32 other;
+
+    target = TARGET_0027B520(entry, arg1);
+    pos = func_001E1090(entry->id >> 8, entry->id & 0xFF);
+    other = func_001E1090(TARGET_0027B520(entry, arg1) >> 8, TARGET_0027B520(entry, arg1) & 0xFF);
+    func_002464F0(func_001DF540(entry->id >> 8, entry->id & 0xFF), pos & 0xFF, pos >> 8);
+    return (func_00279850(entry->id >> 8, entry->id & 0xFF, pos & 0xFF, pos >> 8,
+                          other & 0xFF, other >> 8, &target) == 1) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B650);
 
