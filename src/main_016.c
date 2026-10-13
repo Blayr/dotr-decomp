@@ -886,7 +886,442 @@ s32 func_0016B3C0(s32 arg0) {
     return ((u16)bestPos << 16) | (u16)found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016B610);
+s32 func_0016B610(s32 arg0, s32 arg1, void *arg2) {
+    s32 mask = 0;
+    s32 count = 0;
+    s32 owner;
+    s32 *effect;
+    s32 card;
+    s32 position;
+    s32 i;
+    s32 y;
+    s32 x;
+    s32 y55;
+    s32 x55;
+    s32 index55;
+    s32 value;
+    s32 otherCount;
+    s32 otherMask;
+    s32 otherIndex;
+    s32 handIndex;
+    u32 word;
+    s16 buffer[24];
+    extern s32 func_001E1030();
+    extern s32 func_001E1580();
+    extern s32 func_001DEE50();
+    extern s32 func_00215D30();
+
+    card = func_001E1030();
+    position = func_001E1090(arg0, arg1);
+    owner = func_00250360(arg0, arg1);
+    effect = func_001E0B70(arg0, arg1, 0);
+    func_0024C910(owner, 2, buffer);
+    if (func_001E2100(arg0, arg1, 4)) {
+        return 0;
+    }
+    if (func_0016CF10(card) == 1) {
+        if (func_0016CF30(owner) == 1 && func_0016CFF0(owner) == 4) {
+            return 1;
+        }
+    }
+
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_0016CE00(func_00250360(arg0, arg1), card) == 1 &&
+            func_001E22B0(position & 0xFF, position >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (effect == NULL) {
+            return 2;
+        }
+        word = (u32)effect[0];
+        switch (word >> 8) {
+        case 0x17:
+        case 0x49:
+            if (func_0016C6B0(owner, (word >> 6) & 3, word & 0x3F) == 1) {
+                return 1;
+            }
+            break;
+        case 0x18:
+            mask = func_0024CA40(0, 0, owner, 2, 0x34, 0xE);
+            for (i = 0; i < func_0024E910(mask); i++) {
+                value = func_0024EC50(mask, i);
+                if (func_001E2100(value >> 8, value & 0xFF, 4) == 1) {
+                    count++;
+                }
+            }
+            if (count > 5) {
+                return 1;
+            }
+            break;
+        case 2:
+            value = func_0027C770(func_001DF540(arg0, arg1), position & 0xFF,
+                                 position >> 8, *(u8 *)(effect + 1), 8, 2);
+            if (value >= 0 && value == position) {
+                return 1;
+            }
+            break;
+        case 4:
+            switch ((u32)effect[1] >> 16) {
+            case 0x12:
+                value = func_0016CBB0(arg0, effect);
+                if (value >= 0 && ((position & 0xFF) == (value & 0xFF) ||
+                                  (position >> 8) == (value >> 8))) {
+                    return 1;
+                }
+                break;
+            case 0x13:
+            default:
+                if (func_0016C6B0(owner, (word >> 6) & 3, word & 0x3F) == 1) {
+                    return 1;
+                }
+                break;
+            }
+            break;
+        case 0xD:
+            if (((word >> 6) & 3) == 1) {
+                if (((u32)effect[1] >> 16) == 4) {
+                    if (func_001DF470(owner) < 1201) {
+                        return 1;
+                    }
+                    break;
+                }
+                return 1;
+            }
+            if ((word & 0x3F) == 0x32) {
+                if (func_0024E780(owner == 0 ? 1 : 0, 3) > 3) {
+                    return 1;
+                }
+                break;
+            }
+            return 1;
+        case 0x1F:
+            if (card == 0x2DD && func_0016B3C0(owner) >= 0) {
+                return 1;
+            }
+            break;
+        case 0x20:
+            for (mask = 0; mask < 11; mask++) {
+                if (func_001E1580(arg0, mask) == 0xFF) {
+                    return 1;
+                }
+            }
+            break;
+        case 0x12:
+            mask = func_0024CA40(0, 0, owner, 1, word & 0x3F, 0xE);
+            if (func_0024E910(mask) > 2) {
+                return 1;
+            }
+            break;
+        case 0x21:
+            {
+                s32 targetPosition;
+                s32 sourcePosition;
+                s32 targetY;
+
+                func_0027C2C0(owner == 0 ? 1 : 0, (u16 *)buffer, 0x1D, 0, 0);
+                value = func_0027B650((u16 *)buffer);
+                arg0 = value >> 8;
+                arg1 = value & 0xFF;
+                sourcePosition = func_001E1090(arg0, arg1);
+                func_0027C070(owner, (u16 *)buffer, 0x1D, 1);
+                value = func_0027B650((u16 *)buffer);
+                card = value >> 8;
+                targetY = value & 0xFF;
+                targetPosition = func_001E1090(card, targetY);
+                func_0024C910(owner, 1, buffer);
+                owner = sourcePosition & 0xFF;
+                count = sourcePosition >> 8;
+                if (func_002509E0(arg0, arg1, owner, count) >= 2500) {
+                    count = func_002509E0(arg0, arg1, owner, count);
+                    if (func_002509E0(card, targetY, targetPosition & 0xFF,
+                                     targetPosition >> 8) < count) {
+                        return 1;
+                    }
+                }
+            }
+            break;
+        case 0x36:
+            return 1;
+        case 0x25:
+            switch (word & 0x3F) {
+            case 0x21:
+                if (func_0027BBC0(arg0, arg1, 0) == 1) {
+                    return 1;
+                }
+                break;
+            case 0x22:
+                if (func_0027BBC0(owner, 0, 0) == 1) {
+                    return 1;
+                }
+                break;
+            case 0x34:
+            default:
+                if (func_0027BBC0(owner, 0, 0) == 1) {
+                    return 1;
+                }
+                break;
+            }
+            break;
+        case 0x26:
+            if (func_001DE6D0(owner) == 0) {
+                return 1;
+            }
+            break;
+        case 0x27:
+            if (func_001DE5C0(owner) < 4) {
+                return 1;
+            }
+            break;
+        case 0x28:
+            if (func_0027BBC0(owner, 0, 0) == 1) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    case 0:
+        if (func_002507D0(arg0, arg1) == 0) {
+            return 2;
+        }
+        effect = func_00250740(arg0, arg1, 2);
+        if (effect == NULL) {
+            return 2;
+        }
+        word = (u32)effect[0];
+        switch (word >> 8) {
+        case 0xC:
+        case 0x34:
+        case 0xD:
+        case 0xE:
+        case 0x22:
+        case 0x3B:
+        case 0x56:
+        case 0x43:
+        case 0xF:
+            return 1;
+        case 0xB:
+        case 0x4E:
+        case 0x12:
+        case 0x4D:
+        case 6:
+            mask = func_0024CA40(0, 0, arg0, 1, word & 0x3F, 0xE);
+            if ((u32)mask > 1) {
+                return 1;
+            }
+            break;
+        case 0x13:
+        case 0x17:
+            if (((word >> 6) & 1) &&
+                func_0024CA40(0, 0, arg0, 1, word & 0x3F, 0xE) != 0) {
+                return 2;
+            }
+            mask = func_0027E150(func_0024CA40(0, 0, arg0, 2,
+                                            (u32)effect[0] & 0x3F, 0xE));
+            if ((u32)mask > 2) {
+                return 1;
+            }
+            break;
+        case 0x47:
+            mask = func_0024CA40(0, 0, arg0, 2, 0x34, 0xE);
+            for (i = 0; i < func_0024E910(mask); i++) {
+                value = func_0024EC50(mask, i);
+                x = value >> 8;
+                y = value & 0xFF;
+                if (func_001E1580(x, y) > 0 && func_001E1580(x, y) != 0xFF) {
+                    return 1;
+                }
+            }
+            break;
+        case 0x53:
+            for (handIndex = 0; handIndex < func_001DEE50(arg0); handIndex++) {
+                if ((func_0026FCE0(func_001DEE00(arg0, handIndex)) >> 5) == 0) {
+                    count++;
+                }
+            }
+            for (handIndex = 0; handIndex < func_001DEE50(arg0 == 0 ? 1 : 0); handIndex++) {
+                if ((func_0026FCE0(func_001DEE00(arg0 == 0 ? 1 : 0, handIndex)) >> 5) == 0) {
+                    count++;
+                }
+            }
+            if (count > 5) {
+                return 1;
+            }
+            break;
+        case 0x54:
+            mask = func_0024CA40(0, 0, arg0, 3, 0x21, 0xE);
+            value = func_0024EC50(mask, 0);
+            if (arg0 == func_00250360(value >> 8, value & 0xFF) &&
+                value != ((arg0 << 8) | arg1)) {
+                return 1;
+            }
+            break;
+        case 0x55:
+            mask = func_0024CA40(0, 0, arg0, 1, 0x34, 0xE);
+            for (index55 = 0; index55 < func_0024E910(mask); index55++) {
+                value = func_0024EC50(mask, index55);
+                x55 = value >> 8;
+                y55 = value & 0xFF;
+                if (func_001E1580(x55, y55) > 0 && func_001E1580(x55, y55) != 0xFF) {
+                    return 1;
+                }
+            }
+            break;
+        case 0x58:
+            if (func_00215D30(arg0 == 0 ? 1 : 0,
+                            func_001E1030(arg0 == 0 ? 1 : 0, 0)) >= 6) {
+                return 1;
+            }
+            break;
+        }
+        effect = func_00250740(arg0, arg1, 3);
+        if (effect == NULL) {
+            return 2;
+        }
+        word = (u32)effect[0];
+        switch (word >> 8) {
+        case 0x12:
+            if (((u32)effect[1] >> 16) == 0x16) {
+                mask = func_0024CA40(0, 0, owner, 1, word & 0x3F, 0x16);
+            } else {
+                mask = func_0024CA40(0, 0, owner, 1,
+                                    (((u32)effect[1] >> 16) << 16) | (word & 0x3F), 0xE);
+            }
+            if (func_0024E910(mask) > 2) {
+                return 1;
+            }
+            break;
+        case 0x33:
+            mask = func_0024CA40(0, 0, owner, 1,
+                                (((u32)effect[1] >> 16) << 16) | (word & 0x3F), 0xE);
+            if (func_0024E910(mask) > 2) {
+                return 1;
+            }
+            break;
+        case 0x17:
+            if ((word & 0x3F) == 0x1A) {
+                return 2;
+            }
+            if (func_0016C6B0(owner, (word >> 6) & 3, word & 0x3F) == 1) {
+                return 1;
+            }
+            break;
+        case 0xD:
+            return 1;
+        case 0x23:
+            if (func_0016C6B0(owner, (word >> 6) & 3, word & 0x3F) == 1) {
+                return 1;
+            }
+            break;
+        case 0x18:
+            mask = func_0024CA40(0, 0, owner, 1, word & 0x3F, 0xE);
+            for (i = 0; i < func_0024E910(mask); i++) {
+                value = func_0024EC50(mask, i);
+                if (func_001E2100(value >> 8, value & 0xFF, 4) == 1) {
+                    count++;
+                }
+            }
+            if (count > 2) {
+                return 2;
+            }
+            otherCount = 0;
+            otherMask = func_0024CA40(0, 0, owner, 2, (u32)effect[0] & 0x3F, 0xE);
+            for (otherIndex = 0; otherIndex < func_0024E910(otherMask); otherIndex++) {
+                value = func_0024EC50(otherMask, otherIndex);
+                if (func_001E2100(value >> 8, value & 0xFF, 4) == 1) {
+                    otherCount++;
+                }
+            }
+            if (otherCount > 5) {
+                return 1;
+            }
+            break;
+        case 4:
+            if ((word & 0x3F) == 0x1A) {
+                return 2;
+            }
+            if ((word & 0x3F) == 0x30) {
+                if (func_0016C6B0(owner, (word >> 6) & 3, word & 0x3F) == 1) {
+                    return 1;
+                }
+            } else if (((u32)effect[1] >> 16) != 0) {
+                value = func_001E1090(arg0, arg1);
+                mask = func_0024CA40(value & 0xFF, value >> 8, owner,
+                                    ((u32)effect[0] >> 6) & 3, (u32)effect[0] & 0x3F,
+                                    (u32)effect[1] >> 16);
+            } else {
+                mask = func_0024CA40(0, 0, owner, (word >> 6) & 3, word & 0x3F, 0xE);
+            }
+            for (i = 0; i < func_0024E910(mask); i++) {
+                value = func_0024EC50(mask, i);
+                arg0 = value >> 8;
+                arg1 = value & 0xFF;
+                if (owner == func_00250360(arg0, arg1)) {
+                    return 2;
+                }
+                if (func_001E2100(arg0, arg1, 4)) {
+                    count++;
+                }
+            }
+            if (count > 1) {
+                return 1;
+            }
+            break;
+        case 0x1A:
+            if (func_001DE5C0(arg0) < 4) {
+                return 1;
+            }
+            break;
+        case 0x26:
+            if (func_001DE6D0(owner) == 0) {
+                return 1;
+            }
+            break;
+        case 0x1F:
+            if (func_00266DF0(0x39) > 0) {
+                return 2;
+            }
+            word = (u32)effect[0];
+            if ((word & 0x3F) == 0x1A) {
+                return 2;
+            }
+            mask = func_0024CA40(0, 0, owner, (word >> 6) & 3, word & 0x3F, 0xE);
+            if (func_0024E910(mask) > 2) {
+                return 1;
+            }
+            break;
+        case 0x3C:
+            if (func_0024CA40(position & 0xFF, position >> 8, owner, 1,
+                              ((u32)*(u16 *)(effect + 1) << 16) | (word & 0x3F), 1) &&
+                func_0024E220(owner == 0 ? 1 : 0, 1) >= 0) {
+                return 1;
+            }
+            break;
+        case 0x46:
+            if (func_0027BBC0(owner, 0, 0) == 1) {
+                return 1;
+            }
+            break;
+        case 0xC:
+            return 1;
+        case 0x57:
+            if (func_001DF110(owner) == 0) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    }
+    return 2;
+}
 
 s32 func_0016C6B0(s32 arg0, s32 arg1, s32 arg2) {
     s32 best_other;
@@ -2147,7 +2582,6 @@ s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-s32 func_0016B610(s32, s32, void *);
 void func_001E1E70(s32, s32, s32, s32);
 s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
@@ -2312,7 +2746,6 @@ typedef struct Position_00170F10 {
     u8 y : 4;
 } Position_00170F10;
 
-s32 func_0016B610(s32, s32, void *);
 s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
