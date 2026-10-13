@@ -1311,7 +1311,80 @@ s32 func_00138780(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     return func_001374D0(arg0, arg1, arg2, arg3);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00138950);
+typedef struct Nibbles_00138950 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00138950;
+
+typedef struct Out_00138950 {
+    u16 pos;
+    u8 kind;
+    u8 unk03;
+    u16 target;
+    u8 pad06[6];
+    s32 flag;
+    u8 result;
+} Out_00138950;
+
+static inline s32 slot_00138950(u16 *unit, s32 arg1) {
+    s32 card = func_00138B60(arg1);
+    if (func_0027D830(*unit >> 8, *unit & 0xFF, 0, 0, 6, 1) == 5) {
+        card = -1;
+    }
+    return card;
+}
+
+s32 func_00138950(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_001E1E70(s32, s32, s32, s32);
+    u16 *unit = arg0;
+    s32 count;
+    s32 card;
+    s32 k;
+    Out_00138950 *out = arg2;
+    Nibbles_00138950 entries[12];
+    s32 i;
+    Nibbles_00138950 *entry;
+
+    func_001E1090(*unit >> 8, *unit & 0xFF);
+    entry = entries;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+    count = 0;
+    card = slot_00138950(unit, arg1);
+    if (card >= 0) {
+        card = (card >> 16) & 0xFFFF;
+        if (card != 0xFFFF) {
+            k = 1;
+            do {
+                if (func_001DF540(arg1 == 0 ? 1 : 0, k) != 0) {
+                    count++;
+                }
+                if (k == card) {
+                    k = 11;
+                }
+                k++;
+            } while (k < 11);
+            out->pos = *unit;
+            out->kind = 13;
+            out->result = func_0027E360(*unit >> 8, *unit & 0xFF, out->target, 1, 1);
+            out->flag = 1;
+            out->target = count - 1;
+            func_0027B1B0(unit, arg3);
+            return 0;
+        }
+    }
+    if (func_001E2100(*unit >> 8, *unit & 0xFF, 4) != 0) {
+        func_001E1E70(*unit >> 8, *unit & 0xFF, 0, 1);
+        out->pos = *unit;
+        out->kind = 14;
+        return 0;
+    }
+    return func_001374D0(unit, arg1, out, arg3);
+}
 
 s32 func_00138B60(s32 arg0) {
     extern s32 func_001E1580(s32, s32);

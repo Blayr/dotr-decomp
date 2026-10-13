@@ -3538,7 +3538,80 @@ s32 func_00171D60(u16 *arg0, s32 arg1, void *arg2, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00172000);
+typedef struct Nibbles_00172000 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00172000;
+
+typedef struct Out_00172000 {
+    u16 pos;
+    u8 kind;
+    u8 unk03;
+    u16 target;
+    u8 pad06[6];
+    s32 flag;
+    u8 result;
+} Out_00172000;
+
+static inline s32 slot_00172000(u16 *unit, s32 arg1) {
+    s32 card = func_0016B3C0(arg1);
+    if (func_0027D830(*unit >> 8, *unit & 0xFF, 0, 0, 6, 0) == 5) {
+        card = -1;
+    }
+    return card;
+}
+
+s32 func_00172000(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void func_001E1E70(s32, s32, s32, s32);
+    u16 *unit = arg0;
+    s32 count;
+    s32 card;
+    s32 k;
+    Out_00172000 *out = arg2;
+    Nibbles_00172000 entries[12];
+    s32 i;
+    Nibbles_00172000 *entry;
+
+    func_001E1090(*unit >> 8, *unit & 0xFF);
+    entry = entries;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+    count = 0;
+    card = slot_00172000(unit, arg1);
+    if (card >= 0) {
+        card = (card >> 16) & 0xFFFF;
+        if (card != 0xFFFF) {
+            k = 1;
+            do {
+                if (func_001DF540(arg1 == 0 ? 1 : 0, k) != 0) {
+                    count++;
+                }
+                if (k == card) {
+                    k = 11;
+                }
+                k++;
+            } while (k < 11);
+            out->pos = *unit;
+            out->kind = 13;
+            out->result = func_0027E360(*unit >> 8, *unit & 0xFF, out->target, 1, 0);
+            out->flag = 1;
+            out->target = count - 1;
+            func_0027B1B0(unit, arg3);
+            return 0;
+        }
+    }
+    if (func_001E2100(*unit >> 8, *unit & 0xFF, 4) != 0) {
+        func_001E1E70(*unit >> 8, *unit & 0xFF, 0, 1);
+        out->pos = *unit;
+        out->kind = 14;
+        return 0;
+    }
+    return func_00170940(unit, arg1, out, arg3);
+}
 
 static inline s32 max_00172210(s32 a, s32 b) {
     if (a < b) {
