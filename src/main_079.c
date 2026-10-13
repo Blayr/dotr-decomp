@@ -1198,7 +1198,6 @@ typedef struct State_0027EB00 {
     u8 pad428[8];
 } State_0027EB00;
 
-void func_0027F180(void *, s32, s32);
 
 s32 func_0027EB00(void *arg0, void *arg1, s32 arg2) {
     s32 firstId;
@@ -1384,7 +1383,53 @@ s32 func_0027F160(s32 arg0, s32 arg1) {
     return !(arg0 & (1 << arg1)) ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F180);
+typedef struct Vertex_0027F180 {
+    u8 pad0[0x10];
+    u64 lower : 32;
+    u64 color : 24;
+    u64 upper : 8;
+    u8 pad18[3];
+    u8 alpha;
+    u8 pad1C[0x14];
+} Vertex_0027F180;
+
+typedef struct Count_0027F180 {
+    s16 count : 12;
+    s16 reserved : 4;
+} Count_0027F180;
+
+typedef struct Object_0027F180 {
+    u8 pad0[0x78];
+    Vertex_0027F180 *vertices;
+    s32 field7C;
+    s16 field80;
+    Count_0027F180 field82;
+    u8 pad84[0xC];
+    s32 field90;
+} Object_0027F180;
+
+s32 func_0027F180(void *arg0, s32 arg1, f32 *arg2) {
+    Object_0027F180 *object = arg0;
+    s32 result;
+    s32 i;
+
+    if (arg2 != NULL) {
+        result = func_001DA2B0(object, 0, arg2[0], arg2[1]);
+    } else {
+        result = func_001D9F00(object, 1);
+    }
+    for (i = 0; i < object->field82.count; i++) {
+        object->vertices[i].color = 0xFFFFFF;
+        object->vertices[i].alpha = arg1;
+    }
+    if (result != 0) {
+        func_001DA7A0(object->field90, (s32) object);
+    } else {
+        func_001DA7A0(0, (s32) object);
+    }
+    func_001DBCF0((s32) object);
+    return 0;
+}
 
 typedef struct Vec3_0027F290 {
     f32 x;

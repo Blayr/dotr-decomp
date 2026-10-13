@@ -2031,6 +2031,7 @@ s32 func_0027EB00(void *arg0, void *arg1, s32 arg2);
 void func_0027F0D0(void *arg0);
 void func_0027F110(u8 *arg0);
 s32 func_0027F160(s32 arg0, s32 arg1);
+s32 func_0027F180(void *arg0, s32 arg1, f32 *arg2);
 void func_0027F290(void *arg0, void *arg1, s32 arg2);
 void func_0027F360(void *arg0, void *arg1);
 void func_0027F3A0(void *arg0, void *arg1);
