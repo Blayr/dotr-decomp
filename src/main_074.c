@@ -995,7 +995,261 @@ s32 func_00256D80(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00257340);
+typedef struct Context_00257340 {
+    s32 unk0;
+    s32 side;
+    u32 mask;
+} Context_00257340;
+
+typedef struct State_00257340 {
+    u16 first;
+    u16 second;
+    u16 phase;
+    u8 ids[0xC6];
+    u32 timer;
+    u8 padD0[4];
+    u8 count;
+    u8 padD5[0x2B];
+    u8 stage;
+    u8 pad101;
+    u16 frames;
+} State_00257340;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+
+static inline u8 valid_00257340(u16 value) {
+    return value != 0xFF;
+}
+
+s32 func_00257340(void *arg0, void *arg1, s32 arg2) {
+    s32 data[4];
+    s32 index;
+    u8 flags;
+    s32 *command;
+    Context_00257340 *context = arg0;
+    State_00257340 *state = arg1;
+    s32 specialFirst;
+    s32 foundFirst;
+
+    extern s32 func_001E1E10();
+    extern s32 func_00255A30();
+
+    data[0] = 999;
+    data[1] = 0;
+    data[2] = 0;
+    data[3] = 0;
+    command = data;
+    index = 0;
+    flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->first = 0xFF;
+        state->second = 0xFF;
+        state->phase = 2;
+        if ((foundFirst = func_0026AB80(context->side, 0x2D)) >= 0) {
+            if ((specialFirst = func_0026AB80(context->side, 0x2E)) >= 0) {
+                func_001E42C0(0, -120, 80, func_001DE210(0x339));
+                func_002516D0(specialFirst >> 8, specialFirst & 0xFF, 1);
+                state->second = specialFirst;
+                state->phase = 0;
+                func_00255AC0(state, 0x25A);
+            } else {
+                s32 i;
+                s32 low;
+                s32 high;
+                func_001E42C0(0, -120, 80, func_001DE210(0x338));
+                i = 0;
+                low = foundFirst & 0xFF;
+                high = foundFirst >> 8;
+                do {
+                    context->mask = func_0024C7D0(context->mask, func_0024DE70(high, low), i);
+                    i++;
+                } while (i < 11);
+                func_002516D0(high, low, 1);
+                state->second = foundFirst | 0x10000;
+                state->phase = 0;
+                func_00255AC0(state, 0x25A);
+            }
+        }
+        {
+            s32 low;
+            s32 high;
+            s32 foundSecond;
+            s32 specialSecond;
+            s32 i;
+            if ((foundSecond = func_0026AB80(context->side == 0 ? 1 : 0, 0x2D)) >= 0) {
+                if ((specialSecond = func_0026AB80(context->side, 0x2E)) >= 0) {
+                    func_001E42C0(0, -120, 80, func_001DE210(0x339));
+                    func_002516D0(specialSecond >> 8, specialSecond & 0xFF, 1);
+                    state->first = specialSecond;
+                    state->phase = 0;
+                    func_00255AC0(state, 0x25A);
+                } else {
+                    func_001E42C0(0, -120, 80, func_001DE210(0x338));
+                    i = 0;
+                    low = foundSecond & 0xFF;
+                    high = foundSecond >> 8;
+                    do {
+                        context->mask = func_0024C7D0(context->mask, func_0024DE70(high, low), i);
+                        i++;
+                    } while (i < 11);
+                    func_002516D0(high, low, 1);
+                    state->first = foundSecond | 0x10000;
+                    state->phase = 0;
+                    func_00255AC0(state, 0x25A);
+                }
+            } else {
+                state->phase = 2;
+            }
+        }
+        func_00255AC0(state, 0x15);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (state->second != 0xFF && func_001E1E10(state->second >> 8, state->second & 0xFF) == 0xFF && func_00255B50(state) == 1) {
+            s32 id;
+            command[0] = 0x25A;
+            command[1] = 0;
+            command[2] = state->second;
+            command[3] = 0;
+            id = func_00255A30(command, state);
+            if (id >= 0) {
+                state->ids[state->count] = id;
+                state->count++;
+            }
+            state->phase = 1;
+        }
+        if (state->first != 0xFF && func_001E1E10(state->first >> 8, state->first & 0xFF) == 0xFF && func_00255B50(state) == 1) {
+            command[0] = 0x25A;
+            command[1] = 0;
+            command[2] = state->first;
+            command[3] = 0;
+            state->ids[state->count] = func_00255A30(command, state);
+            state->count++;
+            state->phase = 1;
+        }
+        break;
+    case 1: {
+        s32 i;
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->ids[i]) == 0) {
+                index++;
+            }
+        }
+        func_001E1E70(state->first >> 8, state->first & 0xFF, 0, 1);
+        if (index == state->count) {
+            func_001E4530();
+            state->phase = 2;
+        }
+        break;
+    }
+    case 2:
+        state->stage = 2;
+        if (func_00255B50(state) == 1) {
+            s32 id;
+            command[0] = 0x15;
+            command[1] = 0;
+            command[2] = context->mask;
+            command[3] = 0;
+            id = func_00255A30(command, state);
+            if (id >= 0) {
+                state->ids[0] = id;
+            }
+            state->phase++;
+        }
+        break;
+    case 3:
+        if (func_001F51D0(state->ids[0]) != 0) {
+            if ((state->timer++ % 28U) == 0) {
+                func_00217710(1, 0x49);
+            }
+            if (state->timer >= 28U) {
+                state->timer = 0;
+            }
+        } else {
+            do {
+                if (((context->mask >> (21 - index)) & 1) == 1) {
+                    if (index < 11) {
+                        func_0024F370(0, index);
+                    } else {
+                        func_0024F370(1, index - 11);
+                    }
+                }
+                index++;
+            } while (index < 22);
+            index = 0;
+            do {
+                func_001F5970(index, 0);
+                func_001F5970(index | 0x100, 0);
+                index++;
+            } while (index < 11);
+            flags = 1;
+        }
+        break;
+    default:
+        flags = 1;
+        break;
+    }
+
+    switch (state->stage) {
+    case 0: {
+        u16 value;
+        if (valid_00257340(state->first)) {
+            value = state->first;
+        } else {
+            value = state->second;
+        }
+        func_00260AF0(0, value & 0xFFFF, 180, 180);
+        state->stage++;
+        break;
+    }
+    case 1:
+        break;
+    case 2:
+        func_00260740(20);
+        state->stage++;
+        break;
+    case 3:
+        if (state->frames++ >= 20) {
+            state->stage++;
+            state->frames = 0;
+        }
+        break;
+    case 4:
+        if (!(flags & 0xFF & 1) && context->mask != 0) {
+            if (state->frames++ == 0) {
+                func_00260990(60, 0x3FFF);
+            } else if (state->frames >= 60) {
+                state->frames = 0;
+            }
+        } else {
+            func_00260A70(state, 16);
+            state->frames = 0;
+            state->stage++;
+        }
+        break;
+    default:
+        if (state->frames++ >= 16) {
+            flags = (flags | 2) & 0xFF;
+        }
+        break;
+    }
+    if ((flags & 0xFF) == 3) {
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 typedef struct Request_00257AA0 {
     s32 code;
