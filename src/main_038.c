@@ -1165,12 +1165,12 @@ s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     return id;
 }
 
-void func_001B3CC0(s32, s32, s32, s32, s32, s32, s32, s32,
-                   s64, s64, s64, s64, s64, s64);
-
 void func_001B3C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                    s32 arg4, s32 arg5, s32 arg6, s32 arg7,
                    s32 arg8, s32 arg9, s32 arg10) {
+    extern void func_001B3CC0(s32, s32, s32, s32, s32, s32, s32, s32,
+                              s64, s64, s64, s64, s64, s64);
+
     func_001B3CC0(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
                   0, 0, (s64) arg8, (s64) arg9, (s64) arg10, 0x80);
 }
