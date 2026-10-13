@@ -444,7 +444,60 @@ s32 func_001F4FD0(s32 arg0, s32 arg1, s32 arg2) {
     return var_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5090);
+typedef struct {
+    u8 state : 3;
+    u8 : 5;
+    u8 unknown1;
+    u16 category : 3;
+    u16 variant : 10;
+    u16 : 3;
+    u8 unknown4[20];
+} Entry_001F5090;
+
+typedef struct {
+    s8 : 6;
+    s8 selected : 1;
+    s8 : 1;
+} Flags_001F5090;
+
+extern struct Entry_001F5240 D_0031BC50[];
+
+static inline s32 act_001F5090(s32 index) {
+    extern u8 D_0031BB50[];
+    Entry_001F5090 *entry = (Entry_001F5090 *)(D_0031BB50 + 0x100 + index * 0x18);
+
+    if (index < 0 || index >= 24) {
+        return 0;
+    }
+    if (entry->state == 2) {
+        return func_001F4CB0(index);
+    } else if (entry->state != 1) {
+        return 0;
+    } else {
+        ((Flags_001F5090 *)((u8 *)entry + 3))->selected = 1;
+        return 1;
+    }
+}
+
+s32 func_001F5090(s32 arg0, s32 arg1) {
+    Entry_001F5090 *entry;
+    s32 result;
+    s32 index;
+
+    entry = (Entry_001F5090 *)D_0031BC50;
+    result = 0;
+    index = 0;
+    do {
+        if (arg0 < 0 || entry->category == arg0) {
+            if (arg1 < 0 || entry->variant == arg1) {
+                result |= act_001F5090(index);
+            }
+        }
+        index++;
+        entry++;
+    } while (index < 24);
+    return result;
+}
 
 typedef struct Entry_001F51D0 {
     u8 flags;
