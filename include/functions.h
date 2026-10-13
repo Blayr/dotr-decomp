@@ -1739,6 +1739,7 @@ s32 func_00250940(s32 arg0, s32 arg1);
 s32 func_002509E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00250A60(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00250AC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_00250B40(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00250BC0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00250C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00250CA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);

@@ -108,7 +108,14 @@ s32 func_00250AC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250B40);
+s32 func_00250B40(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 value;
+    s32 base;
+
+    value = func_002660E0(func_001DF540(arg0, arg1), arg2, arg3, 0);
+    base = func_001E0370(arg0, arg1, 0);
+    return func_002508D0(base + value);
+}
 
 void func_00250BC0(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_s0;

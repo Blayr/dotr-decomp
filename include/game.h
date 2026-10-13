@@ -284,7 +284,6 @@ extern s32 D_00350788;
 
 extern u16 D_0029CF32[];
 
-s32 func_00250B40(s32, s32, s32, s32);              /* extern */
 
 s32 func_0026FE70(void);
 s32 func_00270260(void);
