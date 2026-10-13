@@ -1012,6 +1012,7 @@ s32 func_001E8FA0(s32 arg0);
 void func_001E9280(void *arg0, s32 arg1);
 void func_001E92C0(void *arg0, s32 arg1);
 void func_001EA270(void *arg0, s32 arg1);
+s32 func_001EA2A0(s32 current, s32 object, void *data, s32 *size);
 void func_001ED460(s32 arg0);
 s32 func_001ED4A0(s32 index);
 s32 func_001EDCB0(s32 index, s16 duration, s32 mode, void *color0, void *color1, s32 enabled);

@@ -767,6 +767,61 @@ void func_001EA270(void *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001EA2A0);
+typedef struct {
+    s32 id;
+    s32 unused;
+    s32 enabled;
+    s32 count;
+} Entry_001EA2A0;
+
+typedef struct {
+    u8 unused[0x28];
+    s32 offset;
+    s32 present;
+} Header_001EA2A0;
+
+s32 func_001EA410(s32, s32, s32, void *);
+
+s32 func_001EA2A0(s32 current, s32 object, void *data, s32 *size) {
+    extern s32 func_00202E00();
+    s32 cursor;
+    s32 count;
+    s32 index;
+    Entry_001EA2A0 *entry;
+    s32 base;
+    s32 entry_size;
+    s32 *table;
+    Header_001EA2A0 *header;
+
+    if (size != NULL) {
+        *size = 0;
+    }
+    if (data == NULL) {
+        return current;
+    }
+    header = (Header_001EA2A0 *)((u8 *)data + 0x10);
+    if (header->present == 0) {
+        return current;
+    }
+    table = (s32 *)((u8 *)data + header->offset);
+    count = *table;
+    entry = (Entry_001EA2A0 *)((u8 *)table + 0x10);
+    base = cursor = func_00209E50();
+    cursor += func_00202E00(cursor, 2);
+    for (index = 0; index < count; index++, entry++) {
+        if (entry->id != 0) {
+            current = func_00202FB0(current, entry->id, cursor, (s32)&entry_size);
+            if (entry->enabled != 0 && func_001F3360(object) == 0 && func_001F3440(object) == 0) {
+                current = func_001EA410(current, object, cursor, entry);
+                entry->count++;
+            }
+            cursor += entry_size;
+        }
+    }
+    if (size != NULL) {
+        *size = cursor - base;
+    }
+    return func_0020F290(current);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001EA410);
