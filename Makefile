@@ -3,6 +3,7 @@ include config.mk
 
 SPLAT_CFG := config/main.yaml
 LD_SCRIPT := linker/main.ld
+LD_SYMS   := config/linker_syms.txt
 BUILD     := build
 ELF       := $(BUILD)/main.elf
 OUT_EXE   := $(BUILD)/$(EXE)
@@ -46,9 +47,9 @@ $(BUILD)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	@tools/cc.sh $< $@
 
-$(ELF): $(OBJS) $(LD_SCRIPT)
+$(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS)
 	@$(LD) -EL -T $(LD_SCRIPT) -T linker/undefined_syms_auto.txt -T linker/undefined_funcs_auto.txt \
-		-Map $(BUILD)/main.map -o $@
+		-T $(LD_SYMS) -Map $(BUILD)/main.map -o $@
 
 $(OUT_EXE): $(ELF)
 	@$(OBJCOPY) -O binary $< $@
