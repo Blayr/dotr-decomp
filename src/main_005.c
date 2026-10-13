@@ -170,7 +170,173 @@ s32 func_00115160(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00115340);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Cell_00115340;
+
+
+s32 func_00115340(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(void *, void *, s32, s32, s32, s32, u16, s32);
+    s32 best_position;
+    s32 best_cost;
+    s32 fallback_position;
+    Cell_00115340 cells[12];
+    s32 y;
+    s32 x;
+    s32 i;
+    s32 best;
+    s32 position;
+    s32 target_y;
+    s32 target_x;
+    s32 target;
+    s32 result;
+    s32 j;
+    Cell_00115340 *p;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = cells;
+    j = 0;
+    do {
+        p->low = p->high = 15;
+        j++;
+        p++;
+    } while (j < 12);
+
+    if ((u8)(*((u8 *)arg2 + 0x3E) >> 5) == 0 &&
+        *(u16 *)((u8 *)arg2 + 0x3C) != 0x53) {
+        best = 14;
+        if (arg3 >= 0) {
+            s32 candidate;
+            s32 candidate_y;
+            s32 candidate_x;
+            s32 n;
+            s32 cost;
+
+            best_cost = 255;
+            best_position = 65535;
+            target = func_001E1090(arg3 >> 8, arg3 & 255);
+            n = 0;
+            target_y = target >> 8;
+            target_x = target & 255;
+            do {
+                candidate = func_0024E410(arg0, n);
+                if (candidate >= 0) {
+                    candidate_x = candidate & 255;
+                    candidate_y = candidate >> 8;
+                    if (func_001E22B0(candidate_x, candidate_y) != 8 &&
+                        (func_001E22B0(candidate_x, candidate_y) != 9 ||
+                         func_0024FE40(arg2, candidate_x, candidate_y) != 1) &&
+                        func_001E36E0(candidate_x, candidate_y) == 0) {
+                        if (func_00278510(arg2, arg3, func_00117C30(arg0),
+                                         target_x, target_y, 0) > 0) {
+                            cost = func_0027A130(arg2, cells, candidate_x, candidate_y,
+                                                target_x, target_y, arg3, 0, 5,
+                                                (u16)func_00117C30(arg0));
+                        } else {
+                            cost = func_002792C0(arg2, cells, candidate_x, candidate_y,
+                                                target_x, target_y, arg3, 5);
+                        }
+                        if (func_0027AFC0((u8 *)cells) > 0 && cost < best_cost) {
+                            best_cost = cost;
+                            best_position = candidate;
+                        }
+                    }
+                }
+                n++;
+            } while (n < 8);
+            if (best_position != 65535) {
+                return best_position;
+            }
+        }
+        best = 14;
+
+        fallback_position = 0;
+        i = 0;
+        do {
+            position = func_0024E410(arg0, i);
+            if (position >= 0) {
+                x = position & 255;
+                y = position >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0) {
+                    if (func_0024DEB0(3, arg2) == 1) {
+                        if (y >= 5) {
+                            target = 0x602;
+                        } else if (x >= 5) {
+                            target = 0x206;
+                        } else if (x >= y) {
+                            target = 0x105;
+                        } else {
+                            target = 0x501;
+                        }
+                        target_x = target & 255;
+                        target_y = target >> 8;
+                        result = func_001E3790(target_x, target_y);
+                        if (result < 0) {
+                            result = 65535;
+                        }
+                        result = func_002792C0(arg2, cells, x, y, target_x, target_y,
+                                              (u16)result, 7);
+                        if (result < best && result >= 0) {
+                            fallback_position = position;
+                            best = result;
+                        }
+                    } else {
+                        result = func_001E3790(3, 3);
+                        if (result < 0) {
+                            result = 65535;
+                        }
+                        result = func_002792C0(arg2, cells, x, y, 3, 3, (u16)result, 7);
+                        if (result < best && result >= 0) {
+                            fallback_position = position;
+                            best = result;
+                        }
+                    }
+                }
+            }
+            i++;
+        } while (i < 8);
+        if (best < 14) {
+            return fallback_position;
+        } else {
+            fallback_position = -1;
+        }
+        return fallback_position;
+    } else {
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 best;
+        s32 position;
+
+        best = -1;
+        i = 0;
+        do {
+            position = func_0024E410(arg0, i);
+            if (position >= 0) {
+                x = position & 255;
+                y = position >> 8;
+                if (func_001E22B0(x, y) != 8 && func_001E22B0(x, y) != 9 &&
+                    func_001E3790(x, y) < 0 && y < 8) {
+                    best = position;
+                }
+            }
+            i++;
+        } while (i < 8);
+        if (best >= 0) {
+            return best;
+        } else {
+            best = -1;
+        }
+        return best;
+    }
+}
 
 typedef struct Nibbles_00115850 {
     u8 low : 4;

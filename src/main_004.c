@@ -2500,7 +2500,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_00114080;
 
-s32 func_00115340(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
 
