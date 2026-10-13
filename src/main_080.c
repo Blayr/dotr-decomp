@@ -218,7 +218,7 @@ extern Object_00280670 D_00351180[];
 extern Flags_00280670 D_00351240[];
 extern u8 D_00351241;
 extern u8 D_00351242;
-extern s16 D_00351246;
+extern u16 D_00351246;
 
 #pragma optimization_level 0
 
@@ -933,7 +933,7 @@ extern Deck_00285880 *D_00351230;
 extern u8 D_00351241;
 extern u8 D_00351242;
 extern u8 D_00351244;
-extern s16 D_00351246;
+extern u16 D_00351246;
 extern s16 D_00351248;
 
 #pragma optimization_level 0
