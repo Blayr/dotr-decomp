@@ -1675,7 +1675,6 @@ typedef struct {
     } field8;
 } Item_0015EC60;
 
-s32 func_0015EE40(void);
 
 static inline void set_index_0015EC60(void *arg, s32 index) {
     Item_0015EC60 *item = arg;
@@ -1737,7 +1736,38 @@ s32 func_0015ED90(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015EE40);
+static inline s32 slot_pos_0015EE40(s32 slot) {
+    extern s32 func_001604A0();
+    s32 temp;
+
+    temp = func_001DE540();
+    switch (slot) {
+    case 0:
+        return func_001604A0(temp, 0);
+    case 1:
+        return func_001604A0(temp, 3);
+    case 2:
+        return func_001604A0(temp, 4);
+    case 3:
+        return func_001604A0(temp, 5);
+    }
+    return -1;
+}
+
+static inline s32 is_free_0015EE40(s32 pos) {
+    return func_001E36E0(pos & 0xFF, pos >> 8) == 0 ? 1 : 0;
+}
+
+s32 func_0015EE40(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (is_free_0015EE40(func_0015ED90(i)) == 1) {
+            return slot_pos_0015EE40(i);
+        }
+    }
+    return -1;
+}
 
 typedef struct {
     u16 id;
