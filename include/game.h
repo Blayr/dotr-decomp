@@ -441,8 +441,6 @@ extern s8 D_0031BEA2;
 
 extern u8 D_0031BEA0;
 extern s32 D_0031C2E4;
-extern s32 D_00325C80;
-extern s32 D_00325C84;
 extern s32 D_003261D0;
 
 

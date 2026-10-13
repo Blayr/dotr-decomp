@@ -782,6 +782,30 @@ u8 func_00203CA0(s32 arg0, s32 arg1) {
     return ((Entry_00203CA0 *)(arg1 + (D_003259C0 + arg0 * 0x5C)))->value;
 }
 
+typedef struct Flags_00203CD0 {
+    s8 flag0 : 1;
+    s8 flag1 : 1;
+    s8 flag2 : 1;
+    s8 unused3 : 5;
+} Flags_00203CD0;
+
+typedef struct State_00203CD0 {
+    s32 f00;
+    s32 f04;
+    s32 f08;
+    s32 f0C;
+    s32 f10;
+    s32 f14;
+    s32 f18;
+    s32 f1C;
+    s32 f20;
+    s32 f24;
+    s32 f28;
+    Flags_00203CD0 flags;
+} State_00203CD0;
+
+extern State_00203CD0 D_00325C80;
+
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203CD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_055", func_00203E20);
@@ -789,11 +813,11 @@ INCLUDE_ASM("asm/nonmatchings/main_055", func_00203E20);
 INCLUDE_ASM("asm/nonmatchings/main_055", func_002047F0);
 
 s32 func_00205150(void) {
-    return D_00325C80;
+    return D_00325C80.f00;
 }
 
 s32 func_00205160(void) {
-    return D_00325C84;
+    return D_00325C80.f04;
 }
 
 typedef struct Flags_00205170 {
