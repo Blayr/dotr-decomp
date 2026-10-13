@@ -896,7 +896,6 @@ typedef struct Position_0012F350 {
     u8 y : 4;
 } Position_0012F350;
 
-s32 func_00130940(s32, s32, void *, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0012F350(void *arg0, u8 which) {
@@ -1456,7 +1455,62 @@ s32 func_001307E0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00130940);
+s32 func_00130940(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern s32 func_001E1030();
+    s32 card;
+    s32 position;
+    u8 count;
+
+    card = func_001E1030(arg0, arg1);
+    func_00250360(arg0, arg1);
+    position = func_001E1090(arg0, arg1);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (card) {
+        case 0x12A:
+            return 1;
+        case 0x142:
+            if ((arg3 & 0xFF) == 1) {
+                return 1;
+            }
+            break;
+        case 0x146:
+            for (card = 0; card < 11; card++) {
+                if (func_001DF540(0, card) != 0 && arg0 != func_00250360(0, card)) {
+                    count++;
+                }
+                if (func_001DF540(1, card) != 0 && arg0 != func_00250360(1, card)) {
+                    count++;
+                }
+            }
+            if (count >= 4) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_001307E0(func_00250360(arg0, arg1), card) == 1 &&
+            func_001E22B0(position & 0xFF, position >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        return (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) ? 2 : 1;
+    case 2:
+    case 3:
+    case 4:
+        break;
+    }
+    return 2;
+}
 
 static inline s32 max_00130BB0(s32 a, s32 b) {
     if (a < b) {
