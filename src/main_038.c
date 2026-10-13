@@ -977,7 +977,193 @@ s32 func_001B3640(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B3790);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001B3790;
+
+typedef struct {
+    u8 pad[4];
+    u8 b;
+    u8 g;
+    u8 r;
+    u8 a;
+} Source_001B3790;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001B3790;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001B3790;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001B3790;
+
+typedef struct {
+    u64 tag[2];
+    Color_001B3790 color;
+    Vertex_001B3790 vertex0;
+    Vertex_001B3790 vertex1;
+    u64 end;
+} Box_001B3790;
+
+typedef struct {
+    u64 tag[2];
+    Color_001B3790 color;
+    u64 uv0;
+    Vertex_001B3790 vertex0;
+    u64 uv1;
+    Vertex_001B3790 vertex1;
+    u64 test;
+    s64 texture0;
+    s64 texture1;
+    u64 clamp;
+} Sprite_001B3790;
+
+typedef struct {
+    u8 pad00[0x40];
+    f32 eyeX;
+    f32 eyeY;
+    f32 eyeZ;
+    u8 pad4C[4];
+    f32 targetX;
+    f32 targetY;
+    f32 targetZ;
+    u8 pad5C[0x24];
+    s32 roll;
+    u8 pad84[0xC];
+} View_001B3790;
+
+typedef union {
+    __int128 q;
+    s32 w[4];
+} Params_001B3790;
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec_001B3790;
+
+static inline void set_uv_001B3790(UV_001B3790 *p, s32 u, s32 v) {
+    p->u = u;
+    p->v = v;
+}
+
+s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
+    extern Source_001B3790 D_002BE840[];
+    extern Params_001B3790 D_002912D0;
+    extern s32 D_0031AB80;
+    extern s32 func_0020A470(s32, s32, s32);
+    u8 *state = D_00317490;
+    Source_001B3790 *color = &D_002BE840[colorIndex];
+    s32 left;
+    s32 top;
+    s32 width = 0x60;
+    s32 height = 0x40;
+    s32 id;
+    s32 packet;
+    View_001B3790 view;
+    Params_001B3790 params;
+    Box_001B3790 box __attribute__((aligned(8)));
+    Sprite_001B3790 sprite __attribute__((aligned(8)));
+    Vec_001B3790 rotation;
+    Vec_001B3790 front;
+
+    ((Tag_001B3790 *)box.tag)->flags = 6;
+    ((Tag_001B3790 *)box.tag)->count = 3;
+    ((Tag_001B3790 *)box.tag)->registers = 0x441;
+    ((Tag_001B3790 *)box.tag)->padding = 0;
+    left = x + 0x6C0;
+    top = y + 0x720;
+    box.color.r = color->r;
+    box.color.g = color->g;
+    box.color.b = color->b;
+    box.color.a = 0x80;
+    box.color.q = 1.0f;
+    box.vertex0.x = (left + 2) << 4;
+    box.vertex0.y = (top + 2) << 4;
+    box.vertex0.z = D_003180E8;
+    box.vertex0.fog = 0;
+    box.vertex1.x = (left + width - 2) << 4;
+    box.vertex1.y = (top + height) << 4;
+    box.vertex1.z = D_003180E8;
+    box.vertex1.fog = 0;
+    id = func_00207650(arg0, (s32)box.tag, 0, 0);
+    if (func_001F1370(card + 0x4A) == 0) {
+        return id;
+    }
+    left += 3;
+    top += 3;
+    width -= 6;
+    height -= 3;
+    ((Tag_001B3790 *)sprite.tag)->flags = 0x26;
+    ((Tag_001B3790 *)sprite.tag)->count = 5;
+    ((Tag_001B3790 *)sprite.tag)->registers = 0x42421;
+    ((Tag_001B3790 *)sprite.tag)->padding = 0;
+    ((Tag_001B3790 *)sprite.tag)->flags |= 0x800;
+    func_002086D0(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    sprite.color.r = 0xFF;
+    sprite.color.g = 0xFF;
+    sprite.color.b = 0xFF;
+    sprite.color.a = 0x80;
+    sprite.color.q = 1.0f;
+    sprite.vertex0.z = *(s32 *)(state + 0xC58);
+    sprite.vertex0.fog = 0;
+    sprite.vertex1.z = *(s32 *)(state + 0xC58);
+    sprite.vertex1.fog = 0;
+    func_0020DEF0(&view);
+    if (func_0020E460() != 0) {
+        params = D_002912D0;
+        params.w[1] = D_0031AB80;
+        func_0020A470(0, 0xA, 0x31);
+        packet = (s32)func_0020A610((void *)id);
+        packet = (s32)func_0020A870((u8 *)packet, 0);
+        view.targetZ = func_001A6C60(view.targetX * view.targetX + view.targetZ * view.targetZ);
+        view.targetX = 0.0f;
+        func_0020D070(&view.targetX);
+        view.eyeX = -(view.targetX * scale);
+        view.eyeY = -(view.targetY * scale) - 25.0f;
+        view.eyeZ = -(view.targetZ * scale);
+        view.roll = 0;
+        func_0020E360(&view);
+        id = func_0020A0B0(func_0020EC60(packet), 1);
+        func_001F1E10(card + 0x4A, &rotation.x);
+        front = rotation;
+        front.z = 1.0f;
+        func_001F1EE0(card + 0x4A, &front.x);
+        id = func_001EFA80(id, card + 0x4A, 0, (s32)&params, 0, 0, 0);
+        func_001F1EE0(card + 0x4A, &rotation.x);
+        id = func_0020A0B0(id, 0);
+        func_0020AA30(&sprite.texture0, &sprite.texture1);
+        id = func_0020F290((s32)func_0020A760((void *)id));
+        set_uv_001B3790((UV_001B3790 *)&sprite.uv0, 0, 0);
+        set_uv_001B3790((UV_001B3790 *)&sprite.uv1, 0x280 << 4, 0x1C0 << 4);
+        sprite.vertex0.x = (left << 4) - 8;
+        sprite.vertex0.y = (top << 4) - 8;
+        sprite.vertex1.x = ((left + width) << 4) - 8;
+        sprite.vertex1.y = ((top + height) << 4) - 8;
+        func_0020E4F0();
+        func_0020DEF0(&view);
+        func_0020E360(&view);
+        id = func_00207650(func_0020EC60(id), (s32)&sprite, 0, 0);
+        func_0020A9E0();
+        D_0031AB80 += 0x200;
+    }
+    return id;
+}
 
 void func_001B3CC0(s32, s32, s32, s32, s32, s32, s32, s32,
                    s64, s64, s64, s64, s64, s64);
