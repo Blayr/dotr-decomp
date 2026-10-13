@@ -662,7 +662,44 @@ s32 func_0027D720(u16 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027D830);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DA40);
+s32 func_0027DA40(s32 arg0, s32 arg1) {
+    extern s32 func_001DEE50(s32);
+    s32 best;
+    s32 index;
+    s32 owner;
+    s32 i;
+    s32 j;
+    s32 value;
+
+    owner = -1;
+    index = -1;
+    best = -1;
+    if (arg1 & 1) {
+        for (i = 0; i < func_001DEE50(arg0); i++) {
+            if ((func_0026FCE0(func_001DEE00(arg0, i)) >> 5) == 0) {
+                value = func_0026FBB0(func_001DEE00(arg0, i)) >> 16;
+                if (best < value) {
+                    best = value;
+                    index = i;
+                    owner = arg0;
+                }
+            }
+        }
+    }
+    if (arg1 >> 1) {
+        for (j = 0; j < func_001DEE50(arg0 == 0 ? 1 : 0); j++) {
+            if ((func_0026FCE0(func_001DEE00(arg0 == 0 ? 1 : 0, j)) >> 5) == 0) {
+                value = func_0026FBB0(func_001DEE00(arg0 == 0 ? 1 : 0, j)) >> 16;
+                if (best < value) {
+                    best = value;
+                    index = j;
+                    owner = arg0 == 0 ? 1 : 0;
+                }
+            }
+        }
+    }
+    return best | ((owner << 24) | (index << 16));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027DBC0);
 
