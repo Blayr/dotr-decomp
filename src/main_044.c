@@ -655,7 +655,9 @@ s32 func_001DF370(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF470);
+s32 func_001DF470(s32 arg0) {
+    return *(u16 *)(D_00317490 + arg0 * 0x350 + 0x33A);
+}
 
 s32 func_001DF490(s32 index, s32 operation, s32 value) {
     s32 current;
