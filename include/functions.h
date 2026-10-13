@@ -845,6 +845,7 @@ void func_001C12B0(void);
 void func_001C1AD0(void);
 void func_001C2300(s32 arg0);
 void func_001C2530(void);
+void func_001C2540(void);
 s32 func_001C32B0(void);
 void func_001C33A0(s32 player);
 void func_001C3520(s32 arg0);

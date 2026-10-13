@@ -4,7 +4,64 @@ void func_001C2530(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2540);
+typedef struct {
+    s8 axis_0 : 2;
+    s8 axis_1 : 2;
+    s8 unused : 4;
+} MoveFlags_001C2540;
+
+void func_001C2540(void) {
+    extern s32 func_001AB1D0(u8 *, u8 *);
+    extern s32 func_001C2720(s32);
+    extern u16 D_00318118;
+    extern u8 D_003181F3;
+    extern MoveFlags_001C2540 D_003181F4;
+    u8 *state = D_00317490;
+    u8 *state2;
+    s32 temp_v1;
+    s32 var_v0;
+    s32 var_v0_2;
+    s32 var_v0_3;
+    s32 var_v1;
+
+    if (D_003181F3 != 0) {
+        ((MoveFlags_001C2540 *)(state + 0xD64))->axis_0 = 1;
+    }
+    var_v1 = (s32)((MoveFlags_001C2540 *)(state + 0xD64))->axis_0 << 9;
+    var_v0 = *(u16 *)(state + 0xC86);
+    var_v1 = var_v0 + var_v1;
+    var_v0 = var_v1 > 0 ? var_v1 : 0;
+    if (var_v0 < 0x8000) {
+        var_v1 = var_v1 > 0 ? var_v1 : 0;
+    } else {
+        var_v1 = 0x8000;
+    }
+    *(u16 *)(state + 0xC86) = (u16)var_v1;
+    if ((*(u16 *)(state + 0xC86) == 0) || ((s32)*(u16 *)(state + 0xC86) >= 0x8000)) {
+        ((MoveFlags_001C2540 *)(state + 0xD64))->axis_0 = -((MoveFlags_001C2540 *)(state + 0xD64))->axis_0;
+    }
+    state2 = D_00317490;
+    temp_v1 = (s32)D_003181F4.axis_1 << 0xB;
+    var_v0_2 = D_00318118 + temp_v1;
+    if (var_v0_2 > 0) {
+        var_v0_2 = *(u16 *)(state2 + 0xC88) + temp_v1;
+    } else {
+        var_v0_2 = 0;
+    }
+    if (var_v0_2 < 0x8000) {
+        var_v0_2 = *(u16 *)(state2 + 0xC88) + temp_v1;
+        var_v0_2 = var_v0_2 > 0 ? var_v0_2 : 0;
+    } else {
+        var_v0_2 = 0x8000;
+    }
+    *(u16 *)(state2 + 0xC88) = (u16)var_v0_2;
+    if ((*(u16 *)(state2 + 0xC88) == 0) || ((s32)*(u16 *)(state2 + 0xC88) >= 0x8000)) {
+        ((MoveFlags_001C2540 *)(state2 + 0xD64))->axis_1 = -((MoveFlags_001C2540 *)(state2 + 0xD64))->axis_1;
+    }
+    if ((func_001AB1D0(state2, state) < 0) && (func_001C2720(0) == 0)) {
+        func_001C2720(1);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2720);
 
