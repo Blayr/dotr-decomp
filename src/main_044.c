@@ -640,7 +640,44 @@ s32 func_001DF130(s32 arg0, s32 arg1) {
     return hand->count++;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF1E0);
+typedef struct {
+    u16 entries[5];
+    u8 count;
+} Hand_001DF1E0;
+
+void func_001DF1E0(s32 index) {
+    Hand_001DF1E0 hand;
+    Hand_001DF1E0 *dest;
+    s32 i;
+    u16 *src;
+    u16 entry;
+    u16 *out;
+    s32 count;
+
+    dest = (Hand_001DF1E0 *)(D_00317490 + index * 0x350 + 0x324);
+    hand.count = 0;
+    i = 0;
+    src = dest->entries;
+    do {
+        entry = *src;
+        if ((entry & 0xFFF) != 0x3E7) {
+            hand.entries[hand.count++] = entry;
+        }
+        i++;
+        src++;
+    } while (i < 5);
+
+    count = hand.count;
+    if (count < 5) {
+        out = &hand.entries[count];
+        do {
+            count++;
+            *out++ = 0x3E7;
+        } while (count < 5);
+    }
+
+    *dest = hand;
+}
 
 s32 func_001DF2C0(s32 arg0, s32 arg1) {
     u8 *temp_a0;
