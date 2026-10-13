@@ -1029,7 +1029,128 @@ void func_001FDD70(void *arg0, void *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FDFE0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001FDFE0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001FDFE0;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001FDFE0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001FDFE0;
+
+typedef struct {
+    u64 tag[2];
+    Color_001FDFE0 color;
+    u64 uv0;
+    Vertex_001FDFE0 vertex0;
+    u64 uv1;
+    Vertex_001FDFE0 vertex1;
+    u64 test;
+    s64 texture0;
+    s64 texture1;
+    u64 clamp;
+} Packet_001FDFE0;
+
+typedef struct {
+    s8 pad0[3];
+    s8 unused : 7;
+    s8 active : 1;
+    s32 u;
+    s32 v;
+    s32 width;
+    s32 height;
+} Info_001FDFE0;
+
+typedef struct {
+    u8 pad[0x274];
+    s32 depth;
+} State_001FDFE0;
+
+static inline void set_uv_001FDFE0(UV_001FDFE0 *p, s32 u, s32 v) {
+    p->u = u;
+    p->v = v;
+}
+
+s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
+    extern u8 D_00293078[];
+    extern s32 D_002CFCD0[];
+    extern State_001FDFE0 D_0031C070;
+    Packet_001FDFE0 packet __attribute__((aligned(8)));
+    State_001FDFE0 *state = &D_0031C070;
+    Info_001FDFE0 *info;
+    s32 x0;
+    s32 y0;
+    s32 x1;
+    s32 y1;
+    s32 u0;
+    s32 v0;
+    s32 u1;
+    s32 v1;
+    s32 *rect = arg4;
+    u8 *color = arg5;
+
+    info = func_001FEAB0(arg1);
+    if (info == NULL) {
+        return arg0;
+    }
+    if (info->active == 0) {
+        return arg0;
+    }
+    if (rect == NULL) {
+        rect = D_002CFCD0;
+    }
+    if (color == NULL) {
+        color = D_00293078;
+    }
+    x0 = rect[0] + arg2;
+    y0 = rect[1] + arg3;
+    x1 = rect[2] + x0;
+    y1 = rect[3] + y0;
+    u0 = info->u;
+    v0 = info->v;
+    u1 = info->width + u0;
+    v1 = info->height + v0;
+    ((Tag_001FDFE0 *)packet.tag)->flags = 0x26;
+    ((Tag_001FDFE0 *)packet.tag)->count = 5;
+    ((Tag_001FDFE0 *)packet.tag)->registers = 0x42421;
+    ((Tag_001FDFE0 *)packet.tag)->padding = 0;
+    ((Tag_001FDFE0 *)packet.tag)->flags |= 0x800;
+    func_002086D0(packet.tag, 0x44 | ((s64)0x80 << 32));
+    packet.color.r = color[2];
+    packet.color.g = color[1];
+    packet.color.b = color[0];
+    packet.color.a = color[3];
+    packet.color.q = 1.0f;
+    packet.vertex0.x = x0 << 4;
+    packet.vertex0.y = y0 << 4;
+    packet.vertex0.z = state->depth;
+    packet.vertex0.fog = 0;
+    packet.vertex1.x = x1 << 4;
+    packet.vertex1.y = y1 << 4;
+    packet.vertex1.z = state->depth;
+    packet.vertex1.fog = 0;
+    set_uv_001FDFE0((UV_001FDFE0 *)&packet.uv0, (u0 << 4) + 8, (v0 << 4) + 8);
+    set_uv_001FDFE0((UV_001FDFE0 *)&packet.uv1, (u1 << 4) + 8, (v1 << 4) + 8);
+    func_001FDD70(&packet.texture0, &packet.texture1);
+    return func_00207650(arg0, (s32)&packet, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE290);
 
