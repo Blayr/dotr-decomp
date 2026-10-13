@@ -1871,7 +1871,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_00132460;
 
-s32 func_00133320(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
 
@@ -2246,7 +2245,134 @@ s32 func_00133130(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00133320);
+typedef struct Nibbles_00133320 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00133320;
+
+typedef struct Object_00133320 {
+    u8 pad[0x3E];
+    u8 flags;
+} Object_00133320;
+
+s32 func_00133320(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+    s32 bestCell;
+    s32 bestCost;
+    Nibbles_00133320 path[12];
+    s32 i;
+    Nibbles_00133320 *p;
+
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = path;
+    i = 0;
+    do {
+        p->low = p->high = 15;
+        p++;
+        i++;
+    } while (i < 12);
+
+    if ((u8)(((Object_00133320 *)arg2)->flags >> 5) == 0 && arg3 >= 0) {
+        s32 cell;
+        s32 y;
+        s32 x;
+        s32 index;
+        s32 targetY;
+        s32 targetX;
+        s32 target;
+        s32 cost;
+
+        bestCost = 255;
+        bestCell = 0xFFFF;
+        target = func_001E1090(arg3 >> 8, arg3 & 0xFF);
+        index = 0;
+        targetY = target >> 8;
+        targetX = target & 0xFF;
+        do {
+            cell = func_0024E410(arg0, index);
+            if (cell >= 0) {
+                x = cell & 0xFF;
+                y = cell >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E36E0(x, y) == 0) {
+                    if (func_00278510((s32)arg2, arg3, func_00134AE0(arg0), targetX, targetY, 0) > 0) {
+                        cost = func_0027A130((s32)arg2, (s32)path, x, y, targetX, targetY, arg3, 0, 4,
+                                            func_00134AE0(arg0) & 0xFFFF);
+                    } else {
+                        cost = func_002792C0((s32)arg2, (s32)path, x, y, targetX, targetY, arg3, 4);
+                    }
+                    if (func_0027AFC0((u8 *)path) > 0 && cost < bestCost) {
+                        bestCost = cost;
+                        bestCell = cell;
+                    }
+                }
+            }
+            index++;
+        } while (index < 8);
+        if (bestCell != 0xFFFF) {
+            return bestCell;
+        } else {
+            bestCell = -1;
+            return bestCell;
+        }
+    } else {
+        s32 maxY;
+        s32 maxX;
+        s32 y;
+        s32 x;
+        s32 index;
+        s32 bestDistance;
+        s32 cell;
+        s32 target;
+        s32 targetY;
+        s32 distance;
+        s32 minY;
+        s32 minX;
+
+        bestDistance = 14;
+        arg3 = -1;
+        index = 0;
+        do {
+            cell = func_0024E410(arg0, index);
+            if (cell >= 0) {
+                x = cell & 0xFF;
+                y = cell >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0) {
+                    target = func_00131F80((s32)arg2, x, y);
+                    targetY = target >> 8;
+                    minY = y < targetY ? y : targetY;
+                    if (targetY < y) {
+                        maxY = y;
+                    } else {
+                        maxY = targetY;
+                    }
+                    minX = x < (target & 0xFF) ? x : (target & 0xFF);
+                    if ((target & 0xFF) < x) {
+                        maxX = x;
+                    } else {
+                        maxX = target & 0xFF;
+                    }
+                    distance = (maxX - minX) + (maxY - minY);
+                    if (distance < bestDistance && distance >= 0) {
+                        arg3 = cell;
+                        bestDistance = distance;
+                    }
+                }
+            }
+            index++;
+        } while (index < 8);
+        arg3 = bestDistance < 14 ? arg3 : -1;
+    }
+    return arg3;
+}
 
 typedef struct {
     u8 low : 4;
