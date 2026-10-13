@@ -875,7 +875,41 @@ s32 func_0016CBB0(s32 arg0, s32 *arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016CE00);
+typedef struct {
+    s32 unk0;
+    s32 value;
+} Data_0016CE00;
+
+s32 func_0016CE00(s32 arg0, s32 arg1) {
+    extern u32 func_0026FBB0();
+    s32 state[4];
+    s32 index;
+    s32 mask;
+    u32 limit;
+    s32 low;
+    s32 high;
+    s32 encoded;
+    s32 position;
+    Data_0016CE00 *data;
+
+    data = func_0026FC90(arg1, 0);
+    func_00254C90(state, data->value);
+    limit = func_0026FBB0(data->value) >> 16;
+    if ((mask = func_00254890(state, arg0)) < 0) {
+        return 0;
+    } else {
+        for (index = 0; index < func_0024E910(mask); index++) {
+            encoded = func_0024EC50(mask, index);
+            high = encoded >> 8;
+            low = encoded & 0xFF;
+            position = func_001E1090(high, low);
+            if (func_002509E0(high, low, position & 0xFF, position >> 8) >= limit) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+}
 
 s32 func_0016CF10(s32 arg0) {
     return ((u32) (arg0 - 0x36) < 4U) ? 1 : 0;

@@ -673,6 +673,7 @@ s32 func_0016B1F0(s32 arg0, void *arg1);
 s32 func_0016B3C0(s32 arg0);
 s32 func_0016C6B0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0016CBB0(s32 arg0, s32 *arg1);
+s32 func_0016CE00(s32 arg0, s32 arg1);
 s32 func_0016CF10(s32 arg0);
 s32 func_0016CF30(s32 arg0);
 s32 func_0016D8C0(u16 *arg0, s32 arg1, s32 arg2);
