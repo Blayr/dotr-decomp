@@ -1222,7 +1222,11 @@ void func_00214290(void) {
     } while (profile < 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_002145D0);
+void func_002145D0(s32 arg0) {
+    extern u8 D_0034F6D0;
+
+    D_0034F6D0 = arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002145E0);
 
