@@ -1747,7 +1747,34 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00159760);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00159930);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00159BE0);
+s32 func_00159BE0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_0015A120();
+    u16 buf[0x31];
+    s32 i;
+    s32 best;
+    s32 result;
+    u16 *p;
+    u8 count;
+    s32 dist;
+
+    result = func_001E1090(arg0 == 0 ? 1 : 0, 0);
+    count = func_0015A120(result & 0xFF, result >> 8, buf);
+    best = 0xE;
+    if (count == 0) {
+        return -1;
+    }
+    for (p = buf, i = 0; i < count; p++, i++) {
+        if (func_001DF540(*p & 0xFF, *p >> 8) == 0) {
+            dist = (((arg1 < (*p & 0xFF)) ? (*p & 0xFF) : arg1) - (((*p & 0xFF) < arg1) ? (*p & 0xFF) : arg1)) +
+                   (((arg2 < (*p >> 8)) ? (*p >> 8) : arg2) - (((*p >> 8) < arg2) ? (*p >> 8) : arg2));
+            if (dist < best) {
+                best = dist;
+                result = *p;
+            }
+        }
+    }
+    return result;
+}
 
 typedef struct {
     u16 card;
