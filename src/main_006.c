@@ -445,7 +445,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Card_0011DFB0;
 
-s32 func_0011E270(s32 arg0, u8 arg1, void *arg2);
 
 s32 func_0011DFB0(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_00278890(s32, s32);
@@ -523,7 +522,141 @@ s32 func_0011DFB0(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011E270);
+typedef struct Nibbles_0011E270 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0011E270;
+
+s32 func_0011D4E0(s32, s32, s32, s32 *);
+
+s32 func_0011E270(s32 arg0, u8 arg1, void *arg2) {
+    s32 bestLocation;
+    s32 bestCost;
+    Nibbles_0011E270 buffer[12];
+    u8 result[8];
+    s32 initIndex;
+    Nibbles_0011E270 *p;
+
+    extern s32 func_0011F530();
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = buffer;
+    initIndex = 0;
+    do {
+        p->low = p->high = 0xF;
+        initIndex++;
+        p++;
+    } while (initIndex < 12);
+
+    if (!((u8)(*((u8 *)arg2 + 0x3E) >> 5))) {
+        s32 candidate;
+        s32 target;
+        s32 y;
+        s32 x;
+        s32 index;
+        s32 destY;
+        s32 destX;
+        s32 cost;
+        s32 location;
+        location = func_001E1090(arg0, 0);
+        target = func_00276F10(arg2, location & 0xFF, location >> 8,
+            arg0 == 0 ? 1 : 0, 4, 31, 2, 2, 0, func_0011FA80(arg0));
+        if (target >= 0) {
+            bestCost = 255;
+            bestLocation = 65535;
+            location = func_001E1090(target >> 8, target & 0xFF);
+            index = 0;
+            destY = location >> 8;
+            destX = location & 0xFF;
+            do {
+                if ((candidate = func_0011F530(arg0, index)) >= 0) {
+                    x = candidate & 0xFF;
+                    y = candidate >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510(arg2, target, func_0011FA80(arg0), destX, destY, 0) > 0) {
+                            cost = func_0027A130(arg2, buffer, x, y, destX, destY,
+                                target, 0, 4, (u16)func_0011FA80(arg0));
+                        } else {
+                            cost = func_002792C0((s32)arg2, (s32)buffer, x, y, destX, destY,
+                                target, 4);
+                        }
+                        if (func_0027AFC0((u8 *)buffer) > 0 && cost < bestCost) {
+                            bestCost = cost;
+                            bestLocation = candidate;
+                        }
+                    }
+                }
+                index++;
+            } while (index < 8);
+            if (bestLocation != 65535) {
+                return bestLocation;
+            }
+            bestLocation = -1;
+            return bestLocation;
+        }
+        {
+        s32 y;
+        s32 x;
+        s32 fallbackIndex;
+        s32 limit;
+        s32 candidate;
+        s32 fallback;
+        limit = 14;
+        fallback = -1;
+        fallbackIndex = 0;
+        do {
+            if ((candidate = func_0011F530(arg0, fallbackIndex)) >= 0) {
+                x = candidate & 0xFF;
+                y = candidate >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0) {
+                    func_0011D4E0((s32)arg2, x, y, (s32 *)result);
+                    if ((s32)result[4] < limit && (s32)result[4] >= 0) {
+                        fallback = candidate;
+                        limit = (s32)result[4];
+                    }
+                }
+            }
+            fallbackIndex++;
+        } while (fallbackIndex < 8);
+        if (limit < 14) {
+            return fallback;
+        }
+        }
+    } else {
+    s32 y;
+    s32 x;
+    s32 specialIndex;
+    s32 best;
+    s32 candidate;
+    best = -1;
+    specialIndex = 0;
+    do {
+        if ((candidate = func_0011F530(arg0, specialIndex)) >= 0) {
+            x = candidate & 0xFF;
+            y = candidate >> 8;
+            if (func_001E22B0(x, y) != 8 &&
+                (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                func_001E3790(x, y) < 0 && y < 8) {
+                best = candidate;
+            }
+        }
+        specialIndex++;
+    } while (specialIndex < 8);
+    if (best >= 0) {
+        return best;
+    }
+    }
+    return -1;
+}
 
 s32 func_0011E6E0(s32 arg0, void *arg1) {
     s32 cards[8];
