@@ -1535,7 +1535,6 @@ typedef struct Request_00265050 {
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(u32, s32, s32);
 void func_00260A70(void *, s32);
 
 s32 func_00265050(void *arg0, void *arg1, s32 arg2) {

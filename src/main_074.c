@@ -824,7 +824,6 @@ typedef struct Card_00256D80 {
     } flags;
 } Card_00256D80;
 
-extern void func_002516D0(s32, s32, s32);
 extern void func_00260A70(void *, s32);
 extern void func_002614C0(s32, u32, s32);
 
@@ -1029,7 +1028,6 @@ typedef struct State_00257340 {
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -1288,7 +1286,6 @@ typedef struct State_00257AA0 {
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 void func_002614C0(s32, u32, s32);
@@ -1686,7 +1683,6 @@ s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -1888,7 +1884,6 @@ s32 func_00258760(void *arg0, void *arg1, s32 arg2) {
 }
 
 void func_001E1E70(s32, s32, s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260A70(void *, s32);
 
 typedef struct Input_00258E20 {
@@ -2105,7 +2100,6 @@ s32 func_00258E20(void *arg0, void *arg1, s32 arg2) {
 INCLUDE_ASM("asm/nonmatchings/main_074", func_002594D0);
 
 void func_001E1E70(s32, s32, s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2226,7 +2220,6 @@ typedef struct State_0025A060 {
 } State_0025A060;
 
 void func_001E1E70(s32, s32, s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 

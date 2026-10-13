@@ -259,7 +259,25 @@ s32 func_00251370(s32 count, u16 *src, void *dst) {
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_002514F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_002516D0);
+void func_002516D0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E1900();
+    extern s32 func_001E1CB0();
+    extern s32 func_001E1D10();
+    extern void func_001E1E70(s32, s32, s32, s32);
+
+    if (arg2 == 1) {
+        func_001E1900(arg0, arg1, 0x80);
+        func_001E1B70(arg0, arg1, 1, func_001E1CB0(arg0, arg1));
+        func_001E1C10(arg0, arg1, 1, func_001E1D10(arg0, arg1));
+        func_001E1E70(arg0, arg1, 2, 1);
+        func_001E1E70(arg0, arg1, 4, 1);
+        return;
+    }
+    func_001E19D0(arg0, arg1, 0);
+    func_001E1C10(arg0, arg1, -1, func_001E1D10(arg0, arg1));
+    func_001E1E70(arg0, arg1, 2, 0);
+    func_001E1E70(arg0, arg1, 4, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_073", func_002517D0);
 

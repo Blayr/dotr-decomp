@@ -1008,7 +1008,6 @@ typedef struct State_002695D0 {
 void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260A70(void *, s32);
 void func_00269EC0(void *, void *);
 
@@ -1258,7 +1257,6 @@ typedef struct State_0026A0A0 {
 void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260A70(void *, s32);
 s32 func_002610D0(s32, s32, s32, s32);
 
@@ -1739,7 +1737,6 @@ typedef struct State_0026B480 {
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 void func_00260D10(s32, u16, s32, s32);
@@ -1967,7 +1964,6 @@ typedef struct State_0026BB80 {
 } State_0026BB80;
 
 void func_0024F370(s32, s32);
-void func_002516D0(s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2073,7 +2069,6 @@ typedef struct {
 
 void func_001E1E70();
 void func_0024F370();
-void func_002516D0();
 void func_00260A70(void *, s32);
 
 s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
