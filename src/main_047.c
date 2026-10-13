@@ -62,7 +62,9 @@ s32 func_001E5230(void) {
     return D_0031AB90;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5240);
+s32 func_001E5240(s32 index) {
+    return *(s32 *)&D_0031AB88.padding[index * 4];
+}
 
 #ifndef GAME_H
 /* The game translation unit already declares this global with its local type. */
