@@ -212,7 +212,106 @@ s32 func_00229140(s32 arg0, s32 arg1, s16 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_002294B0);
+static inline s16 isSpecial_002294B0(State_00229140 *state) {
+    s16 result = 0;
+
+    if (state->pad0[0] == 0) {
+        switch (state->selection) {
+        case 2:
+        case 4:
+        case 5:
+        case 6:
+        case 8:
+        case 9:
+        case 10:
+            result = 1;
+            break;
+        case 11:
+            if (state->snapshot == 0) {
+                result = 1;
+            }
+            break;
+        }
+    } else {
+        switch (state->selection) {
+        case 12:
+        case 13:
+        case 14:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 0:
+            result = 1;
+            break;
+        }
+    }
+    return result;
+}
+
+s32 func_002294B0(s32 arg0, s16 arg1) {
+    State_00229140 *state = (State_00229140 *)&D_00299E10;
+
+    *(s8 *)0x01ED53C0 = arg1;
+    switch (*(s8 *)0x01ED537A) {
+    case 0:
+        if (state->levels[arg1] == 0) {
+            state->levels[arg1] = 1;
+        }
+        *(s8 *)0x01ED5375 = 1;
+        *(f32 *)0x01ED0040 = D_00298BA0[arg1 * 13];
+        *(f32 *)0x01ED0048 = D_00298BA8[arg1 * 13];
+        *(s16 *)0x01ED0000 = 0x140;
+        *(s16 *)0x01ED0002 = 0xBE;
+        *(s16 *)0x01ED0070 = 0;
+        *(s16 *)0x01ED006C = 0;
+        *(s8 *)0x01ED537B = 0;
+        *(s8 *)0x01ED537D = 0;
+        *(s8 *)0x01ED5440 = 100;
+        state->selection = arg1;
+        state->padC7 = arg1;
+        state->previous = arg1;
+        *(s16 *)0x01ED01DA = 0;
+        *(s16 *)0x01ED01DE = 0;
+        *(s16 *)0x01ED01D8 = 0;
+        *(s8 *)0x01ED5406 = 0;
+        *(s8 *)0x01ED53AB = 0;
+        *(s8 *)0x01ED5472 = 0;
+        *(s8 *)0x01ED537A = 1;
+        break;
+    case 1:
+        if (*(s16 *)0x01ED006C >= 0x100) {
+            *(s8 *)0x01ED537B = 1;
+            *(s8 *)0x01ED537D = 1;
+            *(s16 *)0x01ED5478 = 0;
+            if (state->fieldC2 >= 300) {
+                if (isSpecial_002294B0(state)) {
+                    *(s8 *)0x01ED537A = 2;
+                } else {
+                    *(s8 *)0x01ED537A = 3;
+                }
+            } else {
+                *(s8 *)0x01ED537A = 3;
+            }
+        }
+        break;
+    case 2:
+        if (*(s8 *)0x01ED5440 <= 0) {
+            *(s8 *)0x01ED5472 = 1;
+            *(s32 *)0x01ED5474 += 0x1000;
+            if (*(s16 *)0x01ED5478 < 0x1000) {
+                *(s16 *)0x01ED5478 += 0x20;
+                if (*(s16 *)0x01ED5478 >= 0x1000) {
+                    *(s16 *)0x01ED5478 = 0x1000;
+                    *(s8 *)0x01ED537A = 3;
+                    *(s8 *)0x01ED5472 = 0;
+                }
+            }
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_002297C0);
 
