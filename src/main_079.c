@@ -143,7 +143,32 @@ void func_0027B200(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                   arg6, arg7, arg8);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B290);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0027B290;
+
+s32 func_0027B290(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7) {
+    extern s32 func_002792C0(s32, void *, s32, s32, s32, s32, u16, u8);
+    Nibbles_0027B290 entries[12];
+    s32 i;
+    s32 pos;
+    s32 cost;
+
+    for (i = 0; i < 12; i++) {
+        entries[i].low = entries[i].high = 15;
+    }
+    if (arg4 == -1) {
+        pos = -1;
+    } else {
+        pos = (arg3 << 8) | arg4;
+    }
+    cost = func_002792C0(arg0, entries, arg1, arg2, arg5, arg6, pos, arg7);
+    if (func_0027AFC0((u8 *)entries) > 0) {
+        return cost;
+    }
+    return 0;
+}
 
 typedef struct Entry_0027B360 {
     u16 id;
