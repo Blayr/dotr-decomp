@@ -646,8 +646,8 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F830);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FD10);
 
-void func_0024FDA0(void) {
-    func_0024FDD0(func_001DF540());
+void func_0024FDA0(s32 arg0, s32 arg1) {
+    func_0024FDD0(func_001DF540(arg0, arg1));
 }
 
 s32 func_0024FDD0(s32 arg0) {

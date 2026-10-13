@@ -1860,7 +1860,7 @@ s32 func_001DD990(s32 arg0, s32 arg1) {
     s32 target;
     s32 delta;
 
-    state = (State_001DD990 *)func_001DF540();
+    state = (State_001DD990 *)func_001DF540(arg0, arg1);
     result = 0;
     if (state != 0) {
         target = state->flags.facing ? 0x8000 : 0;
