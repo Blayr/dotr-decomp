@@ -229,7 +229,41 @@ void *func_00209F70(void *arg0, u32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A0B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A280);
+typedef struct Flags_0020A280 {
+    s8 enabled : 1;
+    s8 apply : 1;
+} Flags_0020A280;
+
+typedef struct State_0020A280 {
+    u8 pad00[0xC];
+    s32 base;
+    u8 pad10[8];
+    s32 mode;
+    s32 offset;
+    Flags_0020A280 flags;
+} State_0020A280;
+
+typedef struct Packet_0020A280 {
+    u16 value : 9;
+    u16 reserved : 7;
+    u8 pad02;
+    u8 mode : 4;
+    u8 other : 4;
+} Packet_0020A280;
+
+void func_0020A280(void *arg0) {
+    extern Packet_0020A280 D_00325FC0;
+    State_0020A280 *state = (State_0020A280 *)&D_00325F20;
+    Packet_0020A280 *packet = arg0;
+
+    if (D_00325F40.enabled && state->flags.apply) {
+        packet->value = state->base + state->offset;
+        packet->mode = state->mode;
+    } else {
+        packet->value = D_00325FC0.value;
+        packet->mode = D_00325FC0.mode;
+    }
+}
 
 void *func_0020A340(void *arg0, void *arg1) {
     *(s32 *)((u8 *)arg0 + 0) = 0x10000002;
