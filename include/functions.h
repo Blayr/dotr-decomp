@@ -860,6 +860,7 @@ void func_001DBFE0(s32 arg0, f32 *arg1, u8 *arg2, s32 arg3);
 void func_001DCC90(void *arg0);
 void *func_001DCD00(s32 arg0, s32 arg1);
 void func_001DCD70(void *arg0, s32 arg1);
+u8 *func_001DD0E0(s32 arg0);
 void func_001DD220(void);
 s32 func_001DD890(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001DD990(s32 arg0, s32 arg1);

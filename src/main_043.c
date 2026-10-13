@@ -1764,7 +1764,20 @@ void func_001DCD70(void *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD0E0);
+u8 *func_001DD0E0(s32 arg0) {
+    extern u8 D_002BF080[];
+    u8 *ret;
+
+    if (arg0 == 0x29F) {
+        arg0 = 0x3E7;
+    }
+    if (arg0 < 0 || arg0 >= 0x356) {
+        ret = NULL;
+    } else {
+        ret = &D_002BF080[arg0 * 0x14];
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD130);
 
