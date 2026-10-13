@@ -68,7 +68,125 @@ s32 func_0010D080(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010D490);
+typedef struct Command_0010D490 {
+    u16 position;
+    u16 pad2;
+    u16 action;
+    u16 pad6;
+    u16 target;
+    u16 padA;
+} Command_0010D490;
+
+typedef struct Entry_0010D490 {
+    u16 position;
+    u8 value;
+    u8 pad;
+} Entry_0010D490;
+
+void func_0010D490(void *arg0, s32 arg1, u8 arg2) {
+    extern void func_0027E770();
+    extern s32 func_0027B200();
+    extern s32 func_0010D820();
+    Command_0010D490 *command = arg0;
+
+    if (func_001DF540(command->position >> 8, command->position & 0xFF) != 0) {
+        s32 position;
+        s32 side;
+        s32 data;
+        s32 other;
+        s32 otherPosition;
+        u8 workspace[112];
+        Entry_0010D490 entries[23];
+        s16 count;
+        s16 total;
+        s32 i;
+        Entry_0010D490 *entry;
+
+        side = func_0024DE70(command->position >> 8, command->position & 0xFF);
+        other = (side == 0 ? 1 : 0) << 8;
+        position = func_001E1090(command->position >> 8, command->position & 0xFF);
+        otherPosition = func_001E1090(other >> 8, other & 0xFF);
+        data = func_001DF540(command->position >> 8, command->position & 0xFF);
+        func_0027E770(workspace);
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->position = 0xFFFF;
+            entry->value = 0xFF;
+            entry++;
+        } while (i < 22);
+
+        if (arg1 != 0) {
+            if (func_0027B200(command->position >> 8, command->position & 0xFF,
+                    position & 0xFF, position >> 8, other >> 8, other & 0xFF,
+                    otherPosition & 0xFF, otherPosition >> 8, 2) > 0) {
+                command->action = 0x2FF;
+                *(u32 *)&command->target = (other << 16) | command->target;
+                return;
+            }
+        }
+
+        total = 0;
+        count = 0;
+        if (arg2 == 0) {
+            i = 1;
+            while (1) {
+                s32 result;
+                other = func_0024DE70(command->position >> 8, command->position & 0xFF) == 0 ? 1 : 0;
+                result = func_0010D820(command, 0, data, position & 0xFF, position >> 8,
+                    other, (u8)i, func_0010EDA0(side), entries, 0,
+                    &count, &total, 2, workspace);
+                switch (result) {
+                case 3:
+                    command->action = 0x6FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 2:
+                    command->action = 0x3FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    func_0010DB00(command, 1, 1);
+                    return;
+                }
+                i++;
+                if (i > 2) {
+                    break;
+                }
+            }
+            func_0010DB00(command, 1, 0);
+        } else {
+            i = 1;
+            do {
+                s32 result;
+                other = func_0024DE70(command->position >> 8, command->position & 0xFF) == 0 ? 1 : 0;
+                result = func_0010D820(command, 0, data, position & 0xFF, position >> 8,
+                    other, (u8)i, func_0010EDA0(side), entries, 0,
+                    &count, &total, 6, workspace);
+                switch (result) {
+                case 3:
+                    command->action = 0x6FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 2:
+                    command->action = 0x3FF;
+                    *(u32 *)&command->target = (position << 16) | command->target;
+                    return;
+                case 1:
+                    return;
+                case 0:
+                    func_0010DB00(command, 1, 1);
+                    return;
+                }
+                i++;
+            } while (i < 6);
+            func_0010DB00(command, 1, 0);
+        }
+    }
+}
 
 void func_0010D820(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
@@ -82,7 +200,6 @@ typedef struct Entry_0010D880 {
     u8 pad;
 } Entry_0010D880;
 
-void func_0010D490(void *, s32, u8);
 
 void func_0010D880(void *arg0, s32 arg1, u8 arg2) {
     extern s32 func_001E1030();
