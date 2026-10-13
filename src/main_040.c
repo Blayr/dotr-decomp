@@ -452,7 +452,106 @@ void func_001BAE70(void) {
     func_00209D30(func_001BAEA0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BAEA0);
+s32 func_001BAEA0(s32 arg0) {
+    extern s16 D_00318122;
+    extern void func_0020A470();
+    extern s32 func_001BB6D0();
+    extern s32 func_001BF710();
+    extern s32 func_001BDAF0();
+    extern s32 func_001BB940();
+    extern s32 func_001BC350();
+    extern s32 func_001C02E0();
+    extern s32 func_001C05F0();
+    extern s32 func_001C0A30();
+    extern s32 func_001C0EE0();
+    extern s32 func_001C0F70();
+    extern s32 func_001C1000();
+    u8 *state;
+    s32 player;
+    s32 flag;
+    s32 value;
+    s32 position;
+    s32 result;
+
+    player = D_003181EC;
+    state = D_00317490;
+    func_0020A470(5, 2, 0x32);
+    arg0 = (s32)func_0020A610((void *)arg0);
+    value = func_001BB6D0(
+        func_00209F70((void *)func_001BB260((s32)func_00209F70(
+                          (void *)func_001AEFD0((s32)func_0020A760(func_0020A870((u8 *)arg0, NULL)), 2),
+                          0xFF000000)),
+                      0),
+        D_00318122, 0);
+    if (D_00318122 > 0x140) {
+        value = func_001BF710(value, *(s16 *)(state + 0xC92), 0);
+    }
+    if (*(s16 *)(state + 0xC92) > 0) {
+        if (state[0xD5D] == 0) {
+            flag = 0;
+            position = state[0xD61] + (state[0xD60] + state[0xD62]) * 10;
+            if (func_00216AC0(player, position, -1) > 0) {
+                flag = 1;
+            }
+            if (func_00216BC0(player, position) != 0) {
+                flag = 1;
+            }
+            if (flag != 0) {
+                value = func_001BDAF0(value, position, *(s16 *)(state + 0xC92), 0, 0, 0, 0, 1);
+            }
+        } else {
+            value = func_001BDAF0(value,
+                                   (*(u16 **)(state + 0x6D8))[*(u16 *)(state + 0xC8A) + state[0xD5E]],
+                                   *(s16 *)(state + 0xC92), 0, 0, (state[0xD5D] == 1) ? 1 : 0, 0, 1);
+        }
+    }
+    if (*(s16 *)(state + 0xC92) > -0x140 && *(s16 *)(state + 0xC92) < 0x280) {
+        value = func_001BB940(value, *(s16 *)(state + 0xC92), 0);
+    }
+    if (*(s16 *)(state + 0xC92) < 0x140) {
+        value = func_001BC350(value, *(s16 *)(state + 0xC92), 0);
+    }
+    if (*(s16 *)(state + 0xC92) < 0) {
+        value = func_001BDAF0(value,
+                               (*(u16 **)(state + 0x6DC))[*(u16 *)(state + 0xC8E) + state[0xD5F]],
+                               *(s16 *)(state + 0xC92), 0, 1, (state[0xD5D] == 6) ? 1 : 0, 0, 0);
+    }
+    result = func_001BCCE0(value, *(s16 *)(state + 0xC92), 0);
+    switch (state[0xD5D]) {
+    case 2:
+    case 3:
+        result = func_001BFF00(result, *(s16 *)(state + 0xC92), 0, state[0xD5E]);
+        break;
+    case 4:
+    case 5:
+        result = func_001C02E0(result, *(s16 *)(state + 0xC92), 0, state[0xD5F]);
+        break;
+    case 7:
+        result = func_001C05F0(result, 0, 0);
+        break;
+    case 8:
+        result = func_001C07E0(result, 0, 0);
+        break;
+    case 9:
+        result = func_001C0A30(result, 0, 0);
+        break;
+    case 10:
+        result = func_001C0CE0(result, 0, 0);
+        break;
+    case 11:
+        result = func_001C0EE0(result, 0, 0);
+        break;
+    case 12:
+        result = func_001C0F70(result, 0, 0);
+        break;
+    case 13:
+        result = func_001C1000(result, 0, 0);
+        break;
+    }
+    func_001FEAF0(0);
+    func_0020A9E0();
+    return result;
+}
 
 typedef struct {
     u16 count;
