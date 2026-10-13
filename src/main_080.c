@@ -610,7 +610,293 @@ void func_002831A0(void) {
 
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00283880);
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 reserved;
+    s64 registers;
+} Tag_00283880;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_00283880;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Position_00283880;
+
+typedef struct {
+    u16 u : 14;
+    u16 : 2;
+    u16 v : 14;
+    u16 : 2;
+    u32 padding;
+} UV_00283880;
+
+typedef struct {
+    u64 texture;
+    Position_00283880 xyz;
+} TexVertex_00283880;
+
+typedef struct {
+    Color_00283880 color;
+    Position_00283880 xyz;
+} ColorVertex_00283880;
+
+typedef struct {
+    u64 tag;
+    u64 header[2];
+    ColorVertex_00283880 v0, v1, v2, v3;
+} Gradient_00283880;
+
+typedef struct {
+    u64 tag;
+    u64 header[2];
+    Color_00283880 color;
+    TexVertex_00283880 v0, v1, v2, v3;
+    u64 texture[4];
+} Textured_00283880;
+
+typedef struct {
+    s32 images[4];
+    s32 *background;
+    Gradient_00283880 gradient;
+    Textured_00283880 textured;
+} DrawWork_00283880;
+
+#pragma optimization_level 0
+
+void func_00283880(s32 arg0) {
+    extern s32 func_00202BF0();
+    extern s32 func_00202E00();
+    extern s32 func_00207650();
+    extern s32 func_00200930();
+    extern s32 func_00202FB0();
+    extern s32 D_00351228;
+    extern u8 *D_00351230;
+
+    s32 i;
+    s32 u0;
+    s32 u1;
+    s32 scroll;
+    s32 y;
+    s32 shadeY;
+    s32 shadeHeight;
+    s32 top;
+    s32 bottom;
+    DrawWork_00283880 work;
+    s32 position;
+    s32 x;
+    s32 imageIndex;
+    s32 height;
+    s32 size;
+    s32 backgroundX;
+    s32 backgroundY;
+
+    work.background = (s32 *) func_00202BF0(9, 0);
+    position = func_00209E50();
+    position += func_00202E00(position, 1);
+    D_00351228 = func_00202B00(D_00351228, 9, position, NULL);
+    D_00351228 = func_0020F290(D_00351228);
+    func_00202D60(9, -1);
+    scroll = D_00351240[arg0].angle % 176;
+
+    ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
+    ((Tag_00283880 *) &work.textured.header[0])->count = 9;
+    ((Tag_00283880 *) &work.textured.header[0])->registers = 0x424242421LL;
+    ((Tag_00283880 *) &work.textured.header[0])->reserved = 0;
+    work.textured.color.r = work.textured.color.g = work.textured.color.b = 0x80;
+    work.textured.color.a = 0x80;
+    work.textured.color.q = 1.0f;
+    work.textured.v0.xyz.z = work.textured.v1.xyz.z = work.textured.v2.xyz.z = work.textured.v3.xyz.z = 0xFFFFF8;
+    work.textured.v0.xyz.f = work.textured.v1.xyz.f = work.textured.v2.xyz.f = work.textured.v3.xyz.f = 0;
+
+    backgroundY = 0x750;
+    backgroundX = arg0 * 0x70 + 0x75C;
+    for (i = 0; i < 3; i++) {
+        switch (i) {
+        case 0:
+            work.textured.v2.xyz.x = work.textured.v0.xyz.x = backgroundX << 4;
+            work.textured.v1.xyz.y = work.textured.v0.xyz.y = (backgroundY + scroll) << 4;
+            work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
+            work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + 0xB00;
+            ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
+            if (D_00351240[arg0].angle < 176) {
+                u0 = 0x30;
+                u1 = 0x98;
+            } else {
+                u0 = 0x98;
+                u1 = 0x100;
+            }
+            ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
+            ((UV_00283880 *) &work.textured.v0.texture)->u = (u16) (u0 << 4);
+            ((UV_00283880 *) &work.textured.v0.texture)->v = 0x500;
+            ((UV_00283880 *) &work.textured.v1.texture)->u = (u16) (u1 << 4);
+            ((UV_00283880 *) &work.textured.v1.texture)->v = 0x500;
+            ((UV_00283880 *) &work.textured.v2.texture)->u = (u16) (u0 << 4);
+            ((UV_00283880 *) &work.textured.v2.texture)->v = 0x1000;
+            ((UV_00283880 *) &work.textured.v3.texture)->u = (u16) (u1 << 4);
+            ((UV_00283880 *) &work.textured.v3.texture)->v = 0x1000;
+            break;
+        case 1:
+            work.textured.v2.xyz.x = work.textured.v0.xyz.x = backgroundX << 4;
+            work.textured.v1.xyz.y = work.textured.v0.xyz.y = backgroundY << 4;
+            work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
+            work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + (scroll << 4);
+            if (D_00351240[arg0].angle < 176) {
+                u0 = 0x98;
+                u1 = 0x100;
+            } else {
+                u0 = 0x30;
+                u1 = 0x98;
+            }
+            ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
+            ((UV_00283880 *) &work.textured.v0.texture)->u = (u16) (u0 << 4);
+            ((UV_00283880 *) &work.textured.v0.texture)->v = (u16) ((0x100 - scroll) * 16);
+            ((UV_00283880 *) &work.textured.v1.texture)->u = (u16) (u1 << 4);
+            ((UV_00283880 *) &work.textured.v1.texture)->v = (u16) ((0x100 - scroll) * 16);
+            ((UV_00283880 *) &work.textured.v2.texture)->u = (u16) (u0 << 4);
+            ((UV_00283880 *) &work.textured.v2.texture)->v = 0x1000;
+            ((UV_00283880 *) &work.textured.v3.texture)->u = (u16) (u1 << 4);
+            ((UV_00283880 *) &work.textured.v3.texture)->v = 0x1000;
+            break;
+        case 2:
+            work.textured.v2.xyz.x = work.textured.v0.xyz.x = backgroundX << 4;
+            work.textured.v1.xyz.y = work.textured.v0.xyz.y = (backgroundY + 0xB0 + scroll) << 4;
+            work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
+            work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + ((0xB0 - scroll) << 4);
+            ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
+            ((UV_00283880 *) &work.textured.v0.texture)->u = (u16) (u0 << 4);
+            ((UV_00283880 *) &work.textured.v0.texture)->v = 0x500;
+            ((UV_00283880 *) &work.textured.v1.texture)->u = (u16) (u1 << 4);
+            ((UV_00283880 *) &work.textured.v1.texture)->v = 0x500;
+            ((UV_00283880 *) &work.textured.v2.texture)->u = (u16) (u0 << 4);
+            ((UV_00283880 *) &work.textured.v2.texture)->v = (u16) ((0x100 - scroll) * 16);
+            ((UV_00283880 *) &work.textured.v3.texture)->u = (u16) (u1 << 4);
+            ((UV_00283880 *) &work.textured.v3.texture)->v = (u16) ((0x100 - scroll) * 16);
+            break;
+        }
+        func_00208CB0(&work.textured.header[0], ((s64) u0 << 4) | 0xA | ((s64) u1 << 14) | 0x50000000 | ((u64) 0x3FC << 32));
+        func_00208700(&work.textured.header[0], work.background, 1);
+        func_002086D0(&work.textured.header[0], 0x44);
+        D_00351228 = func_00207650(D_00351228, &work.textured.header[0], 0, -1);
+    }
+
+    imageIndex = D_00351240[arg0].position / 112;
+    scroll = D_00351240[arg0].position % 112;
+    position = func_00209E50();
+    position += func_00202E00(position, 1);
+    for (i = 0; i < 4; i++) {
+        work.images[i] = func_00200930(1, D_00351240[arg0].symbols[(imageIndex + i) % *D_00351230]);
+        if (work.images[i] != NULL) {
+            D_00351228 = func_00202FB0(D_00351228, *(s32 *) work.images[i], position, &size);
+            position += size;
+        }
+    }
+    D_00351228 = func_0020F290(D_00351228);
+    for (i = 0; i < 4; i++) {
+        if (work.images[i] != NULL) {
+            ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
+            ((Tag_00283880 *) &work.textured.header[0])->count = 9;
+            ((Tag_00283880 *) &work.textured.header[0])->registers = 0x424242421LL;
+            ((Tag_00283880 *) &work.textured.header[0])->reserved = 0;
+            work.textured.color.r = work.textured.color.g = work.textured.color.b = work.textured.color.a = 0x80;
+            work.textured.color.q = 1.0f;
+            work.textured.v0.xyz.z = work.textured.v1.xyz.z = work.textured.v2.xyz.z = work.textured.v3.xyz.z = 0xFFFFF8;
+            work.textured.v0.xyz.f = work.textured.v1.xyz.f = work.textured.v2.xyz.f = work.textured.v3.xyz.f = 0;
+
+            x = arg0 * 0x70 + 0xA0;
+            work.textured.v2.xyz.x = work.textured.v0.xyz.x = (x + 0x6C0) << 4;
+            work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x600;
+            y = scroll + (0x120 - i * 0x70);
+            if (y < 0x30) {
+                top = ((0x30 - y) << 7) / 96;
+                height = 0x60 - (0x30 - y);
+                y = 0x30;
+            } else {
+                height = 0x60;
+                top = 0;
+            }
+            if (y + 0x60 > 400) {
+                bottom = ((400 - y) << 7) / 96;
+                height = 400 - y;
+            } else {
+                bottom = 0x80;
+            }
+            work.textured.v1.xyz.y = work.textured.v0.xyz.y = (y + 0x720) << 4;
+            work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + (height << 4);
+            ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
+            ((UV_00283880 *) &work.textured.v0.texture)->u = 0;
+            ((UV_00283880 *) &work.textured.v0.texture)->v = (u16) (top << 4);
+            ((UV_00283880 *) &work.textured.v1.texture)->u = 0x800;
+            ((UV_00283880 *) &work.textured.v1.texture)->v = (u16) (top << 4);
+            ((UV_00283880 *) &work.textured.v2.texture)->u = 0;
+            ((UV_00283880 *) &work.textured.v2.texture)->v = (u16) (bottom << 4);
+            ((UV_00283880 *) &work.textured.v3.texture)->u = 0x800;
+            ((UV_00283880 *) &work.textured.v3.texture)->v = (u16) (bottom << 4);
+            func_00208CB0(&work.textured.header[0], ((s64) top << 24) | 0x20000A | ((s64) bottom << 34));
+            func_00208700(&work.textured.header[0], *(void **) work.images[i], 1);
+            D_00351228 = func_00207650(D_00351228, &work.textured.header[0], 0, -1);
+        }
+    }
+    ((Tag_00283880 *) &work.gradient.header[0])->flags = 0x14;
+    ((Tag_00283880 *) &work.gradient.header[0])->count = 8;
+    ((Tag_00283880 *) &work.gradient.header[0])->registers = 0x41414141LL;
+    ((Tag_00283880 *) &work.gradient.header[0])->reserved = 0;
+    x = arg0 * 0x70 + 0x9C;
+    for (i = 0; i < 4; i++) {
+        switch (i) {
+        case 0:
+            work.gradient.v0.color.r = work.gradient.v0.color.g = work.gradient.v0.color.b =
+                work.gradient.v1.color.r = work.gradient.v1.color.g = work.gradient.v1.color.b = 0x80;
+            work.gradient.v2.color.r = work.gradient.v2.color.g = work.gradient.v2.color.b =
+                work.gradient.v3.color.r = work.gradient.v3.color.g = work.gradient.v3.color.b = 0x20;
+            shadeY = 0x30;
+            shadeHeight = 0x40;
+            break;
+        case 1:
+            work.gradient.v0.color.r = work.gradient.v0.color.g = work.gradient.v0.color.b =
+                work.gradient.v1.color.r = work.gradient.v1.color.g = work.gradient.v1.color.b = 0x20;
+            work.gradient.v2.color.r = work.gradient.v2.color.g = work.gradient.v2.color.b =
+                work.gradient.v3.color.r = work.gradient.v3.color.g = work.gradient.v3.color.b = 0;
+            shadeY += 0x40;
+            shadeHeight = 0x70;
+            break;
+        case 2:
+            work.gradient.v0.color.r = work.gradient.v0.color.g = work.gradient.v0.color.b =
+                work.gradient.v1.color.r = work.gradient.v1.color.g = work.gradient.v1.color.b = 0;
+            work.gradient.v2.color.r = work.gradient.v2.color.g = work.gradient.v2.color.b =
+                work.gradient.v3.color.r = work.gradient.v3.color.g = work.gradient.v3.color.b = 0x20;
+            shadeY += 0x70;
+            shadeHeight = 0x70;
+            break;
+        case 3:
+            work.gradient.v0.color.r = work.gradient.v0.color.g = work.gradient.v0.color.b =
+                work.gradient.v1.color.r = work.gradient.v1.color.g = work.gradient.v1.color.b = 0x20;
+            work.gradient.v2.color.r = work.gradient.v2.color.g = work.gradient.v2.color.b =
+                work.gradient.v3.color.r = work.gradient.v3.color.g = work.gradient.v3.color.b = 0x80;
+            shadeY += 0x70;
+            shadeHeight = 0x40;
+            break;
+        }
+        work.gradient.v0.color.a = work.gradient.v1.color.a = work.gradient.v2.color.a = work.gradient.v3.color.a = 0x80;
+        work.gradient.v0.color.q = work.gradient.v1.color.q = work.gradient.v2.color.q = work.gradient.v3.color.q = 1.0f;
+        work.gradient.v0.xyz.z = work.gradient.v1.xyz.z = work.gradient.v2.xyz.z = work.gradient.v3.xyz.z = 0xFFFFF8;
+        work.gradient.v0.xyz.f = work.gradient.v1.xyz.f = work.gradient.v2.xyz.f = work.gradient.v3.xyz.f = 0;
+        work.gradient.v2.xyz.x = work.gradient.v0.xyz.x = (x + 0x6C0) << 4;
+        work.gradient.v1.xyz.y = work.gradient.v0.xyz.y = (shadeY + 0x720) << 4;
+        work.gradient.v3.xyz.x = work.gradient.v1.xyz.x = work.gradient.v0.xyz.x + 0x680;
+        work.gradient.v3.xyz.y = work.gradient.v2.xyz.y = work.gradient.v0.xyz.y + (shadeHeight << 4);
+        func_002086D0(&work.gradient.header[0], 0x42 | ((u64) 0x80 << 32));
+        D_00351228 = func_00207650(D_00351228, &work.gradient.header[0], 0, -1);
+    }
+}
+
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00284D30);
 
