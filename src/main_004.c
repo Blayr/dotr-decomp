@@ -2479,7 +2479,111 @@ s32 func_00113B60(s32 arg0, s32 arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00113BB0);
+typedef struct Entry_00113BB0 {
+    u16 value;
+    u8 flag;
+    u8 pad;
+} Entry_00113BB0;
+
+void func_00113BB0(void *arg0, s32 arg1) {
+    u8 buffer[0x70];
+    Entry_00113BB0 entries[22];
+    u16 out_a;
+    u16 out_b;
+    u16 count;
+    s32 attempt;
+    u16 *command = (u16 *)arg0;
+    s32 owner;
+    s32 position;
+    s32 state;
+    s32 object;
+    s32 high;
+    s32 i;
+    Entry_00113BB0 *entry;
+    s32 result;
+    u16 id;
+    u32 mode = arg1;
+    extern s32 func_001E1030();
+    extern s32 func_00277160(s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_002770E0();
+    extern void func_0027E770();
+
+    id = command[0];
+    if (func_001DF540(id >> 8, id & 0xFF) != 0) {
+        id = command[0];
+        owner = func_0024DE70(id >> 8, id & 0xFF);
+        id = command[0];
+        position = func_001E1090(id >> 8, id & 0xFF);
+        count = 0;
+        out_b = 0;
+        out_a = 0;
+        id = command[0];
+        object = func_001DF540(id >> 8, id & 0xFF);
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->value = 0xFFFF;
+            entry->flag = 0xFF;
+            entry++;
+        } while (i < 22);
+        func_0027E770(buffer);
+        state = 0;
+        id = command[0];
+        switch (func_001E1030(id >> 8, id & 0xFF)) {
+        case 0x53:
+            if (func_00117600(owner) == 1) {
+                command[2] = 0x3FF;
+                *(u32 *)&command[4] = (position << 16) | command[4];
+            } else {
+                command[2] = 0x5FF;
+            }
+            return;
+        case 0x89: {
+            high = position >> 8;
+            attempt = 1;
+            position &= 0xFF;
+            while (1) {
+                state = func_002770E0(state, object, position, high, owner == 0 ? 1 : 0,
+                                     (u8)attempt, 0, func_00117C30(owner),
+                                     entries, &count, &out_a, &out_b, buffer);
+                result = func_00277160(object, position, high, entries, 5, 0x34,
+                                      0, 2, 0, func_00117C30(owner), count);
+                if (result >= 0) {
+                    command[2] = 0x2FF;
+                    *(u32 *)&command[4] = (result << 16) | command[4];
+                    return;
+                }
+                attempt++;
+                if (attempt <= 5) {
+                    continue;
+                }
+                break;
+            }
+            break;
+        }
+        case 0xBF:
+            if (func_0027D720(command, 0) == 1) {
+                command[2] = 0xBFF;
+                return;
+            }
+            break;
+        case 0x179:
+            if (func_001173E0(owner) == 1 && func_0027D720(command, 0) == 1) {
+                command[2] = 0xBFF;
+                return;
+            }
+            break;
+        case 0x186:
+            if (func_00117550(owner) == 1 && func_0027D720(command, 0) == 1) {
+                command[2] = 0xBFF;
+                return;
+            }
+            break;
+        }
+        func_00113760(command, 1, mode);
+    }
+}
 
 typedef struct {
     u16 key;
