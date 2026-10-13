@@ -20,7 +20,72 @@ s32 func_00214FD0(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215060);
+typedef struct {
+    u32 card : 31;
+    u32 flag : 1;
+    u32 value : 30;
+    u32 valueFlags : 2;
+} Entry_00215060;
+
+typedef struct {
+    Entry_00215060 entries[9];
+    u8 unknown48;
+    u8 flagsLow : 6;
+    u8 assigned : 1;
+    u8 flagsHigh : 1;
+    u8 unknown4A[2];
+} Card_00215060;
+
+typedef struct {
+    Card_00215060 cards[0x356];
+    u8 unknownFD88[0x210];
+    s32 defaultCard;
+    s32 unknownFF9C;
+} Player_00215060;
+
+s32 func_00215060(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
+    extern u8 D_0034F6D0;
+    extern Player_00215060 D_0032F790[2];
+    Entry_00215060 *entry;
+    s32 n;
+
+    if (arg0 < 0 || arg0 >= 2) {
+        return -1;
+    }
+    if (arg1 == 0) {
+        Player_00215060 *player;
+        s32 side;
+
+        side = (D_0034F6D0 == arg0) ? 0 : 1;
+        player = &D_0032F790[side];
+        arg1 = player->defaultCard;
+    }
+    if (arg1 == 0) {
+        return -1;
+    }
+    if (arg3 == 0x29F) {
+        arg3 = 0x3E7;
+    }
+    if (arg3 < 0 || arg3 >= 0x356) {
+        return -1;
+    }
+    {
+        s32 side;
+
+        side = (D_0034F6D0 == arg0) ? 0 : 1;
+        entry = (Entry_00215060 *)((u8 *)&D_0032F790[side] + arg3 * 0x4C);
+    }
+    n = 9;
+    while (n-- != 0) {
+        if (entry->card != 0) {
+            if (entry->value == arg2) {
+                return 1;
+            }
+        }
+        entry++;
+    }
+    return 0;
+}
 
 typedef struct {
     u16 entries[40];
@@ -675,7 +740,6 @@ typedef struct {
     s32 unknownFF9C;
 } Player_00216040;
 
-s32 func_00215060(s32, s32, u32, s32);
 
 static inline s32 side_00216040(s32 player) {
     extern u8 D_0034F6D0;
