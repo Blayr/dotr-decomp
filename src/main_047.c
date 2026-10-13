@@ -340,7 +340,53 @@ void func_001E7890(void) {
     func_00209D30(func_001E78C0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E78C0);
+typedef struct Entry_001E78C0 {
+    s16 first;
+    s16 second;
+    f32 x;
+    f32 z;
+} Entry_001E78C0;
+
+typedef union Quad_001E78C0 {
+    __int128 q;
+    f32 f[4];
+} Quad_001E78C0;
+
+s32 func_001E78C0(s32 arg0) {
+    extern Quad_001E78C0 D_00292470;
+    extern Entry_001E78C0 D_002CF750[];
+    Quad_001E78C0 position;
+    s32 i;
+    s32 firstId;
+    s32 secondId;
+    s32 id;
+
+    if (func_001F3130(0x22) != 0) {
+        if (D_00292468 == 2) {
+            for (i = 0; D_002CF750[i].second >= 0; i++) {
+                secondId = D_002CF750[i].second + 0x22;
+                firstId = D_002CF750[i].first + 0x22;
+                position = D_00292470;
+                position.f[0] = D_002CF750[i].x;
+                position.f[2] = D_002CF750[i].z;
+                if (D_002CF750[i].first >= 0 && func_001F1370(firstId) != 0) {
+                    arg0 = func_001EFA80(arg0, firstId, (s32) &position, 0, 0, 0, 0);
+                }
+                if (D_002CF750[i].second >= 0 && func_001F1370(secondId) != 0) {
+                    arg0 = func_001EFA80(arg0, secondId, (s32) &position, 0, 0, 0, 0);
+                }
+            }
+        } else {
+            for (i = 0; i < 0x28; i++) {
+                id = i + 0x22;
+                if (func_001F1370(id) != 0) {
+                    arg0 = func_001EFA80(arg0, id, 0, 0, 0, 0, 0);
+                }
+            }
+        }
+    }
+    return arg0;
+}
 
 void func_001E7A50(void) {
 
