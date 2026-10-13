@@ -456,7 +456,55 @@ void *func_001FFCC0(void *arg0, s32 arg1) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFD30);
+typedef struct {
+    s8 completed : 1;
+    s8 running : 1;
+    s8 reserved : 6;
+} Flags_001FFD30;
+
+typedef struct {
+    u8 pad0[0x6688];
+    s32 handle;
+    u16 head;
+    u16 count;
+    Flags_001FFD30 flags;
+} Queue_001FFD30;
+
+static inline s32 poll_001FFD30(void) {
+    extern Queue_001FFD30 D_0031C2F0;
+    extern Flags_001FFD30 D_00322980;
+    Queue_001FFD30 *queue = &D_0031C2F0;
+    s32 handle;
+
+    if (D_00322980.running == 0) {
+        handle = func_001FF9C0();
+        queue->handle = handle;
+        if (handle < 0) {
+            return 0;
+        }
+    }
+    return func_001FF480(queue->handle);
+}
+
+s32 func_001FFD30(s32 arg0, s32 arg1, s32 arg2) {
+    extern Queue_001FFD30 D_0031C2F0;
+    extern s32 func_001FECB0();
+    s32 result;
+    Queue_001FFD30 *queue = &D_0031C2F0;
+
+    result = func_001FECB0(0x1400, 0, arg0, arg1, arg2, 0, -1, func_001FFF60, (s64)0);
+    if (result == 0) {
+        return 0;
+    }
+    goto check;
+loop:
+    poll_001FFD30();
+check:
+    if (func_001FF360(-1, 0) != 0) {
+        goto loop;
+    }
+    return queue->flags.completed ? result : 0;
+}
 
 typedef struct {
     s8 completed : 1;
