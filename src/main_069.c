@@ -1051,7 +1051,47 @@ s32 func_00244B70(void *arg0, void *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244CB0);
+typedef struct Record_00244CB0 {
+    s64 value0;
+    s64 value8;
+    s32 value10;
+    s32 value14;
+} Record_00244CB0;
+
+typedef struct Queue_00244CB0 {
+    u8 padding0[0x40];
+    s32 semaphore;
+    u8 padding44[0xC];
+    Record_00244CB0 *records;
+    s32 capacity;
+    s32 count;
+    s32 tail;
+} Queue_00244CB0;
+
+void func_0017B900(s32);
+void func_0017B920(s32);
+
+s32 func_00244CB0(void *arg0, void *arg1) {
+    Record_00244CB0 *record = arg1;
+    Queue_00244CB0 *queue = arg0;
+    s32 result = 0;
+
+    func_0017B920(queue->semaphore);
+    if (queue->count < queue->capacity) {
+        func_00244B70(queue, record);
+        if (record->value0 >= 0 || record->value8 >= 0) {
+            queue->records[queue->tail].value0 = record->value0;
+            queue->records[queue->tail].value8 = record->value8;
+            queue->records[queue->tail].value10 = record->value10;
+            queue->records[queue->tail].value14 = record->value14;
+            queue->count++;
+            queue->tail = (queue->tail + 1) % queue->capacity;
+        }
+        result = 1;
+    }
+    func_0017B900(queue->semaphore);
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_069", func_00244DE0);
 

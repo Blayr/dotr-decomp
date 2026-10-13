@@ -12,7 +12,6 @@ typedef struct Values_00245160 {
 } Values_00245160;
 
 extern u8 D_003506C8[];
-void func_00244CB0(u8 *, void *);
 
 void func_00245160(void *arg0, s64 arg1, s64 arg2, s32 arg3, s32 arg4) {
     Values_00245160 values;
