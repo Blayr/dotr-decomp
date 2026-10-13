@@ -57,6 +57,7 @@ void func_00103660(void *arg0, void *arg1);
 void func_001036A0(void *arg0, void *arg1);
 void func_001036E0(f32 *arg0, f32 *arg1, f32 *arg2);
 void func_00103760(void *arg0);
+s32 func_001037C0(u8 *arg0, s32 arg1, s32 arg2);
 void func_00103890(void *arg0);
 void func_001038D0(void *arg0);
 s32 func_00103920(void *arg0, f32 fparg0, f32 fparg1);

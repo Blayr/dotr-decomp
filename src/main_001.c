@@ -239,7 +239,18 @@ void func_00103760(void *arg0) {
     func_001A22C0(90.0f + (360.0f / (6.2831855f / func_001A6C18(vector[1], vector[0]))));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001037C0);
+s32 func_001037C0(u8 *arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001A22C0(f32);
+    u16 point1[4];
+    u16 point2[4];
+    s32 depth;
+
+    func_00205440(arg1, arg0 + 0x30, point1, &depth);
+    func_00205440(arg2, arg0 + 0x30, point2, &depth);
+    return func_001A22C0(65536.0f *
+        (func_001A6C18((f32)((s32)(point1[0] - point2[0]) >> 4),
+                      (f32)((s32)(point1[1] - point2[1]) >> 4)) / 6.2831855f)) % 65536;
+}
 
 void func_00103890(void *arg0) {
     f32 *values = arg0;
