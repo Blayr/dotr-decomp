@@ -369,7 +369,398 @@ void func_002464E0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002464F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00246810);
+s32 func_001E1E70(s32, s32, s32, s32);
+s32 func_00215B10(s32, s32, s32, s32);
+
+typedef struct Flags_00246810 {
+    u8 bit0 : 1;
+    u8 bit1 : 1;
+    u8 bit2 : 1;
+    u8 bit3 : 1;
+    u8 bit4 : 1;
+    u8 bit5 : 1;
+    u8 bit6 : 1;
+    u8 bit7 : 1;
+} Flags_00246810;
+
+typedef struct Status_00246810 {
+    Flags_00246810 mode;
+    s32 value1;
+    s32 value2;
+    s32 value3;
+    Flags_00246810 flags;
+} Status_00246810;
+
+static inline s32 encode_00246810(s32 value) {
+    return ((value < 0 ? 1 : 0) << 15) | (value >= 0 ? value : -value);
+}
+
+s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg6) {
+    extern s32 func_001E08F0();
+    extern s32 func_001E1030();
+    extern s32 func_001E1580();
+    Status_00246810 status;
+    Status_00246810 *p = &status;
+    s32 *out = arg6;
+    s32 sp120;
+    s32 sp138;
+    s32 sp13C;
+    s32 sp140;
+    s32 sp144;
+    s32 temp_a0;
+    s32 temp_a0_2;
+    s32 temp_s0;
+    s32 temp_s0_10;
+    s32 temp_s0_11;
+    s32 temp_s0_2;
+    s32 temp_s0_3;
+    s32 temp_s0_4;
+    s32 temp_s0_5;
+    s32 temp_s0_6;
+    s32 temp_s0_7;
+    s32 temp_s0_8;
+    s32 temp_s0_9;
+    s32 temp_s1;
+    s32 temp_s1_2;
+    s32 temp_s1_3;
+    s32 temp_s5;
+    s32 temp_s5_2;
+    s32 temp_v0_20;
+    s32 temp_v0_21;
+    s32 temp_v0_4;
+    s32 temp_v0_5;
+    s32 temp_v0_7;
+    s32 var_fp;
+    s32 var_s7;
+
+    p->value1 = 0;
+    p->value2 = 0;
+    p->value3 = 0;
+    p->flags.bit0 = 0;
+    p->flags.bit1 = 0;
+    p->flags.bit2 = 0;
+    p->flags.bit3 = 0;
+    p->flags.bit4 = 0;
+    p->mode.bit1 = 0;
+    p->mode.bit2 = 0;
+    p->mode.bit0 = 1;
+    p->flags.bit5 = 0;
+    p->flags.bit6 = 0;
+    temp_s1 = func_001E0700(arg0, arg1) >> 5;
+    temp_a0 = func_001E0700(arg2, arg3) >> 5;
+    sp120 = 0;
+    var_fp = 0;
+    var_s7 = 0;
+    if ((temp_s1 == 0) && (temp_a0 == 0)) {
+        if (arg1 == 0) {
+            temp_s1_2 = func_00261F20(arg0, arg1, arg2, arg3, p);
+            temp_s5 = func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1);
+            temp_s5_2 = p->value2 + func_001E0290(arg2, arg3, 0);
+            temp_s5_2 = func_002508D0(temp_s5_2 + temp_s5);
+            func_001E0450(arg2, arg3, 0, p->value2);
+            func_001E0570(arg2, arg3, 0, p->value2);
+            p->value2 = encode_00246810(p->value2);
+            if (func_00271740(6, arg0) != 0) {
+                out[0] = 0x5D;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = arg0;
+                out[3] = (((p->flags.bit6 << 1) | ((temp_s1_2 >> 0x18) & 1)) << 0x16) | ((temp_s5_2 >> 1) | (((p->flags.bit5 << 1) | ((temp_s1_2 >> 0x10) & 1)) << 0x14));
+            } else {
+                out[0] = 0x5D;
+                out[1] = (s32) ((arg2 << 8) | arg3);
+                out[2] = arg0;
+                out[3] = (((p->flags.bit6 << 1) | ((temp_s1_2 >> 0x18) & 1)) << 0x16) | (temp_s5_2 | (((p->flags.bit5 << 1) | ((temp_s1_2 >> 0x10) & 1)) << 0x14));
+            }
+            return 1;
+        }
+        temp_s1_3 = func_001E0830(arg2, arg3);
+        temp_v0_4 = func_0024EA70(temp_s1_3, func_001E0830(arg0, arg1));
+        switch (temp_v0_4) {                        /* switch 1; irregular */
+        case 1:                                     /* switch 1 */
+            if (func_001E1580(arg0, arg1) == 0) {
+                var_fp = 1;
+            }
+            break;
+        case -1:                                    /* switch 1 */
+            if (func_001E1580(arg2, arg3) == 0) {
+                var_s7 = 1;
+            }
+            break;
+        }
+        temp_v0_5 = func_00261F20(arg0, arg1, arg2, arg3, p);
+        if ((temp_v0_5 & 0xFF) == 1) {
+            temp_a0_2 = (temp_v0_5 >> 0x18) & 1;
+            if ((temp_a0_2 == 1) && (((temp_v0_5 >> 0x10) & 1) == 1)) {
+                out[0] = 0x5E;
+                out[1] = (s32) ((arg2 << 8) | arg3);
+                out[2] = (s32) ((arg0 << 8) | arg1);
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | 1) << 0x16) | ((((p->flags.bit5 << 1) | 1) << 0x14) | 0xCFFFF)))) | 0x10000000);
+                temp_s0 = func_001E1030(arg0, arg1);
+                                func_00215B10(arg0, temp_s0, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
+                temp_s0_2 = func_001E1030(arg2, arg3);
+                                func_00215B10(arg2, temp_s0_2, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                return 1;
+            }
+            if (temp_a0_2 == 1) {
+                out[0] = 0x5E;
+                out[1] = (s32) ((arg2 << 8) | arg3);
+                out[2] = (s32) ((arg0 << 8) | arg1);
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | 1) << 0x16) | (((p->flags.bit5 << 1) << 0x14) | 0x8FFFF)))) | 0x10000000);
+                temp_s0_3 = func_001E1030(arg0, arg1);
+                                func_00215B10(arg0, temp_s0_3, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
+                return 1;
+            }
+            if (((temp_v0_5 >> 0x10) & 1) == 1) {
+                out[0] = 0x5E;
+                out[1] = (s32) ((arg2 << 8) | arg3);
+                out[2] = (s32) ((arg0 << 8) | arg1);
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((p->flags.bit6 << 0x17) | ((((p->flags.bit5 << 1) | 1) << 0x14) | 0x4FFFF)))));
+                temp_s0_4 = func_001E1030(arg2, arg3);
+                                func_00215B10(arg2, temp_s0_4, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                return 1;
+            }
+
+        }
+        temp_v0_7 = func_001E2100(arg0, arg1, 3);
+        switch (temp_v0_7) {                        /* switch 2; irregular */
+        case 1:                                     /* switch 2 */
+            if (p->flags.bit3 == 1) {
+                func_001E0450(arg0, arg1, 4, 0);
+                func_001E0570(arg0, arg1, 4, 0);
+                sp13C = func_002508D0(func_001E0370(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 0));
+            } else {
+                sp13C = func_002508D0(p->value1 + func_001E0370(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 0));
+                func_001E0450(arg0, arg1, 0, p->value1);
+                func_001E0570(arg0, arg1, 0, p->value1);
+                p->value1 = encode_00246810(p->value1);
+            }
+            if (p->flags.bit4 == 1) {
+                func_001E0450(arg2, arg3, 4, 0);
+                func_001E0570(arg2, arg3, 4, 0);
+                sp138 = func_002508D0(func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
+            } else {
+                sp138 = func_002508D0(p->value2 + func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
+                func_001E0450(arg2, arg3, 0, p->value2);
+                func_001E0570(arg2, arg3, 0, p->value2);
+                p->value2 = encode_00246810(p->value2);
+            }
+            if (sp13C > sp138) {
+
+                if (p->flags.bit1 == 0) {
+                    sp120 += sp13C - sp138;
+
+                }
+                out[0] = 0x5E;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0x20000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14)) | 0x01000000))) | 0x10000000);
+                return 1;
+            }
+            if (sp13C == sp138) {
+                out[0] = 0x5E;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0x01000000))));
+                return 1;
+            }
+            if (sp13C < sp138) {
+                out[0] = 0x5E;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0x40000)))));
+                temp_s0_5 = func_001E1030(arg2, arg3);
+                                func_00215B10(arg2, temp_s0_5, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                return 1;
+            }
+            break;
+        case 0:                                     /* switch 2 */
+            if (p->flags.bit3 == 1) {
+                func_001E0450(arg0, arg1, 4, 0);
+                func_001E0570(arg0, arg1, 4, 0);
+                sp140 = func_002508D0(func_001E0290(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 1));
+            } else {
+                sp140 = func_002508D0(p->value1 + func_001E0290(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 1));
+                func_001E0450(arg0, arg1, 0, p->value1);
+                func_001E0570(arg0, arg1, 0, p->value1);
+                p->value1 = encode_00246810(p->value1);
+            }
+            if (p->flags.bit4 == 1) {
+                func_001E0450(arg2, arg3, 4, 0);
+                func_001E0570(arg2, arg3, 4, 0);
+                sp144 = func_002508D0(func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
+            } else {
+                sp144 = func_002508D0(p->value2 + func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
+                func_001E0450(arg2, arg3, 0, p->value2);
+                func_001E0570(arg2, arg3, 0, p->value2);
+                p->value2 = encode_00246810(p->value2);
+            }
+            if (sp140 > sp144) {
+                if (p->flags.bit1 == 0) {
+                    sp120 = sp140 - sp144;
+                }
+                out[0] = 0x5E;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0xA0000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14))))) | 0x10000000);
+                if (sp120 <= 0) {
+                    temp_s0_6 = func_001E1030(arg0, arg1);
+                                        func_00215B10(arg0, temp_s0_6, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
+                } else {
+                    temp_s0_7 = func_001E1030(arg0, arg1);
+                                        func_00215B10(arg0, temp_s0_7, 0, func_001E08F0(arg2, arg3, 0) * 4);
+                }
+                return 1;
+            }
+            if (sp140 == sp144) {
+                out[0] = 0x5E;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0xC0000)))) | 0x10000000);
+                temp_s0_8 = func_001E1030(arg0, arg1);
+                                func_00215B10(arg0, temp_s0_8, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
+                temp_s0_9 = func_001E1030(arg2, arg3);
+                                func_00215B10(arg2, temp_s0_9, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                return 1;
+            }
+            if (sp140 < sp144) {
+                if (!(p->flags.bit0)) {
+                    sp120 = sp144 - sp140;
+                }
+                out[0] = 0x5E;
+                out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
+                out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0x50000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14))))));
+                if (sp120 <= 0) {
+                    temp_s0_10 = func_001E1030(arg2, arg3);
+                                        func_00215B10(arg2, temp_s0_10, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                } else {
+                    temp_s0_11 = func_001E1030(arg2, arg3);
+                                        func_00215B10(arg2, temp_s0_11, 0, func_001E08F0(arg0, arg1, 0) * 4);
+                }
+                return 1;
+            }
+            break;
+        }
+    } else {
+        if ((temp_s1 == 0) && ((temp_a0 == 1) || ((u32)(temp_a0 - 3) < 3U))) {
+            out[0] = 0x5F;
+            out[1] = (s32) ((arg0 << 8) | arg1);
+            out[2] = (s32) ((arg2 << 8) | arg3);
+            out[3] = 1;
+            return 1;
+        }
+        if (temp_s1 == 0) {
+            if (temp_a0 == 2) {
+                if (func_00271E40(arg0, arg1, 0xB) == 1) {
+                    out[0] = 0x5F;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = 3;
+                    return 0x10001;
+                }
+                if (func_00267700(arg0, arg1) != 0) {
+                    out[0] = 0x5F;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = 1;
+                    return 0x10001;
+                }
+                temp_v0_20 = func_00248AF0(arg0, arg1, func_001E1030(arg2, arg3));
+                if (temp_v0_20 == 0x3E7) {
+                    out[0] = 0x5F;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = 1;
+                    return 0x10001;
+                }
+                if (((temp_v0_20 >> 0x1E) & 1) == 1) {
+                    func_001E1E70(arg2, arg3, 2, 1);
+                    out[0] = 0x2B;
+                    out[1] = (s32) ((arg2 << 8) | arg3);
+                    out[2] = (s32) ((arg0 << 8) | arg1);
+                    out[3] = (s32) ((temp_v0_20 >> 0xE) & 0x3FFF);
+                    return 0x10001;
+                }
+                if ((temp_v0_20 >> 0xE) == 0x219) {
+                    func_001E1E70(arg2, arg3, 2, 1);
+                    out[0] = 0x25;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = (s32) ((temp_v0_20 & 0x3FFF) | (func_0024DE70(arg2, arg3) << 0x10));
+                } else {
+                    func_001E1E70(arg2, arg3, 2, 1);
+                    out[0] = 0x24;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = temp_v0_20;
+                }
+                return 0x10001;
+            }
+        }
+
+        if (temp_s1 == 2) {
+            if (temp_a0 == 0) {
+                func_00215B10(arg2, func_001E1030(arg2, arg3), 0, 6);
+                if (func_00271E40(arg2, arg3, 0xB) == 1) {
+                    out[0] = 0x5F;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = 2;
+                    return 1;
+                }
+                if (func_00267700(arg2, arg3) != 0) {
+                    out[0] = 0x5F;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = 0;
+                    return 1;
+                }
+                temp_v0_21 = func_00248AF0(arg2, arg3, func_001E1030(arg0, arg1));
+                if (temp_v0_21 == 0x3E7) {
+                    out[0] = 0x5F;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = 0;
+                    return 1;
+                }
+                if (((temp_v0_21 >> 0x1E) & 1) == 1) {
+                    func_001E1E70(arg0, arg1, 2, 1);
+                    out[0] = 0x2B;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = (s32) ((temp_v0_21 >> 0xE) & 0x3FFF);
+                    return 1;
+                }
+                if ((temp_v0_21 >> 0xE) == 0x219) {
+                    func_001E1E70(arg0, arg1, 2, 1);
+                    out[0] = 0x25;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = (s32) ((temp_v0_21 & 0x3FFF) | (func_0024DE70(arg0, arg1) << 0x10));
+                } else {
+                    func_001E1E70(arg0, arg1, 2, 1);
+                    out[0] = 0x24;
+                    out[1] = (s32) ((arg0 << 8) | arg1);
+                    out[2] = (s32) ((arg2 << 8) | arg3);
+                    out[3] = temp_v0_21;
+                }
+                return 1;
+            }
+
+        }
+        if (((u32)(temp_s1 - 1) < 5U) && ((u32) temp_a0 < 6U)) {
+            out[0] = 0x5F;
+            out[1] = (s32) ((arg0 << 8) | arg1);
+            out[2] = (s32) ((arg2 << 8) | arg3);
+            out[3] = 0;
+            if (temp_a0 == 0) {
+                func_00215B10(arg2, func_001E1030(arg2, arg3), 0, 6);
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00247F40);
 
