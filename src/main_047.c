@@ -863,7 +863,48 @@ void func_001E92C0(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E9340);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001EA0F0);
+s32 func_001EA0F0(s32 arg0) {
+    extern u8 D_002CFA17[];
+    extern u8 D_002CFB4F[];
+    extern u8 D_002CFB64[];
+    extern s32 D_00292480[];
+    extern void func_0019B648();
+    extern s32 func_001FEC70();
+    u8 buf1[0x80];
+    u8 buf2[0x80];
+    s32 s0;
+    s32 s1;
+    u8 *obj;
+    s32 s4;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = (u8 *)D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    s0 = (s32)func_001FFF90((s32)D_002CFA17);
+    s1 = *(s16 *)(obj + 0x1F4);
+    if (*(s32 *)(obj + 0x138) == 0) {
+        return 1;
+    }
+    s4 = D_00292480[*(s8 *)(obj + 0x1F3)];
+    *(s32 *)(obj + 0x140) = 0;
+    func_0019B648(buf1, D_002CFB4F, s0, s4);
+    func_0019B648(buf2, buf1, s1, s1);
+    func_001FEC70(arg0, buf2, 0, -1, func_001EA270, (s32)(obj + 0x140));
+    func_0019B648(buf1, D_002CFB64, s0, s4);
+    s0 = 0;
+    do {
+        *(s32 *)(obj + 0x144) = 0;
+        func_0019B648(buf2, buf1, s1, s1, s0);
+        func_001FEC70(arg0, buf2, 0, -1, func_001EA270, (s32)(obj + 0x144));
+        s0 += 1;
+        obj += 4;
+    } while (s0 < 8);
+    return 1;
+}
 
 void func_001EA270(void *arg0, s32 arg1) {
     s32 *temp_v1;
