@@ -1394,7 +1394,65 @@ s64 func_001AAF60(s32 arg0) {
     return value;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAFA0);
+typedef struct Flags2D_001AAFA0 {
+    u8 first : 3;
+    u8 second : 3;
+    u8 high : 2;
+} Flags2D_001AAFA0;
+
+typedef struct Flags2E_001AAFA0 {
+    u8 value : 3;
+    u8 bit3 : 1;
+    u8 high : 4;
+} Flags2E_001AAFA0;
+
+void func_001AAFA0(s32 arg0) {
+    extern char D_002BE7D0[];
+    extern char D_002BE821[];
+    s8 *data = (s8 *)&D_00317250;
+
+    switch (arg0) {
+    case 0:
+        func_0023C770(1);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 2;
+        break;
+    case 1: {
+        u8 path[128];
+
+        func_0019B648(path, D_002BE821, (s32)func_001FFF90((s32)D_002BE7D0));
+        func_001FECB0(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
+        break;
+    }
+    case 2: {
+        u8 path[128];
+
+        func_0019B648(path, D_002BE821, (s32)func_001FFF90((s32)D_002BE7D0));
+        func_001FECB0(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
+        break;
+    }
+    case 3:
+        func_0023CC50(1);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
+        break;
+    case 4:
+        func_0023C8B0(1);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
+        break;
+    case 5:
+        func_0023CA10(1);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
+        break;
+    case 6:
+        func_0023C3F0(1);
+        ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
+        break;
+    }
+    *(s16 *)(data + 0x21C) = 0;
+    ((Flags2D_001AAFA0 *)(data + 0x22D))->second = arg0;
+    ((Flags2E_001AAFA0 *)(data + 0x22E))->bit3 = (arg0 == 2) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AB1D0);
 

@@ -180,7 +180,6 @@ void func_00182A28(s32);
 
 extern u8 D_003193C0[];
 
-void func_001AAFA0(s32);
 
 extern s32 D_0030FF48;
 
