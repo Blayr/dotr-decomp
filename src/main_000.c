@@ -353,7 +353,6 @@ typedef struct {
     u32 values[4];
 } Config_00100E00;
 
-void func_0020CB90(s32, u32 *);
 extern Config_00100E00 D_0028C210;
 
 void func_00100E00(s32 arg0, s32 arg1, s32 arg2) {
@@ -377,7 +376,6 @@ extern Config_00100E00 D_0028C210;
 
 
 void func_0020BBB0(void *);
-void func_0020CB90(s32, u32 *);
 
 void func_00100E40(void *matrix, f32 *vector) {
     Config_00100E00 rotationZ;

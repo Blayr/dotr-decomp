@@ -2,7 +2,13 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CB20);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CB90);
+void func_0020CB90(s32 arg0, u32 *arg1) {
+    extern void func_0020C630();
+    f32 matrix[4][4];
+
+    func_0020C630(matrix, arg1);
+    func_0020BC00(arg0, matrix);
+}
 
 void func_0020CBD0(s32 arg0) {
     f32 matrix[4][4];
@@ -578,7 +584,25 @@ void func_0020EC00(void *dst) {
     *(Block_0020EC00 *)dst = D_0032A320[D_0032A240].block;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EC60);
+s32 func_0020EC60(s32 arg0) {
+    u8 matrix_storage[0x4F];
+    u8 *matrix;
+    u8 *item;
+    void *result;
+
+    matrix = (u8 *)(((u32)matrix_storage + 0xF) & ~0xF);
+    item = (u8 *)&D_0032A2A0[D_0032A240];
+    result = func_00208E60((void *)arg0, item + 0x80);
+    func_0020BDE0(matrix, item);
+    return (s32)func_002093E0(
+        func_0020A340(
+            func_00209320(func_00208EB0(result, matrix), 1,
+                *(f32 *)(item + 0x160), *(f32 *)(item + 0x16C),
+                *(f32 *)(item + 0x170)),
+            item + 0x184),
+        *(f32 *)(item + 0x174), *(f32 *)(item + 0x178),
+        *(f32 *)(item + 0x17C), *(f32 *)(item + 0x180));
+}
 
 typedef struct {
     f32 x, y, z, w;
