@@ -114,7 +114,6 @@ typedef struct State_001547A0 {
 
 void func_00154EB0(void *);
 void func_00155070(void *);
-void func_00155230(void *);
 
 s32 func_001547A0(void *arg0) {
     extern s32 func_001E1030();
@@ -263,7 +262,86 @@ INCLUDE_ASM("asm/nonmatchings/main_013", func_00154EB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00155070);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155230);
+typedef struct State_00155230 {
+    u16 position;
+    u16 pad2;
+    u16 flags;
+    u16 pad6;
+    u16 destination;
+    u16 destination_high;
+} State_00155230;
+
+void func_00155230(void *arg0) {
+    s32 position;
+    u8 kind;
+    State_00155230 *state = arg0;
+    s32 card;
+    s32 destination;
+
+    extern s32 func_001E1030();
+
+    func_00250360(state->position >> 8, state->position & 0xFF);
+    kind = (func_001E0700(state->position >> 8, state->position & 0xFF) >> 5) & 0xFF;
+    position = func_001E1090(state->position >> 8, state->position & 0xFF);
+    card = func_001E1030(state->position >> 8, state->position & 0xFF);
+    switch (kind) {
+    case 1:
+    case 3:
+    case 2: {
+        s32 y;
+        s32 x;
+
+        state->flags = 0x7FF;
+        if (func_00155670(state->position >> 8, state->position & 0xFF) == 1) {
+            *(u32 *)&state->destination = (position << 16) | state->destination;
+            break;
+        }
+        x = position & 0xFF;
+        y = position >> 8;
+        if (func_001554B0(x, y, kind) == 0 &&
+            func_001554B0(x, y, 0) == 0 && y < 6) {
+            *(u32 *)&state->destination = (((position & 0xFF) | 0x600) << 16) | state->destination;
+            break;
+        }
+        destination = func_001555F0(kind);
+        if (destination >= 0) {
+            *(u32 *)&state->destination = (destination << 16) | state->destination;
+            break;
+        }
+        destination = func_001555F0(0);
+        if (destination >= 0) {
+            *(u32 *)&state->destination = (destination << 16) | state->destination;
+            break;
+        }
+        state->flags = 0x6FF;
+        *(u32 *)&state->destination = state->destination | 0x05030000;
+        break;
+    }
+    case 4:
+        if (card != 0x334 && card != 0x337) {
+            state->flags = 0x3FF;
+            *(u32 *)&state->destination = (position << 16) | state->destination;
+            break;
+        }
+        state->flags = 0x6FF;
+        destination = func_001555F0(kind);
+        if (destination >= 0) {
+            *(u32 *)&state->destination = (destination << 16) | state->destination;
+            break;
+        }
+        destination = func_001555F0(0);
+        if (destination >= 0) {
+            *(u32 *)&state->destination = (destination << 16) | state->destination;
+            break;
+        }
+        state->flags = 0x6FF;
+        *(u32 *)&state->destination = state->destination | 0x05030000;
+        break;
+    default:
+        state->flags = 0x5FF;
+        break;
+    }
+}
 
 s32 func_001554B0(s32 arg0, s32 arg1, s32 arg2) {
     s32 i = 0;
