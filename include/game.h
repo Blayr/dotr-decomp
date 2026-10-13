@@ -606,7 +606,6 @@ void func_0020BA90(void *);
 void func_0020BAD0(void *);
 extern u8 D_0032A730[];
 
-void func_00255AC0(void *, s32);
 
 extern u8 D_0032A784[];
 

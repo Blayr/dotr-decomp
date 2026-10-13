@@ -241,7 +241,25 @@ s32 func_00255A30(void *arg0, void *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00255AC0);
+typedef struct State_00255AC0 {
+    u8 padding[0x80];
+    u8 flag : 1;
+    u8 count : 5;
+    u8 flags : 2;
+    s16 entries[32];
+} State_00255AC0;
+
+s32 func_00255AC0(void *arg0, s16 arg1) {
+    extern s32 func_001F3910(s32, s16, s32);
+    State_00255AC0 *state = arg0;
+
+    if (func_001F3910(0, arg1, 0) != 0) {
+        state->entries[state->count] = arg1;
+        state->count++;
+        return 1;
+    }
+    return -1;
+}
 
 typedef struct {
     s8 ready : 1;
@@ -511,7 +529,6 @@ typedef struct State_002560C0 {
 } State_002560C0;
 
 void func_001E1E70(s32, s32, s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -666,7 +683,6 @@ typedef struct Request_00256AB0 {
     s32 kind;
 } Request_00256AB0;
 
-void func_00255AC0(void *, s32);
 void func_0025FC30(void *, void *, s32, s32, s32, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
@@ -810,7 +826,6 @@ typedef struct Card_00256D80 {
 
 extern void func_001DEF20(u32);
 extern void func_002516D0(s32, s32, s32);
-extern void func_00255AC0(void *, s32);
 extern void func_00260A70(void *, s32);
 extern void func_002614C0(s32, u32, s32);
 
@@ -1576,7 +1591,6 @@ typedef struct State_00258490 {
 } State_00258490;
 
 void func_0024F370(s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2093,7 +2107,6 @@ INCLUDE_ASM("asm/nonmatchings/main_074", func_002594D0);
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_002516D0(s32, s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2215,7 +2228,6 @@ typedef struct State_0025A060 {
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_002516D0(s32, s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2359,7 +2371,6 @@ typedef struct Command_0025A4C0 {
     s32 fieldC;
 } Command_0025A4C0;
 
-void func_00255AC0(void *, s32);
 
 s32 func_0025A4C0(void *arg0, u16 *arg1, s32 arg2) {
     Command_0025A4C0 command;
@@ -2553,7 +2564,6 @@ typedef struct Mask_0025AA80 {
     u32 mask;
 } Mask_0025AA80;
 
-void func_00255AC0(void *, s32);
 void func_002607D0(s32);
 void func_00260A70(void *, s32);
 
@@ -2665,7 +2675,6 @@ typedef struct State_0025AD60 {
     u16 timer;
 } State_0025AD60;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2763,7 +2772,6 @@ typedef struct Params_0025B050 {
     s32 value3;
 } Params_0025B050;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2854,7 +2862,6 @@ typedef struct {
     u16 timer;
 } State_0025B330;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -2953,7 +2960,6 @@ typedef struct Source_0025B610 {
 } Source_0025B610;
 
 void func_0024F370(s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -3050,7 +3056,6 @@ typedef struct State_0025B900 {
     u16 timer;
 } State_0025B900;
 
-void func_00255AC0(void *, s32);
 void func_00260860(s32);
 void func_00260A70(void *, s32);
 extern char D_002B86E8[];
@@ -3216,7 +3221,6 @@ typedef struct Obj_0025BE50 {
     u16 timer;
 } Obj_0025BE50;
 
-extern void func_00255AC0(void *, s32);
 extern void func_00260740(s32);
 extern void func_00260A70(void *, s32);
 
@@ -3305,7 +3309,6 @@ typedef struct Obj_0025C0B0 {
     u16 timer;
 } Obj_0025C0B0;
 
-extern void func_00255AC0(void *, s32);
 extern void func_00260860(s32);
 extern void func_00260A70(void *, s32);
 
@@ -3389,7 +3392,6 @@ s32 func_0025C0B0(void *arg0, void *arg1, s32 arg2) {
 }
 
 void func_0024F370(s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -3898,7 +3900,6 @@ typedef struct Command_0025D230 {
     s32 z;
 } Command_0025D230;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -4014,7 +4015,6 @@ typedef struct State_0025D640 {
     u16 timer;
 } State_0025D640;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -4134,7 +4134,6 @@ typedef struct Packet_0025D9D0 {
 } Packet_0025D9D0;
 
 void func_0024F370(s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -4313,7 +4312,6 @@ typedef struct Selection_0025DE70 {
     s32 fieldC;
 } Selection_0025DE70;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -4439,7 +4437,6 @@ typedef struct {
     u16 timer;
 } State_0025E200;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 

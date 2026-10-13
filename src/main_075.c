@@ -461,7 +461,6 @@ void func_00260020(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg
 }
 
 void func_001E42C0(s32, s32, s32, s32);
-void func_00255AC0(void *, s32);
 
 typedef struct State_00260200 {
     u32 unknown;
@@ -844,7 +843,6 @@ typedef struct Effect_00261B70 {
     s32 value3;
 } Effect_00261B70;
 
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -1204,7 +1202,6 @@ typedef struct {
 } State_00262BE0;
 
 void func_0024F370(s32, s32);
-void func_00255AC0(void *, s32);
 
 s32 func_00262BE0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1D10();
@@ -1375,7 +1372,6 @@ typedef struct {
 } State_00263500;
 
 void func_0024F370(s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 
@@ -1457,7 +1453,6 @@ s32 func_00263500(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_00255AC0(void *, s32);
 
 typedef struct Config_00263790 {
     u8 padding[8];
@@ -1541,7 +1536,6 @@ typedef struct Request_00265050 {
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(u32, s32, s32);
-void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 
 s32 func_00265050(void *arg0, void *arg1, s32 arg2) {
