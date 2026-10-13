@@ -1076,6 +1076,7 @@ void *func_001E09E0(void *arg0, s32 arg1);
 void *func_001E0B70(s32 arg0, s32 arg1, s32 index);
 s32 func_001E0C00(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001E0C70(void *arg0, s32 arg1, s32 arg2);
+s32 func_001E0C80(void *arg0, u32 arg1, s32 *arg2, s32 arg3);
 s32 func_001E1030(void);
 s32 func_001E1090(s32 arg0, s32 arg1);
 void func_001E10F0(s32 arg0, s32 arg1, s32 arg2, void *arg3);

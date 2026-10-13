@@ -852,7 +852,173 @@ s32 func_001E0C70(void *arg0, s32 arg1, s32 arg2) {
     return func_001E0C80(arg0, arg1, arg2, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0C80);
+typedef struct Card_001E0C80 {
+    u8 pad0[8];
+    u32 pairs[9];
+    u8 pad2C[0x10];
+    u16 id;
+    u8 pad3E[6];
+    u8 owner;
+} Card_001E0C80;
+
+s32 func_001E0C80(void *arg0, u32 arg1, s32 *arg2, s32 arg3) {
+    extern s32 func_00215D30();
+    s32 extra;
+    s32 need;
+    Card_001E0C80 *card = arg0;
+    s32 value;
+
+    extra = 0;
+    if (arg2 != NULL) {
+        *arg2 = 0;
+    }
+    if (card == NULL) {
+        return 0;
+    }
+    if (card->id >= 0x356) {
+        return 0;
+    }
+    if (card->id == 0x29F) {
+        return 0;
+    }
+    if (arg3 == 0) {
+        value = func_001A82E0(0x1C);
+        if (!(value & (1 << card->owner))) {
+            return 0;
+        }
+    }
+    switch (arg1) {
+    case 0:
+        value = card->pairs[0] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        return value ? 1 : 0;
+    case 1:
+        value = (u16)card->pairs[0];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        return value ? 1 : 0;
+    case 2:
+        value = card->pairs[1] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        extra = value & 0xFF;
+        break;
+    case 3:
+        value = (u16)card->pairs[1];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 4:
+        value = card->pairs[2] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 5:
+        value = (u16)card->pairs[2];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 6:
+        value = card->pairs[3] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 7:
+        value = (u16)card->pairs[3];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value & 0xFF;
+        extra = value >> 8;
+        break;
+    case 8:
+        value = card->pairs[4] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value & 0xFF;
+        extra = value >> 8;
+        break;
+    case 9:
+        value = (u16)card->pairs[4];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 10:
+        value = card->pairs[5] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value & 0xFF;
+        extra = value >> 8;
+        break;
+    case 11:
+        value = (u16)card->pairs[5];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 12:
+        value = card->pairs[6] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 13:
+        value = (u16)card->pairs[6];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 14:
+        value = card->pairs[7] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value & 0xFF;
+        extra = value >> 8;
+        break;
+    case 15:
+        value = (u16)card->pairs[7];
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    case 16:
+        value = card->pairs[8] >> 16;
+        if (value == 0xFFFF) {
+            return 0;
+        }
+        need = value >> 8;
+        break;
+    default:
+        return 0;
+    }
+    value = func_00215D30(card->owner, card->id);
+    if (arg2 != NULL) {
+        *arg2 = extra;
+    }
+    return (value >= need) ? 1 : 0;
+}
 
 s32 func_001E1030(void) {
     extern void *func_001DD130();
