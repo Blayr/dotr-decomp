@@ -357,7 +357,6 @@ typedef struct State_0023C770 {
     s16 result;
 } State_0023C770;
 
-s32 func_0023F130(s32);
 extern struct State_0023E610 D_0034FB00;
 
 s32 func_0023C770(s32 arg0) {
@@ -421,7 +420,6 @@ typedef struct State_0023C8B0 {
     s16 field2BE;
 } State_0023C8B0;
 
-s32 func_0023F130(s32);
 s32 func_0023FF30(void);
 extern struct State_0023E610 D_0034FB00;
 
@@ -1267,7 +1265,104 @@ s32 func_0023E6D0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E7A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023F130);
+s32 func_0023F130(s32 arg0) {
+    extern s32 D_0034FB10;
+    extern s32 D_0034FB14;
+    extern s32 D_0034FB18;
+    u8 *state = (u8 *)&D_0034FB00;
+    s32 result;
+
+    D_0034FB00.result = func_00194380(D_0034FB08, D_0034FB0C,
+                               &D_0034FB10, &D_0034FB14, &D_0034FB18);
+    D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
+    if (D_0034FB04 == 1) {
+        if (*(s32 *)(state + 0x20) == 1) {
+            switch (*(s32 *)(state + 0x24)) {
+            case 0:
+                goto mode_switch;
+            case -1:
+                *(s16 *)(state + 0x30) = 3;
+                *(s16 *)(state + 0x34) = 0;
+                *(s16 *)(state + 0x40) = 0;
+                result = 0x700;
+                goto done;
+            case -2:
+                *(s16 *)(state + 0x30) = 3;
+                *(s16 *)(state + 0x34) = 0;
+                *(s16 *)(state + 0x40) = 0;
+                result = 0x700;
+                goto done;
+            default:
+                *(s16 *)(state + 0x30) = 3;
+                *(s16 *)(state + 0x34) = 0;
+                *(s16 *)(state + 0x40) = 0;
+                /* fall through */
+            }
+mode_switch:
+            switch (*(s32 *)(state + 0x10)) {
+                case 0:
+                    *(s16 *)(state + 0x30) = 3;
+                    *(s16 *)(state + 0x34) = 0;
+                    *(s16 *)(state + 0x40) = 0;
+                    result = 2;
+                    goto done;
+                case 1:
+                    *(s16 *)(state + 0x30) = 3;
+                    *(s16 *)(state + 0x34) = 0;
+                    *(s16 *)(state + 0x40) = 0;
+                    result = 4;
+                    goto done;
+                case 2:
+                    goto state2;
+                case 3:
+                    *(s16 *)(state + 0x30) = 3;
+                    *(s16 *)(state + 0x34) = 0;
+                    *(s16 *)(state + 0x40) = 0;
+                    result = 4;
+                    goto done;
+                default:
+                    *(s16 *)(state + 0x30) = 3;
+                    *(s16 *)(state + 0x34) = 0;
+                    *(s16 *)(state + 0x40) = 0;
+                    result = 2;
+                    goto done;
+                }
+state2:
+                if (*(s32 *)(state + 0x10) == 2) {
+                    switch (*(s32 *)(state + 0x18)) {
+                    case 0:
+                        *(s16 *)(state + 0x40) = *(s16 *)(state + 0x40) + 1;
+                        if (*(s16 *)(state + 0x40) >= 3) {
+                            *(s16 *)(state + 0x30) = 3;
+                            *(s16 *)(state + 0x34) = 0;
+                            *(s16 *)(state + 0x40) = 3;
+                            result = 3;
+                            goto done;
+                        }
+                        break;
+                    case 1:
+                        if (*(s16 *)(state + 0x30) == 0) {
+                            *(s16 *)(state + 0x30) = 1;
+                            *(s16 *)(state + 0x34) = 0;
+                            *(s16 *)(state + 0x40) = 0;
+                            result = 0x10;
+                            goto done;
+                        }
+                        break;
+                    default:
+                        *(s16 *)(state + 0x30) = 3;
+                        *(s16 *)(state + 0x34) = 0;
+                        *(s16 *)(state + 0x40) = 0;
+                        result = 2;
+                        goto done;
+                }
+            }
+        }
+    }
+    result = 0;
+done:
+    return result;
+}
 
 typedef struct {
     s32 result;
