@@ -1,6 +1,24 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00250620);
+s32 func_00250620(s32 arg0, s32 arg1) {
+    extern s32 func_00215D30();
+    s32 i;
+    s32 id;
+    s32 max;
+
+    max = 0;
+    for (i = 0; i < 2; i++) {
+        if ((id = func_002159D0(arg0, i)) != 999) {
+            if (max < func_00215D30(arg0, id)) {
+                max = func_00215D30(arg0, id);
+            }
+        }
+    }
+    if ((max - 1) * 2 + func_0019A5C8() % 100 >= 90) {
+        return arg1 + (func_0019A5C8() % 10 + 1);
+    }
+    return arg1 - func_0019A5C8() % 12 + 1;
+}
 
 void *func_00250740(s32 arg0, s32 arg1, s32 arg2) {
     void *var_v0;

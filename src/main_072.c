@@ -838,7 +838,6 @@ typedef struct {
     u8 flag : 1;
 } Card_00250430;
 
-s32 func_00250620(s32, s32);
 
 s32 func_00250430(s32 arg0, s32 arg1) {
     s32 list[0x356];
