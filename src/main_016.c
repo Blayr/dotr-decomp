@@ -1540,7 +1540,149 @@ s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00170940);
+s32 func_0016B610(s32, s32, void *);
+void func_001E1E70(s32, s32, s32, s32);
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
+s32 func_0027BE10(s32, s32, s32, s32, s32);
+
+typedef struct Nibbles_00170940 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00170940;
+
+typedef struct Result_00170940 {
+    u16 source;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 value;
+    u8 flags;
+} Result_00170940;
+
+static inline s32 moveFlags_00170940(u16 *unit, u16 *move, s32 exact) {
+    return func_0027E360(*unit >> 8, *unit & 0xFF, move[2], exact, 0);
+}
+
+s32 func_00170940(u16 *unit, s32 arg1, void *out, u8 arg3) {
+    extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
+    s32 destination;
+    s32 chosen;
+    s32 bestScore;
+    Nibbles_00170940 positions[12];
+    s32 i;
+    Nibbles_00170940 *p;
+
+    destination = func_001E1090(*unit >> 8, *unit & 0xFF);
+    p = positions;
+    i = 0;
+    do {
+        p->low = p->high = 15;
+        p++;
+        i++;
+    } while (i < 12);
+    {
+        s32 rawRange;
+        s32 currentY;
+        s32 score;
+        s32 shiftedY;
+        s32 targetY;
+        s32 targetX;
+        s32 currentX;
+        u8 lowerX;
+        u8 upperX;
+        u8 lowerY;
+        u8 upperY;
+        u8 ability;
+        u8 range;
+        u16 unitFlags;
+
+        unitFlags = func_00172310(arg1);
+        targetX = destination & 0xFF;
+        targetY = destination >> 8;
+        if (func_00276CC0(targetX, targetY, *unit, 3, unitFlags, 0) == 0) {
+            ((Result_00170940 *)out)->source = *unit;
+            ((Result_00170940 *)out)->action = 6;
+            ((Result_00170940 *)out)->destination = destination;
+            ((Result_00170940 *)out)->flags = moveFlags_00170940(unit, out, 1);
+            ((Result_00170940 *)out)->value = func_0016B610(*unit >> 8, *unit & 0xFF, unit);
+            func_0027B1B0(unit, arg3);
+            return 0;
+        }
+        if ((rawRange = func_002464F0(func_001DF540(*unit >> 8, *unit & 0xFF), targetX, targetY)) == 0) {
+            ((Result_00170940 *)out)->source = *unit;
+            ((Result_00170940 *)out)->action = 6;
+            ((Result_00170940 *)out)->destination = destination;
+            ((Result_00170940 *)out)->flags = moveFlags_00170940(unit, out, 1);
+            ((Result_00170940 *)out)->value = func_0016B610(*unit >> 8, *unit & 0xFF, unit);
+            func_0027B1B0(unit, arg3);
+            return 0;
+        }
+        if (func_001E2100(*unit >> 8, *unit & 0xFF, 4) != 0) {
+            if ((func_001E0700(*unit >> 8, *unit & 0xFF) >> 5) == 1 ||
+                (func_001E0700(*unit >> 8, *unit & 0xFF) >> 5) == 5) {
+                func_001E1E70(*unit >> 8, *unit & 0xFF, 0, 1);
+                ((Result_00170940 *)out)->source = *unit;
+                ((Result_00170940 *)out)->action = 14;
+                return 0;
+            }
+        }
+        range = rawRange & 15;
+        chosen = 0xFF;
+        bestScore = 0xFFFF;
+        lowerX = func_00250860(0, targetX - range);
+        upperX = (targetX + range >= 7) ? 6 : targetX + range;
+        lowerY = func_00250860(0, targetY - range);
+        upperY = (targetY + range >= 7) ? 6 : targetY + range;
+        if ((*unit & 0xFF) == 0) {
+            ability = func_0027BBC0(*unit >> 8, *unit & 0xFF, 0);
+        } else {
+            ability = 0;
+        }
+        for (currentX = lowerX; currentX <= (s32)upperX; currentX++) {
+            for (currentY = lowerY, shiftedY = currentY << 8; currentY <= (s32)upperY; shiftedY += 0x100, currentY++) {
+                if ((((currentX < targetX ? targetX : currentX) -
+                      (targetX < currentX ? targetX : currentX)) +
+                     ((currentY < targetY ? targetY : currentY) -
+                      (targetY < currentY ? targetY : currentY))) <= range) {
+                    if (func_00279C40(*unit >> 8, *unit & 0xFF, targetX, targetY, currentX, currentY, unit, ability) == 1) {
+                        if (func_0027BE10(*unit >> 8, *unit & 0xFF, currentX, currentY, 0) == 0 || *(u8 *)unit == 0) {
+                            score = func_00276CC0(currentX, currentY, *unit, 3, (u16)func_00172310(arg1), 0);
+                            if (score < bestScore) {
+                                bestScore = score;
+                                chosen = shiftedY | currentX;
+                            } else if (score == bestScore && func_001E36E0(currentX, currentY) == 0 &&
+                                       func_001E36E0(chosen & 0xFF, chosen >> 8) != 0) {
+                                bestScore = score;
+                                chosen = shiftedY | currentX;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (chosen != 0xFF) {
+            ((Result_00170940 *)out)->source = *unit;
+            ((Result_00170940 *)out)->action = 6;
+            ((Result_00170940 *)out)->destination = chosen;
+            if (chosen == destination) {
+                ((Result_00170940 *)out)->flags = moveFlags_00170940(unit, out, 1);
+            } else {
+                ((Result_00170940 *)out)->flags = moveFlags_00170940(unit, out, 0);
+            }
+            ((Result_00170940 *)out)->value = func_0016B610(*unit >> 8, *unit & 0xFF, unit);
+        } else {
+            ((Result_00170940 *)out)->source = *unit;
+            ((Result_00170940 *)out)->action = 6;
+            ((Result_00170940 *)out)->destination = destination;
+            ((Result_00170940 *)out)->flags = moveFlags_00170940(unit, out, 1);
+            ((Result_00170940 *)out)->value = func_0016B610(*unit >> 8, *unit & 0xFF, unit);
+        }
+        func_0027B1B0(unit, arg3);
+    }
+    return 0;
+}
 
 typedef struct Source_00170F10 {
     u16 position;
