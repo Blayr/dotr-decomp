@@ -1175,6 +1175,203 @@ void func_001B3C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                   0, 0, (s64) arg8, (s64) arg9, (s64) arg10, 0x80);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B3CC0);
+typedef struct Tag_001B3CC0 {
+    u32 count : 16;
+    u32 flags : 16;
+    u32 reserved;
+    u64 registers;
+} Tag_001B3CC0;
+
+typedef struct Color_001B3CC0 {
+    u32 r : 8;
+    u32 g : 8;
+    u32 b : 8;
+    u32 a : 8;
+    f32 q;
+} Color_001B3CC0;
+
+typedef struct UV_001B3CC0 {
+    u16 u : 14;
+    u16 pad0 : 2;
+    u16 v : 14;
+    u16 pad1 : 2;
+    u32 reserved;
+} UV_001B3CC0;
+
+typedef struct XYZ_001B3CC0 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} XYZ_001B3CC0;
+
+typedef struct Sprite_001B3CC0 {
+    u64 tag[2];
+    Color_001B3CC0 color;
+    u64 uv0;
+    XYZ_001B3CC0 xyz0;
+    u64 uv1;
+    XYZ_001B3CC0 xyz1;
+    u64 texture[4];
+} Sprite_001B3CC0;
+
+typedef struct Solid_001B3CC0 {
+    u64 tag[2];
+    Color_001B3CC0 color;
+    XYZ_001B3CC0 xyz0;
+    XYZ_001B3CC0 xyz1;
+    u64 unused;
+} Solid_001B3CC0;
+
+typedef struct Texture_001B3CC0 {
+    u8 index;
+    u8 reserved;
+    u16 x0;
+    u16 y0;
+    u16 x1;
+    u16 y1;
+} Texture_001B3CC0;
+
+typedef struct State_001B3CC0 {
+    u8 pad000[0x6A0];
+    void *textures[16];
+    u8 pad6E0[0x578];
+    s32 depth;
+} State_001B3CC0;
+
+extern u8 D_002909F4[];
+extern u16 D_00318118;
+
+static inline void tag_001B3CC0(Tag_001B3CC0 *tag, s32 count, s32 flags, u64 registers) {
+    tag->flags = flags;
+    tag->count = count;
+    tag->registers = registers;
+    tag->reserved = 0;
+}
+
+static inline s32 abs_001B3CC0(s32 value) {
+    if (value >= 0) {
+        return value;
+    }
+    return -value;
+}
+
+static inline s32 intensity_001B3CC0(s32 bright) {
+    if (bright != 0) {
+        return 0x80;
+    }
+    return 0x30;
+}
+
+static inline s32 lower_001B3CC0(s32 value) {
+    if (value > 0) {
+        return value;
+    }
+    return 0;
+}
+
+static inline s32 upper_001B3CC0(s32 value) {
+    if (value < 0x3FFF) {
+        return value;
+    }
+    return 0x3FFF;
+}
+
+s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
+                  s32 background, s32 image, s32 border, s32 shrink,
+                  s32 flipX, s32 flipY, s32 bright, u8 *rgb,
+                  s32 blend, u8 alpha) {
+    Sprite_001B3CC0 sprite __attribute__((aligned(8)));
+    Solid_001B3CC0 solid __attribute__((aligned(8)));
+    State_001B3CC0 *graphics;
+    s32 width;
+    s32 height;
+
+    graphics = (State_001B3CC0 *)D_00317490;
+    width = abs_001B3CC0(src[3] - src[1]);
+    height = abs_001B3CC0(src[4] - src[2]);
+    if (shrink != 0) {
+        width = (width * 3) >> 2;
+        height = (height * 3) >> 2;
+    }
+    tag_001B3CC0((Tag_001B3CC0 *)sprite.tag, 5, 0x26, 0x42421);
+    ((Tag_001B3CC0 *)sprite.tag)->flags |= 0x800;
+    func_002086D0(&sprite, 0x8000000044LL);
+    sprite.color.r = sprite.color.g = sprite.color.b = intensity_001B3CC0(bright);
+    sprite.color.a = alpha;
+    sprite.color.q = 1.0f;
+    sprite.xyz0.z = graphics->depth;
+    sprite.xyz0.fog = 0;
+    sprite.xyz1.z = graphics->depth;
+    sprite.xyz1.fog = 0;
+    tag_001B3CC0((Tag_001B3CC0 *)solid.tag, 3, 6, 0x441);
+    solid.color.r = 0x80;
+    solid.color.g = 0x80;
+    solid.color.b = 0x80;
+    solid.color.a = 0x80;
+    solid.color.q = 1.0f;
+    solid.xyz0.z = graphics->depth;
+    solid.xyz0.fog = 0;
+    solid.xyz1.z = graphics->depth;
+    solid.xyz1.fog = 0;
+    if (background != 0) {
+        solid.color.r = solid.color.g = solid.color.b = 0;
+        solid.xyz0.x = x * 16;
+        solid.xyz0.y = y * 16;
+        solid.xyz1.x = (x + width) * 16;
+        solid.xyz1.y = (y + height) * 16;
+        packet = func_00207650(packet, (s32)&solid, 0, 0);
+    }
+    if (image != 0) {
+        func_00208700(&sprite, graphics->textures[((u8 *)src)[0]], 0);
+        if (flipX != 0 && flipY != 0) {
+            ((UV_001B3CC0 *)&sprite.uv0)->u = lower_001B3CC0(src[3] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->v = lower_001B3CC0(src[4] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->u = lower_001B3CC0(src[1] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->v = lower_001B3CC0(src[2] * 16 - 8);
+        } else if (flipX != 0 && flipY == 0) {
+            ((UV_001B3CC0 *)&sprite.uv0)->u = lower_001B3CC0(src[3] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->v = upper_001B3CC0(src[2] * 16 + 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->u = lower_001B3CC0(src[1] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->v = upper_001B3CC0(src[4] * 16 + 8);
+        } else if (flipX == 0 && flipY != 0) {
+            ((UV_001B3CC0 *)&sprite.uv0)->u = upper_001B3CC0(src[1] * 16 + 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->v = lower_001B3CC0(src[4] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->u = upper_001B3CC0(src[3] * 16 + 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->v = lower_001B3CC0(src[2] * 16 - 8);
+        } else {
+            ((UV_001B3CC0 *)&sprite.uv0)->u = upper_001B3CC0(src[1] * 16 + 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->v = upper_001B3CC0(src[2] * 16 + 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->u = upper_001B3CC0(src[3] * 16 + 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->v = upper_001B3CC0(src[4] * 16 + 8);
+        }
+        sprite.xyz0.x = x * 16;
+        sprite.xyz0.y = y * 16;
+        sprite.xyz1.x = (x + width) * 16;
+        sprite.xyz1.y = (y + height) * 16;
+        packet = func_00207650(packet, (s32)&sprite, 0, 0);
+    }
+    if (border != 0) {
+        packet = func_001B3CC0(packet, (u16 *)D_002909F4, x, y, 0, 1, 0, shrink,
+                              0, 0, bright, NULL, -1, 0x80);
+    }
+    if (blend >= 0) {
+        func_002086D0(&solid, func_00208D00(blend));
+        if (rgb != NULL) {
+            solid.color.r = rgb[2];
+            solid.color.g = rgb[1];
+            solid.color.b = rgb[0];
+        } else {
+            solid.color.r = solid.color.g = solid.color.b = 0x80;
+        }
+        solid.color.a = D_00318118 >> 8;
+        solid.xyz0.x = x * 16;
+        solid.xyz0.y = y * 16;
+        solid.xyz1.x = (x + width) * 16;
+        solid.xyz1.y = (y + height) * 16;
+        packet = func_00207650(packet, (s32)&solid, 0, 0);
+    }
+    return packet;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001B4540);
