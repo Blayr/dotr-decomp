@@ -1922,7 +1922,384 @@ void func_0016E4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
                   0, 2500, arg_sp28);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016E510);
+typedef struct Candidate_0016E510 {
+    u16 card;
+    u8 index;
+    u8 flags;
+} Candidate_0016E510;
+
+static inline s32 max_0016E510(s32 a, s32 b) {
+    if (a < b) {
+        return b;
+    }
+    return a;
+}
+
+static inline s32 ready_0016E510(s32 player) {
+    extern s32 func_001E1030();
+
+    if (func_001E1030(player, 0) == 0x3A &&
+        func_002151D0(player, func_002158B0(player), 0x36) >= 0 &&
+        func_002151D0(player, func_002158B0(player), 0x37) >= 0 &&
+        func_002151D0(player, func_002158B0(player), 0x38) >= 0 &&
+        func_002151D0(player, func_002158B0(player), 0x39) >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+void func_0016E510(u16 *arg0) {
+    u8 work[112];
+    Candidate_0016E510 list[22];
+    s16 first;
+    s16 second;
+    u16 length;
+    s32 player;
+    s32 position;
+    s32 distance;
+    s32 count;
+    s32 type;
+    s32 x;
+    s32 y;
+    s32 x55;
+    s32 y55;
+    s32 retry_y;
+    s32 retry_x;
+    s32 nearest_y;
+    s32 nearest_x;
+    s32 mask;
+    s32 mask55;
+    s32 nearest_mask;
+    s32 i;
+    s32 i55;
+    s32 nearest_i;
+    s32 attempt;
+    s32 card;
+    s32 cursor;
+    u32 *effect;
+    u32 *action;
+    s32 ready;
+    s32 nearest;
+    s32 maxy;
+    s32 miny;
+    s32 maxx;
+    s32 minx;
+    s32 other;
+    s32 result;
+    s32 result55;
+    s32 nearest_card;
+    s32 nearest_position;
+    s32 nearest_delta;
+    s32 n;
+    Candidate_0016E510 *p;
+    extern s32 func_001E1030();
+    extern s32 func_00170610();
+    extern s32 func_001E1580();
+    extern s32 func_001DEE50();
+    extern s32 func_00215D30();
+    extern s32 func_002770E0();
+    extern s32 func_00277160();
+    extern void func_0027E770();
+
+    count = 0;
+    player = func_00250360(arg0[0] >> 8, arg0[0] & 0xFF);
+    type = func_001E1030(arg0[0] >> 8, arg0[0] & 0xFF);
+    func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF);
+    position = func_001E1090(arg0[0] >> 8, arg0[0] & 0xFF);
+    if ((card = func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF)) != 0) {
+        p = list;
+        length = 0;
+        second = 0;
+        first = 0;
+        cursor = 0;
+        n = 0;
+        do {
+            n++;
+            p->card = 0xFFFF;
+            p->index = 0xFF;
+            p++;
+        } while (n < 22);
+        func_0027E770(work);
+        if (((u32)(type - 0x36) < 4 ? 1 : 0) == 1) {
+            ready = ready_0016E510(player);
+            i = 0;
+            if (ready == 1) {
+                do {
+                    if (position == func_00170610(player, i)) {
+                        arg0[2] = 0x6FF;
+                        *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                    }
+                    i++;
+                } while (i < 9);
+                arg0[2] = 0x6FF;
+                *(u32 *)&arg0[4] = arg0[4] | (func_001E1090(player, 0) << 16);
+                return;
+            }
+        }
+        effect = func_00250740(arg0[0] >> 8, arg0[0] & 0xFF, 2);
+        if (effect != NULL) {
+            switch (effect[0] >> 8) {
+            case 0xC:
+            case 0x34:
+            case 0xD:
+            case 0xE:
+            case 0x22:
+            case 0x3B:
+            case 0x56:
+            case 0x43:
+            case 0xF:
+                arg0[2] = 0x3FF;
+                *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                return;
+            case 0xB:
+            case 0x4E:
+            case 0x12:
+            case 0x4D:
+            case 0x6:
+                if ((u32)func_0024CA40(0, 0, player, 1, effect[0] & 0x3F, 14) > 1U) {
+                    arg0[2] = 0x3FF;
+                    *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                    return;
+                }
+                break;
+            case 0x13:
+            case 0x17:
+                if (((effect[0] >> 6) & 1) && func_0024CA40(0, 0, player, 1, effect[0] & 0x3F, 14) != 0) {
+                    if (func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF) != 0) {
+                        other = (func_0024DE70(arg0[0] >> 8, arg0[0] & 0xFF) == 0 ? 1 : 0) << 8;
+                        func_001E1090(arg0[0] >> 8, arg0[0] & 0xFF);
+                        func_001E1090(other >> 8, other & 0xFF);
+                        func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF);
+                        if (func_001E0290(arg0[0] >> 8, arg0[0] & 0xFF, 0) >= 2500) {
+                            func_0016DDA0(arg0);
+                        } else if (func_0016E000(arg0[0] >> 8, arg0[0] & 0xFF, 1) == 1) {
+                            func_0016E0E0(arg0, 1);
+                        } else {
+                            func_0016DDA0(arg0);
+                        }
+                    }
+                    return;
+                }
+                if ((u32)func_0027E150(func_0024CA40(0, 0, player, 2, effect[0] & 0x3F, 14)) > 2U) {
+                    arg0[2] = 0x3FF;
+                    *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                    return;
+                }
+                break;
+            case 0x47:
+                mask = func_0024CA40(0, 0, player, 2, 0x34, 14);
+                i = 0;
+                if (0 < func_0024E910(mask)) {
+                    do {
+                        result = func_0024EC50(mask, i);
+                        y = result >> 8;
+                        x = result & 0xFF;
+                        if (func_001E1580(y, x) > 0 && func_001E1580(y, x) != 0xFF) {
+                            arg0[2] = 0x3FF;
+                            *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                            return;
+                        }
+                        i++;
+                    } while (i < func_0024E910(mask));
+                }
+                break;
+            case 0x53:
+                i = 0;
+                if (0 < func_001DEE50(player)) {
+                    do {
+                        if ((func_0026FCE0(func_001DEE00(player, i)) >> 5) == 0) {
+                            count++;
+                        }
+                        i++;
+                    } while (i < func_001DEE50(player));
+                }
+                i = 0;
+                while (i < func_001DEE50((player == 0 ? 1 : 0))) {
+                    if ((func_0026FCE0(func_001DEE00((player == 0 ? 1 : 0), i)) >> 5) == 0) {
+                        count++;
+                    }
+                    i++;
+                }
+                if (count > 5) {
+                    arg0[2] = 0x3FF;
+                    *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                    return;
+                }
+                break;
+            case 0x54:
+                result = func_0024EC50(func_0024CA40(0, 0, player, 3, 0x21, 14), 0);
+                if (player == func_00250360(result >> 8, result & 0xFF) && result != arg0[0]) {
+                    arg0[2] = 0x3FF;
+                    *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                    return;
+                }
+                break;
+            case 0x55:
+                mask55 = func_0024CA40(0, 0, player, 1, 0x34, 14);
+                i55 = 0;
+                if (0 < func_0024E910(mask55)) {
+                    do {
+                        result55 = func_0024EC50(mask55, i55);
+                        y55 = result55 >> 8;
+                        x55 = result55 & 0xFF;
+                        if (func_001E1580(y55, x55) > 0 && func_001E1580(y55, x55) != 0xFF) {
+                            arg0[2] = 0x3FF;
+                            *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                            return;
+                        }
+                        i55++;
+                    } while (i55 < func_0024E910(mask55));
+                }
+                break;
+            case 0x58:
+                if (func_00215D30((player == 0 ? 1 : 0), func_001E1030((player == 0 ? 1 : 0), 0)) >= 6) {
+                    arg0[2] = 0x3FF;
+                    *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                    return;
+                }
+                break;
+            }
+        }
+        action = func_00250740(arg0[0] >> 8, arg0[0] & 0xFF, 3);
+        if (func_001E2100(arg0[0] >> 8, arg0[0] & 0xFF, 4) == 0 && action != NULL) {
+            switch (action[0] >> 8) {
+            case 0x17:
+                if ((action[0] & 0x3F) == 0x1A && func_0027D720(arg0, 0) == 1) {
+                    arg0[2] = 0xBFF;
+                    return;
+                }
+                break;
+            case 0x14:
+                arg0[2] = 0xCFF;
+                return;
+            case 0x4:
+                if ((action[0] & 0x3F) == 0x1A && func_0027D720(arg0, 0) == 1) {
+                    arg0[2] = 0xBFF;
+                    if ((action[1] >> 16) != 2) {
+                        return;
+                    }
+                    result = (u16)func_001E0700((u32)(u16)(*(u32 *)&arg0[4] >> 16) >> 8, (*(u32 *)&arg0[4] >> 16) & 0xFF);
+                    if ((result >> 5) == 0 && (result & 0x1F) == 2) {
+                        return;
+                    }
+                }
+                break;
+            case 0x16:
+                if (func_0027D720(arg0, 0) == 1) {
+                    arg0[2] = 0xBFF;
+                    return;
+                }
+                break;
+            case 0x24:
+                if (((action[0] & 0x3F) == 0x1A || (action[0] & 0x3F) == 0x1B) && func_0027D720(arg0, 0) == 1) {
+                    arg0[2] = 0xBFF;
+                    return;
+                }
+                break;
+            case 0x1F:
+                if (func_00266DF0(0x39) <= 0 && (action[0] & 0x3F) == 0x1A && func_0027D720(arg0, 0) == 1) {
+                    arg0[2] = 0xBFF;
+                    if ((action[1] >> 16) != 14) {
+                        return;
+                    }
+                    result = (u16)func_001E0700((u32)(u16)(*(u32 *)&arg0[4] >> 16) >> 8, (*(u32 *)&arg0[4] >> 16) & 0xFF);
+                    if ((result >> 5) == 0 && (result & 0x1F) == 14) {
+                        return;
+                    }
+                }
+                break;
+            case 0x25:
+                attempt = 1;
+                retry_y = position >> 8;
+                retry_x = position & 0xFF;
+                while (1) {
+                    cursor = func_002770E0(cursor, card, retry_x, retry_y, (player == 0 ? 1 : 0), (u8)attempt, 0, func_00172310(player), list, &length, &first, &second, work);
+                    result = func_00277160(card, retry_x, retry_y, list, 5, 0x34, 0, 2, 0, func_00172310(player), length);
+                    if (result >= 0) {
+                        arg0[2] = 0x2FF;
+                        *(u32 *)&arg0[4] = (result << 16) | arg0[4];
+                        return;
+                    }
+                    attempt++;
+                    if (attempt <= 5) {
+                        continue;
+                    }
+                    break;
+                }
+                break;
+            case 0x3C:
+                nearest_mask = func_0024CA40(0, 0, player, 3, 0x26D, 14);
+                distance = 7;
+                nearest = -1;
+                if (nearest_mask != 0) {
+                    nearest_i = 0;
+                    if (0 < func_0024E910(nearest_mask)) {
+                        nearest_y = position >> 8;
+                        nearest_x = position & 0xFF;
+                        do {
+                            nearest_card = func_0024EC50(nearest_mask, nearest_i);
+                            nearest_position = func_001E1090(nearest_card >> 8, nearest_card & 0xFF);
+                            miny = nearest_y < (nearest_position >> 8) ? nearest_y : (nearest_position >> 8);
+                            maxy = max_0016E510(nearest_position >> 8, nearest_y);
+                            minx = nearest_x < (nearest_position & 0xFF) ? nearest_x : (nearest_position & 0xFF);
+                            maxx = max_0016E510(nearest_position & 0xFF, nearest_x);
+                            nearest_delta = (maxx - minx) + (maxy - miny);
+                            if (nearest_delta < distance) {
+                                distance = nearest_delta;
+                                nearest = nearest_card;
+                            }
+                            nearest_i++;
+                        } while (nearest_i < func_0024E910(nearest_mask));
+                    }
+                    if (nearest >= 0) {
+                        arg0[2] = 0xBFF;
+                        *(u32 *)&arg0[4] = (nearest << 16) | arg0[4];
+                        return;
+                    }
+                }
+                break;
+            case 0xC:
+                arg0[2] = 0x3FF;
+                *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                return;
+            case 0x46:
+                if (func_0027D720(arg0, 0) == 1) {
+                    arg0[2] = 0xBFF;
+                }
+                return;
+            case 0x51:
+                if (func_0027D720(arg0, 0) == 1) {
+                    return;
+                }
+                break;
+            }
+        }
+        action = func_00250740(arg0[0] >> 8, arg0[0] & 0xFF, 1);
+        if (action != NULL) {
+            switch (action[0] >> 8) {
+            case 0x42:
+                if (((action[0] >> 6) & 3) == 1) {
+                    arg0[2] = 0x6FF;
+                    *(u32 *)&arg0[4] = (position << 16) | arg0[4];
+                }
+                break;
+            }
+        }
+        if (func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF) != 0) {
+            other = (func_0024DE70(arg0[0] >> 8, arg0[0] & 0xFF) == 0 ? 1 : 0) << 8;
+            func_001E1090(arg0[0] >> 8, arg0[0] & 0xFF);
+            func_001E1090(other >> 8, other & 0xFF);
+            func_001DF540(arg0[0] >> 8, arg0[0] & 0xFF);
+            if (func_001E0290(arg0[0] >> 8, arg0[0] & 0xFF, 0) >= 2500) {
+                func_0016DDA0(arg0);
+            } else if (func_0016E000(arg0[0] >> 8, arg0[0] & 0xFF, 1) == 1) {
+                func_0016E0E0(arg0, 1);
+            } else {
+                func_0016DDA0(arg0);
+            }
+        }
+    }
+}
 
 void func_0016F240(u16 *arg0) {
     extern s32 func_001E1030();
