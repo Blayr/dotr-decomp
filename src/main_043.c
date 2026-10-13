@@ -1497,7 +1497,6 @@ typedef struct Prim_001DBD50 {
     u64 clamp;
 } Prim_001DBD50;
 
-s32 func_002070F0(s32, s32, void *, s32, void *, s32, s32);
 s32 func_00207AA0(s32, void *, s32, s32, s32, s32);
 
 static inline void initPrim_001DBD50(s32 kind, void *prim) {
@@ -1581,7 +1580,6 @@ static inline void init_001DBFE0(void *prim, s32 flags) {
     ((s32 *)prim)[1] = 0;
 }
 
-s32 func_002070F0(s32, s32, void *, s32, void *, s32, s32);
 s32 func_00207AA0(s32, void *, s32, s32, s32, s32);
 
 void func_001DBFE0(s32 arg0, f32 *arg1, u8 *arg2, s32 arg3) {

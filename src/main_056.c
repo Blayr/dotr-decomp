@@ -163,7 +163,39 @@ s32 func_00206D30(s32 planeCount, void *planeArg, s32 count, s32 verticesArg,
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_002070F0);
+typedef struct Vertex_002070F0 {
+    f32 position[4];
+    u8 padding[0x20];
+} Vertex_002070F0;
+
+s32 func_002070F0(void *matrix, s32 count, void *vertices, s32 arg3, void *arg4, s32 flags, f32 *depth) {
+    f32 identity[16];
+    s32 result;
+    s32 i;
+    Vertex_002070F0 *vertex;
+    f32 sum;
+
+    sum = 0.0f;
+    if (matrix == NULL) {
+        func_0020EBA0(identity);
+        matrix = identity;
+    }
+    func_0020BAF0((s32)matrix);
+    vertex = vertices;
+    for (i = 0; i < count; i++) {
+        vertex[i].position[3] = 1.0f;
+        func_0020CDD0(&vertex[i], NULL, &vertex[i]);
+        sum += vertex[i].position[2];
+    }
+    func_0020BB50();
+    if (flags >= 0) {
+        result = func_00206D30(6, D_00325CC0, count, (s32)vertices, arg3, (s32)arg4, flags);
+    }
+    if (depth != NULL) {
+        *depth = sum / (f32)result;
+    }
+    return result;
+}
 
 typedef union PackedXYZ_00207230 {
     struct {
