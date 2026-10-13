@@ -71,7 +71,60 @@ s64 func_0020D1D0(s32 arg0, s32 arg1, f32 weight0, f32 weight1) {
     return func_001A22C0(arg0, arg1, (f32)start * weight0 + (f32)end * weight1 + 0.5f);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D240);
+void func_0020D240(s32 *out, s32 *from, s32 *to, f32 weight0, f32 weight1) {
+    s32 end[2][3];
+    s32 diff[2][3];
+    s32 start[3];
+    f32 sinX;
+    f32 cosX;
+    f32 sinZ;
+    f32 cosZ;
+    f32 cosY;
+    f32 cosY2;
+    s32 d;
+    s32 pick;
+
+    start[0] = (from[0] & 0xFFFF) << 4;
+    start[1] = (from[1] & 0xFFFF) << 4;
+    start[2] = (from[2] & 0xFFFF) << 4;
+    end[0][0] = (to[0] & 0xFFFF) << 4;
+    end[0][1] = (to[1] & 0xFFFF) << 4;
+    end[0][2] = (to[2] & 0xFFFF) << 4;
+    sinX = func_0020B550(to[0]);
+    cosX = func_0020B480(to[0]);
+    sinZ = func_0020B550(to[2]);
+    cosZ = func_0020B480(to[2]);
+    cosY = func_0020B480(to[1]);
+    end[1][1] = (0x80000 - end[0][1]) & 0xFFFFF;
+    cosY2 = func_0020B480(end[1][1] >> 4);
+    end[1][0] = ((s32)(65536.0f * (func_001A6C18(sinX * cosY / cosY2, cosX * cosY / cosY2) / 6.2831855f)) & 0xFFFF) << 4;
+    end[1][2] = ((s32)(65536.0f * (func_001A6C18(cosY * sinZ / cosY2, cosY * cosZ / cosY2) / 6.2831855f)) & 0xFFFF) << 4;
+    {
+        s32 i;
+        s32 j;
+
+        for (i = 0; i < 2; i++) {
+            for (j = 0; j < 3; j++) {
+                d = end[i][j] - start[j];
+                if (d > 0x80000) {
+                    end[i][j] -= 0x100000;
+                    diff[i][j] = 0x100000 - d;
+                } else if (d < -0x80000) {
+                    end[i][j] += 0x100000;
+                    diff[i][j] = d + 0x100000;
+                } else if (d < 0) {
+                    diff[i][j] = -d;
+                } else {
+                    diff[i][j] = d;
+                }
+            }
+        }
+    }
+    pick = (diff[0][0] + diff[0][1] + diff[0][2] > diff[1][0] + diff[1][1] + diff[1][2]) ? 1 : 0;
+    out[0] = (((s32)(start[0] * weight0 + end[pick][0] * weight1) & 0xFFFFF) + 8) >> 4;
+    out[1] = (((s32)(start[1] * weight0 + end[pick][1] * weight1) & 0xFFFFF) + 8) >> 4;
+    out[2] = (((s32)(start[2] * weight0 + end[pick][2] * weight1) & 0xFFFFF) + 8) >> 4;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D5E0);
 

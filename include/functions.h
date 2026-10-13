@@ -1564,6 +1564,7 @@ f32 func_0020D100(f32 *arg0, f32 *arg1);
 void func_0020D140(f32 *arg0, f32 *arg1, f32 *arg2);
 f32 func_0020D1A0(f32 *arg0, f32 *arg1);
 s64 func_0020D1D0(s32 arg0, s32 arg1, f32 weight0, f32 weight1);
+void func_0020D240(s32 *out, s32 *from, s32 *to, f32 weight0, f32 weight1);
 void func_0020D8E0(f32 *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4, f32 fparg5, f32 fparg6, f32 fparg7, f32 arg_sp0);
 s32 func_0020DDB0(void);
 s32 func_0020DEE0(void);
