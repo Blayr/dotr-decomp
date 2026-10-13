@@ -292,7 +292,6 @@ void func_001038D0(void *arg0) {
     func_0020BC00((s32)&camera->matrix, &matrix);
 }
 
-void func_001039A0(void *);
 void func_0020C940(void *, void *, void *, void *);
 void func_0020EB40(s32);
 
@@ -319,7 +318,38 @@ s32 func_00103920(void *arg0, f32 fparg0, f32 fparg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_001039A0);
+typedef struct Vec3_001039A0 {
+    s32 x;
+    s32 y;
+    s32 z;
+} Vec3_001039A0;
+
+typedef struct Object_001039A0 {
+    s32 leading[4];
+    Vec3_001039A0 values10;
+    s32 padding1C;
+    Vec3_001039A0 values20;
+    s32 padding2C;
+    f32 matrix[4][4];
+} Object_001039A0;
+
+void func_0020C940(void *, void *, void *, void *);
+void func_0020EB40(s32);
+
+s32 func_001039A0(void *arg0) {
+    s32 vector[4];
+    f32 matrix[4][4];
+    Object_001039A0 *object = arg0;
+
+    func_00205C40((s32) &vector);
+    object->values10.y = vector[1] % 0x10000;
+    object->values10.x = vector[0];
+    object->values10.z = vector[2];
+    func_0020EB40((s32)object->matrix);
+    func_0020C940(matrix, object, &object->values10, &object->values20);
+    func_0020BC00((s32)object->matrix, matrix);
+    return vector[1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103A30);
 
