@@ -473,7 +473,170 @@ s32 func_002817C0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_002818A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_002825F0);
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 reserved;
+    s64 registers;
+} Tag_002825F0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_002825F0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Position_002825F0;
+
+typedef struct {
+    u16 u : 14;
+    u16 : 2;
+    u16 v : 14;
+    u16 : 2;
+    u32 padding;
+} UV_002825F0;
+
+typedef struct {
+    u64 texture;
+    Position_002825F0 xyz;
+} Vertex_002825F0;
+
+typedef struct {
+    u64 header[2];
+    Color_002825F0 color;
+    Vertex_002825F0 v0, v1, v2, v3;
+    u64 texture[4];
+} Packet_002825F0;
+
+typedef struct {
+    s32 values[17];
+} Pulse_002825F0;
+
+#pragma optimization_level 0
+
+void func_002825F0(void) {
+    extern s32 func_00202BF0();
+    extern s32 func_00202E00();
+    extern s32 func_00207650();
+    extern Pulse_002825F0 D_002B8E40;
+    Pulse_002825F0 pulse;
+    Packet_002825F0 packet __attribute__((aligned(8)));
+    s32 i;
+    s32 handle;
+    s32 x;
+    s32 y;
+    s32 width;
+    s32 size;
+
+    pulse = D_002B8E40;
+    handle = func_00202BF0(3, 7);
+    size = func_00209E50();
+    size += func_00202E00(size, 1);
+    D_00351228 = func_00202B00(D_00351228, 3, size, NULL);
+    D_00351228 = func_0020F290(D_00351228);
+    func_00202D60(3, -1);
+    ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
+    ((Tag_002825F0 *)&packet.header[0])->count = 9;
+    ((Tag_002825F0 *)&packet.header[0])->registers = 0x424242421LL;
+    ((Tag_002825F0 *)&packet.header[0])->reserved = 0;
+    packet.color.r = packet.color.g = packet.color.b = 0x80;
+    packet.color.a = 0x80;
+    packet.color.q = 1.0f;
+    packet.v0.xyz.z = packet.v1.xyz.z = packet.v2.xyz.z = packet.v3.xyz.z = 0xFFFFF8;
+    packet.v0.xyz.f = packet.v1.xyz.f = packet.v2.xyz.f = packet.v3.xyz.f = 0;
+    y = (pulse.values[D_00351246 & 0xF] >> 2) + 0x8B8;
+    x = (pulse.values[D_00351246 & 0xF] >> 2) + 0x77E;
+    width = 0x20 - (pulse.values[D_00351246 & 0xF] >> 1);
+    for (i = 0; i < 3; i++) {
+        if (D_00351240[i].enabled != 4) {
+            packet.v2.xyz.x = packet.v0.xyz.x = (x + i * 0x70) << 4;
+            packet.v1.xyz.y = packet.v0.xyz.y = y << 4;
+            packet.v3.xyz.x = packet.v1.xyz.x = packet.v0.xyz.x + (width << 4);
+            packet.v3.xyz.y = packet.v2.xyz.y = packet.v0.xyz.y + (width << 4);
+            ((Tag_002825F0 *)&packet.header[0])->flags |= 0x800;
+            switch (i) {
+            case 0:
+                ((UV_002825F0 *)&packet.v0.texture)->u = 0x160;
+                ((UV_002825F0 *)&packet.v0.texture)->v = 0xB00;
+                ((UV_002825F0 *)&packet.v1.texture)->u = 0x2C0;
+                ((UV_002825F0 *)&packet.v1.texture)->v = 0xB00;
+                ((UV_002825F0 *)&packet.v2.texture)->u = 0x160;
+                ((UV_002825F0 *)&packet.v2.texture)->v = 0xC60;
+                ((UV_002825F0 *)&packet.v3.texture)->u = 0x2B0;
+                ((UV_002825F0 *)&packet.v3.texture)->v = 0xC60;
+                break;
+            case 1:
+                ((UV_002825F0 *)&packet.v0.texture)->u = 0;
+                ((UV_002825F0 *)&packet.v0.texture)->v = 0xB00;
+                ((UV_002825F0 *)&packet.v1.texture)->u = 0x160;
+                ((UV_002825F0 *)&packet.v1.texture)->v = 0xB00;
+                ((UV_002825F0 *)&packet.v2.texture)->u = 0;
+                ((UV_002825F0 *)&packet.v2.texture)->v = 0xC60;
+                ((UV_002825F0 *)&packet.v3.texture)->u = 0x160;
+                ((UV_002825F0 *)&packet.v3.texture)->v = 0xC60;
+                break;
+            case 2:
+                ((UV_002825F0 *)&packet.v0.texture)->u = 0x420;
+                ((UV_002825F0 *)&packet.v0.texture)->v = 0xB00;
+                ((UV_002825F0 *)&packet.v1.texture)->u = 0x580;
+                ((UV_002825F0 *)&packet.v1.texture)->v = 0xB00;
+                ((UV_002825F0 *)&packet.v2.texture)->u = 0x420;
+                ((UV_002825F0 *)&packet.v2.texture)->v = 0xC60;
+                ((UV_002825F0 *)&packet.v3.texture)->u = 0x580;
+                ((UV_002825F0 *)&packet.v3.texture)->v = 0xC60;
+                break;
+            }
+            func_00208700(&packet.header[0], (void *)handle, 0);
+            func_002086D0(&packet.header[0], 0x44);
+            D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+        }
+    }
+
+    handle = func_00202BF0(9, 0);
+    size = func_00209E50();
+    size += func_00202E00(size, 1);
+    D_00351228 = func_00202B00(D_00351228, 9, size, NULL);
+    D_00351228 = func_0020F290(D_00351228);
+    func_00202D60(9, -1);
+    ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
+    ((Tag_002825F0 *)&packet.header[0])->count = 9;
+    ((Tag_002825F0 *)&packet.header[0])->registers = 0x424242421LL;
+    ((Tag_002825F0 *)&packet.header[0])->reserved = 0;
+    packet.color.r = 0x60;
+    packet.color.g = packet.color.b = 0x80;
+    packet.color.a = pulse.values[D_00351246 & 0xF] * 3;
+    packet.color.q = 1.0f;
+    packet.v0.xyz.z = packet.v1.xyz.z = packet.v2.xyz.z = packet.v3.xyz.z = 0xFFFFF8;
+    packet.v0.xyz.f = packet.v1.xyz.f = packet.v2.xyz.f = packet.v3.xyz.f = 0;
+    y = 0x8B7;
+    x = 0x77D;
+    for (i = 0; i < 3; i++) {
+        if (D_00351240[i].enabled != 4) {
+            packet.v2.xyz.x = packet.v0.xyz.x = (x + i * 0x70) << 4;
+            packet.v1.xyz.y = packet.v0.xyz.y = y << 4;
+            packet.v3.xyz.x = packet.v1.xyz.x = packet.v0.xyz.x + 0x220;
+            packet.v3.xyz.y = packet.v2.xyz.y = packet.v0.xyz.y + 0x220;
+            ((Tag_002825F0 *)&packet.header[0])->flags |= 0x800;
+            ((UV_002825F0 *)&packet.v0.texture)->u = 0x160;
+            ((UV_002825F0 *)&packet.v0.texture)->v = 0x600;
+            ((UV_002825F0 *)&packet.v1.texture)->u = 0x2E0;
+            ((UV_002825F0 *)&packet.v1.texture)->v = 0x600;
+            ((UV_002825F0 *)&packet.v2.texture)->u = 0x160;
+            ((UV_002825F0 *)&packet.v2.texture)->v = 0x780;
+            ((UV_002825F0 *)&packet.v3.texture)->u = 0x2E0;
+            ((UV_002825F0 *)&packet.v3.texture)->v = 0x780;
+            func_00208700(&packet.header[0], (void *)handle, 0);
+            func_002086D0(&packet.header[0], 0x48);
+            D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+        }
+    }
+}
+
+#pragma optimization_level reset
 
 typedef struct {
     u16 u : 14;
@@ -906,7 +1069,6 @@ typedef struct Timers_00284D30 {
 
 void func_00280920(void);
 void func_002818A0(s32);
-void func_002825F0(void);
 extern u8 D_00351178;
 extern u8 D_00351179;
 extern u8 D_0035117A;
