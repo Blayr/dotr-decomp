@@ -1224,7 +1224,6 @@ typedef struct {
     u8 result;
 } Out_00138780;
 
-s32 func_00138EA0(s32 arg0);
 s32 func_0027DBC0(s32 arg0, s32 arg1, s32 arg2);
 void func_001E1E70(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
@@ -1352,7 +1351,24 @@ s32 func_00138DB0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00138EA0);
+s32 func_00138EA0(s32 arg0) {
+    extern s32 func_001DEE50(s32);
+    s32 i;
+
+    if (func_001E01F0(arg0) < 5) {
+        for (i = 0; i < func_001DEE50(arg0); i++) {
+            if (func_001DEE00(arg0, i) == 0x2C9) {
+                return (arg0 << 16) | i;
+            }
+        }
+        for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
+            if (func_001DEE00(arg0 == 0 ? 1 : 0, i) == 0x2C9) {
+                return i | ((arg0 == 0 ? 1 : 0) << 16);
+            }
+        }
+    }
+    return -1;
+}
 
 s32 func_00138F90(s32 arg0, s32 arg1) {
     s32 index;
