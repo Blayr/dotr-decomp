@@ -545,7 +545,99 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C8590);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C8690);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C8DC0);
+static inline u8 *save_001C8DC0(u8 *save) {
+    return save + 0xA9C000;
+}
+
+s32 func_001C8DC0(s32 arg0, u8 *arg1, s32 x, s32 y) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern u8 D_00290080[];
+    extern char D_002BF05B[];
+    extern char D_002BEF93[];
+    extern s32 D_00290A58;
+    extern s32 D_00290A62;
+    extern s32 D_00290A6C;
+    u8 *state = D_00317490;
+    s8 *text3 = D_002BF05B;
+    s8 *text4 = D_002BEF93;
+    s32 color = (arg1[0xA9C002] & 0xF) + 0x81;
+    s32 width = 0x244;
+    f32 scale;
+    s32 hint = 0;
+    s32 cx;
+    s32 w;
+    s32 id;
+    u8 *p;
+    s32 i;
+    s32 a;
+    s32 b;
+    s32 ok;
+    s32 sel;
+    s32 okColor;
+    s32 selColor;
+    s32 base;
+    s32 off;
+    s32 bx;
+    s32 px;
+    s32 py;
+    s32 by;
+
+    width = (*(u8 *)0xA9C088 != 0) ? width : 0x114;
+    scale = 1.0f;
+    id = func_0020F290(func_001FD680(arg0, 1, color, 0, 0x16));
+    cx = x + (width >> 1);
+    id = func_001B4780(id, 0xC, 3, 4, cx - 0x59, y, -0xB2, -0x20, 1);
+    w = func_001FEAB0(1)[3];
+    if (w > 0x9A) {
+        scale = 154.0f / (f32)w;
+    }
+    id = func_001FE660(id, 1, cx - (s32)((f32)(w >> 1) * scale), y + 5, scale, 1.0f, 0, func_001FDFE0);
+    func_001FEAF0(1);
+    id = func_001B4780(id, (s32)arg1, -1, 0xB, x, y + 0x20, -width, -0x96, 1);
+    i = 0;
+    p = save_001C8DC0(arg1);
+    do {
+        a = func_00215F90((s32)arg1, i);
+        b = func_002159D0((s32)arg1, i);
+        ok = (a >= 0x28 && b != 0x3E7) ? 1 : 0;
+        sel = (p[4] == i) ? 1 : 0;
+        selColor = sel ? 4 : 7;
+        okColor = ok ? -1 : 5;
+        base = arg1 ? 0x14 : 0xA;
+        off = (width * (i + 1)) >> 2;
+        px = x + 0x6B4 + off;
+        py = y + 0x74B;
+        id = func_001B3CC0(id, D_00290080 + (i + 0xE3) * 10, px, py, 0, 1, 0, 0, 0, 0, sel, 0, -1,
+                           hint != 0 ? 0x40 : 0x80);
+        bx = x + off - 0x18;
+        by = y + 0x46;
+        id = func_001B7F90(id, i + base, bx, by, 0x30, 0x30, *(s32 *)(state + 0xC58), sel);
+        id = func_001B4780(id, okColor, -1, selColor, bx, by, -0x30, -0x30, 1);
+        i++;
+    } while (i < 3);
+    id = func_001B65F0(id, (s32)arg1, x + 0x12, y + 0x7A, -(width - 0x24), -0x34, -1, 0);
+    px = x + 0x6C2 + ((width - 0x24) >> 2);
+    py = y + 0x7A1;
+    id = func_001B3CC0(id, &D_00290A58, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x6D2 + ((width - 0x24) >> 2);
+    py = y + 0x7A1;
+    id = func_001B3CC0(id, &D_00290A62, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x12 + ((width - 0x24) >> 2);
+    py = y + 0x9C;
+    id = func_001B6F70(id, px, py, 1, 2, func_0019BEF0((char *)text3), text3,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    px = x + 0x6CA + (((width - 0x24) * 2) >> 2);
+    py = y + 0x7A1;
+    id = func_001B3CC0(id, &D_00290A6C, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x12 + (((width - 0x24) * 2) >> 2);
+    py = y + 0x9C;
+    return func_001B6F70(id, px, py, 1, 2, func_0019BEF0((char *)text4), text4,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C92C0);
 
