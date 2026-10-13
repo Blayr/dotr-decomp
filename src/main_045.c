@@ -653,7 +653,6 @@ s32 func_001E0890(s32 arg0, s32 arg1, s8 arg2) {
 }
 
 void *func_001DD130();
-void func_001E0950(void *, s32);
 
 static inline void *check_001E08F0(void *var_v0) {
     if (var_v0 == NULL) {
@@ -669,7 +668,29 @@ void func_001E08F0(s32 arg0, s32 arg1, s32 arg2) {
     func_001E0950(check_001E08F0(func_001DD130()), arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001E0950);
+typedef struct Flags_001E0950 {
+    u8 padding[2];
+    u8 low : 4;
+    u8 high : 4;
+} Flags_001E0950;
+
+s32 func_001E0950(void *arg0, s32 arg1) {
+    s32 value;
+    void *temp_v0;
+
+    if (arg0 == NULL) {
+        return -1;
+    }
+    temp_v0 = *(void **)arg0;
+    if (temp_v0 == NULL) {
+        return -1;
+    }
+    value = ((Flags_001E0950 *)temp_v0)->high;
+    if (arg1 == 0) {
+        value -= *(u8 *)((u8 *)arg0 + 0x48);
+    }
+    return (value > 0 ? value : 0) < 12 ? (value > 0 ? value : 0) : 12;
+}
 
 typedef struct Sub_001E09E0 {
     u8 pad[4];
