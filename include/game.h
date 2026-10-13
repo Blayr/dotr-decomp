@@ -680,4 +680,7 @@ s32 func_0027B860(u16 *, s32);
 
 extern void func_0010A8B0(void);
 
+s32 func_00112850(s32, s32);
+s32 func_00112A40(s32);
+
 #endif

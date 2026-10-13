@@ -1322,7 +1322,455 @@ s32 func_001110D0(s32 arg0) {
     return ((u16)bestPos << 16) | (u16)found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_00111320);
+s32 func_00111320(s32 arg0, s32 arg1) {
+    s16 buffer[24];
+    s32 mask;
+    s32 count;
+    s32 owner;
+    u32 *effect;
+    s32 card;
+    s32 position;
+    s32 unit;
+    extern s32 func_001E1030();
+    extern s32 func_001E1580();
+    extern s32 func_001DEE50();
+    extern s32 func_00215D30();
+
+    mask = 0;
+    count = 0;
+    card = func_001E1030();
+    position = func_001E1090(arg0, arg1);
+    owner = func_00250360(arg0, arg1);
+    effect = func_001E0B70(arg0, arg1, 0);
+    func_0024C910(owner, 2, buffer);
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    if (func_00112960(card) == 1) {
+        if (func_00112980(owner) == 1 && func_00112A40(owner) == 4) {
+            return 1;
+        }
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_00112850(func_00250360(arg0, arg1), card) == 1 &&
+            func_001E22B0(position & 0xFF, position >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (effect == NULL) {
+            return 2;
+        }
+        switch (effect[0] >> 8) {
+        case 0x17:
+        case 0x49:
+            if (func_001123C0(owner, (effect[0] >> 6) & 3, effect[0] & 0x3F) == 1) {
+                return 1;
+            }
+            break;
+        case 0x18:
+        {
+            s32 index;
+            mask = func_0024CA40(0, 0, owner, 2, 0x34, 0xE);
+            for (index = 0; index < func_0024E910(mask); index++) {
+                unit = func_0024EC50(mask, index);
+                if (func_001E2100(unit >> 8, unit & 0xFF, 4) == 1) {
+                    count++;
+                }
+            }
+            if (count > 5) {
+                return 1;
+            }
+            break;
+        }
+        case 2:
+            unit = func_0027C770(func_001DF540(arg0, arg1), position & 0xFF,
+                                position >> 8, *((u8 *)effect + 4), 8, 2);
+            if (unit >= 0 && unit == position) {
+                return 1;
+            }
+            break;
+        case 4:
+            switch (effect[1] >> 16) {
+            case 0x12:
+                unit = func_00112600(arg0, (s32 *)effect);
+                if (unit >= 0 && ((position & 0xFF) == (unit & 0xFF) ||
+                                  (position >> 8) == (unit >> 8))) {
+                    return 1;
+                }
+                break;
+            case 0x13:
+            default:
+                if (func_001123C0(owner, (effect[0] >> 6) & 3, effect[0] & 0x3F) == 1) {
+                    return 1;
+                }
+                break;
+            }
+            break;
+        case 0xD:
+            if (((effect[0] >> 6) & 3) == 1) {
+                if ((effect[1] >> 16) == 4) {
+                    if (func_001DF470(owner) <= 1200) {
+                        return 1;
+                    }
+                    break;
+                }
+                return 1;
+            }
+            if ((effect[0] & 0x3F) == 0x32) {
+                if (func_0024E780(owner == 0 ? 1 : 0, 3) > 3) {
+                    return 1;
+                }
+                break;
+            }
+            return 1;
+        case 0x1F:
+            if (card == 0x2DD && func_001110D0(owner) >= 0) {
+                return 1;
+            }
+            break;
+        case 0x20:
+            mask = 0;
+            do {
+                if (func_001E1580(arg0, mask) == 0xFF) {
+                    return 1;
+                }
+                mask++;
+            } while (mask < 11);
+            break;
+        case 0x12:
+            if (func_0024E910(func_0024CA40(0, 0, owner, 1, effect[0] & 0x3F, 0xE)) > 2) {
+                return 1;
+            }
+            break;
+        case 0x21:
+            {
+                s32 targetPosition;
+                s32 sourcePosition;
+                s32 targetY;
+
+                func_0027C2C0(owner == 0 ? 1 : 0, (u16 *)buffer, 0x1D, 0, 0);
+                unit = func_0027B650((u16 *)buffer);
+                arg0 = unit >> 8;
+                arg1 = unit & 0xFF;
+                sourcePosition = func_001E1090(arg0, arg1);
+                func_0027C070(owner, (u16 *)buffer, 0x1D, 1);
+                unit = func_0027B650((u16 *)buffer);
+                card = unit >> 8;
+                targetY = unit & 0xFF;
+                targetPosition = func_001E1090(card, targetY);
+                func_0024C910(owner, 1, buffer);
+                owner = sourcePosition & 0xFF;
+                count = sourcePosition >> 8;
+                if (func_002509E0(arg0, arg1, owner, count) >= 3000) {
+                    count = func_002509E0(arg0, arg1, owner, count);
+                    if (func_002509E0(card, targetY, targetPosition & 0xFF, targetPosition >> 8) < count) {
+                        return 1;
+                    }
+                }
+            }
+            break;
+        case 0x36:
+            return 1;
+        case 0x25:
+            switch (effect[0] & 0x3F) {
+            case 0x21:
+                if (func_0027BBC0(arg0, arg1, 0) == 1) {
+                    return 1;
+                }
+                break;
+            case 0x22:
+                if (func_0027BBC0(owner, 0, 0) == 1) {
+                    return 1;
+                }
+                break;
+            case 0x34:
+            default:
+                if (func_0027BBC0(owner, 0, 0) == 1) {
+                    return 1;
+                }
+                break;
+            }
+            break;
+        case 0x26:
+            if (func_001DE6D0(owner) == 0) {
+                return 1;
+            }
+            break;
+        case 0x27:
+            if (func_001DE5C0(owner) < 4) {
+                return 1;
+            }
+            break;
+        case 0x28:
+            if (func_0027BBC0(owner, 0, 0) == 1) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    case 0:
+        if (func_002507D0(arg0, arg1) == 0) {
+            return 2;
+        }
+        effect = func_00250740(arg0, arg1, 2);
+        if (effect == NULL) {
+            return 2;
+        }
+        switch (effect[0] >> 8) {
+        case 0xC:
+        case 0x34:
+        case 0xD:
+        case 0xE:
+        case 0x22:
+        case 0x3B:
+        case 0x56:
+        case 0x43:
+        case 0xF:
+            return 1;
+        case 0xB:
+        case 0x4E:
+        case 0x12:
+        case 0x4D:
+        case 6:
+            mask = func_0024CA40(0, 0, arg0, 1, effect[0] & 0x3F, 0xE);
+            if ((u32)mask > 1) {
+                return 1;
+            }
+            break;
+        case 0x13:
+        case 0x17:
+            if (((effect[0] >> 6) & 1) && func_0024CA40(0, 0, arg0, 1, effect[0] & 0x3F, 0xE)) {
+                return 2;
+            }
+            mask = func_0027E150(func_0024CA40(0, 0, arg0, 2, effect[0] & 0x3F, 0xE));
+            if ((u32)mask > 2) {
+                return 1;
+            }
+            break;
+        case 0x47:
+        {
+            s32 y;
+            s32 x;
+            s32 index;
+            mask = func_0024CA40(0, 0, arg0, 2, 0x34, 0xE);
+            for (index = 0; index < func_0024E910(mask); index++) {
+                unit = func_0024EC50(mask, index);
+                x = unit >> 8;
+                y = unit & 0xFF;
+                if (func_001E1580(x, y) > 0 && func_001E1580(x, y) != 0xFF) {
+                    return 1;
+                }
+            }
+            break;
+        }
+        case 0x53:
+        {
+            s32 index;
+            for (index = 0; index < func_001DEE50(arg0); index++) {
+                if ((func_0026FCE0(func_001DEE00(arg0, index)) >> 5) == 0) {
+                    count++;
+                }
+            }
+            for (index = 0; index < func_001DEE50(arg0 == 0 ? 1 : 0); index++) {
+                if ((func_0026FCE0(func_001DEE00(arg0 == 0 ? 1 : 0, index)) >> 5) == 0) {
+                    count++;
+                }
+            }
+            if (count > 5) {
+                return 1;
+            }
+            break;
+        }
+        case 0x54:
+            mask = func_0024CA40(0, 0, arg0, 3, 0x21, 0xE);
+            unit = func_0024EC50(mask, 0);
+            if (arg0 == func_00250360(unit >> 8, unit & 0xFF) && unit != ((arg0 << 8) | arg1)) {
+                return 1;
+            }
+            break;
+        case 0x55:
+        {
+            s32 y;
+            s32 x;
+            s32 index;
+            mask = func_0024CA40(0, 0, arg0, 1, 0x34, 0xE);
+            for (index = 0; index < func_0024E910(mask); index++) {
+                unit = func_0024EC50(mask, index);
+                x = unit >> 8;
+                y = unit & 0xFF;
+                if (func_001E1580(x, y) > 0 && func_001E1580(x, y) != 0xFF) {
+                    return 1;
+                }
+            }
+            break;
+        }
+        case 0x58:
+            if (func_00215D30(arg0 == 0 ? 1 : 0, func_001E1030(arg0 == 0 ? 1 : 0, 0)) >= 6) {
+                return 1;
+            }
+            break;
+        }
+        effect = func_00250740(arg0, arg1, 3);
+        if (effect == NULL) {
+            return 2;
+        }
+        switch (effect[0] >> 8) {
+        case 0x12:
+            if ((effect[1] >> 16) == 0x16) {
+                unit = func_0024CA40(0, 0, owner, 1, effect[0] & 0x3F, 0x16);
+            } else {
+                unit = func_0024CA40(0, 0, owner, 1, ((effect[1] >> 16) << 16) | (effect[0] & 0x3F), 0xE);
+            }
+            if (func_0024E910(unit) > 2) {
+                return 1;
+            }
+            break;
+        case 0x33:
+            if (func_0024E910(func_0024CA40(0, 0, owner, 1, ((effect[1] >> 16) << 16) | (effect[0] & 0x3F), 0xE)) > 2) {
+                return 1;
+            }
+            break;
+        case 0x17:
+            if ((effect[0] & 0x3F) == 0x1A) {
+                return 2;
+            }
+            if (func_001123C0(owner, (effect[0] >> 6) & 3, effect[0] & 0x3F) == 1) {
+                return 1;
+            }
+            break;
+        case 0xD:
+            return 1;
+        case 0x23:
+            if (func_001123C0(owner, (effect[0] >> 6) & 3, effect[0] & 0x3F) == 1) {
+                return 1;
+            }
+            break;
+        case 0x18:
+        {
+            s32 targets;
+            s32 index;
+
+            targets = func_0024CA40(0, 0, owner, 1, effect[0] & 0x3F, 0xE);
+            for (index = 0; index < func_0024E910(targets); index++) {
+                unit = func_0024EC50(targets, index);
+                if (func_001E2100(unit >> 8, unit & 0xFF, 4) == 1) {
+                    count++;
+                }
+            }
+            if (count > 2) {
+                return 2;
+            }
+            {
+                s32 unavailable;
+                s32 others;
+                s32 otherIndex;
+
+                unavailable = 0;
+                others = func_0024CA40(0, 0, owner, 2, effect[0] & 0x3F, 0xE);
+                for (otherIndex = 0; otherIndex < func_0024E910(others); otherIndex++) {
+                    unit = func_0024EC50(others, otherIndex);
+                    if (func_001E2100(unit >> 8, unit & 0xFF, 4) == 1) {
+                        unavailable++;
+                    }
+                }
+                if (unavailable > 5) {
+                    return 1;
+                }
+            }
+            break;
+        }
+        case 4:
+        {
+            s32 y;
+            s32 x;
+            s32 index;
+            if ((effect[0] & 0x3F) == 0x1A) {
+                return 2;
+            }
+            if ((effect[0] & 0x3F) == 0x30) {
+                if (func_001123C0(owner, (effect[0] >> 6) & 3, effect[0] & 0x3F) == 1) {
+                    return 1;
+                }
+            } else {
+                if ((effect[1] >> 16) != 0) {
+                    unit = func_001E1090(arg0, arg1);
+                    mask = func_0024CA40(unit & 0xFF, unit >> 8, owner, (effect[0] >> 6) & 3,
+                                        effect[0] & 0x3F, effect[1] >> 16);
+                } else {
+                    mask = func_0024CA40(0, 0, owner, (effect[0] >> 6) & 3, effect[0] & 0x3F, 0xE);
+                }
+            }
+            for (index = 0; index < func_0024E910(mask); index++) {
+                unit = func_0024EC50(mask, index);
+                x = unit >> 8;
+                y = unit & 0xFF;
+                if (owner == func_00250360(x, y)) {
+                    return 2;
+                }
+                if (func_001E2100(x, y, 4) != 0) {
+                    count++;
+                }
+            }
+            if (count > 1) {
+                return 1;
+            }
+            break;
+        }
+        case 0x1A:
+            if (func_001DE5C0(arg0) < 4) {
+                return 1;
+            }
+            break;
+        case 0x26:
+            if (func_001DE6D0(owner) == 0) {
+                return 1;
+            }
+            break;
+        case 0x1F:
+            if (func_00266DF0(0x39) > 0) {
+                return 2;
+            }
+            if ((effect[0] & 0x3F) == 0x1A) {
+                return 2;
+            }
+            if (func_0024E910(func_0024CA40(0, 0, owner, (effect[0] >> 6) & 3, effect[0] & 0x3F, 0xE)) > 2) {
+                return 1;
+            }
+            break;
+        case 0x3C:
+            if (func_0024CA40(position & 0xFF, position >> 8, owner, 1,
+                             ((u32)*((u16 *)effect + 2) << 16) | (effect[0] & 0x3F), 1) &&
+                func_0024E220(owner == 0 ? 1 : 0, 1) >= 0) {
+                return 1;
+            }
+            break;
+        case 0x46:
+            if (func_0027BBC0(owner, 0, 0) == 1) {
+                return 1;
+            }
+            break;
+        case 0xC:
+            return 1;
+        case 0x57:
+            if (func_001DF110(owner) == 0) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+    return 2;
+}
 
 s32 func_001123C0(s32 arg0, s32 arg1, s32 arg2) {
     s32 best_other;
