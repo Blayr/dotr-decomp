@@ -234,7 +234,7 @@ s32 func_0027B740(void *arg0, s32 arg1) {
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B860);
 
 s32 func_002464F0(s32, s32, s32);
-s32 func_0024FE40(s32, s32, s32);
+s32 func_0024FE40(void *, s32, s32);
 
 static inline s32 min_0027B9B0(s32 a, s32 b) {
     return (a >= b + 1) ? b : a;
@@ -269,7 +269,7 @@ s32 func_0027B9B0(s32 arg0) {
             if ((((pos & 0xFF) > i ? (pos & 0xFF) : i) - ((pos & 0xFF) < i ? (pos & 0xFF) : i)) + (((pos >> 8) > j ? (pos >> 8) : j) - ((pos >> 8) < j ? (pos >> 8) : j)) == 1 &&
                 func_001E36E0(i, j) == 0) {
                 if (func_001E22B0(i, j) != 8 || (flags & 0x10)) {
-                    if (func_001E22B0(i, j) != 9 || func_0024FE40(func_001DF540(y, x), i, j) != 1) {
+                    if (func_001E22B0(i, j) != 9 || func_0024FE40((void *)func_001DF540(y, x), i, j) != 1) {
                         return 1;
                     }
                 }
