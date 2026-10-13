@@ -895,7 +895,66 @@ void func_001AA260(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAAF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAD50);
+void func_001AAD50(s32 arg0) {
+    extern void func_001C5D70(s32);
+    s8 *data = (s8 *)&D_00317250;
+
+    switch (arg0) {
+    case 1:
+        func_001AE520();
+        if (data[0x21F] == 9) {
+            func_001C5D70(-1);
+        }
+        break;
+    case 5:
+        func_001E77A0();
+        break;
+    case 6:
+        func_001B8830();
+        if (data[0x21F] == 9) {
+            func_001C5D70(-1);
+        }
+        break;
+    case 7:
+        func_001C1270();
+        break;
+    case 8:
+        func_001C2530();
+        break;
+    case 9:
+        func_001C6120();
+        break;
+    case 0x24:
+        func_001AC600();
+        break;
+    case 0xA:
+        func_001AC6F0();
+        break;
+    case 0xB:
+        func_0023B920();
+        func_002464E0();
+        break;
+    case 0xC:
+        func_001E7A50();
+        break;
+    case 0xD:
+        func_001CC610();
+        break;
+    case 0xE:
+        func_002464E0();
+        break;
+    case 0xF:
+        func_00286900();
+        if (data[0x21F] == 9) {
+            func_001C5D70(-1);
+        }
+        break;
+    case 0x13:
+        func_001E77A0();
+        func_001FCA70();
+        break;
+    }
+}
 
 typedef struct {
     u8 pad[0x1F1];
