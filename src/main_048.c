@@ -461,6 +461,7 @@ typedef struct Info_001EFDC0 {
 
 s32 func_001EFDC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     extern s32 func_001EE6C0();
+    extern s32 func_002084D0();
     Info_001EFDC0 info;
     s32 saved;
     s32 ret;
