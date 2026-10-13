@@ -350,7 +350,6 @@ typedef struct Event_00270260 {
     s32 mode;
 } Event_00270260;
 
-void func_001E1E70(u32, s32, s32, s32);
 void func_00248460(u32, s32, s32, s32);
 void func_0024F430(u32, s32);
 s32 func_00270C30(void *, void *, s32);
@@ -1229,7 +1228,6 @@ typedef struct Command_002738B0 {
     s32 argument;
 } Command_002738B0;
 
-void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
 s32 func_002738B0(void *arg0, void *arg1, s32 arg2) {
@@ -1479,7 +1477,6 @@ typedef struct Request_00275740 {
     s32 flag;
 } Request_00275740;
 
-void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
 s32 func_00275740(u32 *arg0, void *arg1, s32 arg2) {
@@ -1580,7 +1577,6 @@ typedef struct {
     s32 flags;
 } Command_002759D0;
 
-void func_001E1E70(u32, s32, s32, s32);
 
 s32 func_002759D0(void *arg0, void *arg1, s32 arg2) {
     Command_002759D0 storage;

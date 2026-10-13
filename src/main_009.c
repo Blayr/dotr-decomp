@@ -1262,7 +1262,6 @@ typedef struct {
     u8 result;
 } Out_00138780;
 
-void func_001E1E70(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 s32 func_00138780(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     s32 card;
@@ -2754,7 +2753,6 @@ typedef struct Output_0013BE60 {
     u8 result;
 } Output_0013BE60;
 
-void func_001E1E70(s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -3091,7 +3089,6 @@ typedef struct Output_0013CA10 {
     u8 flag;
 } Output_0013CA10;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 static inline u32 target_0013CA10(void *unit, s32 side) {
     return side == 1 ? (u32)(u16)(((Unit_0013CA10 *)unit)->target.packed >> 16) : (u32)((Unit_0013CA10 *)unit)->target.low;

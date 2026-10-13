@@ -252,7 +252,68 @@ s32 func_001E1E10(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E1E70);
+typedef struct Flags_001E1E70 {
+    u8 pad0[0x56];
+    s8 unused0 : 4;
+    s8 sideA : 2;
+    s8 sideB : 2;
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 unused57 : 2;
+} Flags_001E1E70;
+
+static inline void *get_001E1E70(s32 arg0, s32 arg1) {
+    u8 *card = func_001DD130(arg0, arg1);
+
+    if (card == NULL) {
+        return NULL;
+    }
+    if (card[0x45] >= 0xB) {
+        return NULL;
+    }
+    return card;
+}
+
+s32 func_001E1E70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Flags_001E1E70 *card = get_001E1E70(arg0, arg1);
+
+    if (card == NULL) {
+        return 0;
+    }
+    switch (arg2) {
+    case 0:
+        card->bit0 = arg3;
+        break;
+    case 1:
+        card->bit1 = arg3;
+        break;
+    case 2:
+        card->bit2 = arg3;
+        card->sideA = (arg3 ? 1 : -1) & 3;
+        break;
+    case 3:
+        card->bit3 = arg3;
+        card->sideB = (arg3 ? 1 : -1) & 3;
+        break;
+    case 4:
+        card->bit4 = arg3;
+        card->bit2 = arg3;
+        card->sideA = (arg3 ? 1 : -1) & 3;
+        break;
+    case 5:
+        card->bit5 = arg3;
+        card->bit3 = arg3;
+        card->sideB = (arg3 ? 1 : -1) & 3;
+        break;
+    default:
+        return 0;
+    }
+    return 1;
+}
 
 typedef struct Flags_001E2100 {
     u8 pad0[0x57];

@@ -847,7 +847,6 @@ s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
     return var_v0;
 }
 
-s32 func_001E1E70(s32, s32, s32, s32);
 
 typedef struct Flags_00246810 {
     u8 bit0 : 1;

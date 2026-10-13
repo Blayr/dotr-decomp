@@ -353,7 +353,6 @@ typedef struct Output_00115850 {
     u8 result;
 } Output_00115850;
 
-void func_001E1E70(s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -652,7 +651,6 @@ typedef struct Output_001162F0 {
     u8 flag;
 } Output_001162F0;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 static inline u32 target_001162F0(void *unit, s32 side) {
     return side == 1 ? (u32)(u16)(((Unit_001162F0 *)unit)->target.packed >> 16) : (u32)((Unit_001162F0 *)unit)->target.low;
@@ -967,7 +965,6 @@ typedef struct Output_001170A0 {
     s8 result;
 } Output_001170A0;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 s32 func_001170A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Nibbles_001170A0 flags[12];

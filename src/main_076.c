@@ -1449,7 +1449,6 @@ typedef struct State_002695D0 {
     u8 cursor;
 } State_002695D0;
 
-void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
@@ -1776,7 +1775,6 @@ typedef struct State_0026A0A0 {
     u16 ticks;
 } State_0026A0A0;
 
-void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
@@ -2255,7 +2253,6 @@ typedef struct State_0026B480 {
     u16 timer;
 } State_0026B480;
 
-void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
 s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
@@ -2642,7 +2639,6 @@ typedef struct {
     s32 field_C;
 } Temp_0026BF50;
 
-void func_001E1E70();
 void func_0024F370();
 
 s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
@@ -3168,7 +3164,6 @@ s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(u32, s32);
 
 typedef struct Context_0026E1F0 {

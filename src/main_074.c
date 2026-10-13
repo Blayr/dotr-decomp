@@ -781,7 +781,6 @@ typedef struct State_002560C0 {
     u16 timer;
 } State_002560C0;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 s32 func_002560C0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_0024EA60();
@@ -1272,7 +1271,6 @@ typedef struct State_00257340 {
     u16 frames;
 } State_00257340;
 
-void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
 static inline u8 valid_00257340(u16 value) {
@@ -1528,7 +1526,6 @@ typedef struct State_00257AA0 {
     u16 phaseTimer;
 } State_00257AA0;
 
-void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
 s32 func_00257AA0(void *arg0, void *arg1, s32 arg2) {
@@ -1920,7 +1917,6 @@ s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 
 typedef struct Request_00258760 {
@@ -2120,7 +2116,6 @@ s32 func_00258760(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_001E1E70(s32, s32, s32, s32);
 
 typedef struct Input_00258E20 {
     s32 unused[2];
@@ -2335,7 +2330,6 @@ s32 func_00258E20(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_002594D0);
 
-void func_001E1E70(s32, s32, s32, s32);
 
 typedef struct Task_00259D90 {
     u8 pad0[4];
@@ -2453,7 +2447,6 @@ typedef struct State_0025A060 {
     u16 timer;
 } State_0025A060;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 s32 func_0025A060(void *arg0, void *arg1, s32 arg2) {
     State_0025A060 *state = arg1;
@@ -3879,7 +3872,6 @@ typedef struct Command_0025C9E0 {
     s32 unused;
 } Command_0025C9E0;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 s32 func_0025C9E0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1580();

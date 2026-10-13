@@ -1826,7 +1826,6 @@ typedef struct Output_00149690 {
     u8 result;
 } Output_00149690;
 
-void func_001E1E70(s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, u16, s32, u16, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -2143,7 +2142,6 @@ typedef struct Output_0014A240 {
     u8 flag;
 } Output_0014A240;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 static inline u32 target_0014A240(void *unit, s32 side) {
     return side == 1 ? (u32)(u16)(((Unit_0014A240 *)unit)->target.packed >> 16) : (u32)((Unit_0014A240 *)unit)->target.low;
@@ -2318,7 +2316,6 @@ typedef struct {
     u8 result;
 } Out_0014AAB0;
 
-void func_001E1E70(s32, s32, s32, s32);
 
 s32 func_0014AAB0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     Unit_0014AAB0 *unit = arg0;

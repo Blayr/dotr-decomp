@@ -1839,7 +1839,6 @@ typedef struct Result_00129700 {
 } Result_00129700;
 
 s32 func_0012B210(s32, s32, void *);
-void func_001E1E70(s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
