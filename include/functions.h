@@ -1794,6 +1794,7 @@ s32 func_0023C3F0(s32 arg0);
 s16 func_0023C560(s32 arg0);
 s32 func_0023C770(s32 arg0);
 s32 func_0023C8B0(s32 arg0);
+s16 func_0023CA10(s32 arg0);
 s16 func_0023CC50(s32 arg0);
 s32 func_0023CE40(s32 arg0);
 s32 func_0023D170(s32 arg0);

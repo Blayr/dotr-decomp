@@ -555,7 +555,108 @@ s32 func_0023C8B0(s32 arg0) {
     return state->field2BE;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023CA10);
+typedef struct State_0023CA10 {
+    u8 pad0[8];
+    s32 field8;
+    u8 padC[0x24];
+    s16 field30;
+    u8 pad32[2];
+    s16 field34;
+    u8 pad36[0xA];
+    s16 field40;
+    u8 pad42[0x16];
+    s16 field58;
+    u8 pad5A[0x264];
+    s16 field2BE;
+} State_0023CA10;
+
+s16 func_0023CA10(s32 arg0) {
+    State_0023CA10 *state = (State_0023CA10 *)&D_0034FB00;
+    s32 result;
+
+    result = 0;
+    if (arg0 == 1) {
+        if (func_0023C170(1) != 0) {
+            state->field58 = 1;
+            return 0x600;
+        }
+        state->field2BE = 0;
+    }
+    if (state->field58 != 0) {
+        return 0x600;
+    }
+    switch (state->field30) {
+    case 0:
+        result = func_002406C0(arg0);
+        if (result == 2) {
+            state->field30 = 0;
+        }
+        break;
+    case 1:
+        result = func_0023D170(0);
+        break;
+    case 2:
+        result = func_0023D400();
+        break;
+    case 3:
+        result = func_0023CE40(0);
+        break;
+    case 4:
+        result = func_0023D920();
+        break;
+    case 5:
+        result = func_002409E0();
+        break;
+    case 10:
+        result = func_0023E610();
+        break;
+    case 11:
+        result = func_002406C0(arg0);
+        if (state->field2BE == 0xE && arg0 == 2) {
+            state->field30 = 0xA;
+            state->field34 = 0;
+            result = 0xB;
+            state->field40 = 0;
+        }
+        break;
+    case 13:
+        result = func_002406C0(arg0);
+        if (state->field2BE == 1 && arg0 == 2) {
+            state->field30 = 5;
+            state->field34 = 0;
+            result = 9;
+            state->field40 = 0;
+        }
+        break;
+    case 14:
+        result = func_002406C0(arg0);
+        if (result == 2) {
+            result = 0xA;
+        }
+        if (arg0 == 2) {
+            state->field30 = 0;
+            state->field34 = 0;
+            result = 0x700;
+            state->field40 = 0;
+        }
+        break;
+    }
+    if (arg0 == 1) {
+        state->field34 = 0;
+        state->field40 = 0;
+        state->field30 = 0;
+    }
+    if (result != 0) {
+        state->field2BE = result;
+    }
+    if (result == 0x100) {
+        return 0x100;
+    }
+    if (state->field8 == 1) {
+        state->field2BE = state->field2BE | 0x80;
+    }
+    return state->field2BE;
+}
 
 s16 func_0023CC50(s32 arg0) {
     extern struct State_0023E610 D_0034FB00;
