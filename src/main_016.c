@@ -1700,7 +1700,6 @@ s32 func_0016FEF0(s32 arg0, u8 *arg1, void *arg2) {
     }
 }
 
-s32 func_001702B0(s32 arg0);
 
 typedef struct {
     u16 id;
@@ -1742,7 +1741,38 @@ void func_001700D0(s32 arg0, void *arg1, s32 *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_001702B0);
+static inline s32 isSpecial_001702B0(s32 card) {
+    return ((u32)(card - 0x36) < 4) ? 1 : 0;
+}
+
+static inline s32 hasAll_001702B0(void) {
+    extern s32 func_001E1030();
+    s32 player = func_001DE540();
+
+    if (func_001E1030(player, 0) == 0x3A &&
+        func_002151D0(player, func_002158B0(player), 0x36) >= 0 &&
+        func_002151D0(player, func_002158B0(player), 0x37) >= 0 &&
+        func_002151D0(player, func_002158B0(player), 0x38) >= 0 &&
+        func_002151D0(player, func_002158B0(player), 0x39) >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_001702B0(s32 arg0) {
+    if (func_0026FCE0(arg0) >> 5 != 0) {
+        return 1;
+    }
+    if (func_0026FC10(arg0) == 1) {
+        return 1;
+    }
+    if (isSpecial_001702B0(arg0) == 1) {
+        if (hasAll_001702B0() == 1) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 
 typedef struct {
