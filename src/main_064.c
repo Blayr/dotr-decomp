@@ -219,7 +219,6 @@ INCLUDE_ASM("asm/nonmatchings/main_064", func_002297C0);
 INCLUDE_ASM("asm/nonmatchings/main_064", func_0022A020);
 
 extern s16 D_00299ED2;
-void func_001DA2B0(void *, s32, f32, f32);
 
 typedef struct State_0022A140 {
     u8 pad_0000[0x53A6];

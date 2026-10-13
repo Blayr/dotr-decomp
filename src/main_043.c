@@ -1053,7 +1053,96 @@ s32 func_001D9F00(void *arg0, s32 arg1) {
     return func_0020D1A0(transformed.f, point.f) <= 0.0f ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DA2B0);
+typedef struct {
+    s8 reserved0 : 4;
+    s8 flag4 : 1;
+    s8 reserved5 : 1;
+    s8 flag6 : 1;
+    s8 reserved7 : 1;
+} FlagByte_001DA2B0;
+
+typedef struct {
+    s16 count : 12;
+    s16 reserved : 4;
+} Count_001DA2B0;
+
+typedef union {
+    s16 value;
+    Count_001DA2B0 bits;
+    struct {
+        u8 low;
+        FlagByte_001DA2B0 flags;
+    } bytes;
+} Flags_001DA2B0;
+
+typedef struct {
+    u8 pad0[0x48];
+    s16 field48;
+    s16 field4A;
+    s32 field4C;
+    s64 field50;
+    u8 pad58[0x20];
+    void *vertices;
+    s32 field7C;
+    Flags_001DA2B0 field80;
+    Count_001DA2B0 field82;
+} Object_001DA2B0;
+
+typedef struct {
+    u8 pad0[0x10];
+    u64 lower : 32;
+    u64 color : 24;
+    u64 upper : 8;
+    u8 pad18[0x18];
+} Vertex_001DA2B0;
+
+s32 func_001DA2B0(void *arg0, s32 arg1, f32 fparg0, f32 fparg1) {
+    Object_001DA2B0 *object;
+    void *temp_s1;
+    u8 *global;
+
+    object = arg0;
+    global = D_00317490;
+    temp_s1 = (object->field80.bytes.flags.flag6 == 0) ? NULL : ((u8 *) object + 0x30);
+    object->field4A = 0x35;
+    object->field48 = 0;
+    object->field50 = 0;
+    object->field4C = 0;
+    func_002086D0(&object->field48, ((s64) 0x80 << 32) | 0x44);
+    if (object->field80.bytes.flags.flag4 != 0) {
+        func_00208CB0(&object->field48, ((s64) 0x5C0 << 32) | 0x40000A);
+    } else {
+        func_00208CB0(&object->field48, ((s64) 0x2D0 << 32) | 0x1E000A);
+    }
+    object->field82.count = (s16) func_001DA5E0(
+            object->field80.bytes.flags.flag4,
+            fparg0,
+            fparg1,
+            object->vertices,
+            temp_s1);
+    if (arg1 != 0) {
+        extern s32 func_00206D00();
+        object->field82.count = (s16) func_00206D00(
+                object->field82.count,
+                object->vertices,
+                object->field80.bits.count,
+                object->field7C,
+                0xF);
+    }
+    {
+        extern void func_00207230();
+        func_00207230(NULL,
+            object->field82.count,
+            object->vertices);
+    }
+    if (*(s32 *) (global + 0xC54) != 0) {
+        s32 i;
+        for (i = 0; i < object->field82.count; i++) {
+            ((Vertex_001DA2B0 *) object->vertices)[i].color = *(s32 *) (global + 0xC54);
+        }
+    }
+    return 1;
+}
 
 s32 func_001DA4C0(s32 mode, void *dst) {
     f32 negativeHalfWidth;
