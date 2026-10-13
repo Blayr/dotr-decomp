@@ -1,6 +1,281 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001ADD00);
+extern void func_00217590(s32, s32, s32);
+extern void func_00275D00(s32, u8 *);
+typedef union {
+    __int128 quad;
+    f32 f[4];
+} Vec_001ADD00;
+
+typedef struct {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Bits_001ADD00;
+
+typedef struct {
+    s8 low : 2;
+    s8 next : 2;
+    s8 unused : 2;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Modes_001ADD00;
+
+typedef struct {
+    s8 bit0 : 1;
+    u8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} MixedBits_001ADD00;
+
+extern Vec_001ADD00 D_002910C0;
+extern Vec_001ADD00 D_002910D0;
+
+void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
+    Vec_001ADD00 spA0;
+    Vec_001ADD00 spB0;
+    u8 *state = D_00317490;
+    s32 var_s1;
+    u8 *temp_s1_2;
+    u8 *var_t2;
+    u8 *var_t3;
+    s32 var_t4;
+
+    func_001DE970(0);
+    func_001DEDB0(0);
+    func_001DF070(0);
+    func_001DE970(1);
+    func_001DEDB0(1);
+    func_001DF070(1);
+    var_s1 = 0;
+    if (arg2 != 0) {
+        s32 temp_s1;
+        s32 temp_s2;
+        s32 var_s3;
+        s32 temp_s5;
+        s32 temp_s4;
+        s32 temp_s3;
+        s32 temp_s4_2;
+        s32 var_s5;
+        s32 var_s1_2;
+        s32 var_s2_2;
+        s32 otherPlayer;
+        s32 var_s2;
+        s32 heading;
+        temp_s1 = func_002158B0(0);
+        temp_s2 = func_002158B0(1);
+        temp_s5 = func_002159D0(0, temp_s1);
+        temp_s4 = func_002159D0(1, temp_s2);
+        func_001CDA10();
+        func_001CDD40();
+        var_s3 = 0;
+        do {
+            func_001DFBB0(0, var_s3);
+            func_001DFBB0(1, var_s3);
+            var_s3 += 1;
+        } while (var_s3 < 0xB);
+        func_001E2FB0(0, 0, 1);
+        func_001DF580(0, 3, 6, temp_s5, 1);
+        func_001DF580(1, 3, 0, temp_s4, 1);
+        func_001E1C10(0, 0, 0, 0);
+        func_001E18A0(0, 0, 7);
+        func_001E1C10(1, 0, 0, 0);
+        func_001E18A0(1, 0, 7);
+        var_s5 = 0;
+        do {
+            temp_s3 = func_00215A60(0, temp_s1, var_s5);
+            temp_s4_2 = func_00215A60(1, temp_s2, var_s5);
+            if (func_001A82E0(3) >= 0x3E8) {
+                func_001DEA30(0, temp_s3);
+            } else {
+                func_001DEC00(0, var_s5, temp_s3);
+            }
+            if (func_001A82E0(4) >= 0x3E8) {
+                func_001DEA30(1, temp_s4_2);
+            } else {
+                func_001DEC00(1, var_s5, temp_s4_2);
+            }
+            var_s5 += 1;
+        } while (var_s5 < 0x28);
+        var_s2 = 0;
+        otherPlayer = arg1 ^ 1;
+        do {
+            func_00214BB0(otherPlayer, var_s2, func_00214D00(arg1, var_s2));
+            var_s2 += 1;
+        } while (var_s2 < 3);
+        heading = (arg1 != 0) ? 0xC000 : 0x4000;
+        spA0 = D_002910C0;
+        spB0 = D_002910D0;
+        spB0.f[1] = (3.1415927f * (f32) heading) / 32768.0f;
+        func_001F9D80(0, &spA0);
+        func_001FB360(0, spB0.f);
+        var_s2_2 = 0;
+        do {
+            var_s1_2 = 0;
+            do {
+                func_001E23A0(var_s1_2, var_s2_2, -0x80);
+                var_s1_2 += 1;
+            } while (var_s1_2 < 7);
+            var_s2_2 += 1;
+        } while (var_s2_2 < 7);
+        *(u8 *)(state + 0xD34) = 0;
+        func_00217590(1, 0, 0);
+    } else {
+        s32 var_s2_3;
+        for (var_s1 = 0; var_s1 < 7; var_s1++) {
+            for (var_s2_3 = 0; var_s2_3 < 7; var_s2_3++) {
+                func_001E23A0(var_s2_3, var_s1, 0);
+            }
+        }
+        *(u8 *)(state + 0xD34) = 0x80;
+    }
+    *(u8 *)(state + 0xD37) = (u8) arg0;
+    func_001DDE80((s32) *(u8 *)(state + 0xD37));
+    func_001ADA80(arg2);
+    func_00275D00(0, state);
+    *(s32 *)(state + 0x330) = -1;
+    if (*(s32 *)(state + 0x334) != 0) {
+        func_00217B50(*(s32 *)(state + 0x334));
+    }
+    *(s32 *)(state + 0x334) = 0;
+    *(s16 *)(state + 0x338) = 0;
+    *(s32 *)(state + 0x1D0) = 0xC8;
+    *(s32 *)(state + 0x1D4) = 0x4000;
+    *(s32 *)(state + 0x1D8) = 0x2000;
+    *(s8 *)(state + 0x341) = 4;
+    if (arg0 < 0x16) {
+        *(s16 *)(state + 0x33A) = 0xFA0;
+        *(s8 *)(state + 0x342) = 3;
+    }
+    *(s8 *)(state + 0x343) = 0;
+    ((Bits_001ADD00 *)(state + 0x346))->bit0 = 1;
+    *(s8 *)(state + 0x344) = 0;
+    *(s8 *)(state + 0x345) = 0x28;
+    *(s8 *)(state + 0x33D) = 3;
+    *(s8 *)(state + 0x33E) = 6;
+    temp_s1_2 = state + 0x350;
+    func_00275D00(1, temp_s1_2);
+    *(s32 *)(temp_s1_2 + 0x330) = -1;
+    if (*(s32 *)(temp_s1_2 + 0x334) != 0) {
+        func_00217B50(*(s32 *)(temp_s1_2 + 0x334));
+    }
+    *(s32 *)(temp_s1_2 + 0x334) = 0;
+    *(s16 *)(temp_s1_2 + 0x338) = 0;
+    *(s32 *)(temp_s1_2 + 0x1D0) = 0xC8;
+    *(s32 *)(temp_s1_2 + 0x1D4) = 0xC000;
+    *(s32 *)(temp_s1_2 + 0x1D8) = 0x2000;
+    *(s8 *)(temp_s1_2 + 0x341) = 4;
+    if (arg0 < 0x16) {
+        *(s16 *)(temp_s1_2 + 0x33A) = 0xFA0;
+        *(s8 *)(temp_s1_2 + 0x342) = 3;
+    }
+    *(s8 *)(temp_s1_2 + 0x343) = 0;
+    ((Bits_001ADD00 *)(temp_s1_2 + 0x346))->bit0 = 1;
+    *(s8 *)(temp_s1_2 + 0x344) = 0;
+    *(s8 *)(temp_s1_2 + 0x345) = 0x28;
+    *(s8 *)(temp_s1_2 + 0x33D) = 3;
+    *(s8 *)(temp_s1_2 + 0x33E) = 0;
+    *(s32 *)(state + 0x6C8) = 0;
+    *(s32 *)(state + 0x6CC) = 0;
+    *(s8 *)(state + 0xD35) = 0;
+    *(s8 *)(state + 0xD36) = 0;
+    *(s8 *)(state + 0xD38) = 0;
+    *(s8 *)(state + 0xD39) = 0;
+    *(s8 *)(state + 0xD3A) = 0;
+    *(s8 *)(state + 0xD3B) = 0;
+    *(s8 *)(state + 0xD50) = 2;
+    *(s8 *)(state + 0xD51) = 0;
+    *(u8 *)(state + 0xD52) = (u8) arg1;
+    *(u8 *)(state + 0xD54) = (u8) *(u8 *)(state + 0xD52);
+    *(u8 *)(state + 0xD53) = 0U;
+    *(u8 *)(state + 0xD55) = 0xFF;
+    *(u8 *)(state + 0xD56) = 0xFF;
+    *(s8 *)(state + 0xD57) = 0;
+    *(s8 *)(state + 0xD58) = 0x18;
+    *(s8 *)(state + 0xD5B) = 0;
+    *(s8 *)(state + 0xD59) = 0;
+    *(s8 *)(state + 0xD5A) = 0;
+    *(u8 *)(state + 0xD3C) = (u8) *(u8 *)(state + 0xD52);
+    *(u8 *)(state + 0xD3D) = (u8) *(u8 *)(state + 0xD53);
+    *(u8 *)(state + 0xD3E) = 0x80;
+    *(s8 *)(state + 0xD3F) = 0;
+    *(s8 *)(state + 0xD40) = 0;
+    *(s8 *)(state + 0xD41) = 0;
+    *(s8 *)(state + 0xD42) = 0;
+    *(s8 *)(state + 0xD43) = 0;
+    *(s8 *)(state + 0xD44) = 0;
+    *(s8 *)(state + 0xD45) = 0;
+    *(s8 *)(state + 0xD46) = 0;
+    *(s8 *)(state + 0xD47) = 0;
+    *(s8 *)(state + 0xD48) = 0;
+    *(s8 *)(state + 0xD49) = 0;
+    *(s8 *)(state + 0xD4A) = 0;
+    *(s8 *)(state + 0xD4B) = 0;
+    *(s8 *)(state + 0xD4C) = 0;
+    *(s8 *)(state + 0xD4D) = 0;
+    *(s8 *)(state + 0xD4E) = 0;
+    *(s8 *)(state + 0xD4F) = 0;
+    *(s8 *)(state + 0xD63) = 0;
+    *(s16 *)(state + 0xC86) = 0;
+    *(s16 *)(state + 0xC88) = 0;
+    ((Modes_001ADD00 *)(state + 0xD64))->low = 1;
+    ((Modes_001ADD00 *)(state + 0xD64))->next = 1;
+    *(s16 *)(state + 0xC96) = 0;
+    *(s16 *)(state + 0xC98) = 0;
+    var_t4 = 0;
+    var_t2 = state;
+    var_t3 = state;
+    do {
+        *(s8 *)(&state[var_t4] + 0xCB2) = 0x18;
+        *(s16 *)(var_t2 + 0xCAA) = 0;
+        var_t4 += 1;
+        *(s16 *)(var_t3 + 0xC9C) = 0;
+        *(s16 *)(var_t3 + 0xC9A) = 0;
+        var_t2 += 2;
+        var_t3 += 4;
+    } while (var_t4 < 4);
+    *(s32 *)(state + 0xC5C) = 0;
+    *(s32 *)(state + 0xC60) = 0;
+    *(s32 *)(state + 0xC64) = 0;
+    *(s32 *)(state + 0xC68) = 0;
+    *(s32 *)(state + 0xC78) = -1;
+    *(s32 *)(state + 0xC6C) = 0;
+    *(s32 *)(state + 0xC70) = 0;
+    *(s32 *)(state + 0xC74) = 0;
+    ((Modes_001ADD00 *)(state + 0xD64))->bit6 = 0;
+    ((Modes_001ADD00 *)(state + 0xD64))->bit7 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit0 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit1 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit2 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit3 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit4 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit5 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit6 = 0;
+    ((Bits_001ADD00 *)(state + 0xD65))->bit7 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit0 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit1 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit2 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit3 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit4 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit5 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit6 = 0;
+    ((MixedBits_001ADD00 *)(state + 0xD66))->bit7 = 1;
+    ((Bits_001ADD00 *)(state + 0xD67))->bit0 = ((MixedBits_001ADD00 *)(state + 0xD66))->bit7;
+    ((Bits_001ADD00 *)(state + 0xD67))->bit1 = 1;
+    ((Bits_001ADD00 *)(state + 0xD67))->bit2 = 0;
+    ((Bits_001ADD00 *)(state + 0xD67))->bit3 = 0;
+    ((Bits_001ADD00 *)(state + 0xD67))->bit4 = 0;
+    ((Bits_001ADD00 *)(state + 0xD67))->bit5 = 0;
+}
 
 void func_001AE520(void) {
     u8 *data = D_00317490;

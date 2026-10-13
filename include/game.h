@@ -434,7 +434,6 @@ f32 func_001A6898(f32);
 extern f32 D_00294050[];
 
 
-void func_001ADD00(s32, s32, s32);
 extern u8 D_00318280[];
 
 
