@@ -458,7 +458,82 @@ void *func_001FFCC0(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFD30);
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_001FFE00);
+typedef struct {
+    s8 completed : 1;
+    s8 running : 1;
+    s8 reserved : 6;
+} Flags_001FFE00;
+
+typedef struct {
+    u8 data[0x24];
+} Request_001FFE00;
+
+typedef struct {
+    u8 pad0[0x4080];
+    Request_001FFE00 requests[0x100];
+    u8 pad1[0x208];
+    s32 handle;
+    u16 head;
+    u16 count;
+    Flags_001FFE00 flags;
+} Queue_001FFE00;
+
+static inline void *enqueue_001FFE00(s32 arg0, s32 arg1, s32 arg2,
+                                     s32 arg3, s32 arg4, s32 arg5) {
+    extern Queue_001FFE00 D_0031C2F0;
+    Queue_001FFE00 *queue = &D_0031C2F0;
+    Request_001FFE00 *request;
+
+    if (arg1 == 0) {
+        return NULL;
+    }
+    if (queue->count >= 0x100) {
+        return NULL;
+    }
+    request = &queue->requests[(queue->head + queue->count) % 0x100];
+    if (func_001FEDA0(request, 0x1400, arg0, (void *)arg1, arg2, arg3, arg4,
+                      arg5, (s32)func_001FFF60, 0) == 0) {
+        return NULL;
+    }
+    queue->count++;
+    return request;
+}
+
+static inline s32 poll_001FFE00(void) {
+    extern Queue_001FFE00 D_0031C2F0;
+    extern Flags_001FFE00 D_00322980;
+    Queue_001FFE00 *queue = &D_0031C2F0;
+    s32 handle;
+
+    if (D_00322980.running == 0) {
+        handle = func_001FF9C0();
+        queue->handle = handle;
+        if (handle < 0) {
+            return 0;
+        }
+    }
+    return func_001FF480(queue->handle);
+}
+
+void *func_001FFE00(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+                    s32 arg4, s32 arg5) {
+    extern Queue_001FFE00 D_0031C2F0;
+    Queue_001FFE00 *queue = &D_0031C2F0;
+    void *request;
+
+    request = enqueue_001FFE00(arg0, arg1, arg2, arg3, arg4, arg5);
+    if (request == NULL) {
+        return NULL;
+    }
+    goto check;
+loop:
+    poll_001FFE00();
+check:
+    if (func_001FF360(-1, 0) != 0) {
+        goto loop;
+    }
+    return queue->flags.completed ? request : NULL;
+}
 
 typedef struct Flags_001FFF60 {
     s8 enabled : 1;

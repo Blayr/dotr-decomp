@@ -1224,6 +1224,7 @@ void func_001FFAC0(s32 arg0, s32 arg1);
 s32 func_001FFC50(s32 arg0, s32 arg1);
 void func_001FFCB0(void *arg0);
 void *func_001FFCC0(void *arg0, s32 arg1);
+void *func_001FFE00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_001FFF60(s32 arg0, s64 arg1);
 u8 *func_001FFF90(s32 unused0);
 s32 func_001FFFC0(void);
