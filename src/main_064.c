@@ -216,7 +216,35 @@ INCLUDE_ASM("asm/nonmatchings/main_064", func_002294B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_002297C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022A020);
+typedef union {
+    __int128 value;
+    s32 axis[4];
+} Rotation_0022A020;
+
+extern Rotation_0022A020 D_0029ABB0;
+
+s32 func_0022A020(s32 arg0) {
+    Rotation_0022A020 rotation;
+    s8 *state = (s8 *)0x01ED0000;
+    s16 i;
+
+    rotation = D_0029ABB0;
+    rotation.axis[1] = *(s16 *)0x01ED53F4;
+    for (i = 0; i <= 9; i++) {
+        switch (state[0x53B3]) {
+        case 1:
+            arg0 = func_001EE4B0(arg0, i + 0x22, 0, (s32)&rotation, 0, 0, 0);
+            break;
+        default:
+            arg0 = func_001EE4B0(arg0, i + 0x22, 0, 0, 0, 0, 0);
+            break;
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        func_001F30B0(i + 0x1E, 0);
+    }
+    return arg0;
+}
 
 extern s16 D_00299ED2;
 
