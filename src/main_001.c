@@ -352,9 +352,21 @@ s32 func_001039A0(void *arg0) {
     return vector[1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103A30);
+s32 func_00103A30(f32 *arg0, s32 *arg1) {
+    arg1[1] = (s32)(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f)) % 65536;
+    arg1[0] = (s32)(65536.0f * (func_001A6C18(arg0[2], arg0[1]) / 6.2831855f)) % 65536;
+    arg1[2] = (s32)(65536.0f * (func_001A6C18(arg0[1], arg0[0]) / 6.2831855f)) % 65536;
+    arg1[3] = 0;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103B50);
+s32 func_00103B50(f32 *arg0, s32 *arg1) {
+    arg1[1] = (s32)(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f)) % 65536;
+    arg1[0] = (s32)(65536.0f * (func_001A6C18(func_001A6C60(arg0[0] * arg0[0] + arg0[2] * arg0[2]), arg0[1]) / 6.2831855f)) % 65536;
+    arg1[3] = 0;
+    arg1[2] = 0;
+    return 0;
+}
 
 s32 func_00103C40(Vec4f *arg0, void *arg1) {
     Vec4f sp20;
