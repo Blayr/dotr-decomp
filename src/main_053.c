@@ -181,7 +181,6 @@ typedef struct Motion_001FB940 {
 } Motion_001FB940;
 
 void func_001FBE50(void *, void *, u16, f32);
-f32 func_001FC050(void *, u16, f32);
 f32 func_0020B620(f32);
 f32 func_001A6C30(f32, f32);
 void func_0020C630(void *, void *);
@@ -305,7 +304,75 @@ s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, 
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FBE50);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC050);
+typedef struct Key_001FC050 {
+    u32 time;
+    f32 value;
+} Key_001FC050;
+
+f32 func_001FC050(u8 *arg0, s32 arg1, f32 fparg0) {
+    f32 var_f0;
+    f32 var_f0_2;
+    f32 var_f0_3;
+    f32 var_f0_4;
+    f32 var_f3;
+    f32 weight;
+    f32 result;
+    Key_001FC050 *temp_a2;
+    u32 temp_a1;
+    u32 temp_a3;
+    u32 temp_v0;
+    u32 temp_v0_2;
+    u32 temp_v0_3;
+    s32 temp_v1;
+    s32 var_a2;
+    s32 var_a3;
+    s32 var_t0;
+    s32 var_v0;
+    void *temp_t1;
+
+    var_a3 = 0;
+    if (arg1 > 2) {
+    var_a2 = 0;
+    var_t0 = arg1;
+loop_2:
+    var_a3 = (s32)(var_a2 + var_t0) >> 1;
+    var_v0 = var_a3 * 8;
+    if (var_a2 >= var_a3) {
+        goto block_15;
+    }
+    temp_t1 = arg0 + (var_a3 * 8);
+    temp_v0 = *(u32 *)((u8 *)temp_t1 + 8);
+    var_f0_3 = (f32)temp_v0;
+    if (!(fparg0 < var_f0_3)) {
+        var_a2 = var_a3;
+        goto loop_2;
+    }
+    temp_v0_2 = *(u32 *)temp_t1;
+    var_f0_4 = (f32)temp_v0_2;
+    if (fparg0 < var_f0_4) {
+        var_t0 = var_a3;
+        goto loop_2;
+    }
+    }
+block_15:
+    var_v0 = var_a3 * 8;
+    temp_a2 = (Key_001FC050 *)(arg0 + var_v0);
+    temp_v1 = var_a3 + 1;
+    if (temp_v1 >= arg1) {
+        return temp_a2->value;
+    }
+    arg0 += temp_v1 * 8;
+    temp_a1 = temp_a2->time;
+    temp_a3 = *(u32 *)arg0;
+    temp_v0_3 = temp_a3 - temp_a1;
+    var_f3 = (f32)temp_v0_3;
+    var_f0 = (f32)temp_a3;
+    var_f0_2 = (f32)temp_a1;
+    weight = (var_f0 - fparg0) / var_f3;
+    result = weight * temp_a2->value;
+    weight = (fparg0 - var_f0_2) / var_f3;
+    return result + weight * *(f32 *)(arg0 + 4);
+}
 
 typedef struct Vec4_001FC210 {
     f32 x, y, z, w;
