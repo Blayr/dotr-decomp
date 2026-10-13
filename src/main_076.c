@@ -1723,7 +1723,236 @@ s32 func_0026B430(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026B480);
+typedef struct Request_0026B480 {
+    u32 unused;
+    u32 position;
+    u32 result;
+    u32 command;
+} Request_0026B480;
+
+typedef struct State_0026B480 {
+    u8 pad0[4];
+    u16 phase;
+    u8 handles[26];
+    s32 slots[45];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_0026B480;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+void func_00260D10(s32, u16, s32, s32);
+
+s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1030();
+    extern s32 func_001E1E10();
+    extern s32 func_0025F670();
+    s32 buffer[4];
+    s32 *command = buffer;
+    Request_0026B480 *request = arg0;
+    State_0026B480 *state = arg1;
+    s32 card;
+    s32 i;
+    u32 position;
+    u32 value;
+    u16 timer;
+
+    buffer[0] = 999;
+    buffer[1] = 0;
+    buffer[2] = 0;
+    buffer[3] = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        value = request->command;
+        func_002516D0((value & 0xFFFF) >> 8, value & 0xFF, 1);
+        func_00255AC0(state, 0x22);
+        func_00255AC0(state, 0x22B);
+        func_00255AC0(state, 0x22D);
+        func_00255AC0(state, 0x25A);
+        func_00255AC0(state, 0x25B);
+        func_00260D10(0, (u16)request->command, 180, 180);
+        state->phase = 16;
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (func_001F51D0(state->handles[0]) == 1) {
+            return 1;
+        }
+        value = request->command;
+        func_001E1E70((value & 0xFFFF) >> 8, value & 0xFF, 0, 1);
+        value = request->command;
+        func_001E42C0(0, -120, 80,
+            func_001DE210(func_001E1030((value & 0xFFFF) >> 8, value & 0xFF)));
+        value = request->command;
+        if ((value >> 16) != 49) {
+            func_0024F370((value & 0xFFFF) >> 8, value & 0xFF);
+        }
+        func_00260AF0(0, request->position, 100, 180);
+        command[0] = 0x22;
+        command[1] = 0;
+        command[2] = request->position;
+        command[3] = 0;
+        state->handles[0] = func_00255A30(command, state);
+        state->phase++;
+        return 1;
+
+    case 1:
+        if (func_001F51D0(state->handles[0]) == 1) {
+            return 1;
+        }
+        switch (request->command >> 16) {
+        case 4:
+            position = request->position;
+            card = func_0024CA40(0, 0,
+                func_0024DE70(position >> 8, position & 0xFF), 2, 0x35, 14);
+            value = request->command;
+            value = func_00272330(card,
+                func_00250360((value & 0xFFFF) >> 8, value & 0xFF));
+            request->result = value;
+            if (value == 0) {
+                timer = state->timer++;
+                if (timer > 16) {
+                    func_001E4530();
+                    return 0;
+                }
+                return 1;
+            }
+            if (func_0024E910(request->result) == 1) {
+                func_00260AF0(0, func_0024EC50(request->result, 0), 100, 180);
+            } else {
+                func_00260740(0);
+            }
+            func_0025F720(request, state, command, 0x22B);
+            state->phase = 2;
+            return 1;
+
+        case 48:
+            state->phase = 4;
+            func_001E4530();
+            func_00260A70(state, 16);
+            break;
+
+        case 49:
+            func_00260AF0(0, request->result, 100, 180);
+            command[0] = 0x22B;
+            command[1] = 0;
+            command[2] = request->result;
+            command[3] = 0;
+            state->handles[state->count] = func_00255A30(command, state);
+            state->slots[state->count] = 1;
+            state->phase = 2;
+            state->count++;
+            return 1;
+        }
+        return 1;
+
+    case 2:
+        switch (request->command >> 16) {
+        case 4:
+            if (func_0025F400(request, state, command) != 0) {
+                state->phase++;
+            }
+            break;
+
+        case 49:
+            if (func_001F51D0(state->handles[state->count - 1]) == 1 &&
+                func_001F52D0(state->handles[state->count - 1]) == 2 &&
+                state->slots[state->count - 1] >= 0) {
+                command[0] = 0x22D;
+                command[1] = 0;
+                command[2] = request->result;
+                command[3] = 0;
+                state->handles[state->count] = func_00255A30(command, state);
+                state->slots[state->count] = 1;
+                state->phase++;
+                state->count++;
+            }
+            break;
+
+        default:
+            func_001E4530();
+            return 0;
+        }
+        break;
+
+    case 3:
+        switch (request->command >> 16) {
+        case 4:
+            if (func_0025F670(request, state, command) != 0) {
+                func_001E4530();
+                func_00260A70(state, 16);
+                state->phase++;
+            }
+            break;
+
+        case 49:
+            for (i = 0; i < state->count; i++) {
+                if (func_001F51D0(state->handles[i]) == 1) {
+                    return 1;
+                }
+            }
+            position = request->result;
+            card = func_001E0290(position / 256, position & 0xFF, 0);
+            func_00250CA0(position >> 8, (u8)position, 1, card >> 1);
+            func_001E4530();
+            func_00260A70(state, 16);
+            state->phase++;
+            break;
+
+        default:
+            func_001E4530();
+            return 0;
+        }
+        break;
+
+    case 4:
+        timer = state->timer++;
+        if (timer > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+
+    case 16:
+        value = request->command;
+        if (func_001E1E10((value & 0xFFFF) >> 8, value & 0xFF) == 0xFF &&
+            func_00255B50(state) == 1) {
+            switch (request->command >> 16) {
+            case 49:
+                command[0] = 0x25A;
+                command[1] = 0;
+                command[2] = (u16)request->command;
+                command[3] = 0;
+                break;
+            default:
+                command[0] = 0x25A;
+                command[1] = 0;
+                command[2] = (u16)request->command;
+                command[3] = 1;
+                break;
+            }
+            state->handles[0] = func_00255A30(command, state);
+            state->phase = 0;
+            func_001E42C0(0, -120, 80, 0x103);
+            return 1;
+        }
+        break;
+
+    default:
+        return 1;
+    }
+    return 1;
+}
 
 typedef struct Command_0026BB80 {
     s32 id;
