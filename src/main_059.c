@@ -1585,4 +1585,27 @@ void *func_00214DD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00214F00);
+void *func_00214F00(s32 arg0, s32 arg1, s32 arg2) {
+    s32 bank;
+    u8 *base;
+
+    if (D_0034F6D0 == arg0) {
+        bank = 0;
+    } else {
+        bank = 1;
+    }
+    base = (u8 *)D_0032F790 + bank * 0xFFA0;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return NULL;
+    }
+    if ((arg2 < 0) || (arg2 >= 9)) {
+        return NULL;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return NULL;
+    }
+    return base + arg1 * 0x4C + arg2 * 8;
+}

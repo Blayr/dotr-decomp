@@ -67,7 +67,6 @@ typedef struct {
     u8 *counts1;
 } State_001C33A0;
 
-void *func_00214F00(s32, s32, s32);
 s32 func_00215060(s32, u32, u32, s32);
 void func_00216280(s32, u32, u32, s32);
 
