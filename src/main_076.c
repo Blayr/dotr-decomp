@@ -1181,7 +1181,6 @@ typedef struct State_002695D0 {
 void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_00269EC0(void *, void *);
 
 s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -1402,7 +1401,87 @@ void func_00269E10(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00269EC0);
+void func_00269EC0(void *arg0, void *arg1) {
+    u32 *p0;
+    s32 *p1;
+    u32 temp_a2;
+    u32 temp_a3;
+    s32 var_t0;
+    s32 temp_v0;
+
+    p0 = arg0;
+    p1 = arg1;
+    temp_a3 = p0[3];
+    temp_a2 = temp_a3 >> 0xE;
+    switch (temp_a2) {
+    case 0x218:
+        var_t0 = 0x40;
+        break;
+    case 0x21C:
+        var_t0 = 0x42;
+        break;
+    case 0x21D:
+        var_t0 = 0x40;
+        break;
+    case 0x21E:
+        var_t0 = 0x48;
+        break;
+    default:
+        var_t0 = 0x30;
+        break;
+    }
+    if (temp_a3 == 0x3E7) {
+        temp_v0 = p1[0x34];
+        p1[0x34] = temp_v0 + 1;
+        switch (temp_v0) {
+        case 0:
+            func_00217710(1, 0x38);
+            break;
+        case 0x14:
+            func_00217710(1, 0x39);
+            break;
+        case 0x1E:
+            func_00217710(1, 0x4C);
+            break;
+        case 0x24:
+            func_00269E10(arg0);
+            break;
+        default:
+            if (p1[0x34] == var_t0) {
+                func_00217710(1, 0x3C);
+            }
+            break;
+        }
+        return;
+    } else {
+        temp_v0 = p1[0x34];
+        p1[0x34] = temp_v0 + 1;
+        switch (temp_v0) {
+        case 0:
+            func_00217710(1, 0x38);
+            return;
+        case 0x14:
+            func_00217710(1, 0x39);
+            return;
+        case 0x1E:
+            func_00217710(1, 0x4C);
+            return;
+        case 0x24:
+            func_00269E10(arg0);
+            return;
+        case 0x25:
+            if ((p0[3] >> 0xE) == 0x21D || (p0[3] >> 0xE) == 0x21E) {
+                func_00217710(1, 0x3B);
+            }
+            return;
+        default:
+            if (p1[0x34] == var_t0) {
+                func_00217710(1, 0x3C);
+            }
+            return;
+        }
+    }
+}
 
 typedef struct Packet_0026A0A0 {
     u32 command;
