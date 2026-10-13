@@ -336,7 +336,68 @@ s32 func_001E5D30(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5DD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5EB0);
+typedef struct Part_001E5EB0 {
+    u8 pad0[0x10];
+    f32 x;
+    f32 y;
+    s32 phase;
+    u8 pad1C[4];
+} Part_001E5EB0;
+
+typedef struct Rot_001E5EB0 {
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 w;
+} Rot_001E5EB0;
+
+static inline f32 toAngle_001E5EB0(f32 degrees) {
+    return 32768.0f * degrees / 180.0f;
+}
+
+s32 func_001E5EB0(s32 arg0, s32 arg1, s32 arg2) {
+    extern Part_001E5EB0 *D_00292150[];
+    extern u8 D_00292160[];
+    extern Rot_001E5EB0 D_002922A0;
+    extern s32 func_001E6650(s32, s32);
+    Rot_001E5EB0 rot;
+    s32 i;
+    s32 count;
+    s32 base;
+    Part_001E5EB0 *part;
+    s32 idx;
+    s32 phase;
+
+    switch (arg2) {
+    case 0:
+        arg0 = func_001EFA80(arg0, arg1, 0, 0, 0, 0, 0);
+        arg0 = func_001E6650(arg0, 0xF);
+        break;
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+        count = func_001F1D50(arg1, -1);
+        base = (s32)func_001F1B50(arg1);
+        idx = arg2 - 5;
+        part = D_00292150[idx];
+        for (i = 0; i < D_00292160[idx]; i++) {
+            rot = D_002922A0;
+            rot.x = (s32)toAngle_001E5EB0(part->x);
+            rot.y = (s32)toAngle_001E5EB0(part->y);
+            phase = (base + part->phase) % count;
+            func_001F1C40(arg1, (f32)phase);
+            arg0 = func_001EFA80(arg0, arg1, (s32)part, (s32)&rot, 0, 0, 0);
+            part++;
+        }
+        func_001F1C40(arg1, (f32)base);
+        break;
+    default:
+        arg0 = func_001EFA80(arg0, arg1, 0, 0, 0, 0, 0);
+        break;
+    }
+    return arg0;
+}
 
 typedef union {
     __int128 q;
