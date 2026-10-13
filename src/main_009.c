@@ -758,7 +758,6 @@ typedef struct {
     u8 mode;
 } Output_001374D0;
 
-s32 func_00139180(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -900,7 +899,6 @@ typedef struct Coordinate_001379F0 {
     u8 y : 4;
 } Coordinate_001379F0;
 
-s32 func_00139180(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline s32 destination_001379F0(void *src, u8 mode) {
@@ -1076,7 +1074,6 @@ typedef struct Point_00137FB0 {
     u8 y : 4;
 } Point_00137FB0;
 
-s32 func_00139180(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 destination_00137FB0(void *unit, s32 side) {
@@ -1542,7 +1539,165 @@ s32 func_00139080(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", func_00139180);
+static inline s32 check_list_00139180(s32 *buffer, s32 owner) {
+    s32 player;
+    s32 slot;
+    s32 index;
+    s32 list;
+    s32 packed;
+
+    if ((list = func_00254890(buffer, owner)) < 0) {
+        return 0;
+    }
+    for (index = 0; index < func_0024E910(list); index++) {
+        packed = func_0024EC50(list, index);
+        player = packed >> 8;
+        slot = packed & 0xFF;
+        packed = func_001E1090(player, slot);
+        if (func_002509E0(player, slot, packed & 0xFF, packed >> 8) >= 0xA28) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+static inline s32 check_target_00139180(s32 arg0) {
+    s32 player;
+    s32 slot;
+    s32 packed;
+
+    if (func_0024E910(func_0024CA40(0, 0, arg0, 2, 0, 14)) >= 2) {
+        return 1;
+    }
+    packed = func_0024EC50(func_0024CA40(0, 0, arg0, 3, 33, 14), 0);
+    player = packed >> 8;
+    slot = packed & 0xFF;
+    if (arg0 != func_00250360(player, slot)) {
+        if ((func_001E0700(player, slot) >> 5) == 0 &&
+            (func_001E0700(player, slot) & 0x1F) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+s32 func_00139180(s32 arg0, s32 arg1, void *arg2) {
+    extern s32 func_001E1580();
+    s32 buffer[4];
+    s32 i;
+    s32 card;
+    u32 *info;
+    s32 position;
+    u8 count;
+    s32 owner;
+    s32 target;
+    s32 valid;
+    s32 state;
+
+    card = func_001E1030();
+    func_00250360(arg0, arg1);
+    info = func_001E0B70(arg0, arg1, 0);
+    position = func_001E1090(arg0, arg1);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    state = func_001E0700(arg0, arg1) >> 5;
+    switch (state) {
+    case 0:
+        switch (card) {
+        case 0x265:
+            i = 1;
+            while (1) {
+                if (func_001E1580(arg0, i) > 0 &&
+                    arg0 == func_00250360(arg0, i)) {
+                    count++;
+                }
+                if (func_001E1580(arg0 == 0 ? 1 : 0, i) > 0 &&
+                    arg0 == func_00250360(arg0 == 0 ? 1 : 0, i)) {
+                    count++;
+                }
+                i++;
+                if (i > 11) {
+                    break;
+                }
+            }
+            if ((u8)count >= 2) {
+                return 1;
+            }
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 1) == 5) {
+            return 2;
+        }
+        owner = func_00250360(arg0, arg1);
+        func_00254C90(buffer, *(s32 *)((u8 *)func_0026FC90(card, 0) + 4));
+        valid = check_list_00139180(buffer, owner);
+        if (valid == 1) {
+            if (func_001E22B0(position & 0xFF, position >> 8) != 9) {
+                return 1;
+            }
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 1) == 5) {
+            return 2;
+        }
+        if (info == NULL) {
+            return 2;
+        }
+        switch (*info >> 8) {
+        case 2:
+            target = func_0027C770(func_001DF540(arg0, arg1),
+                position & 0xFF, position >> 8, 6, 5, 2);
+            if (target >= 0 && (target >> 8) < 4 && position == target) {
+                return 1;
+            }
+            break;
+        case 13:
+            return 1;
+        case 23:
+            valid = check_target_00139180(arg0);
+            if (valid == 1) {
+                return 1;
+            }
+            break;
+        case 31:
+            if (card == 0x2DD) {
+                target = func_00138B60(arg0);
+                if (target >= 0 && (target & 0xFFFF) != 0xFFFF) {
+                    return 1;
+                }
+            }
+            break;
+        case 32:
+            i = 1;
+            while (1) {
+                if (func_001E1580(arg0, i) != 0 &&
+                    arg0 == func_00250360(arg0, i)) {
+                    count++;
+                }
+                if (func_001E1580(arg0 == 0 ? 1 : 0, i) != 0 &&
+                    arg0 == func_00250360(arg0 == 0 ? 1 : 0, i)) {
+                    count++;
+                }
+                i++;
+                if (i > 11) {
+                    break;
+                }
+            }
+            if ((u8)count >= 2) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 typedef struct {
     u16 unk0;
