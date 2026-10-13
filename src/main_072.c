@@ -669,7 +669,29 @@ INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FE40);
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FEB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_00250000);
+s32 func_00250000(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001DEE50(s32);
+    s32 card;
+
+    if (func_001DEE50(arg0) < arg1) {
+        return 0;
+    }
+    card = func_001DEE00(arg0, arg1);
+    if (card != 999) {
+        switch (arg2) {
+        case 0:
+            return 1;
+        case 1:
+            return card < 0x2AB ? 1 : 0;
+        case 2:
+            if (card >= 0x2AB) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+    return 0;
+}
 
 void func_002500C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     extern s32 func_001E1840();
