@@ -1,6 +1,92 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00254890);
+s32 func_00254890(s32 *arg0, s32 arg1) {
+    s32 ids[6];
+    s32 scores[6];
+    s32 key[3];
+    s32 i;
+    s32 j;
+    s32 count;
+    s32 code;
+    s32 *p;
+    s32 best;
+    s32 value;
+    s32 k;
+    s32 lowest;
+
+    key[2] = -1;
+    key[1] = -1;
+    key[0] = -1;
+    for (i = 0; i < 6; i++) {
+        scores[i] = -1;
+        ids[i] = -1;
+    }
+    for (i = 0; i < 6; i++) {
+        switch (i) {
+        case 0:
+            key[0] = arg0[0];
+            key[1] = arg0[1];
+            key[2] = arg0[2];
+            break;
+        case 1:
+            key[0] = arg0[0];
+            key[1] = arg0[2];
+            key[2] = arg0[1];
+            break;
+        case 2:
+            key[0] = arg0[1];
+            key[1] = arg0[0];
+            key[2] = arg0[2];
+            break;
+        case 3:
+            key[0] = arg0[1];
+            key[1] = arg0[2];
+            key[2] = arg0[0];
+            break;
+        case 4:
+            key[0] = arg0[2];
+            key[1] = arg0[0];
+            key[2] = arg0[1];
+            break;
+        case 5:
+            key[0] = arg0[2];
+            key[1] = arg0[1];
+            key[2] = arg0[0];
+            break;
+        default:
+            key[0] = arg0[0];
+            key[1] = arg0[1];
+            key[2] = arg0[2];
+            break;
+        }
+        if ((ids[i] = func_00254B20(key, arg1)) >= 0) {
+            scores[i] = 0;
+            count = func_0024E910(ids[i]);
+            if (count == 3) {
+                for (j = 0; j < count; j++) {
+                    code = func_0024EC50(ids[i], j);
+                    scores[i] += func_0024F2F0(code >> 8, code & 0xFF);
+                }
+            } else {
+                scores[i] = -1;
+            }
+        }
+    }
+    best = 0xFF;
+    lowest = 0xFFFF;
+    for (k = 5, p = &scores[5]; k >= 0; k--) {
+        value = *p;
+        if (value >= 0 && value <= lowest) {
+            lowest = value;
+            best = k;
+        }
+        p--;
+    }
+    if (best == 0xFF) {
+        return -1;
+    }
+    return ids[best];
+}
 
 s32 func_00254B20(void *arg0, s32 arg1) {
     s32 result;
