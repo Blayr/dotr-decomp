@@ -154,7 +154,424 @@ void func_001A6C80(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6FF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A7380);
+typedef struct Flags_001A7380 {
+    s8 reserved0 : 5;
+    s8 enabled : 1;
+    s8 reserved1 : 2;
+} Flags_001A7380;
+
+typedef struct Menu_001A7380 {
+    u8 pad000[0xA4];
+    u32 limits[37];
+    u32 values[37];
+    u8 pad1CC[0x38];
+    s32 firstAddress;
+    s32 secondAddress;
+    u8 pad20C[0x14];
+    s8 x;
+    s8 y;
+    u8 pad222;
+    u8 selected;
+    u8 pad224[7];
+    s8 mode;
+    u8 pad22C;
+    u8 page;
+    Flags_001A7380 flags;
+} Menu_001A7380;
+
+typedef struct File_001A7380 {
+    u8 pad000[8];
+    s32 size : 31;
+    u32 flag : 1;
+} File_001A7380;
+
+void func_002009E0(s32, s32);
+extern u8 D_002BE660[];
+extern char D_002BE7D0[];
+extern char D_002BE7D5[];
+extern u8 D_00317473;
+extern u8 D_0031747D;
+
+void func_001A7380(void) {
+    extern void func_0019B648();
+    extern s32 func_001AB1D0();
+    Menu_001A7380 *menu;
+    u32 selectionIndex;
+    s32 high;
+    s32 low;
+    u32 limit;
+    u32 offset;
+    u32 *value;
+    s32 item;
+    u32 previous;
+    char filename[128];
+
+    menu = (Menu_001A7380 *) &D_00317250;
+    selectionIndex = D_00317473 + (D_0031747D & 7) * 20;
+    if (func_001AB1D0() >= 0) {
+        return;
+    }
+        if (selectionIndex >= 29) {
+            selectionIndex = (menu->page & 7) * 20;
+            menu->selected = 0;
+        }
+        item = D_002BE660[selectionIndex];
+        if (func_001FD1B0(0) == 0) {
+            func_001A89C0(menu->x, menu->y);
+            func_001FD0B0(0);
+            func_001FCD60(1);
+            func_001FCC70(1, 0, 1, 0, 60, 0);
+            func_001FD0B0(1);
+            func_001FD130(1, 1);
+            return;
+        }
+        if (func_00203A40(0, 2, 0x5000) != 0) {
+            s32 high;
+            s32 low;
+            low = menu->selected;
+            high = 9;
+            if ((u32) ((menu->page & 7) + 1) < 2) {
+                high = 20;
+            }
+            if (func_00203A40(0, 2, 0x1000) != 0) {
+                menu->selected = (menu->selected + high - 1) % high;
+            } else {
+                menu->selected = (menu->selected + high + 1) % high;
+            }
+            if (menu->selected != low) {
+                func_00217710(0, 3);
+            }
+            return;
+        }
+        if (func_00203A40(0, 2, 0xA000) != 0) {
+            s32 high;
+            high = menu->page & 7;
+            if (func_00203A40(0, 2, 0x8000) != 0) {
+                menu->page = (menu->page & ~7) | (((menu->page & 7) + 1) & 1);
+            } else {
+                menu->page = (menu->page & ~7) | (((menu->page & 7) + 3) & 1);
+            }
+            if ((menu->page & 7) != high) {
+                func_00217710(0, 3);
+            }
+            return;
+        }
+        {
+            offset = item * 4;
+            limit = menu->limits[item];
+            if (limit != 0) {
+                previous = menu->values[item];
+                value = &menu->values[item];
+                switch (item) {
+                case 3:
+                case 4:
+                    high = *value / 1000U;
+                    low = *value % 1000U;
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        low = (low + limit - 1) % limit;
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        low = (low + limit + 1) % limit;
+                    }
+                    if (func_00203A40(0, 2, 1) != 0) {
+                        high = (high + 1) % 2;
+                    }
+                    if (func_00203A40(0, 2, 2) != 0) {
+                        high = (high + 3) % 2;
+                    }
+                    *value = low + high * 1000;
+                    break;
+                case 17:
+                case 19:
+                case 22:
+                    high = *value / 100U;
+                    low = *value % 100U;
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        low = (low + 99) % 100;
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        low = (low + 101) % 100;
+                    }
+                    if (func_00203A40(0, 2, 1) != 0) {
+                        high = (high + 99) % 100;
+                    }
+                    if (func_00203A40(0, 2, 2) != 0) {
+                        high = (high + 101) % 100;
+                    }
+                    *value = low + high * 100;
+                    break;
+                case 23:
+                    high = *value / 1000U;
+                    low = *value % 1000U;
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        low = (low + 999) % 1000;
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        low = (low + 1001) % 1000;
+                    }
+                    if (func_00203A40(0, 2, 1) != 0) {
+                        high = (high + 99) % 100;
+                    }
+                    if (func_00203A40(0, 2, 2) != 0) {
+                        high = (high + 101) % 100;
+                    }
+                    *value = low + high * 1000;
+                    break;
+                case 24: {
+                    u32 packed;
+                    packed = *value;
+                    high = packed >> 8;
+                    low = packed & 0xFF;
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        low = (low + 255) % 256;
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        low = (low + 257) % 256;
+                    }
+                    if (func_00203A40(0, 2, 1) != 0) {
+                        high = (high + 255) % 256;
+                    }
+                    if (func_00203A40(0, 2, 2) != 0) {
+                        high = (high + 257) % 256;
+                    }
+                    *value = low + (high << 8);
+                    break;
+                }
+                case 26:
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        *value = (*value + limit - 1) % limit;
+                        if (*value == 0) {
+                            *value = limit - 1;
+                        }
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        *value = (*value + limit + 1) % limit;
+                        if (*value == 0) {
+                            *value = 1;
+                        }
+                    }
+                    break;
+                case 27:
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        *value = (*value + limit - 1) % limit;
+                        if (*value == 0) {
+                            *value = 12;
+                        }
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        *value = (*value + limit + 1) % limit;
+                        if (*value == 0) {
+                            *value = 1;
+                        }
+                    }
+                    break;
+                default:
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        *value = (*value + limit - 1) % limit;
+                    }
+                    if (func_00203A40(0, 2, 8) != 0) {
+                        *value = (*value + limit + 1) % limit;
+                    }
+                    break;
+                }
+                if (*value != previous) {
+                    func_00217710(0, 3);
+                }
+            }
+            switch (item) {
+            case 2:
+            case 3:
+            case 4:
+            case 29:
+            case 30:
+                return;
+            case 6:
+                if (func_00203A40(0, 0, 0x10) != 0) {
+                    if ((s32) menu->values[1] < 22) {
+                        high = menu->values[1] + 26;
+                        if (menu->values[1] == 0) {
+                            high = 17;
+                        }
+                        func_00217710(0, 4);
+                        func_00214990(*(u32 *) (offset + (u32) menu + 0x138), high);
+                        return;
+                    } else {
+                        func_00217710(0, 6);
+                        return;
+                    }
+                } else if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    func_001A8870(item, 0);
+                }
+                return;
+            case 10:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    func_001A8870(item, 0);
+                }
+                return;
+            case 13:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    *(u32 *) (offset + (u32) menu + 0x138) = 1;
+                    func_001A8870(item, 0);
+                }
+                return;
+            case 15:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    *(u32 *) (offset + (u32) menu + 0x138) = 1;
+                    func_001A8870(item, 0);
+                }
+                return;
+            case 17:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    u8 *address;
+                    u8 *directory;
+                    File_001A7380 *loaded;
+                    address = (u8 *) 0x04000000;
+                    directory = func_001FFF90((s32) D_002BE7D0);
+                    low = menu->values[17] % 100U;
+                    high = menu->values[17] / 100U;
+                    menu->secondAddress = 0;
+                    menu->firstAddress = 0;
+                    func_0019B648(filename, D_002BE7D5, (s32) directory, low);
+                    if ((loaded = (File_001A7380 *) func_001FFD30((s32) filename, (s32) address, -1)) != NULL) {
+                        menu->firstAddress = 0x04000000;
+                        func_0020F250(menu->firstAddress);
+                        address = (u8 *) 0x04000000 + ((loaded->size + 63) & ~63);
+                    }
+                    if (high != 0) {
+                        func_0019B648(filename, D_002BE7D5, directory, high);
+                        if (func_001FFD30((s32) filename, (s32) address, -1) != 0) {
+                            menu->secondAddress = (s32) address;
+                            func_0020F250(menu->secondAddress);
+                        }
+                    }
+                    if (menu->firstAddress != 0 || menu->secondAddress != 0) {
+                        func_00217710(0, 4);
+                        func_001A8870(item, 0);
+                        return;
+                    } else {
+                        func_00217710(0, 6);
+                        return;
+                    }
+                }
+                return;
+            case 20:
+                menu->mode = *(s8 *) &menu->values[20];
+                return;
+            case 21:
+                menu->flags.enabled = *(s8 *) &menu->values[21];
+                return;
+            case 22:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217980(menu->values[22], 1);
+                    return;
+                } else if (func_00203A40(0, 0, 0x20) != 0) {
+                    func_00217A10(0x100);
+                    return;
+                }
+                return;
+            case 23: {
+                s32 channel;
+                s32 sound;
+                channel = menu->values[23] / 1000U;
+                sound = menu->values[23] % 1000U;
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217590(channel, sound, 1);
+                }
+                return;
+            }
+            case 24: {
+                s32 channel;
+                channel = menu->values[23] / 1000U;
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(channel, menu->values[24]);
+                    return;
+                } else if (func_00203A40(0, 0, 0x20) != 0) {
+                    func_002178C0(channel, menu->values[24]);
+                    return;
+                }
+                return;
+            }
+            case 25:
+                if (func_00203A40(0, 0, 0x10) != 0) {
+                    if (menu->values[25] != 0) {
+                        func_00109D70(0);
+                        func_00217410();
+                    } else {
+                        func_00109FC0();
+                        func_00109D70(1);
+                        func_002174D0();
+                    }
+                }
+                func_00214BB0(0, 2, menu->values[25]);
+                return;
+            case 26:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_0010A160(menu->values[26], 0x80);
+                    func_00217710(0, 4);
+                }
+                return;
+            case 27:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    s32 count;
+                    s32 i;
+                    count = menu->values[27];
+                    i = 0;
+                    do {
+                        func_002172D0(0, i, count);
+                        func_002172D0(1, i, count);
+                        i++;
+                    } while (i < 854);
+                    func_00217710(0, 4);
+                }
+                return;
+            case 31:
+                func_00214BB0(0, 1, menu->values[31]);
+                return;
+            case 32:
+                func_00214BB0(0, 0, menu->values[32]);
+                return;
+            case 16:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_001A8360(*(u32 *) (offset + (u32) menu + 0x138), 1, 1);
+                }
+                return;
+            case 33:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    if (func_001FF300() == 0) {
+                        func_002009E0(menu->values[33], 1);
+                        func_00217710(0, 4);
+                        return;
+                    } else {
+                        func_00217710(0, 6);
+                        return;
+                    }
+                }
+                return;
+            case 34:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    func_001AAFA0(0);
+                }
+                return;
+            case 35:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    func_001AAFA0(1);
+                }
+                return;
+            default:
+                if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    func_001A8870(item, 0);
+                }
+                return;
+            }
+        }
+}
 
 typedef struct {
     u8 padding[0x138];
@@ -641,7 +1058,6 @@ typedef struct {
 
 extern u8 D_00317472;
 
-void func_001A7380(void);
 void func_001AC700(void);
 void func_001B8840(void);
 void func_001CC620(void);
