@@ -354,7 +354,21 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001CA7C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CB6B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC380);
+void func_001CC380(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    s32 text = (s32)D_002BEF98;
+    s8 *text2 = D_002BEF6F;
+    s8 *text3 = D_002BEF73;
+    s32 id;
+
+    arg0 = func_001B0CE0(arg0, 2, -1, 0x91, arg1 + 0x140, arg2 + 0x94, 0x140, 0x98,
+                         func_0019BEF0((char *)text), text, 0);
+    id = func_001B6F70(arg0, arg1 + 0xF0, arg2 + 0x108, 2, 3, func_0019BEF0((char *)text2), text2,
+                       *(u8 *)0xA9C08E != 0 ? 0 : (s32)D_002BE944);
+    func_001B6F70(id, arg1 + 0x190, arg2 + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
+                  *(u8 *)0xA9C08E != 0 ? (s32)D_002BE944 : 0);
+}
 
 typedef struct {
     u8 enabled : 1;
