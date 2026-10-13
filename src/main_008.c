@@ -1265,7 +1265,34 @@ s32 func_00130780(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_001307E0);
+s32 func_001307E0(s32 arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    s32 data[4];
+    s32 i;
+    s32 mask;
+    s32 coords;
+    s32 card;
+    s32 y;
+    s32 x;
+    s32 cell;
+
+    func_00254C90(data, *(s32 *) ((u8 *) func_0026FC90(arg1, 0) + 4));
+    if ((mask = func_00254890(data, arg0)) < 0) {
+        return 0;
+    }
+    for (i = 0; i < func_0024E910(mask); i++) {
+        cell = func_0024EC50(mask, i);
+        x = cell >> 8;
+        y = cell & 0xFF;
+        coords = func_001E1090(x, y);
+        card = func_001E1030(x, y);
+        if (func_002509E0(x, y, coords & 0xFF, coords >> 8) >= 3000 || card == 0x12A ||
+            (card == 0x131 && func_001E2100(x, y, 4) == 0) || card == 0x146) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_008", func_00130940);
 
