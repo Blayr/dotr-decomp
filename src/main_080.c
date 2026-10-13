@@ -252,7 +252,194 @@ void func_00280670(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00280920);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00280CB0);
+#pragma optimization_level 0
+
+void func_00280CB0(s32 arg0) {
+    extern u8 *D_00351230;
+    u16 symbols[3][3];
+    s32 row;
+    s32 column;
+    s32 offset;
+    s32 clear;
+
+    for (row = 0; row < 3; row++) {
+        if (D_00351240[row].enabled != 4) {
+            symbols[row][0] = symbols[row][1] = symbols[row][2] = 0xFFFF;
+        } else {
+            offset = D_00351240[row].position / 0x70;
+            for (column = 0; column < 3; column++) {
+                symbols[row][column] = D_00351240[row].symbols[(offset + column) % *D_00351230];
+            }
+        }
+    }
+    for (column = 0; column < 5; column++) {
+        if (D_00351242 & (1 << column)) {
+            clear = 0;
+            switch (column) {
+            case 0:
+                if ((symbols[arg0][1]) == 0x334) {
+                    clear = 1;
+                }
+                switch (arg0) {
+                case 0:
+                    if (((symbols[1][1]) != 0xFFFF) && ((symbols[0][1]) != (symbols[1][1]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][1]) != 0xFFFF) && ((symbols[0][1]) != (symbols[2][1]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 1:
+                    if (((symbols[0][1]) != 0xFFFF) && ((symbols[1][1]) != (symbols[0][1]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][1]) != 0xFFFF) && ((symbols[1][1]) != (symbols[2][1]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 2:
+                    if (((symbols[0][1]) != 0xFFFF) && ((symbols[2][1]) != (symbols[0][1]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[1][1]) != 0xFFFF) && ((symbols[2][1]) != (symbols[1][1]))) {
+                        clear = 1;
+                    }
+                    break;
+                }
+                break;
+            case 1:
+                if ((symbols[arg0][2]) == 0x334) {
+                    clear = 1;
+                }
+                switch (arg0) {
+                case 0:
+                    if (((symbols[1][2]) != 0xFFFF) && ((symbols[0][2]) != (symbols[1][2]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][2]) != 0xFFFF) && ((symbols[0][2]) != (symbols[2][2]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 1:
+                    if (((symbols[0][2]) != 0xFFFF) && ((symbols[1][2]) != (symbols[0][2]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][2]) != 0xFFFF) && ((symbols[1][2]) != (symbols[2][2]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 2:
+                    if (((symbols[0][2]) != 0xFFFF) && ((symbols[2][2]) != (symbols[0][2]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[1][2]) != 0xFFFF) && ((symbols[2][2]) != (symbols[1][2]))) {
+                        clear = 1;
+                    }
+                    break;
+                }
+                break;
+            case 2:
+                if ((symbols[arg0][0]) == 0x334) {
+                    clear = 1;
+                }
+                switch (arg0) {
+                case 0:
+                    if (((symbols[1][0]) != 0xFFFF) && ((symbols[0][0]) != (symbols[1][0]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][0]) != 0xFFFF) && ((symbols[0][0]) != (symbols[2][0]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 1:
+                    if (((symbols[0][0]) != 0xFFFF) && ((symbols[1][0]) != (symbols[0][0]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][0]) != 0xFFFF) && ((symbols[1][0]) != (symbols[2][0]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 2:
+                    if (((symbols[0][0]) != 0xFFFF) && ((symbols[2][0]) != (symbols[0][0]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[1][0]) != 0xFFFF) && ((symbols[2][0]) != (symbols[1][0]))) {
+                        clear = 1;
+                    }
+                    break;
+                }
+                break;
+            case 3:
+                if ((symbols[arg0][2 - arg0]) == 0x334) {
+                    clear = 1;
+                }
+                switch (arg0) {
+                case 0:
+                    if (((symbols[1][1]) != 0xFFFF) && ((symbols[0][2]) != (symbols[1][1]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][0]) != 0xFFFF) && ((symbols[0][2]) != (symbols[2][0]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 1:
+                    if (((symbols[0][2]) != 0xFFFF) && ((symbols[1][1]) != (symbols[0][2]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][0]) != 0xFFFF) && ((symbols[1][1]) != (symbols[2][0]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 2:
+                    if (((symbols[0][2]) != 0xFFFF) && ((symbols[2][0]) != (symbols[0][2]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[1][1]) != 0xFFFF) && ((symbols[2][0]) != (symbols[1][1]))) {
+                        clear = 1;
+                    }
+                    break;
+                }
+                break;
+            case 4:
+                if ((symbols[arg0][arg0]) == 0x334) {
+                    clear = 1;
+                }
+                switch (arg0) {
+                case 0:
+                    if (((symbols[1][1]) != 0xFFFF) && ((symbols[0][0]) != (symbols[1][1]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][2]) != 0xFFFF) && ((symbols[0][0]) != (symbols[2][2]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 1:
+                    if (((symbols[0][0]) != 0xFFFF) && ((symbols[1][1]) != (symbols[0][0]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[2][2]) != 0xFFFF) && ((symbols[1][1]) != (symbols[2][2]))) {
+                        clear = 1;
+                    }
+                    break;
+                case 2:
+                    if (((symbols[0][0]) != 0xFFFF) && ((symbols[2][2]) != (symbols[0][0]))) {
+                        clear = 1;
+                    }
+                    if (((symbols[1][1]) != 0xFFFF) && ((symbols[2][2]) != (symbols[1][1]))) {
+                        clear = 1;
+                    }
+                    break;
+                }
+                break;
+            }
+            if (clear != 0) {
+                D_00351242 &= (u8)~(1 << column);
+            }
+        }
+    }
+    D_00351240[arg0].center = symbols[arg0][1];
+}
+#pragma optimization_level reset
 
 typedef struct {
     u8 pad[4];
