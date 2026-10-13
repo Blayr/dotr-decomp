@@ -179,8 +179,8 @@ void func_001F6480(s32 arg0) {
     func_001F6490(D_0031BE98, arg0);
 }
 
-s32 func_001F6490(void) {
-    if (func_001F64C0() >= 0) {
+s32 func_001F6490(s32 arg0, u8 *arg1) {
+    if (func_001F64C0(arg0, arg1) >= 0) {
         return 1;
     }
     return 0;
