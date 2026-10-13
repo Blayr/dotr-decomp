@@ -1163,7 +1163,29 @@ s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE290);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE660);
+typedef struct Rect_001FE660 {
+    s32 x;
+    s32 y;
+    s32 w;
+    s32 h;
+} Rect_001FE660;
+
+typedef s32 (*Draw_001FE660)(s32, s32, s64, s64, Rect_001FE660 *, s32);
+
+s32 func_001FE660(s32 arg0, s32 arg1, s64 arg2, s64 arg3, f32 scaleX, f32 scaleY, s32 arg4, void (*arg5)(void)) {
+    extern Rect_001FE660 D_002CFCD0;
+    Rect_001FE660 rect;
+    s32 *info;
+
+    info = func_001FEAB0(arg1);
+    rect = D_002CFCD0;
+    if (info == NULL) {
+        return arg0;
+    }
+    rect.w = (s32)((f32)info[3] * scaleX);
+    rect.h = (s32)((f32)info[4] * scaleY);
+    return ((Draw_001FE660)arg5)(arg0, arg1, arg2, arg3, &rect, arg4);
+}
 
 void func_001FE750(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_00209D30(func_001FE7D0(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
