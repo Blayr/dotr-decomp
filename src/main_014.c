@@ -2610,7 +2610,203 @@ s32 func_001607D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_00160DA0);
+typedef struct Input_00160DA0 {
+    u16 position;
+    u8 pad[6];
+    u32 destinations;
+} Input_00160DA0;
+
+typedef struct Output_00160DA0 {
+    u16 position;
+    u8 action;
+    u8 pad3;
+    u16 destination;
+    u8 pad6[6];
+    s32 direct;
+    u8 result;
+} Output_00160DA0;
+
+typedef struct Coord_00160DA0 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_00160DA0;
+
+s32 func_002464F0(s32, s32, s32);
+s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
+
+static inline u32 destination_00160DA0(void *src, s32 which) {
+    if (which == 1) {
+        return (u16)(((Input_00160DA0 *)src)->destinations >> 16);
+    }
+    return (u16)((Input_00160DA0 *)src)->destinations;
+}
+
+static inline s32 closer_00160DA0(Coord_00160DA0 *best, Coord_00160DA0 *current,
+                                  s32 targetX, s32 targetY) {
+    s32 minBestY = best->y < targetY ? best->y : targetY;
+    s32 maxBestY = targetY < best->y ? best->y : targetY;
+    s32 minBestX = best->x < targetX ? best->x : targetX;
+    s32 maxBestX = targetX < best->x ? best->x : targetX;
+    s32 minCurrentY = current->y < targetY ? current->y : targetY;
+    s32 maxCurrentY = targetY < current->y ? current->y : targetY;
+    s32 minCurrentX = current->x < targetX ? current->x : targetX;
+    s32 maxCurrentX = targetX < current->x ? current->x : targetX;
+
+    return (maxCurrentX - minCurrentX) + (maxCurrentY - minCurrentY) <
+           (maxBestX - minBestX) + (maxBestY - minBestY);
+}
+
+s32 func_00160DA0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern s32 func_001620B0();
+    extern void func_0027A090();
+    Coord_00160DA0 coords[12];
+    s32 original;
+    s32 count;
+    s32 originalY;
+    s32 originalX;
+    s32 direct;
+    s32 target;
+    s32 targetX;
+    Coord_00160DA0 *current;
+    s32 fallback;
+    s32 sourcePosition;
+    s32 mode;
+    s32 i;
+    s32 bestCost;
+    s32 bestIndex;
+    u32 destinationForX;
+    u32 destinationForY;
+    Input_00160DA0 *input = arg0;
+    Output_00160DA0 *output = arg2;
+
+    mode = arg3;
+    destinationForX = destination_00160DA0(arg0, mode);
+    destinationForY = destination_00160DA0(arg0, mode);
+    if (func_001DF540(destinationForY >> 8, destinationForX & 0xFF) == 0) {
+        func_0027B1B0(arg0, 1);
+        return -1;
+    }
+    fallback = func_001620B0(input->position >> 8,
+                            input->position & 0xFF, arg0);
+    original = func_001E1090(input->position >> 8,
+                            input->position & 0xFF);
+    destinationForX = destination_00160DA0(arg0, mode);
+    destinationForY = destination_00160DA0(arg0, mode);
+    target = func_001E1090(destinationForY >> 8, destinationForX & 0xFF);
+    {
+        s32 j = 0;
+        do {
+            coords[j].x = coords[j].y = 15;
+            j++;
+        } while (j < 12);
+    }
+    {
+        s32 card = func_001DF540(input->position >> 8,
+                                input->position & 0xFF);
+        originalX = original & 0xFF;
+        originalY = original >> 8;
+        if (func_002464F0(card, originalX, originalY) == 0) {
+            s32 cost;
+            output->position = input->position;
+            output->action = 6;
+            output->destination = original;
+            cost = func_00276CC0(originalX, originalY, arg1, 3, 1,
+                                (u8)func_00162580(arg1));
+            if (cost >= func_001E0290(input->position >> 8,
+                                     input->position & 0xFF, 0)) {
+                output->result = func_0027E360(
+                    input->position >> 8,
+                    input->position & 0xFF,
+                    output->destination, 1, 0);
+            } else {
+                output->result = func_0027E360(
+                    input->position >> 8,
+                    input->position & 0xFF,
+                    output->destination, 0, 0);
+            }
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        } else {
+            s32 sourceY;
+            s32 sourceX;
+            u16 leader;
+            sourcePosition = input->position;
+            leader = (u16)func_00162580(arg1);
+            sourceY = sourcePosition >> 8;
+            sourceX = sourcePosition & 0xFF;
+            targetX = target & 0xFF;
+            func_0027A090(sourceY, sourceX,
+                          coords, originalX, originalY, targetX, target >>= 8,
+                          destination_00160DA0(arg0, mode), 0, 30,
+                          leader);
+            count = func_0027AFC0((u8 *)coords);
+            bestIndex = 0xFF;
+            if (count > 0) {
+                direct = 0;
+                bestCost = 0xFFFF;
+                for (i = 0; i < count; i++) {
+                    if (func_00162390(input->position >> 8,
+                                      input->position & 0xFF,
+                                      originalX, originalY, targetX, target) == 1) {
+                        bestIndex = i;
+                        direct = 1;
+                        coords[i].x = targetX;
+                        coords[i].y = target;
+                        i = count;
+                    } else {
+                        s32 cost;
+                        current = &coords[i];
+                        cost = func_00276CC0(current->x, current->y, arg1, 2, 1,
+                                             (u8)func_00162580(arg1));
+                        if (cost < bestCost) {
+                            bestCost = cost;
+                            bestIndex = i;
+                        } else if (cost == bestCost) {
+                            if (closer_00160DA0(&coords[bestIndex], current, targetX, target)) {
+                                bestCost = cost;
+                                bestIndex = i;
+                            }
+                        }
+                    }
+                }
+            } else {
+                output->position = input->position;
+                output->action = 6;
+                output->destination = original;
+                output->direct = fallback;
+                output->result = func_0027E360(
+                    input->position >> 8,
+                    input->position & 0xFF,
+                    output->destination, 0, 0);
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+            if (bestIndex != 0xFF) {
+                output->position = input->position;
+                output->action = 6;
+                output->destination = (coords[bestIndex].y << 8) | coords[bestIndex].x;
+                output->direct = direct;
+                output->result = func_0027E360(
+                    input->position >> 8,
+                    input->position & 0xFF,
+                    output->destination, 0, 0);
+            } else {
+                output->position = input->position;
+                output->action = 6;
+                output->destination = original;
+                output->direct = direct;
+                output->result = func_0027E360(
+                    input->position >> 8,
+                    input->position & 0xFF,
+                    output->destination, 0, 0);
+                func_0027B1B0(arg0, arg3);
+                return 0;
+            }
+
+        }
+    }
+    return 0;
+}
 
 typedef struct Coord_00161380 {
     u8 x : 4;
