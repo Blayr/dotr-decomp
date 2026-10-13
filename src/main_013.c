@@ -12,7 +12,41 @@ s32 func_00153ED0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00153F30);
+typedef struct Entry_00153F30 {
+    u8 *data;
+    u8 rest[0x5C];
+} Entry_00153F30;
+
+s32 func_00153F30(s32 arg0) {
+    extern s32 func_001DEE50(s32);
+    s32 i;
+    s32 bestScore;
+    s32 result;
+    s32 card;
+    Entry_00153F30 entry;
+    u32 *effect;
+    u8 score;
+
+    bestScore = 0x28;
+    result = -1;
+    if (func_001E01F0(arg0) >= 5) {
+        return result;
+    }
+
+    for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
+        card = func_001DEE00(arg0 == 0 ? 1 : 0, i);
+        if ((func_0026FCE0(card) >> 5) != 0) {
+            func_001DCD70(&entry, card);
+            effect = (u32 *)func_001E09E0(&entry, 0);
+            score = entry.data[3];
+            if (score >= bestScore && (*effect >> 8) != 0x14) {
+                bestScore = score;
+                result = i | ((arg0 == 0 ? 1 : 0) << 16);
+            }
+        }
+    }
+    return result;
+}
 
 typedef struct {
     u16 unk0;
