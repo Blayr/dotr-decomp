@@ -1873,6 +1873,7 @@ s32 func_0026FA70(s32 arg0, s32 arg1);
 s32 func_0026FA80(s32 arg0, s32 arg1);
 s32 func_0026FB10(s32 arg0, s32 arg1);
 s32 func_0026FB60(s32 arg0, s32 arg1);
+u32 func_0026FBB0(s32 arg0);
 s32 func_0026FC10(s32 arg0);
 void *func_0026FC90(s32 arg0, s32 arg1);
 s32 func_0026FCE0(s32 arg0);

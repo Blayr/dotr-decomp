@@ -102,7 +102,24 @@ s32 func_0026FB60(s32 arg0, s32 arg1) {
     return (func_001DE5C0(arg0) < temp_s0) ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FBB0);
+typedef struct CardStats_0026FBB0 {
+    u8 padding[8];
+    u16 attack;
+    u16 defense;
+} CardStats_0026FBB0;
+
+u32 func_0026FBB0(s32 arg0) {
+    CardStats_0026FBB0 *card;
+
+    if (arg0 == 0x3E7) {
+        return 0U;
+    }
+    card = (CardStats_0026FBB0 *)func_001DD0E0(arg0);
+    if (card == NULL) {
+        return 0U;
+    }
+    return ((card->attack & 0x1FFF) << 16) | (card->defense & 0x1FFF);
+}
 
 s32 func_0026FC10(s32 arg0) {
     u8 *p;
