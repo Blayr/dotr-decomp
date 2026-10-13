@@ -704,7 +704,148 @@ void func_002464E0(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002464F0);
+typedef struct Effect_002464F0 {
+    u32 kind;
+    u16 value;
+} Effect_002464F0;
+
+typedef struct Flags_002464F0 {
+    s8 unused : 2;
+    s8 active : 1;
+    s8 rest : 5;
+} Flags_002464F0;
+
+typedef struct Card_002464F0 {
+    u8 pad0[0x10];
+    Effect_002464F0 effect;
+    u8 pad18[0x26];
+    u8 affiliation;
+    u8 pad3F[5];
+    u8 type;
+    u8 present;
+    u8 pad46[0x11];
+    Flags_002464F0 flags;
+} Card_002464F0;
+
+s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 var_s0;
+    s32 temp_s1;
+    s32 var_s2;
+    s32 temp_v0;
+    s32 var_v0;
+    u32 temp_a0;
+    u32 temp_a1;
+    u32 temp_a1_2;
+    u32 temp_v1;
+    u8 temp_a0_3;
+    u8 temp_a0_4;
+    Effect_002464F0 *temp_a0_2;
+    Effect_002464F0 *temp_v0_2;
+    Effect_002464F0 *temp_v0_3;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    var_s2 = 0;
+    if (((Card_002464F0 *)arg0)->present == 0) {
+        var_v0 = func_00271740(4, ((Card_002464F0 *)arg0)->type);
+        if (var_v0 != 0) {
+            var_v0 = 2;
+        } else {
+            var_v0 = 1;
+        }
+        return var_v0;
+    }
+    if (((Card_002464F0 *)arg0)->flags.active == 0) {
+        var_v0 = 1;
+        temp_a0_2 = &((Card_002464F0 *)arg0)->effect;
+        if (temp_a0_2 != NULL) {
+            temp_a0 = temp_a0_2->kind >> 8;
+            if ((temp_a0 == 8) || ((u32) (temp_a0 - 9) < 2U)) {
+                var_v0 |= 0x10;
+            }
+            if (temp_a0 == 0x4F) {
+                return 0;
+            }
+            return var_v0;
+        }
+        return var_v0;
+    }
+    temp_s1 = (arg2 << 8) | arg1;
+    temp_v0 = func_0024DEB0(func_001E22B0(temp_s1 & 0xFF, temp_s1 >> 8), (void *)arg0);
+    switch (temp_v0) {
+    case 0:
+    case 2:
+        var_s2 = 1;
+        break;
+    case 1:
+        var_s2 = 2;
+        break;
+    }
+    temp_a0_2 = &((Card_002464F0 *)arg0)->effect;
+    if (temp_a0_2 != NULL) {
+        temp_v1 = temp_a0_2->kind >> 8;
+        if (temp_v1 == 6) {
+            var_s2 = temp_a0_2->value;
+        } else if ((u32) (temp_v1 - 8) < 3U) {
+            var_s2 |= 0x10;
+        } else if (temp_v1 == 0x4F) {
+            return 0;
+        }
+    }
+    var_s0 = 0;
+    do {
+        if (func_001E2100(0, var_s0, 4) == 1) {
+            if (func_001E2100(0, var_s0, 5) == 1) {
+                temp_v0_2 = func_00250740(0, var_s0, 2);
+                if (temp_v0_2 != NULL) {
+                    temp_a1 = temp_v0_2->kind;
+                    if ((temp_a1 >> 8) == 6) {
+                        switch (temp_a1 & 0x3F) {
+                        case 0xF:
+                            temp_a0_3 = ((Card_002464F0 *)arg0)->affiliation;
+                            if (((temp_a0_3 & 0x1F) == 0xF) && (((s32) temp_a0_3 >> 5) == 0)) {
+                                var_s2 = ((var_s2 >> 4) << 4) | temp_v0_2->value;
+                            }
+                            break;
+                        default:
+                            var_s2 = ((var_s2 >> 4) << 4) | temp_v0_2->value;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if ((func_001E2100(1, var_s0, 4) == 1) && (func_001E2100(1, var_s0, 5) == 1)) {
+            temp_v0_3 = func_00250740(1, var_s0, 2);
+            if (temp_v0_3 != NULL) {
+                temp_a1_2 = temp_v0_3->kind;
+                if ((temp_a1_2 >> 8) == 6) {
+                    switch (temp_a1_2 & 0x3F) {
+                    case 0xF:
+                        temp_a0_4 = ((Card_002464F0 *)arg0)->affiliation;
+                        if (((temp_a0_4 & 0x1F) == 0xF) && (((s32) temp_a0_4 >> 5) == 0)) {
+                            var_s2 = ((var_s2 >> 4) << 4) | temp_v0_3->value;
+                        }
+                        break;
+                    default:
+                        var_s2 = ((var_s2 >> 4) << 4) | temp_v0_3->value;
+                        break;
+                    }
+                }
+            }
+        }
+        var_s0 += 1;
+    } while (var_s0 < 0xB);
+    if (func_00266C70(0x43, 0) >= 0) {
+        var_s2 = ((var_s2 >> 4) << 4) | 1;
+    }
+    var_v0 = var_s2;
+    if (func_00271F00(temp_s1, ((Card_002464F0 *)arg0)->type, ((Card_002464F0 *)arg0)->affiliation & 0x1F, 0xC) == 1) {
+        var_v0 = ((var_s2 >> 4) << 4) | 2;
+    }
+    return var_v0;
+}
 
 s32 func_001E1E70(s32, s32, s32, s32);
 

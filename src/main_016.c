@@ -186,7 +186,6 @@ typedef struct Output_00169A10 {
 } Output_00169A10;
 
 void func_001E1E70(s32, s32, s32, s32);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -345,7 +344,6 @@ static inline u32 destination_00169FE0(void *src, u8 mode) {
     return *(u16 *)((u8 *)src + 8);
 }
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_00169FE0(void *src, s32 arg1, u16 *out, u8 arg3) {
@@ -2960,7 +2958,6 @@ s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
 }
 
 void func_001E1E70(s32, s32, s32, s32);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -3123,7 +3120,6 @@ typedef struct Position_00170F10 {
     u8 y : 4;
 } Position_00170F10;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_00170F10(void *arg0, u8 which) {

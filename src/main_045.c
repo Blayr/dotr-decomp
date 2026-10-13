@@ -1215,7 +1215,6 @@ typedef struct Card_001E1760 {
     u8 type;
 } Card_001E1760;
 
-s32 func_002464F0(s32, s32, s32);
 
 s32 func_001E1760(void) {
     extern void *func_001DD130();
@@ -1241,7 +1240,6 @@ typedef struct {
     u8 type;
 } Card_001E17D0;
 
-s32 func_002464F0(s32, s32, s32);
 
 static inline void *get_card_001E17D0(void) {
     extern void *func_001DD130();

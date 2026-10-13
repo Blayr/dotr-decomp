@@ -242,7 +242,6 @@ typedef struct {
     u8 mode;
 } Output_00124F60;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
@@ -402,7 +401,6 @@ typedef struct Position_00125500 {
 } Position_00125500;
 
 s32 func_00126380(s32, s32, void *);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_00125500(void *arg0, u8 which) {
@@ -1638,7 +1636,6 @@ typedef struct {
     u8 mode;
 } Output_001291C0;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
@@ -1781,7 +1778,6 @@ typedef struct Result_00129700 {
 
 s32 func_0012B210(s32, s32, void *);
 void func_001E1E70(s32, s32, s32, s32);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -1948,7 +1944,6 @@ typedef struct {
 } Point_00129D00;
 
 s32 func_0012B210(s32, s32, void *);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 #define TARGET_00129D00(in, mode) ((mode) == 1 ? (u16)((in)->targets >> 16) : (in)->targets & 0xFFFF)
@@ -2260,7 +2255,6 @@ typedef struct {
 #define MIN_0012AAC0(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_0012AAC0(a, b) ((b) < (a) ? (a) : (b))
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0012AAC0(void *arg0, s32 mode) {

@@ -314,7 +314,6 @@ s32 func_002774F0(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u
     return var_v0;
 }
 
-s32 func_002464F0(s32, s32, s32);
 
 typedef struct Visit_002777F0 {
     u16 id;
@@ -1043,7 +1042,6 @@ typedef struct Node_002794E0 {
     u8 *children[48];
 } Node_002794E0;
 
-s32 func_002464F0(s32, s32, s32);
 
 u8 *func_002794E0(u8 *node, s32 parent, s32 card, s32 x, s32 y,
                   s32 targetX, s32 targetY, u8 limit, s8 *found, s32 mode,
@@ -1130,7 +1128,6 @@ void func_00279850(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
     func_002798C0(func_001DF540(arg0, arg1), arg2, arg3, arg4, arg5, arg6);
 }
 
-s32 func_002464F0();
 
 static inline s32 distance_002798C0(s32 y1, s32 x1, s32 y2, s32 x2) {
     return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
@@ -1414,7 +1411,6 @@ u8 *func_0027A360(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, 
     return var_s6;
 }
 
-s32 func_002464F0();
 
 static inline s32 distance_0027A710(s32 y1, s32 x1, s32 y2, s32 x2) {
     return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +

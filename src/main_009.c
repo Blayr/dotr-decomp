@@ -759,7 +759,6 @@ typedef struct {
 } Output_001374D0;
 
 s32 func_00139180(s32, s32, void *);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -902,7 +901,6 @@ typedef struct Coordinate_001379F0 {
 } Coordinate_001379F0;
 
 s32 func_00139180(s32, s32, void *);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline s32 destination_001379F0(void *src, u8 mode) {
@@ -2602,7 +2600,6 @@ typedef struct Output_0013BE60 {
 } Output_0013BE60;
 
 void func_001E1E70(s32, s32, s32, s32);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -2753,7 +2750,6 @@ typedef struct Output_0013C430 {
     u8 result;
 } Output_0013C430;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 destination_0013C430(void *src, s32 mode) {

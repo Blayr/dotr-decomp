@@ -322,7 +322,6 @@ s32 func_0027B860(u16 *arg0, s32 arg1) {
     return bestPos;
 }
 
-s32 func_002464F0(s32, s32, s32);
 
 static inline s32 min_0027B9B0(s32 a, s32 b) {
     return (a >= b + 1) ? b : a;

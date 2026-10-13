@@ -1101,7 +1101,6 @@ typedef struct {
     u8 mode;
 } Output_0011F540;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
@@ -1261,7 +1260,6 @@ typedef struct Position_0011FAE0 {
 } Position_0011FAE0;
 
 s32 func_001211B0(s32, s32, void *);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0011FAE0(void *arg0, u8 which) {
@@ -1453,7 +1451,6 @@ typedef struct Position_00120150 {
     u8 y : 4;
 } Position_00120150;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_00120150(Input_00120150 *src, u8 kind) {

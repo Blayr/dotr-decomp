@@ -266,7 +266,6 @@ typedef struct {
     u8 mode;
 } Output_00144EC0;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, u16, s32, u16, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -1669,7 +1668,6 @@ typedef struct Output_00149690 {
 } Output_00149690;
 
 void func_001E1E70(s32, s32, s32, s32);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, u16, s32, u16, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 

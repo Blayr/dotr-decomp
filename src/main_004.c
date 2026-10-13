@@ -919,7 +919,6 @@ typedef struct {
     u8 mode;
 } Output_0010FA60;
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 static inline s32 score_0010FA60(s32 arg0) {
@@ -1077,7 +1076,6 @@ typedef struct Coord_0010FFF0 {
 } Coord_0010FFF0;
 
 s32 func_0010EE00(s32, s32, void *);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_0010FFF0(void *src, u8 mode) {

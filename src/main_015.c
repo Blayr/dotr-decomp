@@ -1287,7 +1287,6 @@ typedef struct Output_001658F0 {
 } Output_001658F0;
 
 s32 func_001E1E70(s32, s32, s32, s32);
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -1447,7 +1446,6 @@ static inline u32 target_00165EC0(void *input, u8 mode) {
     return *(u16 *)&p->targets;
 }
 
-s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_00165EC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
