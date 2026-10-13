@@ -1665,6 +1665,7 @@ void func_00233F50(s8 arg0);
 void *func_002351A0(void *arg0);
 void func_0023BB00(s32 arg0);
 void func_0023BC80(void);
+void *func_0023BFF0(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2);
 s8 func_0023C140(void);
 void func_0023C150(void);
 s32 func_0023C160(void);

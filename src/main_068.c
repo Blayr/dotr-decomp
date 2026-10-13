@@ -70,7 +70,60 @@ void func_0023BC80(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BCE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BFF0);
+typedef struct Flags_0023BFF0 {
+    s8 unused : 4;
+    s8 horizontal : 1;
+    s8 enabled : 1;
+    s8 colored : 1;
+    s8 reserved : 1;
+} Flags_0023BFF0;
+
+typedef struct Draw_0023BFF0 {
+    u8 pad00[0x10];
+    s32 field10;
+    s32 field14;
+    s32 field18;
+    s32 field1C;
+    u8 vector20[0x10];
+    s32 field30;
+    s32 field34;
+    u8 pad38[0x49];
+    Flags_0023BFF0 flags;
+    u8 pad82[0xE];
+} Draw_0023BFF0;
+
+typedef struct Texture_0023BFF0 {
+    u8 pad00[0x44];
+    u8 field44;
+    u8 pad45[0x1B];
+} Texture_0023BFF0;
+
+void *func_0023BFF0(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2) {
+    extern void func_001CD560();
+    Texture_0023BFF0 texture;
+    Draw_0023BFF0 draw;
+
+    func_001CD560(&draw);
+    draw.flags.enabled = 1;
+    draw.flags.colored = 1;
+    draw.flags.reserved = 0;
+    draw.flags.horizontal = 1;
+    draw.field30 = 0x3F000000;
+    draw.field34 = 0x3F000000;
+    func_001DCD70(&texture, 999);
+    texture.field44 = arg1;
+    func_00205C40((s32)draw.vector20);
+    draw.field10 = 0;
+    draw.field14 = arg2;
+    draw.field18 = 0;
+    draw.field1C = 0;
+    arg0 = (void *)func_001D9A20((s32)arg0);
+    func_001D9ED0(0xFFFFFF);
+    func_00205CB0(&draw, fparg0, fparg1);
+    return (void *)func_001D9E70(func_001DBD30(
+        func_001DBC40((s32)arg0, (s32)(func_001D9F00(&draw, 1) ? &texture : NULL), &draw),
+        (s32)&draw));
+}
 
 s8 func_0023C140(void) {
     return D_00299EDA;

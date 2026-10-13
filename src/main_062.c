@@ -420,7 +420,6 @@ typedef struct {
 
 void *func_0021DFF0(void *, s32, s32, s32, f32, s32, s32, s32);
 void *func_002297C0(s32);
-void *func_0023BFF0(void *, f32, s32, f32, s32);
 extern s16 D_00298AD0;
 extern s16 D_00298AD2;
 extern s16 D_00298AD4;
