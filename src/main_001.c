@@ -558,7 +558,122 @@ s32 func_00104520(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00104540);
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00104DC0);
+typedef struct {
+    u16 val : 14;
+    u16 hi : 2;
+} Coord_00104DC0;
+
+typedef struct {
+    u8 pad0[8];
+    union {
+        struct {
+            Coord_00104DC0 x;
+            Coord_00104DC0 y;
+        } uv;
+        struct {
+            f32 s;
+            f32 t;
+        } st;
+    } tex;
+    u8 pad10[8];
+} Vert_00104DC0;
+
+typedef struct {
+    u16 pad0;
+    u16 flags;
+    u8 pad4[0xC];
+    Vert_00104DC0 v[4];
+} Sprite_00104DC0;
+
+typedef struct {
+    s16 u;
+    s16 v;
+    s16 w;
+    s16 h;
+    s16 baseU;
+    s16 baseV;
+    s16 texW;
+    s16 texH;
+} Cell_00104DC0;
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 w;
+    f32 h;
+} Rect_00104DC0;
+
+typedef struct {
+    union {
+        Cell_00104DC0 i;
+        Rect_00104DC0 f;
+    } r;
+    u8 pad10[0x28];
+    s32 flags;
+    u8 pad3C[0xC];
+    s16 timer;
+    s16 delay;
+    s16 last;
+    s16 loopLength;
+    s16 frame;
+    s16 loop;
+} Anim_00104DC0;
+
+static inline s32 flag_00104DC0(Anim_00104DC0 *anim, s32 bit) {
+    return (anim->flags & bit) ? 1 : 0;
+}
+
+void func_00104DC0(void *arg0, void *arg1) {
+    Sprite_00104DC0 *sprite = arg0;
+    Anim_00104DC0 *anim = arg1;
+
+    if (flag_00104DC0(anim, 1)) {
+        if (flag_00104DC0(anim, 2)) {
+            anim->r.i.u = anim->r.i.baseU + anim->r.i.w * (anim->frame % (anim->r.i.texW / anim->r.i.w));
+            anim->r.i.v = anim->r.i.baseV + anim->r.i.h * (anim->frame / (anim->r.i.texW / anim->r.i.w));
+        } else {
+            anim->r.i.u = anim->r.i.baseU + anim->r.i.w * (anim->frame / (anim->r.i.texH / anim->r.i.h));
+            anim->r.i.v = anim->r.i.baseV + anim->r.i.h * (anim->frame % (anim->r.i.texH / anim->r.i.h));
+        }
+        sprite->flags |= 0x800;
+        sprite->v[0].tex.uv.x.val = anim->r.i.u << 4;
+        sprite->v[0].tex.uv.y.val = anim->r.i.v << 4;
+        sprite->v[1].tex.uv.x.val = (anim->r.i.u + anim->r.i.w) << 4;
+        sprite->v[1].tex.uv.y.val = anim->r.i.v << 4;
+        sprite->v[2].tex.uv.x.val = anim->r.i.u << 4;
+        sprite->v[2].tex.uv.y.val = (anim->r.i.v + anim->r.i.h) << 4;
+        sprite->v[3].tex.uv.x.val = (anim->r.i.u + anim->r.i.w) << 4;
+        sprite->v[3].tex.uv.y.val = (anim->r.i.v + anim->r.i.h) << 4;
+    } else {
+        if (flag_00104DC0(anim, 2)) {
+            anim->r.f.x = anim->r.f.w * (f32)(anim->frame % (s16)(1.0f / anim->r.f.w));
+            anim->r.f.y = anim->r.f.h * (f32)(anim->frame / (s16)(1.0f / anim->r.f.w));
+        } else {
+            anim->r.f.x = anim->r.f.w * (f32)(anim->frame / (s16)(1.0f / anim->r.f.h));
+            anim->r.f.y = anim->r.f.h * (f32)(anim->frame % (s16)(1.0f / anim->r.f.h));
+        }
+        sprite->v[0].tex.st.s = anim->r.f.x;
+        sprite->v[0].tex.st.t = anim->r.f.y;
+        sprite->v[1].tex.st.s = anim->r.f.x + anim->r.f.w;
+        sprite->v[1].tex.st.t = anim->r.f.y;
+        sprite->v[2].tex.st.s = anim->r.f.x;
+        sprite->v[2].tex.st.t = anim->r.f.y + anim->r.f.h;
+        sprite->v[3].tex.st.s = anim->r.f.x + anim->r.f.w;
+        sprite->v[3].tex.st.t = anim->r.f.y + anim->r.f.h;
+    }
+    anim->timer++;
+    if (anim->timer > anim->delay) {
+        anim->timer = 0;
+        anim->frame++;
+        if (anim->frame > anim->last) {
+            if (anim->loop == 999) {
+                anim->frame = anim->last - anim->loopLength + 1;
+            } else {
+                anim->loop = 1;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00105260);
 

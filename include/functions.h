@@ -74,6 +74,7 @@ s32 func_00103EC0(f32 *position, f32 *target, f32 *velocity, s32 limit);
 s32 func_001043F0(void *arg0, f32 fparg0);
 void func_00104490(f32 *arg0, f32 *arg1, s32 arg2);
 s32 func_00104520(s32 arg0, s32 arg1);
+void func_00104DC0(void *arg0, void *arg1);
 s32 func_00105C40(void *arg0);
 void func_00105D00(void *dst, s16 kind, s16 index);
 void func_00106080(void *arg0, s16 arg1, s16 arg2);
