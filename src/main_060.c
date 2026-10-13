@@ -471,7 +471,34 @@ s32 func_00215C40(s32 arg0, s32 arg1) {
     return deck->total;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215D30);
+typedef struct Card_00215D30 {
+    u8 padding[0x48];
+    u64 rank : 14;
+    u64 flags : 2;
+    u64 rest : 48;
+} Card_00215D30;
+
+s64 func_00215D30(s32 arg0, s32 arg1) {
+    s32 side;
+    u8 *base;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    base = (u8 *)D_0032F790 + side * 0xFFA0;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return -1;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x2AB)) {
+        return -1;
+    }
+    return ((Card_00215D30 *)(base + arg1 * 0x4C))->rank;
+}
 
 typedef struct Card_00215DE0 {
     u8 padding[0x48];
