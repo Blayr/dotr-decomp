@@ -82,9 +82,9 @@ typedef struct Entry_0010D880 {
     u8 pad;
 } Entry_0010D880;
 
-void func_0010D490(void *, s32, s32);
+void func_0010D490(void *, s32, u8);
 
-void func_0010D880(void *arg0, s32 arg1, s32 arg2) {
+void func_0010D880(void *arg0, s32 arg1, u8 arg2) {
     extern s32 func_001E1030();
     extern void func_0027E770();
     extern s32 func_0027DE20();
