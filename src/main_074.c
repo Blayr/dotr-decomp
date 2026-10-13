@@ -997,7 +997,314 @@ s32 func_00256D80(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_074", func_00257340);
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00257AA0);
+typedef struct Request_00257AA0 {
+    s32 code;
+    s32 position;
+    u32 mask;
+    u32 flags;
+} Request_00257AA0;
+
+typedef struct State_00257AA0 {
+    u16 timer;
+    u16 targetCount;
+    u16 state;
+    u8 slots[0x1A];
+    s32 positions[13];
+    s32 targets[30];
+    s32 nextState;
+    u32 mask;
+    u8 slotCount;
+    u8 padding[0x2B];
+    u8 phase;
+    u8 padding101;
+    u16 phaseTimer;
+} State_00257AA0;
+
+void func_001E1E70(s32, s32, s32, s32);
+void func_0024F370(s32, s32);
+void func_002516D0(s32, s32, s32);
+void func_00260740(s32);
+void func_00260A70(void *, s32);
+void func_002614C0(s32, u32, s32);
+
+s32 func_00257AA0(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1CB0();
+    extern s32 func_001E1D10();
+    extern s32 func_001E1E10();
+    State_00257AA0 *state = arg1;
+    Request_00257AA0 *request = arg0;
+    s32 i;
+    s32 k;
+    s32 failed;
+    Request_00257AA0 eventData;
+    Request_00257AA0 *event = &eventData;
+    s32 second;
+    s32 *positionp;
+    s32 *targetp;
+    s32 position;
+    s32 card;
+    s32 index;
+    s32 side;
+    s32 j;
+    s32 location;
+    s32 slot;
+    s32 inactive;
+    s32 complete;
+    u8 flags;
+
+    event->code = 999;
+    event->position = 0;
+    event->mask = 0;
+    event->flags = 0;
+    inactive = 0;
+    complete = 0;
+    flags = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->mask = func_00272210(request->mask, *(u16 *)&request->flags);
+        if ((arg2 = func_0026AB80((request->flags >> 16) == 0 ? 1 : 0, 0x50)) < 0) {
+            func_002614C0(0, request->position, 200);
+        } else {
+            if ((second = func_0026AB80(request->flags >> 16, 0x2E)) < 0) {
+                func_00260AF0(0, arg2, 180, 180);
+                func_002516D0(arg2 >> 8, arg2 & 0xFF, 1);
+                state->positions[0] = arg2;
+                state->nextState = 0x82;
+                state->state = 0x80;
+                state->phase = 0x20;
+            } else {
+                func_00260AF0(0, second, 180, 180);
+                func_002516D0(second >> 8, second & 0xFF, 1);
+                state->positions[0] = second;
+                state->nextState = 0xA0;
+                state->state = 0x80;
+                state->phase = 0x20;
+            }
+        }
+        func_00255AC0(arg1, 0x1F9);
+        func_00255AC0(arg1, 0x25A);
+        return 1;
+    }
+    if (func_00255B50(arg1) == 1) {
+        if (state->state < 0x80 || state->state == 0xFF) {
+            i = 0;
+            positionp = (s32 *)state;
+            for (; i < state->slotCount; positionp++, i++) {
+                if (func_001F51D0(state->slots[i]) != 0 &&
+                    func_001F52D0(state->slots[i]) == 2 &&
+                    positionp[8] >= 0 &&
+                    func_001E36E0(positionp[8] & 0xFF, positionp[8] >> 8) != 0) {
+                    position = func_001E3790(positionp[8] & 0xFF, positionp[8] >> 8);
+                    if (func_0024EA10(position, request->mask) != 0) {
+                        positionp[8] = -1;
+                        if (func_0024EA10(position, state->mask) != 0) {
+                            index = position & 0xFF;
+                            if (index > 0 && index < 6) {
+                                func_002500C0(position >> 8, index, -1, 1, 3);
+                                state->targets[state->targetCount] = position;
+                                state->targetCount++;
+                            }
+                        } else {
+                            side = position >> 8;
+                            index = position & 0xFF;
+                            card = func_0024DE70(side, index);
+                            location = func_001E1090(card, 0);
+                            if (func_00271E40(side, index, 11) == 1) {
+                                func_00260490(location & 0xFF, location >> 8, 0,
+                                    func_00271740(9, card), 1, 1, 11);
+                                func_001E42C0(0, -120, 80, 270);
+                            }
+                        }
+                    }
+                }
+            }
+            j = 0;
+            targetp = (s32 *)state;
+            for (; j < state->targetCount; targetp++, j++) {
+                if (func_001E1CB0(targetp[21] >> 8, targetp[21] & 0xFF) <= 0 &&
+                    func_001E1D10(targetp[21] >> 8, targetp[21] & 0xFF) <= 0) {
+                    inactive++;
+                }
+            }
+            if (inactive >= state->targetCount) {
+                complete++;
+            }
+            if (state->timer % 12 == 0) {
+                if (state->state != 0xFF) {
+                    i = 0;
+                    if (state->state == 0) {
+                        position = request->position;
+                        event->code = 0x1F9;
+                        event->position = 0;
+                        event->mask = position;
+                        event->flags = 0;
+                        slot = (u8)func_00255A30(event, arg1);
+                        *(u8 *)(state->slotCount + (s32)state + 6) = slot;
+                        if (slot >= 0) {
+                            *(s32 *)(((s32)state->slotCount << 2) + (s32)state + 0x20) = position;
+                            state->slotCount++;
+                        }
+                        failed = 0;
+                    } else {
+                        i = 0;
+                        failed = 0;
+                        do {
+                            position = request->position;
+                            position = func_0024E950(position, state->state, i);
+                            if (position >= 0) {
+                                event->code = 0x1F9;
+                                event->position = 0;
+                                event->mask = position;
+                                event->flags = 0;
+                                slot = (u8)func_00255A30(event, arg1);
+                                *((u8 *)state + state->slotCount + 6) = slot;
+                                if (slot >= 0) {
+                                    state->positions[state->slotCount] = position;
+                                    state->slotCount++;
+                                }
+                            } else {
+                                failed++;
+                            }
+                            i++;
+                        } while (i < 4);
+                    }
+                }
+                if (failed >= 4) {
+                    state->state = 0xFF;
+                    k = 0;
+                    failed = 0;
+                    while (k < state->slotCount) {
+                        if (func_001F51D0(state->slots[k]) == 0) {
+                            failed++;
+                        }
+                        k++;
+                    }
+                    if (failed >= state->slotCount) {
+                        complete++;
+                    }
+                } else {
+                    state->state++;
+                }
+            }
+            state->timer++;
+            if (complete == 2) {
+                for (i = 0; i < func_0024E910(state->mask); i++) {
+                    position = func_0024EC50(state->mask, i);
+                    func_0024F370(position >> 8, position & 0xFF);
+                }
+                flags = 1;
+            }
+        } else {
+            switch (state->state - 0x80) {
+                case 0:
+                    if (func_001E1E10(state->positions[0] >> 8, state->positions[0] & 0xFF) == 0xFF) {
+                        if (state->nextState == 0x82) {
+                            func_001E42C0(0, -120, 80, 0x103);
+                        } else {
+                            func_001E42C0(0, -120, 80, func_001DE210(0x339));
+                        }
+                        event->code = 0x25A;
+                        event->position = 0;
+                        event->mask = state->positions[0];
+                        event->flags = 0;
+                        state->slots[0] = func_00255A30(event, arg1);
+                        state->state++;
+                    }
+                    break;
+                case 1:
+                    if (func_001F51D0(*(u8 *)(state->slotCount + (s32)state + 5)) == 0) {
+                        func_001E1E70(state->positions[0] >> 8, state->positions[0] & 0xFF, 0, 1);
+                        func_001E4530();
+                        state->state = state->nextState;
+                        if (state->nextState - 0x80 == 2) {
+                            state->phase++;
+                        } else {
+                            state->phase = 0;
+                            func_002614C0(0, request->position, 200);
+                        }
+                    }
+                    break;
+                case 2:
+                    func_001E42C0(0, -120, 80, func_001DE210(0x335));
+                    if (state->targetCount < 10) {
+                        if (state->timer % 6 == 0) {
+                            event->code = 0x1F9;
+                            event->position = 0;
+                            event->mask = func_001E1090(state->positions[0] >> 8, state->positions[0] & 0xFF);
+                            event->flags = 0;
+                            *(u8 *)(state->slotCount + (s32)state + 6) = func_00255A30(event, arg1);
+                            *(s32 *)(((s32)state->slotCount << 2) + (s32)state + 0x20) = state->positions[0];
+                            state->targetCount++;
+                        }
+                        state->timer++;
+                    } else {
+                        func_001E4530();
+                        if (func_001F51D0(*(u8 *)(state->slotCount + (s32)state + 5)) == 0) {
+                            flags = 1;
+                        }
+                    }
+                    break;
+                case 32:
+                    event->code = 0x1F9;
+                    event->position = 0;
+                    event->mask = request->position;
+                    event->flags = 0;
+                    state->slots[0] = func_00255A30(event, arg1);
+                    state->positions[0] = (((u32)request->position >> 8) << 8) | (request->position & 0xFF);
+                    state->slotCount++;
+                    state->timer++;
+                    state->state = 0;
+                    func_002614C0(0, request->position, 200);
+                    break;
+            }
+        }
+        switch (state->phase) {
+            case 0:
+                if (state->phaseTimer++ > 16) {
+                    state->phaseTimer = 0;
+                    state->phase++;
+                    func_00260740(30);
+                }
+                break;
+            case 1:
+                if (state->phaseTimer++ > 30) {
+                    state->phase++;
+                }
+                break;
+            case 2:
+                if (flags & 1) {
+                    func_001E4530();
+                    func_00260A70(arg1, 16);
+                    state->phase = 0xFF;
+                    state->phaseTimer = 0;
+                }
+                break;
+            case 32:
+                break;
+            case 33:
+                func_00260AF0(30, state->positions[0], 500, 500);
+                state->phase = 1;
+                state->phaseTimer = 0;
+                break;
+            default:
+                if (state->phaseTimer++ > 16) {
+                    flags |= 2;
+                }
+                break;
+        }
+    }
+    if (flags == 3) {
+        if (func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+    }
+    return 1;
+}
 
 typedef struct Command_00258490 {
     s32 kind;
