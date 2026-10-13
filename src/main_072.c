@@ -644,7 +644,23 @@ s32 func_0024F780(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F830);
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024FD10);
+s32 func_0024FD10(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_0024FDA0(s32, s32);
+    extern void func_002516D0(s32, s32, s32);
+    s32 *out = (s32 *)arg2;
+    s32 mask;
+
+    if (func_0024FDA0(arg0, arg1) == 1) {
+        mask = func_0024C780(0, arg0, arg1);
+        out[0] = 0x70;
+        out[1] = 0;
+        out[2] = mask;
+        out[3] = 0;
+        func_002516D0(arg0, arg1, 1);
+        return 1;
+    }
+    return 0;
+}
 
 void func_0024FDA0(s32 arg0, s32 arg1) {
     func_0024FDD0(func_001DF540(arg0, arg1));
