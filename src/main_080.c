@@ -180,9 +180,17 @@ s32 func_00280060(void *arg0, s32 arg1) {
 
 typedef struct {
     u8 state;
-    u8 padding01[9];
+    u8 padding01[5];
+    u16 frame;
+    s16 limit;
     u8 enabled;
-    u8 padding0B[0x2F];
+    u8 countdown;
+    u8 padding0C[6];
+    s16 position;
+    s16 angle;
+    s16 velocity;
+    u16 center;
+    u16 symbols[16];
 } Flags_00280670;
 
 typedef struct {
