@@ -745,6 +745,8 @@ void func_0010B6C0(void) {
 }
 
 s32 func_0010BBC0(void) {
+    extern s32 func_0010BCC0();
+
     if (D_0030FF40 == NULL) {
         return 0;
     }
