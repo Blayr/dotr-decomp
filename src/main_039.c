@@ -291,7 +291,94 @@ INCLUDE_ASM("asm/nonmatchings/main_039", func_001B7820);
 
 INCLUDE_ASM("asm/nonmatchings/main_039", func_001B7D60);
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B7F90);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001B7F90;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001B7F90;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001B7F90;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001B7F90;
+
+typedef struct {
+    u64 tag[2];
+    Color_001B7F90 color;
+    u64 uv0;
+    Vertex_001B7F90 vertex0;
+    u64 uv1;
+    Vertex_001B7F90 vertex1;
+    u64 test;
+    u64 texture0;
+    u64 texture1;
+    u64 clamp;
+} Packet_001B7F90;
+
+static inline void set_uv_001B7F90(UV_001B7F90 *p, s32 u, s32 v) {
+    p->u = u;
+    p->v = v;
+}
+
+s32 func_001B7F90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
+                  s64 arg6, s32 arg7) {
+    extern s32 func_00202E00();
+    u8 *state = D_00317490;
+    s32 x = arg2 + 0x6C0;
+    s32 y = arg3 + 0x720;
+    void **image;
+    s32 address;
+    u8 color;
+    Packet_001B7F90 packet __attribute__((aligned(8)));
+
+    image = func_00200930(2, arg1);
+    if (image == NULL) {
+        return arg0;
+    }
+    if (**(s32 **)image == 0x324852) {
+        address = *(s32 *)(state + 0xC7C);
+        address += func_00202E00(address, 1);
+        arg0 = func_00202FB0(arg0, (s32)*image, address, 0);
+        arg0 = func_0020F290(arg0);
+        ((Tag_001B7F90 *)packet.tag)->flags = 0x26;
+        ((Tag_001B7F90 *)packet.tag)->count = 5;
+        ((Tag_001B7F90 *)packet.tag)->registers = 0x42421;
+        ((Tag_001B7F90 *)packet.tag)->padding = 0;
+        ((Tag_001B7F90 *)packet.tag)->flags |= 0x800;
+        func_00208700(packet.tag, *image, 0);
+        color = arg7 ? 0x80 : 0x30;
+        packet.color.r = packet.color.g = packet.color.b = color;
+        packet.color.a = 0x80;
+        packet.color.q = 1.0f;
+        set_uv_001B7F90((UV_001B7F90 *)&packet.uv0, 8, 8);
+        set_uv_001B7F90((UV_001B7F90 *)&packet.uv1, 0x288, 0x208);
+        packet.vertex0.x = x << 4;
+        packet.vertex0.y = y << 4;
+        packet.vertex0.z = arg6;
+        packet.vertex0.fog = 0;
+        packet.vertex1.x = (x + arg4) << 4;
+        packet.vertex1.y = (y + arg5) << 4;
+        packet.vertex1.z = arg6;
+        packet.vertex1.fog = 0;
+        arg0 = func_00207650(arg0, (s32)packet.tag, 0, 0);
+    }
+    return arg0;
+}
 
 void func_001B81E0(void) {
     func_00209D30(func_001B8210(func_00209D20()));
