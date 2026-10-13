@@ -2163,7 +2163,67 @@ s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026BE20);
+typedef struct {
+    u8 pad0[4];
+    s32 field_4;
+    u32 field_8;
+    s32 field_C;
+} Object_0026BE20;
+
+typedef struct {
+    u8 pad0[4];
+    u16 state;
+    u8 id;
+} State_0026BE20;
+
+typedef struct {
+    s32 field_0;
+    s32 field_4;
+    u32 field_8;
+    s32 field_C;
+} Temp_0026BE20;
+
+s32 func_0026BE20(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1E10();
+    Temp_0026BE20 tempStorage;
+    Temp_0026BE20 *temp = &tempStorage;
+    State_0026BE20 *state;
+    Object_0026BE20 *obj = (Object_0026BE20 *)arg0;
+
+    temp->field_0 = 0x3E7;
+    temp->field_4 = 0;
+    temp->field_8 = 0;
+    temp->field_C = 0;
+
+    state = (State_0026BE20 *)arg1;
+
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00255AC0(state, 0x259);
+        func_002516D0(obj->field_8 >> 8, obj->field_8 & 0xFF, 1);
+        return 1;
+    }
+
+    if (func_00255B50(state) == 1) {
+        if (func_001E1E10(obj->field_8 >> 8, obj->field_8 & 0xFF) == 0xFF) {
+            if (state->state == 0) {
+                temp->field_0 = 0x259;
+                temp->field_4 = 0;
+                temp->field_8 = obj->field_8;
+                temp->field_C = obj->field_C;
+                state->id = func_00255A30(temp, state);
+                state->state++;
+            } else {
+                if (func_001F51D0(state->id) == 1) {
+                    return 1;
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 typedef struct {
     u8 pad0[4];
