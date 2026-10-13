@@ -885,6 +885,7 @@ void func_001D9DD0(void) {
 }
 
 s32 func_001D9E00(s32 arg0) {
+    extern s32 func_002084D0();
     s32 temp_s0;
     s32 temp_s0_2;
 
@@ -898,6 +899,7 @@ s32 func_001D9E00(s32 arg0) {
 }
 
 s32 func_001D9E70(s32 arg0) {
+    extern s32 func_002084D0();
     s32 temp_s0;
 
     func_0020A9E0();
