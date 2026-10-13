@@ -324,7 +324,338 @@ common_return:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00270260);
+typedef struct Source_00270260 {
+    s32 unused;
+    u32 position;
+    s32 entries;
+    s32 card;
+} Source_00270260;
+
+typedef struct State_00270260 {
+    u16 flag;
+    u16 position;
+    u16 stage;
+    u8 commands[0x16];
+    u32 results[0x2D];
+    s32 timer;
+    u8 count;
+    u8 padD5[0x3B];
+    u8 queue[1];
+} State_00270260;
+
+typedef struct Event_00270260 {
+    s32 id;
+    s32 from;
+    s32 to;
+    s32 mode;
+} Event_00270260;
+
+void func_001E1E70(u32, s32, s32, s32);
+void func_00248460(u32, s32, s32, s32);
+void func_0024F430(u32, s32);
+s32 func_00270C30(void *, void *, s32);
+
+static inline s32 mode_00270260(u32 position) {
+    if ((func_001E0700(position >> 24, (position >> 16) & 0xFF) >> 5) == 0) {
+        return 0;
+    } else {
+        return 3;
+    }
+}
+
+s32 func_00270260(void *src, void *state, s32 mode) {
+    extern s32 func_001E1E10();
+    extern s32 func_001E1030();
+    extern s32 func_001E1CB0();
+    extern s32 func_001E1A30();
+    Event_00270260 event;
+    Event_00270260 *message = &event;
+    State_00270260 *temp_s1;
+    Source_00270260 *temp_s2;
+    s32 temp_s3;
+    s32 temp_a1;
+    s32 temp_s0;
+    s32 temp_s0_2;
+    s32 temp_s3_2;
+    s32 temp_v0;
+    s32 temp_v0_3;
+    s32 temp_v0_4;
+    s32 temp_v1_2;
+    s32 temp_v1_3;
+    s32 temp_v1_4;
+    s32 var_v0;
+    u16 temp_v0_5;
+    u16 temp_v0_6;
+    u16 temp_v1;
+    u32 temp_a1_2;
+    u32 temp_a1_3;
+    u32 temp_v0_10;
+    u32 temp_v0_2;
+    u32 temp_v0_7;
+    u32 side;
+    u32 temp_v0_8;
+    u32 temp_v0_9;
+    u32 temp_v1_5;
+    s32 var_s3;
+
+    event.id = 0x3E7;
+    event.from = 0;
+    event.to = 0;
+    temp_s2 = src;
+    event.mode = 0;
+    temp_s1 = state;
+    temp_s3 = mode;
+    if ((func_00249200(((Source_00270260 *)src)->card) & 0xFFFF) == 0x219) {
+        return func_00270C30(temp_s2, temp_s1, temp_s3);
+    }
+    if (temp_s3 >= 0) {
+        func_00255960(temp_s1);
+        temp_v0 = func_00249200(temp_s2->card) & 0xFFFF;
+        switch (temp_v0) {
+        case 0x218:
+            func_00255AC0(temp_s1, 0x218);
+            break;
+        case 0x21C:
+            func_00255AC0(temp_s1, 0x21C);
+            break;
+        case 0x21D:
+            func_00255AC0(temp_s1, 0x21D);
+            break;
+        case 0x21E:
+            func_00255AC0(temp_s1, 0x21E);
+            break;
+        default:
+            func_00255AC0(temp_s1, 0x218);
+            break;
+        }
+        temp_v0_2 = temp_s2->position;
+        if ((((func_001E0700((s32) (temp_v0_2 >> 0x18), (temp_v0_2 >> 0x10) & 0xFF) >> 5) == 0) ? 0 : 3) == 0) {
+            var_s3 = (u32) temp_s2->position >> 0x10;
+        } else {
+            var_s3 = (u32) (u16) temp_s2->position;
+        }
+        if ((temp_v0_3 = func_0026AB80(temp_s2->entries, 0x2B)) < 0 ||
+            (func_00249560((s32)(u16)temp_s2->card) == 0 &&
+             func_00271740(0xB, func_001DE540()) == 1 &&
+             (temp_s3_2 = func_001E0700((s32)var_s3 >> 8, var_s3 & 0xFF) & 0x1F) ==
+             (func_001E0700(func_001DE540(), 0) & 0x1F))) {
+            temp_s1->stage = 2;
+            temp_s1->flag = 0;
+        } else {
+            func_001DE7E0(0);
+            func_00255AC0(temp_s1, 0x25A);
+            temp_v0_4 = func_0026AB80(temp_s2->entries, 0x2E);
+            if (temp_v0_4 >= 0) {
+                temp_s1->stage = 0U;
+                temp_s1->flag = 0U;
+                temp_s1->position = (u16) temp_v0_4;
+            } else {
+                temp_s1->stage = 0U;
+                temp_s1->flag = 1U;
+                temp_s1->position = (u16) temp_v0_3;
+            }
+            temp_v0_5 = temp_s1->position;
+            func_002516D0((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, 1);
+        }
+        message->id = 0x25A;
+        message->from = (u32) ((u32) temp_s2->position >> 0x10);
+        message->to = (s32) (u16) temp_s2->position;
+        message->mode = 0;
+        func_0027EB00(temp_s1->queue, message, 0);
+        return 1;
+    }
+    if (func_00255B50(temp_s1) != 1) {
+        if ((s32) temp_s1->position > 0) {
+            func_001DE7E0(0);
+        }
+        message->id = 0x25A;
+        message->from = (u32) ((u32) temp_s2->position >> 0x10);
+        message->to = (s32) (u16) temp_s2->position;
+        message->mode = 0;
+        func_0027EB00(temp_s1->queue, message, -1);
+        return 1;
+    }
+    temp_v1 = temp_s1->stage;
+    switch (temp_v1) {
+    case 0:
+        func_001DE7E0(0);
+        message->id = 0x25A;
+        message->from = (u32) ((u32) temp_s2->position >> 0x10);
+        message->to = (s32) (u16) temp_s2->position;
+        message->mode = 0;
+        if (func_001E1E10((s32)temp_s1->position >> 8, temp_s1->position & 0xFF) == 0xFF) {
+            if (temp_s1->flag == 0) {
+                func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+            } else {
+                func_001E42C0(0, -0x78, 0x50, 0x103);
+            }
+            func_001DE820(1);
+            func_00260AF0(0, (s32) temp_s1->position, 0xB4, 0xB4);
+            message->id = 0x25A;
+            message->from = 0U;
+            message->to = (s32) temp_s1->position;
+            message->mode = 0;
+            temp_s1->commands[temp_s1->count] = func_00255A30(message, temp_s1);
+            temp_s1->count = (u8) (temp_s1->count + 1);
+            temp_s1->stage = (u16) (temp_s1->stage + 1);
+        } else {
+            func_0027EB00(temp_s1->queue, message, -1);
+        }
+        break;
+    case 1:
+        if (func_001F51D0((s32) ((u8 *)(temp_s1->count + (u32)temp_s1))[5]) != 0) {
+            if ((s32) temp_s1->position > 0) {
+                func_001DE7E0(0);
+            }
+            return 1;
+        }
+        temp_v0_6 = temp_s1->position;
+        func_001E1E70((s32) temp_v0_6 >> 8, temp_v0_6 & 0xFF, 0, 1);
+        func_001E4530();
+        message->id = 5;
+        message->from = (u32) ((u32) temp_s2->position >> 0x10);
+        message->to = (s32) (u16) temp_s2->position;
+        message->mode = 0;
+        func_0027EB00(temp_s1->queue, message, -1);
+        func_001DE820(0);
+        func_00260A70(temp_s1, 0);
+        temp_s1->stage = (u16) (temp_s1->stage + 1);
+        break;
+    case 2:
+        message->id = 5;
+        message->from = (u32) ((u32) temp_s2->position >> 0x10);
+        message->to = (s32) (u16) temp_s2->position;
+        message->mode = 0;
+        func_0027EB00(temp_s1->queue, message, -1);
+        temp_v1_2 = func_00249200(temp_s2->card) & 0xFFFF;
+        switch (temp_v1_2) {
+        case 0x218:
+            if (temp_s1->flag != 0) {
+                func_001E42C0(0, 0, -0xA0, func_001DE210(func_001E1030((s32)temp_s1->position >> 8, temp_s1->position & 0xFF)));
+            } else {
+                func_001E42C0(0, 0, -0xA0, 0x106);
+            }
+            message->id = 0x218;
+            message->from = (u32) ((u32) temp_s2->position >> 0x10);
+            message->to = (s32) (u16) temp_s2->position;
+            message->mode = 0;
+            break;
+        case 0x21C:
+            message->id = 0x21C;
+            message->from = (u32) ((u32) temp_s2->position >> 0x10);
+            message->to = (s32) (u16) temp_s2->position;
+            message->mode = 0;
+            break;
+        case 0x21D:
+            message->id = 0x21D;
+            message->from = (u32) ((u32) temp_s2->position >> 0x10);
+            message->to = (s32) (u16) temp_s2->position;
+            message->mode = 0;
+            break;
+        case 0x21E:
+            message->id = 0x21E;
+            message->from = (u32) ((u32) temp_s2->position >> 0x10);
+            message->to = (s32) (u16) temp_s2->position;
+            message->mode = 0;
+            break;
+        default:
+            message->id = 0x218;
+            message->from = (u32) ((u32) temp_s2->position >> 0x10);
+            message->to = (s32) (u16) temp_s2->position;
+            message->mode = 0;
+            break;
+        }
+        temp_v0_7 = temp_s2->position;
+        if ((func_001E0700(temp_v0_7 >> 24, (temp_v0_7 >> 16) & 0xFF) >> 5) == 0) {
+            side = 0;
+        } else {
+            side = 3;
+        }
+        message->mode = side;
+        temp_s1->commands[temp_s1->count] = func_00255A30(message, temp_s1);
+        temp_s1->results[temp_s1->count + 1] = 0;
+        temp_s1->count = (u8) (temp_s1->count + 1);
+        temp_s1->stage = (u16) (temp_s1->stage + 1);
+        break;
+    case 3:
+        if (func_001F51D0((s32) ((u8 *)(temp_s1->count + (u32)temp_s1))[5]) != 0) {
+            temp_a1 = temp_s1->timer;
+            temp_s1->timer = (s32) (temp_a1 + 1);
+            switch (temp_a1) {
+            case 1:
+                func_00217710(1, 0x4C);
+                break;
+            case 15:
+                temp_v1_3 = func_00249200(temp_s2->card) & 0xFFFF;
+                switch (temp_v1_3) {
+                case 0x218:
+                    func_00217710(1, 0x3B);
+                    break;
+                case 0x21C:
+                    func_00217710(1, 0x4B);
+                    break;
+                case 0x21D:
+                    func_00217710(1, 0x4E);
+                    break;
+                case 0x21E:
+                    func_00217710(1, 0x4F);
+                    break;
+                }
+                break;
+            case 16:
+                temp_v1_4 = func_00249200(temp_s2->card) & 0xFFFF;
+                switch (temp_v1_4) {
+                case 0x21D:
+                case 0x21E:
+                    func_00217710(1, 0x3B);
+                    break;
+                }
+                break;
+            }
+            if (func_001F52D0((s32) ((u8 *)(temp_s1->count + (u32)temp_s1))[5]) == 2) {
+                if (((u8 *)(((u32)temp_s1->count << 2) + (u32)temp_s1))[0x1C] == 0) {
+                    temp_v0_8 = temp_s2->position;
+                    if ((func_001E0700((s32) (temp_v0_8 >> 0x18), (temp_v0_8 >> 0x10) & 0xFF) >> 5) == 0) {
+                        temp_a1_2 = temp_s2->position;
+                        func_00248460(temp_a1_2 >> 0x18, (temp_a1_2 >> 0x10) & 0xFF, (temp_s1->flag << 0x10) | temp_s2->card, 0);
+                    } else {
+                        temp_a1_3 = temp_s2->position;
+                        func_00248460((u32) (temp_a1_3 & 0xFFFF) >> 8, temp_a1_3 & 0xFF, (temp_s1->flag << 0x10) | temp_s2->card, 0);
+                    }
+                    temp_s1->results[temp_s1->count] = 0xFFFF;
+                }
+            }
+            return 1;
+        }
+        func_001E4530();
+        temp_v0_9 = temp_s2->position;
+        if ((func_001E0700((s32) (temp_v0_9 >> 0x18), (temp_v0_9 >> 0x10) & 0xFF) >> 5) == 0) {
+            temp_v1_5 = temp_s2->position;
+            temp_s0 = func_001E1CB0((temp_v1_5 & 0xFFFF) >> 8, temp_v1_5 & 0xFF);
+            if (temp_s0 != func_001E1A30((temp_s2->position & 0xFFFF) >> 8, temp_s2->position & 0xFF)) {
+                return 1;
+            }
+            temp_v1_5 = temp_s2->position;
+            func_0024F430((u32) (temp_v1_5 & 0xFFFF) >> 8, temp_v1_5 & 0xFF);
+        } else {
+            temp_v0_10 = temp_s2->position;
+            temp_s0_2 = func_001E1CB0(temp_v0_10 >> 0x18, (temp_v0_10 >> 0x10) & 0xFF);
+            if (temp_s0_2 != func_001E1A30(temp_s2->position >> 0x18, (temp_s2->position >> 0x10) & 0xFF)) {
+                return 1;
+            }
+            temp_v0_10 = temp_s2->position;
+            func_0024F430(temp_v0_10 >> 0x18, (temp_v0_10 >> 0x10) & 0xFF);
+        }
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    default:
+        return 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00270C30);
 
