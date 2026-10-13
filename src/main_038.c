@@ -605,7 +605,60 @@ s32 func_001AF140(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001AF180);
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AF5C0);
+s32 func_001AF5C0(s32 arg0) {
+    extern s32 func_001AAF60(s32);
+    extern s32 func_001B4780();
+    extern s32 func_001B3C80();
+    extern s32 func_001B6EA0();
+    extern u8 D_002902A6[];
+    s32 mode;
+    s32 player;
+    u8 *state;
+    f32 *pos;
+    s32 count;
+    s32 i;
+    s32 x;
+    s32 y;
+    s32 kind;
+
+    state = D_00317490;
+    mode = func_001AAF60(1);
+    player = D_003181E4;
+    count = func_001DF110(player);
+    if (mode != 1) {
+        return arg0;
+    }
+    if (state[0xD45] == 0) {
+        return arg0;
+    }
+    if (state[0xD47] != 0) {
+        return arg0;
+    }
+    for (i = 0; i < count; i++) {
+        pos = (f32 *)func_001DF540(2, i + 1);
+        if (pos != NULL) {
+            pos = ((f32 **)pos)[1];
+            if (pos != NULL) {
+                x = (s32)pos[0] + 0x104;
+                y = (s32)pos[1] + 0x8B;
+                kind = func_001DF0C0(player, i);
+                if (kind >= 0) {
+                    if (state[0xD4F] == i) {
+                        arg0 = func_001B4780(arg0, -1, -1, 8, x, y - 4, 0xC, 0x13, 1);
+                    }
+                    if ((kind & 0xFFF) != 0x3E7) {
+                        kind = (kind & 0xF000) >> 12;
+                        if (kind != 0) {
+                            arg0 = func_001B3C80(arg0, D_002902A6, x + 0x6C0, y + 0x704, 1, 1, 0, 0, 1, 0, -1);
+                            arg0 = func_001B6EA0(arg0, x + 0x10, y - 0x17, 0, 2, 1, kind);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return arg0;
+}
 
 void func_001AF7B0(void) {
     func_00209D30(func_001AF7E0(func_00209D20()));
