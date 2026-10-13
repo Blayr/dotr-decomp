@@ -800,7 +800,92 @@ void func_00279230(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_002792C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002794E0);
+typedef struct Node_002794E0 {
+    s32 parent;
+    u8 *children[48];
+} Node_002794E0;
+
+s32 func_002464F0(s32, s32, s32);
+
+u8 *func_002794E0(u8 *node, s32 parent, s32 card, s32 x, s32 y,
+                  s32 targetX, s32 targetY, u8 limit, s8 *found, s32 mode,
+                  u8 depth, u16 *pool, u16 *poolEnd, s32 arg13) {
+    s32 count;
+    s32 minY;
+    u32 maxX;
+    u32 maxY;
+    u32 distanceLimit;
+    s32 nextDepth;
+    s32 range;
+    s32 iy;
+    s32 ix;
+    extern s32 func_002798C0();
+
+    range = func_002464F0(card, x, y);
+    if (card == 0) {
+        return NULL;
+    }
+    if (node == NULL) {
+        if ((s32)depth > (s32)limit) {
+            return NULL;
+        }
+        if ((node = func_0027B150(pool, poolEnd)) == NULL) {
+            return NULL;
+        }
+        func_0027AF80(node, parent, x, y);
+        if (x == targetX && y == targetY) {
+            *found = 1;
+            return node;
+        }
+    }
+    range &= 0xF;
+    count = 0;
+    ix = func_00250860(0, x - range);
+    if ((u32)(x + range) >= 7U) {
+        maxX = 6;
+    } else {
+        maxX = x + range;
+    }
+    minY = func_00250860(0, y - range);
+    maxY = y + range;
+    if (maxY >= 7U) {
+        maxY = 6;
+    }
+    if (ix <= (s32)maxX) {
+        distanceLimit = range + 1;
+        nextDepth = depth + 1;
+        while (1) {
+            iy = minY;
+            if (iy <= (s32)maxY) {
+                while (1) {
+                    if (ix >= 0 && iy >= 0 && ix < 7 && iy < 7 &&
+                        (u32)(((ix < x ? x : ix) - (x < ix ? x : ix)) +
+                              ((iy < y ? y : iy) - (y < iy ? y : iy))) < distanceLimit &&
+                        (((ix < x ? x : ix) - (x < ix ? x : ix)) +
+                         ((iy < y ? y : iy) - (y < iy ? y : iy))) != 0 &&
+                        func_002798C0(card, x, y, ix, iy, mode) == 1 &&
+                        func_0027B010(node, ix, iy, x, y, depth) == 0) {
+                        ((Node_002794E0 *)node)->children[count] =
+                            func_002794E0(((Node_002794E0 *)node)->children[count],
+                                         (s32)node, card, ix, iy, targetX, targetY,
+                                         limit, found, mode, (u8)nextDepth,
+                                         pool, poolEnd, arg13);
+                        count++;
+                    }
+                    iy++;
+                    if (iy > (s32)maxY) {
+                        break;
+                    }
+                }
+            }
+            ix++;
+            if (ix > (s32)maxX) {
+                break;
+            }
+        }
+    }
+    return node;
+}
 
 void func_00279850(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                    s32 arg4, s32 arg5, s32 arg6) {

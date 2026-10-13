@@ -1849,6 +1849,7 @@ u16 *func_00278E40(u16 *arg0);
 s32 func_00279130(s32 arg0, u16 *arg1);
 s32 func_00279170(void *arg0, s32 arg1, u16 arg2);
 void func_00279230(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8);
+u8 *func_002794E0(u8 *node, s32 parent, s32 card, s32 x, s32 y, s32 targetX, s32 targetY, u8 limit, s8 *found, s32 mode, u8 depth, u16 *pool, u16 *poolEnd, s32 arg13);
 void func_00279850(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 s32 func_002798C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_00279C40(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
