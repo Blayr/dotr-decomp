@@ -910,6 +910,7 @@ void func_001DEDB0(s32 arg0);
 s32 func_001DEE00(s32 arg0, s32 arg1);
 u8 func_001DEE50(s32 arg0);
 s32 func_001DEE70(s32 arg0, s32 arg1);
+void func_001DEF20(s32 arg0);
 s32 func_001DF000(s32 arg0, s32 arg1);
 void func_001DF070(s32 arg0);
 s32 func_001DF0C0(s32 arg0, s32 arg1);

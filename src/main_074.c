@@ -824,7 +824,6 @@ typedef struct Card_00256D80 {
     } flags;
 } Card_00256D80;
 
-extern void func_001DEF20(u32);
 extern void func_002516D0(s32, s32, s32);
 extern void func_00260A70(void *, s32);
 extern void func_002614C0(s32, u32, s32);

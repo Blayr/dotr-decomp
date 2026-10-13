@@ -494,7 +494,6 @@ typedef struct {
     u8 count;
 } CardList_001DEE70;
 
-void func_001DEF20(s32 arg0);
 
 s32 func_001DEE70(s32 arg0, s32 arg1) {
     CardList_001DEE70 *list;
@@ -514,7 +513,52 @@ s32 func_001DEE70(s32 arg0, s32 arg1) {
     return list->count++;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DEF20);
+typedef struct {
+    u16 entries[120];
+    u8 count;
+} List_001DEF20;
+
+extern u8 D_00317490[];
+
+void func_001DEF20(s32 arg0) {
+    List_001DEF20 list;
+    s16 *copy;
+    s32 remaining;
+    s16 *dest;
+    s32 i;
+    u16 *src;
+    u16 entry;
+    s32 fill;
+
+    dest = (s16 *)(D_00317490 + arg0 * 0x350 + 0x232);
+    list.count = 0;
+    i = 0;
+    src = (u16 *)dest;
+    do {
+        entry = *src;
+        if (entry != 999) {
+            list.entries[list.count++] = entry;
+        }
+        i++;
+        src++;
+    } while (i < 120);
+
+    fill = list.count;
+    if (fill < 120) {
+        copy = (s16 *)&list.entries[fill];
+        do {
+            fill++;
+            *copy++ = 999;
+        } while (fill < 120);
+    }
+
+    copy = (s16 *)&list;
+    remaining = 121;
+    do {
+        remaining--;
+        *dest++ = *copy++;
+    } while (remaining > 0);
+}
 
 s32 func_001DF000(s32 arg0, s32 arg1) {
     s32 offset;
