@@ -785,7 +785,40 @@ s32 func_001BFF00(s32 id, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C02E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C05F0);
+void func_001C05F0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001B0CE0();
+    extern s32 func_001B6F70();
+    extern s32 func_001FE7D0();
+    extern char D_002BEF9D[];
+    extern u16 D_0031811A;
+    extern u8 D_003181EE;
+    s32 text0;
+    char *text1;
+    char *text2;
+    s32 table;
+    u8 *state;
+    s32 icon;
+    s32 res;
+    s32 *info;
+
+    state = D_00317490;
+    text0 = (s32)D_002BEF9D;
+    text1 = D_002BEF6F;
+    text2 = D_002BEF73;
+    table = *(u16 *)((u8 *)D_00317B68 + (D_0031811A + D_003181EE) * 2);
+    icon = func_001DE210(table);
+    arg0 = func_001B0CE0(arg0, 2, table, icon, arg1 + 0x140, arg2 + 0x48, -0x1CC, 0x130,
+                         func_0019BEF0((char *)text0), text0, 0);
+    res = func_0020F290(func_001FD680(arg0, 1, 0x92, 0, 0x16));
+    info = func_001FEAB0(1);
+    res = func_001FE7D0(res, 1, (arg1 + 0x140) - (info[3] >> 1), (arg2 + 0x154) - (info[4] + 0xC), 0,
+                        func_001FDFE0);
+    func_001FEAF0(1);
+    res = func_001B6F70(res, arg1 + 0xCD, arg2 + 0x154, 2, 3, func_0019BEF0(text1), text1,
+                        D_003181C6 != 0 ? 0 : (s32)D_002BE944);
+    func_001B6F70(res, arg1 + 0x1B3, arg2 + 0x154, 2, 3, func_0019BEF0(text2), text2,
+                  state[0xD36] != 0 ? (s32)D_002BE944 : 0);
+}
 
 s32 func_001C07E0(s32 arg0, s32 arg1, s32 arg2) {
     u8 *state;
