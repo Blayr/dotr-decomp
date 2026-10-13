@@ -2058,4 +2058,132 @@ s32 func_00265050(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00265440);
+typedef struct Effect_00265440 {
+    u32 pad0;
+    u32 source;
+    u32 target;
+    u32 param;
+} Effect_00265440;
+
+typedef struct Step_00265440 {
+    u8 pad0[4];
+    u16 step;
+    u8 slot;
+    u8 slot2;
+    u8 pad8[0xFA];
+    u16 timer;
+} Step_00265440;
+
+typedef struct Request_00265440 {
+    s32 id;
+    s32 unk4;
+    u32 position;
+    s32 unkC;
+} Request_00265440;
+
+s32 func_00265440(void *arg0, void *arg1, s32 arg2) {
+    extern s32 func_001E1E10();
+    extern void func_0024F370();
+    Request_00265440 request;
+    Request_00265440 *req;
+    Effect_00265440 *effect = arg0;
+    Step_00265440 *state = arg1;
+
+    request.id = 999;
+    request.unk4 = 0;
+    request.position = 0;
+    request.unkC = 0;
+    req = &request;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_002516D0(effect->source >> 8, effect->source & 0xFF, 1);
+        func_002516D0(effect->target >> 8, effect->target & 0xFF, 1);
+        func_00260AF0(0, effect->source, 100, 180);
+        func_00255AC0(state, 0x259);
+        func_00255AC0(state, 0x25A);
+        func_00255AC0(state, 0x220);
+        if ((u16)effect->param != 0) {
+            func_00255AC0(state, 0x22D);
+        }
+        return 1;
+    }
+    switch (state->step) {
+    case 0:
+        func_001E42C0(0, -120, 80, 0x103);
+        if (func_001E1E10(effect->source >> 8, effect->source & 0xFF) < 0xFF ||
+            func_001E1E10(effect->target >> 8, effect->target & 0xFF) < 0xFF) {
+            return 1;
+        }
+        if (func_00255B50(state) == 1) {
+            req->id = 0x25A;
+            req->unk4 = 0;
+            req->position = effect->source;
+            req->unkC = 0;
+            state->slot = func_00255A30(req, state);
+            state->step++;
+        }
+        return 1;
+    case 1:
+    case 4:
+        if (func_001F51D0(state->slot) != 1) {
+            if (state->step == 1) {
+                func_001E1E70(effect->source >> 8, effect->source & 0xFF, 0, 1);
+            }
+            state->step++;
+        }
+        return 1;
+    case 2:
+        if (func_001F51D0(state->slot) == 0) {
+            req->id = 0x259;
+            req->unk4 = 0;
+            req->position = effect->source;
+            req->unkC = 1;
+            state->slot = func_00255A30(req, state);
+            state->step++;
+        }
+        return 1;
+    case 3:
+        if (func_001F51D0(state->slot) == 0) {
+            func_00260AF0(0x10, effect->target, 100, 180);
+            func_001E42C0(0, -120, 80, 0x108);
+            func_0024F370(effect->source >> 8, effect->source & 0xFF);
+            req->id = 0x220;
+            req->unk4 = 0;
+            req->position = effect->target;
+            req->unkC = 0;
+            state->slot = func_00255A30(req, state);
+            if ((u16)effect->param != 0 && (func_001E0700(effect->target >> 8, effect->target & 0xFF) >> 5) == 0) {
+                func_001E42C0(0, -120, 80, 0x107);
+                req->id = 0x22D;
+                req->unk4 = 0;
+                req->position = effect->target;
+                req->unkC = 0;
+                state->slot2 = func_00255A30(req, state);
+            }
+            state->step++;
+        }
+        return 1;
+    case 5:
+        func_001E1E70(effect->target >> 8, effect->target & 0xFF, 0, 1);
+        func_002503B0(effect->target >> 8, effect->target & 0xFF, (effect->param >> 16) & 0xFF);
+        if ((u16)effect->param != 0 && (func_001E0700(effect->target >> 8, effect->target & 0xFF) >> 5) == 0) {
+            func_00250CA0(effect->target >> 8, effect->target & 0xFF, 1, (u16)effect->param);
+            func_00250E80(effect->target >> 8, effect->target & 0xFF, 1, (u16)effect->param);
+        }
+        func_001E4530();
+        func_00260A70(state, 0x10);
+        state->step++;
+        break;
+    default:
+        if (state->timer++ > 0x10) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
