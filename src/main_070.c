@@ -451,7 +451,91 @@ void func_00245D80(u8 *arg0) {
     D_00350FD0[*arg0].value = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245DB0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_00245DB0;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_00245DB0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} XYZ_00245DB0;
+
+typedef struct {
+    u64 uv;
+    XYZ_00245DB0 xyz;
+} Vertex_00245DB0;
+
+typedef struct {
+    u64 tag[2];
+    u8 r, g, b, a;
+    f32 q;
+    Vertex_00245DB0 vertex[4];
+    u64 state[4];
+} Packet_00245DB0;
+
+typedef struct {
+    u8 pad0[0x2C];
+    u16 x;
+    u16 y;
+    void *texture;
+} Object_00245DB0;
+
+void func_00245DB0(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+    extern s32 D_00350FC0;
+    Object_00245DB0 *object = arg0;
+    u16 *rect = arg1;
+    u32 shift;
+    u16 y;
+    Packet_00245DB0 packet __attribute__((aligned(8)));
+
+    ((Tag_00245DB0 *)packet.tag)->flags = 0x24;
+    ((Tag_00245DB0 *)packet.tag)->count = 9;
+    ((Tag_00245DB0 *)packet.tag)->registers = 0x424242421ULL;
+    ((Tag_00245DB0 *)packet.tag)->padding = 0;
+    shift = 4;
+    packet.r = packet.g = packet.b = packet.a = 0x80;
+    packet.q = 1.0f;
+    y = object->y + 0x720;
+    packet.vertex[2].xyz.x = packet.vertex[0].xyz.x =
+        ((object->x + 0x6C0) << 4) + (arg2 << shift);
+    packet.vertex[1].xyz.y = packet.vertex[0].xyz.y = (y << 4) + (arg3 << shift);
+    packet.vertex[3].xyz.x = packet.vertex[1].xyz.x =
+        packet.vertex[0].xyz.x + ((rect[3] - rect[1]) << shift);
+    packet.vertex[3].xyz.y = packet.vertex[2].xyz.y =
+        packet.vertex[0].xyz.y + ((rect[2] - rect[0]) << shift);
+    packet.vertex[0].xyz.z = packet.vertex[1].xyz.z = packet.vertex[2].xyz.z =
+        packet.vertex[3].xyz.z = 0xFFFFF8;
+    packet.vertex[0].xyz.fog = packet.vertex[1].xyz.fog = packet.vertex[2].xyz.fog =
+        packet.vertex[3].xyz.fog = 0;
+    ((Tag_00245DB0 *)packet.tag)->flags |= 0x800;
+    ((UV_00245DB0 *)&packet.vertex[0].uv)->u = rect[1] << 4;
+    ((UV_00245DB0 *)&packet.vertex[0].uv)->v = rect[0] << 4;
+    ((UV_00245DB0 *)&packet.vertex[1].uv)->u = rect[3] << 4;
+    ((UV_00245DB0 *)&packet.vertex[1].uv)->v = rect[0] << 4;
+    ((UV_00245DB0 *)&packet.vertex[2].uv)->u = rect[1] << 4;
+    ((UV_00245DB0 *)&packet.vertex[2].uv)->v = rect[2] << 4;
+    ((UV_00245DB0 *)&packet.vertex[3].uv)->u = rect[3] << 4;
+    ((UV_00245DB0 *)&packet.vertex[3].uv)->v = rect[2] << 4;
+    func_00208700(packet.tag, object->texture, 1);
+    func_00208CB0(packet.tag, ((u64)rect[1] << 4) | 0xA | ((u64)rect[3] << 14) |
+                                  ((u64)rect[0] << 24) | ((u64)rect[2] << 34));
+    func_002086D0(packet.tag, 0x44);
+    if (D_00350FC0 != 0) {
+        D_00350FC0 = func_00207650(D_00350FC0, (s32)packet.tag, 0, 0);
+    }
+}
 
 typedef struct {
     u8 kind;
