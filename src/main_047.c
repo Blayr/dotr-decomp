@@ -320,7 +320,175 @@ s32 func_001E5590(s32 arg0) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E55E0);
+typedef struct Vec3_001E55E0 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_001E55E0;
+
+typedef struct Camera_001E55E0 {
+    f32 position[4];
+    s32 rotation[4];
+    f32 scale[4];
+    u8 pad30[0x60];
+} Camera_001E55E0;
+
+typedef struct Stage_001E55E0 {
+    Vec3_001E55E0 light;
+    Vec3_001E55E0 ambient;
+    u8 pad18[8];
+    Camera_001E55E0 camera;
+    u8 padB0[0x10];
+} Stage_001E55E0;
+
+s32 func_001E55E0(s32 arg0) {
+    extern Stage_001E55E0 D_00291690[];
+    extern Camera_001E55E0 D_002921F0;
+    extern Vec3_001E55E0 D_00292280;
+    extern Vec3_001E55E0 D_00292290;
+    extern s32 D_00292168;
+    extern s8 D_0031AB98;
+    extern s8 D_0031ABA0;
+    extern u8 D_002921E0;
+    extern s32 func_001E5DD0(s32, s32, s32);
+    extern s32 func_001F6D30(void);
+    extern s32 func_001F2920(s32);
+    Camera_001E55E0 camera;
+    Vec3_001E55E0 ambient;
+    Vec3_001E55E0 light;
+    Camera_001E55E0 *stage;
+    Camera_001E55E0 *toCamera;
+    Camera_001E55E0 *fromCamera;
+    Vec3_001E55E0 *toAmbient;
+    Vec3_001E55E0 *fromAmbient;
+    Vec3_001E55E0 *toLight;
+    Vec3_001E55E0 *fromLight;
+    f32 scale;
+    f32 u;
+    f32 t;
+    s32 i;
+    s32 id;
+    s32 value;
+    s32 id2;
+    s32 j;
+
+    scale = (u8)func_001F6D30() / 128.0f;
+    if (D_00292168 == 7) {
+        if (D_0031AB98 < 0x3C) {
+            t = 0.0f;
+        } else {
+            t = (D_0031AB98 - 0x3C) / 4.0f;
+        }
+        u = 1.0f - t;
+        toCamera = &D_00291690[10].camera;
+        fromCamera = &D_00291690[7].camera;
+        toAmbient = &D_00291690[10].ambient;
+        fromAmbient = &D_00291690[7].ambient;
+        toLight = &D_00291690[10].light;
+        fromLight = &D_00291690[7].light;
+        camera = D_002921F0;
+        camera.position[0] = toCamera->position[0] * t + fromCamera->position[0] * u;
+        camera.position[1] = toCamera->position[1] * t + fromCamera->position[1] * u;
+        camera.position[2] = toCamera->position[2] * t + fromCamera->position[2] * u;
+        camera.position[3] = toCamera->position[3] * t + fromCamera->position[3] * u;
+        camera.rotation[0] = (s32)((f32)toCamera->rotation[0] * t + (f32)fromCamera->rotation[0] * u);
+        camera.rotation[1] = (s32)((f32)toCamera->rotation[1] * t + (f32)fromCamera->rotation[1] * u);
+        camera.rotation[2] = (s32)((f32)toCamera->rotation[2] * t + (f32)fromCamera->rotation[2] * u);
+        camera.rotation[3] = (s32)((f32)toCamera->rotation[3] * t + (f32)fromCamera->rotation[3] * u);
+        camera.scale[0] = toCamera->scale[0] * t + fromCamera->scale[0] * u;
+        camera.scale[1] = toCamera->scale[1] * t + fromCamera->scale[1] * u;
+        camera.scale[2] = toCamera->scale[2] * t + fromCamera->scale[2] * u;
+        camera.scale[3] = toCamera->scale[3] * t + fromCamera->scale[3] * u;
+        ambient = D_00292280;
+        ambient.x = toAmbient->x * t + fromAmbient->x * u;
+        ambient.y = toAmbient->y * t + fromAmbient->y * u;
+        ambient.z = toAmbient->z * t + fromAmbient->z * u;
+        light = D_00292290;
+        light.x = toLight->x * t + fromLight->x * u;
+        light.y = toLight->y * t + fromLight->y * u;
+        light.z = toLight->z * t + fromLight->z * u;
+        func_001F30B0(0x10, t > 0.0f ? 1 : 0);
+        func_001F6B40((s32)&camera);
+        func_001F6BD0((s32)&camera);
+        func_001F6D40((s32)&ambient);
+        func_001F6DD0((s32)&light);
+        if (func_001F3360(8) == 0) {
+            if ((s32)(60.0f * (func_0019A5C8() / 2147483648.0f)) == 0) {
+                D_0031ABA0 = 1;
+            }
+            D_0031AB98 += D_0031ABA0;
+            if (D_0031AB98 < 0) {
+                D_0031AB98 = 0;
+                D_0031ABA0 = 0;
+            }
+            if (D_0031AB98 < 0x20) {
+                D_002921E0 = 1;
+            }
+            if (D_0031AB98 > 0x40) {
+                D_0031AB98 = 0x40;
+                D_0031ABA0 = -1;
+                if (D_002921E0 != 0) {
+                    if ((s32)(2.0f * (func_0019A5C8() / 2147483648.0f)) != 0) {
+                        func_002177E0(0, 0x22, 0x23);
+                    } else {
+                        func_002177E0(0, 0x24, 0x25);
+                    }
+                    D_002921E0 = 0;
+                }
+            }
+        }
+    }
+    if (D_00292168 == 5 || D_00292168 == 6) {
+        stage = &D_00291690[D_00292168].camera;
+        if (func_001F3360(8) == 0) {
+            if (D_00292168 == 6) {
+                stage->rotation[1] = (stage->rotation[1] + 0x200) % 0x10000;
+            } else {
+                stage->rotation[2] = (stage->rotation[2] + 0x200) % 0x10000;
+            }
+        }
+        func_001F6B40((s32)stage);
+        func_001F6BD0((s32)stage);
+    }
+    if (D_00292168 == 8) {
+        value = func_001A23B0(func_001F1B50(9));
+        if (value == 0x14 || value == 0xDC) {
+            func_00217710(0, 0x28);
+        }
+    }
+    func_001F6E80(2, scale);
+    func_001F6E80(3, scale);
+    for (i = 0; i < 12; i++) {
+        id = i + 8;
+        value = func_001F2920(id) % 100;
+        if (func_001F1370(id) != 0) {
+            switch (D_00292168) {
+            case 1:
+                arg0 = func_001E5D30(arg0, id, value);
+                break;
+            case 3:
+                arg0 = func_001E5DD0(arg0, id, value);
+                break;
+            case 4:
+                arg0 = func_001E5EB0(arg0, id, value);
+                break;
+            case 7:
+                arg0 = func_001E60E0(arg0, id, value);
+                break;
+            default:
+                arg0 = func_001EFA80(arg0, id, 0, 0, 0, 0, 0);
+                break;
+            }
+        }
+    }
+    for (j = 0; j < 1; j++) {
+        id2 = j + 7;
+        if (func_001F1370(id2) != 0) {
+            arg0 = func_001EFA80(arg0, id2, 0, 0, 0, 0, 0);
+        }
+    }
+    return arg0;
+}
 
 s32 func_001E5D30(s32 arg0, s32 arg1, s32 arg2) {
     s32 parameters[4];
