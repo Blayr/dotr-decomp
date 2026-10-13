@@ -913,6 +913,7 @@ s32 func_001DF000(s32 arg0, s32 arg1);
 void func_001DF070(s32 arg0);
 s32 func_001DF0C0(s32 arg0, s32 arg1);
 s32 func_001DF110(s32 arg0);
+s32 func_001DF130(s32 arg0, s32 arg1);
 s32 func_001DF2C0(s32 arg0, s32 arg1);
 s32 func_001DF330(s32 arg0);
 s32 func_001DF370(s32 arg0, s32 arg1, s32 arg2);

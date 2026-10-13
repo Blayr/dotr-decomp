@@ -573,7 +573,28 @@ s32 func_001DF110(s32 arg0) {
     return ((Entry_001DF110 *)(D_00317490 + arg0 * 0x350))->value;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF130);
+typedef struct {
+    s16 cards[5];
+    u8 count;
+} Hand_001DF130;
+
+s32 func_001DF130(s32 arg0, s32 arg1) {
+    Hand_001DF130 *hand;
+
+    hand = (Hand_001DF130 *)(D_00317490 + arg0 * 0x350 + 0x324);
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if (arg1 < 0 || arg1 >= 0x356) {
+        return -1;
+    }
+    if (hand->count >= 5) {
+        return -1;
+    }
+    func_001DF1E0(arg0);
+    hand->cards[hand->count] = arg1 & 0xFFF;
+    return hand->count++;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_044", func_001DF1E0);
 
