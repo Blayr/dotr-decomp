@@ -346,7 +346,87 @@ s32 func_0023C3F0(s32 arg0) {
     return state->result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023C560);
+s16 func_0023C560(s32 arg0) {
+    State_0023C170 *state = (State_0023C170 *)&D_0034FB00;
+    s32 result;
+
+    result = 0;
+    if (arg0 == 1) {
+        func_0023C170(0);
+        state->field2BE = 0;
+    }
+    switch (state->field30) {
+    case 0:
+        result = func_0023CE40(0);
+        if (result == 2) {
+            state->field30 = 0;
+        }
+        break;
+    case 1:
+        result = func_0023D170(0);
+        break;
+    case 2:
+        result = func_0023D400();
+        break;
+    case 3:
+        result = func_0023CE40(0);
+        break;
+    case 4:
+        result = func_0023D920();
+        break;
+    case 5:
+        result = func_0023DE90();
+        break;
+    case 10:
+        result = func_0023E610();
+        break;
+    case 15:
+        result = func_0023E6D0();
+        break;
+    case 11:
+        result = func_0023CE40(0);
+        if (state->field2BE == 0xE && arg0 == 2) {
+            state->field30 = 0xA;
+            state->field34 = 0;
+            result = 0xB;
+            state->field40 = 0;
+        }
+        break;
+    case 13:
+        result = func_0023CE40(0);
+        if (state->field2BE == 1 && arg0 == 2) {
+            state->field30 = 5;
+            state->field34 = 0;
+            result = 9;
+            state->field40 = 0;
+        }
+        break;
+    case 14:
+        result = func_0023CE40(0);
+        if (result == 2) {
+            result = 0xA;
+        }
+        if (arg0 == 2) {
+            state->field30 = 0;
+            state->field34 = 0;
+            result = 0x700;
+            state->field40 = 0;
+        }
+        break;
+    }
+    if (arg0 == 1) {
+        state->field34 = 0;
+        state->field40 = 0;
+        state->field30 = 0;
+    }
+    if (result != 0) {
+        state->field2BE = result;
+    }
+    if (result == 0x100) {
+        return 0x100;
+    }
+    return state->field2BE;
+}
 
 typedef struct State_0023C770 {
     u8 pad_00[0x30];
