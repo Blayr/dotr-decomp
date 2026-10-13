@@ -824,7 +824,71 @@ s32 func_002004C0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200510);
+typedef struct {
+    u8 data[0x24];
+} Request_00200510;
+
+typedef struct {
+    u8 pad0[0x4080];
+    Request_00200510 requests[0x100];
+    u8 pad1[0x200];
+    void (*callback)(void);
+    u8 pad2[0x8];
+    u16 head;
+    u16 count;
+} Queue_00200510;
+
+static inline Request_00200510 *enqueue_00200510(s32 arg1, s32 arg2, s32 arg3, u8 *buf, s32 arg5, s32 arg6) {
+    extern u8 D_0031C2F0[];
+    Queue_00200510 *queue = (Queue_00200510 *)D_0031C2F0;
+    Request_00200510 *slot;
+    s32 count;
+    s32 idx;
+    s32 temp;
+
+    count = queue->count;
+    if (count >= 0x100) {
+        return NULL;
+    }
+    temp = queue->head + count;
+    idx = temp & 0xFF;
+    if (temp < 0) {
+        if (idx != 0) {
+            idx -= 0x100;
+        }
+    }
+    slot = &queue->requests[idx];
+    if (func_001FEDA0(slot, 0x1400, (arg6 != 0) ? 8 : 7, buf, arg3, arg2, arg1, arg2,
+                      (s32)func_00200680, arg5) == 0) {
+        return NULL;
+    }
+    queue->count++;
+    return slot;
+}
+
+s32 func_00200510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void (*arg4)(void), s32 arg5, s32 arg6) {
+    extern Queue_00200510 D_0031C2F0;
+    extern u8 D_002D0680[];
+    extern u8 D_002D0686[];
+    extern u8 D_002D0655[];
+    extern void func_0019B648();
+    Queue_00200510 *queue = &D_0031C2F0;
+    u8 buf[0x80];
+    u8 *text;
+    Request_00200510 *slot;
+
+    if (arg0 == 0) {
+        return 0;
+    }
+    text = func_00197548((s32)D_002D0680);
+    if (text == NULL) {
+        text = D_002D0655;
+    }
+    func_0019B648(buf, D_002D0686, (s32)text, arg0);
+    queue->callback = arg4;
+    slot = enqueue_00200510(arg1, arg2, arg3, buf, arg5, arg6);
+    return (slot != NULL) ? 1 : 0;
+}
 
 typedef struct CallbackTable_00200680 {
     u8 pad[0x6680];
