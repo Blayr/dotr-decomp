@@ -771,9 +771,21 @@ void func_00212D70(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00212DE0);
+void func_00212DE0(void) {
+    extern u32 D_0032A728;
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00212DF0);
+    D_0032A728 = 0;
+}
+
+s32 func_00212DF0(s32 id) {
+    if (D_0032A728 >= 0x100) {
+        return 0;
+    }
+    D_0032A780[D_0032A728].id = id;
+    D_0032A780[D_0032A728].used = -1;
+    D_0032A728++;
+    return 1;
+}
 
 s32 func_00212E60(s32 arg0, void *arg1) {
     u32 i;
