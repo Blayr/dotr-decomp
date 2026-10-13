@@ -257,7 +257,6 @@ typedef struct {
     s8 types[24];
 } Data_00255B50;
 
-u8 *func_001F3EA0(s32, u16);
 
 s32 func_00255B50(void *arg0) {
     s32 i;
@@ -298,7 +297,6 @@ typedef struct Slots_00255C30 {
     u16 ids[24];
 } Slots_00255C30;
 
-u8 *func_001F3EA0(s32, u16);
 
 s32 func_00255C30(void *arg0, s32 arg1) {
     s32 state;

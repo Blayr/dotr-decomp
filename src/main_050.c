@@ -28,7 +28,33 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3CB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3E40);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3EA0);
+typedef struct {
+    u8 unused : 3;
+    u8 kind : 3;
+} Flags_001F3EA0;
+
+typedef struct {
+    u16 unused : 6;
+    u16 id : 10;
+} Id_001F3EA0;
+
+u8 *func_001F3EA0(s32 arg0, s32 arg1) {
+    extern u8 D_0031BB50[];
+    u8 *entry;
+    s32 i;
+
+    entry = D_0031BB50;
+    i = 0;
+    while ((s64)i < 32) {
+        if ((arg0 < 0 || ((Flags_001F3EA0 *)entry)->kind == arg0) &&
+            (arg1 < 0 || ((Id_001F3EA0 *)entry)->id == arg1)) {
+            return entry;
+        }
+        i++;
+        entry += 8;
+    }
+    return NULL;
+}
 
 typedef struct Entry_001F3F20 {
     u64 kind : 3;
@@ -327,7 +353,42 @@ s32 func_001F4E50(s32 arg0, s32 arg1) {
     return var_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F4F10);
+typedef struct Entry_001F4F10 {
+    u8 state : 3;
+    u8 unused0 : 5;
+    u8 pad1[2];
+    s8 unused3 : 5;
+    s8 flag : 1;
+    s8 unused4 : 2;
+    u8 pad4[0x14];
+} Entry_001F4F10;
+
+s32 func_001F4F10(s32 arg0, s32 arg1) {
+    extern u8 D_0031BB50[];
+    Entry_001F4F10 *entry;
+    s32 state;
+
+    entry = (Entry_001F4F10 *)(D_0031BB50 + arg0 * 0x18 + 0x100);
+    if ((arg0 < 0) || (arg0 >= 0x18)) {
+        return 0;
+    }
+    state = entry->state;
+    if (state == 0) {
+        return 0;
+    }
+    if (arg1 != 0) {
+        if (state != 1) {
+            return 0;
+        }
+    } else {
+        if (state != 2) {
+            return 0;
+        }
+        entry->state = 1;
+    }
+    entry->flag = arg1;
+    return 1;
+}
 
 typedef struct Entry_001F4FD0 {
     u16 unk0;
@@ -337,7 +398,6 @@ typedef struct Entry_001F4FD0 {
     u8 unk4[0x14];
 } Entry_001F4FD0;
 
-s32 func_001F4F10(s32, s32);
 extern struct Entry_001F5240 D_0031BC50[];
 
 s32 func_001F4FD0(s32 arg0, s32 arg1, s32 arg2) {
@@ -457,7 +517,19 @@ s32 func_001F52D0(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F5320);
+typedef struct Bits_001F5320 {
+    u16 state : 3;
+    u16 value : 13;
+} Bits_001F5320;
+
+s32 func_001F5320(s32 arg0) {
+    Entry_001F52D0 *entry = &D_0031BB50.entries[arg0];
+
+    if ((arg0 < 0) || (arg0 >= 0x18)) {
+        return -1;
+    }
+    return ((Bits_001F5320 *)entry)->value;
+}
 
 void func_001F5370(s32 arg0) {
     D_0031BE98 = arg0;
