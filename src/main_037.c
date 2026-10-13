@@ -1456,7 +1456,98 @@ void func_001AAFA0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AB1D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC290);
+s32 func_001AC290(s32 arg0, s32 arg1, s32 *arg2) {
+    s32 alt;
+    s32 result;
+
+    alt = (arg1 & 0x80) ? 1 : 0;
+    result = 0;
+    *arg2 = (alt ? 1 : 0) + 0x9B2;
+    switch (arg1 & 0x7F) {
+    case 1:
+        *arg2 = 0x9D9;
+        result = 2;
+        break;
+    case 2:
+    case 4:
+        *arg2 = (alt ? 1 : 0) + 0x9B5;
+        result = 1;
+        break;
+    case 3:
+    case 14:
+        *arg2 = (alt ? 1 : 0) + 0x9CA;
+        result = 2;
+        break;
+    case 5:
+        if (arg0 == 6) {
+            *arg2 = 0x9BB;
+        } else {
+            *arg2 = (alt ? 3 : 0) + 0x9BA;
+        }
+        result = 1;
+        break;
+    case 6:
+        *arg2 = (alt ? 1 : 0) + 0x9B8;
+        result = 1;
+        break;
+    case 7:
+        *arg2 = (alt ? 2 : 0) + 0x9BF;
+        result = 1;
+        break;
+    case 9:
+        if (arg0 == 4 || arg0 == 5) {
+            if (arg0 == 4) {
+                *arg2 = 0x9C5;
+            } else {
+                *arg2 = 0x9D6;
+            }
+        } else if (arg0 == 0 || arg0 == 3) {
+            *arg2 = (alt ? 1 : 0) + 0x9C3;
+        } else {
+            *arg2 = (alt ? 1 : 0) + 0x9D4;
+        }
+        break;
+    case 8:
+    case 10:
+        if (arg0 == 0 || arg0 == 3 || arg0 == 4) {
+            *arg2 = 0x9C7;
+        } else {
+            *arg2 = 0x9D8;
+        }
+        result = 1;
+        break;
+    case 11:
+        *arg2 = (alt ? 1 : 0) + 0x9CE;
+        break;
+    case 12:
+        *arg2 = (alt ? 1 : 0) + 0x9D0;
+        result = 3;
+        break;
+    case 13:
+        *arg2 = (alt ? 1 : 0) + 0x9D2;
+        result = 1;
+        break;
+    }
+    switch (arg1 & 0xFF00) {
+    case 0x100:
+    case 0x200:
+    case 0x300:
+    case 0x400:
+    case 0x500:
+        if (arg0 == 4) {
+            *arg2 = 0x9DA;
+        } else if (arg0 == 0 || arg0 == 3) {
+            *arg2 = 0x9C6;
+        } else {
+            *arg2 = 0x9D7;
+        }
+        break;
+    case 0x600:
+        *arg2 = 0x9DB;
+        break;
+    }
+    return result;
+}
 
 void func_001AC510(void) {
     s32 i;
