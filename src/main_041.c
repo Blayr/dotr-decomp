@@ -221,7 +221,6 @@ typedef struct State_001C35A0 {
 } State_001C35A0;
 
 s32 func_001C3E20(s32, s32, s32, s32);
-s32 func_001C5550(s32, s32, s32, s32, s32);
 s32 func_001C5870(s32, s32, s32);
 s32 func_001BDAF0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern u16 D_0031811C;
@@ -373,7 +372,59 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C3E20);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C4B00);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5550);
+s32 func_001C5550(s32 id, s32 player, s32 arg2, s32 arg3, s32 arg4) {
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern char D_002BF030[];
+    extern char D_002BEFEC[];
+    extern s32 D_00290A62;
+    extern s32 D_00290A58;
+    extern s32 D_00290A4E;
+    extern s32 D_00290A76;
+    u8 *state = D_00317490;
+    s8 *text1 = D_002BF030 + 3;
+    s8 *text2 = D_002BEFEC;
+    s8 *text4 = (s8 *)&D_002BF00B;
+    s32 hint = 0;
+    u16 busy;
+    s32 x;
+    s32 y;
+    s32 sx;
+    s32 sy;
+    s32 px;
+    s32 py;
+
+    x = arg2 + 8 + (player != 0 ? 0x140 : 0);
+    y = arg3 + 0x70 + arg4 * 0x36;
+    sx = x + 0x6C0;
+    sy = y + 0x720;
+    busy = (player != 0) ? *(u16 *)(state + 0xC98) : *(u16 *)(state + 0xC96);
+    id = func_001B4780(id, -1, 4, 6, x - 2, y - 2, -0x130, -0x36, 1);
+    if (busy != 0) {
+        return id;
+    }
+    id = func_001B4780(id, 0xD, -1, 7, x, y + 0x36, -0x130, -0x14, 1);
+    if (state[player + 0xCC0] < 2) {
+        px = sx + 5;
+        py = sy + 0x38;
+        id = func_001B3CC0(id, &D_00290A62, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        id = func_001B3CC0(id, &D_00290A58, px + 0x11, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        px = x + 0x2C;
+        py = y + 0x3B;
+        id = func_001B6F70(id, px, py, 1, 0, func_0019BEF0((char *)text1), text1,
+                           hint != 0 ? (s32)D_002BE944 : 0);
+    }
+    id = func_001B3CC0(id, &D_00290A4E, sx + 0x6B, sy + 0x38, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    px = x + 0x81;
+    py = y + 0x3B;
+    id = func_001B6F70(id, px, py, 1, 0, func_0019BEF0((char *)text2), text2,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    id = func_001B3CC0(id, &D_00290A76, sx + 0xC9, sy + 0x38, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    px = x + 0xDF;
+    py = y + 0x3B;
+    return func_001B6F70(id, px, py, 1, 0, func_0019BEF0((char *)text4), text4,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5870);
 
