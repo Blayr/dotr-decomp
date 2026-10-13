@@ -793,7 +793,40 @@ s32 func_001C07E0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0A30);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0CE0);
+s32 func_001C0CE0(s32 arg0, s32 arg1, s32 arg2) {
+    s32 text;
+    u16 *cards;
+    s32 name;
+    s32 width;
+    s32 result;
+    f32 scale;
+    extern struct Entry_001BA520 *D_00317B60;
+    extern s32 func_001B0CE0();
+    extern s32 func_001B7D60();
+    extern s32 func_001FE7D0();
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+
+    text = (s32)D_002BF002;
+    cards = (u16 *)((u8 *)D_00317B60 + 0x20);
+    name = func_001DE210(cards[0]);
+    scale = 1.0f;
+    arg0 = func_001B0CE0(arg0, 2, -1, -1, arg1 + 0x140, arg2 + 0x41, 0x1CC, 0x13E,
+                         func_0019BEF0((char *)text), text, 1);
+    result = func_0020F290(func_001FD680(func_001FD680(
+        func_001B7D60(arg0, cards[0], arg1 + 0x100, arg2 + 0xB5, 0x80, 0x80, D_003180E8),
+        1, 0x95, 0, 0x16), 2, name, 0, 0x42));
+    result = func_001FE7D0(result, 1, (arg1 + 0x140) - (((s32 *)func_001FEAB0(1))[3] >> 1),
+                           arg2 + 0x7D, 0, func_001FDFE0);
+    width = ((s32 *)func_001FEAB0(2))[3];
+    if (width > 0x1B4) {
+        scale = 436.0f / (f32)width;
+    }
+    result = func_001FE660(result, 2, (arg1 + 0x140) - (s32)(((f32)width * scale) / 2.0f),
+                           arg2 + 0x141, scale, 1.0f, 0, func_001FDFE0);
+    func_001FEAF0(1);
+    func_001FEAF0(2);
+    return result;
+}
 
 void func_001C0EE0(s32 arg0, s32 arg1, s32 arg2) {
     s32 text = (s32)D_002BF002;
