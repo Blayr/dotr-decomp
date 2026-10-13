@@ -1,5 +1,7 @@
 #include "common.h"
 
+static s32 func_001FF9C0(void);
+
 void func_001FF250(s8 *p) {
     s32 network;
     s32 first;
@@ -277,7 +279,7 @@ typedef struct {
     u16 count;
 } Queue_001FF9C0;
 
-s32 func_001FF9C0(void) {
+static s32 func_001FF9C0(void) {
     extern Queue_001FF9C0 D_0031C2F0;
     Queue_001FF9C0 *queue = &D_0031C2F0;
     s32 bestIndex = -1;
