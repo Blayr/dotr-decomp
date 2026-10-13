@@ -102,7 +102,6 @@ typedef struct {
     s16 id;
 } Slot_00202810;
 
-void func_002029B0(s32, s32);
 
 static inline void *find_00202810(s32 arg0, s32 arg1) {
     Slot_00202810 *entry = func_002008A0(arg0, arg1);
@@ -157,7 +156,45 @@ s32 func_00202810(s32 arg0, s32 arg1, char *arg2, s32 arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002029B0);
+typedef struct {
+    s32 data;
+    char *name;
+    s8 flag0 : 1;
+    s8 flag1 : 1;
+    s8 flag2 : 1;
+    s16 category : 13;
+    s16 id;
+} Slot_002029B0;
+
+s32 func_002029B0(s32 arg0, s32 arg1) {
+    extern Slot_002029B0 D_003229A0[];
+    Slot_002029B0 *entry;
+    s32 i;
+    s32 result;
+
+    entry = D_003229A0;
+    result = 0;
+    i = 0;
+    do {
+        if (entry->data != 0 && (arg0 < 0 || entry->category == arg0) &&
+            (arg1 < 0 || entry->id == arg1) && !(entry->data & 0x80000000)) {
+            if (entry->name != NULL) {
+                func_00217B50((s32)entry->name);
+                entry->name = NULL;
+            }
+            if (entry->data != 0) {
+                if (entry->flag2) {
+                    func_00217B50(entry->data);
+                }
+                entry->data = 0;
+            }
+            result = 1;
+        }
+        i++;
+        entry++;
+    } while (i < 0x400);
+    return result;
+}
 
 s32 func_00202AB0(s32 arg0, s32 arg1) {
     s32 sp3C;
