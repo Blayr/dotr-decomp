@@ -678,7 +678,6 @@ typedef struct {
 } Req_00268FA0;
 
 void func_001E42C0(s32, s32, s32, s32);
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
@@ -787,7 +786,6 @@ typedef struct {
 } Context_002692D0;
 
 void func_0024F370(s32, s32);
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 
@@ -903,7 +901,6 @@ void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(s32, s32, s32);
-u8 func_00255A30(void *, void *);
 void func_00260A70(void *, s32);
 void func_00269EC0(void *, void *);
 
@@ -1274,7 +1271,6 @@ typedef struct State_0026BB80 {
 
 void func_0024F370(s32, s32);
 void func_002516D0(s32, s32, s32);
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
@@ -1382,7 +1378,6 @@ typedef struct {
 void func_001E1E70();
 void func_0024F370();
 void func_002516D0();
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 
@@ -1536,7 +1531,6 @@ typedef struct {
     s32 value;
 } Input_0026CFC0;
 
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
@@ -1787,7 +1781,6 @@ typedef struct Command_0026DCC0 {
     s32 flags;
 } Command_0026DCC0;
 
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
@@ -1919,7 +1912,6 @@ s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(u32, s32);
-u8 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 

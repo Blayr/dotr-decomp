@@ -941,7 +941,6 @@ typedef struct Message_0027E840 {
     s32 flags;
 } Message_0027E840;
 
-s32 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 void func_002610D0(s32, s32, s32, s32);

@@ -72,7 +72,6 @@ typedef struct Command_0025F400 {
     s32 extra;
 } Command_0025F400;
 
-s32 func_00255A30(void *, void *);
 
 s32 func_0025F400(void *arg0, void *arg1, void *arg2) {
     s32 i;
@@ -174,7 +173,6 @@ s32 func_0025F670(void *arg0, void *arg1) {
     return 0;
 }
 
-s32 func_00255A30(void *, void *);
 
 typedef struct Source_0025F720 {
     s32 pad[2];
@@ -240,7 +238,6 @@ typedef struct Request_0025F820 {
     u32 special;
 } Request_0025F820;
 
-s32 func_00255A30(void *, void *);
 
 void func_0025F820(void *arg0, void *arg1, void *arg2, s32 arg3) {
     Source_0025F820 *source = arg0;
@@ -401,7 +398,6 @@ void func_00260020(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg
 }
 
 void func_001E42C0(s32, s32, s32, s32);
-s32 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 
 typedef struct State_00260200 {
@@ -785,7 +781,6 @@ typedef struct Effect_00261B70 {
     s32 value3;
 } Effect_00261B70;
 
-s32 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
@@ -1147,7 +1142,6 @@ typedef struct {
 
 s32 func_001DFAF0(u32, s32, s32);
 void func_0024F370(s32, s32);
-s32 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 
 s32 func_00262BE0(void *arg0, void *arg1, s32 arg2) {
@@ -1401,7 +1395,6 @@ s32 func_00263500(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 
 typedef struct Config_00263790 {
@@ -1486,7 +1479,6 @@ typedef struct Request_00265050 {
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(u32, s32, s32);
-s32 func_00255A30(void *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 

@@ -203,7 +203,6 @@ typedef struct {
 } Object_00270030;
 
 extern void func_0024F430(u32, s32);
-extern u8 func_00255A30(s32 *, void *);
 
 s32 func_00270030(void *src, void *obj, s32 mode) {
     s32 words[4];
@@ -299,7 +298,6 @@ typedef struct State_00271630 {
 } State_00271630;
 
 void func_0024F430(u32, s32);
-u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 
 s32 func_00271630(void *arg0, void *arg1, s32 arg2) {
@@ -744,7 +742,6 @@ typedef struct Command_002738B0 {
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(u32, s32, s32);
-u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 s32 func_0025F990(void *, void *, s32 *, s32);
 void func_00260740(s32);
@@ -1000,7 +997,6 @@ typedef struct Request_00275740 {
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(u32, s32, s32);
-u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 
@@ -1104,7 +1100,6 @@ typedef struct {
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_002516D0(u32, s32, s32);
-u8 func_00255A30(s32 *, void *);
 void func_00255AC0(void *, s32);
 void func_00260A70(void *, s32);
 
