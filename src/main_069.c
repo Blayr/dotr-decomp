@@ -999,7 +999,9 @@ s32 func_002450B0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_002450D0);
+void func_002450D0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
+    func_002440F0((u8 *)arg0 + 0x48, arg1, arg2, arg3, arg4);
+}
 
 void func_002450E0(void *arg0, s32 arg1) {
     func_002441F0((u8 *)arg0 + 0x48, arg1);
