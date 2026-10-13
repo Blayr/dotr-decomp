@@ -730,7 +730,33 @@ INCLUDE_ASM("asm/nonmatchings/main_076", func_00267C50);
 
 INCLUDE_ASM("asm/nonmatchings/main_076", func_00268460);
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00268600);
+s32 func_00268600(s32 arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    s32 type;
+    s32 i;
+    s32 v;
+    s32 min;
+    s32 best;
+    s32 pos;
+    s32 dist;
+
+    best = -1;
+    min = 0xFF;
+    for (i = 0; i < 8; i++) {
+        pos = func_0024E410(arg0, i);
+        if ((v = func_001E3790(pos & 0xFF, pos >> 8)) >= 0) {
+            type = func_001E1030(v >> 8, v & 0xFF);
+            if (type == func_002686F0(arg1)) {
+                dist = func_001E13C0(v >> 8, v & 0xFF);
+                if (dist < min) {
+                    min = dist;
+                    best = v;
+                }
+            }
+        }
+    }
+    return best;
+}
 
 s32 func_002686F0(s32 arg0) {
     s32 result;
