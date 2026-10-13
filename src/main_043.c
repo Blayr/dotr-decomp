@@ -823,13 +823,13 @@ typedef struct {
 } Flags_001D9A30;
 
 s32 func_0020A470(s32, s32, s32);
-s32 func_0020A870(s32, s32);
 
 s32 func_001D9A30(s32 arg0, s32 arg1) {
     extern s32 func_00202E00();
     extern s32 func_00202BF0();
     extern s32 *func_001FEAB0(s32);
     extern s32 func_0020A610();
+    extern s32 func_0020A870();
     extern s32 func_0020A760();
     extern u8 D_00317490[];
     u8 *base = D_00317490;
