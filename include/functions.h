@@ -1768,6 +1768,7 @@ s32 func_0023CE40(s32 arg0);
 s32 func_0023D170(s32 arg0);
 s32 func_0023D400(void);
 s32 func_0023D920(void);
+s32 func_0023DE90(void);
 s32 func_0023E610(void);
 s32 func_0023E6D0(void);
 s32 func_0023F130(s32 arg0);

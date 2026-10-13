@@ -1211,7 +1211,288 @@ s32 func_0023D920(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023DE90);
+typedef struct Data_0023DE90 {
+    s32 ret;
+    s32 status;
+    s32 port;
+    s32 slot;
+    u8 pad10[0x10];
+    s32 command;
+    s32 result;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 stage;
+    u8 pad36[0xA];
+    s16 retries;
+    u8 pad42[6];
+    s32 handles[2];
+    u8 pad50[0x266];
+    s16 format0;
+    s16 format1;
+} Data_0023DE90;
+
+typedef struct Pair_0023DE90 {
+    s32 first;
+    s32 second;
+} Pair_0023DE90;
+
+typedef struct Header_0023DE90 {
+    s16 first;
+    s16 second;
+} Header_0023DE90;
+
+typedef struct Buffer_0023DE90 {
+    Header_0023DE90 header;
+    Pair_0023DE90 pairs[0x1FF4];
+    s32 table[0x53];
+} Buffer_0023DE90;
+
+s32 func_00193BA8(s32, s32, void *, s32);
+s32 func_00193D18(s32);
+s32 func_00193DD0(s32, s16, s16, s32);
+s32 func_00194058(s32, void *, s32);
+s32 func_00194248(s32, s32 *, s32 *);
+s32 func_00194A98(s32);
+extern u8 D_0029B1BE[];
+extern s16 D_0034FB34;
+
+typedef struct Tail_0023DE90 {
+    s32 words[0x53];
+} Tail_0023DE90;
+
+s32 func_0023DE90(void) {
+    extern struct State_0023E610 D_0034FB00;
+    extern s32 *D_0034FAE8;
+    extern Header_0023DE90 D_0034FAF0;
+    Data_0023DE90 *data = (Data_0023DE90 *)&D_0034FB00;
+    Header_0023DE90 *header;
+    s32 *var_v0;
+
+    var_v0 = (s32 *)&D_00299E10;
+    switch (D_0034FB34) {
+    case 0:
+        data->ret = func_00193BA8(data->port, data->slot, D_0029B1BE, 2);
+        data->status = func_00194248(1, &data->command, &data->result);
+        if (data->status == 1) {
+            if (data->command == 2) {
+                if (data->result < 0) {
+                    switch (data->result) {
+                    case -2:
+                        data->retries = (s16) (data->retries + 1);
+                        if (data->retries >= 3) {
+                            data->state = 0xB;
+                            data->stage = 0;
+                            data->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 5;
+                    case -4:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 0xA;
+                    case -5:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 0xA;
+                    case -7:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 0xA;
+                    default:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    data->handles[data->port] = (s32) data->result;
+                    data->stage = 1;
+                    data->retries = 0;
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 1:
+        data->ret = func_00193DD0(data->handles[data->port], data->format0, data->format1, 2);
+        data->status = func_00194248(1, &data->command, &data->result);
+        if (data->status == 1) {
+            if (data->command == 4) {
+                switch (data->result) {
+                case 0:
+                    data->stage = 2;
+                    data->retries = 0;
+                    return 0;
+                case -2:
+                    data->retries = (s16) (data->retries + 1);
+                    if (data->retries >= 3) {
+                        data->state = 0xB;
+                        data->stage = 0;
+                        data->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    data->state = 0xE;
+                    data->stage = 0;
+                    data->retries = 0;
+                    return 0xA;
+                default:
+                    data->state = 0xE;
+                    data->stage = 0;
+                    data->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    case 2: {
+        s32 second;
+        s32 first;
+        s32 count;
+        s32 *dst;
+        s32 *src;
+
+        src = D_0034FAE8;
+        count = 0x1FF4;
+        dst = (s32 *)((Buffer_0023DE90 *)0x01E10000)[data->port].pairs;
+        do {
+            first = *src++;
+            second = *src++;
+            count--;
+            dst[0] = first;
+            dst[1] = second;
+            dst += 2;
+        } while (count > 0);
+        header = &((Buffer_0023DE90 *)0x01E10000)[data->port].header;
+        *header = D_0034FAF0;
+        *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)var_v0;
+        func_00241190((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
+        func_0017BB60(0);
+        data->ret = func_00194058(data->handles[data->port], &((Buffer_0023DE90 *)0x01E10000)[data->port], 0x100F0);
+        data->status = func_00194248(1, &data->command, &data->result);
+        if (data->status == 1) {
+            if (data->command == 6) {
+                if (data->result < 0) {
+                    switch (data->result) {
+                    case -2:
+                        data->retries = (s16) (data->retries + 1);
+                        if (data->retries >= 3) {
+                            data->state = 0xB;
+                            data->stage = 0;
+                            data->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 5;
+                    case -4:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 0xA;
+                    case -5:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 0xA;
+                    default:
+                        data->state = 0xE;
+                        data->stage = 0;
+                        data->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    data->stage = 4;
+                    data->retries = 0;
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    }
+    case 3:
+        data->ret = func_00194A98(data->handles[data->port]);
+        data->status = func_00194248(1, &data->command, &data->result);
+        if (data->status == 1) {
+            if (data->command == 0xA) {
+                switch (data->result) {
+                case 0:
+                    data->stage = 4;
+                    data->retries = 0;
+                    return 0;
+                case -2:
+                    data->retries = (s16) (data->retries + 1);
+                    if (data->retries >= 3) {
+                        data->state = 0xB;
+                        data->stage = 0;
+                        data->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    data->state = 0xE;
+                    data->stage = 0;
+                    data->retries = 0;
+                    return 0xA;
+                default:
+                    data->state = 0xE;
+                    data->stage = 0;
+                    data->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    case 4:
+        data->ret = func_00193D18(data->handles[data->port]);
+        data->status = func_00194248(1, &data->command, &data->result);
+        if (data->status == 1) {
+            if (data->command == 3) {
+                switch (data->result) {
+                case 0:
+                    data->stage = 0;
+                    data->retries = 0;
+                    data->state = 0;
+                    return 0x100;
+                case -2:
+                    data->retries = (s16) (data->retries + 1);
+                    if (data->retries >= 3) {
+                        data->state = 0xB;
+                        data->stage = 0;
+                        data->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    data->state = 0xE;
+                    data->retries = 0;
+                    data->stage = 0;
+                    return 0xA;
+                default:
+                    data->state = 0xE;
+                    data->retries = 0;
+                    data->stage = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    }
+    return 0;
+}
 
 s32 func_00194248(s32, s32 *, s32 *);
 s32 func_001948A8(s32, s32);
