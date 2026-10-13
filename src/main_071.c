@@ -1,6 +1,25 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_071", func_002494D0);
+s32 func_002494D0(void) {
+    s32 roll;
+
+    roll = func_0019A5C8() % 6;
+    switch (roll) {
+    case 0:
+        return 0x23;
+    case 1:
+        return 0x4F;
+    case 2:
+        return 0x2C;
+    case 3:
+        return 0x5C;
+    case 4:
+        return 0x17B;
+    case 5:
+    default:
+        return 0x18A;
+    }
+}
 
 s32 func_00249560(s32 arg0) {
     return (D_0029D1F0[arg0 & 0xFFFF] == 0) ? 1 : 0;

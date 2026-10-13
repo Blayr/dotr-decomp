@@ -760,7 +760,23 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_001020B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00102210);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_001022D0);
+s32 func_001022D0(u32 arg0, s32 arg1) {
+    switch (arg0) {
+    case 0:
+    case 1:
+    case 3:
+        return arg1 & 7;
+    case 4:
+        return arg1 & 1;
+    case 2:
+        return arg1 & 0xF;
+    case 5:
+        return arg1 & 3;
+    case 9:
+    default:
+        return 0;
+    }
+}
 
 void func_00102330(s8 *arg0, s32 arg1) {
     s8 *var_s0;

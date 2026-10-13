@@ -1847,7 +1847,6 @@ typedef struct {
     } data;
 } Entry_00122530;
 
-s32 func_00122970(s32);
 
 void func_00122530(void *arg0) {
     Entry_00122530 *entry = arg0;
@@ -1956,7 +1955,28 @@ s32 func_00122810(s32 arg0, s32 arg1) {
     return var_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00122970);
+s32 func_00122970(s32 arg0) {
+    switch (arg0) {
+    case 0:
+        return 2;
+    case 1:
+        return 6;
+    case 2:
+        return 0x406;
+    case 3:
+        return 0x404;
+    case 4:
+        return 0x604;
+    case 5:
+        return 0x600;
+    case 6:
+        return 0x200;
+    case 7:
+        return 0x202;
+    default:
+        return 2;
+    }
+}
 
 typedef struct Unit_001229F0 {
     u16 id;
