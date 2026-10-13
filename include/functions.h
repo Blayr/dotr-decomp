@@ -83,6 +83,7 @@ s32 func_00106CC0(s32 arg0, s32 arg1);
 s32 func_00106CF0(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00106D80(s32 arg0, s16 *arg1);
 void func_00106DD0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2);
+void func_00106DE0(f32 x, f32 y, f32 z, s32 *out);
 void func_00106E40(s32 *dst, f32 *src);
 void func_00106E90(void *arg0, void *arg1);
 void func_00106ED0(void *arg0, void *arg1);

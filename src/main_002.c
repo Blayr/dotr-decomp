@@ -1,6 +1,12 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00106DE0);
+void func_00106DE0(f32 x, f32 y, f32 z, s32 *out) {
+    extern s32 func_001A22C0(f32);
+
+    out[0] = func_001A22C0(x);
+    out[1] = func_001A22C0(y);
+    out[2] = func_001A22C0(z);
+}
 
 void func_00106E40(s32 *dst, f32 *src) {
     extern s32 func_001A22C0(f32);
