@@ -69,7 +69,35 @@ void func_002761D0(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_078", func_00276290);
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00276B60);
+static inline s32 absolute_00276B60(s32 value) {
+    if (value >= 0) {
+        return value;
+    }
+    return -value;
+}
+
+s32 func_00276B60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 func_00279850();
+    s16 cell;
+
+    cell = func_001E3790(arg4, arg5);
+    if ((((arg4 < arg2) ? arg2 : arg4) - ((arg2 < arg4) ? arg2 : arg4)) +
+        (((arg5 < arg3) ? arg3 : arg5) - ((arg3 < arg5) ? arg3 : arg5)) == 1) {
+        return 1;
+    }
+    switch (absolute_00276B60(arg2 - arg4)) {
+    case 0:
+        return 1;
+    case 2:
+        return 1;
+    case 1:
+        if (func_00279850(arg0, arg1, arg2, arg3, arg4, arg3, &cell) == 1) {
+            return 1;
+        }
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_00276C80(u16 *arg0, s32 arg1) {
     s32 i = 0;
