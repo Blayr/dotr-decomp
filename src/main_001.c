@@ -396,7 +396,21 @@ s32 func_00103D00(s32 arg0, s32 arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00103DB0);
+s32 func_00103DB0(f32 *arg0, f32 *arg1, s32 *arg2) {
+    extern s32 func_001A22C0(f32);
+    f32 x;
+    f32 y;
+    f32 z;
+
+    x = arg0[0] - arg1[0];
+    y = arg0[1] - arg1[1];
+    z = arg0[2] - arg1[2];
+    arg2[1] = func_001A22C0(65536.0f * (func_001A6C18(x, z) / 6.2831855f)) % 65536;
+    arg2[0] = func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(x * x + z * z), y) / 6.2831855f)) % 65536;
+    arg2[3] = 0;
+    arg2[2] = 0;
+    return 0;
+}
 
 
 static inline s32 angle_00103EC0(f32 a, f32 b) {
