@@ -79,7 +79,163 @@ s32 func_001DFBB0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001DFD50);
+typedef struct Vec4_001DFD50 {
+    f32 x, y, z, w;
+} Vec4_001DFD50;
+
+typedef struct Object_001DFD50 {
+    Vec4_001DFD50 position;
+    u8 pad10[0x80];
+    s32 active;
+} Object_001DFD50;
+
+typedef struct Piece_001DFD50 {
+    u8 pad00[4];
+    Object_001DFD50 *object;
+    u8 pad08[0x2C];
+    s16 field34;
+    s16 field36;
+    u8 pad38[8];
+    u8 x;
+    u8 y;
+    u8 pad42[2];
+    u8 player;
+    u8 index;
+    u8 handle;
+} Piece_001DFD50;
+
+typedef struct Cell_001DFD50 {
+    Piece_001DFD50 *piece;
+    u8 pad04[0x18];
+} Cell_001DFD50;
+
+typedef struct Entry_001DFD50 {
+    Object_001DFD50 *object;
+    u8 pad04[0x9C];
+} Entry_001DFD50;
+
+static inline void remove_object_001DFD50(Object_001DFD50 *object) {
+    extern void func_001CD560();
+
+    if (object != NULL) {
+        func_001CD560(object);
+        object->active = 0;
+    }
+}
+
+void *func_001DFD50(s32 arg0, s32 arg1, s32 x, s32 y) {
+    extern void *func_001DD130();
+    Piece_001DFD50 *piece;
+    Cell_001DFD50 *destination;
+    Piece_001DFD50 *occupied;
+    s32 index;
+    s32 player;
+    Cell_001DFD50 *source;
+    Object_001DFD50 *object;
+    Entry_001DFD50 *entry;
+    Object_001DFD50 *entryObject;
+    Piece_001DFD50 *found;
+    Cell_001DFD50 *removed;
+    s32 oldX;
+    s32 oldY;
+    s32 removedX;
+    s32 removedY;
+    Vec4_001DFD50 position;
+
+    found = func_001DD130(arg0, arg1);
+    if (found == NULL) {
+        piece = NULL;
+    } else if (found->index >= 11) {
+        piece = NULL;
+    } else {
+        piece = found;
+    }
+    if (piece == NULL) {
+        return NULL;
+    }
+    oldX = piece->x;
+    if (oldX == x && piece->y == y) {
+        return NULL;
+    }
+    destination = NULL;
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        destination = NULL;
+    } else {
+        destination = (Cell_001DFD50 *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+    }
+    oldY = piece->y;
+    source = NULL;
+    if (oldX < 0 || oldX >= 7 || oldY < 0 || oldY >= 7) {
+        source = NULL;
+    } else {
+        source = (Cell_001DFD50 *)(oldX * 0x1C + (D_00318E60 + oldY * 0xC4));
+    }
+    if (destination == NULL || source == NULL) {
+        return NULL;
+    }
+    if (destination->piece != NULL) {
+        index = destination->piece->index;
+        player = destination->piece->player;
+        found = func_001DD130(player, index);
+        if (found == NULL) {
+            occupied = NULL;
+        } else if (found->index >= 11) {
+            occupied = NULL;
+        } else {
+            occupied = found;
+        }
+        if (occupied != NULL) {
+            if (player < 2) {
+                if (occupied->index < 6) {
+                    func_001E7E70(occupied->handle, -1, 999);
+                }
+                object = occupied->object;
+                if (object != NULL) {
+                    remove_object_001DFD50(object);
+                }
+                removedX = occupied->x;
+                removedY = occupied->y;
+                if (removedX < 0 || removedX >= 7 || removedY < 0 || removedY >= 7) {
+                    removed = NULL;
+                } else {
+                    removed = (Cell_001DFD50 *)(removedX * 0x1C + (D_00318E60 + removedY * 0xC4));
+                }
+                removed->piece = NULL;
+            } else if (index > 0) {
+                if (index < 0 || index >= 6) {
+                    entry = NULL;
+                } else {
+                    entry = (Entry_001DFD50 *)(D_0031A7C0 + index * 0xA0);
+                }
+
+                if (entry != NULL) {
+                    entryObject = entry->object;
+
+                    if (entryObject != NULL) {
+                        remove_object_001DFD50(entryObject);
+                    }
+                    func_001CDD90((u8 *)entry);
+                }
+            }
+            func_001DCD70(occupied, -1);
+        }
+    }
+    piece->x = x;
+    piece->y = y;
+    piece->field34 = 0;
+    piece->field36 = 0;
+    source->piece = NULL;
+    destination->piece = piece;
+    func_001F1FD0(piece->handle, &position);
+    position.x = (f32)((x - 3) * 50);
+    position.z = (f32)((y - 3) * 50);
+    func_001F22B0(piece->handle, &position);
+    if (piece->object != NULL) {
+        position.y = 0.0f;
+        piece->object->position = position;
+    }
+    return piece;
+}
 
 s32 func_001E0110(s32 arg0) {
     s32 temp_s0;
