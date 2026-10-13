@@ -1,6 +1,18 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF540);
+s32 func_001DF540(s32 arg0, s32 arg1) {
+    extern void *func_001DD130();
+    u8 *result;
+
+    result = func_001DD130(arg0, arg1);
+    if (result == NULL) {
+        return 0;
+    }
+    if (result[0x45] >= 11) {
+        result = NULL;
+    }
+    return (s32)result;
+}
 
 void func_001DF580(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     u8 buffer[0x60];

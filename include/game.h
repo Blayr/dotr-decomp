@@ -30,7 +30,6 @@ s32 func_001C7460(s32);                             /* extern */
 s32 func_001CCBB0(s32);                             /* extern */
 s32 func_001E78C0(s32);                             /* extern */
 s32 func_00246340(s32);                             /* extern */
-s32 func_001DF540();                                /* extern */
 s32 func_001EDFD0(s32, s32);                        /* extern */
 
 s32 func_0020A0B0(s32, s32);                        /* extern */
