@@ -1259,7 +1259,6 @@ typedef struct Position_0011FAE0 {
     u8 y : 4;
 } Position_0011FAE0;
 
-s32 func_001211B0(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0011FAE0(void *arg0, u8 which) {
@@ -1589,7 +1588,94 @@ s32 func_00120150(void *arg0, s32 card, void *arg2, u8 kind) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_001206F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_001211B0);
+s32 func_001211B0(s32 arg0, s32 arg1, void *arg2) {
+    extern s32 func_001E1030();
+    s32 i;
+    s32 free;
+    s32 owner;
+    u8 count;
+    u32 *info;
+
+    free = 0;
+    owner = func_00250360(arg0, arg1);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    for (i = 1; i < 5; i++) {
+        if ((func_001E0700(arg0, i) & 0x1F) == 0xE && arg0 == func_00250360(arg0, i)) {
+            count++;
+        }
+        if ((func_001E0700((arg0 == 0) ? 1 : 0, i) & 0x1F) == 0xE &&
+            arg0 == func_00250360((arg0 == 0) ? 1 : 0, i)) {
+            count++;
+        }
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (func_001E1030(arg0, arg1)) {
+        case 0x202:
+            if (count >= 3) {
+                return 1;
+            }
+            break;
+        case 0x1F6: {
+            s16 list[16];
+            u16 *p;
+            s32 j;
+            s32 position;
+
+            p = (u16 *)list;
+            for (j = 0; j < 22; j++) {
+                *p++ = 0xFFFF;
+            }
+            func_0024C910((owner == 0) ? 1 : 0, 3, list);
+            position = func_0027B650((u16 *)list);
+            if (owner != func_00250360(position >> 8, position & 0xFF)) {
+                return 1;
+            }
+            break;
+        }
+        case 0x20B:
+            for (i = 1; i < 11; i++) {
+                if (owner != func_00250360(owner, i) && func_001E2100(owner, i, 4) == 0) {
+                    free++;
+                }
+                if (owner != func_00250360((owner == 0) ? 1 : 0, i) &&
+                    func_001E2100((owner == 0) ? 1 : 0, i, 4) == 0) {
+                    free++;
+                }
+            }
+            if (free >= 6) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        info = func_00250740(arg0, arg1, 0);
+        if (info == NULL) {
+            return 2;
+        }
+        switch (*info >> 8) {
+        case 0x12:
+            if (count >= 3) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    default:
+        return 0;
+    }
+}
 
 static inline s32 max_001214E0(s32 a, s32 b) {
     if (a < b) {
