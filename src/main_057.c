@@ -550,9 +550,35 @@ u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B340);
+void *func_0020B340(void *dest, void *source, s32 count) {
+    s32 *dst = dest;
+    s32 *src = source;
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B380);
+    if (count > 0) {
+        do {
+            count--;
+            *dst = *src;
+            src++;
+            dst++;
+        } while (count > 0);
+    }
+    return dst;
+}
+
+void *func_0020B380(void *dest, void *source, s32 count) {
+    __int128 *dst = dest;
+    __int128 *src = source;
+
+    if (count > 0) {
+        do {
+            count -= 1;
+            *dst = *src;
+            src++;
+            dst++;
+        } while (count > 0);
+    }
+    return dst;
+}
 
 s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2) {
     if (arg2 > 0) {

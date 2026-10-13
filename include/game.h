@@ -210,7 +210,6 @@ s32 func_001E55E0(s32);
 extern s32 D_0031BEB0[];
 
 
-void func_0020B380(void *, void *, s32);
 
 extern s32 func_001A1E70(u64);
 extern s32 func_001A2858(s32, s32);

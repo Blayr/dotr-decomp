@@ -1416,6 +1416,8 @@ s32 func_0020AA30(void *arg0, void *arg1);
 s32 func_0020B000(s32 arg0);
 void func_0020B1E0(s32 arg0);
 u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2);
+void *func_0020B340(void *dest, void *source, s32 count);
+void *func_0020B380(void *dest, void *source, s32 count);
 s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2);
 void *func_0020B400(void *dst, s32 val, s32 count);
 s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2);
