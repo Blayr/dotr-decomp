@@ -420,7 +420,7 @@ typedef struct {
 
 void *func_0021DFF0(void *, s32, s32, s32, f32, s32, s32, s32);
 void *func_002297C0(s32);
-void *func_0023BFF0(void *, s32, s32, f32, f32);
+void *func_0023BFF0(void *, f32, s32, f32, s32);
 extern s16 D_00298AD0;
 extern s16 D_00298AD2;
 extern s16 D_00298AD4;
@@ -488,7 +488,7 @@ void func_0021DAA0(void) {
             }
         }
         if (*(s8 *)0x01ED5472 != 0) {
-            var_s6 = func_0023BFF0(var_s6, *state ^ 1, *(s32 *)0x01ED5474, (f32)angle, 0.0f);
+            var_s6 = func_0023BFF0(var_s6, (f32)angle, *state ^ 1, 0.0f, *(s32 *)0x01ED5474);
         }
         *(s8 *)0x01ED5481 = 0;
         func_00209D30((s32) var_s6);
