@@ -258,7 +258,6 @@ typedef struct {
     Slot_001F4CB0 slots[24];
 } Data_001F4CB0;
 
-void func_001F56D0(s32, s32);
 
 static inline void *find_001F4CB0(s32 source, s32 target) {
     extern Data_001F4CB0 D_0031BB50;
@@ -522,7 +521,30 @@ s32 func_001F5620(s32 arg0, s32 arg1, s32 arg2) {
     return func_001F2EC0(arg0, arg1, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F56D0);
+s32 func_001F56D0(s32 arg0, s32 arg1) {
+    extern s32 func_001E1360(s32, s32);
+    s32 hi;
+    s32 lo;
+    s32 i;
+    s32 value;
+
+    hi = arg0 >> 8;
+    lo = arg0 & 0xFF;
+    if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
+        return 0;
+    }
+    arg0 = func_001E1360(hi, lo);
+    if (arg0 < 0) {
+        return 0;
+    }
+    for (i = 0; i < 8; i++) {
+        value = func_001F2BE0(arg0, i);
+        if (value >= 0 && value < 8 && ((value & 0x7F00) >> 8) == arg1) {
+            func_001F2DD0(arg0, -1, i);
+        }
+    }
+    return 1;
+}
 
 void func_001F57B0(s32 arg0) {
     func_001F57C0(D_0031BE9C, arg0);
