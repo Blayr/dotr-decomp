@@ -1772,6 +1772,7 @@ void func_00242C20(void);
 void func_00242CD0(void);
 void func_00242CF0(s8 *arg0);
 void func_00242D00(void);
+s32 func_00242D10(s32 arg0, void *arg1, u8 *arg2);
 s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2);
 s32 func_00242F20(void *arg0, s32 arg1, void *arg2, s32 arg3, void *arg4, s32 arg5, void *arg6, s32 arg7);
 s32 func_00243060(void *arg0, s32 arg1, s32 arg2, s32 arg3);

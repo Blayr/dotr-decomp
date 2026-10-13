@@ -47,7 +47,6 @@ extern void func_0018EA68(void);
 extern void func_001906D0(void);
 extern void func_00242190(void);
 extern void func_002423A0(void);
-extern s32 func_00242D10();
 extern char D_0030F39A[];
 extern u8 D_00317EF0[];
 extern s32 D_00350730;
@@ -148,7 +147,53 @@ void func_00242D00(void) {
     func_002435A0(D_00350620);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242D10);
+typedef struct Buffer_00242D10 {
+    s32 unk0;
+    s32 unk4;
+    u8 *data;
+    u32 size;
+    s64 unk10;
+    s64 unk18;
+} Buffer_00242D10;
+
+typedef struct Ring_00242D10 {
+    u8 pad[0x50008];
+    s32 capacity;
+} Ring_00242D10;
+
+s32 func_00242D10(s32 arg0, void *arg1, u8 *arg2) {
+    extern s32 func_00245160();
+    extern char D_0030F5E0[];
+    Ring_00242D10 *ring;
+    Buffer_00242D10 *buffer;
+    u8 *data;
+    u32 avail;
+    u32 first;
+    u32 rest;
+    s32 dst1;
+    s32 dst2;
+    s32 dstSize1;
+    s32 dstSize2;
+    s32 result;
+
+    ring = (Ring_00242D10 *)arg2;
+    buffer = (Buffer_00242D10 *)arg1;
+    data = buffer->data;
+    avail = (u8 *)ring + ring->capacity - data;
+    first = buffer->size;
+    first = (first < avail) ? first : avail;
+    rest = ((Buffer_00242D10 *)arg1)->size - first;
+    func_002450D0(D_00350680, &dst1, &dstSize1, &dst2, &dstSize2);
+    result = func_00242F20((void *)((dst1 & 0x0FFFFFFF) | 0x20000000), dstSize1,
+                           (void *)((dst2 & 0x0FFFFFFF) | 0x20000000), dstSize2,
+                           data, first, ring, rest);
+    if (result > 0 && func_00245160(D_00350680, ((Buffer_00242D10 *)arg1)->unk10,
+                                    ((Buffer_00242D10 *)arg1)->unk18, dst1, result) == 0) {
+        func_00242CF0(D_0030F5E0);
+    }
+    func_002450E0(D_00350680, result);
+    return (result > 0) ? 1 : 0;
+}
 
 typedef struct Buffer_00242E40 {
     s32 unk0;
