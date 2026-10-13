@@ -458,7 +458,84 @@ void func_00218AB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
         quad->data[16], quad->field22);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00218C10);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_00218C10;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 xyz;
+} Vertex_00218C10;
+
+typedef struct {
+    u64 tag[2];
+    Vertex_00218C10 vertex[4];
+    u64 end;
+} Packet_00218C10;
+
+void func_00218C10(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+                   s16 x2, s16 y2, s16 x3, s16 y3,
+                   u8 r0, u8 g0, u8 b0, u8 a0,
+                   u8 r1, u8 g1, u8 b1, u8 a1,
+                   u8 r2, u8 g2, u8 b2, u8 a2,
+                   u8 r3, u8 g3, u8 b3, u8 a3,
+                   u16 mode, s16 z) {
+    extern void func_00218E80(void *, s16, s16, s32, u8, s16, s16, s32, u8,
+                              s16, s16, s32, u8, s16, s16, s32, u8);
+    Packet_00218C10 packet __attribute__((aligned(8)));
+    s32 depth;
+
+    func_00207500();
+    ((Tag_00218C10 *)packet.tag)->flags = 0x14;
+    ((Tag_00218C10 *)packet.tag)->count = 8;
+    ((Tag_00218C10 *)packet.tag)->registers = 0x41414141;
+    ((Tag_00218C10 *)packet.tag)->padding = 0;
+    packet.vertex[0].r = r0;
+    packet.vertex[0].g = g0;
+    packet.vertex[0].b = b0;
+    packet.vertex[0].a = a0;
+    packet.vertex[0].q = 1.0f;
+    packet.vertex[1].r = r1;
+    packet.vertex[1].g = g1;
+    packet.vertex[1].b = b1;
+    packet.vertex[1].a = a1;
+    packet.vertex[1].q = 1.0f;
+    packet.vertex[2].r = r2;
+    packet.vertex[2].g = g2;
+    packet.vertex[2].b = b2;
+    packet.vertex[2].a = a2;
+    packet.vertex[2].q = 1.0f;
+    packet.vertex[3].r = r3;
+    packet.vertex[3].g = g3;
+    packet.vertex[3].b = b3;
+    packet.vertex[3].a = a3;
+    packet.vertex[3].q = 1.0f;
+    depth = z + 0xFFFFF8;
+    func_00218E80(packet.tag, x0, y0, depth, 0, x1, y1, depth, 0,
+                  x2, y2, depth, 0, x3, y3, depth, 0);
+    switch (mode) {
+    case 0:
+        func_002086D0(packet.tag, func_00208D00(0));
+        break;
+    case 1:
+        func_002086D0(packet.tag, func_00208D00(0));
+        break;
+    case 2:
+        func_002086D0(packet.tag, func_00208D00(0));
+        break;
+    case 3:
+        func_002086D0(packet.tag, func_00208D00(2));
+        break;
+    default:
+        func_002086D0(packet.tag, func_00208D00(0));
+        break;
+    }
+    func_00207650((s32)arg0, (s32)packet.tag, 0, 0);
+}
 
 typedef struct {
     u64 x : 16;

@@ -1667,6 +1667,7 @@ void *func_002185E0(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1, s16 x2, s16 y2, 
 void func_00218840(void *arg0, u16 x0, u16 y0, s32 z0, u8 f0, u16 x1, u16 y1, s32 z1, u8 f1, u16 x2, u16 y2, s32 z2, u8 f2, u16 x3, u16 y3, s32 z3, u8 f3);
 void func_00218970(void *arg0, void *src, s16 x, s16 y);
 void func_00218AB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy);
+void func_00218C10(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1, s16 x2, s16 y2, s16 x3, s16 y3, u8 r0, u8 g0, u8 b0, u8 a0, u8 r1, u8 g1, u8 b1, u8 a1, u8 r2, u8 g2, u8 b2, u8 a2, u8 r3, u8 g3, u8 b3, u8 a3, u16 mode, s16 z);
 void func_00218E80(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0, u16 x1, u16 y1, s32 z1, u8 fog1, u16 x2, u16 y2, s32 z2, u8 fog2, u16 x3, u16 y3, s32 z3, u8 fog3);
 void func_00218FB0(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy);
 void func_00219180(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1, s16 x2, s16 y2, s16 x3, s16 y3, s16 u0, s16 v0, s16 u1, s16 v1, s16 u2, s16 v2, s16 u3, s16 v3, u8 r0, u8 g0, u8 b0, u8 a0, u8 r1, u8 g1, u8 b1, u8 a1, u8 r2, u8 g2, u8 b2, u8 a2, u8 r3, u8 g3, u8 b3, u8 a3, u8 unused0, u16 texture, u8 unused1, s16 z);
