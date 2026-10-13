@@ -31,7 +31,26 @@ s32 func_0017B3F0(void) {
     return func_001A2E60() > 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B410);
+typedef struct Module_0017B410 {
+    u8 pad[0x14];
+    s32 size;
+    void *start;
+    void *end;
+} Module_0017B410;
+
+void func_0017B410(s32 arg0, s32 arg1) {
+    extern void func_00286910();
+    u8 *cursor = (u8 *)arg0;
+    Module_0017B410 *module = (Module_0017B410 *)arg0;
+    s32 size = module->size;
+
+    func_0017BB60(2);
+    if (size != 0) {
+        cursor += arg1;
+        func_00198948(cursor, 0, size);
+    }
+    func_00286910(module->start, module->end, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B4C0);
 

@@ -146,7 +146,6 @@ extern s32 D_0031BE90;
 extern Dispatch_001F4900 D_00292FF0[];
 extern s32 D_00292FF8[];
 void func_0017BB90(s32);
-void func_0017B410(s32, s32);
 
 s32 func_001F4900(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     extern Cache_001F4900 D_0031BB50;
