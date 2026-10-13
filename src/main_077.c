@@ -1333,7 +1333,73 @@ s32 func_00275E30(void *arg0) {
     return func_00275E80(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00275E80);
+typedef struct Entry_00275E80 {
+    u16 id;
+    u16 value;
+    u16 other;
+    u16 pad6;
+    s32 index;
+    u8 flags : 2;
+    u8 rest : 6;
+    u8 padD[3];
+} Entry_00275E80;
+
+typedef struct Data_00275E80 {
+    Entry_00275E80 entries[22];
+    u16 list[32];
+    u8 idx : 5;
+    u8 pad1A0 : 3;
+} Data_00275E80;
+
+s32 func_00275E80(void *arg0) {
+    Data_00275E80 *data = arg0;
+    s32 owner;
+    s32 i;
+
+    owner = func_001DE540();
+    if (func_0027F830(owner) == 1) {
+        return 1;
+    }
+    if (data != NULL) {
+        data->idx = 0;
+        for (i = 0; i < 32; i++) {
+            data->list[i] = 0xFFFF;
+        }
+        for (i = 0; i < 22; i++) {
+            if (data->entries[i].id < 0xFFFF) {
+                if (func_001DF540(data->entries[i].id >> 8, data->entries[i].id & 0xFF) == 0 ||
+                    owner != func_0024DE70(data->entries[i].id >> 8, data->entries[i].id & 0xFF)) {
+                    data->entries[i].id = 0xFFFF;
+                    data->entries[i].value = 0xFF;
+                    data->entries[i].index = -1;
+                    data->entries[i].other = 0xFFFF;
+                    data->entries[i].flags = 0;
+                } else if (func_001E13C0(data->entries[i].id >> 8,
+                                         (data->entries[i].id & 0xFF) != data->entries[i].value) != 0) {
+                    data->entries[i].value = func_001E13C0(data->entries[i].id >> 8, data->entries[i].id & 0xFF);
+                    data->entries[i].index = -1;
+                    data->entries[i].other = 0xFFFF;
+                    data->entries[i].flags = 0;
+                }
+            }
+        }
+        for (i = 0; i < 11; i++) {
+            if (owner == func_0024DE70(0, i)) {
+                if (func_002760E0(i, (u16 *)data) == 0 && func_001DF540(0, i) != 0) {
+                    func_00276120(i, data);
+                }
+            }
+            if (owner == func_0024DE70(1, i)) {
+                if (func_002760E0(i | 0x100, (u16 *)data) == 0 && func_001DF540(1, i) != 0) {
+                    func_00276120(i | 0x100, data);
+                }
+            }
+        }
+        func_002761D0(data);
+        return 1;
+    }
+    return -1;
+}
 
 s32 func_002760E0(u16 value, u16 *entries) {
     s32 i = 0;

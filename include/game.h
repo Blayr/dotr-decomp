@@ -198,7 +198,6 @@ extern s32 func_001A1E70(u64);
 extern s32 func_001A2858(s32, s32);
 
 
-s32 func_00275E80(void *);                          /* extern */
 
 
 
