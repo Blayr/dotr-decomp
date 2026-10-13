@@ -1082,8 +1082,8 @@ s32 func_0011F3C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-void func_0011F530(void) {
-    func_0024E410();
+s32 func_0011F530(s32 arg0, u32 arg1) {
+    return func_0024E410(arg0, arg1);
 }
 
 typedef struct {

@@ -223,8 +223,8 @@ s32 func_00124C90(s32 arg0, void *arg1, void *arg2, s32 arg3) {
     return 0;
 }
 
-void func_00124F50(void) {
-    func_0024E410();
+s32 func_00124F50(s32 arg0, u32 arg1) {
+    return func_0024E410(arg0, arg1);
 }
 
 typedef struct {

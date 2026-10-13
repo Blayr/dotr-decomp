@@ -773,8 +773,8 @@ void func_0010E6B0(s32 arg0, void *arg1, s32 *arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E890);
 
-void func_0010ED90(void) {
-    func_0024E410();
+s32 func_0010ED90(s32 arg0, u32 arg1) {
+    return func_0024E410(arg0, arg1);
 }
 
 s32 func_0010EDA0(s32 arg0) {
