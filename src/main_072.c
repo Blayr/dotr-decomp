@@ -516,7 +516,33 @@ s32 func_0024EFB0(s32 mask) {
     return bestPair;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F060);
+s32 func_0024F060(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 min;
+    s32 result;
+    s32 card;
+    s32 lo;
+    s32 hi;
+    s32 cost;
+
+    min = 0xFF;
+    result = -1;
+    for (i = 0; i < func_0024E910(arg0); i++) {
+        card = func_0024EC50(arg0, i);
+        hi = card >> 8;
+        lo = card & 0xFF;
+        cost = func_001E13C0(hi, lo);
+        if (cost <= min) {
+            min = cost;
+            if (result < 0) {
+                result = card;
+            } else if (arg1 == func_0024DE70(hi, lo)) {
+                result = card;
+            }
+        }
+    }
+    return result;
+}
 
 s32 func_0024F150(s32 mask) {
     extern s32 func_001E13C0(s32, s32);
