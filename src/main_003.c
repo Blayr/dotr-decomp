@@ -376,7 +376,47 @@ void func_0010A8D0(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010AC20);
+static inline s32 find_0010AC20(s32 *base, s32 value) {
+    u8 *entry;
+    s32 i;
+
+    for (i = 0, entry = (u8 *)base; i < 0x100; i++, entry += 0x10) {
+        if (*(s32 *)(entry + 0x214) == value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void func_0010AC20(s32 arg0) {
+    s32 index;
+    s32 end;
+
+    func_0017BB60(0);
+    if (D_0030FF40[0x1DC / 4] == 0x23A7) {
+        func_0010A090(0x100);
+        D_0030FF40[0x2248 / 4] = 0x23A7;
+        return;
+    }
+    index = find_0010AC20(D_0030FF40, D_0030FF40[0x1DC / 4]);
+    if (index == -1) {
+        return;
+    }
+    D_0030FF40[0x1C8 / 4] = func_0010A780(D_0030FF40[0x1C8 / 4]);
+    D_0030FF40[0x1D4 / 4] += 0x4000;
+    end = D_0030FF40[index * 4 + 0x87];
+    if (end != 0) {
+        if (end < D_0030FF40[0x1D4 / 4]) {
+            D_0030FF40[0x1D4 / 4] -= end;
+            D_0030FF40[0x1D4 / 4] += D_0030FF40[index * 4 + 0x86];
+        }
+    } else if (D_0030FF40[0x1D4 / 4] > (D_0030FF40[index * 4 + 0x84] >> 2)) {
+        func_0010B270();
+        return;
+    }
+    func_0010C220((s32)((u8 *)D_0030FF48 + 0x181800), D_0030FF40[5] + (D_0030FF40[0x1D8 / 4] << 17), 0x20000);
+    D_0030FF40[0x1D8 / 4] = 1 - D_0030FF40[0x1D8 / 4];
+}
 
 void func_0010ADB0(void) {
     s32 flags;

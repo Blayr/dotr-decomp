@@ -569,7 +569,6 @@ extern u8 D_003181CC;
 
 s32 func_00158960(s32);
 
-s32 func_0010AC20(s32);
 
 
 extern f32 D_00298BA4;
