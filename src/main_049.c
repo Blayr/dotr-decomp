@@ -1070,7 +1070,6 @@ typedef struct Table_001F3700 {
     s32 count;
 } Table_001F3700;
 
-void func_001F3790(void);
 extern Table_001F3700 D_00292FF0[3];
 extern s8 D_0031BB50;
 

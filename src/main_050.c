@@ -1,6 +1,52 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3790);
+typedef struct Entry_001F3790 {
+    u64 state : 3;
+    u64 unused : 29;
+    s32 handle;
+} Entry_001F3790;
+
+typedef struct Slot_001F3790 {
+    u64 state : 3;
+    u64 rest : 61;
+    u8 pad[0x10];
+} Slot_001F3790;
+
+typedef struct State_001F3790 {
+    Entry_001F3790 entries[32];
+    Slot_001F3790 slots[24];
+    s32 group;
+    s32 entry;
+    s32 count;
+    s32 pending;
+} State_001F3790;
+
+void func_001F3790(void) {
+    extern State_001F3790 D_0031BB50;
+    extern Slot_001F3790 D_0031BC50[];
+    State_001F3790 *state;
+    Entry_001F3790 *entry;
+    Slot_001F3790 *slot;
+    s32 i;
+
+    state = &D_0031BB50;
+    slot = D_0031BC50;
+    entry = D_0031BB50.entries;
+    for (i = 0; i < 24; i++, slot++) {
+        slot->state = 0;
+    }
+    for (i = 0; (s64)i < 32; i++, entry++) {
+        entry->state = 0;
+        if (entry->handle != 0) {
+            func_00217B50(entry->handle);
+            entry->handle = 0;
+        }
+    }
+    state->count = 0;
+    state->pending = 0;
+    state->group = -1;
+    state->entry = -1;
+}
 
 typedef struct Entry_001F3870 {
     u64 state : 3;
