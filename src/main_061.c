@@ -139,7 +139,57 @@ void func_00217CB0(s32 arg0, void *arg1, s16 x, s16 y) {
                    src->a, src->flags0, sprite->texture, src->flags1, src->z);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_00217D70);
+typedef struct {
+    u16 u : 14;
+    u16 reserved_u : 2;
+    u16 v : 14;
+    u16 reserved_v : 2;
+    u8 pad[12];
+} Vertex_00217D70;
+
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 pad;
+    u64 registers;
+} Header_00217D70;
+
+typedef struct {
+    u8 tag[0x10];
+    u8 r, g, b, a;
+    f32 q;
+    u8 vertices[0x20];
+    u8 state[0x20];
+} Packet_00217D70;
+
+void func_00217D70(s32 arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+                   s16 u, s16 v, s16 width, s16 height,
+                   u8 r, u8 g, u8 b, u8 a, u8 mode,
+                   u16 texture, u8 flag, s16 depth) {
+    extern void *D_00299DD0[];
+    extern void func_00217F90(void *, s16, s16, s16, s16, s32, s32);
+    Packet_00217D70 packet __attribute__((aligned(8)));
+
+    func_00207500();
+    ((Header_00217D70 *)packet.tag)->flags = 0x26;
+    ((Header_00217D70 *)packet.tag)->count = 5;
+    ((Header_00217D70 *)packet.tag)->registers = 0x42421;
+    ((Header_00217D70 *)packet.tag)->pad = 0;
+    packet.r = r;
+    packet.g = g;
+    packet.b = b;
+    packet.a = a;
+    packet.q = 1.0f;
+    func_00217F90(packet.tag, x0, y0, (s16)(x1 - x0), (s16)(y1 - y0), depth + 0xFFFFF8, 0);
+    ((Header_00217D70 *)packet.tag)->flags |= 0x800;
+    ((Vertex_00217D70 *)packet.vertices)->u = (u * 16) + 8;
+    ((Vertex_00217D70 *)packet.vertices)->v = (v * 16) + 8;
+    ((Vertex_00217D70 *)(packet.vertices + 0x10))->u = ((u + width) * 16) + 8;
+    ((Vertex_00217D70 *)(packet.vertices + 0x10))->v = ((v + height) * 16) + 8;
+    func_00208700(packet.tag, D_00299DD0[texture], 0);
+    func_002086D0(packet.tag, 0x0000008000000044ULL);
+    func_00207650(arg0, (s32)packet.tag, 0, 0);
+}
 
 typedef struct {
     u64 x : 16;
