@@ -261,7 +261,8 @@ void func_001A86A0(s32 arg0) {
 typedef struct Flags_001A86D0 {
     s8 reserved0 : 5;
     s8 enabled : 1;
-    s8 reserved1 : 2;
+    s8 flag6 : 1;
+    s8 reserved1 : 1;
 } Flags_001A86D0;
 
 extern Flags_001A86D0 D_0031747E;
