@@ -367,6 +367,7 @@ s32 func_001BAC00(u16 *arg0, u16 *arg1) {
 }
 
 s32 func_001BAC90(u16 *arg0, u16 *arg1) {
+    extern s64 func_00215D30(u8, s32);
     u8 temp_s0;
     s32 temp_s1;
     s32 var_s2;
