@@ -1334,7 +1334,21 @@ void func_00217550(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217590);
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_002176B0);
+#ifndef GAME_H
+typedef struct {
+    signed char active : 1;
+} Flags_002176B0;
+extern Flags_002176B0 D_0034F6E8;
+#endif
+
+s32 func_002176B0(void) {
+    extern s64 func_0010A8A0();
+
+    if (!D_0034F6E8.active) {
+        return 0;
+    }
+    return !((s32)func_0010A8A0() & 0x4000) ? 1 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_060", func_00217710);
 
