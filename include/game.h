@@ -482,7 +482,6 @@ extern u8 D_003181C6;
 
 s32 func_0013EEE0(s32, s32, s32);
 void func_001429B0(void *);
-s32 func_00163660(void *);
 
 
 

@@ -300,7 +300,71 @@ s32 func_00162F60(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_00163130);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00163660);
+typedef struct Entry_00163660 {
+    u16 coordinates;
+    u16 pad2;
+    s16 action;
+    u16 pad6;
+    s32 target;
+} Entry_00163660;
+
+s32 func_00163660(void *arg0) {
+    extern s32 func_001676D0();
+    Entry_00163660 *entry = arg0;
+    s32 card;
+    u16 coordinates;
+
+    func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    card = func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    if (func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        if (func_001E2100(entry->coordinates >> 8, entry->coordinates & 0xFF, 0) == 0) {
+            coordinates = entry->coordinates;
+            if (coordinates != 0xFFFF) {
+                if ((coordinates & 0xFF) == 0) {
+                    if (entry->target == -1) {
+                        if (func_0027BBC0(coordinates >> 8, coordinates & 0xFF, 1) == 1) {
+                            if (func_001DE6D0(entry->coordinates >> 8) == 1) {
+                                entry->action = 0x50A;
+                            } else {
+                                entry->action = 0x5FF;
+                            }
+                        } else if (func_001DE6D0(entry->coordinates >> 8) == 1) {
+                            entry->action = 0xA06;
+                            entry->target = (entry->target & 0xFFFF0000) | 0x103;
+                        } else {
+                            entry->action = 0x6FF;
+                            entry->target = (u16)entry->target | 0x1030000;
+                        }
+                    }
+                } else {
+                    switch (func_001E0700(coordinates >> 8, coordinates & 0xFF) >> 5) {
+                    case 0:
+                    case 5:
+                        if (func_002507D0(entry->coordinates >> 8, entry->coordinates & 0xFF) == 1) {
+                            func_00164020((s32)entry);
+                        } else {
+                            func_00163C50(entry, 1);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(entry, 5, 1, func_001676D0(card) & 0xFF);
+                        break;
+                    case 1:
+                    case 3:
+                    case 4:
+                        func_00164260(entry);
+                        break;
+                    default:
+                        entry->action = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00163870(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
