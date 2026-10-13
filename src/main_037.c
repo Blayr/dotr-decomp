@@ -508,7 +508,306 @@ INCLUDE_ASM("asm/nonmatchings/main_037", func_001A98B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9F50);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AA260);
+typedef struct {
+    u8 unused0 : 4;
+    u8 mode : 2;
+    u8 unused6 : 2;
+} Mode_001AA260;
+
+typedef struct {
+    s8 unused0 : 4;
+    s8 pending : 1;
+    s8 busy : 1;
+    s8 unused6 : 2;
+} Flags_001AA260;
+
+typedef struct {
+    s8 enabled : 1;
+    s8 unused1 : 7;
+} Toggle_001AA260;
+
+typedef struct {
+    u8 pad000[0xC];
+    s32 field00C;
+    u8 pad010[0x180];
+    s32 field190;
+    u8 pad194[0x5C];
+    s8 entries[0x1C];
+    u8 red;
+    u8 green;
+    u8 blue;
+    u8 alpha;
+    u8 pad210[4];
+    s32 x;
+    s32 y;
+    u8 pad21C[3];
+    s8 selection;
+    s8 entry;
+    s8 field221;
+    u8 index;
+    u8 pad223[5];
+    u8 wait;
+    u8 pad229[3];
+    Mode_001AA260 mode;
+    u8 pad22D;
+    Flags_001AA260 flags;
+    Toggle_001AA260 toggle;
+} State_001AA260;
+
+extern u8 D_00317472;
+
+void func_001A7380(void);
+void func_001AC700(void);
+void func_001B8840(void);
+void func_001CC620(void);
+s32 func_001CEE60(void);
+void func_001D95F0(void);
+void func_001EAA60(s32);
+void func_001EDA40(s32, s32);
+void func_001F7790(s32);
+void func_001FCAB0(void);
+void func_002009E0(s32, s32);
+void func_00203E20(void);
+void func_00237730(void);
+void func_00285F20(void);
+
+void func_001AA260(void) {
+    extern void func_001AAAF0();
+    State_001AA260 *state;
+    s64 event;
+    s32 i;
+    s32 position;
+    s32 j0;
+    s32 j5;
+    s32 j12;
+    s32 step;
+
+    state = (State_001AA260 *)&D_00317250;
+    event = func_001AAF60(0);
+    switch (D_0031747C.state) {
+    case 3:
+        if (func_001FF300() != 0) {
+            return;
+        }
+        if (state->field190 != 0) {
+            func_001AAAF0(event, 1);
+        }
+        if (state->flags.pending != 0) {
+            state->wait = 0x80;
+        }
+        state->mode.mode--;
+        return;
+    case 2:
+        if (((D_0031747E.enabled != 0 ? 1 : 0) != 0) && (func_002179C0() != 0)) {
+            return;
+        }
+        switch (event) {
+        case 1:
+            func_002009E0(4, 1);
+            func_002009E0(1, 0);
+            func_002009E0(2, 0);
+            func_002009E0(3, 0);
+            break;
+        case 6:
+        case 8:
+            func_002009E0(0, 0);
+            break;
+        }
+        state->mode.mode--;
+        return;
+    case 1:
+        if (state->wait != 0) {
+            return;
+        }
+        func_001FD130(1, 0);
+        state->field00C = 0;
+        break;
+    }
+
+    if (func_00217530() != 0) {
+        for (i = 0; i < 2; i++) {
+            position = func_001E5240(i);
+            if (position < 0) {
+                continue;
+            }
+            func_001EDA40(i + 2, func_001E1360(position >> 8, position & 0xFF));
+        }
+        func_001F3F20();
+    }
+    i = 0;
+    do {
+        func_001ED4A0(i);
+        i++;
+    } while (i < 0x54);
+    func_001F3870();
+    if (func_001FD220(1) != 0) {
+        return;
+    }
+    switch (event) {
+    case -3:
+        break;
+    case -2:
+    case -1:
+        func_001A7380();
+        break;
+    case 0:
+        func_00203E20();
+        if (func_002051F0() == 0) {
+            j0 = 0;
+            do {
+                func_001EAA60(j0);
+                j0++;
+            } while (j0 < 0x54);
+        }
+        func_001F7790(0);
+        break;
+    case 1:
+        do {
+        } while (func_001CEE60() != 0);
+        break;
+    case 5:
+        func_00203E20();
+        if (func_002051F0() == 0) {
+            j5 = 0;
+            do {
+                func_001EAA60(j5);
+                j5++;
+            } while (j5 < 0x54);
+        }
+        func_001F7790(0);
+        break;
+    case 6:
+        func_001B8840();
+        break;
+    case 7:
+        func_001C12B0();
+        break;
+    case 8:
+        func_001C2540();
+        break;
+    case 9:
+        func_001C6130();
+        break;
+    case 36:
+        func_001AC560();
+        break;
+    case 10:
+        func_001AC700();
+        break;
+    case 11:
+        func_00237730();
+        func_002464C0();
+        break;
+    case 12:
+        func_00203E20();
+        if (func_002051F0() == 0) {
+            j12 = 0;
+            do {
+                func_001EAA60(j12);
+                j12++;
+            } while (j12 < 0x54);
+        }
+        func_001F7790(0);
+        break;
+    case 13:
+        func_001CC620();
+        break;
+    case 18:
+        func_001D95F0();
+        break;
+    case 19:
+        func_001FCAB0();
+        func_001F7790(0);
+        break;
+    case 14:
+        func_002464C0();
+        break;
+    case 15:
+        func_00285F20();
+        break;
+    case 17:
+        step = 1;
+        if (func_00203A40(0, 0, 0x10) != 0) {
+            state->toggle.enabled = (s8)(state->toggle.enabled != 0 ? 0 : 1);
+        }
+        if (func_00203A40(0, 1, 0x20) != 0) {
+            step = 2;
+        }
+        if (func_00203A40(0, 1, 0x80) != 0) {
+            step = 2;
+        }
+        if (func_00203A40(0, 1, 0xF000) != 0) {
+            if (func_00203A40(0, 1, 0x8000) != 0) {
+                state->x -= step;
+            }
+            if (func_00203A40(0, 1, 0x2000) != 0) {
+                state->x += step;
+            }
+            if (func_00203A40(0, 1, 0x1000) != 0) {
+                state->y -= step;
+            }
+            if (func_00203A40(0, 1, 0x4000) != 0) {
+                state->y += step;
+            }
+        }
+        if (func_00203A40(1, 1, 0x1000) != 0) {
+            if (func_00203A40(1, 2, 0x80) != 0) {
+                if (state->alpha > 0) {
+                    state->alpha--;
+                }
+            }
+            if (func_00203A40(1, 2, 0x20) != 0) {
+                if (state->alpha < 0xFF) {
+                    state->alpha++;
+                }
+            }
+        } else {
+            if (func_00203A40(1, 2, 0x81) != 0) {
+                if (state->blue > 0) {
+                    state->blue--;
+                }
+            }
+            if (func_00203A40(1, 2, 0x22) != 0) {
+                if (state->blue < 0xFF) {
+                    state->blue++;
+                }
+            }
+            if (func_00203A40(1, 2, 0x41) != 0) {
+                if (state->green > 0) {
+                    state->green--;
+                }
+            }
+            if (func_00203A40(1, 2, 0x12) != 0) {
+                if (state->green < 0xFF) {
+                    state->green++;
+                }
+            }
+            if (func_00203A40(1, 2, 5) != 0) {
+                if (state->red > 0) {
+                    state->red--;
+                }
+            }
+            if (func_00203A40(1, 2, 10) != 0) {
+                if (state->red < 0xFF) {
+                    state->red++;
+                }
+            }
+        }
+        if (func_00203A40(0, 0, 0x20) != 0) {
+            state = (State_001AA260 *)&D_00317250;
+            if ((D_00317472 - 1) >= 0) {
+                func_001FCC70(0, 1, 1, 0, 0x3C, 0);
+                state->selection = -2;
+                state->entry = state->entries[state->index];
+                state->field221 = -1;
+                if (state->entries[state->index + 1] < 2) {
+                    func_001AAAF0(-2, 1);
+                }
+            }
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAAF0);
 
