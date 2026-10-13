@@ -796,7 +796,81 @@ void func_00105260(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00105830);
+typedef struct {
+    s16 x, y, width, height;
+    s16 origin_x, origin_y, sheet_width, sheet_height;
+    u8 pad10[0x28];
+    s32 flags;
+    u8 pad3C[0xC];
+    s16 tick, delay, last_frame, loop_length, frame, state;
+} Animation_00105830;
+
+typedef struct {
+    u16 value : 14;
+    u16 unused : 2;
+} Coordinate_00105830;
+
+typedef struct {
+    u16 unused, flags;
+    u8 pad04[0x14];
+    Coordinate_00105830 x0, y0;
+    u8 pad1C[0x14];
+    Coordinate_00105830 x1, y1;
+    u8 pad34[0x14];
+    Coordinate_00105830 x2, y2;
+    u8 pad4C[0x14];
+    Coordinate_00105830 x3, y3;
+} Packet_00105830;
+
+void func_00105830(void *arg0, void *arg1, s32 arg2) {
+    Packet_00105830 *packet = arg0;
+    Animation_00105830 *anim = arg1;
+
+    if ((!(anim->flags & 2) ? 0 : 1) != 0) {
+        anim->x = anim->origin_x + anim->width * (anim->frame % (anim->sheet_width / anim->width));
+        anim->y = anim->origin_y + anim->height * (anim->frame / (anim->sheet_width / anim->width));
+    } else {
+        anim->x = anim->origin_x + anim->width * (anim->frame / (anim->sheet_height / anim->height));
+        anim->y = anim->origin_y + anim->height * (anim->frame % (anim->sheet_height / anim->height));
+    }
+
+    if (arg2 == 0) {
+        packet->flags |= 0x800;
+        packet->x0.value = anim->x * 16;
+        packet->y0.value = anim->y * 16;
+        packet->x1.value = (anim->x + anim->width - 1) * 16;
+        packet->y1.value = anim->y * 16;
+        packet->x2.value = anim->x * 16;
+        packet->y2.value = (anim->y + anim->height / 2 - 1) * 16;
+        packet->x3.value = (anim->x + anim->width - 1) * 16;
+        packet->y3.value = (anim->y + anim->height / 2 - 1) * 16;
+    } else {
+        packet->flags |= 0x800;
+        packet->x0.value = anim->x * 16;
+        packet->y0.value = (anim->y + anim->height / 2 - 1) * 16;
+        packet->x1.value = (anim->x + anim->width - 1) * 16;
+        packet->y1.value = (anim->y + anim->height / 2 - 1) * 16;
+        packet->x2.value = anim->x * 16;
+        packet->y2.value = (anim->y + anim->height - 1) * 16;
+        packet->x3.value = (anim->x + anim->width - 1) * 16;
+        packet->y3.value = (anim->y + anim->height - 1) * 16;
+    }
+
+    if (arg2 == 1) {
+        anim->tick++;
+        if (anim->tick > anim->delay) {
+            anim->tick = 0;
+            anim->frame++;
+            if (anim->frame > anim->last_frame) {
+                if (anim->state == 999) {
+                    anim->frame = anim->last_frame - anim->loop_length + 1;
+                } else {
+                    anim->state = 1;
+                }
+            }
+        }
+    }
+}
 
 s32 func_00105C40(void *arg0) {
     Vec4f *v = arg0;
