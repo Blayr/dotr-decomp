@@ -1534,6 +1534,7 @@ s32 func_002158B0(s32 arg0);
 s32 func_00215920(s32 arg0, s32 arg1);
 s32 func_002159D0(s32 arg0, s32 arg1);
 s32 func_00215A60(s32 arg0, s32 arg1, s32 arg2);
+s32 func_00215B10(s32 arg0, s32 arg1, s32 operation, s32 value);
 s32 func_00215C40(s32 arg0, s32 arg1);
 s64 func_00215D30(s32 arg0, s32 arg1);
 s32 func_00215DE0(s32 player, s32 index);

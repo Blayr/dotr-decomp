@@ -438,7 +438,6 @@ void func_002464E0(void) {
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002464F0);
 
 s32 func_001E1E70(s32, s32, s32, s32);
-s32 func_00215B10(s32, s32, s32, s32);
 
 typedef struct Flags_00246810 {
     u8 bit0 : 1;

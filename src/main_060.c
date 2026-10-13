@@ -434,7 +434,59 @@ s32 func_00215A60(s32 arg0, s32 arg1, s32 arg2) {
     return values[arg2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215B10);
+typedef struct Record_00215B10 {
+    u8 padding[0x4A];
+    u16 value;
+} Record_00215B10;
+
+s32 func_00215B10(s32 arg0, s32 arg1, s32 operation, s32 value) {
+    s32 side;
+    u8 *player;
+    Record_00215B10 *record;
+    s32 current;
+    s32 result;
+
+    side = 1;
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    }
+    player = (u8 *)&D_0032F790[side];
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg1 == 0x29F) {
+        arg1 = 0x3E7;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x356)) {
+        return 0;
+    }
+    record = (Record_00215B10 *)(player + arg1 * 0x4C);
+    current = record->value;
+    switch (operation) {
+    case 0:
+        result = current + value;
+        break;
+    case 1:
+        result = current - value;
+        break;
+    case 2:
+        result = current * value;
+        break;
+    case 3:
+        result = current / value;
+        break;
+    case 4:
+        result = value;
+        break;
+    default:
+        return 0;
+    }
+
+    value = result;
+    value = (value > 0 ? value : 0) < 0xFFFF ? (value > 0 ? value : 0) : 0xFFFF;
+    record->value = value;
+    return 1;
+}
 
 s32 func_00215C40(s32 arg0, s32 arg1) {
     typedef struct {
