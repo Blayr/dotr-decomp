@@ -1534,8 +1534,8 @@ s32 func_001587E0(s32 arg0) {
     return result;
 }
 
-void func_00158800(void) {
-    func_00158810();
+s32 func_00158800(s32 arg0) {
+    return func_00158810(arg0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00158810);
