@@ -461,4 +461,13 @@ void func_001F6E80(s32 arg0, f32 fparg0) {
     } while (i < 0x54);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F6EF0);
+static inline s32 player_001F6EF0(void) {
+    return D_0031BE9C;
+}
+
+s32 func_001F6EF0(void) {
+    if (func_001F6F50((func_001E5240(0) == player_001F6EF0()) ? 0 : 1) == 4) {
+        return 1;
+    }
+    return 0;
+}
