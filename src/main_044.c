@@ -494,7 +494,7 @@ typedef struct {
     u8 count;
 } CardList_001DEE70;
 
-s32 func_001DEF20(void);
+void func_001DEF20(s32 arg0);
 
 s32 func_001DEE70(s32 arg0, s32 arg1) {
     CardList_001DEE70 *list;
@@ -509,7 +509,7 @@ s32 func_001DEE70(s32 arg0, s32 arg1) {
     if (list->count >= 120) {
         return -1;
     }
-    func_001DEF20();
+    func_001DEF20(arg0);
     list->cards[list->count] = arg1;
     return list->count++;
 }
