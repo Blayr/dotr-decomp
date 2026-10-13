@@ -1215,7 +1215,7 @@ typedef struct Card_001E1760 {
     u8 type;
 } Card_001E1760;
 
-s32 func_002464F0(void *, u8, u8);
+s32 func_002464F0(s32, s32, s32);
 
 s32 func_001E1760(void) {
     extern void *func_001DD130();
@@ -1228,7 +1228,7 @@ s32 func_001E1760(void) {
         card = NULL;
     }
     if (card != NULL) {
-        return func_002464F0(card, card->x, card->y) & 0xF;
+        return func_002464F0((s32)card, card->x, card->y) & 0xF;
     }
     return 0;
 }
@@ -1241,7 +1241,7 @@ typedef struct {
     u8 type;
 } Card_001E17D0;
 
-s32 func_002464F0(void *, u8, u8);
+s32 func_002464F0(s32, s32, s32);
 
 static inline void *get_card_001E17D0(void) {
     extern void *func_001DD130();
@@ -1262,7 +1262,7 @@ s32 func_001E17D0(void) {
     if (card == NULL) {
         return 0;
     }
-    return ((u32)func_002464F0(card, card->x, card->y) >> 4) != 0 ? 1 : 0;
+    return ((u32)func_002464F0((s32)card, card->x, card->y) >> 4) != 0 ? 1 : 0;
 }
 
 s32 func_001E1840(s32 arg0, s32 arg1, s8 arg2) {

@@ -1427,7 +1427,7 @@ s32 func_0027A710(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
     s32 dy;
     extern s32 func_00278420();
 
-    flags = func_002464F0(arg0, arg1, arg2);
+    flags = func_002464F0((s32)arg0, arg1, arg2);
     if (arg0 == NULL) {
         return 0;
     }
