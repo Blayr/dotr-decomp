@@ -249,7 +249,11 @@ s32 func_0010A8A0(void) {
     return *D_0030FF40;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A8B0);
+void func_0010A8B0(void) {
+    extern s32 func_0010C3D0();
+
+    func_0010C3D0(D_0028C230, D_0030FF40 + 0x84, 0, 0x1000);
+}
 
 extern u8 D_002B90A0[];
 
