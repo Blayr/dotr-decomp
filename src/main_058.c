@@ -75,7 +75,26 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D240);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D5E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D8E0);
+void func_0020D8E0(f32 *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4, f32 fparg5, f32 fparg6, f32 fparg7, f32 arg_sp0) {
+    extern void func_0020BBB0(void *);
+    f32 matrix[16];
+
+    func_0020BBB0(matrix);
+    matrix[0] = fparg0;
+    matrix[5] = fparg0;
+    matrix[10] = 0.0f;
+    matrix[15] = 0.0f;
+    matrix[14] = 1.0f;
+    matrix[11] = 1.0f;
+    func_0020BBB0(arg0);
+    arg0[0] = fparg1;
+    arg0[5] = fparg2;
+    arg0[10] = (arg_sp0 * fparg7 * (-fparg5 + fparg6)) / (-fparg7 + arg_sp0);
+    arg0[12] = fparg3;
+    arg0[13] = fparg4;
+    arg0[14] = (-fparg6 * fparg7 + fparg5 * arg_sp0) / (-fparg7 + arg_sp0);
+    func_0020BC00((s32) arg0, matrix);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D9F0);
 
@@ -531,7 +550,6 @@ typedef struct Object_0020E9F0 {
 } Object_0020E9F0;
 
 void func_0020D5E0(void *, void *, void *, s32);
-void func_0020D8E0(void *, f32, f32, f32, f32, f32, f32, f32, f32, f32);
 
 s32 func_0020E9F0(void) {
     s32 sp50;
