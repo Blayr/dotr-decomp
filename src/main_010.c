@@ -972,7 +972,170 @@ s32 func_0013FCC0(s32 arg0, void *arg1, void *arg2) {
     return o2->f3E >> 5;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013FEB0);
+typedef struct Nibbles_0013FEB0 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0013FEB0;
+
+s32 func_0013FEB0(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern s32 func_00278510();
+    extern s32 func_0027A130(s32, s32, s32, s32, s32, s32, s32, s32, u8, u16);
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+    s32 bestPosition;
+    s32 bestScore;
+    Nibbles_0013FEB0 path[12];
+    s32 transformedY;
+    s32 transformedX;
+    s32 value;
+    u8 mode;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    {
+    s32 initIndex;
+    Nibbles_0013FEB0 *p;
+    p = path;
+    initIndex = 0;
+    do {
+        p->low = p->high = 15;
+        p++;
+        initIndex++;
+    } while (initIndex < 12);
+    }
+    mode = *((u8 *)arg2 + 0x3E) >> 5;
+    if (mode == 0 || mode == 3) {
+        if (arg3 >= 0) {
+            s32 candidate;
+            s32 candidateY;
+            s32 candidateX;
+            s32 index;
+            s32 score;
+            bestScore = 255;
+            bestPosition = 65535;
+            value = func_001E1090(arg3 >> 8, arg3 & 255);
+            index = 0;
+            transformedY = value >> 8;
+            transformedX = value & 255;
+            do {
+                candidate = func_0024E410(arg0, index);
+                if (candidate >= 0) {
+                    candidateX = candidate & 255;
+                    candidateY = candidate >> 8;
+                    if (func_001E22B0(candidateX, candidateY) != 8 &&
+                        (func_001E22B0(candidateX, candidateY) != 9 ||
+                         func_0024FE40(arg2, candidateX, candidateY) != 1) &&
+                        func_001E36E0(candidateX, candidateY) == 0) {
+                        if (func_00278510((s32)arg2, arg3, func_00141B30(arg0),
+                                         transformedX, transformedY, 0) > 0) {
+                            score = func_0027A130((s32)arg2, (s32)path,
+                                                       candidateX, candidateY,
+                                                       transformedX, transformedY,
+                                                       arg3, 0, 2,
+                                                       func_00141B30(arg0));
+                        } else {
+                            score = func_002792C0((s32)arg2, (s32)path,
+                                                       candidateX, candidateY,
+                                                       transformedX, transformedY,
+                                                       arg3, 2);
+                        }
+                        if (func_0027AFC0((u8 *)path) > 0 && score < bestScore) {
+                            bestScore = score;
+                            bestPosition = candidate;
+                        }
+                    }
+                }
+                index++;
+            } while (index < 8);
+            if (bestPosition != 65535) {
+                return bestPosition;
+            }
+            bestPosition = -1;
+            return bestPosition;
+        } else {
+        s32 maxY;
+        s32 maxX;
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 bestDistance;
+        s32 position;
+        s32 minY;
+        s32 minX;
+        bestDistance = 14;
+        arg3 = 0;
+        i = 0;
+        do {
+            position = func_0024E410(arg0, i);
+            if (position >= 0) {
+                x = position & 255;
+                y = position >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0) {
+                    value = func_0013EB20((s32)arg2, x, y);
+                    if (y < (value >> 8)) {
+                        minY = y;
+                    } else {
+                        minY = value >> 8;
+                    }
+                    if (y > (value >> 8)) {
+                        maxY = y;
+                    } else {
+                        maxY = value >> 8;
+                    }
+                    if (x < (value & 255)) {
+                        minX = x;
+                    } else {
+                        minX = value & 255;
+                    }
+                    if (x > (value & 255)) {
+                        maxX = x;
+                    } else {
+                        maxX = value & 255;
+                    }
+                    value = (maxX - minX) + (maxY - minY);
+                    if (value < bestDistance && value >= 0) {
+                        arg3 = position;
+                        bestDistance = value;
+                    }
+                }
+            }
+            i++;
+        } while (i < 8);
+        if (bestDistance < 14) {
+            return arg3;
+        }
+        goto failure;
+        }
+    }
+    {
+    s32 y;
+    s32 x;
+    s32 i;
+    s32 best;
+    best = -1;
+    i = 0;
+    do {
+        arg3 = func_0024E410(arg0, i);
+        if (arg3 >= 0) {
+            x = arg3 & 255;
+            y = arg3 >> 8;
+            if (func_001E22B0(x, y) != 8 &&
+                (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                func_001E3790(x, y) < 0 && y < 8) {
+                best = arg3;
+            }
+        }
+        i++;
+    } while (i < 8);
+    if (best >= 0) {
+        return best;
+    }
+    }
+failure:
+    return -1;
+}
 
 typedef struct {
     u8 low : 4;
