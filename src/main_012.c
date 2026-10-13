@@ -322,7 +322,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_0014CBA0;
 
-s32 func_0014DA40(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
 
@@ -718,7 +717,182 @@ void func_0014DA30(s32 unused0, s32 unused1) {
     func_0024E410(unused0, unused1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014DA40);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0014DA40;
+
+static inline s32 find_0014DA40(void) {
+    s32 i;
+    s32 position;
+    s32 owner;
+
+    i = 0;
+    do {
+        position = func_0014C9D0(i);
+        if ((func_001E36E0(position & 0xFF, position >> 8) == 0 ? 1 : 0) == 1) {
+            owner = func_001DE540();
+            switch (i) {
+            case 0:
+                position = func_0024E410(owner, 0);
+                break;
+            case 1:
+                position = func_0024E410(owner, 3);
+                break;
+            case 2:
+                position = func_0024E410(owner, 4);
+                break;
+            default:
+                position = -1;
+                break;
+            }
+            return position;
+        }
+        i++;
+    } while (i < 3);
+    return -1;
+}
+
+s32 func_0014DA40(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+    s32 bestPosition;
+    s32 bestScore;
+    s32 fallbackPosition;
+    Nibbles_0014DA40 buffer[12];
+    s32 initCount;
+    Nibbles_0014DA40 *p;
+    s32 kind;
+    s32 type;
+    s32 position;
+    s32 y;
+    s32 x;
+    s32 i;
+    s32 targetY;
+    s32 targetX;
+    s32 target;
+    s32 score;
+    extern s32 func_00278510();
+    extern s32 func_001DE020();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = buffer;
+    initCount = 0;
+    do {
+        initCount++;
+        p->low = p->high = 15;
+        p++;
+    } while (initCount < 12);
+
+    kind = (type = (u8)(*((u8 *)arg2 + 0x3E) >> 5));
+    if (kind == 0 || func_001DE020(kind, type) == 2) {
+        if (arg3 >= 0) {
+            bestScore = 0xFF;
+            bestPosition = 0xFFFF;
+            target = func_001E1090(arg3 >> 8, arg3 & 0xFF);
+            i = 0;
+            targetY = target >> 8;
+            targetX = target & 0xFF;
+            do {
+                position = func_0024E410(arg0, i);
+                if (position >= 0) {
+                    x = position & 0xFF;
+                    y = position >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510((s32)arg2, arg3, func_0014F9B0(arg0),
+                                         targetX, targetY, 0) > 0) {
+                            score = func_0027A130((s32)arg2, (s32)buffer, x, y,
+                                                 targetX, targetY, arg3, 0, 3,
+                                                 (u16)func_0014F9B0(arg0));
+                        } else {
+                            score = func_002792C0((s32)arg2, (s32)buffer, x, y,
+                                                 targetX, targetY, arg3, 3);
+                        }
+                        if (func_0027AFC0((u8 *)buffer) > 0 && score < bestScore) {
+                            bestScore = score;
+                            bestPosition = position;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (bestPosition != 0xFFFF) {
+                return bestPosition;
+            }
+        }
+        {
+            s32 y;
+            s32 x;
+            s32 targetY;
+            s32 targetX;
+            s32 target;
+            s32 score;
+            s32 limit;
+
+            limit = 14;
+            fallbackPosition = -1;
+            i = 0;
+            do {
+                arg3 = func_0024E410(arg0, i);
+                if (arg3 >= 0) {
+                    x = arg3 & 0xFF;
+                    y = arg3 >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E3790(x, y) < 0) {
+                        target = find_0014DA40();
+                        targetX = target & 0xFF;
+                        targetY = target >> 8;
+                        func_001E3790(targetX, targetY);
+                        score = func_002792C0((s32)arg2, (s32)buffer, x, y,
+                                             targetX, targetY, 0, 7);
+                        if (score < limit && score >= 0) {
+                            fallbackPosition = arg3;
+                            limit = score;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (limit < 14) {
+                return fallbackPosition;
+            }
+            fallbackPosition = -1;
+            return fallbackPosition;
+        }
+    } else {
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 selected;
+        s32 position;
+
+        selected = -1;
+        i = 0;
+        do {
+            position = func_0024E410(arg0, i);
+            if (position >= 0) {
+                x = position & 0xFF;
+                y = position >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0 && y < 8) {
+                    selected = position;
+                }
+            }
+            i++;
+        } while (i < 8);
+        if (selected >= 0) {
+            return selected;
+        }
+        selected = -1;
+        return selected;
+    }
+}
 
 typedef struct Nibbles_0014DF80 {
     u8 low : 4;
