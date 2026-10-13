@@ -415,7 +415,6 @@ extern s32 D_0031810C;
 extern s8 D_0031747B;
 
 
-void func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern u8 D_003181E4;
 extern u8 D_003181E2;
 

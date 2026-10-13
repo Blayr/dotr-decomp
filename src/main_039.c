@@ -120,7 +120,196 @@ void func_001B65E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
     func_001B65F0(arg0, arg1, arg2, arg3, arg4, arg5, arg6, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B65F0);
+typedef struct {
+    u8 texture;
+    u8 padding;
+    u16 left;
+    u16 top;
+    u16 right;
+    u16 bottom;
+} Slice_001B65F0;
+
+typedef struct {
+    u8 pad[4];
+    u8 b;
+    u8 g;
+    u8 r;
+    u8 a;
+} Color_001B65F0;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001B65F0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} XYZ_001B65F0;
+
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Header_001B65F0;
+
+typedef struct {
+    u64 header[2];
+    u8 r, g, b, a;
+    f32 q;
+    u64 uv0;
+    XYZ_001B65F0 xyz0;
+    u64 uv1;
+    XYZ_001B65F0 xyz1;
+    u64 primitive;
+    u64 tex0;
+    u64 tex1;
+    u64 clamp;
+} Sprite_001B65F0;
+
+typedef struct {
+    u64 header[2];
+    u8 r, g, b, a;
+    f32 q;
+    XYZ_001B65F0 xyz0;
+    XYZ_001B65F0 xyz1;
+    u64 end;
+} Box_001B65F0;
+
+s32 func_001B65F0(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w, s32 h, s32 shadow, s32 style) {
+    extern Slice_001B65F0 D_00290080[];
+    extern Color_001B65F0 D_002BE840[];
+    u8 *state = D_00317490;
+    Slice_001B65F0 *slices = &D_00290080[style * 9 + 0x8C];
+    Color_001B65F0 *color;
+    s32 originX;
+    s32 originY;
+    s32 width;
+    s32 height;
+    s32 xOffset;
+    s32 yOffset;
+    s32 column;
+    Slice_001B65F0 *slice;
+    s32 row;
+    s32 i;
+    u16 y0;
+    Sprite_001B65F0 sprite __attribute__((aligned(8)));
+    Box_001B65F0 box __attribute__((aligned(8)));
+
+    if (colorIndex < 0) {
+        colorIndex = 2;
+    }
+    color = &D_002BE840[colorIndex];
+    ((Header_001B65F0 *)sprite.header)->flags = 0x26;
+    ((Header_001B65F0 *)sprite.header)->count = 5;
+    ((Header_001B65F0 *)sprite.header)->registers = 0x42421;
+    ((Header_001B65F0 *)sprite.header)->padding = 0;
+    ((Header_001B65F0 *)sprite.header)->flags |= 0x800;
+    func_002086D0(sprite.header, func_00208D00(0));
+    originX = x + 0x6C0;
+    originY = y + 0x720;
+    sprite.r = color->r;
+    sprite.g = color->g;
+    sprite.b = color->b;
+    sprite.a = color->a;
+    sprite.q = 1.0f;
+    sprite.xyz0.z = *(s32 *)(state + 0xC58);
+    sprite.xyz0.fog = 0;
+    sprite.xyz1.z = *(s32 *)(state + 0xC58);
+    sprite.xyz1.fog = 0;
+    if (shadow >= 0) {
+        color = &D_002BE840[shadow];
+        if (w >= 0) {
+            width = (slices[2].right - slices[2].left) +
+                    ((slices[0].right - slices[0].left) + w * (slices[1].right - slices[1].left));
+        } else {
+            width = (w >= 0) ? w : -w;
+        }
+        if (h >= 0) {
+            height = (slices[6].bottom - slices[6].top) +
+                     ((slices[0].bottom - slices[0].top) + h * (slices[3].bottom - slices[3].top));
+        } else {
+            height = (h >= 0) ? h : -h;
+        }
+        ((Header_001B65F0 *)box.header)->flags = 6;
+        ((Header_001B65F0 *)box.header)->count = 3;
+        ((Header_001B65F0 *)box.header)->registers = 0x441;
+        ((Header_001B65F0 *)box.header)->padding = 0;
+        if (shadow >= 0xE) {
+            func_002086D0(box.header, func_00208D00(0));
+        } else if (shadow >= 0xC) {
+            func_002086D0(box.header, func_00208D00(2));
+        }
+        box.r = color->r;
+        box.g = color->g;
+        box.b = color->b;
+        box.a = color->a;
+        box.q = 1.0f;
+        box.xyz0.z = *(s32 *)(state + 0xC58);
+        box.xyz0.fog = 0;
+        box.xyz1.z = *(s32 *)(state + 0xC58);
+        box.xyz1.fog = 0;
+        box.xyz0.x = originX << 4;
+        box.xyz0.y = originY << 4;
+        box.xyz1.x = (originX + width) << 4;
+        box.xyz1.y = (originY + height) << 4;
+        packet = func_00207650(packet, (s32)&box, 0, 0);
+    }
+    if (w < 0) {
+        w += (slices[0].right - slices[0].left) + (slices[2].right - slices[2].left);
+    }
+    if (h < 0) {
+        h += (slices[0].bottom - slices[0].top) + (slices[6].bottom - slices[6].top);
+    }
+    yOffset = 0;
+    for (row = 0; row < 3; row++) {
+        xOffset = 0;
+        y0 = (u16)(originY + yOffset) * 16 - 8;
+        for (column = 0; column < 3; column++) {
+            i = row * 3 + column;
+            slice = &slices[i];
+            width = slice->right - slice->left;
+            height = slice->bottom - slice->top;
+            if (i == 1 || i == 4 || i == 7) {
+                if (w > 0) {
+                    width *= w;
+                } else {
+                    width = (w >= 0) ? w : -w;
+                }
+            }
+            if ((u32)(i - 3) < 3) {
+                if (h > 0) {
+                    height *= h;
+                } else {
+                    height = (h >= 0) ? h : -h;
+                }
+            }
+            if (i != 4 && width > 0 && height > 0) {
+                u16 columnX;
+
+                func_00208700(&sprite, *(void **)(state + 0x6A0 + slice->texture * 4), 0);
+                ((UV_001B65F0 *)&sprite.uv0)->u = slice->left * 16;
+                columnX = originX + xOffset;
+                ((UV_001B65F0 *)&sprite.uv0)->v = slice->top * 16;
+                ((UV_001B65F0 *)&sprite.uv1)->u = slice->right * 16;
+                ((UV_001B65F0 *)&sprite.uv1)->v = slice->bottom * 16;
+                sprite.xyz0.x = columnX * 16 - 8;
+                sprite.xyz0.y = y0;
+                sprite.xyz1.x = (width + columnX) * 16 - 8;
+                sprite.xyz1.y = (height + (u16)(originY + yOffset)) * 16 - 8;
+                packet = func_00207650(packet, (s32)&sprite, 0, 0);
+            }
+            xOffset += width;
+        }
+        yOffset += height;
+    }
+    return packet;
+}
 
 void func_001B6C90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     func_001B6CA0(arg0, arg1, arg2, arg3, arg4, arg5, 0, 0);
