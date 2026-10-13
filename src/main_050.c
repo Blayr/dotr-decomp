@@ -70,7 +70,69 @@ void func_001F3870(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3910);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3CB0);
+typedef struct Obj_001F3CB0 {
+    u8 pad00[8];
+    s32 value : 31;
+    u32 flag : 1;
+    u8 pad0C[3];
+    u8 pad0F : 7;
+    s8 hi : 1;
+    u8 pad10[4];
+    s32 f14;
+    u8 pad18[4];
+    s32 f1C;
+} Obj_001F3CB0;
+
+typedef struct Entry_001F3CB0 {
+    u8 state : 3;
+    u8 sub : 3;
+    u16 big : 10;
+    s16 h2;
+    u8 pad4[4];
+} Entry_001F3CB0;
+
+void func_001F3CB0(void *arg0, s32 arg1) {
+    extern s32 func_0019C100();
+    extern s32 func_001FECB0();
+    extern u8 D_002CFBC6[];
+    extern u8 D_002CFBCB[];
+    extern u8 D_002CFBCF[];
+    extern Entry_001F3CB0 D_0031BB50[];
+    Obj_001F3CB0 *obj;
+    Entry_001F3CB0 *entry;
+    u8 sp50[0x80];
+    s32 size;
+
+    obj = arg0;
+    entry = &D_0031BB50[obj->f1C];
+    if (arg1 != 0) {
+        if (func_0019C100(obj->f14, D_002CFBCB, 3) != 0) {
+            if (obj->hi != 0) {
+                func_00217B50(obj->f14);
+            }
+            arg1 = 0;
+        }
+        if (entry->state != 1) {
+            arg1 = 0;
+        }
+    }
+    if (arg1 == 0) {
+        entry->state = 0;
+        return;
+    }
+    entry->h2 = (s16)obj->value;
+    if (entry->sub == 0) {
+        size = entry->big << 11;
+        func_0019B648(sp50, D_002CFBCF, (s32)func_001FFF90((s32)D_002CFBC6));
+        arg0 = (void *)func_001FECB0(0xC00, 0, sp50, 0, 0x800, size, 0x800, func_001F3E40,
+                                     (s64)obj->f1C);
+        if (arg0 == NULL) {
+            entry->state = 3;
+        }
+    } else {
+        entry->state = 3;
+    }
+}
 
 typedef struct Entry_001F3E40 {
     u64 state : 3;
