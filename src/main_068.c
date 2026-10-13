@@ -420,7 +420,6 @@ typedef struct State_0023C8B0 {
     s16 field2BE;
 } State_0023C8B0;
 
-s32 func_0023FF30(void);
 extern struct State_0023E610 D_0034FB00;
 
 s32 func_0023C8B0(s32 arg0) {
@@ -2114,7 +2113,258 @@ s32 func_0023FCE0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023FF30);
+typedef struct State_0023FF30 {
+    s32 request;
+    s32 status;
+    s32 port;
+    s32 slot;
+    u8 pad10[0x10];
+    s32 operation;
+    s32 result;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 step;
+    u8 pad36[0xA];
+    s16 retries;
+    u8 pad42[2];
+    s16 ready[2];
+    s32 handles[2];
+    u8 pad50[0x266];
+    s16 mode;
+    s16 offset;
+} State_0023FF30;
+
+s32 func_0023FF30(void) {
+    extern struct State_0023E610 D_0034FB00;
+    extern void *D_0034FAEC;
+    State_0023FF30 *state;
+    s32 *destination;
+
+    state = (State_0023FF30 *)&D_0034FB00;
+    destination = (s32 *)&D_00299E10;
+    switch (D_0034FB34) {
+    case 0:
+        state->request = func_00193BA8(state->port, state->slot, D_0029B1BE, 1);
+        state->status = func_00194248(1, &state->operation, &state->result);
+        if (state->status == 1) {
+            if (state->operation == 2) {
+                if (state->result < 0) {
+                    switch (state->result) {
+                    case -2:
+                        state->retries = (s16) (state->retries + 1);
+                        if (state->retries >= 3) {
+                            state->state = 3;
+                            state->step = 0;
+                            state->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -3:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 5;
+                    case -4:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    case -5:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    case -7:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    default:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    state->handles[state->port] = (s32) state->result;
+                    state->step = 1;
+                    state->retries = 0;
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 1:
+        state->request = func_00193DD0(state->handles[state->port], state->mode, state->offset, 1);
+        state->status = func_00194248(1, &state->operation, &state->result);
+        if (state->status == 1) {
+            if (state->operation == 4) {
+                switch (state->result) {
+                case 0:
+                    state->step = 2;
+                    state->retries = 0;
+                    return 0;
+                case -2:
+                    state->retries = (s16) (state->retries + 1);
+                    if (state->retries >= 3) {
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    state->state = 3;
+                    state->step = 0;
+                    state->retries = 0;
+                    return 0xA;
+                default:
+                    state->state = 3;
+                    state->step = 0;
+                    state->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    case 2:
+        func_0017BB60(0);
+        state->request = func_00193F38(state->handles[state->port], (u8 *)0x01E10000 + state->port * 0x100F0, 0x100F0);
+        state->status = func_00194248(1, &state->operation, &state->result);
+        if (state->status == 1) {
+            if (state->operation == 5) {
+                if (state->result < 0) {
+                    switch (state->result) {
+                    case -2:
+                        state->retries = (s16) (state->retries + 1);
+                        if (state->retries >= 3) {
+                            state->state = 3;
+                            state->step = 0;
+                            state->retries = 3;
+                            return 3;
+                        }
+                        return 0;
+                    case -4:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    default:
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 2;
+                    }
+                } else {
+                    state->step = 3;
+                    state->retries = 0;
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    case 3:
+        state->request = func_00193D18(state->handles[state->port]);
+        state->status = func_00194248(1, &state->operation, &state->result);
+        if (state->status == 1) {
+            if (state->operation == 3) {
+                switch (state->result) {
+                case 0:
+                    state->state = 0;
+                    state->step = 0;
+                    state->retries = 0;
+                    if (state->port == 0) {
+                        {
+                            s32 second;
+                            s32 first;
+                            s32 count;
+                            s32 *dst;
+                            s32 *src;
+
+                            dst = (s32 *)D_0034FAE8;
+                            src = (s32 *)((u8 *)0x01E10004 + state->port * 0x100F0);
+                            count = 0x1FF4;
+                            do {
+                                first = *src++;
+                                second = *src++;
+                                count--;
+                                dst[0] = first;
+                                dst[1] = second;
+                                dst += 2;
+                            } while (count > 0);
+                        }
+                        D_0034FAF0 = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                        *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
+                        if (func_00241190((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
+                            func_0023FBE0(state->port);
+                            state->ready[state->port] = 1;
+                            state->port = 1;
+                            return 0x10;
+                        }
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 0;
+                        return 0xA;
+                    }
+                    {
+                        s32 second;
+                        s32 first;
+                        s32 count;
+                        s32 *dst;
+                        s32 *src;
+
+                        dst = (s32 *)D_0034FAEC;
+                        src = (s32 *)((u8 *)0x01E10004 + state->port * 0x100F0);
+                        count = 0x1FF4;
+                        do {
+                            first = *src++;
+                            second = *src++;
+                            count--;
+                            dst[0] = first;
+                            dst[1] = second;
+                            dst += 2;
+                        } while (count > 0);
+                    }
+                    D_0034FAF0 = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                    *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
+                    if (func_00241190((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
+                        func_0023FBE0(state->port);
+                        state->ready[state->port] = 1;
+                        state->port = 1;
+                        return 0x100;
+                    }
+                    state->state = 3;
+                    state->step = 0;
+                    state->retries = 0;
+                    return 0xA;
+                case -2:
+                    state->retries = (s16) (state->retries + 1);
+                    if (state->retries >= 3) {
+                        state->state = 3;
+                        state->step = 0;
+                        state->retries = 3;
+                        return 3;
+                    }
+                    return 0;
+                case -4:
+                    state->state = 3;
+                    state->step = 0;
+                    state->retries = 0;
+                    return 0xA;
+                default:
+                    state->state = 3;
+                    state->step = 0;
+                    state->retries = 0;
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    default:
+        return 0;
+    }
+}
 
 typedef struct State_002406C0 {
     s32 result;
