@@ -326,7 +326,59 @@ void func_00245A30(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     *(Record_00245A30 *)arg3 = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->records[var_a1 & 0xFF];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245AE0);
+typedef struct Record_00245AE0 {
+    s16 x;
+    s16 y;
+    s16 width;
+    s16 height;
+} Record_00245AE0;
+
+typedef struct Data_00245AE0 {
+    s32 unk0;
+    u8 (*indices)[8];
+    union {
+        Record_00245AE0 *records;
+        u8 (*links)[8];
+    } u;
+} Data_00245AE0;
+
+void func_00245AE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
+    extern struct Quad_00245980 **D_0029D488[];
+    Record_00245AE0 *table;
+    u8 var_a1;
+    u8 temp_a0;
+    Record_00245AE0 *records;
+    s32 var_t1;
+    s32 count;
+
+    var_t1 = 0;
+    var_a1 = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
+    if (arg2 != 0) {
+        records = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->u.records;
+        while (var_t1 != (arg2 & 0xFF)) {
+            temp_a0 = *(u8 *)&records[var_a1 & 0xFF];
+            if (temp_a0 == 0 || temp_a0 == 0xFF) {
+                break;
+            }
+            var_t1 += 1;
+            var_a1 = temp_a0 & 0xFF;
+        }
+    }
+    var_t1 = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->u.links[var_a1 & 0xFF][6];
+    table = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->u.records;
+    count = 0;
+    if (arg3 != 0) {
+        while (count != (arg3 & 0xFF)) {
+            temp_a0 = *(u8 *)&table[var_t1 & 0xFF];
+            if (temp_a0 == 0 || temp_a0 == 0xFF) {
+                break;
+            }
+            count += 1;
+            var_t1 = temp_a0 & 0xFF;
+        }
+    }
+    *(Record_00245AE0 *)arg4 = table[var_t1 & 0xFF];
+}
 
 typedef struct Request_00245BE0 {
     u8 slot;
