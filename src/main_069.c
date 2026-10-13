@@ -105,7 +105,34 @@ void func_00242950(s32 arg0) {
     func_0017C4F8(2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242C20);
+void func_00242C20(void) {
+    extern void func_00241AC0();
+    extern void func_002457C0();
+    extern s32 func_0017B730(s32);
+    extern s32 func_0017B6F0(s32);
+    extern s32 func_0017C490(s32);
+    extern s32 func_0017B610(s32, s32);
+    extern s32 func_0017C3C0(s32);
+    extern s32 func_0017B5E0(s32, s32);
+    extern s32 D_00350730;
+    extern s32 D_00350734;
+    extern s32 D_00350778;
+    extern s32 D_00350780;
+
+    func_00241AC0(D_00350788);
+    func_002457C0(D_00350600);
+    func_0017B730(D_00350780);
+    func_0017B6F0(D_00350780);
+    func_0017B730(D_00350778);
+    func_0017B6F0(D_00350778);
+    func_0017C490(2);
+    func_0017B610(2, D_00350730);
+    func_0017C3C0(2);
+    func_0017B5E0(2, D_00350734);
+    func_00245100(D_00350680);
+    func_00243170(D_00350620);
+    func_00243D90(D_00350740);
+}
 
 void func_00242CD0(void) {
 loop_1:

@@ -267,7 +267,6 @@ void *func_0019C2B8(void *, const void *, u32);
 s32 func_00208110(s32, s32, s32, s32, s32, s32);
 
 void func_00242600(void *, s32, void *);
-void func_00242C20(void);
 extern char D_0030F354[];
 extern s32 D_003503B8;
 extern s32 D_003505F0;
