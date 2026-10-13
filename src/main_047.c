@@ -502,7 +502,31 @@ s32 func_001E5D30(s32 arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E5DD0);
+s32 func_001E5DD0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001E6F90(s32, s32, s32, f32, f32);
+    s32 i;
+    s32 *entry;
+    s32 result;
+
+    entry = (s32 *)&D_0031AB88;
+    result = func_001EFA80(arg0, arg1, 0, 0, 0, 0, 0);
+    if (arg2 == 0) {
+        result = func_001E6F90(result, 7, -1, -25.0f, 800.0f);
+        i = 0;
+        do {
+            s32 value = *entry;
+            if (value >= 0) {
+                u8 *card = (u8 *)func_001DF540(value >> 8, value & 0xFF);
+                if (card != NULL) {
+                    result = func_001E6F90(result, card[0x46], -1, -25.0f, 800.0f);
+                }
+            }
+            i++;
+            entry++;
+        } while (i < 2);
+    }
+    return result;
+}
 
 typedef struct Part_001E5EB0 {
     u8 pad0[0x10];
