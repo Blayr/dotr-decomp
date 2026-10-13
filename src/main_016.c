@@ -1731,12 +1731,12 @@ typedef struct {
 } Output_00171D60;
 
 s32 func_0016C8F0(s32, s32, s32);
-s32 func_00170940(u16 *, s32, void *, s32);
 void func_001E1E70(s32, s32, s32, s32);
 s32 func_0027DBC0(s32, s32, s32);
 
 s32 func_00171D60(u16 *arg0, s32 arg1, void *arg2, s32 arg3) {
     extern void func_0027B1B0();
+    extern s32 func_00170940();
     s32 address;
     s32 result;
     s32 index;
