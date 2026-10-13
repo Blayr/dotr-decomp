@@ -771,7 +771,69 @@ s32 func_0011E6E0(s32 arg0, void *arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_0011EB10);
+s32 func_0011EB10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 values[8];
+    s32 i;
+    s32 found;
+    s32 *firstPtr;
+    s32 *scanPtr;
+    s32 *modePtr;
+
+    found = 0;
+    func_0026FD30(arg0, values);
+    switch (arg3 & 0xFF) {
+    case 0:
+        i = 0;
+        if (0 < func_0026FE20(arg0)) {
+            firstPtr = values;
+            do {
+                if (*firstPtr == 0x31F) {
+                    found = 1;
+                    ((u8 *)arg1)[6] = i;
+                }
+                firstPtr++;
+                i++;
+            } while (i < func_0026FE20(arg0));
+        }
+        if (found == 1) {
+            found = 0;
+            if (0 < func_0026FE20(arg0)) {
+                scanPtr = values;
+                do {
+                    if (((func_0026FCE0(*scanPtr) >> 5) == 0) &&
+                        (func_00248F60(*scanPtr, 0x31F) >= 0) &&
+                        (func_0026FB10(arg0, *scanPtr) == 1) &&
+                        (*scanPtr != 0x31B) && (*scanPtr != 0x31C)) {
+                        ((u8 *)arg1)[7] = found;
+                        func_001DCD70((void *)arg2, values[found]);
+                        return func_0026FCE0(values[found]) >> 5;
+                    }
+                    scanPtr++;
+                    found++;
+                } while (found < func_0026FE20(arg0));
+            }
+        }
+        break;
+    case 1:
+        if (0 < func_0026FE20(arg0)) {
+            found = 0;
+            modePtr = values;
+            do {
+                if ((*modePtr == 0x202) && (func_0026FB10(arg0, *modePtr) == 1)) {
+                    ((u8 *)arg1)[6] = found;
+                    func_001DCD70((void *)arg2, values[found]);
+                    return func_0026FCE0(values[found]) >> 5;
+                }
+                modePtr++;
+                found++;
+            } while (found < func_0026FE20(arg0));
+        }
+        break;
+    default:
+        break;
+    }
+    return -1;
+}
 
 s32 func_0011ED50(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     s32 buf[8];
@@ -937,7 +999,6 @@ typedef struct {
     u8 indices[5];
 } CardState_0011F3C0;
 
-void func_0011EB10(s32, s32, s32, s32);
 
 s32 func_0011F3C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 cards[5];
