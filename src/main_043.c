@@ -751,7 +751,44 @@ void func_001D90E0(s32 arg0, s32 arg1, s32 arg2) {
     func_001FA8A0(0, 0, 4, arg0 & 0xFFFF, 0, sp50);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D91B0);
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001D91B0;
+
+void func_001D91B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    Vec4_001D91B0 saved;
+    f32 pos[4];
+    f32 camera[4];
+    u8 *p;
+    s32 x0;
+    s32 z0;
+    s32 x1;
+    s32 z1;
+    s32 angle;
+    u8 *cur;
+
+    p = D_00317490 + D_003181E4 * 0x350;
+    saved = *(Vec4_001D91B0 *)(p + 0x1D0);
+    x0 = (s32)(f32)((arg1 - 3) * 50);
+    z0 = (s32)(f32)((arg2 - 3) * 50);
+    x1 = (s32)(f32)((arg3 - 3) * 50);
+    z1 = (s32)(f32)((arg4 - 3) * 50);
+    angle = (s32)(65536.0f * (func_001A6C18((f32)(z1 - z0), (f32)(x1 - x0)) / 6.2831855f));
+    *(s32 *)(p + 0x1D0) = 0x96;
+    *(s32 *)(p + 0x1D4) = (((angle + 0x80) >> 8) << 8) + 0x4000;
+    *(s32 *)(p + 0x1D8) = 0x3800;
+    cur = D_00317490 + D_003181E4 * 0x350;
+    func_001FC950(cur + 0x1D0, camera);
+    pos[0] = (f32)((x0 + x1) >> 1);
+    pos[2] = (f32)((z0 + z1) >> 1);
+    pos[1] = (f32)*(s8 *)(cur + 0x345);
+    func_001FA8A0(0, 0, 3, (u16)arg0, 0, pos);
+    func_001FA8A0(0, 0, 4, arg0 & 0xFFFF, 0, camera);
+    *(Vec4_001D91B0 *)(p + 0x1D0) = saved;
+}
 
 typedef struct {
     u8 pad0[0x40];
