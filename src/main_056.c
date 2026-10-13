@@ -328,7 +328,80 @@ void func_00208090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_00209D30(func_00208110(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208110);
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_00208110;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyzf_00208110;
+
+typedef struct {
+    u16 count;
+    u16 kind;
+    u32 flags;
+    u64 regs;
+} Header_00208110;
+
+typedef struct {
+    Header_00208110 header;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    f32 s0;
+    f32 t0;
+    Xyzf_00208110 v0;
+    f32 s1;
+    f32 t1;
+    Xyzf_00208110 v1;
+    u64 extra[4];
+} Packet_00208110;
+
+s32 func_00208110(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern Color_00208110 D_00293ED0;
+    extern s32 func_002086D0();
+    Color_00208110 def;
+    Packet_00208110 packet;
+    u8 *color;
+
+    def = D_00293ED0;
+    ((Header_00208110 *)&packet)->kind = 0x26;
+    ((Header_00208110 *)&packet)->count = 5;
+    ((Header_00208110 *)&packet)->regs = 0x42421;
+    ((Header_00208110 *)&packet)->flags = 0;
+    color = (u8 *)arg5;
+    if (color == NULL) {
+        color = (u8 *)&def;
+    }
+    packet.r = color[2];
+    packet.g = color[1];
+    packet.b = color[0];
+    packet.a = color[3];
+    packet.q = 1.0f;
+    packet.v0.x = 0x6BF8;
+    packet.v0.y = 0x71F8;
+    packet.v0.z = 0xFFFFF7;
+    packet.v0.fog = 0;
+    packet.v1.x = 0x93F8;
+    packet.v1.y = 0x8DF8;
+    packet.v1.z = 0xFFFFF7;
+    packet.v1.fog = 0;
+    packet.s0 = 0.0f;
+    packet.t0 = 0.0f;
+    packet.s1 = 0.625f;
+    packet.t1 = 0.875f;
+    func_002086D0(&packet, arg4);
+    func_002087A0(&packet, arg3);
+    return func_00207650(arg0, (s32)&packet, arg1, arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208280);
 
