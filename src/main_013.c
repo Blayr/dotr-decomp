@@ -803,7 +803,22 @@ void func_001566D0(s32 arg0, u16 *arg1, s32 *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00156870);
+s32 func_00156870(s32 arg0) {
+    extern u32 func_0026FBB0();
+    s32 cost;
+
+    cost = func_0026FBB0(arg0);
+    if ((func_0026FCE0(arg0) >> 5) != 0) {
+        return 1;
+    }
+    if ((cost & 0xFFFF) + (cost >> 16) * 2 > 0x1194) {
+        return 1;
+    }
+    if (func_001587E0(arg0) == 1) {
+        return 1;
+    }
+    return 0;
+}
 
 s64 func_002493A0(s32);
 
