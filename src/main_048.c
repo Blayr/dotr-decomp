@@ -546,7 +546,91 @@ s32 func_001F0060(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F01A0);
+typedef struct Fields_001F01A0 {
+    u8 pad000[0x138];
+    s32 *header;
+    s32 *data;
+    u8 pad140[0xB3];
+    s8 kind;
+    s16 value;
+    u8 pad1F6[0x16];
+    s8 loaded : 1;
+    s8 unused1 : 2;
+    s8 busy : 1;
+    s8 unused4 : 4;
+} Fields_001F01A0;
+
+typedef struct Request_001F01A0 {
+    u8 pad00[0x14];
+    s32 *header;
+    u8 pad18[4];
+    s32 index;
+} Request_001F01A0;
+
+void func_001F01A0(void *arg0, s32 arg1) {
+    extern void func_0019B648();
+    extern void func_001E8BF0(s32);
+    extern s32 D_00292480[];
+    extern u8 D_002CFA17[];
+    extern u8 D_002CFB94[];
+    s32 index;
+    Fields_001F01A0 *obj;
+
+    index = ((Request_001F01A0 *)arg0)->index;
+    if (index < 0 || index >= 0x54) {
+        return;
+    }
+    obj = (Fields_001F01A0 *)D_0031ABB0[index];
+    if (obj != NULL) {
+        if (arg1 == 0) {
+            obj->busy = 0;
+            return;
+        }
+        func_001E7D00(index);
+        obj->header = ((Request_001F01A0 *)arg0)->header;
+        obj->data = obj->header + 4;
+        obj->header[1] = 0;
+        func_0020F370(obj->header);
+        func_001E90B0(index);
+        switch (obj->kind) {
+        case 4:
+        case 5:
+        case 6: {
+            u8 format[128];
+            u8 path[128];
+            s32 value;
+            s32 base;
+            s32 i;
+
+            value = obj->value;
+            base = D_00292480[obj->kind];
+            func_0019B648(format, D_002CFB94, func_001FFF90((s32)D_002CFA17), base, base);
+            for (i = 0; i < 8; i++) {
+                func_0019B648(path, format, value, value, i + 0x61);
+                func_001F0760(index, i, (s32)path);
+            }
+            func_001EA0F0(index);
+            break;
+        }
+        case 0:
+        case 3:
+        case 7: {
+            u8 format[128];
+            u8 path[128];
+            s32 value;
+            s32 base;
+
+            value = obj->value;
+            base = D_00292480[obj->kind];
+            func_0019B648(format, D_002CFB94, func_001FFF90((s32)D_002CFA17), base, base);
+            func_0019B648(path, format, value, value, 0x61);
+            func_001F0760(index, 0, (s32)path);
+            break;
+        }
+        }
+        func_001FFC50(index, (s32)func_001E8BF0);
+    }
+}
 
 typedef struct Fields_001F0390 {
     u8 pad000[0x1F3];
