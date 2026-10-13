@@ -252,7 +252,48 @@ void func_001B83C0(void) {
     func_00209D30(func_001B83F0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B83F0);
+typedef struct Flags_001B83F0 {
+    s8 unused : 4;
+    s8 horizontal : 1;
+    s8 enabled : 1;
+    s8 colored : 1;
+    s8 reserved : 1;
+} Flags_001B83F0;
+
+typedef struct Draw_001B83F0 {
+    u8 pad00[0x43];
+    u8 alpha;
+    u8 pad44[0x3D];
+    Flags_001B83F0 flags;
+    u8 pad82[0xE];
+} Draw_001B83F0;
+
+s32 func_001B83F0(s32 arg0) {
+    extern void func_001CD560();
+    extern s32 D_00317B58;
+    u8 *state = D_00317490;
+    Draw_001B83F0 draw;
+
+    if (D_00317B58 == 0) {
+        return arg0;
+    }
+    if (*(s32 *)(state + 0x6CC) == 0) {
+        return arg0;
+    }
+    if (state[0xD3B] == 0) {
+        return arg0;
+    }
+    func_001CD560(&draw);
+    draw.flags.colored = 0;
+    draw.alpha = state[0xD3B];
+    arg0 = func_001D9A20(arg0);
+    func_001D9ED0(0xFFFFFE);
+    func_001DA2B0(&draw, 0, -150.0f, 0.0f);
+    arg0 = func_001DBD30(func_001DBC40(arg0, *(s32 *)(state + 0x6C8), &draw), (s32)&draw);
+    func_001DA2B0(&draw, 0, 150.0f, 0.0f);
+    arg0 = func_001DBD30(func_001DBC40(arg0, *(s32 *)(state + 0x6CC), &draw), (s32)&draw);
+    return func_001D9E00(arg0);
+}
 
 void func_001B8520(s32 arg0) {
     extern s32 func_00216AC0();
