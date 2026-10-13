@@ -711,7 +711,166 @@ s32 func_001C8DC0(s32 arg0, u8 *arg1, s32 x, s32 y) {
                          hint != 0 ? (s32)D_002BE944 : 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C92C0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001C92C0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001C92C0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001C92C0;
+
+typedef struct {
+    Color_001C92C0 color;
+    Vertex_001C92C0 xyz;
+} Point_001C92C0;
+
+typedef struct {
+    u64 tag[2];
+    Point_001C92C0 points[4];
+    u64 end;
+} Packet_001C92C0;
+
+typedef struct {
+    u8 b, g, r, a;
+} Source_001C92C0;
+
+typedef struct {
+    Source_001C92C0 c[2];
+} Pair_001C92C0;
+
+static inline void set_color_001C92C0(Color_001C92C0 *a, Color_001C92C0 *b,
+                                      Source_001C92C0 *src) {
+    a->r = b->r = src->r;
+    a->g = b->g = src->g;
+    a->b = b->b = src->b;
+    a->a = b->a = src->a;
+    a->q = b->q = 1.0f;
+}
+
+static inline void set_xyz_001C92C0(Vertex_001C92C0 *v, s32 x, s32 y, u8 *state) {
+    v->x = x << 4;
+    v->y = y << 4;
+    v->z = *(s32 *)(state + 0xC58);
+    v->fog = 0;
+}
+
+s32 func_001C92C0(s32 arg0, s32 player, s32 x, s32 y) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern char D_002BF05B[];
+    extern char D_002BEF93[];
+    extern s32 D_00290A1C;
+    extern s32 D_00290896;
+    extern s32 D_002908A0;
+    extern s32 D_00290A58;
+    extern s32 D_00290A62;
+    extern s32 D_00290A6C;
+    extern Pair_001C92C0 D_002914A0;
+    u8 *state = D_00317490;
+    s8 *text3 = D_002BF05B;
+    s8 *text4 = D_002BEF93;
+    s32 tmp = (((u8 *)player)[0xA9C002] & 0xF) + 0x81;
+    s32 width;
+    s32 hint = 0;
+    s32 cx;
+    s32 id;
+    s16 *life;
+    s32 px;
+    s32 py;
+    s32 w;
+    s32 h;
+    Pair_001C92C0 colors;
+    Packet_001C92C0 packet __attribute__((aligned(8)));
+
+    if (*(u8 *)0xA9C088 != 0) {
+        width = 0x244;
+    } else {
+        width = 0x114;
+    }
+    id = func_0020F290(func_001FD680(arg0, 1, tmp, 0, 0x16));
+    cx = x + (width >> 1);
+    id = func_001B4780(id, 0xC, 3, 4, cx - 0x59, y, -0xB2, -0x20, 1);
+    id = func_001FE7D0(id, 1, cx - (((s32 *)func_001FEAB0(1))[3] >> 1), y + 5, 0, func_001FDFE0);
+    func_001FEAF0(1);
+    id = func_001B4780(id, player, -1, 0xB, x, y + 0x20, -width, -0x96, 1);
+    id = func_001B4780(id, 0xC, -1, 5, cx - 0x38, y + 0x38, -0x70, -0x14, 1);
+    px = x + 0x68A + (width >> 1);
+    py = y + 0x75A;
+    id = func_001B3CC0(id, &D_00290A1C, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    life = &((s16 *)0xA9C010)[player];
+    id = func_001B6EA0(id, cx - 0xE, y + 0x3C, 0, 0, 4, *life);
+    px = x + 0x64E + (width >> 1);
+    py = y + 0x76C;
+    id = func_001B3CC0(id, &D_00290896, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    tmp = cx - 0x58;
+    id = func_001B4780(id, 0xD, -1, 7, tmp, y + 0x50, -0xB0, -0x10, 1);
+    px = x + 0x668 + (width >> 1);
+    py = y + 0x770;
+    w = (s32)((f32)*life * 176.0f / 9999.0f);
+    h = 8;
+    colors = D_002914A0;
+    if (player == 0) {
+        colors.c[1].b = 0;
+        colors.c[1].g = 0;
+        colors.c[0].b = 0;
+        colors.c[0].g = 0;
+    }
+    ((Tag_001C92C0 *)packet.tag)->flags = 0x14;
+    ((Tag_001C92C0 *)packet.tag)->count = 8;
+    ((Tag_001C92C0 *)packet.tag)->registers = 0x41414141;
+    ((Tag_001C92C0 *)packet.tag)->padding = 0;
+    set_color_001C92C0(&packet.points[0].color, &packet.points[1].color, &colors.c[0]);
+    set_color_001C92C0(&packet.points[2].color, &packet.points[3].color, &colors.c[1]);
+    set_xyz_001C92C0(&packet.points[0].xyz, px, py, state);
+    set_xyz_001C92C0(&packet.points[1].xyz, px + w, py, state);
+    set_xyz_001C92C0(&packet.points[2].xyz, px, py + h, state);
+    set_xyz_001C92C0(&packet.points[3].xyz, px + w, py + h, state);
+    id = func_00207650(id, (s32)packet.tag, 0, 0);
+    set_color_001C92C0(&packet.points[0].color, &packet.points[1].color, &colors.c[1]);
+    set_color_001C92C0(&packet.points[2].color, &packet.points[3].color, &colors.c[0]);
+    set_xyz_001C92C0(&packet.points[0].xyz, px, py + h, state);
+    set_xyz_001C92C0(&packet.points[1].xyz, px + w, py + h, state);
+    set_xyz_001C92C0(&packet.points[2].xyz, px, py + h * 2, state);
+    set_xyz_001C92C0(&packet.points[3].xyz, px + w, py + h * 2, state);
+    id = func_00207650(id, (s32)packet.tag, 0, 0);
+    id = func_001B4780(id, -1, -1, 7, tmp, y + 0x50, -0xB0, -0x10, 1);
+    px = x + 0x71A + (width >> 1);
+    py = y + 0x76C;
+    id = func_001B3CC0(id, &D_002908A0, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    id = func_001B65F0(id, player, x + 0x12, y + 0x7A, -(width - 0x24), -0x34, -1, 0);
+    px = x + 0x6C2 + ((width - 0x24) >> 2);
+    py = y + 0x7A1;
+    id = func_001B3CC0(id, &D_00290A58, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x6D2 + ((width - 0x24) >> 2);
+    py = y + 0x7A1;
+    id = func_001B3CC0(id, &D_00290A62, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x12 + ((width - 0x24) >> 2);
+    py = y + 0x9C;
+    id = func_001B6F70(id, px, py, 1, 2, func_0019BEF0((char *)text3), text3,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    px = x + 0x6CA + (((width - 0x24) * 2) >> 2);
+    py = y + 0x7A1;
+    id = func_001B3CC0(id, &D_00290A6C, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    px = x + 0x12 + (((width - 0x24) * 2) >> 2);
+    py = y + 0x9C;
+    return func_001B6F70(id, px, py, 1, 2, func_0019BEF0((char *)text4), text4,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 s32 func_001C9C60(s32 arg0, u8 *arg1, s32 x, s32 y) {
     extern s32 *func_001FEAB0(s32);
