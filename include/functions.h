@@ -1386,6 +1386,7 @@ s32 func_001F9FE0(s32 arg0, void *arg1, void *arg2);
 void *func_001FA6F0(s32 arg0, s32 arg1);
 s32 func_001FA770(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001FA810(s32 arg0, s32 arg1);
+s32 func_001FA8A0(s32 owner, s32 target, s32 type, s32 count, s32 value, void *data);
 s32 func_001FAD10(s32 arg0);
 s32 func_001FAD60(s32 arg0, void *arg1);
 f32 *func_001FAF60(s32 arg0);

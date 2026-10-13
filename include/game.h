@@ -261,7 +261,6 @@ extern u16 D_0029CF32[];
 s32 func_0026FE70(void);
 extern u16 D_002D0970[51][41];
 
-void func_001FA8A0(s32, s32, s32, s32, s32, void *);
 extern u8 D_00299F90[];
 
 

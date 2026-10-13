@@ -1136,7 +1136,155 @@ s32 func_001FA810(s32 arg0, s32 arg1) {
     return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA8A0);
+typedef struct Vec4_001FA8A0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001FA8A0;
+
+typedef struct Camera_001FA8A0 {
+    Vec4_001FA8A0 polar;
+    Vec4_001FA8A0 rotation;
+    Vec4_001FA8A0 direction;
+    Vec4_001FA8A0 position;
+    s32 roll;
+    f32 fov;
+} Camera_001FA8A0;
+
+typedef union Value_001FA8A0 {
+    s32 i;
+    void *p;
+    Vec4_001FA8A0 v;
+} Value_001FA8A0;
+
+typedef struct Slot_001FA8A0 {
+    s8 active : 1;
+    s8 type : 7;
+    s8 flag : 1;
+    s8 other : 7;
+    s8 owner;
+    s8 target;
+    u16 count;
+    u16 timer;
+    u8 pad08[8];
+    Value_001FA8A0 from;
+    Value_001FA8A0 to;
+} Slot_001FA8A0;
+
+typedef struct Track_001FA8A0 {
+    u8 pad00[0xC];
+    u16 frames;
+} Track_001FA8A0;
+
+#define ROUND_001FA8A0(x) (((x) + (((x) > 0 ? 0x1000 : -0x1000) >> 1)) >> 12)
+
+static inline Slot_001FA8A0 *findFree_001FA8A0(void) {
+    Slot_001FA8A0 *slot = (Slot_001FA8A0 *)D_0031BEC0;
+    s32 i = 0;
+
+    do {
+        if (!slot->active) {
+            return slot;
+        }
+        i++;
+        slot++;
+    } while (i < 8);
+    return NULL;
+}
+
+static inline f32 toAngle_001FA8A0(f32 radians) {
+    return (32768.0f * radians) / 3.1415927f;
+}
+
+s32 func_001FA8A0(s32 owner, s32 target, s32 type, s32 count, s32 value, void *data) {
+    Camera_001FA8A0 *camera;
+    Slot_001FA8A0 *slot;
+    f32 fromAngle;
+    f32 toAngle;
+    s32 fromSign;
+    s32 toSign;
+    s32 delta;
+
+    if (owner < 0 || owner > 0) {
+        return 0;
+    }
+    camera = (Camera_001FA8A0 *)D_0031BEB0[owner];
+    if (camera == NULL) {
+        return 0;
+    }
+    slot = findFree_001FA8A0();
+    if (slot == NULL) {
+        return 0;
+    }
+    switch (type) {
+    case 0:
+        slot->from.i = (s32)camera->fov;
+        slot->to.i = value;
+        break;
+    case 1:
+        slot->from.i = camera->roll % 0x10000;
+        if (slot->from.i > 0x8000) {
+            slot->from.i = -(0x10000 - slot->from.i);
+        }
+        slot->to.i = value % 0x10000;
+        if (slot->to.i > 0x8000) {
+            slot->to.i = -(0x10000 - slot->to.i);
+        }
+        break;
+    case 2:
+        slot->from.v = camera->direction;
+        slot->to.v = *(Vec4_001FA8A0 *)data;
+        break;
+    case 3:
+        slot->from.v = camera->position;
+        slot->to.v = *(Vec4_001FA8A0 *)data;
+        break;
+    case 4:
+    case 5:
+        slot->from.v = camera->polar;
+        slot->to.v = *(Vec4_001FA8A0 *)data;
+        fromAngle = toAngle_001FA8A0(slot->from.v.y);
+        fromSign = ((s32)fromAngle > 0) ? 0x1000 : -0x1000;
+        toAngle = toAngle_001FA8A0(slot->to.v.y);
+        toSign = ((s32)toAngle > 0) ? 0x1000 : -0x1000;
+        delta = (s32)toAngle;
+        delta = (((delta + (toSign >> 1)) >> 12) - (((s32)fromAngle + (fromSign >> 1)) >> 12)) << 12;
+        if (delta < -0x8000) {
+            slot->to.v.y += 6.2831855f;
+        } else if (delta >= 0x8000) {
+            slot->to.v.y -= 6.2831855f;
+        }
+        break;
+    case 6:
+    case 7:
+        slot->from.v = camera->position;
+        slot->to.i = value;
+        break;
+    case 8:
+    case 9:
+        slot->from.p = data;
+        slot->to.i = value;
+        if (count == 0) {
+            count = (u16)(((Track_001FA8A0 *)data)->frames - 1);
+        }
+        break;
+    default:
+        return 0;
+    }
+    if (count == 0) {
+        count = (u16)(count + 1);
+    }
+    slot->active = 1;
+    slot->type = type;
+    slot->flag = 0;
+    slot->other = 0;
+    slot->owner = owner;
+    slot->target = target;
+    slot->count = count;
+    slot->timer = 0;
+    return 1;
+}
 
 s32 func_001FAD10(s32 arg0) {
     s32 temp_v0;
