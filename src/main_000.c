@@ -801,7 +801,60 @@ void func_00102390(s32 n, f32 *x, f32 *y, f32 *y2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00102550);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102A50);
+typedef struct Vec3_00102A50 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_00102A50;
+
+typedef struct Arg_00102A50 {
+    s32 count;
+    f32 amplitude;
+    f32 startX;
+    f32 startY;
+    f32 startZ;
+    f32 endX;
+    f32 endY;
+    f32 endZ;
+    f32 *points;
+} Arg_00102A50;
+
+void func_00102A50(void *arg0) {
+    Arg_00102A50 *arg = arg0;
+    extern s32 func_001A22C0(f32);
+    f32 steps[3];
+    f32 temp_f4;
+    f32 temp_f12;
+    f32 *temp_s0;
+    f32 *temp_v0;
+    s32 var_s1;
+    s32 temp_s2;
+    s32 temp_s6;
+    s32 temp_s6_2;
+    s32 temp_s6_3;
+
+    steps[0] = (arg->endX - arg->startX) / (f32) arg->count;
+    steps[1] = (arg->endY - arg->startY) / (f32) arg->count;
+    steps[2] = (arg->endZ - arg->startZ) / (f32) arg->count;
+    temp_f4 = arg->amplitude * func_0020D0E0(steps);
+    temp_s0 = arg->points;
+    var_s1 = 1;
+    *(Vec3_00102A50 *) temp_s0 = *(Vec3_00102A50 *) &arg->startX;
+    temp_f12 = 200.0f * temp_f4;
+    temp_v0 = temp_s0 + (arg->count * 3);
+    temp_s0 += 3;
+    *(Vec3_00102A50 *) temp_v0 = *(Vec3_00102A50 *) &arg->endX;
+    temp_s2 = func_001A22C0(200.0f * temp_f4) >> 1;
+    for (; var_s1 < arg->count;) {
+        temp_s6 = func_0019A5C8() >> 4;
+        temp_s0[0] = arg->startX + (steps[0] * (f32) var_s1) + ((f32) ((temp_s6 % func_001A22C0(temp_f12)) - temp_s2) / 100.0f);
+        temp_s6_2 = func_0019A5C8() >> 4;
+        temp_s0[1] = arg->startY + (steps[1] * (f32) var_s1) + ((f32) ((temp_s6_2 % func_001A22C0(temp_f12)) - temp_s2) / 100.0f);
+        temp_s6_3 = func_0019A5C8() >> 4;
+        temp_s0[2] = arg->startZ + (steps[2] * (f32) var_s1++) + ((f32) ((temp_s6_3 % func_001A22C0(temp_f12)) - temp_s2) / 100.0f);
+        temp_s0 += 3;
+    }
+}
 
 typedef struct Vec3_00102CB0 {
     f32 x, y, z;

@@ -39,6 +39,7 @@ void func_00101D20(void *arg0, void *arg1, void *arg2);
 void func_00101EE0(void *arg0, void *arg1, void *arg2);
 void func_00102330(s8 *arg0, s32 arg1);
 void func_00102390(s32 n, f32 *x, f32 *y, f32 *y2);
+void func_00102A50(void *arg0);
 void func_00102CB0(void *arg0);
 void func_00102F20(void *arg0);
 void func_001031C0(u16 *arg0, s32 arg1);
