@@ -186,7 +186,24 @@ s32 func_001F6490(s32 arg0, u8 *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_051", func_001F64C0);
+s32 func_001F64C0(s32 arg0, u8 *arg1) {
+    extern s32 func_001E1360(s32, s32);
+    s32 hi = arg0 >> 8;
+    s32 lo = arg0 & 0xFF;
+
+    arg1[3] = 0x80;
+    arg1[0] = 0x80;
+    arg1[1] = 0x80;
+    arg1[2] = 0x80;
+    if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
+        return -1;
+    }
+    arg0 = func_001E1360(hi, lo);
+    if (arg0 < 0) {
+        return -1;
+    }
+    return func_001F2660(arg0, arg1);
+}
 
 void func_001F6560(s32 arg0) {
     func_001F6590(D_0031BE98, -1, arg0);

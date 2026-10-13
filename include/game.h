@@ -128,7 +128,6 @@ extern s32 D_003505F8;
 void func_00195108(s32 arg0, s16 arg1);
 
 
-s32 func_001F64C0();                                /* extern */
 
 extern s32 D_0031BE9C;
 
