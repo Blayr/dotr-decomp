@@ -390,7 +390,6 @@ typedef struct {
     s8 bits6_7 : 2;
 } Flags_001E7D00;
 
-void func_001F2C60(s32, s32, s32);
 
 s32 func_001E7D00(s32 index) {
     Obj_0031ABB0 *object;

@@ -709,7 +709,60 @@ s32 func_001F2BE0(s32 arg0, s32 arg1) {
     return *(u16 *)((arg1 << 1) + (s32)obj + 0x1B0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F2C60);
+typedef struct View_001F2C60 {
+    u8 pad0[0x1B0];
+    u16 slots[8];
+    u8 pad1C0[0x39];
+    u8 count;
+    u8 pad1FA[4];
+    u8 max;
+} View_001F2C60;
+
+s32 func_001F2C60(s32 arg0, s32 arg1, s32 arg2) {
+    View_001F2C60 *obj;
+    s32 i;
+    s32 group;
+    s32 newGroup;
+    u16 current;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return -1;
+    }
+    obj = (View_001F2C60 *) D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return -1;
+    }
+    if (arg2 != 0) {
+        if (arg1 >= 0) {
+            group = (arg1 & 0x7F00) >> 8;
+            for (i = 0; i < 8; i++) {
+                if (((obj->slots[i] & 0x7F00) >> 8) == group) {
+                    obj->slots[i] = 0x7FFF;
+                }
+            }
+        } else {
+            for (i = 0; i < 8; i++) {
+                obj->slots[i] = 0x7FFF;
+            }
+        }
+        obj->count = 0;
+    }
+    if (obj->count >= 8) {
+        return -1;
+    }
+    if (arg1 >= 0) {
+        newGroup = (arg1 & 0x7F00) >> 8;
+        if ((arg1 & 0xFF) >= obj->max) {
+            return -1;
+        }
+        current = obj->slots[obj->count];
+        if ((current & 0x7FFF) < 0x7FFF && ((current & 0x7F00) >> 8) != newGroup) {
+            return -1;
+        }
+    }
+    obj->slots[obj->count] = (arg1 < 0) ? 0x7FFF : arg1;
+    return obj->count++;
+}
 
 s32 func_001F2DD0(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
