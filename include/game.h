@@ -627,7 +627,6 @@ extern s8 D_0030F118[];
 
 
 
-s32 func_00112850(s32, s32);
 s32 func_00112A40(s32);
 
 extern char D_0028C230[];
