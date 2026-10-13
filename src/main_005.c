@@ -1014,7 +1014,7 @@ s32 func_00117BD0(s32 arg0, s32 arg1) {
 }
 
 s32 func_00117C30(s32 arg0) {
-    if (func_001DF470() > 0x4B0) {
+    if (func_001DF470(arg0) > 0x4B0) {
         if (func_001E0150(arg0) >= 4) {
             return 0x2EE;
         } else {
@@ -2213,7 +2213,7 @@ s32 func_0011A4D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
 }
 
 s32 func_0011AA10(s32 arg0) {
-    if (func_001DF470() > 0x5DC) {
+    if (func_001DF470(arg0) > 0x5DC) {
         if (func_001E0150(arg0) >= 3) {
             return 0;
         } else {
