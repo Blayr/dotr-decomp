@@ -102,7 +102,6 @@ typedef struct Work_0012D270 {
     u8 pad3E[0x22];
 } Work_0012D270;
 
-s32 func_0012E3F0(s32, s32, void *, s32);
 
 s32 func_0012D270(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 func_00278890();
@@ -570,7 +569,174 @@ s32 func_0012E1F0(s32 arg0, void *arg1, void *arg2) {
     return o2->f3E >> 5;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_0012E3F0);
+typedef struct Nibbles_0012E3F0 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0012E3F0;
+
+s32 func_0012E3F0(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+    s32 best;
+    s32 bestCost;
+    s32 nearest;
+    Nibbles_0012E3F0 flags[12];
+    s32 i;
+    Nibbles_0012E3F0 *p;
+    u8 kind;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = flags;
+    i = 0;
+    do {
+        p->low = p->high = 15;
+        p++;
+        i++;
+    } while (i < 12);
+
+    kind = *(u8 *)((u8 *)arg2 + 0x3E) >> 5;
+    if (kind == 0U || kind == 3U || kind == 2U) {
+        if (arg3 >= 0) {
+            s32 candidate;
+            s32 y;
+            s32 x;
+            s32 index;
+            s32 originY;
+            s32 originX;
+            s32 origin;
+            s32 cost;
+
+            bestCost = 255;
+            best = 65535;
+            origin = func_001E1090(arg3 >> 8, arg3 & 255);
+            index = 0;
+            originY = origin >> 8;
+            originX = origin & 255;
+            do {
+                candidate = func_0024E410(arg0, index);
+                if (candidate >= 0) {
+                    x = candidate & 255;
+                    y = candidate >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 ||
+                         func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510(arg2, arg3, func_00130780(arg0),
+                                         originX, originY, 0) > 0) {
+                            cost = func_0027A130(arg2, flags, x, y,
+                                                originX, originY, arg3, 0,
+                                                5, (u16)func_00130780(arg0));
+                        } else {
+                            cost = func_002792C0((s32)arg2, (s32)flags, x, y,
+                                                originX, originY, arg3, 2);
+                        }
+                        if (func_0027AFC0((u8 *)flags) > 0 && cost < bestCost) {
+                            bestCost = cost;
+                            best = candidate;
+                        }
+                    }
+                }
+                index++;
+            } while (index < 8);
+            if (best != 65535) {
+                return best;
+            }
+            best = -1;
+            return best;
+        }
+        {
+            s32 originY;
+            s32 originX;
+            s32 maxY;
+            s32 maxX;
+            s32 y;
+            s32 x;
+            s32 index;
+            s32 distance;
+            s32 candidate;
+            s32 minY;
+            s32 minX;
+            s32 origin;
+
+            distance = 14;
+            nearest = -1;
+            origin = func_001E1090(arg0 == 0 ? 1 : 0, 0);
+            index = 0;
+            originY = origin >> 8;
+            originX = origin & 255;
+            do {
+                candidate = func_0024E410(arg0, index);
+                if (candidate >= 0) {
+                    x = candidate & 255;
+                    y = candidate >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 ||
+                         func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E3790(x, y) < 0) {
+                        if (y < originY) {
+                            minY = y;
+                        } else {
+                            minY = originY;
+                        }
+                        if (y > originY) {
+                            maxY = y;
+                        } else {
+                            maxY = originY;
+                        }
+                        if (x < originX) {
+                            minX = x;
+                        } else {
+                            minX = originX;
+                        }
+                        if (x > originX) {
+                            maxX = x;
+                        } else {
+                            maxX = originX;
+                        }
+                        origin = (maxX - minX) + (maxY - minY);
+                        if (origin < distance && origin >= 0) {
+                            nearest = candidate;
+                            distance = origin;
+                        }
+                    }
+                }
+                index++;
+            } while (index < 8);
+            if (distance < 14) {
+                return nearest;
+            }
+        }
+    } else {
+        s32 y;
+        s32 x;
+        s32 index;
+        s32 last;
+        s32 candidate;
+
+        last = -1;
+        index = 0;
+        do {
+            candidate = func_0024E410(arg0, index);
+            if (candidate >= 0) {
+                x = candidate & 255;
+                y = candidate >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    func_001E22B0(x, y) != 9 &&
+                    func_001E3790(x, y) < 0 && y < 8) {
+                    last = candidate;
+                }
+            }
+            index++;
+        } while (index < 8);
+        if (last >= 0) {
+            return last;
+        }
+    }
+    return -1;
+}
 
 typedef struct Nibbles_0012E820 {
     u8 low : 4;
