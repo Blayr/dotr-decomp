@@ -743,7 +743,6 @@ void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
 void func_002516D0(u32, s32, s32);
 void func_00255AC0(void *, s32);
-s32 func_0025F990(void *, void *, s32 *, s32);
 void func_00260740(s32);
 void func_00260A70(void *, s32);
 

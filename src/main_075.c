@@ -284,7 +284,70 @@ void func_0025F820(void *arg0, void *arg1, void *arg2, s32 arg3) {
     } while (i < 0x16);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025F990);
+typedef struct {
+    u32 unused;
+    u32 flags;
+} Source_0025F990;
+
+typedef struct {
+    u8 unused[6];
+    u8 results[26];
+    s32 slots[45];
+    u8 count;
+} Output_0025F990;
+
+typedef struct {
+    s32 id;
+    s32 unused;
+    s32 slot;
+    u32 enabled;
+} Request_0025F990;
+
+
+void func_0025F990(void *arg0, void *arg1, void *arg2, s32 arg3) {
+    Source_0025F990 *source = arg0;
+    Output_0025F990 *output = arg1;
+    Request_0025F990 *request = arg2;
+    s32 enabled;
+    s32 i;
+
+    i = 0;
+    do {
+        enabled = 1;
+        if (((source->flags >> (21 - i)) & 1) == 1) {
+            if (i < 11) {
+                request->id = arg3;
+                request->unused = 0;
+                request->slot = i;
+                if (arg3 == 0x25B) {
+                    enabled = 1;
+                } else {
+                    enabled = 0;
+                }
+                request->enabled = enabled;
+                if ((output->results[output->count] = func_00255A30(request, output)) >= 0) {
+                    output->slots[output->count] = i;
+                    output->count++;
+                }
+            } else {
+                request->id = arg3;
+                request->unused = 0;
+                request->slot = (i - 11) | 0x100;
+                if (arg3 == 0x25B) {
+                    enabled = 1;
+                } else {
+                    enabled = 0;
+                }
+                request->enabled = enabled;
+                if ((output->results[output->count] = func_00255A30(request, output)) >= 0) {
+                    output->slots[output->count] = ((u32)i - 11) | 0x100;
+                    output->count++;
+                }
+            }
+        }
+        i++;
+    } while (i < 22);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FB00);
 
