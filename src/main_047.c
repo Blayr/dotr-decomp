@@ -77,7 +77,7 @@ extern State_001E5210 D_0031AB88;
 #endif
 
 
-void func_00217590(s32, s16, s32);
+void func_00217590(s32, s32, s32);
 
 typedef union {
     __int128 value;
@@ -87,6 +87,7 @@ typedef union {
 extern Rotation_001E5260 D_002921C0;
 
 void func_001E5260(s32 arg0, s32 arg1) {
+    extern s32 func_001F2920();
     s32 *states = (s32 *)&D_0031AB88;
     s32 x = arg1 >> 8;
     s32 y = arg1 & 0xFF;
