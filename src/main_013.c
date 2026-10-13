@@ -470,7 +470,114 @@ s32 func_00155A00(s32 arg0, void *arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155C90);
+typedef struct {
+    u8 pad[0x38];
+    s16 attack;
+    s16 defense;
+} Stats_00155C90;
+
+s64 func_002493A0(s32);
+
+s32 func_00155C90(s32 arg0, u8 *arg1, void *arg2) {
+    s32 sortCount;
+    s32 cards[5];
+    u8 selected[5];
+    u16 order[5];
+    s32 selectedCount;
+    u8 *selectedCursor;
+    s32 *cardCursor;
+    s32 *sortCards;
+    u8 *selectedBase;
+    u16 *orderBase;
+    s32 i;
+    u16 *orderCursor;
+    s32 j;
+    u8 *appendCursor;
+    s32 appendIndex;
+    s32 remaining;
+    s32 copyIndex;
+
+    selectedBase = selected;
+    orderBase = order;
+    selectedCount = 0;
+    sortCount = 0;
+    {
+        s32 n = 0;
+        do {
+            selected[n] = order[n] = 0xFF;
+            n++;
+        } while (n < 5);
+    }
+    func_0026FD30(arg0, cards);
+    i = 0;
+    if (0 < func_0026FE20(arg0)) {
+        selectedCursor = selectedBase;
+        do {
+            if (func_001587E0(cards[i]) == 1) {
+                *selectedCursor++ = i;
+                selectedCount++;
+                i = func_0026FE20(arg0);
+            }
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    if (selectedCount == 0) {
+        return -1;
+    }
+    func_001DCD70(arg2, cards[selected[0]]);
+    i = 0;
+    if (0 < func_0026FE20(arg0)) {
+        cardCursor = cards;
+        appendCursor = selected + selectedCount;
+        do {
+            if (func_00248F60(cards[selected[0]], *cardCursor) >= 0 &&
+                (func_0026FCE0(*cardCursor) >> 5) == 2) {
+                s32 card = *cardCursor;
+                if (card != 0x31B && card != 0x31C) {
+                    ((Stats_00155C90 *)arg2)->attack += (s16)func_002493A0(card);
+                    ((Stats_00155C90 *)arg2)->defense += (s16)func_002493A0(*cardCursor);
+                    selectedCount++;
+                    *appendCursor++ = i;
+                }
+            }
+            cardCursor++;
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    j = 0;
+    if (0 < func_0026FE20(arg0)) {
+            sortCards = cards;
+            orderCursor = orderBase;
+            do {
+                if (func_00156870(*sortCards) == 0) {
+                    *orderCursor++ = j;
+                    sortCount++;
+                }
+                sortCards++;
+                j++;
+            } while (j < func_0026FE20(arg0));
+    }
+    func_00155FB0(order, 0, sortCount - 1, arg0, cards);
+    remaining = func_0026FE20(arg0) - selectedCount;
+    copyIndex = 0;
+    if (0 < remaining) {
+        do {
+            arg1[copyIndex + 6] = *(u8 *)orderBase;
+            copyIndex++;
+            orderBase++;
+        } while (copyIndex < remaining);
+    }
+    appendIndex = 0;
+    if (0 < selectedCount) {
+        do {
+            arg1[remaining + 6] = *selectedBase;
+            appendIndex++;
+            remaining++;
+            selectedBase++;
+        } while (appendIndex < selectedCount);
+    }
+    return 1;
+}
 
 void func_00155FB0(u16 *indices, s32 first, s32 last, s32 key, s32 *values) {
     s32 pivot;

@@ -599,7 +599,6 @@ extern void func_00147B90(void *, s32);
 
 
 
-s32 func_00155C90(s32, u8 *, void *);
 
 extern f32 D_00291000;
 extern f32 D_0029100C;
