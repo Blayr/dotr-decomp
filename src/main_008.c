@@ -2392,7 +2392,6 @@ s32 func_001336A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-s32 func_00134B40(s32, s32, void *);
 s32 func_002464F0(s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
@@ -2588,7 +2587,6 @@ typedef struct Result_001341C0 {
     u8 flags;
 } Result_001341C0;
 
-s32 func_00134B40(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 #define target_001341C0(src, side) ((side) == 1 ? ((((Source_001341C0 *)(src))->target >> 16) & 0xFFFF) : (u32)(u16)((Source_001341C0 *)(src))->target)
@@ -2735,7 +2733,111 @@ s32 func_00134AE0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_008", func_00134B40);
+s32 func_00134B40(s32 arg0, s32 arg1, void *arg2) {
+    extern s32 func_001E1030();
+    s32 i;
+    s32 card;
+    s32 position;
+    u32 *effect;
+    u8 count;
+
+    card = func_001E1030();
+    func_00250360(arg0, arg1);
+    position = func_001E1090(arg0, arg1);
+    effect = func_001E0B70(arg0, arg1, 0);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (card) {
+        case 0xBE:
+            i = 1;
+            while (1) {
+                if ((func_001E0700(arg0, i) & 0x1F) == 9) {
+                    if (arg0 == func_00250360(arg0, i)) {
+                        count++;
+                    }
+                }
+                if ((func_001E0700(arg0 == 0 ? 1 : 0, i) & 0x1F) == 9) {
+                    if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, i)) {
+                        count++;
+                    }
+                }
+                i++;
+                if (i > 5) {
+                    break;
+                }
+            }
+            if (count >= 3) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_00135000(func_00250360(arg0, arg1), card) == 1) {
+            if (func_001E22B0(position & 0xFF, position >> 8) != 9) {
+                return 1;
+            }
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (effect == NULL) {
+            return 2;
+        }
+        switch (*effect >> 8) {
+        case 2:
+        case 0x48: {
+            i = func_001349A0(arg0);
+            if (i >= 0 && i == func_001E1090(arg0, arg1)) {
+                return 1;
+            }
+            break;
+        }
+        case 0xD:
+            return 1;
+        case 0x25: {
+            i = 1;
+            while (1) {
+                if (func_001DF540(arg0, i) != 0) {
+                    if (func_001E1030(arg0, i) != 0x91) {
+                        if (arg0 == func_00250360(arg0, i)) {
+                            count++;
+                        }
+                    }
+                }
+                if (func_001DF540(arg0 == 0 ? 1 : 0, i) != 0) {
+                    if (func_001E1030(arg0 == 0 ? 1 : 0, i) != 0x91) {
+                        if (arg0 == func_00250360(arg0 == 0 ? 1 : 0, i)) {
+                            count++;
+                        }
+                    }
+                }
+                i++;
+                if (i > 5) {
+                    break;
+                }
+            }
+            if (count > 0) {
+                return 1;
+            }
+            break;
+        }
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 min_00134F00(s32 a, s32 b) {
     if (a < b) {
