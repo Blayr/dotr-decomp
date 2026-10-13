@@ -674,7 +674,6 @@ extern Block_001C1090 D_00291380;
 extern Quad_001C1090 D_00291410;
 extern Vec3_001C1090 D_00291420;
 
-void func_00217590(s32, s32, s32);
 
 void func_001C1090(s32 arg0) {
     u8 *duel = D_00317490;

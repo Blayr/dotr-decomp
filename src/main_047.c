@@ -77,7 +77,6 @@ extern State_001E5210 D_0031AB88;
 #endif
 
 
-void func_00217590(s32, s32, s32);
 
 typedef union {
     __int128 value;

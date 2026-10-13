@@ -1,6 +1,5 @@
 #include "common.h"
 
-extern void func_00217590(s32, s32, s32);
 typedef union {
     __int128 quad;
     f32 f[4];

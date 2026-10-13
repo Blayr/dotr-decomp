@@ -1538,7 +1538,35 @@ void func_00217550(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00217590);
+s32 func_00217590(s32 arg0, s32 arg1, s32 arg2) {
+    extern char *D_00295090[];
+    extern void func_0019B648();
+    extern s32 func_0010BBC0();
+    State_00217410 *state = &D_0034F6E0;
+    char text[0x80];
+
+    if (!D_0034F6E8.active) {
+        return 0;
+    }
+    if (arg0 < 0 || arg0 >= 4) {
+        return 0;
+    }
+    if (arg2 == 0 && state->slots[arg0] == arg1) {
+        return 1;
+    }
+    state->slots[arg0] = arg1;
+    func_0010A3B0(arg0, -1);
+    switch (arg0) {
+    case 0:
+    case 1:
+        func_0019B648(text, D_00295090[arg0], arg1);
+        break;
+    default:
+        func_0019B648(text, D_00295090[arg0], arg1, arg1);
+        break;
+    }
+    return func_0010BBC0(arg0, text);
+}
 
 #ifndef GAME_H
 typedef struct {
