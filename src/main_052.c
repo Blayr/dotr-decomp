@@ -1196,7 +1196,31 @@ f32 *func_001FAF60(s32 arg0) {
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FAFB0);
+static inline f32 angleToFixed_001FAFB0(f32 angle) {
+    return (32768.0f * angle) / 3.1415927f;
+}
+
+s32 func_001FAFB0(s32 arg0, s32 arg1) {
+    extern s32 func_001A22C0(f32);
+    s32 *out = (s32 *)arg1;
+    f32 *angles;
+
+    if ((arg0 < 0) || (arg0 > 0)) {
+        return 0;
+    }
+    angles = (f32 *)D_0031BEB0[arg0];
+    if (angles == 0) {
+        return 0;
+    }
+    if (out == 0) {
+        return 0;
+    }
+    out[0] = -(s32)func_001A22C0(angleToFixed_001FAFB0(angles[2]));
+    out[1] = 0x4000 - (s32)func_001A22C0(angleToFixed_001FAFB0(angles[1]));
+    out[3] = 0;
+    out[2] = 0;
+    return 1;
+}
 
 typedef struct {
     f32 x;
