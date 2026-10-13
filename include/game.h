@@ -135,10 +135,8 @@ void func_00195108(s32 arg0, s16 arg1);
 
 s32 func_001F64C0();                                /* extern */
 
-s32 func_001F70A0(s32, s32, s32, s32, s32, s32);
 extern s32 D_0031BE9C;
 
-s32 func_001F71A0(s32, s32, s32, s32, s32, s32);
 
 u8 *func_00197548(s32);
 extern u8 D_002D0655[];
@@ -468,7 +466,6 @@ s32 func_001F16C0(s32 arg0, s32 arg1);
 
 
 void func_001F53C0(s32, s32, s32);
-void func_001F60D0(s32, s32);
 
 extern s8 D_0031BEA2;
 
