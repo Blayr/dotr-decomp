@@ -108,7 +108,58 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DB80);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DBE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DDB0);
+typedef struct Entry_0020DDB0 {
+    u8 pad0[0xC0];
+    u8 unkC0[0x90];
+    f32 centerX;
+    f32 centerY;
+    f32 unk158;
+    f32 unk15C;
+    f32 unk160;
+    f32 width;
+    f32 height;
+    f32 unk16C;
+    f32 farZ;
+    f32 range;
+    f32 unk178;
+    f32 unk17C;
+    f32 nearZ;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 pad188[0x18];
+} Entry_0020DDB0;
+
+s32 func_0020DDB0(void) {
+    extern s32 D_0032A294;
+    extern Entry_0020DDB0 D_0032A2A0[];
+    s32 width;
+    s32 height;
+
+    D_0032A240 = 0;
+    D_0032A294 = 0;
+    func_00209D60(&width, &height);
+    D_0032A2A0[0].unk160 = 400.0f;
+    D_0032A2A0[0].width = width;
+    D_0032A2A0[0].height = height;
+    D_0032A2A0[0].centerX = D_0032A2A0[0].width / 2.0f;
+    D_0032A2A0[0].centerY = D_0032A2A0[0].height / 2.0f;
+    D_0032A2A0[0].unk158 = 1.0f;
+    D_0032A2A0[0].unk15C = 0.95f;
+    D_0032A2A0[0].unk16C = 1.0f;
+    D_0032A2A0[0].farZ = 10000.0f;
+    D_0032A2A0[0].range = D_0032A2A0[0].farZ - 1000.0f;
+    D_0032A2A0[0].unk178 = D_0032A2A0[0].farZ;
+    D_0032A2A0[0].unk17C = 0.0f;
+    D_0032A2A0[0].nearZ = 1000.0f;
+    D_0032A2A0[0].a = 0xFF;
+    D_0032A2A0[0].b = 0xFF;
+    D_0032A2A0[0].g = 0xFF;
+    D_0032A2A0[0].r = 0xFF;
+    func_0020E1A0(D_0032A2A0[0].unkC0);
+    return 1;
+}
 
 s32 func_0020DEE0(void) {
     return 1;
