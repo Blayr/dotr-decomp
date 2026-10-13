@@ -1,6 +1,32 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00276120);
+typedef struct Entry_00276120 {
+    u16 id;
+    s16 field_02;
+    u16 field_04;
+    u16 field_06;
+    s32 field_08;
+    u8 state : 2;
+    u8 flags : 6;
+    u8 padding[3];
+} Entry_00276120;
+
+s32 func_00276120(u16 arg0, void *arg1) {
+    Entry_00276120 *entries = arg1;
+    s32 i;
+
+    for (i = 0; i < 22; i++) {
+        if (entries[i].id == 0xFFFF) {
+            entries[i].id = arg0;
+            entries[i].field_02 = func_001E13C0(arg0 >> 8, arg0 & 0xFF);
+            entries[i].field_08 = -1;
+            entries[i].field_04 = 0xFFFF;
+            entries[i].state = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 typedef struct {
     u16 id;
