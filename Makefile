@@ -4,6 +4,7 @@ include config.mk
 SPLAT_CFG := config/main.yaml
 LD_SCRIPT := linker/main.ld
 LD_SYMS   := config/linker_syms.txt
+WARM_LIST := config/warm_files.txt
 BUILD     := build
 ELF       := $(BUILD)/main.elf
 OUT_EXE   := $(BUILD)/$(EXE)
@@ -16,6 +17,9 @@ ASM_SRCS := $(shell find asm -name '*.s' -not -path '*/nonmatchings/*' -not -pat
 C_SRCS   := $(shell find src -name '*.c' 2>/dev/null)
 BIN_SRCS := $(shell find assets -name '*.bin' 2>/dev/null)
 OBJS     := $(ASM_SRCS:%=$(BUILD)/%.o) $(C_SRCS:%=$(BUILD)/%.o) $(BIN_SRCS:%=$(BUILD)/%.o)
+# Files tools/cc.sh compiles warm (see there). A file put on the list compiles again; one
+# taken off does too, through the .d file its warm build wrote.
+WARM_SRCS := $(shell sed 's/\#.*//' $(WARM_LIST) 2>/dev/null)
 
 .PHONY: all build check split clean
 all: check
@@ -46,6 +50,8 @@ $(BUILD)/%.bin.o: %.bin
 $(BUILD)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	@tools/cc.sh $< $@
+
+$(WARM_SRCS:%=$(BUILD)/%.o): $(WARM_LIST)
 
 $(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS)
 	@$(LD) -EL -T $(LD_SCRIPT) -T linker/undefined_syms_auto.txt -T linker/undefined_funcs_auto.txt \

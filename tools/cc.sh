@@ -5,8 +5,23 @@
 # which writes the object itself.
 # Usage: tools/cc.sh in.c out.o   (or: tools/cc.sh in.c -o out.o)
 # Settings come from the environment (dk, make) or else from config.mk:
-# DK_GCC (an ee-gcc version, or mwcps2-<version>), DK_CFLAGS, DK_G.
+# DK_GCC (an ee-gcc version, or mwcps2-<version>), DK_CFLAGS, DK_G, DK_WARM.
 set -euo pipefail
+
+# A warm build (below) has mwccgap run this script as its compiler, with mwccps2's
+# arguments ending in `-o OUT FILE.c`: one mwccps2 run compiles the warm-up file and
+# then FILE.c, and only FILE.c's object is kept.
+if [ "${1:-}" = "-c" ]; then
+    ARGS=("$@")
+    N=$#
+    DIR="$(mktemp -d)"
+    trap 'rm -rf "$DIR"' EXIT
+    wibo "${DK_WARM_MWCC:?}" "${ARGS[@]:0:N-2}" "$DIR" "${DK_WARM_FILE:?}" "${ARGS[N-1]}"
+    NAME="$(basename "${ARGS[N-1]}")"
+    mv "$DIR/${NAME%.*}.o" "${ARGS[N-2]}"
+    exit 0
+fi
+
 IN="$1"
 if [ "${2:-}" = "-o" ]; then OUT="$3"; else OUT="$2"; fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -36,8 +51,29 @@ if [[ "$DK_GCC" == mwcps2-* ]]; then
     OUT_ABS="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")"
     MW="$TC/mwcps2/${DK_GCC#mwcps2-}/mwccps2.exe"
     [ -f "$MW" ] || MW="${MW%/*}/mwccmips.exe"  # 2.3 (1999) has the older name
-    (cd "$ROOT" && python3 "$TC/src/mwccgap/mwccgap.py" "$IN_ABS" "$OUT_ABS" \
-        --mwcc-path "$MW" --use-wibo --wibo-path "$(command -v wibo)" \
+    # Warm files: the original game was compiled many files per mwccps2 run. Once the
+    # compiler has called a runtime helper with arguments in a0/a1 (double maths or
+    # compare, 64-bit divide), every later `(s32)` float cast (jal fptosi) is treated
+    # as using a0/a1, in later functions and later files of the same run. A file listed
+    # in config/warm_files.txt (path from the project root) is compiled in one run right
+    # after a tiny warm-up file that makes such a call. DK_WARM=1 or 0 overrides the
+    # list (dk try sets it for a function whose file is listed).
+    WARM_LIST="$ROOT/config/warm_files.txt"
+    if [ -z "${DK_WARM:-}" ]; then
+        DK_WARM=0
+        if [ -f "$WARM_LIST" ] && awk -v f="${IN_ABS#"$ROOT"/}" \
+                '{ sub(/#.*/, ""); $1 = $1 } $0 == f { hit = 1 } END { exit !hit }' "$WARM_LIST"; then
+            DK_WARM=1
+        fi
+    fi
+    COMPILER=(--mwcc-path "$MW" --use-wibo --wibo-path "$(command -v wibo)")
+    if [ "$DK_WARM" = 1 ]; then
+        printf 'double warm(double a, double b) {\n    return a * b;\n}\n' > "$TMP/dk_warm.c"
+        export DK_WARM_FILE="$TMP/dk_warm.c" DK_WARM_MWCC="$MW"
+        COMPILER=(--mwcc-path "$ROOT/tools/cc.sh")
+        echo "$OUT: $WARM_LIST" >> "$TMP/deps"  # taken off the list = compiled again
+    fi
+    (cd "$ROOT" && python3 "$TC/src/mwccgap/mwccgap.py" "$IN_ABS" "$OUT_ABS" "${COMPILER[@]}" \
         --as-path "$(command -v mipsel-none-elf-as)" --as-march r5900 --as-mabi eabi --as-flags "-G$G" \
         --macro-inc-path include/mwccgap.inc \
         -nostdinc -stderr ${DK_EXTRA_INCLUDE:+"-I$DK_EXTRA_INCLUDE"} "-I$ROOT/include" "-I$ROOT/src" $DK_CFLAGS \
