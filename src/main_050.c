@@ -26,7 +26,31 @@ INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3910);
 
 INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3CB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3E40);
+typedef struct Entry_001F3E40 {
+    u64 state : 3;
+    u64 unused : 29;
+    s32 value;
+} Entry_001F3E40;
+
+typedef struct Input_001F3E40 {
+    u8 pad00[0x14];
+    s32 value;
+    u8 pad18[4];
+    s32 index;
+} Input_001F3E40;
+
+void func_001F3E40(void *arg0, s32 arg1) {
+    extern Entry_001F3E40 D_0031BB50[];
+    Input_001F3E40 *input = arg0;
+    Entry_001F3E40 *entry = &D_0031BB50[input->index];
+
+    if (entry->state == 1) {
+        entry->state = 3;
+    }
+    if (arg1 != 0) {
+        entry->value = input->value;
+    }
+}
 
 typedef struct {
     u8 unused : 3;
