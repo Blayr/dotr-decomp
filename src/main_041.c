@@ -551,9 +551,107 @@ INCLUDE_ASM("asm/nonmatchings/main_041", func_001C92C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C9C60);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CA0E0);
+s32 func_001CA0E0(s32 arg0, u8 *arg1, s32 x, s32 y) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s64, s64, s64, s64, s64, s64);
+    extern char D_002BF05B[];
+    extern char D_002BEF93[];
+    extern char D_002BF062[];
+    extern char D_002BF066[];
+    extern s32 D_00290A58;
+    extern s32 D_00290A62;
+    extern s32 D_00290A6C;
+    s8 *text3 = D_002BF05B;
+    s8 *text4 = D_002BEF93;
+    s8 *text2 = D_002BF062;
+    s8 *text1 = D_002BF066;
+    s32 hint = 0;
+    s32 win;
+    s32 tx;
+    s32 ty;
+    s32 id;
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CA450);
+    id = func_0020F290(func_001FD680(arg0, 1, (arg1[0xA9C002] & 0xF) + 0x81, 0, 0x16));
+    id = func_001B4780(id, 0xC, 3, 4, x + 0x31, y, -0xB2, -0x20, 1);
+    id = func_001FE7D0(id, 1, x + 0x8A - (((s32 *)func_001FEAB0(1))[3] >> 1), y + 5, 0,
+                       func_001FDFE0);
+    func_001FEAF0(1);
+    win = func_001B4780(id, (s32)arg1, -1, 0xB, x, y + 0x20, -0x114, -0x96, 1);
+    tx = x + 0x5C;
+    ty = y + 0x4D;
+    id = func_001B6F70(win, tx, ty, 0, 3, func_0019BEF0((char *)text1), text1,
+                       arg1[0xA9C008] != 0 ? (s32)D_002BE944 : 0);
+    tx = x + 0xB8;
+    ty = y + 0x4D;
+    id = func_001B6F70(id, tx, ty, 0, 3, func_0019BEF0((char *)text2), text2,
+                       arg1[0xA9C008] != 0 ? 0 : (s32)D_002BE944);
+    id = func_001B65F0(id, (s32)arg1, x + 0x12, y + 0x7A, -0xF0, -0x34, -1, 0);
+    id = func_001B3CC0(id, &D_00290A58, x + 0x6FE, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    id = func_001B3CC0(id, &D_00290A62, x + 0x70E, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    tx = x + 0x4E;
+    ty = y + 0x9C;
+    id = func_001B6F70(id, tx, ty, 1, 2, func_0019BEF0((char *)text3), text3,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    id = func_001B3CC0(id, &D_00290A6C, x + 0x742, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    tx = x + 0x8A;
+    ty = y + 0x9C;
+    return func_001B6F70(id, tx, ty, 1, 2, func_0019BEF0((char *)text4), text4,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
+
+s32 func_001CA450(s32 arg0, u8 *arg1, s32 x, s32 y) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s64, s64, s64, s64, s64, s64);
+    extern char D_002BF05B[];
+    extern char D_002BEF93[];
+    extern char D_002BF051[];
+    extern char D_002BF056[];
+    extern s32 D_00290A58;
+    extern s32 D_00290A62;
+    extern s32 D_00290A6C;
+    s8 *text3 = D_002BF05B;
+    s8 *text4 = D_002BEF93;
+    s8 *text2 = D_002BF051;
+    s8 *text1 = D_002BF056;
+    s32 hint = 0;
+    s32 win;
+    s32 tx;
+    s32 ty;
+    s32 id;
+
+    id = func_0020F290(func_001FD680(arg0, 1, (arg1[0xA9C002] & 0xF) + 0x81, 0, 0x16));
+    id = func_001B4780(id, 0xC, 3, 4, x + 0x31, y, -0xB2, -0x20, 1);
+    id = func_001FE7D0(id, 1, x + 0x8A - (((s32 *)func_001FEAB0(1))[3] >> 1), y + 5, 0,
+                       func_001FDFE0);
+    func_001FEAF0(1);
+    win = func_001B4780(id, (s32)arg1, -1, 0xB, x, y + 0x20, -0x114, -0x96, 1);
+    tx = x + 0x5C;
+    ty = y + 0x4D;
+    id = func_001B6F70(win, tx, ty, 0, 3, func_0019BEF0((char *)text1), text1,
+                       arg1[0xA9C00C] != 0 ? (s32)D_002BE944 : 0);
+    tx = x + 0xB8;
+    ty = y + 0x4D;
+    id = func_001B6F70(id, tx, ty, 0, 3, func_0019BEF0((char *)text2), text2,
+                       arg1[0xA9C00C] != 0 ? 0 : (s32)D_002BE944);
+    id = func_001B65F0(id, (s32)arg1, x + 0x12, y + 0x7A, -0xF0, -0x34, -1, 0);
+    id = func_001B3CC0(id, &D_00290A58, x + 0x6FE, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    id = func_001B3CC0(id, &D_00290A62, x + 0x70E, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    tx = x + 0x4E;
+    ty = y + 0x9C;
+    id = func_001B6F70(id, tx, ty, 1, 2, func_0019BEF0((char *)text3), text3,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    id = func_001B3CC0(id, &D_00290A6C, x + 0x742, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    tx = x + 0x8A;
+    ty = y + 0x9C;
+    return func_001B6F70(id, tx, ty, 1, 2, func_0019BEF0((char *)text4), text4,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CA7C0);
 
