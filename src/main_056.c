@@ -381,7 +381,19 @@ s32 func_002085E0(s32 arg0, s32 arg1) {
     return arg0 + 0x30;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208680);
+typedef struct {
+    s64 value;
+    s64 padding;
+} Entry_00208680;
+
+extern Entry_00208680 D_00293D80[][7];
+
+s64 func_00208680(s32 arg0, s32 arg1) {
+    if (arg1 < 0 || arg1 >= 7) {
+        return -1;
+    }
+    return D_00293D80[arg0][arg1].value;
+}
 
 typedef struct {
     u16 index;
