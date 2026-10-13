@@ -221,7 +221,6 @@ typedef struct Entry_0021D480 {
 extern u16 D_00299CE0[];
 extern Entry_0021D480 D_00299D00[];
 extern s8 D_0034F6F8;
-void *func_002145E0();
 
 void func_0021D480(void) {
     u8 *base = (u8 *)0x01ED0000;

@@ -2005,7 +2005,6 @@ void func_001DDD80(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
 }
 
 extern u8 D_002CEE5C[][7][7];
-void *func_002145E0(s32);
 
 typedef struct {
     u8 pad[0xFEA3];

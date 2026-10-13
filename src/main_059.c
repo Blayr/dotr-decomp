@@ -1228,7 +1228,18 @@ void func_002145D0(s32 arg0) {
     D_0034F6D0 = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_002145E0);
+void *func_002145E0(s32 arg0) {
+    extern u8 D_0032F790[];
+    extern u8 D_0034F6D0;
+    s32 var_v1;
+
+    if (D_0034F6D0 == arg0) {
+        var_v1 = 0;
+    } else {
+        var_v1 = 1;
+    }
+    return D_0032F790 + (var_v1 * 0xFFA0);
+}
 
 typedef struct {
     u8 values[9][8];
