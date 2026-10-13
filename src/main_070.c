@@ -406,7 +406,21 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_002460F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00246340);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00246450);
+void func_00246450(s32 arg0) {
+    extern s32 D_00350FC0;
+    s32 i;
+    Entry_00245D80 *entry;
+
+    D_00351170 = arg0;
+    entry = D_00350FD0;
+    i = 0;
+    do {
+        i += 1;
+        entry->value = 0;
+        entry++;
+    } while (i < 8);
+    D_00350FC0 = 0;
+}
 
 void func_00246490(void) {
     func_00209D30(func_00246340(func_00209D20()));
