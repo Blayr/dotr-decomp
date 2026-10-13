@@ -642,7 +642,70 @@ s32 func_001E8780(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8BF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8E90);
+typedef struct {
+    u8 pad0[0xC];
+    u16 count;
+} Res_001E8E90;
+
+typedef struct {
+    u8 pad0[4];
+    u32 flags;
+} Sub_001E8E90;
+
+typedef struct {
+    u8 pad000[0x138];
+    Sub_001E8E90 *sub;
+    u8 pad13C[0x30];
+    Res_001E8E90 *res0;
+    Res_001E8E90 *res1;
+    u8 pad174[0x8E];
+    u16 cur;
+    u16 last;
+} Obj_001E8E90;
+
+typedef struct {
+    u8 pad0[0x14];
+    Res_001E8E90 *res;
+    u8 pad18[4];
+    u32 bits;
+} Req_001E8E90;
+
+void func_001E8E90(void *arg0, s32 arg1) {
+    Req_001E8E90 *req = arg0;
+    s32 second;
+    Obj_001E8E90 *obj;
+    s32 index;
+
+    index = req->bits & 0x7F;
+    second = req->bits & 0x80;
+    if (index < 0 || index >= 0x54) {
+        return;
+    }
+    obj = (Obj_001E8E90 *)D_0031ABB0[index];
+    if (obj == NULL) {
+        return;
+    }
+    if (obj->sub == NULL) {
+        func_00217B50((s32)req->res);
+        arg1 = 0;
+    }
+    if (arg1 == 0) {
+        if (second) {
+            obj->res1 = NULL;
+        } else {
+            obj->res0 = NULL;
+        }
+        return;
+    }
+    if (second) {
+        obj->res1 = req->res;
+        obj->sub->flags &= ~0x100000;
+    } else {
+        obj->res0 = req->res;
+        obj->cur = obj->last = obj->res0->count - 1;
+        obj->sub->flags &= ~0x80000;
+    }
+}
 
 typedef struct {
     s32 data;
