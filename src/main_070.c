@@ -403,7 +403,40 @@ INCLUDE_ASM("asm/nonmatchings/main_070", func_00245DB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_002460F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00246340);
+typedef struct {
+    s32 value;
+    u8 kind;
+    u8 pad5[0x2B];
+    s32 handle;
+} Entry_00246340;
+
+s32 func_00246340(s32 arg0) {
+    extern s32 D_00350FC0;
+    extern s32 func_002460F0();
+    extern s32 func_00202E00();
+    Entry_00246340 *entry;
+    s32 i;
+    s32 base;
+
+    D_00350FC0 = arg0;
+    for (i = 0; i < 8; i++) {
+        if (((Entry_00246340 *)D_00350FD0)[i].value != 0) {
+            ((Entry_00246340 *)D_00350FD0)[i].handle = func_00202BF0(7, ((Entry_00246340 *)D_00350FD0)[i].kind);
+        }
+    }
+    base = func_00209E50();
+    base += func_00202E00(base, 2);
+    D_00350FC0 = func_00202B00(D_00350FC0, 7, base, NULL);
+    D_00350FC0 = func_0020F290(D_00350FC0);
+    func_00202D60(7, -1);
+    entry = (Entry_00246340 *)D_00350FD0;
+    for (i = 0; i < 8; i++, entry++) {
+        if (entry->value != 0 && entry->handle != 0) {
+            func_002460F0(entry);
+        }
+    }
+    return D_00350FC0;
+}
 
 void func_00246450(s32 arg0) {
     extern s32 D_00350FC0;
