@@ -453,7 +453,107 @@ void func_00245D80(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245DB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002460F0);
+typedef struct {
+    u8 kind;
+    u8 flags;
+    u16 mode;
+    u16 length;
+    u16 value;
+} Entry_002460F0;
+
+typedef union {
+    u64 raw;
+    Entry_002460F0 record;
+} Buffer_002460F0;
+
+typedef struct {
+    u8 kind;
+    u8 delay;
+    u16 image;
+    u16 x;
+    u16 y;
+} Frame_002460F0;
+
+typedef struct {
+    s32 value;
+    u8 resource;
+    u8 object;
+    u8 mask;
+    u8 padding7[4];
+    u8 delay[16];
+    u8 frame[16];
+} State_002460F0;
+
+void func_002460F0(void *arg0) {
+    extern void func_00245A30(u8, u8, u8, void *);
+    extern void func_00245980(u8, u8, void *);
+    extern void func_00245DB0(void *, void *, u16, u16);
+    u8 header[8];
+    Buffer_002460F0 entry;
+    Frame_002460F0 frame;
+    u8 image[8];
+    State_002460F0 *state = (State_002460F0 *)arg0;
+    s32 randomSum;
+
+    randomSum = ((func_0019A5C8() >> 4) & 0x3F) + ((func_0019A5C8() >> 4) & 0x3F);
+    {
+    Entry_002460F0 *data;
+    s32 slot;
+    s32 part;
+    s32 randomSmall;
+
+    randomSmall = (func_0019A5C8() >> 4) & 7;
+    if (arg0 != NULL) {
+        func_002459D0(state->resource, state->object, header);
+        slot = 0;
+        for (part = 0; part < header[0]; part++) {
+            func_00245A30(state->resource, state->object, part, &entry);
+            if (entry.record.flags & 0x80) {
+                data = (Entry_002460F0 *)&entry.raw;
+                if (state->mask & (1 << data->mode)) {
+                    if (state->delay[slot] != 0) {
+                        state->delay[slot]--;
+                    }
+                    if (state->delay[slot] == 0) {
+                        state->frame[slot]++;
+                    }
+                    if (state->frame[slot] >= data->length) {
+                        state->frame[slot] = 0;
+                    }
+                } else {
+                    state->frame[slot] = 0;
+                }
+                if (data->length != 0) {
+                    func_00245AE0(state->resource, state->object, (u8)part, state->frame[slot], &frame);
+                    func_00245980(state->resource, frame.image, image);
+                    func_00245DB0(arg0, image, frame.x, frame.y);
+                    if (state->delay[slot] == 0) {
+                        switch (data->mode) {
+                        case 0:
+                            if (state->frame[slot] == 0) {
+                                state->delay[slot] = frame.delay + randomSum;
+                            } else {
+                                state->delay[slot] = frame.delay;
+                            }
+                            break;
+                        case 1:
+                            state->delay[slot] = frame.delay + randomSmall;
+                            break;
+                        default:
+                            state->delay[slot] = frame.delay;
+                            break;
+                        }
+                    }
+                }
+                slot++;
+            } else {
+                func_00245980(state->resource, entry.record.mode, image);
+                func_00245DB0(arg0, image, entry.record.length, entry.record.value);
+            }
+        }
+    }
+    }
+}
 
 typedef struct {
     s32 value;

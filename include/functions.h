@@ -1795,6 +1795,7 @@ void func_00245A30(s32 arg0, s32 arg1, s32 arg2, void *arg3);
 void func_00245AE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4);
 s32 func_00245BE0(void *arg0);
 void func_00245D80(u8 *arg0);
+void func_002460F0(void *arg0);
 s32 func_00246340(s32 arg0);
 void func_00246450(s32 arg0);
 void func_00246490(void);
