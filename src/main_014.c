@@ -282,7 +282,6 @@ typedef struct {
     u8 f3E;
 } Card_0015AF30;
 
-s32 func_0024FE40(void *, s32, s32);
 
 s32 func_0015AF30(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
     extern s32 func_00278510();
@@ -2375,7 +2374,6 @@ typedef struct {
     u8 f3E;
 } Card_001604B0;
 
-s32 func_0024FE40(void *, s32, s32);
 
 s32 func_001604B0(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
     extern s32 func_00278510();

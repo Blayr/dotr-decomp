@@ -234,7 +234,6 @@ s32 func_0027B740(void *arg0, s32 arg1) {
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027B860);
 
 s32 func_002464F0(s32, s32, s32);
-s32 func_0024FE40(void *, s32, s32);
 
 static inline s32 min_0027B9B0(s32 a, s32 b) {
     return (a >= b + 1) ? b : a;

@@ -100,7 +100,6 @@ typedef struct Nibbles_00144A60 {
     u8 high : 4;
 } Nibbles_00144A60;
 
-s32 func_0024FE40(void *, s32, s32);
 
 static inline s32 findrow_00144A60(void *arg2) {
     s32 row = 1;

@@ -1620,7 +1620,6 @@ typedef struct Nibbles_00119520 {
     u8 high : 4;
 } Nibbles_00119520;
 
-s32 func_0024FE40(void *, s32, s32);
 
 static inline s32 direction_00119520(s32 player) {
     s32 i = 0;

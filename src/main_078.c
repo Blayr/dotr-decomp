@@ -1156,7 +1156,6 @@ u8 *func_0027A360(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, 
 }
 
 s32 func_002464F0();
-s32 func_0024FE40(void *, s32, s32);
 
 static inline s32 distance_0027A710(s32 y1, s32 x1, s32 y2, s32 x2) {
     return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
