@@ -948,7 +948,116 @@ void func_001CCB80(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CCBB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CCEA0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001CCEA0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001CCEA0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001CCEA0;
+
+typedef struct {
+    Color_001CCEA0 color;
+    Vertex_001CCEA0 xyz;
+} Point_001CCEA0;
+
+typedef struct {
+    u64 tag[2];
+    Point_001CCEA0 points[4];
+    u64 end;
+} Packet_001CCEA0;
+
+typedef struct {
+    u8 b, g, r, a;
+} Source_001CCEA0;
+
+static inline void set_color_001CCEA0(Color_001CCEA0 *a, Color_001CCEA0 *b,
+                                      Source_001CCEA0 *src) {
+    a->r = b->r = src->r;
+    a->g = b->g = src->g;
+    a->b = b->b = src->b;
+    a->a = b->a = src->a;
+    a->q = b->q = 1.0f;
+}
+
+static inline void set_xyz_001CCEA0(Vertex_001CCEA0 *v, s32 x, s32 y, u8 *state) {
+    v->x = x << 4;
+    v->y = y << 4;
+    v->z = *(s32 *)(state + 0xC58);
+    v->fog = 0;
+}
+
+s32 func_001CCEA0(s32 arg0, s32 x, s32 y) {
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
+    extern u8 D_00290080[];
+    extern u8 D_002BE8C0[];
+    u8 *state = D_00317490;
+    u8 cur;
+    s32 j;
+    s32 i;
+    s32 row;
+    s32 count;
+    s32 px;
+    s32 py;
+    s32 w;
+    s32 h;
+    s32 id;
+    Packet_001CCEA0 packet __attribute__((aligned(8)));
+
+    cur = func_001E22B0(*(u8 *)0xA9C08F, *(u8 *)0xA9C090);
+    id = func_001B4780(arg0, 0, -1, 0xB, x, y, -0x6E, -0xAA, 1);
+    for (row = 0; row < 10; row++) {
+        count = 0;
+        for (j = 0; j < 7; j++) {
+            for (i = 0; i < 7; i++) {
+                if (row == func_001E22B0(i, j)) {
+                    count++;
+                }
+            }
+        }
+        px = x + 0x6C5;
+        id = func_001B3CC0(id, D_00290080 + (row + 0x10E) * 10, px, y + 0x725 + row * 16, 0, 1, 0,
+                           0, 0, 0, 1, 0, (cur == row) ? 1 : -1, 0x80);
+        id = func_001B4780(id, 0xD, -1, 5, x + 0x15, y + 5 + row * 16, -0x54, -0x10, 1);
+        px = x + 0x6D5;
+        py = y + 0x725 + row * 16;
+        w = (s32)((f32)count * 84.0f / 49.0f);
+        h = 8;
+        ((Tag_001CCEA0 *)packet.tag)->flags = 0x14;
+        ((Tag_001CCEA0 *)packet.tag)->count = 8;
+        ((Tag_001CCEA0 *)packet.tag)->registers = 0x41414141;
+        ((Tag_001CCEA0 *)packet.tag)->padding = 0;
+        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3]);
+        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3 + 1]);
+        set_xyz_001CCEA0(&packet.points[0].xyz, px, py, state);
+        set_xyz_001CCEA0(&packet.points[1].xyz, px + w, py, state);
+        set_xyz_001CCEA0(&packet.points[2].xyz, px, py + h, state);
+        set_xyz_001CCEA0(&packet.points[3].xyz, px + w, py + h, state);
+        id = func_00207650(id, (s32)packet.tag, 0, 0);
+        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3 + 1]);
+        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3 + 2]);
+        set_xyz_001CCEA0(&packet.points[0].xyz, px, py + h, state);
+        set_xyz_001CCEA0(&packet.points[1].xyz, px + w, py + h, state);
+        set_xyz_001CCEA0(&packet.points[2].xyz, px, py + h * 2, state);
+        set_xyz_001CCEA0(&packet.points[3].xyz, px + w, py + h * 2, state);
+        id = func_00207650(id, (s32)packet.tag, 0, 0);
+        id = func_001B4780(id, -1, -1, 5, x + 0x15, y + 5 + row * 16, -0x54, -0x10, 1);
+        id = func_001B6EA0(id, x + 0x3F, y + 7 + row * 16, 0, 2, 2, count);
+    }
+    return id;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001CD560);
 
