@@ -859,4 +859,65 @@ void func_00102CB0(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00102F20);
+typedef struct {
+    f32 x, y, z;
+} Vec3_00102F20;
+
+typedef struct {
+    s32 count;
+    f32 radius;
+    f32 angle;
+    f32 angleDelta;
+    Vec3_00102F20 start;
+    Vec3_00102F20 end;
+    Vec3_00102F20 *points;
+} Curve_00102F20;
+
+static inline Vec3_00102F20 *append_00102F20(Vec3_00102F20 *dst,
+                                           const Vec3_00102F20 *src) {
+    *dst = *src;
+    return dst + 1;
+}
+
+void func_00102F20(void *arg0) {
+    Vec3_00102F20 *point;
+    s32 i;
+    f32 matrix[4][4];
+    f32 direction[4];
+    f32 offset[4];
+    s32 rotation[4];
+    Curve_00102F20 *curve = arg0;
+    f32 lengthStep;
+    f32 angleStep;
+    f32 radius;
+    f32 angle;
+    f32 length;
+
+    point = curve->points;
+    point = append_00102F20(point, &curve->start);
+    direction[0] = curve->end.x - curve->start.x;
+    direction[1] = curve->end.y - curve->start.y;
+    direction[2] = curve->end.z - curve->start.z;
+    length = func_0020D0E0(direction);
+    angleStep = 180.0f / (f32)curve->count;
+    lengthStep = length / (f32)curve->count;
+    rotation[0] = (u16)func_001A22C0(65536.0f *
+        (func_001A6C18(func_001A6C60(direction[0] * direction[0] +
+                                  direction[2] * direction[2]), direction[1]) / 6.2831855f));
+    rotation[1] = (u16)func_001A22C0(65536.0f *
+        (func_001A6C18(direction[0], direction[2]) / 6.2831855f));
+    rotation[2] = 0;
+    func_0020C630(matrix, rotation);
+    for (i = 1; i < curve->count + 1; i++) {
+        radius = curve->radius * func_001A6A88((3.1415927f * (angleStep * (f32)i)) / 180.0f);
+        angle = (3.1415927f * (curve->angle + (f32)i * curve->angleDelta)) / 180.0f;
+        offset[0] = radius * func_001A6898(angle);
+        offset[2] = radius * func_001A6A88(angle);
+        offset[1] = lengthStep * (f32)i;
+        func_0020CDD0(point, matrix, offset);
+        point->x += curve->start.x;
+        point->y += curve->start.y;
+        point->z += curve->start.z;
+        point++;
+    }
+}
