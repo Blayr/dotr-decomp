@@ -159,6 +159,7 @@ s32 func_0010B490(s32 id);
 void func_0010B6C0(void);
 s32 func_0010BBC0(void);
 void func_0010BC30(s32 arg0, s32 arg1);
+s32 func_0010BCC0(s32 value, void *src);
 s32 func_0010BD40(s32 *arg0, void *arg1);
 void func_0010BDC0(void);
 s32 func_0010BDE0(void);

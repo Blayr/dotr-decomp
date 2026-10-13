@@ -234,7 +234,6 @@ void func_00245340(void *);
 extern u8 D_00350600[];
 extern volatile s32 D_0035060C;
 
-s32 func_0010BCC0(void);
 
 extern u16 D_002CD8A0[];
 extern u8 D_00318E60[];

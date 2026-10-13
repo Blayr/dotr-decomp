@@ -767,7 +767,22 @@ void func_0010BC30(s32 arg0, s32 arg1) {
     *(s32 *)((u8 *)D_0030FF40 + 0x20B0) = 0x1E;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010BCC0);
+s32 func_0010BCC0(s32 value, void *src) {
+    s32 next;
+    s32 offset;
+    s8 index;
+
+    index = *(s8 *)((u8 *)D_0030FF40 + 0x20C4);
+    next = (index + 1) & 7;
+    if (next == *(s8 *)((u8 *)D_0030FF40 + 0x20C5)) {
+        return 0;
+    }
+    offset = index << 5;
+    *(s32 *)(offset + (u32)D_0030FF40 + 0x20C8) = value;
+    func_0019C2B8((u8 *)D_0030FF40 + offset + 0x20CC, src, 0x1C);
+    *(s8 *)((u8 *)D_0030FF40 + 0x20C4) = next;
+    return 1;
+}
 
 s32 func_0010BD40(s32 *arg0, void *arg1) {
     s32 temp_v1_2;
