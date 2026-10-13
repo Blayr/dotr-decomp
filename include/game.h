@@ -224,7 +224,6 @@ extern s32 func_001A2858(s32, s32);
 
 
 s32 func_00275E80(void *);                          /* extern */
-s32 func_0027F830(s32);                             /* extern */
 
 
 

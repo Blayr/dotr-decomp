@@ -1914,6 +1914,7 @@ void func_0027F3A0(void *arg0, void *arg1);
 void func_0027F3E0(u8 arg0, s32 arg1);
 void func_0027F480(s32 arg0);
 void func_0027F5A0(void);
+s32 func_0027F830(s32 arg0);
 s32 func_00280060(void *arg0, s32 arg1);
 void func_00280670(void);
 void func_002831A0(void);
