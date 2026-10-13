@@ -484,7 +484,36 @@ s32 func_001EFDC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EFF70);
+typedef struct Flags_001EFF70 {
+    s64 loaded : 1;
+    s64 unused1 : 2;
+    s64 pending : 1;
+    s64 rest : 60;
+} Flags_001EFF70;
+
+s32 func_001EFF70(s32 arg0, void *arg1) {
+    extern void func_001F08D0(s32);
+    extern void func_001F01A0();
+    extern s32 func_001FEC70();
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (((Flags_001EFF70 *)&obj->lv[0x2C])->pending) {
+        return 0;
+    }
+    func_001F08D0(arg0);
+    ((Flags_001EFF70 *)&obj->lv[0x2C])->loaded = 1;
+    if (func_001FEC70(arg0, arg1, 0, -1, func_001F01A0, arg0) != 0) {
+        ((Flags_001EFF70 *)&obj->lv[0x2C])->pending = 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0060);
 

@@ -555,7 +555,6 @@ typedef struct {
     s32 values[3];
 } Table_001E8780;
 
-s32 func_001EFF70(s32, void *);
 s32 func_001F0060(s32, void *, s32, s32, s32, s32);
 extern s32 D_00292480[];
 extern s32 D_00292A50[];
