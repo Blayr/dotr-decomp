@@ -1749,6 +1749,7 @@ s32 func_0023F5A0(void);
 s32 func_0023FCE0(s32 arg0);
 s32 func_002406C0(void);
 s32 func_00241190(u16 *arg0);
+void func_002413F0(u8 *out, u8 value, f32 hue, f32 light, f32 sat);
 s32 func_00241A00(s32 arg0, s32 arg1);
 void func_00241A90(void *arg0);
 void func_00241AC0(void);

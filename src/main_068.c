@@ -2026,7 +2026,45 @@ s32 func_00241190(u16 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241200);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_002413F0);
+#define MIN_002413F0(a, b) ((a) < (b) ? (a) : (b))
+#define MAX_002413F0(a, b) ((a) > (b) ? (a) : (b))
+
+void func_002413F0(u8 *out, u8 value, f32 hue, f32 light, f32 sat) {
+    f32 color[3];
+    f32 frac;
+    s32 max;
+    s32 mid;
+    s32 low;
+
+    while (hue < 0.0f) {
+        hue += 6.0f;
+    }
+    while (hue >= 6.0f) {
+        hue -= 6.0f;
+    }
+    light = MIN_002413F0(MAX_002413F0(light, 0.0f), 1.0f);
+    sat = MIN_002413F0(MAX_002413F0(sat, 0.0f), 1.0f);
+    max = ((s32)(hue + 0.5f) % 6) >> 1;
+    if (hue >= (f32)(max * 2)) {
+        mid = (max + 1) % 3;
+        low = (max + 2) % 3;
+    } else {
+        low = (max + 1) % 3;
+        mid = (max + 2) % 3;
+    }
+    if (light <= 0.5f) {
+        color[low] = value * (light * (1.0f - sat));
+        color[max] = light * (value * 2) - color[low];
+    } else {
+        color[max] = value * (sat + light * (1.0f - sat));
+        color[low] = light * (value * 2) - color[max];
+    }
+    frac = hue - (f32)(max * 2);
+    color[mid] = color[low] + frac * (color[max] - color[low]);
+    out[0] = MIN_002413F0((s32)(color[0] + 0.5f), 0xFF);
+    out[1] = MIN_002413F0((s32)(color[1] + 0.5f), 0xFF);
+    out[2] = MIN_002413F0((s32)(color[2] + 0.5f), 0xFF);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241840);
 
