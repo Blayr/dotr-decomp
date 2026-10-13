@@ -265,7 +265,6 @@ void *func_0019C2B8(void *, const void *, u32);
 
 
 
-s32 func_001FE7D0(s32, s32, s32, s32, s32, s32);
 
 s32 func_00208110(s32, s32, s32, s32, s32, s32);
 

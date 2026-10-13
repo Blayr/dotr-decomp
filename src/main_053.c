@@ -918,7 +918,29 @@ void func_001FE750(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_00209D30(func_001FE7D0(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE7D0);
+typedef struct Rect_001FE7D0 {
+    s32 x;
+    s32 y;
+    s32 w;
+    s32 h;
+} Rect_001FE7D0;
+
+typedef s32 (*Draw_001FE7D0)(s32, s32, s32, s32, Rect_001FE7D0 *, s32);
+
+s32 func_001FE7D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern Rect_001FE7D0 D_002CFCD0;
+    Rect_001FE7D0 rect;
+    s32 *info;
+
+    info = func_001FEAB0(arg1);
+    rect = D_002CFCD0;
+    if (info == NULL) {
+        return arg0;
+    }
+    rect.w = info[3];
+    rect.h = info[4];
+    return ((Draw_001FE7D0)arg5)(arg0, arg1, arg2, arg3, &rect, arg4);
+}
 
 void func_001FE880(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_00209D30(func_001FE8F0(func_00209D20(), arg0, arg1, arg2, arg3));
