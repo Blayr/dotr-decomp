@@ -395,7 +395,293 @@ s32 func_0022A140(s32 arg0) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022A710);
+typedef struct Item_0022A710 {
+    f32 x, y, z;
+    s32 pad0C;
+    s16 draw0, draw1;
+    u8 pad14[0x20];
+} Item_0022A710;
+
+typedef struct Vector_0022A710 {
+    f32 x, y, z, w;
+} Vector_0022A710;
+
+typedef struct State_0022A710 {
+    u8 pad00[0x6E];
+    s8 enabled;
+    u8 pad6F[0x11D];
+    s8 all;
+    u8 pad18D[0x17];
+    s16 active;
+    u8 pad1A6[6];
+    s8 kind;
+    u8 pad1AD[5];
+    s16 mode;
+    u8 pad1B4[0x5138];
+    s16 anim[0x20];
+    s16 time[0x20];
+    u8 pad536C[6];
+    s8 busy;
+    u8 pad5373[3];
+    s8 ready;
+    u8 pad5377[0xD1];
+    s8 sound[0x20];
+    u8 pad5468[0x19];
+    s8 shown;
+    s8 hidden;
+} State_0022A710;
+
+extern s16 D_00298BB0;
+extern s16 D_00298BB2;
+extern Item_0022A710 D_00298BD4;
+extern Vector_0022A710 D_00298DDC;
+extern s16 D_00298DEC;
+extern s16 D_00298DEE;
+extern Item_0022A710 D_00298E10;
+void func_0022B060(s32);
+s32 func_0022C570(s32);
+
+void func_0022A710(s32 packet) {
+    extern s32 func_001EE4B0();
+    extern f32 D_00298BA0[];
+    s16 side;
+    s16 choice;
+    s16 kind;
+    s16 animating;
+    Vector_0022A710 positions[32];
+    s8 *control = &D_00299E10;
+    s16 i;
+    Item_0022A710 *src;
+    Vector_0022A710 *dst;
+    State_0022A710 *row;
+    State_0022A710 *state = (State_0022A710 *)0x01ED0000;
+    s8 *sound;
+    f32 height;
+
+    animating = 0;
+    packet = func_001EE4B0(packet, 0x22, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, 0x23, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, 0x24, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, 0x25, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, 0x26, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, 0x27, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, D_00298DEC + 0x22, &D_00298DDC, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, D_00298DEE + 0x22, &D_00298DDC, 0, 0, 0, 0);
+    src = (Item_0022A710 *)D_00298BA0;
+    dst = positions;
+    i = 0;
+    row = state;
+    for (; i <= 21; i++, src++, dst++, row = (State_0022A710 *)((u8 *)row + 2)) {
+        height = 12.0f;
+        if (i == 16) {
+            height = 18.0f;
+        }
+        if (control[i + 3] != 0) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+        } else if (row->anim[0] != 0) {
+            animating = 1;
+            dst->x = 0.4f * (f32)((row->time[0] >> 2) % 2) + src->x;
+            dst->y = (src->y - height) + height * (f32)row->time[0] / 256.0f;
+            dst->z = src->z;
+            sound = &state->sound[i];
+            if (*sound == 0 && row->time[0] != 0 && i != 11) {
+                func_001F48F0(0, 0x194, i, 0, 0);
+                *sound = 1;
+            }
+        } else {
+            dst->x = src->x;
+            dst->y = src->y - height;
+            dst->z = src->z;
+        }
+        if (control[0] == 0) {
+            if (row->anim[0] != 0) {
+                row->time[0] += 4;
+                if (row->time[0] >= 256) {
+                    row->time[0] = 0;
+                    control[i + 3] = 1;
+                    row->anim[0] = 0;
+                    state->active = 0;
+                }
+            }
+        } else if (i == 16) {
+            if (row->anim[0] == 2) {
+                row->time[0] += 4;
+                if (row->time[0] >= 256) {
+                    row->time[0] = 0;
+                    control[i + 3] = 1;
+                    row->anim[0] = 0;
+                    state->active = 0;
+                }
+            }
+        } else if (row->anim[0] != 0) {
+            row->time[0] += 4;
+            if (row->time[0] >= 256) {
+                row->time[0] = 0;
+                control[i + 3] = 1;
+                row->anim[0] = 0;
+                state->active = 0;
+            }
+        }
+    }
+    if (state->all != 0) {
+        state->enabled = 1;
+    } else if (*(s16 *)(control + 0xC2) >= 10000) {
+        state->enabled = 0;
+    } else if (animating == 0 && state->shown != 0 && func_001F5240(-1, -1) == 0 && state->ready != 0 && state->hidden == 0) {
+        if (control[0] == 0) {
+            if (state->busy == 0) {
+                switch (*(s16 *)(control + 0xC2)) {
+                case 100:
+                case 101:
+                    state->enabled = 0;
+                    break;
+                default:
+                    state->enabled = 1;
+                    break;
+                }
+            } else {
+                state->enabled = 0;
+            }
+        } else if (state->busy == 0) {
+            switch (*(s16 *)(control + 0xC2)) {
+            case 104:
+            case 105:
+            case 111:
+                state->enabled = 0;
+                break;
+            default:
+                state->enabled = 1;
+                break;
+            }
+        } else {
+            state->enabled = 0;
+        }
+    } else {
+        if (*(s16 *)(control + 0xC2) != 0) {
+            goto disabled;
+        }
+        if (state->shown == 0 || func_001F5240(-1, -1) != 0 || state->ready == 0 || state->hidden != 0) {
+            goto disabled;
+        }
+        state->enabled = 1;
+        goto control_updated;
+disabled:
+        state->enabled = 0;
+    }
+control_updated:
+    packet = func_001EE4B0(packet, D_00298BB0 + 0x22, positions, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, D_00298BB2 + 0x22, positions, 0, 0, 0, 0);
+    if (state->all != 0) {
+        s32 first = 1;
+        Vector_0022A710 *firstPos = &positions[1];
+        Item_0022A710 *firstSrc = &D_00298BD4;
+        while (1) {
+            packet = func_001EE4B0(packet, firstSrc->draw0 + 0x22, firstPos, 0, 0, 0, 0);
+            packet = func_001EE4B0(packet, firstSrc->draw1 + 0x22, firstPos, 0, 0, 0, 0);
+            first++;
+            firstPos++;
+            firstSrc++;
+            if (first <= 10) {
+                continue;
+            }
+            break;
+        }
+        {
+        Vector_0022A710 *secondPos;
+        Item_0022A710 *secondSrc;
+        s32 second;
+        second = 12;
+        secondPos = &positions[12];
+        secondSrc = &D_00298E10;
+        while (1) {
+            packet = func_001EE4B0(packet, secondSrc->draw0 + 0x22, secondPos, 0, 0, 0, 0);
+            packet = func_001EE4B0(packet, secondSrc->draw1 + 0x22, secondPos, 0, 0, 0, 0);
+            second++;
+            secondPos++;
+            secondSrc++;
+            if (second <= 21) {
+                continue;
+            }
+            break;
+        }
+        }
+    } else if (control[0] == 0) {
+        Vector_0022A710 *firstPos;
+        Item_0022A710 *firstSrc;
+        s32 first;
+        first = 1;
+        firstPos = &positions[1];
+        firstSrc = &D_00298BD4;
+        while (1) {
+            packet = func_001EE4B0(packet, firstSrc->draw0 + 0x22, firstPos, 0, 0, 0, 0);
+            packet = func_001EE4B0(packet, firstSrc->draw1 + 0x22, firstPos, 0, 0, 0, 0);
+            first++;
+            firstPos++;
+            firstSrc++;
+            if (first <= 10) {
+                continue;
+            }
+            break;
+        }
+    } else if (control[0] == 1) {
+        Vector_0022A710 *secondPos;
+        Item_0022A710 *secondSrc;
+        s32 second;
+        second = 12;
+        secondPos = &positions[12];
+        secondSrc = &D_00298E10;
+        while (1) {
+            packet = func_001EE4B0(packet, secondSrc->draw0 + 0x22, secondPos, 0, 0, 0, 0);
+            packet = func_001EE4B0(packet, secondSrc->draw1 + 0x22, secondPos, 0, 0, 0, 0);
+            second++;
+            secondPos++;
+            secondSrc++;
+            if (second <= 21) {
+                continue;
+            }
+            break;
+        }
+    }
+    packet = func_0022C570(packet);
+    switch (state->mode) {
+    case 0:
+        choice = 15;
+        side = 0;
+        kind = 27;
+        break;
+    case 1:
+        side = 0;
+        choice = 0;
+        kind = 27;
+        break;
+    case 2:
+        choice = 4;
+        side = 1;
+        kind = 30;
+        break;
+    case 3:
+        side = 1;
+        choice = 5;
+        kind = 30;
+        break;
+    case 4:
+        side = 1;
+        choice = 11;
+        kind = 27;
+        break;
+    }
+    if (kind == 27) {
+        state->kind = 0;
+    } else {
+        state->kind = 1;
+    }
+    packet = func_0022CC40(packet, side, choice, kind);
+    packet = func_001EE4B0(packet, 0x29, 0, 0, 0, 0, 0);
+    packet = func_001EE4B0(packet, 0x28, 0, 0, 0, 0, 0);
+    func_0022B060(packet);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_0022B060);
 

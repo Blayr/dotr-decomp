@@ -1674,6 +1674,7 @@ s32 func_00228970(void);
 s32 func_00229140(s32 arg0, s32 arg1, s16 arg2);
 s32 func_0022A020(s32 arg0);
 s32 func_0022A140(s32 arg0);
+void func_0022A710(s32 packet);
 s32 func_0022C3C0(s32 arg0);
 void func_0022C450(void);
 s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3);
