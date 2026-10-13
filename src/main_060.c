@@ -459,7 +459,32 @@ s32 func_00215F00(s32 arg0, s32 arg1) {
     return entry->value;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215F90);
+s32 func_00215F90(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 count;
+    s32 side;
+    u16 *card;
+
+    if (D_0034F6D0 == arg0) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    card = (u16 *)((u8 *)D_0032F790 + side * 0xFFA0 + arg1 * 0x54 + 0xFD94);
+    count = 0;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return -1;
+    }
+    i = 0;
+    do {
+        if (*card != 0x3E7) {
+            count++;
+        }
+        i++;
+        card++;
+    } while (i < 0x28);
+    return count;
+}
 
 typedef struct {
     u32 card : 31;
@@ -1033,7 +1058,22 @@ s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00216EC0);
+s32 func_00216EC0(s32 arg0, s32 arg1) {
+    s32 index;
+    u8 *data;
+    s32 flags;
+
+    index = (D_0034F6D0 == arg0) ? 0 : 1;
+    data = (u8 *)D_0032F790 + index * 0xFFA0;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if ((arg1 < 0) || (arg1 >= 0x16)) {
+        return 0;
+    }
+    flags = data[0xFEA0 + (arg1 >> 3)];
+    return (flags & (1 << (arg1 % 8))) ? 1 : 0;
+}
 
 #ifndef GAME_H
 extern unsigned char D_0032F790[];
