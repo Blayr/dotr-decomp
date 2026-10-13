@@ -548,7 +548,42 @@ s32 func_001AEFC0(s32 arg0) {
     return func_001AEFD0(arg0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AEFD0);
+s32 func_001AEFD0(s32 arg0, s32 arg1) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_00202E00(s32, s32);
+    u8 *base;
+    s32 addr;
+    s32 length;
+    s32 i;
+
+    base = D_00317490;
+    addr = func_00209E50();
+    addr += func_00202E00(addr, 2);
+    arg0 = func_001FD320(arg0, arg1, addr, &length);
+    i = 0;
+    addr += length;
+    do {
+        *(s32 *)(base + i * 4 + 0x6A0) = 0;
+        i++;
+    } while (i < 9);
+    *(s32 *)(base + 0x6B8) = func_00202BF0(3, 6);
+    *(s32 *)(base + 0x6BC) = func_00202BF0(3, 7);
+    arg0 = func_00202B00(arg0, 3, addr, &length);
+    addr += length;
+    func_00202D60(3, -1);
+    {
+        s32 *info;
+
+        arg0 = func_001FD680(arg0, 0, 0x15, 0, 0);
+        info = func_001FEAB0(0);
+        info[3] = 0x16;
+        arg0 = func_0020F290(arg0);
+    }
+    *(s32 *)(base + 0xC7C) = addr;
+    *(s32 *)(base + 0xC58) = 0xFFFFF8;
+    func_001FD4B0(0xFFFFF8);
+    return arg0;
+}
 
 s32 func_001AF110(s32 arg0) {
     func_001FEAF0(0);
