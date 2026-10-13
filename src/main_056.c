@@ -459,7 +459,11 @@ s32 func_002087A0(void *arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208800);
+void func_00208800(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_00208870();
+
+    func_00209D30(func_00208870(func_00209D20(), arg0, arg1, arg2, arg3));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00208870);
 

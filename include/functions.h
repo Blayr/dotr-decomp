@@ -1381,6 +1381,7 @@ s64 func_00208680(s32 arg0, s32 arg1);
 s32 func_002086D0(void *arg0, s64 arg1);
 s32 func_00208700(void *arg0, void *arg1, s32 arg2);
 s32 func_002087A0(void *arg0, s32 arg1);
+void func_00208800(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00208CB0(void *arg0, s64 arg1);
 s64 func_00208D00(s32 arg0);
 void *func_00208D40(void *arg0, s32 arg1);
