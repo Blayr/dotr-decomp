@@ -659,7 +659,30 @@ s32 func_001F0C10(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0CD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0E50);
+s32 func_001F0E50(s32 arg0, s32 arg1, s32 arg2) {
+    s32 index;
+    Obj_0031ABB0 *obj;
+    void *data;
+
+    index = func_001E5240(arg0);
+    func_001E5240(arg0 ^ 1);
+    index = func_001E1360(index >> 8, index & 0xFF);
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    func_001F1550(index, 5);
+    if (arg1 != 0) {
+        data = *(void **)((u8 *)obj + 0x170);
+        if (data != NULL) {
+            func_001FA8A0(0, 1, (arg2 != 0 ? 1 : 0) + 8, 0, index, data);
+        }
+    }
+    return 1;
+}
 
 f32 func_001F0F40(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
