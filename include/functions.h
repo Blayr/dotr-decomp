@@ -2120,6 +2120,7 @@ s32 func_00280060(void *arg0, s32 arg1);
 void func_00280670(void);
 s32 func_002817C0(void);
 void func_002831A0(void);
+void func_00285880(s32 arg0);
 void func_00285EE0(void);
 void func_00286900(void);
 void func_00286910(void *arg0, void *arg1);

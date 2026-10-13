@@ -419,7 +419,120 @@ INCLUDE_ASM("asm/nonmatchings/main_080", func_00283880);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00284D30);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00285880);
+typedef struct Deck_00285880 {
+    u8 count;
+    u8 flags;
+    u8 pad2[6];
+    u16 cards[3][21];
+    u16 extra[5];
+} Deck_00285880;
+
+typedef struct Row_00285880 {
+    u8 padding00[0x12];
+    s16 field12;
+    u8 padding14[2];
+    s16 field16;
+    u16 field18;
+    u16 cards[21];
+} Row_00285880;
+
+typedef struct Counters_00285880 {
+    s32 state;
+    u8 pad4[5];
+    u8 rows[3][3];
+} Counters_00285880;
+
+extern Counters_00285880 D_00351210;
+extern u8 D_00351214;
+extern u8 D_00351215;
+extern u8 D_00351216;
+extern u8 D_00351217;
+extern u8 D_00351218;
+extern Deck_00285880 *D_00351230;
+extern u8 D_00351241;
+extern u8 D_00351242;
+extern u8 D_00351244;
+extern s16 D_00351246;
+extern s16 D_00351248;
+
+#pragma optimization_level 0
+
+void func_00285880(s32 arg0) {
+    s32 i;
+    s32 j;
+    s32 a;
+    s32 b;
+    u16 temp;
+    Deck_00285880 *deck;
+    s32 k;
+    extern Flags_00280670 D_00351240[];
+    extern s32 func_00280670();
+
+    D_00351244 = arg0;
+    D_00351230 = (Deck_00285880 *)0x01ED0000;
+    if (D_00351244) {
+        deck = D_00351230;
+        deck->count = 0x10;
+        deck->extra[0] = deck->extra[1] = deck->extra[2] = deck->extra[3] = deck->extra[4] = 0xFFFE;
+        for (k = 0; k < deck->count; k++) {
+            deck->cards[0][k] = (func_0019A5C8() >> 4) % 3 + 5;
+        }
+        deck->cards[0][deck->count >> 1] = 0x334;
+        deck->flags = 2;
+    }
+    D_00351230->extra[0] = 0xFFFE;
+    D_00351241 = D_00351242 = 0;
+    for (i = 0; i < 5; i++) {
+        if (D_00351230->extra[i] != 0xFFFF) {
+            D_00351241 |= (u8)(1 << i);
+        }
+    }
+    D_00351240[0].state = 0;
+    D_00351248 = D_00351230->count * 0x70;
+    D_00351246 = 0;
+    D_00351210.state = 0;
+    for (j = 0; j < 3; j++) {
+        D_00351210.rows[j][0] = D_00351210.rows[j][1] = D_00351210.rows[j][2] = 0;
+    }
+    D_00351214 = D_00351215 = D_00351216 = D_00351217 = D_00351218 = 0;
+    for (j = 0; j < 3; j++) {
+        ((Row_00285880 *)&D_00351240[j])->field12 = 0;
+        ((Row_00285880 *)&D_00351240[j])->field16 = 0;
+        ((Row_00285880 *)&D_00351240[j])->field18 = 0xFFFF;
+        D_00351240[j].enabled = 0;
+        switch (j) {
+        case 0:
+            for (i = 0; i < D_00351230->count; i++) {
+                ((Row_00285880 *)&(&D_00351240[0].state)[i * 2])->cards[0] = D_00351230->cards[0][i];
+            }
+            break;
+        case 1:
+        case 2:
+            if (D_00351230->flags & 1) {
+                for (i = 0; i < D_00351230->count; i++) {
+                    ((Row_00285880 *)&(&D_00351240[j].state)[i * 2])->cards[0] = D_00351230->cards[j][i];
+                }
+            } else {
+                for (i = 0; i < D_00351230->count; i++) {
+                    ((Row_00285880 *)&(&D_00351240[j].state)[i * 2])->cards[0] = ((Row_00285880 *)&(&D_00351240[0].state)[i * 2])->cards[0];
+                }
+                for (i = 0; i < D_00351230->count * 2; i++) {
+                    a = (func_0019A5C8() >> 4) % D_00351230->count;
+                    b = (func_0019A5C8() >> 4) % D_00351230->count;
+                    temp = ((Row_00285880 *)&(&D_00351240[j].state)[a * 2])->cards[0];
+                    ((Row_00285880 *)&(&D_00351240[j].state)[a * 2])->cards[0] = ((Row_00285880 *)&(&D_00351240[j].state)[b * 2])->cards[0];
+                    ((Row_00285880 *)&(&D_00351240[j].state)[b * 2])->cards[0] = temp;
+                }
+            }
+            break;
+        }
+    }
+    if (!D_00351244) {
+        func_00280670();
+    }
+}
+
+#pragma optimization_level reset
 
 #pragma optimization_level 0
 
