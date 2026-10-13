@@ -1889,7 +1889,35 @@ u8 *func_001DD0E0(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD130);
+void *func_001DD130(s32 group, s32 index) {
+    extern s32 func_001F2980();
+    s32 type;
+    s32 offset;
+
+    if (group < 0) {
+        type = func_001F2980(index);
+        if (type < 0) {
+            return NULL;
+        }
+        switch (type) {
+        case 5:
+            group = index - 30;
+            index = 0;
+            break;
+        case 4:
+            offset = index - 20;
+            group = offset < 5 ? 0 : 1;
+            index = offset % 5 + 1;
+            break;
+        default:
+            return NULL;
+        }
+    }
+    if (group < 0 || group >= 3 || index < 0 || index >= 11) {
+        return NULL;
+    }
+    return group * 0x3F4 + D_00318280 + index * 0x5C;
+}
 
 void func_001DD2D0(u8 *, s32);
 extern u8 D_00318E60[];

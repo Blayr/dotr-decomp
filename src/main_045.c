@@ -55,7 +55,6 @@ s32 func_001DFAF0(s32 arg0, s32 arg1, s32 arg2) {
     func_001DF5F0(arg0, x, y, buffer, arg1 == 0 ? 1 : 0);
 }
 
-void *func_001DD130();
 void func_001CD560();
 
 static inline u8 *check_001DFBB0(s32 a0, s32 a1) {
@@ -286,7 +285,6 @@ s32 func_001E0110(s32 arg0) {
     return temp_s0 + func_001E01F0(arg0);
 }
 
-void *func_001DD130();
 
 static inline u8 *check_001E0150(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);
@@ -312,7 +310,6 @@ s32 func_001E0150(s32 arg0) {
     return count;
 }
 
-void *func_001DD130();
 
 static inline u8 *check_001E01F0(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);
@@ -338,7 +335,6 @@ s32 func_001E01F0(s32 arg0) {
     return count;
 }
 
-void *func_001DD130();
 
 static inline void *lookup_001E0290(s32 arg0, s32 arg1)
 {
@@ -379,7 +375,6 @@ s32 func_001E02F0(void *arg0, s32 arg1) {
     return MIN_001E02F0(MAX_001E02F0(value, 0), 9999);
 }
 
-void *func_001DD130();
 
 static inline void *lookup_001E0370(s32 arg0, s32 arg1) {
     void *ptr;
@@ -599,7 +594,6 @@ s32 func_001E0700(s32 arg0, s32 arg1) {
     return -1;
 }
 
-void *func_001DD130();
 
 static inline u8 *check_001E0760(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);
@@ -649,7 +643,6 @@ s32 func_001E07C0(void) {
     return -1;
 }
 
-void *func_001DD130();
 
 static inline u8 *check_001E0830(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);
@@ -672,7 +665,6 @@ s32 func_001E0830(s32 arg0, s32 arg1) {
     return -1;
 }
 
-void *func_001DD130();
 
 static inline void *lookup_001E0890(s32 arg0, s32 arg1) {
     void *entry;
@@ -698,7 +690,6 @@ s32 func_001E0890(s32 arg0, s32 arg1, s8 arg2) {
     return 1;
 }
 
-void *func_001DD130();
 
 static inline void *check_001E08F0(void *var_v0) {
     if (var_v0 == NULL) {
@@ -879,7 +870,6 @@ s32 func_001E1030(void) {
     return -1;
 }
 
-void *func_001DD130();
 
 static inline u8 *get_001E1090(void) {
     extern void *func_001DD130();
@@ -920,7 +910,6 @@ void func_001E10F0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     out[3] = 1.0f;
 }
 
-void *func_001DD130();
 
 static inline u8 *check_001E11B0(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);
@@ -968,7 +957,6 @@ s32 func_001E11B0(s32 arg0, s32 arg1, f32 *arg2) {
     return 1;
 }
 
-void *func_001DD130(void);
 
 static inline void *lookup_001E1360(void) {
     extern void *func_001DD130();
@@ -1000,7 +988,6 @@ typedef struct Entry_001E13C0 {
     u8 value;
 } Entry_001E13C0;
 
-void *func_001DD130(void);
 
 s32 func_001E13C0(s32 unused0, s32 unused1) {
     extern void *func_001DD130();
@@ -1081,7 +1068,6 @@ s32 func_001E14B0(void) {
     return ((Entry_001E14B0 *)entry)->flags.active != 0 ? 1 : 0;
 }
 
-void *func_001DD130();
 
 static inline void *lookup_001E1520(void) {
     extern void *func_001DD130();
@@ -1106,7 +1092,6 @@ s32 func_001E1520(s32 arg0, s32 arg1, s8 arg2) {
     return 1;
 }
 
-void *func_001DD130(void);
 
 static inline void *get_001E1580(void) {
     extern void *func_001DD130();
@@ -1149,7 +1134,6 @@ s32 func_001E15E0(s32 arg0, s32 arg1, s8 arg2) {
     return 1;
 }
 
-void *func_001DD130(void);
 
 static inline u8 *check_001E1640(void) {
     extern void *func_001DD130();
@@ -1175,7 +1159,6 @@ s32 func_001E1640(void) {
     return -1;
 }
 
-void *func_001DD130();
 
 static inline u8 *check_001E16A0(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);
@@ -1199,7 +1182,6 @@ s32 func_001E16A0(s32 a0, s32 a1, s8 arg2) {
     return 1;
 }
 
-void *func_001DD130(void);
 
 static inline u8 *valid_001E1700(void) {
     extern void *func_001DD130();

@@ -209,7 +209,6 @@ s32 func_001A23B0(f32);
 
 s32 func_00254890(s32 *, s32);
 
-void *func_001DD130(void);
 
 
 
