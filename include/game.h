@@ -528,7 +528,6 @@ extern u64 D_00326180;
 void func_00187810(void *, s32);
 
 s32 func_00155770(s32 arg0, s32 arg1, s32 arg2);
-void func_00167D30(void *);
 
 extern s32 func_0023FF30(void);
 

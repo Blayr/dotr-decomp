@@ -1722,7 +1722,57 @@ s32 func_001676E0(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_015", func_001678B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00167D30);
+typedef struct {
+    u16 coordinates;
+    u8 pad2[2];
+    u16 state;
+    u8 pad6[2];
+    union {
+        u32 word;
+        struct {
+            u16 low;
+            u16 high;
+        } halves;
+    } data;
+} Entry_00167D30;
+
+s32 func_00167D30(void *arg0) {
+    extern s32 func_0016B0E0(s32);
+    Entry_00167D30 *entry = arg0;
+    u16 coord;
+    s32 slot;
+    s32 kind;
+
+    func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    slot = func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    if (func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        if (func_001E2100(entry->coordinates >> 8, entry->coordinates & 0xFF, 0) == 0) {
+            coord = entry->coordinates;
+            if (coord != 0xFFFF) {
+                if ((coord & 0xFF) == 0) {
+                    if (entry->data.word == -1) {
+                        func_0027E210(entry, 3, 1, 1);
+                    }
+                } else {
+                    kind = func_001E0700(coord >> 8, coord & 0xFF) >> 5;
+                    switch (kind) {
+                    case 0:
+                        func_00168260(entry, 1);
+                        break;
+                    case 2:
+                        func_0027CA50(entry, 4, 1, func_0016B0E0(slot) & 0xFF);
+                        break;
+                    default:
+                        entry->state = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_00167E80(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
