@@ -68,7 +68,107 @@ void func_001F3870(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F3910);
+typedef struct {
+    u8 state : 3;
+    u8 kind : 3;
+    u16 card : 10;
+    u16 pad;
+    s32 resource;
+} Entry_001F3910;
+
+s32 func_001F3910(s32 kind, s32 card, s32 mode, void *unused) {
+    extern Entry_001F3910 D_0031BB50[];
+    extern u8 D_0031BEA8;
+    extern char D_002CFBB0[];
+    extern char D_002CFBC6[];
+    extern void func_001F3CB0();
+    extern s32 func_0019B648();
+    extern s32 func_001FECB0();
+    Entry_001F3910 *entries = D_0031BB50;
+    s32 count;
+    s32 candidate;
+    Entry_001F3910 *scan;
+    Entry_001F3910 *entry;
+    s32 index;
+    s32 i;
+    s64 destination;
+    s8 letter;
+    char path[128];
+
+    scan = D_0031BB50;
+    for (i = 0; i < 32L; i++, scan++) {
+        if (scan->kind == kind && scan->card == card) {
+            if (scan->state == 2) {
+                return (s32)scan;
+            }
+            if (scan->state == 3) {
+                scan->state = 2;
+                return (s32)scan;
+            }
+        }
+    }
+
+    entry = entries;
+    for (index = 0; index < 32L; index++, entry++) {
+        if (entry->state == 0) {
+            break;
+        }
+    }
+    if (index >= 32L) {
+        count = 0;
+        candidate = D_0031BEA8 + count;
+        for (; count < 32L; candidate++, count++) {
+            s32 slot = candidate % 32L;
+            entry = &entries[slot];
+            if (entry->state == 3) {
+                index = slot;
+                break;
+            }
+        }
+        D_0031BEA8 = (D_0031BEA8 + 1) % 32L;
+    }
+    if (index < 32L) {
+        destination = (s64)(s32)(0x01EE0000 + (s64)index * 0x8000);
+        letter = '?';
+        if (entry->resource != 0) {
+            func_00217B50(entry->resource);
+            entry->resource = 0;
+        }
+        switch (kind) {
+        case 0: letter = 'C'; break;
+        case 1: letter = 'B'; break;
+        case 2: letter = 'M'; break;
+        }
+        if (mode != 0) {
+            return 0;
+        }
+        if (card < 0 || card >= 0x356) {
+            return 0;
+        }
+        func_0019B648(path, D_002CFBB0, func_001FFF90((s32)D_002CFBC6), letter);
+        if ((u32)kind < 3) {
+            s32 offset = card << 15;
+            if ((u32)(kind - 1) < 2) {
+                s32 file = func_001DE130(card);
+                if (file >= 0x2AB) {
+                    return 0;
+                }
+                offset = file << 15;
+            }
+            if (func_001FECB0(0x800, 0, path, destination, 0x8000,
+                             offset, 0x8000, func_001F3CB0, index) == 0) {
+                return 0;
+            }
+            entry->kind = kind;
+            entry->card = card;
+            entry->state = 1;
+        } else {
+            return 0;
+        }
+        return (s32)entry;
+    }
+    return 0;
+}
 
 typedef struct Obj_001F3CB0 {
     u8 pad00[8];

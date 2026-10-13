@@ -1240,6 +1240,7 @@ s32 func_001F3690(s32 arg0);
 void func_001F3700(void);
 void func_001F3790(void);
 void func_001F3870(void);
+s32 func_001F3910(s32 kind, s32 card, s32 mode, void *unused);
 void func_001F3CB0(void *arg0, s32 arg1);
 void func_001F3E40(void *arg0, s32 arg1);
 u8 *func_001F3EA0(s32 arg0, s32 arg1);

@@ -322,7 +322,6 @@ s32 func_0024F830(s32, s32, s32, s32, s32);
 
 
 
-s32 func_001F3910(s32, s16, s32, void *);
 
 void func_001EE570(void);
 s32 func_001EE6C0(s32, s32, s32, s32, s32, s32, s32, void (*)(void), s64);
