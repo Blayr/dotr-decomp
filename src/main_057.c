@@ -838,7 +838,39 @@ INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BCF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BDE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C630);
+void func_0020C630(void *dst, void *src) {
+    f32 *matrix = dst;
+    s32 *angles = src;
+    f32 cx;
+    f32 sx;
+    f32 cy;
+    f32 sy;
+    f32 cz;
+    f32 sz;
+
+    cx = func_0020B480(angles[0]);
+    sx = func_0020B550(angles[0]);
+    cy = func_0020B480(angles[1]);
+    sy = func_0020B550(angles[1]);
+    cz = func_0020B480(angles[2]);
+    sz = func_0020B550(angles[2]);
+    matrix[0] = cy * cz;
+    matrix[4] = cz * (sx * sy) - cx * sz;
+    matrix[8] = cz * (cx * sy) + sx * sz;
+    matrix[1] = cy * sz;
+    matrix[5] = sz * (sx * sy) + cx * cz;
+    matrix[9] = sz * (cx * sy) - sx * cz;
+    matrix[2] = -sy;
+    matrix[6] = sx * cy;
+    matrix[10] = cx * cy;
+    matrix[3] = 0.0f;
+    matrix[7] = 0.0f;
+    matrix[11] = 0.0f;
+    matrix[12] = 0.0f;
+    matrix[13] = 0.0f;
+    matrix[14] = 0.0f;
+    matrix[15] = 1.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C750);
 

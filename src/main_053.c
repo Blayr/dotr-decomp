@@ -1,7 +1,6 @@
 #include "common.h"
 
 f32 func_001A6C30(f32, f32);
-void func_0020C630(void *, void *);
 extern f32 D_00293040[4][4];
 
 typedef struct Vec4_001FB500 {
@@ -183,7 +182,6 @@ typedef struct Motion_001FB940 {
 void func_001FBE50(void *, void *, u16, f32);
 f32 func_0020B620(f32);
 f32 func_001A6C30(f32, f32);
-void func_0020C630(void *, void *);
 
 static inline void direction_001FB940(s32 index) {
     Camera_001FB940 *camera;

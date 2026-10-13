@@ -583,7 +583,6 @@ typedef struct {
     Vec4_001F95E0 result;
 } Entry_001F95E0;
 
-void func_0020C630(void *, void *);
 extern f32 D_00293040[4][4];
 
 s32 func_001F95E0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
@@ -1258,7 +1257,6 @@ typedef struct {
     f32 z;
 } Vector_001FB0B0;
 
-void func_0020C630(void *, void *);
 
 static inline s32 fixed_angle_001FB0B0(f32 radians) {
     extern s32 func_001A22C0(f32);
@@ -1298,7 +1296,6 @@ s32 func_001FB0B0(s32 arg0, s32 arg1) {
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FB1D0);
 
 f32 func_001A6C30(f32, f32);
-void func_0020C630(void *, void *);
 extern f32 D_00293040[4][4];
 
 typedef struct Vec4_001FB360 {

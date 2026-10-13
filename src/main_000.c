@@ -817,7 +817,6 @@ typedef struct Curve_00102CB0 {
     Vec3_00102CB0 *points;
 } Curve_00102CB0;
 
-extern void func_0020C630(void *, s32 *);
 
 void func_00102CB0(void *arg0) {
     extern s32 func_001A22C0(f32);

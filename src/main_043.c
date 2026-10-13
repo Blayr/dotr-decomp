@@ -976,7 +976,6 @@ extern Vec_001D9F00 D_00291560;
 extern Vec_001D9F00 D_00291570;
 extern Vec_001D9F00 D_00291580;
 
-void func_0020C630(void *, void *);
 void func_0020C940(void *, void *, void *, void *);
 
 s32 func_001D9F00(void *arg0, s32 arg1) {

@@ -397,7 +397,6 @@ s32 func_00103D00(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00103DB0);
 
-void func_0020C630(void *, s32 *);
 
 static inline s32 angle_00103EC0(f32 a, f32 b) {
     extern s32 func_001A22C0(f32);
@@ -484,7 +483,6 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_001043F0;
 
-void func_0020C630(void *, s32 *);
 extern Vec4_001043F0 D_0028C220;
 
 s32 func_001043F0(void *arg0, f32 fparg0) {
