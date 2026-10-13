@@ -270,7 +270,41 @@ void func_002459D0(u8 arg0, u8 arg1, void *arg2) {
     *(Name_002459D0 *)arg2 = ((Name_002459D0 **)D_0029D488[arg0])[1][arg1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245A30);
+typedef struct Record_00245A30 {
+    s16 x;
+    s16 y;
+    s16 width;
+    s16 height;
+} Record_00245A30;
+
+typedef struct Data_00245A30 {
+    s32 unk0;
+    u8 (*indices)[8];
+    Record_00245A30 *records;
+} Data_00245A30;
+
+void func_00245A30(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+    extern struct Quad_00245980 **D_0029D488[];
+    u8 var_a1;
+    u8 temp_a0;
+    Record_00245A30 *records;
+    s32 var_t1;
+
+    var_t1 = 0;
+    var_a1 = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
+    if (arg2 != 0) {
+        records = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->records;
+        while (var_t1 != (arg2 & 0xFF)) {
+            temp_a0 = *(u8 *)&records[var_a1 & 0xFF];
+            if (temp_a0 == 0 || temp_a0 == 0xFF) {
+                break;
+            }
+            var_t1 += 1;
+            var_a1 = temp_a0 & 0xFF;
+        }
+    }
+    *(Record_00245A30 *)arg3 = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->records[var_a1 & 0xFF];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_070", func_00245AE0);
 
