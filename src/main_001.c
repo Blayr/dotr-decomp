@@ -21,11 +21,15 @@ void func_001031C0(u16 *arg0, s32 arg1) {
 }
 
 s32 func_00103260(s32 *arg0) {
+    extern s32 func_00202BF0();
+
     *arg0 = func_00202BF0(4);
     return 0;
 }
 
 s32 func_00103290(s32 *arg0) {
+    extern s32 func_00202BF0();
+
     *arg0 = func_00202BF0(5);
     return 0;
 }
