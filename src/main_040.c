@@ -1,6 +1,13 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BA3B0);
+s32 func_001BA3B0(s32 arg0, s32 arg1) {
+    s32 count;
+    s32 card;
+
+    count = func_00215F90(arg0, arg1);
+    card = func_002159D0(arg0, arg1);
+    return (count >= 0x28 && card != 0x3E7) ? 1 : 0;
+}
 
 typedef struct Data_001BA420 {
     u8 padding0[9];
