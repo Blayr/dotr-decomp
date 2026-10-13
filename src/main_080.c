@@ -246,7 +246,35 @@ INCLUDE_ASM("asm/nonmatchings/main_080", func_00280920);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_00280CB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_002817C0);
+typedef struct {
+    u8 pad[4];
+    u8 slots[5];
+    u8 cells[3][3];
+} Board_002817C0;
+
+#pragma optimization_level 0
+
+s32 func_002817C0(void) {
+    extern Board_002817C0 D_00351210;
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < 5; i++) {
+        if (D_00351210.slots[i] > 1) {
+            return 0;
+        }
+    }
+    for (j = 0; j < 3; j++) {
+        for (i = 0; i < 3; i++) {
+            if (D_00351210.cells[j][i] > 1) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_002818A0);
 
