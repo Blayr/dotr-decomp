@@ -1,6 +1,278 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00265890);
+typedef struct Input_00265890 {
+    s32 unk0;
+    u32 position;
+    u32 target;
+    s32 mode;
+} Input_00265890;
+
+typedef struct State_00265890 {
+    u16 value;
+    u16 count;
+    u16 phase;
+    u8 effects[26];
+    s32 entries[44];
+    s32 frame;
+    u8 effectCount;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_00265890;
+
+typedef struct Request_00265890 {
+    s32 command;
+    s32 unk4;
+    s32 argument;
+    s32 flag;
+} Request_00265890;
+
+
+
+static inline s32 absolute_00265890(s32 value) {
+    return value >= 0 ? value : -value;
+}
+
+#pragma opt_strength_reduction off
+
+s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
+    extern void func_001E1E70(u32, s32, s32, s32);
+    extern void func_0024F370(s32, s32);
+    extern void func_002516D0(u32, s32, s32);
+    extern void func_00260A70(void *, s32);
+    Input_00265890 *input = arg0;
+    State_00265890 *state = arg1;
+    s32 packet[4];
+    Request_00265890 *request = (Request_00265890 *)packet;
+    s32 found;
+    extern s32 func_001E1E10();
+
+    packet[0] = 999;
+    packet[1] = 0;
+    packet[2] = 0;
+    packet[3] = 0;
+    found = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        state->value = 0x80;
+        func_002516D0(input->position >> 8, input->position & 0xFF, 1);
+        func_00260AF0(0, input->position, 100, 180);
+        func_00255AC0(state, 0x25A);
+        func_00255AC0(state, 0x25B);
+        func_00255AC0(state, 0x222);
+        return 1;
+    }
+
+    switch (state->phase) {
+    case 0:
+        if (state->value > 0x30) {
+            state->value -= 15;
+        } else {
+            state->value = 0x30;
+            if (func_001E1E10(input->position >> 8, input->position & 0xFF) == 0xFF &&
+                func_00255B50(state) == 1) {
+                if (input->mode == 1) {
+                    func_001E42C0(0, -120, 80, 0x104);
+                } else {
+                    func_001E42C0(0, -120, 80, 0x103);
+                }
+                request->command = 0x25A;
+                request->unk4 = 0;
+                request->argument = input->position;
+                request->flag = 0;
+                state->effects[0] = func_00255A30(request, state);
+                state->phase++;
+            }
+        }
+        if (state->value < 0x30) {
+            state->value = 0x30;
+        }
+        func_001F6CF0((u8)state->value);
+        break;
+    case 1:
+        {
+            __int128 owner;
+            s32 inner;
+            s32 entry;
+            s32 y;
+            s32 x;
+            s32 outer;
+            s32 centerHigh;
+            s32 distance;
+            s32 center;
+            extern __int128 func_00250360();
+
+            if (func_001F51D0(state->effects[0]) != 0) {
+                return 1;
+            }
+            func_001E1E70(input->position >> 8, input->position & 0xFF, 0, 1);
+            func_00260AF0(0x10, input->position, 500, 500);
+            state->value = 0;
+            center = func_001E1090(input->position >> 8, input->position & 0xFF);
+            request->command = 0x222;
+            request->unk4 = 0;
+            request->argument = center;
+            request->flag = 1;
+            state->effects[0] = func_00255A30(request, state);
+            state->entries[0] = input->position;
+            outer = -1;
+            x = (center & 0xFF) - 1;
+            centerHigh = center >> 8;
+            state->value++;
+            state->effectCount++;
+            while (1) {
+                inner = -1;
+                y = centerHigh - 1;
+                while (1) {
+                    if (x >= 0 && x < 7 && y >= 0 && y < 7) {
+                        distance = outer + inner;
+                        distance = absolute_00265890(distance);
+                        if (distance < 3 && (outer != 0 || inner != 0)) {
+                            request->command = 0x222;
+                            request->unk4 = 0;
+                            request->argument = (y << 8) | x;
+                            request->flag = 0;
+                            state->effects[state->effectCount] = func_00255A30(request, state);
+                            if (func_001E36E0(x, y) != 0) {
+                                entry = func_001E3790(x, y);
+                                if (input->mode == 1) {
+                                    state->entries[state->effectCount] = entry;
+                                    state->value++;
+                                } else {
+                                    s32 low;
+                                    s32 high;
+
+                                    high = entry >> 8;
+                                    low = entry & 0xFF;
+                                    owner = func_00250360(high, low);
+                                    if (owner != func_00250360(input->position >> 8, input->position & 0xFF)) {
+                                        if (func_00271E40(high, low, 11) == 0 && func_00267700(high, low) != 1) {
+                                            state->entries[state->effectCount] = entry;
+                                            state->value++;
+                                            if (input->mode == 0 && entry == input->target) {
+                                                found++;
+                                            }
+                                        }
+                                    } else {
+                                        state->entries[state->effectCount] = entry;
+                                        state->value++;
+                                        if (input->mode == 0 && entry == input->target) {
+                                            found++;
+                                        }
+                                    }
+                                }
+                            } else {
+                                state->entries[state->effectCount] = -1;
+                            }
+                            state->effectCount++;
+                        }
+                    }
+                    inner++;
+                    y++;
+                    if (inner > 1) {
+                        break;
+                    }
+                }
+                outer++;
+                x++;
+                if (outer > 1) {
+                    break;
+                }
+            }
+            if (found == 0 && input->mode == 0) {
+                request->command = 0x25B;
+                request->unk4 = 0;
+                request->argument = input->target;
+                request->flag = 1;
+                state->effects[state->effectCount] = func_00255A30(request, state);
+                state->entries[state->effectCount] = -1;
+                state->effectCount++;
+            }
+            state->phase++;
+            return 1;
+        }
+    case 2:
+        {
+            s32 *entry;
+            s32 i;
+            u8 *effect;
+
+            state->frame++;
+            i = 0;
+            entry = (s32 *)state;
+            for (; i < state->effectCount; entry++, i++) {
+                switch (state->frame) {
+                case 1:
+                    func_00217710(1, 0x31);
+                    break;
+                case 5:
+                    func_00217710(1, 0x31);
+                    func_00217710(1, 0x31);
+                    func_00217710(1, 0x31);
+                    func_00217710(1, 0x31);
+                    break;
+                }
+                effect = &state->effects[i];
+                if (func_001F51D0(*effect) != 0 && func_001F52D0(*effect) == 2 && entry[8] >= 0) {
+                    if ((entry[8] & 0xFF) > 0) {
+                        func_002500C0(entry[8] >> 8, entry[8] & 0xFF, -1, 1, 3);
+                        state->entries[state->effectCount + state->count] = entry[8];
+                        entry[8] = -1;
+                    }
+                    state->count++;
+                }
+            }
+            if (state->value <= state->count) {
+                state->phase++;
+            }
+            break;
+        }
+    case 3:
+        if (func_0025FD90() != 0) {
+            s32 i;
+            s32 *entry;
+
+            i = state->effectCount;
+            entry = (s32 *)state + i;
+            for (; i < state->effectCount + state->count; entry++, i++) {
+                if (entry[8] >= 0 && (entry[8] & 0xFF) > 0) {
+                    func_0024F370(entry[8] >> 8, entry[8] & 0xFF);
+                }
+            }
+            if (input->target != 0) {
+                func_0024F370(input->target >> 8, input->target & 0xFF);
+            }
+            state->value = 0x30;
+            state->phase++;
+        }
+        break;
+    case 4:
+        state->value += 15;
+        if (state->value > 0x80) {
+            state->value = 0x80;
+        }
+        func_001F6CF0((u8)state->value);
+        if (state->value == 0x80) {
+            state->phase++;
+            func_001E4530();
+            func_00260A70(state, 0x10);
+            state->timer = 0;
+        }
+        break;
+    default:
+        if (state->timer++ > 16 && func_0025F390(state) == 1 && func_0025FD90() == 1) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
+
+#pragma opt_strength_reduction reset
 
 typedef struct Stats_002660E0 {
     u8 pad[8];
