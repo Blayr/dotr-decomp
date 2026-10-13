@@ -762,7 +762,27 @@ s32 func_00205160(void) {
     return D_00325C84;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00205170);
+typedef struct Flags_00205170 {
+    s8 flag0 : 1;
+    s8 unused1 : 1;
+    s8 flag2 : 1;
+    s8 unused3 : 5;
+} Flags_00205170;
+
+typedef struct State_00205170 {
+    u8 padding[0x2C];
+    Flags_00205170 flags;
+} State_00205170;
+
+s32 func_00205170(void) {
+    extern Flags_00205170 D_00325CAC;
+    State_00205170 *state = (State_00205170 *)&D_00325C80;
+
+    if (D_00325CAC.flag2 != 0) {
+        return 1;
+    }
+    return state->flags.flag0 != 0 ? 1 : 0;
+}
 
 typedef struct {
     s8 enabled : 1;
