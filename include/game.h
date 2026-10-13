@@ -457,7 +457,6 @@ extern u8 D_003181CA;
 s32 func_001854E0(s32);
 
 s32 func_001B4780(s32, s32, s32, s32, s32, s32, s32, s32, s64);
-s32 func_001B62F0(s32, s32, s32, s32, s32);
 extern char D_002BF00B;
 
 extern s32 D_0028FF10[];

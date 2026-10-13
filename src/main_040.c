@@ -466,7 +466,6 @@ typedef struct Entry_001BCCE0 {
     } flags;
 } Entry_001BCCE0;
 
-s32 func_001BD8A0(s32, s32, s32, s32, s32, u8);
 extern struct Entry_001BA520 *D_00317B60;
 
 s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2) {
@@ -515,7 +514,92 @@ s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BCE20);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BD8A0);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001BD8A0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001BD8A0;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001BD8A0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001BD8A0;
+
+typedef struct {
+    u64 tag[2];
+    Color_001BD8A0 color;
+    u64 uv0;
+    Vertex_001BD8A0 vertex0;
+    u64 uv1;
+    Vertex_001BD8A0 vertex1;
+    u64 test;
+    s64 texture0;
+    s64 texture1;
+    u64 clamp;
+} Packet_001BD8A0;
+
+static inline void set_uv_001BD8A0(UV_001BD8A0 *p, s32 u, s32 v) {
+    p->u = u;
+    p->v = v;
+}
+
+void *func_001BCE20(void *, s32, s32, s32, s32, s32);
+
+s32 func_001BD8A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5) {
+    Packet_001BD8A0 packet __attribute__((aligned(8)));
+    s32 width = 0x130;
+    s32 height = 0x36;
+    s32 x;
+    s32 y;
+    void *texture;
+    s32 output;
+
+    ((Tag_001BD8A0 *)packet.tag)->flags = 0x26;
+    ((Tag_001BD8A0 *)packet.tag)->count = 5;
+    ((Tag_001BD8A0 *)packet.tag)->registers = 0x42421;
+    ((Tag_001BD8A0 *)packet.tag)->padding = 0;
+    ((Tag_001BD8A0 *)packet.tag)->flags |= 0x800;
+    func_002086D0(packet.tag, 0x44 | ((s64)0x80 << 32));
+    packet.color.r = 0x80;
+    packet.color.g = 0x80;
+    packet.color.b = 0x80;
+    packet.color.a = arg5;
+    packet.color.q = 1.0f;
+
+    arg0 = (s32)func_0020A610((void *)arg0);
+    texture = func_001BCE20(func_0020A870((u8 *)arg0, 0), arg1, 0, 0, arg4, 0);
+    func_0020AA30(&packet.texture0, &packet.texture1);
+    output = func_0020F290((s32)func_0020A760(texture));
+
+    x = arg2 + 0x6C0;
+    y = arg3 + 0x720;
+    set_uv_001BD8A0((UV_001BD8A0 *)&packet.uv0, 0, 0);
+    set_uv_001BD8A0((UV_001BD8A0 *)&packet.uv1, width << 4, height << 4);
+    packet.vertex0.x = (x << 4) - 8;
+    packet.vertex0.y = (y << 4) - 8;
+    packet.vertex0.z = D_003180E8;
+    packet.vertex0.fog = 0;
+    packet.vertex1.x = ((x + width) << 4) - 8;
+    packet.vertex1.y = ((y + height) << 4) - 8;
+    packet.vertex1.z = D_003180E8;
+    packet.vertex1.fog = 0;
+    return func_00207650(output, (s32)packet.tag, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BDAF0);
 

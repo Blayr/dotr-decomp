@@ -293,7 +293,69 @@ void *func_00218340(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     return (void *)func_00207650((s32)arg0, (s32) packet.tag, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_061", func_002185E0);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_002185E0;
+
+typedef struct {
+    f32 s, t;
+    s64 xyz;
+} Vertex_002185E0;
+
+typedef struct {
+    s16 count;
+    s16 flags;
+    s32 zero;
+    s64 regs;
+    Color_002185E0 color;
+    Vertex_002185E0 vertex[4];
+    u8 padding[0x20];
+} Packet_002185E0;
+
+static inline void init_002185E0(void *packet) {
+    *(s16 *)((u8 *)packet + 2) = 0x24;
+    *(s16 *)packet = 9;
+    *(s64 *)((u8 *)packet + 8) = 0x424242421LL;
+    *(s32 *)((u8 *)packet + 4) = 0;
+}
+
+void *func_002185E0(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+                    s16 x2, s16 y2, s16 x3, s16 y3,
+                    s16 u0, s16 v0, s16 u1, s16 v1,
+                    s16 u2, s16 v2, s16 u3, s16 v3,
+                    u8 r, u8 g, u8 b, u8 a,
+                    u8 unused0, u16 texture, u8 unused1, s16 z) {
+    extern void *D_00299DD0[];
+    extern void func_00218840(void *, s16, s16, s32, u8, s16, s16, s32, u8,
+                              s16, s16, s32, u8, s16, s16, s32, u8);
+    void **textures;
+    Packet_002185E0 packet __attribute__((aligned(8)));
+    s32 depth;
+
+    textures = D_00299DD0;
+    func_00207500();
+    init_002185E0(&packet);
+    packet.color.r = r;
+    packet.color.g = g;
+    packet.color.b = b;
+    packet.color.a = a;
+    packet.color.q = 1.0f;
+    depth = z + 0xFFFFF8;
+    func_00218840(&packet, x0, y0, depth, 0, x1, y1, depth,
+                  0, x2, y2, depth, 0, x3, y3, depth, 0);
+    packet.vertex[0].s = (0.5f + (f32)u0) / 256.0f;
+    packet.vertex[0].t = (0.5f + (f32)v0) / 256.0f;
+    packet.vertex[1].s = (0.5f + (f32)u1) / 256.0f;
+    packet.vertex[1].t = (0.5f + (f32)v1) / 256.0f;
+    packet.vertex[2].s = (0.5f + (f32)u2) / 256.0f;
+    packet.vertex[2].t = (0.5f + (f32)v2) / 256.0f;
+    packet.vertex[3].s = (0.5f + (f32)u3) / 256.0f;
+    packet.vertex[3].t = (0.5f + (f32)v3) / 256.0f;
+    func_00208700(&packet, textures[texture], 0);
+    func_002086D0(&packet, 0x8000000088LL);
+    return (void *)func_00207650((s32)arg0, (s32)&packet, 0, 0);
+}
 
 typedef struct {
     u64 x : 16;

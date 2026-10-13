@@ -1,6 +1,119 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B62F0);
+typedef struct {
+    u8 texture;
+    u8 padding;
+    u16 left;
+    u16 top;
+    u16 right;
+    u16 bottom;
+} Texture_001B62F0;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001B62F0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 padding : 8;
+} XYZ_001B62F0;
+
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Header_001B62F0;
+
+typedef struct {
+    u64 header[2];
+    u8 r, g, b, a;
+    f32 q;
+    u64 uv0;
+    XYZ_001B62F0 xyz0;
+    u64 uv1;
+    XYZ_001B62F0 xyz1;
+    u64 primitive;
+    u64 tex0;
+    u64 tex1;
+    u64 clamp;
+} Packet_001B62F0;
+
+s32 func_001B62F0(s32 packet, s32 x, s32 y, s32 columns, s32 rows) {
+    extern u8 D_002907E2[];
+    extern void *D_00317B30[];
+    Texture_001B62F0 *texture;
+    s32 width;
+    s32 xOffset;
+    s32 column;
+    u16 y0;
+    u16 y1;
+    s32 originY;
+    s32 originX;
+    s32 height;
+    s32 yOffset;
+    s32 row;
+    Packet_001B62F0 sprite __attribute__((aligned(8)));
+    UV_001B62F0 *uv0;
+    UV_001B62F0 *uv1;
+
+    originY = y + 0x720;
+    texture = (Texture_001B62F0 *)D_002907E2;
+    ((Header_001B62F0 *)sprite.header)->flags = 0x26;
+    ((Header_001B62F0 *)sprite.header)->count = 5;
+    ((Header_001B62F0 *)sprite.header)->registers = 0x42421;
+    ((Header_001B62F0 *)sprite.header)->padding = 0;
+    originX = x + 0x6C0;
+    ((Header_001B62F0 *)sprite.header)->flags |= 0x800;
+    func_002086D0(&sprite, 0x8000000044ULL);
+    sprite.r = sprite.g = sprite.b = 0x80;
+    sprite.a = 0x80;
+    sprite.q = 1.0f;
+    sprite.xyz0.z = D_003180E8;
+    sprite.xyz0.padding = 0;
+    sprite.xyz1.z = D_003180E8;
+    sprite.xyz1.padding = 0;
+    func_00208700(&sprite, D_00317B30[texture->texture], 0);
+    uv0 = (UV_001B62F0 *)&sprite.uv0;
+    uv1 = (UV_001B62F0 *)&sprite.uv1;
+    uv0->u = texture->left * 16;
+    yOffset = 0;
+    row = 0;
+    uv0->v = texture->top * 16;
+    uv1->u = texture->right * 16;
+    uv1->v = texture->bottom * 16;
+    width = texture->right - texture->left;
+    height = texture->bottom - texture->top;
+    if (row < rows) {
+        do {
+            xOffset = 0;
+            column = 0;
+            if (column < columns) {
+                u16 rowY = originY + yOffset;
+                y0 = rowY * 16 - 8;
+                y1 = (height + rowY) * 16 - 8;
+                do {
+                    u16 columnX = originX + xOffset;
+                    sprite.xyz0.x = columnX * 16 - 8;
+                    sprite.xyz0.y = y0;
+                    sprite.xyz1.x = (width + columnX) * 16 - 8;
+                    sprite.xyz1.y = y1;
+                    packet = func_00207650(packet, (s32)&sprite, 0, 0);
+                    column++;
+                    xOffset += width;
+                } while (column < columns);
+            }
+            yOffset += height;
+            row++;
+        } while (row < rows);
+    }
+    return packet;
+}
 
 void func_001B65E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                    s32 arg5, s32 arg6) {

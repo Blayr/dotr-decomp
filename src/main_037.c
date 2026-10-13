@@ -506,7 +506,92 @@ void func_001A9800(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A98B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9F50);
+typedef struct {
+    u16 loops;
+    u16 primitive;
+    u32 flags;
+    u64 registers;
+} Tag_001A9F50;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001A9F50;
+
+typedef struct {
+    Tag_001A9F50 tag;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    Vertex_001A9F50 xyz0;
+    f32 s1, t1;
+    Vertex_001A9F50 xyz1;
+    u64 extra[4];
+} Sprite_001A9F50;
+
+void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Sprite_001A9F50 sprite __attribute__((aligned(8)));
+    s32 centerX;
+    s32 centerY;
+    s32 halfWidth;
+    s32 halfHeight;
+    u16 width;
+    u16 height;
+    s32 texture;
+    u16 textureWidth;
+    u16 textureHeight;
+    extern s32 func_00202E00();
+
+    width = *(u16 *)((u8 *)arg0 + 0x54);
+    height = *(u16 *)((u8 *)arg0 + 0x56);
+    centerX = arg1 + 0x800;
+    centerY = arg2 + 0x800;
+    halfWidth = width >> 1;
+    halfHeight = height >> 1;
+    if (arg3 != 0) {
+        halfWidth *= 2;
+        halfHeight *= 2;
+    }
+    func_00208460();
+    texture = func_00209E50();
+    texture += func_00202E00(texture, 1);
+    func_00202F50((s32)arg0, texture, 0);
+    func_00208460();
+    ((Tag_001A9F50 *)&sprite.tag)->primitive = 0x26;
+    ((Tag_001A9F50 *)&sprite.tag)->loops = 5;
+    ((Tag_001A9F50 *)&sprite.tag)->registers = 0x42421;
+    ((Tag_001A9F50 *)&sprite.tag)->flags = 0;
+    func_002086D0(&sprite, func_00208D00(0));
+    func_00208700(&sprite, arg0, 0);
+    sprite.r = 0x80;
+    sprite.g = 0x80;
+    sprite.b = 0x80;
+    sprite.a = 0x80;
+    sprite.q = 1.0f;
+    textureWidth = 0x10;
+    textureHeight = 0x10;
+    while (width > textureWidth) {
+        textureWidth <<= 1;
+    }
+    while (height > textureHeight) {
+        textureHeight <<= 1;
+    }
+    sprite.s0 = 0.0f;
+    sprite.t0 = 0.0f;
+    sprite.s1 = (f32)width / (f32)textureWidth;
+    sprite.t1 = (f32)height / (f32)textureHeight;
+    sprite.xyz0.x = ((centerX - halfWidth) << 4) - 8;
+    sprite.xyz0.y = ((centerY - halfHeight) << 4) - 8;
+    sprite.xyz0.z = 0xFFFFF8;
+    sprite.xyz0.fog = 0;
+    sprite.xyz1.x = ((centerX + halfWidth) << 4) - 8;
+    sprite.xyz1.y = ((centerY + halfHeight) << 4) - 8;
+    sprite.xyz1.z = 0xFFFFF8;
+    sprite.xyz1.fog = 0;
+    func_002075F0((s32)&sprite, 0, 0);
+}
 
 typedef struct {
     u8 unused0 : 4;
