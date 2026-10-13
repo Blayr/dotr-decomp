@@ -2480,7 +2480,7 @@ extern s32 D_0034FB18;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
-s32 func_002406C0(void) {
+s32 func_002406C0(s32 arg0) {
     State_002406C0 *state = (State_002406C0 *)&D_0034FB00;
     s32 ret;
 
