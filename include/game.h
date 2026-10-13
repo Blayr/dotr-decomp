@@ -553,7 +553,6 @@ extern f32 D_00291020;
 extern f32 D_002910B0;
 extern f32 D_002910B8;
 
-s32 func_0010F940(s32, s32);
 
 
 

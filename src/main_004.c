@@ -689,7 +689,36 @@ s32 func_0010F6F0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F850);
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F940);
+s32 func_0010F940(s32 arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    s32 sp50[4];
+    s32 i;
+    s32 mask;
+    s32 low;
+    s32 high;
+    s32 value;
+    s32 kind;
+    s32 result;
+
+    func_00254C90(sp50, *(s32 *)((u8 *)func_0026FC90(arg1, 0) + 4));
+    if ((mask = func_00254890(sp50, arg0)) < 0) {
+        return 0;
+    }
+    for (i = 0; i < func_0024E910(mask); i++) {
+        value = func_0024EC50(mask, i);
+        high = value >> 8;
+        low = value & 0xFF;
+        kind = func_001E1030(high, low);
+        if (kind == 0x1AB || kind == 0x1AC || kind == 0x192 || kind == 0x193) {
+            return 0;
+        }
+        result = func_001E1090(high, low);
+        if (func_002509E0(high, low, result & 0xFF, result >> 8) >= 0xBB8) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 typedef struct {
     u8 low : 4;
