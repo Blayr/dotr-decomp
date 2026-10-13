@@ -539,7 +539,16 @@ s32 func_001FC840(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FC890);
+static inline s32 toAngle_001FC890(f32 radians) {
+    return (s32)(32768.0f * radians / 3.1415927f);
+}
+
+void func_001FC890(f32 *src, s32 *dst) {
+    dst[0] = (s32)src[0];
+    dst[1] = toAngle_001FC890(src[1]);
+    dst[2] = toAngle_001FC890(src[2]);
+    dst[3] = (s32)src[3];
+}
 
 void func_001FC950(void *arg0, void *arg1) {
     s32 *src = arg0;

@@ -860,7 +860,6 @@ typedef struct {
     s32 w;
 } Vec4_00260990;
 
-void func_001FC890(f32 *, void *);
 
 void func_00260990(s32 arg0, s32 arg1) {
     Vec4_00260990 *rotation;
