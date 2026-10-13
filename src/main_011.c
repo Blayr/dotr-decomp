@@ -555,7 +555,162 @@ s32 func_00145400(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_001459E0);
+typedef struct Coord_001459E0 {
+    u8 x : 4;
+    u8 y : 4;
+} Coord_001459E0;
+
+typedef struct Unit_001459E0 {
+    u16 pos;
+    u8 pad2[6];
+    u32 target;
+} Unit_001459E0;
+
+typedef struct Result_001459E0 {
+    u16 pos;
+    s8 kind;
+    u8 pad3;
+    u16 target;
+    u8 pad6[6];
+    s32 action;
+    s8 value;
+} Result_001459E0;
+
+#define selected_001459E0(unit, mode) \
+    ((mode) == 1 ? (u32)(u16)(((Unit_001459E0 *)(unit))->target >> 16) \
+                 : (u32)(u16)((Unit_001459E0 *)(unit))->target)
+
+static inline u32 minY_001459E0(u32 value, void *unit, s32 mode) {
+    return value < (selected_001459E0(unit, mode) >> 8) ? (u8)value : (selected_001459E0(unit, mode) >> 8);
+}
+
+static inline u32 maxY_001459E0(u32 value, void *unit, s32 mode) {
+    return (selected_001459E0(unit, mode) >> 8) < value ? (u8)value : (selected_001459E0(unit, mode) >> 8);
+}
+
+static inline u32 minX_001459E0(u32 value, void *unit, s32 mode) {
+    return value < (selected_001459E0(unit, mode) & 0xFF) ? (u8)value : (selected_001459E0(unit, mode) & 0xFF);
+}
+
+static inline u32 maxX_001459E0(u32 value, void *unit, s32 mode) {
+    return (selected_001459E0(unit, mode) & 0xFF) < value ? (u8)value : (selected_001459E0(unit, mode) & 0xFF);
+}
+
+s32 func_001459E0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
+    s32 target;
+    s32 leader;
+    s32 count;
+    Coord_001459E0 coords[12];
+    extern s32 func_00146220();
+    extern s32 func_00276CC0();
+    extern void func_00279230();
+    extern s32 func_0027E360(s32, s32, s32, u8, s32);
+
+    {
+        s32 bestCost;
+        s32 bestIndex;
+        s32 mode;
+        Coord_001459E0 *p;
+        s32 i;
+        target = func_001E1090(((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF);
+        mode = arg3;
+        if (selected_001459E0(arg0, mode) == 0xFFFF &&
+            target == selected_001459E0(arg0, mode)) {
+            ((Result_001459E0 *)arg2)->pos = ((Unit_001459E0 *)arg0)->pos;
+            ((Result_001459E0 *)arg2)->kind = 6;
+            ((Result_001459E0 *)arg2)->target = target;
+            ((Result_001459E0 *)arg2)->value = func_0027E360(
+                ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF,
+                ((Result_001459E0 *)arg2)->target, arg4, 0);
+            ((Result_001459E0 *)arg2)->action = func_00146220(
+                ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+
+        p = coords;
+        {
+            s32 i = 0;
+            Coord_001459E0 *q = p;
+            do {
+                q->x = q->y = 15;
+                ++i;
+                ++q;
+            } while (i < 12);
+        }
+
+        leader = func_001E3790(selected_001459E0(arg0, mode) & 0xFF,
+                             selected_001459E0(arg0, mode) >> 8);
+        if (leader < 0) {
+            leader = 0xFFFF;
+        }
+        func_00279230(((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF,
+                     coords, target & 0xFF, target >> 8,
+                     selected_001459E0(arg0, mode) & 0xFF,
+                     selected_001459E0(arg0, mode) >> 8, (u16)leader, 7);
+        count = func_0027AFC0((u8 *)coords);
+        if (count > 0) {
+            s32 cost;
+            bestIndex = 0xFF;
+            bestCost = 0xFFFF;
+            for (i = 0; i < count; ++i, ++p) {
+                if (func_001E36E0(p->x, p->y) == 0) {
+                    cost = func_00276CC0(p->x, p->y, arg1, 3, 1,
+                                        (u8)func_001461C0(arg1));
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        bestIndex = i;
+                    } else if (cost == bestCost) {
+                        if ((maxX_001459E0(p->x, arg0, mode) -
+                             minX_001459E0(p->x, arg0, mode)) +
+                            (maxY_001459E0((u8)p->y, arg0, mode) -
+                             minY_001459E0((u8)p->y, arg0, mode)) <
+                            (maxX_001459E0(coords[bestIndex].x, arg0, mode) -
+                             minX_001459E0(coords[bestIndex].x, arg0, mode)) +
+                            (maxY_001459E0((u8)coords[bestIndex].y, arg0, mode) -
+                             minY_001459E0((u8)coords[bestIndex].y, arg0, mode))) {
+                            bestCost = cost;
+                            bestIndex = i;
+                        }
+                    }
+                }
+            }
+        } else {
+            ((Result_001459E0 *)arg2)->pos = ((Unit_001459E0 *)arg0)->pos;
+            ((Result_001459E0 *)arg2)->kind = 6;
+            ((Result_001459E0 *)arg2)->target = target;
+            ((Result_001459E0 *)arg2)->value = func_0027E360(
+                ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF,
+                ((Result_001459E0 *)arg2)->target, arg4, 0);
+            ((Result_001459E0 *)arg2)->action = func_00146220(
+                ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF, arg0);
+            func_0027B1B0(arg0, arg3);
+            return 0;
+        }
+            if (bestIndex != 0xFF) {
+                ((Result_001459E0 *)arg2)->pos = ((Unit_001459E0 *)arg0)->pos;
+                ((Result_001459E0 *)arg2)->kind = 6;
+                ((Result_001459E0 *)arg2)->target =
+                    (coords[bestIndex].y << 8) | coords[bestIndex].x;
+                ((Result_001459E0 *)arg2)->value = func_0027E360(
+                    ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF,
+                    ((Result_001459E0 *)arg2)->target, arg4, 0);
+                ((Result_001459E0 *)arg2)->action = func_00146220(
+                    ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF, arg0);
+            } else {
+                ((Result_001459E0 *)arg2)->pos = ((Unit_001459E0 *)arg0)->pos;
+                ((Result_001459E0 *)arg2)->kind = 6;
+                ((Result_001459E0 *)arg2)->target = target;
+                ((Result_001459E0 *)arg2)->value = func_0027E360(
+                    ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF,
+                    ((Result_001459E0 *)arg2)->target, arg4, 0);
+                ((Result_001459E0 *)arg2)->action = func_00146220(
+                    ((Unit_001459E0 *)arg0)->pos >> 8, ((Unit_001459E0 *)arg0)->pos & 0xFF, arg0);
+            }
+            func_0027B1B0(arg0, arg3);
+        return 0;
+    }
+}
 
 s32 func_001461C0(s32 arg0) {
     if (func_001DF470(arg0) > 2000) {
