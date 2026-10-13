@@ -594,7 +594,197 @@ s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BCE20);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001BCE20;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001BCE20;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001BCE20;
+
+typedef struct {
+    u64 tag[2];
+    Color_001BCE20 color;
+    Vertex_001BCE20 vertex0;
+    Vertex_001BCE20 vertex1;
+    u64 end;
+} Box_001BCE20;
+
+typedef struct {
+    u8 kind;
+    u8 pad1;
+    u8 attribute : 4;
+    u8 level : 4;
+    u8 stars;
+    u16 link;
+    u8 pad6[2];
+    u16 attack;
+    u16 defense;
+} Card_001BCE20;
+
+void *func_001BCE20(void *arg0, s32 card, s32 x, s32 y, s32 flag, s32 flag2) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B4540(s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001DE090(s32, s32);
+    extern s32 func_001B4780(s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_00215D30();
+    extern u8 D_00290080[];
+    extern u8 D_00290020[];
+    extern char D_002BEFB7[];
+    extern char D_002BE940[];
+    extern char D_002BE948[];
+    extern s32 D_00290A12;
+    extern s32 D_002908E6;
+    extern s32 D_002908BE;
+    extern s32 D_002908C8;
+    extern s32 D_002908F0;
+    extern s32 D_0029086E;
+    extern s32 D_00290878;
+    extern s32 D_0029097C;
+    extern s32 D_00290986;
+    extern s32 D_00290990;
+    s32 player = D_003181EC;
+    u8 *state = D_00317490;
+    s32 id = (s32)arg0;
+    Card_001BCE20 *data;
+    s32 level;
+    s32 rank;
+    s32 w;
+    u8 *sprite;
+    s32 kind;
+    s32 attr;
+    s32 hint = 0;
+    s8 *text;
+    s32 px;
+    s32 py;
+    f32 scale;
+    Box_001BCE20 box __attribute__((aligned(8)));
+    s8 digit;
+
+    data = (Card_001BCE20 *)func_001DD0E0(card);
+    level = func_002158B0(player);
+    scale = 1.0f;
+    if (data == NULL) {
+        return (void *)func_001B4780(id, flag ? 6 : -1, -1, 9, x, y, -0x130, -0x36, flag);
+    }
+    kind = data->kind >> 5;
+    attr = data->kind & 0x1F;
+    if (kind == 0) {
+        sprite = D_00290080 + attr * 10;
+    } else {
+        sprite = D_00290080 + (kind + 0x14) * 10;
+    }
+    attr = func_001DE020(kind);
+    rank = func_001DE090(attr, data->attribute);
+    if (attr == 0 && data->link != 0xFFFF) {
+        attr = 4;
+    }
+    id = func_0020F290(func_001FD680(id, 1, func_001DE210(card), 0, 0x16));
+    id = func_001B4780(id, flag ? 6 : attr + 7, -1, 9, x, y, -0x130, -0x36, flag);
+    if (func_00216920(player, card) != 0) {
+        id = func_001B3CC0(id, &D_00290A12, x + 0x6C8, y + 0x727, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    } else {
+        id = func_001B6EA0(id, x + 8, y + 7, 1, 0, 3, card);
+    }
+    if (kind == 0) {
+        id = func_001B4540(id, x + 0x28, y + 3, func_00215D30(player, card), 0, 0);
+    }
+    id = func_001B3CC0(id, sprite, x + 0x6C4, y + 0x73A, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    id = func_001B3CC0(id, D_00290020 + rank * 10, x + 0x6DE, y + 0x73A, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    if (flag) {
+        text = D_002BEFB7;
+        px = x + 0xA0;
+        py = y + 0x25;
+        id = func_001B6F70(id, px, py, 0, 2, func_0019BEF0((char *)text), text, hint != 0 ? (s32)D_002BE944 : 0);
+        id = func_001B3CC0(id, D_00290080 + (level + 0xE3) * 10, x + 0x7C7, y + 0x730, 0, 1,
+                           0, 0, 0, 0, 1, 0, -1, 0x80);
+    } else {
+        if (kind == 0) {
+            id = func_001B3CC0(id, &D_002908E6, x + 0x6F8, y + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            id = func_001B6EA0(id, x + 0x4E, y + 0x25, 1, 0, 2, data->level);
+            id = func_001B3CC0(id, &D_002908BE, x + 0x7B8, y + 0x723, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            id = func_001B6EA0(id, x + 0x108, y + 5, 1, 0, 4, data->attack & 0x1FFF);
+            id = func_001B3CC0(id, &D_002908C8, x + 0x7B8, y + 0x733, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            id = func_001B6EA0(id, x + 0x108, y + 0x15, 1, 0, 4, data->defense & 0x1FFF);
+        }
+        id = func_001B3CC0(id, &D_002908F0, x + 0x728, y + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        id = func_001B6EA0(id, x + 0x7E, y + 0x25, 1, 0, 3, data->stars);
+        px = x + 0x76D;
+        py = y + 0x743;
+        if (func_00216AC0(player, card, -1) < 9) {
+            id = func_001B3CC0(id, &D_0029086E, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        } else {
+            id = func_001B3CC0(id, &D_00290878, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        }
+        px = x + 0xC0;
+        py = y + 0x25;
+        id = func_001B6EA0(id, px, py, 1, 0, 1, func_00216AC0(player, card, hint != 0 ? -1 : 3));
+        id = func_001B3CC0(id, &D_0029097C, x + 0x78D, y + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        px = x + 0xE0;
+        py = y + 0x25;
+        digit = func_00216AC0(player, card, 0) + '0';
+        id = func_001B6F70(id, px, py, 1, 0, 1, &digit, hint != 0 ? (s32)D_002BE944 : 0);
+        id = func_001B3CC0(id, &D_00290986, x + 0x7AD, y + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        px = x + 0x100;
+        py = y + 0x25;
+        digit = func_00216AC0(player, card, 1) + '0';
+        id = func_001B6F70(id, px, py, 1, 0, 1, &digit, hint != 0 ? (s32)D_002BE944 : 0);
+        id = func_001B3CC0(id, &D_00290990, x + 0x7CD, y + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        px = x + 0x120;
+        py = y + 0x25;
+        digit = func_00216AC0(player, card, 2) + '0';
+        id = func_001B6F70(id, px, py, 1, 0, 1, &digit, hint != 0 ? (s32)D_002BE944 : 0);
+    }
+    px = x + 0x48;
+    py = y + 3;
+    id = func_001B65F0(id, flag ? 6 : attr + 7, px, py, -0xB0, -0x20, -1, 0);
+    w = func_001FEAB0(1)[3];
+    if (w > 0xA8) {
+        scale = 168.0f / (f32)w;
+    }
+    id = func_001FE660(id, 1, x + 0x4E, y + 9, scale, 1.0f, (s32)D_002BE940, func_001FDFE0);
+    id = func_001FE660(id, 1, x + 0x4D, y + 8, scale, 1.0f, (s32)D_002BE944, func_001FDFE0);
+    id = func_001FE660(id, 1, x + 0x4C, y + 7, scale, 1.0f, (s32)D_002BE948, func_001FDFE0);
+    func_001FEAF0(1);
+    if (flag2 != 0 && func_00216AC0(player, card, 3) <= 0) {
+        ((Tag_001BCE20 *)box.tag)->flags = 6;
+        ((Tag_001BCE20 *)box.tag)->count = 3;
+        ((Tag_001BCE20 *)box.tag)->registers = 0x441;
+        ((Tag_001BCE20 *)box.tag)->padding = 0;
+        func_002086D0(box.tag, func_00208D00(2));
+        box.color.r = 0x80;
+        box.color.g = 0x80;
+        box.color.b = 0x80;
+        box.color.a = 0x40;
+        box.color.q = 1.0f;
+        box.vertex0.x = (x + 0x6C0) << 4;
+        box.vertex0.y = (y + 0x720) << 4;
+        box.vertex0.z = *(s32 *)(state + 0xC58);
+        box.vertex0.fog = 0;
+        box.vertex1.x = (x + 0x7F0) << 4;
+        box.vertex1.y = (y + 0x756) << 4;
+        box.vertex1.z = *(s32 *)(state + 0xC58);
+        box.vertex1.fog = 0;
+        id = func_00207650(id, (s32)box.tag, 0, 0);
+    }
+    return (void *)id;
+}
 
 typedef struct {
     u16 count;
@@ -640,7 +830,6 @@ static inline void set_uv_001BD8A0(UV_001BD8A0 *p, s32 u, s32 v) {
     p->v = v;
 }
 
-void *func_001BCE20(void *, s32, s32, s32, s32, s32);
 
 s32 func_001BD8A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5) {
     Packet_001BD8A0 packet __attribute__((aligned(8)));
