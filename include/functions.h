@@ -1230,6 +1230,7 @@ void func_001F3CB0(void *arg0, s32 arg1);
 void func_001F3E40(void *arg0, s32 arg1);
 u8 *func_001F3EA0(s32 arg0, s32 arg1);
 void func_001F3F20(void);
+void func_001F40D0(s32 group);
 void func_001F48F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001F4900(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 s32 func_001F4CB0(s32 arg0);

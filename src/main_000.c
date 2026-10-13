@@ -178,7 +178,6 @@ s32 func_00100820(void) {
 
 void func_001A9590(void);
 void func_001A98B0(void);
-void func_001F40D0(s32);
 
 typedef union {
     f32 value;

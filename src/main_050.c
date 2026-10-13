@@ -266,7 +266,245 @@ void func_001F3F20(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_050", func_001F40D0);
+typedef struct Entry_001F40D0 {
+    u64 kind : 3;
+    u64 time : 13;
+    u64 source : 3;
+    u64 target : 10;
+    s64 noLoad : 1;
+    s64 reload : 1;
+    s64 started : 1;
+    u16 model;
+    u16 motion;
+    u8 pad08[8];
+    s32 result;
+    u8 pad14[4];
+} Entry_001F40D0;
+
+typedef struct Link_001F40D0 {
+    u64 status : 3;
+    u64 from : 3;
+    u64 to : 10;
+    u64 extra : 48;
+} Link_001F40D0;
+
+typedef struct State_001F40D0 {
+    Link_001F40D0 links[32];
+    Entry_001F40D0 entries[24];
+    s32 group;
+    s32 entry;
+} State_001F40D0;
+
+typedef s32 (*Play_001F40D0)(void *, s32);
+
+typedef struct Table_001F40D0 {
+    Play_001F40D0 *plays;
+    s32 unused;
+    s32 count;
+} Table_001F40D0;
+
+static inline Link_001F40D0 *find_001F40D0(s32 source, s32 target) {
+    extern State_001F40D0 D_0031BB50;
+    Link_001F40D0 *link;
+    s32 i;
+
+    link = D_0031BB50.links;
+    for (i = 0; i < 32L; i++, link++) {
+        if ((source < 0 || link->from == source) && (target < 0 || link->to == target)) {
+            return link;
+        }
+    }
+    return NULL;
+}
+
+static inline void restart_001F40D0(s32 model, s32 loop) {
+    func_001F1A80(model, 0.0f);
+    if (loop >= 0) {
+        func_001F16B0(model);
+    } else {
+        func_001F1560(model, 0, 0x10);
+    }
+    func_001F1A80(model, 1.0f);
+}
+
+void func_001F40D0(s32 group) {
+    extern State_001F40D0 D_0031BB50;
+    extern Entry_001F40D0 D_0031BC50[];
+    extern Table_001F40D0 D_00292FF0[];
+    extern void func_0017BB90(s32);
+    extern s32 func_001F13F0(s32);
+    extern s32 func_001F1400(s32, s32);
+    extern s32 func_001F19A0(s32);
+    extern void func_001FA8A0(s32, s32, s32, u16, s32, void *);
+    Entry_001F40D0 *entry;
+    Link_001F40D0 *link;
+    Link_001F40D0 *links;
+    State_001F40D0 *state;
+    s32 i;
+    s32 flags;
+    void *data;
+    s32 source;
+    s32 target;
+    s32 result;
+    s32 phase;
+    s32 model;
+    s32 current;
+    s32 loop;
+    s32 kind;
+    s32 length;
+    s32 go;
+    s32 hi;
+    s32 lo;
+    void *addr;
+    long base;
+    f32 frame;
+    f32 start;
+
+    links = D_0031BB50.links;
+    entry = D_0031BC50;
+    func_001AAF60(1);
+    func_0020BAF0(0);
+    for (i = 0, base = 0x1E10000; i < 24; i++, entry++, base += 0x8000) {
+        if (group >= 0 && entry->source != group) {
+            continue;
+        }
+        flags = -1;
+        addr = (void *)0x1ED0000;
+        data = NULL;
+        if (entry->kind != 1) {
+            continue;
+        }
+        if (entry->noLoad) {
+            flags = -2;
+        }
+        if (entry->reload) {
+            flags = -3;
+        }
+        switch (group) {
+        case 1:
+            data = (void *)func_001F1130(func_001E1360(entry->motion >> 8, entry->motion & 0xFF));
+            break;
+        case 2:
+            data = (void *)func_001F0FF0(func_001E1360(entry->motion >> 8, entry->motion & 0xFF));
+            break;
+        }
+        if (data == NULL) {
+            link = find_001F40D0(entry->source, entry->target);
+            if (link == NULL || link->status != 2) {
+                continue;
+            }
+            data = (void *)(0x1EE0000 + (long)(link - links) * 0x8000);
+        }
+        state = &D_0031BB50;
+        target = entry->target;
+        source = entry->source;
+        if (state->group != source || state->entry != target) {
+            func_0020B380((void *)0x1E00000, data, 0x800);
+            func_0017BB90(0);
+            func_0017B410(0x1E00000, *(s32 *)0x1E0001C - 0x1E00000);
+            state->group = source;
+            state->entry = target;
+        }
+        func_001F5370(entry->model);
+        func_001F5390(entry->motion);
+        if (entry->source != 1) {
+            addr = (void *)base;
+        }
+        entry->result = result = D_00292FF0[entry->source].plays[entry->target](addr, flags);
+        entry->time++;
+        if (entry->source == 1) {
+            lo = entry->model;
+            hi = lo >> 8;
+            lo &= 0xFF;
+            phase = func_001F6F50(0);
+            model = func_001E1360(hi, lo);
+            current = func_001F13F0(model);
+            loop = func_001F1400(model, 1);
+            kind = func_001F19A0(model);
+            frame = func_001F1B50(model);
+            if (result == 1) {
+                if (phase == 6) {
+                    result = 6;
+                } else {
+                    result = 0;
+                }
+            }
+            if (result == 3 || result == 4 || result == 8) {
+                if (!entry->started) {
+                    if (phase == current) {
+                        start = func_001F1B50(model);
+                    } else {
+                        start = 0.0f;
+                    }
+                    length = func_001F1D50(model, phase) - (s32)start;
+                    func_001FA810(0, 1);
+                    if (length < 30) {
+                        length = 30;
+                    }
+                    func_001FA8A0(0, 2, 0, length, 800, NULL);
+                    func_001FA8A0(0, 2, 1, length, 0, NULL);
+                    func_001FA8A0(0, 2, 6, length, model, NULL);
+                    entry->started = 1;
+                }
+                if (result == 4) {
+                    result = 0;
+                }
+            }
+            if (phase == 4 && result == 5) {
+                func_001F33C0(model, 1);
+            }
+            if (result == 2 || result == 3 || result == 5 || result == 6) {
+                if (current == 3 || current == 4 || current == 6) {
+                    if (phase == 6) {
+                        func_001F1940(model, 0);
+                    }
+                    if (result == 6 && kind == 1 && !(frame < 11.0f)) {
+                        go = 0;
+                        if (frame >= 16.0f) {
+                            go = 1;
+                        } else if ((s32)(3.0f * (func_0019A5C8() / 2147483648.0f)) != 0) {
+                            go = 1;
+                        }
+                        if (go) {
+                            func_001F1C40(model, frame - 2.0f);
+                        }
+                    }
+                } else {
+                    func_001F1A80(model, 1.0f);
+                    if (loop >= 0) {
+                        func_001F16B0(model);
+                    } else {
+                        if (phase == 3) {
+                            phase = 4;
+                        }
+                        func_001F1550(model, phase);
+                    }
+                    func_001F1A80(model, 1.0f);
+                }
+            } else if (result == 7) {
+                if (current == 3 || current == 4) {
+                    restart_001F40D0(model, loop);
+                }
+            } else if (result == 0) {
+                if (phase == 3 && current == 4 && !(frame < 16.0f)) {
+                    restart_001F40D0(model, loop);
+                }
+            } else if (result == 8) {
+                if (phase == 3 && current == 4) {
+                    restart_001F40D0(model, loop);
+                }
+                func_001F4CB0(i);
+            }
+        } else if (flags == -2) {
+            if (result == 8) {
+                entry->kind = 2;
+            }
+        } else if (result == 8) {
+            func_001F4CB0(i);
+        }
+    }
+    func_0020BB50();
+}
 
 void func_001F48F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_001F4900(arg0, arg1, arg2, arg3, arg4, 0, 0);
