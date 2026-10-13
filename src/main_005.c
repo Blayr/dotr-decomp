@@ -806,7 +806,6 @@ typedef struct Output_001170A0 {
 } Output_001170A0;
 
 void func_001E1E70(s32, s32, s32, s32);
-s32 func_0027DBC0(s32, s32, s32);
 
 s32 func_001170A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Nibbles_001170A0 flags[12];

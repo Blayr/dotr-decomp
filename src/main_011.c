@@ -2007,7 +2007,6 @@ typedef struct {
     u8 result;
 } Out_0014AAB0;
 
-s32 func_0027DBC0(s32, s32, s32);
 void func_001E1E70(s32, s32, s32, s32);
 
 s32 func_0014AAB0(void *arg0, s32 arg1, void *arg2, u8 arg3) {

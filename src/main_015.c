@@ -1431,7 +1431,6 @@ typedef struct {
 s32 func_001664A0(u16 *, s32, void *, u8, s32);
 s32 func_00166EE0(s32);
 s32 func_001E1E70(s32, s32, s32, s32);
-s32 func_0027DBC0(s32, s32, s32);
 
 s32 func_00166D10(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     u16 *unit = arg0;

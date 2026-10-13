@@ -1224,7 +1224,6 @@ typedef struct {
     u8 result;
 } Out_00138780;
 
-s32 func_0027DBC0(s32 arg0, s32 arg1, s32 arg2);
 void func_001E1E70(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 s32 func_00138780(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {

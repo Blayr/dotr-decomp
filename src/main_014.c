@@ -3000,7 +3000,6 @@ typedef struct Result_00161BF0 {
 } Result_00161BF0;
 
 s32 func_001E1E70(s32, s32, s32, s32);
-s32 func_0027DBC0(s32, s32, s32);
 
 s32 func_00161BF0(u16 *arg0, s32 arg1, void *arg2, s32 arg3) {
     extern void func_0027B1B0();
