@@ -938,7 +938,58 @@ s32 func_001D9A30(s32 arg0, s32 arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001D9C40);
+typedef struct {
+    u8 pad000[0x6A0];
+    s32 slots[8];
+    s32 count;
+} State_001D9C40;
+
+s32 func_001D9C40(s32 arg0, s32 arg1) {
+    extern s32 func_00202E00();
+    extern s32 func_00202BF0();
+    extern s32 D_00317B30[];
+    extern s32 D_00318110;
+    State_001D9C40 *state;
+    s32 value;
+    s32 i;
+
+    state = (State_001D9C40 *)D_00317490;
+    value = D_00318110;
+    if (D_00317B30[arg1] != 0) {
+        return arg0;
+    }
+    if (arg1 >= 0 && arg1 < 4) {
+        i = 0;
+        while (1) {
+            state->slots[i] = 0;
+            i++;
+            if (i > 3) {
+                break;
+            }
+        }
+        state->count = 0;
+        value += func_00202E00(value, 1);
+        state->slots[arg1] = func_00202BF0(3, arg1);
+        arg0 = func_00202B00(arg0, 3, value, NULL);
+        func_00202D60(3, arg1);
+        arg0 = func_0020F290(arg0);
+    } else if (arg1 == 8) {
+        i = 0;
+        while (1) {
+            state->slots[i] = 0;
+            i++;
+            if (i > 3) {
+                break;
+            }
+        }
+        value += func_00202E00(value, 1);
+        state->slots[arg1] = func_00202BF0(9, 0);
+        arg0 = func_00202B00(arg0, 9, value, NULL);
+        func_00202D60(9, 0);
+        arg0 = func_0020F290(arg0);
+    }
+    return arg0;
+}
 
 void func_001D9DD0(void) {
     func_00209D30(func_001D9E00(func_00209D20()));
