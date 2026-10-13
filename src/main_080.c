@@ -898,7 +898,151 @@ void func_00283880(s32 arg0) {
 
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00284D30);
+typedef struct Timers_00284D30 {
+    s32 enabled;
+    u8 counters[5];
+    u8 grid[3][3];
+} Timers_00284D30;
+
+void func_00280920(void);
+void func_002818A0(s32);
+void func_002825F0(void);
+extern u8 D_00351178;
+extern u8 D_00351179;
+extern u8 D_0035117A;
+extern u16 D_0035117C;
+extern s16 D_00351248;
+
+#pragma optimization_level 0
+
+s32 func_00284D30(s32 arg0) {
+    extern Timers_00284D30 D_00351210;
+    s32 i;
+    s32 j;
+    s32 speed;
+    s32 brakingSpeed;
+    s32 segment;
+
+    for (i = 0; i < 3; i++) {
+        switch (D_00351240[i].enabled) {
+        case 0:
+        case 4:
+            break;
+        case 1:
+            if (D_00351240[i].velocity < 32) {
+                D_00351240[i].velocity++;
+            } else {
+                D_00351240[i].enabled = 2;
+            }
+        case 2:
+            speed = D_00351240[i].velocity;
+            D_00351240[i].position += (s16)speed;
+            if (D_00351240[i].position > D_00351248) {
+                D_00351240[i].position -= D_00351248;
+            } else if (D_00351240[i].position < 0) {
+                D_00351240[i].position += D_00351248;
+            }
+            D_00351240[i].angle += (s16)speed;
+            if (D_00351240[i].angle > 351) {
+                D_00351240[i].angle -= 351;
+            } else if (D_00351240[i].angle < 0) {
+                D_00351240[i].angle += 351;
+            }
+            break;
+        case 3:
+            if (D_00351240[i].countdown < 6) {
+                switch (D_00351240[i].countdown) {
+                case 5:
+                    segment = D_00351240[i].position / 112;
+                    D_00351240[i].position = (s16)((segment + 1) * 112);
+                    D_00351240[i].velocity = 16;
+                    break;
+                case 4:
+                case 3:
+                    D_00351240[i].velocity = -12;
+                    break;
+                case 2:
+                case 1:
+                    D_00351240[i].velocity = 4;
+                    break;
+                }
+            }
+            brakingSpeed = D_00351240[i].velocity;
+            D_00351240[i].position += (s16)brakingSpeed;
+            if (D_00351240[i].position > D_00351248) {
+                D_00351240[i].position -= D_00351248;
+            } else if (D_00351240[i].position < 0) {
+                D_00351240[i].position += D_00351248;
+            }
+            D_00351240[i].angle += (s16)brakingSpeed;
+            if (D_00351240[i].angle > 351) {
+                D_00351240[i].angle -= 351;
+            } else if (D_00351240[i].angle < 0) {
+                D_00351240[i].angle += 351;
+            }
+            D_00351240[i].countdown--;
+            if (!D_00351240[i].countdown) {
+                D_00351240[i].velocity = 0;
+                D_00351240[i].enabled = 4;
+                func_00280CB0(i);
+            }
+            break;
+        }
+    }
+    D_00351228 = arg0;
+    if (D_00351228 != 0) {
+        func_002818A0(0);
+        func_002825F0();
+        for (j = 0; j < 3; j++) {
+            func_00283880(j);
+        }
+        if (D_00351210.enabled != 0) {
+            func_002831A0();
+            func_002818A0(2);
+            for (i = 0; i < 5; i++) {
+                if (D_00351210.counters[i] > 1) {
+                    D_00351210.counters[i]--;
+                }
+            }
+            for (j = 0; j < 3; j++) {
+                for (i = 0; i < 3; i++) {
+                    if (D_00351210.grid[j][i] > 1) {
+                        D_00351210.grid[j][i]--;
+                    }
+                }
+            }
+        }
+        func_002818A0(1);
+        if (D_00351240[0].state == 3) {
+            switch (D_00351178) {
+            case 1:
+                func_00280920();
+                if (D_0035117C != 0xFFFF) {
+                    if (D_0035117A > 3) {
+                        func_00217710(0, 25);
+                        func_001E42C0(3, 0, 0, D_0035117C);
+                        D_00351178 = 2;
+                        D_00351179 = 0;
+                    } else {
+                        func_00217710(0, 7);
+                        func_001E42C0(2, 0, 0, D_0035117C);
+                        D_00351178 = 2;
+                        D_00351179 = 0;
+                    }
+                } else {
+                    func_001E4530();
+                    D_00351178 = 6;
+                    D_00351179 = 8;
+                }
+                break;
+            }
+        }
+        func_00280060(D_00351180, 3);
+    }
+    D_00351246++;
+    return D_00351228;
+}
+#pragma optimization_level reset
 
 typedef struct Deck_00285880 {
     u8 count;
