@@ -274,7 +274,7 @@ void func_00103890(void *arg0) {
 }
 
 void func_0020C940(void *, void *, void *, void *);
-void func_0020EB40(s32);
+void func_0020EB40(void *);
 
 typedef struct {
     f32 values[4][4];
@@ -291,13 +291,13 @@ void func_001038D0(void *arg0) {
     Camera_001038D0 *camera = arg0;
     Matrix_001038D0 matrix;
 
-    func_0020EB40((s32)&camera->matrix);
+    func_0020EB40(&camera->matrix);
     func_0020C940(&matrix, camera->eye, camera->target, camera->up);
     func_0020BC00((s32)&camera->matrix, &matrix);
 }
 
 void func_0020C940(void *, void *, void *, void *);
-void func_0020EB40(s32);
+void func_0020EB40(void *);
 
 typedef struct Transform_00103920 {
     f32 field0[4];
@@ -316,7 +316,7 @@ s32 func_00103920(void *arg0, f32 fparg0, f32 fparg1) {
     transform->field20[0] = vector[0];
     transform->field20[1] = vector[1];
     transform->field20[2] = vector[2];
-    func_0020EB40((s32)transform->field30);
+    func_0020EB40(transform->field30);
     func_0020C940(matrix, transform->field0, transform->field10, transform->field20);
     func_0020BC00((s32)transform->field30, matrix);
     return 0;
@@ -338,7 +338,7 @@ typedef struct Object_001039A0 {
 } Object_001039A0;
 
 void func_0020C940(void *, void *, void *, void *);
-void func_0020EB40(s32);
+void func_0020EB40(void *);
 
 s32 func_001039A0(void *arg0) {
     s32 vector[4];
@@ -349,7 +349,7 @@ s32 func_001039A0(void *arg0) {
     object->values10.y = vector[1] % 0x10000;
     object->values10.x = vector[0];
     object->values10.z = vector[2];
-    func_0020EB40((s32)object->matrix);
+    func_0020EB40(object->matrix);
     func_0020C940(matrix, object, &object->values10, &object->values20);
     func_0020BC00((s32)object->matrix, matrix);
     return vector[1];
