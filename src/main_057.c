@@ -593,7 +593,138 @@ s32 func_0020AA30(void *arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020AD10);
+typedef struct {
+    u64 x : 9;
+    u64 reserved : 55;
+} Coord_0020AD10;
+
+typedef struct {
+    u32 reserved;
+    u32 reserved1 : 12;
+    u32 height : 11;
+    u32 reserved2 : 9;
+} Display_0020AD10;
+
+typedef struct {
+    u8 reserved0[0x10];
+    Coord_0020AD10 firstX;
+    Display_0020AD10 firstDisplay;
+    u8 reserved20[0x18];
+    Coord_0020AD10 secondX;
+    Display_0020AD10 secondDisplay;
+    u8 reserved48[0x18];
+    Coord_0020AD10 thirdX;
+    u8 reserved68[8];
+    Coord_0020AD10 fourthX;
+    u8 reserved78[0x88];
+    u8 firstColor[4];
+    s32 firstColorWord;
+    u8 reserved108[0x48];
+    Coord_0020AD10 fifthX;
+    u8 reserved158[8];
+    Coord_0020AD10 sixthX;
+    u8 reserved168[0x88];
+    u8 secondColor[4];
+    s32 secondColorWord;
+    u8 reserved1F8[0x40];
+    s32 mode;
+    s32 width;
+    s32 height;
+    f32 scale;
+    s32 field248;
+    s32 field24C;
+    s32 firstMode;
+    s32 firstIndex;
+    s32 secondMode;
+    s32 secondIndex;
+    s32 originX;
+    s32 originY;
+    s32 offset;
+    s32 field26C;
+} State_0020AD10;
+
+typedef struct {
+    s32 value;
+    u8 reserved[0x24];
+} Entry_0020AD10;
+
+typedef struct {
+    f32 value;
+    u8 reserved[0x24];
+} Scale_0020AD10;
+
+typedef struct {
+    s32 values[2];
+    u8 reserved[0x20];
+} Sizes_0020AD10;
+
+static inline s32 from_fixed_0020AD10(s32 value) {
+    return value >> 6;
+}
+
+void func_0020AD10(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern Entry_0020AD10 D_00293F1C[];
+    extern Entry_0020AD10 D_00293F20[];
+    extern Scale_0020AD10 D_00293F24[];
+    extern Entry_0020AD10 D_00293F28[];
+    extern Entry_0020AD10 D_00293F2C[];
+    extern Sizes_0020AD10 D_00293F30[];
+    State_0020AD10 *state = arg0;
+
+    state->mode = arg1;
+    state->width = D_00293F1C[arg1].value;
+    state->height = D_00293F20[arg1].value;
+    state->scale = D_00293F24[arg1].value;
+    state->field248 = D_00293F28[arg1].value;
+    state->field24C = D_00293F2C[arg1].value;
+    state->firstMode = arg2;
+    switch (arg2) {
+    case 0:
+    case 1:
+        state->firstIndex = 1;
+        break;
+    case 2:
+    case 10:
+        state->firstIndex = 0;
+        break;
+    }
+    state->secondMode = arg3;
+    switch (arg3) {
+    case 0x30:
+    case 0x31:
+        state->secondIndex = 1;
+        break;
+    case 0x32:
+    case 0x3A:
+        state->secondIndex = 0;
+        break;
+    }
+    state->originX = 0x800;
+    state->originY = 0x800;
+    state->offset = D_00293F30[arg1].values[state->secondIndex] + D_00293F30[arg1].values[state->firstIndex] * 2;
+    state->offset = from_fixed_0020AD10((state->offset << 13) >> 2);
+    func_001851E8(arg0, (s16)arg2, (s16)D_00293F1C[arg1].value, (s16)D_00293F20[arg1].value, 3, (s16)arg3, 1);
+    if (state->firstX.x == state->secondX.x) {
+        state->firstX.x = 0;
+        state->secondX.x = D_00293F30[arg1].values[state->firstIndex];
+        state->thirdX.x = state->secondX.x;
+        state->fifthX.x = state->firstX.x;
+        state->fourthX.x = D_00293F30[arg1].values[state->firstIndex] * 2;
+        state->sixthX.x = state->fourthX.x;
+        state->firstDisplay.height = state->secondDisplay.height = D_00293F20[arg1].value - 1;
+    }
+    state->firstColor[0] = 0;
+    state->firstColor[1] = 0;
+    state->firstColor[2] = 0x80;
+    state->firstColor[3] = 0xFF;
+    state->firstColorWord = 0;
+    state->secondColor[0] = 0;
+    state->secondColor[1] = 0;
+    state->secondColor[2] = 0x80;
+    state->secondColor[3] = 0xFF;
+    state->secondColorWord = 0;
+    state->field26C = 0;
+}
 
 s32 func_0020B000(s32 arg0) {
     extern void func_00187828();
