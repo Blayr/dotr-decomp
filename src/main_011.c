@@ -912,7 +912,38 @@ void func_001477D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00147830);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00147AC0);
+typedef struct {
+    u16 id;
+    u16 unk2;
+    u16 target;
+    u16 unk6;
+    union {
+        u32 word;
+        u16 low;
+    } info;
+} Action_00147AC0;
+
+void func_00147AC0(void *arg0) {
+    extern s32 func_001E1030();
+    Action_00147AC0 *action = arg0;
+    s32 owner;
+    u16 id;
+
+    id = action->id;
+    owner = func_00250360(id >> 8, id & 0xFF);
+    id = action->id;
+    switch (func_001E1030(id >> 8, id & 0xFF)) {
+    case 0x123:
+        if (func_0024E910(func_0024CA40(0, 0, owner, 1, 6, 14)) >= 3) {
+            action->target = 0x3FF;
+            id = action->id;
+            action->info.word = (func_001E1090(id >> 8, id & 0xFF) << 16) | action->info.low;
+            return;
+        }
+        break;
+    }
+    func_001474F0(action);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_00147B90);
 
