@@ -675,7 +675,126 @@ void func_00104DC0(void *arg0, void *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00105260);
+typedef struct UV_00105260 {
+    u16 u : 14;
+    u16 unusedU : 2;
+    u16 v : 14;
+    u16 unusedV : 2;
+} UV_00105260;
+
+typedef struct Frame_00105260 {
+    f32 x;
+    f32 y;
+    u32 unused;
+    s16 index;
+    s16 timer;
+} Frame_00105260;
+
+typedef struct State_00105260 {
+    u32 unused0;
+    u32 flags;
+    u8 unused8[8];
+    f32 x;
+    f32 y;
+    u8 unused18[8];
+    union {
+        struct {
+            s16 u, v;
+            s16 width, height;
+            s16 baseU, baseV;
+            s16 imageWidth, imageHeight;
+        } fixed;
+        struct {
+            f32 u, v;
+            f32 width, height;
+        } floating;
+    } uv;
+    Frame_00105260 frames[16];
+    u8 unused130[6];
+    s16 randomX;
+    s16 randomY;
+    s16 unused13A;
+    s16 delay;
+    s16 end;
+    s16 rewind;
+} State_00105260;
+
+static inline s32 flag_00105260(State_00105260 *s, s32 bit) {
+    return (s->flags & bit) ? 1 : 0;
+}
+
+void func_00105260(void *arg0, void *arg1, s32 arg2) {
+    State_00105260 *state = arg1;
+    u8 *packet = arg0;
+
+    if (flag_00105260(state, 1)) {
+        if (flag_00105260(state, 2)) {
+            state->uv.fixed.u = state->uv.fixed.baseU + state->uv.fixed.width *
+                (state->frames[arg2].index % (state->uv.fixed.imageWidth / state->uv.fixed.width));
+            state->uv.fixed.v = state->uv.fixed.baseV + state->uv.fixed.height *
+                (state->frames[arg2].index / (state->uv.fixed.imageWidth / state->uv.fixed.width));
+        } else {
+            state->uv.fixed.u = state->uv.fixed.baseU + state->uv.fixed.width *
+                (state->frames[arg2].index / (state->uv.fixed.imageHeight / state->uv.fixed.height));
+            state->uv.fixed.v = state->uv.fixed.baseV + state->uv.fixed.height *
+                (state->frames[arg2].index % (state->uv.fixed.imageHeight / state->uv.fixed.height));
+        }
+        *(u16 *)(packet + 2) |= 0x800;
+        ((UV_00105260 *)(packet + 0x18))->u = state->uv.fixed.u << 4;
+        ((UV_00105260 *)(packet + 0x18))->v = state->uv.fixed.v << 4;
+        ((UV_00105260 *)(packet + 0x30))->u = (state->uv.fixed.u + state->uv.fixed.width - 1) << 4;
+        ((UV_00105260 *)(packet + 0x30))->v = state->uv.fixed.v << 4;
+        ((UV_00105260 *)(packet + 0x48))->u = state->uv.fixed.u << 4;
+        ((UV_00105260 *)(packet + 0x48))->v = (state->uv.fixed.v + state->uv.fixed.height - 1) << 4;
+        ((UV_00105260 *)(packet + 0x60))->u = (state->uv.fixed.u + state->uv.fixed.width - 1) << 4;
+        ((UV_00105260 *)(packet + 0x60))->v = (state->uv.fixed.v + state->uv.fixed.height - 1) << 4;
+    } else {
+        if (flag_00105260(state, 2)) {
+            state->uv.floating.u = state->uv.floating.width *
+                (state->frames[arg2].index % (s16)(1.0f / state->uv.floating.width));
+            state->uv.floating.v = state->uv.floating.height *
+                (state->frames[arg2].index / (s16)(1.0f / state->uv.floating.width));
+        } else {
+            state->uv.floating.u = state->uv.floating.width *
+                (state->frames[arg2].index / (s16)(1.0f / state->uv.floating.height));
+            state->uv.floating.v = state->uv.floating.height *
+                (state->frames[arg2].index % (s16)(1.0f / state->uv.floating.height));
+        }
+        *(f32 *)(packet + 0x18) = state->uv.floating.u;
+        *(f32 *)(packet + 0x1C) = state->uv.floating.v;
+        *(f32 *)(packet + 0x30) = state->uv.floating.u + state->uv.floating.width;
+        *(f32 *)(packet + 0x34) = state->uv.floating.v;
+        *(f32 *)(packet + 0x48) = state->uv.floating.u;
+        *(f32 *)(packet + 0x4C) = state->uv.floating.v + state->uv.floating.height;
+        *(f32 *)(packet + 0x60) = state->uv.floating.u + state->uv.floating.width;
+        *(f32 *)(packet + 0x64) = state->uv.floating.v + state->uv.floating.height;
+    }
+
+    state->frames[arg2].timer++;
+    if (state->frames[arg2].timer > state->delay) {
+        state->frames[arg2].timer = 0;
+        state->frames[arg2].index++;
+        if (state->frames[arg2].index > state->end) {
+            if (flag_00105260(state, 4)) {
+                s16 range;
+                state->frames[arg2].x = state->x;
+                state->frames[arg2].y = state->y;
+                range = state->randomX;
+                if (range != 0) {
+                    state->frames[arg2].x = state->x + (func_0019A5C8() % (range * 2) - range);
+                }
+                range = state->randomY;
+                if (range != 0) {
+                    state->frames[arg2].y = state->y + (func_0019A5C8() % (range * 2) - range);
+                }
+                if (state->randomY < 0) {
+                    state->frames[arg2].y = state->y + func_0019A5C8() % state->randomY;
+                }
+            }
+            state->frames[arg2].index -= state->rewind;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_001", func_00105830);
 
