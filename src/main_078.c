@@ -1175,7 +1175,54 @@ void func_0027A090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                   arg6, arg7, arg8, arg9, arg10);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_0027A130);
+s32 func_0027A130(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8, u16 arg9) {
+    extern s32 func_002464F0(s32, s32, s32);
+    extern s32 func_0027A360(s32, s32, s32, s32, s32, s32, s32, u8, u8 *, s32 *, s32, u16, s32, s16 *, s16 *, void *);
+    extern void func_0027E770();
+    u8 scratch[0x6A];
+    s16 x;
+    s16 y;
+    u8 flag_pad;
+    u8 flag;
+    s32 result;
+    u8 level;
+    s32 previous;
+
+    flag = 0;
+    y = 0;
+    x = 0;
+    level = 1;
+    result = 0;
+    if (func_001A8710() > 0x2EE0U) {
+        return -1;
+    }
+    if (arg0 == 0) {
+        return -1;
+    }
+    if (func_002464F0(arg0, arg2, arg3) == 0) {
+        return 0;
+    }
+    if ((((arg4 < arg2) ? arg2 : arg4) - ((arg2 < arg4) ? arg2 : arg4)) + (((arg5 < arg3) ? arg3 : arg5) - ((arg3 < arg5) ? arg3 : arg5)) > (s32)arg8) {
+        return -1;
+    }
+    func_0027E770(scratch);
+    while (flag != 1 && (previous = (u8)level, arg8 >= previous)) {
+        result = func_0027A360(result, 0, arg0, arg2, arg3, arg4, arg5, level, &flag, &arg6, arg7, arg9, 0, &x, &y, scratch);
+        if (flag == 1) {
+            func_0027AC70(arg1, result, arg4, arg5);
+            return previous;
+        }
+        if (func_0027ABD0((void *)result, 0, level) == 1) {
+            level = (level + 1) & 0xFF;
+        } else {
+            return -1;
+        }
+        if (func_001A8710() > 0x2EE0U) {
+            return -1;
+        }
+    }
+    return -1;
+}
 
 u8 *func_0027A360(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38) {
     extern s32 func_002464F0();
