@@ -1414,7 +1414,6 @@ typedef struct {
 extern s32 D_002D19D8;
 extern u16 D_002D49D4[];
 extern u8 D_0034F6D0;
-s32 func_00215280(s32, s32, s32);
 
 void func_00214990(s32 arg0, s32 arg1) {
     extern State_00214990 D_0032F790[2];

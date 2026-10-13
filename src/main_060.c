@@ -61,7 +61,52 @@ s32 func_002151D0(s32 arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00215280);
+typedef struct {
+    u8 pad0[3];
+    u8 flags3 : 7;
+    u8 active : 1;
+    u8 pad4[3];
+    u8 flags7 : 6;
+    u8 slot : 2;
+} Card_00215280;
+
+typedef u8 Slot_00215280[0x54];
+
+extern u8 D_0034F6D0;
+
+s32 func_00215280(s32 arg0, s32 arg1, s32 arg2) {
+    extern u8 D_0032F790[];
+    s32 var_v1;
+    u8 *temp_s2;
+    Card_00215280 *temp_v0;
+
+    if (D_0034F6D0 == arg0) {
+        var_v1 = 0;
+    } else {
+        var_v1 = 1;
+    }
+    temp_s2 = ((Slot_00215280 *)(D_0032F790 + (var_v1 * 0xFFA0)))[arg1] + 0x7D9C + 0x7FF8;
+    if ((arg0 < 0) || (arg0 >= 2)) {
+        return 0;
+    }
+    if (arg2 == 0x29F) {
+        arg2 = 0x3E7;
+    }
+    if ((arg2 < 0) || (arg2 >= 0x356)) {
+        return 0;
+    }
+    if (*(u16 *)(temp_s2 + 0x50) != 0x3E7) {
+        return 0;
+    }
+    temp_v0 = func_00214DD0(arg0, arg2, 3, 0);
+    if (temp_v0 == NULL) {
+        return 0;
+    }
+    *(u16 *)(temp_s2 + 0x50) = (u16)arg2;
+    temp_v0->slot = arg1;
+    temp_v0->active = 1;
+    return 1;
+}
 
 typedef struct Slot_002153D0 {
     u8 pad[0x50];
