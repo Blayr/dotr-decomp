@@ -1221,6 +1221,7 @@ s32 func_001FA810(s32 arg0, s32 arg1);
 s32 func_001FAD10(s32 arg0);
 s32 func_001FAD60(s32 arg0, void *arg1);
 f32 *func_001FAF60(s32 arg0);
+s32 func_001FB0B0(s32 arg0, s32 arg1);
 s32 func_001FB360(s32 index, f32 *src);
 s32 func_001FB500(s32 index, f32 *src);
 s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2);

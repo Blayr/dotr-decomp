@@ -1198,7 +1198,48 @@ f32 *func_001FAF60(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FAFB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FB0B0);
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vector_001FB0B0;
+
+void func_0020C630(void *, void *);
+
+static inline s32 fixed_angle_001FB0B0(f32 radians) {
+    extern s32 func_001A22C0(f32);
+    return func_001A22C0((32768.0f * radians) / 3.1415927f);
+}
+
+static inline s32 angles_001FB0B0(s32 index, s32 *angles) {
+    Vector_001FB0B0 *source;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    source = (Vector_001FB0B0 *)D_0031BEB0[index];
+    if (source == 0) {
+        return 0;
+    }
+    angles[0] = -fixed_angle_001FB0B0(source->z);
+    angles[1] = 0x4000 - fixed_angle_001FB0B0(source->y);
+    angles[3] = 0;
+    angles[2] = 0;
+    return 1;
+}
+
+s32 func_001FB0B0(s32 arg0, s32 arg1) {
+    s32 angles[4];
+
+    if (arg1 == 0) {
+        return 0;
+    }
+    if (angles_001FB0B0(arg0, angles) == 0) {
+        return 0;
+    }
+    func_0020C630((void *)arg1, angles);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_052", func_001FB1D0);
 
