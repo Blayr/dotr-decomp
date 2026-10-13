@@ -1482,7 +1482,6 @@ typedef struct Unit_00121CE0 {
     s32 unk8;
 } Unit_00121CE0;
 
-void func_001229F0(void *, s32);
 void func_00122270(void *);
 void func_0027CA50(void *, s32, s32, s32);
 
@@ -1723,7 +1722,52 @@ s32 func_00122810(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_006", func_00122970);
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_001229F0);
+typedef struct Unit_001229F0 {
+    u16 id;
+    u8 pad02[2];
+    s16 field04;
+    u8 pad06[2];
+    u16 field08;
+    u16 field0A;
+} Unit_001229F0;
+
+void func_001229F0(void *arg0, s32 arg1) {
+    extern s32 func_001E1030();
+    extern void func_00122270();
+    s32 side;
+    s32 value;
+    u8 count = 0;
+    Unit_001229F0 *unit = arg0;
+    s32 i;
+
+    if (func_001DF540(unit->id >> 8, unit->id & 0xFF) != 0) {
+        side = func_0024DE70(unit->id >> 8, unit->id & 0xFF);
+        value = func_001E1090(unit->id >> 8, unit->id & 0xFF);
+        switch (func_001E1030(unit->id >> 8, unit->id & 0xFF)) {
+        case 0x235:
+            i = 6;
+            do {
+                if (func_001E2100(side, i, 4) != 0) {
+                    if (side == func_00250360(side, i)) {
+                        count++;
+                    }
+                }
+                if (func_001E2100(side == 0 ? 1 : 0, i, 4) != 0) {
+                    if (side == func_00250360(side == 0 ? 1 : 0, i)) {
+                        count++;
+                    }
+                }
+                i++;
+            } while (i < 11);
+            if (count > 0) {
+                unit->field04 = 0x3FF;
+                *(u32 *)&unit->field08 = (value << 16) | unit->field08;
+            }
+            break;
+        }
+        func_00122270(unit, 0);
+    }
+}
 
 typedef struct Data_00122B50 {
     u16 id;
