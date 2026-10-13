@@ -515,7 +515,36 @@ s32 func_001EFF70(s32 arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F0060);
+typedef struct {
+    u8 pad000[0x20C];
+    s8 bit0 : 1;
+    s8 : 2;
+    s8 bit3 : 1;
+} Obj_001F0060;
+
+s32 func_001F0060(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern void func_001F08D0(s32);
+    extern s32 func_001F0390();
+    extern s32 func_001FECB0();
+    Obj_001F0060 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = (Obj_001F0060 *)D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    if (obj->bit3) {
+        return 0;
+    }
+    func_001F08D0(arg0);
+    obj->bit0 = (arg2 != 0) ? 0 : 1;
+    if (func_001FECB0(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5, (s32)func_001F0390, arg0) != 0) {
+        obj->bit3 = 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001F01A0);
 
