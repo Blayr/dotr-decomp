@@ -846,7 +846,58 @@ s32 func_001FD2D0(s32 arg0, s32 arg1) {
     return sp3C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD320);
+typedef struct State_001FD320 {
+    s32 width;
+    s32 height;
+    s32 tw;
+    s32 th;
+    s32 cbp;
+    s32 tbp;
+    s32 cbpOffset;
+    u8 pad1C[0x258];
+    s32 unk274;
+    u16 unk278;
+} State_001FD320;
+
+s32 func_001FD320(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+    extern State_001FD320 D_0031C070;
+    extern s32 D_002D19D0;
+    extern u16 D_002D49D4[];
+    extern s32 func_00202E00();
+    extern s32 func_001FD4C0();
+    State_001FD320 *state = &D_0031C070;
+    s32 start;
+    s32 i;
+    s32 tw;
+    s32 th;
+
+    start = arg2;
+    func_001FEB40();
+    D_0031C070.width = 640;
+    D_0031C070.height = 384;
+    for (tw = 0; (1 << tw) < 640; tw++) {
+    }
+    for (th = 0; (1 << th) < 384; th++) {
+    }
+    state->tw = tw;
+    state->th = th;
+    state->cbp = func_00202F00(3);
+    if (state->cbp < 0) {
+        arg2 += func_00202E00(arg2, 1);
+        state->cbp = func_00202F00(3);
+    }
+    state->tbp = arg2;
+    for (i = 0; i < 3; i++) {
+        arg0 = func_001FD4C0(arg0, i, state->cbp + i);
+    }
+    if (arg3 != NULL) {
+        *arg3 = arg2 + 0x1E0 - start;
+    }
+    state->cbpOffset = arg1;
+    state->unk274 = 0xFFFFFB;
+    state->unk278 = D_002D49D4[D_002D19D0] & 0x1FFF;
+    return arg0;
+}
 
 void func_001FD4B0(s32 arg0) {
     D_0031C2E4 = arg0;
