@@ -361,7 +361,75 @@ void func_0010DC40(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010DD50);
+s32 func_0010DD50(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_0010DFC0();
+    extern s32 func_0010E890();
+    extern s32 func_0010F450();
+    extern s32 func_00278890();
+    u8 work[0x60];
+    s32 ret;
+    s32 res;
+    s32 pos;
+    s32 kind;
+    u8 *ctx = (u8 *)arg2;
+
+    *(s16 *)ctx = arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+        return -1;
+    }
+    kind = func_0010DFC0(arg1, work);
+    if (kind == -1) {
+        return -1;
+    }
+    *(u8 *)(ctx + 2) = 10;
+    *(s32 *)(ctx + 0xC) = 0;
+    pos = func_001E1090(arg0 >> 8, arg0 & 0xFF);
+    if (kind == 0) {
+        if (func_0010E320(arg1, ctx, work) >= 0) {
+            ret = func_00276F10(work, pos & 0xFF, pos >> 8,
+                                arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0,
+                                func_0010EDA0(arg1));
+            if (ret < 0) {
+                if (func_001E0150(arg1) < 6) {
+                    res = func_0010E890(arg1, kind & 0xFF, work, ret);
+                    if (res < 0) {
+                        return -1;
+                    }
+                    *(s16 *)(ctx + 4) = res;
+                    return 1;
+                }
+            } else {
+                res = func_0010E890(arg1, kind & 0xFF, work, ret);
+                if (res < 0) {
+                    return -1;
+                }
+                *(s16 *)(ctx + 4) = res;
+                return 1;
+            }
+        }
+    } else {
+        ret = func_00276F10(work, pos & 0xFF, pos >> 8,
+                            arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0,
+                            func_0010EDA0(arg1));
+    }
+    if (kind == 2) {
+        func_0010E540(arg1, ctx, (s32)work, 0);
+        *(s16 *)(ctx + 4) = 0;
+        return 1;
+    }
+    if (func_0010F450(arg1, ctx, work) < 0) {
+        return -1;
+    }
+    res = func_0010E890(arg1, kind & 0xFF, work, ret);
+    if (res < 0) {
+        return -1;
+    }
+    *(s16 *)(ctx + 4) = res;
+    return 1;
+}
 
 s32 func_0010DFC0(s32 arg0, void *arg1) {
     extern s32 func_00278890();
