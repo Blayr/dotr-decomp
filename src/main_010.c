@@ -806,7 +806,76 @@ s32 func_0013F640(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", func_0013F850);
+s32 func_0013F850(s32 arg0, u8 *arg1, u8 *arg2) {
+    extern u16 *func_00278A90();
+    extern s32 func_00278F10();
+    s32 spA0[8];
+    s32 spC0[7];
+    s16 spDC;
+    s16 spDE;
+    s32 var_s5;
+    s32 temp_s6;
+    s32 temp_s6_2;
+    s32 var_s0;
+    s32 var_s7;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    func_0026FD30(arg0, spC0);
+    var_s7 = -1;
+    var_s0 = -1;
+    var_s5 = 0;
+    if (0 < func_0026FE20(arg0)) {
+        s32 *var_s1;
+        s32 *var_s2;
+
+        var_s1 = spC0;
+        var_s2 = spA0;
+        do {
+            spDE = 0;
+            spDC = 0;
+            temp_s6 = *var_s1;
+            *var_s2 = 0;
+            if ((func_0026FCE0(temp_s6) >> 5) == 0) {
+                if (func_0023C160() < 3) {
+                    *var_s2 = (s32)func_00278C80(
+                        arg0, *var_s2, var_s5 & 0xFF, temp_s6 & 0xFFFF,
+                        0, (u16 *)&spDC, (u16 *)&spDE);
+                } else {
+                    *var_s2 = (s32)func_00278A90(
+                        arg0, *var_s2, var_s5 & 0xFF, temp_s6 & 0xFFFF,
+                        0, (u16 *)&spDC, (u16 *)&spDE);
+                }
+                *var_s2 = (s32)func_00278E40((u16 *)*var_s2);
+                temp_s6_2 = func_00278F10(arg0, *var_s2, 0, 0);
+                if (func_0026FB10(arg0, temp_s6) == 1) {
+                    if (var_s7 < temp_s6_2) {
+                        if (func_0023C160() > 3) {
+                            func_0013FA90(arg0, (void *)*var_s2, spC0);
+                        }
+                        func_00278DD0((u8 *)*var_s2 + 2, arg1 + 6);
+                        func_001DCD70(arg2, *(u16 *)*var_s2);
+                        var_s7 = temp_s6_2;
+                        *(s16 *)(arg2 + 0x38) = (s16)((temp_s6_2 >> 16)
+                            - (*(u16 *)(*(u8 **)arg2 + 8) & 0x1FFF));
+                        *(s16 *)(arg2 + 0x3A) = (s16)((temp_s6_2 & 0xFFFF)
+                            - (*(s16 *)(*(u8 **)arg2 + 0xA) & 0x1FFF));
+                        if (var_s0 < temp_s6_2) {
+                            var_s0 = temp_s6_2;
+                        }
+                    }
+                } else if (var_s0 < temp_s6_2) {
+                    var_s0 = temp_s6_2;
+                }
+            }
+            var_s1 += 1;
+            var_s2 += 1;
+            var_s5 += 1;
+        } while (var_s5 < func_0026FE20(arg0));
+    }
+    return var_s0;
+}
 
 typedef struct {
     u16 id;
