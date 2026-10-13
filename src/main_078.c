@@ -826,7 +826,63 @@ u16 *func_00278E40(u16 *arg0) {
     return var_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00278F10);
+s32 func_00278F10(s32 arg0, u16 *arg1, void **arg2, s32 arg3) {
+    extern s32 func_00279170();
+    extern s32 func_002493A0();
+    s32 entries[8];
+    u32 totalHigh;
+    u32 totalLow;
+    s32 i;
+    s32 j;
+    s32 id;
+    void **target;
+    s32 *entry;
+    s32 count;
+    s32 status;
+
+    totalHigh = (u32)func_0026FBB0(*arg1) >> 16;
+    totalLow = func_0026FBB0(*arg1) & 0xFFFF;
+    func_0026FD30(arg0, entries);
+    status = func_0026AB80(arg0, 0x2B);
+    if ((status >= 0) && (func_001E2100(status >> 8, status & 0xFF, 4) != 0)) {
+        return 0;
+    }
+
+    i = 0;
+    if (i < func_0026FE20(arg0)) {
+        entry = entries;
+        count = arg3 & 0xFF;
+        do {
+            if ((func_00278E00(i & 0xFF, arg1 + 1) & 0xFF) == 0) {
+                id = *entry;
+                if (((func_0026FCE0(*entry) >> 5) == 2) && (*entry != 0x31C) && (*entry != 0x31B) &&
+                    ((func_00248F60(*arg1, id) >> 16) == 1) &&
+                    (func_00249320(id) == 1)) {
+                    if (arg2 != NULL) {
+                        j = 0;
+                        target = arg2;
+                        goto targets_test_00278F10;
+                    targets_body_00278F10:
+                        func_00279170(*target, id, *arg1);
+                        target++;
+                        j++;
+                    targets_test_00278F10:
+                        if (j < count) {
+                            goto targets_body_00278F10;
+                        }
+                    } else {
+                        ((u8 *)arg1)[2 + (func_00278D90(arg1 + 1) & 0xFF)] = i;
+                        totalHigh += func_002493A0(id);
+                        totalLow += func_002493A0(id);
+                    }
+                }
+            }
+            entry++;
+            i++;
+        } while (i < func_0026FE20(arg0));
+    }
+    return (totalHigh << 16) | (totalLow & 0xFFFF);
+}
 
 s32 func_00279130(s32 arg0, u16 *arg1) {
     u32 temp_s0;

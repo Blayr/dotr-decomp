@@ -1741,7 +1741,6 @@ typedef struct Sprite_0016FEF0 {
 } Sprite_0016FEF0;
 
 u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
-s32 func_00278F10(s32, u16 *, s32, s32);
 
 s32 func_0016FEF0(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];

@@ -14,7 +14,6 @@ typedef struct Sprite_00114D40 {
 } Sprite_00114D40;
 
 u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
-s32 func_00278F10(s32, u16 *, s32, s32);
 
 s32 func_00114D40(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];
@@ -1961,7 +1960,6 @@ typedef struct Sprite_0011A0D0 {
 } Sprite_0011A0D0;
 
 u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
-s32 func_00278F10(s32, u16 *, s32, s32);
 
 s32 func_0011A0D0(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];

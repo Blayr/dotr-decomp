@@ -735,7 +735,6 @@ s32 func_001562E0(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
 }
 
 u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
-s32 func_00278F10(s32, u16 *, s32, s32);
 
 typedef struct Info_001564E0 {
     u8 pad[8];

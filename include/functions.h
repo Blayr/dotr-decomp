@@ -2047,6 +2047,7 @@ s32 func_00278D90(u8 *arg0);
 void func_00278DD0(u8 *src, u8 *dst);
 s32 func_00278E00(u8 value, u8 *values);
 u16 *func_00278E40(u16 *arg0);
+s32 func_00278F10(s32 arg0, u16 *arg1, void **arg2, s32 arg3);
 s32 func_00279130(s32 arg0, u16 *arg1);
 s32 func_00279170(void *arg0, s32 arg1, s32 arg2);
 void func_00279230(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8);

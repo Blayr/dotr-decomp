@@ -416,7 +416,6 @@ typedef struct Sprite_0012DDE0 {
 } Sprite_0012DDE0;
 
 u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
-s32 func_00278F10(s32, u16 *, s32, s32);
 
 s32 func_0012DDE0(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];
@@ -2094,7 +2093,6 @@ typedef struct Sprite_00132D00 {
 } Sprite_00132D00;
 
 u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
-s32 func_00278F10(s32, u16 *, s32, s32);
 
 s32 func_00132D00(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];
