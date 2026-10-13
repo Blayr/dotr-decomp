@@ -774,8 +774,6 @@ typedef struct State_00268760 {
     u16 timer;
 } State_00268760;
 
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 
 s32 func_00268760(void *arg0, void *arg1, s32 arg2) {
     s32 stackData[4];
@@ -896,8 +894,6 @@ typedef struct {
 } Req_00268FA0;
 
 void func_001E42C0(s32, s32, s32, s32);
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 
 s32 func_00268FA0(void *arg0, void *arg1, s32 arg2) {
     Src_00268FA0 *src = (Src_00268FA0 *)arg0;
@@ -1003,7 +999,6 @@ typedef struct {
 } Context_002692D0;
 
 void func_0024F370(s32, s32);
-void func_00260A70(void *, s32);
 
 s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
     s32 data[4];
@@ -1116,7 +1111,6 @@ typedef struct State_002695D0 {
 void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_00260A70(void *, s32);
 void func_00269EC0(void *, void *);
 
 s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
@@ -1365,8 +1359,6 @@ typedef struct State_0026A0A0 {
 void func_001E1E70(s32, s32, s32, s32);
 void func_00248460(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_00260A70(void *, s32);
-s32 func_002610D0(s32, s32, s32, s32);
 
 s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
     Packet_0026A0A0 packet_data;
@@ -1845,9 +1837,6 @@ typedef struct State_0026B480 {
 
 void func_001E1E70(s32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_00260740(s32);
-void func_00260A70(void *, s32);
-void func_00260D10(s32, u16, s32, s32);
 
 s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -2072,8 +2061,6 @@ typedef struct State_0026BB80 {
 } State_0026BB80;
 
 void func_0024F370(s32, s32);
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 
 s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1E10();
@@ -2177,7 +2164,6 @@ typedef struct {
 
 void func_001E1E70();
 void func_0024F370();
-void func_00260A70(void *, s32);
 
 s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -2329,8 +2315,6 @@ typedef struct {
     s32 value;
 } Input_0026CFC0;
 
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 s32 func_0026D3C0(void *, void *, u16);
 
 s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
@@ -2578,8 +2562,6 @@ typedef struct Command_0026DCC0 {
     s32 flags;
 } Command_0026DCC0;
 
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 
 s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
     Command_0026DCC0 storage;
@@ -2708,7 +2690,6 @@ s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(u32, s32);
-void func_00260A70(void *, s32);
 
 typedef struct Context_0026E1F0 {
     u32 unk0;

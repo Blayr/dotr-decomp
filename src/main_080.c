@@ -29,7 +29,17 @@ INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FAB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FC20);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FFC0);
+void func_0027FFC0(s32 arg0) {
+    void *temp_s0;
+    f32 *temp_v0;
+
+    func_001FA810(0, 0);
+    temp_s0 = (void *)func_001F9D30(0);
+    temp_v0 = func_001FAF60(0);
+    *temp_v0 = 2.0f * *temp_v0;
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, temp_s0);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, temp_v0);
+}
 
 typedef struct Constants_00280060 {
     f32 values[6];

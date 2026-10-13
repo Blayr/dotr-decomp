@@ -1008,8 +1008,6 @@ typedef struct Message_0027E840 {
     s32 flags;
 } Message_0027E840;
 
-void func_00260A70(void *, s32);
-void func_002610D0(s32, s32, s32, s32);
 
 s32 func_0027E840(void *arg0, void *arg1, s32 arg2) {
     Message_0027E840 messageData;

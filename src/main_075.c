@@ -590,8 +590,6 @@ typedef struct {
 } State_00260320;
 
 void func_001E42C0(s32, s32, s32, s32);
-void func_00260A70(void *, s32);
-void func_00260AF0(s32, s32, s32, s32);
 
 s32 func_00260320(void *arg0, void *arg1, s32 arg2) {
     State_00260320 *state = arg1;
@@ -720,11 +718,44 @@ void func_00260490(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260740);
+void func_00260740(s32 arg0) {
+    s32 sp20[4];
+    s32 sp30[4];
+    s32 sp40[4];
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_002607D0);
+    func_001FA810(0, 0);
+    func_001E10F0(3, 3, 0, sp20);
+    func_00255D40(sp30);
+    func_001FC950(sp30, sp40);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp20);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp40);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260860);
+void func_002607D0(s32 arg0) {
+    s32 sp20[4];
+    s32 sp30[4];
+    s32 sp40[4];
+
+    func_001FA810(0, 0);
+    func_001E10F0(3, 3, 0, sp20);
+    func_00255DB0(sp30);
+    func_001FC950(sp30, sp40);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp20);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp40);
+}
+
+void func_00260860(s32 arg0) {
+    s32 sp20[4];
+    s32 sp30[4];
+    s32 sp40[4];
+
+    func_001FA810(0, 0);
+    func_001E10F0(3, 3, 0x64, sp20);
+    func_00255E20(sp30);
+    func_001FC950(sp30, sp40);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp20);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp40);
+}
 
 void func_002608F0(s32 arg0) {
     f32 sp20[4];
@@ -777,15 +808,145 @@ void func_00260990(s32 arg0, s32 arg1) {
     func_001FA8A0(0, 0, 4, arg0 & 0xFF, 0, sp50);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260A70);
+void func_00260A70(void *arg0, s32 arg1) {
+    func_001FA810(0, 0);
+    func_001FA8A0(0, 0, 3, (u8)arg1 & 0xFF, 0, (u8 *)arg0 + 0xE0);
+    func_001FA8A0(0, 0, 4, (u8)arg1, 0, (u8 *)arg0 + 0xF0);
+    *(s16 *)((u8 *)arg0 + 0x102) = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260AF0);
+void func_00260AF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001E1D10(s32, s32);
+    u8 sp70[16];
+    u8 sp80[16];
+    f32 sp90[4];
+    s32 val;
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260D10);
+    func_001FA810(0, 0);
+    if (func_001F5EC0(arg1) != 0) {
+        if ((func_001E2100(arg1 >> 8, arg1 & 0xFF, 4) != 0 || (arg1 & 0xFF) == 0) &&
+            func_001E1D10(arg1 >> 8, arg1 & 0xFF) > 0) {
+            func_002612E0(sp80, arg1, arg2);
+            func_001FC950(sp80, sp90);
+            sp90[0] += func_001F5860(arg1);
+            func_001FA8A0(0, 0, 7, (u8)arg0 & 0xFF, func_001E1360(arg1 >> 8, arg1 & 0xFF), NULL);
+            func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+            return;
+        }
+        val = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+        func_001E10F0(val & 0xFF, val >> 8, 0, sp70);
+        func_00255F00(sp80, arg3);
+        func_001FC950(sp80, sp90);
+        func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp70);
+        func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+    }
+    val = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+    func_001E10F0(val & 0xFF, val >> 8, 0, sp70);
+    func_00255F00(sp80, arg3);
+    func_001FC950(sp80, sp90);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp70);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00260EB0);
+void func_00260D10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001E1D10(s32, s32);
+    u8 sp70[0x10];
+    u8 sp80[0x10];
+    f32 sp90[4];
+    s32 col;
+    s32 row;
+    s32 id;
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_002610D0);
+    func_001FA810(0, 0);
+    if (func_001F5EC0(arg1) != 0) {
+        row = arg1 >> 8;
+        col = arg1 & 0xFF;
+        if ((func_001E2100(row, col, 4) != 0 || col == 0) &&
+            func_001E1D10(row, col) > 0) {
+            func_002612E0(sp80, arg1, arg2);
+            func_001FC950(sp80, sp90);
+            sp90[0] += func_001F5860(arg1);
+            func_001FA8A0(0, 0, 7, (u8)arg0 & 0xFF, func_001E1360(row, col), NULL);
+            func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+            return;
+        }
+    }
+    id = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+    func_001E10F0(id & 0xFF, id >> 8, 0, sp70);
+    func_00255F70(sp80, arg3);
+    func_001FC950(sp80, sp90);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp70);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+}
+
+void func_00260EB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001E1D10(s32, s32);
+    u8 sp70[16];
+    u8 sp80[16];
+    f32 sp90[4];
+    s32 val;
+
+    func_001FA810(0, 0);
+    if (func_001F5EC0(arg1) != 0) {
+        if ((func_001E2100(arg1 >> 8, arg1 & 0xFF, 4) != 0 || (arg1 & 0xFF) == 0) &&
+            func_001E1D10(arg1 >> 8, arg1 & 0xFF) > 0) {
+            func_00261380(sp80, arg1, arg2);
+            func_001FC950(sp80, sp90);
+            sp90[0] += func_001F5860(arg1);
+            func_001FA8A0(0, 0, 7, (u8)arg0 & 0xFF, func_001E1360(arg1 >> 8, arg1 & 0xFF), NULL);
+            func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+            return;
+        }
+        val = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+        func_001E10F0(val & 0xFF, val >> 8, 0, sp70);
+        func_00255F00(sp80, arg3);
+        func_001FC950(sp80, sp90);
+        func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp70);
+        func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+    }
+    val = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+    func_001E10F0(val & 0xFF, val >> 8, 0, sp70);
+    func_00255F00(sp80, arg3);
+    func_001FC950(sp80, sp90);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp70);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp90);
+}
+
+void func_002610D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u8 buf[16];
+    f32 vec[4];
+    f32 pos[4];
+    s32 lo;
+    s32 hi;
+    s32 t;
+
+    func_001FA810(0, 0);
+    if (func_001F5EC0(arg1) != 0) {
+        hi = arg1 >> 8;
+        lo = arg1 & 0xFF;
+        if (func_001E2100(hi, lo, 4) != 0 || lo == 0) {
+            func_00261420(vec, arg1, arg2);
+            func_001FC950(vec, pos);
+            pos[0] += func_001F5860(arg1);
+            func_001FA8A0(0, 0, 7, (u8)arg0 & 0xFF, func_001E1360(hi, lo), NULL);
+            func_001FA8A0(0, 0, 4, (u8)arg0, 0, pos);
+            return;
+        }
+        t = func_001E1090(hi, lo);
+        func_001E10F0(t & 0xFF, t >> 8, 0, buf);
+        func_00255F00(vec, arg3);
+        func_001FC950(vec, pos);
+        func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, buf);
+        func_001FA8A0(0, 0, 4, (u8)arg0, 0, pos);
+        return;
+    }
+    t = func_001E1090(arg1 >> 8, arg1 & 0xFF);
+    func_001E10F0(t & 0xFF, t >> 8, 0, buf);
+    func_00255F00(vec, arg3);
+    func_001FC950(vec, pos);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, buf);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, pos);
+}
 
 void func_002612E0(void *arg0, s32 arg1, s32 arg2) {
     s32 temp_a0;
@@ -838,7 +999,19 @@ void func_00261420(void *arg0, s32 arg1, s32 arg2) {
     ((s32 *)arg0)[2] += 0x2000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_002614C0);
+void func_002614C0(s32 arg0, s32 arg1, s32 arg2) {
+    f32 sp40[4];
+    f32 sp50[4];
+    f32 sp60[4];
+    
+
+    func_001FA810(0, 0);
+    func_001E10F0(arg1 & 0xFF, arg1 >> 8, 0, &sp40);
+    func_00255F00(&sp50, arg2);
+    func_001FC950(&sp50, &sp60);
+    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, sp40);
+    func_001FA8A0(0, 0, 4, (u8)arg0, 0, sp60);
+}
 
 void func_00261570(s32 arg0, s32 arg1, u8 arg2, u8 arg3) {
     func_00260AF0(arg0, arg1, arg2, arg3);
@@ -913,8 +1086,6 @@ typedef struct Effect_00261B70 {
     s32 value3;
 } Effect_00261B70;
 
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 
 s32 func_00261B70(void *arg0, void *arg1, s32 arg2) {
     Effect_00261B70 effect;
@@ -1442,8 +1613,6 @@ typedef struct {
 } State_00263500;
 
 void func_0024F370(s32, s32);
-void func_00260740(s32);
-void func_00260A70(void *, s32);
 
 s32 func_00263500(void *arg0, void *arg1, s32 arg2) {
     s32 data[4];
@@ -1605,7 +1774,6 @@ typedef struct Request_00265050 {
 
 void func_001E1E70(u32, s32, s32, s32);
 void func_0024F370(s32, s32);
-void func_00260A70(void *, s32);
 
 s32 func_00265050(void *arg0, void *arg1, s32 arg2) {
     Request_00265050 packet;
