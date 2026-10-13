@@ -441,7 +441,6 @@ extern s8 D_00299EDA;
 extern s16 D_00299E4E;
 extern char D_0030F3AE[];
 
-void func_002435A0(void *);
 
 extern s32 D_0031C048;
 

@@ -1795,6 +1795,7 @@ void func_002432F0(void *arg0);
 void func_00243390(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4);
 void func_00243450(void *arg0, u32 arg1);
 s32 func_00243580(void *arg0);
+s32 func_002435A0(void *arg0);
 void func_00243750(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 offset);
 s32 func_002437F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
 s32 func_00243950(s32 arg0, s32 arg1, s32 arg2);

@@ -466,7 +466,67 @@ s32 func_00243580(void *arg0) {
     return *(s32 *)((u8 *)arg0 + 0x54) >= *(s32 *)((u8 *)arg0 + 0x48);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_002435A0);
+typedef struct Stream_002435A0 {
+    s32 kind;
+    u8 pad04[0x2C];
+    s32 f30;
+    s32 f34;
+    s32 f38;
+    s32 f3C;
+    u8 pad40[4];
+    s32 f44;
+    s32 f48;
+    s32 f4C;
+    u8 pad50[4];
+    s32 f54;
+} Stream_002435A0;
+
+s32 func_002435A0(void *arg0) {
+    s32 sp30;
+    s32 sp34;
+    s32 sp38;
+    s32 sp3C;
+    s32 result = 0;
+    s32 pos;
+    s32 avail;
+    s32 first;
+    s32 rest;
+    Stream_002435A0 *st;
+
+    extern s32 func_00190810(s32, ...);
+
+    st = arg0;
+    switch (st->kind) {
+    case 0:
+        return 0;
+    case 1:
+        sp30 = st->f44 + (st->f54 % st->f48);
+        sp38 = st->f48 - st->f54;
+        sp34 = 0;
+        sp3C = 0;
+        break;
+    case 2:
+        func_00243750(&sp30, &sp38, &sp34, &sp3C, st, (func_00190810(1, 0x8100, 0) & 0xFFFFFF) - st->f44);
+        break;
+    case 3:
+        return 0;
+    }
+
+    pos = st->f30 + (st->f3C + (st->f34 - st->f38)) % st->f3C;
+    avail = (st->f38 >> 10) << 10;
+    first = st->f30 + st->f3C - pos;
+    if (avail < first) {
+        first = avail;
+    }
+    rest = avail - first;
+    if (sp38 + sp3C >= 0x400 && first + rest >= 0x400) {
+        result = func_002437F0(sp30, sp38, sp34, sp3C, pos, first, st->f30, rest);
+    }
+    st->f38 = st->f38 - result;
+    st->f54 = st->f54 + result;
+    st->f4C = (st->f4C + result) % st->f48;
+    return result;
+}
 
 typedef struct Range_00243750 {
     u8 padding[0x44];
