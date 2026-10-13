@@ -1744,7 +1744,6 @@ void func_001700D0(s32 arg0, void *arg1, s32 *arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_016", func_001702B0);
 
-s64 func_002493A0(s32);
 
 typedef struct {
     u8 pad0[6];

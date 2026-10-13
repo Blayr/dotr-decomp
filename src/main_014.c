@@ -220,7 +220,6 @@ s32 func_0015A910(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_014", func_0015AB10);
 
-s64 func_002493A0(s32);
 
 typedef struct {
     u8 pad0[6];
@@ -2310,7 +2309,6 @@ s32 func_00160210(s32 arg0) {
     return 0;
 }
 
-s64 func_002493A0(s32);
 
 typedef struct {
     u8 pad0[6];

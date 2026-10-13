@@ -1688,6 +1688,7 @@ s32 func_00249040(s32 arg0, s32 arg1);
 s32 func_00249200(s32 arg0);
 s32 func_002492F0(s32 arg0);
 s32 func_00249320(s32 arg0);
+s64 func_002493A0(s32 arg0);
 s32 func_00249410(u16 arg0, u16 *arg1);
 s32 func_00249560(s32 arg0);
 u8 func_00249580(s32 arg0);

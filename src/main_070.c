@@ -1142,7 +1142,17 @@ s32 func_00249320(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_002493A0);
+s64 func_002493A0(s32 arg0) {
+    switch (D_0029D1F0[arg0]) {
+    case 0:
+        return D_0029CF32[arg0];
+    case 1:
+    case 4:
+        return 0x3E8;
+    default:
+        return 0;
+    }
+}
 
 s32 func_00249410(u16 arg0, u16 *arg1) {
     s32 i;

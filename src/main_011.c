@@ -1189,7 +1189,6 @@ typedef struct {
     s16 defense;
 } Obj2_00148630;
 
-s64 func_002493A0(s32);
 
 s32 func_00148630(s32 arg0, void *arg1, void *arg2) {
     Obj2_00148630 *o2 = arg2;
@@ -1416,7 +1415,6 @@ s32 func_00148F20(s32 arg0) {
     }
 }
 
-s64 func_002493A0(s32);
 
 typedef struct {
     u8 pad0[6];

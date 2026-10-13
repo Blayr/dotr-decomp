@@ -476,7 +476,6 @@ typedef struct {
     s16 defense;
 } Stats_00155C90;
 
-s64 func_002493A0(s32);
 
 s32 func_00155C90(s32 arg0, u8 *arg1, void *arg2) {
     s32 sortCount;
@@ -820,7 +819,6 @@ s32 func_00156870(s32 arg0) {
     return 0;
 }
 
-s64 func_002493A0(s32);
 
 typedef struct {
     u8 pad0[6];
