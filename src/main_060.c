@@ -1433,7 +1433,13 @@ s32 func_002178C0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_060", func_00217980);
+s32 func_00217980(s32 arg0, s32 arg1) {
+    if (D_0034F6E8.active == 0) {
+        return 0;
+    }
+    func_00109E80(arg0, arg1);
+    return 1;
+}
 
 s32 func_002179C0(void) {
     if (D_0034F6E8.active == 0) {
