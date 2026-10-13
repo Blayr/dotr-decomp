@@ -3,3 +3,4 @@
    name; these are their places in the game. */
 fptodp = 0x001A2370; /* float to double (func_001A2370) */
 _dpfgt = 0x0017B3F0; /* double a > b (func_0017B3F0) */
+fptosi = 0x001A22C0;
