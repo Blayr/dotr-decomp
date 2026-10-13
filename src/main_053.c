@@ -763,7 +763,11 @@ s32 func_001FD220(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD2B0);
+void func_001FD2B0(void) {
+    extern u8 D_0031C070[];
+
+    func_0020B3C0((s8 *)D_0031C070, 0, 0x27C);
+}
 
 s32 func_001FD2D0(s32 arg0, s32 arg1) {
     s32 sp3C;
@@ -1001,7 +1005,21 @@ void func_001FEA80(void *arg0) {
     *(Vec4_001FEA80 *)arg0 = D_002CFCD0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FEAB0);
+void *func_001FEAB0(s32 arg0) {
+    extern u8 D_0031C070[];
+    u8 *data = D_0031C070;
+    void *result;
+
+    if (arg0 >= 0) {
+        result = NULL;
+        if (arg0 < 0x1E) {
+            result = data + (arg0 * 0x14) + 0x1C;
+        }
+    } else {
+        result = NULL;
+    }
+    return result;
+}
 
 typedef struct {
     u8 pad00[0x13];
