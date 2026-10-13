@@ -12,3 +12,4 @@ src/main_057.c
 src/main_043.c
 src/main_058.c
 src/main_068.c
+src/main_000.c
