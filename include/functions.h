@@ -124,6 +124,7 @@ s32 func_001091B0(void *arg0, void *arg1, void *arg2);
 s32 func_00109270(void *arg0);
 s32 func_001092E0(void *arg0, s32 arg1);
 s32 func_00109380(void *arg0, s32 arg1);
+s32 func_001094F0(void *arg0);
 void func_001098E0(void *out, f32 *offset, f32 *point, f32 *a, f32 *b);
 void func_001099E0(void *arg0, void *arg1, void *arg2, f32 fparg0);
 s32 func_00109A70(void *arg0, void *arg1);

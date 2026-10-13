@@ -966,7 +966,52 @@ s32 func_00109380(void *arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_001094F0);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyzf_001094F0;
+
+typedef struct {
+    u64 color;
+    Xyzf_001094F0 xyzf;
+} Vertex_001094F0;
+
+typedef struct {
+    u8 header[0x10];
+    Vertex_001094F0 v[4];
+} Packet_001094F0;
+
+s32 func_001094F0(void *arg0) {
+    s32 h;
+    s32 w;
+    Packet_001094F0 *p = arg0;
+
+    w = 320;
+    h = 240;
+    *(s32 *)((u8 *)arg0 + 0x44) = 0;
+    *(s32 *)((u8 *)arg0 + 0x34) = 0;
+    *(s32 *)((u8 *)arg0 + 0x24) = 0;
+    *(s32 *)((u8 *)arg0 + 0x14) = 0;
+    p->v[0].xyzf.x = (0x800 - w) << 4;
+    p->v[0].xyzf.y = (0x800 - h) << 4;
+    p->v[0].xyzf.z = 0xFFFFFF;
+    p->v[0].xyzf.fog = 0;
+    p->v[1].xyzf.x = (0x800 + w) << 4;
+    p->v[1].xyzf.y = (0x800 - h) << 4;
+    p->v[1].xyzf.z = 0xFFFFFF;
+    p->v[1].xyzf.fog = 0;
+    p->v[2].xyzf.x = (0x800 - w) << 4;
+    p->v[2].xyzf.y = (0x800 + h) << 4;
+    p->v[2].xyzf.z = 0xFFFFFF;
+    p->v[2].xyzf.fog = 0;
+    p->v[3].xyzf.x = (0x800 + w) << 4;
+    p->v[3].xyzf.y = (0x800 + h) << 4;
+    p->v[3].xyzf.z = 0xFFFFFF;
+    p->v[3].xyzf.fog = 0;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_002", func_001095D0);
 
