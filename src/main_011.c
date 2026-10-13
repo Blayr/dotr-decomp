@@ -2346,4 +2346,64 @@ s32 func_0014B730(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_011", func_0014B900);
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_0014BDE0);
+s32 func_0014BDE0(void *arg0) {
+    u16 card;
+    s32 low;
+    s32 type;
+    s32 temp_s0;
+
+    card = *(u16 *)arg0;
+    func_001E1090(card >> 8, card & 0xFF);
+    card = *(u16 *)arg0;
+    temp_s0 = func_00250360(card >> 8, card & 0xFF);
+    card = *(u16 *)arg0;
+    if (func_001DF540(card >> 8, card & 0xFF) != 0) {
+        card = *(u16 *)arg0;
+        if (func_001E2100(card >> 8, card & 0xFF, 0) == 0) {
+            card = *(u16 *)arg0;
+            if (card != 0xFFFF) {
+                low = card & 0xFF;
+                if (low == 0) {
+                    if (*(s32 *)((u8 *)arg0 + 8) == -1) {
+                        if (func_0027BBC0(card >> 8, low, 0) == 1) {
+                            if (func_001DE6D0(*(u16 *)arg0 >> 8) == 1) {
+                                *(s16 *)((u8 *)arg0 + 4) = 0x50A;
+                            } else {
+                                *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+                            }
+                        } else {
+                            if (func_001DE6D0(*(u16 *)arg0 >> 8) == 1) {
+                                *(s16 *)((u8 *)arg0 + 4) = 0xA05;
+                            } else {
+                                *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+                            }
+                        }
+                    }
+                } else {
+                    type = func_001E0700(card >> 8, low) >> 5;
+                    switch (type) {
+                    case 0:
+                        card = *(u16 *)arg0;
+                        if (func_002507D0(card >> 8, card & 0xFF) == 1) {
+                            func_0014C720(arg0);
+                        } else {
+                            func_0014C3B0(arg0);
+                        }
+                        break;
+                    case 2:
+                        func_0027CA50(arg0, 5, 0, func_0014F9B0(temp_s0) & 0xFF);
+                        break;
+                    case 1:
+                        func_0014C870(arg0);
+                        break;
+                    default:
+                        *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+                        break;
+                    }
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
