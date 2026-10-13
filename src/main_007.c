@@ -1171,7 +1171,50 @@ fallback_00127B00:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_00127D20);
+typedef struct {
+    u16 card;
+    u16 pad2;
+    s16 state;
+    u16 pad6;
+    union {
+        u32 word;
+        struct {
+            u32 lower : 16;
+            u32 upper : 16;
+        } bits;
+    } target;
+} Obj_00127D20;
+
+void func_00127D20(void *arg0) {
+    extern s32 func_001E1030();
+    Obj_00127D20 *obj = arg0;
+    s32 pos;
+
+    func_00250360(obj->card >> 8, obj->card & 0xFF);
+    func_001E1090(obj->card >> 8, obj->card & 0xFF);
+    switch (func_001E1030(obj->card >> 8, obj->card & 0xFF)) {
+    case 0x2E9:
+        pos = func_001E1090(obj->card >> 8, obj->card & 0xFF);
+        obj->state = 0x6FF;
+        if ((pos >> 8) < 3) {
+            obj->target.word = obj->target.bits.lower | 0x03010000;
+        } else {
+            obj->target.word = obj->target.bits.lower | 0x05020000;
+        }
+        break;
+    case 0x2B2:
+        obj->state = 0x6FF;
+        obj->target.word = obj->target.bits.lower | 0x04050000;
+        break;
+    case 0x2AD:
+        obj->state = 0xCFF;
+        obj->target.word = obj->target.bits.lower | 0xFFFF0000;
+        break;
+    default:
+        obj->state = 0x5FF;
+        break;
+    }
+}
 
 typedef struct {
     s16 id;
