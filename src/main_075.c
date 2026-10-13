@@ -398,7 +398,28 @@ void func_0025F990(void *arg0, void *arg1, void *arg2, s32 arg3) {
     } while (i < 22);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FB00);
+void func_0025FB00(s32 arg0, s32 arg1, s32 arg2) {
+    switch (arg1) {
+    case 0:
+        arg2 = func_002670F0(0x2B, arg2);
+        func_001DF490(arg0, 0, arg2);
+        break;
+    case 1:
+        func_001DF490(arg0, 1, func_002670F0(0x2C, arg2));
+        break;
+    case 2:
+        func_001DF490(arg0, 0, func_002670F0(0x2B, func_001DF470(arg0)));
+        break;
+    case 3:
+        func_001DF490(arg0, 1, func_002670F0(0x2C, func_001DF470(arg0)));
+        break;
+    case 4:
+        if (func_001DF470(arg0) < arg2) {
+            func_001DF490(arg0, 4, arg2);
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_075", func_0025FC30);
 
