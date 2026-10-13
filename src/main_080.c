@@ -250,7 +250,81 @@ void func_00280670(void) {
 
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_00280920);
+typedef struct Reel_00280920 {
+    u8 count;
+    u8 pad1[0x85];
+    u16 stops[5];
+} Reel_00280920;
+
+typedef struct Board_00280920 {
+    u8 pad[4];
+    u8 slots[5];
+} Board_00280920;
+
+#pragma optimization_level 0
+
+void func_00280920(void) {
+    extern Board_00280920 D_00351210;
+    extern Reel_00280920 *D_00351230;
+    extern s32 D_002B8780[];
+    extern s16 D_00351252;
+    extern u16 D_00351258;
+    extern u16 D_00351292;
+    extern s32 func_002514F0(u16, u8);
+    extern u8 D_0035117A;
+    extern u16 D_0035117C;
+    u16 id;
+    s32 slot;
+    s32 base;
+
+    D_0035117C = 0xFFFF;
+    while (D_0035117A < 8) {
+        id = D_00351240[D_0035117A].center;
+        switch (D_0035117A) {
+        case 0:
+            if (id != 0xFFFF) {
+                D_0035117C = D_00351240[D_0035117A].center;
+                D_0035117A++;
+                return;
+            }
+            break;
+        case 1:
+            if (id != 0xFFFF && id != D_00351258) {
+                D_0035117C = D_00351240[D_0035117A].center;
+                D_0035117A++;
+                return;
+            }
+            break;
+        case 2:
+            if (id != 0xFFFF && id != D_00351258 && id != D_00351292) {
+                D_0035117C = D_00351240[D_0035117A].center;
+                D_0035117A++;
+                return;
+            }
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            slot = D_0035117A - 3;
+            if (D_00351210.slots[slot]) {
+                if (D_00351230->stops[slot] == 0xFFFE) {
+                    base = D_00351252 / 0x70;
+                    D_0035117C = func_002514F0(D_00351240[0].symbols[(base + D_002B8780[slot]) % D_00351230->count], slot);
+                } else {
+                    D_0035117C = D_00351230->stops[D_0035117A - 3];
+                }
+                D_0035117A++;
+                return;
+            }
+            break;
+        }
+        D_0035117A++;
+    }
+}
+
+#pragma optimization_level reset
 
 #pragma optimization_level 0
 
@@ -1067,7 +1141,6 @@ typedef struct Timers_00284D30 {
     u8 grid[3][3];
 } Timers_00284D30;
 
-void func_00280920(void);
 void func_002818A0(s32);
 extern u8 D_00351178;
 extern u8 D_00351179;
