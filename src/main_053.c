@@ -603,7 +603,32 @@ void func_001FCA70(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FCAB0);
+void func_001FCAB0(void) {
+    extern u16 D_00293070;
+    s32 value;
+    s32 handle;
+    s32 hint = 0;
+
+    if (D_0031C048 != 0) {
+        if (func_00203A40(0, 2, 4) != 0) {
+            value = D_00293070 - 1;
+            D_00293070 = (value > 0) ? value : 0;
+        }
+        if (func_00203A40(0, 2, 8) != 0) {
+            value = D_00293070 + 1;
+            D_00293070 = (value < 1000) ? value : 1000;
+        }
+        if (func_00203A40(0, 0, 0x10) != 0) {
+            func_001FA8A0(0, 0, 8, D_00293070, 7, hint != 0 ? NULL : (void *)D_0031C048);
+        }
+        if (func_00203A40(0, 0, 0xA0) != 0) {
+            value = func_001E5240(0);
+            handle = func_001E1360(value >> 8, value & 0xFF);
+            func_001F1550(handle, func_00203A40(0, 0, 0x80) ? 5 : 2);
+            func_001FA8A0(0, 0, 8, D_00293070, handle, hint != 0 ? NULL : (void *)D_0031C048);
+        }
+    }
+}
 
 void func_001FCC20(void) {
     Entry_0031C050 *entry;

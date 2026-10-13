@@ -1364,6 +1364,7 @@ void func_001FC890(f32 *src, s32 *dst);
 void func_001FC950(void *arg0, void *arg1);
 s32 func_001FC9B0(s32 arg0);
 void func_001FCA70(void);
+void func_001FCAB0(void);
 void func_001FCC20(void);
 s32 func_001FCC70(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5);
 s32 func_001FCD60(s32 arg0);
