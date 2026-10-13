@@ -3047,6 +3047,7 @@ s32 func_0026E950(void) {
 
 s32 func_0026EA00(s32 *arg0) {
     extern s32 func_00270030();
+    extern s32 func_00270260();
     s32 temp_v1;
 
     temp_v1 = *arg0;
