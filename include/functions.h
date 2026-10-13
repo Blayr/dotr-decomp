@@ -886,6 +886,7 @@ s32 func_001C6130(void);
 void func_001C7430(void);
 s32 func_001C7790(s32 arg0);
 s32 func_001C8DC0(s32 arg0, u8 *arg1, s32 x, s32 y);
+s32 func_001C9C60(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001CA0E0(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001CA450(s32 arg0, u8 *arg1, s32 x, s32 y);
 void func_001CC380(s32 arg0, s32 arg1, s32 arg2);
