@@ -388,7 +388,213 @@ void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
     func_001B6F70(arg0, arg1, arg2, arg3, flags, width, text, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B6F70);
+typedef struct {
+    u8 texture;
+    u8 padding;
+    u16 left;
+    u16 top;
+    u16 right;
+    u16 bottom;
+} Glyph_001B6F70;
+
+typedef struct {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001B6F70;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} XYZ_001B6F70;
+
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Header_001B6F70;
+
+typedef struct {
+    u64 uv;
+    XYZ_001B6F70 xyz;
+} Corner_001B6F70;
+
+typedef struct {
+    u64 header[2];
+    u8 r, g, b, a;
+    f32 q;
+    Corner_001B6F70 corners[4];
+    u64 extra[4];
+} Sprite_001B6F70;
+
+static s32 func_001B7660(s8 character);
+
+s32 func_001B6F70(s32 packet, s32 x, s32 y, s32 font, s32 flags, s32 count, s8 *text, u8 *color) {
+    extern u8 D_002BE950[];
+    extern u8 D_002BE951[];
+    extern Glyph_001B6F70 D_00290B70[];
+    extern u8 D_002BEA00[];
+    u8 *state;
+    s32 width;
+    s32 lineHeight;
+    s32 originX;
+    s32 cursorX;
+    s32 cursorY;
+    s32 proportional;
+    s32 centered;
+    s32 italic;
+    s32 additive;
+    s32 subtractive;
+    s32 i;
+    s64 blend;
+    Sprite_001B6F70 sprite __attribute__((aligned(8)));
+
+    originX = x + 0x6C0;
+    state = D_00317490;
+    width = D_002BE950[font * 2];
+    cursorY = y + 0x720;
+    lineHeight = D_002BE951[font * 2];
+    proportional = 0;
+    centered = 0;
+    italic = 0;
+    additive = 0;
+    subtractive = 0;
+    if (flags & 1) {
+        proportional = 1;
+    }
+    if (flags & 2) {
+        centered = 1;
+    }
+    if (flags & 4) {
+        italic = 1;
+    }
+    if (flags & 8) {
+        additive = 1;
+    }
+    if (flags & 0x10) {
+        subtractive = 1;
+    }
+    if (color == NULL) {
+        color = D_002BEA00;
+    }
+    ((Header_001B6F70 *)sprite.header)->flags = 0x24;
+    ((Header_001B6F70 *)sprite.header)->count = 9;
+    ((Header_001B6F70 *)sprite.header)->registers = 0x424242421ULL;
+    ((Header_001B6F70 *)sprite.header)->padding = 0;
+    ((Header_001B6F70 *)sprite.header)->flags |= 0x800;
+    if (additive) {
+        blend = func_00208D00(2);
+    } else if (subtractive) {
+        blend = func_00208D00(3);
+    } else {
+        blend = func_00208D00(0);
+    }
+    func_002086D0(sprite.header, blend);
+    sprite.r = color[2];
+    sprite.g = color[1];
+    sprite.b = color[0];
+    sprite.a = color[3];
+    sprite.q = 1.0f;
+    sprite.corners[0].xyz.z = *(s32 *)(state + 0xC58);
+    sprite.corners[0].xyz.fog = 0;
+    sprite.corners[1].xyz.z = *(s32 *)(state + 0xC58);
+    sprite.corners[1].xyz.fog = 0;
+    sprite.corners[2].xyz.z = *(s32 *)(state + 0xC58);
+    sprite.corners[2].xyz.fog = 0;
+    sprite.corners[3].xyz.z = *(s32 *)(state + 0xC58);
+    sprite.corners[3].xyz.fog = 0;
+    if (centered) {
+        s32 maxWidth = 0;
+        s32 lineWidth = 0;
+
+        for (i = 0; i < count; i++) {
+            s8 *character = text + i;
+            s32 glyph = func_001B7660(*character);
+            Glyph_001B6F70 *entry;
+
+            if (glyph < 0) {
+                if (*character == '\n') {
+                    if (maxWidth < lineWidth) {
+                        maxWidth = lineWidth;
+                    }
+                    lineWidth = 0;
+                } else {
+                    lineWidth += proportional ? (width >> 1) : width;
+                }
+            } else {
+                entry = &D_00290B70[glyph + font * 37];
+                if (proportional) {
+                    lineWidth += entry->right - entry->left;
+                } else {
+                    lineWidth += width;
+                }
+            }
+        }
+        if (maxWidth < lineWidth) {
+            maxWidth = lineWidth;
+        }
+        originX -= maxWidth >> 1;
+    }
+    cursorX = originX;
+    for (i = 0; i < count; i++) {
+        s8 *character = text + i;
+        s32 glyph = func_001B7660(*character);
+        s32 offset = 0;
+        s32 shear = 0;
+        Glyph_001B6F70 *entry;
+        s32 glyphWidth;
+        s32 glyphHeight;
+        u16 top;
+        u16 left;
+        u16 right;
+
+        if (glyph < 0) {
+            if (*character == '\n') {
+                cursorX = originX;
+                cursorY += lineHeight;
+            } else {
+                cursorX += proportional ? (width >> 1) : width;
+            }
+        } else {
+            entry = &D_00290B70[glyph + font * 37];
+            func_00208700(&sprite, *(void **)(state + 0x6A0 + entry->texture * 4), 0);
+            ((UV_001B6F70 *)&sprite.corners[0].uv)->u = entry->left * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[0].uv)->v = entry->top * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[1].uv)->u = entry->right * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[1].uv)->v = entry->top * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[2].uv)->u = entry->left * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[2].uv)->v = entry->bottom * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[3].uv)->u = entry->right * 16 + 8;
+            ((UV_001B6F70 *)&sprite.corners[3].uv)->v = entry->bottom * 16 + 8;
+            glyphWidth = entry->right - entry->left;
+            glyphHeight = entry->bottom - entry->top;
+            if (!proportional) {
+                offset = (width - glyphWidth) * 8;
+            }
+            if (italic) {
+                shear = (width * 16) / 6;
+            }
+            top = cursorY * 16;
+            left = (cursorX << 4) + offset;
+            right = offset + (cursorX + glyphWidth) * 16;
+            sprite.corners[0].xyz.x = shear + left;
+            sprite.corners[0].xyz.y = top;
+            sprite.corners[1].xyz.x = shear + right;
+            sprite.corners[1].xyz.y = top;
+            sprite.corners[2].xyz.x = left;
+            sprite.corners[2].xyz.y = (cursorY + glyphHeight) * 16;
+            sprite.corners[3].xyz.x = right;
+            sprite.corners[3].xyz.y = (cursorY + glyphHeight) * 16;
+            packet = func_00207650(packet, (s32)&sprite, 0, 0);
+            cursorX += proportional ? glyphWidth : width;
+        }
+    }
+    return packet;
+}
 
 static s32 func_001B7660(s8 character) {
     s32 result = -1;

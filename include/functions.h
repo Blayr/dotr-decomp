@@ -828,6 +828,7 @@ s32 func_001B65F0(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w, s32 h, s32 sh
 void func_001B6C90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_001B6CA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
 void func_001B6EA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 flags, s32 width, s32 number);
+s32 func_001B6F70(s32 packet, s32 x, s32 y, s32 font, s32 flags, s32 count, s8 *text, u8 *color);
 void func_001B76E0(s32 arg0, s32 arg1, s32 arg2, s8 *arg3, s32 *arg4, s32 *arg5);
 s32 func_001B7820(s32 packet, s32 x, s32 y, s32 alpha);
 s32 func_001B7D60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s64 arg6);
