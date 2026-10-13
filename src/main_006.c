@@ -1981,7 +1981,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Card_00122D30;
 
-s32 func_00123010(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 
 s32 func_00122D30(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_00278890(s32, s32);
@@ -2058,7 +2057,159 @@ s32 func_00122D30(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_006", func_00123010);
+typedef struct Nibbles_00123010 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00123010;
+
+
+s32 func_00123010(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+    Nibbles_00123010 path[12];
+    u8 info[8];
+    s32 n;
+    Nibbles_00123010 *p;
+    u8 kind;
+
+    extern s32 func_00124F50();
+    extern s32 func_00278510();
+    extern s32 func_0027A130();
+    extern s32 func_002792C0(s32, s32, s32, s32, s32, s32, u16, u8);
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = path;
+    n = 0;
+    do {
+        p->low = p->high = 15;
+        n++;
+        p++;
+    } while (n < 12);
+
+    kind = *((u8 *)arg2 + 0x3E) >> 5;
+    if (kind == 0 || kind == 3) {
+        if (arg3 >= 0) {
+            s32 position;
+            s32 y;
+            s32 x;
+            s32 i;
+            s32 target_y;
+            s32 target_x;
+            s32 best_position;
+            s32 best_distance;
+            s32 target;
+            s32 distance;
+
+            best_distance = 255;
+            best_position = 65535;
+            target = func_001E1090(arg3 >> 8, arg3 & 255);
+            i = 0;
+            target_y = target >> 8;
+            target_x = target & 255;
+            do {
+                if ((position = func_00124F50(arg0, i)) >= 0) {
+                    x = position & 255;
+                    y = position >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E36E0(x, y) == 0) {
+                        if (func_00278510(arg2, arg3, func_001254A0(arg0), target_x, target_y, 0) > 0) {
+                            distance = func_0027A130(arg2, path, x, y, target_x, target_y, arg3, 0, 3,
+                                                    (u16)func_001254A0(arg0));
+                        } else {
+                            distance = func_002792C0((s32)arg2, (s32)path, x, y, target_x, target_y, arg3, 3);
+                        }
+                        if (func_0027AFC0((u8 *)path) > 0 && distance < best_distance) {
+                            best_distance = distance;
+                            best_position = position;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (best_position != 65535) {
+                return best_position;
+            }
+            best_position = -1;
+            return best_position;
+        } else {
+            s32 y;
+            s32 x;
+            s32 i;
+            s32 best_distance;
+            s32 best_position;
+            s32 distance;
+
+            best_distance = 14;
+            best_position = -1;
+            i = 0;
+            do {
+                if ((arg3 = func_00124F50(arg0, i)) >= 0) {
+                    x = arg3 & 255;
+                    y = arg3 >> 8;
+                    if (func_001E22B0(x, y) != 8 &&
+                        (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                        func_001E3790(x, y) < 0) {
+                        func_00123500((s32)arg2, x, y, (s32 *)info);
+                        distance = info[4];
+                        if (distance < best_distance && distance >= 0) {
+                            best_position = arg3;
+                            best_distance = distance;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (best_distance < 14) {
+                return best_position;
+            }
+            {
+                s32 fallback_y;
+                s32 fallback_x;
+                s32 fallback_i = 0;
+                s32 fallback_position;
+                do {
+                    if ((fallback_position = func_00124F50(arg0, fallback_i)) >= 0) {
+                        fallback_x = fallback_position & 255;
+                        fallback_y = fallback_position >> 8;
+                        if (func_001E22B0(fallback_x, fallback_y) != 8 &&
+                            (func_001E22B0(fallback_x, fallback_y) != 9 ||
+                             func_0024FE40(arg2, fallback_x, fallback_y) != 1) &&
+                            func_001E3790(fallback_x, fallback_y) < 0 &&
+                            func_001E22B0(fallback_x, fallback_y) == 4) {
+                            return fallback_position;
+                        }
+                    }
+                    fallback_i++;
+                } while (fallback_i < 8);
+            }
+        }
+    } else {
+        s32 y;
+        s32 x;
+        s32 i;
+        s32 best_position;
+
+        best_position = -1;
+        i = 0;
+        do {
+            if ((arg3 = func_00124F50(arg0, i)) >= 0) {
+                x = arg3 & 255;
+                y = arg3 >> 8;
+                if (func_001E22B0(x, y) != 8 &&
+                    (func_001E22B0(x, y) != 9 || func_0024FE40(arg2, x, y) != 1) &&
+                    func_001E3790(x, y) < 0 && y < 8) {
+                    best_position = arg3;
+                }
+            }
+            i++;
+        } while (i < 8);
+        if (best_position >= 0) {
+            return best_position;
+        }
+    }
+    return -1;
+}
 
 typedef struct Nibbles_00123500 {
     u8 low : 4;
