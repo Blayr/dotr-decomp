@@ -331,7 +331,6 @@ extern s16 D_00299ED4;
 
 s32 func_0024F830(s32, s32, s32, s32, s32);
 
-void func_00217710(s32, s32);
 
 
 
