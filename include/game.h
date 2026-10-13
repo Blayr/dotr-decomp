@@ -211,7 +211,6 @@ s32 func_00254890(s32 *, s32);
 
 
 
-void func_0020BDE0(void *, void *);
 void func_0020CDD0(void *, void *, void *);
 
 

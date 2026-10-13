@@ -1593,6 +1593,7 @@ f32 func_0020B730(f32 angle);
 s32 func_0020BA70(void);
 s32 func_0020BA80(void);
 s32 func_0020BBA0(void);
+void func_0020BDE0(void *dst, void *src);
 void func_0020C630(void *dst, void *src);
 void func_0020C8F0(void *arg0, f32 *arg1);
 void func_0020CB90(s32 arg0, u32 *arg1);
