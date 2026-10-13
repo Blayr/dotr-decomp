@@ -85,7 +85,6 @@ typedef struct {
     } data;
 } Entry_0014C3B0;
 
-s32 func_0014CA60();
 
 void func_0014C3B0(void *arg0) {
     extern s32 func_0027B200();
@@ -247,7 +246,37 @@ s32 func_0014C9D0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014CA60);
+static inline s32 slot_0014CA60(s32 index) {
+    s32 func_0014DA30(s32, s32);
+    s32 id;
+
+    id = func_001DE540();
+    switch (index) {
+    case 0:
+        return func_0014DA30(id, 0);
+    case 1:
+        return func_0014DA30(id, 3);
+    case 2:
+        return func_0014DA30(id, 4);
+    default:
+        return -1;
+    }
+}
+
+s32 func_0014CA60(void) {
+    s32 index;
+    s32 position;
+
+    index = 0;
+    do {
+        position = slot_0014CA60(index);
+        if (((func_001E36E0(position & 0xFF, position >> 8) == 0) ? 1 : 0) == 1) {
+            return slot_0014CA60(index);
+        }
+        index++;
+    } while (index < 3);
+    return -1;
+}
 
 typedef struct {
     s16 id;
