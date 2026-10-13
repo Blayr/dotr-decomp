@@ -768,7 +768,7 @@ typedef struct Condition_00279170 {
     u32 value;
 } Condition_00279170;
 
-s32 func_00279170(void *arg0, s32 arg1, u16 arg2) {
+s32 func_00279170(void *arg0, s32 arg1, s32 arg2) {
     Condition_00279170 *condition = arg0;
 
     if (condition == NULL) {
