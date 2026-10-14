@@ -654,7 +654,6 @@ typedef union {
 
 s32 func_00184E10(void *, s64, s64, s64, s64, s64);
 s32 func_00184FF8(void *, s64, s64, s64, s64, s64, s32, s32, s64, s64, s64);
-s32 func_00186120(s32);
 void func_00186470(s32, void *);
 
 void func_001A8520(s64 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s64 arg5) {

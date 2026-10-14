@@ -75,7 +75,12 @@ void func_001860E8(s8 *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186120);
+s32 func_00186120(s32 arg0) {
+    if ((u32) arg0 < 0xAU) {
+        return ((s32 *)&D_0028D930)[arg0];
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186148);
 

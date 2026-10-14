@@ -800,4 +800,6 @@ s32 func_0017B5A0(s32, s32 *);
 extern s32 D_001842C0;
 extern s32 D_0028CDF8;
 
+extern s32 D_0028D930;
+
 #endif
