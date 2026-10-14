@@ -235,7 +235,172 @@ s32 func_0018E448(u64 *arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E4B8);
+typedef struct {
+    long long id;
+    int length;
+    int scramble;
+    long long pts;
+    long long dts;
+    int pos;
+    int datalen;
+    int startpos;
+} PesPkt_0018E4B8;
+
+typedef struct {
+    unsigned char b[16];
+} HeaderBits_0018E4B8;
+
+extern HeaderBits_0018E4B8 D_002BC988;
+extern char D_002BC998[];
+
+#define pkt_0018E4B8 ((PesPkt_0018E4B8 *)arg2)
+#define bs_0018E4B8 ((u64 *)bs)
+
+/* _PES_packet (this SDK passes the decoder handle first, for _Error, and keeps the header-bits table on
+   the stack): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
+    HeaderBits_0018E4B8 headerBits;
+    int ptsdts;
+    int escr;
+    int flags;
+    int ext;
+    int hdrlen;
+    int base;
+    int n;
+    int len;
+
+    pkt_0018E4B8->startpos = bs[6];
+    headerBits = D_002BC988;
+    func_0018DB40(bs_0018E4B8, 0x18);
+    pkt_0018E4B8->id = (long long)func_0018DB40(bs_0018E4B8, 8) << 32;
+    pkt_0018E4B8->length = func_0018DB40(bs_0018E4B8, 0x10);
+    pkt_0018E4B8->pts = pkt_0018E4B8->dts = -1;
+    if (pkt_0018E4B8->id != 0xBC00000000 && pkt_0018E4B8->id != 0xBE00000000 && pkt_0018E4B8->id != 0xBF00000000 &&
+        pkt_0018E4B8->id != 0xF000000000 && pkt_0018E4B8->id != 0xF100000000 && pkt_0018E4B8->id != 0xFF00000000 &&
+        pkt_0018E4B8->id != 0xF200000000 && pkt_0018E4B8->id != 0xF800000000) {
+        func_0018DB40(bs_0018E4B8, 2);
+        pkt_0018E4B8->scramble = func_0018DB40(bs_0018E4B8, 2);
+        func_0018DB40(bs_0018E4B8, 4);
+        ptsdts = func_0018DB40(bs_0018E4B8, 2);
+        escr = func_0018DB40(bs_0018E4B8, 1);
+        flags = func_0018DB40(bs_0018E4B8, 4);
+        ext = func_0018DB40(bs_0018E4B8, 1);
+        hdrlen = func_0018DB40(bs_0018E4B8, 8);
+        base = (int)*(long long *)(bs + 6);
+        if (ptsdts & 2) {
+            unsigned int a;
+            int b;
+            int c;
+            unsigned int low;
+
+            func_0018DB40(bs_0018E4B8, 4);
+            a = func_0018DB40(bs_0018E4B8, 3);
+            func_0018DB90(bs_0018E4B8);
+            b = func_0018DB40(bs_0018E4B8, 0xF);
+            func_0018DB90(bs_0018E4B8);
+            c = func_0018DB40(bs_0018E4B8, 0xF);
+            func_0018DB90(bs_0018E4B8);
+            low = (a << 30) | (b << 15) | c;
+            pkt_0018E4B8->pts = ((long long)((a >> 2) & 1) << 32) | low;
+        }
+        if (ptsdts == 3) {
+            unsigned int a;
+            int b;
+            int c;
+            unsigned int low;
+
+            func_0018DB40(bs_0018E4B8, 4);
+            a = func_0018DB40(bs_0018E4B8, 3);
+            func_0018DB90(bs_0018E4B8);
+            b = func_0018DB40(bs_0018E4B8, 0xF);
+            func_0018DB90(bs_0018E4B8);
+            c = func_0018DB40(bs_0018E4B8, 0xF);
+            func_0018DB90(bs_0018E4B8);
+            low = (a << 30) | (b << 15) | c;
+            pkt_0018E4B8->dts = ((long long)((a >> 2) & 1) << 32) | low;
+        }
+        if (escr == 1) {
+            func_0018DB40(bs_0018E4B8, 0x30);
+        }
+        if (flags != 0) {
+            func_0018DB40(bs_0018E4B8, headerBits.b[flags]);
+        }
+        if (ext == 1) {
+            int priv;
+            int pack;
+            int seq;
+            int pstd;
+            int ext2;
+            unsigned int i;
+            unsigned int cnt;
+
+            priv = func_0018DB40(bs_0018E4B8, 1);
+            pack = func_0018DB40(bs_0018E4B8, 1);
+            seq = func_0018DB40(bs_0018E4B8, 1);
+            pstd = func_0018DB40(bs_0018E4B8, 1);
+            func_0018DB40(bs_0018E4B8, 3);
+            ext2 = func_0018DB40(bs_0018E4B8, 1);
+            if (priv == 1) {
+                func_0018DB40(bs_0018E4B8, 0x30);
+                func_0018DB40(bs_0018E4B8, 0x30);
+                func_0018DB40(bs_0018E4B8, 0x20);
+            }
+            if (pack == 1) {
+                func_0018F7B0(mp, D_002BC998);
+                return 0;
+            }
+            if (seq == 1) {
+                func_0018DB40(bs_0018E4B8, 0x10);
+            }
+            if (pstd == 1) {
+                func_0018DB40(bs_0018E4B8, 0x10);
+            }
+            if (ext2 == 1) {
+                func_0018DB90(bs_0018E4B8);
+                cnt = func_0018DB40(bs_0018E4B8, 7);
+                for (i = 0; i < cnt; i++) {
+                    func_0018DB40(bs_0018E4B8, 8);
+                }
+            }
+        }
+        n = hdrlen - (int)((*(long long *)(bs + 6) - base) >> 3);
+        if (n != 0) {
+            func_0018DBD8(bs, n);
+        }
+        len = pkt_0018E4B8->length - hdrlen;
+        n = len - 3;
+        pkt_0018E4B8->datalen = n;
+        pkt_0018E4B8->pos = bs[6];
+        if (pkt_0018E4B8->id == 0xBD00000000) {
+            pkt_0018E4B8->id = pkt_0018E4B8->id | (unsigned int)func_0018DB40(bs_0018E4B8, 0x20);
+            n = len - 7;
+        }
+        if (n != 0) {
+            func_0018DBD8(bs, n);
+        }
+    } else if (pkt_0018E4B8->id == 0xBC00000000 || pkt_0018E4B8->id == 0xBF00000000 || pkt_0018E4B8->id == 0xF000000000 ||
+               pkt_0018E4B8->id == 0xF100000000 || pkt_0018E4B8->id == 0xFF00000000 || pkt_0018E4B8->id == 0xF200000000 ||
+               pkt_0018E4B8->id == 0xF800000000) {
+        len = pkt_0018E4B8->length;
+        if (pkt_0018E4B8->id == 0xBF00000000) {
+            len = len - 4;
+            pkt_0018E4B8->id = pkt_0018E4B8->id | (unsigned int)func_0018DB40(bs_0018E4B8, 0x20);
+        }
+        if (len != 0) {
+            func_0018DBD8(bs, len);
+        }
+    } else if (pkt_0018E4B8->id == 0xBE00000000) {
+        n = pkt_0018E4B8->length;
+        if (n != 0) {
+            func_0018DBD8(bs, n);
+        }
+    }
+    return 1;
+}
+
+#undef pkt_0018E4B8
+#undef bs_0018E4B8
 
 void func_0018EA68(void) {
     func_001843E0();

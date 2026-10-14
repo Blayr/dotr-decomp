@@ -1338,6 +1338,7 @@ s32 func_0018E1E0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0018E200(void *arg0, s32 type, s32 ch, void *func, void *data);
 s32 func_0018E2F8(u64 *arg0, void *arg1);
 s32 func_0018E448(u64 *arg0, void *arg1);
+s32 func_0018E4B8(s32 mp, int *bs, void *arg2);
 void func_0018EA68(void);
 s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2);
 s32 func_0018ED10(s32 unused0);
