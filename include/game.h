@@ -753,4 +753,7 @@ extern s32 D_00315BC0;
 extern s32 D_00310FC0;
 extern s32 D_0028DA50;
 
+s32 func_0017E028(s32, void *, s32, s32, s32, s32); /* extern */
+void *func_0017E4D0(s32);                           /* extern */
+
 #endif
