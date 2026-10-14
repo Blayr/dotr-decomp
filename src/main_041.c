@@ -63,7 +63,356 @@ void func_001C2540(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C2720);
+static inline s32 count_001C2720(s32 player) {
+    u8 *q;
+    s32 sum;
+    u8 *b = D_00317490;
+    s32 i;
+
+    if (player) {
+        q = *(u8 **)(b + 0x6E4);
+    } else {
+        q = *(u8 **)(b + 0x6E0);
+    }
+    sum = 0;
+    for (i = 0; i < 0x356; i++) {
+        sum += *q++;
+    }
+    return sum;
+}
+
+s32 func_001C2720(s32 player) {
+    u8 *base;
+    s32 limit;
+    s32 id;
+    s32 old;
+    s32 oldCursor;
+    u16 *list;
+    s32 fast;
+    s32 delta;
+    u16 *timer;
+    u8 *counts;
+    u16 *scroll;
+    u8 *p;
+    s32 before;
+    u8 *slot;
+    u8 *cursor;
+    u8 *digits;
+    u8 *state;
+    u16 *total;
+
+    base = D_00317490;
+    if (player) {
+        list = *(u16 **)(base + 0x6DC);
+    } else {
+        list = *(u16 **)(base + 0x6D8);
+    }
+    if (player) {
+        counts = *(u8 **)(base + 0x6E4);
+    } else {
+        counts = *(u8 **)(base + 0x6E0);
+    }
+    if (player) {
+        digits = base + 0xCB9;
+    } else {
+        digits = base + 0xCB6;
+    }
+    if (player) {
+        timer = (u16 *)(base + 0xC98);
+    } else {
+        timer = (u16 *)(base + 0xC96);
+    }
+    if (player) {
+        scroll = (u16 *)(base + 0xC8E);
+    } else {
+        scroll = (u16 *)(base + 0xC8A);
+    }
+    if (player) {
+        total = (u16 *)(base + 0xC90);
+    } else {
+        total = (u16 *)(base + 0xC8C);
+    }
+    if (player) {
+        cursor = base + 0xD5F;
+    } else {
+        cursor = base + 0xD5E;
+    }
+    state = (u8 *)(player + (s32)base) + 0xCBE;
+    if (*state < 4) {
+        if (func_00203A40(player, 1, 0xFFFF)) {
+            *timer = 0x5A;
+        } else if (*timer != 0) {
+            (*timer)--;
+        }
+    }
+    switch (*state) {
+    case 0: {
+        s16 *slide = (s16 *)((player << 1) + (s32)base + 0xC92);
+        *slide = (*slide - 0x2D > 0) ? *slide - 0x2D : 0;
+        if (*slide <= 0) {
+            *state = 1;
+        }
+        break;
+    }
+    case 1:
+        id = list[*scroll + *cursor];
+        fast = func_00203A40(player, 1, 0x100) ? 1 : 0;
+        oldCursor = *cursor;
+        delta = 0;
+        if (*total != 0) {
+            if (func_00203A40(player, 2, 0xC)) {
+                if (func_00203A40(player, 2, 4)) {
+                    delta = -5;
+                } else {
+                    delta = 5;
+                }
+            } else if (func_00203A40(player, 2, 0x5000)) {
+                if (func_00203A40(player, 2, 0x1000)) {
+                    if (*cursor > 0) {
+                        (*cursor)--;
+                    } else {
+                        delta = -1;
+                    }
+                } else if (*cursor < 4) {
+                    (*cursor)++;
+                } else {
+                    delta = 1;
+                }
+            }
+            if (*cursor != oldCursor) {
+                func_00217710(0, 3);
+                break;
+            }
+            if (delta == 0 && func_00203BC0(player)) {
+                s32 stick = func_00203C40(player, 3) - 0x80;
+                s32 size;
+                if (stick >= 0) {
+                    size = stick;
+                } else {
+                    size = -stick;
+                }
+                if (size > 0x30) {
+                    if (stick > 0) {
+                        stick -= 0x30;
+                    } else {
+                        stick += 0x30;
+                    }
+                    delta = (stick * 15) >> 7;
+                }
+            }
+            if (delta != 0) {
+                s32 max;
+                s32 next;
+                u16 prev;
+                if (*total - 5 > 0) {
+                    max = *total - 5;
+                } else {
+                    max = 0;
+                }
+                prev = *scroll;
+                next = prev + delta;
+                next = ((next > 0 ? next : 0) < max) ? (next > 0 ? next : 0) : max;
+                *scroll = next;
+                if (*scroll != prev) {
+                    func_00217710(0, 3);
+                }
+                *timer = 0x5A;
+                break;
+            }
+            if (func_00203A40(player, 2, 0xC0)) {
+                if (id == 999 || base[player + 0xCC0] == 2) {
+                    func_00217710(0, 6);
+                    break;
+                }
+                limit = func_00216AC0(player, id, 3);
+                slot = counts + id;
+                before = *slot;
+                if (func_00203A40(player, 2, (u16)(player ? 0x80 : 0x40))) {
+                    if (*slot < limit) {
+                        (*slot)++;
+                    }
+                } else if (*slot > 0) {
+                    (*slot)--;
+                }
+                if (before == *slot) {
+                    func_00217710(0, 6);
+                    break;
+                }
+                func_00217710(0, 3);
+                break;
+            }
+            if (func_00203A40(player, 0, 0x10)) {
+                if (id == 999) {
+                    func_00217710(0, 6);
+                    break;
+                }
+                *state = 2;
+                func_00217710(0, 0x10);
+                break;
+            }
+        }
+        if (func_00203A40(player, 0, 0x600)) {
+            if (func_00203A40(player, 0, 0x200)) {
+                base[player + 0xCC0] = (base[player + 0xCC0] + 2) % 3;
+            } else {
+                base[player + 0xCC0] = (base[player + 0xCC0] + 4) % 3;
+            }
+            func_001C2300(player);
+            *scroll = 0;
+            func_00217710(0, 0x13);
+            break;
+        }
+        if (func_00203A40(player, 0, 0x800)) {
+            if (base[(player ^ 1) + 0xCBE] == 4) {
+                if (count_001C2720(player) > 0 || count_001C2720(player ^ 1) > 0) {
+                    func_00217710(0, 4);
+                    base[0xCBE] = 6;
+                    base[0xCBF] = 6;
+                    base[0xD36] = 0;
+                    break;
+                }
+                func_00217710(0, 6);
+                break;
+            }
+            func_00217710(0, 4);
+            *state = 4;
+            break;
+        }
+        if (func_00203A40(player, 2, 3)) {
+            p = digits + fast;
+            old = *p;
+            if (func_00203A40(player, 2, 1)) {
+                *p = (*p + 9) % 10;
+            } else {
+                *p = (*p + 11) % 10;
+            }
+            if (old != *p) {
+                func_001C3520(player);
+                func_00217710(0, 0x13);
+            }
+            break;
+        }
+        if (func_00203A40(player, 0, 0x20)) {
+            if (base[(player ^ 1) + 0xCBE] == 1) {
+                func_00217710(0, 5);
+                base[0xCBE] = 5;
+                base[0xCBF] = 5;
+                base[0xD36] = 0;
+            } else {
+                func_00217710(0, 6);
+            }
+        }
+        break;
+    case 2: {
+        s16 *slide = (s16 *)((player << 1) + (s32)base + 0xC92);
+        *slide = (*slide + 0x2D < 0x140) ? *slide + 0x2D : 0x140;
+        if (*slide >= 0x140) {
+            *state = 3;
+        }
+        break;
+    }
+    case 3:
+        if (func_00203A40(player, 2, 0x5000)) {
+            p = (u8 *)(player + (u32)base) + 0xCBC;
+            before = *p;
+            if (func_00203A40(player, 2, 0x1000)) {
+                *p = (*p + 3) % 4;
+            } else {
+                *p = (*p + 5) % 4;
+            }
+            if (*p != before) {
+                func_00217710(0, 0x13);
+            }
+            break;
+        }
+        if (func_00203A40(player, 0, 0x30)) {
+            *state = 0;
+            func_00217710(0, 0x11);
+        }
+        break;
+    case 4:
+        if (func_00203A40(player, 0, 0x20)) {
+            func_00217710(0, 5);
+            *state = 1;
+        }
+        break;
+    case 5:
+        if (func_00203A40(player, 0, 0xA000)) {
+            old = base[0xD36];
+            if (func_00203A40(player, 0, 0x8000)) {
+                base[0xD36] = 1;
+            } else {
+                base[0xD36] = 0;
+            }
+            if (base[0xD36] != old) {
+                func_00217710(0, 3);
+            }
+            break;
+        }
+        if (func_00203A40(player, 0, 0xC0)) {
+            func_00217710(0, 4);
+            if (base[0xD36] != 0) {
+                func_001A8920();
+                break;
+            }
+            base[0xCBE] = 1;
+            base[0xCBF] = 1;
+            break;
+        }
+        if (func_00203A40(player, 0, 0x20)) {
+            func_00217710(0, 5);
+            base[0xCBE] = 1;
+            base[0xCBF] = 1;
+        }
+        break;
+    case 6:
+        if (func_00203A40(player, 0, 0xA000)) {
+            old = base[0xD36];
+            if (func_00203A40(player, 0, 0x8000)) {
+                base[0xD36] = 1;
+            } else {
+                base[0xD36] = 0;
+            }
+            if (base[0xD36] != old) {
+                func_00217710(0, 3);
+            }
+            break;
+        }
+        if (func_00203A40(player, 0, 0xC0)) {
+            func_00217710(0, 4);
+            if (base[0xD36] != 0) {
+                if (func_001C32B0() > 0) {
+                    base[0xCBE] = 8;
+                    base[0xCBF] = 8;
+                    break;
+                }
+                base[0xCBE] = 7;
+                base[0xCBF] = 7;
+                func_001AAFA0(5);
+                return 1;
+            }
+            *state = 1;
+            base[(player ^ 1) + 0xCBE] = 4;
+            break;
+        }
+        if (func_00203A40(player, 0, 0x20)) {
+            func_00217710(0, 5);
+            *state = 1;
+            base[(player ^ 1) + 0xCBE] = 4;
+        }
+        break;
+    case 7:
+        func_001A8920();
+        break;
+    case 8:
+        if (func_00203A40(player, 0, 0xF0)) {
+            func_00217710(0, 4);
+            func_001A8920();
+        }
+        break;
+    }
+    return 0;
+}
 
 typedef struct {
     u8 padding[0x6E0];
