@@ -178,7 +178,6 @@ typedef struct Motion_001FB940 {
     u16 fovOffset, fovCount;
 } Motion_001FB940;
 
-void func_001FBE50(void *, void *, u16, f32);
 f32 func_001A6C30(f32, f32);
 
 static inline void direction_001FB940(s32 index) {
@@ -298,7 +297,77 @@ s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, 
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FBE50);
+typedef struct Key_001FBE50 {
+    u32 time;
+    f32 value[3];
+} Key_001FBE50;
+
+void func_001FBE50(void *arg0, void *arg1, s32 arg2, f32 fparg0) {
+    f32 var_f0;
+    f32 var_f0_2;
+    f32 var_f0_3;
+    f32 var_f0_4;
+    f32 var_f3;
+    f32 weight;
+    f32 weight2;
+    s32 temp_v1;
+    Key_001FBE50 *temp_a2;
+    Key_001FBE50 *next;
+    u32 temp_a3;
+    u32 temp_a1;
+    u32 temp_v0;
+    u32 temp_v0_2;
+    u32 temp_v0_3;
+    s32 var_a2;
+    s32 var_a3;
+    s32 var_t0;
+    void *temp_t1;
+
+    var_a3 = 0;
+    if (arg2 > 2) {
+    var_a2 = 0;
+    var_t0 = arg2;
+loop_2:
+    var_a3 = (s32)(var_a2 + var_t0) >> 1;
+    if (var_a2 >= var_a3) {
+        goto block_15;
+    }
+    temp_t1 = (u8 *)arg1 + (var_a3 * 16);
+    temp_v0 = *(u32 *)((u8 *)temp_t1 + 16);
+    var_f0_3 = (f32)temp_v0;
+    if (!(fparg0 < var_f0_3)) {
+        var_a2 = var_a3;
+        goto loop_2;
+    }
+    temp_v0_2 = *(u32 *)temp_t1;
+    var_f0_4 = (f32)temp_v0_2;
+    if (fparg0 < var_f0_4) {
+        var_t0 = var_a3;
+        goto loop_2;
+    }
+    }
+block_15:
+    temp_a2 = (Key_001FBE50 *)((u8 *)arg1 + var_a3 * 16);
+    temp_v1 = var_a3 + 1;
+    if (temp_v1 >= arg2) {
+        ((f32 *)arg0)[0] = temp_a2->value[0];
+        ((f32 *)arg0)[1] = temp_a2->value[1];
+        ((f32 *)arg0)[2] = temp_a2->value[2];
+        return;
+    }
+    next = (Key_001FBE50 *)((u8 *)arg1 + temp_v1 * 16);
+    temp_a1 = temp_a2->time;
+    temp_a3 = next->time;
+    temp_v0_3 = temp_a3 - temp_a1;
+    var_f3 = (f32)temp_v0_3;
+    var_f0 = (f32)temp_a3;
+    var_f0_2 = (f32)temp_a1;
+    weight = (var_f0 - fparg0) / var_f3;
+    weight2 = (fparg0 - var_f0_2) / var_f3;
+    ((f32 *)arg0)[0] = weight * temp_a2->value[0] + weight2 * next->value[0];
+    ((f32 *)arg0)[1] = weight * temp_a2->value[1] + weight2 * next->value[1];
+    ((f32 *)arg0)[2] = weight * temp_a2->value[2] + weight2 * next->value[2];
+}
 
 typedef struct Key_001FC050 {
     u32 time;

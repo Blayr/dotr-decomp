@@ -1669,6 +1669,7 @@ s32 func_001FB360(s32 index, f32 *src);
 s32 func_001FB500(s32 index, f32 *src);
 s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2);
 s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, s32 mirror);
+void func_001FBE50(void *arg0, void *arg1, s32 arg2, f32 fparg0);
 f32 func_001FC050(u8 *arg0, s32 arg1, f32 fparg0);
 s32 func_001FC210(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight);
 s32 func_001FC6D0(s32 arg0, s32 arg1);
