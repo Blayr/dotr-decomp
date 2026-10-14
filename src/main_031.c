@@ -243,7 +243,18 @@ void func_00190A28(u16 arg0) {
     func_0017B8F0(temp_v0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190A90);
+s32 func_00190A90(void (*arg0)(void)) {
+    s32 old;
+
+    if (func_001914F8(1) != 0) {
+        return 0;
+    }
+    func_001843E0();
+    old = (s32) D_003156C0;
+    D_003156C0 = (void (*)(s32)) arg0;
+    func_00184428();
+    return old;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190AE8);
 

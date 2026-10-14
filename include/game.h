@@ -923,4 +923,6 @@ f32 func_0019B4F8(f32 x, s32 n); /* scalbnf */
 extern s32 D_002BE570[]; /* fdlibm kf_rem_pio2.c init_jk[] = { 4, 7, 9 } */
 extern f32 D_002BE580[]; /* PIo2[11] */
 
+s32 func_001914F8(s32);                         /* extern */
+
 #endif
