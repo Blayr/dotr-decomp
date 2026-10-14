@@ -299,7 +299,22 @@ s32 func_0018EEC8(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EF20);
+s32 func_0018EF20(void *arg0, s32 arg1, s32 (*arg2)(), s32 arg3) {
+    u8 *d;
+    s32 (**p)();
+    s32 (*old)();
+    s32 (**t)();
+    s32 *e;
+
+    d = *(u8 **)((u8 *)arg0 + 0x40);
+    t = (s32 (**)())(d + 0xC);
+    p = t + arg1 * 2;
+    e = (s32 *)(d + arg1 * 8);
+    e[4] = arg3;
+    old = *p;
+    *p = arg2;
+    return (s32)old;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EF48);
 

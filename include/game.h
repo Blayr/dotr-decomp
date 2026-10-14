@@ -306,7 +306,6 @@ extern s32 D_0030FFB0;
 extern s32 D_00325DD0;
 extern s32 D_00325E2C;
 
-s32 func_0018EF20(void *, s32, s32 (*)(), s32);
 
 
 void func_001851E8(void *, s32, s32, s32, s32, s32, s32);
