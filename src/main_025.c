@@ -50,7 +50,7 @@ s32 func_001832D0(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_001832F0(s32 arg0) {
-    return func_00182D00(arg0);
+    return ((s32 (*)(s32))func_00182D00)(arg0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183310);
