@@ -216,9 +216,10 @@ int func_00183C78(int arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C88);
+void func_00183C88(int arg0, int arg1) {
+    __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
+}
 
-void func_00183C88(s32, s32);
 extern s32 D_0028CAC8;
 extern s32 D_0028CE38;
 
