@@ -1589,6 +1589,7 @@ s32 func_0019B7F0(void *arg0, s32 arg1, s32 arg2);
 s64 func_0019B870(void *cookie, s64 offset, s32 whence);
 void func_0019B8D8(void *arg0);
 s32 func_0019B8F8(const char *s1, const char *s2);
+s32 func_0019BEF0(const char *s);
 s32 func_0019C028(const char *s1, const char *s2, u32 n);
 char *func_0019C478(const char *s, s32 i);
 void func_0019D3E0(s32 arg0, s32 arg1);
