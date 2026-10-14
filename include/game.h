@@ -966,4 +966,6 @@ typedef struct fr_FILE { u8 *_p; s32 _r; } fr_FILE;
 s32 func_0017DFE8(s32, void *, s32, s32, s32, s32);
 void *func_0017E408(s32 *);
 
+i2b_Bigint *func_00198BB0(void *ptr, i2b_Bigint *b, s32 m, s32 a);
+
 #endif

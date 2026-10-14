@@ -148,7 +148,30 @@ void func_00198B80(void *arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00198BB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198CB8);
+i2b_Bigint *func_00198CB8(void *ptr, const char *s, s32 nd0, s32 nd, u32 y9) {
+    i2b_Bigint *b;
+    s32 i, k;
+    s32 x, y;
+
+    x = (nd + 8) / 9;
+    for (k = 0, y = 1; x > y; y <<= 1, k++);
+    b = func_00198AD8(ptr, k);
+    b->x[0] = y9;
+    b->wds = 1;
+
+    i = 9;
+    if (9 < nd0) {
+        s += 9;
+        do
+            b = func_00198BB0(ptr, b, 10, *s++ - '0');
+        while (++i < nd0);
+        s++;
+    } else
+        s += 10;
+    for (; i < nd; i++)
+        b = func_00198BB0(ptr, b, 10, *s++ - '0');
+    return b;
+}
 
 s32 func_00198DE8(u32 x) {
     s32 k = 0;
