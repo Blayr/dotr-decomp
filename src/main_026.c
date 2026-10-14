@@ -242,7 +242,6 @@ typedef struct {
 } StoreImage_59D0;
 
 u64 func_0017BC00(void);
-u64 func_0017BC20(u64);
 extern __int128 D_0028D920;
 extern char D_002BC4A0[];
 extern char D_002BC4D8[];

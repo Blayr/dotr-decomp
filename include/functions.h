@@ -840,6 +840,7 @@ int func_0017BBD0(void);
 int func_0017BBE0(void);
 int func_0017BBF0(void);
 int func_0017BC10(void);
+unsigned long long func_0017BC20(unsigned long long arg0);
 void func_0017BD70(void);
 s64 func_0017BE00(void);
 s32 func_0017BFA0(void);
