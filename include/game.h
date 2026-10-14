@@ -594,4 +594,6 @@ extern s32 D_0028CAA4;
 extern u8 D_002BCB08[];
 void func_0018F7B0(s32, void *);
 
+extern u8 D_002BCB38[];
+
 #endif
