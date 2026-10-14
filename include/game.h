@@ -894,4 +894,6 @@ extern s32 D_00315CF0;
 s32 func_0018CE00(void *, s32, s32);       /* extern */
 s32 func_0018CF10(void *, s32, s32, s32);       /* extern */
 
+extern f32 D_002BE120[]; /* fdlibm ef_fmod.c Zero[] = { 0.0, -0.0 } */
+
 #endif
