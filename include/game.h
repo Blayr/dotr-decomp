@@ -598,4 +598,6 @@ extern u8 D_002BCB38[];
 
 s32 func_00198840(s32, s32);                    /* extern */
 
+extern u8 D_002BCB50[];
+
 #endif
