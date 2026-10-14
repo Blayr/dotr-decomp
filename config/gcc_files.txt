@@ -16,6 +16,7 @@ src/main_030.c 2.9-991111 0 -O2
 src/main_031.c 2.9-991111 0 -O2
 src/main_032.c 2.9-991111 0 -O2
 src/main_033.c 2.9-991111 0 -O2
-src/main_034.c 2.9-991111 0 -O2
-src/main_035.c 2.9-991111 0 -O2
-src/main_036.c 2.9-991111 0 -O2
+src/main_033b.c 2.96 0 -O2
+src/main_034.c 2.96 0 -O2
+src/main_035.c 2.96 0 -O2
+src/main_036.c 2.96 0 -O2

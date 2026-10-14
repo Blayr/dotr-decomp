@@ -103,6 +103,8 @@ if [ -x "$EE/bin/ee-gcc" ]; then
 else
     (cd "$TMP" && wibo "$EE/bin/ee-gcc.exe" -S "-G$G" $DK_CFLAGS in.i -o out.s)
 fi
+# Sony's EE assembler turned GCC's `move` into a 64-bit daddu; binutils 2.45 makes it `or`.
+sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
 
 mipsel-none-elf-as -EL "-G$G" -march=r5900 -mabi=eabi -no-pad-sections \
     -I "$ROOT" -I "$ROOT/include" -o "$OUT" "$TMP/out.s"

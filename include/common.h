@@ -18,7 +18,8 @@ typedef float f32;
 /* Sony's SDK libraries (config/gcc_files.txt) build with an EE GCC 2.9, which has no
  * __int128; its 128-bit integer is the TI machine mode. */
 #if defined(__GNUC__) && !defined(__MWERKS__) && !defined(M2CTX) && !defined(PERMUTER)
-#define __int128 int __attribute__((mode(TI)))
+typedef int dk_int128 __attribute__((mode(TI)));
+#define __int128 dk_int128
 #endif
 
 #include "dk_asm.h"
