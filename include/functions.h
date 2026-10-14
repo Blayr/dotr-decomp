@@ -1063,6 +1063,7 @@ void func_00187B18(void *v0, void *v1, void *v2);
 void func_00187B30(void *p0, void *p1, void *p2);
 void func_00187B48(void *p0, void *p1, float f0);
 void func_00187B60(void *p0, void *p1, void *p2);
+void func_00187B90(void *p0, void *p1);
 void func_00187BA0(void *m0, void *m1);
 void func_00187BC8(void *p0, void *p1);
 void func_00187BD8(void *p0, void *p1);

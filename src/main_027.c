@@ -482,7 +482,12 @@ void func_00187B60(void *p0, void *p1, void *p2) {
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B90);
+void func_00187B90(void *p0, void *p1) {
+    __asm__ __volatile__("\n\
+	lq	$6,0x0(%1)\n\
+	sq	$6,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1));
+}
 
 void func_00187BA0(void *m0, void *m1) {
     __asm__ __volatile__("\n\
