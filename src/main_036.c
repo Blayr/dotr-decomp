@@ -31,7 +31,14 @@ void func_001A2340(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_001A2190(sp0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A2370);
+void func_001A2370(f32 fparg0) {
+    struct { s32 x0; s32 x4; s32 x8; u32 xC; } spS;
+    f32 sp10;
+
+    sp10 = fparg0;
+    func_001A2260(&sp10, &spS);
+    func_001A3008(spS.x0, spS.x4, spS.x8, (s64) spS.xC << 0x1E);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A23B0);
 

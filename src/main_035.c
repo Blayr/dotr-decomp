@@ -18,7 +18,15 @@ INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B148);
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B418);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B4B8);
+f32 func_0019B4B8(f32 fparg0, f32 fparg1) {
+    u32 gw0;
+    u32 gw4;
+
+    do { fshape gf_u; gf_u.value = (fparg0); (gw0) = gf_u.word; } while (0);
+    do { fshape gf_u; gf_u.value = (fparg1); (gw4) = gf_u.word; } while (0);
+    do { fshape sf_u; sf_u.word = (((gw0 & 0x7FFFFFFF) | (gw4 & 0x80000000))); (fparg0) = sf_u.value; } while (0);
+    return fparg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B4F8);
 

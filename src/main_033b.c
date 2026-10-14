@@ -69,7 +69,19 @@ void func_00196A10(void) {
     func_001969F0(D_0028FA98);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196A30);
+void func_00196A30(void *arg0) {
+    void *temp_s1;
+
+    temp_s1 = arg0 + 0x1E4;
+    (*(s32 (**)(s32))((u8 *)arg0 + 0x3C)) = func_001969F0;
+    (*(s32 *)((u8 *)arg0 + 0x38)) = 1;
+    func_00196820(temp_s1, 4, 0, arg0);
+    func_00196820(arg0 + 0x23C, 9, 1, arg0);
+    func_00196820(arg0 + 0x294, 0xA, 2, arg0);
+    (*(s32 *)((u8 *)arg0 + 0x1D8)) = 0;
+    (*(void **)((u8 *)arg0 + 0x1E0)) = temp_s1;
+    (*(s32 *)((u8 *)arg0 + 0x1DC)) = 3;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196AC0);
 

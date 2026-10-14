@@ -51,11 +51,9 @@ typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
 extern void func_00187660(void *, s32);
-extern void func_001876B8(void *, Q128_0020F290);
 extern void func_001876D0(void *);
 extern void func_00187778(void *, s32, s32);
 extern void func_00187828(void *, s32, s32);
-extern void func_00187858(void *, s32);
 extern void func_001878B0(void *);
 
 extern u8 D_003506C8[];
@@ -761,5 +759,8 @@ extern s32 func_0019B7F0;
 extern s32 func_0019B870;
 
 typedef union { f32 value; u32 word; } fshape;
+
+s32 func_001A2260(f32 *, void *);               /* extern */
+s32 func_001A3008(s32, s32, s32, s64);          /* extern */
 
 #endif
