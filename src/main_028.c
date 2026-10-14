@@ -44,7 +44,18 @@ void func_00187EA0(s32 arg0, s32 arg1, void *arg2) {
     func_00187D50(arg0, arg0, (*(f32 *)arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00187EF0);
+void func_00187EF0(void *p0, void *p1, float f0, float f1) {
+    __asm__ __volatile__("\n\
+	mfc1	$8,%2\n\
+	mfc1	$9,%3\n\
+	lqc2	$vf6,0x0(%1)\n\
+	qmtc2.ni	$8,$vf4\n\
+	qmtc2.ni	$9,$vf5\n\
+	vmaxx.xyzw	$vf6,$vf6,$vf4x\n\
+	vminix.xyzw	$vf6,$vf6,$vf5x\n\
+	sqc2	$vf6,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1), "f" (f0), "f" (f1));
+}
 
 void func_00187F18(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     s32 sp0[4];
