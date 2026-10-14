@@ -146,7 +146,34 @@ void func_00198B80(void *arg0, void *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198BB0);
+i2b_Bigint *func_00198BB0(void *ptr, i2b_Bigint *b, s32 m, s32 a) {
+    s32 i, wds;
+    u32 *x, y;
+    u32 xi, z;
+    i2b_Bigint *b1;
+
+    wds = b->wds;
+    x = b->x;
+    i = 0;
+    do {
+        xi = *x;
+        y = (xi & 0xffff) * m + a;
+        z = (xi >> 16) * m + (y >> 16);
+        a = (s32)(z >> 16);
+        *x++ = (z << 16) + (y & 0xffff);
+    } while (++i < wds);
+    if (a) {
+        if (wds >= b->maxwds) {
+            b1 = func_00198AD8(ptr, b->k + 1);
+            func_00198790((char *)&b1->sign, (char *)&b->sign, b->wds * sizeof(s32) + 2 * sizeof(s32));
+            func_00198B80(ptr, b);
+            b = b1;
+        }
+        b->x[wds++] = a;
+        b->wds = wds;
+    }
+    return b;
+}
 
 i2b_Bigint *func_00198CB8(void *ptr, const char *s, s32 nd0, s32 nd, u32 y9) {
     i2b_Bigint *b;
