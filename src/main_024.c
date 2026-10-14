@@ -14,7 +14,11 @@ void func_0017F6B8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F708);
+s32 func_0017F708(void) {
+    func_0017F6B8();
+    func_0017B920(D_0028CAA4);
+    return 0;
+}
 
 void func_0017F738(void) {
     func_0017B900(D_0028CAA4);
