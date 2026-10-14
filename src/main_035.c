@@ -274,7 +274,44 @@ s32 func_0019D9E0(s32 c) {
     return (D_002BD0C1[(u32)c] & 2) ? c - 'a' + 'A' : c;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DA00);
+typedef struct sm_buf { u8 *_base; s32 _size; } sm_buf;
+typedef struct sm_FILE {
+    u8 *_p;
+    u8 pad04[0x2C];
+    sm_buf _ub;
+    u8 pad38[0x8];
+    u8 _ubuf[3];
+    u8 pad43[0x11];
+    void *_data;
+} sm_FILE;
+void *func_0019A690(void *ptr, void *old, s32 size);
+
+s32 func_0019DA00(void *arg0) {
+    sm_FILE *fp = arg0;
+    s32 i;
+    u8 *p;
+
+    if (fp->_ub._base == fp->_ubuf) {
+        if ((p = (u8 *)func_00197EB8((s32)fp->_data, 1024)) == NULL)
+            return -1;
+        fp->_ub._base = p;
+        fp->_ub._size = 1024;
+        p += 1024 - sizeof(fp->_ubuf);
+        for (i = sizeof(fp->_ubuf); --i >= 0;)
+            p[i] = fp->_ubuf[i];
+        fp->_p = p;
+        return 0;
+    }
+    i = fp->_ub._size;
+    p = (u8 *)func_0019A690(fp->_data, fp->_ub._base, i << 1);
+    if (p == NULL)
+        return -1;
+    func_00198790(p + i, p, i);
+    fp->_p = p + i;
+    fp->_ub._base = p;
+    fp->_ub._size = i << 1;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DAE8);
 
