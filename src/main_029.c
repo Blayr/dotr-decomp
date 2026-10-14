@@ -685,7 +685,62 @@ s32 func_0018C938(void *arg0, s32 *arg1) {
     return ok;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C9D8);
+void func_0018C9D8(void *arg0, s32 *s) {
+    u8 *d = arg0;
+    s32 src;
+    s32 n;
+    s32 dst;
+    s32 p;
+    s32 i;
+    s32 j;
+    s32 qwc;
+    s32 inc_src;
+    s32 inc_dst;
+
+    src = s[0] & 0x0FFFFFFF;
+    dst = *(s32 *)(d + 0xD8) & 0x0FFFFFFF;
+    if (*(s32 *)(d + 0x174) == 3 || *(s32 *)(d + 0xE0) == 0) {
+        inc_src = s[4] * 0x180;
+        qwc = inc_src >> 4;
+        if (*(s32 *)(d + 0xE0) != 0) {
+            inc_dst = (*(s32 *)(d + 0xE0) >> 4) * 0x180;
+        } else {
+            inc_dst = inc_src;
+        }
+        n = 1;
+    } else {
+        inc_dst = (*(s32 *)(d + 0xE0) >> 4) * 0xC0;
+        inc_src = (s[4] >> 1) * 0x180;
+        n = 2;
+        qwc = inc_src >> 4;
+    }
+    for (i = 0; i < n; i++) {
+        p = dst;
+        for (j = 0; j < s[3]; j++) {
+            func_001843E0();
+            *(volatile s32 *)0x1000D480 = 0;
+            *(volatile s32 *)0x1000D410 = src;
+            *(volatile s32 *)0x1000D420 = qwc;
+            *(volatile s32 *)0x1000D400 = 0x101;
+            func_00184428();
+            while (*(volatile s32 *)0x1000D400 & 0x100) {
+            }
+            func_001843E0();
+            *(volatile s32 *)0x1000D080 = 0;
+            *(volatile s32 *)0x1000D010 = p;
+            *(volatile s32 *)0x1000D020 = qwc;
+            *(volatile s32 *)0x1000D000 = 0x100;
+            func_00184428();
+            while (*(volatile s32 *)0x1000D000 & 0x100) {
+            }
+            while (*(volatile s32 *)0x1000D020 != 0) {
+            }
+            p += inc_dst;
+            src += inc_src;
+        }
+        dst += *(s32 *)(d + 0xE4) * 0xC0;
+    }
+}
 
 void func_0018CC48(void *arg0) {
     if ((*(s32 *)((u8 *)arg0 + 8)) != 2) {

@@ -928,7 +928,6 @@ typedef struct su_reent { s32 _errno; } su_reent;
 typedef struct sl_reent { s32 _errno; } sl_reent;
 
 extern u32 D_0028DA78[];
-void func_0018C9D8(void *);
 
 extern s32 D_0028F74C;
 extern char D_002BCEE0[];

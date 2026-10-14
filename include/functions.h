@@ -1316,6 +1316,7 @@ void func_0018C490(s32 arg0, s32 arg1);
 s32 func_0018C520(void *arg0);
 void func_0018C5F0(void *arg0, s32 arg1, s32 arg2);
 s32 func_0018C938(void *arg0, s32 *arg1);
+void func_0018C9D8(void *arg0, s32 *s);
 void func_0018CC48(void *arg0);
 void func_0018CC70(void *arg0, s32 *img, void *arg2, void *arg3, void *arg4);
 void func_0018CE00(void *d, s32 arg1, s32 unused);
