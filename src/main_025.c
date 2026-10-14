@@ -1,6 +1,28 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_001831A0);
+s32 func_001831A0(void *arg0) {
+    u8 *b_D_00313E08;
+    s32 *temp_v1;
+    s32 var_v0;
+
+    var_v0 = 0xFFFF0000;
+    if (func_00182B38() < 0) {
+        return var_v0;
+    }
+    if (func_00182C38() != 0) {
+        return 0xFFFEFFFC;
+    }
+    b_D_00313E08 = (u8 *)&D_00313E08;
+    func_0019C2B8((void *)b_D_00313E08, arg0, 0xFCU);
+    temp_v1 = (void *)b_D_00313E08 - 8;
+    (*(s8 *)((u8 *)temp_v1 + 0x103)) = 0;
+    if (func_0017EA80(&D_00314000, 9, 0, temp_v1, 0x200, temp_v1, 4, 0, 0) < 0) {
+        var_v0 = 0xFFFEFFFF;
+        /* Duplicate return node #9. Try simplifying control flow for better match */
+        return var_v0;
+    }
+    return (*(s32 *)(b_D_00313E08 + -8));
+}
 
 s32 func_00183240(s32 arg0) {
     s32 var_v0;

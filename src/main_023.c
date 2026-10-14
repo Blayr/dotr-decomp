@@ -375,7 +375,36 @@ s32 func_0017EC70(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017ECB0);
+void func_0017ECB0(void *arg0, s32 arg1) {
+    u8 *b_D_00312840;
+    void *temp_v0;
+    void *var_a0;
+    void *var_v1;
+
+    func_001843E0();
+    (*(s32 *)arg0) = arg1;
+    (*(s32 *)((u8 *)arg0 + 4)) = 0;
+    (*(s32 *)((u8 *)arg0 + 8)) = 0;
+    (*(s32 *)((u8 *)arg0 + 0xC)) = 0;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
+    (*(s32 *)((u8 *)arg0 + 0x14)) = 0;
+    b_D_00312840 = (u8 *)&D_00312840;
+    if ((*(void **)(b_D_00312840 + 0x28)) == NULL) {
+        (*(void **)(b_D_00312840 + 0x28)) = arg0;
+    } else {
+        var_a0 = (*(void **)(b_D_00312840 + 0x28));
+        var_v1 = (*(void **)((u8 *)var_a0 + 0x14));
+        if (var_v1 != NULL) {
+            do {
+                var_a0 = var_v1;
+                temp_v0 = (*(void **)((u8 *)var_a0 + 0x14));
+                var_v1 = temp_v0;
+            } while (temp_v0 != NULL);
+        }
+        (*(void **)((u8 *)var_a0 + 0x14)) = arg0;
+    }
+    func_00184428();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017ED48);
 

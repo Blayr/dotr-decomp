@@ -953,4 +953,8 @@ extern char ***D_0028FF08; /* p_environ */
 
 typedef struct cal_chunk { u32 prev_size; u32 size; } cal_chunk;
 
+extern s32 D_00312840;
+extern s32 D_00313E08;
+extern s32 D_00315D04;
+
 #endif
