@@ -234,7 +234,6 @@ extern char D_002BF040;
 
 extern u32 D_0029E830[];
 
-void func_00241840(u8 *, s32, s32, s32, s32, s32);
 
 
 

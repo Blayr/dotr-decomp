@@ -3218,7 +3218,55 @@ void func_002413F0(u8 *out, u8 value, f32 hue, f32 light, f32 sat) {
     out[2] = MIN_002413F0((s32)(color[2] + 0.5f), 0xFF);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241840);
+typedef struct Vec_00241840 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec_00241840;
+
+void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) {
+    extern void func_00241200(void *, s32, s32, s32, u8);
+    Vec_00241840 vec;
+    s32 flip;
+    s32 isSix;
+    s32 mode;
+    u8 flags;
+
+    flags = arg4;
+    if (flags & 8) {
+        flip = 1;
+    } else {
+        flip = 0;
+    }
+    mode = flags & 7;
+    if (mode == 6) {
+        isSix = 1;
+    } else {
+        isSix = 0;
+    }
+    func_00241200(&vec, r, g, b, max);
+    if (mode < 7) {
+        arg4 &= 7;
+        if (flip) {
+            arg4 = (u8)(((u8)arg4 + 3) % 6);
+        }
+        vec.x = (u32)arg4;
+    }
+    if (isSix) {
+        vec.z = 0.0f;
+    } else {
+        vec.z = vec.z * scale;
+    }
+    func_002413F0(color, max, vec.x, vec.y, vec.z);
+    if (flip) {
+        color[0] = max - color[0];
+        color[1] = max - color[1];
+        color[2] = max - color[2];
+    }
+    color[0] = (color[0] > 1) ? color[0] : 1;
+    color[1] = (color[1] > 1) ? color[1] : 1;
+    color[2] = (color[2] > 1) ? color[2] : 1;
+}
 
 s32 func_00241A00(s32 arg0, s32 arg1) {
     extern void func_00241840();
