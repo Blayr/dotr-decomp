@@ -294,7 +294,6 @@ typedef struct State_001547A0 {
     } data;
 } State_001547A0;
 
-void func_00154EB0(void *);
 
 s32 func_001547A0(void *arg0) {
     extern s32 func_001E1030();
@@ -439,7 +438,59 @@ s32 func_00154AD0(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00154EB0);
+typedef struct State_00154EB0 {
+    u16 position;
+    u16 pad2;
+    u16 flags;
+    u16 pad6;
+    u16 destination;
+    u16 destination_high;
+} State_00154EB0;
+
+void func_00154EB0(void *arg0) {
+    s32 position;
+    u8 kind;
+    State_00154EB0 *state = arg0;
+    s32 other;
+    s32 destination;
+
+    if (func_001DF540(state->position >> 8, state->position & 0xFF) == 0) {
+        return;
+    }
+    other = (func_0024DE70(state->position >> 8, state->position & 0xFF) == 0 ? 1 : 0) << 8;
+    position = func_001E1090(state->position >> 8, state->position & 0xFF);
+    func_001E1090(other >> 8, other & 0xFF);
+    func_001DF540(state->position >> 8, state->position & 0xFF);
+    kind = (func_001E0700(state->position >> 8, state->position & 0xFF) >> 5) & 0xFF;
+    state->flags = 0x7FF;
+    if (func_00155670(state->position >> 8, state->position & 0xFF) == 1) {
+        *(u32 *)&state->destination = (position << 16) | state->destination;
+        return;
+    }
+    {
+        s32 y;
+        s32 x;
+
+        x = position & 0xFF;
+        y = position >> 8;
+        if (func_001554B0(x, y, kind) == 0 && func_001554B0(x, y, 0) == 0 && y < 6) {
+            *(u32 *)&state->destination = (((position & 0xFF) | 0x600) << 16) | state->destination;
+            return;
+        }
+    }
+    destination = func_001555F0(kind);
+    if (destination >= 0) {
+        *(u32 *)&state->destination = (destination << 16) | state->destination;
+        return;
+    }
+    destination = func_001555F0(0);
+    if (destination >= 0) {
+        *(u32 *)&state->destination = (destination << 16) | state->destination;
+        return;
+    }
+    state->flags = 0x6FF;
+    *(u32 *)&state->destination = state->destination | 0x05030000;
+}
 
 typedef struct Action_00155070 {
     u16 location;
@@ -452,7 +503,6 @@ typedef struct Action_00155070 {
     } data;
 } Action_00155070;
 
-void func_00154EB0(void *);
 
 void func_00155070(void *arg0) {
     extern s32 func_001E1030();
