@@ -805,6 +805,7 @@ s32 func_0018DA88(u64 *arg0, s32 arg1);
 s32 func_0018ED10(s32 unused0);
 s32 func_0018F108(s32 *arg0);
 void func_0018F768(s32 arg0);
+s32 func_00190800(s32 arg0);
 s32 func_00195070(s32 arg0);
 void func_00195088(s32 arg0);
 s32 func_001950A0(const char *s);
