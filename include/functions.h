@@ -1106,6 +1106,7 @@ void *func_001968F8(void *arg0);
 s32 func_001969F0(s32 ptr);
 void func_00196A10(void);
 void func_00196A30(void *arg0);
+u32 func_00196AC0(void *buf, u32 size, u32 count, void *arg3);
 s32 func_00197048(s32 *ptr, s32 fd, void *st);
 s32 func_00197488(u8 *ptr, s32 (*function)(nl_FILE *));
 void func_00197520(s32 arg0, s32 arg1);

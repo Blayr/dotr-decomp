@@ -254,7 +254,33 @@ void func_00196A30(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x1DC)) = 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196AC0);
+u32 func_00196AC0(void *buf, u32 size, u32 count, void *arg3) {
+    fr_FILE *fp = arg3;
+    u32 resid;
+    char *p;
+    s32 r;
+    u32 total;
+
+    if ((resid = count * size) == 0)
+        return 0;
+    if (fp->_r < 0)
+        fp->_r = 0;
+    total = resid;
+    p = buf;
+    while (resid > (r = fp->_r)) {
+        func_00198790(p, fp->_p, r);
+        fp->_p += r;
+        p += r;
+        resid -= r;
+        if (func_0019AC68(fp)) {
+            return (total - resid) / size;
+        }
+    }
+    func_00198790(p, fp->_p, resid);
+    fp->_r -= resid;
+    fp->_p += resid;
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196BE0);
 

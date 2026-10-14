@@ -961,4 +961,6 @@ typedef union { double d; u32 i[2]; } ulp_du;
 s32 func_00186238(void *);
 extern s32 D_0028D970;
 
+typedef struct fr_FILE { u8 *_p; s32 _r; } fr_FILE;
+
 #endif
