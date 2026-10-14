@@ -85,7 +85,32 @@ INCLUDE_ASM("asm/nonmatchings/main_028", func_001880F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001881F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188388);
+void func_00188388(void *p0, void *p1, void *p2, void *p3) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%1)\n\
+	lqc2	$vf5,0x10(%1)\n\
+	lqc2	$vf6,0x20(%1)\n\
+	lqc2	$vf7,0x30(%1)\n\
+_func_00188388_00188398:\n\
+	lqc2	$vf8,0x0(%2)\n\
+	vmulax.xyzw	$ACC,$vf4,$vf8x\n\
+	vmadday.xyzw	$ACC,$vf5,$vf8y\n\
+	vmaddaz.xyzw	$ACC,$vf6,$vf8z\n\
+	vmaddw.xyzw	$vf9,$vf7,$vf8w\n\
+	vdiv	$Q,$vf0w,$vf9w\n\
+	vwaitq\n\
+	vmulq.xyz	$vf9,$vf9,$Q\n\
+	vftoi4.xyzw	$vf10,$vf9\n\
+	beqz	$8,_func_00188388_001883C4\n\
+	vftoi0.zw	$vf10,$vf9\n\
+_func_00188388_001883C4:\n\
+	sqc2	$vf10,0x0(%0)\n\
+	addi	%3,%3,-0x1\n\
+	addi	%2,%2,0x10\n\
+	addi	%0,%0,0x10\n\
+	bne	$0,%3,_func_00188388_00188398\n\
+	" :  : "r" (p0), "r" (p1), "r" (p2), "r" (p3));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001883E0);
 
