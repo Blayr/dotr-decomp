@@ -466,7 +466,96 @@ s32 func_00155670(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155770);
+typedef struct {
+    u8 data[0x3C];
+    u16 unk3C;
+    u8 pad3E[0x22];
+} Work_00155770;
+
+typedef struct {
+    s16 id;
+    u8 kind;
+    u8 pad3;
+    s16 value;
+    u8 pad6[6];
+    s32 unkC;
+} Ctx_00155770;
+
+s32 func_00155770(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_00278890();
+    Work_00155770 work;
+    s32 ret;
+    s32 res;
+    s32 pos;
+    s32 kind;
+    Ctx_00155770 *ctx = (Ctx_00155770 *)arg2;
+
+    ctx->id = arg0;
+    if (func_001DE6D0(arg1) == 0) {
+        return -1;
+    }
+    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+        return -1;
+    }
+    kind = func_00155A00(arg1, &work);
+    if (kind < 0) {
+        return -1;
+    }
+    ctx->kind = 10;
+    ctx->unkC = 0;
+    pos = func_001E1090(arg0 >> 8, arg0 & 0xFF);
+    ret = func_00276F10(&work, pos & 0xFF, pos >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, func_00158780(arg1));
+    if (kind == 0) {
+        if (func_001564E0(arg1, ctx, &work) < 0) {
+            goto fallback;
+        }
+        if (ret < 0) {
+            if (func_001E0150(arg1) >= 6) {
+                goto fallback;
+            }
+            res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+            if (res < 0) {
+                return -1;
+            }
+            ctx->value = res;
+            return 1;
+        }
+        res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+        if (res < 0) {
+            return -1;
+        }
+        ctx->value = res;
+        return 1;
+    }
+    if (kind == 2) {
+        func_00156910(arg1, ctx, &work);
+        res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+        if (res < 0) {
+            return -1;
+        }
+        ctx->value = res;
+        return 1;
+    }
+    if (kind == 3) {
+        func_00155C90(arg1, ctx, &work);
+        res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+        if (res < 0) {
+            return -1;
+        }
+        ctx->value = res;
+        return 1;
+    }
+fallback:
+    if (func_001562E0(arg1, (u8 *)ctx, &work, work.unk3C) < 0) {
+        return -1;
+    }
+    res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+    if (res < 0) {
+        return -1;
+    }
+    ctx->value = res;
+    return 1;
+}
 
 s32 func_00155A00(s32 arg0, void *arg1) {
     extern s32 func_00278890();

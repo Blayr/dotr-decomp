@@ -447,7 +447,6 @@ extern char D_002BE944[];
 extern u8 D_003181C6;
 
 
-s32 func_0013EEE0(s32, s32, s32);
 
 
 
@@ -456,7 +455,6 @@ extern u8 D_00325F00[];
 extern Q128_0020F290 D_00325EF0;
 extern u64 D_00326180;
 
-s32 func_00155770(s32 arg0, s32 arg1, s32 arg2);
 
 
 
