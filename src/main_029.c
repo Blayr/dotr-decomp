@@ -124,13 +124,57 @@ INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D0C8);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D220);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D290);
+void func_0018D290(void *arg0, s32 arg1, s32 arg2) {
+    s32 sp0[8];
+    do {
+
+    } while (*(volatile s32 *)0x10002010 < 0);
+    func_001843E0();
+    *(volatile s32 *)0x1000B010 = arg1 & 0x0FFFFFFF;
+    *(volatile s32 *)0x1000B020 = arg2 << 6;
+    *(volatile u32 *)0x1000B000 = 0x100;
+    func_00184428();
+    func_0018B550(arg0, arg2 | 0x70000000);
+    sp0[0] = 4;
+    func_0018EF48((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
+    do {
+
+    } while (((u32) *(volatile s32 *)0x1000B000 >> 8) & 1);
+    do {
+
+    } while (*(volatile s32 *)0x10002010 < 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D3A8);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D520);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D6D0);
+s32 func_0018D6D0(s32 arg0, void *arg1) {
+    u32 temp_v0;
+
+    *(volatile s32 *)0x1000E010 = 0x10;
+    temp_v0 = (*(u32 *)arg1);
+    if (temp_v0 == 0) {
+        return 1;
+    }
+    if (temp_v0 > 0xFFFFU) {
+        func_001843E0();
+        *(volatile s32 *)0x1000B410 = (*(s32 *)((u8 *)arg1 + 4));
+        *(volatile u32 *)0x1000B420 = 0xFFFF;
+        *(volatile s32 *)0x1000B400 = 0x101;
+        func_00184428();
+        (*(u32 *)arg1) = (u32) ((*(u32 *)arg1) - 0xFFFF);
+        (*(s32 *)((u8 *)arg1 + 4)) = (s32) (((*(s32 *)((u8 *)arg1 + 4)) + 0xFFFF0) & 0x0FFFFFFF);
+    } else {
+        func_001843E0();
+        *(volatile s32 *)0x1000B410 = (s32) (*(s32 *)((u8 *)arg1 + 4));
+        *(volatile s32 *)0x1000B420 = (u32) (*(u32 *)arg1);
+        *(volatile s32 *)0x1000B400 = 0x101;
+        func_00184428();
+        (*(u32 *)arg1) = 0U;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D7D8);
 
