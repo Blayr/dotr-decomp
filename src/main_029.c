@@ -79,11 +79,67 @@ void func_0018BD90(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BE58);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BF80);
+void func_0018BF80(void *arg0) {
+    s32 temp_v0;
+
+    (*(s32 *)((u8 *)arg0 + 0x164)) = func_0018BA48(arg0, 4);
+    (*(s32 *)((u8 *)arg0 + 0x168)) = func_0018BA48(arg0, 4);
+    (*(s32 *)((u8 *)arg0 + 0x16C)) = func_0018BA48(arg0, 4);
+    (*(s32 *)((u8 *)arg0 + 0x170)) = func_0018BA48(arg0, 4);
+    *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFFFCFFFF) | (func_0018BA48(arg0, 2) << 0x10);
+    temp_v0 = func_0018BA48(arg0, 2);
+    (*(s32 *)((u8 *)arg0 + 0x174)) = temp_v0;
+    if ((*(s32 *)((u8 *)arg0 + 0xD4)) == 0) {
+        (*(s32 *)((u8 *)arg0 + 0xD4)) = temp_v0;
+    }
+    (*(s32 *)((u8 *)arg0 + 0x178)) = func_0018BA48(arg0, 1);
+    (*(s32 *)((u8 *)arg0 + 0x17C)) = func_0018BA48(arg0, 1);
+    (*(s32 *)((u8 *)arg0 + 0x180)) = func_0018BA48(arg0, 1);
+    *(volatile s32 *)0x10002010 = (s32) ((*(volatile s32 *)0x10002010 & 0xFFBFFFFF) | (func_0018BA48(arg0, 1) << 0x16));
+    *(volatile s32 *)0x10002010 = (s32) ((*(volatile s32 *)0x10002010 & 0xFFDFFFFF) | (func_0018BA48(arg0, 1) << 0x15));
+    *(volatile s32 *)0x10002010 = (s32) ((*(volatile s32 *)0x10002010 & 0xFFEFFFFF) | (func_0018BA48(arg0, 1) << 0x14));
+    (*(s32 *)((u8 *)arg0 + 0x184)) = func_0018BA48(arg0, 1);
+    func_0018BA48(arg0, 1);
+    (*(s32 *)((u8 *)arg0 + 0x188)) = func_0018BA48(arg0, 1);
+    if (func_0018BA48(arg0, 1) != 0) {
+        func_0018BA48(arg0, 1);
+        func_0018BA48(arg0, 3);
+        func_0018BA48(arg0, 1);
+        func_0018BA48(arg0, 7);
+        func_0018BA48(arg0, 8);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C170);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C1B8);
+s32 func_0018C1B8(void *arg0, s32 arg1) {
+    s32 temp_a0;
+    s32 temp_v0;
+    s32 temp_v0_2;
+    s32 temp_v1;
+    s32 var_a0;
+    s32 var_a3;
+
+    var_a3 = 0;
+    var_a0 = 0;
+    if (((*(s32 *)((u8 *)arg0 + 0x150)) != 3) && (arg1 != 0)) {
+        if (arg1 < 0) {
+            var_a3 = (*(s32 *)((u8 *)arg0 + 0x854)) == 0;
+        }
+        (*(s32 *)((u8 *)arg0 + 0x854)) = 0;
+        var_a0 = arg1;
+    }
+    temp_v1 = (*(s32 *)((u8 *)arg0 + 0x84C)) + arg1;
+    (*(s32 *)((u8 *)arg0 + 0x1AC)) = temp_v1;
+    if ((var_a3 != 0) && (var_a0 >= arg1)) {
+        (*(s32 *)((u8 *)arg0 + 0x1AC)) = (s32) (temp_v1 + 0x400);
+    }
+    temp_v0_2 = (*(s32 *)((u8 *)arg0 + 0x850));
+    temp_a0 = (*(s32 *)((u8 *)arg0 + 0x1AC));
+    temp_v0 = (temp_v0_2 < temp_a0) ? temp_a0 : temp_v0_2;
+    (*(s32 *)((u8 *)arg0 + 0x850)) = temp_v0;
+    return temp_v0;
+}
 
 void func_0018C230(void *arg0, s32 arg1) {
     (*(s32 *)((u8 *)arg0 + 0xE8)) = 0;

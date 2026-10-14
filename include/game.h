@@ -726,7 +726,6 @@ s32 func_001A25F8(s32 *, s32 *, s32 *); /* extern */
 
 s32 func_0018B550(void *, s32);                 /* extern */
 
-s32 func_0017D180(s32);                     /* extern */
 s32 func_00187B90(s32, s32);                    /* extern */
 
 s32 func_001912F0(s32);                         /* extern */
@@ -745,7 +744,6 @@ s32 func_0018B958(void *, s32);             /* extern */
 s32 func_0018BA48(void *, s32);                 /* extern */
 s32 func_0018C170(void *);                      /* extern */
 s32 func_0018BE58(void *);                      /* extern */
-s32 func_0018C1B8(void *, s32);                 /* extern */
 s32 func_0018B580(void *);                      /* extern */
 extern s32 D_002BC8A8;
 extern s32 D_002BC8D0;

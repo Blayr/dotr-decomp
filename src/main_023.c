@@ -2,7 +2,13 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D0C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D180);
+s32 func_0017D180(s32 arg0) {
+    do {
+
+    } while (*(volatile s32 *)0x1000F130 & 0x8000);
+    *(volatile s8 *)0x1000F180 = (s8) arg0;
+    return arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D1B8);
 

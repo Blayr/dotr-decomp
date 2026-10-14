@@ -146,7 +146,11 @@ INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EF20);
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EF48);
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EF98);
+void func_0018EF98(s32 arg0) {
+    s32 sp0[8];
+    sp0[0] = /* extra? */ 1;
+    func_0018EF48(arg0, sp0);
+}
 
 void func_0018EFC0(void *arg0, s64 arg1) {
     void *temp_v0;
