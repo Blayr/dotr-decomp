@@ -103,6 +103,8 @@ if [ -x "$EE/bin/ee-gcc" ]; then
 else
     (cd "$TMP" && wibo "$EE/bin/ee-gcc.exe" -S "-G$G" $DK_CFLAGS in.i -o out.s)
 fi
+# Switch tables: GCC's own go to .rdata, which the link drops; load the game's (see there).
+(cd "$ROOT" && python3 tools/jtbl_fix.py --gcc "$TMP/out.s")
 # Sony's EE assembler turned GCC's `move` into a 64-bit daddu; binutils 2.45 makes it `or`.
 sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took

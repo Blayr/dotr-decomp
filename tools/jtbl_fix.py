@@ -8,7 +8,12 @@ which stay right as long as the code matches. So the compiled table is not
 needed: each table symbol becomes an absolute symbol named after the original
 table (taken, in order, from the function's asm file), and the compiled table's
 section is renamed so the linker script's /DISCARD/ drops it.
-Usage: jtbl_fix.py object.o   (run from the project root, after pad_functions.py)"""
+GCC files (config/gcc_files.txt) get the same on GCC's assembly, before it is assembled:
+GCC writes each table into .rdata (`$L19: .word $L14 ...`), which the linker script drops
+for every file, and loads it with %hi/%lo($L19). The loads get the original table's name
+(the function's Nth table = the Nth jtbl_ in its asm) and the compiled table goes.
+Usage: jtbl_fix.py object.o   (run from the project root, after pad_functions.py)
+       jtbl_fix.py --gcc out.s   (GCC's assembly, from the project root)"""
 import os
 import re
 import sys
@@ -22,6 +27,62 @@ R_MIPS_HI16 = 5
 SHN_ABS = 0xFFF1
 SHF_ALLOC = 0x2
 DROPPED = ".jtbl_compiled"
+GCC_LABEL_RE = re.compile(r"^(\$L\d+):")
+GCC_REF_RE = re.compile(r"%(hi|lo)\((\$L\d+)\)")
+
+
+def fix_gcc(path: Path) -> None:
+    lines = path.read_text().splitlines(keepends=True)
+    section = ".text"
+    tables = {}  # table label -> number of .word lines after it
+    for i, line in enumerate(lines):
+        words = line.split()
+        if words[:1] in ([".text"], [".rdata"], [".data"], [".section"]):
+            section = words[0] if words[0] != ".section" else words[1].rstrip(",")
+        m = GCC_LABEL_RE.match(line)
+        if m and section == ".rdata":
+            n = 0
+            while i + 1 + n < len(lines) and lines[i + 1 + n].split()[:1] == [".word"]:
+                n += 1
+            if n:
+                tables[m.group(1)] = n
+    if not tables:
+        return
+    used = {}  # function -> its table labels, in order of first use
+    func = None
+    for line in lines:
+        words = line.split()
+        if words[:1] == [".ent"]:
+            func = words[1]
+        for _, label in GCC_REF_RE.findall(line):
+            if label in tables and label not in used.setdefault(func, []):
+                used[func].append(label)
+    names = {}
+    for func, labels in used.items():
+        asm = next(Path("asm").glob(f"**/{func}.s"), None)
+        if asm is None:  # not a game function (a scratch file): keep GCC's table
+            continue
+        originals = list(dict.fromkeys(JTBL_RE.findall(asm.read_text())))
+        if len(originals) != len(labels):
+            sys.exit(f"jtbl_fix: {func} has {len(labels)} switch table(s), its asm uses {len(originals)}")
+        names.update(zip(labels, originals))
+    out = []
+    skip = 0
+    for line in lines:
+        if skip:
+            skip -= 1
+            continue
+        m = GCC_LABEL_RE.match(line)
+        if m and m.group(1) in names:
+            skip = tables[m.group(1)]
+            continue
+        out.append(GCC_REF_RE.sub(lambda r: f"%{r.group(1)}({names.get(r.group(2), r.group(2))})", line))
+    path.write_text("".join(out))
+
+
+if sys.argv[1] == "--gcc":
+    fix_gcc(Path(sys.argv[2]))
+    sys.exit(0)
 
 path = Path(sys.argv[1])
 elf = Elf(path.read_bytes())
