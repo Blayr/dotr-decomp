@@ -1,6 +1,14 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019AE78);
+s32 func_0019AE78(double x) {
+    s32 hx, lx;
+
+    do { nl_dshape ew_u; ew_u.value = (x); (hx) = ew_u.parts.msw; (lx) = ew_u.parts.lsw; } while (0);
+    hx &= 0x7fffffff;
+    hx |= (u32)(lx | (-lx)) >> 31;
+    hx = 0x7ff00000 - hx;
+    return (s32)(((u32)(hx)) >> 31);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019AEB8);
 
