@@ -1037,6 +1037,7 @@ void func_00187308(void *arg0);
 s32 func_00187318(void *arg0);
 void func_00187370(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00187480(void *arg0, s32 arg1, s32 arg2, s32 arg3);
+void *func_001874F8(void *p0, s32 p1);
 void func_00187510(s32 *arg0, __int128 arg1);
 void func_001875D0(u64 **arg0, u32 arg1, u64 arg2);
 void func_001875F8(s32 *arg0, s32 arg1);

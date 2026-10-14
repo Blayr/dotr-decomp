@@ -143,7 +143,12 @@ void func_00187480(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     tag[0] = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001874F8);
+void *func_001874F8(void *p0, s32 p1) {
+    u32 *cur = *(u32 **)p0;
+
+    *(u32 **)p0 = cur + p1;
+    return cur;
+}
 
 void func_00187510(s32 *arg0, __int128 arg1) {
     __int128 *p = (__int128 *) arg0[0];
