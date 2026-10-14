@@ -240,7 +240,6 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_00162F60;
 
-s32 func_0015D350(void *, void *, s32);
 s32 func_00276290(void *, void *, s32);
 
 s32 func_00162F60(s32 arg0, void *arg1) {
