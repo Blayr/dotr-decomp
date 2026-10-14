@@ -129,7 +129,23 @@ INCLUDE_ASM("asm/nonmatchings/main_026", func_00186BB8);
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186BD0);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186BE8);
+s32 func_00186BE8(void) {
+    s32 ret;
+
+    ret = 0;
+    switch (func_00186D18()) {
+    case 4:
+        __asm__ volatile(".set noreorder\n\tcfc2.ni $2, $vi28\n\tori $2, $2, 1\n\tctc2.ni $2, $vi28\n\t.set reorder" : : : "$2");
+    case 0:
+    case 3:
+        ret = 1;
+        break;
+    case 1:
+    case 2:
+        break;
+    }
+    return ret;
+}
 
 s32 func_00186C48(void) {
     s32 temp_v0;
