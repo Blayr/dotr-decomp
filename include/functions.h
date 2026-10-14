@@ -313,6 +313,7 @@ s32 func_001211B0(s32 arg0, s32 arg1, void *arg2);
 s32 func_001214E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 void func_001215E0(void *arg0, u8 arg1);
 s32 func_00121630(s32 arg0, void *arg1);
+s32 func_00121800(void *work, void *arg1, s32 arg2);
 s32 func_00121CE0(void *arg0);
 s32 func_00121E90(u16 *arg0, s32 arg1, s32 arg2);
 void func_00122270(void *arg0, s32 arg1);
