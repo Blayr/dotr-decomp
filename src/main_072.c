@@ -34,7 +34,55 @@ void func_0024C450(s32 *arg0, s32 arg1, s32 arg2) {
     *temp_a2 = temp_a0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024C480);
+s32 func_0024C480(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    switch (func_001E07C0()) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        if ((func_001E0700(arg2, arg3) >> 5) == 0) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    case 6:
+        if ((func_001E0700(arg2, arg3) >> 5) == 0 && func_002509E0(arg2, arg3, arg4, arg5) < 0x1F5) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    case 7:
+        if ((func_001E0700(arg2, arg3) >> 5) == 0 && func_002509E0(arg2, arg3, arg4, arg5) < 0x3E9) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    case 8:
+        if ((func_001E0700(arg2, arg3) >> 5) == 0 && func_001E0290(arg2, arg3, 0) < 0x5DD) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    case 9:
+        if ((func_001E0700(arg2, arg3) >> 5) == 0 && func_002509E0(arg2, arg3, arg4, arg5) < 0x7D1) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    case 10:
+        if ((func_001E0700(arg2, arg3) >> 5) == 0 && func_002509E0(arg2, arg3, arg4, arg5) < 0xBB9) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    case 11:
+        return 1;
+    case 12:
+        if ((func_001E0700(arg2, arg3) >> 5) != 0) {
+            return (func_00271F90(arg2, arg3, arg4, arg5, 0xB) != 0) ? 0 : 1;
+        }
+        break;
+    default:
+        return 0;
+    }
+    return 0;
+}
 
 s32 func_0024C780(u32 arg0, s32 arg1, s32 arg2) {
     if (arg1 == 0) {

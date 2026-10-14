@@ -457,7 +457,6 @@ s32 func_00277C60(void *arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-s32 func_0024C480(s32, s32, s32, s32, s32, s32);
 
 typedef struct Entry_00277CD0 {
     u16 id;
