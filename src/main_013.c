@@ -1483,7 +1483,6 @@ typedef struct Output_00157480 {
 } Output_00157480;
 
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00157480 *output = arg2;

@@ -186,7 +186,6 @@ typedef struct Output_00169A10 {
 } Output_00169A10;
 
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 s32 func_00169A10(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00169A10 *output = arg2;
@@ -3105,7 +3104,6 @@ s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
 }
 
 s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 typedef struct Nibbles_00170940 {
     u8 low : 4;

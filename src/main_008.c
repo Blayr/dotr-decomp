@@ -754,7 +754,6 @@ typedef struct Output_0012E820 {
 } Output_0012E820;
 
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 s32 func_0012E820(u16 *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
     Output_0012E820 *output = arg2;
@@ -2898,7 +2897,6 @@ typedef struct {
     u8 mode;
 } Output_001336A0;
 
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_001336A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {

@@ -354,7 +354,6 @@ typedef struct Output_00115850 {
 } Output_00115850;
 
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 s32 func_00115850(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00115850 *output = arg2;
@@ -2378,7 +2377,6 @@ typedef struct {
 } Output_0011A4D0;
 
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 s32 func_0011A4D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);

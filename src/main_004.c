@@ -1218,7 +1218,6 @@ typedef struct {
     u8 mode;
 } Output_0010FA60;
 
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 static inline s32 score_0010FA60(s32 arg0) {
     if (func_001DF470(arg0) > 0x5DC) {

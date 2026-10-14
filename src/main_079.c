@@ -368,7 +368,71 @@ s32 func_0027B9B0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027BBC0);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027BE10);
+s32 func_0027BE10(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 distance;
+    s32 origin;
+    s32 count;
+    u16 *p;
+    s32 coords;
+    s32 targetY;
+    s32 targetX;
+    s32 packed;
+    u16 *current;
+    s32 range;
+    u16 position;
+    s32 unit;
+    s32 y;
+    u16 values[22];
+    s32 x;
+    s32 index;
+
+    extern s32 func_00279850();
+    extern s32 func_001E1580();
+    extern s32 func_001E1640();
+    extern void func_0027C070();
+
+    if (func_001DF540(arg0, arg1) == 0) {
+        return 0;
+    }
+    position = (arg0 << 8) | arg1;
+    current = values;
+    count = 0;
+    p = current;
+    do {
+        count++;
+        *p++ = 0xFFFF;
+    } while (count < 22);
+    func_0027C070(func_00250360(arg0, arg1) == 0 ? 1 : 0, values, 31, arg4);
+    packed = (arg3 << 8) | arg2;
+    index = 0;
+    if (index < func_0027C670(values)) {
+        origin = (arg0 << 8) | arg1;
+        targetY = packed >> 8;
+        targetX = packed & 0xFF;
+        do {
+            coords = func_001E1090(*current >> 8, *current & 0xFF);
+            unit = func_001DF540(*current >> 8, *current & 0xFF);
+            x = coords & 0xFF;
+            y = coords >> 8;
+            range = func_002464F0(unit, x, y);
+            distance = ((x < targetX ? targetX : x) - (targetX < x ? targetX : x)) +
+                       ((y < targetY ? targetY : y) - (targetY < y ? targetY : y));
+            if ((u32)distance <= (u32)(range & 0xF)) {
+                if (func_00279850(*current >> 8, *current & 0xFF, x, y,
+                                  targetX, targetY, &position) == 1 &&
+                    func_002781F0(position, *current, targetX, targetY) <= 0 &&
+                    func_001E1580(*current >> 8, *current & 0xFF) == 0 &&
+                    func_001E1640(*current >> 8, *current & 0xFF) == 0 &&
+                    func_0027E5B0(origin, arg2, arg3) == 0) {
+                    return 1;
+                }
+            }
+            current++;
+            index++;
+        } while (index < func_0027C670(values));
+    }
+    return 0;
+}
 
 void func_0027C070(s32 arg0, u16 *arg1, s32 arg2, u8 arg3) {
     void *card;
@@ -940,7 +1004,6 @@ s32 func_0027E150(s32 arg0) {
     return result;
 }
 
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 
 typedef struct Entry_0027E210 {
     u16 id;

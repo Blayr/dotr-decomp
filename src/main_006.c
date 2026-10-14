@@ -1101,7 +1101,6 @@ typedef struct {
     u8 mode;
 } Output_0011F540;
 
-s32 func_0027BE10(s32, s32, s32, s32, s32);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_0011F540(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
