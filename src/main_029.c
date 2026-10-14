@@ -518,7 +518,72 @@ s32 func_0018D6D0(s32 arg0, void *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D7D8);
+s32 func_0017B600(s32, s32 (*)(s32, void *), s32, u32 *);
+s32 func_0018D520(void *, s32, s32);
+
+typedef struct MpegOut_0018D7D8 {
+    s32 type;
+    s32 unk4[7];
+    u32 qwc;
+    u32 addr;
+} MpegOut_0018D7D8;
+
+void func_0018D7D8(void *arg0, s32 *arg1) {
+    MpegOut_0018D7D8 cb;
+    s32 mbs;
+    s32 small;
+    s32 hid;
+    s32 addr;
+
+    mbs = arg1[3] * arg1[4];
+    cb.type = 2;
+    func_0018EF48(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+    if (*(volatile s32 *)0x10002010 & 0x4000) {
+        *(volatile s32 *)0x10002010 = 0x40000000;
+    }
+    small = mbs < 0x400;
+    while (*(volatile s32 *)0x10002010 < 0) {
+    }
+    func_0018B550(arg0, 0);
+    addr = arg1[0];
+    while (*(volatile s32 *)0x10002010 < 0) {
+    }
+    cb.qwc = mbs * 0x18;
+    cb.addr = addr & 0x0FFFFFFF;
+    if (cb.qwc > 0xFFFF) {
+        hid = func_0017B600(4, func_0018D6D0, 0, &cb.qwc);
+        *(volatile s32 *)0x1000E010 = 0x10;
+        func_0017C4F8(4);
+        func_001843E0();
+        *(volatile u32 *)0x1000B410 = cb.addr;
+        *(volatile u32 *)0x1000B420 = 0xFFFF;
+        *(volatile u32 *)0x1000B400 = 0x101;
+        func_00184428();
+        cb.addr = (cb.addr + 0xFFFF0) & 0x0FFFFFFF;
+        cb.qwc -= 0xFFFF;
+        if (small) {
+            func_0018D290(arg0, *(s32 *)((u8 *)arg0 + 0xD8), mbs);
+        } else {
+            func_0018D520(arg0, *(s32 *)((u8 *)arg0 + 0xD8), mbs);
+        }
+        func_0017C490(4);
+        func_0017B610(4, hid);
+    } else {
+        func_001843E0();
+        *(volatile u32 *)0x1000B410 = arg1[0] & 0x0FFFFFFF;
+        *(volatile u32 *)0x1000B420 = cb.qwc;
+        *(volatile u32 *)0x1000B400 = 0x101;
+        func_00184428();
+        cb.qwc = 0;
+        if (small) {
+            func_0018D290(arg0, *(s32 *)((u8 *)arg0 + 0xD8), mbs);
+        } else {
+            func_0018D520(arg0, *(s32 *)((u8 *)arg0 + 0xD8), mbs);
+        }
+    }
+    cb.type = 3;
+    func_0018EF48(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+}
 
 void func_0018DA50(u64 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)((u8 *)arg0 + 8)) = arg1;
