@@ -806,6 +806,7 @@ s32 func_00180CE0(s32 arg0);
 s32 func_00180EB0(s32 arg0);
 s32 func_00181260(s32 arg0);
 s32 func_00181BD8(s32 arg0);
+s32 func_00182000(s32 arg0);
 void func_00184700(void);
 s32 *func_001849A0(void);
 s32 func_00186228(s32 arg0);
