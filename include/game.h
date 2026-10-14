@@ -705,7 +705,6 @@ typedef struct { void (*fn)(s32); s32 arg; } hcall_t;
 extern s32 *D_0028D11C;
 
 extern void (*D_0028CA0C)(s32);
-u64 func_001A1388(u64, u64);
 void func_0017D330(s64);
 
 extern s32 D_00316200;

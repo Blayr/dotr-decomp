@@ -1609,6 +1609,7 @@ s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s32 func_001A04D8(void *arg0);
 s64 func_001A05E8(s64 u, s64 v);
 s64 func_001A0CF8(s64 u, s64 v);
+u64 func_001A1388(u64 n, u64 d);
 u64 func_001A1908(u64 u, u64 v);
 double func_001A1E70(s64 u);
 u64 func_001A2000(double a);
