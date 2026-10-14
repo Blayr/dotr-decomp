@@ -284,7 +284,18 @@ INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B60);
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B90);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187BA0);
+void func_00187BA0(void *m0, void *m1) {
+    __asm__ __volatile__("\n\
+	lq    $6,0x0(%1)\n\
+	lq    $7,0x10(%1)\n\
+	lq    $8,0x20(%1)\n\
+	lq    $9,0x30(%1)\n\
+	sq    $6,0x0(%0)\n\
+	sq    $7,0x10(%0)\n\
+	sq    $8,0x20(%0)\n\
+	sq    $9,0x30(%0)\n\
+	" : : "r" (m0) , "r" (m1));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187BC8);
 
