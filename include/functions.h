@@ -1043,6 +1043,7 @@ void func_00189C60(void *p0);
 void func_00189D10(void *p0);
 void func_00189DF0(void *p0);
 void func_00189ED8(void *p0);
+void func_00189FB0(void *p0);
 void func_0018A080(void *p0);
 void func_0018A1A0(void *p0);
 void func_0018A2B8(void *p0, void *p1, void *p2);
