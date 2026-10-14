@@ -113,7 +113,19 @@ void func_00187370(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_001873E8);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187480);
+void func_00187480(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u32 *tag;
+    s32 ret;
+
+    ret = func_00187318(arg0);
+    tag = *(u32 **)arg0;
+    *(u32 **)((u8 *)arg0 + 8) = (u32 *)ret;
+    *tag++ = arg3 | 0x70000000;
+    tag[1] = arg1;
+    *(u32 **)arg0 = tag + 3;
+    tag[2] = arg2;
+    tag[0] = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_001874F8);
 
