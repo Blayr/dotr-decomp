@@ -105,6 +105,9 @@ else
 fi
 # Sony's EE assembler turned GCC's `move` into a 64-bit daddu; binutils 2.45 makes it `or`.
 sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
+# binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
+# it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
+perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
 # GCC objects were linked 8-byte aligned; the linker script's SUBALIGN(4) is not, so the
 # file's last function keeps its padding here.
 printf '\t.text\n\t.p2align 3\n' >> "$TMP/out.s"
