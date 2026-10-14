@@ -577,7 +577,6 @@ void func_0017B6B0(void);
 
 s32 func_0019B148(s32, s32, s32, s32);          /* extern */
 
-s32 func_0019D780(s32, s32, s32, s32);          /* extern */
 
 extern s32 D_0028F790;
 extern s32 D_0028F794;
@@ -986,5 +985,8 @@ s32 func_0017D0C0(void);
 typedef struct { void *func; void *data; } SifCmdHandlerData;
 extern SifCmdHandlerData *D_00310EA4;
 extern SifCmdHandlerData *D_00310EAC;
+
+extern const char D_002BD0C0[];
+typedef struct su_reent { s32 _errno; } su_reent;
 
 #endif
