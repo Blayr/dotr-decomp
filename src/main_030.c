@@ -413,4 +413,18 @@ void func_0018F5B8(void *arg0) {
     func_0018A378(1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F5C8);
+void func_0018F5C8(void *arg0) {
+    s32 temp_a2;
+
+    temp_a2 = (*(s32 *)((u8 *)arg0 + 0x118));
+    if ((*(s32 *)((u8 *)arg0 + 0x120)) != 0) {
+        func_0018F7B0((s32) arg0, &D_002BCA78);
+    } else {
+        if ((*(s32 *)((u8 *)arg0 + 0x174)) == 3) {
+            func_0018CE00(arg0, (*(s32 *)((u8 *)arg0 + 0x1BC)), temp_a2 - 1);
+        } else {
+            func_0018CF10(arg0, (*(s32 *)((u8 *)arg0 + 0x1CC)), (*(s32 *)((u8 *)arg0 + 0x1DC)), temp_a2 - 1);
+        }
+    }
+    (*(s32 *)((u8 *)arg0 + 0x120)) = 0;
+}

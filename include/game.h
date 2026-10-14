@@ -812,7 +812,6 @@ extern s32 *D_0028CAC4;
 
 void func_0017B910(s32);
 
-void func_0018F5C8(void *);                      /* extern */
 
 typedef struct { void (*fn)(s32); s32 arg; } hcall_t;
 extern s32 *D_0028D11C;
@@ -934,5 +933,7 @@ extern s32 D_00313C00;
 extern s32 D_0028FF04;
 extern s32 D_0028FF00;
 extern s32 D_0028D114;
+
+extern s32 D_002BCA78;
 
 #endif
