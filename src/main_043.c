@@ -1570,7 +1570,7 @@ static inline void initPrim_001DBD50(s32 kind, void *prim) {
     ((Prim_001DBD50 *)prim)->pad = 0;
 }
 
-void func_001DBD50(s32 arg0, f32 *position, f32 width, f32 height,
+s32 func_001DBD50(s32 arg0, f32 *position, f32 width, f32 height,
                    s32 arg2, u8 *color, s32 arg4) {
     void *scratchpad = (void *)0x70000000;
     Vertex_001DBD50 *vertices = (Vertex_001DBD50 *)((u8 *)scratchpad + 0x2000);
@@ -1626,7 +1626,7 @@ void func_001DBD50(s32 arg0, f32 *position, f32 width, f32 height,
         height -= 0.2f;
     } while (1);
     end = func_00207500();
-    func_00208030(arg0, original, (s32)end, func_00205D10(position, 0.0f));
+    return func_00208030(arg0, original, (s32)end, func_00205D10(position, 0.0f));
 }
 
 typedef struct Primitive_001DBFE0 {
