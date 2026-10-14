@@ -1805,7 +1805,7 @@ typedef struct Unit_00121CE0 {
     s32 unk8;
 } Unit_00121CE0;
 
-void func_00122270(void *);
+void func_00122270(void *, s32);
 void func_0027CA50(void *, s32, s32, s32);
 
 s32 func_00121CE0(void *arg0) {
@@ -1825,7 +1825,7 @@ s32 func_00121CE0(void *arg0) {
             if (func_002507D0(unit->pos >> 8, unit->pos & 0xFF) == 1) {
                 func_001229F0(unit, 1);
             } else {
-                func_00122270(unit);
+                func_00122270(unit, 1);
             }
             break;
         case 1:
