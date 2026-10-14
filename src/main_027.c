@@ -399,7 +399,14 @@ void func_00187B00(void *v0, void *v1, void *v2) {
 	" : : "r" (v0) , "r" (v1), "r" (v2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B18);
+void func_00187B18(void *v0, void *v1, void *v2) {
+    __asm__ __volatile__("\n\
+	lqc2    $vf4,0x0(%1)\n\
+	lqc2    $vf5,0x0(%2)\n\
+	.word 0x4BE521AC\n\
+	sqc2    $vf6,0x0(%0)\n\
+	" : : "r" (v0) , "r" (v1), "r" (v2));
+}
 
 void func_00187B30(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
