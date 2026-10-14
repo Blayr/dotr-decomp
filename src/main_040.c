@@ -1468,7 +1468,79 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1B00);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1FE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C21A0);
+extern u8 D_002CCB48[];
+extern u8 D_002CD1F4[];
+extern s32 D_003180E8;
+
+#pragma opt_propagation off
+
+void func_001C21A0(void) {
+    u8 *state;
+    s16 *var_s1;
+    s16 *var_s2;
+    s8 *var_s3;
+    s8 *var_s4;
+    s32 var_a0;
+    s32 result;
+    u8 *var_v0;
+
+    state = D_00317490;
+    var_s1 = (s16 *)0x01ED0000;
+    var_s2 = (s16 *)0x01ED06AC;
+    var_s3 = (s8 *)0x01ED0D58;
+    var_s4 = (s8 *)0x01ED10AE;
+    result = func_00214D00(0, 0);
+    D_003180E8 = 0xFFFFF8;
+    if (result != 0) {
+        var_v0 = D_002CD1F4;
+    } else {
+        var_v0 = D_002CCB48;
+    }
+    *(u8 **)(state + 0x6D4) = var_v0;
+    *(s32 *)(state + 0x6D8) = 0x01ED0000;
+    *(s32 *)(state + 0x6DC) = 0x01ED06AC;
+    *(s32 *)(state + 0x6E0) = 0x01ED0D58;
+    *(s32 *)(state + 0x6E4) = (s32)var_s4;
+    var_a0 = 0;
+    do {
+        var_a0 += 1;
+        *var_s1 = 0x3E7;
+        *var_s3 = 0;
+        var_s1 += 1;
+        var_s3 += 1;
+    } while (var_a0 < 0x356);
+    var_a0 = 0;
+    do {
+        var_a0 += 1;
+        *var_s2 = 0x3E7;
+        *var_s4 = 0;
+        var_s2 += 1;
+        var_s4 += 1;
+    } while (var_a0 < 0x356);
+    *(s16 *)(state + 0xC92) = 0;
+    *(s16 *)(state + 0xC94) = 0;
+    *(s8 *)(state + 0xCB6) = 0;
+    *(s8 *)(state + 0xCB7) = 4;
+    *(s8 *)(state + 0xCB8) = 0xA;
+    *(s8 *)(state + 0xCB9) = 0;
+    *(s8 *)(state + 0xCBA) = 4;
+    *(s8 *)(state + 0xCBB) = 0xA;
+    *(s8 *)(state + 0xCBE) = 1;
+    *(s8 *)(state + 0xCBF) = 1;
+    *(s8 *)(state + 0xCC0) = 0;
+    *(s8 *)(state + 0xCC1) = 0;
+    *(s8 *)(state + 0xD5E) = 0;
+    *(s8 *)(state + 0xD5F) = 0;
+    *(s16 *)(state + 0xC8A) = 0;
+    *(s16 *)(state + 0xC8E) = 0;
+    *(s16 *)(state + 0xC96) = 0;
+    *(s16 *)(state + 0xC98) = 0;
+    *(s8 *)(state + 0xCBC) = 0;
+    *(s8 *)(state + 0xCBD) = 0;
+    func_001C2300(0);
+    func_001C2300(1);
+}
+#pragma opt_propagation reset
 
 void func_001C2300(s32 arg0) {
     extern s32 func_00216AC0();

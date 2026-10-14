@@ -1758,6 +1758,7 @@ void func_001C1090(s32 arg0);
 void func_001C1270(void);
 void func_001C12B0(void);
 void func_001C1AD0(void);
+void func_001C21A0(void);
 void func_001C2300(s32 arg0);
 void func_001C2530(void);
 void func_001C2540(void);
