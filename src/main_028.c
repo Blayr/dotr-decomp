@@ -157,7 +157,17 @@ void func_00188448(void *p0, void *p1, void *p2, float f0) {
 	" :  : "r" (p0), "r" (p1), "r" (p2), "f" (f0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188478);
+void func_00188478(void *p0, void *p1, float f0) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%1)\n\
+	.set noreorder\n\
+	mfc1	$8,%2\n\
+	qmtc2.ni	$8,$vf5\n\
+	.set reorder\n\
+	vmulx.xyz	$vf4,$vf4,$vf5x\n\
+	sqc2	$vf4,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1), "f" (f0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00188490);
 
