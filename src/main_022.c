@@ -8,7 +8,32 @@ s32 func_0017BFD8(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017BFE0);
+u32 func_0017BFE0(s32 incr) {
+    s32 eie, st, old, new;
+    __asm__ volatile("mfc0\t%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+    again:
+        __asm__ volatile("di");
+        __asm__ volatile("sync.p");
+        __asm__ volatile("mfc0\t%0, $12" : "=r"(st));
+        if (st & 0x10000) goto again;
+    }
+    new = D_0028C254 + incr;
+    if (func_0017B8C0() < (u32)new) {
+        *(s32 *)func_001966F8() = 12;
+        if (eie) {
+            __asm__ volatile("ei");
+        }
+        return 0xFFFFFFFF;
+    }
+    old = D_0028C254;
+    D_0028C254 = new;
+    if (eie) {
+        __asm__ volatile("ei");
+    }
+    return old;
+}
 
 s32 func_0017C090(void) {
     return 1;
