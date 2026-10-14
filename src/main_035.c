@@ -34,7 +34,9 @@ INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B7F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B870);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B8D8);
+void func_0019B8D8(void *arg0) {
+    func_001951F8((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B8F8);
 
