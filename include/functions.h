@@ -800,6 +800,7 @@ s32 func_0017C0B8(s32 arg0, s32 arg1);
 void func_0017C560(void);
 void func_0017C580(void);
 void func_0017C5A0(void);
+void func_0017C5C0(void);
 void func_0017DAF8(s32 *arg0, s32 *arg1);
 void func_0017DB18(void *arg0, void *arg1);
 s32 *func_0017DB60(void);

@@ -68,7 +68,10 @@ void func_0017C5A0(void) {
     __asm__ volatile("sync");
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C5C0);
+void func_0017C5C0(void) {
+    func_0017B6B0();
+    __asm__ volatile("sync");
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C5E0);
 
