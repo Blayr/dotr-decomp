@@ -316,7 +316,17 @@ void func_0017E4B0(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) ((*(s32 *)((u8 *)arg0 + 0x10)) & 0xFFFFFFFE);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E4D0);
+void *func_0017E4D0(s32 arg0) {
+    u8 *q;
+    s32 i;
+    u8 *r;
+
+    q = (u8 *)arg0;
+    i = *(s32 *)(q + 0x24) % *(s32 *)(q + 0x18);
+    r = *(u8 **)(q + 0x14) + i * 64;
+    *(s32 *)(q + 0x24) = i + 1;
+    return r;
+}
 
 void *func_0017E500(void *arg0, s32 arg1) {
     void *r;

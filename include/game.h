@@ -687,7 +687,6 @@ extern s32 D_00315BC0;
 extern s32 D_00310FC0;
 extern s32 D_0028DA50;
 
-void *func_0017E4D0(s32);                           /* extern */
 
 
 typedef union { f32 value; u32 word; } fshape;
