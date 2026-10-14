@@ -1144,7 +1144,7 @@ s32 func_0017B7D0(void);
 void func_00184810(s32, s16, s16, s16);
 void func_001849B0(void);
 s32 func_00186148(s32);
-void func_00186238(void *);
+s32 func_00186238(void *);
 void func_00186410(void *);
 void func_00186470(u8 *, s32);
 void func_00186BD0(void);
