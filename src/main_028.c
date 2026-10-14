@@ -1031,7 +1031,82 @@ _func_00189ED8_00189F04:\n\
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00189FB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_0018A080);
+void func_0018A080(void *p0) {
+    __asm__ __volatile__("\n\
+	pnor	$25,$0,$0\n\
+	psrlh	$25,$25,15\n\
+	psllh	$25,$25,1\n\
+	lw	$5,0x14(%0)\n\
+	lw	$6,0x18(%0)\n\
+	lw	$7,0x8(%0)\n\
+	lw	$14,0x0(%0)\n\
+	lw	$13,0x4(%0)\n\
+	lw	$24,0x10(%0)\n\
+	addiu	$12,$0,0x1\n\
+	lq	$8,0x0($5)\n\
+	lq	$9,0x0($6)\n\
+	mtsab	$13,0x0\n\
+	qfsrv	$10,$9,$8\n\
+	qfsrv	$15,$8,$9\n\
+	pextlb	$8,$0,$10\n\
+	pextub	$9,$0,$10\n\
+	addiu	$11,$0,-0x1\n\
+	mtsab	$12,0x0\n\
+	qfsrv	$15,$15,$10\n\
+	pextlb	$10,$0,$15\n\
+	pextub	$15,$0,$15\n\
+	paddh	$8,$8,$10\n\
+	paddh	$9,$9,$15\n\
+	beqz	$7,_func_0018A080_0018A180\n\
+_func_0018A080_0018A0E4:\n\
+	addu	$5,$5,$24\n\
+	addu	$6,$6,$24\n\
+	lq	$10,0x0($5)\n\
+	lq	$15,0x0($6)\n\
+	mtsab	$13,0x0\n\
+	qfsrv	$2,$15,$10\n\
+	qfsrv	$3,$10,$15\n\
+	pextlb	$10,$0,$2\n\
+	addi	$7,$7,-0x1\n\
+	pextub	$15,$0,$2\n\
+	mtsab	$12,0x0\n\
+	qfsrv	$3,$3,$2\n\
+	pextlb	$2,$0,$3\n\
+	pextub	$3,$0,$3\n\
+	paddh	$10,$10,$2\n\
+	paddh	$15,$15,$3\n\
+	paddh	$2,$8,$10\n\
+	paddh	$3,$9,$15\n\
+	por	$8,$10,$0\n\
+	por	$9,$15,$0\n\
+	paddh	$2,$2,$25\n\
+	paddh	$3,$3,$25\n\
+	psrlh	$2,$2,2\n\
+	psrlh	$3,$3,2\n\
+	lq	$10,0x0($14)\n\
+	lq	$15,0x10($14)\n\
+	paddh	$2,$2,$10\n\
+	paddh	$3,$3,$15\n\
+	pnor	$25,$0,$0\n\
+	psrlh	$25,$25,15\n\
+	paddh	$10,$2,$25\n\
+	psrlh	$2,$10,1\n\
+	paddh	$10,$3,$25\n\
+	psrlh	$3,$10,1\n\
+	sq	$2,0x0($14)\n\
+	sll	$10,$24,1\n\
+	sq	$3,0x10($14)\n\
+	addu	$14,$14,$10\n\
+	bgtz	$7,_func_0018A080_0018A0E4\n\
+_func_0018A080_0018A180:\n\
+	addiu	$5,$5,0x80\n\
+	addiu	$6,$6,0x80\n\
+	lw	$7,0xC(%0)\n\
+	and	$10,$11,$7\n\
+	daddu	$11,$0,$0\n\
+	bnez	$10,_func_0018A080_0018A0E4\n\
+	" :  : "r" (p0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_0018A1A0);
 
