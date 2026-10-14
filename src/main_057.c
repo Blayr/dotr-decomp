@@ -445,7 +445,6 @@ typedef struct Color_0020A870 {
     f32 value;
 } Color_0020A870;
 
-s32 func_00184FF8(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
 extern Color_0020A870 D_00293F00;
 
 static inline void default_color_0020A870(void *color, void *value) {
@@ -464,6 +463,7 @@ static inline s32 color_0020A870(u8 *color, s32 component) {
 }
 
 void *func_0020A870(u8 *packet, u8 *color) {
+    s32 func_00184FF8(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
     Color_0020A870 defaultColor;
     State_0020A870 *state = (State_0020A870 *)&D_00325F20;
     s32 alpha;
