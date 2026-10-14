@@ -630,6 +630,7 @@ void func_00200170(void);
 
 s32 func_001FFFC0(void) {
     extern s32 func_00200220(s32, s32);
+    extern s32 func_00190FF0(Stat_001FFFC0 *, s32);
     extern u8 D_0031C2F0[];
     u8 *buf = D_0031C2F0;
     s32 i;
