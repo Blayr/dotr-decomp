@@ -43,4 +43,11 @@ typedef struct {
 
 extern Obj_0031ABB0 *D_0031ABB0[];
 
+typedef struct PadSlot_00192A88 {
+    u8 *buf;
+    s32 unk4[3];
+    s32 open;
+    s32 unk14[2];
+} PadSlot_00192A88;
+
 #endif

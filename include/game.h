@@ -663,6 +663,7 @@ s32 func_0018BE58(void *);                      /* extern */
 extern s32 D_002BC8A8;
 extern s32 D_002BC8D0;
 
+extern PadSlot_00192A88 D_003159D0[2][4];
 extern s32 D_00315980;
 extern s32 D_00315BC0;
 

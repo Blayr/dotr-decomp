@@ -1,14 +1,5 @@
 #include "common.h"
 
-typedef struct PadSlot_00192A88 {
-    u8 *buf;
-    s32 unk4[3];
-    s32 open;
-    s32 unk14[2];
-} PadSlot_00192A88;
-
-extern PadSlot_00192A88 D_003159D0[2][4];
-
 s32 func_00191C50(s32 arg0) {
     u8 *b_D_0028F300 = (u8 *)&D_0028F300;
     s32 temp_s0;
