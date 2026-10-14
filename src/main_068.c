@@ -1430,7 +1430,6 @@ s32 func_00193BA8(s32, s32, void *, s32);
 s32 func_00193DD0(s32, s16, s16, s32);
 s32 func_00194058(s32, void *, s32);
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194A98(s32);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
@@ -2729,7 +2728,6 @@ typedef struct IOState_002409E0 {
 s32 func_00193BA8(s32, s32, void *, s32);
 s32 func_00194058(s32, void *, s32);
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194A98(s32);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
