@@ -59,13 +59,65 @@ void func_0017C398(u32 arg0, u32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C3B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C3C0);
+s32 func_0017C3C0(s32 arg0) {
+    s32 eie, ret;
+    __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+        func_001843E0();
+    }
+    ret = func_0017B630(arg0);
+    __asm__ volatile("sync");
+    if (eie) {
+        func_00184428();
+    }
+    return ret;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C428);
+s32 func_0017C428(s32 arg0) {
+    s32 eie, ret;
+    __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+        func_001843E0();
+    }
+    ret = func_0017B620(arg0);
+    __asm__ volatile("sync");
+    if (eie) {
+        func_00184428();
+    }
+    return ret;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C490);
+s32 func_0017C490(s32 arg0) {
+    s32 eie, ret;
+    __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+        func_001843E0();
+    }
+    ret = func_0017B650(arg0);
+    __asm__ volatile("sync");
+    if (eie) {
+        func_00184428();
+    }
+    return ret;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C4F8);
+s32 func_0017C4F8(s32 arg0) {
+    s32 eie, ret;
+    __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+        func_001843E0();
+    }
+    ret = func_0017B640(arg0);
+    __asm__ volatile("sync");
+    if (eie) {
+        func_00184428();
+    }
+    return ret;
+}
 
 void func_0017C560(void) {
     func_0017B680();

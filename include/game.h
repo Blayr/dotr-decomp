@@ -621,7 +621,6 @@ extern s32 D_00315C40;
 extern s32 D_00317200;
 
 s32 func_0017B610(s32, s32);                /* extern */
-s32 func_0017C490(s32);                     /* extern */
 extern s32 D_0028CA10;
 extern s32 D_00310E94;
 
@@ -848,5 +847,10 @@ u64 func_001A1908(u64, u64);
 void func_0017D330(s64);
 
 extern s32 D_00316200;
+
+s32 func_0017B630(s32);
+s32 func_0017B620(s32);
+s32 func_0017B650(s32);
+s32 func_0017B640(s32);
 
 #endif
