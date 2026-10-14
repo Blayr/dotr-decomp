@@ -405,7 +405,52 @@ s32 func_00194A98(s32 arg0) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00194B50);
+extern s32 D_00315C80;
+
+typedef struct McFileInfoDesc_00194B50 {
+    s32 port;
+    s32 slot;
+    s32 flags;
+    s32 unkC;
+    void *info;
+    s8 name[0x400];
+} McFileInfoDesc_00194B50;
+
+s32 func_00194B50(s32 arg0, s32 arg1, s8 *arg2, void *arg3, s32 arg4) {
+    McFileInfoDesc_00194B50 *d;
+    s32 *p;
+    s32 ret;
+
+    if (func_0017B930(D_0028F794) < 0) {
+        return -0xC8;
+    }
+    p = &D_00315C40;
+    if (p[9] == 0) {
+        func_0017B900(D_0028F794);
+        return -0x64;
+    }
+    if (arg2 == NULL || *arg2 == 0) {
+        func_0017B900(D_0028F794);
+        return -0xD2;
+    }
+    d = (McFileInfoDesc_00194B50 *)&D_00315CF0;
+    d->port = arg0;
+    d->slot = arg1;
+    arg4 &= 7;
+    d->flags = arg4;
+    __builtin_memcpy(&D_00315C80, arg3, 0x40);
+    d->info = &D_00315C80;
+    func_0019C2B8(d->name, arg2, 0x3FF);
+    d->name[0x3FF] = 0;
+    func_0017BB60(0);
+    ret = func_0017EA80(p, 0xE, 1, (s32 *)d, 0x414, &D_00317200, 4, 0, 0);
+    if (ret == 0) {
+        D_0028F790 = 0xE;
+    } else {
+        func_0017B900(D_0028F794);
+    }
+    return ret;
+}
 
 s32 func_00194D28(s32 arg0, s32 arg1, s8 *arg2, void *arg3) {
     s32 temp_v0;
