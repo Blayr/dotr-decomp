@@ -822,7 +822,6 @@ s32 func_0017B930(s32);                             /* extern */
 extern s32 D_00315CA0;
 extern s32 D_00315CF0;
 
-void func_0018CE00(void *, s32, s32);       /* extern */
 s32 func_0018CF10(void *, s32, s32, s32);       /* extern */
 
 extern f32 D_002BE120[]; /* fdlibm ef_fmod.c Zero[] = { 0.0, -0.0 } */
@@ -989,5 +988,9 @@ extern const char D_002BD0C0[];
 typedef struct su_reent { s32 _errno; } su_reent;
 
 typedef struct sl_reent { s32 _errno; } sl_reent;
+
+extern u32 D_0028DA78[];
+void func_0018CC70(void *, s32 *, void *, void *, void *);
+void func_0018C9D8(void *);
 
 #endif

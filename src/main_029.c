@@ -672,7 +672,36 @@ void func_0018CC48(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CC70);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CE00);
+void func_0018CE00(void *d, s32 arg1, s32 unused) {
+    s32 *s = (s32 *)arg1;
+    u8 *p;
+
+    p = *(u8 **)((u8 *)d + 0x858);
+    func_0018CC70(d, s, p + 0x10, p + 0x18, p + 0x20);
+    p = *(u8 **)((u8 *)d + 0x858);
+    *(s32 *)((u8 *)d + 0x80) = *(s32 *)(p + 0x10);
+    *(u64 *)((u8 *)d + 0x88) = D_0028DA78[(s32)(*(u64 *)(p + 0x20) >> 5) & 0xF];
+    *(s32 *)((u8 *)d + 0xCC) = s[0x5C / 4];
+    *(s32 *)((u8 *)d + 0xD0) = s[0x60 / 4];
+    *(s32 *)((u8 *)d + 0xB4) = s[0x44 / 4];
+    *(s32 *)((u8 *)d + 0xB8) = s[0x48 / 4];
+    *(s32 *)((u8 *)d + 0xBC) = s[0x4C / 4];
+    *(s32 *)((u8 *)d + 0xC0) = s[0x50 / 4];
+    *(s32 *)((u8 *)d + 0xC4) = s[0x54 / 4];
+    *(s32 *)((u8 *)d + 0xC8) = s[0x58 / 4];
+    if (func_0018C938(d, s) == 0) {
+        return;
+    }
+    if (s[0x28 / 4] != 1) {
+        return;
+    }
+    if (*(s32 *)((u8 *)d + 0xB0) != 0) {
+        func_0018D7D8(d, s);
+    } else {
+        func_0018C9D8(d);
+    }
+    func_0018CC48(d);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CF10);
 
