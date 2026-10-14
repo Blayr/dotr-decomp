@@ -319,7 +319,20 @@ s32 func_00190C48(s32 arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190D20);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190DC0);
+void func_00190DC0(void) {
+    s32 sp0[8];
+
+    if (D_0028DCE8 == -1 || D_0028DCEC == -1) {
+        sp0[5] = 0;
+        sp0[2] = 1;
+        sp0[1] = 1;
+        (*(volatile s32 *)&D_0028DCE8) = func_0017B8E0(sp0);
+        D_0028DCEC = func_0017B8E0(sp0);
+        sp0[2] = 0;
+        (*(volatile s32 *)&D_0028DCE0) = func_0017B8E0(sp0);
+        D_0028DCF0 = 0;
+    }
+}
 
 void func_00190E58(void) {
     if (D_0028DCD4 != 0) {
