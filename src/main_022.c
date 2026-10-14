@@ -482,4 +482,33 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CD08);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CEA0);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CFF0);
+typedef struct Deci2Q_0017CFF0 {
+    s32 unk0;
+    volatile s32 count;
+    u8 *rptr;
+} Deci2Q_0017CFF0;
+
+typedef struct Deci2Tty_0017CFF0 {
+    s32 sock;
+    s32 unk4[5];
+    Deci2Q_0017CFF0 *q;
+} Deci2Tty_0017CFF0;
+
+extern Deci2Tty_0017CFF0 D_00310A90;
+
+s32 func_0017CFF0(char *arg0, s32 arg1) {
+    s32 i;
+    char *p;
+
+    for (i = 0; i < arg1; i++) {
+        p = &arg0[i];
+        while (D_00310A90.q->count == 0) {
+        }
+        *p = *(*(Deci2Tty_0017CFF0 *)&D_00310A90).q->rptr;
+        func_0017CCC8((*(Deci2Tty_0017CFF0 *)&D_00310A90).q);
+        if (*p == '\n' || *p == '\r') {
+            return i + 1;
+        }
+    }
+    return i;
+}
