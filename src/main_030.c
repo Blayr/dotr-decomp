@@ -240,7 +240,54 @@ s32 func_0018F108(s32 *arg0) {
     return (arg0[0] + arg0[1]) - arg0[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F120);
+s32 func_0018F120(void *arg0) {
+    s32 *p;
+    s32 ret;
+    u32 st;
+
+    st = 1;
+    ret = 0;
+    p = *(s32 **)((u8 *)arg0 + 0x40);
+    p[0] = 0;
+    if (p[0xD8 / 4] & 0x3F) {
+        func_0018F778((s32)p, D_002BCA18, p[0xD8 / 4]);
+        return -1;
+    }
+    p[0x820 / 4] = 0;
+    do {
+        if (ret != -1) {
+            do {
+                st = func_0018BC80(p);
+            } while (st != 0 && p[0x174 / 4] != p[0xD4 / 4] && p[0x848 / 4] != 0);
+        }
+        switch (st) {
+        case 0:
+            func_0018F550(arg0);
+            p[0] = 1;
+            break;
+        case 1:
+            p[0xA8 / 4] = 0;
+            p[0xA4 / 4] = 0;
+            p[0xA0 / 4] = 0;
+            ret = func_0018F3A8(arg0, 0, p[0x94 / 4]);
+            p[0xA0 / 4]++;
+            break;
+        case 2:
+            ret = func_0018F3A8(arg0, p[0xA4 / 4], p[0x98 / 4]);
+            p[0xA4 / 4]++;
+            break;
+        case 3:
+        case 4:
+            ret = func_0018F3A8(arg0, p[0xA8 / 4], p[0x9C / 4]);
+            p[0xA8 / 4]++;
+            break;
+        }
+        if (p[0x820 / 4] != 0) {
+            return 1;
+        }
+    } while (p[0] == 0);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F290);
 

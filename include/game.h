@@ -791,4 +791,9 @@ extern s32 D_0028F748;
 
 void func_0018F808();
 
+s32 func_0018BC80(void *);
+s32 func_0018F3A8(void *, s32, s32);
+s32 func_0018F550(void *);
+extern char D_002BCA18[];
+
 #endif
