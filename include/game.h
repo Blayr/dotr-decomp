@@ -966,7 +966,6 @@ extern s32 D_002BC808;
 
 extern s8 D_002BC2D8;
 
-s32 func_00183D70(s32, s32, s32, s32, s32);
 
 
 extern s32 D_0028D118;

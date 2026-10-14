@@ -256,7 +256,11 @@ int func_00183D60(void) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183D70);
+int func_00183D70(int arg0, int arg1, int arg2, int arg3, int arg4) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x56\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_00183D80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 r;
@@ -293,7 +297,6 @@ extern char D_002BC220[];
 extern char D_002BC258[];
 extern char D_002BC270[];
 extern char D_002BC288[];
-s32 func_00183D70(s32, s32, s32, s32, s32);
 
 typedef struct {
     s32 a, b, c, d;
