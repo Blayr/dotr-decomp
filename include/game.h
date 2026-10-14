@@ -655,7 +655,7 @@ void func_0017C130(u32, u32);
 void func_0017C270(u32, u32);
 
 s32 func_0018B958(void *, s32);             /* extern */
-s32 func_0018BE58(void *);                      /* extern */
+void func_0018BE58(void *);                      /* extern */
 extern s32 D_002BC8A8;
 extern s32 D_002BC8D0;
 
@@ -822,7 +822,7 @@ s32 func_0017B930(s32);                             /* extern */
 extern s32 D_00315CA0;
 extern s32 D_00315CF0;
 
-s32 func_0018CE00(void *, s32, s32);       /* extern */
+void func_0018CE00(void *, s32, s32);       /* extern */
 s32 func_0018CF10(void *, s32, s32, s32);       /* extern */
 
 extern f32 D_002BE120[]; /* fdlibm ef_fmod.c Zero[] = { 0.0, -0.0 } */
