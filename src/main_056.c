@@ -1142,7 +1142,6 @@ typedef struct Mode_00209510 {
 s32 func_0017B770(s32, s32);
 void func_001849B0(void);
 s32 func_00186238(void *);
-void func_00186470(u8 *, s32);
 void func_00186BD0(void);
 extern u8 D_00286980[];
 extern u8 D_00293F10[];
@@ -1151,6 +1150,7 @@ extern u8 D_00293F18[];
 extern s32 D_003261C8;
 
 s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    void func_00186470(u8 *, s32);
     Env_00209510 env;
     Mode_00209510 mode;
     State_00209510 *state = (State_00209510 *)D_00325F50;
@@ -1224,6 +1224,7 @@ s32 func_00209870(void) {
 }
 
 void func_002098B0(s32 arg0) {
+    void func_00186470(u8 *, s32);
     extern void func_001869C0(u8 *, s32, s32);
     extern void func_001885C8(void);
     extern u8 D_00293F1C[];

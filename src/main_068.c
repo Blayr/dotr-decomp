@@ -3147,9 +3147,9 @@ typedef struct {
 
 
 void func_00184E10(void *, s32, s64, s64, s32, s32);
-void func_00186470(s32, s32);
 
 void func_00241C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void func_00186470(s32, s32);
     extern void func_001872F8();
     extern Quad_00241C20 D_0029B2C0;
     extern GifTag_00241C20 D_00350410;
