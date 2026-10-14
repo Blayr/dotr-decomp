@@ -56,7 +56,13 @@ void func_0017B410(s32 arg0, s32 arg1) {
     func_00286910(module->start, module->end, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B4C0);
+asm int func_0017B4C0(void) {
+    .set noreorder
+    addiu v1, zero, 0x0
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B4D0);
 
