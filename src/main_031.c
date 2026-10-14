@@ -600,6 +600,111 @@ s32 func_00191598(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00191608);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00191778);
+typedef struct CdClient_00191778 {
+    void *pkt;
+    int pid;
+    int sema;
+    unsigned int mode;
+    unsigned int command;
+    unsigned int buff;
+    unsigned int cbuff;
+    void (*endFunc)(void *);
+    void *endParam;
+    unsigned int serve;
+} CdClient_00191778;
+
+extern volatile int D_0028DCF4;
+extern char D_002BCD20[];
+extern char D_002BCD40[];
+extern int D_0028DCF8;
+extern int D_0028DD00;
+extern int D_0028DD04;
+extern int D_0028DD08;
+extern int D_0028DD0C;
+extern int D_0028DD10;
+extern int D_003156D0;
+extern CdClient_00191778 D_003158E8;
+extern int D_00315940;
+s32 func_0017E240(s32);
+
+/* sceCdInit: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00191778(s32 mode) {
+    int *p;
+    int ver;
+    int r;
+    int w;
+    int type;
+    int v1;
+    int v2;
+
+    if (func_00191598(1) != 0) {
+        return 0;
+    }
+    func_0017E240(0);
+    D_003156D0 = func_0017B7D0();
+    *(volatile int *)&D_0028DCE4 = 1;
+    D_0028DD00 = -1;
+    D_0028DCF8 = -1;
+    D_0028DD08 = -1;
+    D_0028DD04 = -1;
+    D_0028DD0C = -1;
+    D_0028DCFC = -1;
+    D_0028DCF4 = 0;
+    D_0028DD10++;
+    while (1) {
+        r = func_0017E8B0(&D_003158E8, 0x80000592, 0);
+        if (r < 0) {
+            if (D_0028DCD0 > 0) {
+                ((void (*)(const char *, ...))func_0017DA98)(D_002BCD20, r, D_0028DD10);
+            }
+            w = 0x100000;
+            while (w--) {}
+            continue;
+        }
+        if (D_003158E8.serve != 0) {
+            D_00315940 = mode;
+            D_0028DD0C = 0;
+            func_0017E190(&D_00315940, 4);
+            p = &D_0028EEC0;
+            if (func_0017EA80((s32 *)&D_003158E8, 0, 0, &D_00315940, 4, p, 16, 0, 0) < 0) {
+                *(volatile int *)&D_0028DCE4 = 0;
+                return 0;
+            }
+            break;
+        }
+        w = 0x100000;
+        while (w--) {}
+    }
+    v1 = *(int *)((int)(p + 1) | 0x20000000);
+    v2 = *(int *)((int)(p + 2) | 0x20000000);
+    type = *(int *)((int)(p + 3) | 0x20000000);
+    ver = 1;
+    if (type == 0xFF) {
+    } else if (type == 0xFE) {
+        D_0028DCD0 = 1;
+    } else if (v1 / 256 < 2 || v2 / 256 < 2) {
+        ver = 2;
+    }
+    *(volatile int *)&D_0028DCE4 = 0;
+    switch (mode) {
+    case 5:
+        if (D_0028DCD0 > 0) {
+            ((void (*)(const char *, ...))func_0017DA98)(D_002BCD40);
+        }
+        func_00190E58();
+        *(volatile int *)&D_0028DCE8 = -1;
+        *(volatile int *)&D_0028DCEC = -1;
+        *(volatile int *)&D_0028DCE0 = -1;
+        break;
+    case 0:
+    case 1:
+    default:
+        func_00190DC0();
+        func_00190F88();
+        break;
+    }
+    return ver;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00191A58);

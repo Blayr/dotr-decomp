@@ -1408,6 +1408,7 @@ s32 func_00190F88(void);
 s32 func_00191460(void);
 s32 func_001914F8(s32 arg0);
 s32 func_00191598(s32 arg0);
+s32 func_00191778(s32 mode);
 s32 func_00191C50(s32 arg0);
 s32 func_00191D18(s32 lsn, s32 sectors, s32 buf, void *arg3);
 s32 func_00191EF8(void);
