@@ -1001,4 +1001,8 @@ extern s32 D_00313C40;
 extern s32 D_00313C80;
 extern s32 D_00313CC0;
 
+extern s32 D_00313500;
+extern s32 D_00313B80;
+void *func_0017F288(s32);
+
 #endif

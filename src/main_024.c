@@ -153,7 +153,49 @@ INCLUDE_ASM("asm/nonmatchings/main_024", func_00181280);
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_00181348);
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_001814B0);
+s32 func_001814B0(s32 arg0, s32 arg1) {
+    s32 sp[8];
+    s32 result;
+    FioReq_00181140 *p;
+    s32 *slot;
+    s32 sema;
+    s32 r;
+
+    p = &D_003128C0;
+    slot = func_0017F288(arg0);
+    ((s32 (*)(s32))func_0017F708)(0xB);
+    if (D_0028CAA0 == 0) {
+        func_0017F738();
+        return -1;
+    }
+    if (slot == NULL || slot[1] == 0) {
+        func_0017F738();
+        return -9;
+    }
+    p->arg = slot[0];
+    *(s32 *)((u8 *)p + 0x10) = arg1;
+    sp[1] = 1;
+    sp[2] = 0;
+    sp[5] = 0;
+    sema = func_0017B8E0(sp);
+    D_003128C0.sema = sema;
+    p->result = &result;
+    p->size = 4;
+    if (func_0017EA80(&D_00313B80, 0xB, 0, (s32 *)p, 0x20, &D_00313500, 4, 0, 0) < 0) {
+        func_0017B920(sema);
+        func_0017F738();
+        return -0xB;
+    }
+    r = *(s32 *)((u32)&D_00313500 | 0x20000000);
+    func_0017F738();
+    if (r == 0) {
+        func_0017B8F0(sema);
+        return -0xB;
+    }
+    func_0017B920(sema);
+    func_0017B8F0(sema);
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_00181608);
 
