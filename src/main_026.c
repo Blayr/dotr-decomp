@@ -466,7 +466,16 @@ s32 func_00186228(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186238);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186410);
+typedef struct GsDef_00186410 {
+    s32 v[5];
+} GsDef_00186410;
+
+extern GsDef_00186410 D_0028D9C8;
+
+void *func_00186410(void *arg0) {
+    *(GsDef_00186410 *)arg0 = D_0028D9C8;
+    return arg0;
+}
 
 s32 func_00186448(u32 arg0) {
     s32 old = *(volatile s32 *)0x1000E060;
