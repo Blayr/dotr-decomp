@@ -1143,7 +1143,7 @@ s32 func_0017B770(s32, s32);
 s32 func_0017B7D0(void);
 void func_00184810(s32, s16, s16, s16);
 void func_001849B0(void);
-u8 *func_00186120(s32);
+s32 func_00186120(s32);
 void func_00186148(s32);
 void func_00186238(void *);
 void func_00186410(void *);
@@ -1176,7 +1176,7 @@ s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
                     *(s16 *)(D_00293F14 + arg0 * 0x28),
                     *(s16 *)(D_00293F18 + arg0 * 0x28));
-    state->decoder = func_00186120(1);
+    state->decoder = (u8 *)func_00186120(1);
     ((Flags_00209510 *)state->decoder)->enabled = 1;
     func_0020AD10(state, arg0, arg1, arg2);
     mode.clock = 3;
