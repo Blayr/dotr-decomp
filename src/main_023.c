@@ -582,7 +582,16 @@ void *func_0017EF40(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017EF98);
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017F160);
+void func_0017F160(void *arg0) {
+    void *sd;
+
+    while (1) {
+        while ((sd = func_0017EF40(arg0)) != NULL) {
+            func_0017EF98(sd);
+        }
+        func_0017B800();
+    }
+}
 
 void func_0017F1A0(void) {
     s32 sp0[8];

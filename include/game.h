@@ -996,4 +996,6 @@ s32 func_0017BCF0(s32);
 
 extern s32 D_0028D118;
 
+void func_0017EF98(void *);
+
 #endif
