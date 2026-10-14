@@ -1,6 +1,199 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023B1F0);
+typedef struct Vec3_0023B1F0 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_0023B1F0;
+
+typedef struct Vec4_0023B1F0 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_0023B1F0;
+
+typedef struct Item_0023B1F0 {
+    Vec3_0023B1F0 pos;
+    u8 pad0C[0x28];
+} Item_0023B1F0;
+
+void func_0023B1F0(s32 arg0) {
+    extern u8 D_00299F60[];
+    extern Item_0023B1F0 D_00298BA0[];
+    extern s32 D_0034F6F0;
+    extern void func_0021BB90();
+    Vec4_0023B1F0 top;
+    u8 *work;
+    s16 show;
+    s8 *state;
+    s16 result;
+    s16 i;
+    s32 sx;
+    s16 *rect;
+    s32 dx;
+    s16 j;
+    Item_0023B1F0 *item;
+    Vec4_0023B1F0 side;
+    s32 *spot;
+    s32 sy;
+    s32 radius;
+
+    state = &D_00299E10;
+    work = (u8 *)0x01ED0000;
+    result = 0;
+    func_0021BB20(D_00299F60);
+    item = D_00298BA0;
+    for (i = 0, spot = (s32 *)work; i <= 21; i++) {
+        show = 0;
+        top.x = item->pos.x;
+        top.y = 8.65f + item->pos.y;
+        top.z = item->pos.z;
+        side.x = 5.0f + item->pos.x;
+        side.y = 8.65f + item->pos.y;
+        side.z = item->pos.z;
+        if (arg0 != 0) {
+            show = 1;
+        }
+        if (*(s8 *)(work + 0x18C) != 0) {
+            show = 1;
+        } else if (state[0] == 0) {
+            if (i == 0 || i == 11) {
+                show = 1;
+            } else if (i > 0 && i < 11 && state[i + 3] != 0) {
+                show = 1;
+            }
+        } else {
+            if (i == 0 || i == 11) {
+                show = 1;
+            } else if (i >= 12 && i < 22 && state[i + 3] != 0) {
+                show = 1;
+            }
+        }
+        if (show) {
+            func_0021BB90(&spot[0x23], &spot[0x43], &top);
+            func_0021BB90(&sx, &sy, &side);
+            radius = sx - spot[0x23];
+            if (D_0034F6F0 == 0) {
+                if (*(s8 *)(work + 0x5373) != 0) {
+                    *(s16 *)(work + 0x0) = *(s16 *)(work + 0x8C + state[0xC6] * 4);
+                    *(s16 *)(work + 0x2) = *(s16 *)(work + 0x10C + state[0xC6] * 4);
+                }
+                dx = *(s16 *)(work + 0x0) - spot[0x23];
+                if (func_001A6C60(func_001A6C48(dx, 2.0f) + func_001A6C48(*(s16 *)(work + 0x2) - spot[0x43], 2.0f)) < radius) {
+                    if (*(s16 *)(work + 0x6C) == 0 || *(s8 *)(work + 0x5373) != 0) {
+                        if (i != state[0xC6]) {
+                            state[0xC6] = i;
+                        }
+                    }
+                    if (state[0xC6] == i) {
+                        result = 1;
+                    }
+                    if (*(s8 *)(work + 0x5373) != 0) {
+                        *(s16 *)(work + 0x0) = *(s16 *)(work + 0x8C + state[0xC6] * 4);
+                        *(s16 *)(work + 0x2) = *(s16 *)(work + 0x10C + state[0xC6] * 4);
+                    }
+                }
+            } else {
+                result = 1;
+            }
+        }
+        item++;
+        spot++;
+    }
+    rect = D_00298260;
+    for (j = 0; j < 4; j++) {
+        if (rect[0] - 2 <= *(s16 *)(work + 0x0) && *(s16 *)(work + 0x0) <= rect[2] + 2 &&
+            rect[1] - 2 <= *(s16 *)(work + 0x2) && *(s16 *)(work + 0x2) <= rect[3] + 2) {
+            *(s16 *)(work + 0x80) = j;
+            *(s8 *)(work + 0x547A) = 1;
+            result = 2;
+        }
+        rect = (s16 *)((u8 *)rect + 0x26);
+    }
+    if (*(u16 *)0x01ED0004 != 1) {
+        switch (result) {
+        case 0:
+            *(s8 *)0x01ED006A = 0;
+            *(s8 *)0x01ED007E = 0;
+            *(u16 *)0x01ED0004 = 0;
+            break;
+        case 1:
+            if (state[0xC6] == 11) {
+                switch (state[state[0xC6] + 3]) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    if (*(s8 *)0x01ED0072 == 0 || *(s8 *)0x01ED537A != 0) {
+                        *(s8 *)0x01ED006A = 1;
+                        *(s8 *)0x01ED007E = 0;
+                        *(u16 *)0x01ED0004 = 0;
+                        *(u16 *)0x01ED0004 = 2;
+                    }
+                    break;
+                }
+            } else {
+                switch (state[state[0xC6] + 3]) {
+                case 1:
+                case 2:
+                case 3:
+                    if (*(s8 *)0x01ED0072 == 0 || *(s8 *)0x01ED537A != 0) {
+                        *(s8 *)0x01ED006A = 1;
+                        *(s8 *)0x01ED007E = 0;
+                        *(u16 *)0x01ED0004 = 2;
+                    }
+                    break;
+                }
+            }
+            break;
+        case 2:
+            *(s8 *)0x01ED007E = 1;
+            *(s8 *)0x01ED006A = 0;
+            *(u16 *)0x01ED0004 = 2;
+            *(s8 *)0x01ED547A = 1;
+            break;
+        }
+    } else {
+        *(s8 *)0x01ED006A = 0;
+        *(s8 *)0x01ED007E = 0;
+    }
+    if (*(s16 *)0x01ED0002 < 0x78) {
+        *(s16 *)0x01ED0224 -= 8;
+        if (*(s16 *)0x01ED0224 <= 0x60) {
+            *(s16 *)0x01ED0224 = 0x60;
+        }
+    } else {
+        *(s16 *)0x01ED0224 += 8;
+        if (*(s16 *)0x01ED0224 >= 0x80) {
+            *(s16 *)0x01ED0224 = 0x80;
+        }
+    }
+    if (*(s16 *)0x01ED0002 >= 0x154) {
+        *(s16 *)0x01ED0226 -= 8;
+        if (*(s16 *)0x01ED0226 <= 0x60) {
+            *(s16 *)0x01ED0226 = 0x60;
+        }
+    } else {
+        *(s16 *)0x01ED0226 += 8;
+        if (*(s16 *)0x01ED0226 >= 0x80) {
+            *(s16 *)0x01ED0226 = 0x80;
+        }
+    }
+    if (*(s16 *)0x01ED0000 >= 0x1C8) {
+        *(s16 *)0x01ED0228 -= 8;
+        if (*(s16 *)0x01ED0228 <= 0x60) {
+            *(s16 *)0x01ED0228 = 0x60;
+        }
+    } else {
+        *(s16 *)0x01ED0228 += 8;
+        if (*(s16 *)0x01ED0228 >= 0x80) {
+            *(s16 *)0x01ED0228 = 0x80;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_0023B920);
 
