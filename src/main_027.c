@@ -19,7 +19,21 @@ s32 func_001870B8(void) {
     return *(volatile s32 *)0x10003820;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001870C8);
+u32 func_001870C8(void) {
+    s32 temp_a0;
+
+    temp_a0 = *(volatile s32 *)0x10003800;
+    if (!(temp_a0 & 3)) {
+        return 0U;
+    }
+    if (temp_a0 & 0x700) {
+        return 1U;
+    }
+    if (temp_a0 & 0xC) {
+        return 2U;
+    }
+    return (temp_a0 & 0x3000) ? 3U : 4U;
+}
 
 s32 func_00187118(void *arg0) {
     u32 temp_s4;

@@ -16,7 +16,10 @@ void func_00184768(s32 arg0, s32 arg1, s32 arg2) {
     func_0017B520(arg0, arg1, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001847B0);
+void func_001847B0(s32 arg0) {
+    func_00184700();
+    func_0017B500(arg0);
+}
 
 void func_001847D8(s32 arg0, s32 arg1) {
     func_00184700();

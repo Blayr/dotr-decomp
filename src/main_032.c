@@ -42,7 +42,13 @@ s32 func_00192218(void) {
     return func_00192308(0, 0, 0, 7, &D_00315958);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192268);
+s32 func_00192268(void) {
+    D_0028F730 = 1;
+    if (D_0028DCD0 > 0) {
+        func_0017DA98(&D_002BCE70);
+    }
+    return func_00192308(0, 0, 0, 8, &D_00315958);
+}
 
 s32 func_001922C0(void) {
     if (D_0028DCD0 > 0) {
