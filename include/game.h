@@ -956,4 +956,7 @@ extern s32 D_00312840;
 extern s32 D_00313E08;
 extern s32 D_00315D04;
 
+typedef union { double d; u32 i[2]; } ratio_du;
+double func_00199690(i2b_Bigint *a, s32 *e); /* b2d */
+
 #endif

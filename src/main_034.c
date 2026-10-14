@@ -262,7 +262,21 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_00199690);
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199828);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001999B0);
+double func_001999B0(i2b_Bigint *a, i2b_Bigint *b) {
+    ratio_du da, db;
+    s32 k, ka, kb;
+
+    da.d = func_00199690(a, &ka);
+    db.d = func_00199690(b, &kb);
+    k = ka - kb + 32 * (a->wds - b->wds);
+    if (k > 0)
+        da.i[1] += k * 0x100000;
+    else {
+        k = -k;
+        db.i[1] += k * 0x100000;
+    }
+    return da.d / db.d;
+}
 
 double func_00199A80(s32 dig) {
     double v = 1.0;

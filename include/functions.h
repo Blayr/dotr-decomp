@@ -1118,6 +1118,7 @@ s32 func_00198DE8(u32 x);
 s32 func_00198E68(u32 *y);
 i2b_Bigint *func_00198F28(void *ptr, s32 i);
 s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b);
+double func_001999B0(i2b_Bigint *a, i2b_Bigint *b);
 double func_00199A80(s32 dig);
 s32 func_00199AF0(vf_reent *ptr, const char *fmt, ...);
 void func_00199B50(const char *fmt, ...);
