@@ -799,6 +799,7 @@ s32 func_0017C0B0(void);
 void func_00184700(void);
 s32 func_0018ED10(s32 unused0);
 s32 func_00195070(s32 arg0);
+void func_00195088(s32 arg0);
 s32 func_001950A0(const char *s);
 void func_001966E8(void);
 void func_001966F0(void);

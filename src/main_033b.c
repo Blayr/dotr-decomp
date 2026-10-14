@@ -4,7 +4,9 @@ s32 func_00195070(s32 arg0) {
     return arg0 < 0 ? -arg0 : arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00195088);
+void func_00195088(s32 arg0) {
+    func_0019D3E0(arg0, 0);
+}
 
 s32 func_001950A0(const char *s) {
     return func_0019D750(s, NULL, 10);

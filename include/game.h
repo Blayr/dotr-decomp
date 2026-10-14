@@ -569,4 +569,6 @@ extern char D_0028C230[];
 
 long func_0019D750(const char *, char **, s32);
 
+void func_0019D3E0(s32, s32);
+
 #endif
