@@ -278,11 +278,8 @@ void func_001F34A0(s32, s32);
 void func_0010C580(void);
 extern char D_002B90C0[];
 extern s32 D_0030FF58;
-extern s32 D_0030FFA0;
-extern s32 D_0030FFA4;
-extern s32 D_0030FFA8;
-extern s32 D_0030FFAC;
-extern s32 D_0030FFB0;
+typedef struct { s32 src; s32 offset; s32 size; s32 position; s32 left; } cdstream_t;
+extern cdstream_t D_0030FFA0;
 
 
 
