@@ -68,7 +68,35 @@ INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C398);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C490);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C520);
+s32 func_0018C520(void *arg0) {
+    s32 temp_v0;
+    void *var_s1;
+
+    if (((*(s32 *)((u8 *)arg0 + 0x174)) == 3) && ((*(s32 *)((u8 *)arg0 + 0x120)) != 0)) {
+        func_0018F7B0((s32) arg0, &D_002BC900);
+        (*(s32 *)((u8 *)arg0 + 0x120)) = 0;
+    }
+    switch ((*(s32 *)((u8 *)arg0 + 0x174))) {        /* irregular */
+    case 3:
+        var_s1 = (*(void **)((u8 *)arg0 + 0x1C0));
+        break;
+    case 1:
+        var_s1 = (*(void **)((u8 *)arg0 + 0x1D0));
+        break;
+    case 2:
+        var_s1 = (*(void **)((u8 *)arg0 + 0x1E0));
+        break;
+    default:
+        var_s1 = (*(void **)((u8 *)arg0 + 0x1C0));
+        func_0018F7B0((s32) arg0, &D_002BC920);
+        break;
+    }
+    temp_v0 = func_0018A848(arg0);
+    if (temp_v0 != 0) {
+        (*(s32 *)((u8 *)var_s1 + 0x28)) = 1;
+    }
+    return temp_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C5F0);
 

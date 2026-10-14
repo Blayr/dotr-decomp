@@ -704,4 +704,8 @@ void *func_001979F8(s32, s32, s32);                 /* extern */
 
 extern s32 D_00315500;
 
+s32 func_0018A848(void *);                          /* extern */
+extern s32 D_002BC900;
+extern s32 D_002BC920;
+
 #endif
