@@ -1578,6 +1578,8 @@ void func_001CDA10(void) {
 }
 
 s32 func_001CDA60(void *arg0) {
+    extern void func_001CD560();
+
     if (arg0 == NULL) {
         return 0;
     }
