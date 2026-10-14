@@ -6,7 +6,6 @@
 /* Declarations collected by `dk accept`. Move them into topic headers as the
  * game's structure becomes clear. */
 
-s32 func_00183E10();                            /* extern */
 
 s32 func_00172370();                            /* extern */
 
@@ -670,5 +669,9 @@ s32 func_0017C7F8();                            /* extern */
 s32 func_00183C98();                            /* extern */
 s32 func_00184440();                            /* extern */
 s32 func_00184650();                            /* extern */
+
+s32 func_0017BD40();                                /* extern */
+s32 func_0017BD50();                                /* extern */
+s32 func_00183E50();                                /* extern */
 
 #endif
