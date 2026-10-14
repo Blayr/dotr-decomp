@@ -1275,7 +1275,7 @@ typedef struct State_002099D0 {
     void (*beforeWait)(void);
 } State_002099D0;
 
-void func_00186060(u8 *, s16, s16, s64);
+void func_00186060(u8 *, s16, s16, s16);
 
 s32 func_002099D0(void) {
     extern s32 func_00185578();
