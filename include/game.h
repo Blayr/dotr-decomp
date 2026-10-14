@@ -12,7 +12,6 @@ s32 func_00172370();                            /* extern */
 s32 func_00193808();                            /* extern */
 s32 func_0017B790(s32);                     /* extern */
 s32 func_0018E200();                            /* extern */
-s32 func_0019A5C8();                            /* extern */
 s32 func_001ACC80(s32);                             /* extern */
 s32 func_001AEEB0(s32);                             /* extern */
 s32 func_001AF7E0(s32);                             /* extern */

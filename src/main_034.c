@@ -155,7 +155,12 @@ void func_0019A5B0(s64 arg0) {
     (*(u64 *)((u8 *)D_0028FA98 + 0xA8)) = (u64) ((u64) (arg0 << 0x20) >> 0x20);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A5C8);
+s32 func_0019A5C8(void) {
+    u8 *r = (u8 *)D_0028FA98;
+
+    *(u64 *)(r + 0xA8) = *(u64 *)(r + 0xA8) * 6364136223846793005ULL + 1;
+    return (s32)((*(u64 *)(r + 0xA8) >> 32) & 0x7fffffff);
+}
 
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     s64 ret;
