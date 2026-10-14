@@ -92,7 +92,43 @@ void func_00190128(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190190);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190278);
+void func_00190278(s32 arg0) {
+    s32 temp_a1;
+    s32 temp_a2;
+    s32 temp_s1;
+    s32 temp_s2;
+    s32 temp_s3;
+    s32 temp_v0_2;
+    u32 temp_v0;
+
+    temp_v0 = (*(u32 *)((u8 *)arg0 + 0x1C));
+    temp_s3 = temp_v0 & 0x7F;
+    temp_a1 = (*(s32 *)arg0);
+    temp_v0_2 = ((temp_v0 >> 0x10) & 3) + ((temp_v0 >> 8) & 0xF);
+    temp_a2 = (*(s32 *)((u8 *)arg0 + 0x10));
+    temp_s2 = (*(s32 *)((u8 *)arg0 + 8)) + temp_v0_2;
+    temp_s1 = temp_a1 - (temp_v0_2 * 0x10);
+    if ((temp_a2 != 0) && ((*(s32 *)((u8 *)arg0 + 0x14)) != 0)) {
+        *(volatile s32 *)0x1000B010 = temp_a2;
+        *(volatile s32 *)0x1000B020 = (*(s32 *)((u8 *)arg0 + 0x14));
+        func_001900C0((*(s32 *)((u8 *)arg0 + 0x18)) | 0x100);
+    }
+    do {
+
+    } while (*(volatile s32 *)0x10002010 < 0);
+    *(volatile s32 *)0x10002000 = temp_s3;
+    do {
+
+    } while (*(volatile s32 *)0x10002010 < 0);
+    if (temp_s1 != 0) {
+        if (temp_s2 != 0) {
+            *(volatile s32 *)0x1000B410 = temp_s1;
+            *(volatile s32 *)0x1000B430 = (*(s32 *)((u8 *)arg0 + 4));
+            *(volatile s32 *)0x1000B420 = temp_s2;
+            func_00190128((*(s32 *)((u8 *)arg0 + 0xC)) | 0x100);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_001903C8);
 
@@ -158,7 +194,20 @@ INCLUDE_ASM("asm/nonmatchings/main_031", func_00190FF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_001912F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00191460);
+s32 func_00191460(void) {
+    s32 temp_s0;
+
+    if (func_001912F0(2) == 0) {
+        return 0;
+    }
+    if (func_0017EA80(&D_0028EE90, 0xE, 0, 0, 0, &D_0028DD40, 4, 0, 0) < 0) {
+        func_0017B900(D_0028DCE8);
+        return 0;
+    }
+    temp_s0 = *(s32 *)((s32) &D_0028DD40 | 0x20000000);
+    func_0017B900(D_0028DCE8);
+    return temp_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_001914F8);
 

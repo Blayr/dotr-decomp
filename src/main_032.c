@@ -4,7 +4,20 @@ INCLUDE_ASM("asm/nonmatchings/main_032", func_00191C50);
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00191D18);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00191EF8);
+s32 func_00191EF8(void) {
+    s32 temp_s0;
+
+    if (func_00191608(3) == 0) {
+        return -1;
+    }
+    if (func_0017EA80(&D_0028F708, 4, 0, 0, 0, &D_0028EEC0, 4, 0, 0) < 0) {
+        func_0017B900(D_0028DCEC);
+        return -1;
+    }
+    temp_s0 = *(s32 *)((s32) &D_0028EEC0 | 0x20000000);
+    func_0017B900(D_0028DCEC);
+    return temp_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00191F90);
 
