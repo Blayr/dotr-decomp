@@ -98,7 +98,17 @@ s32 func_0018B550(void *arg0, s32 arg1) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B580);
+void func_0018B580(void *arg0) {
+    s32 n;
+
+    n = 0;
+    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+        if (n++ > 5000) {
+            func_0018EF98((*(s32 *)((u8 *)arg0 + 0x858)));
+            n = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B628);
 
