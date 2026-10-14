@@ -12,7 +12,9 @@ s32 func_001950A0(const char *s) {
     return func_0019D750(s, NULL, 10);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_001950C8);
+void func_001950C8(s8 *arg0) {
+    func_0019D750(arg0, NULL, 0xA);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_001950E8);
 
