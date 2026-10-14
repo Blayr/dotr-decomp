@@ -1313,7 +1313,143 @@ f32 func_001A57D8(f32 x, f32 y) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A5948);
+s32 func_001A5948(f32 *x, f32 *y, s32 e0, s32 nx, s32 prec, const s32 *ipio2) {
+    s32 jz, jx, jv, jp, jk, carry, n, iq[20], i, j, k, m, q0, ih;
+    f32 z, fw, f[20], fq[20], q[20];
+
+    jk = D_002BE570[prec];
+    jp = jk;
+
+    jx = nx - 1;
+    jv = (e0 - 3) / 8; if (jv < 0) jv = 0;
+    q0 = e0 - 8 * (jv + 1);
+
+    j = jv - jx; m = jx + jk;
+    for (i = 0; i <= m; i++, j++) f[i] = (j < 0) ? (f32)0.0 : (f32)ipio2[j];
+
+    for (i = 0; i <= jk; i++) {
+        for (j = 0, fw = 0.0; j <= jx; j++) fw += x[j] * f[jx + i - j]; q[i] = fw;
+    }
+
+    jz = jk;
+recompute:
+    for (i = 0, j = jz, z = q[jz]; j > 0; i++, j--) {
+        fw = (f32)((s32)((f32)0.00390625023283064365386962890625 * z));
+        iq[i] = (s32)(z - (f32)256.0000152587890625 * fw);
+        z = q[j - 1] + fw;
+    }
+
+    z = func_0019B4F8(z, (int)q0);
+    z -= (f32)8.000000476837158203125 * func_001A6998(z * (f32)0.125000007450580596923828125);
+    n = (s32)z;
+    z -= (f32)n;
+    ih = 0;
+    if (q0 > 0) {
+        i = (iq[jz - 1] >> (8 - q0)); n += i;
+        iq[jz - 1] -= i << (8 - q0);
+        ih = iq[jz - 1] >> (7 - q0);
+    }
+    else if (q0 == 0) ih = iq[jz - 1] >> 8;
+    else if (z >= (f32)0.5000000298023223876953125) ih = 2;
+
+    if (ih > 0) {
+        n += 1; carry = 0;
+        for (i = 0; i < jz; i++) {
+            j = iq[i];
+            if (carry == 0) {
+                if (j != 0) {
+                    carry = 1; iq[i] = 0x100 - j;
+                }
+            } else iq[i] = 0xff - j;
+        }
+        if (q0 > 0) {
+            switch (q0) {
+            case 1:
+                iq[jz - 1] &= 0x7f; break;
+            case 2:
+                iq[jz - 1] &= 0x3f; break;
+            }
+        }
+        if (ih == 2) {
+            z = (f32)1.000000059604644775390625 - z;
+            if (carry != 0) z -= func_0019B4F8((f32)1.000000059604644775390625, (int)q0);
+        }
+    }
+
+    if (z == (f32)0.0) {
+        j = 0;
+        for (i = jz - 1; i >= jk; i--) j |= iq[i];
+        if (j == 0) {
+            for (k = 1; iq[jk - k] == 0; k++);
+
+            for (i = jz + 1; i <= jz + k; i++) {
+                f[jx + i] = (f32)ipio2[jv + i];
+                for (j = 0, fw = 0.0; j <= jx; j++) fw += x[j] * f[jx + i - j];
+                q[i] = fw;
+            }
+            jz += k;
+            goto recompute;
+        }
+    }
+
+    if (z == (f32)0.0) {
+        jz -= 1; q0 -= 8;
+        while (iq[jz] == 0) { jz--; q0 -= 8; }
+    } else {
+        z = func_0019B4F8(z, -(int)q0);
+        if (z >= (f32)256.0000152587890625) {
+            fw = (f32)((s32)((f32)0.00390625023283064365386962890625 * z));
+            iq[jz] = (s32)(z - (f32)256.0000152587890625 * fw);
+            jz += 1; q0 += 8;
+            iq[jz] = (s32)fw;
+        } else iq[jz] = (s32)z;
+    }
+
+    fw = func_0019B4F8((f32)1.000000059604644775390625, (int)q0);
+    for (i = jz; i >= 0; i--) {
+        q[i] = fw * (f32)iq[i]; fw *= (f32)0.00390625023283064365386962890625;
+    }
+
+    for (i = jz; i >= 0; i--) {
+        for (fw = 0.0, k = 0; k <= jp && k <= jz - i; k++) fw += D_002BE580[k] * q[i + k];
+        fq[jz - i] = fw;
+    }
+
+    switch (prec) {
+    case 0:
+        fw = 0.0;
+        for (i = jz; i >= 0; i--) fw += fq[i];
+        y[0] = (ih == 0) ? fw : -fw;
+        break;
+    case 1:
+    case 2:
+        fw = 0.0;
+        for (i = jz; i >= 0; i--) fw += fq[i];
+        y[0] = (ih == 0) ? fw : -fw;
+        fw = fq[0] - fw;
+        for (i = 1; i <= jz; i++) fw += fq[i];
+        y[1] = (ih == 0) ? fw : -fw;
+        break;
+    case 3:
+        for (i = jz; i > 0; i--) {
+            fw = fq[i - 1] + fq[i];
+            fq[i] += fq[i - 1] - fw;
+            fq[i - 1] = fw;
+        }
+        for (i = jz; i > 1; i--) {
+            fw = fq[i - 1] + fq[i];
+            fq[i] += fq[i - 1] - fw;
+            fq[i - 1] = fw;
+        }
+        for (fw = 0.0, i = jz; i >= 2; i--) fw += fq[i];
+        if (ih == 0) {
+            y[0] = fq[0]; y[1] = fq[1]; y[2] = fw;
+        } else {
+            y[0] = -fq[0]; y[1] = -fq[1]; y[2] = -fw;
+        }
+    }
+    return n & 7;
+}
 
 f32 func_001A61F0(f32 x, f32 y, s32 iy) {
     f32 z, r, v;

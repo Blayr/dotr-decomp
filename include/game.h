@@ -882,7 +882,6 @@ extern s32 D_002BC7E8;
 
 extern s32 D_002BE4C4[];  /* fdlibm ef_rem_pio2.c npio2_hw[] - 1 */
 extern s32 D_002BE1B0[];  /* two_over_pi[] */
-s32 func_001A5948(f32 *x, f32 *y, s32 e0, s32 nx, s32 prec, const s32 *ipio2);
 
 s32 func_0017B930(s32);                             /* extern */
 extern s32 D_00315CA0;
@@ -921,5 +920,8 @@ extern f32 D_002BE130[]; /* dp_h[2] */
 extern f32 D_002BE138[]; /* dp_l[2] */
 extern f32 D_002BE1AC;   /* huge * huge, folded (the compiler kept it in rodata) */
 f32 func_0019B4F8(f32 x, s32 n); /* scalbnf */
+
+extern s32 D_002BE570[]; /* fdlibm kf_rem_pio2.c init_jk[] = { 4, 7, 9 } */
+extern f32 D_002BE580[]; /* PIo2[11] */
 
 #endif
