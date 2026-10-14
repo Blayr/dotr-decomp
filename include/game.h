@@ -929,4 +929,6 @@ extern char D_0030FF60[];
 
 extern u8 D_003261F0;
 
+extern u8 D_00318200[];
+
 #endif
