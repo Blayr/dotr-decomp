@@ -580,7 +580,69 @@ s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_001A04D8);
+typedef struct sw_reent { u8 pad0[0x38]; s32 __sdidinit; } sw_reent;
+typedef struct sw_sbuf { u8 *_base; s32 _size; } sw_sbuf;
+typedef struct sw_FILE {
+    u8 *_p;
+    s32 _r;
+    s32 _w;
+    s16 _flags;
+    s16 _file;
+    sw_sbuf _bf;
+    s32 _lbfsize;
+    void *_cookie;
+    void *_read;
+    void *_write;
+    void *_seek;
+    void *_close;
+    sw_sbuf _ub;
+    u8 *_up;
+    s32 _ur;
+    u8 _ubuf[3];
+    u8 _nbuf[1];
+    sw_sbuf _lb;
+    s32 _blksize;
+    s32 _offset;
+    sw_reent *_data;
+} sw_FILE;
+
+s32 func_001A04D8(void *arg0) {
+    sw_FILE *fp = arg0;
+
+    do {
+        if (fp->_data == 0)
+            fp->_data = (sw_reent *)D_0028FA98;
+        if (!fp->_data->__sdidinit)
+            func_00196A30(fp->_data);
+    } while (0);
+
+    if ((fp->_flags & 8) == 0) {
+        if ((fp->_flags & 0x10) == 0)
+            return -1;
+        if (fp->_flags & 4) {
+            if (fp->_ub._base != NULL) {
+                if (fp->_ub._base != fp->_ubuf)
+                    func_00196BE0((s32)fp->_data, (s32)fp->_ub._base);
+                fp->_ub._base = NULL;
+            }
+            fp->_flags &= ~(4 | 0x20);
+            fp->_r = 0;
+            fp->_p = fp->_bf._base;
+        }
+        fp->_flags |= 8;
+    }
+
+    if (fp->_bf._base == NULL)
+        func_00197838(fp);
+
+    if (fp->_flags & 1) {
+        fp->_w = 0;
+        fp->_lbfsize = -fp->_bf._size;
+    } else
+        fp->_w = fp->_flags & 2 ? 0 : fp->_bf._size;
+
+    return 0;
+}
 
 /* __muldi3 */
 typedef union { struct { s32 low, high; } s; s64 ll; } DIunion;
