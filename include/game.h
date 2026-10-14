@@ -742,7 +742,7 @@ extern s32 D_00310920;
 extern s32 D_002BC1E8;
 extern s32 D_0028F730;
 extern s32 D_00315958;
-s32 func_0017DA98(s32 *);                   /* extern */
+s32 func_0017DA98(const char *, ...);
 extern s32 D_0028DCD0;
 extern s32 D_002BCE58;
 extern s32 D_002BCE88;
