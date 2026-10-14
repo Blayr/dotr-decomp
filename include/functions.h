@@ -1115,6 +1115,7 @@ s32 func_0018A848(void *arg0);
 s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4);
 s32 func_0018AA80(void *arg0, s32 arg1);
 s32 func_0018AC70(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4);
+s32 func_0018B1D8(s32 *pred, s32 r_size, s32 motion_code, s32 motion_residual, s32 full_pel_vector);
 void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32 s, s32 count, s32 fmt, s32 h_r, s32 v_r, s32 dmv, s32 mvscale);
 void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
 s32 func_0018B550(void *arg0, s32 arg1);

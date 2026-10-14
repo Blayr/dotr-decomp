@@ -924,7 +924,6 @@ extern s32 D_0028DB80;
 extern s32 D_0028DBC0;
 extern s32 D_002BCAA8;
 
-s32 func_0018B1D8(void *, s32, s32, s32, s32);
 
 typedef struct p5_reent { u8 pad0[0x48]; i2b_Bigint *_p5s; } p5_reent;
 extern s32 D_002BD274[];
