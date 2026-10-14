@@ -811,7 +811,6 @@ s32 func_0019F6E8(void *fp, const char *fmt, void *ap); /* __svfscanf */
 
 extern char D_002BD270[]; /* "C" */
 extern char D_002BD260[]; /* "" */
-s32 func_0019BC90(const char *a, const char *b); /* strcmp */
 
 
 extern char ***D_0028FF08; /* p_environ */

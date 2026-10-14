@@ -625,7 +625,6 @@ typedef struct File_00243A90 {
     s32 fd;
 } File_00243A90;
 
-s32 func_0019BC90(const char *, const char *);
 extern char D_0030F7F0[];
 extern char D_0030F7F7[];
 extern char D_0030F7F8[];
