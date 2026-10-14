@@ -967,4 +967,9 @@ void *func_0017E408(s32 *);
 
 i2b_Bigint *func_00198BB0(void *ptr, i2b_Bigint *b, s32 m, s32 a);
 
+void func_0018FA40(void *);
+extern s32 D_0028DB80;
+extern s32 D_0028DBC0;
+extern s32 D_002BCAA8;
+
 #endif
