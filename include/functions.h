@@ -3130,6 +3130,7 @@ s32 func_0027B520(void *arg0, u8 arg1);
 s32 func_0027B740(void *arg0, s32 arg1);
 s32 func_0027B860(u16 *arg0, s32 arg1);
 s32 func_0027B9B0(s32 arg0);
+s32 func_0027BBC0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0027BE10(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_0027C070(s32 arg0, u16 *arg1, s32 arg2, u8 arg3);
 void func_0027C2C0(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, u8 arg4);
