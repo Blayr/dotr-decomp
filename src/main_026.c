@@ -52,7 +52,39 @@ void func_001847D8(s32 arg0, s32 arg1) {
     func_0017BD00(arg0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184810);
+void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
+    s16 *p;
+
+    switch (arg0) {
+    case 0:
+        p = (s16 *)func_001849A0();
+        *(volatile u64 *)0x12001000 = 0x200;
+        p[0] = arg1;
+        p[1] = arg2;
+        p[3] = (*(volatile u64 *)0x12001000 >> 16) & 0xFF;
+        func_0017BC20(0xFF00);
+        p[2] = arg3 != 0;
+        if (((s32 *)p)[2] != 0) {
+            func_0017C3C0(2);
+            func_0017B5E0(2, ((s32 *)p)[3]);
+            ((s32 *)p)[2] = 0;
+            ((s32 *)p)[3] = 0;
+        }
+        func_0017B4E0(arg1 & 1, arg2 & 0xFF, arg3 & 1);
+        break;
+    case 1:
+        *(volatile u64 *)0x12001000 = 0x100;
+        break;
+    case 5:
+        p = (s16 *)func_001849A0();
+        p[2] = arg3 != 0;
+        p[0] = arg1;
+        p[1] = arg2;
+        p[3] = (*(volatile u64 *)0x12001000 >> 16) & 0xFF;
+        func_0017B4E0(arg1 & 1, arg2 & 0xFF, arg3 & 1);
+        break;
+    }
+}
 
 s32 *func_001849A0(void) {
     return &D_0028D8F0;
