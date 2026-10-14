@@ -53,8 +53,6 @@ s32 func_0024CA40(s32, s32, s32, s32, s32, s32);
 
 s32 func_0027B650(u16 *);
 
-void func_00185578(s32, s32);
-void func_00185890(void *, s16, s32, s32, s32, s32, s32, s32);
 extern u8 D_00325E80[];
 extern u8 D_00325F50[];
 extern s32 D_003261BC;
@@ -609,9 +607,7 @@ extern s32 D_002BC900;
 extern s32 D_002BC920;
 
 extern s32 D_0028CA18;
-s32 func_00186D18();                                /* extern */
 s32 func_00186D58(s32);                         /* extern */
-s32 func_00186D68();                                /* extern */
 s32 func_001970A8();                                /* extern */
 
 s32 func_0018EF48(s32, void *);    /* extern */
@@ -865,7 +861,6 @@ typedef union { double d; u32 i[2]; } ratio_du;
 
 typedef union { double d; u32 i[2]; } ulp_du;
 
-s32 func_00186238(void *);
 extern s32 D_0028D970;
 
 typedef struct fr_FILE { u8 *_p; s32 _r; } fr_FILE;

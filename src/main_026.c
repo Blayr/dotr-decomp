@@ -89,7 +89,104 @@ s32 *func_001849A0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_001849B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184A18);
+typedef struct {
+    s16 inter;
+    s16 omode;
+    s16 ffmd;
+    s16 version;
+} GsGParam_00184A18;
+
+typedef struct {
+    s64 pmode;
+    s64 smode2;
+    s64 dispfb;
+    s64 display;
+    s64 bgcolor;
+} GsDispEnv_00184A18;
+
+extern char D_002BC2A0[];
+
+/* sceGsSetDefDispEnv: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_00184A18(void *arg0, s16 psm, s16 w, s16 h, s16 dx, s16 dy) {
+    GsDispEnv_00184A18 *disp = arg0;
+    GsGParam_00184A18 *gp = (GsGParam_00184A18 *)func_001849A0();
+
+    disp->pmode = 0x66;
+    if (gp->inter != 0) {
+        if (gp->ffmd != 0) {
+            disp->smode2 = 3;
+        } else {
+            disp->smode2 = 1;
+        }
+    } else {
+        disp->smode2 = 2;
+    }
+    disp->dispfb = ((s64)(psm & 0xF) << 15) | ((s64)(((w + 0x3F) >> 6) & 0x3F) << 9);
+
+    if (gp->omode == 2) {
+        if (gp->inter == 1) {
+            s64 ddy = (s64)(({
+                                s32 e = dy + 0x32;
+                                __asm__("" : "+r"(e));
+                                e;
+                            }) &
+                            0xFFF)
+                      << 12;
+            s32 q = (w + 0x9FF) / w;
+            s64 magh = (s64)(q - 1) << 23;
+            s64 ddx = ((s64)(dx * q) + 0x27C) & 0xFFF;
+            s64 dw = (s64)(q * w - 1) << 32;
+            s64 display;
+
+            if (gp->ffmd) {
+                display = magh | dw | (ddx | (s64)(h * 2 - 1) << 44) | ddy;
+            } else {
+                display = magh | dw | (ddx | (s64)(h - 1) << 44) | ddy;
+            }
+            disp->display = display;
+        } else {
+            s32 q = (w + 0x9FF) / w;
+            s64 dh = (s64)(h - 1) << 44;
+
+            disp->display = (s64)(q - 1) << 23 | (s64)(q * w - 1) << 32 |
+                            ((((s64)(dx * q) + 0x27C) & 0xFFF) | dh) |
+                            (s64)((dy + 0x19) & 0xFFF) << 12;
+        }
+    } else if (gp->omode == 3) {
+        if (gp->inter == 1) {
+            s64 ddy = (s64)(({
+                                s32 e = dy + 0x48;
+                                __asm__("" : "+r"(e));
+                                e;
+                            }) &
+                            0xFFF)
+                      << 12;
+            s32 q = (w + 0x9FF) / w;
+            s64 magh = (s64)(q - 1) << 23;
+            s64 ddx = ((s64)(dx * q) + 0x290) & 0xFFF;
+            s64 dw = (s64)(q * w - 1) << 32;
+            s64 display;
+
+            if (gp->ffmd) {
+                display = magh | dw | (ddx | (s64)(h * 2 - 1) << 44) | ddy;
+            } else {
+                display = magh | dw | (ddx | (s64)(h - 1) << 44) | ddy;
+            }
+            disp->display = display;
+        } else {
+            s32 q = (w + 0x9FF) / w;
+            s64 dh = (s64)(h - 1) << 44;
+
+            disp->display = (s64)(q - 1) << 23 | (s64)(q * w - 1) << 32 |
+                            ((((s64)(dx * q) + 0x290) & 0xFFF) | dh) |
+                            (s64)((dy + 0x24) & 0xFFF) << 12;
+        }
+    } else {
+        func_00199B50(D_002BC2A0, gp->omode);
+    }
+    disp->bgcolor = 0;
+}
 
 s32 func_00184C88(void *arg0) {
     u64 *disp;
@@ -300,9 +397,156 @@ s32 func_001854E0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00185578);
+extern char D_002BC308[];
+extern char D_002BC338[];
+extern char D_002BC348[];
+extern char D_002BC358[];
+extern char D_002BC368[];
+extern char D_002BC378[];
+extern char D_002BC388[];
+extern char D_002BC398[];
+extern char D_002BC3A8[];
+extern char D_002BC3B8[];
+extern char D_002BC3D0[];
+extern char D_002BC3E8[];
+extern char D_002BC418[];
+extern char D_002BC448[];
+extern char D_002BC470[];
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00185890);
+#define REG_00185578(a) (*(volatile u32 *)(a))
+#define PRINTF_00185578 ((s32 (*)(const char *, ...))func_00199B50)
+#define DUMP_00185578()                                                                            \
+    PRINTF_00185578(D_002BC338, REG_00185578(0x10009000));                                           \
+    PRINTF_00185578(D_002BC348, REG_00185578(0x10009030));                                           \
+    PRINTF_00185578(D_002BC358, REG_00185578(0x10009010));                                           \
+    PRINTF_00185578(D_002BC368, REG_00185578(0x10009020));                                           \
+    PRINTF_00185578(D_002BC378, REG_00185578(0x1000A000));                                           \
+    PRINTF_00185578(D_002BC388, REG_00185578(0x1000A030));                                           \
+    PRINTF_00185578(D_002BC398, REG_00185578(0x1000A010));                                           \
+    PRINTF_00185578(D_002BC3A8, REG_00185578(0x1000A020));                                           \
+    PRINTF_00185578(D_002BC3B8, REG_00185578(0x10003C00));                                           \
+    PRINTF_00185578(D_002BC3D0, REG_00185578(0x10003020));                                           \
+    return -1
+
+/* sceGsSyncPath: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00185578(s32 mode, s32 timeout) {
+    u32 i = 0;
+    s32 r;
+    s32 v;
+
+    if (mode == 0) {
+        while (REG_00185578(0x10009000) & 0x100) {
+            if (i++ > 0x1000000) {
+                PRINTF_00185578(D_002BC308);
+                DUMP_00185578();
+            }
+        }
+        while (REG_00185578(0x1000A000) & 0x100) {
+            if (i++ > 0x1000000) {
+                PRINTF_00185578(D_002BC3E8);
+                DUMP_00185578();
+            }
+        }
+        while (REG_00185578(0x10003C00) & 0x1F000003) {
+            if (i++ > 0x1000000) {
+                PRINTF_00185578(D_002BC418);
+                DUMP_00185578();
+            }
+        }
+        __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(v));
+        while (v & 0x100) {
+            if (i++ > 0x1000000) {
+                PRINTF_00185578(D_002BC448);
+                DUMP_00185578();
+            }
+            __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(v));
+        }
+        while (REG_00185578(0x10003020) & 0xC00) {
+            if (i++ > 0x1000000) {
+                PRINTF_00185578(D_002BC470);
+                DUMP_00185578();
+            }
+        }
+        return 0;
+    }
+    r = 0;
+    if (REG_00185578(0x10009000) & 0x100) {
+        r |= 1;
+    }
+    if (REG_00185578(0x1000A000) & 0x100) {
+        r |= 2;
+    }
+    if (REG_00185578(0x10003C00) & 0x1F000003) {
+        r |= 4;
+    }
+    __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(v));
+    if (v & 0x100) {
+        r |= 8;
+    }
+    if (REG_00185578(0x10003020) & 0xC00) {
+        r |= 0x10;
+    }
+    return r;
+}
+
+typedef struct {
+    u64 nloop : 15;
+    u64 eop : 1;
+    u64 pad1 : 30;
+    u64 pre : 1;
+    u64 prim : 11;
+    u64 flg : 2;
+    u64 nreg : 4;
+    u64 regs0 : 4;
+    u64 regs1 : 60;
+} GifTag_00185890;
+
+typedef struct {
+    u32 h0;
+    u32 h1;
+    u32 h2;
+    u32 h3;
+    GifTag_00185890 gif;
+    s64 bitbltbuf;
+    s64 abitbltbuf;
+    s64 trxpos;
+    s64 atrxpos;
+    s64 trxreg;
+    s64 atrxreg;
+    s64 finish;
+    s64 afinish;
+    s64 trxdir;
+    s64 atrxdir;
+} StoreImage_00185890;
+
+/* sceGsSetDefStoreImage: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00185890(void *arg0, s16 sbp, s16 sbw, s16 spsm, s16 ssax, s16 ssay, s16 rrw, s16 rrh) {
+    StoreImage_00185890 *di = arg0;
+
+    di->h0 = 0;
+    di->h1 = 0x06008000;
+    di->h2 = 0x13000000;
+    di->h3 = 0x50000006;
+    *(__int128 *)&di->gif = 0;
+    di->gif.nloop = 5;
+    di->gif.eop = 1;
+    di->gif.nreg = 1;
+    di->gif.regs0 = 0xE;
+    di->bitbltbuf = (s64)sbp | ((s64)sbw << 16) | ((s64)spsm << 24);
+    di->abitbltbuf = 0x50;
+    di->trxpos = (s64)ssax | ((s64)ssay << 16);
+    di->atrxpos = 0x51;
+    di->trxreg = (s64)rrw | ((s64)rrh << 32);
+    di->atrxreg = 0x52;
+    di->finish = 0;
+    di->afinish = 0x61;
+    di->trxdir = 1;
+    di->atrxdir = 0x53;
+    __asm__ __volatile__("sync" : : : "memory");
+    return 7;
+}
 
 typedef struct {
     u64 SBP : 14;
@@ -648,7 +892,66 @@ typedef struct GsDef_00186410 {
 
 extern GsDef_00186410 D_0028D9C8;
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186238);
+typedef struct {
+    u8 mfd;
+    u8 sts;
+    u8 std;
+    u8 rcyc;
+    u16 cde;
+    u16 cpc;
+    u16 sqwc;
+    u16 tqwc;
+    void *rbadr;
+    s32 rbsize;
+} DmaEnv_00186238;
+
+extern u8 D_0028D998[16];
+extern u8 D_0028D9A8[16];
+extern u8 D_0028D9B8[16];
+
+/* sceDmaPutEnv: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00186238(void *arg0) {
+    DmaEnv_00186238 *env = arg0;
+    s32 ctrl = *(volatile s32 *)0x1000E000;
+    s32 pcr = *(volatile s32 *)0x1000E020;
+    s32 sqwc = *(volatile s32 *)0x1000E030;
+    s32 rbor = *(volatile s32 *)0x1000E050;
+    s32 rbsr = *(volatile s32 *)0x1000E040;
+
+    if (env->mfd >= 10) {
+        return -1;
+    }
+    if (env->sts >= 10) {
+        return -2;
+    }
+    if (env->std >= 10) {
+        return -3;
+    }
+    if (env->rcyc >= 7) {
+        return -4;
+    }
+    ctrl = (ctrl & 0xFFFFFFCF) | (D_0028D998[env->mfd] << 4);
+    ctrl = (ctrl & 0xFFFFFF3F) | (D_0028D9A8[env->sts] << 6);
+    ctrl = (ctrl & 0xFFFFFFF3) | (D_0028D9B8[env->std] << 2);
+    if (env->rcyc != 0) {
+        ctrl |= 2;
+        ctrl = (ctrl & 0xFFFFFCFF) | ((env->rcyc - 1) << 8);
+    } else {
+        ctrl &= 0xFFFFFFFD;
+    }
+    pcr = (env->cde << 16) | env->cpc;
+    sqwc = (env->tqwc << 16) | env->sqwc;
+    rbor = (s32)env->rbadr;
+    rbsr = env->rbsize;
+    *(volatile s32 *)0x1000E000 = ctrl;
+    *(volatile s32 *)0x1000E020 = pcr;
+    *(volatile s32 *)0x1000E030 = sqwc;
+    *(volatile s32 *)0x1000E050 = rbor;
+    *(volatile s32 *)0x1000E040 = rbsr;
+    D_0028D9C8 = *(GsDef_00186410 *)env;
+    return 0;
+}
 
 void *func_00186410(void *arg0) {
     *(GsDef_00186410 *)arg0 = D_0028D9C8;
@@ -852,9 +1155,24 @@ s32 func_00186BA0(u32 *arg0, u32 arg1) {
     return (temp_v0 >> 8) & 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186BB8);
+/* sceDevVu0IsRunning: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186BD0);
+s32 func_00186BB8(void) {
+    u32 s;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(s));
+    return (s & 0xF) == 1;
+}
+
+/* sceDevVu0Pause: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_00186BD0(void) {
+    u32 s;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
+    s |= 0x2;
+    __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
+}
 
 s32 func_00186BE8(void) {
     s32 ret;
@@ -889,16 +1207,77 @@ s32 func_00186C48(void) {
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186C98);
+/* sceDevVu0PutStop: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186CC8);
+void func_00186C98(s32 on) {
+    u32 s;
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186CF8);
+    __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
+    if (on == 1) {
+        s |= 0x4;
+    } else {
+        s &= ~0x4;
+    }
+    __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186D08);
+/* sceDevVu0PutDbf: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186D18);
+void func_00186CC8(s32 on) {
+    u32 s;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
+    if (on == 1) {
+        s |= 0x8;
+    } else {
+        s &= ~0x8;
+    }
+    __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
+}
+
+/* sceDevVu0GetStop: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00186CF8(void) {
+    u32 s;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
+    return (s >> 2) & 1;
+}
+
+/* sceDevVu0GetDbf: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00186D08(void) {
+    u32 s;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
+    return (s >> 3) & 1;
+}
+
+/* sceDevVu0GetStat: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00186D18(void) {
+    u32 s;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(s));
+    if (s & 0x2) {
+        return 1;
+    }
+    if (s & 0x4) {
+        return 2;
+    }
+    if (s & 0x8) {
+        return 3;
+    }
+    return (s & 0x1) ? 4 : 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186D58);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186D68);
+/* sceDevVu0GetTpc: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+u32 func_00186D68(void) {
+    u32 t;
+
+    __asm__ __volatile__("cfc2.ni %0, $vi26" : "=r"(t));
+    return t & 0xFFFF;
+}
