@@ -478,7 +478,6 @@ typedef struct {
     u8 pad18[4];
 } Cell_001E27D0;
 
-extern s32 func_001E2A60(s32, s32, s32, s32, s32, s32, u8 *, u8 *, s32, void *, void *, s32, s32);
 
 static inline Cell_001E27D0 *cell_001E27D0(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
@@ -576,7 +575,134 @@ void func_001E27D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2A60);
+typedef struct Cell_001E2A60 {
+    u8 pad[0x16];
+    u8 terrain;
+    u8 distance;
+    u8 tail[4];
+} Cell_001E2A60;
+
+typedef struct Object_001E2A60 {
+    u8 pad[0x44];
+    u8 owner;
+    u8 state;
+} Object_001E2A60;
+
+static inline s32 valid_001E2A60(s32 x, s32 y) {
+    if (x < 0 || x >= 7 || y < 0) {
+        return 0;
+    }
+    return y < 7;
+}
+
+static inline Cell_001E2A60 *cell_001E2A60(s32 x, s32 y) {
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return NULL;
+    }
+    return (Cell_001E2A60 *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+}
+
+static inline s32 terrain_001E2A60(s32 x, s32 y) {
+    Cell_001E2A60 *cell = cell_001E2A60(x, y);
+    s32 terrain;
+    if (cell != NULL) {
+        terrain = cell->terrain;
+    } else {
+        terrain = -1;
+    }
+    return terrain;
+}
+
+static inline s32 distance_001E2A60(s32 x, s32 y) {
+    Cell_001E2A60 *cell = cell_001E2A60(x, y);
+    if (cell != NULL) {
+        return cell->distance;
+    }
+    return 0xFF;
+}
+
+static inline void set_distance_001E2A60(s32 x, s32 y, s32 distance) {
+    Cell_001E2A60 *cell = cell_001E2A60(x, y);
+    if (cell != NULL) {
+        cell->distance = distance;
+    }
+}
+
+static inline s32 visited_001E2A60(s32 x, s32 y, u8 *pathX, u8 *pathY, s32 count) {
+    s32 i;
+    for (i = 0; i < count; i++) {
+        if (x == pathX[i] && y == pathY[i]) {
+            break;
+        }
+    }
+    return i < count;
+}
+
+void func_001E2A60(s32 arg0, s32 arg1, s32 arg2, s32 x, s32 y, s32 limit,
+                   u8 *oldX, u8 *oldY, s32 oldCount, u8 *pathX, u8 *pathY,
+                   s32 depth, s32 allowance) {
+    Object_001E2A60 *object;
+    s32 terrain;
+    s32 i;
+    s32 nextDepth;
+
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return;
+    }
+    object = (Object_001E2A60 *)func_001E36E0(x, y);
+    terrain = terrain_001E2A60(x, y);
+    if (depth > 0) {
+        for (i = 0; i < oldCount; i++) {
+            if (x == oldX[i] && y == oldY[i]) {
+                return;
+            }
+        }
+        if (object != NULL) {
+            s32 owner = func_00250360(object->owner, object->state);
+            if (arg1 != 0 && owner != arg2) {
+                return;
+            }
+            if (object->state == 0 && object->owner == arg2) {
+                return;
+            }
+        }
+    }
+    pathX[depth] = x;
+    pathY[depth] = y;
+    if (object != NULL || terrain != 8 || arg0 != 0) {
+        if (distance_001E2A60(x, y) > oldCount + depth) {
+            set_distance_001E2A60(x, y, oldCount + depth);
+        }
+    }
+    if (object != NULL || (terrain == 8 && arg0 == 0)) {
+        if (oldCount + depth > 0) {
+            allowance--;
+            if (allowance <= 0) {
+                return;
+            }
+        }
+    }
+    nextDepth = ++depth;
+    if (nextDepth > limit) {
+        return;
+    }
+    if (!visited_001E2A60(x + 1, y, pathX, pathY, nextDepth)) {
+        func_001E2A60(arg0, arg1, arg2, x + 1, y, limit, oldX, oldY,
+                      oldCount, pathX, pathY, nextDepth, allowance);
+    }
+    if (!visited_001E2A60(x - 1, y, pathX, pathY, nextDepth)) {
+        func_001E2A60(arg0, arg1, arg2, x - 1, y, limit, oldX, oldY,
+                      oldCount, pathX, pathY, nextDepth, allowance);
+    }
+    if (!visited_001E2A60(x, y + 1, pathX, pathY, nextDepth)) {
+        func_001E2A60(arg0, arg1, arg2, x, y + 1, limit, oldX, oldY,
+                      oldCount, pathX, pathY, nextDepth, allowance);
+    }
+    if (!visited_001E2A60(x, y - 1, pathX, pathY, nextDepth)) {
+        func_001E2A60(arg0, arg1, arg2, x, y - 1, limit, oldX, oldY,
+                      oldCount, pathX, pathY, nextDepth, allowance);
+    }
+}
 
 void func_001E2FB0(s32 arg0, s32 arg1, s32 arg2) {
     func_001E2FC0(arg0, arg1, arg2, 1);

@@ -131,7 +131,106 @@ s32 func_00228970(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_00228AD0);
+s32 func_00228AD0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
+    extern f32 D_00298BA0[];
+    extern f32 D_00298BA8[];
+    s16 *state;
+    f32 divisor;
+    f32 sum_x;
+    f32 sum_z;
+    s16 progress;
+    s16 entry;
+    s16 location;
+    s32 offset;
+    s16 side;
+    s16 selected;
+    s16 i;
+    s16 skipped;
+    u8 *point;
+    Side_00228660 *pt;
+
+    state = (s16 *)&D_00299E10;
+    switch (*(s8 *)0x01ED5372) {
+    case 1:
+        if (*(s16 *)0x01ED0060 == 0) {
+            *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
+            *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
+        }
+        *(s16 *)0x01ED0060 += 0x10;
+        if (*(s16 *)0x01ED0060 >= 0x100) {
+            *(s16 *)0x01ED0060 = 0x100;
+        }
+        progress = *(s16 *)0x01ED0060;
+        *(f32 *)0x01ED0040 =
+            (*(f32 *)0x01ED0050 * (f32)(0x100 - progress)) / 256.0f +
+            ((f32)progress * D_00298BA0[arg1 * 13]) / 256.0f;
+        progress = *(s16 *)0x01ED0060;
+        *(f32 *)0x01ED0048 =
+            (*(f32 *)0x01ED0058 * (f32)(0x100 - progress)) / 256.0f +
+            ((f32)progress * D_00298BA8[arg1 * 13]) / 256.0f;
+        if (*(s16 *)0x01ED0060 >= 0x100) {
+            *(s16 *)0x01ED0060 = 0;
+            *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
+            *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
+            *(s8 *)0x01ED5372 += 1;
+        }
+        break;
+    case 2:
+        if (*(s16 *)0x01ED0060 == 0) {
+            sum_x = 0.0f;
+            sum_z = 0.0f;
+            side = (s16)arg0;
+            *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
+            skipped = 0;
+            i = 0;
+            pt = &((Side_00228660 *)D_00298BA0)[(s16)arg1];
+            *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
+            for (; i < arg3; i++) {
+                entry = *arg2;
+                if (side == 0 && pt->slots[i] == 2) {
+                    location = D_00299020[side][(s16)entry].special;
+                } else {
+                    location = D_00299020[side][(s16)entry].normal;
+                }
+                selected = (s16)location;
+                if (selected != 7) {
+                    point = (u8 *)D_00298BA0 + selected * 0x34;
+                    sum_x += *(f32 *)point;
+                    sum_z += *(f32 *)(point + 8);
+                } else {
+                    skipped = (s16)1;
+                }
+                arg2++;
+            }
+            if (skipped) {
+                arg3 = (s16)(arg3 - 1);
+            }
+            divisor = (f32)arg3;
+            *(f32 *)0x01ED01C8 = sum_x / divisor;
+            *(f32 *)0x01ED01D0 = sum_z / divisor;
+        }
+        progress = *(s16 *)0x01ED0060;
+        *(f32 *)0x01ED0040 =
+            (*(f32 *)0x01ED0050 * (f32)(0x100 - progress)) / 256.0f +
+            (*(f32 *)0x01ED01C8 * (f32)progress) / 256.0f;
+        progress = *(s16 *)0x01ED0060;
+        *(f32 *)0x01ED0048 =
+            (*(f32 *)0x01ED0058 * (f32)(0x100 - progress)) / 256.0f +
+            (*(f32 *)0x01ED01D0 * (f32)progress) / 256.0f;
+        *(s16 *)0x01ED0060 += 8;
+        if (*(s16 *)0x01ED0060 > 0x100) {
+            *(s16 *)0x01ED0060 = 0;
+            *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
+            *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
+            *(s8 *)0x01ED5372 = 0;
+            *(s8 *)0x01ED5375 = 0;
+            state[0x61] = 0;
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_00228F50);
 
