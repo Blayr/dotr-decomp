@@ -172,7 +172,19 @@ void func_0018B580(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B628);
+s64 func_0018B628(void *arg0) {
+    s32 i;
+    s64 r;
+
+    i = 0;
+    while ((r = *(volatile s64 *)0x10002000) < 0 && !(*(volatile s32 *)0x10002010 & 0x4000)) {
+        if (i++ > 5000) {
+            func_0018EF98(*(s32 *)((u8 *)arg0 + 0x858));
+            i = 0;
+        }
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B6D8);
 

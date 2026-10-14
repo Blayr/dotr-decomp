@@ -988,6 +988,5 @@ u64 func_0017BC20(u64);
 
 extern s32 D_002BC940;
 
-s64 func_0018B628(void *);
 
 #endif
