@@ -1447,7 +1447,391 @@ void func_001AAFA0(s32 arg0) {
     ((Flags2E_001AAFA0 *)(data + 0x22E))->bit3 = (arg0 == 2) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AB1D0);
+typedef struct Flags2D_001AB1D0 {
+    u8 first : 3;
+    u8 second : 3;
+    u8 high : 2;
+} Flags2D_001AB1D0;
+
+typedef struct Flags2E_001AB1D0 {
+    u8 value : 3;
+    u8 bit3 : 1;
+    u8 high : 4;
+} Flags2E_001AB1D0;
+
+extern u8 D_0031747D;
+
+#define F2D ((Flags2D_001AB1D0 *)(data + 0x22D))
+#define F2E ((Flags2E_001AB1D0 *)(data + 0x22E))
+#define RESULT (*(s32 *)(data + 0x210))
+#define CODE (*(u16 *)(data + 0x21C))
+
+s32 func_001AB1D0(void) {
+    s8 *data = (s8 *)&D_00317250;
+    s32 prev;
+    s32 cancel;
+    s32 cmd;
+    s32 res;
+    s32 old;
+    s32 mode;
+
+    if (((&D_0031747D)[1] & 7)) {
+        cmd = 5;
+        cancel = 0;
+        res = 0;
+        prev = F2E->value;
+        if (func_001FF300() != 0) {
+            return 0;
+        }
+        mode = F2D->second;
+        switch (mode) {
+        case 0:
+            switch (F2E->value) {
+            case 1:
+                F2E->value = 2;
+            case 2:
+            case 3:
+            case 4:
+                CODE = func_0023C770(F2E->value - 2);
+                res = func_001AC290(F2D->second, CODE, &RESULT);
+                F2E->value = 2;
+                switch (CODE & 0xFF00) {
+                case 0:
+                    if (res != 0 && func_00203A40(0, 0, 0xF0) != 0) {
+                        func_00217710(0, 4);
+                        F2E->value = 0;
+                        RESULT = -1;
+                        cancel = 1;
+                    }
+                    break;
+                case 0x100:
+                    F2E->value = 5;
+                    break;
+                case 0x700:
+                    F2E->bit3 = 0;
+                    F2E->value = 3;
+                    break;
+                }
+                break;
+            case 5:
+                res = 1;
+                if (func_00203A40(0, 0, 0xF0) != 0) {
+                    func_00217710(0, 4);
+                    F2E->value = 0;
+                    RESULT = -1;
+                }
+                break;
+            }
+            break;
+        case 1:
+        case 2:
+            switch (F2E->value) {
+            case 1:
+                if (mode == 1) {
+                    func_0023C560(1);
+                    F2E->value = 2;
+                    break;
+                }
+                res = 2;
+                RESULT = 0x9C9;
+                if (func_00203A40(0, 0, 0xA000) != 0) {
+                    old = F2E->bit3;
+                    if (func_00203A40(0, 0, 0x8000) != 0) {
+                        F2E->bit3 = 1;
+                    } else {
+                        F2E->bit3 = 0;
+                    }
+                    if (F2E->bit3 != old) {
+                        func_00217710(0, 3);
+                    }
+                } else if (func_00203A40(0, 0, 0xC0) != 0) {
+                    func_00217710(0, 4);
+                    if (F2E->bit3) {
+                        func_0023C560(1);
+                        F2E->value = 2;
+                    } else {
+                        F2E->value = 0;
+                        RESULT = -1;
+                        cancel = 1;
+                    }
+                } else if (func_00203A40(0, 0, 0x20) != 0) {
+                    func_00217710(0, 5);
+                    F2E->value = 0;
+                    RESULT = -1;
+                    cancel = 1;
+                }
+                break;
+            case 2:
+            case 3:
+            case 4:
+                CODE = func_0023C560(F2E->value - 2);
+                res = func_001AC290(F2D->second, CODE, &RESULT);
+                F2E->value = 2;
+                switch (CODE & 0xFF00) {
+                case 0:
+                    if (res == 0) {
+                    } else if (res == 2) {
+                        if (func_00203A40(0, 0, 0xA000) != 0) {
+                            old = F2E->bit3;
+                            if (func_00203A40(0, 0, 0x8000) != 0) {
+                                F2E->bit3 = 1;
+                            } else {
+                                F2E->bit3 = 0;
+                            }
+                            if (F2E->bit3 != old) {
+                                func_00217710(0, 3);
+                            }
+                        } else if (func_00203A40(0, 0, 0xC0) != 0) {
+                            func_00217710(0, 4);
+                            if (F2E->bit3) {
+                                F2E->value = 4;
+                            } else if (F2D->second == 1) {
+                                cancel = 1;
+                                F2E->value = 0;
+                                RESULT = -1;
+                            } else {
+                                prev = F2E->value = 1;
+                                F2E->bit3 = 1;
+                            }
+                        } else if (func_00203A40(0, 0, 0x20) != 0) {
+                            func_00217710(0, 5);
+                            if (F2D->second == 1) {
+                                cancel = 1;
+                                F2E->value = 0;
+                                RESULT = -1;
+                            } else {
+                                prev = F2E->value = 1;
+                                F2E->bit3 = 1;
+                            }
+                        }
+                    } else if (res == 3) {
+                        if (func_00203A40(0, 0, 0xF0) != 0) {
+                            func_00217710(0, 4);
+                            F2E->value = 4;
+                        }
+                    } else {
+                        if (func_00203A40(0, 0, 0xF0) != 0) {
+                            func_00217710(0, 4);
+                            if (F2D->second == 1) {
+                                cancel = 1;
+                                F2E->value = 0;
+                                RESULT = -1;
+                            } else {
+                                prev = F2E->value = 1;
+                                F2E->bit3 = 1;
+                            }
+                        }
+                    }
+                    break;
+                case 0x100:
+                    F2E->value = 5;
+                    break;
+                case 0x700:
+                    F2E->bit3 = 0;
+                    F2E->value = 3;
+                    break;
+                }
+                break;
+            case 5:
+                res = 1;
+                if (func_00203A40(0, 0, 0xF0) != 0) {
+                    func_00217710(0, 4);
+                    F2E->value = 0;
+                    RESULT = -1;
+                }
+                break;
+            }
+            break;
+        case 3:
+            switch (F2E->value) {
+            case 1:
+                F2E->value = 2;
+            case 2:
+            case 3:
+            case 4:
+                CODE = func_0023CC50(F2E->value - 2);
+                res = func_001AC290(F2D->second, CODE, &RESULT);
+                F2E->value = 2;
+                switch (CODE & 0xFF00) {
+                case 0:
+                    if (res != 0 && func_00203A40(0, 0, 0xF0) != 0) {
+                        func_00217710(0, 4);
+                        F2E->value = 0;
+                        RESULT = -1;
+                        cancel = 1;
+                    }
+                    break;
+                case 0x100:
+                case 0x200:
+                case 0x300:
+                case 0x400:
+                case 0x500:
+                    F2E->value = 5;
+                    break;
+                case 0x700:
+                    F2E->bit3 = 0;
+                    F2E->value = 3;
+                    break;
+                }
+                break;
+            case 5:
+                res = 1;
+                if (func_00203A40(0, 0, 0xF0) != 0) {
+                    func_00217710(0, 4);
+                    F2E->value = 0;
+                    RESULT = -1;
+                }
+                break;
+            }
+            break;
+        case 4:
+            switch (F2E->value) {
+            case 1:
+                F2E->value = 2;
+            case 2:
+            case 3:
+            case 4:
+                CODE = func_0023C8B0(F2E->value - 2);
+                res = func_001AC290(F2D->second, CODE, &RESULT);
+                F2E->value = 2;
+                switch (CODE & 0xFF00) {
+                case 0:
+                    if (res != 0) {
+                        if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
+                            func_00217710(0, 4);
+                            F2E->value = 0;
+                            RESULT = -1;
+                            cancel = 1;
+                        }
+                    }
+                    break;
+                case 0x100:
+                    F2E->value = 5;
+                    break;
+                case 0x700:
+                    F2E->bit3 = 0;
+                    F2E->value = 3;
+                    break;
+                }
+                break;
+            case 5:
+                res = 1;
+                if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
+                    func_00217710(0, 4);
+                    F2E->value = 0;
+                    RESULT = -1;
+                }
+                break;
+            }
+            break;
+        case 5:
+            switch (F2E->value) {
+            case 1:
+                F2E->value = 2;
+            case 2:
+            case 3:
+            case 4:
+                CODE = func_0023CA10(F2E->value - 2);
+                res = func_001AC290(F2D->second, CODE, &RESULT);
+                F2E->value = 2;
+                switch (CODE & 0xFF00) {
+                case 0:
+                    if (res != 0) {
+                        res = 1;
+                        if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
+                            func_00217710(0, 4);
+                            F2E->value = 0;
+                            RESULT = -1;
+                            cancel = 1;
+                        }
+                    }
+                    break;
+                case 0x100:
+                case 0x600:
+                    F2E->value = 5;
+                    break;
+                case 0x700:
+                    F2E->bit3 = 0;
+                    F2E->value = 3;
+                    break;
+                }
+                break;
+            case 5:
+                res = 1;
+                if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
+                    func_00217710(0, 4);
+                    F2E->value = 0;
+                    RESULT = -1;
+                }
+                break;
+            }
+            break;
+        case 6:
+            switch (F2E->value) {
+            case 1:
+                F2E->value = 2;
+            case 2:
+            case 3:
+            case 4:
+                CODE = func_0023C3F0(F2E->value - 2);
+                res = func_001AC290(F2D->second, CODE, &RESULT);
+                if (RESULT == 0x9B2) {
+                    RESULT = -1;
+                }
+                F2E->value = 2;
+                switch (CODE & 0xFF00) {
+                case 0:
+                    if (res != 0 && func_00203A40(0, 0, 0xF0) != 0) {
+                        func_00217710(0, 4);
+                        F2E->value = 0;
+                        RESULT = -1;
+                        cancel = 1;
+                    }
+                    break;
+                case 0x100:
+                    F2E->value = 0;
+                    RESULT = -1;
+                    break;
+                case 0x700:
+                    F2E->bit3 = 0;
+                    F2E->value = 3;
+                    break;
+                }
+                break;
+            }
+            break;
+        }
+        if (RESULT < 0) {
+            func_001E4530();
+            return (cancel != 0) ? 2 : 1;
+        }
+        switch (res) {
+        case 1:
+        case 3:
+            cmd = 6;
+            break;
+        case 2:
+            if (F2E->bit3) {
+                RESULT |= 0x8000;
+            } else {
+                RESULT &= 0xFFFF7FFF;
+            }
+            if (F2E->value != prev) {
+                F2E->bit3 = 0;
+            }
+            cmd = 7;
+            break;
+        }
+        func_001E42C0(cmd, 0, 0, RESULT);
+        return 0;
+    }
+    return -1;
+}
+
+#undef F2D
+#undef F2E
+#undef RESULT
+#undef CODE
 
 s32 func_001AC290(s32 arg0, s32 arg1, s32 *arg2) {
     s32 alt;
@@ -1562,7 +1946,6 @@ typedef struct Block_001AC560 {
 } Block_001AC560;
 
 void func_001AAAF0(s32, s32);
-s32 func_001AB1D0(void);
 extern s32 D_003173B0;
 extern Block_001AC560 D_00317449;
 
