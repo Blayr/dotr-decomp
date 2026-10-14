@@ -46,7 +46,34 @@ s32 func_00193DD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00193EA8);
+typedef struct McDirBuf_00193EA8 {
+    s32 n1;
+    s32 n2;
+    u8 *d1;
+    u8 *d2;
+    u8 b1[0x40];
+    u8 b2[0x40];
+} McDirBuf_00193EA8;
+
+void func_00193EA8(void *arg0) {
+    McDirBuf_00193EA8 *p;
+    u8 *d;
+    s32 i;
+
+    p = (McDirBuf_00193EA8 *)((u32)arg0 | 0x20000000);
+    if (p->n1 != 0) {
+        d = p->d1;
+        for (i = 0; i < p->n1; i++) {
+            *d++ = p->b1[i];
+        }
+    }
+    if (p->n2 != 0) {
+        d = p->d2;
+        for (i = 0; i < p->n2; i++) {
+            *d++ = p->b2[i];
+        }
+    }
+}
 
 s32 func_00193F38(s32 arg0, s32 *arg1, s32 arg2) {
     u8 *b_D_00315C40;
