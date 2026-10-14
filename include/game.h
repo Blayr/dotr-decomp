@@ -713,8 +713,8 @@ extern s32 D_0028DA50;
 s32 func_0017E028(s32, void *, s32, s32, s32, s32); /* extern */
 void *func_0017E4D0(s32);                           /* extern */
 
-extern s32 func_0019B788;
-extern s32 func_0019B870;
+s32 func_0019B788(void *cookie, char *buf, s32 n);
+s64 func_0019B870(void *cookie, s64 offset, s32 whence);
 
 typedef union { f32 value; u32 word; } fshape;
 
