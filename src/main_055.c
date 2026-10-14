@@ -703,7 +703,135 @@ void func_002032C0(s32 arg0, s8 arg1, s64 arg2) {
     entry->low = arg2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203320);
+typedef struct Pad_00203320 {
+    u16 buttons[3];
+    u8 act[4];
+    u8 data[12];
+    u8 pad16[2];
+    s32 press[16];
+    s8 mode;
+    s8 base;
+    s8 low : 4;
+    s8 count : 4;
+    s8 state : 6;
+    s8 pressed : 1;
+    s8 ready : 1;
+} Pad_00203320;
+
+static inline void reset_00203320(Pad_00203320 *pad) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        pad->buttons[i] = 0;
+    }
+    for (i = 0; i < 16; i++) {
+        pad->press[i] = -pad->base;
+    }
+    pad->pressed = 0;
+    for (i = 0; i < 4; i++) {
+        pad->act[i] = 0x80;
+    }
+    pad->ready = 0;
+    for (i = 0; i < 12; i++) {
+        pad->data[i] = 0;
+    }
+}
+
+void func_00203320(void) {
+    extern s32 func_00192CD0();
+    s32 port;
+    Pad_00203320 *pad;
+    u8 *base;
+    s32 state;
+    s32 id;
+    s32 offs;
+
+    base = D_003259C0;
+    for (port = 0; port < 2; port++, base += 0x5C) {
+        pad = (Pad_00203320 *)(base + 0x200);
+        state = func_00192BB8(port, 0);
+        if (state == 0) {
+            reset_00203320(pad);
+            pad->state = 0;
+        }
+        if (state == 2 || state == 6) {
+            switch (pad->state) {
+            case 0:
+                for (state = 0; state < 3; state++) {
+                    pad->buttons[state] = 0;
+                }
+                for (state = 0; state < 16; state++) {
+                    pad->press[state] = -pad->base;
+                }
+                pad->pressed = 0;
+                for (state = 0; state < 4; state++) {
+                    pad->act[state] = 0x80;
+                }
+                pad->ready = 0;
+                for (state = 0; state < 12; state++) {
+                    pad->data[state] = 0;
+                }
+                pad->count = func_00192F98(port, 0, 4, -1);
+                id = func_00192F98(port, 0, 1, 0);
+                if (id == 0) {
+                    break;
+                }
+                pad->mode = id;
+                id = func_00192F98(port, 0, 2, 0);
+                if (id > 0) {
+                    pad->mode = id;
+                }
+                if (pad->count != 0) {
+                    pad->state = 1;
+                } else {
+                    pad->state = 5;
+                }
+                break;
+            case 1:
+                pad->state = 5;
+                for (offs = 0; offs < pad->count; offs++) {
+                    id = func_00192F98(port, 0, 4, offs);
+                    if (id == 7 && func_001930D0(port, 0, offs, 3) == 1) {
+                        pad->mode = id;
+                        pad->state = 2;
+                        break;
+                    }
+                }
+                break;
+            case 2:
+                id = func_00192CD0(port, 0);
+                if (id != 0) {
+                    if (id == 1) {
+                        pad->state = 1;
+                    }
+                } else {
+                    pad->pressed = 1;
+                    pad->state = 3;
+                }
+                break;
+            case 3:
+                pad->state = 5;
+                if (func_00193488(port, 0) == 1 && func_001934E8(port, 0) == 1) {
+                    pad->state = 4;
+                }
+                break;
+            case 4:
+                id = func_00192CD0(port, 0);
+                if (id != 0) {
+                    if (id == 1) {
+                        pad->state = 3;
+                    }
+                } else {
+                    pad->ready = 1;
+                    pad->state = 5;
+                }
+                break;
+            case 5:
+                break;
+            }
+        }
+    }
+}
 
 typedef struct Flags_00203840 {
     s8 status : 6;
