@@ -1131,6 +1131,7 @@ s32 *func_001977B8(void);
 s32 func_001977D8(s32 *ptr, s32 fd, s32 pos, s32 whence);
 void func_00197838(void *arg0);
 void *func_00197990(s32 arg0, s32 arg1);
+void *func_001979F8(s32 reent_ptr, s32 arg1, s32 arg2);
 s32 func_00197BC0(s32 arg0);
 s32 func_00197C18(s32 arg0);
 s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state);

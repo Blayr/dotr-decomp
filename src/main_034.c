@@ -113,7 +113,83 @@ void *func_00197990(s32 arg0, s32 arg1) {
     return temp_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001979F8);
+typedef struct ma_chunk {
+    u32 prev_size;
+    u32 size;
+    struct ma_chunk *fd;
+    struct ma_chunk *bk;
+} ma_chunk;
+
+#define ma_mem2chunk(mem) ((ma_chunk *)((char *)(mem) - 8))
+#define ma_chunk2mem(p) ((void *)((char *)(p) + 8))
+#define ma_chunksize(p) ((p)->size & ~(0x1 | 0x2))
+#define ma_set_head(p, s) ((p)->size = (s))
+#define ma_set_head_size(p, s) ((p)->size = (((p)->size & 0x1) | (s)))
+#define ma_set_inuse_bit_at_offset(p, s) (((ma_chunk *)(((char *)(p)) + (s)))->size |= 0x1)
+#define ma_chunk_at_offset(p, s) ((ma_chunk *)(((char *)(p)) + (s)))
+#define ma_request2size(req) \
+    (((unsigned long)((req) + (4 + 15)) < (unsigned long)(16 + 15)) ? 16 : (((req) + (4 + 15)) & ~(15)))
+#define ma_long_sub_size_t(x, y) \
+    (sizeof(long) > sizeof(u32) && x < y ? -(long)(y - x) : (long)(x - y))
+
+void *func_001979F8(s32 reent_ptr, s32 arg1, s32 arg2) {
+    u32 alignment = arg1;
+    u32 bytes = arg2;
+    u32 nb;
+    char *m;
+    ma_chunk *p;
+    char *brk;
+    ma_chunk *newp;
+    u32 newsize;
+    u32 leadsize;
+    ma_chunk *remainder;
+    long remainder_size;
+
+    if (alignment <= 16)
+        return (void *)func_00197EB8(reent_ptr, bytes);
+
+    if (alignment < 16)
+        alignment = 16;
+
+    nb = ma_request2size(bytes);
+    m = (char *)func_00197EB8(reent_ptr, nb + alignment + 16);
+
+    if (m == NULL)
+        return NULL;
+
+    func_00198A08(reent_ptr);
+
+    p = ma_mem2chunk(m);
+
+    if ((((unsigned long)(m)) % alignment) == 0) {
+    } else {
+        brk = (char *)ma_mem2chunk(((unsigned long)(m + alignment - 1)) & -alignment);
+        if ((long)(brk - (char *)(p)) < (long)16)
+            brk = brk + alignment;
+
+        newp = (ma_chunk *)brk;
+        leadsize = brk - (char *)(p);
+        newsize = ma_chunksize(p) - leadsize;
+
+        ma_set_head(newp, newsize | 0x1);
+        ma_set_inuse_bit_at_offset(newp, newsize);
+        ma_set_head_size(p, leadsize);
+        func_00196BE0(reent_ptr, (s32)ma_chunk2mem(p));
+        p = newp;
+    }
+
+    remainder_size = ma_long_sub_size_t(ma_chunksize(p), nb);
+
+    if (remainder_size >= (long)16) {
+        remainder = ma_chunk_at_offset(p, nb);
+        ma_set_head(remainder, remainder_size | 0x1);
+        ma_set_head_size(p, nb);
+        func_00196BE0(reent_ptr, (s32)ma_chunk2mem(remainder));
+    }
+
+    func_00198A88(reent_ptr);
+    return ma_chunk2mem(p);
+}
 
 s32 func_00197BC0(s32 arg0) {
     s32 temp_s1;
