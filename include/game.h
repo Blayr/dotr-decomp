@@ -789,7 +789,6 @@ void func_0018F808();
 
 s32 func_0018BC80(void *);
 s32 func_0018F3A8(void *, s32, s32);
-s32 func_0018F550(void *);
 extern char D_002BCA18[];
 
 s32 func_0017B5A0(s32, s32 *);
@@ -811,5 +810,7 @@ extern s32 *D_0028CAC4;
 
 void func_0017C8D0(s32);
 void func_0017B910(s32);
+
+void func_0018F5C8(void *);                      /* extern */
 
 #endif
