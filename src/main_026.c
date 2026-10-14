@@ -139,7 +139,43 @@ s32 func_00184D48(s16 arg0, s16 arg1, s16 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00184E10);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184FF8);
+typedef struct {
+    u64 testa;
+    u64 testaaddr;
+    u64 prim;
+    u64 primaddr;
+    u64 rgbaq;
+    u64 rgbaqaddr;
+    u64 xyz2a;
+    u64 xyz2aaddr;
+    u64 xyz2b;
+    u64 xyz2baddr;
+    u64 testb;
+    u64 testbaddr;
+} sceGsClear;
+
+s32 func_00184FF8(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b, u8 a, u32 z) {
+    sceGsClear *cp = arg0;
+
+    cp->testaaddr = 0x47;
+    cp->testa = 0x30000;
+    cp->prim = 6;
+    cp->primaddr = 0;
+    cp->rgbaqaddr = 1;
+    cp->rgbaq = (u64)r | ((u64)g << 8) | ((u64)b << 16) | ((u64)a << 24) | ((u64)0x3F800000 << 32);
+    cp->xyz2a = (u64)(x << 4) | ((u64)(y << 4) << 16) | ((u64)z << 32);
+    cp->xyz2aaddr = 5;
+    cp->xyz2baddr = 5;
+    cp->xyz2b = (u64)((x + w) << 4) | ((u64)((y + h) << 4) << 16) | ((u64)z << 32);
+    cp->testbaddr = 0x47;
+    if (ztest) {
+        cp->testb = ((u64)1 << 16) | ((u64)(ztest & 3) << 17);
+    } else {
+        cp->testb = 0x30000;
+    }
+    __asm__ volatile("sync");
+    return 6;
+}
 
 s32 func_00185100(void *arg0) {
     u32 i;
