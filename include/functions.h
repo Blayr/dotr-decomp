@@ -1136,6 +1136,7 @@ i2b_Bigint *func_00198CB8(void *ptr, const char *s, s32 nd0, s32 nd, u32 y9);
 s32 func_00198DE8(u32 x);
 s32 func_00198E68(u32 *y);
 i2b_Bigint *func_00198F28(void *ptr, s32 i);
+i2b_Bigint *func_00199170(void *arg0, i2b_Bigint *b, s32 k);
 s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b);
 double func_001995C0(double _x);
 double func_001999B0(i2b_Bigint *a, i2b_Bigint *b);

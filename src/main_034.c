@@ -279,7 +279,36 @@ i2b_Bigint *func_00198F28(void *ptr, s32 i) {
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00198F60);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00199170);
+i2b_Bigint *func_00199170(void *arg0, i2b_Bigint *b, s32 k) {
+    p5_reent *ptr = arg0;
+    i2b_Bigint *b1, *p5, *p51;
+    s32 i;
+
+    if ((i = k & 3))
+        b = func_00198BB0(ptr, b, D_002BD274[i], 0);
+
+    if (!(k >>= 2))
+        return b;
+    if (!(p5 = ptr->_p5s)) {
+        p5 = ptr->_p5s = func_00198F28(ptr, 625);
+        p5->next = 0;
+    }
+    for (;;) {
+        if (k & 1) {
+            b1 = func_00198F60(ptr, b, p5);
+            func_00198B80(ptr, b);
+            b = b1;
+        }
+        if (!(k >>= 1))
+            break;
+        if (!(p51 = p5->next)) {
+            p51 = p5->next = func_00198F60(ptr, p5, p5);
+            p51->next = 0;
+        }
+        p5 = p51;
+    }
+    return b;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199270);
 
