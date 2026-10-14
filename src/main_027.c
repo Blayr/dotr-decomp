@@ -9,7 +9,23 @@ void func_00186FC8(void) {
     *(volatile s32 *)0x10003820 = 6;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00186FF0);
+s32 func_00186FF0(s32 arg0) {
+    s32 r;
+
+    r = func_001870C8();
+    if (r == 0) {
+        return 0;
+    }
+    if (r == 1) {
+        return 0;
+    }
+    if (arg0 == 0) {
+        *(volatile s32 *)0x10003810 = 2;
+    } else if (arg0 == 1) {
+        *(volatile s32 *)0x10003810 = 4;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187058);
 

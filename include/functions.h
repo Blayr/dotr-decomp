@@ -944,6 +944,7 @@ s32 func_00186BA0(u32 *arg0, u32 arg1);
 s32 func_00186BE8(void);
 s32 func_00186C48(void);
 void func_00186FC8(void);
+s32 func_00186FF0(s32 arg0);
 u32 func_00187098(u32 arg0, u32 arg1, u32 arg2);
 s32 func_001870B8(void);
 u32 func_001870C8(void);
