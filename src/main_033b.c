@@ -128,7 +128,59 @@ nl_mglue *func_00196880(s32 d, s32 n) {
     return g;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_001968F8);
+typedef struct sf_sbuf { u8 *_base; s32 _size; } sf_sbuf;
+typedef struct sf_FILE {
+    u8 *_p;
+    s32 _r;
+    s32 _w;
+    s16 _flags;
+    s16 _file;
+    sf_sbuf _bf;
+    s32 _lbfsize;
+    u8 pad1C[0x14];
+    sf_sbuf _ub;
+    u8 pad38[0xC];
+    sf_sbuf _lb;
+    u8 pad4C[0x8];
+    void *_data;
+} sf_FILE;
+typedef struct sf_glue { struct sf_glue *_next; s32 _niobs; sf_FILE *_iobs; } sf_glue;
+typedef struct sf_reent { s32 _errno; u8 pad04[0x34]; s32 __sdidinit; u8 pad3C[0x19C]; sf_glue __sglue; } sf_reent;
+
+void *func_001968F8(void *arg0) {
+    sf_reent *d = arg0;
+    sf_FILE *fp;
+    s32 n;
+    sf_glue *g;
+
+    if (!d->__sdidinit)
+        func_00196A30(d);
+    for (g = &d->__sglue;; g = g->_next) {
+        for (fp = g->_iobs, n = g->_niobs; --n >= 0; fp++)
+            if (fp->_flags == 0)
+                goto found;
+        if (g->_next == NULL && (g->_next = (sf_glue *)func_00196880((s32)d, 4)) == NULL)
+            break;
+    }
+    d->_errno = 12;
+    return NULL;
+
+found:
+    fp->_flags = 1;
+    fp->_p = NULL;
+    fp->_w = 0;
+    fp->_r = 0;
+    fp->_bf._base = NULL;
+    fp->_bf._size = 0;
+    fp->_lbfsize = 0;
+    fp->_file = -1;
+    fp->_ub._base = NULL;
+    fp->_ub._size = 0;
+    fp->_lb._base = NULL;
+    fp->_lb._size = 0;
+    fp->_data = d;
+    return fp;
+}
 
 s32 func_001969F0(s32 ptr) {
     return func_00197488(ptr, func_00196708);

@@ -1093,6 +1093,7 @@ void func_001966F0(void);
 s32 func_001966F8(void);
 void func_00196820(void *arg0, s16 arg1, s16 arg2, s32 arg3);
 nl_mglue *func_00196880(s32 d, s32 n);
+void *func_001968F8(void *arg0);
 s32 func_001969F0(s32 ptr);
 void func_00196A10(void);
 void func_00196A30(void *arg0);
