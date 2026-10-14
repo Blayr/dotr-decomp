@@ -136,6 +136,10 @@ fi
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
+# Sony's assembler put no nop between an inline `mfc0` and an instruction reading its result
+# (func_0017C3B0: `mfc0 $2,$12; xori $2,$2,1`); binutils pads it as a coprocessor hazard.
+# Written as its word, gas doesn't track it.
+perl -pi -e 's/^(\s+)mfc0\s+\$(\d+),\s*\$(\d+)\s*$/sprintf("%s.word 0x%08X", $1, 0x40000000 | ($2 << 16) | ($3 << 11))/e' "$TMP/out.s"
 # GCC loads a double constant into a GPR (soft-float doubles) as `li.d $N,<value>`; binutils
 # refuses it for the r5900, Sony's assembler expanded it as `dli` does (libgcc2's __floatdidf).
 perl -pi -e 's/^(\s+)li\.d\s+\$(\d+),\s*(\S+)\s*$/sprintf("%sdli\t\$%s,0x%016X\n", $1, $2, unpack("Q<", pack("d<", $3)))/e' "$TMP/out.s"
