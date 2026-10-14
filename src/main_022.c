@@ -173,7 +173,16 @@ void func_0017CC38(s32 arg0) {
     func_0017BD10(0x10, sp0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CC60);
+s32 *func_0017CC60(s32 arg0) {
+    void *temp_a0;
+
+    (*(s32 *)(&D_00310980)) = arg0;
+    temp_a0 = (u8 *)&D_00310980 + 0x10;
+    (*(s32 *)((u8 *)(&D_00310980) + 4)) = 0;
+    (*(void **)((u8 *)(&D_00310980) + 0xC)) = temp_a0;
+    (*(void **)((u8 *)(&D_00310980) + 8)) = temp_a0;
+    return &D_00310980;
+}
 
 void func_0017CC88(void *arg0) {
     void *temp_a0;

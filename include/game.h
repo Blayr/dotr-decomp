@@ -106,7 +106,6 @@ f32 func_001A6C60(f32);
 extern s32 D_00350340;
 extern s32 D_003505F8;
 
-void func_00195108(s32 arg0, s16 arg1);
 
 
 
@@ -755,12 +754,17 @@ void *func_0017E4D0(s32);                           /* extern */
 
 u32 func_001870C8();                                /* extern */
 extern s32 func_0019B788;
-s32 func_0019B7F0(void *, s32, s32);
 extern s32 func_0019B870;
 
 typedef union { f32 value; u32 word; } fshape;
 
 s32 func_001A2260(f32 *, void *);               /* extern */
 s32 func_001A3008(s32, s32, s32, s64);          /* extern */
+
+extern s32 D_00310980;
+s32 func_0017B8E0(void *);           /* extern */
+extern s32 func_00190A00;
+s32 func_001977D8(s32, s16, s32, s32);  /* extern */
+s64 func_001A0478(s32, s16, s32, s32);              /* extern */
 
 #endif
