@@ -1746,7 +1746,63 @@ s32 func_00262680(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_002626F0);
+s32 func_002626F0(s32 arg0, s32 arg1, s32 arg2) {
+    switch (arg0) {
+    case 0:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 0) ? 1 : -1;
+    case 1:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 1) ? 1 : -1;
+    case 2:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 2) ? 1 : -1;
+    case 3:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 3) ? 1 : -1;
+    case 4:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 4) ? 1 : -1;
+    case 5:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 5) ? 1 : -1;
+    case 6:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 6) ? 1 : -1;
+    case 7:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 7) ? 1 : -1;
+    case 8:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 8) ? 1 : -1;
+    case 9:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 9) ? 1 : -1;
+    case 10:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 10) ? 1 : -1;
+    case 11:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 11) ? 1 : -1;
+    case 12:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 12) ? 1 : -1;
+    case 13:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 13) ? 1 : -1;
+    case 14:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 14) ? 1 : -1;
+    case 15:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 15) ? 1 : -1;
+    case 16:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 16) ? 1 : -1;
+    case 17:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 17) ? 1 : -1;
+    case 18:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 18) ? 1 : -1;
+    case 19:
+        return ((func_001E0700(arg1, arg2) & 0x1F) == 19) ? 1 : -1;
+    case 20:
+        return (func_001E0830(arg1, arg2) == 0) ? 1 : -1;
+    case 21:
+        return (func_001E0830(arg1, arg2) == 1) ? 1 : -1;
+    case 22:
+        return (func_001E0830(arg1, arg2) == 2) ? 1 : -1;
+    case 23:
+        return (func_001E0830(arg1, arg2) == 3) ? 1 : -1;
+    case 24:
+        return (func_001E0830(arg1, arg2) == 4) ? 1 : -1;
+    case 25:
+        return (func_001E0830(arg1, arg2) == 5) ? 1 : -1;
+    }
+    return 0;
+}
 
 typedef struct {
     s32 kind;
