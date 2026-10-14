@@ -760,6 +760,8 @@ double func_001A65C0(double x) {
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65F8);
 
+f32 __kernel_sinf(f32 x, f32 y, s32 iy); /* func_001A61F0, called by name */
+
 f32 func_001A6898(f32 x) {
     f32 y[2], z = 0.0f;
     s32 n, ix;
@@ -774,11 +776,11 @@ f32 func_001A6898(f32 x) {
         case 0:
             return func_001A57D8(y[0], y[1]);
         case 1:
-            return -func_001A61F0(y[0], y[1], 1);
+            return -__kernel_sinf(y[0], y[1], 1);
         case 2:
             return -func_001A57D8(y[0], y[1]);
         default:
-            return func_001A61F0(y[0], y[1], 1);
+            return __kernel_sinf(y[0], y[1], 1);
         }
     }
 }
@@ -830,16 +832,16 @@ f32 func_001A6A88(f32 x) {
     do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
     ix &= 0x7fffffff;
     if (ix <= 0x3f490fd8) {
-        return func_001A61F0(x, z, 0);
+        return __kernel_sinf(x, z, 0);
     } else {
         n = func_001A5338(x, y);
         switch (n & 3) {
         case 0:
-            return func_001A61F0(y[0], y[1], 1);
+            return __kernel_sinf(y[0], y[1], 1);
         case 1:
             return func_001A57D8(y[0], y[1]);
         case 2:
-            return -func_001A61F0(y[0], y[1], 1);
+            return -__kernel_sinf(y[0], y[1], 1);
         default:
             return -func_001A57D8(y[0], y[1]);
         }
