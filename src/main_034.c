@@ -360,7 +360,7 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A690);
 
 s32 func_0019AC30(void *arg0) {
     if (((*(u16 *)((u8 *)arg0 + 0xC)) & 9) == 9) {
-        return func_00196708();
+        return func_00196708(arg0);
     }
     return 0;
 }
