@@ -937,4 +937,6 @@ extern s32 D_002BCA78;
 
 typedef struct mcmp_Bigint { struct mcmp_Bigint *next; s32 k, maxwds, sign, wds; u32 x[1]; } mcmp_Bigint;
 
+extern double D_002BD288[]; /* mprec tens[] */
+
 #endif

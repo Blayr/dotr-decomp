@@ -162,7 +162,17 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_00199828);
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_001999B0);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00199A80);
+double func_00199A80(s32 dig) {
+    double v = 1.0;
+
+    if (dig < 24)
+        return D_002BD288[dig];
+    while (dig > 0) {
+        v *= 10;
+        dig--;
+    }
+    return v;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199AF0);
 
