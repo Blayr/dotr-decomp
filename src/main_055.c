@@ -755,7 +755,6 @@ typedef struct Flags_002038F0 {
 } Flags_002038F0;
 
 extern u8 D_003259C0[];
-s32 func_00192B38(s32, s32, void *);
 
 s32 func_002038F0(void) {
     u8 data[20];

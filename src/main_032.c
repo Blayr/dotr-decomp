@@ -170,7 +170,16 @@ u8 *func_00192A88(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192AE8);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192B38);
+s32 func_00192B38(s32 port, s32 slot, u8 *data) {
+    u8 *p;
+
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    p = func_00192A88(port, slot);
+    func_00198790(data, p, *(s32 *)(p + 0x60));
+    return *(s32 *)(p + 0x60);
+}
 
 s32 func_00192BB8(s32 port, s32 slot) {
     u8 *p;
