@@ -53,7 +53,10 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C490);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C4F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C560);
+void func_0017C560(void) {
+    func_0017B680();
+    __asm__ volatile("sync");
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C580);
 

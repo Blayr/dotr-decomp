@@ -628,4 +628,6 @@ s32 func_0018B6D8(s32, s32);
 
 s32 func_0018DEE8(s32, s32, s32, s32, s32);
 
+void func_0017B680(void);
+
 #endif
