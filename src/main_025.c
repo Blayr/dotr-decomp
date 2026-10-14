@@ -175,7 +175,16 @@ INCLUDE_ASM("asm/nonmatchings/main_025", func_00183D60);
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183D70);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183D80);
+s32 func_00183D80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 r;
+
+    if ((u32)(arg0 - 13) >= 35) {
+        r = -1;
+    } else {
+        r = func_00183D70(arg0, arg1, arg2, arg3, arg4);
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183DB0);
 
