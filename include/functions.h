@@ -1116,6 +1116,7 @@ s32 func_001A2F68(double arg_a);
 double func_001A3008(fp_class_type class, u32 sign, s32 exp, u64 frac);
 f32 func_001A3038(double arg_a);
 u32 func_001A3090(double arg_a);
+double func_001A4088(double x);
 f32 func_001A43A8(f32 x);
 f32 func_001A4760(f32 y, f32 x);
 f32 func_001A4948(f32 x, f32 y);
