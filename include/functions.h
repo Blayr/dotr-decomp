@@ -3027,6 +3027,7 @@ void *func_0026FC90(s32 arg0, s32 arg1);
 s32 func_0026FCE0(s32 arg0);
 void func_0026FD30(s32 arg0, s32 *arg1);
 s32 func_0026FE20(s32 arg0);
+s32 func_0026FE70(void *src, void *obj, s32 mode);
 s32 func_00270030(void *src, void *obj, s32 mode);
 s32 func_00270260(void *src, void *state, s32 mode);
 s32 func_00271630(void *arg0, void *arg1, s32 arg2);

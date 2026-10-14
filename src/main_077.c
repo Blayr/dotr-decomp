@@ -367,7 +367,97 @@ s32 func_0026FE20(s32 arg0) {
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026FE70);
+typedef struct {
+    u32 unused;
+    u32 value1;
+    u32 value2;
+    s32 flags;
+} Input_0026FE70;
+
+typedef struct {
+    u8 pad0[4];
+    u16 state;
+    u8 type;
+    u8 pad7;
+    u8 pad8[0x18];
+    s32 once;
+    u8 pad24[0xAC];
+    s32 count;
+} Object_0026FE70;
+
+s32 func_0026FE70(void *src, void *obj, s32 mode) {
+    extern void func_0024F430(u32, s32);
+    s32 words[4];
+    s32 *message = words;
+    Input_0026FE70 *input = src;
+    Object_0026FE70 *target = obj;
+    s32 count;
+    u32 color;
+
+    message[0] = 0x3E7;
+    message[1] = 0;
+    message[2] = 0;
+    message[3] = 0;
+
+    if (mode >= 0) {
+        func_00255960(obj);
+        func_00255AC0(obj, 0x21A);
+        message[0] = 0x25A;
+        message[1] = input->value1;
+        message[2] = input->value2;
+        message[3] = 0;
+        func_0027EB00((u8 *)obj + 0x110, message, 0);
+        goto common_return;
+    }
+
+    switch (target->state) {
+    case 0:
+        goto no_state;
+    default:
+        goto active;
+    }
+
+no_state:
+    if (func_00255B50(obj) == 1) {
+        message[0] = 0x21A;
+        message[1] = input->value1;
+        message[2] = input->value2;
+        message[3] = 0;
+        *(u8 *)((u8 *)obj + 6) = func_00255A30(message, obj);
+        target->once = 0;
+        target->state = target->state + 1;
+    }
+
+    message[0] = 0x25A;
+    message[1] = input->value1;
+    message[2] = input->value2;
+    message[3] = 0;
+    func_0027EB00((u8 *)obj + 0x110, message, -1);
+    return 1;
+
+active:
+    if (func_001F51D0(target->type) != 0) {
+        count = target->count;
+        target->count = count + 1;
+        switch (count) {
+        case 1:
+            func_00217710(1, 0x4C);
+            break;
+        case 0xF:
+            func_00217710(1, 0x4A);
+            break;
+        }
+        return 1;
+    } else {
+        color = input->value1;
+        func_0024F430(color >> 8, color & 0xFF);
+        func_001E4530();
+        return 0;
+    }
+
+common_return:
+    return 1;
+}
 
 typedef struct {
     u32 unused;
