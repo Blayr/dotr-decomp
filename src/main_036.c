@@ -746,7 +746,24 @@ INCLUDE_ASM("asm/nonmatchings/main_036", func_001A57D8);
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A5948);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A61F0);
+f32 func_001A61F0(f32 x, f32 y, s32 iy) {
+    f32 z, r, v;
+    s32 ix;
+
+    do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
+    ix &= 0x7fffffff;
+    if (ix < 0x32000000) {
+        if ((s32)x == 0)
+            return x;
+    }
+    z = x * x;
+    v = z * x;
+    r = (f32)0.0083333342336118221282958984375 + z * ((f32)-0.0001984127084142528474330902099609375 + z * ((f32)0.0000027557315434023621492087841033935546875 + z * ((f32)-0.00000002505076057701671743416227400302886962890625 + z * (f32)0.000000000158969108710049766841621021740138530731201171875)));
+    if (iy == 0)
+        return x + v * ((f32)-0.166666679084300994873046875 + z * r);
+    else
+        return x - ((z * ((f32)0.5000000298023223876953125 * y - v * r) - y) - v * (f32)-0.166666679084300994873046875);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6318);
 
