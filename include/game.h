@@ -802,4 +802,8 @@ extern s32 D_0028CDF8;
 
 extern s32 D_0028D930;
 
+extern s32 D_0028F750;
+extern u8 D_002BD000;
+extern s32 D_0028F770;
+
 #endif
