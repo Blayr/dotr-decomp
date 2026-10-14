@@ -868,6 +868,7 @@ void func_001900B0(void *arg0);
 s32 func_00190800(s32 arg0);
 s32 *func_00193A00(s32 **arg0, s32 **arg1);
 void func_00194200(s32 arg0);
+void func_00194328(s32 arg0);
 s32 func_00195070(s32 arg0);
 void func_00195088(s32 arg0);
 s32 func_001950A0(const char *s);

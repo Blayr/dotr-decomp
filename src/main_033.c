@@ -19,7 +19,20 @@ void func_00194200(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194248);
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00194328);
+void func_00194328(s32 arg0) {
+    s32 temp_a0;
+
+    temp_a0 = arg0 | 0x20000000;
+    if (D_00315C68 != NULL) {
+        *D_00315C68 = (*(s32 *)temp_a0);
+    }
+    if (D_00315C6C != NULL) {
+        *D_00315C6C = (*(s32 *)((u8 *)temp_a0 + 4));
+    }
+    if (D_00315C70 != NULL) {
+        *D_00315C70 = (*(s32 *)((u8 *)temp_a0 + 0x90));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194380);
 

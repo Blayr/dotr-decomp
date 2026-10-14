@@ -688,4 +688,8 @@ s32 func_00198A88(s32);                             /* extern */
 
 s32 func_0018F6A8(void *);                      /* extern */
 
+extern s32 *D_00315C68;
+extern s32 *D_00315C6C;
+extern s32 *D_00315C70;
+
 #endif
