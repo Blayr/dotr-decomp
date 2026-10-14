@@ -760,4 +760,6 @@ extern s32 func_0019B788;
 extern s32 func_0019B7F0;
 extern s32 func_0019B870;
 
+typedef union { f32 value; u32 word; } fshape;
+
 #endif

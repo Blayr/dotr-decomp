@@ -969,6 +969,7 @@ void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0019DC70(s32 arg0, void *arg1);
 void func_001A2340(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001A2858(s32 arg0, s32 arg1);
+f32 func_001A6970(f32 x);
 s32 func_001A6BE8(s64 arg0, s32 arg1);
 void func_001A6C80(void);
 void func_001A7380(void);

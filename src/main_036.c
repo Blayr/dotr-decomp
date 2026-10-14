@@ -105,7 +105,12 @@ INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65F8);
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6898);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6970);
+f32 func_001A6970(f32 x) {
+    u32 ix;
+    do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
+    do { fshape sf_u; sf_u.word = (ix & 0x7fffffff); (x) = sf_u.value; } while (0);
+    return x;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6998);
 
