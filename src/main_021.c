@@ -109,7 +109,29 @@ void func_0017BD70(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BE00);
+s64 func_0017BE00(void) {
+    volatile s32 done;
+    volatile s64 val;
+    s32 eie;
+
+    done = 0;
+    func_0017BC50((void *)&done, (s64 *)&val);
+    eie = func_001843E0();
+    *(volatile s32 *)0x1000F000 = 4;
+    __asm__ volatile("sync");
+    if (eie) {
+        func_00184428();
+    }
+    while (!(*(volatile s32 *)0x1000F000 & 4) && done == 0) {
+    }
+    eie = func_001843E0();
+    *(volatile s32 *)0x1000F000 = 4;
+    __asm__ volatile("sync");
+    if (eie) {
+        func_00184428();
+    }
+    return val;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BEA8);
 
