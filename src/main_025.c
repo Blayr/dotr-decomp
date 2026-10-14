@@ -14,7 +14,9 @@ INCLUDE_ASM("asm/nonmatchings/main_025", func_00183310);
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183538);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183558);
+s32 func_00183558(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    return func_00183310(arg0, arg1, arg2, arg3, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183578);
 
