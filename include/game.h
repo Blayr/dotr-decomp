@@ -983,4 +983,6 @@ s32 func_00185100(void *);
 
 s64 func_0017BE00();
 
+s32 func_0018C680(void *, s32);
+
 #endif
