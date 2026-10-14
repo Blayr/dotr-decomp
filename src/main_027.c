@@ -252,7 +252,20 @@ void func_001878B0(void *arg0) {
     *tag += (u32)(end - tag) >> 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001878E0);
+void func_001878E0(void *p0, void *p1, void *p2) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%1)\n\
+	lqc2	$vf5,0x10(%1)\n\
+	lqc2	$vf6,0x20(%1)\n\
+	lqc2	$vf7,0x30(%1)\n\
+	lqc2	$vf8,0x0(%2)\n\
+	vmulax.xyzw	$ACC,$vf4,$vf8x\n\
+	vmadday.xyzw	$ACC,$vf5,$vf8y\n\
+	vmaddaz.xyzw	$ACC,$vf6,$vf8z\n\
+	vmaddw.xyzw	$vf9,$vf7,$vf8w\n\
+	sqc2	$vf9,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1), "r" (p2));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187910);
 
