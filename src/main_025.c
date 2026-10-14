@@ -303,7 +303,11 @@ int func_00183DF0(void) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183E00);
+int func_00183E00(void) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x59\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_00183E10(void) {
     if (func_0017BD40() == 0x02000000) {

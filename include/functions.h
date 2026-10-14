@@ -991,6 +991,7 @@ int func_00183DC0(void);
 int func_00183DD0(void);
 int func_00183DE0(void);
 int func_00183DF0(void);
+int func_00183E00(void);
 s32 func_00183E10(void);
 s32 func_00183E50(void);
 s32 func_001843E0(void);
