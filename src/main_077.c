@@ -1201,7 +1201,179 @@ s32 func_002724C0(s32 arg0) {
     return func_00271740(9, arg0) ? 5 : 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002724F0);
+s32 func_002724F0(s32 phase, s32 *res) {
+    extern s32 func_001E1640();
+    extern s32 func_001E1580();
+    extern s32 func_001E14B0();
+    extern s32 func_001E1030();
+    extern s32 func_001E1520();
+    extern s32 func_001E15E0();
+    extern s32 func_001DE550();
+    extern s32 func_001DE560();
+    s32 row;
+    s32 a;
+    s32 v;
+    s32 pos;
+    s32 col;
+    s32 player;
+    s32 b;
+    s32 c;
+    s32 vy;
+    s32 other;
+    s32 hp;
+    s32 hi;
+    s32 lo;
+    s32 n;
+    s32 vx;
+    s32 i;
+    s32 mine;
+    s32 w;
+
+    player = func_001DE540();
+    switch (phase) {
+    case 0:
+        if (func_00271740(5, player)) {
+            res[0] = 8;
+            res[1] = 0;
+            res[2] = player;
+            res[3] = 100;
+            return ((phase + 1) << 16) | 1;
+        }
+        return (phase + 1) << 16;
+    case 1:
+        return ((phase + 1) << 16) | func_0024FEB0(res);
+    case 2:
+        pos = func_001E1090(player, 0);
+        row = 0;
+        a = 0;
+        b = 0;
+        c = 0;
+        hi = pos >> 8;
+        lo = pos & 0xFF;
+        for (; row < 7; row++) {
+            for (col = 0; col < 7; col++) {
+                v = func_001E3790(row, col);
+                if (v < 0) {
+                    continue;
+                }
+                vx = v >> 8;
+                vy = v & 0xFF;
+                if (player == func_0024DE70(vx, vy)) {
+                    continue;
+                }
+                if (func_00271950(lo, hi, row, col, func_002724C0(player)) == 0) {
+                    continue;
+                }
+                if ((func_001E0700(vx, vy) >> 5) == 0) {
+                    if (func_00271740(0x10, player)) {
+                        if (func_002720F0(player, func_001E0700(vx, vy) & 0x1F) && vy != 0) {
+                            a = func_0024C780(a, vx, vy);
+                        }
+                    }
+                    if (func_00271740(0xF, player) && func_00272050(player, func_001E0700(vx, vy) & 0x1F) &&
+                        vy != 0 && func_001E1640(vx, vy) == 0) {
+                        b = func_0024C780(b, vx, vy);
+                    }
+                }
+                if (func_00271740(0xD, player) && func_001E2100(vx, vy, 4) == 0 && vy != 0) {
+                    c = func_0024C780(c, vx, vy);
+                }
+            }
+        }
+        if (a > 0 || b > 0 || c > 0) {
+            res[0] = 0x71;
+            res[1] = a | 0x80000000;
+            res[2] = b;
+            res[3] = c;
+            return ((phase + 1) << 16) | 1;
+        }
+        return (phase + 1) << 16;
+    case 3:
+        for (i = 1; i <= 5; i++) {
+            if (func_001E2100(player, i, 4) == 1) {
+                func_00215B10(player, func_001E1030(player, i), 0, 4);
+            } else {
+                func_00215B10(player, func_001E1030(player, i), 0, 2);
+            }
+        }
+        n = func_00266DF0(0x55);
+        for (i = 1; i <= 11; i++) {
+            mine = func_001E1090(player, i);
+            if (func_00266DF0(0x47) <= 0) {
+                if ((hp = func_001E1580(player, i)) > 0 && player == func_00250360(player, i) && func_001E14B0(player, i) == 0 && hp < 0xFF) {
+                    if (n > 0) {
+                        func_001E1520(player, i, func_00250860(0, hp - 2));
+                    } else {
+                        func_001E1520(player, i, hp - 1);
+                    }
+                }
+                if ((hp = func_001E1580((player == 0) ? 1 : 0, i)) > 0 && player == func_00250360((player == 0) ? 1 : 0, i) &&
+                    func_001E14B0((player == 0) ? 1 : 0, i) == 0 && hp < 0xFF) {
+                    if (n > 0) {
+                        func_001E1520((player == 0) ? 1 : 0, i, func_00250860(0, hp - 2));
+                    } else {
+                        func_001E1520((player == 0) ? 1 : 0, i, hp - 1);
+                    }
+                }
+            }
+            other = func_001E1090((player == 0) ? 1 : 0, 0);
+            if (func_001DF540(player, i)) {
+                if (!(func_00271740(0xF, (player == 0) ? 1 : 0) &&
+                      func_00272050((player == 0) ? 1 : 0, func_001E0700(player, i) & 0x1F) &&
+                      func_00271950(other & 0xFF, other >> 8, mine & 0xFF, mine >> 8,
+                                    func_002724C0((player == 0) ? 1 : 0))) &&
+                    func_00266A80(player, i) == 0) {
+                    func_001E15E0(player, i, 0);
+                }
+            }
+            mine = func_001E1090((player == 0) ? 1 : 0, i);
+            other = func_001E1090(player, 0);
+            if (func_001DF540((player == 0) ? 1 : 0, i)) {
+                if (!(func_00271740(0xF, player) &&
+                      func_00272050(player, func_001E0700((player == 0) ? 1 : 0, i) & 0x1F) &&
+                      func_00271950(other & 0xFF, other >> 8, mine & 0xFF, mine >> 8, func_002724C0(player))) &&
+                    func_00266A80((player == 0) ? 1 : 0, i) == 0) {
+                    func_001E15E0((player == 0) ? 1 : 0, i, 0);
+                }
+            }
+        }
+        for (i = 0; i <= 11; i++) {
+            func_001E1420(player, i, 0);
+            func_001E1420((player == 0) ? 1 : 0, i, 0);
+        }
+        return (phase + 1) << 16;
+    case 4:
+        for (i = 0; i < 8; i++) {
+            v = func_0024E410(player, i);
+            if (v < 0) {
+                continue;
+            }
+            vy = v & 0xFF;
+            vx = v >> 8;
+            w = func_001E3790(vy, vx);
+            if (w >= 0) {
+                if (player == func_00250360(w >> 8, w & 0xFF)) {
+                    if (func_001E22B0(vy, vx) != 8) {
+                        return (phase + 1) << 16;
+                    }
+                }
+            } else {
+                if (func_001E22B0(vy, vx) != 8) {
+                    return (phase + 1) << 16;
+                }
+            }
+        }
+        return ((phase + 1) << 16) | 5;
+    case 5:
+        if (player != func_001DE550()) {
+            if (func_001DE560() >= 100) {
+                return 0xFF0008;
+            }
+        }
+        return 0xFF0000;
+    }
+    return 0xFF0000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00272CC0);
 
