@@ -2175,7 +2175,121 @@ s32 func_0026AC90(s32 arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026AE70);
+s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+    s32 value;
+    s32 position;
+    s32 result;
+    s32 id;
+    s32 special;
+
+    special = 0;
+    position = func_001E1090(arg0, arg1);
+    id = func_0024DE70(arg0, arg1);
+    if (!arg1) {
+        return 0;
+    }
+    if (func_00271F90(arg0, arg1, position & 0xFF, position >> 8, 0xB) != 0) {
+        special = 1;
+    }
+    if (func_00267700(arg0, arg1) != 0) {
+        return 0;
+    }
+    switch (arg2) {
+    s32 fallback;
+    case 0: {
+        s32 value;
+        if ((value = func_0026AB80(id, 0x2C)) >= 0) {
+            if (1 == special) {
+                s32 position;
+                position = func_001E1090(id, 0);
+                func_00260490(position & 0xFF, position >> 8, 0, func_00271740(9, id), 1, 1, 0xB);
+                arg3[0] = 0xFE;
+                arg3[1] = 0;
+                arg3[2] = id << 8;
+                arg3[3] = 0x10;
+                result = 1;
+                break;
+            }
+            if ((fallback = func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
+                arg3[0] = 0x66;
+                arg3[1] = 1;
+                arg3[2] = fallback;
+                arg3[3] = 0;
+                result = 1;
+                break;
+            }
+            arg3[0] = 0x46;
+            arg3[1] = value;
+            arg3[2] = (arg0 << 8) | arg1;
+            arg3[3] = 0;
+            result = 0x10001;
+            break;
+        }
+        result = 0;
+        break;
+    }
+    default: {
+        s32 fallback;
+        if ((value = func_0026AB80(id, 0x4A)) >= 0) {
+            if (special == 1) {
+                s32 position;
+                position = func_001E1090(id, 0);
+                func_00260490(position & 0xFF, position >> 8, 0, func_00271740(9, id), 1, 1, 0xB);
+                arg3[0] = 0xFE;
+                arg3[1] = 0;
+                arg3[2] = id << 8;
+                arg3[3] = 0x10;
+                result = 1;
+                break;
+            }
+            if ((fallback = func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
+                arg3[0] = 0x66;
+                arg3[1] = 1;
+                arg3[2] = fallback;
+                result = 1;
+                arg3[3] = 0;
+                break;
+            }
+            arg3[0] = 0x47;
+            arg3[1] = value;
+            arg3[2] = (arg0 << 8) | arg1;
+            arg3[3] = 1;
+            result = 0x10001;
+            break;
+        }
+        if ((value = func_0026AB80(id, 0x23)) >= 0) {
+            if (special == 1) {
+                s32 position;
+                position = func_001E1090(id, 0);
+                func_00260490(position & 0xFF, position >> 8, 0, func_00271740(9, id), 1, 1, 0xB);
+                arg3[0] = 0xFE;
+                arg3[1] = 0;
+                arg3[2] = id << 8;
+                arg3[3] = 0x10;
+                result = 1;
+                break;
+            }
+            if ((fallback = func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
+                arg3[0] = 0x66;
+                arg3[1] = 1;
+                arg3[2] = fallback;
+                arg3[3] = 0;
+                result = 1;
+                break;
+            }
+            arg3[0] = 0x47;
+            arg3[1] = value;
+            arg3[2] = (arg0 << 8) | arg1;
+            arg3[3] = 0;
+            result = 1;
+            break;
+        }
+        result = 0;
+        break;
+    }
+    }
+    return result;
+}
 
 s32 func_0026B1F0(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     s32 s1;
