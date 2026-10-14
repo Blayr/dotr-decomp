@@ -940,7 +940,55 @@ _func_00189BC0_00189BE4:\n\
 	" :  : "r" (p0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00189C60);
+void func_00189C60(void *p0) {
+    __asm__ __volatile__("\n\
+	lw	$5,0x14(%0)\n\
+	lw	$6,0x18(%0)\n\
+	lw	$14,0x0(%0)\n\
+	lw	$13,0x4(%0)\n\
+	addiu	$12,$0,-0x1\n\
+	lw	$3,0x10(%0)\n\
+	sll	$2,$3,1\n\
+	mtsab	$13,0x0\n\
+_func_00189C60_00189C80:\n\
+	lw	$7,0x8(%0)\n\
+	addiu	$11,$0,-0x1\n\
+_func_00189C60_00189C88:\n\
+	ld	$8,0x0($5)\n\
+	ld	$9,0x0($6)\n\
+	pcpyld	$8,$9,$8\n\
+	qfsrv	$8,$8,$8\n\
+	pextlb	$9,$0,$8\n\
+	addi	$7,$7,-0x1\n\
+	addu	$5,$5,$3\n\
+	addu	$6,$6,$3\n\
+	lq	$8,0x0($14)\n\
+	paddh	$10,$9,$8\n\
+	pcgth	$9,$10,$0\n\
+	psrlh	$9,$9,15\n\
+	paddh	$10,$10,$9\n\
+	psrlh	$10,$10,1\n\
+	sq	$10,0x0($14)\n\
+	addu	$14,$14,$2\n\
+	bgtz	$7,_func_00189C60_00189C88\n\
+	addiu	$5,$5,0x140\n\
+	addiu	$6,$6,0x140\n\
+	lw	$7,0xC(%0)\n\
+	and	$10,$11,$7\n\
+	daddu	$11,$0,$0\n\
+	bnez	$10,_func_00189C60_00189C88\n\
+	lw	$5,0x14(%0)\n\
+	lw	$6,0x18(%0)\n\
+	lw	$14,0x0(%0)\n\
+	addiu	$5,$5,0x40\n\
+	addiu	$6,$6,0x40\n\
+	addiu	$14,$14,0x80\n\
+	.set noreorder\n\
+	bnez	$12,_func_00189C60_00189C80\n\
+	daddu	$12,$0,$0\n\
+	.set reorder\n\
+	" :  : "r" (p0));
+}
 
 void func_00189D10(void *p0) {
     __asm__ __volatile__("\n\

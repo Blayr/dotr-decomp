@@ -1039,6 +1039,7 @@ void func_00189910(void *p0);
 void func_001899C8(void *p0);
 void func_00189AC0(void *p0);
 void func_00189BC0(void *p0);
+void func_00189C60(void *p0);
 void func_00189D10(void *p0);
 void func_00189DF0(void *p0);
 void func_00189ED8(void *p0);
