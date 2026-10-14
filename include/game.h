@@ -207,7 +207,6 @@ s32 func_001A23B0(f32);
 void func_0020CDD0(void *, void *, void *);
 
 
-s32 func_0018EE68(void *);
 
 void func_00245340(void *);
 extern u8 D_00350600[];
