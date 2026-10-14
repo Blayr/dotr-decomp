@@ -295,7 +295,24 @@ _func_00188538_001885BC:\n\
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_001885C8);
+void func_001885C8(void) {
+    *(volatile int *)0x10003830 = 0;
+    *(volatile int *)0x10003820 = 0;
+    *(volatile int *)0x10003810 = 1;
+    __asm__ __volatile__("\n\
+	.set push\n\
+	.set noreorder\n\
+	cfc2	$8,$vi28\n\
+	ori	$8,$8,0x2\n\
+	.set pop\n\
+	ctc2	$8,$vi28\n\
+	sync.p\n\
+	" : : : "$8");
+    *(volatile __int128 *)0x10004000 = D_0028D9F0[0];
+    *(volatile __int128 *)0x10004000 = D_0028D9F0[1];
+}
+
+__asm__(".space 12");
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00188630);
 

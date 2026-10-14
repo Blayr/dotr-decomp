@@ -1002,4 +1002,6 @@ s32 func_0017DEB0(s32, s32, s32, s32, s32, s32, s32);
 extern s32 D_0028CA08;
 extern char D_00310D40[];
 
+extern __int128 D_0028D9F0[];
+
 #endif
