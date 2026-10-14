@@ -94,7 +94,57 @@ s32 func_001966F8(void) {
     return D_0028FA98;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196708);
+typedef struct ff_reent { u8 pad0[0x38]; s32 __sdidinit; } ff_reent;
+typedef struct ff_sbuf { u8 *_base; s32 _size; } ff_sbuf;
+typedef struct ff_FILE {
+    u8 *_p;
+    s32 _r;
+    s32 _w;
+    s16 _flags;
+    s16 _file;
+    ff_sbuf _bf;
+    s32 _lbfsize;
+    void *_cookie;
+    s32 (*_read)(void *, char *, s32);
+    s32 (*_write)(void *, const char *, s32);
+    u8 pad28[0x2C];
+    ff_reent *_data;
+} ff_FILE;
+
+s32 func_00196708(nl_FILE *arg0) {
+    ff_FILE *fp = (ff_FILE *)arg0;
+    u8 *p;
+    s32 n, t;
+
+    if (fp == NULL)
+        return func_00197488((u8 *)D_0028FA98, func_00196708);
+
+    do {
+        if (fp->_data == 0)
+            fp->_data = (ff_reent *)D_0028FA98;
+        if (!fp->_data->__sdidinit)
+            func_00196A30(fp->_data);
+    } while (0);
+
+    t = fp->_flags;
+    if ((t & 8) == 0 || (p = fp->_bf._base) == NULL)
+        return 0;
+    n = fp->_p - p;
+
+    fp->_p = p;
+    fp->_w = t & (1 | 2) ? 0 : fp->_bf._size;
+
+    while (n > 0) {
+        t = (*fp->_write)(fp->_cookie, (char *)p, n);
+        if (t <= 0) {
+            fp->_flags |= 0x40;
+            return -1;
+        }
+        p += t;
+        n -= t;
+    }
+    return 0;
+}
 
 void func_00196820(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
     (*(s32 *)((u8 *)arg0 + 0x54)) = arg3;
