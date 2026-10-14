@@ -56,6 +56,9 @@ s32 func_0024C7D0(u32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0024C870(s32 arg0) {
+    extern s32 func_001A2858(s32, s32);
+    extern s32 func_001A2EB0(s32);
+    extern s32 func_001A2F68(s32);
     s32 temp_s0;
     s32 var_s0;
     s32 var_s1;

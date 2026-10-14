@@ -11,6 +11,7 @@ f32 func_0017B340(u64 arg0) {
 }
 
 void func_0017B380(u32 arg0) {
+    extern s32 func_001A2858(s32, s32);
     s32 temp_v0;
     u64 value;
 
@@ -24,10 +25,12 @@ void func_0017B380(u32 arg0) {
 }
 
 s32 func_0017B3D0(void) {
+    extern s32 func_001A2E60();
     return func_001A2E60() < 0;
 }
 
 s32 func_0017B3F0(void) {
+    extern s32 func_001A2E60();
     return func_001A2E60() > 0;
 }
 

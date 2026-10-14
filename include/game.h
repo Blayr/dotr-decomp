@@ -9,7 +9,6 @@
 
 s32 func_00172370();                            /* extern */
 
-s32 func_001A2E60();                                /* extern */
 s32 func_00193808();                            /* extern */
 s32 func_0017B790(s32);                     /* extern */
 s32 func_0018E200();                            /* extern */
@@ -184,7 +183,6 @@ typedef void (*Callback_00286910)(void);
 f32 func_001A6C18(f32, f32);                        /* extern */
 
 s32 func_0024DF80(s32 arg0, void *arg1);
-s32 func_001A23B0(f32);
 
 
 
@@ -274,8 +272,6 @@ f32 func_001A6A88(f32);
 extern u64 D_00293EE0[];
 
 
-s32 func_001A2EB0(s32);                             /* extern */
-s32 func_001A2F68(s32);                             /* extern */
 
 void func_0027F5B0(void);
 f32 func_001A6B70(f32);
@@ -711,10 +707,6 @@ s32 func_0018EF48(s32, void *);    /* extern */
 s32 func_0017EA80(s32 *, s32, s32, s32 *, s32, s32 *, s32, s32, s32); /* extern */
 extern s8 D_002BD0A0;
 extern s32 D_00315CC0;
-s32 func_001A2190(void *);  /* extern */
-s32 func_001A2430(s32);                             /* extern */
-s32 func_001A2548(s64 *, s32 *);            /* extern */
-s32 func_001A25F8(s32 *, s32 *, s32 *); /* extern */
 
 
 s32 func_00187B90(s32, s32);                    /* extern */
@@ -753,8 +745,61 @@ extern s32 func_0019B870;
 
 typedef union { f32 value; u32 word; } fshape;
 
-s32 func_001A2260(f32 *, void *);               /* extern */
-s32 func_001A3008(s32, s32, s32, s64);          /* extern */
+/* libgcc fp-bit.c (main_036): Cygnus built it for the r5900 with US_SOFTWARE_GOFAST and
+   FLOAT_BIT_ORDER_MISMATCH, once for float (NO_NANS) and once for double. */
+typedef enum { CLASS_SNAN, CLASS_QNAN, CLASS_ZERO, CLASS_NUMBER, CLASS_INFINITY } fp_class_type;
+typedef struct { fp_class_type class; u32 sign; s32 normal_exp; u32 fraction; } fp_number_f;
+typedef struct { fp_class_type class; u32 sign; s32 normal_exp; u64 fraction; } fp_number_d;
+typedef union {
+    f32 value;
+    u32 value_raw;
+#if defined(__GNUC__) && !defined(__MWERKS__) && !defined(M2CTX) && !defined(PERMUTER)
+    struct {
+        u32 fraction : 23 __attribute__((packed));
+        u32 exp : 8 __attribute__((packed));
+        u32 sign : 1 __attribute__((packed));
+    } bits;
+#endif
+} fp_union_f;
+typedef union {
+    double value;
+    u64 value_raw;
+#if defined(__GNUC__) && !defined(__MWERKS__) && !defined(M2CTX) && !defined(PERMUTER)
+    struct {
+        u64 fraction : 52 __attribute__((packed));
+        u32 exp : 11 __attribute__((packed));
+        u32 sign : 1 __attribute__((packed));
+    } bits;
+#endif
+} fp_union_d;
+extern fp_number_d D_002BDF30; /* __thenan_df */
+#if defined(__GNUC__) && !defined(__MWERKS__) && !defined(M2CTX) && !defined(PERMUTER)
+/* fp-bit's INLINE predicates: a test of their int result compiles to xori/beqz */
+static __inline__ s32 fp_isnan_f(fp_number_f *x) { return x->class == CLASS_SNAN || x->class == CLASS_QNAN; }
+static __inline__ s32 fp_isinf_f(fp_number_f *x) { return x->class == CLASS_INFINITY; }
+static __inline__ s32 fp_iszero_f(fp_number_f *x) { return x->class == CLASS_ZERO; }
+static __inline__ s32 fp_isnan_d(fp_number_d *x) { return x->class == CLASS_SNAN || x->class == CLASS_QNAN; }
+static __inline__ s32 fp_isinf_d(fp_number_d *x) { return x->class == CLASS_INFINITY; }
+static __inline__ s32 fp_iszero_d(fp_number_d *x) { return x->class == CLASS_ZERO; }
+#endif
+s64 func_001A05E8(s64 u, s64 v);
+f32 func_001A2190(fp_number_f *src);
+void func_001A2260(fp_union_f *src, fp_number_f *dst);
+s32 func_001A23B0(f32 arg_a);
+double func_001A2430(fp_number_d *src);
+void func_001A2548(fp_union_d *src, fp_number_d *dst);
+fp_number_d *func_001A25F8(fp_number_d *a, fp_number_d *b, fp_number_d *tmp);
+double func_001A28B0(double arg_a, double arg_b);
+double func_001A2918(double arg_a, double arg_b);
+double func_001A2BC8(double arg_a, double arg_b);
+s32 func_001A2D40(fp_number_d *a, fp_number_d *b);
+s32 func_001A2E60(double arg_a, double arg_b);
+double func_001A2EB0(s32 arg_a);
+s32 func_001A2F68(double arg_a);
+double func_001A3008(fp_class_type class, u32 sign, s32 exp, u64 frac);
+f32 func_001A3038(double arg_a);
+u32 func_001A3090(double arg_a);
+
 
 extern s32 D_00310980;
 s32 func_0017B8E0(void *);           /* extern */
