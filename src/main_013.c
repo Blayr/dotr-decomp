@@ -2220,7 +2220,68 @@ s32 func_00159380(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00159760);
+s32 func_00159930(s32, s32); /* extern */
+s32 func_00159BE0(s32, s32, s32); /* extern */
+s32 func_0015A5F0(s32, void *); /* extern */
+void func_0015AB10(s32, void *, void *); /* extern */
+
+typedef struct {
+    u16 id;
+    u16 pad2;
+    s16 status;
+    u16 pad6;
+    u32 code;
+} Object_00159760;
+
+void func_00159760(void *arg0) {
+    u8 sp40[0x20];
+    u8 sp60[0x60];
+    Object_00159760 *obj;
+    s32 kind;
+    s32 pos;
+    s32 result;
+    u16 id;
+
+    obj = arg0;
+    id = obj->id;
+    kind = id >> 8;
+    pos = func_001E1090(id >> 8, id & 0xFF);
+    if (func_0027BBC0(obj->id >> 8, obj->id & 0xFF, 0) == 1) {
+        if (func_001DE6D0(kind) == 1) {
+            obj->status = 0x50A;
+        } else {
+            obj->status = 0x5FF;
+        }
+        return;
+    }
+    result = func_0015A5F0(kind, sp60);
+    if (result < 0) {
+        if (func_001DE6D0(kind) == 1) {
+            obj->status = 0x60A;
+        } else {
+            obj->status = 0x6FF;
+        }
+        obj->code = (u16)obj->code | (func_00159930(obj->id >> 8, obj->id & 0xFF) << 16);
+    } else {
+        if (result == 0) {
+            func_0015AB10(kind, sp40, sp60);
+        }
+        if ((sp60[0x3E] >> 5) == 0 && func_001E02F0(sp60, 0) > 0x5DC) {
+            if (func_001DE6D0(kind) == 1) {
+                obj->status = 0x60A;
+            } else {
+                obj->status = 0x6FF;
+            }
+            obj->code = (u16)obj->code | (func_00159BE0(kind, pos & 0xFF, pos >> 8) << 16);
+        }
+        if (func_001DE6D0(kind) == 1) {
+            obj->status = 0x60A;
+        } else {
+            obj->status = 0x6FF;
+        }
+        obj->code = (u16)obj->code | (func_00159930(obj->id >> 8, obj->id & 0xFF) << 16);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00159930);
 
