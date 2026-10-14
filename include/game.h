@@ -9,7 +9,6 @@
 
 
 s32 func_001ACC80(s32);                             /* extern */
-s32 func_001AEEB0(s32);                             /* extern */
 s32 func_001AF7E0(s32);                             /* extern */
 s32 func_001B11C0(s32);                             /* extern */
 s32 func_001C1B00(s32);                             /* extern */

@@ -541,7 +541,40 @@ void func_001AEE80(void) {
     func_00209D30(func_001AEEB0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AEEB0);
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001AEEB0;
+
+extern Vec4_001AEEB0 D_00291120;
+
+#pragma opt_lifetimes off
+
+s32 func_001AEEB0(s32 arg0) {
+    Vec4_001AEEB0 sp30;
+    s32 var_s0;
+    s32 var_s1;
+
+    var_s1 = arg0;
+    if (func_001F3130(0) == 0) {
+        return var_s1;
+    }
+    var_s0 = 3;
+    do {
+        sp30 = D_00291120;
+        sp30.z = (var_s0 == 4) ? 180.0f : -180.0f;
+        if (func_001F1370(var_s0) != 0) {
+            var_s1 = func_001EF8A0(var_s1, var_s0, &sp30, 0, 0, 0, 0);
+            sp30.x *= -1.0f;
+            var_s1 = func_001EF8A0(var_s1, var_s0, &sp30, 0, 0, 0, 0);
+        }
+        var_s0 += 1;
+    } while ((s32) var_s0 < 5);
+    return func_001DC560(var_s1);
+}
+#pragma opt_lifetimes reset
 
 s32 func_001AEFC0(s32 arg0) {
     return func_001AEFD0(arg0, 0);
