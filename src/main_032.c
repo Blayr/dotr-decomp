@@ -19,13 +19,25 @@ s32 func_00191EF8(void) {
     return temp_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00191F90);
+s32 func_00191F90(s32 arg0, s32 arg1, s32 arg2) {
+    D_0028F730 = 0;
+    return func_00192308(arg0, arg1, arg2, 5, &D_00315958);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00191FC0);
+s32 func_00191FC0(s32 arg0, s32 *arg1) {
+    D_0028F730 = 1;
+    return func_00192308(arg0, 0, 0, 1, arg1);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00191FF8);
+s32 func_00191FF8(s32 arg0) {
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192028);
+    return func_00192308(arg0, 0, 0, 9, &D_00315958);
+}
+
+s32 func_00192028(s32 arg0) {
+
+    return func_00192308(arg0, 0, 0, 4, &D_00315958);
+}
 
 s32 func_00192058(void) {
     D_0028F730 = 0;

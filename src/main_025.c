@@ -71,7 +71,25 @@ s32 func_00183B48(s32 arg0) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183BA8);
+u32 func_00183BA8(s32 arg0, s32 arg1) {
+    s32 *temp_v1;
+    s32 temp_s0;
+    u32 temp_a0;
+
+    temp_a0 = arg0 - 1;
+    if (temp_a0 >= 0xDU) {
+        return 0xFFFFFFFF;
+    }
+    temp_v1 = (&D_0028CDF8 + arg0);
+    temp_s0 = *temp_v1;
+    *temp_v1 = arg1;
+    if (temp_a0 < 3U) {
+        func_0017B590(arg0, &D_001842C0);
+    } else {
+        func_0017B5A0(arg0, &D_001842C0);
+    }
+    return temp_s0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C30);
 

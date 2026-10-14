@@ -641,8 +641,6 @@ s32 func_0017FEA0(s32, s32, s32);
 s32 func_001828C0(s32);
 s32 func_00190FF0(void *, const char *);
 s32 func_00191A58(s32);
-void func_00191F90(s32, s32, u32);
-s32 func_00191FC0(s32, u8 *);
 s32 func_0019BC90(const char *, const char *);
 s32 func_0019D9E0(s32);
 extern char D_0030F7F0[];
@@ -760,7 +758,6 @@ typedef struct {
 
 s32 func_001800D8(s32, s32, s32);
 s32 func_00191A58(s32);
-s32 func_00191FC0(s32, u8 *);
 s32 func_00192090(s32, s32, s32, s32 *);
 extern Float_00243DE0 D_0029B2F8;
 
