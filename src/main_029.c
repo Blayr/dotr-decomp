@@ -10,7 +10,29 @@ s32 func_0018A590(s32 arg0) {
     return func_0018B6D8(arg0, 3);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018A5B0);
+void func_0018A5B0(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy) {
+    if (*(s32 *)((u8 *)arg0 + 0x174) == 3) {
+        if (*(s32 *)((u8 *)arg0 + 0x178)) {
+            DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[0][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1] - 1;
+            DMV[1][0] = ((3 * mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[1][1] = ((3 * mvy + (mvy > 0)) >> 1) + dmvector[1] + 1;
+        } else {
+            DMV[0][0] = ((3 * mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[0][1] = ((3 * mvy + (mvy > 0)) >> 1) + dmvector[1] - 1;
+            DMV[1][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[1][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1] + 1;
+        }
+    } else {
+        DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
+        DMV[0][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1];
+        if (*(s32 *)((u8 *)arg0 + 0x174) == 1) {
+            DMV[0][1]--;
+        } else {
+            DMV[0][1]++;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018A738);
 
