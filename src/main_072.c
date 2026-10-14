@@ -1,6 +1,170 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024B310);
+#define B310_ATTACK(kind, last)                                                              \
+    if (func_00271F90(arg0, arg1, arg2, arg3, 0xB) != 0) {                                  \
+        func_00260490(pos & 0xFF, pos >> 8, 0, func_00271740(9, side), 1, 1, 0xB);          \
+        arg4[0] = 0xFE;                                                                      \
+        arg4[1] = 0;                                                                         \
+        arg4[2] = side << 8;                                                                 \
+        arg4[3] = 0x10;                                                                      \
+        return 1;                                                                            \
+    }                                                                                        \
+    if (func_00267700(arg0, arg1) != 0) {                                                    \
+        return 0;                                                                            \
+    }                                                                                        \
+    arg4[0] = kind;                                                                          \
+    arg4[1] = list[i];                                                                       \
+    arg4[2] = (arg0 << 8) | arg1;                                                            \
+    arg4[3] = last;                                                                          \
+    return 0x101;
+
+s32 func_0024B310(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, s32 arg5) {
+    extern s32 func_001E07C0();
+    s32 side;
+    s32 count;
+    s32 maskA;
+    u32 *info;
+    s32 y;
+    s32 pos;
+    s32 maskB;
+    s32 i;
+    s32 ret;
+    s32 list[5];
+    s32 cell;
+    s32 col;
+    s32 row;
+    s32 x;
+
+    side = func_0024DE70(arg0, arg1);
+    maskA = 0;
+    maskB = 0;
+    if (arg1 == 0) {
+        return 0;
+    }
+    if (!(arg5 & 0xFFFF)) {
+        if (func_00271A40((side == 0) ? 1 : 0, arg2, arg3) != 0) {
+            if ((func_001E0700(arg0, arg1) >> 5) == 0) {
+                if ((func_00271740(0x10, (side == 0) ? 1 : 0) != 0) && (func_002720F0((side == 0) ? 1 : 0, func_001E0700(arg0, arg1) & 0x1F) != 0)) {
+                    maskA = func_0024C780(0U, arg0, arg1);
+                }
+                if ((func_00271740(0xF, (side == 0) ? 1 : 0) != 0) && (func_00272050((side == 0) ? 1 : 0, func_001E0700(arg0, arg1) & 0x1F) != 0)) {
+                    maskB = func_0024C780(0U, arg0, arg1);
+                }
+                if (maskA > 0 || maskB > 0) {
+                    arg4[0] = 0x71;
+                    arg4[1] = maskA;
+                    arg4[2] = maskB;
+                    arg4[3] = 0x80000000;
+                    return 0x101;
+                }
+            }
+            maskA = 0;
+            if ((func_00271740(0xD, (side == 0) ? 1 : 0) != 0) && (func_001E2100(arg0, arg1, 2) == 0) && (func_001E2100(arg0, arg1, 4) == 0)) {
+                maskA = func_0024C780(0U, arg0, arg1);
+            }
+            if (maskA > 0) {
+                arg4[0] = 0x71;
+                arg4[1] = 0;
+                arg4[2] = 0;
+                arg4[3] = maskA | 0x80000000;
+                return 0x10201;
+            }
+        }
+    }
+    info = func_00250740(arg0, arg1, 1);
+    if (info != NULL && (*info >> 8) == 7) {
+        return 0;
+    }
+    if (func_00266DF0(0xF) > 0) {
+        return 0;
+    }
+    count = 0;
+    for (i = 0; i < 5; i++) {
+        list[i] = -1;
+    }
+    for (x = 0; x < 7; x++) {
+        for (y = 0; y < 7; y++) {
+            cell = func_001E3790(x, y);
+            if (cell >= 0) {
+                row = cell >> 8;
+                col = cell & 0xFF;
+                if (side != func_0024DE70(row, col)
+                    && (((x < arg2) ? arg2 : x) - ((arg2 < x) ? arg2 : x)) + (((y < arg3) ? arg3 : y) - ((arg3 < y) ? arg3 : y)) < 2
+                    && (func_001E0700(row, col) >> 5) == 3) {
+                    if (func_0024DE70(arg0, arg1) != func_0024DE70(row, col)) {
+                        if (((arg5 >> 16) & 1) != 1 || func_001E2100(row, col, 4) != 0) {
+                            list[count] = cell;
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (count == 0) {
+        return 0;
+    }
+    ret = func_0026AB80(0, 0x2E);
+    if (ret >= 0) {
+        arg4[0] = 0x66;
+        arg4[1] = 1;
+        arg4[2] = ret;
+        arg4[3] = 0;
+        return 1;
+    }
+    func_0024C330(list, 0, func_00250860(0, count - 1));
+    pos = func_001E1090(side, 0);
+    for (i = 0; i < count; i++) {
+        info = func_00250740(list[i] >> 8, list[i] & 0xFF, 0);
+        switch (func_001E07C0(list[i] >> 8, list[i] & 0xFF)) {
+        case 0:
+            B310_ATTACK(0x2C, info[1])
+        case 1:
+            B310_ATTACK(0x2C, info[1])
+        case 2:
+            B310_ATTACK(0x2C, info[1])
+        case 3:
+            B310_ATTACK(0x2C, info[1])
+        case 4:
+            B310_ATTACK(0x2C, info[1])
+        case 5:
+            B310_ATTACK(0x2C, info[1])
+        case 6:
+            if ((func_001E0700(arg0, arg1) >> 5) == 0 && func_002509E0(arg0, arg1, arg2, arg3) < 0x3E9) {
+                B310_ATTACK(0x2D, 0)
+            }
+            break;
+        case 7:
+            if ((func_001E0700(arg0, arg1) >> 5) == 0 && func_002509E0(arg0, arg1, arg2, arg3) < 0x5DD) {
+                B310_ATTACK(0x2D, 0)
+            }
+            break;
+        case 8:
+            if ((func_001E0700(arg0, arg1) >> 5) == 0 && func_002509E0(arg0, arg1, arg2, arg3) < 0x7D1) {
+                B310_ATTACK(0x2D, 0)
+            }
+            break;
+        case 9:
+            if ((func_001E0700(arg0, arg1) >> 5) == 0 && func_002509E0(arg0, arg1, arg2, arg3) < 0xBB9) {
+                B310_ATTACK(0x2D, 0)
+            }
+            break;
+        case 10:
+            if ((func_001E0700(arg0, arg1) >> 5) == 0 && func_002509E0(arg0, arg1, arg2, arg3) < 0xFA1) {
+                B310_ATTACK(0x2D, 0)
+            }
+            break;
+        case 11:
+            B310_ATTACK(0x2E, 0)
+        case 12:
+            if ((func_001E0700(arg0, arg1) >> 5) != 0) {
+                B310_ATTACK(0x2D, 0)
+            }
+            break;
+        }
+    }
+    return 0;
+}
 
 void func_0024C330(s32 *list, s32 left, s32 right) {
     s32 cost;
