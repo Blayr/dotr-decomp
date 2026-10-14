@@ -774,4 +774,7 @@ f32 func_001A6C48(f32 y, f32 x) {
     return func_001A4B18(y, x);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6C60);
+f32 func_001A6C60(f32 x) {
+    extern f32 func_001A5700(f32);
+    return func_001A5700(x);
+}
