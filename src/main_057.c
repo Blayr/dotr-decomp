@@ -294,7 +294,76 @@ void func_0020A3B0(u32 arg0) {
     func_00185578(0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A470);
+typedef struct {
+    s32 id;
+    s32 value4;
+    s32 value8;
+    s32 valueC;
+    s32 value10;
+    s32 mode;
+    s32 kind;
+    s32 value1C;
+    s8 enabled : 1;
+    s8 flag1 : 1;
+} Full_0020A470;
+
+typedef struct {
+    s8 enabled : 1;
+} Flags_0020A470;
+
+typedef struct {
+    s32 value0;
+    s32 value4;
+    s32 pad08[3];
+    s32 sizes[2];
+    s32 pad1C[3];
+} Table_0020A470;
+
+s32 func_0020A470(s32 arg0, s32 arg1, s32 arg2) {
+    extern Table_0020A470 D_00293F1C[];
+    u8 *base = D_00325F50;
+    Full_0020A470 *state = (Full_0020A470 *)&D_00325F20;
+    s32 a = 0;
+    s32 b = 0;
+
+    if (D_00325F40.enabled != 0) {
+        return 0;
+    }
+    state->id = arg0;
+    state->value4 = D_00293F1C[arg0].value0;
+    state->value8 = D_00293F1C[arg0].value4;
+    state->mode = arg1;
+    state->kind = arg2;
+    switch (arg1) {
+    case 0:
+    case 1:
+        a = 1;
+        break;
+    case 2:
+    case 10:
+        a = 0;
+        break;
+    }
+    switch (arg2) {
+    case 0x30:
+    case 0x31:
+        b = 1;
+        break;
+    case 0x32:
+    case 0x3A:
+        b = 0;
+        break;
+    }
+    state->valueC = *(s32 *)(base + 0x268) >> 5;
+    state->value1C = D_00293F1C[arg0].sizes[a];
+    state->value10 = D_00293F1C[arg0].sizes[a] + D_00293F1C[arg0].sizes[b];
+    if (state->valueC + state->value10 > 0x200) {
+        return 0;
+    }
+    state->enabled = 1;
+    state->flag1 = 0;
+    return 1;
+}
 
 typedef struct Flags_0020A610 {
     s8 enabled : 1;

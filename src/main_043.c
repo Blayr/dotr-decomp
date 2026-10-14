@@ -919,7 +919,6 @@ typedef struct {
     s8 high : 2;
 } Flags_001D9A30;
 
-s32 func_0020A470(s32, s32, s32);
 
 s32 func_001D9A30(s32 arg0, s32 arg1) {
     extern s32 func_00202E00();
