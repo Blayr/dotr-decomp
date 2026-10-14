@@ -233,7 +233,9 @@ void func_0017D498(char *fmt, u8 *ap) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DA60);
+s32 func_0017DA60(const char *arg0, ...) {
+    return ((s32 (*)(const char *, void *))func_0017D498)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DA98);
 

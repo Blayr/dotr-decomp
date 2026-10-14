@@ -868,6 +868,7 @@ s32 func_0017CFF0(char *arg0, s32 arg1);
 s32 func_0017D180(s32 arg0);
 void func_0017D268(s32 arg0);
 void func_0017D498(char *fmt, u8 *ap);
+s32 func_0017DA60(const char *arg0, ...);
 void func_0017DAF8(s32 *arg0, s32 *arg1);
 void func_0017DB18(void *arg0, void *arg1);
 s32 func_0017DB28(s32 arg0);
