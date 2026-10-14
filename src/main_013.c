@@ -127,6 +127,8 @@ s32 func_00154040(s32 arg0, void *arg1) {
 }
 
 void func_00154210(void) {
+    extern s32 func_00172370();
+
     func_00172370();
 }
 
