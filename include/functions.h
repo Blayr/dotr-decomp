@@ -1012,6 +1012,7 @@ void func_00187EF0(void *p0, void *p1, float f0, float f1);
 void func_00187F18(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3);
 void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_00188388(void *p0, void *p1, void *p2, void *p3);
+void func_001883E0(void *p0, void *p1, void *p2, void *p3);
 void func_00188428(f32 *arg0, f32 *arg1);
 void func_0018A378(s32 arg0);
 s32 func_0018A590(s32 arg0);
