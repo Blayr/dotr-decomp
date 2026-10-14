@@ -431,7 +431,11 @@ s32 *func_00184488(s32 arg0) {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_001844C0);
+s32 func_001844C0(s32 *arg0) {
+    register s32 ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x83\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_001844D0(void) {
     func_00184510((*(s32 *)(&D_0028D108)), (*(s32 *)((u8 *)(&D_0028D108) + 4)));

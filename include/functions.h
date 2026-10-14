@@ -1004,6 +1004,7 @@ s32 func_001843E0(void);
 s32 func_00184428(void);
 void func_00184440(void);
 s32 *func_00184488(s32 arg0);
+s32 func_001844C0(s32 *arg0);
 s32 func_001844D0(void);
 void func_00184510(int arg0, int arg1);
 s32 *func_00184520(s32 arg0);
