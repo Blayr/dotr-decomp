@@ -606,4 +606,6 @@ extern u8 D_002BCB88[];
 
 void func_00190190(s32);
 
+void func_00190278(s32);
+
 #endif

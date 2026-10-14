@@ -48,7 +48,9 @@ void func_001900A0(void *arg0) {
     func_00190190(*(s32 *)((u8 *)arg0 + 0x40) + 0x4C);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_001900B0);
+void func_001900B0(void *arg0) {
+    func_00190278(*(s32 *)((u8 *)arg0 + 0x40) + 0x4C);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_001900C0);
 
