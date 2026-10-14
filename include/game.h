@@ -874,4 +874,6 @@ f32 func_001A57D8(f32 x, f32 y);
 
 typedef union { double value; struct { u32 lsw; u32 msw; } parts; } nl_dshape;
 
+extern s32 D_002BC828;
+
 #endif
