@@ -56,6 +56,8 @@ typedef struct sceSifRpcClientData {
     u32 serve;             /* 0x24 */
 } sceSifRpcClientData;
 
+extern sceSifRpcClientData D_00315980[2]; /* libpad's clients of padman's two RPC servers */
+
 typedef struct sceSifReceiveData {
     void *pkt;  /* 0x00 */
     s32 pid;    /* 0x04 */
