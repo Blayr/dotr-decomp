@@ -224,7 +224,61 @@ s32 func_001937A0(s32 arg0) {
     return (*(s32 *)((u8 *)(&D_00315BC0) + 8));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193808);
+extern s8 D_002BD038;
+extern s8 D_002BD050;
+extern s8 D_002BD078;
+s32 func_0017E240(s32);
+
+typedef struct McCd_00193808 {
+    s32 unk0[9];
+    s32 serve;
+} McCd_00193808;
+
+s32 func_00193808(void) {
+    s32 sp0[8];
+    s32 ret;
+    s32 i;
+
+    if (D_0028F794 < 0) {
+        sp0[5] = 0;
+        sp0[2] = 1;
+        sp0[1] = 1;
+        D_0028F794 = func_0017B8E0(sp0);
+    }
+    func_00194248(0, NULL, NULL);
+    func_0017B920(D_0028F794);
+    func_0017E240(0);
+    while (1) {
+        if (func_0017E8B0(&D_00315C40, 0x80000400, 0) < 0) {
+            func_00199B50(&D_002BD038);
+            while (1) {
+            }
+        }
+        if ((*(McCd_00193808 *)&D_00315C40).serve != 0) {
+            break;
+        }
+        i = 0x100000;
+        while (--i != 0) {
+        }
+    }
+    ret = func_0017EA80(&D_00315C40, 0xFE, 0, &D_00315CC0, 0x30, &D_00317200, 0xC, 0, 0);
+    func_0017B900(D_0028F794);
+    if (ret < 0) {
+        (*(McCd_00193808 *)&D_00315C40).serve = 0;
+        return ret - 0x64;
+    }
+    if ((&D_00317200)[1] < 0x20A) {
+        func_00199B50(&D_002BD050);
+        (*(McCd_00193808 *)&D_00315C40).serve = 0;
+        return -0x78;
+    }
+    if ((&D_00317200)[2] < 0x20E) {
+        func_00199B50(&D_002BD078);
+        (*(McCd_00193808 *)&D_00315C40).serve = 0;
+        return -0x79;
+    }
+    return D_00317200;
+}
 
 s32 func_001939C0(void) {
     if (D_0028F794 >= 0) {
