@@ -10,7 +10,48 @@ s32 func_0019AE78(double x) {
     return (s32)(((u32)(hx)) >> 31);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019AEB8);
+#define sb_EXTRACT_WORDS(ix0, ix1, d) \
+    do { nl_dshape ew_u; ew_u.value = (d); (ix0) = ew_u.parts.msw; (ix1) = ew_u.parts.lsw; } while (0)
+#define sb_GET_HIGH_WORD(i, d) \
+    do { nl_dshape gh_u; gh_u.value = (d); (i) = gh_u.parts.msw; } while (0)
+#define sb_SET_HIGH_WORD(d, v) \
+    do { nl_dshape sh_u; sh_u.value = (d); sh_u.parts.msw = (v); (d) = sh_u.value; } while (0)
+
+extern const double D_002BD3C8; /* tiny */
+extern const double D_002BD3D0; /* huge */
+
+double func_0019AEB8(double x, s32 n) {
+    s32 k, hx, lx;
+    sb_EXTRACT_WORDS(hx, lx, x);
+    k = (hx & 0x7ff00000) >> 20;
+    if (k == 0) {
+        if ((lx | (hx & 0x7fffffff)) == 0)
+            return x;
+        x *= 1.80143985094819840000e+16;
+        sb_GET_HIGH_WORD(hx, x);
+        k = ((hx & 0x7ff00000) >> 20) - 54;
+        if (n < -50000)
+            return x * D_002BD3C8;
+    }
+    if (k == 0x7ff)
+        return x + x;
+    k = k + n;
+    if (k > 0x7fe)
+        return func_0019ADE8(D_002BD3D0, x) * D_002BD3D0;
+    if (k > 0) {
+        sb_SET_HIGH_WORD(x, (hx & 0x800fffff) | (k << 20));
+        return x;
+    }
+    if (k <= -54) {
+        if (n > 50000)
+            return func_0019ADE8(D_002BD3D0, x) * D_002BD3D0;
+        else
+            return func_0019ADE8(D_002BD3C8, x) * D_002BD3C8;
+    }
+    k += 54;
+    sb_SET_HIGH_WORD(x, (hx & 0x800fffff) | (k << 20));
+    return x * 5.55111512312578270212e-17;
+}
 
 void *func_0019B0A0(s32 *ptr, s32 incr) {
     void *ret;
