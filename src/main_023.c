@@ -535,7 +535,35 @@ void *func_0017EE18(void *arg0, void *arg1) {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017EEB0);
+extern s32 D_00312840;
+
+typedef struct SifRpcNode_0017EEB0 {
+    s32 unk0[5];
+    struct SifRpcNode_0017EEB0 *next;
+} SifRpcNode_0017EEB0;
+
+void *func_0017EEB0(void *arg0) {
+    SifRpcNode_0017EEB0 *sd = arg0;
+    SifRpcNode_0017EEB0 *p;
+    u8 *q;
+
+    func_001843E0();
+    q = (u8 *)&D_00312840;
+    p = *(SifRpcNode_0017EEB0 **)(q + 0x28);
+    if (p == sd) {
+        *(SifRpcNode_0017EEB0 **)(q + 0x28) = p->next;
+    } else {
+        while (p != NULL) {
+            if (p->next == sd) {
+                p->next = sd->next;
+                break;
+            }
+            p = p->next;
+        }
+    }
+    func_00184428();
+    return p;
+}
 
 void *func_0017EF40(void *arg0) {
     void *temp_s1;
