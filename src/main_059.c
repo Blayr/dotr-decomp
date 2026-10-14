@@ -326,7 +326,7 @@ void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
-s32 func_002106E0(void *, void *, u16, void *, void *, void *, f32, f32, f32, f32, f32);
+s32 func_002106E0(void *, void *, s32, f32, f32, f32, f32, void *, void *, void *, f32);
 
 s32 func_00210310(void *arg0, s32 depth, void *arg2) {
     extern Slot_00210310 D_0032A780[];
@@ -363,7 +363,7 @@ s32 func_00210310(void *arg0, s32 depth, void *arg2) {
                 f32 *rot = spr->v10;
                 f32 scale = depth == 0 ? 1.0f : spr->fBC;
 
-                flags = func_002106E0(p, q, nflags, pos, rot, spr, spr->f98, spr->fA8, spr->fA4, spr->fAC, scale);
+                flags = func_002106E0(p, q, nflags, spr->f98, spr->fA8, spr->fA4, spr->fAC, pos, rot, spr, scale);
             }
             if (depth == 0 && (spr->flagsE0 & 4)) {
                 func_0020B340(spr, node, 3);
