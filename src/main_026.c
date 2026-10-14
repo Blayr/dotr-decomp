@@ -583,19 +583,161 @@ void func_00186470(void *arg0, void *tag) {
     d->chcr.STR = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186548);
+void func_00186548(void *arg0, void *addr, s32 size) {
+    sceDmaChan *d = arg0;
+    s32 i = 0x1000000;
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186630);
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--i < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    if ((u32)d->madr != 0xFFFFFFFF) {
+        d->madr = addr;
+    }
+    d->qwc = size;
+    d->chcr.MOD = 0;
+    d->chcr.DIR = 1;
+    d->chcr.STR = 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186718);
+void func_00186630(void *arg0, void *addr, s32 size) {
+    sceDmaChan *d = arg0;
+    s32 i = 0x1000000;
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001867E0);
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--i < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    if ((u32)d->madr != 0xFFFFFFFF) {
+        d->madr = addr;
+    }
+    d->qwc = size;
+    d->chcr.MOD = 2;
+    d->chcr.DIR = 1;
+    d->chcr.STR = 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001868D0);
+void func_00186718(void *arg0) {
+    sceDmaChan *d = arg0;
+    s32 i = 0x1000000;
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001869C0);
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--i < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    d->qwc = 0;
+    d->chcr.MOD = 1;
+    d->chcr.DIR = 0;
+    d->chcr.STR = 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186A88);
+void func_001867E0(void *arg0, void *addr, s32 size) {
+    sceDmaChan *d = arg0;
+    s32 i = 0x1000000;
+
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--i < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    if ((u32)d->madr != 0xFFFFFFFF) {
+        d->madr = addr;
+    }
+    d->qwc = size;
+    d->chcr.MOD = 0;
+    d->chcr.DIR = 0;
+    d->chcr.STR = 1;
+}
+
+void func_001868D0(void *arg0, void *addr, s32 size) {
+    sceDmaChan *d = arg0;
+    s32 i = 0x1000000;
+
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--i < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    if ((u32)d->madr != 0xFFFFFFFF) {
+        d->madr = addr;
+    }
+    d->qwc = size;
+    d->chcr.MOD = 2;
+    d->chcr.DIR = 0;
+    d->chcr.STR = 1;
+}
+
+s32 func_001869C0(void *arg0, s32 mode, s32 timeout) {
+    sceDmaChan *d = arg0;
+
+    if (mode == 1) {
+        return d->chcr.STR;
+    }
+    if (timeout == 0) {
+        timeout = 0x1000000;
+    }
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--timeout < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    return 0;
+}
+
+s32 func_00186A88(void *arg0, void *addr, s32 mode, s32 timeout) {
+    sceDmaChan *d = arg0;
+
+    if (mode == 1) {
+        return *(volatile u32 *)&d->madr < (u32)addr;
+    }
+    if (timeout == 0) {
+        timeout = 0x1000000;
+    }
+    if (*(volatile u32 *)&d->madr < (u32)addr) {
+        do {
+            if (--timeout < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while (*(volatile u32 *)&d->madr < (u32)addr);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186B58);
 
