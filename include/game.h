@@ -963,4 +963,7 @@ extern s32 D_0028D970;
 
 typedef struct fr_FILE { u8 *_p; s32 _r; } fr_FILE;
 
+s32 func_0017DFE8(s32, void *, s32, s32, s32, s32);
+void *func_0017E408(s32 *);
+
 #endif
