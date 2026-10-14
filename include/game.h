@@ -662,7 +662,7 @@ s32 func_0018DAA8(u64 *, s32);              /* extern */
 s32 func_0017B660(s32, s32 *, s32);         /* extern */
 s32 func_0017B7D0();                                /* extern */
 s32 func_0017B800();                            /* extern */
-extern s32 func_001941D8;
+void func_001941D8(s32, s32, s32);
 
 s32 func_0017B520(s32, s32, s32);               /* extern */
 
@@ -759,7 +759,7 @@ s32 func_001A3008(s32, s32, s32, s64);          /* extern */
 
 extern s32 D_00310980;
 s32 func_0017B8E0(void *);           /* extern */
-extern s32 func_00190A00;
+void func_00190A00(s32, s32, s32);
 s32 func_001977D8(s32, s16, s32, s32);  /* extern */
 s64 func_001A0478(s32, s16, s32, s32);              /* extern */
 
