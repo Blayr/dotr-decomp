@@ -160,6 +160,23 @@ fi
 if [ "$DK_GCC" = 2.96 ]; then
     perl -0777 -i -pe 's/^(\s+mfc1\s+\$(\d+),[^\n]*\n)((?:[\$.\w]+:[^\n]*\n)+)((?:\s+\.set\s[^\n]*\n)*)(\s+([a-z][a-z0-9.]*)\s+([^\n]*))/my ($h, $r, $l, $d, $i, $m, $o) = ($1, $2, $3, $4, $5, $6, $7); my @x = split m{,}, $o; shift @x unless $m =~ m{^(s[bhwdq]|b|j)}; (grep { m{\$$r\b} } @x) ? "$h$l\tnop\n$d$i" : "$h$l$d$i"/gme' "$TMP/out.s"
 fi
+# Old gas never moved into a branch's delay slot an instruction that directly follows a `.set noreorder`
+# block (the slot GCC filled itself); binutils does (sceCdSearchFile: `jal cmd_sem_init; sd` /
+# `lw $4,semid; jal PollSema; nop`). The first instruction after such a block is counted, and a branch
+# right after it gets a local label, which stops the swap.
+perl -i -ne 'BEGIN { $n = 0; $noreo = 0; $after = 0; $count = 0 }
+    if (/^\s+\.set\s+noreorder\b/) { $noreo = 1 }
+    elsif (/^\s+\.set\s+reorder\b/) { if ($noreo) { $after = 1; $count = 0 } $noreo = 0 }
+    elsif (!$noreo && /^\s+([a-z][a-z0-9.]*)(\s|$)/) {
+        if ($after && $count == 1
+            && /^\s+(b|j|jal|jr|jalr|bal|beqz?l?|bnez?l?|b[gl][et]zl?|b[gl]tzall?|bgezall?|bc1[tf]l?)\s/) {
+            print ".Lnoreofill", $n++, ":\n";
+        }
+        $count++;
+        $after = 0 if $count > 1;
+    }
+    elsif (/^[\$.\w]+:/) { $after = 0 }
+    print' "$TMP/out.s"
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
