@@ -680,7 +680,76 @@ s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state) {
     return (*t != '\0');
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198618);
+/* memchr: newlib's hand-written r5900 assembly (libc/machine/r5900/memchr.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void *func_00198618(const void *s, s32 c, u32 n) {
+    register s32 r4 __asm__("$4");
+
+    __asm__ __volatile__(
+        "	.set	noreorder\n"
+        "	sltiu	$2,$6,0x10\n"
+        "	bnez	$2,_func_00198618_001986B8\n"
+        "	andi	$5,$5,0xFF\n"
+        "	andi	$2,$4,0xF\n"
+        "	bnez	$2,_func_00198618_001986B8\n"
+        "	daddu	$7,$4,$0\n"
+        "	dsll	$3,$5,8\n"
+        "	lui	$2,(0x1010101 >> 16)\n"
+        "	ori	$2,$2,(0x1010101 & 0xFFFF)\n"
+        "	dsll	$2,$2,16\n"
+        "	ori	$2,$2,0x101\n"
+        "	dsll	$2,$2,16\n"
+        "	ori	$2,$2,0x101\n"
+        "	daddu	$10,$3,$5\n"
+        "	lui	$3,(0x80808080 >> 16)\n"
+        "	ori	$3,$3,(0x80808080 & 0xFFFF)\n"
+        "	dsll	$3,$3,16\n"
+        "	ori	$3,$3,0x8080\n"
+        "	dsll	$3,$3,16\n"
+        "	ori	$3,$3,0x8080\n"
+        "	pcpyh	$8,$10\n"
+        "	pcpyld	$9,$8,$8\n"
+        "	daddu	$4,$2,$0\n"
+        "	pcpyld	$8,$3,$3\n"
+        "_func_00198618_00198678:\n"
+        "	lq	$2,0x0($7)\n"
+        "	pxor	$2,$2,$9\n"
+        "	pcpyld	$10,$4,$4\n"
+        "	pnor	$3,$0,$2\n"
+        "	psubb	$2,$2,$10\n"
+        "	pand	$2,$2,$3\n"
+        "	pand	$2,$2,$8\n"
+        "	pcpyud	$3,$2,$9\n"
+        "	or	$2,$2,$3\n"
+        "	bnel	$2,$0,_func_00198618_001986B8\n"
+        "	daddu	$4,$7,$0\n"
+        "	addiu	$6,$6,-0x10\n"
+        "	sltiu	$2,$6,0x10\n"
+        "	beqz	$2,_func_00198618_00198678\n"
+        "	addiu	$7,$7,0x10\n"
+        "	daddu	$4,$7,$0\n"
+        "_func_00198618_001986B8:\n"
+        "	lui	$2,(0xFFFFFFFF >> 16)\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	ori	$2,$2,(0xFFFFFFFF & 0xFFFF)\n"
+        "	beq	$6,$2,_func_00198618_001986E8\n"
+        "	nop\n"
+        "	lui	$3,(0xFFFFFFFF >> 16)\n"
+        "	ori	$3,$3,(0xFFFFFFFF & 0xFFFF)\n"
+        "_func_00198618_001986D4:\n"
+        "	lbu	$2,0x0($4)\n"
+        "	beq	$2,$5,_func_00198618_001986F0\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	bne	$6,$3,_func_00198618_001986D4\n"
+        "	addiu	$4,$4,0x1\n"
+        "_func_00198618_001986E8:\n"
+        "	jr	$31\n"
+        "	daddu	$2,$0,$0\n"
+        "_func_00198618_001986F0:\n"
+        "	.set	reorder\n"
+        : "=r"(r4));
+    return (void *)r4;
+}
 
 /* memcmp: newlib's hand-written r5900 assembly (libc/machine/r5900/memcmp.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
