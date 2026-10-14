@@ -845,7 +845,6 @@ extern f32 D_002BE5D0[]; /* fdlibm kf_tan.c T[13] */
 
 s32 func_0018A738(void *);                          /* extern */
 s32 func_0018B850(void *, s32);                 /* extern */
-void func_0018BB98(void *);
 extern s32 D_002BC7C0;
 extern s32 D_002BC7E8;
 

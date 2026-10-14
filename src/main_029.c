@@ -182,7 +182,18 @@ INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B958);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BA48);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BB98);
+void func_0018BB98(void *arg0) {
+    s32 n;
+
+    func_0018B580(arg0);
+    n = -(*(volatile s32 *)0x10002020 & 7) & 7;
+    if (n != 0) {
+        func_0018B958(arg0, n);
+    }
+    while (func_0018B850(arg0, 0x18) != 1) {
+        func_0018B958(arg0, 8);
+    }
+}
 
 s32 func_0018BC18(void *arg0, s32 arg1) {
     (*(s32 *)((u8 *)arg0 + 0x1B4)) = func_0018BA48(arg0, 5);
