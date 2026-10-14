@@ -832,7 +832,6 @@ s32 func_001986F8(s32 *, s32 *, s32);
 extern s32 D_0028C24C;
 extern s32 *D_0028CAC4;
 
-void func_0017C8D0(s32);
 void func_0017B910(s32);
 
 void func_0018F5C8(void *);                      /* extern */
@@ -852,5 +851,12 @@ s32 func_0017B630(s32);
 s32 func_0017B620(s32);
 s32 func_0017B650(s32);
 s32 func_0017B640(s32);
+
+typedef struct { u8 a; u8 b; } ringent_t;
+typedef struct { s32 x0; u32 count; ringent_t e[0x200]; } ring_t;
+extern s32 D_0028CA00;
+extern s32 D_00310510;
+extern s32 D_00310518;
+s32 func_0017B820(s32);
 
 #endif

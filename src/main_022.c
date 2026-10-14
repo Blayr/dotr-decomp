@@ -43,7 +43,18 @@ s32 func_0017C108(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C130);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C1D8);
+void func_0017C1D8(u32 arg0, u32 arg1) {
+    s32 eie;
+    __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+        func_001843E0();
+    }
+    func_0017C130(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
+    if (eie) {
+        func_00184428();
+    }
+}
 
 void func_0017C258(u32 arg0, u32 arg1) {
     func_0017C130(arg0 & ~0x3F, arg1 & ~0x3F);
@@ -51,7 +62,18 @@ void func_0017C258(u32 arg0, u32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C270);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C318);
+void func_0017C318(u32 arg0, u32 arg1) {
+    s32 eie;
+    __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    if (eie) {
+        func_001843E0();
+    }
+    func_0017C270(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
+    if (eie) {
+        func_00184428();
+    }
+}
 
 void func_0017C398(u32 arg0, u32 arg1) {
     func_0017C270(arg0 & ~0x3F, arg1 & ~0x3F);
@@ -172,7 +194,25 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C648);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C720);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C8D0);
+s32 func_0017C8D0(s32 arg0) {
+    s32 tid;
+    __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
+    if (tid != arg0) {
+        return func_0017B820(arg0);
+    }
+    if ((u32)tid >= 0x100 || D_0028CA00 == 0) {
+        return -1;
+    }
+    {
+        ring_t *r = (ring_t *)&D_00310518;
+        u32 i = r->count & 0x1FF;
+        r->count = i + 1;
+        r->e[i].a = 0;
+        r->e[i].b = tid;
+        func_0017B910(D_00310510);
+    }
+    return tid;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C968);
 
