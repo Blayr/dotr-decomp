@@ -257,7 +257,7 @@ void func_001F7550(s32);
 
 extern char D_002BF040;
 
-void func_0017B8F0(s32);
+s32 func_0017B8F0(s32);
 void func_001843E0(void);
 void func_00184428(void);
 
