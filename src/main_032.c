@@ -282,7 +282,24 @@ s32 func_00193248(s32 arg0, s32 arg1, u8 *arg2) {
     return p->result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193320);
+s32 func_00193320(s32 port, s32 slot) {
+    u8 *p;
+
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    p = func_00192A88(port, slot);
+    if (p[0x72] != 1) {
+        return 0;
+    }
+    if (p[0x64] < 2) {
+        return 0;
+    }
+    if (p[0x66] < 2) {
+        return 0;
+    }
+    return p[0x79] + ((long)p[0x7A] << 8) + ((long)p[0x7B] << 16) + ((long)p[0x7C] << 24);
+}
 
 s32 func_001933D8(s32 arg0, s32 arg1, s32 arg2) {
     u8 *b_D_00315BC0 = (u8 *)&D_00315BC0;
