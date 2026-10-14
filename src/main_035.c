@@ -186,7 +186,15 @@ s32 func_0019DC70(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DCB8);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DD70);
+s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap) {
+    do {
+        if ((fp)->_data == 0)
+            (fp)->_data = (vf_reent *)D_0028FA98;
+        if (!(fp)->_data->__sdidinit)
+            func_00196A30((fp)->_data);
+    } while (0);
+    return func_0019DDE8(fp->_data, fp, fmt0, ap);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DDE8);
 

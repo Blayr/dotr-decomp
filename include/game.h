@@ -939,4 +939,8 @@ typedef struct mcmp_Bigint { struct mcmp_Bigint *next; s32 k, maxwds, sign, wds;
 
 extern double D_002BD288[]; /* mprec tens[] */
 
+typedef struct vf_reent { u8 pad[0x38]; s32 __sdidinit; } vf_reent;
+typedef struct vf_FILE { u8 pad[0x54]; vf_reent *_data; } vf_FILE;
+s32 func_0019DDE8(vf_reent *ptr, vf_FILE *fp, const char *fmt, void *ap);
+
 #endif
