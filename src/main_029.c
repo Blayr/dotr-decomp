@@ -248,7 +248,11 @@ void func_0018BF80(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C170);
+s32 func_0018C170(void *arg0) {
+    while (func_0018BA48(arg0, 1) != 0) {
+        func_0018B958(arg0, 8);
+    }
+}
 
 s32 func_0018C1B8(void *arg0, s32 arg1) {
     s32 temp_a0;
