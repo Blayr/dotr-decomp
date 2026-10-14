@@ -566,7 +566,6 @@ extern char D_0028C230[];
 
 long func_0019D750(const char *, char **, s32);
 
-void func_0019D3E0(s32, s32);
 
 extern s32 D_0028FA98;
 
@@ -612,5 +611,7 @@ void func_0018A378(s32);
 s32 func_00197570(s32, s32, s32);               /* extern */
 
 s32 func_001976F0(s32, s32, s32);               /* extern */
+
+s32 func_0019C4C8(s32, s32, s32);               /* extern */
 
 #endif
