@@ -308,6 +308,7 @@ s32 func_0011F540(u16 *arg0, s32 arg1, void *arg2, u8 arg3);
 s32 func_0011FA80(s32 arg0);
 s32 func_0011FAE0(void *arg0, s32 arg1, void *arg2, u8 arg3);
 s32 func_00120150(void *arg0, s32 card, void *arg2, u8 kind);
+s32 func_001206F0(u32 *arg0, s32 arg1, u16 *arg2, u8 arg3, u8 arg4);
 s32 func_001211B0(s32 arg0, s32 arg1, void *arg2);
 s32 func_001214E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 void func_001215E0(void *arg0, u8 arg1);
