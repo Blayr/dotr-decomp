@@ -643,7 +643,6 @@ s32 func_00190FF0(void *, const char *);
 s32 func_00191A58(s32);
 void func_00191F90(s32, s32, u32);
 s32 func_00191FC0(s32, u8 *);
-char *func_001976D8(char *, s32);
 s32 func_0019BC90(const char *, const char *);
 s32 func_0019D9E0(s32);
 extern char D_0030F7F0[];

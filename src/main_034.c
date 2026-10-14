@@ -5,7 +5,9 @@ void func_001976B8(s32 arg0, s32 arg1) {
     func_00197570(arg0, arg1, (s32) sp0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001976D8);
+char *func_001976D8(char *arg0, s32 arg1) {
+    return func_0019BB00(arg0, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_001976F0);
 

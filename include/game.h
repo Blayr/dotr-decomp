@@ -767,4 +767,6 @@ extern s32 func_00190A00;
 s32 func_001977D8(s32, s16, s32, s32);  /* extern */
 s64 func_001A0478(s32, s16, s32, s32);              /* extern */
 
+char *func_0019BB00(char *, s32);
+
 #endif
