@@ -983,6 +983,7 @@ int func_00183C78(int arg0);
 void func_00183C88(int arg0, int arg1);
 void func_00183C98(void);
 int func_00183D50(void);
+int func_00183D60(void);
 s32 func_00183D80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_00183E10(void);
 s32 func_00183E50(void);
