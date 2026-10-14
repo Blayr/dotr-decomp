@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018A378);
+void func_0018A378(s32 arg0) {
+    *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFF7FFFFF) | (arg0 << 0x17);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018A3A0);
 

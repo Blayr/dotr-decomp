@@ -606,7 +606,6 @@ void func_00190190(s32);
 
 void func_00190278(s32);
 
-void func_0018A378(s32);
 
 s32 func_00197570(s32, s32, s32);               /* extern */
 
