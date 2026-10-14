@@ -262,7 +262,26 @@ INCLUDE_ASM("asm/nonmatchings/main_027", func_00187978);
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_001879A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001879E0);
+void func_001879E0(void *m0, void *m1) {
+    __asm__ __volatile__("\n\
+	lq $8,0x0000(%1)\n\
+	lq $9,0x0010(%1)\n\
+	lq $10,0x0020(%1)\n\
+	lq $11,0x0030(%1)\n\
+	pextlw     $12,$9,$8\n\
+	pextuw     $13,$9,$8\n\
+	pextlw     $14,$11,$10\n\
+	pextuw     $15,$11,$10\n\
+	pcpyld     $8,$14,$12\n\
+	pcpyud     $9,$12,$14\n\
+	pcpyld     $10,$15,$13\n\
+	pcpyud     $11,$13,$15\n\
+	sq $8,0x0000(%0)\n\
+	sq $9,0x0010(%0)\n\
+	sq $10,0x0020(%0)\n\
+	sq $11,0x0030(%0)\n\
+	" : : "r" (m0) , "r" (m1));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187A28);
 
