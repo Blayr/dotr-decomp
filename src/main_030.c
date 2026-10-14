@@ -446,7 +446,16 @@ s32 func_0018F120(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F290);
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F3A8);
+s32 func_0018F3A8(void *arg0, s32 arg1, s32 arg2) {
+    s32 ret;
+
+    if (*(s32 *)(*(u8 **)((u8 *)arg0 + 0x40) + 0x174) != 3) {
+        ret = func_0018F3F0(arg0, arg1, arg2);
+    } else {
+        ret = func_0018F290(arg0, arg1, arg2);
+    }
+    return ret;
+}
 
 s32 func_0018F3F0(void *arg0, s32 arg1, s32 arg2) {
     u8 *d;
