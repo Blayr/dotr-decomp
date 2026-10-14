@@ -66,7 +66,59 @@ _func_00187C30_00187C9C:\n\
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00187CA8);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00187D50);
+void func_00187D50(void *p0, void *p1, float f0) {
+    __asm__ __volatile__("\n\
+	.set noat\n\
+	.set noreorder\n\
+	mtc1	$0,$f0\n\
+	c.lt.s	%2,$f0\n\
+	.set reorder\n\
+	lui	$1,(0x3FC90FDB >> 16)\n\
+	ori	$1,$1,(0x3FC90FDB & 0xFFFF)\n\
+	.set noreorder\n\
+	mtc1	$1,$f0\n\
+	.set reorder\n\
+	bc1f	_func_00187D50_00187D78\n\
+	add.s	%2,$f0,%2\n\
+	addiu	$7,$0,0x1\n\
+	j	_func_00187D50_00187D80\n\
+_func_00187D50_00187D78:\n\
+	sub.s	%2,$f0,%2\n\
+	daddu	$7,$0,$0\n\
+_func_00187D50_00187D80:\n\
+	.set noreorder\n\
+	mfc1	$8,%2\n\
+	qmtc2.ni	$8,$vf6\n\
+	.set reorder\n\
+	daddu	$6,$31,$0\n\
+	jal	func_00187C30\n\
+	daddu	$31,$6,$0\n\
+	vmove.xyzw	$vf6,$vf5\n\
+	vmove.xyzw	$vf7,$vf5\n\
+	vmove.xyzw	$vf8,$vf5\n\
+	vmove.xyzw	$vf9,$vf5\n\
+	vaddw.x	$vf6,$vf5,$vf0w\n\
+	vaddw.w	$vf9,$vf5,$vf0w\n\
+	vsub.zw	$vf4,$vf4,$vf4\n\
+	vaddx.z	$vf7,$vf5,$vf4x\n\
+	vaddy.y	$vf7,$vf5,$vf4y\n\
+	vsubx.y	$vf8,$vf5,$vf4x\n\
+	vaddy.z	$vf8,$vf5,$vf4y\n\
+	addiu	$7,$0,0x4\n\
+_func_00187D50_00187DC8:\n\
+	lqc2	$vf4,0x0(%1)\n\
+	vmulax.xyzw	$ACC,$vf6,$vf4x\n\
+	vmadday.xyzw	$ACC,$vf7,$vf4y\n\
+	vmaddaz.xyzw	$ACC,$vf8,$vf4z\n\
+	vmaddw.xyzw	$vf5,$vf9,$vf4w\n\
+	sqc2	$vf5,0x0(%0)\n\
+	addi	$7,$7,-0x1\n\
+	addi	%1,%1,0x10\n\
+	addi	%0,%0,0x10\n\
+	bne	$0,$7,_func_00187D50_00187DC8\n\
+	.set at\n\
+	" :  : "r" (p0), "r" (p1), "f" (f0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00187DF8);
 

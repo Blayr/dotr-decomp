@@ -627,7 +627,6 @@ extern s32 *D_00315C6C;
 extern s32 *D_00315C70;
 
 s32 func_00187CA8(f32);                         /* extern */
-s32 func_00187D50(s32, s32, f32);               /* extern */
 s32 func_00187DF8(s32, s32, f32);               /* extern */
 
 s32 func_00197EB8(s32, s32);                        /* extern */
