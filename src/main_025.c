@@ -73,7 +73,6 @@ s32 func_001836A0(s32 arg0, s32 arg1) {
     return func_00183578(arg0, (s32) &D_002BC1E8, arg1, 1);
 }
 
-s32 func_00182B38(void);
 
 typedef struct IopPeek_001836C8 {
     s32 addr;
@@ -110,7 +109,6 @@ bad:
 
 extern s32 D_00313E00;
 extern s32 D_00314000;
-s32 func_00182B38(void);
 
 typedef struct IopPoke_001837B8 {
     s32 addr;
