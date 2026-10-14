@@ -637,7 +637,6 @@ s32 func_00183A00(void);
 void func_00182838(void);
 void func_00182CC8(void);
 void func_00191C50(s32);
-void func_0017FA60(void);
 s32 func_00191A58(s32);
 s32 func_00190FF0(Stat_001FFFC0 *, s32);
 void func_00190C48(s32, u8 *, s32);
