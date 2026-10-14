@@ -1935,7 +1935,6 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_00121630;
 
-s32 func_0011C600(void *, void *, s32);
 s32 func_00276290(void *, void *, s32);
 
 s32 func_00121630(s32 arg0, void *arg1) {
