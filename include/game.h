@@ -654,7 +654,6 @@ static __inline__ s32 fp_iszero_d(fp_number_d *x) { return x->class == CLASS_ZER
 
 extern s32 D_00310980;
 
-char *func_0019BB00(char *, s32);
 
 extern s32 D_0028CAA8;
 extern s32 D_0028CAAC;
