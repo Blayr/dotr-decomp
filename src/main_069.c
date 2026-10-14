@@ -1218,6 +1218,8 @@ s32 func_00244FB0(void *arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4, s32 arg5, 
 }
 
 s32 func_002450B0(void) {
+    extern s32 func_0018E200();
+
     func_0018E200();
     return 1;
 }
