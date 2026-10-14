@@ -960,7 +960,6 @@ typedef struct p5_reent { u8 pad0[0x48]; i2b_Bigint *_p5s; } p5_reent;
 extern s32 D_002BD274[];
 i2b_Bigint *func_00198F60(void *ptr, i2b_Bigint *a, i2b_Bigint *b);
 
-s32 func_0018E448(u64 *, void *);               /* extern */
 
 typedef union b2d_du { double d; u32 i[2]; } b2d_du;
 

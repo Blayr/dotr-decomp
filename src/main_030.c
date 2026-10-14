@@ -73,7 +73,14 @@ s32 func_0018E2F8(u64 *arg0, void *arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E448);
+s32 func_0018E448(u64 *arg0, void *arg1) {
+    func_0018DB40(arg0, 0x38);
+    func_0018DB40(arg0, 0x28);
+    while (func_0018DA88(arg0, 1) == 1) {
+        func_0018DB40(arg0, 0x18);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E4B8);
 
