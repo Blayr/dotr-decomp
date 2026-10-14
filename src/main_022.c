@@ -216,7 +216,25 @@ s32 func_0017C8D0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C968);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C9E8);
+s32 func_0017C9E8(s32 arg0) {
+    s32 tid;
+    __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
+    if (tid != arg0) {
+        return func_0017B860(arg0);
+    }
+    if ((u32)tid >= 0x100 || D_0028CA00 == 0) {
+        return -1;
+    }
+    {
+        ring_t *r = (ring_t *)&D_00310518;
+        u32 i = r->count & 0x1FF;
+        r->count = i + 1;
+        r->e[i].a = 2;
+        r->e[i].b = tid;
+        func_0017B910(D_00310510);
+    }
+    return tid;
+}
 
 s32 func_0017CA80(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];

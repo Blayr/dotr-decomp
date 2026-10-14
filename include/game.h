@@ -859,4 +859,6 @@ extern s32 D_00310510;
 extern s32 D_00310518;
 s32 func_0017B820(s32);
 
+s32 func_0017B860(s32);
+
 #endif
