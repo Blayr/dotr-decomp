@@ -581,4 +581,6 @@ extern s32 D_0028DC90;
 
 extern s32 D_00310E98;
 
+extern s32 D_0028D8F0;
+
 #endif
