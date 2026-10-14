@@ -190,7 +190,9 @@ void func_0017C5C0(void) {
     __asm__ volatile("sync");
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C5E0);
+void func_0017C5E0(int arg0, int arg1) {
+    __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C5F0);
 
@@ -219,7 +221,6 @@ s32 func_0017C600(s32 *arg0, s32 *arg1, u32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C638);
 
-void func_0017C5E0(s32, s32);
 s32 func_0017C5F0(s32, s32 *, s32);
 s32 func_0017C638(s32);
 extern s32 D_0028C258;
