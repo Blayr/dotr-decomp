@@ -60,7 +60,21 @@ s32 func_0019B5C0(void *ptr, char *str, const char *fmt, ...) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B648);
+s32 func_0019B648(char *str, const char *fmt, ...) {
+    s32 ret;
+    __builtin_va_list ap;
+    spr_FILE f;
+
+    f._flags = 0x0008 | 0x0200;
+    f._bf_base = f._p = (u8 *)str;
+    f._bf_size = f._w = 0x7fffffff;
+    f._data = (void *)D_0028FA98;
+    __builtin_stdarg_start(ap, fmt);
+    ret = func_0019DD70((vf_FILE *)&f, fmt, ap);
+    __builtin_va_end(ap);
+    *f._p = 0;
+    return ret;
+}
 
 s32 func_0019B6D8(void) {
     return 0;

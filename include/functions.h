@@ -1114,6 +1114,7 @@ void func_0019B0F8(s32 arg0, s32 arg1, s32 arg2);
 void func_0019B128(s32 arg0);
 f32 func_0019B4B8(f32 fparg0, f32 fparg1);
 s32 func_0019B5C0(void *ptr, char *str, const char *fmt, ...);
+s32 func_0019B648(char *str, const char *fmt, ...);
 s32 func_0019B6D8(void);
 s32 func_0019B788(void *cookie, char *buf, s32 n);
 s32 func_0019B7F0(void *arg0, s32 arg1, s32 arg2);
