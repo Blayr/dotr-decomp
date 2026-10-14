@@ -710,4 +710,297 @@ s32 func_002517D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00252440);
+typedef struct Result_00252440 {
+    s32 kind;
+    s32 value;
+    s32 pos;
+    s32 extra;
+    u8 flag0;
+    u8 flag1;
+} Result_00252440;
+
+s32 func_00252440(s32 x, s32 y, void *arg2, s32 phase) {
+    extern s32 func_001E1E10();
+    extern s32 func_00263930();
+    extern s32 func_00252EC0();
+    extern s32 func_0024F370();
+    s32 type;
+    u32 *info;
+    s32 pos;
+    s32 card;
+    s32 other;
+    u8 *tail;
+    Result_00252440 *res;
+    s32 found;
+    s32 target;
+
+    res = arg2;
+    tail = &res->flag0;
+    type = func_001E0700(x, y) >> 5;
+    res->kind = 0;
+    res->value = 0;
+    res->pos = 0;
+    res->extra = 0;
+    res->flag0 = 0;
+    res->flag1 = 0;
+    info = func_00250740(x, y, 0);
+    switch (phase) {
+    case 0:
+        if (type == 0) {
+            if ((card = (s32)func_00250740(x, y, 3)) != 0 && func_001E2100(x, y, 4) == 0 && func_001E2100(x, y, 2) != 0) {
+                pos = func_001E1090(x, y);
+                func_002516D0(x, y, 1);
+                return func_00263930(card, x, y, -1, -1, pos & 0xFF, pos >> 8, res, tail, 0) | 0x100;
+            }
+            return 0x100;
+        }
+        if (type != 1 && type != 5) {
+            return 0x100;
+        }
+        if ((type == 1 || type == 5) && func_001E2100(x, y, 2) == 0) {
+            return 0x100;
+        }
+        return (phase + 1) << 16;
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+        found = func_00266C70(0xE, 0);
+        if (found >= 0) {
+        switch (phase) {
+        case 1:
+            res->kind = 0x65;
+            res->value = 0;
+            res->pos = (x << 8) | y;
+            res->extra = 0;
+            return 0x20001;
+        case 2:
+            res->kind = 0x66;
+            res->value = 0;
+            res->pos = found;
+            res->extra = 0;
+            return 0x30001;
+        case 3:
+            func_0024F370(x, y);
+            return 0;
+        }
+        return 0;
+        }
+        found = func_00266C70(0x4C, 0);
+        if (found >= 0 && (*info >> 8) == 0x14) {
+        switch (phase) {
+        case 1:
+            res->kind = 0x65;
+            res->value = 0;
+            res->pos = (x << 8) | y;
+            res->extra = 0;
+            return 0x20001;
+        case 2:
+            res->kind = 0x66;
+            res->value = 0;
+            res->pos = found;
+            res->extra = 0;
+            return 0x30001;
+        case 3:
+            func_0024F370(x, y);
+            return 0;
+        }
+        return 0;
+        }
+        found = func_00266C70(0x11, 0);
+        if (found >= 0 && (*info >> 8) == 0x32) {
+        switch (phase) {
+        case 1:
+            res->kind = 0x65;
+            res->value = 0;
+            res->pos = (x << 8) | y;
+            res->extra = 0;
+            return 0x20001;
+        case 2:
+            res->kind = 0x66;
+            res->value = 0;
+            res->pos = found;
+            res->extra = 0;
+            return 0x30001;
+        case 3:
+            func_0024F370(x, y);
+            return 0;
+        }
+        return 0;
+        }
+        if ((target = func_0026AB80(func_0024DE70(x, y), 0xE)) >= 0) {
+            if ((other = func_0026AB80(0, 0x2E)) < 0) {
+                switch (phase) {
+                case 1:
+                    return (phase + 1) << 16;
+                case 2:
+                    res->kind = 0x65;
+                    res->value = 0;
+                    res->pos = (x << 8) | y;
+                    res->extra = 0;
+                    return 0x30001;
+                case 3:
+                    func_002516D0(target >> 8, target & 0xFF, 1);
+                    return 0x40000;
+                case 4:
+                    if (func_001E1E10(target >> 8, target & 0xFF) == 0xFF) {
+                        res->kind = 0x33;
+                        res->value = target;
+                        res->pos = (x << 8) | y;
+                        res->extra = 1;
+                        return 1;
+                    }
+                    return 0x40000;
+                }
+                return 0;
+            }
+            switch (phase) {
+            case 1:
+                return (phase + 1) << 16;
+            case 2:
+                res->kind = 0x65;
+                res->value = 0;
+                res->pos = (x << 8) | y;
+                res->extra = 0;
+                return 0x30001;
+            case 3:
+                func_002516D0(other >> 8, other & 0xFF, 1);
+                return 0x40000;
+            case 4:
+                if (func_001E1E10(other >> 8, other & 0xFF) == 0xFF) {
+                    res->kind = 0x66;
+                    res->value = 1;
+                    res->pos = other;
+                    res->extra = 0;
+                    return 0x50001;
+                }
+                return 0x40000;
+            case 5:
+                res->kind = 0x65;
+                res->value = 0;
+                res->pos = (x << 8) | y;
+                res->extra = 2;
+                return 0x70001;
+            }
+            return 0;
+        }
+        if ((target = func_0026AB80(func_0024DE70(x, y), 0x4C)) >= 0 && (*info >> 8) == 0x14) {
+            if ((other = func_0026AB80(0, 0x2E)) < 0) {
+                switch (phase) {
+                case 1:
+                    return (phase + 1) << 16;
+                case 2:
+                    res->kind = 0x65;
+                    res->value = 0;
+                    res->pos = (x << 8) | y;
+                    res->extra = 0;
+                    return 0x30001;
+                case 3:
+                    func_002516D0(target >> 8, target & 0xFF, 1);
+                    return 0x40000;
+                default:
+                    if (func_001E1E10(target >> 8, target & 0xFF) == 0xFF) {
+                        res->kind = 0x33;
+                        res->value = target;
+                        res->pos = (x << 8) | y;
+                        res->extra = 0;
+                        return 1;
+                    }
+                    return 0x40000;
+                }
+            }
+            switch (phase) {
+            case 1:
+                return (phase + 1) << 16;
+            case 2:
+                res->kind = 0x65;
+                res->value = 0;
+                res->pos = (x << 8) | y;
+                res->extra = 0;
+                return 0x30001;
+            case 3:
+                func_002516D0(target >> 8, target & 0xFF, 1);
+                return 0x40000;
+            case 4:
+                if (func_001E1E10(other >> 8, other & 0xFF) == 0xFF) {
+                    res->kind = 0x66;
+                    res->value = 1;
+                    res->pos = other;
+                    res->extra = 0;
+                    return 0x50001;
+                }
+                return 0x40000;
+            case 5:
+                res->kind = 0x65;
+                res->value = 0;
+                res->pos = (x << 8) | y;
+                res->extra = 2;
+                return 0x70001;
+            }
+            return 0;
+        }
+        if ((target = func_0026AB80(func_0024DE70(x, y), 0x11)) >= 0 && (*info >> 8) == 0x32) {
+            if ((other = func_0026AB80(0, 0x2E)) < 0) {
+                switch (phase) {
+                case 1:
+                    return (phase + 1) << 16;
+                case 2:
+                    res->kind = 0x65;
+                    res->value = 0;
+                    res->pos = (x << 8) | y;
+                    res->extra = 0;
+                    return 0x30001;
+                case 3:
+                    func_002516D0(target >> 8, target & 0xFF, 1);
+                    return 0x40000;
+                default:
+                    if (func_001E1E10(target >> 8, target & 0xFF) == 0xFF) {
+                        res->kind = 0x33;
+                        res->value = target;
+                        res->pos = (x << 8) | y;
+                        res->extra = 0;
+                        return 1;
+                    }
+                    return 0x40000;
+                }
+            }
+            switch (phase) {
+            case 1:
+                return (phase + 1) << 16;
+            case 2:
+                res->kind = 0x65;
+                res->value = 0;
+                res->pos = (x << 8) | y;
+                res->extra = 0;
+                return 0x30001;
+            case 3:
+                func_002516D0(other >> 8, other & 0xFF, 1);
+                return 0x40000;
+            case 4:
+                if (func_001E1E10(other >> 8, other & 0xFF) == 0xFF) {
+                    res->kind = 0x66;
+                    res->value = 1;
+                    res->pos = other;
+                    res->extra = 0;
+                    return 0x50001;
+                }
+                return 0x40000;
+            case 5:
+                res->kind = 0x65;
+                res->value = 0;
+                res->pos = (x << 8) | y;
+                res->extra = 2;
+                return 0x70001;
+            }
+            return 0;
+        }
+        res->kind = 0x65;
+        res->value = 0;
+        res->pos = (x << 8) | y;
+        res->extra = 1;
+        return 0x70001;
+    }
+    return func_00252EC0(x, y, res, tail, phase, info);
+}

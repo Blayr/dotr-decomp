@@ -2861,6 +2861,7 @@ s32 func_00250E80(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00251370(s32 count, u16 *src, void *dst);
 void func_002516D0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_002517D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 *out, s32 arg7);
+s32 func_00252440(s32 x, s32 y, void *arg2, s32 phase);
 s32 func_00254890(s32 *arg0, s32 arg1);
 s32 func_00254B20(void *arg0, s32 arg1);
 void func_00254C90(s32 *arg0, s32 arg1);
