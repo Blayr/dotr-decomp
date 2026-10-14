@@ -871,4 +871,6 @@ typedef struct nl_glue { struct nl_glue *_next; s32 _niobs; nl_FILE *_iobs; } nl
 typedef struct { u8 pad0[0x58]; } nl_mFILE;
 typedef struct nl_mglue { struct nl_mglue *_next; s32 _niobs; nl_mFILE *_iobs; } nl_mglue;
 
+extern s8 D_002BD0C1[];
+
 #endif

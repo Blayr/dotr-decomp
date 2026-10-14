@@ -1058,6 +1058,7 @@ void func_0019D3E0(s32 arg0, s32 arg1);
 char *func_0019D430(char *s, const char *delim);
 char *func_0019D450(char *s, const char *delim, char **lasts);
 void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2);
+s32 func_0019D9E0(s32 c);
 s32 func_0019DC70(s32 arg0, void *arg1);
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s64 func_001A05E8(s64 u, s64 v);

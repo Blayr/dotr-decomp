@@ -141,7 +141,9 @@ void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2) {
     func_0019D780(D_0028FA98, arg0, arg1, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D9E0);
+s32 func_0019D9E0(s32 c) {
+    return (D_002BD0C1[(u32)c] & 2) ? c - 'a' + 'A' : c;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DA00);
 
