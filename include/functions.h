@@ -849,6 +849,7 @@ int func_0017BC70(void);
 int func_0017BC80(int arg0);
 int func_0017BC90(void);
 int func_0017BCA0(int *arg0, int arg1);
+int func_0017BCB0(void);
 void func_0017BD70(void);
 s64 func_0017BE00(void);
 s32 func_0017BFA0(void);
