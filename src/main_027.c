@@ -34,7 +34,12 @@ INCLUDE_ASM("asm/nonmatchings/main_027", func_00187480);
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_001874F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187510);
+void func_00187510(s32 *arg0, __int128 arg1) {
+    __int128 *p = (__int128 *) arg0[0];
+    *p = arg1;
+    arg0[3] = (s32) p;
+    arg0[0] = (s32) (p + 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187528);
 

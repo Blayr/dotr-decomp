@@ -3193,7 +3193,6 @@ void func_00186470(s32, s32);
 void func_00187308(void *);
 void func_00187318(void *);
 void func_00187480(void *, s32, s32, s32);
-void func_00187510(void *, __int128);
 void func_00187528(void *);
 void func_001875D0(void *, s32, u64);
 
@@ -3249,7 +3248,6 @@ void func_00187370(void *, s32, s32, s32);
 void func_001873E8(void *, u64, s32, s32, s32, s32);
 void func_00187480(void *, s32, s32, s32);
 void *func_001874F8(void *, s32);
-void func_00187510(void *, __int128);
 void func_00187528(void *);
 void func_001875D0(void *, s32, u64);
 extern Tag_00241E80 D_0029B2D0;
