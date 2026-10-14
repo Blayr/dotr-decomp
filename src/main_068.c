@@ -747,7 +747,6 @@ typedef struct State_0023CE40 {
     s16 retries;
 } State_0023CE40;
 
-s32 func_00194248(s32, s32 *, s32 *);
 s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
 
 s32 func_0023CE40(s32 arg0) {
@@ -899,7 +898,6 @@ typedef struct State_0023D170 {
 } State_0023D170;
 
 
-s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
@@ -1010,7 +1008,6 @@ typedef struct State_0023D400 {
     s16 field2B8;
 } State_0023D400;
 
-s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 extern struct State_0023E610 D_0034FB00;
@@ -1199,7 +1196,6 @@ typedef struct State_0023D920 {
 } State_0023D920;
 
 s32 func_00193CE0(s32, s32, void *);
-s32 func_00194248(s32, s32 *, s32 *);
 s32 func_0023E7A0(void);
 extern s16 D_0034FB34;
 extern u8 D_0029B100[];
@@ -1421,7 +1417,6 @@ typedef struct Buffer_0023DE90 {
     s32 table[0x53];
 } Buffer_0023DE90;
 
-s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
@@ -1662,7 +1657,6 @@ s32 func_0023DE90(void) {
     return 0;
 }
 
-s32 func_00194248(s32, s32 *, s32 *);
 extern State_0023E610 D_0034FB00;
 extern s32 D_0034FB04;
 extern s32 D_0034FB08;
@@ -1836,7 +1830,6 @@ extern s16 D_0034FB34;
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
-s32 func_00194248(s32, s32 *, s32 *);
 
 s32 func_0023F340(void) {
     extern struct State_0023E610 D_0034FB00;
@@ -1961,7 +1954,6 @@ typedef struct Tail_0023F5A0 {
     s32 words[0x53];
 } Tail_0023F5A0;
 
-s32 func_00194248(s32, s32 *, s32 *);
 void func_0023FBE0(s32);
 extern u8 D_0029B1BE[];
 extern s32 *D_0034FAE8;
@@ -2182,7 +2174,6 @@ typedef struct State_0023FCE0 {
     s16 field_40;
 } State_0023FCE0;
 
-s32 func_00194248(s32, s32 *, s32 *);
 s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
 extern s32 D_0034FB04;
 extern s32 D_0034FB08;
@@ -2549,7 +2540,6 @@ typedef struct State_002406C0 {
     s16 flags[2];
 } State_002406C0;
 
-s32 func_00194248(s32, s32 *, s32 *);
 s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
 extern s32 D_0034FB04;
 extern s32 D_0034FB08;
@@ -2713,7 +2703,6 @@ typedef struct IOState_002409E0 {
     s16 block_count;
 } IOState_002409E0;
 
-s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
