@@ -94,7 +94,23 @@ INCLUDE_ASM("asm/nonmatchings/main_026", func_001849B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00184A18);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184C88);
+s32 func_00184C88(void *arg0) {
+    u64 *disp;
+
+    disp = arg0;
+    if (((s16 *)func_001849A0())[3] == 1) {
+        *(volatile u64 *)0x12000000 = disp[0];
+        *(volatile u64 *)0x12000070 = disp[2];
+        *(volatile u64 *)0x12000080 = disp[3];
+        *(volatile u64 *)0x120000C0 = disp[4];
+    } else {
+        *(volatile u64 *)0x12000000 = disp[0];
+        *(volatile u64 *)0x12000020 = disp[1];
+        *(volatile u64 *)0x12000090 = disp[2];
+        *(volatile u64 *)0x120000A0 = disp[3];
+        *(volatile u64 *)0x120000E0 = disp[4];
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00184D48);
 
