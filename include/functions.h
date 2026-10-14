@@ -1387,6 +1387,7 @@ void func_0019D3E0(s32 arg0, s32 arg1);
 f32 func_0019D408(s32 s, s32 ptr);
 char *func_0019D430(char *s, const char *delim);
 char *func_0019D450(char *s, const char *delim, char **lasts);
+long func_0019D518(s32 rptr, const char *nptr, char **endptr, s32 base);
 long func_0019D750(const char *arg0, char **arg1, s32 arg2);
 u64 func_0019D780(s32 rptr, const char *nptr, char **endptr, s32 base);
 void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2);

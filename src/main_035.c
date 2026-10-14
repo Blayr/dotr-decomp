@@ -301,7 +301,57 @@ cont:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D518);
+long func_0019D518(s32 rptr, const char *nptr, char **endptr, s32 base) {
+    register const char *s = nptr;
+    register u64 acc;
+    register s32 c;
+    register u64 cutoff;
+    register s32 neg = 0, any, cutlim;
+
+    do {
+        c = *s++;
+    } while ((D_002BD0C0 + 1)[(u32)c] & 8);
+    if (c == '-') {
+        neg = 1;
+        c = *s++;
+    } else if (c == '+')
+        c = *s++;
+    if ((base == 0 || base == 16) && c == '0' && (*s == 'x' || *s == 'X')) {
+        c = s[1];
+        s += 2;
+        base = 16;
+    }
+    if (base == 0)
+        base = c == '0' ? 8 : 10;
+    cutoff = neg ? -(u64)(-0x7FFFFFFFFFFFFFFF - 1) : 0x7FFFFFFFFFFFFFFF;
+    cutlim = cutoff % (u64)base;
+    cutoff /= (u64)base;
+    for (acc = 0, any = 0;; c = *s++) {
+        if ((D_002BD0C0 + 1)[(u32)c] & 4)
+            c -= '0';
+        else if ((D_002BD0C0 + 1)[(u32)c] & 3)
+            c -= ((D_002BD0C0 + 1)[(u32)c] & 1) ? 'A' - 10 : 'a' - 10;
+        else
+            break;
+        if (c >= base)
+            break;
+        if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
+            any = -1;
+        else {
+            any = 1;
+            acc *= base;
+            acc += c;
+        }
+    }
+    if (any < 0) {
+        acc = neg ? (-0x7FFFFFFFFFFFFFFF - 1) : 0x7FFFFFFFFFFFFFFF;
+        ((sl_reent *)rptr)->_errno = 34;
+    } else if (neg)
+        acc = -acc;
+    if (endptr != 0)
+        *endptr = (char *)(any ? s - 1 : nptr);
+    return acc;
+}
 
 long func_0019D750(const char *arg0, char **arg1, s32 arg2) {
     return func_0019D518(D_0028FA98, arg0, arg1, arg2);

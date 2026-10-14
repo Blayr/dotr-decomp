@@ -978,7 +978,6 @@ extern char D_00310D40[];
 
 extern __int128 D_0028D9F0[];
 
-long func_0019D518(s32, const char *, char **, s32);           /* extern */
 
 extern s32 D_0028C250;
 s32 func_0017D0C0(void);
@@ -988,5 +987,7 @@ extern SifCmdHandlerData *D_00310EAC;
 
 extern const char D_002BD0C0[];
 typedef struct su_reent { s32 _errno; } su_reent;
+
+typedef struct sl_reent { s32 _errno; } sl_reent;
 
 #endif
