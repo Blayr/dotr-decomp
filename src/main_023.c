@@ -22,7 +22,9 @@ void func_0017DAF8(s32 *arg0, s32 *arg1) {
     ((s32 **) arg1)[7][arg0[4]] = arg0[5];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DB18);
+void func_0017DB18(void *arg0, void *arg1) {
+    (*(s32 *)((u8 *)arg1 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0x10));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DB28);
 
