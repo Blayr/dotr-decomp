@@ -223,7 +223,69 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C648);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C720);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C7F8);
+typedef struct {
+    s32 status;
+    void *entry;
+    void *stack;
+    s32 stackSize;
+    void *gpReg;
+    s32 initPriority;
+    s32 currentPriority;
+    u32 attr;
+    u32 option;
+    s32 waitType;
+    s32 waitId;
+    s32 wakeupCount;
+} ThParam_0017C7F8;
+
+typedef struct {
+    s32 count;
+    s32 max_count;
+    s32 init_count;
+    s32 wait_threads;
+    u32 attr;
+    u32 option;
+} SemParam_0017C7F8;
+
+extern u8 D_00310110[];
+extern s32 D_00317EF0;
+void func_0017C720(void);
+s32 func_0017B6E0(ThParam_0017C7F8 *);
+s32 func_0017B700(s32, void *);
+s32 func_0017B770(s32, s32);
+
+s32 func_0017C7F8(void) {
+    ThParam_0017C7F8 tp;
+    SemParam_0017C7F8 sp;
+    s32 tid;
+    ring_t *r;
+
+    if (D_0028CA00 > 0) {
+        return -1;
+    }
+    sp.init_count = 0;
+    sp.max_count = 0xFF;
+    D_00310510 = func_0017B8E0(&sp);
+    if (D_00310510 < 0) {
+        return -1;
+    }
+    tp.entry = func_0017C720;
+    tp.stack = D_00310110;
+    tp.stackSize = 0x400;
+    tp.gpReg = &D_00317EF0;
+    tp.initPriority = 0;
+    D_0028CA00 = tid = func_0017B6E0(&tp);
+    if (tid < 0) {
+        func_0017B8F0(D_00310510);
+        return -1;
+    }
+    r = (ring_t *)&D_00310518;
+    r->x0 = 0;
+    r->count = 0;
+    func_0017B700(tid, r);
+    func_0017B770(func_0017B7D0(), 1);
+    return D_0028CA00;
+}
 
 s32 func_0017C8D0(s32 arg0) {
     s32 tid;
