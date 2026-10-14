@@ -976,6 +976,7 @@ void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32
 void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
 s32 func_0018B550(void *arg0, s32 arg1);
 void func_0018B580(void *arg0);
+s32 func_0018B850(void *arg0, s32 arg1);
 void func_0018BB98(void *arg0);
 s32 func_0018BC18(void *arg0, s32 arg1);
 void func_0018BD90(void *arg0, s32 arg1);
