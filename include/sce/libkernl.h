@@ -99,8 +99,8 @@ typedef struct sceSifQueueData {
 typedef enum { SIF_CMD_DIAG = 0 } SifCmdId;
 
 typedef struct {
-    u64 psize : 8;
-    u64 dsize : 24;
+    u32 psize : 8;
+    u32 dsize : 24;
     void *dest;
     SifCmdId cid;
     u32 opt;
@@ -114,6 +114,45 @@ typedef struct {
 } SifCmdResetData;
 
 extern SifCmdResetData D_00314040; /* the reset packet */
+
+/* sifrpc.o: the words every RPC packet carries after the command header */
+typedef struct {
+    SifCmdHeader header; /* 0x00 */
+    s32 recId;           /* 0x10, the slot index << 16 | 5; bit 0 marks the slot taken */
+    void *pktAddr;       /* 0x14 */
+    s32 rpcId;           /* 0x18 */
+} SifRpcPktHeader;
+
+/* a 64-byte packet slot */
+typedef struct {
+    SifRpcPktHeader rpch;
+    char body[36];
+} SifRpcPkt;
+
+/* the answer that finishes a request */
+typedef struct {
+    SifRpcPktHeader rpch;
+    void *client; /* 0x1C */
+    u32 cid;      /* 0x20 */
+    u32 server;   /* 0x24 */
+    u32 buff;     /* 0x28 */
+    u32 cbuff;    /* 0x2C */
+} SifRpcRendPkt;
+
+/* sifrpc.o's RPC state record */
+typedef struct {
+    s32 pid;
+    void *pkt_table;
+    s32 pkt_table_len;
+    s32 unused1;
+    s32 unused2;
+    u8 *rdata_table;
+    s32 rdata_table_len;
+    u8 *client_table;
+    s32 client_table_len;
+    s32 rdata_table_idx;
+    sceSifQueueData *active_queue;
+} SifRpcData;
 
 /* the file stub (filestub.o): the requests the FS calls send in its send buffer */
 typedef struct {
