@@ -219,7 +219,35 @@ s32 func_0017C600(s32 *arg0, s32 *arg1, u32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C638);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C648);
+void func_0017C5E0(s32, s32);
+s32 func_0017C5F0(s32, s32 *, s32);
+s32 func_0017C638(s32);
+extern s32 D_0028C258;
+extern s32 D_0028C998;
+extern s32 D_0028C9C0;
+
+typedef struct KPatch_0017C648 {
+    s32 addr;
+    s32 val;
+} KPatch_0017C648;
+
+void func_0017C648(void) {
+    KPatch_0017C648 *t;
+    u32 i;
+
+    if (!(*(volatile s32 *)0x10001810 & 0x100)) {
+        t = (KPatch_0017C648 *)&D_0028C9C0;
+        func_0017C5E0(t[0].addr, t[0].val);
+        func_0017C5F0(0x80076000, &D_0028C258, 0x740);
+        func_0017C5F0(0x82000, &D_0028C998, 0x28);
+        func_0017BB60(0);
+        func_0017BB60(2);
+        func_0017C5E0(t[1].addr, t[1].val);
+        for (i = 2; i < 8; i++) {
+            func_0017C5E0(t[i].addr, func_0017C638(t[i].addr));
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C720);
 
