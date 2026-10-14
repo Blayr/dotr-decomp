@@ -24,7 +24,22 @@ void func_0017F738(void) {
     func_0017B900(D_0028CAA4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F748);
+s32 func_0017F748(s32 arg0, s32 arg1) {
+    u8 *b_D_00313C00 = (u8 *)&D_00313C00;
+    s32 temp_s0;
+
+    ((s32 (*)(s32))func_0017F708)(0x1B);
+    if (D_0028CAA0 == 0) {
+        func_0017F808();
+    }
+    func_001843E0();
+    temp_s0 = (*(s32 *)(&D_00313C00));
+    (*(s32 *)(b_D_00313C00 + 4)) = arg1;
+    (*(s32 *)(&D_00313C00)) = arg0;
+    func_00184428();
+    func_0017F738();
+    return temp_s0;
+}
 
 void func_0017F7D8(s32 arg0, hcall_t *arg1) {
     if (arg1->fn != NULL) {

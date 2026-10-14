@@ -929,4 +929,7 @@ i2b_Bigint *func_00198AD8(void *ptr, s32 k); /* _Balloc */
 
 void *func_0017E7B0(s32, s32);                      /* extern */
 
+s32 func_0017F808();                            /* extern */
+extern s32 D_00313C00;
+
 #endif

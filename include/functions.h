@@ -880,6 +880,7 @@ void func_0017F1A0(void);
 void func_0017F6B8(void);
 s32 func_0017F708(void);
 void func_0017F738(void);
+s32 func_0017F748(s32 arg0, s32 arg1);
 void func_0017F7D8(s32 arg0, hcall_t *arg1);
 s32 func_0017F9D0(void);
 s32 func_0017FA60(void);
