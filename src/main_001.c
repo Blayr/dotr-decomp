@@ -556,7 +556,121 @@ s32 func_00104520(s32 arg0, s32 arg1) {
     return !(arg0 & (1 << arg1)) ? 0 : 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_001", func_00104540);
+typedef struct {
+    u16 val : 14;
+    u16 hi : 2;
+} Coord_00104540;
+
+typedef struct {
+    u8 pad0[8];
+    Coord_00104540 x;
+    Coord_00104540 y;
+    u8 padC[0xC];
+} Vert_00104540;
+
+typedef struct {
+    u16 pad0;
+    u16 flags;
+    u8 pad4[0xC];
+    Vert_00104540 v[4];
+} Sprite_00104540;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 w;
+    s16 h;
+} Rect_00104540;
+
+s32 func_00104540(void *arg0, void *arg1, s32 arg2) {
+    Sprite_00104540 *s = arg0;
+    Rect_00104540 *r = arg1;
+
+    s->flags |= 0x800;
+    switch (arg2) {
+    case 0:
+        s->v[0].x.val = r->x << 4;
+        s->v[0].y.val = r->y << 4;
+        s->v[1].x.val = (r->x + r->w) << 4;
+        s->v[1].y.val = r->y << 4;
+        s->v[2].x.val = r->x << 4;
+        s->v[2].y.val = (r->y + r->h) << 4;
+        s->v[3].x.val = (r->x + r->w) << 4;
+        s->v[3].y.val = (r->y + r->h) << 4;
+        break;
+    case 1:
+        s->v[0].x.val = r->x << 4;
+        s->v[0].y.val = r->y << 4;
+        s->v[1].x.val = r->x << 4;
+        s->v[1].y.val = (r->y + r->h) << 4;
+        s->v[2].x.val = (r->x + r->w) << 4;
+        s->v[2].y.val = r->y << 4;
+        s->v[3].x.val = (r->x + r->w) << 4;
+        s->v[3].y.val = (r->y + r->h) << 4;
+        break;
+    case 2:
+        s->v[0].x.val = r->x << 4;
+        s->v[0].y.val = (r->y + r->h) << 4;
+        s->v[1].x.val = r->x << 4;
+        s->v[1].y.val = r->y << 4;
+        s->v[2].x.val = (r->x + r->w) << 4;
+        s->v[2].y.val = (r->y + r->h) << 4;
+        s->v[3].x.val = (r->x + r->w) << 4;
+        s->v[3].y.val = r->y << 4;
+        break;
+    case 3:
+        s->v[0].x.val = r->x << 4;
+        s->v[0].y.val = (r->y + r->h) << 4;
+        s->v[1].x.val = (r->x + r->w) << 4;
+        s->v[1].y.val = (r->y + r->h) << 4;
+        s->v[2].x.val = r->x << 4;
+        s->v[2].y.val = r->y << 4;
+        s->v[3].x.val = (r->x + r->w) << 4;
+        s->v[3].y.val = r->y << 4;
+        break;
+    case 4:
+        s->v[0].x.val = (r->x + r->w) << 4;
+        s->v[0].y.val = r->y << 4;
+        s->v[1].x.val = r->x << 4;
+        s->v[1].y.val = r->y << 4;
+        s->v[2].x.val = (r->x + r->w) << 4;
+        s->v[2].y.val = (r->y + r->h) << 4;
+        s->v[3].x.val = r->x << 4;
+        s->v[3].y.val = (r->y + r->h) << 4;
+        break;
+    case 5:
+        s->v[0].x.val = (r->x + r->w) << 4;
+        s->v[0].y.val = r->y << 4;
+        s->v[1].x.val = (r->x + r->w) << 4;
+        s->v[1].y.val = (r->y + r->h) << 4;
+        s->v[2].x.val = r->x << 4;
+        s->v[2].y.val = r->y << 4;
+        s->v[3].x.val = r->x << 4;
+        s->v[3].y.val = (r->y + r->h) << 4;
+        break;
+    case 6:
+        s->v[0].x.val = (r->x + r->w) << 4;
+        s->v[0].y.val = (r->y + r->h) << 4;
+        s->v[1].x.val = r->x << 4;
+        s->v[1].y.val = (r->y + r->h) << 4;
+        s->v[2].x.val = (r->x + r->w) << 4;
+        s->v[2].y.val = r->y << 4;
+        s->v[3].x.val = r->x << 4;
+        s->v[3].y.val = r->y << 4;
+        break;
+    case 7:
+        s->v[0].x.val = (r->x + r->w) << 4;
+        s->v[0].y.val = (r->y + r->h) << 4;
+        s->v[1].x.val = (r->x + r->w) << 4;
+        s->v[1].y.val = r->y << 4;
+        s->v[2].x.val = r->x << 4;
+        s->v[2].y.val = (r->y + r->h) << 4;
+        s->v[3].x.val = r->x << 4;
+        s->v[3].y.val = r->y << 4;
+        break;
+    }
+    return 0;
+}
 
 typedef struct {
     u16 val : 14;
