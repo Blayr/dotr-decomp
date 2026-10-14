@@ -95,7 +95,7 @@ segments:
       - [0x9DFB8, c, main_034]
       - [0xA1778, c, main_035]
       - [0xA6F60, c, main_036]
-      - [0xAD530, c, main_037]
+      - [0xAD580, c, main_037]
       - [0xB4600, c, main_038]
       - [0xBB080, asm, big_func_001B4780]
       - [0xBCBF0, c, main_039]

@@ -1,11 +1,5 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6C30);
-
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6C48);
-
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6C60);
-
 
 typedef struct Flags2C_001A6C80 {
     u8 low : 2;
