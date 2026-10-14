@@ -829,6 +829,7 @@ void func_001950C8(s8 *arg0);
 void func_001966E8(void);
 void func_001966F0(void);
 s32 func_001966F8(void);
+void func_00196A10(void);
 s32 *func_00197780(void);
 void func_0019A5B0(s64 arg0);
 s32 func_0019B6D8(void);
