@@ -259,7 +259,19 @@ void func_00187F18(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     func_00187A28(arg0, sp0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00187FC8);
+void func_00187FC8(f32 (*m)[4], f32 *x, f32 *y, f32 *z) {
+    f32 v[4];
+
+    func_00187B48(v, x, -1.0f);
+    func_001879A0(m[0], v);
+    func_00187B48(v, y, -1.0f);
+    func_001879A0(m[1], v);
+    func_00187B48(v, z, -1.0f);
+    func_001879A0(m[2], v);
+    m[3][0] = m[3][1] = m[3][2] = 0.0f;
+    m[3][3] = 1.0f;
+    func_001879E0(m, m);
+}
 
 void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_00187B90(arg0, arg1);
