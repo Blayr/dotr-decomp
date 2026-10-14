@@ -3195,7 +3195,6 @@ typedef struct {
     u32 words[4];
 } Tag_00241E80;
 
-void func_001872F8(void *, u64);
 void func_001873E8(void *, u64, s32, s32, s32, s32);
 void func_00187528(void *);
 extern Tag_00241E80 D_0029B2D0;

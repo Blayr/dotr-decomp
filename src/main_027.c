@@ -86,7 +86,13 @@ s32 func_00187118(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187298);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001872F8);
+void func_001872F8(void *p0, u64 p1) {
+    __asm__ __volatile__("\n\
+	sw	%1,0x0(%0)\n\
+	sw	$0,0x8(%0)\n\
+	sw	%1,0x4(%0)\n\
+	" :  : "r" (p0), "r" (p1));
+}
 
 void func_00187308(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 8)) = 0;
