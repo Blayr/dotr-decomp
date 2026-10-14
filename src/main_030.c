@@ -44,7 +44,14 @@ INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EDD0);
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EE20);
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EE38);
+void func_0018EE38(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
+    void *temp_t0;
+
+    temp_t0 = (*(void **)((u8 *)arg0 + 0x40));
+    *arg1 = (*(s32 *)((u8 *)temp_t0 + 0x94));
+    *arg2 = (*(s32 *)((u8 *)temp_t0 + 0x98));
+    *arg3 = (*(s32 *)((u8 *)temp_t0 + 0x9C));
+}
 
 s32 func_0018EE58(void *arg0) {
     return *(*(s32 **)((u8 *)arg0 + 0x40));
