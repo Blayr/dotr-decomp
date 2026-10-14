@@ -2,7 +2,22 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F648);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F6A8);
+void func_0018F6A8(void *arg0) {
+    (*(s32 *)((u8 *)arg0 + 0x818)) = 1;
+    (*(s32 *)((u8 *)arg0 + 0x1B0)) = 0;
+    func_001843E0();
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+    *(volatile s32 *)0x1000B000 = 0;
+    *(volatile s32 *)0x1000B400 = 0;
+    *(volatile s32 *)0x1000D400 = 0;
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    *(volatile s32 *)0x1000B020 = 0;
+    *(volatile s32 *)0x1000B420 = 0;
+    *(volatile s32 *)0x1000D420 = 0;
+    *(volatile s32 *)0x10002010 = 0x40000000;
+    func_001903C8(0, 0);
+}
 
 void func_0018F768(s32 arg0) {
     func_00199B50(&D_002BCA98, arg0);
