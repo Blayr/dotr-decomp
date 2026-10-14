@@ -1119,6 +1119,7 @@ void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3);
 s32 *func_001849A0(void);
 s32 func_00184C88(void *arg0);
 s32 func_00184D48(s16 arg0, s16 arg1, s16 arg2);
+s32 func_00184E10(void *arg0, s16 psm, s16 w, s16 h, s16 ztest, s16 zpsm);
 s32 func_00184FF8(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b, u8 a, u32 z);
 s32 func_00185100(void *arg0);
 s32 func_00185480(u8 *arg0, s32 arg1);

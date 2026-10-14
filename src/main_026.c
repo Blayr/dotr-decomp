@@ -137,7 +137,74 @@ s32 func_00184D48(s16 arg0, s16 arg1, s16 arg2) {
     return (s16)(bw * bh * 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184E10);
+typedef struct {
+    u64 AC : 1;
+    u64 pad : 63;
+} sceGsPrmodecontE10;
+
+typedef struct {
+    u64 CLAMP : 1;
+    u64 pad : 63;
+} sceGsColclampE10;
+
+typedef struct {
+    u64 DTHE : 1;
+    u64 pad : 63;
+} sceGsDtheE10;
+
+typedef struct {
+    u64 frame1;
+    u64 frame1addr;
+    u64 zbuf1;
+    u64 zbuf1addr;
+    u64 xyoffset1;
+    u64 xyoffset1addr;
+    u64 scissor1;
+    u64 scissor1addr;
+    sceGsPrmodecontE10 prmodecont;
+    u64 prmodecontaddr;
+    sceGsColclampE10 colclamp;
+    u64 colclampaddr;
+    sceGsDtheE10 dthe;
+    u64 dtheaddr;
+    u64 test1;
+    u64 test1addr;
+} sceGsDrawEnv1E10;
+
+s32 func_00184E10(void *arg0, s16 psm, s16 w, s16 h, s16 ztest, s16 zpsm) {
+    sceGsDrawEnv1E10 *dp = arg0;
+
+    dp->frame1addr = 0x4C;
+    dp->frame1 = ((u64)(((w + 63) >> 6) & 0x3F) << 16) | ((u64)(psm & 0xF) << 24);
+    dp->zbuf1addr = 0x4E;
+    if (ztest == 0) {
+        dp->zbuf1 = (u64)(s16)func_00184D48(psm, w, h) | ((u64)(zpsm & 0xF) << 24) | ((u64)1 << 32);
+    } else {
+        dp->zbuf1 = (u64)(s16)func_00184D48(psm, w, h) | ((u64)(zpsm & 0xF) << 24);
+    }
+    dp->xyoffset1addr = 0x18;
+    dp->xyoffset1 = (((u64)2048 - (s16)(w >> 1)) << 4) | ((((u64)2048 - (s16)(h >> 1)) << 4) << 32);
+    dp->scissor1addr = 0x40;
+    dp->scissor1 = ((u64)(w - 1) << 16) | ((u64)(h - 1) << 48);
+    dp->prmodecontaddr = 0x1A;
+    dp->prmodecont.AC = 1;
+    dp->colclampaddr = 0x46;
+    dp->colclamp.CLAMP = 1;
+    dp->dtheaddr = 0x45;
+    if (psm & 2) {
+        dp->dthe.DTHE = 1;
+    } else {
+        dp->dthe.DTHE = 0;
+    }
+    dp->test1addr = 0x47;
+    if (ztest) {
+        dp->test1 = 0x10000 | ((u64)(ztest & 3) << 17);
+    } else {
+        dp->test1 = 0x30000;
+    }
+    __asm__ volatile("sync");
+    return 8;
+}
 
 typedef struct {
     u64 testa;
