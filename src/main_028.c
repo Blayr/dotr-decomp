@@ -16,7 +16,19 @@ void func_00187BF8(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00187C08);
+void func_00187C08(void *p0) {
+    __asm__ __volatile__("\n\
+	vsub.xyzw	$vf4,$vf0,$vf0\n\
+	vadd.w	$vf4,$vf4,$vf0\n\
+	vmr32.xyzw	$vf5,$vf4\n\
+	vmr32.xyzw	$vf6,$vf5\n\
+	vmr32.xyzw	$vf7,$vf6\n\
+	sqc2	$vf4,0x30(%0)\n\
+	sqc2	$vf5,0x20(%0)\n\
+	sqc2	$vf6,0x10(%0)\n\
+	sqc2	$vf7,0x0(%0)\n\
+	" :  : "r" (p0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00187C30);
 
