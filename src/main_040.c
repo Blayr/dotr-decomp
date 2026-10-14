@@ -1466,7 +1466,65 @@ void func_001C1AD0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1B00);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1FE0);
+typedef struct Vertex_001C1FE0 {
+    f32 x, y, z;
+    u8 pad0C[0xC];
+    u8 r, g, b, a;
+    f32 q;
+    u8 pad20[0x10];
+} Vertex_001C1FE0;
+
+typedef struct Prim_001C1FE0 {
+    u16 flags;
+    u16 kind;
+    u32 pad;
+    u64 value;
+    u64 alpha;
+    u64 tex0;
+    u64 tex1;
+    u64 clamp;
+} Prim_001C1FE0;
+
+static inline void initPrim_001C1FE0(s32 kind, void *prim) {
+    ((Prim_001C1FE0 *)prim)->kind = kind;
+    ((Prim_001C1FE0 *)prim)->flags = 0;
+    ((Prim_001C1FE0 *)prim)->value = 0;
+    ((Prim_001C1FE0 *)prim)->pad = 0;
+}
+
+void func_001C1FE0(s32 arg0, f32 *position, u8 alpha, f32 width, f32 height) {
+    extern s32 func_00207AA0(s32, void *, s32, s32, s32, s32);
+    void *scratchpad = (void *)0x70000000;
+    Vertex_001C1FE0 *vertices = (Vertex_001C1FE0 *)((u8 *)scratchpad + 0x2000);
+    s32 count;
+    Prim_001C1FE0 prim;
+
+    vertices[0].r = 0x80;
+    vertices[0].g = 0x80;
+    vertices[0].b = 0x80;
+    vertices[0].a = alpha;
+    vertices[0].q = 1.0f;
+    vertices[0].x = position[0] - width;
+    vertices[0].y = position[1];
+    vertices[0].z = position[2] - height;
+    vertices[1].x = position[0] + width;
+    vertices[1].y = position[1];
+    vertices[1].z = position[2] - height;
+    vertices[2].x = position[0] + width;
+    vertices[2].y = position[1];
+    vertices[2].z = position[2] + height;
+    vertices[3].x = position[0] - width;
+    vertices[3].y = position[1];
+    vertices[3].z = position[2] + height;
+    vertices[4].x = position[0] - width;
+    vertices[4].y = position[1];
+    vertices[4].z = position[2] - height;
+    count = func_002070F0(0, 5, vertices, 0xAA, scratchpad, 0, 0);
+    func_00207230(NULL, count, vertices);
+    initPrim_001C1FE0(5, &prim);
+    func_002086D0(&prim, func_00208D00(2));
+    func_00207AA0(arg0, &prim, count, (s32)vertices, 0, 0);
+}
 
 extern u8 D_002CCB48[];
 extern u8 D_002CD1F4[];
