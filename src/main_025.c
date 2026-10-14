@@ -181,7 +181,11 @@ u32 func_00183BA8(s32 arg0, s32 arg1) {
     return temp_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C30);
+int func_00183C30(int arg0, int *arg1, int arg2) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x5A\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_00183C40(s32 *arg0, s32 *arg1, u32 arg2) {
     s32 *var_a0;
@@ -210,7 +214,6 @@ INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C78);
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C88);
 
-s32 func_00183C30(s32, s32 *, s32);
 s32 func_00183C78(s32);
 void func_00183C88(s32, s32);
 extern s32 D_0028CAC8;
