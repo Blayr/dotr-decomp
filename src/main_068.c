@@ -1421,7 +1421,6 @@ typedef struct Buffer_0023DE90 {
     s32 table[0x53];
 } Buffer_0023DE90;
 
-s32 func_00194058(s32, void *, s32);
 s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
@@ -2714,7 +2713,6 @@ typedef struct IOState_002409E0 {
     s16 block_count;
 } IOState_002409E0;
 
-s32 func_00194058(s32, void *, s32);
 s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;

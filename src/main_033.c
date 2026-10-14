@@ -75,7 +75,57 @@ s32 func_00193F38(s32 arg0, s32 *arg1, s32 arg2) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00194058);
+typedef struct McWriteDesc_00194058 {
+    s32 fd;
+    s32 unk4;
+    s32 unk8;
+    s32 rest;
+    s32 unk10;
+    s32 size;
+    s32 origin;
+    s32 unk1C;
+    u8 data[16];
+} McWriteDesc_00194058;
+
+s32 func_00194058(s32 arg0, void *arg1, s32 arg2) {
+
+    u8 *p;
+    u32 i;
+    u32 t;
+    s32 ret;
+
+    if (func_0017B930(D_0028F794) < 0) {
+        return -0xC8;
+    }
+    p = (u8 *)&D_00315C40;
+    if ((*(s32 *)(p + 0x24)) == 0) {
+        func_0017B900(D_0028F794);
+        return -0x64;
+    }
+
+    (*(McWriteDesc_00194058 *)&D_00315CC0).fd = arg0;
+    if (arg2 < 0x11) {
+        (*(McWriteDesc_00194058 *)&D_00315CC0).size = arg2;
+        (*(McWriteDesc_00194058 *)&D_00315CC0).rest = 0;
+        (*(McWriteDesc_00194058 *)&D_00315CC0).origin = 0;
+    } else {
+        t = (u32)arg1 - 0x10;
+        (*(McWriteDesc_00194058 *)&D_00315CC0).size = (((u32)arg1 - 1) & 0xFFFFFFF0) - t;
+        (*(McWriteDesc_00194058 *)&D_00315CC0).rest = arg2 - (*(McWriteDesc_00194058 *)&D_00315CC0).size;
+        (*(McWriteDesc_00194058 *)&D_00315CC0).origin = (u32)arg1 + (*(McWriteDesc_00194058 *)&D_00315CC0).size;
+    }
+    for (i = 0; i < (*(McWriteDesc_00194058 *)&D_00315CC0).size; i++) {
+        (*(McWriteDesc_00194058 *)&D_00315CC0).data[i] = ((u8 *)arg1)[i];
+    }
+    func_0017BB60(0);
+    ret = func_0017EA80(&D_00315C40, 6, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (ret == 0) {
+        D_0028F790 = 6;
+    } else {
+        func_0017B900(D_0028F794);
+    }
+    return ret;
+}
 
 void func_001941D8(s32 arg0, s32 arg1, s32 arg2) {
     func_0017C8D0(arg2);
