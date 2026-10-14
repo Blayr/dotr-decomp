@@ -789,7 +789,53 @@ f32 func_001A61F0(f32 x, f32 y, s32 iy) {
         return x - ((z * ((f32)0.5000000298023223876953125 * y - v * r) - y) - v * (f32)-0.166666679084300994873046875);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6318);
+f32 func_001A6318(f32 x, f32 y, s32 iy) {
+    f32 z, r, v, w, s;
+    s32 ix, hx;
+
+    do { fshape gf_u; gf_u.value = (x); (hx) = gf_u.word; } while (0);
+    ix = hx & 0x7fffffff;
+    if (ix < 0x31800000) {
+        if ((s32)x == 0) {
+            if ((ix | (iy + 1)) == 0)
+                return (f32)1.000000059604644775390625 / func_001A6970(x);
+            else
+                return (iy == 1) ? x : (f32)-1.000000059604644775390625 / x;
+        }
+    }
+    if (ix >= 0x3f2ca140) {
+        if (hx < 0) { x = -x; y = -y; }
+        z = (f32)0.7853981554508209228515625 - x;
+        w = (f32)0.0000000377489488556648211670108139514923095703125 - y;
+        x = z + w; y = 0.0;
+    }
+    z = x * x;
+    w = z * z;
+    r = D_002BE5D0[1] + w * (D_002BE5D0[3] + w * (D_002BE5D0[5] + w * (D_002BE5D0[7] + w * (D_002BE5D0[9] + w * D_002BE5D0[11]))));
+    v = z * (D_002BE5D0[2] + w * (D_002BE5D0[4] + w * (D_002BE5D0[6] + w * (D_002BE5D0[8] + w * (D_002BE5D0[10] + w * D_002BE5D0[12])))));
+    s = z * x;
+    r = y + z * (s * (r + v) + y);
+    r += D_002BE5D0[0] * s;
+    w = x + r;
+    if (ix >= 0x3f2ca140) {
+        v = (f32)iy;
+        return (f32)(1 - ((hx >> 30) & 2)) * (v - (f32)2.00000011920928955078125 * (x - (w * w / (w + v) - r)));
+    }
+    if (iy == 1) return w;
+    else {
+        f32 a, t;
+        s32 i;
+        z = w;
+        do { fshape gf_u; gf_u.value = (z); (i) = gf_u.word; } while (0);
+        do { fshape sf_u; sf_u.word = (i & 0xfffff000); (z) = sf_u.value; } while (0);
+        v = r - (z - x);
+        t = a = (f32)-1.000000059604644775390625 / w;
+        do { fshape gf_u; gf_u.value = (t); (i) = gf_u.word; } while (0);
+        do { fshape sf_u; sf_u.word = (i & 0xfffff000); (t) = sf_u.value; } while (0);
+        s = (f32)1.000000059604644775390625 + t * z;
+        return t + a * (s + t * v);
+    }
+}
 
 double func_001A65C0(double x) {
     u32 high;

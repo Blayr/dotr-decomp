@@ -867,7 +867,6 @@ typedef struct nl_mglue { struct nl_mglue *_next; s32 _niobs; nl_mFILE *_iobs; }
 
 extern s8 D_002BD0C1[];
 
-f32 func_001A6318(f32 x, f32 y, s32 iy);
 s32 func_001A5338(f32 x, f32 *y);
 
 typedef union { double value; struct { u32 lsw; u32 msw; } parts; } nl_dshape;
@@ -876,5 +875,7 @@ extern s32 D_002BC828;
 
 s32 func_0018F648(s32);                         /* extern */
 extern s32 D_002BC9D0;
+
+extern f32 D_002BE5D0[]; /* fdlibm kf_tan.c T[13] */
 
 #endif
