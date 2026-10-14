@@ -303,7 +303,18 @@ s64 func_0017BE00(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BEA8);
 
-INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BF28);
+s32 func_0017BF28(s32 fd, char *buf, s32 n) {
+    if (fd == 0) {
+        if (D_0028C250 == 0) {
+            if (func_0017D0C0() == 0) {
+                return -1;
+            }
+            D_0028C250 = 1;
+        }
+        return func_0017CFF0(buf, n);
+    }
+    return -1;
+}
 
 s32 func_0017BFA0(void) {
     *(s32 *)func_001966F8() = 5;

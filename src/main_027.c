@@ -27,7 +27,13 @@ s32 func_00186FF0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187058);
+s32 func_00187058(void) {
+    if (func_001870C8() != 1) {
+        return 0;
+    }
+    *(volatile u32 *)0x10003810 = 8;
+    return 1;
+}
 
 u32 func_00187098(u32 arg0, u32 arg1, u32 arg2) {
     u32 v = arg0 | (arg1 << 1) | (arg2 << 2);
@@ -84,7 +90,18 @@ s32 func_00187118(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187298);
+s32 func_00187298(__int128 *data, s32 n) {
+    s32 i = 0;
+
+    while (--n != -1) {
+        if (*(volatile u32 *)0x10003800 & 0x10000000) {
+            return i;
+        }
+        *(volatile __int128 *)0x10004000 = *data++;
+        i++;
+    }
+    return i;
+}
 
 void func_001872F8(void *p0, u64 p1) {
     __asm__ __volatile__("\n\
@@ -163,7 +180,36 @@ void func_00187510(s32 *arg0, __int128 arg1) {
     arg0[0] = (s32) (p + 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187528);
+void func_00187528(void *arg0) {
+    u64 *code = *(u64 **)((u8 *)arg0 + 0xC);
+    s32 cur = *(s32 *)arg0;
+    u64 v = *code;
+    u32 n = ((cur - (s32)code) >> 3) - 2;
+    u64 mode = (v >> 58) & 3;
+    u32 d;
+    s32 p;
+
+    if (mode != 1) {
+        n >>= 1;
+    }
+    if (mode != 2) {
+        d = v >> 60;
+        if (d == 0) {
+            d = 16;
+        }
+        n = (n + d - 1) / d;
+    }
+    *(s32 *)((u8 *)arg0 + 0xC) = 0;
+    *code = v + n;
+    p = cur;
+    if (p & 0xC) {
+        do {
+            *(s32 *)p = 0;
+            p += 4;
+        } while (p & 0xC);
+    }
+    *(s32 *)arg0 = p;
+}
 
 void func_001875D0(u64 **arg0, u32 arg1, u64 arg2) {
     u64 *p = *arg0;
@@ -220,7 +266,36 @@ void func_001876B8(void *arg0, __int128 arg1) {
     (*(__int128 **)arg0) = (__int128 *) (temp_v0 + 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001876D0);
+void func_001876D0(void *arg0) {
+    u64 *code = *(u64 **)((u8 *)arg0 + 0x14);
+    s32 cur = *(s32 *)arg0;
+    u64 v = *code;
+    u32 n = ((cur - (s32)code) >> 3) - 2;
+    u64 mode = (v >> 58) & 3;
+    u32 d;
+    s32 p;
+
+    if (mode != 1) {
+        n >>= 1;
+    }
+    if (mode != 2) {
+        d = v >> 60;
+        if (d == 0) {
+            d = 16;
+        }
+        n = (n + d - 1) / d;
+    }
+    *(s32 *)((u8 *)arg0 + 0x14) = 0;
+    *code = v + n;
+    p = cur;
+    if (p & 0xC) {
+        do {
+            *(s32 *)p = 0;
+            p += 4;
+        } while (p & 0xC);
+    }
+    *(s32 *)arg0 = p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187778);
 

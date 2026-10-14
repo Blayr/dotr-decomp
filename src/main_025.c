@@ -149,7 +149,13 @@ s32 func_001839D8(void) {
     return x != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183A00);
+s32 func_00183A00(void) {
+    if (func_0017BCF0(4) & 0x40000) {
+        func_0017BD60();
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183A38);
 

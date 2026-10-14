@@ -310,9 +310,23 @@ s32 func_0017DE40(s32 arg0, s32 arg1) {
     return old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DE58);
+s32 func_0017DE58(s32 cid, s32 *f, s32 data) {
+    if (cid < 0) {
+        D_00310EA4[cid].func = f;
+        D_00310EA4[cid].data = (void *)data;
+    } else {
+        D_00310EAC[cid].func = f;
+        D_00310EAC[cid].data = (void *)data;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DE88);
+s32 func_0017DE88(s32 cid) {
+    if (cid < 0) {
+        D_00310EA4[cid].func = 0;
+    } else {
+        D_00310EAC[cid].func = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DEB0);
 

@@ -633,7 +633,6 @@ extern char D_002D066F[];
 void func_0017E240(s32);
 void func_00191778(s32);
 s32 func_00183A38(char *);
-s32 func_00183A00(void);
 void func_00182838(void);
 s32 func_00191A58(s32);
 s32 func_00190FF0(Stat_001FFFC0 *, s32);

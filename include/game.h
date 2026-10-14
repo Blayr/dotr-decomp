@@ -44,7 +44,6 @@ extern u8 D_00317490[];
 typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
-extern void func_001876D0(void *);
 extern void func_00187778(void *, s32, s32);
 
 extern u8 D_003506C8[];
@@ -791,14 +790,12 @@ s32 func_00190498();                            /* extern */
 extern s32 D_0028DCFC;
 extern s32 D_003156C4;
 extern s32 D_003156C8;
-s32 func_0017DE58(s32, s32 *, s32); /* extern */
 extern s32 D_0028DCE4;
 
 extern s32 D_0028C254;
 u32 func_0017B8C0(void);
 
 extern s32 D_003512F8;
-s32 func_0017BF28();
 s32 func_0017BEA8();
 
 typedef struct { u8 pad0[0xC]; s16 _flags; u8 pad1[0x58 - 0xE]; } nl_FILE;
@@ -851,7 +848,6 @@ void func_0017B720(void);
 
 
 
-s32 func_0017DE88(s32);                     /* extern */
 
 extern f32 D_002BE128[]; /* fdlibm ef_pow.c bp[2] = { 1.0, 1.5 } */
 extern f32 D_002BE130[]; /* dp_h[2] */
@@ -987,5 +983,11 @@ extern char D_00310D40[];
 extern __int128 D_0028D9F0[];
 
 long func_0019D518(s32, const char *, char **, s32);           /* extern */
+
+extern s32 D_0028C250;
+s32 func_0017D0C0(void);
+typedef struct { void *func; void *data; } SifCmdHandlerData;
+extern SifCmdHandlerData *D_00310EA4;
+extern SifCmdHandlerData *D_00310EAC;
 
 #endif
