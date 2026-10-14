@@ -48,7 +48,7 @@ s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
     s32 temp_v0_2;
 
     (*(s32 *)((u8 *)arg0 + 0x11C)) = 0;
-    func_0018BB98();
+    func_0018BB98(arg0);
     temp_v0 = func_0018B850(arg0, 0x20);
     if ((u32) (temp_v0 - 0x101) >= 0xAFU) {
         func_0018F778((s32) arg0, &D_002BC7C0, temp_v0);
