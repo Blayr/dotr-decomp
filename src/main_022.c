@@ -256,7 +256,45 @@ void func_0017C648(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C720);
+typedef struct {
+    u8 code;
+    u8 id;
+} KernEvent_0017C720;
+
+typedef struct {
+    s32 ridx;
+    s32 widx;
+    KernEvent_0017C720 ent[512];
+} KernEventRing_0017C720;
+
+extern char D_002BBF78[];
+
+/* topThread: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0017C720(void *arg) {
+    KernEventRing_0017C720 *ring = (KernEventRing_0017C720 *)arg;
+    s32 i;
+
+    while (1) {
+        ((s32 (*)(s32))func_0017B920)(D_00310510);
+        i = ring->ridx & 0x1FF;
+        ring->ridx = i + 1;
+        switch (ring->ent[i].code) {
+        case 0:
+            ((s32 (*)(s32))func_0017B810)(ring->ent[i].id);
+            break;
+        case 1:
+            func_0017B790(ring->ent[i].id);
+            break;
+        case 2:
+            ((s32 (*)(s32))func_0017B850)(ring->ent[i].id);
+            break;
+        default:
+            func_0017DA60(D_002BBF78);
+            break;
+        }
+    }
+}
 
 typedef struct {
     s32 status;
@@ -284,7 +322,6 @@ typedef struct {
 
 extern u8 D_00310110[];
 extern s32 D_00317EF0;
-void func_0017C720(void);
 
 s32 func_0017C7F8(void) {
     ThParam_0017C7F8 tp;
@@ -482,7 +519,80 @@ void func_0017CCC8(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CD08);
+typedef struct {
+    s32 size;
+    s32 count;
+    char *rp;
+    char *wp;
+    char buf[256];
+} TtyQueue_0017CD08;
+
+typedef struct {
+    volatile s32 s;
+    volatile s32 wlen;
+    volatile s32 rlen;
+    volatile s32 busy;
+    char *wbuf;
+    char *rbuf;
+    TtyQueue_0017CD08 *q;
+} TtyRec_0017CD08;
+
+extern char D_002BBFA0[];
+extern char D_002BBFC8[];
+extern char D_002BBFE0[];
+extern char D_002BBFF8[];
+
+/* sceTtyHandler: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0017CD08(s32 event, s32 param, void *opt) {
+    TtyRec_0017CD08 *tty = opt;
+    s32 n;
+    s32 i;
+    char *hdr;
+
+    switch (event) {
+    case 1:
+    case 2:
+        if (param != 0) {
+            if (320 < (u32)(tty->rlen + param)) {
+                func_0017DA60(D_002BBFA0);
+            }
+            i = ((s32 (*)(s32, char *, u16))func_0017CB48)(tty->s, tty->rbuf + tty->rlen, (u16)param);
+            if (i < 0) {
+                func_0017DA60(D_002BBFC8);
+            }
+            tty->rlen = tty->rlen + i;
+            return;
+        }
+        hdr = tty->rbuf;
+        for (i = 12; i < *(u16 *)hdr; i++) {
+            *tty->q->wp = tty->rbuf[i];
+            func_0017CC88(tty->q);
+        }
+        tty->rlen = 0;
+        return;
+
+    case 3:
+        n = ((s32 (*)(s32, char *, u16))func_0017CB80)(tty->s, tty->wbuf, (u16)tty->wlen);
+        if (n < 0) {
+            func_0017DA60(D_002BBFE0, n);
+            break;
+        }
+        tty->wbuf = tty->wbuf + n;
+        tty->wlen = tty->wlen - n;
+        return;
+
+    case 4:
+        if (tty->wlen != 0) {
+            func_0017DA60(D_002BBFF8, tty->wlen);
+        }
+        break;
+
+    default:
+        return;
+    }
+    tty->busy = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CEA0);
 

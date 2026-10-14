@@ -301,7 +301,21 @@ s64 func_0017BE00(void) {
     return val;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BEA8);
+/* write: adapted from gt4-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0017BEA8(s32 mode, s32 a, s32 b) {
+    extern s32 func_0017CEA0(s32, s32);
+
+    if (mode == 1 || mode == 2) {
+        if (D_0028C250 == 0) {
+            if (func_0017D0C0() == 0)
+                return -1;
+            D_0028C250 = 1;
+        }
+        return func_0017CEA0(a, b);
+    }
+    return -1;
+}
 
 s32 func_0017BF28(s32 fd, char *buf, s32 n) {
     if (fd == 0) {

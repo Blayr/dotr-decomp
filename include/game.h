@@ -615,7 +615,6 @@ s32 func_00186D68();                                /* extern */
 s32 func_001970A8();                                /* extern */
 
 s32 func_0018EF48(s32, void *);    /* extern */
-s32 func_0017EA80(s32 *, s32, s32, s32 *, s32, s32 *, s32, s32, s32); /* extern */
 extern s8 D_002BD0A0;
 extern s32 D_00315CC0;
 
@@ -760,7 +759,6 @@ extern s32 D_0028DCE4;
 extern s32 D_0028C254;
 
 extern s32 D_003512F8;
-s32 func_0017BEA8();
 
 typedef struct { u8 pad0[0xC]; s16 _flags; u8 pad1[0x58 - 0xE]; } nl_FILE;
 typedef struct nl_glue { struct nl_glue *_next; s32 _niobs; nl_FILE *_iobs; } nl_glue;
@@ -872,7 +870,6 @@ extern s32 D_0028D970;
 
 typedef struct fr_FILE { u8 *_p; s32 _r; } fr_FILE;
 
-void *func_0017E408(s32 *);
 
 
 void func_0018FA40(void *);
@@ -920,7 +917,6 @@ extern s8 D_002BC2D8;
 
 extern s32 D_0028D118;
 
-void func_0017EF98(void *);
 
 extern s32 D_0028CAB8;
 extern s32 D_00313C40;
@@ -931,7 +927,6 @@ extern s32 D_00313500;
 extern s32 D_00313B80;
 
 
-s32 func_0017DEB0(s32, s32, s32, s32, s32, s32, s32);
 
 
 extern s32 D_0028CA08;
@@ -941,7 +936,6 @@ extern __int128 D_0028D9F0[];
 
 
 extern s32 D_0028C250;
-s32 func_0017D0C0(void);
 typedef struct { void *func; void *data; } SifCmdHandlerData;
 extern SifCmdHandlerData *D_00310EA4;
 extern SifCmdHandlerData *D_00310EAC;

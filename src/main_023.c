@@ -1,7 +1,47 @@
 #include "common.h"
 #include "sce/libkernl.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D0C0);
+typedef struct {
+    volatile s32 s;
+    volatile s32 wlen;
+    volatile s32 rlen;
+    volatile s32 busy;
+    char *wbuf;
+    char *rbuf;
+    void *q;
+} TtyRec_0017D0C0;
+
+extern TtyRec_0017D0C0 D_00310A90;
+extern char D_00310AC0[];
+extern char D_00310C00[];
+
+/* sceTtyInit: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0017D0C0(void) {
+    extern void func_0017CD08(s32, s32, void *);
+    char *snd;
+    char *rcv;
+
+    func_0017BB60(0);
+    D_00310A90.s = func_0017CA80(0x210, (s32)&D_00310A90, (s32)func_0017CD08);
+    if (D_00310A90.s < 0) {
+        return 0;
+    }
+    D_00310A90.busy = 0;
+    rcv = (char *)((u32)D_00310C00 | 0x20000000);
+    snd = (char *)((u32)D_00310AC0 | 0x20000000);
+    D_00310A90.wlen = 0;
+    D_00310A90.rlen = 0;
+    D_00310A90.rbuf = rcv;
+    D_00310A90.wbuf = snd;
+    *(s16 *)(snd + 4) = 0x210;
+    snd[6] = 'E';
+    snd[7] = 'H';
+    *(s16 *)(snd + 2) = 0;
+    *(s32 *)(snd + 8) = 0;
+    D_00310A90.q = func_0017CC60(256);
+    return 1;
+}
 
 s32 func_0017D180(s32 arg0) {
     do {
@@ -360,7 +400,47 @@ s32 func_0017DE88(s32 cid) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DEB0);
+/* _sceSifSendCmd: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0017DEB0(s32 cid, s32 mode, s32 pkt, s32 pktsize, s32 src, s32 dest, s32 size) {
+    extern s32 D_00310EA0;
+    sceSifDmaData dmat[2];
+    SifCmdHeader *header;
+    s32 count;
+
+    if (pktsize < 16 || pktsize > 112) {
+        return 0;
+    }
+    header = (SifCmdHeader *)pkt;
+    count = 0;
+    if (size > 0) {
+        header->dsize = size;
+        dmat[0].src = (u32)src;
+        dmat[0].dest = (u32)dest;
+        dmat[0].size = size;
+        header->dest = (void *)dest;
+        dmat[0].u.attr = 0;
+        count = 1;
+        if (mode & 4) {
+            func_0017E190((s32 *)src, size);
+        }
+    } else {
+        header->dsize = 0;
+        header->dest = 0;
+    }
+    dmat[count].src = (u32)pkt;
+    dmat[count].dest = D_00310EA0;
+    dmat[count].size = pktsize;
+    header->cid = cid;
+    header->psize = pktsize;
+    dmat[count].u.attr = 0x44;
+    count++;
+    func_0017E190((s32 *)pkt, pktsize);
+    if (mode & 1) {
+        return ((s32 (*)(sceSifDmaData *, s32))func_0017BCB0)(dmat, count);
+    }
+    return func_0017BCA0((s32 *)dmat, count);
+}
 
 s32 func_0017DFE8(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return func_0017DEB0(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5);
@@ -383,7 +463,36 @@ void func_0017E3E0(void) {
     D_0028CA18 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E408);
+/* _sceRpcGetPacket: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void *func_0017E408(s32 *data) {
+    SifRpcData *rd = (SifRpcData *)data;
+    SifRpcPkt *p;
+    s32 i;
+    s32 sid;
+
+    func_001843E0();
+    p = rd->pkt_table;
+    for (i = 0; i < rd->pkt_table_len; i++) {
+        if ((p->rpch.recId & 1) == 0) {
+            p->rpch.recId = (i << 16) | 5;
+            ++rd->pid;
+            if (rd->pid == 1) {
+                ++rd->pid;
+                sid = 1;
+            } else {
+                sid = rd->pid;
+            }
+            p->rpch.pktAddr = p;
+            p->rpch.rpcId = sid;
+            func_00184428();
+            return p;
+        }
+        p++;
+    }
+    func_00184428();
+    return 0;
+}
 
 void func_0017E4B0(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x18)) = 0;
@@ -413,7 +522,37 @@ void *func_0017E500(void *arg0, s32 arg1) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E540);
+/* _request_end: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0017E540(void *pkt, void *data) {
+    SifRpcRendPkt *rend = pkt;
+    sceSifRpcClientData *c;
+    sceSifEndFunc fn;
+
+    switch (rend->cid) {
+    case 0x8000000A:
+        c = rend->client;
+        fn = c->endFunc;
+        if (fn != 0) {
+            fn(c->endParam);
+        }
+        break;
+    case 0x80000009:
+        c = rend->client;
+        c->serve = rend->server;
+        c->buff = rend->buff;
+        c->cbuff = rend->cbuff;
+        break;
+    case 0x8000000C:
+        break;
+    }
+    c = rend->client;
+    if (c->sema >= 0) {
+        func_0017B910(c->sema);
+    }
+    func_0017E4B0(c->pkt);
+    c->pkt = 0;
+}
 
 void func_0017E5F8(void *arg0, s32 arg1) {
     void *temp_v0;
@@ -563,9 +702,108 @@ s32 func_0017E8B0(void *arg0, s32 arg1, s32 arg4) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E9F0);
+/* _request_call: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017EA80);
+void func_0017E9F0(void *pkt, void *data) {
+    s32 *req = pkt;
+    s32 *sd = (s32 *)req[13];
+    s32 *q = (s32 *)sd[16];
+    s32 *start = (s32 *)q[3];
+
+    if (start == 0) {
+        q[3] = (s32)sd;
+    } else {
+        ((s32 *)q[4])[15] = (s32)sd;
+    }
+    q[4] = (s32)sd;
+    {
+        s32 paddr = req[5], client = req[7];
+        sd[8] = paddr;
+        sd[7] = client;
+    }
+    sd[9] = req[8];
+    sd[3] = req[9];
+    sd[10] = req[10];
+    sd[11] = req[11];
+    sd[12] = req[12];
+    sd[13] = req[4];
+    if (q[0] < 0) {
+        return;
+    }
+    if (q[1] != 0) {
+        return;
+    }
+    func_0017C8D0(q[0]);
+}
+
+/* sceSifCallRpc: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0017EA80(s32 *client, s32 rpc_number, s32 mode, s32 *sendbuf, s32 ssize, s32 *recvbuf, s32 rsize,
+                  s32 end_func, s32 end_param) {
+    sceSifRpcClientData *cd = (sceSifRpcClientData *)client;
+    volatile s32 *vc = (volatile s32 *)cd;
+    s32 *pkt;
+    struct SemaParam buf;
+    s32 pid;
+
+    pkt = func_0017E408(&D_00312840);
+    if (pkt == 0) {
+        return -1;
+    }
+    pid = pkt[6];
+    vc[8] = end_param;
+    vc[0] = (s32)pkt;
+    vc[1] = pid;
+    vc[7] = end_func;
+    pkt[8] = rpc_number;
+    pkt[9] = ssize;
+    pkt[10] = (s32)recvbuf;
+    pkt[11] = rsize;
+    pkt[5] = (s32)pkt;
+    pkt[13] = cd->serve;
+    pkt[7] = (s32)cd;
+    if ((mode & 2) == 0) {
+        if (sendbuf == recvbuf) {
+            func_0017E190(sendbuf, (ssize < rsize) ? rsize : ssize);
+        } else {
+            if (ssize > 0) {
+                func_0017E190(sendbuf, ssize);
+            }
+            if (rsize > 0) {
+                func_0017E190(recvbuf, rsize);
+            }
+        }
+    }
+    if (mode & 1) {
+        if (end_func == 0) {
+            pkt[12] = 0;
+        } else {
+            pkt[12] = 1;
+        }
+        cd->sema = -1;
+        if (func_0017DFE8(0x8000000A, pkt, 0x40, (s32)sendbuf, cd->buff, ssize) != 0) {
+            return 0;
+        }
+        func_0017E4B0(pkt);
+        return -2;
+    }
+    buf.maxCount = 1;
+    buf.initCount = 0;
+    cd->sema = func_0017B8E0(&buf);
+    if (cd->sema < 0) {
+        func_0017E4B0(pkt);
+        return -3;
+    }
+    pkt[12] = 1;
+    if (func_0017DFE8(0x8000000A, pkt, 0x40, (s32)sendbuf, cd->buff, ssize) == 0) {
+        func_0017B8F0(cd->sema);
+        func_0017E4B0(pkt);
+        return -2;
+    }
+    func_0017B920(cd->sema);
+    func_0017B8F0(cd->sema);
+    return 0;
+}
 
 s32 func_0017EC70(void *arg0) {
     void *temp_a1;
@@ -706,7 +944,68 @@ void *func_0017EF40(void *arg0) {
     return temp_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017EF98);
+/* sceSifExecRequest: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0017EF98(void *data) {
+    sceSifServeData *sd = data;
+    s32 size = 0;
+    void *rec;
+    SifRpcRendPkt *pkt;
+    s32 i;
+    sceSifDmaData dmat[2];
+    s32 j;
+    s32 r;
+
+    rec = sd->func(sd->fno, sd->buff, sd->size);
+    if (rec != 0) {
+        size = sd->rsize;
+    }
+    if (sd->size > 0) {
+        func_0017E190(sd->buff, sd->size);
+    }
+    if (size > 0) {
+        func_0017E190(rec, size);
+    }
+    func_001843E0();
+    if (sd->rid & 4) {
+        pkt = func_0017E500(&D_00312840, sd->rid >> 16);
+    } else {
+        pkt = func_0017E4D0((s32)&D_00312840);
+    }
+    func_00184428();
+    pkt->cid = 0x8000000A;
+    pkt->client = sd->client;
+    if (sd->rmode != 0) {
+        while (func_0017DFE8(0x80000008, pkt, 0x40, (s32)rec, (s32)sd->receive, size) == 0) {
+            ;
+        }
+        return;
+    }
+    pkt->rpch.rpcId = 0;
+    i = 0;
+    pkt->rpch.recId = 0;
+    if (size > 0) {
+        dmat[0].src = (u32)rec;
+        dmat[0].dest = (u32)sd->receive;
+        dmat[0].size = size;
+        dmat[0].u.attr = 0;
+        i = 1;
+    }
+    dmat[i].src = (u32)pkt;
+    dmat[i].dest = (u32)sd->paddr;
+    dmat[i].size = 0x40;
+    dmat[i].u.attr = 0;
+    i++;
+    do {
+        r = func_0017BCA0((s32 *)dmat, i);
+        if (r != 0) {
+            break;
+        }
+        for (j = 0x100000; j != -1; j--) {
+            ;
+        }
+    } while (r == 0);
+}
 
 void func_0017F160(void *arg0) {
     void *sd;

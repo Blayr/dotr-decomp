@@ -1109,7 +1109,6 @@ typedef char *VaList_0010C720;
     ((ap) = (char *)__builtin_next_arg(parm) - (__builtin_args_info(2) >= 8 ? 0 : (8 - __builtin_args_info(2)) * 8))
 #define VA_ARG_0010C720(ap, T) (*(T *)((ap += 8) - 8))
 
-extern s32 func_0017EA80(s32 *, s32, s32, s32 *, s32, s32 *, s32, s32, s32);
 
 s32 func_0010C720(s32 cmd, ...) {
     s32 id;
