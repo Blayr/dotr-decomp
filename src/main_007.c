@@ -2091,7 +2091,6 @@ typedef struct Result_00129700 {
     u8 flags;
 } Result_00129700;
 
-s32 func_0012B210(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 s32 func_0027BE10(s32, s32, s32, s32, s32);
 
@@ -2257,7 +2256,6 @@ typedef struct {
     u8 y : 4;
 } Point_00129D00;
 
-s32 func_0012B210(s32, s32, void *);
 s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 #define TARGET_00129D00(in, mode) ((mode) == 1 ? (u16)((in)->targets >> 16) : (in)->targets & 0xFFFF)
@@ -2402,7 +2400,6 @@ typedef struct Output_0012A2E0 {
     u8 flag;
 } Output_0012A2E0;
 
-s32 func_0012B210(s32, s32, void *);
 
 static inline u32 target_0012A2E0(void *unit, s32 side) {
     return side == 1 ? (u32)(u16)(((Unit_0012A2E0 *)unit)->target.packed >> 16) : (u32)((Unit_0012A2E0 *)unit)->target.low;
@@ -2705,7 +2702,120 @@ s32 func_0012B1B0(s32 arg0) {
     return 0x960;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B210);
+s32 func_0012B210(s32 arg0, s32 arg1, void *arg2) {
+    extern s32 func_001E1030();
+    extern s32 func_0012B000();
+    s32 card;
+    s32 position;
+    s32 owner;
+    s32 value;
+    u8 count;
+
+    card = func_001E1030(arg0, arg1);
+    owner = func_00250360(arg0, arg1);
+    position = func_001E1090(arg0, arg1);
+    count = 0;
+    if (func_001E2100(arg0, arg1, 4) != 0) {
+        return 0;
+    }
+    switch (func_001E0700(arg0, arg1) >> 5) {
+    case 0:
+        switch (card) {
+        case 0x65:
+            for (card = 1; card <= 5; card++) {
+                if (func_001E1030(arg0, card) == 0x65 && arg0 == func_00250360(arg0, card)) {
+                    count++;
+                }
+                if (func_001E1030((arg0 == 0) ? 1 : 0, card) == 0x65 &&
+                    arg0 == func_00250360((arg0 == 0) ? 1 : 0, card)) {
+                    count++;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        case 0x66:
+            for (card = 1; card <= 5; card++) {
+                if (func_001E1030(arg0, card) == 0x66 && arg0 == func_00250360(arg0, card)) {
+                    count++;
+                }
+                if (func_001E1030((arg0 == 0) ? 1 : 0, card) == 0x66 &&
+                    arg0 == func_00250360((arg0 == 0) ? 1 : 0, card)) {
+                    count++;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        case 0x6C:
+            return 1;
+        case 0x77:
+            for (card = 1; card <= 5; card++) {
+                if (func_001E1030(arg0, card) == 0x77 && arg0 == func_00250360(arg0, card)) {
+                    count++;
+                }
+                if (func_001E1030((arg0 == 0) ? 1 : 0, card) == 0x77 &&
+                    arg0 == func_00250360((arg0 == 0) ? 1 : 0, card)) {
+                    count++;
+                }
+            }
+            if (count >= 2) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0012B8B0(func_00250360(arg0, arg1), card) == 1 &&
+            func_001E22B0(position & 0xFF, position >> 8) != 9) {
+            return 1;
+        }
+        break;
+    case 1:
+        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        switch (func_001E1030(arg0, arg1)) {
+        case 0x2BB:
+            if (func_0027BBC0(arg0, 0, 0) == 1 || func_0012B000(arg0) == 1) {
+                return 1;
+            }
+            break;
+        case 0x2AD:
+            value = func_0027DA40(arg0, 3);
+            if (value >= 0 && (u16)value >= 0x960 && func_001E0150(arg0) < 5 &&
+                func_001E22B0(position & 0xFF, position >> 8) != 9) {
+                return 1;
+            }
+            break;
+        case 0x2E9:
+            for (card = 1; card <= 5; card++) {
+                if (func_001DF540(arg0, card) != 0 && (func_001E0700(arg0, card) & 0x1F) != 2 &&
+                    arg0 == func_00250360(arg0, card)) {
+                    count++;
+                }
+                if (func_001DF540((arg0 == 0) ? 1 : 0, card) != 0 &&
+                    (func_001E0700((arg0 == 0) ? 1 : 0, card) & 0x1F) != 2 &&
+                    arg0 == func_00250360((arg0 == 0) ? 1 : 0, card)) {
+                    count++;
+                }
+            }
+            if (count >= 3) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    case 2:
+    case 3:
+    case 4:
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_0012B730(s32 a, s32 b) {
     s32 maximum;
