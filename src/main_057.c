@@ -1101,7 +1101,43 @@ void func_0020C630(void *dst, void *src) {
     matrix[15] = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C750);
+typedef struct Vec4_0020C750 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_0020C750;
+
+
+void func_0020C750(void *arg0, void *arg1, s32 arg2) {
+    f32 *m = arg0;
+    Vec4_0020C750 v;
+    f32 c;
+    f32 s;
+    f32 t;
+
+    v = *(Vec4_0020C750 *)arg1;
+    c = func_0020B480(arg2);
+    t = 1.0f - c;
+    s = func_0020B550(arg2);
+    func_0020D070(&v.x);
+    m[0] = c + t * (v.x * v.x);
+    m[4] = t * (v.x * v.y) - v.z * s;
+    m[8] = t * (v.x * v.z) + v.y * s;
+    m[1] = t * (v.x * v.y) + v.z * s;
+    m[5] = c + t * (v.y * v.y);
+    m[9] = t * (v.y * v.z) - v.x * s;
+    m[2] = t * (v.x * v.z) - v.y * s;
+    m[6] = t * (v.y * v.z) + v.x * s;
+    m[10] = c + t * (v.z * v.z);
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[3] = 0.0f;
+    m[7] = 0.0f;
+    m[11] = 0.0f;
+    m[15] = 1.0f;
+}
 
 typedef struct {
     f32 rotation[12];
