@@ -556,7 +556,6 @@ s32 func_0018DEE8(s32, s32, s32, s32, s32);
 
 
 
-s32 func_0019B148(s32, s32, s32, s32);          /* extern */
 
 
 extern s32 D_0028F790;
@@ -932,5 +931,8 @@ extern s32 D_0028F74C;
 extern char D_002BCEE0[];
 
 extern char D_002BC670[];
+
+extern s32 D_00317240;
+extern char **D_0028F79C;
 
 #endif

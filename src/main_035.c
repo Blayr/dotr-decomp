@@ -70,7 +70,68 @@ void func_0019B128(s32 arg0) {
     func_0019B418(D_0028FA98, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B148);
+s32 func_0019B148(s32 reent_ptr, s32 name, s32 arg2, s32 rewrite) {
+    const char *value = (const char *)arg2;
+    char *C;
+    s32 l_value;
+    s32 offset;
+    char *S;
+
+    ((void (*)(s32))func_001966E8)(reent_ptr);
+    if (*value == '=')
+        ++value;
+    l_value = func_0019BEF0(value);
+    if ((C = (char *)func_00197570(reent_ptr, name, (s32)&offset))) {
+        if (!rewrite) {
+            ((void (*)(s32))func_001966F0)(reent_ptr);
+            return 0;
+        }
+        if ((u32)func_0019BEF0(C) >= (u32)l_value) {
+            while ((*C++ = *value++) != 0)
+                ;
+            ((void (*)(s32))func_001966F0)(reent_ptr);
+            return 0;
+        }
+    } else {
+        s32 cnt;
+        char **P;
+
+        for (P = *D_0028FF08, cnt = 0; *P; ++P, ++cnt)
+            ;
+        if (D_00317240) {
+            if (!(*D_0028FF08 = (char **)func_0019A690((void *)reent_ptr, D_0028F79C, sizeof(char *) * (cnt + 2)))) {
+                ((void (*)(s32))func_001966F0)(reent_ptr);
+                return -1;
+            }
+        } else {
+            D_00317240 = 1;
+            P = (char **)func_00197EB8(reent_ptr, sizeof(char *) * (cnt + 2));
+            if (!P) {
+                ((void (*)(s32))func_001966F0)(reent_ptr);
+                return -1;
+            }
+            ((void (*)(s32, s32, s32))func_001950E8)((s32)*D_0028FF08, (s32)P, cnt * sizeof(char *));
+            *D_0028FF08 = P;
+        }
+        {
+            char ***pe = D_0028FF08;
+            offset = cnt;
+            (*pe)[cnt + 1] = 0;
+        }
+    }
+    for (C = (char *)name; *C && *C != '='; ++C)
+        ;
+    if (!((*D_0028FF08)[offset] = S = func_00197EB8(reent_ptr, (C - (char *)name) + l_value + 2))) {
+        ((void (*)(s32))func_001966F0)(reent_ptr);
+        return -1;
+    }
+    for (C = S; (*C = *(char *)name++) && *C != '='; ++C)
+        ;
+    for (*C++ = '='; (*C++ = *value++) != 0;)
+        ;
+    ((void (*)(s32))func_001966F0)(reent_ptr);
+    return 0;
+}
 
 s32 func_0019B418(s32 reent_ptr, s32 name) {
     char **P;
