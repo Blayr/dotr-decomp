@@ -223,9 +223,12 @@ s32 func_0017C600(s32 *arg0, s32 *arg1, u32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C638);
+int func_0017C638(int arg0) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x5B\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
-s32 func_0017C638(s32);
 extern s32 D_0028C258;
 extern s32 D_0028C998;
 extern s32 D_0028C9C0;
