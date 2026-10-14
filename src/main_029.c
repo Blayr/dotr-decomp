@@ -783,7 +783,7 @@ void func_0018CE00(void *d, s32 arg1, s32 unused) {
     if (*(s32 *)((u8 *)d + 0xB0) != 0) {
         func_0018D7D8(d, s);
     } else {
-        func_0018C9D8(d);
+        ((void (*)(void *, s32 *))func_0018C9D8)(d, s);
     }
     func_0018CC48(d);
 }
