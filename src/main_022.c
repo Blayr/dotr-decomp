@@ -194,7 +194,11 @@ void func_0017C5E0(int arg0, int arg1) {
     __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C5F0);
+int func_0017C5F0(int arg0, int *arg1, int arg2) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x5A\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_0017C600(s32 *arg0, s32 *arg1, u32 arg2) {
     s32 *var_a0;
@@ -221,7 +225,6 @@ s32 func_0017C600(s32 *arg0, s32 *arg1, u32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C638);
 
-s32 func_0017C5F0(s32, s32 *, s32);
 s32 func_0017C638(s32);
 extern s32 D_0028C258;
 extern s32 D_0028C998;
