@@ -910,6 +910,7 @@ void func_00183538(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00183558(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00183680(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001836A0(s32 arg0, s32 arg1);
+s32 func_001839D8(void);
 s32 func_00183B48(s32 arg0);
 u32 func_00183BA8(s32 arg0, s32 arg1);
 s32 func_00183C40(s32 *arg0, s32 *arg1, u32 arg2);
