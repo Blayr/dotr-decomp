@@ -835,6 +835,7 @@ int func_0017BB70(void);
 int func_0017BB80(void);
 int func_0017BBA0(void);
 int func_0017BBB0(void);
+int func_0017BBC0(void);
 void func_0017BD70(void);
 s64 func_0017BE00(void);
 s32 func_0017BFA0(void);
