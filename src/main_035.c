@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sce/libc.h"
 
 s32 func_0019AE78(double x) {
     s32 hx, lx;
@@ -541,7 +542,7 @@ s32 func_0019DC70(s32 arg0, void *arg1) {
         (*(s32 *)((u8 *)arg1 + 4)) = 0;
         return 0;
     }
-    temp_v0 = func_001970A8();
+    temp_v0 = func_001970A8(arg0, arg1);
     (*(s32 *)((u8 *)arg1 + 8)) = 0;
     (*(s32 *)((u8 *)arg1 + 4)) = 0;
     return temp_v0;

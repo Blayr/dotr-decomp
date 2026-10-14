@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sce/libc.h"
 
 void func_001976B8(s32 arg0, s32 arg1) {
     s32 sp0[4];
