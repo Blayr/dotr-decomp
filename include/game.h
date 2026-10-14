@@ -686,7 +686,6 @@ extern s32 D_0028F770;
 void func_0017E190(s32 *, s32);              /* extern */
 extern s32 D_0028F300;
 
-s32 func_001986F8(s32 *, s32 *, s32);
 extern s32 D_0028C24C;
 extern s32 *D_0028CAC4;
 

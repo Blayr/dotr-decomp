@@ -682,7 +682,56 @@ s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state) {
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00198618);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001986F8);
+/* memcmp: newlib's hand-written r5900 assembly (libc/machine/r5900/memcmp.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_001986F8(s32 *a, s32 *b, s32 n) {
+
+    __asm__ __volatile__(
+        "	.set	noreorder\n"
+        "	sltiu	$2,$6,0x10\n"
+        "	bnez	$2,_func_001986F8_00198744\n"
+        "	or	$2,$4,$5\n"
+        "	andi	$2,$2,0xF\n"
+        "	bnez	$2,_func_001986F8_00198744\n"
+        "	nop\n"
+        "_func_001986F8_00198710:\n"
+        "	lq	$3,0x0($4)\n"
+        "	sltiu	$7,$6,0x20\n"
+        "	lq	$2,0x0($5)\n"
+        "	addiu	$4,$4,0x10\n"
+        "	pxor	$8,$2,$3\n"
+        "	addiu	$2,$5,0x10\n"
+        "	pcpyud	$10,$8,$7\n"
+        "	or	$9,$10,$8\n"
+        "	movz	$5,$2,$9\n"
+        "	bnel	$9,$0,_func_001986F8_00198744\n"
+        "	addiu	$4,$4,-0x10\n"
+        "	beqz	$7,_func_001986F8_00198710\n"
+        "	addiu	$6,$6,-0x10\n"
+        "_func_001986F8_00198744:\n"
+        "	lui	$2,(0xFFFFFFFF >> 16)\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	ori	$2,$2,(0xFFFFFFFF & 0xFFFF)\n"
+        "	beq	$6,$2,_func_001986F8_00198784\n"
+        "	nop\n"
+        "	lui	$7,(0xFFFFFFFF >> 16)\n"
+        "	ori	$7,$7,(0xFFFFFFFF & 0xFFFF)\n"
+        "_func_001986F8_00198760:\n"
+        "	lbu	$3,0x0($4)\n"
+        "	lbu	$2,0x0($5)\n"
+        "	beq	$3,$2,_func_001986F8_00198778\n"
+        "	addiu	$4,$4,0x1\n"
+        "	jr	$31\n"
+        "	subu	$2,$3,$2\n"
+        "_func_001986F8_00198778:\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	bne	$6,$7,_func_001986F8_00198760\n"
+        "	addiu	$5,$5,0x1\n"
+        "_func_001986F8_00198784:\n"
+        "	.set	reorder\n"
+       );
+    return 0;
+}
 
 /* memcpy: newlib's hand-written r5900 assembly (libc/machine/r5900/memcpy.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
