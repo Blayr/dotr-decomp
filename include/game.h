@@ -31,7 +31,6 @@ s32 func_00207650(s32, s32, s32, s32);              /* extern */
 
 
 extern s32 *D_0030FF40;
-s32 func_0017BCA0(s32 *, s32);
 
 
 
