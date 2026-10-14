@@ -90,9 +90,46 @@ void func_0019D3E0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D408);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D430);
+char *func_0019D430(char *s, const char *delim) {
+    return func_0019D450(s, delim, (char **)(D_0028FA98 + 0x5C));
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D450);
+char *func_0019D450(char *s, const char *delim, char **lasts) {
+    char *spanp;
+    s32 c, sc;
+    char *tok;
+
+    if (s == NULL && (s = *lasts) == NULL)
+        return NULL;
+
+cont:
+    c = *s++;
+    for (spanp = (char *)delim; (sc = *spanp++) != 0;) {
+        if (c == sc)
+            goto cont;
+    }
+
+    if (c == 0) {
+        *lasts = NULL;
+        return NULL;
+    }
+    tok = s - 1;
+
+    for (;;) {
+        c = *s++;
+        spanp = (char *)delim;
+        do {
+            if ((sc = *spanp++) == c) {
+                if (c == 0)
+                    s = NULL;
+                else
+                    s[-1] = 0;
+                *lasts = s;
+                return tok;
+            }
+        } while (sc != 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D518);
 

@@ -78,11 +78,26 @@ void func_00196820(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
     (*(s32 *)arg0) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196880);
+nl_mglue *func_00196880(s32 d, s32 n) {
+    nl_mglue *g;
+    nl_mFILE *p;
+
+    g = (nl_mglue *)func_00197EB8(d, sizeof(*g) + n * sizeof(nl_mFILE));
+    if (g == NULL)
+        return NULL;
+    p = (nl_mFILE *)(g + 1);
+    g->_next = NULL;
+    g->_niobs = n;
+    g->_iobs = p;
+    func_00198948(p, 0, n * sizeof(nl_mFILE));
+    return g;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_001968F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_001969F0);
+s32 func_001969F0(s32 ptr) {
+    return func_00197488(ptr, func_00196708);
+}
 
 void func_00196A10(void) {
     func_001969F0(D_0028FA98);
@@ -118,7 +133,17 @@ s32 func_00197048(s32 *ptr, s32 fd, void *st) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_001970A8);
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00197488);
+s32 func_00197488(u8 *ptr, s32 (*function)(nl_FILE *)) {
+    nl_FILE *fp;
+    s32 n, ret = 0;
+    nl_glue *g;
+
+    for (g = (nl_glue *)(ptr + 0x1D8); g != NULL; g = g->_next)
+        for (fp = g->_iobs, n = g->_niobs; --n >= 0; fp++)
+            if (fp->_flags != 0)
+                ret |= (*function)(fp);
+    return ret;
+}
 
 void func_00197520(s32 arg0, s32 arg1) {
     func_00197570(D_0028FA98, arg0, arg1);

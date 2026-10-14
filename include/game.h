@@ -554,7 +554,6 @@ extern s32 D_002BD230;
 
 s32 func_001A3130();                                /* extern */
 
-s32 func_001969F0(s32);                         /* extern */
 
 
 extern s32 D_0028CAA4;
@@ -866,5 +865,10 @@ u32 func_0017B8C0(void);
 extern s32 D_003512F8;
 s32 func_0017BF28();
 s32 func_0017BEA8();
+
+typedef struct { u8 pad0[0xC]; s16 _flags; u8 pad1[0x58 - 0xE]; } nl_FILE;
+typedef struct nl_glue { struct nl_glue *_next; s32 _niobs; nl_FILE *_iobs; } nl_glue;
+typedef struct { u8 pad0[0x58]; } nl_mFILE;
+typedef struct nl_mglue { struct nl_mglue *_next; s32 _niobs; nl_mFILE *_iobs; } nl_mglue;
 
 #endif
