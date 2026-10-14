@@ -788,7 +788,64 @@ void func_0018CE00(void *d, s32 arg1, s32 unused) {
     func_0018CC48(d);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CF10);
+typedef union MpegU64_0018CF10 {
+    u64 d;
+    s32 w[2];
+} MpegU64_0018CF10;
+
+void func_0018CF10(void *d, s32 arg1, s32 arg2, s32 unused) {
+    s32 *top = (s32 *)arg1;
+    s32 *bot = (s32 *)arg2;
+    s32 *s0;
+    s32 *s1;
+    s32 bits = 0;
+    u8 *p;
+    u8 *q;
+    u8 *r;
+
+    if (*(s32 *)((u8 *)d + 0x174) == 2) {
+        s0 = top;
+        s1 = bot;
+        bits = 0x40;
+    } else {
+        s0 = bot;
+        s1 = top;
+    }
+    p = *(u8 **)((u8 *)d + 0x858);
+    func_0018CC70(d, s0, p + 0x10, p + 0x18, p + 0x20);
+    q = *(u8 **)((u8 *)d + 0x858);
+    *(s32 *)((u8 *)d + 0x80) = *(s32 *)(q + 0x10);
+    ((MpegU64_0018CF10 *)((u8 *)d + 0x88))->d = 1;
+    func_0018CC70(d, s1, q + 0x28, q + 0x30, q + 0x38);
+    r = *(u8 **)((u8 *)d + 0x858);
+    *(s32 *)((u8 *)d + 0x80) = *(s32 *)(r + 0x28);
+    ((MpegU64_0018CF10 *)((u8 *)d + 0x88))->d = 1;
+    *(u64 *)(r + 0x20) |= bits;
+    *(u64 *)(r + 0x38) |= bits;
+    *(s32 *)((u8 *)d + 0xCC) = s0[0x5C / 4];
+    *(s32 *)((u8 *)d + 0xD0) = s0[0x60 / 4];
+    *(s32 *)((u8 *)d + 0xB4) = s0[0x44 / 4];
+    *(s32 *)((u8 *)d + 0xB8) = s1[0x48 / 4];
+    *(s32 *)((u8 *)d + 0xC0) = s0[0x50 / 4];
+    *(s32 *)((u8 *)d + 0xC4) = s1[0x54 / 4];
+    if (func_0018C938(d, top) == 0) {
+        return;
+    }
+    if (top[0x28 / 4] != 1) {
+        return;
+    }
+    if (bot[0x28 / 4] != 1) {
+        return;
+    }
+    top[0x10 / 4] <<= 1;
+    if (*(s32 *)((u8 *)d + 0xB0) != 0) {
+        func_0018D7D8(d, top);
+    } else {
+        ((void (*)(void *, s32 *))func_0018C9D8)(d, top);
+    }
+    top[0x10 / 4] >>= 1;
+    func_0018CC48(d);
+}
 
 extern s32 D_00315300;
 
