@@ -833,6 +833,7 @@ int func_0017BB50(void);
 void func_0017BB60(int arg0);
 int func_0017BB70(void);
 int func_0017BB80(void);
+void func_0017BB90(s32 arg0);
 int func_0017BBA0(void);
 int func_0017BBB0(void);
 int func_0017BBC0(void);
