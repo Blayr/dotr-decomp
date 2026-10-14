@@ -591,4 +591,7 @@ s32 func_001951F8(s32, s16);                    /* extern */
 
 extern s32 D_0028CAA4;
 
+extern u8 D_002BCB08[];
+void func_0018F7B0(s32, void *);
+
 #endif
