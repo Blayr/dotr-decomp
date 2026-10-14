@@ -477,7 +477,38 @@ INCLUDE_ASM("asm/nonmatchings/main_028", func_00188F88);
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001893A8);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_001895C8);
+void func_001895C8(void *p0) {
+    __asm__ __volatile__("\n\
+	lw	$5,0x14(%0)\n\
+	lw	$6,0x18(%0)\n\
+	lw	$7,0x8(%0)\n\
+	lw	$14,0x0(%0)\n\
+	lw	$13,0x4(%0)\n\
+	lw	$12,0x10(%0)\n\
+	sll	$11,$12,1\n\
+	addiu	$15,$0,-0x1\n\
+	mtsab	$13,0x0\n\
+_func_001895C8_001895EC:\n\
+	lq	$8,0x0($5)\n\
+	addi	$7,$7,-0x1\n\
+	lq	$9,0x0($6)\n\
+	addu	$5,$5,$12\n\
+	qfsrv	$10,$9,$8\n\
+	pextlb	$8,$0,$10\n\
+	pextub	$9,$0,$10\n\
+	sq	$8,0x0($14)\n\
+	addu	$6,$6,$12\n\
+	sq	$9,0x10($14)\n\
+	addu	$14,$14,$11\n\
+	bgtz	$7,_func_001895C8_001895EC\n\
+	addiu	$5,$5,0x80\n\
+	addiu	$6,$6,0x80\n\
+	lw	$7,0xC(%0)\n\
+	and	$10,$15,$7\n\
+	daddu	$15,$0,$0\n\
+	bnez	$10,_func_001895C8_001895EC\n\
+	" :  : "r" (p0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00189640);
 
