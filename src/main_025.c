@@ -2,7 +2,24 @@
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_001831A0);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183240);
+s32 func_00183240(s32 arg0) {
+    s32 var_v0;
+
+    var_v0 = -0x10000;
+    if (func_00182B38() < 0) {
+        return var_v0;
+    }
+    if (func_00182C38() != 0) {
+        return -0x10004;
+    }
+    D_00313E00 = arg0;
+    if (func_0017EA80(&D_00314000, 0xA, 0, &D_00313E00, 4, &D_00313E00, 4, 0, 0) < 0) {
+        var_v0 = -0x10001;
+        /* Duplicate return node #7. Try simplifying control flow for better match */
+        return var_v0;
+    }
+    return D_00313E00;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_001832D0);
 

@@ -220,7 +220,19 @@ void func_0018F088(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0xC));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F098);
+s32 func_0018F098(s32 arg0, void *arg1, s32 arg2, u32 arg3) {
+    s32 temp_v0;
+    u32 temp_a0;
+
+    temp_v0 = ((u32) (((*(u32 *)((u8 *)arg1 + 8)) + arg3) - 1) / arg3) * arg3;
+    temp_a0 = temp_v0 + arg2;
+    if ((u32) ((*(s32 *)arg1) + (*(s32 *)((u8 *)arg1 + 4))) >= temp_a0) {
+        (*(u32 *)((u8 *)arg1 + 8)) = temp_a0;
+        return temp_v0;
+    }
+    func_0018F7B0(arg0, &D_002BC9F8);
+    return 0;
+}
 
 s32 func_0018F108(s32 *arg0) {
     return (arg0[0] + arg0[1]) - arg0[2];
