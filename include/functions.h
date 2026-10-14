@@ -1084,6 +1084,7 @@ s32 func_001977D8(s32 *ptr, s32 fd, s32 pos, s32 whence);
 void *func_00197990(s32 arg0, s32 arg1);
 s32 func_00197BC0(s32 arg0);
 s32 func_00197C18(s32 arg0);
+s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state);
 void func_00198B80(void *arg0, void *arg1);
 void func_0019A5B0(s64 arg0);
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt);
