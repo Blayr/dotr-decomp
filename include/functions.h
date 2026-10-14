@@ -1874,6 +1874,7 @@ s32 func_001DE1A0(s32 arg0);
 s32 func_001DE210(s32 arg0);
 s32 func_001DE260(s32 arg0);
 void func_001DE2A0(void);
+s32 func_001DE2B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 u8 func_001DE4E0(s32 arg0);
 void func_001DE500(s32 arg0, s32 arg1);
 s32 func_001DE540(void);

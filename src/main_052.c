@@ -12,7 +12,6 @@ typedef struct {
     s8 : 1;
 } Card_001F6F50;
 
-s32 func_001DE2B0(s32, s32, s32, s32, s32, s32, s32);
 
 s32 func_001F6F50(s32 arg0) {
     s32 temp_a0;

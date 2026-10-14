@@ -71,7 +71,53 @@ void func_001DE2A0(void) {
     func_00214D00(0, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_044", func_001DE2B0);
+#define MAX_001DE2B0(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_001DE2B0(a, b) ((a) < (b) ? (a) : (b))
+
+typedef struct {
+    s8 pad0 : 3;
+    s8 flag : 1;
+    s8 pad4 : 4;
+} Flags_001DE2B0;
+
+s32 func_001DE2B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    s32 self;
+    s32 other;
+    s32 result;
+    s32 base;
+    s32 attack;
+    s32 power;
+    s32 defense;
+    s32 guard;
+
+    self = func_001DF540(arg0, arg1);
+    other = func_001DF540(arg2, arg3);
+    result = 0;
+    if (self != 0 && other != 0) {
+        base = func_002660E0(self, arg4, arg5, 1);
+        power = func_002660E0(other, arg4, arg5, 1);
+        defense = func_002660E0(other, arg4, arg5, 0);
+        attack = base + func_001E02F0((void *)self, 0);
+        power += func_001E02F0((void *)other, 0);
+        guard = defense + func_001E03D0((void *)other, 0);
+        attack = MIN_001DE2B0(MAX_001DE2B0(attack, 0), 9999);
+        power = MIN_001DE2B0(MAX_001DE2B0(power, 0), 9999);
+        guard = MIN_001DE2B0(MAX_001DE2B0(guard, 0), 9999);
+        result = 4;
+        if (((Flags_001DE2B0 *)((u8 *)other + 0x57))->flag) {
+            if (guard >= attack) {
+                result = 6;
+            }
+        } else if (power == attack) {
+            if (arg6 == 0 && arg0 == func_001DE540()) {
+                result = 3;
+            }
+        } else if (attack < power) {
+            result = 3;
+        }
+    }
+    return result;
+}
 
 typedef struct {
     u8 padding[0x33C];
