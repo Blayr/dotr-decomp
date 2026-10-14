@@ -235,7 +235,7 @@ extern u16 D_002D0970[51][41];
 extern u8 D_00299F90[];
 
 
-void func_0019B648(void *, void *, s32);
+s32 func_0019B648(char *str, const char *fmt, ...);
 extern u8 D_002B90B0[];
 s32 func_0017BC80(s32);
 
