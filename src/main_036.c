@@ -75,7 +75,30 @@ void func_001A2260(fp_union_f *src, fp_number_f *dst) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A22C0);
+/* fptosi (float_to_si) */
+
+s64 func_001A22C0(f32 arg_a) {
+    fp_number_f a;
+    s32 tmp;
+    fp_union_f au;
+    s32 r;
+
+    au.value = arg_a;
+    func_001A2260(&au, &a);
+    if (fp_iszero_f(&a)) {
+        return 0;
+    }
+    if (a.normal_exp < 0) {
+        return 0;
+    }
+    if (a.normal_exp > 30) {
+        r = a.sign ? (-0x7FFFFFFF - 1) : 0x7FFFFFFF;
+        return r;
+    }
+    tmp = a.fraction >> (30 - a.normal_exp);
+    r = a.sign ? (-tmp) : (tmp);
+    return r;
+}
 
 /* __make_fp */
 f32 func_001A2340(fp_class_type class, u32 sign, s32 exp, u32 frac) {
@@ -332,7 +355,113 @@ double func_001A28B0(double arg_a, double arg_b) {
     return func_001A2430(res);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A2918);
+/* dpmul, _fpmul_parts inlined. __pack_d is func_001A2430 (config/linker_syms.txt): by its
+   func_ name GCC sees its body earlier in this file, which changes a branch here. */
+double __pack_d(fp_number_d *src);
+
+static __inline__ fp_number_d *_fpmul_parts(fp_number_d *a, fp_number_d *b, fp_number_d *tmp) {
+    u64 low = 0;
+    u64 high = 0;
+
+    if (fp_isnan_d(a)) {
+        a->sign = a->sign != b->sign;
+        return a;
+    }
+    if (fp_isnan_d(b)) {
+        b->sign = a->sign != b->sign;
+        return b;
+    }
+    if (fp_isinf_d(a)) {
+        if (fp_iszero_d(b)) {
+            return &D_002BDF30;
+        }
+        a->sign = a->sign != b->sign;
+        return a;
+    }
+    if (fp_isinf_d(b)) {
+        if (fp_iszero_d(a)) {
+            return &D_002BDF30;
+        }
+        b->sign = a->sign != b->sign;
+        return b;
+    }
+    if (fp_iszero_d(a)) {
+        a->sign = a->sign != b->sign;
+        return a;
+    }
+    if (fp_iszero_d(b)) {
+        b->sign = a->sign != b->sign;
+        return b;
+    }
+    {
+        u64 nl = a->fraction & 0xffffffff;
+        u64 nh = a->fraction >> 32;
+        u64 ml = b->fraction & 0xffffffff;
+        u64 mh = b->fraction >> 32;
+        u64 pp_ll = ml * nl;
+        u64 pp_hl = mh * nl;
+        u64 pp_lh = ml * nh;
+        u64 pp_hh = mh * nh;
+        u64 res2 = 0;
+        u64 res0 = 0;
+        u64 ps_hh__ = pp_hl + pp_lh;
+        if (ps_hh__ < pp_hl) {
+            res2 += 0x100000000LL;
+        }
+        pp_hl = (ps_hh__ << 32) & 0xffffffff00000000LL;
+        res0 = pp_ll + pp_hl;
+        if (res0 < pp_ll) {
+            res2++;
+        }
+        res2 += ((ps_hh__ >> 32) & 0xffffffffL) + pp_hh;
+        high = res2;
+        low = res0;
+    }
+    tmp->normal_exp = a->normal_exp + b->normal_exp;
+    tmp->sign = a->sign != b->sign;
+    tmp->normal_exp += 4;
+    while (high >= 0x2000000000000000LL) {
+        tmp->normal_exp++;
+        if (high & 1) {
+            low >>= 1;
+            low |= 0x8000000000000000LL;
+        }
+        high >>= 1;
+    }
+    while (high < 0x1000000000000000LL) {
+        tmp->normal_exp--;
+        high <<= 1;
+        if (low & 0x8000000000000000LL) {
+            high |= 1;
+        }
+        low <<= 1;
+    }
+    if ((high & 0xFF) == 0x80) {
+        if (high & 0x100) {
+            high += 0x80;
+        } else if (low) {
+            high += 0x80;
+        }
+    }
+    tmp->fraction = high;
+    tmp->class = CLASS_NUMBER;
+    return tmp;
+}
+
+double func_001A2918(double arg_a, double arg_b) {
+    fp_number_d a;
+    fp_number_d b;
+    fp_number_d tmp;
+    fp_number_d *res;
+    fp_union_d au, bu;
+
+    au.value = arg_a;
+    bu.value = arg_b;
+    func_001A2548(&au, &a);
+    func_001A2548(&bu, &b);
+    res = _fpmul_parts(&a, &b, &tmp);
+    return __pack_d(res);
+}
 
 /* dpdiv, _fpdiv_parts inlined */
 static __inline__ fp_number_d *_fpdiv_parts(fp_number_d *a, fp_number_d *b) {

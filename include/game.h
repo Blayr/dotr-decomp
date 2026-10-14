@@ -42,7 +42,6 @@ s32 func_0017BCA0(s32 *, s32);
 extern u8 D_1FE0000;
 
 
-s64 func_001A22C0(f32);
 extern u8 D_00317490[];
 
 
@@ -780,7 +779,6 @@ static __inline__ s32 fp_isnan_d(fp_number_d *x) { return x->class == CLASS_SNAN
 static __inline__ s32 fp_isinf_d(fp_number_d *x) { return x->class == CLASS_INFINITY; }
 static __inline__ s32 fp_iszero_d(fp_number_d *x) { return x->class == CLASS_ZERO; }
 #endif
-double func_001A2918(double arg_a, double arg_b);
 
 
 extern s32 D_00310980;
