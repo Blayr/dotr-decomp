@@ -1012,7 +1012,6 @@ typedef struct State_0023D400 {
 } State_0023D400;
 
 s32 func_00193BA8(s32, s32, void *, s32);
-s32 func_00193DD0(s32, s16, s16, s32);
 s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
@@ -1427,7 +1426,6 @@ typedef struct Buffer_0023DE90 {
 } Buffer_0023DE90;
 
 s32 func_00193BA8(s32, s32, void *, s32);
-s32 func_00193DD0(s32, s16, s16, s32);
 s32 func_00194058(s32, void *, s32);
 s32 func_00194248(s32, s32 *, s32 *);
 extern u8 D_0029B1BE[];
@@ -1972,7 +1970,6 @@ typedef struct Tail_0023F5A0 {
 } Tail_0023F5A0;
 
 s32 func_00193BA8(s32, s32, void *, s32);
-s32 func_00193DD0(s32, s16, s16, s32);
 s32 func_00194248(s32, s32 *, s32 *);
 void func_0023FBE0(s32);
 extern u8 D_0029B1BE[];
