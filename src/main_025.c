@@ -142,7 +142,32 @@ INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C78);
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C88);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183C98);
+s32 func_00183C30(s32, s32 *, s32);
+s32 func_00183C78(s32);
+void func_00183C88(s32, s32);
+extern s32 D_0028CAC8;
+extern s32 D_0028CE38;
+
+typedef struct KPatch_00183C98 {
+    s32 addr;
+    s32 val;
+} KPatch_00183C98;
+
+void func_00183C98(void) {
+    KPatch_00183C98 *t;
+    u32 i;
+
+    t = (KPatch_00183C98 *)&D_0028CE38;
+    func_00183C88(t[0].addr, t[0].val);
+    func_00183C30(0x80075000, &D_0028CAC8, 0x328);
+    func_0017BB60(0);
+    func_0017BB60(2);
+    func_00183C88(t[1].addr, t[1].val);
+    func_00183C88(t[2].addr, t[2].val);
+    for (i = 3; i < 8; i++) {
+        func_00183C88(t[i].addr, func_00183C78(t[i].addr));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183D50);
 
