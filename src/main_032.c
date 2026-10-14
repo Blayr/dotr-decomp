@@ -171,9 +171,65 @@ s32 func_00192470(s32 port, s32 slot) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192588);
+extern char D_002BCF28[];
+extern char D_002BCF50[];
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_001926C8);
+/* scePadInit: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00192588(s32 a0) {
+    s32 ver;
+    s32 major;
+    s32 i;
+
+    D_0028F748 = 1;
+    while (1) {
+        func_0017E8B0(&D_00315980[0], 0x80000100, 0);
+        if (D_00315980[0].serve != 0) {
+            break;
+        }
+        for (i = 0x10000; i != -1; i--) {}
+    }
+    while (1) {
+        func_0017E8B0(&D_00315980[1], 0x80000101, 0);
+        if (D_00315980[1].serve != 0) {
+            break;
+        }
+        for (i = 0x10000; i != -1; i--) {}
+    }
+    ver = func_00193738();
+    major = ver >> 8;
+    if (major != 4) {
+        if (D_0028F74C != 0) {
+            ((s32 (*)(const char *, ...))func_00199B50)(D_002BCF28);
+            ((s32 (*)(const char *, ...))func_00199B50)(D_002BCF50, 4, 0, major, ver & 0xFF);
+        }
+        return 0;
+    }
+    return func_001926C8(a0);
+}
+
+/* scePadInit2: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_001926C8(s32 a0) {
+    s32 ret;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        D_003159D0[0][i].open = 0;
+        D_003159D0[0][i].unk14[1] = 0;
+        D_003159D0[0][i].unk14[0] = 0;
+        D_003159D0[1][i].open = 0;
+        D_003159D0[1][i].unk14[1] = 0;
+        D_003159D0[1][i].unk14[0] = 0;
+    }
+    (&D_00315BC0)[0] = 0x10;
+    (&D_00315BC0)[4] = 0;
+    ret = func_0017EA80((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0);
+    if (ret < 0) {
+        return 0;
+    }
+    return (&D_00315BC0)[3];
+}
 
 s32 func_00192768(void) {
     (*(s32 *)(&D_00315BC0)) = 0xF;
@@ -186,7 +242,59 @@ s32 func_00192768(void) {
     return (*(s32 *)((u8 *)(&D_00315BC0) + 0xC));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_001927E8);
+extern s32 D_00315AC0[2][4][8];
+extern char D_002BCF78[];
+extern char D_002BCFA8[];
+
+/* scePadPortOpen: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_001927E8(s32 port, s32 slot, void *addr) {
+    s32 ret;
+    s32 val;
+    s32 i;
+    char *p;
+    s32 *q;
+
+    if (((u32)addr & 0x3F) != 0) {
+        if (D_0028F74C != 0) {
+            ((s32 (*)(const char *, ...))func_00199B50)(D_002BCF78, addr);
+        }
+        return 0;
+    }
+    if (D_003159D0[port][slot].open == 1) {
+        if (D_0028F74C != 0) {
+            ((s32 (*)(const char *, ...))func_00199B50)(D_002BCFA8, port, slot);
+        }
+        return 0;
+    }
+    p = (char *)addr;
+    for (i = 0; i < 2; i++) {
+        *(s32 *)(p + 0x58) = 0;
+        p[0x70] = 5;
+        p[0x71] = 2;
+        p[0x67] = 0;
+        func_00198948(p, 0xFF, 0x20);
+        *(s32 *)(p + 0x60) = 0;
+        p += 0x80;
+    }
+    (&D_00315BC0)[0] = 1;
+    (&D_00315BC0)[1] = port;
+    (&D_00315BC0)[2] = slot;
+    (&D_00315BC0)[4] = (s32)addr;
+    ret = func_0017EA80((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0);
+    if (ret < 0) {
+        return 0;
+    }
+    q = D_00315AC0[port][slot];
+    val = (s32)*(void **)&(&D_00315BC0)[5];
+    D_003159D0[port][slot].open = 1;
+    *(s32 **)&D_003159D0[port][slot].unk4[1] = (s32 *)val;
+    *(void **)&D_003159D0[port][slot].buf = addr;
+    *(s32 **)&D_003159D0[port][slot].unk4[0] = q;
+    q[0] = 0;
+    D_003159D0[port][slot].unk4[2] = 0;
+    return (&D_00315BC0)[3];
+}
 
 s32 func_001929D0(s32 port, s32 slot) {
     u8 *b;
@@ -216,7 +324,16 @@ u8 *func_00192A88(s32 arg0, s32 arg1) {
     return p + i * 0x80;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192AE8);
+/* scePadGetFrameCount: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00192AE8(s32 port, s32 slot) {
+    s32 ret = 0;
+
+    if (D_003159D0[port][slot].open == 0) {
+        return ret;
+    }
+    return *(s32 *)(func_00192A88(port, slot) + 0x58);
+}
 
 s32 func_00192B38(s32 port, s32 slot, u8 *data) {
     u8 *p;
@@ -506,7 +623,14 @@ s32 func_001933D8(s32 arg0, s32 arg1, s32 arg2) {
     return (*(s32 *)(b_D_00315BC0 + 0x10));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193488);
+/* scePadInfoPressMode: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00193488(s32 port, s32 slot) {
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    return func_00193320(port, slot) == 0x3FFFF;
+}
 
 s32 func_001934E8(s32 port, s32 slot) {
     if (D_003159D0[port][slot].open == 0) {

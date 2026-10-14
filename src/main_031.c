@@ -282,7 +282,40 @@ void func_00190430(s32 arg0) {
     func_00184428();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190498);
+extern volatile __int128 D_0028DC10[5];
+extern __int128 D_0028DC60[2];
+
+/* sceIpuInit: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_00190498(void) {
+    func_00190430(1);
+    *(volatile s32 *)0x10002010 = 0x40000000;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile s32 *)0x10002000 = 0;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile __int128 *)0x10007010 = D_0028DC10[0];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[1];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[2];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[3];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
+    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
+    *(volatile s32 *)0x10002000 = 0x50000000;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile s32 *)0x10002000 = 0x58000000;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile __int128 *)0x10007010 = D_0028DC60[0];
+    *(volatile __int128 *)0x10007010 = D_0028DC60[1];
+    *(volatile s32 *)0x10002000 = 0x60000000;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile s32 *)0x10002000 = 0x90000000;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile s32 *)0x10002010 = 0x40000000;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile s32 *)0x10002000 = 0;
+    while (*(volatile s32 *)0x10002010 < 0) {}
+}
 
 s32 func_0017E240(s32);
 extern s8 D_002BCBC0;

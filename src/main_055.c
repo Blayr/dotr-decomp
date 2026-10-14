@@ -655,8 +655,6 @@ s32 func_00202FB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return arg0;
 }
 
-void func_00192588(s32);
-void func_001927E8(s32, s32, u8 *);
 
 typedef struct {
     s8 low : 4;
