@@ -464,7 +464,27 @@ s32 func_001859D0(void *arg0, void *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186060);
+typedef struct GsScissor_00186060 {
+    u64 SCAX0 : 11;
+    u64 pad11 : 5;
+    u64 SCAX1 : 11;
+    u64 pad27 : 5;
+    u64 SCAY0 : 11;
+    u64 pad43 : 5;
+    u64 SCAY1 : 11;
+    u64 pad59 : 5;
+} GsScissor_00186060;
+
+void func_00186060(u8 *arg0, s16 arg1, s16 arg2, s16 arg3) {
+    GsScissor_00186060 *sc;
+    u64 x;
+    u64 y;
+
+    sc = (GsScissor_00186060 *)((u8 *)arg0 + 0x30);
+    y = (arg2 - ((u64)(sc->SCAY1 + 1) >> 1)) << 4;
+    x = (arg1 - ((u64)(sc->SCAX1 + 1) >> 1)) << 4;
+    *(u64 *)((u8 *)arg0 + 0x20) = x | ((arg3 ? y + 8 : y) << 32);
+}
 
 void func_001860E8(s8 *arg0, s32 arg1) {
     s32 var_v0;
