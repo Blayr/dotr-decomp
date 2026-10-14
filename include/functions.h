@@ -2,6 +2,7 @@
 #define FUNCTIONS_H
 
 /* Prototypes of every decompiled function. dk rewrites this file. */
+void func_001000C0(void);
 s32 func_001001D0(void);
 s32 func_00100350(void);
 void func_001004C0(void);

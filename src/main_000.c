@@ -6,7 +6,11 @@ INCLUDE_ASM("asm/nonmatchings/main_000", func_00100008);
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_001000B8);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_001000C0);
+asm void func_001000C0(void) {
+    .set noreorder
+    addiu v1, zero, 0x23
+    syscall 0
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_001000D0);
 
