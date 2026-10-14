@@ -167,6 +167,10 @@ perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", 
 # (func_0017C3B0: `mfc0 $2,$12; xori $2,$2,1`); binutils pads it as a coprocessor hazard.
 # Written as its word, gas doesn't track it.
 perl -pi -e 's/^(\s+)mfc0\s+\$(\d+),\s*\$(\d+)\s*$/sprintf("%s.word 0x%08X", $1, 0x40000000 | ($2 << 16) | ($3 << 11))/e' "$TMP/out.s"
+# The same for an inline `cfc2.ni` (a VU0 control register read: libdev, libgraph's sceGsSyncPath):
+# Sony's assembler put no nop before the instruction reading its result (sceDevVu0Pause: `cfc2.ni
+# $2,$vi28; ori $2,$2,2`); binutils pads it. Written as its word: 0x48400000 | rt << 16 | vi << 11.
+perl -pi -e 's/^(\s+)cfc2\.ni\s+\$(\d+),\s*\$vi(\d+)\s*$/sprintf("%s.word 0x%08X", $1, 0x48400000 | ($2 << 16) | ($3 << 11))/e' "$TMP/out.s"
 # GCC loads a double constant into a GPR (soft-float doubles) as `li.d $N,<value>`; binutils
 # refuses it for the r5900, Sony's assembler expanded it as `dli` does (libgcc2's __floatdidf).
 perl -pi -e 's/^(\s+)li\.d\s+\$(\d+),\s*(\S+)\s*$/sprintf("%sdli\t\$%s,0x%016X\n", $1, $2, unpack("Q<", pack("d<", $3)))/e' "$TMP/out.s"
