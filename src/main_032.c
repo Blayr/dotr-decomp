@@ -371,7 +371,21 @@ s32 func_00193540(s32 port, s32 slot) {
     return func_001933D8(port, slot, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193598);
+s32 func_00193598(s32 port, s32 slot, u8 *data) {
+    u8 *b = (u8 *)&D_00315BC0;
+
+    *(s32 *)&D_00315BC0 = 0xB;
+    *(s32 *)(b + 4) = port;
+    *(s32 *)(b + 8) = slot;
+    __builtin_memcpy(b + 0xC, data, 12);
+    if (func_0017EA80(&D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
+        return 0;
+    }
+    if (*(s32 *)(b + 0x1C) == 1) {
+        func_00192C68(port, slot, 2);
+    }
+    return *(s32 *)(b + 0x1C);
+}
 
 s32 func_00193668(void) {
     (*(s32 *)(&D_00315BC0)) = 0xC;
