@@ -301,7 +301,17 @@ s32 func_00184428(void) {
     return eie != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184440);
+void func_00184440(void) {
+    s32 a[8];
+    s32 b[8];
+
+    a[1] = 1;
+    a[2] = 1;
+    b[1] = 1;
+    b[2] = 1;
+    D_0028D114 = func_0017B8E0(a);
+    D_0028D118 = func_0017B8E0(b);
+}
 
 s32 *func_00184488(s32 arg0) {
     s32 *p = (s32 *)0x80000000;
