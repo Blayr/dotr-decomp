@@ -728,4 +728,7 @@ s32 func_001A25F8(s32 *, s32 *, s32 *); /* extern */
 
 s32 func_0018B550(void *, s32);                 /* extern */
 
+s32 func_0017D180(s32);                     /* extern */
+s32 func_00187B90(s32, s32);                    /* extern */
+
 #endif

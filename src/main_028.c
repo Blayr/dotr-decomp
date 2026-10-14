@@ -39,7 +39,12 @@ void func_00187F18(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00187FC8);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188088);
+void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    func_00187B90(arg0, arg1);
+    func_00187B90(arg0 + 0x10, arg2);
+    func_00187B90(arg0 + 0x20, arg3);
+    func_00187B90(arg0 + 0x30, arg4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001880F0);
 

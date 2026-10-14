@@ -6,7 +6,14 @@ INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D180);
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D1B8);
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D268);
+void func_0017D268(s32 arg0) {
+    if (arg0 == 0xA) {
+        func_0017D180(0xD);
+        func_0017D180(0xA);
+        return;
+    }
+    func_0017D180(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D2A0);
 
