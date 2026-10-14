@@ -981,4 +981,6 @@ s32 func_0018A3A0(void *);
 s32 func_0018AA80(void *, s32);
 extern s32 D_002BC7A0;
 
+typedef union cvt_du { double d; u32 i[2]; } cvt_du;
+
 #endif

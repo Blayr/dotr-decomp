@@ -419,7 +419,44 @@ s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DDE8);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019F448);
+char *func_0019F448(void *data, double value, s32 ndigits, s32 flags, char *sign, s32 *decpt, s32 ch,
+                    s32 *length) {
+    extern char *func_00195480(void *, double, s32, s32, s32 *, s32 *, char **);
+    s32 mode, dsgn;
+    char *digits, *bp, *rve;
+    cvt_du tmp;
+
+    if (ch == 'f') {
+        mode = 3;
+    } else {
+        if (ch == 'e' || ch == 'E') {
+            ndigits++;
+        }
+        mode = 2;
+    }
+
+    tmp.d = value;
+    if (tmp.i[1] & 0x80000000) {
+        value = -value;
+        *sign = '-';
+    } else
+        *sign = '\000';
+    digits = func_00195480(data, value, mode, ndigits, decpt, &dsgn, &rve);
+    if ((ch != 'g' && ch != 'G') || flags & 1) {
+        bp = digits + ndigits;
+        if (ch == 'f') {
+            if (*digits == '0' && value)
+                *decpt = -ndigits + 1;
+            bp += *decpt;
+        }
+        if (value == 0)
+            rve = bp;
+        while (rve < bp)
+            *rve++ = '0';
+    }
+    *length = rve - digits;
+    return (digits);
+}
 
 s32 func_0019F608(char *p0, s32 exp, s32 fmtch) {
     char *p, *t;
