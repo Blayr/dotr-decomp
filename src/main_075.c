@@ -1245,7 +1245,146 @@ void func_00261680(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00261760);
+typedef struct Command_00261760 {
+    s32 unk0;
+    s32 mode;
+    u32 mask;
+    u32 value;
+} Command_00261760;
+
+typedef struct State_00261760 {
+    u16 fade;
+    u16 unk2;
+    u16 phase;
+    u8 handles[0xCE];
+    u8 count;
+    u8 padD5[0x2D];
+    u16 timer;
+} State_00261760;
+
+typedef struct Effect_00261760 {
+    s32 kind;
+    s32 value1;
+    s32 value2;
+    s32 value3;
+} Effect_00261760;
+
+s32 func_00261760(void *arg0, void *arg1, s32 arg2) {
+    Effect_00261760 effect;
+    s32 complete;
+    Effect_00261760 *command = &effect;
+    Command_00261760 *config = arg0;
+    State_00261760 *state = arg1;
+
+    effect.kind = 999;
+    effect.value1 = 0;
+    effect.value2 = 0;
+    effect.value3 = 0;
+    complete = 0;
+    func_001DE7E0(0);
+    if (arg2 >= 0) {
+        func_00255960(arg1);
+        state->fade = 0x80;
+        func_00260740(16);
+        func_00255AC0(arg1, 20);
+        func_00255AC0(arg1, 0x211);
+        func_00260020(arg0, arg1, arg2, -1, 1, 1);
+    } else {
+        switch (state->phase) {
+    case 0:
+        if (state->fade > 0x3F) {
+            state->fade -= 15;
+        } else {
+            state->fade = 0x30;
+            if (func_00255B50(arg1) == 1) {
+                if (state->timer++ > 16) {
+                    u8 handle;
+
+                    func_001E42C0(0, -120, 80, 0x106);
+                    command->kind = 20;
+                    command->value1 = 0;
+                    command->value2 = 0;
+                    command->value3 = 0;
+                    handle = func_00255A30((s32 *)command, arg1);
+                    state->handles[state->count] = handle;
+                    if (handle >= 0) {
+                        state->count++;
+                    }
+                    state->phase++;
+                    state->timer = 0;
+                }
+            }
+        }
+        func_001F6CF0((u8)state->fade);
+        return 1;
+    case 1:
+        if (func_001F51D0(state->handles[0]) == 1) {
+            return 1;
+        }
+        func_0025F720(arg0, arg1, command, 0x211);
+        state->phase++;
+        return 1;
+    case 2:
+        {
+            s32 i;
+
+            for (i = 0; i < state->count; i++) {
+                if (func_001F51D0(state->handles[i]) == 0) {
+                    complete++;
+                }
+            }
+            if (complete < state->count) {
+                return 1;
+            }
+            func_001E4530();
+            complete = 0;
+            do {
+                if ((config->mask >> (21 - complete)) & 1) {
+                    if (complete < 11) {
+                        func_00250E80(0, complete, config->value >> 16, config->value & 0xFFFF);
+                        if (config->mode == 1) {
+                            func_00250CA0(0, complete, config->value >> 16, config->value & 0xFFFF);
+                        }
+                    } else {
+                        func_00250E80(1, complete - 11, config->value >> 16, config->value & 0xFFFF);
+                        if (config->mode == 1) {
+                            func_00250CA0(1, complete - 11, config->value >> 16, config->value & 0xFFFF);
+                        }
+                    }
+                }
+                complete++;
+            } while (complete < 22);
+            state->phase++;
+        }
+        break;
+    case 3:
+        if (state->timer++ > 16) {
+            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            func_00260A70(arg1, 16);
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+    default:
+        state->fade += 15;
+        if (state->fade > 0x80) {
+            state->fade = 0x80;
+        }
+        func_001F6CF0((u8)state->fade);
+        if (state->fade == 0x80) {
+            if (state->timer++ > 16 && func_0025FD90() == 1) {
+                if (func_001DE780() != 0) {
+                    func_001DE7E0(1);
+                }
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+        }
+    }
+    return 1;
+}
 
 typedef struct Command_00261B70 {
     s32 unk0;
