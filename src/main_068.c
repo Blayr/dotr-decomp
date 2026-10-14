@@ -3199,7 +3199,6 @@ typedef struct {
 } Tag_00241E80;
 
 void func_001872F8(void *, u64);
-void func_00187370(void *, s32, s32, s32);
 void func_001873E8(void *, u64, s32, s32, s32, s32);
 void func_00187480(void *, s32, s32, s32);
 void *func_001874F8(void *, s32);
