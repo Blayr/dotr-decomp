@@ -649,7 +649,6 @@ void *func_001979F8(s32, s32, s32);                 /* extern */
 
 extern s32 D_00315500;
 
-s32 func_0018A848(void *);                          /* extern */
 extern s32 D_002BC900;
 extern s32 D_002BC920;
 
@@ -977,5 +976,10 @@ i2b_Bigint *func_00198F60(void *ptr, i2b_Bigint *a, i2b_Bigint *b);
 s32 func_0018E448(u64 *, void *);               /* extern */
 
 typedef union b2d_du { double d; u32 i[2]; } b2d_du;
+
+s32 func_001893A8(void *, s32);
+s32 func_0018A3A0(void *);
+s32 func_0018AA80(void *, s32);
+extern s32 D_002BC7A0;
 
 #endif

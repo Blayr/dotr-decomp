@@ -960,6 +960,7 @@ void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_00188428(f32 *arg0, f32 *arg1);
 void func_0018A378(s32 arg0);
 s32 func_0018A590(s32 arg0);
+s32 func_0018A848(void *arg0);
 s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4);
 s32 func_0018AC70(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4);
 void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32 s, s32 count, s32 fmt, s32 h_r, s32 v_r, s32 dmv, s32 mvscale);
