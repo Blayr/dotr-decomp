@@ -75,7 +75,39 @@ s32 func_001836A0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_001836C8);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_001837B8);
+extern s32 D_00313E00;
+extern s32 D_00314000;
+s32 func_00182B38(void);
+
+typedef struct IopPoke_001837B8 {
+    s32 addr;
+    s32 type;
+    s32 val;
+} IopPoke_001837B8;
+
+s32 func_001837B8(s32 arg0, void *arg1, s32 arg2) {
+    IopPoke_001837B8 *p;
+
+    if (func_00182B38() < 0) {
+        return 0xFFFF0000;
+    }
+    p = (IopPoke_001837B8 *)&D_00313E00;
+    p->addr = arg0;
+    p->type = arg2;
+    if (arg2 == 0) {
+        *(u8 *)&p->val = *(u8 *)arg1;
+    } else if (arg2 == 1) {
+        *(u16 *)&p->val = *(u16 *)arg1;
+    } else if (arg2 == 2) {
+        p->val = *(s32 *)arg1;
+    } else {
+        return 0xFFFEFFFE;
+    }
+    if (func_0017EA80(&D_00314000, 2, 0, &D_00313E00, 0x20, &D_00313E00, 0x10, 0, 0) < 0) {
+        return 0xFFFEFFFF;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183898);
 
