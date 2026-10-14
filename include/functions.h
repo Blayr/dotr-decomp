@@ -2034,6 +2034,7 @@ void func_001E7890(void);
 s32 func_001E78C0(s32 arg0);
 void func_001E7A50(void);
 s32 func_001E7A60(void);
+s32 func_001E7B20(s32 arg0);
 s32 func_001E7D00(s32 index);
 s32 func_001E7DE0(s32 arg0);
 s32 func_001E7E70(s32 arg0, s32 arg1, s32 arg2);

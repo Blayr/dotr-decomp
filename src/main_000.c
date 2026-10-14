@@ -55,7 +55,6 @@ typedef struct {
     u8 rotation[0x10];
 } Entry_00100350;
 
-s32 func_001E7B20(s32);
 extern Entry_00100350 D_0028A880[];
 
 s32 func_00100350(void) {

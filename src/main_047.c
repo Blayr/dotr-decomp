@@ -1034,7 +1034,84 @@ s32 func_001E7A60(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7B20);
+typedef struct ObjInit_001E7B20 {
+    u8 pad000[0x30];
+    f32 v[4];
+    u8 pad040[0xE0];
+    f32 f120;
+    f32 f124;
+    f32 f128;
+    u8 rgba[4];
+    u8 c130[4];
+    u8 pad134[0xB8];
+    s32 f1EC;
+    u8 pad1F0;
+    s8 f1E1_dummy;
+    s8 f1F2;
+    u8 pad1F3;
+    s16 f1F4;
+    u8 pad1F6;
+    s8 pad1F7 : 6;
+    s8 mode1F7 : 2;
+    u8 pad1F8a : 2;
+    u8 kind1F8 : 2;
+    u8 pad1F8b : 4;
+    u8 pad1F9[0x13];
+    s8 b0 : 1;
+    s8 b1 : 1;
+    s8 b2 : 1;
+    s8 b3 : 1;
+    s8 b4 : 1;
+    s8 b5 : 1;
+    s8 b6 : 1;
+    s8 b7 : 1;
+} ObjInit_001E7B20;
+
+s32 func_001E7B20(s32 arg0) {
+    ObjInit_001E7B20 *obj;
+    s32 off;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    if ((obj = (ObjInit_001E7B20 *)func_00217B40(0x210)) == NULL) {
+        return 0;
+    }
+    D_0031ABB0[arg0] = (Obj_0031ABB0 *)obj;
+    func_0020B400(obj, 0, 0x84);
+    ((s8 *)obj)[0x1E1] = -1;
+    obj->mode1F7 = 1;
+    obj->f1F2 = -1;
+    obj->f1F4 = -1;
+    obj->f1EC = -1;
+    obj->v[0] = 1.0f;
+    obj->v[1] = 1.0f;
+    obj->v[2] = 1.0f;
+    obj->v[3] = 1.0f;
+    obj->f120 = 0.8f;
+    obj->f124 = 0.8f;
+    obj->f128 = 1.0f;
+    obj->rgba[2] = 0x80;
+    obj->rgba[1] = 0x80;
+    obj->rgba[0] = 0x80;
+    obj->rgba[3] = 0x80;
+    obj->kind1F8 = 1;
+    obj->c130[2] = 0;
+    obj->c130[1] = 0;
+    obj->c130[0] = 0;
+    obj->c130[3] = 0;
+    off = 0;
+    obj->b0 = 1;
+    obj->b1 = 1;
+    obj->b2 = off;
+    obj->b3 = off;
+    obj->b4 = off;
+    obj->b5 = off;
+    obj->b6 = 1;
+    obj->b7 = 1;
+    func_001E7D00(arg0);
+    return 1;
+}
 
 typedef struct {
     s8 bit0 : 1;
