@@ -232,7 +232,46 @@ s32 func_00228AD0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_00228F50);
+s32 func_00228F50(s16 arg0, s16 arg1) {
+    extern f32 D_00298BA0[];
+    extern f32 D_00298BA8[];
+    s16 sp1E;
+    s8 mode;
+
+    sp1E = 0;
+    mode = *(s8 *)0x01ED5372;
+    switch (mode) {
+    case 0:
+        if (*(s16 *)0x01ED536C == 0) {
+            func_00228660(arg0, arg1, 3, &sp1E, 0);
+            *(s16 *)0x01ED536C += 1;
+        }
+        break;
+    case 1:
+        if (*(s16 *)0x01ED0060 == 0) {
+            *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
+            *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
+        }
+        *(f32 *)0x01ED0040 = (*(f32 *)0x01ED0050 * (f32)(0x100 - *(s16 *)0x01ED0060) / 256.0f) +
+                             ((f32)*(s16 *)0x01ED0060 * D_00298BA0[arg1 * 13] / 256.0f);
+        *(f32 *)0x01ED0048 = (*(f32 *)0x01ED0058 * (f32)(0x100 - *(s16 *)0x01ED0060) / 256.0f) +
+                             ((f32)*(s16 *)0x01ED0060 * D_00298BA8[arg1 * 13] / 256.0f);
+        *(s16 *)0x01ED0060 += 0x10;
+        if (*(s16 *)0x01ED0060 > 0x100) {
+            *(s16 *)0x01ED0060 = 0;
+            *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
+            *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
+            *(s8 *)0x01ED5372 = 0;
+            *(s8 *)0x01ED5375 = 0;
+            return 1;
+        }
+        break;
+    case 2:
+    default:
+        break;
+    }
+    return 0;
+}
 
 typedef struct State_00229140 {
     s8 pad0[3];

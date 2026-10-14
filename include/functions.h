@@ -2409,6 +2409,7 @@ void func_00228660(s16 player, s16 side, s8 state, s16 *items, s16 count);
 void func_00228940(s16 arg0, s16 arg1);
 s32 func_00228970(void);
 s32 func_00228AD0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3);
+s32 func_00228F50(s16 arg0, s16 arg1);
 s32 func_00229140(s32 arg0, s32 arg1, s16 arg2);
 s32 func_002294B0(s32 arg0, s16 arg1);
 s32 func_0022A020(s32 arg0);
