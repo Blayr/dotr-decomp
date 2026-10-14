@@ -48,7 +48,6 @@ extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
 extern void func_001876D0(void *);
 extern void func_00187778(void *, s32, s32);
-extern void func_00187828(void *, s32, s64);
 extern void func_001878B0(void *);
 
 extern u8 D_003506C8[];

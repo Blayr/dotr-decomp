@@ -205,7 +205,16 @@ void func_00187810(s32 **arg0, s32 arg1) {
     *(*arg0)++ = arg1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187828);
+void func_00187828(void *arg0, s32 arg1, s64 arg2) {
+    u32 *tag;
+
+    tag = *(u32 **)arg0;
+    *tag++ = (s32)arg2;
+    tag[0] = arg2 >> 32;
+    *(u32 **)arg0 = tag + 3;
+    tag[1] = arg1;
+    tag[2] = 0;
+}
 
 void func_00187858(void *arg0, s32 arg1) {
     s32 *temp_a1;
