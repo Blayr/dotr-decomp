@@ -303,7 +303,9 @@ cont:
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D518);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D750);
+long func_0019D750(const char *arg0, char **arg1, s32 arg2) {
+    return func_0019D518(D_0028FA98, arg0, arg1, arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D780);
 
