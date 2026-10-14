@@ -806,4 +806,7 @@ extern s32 D_0028F750;
 extern u8 D_002BD000;
 extern s32 D_0028F770;
 
+void func_0017E190(s32 *, s32);              /* extern */
+extern s32 D_0028F300;
+
 #endif

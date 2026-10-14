@@ -314,7 +314,17 @@ s32 func_0018D6D0(s32 arg0, void *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D7D8);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018DA50);
+void func_0018DA50(u64 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    (*(s32 *)((u8 *)arg0 + 8)) = arg1;
+    (*(u64 *)arg0) = 0;
+    (*(s32 *)((u8 *)arg0 + 0xC)) = arg1;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
+    (*(s64 *)((u8 *)arg0 + 0x18)) = 0;
+    (*(s32 *)((u8 *)arg0 + 0x20)) = arg2;
+    (*(s32 *)((u8 *)arg0 + 0x24)) = (s32) (arg2 + arg3);
+    (*(s32 *)((u8 *)arg0 + 0x28)) = arg3;
+    func_0018DAA8(arg0, 0);
+}
 
 s32 func_0018DA88(u64 *arg0, s32 arg1) {
     return *arg0 >> (64 - arg1);
