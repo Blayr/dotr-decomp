@@ -900,7 +900,6 @@ typedef struct State_0023D170 {
 
 
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194758(s32, s32, void *, void *);
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
@@ -1201,7 +1200,6 @@ typedef struct State_0023D920 {
 
 s32 func_00193CE0(s32, s32, void *);
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194758(s32, s32, void *, void *);
 s32 func_0023E7A0(void);
 extern s16 D_0034FB34;
 extern u8 D_0029B100[];
@@ -1840,7 +1838,6 @@ extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194758(s32, s32, void *, void *);
 
 s32 func_0023F340(void) {
     extern struct State_0023E610 D_0034FB00;
