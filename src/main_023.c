@@ -406,7 +406,38 @@ void func_0017ECB0(void *arg0, s32 arg1) {
     func_00184428();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017ED48);
+void func_0017ED48(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg6) {
+    void *temp_v0;
+    void *temp_v0_2;
+    void *var_a0;
+    void *var_v1;
+
+    func_001843E0();
+    (*(volatile s32 *)((u8 *)arg0 + 0x3C)) = 0;
+    (*(volatile s32 *)((u8 *)arg0 + 0x38)) = 0;
+    (*(volatile s32 *)arg0) = arg1;
+    temp_v0 = (void *)(*(s32 *)((u8 *)arg6 + 8));
+    (*(s32 *)((u8 *)arg0 + 4)) = arg2;
+    (*(s32 *)((u8 *)arg0 + 8)) = arg3;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = arg4;
+    (*(s32 *)((u8 *)arg0 + 0x14)) = arg5;
+    (*(s32 *)((u8 *)arg0 + 0x40)) = (s32)arg6;
+    if (temp_v0 == NULL) {
+        (*(void **)((u8 *)arg6 + 8)) = arg0;
+    } else {
+        var_a0 = temp_v0;
+        var_v1 = (*(void **)((u8 *)var_a0 + 0x38));
+        if (var_v1 != NULL) {
+            do {
+                var_a0 = var_v1;
+                temp_v0_2 = (*(void **)((u8 *)var_a0 + 0x38));
+                var_v1 = temp_v0_2;
+            } while (temp_v0_2 != NULL);
+        }
+        (*(void **)((u8 *)var_a0 + 0x38)) = arg0;
+    }
+    func_00184428();
+}
 
 void *func_0017EE18(void *arg0, void *arg1) {
     void *p;
