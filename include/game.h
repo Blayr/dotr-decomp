@@ -171,7 +171,6 @@ extern s8 D_0034F710;
 extern s32 D_0029B2F0;
 extern u8 D_00350620[];
 
-void func_00182A28(s32);
 
 
 extern u8 D_003193C0[];
@@ -616,5 +615,7 @@ s32 func_0019C4C8(s32, s32, s32);               /* extern */
 s32 func_001847B0(s32);                         /* extern */
 
 s32 func_00180B38(s32, s32);
+
+s32 func_001829B0(s32);
 
 #endif

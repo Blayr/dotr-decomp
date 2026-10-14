@@ -742,7 +742,6 @@ typedef struct {
 } Obj_00243D90;
 
 void func_0017FD20(s32);
-void func_00182A28(s32);
 void func_00192058(void);
 
 s32 func_00243D90(void *arg0) {
