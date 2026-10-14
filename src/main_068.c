@@ -195,7 +195,66 @@ void func_0023B1F0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023B920);
+typedef struct Copy_0023B920 {
+    s32 words[0x3FE8];
+} Copy_0023B920;
+
+extern s8 D_0034F6F8;
+
+void func_0023B920(void) {
+    s32 a;
+    s32 b;
+    s32 c;
+    s32 i;
+    s32 x;
+    s32 y;
+
+    if (D_0034F6F8 != 0) {
+        *(Copy_0023B920 *)0x01E301E0 = *(Copy_0023B920 *)func_002145E0(0);
+        a = func_00214D00(0, 0);
+        b = func_00214D00(0, 1);
+        c = func_00214D00(0, 2);
+        switch (*(s8 *)0x01ED546B) {
+        case 0:
+            i = 0x20;
+            x = 0x11;
+            y = 0x12;
+            break;
+        case 1:
+            i = 0x21;
+            x = 0x13;
+            y = 0x14;
+            break;
+        case 2:
+            i = 0x22;
+            x = 0x15;
+            y = 0x16;
+            break;
+        case 3:
+            i = 0x23;
+            x = 0x17;
+            y = 0x18;
+            break;
+        default:
+            i = 0x24;
+            x = 0x19;
+            y = 0x1A;
+            break;
+        }
+        func_001A8320(1, 0);
+        func_001A8320(2, 0);
+        func_001A8320(3, i);
+        func_001A8320(4, i);
+        func_00214990(0, x);
+        func_00214990(1, y);
+        for (i = 0; i < 2; i++) {
+            func_00214BB0(i, 0, a);
+            func_00214BB0(i, 1, b);
+            func_00214BB0(i, 2, c);
+        }
+    }
+    func_001E4530();
+}
 
 void func_0023BB00(s32 arg0) {
     s32 var_s0;
