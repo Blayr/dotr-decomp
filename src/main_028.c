@@ -1183,4 +1183,29 @@ _func_0018A1A0_0018A26C:\n\
 	" :  : "r" (p0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_0018A2B8);
+void func_0018A2B8(void *p0, void *p1, void *p2) {
+    __asm__ __volatile__("\n\
+	addiu	$12,$0,0x18\n\
+	lui	$10,%%hi(D_0018A360)\n\
+	addiu	$10,$10,%%lo(D_0018A360)\n\
+	lq	$11,0x0($10)\n\
+_func_0018A2B8_0018A2C8:\n\
+	lq	$8,0x0(%1)\n\
+	addi	$12,$12,-0x1\n\
+	lq	$13,0x0(%2)\n\
+	addiu	%0,%0,0x10\n\
+	lq	$9,0x10(%1)\n\
+	paddh	$8,$8,$13\n\
+	lq	$2,0x10(%2)\n\
+	pminh	$8,$8,$11\n\
+	paddh	$9,$9,$2\n\
+	pmaxh	$8,$8,$0\n\
+	pminh	$9,$9,$11\n\
+	addiu	%1,%1,0x20\n\
+	pmaxh	$9,$9,$0\n\
+	addiu	%2,%2,0x20\n\
+	ppacb	$10,$9,$8\n\
+	sq	$10,-0x10(%0)\n\
+	bnez	$12,_func_0018A2B8_0018A2C8\n\
+	" :  : "r" (p0), "r" (p1), "r" (p2));
+}
