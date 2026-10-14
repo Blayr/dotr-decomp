@@ -1009,7 +1009,178 @@ void func_001F0830(void *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F08D0);
+typedef struct {
+    s8 owns_data : 1;
+    s8 reserved : 2;
+    s8 busy : 1;
+    s8 rest : 4;
+} Flags_001F08D0;
+
+static inline s32 read_001F08D0(void *obj, s32 offset) {
+    return *(s32 *)((u8 *)obj + offset);
+}
+
+static inline void clear_001F08D0(void *obj, s32 offset) {
+    *(s32 *)((u32)obj + offset) = 0;
+}
+
+static inline s32 busy_001F08D0(void *obj) {
+    return ((Flags_001F08D0 *)obj)[0x20C].busy;
+}
+
+static inline s32 owns_001F08D0(void *obj) {
+    return ((Flags_001F08D0 *)((u32)obj + 0x20C))->owns_data;
+}
+
+#pragma global_optimizer off
+
+s32 func_001F08D0(s32 arg0) {
+    u8 *data;
+    Obj_0031ABB0 *obj;
+
+    if (arg0 < 0 || arg0 >= 0x54) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    data = (u8 *)read_001F08D0(obj, 0x138);
+    if (data == NULL) {
+        return 1;
+    }
+    if (busy_001F08D0(obj)) {
+        return 0;
+    }
+
+    if (*(s32 *)(data + 4) != 0) {
+        s32 i;
+        u8 *cursor;
+
+        i = 0;
+        cursor = (u8 *)obj;
+        do {
+            i++;
+            *(s32 *)(cursor + 0x178) = 0;
+            cursor += 4;
+        } while (i < 8);
+        clear_001F08D0(obj, 0x140);
+        {
+            u8 *clear_cursor;
+            s32 j;
+
+            j = 0;
+            clear_cursor = (u8 *)obj;
+            do {
+                j++;
+                *(s32 *)(clear_cursor + 0x144) = 0;
+                clear_cursor += 4;
+            } while (j < 8);
+        }
+    } else {
+        s32 slot;
+        u8 *metadata;
+        s32 resource;
+
+        metadata = (u8 *)read_001F08D0(obj, 0x13C);
+        if (*(s32 *)(metadata + 0x2C) != 0) {
+            s32 *table;
+            s32 *resources;
+            s32 count;
+            s32 k;
+
+            k = 0;
+            table = (s32 *)(data + *(s32 *)(metadata + 0x28));
+            count = table[0];
+            resources = table + 4;
+            if (0 < count) {
+                do {
+                    resource = resources[0];
+                    if (resource != 0) {
+                        func_00217B50(resource);
+                    }
+                    resource = resources[2];
+                    if (resource != 0) {
+                        func_00217B50(resource);
+                    }
+                    k++;
+                    resources += 4;
+                } while (k < count);
+            }
+        }
+        slot = 0;
+        do {
+            func_001F0C10(arg0, slot);
+            slot++;
+        } while (slot < 8);
+        resource = read_001F08D0(obj, 0x140);
+        if (resource != 0) {
+            func_00217B50(resource);
+            clear_001F08D0(obj, 0x140);
+        }
+        {
+            u8 *cursor;
+            s32 l;
+
+            l = 0;
+            cursor = (u8 *)obj;
+            do {
+                resource = *(s32 *)(cursor + 0x144);
+                if (resource != 0) {
+                    func_00217B50(resource);
+                    *(s32 *)(cursor + 0x144) = 0;
+                }
+                l++;
+                cursor += 4;
+            } while (l < 8);
+        }
+    }
+
+    clear_001F08D0(obj, 0x164);
+    clear_001F08D0(obj, 0x168);
+    func_001FA810(0, 1);
+    if (*(s32 *)((u8 *)read_001F08D0(obj, 0x138) + 4) & 0x80000) {
+        clear_001F08D0(obj, 0x16C);
+    } else if (read_001F08D0(obj, 0x16C) != 0) {
+        func_00217B50(read_001F08D0(obj, 0x16C));
+        clear_001F08D0(obj, 0x16C);
+    }
+    if (*(s32 *)((u8 *)read_001F08D0(obj, 0x138) + 4) & 0x100000) {
+        clear_001F08D0(obj, 0x170);
+    } else if (read_001F08D0(obj, 0x170) != 0) {
+        func_00217B50(read_001F08D0(obj, 0x170));
+        clear_001F08D0(obj, 0x170);
+    }
+    if (*(s32 *)((u8 *)read_001F08D0(obj, 0x138) + 4) & 0x200000) {
+        clear_001F08D0(obj, 0x174);
+    } else if (read_001F08D0(obj, 0x174) != 0) {
+        func_00217B50(read_001F08D0(obj, 0x174));
+        clear_001F08D0(obj, 0x174);
+    }
+    if (read_001F08D0(obj, 0x1EC) >= 0) {
+        func_001F4CB0(read_001F08D0(obj, 0x1EC));
+    }
+    if (owns_001F08D0(obj)) {
+        func_00217B50((s32)(u8 *)read_001F08D0(obj, 0x138));
+    }
+    {
+        s32 n;
+        Entry_001EDF20 *entry;
+
+        n = 1;
+        entry = D_0031AD70;
+        clear_001F08D0(obj, 0x138);
+        do {
+            if (entry->id >= 0 && (arg0 < 0 || entry->id == arg0)) {
+                entry->id = -1;
+            }
+            n++;
+            entry++;
+        } while (n < 0x20);
+    }
+    return 1;
+}
+#pragma global_optimizer reset
 
 s32 func_001F0C10(s32 arg0, s32 arg1) {
     void func_00217B50(void *);

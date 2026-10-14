@@ -1181,7 +1181,6 @@ typedef struct {
     s8 unused4 : 4;
 } Flags_001E7E70;
 
-void func_001F08D0(s32);
 
 static inline s64 busy_001E7E70(Obj_0031ABB0 *obj) {
     return (s64) ((u64) obj->lv[0x2C] << 60) >> 63;
