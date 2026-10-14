@@ -306,7 +306,59 @@ void func_001880F0(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zm
     func_00187910(m, mt, m);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_001881F8);
+void func_001881F8(f32 (*m)[4], f32 *lp, f32 a, f32 b, f32 c, s32 mode) {
+
+
+
+    if (mode) {
+        f32 x, y, z, d;
+
+        x = lp[0];
+        y = lp[1];
+        z = lp[2];
+        d = 1.0f - (a * x + b * y + c * z);
+        m[0][0] = a * x + d;
+        m[1][0] = b * x;
+        m[2][0] = c * x;
+        m[3][0] = -x;
+        m[0][1] = a * y;
+        m[1][1] = b * y + d;
+        m[2][1] = c * y;
+        m[3][1] = -y;
+        m[0][2] = a * z;
+        m[1][2] = b * z;
+        m[2][2] = c * z + d;
+        m[3][2] = -z;
+        m[0][3] = a;
+        m[1][3] = b;
+        m[2][3] = c;
+        m[3][3] = d - 1.0f;
+    } else {
+        f32 x, y, z, d, e;
+
+        x = lp[0];
+        y = lp[1];
+        z = lp[2];
+        d = a * x + b * y + c * z;
+        e = -1.0f / d;
+        m[0][0] = e * (a * x - d);
+        m[1][0] = e * (b * x);
+        m[2][0] = e * (c * x);
+        m[3][0] = e * (-x);
+        m[0][1] = e * (a * y);
+        m[1][1] = e * (b * y - d);
+        m[2][1] = e * (c * y);
+        m[3][1] = e * (-y);
+        m[0][2] = e * (a * z);
+        m[1][2] = e * (b * z);
+        m[2][2] = e * (c * z - d);
+        m[3][2] = e * (-z);
+        m[0][3] = 0.0f;
+        m[1][3] = 0.0f;
+        m[2][3] = 0.0f;
+        m[3][3] = e * (-d);
+    }
+}
 
 void func_00188388(void *p0, void *p1, void *p2, void *p3) {
     __asm__ __volatile__("\n\
