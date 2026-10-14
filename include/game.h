@@ -632,4 +632,6 @@ void func_0017B680(void);
 
 void func_0017B690(void);
 
+void func_0017B6A0(void);
+
 #endif
