@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sce/libkernl.h"
 
 s32 func_001831A0(void *arg0) {
     u8 *b_D_00313E08;

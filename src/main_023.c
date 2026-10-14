@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sce/libkernl.h"
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D0C0);
 

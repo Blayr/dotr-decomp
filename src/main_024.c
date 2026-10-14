@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sce/libkernl.h"
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F288);
 
@@ -99,15 +100,6 @@ INCLUDE_ASM("asm/nonmatchings/main_024", func_00180ED0);
 
 extern s32 D_00313500;
 extern s32 D_00313B80;
-
-typedef struct FioReq_00181140 {
-    s32 sema;
-    s32 *result;
-    s32 size;
-    s32 arg;
-} FioReq_00181140;
-
-extern FioReq_00181140 D_003128C0;
 
 s32 func_00181140(s32 arg0) {
     s32 sp[8];
