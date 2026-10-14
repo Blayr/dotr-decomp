@@ -989,4 +989,6 @@ s32 func_0017B4E0(s32, s32, s32);
 s32 func_0017B5E0(s32, s32);
 u64 func_0017BC20(u64);
 
+extern s32 D_002BC940;
+
 #endif

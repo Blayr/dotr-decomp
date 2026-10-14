@@ -401,7 +401,21 @@ void func_0018C5F0(void *arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C680);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C938);
+s32 func_0018C938(void *arg0, s32 *arg1) {
+    s8 buf[0x100];
+    s32 ok;
+
+    if (*(s32 *)((u8 *)arg0 + 0xE0) != 0) {
+        ok = *(s32 *)((u8 *)arg0 + 0xDC) >= arg1[1] && *(s32 *)((u8 *)arg0 + 0xE0) >= arg1[2];
+    } else {
+        ok = *(s32 *)((u8 *)arg0 + 0xE4) >= arg1[3] * arg1[4];
+    }
+    if (!ok) {
+        func_0019B648(buf, &D_002BC940, arg1[1], arg1[2]);
+        func_0018F7B0((s32)arg0, buf);
+    }
+    return ok;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C9D8);
 
