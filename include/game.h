@@ -179,7 +179,6 @@ extern s32 func_001A1E70(u64);
 
 
 typedef void (*Callback_00286910)(void);
-f32 func_001A6C18(f32, f32);                        /* extern */
 
 s32 func_0024DF80(s32 arg0, void *arg1);
 
@@ -420,7 +419,6 @@ s32 func_001C6170(s32);
 
 
 
-f32 func_001A6C00(f32);
 
 extern char D_002BEF67[];
 

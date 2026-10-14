@@ -754,6 +754,12 @@ s32 func_001A6BE8(s64 arg0, s32 arg1) {
     return func_001A3130();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6C00);
+f32 func_001A6C00(f32 x) {
+    extern f32 func_001A43A8(f32);
+    return func_001A43A8(x);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6C18);
+f32 func_001A6C18(f32 y, f32 x) {
+    extern f32 func_001A4760(f32, f32);
+    return func_001A4760(y, x);
+}
