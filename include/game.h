@@ -259,7 +259,6 @@ extern u32 D_0029E830[];
 void func_00241840(u8 *, s32, s32, s32, s32, s32);
 
 
-f32 func_001A6A88(f32);
 
 
 
@@ -269,7 +268,6 @@ extern u64 D_00293EE0[];
 
 
 void func_0027F5B0(void);
-f32 func_001A6B70(f32);
 void func_001FA220(s32, s32);
 void func_00203320(void);
 void *func_00198948(void *, s32, u32);
@@ -337,7 +335,6 @@ extern s32 D_003503B0;
 extern u8 D_003503C0[];
 
 
-f32 func_001A6898(f32);
 
 extern f32 D_00294050[];
 
@@ -871,5 +868,10 @@ typedef struct { u8 pad0[0x58]; } nl_mFILE;
 typedef struct nl_mglue { struct nl_mglue *_next; s32 _niobs; nl_mFILE *_iobs; } nl_mglue;
 
 extern s8 D_002BD0C1[];
+
+f32 func_001A6318(f32 x, f32 y, s32 iy);
+s32 func_001A5338(f32 x, f32 *y);
+f32 func_001A61F0(f32 x, f32 y, s32 iy);
+f32 func_001A57D8(f32 x, f32 y);
 
 #endif

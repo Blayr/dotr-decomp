@@ -735,7 +735,28 @@ INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6898);
+f32 func_001A6898(f32 x) {
+    f32 y[2], z = 0.0f;
+    s32 n, ix;
+
+    do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
+    ix &= 0x7fffffff;
+    if (ix <= 0x3f490fd8) {
+        return func_001A57D8(x, z);
+    } else {
+        n = func_001A5338(x, y);
+        switch (n & 3) {
+        case 0:
+            return func_001A57D8(y[0], y[1]);
+        case 1:
+            return -func_001A61F0(y[0], y[1], 1);
+        case 2:
+            return -func_001A57D8(y[0], y[1]);
+        default:
+            return func_001A61F0(y[0], y[1], 1);
+        }
+    }
+}
 
 f32 func_001A6970(f32 x) {
     u32 ix;
@@ -746,9 +767,42 @@ f32 func_001A6970(f32 x) {
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6998);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6A88);
+f32 func_001A6A88(f32 x) {
+    f32 y[2], z = 0.0f;
+    s32 n, ix;
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6B70);
+    do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
+    ix &= 0x7fffffff;
+    if (ix <= 0x3f490fd8) {
+        return func_001A61F0(x, z, 0);
+    } else {
+        n = func_001A5338(x, y);
+        switch (n & 3) {
+        case 0:
+            return func_001A61F0(y[0], y[1], 1);
+        case 1:
+            return func_001A57D8(y[0], y[1]);
+        case 2:
+            return -func_001A61F0(y[0], y[1], 1);
+        default:
+            return -func_001A57D8(y[0], y[1]);
+        }
+    }
+}
+
+f32 func_001A6B70(f32 x) {
+    f32 y[2], z = 0.0f;
+    s32 n, ix;
+
+    do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
+    ix &= 0x7fffffff;
+    if (ix <= 0x3f490fda) {
+        return func_001A6318(x, z, 1);
+    } else {
+        n = func_001A5338(x, y);
+        return func_001A6318(y[0], y[1], 1 - ((n & 1) << 1));
+    }
+}
 
 s32 func_001A6BE8(s64 arg0, s32 arg1) {
     return func_001A3130();
