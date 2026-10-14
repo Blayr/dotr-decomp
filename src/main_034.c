@@ -256,7 +256,28 @@ s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b) {
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199430);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001995C0);
+double func_001995C0(double _x) {
+    ulp_du x, a;
+    s32 L;
+
+    x.d = _x;
+    L = (x.i[1] & 0x7ff00000) - (53 - 1) * 0x100000;
+    if (L > 0) {
+        a.i[1] = L;
+        a.i[0] = 0;
+    } else {
+        L = -L >> 20;
+        if (L < 20) {
+            a.i[1] = 0x80000 >> L;
+            a.i[0] = 0;
+        } else {
+            a.i[1] = 0;
+            L -= 20;
+            a.i[0] = L >= 31 ? 1 : 1 << (31 - L);
+        }
+    }
+    return a.d;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199690);
 
