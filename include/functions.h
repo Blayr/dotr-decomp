@@ -827,6 +827,7 @@ void func_0018A378(s32 arg0);
 s32 func_0018A590(s32 arg0);
 void func_0018CC48(void *arg0);
 s32 func_0018DA88(u64 *arg0, s32 arg1);
+u32 func_0018DC30(void *arg0, s32 arg1);
 s32 func_0018E1E0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0018ED10(s32 unused0);
 void func_0018EE38(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3);

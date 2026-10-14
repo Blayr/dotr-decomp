@@ -8,7 +8,15 @@ INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DB90);
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DBD8);
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DC30);
+u32 func_0018DC30(void *arg0, s32 arg1) {
+    u32 var_v1;
+
+    var_v1 = (*(s32 *)((u8 *)arg0 + 8)) + (arg1 >> 3);
+    if (var_v1 >= (u32) (*(u32 *)((u8 *)arg0 + 0x24))) {
+        var_v1 -= (*(s32 *)((u8 *)arg0 + 0x28));
+    }
+    return var_v1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DC60);
 
