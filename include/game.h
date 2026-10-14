@@ -638,7 +638,6 @@ s32 func_00184650();                            /* extern */
 
 s32 func_0017BD40();                                /* extern */
 s32 func_0017BD50();                                /* extern */
-s32 func_00183E50();                                /* extern */
 
 s32 func_0018DAA8(u64 *, s32);              /* extern */
 

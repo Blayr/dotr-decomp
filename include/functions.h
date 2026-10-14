@@ -880,6 +880,7 @@ s32 func_00183B48(s32 arg0);
 u32 func_00183BA8(s32 arg0, s32 arg1);
 s32 func_00183C40(s32 *arg0, s32 *arg1, u32 arg2);
 s32 func_00183E10(void);
+s32 func_00183E50(void);
 s32 func_001843E0(void);
 s32 func_00184428(void);
 s32 func_001844D0(void);

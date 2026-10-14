@@ -149,7 +149,68 @@ s32 func_00183E10(void) {
     return func_0017BD50();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183E50);
+extern s32 D_0028D0E8;
+extern char D_002BC220[];
+extern char D_002BC258[];
+extern char D_002BC270[];
+extern char D_002BC288[];
+void func_0017DA60(char *, ...);
+void func_00183D70(s32, s32, s32, s32, s32);
+
+typedef struct {
+    s32 a, b, c, d;
+} TlbEnt;
+
+s32 func_00183E50(void) {
+    register s32 i __asm__("$25");
+    s32 *d;
+    TlbEnt *e;
+    s32 n, j, addr;
+
+    d = &D_0028D0E8;
+    func_0017DA60(D_002BC220, d[0] - 1, d[0], d[0] + d[1] - 1, d[0] + d[1], d[0] + d[1] + d[2] - 1);
+    __asm__ volatile("mtc0\t$0, $6");
+    __asm__ volatile("sync.p");
+    n = d[0];
+    i = 0;
+    if (n > 48) {
+        func_0017DA60(D_002BC258);
+        func_001847B0(1);
+    }
+    for (e = (TlbEnt *)d[4]; i < n; i++, e++) {
+        func_00183D70(i, e->a, e->b, e->c, e->d);
+    }
+    d = &D_0028D0E8;
+    n = i + d[1];
+    if (n > 48) {
+        func_0017DA60(D_002BC270);
+        func_001847B0(1);
+    }
+    for (e = (TlbEnt *)d[5]; i < n; i++, e++) {
+        func_00183D70(i, e->a, e->b, e->c, e->d);
+    }
+    d = &D_0028D0E8;
+    d[3] = i;
+    __asm__ volatile("mtc0\t%0, $6" : : "r"(i));
+    __asm__ volatile("sync.p");
+    if (d[2] > 0) {
+        n = i + d[2];
+        if (n > 48) {
+            func_0017DA60(D_002BC288);
+            func_001847B0(1);
+        }
+        for (e = (TlbEnt *)d[6]; i < n; i++, e++) {
+            func_00183D70(i, e->a, e->b, e->c, e->d);
+        }
+    }
+    for (j = i; j < 48; j++) {
+        func_00183D70(j, 0, 0xE0000000 + (j << 13), 0, 0);
+    }
+    return i;
+}
+
+/* the 15 padding nops after it (func_00184080 starts at 0x184080) */
+__asm__(".space 60");
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00184080);
 
