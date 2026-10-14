@@ -713,7 +713,6 @@ extern s32 D_0028DA50;
 s32 func_0017E028(s32, void *, s32, s32, s32, s32); /* extern */
 void *func_0017E4D0(s32);                           /* extern */
 
-s64 func_0019B870(void *cookie, s64 offset, s32 whence);
 
 typedef union { f32 value; u32 word; } fshape;
 
@@ -941,5 +940,7 @@ typedef struct vf_FILE { u8 pad[0x54]; vf_reent *_data; } vf_FILE;
 s32 func_0019DDE8(vf_reent *ptr, vf_FILE *fp, const char *fmt, void *ap);
 
 typedef struct sread_FILE { u8 pad0[0xC]; s16 _flags; s16 _file; u8 pad1[0x40]; s32 _offset; s32 *_data; } sread_FILE;
+
+typedef struct sseek_FILE { u8 pad0[0xC]; s16 _flags; s16 _file; u8 pad1[0x40]; s32 _offset; s32 *_data; } sseek_FILE;
 
 #endif

@@ -74,7 +74,19 @@ s32 func_0019B7F0(void *arg0, s32 arg1, s32 arg2) {
     return func_001A0478((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)), arg1, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B870);
+s64 func_0019B870(void *cookie, s64 offset, s32 whence) {
+    sseek_FILE *fp = (sseek_FILE *)cookie;
+    s64 ret;
+
+    ret = ((s64 (*)(s32 *, s32, s64, s32))func_001977D8)(fp->_data, fp->_file, offset, whence);
+    if (ret == -1L)
+        fp->_flags &= ~0x1000;
+    else {
+        fp->_flags |= 0x1000;
+        fp->_offset = ret;
+    }
+    return ret;
+}
 
 void func_0019B8D8(void *arg0) {
     func_001951F8((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)));
