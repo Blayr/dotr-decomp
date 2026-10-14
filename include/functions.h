@@ -1542,6 +1542,7 @@ s32 func_00197C18(s32 arg0);
 void func_00197C60(s32 reent_ptr, u32 nb);
 void *func_00197EB8(s32 reent_ptr, s32 bytes);
 s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state);
+void *func_00198790(void *dst, const void *src, s32 n);
 s32 func_00198840(s32 dst, s32 src);
 void *func_00198948(void *dst, s32 c, u32 n);
 void func_00198A08(s32 r);

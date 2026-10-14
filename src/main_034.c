@@ -684,7 +684,65 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_00198618);
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_001986F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198790);
+/* memcpy: newlib's hand-written r5900 assembly (libc/machine/r5900/memcpy.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void *func_00198790(void *dst, const void *src, s32 n) {
+    register s32 r8 __asm__("$8");
+
+    __asm__ __volatile__(
+        "	.set	noreorder\n"
+        "	daddu	$8,$4,$0\n"
+        "	sltiu	$2,$6,0x20\n"
+        "	bnez	$2,_func_00198790_0019880C\n"
+        "	daddu	$3,$8,$0\n"
+        "	or	$2,$5,$8\n"
+        "	andi	$2,$2,0xF\n"
+        "	bnel	$2,$0,_func_00198790_00198810\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	daddu	$7,$8,$0\n"
+        "_func_00198790_001987B4:\n"
+        "	lq	$3,0x0($5)\n"
+        "	addiu	$6,$6,-0x20\n"
+        "	addiu	$5,$5,0x10\n"
+        "	sltiu	$4,$6,0x20\n"
+        "	sq	$3,0x0($7)\n"
+        "	addiu	$7,$7,0x10\n"
+        "	lq	$2,0x0($5)\n"
+        "	addiu	$5,$5,0x10\n"
+        "	sq	$2,0x0($7)\n"
+        "	beqz	$4,_func_00198790_001987B4\n"
+        "	addiu	$7,$7,0x10\n"
+        "	sltiu	$2,$6,0x8\n"
+        "	bnez	$2,_func_00198790_0019880C\n"
+        "	daddu	$3,$7,$0\n"
+        "_func_00198790_001987EC:\n"
+        "	ld	$3,0x0($5)\n"
+        "	addiu	$6,$6,-0x8\n"
+        "	addiu	$5,$5,0x8\n"
+        "	sltiu	$2,$6,0x8\n"
+        "	sd	$3,0x0($7)\n"
+        "	beqz	$2,_func_00198790_001987EC\n"
+        "	addiu	$7,$7,0x8\n"
+        "	daddu	$3,$7,$0\n"
+        "_func_00198790_0019880C:\n"
+        "	addiu	$6,$6,-0x1\n"
+        "_func_00198790_00198810:\n"
+        "	addiu	$2,$0,-0x1\n"
+        "	beq	$6,$2,_func_00198790_00198838\n"
+        "	daddu	$4,$2,$0\n"
+        "_func_00198790_0019881C:\n"
+        "	lbu	$2,0x0($5)\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	addiu	$5,$5,0x1\n"
+        "	sb	$2,0x0($3)\n"
+        "	addiu	$3,$3,0x1\n"
+        "	bne	$6,$4,_func_00198790_0019881C\n"
+        "	nop\n"
+        "_func_00198790_00198838:\n"
+        "	.set	reorder\n"
+        : "=r"(r8));
+    return (void *)r8;
+}
 
 /* memmove: newlib's hand-written r5900 assembly (libc/machine/r5900/memmove.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
