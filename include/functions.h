@@ -1159,6 +1159,7 @@ s32 func_0019DA00(void *arg0);
 s32 func_0019DC70(s32 arg0, void *arg1);
 s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap);
 s32 func_0019F608(char *p0, s32 exp, s32 fmtch);
+char *func_001A0378(char *tab, char *fmt);
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s64 func_001A05E8(s64 u, s64 v);
 u64 func_001A2000(double a);

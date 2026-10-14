@@ -371,7 +371,51 @@ s32 func_0019F608(char *p0, s32 exp, s32 fmtch) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019F6E8);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_001A0378);
+char *func_001A0378(char *tab, char *fmt) {
+    s32 c, n, v;
+
+    c = *fmt++;
+    if (c == '^') {
+        v = 1;
+        c = *fmt++;
+    } else
+        v = 0;
+    for (n = 0; n < 256; n++)
+        tab[n] = v;
+    if (c == 0)
+        return fmt - 1;
+
+    v = 1 - v;
+    for (;;) {
+        tab[c] = v;
+    doswitch:
+        n = *fmt++;
+        switch (n) {
+
+        case 0:
+            return fmt - 1;
+
+        case '-':
+            n = *fmt;
+            if (n == ']' || n < c) {
+                c = '-';
+                break;
+            }
+            fmt++;
+            do {
+                tab[++c] = v;
+            } while (c < n);
+            goto doswitch;
+
+        case ']':
+            return fmt;
+
+        default:
+            c = n;
+            break;
+        }
+    }
+}
 
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     s64 ret;
