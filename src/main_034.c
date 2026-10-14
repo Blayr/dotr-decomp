@@ -1,6 +1,9 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001976B8);
+void func_001976B8(s32 arg0, s32 arg1) {
+    s32 sp0[4];
+    func_00197570(arg0, arg1, (s32) sp0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_001976D8);
 

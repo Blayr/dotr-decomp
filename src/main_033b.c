@@ -72,6 +72,9 @@ void func_00197520(s32 arg0, s32 arg1) {
     func_00197570(D_0028FA98, arg0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00197548);
+u8 *func_00197548(s32 arg0) {
+    s32 sp0[4];
+    return func_00197570(D_0028FA98, arg0, (s32) sp0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00197570);

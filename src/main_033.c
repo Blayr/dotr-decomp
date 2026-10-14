@@ -36,7 +36,13 @@ void func_00194328(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194380);
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00194508);
+s32 func_00194508(void) {
+    if (func_0017EA80(&D_00315C40, 0x35, 0, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0) != 0) {
+        func_00199B50(&D_002BD0A0);
+        return -1;
+    }
+    return D_00317200;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194578);
 

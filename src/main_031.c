@@ -8,9 +8,25 @@ void func_0018F768(s32 arg0) {
     func_00199B50(&D_002BCA98, arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F778);
+void func_0018F778(s32 arg0, void *arg1, s32 arg2) {
+    s32 sp0[64];
+    func_0019B648(sp0, arg1, arg2);
+    func_0018F7B0(arg0, sp0);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F7B0);
+void func_0018F7B0(s32 arg0, void *arg1) {
+    s32 sp0[4];
+    s32 temp_v1;
+
+    temp_v1 = (*(s32 *)((u8 *)arg0 + 0x858));
+    if ((temp_v1 != 0) && (arg0 != 0) && ((*(s32 *)((u8 *)arg0 + 0xC)) != 0)) {
+        sp0[0] = 0;
+        sp0[1] = arg1;
+        func_0018EF48(temp_v1, sp0);
+        return;
+    }
+    func_0018F768((s32) arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F808);
 
@@ -58,9 +74,21 @@ void func_001900B0(void *arg0) {
     func_00190278(*(s32 *)((u8 *)arg0 + 0x40) + 0x4C);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_001900C0);
+void func_001900C0(s32 arg0) {
+    func_001843E0();
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+    *(volatile s32 *)0x1000B000 = arg0;
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190128);
+void func_00190128(s32 arg0) {
+    func_001843E0();
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+    *(volatile s32 *)0x1000B400 = arg0;
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190190);
 
@@ -68,7 +96,13 @@ INCLUDE_ASM("asm/nonmatchings/main_031", func_00190278);
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_001903C8);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190430);
+void func_00190430(s32 arg0) {
+    func_001843E0();
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+    *(volatile s32 *)0x1000B400 = arg0;
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190498);
 
