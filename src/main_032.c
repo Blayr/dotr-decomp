@@ -266,7 +266,28 @@ s32 func_001930D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return ((*(s32 *)(b_D_00315BC0 + 0x14)));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193188);
+s32 func_00193188(s32 port, s32 slot, u8 *data) {
+    u8 *p;
+    u8 *q;
+    s32 i;
+    s32 ret;
+
+    if (func_00192A88(port, slot)[0x72] != 1) {
+        return 0;
+    }
+    p = (u8 *)D_003159D0[port][slot].unk4[0];
+    q = p + 0xC;
+    for (i = 0; i < 6; i++) {
+        q[i] = data[i];
+    }
+    ret = 1;
+    *(s32 *)(p + 4) = 1;
+    *(s32 *)(p + 8) = 6;
+    if (func_00192470(port, slot) != 1) {
+        ret = 0;
+    }
+    return ret;
+}
 
 
 typedef struct CdRpcBuf_00193248 {
