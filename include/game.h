@@ -905,7 +905,6 @@ extern f32 D_002BE128[]; /* fdlibm ef_pow.c bp[2] = { 1.0, 1.5 } */
 extern f32 D_002BE130[]; /* dp_h[2] */
 extern f32 D_002BE138[]; /* dp_l[2] */
 extern f32 D_002BE1AC;   /* huge * huge, folded (the compiler kept it in rodata) */
-f32 func_0019B4F8(f32 x, s32 n); /* scalbnf */
 
 extern s32 D_002BE570[]; /* fdlibm kf_rem_pio2.c init_jk[] = { 4, 7, 9 } */
 extern f32 D_002BE580[]; /* PIo2[11] */
