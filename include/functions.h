@@ -1095,6 +1095,7 @@ s32 func_001828C0(s32 arg0);
 s32 func_00182930(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001829B0(s32 arg0);
 s32 func_00182A28(s32 arg0);
+s32 func_00182A48(const char *name, void *addr);
 s32 func_00182B38(void);
 s32 func_00182C38(void);
 s32 func_00182CC8(void);

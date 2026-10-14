@@ -1548,7 +1548,35 @@ s32 func_00182A28(s32 arg0) {
     return func_001829B0(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_00182A48);
+typedef struct IopLoadHeap_00182A48 {
+    void *addr;
+    char name[252];
+} IopLoadHeap_00182A48;
+
+extern IopLoadHeap_00182A48 D_00313D00;
+
+s32 func_00182A48(const char *name, void *addr) {
+    s32 i;
+
+    if (D_0028CAB8 < 0) {
+        return 0;
+    }
+    for (i = 0; i < 252; i++) {
+        if ((D_00313D00.name[i] = name[i]) == 0) {
+            break;
+        }
+    }
+    if (i == 252) {
+        i = 251;
+        D_00313D00.name[i] = 0;
+    }
+    D_00313D00.addr = addr;
+    D_00313D00.name[251] = 0;
+    if (func_0017EA80(&D_00313C40, 3, 0, &D_00313D00, i + 5, &D_00313C80, 4, 0, 0) < 0) {
+        return -1;
+    }
+    return D_00313C80;
+}
 
 extern s32 D_0028CAC0;
 extern s32 D_00314028;
