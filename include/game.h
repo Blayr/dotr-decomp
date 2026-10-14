@@ -959,4 +959,7 @@ double func_00199690(i2b_Bigint *a, s32 *e); /* b2d */
 
 typedef union { double d; u32 i[2]; } ulp_du;
 
+s32 func_00186238(void *);
+extern s32 D_0028D970;
+
 #endif

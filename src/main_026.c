@@ -340,7 +340,33 @@ s32 func_00186120(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186148);
+s32 func_00186148(s32 arg0) {
+    s32 sp0[8];
+    s32 prev;
+    s32 i;
+    volatile s32 *ch;
+
+    prev = *(volatile s32 *)0x1000E000 & 1;
+    for (i = 0; i < 10; i++) {
+        if ((&D_0028D970)[i] != 0) {
+            ch = (volatile s32 *)(&D_0028D930)[i];
+            ch[0x20] = 0;
+            ch[0] = 0;
+            ch[0xC] = 0;
+            ch[4] = 0;
+            ch[0x14] = 0;
+            ch[0x10] = 0;
+        }
+    }
+    *(volatile s32 *)0x1000E010 = 0xFF1F;
+    *(volatile s32 *)0x1000E010 &= 0xFF1F0000;
+    func_001860E8((s8 *)sp0, 0x14);
+    func_00186238(sp0);
+    if (arg0 == 1) {
+        *(volatile s32 *)0x1000E000 = *(volatile s32 *)0x1000E000 | 1;
+    }
+    return prev;
+}
 
 s32 func_00186228(s32 arg0) {
     s32 temp_v0;
