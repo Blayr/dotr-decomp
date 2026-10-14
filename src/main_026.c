@@ -560,7 +560,53 @@ s32 func_00186448(u32 arg0) {
     return old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186470);
+typedef struct {
+    u32 DIR : 1;
+    u32 p0 : 1;
+    u32 MOD : 2;
+    u32 ASP : 2;
+    u32 TTE : 1;
+    u32 TIE : 1;
+    u32 STR : 1;
+    u32 p1 : 7;
+    u32 TAG : 16;
+} sceDmaChcr;
+
+typedef struct {
+    sceDmaChcr chcr;
+    u32 p0[3];
+    void *madr;
+    u32 p1[3];
+    u32 qwc;
+    u32 p2[3];
+    void *tadr;
+    u32 p3[3];
+} sceDmaChan;
+
+extern char D_002BC670[];
+
+void func_00186470(void *arg0, void *tag) {
+    sceDmaChan *d = arg0;
+    s32 i = 0x1000000;
+
+    if ((*(volatile u32 *)&d->chcr & 0x100)) {
+        do {
+            if (--i < 0) {
+                ((s32 (*)(const char *, ...))func_00199B50)(D_002BC670);
+                while (d->chcr.STR) {
+                    d->chcr.STR = 0;
+                }
+            }
+        } while ((*(volatile u32 *)&d->chcr & 0x100));
+    }
+    if ((u32)d->tadr != 0xFFFFFFFF) {
+        d->tadr = tag;
+    }
+    d->qwc = 0;
+    d->chcr.MOD = 1;
+    d->chcr.DIR = 1;
+    d->chcr.STR = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186548);
 
