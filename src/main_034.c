@@ -688,7 +688,69 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_00198790);
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00198840);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198948);
+/* memset: newlib's hand-written r5900 assembly (libc/machine/r5900/memset.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void *func_00198948(void *dst, s32 c, u32 n) {
+    register s32 r4 __asm__("$4");
+
+    __asm__ __volatile__(
+        "	.set	noreorder\n"
+        "	sltiu	$2,$6,0x8\n"
+        "	bnez	$2,_func_00198948_001989C8\n"
+        "	daddu	$3,$4,$0\n"
+        "	andi	$2,$4,0xF\n"
+        "	bnez	$2,_func_00198948_001989C8\n"
+        "	daddu	$7,$4,$0\n"
+        "	andi	$9,$5,0xFF\n"
+        "	sltiu	$10,$6,0x20\n"
+        "	daddu	$8,$9,$0\n"
+        "	dsll	$3,$8,8\n"
+        "	or	$8,$3,$9\n"
+        "	pcpyh	$3,$8\n"
+        "	bnez	$10,_func_00198948_001989B4\n"
+        "	sltiu	$2,$6,0x8\n"
+        "	pcpyld	$8,$3,$3\n"
+        "_func_00198948_00198984:\n"
+        "	sq	$8,0x0($7)\n"
+        "	addiu	$6,$6,-0x20\n"
+        "	addiu	$7,$7,0x10\n"
+        "	sltiu	$2,$6,0x20\n"
+        "	sq	$8,0x0($7)\n"
+        "	beqz	$2,_func_00198948_00198984\n"
+        "	addiu	$7,$7,0x10\n"
+        "	b	_func_00198948_001989B4\n"
+        "	sltiu	$2,$6,0x8\n"
+        "_func_00198948_001989A8:\n"
+        "	addiu	$6,$6,-0x8\n"
+        "	addiu	$7,$7,0x8\n"
+        "	sltiu	$2,$6,0x8\n"
+        "_func_00198948_001989B4:\n"
+        "	nop\n"
+        "	nop\n"
+        "	beql	$2,$0,_func_00198948_001989A8\n"
+        "	sd	$3,0x0($7)\n"
+        "	daddu	$3,$7,$0\n"
+        "_func_00198948_001989C8:\n"
+        "	lui	$2,(0xFFFFFFFF >> 16)\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	ori	$2,$2,(0xFFFFFFFF & 0xFFFF)\n"
+        "	beq	$6,$2,_func_00198948_00198A00\n"
+        "	nop\n"
+        "	lui	$2,(0xFFFFFFFF >> 16)\n"
+        "	ori	$2,$2,(0xFFFFFFFF & 0xFFFF)\n"
+        "_func_00198948_001989E4:\n"
+        "	sb	$5,0x0($3)\n"
+        "	addiu	$6,$6,-0x1\n"
+        "	addiu	$3,$3,0x1\n"
+        "	nop\n"
+        "	nop\n"
+        "	bne	$6,$2,_func_00198948_001989E4\n"
+        "	nop\n"
+        "_func_00198948_00198A00:\n"
+        "	.set	reorder\n"
+        : "=r"(r4));
+    return (void *)r4;
+}
 
 void func_00198A08(s32 r) {
     s32 id = func_0017B7D0();
