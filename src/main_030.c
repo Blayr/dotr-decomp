@@ -48,7 +48,17 @@ INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E448);
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E4B8);
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EA68);
+void func_0018EA68(void) {
+    func_001843E0();
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+    *(volatile s32 *)0x1000B000 &= 0xFFFFFEFF;
+    *(volatile s32 *)0x1000B400 &= 0xFFFFFEFF;
+    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    func_00184428();
+    *(volatile s32 *)0x1000B020 = 0;
+    *(volatile s32 *)0x1000B420 = 0;
+    func_00190498();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EB08);
 

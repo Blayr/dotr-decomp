@@ -861,4 +861,13 @@ s32 func_0017B820(s32);
 
 s32 func_0017B860(s32);
 
+extern s32 *D_0028CAB0;
+s32 func_00190498();                            /* extern */
+extern s32 D_0028DCFC;
+extern s32 D_003156C4;
+extern s32 D_003156C8;
+s32 func_0017DE58(s32, s32 *, s32); /* extern */
+extern s32 D_0028DCE4;
+extern s32 func_00190F48;
+
 #endif

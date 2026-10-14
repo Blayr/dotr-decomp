@@ -36,7 +36,17 @@ void func_0017F7D8(s32 arg0, hcall_t *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F808);
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F9D0);
+s32 func_0017F9D0(void) {
+    s32 *a_D_0028C24C = &D_0028C24C;
+    s32 *a_D_00313BA8 = &D_00313BA8;
+    s32 var_s2;
+
+    var_s2 = 0;
+    if ((func_001986F8(a_D_00313BA8, a_D_0028C24C, 4) != 0) && (func_001986F8(a_D_00313BA8, D_0028CAB0, 4) != 0)) {
+        var_s2 = func_001986F8(a_D_0028C24C, D_0028CAB0, 4) != 0;
+    }
+    return var_s2;
+}
 
 s32 func_0017FA60(void) {
     D_0028CAA0 = 0;
