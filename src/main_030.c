@@ -83,7 +83,20 @@ s32 func_0018EE68(void *arg0) {
     return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 4)) == 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EE78);
+void func_0018EE78(void *arg0) {
+    void *temp_s0;
+
+    temp_s0 = (*(void **)((u8 *)arg0 + 0x40));
+    (*(s32 *)temp_s0) = 0;
+    (*(s32 *)((u8 *)temp_s0 + 4)) = 0;
+    (*(s32 *)((u8 *)temp_s0 + 8)) = 0;
+    (*(s32 *)((u8 *)arg0 + 8)) = 0;
+    (*(s32 *)((u8 *)temp_s0 + 0xAC)) = 0;
+    (*(s32 *)((u8 *)temp_s0 + 0x80)) = -1;
+    func_0018F6A8(temp_s0);
+    (*(s32 *)((u8 *)temp_s0 + 0x118)) = 0;
+    func_0018F5B8(temp_s0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EEC8);
 

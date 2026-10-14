@@ -686,4 +686,6 @@ s32 func_00196BE0(s32, s32);                    /* extern */
 s32 func_00198A08(s32);                         /* extern */
 s32 func_00198A88(s32);                             /* extern */
 
+s32 func_0018F6A8(void *);                      /* extern */
+
 #endif
