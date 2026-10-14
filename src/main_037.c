@@ -877,8 +877,6 @@ void func_001A8BB0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8DB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9590);
-
 typedef struct Flags_001A9800 {
     u8 unused:4;
     u8 state:2;
@@ -886,6 +884,9 @@ typedef struct Flags_001A9800 {
 } Flags_001A9800;
 
 extern Flags_001A9800 D_0031747C;
+
+INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9590);
+
 
 void func_001A9800(void) {
     u8 *data = (u8 *) &D_00317250;
