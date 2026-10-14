@@ -198,7 +198,6 @@ typedef struct {
 } Queue_00245800;
 
 s32 func_001843E0(void);
-s32 func_00184428(void);
 
 void func_00245800(void *arg0) {
     Queue_00245800 *queue = (Queue_00245800 *)arg0;

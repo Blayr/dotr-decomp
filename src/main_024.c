@@ -26,7 +26,13 @@ void func_0017F738(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F748);
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F7D8);
+void func_0017F7D8(s32 arg0, hcall_t *arg1) {
+    if (arg1->fn != NULL) {
+        arg1->fn(arg1->arg);
+    }
+    __asm__ volatile("sync");
+    __asm__ volatile("ei");
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F808);
 

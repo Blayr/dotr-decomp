@@ -257,7 +257,6 @@ extern char D_002BF040;
 
 s32 func_0017B8F0(s32);
 s32 func_001843E0(void);
-s32 func_00184428(void);
 
 extern u32 D_0029E830[];
 
@@ -841,5 +840,8 @@ void func_0017C8D0(s32);
 void func_0017B910(s32);
 
 void func_0018F5C8(void *);                      /* extern */
+
+typedef struct { void (*fn)(s32); s32 arg; } hcall_t;
+extern s32 *D_0028D11C;
 
 #endif

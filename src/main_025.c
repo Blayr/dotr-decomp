@@ -155,7 +155,13 @@ INCLUDE_ASM("asm/nonmatchings/main_025", func_00184080);
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_001843E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184428);
+s32 func_00184428(void) {
+    s32 eie;
+    __asm__ volatile("mfc0\t%0, $12" : "=r"(eie));
+    eie &= 0x10000;
+    __asm__ volatile("ei");
+    return eie != 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00184440);
 
@@ -170,7 +176,10 @@ s32 func_001844D0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00184510);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184520);
+s32 *func_00184520(s32 arg0) {
+    __asm__ volatile("addiu $3, $0, 0x74\n\tsyscall");
+    return D_0028D11C + arg0;
+}
 
 void func_00184540(void) {
     func_00184440();
