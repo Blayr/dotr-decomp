@@ -21,7 +21,13 @@ void func_00197790(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_001977B8);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001977D8);
+s32 func_001977D8(s32 *ptr, s32 fd, s32 pos, s32 whence) {
+    s32 ret;
+    D_003512F8 = 0;
+    if ((ret = ((s32 (*)(s32, s32, s32))func_0017BFD8)(fd, pos, whence)) == -1 && D_003512F8 != 0)
+        *ptr = D_003512F8;
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00197838);
 
@@ -125,7 +131,13 @@ void func_0019A5B0(s64 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A5C8);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A630);
+s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
+    s64 ret;
+    D_003512F8 = 0;
+    if ((ret = (s64)func_0017BF28(fd, buf, cnt)) == -1 && D_003512F8 != 0)
+        *ptr = D_003512F8;
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A690);
 

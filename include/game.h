@@ -558,7 +558,6 @@ s32 func_001A3130();                                /* extern */
 
 s32 func_001969F0(s32);                         /* extern */
 
-s32 func_001951F8(s32, s16);                    /* extern */
 
 extern s32 D_0028CAA4;
 
@@ -777,8 +776,6 @@ static __inline__ s32 fp_iszero_d(fp_number_d *x) { return x->class == CLASS_ZER
 
 extern s32 D_00310980;
 s32 func_0017B8E0(void *);           /* extern */
-s32 func_001977D8(s32, s16, s32, s32);  /* extern */
-s64 func_001A0478(s32, s16, s32, s32);              /* extern */
 
 char *func_0019BB00(char *, s32);
 
@@ -867,5 +864,9 @@ extern s32 func_00190F48;
 
 extern s32 D_0028C254;
 u32 func_0017B8C0(void);
+
+extern s32 D_003512F8;
+s32 func_0017BF28();
+s32 func_0017BEA8();
 
 #endif
