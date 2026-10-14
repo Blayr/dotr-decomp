@@ -393,7 +393,6 @@ extern s32 D_0031C048;
 
 extern u8 D_003181CA;
 
-s32 func_001854E0(s32);
 
 s32 func_001B4780(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 extern char D_002BF00B;
@@ -985,5 +984,7 @@ typedef union cvt_du { double d; u32 i[2]; } cvt_du;
 
 s32 func_00184C88(void *);
 s32 func_00185100(void *);
+
+s64 func_0017BE00();
 
 #endif

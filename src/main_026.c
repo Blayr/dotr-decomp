@@ -62,7 +62,25 @@ s32 func_00185480(u8 *arg0, s32 arg1) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001854E0);
+s32 func_001854E0(s32 arg0) {
+    s32 *p;
+    s64 v;
+
+    p = func_001849A0();
+    if (p[2] == 0) {
+        func_0017BD70();
+        if (*(s16 *)p == 1) {
+            return (*(volatile u64 *)0x12001000 >> 13) & 1;
+        }
+        return 1;
+    } else {
+    }
+    v = (func_0017BE00() >> 13) & 1;
+    if (*(s16 *)p == 1) {
+        return v;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00185578);
 
