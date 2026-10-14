@@ -1743,7 +1743,184 @@ void func_001DBFE0(s32 arg0, f32 *arg1, u8 *arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_043", func_001DC560);
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DC790);
+typedef struct {
+    s8 unused : 7;
+    s8 set : 1;
+} Flag7_001DC790;
+
+typedef struct {
+    s8 unused : 1;
+    s8 set : 1;
+    s8 rest : 6;
+} Flag1_001DC790;
+
+typedef struct {
+    u8 pad0[4];
+    s32 state;
+    u8 pad8[0x38];
+    u8 x, y;
+    u8 pad42[4];
+    u8 angle;
+    u8 pad47[6];
+    u8 intensity;
+    u8 pad4E[9];
+    Flag7_001DC790 flag7;
+    Flag1_001DC790 flag1;
+} Card_001DC790;
+
+typedef struct {
+    u8 pad0[0x10];
+    u8 blue, green, red;
+    u8 pad13[7];
+    u8 intensity;
+} Info_001DC790;
+
+typedef union {
+    __int128 q[4];
+    f32 v[4][4];
+} Points_001DC790;
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[0xC];
+    u8 red, green, blue, alpha;
+    f32 q, u, v;
+    u8 pad28[8];
+} Vertex_001DC790;
+
+typedef union {
+    __int128 raw;
+    u8 bytes[48];
+} Packet_001DC790;
+
+typedef struct {
+    u8 pad000[0x6A0];
+    void *textures[1];
+} Gfx_001DC790;
+
+void func_0020CF00(void *, s32, void *, s32);
+extern Points_001DC790 D_00291590;
+extern u8 D_00290000[];
+extern u8 D_003181C4;
+
+s32 func_001DC790(s32 arg0, s32 arg1, f32 *arg2, s32 arg3, s32 arg4) {
+    s16 *type;
+    s64 *bits;
+    s32 *data;
+    Points_001DC790 points;
+    f32 rotation[4];
+    Points_001DC790 matrix;
+    Packet_001DC790 packet;
+    Gfx_001DC790 *textures = (Gfx_001DC790 *)D_00317490;
+    f32 u;
+    u8 *entry;
+    f32 scale;
+    s32 count;
+    Card_001DC790 *card;
+    Info_001DC790 *info;
+    u8 intensity;
+
+    card = (Card_001DC790 *)func_001DF540(arg1, 0);
+    scale = 16.666666f;
+    scale = (scale * D_003181C4) / 128.0f;
+    points = D_00291590;
+    points.v[0][0] = scale;
+    points.v[0][2] = scale;
+    points.v[1][0] = scale;
+    points.v[1][2] = -scale;
+    points.v[2][0] = -scale;
+    points.v[2][2] = -scale;
+    points.v[3][0] = -scale;
+    points.v[3][2] = scale;
+    if (arg1 != 0) {
+        u = 0.5f;
+    } else {
+        u = 0.0f;
+    }
+    entry = &D_00290000[arg1 * 10];
+    intensity = 0x80;
+    if (card == NULL) {
+        return arg0;
+    }
+    if (card->state != 0) {
+        return arg0;
+    } else {
+        info = func_001DCD00(card->x, card->y);
+        if (card->flag7.set == 0 && card->flag1.set == 0) {
+            intensity = info->intensity;
+        }
+        func_001F2330(card->angle, rotation);
+        rotation[2] = 0;
+        rotation[0] = 0;
+        func_0020C630(&matrix, rotation);
+        func_0020BAF0((s32)&matrix);
+        func_0020CF00(&points, 0, &points, 4);
+        func_0020BB50();
+        *(s16 *)((s32)&packet + 2) = 0x35;
+        type = (s16 *)((s32)&packet + 2);
+        bits = (s64 *)((s32)&packet + 8);
+        data = (s32 *)((s32)&packet + 4);
+        *(s16 *)(s32)&packet = 0;
+        *(s64 *)((s32)&packet + 8) = 0;
+        *(s32 *)((s32)&packet + 4) = 0;
+        func_002086D0(&packet, 0x8000000044LL);
+        func_00208700(&packet, textures->textures[entry[0]], 1);
+        {
+            s32 first;
+            u32 i = 0;
+            Vertex_001DC790 *vertex = (Vertex_001DC790 *)0x70002000;
+            f32 *p = points.v[0];
+            intensity = (u8)intensity;
+            do {
+                first = 1;
+                vertex->red = vertex->green = vertex->blue = (card->intensity * intensity) >> 7;
+                vertex->alpha = arg3;
+                vertex->q = 1.0f;
+                if (i > 1U) {
+                    first = 0;
+                }
+                vertex->u = u + (first ? 0.0f : 0.5f);
+                vertex->v = (i == 0 || i == 3) ? 0.0f : 1.0f;
+                i++;
+                vertex->x = arg2[0] + p[0];
+                vertex->y = arg2[1] + p[1];
+                vertex->z = arg2[2] + p[2];
+                p += 4;
+                vertex++;
+            } while ((s32)i < 4);
+            count = func_002070F0(0, i, (void *)0x70002000, 0xAA, (void *)0x70000000, 0xF, 0);
+            func_00207230(0, count, (void *)0x70002000);
+            arg0 = func_00207AA0(arg0, &packet, count, 0x70002000, 0, 0);
+            if (arg4 != 0) {
+                Vertex_001DC790 *vertex2;
+                s32 j;
+                *type = 0x402;
+                *(s16 *)(s32)&packet = 0;
+                *bits = 0;
+                *data = 0;
+                func_002086D0(&packet, 0x8000000048LL);
+                *(u8 *)0x70002018 = (info->red * intensity) >> 7;
+                *(u8 *)0x70002019 = (info->green * intensity) >> 7;
+                *(u8 *)0x7000201A = (info->blue * intensity) >> 7;
+                *(u8 *)0x7000201B = arg3;
+                *(f32 *)0x7000201C = 1.0f;
+                vertex2 = (Vertex_001DC790 *)0x70002000;
+                j = 0;
+                do {
+                    vertex2->x = arg2[0] + points.v[j % 4][0];
+                    vertex2->y = arg2[1] + points.v[j % 4][1];
+                    vertex2->z = arg2[2] + points.v[j % 4][2];
+                    j++;
+                    vertex2++;
+                } while (j < 5);
+                count = func_002070F0(0, j, (void *)0x70002000, 0xAA, (void *)0x70000000, 0xF, 0);
+                func_00207230(0, count, (void *)0x70002000);
+                arg0 = func_00207AA0(arg0, &packet, count, 0x70002000, 0, 0);
+            }
+        }
+    }
+    return arg0;
+}
 
 void func_001DCC90(void *arg0) {
     *(s32 *)arg0 = 0;

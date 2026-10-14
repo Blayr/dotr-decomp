@@ -1728,7 +1728,6 @@ typedef struct Object_001CD710 {
 } Object_001CD710;
 
 s32 func_001AF180(s32);
-s32 func_001DC790(s32, s32, f32 *, s32, s32);
 
 s32 func_001CD710(s32 arg0) {
     Vec4_001CD710 position;
