@@ -802,6 +802,7 @@ void func_0017DB18(void *arg0, void *arg1);
 s32 *func_0017DB60(void);
 void func_0017E4B0(void *arg0);
 void func_0017F738(void);
+s32 func_00180CE0(s32 arg0);
 void func_00184700(void);
 s32 *func_001849A0(void);
 s32 func_00186228(s32 arg0);
