@@ -318,7 +318,134 @@ void func_001EDF90(s32 arg0) {
     func_00209D30(func_001EDFD0(func_00209D20(), arg0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDFD0);
+typedef struct Vec3_001EDFD0 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_001EDFD0;
+
+typedef struct Color_001EDFD0 {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_001EDFD0;
+
+typedef struct Slot_001EDFD0 {
+    u8 pad00[0x40];
+    Vec3_001EDFD0 pos[2];
+    s8 level[2];
+    Color_001EDFD0 color;
+    Color_001EDFD0 target;
+    u16 duration;
+    u16 timer;
+    u8 pad66[2];
+    s32 index : 27;
+    u32 style : 2;
+    u32 : 2;
+    s32 alternate : 1;
+    u8 pad6C[4];
+} Slot_001EDFD0;
+
+typedef struct View_001EDFD0 {
+    u8 pad000[0x12C];
+    Color_001EDFD0 color;
+    u8 pad130[0x68];
+    Vec3_001EDFD0 pos[2];
+    u8 pad1B0[0x30];
+    s8 level[2];
+    u8 pad1E2[0x16];
+    u8 style : 2;
+    u8 : 6;
+} View_001EDFD0;
+
+s32 func_001EDFD0(s32 arg0, s32 arg1) {
+    extern Slot_001EDFD0 D_0031AD00;
+    extern Slot_001EDFD0 D_0031BA90;
+    extern s32 D_0031BB00;
+    extern s32 func_001EF8A0();
+    Slot_001EDFD0 *scratch;
+    s32 ready;
+    s32 remaining;
+    View_001EDFD0 *obj;
+    Slot_001EDFD0 *slot;
+    s32 i;
+
+    scratch = &D_0031AD00;
+    ready = 0;
+    D_0031BB00 = (arg1 < 0) ? 2 : 1;
+    remaining = 31;
+    slot = &D_0031BA90;
+    do {
+        if (slot->index >= 0 && (arg1 < 0 || slot->index == arg1)) {
+            if (func_001F1370(slot->index) == 0) {
+                slot->index = -1;
+            } else {
+                obj = (View_001EDFD0 *)D_0031ABB0[slot->index];
+                if (obj == NULL) {
+                    goto next;
+                }
+                if (arg1 < 0) {
+                    if (!slot->alternate) {
+                        goto next;
+                    }
+                } else if (slot->alternate) {
+                    goto next;
+                }
+                {
+                    if (!ready) {
+                        func_001EE4A0(0);
+                        ready = 1;
+                    }
+                    for (i = 0; i < 2; i++) {
+                        scratch->pos[i] = obj->pos[i];
+                        scratch->level[i] = obj->level[i];
+                    }
+                    func_0020B380(scratch, obj, 4);
+                    scratch->color = obj->color;
+                    scratch->style = obj->style;
+                    for (i = 0; i < 2; i++) {
+                        obj->pos[i] = slot->pos[i];
+                        obj->level[i] = slot->level[i];
+                    }
+                    func_0020B380(obj, slot, 4);
+                    obj->color.b = (slot->color.b * (slot->duration - slot->timer) + slot->target.b * slot->timer) /
+                                   slot->duration;
+                    obj->color.g = (slot->color.g * (slot->duration - slot->timer) + slot->target.g * slot->timer) /
+                                   slot->duration;
+                    obj->color.r = (slot->color.r * (slot->duration - slot->timer) + slot->target.r * slot->timer) /
+                                   slot->duration;
+                    obj->color.a = (slot->color.a * (slot->duration - slot->timer) + slot->target.a * slot->timer) /
+                                   slot->duration;
+                    obj->style = slot->style;
+                    if (slot->alternate) {
+                        arg0 = func_001EF8A0(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
+                    } else {
+                        arg0 = func_001EE4B0(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
+                    }
+                    for (i = 0; i < 2; i++) {
+                        obj->pos[i] = scratch->pos[i];
+                        obj->level[i] = scratch->level[i];
+                    }
+                    func_0020B380(obj, scratch, 4);
+                    obj->color = scratch->color;
+                    obj->style = scratch->style;
+                    if (++slot->timer >= slot->duration) {
+                        slot->index = -1;
+                    }
+                }
+            }
+        }
+    next:
+        remaining--;
+        slot--;
+    } while (remaining > 0);
+    if (ready) {
+        func_001EE4A0(0);
+    }
+    D_0031BB00 = 0;
+    return arg0;
+}
 
 void func_001EE4A0(s32 arg0) {
     D_0031BB10 = arg0;
