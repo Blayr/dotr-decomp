@@ -1,8 +1,5 @@
 #include "common.h"
 
-void func_00184580(s32, s32);
-s32 func_00184590(s32, s32 *, s32);
-s32 func_001845D8(s32);
 extern s32 D_0028D120;
 extern s32 D_0028D8C8;
 

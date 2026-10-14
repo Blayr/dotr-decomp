@@ -438,7 +438,9 @@ s32 func_001844D0(void) {
     return func_001844C0(&func_00184488) - 0x20C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184510);
+void func_00184510(int arg0, int arg1) {
+    __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
+}
 
 s32 *func_00184520(s32 arg0) {
     __asm__ volatile("addiu $3, $0, 0x74\n\tsyscall");
@@ -454,9 +456,15 @@ void func_00184540(void) {
     func_00183C98();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184580);
+void func_00184580(int arg0, int arg1) {
+    __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184590);
+int func_00184590(int arg0, int *arg1, int arg2) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x5A\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_001845A0(s32 *arg0, s32 *arg1, u32 arg2) {
     s32 *var_a0;
@@ -481,7 +489,11 @@ s32 func_001845A0(s32 *arg0, s32 *arg1, u32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_001845D8);
+int func_001845D8(int arg0) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,0x5B\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 s32 func_001845E8(void) {
     u32 sp0;
