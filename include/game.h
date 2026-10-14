@@ -878,7 +878,7 @@ s32 func_0018CF10(void *, s32, s32, s32);       /* extern */
 extern f32 D_002BE120[]; /* fdlibm ef_fmod.c Zero[] = { 0.0, -0.0 } */
 
 extern s32 D_00316140;
-extern s32 func_00193EA8;
+void func_00193EA8(void *);
 
 extern f32 D_002BE608[]; /* fdlibm sf_atan.c atanhi[4] */
 extern f32 D_002BE618[]; /* atanlo[4] */
