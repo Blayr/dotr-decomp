@@ -397,7 +397,36 @@ s32 func_0017E658(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E7B0);
+typedef struct SifSrv_0017E7B0 {
+    u32 sid;
+    s32 unk4[13];
+    struct SifSrv_0017E7B0 *link;
+} SifSrv_0017E7B0;
+
+typedef struct SifQ_0017E7B0 {
+    s32 unk0[2];
+    SifSrv_0017E7B0 *link;
+    s32 unkC[2];
+    struct SifQ_0017E7B0 *next;
+} SifQ_0017E7B0;
+
+void *func_0017E7B0(s32 arg0, s32 arg1) {
+    SifSrv_0017E7B0 *server;
+    SifQ_0017E7B0 *queue;
+
+    queue = *(SifQ_0017E7B0 **)((u8 *)arg1 + 0x28);
+    while (queue) {
+        server = queue->link;
+        while (server) {
+            if (server->sid == (u32)arg0) {
+                return server;
+            }
+            server = server->link;
+        }
+        queue = queue->next;
+    }
+    return NULL;
+}
 
 void func_0017E800(void *arg0, s32 arg1) {
     s32 hl0;

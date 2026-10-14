@@ -885,6 +885,7 @@ void *func_0017E4D0(s32 arg0);
 void *func_0017E500(void *arg0, s32 arg1);
 void func_0017E5F8(void *arg0, s32 arg1);
 s32 func_0017E658(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void *func_0017E7B0(s32 arg0, s32 arg1);
 void func_0017E800(void *arg0, s32 arg1);
 s32 func_0017E8B0(void *arg0, s32 arg1, s32 arg4);
 s32 func_0017EC70(void *arg0);

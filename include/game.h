@@ -883,7 +883,6 @@ extern f32 D_002BE580[]; /* PIo2[11] */
 
 typedef struct i2b_Bigint { struct i2b_Bigint *next; s32 k, maxwds, sign, wds; u32 x[1]; } i2b_Bigint;
 
-void *func_0017E7B0(s32, s32);                      /* extern */
 
 s32 func_0017F808();                            /* extern */
 extern s32 D_00313C00;
