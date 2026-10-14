@@ -108,6 +108,9 @@ sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
+# GCC's divide-by-zero trap is `break 7`; Sony's assembler put the 7 in the low code field
+# (0x000001CD, shown as `break 0, 7`), binutils in the high one (0x0007000D).
+sed -i -E 's/^([[:space:]]+)break([[:space:]]+)7[[:space:]]*$/\1break\20,7/' "$TMP/out.s"
 # GCC objects were linked 8-byte aligned; the linker script's SUBALIGN(4) is not, so the
 # file's last function keeps its padding here.
 printf '\t.text\n\t.p2align 3\n' >> "$TMP/out.s"
