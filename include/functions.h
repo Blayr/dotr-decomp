@@ -1124,6 +1124,7 @@ double func_001A4088(double x);
 f32 func_001A43A8(f32 x);
 f32 func_001A4760(f32 y, f32 x);
 f32 func_001A4948(f32 x, f32 y);
+f32 func_001A4B18(f32 x, f32 y);
 s32 func_001A5338(f32 x, f32 *y);
 f32 func_001A5700(f32 x);
 f32 func_001A57D8(f32 x, f32 y);
