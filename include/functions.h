@@ -813,6 +813,7 @@ void func_0017C1D8(u32 arg0, u32 arg1);
 void func_0017C258(u32 arg0, u32 arg1);
 void func_0017C318(u32 arg0, u32 arg1);
 void func_0017C398(u32 arg0, u32 arg1);
+s32 func_0017C3B0(void);
 s32 func_0017C3C0(s32 arg0);
 s32 func_0017C428(s32 arg0);
 s32 func_0017C490(s32 arg0);

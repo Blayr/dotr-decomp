@@ -104,7 +104,11 @@ void func_0017C398(u32 arg0, u32 arg1) {
     func_0017C270(arg0 & ~0x3F, arg1 & ~0x3F);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C3B0);
+s32 func_0017C3B0(void) {
+    s32 s;
+    __asm__ volatile("mfc0\t%0, $12" : "=r"(s));
+    return (s ^ 1) & 1;
+}
 
 s32 func_0017C3C0(s32 arg0) {
     s32 eie, ret;
