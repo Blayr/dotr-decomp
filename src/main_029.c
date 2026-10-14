@@ -287,7 +287,44 @@ void func_0018D290(void *arg0, s32 arg1, s32 arg2) {
     } while (*(volatile s32 *)0x10002010 < 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D3A8);
+typedef struct {
+    volatile s32 count;
+    s32 done;
+    s32 remain;
+    s32 addr;
+    s32 n;
+} IpuDmaState;
+
+s32 func_0018D3A8(s32 ch, void *arg) {
+    IpuDmaState *st = arg;
+
+    *(volatile u32 *)0x1000E010 = 8;
+    st->count++;
+    if (*(volatile u32 *)0x1000B020 != 0 || (*(volatile u32 *)0x1000B000 & 0x100)) {
+        st->done = 1;
+        return 0;
+    }
+    if (st->count < st->n - 1) {
+        func_001843E0();
+        *(volatile u32 *)0x1000B010 = st->addr;
+        *(volatile u32 *)0x1000B020 = 0xFFC0;
+        *(volatile u32 *)0x1000B000 = 0x100;
+        func_00184428();
+        *(volatile u32 *)0x10002000 = 0x700003FF;
+        st->addr = (st->addr + 0xFFC00) & 0x0FFFFFFF;
+    } else if (st->count == st->n - 1) {
+        st->remain -= st->count * 1023;
+        func_001843E0();
+        *(volatile u32 *)0x1000B010 = st->addr;
+        *(volatile u32 *)0x1000B020 = st->remain << 6;
+        *(volatile u32 *)0x1000B000 = 0x100;
+        func_00184428();
+        *(volatile u32 *)0x10002000 = st->remain | 0x70000000;
+    }
+    __asm__ volatile("sync");
+    __asm__ volatile("ei");
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D520);
 
