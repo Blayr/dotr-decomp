@@ -223,6 +223,8 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C648);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C720);
 
+INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C7F8);
+
 s32 func_0017C8D0(s32 arg0) {
     s32 tid;
     __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
