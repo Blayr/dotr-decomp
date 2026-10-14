@@ -382,7 +382,37 @@ s32 func_00190C48(s32 arg0, void *arg1, s32 arg2) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190D20);
+void func_00190AE8(s32 *);
+
+typedef struct CdDirBuf_00190D20 {
+    s32 n1;
+    s32 n2;
+    u8 *d1;
+    u8 *d2;
+    u8 b1[0x40];
+    u8 b2[0x40];
+} CdDirBuf_00190D20;
+
+void func_00190D20(void *arg0) {
+    CdDirBuf_00190D20 *p;
+    u8 *d;
+    s32 i;
+
+    p = (CdDirBuf_00190D20 *)((u32)arg0 | 0x20000000);
+    if (p->n1 > 0) {
+        d = p->d1;
+        for (i = 0; i < p->n1; i++) {
+            d[i] = p->b1[i];
+        }
+    }
+    if (p->n2 > 0) {
+        d = p->d2;
+        for (i = 0; i < p->n2; i++) {
+            d[i] = p->b2[i];
+        }
+    }
+    func_00190AE8(&D_0028DD14);
+}
 
 void func_00190DC0(void) {
     s32 sp0[8];
