@@ -50,7 +50,21 @@ s32 func_00194508(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194578);
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_001946D0);
+void func_001946D0(void *arg0) {
+    s32 temp_s0;
+    s32 var_s0;
+
+    if (arg0 != NULL) {
+        temp_s0 = (s32) &D_00316200 | 0x20000000;
+        if (func_0019BEF0((s8 *) temp_s0) < 0x400U) {
+            var_s0 = func_0019BEF0((s8 *) temp_s0);
+        } else {
+            var_s0 = 0x3FF;
+        }
+        func_00198790(arg0, (void *) ((s32) &D_00316200 | 0x20000000), var_s0);
+        *(s8 *)(arg0 + var_s0) = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194758);
 

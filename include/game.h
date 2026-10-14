@@ -847,4 +847,6 @@ u64 func_001A1388(u64, u64);
 u64 func_001A1908(u64, u64);
 void func_0017D330(s64);
 
+extern s32 D_00316200;
+
 #endif
