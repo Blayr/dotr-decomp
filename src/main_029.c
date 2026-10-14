@@ -211,7 +211,33 @@ s32 func_0018B850(void *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B958);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BA48);
+s32 func_0018BA48(void *arg0, s32 arg1) {
+    s32 i;
+    s32 *tbl;
+    s32 cmd;
+    u32 v;
+
+    i = 0;
+    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+        if (i++ > 5000) {
+            func_0018EF98(*(s32 *)((u8 *)arg0 + 0x858));
+            i = 0;
+        }
+    }
+    if (*(s32 *)((u8 *)arg0 + 0x818) != 0 || *(s32 *)((u8 *)arg0 + 0x83C) < arg1) {
+        *(volatile s32 *)0x10002000 = 0x40000000;
+        tbl = &D_0028DA50;
+        *(s32 *)((u8 *)arg0 + 0x818) = tbl[4];
+        *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
+    }
+    cmd = arg1 | 0x40000000;
+    v = *(u32 *)((u8 *)arg0 + 0x838) >> (0x20 - arg1);
+    *(s32 *)((u8 *)arg0 + 0x83C) = 0x20;
+    *(volatile u32 *)0x10002000 = cmd;
+    *(s32 *)((u8 *)arg0 + 0x818) = (&D_0028DA50)[(u32)cmd >> 28];
+    *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
+    return v;
+}
 
 void func_0018BB98(void *arg0) {
     s32 n;
