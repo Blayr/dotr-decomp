@@ -614,4 +614,6 @@ s32 func_001976F0(s32, s32, s32);               /* extern */
 
 s32 func_0019C4C8(s32, s32, s32);               /* extern */
 
+s32 func_001847B0(s32);                         /* extern */
+
 #endif
