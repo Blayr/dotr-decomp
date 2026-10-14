@@ -188,7 +188,6 @@ void func_0020BCF0(s32, s32);
 extern u8 D_0029D580[];
 
 
-void *func_0019C2B8(void *, const void *, u32);
 
 
 

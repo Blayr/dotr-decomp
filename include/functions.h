@@ -1596,6 +1596,7 @@ char *func_0019BDD8(char *dst, const char *src);
 s32 func_0019BEF0(const char *s);
 s32 func_0019C028(const char *s1, const char *s2, u32 n);
 s32 func_0019C100(const char *a, const char *b, u32 n);
+void *func_0019C2B8(void *dst, const void *src, u32 n);
 char *func_0019C478(const char *s, s32 i);
 void func_0019D3E0(s32 arg0, s32 arg1);
 f32 func_0019D408(s32 s, s32 ptr);
