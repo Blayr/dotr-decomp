@@ -3795,4 +3795,70 @@ s32 func_00172310(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00172370);
+typedef struct Info_00172370 {
+    u16 a;
+    u8 b;
+    u8 pad3;
+    u16 c;
+    u8 pad6[6];
+    s32 d;
+    u8 e;
+} Info_00172370;
+
+typedef struct Queue_00172370 {
+    u8 pad0[0x160];
+    u16 list[0x20];
+    u8 cursor : 5;
+    u8 flags : 3;
+    u8 pad1A1;
+    u16 counter;
+} Queue_00172370;
+
+s32 func_00172370(s32 arg0, void *arg1) {
+    Info_00172370 info;
+    Queue_00172370 *q;
+    u16 cur;
+    s32 i;
+
+    info.a = 0xFFFF;
+    info.b = 0xFF;
+    info.c = 0xFFFF;
+    info.d = 0;
+    info.e = 0xFF;
+    q = arg1;
+    q->counter++;
+    if (q->counter == 600) {
+        return 0x20;
+    }
+    if (q->counter == 601) {
+        return 0x20;
+    }
+    if (q->counter == 602) {
+        return 0x20;
+    }
+    if (q->counter >= 603) {
+        return 0x800;
+    }
+    if (q->cursor == 0) {
+        func_00275E80(q);
+        if (func_0016D140(q, &info, arg0) == 0) {
+            return 0x800;
+        }
+        if (func_00276290(q, &info, arg0) < 0) {
+            return 0;
+        }
+    }
+    cur = q->list[q->cursor - 1];
+    if (cur == 0xFFFF) {
+        return 0;
+    }
+    if (q->list[q->cursor] == 0xFFFF) {
+        q->cursor = 0;
+        for (i = 0; i < 0x20; i++) {
+            q->list[i] = 0xFFFF;
+        }
+    } else {
+        q->cursor++;
+    }
+    return cur & 0xFFFF;
+}
