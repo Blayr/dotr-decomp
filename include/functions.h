@@ -1090,6 +1090,7 @@ void func_00197520(s32 arg0, s32 arg1);
 u8 *func_00197548(s32 arg0);
 void func_001976B8(s32 arg0, s32 arg1);
 char *func_001976D8(char *arg0, s32 arg1);
+s32 func_001976F0(s32 p, s32 category, s32 locale);
 s32 *func_00197780(void);
 void func_00197790(s32 arg0, s32 arg1);
 s32 *func_001977B8(void);

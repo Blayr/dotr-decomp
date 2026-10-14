@@ -9,7 +9,15 @@ char *func_001976D8(char *arg0, s32 arg1) {
     return func_0019BB00(arg0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001976F0);
+s32 func_001976F0(s32 p, s32 category, s32 locale) {
+    if (locale) {
+        if (func_0019BC90((const char *)locale, D_002BD270) && func_0019BC90((const char *)locale, D_002BD260))
+            return 0;
+        *(s32 *)(p + 0x30) = category;
+        *(s32 *)(p + 0x34) = locale;
+    }
+    return (s32)D_002BD270;
+}
 
 s32 *func_00197780(void) {
     return &D_002BD230;

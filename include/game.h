@@ -565,7 +565,6 @@ extern u8 D_002BCB88[];
 
 s32 func_00197570(s32, s32, s32);               /* extern */
 
-s32 func_001976F0(s32, s32, s32);               /* extern */
 
 s32 func_0019C4C8(s32, s32, s32);               /* extern */
 
@@ -946,5 +945,9 @@ typedef struct spr_FILE { u8 *_p; s32 _r; s32 _w; s16 _flags; s16 _file; u8 *_bf
 
 typedef struct ssc_FILE { u8 *_p; s32 _r; s32 _w; s16 _flags; s16 _file; u8 *_bf_base; s32 _bf_size; s32 _lbfsize; void *_cookie; void *_read; void *_write; void *_seek; void *_close; u8 *_ub_base; s32 _ub_size; u8 *_up; s32 _ur; u8 _ubuf[3]; u8 _nbuf[1]; u8 *_lb_base; s32 _lb_size; s32 _blksize; s32 _offset; void *_data; } ssc_FILE;
 s32 func_0019F6E8(void *fp, const char *fmt, void *ap); /* __svfscanf */
+
+extern char D_002BD270[]; /* "C" */
+extern char D_002BD260[]; /* "" */
+s32 func_0019BC90(const char *a, const char *b); /* strcmp */
 
 #endif
