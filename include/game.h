@@ -927,4 +927,6 @@ extern char D_002B9141[];
 extern char D_002B9168[];
 extern char D_0030FF60[];
 
+extern u8 D_003261F0;
+
 #endif

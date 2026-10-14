@@ -1324,7 +1324,6 @@ typedef struct {
     Record_00213FC0 *begin;
 } State_00213FC0;
 
-void func_0020B840(void *, s32, s32, s32 (*)(s32 *, s32 *));
 
 s32 func_00213FC0(s32 arg0) {
     State_00213FC0 *state = (State_00213FC0 *)&D_0032F780;

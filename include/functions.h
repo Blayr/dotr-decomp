@@ -2489,6 +2489,7 @@ f32 func_0020B480(s32 arg0);
 f32 func_0020B550(s32 arg0);
 f32 func_0020B620(f32 angle);
 f32 func_0020B730(f32 angle);
+void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *));
 s32 func_0020BA70(void);
 s32 func_0020BA80(void);
 s32 func_0020BBA0(void);

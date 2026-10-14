@@ -1097,7 +1097,77 @@ f32 func_0020B730(f32 angle) {
     return sign;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020B840);
+void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
+    s32 spA0;
+    u8 *var_s3_2;
+    u8 *temp_s3;
+    s32 var_v0;
+    s32 var_s3;
+    s32 var_s4_2;
+    s32 var_fp_2;
+    s32 var_s2;
+    u8 *sentinel;
+    u8 *temp_s5;
+    s32 var_s6;
+    s32 var_s4;
+    s32 var_fp;
+    u8 *temp_s6;
+    u8 *spB0;
+
+    sentinel = &D_003261F0;
+    var_fp = arg1 >> 1;
+    temp_s5 = arg0 - arg2;
+    var_s2 = arg1;
+    if (var_fp > 0) {
+        spA0 = var_fp * arg2;
+        do {
+            var_s3 = var_fp;
+            func_0020B300(sentinel, temp_s5 + spA0, arg2);
+            while ((var_s4 = var_s3 * 2) <= var_s2) {
+                if (var_s4 < var_s2 &&
+                    arg3(temp_s5 + (var_s4 * arg2), temp_s5 + ((var_s4 + 1) * arg2)) < 0) {
+                    var_s4 += 1;
+                }
+                temp_s6 = temp_s5 + (var_s4 * arg2);
+                if (arg3(sentinel, temp_s6) >= 0) {
+                    break;
+                }
+                var_v0 = var_s3 * arg2;
+                func_0020B300(temp_s5 + var_v0, temp_s6, arg2);
+                var_s3 = var_s4;
+            }
+            func_0020B300(temp_s5 + (var_s3 * arg2), sentinel, arg2);
+            var_fp -= 1;
+            spA0 -= arg2;
+        } while (var_fp > 0);
+    }
+    if (var_s2 > 1) {
+        var_fp_2 = var_s2 * arg2;
+        spB0 = temp_s5 + arg2;
+        var_s3_2 = temp_s5 + var_fp_2;
+        do {
+            func_0020B300(sentinel, var_s3_2, arg2);
+            func_0020B300(var_s3_2, spB0, arg2);
+            var_s2 -= 1;
+            var_s4_2 = 1;
+            var_fp_2 -= arg2;
+            while ((var_s6 = var_s4_2 * 2) <= var_s2) {
+                if (var_s6 < var_s2 &&
+                    arg3(temp_s5 + (var_s6 * arg2), temp_s5 + ((var_s6 + 1) * arg2)) < 0) {
+                    var_s6 += 1;
+                }
+                temp_s3 = temp_s5 + (var_s6 * arg2);
+                if (arg3(sentinel, temp_s3) >= 0) {
+                    break;
+                }
+                func_0020B300(temp_s5 + (var_s4_2 * arg2), temp_s3, arg2);
+                var_s4_2 = var_s6;
+            }
+            func_0020B300(temp_s5 + (var_s4_2 * arg2), sentinel, arg2);
+            var_s3_2 = temp_s5 + var_fp_2;
+        } while (var_s2 > 1);
+    }
+}
 
 s32 func_0020BA70(void) {
     D_0032A220 = 0;
