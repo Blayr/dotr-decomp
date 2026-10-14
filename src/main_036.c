@@ -8,7 +8,17 @@ INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1388);
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1908);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1E70);
+/* __floatdidf */
+
+double func_001A1E70(s64 u) {
+    double d;
+
+    d = (s32)(u >> 32);
+    d *= (u64)1 << 16;
+    d *= (u64)1 << 16;
+    d += (u32)(u & (((u64)1 << 32) - 1));
+    return d;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1F18);
 

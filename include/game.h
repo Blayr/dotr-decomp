@@ -167,7 +167,6 @@ extern s32 D_0031BEB0[];
 
 
 
-extern s32 func_001A1E70(u64);
 
 
 

@@ -1195,6 +1195,7 @@ s32 func_0019F608(char *p0, s32 exp, s32 fmtch);
 char *func_001A0378(char *tab, char *fmt);
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s64 func_001A05E8(s64 u, s64 v);
+double func_001A1E70(s64 u);
 u64 func_001A2000(double a);
 f32 func_001A2190(fp_number_f *src);
 void func_001A2260(fp_union_f *src, fp_number_f *dst);
