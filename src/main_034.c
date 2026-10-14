@@ -396,7 +396,58 @@ s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00199430);
+#define md_Storeinc(a, b, c) (((u16 *)a)[1] = (u16)b, ((u16 *)a)[0] = (u16)c, a++)
+
+i2b_Bigint *func_00199430(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
+    s32 i, wa, wb;
+    i2b_Bigint *c;
+    s32 borrow, y;
+    u32 *xa, *xae, *xb, *xbe, *xc;
+    s32 z;
+
+    i = func_001993C8((mcmp_Bigint *)a, (mcmp_Bigint *)b);
+    if (!i) {
+        c = func_00198AD8(ptr, 0);
+        c->wds = 1;
+        c->x[0] = 0;
+        return c;
+    }
+    if (i < 0) {
+        c = a;
+        a = b;
+        b = c;
+        i = 1;
+    } else
+        i = 0;
+    c = func_00198AD8(ptr, a->k);
+    c->sign = i;
+    wa = a->wds;
+    xa = a->x;
+    xae = xa + wa;
+    wb = b->wds;
+    xb = b->x;
+    xbe = xb + wb;
+    xc = c->x;
+    borrow = 0;
+    do {
+        y = (*xa & 0xffff) - (*xb & 0xffff) + borrow;
+        borrow = y >> 16;
+        z = (*xa++ >> 16) - (*xb++ >> 16) + borrow;
+        borrow = z >> 16;
+        md_Storeinc(xc, z, y);
+    } while (xb < xbe);
+    while (xa < xae) {
+        y = (*xa & 0xffff) + borrow;
+        borrow = y >> 16;
+        z = (*xa++ >> 16) + borrow;
+        borrow = z >> 16;
+        md_Storeinc(xc, z, y);
+    }
+    while (!*--xc)
+        wa--;
+    c->wds = wa;
+    return c;
+}
 
 double func_001995C0(double _x) {
     ulp_du x, a;
