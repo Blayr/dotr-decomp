@@ -42,7 +42,36 @@ s32 func_0018E1E0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E200);
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E2F8);
+s32 func_0018E2F8(u64 *arg0, void *arg1) {
+    s32 temp_s0;
+    s32 temp_s1;
+    s32 temp_s2;
+    s32 temp_s4;
+    u32 var_s5;
+
+    func_0018DB40(arg0, 0x22);
+    temp_s0 = func_0018DB40(arg0, 3);
+    func_0018DB90(arg0);
+    temp_s1 = func_0018DB40(arg0, 0xF);
+    func_0018DB90(arg0);
+    temp_s2 = func_0018DB40(arg0, 0xF);
+    func_0018DB90(arg0);
+    (*(s32 *)arg1) = func_0018DB40(arg0, 9);
+    func_0018DB40(arg0, 0x1E);
+    temp_s4 = func_0018DB40(arg0, 3);
+    (*(s32 *)((u8 *)arg1 + 8)) = (s32) (((u32) temp_s0 >> 2) & 1);
+    (*(s32 *)((u8 *)arg1 + 4)) = (s32) ((temp_s0 << 0x1E) | (temp_s1 << 0xF) | temp_s2);
+    for (var_s5 = 0; var_s5 < (u32) temp_s4; var_s5++) {
+        func_0018DB40(arg0, 8);
+    }
+    if (func_0018DA88(arg0, 0x20) == 0x1BB) {
+        (*(s32 *)((u8 *)arg1 + 0xC)) = 1;
+        func_0018E448(arg0, arg1);
+    } else {
+        (*(s32 *)((u8 *)arg1 + 0xC)) = 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E448);
 
