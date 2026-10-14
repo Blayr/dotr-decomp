@@ -849,7 +849,65 @@ _func_00189BC0_00189BE4:\n\
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00189C60);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00189D10);
+void func_00189D10(void *p0) {
+    __asm__ __volatile__("\n\
+	pnor	$25,$0,$0\n\
+	psrlh	$25,$25,15\n\
+	lw	$5,0x14(%0)\n\
+	lw	$6,0x18(%0)\n\
+	lw	$7,0x8(%0)\n\
+	lw	$14,0x0(%0)\n\
+	lw	$13,0x4(%0)\n\
+	lw	$12,0x10(%0)\n\
+	lq	$8,0x0($5)\n\
+	lq	$9,0x0($6)\n\
+	mtsab	$13,0x0\n\
+	qfsrv	$10,$9,$8\n\
+	sll	$24,$12,1\n\
+	pextlb	$8,$0,$10\n\
+	addiu	$11,$0,-0x1\n\
+	pextub	$9,$0,$10\n\
+	beqz	$7,_func_00189D10_00189DCC\n\
+_func_00189D10_00189D54:\n\
+	addu	$5,$5,$12\n\
+	addu	$6,$6,$12\n\
+	lq	$10,0x0($5)\n\
+	lq	$15,0x0($6)\n\
+	qfsrv	$2,$15,$10\n\
+	pextlb	$10,$0,$2\n\
+	addi	$7,$7,-0x1\n\
+	pextub	$15,$0,$2\n\
+	paddh	$2,$8,$10\n\
+	paddh	$3,$9,$15\n\
+	por	$8,$10,$0\n\
+	por	$9,$15,$0\n\
+	paddh	$2,$2,$25\n\
+	paddh	$3,$3,$25\n\
+	psrlh	$2,$2,1\n\
+	psrlh	$3,$3,1\n\
+	lq	$10,0x0($14)\n\
+	lq	$15,0x10($14)\n\
+	paddh	$2,$2,$10\n\
+	paddh	$3,$3,$15\n\
+	paddh	$10,$2,$25\n\
+	psrlh	$2,$10,1\n\
+	pcgth	$10,$3,$0\n\
+	psrlh	$10,$10,15\n\
+	paddh	$10,$3,$10\n\
+	psrlh	$3,$10,1\n\
+	sq	$2,0x0($14)\n\
+	sq	$3,0x10($14)\n\
+	addu	$14,$14,$24\n\
+	bgtz	$7,_func_00189D10_00189D54\n\
+_func_00189D10_00189DCC:\n\
+	addiu	$5,$5,0x80\n\
+	addiu	$6,$6,0x80\n\
+	lw	$7,0xC(%0)\n\
+	and	$10,$11,$7\n\
+	daddu	$11,$0,$0\n\
+	bnez	$10,_func_00189D10_00189D54\n\
+	" :  : "r" (p0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00189DF0);
 
