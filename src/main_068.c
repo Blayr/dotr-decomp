@@ -3190,7 +3190,6 @@ void func_00184E10(void *, s32, s64, s64, s32, s32);
 void func_00185100(void *);
 s32 func_00186120(s32);
 void func_00186470(s32, s32);
-void func_00187308(void *);
 void func_00187318(void *);
 void func_00187480(void *, s32, s32, s32);
 void func_00187528(void *);
@@ -3242,7 +3241,6 @@ typedef struct {
 } Tag_00241E80;
 
 void func_001872F8(void *, u64);
-void func_00187308(void *);
 void func_00187318(void *);
 void func_00187370(void *, s32, s32, s32);
 void func_001873E8(void *, u64, s32, s32, s32, s32);
