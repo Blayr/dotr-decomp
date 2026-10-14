@@ -839,7 +839,7 @@ typedef union { double value; struct { u32 lsw; u32 msw; } parts; } nl_dshape;
 
 extern s32 D_002BC828;
 
-s32 func_0018F648(s32);                         /* extern */
+void func_0018F648(void *);
 extern s32 D_002BC9D0;
 
 extern f32 D_002BE5D0[]; /* fdlibm kf_tan.c T[13] */
