@@ -651,7 +651,6 @@ s32 func_001970A8();                                /* extern */
 s32 func_0017BD10(s32, void *);        /* extern */
 s32 func_0017B980(u32 *);                       /* extern */
 s32 func_0017B990(u32 *);                       /* extern */
-s32 func_00187B60(s32 *, s32 *, s32);   /* extern */
 s32 func_00187C08(s32 *);                   /* extern */
 s32 func_0018EF48(s32, void *);    /* extern */
 s32 func_0017EA80(s32 *, s32, s32, s32 *, s32, s32 *, s32, s32, s32); /* extern */

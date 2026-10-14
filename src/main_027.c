@@ -405,7 +405,20 @@ void func_00187B30(void *p0, void *p1, void *p2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B48);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B60);
+void func_00187B60(void *p0, void *p1, void *p2) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%2)\n\
+	lqc2	$vf5,0x30(%1)\n\
+	lq	$7,0x0(%1)\n\
+	lq	$8,0x10(%1)\n\
+	lq	$9,0x20(%1)\n\
+	vadd.xyz	$vf5,$vf5,$vf4\n\
+	sq	$7,0x0(%0)\n\
+	sq	$8,0x10(%0)\n\
+	sq	$9,0x20(%0)\n\
+	sqc2	$vf5,0x30(%0)\n\
+	" :  : "r" (p0), "r" (p1), "r" (p2));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187B90);
 
