@@ -120,7 +120,16 @@ INCLUDE_ASM("asm/nonmatchings/main_024", func_00182A48);
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_00182B38);
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_00182C38);
+s32 func_00182C38(void) {
+    s32 *a = &D_0028C24C;
+    s32 *b = &D_00314028;
+    s32 var_s2;
+    var_s2 = 0;
+    if ((func_001986F8(b, a, 4) != 0) && (func_001986F8(b, D_0028CAC4, 4) != 0)) {
+        var_s2 = func_001986F8(a, D_0028CAC4, 4) != 0;
+    }
+    return var_s2;
+}
 
 s32 func_00182CC8(void) {
     D_0028CAC0 = -1;

@@ -196,7 +196,13 @@ s32 func_001937A0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00193808);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_001939C0);
+s32 func_001939C0(void) {
+    if (D_0028F794 >= 0) {
+        func_0017B8F0(D_0028F794);
+        D_0028F794 = -1;
+    }
+    return 1;
+}
 
 s32 *func_00193A00(s32 **arg0, s32 **arg1) {
     *arg0 = &D_00317200;
