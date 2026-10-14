@@ -1065,6 +1065,7 @@ s32 func_00190ED8(s32 arg0, s32 arg1);
 void func_00190F48(void);
 s32 func_00190F88(void);
 s32 func_00191460(void);
+s32 func_00191598(s32 arg0);
 s32 func_00191C50(s32 arg0);
 s32 func_00191EF8(void);
 s32 func_00191F90(s32 arg0, s32 arg1, s32 arg2);

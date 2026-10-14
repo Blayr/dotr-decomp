@@ -982,4 +982,6 @@ s32 func_0018C680(void *, s32);
 
 s32 func_0018F290(void *, s32, s32);
 
+extern s32 D_002BCCD0;
+
 #endif
