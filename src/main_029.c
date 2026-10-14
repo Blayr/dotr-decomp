@@ -30,7 +30,14 @@ INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B260);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B400);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B550);
+s32 func_0018B550(void *arg0, s32 arg1) {
+    s32 temp_v0;
+
+    *(volatile s32 *)0x10002000 = arg1;
+    temp_v0 = (&D_0028DA50)[((u32) arg1 >> 0x1C)];
+    (*(s32 *)((u8 *)arg0 + 0x818)) = temp_v0;
+    return temp_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B580);
 

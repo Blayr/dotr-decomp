@@ -39,9 +39,14 @@ void func_0017DB18(void *arg0, void *arg1) {
     (*(s32 *)((u8 *)arg1 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0x10));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DB28);
+s32 func_0017DB28(s32 arg0) {
+    return (&D_00310FC0)[arg0];
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DB40);
+s32 func_0017DB40(s32 arg0, s32 arg1) {
+    (&D_00310FC0)[arg0] = arg1;
+    return arg1;
+}
 
 s32 *func_0017DB60(void) {
     return &D_00310E98;
