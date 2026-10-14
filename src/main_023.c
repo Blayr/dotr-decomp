@@ -25,7 +25,213 @@ INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D2A0);
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D330);
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D498);
+void func_0017D498(char *fmt, u8 *ap) {
+    char buf[32];
+    char *p;
+    char *pad;
+    s64 v;
+    u64 u;
+    s32 mod;
+    s32 w;
+    s32 c;
+    f32 f;
+    char *s;
+    char ch;
+    u64 d;
+    u64 e;
+
+    while (*fmt) {
+        pad = 0;
+        mod = 0;
+        if (*fmt == '%') {
+    again:
+        switch (*++fmt) {
+        case '0':
+            w = fmt[1] - '0';
+            c = fmt[2];
+            if ((u8)w < 10) {
+                if (c >= '0' && c <= '9') {
+                    w = w * 10 + (c - '0');
+                    fmt += 2;
+                    if (w >= 32) {
+                        w = 31;
+                    }
+                } else {
+                    fmt++;
+                }
+                pad = buf + (31 - w);
+                while (w > 0) {
+                    buf[31 - w] = '0';
+                    w--;
+                }
+            }
+            goto again;
+        case 'l':
+            mod = 'l';
+            goto again;
+        case 'h':
+            mod = 'h';
+            goto again;
+        case 'o':
+            if (mod == 'l') {
+                ap += 8;
+                u = *(u64 *)(ap - 8);
+            } else if (mod == 'h') {
+                ap += 8;
+                u = *(u16 *)(ap - 8);
+            } else {
+                ap += 8;
+                u = *(u32 *)(ap - 8);
+            }
+            p = &buf[31];
+            *p = 0;
+            if (u == 0) {
+                *--p = '0';
+            } else {
+                while (u != 0) {
+                    *--p = (u & 7) + '0';
+                    u >>= 3;
+                }
+            }
+            if (pad != 0 && pad < p) {
+                p = pad;
+            }
+            while (*p) {
+                D_0028CA0C(*p++);
+            }
+            break;
+        case 'x':
+            if (mod == 'l') {
+                ap += 8;
+                u = *(u64 *)(ap - 8);
+            } else if (mod == 'h') {
+                ap += 8;
+                u = *(u16 *)(ap - 8);
+            } else {
+                ap += 8;
+                u = *(u32 *)(ap - 8);
+            }
+            p = &buf[31];
+            *p = 0;
+            if (u == 0) {
+                *--p = '0';
+            } else {
+                while (u != 0) {
+                    d = u & 0xF;
+                    if (d < 10) {
+                        *--p = d + '0';
+                    } else {
+                        *--p = d + 'a' - 10;
+                    }
+                    u >>= 4;
+                }
+            }
+            if (pad != 0 && pad < p) {
+                p = pad;
+            }
+            while (*p) {
+                D_0028CA0C(*p++);
+            }
+            break;
+        case 'd':
+            if (mod == 'l') {
+                ap += 8;
+                v = *(s64 *)(ap - 8);
+            } else if (mod == 'h') {
+                ap += 8;
+                v = *(s16 *)(ap - 8);
+            } else {
+                ap += 8;
+                v = *(s32 *)(ap - 8);
+            }
+            p = &buf[31];
+            *p = 0;
+            if (v == 0) {
+                *--p = '0';
+            } else {
+                if (v < 0) {
+                    v = -v;
+                    D_0028CA0C('-');
+                }
+                while (v != 0) {
+                    *--p = func_001A0CF8(v, 10) + '0';
+                    v = func_001A0660(v, 10);
+                }
+            }
+            if (pad != 0 && pad < p) {
+                p = pad;
+            }
+            while (*p) {
+                D_0028CA0C(*p++);
+            }
+            break;
+        case 'u':
+            if (mod == 'l') {
+                ap += 8;
+                u = *(u64 *)(ap - 8);
+            } else if (mod == 'h') {
+                ap += 8;
+                u = *(u16 *)(ap - 8);
+            } else {
+                ap += 8;
+                u = *(u32 *)(ap - 8);
+            }
+            p = &buf[31];
+            *p = 0;
+            if (u == 0) {
+                *--p = '0';
+            } else {
+                while (u != 0) {
+                    *--p = func_001A1908(u, 10) + '0';
+                    u = func_001A1388(u, 10);
+                }
+            }
+            if (pad != 0 && pad < p) {
+                p = pad;
+            }
+            while (*p) {
+                D_0028CA0C(*p++);
+            }
+            break;
+        case 'e':
+        case 'f':
+            ap += 8;
+            f = *(f32 *)(ap - 8);
+            if (f == 0.0f) {
+                D_0028CA0C('0');
+            } else {
+                func_0017D330(((s64 (*)(f32))func_001A2370)(f));
+            }
+            break;
+        case 's':
+            ap += 8;
+            s = *(char **)(ap - 8);
+            if (*s == 0) {
+                D_0028CA0C('(');
+                D_0028CA0C('n');
+                D_0028CA0C('u');
+                D_0028CA0C('l');
+                D_0028CA0C('l');
+                D_0028CA0C(')');
+            } else {
+                p = s;
+                do {
+                    D_0028CA0C(*p++);
+                } while (*p);
+            }
+            break;
+        case 'c':
+            ap += 8;
+            v = *(char *)(ap - 8);
+            D_0028CA0C(v);
+            break;
+        }
+        } else {
+            D_0028CA0C(*fmt);
+        }
+        fmt++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DA60);
 
