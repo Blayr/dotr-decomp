@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sce/libmpeg.h"
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DAA8);
 
