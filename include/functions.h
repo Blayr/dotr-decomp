@@ -877,6 +877,7 @@ void func_0017DDF0(void);
 s32 func_0017DE28(s32 arg0, s32 arg1);
 s32 func_0017DE40(s32 arg0, s32 arg1);
 s32 func_0017DFE8(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+s32 func_0017E028(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_0017E3E0(void);
 void func_0017E4B0(void *arg0);
 void *func_0017E500(void *arg0, s32 arg1);

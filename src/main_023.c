@@ -292,7 +292,9 @@ s32 func_0017DFE8(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     return func_0017DEB0(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E028);
+s32 func_0017E028(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    return func_0017DEB0(arg0, 1, (s32)arg1, arg2, arg3, arg4, arg5);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E068);
 
