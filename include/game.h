@@ -987,4 +987,7 @@ u64 func_0017BC20(u64);
 extern s32 D_002BC940;
 
 
+extern s32 D_002BCAC0;
+extern s32 D_002BCAE8;
+
 #endif

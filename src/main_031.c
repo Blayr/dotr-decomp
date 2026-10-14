@@ -116,7 +116,39 @@ void func_0018FDC8(void *arg0, s32 arg1, s32 arg2) {
     func_0018EF48((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018FEA0);
+void func_0018FEA0(void *arg0) {
+    u8 *d;
+    u32 v;
+    u32 prof;
+    s32 chroma;
+    s32 hext;
+    s32 vext;
+    s32 brext;
+    s32 vbvext;
+
+    d = arg0;
+    *(s32 *)(d + 0x848) = 1;
+    func_0018A378(0);
+    v = func_0018BA48(arg0, 28);
+    brext = (v >> 1) & 0xFFF;
+    vext = (v >> 13) & 3;
+    hext = (v >> 15) & 3;
+    chroma = (v >> 17) & 3;
+    *(s32 *)(d + 0x140) = chroma;
+    if (chroma != 1) {
+        func_0018F7B0((s32)arg0, &D_002BCAC0);
+    }
+    *(s32 *)(d + 0x13C) = (v >> 19) & 1;
+    prof = v >> 20;
+    vbvext = (u32)func_0018BA48(arg0, 16) >> 8;
+    if (prof != 0x48 && prof != 0x58 && prof != 0x44) {
+        func_0018F7B0((s32)arg0, &D_002BCAE8);
+    }
+    *(s32 *)(d + 0x124) = (hext << 12) | (*(s32 *)(d + 0x124) & 0xFFF);
+    *(s32 *)(d + 0x128) = (vext << 12) | (*(s32 *)(d + 0x128) & 0xFFF);
+    *(s32 *)(d + 0x134) += brext << 18;
+    *(s32 *)(d + 0x138) += vbvext << 10;
+}
 
 void func_0018FFD0(void *arg0, s32 arg1) {
     func_0018BA48(arg0, 3);
