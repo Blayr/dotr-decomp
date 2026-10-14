@@ -226,7 +226,110 @@ void func_001E4E90(void) {
     state->count = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E4F00);
+typedef struct Vec3_001E4F00 {
+    f32 x, y, z;
+} Vec3_001E4F00;
+
+void func_001E4F00(s32 arg0) {
+    extern u8 D_00291690[];
+    extern s32 D_00292168;
+    extern s32 D_00292170[];
+    extern s32 D_00292174[];
+    extern Vec3_001E4F00 D_002921A0;
+    extern Vec3_001E4F00 D_002921B0;
+    extern char D_002CF730[];
+    extern char D_002CF746[];
+    extern s32 D_0031AB88[];
+    extern s32 func_001FECB0(s32, s32, char *, s32, s32, s32, s32, void *, s64);
+    s32 * state;
+    s32 begin;
+    f32 * vec20;
+    s32 j;
+    f32 * range;
+    f32 * vecC;
+    s32 size;
+    f32 * vecB8;
+    char filename[128];
+    s32 i;
+    s64 enabled;
+    u8 * base;
+
+    state = D_0031AB88;
+    base = D_00291690 + arg0 * 0xC0;
+    vecC = (f32 *)(base + 0xC);
+    vec20 = (f32 *)(base + 0x20);
+    range = (f32 *)(base + 0xB0);
+    vecB8 = (f32 *)(base + 0xB8);
+    if (arg0 == 4) {
+        enabled = 0;
+    } else {
+        enabled = 1;
+    }
+    func_001F9770(0, 9, 1);
+    i = 0;
+    do {
+        func_001F30B0(i, 0);
+        i += 1;
+    } while (i < 0x54);
+    i = 0;
+    do {
+        func_001F30B0(i + 8, 1);
+        i += 1;
+    } while (i < 0xC);
+    i = 0;
+    do {
+        func_001F30B0(i + 7, 1);
+        i += 1;
+    } while (i <= 0);
+    func_001F68D0((s32) vecB8);
+    func_001F6960((s32) vecB8);
+    func_001F69A0(0);
+    func_001F6A30(0);
+    if (range[0] == range[1]) {
+        func_001F6A70(0);
+        func_001F6B00(0);
+    } else {
+        func_001F6A70((s32) range);
+        func_001F6B00((s32) range);
+    }
+    func_001F6B40((s32) vec20);
+    func_001F6BD0((s32) vec20);
+    func_001F6C10(0);
+    func_001F6CA0(0);
+    func_001F6D40((s32) vecC);
+    func_001F6DD0((s32) base);
+    func_001F6CE0(0x80);
+    func_001F6D00(0x80);
+    j = 0;
+    do {
+        func_001F3270(j + 8, enabled);
+        j += 1;
+    } while (j < 0xC);
+    if (arg0 == 4) {
+        Vec3_001E4F00 position = D_002921A0;
+        Vec3_001E4F00 other;
+        position.x = ((f32 *)base)[0];
+        position.y = ((f32 *)base)[1];
+        other = D_002921B0;
+        func_001F1EE0(8, &position.x);
+        func_001F3270(9, 1);
+        func_001F1EE0(0xC, &other.x);
+    }
+    if (arg0 == 2) {
+        func_001F3270(9, 0);
+    }
+    if (arg0 != D_00292168) {
+        D_00292168 = arg0;
+    }
+    if (state[2] != 0) {
+        func_00217B50(state[2]);
+        state[2] = 0;
+    }
+    begin = D_00292170[arg0];
+    size = D_00292174[arg0] - begin;
+    func_0019B648(filename, D_002CF730, (s32) func_001FFF90((s32) D_002CF746));
+    func_001FECB0(0x400, 1, filename, 0, size, begin, size, func_001E5210, 0);
+}
 
 typedef struct {
     u8 padding[8];
