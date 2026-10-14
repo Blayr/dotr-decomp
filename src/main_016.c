@@ -1514,7 +1514,157 @@ s32 func_0016CFF0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016D140);
+#pragma conditional_move off
+
+s32 func_0016D140(void *work, void *arg1, s32 arg2) {
+    u16 *arg0 = work;
+    s32 side;
+    s32 found;
+    s32 result;
+    s32 index;
+
+    side = func_001DE540();
+    found = 0;
+    if ((result = func_0016D8C0(arg0, side, (s32)arg1)) < 0) {
+        return 0;
+    }
+    index = func_00276C80(arg0, result & 0xFFFF);
+    if (index < 0) {
+        return 0;
+    }
+    if ((result >> 16) == 1) {
+        func_0027B1B0(arg0 + index * 8, 1);
+        return 1;
+    }
+    func_0016D6A0(arg0 + index * 8);
+    switch ((arg0[index * 8 + 2] >> 8) & 0xFF) {
+    case 5:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            func_00170940(arg0 + index * 8, side, arg1, 1);
+            found = 1;
+        }
+        break;
+    case 2:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            if (func_00170F10(arg0 + index * 8, side, arg1, 1) < 0) {
+                func_0027B1B0(arg0 + index * 8, 1);
+                return 1;
+            }
+            found = 1;
+        }
+        break;
+    case 10:
+        if (func_0016F4D0(arg0[index * 8], side, (s32)arg1) < 0) {
+            func_0027B1B0(arg0 + index * 8, 1);
+            *(u8 *)((u8 *)arg1 + 2) = 0xFF;
+            *(s32 *)((u8 *)arg1 + 0xC) = 0;
+        } else {
+            func_0027B1B0(arg0 + index * 8, 1);
+            found = 1;
+        }
+        break;
+    case 6:
+    case 15:
+    case 16:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            func_001714F0(arg0 + index * 8, side, arg1, 1, 0);
+            found = 1;
+        }
+        break;
+    case 3:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            func_001714F0(arg0 + index * 8, side, arg1, 1, 1);
+            found = 1;
+        }
+        break;
+    case 9:
+        func_0027D020(arg0 + index * 8, side, arg1, 1, 0, func_00172310(side), 5, 1);
+        found = 1;
+        break;
+    case 12:
+        func_00171D60(arg0 + index * 8, side, arg1, 1);
+        found = 1;
+        break;
+    case 13:
+        func_00172000(arg0 + index * 8, side, arg1, 1);
+        found = 1;
+        break;
+    case 14:
+        func_00276EC0(arg0 + index * 8, side, arg1);
+        found = 1;
+        break;
+    default:
+        found = 0;
+        break;
+    }
+    if (found == 1) {
+        return 1;
+    }
+    found = 0;
+    switch (arg0[index * 8 + 2] & 0xFF) {
+    case 5:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            func_00170940(arg0 + index * 8, side, arg1, 0);
+            found = 1;
+        }
+        break;
+    case 2:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            if (func_00170F10(arg0 + index * 8, side, arg1, 0) < 0) {
+                func_00170940(arg0 + index * 8, side, arg1, 0);
+            }
+            found = 1;
+        }
+        break;
+    case 10:
+        if (func_0016F4D0(arg0[index * 8], side, (s32)arg1) < 0) {
+            func_0027B1B0(arg0 + index * 8, 0);
+            *(u8 *)((u8 *)arg1 + 2) = 0xFF;
+            found = 1;
+            *(s32 *)((u8 *)arg1 + 0xC) = 0;
+        } else {
+            func_0027B1B0(arg0 + index * 8, 0);
+            found = 1;
+        }
+        break;
+    case 6:
+    case 15:
+    case 16:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            func_001714F0(arg0 + index * 8, side, arg1, 0, 0);
+            found = 1;
+        }
+        break;
+    case 3:
+        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            func_001714F0(arg0 + index * 8, side, arg1, 0, 1);
+            found = 1;
+        }
+        break;
+    case 9:
+        func_0027D020(arg0 + index * 8, side, arg1, 0, 0, func_00172310(side), 5, 1);
+        found = 1;
+        break;
+    case 12:
+        func_00171D60(arg0 + index * 8, side, arg1, 0);
+        found = 1;
+        break;
+    case 13:
+        func_00172000(arg0 + index * 8, side, arg1, 0);
+        found = 1;
+        break;
+    case 14:
+        func_00276EC0(arg0 + index * 8, side, arg1);
+        break;
+    default:
+        return 0;
+    }
+    if (found == 1) {
+        return 1;
+    }
+    return 0;
+}
+#pragma conditional_move reset
 
 static inline s32 check_0016D6A0(s32 value) {
     s32 result = 1;
