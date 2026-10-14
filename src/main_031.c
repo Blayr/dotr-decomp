@@ -1,6 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F648);
+void func_0018F648(void *arg0) {
+    u8 *spr;
+
+    spr = (u8 *)0x70000000;
+    func_0018A378(1);
+    *(u8 **)((u8 *)arg0 + 0x590) = spr;
+    *(u8 **)((u8 *)arg0 + 0x594) = spr + 0x1800;
+    *(u8 **)((u8 *)arg0 + 0x6D0) = spr + 0x1B00;
+    *(u8 **)((u8 *)arg0 + 0x6D4) = spr + 0x3300;
+    *(s32 *)((u8 *)arg0 + 0x810) = 0;
+}
 
 void func_0018F6A8(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x818)) = 1;
