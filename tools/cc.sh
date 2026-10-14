@@ -152,6 +152,12 @@ if [ "$DK_GCC" = 2.96 ]; then
         $held = 1 if /^\s+(l[bhwd]u?|lq|s[bhwdq]|lwc1|swc1|ldc1|sdc1|l\.[sd]|s\.[sd]|d?la)\s+[^,]+,\s*[A-Za-z_]/;
         print' "$TMP/out.s"
 fi
+# Old gas left a label BEFORE the hazard nop after an `mfc1` (powf: `mfc1 $7,$f0` / `.L: nop` /
+# `daddu $3,$7,$0`, a branch lands on the nop); binutils moves the label past the nop. When a label
+# sits between `mfc1 $N` and an instruction reading $N, the nop is written after the label.
+if [ "$DK_GCC" = 2.96 ]; then
+    perl -0777 -i -pe 's/^(\s+mfc1\s+\$(\d+),[^\n]*\n)((?:[\$.\w]+:[^\n]*\n)+)((?:\s+\.set\s[^\n]*\n)*)(\s+([a-z][a-z0-9.]*)\s+([^\n]*))/my ($h, $r, $l, $d, $i, $m, $o) = ($1, $2, $3, $4, $5, $6, $7); my @x = split m{,}, $o; shift @x unless $m =~ m{^(s[bhwdq]|b|j)}; (grep { m{\$$r\b} } @x) ? "$h$l\tnop\n$d$i" : "$h$l$d$i"/gme' "$TMP/out.s"
+fi
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
