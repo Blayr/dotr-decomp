@@ -3194,11 +3194,11 @@ typedef struct {
     u32 words[4];
 } Tag_00241E80;
 
-void func_001873E8(void *, u64, s32, s32, s32, s32);
 extern Tag_00241E80 D_0029B2D0;
 extern Tag_00241E80 D_0029B2E0;
 
 void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void func_001873E8(void *, u64, s32, s32, s32, s32);
     u8 spB0[16];
     Tag_00241E80 spC0;
     Tag_00241E80 spD0;
