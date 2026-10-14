@@ -39,7 +39,70 @@ s32 func_001977D8(s32 *ptr, s32 fd, s32 pos, s32 whence) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00197838);
+typedef struct mb_reent { u8 pad0[0x3C]; s32 (*__cleanup)(s32); } mb_reent;
+typedef struct mb_sbuf { u8 *_base; s32 _size; } mb_sbuf;
+typedef struct mb_FILE {
+    u8 *_p;
+    s32 _r;
+    s32 _w;
+    s16 _flags;
+    s16 _file;
+    mb_sbuf _bf;
+    s32 _lbfsize;
+    void *_cookie;
+    void *_read;
+    void *_write;
+    void *_seek;
+    void *_close;
+    mb_sbuf _ub;
+    u8 *_up;
+    s32 _ur;
+    u8 _ubuf[3];
+    u8 _nbuf[1];
+    mb_sbuf _lb;
+    s32 _blksize;
+    s32 _offset;
+    mb_reent *_data;
+} mb_FILE;
+typedef struct mb_stat { s16 st_dev; u16 st_ino; u32 st_mode; u8 pad8[0x68]; } mb_stat;
+
+void func_00197838(void *arg0) {
+    mb_FILE *fp = arg0;
+    u32 size, couldbetty;
+    void *p;
+    mb_stat st;
+
+    if (fp->_flags & 2) {
+        fp->_bf._base = fp->_p = fp->_nbuf;
+        fp->_bf._size = 1;
+        return;
+    }
+    if (fp->_file < 0 || func_00197048((s32 *)fp->_data, fp->_file, &st) < 0) {
+        couldbetty = 0;
+        size = 1024;
+        fp->_flags |= 0x800;
+    } else {
+        couldbetty = (st.st_mode & 0xF000) == 0x2000;
+        size = 1024;
+        if ((st.st_mode & 0xF000) == 0x8000 && fp->_seek == (void *)func_0019B870) {
+            fp->_flags |= 0x400;
+            fp->_blksize = 1024;
+        } else
+            fp->_flags |= 0x800;
+    }
+    if ((p = (void *)func_00197EB8((s32)fp->_data, size)) == NULL) {
+        fp->_flags |= 2;
+        fp->_bf._base = fp->_p = fp->_nbuf;
+        fp->_bf._size = 1;
+    } else {
+        fp->_data->__cleanup = func_001969F0;
+        fp->_flags |= 0x80;
+        fp->_bf._base = fp->_p = (u8 *)p;
+        fp->_bf._size = size;
+        if (couldbetty && ((s32 (*)(s32))func_0017C090)(fp->_file))
+            fp->_flags |= 1;
+    }
+}
 
 void *func_00197990(s32 arg0, s32 arg1) {
     void *temp_s1;
@@ -469,7 +532,6 @@ typedef struct sr_FILE {
     s32 _offset;
     sr_reent *_data;
 } sr_FILE;
-void func_00197838(void *fp);
 
 s32 func_0019AC68(void *arg0) {
     sr_FILE *fp = arg0;
