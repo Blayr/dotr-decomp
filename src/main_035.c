@@ -80,7 +80,23 @@ s32 func_0019B6D8(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B6E0);
+s32 func_0019B6E0(const char *str, const char *fmt, ...) {
+    s32 ret;
+    __builtin_va_list ap;
+    ssc_FILE f;
+
+    f._flags = 0x0004;
+    f._bf_base = f._p = (u8 *)str;
+    f._bf_size = f._r = func_0019BEF0(str);
+    f._read = (void *)func_0019B6D8;
+    f._ub_base = NULL;
+    f._lb_base = NULL;
+    f._data = (void *)D_0028FA98;
+    __builtin_stdarg_start(ap, fmt);
+    ret = func_0019F6E8(&f, fmt, ap);
+    __builtin_va_end(ap);
+    return ret;
+}
 
 s32 func_0019B788(void *cookie, char *buf, s32 n) {
     sread_FILE *fp = (sread_FILE *)cookie;
