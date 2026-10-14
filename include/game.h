@@ -1003,6 +1003,8 @@ s32 func_0017BC50(void *, s64 *);
 
 s32 func_0017DEB0(s32, s32, s32, s32, s32, s32, s32);
 
-void func_0017D1B8(s32);
+
+extern s32 D_0028CA08;
+extern char D_00310D40[];
 
 #endif
