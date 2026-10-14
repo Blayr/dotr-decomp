@@ -172,7 +172,20 @@ INCLUDE_ASM("asm/nonmatchings/main_032", func_00192AE8);
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192B38);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192BB8);
+s32 func_00192BB8(s32 port, s32 slot) {
+    u8 *p;
+
+    if (D_003159D0[port][slot].open == 0) {
+        return 0x63;
+    }
+    p = func_00192A88(port, slot);
+    if (p[0x70] == 6) {
+        if (p[0x71] == 2) {
+            return 5;
+        }
+    }
+    return p[0x70];
+}
 
 void func_00192C30(u32 arg0, s8 *arg1) {
     if (arg0 < 8U) {
