@@ -3567,7 +3567,14 @@ void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00242190);
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_002423A0);
+s32 func_002423A0(void) {
+    if (D_00350350 != 0) {
+        func_00245960(&D_00350600);
+        D_00350350 = 0;
+    }
+    asm("sync"); asm("ei");
+    return 0;
+}
 
 void func_002423F0(s32 arg0) {
     do {

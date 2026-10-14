@@ -925,4 +925,6 @@ extern u8 D_003261F0;
 
 extern u8 D_00318200[];
 
+extern s32 D_00350350;
+
 #endif

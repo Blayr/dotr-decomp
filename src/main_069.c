@@ -38,7 +38,6 @@ typedef struct ThreadParams_00242950 {
 } ThreadParams_00242950;
 
 extern void func_00242190(void);
-extern void func_002423A0(void);
 extern char D_0030F39A[];
 extern u8 D_00317EF0[];
 extern s32 D_00350730;
