@@ -241,7 +241,6 @@ typedef struct {
     s64 trxdiraddr;
 } StoreImage_59D0;
 
-u64 func_0017BC00(void);
 extern __int128 D_0028D920;
 extern char D_002BC4A0[];
 extern char D_002BC4D8[];
