@@ -1268,7 +1268,152 @@ void func_001CC610(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CC620);
+typedef struct {
+    s8 first : 2;
+    s8 second : 2;
+    s8 unused : 4;
+} PulseFlags_001CC620;
+
+typedef struct {
+    u8 padding[0xC86];
+    u16 first;
+    u16 second;
+    u8 padding2[0xD63 - 0xC8A];
+    u8 active;
+    PulseFlags_001CC620 flags;
+} State_001CC620;
+
+typedef struct {
+    u8 diagonal : 1;
+    u8 unused : 7;
+} InputFlags_001CC620;
+
+extern u16 D_00318118;
+extern u8 D_003181F3;
+extern PulseFlags_001CC620 D_003181F4;
+
+#pragma conditional_move off
+
+void func_001CC620(void) {
+    extern void *func_002145E0(s32);
+    extern s32 func_001E2220();
+    State_001CC620 *state = (State_001CC620 *)D_00317490;
+    s32 row;
+    s32 column;
+    u8 *cell;
+    u8 *rowStart;
+    s32 value;
+    s32 positive;
+    s32 step;
+    u8 tile;
+    u16 buttons;
+    State_001CC620 *p;
+    State_001CC620 *p2;
+
+    {
+        p = (State_001CC620 *)D_00317490;
+        if (D_003181F3 != 0) {
+            p->flags.first = 1;
+        }
+        value = p->first + (p->flags.first << 9);
+        p->first = (value > 0 ? value : 0) < 0x8000 ?
+            (value > 0 ? value : 0) : 0x8000;
+        if (p->first == 0 || p->first >= 0x8000) {
+            p->flags.first = (s8)-p->flags.first;
+        }
+    }
+    {
+        p2 = (State_001CC620 *)D_00317490;
+        step = D_003181F4.second << 11;
+        p2->second = (D_00318118 + step > 0 ? p2->second + step : 0) < 0x8000 ?
+            (p2->second + step > 0 ? p2->second + step : 0) : 0x8000;
+        if (p2->second == 0 || p2->second >= 0x8000) {
+            p2->flags.second = (s8)-p2->flags.second;
+        }
+    }
+    if (*(u8 *)0xA9C091 != 0) {
+        --*(u8 *)0xA9C091;
+    }
+    if (func_00203A40(0, 0, 0x8C0) != 0) {
+        rowStart = (u8 *)func_002145E0(0) +
+            ((*(u8 *)0xA9C08C + 2) % *(u8 *)0xA9C08D) * 49;
+        row = 0;
+        do {
+            column = 0;
+            cell = rowStart;
+            do {
+                cell[0xFEA3] = func_001E22B0(column, row);
+                ++column;
+                ++cell;
+            } while (column < 7);
+            ++row;
+            rowStart += 7;
+        } while (row < 7);
+        func_00217710(0, 4);
+        func_001A8920();
+        return;
+    }
+    if (func_00203A40(0, 0, 0x20) != 0) {
+        func_00217710(0, 5);
+        func_001A8920();
+        return;
+    }
+    if (func_00203A40(0, 2, 0xC) != 0) {
+        tile = func_001E22B0(*(u8 *)0xA9C08F, *(u8 *)0xA9C090);
+        if (func_00203A40(0, 2, 4) != 0) {
+            tile = (tile + 9) % 10;
+        }
+        if (func_00203A40(0, 2, 8) != 0) {
+            tile = (tile + 11) % 10;
+        }
+        func_00217710(0, 3);
+        func_001E2220(*(u8 *)0xA9C08F, *(u8 *)0xA9C090, tile);
+    }
+    if (*(u8 *)0xA9C091 == 0) {
+        buttons = func_00203A40(0, 1, 0xFFFF);
+        if (buttons & 0xF000) {
+            if (((buttons & 0x8000) && *(u8 *)0xA9C08F <= 0) ||
+                ((buttons & 0x2000) && *(u8 *)0xA9C08F >= 6)) {
+                buttons &= 0x5FFF;
+            }
+            if (((buttons & 0x1000) && *(u8 *)0xA9C090 <= 0) ||
+                ((buttons & 0x4000) && *(u8 *)0xA9C090 >= 6)) {
+                buttons &= 0xAFFF;
+            }
+            state->active = 60;
+            if (((InputFlags_001CC620 *)0xA9C092)->diagonal) {
+                if (buttons & 0x5000) {
+                    buttons &= 0x5000;
+                } else {
+                    ((InputFlags_001CC620 *)0xA9C092)->diagonal = 0;
+                }
+            }
+            if (buttons & 0xA000) {
+                if (buttons & 0x8000) {
+                    --*(u8 *)0xA9C08F;
+                } else {
+                    ++*(u8 *)0xA9C08F;
+                }
+                if (buttons & 0x5000) {
+                    ((InputFlags_001CC620 *)0xA9C092)->diagonal = 1;
+                }
+            } else if (buttons & 0x5000) {
+                if (buttons & 0x1000) {
+                    --*(u8 *)0xA9C090;
+                } else {
+                    ++*(u8 *)0xA9C090;
+                }
+                ((InputFlags_001CC620 *)0xA9C092)->diagonal = 0;
+            } else {
+                ((InputFlags_001CC620 *)0xA9C092)->diagonal = 0;
+                return;
+            }
+            func_00217710(0, 3);
+            *(u8 *)0xA9C091 = 8;
+        }
+    }
+}
+#pragma conditional_move reset
 
 void func_001CCB80(void) {
     func_00209D30(func_001CCBB0(func_00209D20()));
