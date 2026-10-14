@@ -30,7 +30,39 @@ void func_00187C08(void *p0) {
 	" :  : "r" (p0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00187C30);
+void func_00187C30(void *p0, void *p1, void *p2, void *p3) {
+    __asm__ __volatile__("\n\
+	lui	$8,%%hi(D_0028D9E0)\n\
+	addiu	$8,$8,%%lo(D_0028D9E0)\n\
+	lqc2	$vf5,0x0($8)\n\
+	vmr32.w	$vf6,$vf6\n\
+	vaddx.x	$vf4,$vf0,$vf6x\n\
+	vmul.x	$vf6,$vf6,$vf6\n\
+	vmulx.yzw	$vf4,$vf4,$vf0x\n\
+	vmulw.xyzw	$vf8,$vf5,$vf6w\n\
+	vsub.xyzw	$vf5,$vf0,$vf0\n\
+	vmulx.xyzw	$vf8,$vf8,$vf6x\n\
+	vmulx.xyz	$vf8,$vf8,$vf6x\n\
+	vaddw.x	$vf4,$vf4,$vf8w\n\
+	vmulx.xy	$vf8,$vf8,$vf6x\n\
+	vaddz.x	$vf4,$vf4,$vf8z\n\
+	vmulx.x	$vf8,$vf8,$vf6x\n\
+	vaddy.x	$vf4,$vf4,$vf8y\n\
+	vaddx.x	$vf4,$vf4,$vf8x\n\
+	vaddx.xy	$vf4,$vf5,$vf4x\n\
+	vmul.x	$vf7,$vf4,$vf4\n\
+	vsubx.w	$vf7,$vf0,$vf7x\n\
+	.word 0x4B8703BD\n\
+	vwaitq\n\
+	vaddq.x	$vf7,$vf0,$Q\n\
+	bnez	%3,_func_00187C30_00187C98\n\
+	vaddx.x	$vf4,$vf5,$vf7x\n\
+	b	_func_00187C30_00187C9C\n\
+_func_00187C30_00187C98:\n\
+	vsubx.x	$vf4,$vf5,$vf7x\n\
+_func_00187C30_00187C9C:\n\
+	" :  : "r" (p0), "r" (p1), "r" (p2), "r" (p3));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00187CA8);
 
