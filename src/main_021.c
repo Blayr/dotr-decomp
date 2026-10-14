@@ -134,7 +134,11 @@ unsigned long long func_0017BC20(unsigned long long arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BC30);
+int func_0017BC30(void) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,-0x71\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BC40);
 
