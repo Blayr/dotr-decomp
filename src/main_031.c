@@ -68,7 +68,19 @@ INCLUDE_ASM("asm/nonmatchings/main_031", func_00190498);
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_001906D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190778);
+s32 func_00190778(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 temp_v0;
+
+    if ((arg3 == 0) || ((*(s32 *)(&D_00315500)) = arg0, (*(s32 *)((u8 *)(&D_00315500) + 4)) = arg1, (*(s32 *)((u8 *)(&D_00315500) + 8)) = arg2, (*(s32 *)((u8 *)(&D_00315500) + 0xC)) = 0, temp_v0 = func_0017BCA0(&D_00315500, 1), (temp_v0 == 0))) {
+        return -1;
+    }
+    if (arg3 == 1) {
+        do {
+
+        } while (func_0017BC80(temp_v0) >= 0);
+    }
+    return 0;
+}
 
 s32 func_00190800(s32 arg0) {
     s32 temp_v0;

@@ -702,4 +702,6 @@ extern s32 func_00184080;
 
 void *func_001979F8(s32, s32, s32);                 /* extern */
 
+extern s32 D_00315500;
+
 #endif

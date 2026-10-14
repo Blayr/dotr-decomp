@@ -867,6 +867,7 @@ void func_00190080(s32 arg0);
 void func_00190090(s32 arg0);
 void func_001900A0(void *arg0);
 void func_001900B0(void *arg0);
+s32 func_00190778(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00190800(s32 arg0);
 s32 *func_00193A00(s32 **arg0, s32 **arg1);
 void func_00194200(s32 arg0);
