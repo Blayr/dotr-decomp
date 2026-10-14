@@ -848,6 +848,7 @@ double func_001A65C0(double x) {
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65F8);
 
 f32 __kernel_sinf(f32 x, f32 y, s32 iy); /* func_001A61F0, called by name */
+s32 __ieee754_rem_pio2f(f32 x, f32 *y); /* func_001A5338, called by name */
 f32 __kernel_tanf(f32 x, f32 y, s32 iy); /* func_001A6318, called by name */
 f32 __kernel_cosf(f32 x, f32 y); /* func_001A57D8, called by name */
 
@@ -860,7 +861,7 @@ f32 func_001A6898(f32 x) {
     if (ix <= 0x3f490fd8) {
         return __kernel_cosf(x, z);
     } else {
-        n = func_001A5338(x, y);
+        n = __ieee754_rem_pio2f(x, y);
         switch (n & 3) {
         case 0:
             return __kernel_cosf(y[0], y[1]);
@@ -923,7 +924,7 @@ f32 func_001A6A88(f32 x) {
     if (ix <= 0x3f490fd8) {
         return __kernel_sinf(x, z, 0);
     } else {
-        n = func_001A5338(x, y);
+        n = __ieee754_rem_pio2f(x, y);
         switch (n & 3) {
         case 0:
             return __kernel_sinf(y[0], y[1], 1);
@@ -946,7 +947,7 @@ f32 func_001A6B70(f32 x) {
     if (ix <= 0x3f490fda) {
         return __kernel_tanf(x, z, 1);
     } else {
-        n = func_001A5338(x, y);
+        n = __ieee754_rem_pio2f(x, y);
         return __kernel_tanf(y[0], y[1], 1 - ((n & 1) << 1));
     }
 }
