@@ -219,7 +219,22 @@ void func_0019B8D8(void *arg0) {
     func_001951F8((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B8F8);
+#define tolower_0019B8F8(c) ({ int __x = (c); ((D_002BD0C0 + 1)[(int)(__x)] & 01) ? (__x - 'A' + 'a') : __x; })
+
+/* strcasecmp (newlib 1.9.0 strcasecmp.c): adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0019B8F8(const char *s1, const char *s2) {
+    extern const char D_002BD0C0[];
+
+    while (*s1 != '\0' && tolower_0019B8F8(*s1) == tolower_0019B8F8(*s2)) {
+        s1++;
+        s2++;
+    }
+
+    return tolower_0019B8F8(*(unsigned char *)s1) - tolower_0019B8F8(*(unsigned char *)s2);
+}
+
+#undef tolower_0019B8F8
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B9D0);
 
@@ -231,7 +246,27 @@ INCLUDE_ASM("asm/nonmatchings/main_035", func_0019BDD8);
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019BEF0);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019C028);
+#define tolower_0019C028(c) __extension__({ int __x = (c); ((D_002BD0C0 + 1)[(unsigned)(__x)] & 01) ? (__x - 'A' + 'a') : __x; })
+
+/* strncasecmp (newlib 1.9.0 strncasecmp.c) via gt4-decomp (MIT, (c) Gustavo Canepa and gt4-decomp contributors; newlib notice in THIRD_PARTY_NOTICES.md) */
+
+s32 func_0019C028(const char *s1, const char *s2, u32 n) {
+    extern const char D_002BD0C0[];
+
+    if (n == 0)
+        return 0;
+
+    while (n-- != 0 && tolower_0019C028(*s1) == tolower_0019C028(*s2)) {
+        if (n == 0 || *s1 == '\0' || *s2 == '\0')
+            break;
+        s1++;
+        s2++;
+    }
+
+    return tolower_0019C028(*(unsigned char *)s1) - tolower_0019C028(*(unsigned char *)s2);
+}
+
+#undef tolower_0019C028
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019C100);
 
@@ -548,7 +583,34 @@ s32 func_0019DC70(s32 arg0, void *arg1) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DCB8);
+#define fp_0019DCB8 ((Fil *)arg0)
+
+/* __sbprintf (newlib 1.9.0 vfprintf.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0019DCB8(void *arg0, const char *fmt, void *ap) {
+    s32 ret;
+    Fil fake;
+    u8 buf[1024];
+
+    fake.data = fp_0019DCB8->data;
+    fake.flags = fp_0019DCB8->flags & ~0x0002;
+    fake.file = fp_0019DCB8->file;
+    fake.cookie = fp_0019DCB8->cookie;
+    fake.write = fp_0019DCB8->write;
+
+    fake.bf.base = fake.p = buf;
+    fake.bf.size = fake.w = sizeof(buf);
+    fake.lbfsize = 0;
+
+    ret = func_0019DD70((vf_FILE *)&fake, fmt, ap);
+    if (ret >= 0 && func_00196708((nl_FILE *)&fake))
+        ret = -1;
+    if (fake.flags & 0x0040)
+        fp_0019DCB8->flags |= 0x0040;
+    return ret;
+}
+
+#undef fp_0019DCB8
 
 s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap) {
     do {

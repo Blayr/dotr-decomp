@@ -1535,7 +1535,6 @@ s32 func_001FECB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     return (s32)request;
 }
 
-s32 func_0019C028(const char *, const char *, s32);
 extern char *D_00293090[];
 extern s64 D_00293098[];
 extern s32 D_002930A8[];

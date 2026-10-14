@@ -350,7 +350,65 @@ u32 func_00196AC0(void *buf, u32 size, u32 count, void *arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196BE0);
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196ED8);
+#define SIZE_SZ (sizeof(INTERNAL_SIZE_T))
+#define PREV_INUSE 0x1
+#define SIZE_BITS 0x3
+#define MINSIZE 16
+#define chunksize(p) ((p)->size & ~(SIZE_BITS))
+#define set_head(p, s) ((p)->size = (s))
+#define bin_at(i) ((mchunkptr)((char *)&(D_0028FAA8[2 * (i) + 2]) - 2 * SIZE_SZ))
+#define top (bin_at(0)->fd)
+
+/* _malloc_trim_r (newlib 1.9.0 mallocr.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00196ED8(s32 reent_ptr, u32 pad) {
+    long top_size;
+    long extra;
+    char *current_brk;
+    char *new_brk;
+    unsigned long pagesz = 4096;
+
+    func_00198A08(reent_ptr);
+    top_size = chunksize(top);
+    extra = ((top_size - pad - MINSIZE + (pagesz - 1)) / pagesz - 1) * pagesz;
+
+    if (extra < (long)pagesz) {
+        ((void (*)(s32))func_00198A88)(reent_ptr);
+        return 0;
+    } else {
+        current_brk = (char *)(func_0019B0A0((s32 *)reent_ptr, 0));
+        if (current_brk != (char *)(top) + top_size) {
+            ((void (*)(s32))func_00198A88)(reent_ptr);
+            return 0;
+        } else {
+            new_brk = (char *)(func_0019B0A0((s32 *)reent_ptr, -extra));
+            if (new_brk == (char *)(-1)) {
+                current_brk = (char *)(func_0019B0A0((s32 *)reent_ptr, 0));
+                top_size = current_brk - (char *)top;
+                if (top_size >= (long)MINSIZE) {
+                    D_0028FED8.arena = current_brk - D_0028FEC0;
+                    set_head(top, top_size | PREV_INUSE);
+                }
+                ((void (*)(s32))func_00198A88)(reent_ptr);
+                return 0;
+            } else {
+                set_head(top, (top_size - extra) | PREV_INUSE);
+                D_0028FED8.arena -= extra;
+                ((void (*)(s32))func_00198A88)(reent_ptr);
+                return 1;
+            }
+        }
+    }
+}
+
+#undef SIZE_SZ
+#undef PREV_INUSE
+#undef SIZE_BITS
+#undef MINSIZE
+#undef chunksize
+#undef set_head
+#undef bin_at
+#undef top
 
 s32 func_00197048(s32 *ptr, s32 fd, void *st) {
     s32 ret;
@@ -360,7 +418,129 @@ s32 func_00197048(s32 *ptr, s32 fd, void *st) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_001970A8);
+#define MIN_001970A8(a, b) ((a) < (b) ? (a) : (b))
+#define COPY_001970A8(n) (void)((void *(*)(void *, const void *, s32))func_00198840)((void *)fp->p, (void *)p, (int)(n))
+#define GETIOV_001970A8(extra_work)                                                                \
+    while (len == 0) {                                                                             \
+        extra_work;                                                                                \
+        p = iov->iov_base;                                                                         \
+        len = iov->iov_len;                                                                        \
+        iov++;                                                                                     \
+    }
+
+/* __sfvwrite (newlib 1.9.0 fvwrite.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_001970A8(void *arg0, void *arg1) {
+    extern void *func_00198618();
+    Fil *fp = arg0;
+    struct __suio *uio = arg1;
+    unsigned int len;
+    const char *p;
+    struct __siov *iov;
+    int w, s;
+    char *nl;
+    int nlknown, nldist;
+
+    if ((len = uio->uio_resid) == 0) {
+        return 0;
+    }
+    if (((fp->flags & 0x0008) == 0 || fp->bf.base == 0) && func_001A04D8(fp)) {
+        return -1;
+    }
+
+    iov = uio->uio_iov;
+    len = 0;
+    w = 0;
+    if (fp->flags & 0x0002) {
+        do {
+            GETIOV_001970A8(;);
+            w = (*fp->write)(fp->cookie, p, MIN_001970A8(len, 1024));
+            if (w <= 0) {
+                goto err;
+            }
+            p += w;
+            len -= w;
+        } while ((uio->uio_resid -= w) != 0);
+    } else if ((fp->flags & 0x0001) == 0) {
+        do {
+            GETIOV_001970A8(;);
+            w = fp->w;
+            if (fp->flags & 0x0200) {
+                if (len < w) {
+                    w = len;
+                }
+                COPY_001970A8(w);
+                fp->w -= w;
+                fp->p += w;
+                w = len;
+            } else if (fp->p > fp->bf.base && len > w) {
+                COPY_001970A8(w);
+                fp->p += w;
+                if (func_00196708((nl_FILE *)fp)) {
+                    goto err;
+                }
+            } else if (len >= (w = fp->bf.size)) {
+                w = (*fp->write)(fp->cookie, p, w);
+                if (w <= 0) {
+                    goto err;
+                }
+            } else {
+                w = len;
+                COPY_001970A8(w);
+                fp->w -= w;
+                fp->p += w;
+            }
+            p += w;
+            len -= w;
+        } while ((uio->uio_resid -= w) != 0);
+    } else {
+        nlknown = 0;
+        do {
+            GETIOV_001970A8(nlknown = 0);
+            if (!nlknown) {
+                nl = ((void *(*)(const void *, s32, u32))func_00198618)((void *)p, '\n', len);
+                nldist = nl ? nl + 1 - p : len + 1;
+                nlknown = 1;
+            }
+            s = MIN_001970A8(len, nldist);
+            w = fp->w + fp->bf.size;
+            if (fp->p > fp->bf.base && s > w) {
+                COPY_001970A8(w);
+                fp->p += w;
+                if (func_00196708((nl_FILE *)fp)) {
+                    goto err;
+                }
+            } else if (s >= (w = fp->bf.size)) {
+                w = (*fp->write)(fp->cookie, p, w);
+                if (w <= 0) {
+                    goto err;
+                }
+            } else {
+                w = s;
+                COPY_001970A8(w);
+                fp->w -= w;
+                fp->p += w;
+            }
+            if ((nldist -= w) == 0) {
+                if (func_00196708((nl_FILE *)fp)) {
+                    goto err;
+                }
+                nlknown = 0;
+            }
+            p += w;
+            len -= w;
+        } while ((uio->uio_resid -= w) != 0);
+    }
+    return 0;
+
+err:
+    fp->flags |= 0x0040;
+    return -1;
+}
+
+#undef MIN_001970A8
+#undef COPY_001970A8
+#undef GETIOV_001970A8
 
 s32 func_00197488(u8 *ptr, s32 (*function)(nl_FILE *)) {
     nl_FILE *fp;
