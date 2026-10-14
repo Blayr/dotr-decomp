@@ -414,7 +414,70 @@ void func_001E5260(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E53C0);
+typedef struct {
+    s32 entries[2];
+    s32 count;
+} Slots_001E53C0;
+
+typedef struct {
+    s32 v[4];
+} Rot_001E53C0 __attribute__((aligned(16)));
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 f40;
+    u8 f41;
+    u8 pad42[4];
+    u8 model;
+} Card_001E53C0;
+
+extern Rot_001E53C0 D_002921D0;
+
+void func_001E53C0(s32 arg0, s32 arg1) {
+    extern s32 func_001F56D0();
+    Slots_001E53C0 *state = (Slots_001E53C0 *)&D_0031AB88;
+    s32 pos;
+    s32 hi;
+    s32 lo;
+    Card_001E53C0 *card;
+    s32 model;
+    Rot_001E53C0 rot;
+    f32 vecA[4];
+    f32 vecB[4];
+
+    pos = ((Slots_001E53C0 *)&D_0031AB88)->entries[arg0];
+    hi = pos >> 8;
+    lo = pos & 0xFF;
+    card = (Card_001E53C0 *)func_001DF540(hi, lo);
+    rot = D_002921D0;
+    rot.v[1] = (hi != 0) ? 0 : 0x8000;
+    if (card != NULL) {
+        model = card->model;
+        func_001F56D0(pos, 1, &rot);
+        func_001E3850(hi, lo, 0);
+        func_001F25D0(model, NULL);
+        func_001F2430(model, &rot);
+        func_001F1FD0(model, vecA);
+        func_001E10F0(card->f40, card->f41, 0, vecB);
+        vecA[0] = vecB[0];
+        vecA[2] = vecB[2];
+        func_001F22B0(model, vecA);
+        func_001F29E0(model, 1);
+        func_001F2AD0(model, 0x20);
+        if (arg1 != 0) {
+            func_001E1C10(hi, lo, 0, 0);
+            func_001E19D0(hi, lo, 0);
+        } else {
+            func_001F1830(model, 0);
+            func_001F1A00(model, 1);
+        }
+        func_001F26E0(model, 0, NULL);
+        func_001F2860(model, 1, NULL);
+        func_001EDF20(model);
+        func_002178C0(arg0 + 2, -1);
+        state->entries[arg0] = -1;
+    }
+}
 
 s32 func_001E5590(s32 arg0) {
     if (func_001F3130(8) != 0) {
