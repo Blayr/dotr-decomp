@@ -681,4 +681,6 @@ s32 func_0017B7D0();                                /* extern */
 s32 func_0017B800();                            /* extern */
 extern s32 func_001941D8;
 
+s32 func_0017B520(s32, s32, s32);               /* extern */
+
 #endif

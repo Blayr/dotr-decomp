@@ -8,7 +8,10 @@ void func_00184700(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00184708);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184768);
+void func_00184768(s32 arg0, s32 arg1, s32 arg2) {
+    func_00184700();
+    func_0017B520(arg0, arg1, arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_001847B0);
 
