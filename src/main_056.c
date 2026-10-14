@@ -1140,7 +1140,6 @@ typedef struct Mode_00209510 {
 } Mode_00209510;
 
 s32 func_0017B770(s32, s32);
-s32 func_0017B7D0(void);
 void func_001849B0(void);
 s32 func_00186238(void *);
 void func_00186470(u8 *, s32);

@@ -235,7 +235,6 @@ void func_001F7550(s32);
 
 extern char D_002BF040;
 
-s32 func_0017B8F0(s32);
 
 extern u32 D_0029E830[];
 
@@ -327,8 +326,6 @@ extern u8 D_00318280[];
 
 
 
-void func_0017B900(s32);
-void func_0017B920(s32);
 
 void func_001A89C0(s32, s32);
 
@@ -566,13 +563,9 @@ s32 func_0018B6D8(s32, s32);
 
 s32 func_0018DEE8(s32, s32, s32, s32, s32);
 
-void func_0017B680(void);
 
-void func_0017B690(void);
 
-void func_0017B6A0(void);
 
-void func_0017B6B0(void);
 
 s32 func_0019B148(s32, s32, s32, s32);          /* extern */
 
@@ -582,7 +575,6 @@ extern s32 D_0028F794;
 extern s32 D_00315C40;
 extern s32 D_00317200;
 
-s32 func_0017B610(s32, s32);                /* extern */
 extern s32 D_0028CA10;
 extern s32 D_00310E94;
 
@@ -600,11 +592,7 @@ extern s32 D_0028D108;
 
 s32 func_0018DAA8(u64 *, s32);              /* extern */
 
-s32 func_0017B660(s32, s32 *, s32);         /* extern */
-s32 func_0017B7D0();                                /* extern */
-s32 func_0017B800();                            /* extern */
 
-s32 func_0017B520(s32, s32, s32);               /* extern */
 
 s32 func_00196BE0(s32, s32);                    /* extern */
 
@@ -616,7 +604,6 @@ extern s32 *D_00315C70;
 
 s32 func_00197EB8(s32, s32);                        /* extern */
 
-s32 func_0017B590(s32, s32 *);          /* extern */
 extern s32 D_0028CDF0;
 extern s32 func_00184080;
 
@@ -632,8 +619,6 @@ s32 func_00186D58(s32);                         /* extern */
 s32 func_00186D68();                                /* extern */
 s32 func_001970A8();                                /* extern */
 
-s32 func_0017B980(u32 *);                       /* extern */
-s32 func_0017B990(u32 *);                       /* extern */
 s32 func_0018EF48(s32, void *);    /* extern */
 s32 func_0017EA80(s32 *, s32, s32, s32 *, s32, s32 *, s32, s32, s32); /* extern */
 extern s8 D_002BD0A0;
@@ -708,7 +693,6 @@ static __inline__ s32 fp_iszero_d(fp_number_d *x) { return x->class == CLASS_ZER
 
 
 extern s32 D_00310980;
-s32 func_0017B8E0(void *);           /* extern */
 
 char *func_0019BB00(char *, s32);
 
@@ -723,7 +707,6 @@ extern s32 D_0028DCD0;
 extern s32 D_002BCE58;
 extern s32 D_002BCE88;
 
-s32 func_0017B500(s32);                             /* extern */
 extern s32 D_002BCE70;
 
 extern s32 D_00313E00;
@@ -735,7 +718,6 @@ void func_0018F808();
 
 extern char D_002BCA18[];
 
-s32 func_0017B5A0(s32, s32 *);
 extern s32 D_001842C0;
 extern s32 D_0028CDF8;
 
@@ -752,7 +734,6 @@ s32 func_001986F8(s32 *, s32 *, s32);
 extern s32 D_0028C24C;
 extern s32 *D_0028CAC4;
 
-void func_0017B910(s32);
 
 
 typedef struct { void (*fn)(s32); s32 arg; } hcall_t;
@@ -766,19 +747,13 @@ void func_0017D330(s64);
 
 extern s32 D_00316200;
 
-s32 func_0017B630(s32);
-s32 func_0017B620(s32);
-s32 func_0017B650(s32);
-s32 func_0017B640(s32);
 
 typedef struct { u8 a; u8 b; } ringent_t;
 typedef struct { s32 x0; u32 count; ringent_t e[0x200]; } ring_t;
 extern s32 D_0028CA00;
 extern s32 D_00310510;
 extern s32 D_00310518;
-s32 func_0017B820(s32);
 
-s32 func_0017B860(s32);
 
 extern s32 *D_0028CAB0;
 s32 func_00190498();                            /* extern */
@@ -788,7 +763,6 @@ extern s32 D_003156C8;
 extern s32 D_0028DCE4;
 
 extern s32 D_0028C254;
-u32 func_0017B8C0(void);
 
 extern s32 D_003512F8;
 s32 func_0017BEA8();
@@ -816,7 +790,6 @@ extern s32 D_002BC7E8;
 extern s32 D_002BE4C4[];  /* fdlibm ef_rem_pio2.c npio2_hw[] - 1 */
 extern s32 D_002BE1B0[];  /* two_over_pi[] */
 
-s32 func_0017B930(s32);                             /* extern */
 extern s32 D_00315CA0;
 extern s32 D_00315CF0;
 
@@ -838,7 +811,6 @@ extern volatile s32 D_0028DD18;
 extern char D_002BCBE8[];
 extern void (*D_003156C0)(s32);
 extern s32 D_003156CC;
-void func_0017B720(void);
 
 
 
@@ -936,8 +908,6 @@ extern s32 D_002BCCD0;
 
 extern s32 D_002BCCC0;
 
-s32 func_0017B4E0(s32, s32, s32);
-s32 func_0017B5E0(s32, s32);
 
 extern s32 D_002BC940;
 

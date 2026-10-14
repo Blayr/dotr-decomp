@@ -793,7 +793,6 @@ typedef struct {
     u32 option;
 } Sema_00243EE0;
 
-s32 func_0017B8E0(void *);
 
 s32 func_00243EE0(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     Sema_00243EE0 sema;
@@ -919,8 +918,6 @@ typedef struct Counter_002441F0 {
     s64 total;
 } Counter_002441F0;
 
-void func_0017B900(s32);
-void func_0017B920(s32);
 
 void func_002441F0(void *arg0, s32 arg1) {
     Counter_002441F0 *counter = arg0;
@@ -1072,8 +1069,6 @@ typedef struct Data_00244AD0 {
     s32 field_40;
 } Data_00244AD0;
 
-void func_0017B900(s32);
-void func_0017B920(s32);
 
 s32 func_00244AD0(void *arg0) {
     Data_00244AD0 *data = arg0;
@@ -1085,8 +1080,6 @@ s32 func_00244AD0(void *arg0) {
     return temp_s0;
 }
 
-void func_0017B900(s32);
-void func_0017B920(s32);
 
 typedef struct State_00244B20 {
     u8 pad_00[0x14];
@@ -1196,8 +1189,6 @@ typedef struct Queue_00244CB0 {
     s32 tail;
 } Queue_00244CB0;
 
-void func_0017B900(s32);
-void func_0017B920(s32);
 
 s32 func_00244CB0(void *arg0, void *arg1) {
     Record_00244CB0 *record = arg1;
