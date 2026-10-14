@@ -88,7 +88,9 @@ void func_0019D3E0(s32 arg0, s32 arg1) {
     func_0019C4C8(D_0028FA98, arg0, arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019D408);
+f32 func_0019D408(s32 s, s32 ptr) {
+    return ((double (*)(s32, s32))func_0019D3E0)(s, ptr);
+}
 
 char *func_0019D430(char *s, const char *delim) {
     return func_0019D450(s, delim, (char **)(D_0028FA98 + 0x5C));

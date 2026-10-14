@@ -731,7 +731,13 @@ INCLUDE_ASM("asm/nonmatchings/main_036", func_001A61F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6318);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65C0);
+double func_001A65C0(double x) {
+    u32 high;
+
+    do { nl_dshape gh_u; gh_u.value = (x); (high) = gh_u.parts.msw; } while (0);
+    do { nl_dshape sh_u; sh_u.value = (x); sh_u.parts.msw = (high & 0x7fffffff); (x) = sh_u.value; } while (0);
+    return x;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65F8);
 
