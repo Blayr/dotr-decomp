@@ -178,7 +178,6 @@ s32 func_00100820(void) {
     return 0;
 }
 
-void func_001A9590(void);
 void func_001A98B0(void);
 
 typedef union {

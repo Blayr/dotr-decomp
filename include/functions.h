@@ -1695,6 +1695,7 @@ void func_001A87C0(s32 arg0, s32 arg1);
 void func_001A8870(s32 arg0, s32 arg1);
 void func_001A8920(void);
 void func_001A8BB0(void);
+void func_001A9590(void);
 void func_001A9800(void);
 void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_001AA260(void);

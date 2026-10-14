@@ -885,7 +885,117 @@ typedef struct Flags_001A9800 {
 
 extern Flags_001A9800 D_0031747C;
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A9590);
+typedef struct Xyzf_001A9590 {
+    u64 x:16;
+    u64 y:16;
+    u64 z:24;
+    u64 f:8;
+} Xyzf_001A9590;
+
+typedef struct Sprite_001A9590 {
+    s16 kind;
+    s16 count;
+    s32 unk4;
+    s64 prim;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    Xyzf_001A9590 v[2];
+} Sprite_001A9590;
+
+void func_001A6FF0(void);
+
+#pragma conditional_move off
+#pragma opt_propagation off
+
+void func_001A9590(void) {
+    u8 *data = (u8 *)&D_00317250;
+    s64 temp_v0;
+    Sprite_001A9590 sprite;
+    Sprite_001A9590 *s;
+
+    temp_v0 = func_001AAF60(1);
+    if (D_0031747C.state < 3) {
+        switch (data[0x228]) {
+        case 0:
+        switch (temp_v0) {
+        case -1:
+            func_001A6FF0();
+            break;
+        case 1:
+            func_001B1190();
+            break;
+        case 6:
+            func_001BAE70();
+            break;
+        case 7:
+            func_001C1AD0();
+            break;
+        case 8:
+            func_001C3570();
+            break;
+        case 9:
+            func_001C7430();
+            break;
+        case 10:
+            func_001ACC50();
+            break;
+        case 11:
+            func_002085A0(1);
+            func_0021DA60();
+            break;
+        case 12:
+            func_002085A0(1);
+            func_001E7890();
+            break;
+        case 13:
+            func_001CCB80();
+            break;
+        case 18:
+            func_001CEA50();
+            break;
+        case 14:
+            func_00246490();
+            break;
+        case 15:
+            func_00285EE0();
+            break;
+        case 17:
+            (s = &sprite)->count = 6;
+            s->kind = 3;
+            s->prim = 0x441;
+            s->unk4 = 0;
+            sprite.r = data[0x20E];
+            sprite.g = data[0x20D];
+            sprite.b = data[0x20C];
+            sprite.a = data[0x20F];
+            sprite.q = 1.0f;
+            sprite.v[0].x = 0x6BF8;
+            sprite.v[0].y = 0x71F8;
+            sprite.v[0].z = 0xFFFFF8;
+            sprite.v[0].f = 0;
+            sprite.v[1].x = 0x93F8;
+            sprite.v[1].y = 0x8DF8;
+            sprite.v[1].z = 0xFFFFF8;
+            sprite.v[1].f = 0;
+            func_002075F0((s32)s, 0, 0);
+            if (*(void **)(data + 0x208) != NULL) {
+                func_001A9F50(*(void **)(data + 0x208), 0, 0, 0);
+            }
+            if (*(void **)(data + 0x204) != NULL) {
+                func_001A9F50(*(void **)(data + 0x204), *(s32 *)(data + 0x214), *(s32 *)(data + 0x218),
+                              ((struct { s8 b0:1; s8 rest:7; } *)(data + 0x22F))->b0);
+            }
+            break;
+        }
+            break;
+        }
+    }
+}
+#pragma opt_propagation reset
+#pragma conditional_move reset
 
 
 void func_001A9800(void) {
