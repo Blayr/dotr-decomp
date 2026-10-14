@@ -602,4 +602,6 @@ extern u8 D_002BCB50[];
 
 s32 func_0019B418(s32, s32);                    /* extern */
 
+extern u8 D_002BCB88[];
+
 #endif
