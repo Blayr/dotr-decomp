@@ -579,4 +579,6 @@ extern s8 D_002BCA98;
 
 extern s32 D_0028DC90;
 
+extern s32 D_00310E98;
+
 #endif
