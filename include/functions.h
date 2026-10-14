@@ -1938,6 +1938,7 @@ s32 func_00215DE0(s32 player, s32 index);
 s32 func_00215F00(s32 arg0, s32 arg1);
 s32 func_00215F90(s32 arg0, s32 arg1);
 s32 func_00216040(s32 arg0, s32 arg1, s32 arg2);
+s32 func_00216280(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00216490(s32 arg0, s32 arg1);
 s32 func_00216580(s32 arg0, s32 arg1);
 s32 func_002166D0(s32 arg0, s32 arg1);

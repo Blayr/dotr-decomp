@@ -124,7 +124,6 @@ typedef struct {
     u8 *counts1;
 } State_001C33A0;
 
-void func_00216280(s32, u32, u32, s32);
 
 void func_001C33A0(s32 player) {
     s32 id;
