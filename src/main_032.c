@@ -108,7 +108,24 @@ INCLUDE_ASM("asm/nonmatchings/main_032", func_001927E8);
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_001929D0);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192A88);
+extern s32 D_003159D0;
+
+typedef struct PadSlot_00192A88 {
+    u8 *buf;
+    s32 unk4[3];
+    s32 open;
+    s32 unk14[2];
+} PadSlot_00192A88;
+
+u8 *func_00192A88(s32 arg0, s32 arg1) {
+    u8 *p;
+    s32 i;
+
+    p = ((PadSlot_00192A88 *)((u8 *)&D_003159D0 + arg1 * 0x1C + arg0 * 0x70))->buf;
+    func_0017C1D8((u32)p, (u32)(p + 0x100));
+    i = *(s32 *)(p + 0x58) < *(s32 *)(p + 0xD8);
+    return p + i * 0x80;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192AE8);
 
