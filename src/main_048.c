@@ -353,7 +353,65 @@ s32 func_001EE4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     return func_001EE6C0(arg0, arg1, arg2, arg3, arg4, arg5, arg6, callback, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE570);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyzf_001EE570;
+
+typedef struct {
+    u16 count;
+    u16 kind;
+    u32 flags;
+    u64 regs;
+} Header_001EE570;
+
+typedef struct {
+    u64 dmatag;
+    Header_001EE570 header;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    f32 s0;
+    f32 t0;
+    Xyzf_001EE570 v0;
+    f32 s1;
+    f32 t1;
+    Xyzf_001EE570 v1;
+    u64 extra[3];
+} Packet_001EE570;
+
+void func_001EE570(s32 arg0) {
+    extern s32 func_00208870();
+    extern s32 func_00209F70();
+    Packet_001EE570 packet;
+
+    ((Header_001EE570 *)&packet.header)->kind = 0x26;
+    ((Header_001EE570 *)&packet.header)->count = 5;
+    ((Header_001EE570 *)&packet.header)->regs = 0x42421;
+    ((Header_001EE570 *)&packet.header)->flags = 0;
+    packet.r = 0x80;
+    packet.g = 0x80;
+    packet.b = 0x80;
+    packet.a = 0x80;
+    packet.q = 1.0f;
+    packet.v0.x = 0x6BF8;
+    packet.v0.y = 0x71F8;
+    packet.v0.z = 0xFFFFFF;
+    packet.v0.fog = 0;
+    packet.v1.x = 0x93F8;
+    packet.v1.y = 0x8DF8;
+    packet.v1.z = 0xFFFFFF;
+    packet.v1.fog = 0;
+    packet.s0 = 0.0f;
+    packet.t0 = 0.0f;
+    packet.s1 = 0.625f;
+    packet.t1 = 0.875f;
+    func_00209F70(func_0020A0B0(func_00207650(func_0020A0B0(func_00209F70(func_0020F290(func_00208870(func_0020F290(arg0), -1, 0, &packet.extra[1], &packet.extra[2])), 0xFF000000), 0), (s32)(&packet.dmatag + 1), 0, 0), 1), 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE6C0);
 
