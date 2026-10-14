@@ -21,3 +21,4 @@ __fixunsdfdi = 0x001A2000; /* double to unsigned 64-bit (func_001A2000) */
 __fixdfdi = 0x001A2118; /* double to 64-bit (func_001A2118) */
 __pack_d = 0x001A2430; /* fp-bit pack, called by name from dpmul (func_001A2430) */
 __kernel_sinf = 0x001A61F0; /* fdlibm kernel sin, called by name from sinf/cosf (func_001A61F0) */
+__kernel_cosf = 0x001A57D8; /* fdlibm, called by name from the main_036 libm callers (func_001A57D8) */
