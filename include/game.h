@@ -998,4 +998,9 @@ extern s32 D_0028D118;
 
 void func_0017EF98(void *);
 
+extern s32 D_0028CAB8;
+extern s32 D_00313C40;
+extern s32 D_00313C80;
+extern s32 D_00313CC0;
+
 #endif

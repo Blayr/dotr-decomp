@@ -279,7 +279,6 @@ typedef struct {
     s32 unk58;
 } State_00243060;
 
-s32 func_001828C0(s32);
 extern char D_0030F600[];
 extern char D_0030F61C[];
 extern u8 D_003507C0[];
@@ -634,7 +633,6 @@ typedef struct File_00243A90 {
 s32 func_0017FA98(const char *, s32);
 void func_0017FD20(s32);
 s32 func_0017FEA0(s32, s32, s32);
-s32 func_001828C0(s32);
 s32 func_00190FF0(void *, const char *);
 s32 func_00191A58(s32);
 s32 func_0019BC90(const char *, const char *);
