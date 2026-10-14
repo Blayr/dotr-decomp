@@ -215,7 +215,6 @@ void func_001DF5F0(s32, s32, s32, void *, s32);
 s32 func_001FD680(s32, s32, s32, s32, s32);
 
 
-void *func_00197990(s32, s32);
 char *func_0019BDD8(char *, const char *);
 s32 func_0019BEF0(const char *);
 
@@ -700,5 +699,7 @@ s32 func_00197EB8(s32, s32);                        /* extern */
 s32 func_0017B590(s32, s32 *);          /* extern */
 extern s32 D_0028CDF0;
 extern s32 func_00184080;
+
+void *func_001979F8(s32, s32, s32);                 /* extern */
 
 #endif
