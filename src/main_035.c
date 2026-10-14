@@ -307,7 +307,30 @@ INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DDE8);
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019F448);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019F608);
+s32 func_0019F608(char *p0, s32 exp, s32 fmtch) {
+    char *p, *t;
+    char expbuf[308];
+
+    p = p0;
+    *p++ = fmtch;
+    if (exp < 0) {
+        exp = -exp;
+        *p++ = '-';
+    } else
+        *p++ = '+';
+    t = expbuf + 308;
+    if (exp > 9) {
+        do {
+            *--t = (exp % 10) + '0';
+        } while ((exp /= 10) > 9);
+        *--t = exp + '0';
+        for (; t < expbuf + 308; *p++ = *t++);
+    } else {
+        *p++ = '0';
+        *p++ = exp + '0';
+    }
+    return p - p0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019F6E8);
 
