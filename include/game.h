@@ -901,4 +901,14 @@ extern f32 D_002BE608[]; /* fdlibm sf_atan.c atanhi[4] */
 extern f32 D_002BE618[]; /* atanlo[4] */
 extern f32 D_002BE628[]; /* aT[11] */
 
+extern s32 D_0028DCD4;
+extern s32 D_0028DCE0;
+extern volatile s32 D_0028DCF0;
+extern s32 D_0028DD14;
+extern volatile s32 D_0028DD18;
+extern char D_002BCBE8[];
+extern void (*D_003156C0)(s32);
+extern s32 D_003156CC;
+void func_0017B720(void);
+
 #endif

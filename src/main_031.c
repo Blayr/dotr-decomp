@@ -232,7 +232,25 @@ INCLUDE_ASM("asm/nonmatchings/main_031", func_00190A90);
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190AE8);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190B88);
+void func_00190B88(void) {
+    while (1) {
+        func_0017B920(D_0028DCE0);
+        if (D_0028DD14 == -1) {
+            D_0028DCF0 = 0;
+            D_0028DD14 = 0;
+            D_0028DCD4 = 0;
+            D_003156CC = 0;
+            func_0017B720();
+        }
+        if (D_0028DCD0 > 0) {
+            ((s32 (*)(char *, ...))func_0017DA98)(D_002BCBE8, D_003156C0, D_0028DD18);
+        }
+        if (D_003156C0 != NULL && D_0028DD18 != 0) {
+            D_003156C0(D_0028DD18);
+        }
+        D_0028DCF0 = 0;
+    }
+}
 
 typedef struct {
     s32 status;
@@ -248,7 +266,6 @@ extern s32 D_003156D0;
 extern s32 D_003156D8;
 extern ThParam_00190C48 D_00315708;
 extern s32 D_00317EF0;
-void func_00190B88(void);
 s32 func_0017B6E0(ThParam_00190C48 *);
 s32 func_0017B700(s32, s32);
 s32 func_0017B770(s32, s32);
