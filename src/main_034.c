@@ -472,7 +472,34 @@ double func_001995C0(double _x) {
     return a.d;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00199690);
+double func_00199690(i2b_Bigint *a, s32 *e) {
+    u32 *xa, *xa0, w, y, z;
+    s32 k;
+    b2d_du d;
+
+    xa0 = a->x;
+    xa = xa0 + a->wds;
+    y = *--xa;
+    k = func_00198DE8(y);
+    *e = 32 - k;
+    if (k < 11) {
+        d.i[1] = 0x3ff00000 | y >> (11 - k);
+        w = xa > xa0 ? *--xa : 0;
+        d.i[0] = y << ((32 - 11) + k) | w >> (11 - k);
+        goto ret_d;
+    }
+    z = xa > xa0 ? *--xa : 0;
+    if (k -= 11) {
+        d.i[1] = 0x3ff00000 | y << k | z >> (32 - k);
+        y = xa > xa0 ? *--xa : 0;
+        d.i[0] = z << k | y >> (32 - k);
+    } else {
+        d.i[1] = 0x3ff00000 | y;
+        d.i[0] = z;
+    }
+ret_d:
+    return d.d;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199828);
 
