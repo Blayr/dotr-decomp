@@ -236,7 +236,6 @@ extern u8 D_00299F90[];
 extern u8 D_002B90B0[];
 s32 func_0017BC80(s32);
 
-s32 func_0017E8B0(void *, s32, s32);
 
 
 void func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
