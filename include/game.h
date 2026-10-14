@@ -495,7 +495,6 @@ extern u8 D_0032A730[];
 
 extern u8 D_0032A784[];
 
-s32 func_00194E90(s32, s32);
 
 extern f32 D_00325D50;
 extern f32 D_00325D54;
