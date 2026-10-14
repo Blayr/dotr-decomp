@@ -143,11 +143,6 @@ typedef struct Progress_001FF480 {
     f32 value;
 } Progress_001FF480;
 
-s32 func_0017FA98(void *, s32);
-void func_0017FD20(s32);
-s32 func_0017FEA0(s32, s32, s32);
-s32 func_001800D8(s32, s32, s32);
-s32 func_00180608(s32, s32, s32 *);
 s32 func_00191A58(s32);
 s32 func_00191D18(s32, s32, s32, void *);
 extern Progress_001FF480 D_00293CB0;
@@ -359,7 +354,6 @@ typedef struct State_001FFAC0 {
     StateFlags_001FFAC0 flags;
 } State_001FFAC0;
 
-void func_0017FD20(s32);
 
 void func_001FFAC0(s32 arg0, s32 arg1) {
     extern State_001FFAC0 D_0031C2F0;
@@ -632,8 +626,6 @@ extern char D_002D066F[];
 
 void func_0017E240(s32);
 void func_00191778(s32);
-s32 func_00183A38(char *);
-void func_00182838(void);
 s32 func_00191A58(s32);
 s32 func_00190FF0(Stat_001FFFC0 *, s32);
 void func_00200170(void);

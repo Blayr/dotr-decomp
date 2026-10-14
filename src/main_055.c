@@ -1052,9 +1052,6 @@ typedef struct BitmapInfo_00205210 {
     s32 colorsImportant;
 } BitmapInfo_00205210;
 
-s32 func_0017FA98(void *, s32);
-s32 func_0017FD20(s32);
-s32 func_00180348(s32, void *, s32);
 extern u8 D_002D07FA[];
 extern u8 D_002D0806[];
 extern s32 D_00325CB0;

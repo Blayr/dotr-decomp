@@ -549,14 +549,10 @@ s32 func_00197570(s32, s32, s32);               /* extern */
 s32 func_0019C4C8(s32, s32, s32);               /* extern */
 
 
-s32 func_00180B38(s32, s32);
 
 
-s32 func_00182D00(s32);
 
-s32 func_00183310(s32, s32, s32, s32, s32);
 
-s32 func_00183578(s32, s32, s32, s32);
 
 s32 func_0018B6D8(s32, s32);
 
@@ -933,7 +929,6 @@ extern s32 D_00313CC0;
 
 extern s32 D_00313500;
 extern s32 D_00313B80;
-void *func_0017F288(s32);
 
 
 s32 func_0017DEB0(s32, s32, s32, s32, s32, s32, s32);

@@ -626,9 +626,6 @@ typedef struct File_00243A90 {
     s32 fd;
 } File_00243A90;
 
-s32 func_0017FA98(const char *, s32);
-void func_0017FD20(s32);
-s32 func_0017FEA0(s32, s32, s32);
 s32 func_00190FF0(void *, const char *);
 s32 func_00191A58(s32);
 s32 func_0019BC90(const char *, const char *);
@@ -727,7 +724,6 @@ typedef struct {
     s32 unk30;
 } Obj_00243D90;
 
-void func_0017FD20(s32);
 
 s32 func_00243D90(void *arg0) {
     Obj_00243D90 *p = (Obj_00243D90 *)arg0;
@@ -745,7 +741,6 @@ typedef struct {
     f32 value;
 } Float_00243DE0;
 
-s32 func_001800D8(s32, s32, s32);
 s32 func_00191A58(s32);
 s32 func_00192090(s32, s32, s32, s32 *);
 extern Float_00243DE0 D_0029B2F8;

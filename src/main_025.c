@@ -53,7 +53,40 @@ s32 func_001832F0(s32 arg0) {
     return ((s32 (*)(s32))func_00182D00)(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183310);
+/* _sceSifLoadModule: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00183310(s32 name, s32 arglen, s32 args, s32 ret, s32 rpcno) {
+    char *buf;
+    s32 r;
+
+    if (func_00182B38() < 0) {
+        return 0xFFFF0000;
+    }
+    if (func_00182C38() != 0) {
+        return 0xFFFEFFFC;
+    }
+    func_0019C2B8((char *)&D_00313E00 + 8, (char *)name, 252);
+    buf = ((char *)&D_00313E00 + 8) - 8;
+    buf[0x103] = 0;
+    if (args != 0) {
+        if (arglen >= 0xFD) {
+            *(SceLfArgBuf *)(buf + 0x104) = *(SceLfArgBuf *)args;
+            *(s32 *)&D_00313E00 = 0xFC;
+        } else {
+            func_00198790(buf + 0x104, (char *)args, arglen);
+            *(s32 *)buf = arglen;
+        }
+    } else {
+        buf[0x104] = 0;
+        *(s32 *)buf = 0;
+    }
+    if (func_0017EA80(&D_00314000, rpcno, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
+        return 0xFFFEFFFF;
+    }
+    r = *(s32 *)((char *)&D_00313E00 + 0);
+    *(s32 *)ret = *(s32 *)((char *)&D_00313E00 + 4);
+    return r;
+}
 
 void func_00183538(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];
@@ -64,7 +97,34 @@ s32 func_00183558(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return func_00183310(arg0, arg1, arg2, arg3, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183578);
+/* _sceSifLoadElfPart: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00183578(s32 name, s32 sec, s32 out, s32 rpcno) {
+    char *buf;
+    s32 r;
+
+    if (func_00182B38() < 0) {
+        return 0xFFFF0000;
+    }
+    if (func_00182C38() != 0) {
+        return 0xFFFEFFFC;
+    }
+    func_0019C2B8((char *)&D_00313E00 + 8, (char *)name, 252);
+    buf = ((char *)&D_00313E00 + 8) - 8;
+    buf[0x103] = 0;
+    func_0019C2B8(((char *)&D_00313E00 + 8) + 252, (char *)sec, 252);
+    buf[0x1FF] = 0;
+    if (func_0017EA80(&D_00314000, rpcno, 0, (s32 *)buf, 0x200, (s32 *)buf, 0x10, 0, 0) < 0) {
+        return 0xFFFEFFFF;
+    }
+    r = *(s32 *)buf;
+    if (r == 0) {
+        return 0xFFFEFFFD;
+    }
+    ((s32 *)out)[0] = r;
+    ((s32 *)out)[1] = *(s32 *)(buf + 4);
+    return 0;
+}
 
 s32 func_00183680(s32 arg0, s32 arg1, s32 arg2) {
     return func_00183578(arg0, arg1, arg2, 1);
@@ -158,7 +218,35 @@ s32 func_00183A00(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183A38);
+extern char D_002BC1F0[];
+extern char D_002BC200[];
+
+/* sceSifRebootIop: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00183A38(char *arg) {
+    extern void func_0017E240(s32);
+    char buf[80];
+    char *s = D_002BC1F0;
+    char *d;
+    char *p;
+
+    for (p = arg; *p != 0; p++) {}
+    if ((u32)(p + 11 - arg) > 80) {
+        func_0017DA98(D_002BC200, arg);
+        return 0;
+    }
+    func_0017E240(0);
+    func_0017E3E0();
+    d = buf;
+    while (*s != 0) {
+        *d++ = *s++;
+    }
+    while (*arg != 0) {
+        *d++ = *arg++;
+    }
+    *d = 0;
+    return func_00183898(buf, 0);
+}
 
 s32 func_00183B48(s32 arg0) {
     D_0028CDF0 = arg0;

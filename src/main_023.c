@@ -39,7 +39,38 @@ void func_0017D268(s32 arg0) {
     func_0017D180(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D2A0);
+/* ftoi: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0017D2A0(u64 a) {
+    u64 m = a;
+    s64 e;
+
+    e = (s64)((m << 1) >> 53);
+    e -= 1075;
+    if (e < -53) {
+        return 0;
+    }
+    if (e >= 13) {
+        return 9999;
+    }
+    m = (m << 12) >> 12;
+    m |= (u64)1 << 52;
+    if (e < 0) {
+        s32 s;
+
+        e = -e;
+        s = e - 2;
+        m >>= s;
+        if ((m & 3) == 3) {
+            m = (m >> 2) + 1;
+        } else {
+            m >>= 2;
+        }
+    } else {
+        m <<= e;
+    }
+    return (s32)m;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D330);
 
@@ -699,4 +730,24 @@ void func_0017F1A0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017F200);
+/* new_iob: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void *func_0017F200(void) {
+    char *p;
+    char *end;
+
+    func_0017F1A0();
+    ((s32 (*)(s32))func_0017B920)(D_0028CAA8);
+    p = D_00313980;
+    end = p + 0x200;
+    while (p < end) {
+        if (*(s32 *)(p + 4) == 0) {
+            *(s32 *)(p + 4) = 0x10000000;
+            ((s32 (*)(s32))func_0017B900)(D_0028CAA8);
+            return p;
+        }
+        p += 0x10;
+    }
+    ((s32 (*)(s32))func_0017B900)(D_0028CAA8);
+    return 0;
+}
