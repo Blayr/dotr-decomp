@@ -983,4 +983,7 @@ extern s32 D_002BC7A0;
 
 typedef union cvt_du { double d; u32 i[2]; } cvt_du;
 
+s32 func_00184C88(void *);
+s32 func_00185100(void *);
+
 #endif

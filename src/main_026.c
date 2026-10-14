@@ -48,7 +48,19 @@ INCLUDE_ASM("asm/nonmatchings/main_026", func_00185100);
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_001851E8);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00185480);
+s32 func_00185480(u8 *arg0, s32 arg1) {
+    s32 odd;
+    s32 ret;
+
+    odd = arg1 & 1;
+    func_00184C88(arg0 + odd * 0x28);
+    if (odd != 0) {
+        ret = func_00185100(arg0 + 0x140);
+    } else {
+        ret = func_00185100(arg0 + 0x50);
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_001854E0);
 
