@@ -1,6 +1,32 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184650);
+void func_00184580(s32, s32);
+s32 func_00184590(s32, s32 *, s32);
+s32 func_001845D8(s32);
+extern s32 D_0028D120;
+extern s32 D_0028D8C8;
+
+typedef struct KPatch_00184650 {
+    s32 addr;
+    s32 val;
+} KPatch_00184650;
+
+void func_00184650(void) {
+    KPatch_00184650 *t;
+    u32 i;
+
+    if (func_001845E8() != 0) {
+        t = (KPatch_00184650 *)&D_0028D8C8;
+        func_00184580(t[0].addr, t[0].val);
+        func_00184590(0x80074000, &D_0028D120, 0x7A8);
+        func_0017BB60(0);
+        func_0017BB60(2);
+        func_00184580(t[1].addr, t[1].val);
+        for (i = 2; i < 3; i++) {
+            func_00184580(t[i].addr, func_001845D8(t[i].addr));
+        }
+    }
+}
 
 void func_00184700(void) {
     func_00183E10();
