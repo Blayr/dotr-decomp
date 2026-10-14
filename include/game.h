@@ -914,4 +914,6 @@ s32 func_001903C8(s32, s32);                /* extern */
 
 s32 func_00192C68(s32, s32, s32);           /* extern */
 
+s32 func_0017DE88(s32);                     /* extern */
+
 #endif
