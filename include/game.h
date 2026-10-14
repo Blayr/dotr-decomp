@@ -891,7 +891,6 @@ extern f32 D_002BE1AC;   /* huge * huge, folded (the compiler kept it in rodata)
 extern s32 D_002BE570[]; /* fdlibm kf_rem_pio2.c init_jk[] = { 4, 7, 9 } */
 extern f32 D_002BE580[]; /* PIo2[11] */
 
-s32 func_001914F8(s32);                         /* extern */
 
 typedef struct i2b_Bigint { struct i2b_Bigint *next; s32 k, maxwds, sign, wds; u32 x[1]; } i2b_Bigint;
 
@@ -983,5 +982,7 @@ s32 func_0018C680(void *, s32);
 s32 func_0018F290(void *, s32, s32);
 
 extern s32 D_002BCCD0;
+
+extern s32 D_002BCCC0;
 
 #endif
