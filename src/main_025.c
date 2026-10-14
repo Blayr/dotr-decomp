@@ -202,7 +202,7 @@ extern char D_002BC258[];
 extern char D_002BC270[];
 extern char D_002BC288[];
 void func_0017DA60(char *, ...);
-void func_00183D70(s32, s32, s32, s32, s32);
+s32 func_00183D70(s32, s32, s32, s32, s32);
 
 typedef struct {
     s32 a, b, c, d;
