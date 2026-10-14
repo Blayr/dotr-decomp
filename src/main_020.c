@@ -1,46 +1,136 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B790);
+asm int func_0017B790(int arg0) {
+    .set noreorder
+    addiu v1, zero, 0x2B
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7A0);
+asm int func_0017B7A0(void) {
+    .set noreorder
+    addiu v1, zero, -0x2C
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7B0);
+asm int func_0017B7B0(void) {
+    .set noreorder
+    addiu v1, zero, 0x2D
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7C0);
+asm int func_0017B7C0(void) {
+    .set noreorder
+    addiu v1, zero, -0x2E
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7F0);
+asm int func_0017B7F0(void) {
+    .set noreorder
+    addiu v1, zero, -0x31
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B800);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B810);
+asm int func_0017B810(void) {
+    .set noreorder
+    addiu v1, zero, 0x33
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B820);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B830);
+asm int func_0017B830(void) {
+    .set noreorder
+    addiu v1, zero, 0x35
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B840);
+asm int func_0017B840(void) {
+    .set noreorder
+    addiu v1, zero, -0x36
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B850);
+asm int func_0017B850(void) {
+    .set noreorder
+    addiu v1, zero, 0x37
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B860);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B870);
+asm int func_0017B870(void) {
+    .set noreorder
+    addiu v1, zero, 0x39
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B880);
+asm int func_0017B880(void) {
+    .set noreorder
+    addiu v1, zero, -0x3A
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B890);
+asm int func_0017B890(void) {
+    .set noreorder
+    addiu v1, zero, 0x3B
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B8A0);
+asm int func_0017B8A0(void) {
+    .set noreorder
+    addiu v1, zero, 0x3C
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B8B0);
+asm int func_0017B8B0(void) {
+    .set noreorder
+    addiu v1, zero, 0x3D
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B8C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B8D0);
+asm int func_0017B8D0(void) {
+    .set noreorder
+    addiu v1, zero, 0x3F
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B8E0);
 
@@ -54,48 +144,174 @@ INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B920);
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B930);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B940);
+asm int func_0017B940(void) {
+    .set noreorder
+    addiu v1, zero, -0x46
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B950);
+asm int func_0017B950(void) {
+    .set noreorder
+    addiu v1, zero, 0x47
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B960);
+asm int func_0017B960(void) {
+    .set noreorder
+    addiu v1, zero, -0x48
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B970);
+asm int func_0017B970(void) {
+    .set noreorder
+    addiu v1, zero, 0x49
+    syscall 0
+    jr ra
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B980);
 
 INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B990);
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B9A0);
+asm int func_0017B9A0(void) {
+    .set noreorder
+    addiu v1, zero, 0x4C
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B9B0);
+asm int func_0017B9B0(void) {
+    .set noreorder
+    addiu v1, zero, 0x4D
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B9C0);
+asm int func_0017B9C0(void) {
+    .set noreorder
+    addiu v1, zero, 0x4E
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B9D0);
+asm int func_0017B9D0(void) {
+    .set noreorder
+    addiu v1, zero, 0x4F
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B9E0);
+asm int func_0017B9E0(void) {
+    .set noreorder
+    addiu v1, zero, 0x50
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B9F0);
+asm int func_0017B9F0(void) {
+    .set noreorder
+    addiu v1, zero, 0x51
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA00);
+asm int func_0017BA00(void) {
+    .set noreorder
+    addiu v1, zero, 0x52
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA10);
+asm int func_0017BA10(void) {
+    .set noreorder
+    addiu v1, zero, -0x53
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA20);
+asm int func_0017BA20(void) {
+    .set noreorder
+    addiu v1, zero, 0x54
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA30);
+asm int func_0017BA30(void) {
+    .set noreorder
+    addiu v1, zero, -0x55
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA40);
+asm int func_0017BA40(void) {
+    .set noreorder
+    addiu v1, zero, 0x56
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA50);
+asm int func_0017BA50(void) {
+    .set noreorder
+    addiu v1, zero, 0x57
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA60);
+asm int func_0017BA60(void) {
+    .set noreorder
+    addiu v1, zero, -0x58
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA70);
+asm int func_0017BA70(void) {
+    .set noreorder
+    addiu v1, zero, 0x59
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA80);
+asm int func_0017BA80(void) {
+    .set noreorder
+    addiu v1, zero, -0x5A
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BA90);
+asm int func_0017BA90(void) {
+    .set noreorder
+    addiu v1, zero, 0x5B
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017BAA0);
+asm int func_0017BAA0(void) {
+    .set noreorder
+    addiu v1, zero, 0x5C
+    syscall 0
+    jr ra
+    nop
+}
