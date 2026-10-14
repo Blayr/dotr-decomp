@@ -144,12 +144,14 @@ fi
 # The C library's assembler never moved an instruction of an address macro (`l.s $f0,D_X($2)`,
 # `lw $2,D_X($3)`, `la`) into the next branch's delay slot (fmodf: `lwc1 $f0,%lo(D_X)($at); b; nop`);
 # binutils moves the expansion's last instruction there. A local label before the branch stops it.
+# The same for GCC's 64-bit constant `li.d` (expanded below as `dli`: scalbn `dsll32; jal dpmul; nop`).
 if [ "$DK_GCC" = 2.96 ]; then
     perl -i -ne 'BEGIN { $n = 0; $held = 0 }
         print ".Lnofill", $n++, ":\n" if $held
             && /^\s+(b|j|jal|jr|jalr|bal|beqz?l?|bnez?l?|b[gl][et]zl?|b[gl]tzall?|bgezall?|bc1[tf]l?)\s/;
         $held = 0 if /^\s+[a-z]/;
         $held = 1 if /^\s+(l[bhwd]u?|lq|s[bhwdq]|lwc1|swc1|ldc1|sdc1|l\.[sd]|s\.[sd]|d?la)\s+[^,]+,\s*[A-Za-z_]/;
+        $held = 1 if /^\s+li\.d\s/;
         print' "$TMP/out.s"
 fi
 # Old gas left a label BEFORE the hazard nop after an `mfc1` (powf: `mfc1 $7,$f0` / `.L: nop` /
