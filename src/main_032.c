@@ -243,7 +243,43 @@ void func_00192D20(u32 arg0, s8 *arg1) {
     *arg1 = (s8) D_002BD000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192D58);
+typedef struct PadInfo_00192D58 {
+    u8 unk0[0x30];
+    u8 mode[4][4];
+    u8 act[8][4];
+} PadInfo_00192D58;
+
+s32 func_00192D58(s32 port, s32 slot, s32 term, s32 offs) {
+    u8 *p;
+
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    p = func_00192A88(port, slot);
+    if (p[0x72] != 1) {
+        return 0;
+    }
+    if (p[0x64] < 2) {
+        return 0;
+    }
+    if (term >= p[0x6A]) {
+        return 0;
+    }
+    if (term == -1) {
+        return p[0x6A];
+    }
+    switch (offs) {
+    case 1:
+        return ((PadInfo_00192D58 *)p)->mode[term][0];
+    case 2:
+        return ((PadInfo_00192D58 *)p)->mode[term][1];
+    case 3:
+        return ((PadInfo_00192D58 *)p)->mode[term][2];
+    case 4:
+        return ((PadInfo_00192D58 *)p)->mode[term][3];
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192E78);
 

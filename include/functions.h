@@ -1264,6 +1264,7 @@ void func_00192C30(u32 arg0, s8 *arg1);
 s32 func_00192C68(s32 port, s32 slot, s32 state);
 u8 func_00192CD0(s32 port, s32 slot);
 void func_00192D20(u32 arg0, s8 *arg1);
+s32 func_00192D58(s32 port, s32 slot, s32 term, s32 offs);
 s32 func_001930D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_00193188(s32 port, s32 slot, u8 *data);
 s32 func_00193248(s32 arg0, s32 arg1, u8 *arg2);
