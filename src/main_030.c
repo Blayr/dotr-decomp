@@ -74,7 +74,9 @@ s32 func_0018EFF8(void *arg0) {
     return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xCC));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F008);
+s32 func_0018F008(void *arg0) {
+    return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xD0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F018);
 
