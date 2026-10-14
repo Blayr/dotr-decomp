@@ -790,7 +790,38 @@ f32 func_001A6970(f32 x) {
     return x;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A6998);
+f32 func_001A6998(f32 x) {
+    s32 i0, j0;
+    u32 i, ix;
+
+    do { fshape gf_u; gf_u.value = (x); (i0) = gf_u.word; } while (0);
+    ix = (i0 & 0x7fffffff);
+    j0 = (ix >> 23) - 0x7f;
+    if (j0 < 23) {
+        if (j0 < 0) {
+            if ((f32)1000000052826398082833850564608.0 + x > (f32)0.0) {
+                if (i0 >= 0) {
+                    i0 = 0;
+                } else if (!(ix < 0x00800000)) {
+                    i0 = 0xbf800000;
+                }
+            }
+        } else {
+            i = (0x007fffff) >> j0;
+            if ((i0 & i) == 0)
+                return x;
+            if ((f32)1000000052826398082833850564608.0 + x > (f32)0.0) {
+                if (i0 < 0)
+                    i0 += (0x00800000) >> j0;
+                i0 &= (~i);
+            }
+        }
+    } else {
+        return x;
+    }
+    do { fshape sf_u; sf_u.word = (i0); (x) = sf_u.value; } while (0);
+    return x;
+}
 
 f32 func_001A6A88(f32 x) {
     f32 y[2], z = 0.0f;

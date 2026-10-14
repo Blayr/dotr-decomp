@@ -1089,6 +1089,7 @@ u32 func_001A3090(double arg_a);
 double func_001A65C0(double x);
 f32 func_001A6898(f32 x);
 f32 func_001A6970(f32 x);
+f32 func_001A6998(f32 x);
 f32 func_001A6A88(f32 x);
 f32 func_001A6B70(f32 x);
 s32 func_001A6BE8(s64 arg0, s32 arg1);
