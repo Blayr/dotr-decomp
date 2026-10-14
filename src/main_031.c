@@ -237,7 +237,33 @@ void func_00190430(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190498);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_001906D0);
+s32 func_0017E240(s32);
+extern s8 D_002BCBC0;
+extern s32 D_00315680;
+
+typedef struct CdCd_001906D0 {
+    s32 unk0[9];
+    s32 serve;
+} CdCd_001906D0;
+
+s32 func_001906D0(void) {
+    s32 i;
+
+    func_0017E240(0);
+    while (1) {
+        if (func_0017E8B0(&D_00315680, 0x80000701, 0) < 0) {
+            func_00199B50(&D_002BCBC0);
+            return -1;
+        }
+        for (i = 10000; i != -1; i--) {
+        }
+        if ((*(CdCd_001906D0 *)&D_00315680).serve != 0) {
+            break;
+        }
+    }
+    func_0017BB60(0);
+    return 0;
+}
 
 s32 func_00190778(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_v0;

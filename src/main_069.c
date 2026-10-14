@@ -41,7 +41,6 @@ extern s32 func_0017B5C0(s32, void (*)(), s32);
 extern s32 func_0017B5F0(s32, void (*)(), s32);
 extern s32 func_0017B6E0(void *);
 extern void func_0017B700(s32, void *);
-extern s32 func_001906D0(void);
 extern void func_00242190(void);
 extern void func_002423A0(void);
 extern char D_0030F39A[];
