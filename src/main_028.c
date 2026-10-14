@@ -280,7 +280,31 @@ void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_00187B90(arg0 + 0x30, arg4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_001880F0);
+void func_001880F0(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zmin, f32 zmax, f32 nearz, f32 farz) {
+    f32 az, cz;
+    f32 mt[4][4];
+
+    cz = (-zmax * nearz + zmin * farz) / (-nearz + farz);
+    az = farz * nearz * (-zmin + zmax) / (-nearz + farz);
+
+    func_00187C08(m);
+    m[0][0] = scrz;
+    m[1][1] = scrz;
+    m[2][2] = 0.0f;
+    m[3][2] = 1.0f;
+    m[2][3] = 1.0f;
+    m[3][3] = 0.0f;
+
+    func_00187C08(mt);
+    mt[0][0] = ax;
+    mt[1][1] = ay;
+    mt[2][2] = az;
+    mt[3][0] = cx;
+    mt[3][1] = cy;
+    mt[3][2] = cz;
+
+    func_00187910(m, mt, m);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001881F8);
 

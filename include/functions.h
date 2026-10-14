@@ -1091,6 +1091,7 @@ void func_00187EF0(void *p0, void *p1, float f0, float f1);
 void func_00187F18(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3);
 void func_00187FC8(f32 (*m)[4], f32 *x, f32 *y, f32 *z);
 void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void func_001880F0(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zmin, f32 zmax, f32 nearz, f32 farz);
 void func_00188388(void *p0, void *p1, void *p2, void *p3);
 void func_001883E0(void *p0, void *p1, void *p2, void *p3);
 void func_00188428(f32 *arg0, f32 *arg1);
