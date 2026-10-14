@@ -262,7 +262,41 @@ s32 func_0018BC18(void *arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BC80);
+typedef struct MpegCb_0018BC80 {
+    s32 type;
+    s32 pad4;
+    s64 a;
+    s64 b;
+} MpegCb_0018BC80;
+
+s32 func_0018BC80(void *arg0) {
+    MpegCb_0018BC80 cb;
+    u32 code;
+
+    for (;;) {
+        func_0018BB98(arg0);
+        code = func_0018BA48(arg0, 32);
+        switch (code) {
+        case 0x1B3:
+            func_0018F918(arg0);
+            break;
+        case 0x1B8:
+            ((void (*)(void *))func_0018C230)(arg0);
+            break;
+        case 0x100:
+            ((void (*)(void *))func_0018BD90)(arg0);
+            cb.type = 5;
+            cb.a = -1;
+            cb.b = -1;
+            func_0018EF48(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+            *(s64 *)((u8 *)arg0 + 0x828) = cb.a;
+            *(s64 *)((u8 *)arg0 + 0x830) = cb.b;
+            return *(s32 *)((u8 *)arg0 + 0x150);
+        case 0x1B7:
+            return 0;
+        }
+    }
+}
 
 void func_0018BD90(void *arg0, s32 arg1) {
     s32 temp_s1;
