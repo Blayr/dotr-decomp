@@ -180,7 +180,59 @@ void func_00194328(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00194380);
+typedef struct McInfoDesc_00194380 {
+    s32 unk0;
+    s32 port;
+    s32 slot;
+    s32 wantFormat;
+    s32 wantFree;
+    s32 wantType;
+    s32 unk18;
+    s32 *rbuf;
+} McInfoDesc_00194380;
+
+s32 func_00194380(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
+    u8 *p;
+    s32 ret;
+
+    if (func_0017B930(D_0028F794) < 0) {
+        return -0xC8;
+    }
+    p = (u8 *)&D_00315C40;
+    if ((*(s32 *)(p + 0x24)) == 0) {
+        func_0017B900(D_0028F794);
+        return -0x64;
+    }
+    (*(McInfoDesc_00194380 *)&D_00315CC0).port = arg0;
+    (*(McInfoDesc_00194380 *)&D_00315CC0).slot = arg1;
+    (*(McInfoDesc_00194380 *)&D_00315CC0).rbuf = &D_00316140;
+    if (arg2 != NULL) {
+        (*(McInfoDesc_00194380 *)&D_00315CC0).wantType = 1;
+    } else {
+        (*(McInfoDesc_00194380 *)&D_00315CC0).wantType = 0;
+    }
+    if (arg3 != NULL) {
+        (*(McInfoDesc_00194380 *)&D_00315CC0).wantFree = 1;
+    } else {
+        (*(McInfoDesc_00194380 *)&D_00315CC0).wantFree = 0;
+    }
+    if (arg4 != NULL) {
+        (*(McInfoDesc_00194380 *)&D_00315CC0).wantFormat = 1;
+    } else {
+        (*(McInfoDesc_00194380 *)&D_00315CC0).wantFormat = 0;
+    }
+    D_00315C68 = arg2;
+    D_00315C6C = arg3;
+    D_00315C70 = arg4;
+    func_0017E190(&D_00316140, 0xC0);
+    ret = func_0017EA80(&D_00315C40, 1, 1, &D_00315CC0, 0x30, &D_00317200, 4, (s32)func_00194328, (s32)&D_00316140);
+    if (ret == 0) {
+        D_0028F790 = 1;
+    } else {
+        func_0017B900(D_0028F794);
+    }
+    return ret;
+}
 
 s32 func_00194508(void) {
     if (func_0017EA80(&D_00315C40, 0x35, 0, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0) != 0) {

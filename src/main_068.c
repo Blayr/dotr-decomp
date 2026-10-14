@@ -747,7 +747,6 @@ typedef struct State_0023CE40 {
     s16 retries;
 } State_0023CE40;
 
-s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
 
 s32 func_0023CE40(s32 arg0) {
     extern struct State_0023E610 D_0034FB00;
@@ -2174,7 +2173,6 @@ typedef struct State_0023FCE0 {
     s16 field_40;
 } State_0023FCE0;
 
-s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
 extern s32 D_0034FB04;
 extern s32 D_0034FB08;
 extern s32 D_0034FB0C;
@@ -2540,7 +2538,6 @@ typedef struct State_002406C0 {
     s16 flags[2];
 } State_002406C0;
 
-s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
 extern s32 D_0034FB04;
 extern s32 D_0034FB08;
 extern s32 D_0034FB0C;
