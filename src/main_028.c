@@ -8,7 +8,13 @@ void func_00187BE8(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00187BF8);
+void func_00187BF8(void *p0, void *p1) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%1)\n\
+	vitof0.xyzw	$vf5,$vf4\n\
+	sqc2	$vf5,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00187C08);
 
