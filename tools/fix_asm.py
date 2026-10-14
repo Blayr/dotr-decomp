@@ -31,6 +31,25 @@ def fix(m):
     return f"{m.group(1)}.word 0x{word:08X} /* {op}{m.group(4)} */"
 
 
+# 0. splat glues func_0017E240's first instruction (addiu sp) onto the 4-byte `jr ra` stub
+#    func_0017E23C and names the rest func_0017E244. Restore the real boundary (was a one-off
+#    hand fix, chatE split240.py, lost by a later re-split). Giving splat the two symbols in
+#    config/symbol_addrs.txt instead makes it merge 0x17E23C-0x17F284 into one function.
+d23 = root / "asm/nonmatchings/main_023"
+a23 = d23 / "func_0017E23C.s"
+# splat files func_0017E244 under matchings/ once main_023.c no longer INCLUDE_ASMs it
+b23 = next((p for p in (d23 / "func_0017E244.s", root / "asm/matchings/main_023/func_0017E244.s") if p.exists()),
+           d23 / "func_0017E244.s")
+if a23.exists() and b23.exists():
+    a, b = a23.read_text(), b23.read_text()
+    jr = next(ln for ln in a.split("\n") if "0017E23C 0800E003" in ln)
+    addiu = next(ln for ln in a.split("\n") if "0017E240 C0FFBD27" in ln).replace("*/   addiu", "*/  addiu")
+    body = b.split("glabel func_0017E244\n", 1)[1].replace("endlabel func_0017E244", "endlabel func_0017E240")
+    a23.write_text(f"nonmatching func_0017E23C, 0x4\n\nglabel func_0017E23C\n{jr}\nendlabel func_0017E23C\n")
+    (d23 / "func_0017E240.s").write_text(f"nonmatching func_0017E240, 0x1A0\n\nglabel func_0017E240\n{addiu}\n{body}")
+    b23.unlink()
+    print("fix_asm: func_0017E23C / func_0017E240 boundary restored", file=sys.stderr)
+
 files = {path: path.read_text() for path in sorted((root / "asm").rglob("*.s"))}
 changed = set()
 for path, text in files.items():
