@@ -35,7 +35,42 @@ void func_00195108(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00195140);
+void *func_00195140(void *ptr, u32 n, u32 size) {
+    cal_chunk *p;
+    u32 csz;
+    u32 sz = n * size;
+    void *mem;
+
+    mem = (void *)func_00197EB8((s32)ptr, sz);
+    if (mem == 0) {
+        return 0;
+    } else {
+        p = (cal_chunk *)((char *)mem - 8);
+        csz = p->size & ~(0x1 | 0x2);
+        do {
+            u32 mzsz = (csz - 4);
+            if (mzsz <= 9 * sizeof(mzsz)) {
+                u32 *mz = (u32 *)(mem);
+                if (mzsz >= 5 * sizeof(mzsz)) {
+                    *mz++ = 0;
+                    *mz++ = 0;
+                    if (mzsz >= 7 * sizeof(mzsz)) {
+                        *mz++ = 0;
+                        *mz++ = 0;
+                        if (mzsz >= 9 * sizeof(mzsz)) {
+                            *mz++ = 0;
+                            *mz++ = 0;
+                        }
+                    }
+                }
+                *mz++ = 0;
+                *mz++ = 0;
+                *mz = 0;
+            } else func_00198948((mem), 0, mzsz);
+        } while (0);
+        return mem;
+    }
+}
 
 s32 func_001951F8(s32 *ptr, s32 fd) {
     s32 ret;

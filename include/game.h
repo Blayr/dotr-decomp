@@ -948,8 +948,9 @@ extern char D_002BD270[]; /* "C" */
 extern char D_002BD260[]; /* "" */
 s32 func_0019BC90(const char *a, const char *b); /* strcmp */
 
-void *func_00195140(void *ptr, u32 n, u32 size); /* _calloc_r */
 
 extern char ***D_0028FF08; /* p_environ */
+
+typedef struct cal_chunk { u32 prev_size; u32 size; } cal_chunk;
 
 #endif
