@@ -184,7 +184,12 @@ void func_00192C30(u32 arg0, s8 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192C68);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192CD0);
+u8 func_00192CD0(s32 port, s32 slot) {
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    return func_00192A88(port, slot)[0x71];
+}
 
 void func_00192D20(u32 arg0, s8 *arg1) {
     if (arg0 < 4U) {
