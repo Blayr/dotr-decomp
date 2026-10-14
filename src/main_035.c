@@ -44,7 +44,21 @@ f32 func_0019B4B8(f32 fparg0, f32 fparg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B4F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B5C0);
+s32 func_0019B5C0(void *ptr, char *str, const char *fmt, ...) {
+    s32 ret;
+    __builtin_va_list ap;
+    sprr_FILE f;
+
+    f._flags = 0x0008 | 0x0200;
+    f._bf_base = f._p = (u8 *)str;
+    f._bf_size = f._w = 0x7fffffff;
+    f._data = ptr;
+    __builtin_stdarg_start(ap, fmt);
+    ret = func_0019DD70((vf_FILE *)&f, fmt, ap);
+    __builtin_va_end(ap);
+    *f._p = 0;
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B648);
 

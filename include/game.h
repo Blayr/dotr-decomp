@@ -942,4 +942,6 @@ typedef struct sread_FILE { u8 pad0[0xC]; s16 _flags; s16 _file; u8 pad1[0x40]; 
 
 typedef struct sseek_FILE { u8 pad0[0xC]; s16 _flags; s16 _file; u8 pad1[0x40]; s32 _offset; s32 *_data; } sseek_FILE;
 
+typedef struct sprr_FILE { u8 *_p; s32 _r; s32 _w; s16 _flags; s16 _file; u8 *_bf_base; s32 _bf_size; s32 _lbfsize; void *_cookie; void *_read; void *_write; void *_seek; void *_close; u8 *_ub_base; s32 _ub_size; u8 *_up; s32 _ur; u8 _ubuf[3]; u8 _nbuf[1]; u8 *_lb_base; s32 _lb_size; s32 _blksize; s32 _offset; void *_data; } sprr_FILE;
+
 #endif
