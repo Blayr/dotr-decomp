@@ -1,6 +1,26 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_00193D18);
+s32 func_00193D18(s32 arg0) {
+    u8 *b_D_00315C40;
+    s32 temp_v0;
+
+    if (func_0017B930(D_0028F794) < 0) {
+        return -0xC8;
+    }
+    b_D_00315C40 = (u8 *)&D_00315C40;
+    if ((*(s32 *)(b_D_00315C40 + 0x24)) == 0) {
+        func_0017B900(D_0028F794);
+        return -0x64;
+    }
+    D_00315CC0 = arg0;
+    temp_v0 = func_0017EA80((void *)b_D_00315C40, 3, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (temp_v0 == 0) {
+        D_0028F790 = 3;
+    } else {
+        func_0017B900(D_0028F794);
+    }
+    return temp_v0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00193DD0);
 
