@@ -391,7 +391,6 @@ s32 func_0027C770(s32, s32, s32, s32, s32, s32);
 
 
 
-s64 func_001A0660(s64, s64);
 
 
 extern char D_002BEF98[];
