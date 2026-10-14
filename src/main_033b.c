@@ -16,7 +16,9 @@ void func_001950C8(s8 *arg0) {
     func_0019D750(arg0, NULL, 0xA);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_001950E8);
+void func_001950E8(s32 arg0, s32 arg1) {
+    func_00198840(arg1, arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00195108);
 
