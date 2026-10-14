@@ -676,7 +676,57 @@ INCLUDE_ASM("asm/nonmatchings/main_038", func_001B11C0);
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001B19F0);
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B1EF0);
+s32 func_001B1EF0(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 func_001B3C80();
+    extern s32 func_001B65E0();
+    extern s32 func_001B6C90();
+    extern s32 func_001FEAB0();
+    extern s32 func_001E08F0();
+    extern s32 func_001DE4E0();
+    extern s32 func_001FE7D0();
+    extern u8 D_002901CA[];
+    u8 *global;
+    s32 x;
+    s32 xResult;
+    s32 y;
+    s32 yResult;
+    s32 xCoord;
+    s32 result;
+    s32 temp;
+    s32 flag;
+    s32 areaX;
+    s32 areaY;
+
+    global = D_00317490;
+    x = arg1 + 3;
+    y = arg2 + 3;
+    areaX = x + 0x6C0;
+    areaY = y + 0x720;
+    flag = 0;
+    if (func_001DE4E0(D_003181CC) < 0x20) {
+        if (func_001DE4E0(global[0xD3C] ^ 1) >= 0x64) {
+            flag = 1;
+        }
+    }
+
+    arg0 = func_001B4780(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
+    result = func_001B3C80(arg0, (s32) D_002901CA, areaX + 4, areaY + 3,
+                           0, 1, 0, 0, 1, 0, -1);
+    xCoord = x + 0x1E;
+    yResult = y + 1;
+    xResult = func_001B65E0(result, global[0xD54], xCoord, yResult, 3, 1, -1);
+    if (flag != 0) {
+        temp = func_0020F290(func_001FD680(xResult, 1, 0x1C, 0, 0x16));
+        result = func_001FEAB0(1);
+        *(s32 *)(result + 0xC) = 0x2C;
+        result = func_001FE7D0(temp, 1, xCoord + 3, yResult + 2, 0, func_001FDFE0);
+        func_001FEAF0(1);
+    } else {
+        temp = func_001E08F0(2, global[0xD4F] + 1, 0);
+        result = func_001B6C90(xResult, xCoord + 3, yResult + 2, 2, temp, 0);
+    }
+    return result;
+}
 
 s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_001B3C80();
