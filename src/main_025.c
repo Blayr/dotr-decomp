@@ -285,7 +285,11 @@ int func_00183DC0(void) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183DD0);
+int func_00183DD0(void) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,-0x57\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183DE0);
 
