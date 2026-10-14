@@ -255,7 +255,45 @@ int func_001884D8(void *p0, void *p1, void *p2) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188538);
+int func_00188538(void *p0, void *p1, void *p2, void *p3) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("\n\
+	lqc2	$vf8,0x0(%4)\n\
+	lqc2	$vf4,0x0(%3)\n\
+	lqc2	$vf5,0x10(%3)\n\
+	lqc2	$vf6,0x20(%3)\n\
+	lqc2	$vf7,0x30(%3)\n\
+	lqc2	$vf9,0x0(%1)\n\
+	lqc2	$vf10,0x0(%2)\n\
+	lqc2	$vf11,0x0(%1)\n\
+	lqc2	$vf12,0x0(%2)\n\
+_func_00188538_0018855C:\n\
+	vmulax.xyzw	$ACC,$vf4,$vf8x\n\
+	vmadday.xyzw	$ACC,$vf5,$vf8y\n\
+	vmaddaz.xyzw	$ACC,$vf6,$vf8z\n\
+	vmaddw.xyzw	$vf8,$vf7,$vf8w\n\
+	vmulw.xyz	$vf11,$vf9,$vf8w\n\
+	vmulw.xyz	$vf12,$vf10,$vf8w\n\
+	vnop\n\
+	vnop\n\
+	.word 0x48C08000 # ctc2.ni $zero, $vi16\n\
+	vsub.xyw	$vf11,$vf8,$vf11\n\
+	vsub.xyw	$vf12,$vf12,$vf8\n\
+	vmove.w	$vf11,$vf9\n\
+	vmove.w	$vf12,$vf10\n\
+	vnop\n\
+	addi	%4,%4,0x10\n\
+	lqc2	$vf8,0x0(%4)\n\
+	addi	$8,$8,-0x1\n\
+	.word 0x48428000 # cfc2.ni $v0, $vi16\n\
+	andi	%0,%0,0xC0\n\
+	beqz	%0,_func_00188538_001885BC\n\
+	bne	$0,$8,_func_00188538_0018855C\n\
+	addi	%0,$0,0x1\n\
+_func_00188538_001885BC:\n\
+	" : "=r" (ret) : "r" (p0), "r" (p1), "r" (p2), "r" (p3));
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001885C8);
 
