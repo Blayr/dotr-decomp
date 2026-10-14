@@ -1,0 +1,21 @@
+# Files tools/cc.sh compiles with an EE GCC instead of the game's Metrowerks: Sony's SDK 2.4
+# libraries (libkernl, libpad, libmc, libcdvd, libgraph, libdma, libipu, libsdr). They sit in
+# one run of GCC-style code (dk.json gcc_ranges). One file per line from the project root:
+# path, ee-gcc version, -G value, compiler flags. Change a line only together with a
+# `make check` that stays OK.
+src/main_021.c 2.9-991111 0 -O2
+src/main_022.c 2.9-991111 0 -O2
+src/main_023.c 2.9-991111 0 -O2
+src/main_024.c 2.9-991111 0 -O2
+src/main_025.c 2.9-991111 0 -O2
+src/main_026.c 2.9-991111 0 -O2
+src/main_027.c 2.9-991111 0 -O2
+src/main_028.c 2.9-991111 0 -O2
+src/main_029.c 2.9-991111 0 -O2
+src/main_030.c 2.9-991111 0 -O2
+src/main_031.c 2.9-991111 0 -O2
+src/main_032.c 2.9-991111 0 -O2
+src/main_033.c 2.9-991111 0 -O2
+src/main_034.c 2.9-991111 0 -O2
+src/main_035.c 2.9-991111 0 -O2
+src/main_036.c 2.9-991111 0 -O2

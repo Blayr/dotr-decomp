@@ -29,6 +29,17 @@ TC="${DK_TOOLCHAIN:?load the toolchain first: . ~/decomp/toolchain/env.sh}"
 if [ -z "${DK_GCC:-}" ]; then
     eval "$(sed -n 's/^export \(DK_[A-Z]*\) := \(.*\)$/\1="\2"/p' "$ROOT/config.mk")"
 fi
+# Files in config/gcc_files.txt (Sony's SDK libraries) were built with an EE GCC, not the
+# game's compiler. Each line gives the file, the GCC version, -G and the flags:
+# `src/main_022.c 2.9-991111 0 -O2`. DK_GCC_LIST=0 (dk try --gcc) ignores the list.
+GCC_LIST="$ROOT/config/gcc_files.txt"
+if [ "${DK_GCC_LIST:-1}" = 1 ] && [ -f "$GCC_LIST" ]; then
+    IN_ABS="$(cd "$(dirname "$IN")" && pwd)/$(basename "$IN")"
+    ROW="$(awk -v f="${IN_ABS#"$ROOT"/}" '{ sub(/#.*/, "") } $1 == f { $1 = ""; print; exit }' "$GCC_LIST")"
+    if [ -n "$ROW" ]; then
+        read -r DK_GCC DK_G DK_CFLAGS <<< "$ROW"
+    fi
+fi
 EE="$TC/ee-gcc/$DK_GCC"
 PRE="$TC/ee-gcc/2.96"  # a Linux build, used only to preprocess
 PRE_LIB="$(dirname "$(find "$PRE/lib" -name cpp0 | head -1)")"
@@ -43,6 +54,7 @@ mkdir -p "$(dirname "$OUT")"
 # Dependencies for make come from the system cpp. It is 64-bit, so Metrowerks
 # builds also run inside sandboxes that ban 32-bit programs (Codex on Linux).
 cpp -M -nostdinc $CPP_FLAGS "$IN" 2>/dev/null | sed "1s|^[^:]*:|$OUT:|" > "$TMP/deps" || true
+[ -z "${ROW:-}" ] || echo "$OUT: $GCC_LIST" >> "$TMP/deps"  # taken off the list = compiled again
 
 if [[ "$DK_GCC" == mwcps2-* ]]; then
     # mwccgap swaps each INCLUDE_ASM line for its assembled function. It reads C

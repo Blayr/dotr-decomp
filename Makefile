@@ -20,6 +20,9 @@ OBJS     := $(ASM_SRCS:%=$(BUILD)/%.o) $(C_SRCS:%=$(BUILD)/%.o) $(BIN_SRCS:%=$(B
 # Files tools/cc.sh compiles warm (see there). A file put on the list compiles again; one
 # taken off does too, through the .d file its warm build wrote.
 WARM_SRCS := $(shell sed 's/\#.*//' $(WARM_LIST) 2>/dev/null)
+# Files tools/cc.sh compiles with an EE GCC (Sony's libraries), the same way.
+GCC_LIST  := config/gcc_files.txt
+GCC_SRCS  := $(shell sed 's/\#.*//' $(GCC_LIST) 2>/dev/null | awk '{ print $$1 }')
 
 .PHONY: all build check split clean
 all: check
@@ -52,6 +55,7 @@ $(BUILD)/%.c.o: %.c
 	@tools/cc.sh $< $@
 
 $(WARM_SRCS:%=$(BUILD)/%.o): $(WARM_LIST)
+$(GCC_SRCS:%=$(BUILD)/%.o): $(GCC_LIST)
 
 $(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS)
 	@$(LD) -EL -T $(LD_SCRIPT) -T linker/undefined_syms_auto.txt -T linker/undefined_funcs_auto.txt \
