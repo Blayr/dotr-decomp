@@ -106,7 +106,15 @@ fi
 # Switch tables: GCC's own go to .rdata, which the link drops; load the game's (see there).
 (cd "$ROOT" && python3 tools/jtbl_fix.py --gcc "$TMP/out.s")
 # Sony's EE assembler turned GCC's `move` into a 64-bit daddu; binutils 2.45 makes it `or`.
-sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
+# The C library's assembler (the 2.96 files) never moved that macro into a branch's delay
+# slot (`move $2,$4; j $31; nop`, `move $4,$2; jal dptofp; nop`); a plain daddu would be
+# moved, so there it is emitted as a noreorder instruction. The SDK libraries' assembler
+# (2.9 files) did move it.
+if [ "$DK_GCC" = 2.96 ]; then
+    sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1.set\tpush\n\1.set\tnoreorder\n\1daddu\2\3,\4,$0\n\1.set\tpop/' "$TMP/out.s"
+else
+    sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
+fi
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
