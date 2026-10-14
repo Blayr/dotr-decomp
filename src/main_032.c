@@ -283,7 +283,12 @@ s32 func_001934E8(s32 port, s32 slot) {
     return func_001933D8(port, slot, 0xFFF);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193540);
+s32 func_00193540(s32 port, s32 slot) {
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    return func_001933D8(port, slot, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00193598);
 
