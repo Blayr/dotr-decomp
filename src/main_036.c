@@ -802,6 +802,7 @@ double func_001A65C0(double x) {
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A65F8);
 
 f32 __kernel_sinf(f32 x, f32 y, s32 iy); /* func_001A61F0, called by name */
+f32 __kernel_tanf(f32 x, f32 y, s32 iy); /* func_001A6318, called by name */
 f32 __kernel_cosf(f32 x, f32 y); /* func_001A57D8, called by name */
 
 f32 func_001A6898(f32 x) {
@@ -897,10 +898,10 @@ f32 func_001A6B70(f32 x) {
     do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
     ix &= 0x7fffffff;
     if (ix <= 0x3f490fda) {
-        return func_001A6318(x, z, 1);
+        return __kernel_tanf(x, z, 1);
     } else {
         n = func_001A5338(x, y);
-        return func_001A6318(y[0], y[1], 1 - ((n & 1) << 1));
+        return __kernel_tanf(y[0], y[1], 1 - ((n & 1) << 1));
     }
 }
 
