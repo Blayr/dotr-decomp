@@ -88,7 +88,26 @@ INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BD50);
 
 INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BD60);
 
-INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BD70);
+void func_0017BD70(void) {
+    s32 temp_v0;
+    s32 temp_v0_2;
+
+    temp_v0 = func_001843E0();
+    *(volatile s32 *)0x1000F000 = 4;
+    __asm__ volatile("sync");
+    if (temp_v0 != 0) {
+        func_00184428();
+    }
+    do {
+
+    } while (!(*(volatile s32 *)0x1000F000 & 4));
+    temp_v0_2 = func_001843E0();
+    *(volatile s32 *)0x1000F000 = 4;
+    __asm__ volatile("sync");
+    if (temp_v0_2 != 0) {
+        func_00184428();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BE00);
 
