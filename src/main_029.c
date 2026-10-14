@@ -76,7 +76,69 @@ s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018AA80);
+s32 func_0018AA80(void *arg0, s32 arg1) {
+    s32 dc[8];
+    s32 pmv[4];
+    s32 mvfs[4];
+    s32 MBA;
+    s32 MBAinc;
+    s32 mbtype;
+    s32 mtype;
+    s32 dct;
+    s32 ret;
+
+    MBA = 0;
+    MBAinc = 0;
+    if ((ret = func_0018A950(arg0, arg1, &MBA, &MBAinc, dc)) != 0) {
+        return ret;
+    }
+    *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+    for (;;) {
+        if (MBA >= arg1) {
+            return 0;
+        }
+        *(s32 *)((u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x810) * 0x140 + 0x6CC) = 0;
+        if (func_0018A3A0(arg0) == 0) {
+            return 2;
+        }
+        if (MBAinc == 0) {
+            if (func_0018B850(arg0, 23) == 0 || *(s32 *)((u8 *)arg0 + 0x11C) != 0) {
+                *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+                return 3;
+            }
+            MBAinc = func_0018A738(arg0);
+            if (*(s32 *)((u8 *)arg0 + 0x11C) != 0) {
+                goto fault;
+            }
+        }
+        if (MBA >= arg1) {
+            func_0018F7B0((s32)arg0, &D_002BC808);
+            return 2;
+        }
+        if (MBAinc == 1) {
+            if (func_0018AD30(arg0, &mbtype, &mtype, &dct, dc, pmv, mvfs) == 0) {
+fault:
+                *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+                return 1;
+            }
+        } else {
+            if (func_0018AC70(arg0, dc, &mtype, pmv, &mbtype) == 0) {
+                goto fail;
+            }
+        }
+        if (func_00188630(arg0, MBA, MBAinc, mbtype, mtype, dc, pmv, mvfs) == 0) {
+fail:
+            *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+            return 2;
+        }
+        if (MBA != 0) {
+            func_001893A8(arg0, *(s32 *)((u8 *)arg0 + 0x810) ^ 1);
+        }
+        MBA++;
+        *(s32 *)((u8 *)arg0 + 0x810) ^= 1;
+        MBAinc--;
+    }
+}
 
 s32 func_0018AC70(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
     s32 temp_v0;
