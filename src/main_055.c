@@ -13,7 +13,6 @@ typedef struct Entry_00202220 {
 extern s8 D_002BD0C1[];
 extern char D_002D074B[];
 extern char D_002D0760[];
-extern s32 func_002024D0();
 
 static inline Entry_00202220 *find_00202220(s32 group, s32 index) {
     extern Entry_00202220 D_003229A0[];
@@ -90,7 +89,145 @@ s32 func_00202220(s32 arg0, s32 arg1, char *arg2, s32 arg3, s32 arg4, s32 arg5, 
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002024D0);
+typedef struct Track_002024D0 {
+    s32 *data;
+    s32 buffer;
+    s16 low : 3;
+    s16 count : 13;
+    s16 mode;
+    u16 *names;
+} Track_002024D0;
+
+typedef struct Stream_002024D0 {
+    u8 pad0[8];
+    s32 size : 31;
+    s32 unk8 : 1;
+    s32 unkC : 31;
+    s32 owned : 1;
+    u8 pad10[4];
+    s32 *data;
+    u8 pad18[4];
+    Track_002024D0 *track;
+} Stream_002024D0;
+
+void func_002024D0(void *arg0, s32 arg1) {
+    extern u16 D_002CE9FC[];
+    Stream_002024D0 *stream = arg0;
+    Track_002024D0 *track = stream->track;
+    u8 *block;
+    s32 kind;
+    s32 remaining;
+    s32 index;
+    u8 *dest;
+    s32 step;
+    s32 value;
+    s32 blockSize;
+    s32 i;
+    s32 offset;
+    s32 chunk;
+    s16 mode;
+    u16 *names;
+
+    if (arg1 != 0 && *stream->data != 0x324852) {
+        if (stream->owned) {
+            func_00217B50((s32)stream->data);
+        }
+        arg1 = 0;
+    }
+    if (arg1 == 0) {
+        if (track->buffer != 0) {
+            func_00217B50(track->buffer);
+            track->buffer = 0;
+        }
+        track->data = NULL;
+        return;
+    }
+    track->data = stream->data;
+    if (track->count == 0) {
+        mode = track->mode;
+        index = 0;
+        block = (u8 *)track->data;
+        blockSize = ((s32 *)block)[2];
+        kind = mode & 0xF;
+        remaining = stream->size;
+        if (kind == 0) {
+            index = (mode >> 4) * 100;
+        }
+        i = 0;
+        offset = index * blockSize;
+        names = D_002CE9FC;
+        chunk = blockSize >> 4;
+        while (1) {
+            value = i;
+            dest = NULL;
+            step = blockSize;
+            if (*(s32 *)block == 0x324852) {
+                dest = block;
+                if (kind == 0 || kind == 2) {
+                    value = index;
+                    if (index != 0) {
+                        {
+                            s64 t = offset;
+                            dest = (u8 *)(t + 0xB1B000);
+                        }
+                        func_0020B380(dest, block, chunk);
+                    }
+                    index++;
+                    offset += blockSize;
+                    if (kind == 0) {
+                        step = 0x4800;
+                    } else {
+                        step = 0x1000;
+                    }
+                } else if (kind == 1) {
+                    value = *names;
+                } else {
+                    step = ((s32 *)block)[2];
+                }
+                func_0020F250((s32)dest);
+            } else if (remaining < blockSize) {
+                return;
+            }
+            switch (kind) {
+            case 0:
+                func_00202810(1, value, 0, (s32)dest);
+                break;
+            case 1:
+                func_00202810(1, value, 0, (s32)dest);
+                break;
+            case 2:
+                func_00202810(2, value, 0, (s32)dest);
+                break;
+            case 3:
+                func_00202810(3, value, 0, (s32)dest);
+                break;
+            case 4:
+                func_00202810(4, value, 0, (s32)dest);
+                break;
+            case 5:
+                func_00202810(7, value, 0, (s32)dest);
+                break;
+            case 6:
+                func_00202810(8, value, 0, (s32)dest);
+                break;
+            case 7:
+            case 8:
+            case 9:
+                func_00202810(9, value, 0, (s32)dest);
+                break;
+            }
+            block += step;
+            remaining -= step;
+            if (remaining <= 0) {
+                return;
+            }
+            names++;
+            i++;
+        }
+    } else {
+        func_0020F250((s32)track->data);
+    }
+}
 
 typedef struct {
     s32 data;
