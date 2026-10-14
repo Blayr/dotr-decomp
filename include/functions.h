@@ -819,6 +819,7 @@ void func_0017B380(u32 arg0);
 s32 func_0017B3D0(void);
 s32 func_0017B3F0(void);
 void func_0017B410(s32 arg0, s32 arg1);
+int func_0017BAB0(void);
 void func_0017BD70(void);
 s64 func_0017BE00(void);
 s32 func_0017BFA0(void);
