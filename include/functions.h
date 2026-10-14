@@ -1373,6 +1373,7 @@ s32 func_001A04D8(void *arg0);
 s64 func_001A05E8(s64 u, s64 v);
 double func_001A1E70(s64 u);
 u64 func_001A2000(double a);
+s64 func_001A2118(double a);
 f32 func_001A2190(fp_number_f *src);
 void func_001A2260(fp_union_f *src, fp_number_f *dst);
 s64 func_001A22C0(f32 arg_a);

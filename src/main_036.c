@@ -43,7 +43,14 @@ u64 func_001A2000(double a) {
     return v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A2118);
+/* __fixdfdi */
+
+s64 func_001A2118(double a) {
+    if (func_001A2E60(a, 0.0) < 0) {
+        return -func_001A2000(func_001A28B0(0.0, a));
+    }
+    return func_001A2000(a);
+}
 
 /* __pack_f */
 
