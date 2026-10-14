@@ -640,4 +640,9 @@ s32 func_0019B148(s32, s32, s32, s32);          /* extern */
 
 s32 func_0019D780(s32, s32, s32, s32);          /* extern */
 
+extern s32 D_0028F790;
+extern s32 D_0028F794;
+extern s32 D_00315C40;
+extern s32 D_00317200;
+
 #endif
