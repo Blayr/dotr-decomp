@@ -574,7 +574,55 @@ INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CE00);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CF10);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D0C8);
+extern s32 D_00315300;
+
+typedef struct SprBuf_0018D0C8 {
+    s32 spr;
+    s32 unk4;
+    s32 a[4];
+    s32 b[4];
+    u8 unk28[0x104];
+    s32 n;
+    u8 unk130[0x10];
+} SprBuf_0018D0C8;
+
+typedef struct SprDec_0018D0C8 {
+    u8 unk0[0x590];
+    SprBuf_0018D0C8 bufs[2];
+    s32 cur;
+} SprDec_0018D0C8;
+
+void func_0018D0C8(void *arg0) {
+    SprDec_0018D0C8 *d;
+    s32 cur;
+    s32 n;
+    s32 i;
+    u64 *t;
+    s32 id;
+    u64 hi;
+
+    d = arg0;
+    cur = d->cur;
+    n = d->bufs[cur].n;
+    t = (u64 *)(((u32)&D_00315300 & 0x0FFFFFFF) | 0x20000000);
+    for (i = 0; i < n; i++) {
+        t[0] = ((u64)(d->bufs[cur].a[i] & 0x0FFFFFFF) << 32) | 0x30000030;
+        hi = (u64)(d->bufs[cur].b[i] & 0x0FFFFFFF) << 32;
+        id = 3;
+        if (i == n - 1) {
+            id = 0;
+        }
+        t[2] = hi | ((u64)id << 28) | 0x30;
+        t += 4;
+    }
+    func_001843E0();
+    __asm__ volatile("sync");
+    *(volatile s32 *)0x1000D480 = d->bufs[d->cur].spr;
+    *(volatile s32 *)0x1000D430 = (s32)&D_00315300;
+    *(volatile s32 *)0x1000D420 = 0;
+    *(volatile s32 *)0x1000D400 = 0x105;
+    func_00184428();
+}
 
 void func_0018D220(s32 arg0, s32 arg1) {
     func_001843E0();
