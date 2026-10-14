@@ -2542,6 +2542,7 @@ void func_0020FAF0(void *arg0);
 void func_0020FED0(void *arg0, void *arg1, void *arg2, s32 arg3);
 void func_00210010(void *arg0, void *arg1, void *arg2);
 s32 func_00210310(void *arg0, s32 depth, void *arg2);
+s32 func_002106E0(void *src0, void *src1, s32 flags, f32 time0, f32 weight0, f32 time1, f32 weight1, void *pos, void *rot, void *scl, f32 multiplier);
 s32 func_00210940(void *arg0, s32 depth, void *arg2);
 s32 func_00210CF0(void *src, f32 time, s32 flags, f32 *position, void *rotation, void *scale, f32 multiplier);
 s32 func_00211530(void *arg0, s32 depth, void *arg2);

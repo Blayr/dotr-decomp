@@ -326,7 +326,6 @@ void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
-s32 func_002106E0(void *, void *, s32, f32, f32, f32, f32, void *, void *, void *, f32);
 
 s32 func_00210310(void *arg0, s32 depth, void *arg2) {
     extern Slot_00210310 D_0032A780[];
@@ -431,7 +430,28 @@ s32 func_00210310(void *arg0, s32 depth, void *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_002106E0);
+s32 func_002106E0(void *src0, void *src1, s32 flags, f32 time0, f32 weight0, f32 time1, f32 weight1,
+                  void *pos, void *rot, void *scl, f32 multiplier) {
+    f32 *position = pos;
+    s32 *rotation = rot;
+    f32 *scale = scl;
+    s32 result;
+
+    func_0020B380((void *)0x70000030, (void *)0x70000000, 3);
+    func_0020B380((void *)0x70000060, (void *)0x70000000, 3);
+    flags = func_00210CF0(src0, time0, flags, (f32 *)0x70000050, (void *)0x70000040, (void *)0x70000030, multiplier);
+    result = func_00210CF0(src1, time1, flags, (f32 *)0x70000080, (void *)0x70000070, (void *)0x70000060, multiplier);
+    position[0] = ((f32 *)0x70000050)[0] * weight0 + ((f32 *)0x70000080)[0] * weight1;
+    position[1] = ((f32 *)0x70000050)[1] * weight0 + ((f32 *)0x70000080)[1] * weight1;
+    position[2] = ((f32 *)0x70000050)[2] * weight0 + ((f32 *)0x70000080)[2] * weight1;
+    func_0020D240(rotation, (s32 *)0x70000040, (s32 *)0x70000070, weight0, weight1);
+    if (!(result & 4)) {
+        scale[0] = ((f32 *)0x70000030)[0] * weight0 + ((f32 *)0x70000060)[0] * weight1;
+        scale[1] = ((f32 *)0x70000030)[1] * weight0 + ((f32 *)0x70000060)[1] * weight1;
+        scale[2] = ((f32 *)0x70000030)[2] * weight0 + ((f32 *)0x70000060)[2] * weight1;
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002108C0);
 
