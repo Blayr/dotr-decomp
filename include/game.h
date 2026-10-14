@@ -636,7 +636,7 @@ s32 func_0017B800();                            /* extern */
 s32 func_0017B520(s32, s32, s32);               /* extern */
 
 s32 func_00196BE0(s32, s32);                    /* extern */
-s32 func_00198A08(s32);                         /* extern */
+void func_00198A08(s32);
 
 
 extern s32 *D_00315C68;
