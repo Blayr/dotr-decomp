@@ -3221,6 +3221,7 @@ void func_002413F0(u8 *out, u8 value, f32 hue, f32 light, f32 sat) {
 INCLUDE_ASM("asm/nonmatchings/main_068", func_00241840);
 
 s32 func_00241A00(s32 arg0, s32 arg1) {
+    extern void func_00241840();
     u8 color[4];
     s32 temp_v1;
 
