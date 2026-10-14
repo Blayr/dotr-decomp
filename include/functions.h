@@ -1096,6 +1096,7 @@ s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state);
 s32 func_00198A88(s32 r);
 void func_00198B80(void *arg0, void *arg1);
 i2b_Bigint *func_00198F28(void *ptr, s32 i);
+s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b);
 void func_0019A5B0(s64 arg0);
 s32 func_0019A5C8(void);
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt);

@@ -131,7 +131,26 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_00199170);
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199270);
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_001993C8);
+s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b) {
+    u32 *xa, *xa0, *xb, *xb0;
+    s32 i, j;
+
+    i = a->wds;
+    j = b->wds;
+    if (i -= j)
+        return i;
+    xa0 = a->x;
+    xa = xa0 + j;
+    xb0 = b->x;
+    xb = xb0 + j;
+    for (;;) {
+        if (*--xa != *--xb)
+            return *xa < *xb ? -1 : 1;
+        if (xa <= xa0)
+            break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_034", func_00199430);
 
