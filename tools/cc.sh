@@ -141,6 +141,17 @@ if [ "$DK_GCC" = 2.96 ]; then
         }
         print' "$TMP/out.s"
 fi
+# The C library's assembler never moved an instruction of an address macro (`l.s $f0,D_X($2)`,
+# `lw $2,D_X($3)`, `la`) into the next branch's delay slot (fmodf: `lwc1 $f0,%lo(D_X)($at); b; nop`);
+# binutils moves the expansion's last instruction there. A local label before the branch stops it.
+if [ "$DK_GCC" = 2.96 ]; then
+    perl -i -ne 'BEGIN { $n = 0; $held = 0 }
+        print ".Lnofill", $n++, ":\n" if $held
+            && /^\s+(b|j|jal|jr|jalr|bal|beqz?l?|bnez?l?|b[gl][et]zl?|b[gl]tzall?|bgezall?|bc1[tf]l?)\s/;
+        $held = 0 if /^\s+[a-z]/;
+        $held = 1 if /^\s+(l[bhwd]u?|lq|s[bhwdq]|lwc1|swc1|ldc1|sdc1|l\.[sd]|s\.[sd]|d?la)\s+[^,]+,\s*[A-Za-z_]/;
+        print' "$TMP/out.s"
+fi
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
