@@ -676,4 +676,9 @@ s32 func_00183E50();                                /* extern */
 
 s32 func_0018DAA8(u64 *, s32);              /* extern */
 
+s32 func_0017B660(s32, s32 *, s32);         /* extern */
+s32 func_0017B7D0();                                /* extern */
+s32 func_0017B800();                            /* extern */
+extern s32 func_001941D8;
+
 #endif
