@@ -989,7 +989,6 @@ extern s32 D_00313500;
 extern s32 D_00313B80;
 void *func_0017F288(s32);
 
-s32 func_0017BC50(void *, s64 *);
 
 s32 func_0017DEB0(s32, s32, s32, s32, s32, s32, s32);
 
