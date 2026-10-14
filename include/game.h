@@ -790,4 +790,6 @@ extern s32 D_00314000;
 extern s32 D_002BC9F8;
 extern s32 D_0028F748;
 
+void func_0018F808();
+
 #endif

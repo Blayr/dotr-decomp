@@ -60,9 +60,21 @@ void func_0017DDF0(void) {
     D_0028CA10 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DE28);
+s32 func_0017DE28(s32 arg0, s32 arg1) {
+    s32 *p = (s32 *)&D_00310E98;
+    s32 old = p[5];
+    p[5] = arg0;
+    p[6] = arg1;
+    return old;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DE40);
+s32 func_0017DE40(s32 arg0, s32 arg1) {
+    s32 *p = (s32 *)&D_00310E98;
+    s32 old = p[3];
+    p[3] = arg0;
+    p[4] = arg1;
+    return old;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DE58);
 

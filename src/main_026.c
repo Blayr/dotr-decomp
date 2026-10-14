@@ -91,7 +91,13 @@ INCLUDE_ASM("asm/nonmatchings/main_026", func_00186238);
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186410);
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186448);
+s32 func_00186448(u32 arg0) {
+    s32 old = *(volatile s32 *)0x1000E060;
+    if (arg0 != 0xFFFFFFFF) {
+        *(volatile s32 *)0x1000E060 = arg0;
+    }
+    return old;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00186470);
 

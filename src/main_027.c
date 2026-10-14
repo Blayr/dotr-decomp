@@ -13,7 +13,11 @@ INCLUDE_ASM("asm/nonmatchings/main_027", func_00186FF0);
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187058);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187098);
+u32 func_00187098(u32 arg0, u32 arg1, u32 arg2) {
+    u32 v = arg0 | (arg1 << 1) | (arg2 << 2);
+    *(volatile u32 *)0x10003820 = v;
+    return v;
+}
 
 s32 func_001870B8(void) {
     return *(volatile s32 *)0x10003820;
@@ -110,7 +114,12 @@ void func_00187510(s32 *arg0, __int128 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187528);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001875D0);
+void func_001875D0(u64 **arg0, u32 arg1, u64 arg2) {
+    u64 *p = *arg0;
+    *p++ = arg2;
+    *p++ = arg1;
+    *arg0 = p;
+}
 
 void func_001875F8(s32 *arg0, s32 arg1) {
     arg0[1] = arg1;

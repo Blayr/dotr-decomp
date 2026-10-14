@@ -3192,7 +3192,6 @@ s32 func_00186120(s32);
 void func_00186470(s32, s32);
 void func_00187480(void *, s32, s32, s32);
 void func_00187528(void *);
-void func_001875D0(void *, s32, u64);
 
 void func_00241C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     extern void func_001872F8();
@@ -3245,7 +3244,6 @@ void func_001873E8(void *, u64, s32, s32, s32, s32);
 void func_00187480(void *, s32, s32, s32);
 void *func_001874F8(void *, s32);
 void func_00187528(void *);
-void func_001875D0(void *, s32, u64);
 extern Tag_00241E80 D_0029B2D0;
 extern Tag_00241E80 D_0029B2E0;
 
