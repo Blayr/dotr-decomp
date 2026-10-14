@@ -623,7 +623,6 @@ extern File_001FFFC0 D_00293090[];
 extern char D_002D066F[];
 
 void func_0017E240(s32);
-void func_00200170(void);
 
 s32 func_001FFFC0(void) {
     extern s32 func_00200220(s32, s32);
@@ -675,7 +674,36 @@ s32 func_001FFFC0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_054", func_00200170);
+typedef struct Flags_00200170 {
+    s8 reserved : 1;
+    s8 active : 1;
+    s8 remaining : 6;
+} Flags_00200170;
+
+typedef struct State_00200170 {
+    u8 pad[0x6688];
+    s32 current;
+    s32 unk668C;
+    Flags_00200170 flags;
+} State_00200170;
+
+void func_00200170(s32 arg0) {
+    extern State_00200170 D_0031C2F0;
+    State_00200170 *state = &D_0031C2F0;
+
+    if (arg0 == 1) {
+        if (state->flags.active) {
+            if (func_00191EF8() == 0) {
+                func_0017BB90(0);
+                func_001FFAC0(state->current, 1);
+            } else {
+                state->flags.active = 0;
+            }
+        }
+    }
+    asm("sync");
+    asm("ei");
+}
 
 s32 func_00200210(void) {
     return 1;
