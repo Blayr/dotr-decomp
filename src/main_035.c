@@ -88,7 +88,19 @@ INCLUDE_ASM("asm/nonmatchings/main_035", func_0019C100);
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019C2B8);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019C478);
+char *func_0019C478(const char *s, s32 i) {
+    const char *last = NULL;
+    char c = i;
+
+    while (*s) {
+        if (*s == c)
+            last = s;
+        s++;
+    }
+    if (*s == c)
+        last = s;
+    return (char *)last;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019C4C8);
 
