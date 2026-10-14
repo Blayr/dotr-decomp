@@ -567,4 +567,6 @@ extern s8 D_0030F118[];
 
 extern char D_0028C230[];
 
+long func_0019D750(const char *, char **, s32);
+
 #endif

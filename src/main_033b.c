@@ -6,7 +6,9 @@ s32 func_00195070(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00195088);
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_001950A0);
+s32 func_001950A0(const char *s) {
+    return func_0019D750(s, NULL, 10);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_001950C8);
 
