@@ -992,4 +992,7 @@ extern u32 D_0028DA78[];
 void func_0018CC70(void *, s32 *, void *, void *, void *);
 void func_0018C9D8(void *);
 
+extern s32 D_0028F74C;
+extern char D_002BCEE0[];
+
 #endif

@@ -137,7 +137,38 @@ s32 func_00192308(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192470);
+s32 func_00192470(s32 port, s32 slot) {
+    s32 dma[64];
+    u32 *buf;
+    u32 addr;
+    s32 id;
+    u32 n;
+
+    buf = (u32 *)D_003159D0[port][slot].unk4[0];
+    if (D_003159D0[port][slot].unk4[2] != 0 && func_0017BC80(D_003159D0[port][slot].unk4[2]) >= 0) {
+        if (D_0028F74C != 0) {
+            func_00199B50(D_002BCEE0);
+        }
+        return 0;
+    }
+    n = buf[0] + 1;
+    addr = D_003159D0[port][slot].unk4[1] + ((n & 1) << 5);
+    buf[0] = n;
+    func_0017C1D8((u32)buf, (u32)(buf + 8));
+    dma[1] = addr;
+    dma[0] = (s32)buf;
+    dma[2] = 0x20;
+    dma[3] = 0;
+    id = func_0017BCA0(dma, 1);
+    if (id == 0) {
+        if (D_0028F74C != 0) {
+            func_00199B50(D_002BCEE0);
+        }
+        return 0;
+    }
+    D_003159D0[port][slot].unk4[2] = id;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192588);
 

@@ -1255,6 +1255,7 @@ s32 func_00192218(void);
 s32 func_00192268(void);
 s32 func_001922C0(void);
 s32 func_00192308(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4);
+s32 func_00192470(s32 port, s32 slot);
 s32 func_00192768(void);
 s32 func_001929D0(s32 port, s32 slot);
 u8 *func_00192A88(s32 arg0, s32 arg1);
