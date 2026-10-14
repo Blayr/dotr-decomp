@@ -376,7 +376,6 @@ extern char D_002BEF67[];
 
 
 
-void func_0010A4D0(void);
 
 s32 func_0016B0F0();                            /* extern */
 

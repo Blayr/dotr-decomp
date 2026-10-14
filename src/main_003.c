@@ -195,7 +195,91 @@ void func_0010A450(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010A4D0);
+typedef struct State_0010A4D0 {
+    u32 flags;
+    u32 flags4;
+    u8 pad8[0xC];
+    s32 source;
+    u8 pad18[0x40];
+    u8 busy;
+    u8 pad59[0x1FF3];
+    s32 pending;
+    u8 pad2050[0x178];
+    u8 buffer[0x40];
+    s32 states[2];
+    s32 indexes[2];
+    s32 values[2];
+    u8 pad2220[0x38];
+    s32 results[2];
+} State_0010A4D0;
+
+extern u8 D_002B9090[];
+
+static inline void set_result_0010A4D0(s32 index, s32 value) {
+    State_0010A4D0 *state = (State_0010A4D0 *)D_0030FF40;
+    ((State_0010A4D0 *)((index << 2) + (s32)state))->results[0] = value;
+}
+
+void func_0010A4D0(void) {
+    s32 i;
+    State_0010A4D0 *slot;
+
+    if (D_0030FF40 != NULL && (((State_0010A4D0 *)D_0030FF40)->flags4 & 8)) {
+        i = 0;
+        do {
+            switch (((State_0010A4D0 *)D_0030FF40)->states[i]) {
+            case 1:
+                if (func_0010BDE0() == 0 && ((State_0010A4D0 *)D_0030FF40)->busy == 0 && ((State_0010A4D0 *)D_0030FF40)->pending == 0) {
+                    func_0019B648(((State_0010A4D0 *)D_0030FF40)->buffer, D_002B9090, ((State_0010A4D0 *)D_0030FF40)->values[i]);
+                    if (func_002006C0((s32)((State_0010A4D0 *)D_0030FF40)->buffer) == 0) {
+                        ((State_0010A4D0 *)D_0030FF40)->states[i] = 0;
+                        break;
+                    }
+                    func_0010C110(((State_0010A4D0 *)D_0030FF40)->buffer, (u8 *)(D_0030FF48 + (i << 12)) + 0x101800, 0, 0x1000);
+                    slot = (State_0010A4D0 *)D_0030FF40;
+                    slot = (State_0010A4D0 *)((i << 2) + (s32)slot);
+                    slot->states[0]++;
+                }
+                return;
+            case 2:
+                if (func_0010BDE0() == 0) {
+                    slot = (State_0010A4D0 *)D_0030FF40;
+                    slot = (State_0010A4D0 *)((i << 2) + (s32)slot);
+                    slot->states[0]++;
+                }
+                return;
+            case 3:
+                if (func_0010BE20() == 0) {
+                    func_0010C220((s32)((u8 *)(D_0030FF48 + (i << 12)) + 0x101800), ((State_0010A4D0 *)D_0030FF40)->source + 0xC0800, 0x1000);
+                    slot = (State_0010A4D0 *)D_0030FF40;
+                    slot = (State_0010A4D0 *)((i << 2) + (s32)slot);
+                    slot->states[0]++;
+                }
+                return;
+            case 4:
+                if (func_0010BE20() == 0) {
+                    func_0010C720(0x5401, ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40))->indexes[0], ((State_0010A4D0 *)D_0030FF40)->source + 0xC0800);
+                    ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40))->states[0]++;
+                }
+                return;
+            case 5:
+                if (!(((State_0010A4D0 *)D_0030FF40)->busy & 8)) {
+                    ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40))->states[0] = 0;
+                    slot = ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40));
+                    set_result_0010A4D0(slot->indexes[0], slot->values[0]);
+                }
+                return;
+            default:
+                ((State_0010A4D0 *)D_0030FF40)->states[i] = 0;
+                break;
+            }
+            i++;
+        } while (i < 2);
+        if (!(((State_0010A4D0 *)D_0030FF40)->flags & 0x200000)) {
+            ((State_0010A4D0 *)D_0030FF40)->flags &= ~0x8000;
+        }
+    }
+}
 
 s32 func_0010A780(s32 arg0) {
     s16 left;
