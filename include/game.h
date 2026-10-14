@@ -55,7 +55,6 @@ extern void func_00187660(void *, s32);
 extern void func_001876B8(void *, Q128_0020F290);
 extern void func_001876D0(void *);
 extern void func_00187778(void *, s32, s32);
-extern void func_001877F8(void *, s32);
 extern void func_00187828(void *, s32, s32);
 extern void func_00187858(void *, s32);
 extern void func_001878B0(void *);
@@ -475,7 +474,6 @@ void func_001429B0(void *);
 extern u8 D_00325F00[];
 extern Q128_0020F290 D_00325EF0;
 extern u64 D_00326180;
-void func_00187810(void *, s32);
 
 s32 func_00155770(s32 arg0, s32 arg1, s32 arg2);
 

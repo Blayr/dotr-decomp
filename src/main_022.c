@@ -14,7 +14,11 @@ s32 func_0017C090(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C098);
+s32 func_0017C098(s32 arg0, void *arg1) {
+    (*(s64 *)((u8 *)arg1 + 0x48)) = 0;
+    (*(s32 *)((u8 *)arg1 + 4)) = 0x2000;
+    return 0;
+}
 
 s32 func_0017C0B0(void) {
     return 1;
