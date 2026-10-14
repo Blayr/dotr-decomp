@@ -744,7 +744,6 @@ extern s32 D_0028CAAC;
 
 extern s32 D_00310920;
 extern s32 D_002BC1E8;
-s32 func_00192308(s32, s32, s32, s32, s32 *); /* extern */
 extern s32 D_0028F730;
 extern s32 D_00315958;
 s32 func_0017DA98(s32 *);                   /* extern */

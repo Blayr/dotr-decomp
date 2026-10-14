@@ -85,7 +85,57 @@ s32 func_001922C0(void) {
     return func_00192308(0, 0, 0, 6, &D_00315958);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192308);
+extern s32 D_0028DDC0;
+extern s32 D_0028DD40;
+extern s32 D_002BCEA0;
+extern s32 D_002BCEB8;
+extern s32 D_002BCED0;
+
+typedef struct CdRead_00192308 {
+    s32 lbn;
+    s32 sectors;
+    s32 buf;
+    s32 unkC;
+    u8 mode[4];
+} CdRead_00192308;
+
+s32 func_00192308(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
+    CdRead_00192308 *p;
+    s32 *q;
+    s32 r;
+
+    p = (CdRead_00192308 *)&D_0028DDC0;
+    if (func_001912F0(0xF) == 0) {
+        return 0;
+    }
+    if (D_0028DCD0 > 0) {
+        func_0017DA98(&D_002BCEA0);
+    }
+    p->lbn = arg0;
+    p->sectors = arg1;
+    p->buf = arg2;
+    p->unkC = arg3;
+    if (arg4 != NULL) {
+        p->mode[0] = ((u8 *)arg4)[0];
+        p->mode[1] = ((u8 *)arg4)[1];
+        p->mode[2] = ((u8 *)arg4)[2];
+    }
+    if (D_0028DCD0 > 0) {
+        func_0017DA98(&D_002BCEB8);
+    }
+    func_0017E190((s32 *)p, 0x14);
+    q = &D_0028DD40;
+    if (func_0017EA80(&D_0028EE90, 9, 0, (s32 *)p, 0x14, q, 4, 0, 0) < 0) {
+        func_0017B900(D_0028DCE8);
+        return 0;
+    }
+    if (D_0028DCD0 > 0) {
+        func_0017DA98(&D_002BCED0);
+    }
+    r = *(s32 *)((u32)q | 0x20000000);
+    func_0017B900(D_0028DCE8);
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00192470);
 
