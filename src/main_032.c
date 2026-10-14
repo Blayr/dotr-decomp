@@ -473,4 +473,12 @@ s32 func_00193BA8(s32 arg0, s32 arg1, s8 *arg2, s32 arg3) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193CE0);
+s32 func_00193CE0(s32 arg0, s32 arg1, void *arg2) {
+    s32 ret;
+
+    ret = func_00193BA8(arg0, arg1, arg2, 0x40);
+    if (ret == 0) {
+        D_0028F790 = 0xB;
+    }
+    return ret;
+}

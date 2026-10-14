@@ -1194,7 +1194,6 @@ typedef struct State_0023D920 {
     u8 buffer[1];
 } State_0023D920;
 
-s32 func_00193CE0(s32, s32, void *);
 s32 func_0023E7A0(void);
 extern s16 D_0034FB34;
 extern u8 D_0029B100[];
