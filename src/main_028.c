@@ -169,7 +169,29 @@ void func_00188478(void *p0, void *p1, float f0) {
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188490);
+int func_00188490(void *p0) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("\n\
+	vsub.xyzw	$vf4,$vf0,$vf0\n\
+	lui	%0,(0x45800000 >> 16)\n\
+	dsll	%0,%0,16\n\
+	ori	%0,%0,0x4580\n\
+	dsll	%0,%0,16\n\
+	lqc2	$vf7,0x0(%1)\n\
+	qmtc2.ni	%0,$vf6\n\
+	.word 0x48C08000 # ctc2.ni $zero, $vi16\n\
+	vsub.xyw	$vf5,$vf7,$vf4\n\
+	vsub.xy	$vf5,$vf6,$vf7\n\
+	vnop\n\
+	vnop\n\
+	vnop\n\
+	vnop\n\
+	vnop\n\
+	.word 0x48428000 # cfc2.ni $v0, $vi16\n\
+	andi	%0,%0,0xC0\n\
+	" : "=r" (ret) : "r" (p0));
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_001884D8);
 

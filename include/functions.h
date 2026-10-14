@@ -1022,6 +1022,7 @@ void func_001883E0(void *p0, void *p1, void *p2, void *p3);
 void func_00188428(f32 *arg0, f32 *arg1);
 void func_00188448(void *p0, void *p1, void *p2, float f0);
 void func_00188478(void *p0, void *p1, float f0);
+int func_00188490(void *p0);
 void func_0018A378(s32 arg0);
 s32 func_0018A590(s32 arg0);
 void func_0018A5B0(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy);
