@@ -1031,6 +1031,7 @@ int func_001884D8(void *p0, void *p1, void *p2);
 int func_00188538(void *p0, void *p1, void *p2, void *p3);
 void func_001885C8(void);
 void func_001895C8(void *p0);
+void func_00189640(void *p0);
 void func_001896D8(void *p0);
 void func_00189790(void *p0);
 void func_00189860(void *p0);
