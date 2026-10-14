@@ -710,7 +710,6 @@ typedef struct {
     u8 data[1];
 } Header_002087A0;
 
-void func_00208870(s32, s32, s32, void *, void *);
 
 s32 func_002087A0(void *arg0, s32 arg1) {
     Header_002087A0 *header = arg0;
@@ -731,7 +730,103 @@ void func_00208800(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_00209D30(func_00208870(func_00209D20(), arg0, arg1, arg2, arg3));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00208870);
+typedef struct Tex0_00208870 {
+    u64 tbp0 : 14;
+    u64 tbw : 6;
+    u64 psm : 6;
+    u64 tw : 4;
+    u64 th : 4;
+    u64 tcc : 1;
+    u64 tfx : 2;
+    u64 cbp : 14;
+    u64 cpsm : 4;
+    u64 csm : 1;
+    u64 csa : 5;
+    u64 cld : 3;
+} Tex0_00208870;
+
+typedef struct Tex1_00208870 {
+    u64 lcm : 1;
+    u64 pad0 : 1;
+    u64 mxl : 3;
+    u64 mmag : 1;
+    u64 mmin : 3;
+    u64 mtba : 1;
+    u64 pad1 : 9;
+    u64 l : 2;
+    u64 pad2 : 11;
+    u64 k : 12;
+    u64 pad3 : 20;
+} Tex1_00208870;
+
+s32 func_00208870(s32 arg0, s32 arg1, s32 arg2, void *arg3, void *arg4) {
+    s32 sp70;
+    s32 sp74;
+    s32 sp78;
+    s32 sp7C;
+    s32 tw;
+    s32 th;
+    Tex0_00208870 *tex0 = (Tex0_00208870 *)arg3;
+    Tex1_00208870 *tex1 = (Tex1_00208870 *)arg4;
+    s64 *packet = (s64 *)arg0;
+    s64 *start = packet;
+
+    func_00209EF0(arg1 != 0 ? 1 : 0, &sp70, &sp74, NULL);
+    func_00209D60(&sp78, &sp7C);
+    for (tw = 0; (1 << tw) < sp78; tw++) {
+    }
+    for (th = 0; (1 << th) < sp7C; th++) {
+    }
+    if (tex0 != NULL) {
+        tex0->tbp0 = arg1 > 0 ? arg1 : sp70;
+        tex0->tbw = sp78 >> 6;
+        tex0->psm = sp74;
+        tex0->tw = tw;
+        tex0->th = th;
+        tex0->tcc = 0;
+        tex0->tfx = 0;
+        tex0->cbp = 0;
+        tex0->cpsm = 0;
+        tex0->csm = 0;
+        tex0->csa = 0;
+        tex0->cld = 1;
+    }
+    if (tex1 != NULL) {
+        tex1->lcm = 0;
+        tex1->mxl = 0;
+        tex1->mmag = arg2;
+        tex1->mmin = arg2;
+        tex1->mtba = 0;
+        tex1->l = 0;
+        tex1->k = 0;
+    }
+    if (arg1 > 0) {
+        s64 width;
+        u16 count;
+
+        packet[1] = 0;
+        packet[0] = 0;
+        ((u8 *)packet)[3] = 0x10;
+        packet[2] = 0x1000000000008004LL;
+        packet[3] = 0xE;
+        width = sp78 >> 6;
+        packet[4] = ((s64)sp74 << 56) | ((width << 48) | (((s64)arg1 << 32) |
+                    (((s64)sp74 << 24) | (sp70 | (width << 16)))));
+        packet[5] = 0x50;
+        packet[6] = 0;
+        packet[7] = 0x51;
+        packet[8] = sp78 | ((s64)sp7C << 32);
+        packet[9] = 0x52;
+        packet[10] = 2;
+        packet[11] = 0x53;
+        packet += 12;
+        count = ((packet - start) >> 1) - 1;
+        *(u16 *)start = count;
+        ((s32 *)start)[2] = 0x11000000;
+        ((s32 *)start)[3] = count | 0x51000000;
+    }
+    return (s32)packet;
+}
 
 typedef struct Buffer_00208CB0 {
     u16 index;
