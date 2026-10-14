@@ -46,7 +46,6 @@ extern u8 D_00317490[];
 typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
-extern void func_00187660(void *, s32);
 extern void func_001876D0(void *);
 extern void func_00187778(void *, s32, s32);
 extern void func_00187828(void *, s32, s32);

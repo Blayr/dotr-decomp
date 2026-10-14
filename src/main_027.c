@@ -171,7 +171,18 @@ s32 func_00187608(void *arg0) {
     return var_a1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187660);
+void func_00187660(void *arg0, s32 arg1) {
+    u32 *tag;
+    s32 ret;
+
+    ret = func_00187608(arg0);
+    tag = *(u32 **)arg0;
+    *(u32 **)((u8 *)arg0 + 8) = (u32 *)ret;
+    *tag++ = arg1 | 0x10000000;
+    *(s32 *)((u8 *)arg0 + 0xC) = 0;
+    *(u32 **)arg0 = tag + 1;
+    tag[0] = 0;
+}
 
 void func_001876B8(void *arg0, __int128 arg1) {
     __int128 *temp_v0;
