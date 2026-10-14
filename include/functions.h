@@ -1560,6 +1560,7 @@ double func_001999B0(i2b_Bigint *a, i2b_Bigint *b);
 double func_00199A80(s32 dig);
 s32 func_00199AF0(vf_reent *ptr, const char *fmt, ...);
 void func_00199B50(const char *fmt, ...);
+void func_00199BC0(s32 arg0, u32 n, u32 es, void (*arg3)(void));
 void func_0019A5B0(s64 arg0);
 s32 func_0019A5C8(void);
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt);
