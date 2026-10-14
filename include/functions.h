@@ -1065,6 +1065,7 @@ s32 func_0019D9E0(s32 c);
 s32 func_0019DC70(s32 arg0, void *arg1);
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s64 func_001A05E8(s64 u, s64 v);
+u64 func_001A2000(double a);
 f32 func_001A2190(fp_number_f *src);
 void func_001A2260(fp_union_f *src, fp_number_f *dst);
 s64 func_001A22C0(f32 arg_a);

@@ -12,7 +12,26 @@ INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1E70);
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1F18);
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A2000);
+/* __fixunsdfdi */
+
+u64 func_001A2000(double a) {
+    double b;
+    u64 v;
+
+    if (a < 0) {
+        return 0;
+    }
+    b = (a / ((u64)1 << 32));
+    v = (u32)b;
+    v <<= 32;
+    a -= (double)v;
+    if (a < 0) {
+        v -= (u32)(-a);
+    } else {
+        v += (u32)a;
+    }
+    return v;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_036", func_001A2118);
 
