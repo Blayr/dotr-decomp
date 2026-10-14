@@ -1459,7 +1459,97 @@ s32 func_001CCEA0(s32 arg0, s32 x, s32 y) {
     return id;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001CD560);
+typedef struct Draw_001CD560 {
+    s32 f00;
+    s32 f04;
+    s32 f08;
+    f32 f0C;
+    s32 f10;
+    s32 f14;
+    s32 f18;
+    s32 f1C;
+    s32 f20;
+    s32 f24;
+    s32 f28;
+    s32 f2C;
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    s32 f3C;
+    u8 g40;
+    u8 g41;
+    u8 g42;
+    u8 alpha;
+    u8 g44;
+    u8 g45;
+    u8 g46;
+    u8 g47;
+    u16 h48;
+    u16 h4A;
+    s32 f4C;
+    s64 d50;
+    u8 pad58[0x20];
+    s32 p78;
+    s32 p7C;
+    s16 a80 : 12;
+    s8 horizontal : 1;
+    s8 enabled : 1;
+    s8 colored : 1;
+    s8 reserved : 1;
+    s16 a82 : 12;
+    u8 b83a : 2;
+    s8 b83c : 1;
+    s8 b83d : 1;
+} Draw_001CD560;
+
+s32 func_001CD560(void *arg0) {
+    Draw_001CD560 *p;
+
+    if (arg0 == NULL) {
+        return 0;
+    }
+    p = arg0;
+    p->f00 = 0;
+    p->f04 = 0;
+    p->f08 = 0;
+    p->f0C = 1.0f;
+    p->f10 = 0x4000;
+    p->f14 = 0;
+    p->f18 = 0;
+    p->f1C = 0;
+    p->f20 = 0;
+    p->f24 = 0;
+    p->f28 = 0;
+    p->f2C = 0;
+    p->f30 = 0.1f;
+    p->f34 = 0.1f;
+    p->f38 = 1.0f;
+    p->f3C = 0;
+    p->g42 = 0x80;
+    p->g41 = 0x80;
+    p->g40 = 0x80;
+    p->alpha = 0x80;
+    p->g46 = 0;
+    p->g45 = 0;
+    p->g44 = 0;
+    p->g47 = 0;
+    p->h4A = 7;
+    p->h48 = 0;
+    p->d50 = 0;
+    p->f4C = 0;
+    p->p78 = 0x70002000;
+    p->p7C = 0x70000000;
+    p->a80 = 0xAA;
+    p->a82 = 0;
+    p->b83a = 1;
+    p->horizontal = 1;
+    p->enabled = 0;
+    p->colored = 1;
+    p->reserved = 1;
+    p->b83c = 0;
+    p->b83d = 0;
+    return 1;
+}
 
 void func_001CD6E0(void) {
     func_00209D30(func_001CD710(func_00209D20()));
@@ -1588,7 +1678,6 @@ s32 func_001CDA60(void *arg0) {
     return 1;
 }
 
-void func_001CD560();
 
 typedef struct {
     u8 pad_00[0x90];

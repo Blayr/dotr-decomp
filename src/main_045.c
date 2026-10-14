@@ -55,7 +55,6 @@ s32 func_001DFAF0(s32 arg0, s32 arg1, s32 arg2) {
     func_001DF5F0(arg0, x, y, buffer, arg1 == 0 ? 1 : 0);
 }
 
-void func_001CD560();
 
 static inline u8 *check_001DFBB0(s32 a0, s32 a1) {
     u8 *p = func_001DD130(a0, a1);

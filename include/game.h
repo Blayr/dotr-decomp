@@ -131,7 +131,6 @@ extern u8 D_0029D586[];
 
 
 f32 func_001A1F18(s64);
-void func_001CD560(void);
 extern u8 D_0031A7C0[];
 extern u16 D_002CE4A4[];
 
