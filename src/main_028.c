@@ -563,7 +563,57 @@ INCLUDE_ASM("asm/nonmatchings/main_028", func_00188880);
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00188F88);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_001893A8);
+typedef struct MpegSub_001893A8 {
+    u8 b[0x1C];
+} MpegSub_001893A8;
+
+typedef struct MpegBuf_001893A8 {
+    s32 unk0;
+    s32 f4;
+    u8 unk8[0x20];
+    void (*fn1[4])(void *);
+    void (*fn2[4])(void *);
+    MpegSub_001893A8 sub1[4];
+    MpegSub_001893A8 sub2[4];
+    s32 p;
+    s32 n;
+    s32 f130;
+    s32 unk134;
+    s32 f138;
+    s32 f13C;
+} MpegBuf_001893A8;
+
+typedef struct MpegDec_001893A8 {
+    u8 unk0[0x590];
+    MpegBuf_001893A8 bufs[2];
+    s32 unk810[3];
+    s32 f81C;
+} MpegDec_001893A8;
+
+extern char D_002BC730[];
+
+void func_001893A8(void *arg0, s32 idx) {
+    extern void func_0018A318(s32, s32);
+    MpegDec_001893A8 *d = arg0;
+    s32 i;
+
+    if (d->bufs[idx].f138 != 0) {
+        for (i = 0; i < d->bufs[idx].n; i++) {
+            d->bufs[idx].fn1[i](&d->bufs[idx].sub1[i]);
+            d->bufs[idx].fn2[i](&d->bufs[idx].sub2[i]);
+        }
+    }
+    if (d->bufs[idx].f130 != 0 && d->bufs[idx].f13C != 0) {
+        func_0018F7B0((s32)d, D_002BC730);
+    }
+    if (d->bufs[idx].f130 != 0) {
+        func_0018A318(d->bufs[idx].p, d->bufs[idx].f4);
+    } else if (d->bufs[idx].f13C != 0) {
+        func_0018A318(d->bufs[idx].p, d->f81C);
+    } else {
+        func_0018A2B8((void *)d->bufs[idx].p, (void *)d->f81C, (void *)d->bufs[idx].f4);
+    }
+}
 
 void func_001895C8(void *p0) {
     __asm__ __volatile__("\n\

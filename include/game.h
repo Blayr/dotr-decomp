@@ -866,7 +866,6 @@ extern s32 D_002BD274[];
 
 typedef union b2d_du { double d; u32 i[2]; } b2d_du;
 
-s32 func_001893A8(void *, s32);
 s32 func_0018A3A0(void *);
 extern s32 D_002BC7A0;
 
