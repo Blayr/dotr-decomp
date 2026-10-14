@@ -115,21 +115,29 @@ if [ "$DK_GCC" = 2.96 ]; then
 else
     sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
 fi
-# The C library's assembler put a nop after every `mtc1` followed by an FPU instruction, whatever
-# the registers (`mtc1 $at,$f1; nop; mul.s $f0,$f3,$f0`, fdlibm's constants); binutils only when
-# the next instruction reads that register. `li.s` ends in an mtc1 too (gas expands it). Only in
-# reorder code: GCC handles its own noreorder.
+# The C library's assembler put a nop after an `mtc1` when the next FPU instruction reads the
+# even/odd register PAIR it wrote (old gas compares `reg & ~1`: `mtc1 $at,$f1; nop; mul.s $f0,..`,
+# but `mtc1 $at,$f0; mul.s $f2,$f12,$f13` has none); binutils only for the same register. `li.s`
+# ends in an mtc1 too (gas expands it). Only in reorder code: GCC handles its own noreorder.
 if [ "$DK_GCC" = 2.96 ]; then
-    perl -i -ne 'BEGIN { @st = (0); $mt = 0 }
+    perl -i -ne 'BEGIN { @st = (0); $mt = -1 }
         if (/^\s*\.set\s+push\b/) { push @st, $st[-1] }
         elsif (/^\s*\.set\s+pop\b/) { pop @st }
         elsif (/^\s*\.set\s+noreorder\b/) { $st[-1] = 1 }
         elsif (/^\s*\.set\s+reorder\b/) { $st[-1] = 0 }
-        elsif (/^\s+([a-z][a-z0-9.]*)\s/) {
-            my $m = $1;
-            print "\tnop\n" if $mt && !$st[-1] && $m =~ /^(c\.[a-z]+\.s|[a-z]+\.s|cvt\.[a-z]\.[a-z])$/
-                && $m !~ /^(li|l|s)\.s$/;
-            $mt = ($m eq "mtc1" || $m eq "li.s") && !$st[-1];
+        elsif (/^\s+([a-z][a-z0-9.]*)\s+(.*)$/) {
+            my ($m, $o) = ($1, $2);
+            if ($mt >= 0 && !$st[-1] && $m =~ /^(c\.[a-z]+\.s|[a-z]+\.s|cvt\.[a-z]\.[a-z])$/
+                && $m !~ /^(li|l|s)\.s$/) {
+                my @r = ($o =~ /\$f(\d+)/g);
+                shift @r unless $m =~ /^c\./;
+                print "\tnop\n" if grep { ($_ & ~1) == ($mt & ~1) } @r;
+            }
+            $mt = -1;
+            if (!$st[-1]) {
+                if ($m eq "mtc1" && $o =~ /,\s*\$f(\d+)/) { $mt = $1 }
+                elsif ($m eq "li.s" && $o =~ /^\$f(\d+)/) { $mt = $1 }
+            }
         }
         print' "$TMP/out.s"
 fi
