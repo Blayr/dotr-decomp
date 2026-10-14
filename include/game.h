@@ -891,4 +891,7 @@ s32 func_0017B930(s32);                             /* extern */
 extern s32 D_00315CA0;
 extern s32 D_00315CF0;
 
+s32 func_0018CE00(void *, s32, s32);       /* extern */
+s32 func_0018CF10(void *, s32, s32, s32);       /* extern */
+
 #endif
