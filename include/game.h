@@ -64,7 +64,7 @@ s32 func_0027B650(u16 *);
 
 void func_00185578(s32, s32);
 void func_00185890(void *, s16, s32, s32, s32, s32, s32, s32);
-void func_001859D0(void *, u64);
+s32 func_001859D0(void *, void *);
 extern u8 D_00325E80[];
 extern u8 D_00325F50[];
 extern s32 D_003261BC;

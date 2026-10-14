@@ -1944,7 +1944,7 @@ s32 func_00209F60(void (*arg0)(void));
 void *func_00209F70(void *arg0, u32 arg1);
 void func_0020A280(void *arg0);
 void *func_0020A340(void *arg0, void *arg1);
-void func_0020A3B0(s64 arg0);
+void func_0020A3B0(u32 arg0);
 void *func_0020A610(void *arg0);
 void *func_0020A760(void *arg0);
 void *func_0020A870(u8 *packet, u8 *color);

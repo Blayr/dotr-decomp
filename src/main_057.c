@@ -278,7 +278,7 @@ void *func_0020A340(void *arg0, void *arg1) {
     return (u8 *)arg0 + 0x30;
 }
 
-void func_0020A3B0(s64 arg0) {
+void func_0020A3B0(u32 arg0) {
     u8 *base = D_00325F50;
     u16 *p;
 
@@ -290,7 +290,7 @@ void func_0020A3B0(s64 arg0) {
     }
     func_00185890(D_00325E80, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
     func_0017BB60(0);
-    func_001859D0(D_00325E80, arg0 & 0x0FFFFFFF);
+    func_001859D0(D_00325E80, (void *)(arg0 & 0x0FFFFFFF));
     func_00185578(0, 0);
 }
 
