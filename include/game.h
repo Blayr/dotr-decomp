@@ -50,7 +50,6 @@ extern u8 D_00317490[];
 typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
-extern s32 func_00187608(void *);
 extern void func_00187660(void *, s32);
 extern void func_001876B8(void *, Q128_0020F290);
 extern void func_001876D0(void *);
