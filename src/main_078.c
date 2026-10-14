@@ -1037,7 +1037,52 @@ void func_00279230(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                   arg5, arg6, arg7, arg8);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_002792C0);
+s32 func_002792C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s16 arg6, u8 arg7) {
+    extern void func_0027E770();
+    u8 scratch[0x6A];
+    s16 x;
+    s16 y;
+    u8 flag_pad;
+    u8 flag;
+    s32 result;
+    u8 level;
+    s32 previous;
+
+    flag = 0;
+    y = 0;
+    x = 0;
+    level = 1;
+    result = 0;
+    if (arg0 == 0) {
+        return -1;
+    }
+    func_0027E770(scratch);
+    if (func_001A8710() > 0x2EE0U) {
+        return -1;
+    }
+    if (func_002464F0(arg0, arg2, arg3) == 0) {
+        return 0;
+    }
+    if ((((arg4 < arg2) ? arg2 : arg4) - ((arg2 < arg4) ? arg2 : arg4)) + (((arg5 < arg3) ? arg3 : arg5) - ((arg3 < arg5) ? arg3 : arg5)) > (s32)arg7) {
+        return -1;
+    }
+    while (flag == 0 && (previous = (u8)level, arg7 >= previous)) {
+        result = (s32)func_002794E0((u8 *)result, 0, arg0, arg2, arg3, arg4, arg5, level, (s8 *)&flag, (s32)&arg6, 0, (u16 *)&x, (u16 *)&y, (s32)scratch);
+        if (flag == 1) {
+            func_0027AC70(arg1, result, arg4, arg5);
+            return previous;
+        }
+        if (func_0027ABD0((void *)result, 0, level) == 1) {
+            level = (level + 1) & 0xFF;
+        } else {
+            return -1;
+        }
+        if (func_001A8710() > 0x2EE0U) {
+            return -1;
+        }
+    }
+    return -1;
+}
 
 typedef struct Node_002794E0 {
     s32 parent;
