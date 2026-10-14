@@ -464,7 +464,6 @@ void func_0027CA50(void *, s32, s32, s32);
 
 
 
-extern void func_001474F0(void *);
 extern void func_00147830(void *);
 extern void func_00147B90(void *, s32);
 

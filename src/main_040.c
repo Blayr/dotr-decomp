@@ -1078,7 +1078,60 @@ s32 func_001BFF00(s32 id, s32 arg1, s32 arg2, s32 arg3) {
     return func_001B3CC0(id, &D_00290864, sx + 0x11B, sy + 0x38, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C02E0);
+s32 func_001C02E0(s32 id, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern char D_002BEFE7[];
+    extern char D_002BEFEC[];
+    extern char D_002BEFF3[];
+    extern s32 D_00290A62;
+    extern s32 D_00290A58;
+    extern s32 D_00290A4E;
+    extern u8 D_003181ED;
+    u8 *state = D_00317490;
+    s32 flag = (D_003181ED == 4) ? 1 : 0;
+    s8 *text1 = D_002BEFE7;
+    s8 *text2 = D_002BEFEC;
+    s8 *text3 = D_002BEFF3;
+    s32 hint = 0;
+    s32 x;
+    s32 y;
+    s32 sx;
+    s32 sy;
+    s32 px;
+    s32 py;
+
+    x = arg1 + 0x148;
+    y = arg2 + 0x70 + arg3 * 0x36;
+    sx = x + 0x6C0;
+    sy = y + 0x720;
+    id = func_001B4780(id, -1, 4, 6, x - 2, y - 2, -0x130, -0x36, 1);
+    if (*(u16 *)(state + 0xC96) != 0) {
+        return id;
+    }
+    id = func_001B4780(id, 0xD, -1, 7, x, y + 0x36, -0x130, -0x14, 1);
+    px = sx + 5;
+    py = sy + 0x38;
+    id = func_001B3CC0(id, &D_00290A62, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    id = func_001B3CC0(id, &D_00290A58, px + 0x11, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    px = x + 0x2C;
+    py = y + 0x3B;
+    id = func_001B6F70(id, px, py, 1, 0, func_0019BEF0((char *)text1), text1,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    if (flag) {
+        id = func_001B3CC0(id, &D_00290A4E, sx + 0x6B, sy + 0x38, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        px = x + 0x81;
+        py = y + 0x3B;
+        return func_001B6F70(id, px, py, 1, 0, func_0019BEF0((char *)text2), text2,
+                             hint != 0 ? (s32)D_002BE944 : 0);
+    } else {
+        id = func_001B3CC0(id, &D_00290A4E, sx + 0x5B, sy + 0x38, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        px = x + 0x71;
+        py = y + 0x3B;
+        return func_001B6F70(id, px, py, 1, 0, func_0019BEF0((char *)text3), text3,
+                             hint != 0 ? (s32)D_002BE944 : 0);
+    }
+}
 
 void func_001C05F0(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_001B0CE0();

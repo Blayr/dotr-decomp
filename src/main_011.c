@@ -1057,7 +1057,105 @@ s32 func_00147100(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_001474F0);
+typedef struct {
+    u16 card;
+    u8 flag;
+    u8 pad3;
+} Slot_001474F0;
+
+typedef struct {
+    u16 low;
+    u16 high;
+} DataHalves_001474F0;
+
+typedef struct {
+    u16 coordinates;
+    u8 pad2[2];
+    u16 state;
+    u8 pad6[2];
+    union {
+        u32 word;
+        DataHalves_001474F0 halves;
+    } data;
+} Entry_001474F0;
+
+void func_001474F0(void *arg0) {
+    extern s32 func_0027B200();
+    extern void func_0027E770();
+    extern s32 func_001477D0();
+    Entry_001474F0 *entry = arg0;
+    s32 side;
+    s32 player;
+    s32 pos;
+    s32 other;
+    s32 otherPos;
+    s32 i;
+    s32 result;
+    u8 work[0x70];
+    Slot_001474F0 list[22];
+    s16 countA;
+    s16 countB;
+
+    if (func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        side = func_0024DE70(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        other = (side == 0 ? 1 : 0) << 8;
+        pos = func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        otherPos = func_001E1090(other >> 8, other & 0xFF);
+        player = func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        for (i = 0; i < 22; i++) {
+            list[i].card = 0xFFFF;
+            list[i].flag = 0xFF;
+        }
+        func_0027E770(work);
+        if (func_0027B200(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
+                          other >> 8, other & 0xFF, otherPos & 0xFF, otherPos >> 8, 2) > 0) {
+            entry->state = 0x2FF;
+            entry->data.word = (other << 16) | entry->data.halves.low;
+            return;
+        }
+        countB = 0;
+        countA = 0;
+        i = 1;
+        while (1) {
+            switch (func_001477D0(entry, 0, player, pos & 0xFF, pos >> 8,
+                                  func_0024DE70(entry->coordinates >> 8, entry->coordinates & 0xFF) == 0 ? 1 : 0,
+                                  (u8)i, func_0014B330(side), list, 0,
+                                  &countA, &countB, 2, work)) {
+            case 3:
+                entry->state = 0x6FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            case 2:
+                entry->state = 0x3FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            case 1:
+                return;
+            case 0:
+                entry->state = 0x3FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            }
+            i++;
+            if (i > 2) {
+                break;
+            }
+        }
+        if (func_00147E50(pos & 0xFF, pos >> 8) == 1) {
+            entry->state = 0x6FF;
+            entry->data.word = (pos << 16) | entry->data.halves.low;
+            return;
+        }
+        result = func_00147F40();
+        if (result >= 0) {
+            entry->state = 0x6FF;
+            entry->data.word = (result << 16) | entry->data.halves.low;
+        } else {
+            entry->state = 0x6FF;
+            entry->data.word = entry->data.halves.low | (func_00147E00(side, pos & 0xFF, pos >> 8) << 16);
+        }
+    }
+}
 
 void func_001477D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, u16 arg9, s32 arg10, s32 arg11, u8 arg12, s32 arg13) {
     func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, 0, 0x960, arg13);
