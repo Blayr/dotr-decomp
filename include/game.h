@@ -887,4 +887,8 @@ extern s32 D_002BE4C4[];  /* fdlibm ef_rem_pio2.c npio2_hw[] - 1 */
 extern s32 D_002BE1B0[];  /* two_over_pi[] */
 s32 func_001A5948(f32 *x, f32 *y, s32 e0, s32 nx, s32 prec, const s32 *ipio2);
 
+s32 func_0017B930(s32);                             /* extern */
+extern s32 D_00315CA0;
+extern s32 D_00315CF0;
+
 #endif

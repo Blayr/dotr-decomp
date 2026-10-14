@@ -1025,6 +1025,7 @@ void func_00194200(s32 arg0);
 void func_00194328(s32 arg0);
 s32 func_00194508(void);
 void func_001946D0(void *arg0);
+s32 func_00194D28(s32 arg0, s32 arg1, s8 *arg2, void *arg3);
 s32 func_00195070(s32 arg0);
 void func_00195088(s32 arg0);
 s32 func_001950A0(const char *s);
