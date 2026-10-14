@@ -1443,7 +1443,6 @@ void func_0027F0D0(void *arg0) {
     values[8] = values[9] = values[10] = values[11] = 0.0f;
 }
 
-void func_0020C940(void *, void *, void *, void *);
 
 typedef struct {
     f32 values[4][4];

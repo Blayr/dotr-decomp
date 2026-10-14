@@ -273,7 +273,6 @@ void func_00103890(void *arg0) {
     values[8] = 0.0f;
 }
 
-void func_0020C940(void *, void *, void *, void *);
 
 typedef struct {
     f32 values[4][4];
@@ -295,7 +294,6 @@ void func_001038D0(void *arg0) {
     func_0020BC00((s32)&camera->matrix, &matrix);
 }
 
-void func_0020C940(void *, void *, void *, void *);
 
 typedef struct Transform_00103920 {
     f32 field0[4];
@@ -335,7 +333,6 @@ typedef struct Object_001039A0 {
     f32 matrix[4][4];
 } Object_001039A0;
 
-void func_0020C940(void *, void *, void *, void *);
 
 s32 func_001039A0(void *arg0) {
     s32 vector[4];

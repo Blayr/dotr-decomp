@@ -1119,4 +1119,57 @@ void func_0020C8F0(void *arg0, f32 *arg1) {
     matrix->translation[2] = arg1[2];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020C940);
+typedef struct {
+    f32 m[3][4];
+    f32 t[3];
+} Matrix_0020C940;
+
+void func_0020BBB0(void *arg0);
+
+void func_0020C940(void *arg0, void *p1, void *p2, void *p3) {
+    Matrix_0020C940 *mtx = arg0;
+    f32 *arg1 = p1;
+    s32 *arg2 = p2;
+    f32 *arg3 = p3;
+    f32 cx;
+    f32 sx;
+    f32 cy;
+    f32 sy;
+    f32 cz;
+    f32 sz;
+
+    func_0020BBB0(arg0);
+    if (arg3 != NULL) {
+        mtx->t[0] = arg3[0];
+        mtx->t[1] = arg3[1];
+        mtx->t[2] = arg3[2];
+    }
+    if (arg2 != NULL) {
+        cx = func_0020B480(arg2[0]);
+        sx = func_0020B550(arg2[0]);
+        cy = func_0020B480(arg2[1]);
+        sy = func_0020B550(arg2[1]);
+        cz = func_0020B480(arg2[2]);
+        sz = func_0020B550(arg2[2]);
+        mtx->m[0][0] = cy * cz;
+        mtx->m[1][0] = sx * sy * cz - cx * sz;
+        mtx->m[2][0] = cx * sy * cz + sx * sz;
+        mtx->m[0][1] = cy * sz;
+        mtx->m[1][1] = sx * sy * sz + cx * cz;
+        mtx->m[2][1] = cx * sy * sz - sx * cz;
+        mtx->m[0][2] = -sy;
+        mtx->m[1][2] = sx * cy;
+        mtx->m[2][2] = cx * cy;
+    }
+    if (arg1 != NULL) {
+        mtx->m[0][0] *= arg1[0];
+        mtx->m[0][1] *= arg1[0];
+        mtx->m[0][2] *= arg1[0];
+        mtx->m[1][0] *= arg1[1];
+        mtx->m[1][1] *= arg1[1];
+        mtx->m[1][2] *= arg1[1];
+        mtx->m[2][0] *= arg1[2];
+        mtx->m[2][1] *= arg1[2];
+        mtx->m[2][2] *= arg1[2];
+    }
+}
