@@ -755,7 +755,7 @@ void *func_0017E4D0(s32);                           /* extern */
 
 u32 func_001870C8();                                /* extern */
 extern s32 func_0019B788;
-extern s32 func_0019B7F0;
+s32 func_0019B7F0(void *, s32, s32);
 extern s32 func_0019B870;
 
 typedef union { f32 value; u32 word; } fshape;
