@@ -901,6 +901,7 @@ s32 func_00181260(s32 arg0);
 s32 func_00181BD8(s32 arg0);
 s32 func_00182000(s32 arg0);
 s32 func_001828C0(s32 arg0);
+s32 func_001829B0(s32 arg0);
 s32 func_00182A28(s32 arg0);
 s32 func_00182C38(void);
 s32 func_00182CC8(void);
