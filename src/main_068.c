@@ -3148,7 +3148,7 @@ typedef struct {
 
 
 void func_00184E10(void *, s32, s64, s64, s32, s32);
-void func_00185100(void *);
+s32 func_00185100(void *);
 void func_00186470(s32, s32);
 void func_00187480(void *, s32, s32, s32);
 void func_00187528(void *);
