@@ -10,7 +10,11 @@ INCLUDE_ASM("asm/nonmatchings/main_033", func_00193F38);
 
 INCLUDE_ASM("asm/nonmatchings/main_033", func_00194058);
 
-INCLUDE_ASM("asm/nonmatchings/main_033", func_001941D8);
+void func_001941D8(s32 arg0, s32 arg1, s32 arg2) {
+    func_0017C8D0(arg2);
+    __asm__ volatile("sync");
+    __asm__ volatile("ei");
+}
 
 void func_00194200(s32 arg0) {
     func_0017B660(arg0 & 0xFFFF, &func_001941D8, func_0017B7D0());

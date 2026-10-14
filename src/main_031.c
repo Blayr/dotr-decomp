@@ -193,7 +193,11 @@ s32 func_00190800(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_00190810);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190A00);
+void func_00190A00(s32 arg0, s32 arg1, s32 arg2) {
+    func_0017B910(arg2);
+    __asm__ volatile("sync");
+    __asm__ volatile("ei");
+}
 
 void func_00190A28(u16 arg0) {
     s32 sp0[8];
