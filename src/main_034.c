@@ -365,7 +365,90 @@ s32 func_0019AC30(void *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_0019AC68);
+typedef struct sr_reent { u8 pad0[0x38]; s32 __sdidinit; } sr_reent;
+typedef struct sr_sbuf { u8 *_base; s32 _size; } sr_sbuf;
+typedef struct sr_FILE {
+    u8 *_p;
+    s32 _r;
+    s32 _w;
+    s16 _flags;
+    s16 _file;
+    sr_sbuf _bf;
+    s32 _lbfsize;
+    void *_cookie;
+    s32 (*_read)(void *, char *, s32);
+    s32 (*_write)(void *, const char *, s32);
+    void *_seek;
+    void *_close;
+    sr_sbuf _ub;
+    u8 *_up;
+    s32 _ur;
+    u8 _ubuf[3];
+    u8 _nbuf[1];
+    sr_sbuf _lb;
+    s32 _blksize;
+    s32 _offset;
+    sr_reent *_data;
+} sr_FILE;
+void func_00197838(void *fp);
+
+s32 func_0019AC68(void *arg0) {
+    sr_FILE *fp = arg0;
+
+    do {
+        if (fp->_data == 0)
+            fp->_data = (sr_reent *)D_0028FA98;
+        if (!fp->_data->__sdidinit)
+            func_00196A30(fp->_data);
+    } while (0);
+
+    fp->_r = 0;
+
+    if (fp->_flags & 0x20)
+        return -1;
+
+    if ((fp->_flags & 4) == 0) {
+        if ((fp->_flags & 0x10) == 0)
+            return -1;
+        if (fp->_flags & 8) {
+            if (func_00196708((nl_FILE *)fp))
+                return -1;
+            fp->_flags &= ~8;
+            fp->_w = 0;
+            fp->_lbfsize = 0;
+        }
+        fp->_flags |= 4;
+    } else {
+        if (fp->_ub._base != NULL) {
+            if (fp->_ub._base != fp->_ubuf)
+                func_00196BE0((s32)fp->_data, (s32)fp->_ub._base);
+            fp->_ub._base = NULL;
+            if ((fp->_r = fp->_ur) != 0) {
+                fp->_p = fp->_up;
+                return 0;
+            }
+        }
+    }
+
+    if (fp->_bf._base == NULL)
+        func_00197838(fp);
+
+    if (fp->_flags & (1 | 2))
+        func_00197488((u8 *)fp->_data, (s32 (*)(nl_FILE *))func_0019AC30);
+    fp->_p = fp->_bf._base;
+    fp->_r = (*fp->_read)(fp->_cookie, (char *)fp->_p, fp->_bf._size);
+    fp->_flags &= ~0x2000;
+    if (fp->_r <= 0) {
+        if (fp->_r == 0)
+            fp->_flags |= 0x20;
+        else {
+            fp->_r = 0;
+            fp->_flags |= 0x40;
+        }
+        return -1;
+    }
+    return 0;
+}
 
 double func_0019ADE8(double x, double y) {
     u32 hx, hy;

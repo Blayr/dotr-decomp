@@ -1138,6 +1138,7 @@ void func_0019A5B0(s64 arg0);
 s32 func_0019A5C8(void);
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s32 func_0019AC30(void *arg0);
+s32 func_0019AC68(void *arg0);
 double func_0019ADE8(double x, double y);
 s32 func_0019AE30(double x);
 s32 func_0019AE78(double x);
