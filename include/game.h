@@ -275,7 +275,6 @@ s32 func_0027BBC0(s32, s32, s32);
 
 void func_001F34A0(s32, s32);
 
-void func_0010C580(void);
 extern char D_002B90C0[];
 extern s32 D_0030FF58;
 typedef struct { s32 src; s32 offset; s32 size; s32 position; s32 left; } cdstream_t;
@@ -926,5 +925,9 @@ extern char D_002BC670[];
 
 extern s32 D_00317240;
 extern char **D_0028F79C;
+
+extern char D_002B9141[];
+extern char D_002B9168[];
+extern char D_0030FF60[];
 
 #endif

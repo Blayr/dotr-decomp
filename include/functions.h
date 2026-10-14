@@ -188,6 +188,7 @@ s32 func_0010C290(void);
 s32 func_0010C2C0(void);
 s32 func_0010C2D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0010C3D0(s32 file, s32 destination, s32 position, s32 size);
+void func_0010C580(void);
 s32 func_0010C720(s32 cmd, ...);
 s32 func_0010C800(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0010C8A0(void);

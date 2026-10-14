@@ -1102,7 +1102,39 @@ s32 func_0010C3D0(s32 file, s32 destination, s32 position, s32 size) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_003", func_0010C580);
+void func_0010C580(void) {
+    s32 position;
+    s32 size;
+
+    func_00199B50(D_002B9141);
+    if (D_0030FF58 != 0) {
+        if (D_0030FFA0.src != 0) {
+            func_00198790((void *)D_0030FFA0.src, (u8 *)0x04000000 + D_0030FFA0.offset, D_0030FFA0.size);
+        }
+        if (D_0030FFA0.left != 0) {
+            position = D_0030FFA0.position;
+            D_0030FFA0.src += D_0030FFA0.size;
+            D_0030FFA0.offset = 0;
+            if (D_0030FFA0.left > 0x80000) {
+                D_0030FFA0.size = 0x80000;
+            } else {
+                D_0030FFA0.size = D_0030FFA0.left;
+            }
+            if (D_0030FFA0.left > D_0030FFA0.size) {
+                D_0030FFA0.position += D_0030FFA0.size;
+                D_0030FFA0.left -= D_0030FFA0.size;
+            } else {
+                D_0030FFA0.position = 0;
+                D_0030FFA0.left = 0;
+            }
+            size = ((D_0030FFA0.size + 0x7FF) >> 11) << 11;
+            func_00199B50(D_002B9168, D_0030FF60, 0x04000000);
+            func_00200510((s32)D_0030FF60, position, size, 0x04000000, func_0010C580, 0, 0x20);
+        } else {
+            D_0030FF58 = 0;
+        }
+    }
+}
 
 typedef char *VaList_0010C720;
 #define VA_START_0010C720(ap, parm) \
