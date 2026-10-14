@@ -85,7 +85,21 @@ INCLUDE_ASM("asm/nonmatchings/main_029", func_0018AD30);
 
 INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B1D8);
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B260);
+void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32 s, s32 count, s32 fmt, s32 h_r, s32 v_r, s32 dmv, s32 mvscale) {
+    if (count == 1) {
+        if (fmt == 0 && dmv == 0) {
+            sel[1][s] = sel[0][s] = func_0018BA48((void *)arg0, 1);
+        }
+        func_0018B400(arg0, PMV[0][s], dmvector, h_r, v_r, dmv, mvscale, 0);
+        PMV[1][s][0] = PMV[0][s][0];
+        PMV[1][s][1] = PMV[0][s][1];
+    } else {
+        sel[0][s] = func_0018BA48((void *)arg0, 1);
+        func_0018B400(arg0, PMV[0][s], dmvector, h_r, v_r, dmv, mvscale, 0);
+        sel[1][s] = func_0018BA48((void *)arg0, 1);
+        func_0018B400(arg0, PMV[1][s], dmvector, h_r, v_r, dmv, mvscale, 0);
+    }
+}
 
 void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     s32 code;
