@@ -833,6 +833,7 @@ void func_0017E3E0(void);
 void func_0017E4B0(void *arg0);
 void func_0017E5F8(void *arg0, s32 arg1);
 s32 func_0017EC70(void *arg0);
+void *func_0017EF40(void *arg0);
 void func_0017F1A0(void);
 void func_0017F6B8(void);
 s32 func_0017F708(void);
