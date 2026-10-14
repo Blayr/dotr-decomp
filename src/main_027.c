@@ -226,7 +226,15 @@ void func_00187858(void *arg0, s32 arg1) {
     *temp_a1 = (arg1 != 0) ? 0xD1000000 : 0x51000000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001878B0);
+void func_001878B0(void *arg0) {
+    u32 *tag;
+    u32 *end;
+
+    tag = *(u32 **)((u8 *)arg0 + 0xC);
+    *(u32 **)((u8 *)arg0 + 0xC) = NULL;
+    end = *(u32 **)arg0 - 1;
+    *tag += (u32)(end - tag) >> 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_001878E0);
 
