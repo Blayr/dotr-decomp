@@ -416,7 +416,68 @@ i2b_Bigint *func_00198F28(void *ptr, s32 i) {
     return b;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198F60);
+#define MU_Storeinc(a, b, c) (((u16 *)a)[1] = (u16)b, ((u16 *)a)[0] = (u16)c, a++)
+
+i2b_Bigint *func_00198F60(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
+    i2b_Bigint *c;
+    s32 k, wa, wb, wc;
+    u32 carry, y, z;
+    u32 *x, *xa, *xae, *xb, *xbe, *xc, *xc0;
+    u32 z2;
+
+    if (a->wds < b->wds) {
+        c = a;
+        a = b;
+        b = c;
+    }
+    k = a->k;
+    wa = a->wds;
+    wb = b->wds;
+    wc = wa + wb;
+    if (wc > a->maxwds)
+        k++;
+    c = func_00198AD8(ptr, k);
+    for (x = c->x, xa = x + wc; x < xa; x++)
+        *x = 0;
+    xa = a->x;
+    xae = xa + wa;
+    xb = b->x;
+    xbe = xb + wb;
+    xc0 = c->x;
+    for (; xb < xbe; xb++, xc0++) {
+        if ((y = *xb & 0xffff) != 0) {
+            x = xa;
+            xc = xc0;
+            carry = 0;
+            do {
+                z = (*x & 0xffff) * y + (*xc & 0xffff) + carry;
+                carry = z >> 16;
+                z2 = (*x++ >> 16) * y + (*xc >> 16) + carry;
+                carry = z2 >> 16;
+                MU_Storeinc(xc, z2, z);
+            } while (x < xae);
+            *xc = carry;
+        }
+        if ((y = *xb >> 16) != 0) {
+            x = xa;
+            xc = xc0;
+            carry = 0;
+            z2 = *xc;
+            do {
+                z = (*x & 0xffff) * y + (*xc >> 16) + carry;
+                carry = z >> 16;
+                MU_Storeinc(xc, z, z2);
+                z2 = (*x++ >> 16) * y + (*xc & 0xffff) + carry;
+                carry = z2 >> 16;
+            } while (x < xae);
+            *xc = z2;
+        }
+    }
+    for (xc0 = c->x, xc = xc0 + wc; wc > 0 && !*--xc; --wc)
+        ;
+    c->wds = wc;
+    return c;
+}
 
 i2b_Bigint *func_00199170(void *arg0, i2b_Bigint *b, s32 k) {
     p5_reent *ptr = arg0;
