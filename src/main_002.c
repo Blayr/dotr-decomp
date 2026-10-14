@@ -811,9 +811,8 @@ typedef struct {
     s32 data[16];
 } Matrix_00108EF0;
 
-void func_0020C940(void *, s32, s32, s32);
-
 void func_00108EF0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern void func_0020C940(void *, s32, s32, s32);
     Matrix_00108EF0 sp50;
     Matrix_00108EF0 sp90;
 

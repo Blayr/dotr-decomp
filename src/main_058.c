@@ -11,6 +11,7 @@ void func_0020CB90(s32 arg0, u32 *arg1) {
 }
 
 void func_0020CBD0(s32 arg0) {
+    extern void func_0020C750();
     f32 matrix[4][4];
 
     func_0020C750(matrix);
