@@ -288,7 +288,16 @@ _func_00187910_00187924:\n\
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187958);
+void func_00187958(void *p0, void *p1, void *p2) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%1)\n\
+	lqc2	$vf5,0x0(%2)\n\
+	vopmula.xyz	$ACC,$vf4,$vf5\n\
+	vopmsub.xyz	$vf6,$vf5,$vf4\n\
+	vsub.w	$vf6,$vf6,$vf6\n\
+	sqc2	$vf6,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1), "r" (p2));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187978);
 
