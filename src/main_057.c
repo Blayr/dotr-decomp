@@ -227,7 +227,66 @@ void *func_00209F70(void *arg0, u32 arg1) {
     return packet;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020A0B0);
+typedef struct Flags_0020A0B0 {
+    s8 enabled : 1;
+    s8 apply : 1;
+} Flags_0020A0B0;
+
+typedef struct State_0020A0B0 {
+    u8 pad00[0xC];
+    s32 base;
+    u8 pad10[8];
+    s32 mode;
+    s32 offset;
+    Flags_0020A0B0 flags;
+} State_0020A0B0;
+
+typedef union Packet_0020A0B0 {
+    u64 raw;
+    struct {
+        u16 value : 9;
+        u16 reserved : 7;
+        u8 pad02;
+        u8 mode : 4;
+        u8 other : 4;
+        u8 clear : 1;
+        u8 rest : 7;
+        u8 pad05[3];
+    } f;
+} Packet_0020A0B0;
+
+typedef struct GifTag_0020A0B0 {
+    u64 lo;
+    u64 hi;
+} GifTag_0020A0B0;
+
+s32 func_0020A0B0(s32 arg0, s32 arg1) {
+    extern u8 D_00325E40[];
+    extern __int128 D_00325E60;
+    extern Packet_0020A0B0 D_00325E70;
+    extern Packet_0020A0B0 D_00325FC0;
+    State_0020A0B0 *state = (State_0020A0B0 *)&D_00325F20;
+
+    func_001875F8((s32 *)D_00325E40, arg0);
+    func_00187660(D_00325E40, 0);
+    func_001877F8((s32 **)D_00325E40, 0x11000000);
+    func_00187778(D_00325E40, 2, 3);
+    func_00187858(D_00325E40, 0);
+    ((u64 *)&D_00325E60)[0] = ((u64)0x10000000 << 32) | 0x8000;
+    ((u64 *)&D_00325E60)[1] = 0xE;
+    func_001876B8(D_00325E40, D_00325E60);
+    if (D_00325F40.enabled && state->flags.apply) {
+        D_00325E70.f.value = state->base + state->offset;
+        D_00325E70.f.mode = state->mode;
+    } else {
+        D_00325E70 = D_00325FC0;
+    }
+    D_00325E70.f.clear = !arg1;
+    func_00187828(D_00325E40, 0x4E, ((u64 *)&D_00325E70)[0]);
+    func_001876D0(D_00325E40);
+    func_001878B0(D_00325E40);
+    return func_00187608(D_00325E40);
+}
 
 typedef struct Flags_0020A280 {
     s8 enabled : 1;
