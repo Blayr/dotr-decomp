@@ -199,7 +199,338 @@ s32 func_001F7720(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7790);
+typedef struct Light_001F7790 {
+    s32 unk0;
+    f32 rotation[3];
+    s32 x;
+    s32 y;
+    u8 pad18[0x18];
+} Light_001F7790;
+
+typedef struct Color_001F7790 {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Color_001F7790;
+
+typedef struct Range_001F7790 {
+    f32 near;
+    f32 far;
+} Range_001F7790;
+
+typedef struct State_001F7790 {
+    u8 pad0[0x44];
+    f32 radius;
+    u8 pad48[0x860];
+    u16 lightFlags;
+    u16 pad8AA;
+    u16 fogFlags;
+    u16 secondFlags;
+    s32 mode;
+} State_001F7790;
+
+typedef struct Reset_001F7790 {
+    __int128 value;
+} Reset_001F7790;
+
+extern Reset_001F7790 D_00293050;
+extern s32 D_0031C040;
+
+#pragma conditional_move off
+
+s32 func_001F7790(s32 arg0) {
+    extern u32 func_00203CA0();
+    extern s32 func_001F2980();
+    s32 temp_fp;
+    s64 temp_s7;
+
+    temp_fp = func_00205150();
+    temp_s7 = func_001AAF60(1);
+    if (arg0 < 0 || arg0 > 0) {
+        return 0;
+    } else {
+        State_001F7790 *temp_s0;
+        s32 temp_v0;
+        Light_001F7790 *temp_s2;
+        Range_001F7790 *temp_s3;
+        Range_001F7790 *temp_s4;
+        Color_001F7790 *temp_s5;
+        s32 spBC;
+        s32 spC0;
+        s32 spD0;
+        s32 spE0;
+        Reset_001F7790 spF0;
+        f32 var_f20;
+        f32 var_f21;
+        f32 var_f22;
+        s32 var_v0;
+        s32 temp_s2_2;
+
+        temp_s0 = (State_001F7790 *) D_0031BEB0[arg0];
+        if (temp_s0 == 0) {
+            return 0;
+        }
+        spBC = func_00205160();
+        temp_v0 = func_001F2980(spBC);
+        spC0 = (temp_s0->lightFlags & (1 << temp_v0)) ? temp_v0 : 9;
+        spD0 = (temp_s0->fogFlags & (1 << temp_v0)) ? temp_v0 : 9;
+        spE0 = (temp_s0->secondFlags & (1 << temp_v0)) ? temp_v0 : 9;
+        var_v0 = 9;
+        if (spD0 != 9 || spE0 != 9) {
+            var_v0 = temp_v0;
+        }
+        temp_s5 = (Color_001F7790 *) ((u8 *) temp_s0 + var_v0 * 4 + 0x880);
+        temp_s2 = (Light_001F7790 *) ((u8 *) temp_s0 + spC0 * 0x90 + 0x60);
+        temp_s3 = (Range_001F7790 *) ((u8 *) temp_s0 + spD0 * 8 + 0x7E0);
+        temp_s4 = (Range_001F7790 *) ((u8 *) temp_s0 + spE0 * 8 + 0x830);
+        if (temp_s7 == 0 || temp_s7 == 5 || temp_s7 == 12) {
+            if (temp_fp == 0xC) {
+                if (func_00203A40(0, 0, 0x4000) != 0) {
+                    spF0 = D_00293050;
+                    func_001F95E0(0, spC0, D_0031C040, &spF0);
+                }
+                if (func_00203A40(0, 2, 0xA000) != 0) {
+                    if (func_00203A40(0, 2, 0x8000) != 0) {
+                        D_0031C040 = (D_0031C040 + 2) % 3;
+                    } else {
+                        D_0031C040 = (D_0031C040 + 4) % 3;
+                    }
+                    }
+                if (func_00203A40(0, 2, 0x80) != 0) {
+                    temp_s2[D_0031C040].y -= 0x100;
+                }
+                if (func_00203A40(0, 2, 0x20) != 0) {
+                    temp_s2[D_0031C040].y += 0x100;
+                }
+                if (func_00203A40(0, 2, 0x40) != 0) {
+                    temp_s2[D_0031C040].x -= 0x100;
+                }
+                if (func_00203A40(0, 2, 0x10) != 0) {
+                    temp_s2[D_0031C040].x += 0x100;
+                }
+                if (func_00203A40(0, 2, 0xFFFF) != 0) {
+                    func_001F95E0(0, spC0, D_0031C040, NULL);
+                }
+            }
+            if (temp_fp == 0xD) {
+                if (func_00203A40(0, 0, 0x4000) != 0) {
+                    func_001F93F0(arg0, spC0, D_0031C040, NULL);
+                }
+                if (func_00203A40(0, 2, 0xA000) != 0) {
+                    if (func_00203A40(0, 2, 0x8000) != 0) {
+                        D_0031C040 = (D_0031C040 + 2) % 3;
+                    } else {
+                        D_0031C040 = (D_0031C040 + 4) % 3;
+                    }
+                    }
+                if (func_00203A40(0, 2, 0x81) != 0) {
+                    temp_s2[D_0031C040].rotation[0] -= 0.01f;
+                }
+                if (func_00203A40(0, 2, 0x22) != 0) {
+                    temp_s2[D_0031C040].rotation[0] += 0.01f;
+                }
+                if (func_00203A40(0, 2, 0x41) != 0) {
+                    temp_s2[D_0031C040].rotation[1] -= 0.01f;
+                }
+                if (func_00203A40(0, 2, 0x12) != 0) {
+                    temp_s2[D_0031C040].rotation[1] += 0.01f;
+                }
+                if (func_00203A40(0, 2, 5) != 0) {
+                    temp_s2[D_0031C040].rotation[2] -= 0.01f;
+                }
+                if (func_00203A40(0, 2, 0xA) != 0) {
+                    temp_s2[D_0031C040].rotation[2] += 0.01f;
+                }
+            }
+            if (temp_fp == 0xE) {
+                if (func_00203A40(0, 0, 0x4000) != 0) {
+                    temp_s5->r = 0xFFU;
+                    temp_s5->g = 0xFFU;
+                    temp_s5->b = 0xFFU;
+                }
+                if (func_00203A40(0, 2, 0x81) != 0) {
+                    if (temp_s5->b > 0) {
+                        temp_s5->b--;
+                    }
+                }
+                if (func_00203A40(0, 2, 0x22) != 0) {
+                    if (temp_s5->b < 0xFF) {
+                        temp_s5->b++;
+                    }
+                }
+                if (func_00203A40(0, 2, 0x41) != 0) {
+                    if (temp_s5->g > 0) {
+                        temp_s5->g--;
+                    }
+                }
+                if (func_00203A40(0, 2, 0x12) != 0) {
+                    if (temp_s5->g < 0xFF) {
+                        temp_s5->g++;
+                    }
+                }
+                if (func_00203A40(0, 2, 5) != 0) {
+                    if (temp_s5->r > 0) {
+                        temp_s5->r--;
+                    }
+                }
+                if (func_00203A40(0, 2, 0xA) != 0) {
+                    if (temp_s5->r < 0xFF) {
+                        temp_s5->r++;
+                    }
+                }
+            }
+            if (temp_fp == 0xF) {
+                if (func_00203A40(0, 0, 0x4000) != 0) {
+                    temp_s3->near = 2000.0f;
+                    temp_s3->far = 4000.0f;
+                }
+                if (func_00203A40(0, 0, 0x8000) != 0) {
+                    temp_s0->fogFlags &= ~(1 << spD0);
+                }
+                if (func_00203A40(0, 0, 0x2000) != 0) {
+                    temp_s0->fogFlags |= 1 << spD0;
+                }
+                if (func_00203A40(0, 2, 0x80) != 0) {
+                    temp_s3->near -= 10.0f;
+                }
+                if (func_00203A40(0, 2, 0x20) != 0) {
+                    temp_s3->near += 10.0f;
+                }
+                if (func_00203A40(0, 2, 0x40) != 0) {
+                    temp_s3->far -= 10.0f;
+                }
+                if (func_00203A40(0, 2, 0x10) != 0) {
+                    temp_s3->far += 10.0f;
+                }
+            }
+            if (temp_fp == 0x10) {
+                if (func_00203A40(0, 0, 0x4000) != 0) {
+                    temp_s4->near = 2000.0f;
+                    temp_s4->far = 4000.0f;
+                }
+                if (func_00203A40(0, 0, 0x8000) != 0) {
+                    temp_s0->secondFlags &= ~(1 << spE0);
+                }
+                if (func_00203A40(0, 0, 0x2000) != 0) {
+                    temp_s0->secondFlags |= 1 << spE0;
+                }
+                if (func_00203A40(0, 2, 0x80) != 0) {
+                    temp_s4->near -= 10.0f;
+                }
+                if (func_00203A40(0, 2, 0x20) != 0) {
+                    temp_s4->near += 10.0f;
+                }
+                if (func_00203A40(0, 2, 0x40) != 0) {
+                    temp_s4->far -= 10.0f;
+                }
+                if (func_00203A40(0, 2, 0x10) != 0) {
+                    temp_s4->far += 10.0f;
+                }
+            }
+            if (temp_fp == 0x11) {
+                if (func_00203A40(0, 2, 0xC) != 0) {
+                    temp_s2_2 = func_001FC7F0(0);
+                    if (func_00203A40(0, 2, 4) != 0) {
+                        func_001FC840(0, (s32) (temp_s2_2 + 2) % 3);
+                    } else {
+                        func_001FC840(0, (s32) (temp_s2_2 + 4) % 3);
+                    }
+                }
+                if (func_00203A40(0, 2, 0x4000) != 0) {
+                    temp_s0->radius = 800.0f;
+                }
+                if (func_00203A40(0, 2, 0x80) != 0) {
+                    temp_s0->radius -= 10.0f;
+                    if (temp_s0->radius < 10.0f) {
+                        temp_s0->radius = 10.0f;
+                    }
+                }
+                if (func_00203A40(0, 2, 0x20) != 0) {
+                    temp_s0->radius += 10.0f;
+                    if (!(temp_s0->radius <= 10000.0f)) {
+                        temp_s0->radius = 10000.0f;
+                    }
+                }
+            }
+        }
+        var_f20 = 0.0f;
+        var_f21 = 0.0f;
+        var_f22 = 0.0f;
+        if (func_001FA6F0(-1, -1) == NULL) {
+            if ((u32) (temp_v0 - 4) < 2U) {
+                func_001FC210(arg0, spBC, NULL, temp_s0->mode, 1.0f);
+            }
+        }
+        if (func_00203C00(1) != 0) {
+            var_f20 += (0.024543693f * (f32) func_00203CA0(1, 1)) / 64.0f;
+            var_f20 -= (0.024543693f * (f32) func_00203CA0(1, 0)) / 64.0f;
+            var_f21 += (0.024543693f * (f32) func_00203CA0(1, 2)) / 64.0f;
+            var_f21 -= (0.024543693f * (f32) func_00203CA0(1, 3)) / 64.0f;
+            var_f22 += (2.0f * (f32) func_00203CA0(1, 8)) / 64.0f;
+            var_f22 -= (2.0f * (f32) func_00203CA0(1, 9)) / 64.0f;
+            func_001FB6A0(arg0, 0, 1, var_f20, var_f21, var_f22);
+            var_f22 = 0.0f;
+            var_f21 = 0.0f;
+            var_f20 = 0.0f;
+            var_f20 -= (0.024543693f * (f32) func_00203CA0(1, 7)) / 64.0f;
+            var_f20 += (0.024543693f * (f32) func_00203CA0(1, 5)) / 64.0f;
+            var_f21 -= (0.024543693f * (f32) func_00203CA0(1, 4)) / 64.0f;
+            var_f21 += (0.024543693f * (f32) func_00203CA0(1, 6)) / 64.0f;
+            var_f22 -= (2.0f * (f32) func_00203CA0(1, 0xA)) / 64.0f;
+            var_f22 += (2.0f * (f32) func_00203CA0(1, 0xB)) / 64.0f;
+            func_001FB6A0(arg0, 0, -1, var_f20, var_f21, var_f22);
+        } else {
+            if (func_00203A40(1, 1, 0x8000) != 0) {
+                var_f20 += 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 0x2000) != 0) {
+                var_f20 -= 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 0x1000) != 0) {
+                var_f21 += 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 0x4000) != 0) {
+                var_f21 -= 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 4) != 0) {
+                var_f22 += 2.0f;
+            }
+            if (func_00203A40(1, 1, 8) != 0) {
+                var_f22 -= 2.0f;
+            }
+            func_001FB6A0(arg0, 0, 1, var_f20, var_f21, var_f22);
+            var_f22 = 0.0f;
+            var_f21 = 0.0f;
+            var_f20 = 0.0f;
+            if (func_00203A40(1, 1, 0x80) != 0) {
+                var_f20 -= 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 0x20) != 0) {
+                var_f20 += 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 0x10) != 0) {
+                var_f21 -= 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 0x40) != 0) {
+                var_f21 += 0.024543693f;
+            }
+            if (func_00203A40(1, 1, 1) != 0) {
+                var_f22 -= 2.0f;
+            }
+            if (func_00203A40(1, 1, 2) != 0) {
+                var_f22 += 2.0f;
+            }
+            func_001FB6A0(arg0, 0, -1, var_f20, var_f21, var_f22);
+        }
+        if ((temp_s7 == 0) || (temp_s7 == 5) || (temp_s7 == 0xC)) {
+            func_00205170();
+        }
+        func_00205170();
+        return 1;
+    }
+}
+#pragma conditional_move reset
 
 typedef struct Vec4_001F8A30 {
     f32 x, y, z, w;

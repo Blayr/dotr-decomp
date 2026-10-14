@@ -2223,6 +2223,7 @@ void func_001F73C0(void);
 s32 func_001F74B0(void);
 s32 func_001F74C0(s32 arg0);
 s32 func_001F7720(s32 arg0);
+s32 func_001F7790(s32 arg0);
 s32 func_001F8A30(s32 arg0, s32 arg1);
 s32 func_001F8D30(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001F8F80(s32 arg0);
