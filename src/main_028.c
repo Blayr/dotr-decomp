@@ -804,7 +804,48 @@ _func_00189AC0_00189B74:\n\
 	" :  : "r" (p0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00189BC0);
+void func_00189BC0(void *p0) {
+    __asm__ __volatile__("\n\
+	lw	$5,0x14(%0)\n\
+	lw	$6,0x18(%0)\n\
+	lw	$7,0x8(%0)\n\
+	lw	$14,0x0(%0)\n\
+	lw	$13,0x4(%0)\n\
+	lw	$9,0x10(%0)\n\
+	sll	$8,$9,1\n\
+	addiu	$11,$0,-0x1\n\
+	mtsab	$13,0x0\n\
+_func_00189BC0_00189BE4:\n\
+	lq	$10,0x0($5)\n\
+	lq	$15,0x0($6)\n\
+	qfsrv	$2,$15,$10\n\
+	pextlb	$10,$0,$2\n\
+	pextub	$15,$0,$2\n\
+	lq	$2,0x0($14)\n\
+	lq	$3,0x10($14)\n\
+	paddh	$2,$2,$10\n\
+	paddh	$3,$3,$15\n\
+	pnor	$25,$0,$0\n\
+	psrlh	$25,$25,15\n\
+	paddh	$10,$2,$25\n\
+	psrlh	$2,$10,1\n\
+	paddh	$10,$3,$25\n\
+	psrlh	$3,$10,1\n\
+	sq	$2,0x0($14)\n\
+	sq	$3,0x10($14)\n\
+	addi	$7,$7,-0x1\n\
+	addu	$5,$5,$9\n\
+	addu	$14,$14,$8\n\
+	addu	$6,$6,$9\n\
+	bgtz	$7,_func_00189BC0_00189BE4\n\
+	addiu	$5,$5,0x80\n\
+	addiu	$6,$6,0x80\n\
+	lw	$7,0xC(%0)\n\
+	and	$12,$11,$7\n\
+	daddu	$11,$0,$0\n\
+	bnez	$12,_func_00189BC0_00189BE4\n\
+	" :  : "r" (p0));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00189C60);
 

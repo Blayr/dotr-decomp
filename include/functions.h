@@ -1036,6 +1036,7 @@ void func_00189790(void *p0);
 void func_00189860(void *p0);
 void func_001899C8(void *p0);
 void func_00189AC0(void *p0);
+void func_00189BC0(void *p0);
 void func_0018A378(s32 arg0);
 s32 func_0018A590(s32 arg0);
 void func_0018A5B0(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy);
