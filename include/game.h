@@ -229,7 +229,6 @@ extern u8 D_00299F90[];
 
 
 extern u8 D_002B90B0[];
-s32 func_0017BC80(s32);
 
 
 
