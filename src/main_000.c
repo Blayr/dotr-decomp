@@ -425,7 +425,6 @@ s32 func_00101050(s32 arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-void func_00187B48(void *, void *, f32);
 extern f32 D_0028BC10[4][32][3];
 
 static inline void rotate_00101080(void *matrix, s32 angle, s32 axis) {
