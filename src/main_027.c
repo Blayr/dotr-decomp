@@ -313,7 +313,24 @@ float func_00187978(void *p0, void *p1) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_001879A0);
+void func_001879A0(void *p0, void *p1) {
+    __asm__ __volatile__("\n\
+	lqc2	$vf4,0x0(%1)\n\
+	vmul.xyz	$vf5,$vf4,$vf4\n\
+	vaddy.x	$vf5,$vf5,$vf5y\n\
+	vaddz.x	$vf5,$vf5,$vf5z\n\
+	.word 0x4A0503BD\n\
+	vwaitq\n\
+	vaddq.x	$vf5,$vf0,$Q\n\
+	vnop\n\
+	vnop\n\
+	vdiv	$Q,$vf0w,$vf5x\n\
+	vsub.xyzw	$vf6,$vf0,$vf0\n\
+	vwaitq\n\
+	vmulq.xyz	$vf6,$vf4,$Q\n\
+	sqc2	$vf6,0x0(%0)\n\
+	" :  : "r" (p0), "r" (p1));
+}
 
 void func_001879E0(void *m0, void *m1) {
     __asm__ __volatile__("\n\

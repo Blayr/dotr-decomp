@@ -996,6 +996,7 @@ void func_001878E0(void *p0, void *p1, void *p2);
 void func_00187910(void *p0, void *p1, void *p2);
 void func_00187958(void *p0, void *p1, void *p2);
 float func_00187978(void *p0, void *p1);
+void func_001879A0(void *p0, void *p1);
 void func_001879E0(void *m0, void *m1);
 void func_00187BA0(void *m0, void *m1);
 void func_00187EA0(s32 arg0, s32 arg1, void *arg2);
