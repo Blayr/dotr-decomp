@@ -115,6 +115,22 @@ if [ "$DK_GCC" = 2.96 ]; then
 else
     sed -i -E 's/^([[:space:]]+)move([[:space:]]+)([^,]+),([^[:space:]#]+)/\1daddu\2\3,\4,$0/' "$TMP/out.s"
 fi
+# The C library's assembler put a nop after every `mtc1` followed by an FPU instruction, whatever
+# the registers (`mtc1 $at,$f1; nop; mul.s $f0,$f3,$f0`, fdlibm's constants); binutils only when
+# the next instruction reads that register. Only in reorder code: GCC handles its own noreorder.
+if [ "$DK_GCC" = 2.96 ]; then
+    perl -i -ne 'BEGIN { @st = (0); $mt = 0 }
+        if (/^\s*\.set\s+push\b/) { push @st, $st[-1] }
+        elsif (/^\s*\.set\s+pop\b/) { pop @st }
+        elsif (/^\s*\.set\s+noreorder\b/) { $st[-1] = 1 }
+        elsif (/^\s*\.set\s+reorder\b/) { $st[-1] = 0 }
+        elsif (/^\s+([a-z][a-z0-9.]*)\s/) {
+            my $m = $1;
+            print "\tnop\n" if $mt && !$st[-1] && $m =~ /^(c\.[a-z]+\.s|[a-z]+\.s|cvt\.[a-z]\.[a-z])$/;
+            $mt = $m eq "mtc1" && !$st[-1];
+        }
+        print' "$TMP/out.s"
+fi
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
 perl -pi -e 's/^(\s+)cvt\.w\.s\s+\$f(\d+),\s*\$f(\d+)/sprintf("%s.word 0x%08X", $1, 0x46000024 | ($3 << 11) | ($2 << 6))/e' "$TMP/out.s"
