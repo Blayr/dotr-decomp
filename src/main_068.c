@@ -900,7 +900,6 @@ typedef struct State_0023D170 {
 
 
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194578(s32, s32, void *, u32, s32, void *);
 s32 func_00194758(s32, s32, void *, void *);
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
@@ -1851,7 +1850,6 @@ extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
 s32 func_00194248(s32, s32 *, s32 *);
-s32 func_00194578(s32, s32, void *, u32, s32, void *);
 s32 func_00194758(s32, s32, void *, void *);
 
 s32 func_0023F340(void) {
