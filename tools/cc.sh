@@ -117,8 +117,13 @@ perl -pi -e 's/^(\s+)li\.d\s+\$(\d+),\s*(\S+)\s*$/sprintf("%sdli\t\$%s,0x%016X\n
 # (0x000001CD, shown as `break 0, 7`), binutils in the high one (0x0007000D).
 sed -i -E 's/^([[:space:]]+)break([[:space:]]+)7[[:space:]]*$/\1break\20,7/' "$TMP/out.s"
 # GCC objects were linked 8-byte aligned; the linker script's SUBALIGN(4) is not, so the
-# file's last function keeps its padding here.
-printf '\t.text\n\t.p2align 3\n' >> "$TMP/out.s"
+# file's last function keeps its padding here. The list's last file ends where Metrowerks
+# code starts, on a 16-byte boundary (main_036 -> main_037 at 0x1A6C80).
+P2=3
+if [ -n "$ROW" ] && [ "${IN_ABS#"$ROOT"/}" = "$(awk '{ sub(/#.*/, "") } NF { f = $1 } END { print f }' "$GCC_LIST")" ]; then
+    P2=4
+fi
+printf '\t.text\n\t.p2align %s\n' "$P2" >> "$TMP/out.s"
 
 mipsel-none-elf-as -EL "-G$G" -march=r5900 -mabi=eabi -no-pad-sections \
     -I "$ROOT" -I "$ROOT/include" -o "$OUT" "$TMP/out.s"
