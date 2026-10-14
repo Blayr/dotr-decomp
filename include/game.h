@@ -271,7 +271,6 @@ extern u64 D_00293EE0[];
 
 void func_0027F5B0(void);
 f32 func_001A6B70(f32);
-f32 func_001A6C48(f32, f32);
 void func_001FA220(s32, s32);
 void func_00203320(void);
 void *func_00198948(void *, s32, u32);

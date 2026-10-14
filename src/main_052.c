@@ -330,7 +330,6 @@ typedef struct Camera_001F8F80 {
     Vec4_001F8F80 target;
 } Camera_001F8F80;
 
-f32 func_001A6C30(f32, f32);
 
 s32 func_001F8F80(s32 arg0) {
     Vec4_001F8F80 result;
@@ -775,7 +774,6 @@ typedef struct Camera_001F9B20 {
 
 extern Vec4_001F9B20 D_00293020;
 
-f32 func_001A6C30(f32, f32);
 
 static inline s32 direction_001F9B20(s32 arg0) {
     Camera_001F9B20 *camera;
@@ -870,7 +868,6 @@ typedef struct Camera_001F9D80 {
 
 extern Vec4_001F9D80 D_00293030;
 
-f32 func_001A6C30(f32, f32);
 
 static inline s32 direction_001F9D80(s32 arg0) {
     Camera_001F9D80 *camera;
@@ -964,7 +961,6 @@ typedef struct Camera_001F9FE0 {
     Vec4_001F9FE0 target;
 } Camera_001F9FE0;
 
-f32 func_001A6C30(f32, f32);
 
 static inline s32 direction_001F9FE0(s32 arg0) {
     Camera_001F9FE0 *camera;
@@ -1313,7 +1309,6 @@ typedef struct Camera_001FAD60 {
     Vec4_001FAD60 position;
 } Camera_001FAD60;
 
-extern f32 func_001A6C30(f32, f32);
 
 s32 func_001FAD60(s32 arg0, void *arg1) {
     Camera_001FAD60 *camera;
@@ -1479,7 +1474,6 @@ s32 func_001FB1D0(s32 arg0, s32 arg1) {
     return 1;
 }
 
-f32 func_001A6C30(f32, f32);
 extern f32 D_00293040[4][4];
 
 typedef struct Vec4_001FB360 {

@@ -1311,7 +1311,6 @@ typedef struct Vec4_001C12B0 {
 } Vec4_001C12B0;
 
 void func_001EDA40(s32, s32);
-f32 func_001A6C30(f32, f32);
 
 static inline s32 abs_001C12B0(s32 value) {
     return value >= 0 ? value : -value;

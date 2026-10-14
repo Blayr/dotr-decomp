@@ -1068,6 +1068,8 @@ f32 func_001A6970(f32 x);
 s32 func_001A6BE8(s64 arg0, s32 arg1);
 f32 func_001A6C00(f32 x);
 f32 func_001A6C18(f32 y, f32 x);
+f32 func_001A6C30(f32 x, f32 y);
+f32 func_001A6C48(f32 y, f32 x);
 void func_001A6C80(void);
 void func_001A7380(void);
 s32 func_001A82E0(s32 arg0);

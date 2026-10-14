@@ -1,6 +1,5 @@
 #include "common.h"
 
-f32 func_001A6C30(f32, f32);
 extern f32 D_00293040[4][4];
 
 typedef struct Vec4_001FB500 {
@@ -73,7 +72,6 @@ typedef struct Camera_001FB6A0 {
     s32 mode;
 } Camera_001FB6A0;
 
-f32 func_001A6C30(f32, f32);
 
 s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
     Camera_001FB6A0 *camera;
@@ -178,7 +176,6 @@ typedef struct Motion_001FB940 {
     u16 fovOffset, fovCount;
 } Motion_001FB940;
 
-f32 func_001A6C30(f32, f32);
 
 static inline void direction_001FB940(s32 index) {
     Camera_001FB940 *camera;
@@ -450,7 +447,6 @@ typedef struct Camera_001FC210 {
     Vec4_001FC210 target;
 } Camera_001FC210;
 
-f32 func_001A6C30(f32, f32);
 
 static inline void direction_001FC210(s32 index) {
     if (index >= 0 && index <= 0) {
