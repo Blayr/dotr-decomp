@@ -335,7 +335,20 @@ s32 func_0017C8D0(s32 arg0) {
     return tid;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C968);
+s32 func_0017C968(u32 arg0) {
+    if (arg0 >= 0x80 || D_0028CA00 == 0) {
+        return -1;
+    }
+    {
+        ring_t *r = (ring_t *)&D_00310518;
+        u32 i = r->count & 0x1FF;
+        r->count = i + 1;
+        r->e[i].a = 1;
+        r->e[i].b = arg0;
+        func_0017B910(D_00310510);
+    }
+    return arg0;
+}
 
 s32 func_0017C9E8(s32 arg0) {
     s32 tid;
