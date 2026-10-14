@@ -1099,6 +1099,7 @@ void func_00198B80(void *arg0, void *arg1);
 i2b_Bigint *func_00198F28(void *ptr, s32 i);
 s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b);
 double func_00199A80(s32 dig);
+s32 func_00199AF0(vf_reent *ptr, const char *fmt, ...);
 void func_00199B50(const char *fmt, ...);
 void func_0019A5B0(s64 arg0);
 s32 func_0019A5C8(void);

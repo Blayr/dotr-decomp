@@ -174,7 +174,15 @@ double func_00199A80(s32 dig) {
     return v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00199AF0);
+s32 func_00199AF0(vf_reent *ptr, const char *fmt, ...) {
+    s32 ret;
+    __builtin_va_list ap;
+
+    __builtin_stdarg_start(ap, fmt);
+    ret = func_0019DDE8(ptr, *(vf_FILE **)((u8 *)ptr + 8), fmt, ap);
+    __builtin_va_end(ap);
+    return ret;
+}
 
 typedef __builtin_va_list va_list;
 #define va_start(v, l) __builtin_stdarg_start((v), l)
