@@ -1139,7 +1139,6 @@ typedef struct Mode_00209510 {
     u32 reserved : 20;
 } Mode_00209510;
 
-s32 func_0017B770(s32, s32);
 void func_001849B0(void);
 s32 func_00186238(void *);
 void func_00186BD0(void);

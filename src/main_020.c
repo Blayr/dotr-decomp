@@ -40,7 +40,13 @@ asm int func_0017B7D0(void) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_020", func_0017B7E0);
+asm s32 func_0017B7E0(s32 arg0, s32 *arg1) {
+    .set noreorder
+    addiu v1, zero, 0x30
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B7F0(void) {
     .set noreorder

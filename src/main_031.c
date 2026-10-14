@@ -404,10 +404,6 @@ extern s32 D_003156D0;
 extern s32 D_003156D8;
 extern ThParam_00190C48 D_00315708;
 extern s32 D_00317EF0;
-s32 func_0017B6E0(ThParam_00190C48 *);
-s32 func_0017B700(s32, s32);
-s32 func_0017B770(s32, s32);
-s32 func_0017B7E0(s32, s32 *);
 
 s32 func_00190C48(s32 arg0, void *arg1, s32 arg2) {
     s32 ret = 1;

@@ -877,7 +877,6 @@ s32 func_0018D6D0(s32 arg0, void *arg1) {
     return 0;
 }
 
-s32 func_0017B600(s32, s32 (*)(s32, void *), s32, u32 *);
 s32 func_0018D520(void *, s32, s32);
 
 typedef struct MpegOut_0018D7D8 {

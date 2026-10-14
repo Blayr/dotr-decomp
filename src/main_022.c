@@ -285,9 +285,6 @@ typedef struct {
 extern u8 D_00310110[];
 extern s32 D_00317EF0;
 void func_0017C720(void);
-s32 func_0017B6E0(ThParam_0017C7F8 *);
-s32 func_0017B700(s32, void *);
-s32 func_0017B770(s32, s32);
 
 s32 func_0017C7F8(void) {
     ThParam_0017C7F8 tp;

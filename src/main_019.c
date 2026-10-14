@@ -112,7 +112,13 @@ asm int func_0017B520(int arg0, int arg1, int arg2) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B530);
+asm s32 func_0017B530(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    .set noreorder
+    addiu v1, zero, 0x7
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B540(void) {
     .set noreorder
@@ -178,7 +184,13 @@ asm int func_0017B5B0(void) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B5C0);
+asm s32 func_0017B5C0(s32 arg0, void (*arg1)(), s32 arg2) {
+    .set noreorder
+    addiu v1, zero, 0x10
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B5D0(void) {
     .set noreorder
@@ -196,9 +208,21 @@ asm int func_0017B5E0(int arg0, int arg1) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B5F0);
+asm s32 func_0017B5F0(s32 arg0, void (*arg1)(), s32 arg2) {
+    .set noreorder
+    addiu v1, zero, 0x12
+    syscall 0
+    jr ra
+    nop
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B600);
+asm s32 func_0017B600(s32 arg0, s32 (*arg1)(s32, void *), s32 arg2, u32 *arg3) {
+    .set noreorder
+    addiu v1, zero, 0x12
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B610(int arg0, int arg1) {
     .set noreorder
@@ -304,7 +328,13 @@ asm int func_0017B6D0(void) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B6E0);
+asm s32 func_0017B6E0(void *arg0) {
+    .set noreorder
+    addiu v1, zero, 0x20
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B6F0(void) {
     .set noreorder
@@ -314,7 +344,13 @@ asm int func_0017B6F0(void) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B700);
+asm s32 func_0017B700(s32 arg0, void *arg1) {
+    .set noreorder
+    addiu v1, zero, 0x22
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B710(void) {
     .set noreorder
@@ -364,7 +400,13 @@ asm int func_0017B760(void) {
     nop
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_019", func_0017B770);
+asm s32 func_0017B770(s32 arg0, s32 arg1) {
+    .set noreorder
+    addiu v1, zero, 0x29
+    syscall 0
+    jr ra
+    nop
+}
 
 asm int func_0017B780(void) {
     .set noreorder
