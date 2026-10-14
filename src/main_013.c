@@ -293,7 +293,6 @@ typedef struct State_001547A0 {
 } State_001547A0;
 
 void func_00154EB0(void *);
-void func_00155070(void *);
 
 s32 func_001547A0(void *arg0) {
     extern s32 func_001E1030();
@@ -440,7 +439,65 @@ s32 func_00154AD0(u16 *arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_013", func_00154EB0);
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00155070);
+typedef struct Action_00155070 {
+    u16 location;
+    u16 unk2;
+    s16 state;
+    u16 unk6;
+    union {
+        s32 value;
+        u16 low;
+    } data;
+} Action_00155070;
+
+void func_00154EB0(void *);
+
+void func_00155070(void *arg0) {
+    extern s32 func_001E1030();
+    s32 owner;
+    s32 i;
+    s32 kind;
+    s32 list;
+    s32 pair;
+    u8 count;
+    Action_00155070 *action;
+
+    action = arg0;
+    owner = func_00250360(action->location >> 8, action->location & 0xFF);
+    kind = func_001E1030(action->location >> 8, action->location & 0xFF);
+    count = 0;
+    switch (kind) {
+    case 0x38:
+    case 0x39:
+    case 0x36:
+    case 0x37:
+        action->state = 0x6FF;
+        action->data.value = action->data.low | (func_001E1090(action->location >> 8, action->location & 0xFF) << 16);
+        return;
+    case 0x40:
+        list = func_0024CA40(0, 0, owner, 2, 3, 0xE);
+        for (i = 0; i < func_0024E910(list); i++) {
+            pair = func_0024EC50(list, i);
+            if (func_002781B0(pair >> 8, pair & 0xFF, 0) == 1) {
+                count++;
+            }
+        }
+        if (count > 1) {
+            func_00154EB0(action);
+            action->state = 0x3FF;
+            return;
+        }
+        break;
+    case 0x5F:
+        if (func_001DF470(owner) < 0x4B0) {
+            func_00154EB0(action);
+            action->state = 0x3FF;
+            return;
+        }
+        break;
+    }
+    func_00154EB0(action);
+}
 
 typedef struct State_00155230 {
     u16 position;
