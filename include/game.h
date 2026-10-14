@@ -739,4 +739,7 @@ extern s32 D_0028DCEC;
 extern s32 D_0028EEC0;
 extern s32 D_0028F708;
 
+void func_0017C130(u32, u32);
+void func_0017C270(u32, u32);
+
 #endif
