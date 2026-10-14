@@ -571,4 +571,6 @@ long func_0019D750(const char *, char **, s32);
 
 void func_0019D3E0(s32, s32);
 
+extern s32 D_0028FA98;
+
 #endif
