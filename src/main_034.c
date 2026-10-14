@@ -114,7 +114,27 @@ s32 func_00198A88(s32 r) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00198AD8);
+i2b_Bigint *func_00198AD8(void *ptr, s32 k) {
+    s32 x;
+    i2b_Bigint *rv;
+
+    if (*(i2b_Bigint ***)((u8 *)ptr + 0x4C) == NULL) {
+        *(i2b_Bigint ***)((u8 *)ptr + 0x4C) = (i2b_Bigint **)func_00195140(ptr, sizeof(i2b_Bigint *), 15 + 1);
+        if (*(i2b_Bigint ***)((u8 *)ptr + 0x4C) == NULL)
+            return NULL;
+    }
+    if ((rv = (*(i2b_Bigint ***)((u8 *)ptr + 0x4C))[k]) != 0) {
+        (*(i2b_Bigint ***)((u8 *)ptr + 0x4C))[k] = rv->next;
+    } else {
+        x = 1 << k;
+        rv = (i2b_Bigint *)func_00195140(ptr, 1, sizeof(i2b_Bigint) + (x - 1) * sizeof(rv->x));
+        if (rv == NULL) return NULL;
+        rv->k = k;
+        rv->maxwds = x;
+    }
+    rv->sign = rv->wds = 0;
+    return rv;
+}
 
 void func_00198B80(void *arg0, void *arg1) {
     void **temp_v0;

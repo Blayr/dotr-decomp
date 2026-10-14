@@ -914,7 +914,6 @@ extern f32 D_002BE580[]; /* PIo2[11] */
 s32 func_001914F8(s32);                         /* extern */
 
 typedef struct i2b_Bigint { struct i2b_Bigint *next; s32 k, maxwds, sign, wds; u32 x[1]; } i2b_Bigint;
-i2b_Bigint *func_00198AD8(void *ptr, s32 k); /* _Balloc */
 
 void *func_0017E7B0(s32, s32);                      /* extern */
 
@@ -949,5 +948,7 @@ s32 func_0019F6E8(void *fp, const char *fmt, void *ap); /* __svfscanf */
 extern char D_002BD270[]; /* "C" */
 extern char D_002BD260[]; /* "" */
 s32 func_0019BC90(const char *a, const char *b); /* strcmp */
+
+void *func_00195140(void *ptr, u32 n, u32 size); /* _calloc_r */
 
 #endif

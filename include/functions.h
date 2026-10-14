@@ -1101,6 +1101,7 @@ s32 func_00197C18(s32 arg0);
 s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state);
 void func_00198A08(s32 r);
 s32 func_00198A88(s32 r);
+i2b_Bigint *func_00198AD8(void *ptr, s32 k);
 void func_00198B80(void *arg0, void *arg1);
 s32 func_00198DE8(u32 x);
 i2b_Bigint *func_00198F28(void *ptr, s32 i);
