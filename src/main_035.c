@@ -313,7 +313,84 @@ s32 func_0019DA00(void *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019DAE8);
+typedef struct ug_reent { u8 pad0[0x38]; s32 __sdidinit; } ug_reent;
+typedef struct ug_sbuf { u8 *_base; s32 _size; } ug_sbuf;
+typedef struct ug_FILE {
+    u8 *_p;
+    s32 _r;
+    s32 _w;
+    s16 _flags;
+    s16 _file;
+    ug_sbuf _bf;
+    s32 _lbfsize;
+    void *_cookie;
+    void *_read;
+    void *_write;
+    void *_seek;
+    void *_close;
+    ug_sbuf _ub;
+    u8 *_up;
+    s32 _ur;
+    u8 _ubuf[3];
+    u8 _nbuf[1];
+    ug_sbuf _lb;
+    s32 _blksize;
+    s32 _offset;
+    ug_reent *_data;
+} ug_FILE;
+
+s32 func_0019DAE8(s32 c, void *arg1) {
+    ug_FILE *fp = arg1;
+
+    if (c == -1)
+        return -1;
+
+    do {
+        if (fp->_data == 0)
+            fp->_data = (ug_reent *)D_0028FA98;
+        if (!fp->_data->__sdidinit)
+            func_00196A30(fp->_data);
+    } while (0);
+
+    fp->_flags &= ~0x20;
+
+    if ((fp->_flags & 4) == 0) {
+        if ((fp->_flags & 0x10) == 0)
+            return -1;
+        if (fp->_flags & 8) {
+            if (func_00196708((nl_FILE *)fp))
+                return -1;
+            fp->_flags &= ~8;
+            fp->_w = 0;
+            fp->_lbfsize = 0;
+        }
+        fp->_flags |= 4;
+    }
+    c = (u8)c;
+
+    if (fp->_ub._base != NULL) {
+        if (fp->_r >= fp->_ub._size && func_0019DA00(fp))
+            return -1;
+        *--fp->_p = c;
+        fp->_r++;
+        return c;
+    }
+
+    if (fp->_bf._base != NULL && fp->_p > fp->_bf._base && fp->_p[-1] == c) {
+        fp->_p--;
+        fp->_r++;
+        return c;
+    }
+
+    fp->_ur = fp->_r;
+    fp->_up = fp->_p;
+    fp->_ub._base = fp->_ubuf;
+    fp->_ub._size = sizeof(fp->_ubuf);
+    fp->_ubuf[sizeof(fp->_ubuf) - 1] = c;
+    fp->_p = &fp->_ubuf[sizeof(fp->_ubuf) - 1];
+    fp->_r = 1;
+    return c;
+}
 
 s32 func_0019DC70(s32 arg0, void *arg1) {
     s32 temp_v0;

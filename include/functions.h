@@ -1176,6 +1176,7 @@ char *func_0019D450(char *s, const char *delim, char **lasts);
 void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0019D9E0(s32 c);
 s32 func_0019DA00(void *arg0);
+s32 func_0019DAE8(s32 c, void *arg1);
 s32 func_0019DC70(s32 arg0, void *arg1);
 s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap);
 s32 func_0019F608(char *p0, s32 exp, s32 fmtch);
