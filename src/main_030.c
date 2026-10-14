@@ -1,7 +1,33 @@
 #include "common.h"
 #include "sce/libmpeg.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DAA8);
+typedef struct {
+    s64 buf;
+    u8 *base;
+    u8 *p;
+    u32 cnt;
+    s64 pos;
+    u8 *wrap;
+    u8 *end;
+    s32 size;
+} SysBit_0018DAA8;
+
+#define bs_0018DAA8 ((SysBit_0018DAA8 *)arg0)
+
+/* _sysbitFlush: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0018DAA8(void *arg0, s32 n) {
+    bs_0018DAA8->buf <<= n;
+    bs_0018DAA8->cnt -= n;
+    while (bs_0018DAA8->cnt < 57) {
+        bs_0018DAA8->buf |= (s64)*bs_0018DAA8->p++ << (56 - bs_0018DAA8->cnt);
+        if (bs_0018DAA8->p >= bs_0018DAA8->end) {
+            bs_0018DAA8->p = bs_0018DAA8->wrap;
+        }
+        bs_0018DAA8->cnt += 8;
+    }
+    bs_0018DAA8->pos += n;
+}
 
 s32 func_0018DB40(u64 *arg0, s32 arg1) {
     s32 temp_s2;
@@ -19,7 +45,22 @@ s32 func_0018DB90(u64 *arg0) {
     return temp_s1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DBD8);
+/* _sysbitJump: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0018DBD8(s32 *bs, s32 bytes) {
+    s64 x = *(s64 *)(bs + 6) + (bytes << 3);
+    s32 v;
+
+    *(s64 *)bs = 0;
+    bs[4] = 0;
+    *(s64 *)(bs + 6) = x;
+    v = bs[2] + (s32)(x >> 3);
+    bs[3] = v;
+    if ((u32)v >= (u32)bs[9]) {
+        bs[3] = v - bs[10];
+    }
+    func_0018DAA8(bs, 0);
+}
 
 u32 func_0018DC30(void *arg0, s32 arg1) {
     u32 var_v1;
@@ -31,9 +72,95 @@ u32 func_0018DC30(void *arg0, s32 arg1) {
     return var_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DC60);
+/* _type2id: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DCE8);
+s64 func_0018DC60(s32 type, s32 ch) {
+    s64 id = 0;
+    s32 sh = 0;
+
+    if ((u32)type < 10) {
+        switch (D_0028DAB8[type].mask) {
+        case 0xFFFFFFFFFFULL:
+            sh = 0;
+            break;
+        case 0xFFFF000000ULL:
+            sh = 24;
+            break;
+        case 0xFF00000000ULL:
+            sh = 32;
+            break;
+        }
+        id = D_0028DAB8[type].id | ((s64)ch << sh);
+    }
+    return id;
+}
+
+/* _id2type: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0018DCE8(s32 *type, s32 *num, u64 id) {
+    StrDesc *p = D_0028DAB8;
+    u32 i;
+    s32 found = 0;
+
+    for (i = 0; i < 10 && found == 0; i++) {
+        u64 m = p->mask;
+        u64 k;
+
+        switch (m) {
+        case 0xFFFFFFFFFFULL:
+            m = id & 0xFFFFFF0000ULL;
+            if (m == p->id) {
+                *type = i;
+                *num = id & 0xFFFF;
+                found = 1;
+            }
+            break;
+        case 0xFFFF000000ULL:
+            switch (p->id) {
+            case 0xBD20000000ULL:
+                m = id & 0xFFE0000000ULL;
+                k = 0x1F;
+                break;
+            case 0xBD80000000ULL:
+            case 0xBD88000000ULL:
+            case 0xBD90000000ULL:
+            case 0xBDA0000000ULL:
+                m = id & 0xFFF8000000ULL;
+                k = 7;
+                break;
+            default:
+                m = id & 0xFFFF000000ULL;
+                k = 0;
+                break;
+            }
+            if (m == p->id) {
+                *type = i;
+                *num = (id >> 24) & k;
+                found = 1;
+            }
+            break;
+        case 0xFF00000000ULL:
+            if (p->id == 0xE000000000ULL) {
+                m = id & 0xF000000000ULL;
+                k = 0xF;
+            } else if (p->id == 0xC000000000ULL) {
+                m = id & 0xE000000000ULL;
+                k = 0x1F;
+            } else {
+                m = id & m;
+                k = 0;
+            }
+            if (m == p->id) {
+                *type = i;
+                *num = (id >> 32) & k;
+                found = 1;
+            }
+            break;
+        }
+        p++;
+    }
+    return found;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DEE8);
 
@@ -41,7 +168,32 @@ s32 func_0018E1E0(s32 arg0, s32 arg1, s32 arg2) {
     return func_0018DEE8(arg0, arg1, arg2, 0, -1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018E200);
+/* sceMpegAddStrCallback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0018E200(void *arg0, s32 type, s32 ch, void *func, void *data) {
+    sceMpeg *mp = arg0;
+    s32 ret = 0;
+    MpegSys *p = mp->sys;
+    StrCb *tbl = p->strCb;
+    s64 id = func_0018DC60(type, ch);
+    s32 n = p->nStrCb;
+    s32 i;
+
+    for (i = 0; i < n; i++) {
+        if (id == tbl[i].id) {
+            ret = (s32)tbl[i].func;
+            break;
+        }
+    }
+    if (i < 0x40) {
+        p->nStrCb = n + 1;
+        tbl[i].id = id;
+        tbl[i].arg = data;
+        tbl[i].func = (sceMpegCallback)func;
+        tbl[i].mask = D_0028DAB8[type].mask;
+    }
+    return ret;
+}
 
 s32 func_0018E2F8(u64 *arg0, void *arg1) {
     s32 temp_s0;
@@ -324,7 +476,25 @@ s32 func_0018EF20(void *arg0, s32 arg1, s32 (*arg2)(), s32 arg3) {
     return (s32)old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EF48);
+/* _dispatchMpegCallback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0018EF48(s32 arg0, void *arg1) {
+    sceMpeg *mp = (sceMpeg *)arg0;
+    s32 *cbdata = arg1;
+    s32 rv = 0;
+
+    if (mp != 0) {
+        MpegSys *p = mp->sys;
+        if (p != 0) {
+            s32 type = *cbdata;
+            sceMpegCallback fn = p->cb[type].func;
+            if (fn != 0) {
+                rv = fn(mp, cbdata, p->cb[type].data);
+            }
+        }
+    }
+    return rv;
+}
 
 void func_0018EF98(s32 arg0) {
     s32 sp0[8];
