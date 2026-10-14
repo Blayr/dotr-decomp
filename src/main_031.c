@@ -96,7 +96,26 @@ void func_0018F918(void *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_0018FA40);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018FCE8);
+static inline int uncachedAddr_0018FCE8(int addr) {
+    return (addr & 0x0FFFFFFF) | 0x20000000;
+}
+
+/* _initRefImages (this SDK passes the picture size as two more arguments): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0018FCE8(int *frame0, int *frame1, int *frame2, int *top0, int *top1, int *top2, int *bot0, int *bot1,
+                   int *bot2, int y, int cb, int cr, int width, int height) {
+    int size = width * height;
+
+    *frame0 = uncachedAddr_0018FCE8(y);
+    *frame1 = uncachedAddr_0018FCE8(cb);
+    *frame2 = uncachedAddr_0018FCE8(cr);
+    *top0 = uncachedAddr_0018FCE8(y);
+    *top1 = uncachedAddr_0018FCE8(cb);
+    *top2 = uncachedAddr_0018FCE8(cr);
+    *bot0 = uncachedAddr_0018FCE8(y + size / 512 * 384);
+    *bot1 = uncachedAddr_0018FCE8(cb + size / 512 * 384);
+    *bot2 = uncachedAddr_0018FCE8(cr + size / 512 * 384);
+}
 
 void func_0018FDC8(void *arg0, s32 arg1, s32 arg2) {
     s32 sp0[8];

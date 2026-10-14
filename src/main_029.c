@@ -695,7 +695,67 @@ void func_0018CC48(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x820)) = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018CC70);
+typedef struct {
+    u8 pad00[0x70];
+    int usePtsGap;   /* 0x070 */
+    int pad74;       /* 0x074 */
+    long long ptsGap;   /* 0x078 */
+    int lastPts;     /* 0x080 */
+    int pad84;       /* 0x084 */
+    long long lastShow; /* 0x088 */
+    int halfCount;   /* 0x090 */
+    u8 pad94[0xF0 - 0x94];
+    long long ptm;   /* 0x0F0 */
+    int ptmState;    /* 0x0F8 */
+} MpegSys_0018CC70;
+
+#define s_0018CC70 ((MpegSys_0018CC70 *)arg0)
+#define pts_0018CC70 ((long long *)arg2)
+#define dts_0018CC70 ((long long *)arg3)
+#define flags_0018CC70 ((long long *)arg4)
+
+/* _getPtsDtsFlags (this SDK passes the decoder record first): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_0018CC70(void *arg0, s32 *img, void *arg2, void *arg3, void *arg4) {
+    long long t;
+    int show;
+    int last;
+    int carry;
+
+    if (s_0018CC70->usePtsGap != 0) {
+        t = *(long long *)&img[0x18 / 4];
+        if (t < 0 && (last = s_0018CC70->lastPts) >= 0) {
+            show = (int)s_0018CC70->lastShow;
+            carry = (int)((long long)(show & 1) * (s_0018CC70->ptsGap & 1) * (s_0018CC70->halfCount & 1));
+            *pts_0018CC70 = last + ((int)((s_0018CC70->ptsGap * show) >> 1) + carry);
+            if ((long long)(show & 1) * (s_0018CC70->ptsGap & 1) != 0) {
+                s_0018CC70->halfCount = s_0018CC70->halfCount + 1;
+            }
+        } else {
+            *pts_0018CC70 = t;
+        }
+    } else {
+        *pts_0018CC70 = *(long long *)&img[0x18 / 4];
+    }
+    if (s_0018CC70->ptmState == 2) {
+        long long v = s_0018CC70->ptm;
+
+        if (v >= 0) {
+            *pts_0018CC70 = v;
+            s_0018CC70->ptmState = 0;
+            s_0018CC70->ptm = -1;
+        }
+    }
+    *dts_0018CC70 = *(long long *)&img[0x20 / 4];
+    *flags_0018CC70 = ((long long)img[0x34 / 4] << 8) | ((long long)img[0x38 / 4] << 7) |
+                      ((long long)img[0x3C / 4] << 6) | ((long long)img[0x40 / 4] << 5) |
+                      ((long long)img[0x30 / 4] << 3) | img[0x2C / 4];
+}
+
+#undef s_0018CC70
+#undef pts_0018CC70
+#undef dts_0018CC70
+#undef flags_0018CC70
 
 void func_0018CE00(void *d, s32 arg1, s32 unused) {
     s32 *s = (s32 *)arg1;
