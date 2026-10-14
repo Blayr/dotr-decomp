@@ -225,7 +225,22 @@ void func_00190278(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_001903C8);
+s32 func_001903C8(s32 arg0, s32 arg1) {
+    u32 r;
+
+    r = 0;
+    switch (arg0) {
+    case 0:
+        while (*(volatile s32 *)0x10002010 < 0) {
+        }
+        r = 0;
+        break;
+    case 1:
+        r = (u32)*(volatile s32 *)0x10002010 >> 31;
+        break;
+    }
+    return r;
+}
 
 void func_00190430(s32 arg0) {
     func_001843E0();

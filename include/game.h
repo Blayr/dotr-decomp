@@ -874,7 +874,6 @@ extern void (*D_003156C0)(s32);
 extern s32 D_003156CC;
 void func_0017B720(void);
 
-s32 func_001903C8(s32, s32);                /* extern */
 
 s32 func_00192C68(s32, s32, s32);           /* extern */
 
