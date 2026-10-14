@@ -782,23 +782,7 @@ static __inline__ s32 fp_isnan_d(fp_number_d *x) { return x->class == CLASS_SNAN
 static __inline__ s32 fp_isinf_d(fp_number_d *x) { return x->class == CLASS_INFINITY; }
 static __inline__ s32 fp_iszero_d(fp_number_d *x) { return x->class == CLASS_ZERO; }
 #endif
-s64 func_001A05E8(s64 u, s64 v);
-f32 func_001A2190(fp_number_f *src);
-void func_001A2260(fp_union_f *src, fp_number_f *dst);
-s32 func_001A23B0(f32 arg_a);
-double func_001A2430(fp_number_d *src);
-void func_001A2548(fp_union_d *src, fp_number_d *dst);
-fp_number_d *func_001A25F8(fp_number_d *a, fp_number_d *b, fp_number_d *tmp);
-double func_001A28B0(double arg_a, double arg_b);
 double func_001A2918(double arg_a, double arg_b);
-double func_001A2BC8(double arg_a, double arg_b);
-s32 func_001A2D40(fp_number_d *a, fp_number_d *b);
-s32 func_001A2E60(double arg_a, double arg_b);
-double func_001A2EB0(s32 arg_a);
-s32 func_001A2F68(double arg_a);
-double func_001A3008(fp_class_type class, u32 sign, s32 exp, u64 frac);
-f32 func_001A3038(double arg_a);
-u32 func_001A3090(double arg_a);
 
 
 extern s32 D_00310980;

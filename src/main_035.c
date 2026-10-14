@@ -135,4 +135,19 @@ INCLUDE_ASM("asm/nonmatchings/main_035", func_001A0478);
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_001A04D8);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_001A05E8);
+/* __muldi3 */
+typedef union { struct { s32 low, high; } s; s64 ll; } DIunion;
+
+s64 func_001A05E8(s64 u, s64 v) {
+    DIunion w;
+    DIunion uu, vv;
+
+    uu.ll = u, vv.ll = v;
+    {
+        DIunion __w;
+        __asm__("multu %2,%3" : "=l"((u32)(__w.s.low)), "=h"((u32)(__w.s.high)) : "d"((u32)(uu.s.low)), "d"((u32)(vv.s.low)));
+        w.ll = __w.ll;
+    }
+    w.s.high += ((u32)uu.s.low * (u32)vv.s.high + (u32)uu.s.high * (u32)vv.s.low);
+    return w.ll;
+}
