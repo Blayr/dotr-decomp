@@ -419,7 +419,32 @@ void func_0018BD90(void *arg0, s32 arg1) {
     func_0018C1B8(arg0, temp_s1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018BE58);
+typedef struct ExtTbl_0018BE58 {
+    void (*f[11])(void *);
+} ExtTbl_0018BE58;
+
+extern ExtTbl_0018BE58 D_002BC878;
+
+void func_0018BE58(void *d) {
+    ExtTbl_0018BE58 tbl;
+    u32 id;
+    s32 code;
+
+    tbl = D_002BC878;
+    func_0018BB98(d);
+    while ((code = func_0018B850(d, 32)) == 0x1B5 || code == 0x1B2) {
+        if (code == 0x1B5) {
+            func_0018B958(d, 32);
+            id = func_0018BA48(d, 4);
+            id = (id > 10) ? 0 : id;
+            tbl.f[id](d);
+            func_0018BB98(d);
+        } else {
+            func_0018B958(d, 32);
+            func_0018BB98(d);
+        }
+    }
+}
 
 void func_0018BF80(void *arg0) {
     s32 temp_v0;
