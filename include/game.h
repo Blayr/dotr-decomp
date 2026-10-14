@@ -636,4 +636,6 @@ void func_0017B6A0(void);
 
 void func_0017B6B0(void);
 
+s32 func_0019B148(s32, s32, s32, s32);          /* extern */
+
 #endif
