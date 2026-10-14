@@ -988,6 +988,7 @@ s32 func_0018C170(void *arg0);
 s32 func_0018C1B8(void *arg0, s32 arg1);
 void func_0018C230(void *arg0, s32 arg1);
 void func_0018C2D0(void *arg0, s32 arg1);
+void func_0018C398(void *arg0);
 void func_0018C490(s32 arg0, s32 arg1);
 s32 func_0018C520(void *arg0);
 void func_0018C5F0(void *arg0, s32 arg1, s32 arg2);

@@ -392,7 +392,46 @@ void func_0018C2D0(void *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C398);
+typedef struct DispExt_0018C398 {
+    u8 pad[0x18C];
+    s32 h[3];
+    s32 v[3];
+} DispExt_0018C398;
+
+void func_0018C398(void *arg0) {
+    u8 *d;
+    s32 i;
+    s32 n;
+
+    d = arg0;
+    if (*(s32 *)(d + 0x13C)) {
+        if (*(s32 *)(d + 0x184)) {
+            if (*(s32 *)(d + 0x178)) {
+                n = 3;
+            } else {
+                n = 2;
+            }
+        } else {
+            n = 1;
+        }
+    } else {
+        if (*(s32 *)(d + 0x174) != 3) {
+            n = 1;
+        } else {
+            if (*(s32 *)(d + 0x184)) {
+                n = 3;
+            } else {
+                n = 2;
+            }
+        }
+    }
+    for (i = 0; i < n; i++) {
+        ((DispExt_0018C398 *)d)->h[i] = func_0018BA48(arg0, 16);
+        func_0018BA48(arg0, 1);
+        ((DispExt_0018C398 *)d)->v[i] = func_0018BA48(arg0, 16);
+        func_0018BA48(arg0, 1);
+    }
+}
 
 void func_0018C490(s32 arg0, s32 arg1) {
     func_0018BA48(arg0, 1);
