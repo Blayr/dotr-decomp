@@ -180,7 +180,6 @@ void func_001DF5F0(s32, s32, s32, void *, s32);
 s32 func_001FD680(s32, s32, s32, s32, s32);
 
 
-char *func_0019BDD8(char *, const char *);
 
 void func_0020BCF0(s32, s32);
 
