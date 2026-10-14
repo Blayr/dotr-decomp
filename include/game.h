@@ -556,7 +556,6 @@ s32 func_00198840(s32, s32);                    /* extern */
 
 extern u8 D_002BCB50[];
 
-s32 func_0019B418(s32, s32);                    /* extern */
 
 extern u8 D_002BCB88[];
 
@@ -950,5 +949,7 @@ extern char D_002BD260[]; /* "" */
 s32 func_0019BC90(const char *a, const char *b); /* strcmp */
 
 void *func_00195140(void *ptr, u32 n, u32 size); /* _calloc_r */
+
+extern char ***D_0028FF08; /* p_environ */
 
 #endif

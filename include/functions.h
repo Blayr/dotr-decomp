@@ -1119,6 +1119,7 @@ s32 func_0019AE78(double x);
 void *func_0019B0A0(s32 *ptr, s32 incr);
 void func_0019B0F8(s32 arg0, s32 arg1, s32 arg2);
 void func_0019B128(s32 arg0);
+s32 func_0019B418(s32 reent_ptr, s32 name);
 f32 func_0019B4B8(f32 fparg0, f32 fparg1);
 s32 func_0019B5C0(void *ptr, char *str, const char *fmt, ...);
 s32 func_0019B648(char *str, const char *fmt, ...);

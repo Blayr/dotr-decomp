@@ -30,7 +30,17 @@ void func_0019B128(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B148);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B418);
+s32 func_0019B418(s32 reent_ptr, s32 name) {
+    char **P;
+    s32 offset;
+
+    ((void (*)(s32))func_001966E8)(reent_ptr);
+    while (func_00197570(reent_ptr, name, (s32)&offset))
+        for (P = &(*D_0028FF08)[offset];; ++P)
+            if (!(*P = *(P + 1)))
+                break;
+    ((void (*)(s32))func_001966F0)(reent_ptr);
+}
 
 f32 func_0019B4B8(f32 fparg0, f32 fparg1) {
     u32 gw0;
