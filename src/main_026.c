@@ -361,7 +361,107 @@ s32 func_00185100(void *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001851E8);
+typedef struct {
+    s16 inter;
+    s16 omode;
+    s16 ffmd;
+    s16 version;
+    s64 intc;
+} GParam_001851E8;
+
+typedef struct {
+    u64 FBP : 9;
+    u64 FBW : 6;
+    u64 PSM : 5;
+    u64 pad20 : 12;
+    u64 DBX : 11;
+    u64 DBY : 11;
+    u64 pad54 : 10;
+} GsDispFb_001851E8;
+
+typedef struct {
+    u64 FBP : 9;
+    u64 FBW : 6;
+    u64 PSM : 6;
+    u64 pad21 : 11;
+    u64 FBMSK : 32;
+} GsFrame_001851E8;
+
+typedef struct {
+    u64 NLOOP : 15;
+    u64 EOP : 1;
+    u64 pad16 : 16;
+    u64 id : 14;
+    u64 PRE : 1;
+    u64 PRIM : 11;
+    u64 FLG : 2;
+    u64 NREG : 4;
+    u64 REGS0 : 4;
+    u64 REGS1 : 60;
+} GifTag_001851E8;
+
+typedef struct {
+    s64 pmode;
+    s64 smode2;
+    GsDispFb_001851E8 dispfb;
+    s64 display;
+    s64 bgcolor;
+} GsDispEnv_001851E8;
+
+typedef struct {
+    GsFrame_001851E8 frame;
+    s64 frame_addr;
+    char rest[0x70];
+} GsDrawEnv_001851E8;
+
+typedef struct {
+    char c[0x60];
+} GsClear_001851E8;
+
+typedef struct {
+    GsDispEnv_001851E8 disp0;
+    GsDispEnv_001851E8 disp1;
+    GifTag_001851E8 giftag0;
+    GsDrawEnv_001851E8 draw0;
+    GsClear_001851E8 clear0;
+    GifTag_001851E8 giftag1;
+    GsDrawEnv_001851E8 draw1;
+    GsClear_001851E8 clear1;
+} GsDBuff_001851E8;
+
+void func_001851E8(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 flag) {
+    GsDBuff_001851E8 *db = arg0;
+    GParam_001851E8 *gp = (GParam_001851E8 *)func_001849A0();
+    s32 zb;
+    s16 fbp;
+
+    func_00184A18(&db->disp0, psm, w, h, 0, 0);
+    func_00184A18(&db->disp1, psm, w, h, 0, 0);
+    func_00184E10(&db->draw0, psm, w, h, ztst, zpsm);
+    func_00184E10(&db->draw1, psm, w, h, ztst, zpsm);
+    if (flag) {
+        func_00184FF8(&db->clear0, ztst, 0x800 - (w >> 1), 0x800 - (h >> 1), w, h, 0, 0, 0, 0, 0);
+        func_00184FF8(&db->clear1, ztst, 0x800 - (w >> 1), 0x800 - (h >> 1), w, h, 0, 0, 0, 0, 0);
+    }
+
+    *(__int128 *)&db->giftag0 = 0;
+    *(__int128 *)&db->giftag1 = 0;
+    db->giftag0.NLOOP = flag ? 0xE : 8;
+    db->giftag0.EOP = 1;
+    db->giftag0.NREG = 1;
+    db->giftag0.REGS0 = 0xE;
+    db->giftag1.NLOOP = flag ? 0xE : 8;
+    db->giftag1.EOP = 1;
+    db->giftag1.NREG = 1;
+    db->giftag1.REGS0 = 0xE;
+
+    zb = func_00184D48(psm, w, h);
+    if ((gp->inter == 1 && gp->ffmd == 1) || gp->inter == 0) {
+        fbp = zb >> 1;
+        db->disp1.dispfb.FBP = fbp;
+        db->draw0.frame.FBP = zb >> 1;
+    }
+}
 
 s32 func_00185480(u8 *arg0, s32 arg1) {
     s32 odd;

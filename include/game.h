@@ -296,7 +296,6 @@ extern s32 D_00325E2C;
 
 
 
-void func_001851E8(void *, s32, s32, s32, s32, s32, s32);
 extern s32 D_00350368;
 extern s32 D_00350370;
 extern s32 D_00350378;
