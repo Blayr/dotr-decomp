@@ -125,6 +125,11 @@ if [ -n "$ROW" ] && [ "${IN_ABS#"$ROOT"/}" = "$(awk '{ sub(/#.*/, "") } NF { f =
 fi
 printf '\t.text\n\t.p2align %s\n' "$P2" >> "$TMP/out.s"
 
-mipsel-none-elf-as -EL "-G$G" -march=r5900 -mabi=eabi -no-pad-sections \
+# Sony's assembler expanded GCC's address macros (`lbu $3,D_X($2)`, `la`) with 32-bit adds
+# (`addu`, `addiu`); binutils' eabi64 uses `daddu`/`daddiu`. o64 assembles the same 64-bit
+# code with 32-bit addresses; the header's ABI field is then set back to eabi64 for the link.
+mipsel-none-elf-as -EL "-G$G" -march=r5900 -mabi=o64 -no-pad-sections \
     -I "$ROOT" -I "$ROOT/include" -o "$OUT" "$TMP/out.s"
+perl -e 'open(F, "+<", $ARGV[0]) or die; binmode F; seek(F, 0x24, 0); read(F, $b, 4);
+    seek(F, 0x24, 0); print F pack("V", (unpack("V", $b) & ~0xF000) | 0x4000); close F' "$OUT"
 mv "$TMP/deps" "$OUT.d"
