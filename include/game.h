@@ -317,7 +317,6 @@ extern s32 D_0030FFB0;
 extern s32 D_00325DD0;
 extern s32 D_00325E2C;
 
-s32 func_0018EB08(void *, s32, s32);
 s32 func_0018EF20(void *, s32, s32 (*)(), s32);
 
 
@@ -874,5 +873,8 @@ s32 func_001A5338(f32 x, f32 *y);
 typedef union { double value; struct { u32 lsw; u32 msw; } parts; } nl_dshape;
 
 extern s32 D_002BC828;
+
+s32 func_0018F648(s32);                         /* extern */
+extern s32 D_002BC9D0;
 
 #endif

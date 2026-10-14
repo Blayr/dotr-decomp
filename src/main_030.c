@@ -60,7 +60,93 @@ void func_0018EA68(void) {
     func_00190498();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018EB08);
+s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
+    s32 temp_s2;
+    s32 temp_v0;
+    s32 ret;
+    u32 temp_a2;
+    void *temp_s1;
+
+    func_00198948((void *) arg1, 0, (u32) arg2);
+    temp_s2 = ((u32) (arg1 + 3) >> 2) * 4;
+    temp_a2 = arg2 - (temp_s2 - arg1);
+    if (temp_a2 < 0x10C0U) {
+        func_0018F7B0(temp_s2, &D_002BC9D0);
+        ret = 0;
+    } else {
+    temp_s1 = temp_s2 + 0x108;
+    (*(s32 *)((u8 *)arg0 + 0x40)) = temp_s2;
+    func_0018F060(temp_s1, temp_s2 + 0x10C0, temp_a2 - 0x10C0);
+    (*(s32 *)arg0) = 0;
+    (*(s32 *)((u8 *)arg0 + 4)) = 0;
+    (*(s32 *)((u8 *)arg0 + 8)) = 0;
+    (*(s64 *)((u8 *)arg0 + 0x10)) = -1;
+    (*(s64 *)((u8 *)arg0 + 0x18)) = -1;
+    (*(s64 *)((u8 *)arg0 + 0x20)) = 0;
+    (*(s64 *)((u8 *)arg0 + 0x28)) = -1;
+    (*(s64 *)((u8 *)arg0 + 0x30)) = -1;
+    (*(s64 *)((u8 *)arg0 + 0x38)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xB4)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xB8)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xBC)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xC0)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xC4)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xC8)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xCC)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xD0)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xD4)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xD8)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xDC)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xE0)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xE4)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xE8)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xF8)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xC)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x14)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x2C)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x34)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x3C)) = 0;
+    (*(s64 *)((u8 *)temp_s2 + 0xF0)) = -1;
+    (*(void (**)(void *))((u8 *)temp_s2 + 0x1C)) = func_001900A0;
+    (*(void (**)(void *))((u8 *)temp_s2 + 0x24)) = func_001900B0;
+    temp_v0 = func_0018F098(temp_s2, temp_s1, 0x600, 8);
+    (*(s32 *)((u8 *)temp_s2 + 0x48)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xFC)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x100)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x104)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x70)) = 0;
+    (*(s64 *)((u8 *)temp_s2 + 0x78)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x80)) = -1;
+    (*(s64 *)((u8 *)temp_s2 + 0x88)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x90)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0xAC)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x94)) = -1;
+    (*(s32 *)((u8 *)temp_s2 + 0x98)) = -1;
+    (*(s32 *)((u8 *)temp_s2 + 0x9C)) = -1;
+    (*(void **)((u8 *)temp_s2 + 0x858)) = arg0;
+    (*(s32 *)((u8 *)temp_s2 + 0x44)) = temp_v0;
+    (*(s32 *)((u8 *)temp_s2 + 0xB0)) = 1;
+    func_0018F648(temp_s2);
+    func_0018EE78(arg0);
+    func_0018EEC8(arg0);
+    (*(s32 *)((u8 *)temp_s2 + 0x1B8)) = (s32) (temp_s2 + 0x1E8);
+    (*(s32 *)((u8 *)temp_s2 + 0x1BC)) = (s32) (temp_s2 + 0x250);
+    (*(s32 *)((u8 *)temp_s2 + 0x1C4)) = (s32) (temp_s2 + 0x2B8);
+    (*(s32 *)((u8 *)temp_s2 + 0x1C8)) = (s32) (temp_s2 + 0x320);
+    (*(s32 *)((u8 *)temp_s2 + 0x1CC)) = (s32) (temp_s2 + 0x388);
+    (*(s32 *)((u8 *)temp_s2 + 0x1D4)) = (s32) (temp_s2 + 0x3F0);
+    (*(s32 *)((u8 *)temp_s2 + 0x1D8)) = (s32) (temp_s2 + 0x458);
+    (*(s32 *)((u8 *)temp_s2 + 0x1DC)) = (s32) (temp_s2 + 0x4C0);
+    (*(s32 *)((u8 *)temp_s2 + 0x1E4)) = (s32) (temp_s2 + 0x528);
+    func_0018F078(temp_s1);
+    (*(s32 *)((u8 *)temp_s2 + 0x850)) = -1;
+    (*(s32 *)((u8 *)temp_s2 + 0x854)) = 0;
+    (*(s32 *)((u8 *)temp_s2 + 0x84C)) = 0;
+    ret = 0x70003600;
+    (*(s32 *)((u8 *)temp_s2 + 0x81C)) = ret;
+    }
+    return ret;
+}
 
 s32 func_0018ED10(s32 unused0) {
     return 1;
