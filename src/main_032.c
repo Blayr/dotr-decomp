@@ -156,7 +156,23 @@ s32 func_00192768(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_001927E8);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_001929D0);
+s32 func_001929D0(s32 port, s32 slot) {
+    u8 *b;
+
+    if (D_003159D0[port][slot].open == 0) {
+        return 0;
+    }
+    b = (u8 *)&D_00315BC0;
+    *(s32 *)&D_00315BC0 = 0xE;
+    *(s32 *)(b + 4) = port;
+    *(s32 *)(b + 8) = slot;
+    *(s32 *)(b + 0x10) = 1;
+    if (func_0017EA80(&D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
+        return 0;
+    }
+    D_003159D0[port][slot].open = 0;
+    return *(s32 *)(b + 0xC);
+}
 
 u8 *func_00192A88(s32 arg0, s32 arg1) {
     u8 *p;
