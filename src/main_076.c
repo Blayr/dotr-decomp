@@ -2707,7 +2707,339 @@ s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026C170);
+typedef struct Request_0026C170 {
+    s32 command;
+    s32 value;
+    s32 cell;
+    s32 flag;
+} Request_0026C170;
+
+typedef struct State_0026C170 {
+    u16 fade;
+    u8 pad02[2];
+    u16 phase;
+    u8 handles[0x1A];
+    s32 counters[0x2C];
+    s32 timer2;
+    u8 count;
+    u8 padD5[0x2B];
+    u8 stage;
+    u8 pad101;
+    u16 timer;
+} State_0026C170;
+
+typedef struct Card_0026C170 {
+    u8 pad00[4];
+    u8 *model;
+    u8 pad08[0x38];
+    u8 x;
+    u8 y;
+} Card_0026C170;
+
+typedef struct Rot_0026C170 {
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 w;
+} Rot_0026C170;
+
+typedef struct Vec4_0026C170 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_0026C170;
+
+s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
+    s32 busy;
+    Request_0026C170 data;
+    u8 done = 0;
+    Request_0026C170 *req = &data;
+    State_0026C170 *state = arg1;
+    Card_0026C170 *card;
+    Vec4_0026C170 color;
+    Vec4_0026C170 pos;
+    Rot_0026C170 rot;
+    s32 i;
+    u32 *list;
+    u8 *handle;
+
+    data.command = 999;
+    data.value = 0;
+    data.cell = 0;
+    data.flag = 0;
+    func_001DE7E0(0);
+    color.w = 0.0f;
+    color.z = 0.0f;
+    color.y = 0.0f;
+    color.x = 0.0f;
+    busy = 0;
+    card = (Card_0026C170 *)func_001DF540(src[1], 0);
+    if (arg2 >= 0) {
+        func_00255960(state);
+        func_00217980(0x2B, 0);
+        func_00255AC0(state, 0x3D);
+        func_00255AC0(state, 0x3E);
+        func_00255AC0(state, 0x3F);
+        func_00255AC0(state, 0x26C);
+        if (func_0027F830(func_001DE540()) == 0) {
+            func_001E8780(0x20, -1, 0x2E1, 1);
+            func_001F25D0(0x20, &color);
+        }
+        func_002516D0(src[1], src[2] & 7, 1);
+        func_002516D0(src[1], (src[2] >> 3) & 7, 1);
+        func_002516D0(src[1], (src[2] >> 6) & 7, 1);
+        func_002516D0(src[1], (src[2] >> 9) & 7, 1);
+        state->fade = 0x80;
+        for (i = 1; i < 11; i++) {
+            if (func_001DF540((src[1] == 0) ? 1 : 0, i)) {
+                func_002516D0((src[1] == 0) ? 1 : 0, i, 1);
+            }
+        }
+        return 1;
+    }
+    switch (state->stage) {
+    case 0:
+        if (func_002179C0() == 0) {
+            func_00260AF0(0, (src[1] << 8) | (src[2] & 7), 0x32, 0xB4);
+            func_00217980(0x2B, 1);
+            if (card->model == NULL) {
+                card->model = func_001CDAA0();
+            }
+            if (card->model != NULL) {
+                *(Card_0026C170 **)(card->model + 0x90) = card;
+                func_001E10F0(card->x, card->y, 0, card->model);
+                pos.x = 0.0f;
+                pos.y = 0.0f;
+                pos.z = (src[1] == 0) ? 350.0f : -350.0f;
+                rot.x = 0;
+                rot.y = (src[1] == 0) ? 0x8000 : 0;
+                rot.z = 0;
+                func_001F22B0(0x20, &pos);
+                func_001F2430(0x20, &rot);
+            }
+            func_002516D0(src[1], 0, 1);
+            func_001E1970(src[1], 0, 0);
+            func_001E1B70(src[1], 0, -1, 0);
+            func_001E1D70(src[1], 0, 1, 0x80);
+            state->stage++;
+        }
+        break;
+    case 1:
+        if (state->timer++ > 24) {
+            if (func_001F5EC0((src[1] << 8) | ((src[2] >> 3) & 7))) {
+                func_00260AF0(0, (src[1] << 8) | ((src[2] >> 3) & 7), 0x32, 0xB4);
+                state->timer = 0;
+                state->stage++;
+            }
+        }
+        break;
+    case 2:
+        if (state->timer++ > 24) {
+            if (func_001F5EC0((src[1] << 8) | ((src[2] >> 6) & 7))) {
+                func_00260AF0(0, (src[1] << 8) | ((src[2] >> 6) & 7), 0x32, 0xB4);
+                state->timer = 0;
+                state->stage++;
+            }
+        }
+        break;
+    case 3:
+        if (state->timer++ > 24) {
+            if (func_001F5EC0((src[1] << 8) | ((src[2] >> 9) & 7))) {
+                func_00260AF0(0, (src[1] << 8) | ((src[2] >> 9) & 7), 0x32, 0xB4);
+                state->timer = 0;
+                state->stage++;
+            }
+        }
+        break;
+    case 4:
+        if (state->timer++ > 24) {
+            if (func_001F5EC0(src[1] << 8)) {
+                func_00260AF0(0, src[1] << 8, 0xC8, 0xB4);
+                func_001A86A0(6);
+                state->timer = 0;
+                state->stage++;
+            }
+        }
+        break;
+    case 5:
+        if (state->timer++ == 0) {
+            func_00217710(0, 0x27);
+            func_00260AF0(0xC, src[1] << 8, 0x32, 0xB4);
+            return 1;
+        }
+        if (state->timer >= 12) {
+            func_001A86A0(4);
+        }
+        if (state->timer >= 24 && func_00255B50(state)) {
+            func_001A86A0(0);
+            func_00260EB0(0, src[1] << 8, 0xB4, 0xB4);
+            state->phase++;
+            state->timer = 0;
+            state->stage++;
+        }
+        break;
+    }
+    switch (state->phase) {
+    case 0:
+        break;
+    case 1:
+        req->command = 0x26C;
+        req->value = 0;
+        req->cell = func_001E1090(src[1], (src[2] >> 9) & 7);
+        req->flag = 0;
+        state->handles[state->count] = func_00255A30(req, state);
+        state->count++;
+        state->timer = 0;
+        state->phase++;
+        break;
+    case 2:
+        if (state->timer++ > 24) {
+            req->command = 0x26C;
+            req->value = 0;
+            req->cell = func_001E1090(src[1], (src[2] >> 6) & 7);
+            req->flag = 0;
+            state->handles[state->count] = func_00255A30(req, state);
+            state->count++;
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+    case 3:
+        if (state->timer++ > 24) {
+            req->command = 0x26C;
+            req->value = 0;
+            req->cell = func_001E1090(src[1], (src[2] >> 3) & 7);
+            req->flag = 0;
+            state->handles[state->count] = func_00255A30(req, state);
+            state->count++;
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+    case 4:
+        if (state->timer++ > 24) {
+            req->command = 0x26C;
+            req->value = 0;
+            req->cell = func_001E1090(src[1], src[2] & 7);
+            req->flag = 0;
+            state->handles[state->count] = func_00255A30(req, state);
+            state->count++;
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+    case 5:
+        if (state->timer++ > 24) {
+            func_002500C0(src[1], 0, 1, 1, 2);
+            req->command = 0x26C;
+            req->value = 0;
+            req->cell = func_001E1090(src[1], 0);
+            req->flag = 0;
+            state->handles[state->count] = func_00255A30(req, state);
+            state->count++;
+            state->timer = 0;
+            state->phase++;
+        }
+        break;
+    case 6:
+        for (i = 0; i < state->count; i++) {
+            if (func_001F51D0(state->handles[i])) {
+                return 1;
+            }
+        }
+        if (func_0027F830(func_001DE540()) == 1) {
+            if (func_001F6D20() > 0) {
+                func_001F6CF0((u8)(func_001F6D20() - 4));
+            } else {
+                done++;
+            }
+            if (func_001F6D10() > 0) {
+                func_001F6CE0((u8)(func_001F6D10() - 4));
+            } else {
+                done++;
+            }
+            if (done == 2) {
+                func_001DE7A0(0);
+                func_001E4530();
+                return 0;
+            }
+            return 1;
+        }
+        state->count = 0;
+        if (func_001F1300(0x20)) {
+            list = (u32 *)func_001F0FA0(0x20);
+            func_00202D60(5, -1);
+            for (i = 0; i < 8; i++) {
+                func_00202810(5, i, 0, *list);
+                list++;
+            }
+            func_001FA810(0, 0);
+            func_001FA8A0(0, 0, 8, 0, 0x20, (void *)func_001F11B0(0x20, 0x13));
+            req->command = 0x3D;
+            req->value = src[1];
+            req->cell = src[2];
+            req->flag = src[3];
+            state->handles[state->count] = func_00255A30(req, state);
+            state->counters[state->count] = 0x3D;
+            state->count++;
+            req->command = 0x3E;
+            req->value = src[1];
+            req->cell = src[2];
+            req->flag = src[3];
+            state->handles[state->count] = func_00255A30(req, state);
+            state->counters[state->count] = 0x3E;
+            state->count++;
+            req->command = 0x3F;
+            req->value = src[1];
+            req->cell = src[2];
+            req->flag = src[3];
+            state->handles[state->count] = func_00255A30(req, state);
+            state->counters[state->count] = 0x3F;
+            state->count++;
+            state->phase++;
+        }
+        break;
+    case 7:
+        func_0026CD80(-1);
+        if (state->timer++ > 100) {
+            color.x = 1.0f;
+            color.y = 1.0f;
+            color.z = 1.0f;
+            color.w = 1.0f;
+            func_001F25D0(0x20, &color);
+            state->phase++;
+            state->timer = 0;
+        }
+        break;
+    case 8:
+        for (i = 0; i < state->count; i++) {
+            handle = &state->handles[i];
+            if (func_001F51D0(*handle)) {
+                if (func_001F52D0(*handle) == 2) {
+                    func_0026CD80(1);
+                    func_001DFBB0(src[1], src[2] & 7);
+                    func_001DFBB0(src[1], (src[2] >> 3) & 7);
+                    func_001DFBB0(src[1], (src[2] >> 6) & 7);
+                    func_001DFBB0(src[1], (src[2] >> 9) & 7);
+                    func_001E7E70(0x20, -1, 999);
+                    if (card->model) {
+                        func_001CDA60(card->model);
+                    }
+                    card->model = NULL;
+                }
+                busy++;
+            }
+        }
+        if (busy == 0) {
+            func_00202D60(5, -1);
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 void func_0026CD80(s32 arg0) {
     f32 v[4];
