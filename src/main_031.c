@@ -14,7 +14,13 @@ INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F7B0);
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F808);
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F8F8);
+s32 func_0018F8F8(void *arg0, s32 arg1, s32 arg2) {
+    (*(s32 *)((u8 *)arg0 + 4)) = arg1;
+    (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) (arg1 >> 4);
+    (*(s32 *)((u8 *)arg0 + 8)) = arg2;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) (arg2 >> 4);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_031", func_0018F918);
 

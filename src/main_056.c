@@ -1149,7 +1149,6 @@ void func_00186238(void *);
 void func_00186410(void *);
 void func_00186470(u8 *, s32);
 void func_00186BD0(void);
-void func_00186FC8(void);
 extern u8 D_00286980[];
 extern u8 D_00293F10[];
 extern u8 D_00293F14[];

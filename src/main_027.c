@@ -4,7 +4,10 @@ INCLUDE_ASM("asm/nonmatchings/main_027", func_00186D78);
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00186E58);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00186FC8);
+void func_00186FC8(void) {
+    *(volatile s32 *)0x10003810 = 1;
+    *(volatile s32 *)0x10003820 = 6;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00186FF0);
 

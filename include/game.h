@@ -706,4 +706,10 @@ s32 func_0018A848(void *);                          /* extern */
 extern s32 D_002BC900;
 extern s32 D_002BC920;
 
+extern s32 D_0028CA18;
+s32 func_00186D18();                                /* extern */
+s32 func_00186D58(s32);                         /* extern */
+s32 func_00186D68();                                /* extern */
+s32 func_001970A8();                                /* extern */
+
 #endif

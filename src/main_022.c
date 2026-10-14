@@ -117,9 +117,27 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CC38);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CC60);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CC88);
+void func_0017CC88(void *arg0) {
+    void *temp_a0;
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CCC8);
+    (*(s32 *)((u8 *)arg0 + 4)) = (s32) ((*(s32 *)((u8 *)arg0 + 4)) + 1);
+    temp_a0 = (*(void **)((u8 *)arg0 + 0xC)) + 1;
+    (*(void **)((u8 *)arg0 + 0xC)) = temp_a0;
+    if (temp_a0 == (arg0 + ((*(s32 *)arg0) + 0x10))) {
+        (*(void **)((u8 *)arg0 + 0xC)) = (void *) (arg0 + 0x10);
+    }
+}
+
+void func_0017CCC8(void *arg0) {
+    void *temp_a0;
+
+    (*(s32 *)((u8 *)arg0 + 4)) = (s32) ((*(s32 *)((u8 *)arg0 + 4)) - 1);
+    temp_a0 = (*(void **)((u8 *)arg0 + 8)) + 1;
+    (*(void **)((u8 *)arg0 + 8)) = temp_a0;
+    if (temp_a0 == (arg0 + ((*(s32 *)arg0) + 0x10))) {
+        (*(void **)((u8 *)arg0 + 8)) = (void *) (arg0 + 0x10);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CD08);
 
