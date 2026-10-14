@@ -242,7 +242,13 @@ s32 func_00184428(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00184440);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184488);
+s32 *func_00184488(s32 arg0) {
+    s32 *p = (s32 *)0x80000000;
+    while (*p != arg0) {
+        p++;
+    }
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_001844C0);
 
