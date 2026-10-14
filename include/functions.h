@@ -1305,6 +1305,7 @@ void func_001950E8(s32 arg0, s32 arg1);
 void func_00195108(s32 arg0, s32 arg1);
 void *func_00195140(void *ptr, u32 n, u32 size);
 s32 func_001951F8(s32 *ptr, s32 fd);
+s32 func_00195250(i2b_Bigint *b, i2b_Bigint *S);
 void func_001966E8(void);
 void func_001966F0(void);
 s32 func_001966F8(void);
