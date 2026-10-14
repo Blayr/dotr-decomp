@@ -626,8 +626,6 @@ typedef struct File_00243A90 {
     s32 fd;
 } File_00243A90;
 
-s32 func_00190FF0(void *, const char *);
-s32 func_00191A58(s32);
 s32 func_0019BC90(const char *, const char *);
 extern char D_0030F7F0[];
 extern char D_0030F7F7[];
@@ -741,7 +739,6 @@ typedef struct {
     f32 value;
 } Float_00243DE0;
 
-s32 func_00191A58(s32);
 extern Float_00243DE0 D_0029B2F8;
 
 s32 func_00243DE0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {

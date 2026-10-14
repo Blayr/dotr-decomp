@@ -569,9 +569,183 @@ s32 func_00190F88(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190FF0);
+typedef struct CdClient_00190FF0 {
+    void *pkt;
+    int pid;
+    int sema;
+    unsigned int mode;
+    unsigned int command;
+    unsigned int buff;
+    unsigned int cbuff;
+    void (*endFunc)(void *);
+    void *endParam;
+    unsigned int serve;
+} CdClient_00190FF0;
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_001912F0);
+typedef struct {
+    unsigned char file[0x24];
+    char name[0x100];
+    void *addr;
+} CdSearchReq_00190FF0;
+
+typedef struct {
+    unsigned char b[0x24];
+} CdlFILE_00190FF0;
+
+extern int D_0028DCDC;
+extern s32 D_003156D0;
+extern s32 D_003156D8;
+extern int D_0028DD00;
+extern CdClient_00190FF0 D_003158C0;
+extern CdSearchReq_00190FF0 D_00315740;
+extern int D_00315880[16];
+extern char D_002BCC10[];
+extern char D_002BCC30[];
+extern char D_002BCC48[];
+extern char D_002BCC58[];
+extern char D_002BCC68[];
+s32 func_0017E240(s32);
+
+#define scePrintf_00190FF0 ((void (*)(const char *, ...))func_0017DA98)
+
+/* sceCdSearchFile: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00190FF0(void *arg0, const char *name) {
+    char *req;
+    int w;
+    int i;
+    int v;
+
+    func_00190DC0();
+    if (D_0028DCE8 != func_0017B930(*(volatile int *)&D_0028DCE8)) {
+        return 0;
+    }
+    D_0028DCDC = 1;
+    func_0017B7E0(D_003156D0, &D_003156D8);
+    if (func_001914F8(1) != 0) {
+        func_0017B900(*(volatile int *)&D_0028DCE8);
+        return 0;
+    }
+    ((void (*)(s32))func_0017E240)(0);
+    if (D_0028DD00 < 0) {
+        while (1) {
+            if (func_0017E8B0(&D_003158C0, 0x80000597, 0) < 0) {
+                if (D_0028DCD0 > 0) {
+                    scePrintf_00190FF0(D_002BCC10);
+                }
+                w = 0x100000;
+                while (w--) {}
+                continue;
+            }
+            if (D_003158C0.serve != 0) {
+                D_0028DD00 = 0;
+                break;
+            }
+            w = 0x100000;
+            while (w--) {}
+        }
+    }
+    for (i = 0; i < 0x100; i++) {
+        if ((D_00315740.name[i] = name[i]) == 0) {
+            break;
+        }
+    }
+    if (i == 0x100) {
+        D_00315740.name[i - 1] = 0;
+    }
+    req = (char *)&D_00315740;
+    *(char **)(req + 0x124) = req;
+    if (D_0028DCD0 > 0) {
+        scePrintf_00190FF0(D_002BCC30, req + 0x24);
+    }
+    func_0017E190((s32 *)req, 0x128);
+    if (func_0017EA80((s32 *)&D_003158C0, 0, 0, (s32 *)req, 0x128, D_00315880, 4, 0, 0) < 0) {
+        func_0017B900(*(volatile int *)&D_0028DCE8);
+        return 0;
+    }
+    *(CdlFILE_00190FF0 *)arg0 = *(CdlFILE_00190FF0 *)((int)req | 0x20000000);
+    if (D_0028DCD0 > 0) {
+        scePrintf_00190FF0(D_002BCC48, (char *)arg0 + 8);
+    }
+    if (D_0028DCD0 > 0) {
+        scePrintf_00190FF0(D_002BCC58, ((int *)arg0)[1]);
+    }
+    if (D_0028DCD0 > 0) {
+        scePrintf_00190FF0(D_002BCC68, ((int *)arg0)[0]);
+    }
+    v = *(int *)((int)D_00315880 | 0x20000000);
+    func_0017B900(D_0028DCE8);
+    return v;
+}
+
+#undef scePrintf_00190FF0
+
+typedef struct CdClient_001912F0 {
+    void *pkt;
+    int pid;
+    int sema;
+    unsigned int mode;
+    unsigned int command;
+    unsigned int buff;
+    unsigned int cbuff;
+    void (*endFunc)(void *);
+    void *endParam;
+    unsigned int serve;
+} CdClient_001912F0;
+
+extern int D_0028DCDC;
+extern int D_0028DCF8;
+#define cd_001912F0 (*(CdClient_001912F0 *)&D_0028EE90)
+extern s32 D_003156D0;
+extern s32 D_003156D8;
+extern char D_002BCC80[];
+extern char D_002BCCA8[];
+s32 func_0017E240(s32);
+
+#define scePrintf_001912F0 ((void (*)(const char *, ...))func_0017DA98)
+
+/* _sceCd_ncmd_prechk: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_001912F0(int cmd) {
+    int w;
+
+    func_00190DC0();
+    if (D_0028DCE8 != func_0017B930(*(volatile int *)&D_0028DCE8)) {
+        if (D_0028DCD0 > 0) {
+            scePrintf_001912F0(D_002BCC80, cmd, D_0028DCDC);
+        }
+        return 0;
+    }
+    D_0028DCDC = cmd;
+    func_0017B7E0(D_003156D0, &D_003156D8);
+    if (func_001914F8(1) != 0) {
+        func_0017B900(*(volatile int *)&D_0028DCE8);
+        return 0;
+    }
+    ((void (*)(s32))func_0017E240)(0);
+    if (D_0028DCF8 < 0) {
+        while (1) {
+            if (func_0017E8B0(&cd_001912F0, 0x80000595, 0) < 0) {
+                if (D_0028DCD0 > 0) {
+                    scePrintf_001912F0(D_002BCCA8);
+                }
+                w = 0x100000;
+                while (w--) {}
+                continue;
+            }
+            if (cd_001912F0.serve != 0) {
+                D_0028DCF8 = 0;
+                break;
+            }
+            w = 0x100000;
+            while (w--) {}
+        }
+    }
+    return 1;
+}
+
+#undef scePrintf_001912F0
+#undef cd_001912F0
 
 s32 func_00191460(void) {
     s32 temp_s0;
@@ -617,7 +791,72 @@ s32 func_00191598(s32 arg0) {
     return func_0017EC70(&D_0028F708);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00191608);
+typedef struct CdClient_00191608 {
+    void *pkt;
+    int pid;
+    int sema;
+    unsigned int mode;
+    unsigned int command;
+    unsigned int buff;
+    unsigned int cbuff;
+    void (*endFunc)(void *);
+    void *endParam;
+    unsigned int serve;
+} CdClient_00191608;
+
+extern int D_0028DCD8;
+extern int D_0028DD08;
+#define cd_00191608 (*(CdClient_00191608 *)&D_0028F708)
+extern s32 D_003156D0;
+extern s32 D_003156D8;
+extern char D_002BCCE0[];
+extern char D_002BCD08[];
+s32 func_0017E240(s32);
+
+#define scePrintf_00191608 ((void (*)(const char *, ...))func_0017DA98)
+
+/* _sceCd_scmd_prechk: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00191608(int cmd) {
+    int w;
+
+    func_00190DC0();
+    if (D_0028DCEC != func_0017B930(*(volatile int *)&D_0028DCEC)) {
+        if (D_0028DCD0 > 0) {
+            scePrintf_00191608(D_002BCCE0, cmd, D_0028DCD8);
+        }
+        return 0;
+    }
+    D_0028DCD8 = cmd;
+    func_0017B7E0(D_003156D0, &D_003156D8);
+    if (func_00191598(1) != 0) {
+        func_0017B900(*(volatile int *)&D_0028DCEC);
+        return 0;
+    }
+    ((void (*)(s32))func_0017E240)(0);
+    if (D_0028DD08 < 0) {
+        while (1) {
+            if (func_0017E8B0(&cd_00191608, 0x80000593, 0) < 0) {
+                if (D_0028DCD0 > 0) {
+                    scePrintf_00191608(D_002BCD08);
+                }
+                w = 0x100000;
+                while (w--) {}
+                continue;
+            }
+            if (cd_00191608.serve != 0) {
+                D_0028DD08 = 0;
+                break;
+            }
+            w = 0x100000;
+            while (w--) {}
+        }
+    }
+    return 1;
+}
+
+#undef scePrintf_00191608
+#undef cd_00191608
 
 typedef struct CdClient_00191778 {
     void *pkt;
@@ -726,4 +965,77 @@ s32 func_00191778(s32 mode) {
     return ver;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00191A58);
+typedef struct CdClient_00191A58 {
+    void *pkt;
+    int pid;
+    int sema;
+    unsigned int mode;
+    unsigned int command;
+    unsigned int buff;
+    unsigned int cbuff;
+    void (*endFunc)(void *);
+    void *endParam;
+    unsigned int serve;
+} CdClient_00191A58;
+
+extern int D_0028DD04;
+extern CdClient_00191A58 D_00315910;
+extern int D_00315950;
+extern char D_002BCD50[];
+extern char D_002BCD60[];
+extern char D_002BCD80[];
+s32 func_0017E240(s32);
+
+#define scePrintf_00191A58 ((void (*)(const char *, ...))func_0017DA98)
+
+/* sceCdDiskReady: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00191A58(int mode) {
+    int v;
+    int w;
+
+    if (D_0028DCD0 > 0) {
+        scePrintf_00191A58(D_002BCD50);
+    }
+    func_00190DC0();
+    if (D_0028DCEC != func_0017B930(*(volatile int *)&D_0028DCEC)) {
+        return 6;
+    }
+    if (func_00191598(1) != 0) {
+        func_0017B900(*(volatile int *)&D_0028DCEC);
+        return (mode != 8) ? 6 : -1;
+    }
+    ((void (*)(s32))func_0017E240)(0);
+    if (D_0028DD04 < 0) {
+        while (1) {
+            if (func_0017E8B0(&D_00315910, 0x8000059A, 0) < 0) {
+                if (D_0028DCD0 > 0) {
+                    scePrintf_00191A58(D_002BCD60);
+                }
+                w = 0x100000;
+                while (w--) {}
+                continue;
+            }
+            if (D_00315910.serve != 0) {
+                D_0028DD04 = 0;
+                break;
+            }
+            w = 0x100000;
+            while (w--) {}
+        }
+    }
+    D_00315950 = mode;
+    func_0017E190(&D_00315950, 4);
+    if (func_0017EA80((s32 *)&D_00315910, 0, 0, &D_00315950, 4, &D_0028EEC0, 4, 0, 0) < 0) {
+        func_0017B900(*(volatile int *)&D_0028DCEC);
+        return (mode != 8) ? 6 : -1;
+    }
+    if (D_0028DCD0 > 0) {
+        scePrintf_00191A58(D_002BCD80);
+    }
+    v = *(int *)((int)&D_0028EEC0 | 0x20000000);
+    func_0017B900(D_0028DCEC);
+    return v;
+}
+
+#undef scePrintf_00191A58
