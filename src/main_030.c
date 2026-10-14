@@ -96,7 +96,9 @@ void func_0018F078(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) (*(s32 *)((u8 *)arg0 + 8));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F088);
+void func_0018F088(void *arg0) {
+    (*(s32 *)((u8 *)arg0 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0xC));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F098);
 
