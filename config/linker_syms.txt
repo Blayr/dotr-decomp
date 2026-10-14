@@ -19,3 +19,4 @@ __floatdidf = 0x001A1E70; /* 64-bit int to double (func_001A1E70) */
 __floatdisf = 0x001A1F18; /* 64-bit int to float (func_001A1F18) */
 __fixunsdfdi = 0x001A2000; /* double to unsigned 64-bit (func_001A2000) */
 __fixdfdi = 0x001A2118; /* double to 64-bit (func_001A2118) */
+__pack_d = 0x001A2430; /* fp-bit pack, called by name from dpmul (func_001A2430) */
