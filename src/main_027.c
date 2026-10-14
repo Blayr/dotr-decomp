@@ -21,7 +21,34 @@ s32 func_001870B8(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_001870C8);
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187118);
+s32 func_00187118(void *arg0) {
+    u32 temp_s4;
+
+    temp_s4 = *(volatile u32 *)0x10003840;
+    if (func_001870C8() >= 2U) {
+        return 0;
+    }
+    (*(s32 *)arg0) = (s32) *(volatile s32 *)0x10003900;
+    (*(s32 *)((u8 *)arg0 + 4)) = (s32) *(volatile s32 *)0x10003910;
+    (*(s32 *)((u8 *)arg0 + 8)) = (s32) *(volatile s32 *)0x10003920;
+    (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) *(volatile s32 *)0x10003930;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) *(volatile s32 *)0x10003940;
+    (*(s32 *)((u8 *)arg0 + 0x14)) = (s32) *(volatile s32 *)0x10003950;
+    (*(s32 *)((u8 *)arg0 + 0x18)) = (s32) *(volatile s32 *)0x10003960;
+    (*(s32 *)((u8 *)arg0 + 0x1C)) = (s32) *(volatile s32 *)0x10003970;
+    (*(s32 *)((u8 *)arg0 + 0x20)) = (s32) *(volatile s32 *)0x10003870;
+    (*(s32 *)((u8 *)arg0 + 0x24)) = (s32) *(volatile s32 *)0x10003880;
+    (*(s32 *)((u8 *)arg0 + 0x28)) = (s32) *(volatile s32 *)0x10003800;
+    (*(s16 *)((u8 *)arg0 + 0x2C)) = (s16) *(volatile s32 *)0x100038D0;
+    (*(s16 *)((u8 *)arg0 + 0x2E)) = (s16) *(volatile s32 *)0x10003890;
+    (*(s16 *)((u8 *)arg0 + 0x30)) = (s16) *(volatile s32 *)0x10003830;
+    (*(s16 *)((u8 *)arg0 + 0x32)) = (s16) *(volatile s32 *)0x10003860;
+    (*(s8 *)((u8 *)arg0 + 0x34)) = (s8) *(volatile s32 *)0x10003820;
+    (*(s8 *)((u8 *)arg0 + 0x35)) = (s8) temp_s4;
+    (*(s8 *)((u8 *)arg0 + 0x36)) = (s8) (temp_s4 >> 8);
+    (*(s8 *)((u8 *)arg0 + 0x37)) = (s8) *(volatile s32 *)0x10003850;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00187298);
 
