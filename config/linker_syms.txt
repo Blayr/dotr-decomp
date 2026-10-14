@@ -5,6 +5,7 @@ fptodp = 0x001A2370; /* float to double (func_001A2370) */
 _dpfgt = 0x0017B3F0; /* double a > b (func_0017B3F0) */
 fptosi = 0x001A22C0;
 __moddi3 = 0x001A0CF8; /* signed 64-bit modulo (func_001A0CF8) */
+__umoddi3 = 0x001A1908; /* unsigned 64-bit modulo (func_001A1908) */
 dptofp = 0x001A3038; /* double to float (func_001A3038) */
 dpmul = 0x001A2918; /* double multiply (func_001A2918) */
 dpadd = 0x001A2858; /* double add (func_001A2858) */
