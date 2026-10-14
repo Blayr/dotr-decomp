@@ -847,8 +847,8 @@ typedef struct {
     s32 f5C;
 } Obj_00243F60;
 
-void func_001843E0(void);
-void func_00184428(void);
+s32 func_001843E0(void);
+s32 func_00184428(void);
 
 s32 func_00243F60(void *arg0) {
     Obj_00243F60 *obj = arg0;
