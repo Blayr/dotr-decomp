@@ -19,7 +19,95 @@ s32 func_00191C50(s32 arg0) {
     return temp_s0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00191D18);
+typedef struct {
+    int lsn;
+    int sectors;
+    void *buf;
+    unsigned char trycount;
+    unsigned char spindlctrl;
+    unsigned char datapattern;
+    unsigned char pad;
+    int *intr_data;
+    int *cur_pos;
+} CdReadCmd_00191D18;
+
+typedef struct {
+    unsigned char trycount;
+    unsigned char spindlctrl;
+    unsigned char datapattern;
+    unsigned char pad;
+} CdRMode_00191D18;
+
+extern s32 D_0028DDC0;
+extern int D_0028EDC0[];
+extern int D_0028EE80[];
+extern volatile int D_0028DCF4;
+extern char D_002BCD98[];
+extern char D_002BCDB0[];
+
+#define mode_00191D18 ((CdRMode_00191D18 *)arg3)
+#define scePrintf_00191D18 ((void (*)(const char *, ...))func_0017DA98)
+
+/* sceCdRead: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00191D18(s32 lsn, s32 sectors, s32 buf, void *arg3) {
+    CdReadCmd_00191D18 *sd = (CdReadCmd_00191D18 *)&D_0028DDC0;
+    int size;
+
+    if ((D_0028DCF4 & 1) == 0) {
+        if (func_00191460() == 6) {
+            return 0;
+        }
+    }
+    if (func_001912F0(4) == 0) {
+        return 0;
+    }
+    sd->lsn = lsn;
+    sd->sectors = sectors;
+    sd->buf = (void *)buf;
+    sd->trycount = mode_00191D18->trycount;
+    sd->spindlctrl = mode_00191D18->spindlctrl;
+    sd->datapattern = mode_00191D18->datapattern;
+    sd->intr_data = D_0028EDC0;
+    sd->cur_pos = D_0028EE80;
+    switch (mode_00191D18->datapattern) {
+    case 1:
+        size = sectors * 2328;
+        break;
+    case 2:
+        size = sectors * 2340;
+        break;
+    case 0:
+    default:
+        size = sectors * 2048;
+        break;
+    }
+    D_0028EE80[0] = 0;
+    if ((D_0028DCF4 & 2) == 0) {
+        func_0017E190((s32 *)buf, size);
+    }
+    func_0017E190(D_0028EDC0, 144);
+    func_0017E190((s32 *)sd, 24);
+    func_0017E190(D_0028EE80, 4);
+    if (D_0028DCD0 > 0) {
+        scePrintf_00191D18(D_002BCD98);
+    }
+    *(volatile s32 *)&D_0028DD14 = 1;
+    D_0028DCF0 = 1;
+    if (func_0017EA80(&D_0028EE90, 1, 1, (s32 *)sd, 24, 0, 0, (s32)func_00190D20, (s32)D_0028EDC0) < 0) {
+        *(volatile s32 *)&D_0028DD14 = 0;
+        D_0028DCF0 = 0;
+        ((s32 (*)(s32))func_0017B900)(*(volatile s32 *)&D_0028DCE8);
+        return 0;
+    }
+    if (D_0028DCD0 > 0) {
+        scePrintf_00191D18(D_002BCDB0);
+    }
+    return 1;
+}
+
+#undef mode_00191D18
+#undef scePrintf_00191D18
 
 s32 func_00191EF8(void) {
     s32 temp_s0;
@@ -61,7 +149,59 @@ s32 func_00192058(void) {
     return func_00192308(0, 0, 0, 3, &D_00315958);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00192090);
+extern char D_002BCDC0[];
+extern char D_002BCDF0[];
+extern char D_002BCE38[];
+
+#define scePrintf_00192090 ((void (*)(const char *, ...))func_0017DA98)
+
+/* sceCdStRead: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_00192090(s32 sectors, s32 buf, s32 mode, s32 *err) {
+    int got;
+    unsigned int r;
+    unsigned int n;
+    int e;
+    int rerr;
+
+    if (D_0028DCD0 > 0) {
+        scePrintf_00192090(D_002BCDC0, sectors);
+    }
+    if (D_0028F730 == 0) {
+        return 0;
+    }
+    rerr = 0;
+    got = 0;
+    func_0017E190((s32 *)buf, sectors << 11);
+    if (mode != 0) {
+        do {
+            r = func_00192308(0, sectors - got, buf + (got << 11), 2, &D_00315958);
+            n = r & 0xFFFF;
+            e = r >> 16;
+            got += n;
+            if (e != 0) {
+                rerr = e;
+                if (D_0028DCD0 > 0) {
+                    scePrintf_00192090(D_002BCDF0, got, n, sectors, e);
+                }
+            } else if (n == 0) {
+                func_00190A28(8);
+            }
+        } while (got != sectors && (e == 0 || n != 0));
+        if (D_0028DCD0 > 0) {
+            scePrintf_00192090(D_002BCE38);
+        }
+        *err = rerr;
+    } else {
+        r = func_00192308(0, sectors, buf, 2, &D_00315958);
+        e = r >> 16;
+        got = r & 0xFFFF;
+        *err = e;
+    }
+    return got;
+}
+
+#undef scePrintf_00192090
 
 s32 func_00192218(void) {
     D_0028F730 = 0;

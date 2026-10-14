@@ -144,7 +144,6 @@ typedef struct Progress_001FF480 {
 } Progress_001FF480;
 
 s32 func_00191A58(s32);
-s32 func_00191D18(s32, s32, s32, void *);
 extern Progress_001FF480 D_00293CB0;
 extern char D_002D0648[];
 extern char D_002D064D[];

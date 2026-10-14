@@ -742,7 +742,6 @@ typedef struct {
 } Float_00243DE0;
 
 s32 func_00191A58(s32);
-s32 func_00192090(s32, s32, s32, s32 *);
 extern Float_00243DE0 D_0029B2F8;
 
 s32 func_00243DE0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
