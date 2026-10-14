@@ -105,7 +105,14 @@ INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C968);
 
 INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C9E8);
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CA80);
+s32 func_0017CA80(s32 arg0, s32 arg1, s32 arg2) {
+    s32 sp0[4];
+    sp0[0] = /* extra? */ (arg0 & 0xFFFF);
+    sp0[1] = /* extra? */ arg1;
+    sp0[2] = /* extra? */ arg2;
+    sp0[3] = /* extra? */ ((s32) &D_00310920 | 0x20000000);
+    return func_0017BD10(1, sp0);
+}
 
 void func_0017CAC8(s32 arg0) {
     s32 sp0[4];
