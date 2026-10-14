@@ -54,7 +54,17 @@ s32 func_0019B6D8(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B6E0);
 
-INCLUDE_ASM("asm/nonmatchings/main_035", func_0019B788);
+s32 func_0019B788(void *cookie, char *buf, s32 n) {
+    sread_FILE *fp = (sread_FILE *)cookie;
+    s32 ret;
+
+    ret = func_0019A630(fp->_data, fp->_file, (s32)buf, n);
+    if (ret >= 0)
+        fp->_offset += ret;
+    else
+        fp->_flags &= ~0x1000;
+    return ret;
+}
 
 s32 func_0019B7F0(void *arg0, s32 arg1, s32 arg2) {
     if ((*(u16 *)((u8 *)arg0 + 0xC)) & 0x100) {
