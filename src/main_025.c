@@ -97,7 +97,14 @@ INCLUDE_ASM("asm/nonmatchings/main_025", func_00184510);
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00184520);
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00184540);
+void func_00184540(void) {
+    func_00184440();
+    func_001844D0();
+    func_0017C648();
+    func_0017C7F8();
+    func_00184650();
+    func_00183C98();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00184580);
 
