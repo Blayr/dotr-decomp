@@ -161,7 +161,36 @@ s32 func_001930D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00193188);
 
-INCLUDE_ASM("asm/nonmatchings/main_032", func_00193248);
+s32 func_00192C68(s32, s32, s32);
+
+typedef struct CdRpcBuf_00193248 {
+    s32 cmd;
+    s32 arg0;
+    s32 arg1;
+    u8 data[8];
+    s32 result;
+} CdRpcBuf_00193248;
+
+s32 func_00193248(s32 arg0, s32 arg1, u8 *arg2) {
+    CdRpcBuf_00193248 *p;
+    s32 i;
+
+    p = (CdRpcBuf_00193248 *)&D_00315BC0;
+
+    p->cmd = 8;
+    p->arg0 = arg0;
+    p->arg1 = arg1;
+    for (i = 0; i < 6; i++) {
+        p->data[i] = arg2[i];
+    }
+    if (func_0017EA80(&D_00315980, 1, 0, (s32 *)p, 0x80, (s32 *)p, 0x80, 0, 0) < 0) {
+        return 0;
+    }
+    if (p->result == 1) {
+        func_00192C68(arg0, arg1, 2);
+    }
+    return p->result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_032", func_00193320);
 
