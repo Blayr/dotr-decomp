@@ -769,4 +769,7 @@ s64 func_001A0478(s32, s16, s32, s32);              /* extern */
 
 char *func_0019BB00(char *, s32);
 
+extern s32 D_0028CAA8;
+extern s32 D_0028CAAC;
+
 #endif

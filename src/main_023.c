@@ -150,6 +150,15 @@ INCLUDE_ASM("asm/nonmatchings/main_023", func_0017EF98);
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017F160);
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017F1A0);
+void func_0017F1A0(void) {
+    s32 sp0[8];
+    if (D_0028CAA8 == -1) {
+        sp0[2] = 1;
+        sp0[1] = 1;
+        sp0[5] = 0;
+        D_0028CAA8 = func_0017B8E0(sp0);
+        D_0028CAAC = func_0017B8E0(sp0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017F200);

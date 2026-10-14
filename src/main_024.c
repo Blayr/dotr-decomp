@@ -4,7 +4,15 @@ INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F288);
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F2F8);
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F6B8);
+void func_0017F6B8(void) {
+    s32 sp0[8];
+    if (D_0028CAA4 == -1) {
+        sp0[2] = 1;
+        sp0[1] = 1;
+        sp0[5] = 0;
+        D_0028CAA4 = func_0017B8E0(sp0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F708);
 
