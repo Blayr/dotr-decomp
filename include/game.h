@@ -964,4 +964,6 @@ void func_0018C9D8(void *);
 extern s32 D_0028F74C;
 extern char D_002BCEE0[];
 
+extern char D_002BC670[];
+
 #endif
