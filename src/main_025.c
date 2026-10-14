@@ -273,7 +273,11 @@ s32 func_00183D80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183DB0);
+int func_00183DB0(void) {
+    register int ret __asm__("$2");
+    __asm__ __volatile__("addiu\t$3,$0,-0x56\n\tsyscall" : "=r" (ret));
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_025", func_00183DC0);
 
