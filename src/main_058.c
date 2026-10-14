@@ -127,7 +127,76 @@ void func_0020D240(s32 *out, s32 *from, s32 *to, f32 weight0, f32 weight1) {
     out[2] = (((s32)(start[2] * weight0 + end[pick][2] * weight1) & 0xFFFFF) + 8) >> 4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D5E0);
+extern f32 D_003269F0;
+extern f32 D_003269F4;
+extern f32 D_003269F8;
+extern f32 D_003269FC;
+extern f32 D_00326A00;
+extern f32 D_00326A04;
+extern f32 D_00326A08;
+extern f32 D_00326A0C;
+extern f32 D_00326A10;
+extern f32 D_00326A14;
+extern f32 D_00326A18;
+extern f32 D_00326A1C;
+
+typedef union Angles_0020D5E0 {
+    s32 a[4];
+    __int128 q;
+} Angles_0020D5E0;
+
+typedef union Matrix_0020D5E0 {
+    f32 m[4][4];
+    __int128 q[4];
+} Matrix_0020D5E0;
+
+static inline void normalize_0020D5E0(f32 *dest, f32 *src) {
+    f32 length;
+
+    length = func_001A6C60(src[0] * src[0] + src[1] * src[1] + src[2] * src[2]);
+    dest[0] = src[0] / length;
+    dest[1] = src[1] / length;
+    dest[2] = src[2] / length;
+    dest[3] = src[3];
+}
+
+void func_0020D5E0(f32 *arg0, f32 *arg1, f32 *arg2, s32 arg3) {
+    Angles_0020D5E0 angles;
+    Matrix_0020D5E0 matrix;
+
+    D_003269F0 = arg2[2];
+    D_003269F4 = 0.0f;
+    D_003269F8 = -arg2[0];
+    D_00326A00 = -arg2[1] * arg2[0];
+    D_00326A04 = arg2[0] * arg2[0] + arg2[2] * arg2[2];
+    D_00326A08 = -arg2[1] * arg2[2];
+    *(__int128 *)&D_00326A10 = *(__int128 *)arg2;
+    normalize_0020D5E0(&D_003269F0, &D_003269F0);
+    normalize_0020D5E0(&D_00326A00, &D_00326A00);
+    normalize_0020D5E0(&D_00326A10, &D_00326A10);
+    arg0[0] = -D_003269F0;
+    arg0[1] = -D_003269F4;
+    arg0[2] = -D_003269F8;
+    arg0[3] = 0.0f;
+    arg0[4] = -D_00326A00;
+    arg0[5] = -D_00326A04;
+    arg0[6] = -D_00326A08;
+    arg0[7] = 0.0f;
+    arg0[8] = D_00326A10;
+    arg0[9] = D_00326A14;
+    arg0[10] = D_00326A18;
+    arg0[11] = 0.0f;
+    arg0[12] = arg1[0];
+    arg0[13] = arg1[1];
+    arg0[14] = arg1[2];
+    arg0[15] = 1.0f;
+    angles.a[0] = 0;
+    angles.a[1] = 0;
+    angles.a[2] = arg3;
+    func_0020C630(&matrix, angles.a);
+    func_0020BC00((s32) arg0, &matrix);
+    func_0020BDE0(arg0, arg0);
+}
 
 void func_0020D8E0(f32 *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4, f32 fparg5, f32 fparg6, f32 fparg7, f32 arg_sp0) {
     extern void func_0020BBB0(void *);
@@ -534,7 +603,6 @@ typedef struct Block_0020E520 {
 extern s32 D_0032A294;
 extern u8 D_0032A360[];
 extern u8 D_0032A440[];
-void func_0020D5E0(void *, void *, void *, s32);
 
 static inline void reflect_0020E520(Vec4_0020E520 *v, Vec4_0020E520 *normal) {
     f32 twiceDot = 2.0f * (normal->x * v->x + normal->y * v->y + normal->z * v->z);
@@ -654,7 +722,6 @@ typedef struct Object_0020E9F0 {
     u8 unk174[0x2C];
 } Object_0020E9F0;
 
-void func_0020D5E0(void *, void *, void *, s32);
 
 s32 func_0020E9F0(void) {
     s32 sp50;
