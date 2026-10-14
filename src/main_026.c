@@ -112,7 +112,33 @@ s32 func_00184C88(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00184D48);
+typedef struct GsGParam_00184D48 {
+    s16 inter;
+    s16 omode;
+    s16 ffmode;
+    s16 version;
+    s32 sema;
+    s32 unkC;
+    u64 unk10;
+} GsGParam_00184D48;
+
+s32 func_00184D48(s16 arg0, s16 arg1, s16 arg2) {
+    GsGParam_00184D48 *p;
+    s32 bw;
+    s32 bh;
+
+    p = (GsGParam_00184D48 *)func_001849A0();
+    bw = (arg1 + 63) / 64;
+    if (arg0 & 2) {
+        bh = (arg2 + 63) / 64;
+    } else {
+        bh = (arg2 + 31) / 32;
+    }
+    if (p->inter == 1 && p->ffmode == 0) {
+        return (s16)(bw * bh);
+    }
+    return (s16)(bw * bh * 2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_026", func_00184E10);
 
