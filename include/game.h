@@ -847,7 +847,6 @@ extern s32 D_003156C4;
 extern s32 D_003156C8;
 s32 func_0017DE58(s32, s32 *, s32); /* extern */
 extern s32 D_0028DCE4;
-void func_00190F48(void);
 
 extern s32 D_0028C254;
 u32 func_0017B8C0(void);
