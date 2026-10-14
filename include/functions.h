@@ -2714,7 +2714,7 @@ s32 func_002409E0(void);
 s32 func_00241190(u16 *arg0);
 void func_002413F0(u8 *out, u8 value, f32 hue, f32 light, f32 sat);
 void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale);
-s32 func_00241A00(s32 arg0, s32 arg1);
+s32 func_00241A00(s32 arg0, s32 arg1, f32 scale);
 void func_00241A90(void *arg0);
 void func_00241AC0(void);
 s32 func_00241AD0(void *arg0, void **arg1);

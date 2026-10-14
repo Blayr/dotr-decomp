@@ -3327,8 +3327,7 @@ void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) 
     color[2] = (color[2] > 1) ? color[2] : 1;
 }
 
-s32 func_00241A00(s32 arg0, s32 arg1) {
-    extern void func_00241840();
+s32 func_00241A00(s32 arg0, s32 arg1, f32 scale) {
     u8 color[4];
     s32 temp_v1;
 
@@ -3336,7 +3335,7 @@ s32 func_00241A00(s32 arg0, s32 arg1) {
     if (!(temp_v1 & 0xFFFF7FFF)) {
         return arg0;
     }
-    func_00241840(color, temp_v1 & 0x1F, (temp_v1 >> 5) & 0x1F, (temp_v1 >> 0xA) & 0x1F, arg1, 0x1F);
+    func_00241840(color, temp_v1 & 0x1F, (temp_v1 >> 5) & 0x1F, (temp_v1 >> 0xA) & 0x1F, arg1, 0x1F, scale);
     return (arg0 & 0x8000) | (((color[2] & 0x1F) << 0xA) | ((color[0] & 0x1F) | ((color[1] & 0x1F) << 5)));
 }
 
