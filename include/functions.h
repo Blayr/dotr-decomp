@@ -2737,6 +2737,7 @@ void func_0022A710(s32 packet);
 s32 func_0022C3C0(s32 arg0);
 void func_0022C450(void);
 s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3);
+s32 func_0022D140(void);
 s32 func_0022F1C0(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 void func_002336F0(void);
 void func_00233F50(s8 arg0);
