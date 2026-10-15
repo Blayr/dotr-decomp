@@ -197,7 +197,6 @@ void func_0020DB20(void);
 void func_0020DBE0(void *, void *, void *);
 void func_0020DB00(void *);
 void func_0020CB20(void *, void *);
-void func_0020BAD0(void *);
 void func_0020DB80(void);
 
 void func_00210010(void *arg0, void *arg1, void *arg2) {
@@ -318,7 +317,6 @@ typedef struct {
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-void func_0020BAD0(void *);
 void func_0020CB20(void *, void *);
 void func_0020DB00(void *);
 void func_0020DB20(void);
@@ -503,7 +501,6 @@ typedef struct {
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-void func_0020BAD0(void *);
 void func_0020CB20(void *, void *);
 void func_0020DB00(void *);
 void func_0020DB20(void);
@@ -821,7 +818,6 @@ extern u32 D_0032A728;
 extern s32 D_0032A770;
 extern Slot_00211530 D_0032A780[];
 
-void func_0020BAD0(void *);
 void func_0020CB20(void *, void *);
 void func_0020DB00(void *);
 void func_0020DB20(void);

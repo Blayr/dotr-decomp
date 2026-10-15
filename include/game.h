@@ -440,7 +440,6 @@ extern f32 D_00298BA4;
 
 
 void func_0020BA90(void *);
-void func_0020BAD0(void *);
 extern u8 D_0032A730[];
 
 

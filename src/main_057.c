@@ -1180,7 +1180,14 @@ s32 func_0020BA80(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BA90);
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BAD0);
+asm void func_0020BAD0(void *p) {
+    .set noreorder
+    sqc2 vf28, 0x0(a0)
+    sqc2 vf29, 0x10(a0)
+    sqc2 vf30, 0x20(a0)
+    jr ra
+    sqc2 vf31, 0x30(a0)
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BAF0);
 
