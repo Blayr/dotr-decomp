@@ -759,7 +759,121 @@ static s32 func_01E01BA0_c525(Ring_c525_01E01BA0 *o, s32 id __attribute__((align
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c525", func_01E01D50_c525);
+/* OVL_WARM */
+
+/* shape c525:01E01D50, 232 insns (LkSortFireball): draws c525:01E01BA0's fireball: it moves to the given point, then
+   one textured square (the left half of the texture, rows 0..1) of its radius around it, corners at its angle + 135,
+   45, 225 and 315 degrees, coloured by the module's colour helper (shape b000:01E00100, included as a static
+   function); its trail emitter (at +0x20) takes the fireball's angle and is drawn by c525:01E00280 drifting (-2, -20);
+   the square goes into the order table at the average depth of its corners */
+
+typedef struct {
+    u64 u : 14;
+    u64 pad14 : 2;
+    u64 v : 14;
+    u64 pad30 : 34;
+} Uv_c525_01E01D50;
+
+typedef union {
+    Uv_c525_01E01D50 i;
+    struct {
+        f32 s, t;
+    } f;
+} St_c525_01E01D50;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    St_c525_01E01D50 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vtx_c525_01E01D50;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c525_01E01D50 v[4];
+    u8 tail[0x20];
+} Pkt_c525_01E01D50;
+
+typedef struct {
+    u8 pad0[0x132];
+    s16 angle;
+} Emit_c525_01E01D50;
+
+typedef struct {
+    void *texture;
+    Src_b000_01E00100 color;
+    f32 half;
+    s32 angle;
+    f32 x, y, z;
+    u8 pad1C[4];
+    Emit_c525_01E01D50 emit;
+} Fire_c525_01E01D50;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_c525_01E01D50;
+
+static s32 func_01E01D50_c525(s32 obj, Fire_c525_01E01D50 *o, Cam_c525_01E01D50 *cam, Vec4f *in) {
+    extern s32 c525_01E00280(s32, Cam_c525_01E01D50 *, Emit_c525_01E01D50 *, Vec4f *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00208700(void *, void *, s32);
+    Vec4f p;
+    Vec4f vel;
+    f32 depth[4];
+    Pkt_c525_01E01D50 pkt;
+    f32 r;
+
+    vel.x = -2.0f;
+    vel.y = -20.0f;
+    vel.z = 0.0f;
+    o->x = in->x;
+    o->y = in->y;
+    o->z = in->z;
+    ((Pkt_c525_01E01D50 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_c525_01E01D50 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_c525_01E01D50 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_c525_01E01D50 *)(s32)&pkt)->pad = 0;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    func_01E00080_c525((Vtx_b000_01E00100 *)&pkt, &o->color);
+    pkt.v[0].st.f.s = 0.0f;
+    pkt.v[0].st.f.t = 0.0f;
+    pkt.v[1].st.f.s = 0.5f;
+    pkt.v[1].st.f.t = 0.0f;
+    pkt.v[2].st.f.s = 0.0f;
+    pkt.v[2].st.f.t = 1.0f;
+    pkt.v[3].st.f.s = 0.5f;
+    pkt.v[3].st.f.t = 1.0f;
+    r = 0.017453292f * ((o->angle + 135) % 360);
+    p.x = o->x + o->half * func_0020B620(r);
+    p.y = o->y + o->half * func_0020B730(r);
+    p.z = 0.0f;
+    func_00205440(&p, cam->view, &pkt.v[0].st + 1, &depth[0]);
+    r = 0.017453292f * ((o->angle + 45) % 360);
+    p.x = o->x + o->half * func_0020B620(r);
+    p.y = o->y + o->half * func_0020B730(r);
+    func_00205440(&p, cam->view, &pkt.v[1].st + 1, &depth[1]);
+    r = 0.017453292f * ((o->angle + 225) % 360);
+    p.x = o->x + o->half * func_0020B620(r);
+    p.y = o->y + o->half * func_0020B730(r);
+    func_00205440(&p, cam->view, &pkt.v[2].st + 1, &depth[2]);
+    r = 0.017453292f * ((o->angle + 315) % 360);
+    p.x = o->x + o->half * func_0020B620(r);
+    p.y = o->y + o->half * func_0020B730(r);
+    func_00205440(&p, cam->view, &pkt.v[3].st + 1, &depth[3]);
+    func_00208700(&pkt, o->texture, 0);
+    o->emit.angle = o->angle;
+    c525_01E00280(obj, cam, &o->emit, &vel);
+    func_002075F0(&pkt, obj, (u32)((depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f));
+    return 0;
+}
 
 /* shape c525:01E020F0, 82 insns, 2 copies: sets up a burst: half the given size, the given value, then for each of count
    entries a random speed (0.5..1.5) and two random directions (any heading, a 40..90 degree pitch) as sin/cos */

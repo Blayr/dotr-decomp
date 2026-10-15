@@ -574,6 +574,154 @@ static s32 func_01E04B10_b044(Part_b010_01E04D20 *arg0, s32 id, s32 n) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b044", func_01E05530_b044);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b044", func_01E06000_b044);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b044:01E06000, 232 insns: b198:01E05C30's trail emitters without velocity or follow offset (0x5C bytes
+   each, particles 0x44): one particle at the head when the emitter's count is below 2, otherwise count particles
+   along a spline through the last three positions; each particle gets the emitter's settings and an up vector. */
+
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec4f out[28];
+} Spline_b044_01E06000;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b044_01E06000;
+
+typedef struct {
+    u8 pad00[4];
+    u8 flags;
+    u8 b5;
+    u8 pad06[2];
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 bB;
+    u8 bC;
+    u8 bD;
+    u8 pad0E[2];
+    s32 w10;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    C4_b044_01E06000 col;
+    u8 x28[0x10];
+    f32 x, y, z;
+} Part_b044_01E06000;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3;
+    u8 flags;
+    u8 pad5[3];
+    Part_b044_01E06000 *list;
+    s32 w0C;
+    u8 b10;
+    u8 b11;
+    u8 b12;
+    u8 b13;
+    u8 b14;
+    u8 b15;
+    u8 b16;
+    u8 count;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    f32 f24;
+    C4_b044_01E06000 col;
+    Vec4f pos;
+    Vec4f prev;
+    Vec4f prev2;
+} Trail_b044_01E06000;
+
+#pragma optimization_level 2
+
+static s32 func_01E06000_b044(void *arg0, s32 arg1, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_00102550(void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_00101940(void *, void *);
+    Spline_b044_01E06000 sp;
+    Vec4f tmp;
+    Trail_b044_01E06000 *e;
+    s32 i;
+    s32 k;
+    s32 cnt;
+    s32 idx;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Trail_b044_01E06000 *)((u8 *)e + 0x5C);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->life == e->max - 1) {
+            continue;
+        }
+        func_00101BA0(e, &e->pos);
+        if (e->count < 2) {
+            sp.out[0] = e->pos;
+            sp.out[1] = e->prev;
+            cnt = 1;
+        } else {
+            sp.n = 3;
+            sp.x[0] = e->pos.x;
+            sp.y[0] = e->pos.y;
+            sp.z[0] = e->pos.z;
+            sp.x[1] = e->prev.x;
+            sp.y[1] = e->prev.y;
+            sp.z[1] = e->prev.z;
+            sp.x[2] = e->prev2.x;
+            sp.y[2] = e->prev2.y;
+            sp.z[2] = e->prev2.z;
+            func_00102550(&sp);
+            cnt = e->count;
+        }
+        for (k = 0; k < cnt; k++) {
+            idx = func_00101C30(e->list, 0x44, e->b10);
+            if (idx >= 0) {
+                func_00101AD0(&e->list[idx], e->b11, 0, 0xFF);
+                tmp.z = 0.0f;
+                tmp.x = 0.0f;
+                tmp.y = 1.0f;
+                if (e->f18) {
+                    e->list[idx].f14 = e->f18;
+                }
+                e->list[idx].f18 = e->f1C;
+                e->list[idx].flags = e->flags;
+                e->list[idx].b5 = 0;
+                e->list[idx].b8 = e->b12;
+                e->list[idx].f1C = e->f20;
+                e->list[idx].f20 = e->f24;
+                e->list[idx].b9 = func_0019A5C8() >> 4;
+                e->list[idx].bA = e->b13;
+                e->list[idx].bB = e->b14;
+                e->list[idx].bC = e->b15;
+                e->list[idx].bD = e->b16;
+                e->list[idx].w10 = e->w0C;
+                e->list[idx].col = e->col;
+                e->list[idx].x = sp.out[k].x;
+                e->list[idx].y = sp.out[k].y;
+                e->list[idx].z = sp.out[k].z;
+                func_00101940(&tmp, e->list[idx].x28);
+            }
+        }
+        e->prev2 = e->prev;
+        e->prev = e->pos;
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b044", func_01E063A0_b044);

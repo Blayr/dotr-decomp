@@ -459,7 +459,111 @@ static void func_01E00CE0_b192(Ctx_b192_01E00CE0 *c, Fan_b192_01E00CE0 *o, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E00FB0_b192);
+/* OVL_WARM */
+/* func_00108030 really takes an s16 angle (functions.h says s32): hide that prototype */
+
+/* shape b192:01E00FB0, 253 insns: scene step of a joint-anchored burst: the scene colour turns red-black, the tick
+   0x365A counts; the scene point follows joint 0x3648; from tick 32 / 36 it spawns three effects each tick there;
+   at tick 85, at joint 0x364C, it spawns 0x1E015D0, fifteen 0x1E01DA0 scattered +-10 around it, 0x1E019C0 and
+   thirteen pairs of 0x1E01A60 stepping along the joint's heading; the angle 0x3650 turns 2 a tick */
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[0xB2 - 0xC];
+    s16 hB2;
+    u8 padB4[0x764 - 0xB4];
+    u8 x764[0x3614 - 0x764];
+    u8 col[4];
+    u8 pad3618[0x3648 - 0x3618];
+    s16 j0;
+    u8 pad364A[2];
+    s16 j1;
+    u8 pad364E[2];
+    s16 ang;
+    u8 pad3652[8];
+    s16 tick;
+    u8 pad365C[0x375C - 0x365C];
+    u8 trig[1];
+} G_b192_01E00FB0;
+
+static void func_01E00FB0_b192(G_b192_01E00FB0 *g) {
+    extern f32 func_00108030(void *table, s16 angle, s32 axis);
+    extern s32 b192_01E015D0(void);
+    extern s32 b192_01E019C0(void);
+    extern s32 b192_01E01A60(void);
+    extern s32 b192_01E01DA0(void);
+    extern s32 b192_01E01F00(void);
+    extern s32 b192_01E020D0(void);
+    extern s32 b192_01E02250(void);
+    extern s32 b192_01E02F00(G_b192_01E00FB0 *, s32 (*)(void), s32, void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6160(s32, s32 *);
+    s32 i;
+    s32 a;
+    f32 s;
+    Vec4f p;
+    s32 r[4];
+    s32 r2[4];
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    func_001F5620(func_001F53A0(), g->j0, &p);
+    g->x = p.x;
+    g->y = *(f32 *)(u32)&p.y;
+    g->z = *(f32 *)(u32)&p.z;
+    if (g->tick > 31) {
+        b192_01E02F00(g, b192_01E01F00, 0, g->x764);
+    }
+    if (g->tick > 31) {
+        b192_01E02F00(g, b192_01E020D0, 0, g->x764);
+    }
+    if (g->tick > 35) {
+        b192_01E02F00(g, b192_01E02250, 0, g->x764);
+    }
+    if (g->tick == 85) {
+        b192_01E02F00(g, b192_01E015D0, 0, g->x764);
+    }
+    func_001F5620(func_001F53A0(), g->j1, &p);
+    if (g->tick == 85) {
+        func_001F6160(func_001F53A0(), r);
+        a = (s32)((f32)r[1] / 180.0f);
+        for (i = 0; i < 15; i++) {
+            func_0019A5C8();
+            func_00108030(g->trig, a - 180, 1);
+            g->x = p.x + (f32)(func_0019A5C8() % 20) - 10.0f;
+            g->y = *(f32 *)(u32)&p.y + (f32)(func_0019A5C8() % 20) - 10.0f;
+            g->z = *(f32 *)(u32)&p.z + (f32)(func_0019A5C8() % 20) - 10.0f;
+            b192_01E02F00(g, b192_01E01DA0, 0, g->x764);
+        }
+    }
+    if (g->tick == 85) {
+        b192_01E02F00(g, b192_01E019C0, 0, g->x764);
+    }
+    if (g->tick == 85) {
+        func_001F6160(func_001F53A0(), r2);
+        s = -func_00108030(g->trig, (s32)((f32)r2[1] / 180.0f) - 180, 1);
+        for (i = 0; i < 13; i++) {
+            g->x = p.x;
+            g->y = *(f32 *)(u32)&p.y;
+            g->z = *(f32 *)(u32)&p.z + s * i;
+            g->hB2 = 0;
+            b192_01E02F00(g, b192_01E01A60, 0, g->x764);
+            g->x = p.x;
+            g->y = *(f32 *)(u32)&p.y;
+            g->z = *(f32 *)(u32)&p.z + s * i;
+            g->hB2 = 1;
+            b192_01E02F00(g, b192_01E01A60, 0, g->x764);
+        }
+    }
+    g->ang += 2;
+    if (g->ang >= 360) {
+        g->ang %= 360;
+    }
+}
 
 /* shape b192:01E013B0, 134 insns: b019:01E01F60 with its sine table at ctx+0x375C */
 

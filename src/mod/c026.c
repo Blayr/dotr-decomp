@@ -380,6 +380,122 @@ static void func_01E01270_c026(Ctx_c026_01E01270 *g, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E014F0_c026);
+/* OVL_WARM */
+
+/* shape c026:01E014F0, 220 insns: c015:01E00620 family two-pass sprite: mode 0 sets the material (frame 0x98, the
+   scene colour copied into both object colours, two corners each, scene texture 0xDC); other modes place four 40x20
+   quads (func_00108D60 corner i) at the camera point with a spin, each pushed to the far plane and drawn once (depth
+   0x1A98, packet list 0x1A4C) */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_c026_01E014F0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c026_01E014F0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_c026_01E014F0;
+
+typedef struct {
+    Rgbaq_c026_01E014F0 c;
+    u64 st;
+    Xyz_c026_01E014F0 p;
+} Vtx_c026_01E014F0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c026_01E014F0 v[4];
+} Pkt_c026_01E014F0;
+
+typedef struct {
+    u8 pad0[0x64];
+    u8 col[4];
+    u8 col2[4];
+} Obj_c026_01E014F0;
+
+typedef struct {
+    u8 pad0[0xDC];
+    s32 texture;
+    u8 padE0[0x1A4C - 0xE0];
+    s32 target;
+    u8 pad1A50[0x1A98 - 0x1A50];
+    f32 depth;
+    u8 pad1A9C[0x1BE8 - 0x1A9C];
+    u8 rgb[4];
+} Game_c026_01E014F0;
+
+static void func_01E014F0_c026(Game_c026_01E014F0 *g, Obj_c026_01E014F0 *o, Pkt_c026_01E014F0 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern Rgbaq_c026_01E014F0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern Vec_c026_01E014F0 *func_001F9D30(s32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern void func_00108D60(void *, s32, s32, s16);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 q[16];
+    f32 rm[4];
+    f32 m[16];
+    f32 m2[16];
+    s32 rot[4];
+    Vec_c026_01E014F0 pos;
+    s32 i;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x98, 0, rm);
+        p->count = 0x34;
+        p->tag = 0xC;
+        p->regs = ((u64)0x4214 << 32) | 0x21421421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        o->col[0] = g->rgb[0];
+        o->col[1] = g->rgb[1];
+        o->col[2] = g->rgb[2];
+        o->col2[0] = g->rgb[0];
+        o->col2[1] = g->rgb[1];
+        o->col2[2] = g->rgb[2];
+        p->v[0].c = func_00107740(o->col);
+        p->v[1].c = func_00107740(o->col);
+        p->v[2].c = func_00107740(o->col2);
+        p->v[3].c = func_00107740(o->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->texture, 1);
+        return;
+    }
+    pos = *func_001F9D30(0);
+    func_0020EB40(m);
+    func_00205C40((s32)rot);
+    func_0020C940(m2, 0, rot, &pos);
+    func_0020BC00(m, m2);
+    for (i = 0; i < 4; i++) {
+        if (i == 0) {
+            func_00108D60(q, 40, 20, i);
+        } else if (i == 1) {
+            func_00108D60(q, 40, 20, i);
+        } else if (i == 2) {
+            func_00108D60(q, 40, 20, i);
+        } else if (i == 3) {
+            func_00108D60(q, 40, 20, i);
+        }
+        if (func_00205630(q, 0x70000000, m, p, &g->depth) != 0) {
+            p->v[0].p.z = p->v[1].p.z = p->v[2].p.z = p->v[3].p.z = 0xFFFFFF;
+            func_002075F0(p, g->target, (u32)g->depth);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E01860_c026);

@@ -723,7 +723,129 @@ static void func_01E01BB0_b393(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b393", func_01E01DA0_b393);
+/* shape b393:01E01DA0, 250 insns: the scene script of b393: colour 0x80/0/0/0, counts g+0x389E; at 51 reads joint
+   0x388A into +0x36C0, which 52..64 is copied to the point (+0x2D0); before 137 two 0x1E023B0 a tick; 52..136 a
+   0x1E02610 on each of joints 0x388C..0x3892; at 26 the point on joint 0x388C raised 1, flag set; at 136 on joint
+   0x3888 eight 0x1E02C40, eight 0x1E02AB0, thirty 0x1E02900, a 0x1E02770 and a 0x1E02E60 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b393_01E01DA0;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    V4_b393_01E01DA0 pos;
+    u8 pad2E0[0x36C0 - 0x2E0];
+    V4_b393_01E01DA0 pt;
+    u8 pad36D0[0x174];
+    u8 col[4];
+    u8 pad3848[0x40];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    s16 j3;
+    s16 j4;
+    s16 j5;
+    u8 pad3894[6];
+    s16 flag;
+    u8 pad389C[2];
+    s16 tick;
+} Ctx_b393_01E01DA0;
+
+static void func_01E01DA0_b393(Ctx_b393_01E01DA0 *g) {
+    extern void b393_01E023B0();
+    extern void b393_01E02610();
+    extern void b393_01E02770();
+    extern void b393_01E02900();
+    extern void b393_01E02AB0();
+    extern void b393_01E02C40();
+    extern void b393_01E02E60();
+    extern void b393_01E03A40(Ctx_b393_01E01DA0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    f32 w[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick == 51) {
+        func_001F5620(func_001F53A0(), g->j1, &g->pt);
+    }
+    if (g->tick > 51 && g->tick < 65) {
+        func_001F5620(func_001F53A0(), g->j1, v);
+        for (i = 0; i < 6; i++) {
+            g->pos.x = g->pt.x;
+            g->pos.y = g->pt.y;
+            g->pos.z = g->pt.z;
+        }
+    }
+    if (g->tick < 137) {
+        b393_01E03A40(g, b393_01E023B0, 0);
+        b393_01E03A40(g, b393_01E023B0, 0);
+    }
+    if (g->tick >= 52 && g->tick < 137) {
+        func_001F5620(func_001F53A0(), g->j2, v);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        b393_01E03A40(g, b393_01E02610, 0);
+        func_001F5620(func_001F53A0(), g->j3, v);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        b393_01E03A40(g, b393_01E02610, 0);
+        func_001F5620(func_001F53A0(), g->j4, v);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        b393_01E03A40(g, b393_01E02610, 0);
+        func_001F5620(func_001F53A0(), g->j5, v);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        b393_01E03A40(g, b393_01E02610, 0);
+    }
+    if (g->tick == 26) {
+        func_001F5620(func_001F53A0(), g->j2, v);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        g->flag = 1;
+        g->pos.y = 1.0f + v[1];
+    }
+    if (g->tick == 136) {
+        func_001F5620(func_001F53A0(), g->j0, v);
+        func_001F5F90(func_001F5380(), w);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b393_01E03A40(g, b393_01E02C40, 0);
+        }
+    }
+    if (g->tick == 136) {
+        func_001F5620(func_001F53A0(), g->j0, v);
+        g->pos.x = v[0];
+        g->pos.y = v[1];
+        g->pos.z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b393_01E03A40(g, b393_01E02AB0, 0);
+        }
+        for (i = 0; i < 30; i++) {
+            b393_01E03A40(g, b393_01E02900, 0);
+        }
+        b393_01E03A40(g, b393_01E02770, 0);
+        b393_01E03A40(g, b393_01E02E60, 0);
+    }
+}
 
 /* shape b393:01E02190, 134 insns: b019:01E01F60 with its sine table at ctx+0x39A4 */
 

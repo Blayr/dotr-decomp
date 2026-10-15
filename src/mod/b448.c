@@ -435,7 +435,115 @@ static void func_01E01200_b448(Scene_b448_01E01200 *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b448", func_01E01350_b448);
+/* shape b448:01E01350 (B448_OBJ_MOVE_2_), 226 insns: a white glow: size 30 growing 1.5, kind (rand >> 4) % 8, spin
+   10..29, random drift (-20..19) / 60 applied from tick 11 to 69, a z climb of an 80th of the camera-to-joint (game
+   +0xB228) gap; brightens by 0xC0 below 0xC0 for 100 ticks, then fades by 8; f5A grows by 3 up to 180; once the game
+   value at 0xB25E passes 300 it jumps to the fade */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 spin;
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[0x14];
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 rise;
+    u8 pad40[8];
+    f32 size;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b448_01E01350;
+
+typedef struct {
+    u8 pad[0xB228];
+    s16 j;
+    u8 padB22A[0x34];
+    s16 v;
+} Game_b448_01E01350;
+
+static s32 func_01E01350_b448(Game_b448_01E01350 *g, Fx_b448_01E01350 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    f32 c[4];
+
+    if (o->mode == 1) {
+        o->size = 30.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = 45;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->f50;
+        o->f50 = 0;
+        o->f52 = func_0019A5C8() % 350 + 100;
+        o->spin = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->dx = func_0019A5C8() % 40 - 20;
+        o->dy = func_0019A5C8() % 40 - 20;
+        o->dz = func_0019A5C8() % 40 - 20;
+        o->dx /= 60.0f;
+        o->dy /= 60.0f;
+        o->dz /= 60.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), g->j, b);
+        o->rise = (a[2] - b[2]) / 80.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 100) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick > 10 && o->tick < 70) {
+        o->x += o->dx;
+        o->y += o->dy;
+        o->z += o->dz;
+    }
+    func_001F5F90(func_001F5380(), c);
+    if (o->tick != 0) {
+        o->z += o->rise;
+        o->size += 1.5f;
+    }
+    if (o->tick != 0) {
+        if (o->f5A < 180) {
+            o->f5A += 3;
+        }
+    }
+    if (g->v > 300) {
+        o->tick = 100;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b448:01E016E0, 65 insns: on start f48 6, colour 0x80 grey, second colour (0x80, 0x10, 0x10) with alpha 0, 0x30 = 6.5f,
    0x34 = 50.0f; alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and stops; 0x34 grows by 10.0f after the

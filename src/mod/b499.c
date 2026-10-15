@@ -895,7 +895,91 @@ static s32 func_01E02550_b499(Mgr_b499_01E02550 *m, Obj_b499_01E02550 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02770_b499);
+/* shape b499:01E02770, 227 insns: b479:01E024C0's drifting spark with a start size of 20 + rand % 20 below
+   counter 88 and colour (0x60,0x60,0x60) */
+
+typedef struct {
+    u8 pad0[0xBB14];
+    s16 count;
+} Ctx_b499_01E02770;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0x18];
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b499_01E02770;
+
+static s32 func_01E02770_b499(Ctx_b499_01E02770 *ctx, Obj_b499_01E02770 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (ctx->count < 88) {
+            o->h8 = func_0019A5C8() % 20 + 20;
+            o->hA = o->h8;
+        } else {
+            o->h8 = func_0019A5C8() % 20 + 50;
+            o->hA = o->h8;
+            o->y += func_0019A5C8() % 10 - 5;
+            o->z += func_0019A5C8() % 10 - 5;
+        }
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f38 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 200.0f;
+        o->f30 /= 200.0f;
+        o->f38 /= 200.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (ctx->count < 88) {
+        if (o->t % 3 == 1) {
+            o->h8 += 2;
+            o->hA = o->h8;
+        }
+    } else {
+        o->h8 += 2;
+        o->hA = o->h8;
+    }
+    if (o->t != 0) {
+        o->x += o->f30;
+        o->y += o->f34;
+        o->z += o->f38;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b499:01E02B00, 31 insns: b018:01E02DB0 family: func_001F7170(1, 0) with the module's two floats, then ends the object when the scene counter is 115 */
 
@@ -1118,7 +1202,130 @@ static void func_01E03DD0_b499(Scene_b499_01E03DD0 *g, Fx_b499_01E03DD0 *o, void
     func_00108F90(quad, p, m, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E03F70_b499);
+/* shape b499:01E03F70, 247 insns: b004:01E01A00's hanging quad for module b499: setup pass with the scene texture 0x34C;
+   draw pass builds the scene matrix (0x290) from the scene point 0xBA80 (copied into a local) and the anim's
+   rotation, one quad 1 wide at the anim's s16 point hanging 0x6 down, heights kept within 0..200, depth in 0xBAE4, into
+   0xBABC */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b499_01E03F70;
+
+typedef struct {
+    Rgbaq_b499_01E03F70 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b499_01E03F70;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b499_01E03F70 v[4];
+} Pkt_b499_01E03F70;
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    u8 pad8[8];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[4];
+    s16 h34;
+} Anim_b499_01E03F70;
+
+typedef struct {
+    u8 pad00[0x290];
+    u8 m[0x40];
+    u8 pad2D0[0x7C];
+    s32 tex;
+    u8 pad350[0xB930 - 0x350];
+    u8 cam[0x150];
+    Vec4f point;
+    u8 padBA90[0x2C];
+    s32 ot;
+    u8 padBAC0[0x24];
+    f32 depth;
+} Scene_b499_01E03F70;
+
+static void func_01E03F70_b499(Scene_b499_01E03F70 *g, Anim_b499_01E03F70 *an, Pkt_b499_01E03F70 *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b499_01E03F70 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_00107130(void *, void *, s32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 m[16];
+    f32 v[4];
+    f32 rm[4];
+
+    if (lit == 0) {
+        func_00106080(rm, 0x9C, an->h34, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_0020EB40(g->m);
+    func_00107130(g->cam, v, 1);
+    v[0] = g->point.x;
+    v[1] = g->point.y;
+    v[2] = g->point.z;
+    func_0020C940(m, 0, an->rot, v);
+    func_0020BC00(g->m, m);
+    q[0].x = an->x;
+    q[0].y = an->y;
+    q[0].z = an->z;
+    q[1] = q[0];
+    q[1].x += 1.0f;
+    q[2].x = an->x;
+    q[2].y = an->y;
+    q[2].z = an->z;
+    q[2].y -= an->h6;
+    q[3] = q[2];
+    q[3].x += 1.0f;
+    if (q[0].y > 200.0f) {
+        q[0].y = 200.0f;
+    }
+    if (q[1].y > 200.0f) {
+        q[1].y = 200.0f;
+    }
+    if (q[2].y > 200.0f) {
+        q[2].y = 200.0f;
+    }
+    if (q[3].y > 200.0f) {
+        q[3].y = 200.0f;
+    }
+    if (q[0].y < 0.0f) {
+        q[0].y = 0.0f;
+    }
+    if (q[1].y < 0.0f) {
+        q[1].y = 0.0f;
+    }
+    if (q[2].y < 0.0f) {
+        q[2].y = 0.0f;
+    }
+    if (q[3].y < 0.0f) {
+        q[3].y = 0.0f;
+    }
+    if (func_00205630(q, 0x70000000, g->m, p, &g->depth) != 0) {
+        func_002075F0(p, g->ot, (u32)g->depth);
+    }
+}
 
 /* shape b479:01E03A40, 94 insns: a billboard: with flag 0 set the packet up (texture cell 0x99/f34 of the
    scene, colour, texture); otherwise place it at the effect's position (size f38), and send it with the scene's

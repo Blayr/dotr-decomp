@@ -728,7 +728,107 @@ static void func_01E018F0_b016(Obj_b016_01E018F0 *obj, Cam_b016_01E018F0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b016", func_01E01BC0_b016);
+/* shape b016:01E01BC0, 267 insns: the effect scene's step: counts the frame (0x4522); frame 99 spawns 0x1E02D30 twice;
+   frames 106..109 put the scene point on joint 0x44EC nudged 10 in z by the scene side (0x451E), then at the
+   camera's depth, sliding 10 right and 20 left while the slot (0x451A) flips; frame 109 spawns 0x1E01FF0, two
+   0x1E023F0, seven 0x1E02270, six 0x1E024F0, six 0x1E026B0 (slot 0) and 0x1E02B40 on the joint; frames 75 and 91
+   spawn seven 0x1E020F0 there */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x44EC - 0x260];
+    s16 joint;
+    u8 pad44EE[0x451A - 0x44EE];
+    s16 slot;
+    u8 pad451C[2];
+    s16 side;
+    u8 pad4520[2];
+    s16 t;
+} Scene_b016_01E01BC0;
+
+static void func_01E01BC0_b016(Scene_b016_01E01BC0 *g) {
+    extern void b016_01E01FF0(void);
+    extern void b016_01E020F0(void);
+    extern void b016_01E02270(void);
+    extern void b016_01E023F0(void);
+    extern void b016_01E024F0(void);
+    extern void b016_01E026B0(void);
+    extern void b016_01E02B40(void);
+    extern void b016_01E02D30(void);
+    extern s32 b016_01E03740(Scene_b016_01E01BC0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v[2];
+
+    g->t++;
+    if (g->t == 99) {
+        b016_01E03740(g, (s32)b016_01E02D30, 0);
+        b016_01E03740(g, (s32)b016_01E02D30, 0);
+    }
+    if (g->t >= 106 && g->t < 110) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        if (g->side != 0) {
+            g->pos.z -= 10.0f;
+        } else {
+            g->pos.z += 10.0f;
+        }
+        func_001F5F90(func_001F5380(), &v[0]);
+        g->pos.z = v[0].z;
+        g->slot = 0;
+        g->slot = 1;
+        g->pos.x += 10.0f;
+        g->slot = 0;
+        g->slot = 1;
+        g->pos.x -= 20.0f;
+        g->slot = 0;
+        g->slot = 1;
+    }
+    if (g->t == 109) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        if (g->side != 0) {
+            g->pos.z -= 10.0f;
+        } else {
+            g->pos.z += 10.0f;
+        }
+        b016_01E03740(g, (s32)b016_01E01FF0, 0);
+        b016_01E03740(g, (s32)b016_01E023F0, 0);
+        b016_01E03740(g, (s32)b016_01E023F0, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E02270, 0);
+        b016_01E03740(g, (s32)b016_01E024F0, 0);
+        b016_01E03740(g, (s32)b016_01E024F0, 0);
+        b016_01E03740(g, (s32)b016_01E024F0, 0);
+        b016_01E03740(g, (s32)b016_01E024F0, 0);
+        b016_01E03740(g, (s32)b016_01E024F0, 0);
+        b016_01E03740(g, (s32)b016_01E024F0, 0);
+        g->slot = 0;
+        b016_01E03740(g, (s32)b016_01E026B0, 0);
+        b016_01E03740(g, (s32)b016_01E026B0, 0);
+        b016_01E03740(g, (s32)b016_01E026B0, 0);
+        b016_01E03740(g, (s32)b016_01E026B0, 0);
+        b016_01E03740(g, (s32)b016_01E026B0, 0);
+        b016_01E03740(g, (s32)b016_01E026B0, 0);
+        b016_01E03740(g, (s32)b016_01E02B40, 0);
+    }
+    if (g->t == 75 || g->t == 91) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+        b016_01E03740(g, (s32)b016_01E020F0, 0);
+    }
+}
 
 /* shape b016:01E01FF0, 64 insns, 2 copies: a spinning flash: set up once with a random angle and turn direction, fades in
    over 8 frames, then out; turned each frame (b003:01E01780 family) */

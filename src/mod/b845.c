@@ -640,9 +640,210 @@ static void func_01E015A0_b845(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b845", func_01E019A0_b845);
+/* shape b845:01E019A0 (B845_W_S), 269 insns: b445:01E019A0 with every TENTH tick (not 13th) from 140 to 320 for the
+   point spawns, and this module's own callbacks (0x1E01DE0, 0x1E03C50, 0x1E03D10, 0x1E026F0, 0x1E02AF0, 0x1E03640,
+   0x1E02E40; spawn helper 0x1E04BC0) (chatA, 16 Oct) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b845", func_01E01DE0_b845);
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xD930 - 0x260];
+    Vec4f pts[10];
+    u8 padD9D0[0xDA70 - 0xD9D0];
+    Vec4f pt0;
+    Vec4f pt1;
+    u8 padDA90[0xDB68 - 0xDA90];
+    s16 id;
+    u8 padDB6A[0xDC1A - 0xDB6A];
+    s16 cnt;
+    u8 padDC1C[6];
+    s16 next;
+    u8 padDC24[0x20];
+    s16 slot;
+    u8 padDC46[6];
+    s16 timer;
+} Ctx_b845_01E019A0;
+
+static void func_01E019A0_b845(Ctx_b845_01E019A0 *g) {
+    extern s32 b845_01E01DE0(void);
+    extern s32 b845_01E026F0(void);
+    extern s32 b845_01E02AF0(void);
+    extern s32 b845_01E02E40(void);
+    extern s32 b845_01E03640(void);
+    extern s32 b845_01E03C50(void);
+    extern s32 b845_01E03D10(void);
+    extern void b845_01E04BC0(Ctx_b845_01E019A0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->id, &g->pt0);
+    func_001F5620(func_001F53A0(), g->id, &g->pt1);
+    if (g->timer == 45) {
+        g->slot = 0;
+        b845_01E04BC0(g, b845_01E01DE0, 0);
+    }
+    if (g->timer >= 55 && g->timer % 3 == 1 && g->timer < 286) {
+        g->slot = 1;
+        b845_01E04BC0(g, b845_01E01DE0, 0);
+    }
+    if (g->timer == 1) {
+        b845_01E04BC0(g, b845_01E03C50, 0);
+    }
+    if (g->timer == 173) {
+        g->slot = 0;
+        b845_01E04BC0(g, b845_01E03D10, 0);
+    }
+    if (g->timer >= 140 && g->timer % 10 == 1 && g->timer < 321) {
+        if (g->cnt < 10) {
+            g->slot = g->cnt;
+            func_001F5620(func_001F53A0(), g->id, &g->pts[g->cnt]);
+            b845_01E04BC0(g, b845_01E026F0, 0);
+            b845_01E04BC0(g, b845_01E02AF0, 0);
+            g->cnt++;
+        }
+    }
+    if (g->timer > 45 && g->timer < 286) {
+        for (i = 0; i < 1; i++) {
+            if (g->timer % 2 == 1) {
+                g->slot = g->next;
+                b845_01E04BC0(g, b845_01E03640, 0);
+                g->next++;
+                if (g->next >= 80) {
+                    g->next = 0;
+                }
+            } else {
+                g->slot = g->next;
+                g->next++;
+                if (g->next >= 80) {
+                    g->next = 0;
+                }
+            }
+        }
+    }
+    if (g->timer > 45 && g->timer < 316) {
+        for (i = 0; i < 1; i++) {
+            g->pos = g->pt1;
+            b845_01E04BC0(g, b845_01E02E40, 0);
+        }
+    }
+}
+
+/* shape b845:01E01DE0, 253 insns: b845:01E02570's beam set up by kind (0x50): kind 0 is 100 long, white and yellow, in
+   over 20 ticks by 10 and out by 11 after scene clock 280; kind 1 is 10..59 long, grey (dimmer from clock 200), in
+   over 4 ticks by 0x40 and out by 11 at once; both blink by tick parity in their own colours and turn 0x4000 a tick */
+
+typedef struct {
+    u8 pad0[0xDC4C];
+    s16 clock;
+} Scene_b845_01E01DE0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x20];
+    f32 f4C;
+    s16 kind;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b845_01E01DE0;
+
+static s32 func_01E01DE0_b845(Scene_b845_01E01DE0 *g, Obj_b845_01E01DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f4C = 100.0f;
+            func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+            o->h52 = 20;
+        }
+        if (o->kind == 1) {
+            o->f4C = 10.0f + func_0019A5C8() % 50;
+            if (g->clock < 200) {
+                func_001076F0(o->col2, 0x40, 0x40, 0x40);
+                func_001076F0(o->col, 0x80, 0x80, 0x40);
+            } else {
+                func_001076F0(o->col2, 0x20, 0x20, 0x20);
+                func_001076F0(o->col, 0x40, 0x40, 0x20);
+            }
+            o->h52 = 4;
+        }
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < o->h52) {
+        if (o->kind == 0) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 10;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 0x40;
+            }
+        }
+    } else {
+        if (o->kind == 0) {
+            if (g->clock > 280) {
+                if (o->col2[3] > 12) {
+                    o->col2[3] -= 11;
+                } else {
+                    o->mode = 0;
+                }
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col2[3] > 12) {
+                o->col2[3] -= 11;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 0) {
+        if (g->clock < 200) {
+            if (o->t % 2 == 1) {
+                func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+            } else {
+                func_001076F0(o->col, 0xC0, 0xC0, 0x80);
+            }
+        } else if (o->t % 2 == 1) {
+            func_001076F0(o->col, 0xC0, 0xC0, 0x60);
+        } else {
+            func_001076F0(o->col, 0x80, 0x80, 0x40);
+        }
+    }
+    if (o->kind == 1) {
+        if (g->clock < 200) {
+            if (o->t % 2 == 1) {
+                func_001076F0(o->col, 0x80, 0x80, 0xFF);
+            } else {
+                func_001076F0(o->col, 0x80, 0x80, 0xC0);
+            }
+        } else if (o->t % 2 == 1) {
+            func_001076F0(o->col, 0x40, 0x40, 0x80);
+        } else {
+            func_001076F0(o->col, 0x40, 0x40, 0x60);
+        }
+    }
+    o->t++;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    return 0;
+}
 
 /* shape b445:01E021E0, 81 insns: a flickering spinning flash: on start size 280, colours white and
    (0xFF,0xFF,0x80), f52 6; the second alpha grows by 0x60 (below 0xC0) for f52 ticks, then fades out by 19 and
@@ -820,7 +1021,116 @@ static s32 func_01E02570_b845(s32 arg0, Obj_b845_01E02570 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b845", func_01E026F0_b845);
+/* shape b845:01E026F0, 253 insns: a pale blue flash (size 70) that fades in by 0x60 for 20 ticks, blinks white/grey,
+   cycles 8 frames and turns; until tick 32 it moves its point (the scene's points at 0xD930, picked by 0x50) 5 in
+   depth, against the scene flag (0xDC48); at tick 32 it puts the scene point there and spawns 0x1E021E0, five
+   0x1E02330, seven 0x1E02570, ten 0x1E02C60, seven 0x1E03040 (numbered by the scene's 0..79 counter 0xDC22, passed
+   in 0xDC44) and 0x1E03D10 (0xDC44 = 1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xD930 - 0x260];
+    Vec4f pts[0x2F];
+    u8 padDC20[2];
+    s16 count;
+    u8 padDC24[0x20];
+    s16 arg;
+    u8 padDC46[2];
+    s16 flag;
+} Scene_b845_01E026F0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x18];
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Obj_b845_01E026F0;
+
+static s32 func_01E026F0_b845(Scene_b845_01E026F0 *g, Obj_b845_01E026F0 *o) {
+    extern void b845_01E021E0(void);
+    extern void b845_01E02330(void);
+    extern void b845_01E02570(void);
+    extern void b845_01E02C60(void);
+    extern void b845_01E03040(void);
+    extern void b845_01E03D10(void);
+    extern void b845_01E04BC0(Scene_b845_01E026F0 *, void (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        o->hA = o->h8 = 70;
+        o->h56 = func_0019A5C8() % 8;
+        o->f34 = 0.5f;
+        func_001076F0(o->col, 0xA0, 0xA0, 0xFF);
+        o->mode = 2;
+    }
+    if (o->t < 20) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    o->h56++;
+    if (o->h56 > 7) {
+        o->h56 = 0;
+    }
+    if (o->t != 0) {
+        if (g->flag != 0) {
+            if ((s16)o->t < 33) {
+                g->pts[o->idx].z -= 5.0f;
+            }
+        } else if ((s16)o->t < 33) {
+            g->pts[o->idx].z += 5.0f;
+        }
+    }
+    if (o->t == 32) {
+        g->pos = g->pts[o->idx];
+        b845_01E04BC0(g, b845_01E021E0, 0);
+        for (i = 0; i < 5; i++) {
+            b845_01E04BC0(g, b845_01E02330, 0);
+        }
+        for (i = 0; i < 7; i++) {
+            b845_01E04BC0(g, b845_01E02570, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b845_01E04BC0(g, b845_01E02C60, 0);
+        }
+        for (i = 0; i < 7; i++) {
+            g->arg = g->count;
+            b845_01E04BC0(g, b845_01E03040, 0);
+            g->count++;
+            if (g->count >= 80) {
+                g->count = 0;
+            }
+        }
+        g->arg = 1;
+        b845_01E04BC0(g, b845_01E03D10, 0);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b445:01E02B30, 89 insns: a flickering ring: on start f48 80, f8/fA 70, f56 random 0..7, grey colour,
    life 5; alpha 0x80 until tick 0x22, then stops; colour flickers between (0xC0,0xC0,0) and (0x40,0x40,0xC0);

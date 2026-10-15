@@ -391,7 +391,76 @@ static void func_01E00E10_b149(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01360_b149);
+/* shape b149:01E01360, 258 insns: b615:01E01880 family scene timer step: from 36 to 70, twice a frame, place the
+   scene at model point 0xBCBE (odd frames) or 0xBCC0, jitter x/z by +-20 and start the module's b149:01E01770 in
+   the next slot (0..119); from 36 to 100, twice a frame, two b149:01E01C60 bursts around the scene point and model
+   point 0xBCBC, jittered by +-10 per axis, through b149:01E02BA0 */
+
+typedef struct Scn_b149_01E01360 {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xBCBC - 0x25C];
+    s16 pc;
+    s16 pa;
+    s16 pb;
+    u8 padBCC2[0x28];
+    s16 cur;
+    s16 next;
+    u8 padBCEE[4];
+    s16 count;
+} Scn_b149_01E01360;
+
+static void func_01E01360_b149(Scn_b149_01E01360 *g) {
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    extern u8 b149_01E01770[];
+    extern u8 b149_01E01C60[];
+    extern void b149_01E02BA0(Scn_b149_01E01360 *w, void *data, s32 arg);
+    s16 i;
+    s16 n;
+
+    g->count++;
+    if (g->count >= 36 && g->count < 71 && g->count != 0) {
+        if (g->count < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            if (g->count % 2 == 1) {
+                func_001F5620(func_001F53A0(), g->pa, g->pos);
+            } else {
+                func_001F5620(func_001F53A0(), g->pb, g->pos);
+            }
+            g->pos[0] += func_0019A5C8() % 40 - 20;
+            g->pos[2] += func_0019A5C8() % 40 - 20;
+            g->cur = g->next;
+            b149_01E02BA0(g, b149_01E01770, 0);
+            g->next++;
+            if (g->next >= 0x78) {
+                g->next = 0;
+            }
+        }
+    }
+    if (g->count >= 36 && g->count < 101) {
+        if (g->count < 100) {
+            i = 2;
+        } else {
+            i = 2;
+        }
+        for (n = 0; n < i; n++) {
+            g->pos[0] += func_0019A5C8() % 20 - 10;
+            g->pos[1] += func_0019A5C8() % 20 - 10;
+            g->pos[2] += func_0019A5C8() % 20 - 10;
+            b149_01E02BA0(g, b149_01E01C60, 0);
+            func_001F5620(func_001F53A0(), g->pc, g->pos);
+            g->pos[0] += func_0019A5C8() % 20 - 10;
+            g->pos[1] += func_0019A5C8() % 20 - 10;
+            g->pos[2] += func_0019A5C8() % 20 - 10;
+            b149_01E02BA0(g, b149_01E01C60, 0);
+        }
+    }
+}
 
 /* shape b149:01E01770, 211 insns: b149:01E01C60 cousin (size 10, alpha up for 80 ticks); from tick 31 to 69 it is
    pushed 4.7 a tick in z by the scene side (0xBCEE), sinks 1.1 and grows 0.5; from tick 71 it turns 5, rises by hE

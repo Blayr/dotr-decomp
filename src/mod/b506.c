@@ -224,7 +224,130 @@ static void func_01E00790_b506(s32 arg0, u8 *obj, s32 mode, f32 level) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b506", func_01E00960_b506);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b506", func_01E00E70_b506);
+/* shape b506:01E00E70, 243 insns: c061:01E01BA0's rising column for module b506: colours (0x38, 0x38, 0x48), spine
+   at g+0xAE70, side widths up to 10 / 9 per point, publish block at g+0xBFB0..0xC026, run while the scene count
+   (0xC02C) is under 115 through b506:01E02120 */
+
+typedef struct {
+    u8 pad0[0x70];
+    s32 w70;
+} Link_b506_01E00E70;
+
+typedef struct {
+    u8 pad0[4];
+    f32 top;
+    u8 pad8[0xC];
+    f32 base;
+    u8 pad18[0x18];
+    s32 w30;
+    s32 w34;
+    s32 w38;
+    u8 pad3C[4];
+    Vec4f a;
+    Vec4f b;
+    u8 pad60[0x14];
+    Link_b506_01E00E70 *link;
+    u8 pad78[8];
+    u8 c80[4];
+    u8 c84[4];
+    s16 state;
+    s16 h8A;
+    s16 h8C;
+    u8 pad8E[4];
+    s16 ang;
+} Obj_b506_01E00E70;
+
+typedef struct {
+    u8 pad0[0xAE70];
+    Vec4f pts[8];
+    u8 padAEF0[0xBFB0 - 0xAEF0];
+    Obj_b506_01E00E70 *obj;
+    u8 padBFB4[0x28];
+    f32 size;
+    f32 base;
+    u8 padBFE4[0x3C];
+    s16 ang;
+    s16 h68BE;
+    u8 padC024[2];
+    s16 h68C2;
+    u8 padC028[4];
+    s16 step;
+} Scene_b506_01E00E70;
+
+static s32 func_01E00E70_b506(Scene_b506_01E00E70 *g, Obj_b506_01E00E70 *o) {
+    extern s32 b506_01E02120(Scene_b506_01E00E70 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern Vec4f func_001098E0(void *, void *, void *, void *);
+    f32 v[4];
+    s16 i;
+
+    v[1] = 0.0f;
+    func_001076F0(o->c80, 0x38, 0x38, 0x48);
+    func_001076F0(o->c84, 0x38, 0x38, 0x48);
+    o->w30 = 0;
+    o->w34 = 0;
+    o->w38 = 0;
+    if (o->top < 100.0f) {
+        if (o->c80[3] < 0x50) {
+            o->c80[3] += 10;
+        }
+        if (o->c84[3] < 0x50) {
+            o->c84[3] += 10;
+        }
+    } else {
+        if (o->c80[3] > 16) {
+            o->c80[3] -= 14;
+        }
+        if (o->c84[3] > 16) {
+            o->c84[3] -= 14;
+        }
+    }
+    for (i = 1; i < 8; i++) {
+        if (!(g->pts[i].y <= o->top)) {
+            v[0] = g->pts[0].x;
+            v[2] = g->pts[0].z;
+            o->a = func_001098E0(v, o, &g->pts[i - 1], &g->pts[i]);
+            o->b = func_001098E0(v, o, &g->pts[i - 1], &g->pts[i]);
+            if (o->h8A <= i * 10) {
+                o->h8A += 7;
+            }
+            if (o->h8C <= i * 9) {
+                o->h8C += 6;
+            }
+            i = 8;
+        }
+    }
+    if (o->top <= 80.0f) {
+        o->top += 4.0f;
+        if (!(o->top - o->base <= 18.0f)) {
+            o->base += 4.0f;
+        }
+    } else {
+        o->base += 4.0f;
+        if (!(o->base <= o->top)) {
+            if (o->link != 0) {
+                o->link->w70 = 0;
+            }
+            o->state = 0;
+        }
+    }
+    if (o->state == 1) {
+        if (!(o->base <= 0.0f)) {
+            g->size = 14.0f;
+            g->obj = o;
+            g->h68BE = 1;
+            g->base = o->base;
+            g->h68C2 = 1;
+            g->ang = o->ang - 15;
+            if (g->step < 115) {
+                if (b506_01E02120(g, func_01E00E70_b506, 0)) {
+                    o->state = 2;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 /* shape b506:01E01240, 189 insns: c063:01E04250 family blue-grey (0x60, 0x60, 0x80) flake 20 square growing 10 to 200, frame 0..2, held 20 ticks, drifting 2 a tick in z by the scene side flag (ctx+0xC02A), tumbling on all axes */
 

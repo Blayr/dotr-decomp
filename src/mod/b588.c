@@ -733,7 +733,96 @@ static s32 func_01E01D00_b588(Mgr_b588_01E01D00 *m, Obj_b588_01E01D00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01EF0_b588);
+/* shape b588:01E01EF0 (B588_OBJ_MOVE_10_), 221 insns: a blue spark: size 50..79 (+4 for fA), kind (rand >> 4) % 3,
+   colour (0x10, 0x10, 0xFF), drift (rand % 100 - 50) / 400 in x and y, random spin rates -0x400..0x3FF on all three
+   axes and a random start angle; brightens by 0x40 below 0x80 for 50 ticks, then fades by 9; every third tick it
+   grows by 5 up to 150; while moving it slides 2.7 in z (the sign by the game value at 0xA96A) and sinks 0.09 */
+
+typedef struct {
+    s16 r[3];
+    u8 pad6[2];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 pos[3];
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x1A];
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b588_01E01EF0;
+
+typedef struct {
+    u8 pad[0xA96A];
+    s16 v;
+} Game_b588_01E01EF0;
+
+static s32 func_01E01EF0_b588(Game_b588_01E01EF0 *g, Fx_b588_01E01EF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->f8 = func_0019A5C8() % 30 + 50;
+        o->fA = o->f8 + 4;
+        o->f56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x10, 0x10, 0xFF);
+        o->mode = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40(o->pos);
+        o->r[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->r[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->r[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->pos[0] = func_0019A5C8() % 0xFFFF;
+        o->pos[1] = func_0019A5C8() % 0xFFFF;
+        o->pos[2] = func_0019A5C8() % 0xFFFF;
+        o->f52 = func_0019A5C8() % 4;
+    }
+    if (o->tick < 50) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f8 < 150) {
+            o->f8 += 5;
+        }
+        o->fA = o->f8;
+    }
+    if (o->tick != 0) {
+        if (g->v != 0) {
+            o->f18 -= 2.7f;
+        } else {
+            o->f18 += 2.7f;
+        }
+        o->f10 += o->f30;
+        o->f14 += o->f34 - 0.09f;
+    }
+    func_00205C40(o->pos);
+    o->pos[2] += o->r[2];
+    o->pos[1] += o->r[1];
+    o->pos[0] += o->r[0];
+    o->tick++;
+    return 0;
+}
 
 /* shape b588:01E02270, 161 insns: b482:01E02180 in purple (0x80, 0x40, 0xFF), size 50 x 25, sinking 1 per tick and spinning by its random spins */
 

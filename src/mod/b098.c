@@ -455,7 +455,103 @@ static void func_01E01200_b098(Ctx_b098_01E01200 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E014D0_b098);
+/* shape b098:01E014D0, 222 insns: b276:01E01060's smoke-puff source in yellow (0x80, 0x80, 0x20), size 80 growing
+   0.5 a tick, drift (-20..19)/60 on all axes between ticks 11 and 69, sinking 0.05 more until tick 39, and a fall
+   toward the joint at ctx+0xB244 spread over 80 ticks; fades in for 90 ticks, out by 11 */
+
+typedef struct {
+    u8 pad0[0xB244];
+    s16 v;
+} Ctx_b098_01E014D0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b098_01E014D0;
+
+static s32 func_01E014D0_b098(Ctx_b098_01E014D0 *ctx, Obj_b098_01E014D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+
+    if (o->state == 1) {
+        o->f48 = 80.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x20);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 40 - 20;
+        o->f38 = func_0019A5C8() % 40 - 20;
+        o->f30 /= 60.0f;
+        o->f34 /= 60.0f;
+        o->f38 /= 60.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), ctx->v, b);
+        o->f3C = (a[2] - b[2]) / 80.0f;
+        o->state = 2;
+    }
+    if (o->t < 90) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->state = 0;
+    }
+    if (o->t > 10 && o->t < 70) {
+        o->x += o->f30;
+        o->y += o->f34;
+        o->z += o->f38;
+    }
+    if (o->t > 10 && o->t < 40) {
+        o->y -= 0.05f;
+    }
+    if (o->t != 0) {
+        o->z += o->f3C;
+        o->f48 += 0.5f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b098:01E01850, 117 insns: b413:01E023D0 family shock wave (red, scale 6, width 8) pinned to the scene joint: kind 0 from 200 growing 25, kind 1 from 100 growing 22.5, kind 2 400 fixed; in by 64 up to 0x80 for 9 ticks, then out by 5 and ends; +0x52 counts to 25 */
 

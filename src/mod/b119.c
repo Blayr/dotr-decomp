@@ -608,7 +608,99 @@ static s32 func_01E02990_b119(s32 arg0, Fx_b119_01E02990 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E02BE0_b119);
+/* shape b119:01E02BE0, 224 insns: a red, green or blue (by kind h30) beam between two scene points (ctx+0x3E30 + 32 k):
+   size 50..129; its base sits at a random (-15..14, 100, -15..14) and its tip 30 high on an ellipse of radii 5..34
+   (x) and 5..34 (z) at an angle turning by -5..4 (never 0) a tick; alpha up by 10 to 0x8A for 20 ticks, then
+   flickers 0x90/0x70 until tick 250, then fades by 9 while the size shrinks by 2 */
+
+typedef struct {
+    Vec4f a;
+    Vec4f b;
+} Pair_b119_01E02BE0;
+
+typedef struct {
+    u8 pad0[0x3E30];
+    Pair_b119_01E02BE0 pt[3];
+    u8 pad3E90[0x4420 - 0x3E90];
+    u8 trig[1];
+} Ctx_b119_01E02BE0;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b119_01E02BE0;
+
+static s32 func_01E02BE0_b119(Ctx_b119_01E02BE0 *g, Fx_b119_01E02BE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 80 + 50;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x10, 0x10);
+            func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        } else if (o->kind == 1) {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+            func_001076F0(o->col2, 0x10, 0x80, 0x10);
+        } else if (o->kind == 2) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+            func_001076F0(o->col2, 0x10, 0x10, 0x80);
+        }
+        o->w10 = func_0019A5C8() % 30 + 5;
+        o->w14 = func_0019A5C8() % 10 - 5;
+        o->w18 = func_0019A5C8() % 30 + 5;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col[3] = 0;
+        o->col2[3] = 0;
+        o->hE = func_0019A5C8() % 10;
+        g->pt[o->kind].a.x = func_0019A5C8() % 30 - 15;
+        g->pt[o->kind].a.z = func_0019A5C8() % 30 - 15;
+        if (o->w14 == 0) {
+            o->w14 = 1;
+        }
+    }
+    if (o->tick < 250) {
+        if (o->tick < 20) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 10;
+            }
+        } else if (o->tick % 2 == 1) {
+            o->col2[3] = 0x90;
+        } else {
+            o->col2[3] = 0x70;
+        }
+    } else {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        o->size -= 2;
+        if (o->size < 0) {
+            o->size = 0;
+        }
+    }
+    g->pt[o->kind].a.y = 100.0f;
+    g->pt[o->kind].b.y = 30.0f;
+    g->pt[o->kind].b.x = o->w10 * func_00108030(g->trig, o->ang, 0);
+    g->pt[o->kind].b.z = o->w18 * func_00108030(g->trig, o->ang, 1);
+    o->ang += o->w14;
+    o->tick++;
+    return 0;
+}
 
 /* shape b119:01E02F60, 98 insns: a long coloured glow: frame 280, red, green or blue by its kind, random angle; alpha flickers
    0x80/0x70 by frame parity until frame 230, then down by 9 until it ends */

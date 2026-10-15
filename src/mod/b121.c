@@ -504,7 +504,134 @@ static void func_01E017B0_b121(Ctx_b121_01E017B0 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E019D0_b121);
+/* shape b121:01E019D0, 264 insns: the point object b121:01E017B0 spawns: grey, fades in from tick 4 and out by 34
+   after 32; blinks by tick parity; its point (pts[o->h30]) closes a 33rd of the camera's depth gap until tick 32 while
+   it spins 0x4000 against the scene flag; until tick 30 it drops two trail points (the first 3 lower) into the
+   scene's ring at 0x3350 and spawns b121:01E02030 for each; at tick 30 it drops eight camera points into the ring at
+   0x3990 and spawns b121:01E023B0 for each */
+
+typedef struct {
+    u8 pad0[0x28D0];
+    Vec4f pts[8];
+    u8 pad2950[0x3350 - 0x2950];
+    Vec4f ring[100];
+    Vec4f ring2[100];
+    u8 pad3FD0[0x4028 - 0x3FD0];
+    s16 flag;
+    u8 pad402A[2];
+    s16 n;
+    s16 n2;
+    u8 pad4030[6];
+    s16 cur;
+} Ctx_b121_01E019D0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[8];
+    s32 w14;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 idx;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Obj_b121_01E019D0;
+
+static s32 func_01E019D0_b121(Ctx_b121_01E019D0 *g, Obj_b121_01E019D0 *o) {
+    extern s32 b121_01E02030(void);
+    extern s32 b121_01E023B0(void);
+    extern void b121_01E02F60(Ctx_b121_01E019D0 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, Vec4f *);
+    Vec4f v[2];
+    s16 i;
+
+    func_001F5F90(func_001F53A0(), &v[0]);
+    func_001F5F90(func_001F5380(), &v[1]);
+    if (o->mode == 1) {
+        o->h8 = 127;
+        o->hA = 31;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 32) {
+        if (o->tick > 3) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 10;
+            }
+        }
+        if (o->tick > 3) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 10;
+            }
+        }
+    } else {
+        if (o->col[3] > 35) {
+            o->col[3] -= 34;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 35) {
+            o->col[3] -= 34;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    o->tick++;
+    *(f32 *)(u32)&v[0].z = (v[1].z - v[0].z) / 33.0f;
+    if (g->flag != 0) {
+        o->w14 = -0x4000;
+        if (o->tick < 32) {
+            g->pts[o->idx].z += v[0].z;
+        }
+    } else {
+        o->w14 = 0x4000;
+        if (o->tick < 32) {
+            g->pts[o->idx].z += v[0].z;
+        }
+    }
+    if (o->tick < 30) {
+        for (i = 0; i < 2; i++) {
+            g->ring[g->n].x = g->pts[o->idx].x;
+            g->ring[g->n].y = g->pts[o->idx].y;
+            g->ring[g->n].z = g->pts[o->idx].z;
+            if (!i) {
+                g->ring[g->n].z -= 3.0f;
+            }
+            g->cur = g->n;
+            b121_01E02F60(g, b121_01E02030, 0);
+            g->n++;
+            if (g->n >= 100) {
+                g->n = 0;
+            }
+        }
+    }
+    if (o->tick == 30) {
+        func_001F5F90(func_001F5380(), &v[0]);
+        for (i = 0; i < 8; i++) {
+            g->ring2[g->n2].x = v[0].x;
+            g->ring2[g->n2].y = v[0].y;
+            g->ring2[g->n2].z = *(f32 *)(u32)&v[0].z;
+            g->cur = g->n2;
+            b121_01E02F60(g, b121_01E023B0, 0);
+            g->n2++;
+            if (g->n2 >= 100) {
+                g->n2 = 0;
+            }
+        }
+    }
+    return 0;
+}
 
 /* shape b121:01E01DF0, 143 insns: a dark falling flake: size 8 growing by 0..2 to 16, frame 0..6 (stepped every third
    tick for kind 0), 0xA 0..7, kind from the old height, height 20..119 falling 1..3 a tick (ends at 0), f8 0..34, held

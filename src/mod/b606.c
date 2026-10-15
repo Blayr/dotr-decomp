@@ -489,7 +489,85 @@ static void func_01E01230_b606(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b606", func_01E014F0_b606);
+/* shape b606:01E014F0 (B606_W_S), 269 insns: the scene script of b606: tick 1 spawns 0x1E01FF0; ticks 153..178 put
+   the spawn point on joint 0xB248 with the camera depth and spawn thirteen 0x1E01930; ticks 116..198 spawn two
+   0x1E01AE0 on each of joints 0xB244 and 0xB246; tick 95 spawns 0x1E01ED0 and thirteen 0x1E01930 on each of them;
+   ticks 44/65/84 (joint 0xB244) and 55/76 (joint 0xB246) spawn thirteen 0x1E01D00 1.5 lower (chatA, 16 Oct) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0xB244 - 0x25C];
+    s16 j[3];
+    u8 padB24A[0xB2B8 - 0xB24A];
+    s16 tick;
+} Ctx_b606_01E014F0;
+
+static void func_01E014F0_b606(Ctx_b606_01E014F0 *g) {
+    extern void b606_01E01930();
+    extern void b606_01E01AE0();
+    extern void b606_01E01D00();
+    extern void b606_01E01ED0();
+    extern void b606_01E01FF0();
+    extern void b606_01E02750(Ctx_b606_01E014F0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[8];
+    s16 i;
+
+    g->tick++;
+    if (g->tick == 1) {
+        b606_01E02750(g, b606_01E01FF0, 0);
+    }
+    if (g->tick >= 153 && g->tick <= 178) {
+        func_001F5620(func_001F53A0(), g->j[2], &g->x);
+        func_001F5F90(func_001F5380(), v);
+        g->z = v[2];
+        for (i = 0; i < 13; i++) {
+            b606_01E02750(g, b606_01E01930, 0);
+        }
+    }
+    if (g->tick >= 116 && g->tick <= 198) {
+        func_001F5620(func_001F53A0(), g->j[0], &g->x);
+        for (i = 0; i < 2; i++) {
+            b606_01E02750(g, b606_01E01AE0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j[1], &g->x);
+        for (i = 0; i < 2; i++) {
+            b606_01E02750(g, b606_01E01AE0, 0);
+        }
+    }
+    if (g->tick == 95) {
+        func_001F5620(func_001F53A0(), g->j[0], &g->x);
+        b606_01E02750(g, b606_01E01ED0, 0);
+        for (i = 0; i < 13; i++) {
+            b606_01E02750(g, b606_01E01930, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j[1], &g->x);
+        b606_01E02750(g, b606_01E01ED0, 0);
+        for (i = 0; i < 13; i++) {
+            b606_01E02750(g, b606_01E01930, 0);
+        }
+    }
+    if (g->tick == 44 || g->tick == 65 || g->tick == 84) {
+        func_001F5620(func_001F53A0(), g->j[0], &g->x);
+        g->y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b606_01E02750(g, b606_01E01D00, 0);
+        }
+    }
+    if (g->tick == 55 || g->tick == 76) {
+        func_001F5620(func_001F53A0(), g->j[1], &g->x);
+        g->y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b606_01E02750(g, b606_01E01D00, 0);
+        }
+    }
+}
 
 /* shape b606:01E01930, 105 insns: b282:01E01C20 family spinning white spark (random size 8..15 from rand() % 8, frame 0..2, angle 10..19, spin 16..35, held 3..5 ticks): in by 64 up to 0xC0, then out by 14 and ends */
 

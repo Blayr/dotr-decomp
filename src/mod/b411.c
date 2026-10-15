@@ -575,7 +575,125 @@ static s32 func_01E01B30_b411(s32 arg0, Fx_b411_01E01B30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b411", func_01E01D30_b411);
+/* shape b411:01E01D30, 271 insns: a white trail head for scene point 0x50 (ctx+0x9BF0): on start fills its 70-point
+   history (ctx+0x8610 + 0x460 per point) with the point; fades in by 0x2A for 90 ticks, then shrinks 0x48 by 1.5 and
+   stops; shifts the history (the module's b411:01E00080) before tick 50 and after 80; flickers 0xFF / 0xC0 before 80;
+   grows 0x6 to 50; for 50 ticks it slides the point 3.5 along z (sign by ctx+0x9D24) and lifts it 0.3, then hands
+   it to the scene (ctx+0x250, flag 0x9D20) and starts b411:01E01B30 (even ticks), b411:01E01790 (odd) and
+   b411:01E02580 (tick 50) through b411:01E02F60 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 f48;
+    u8 pad4C[4];
+    s16 idx;
+    u8 pad52[2];
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Head_b411_01E01D30;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f org;
+    u8 pad260[0x8610 - 0x260];
+    Vec4f trail[5][70];
+    Vec4f pt[5];
+    u8 pad9C40[0x9D20 - 0x9C40];
+    s16 flag;
+    u8 pad9D22[2];
+    s16 side;
+} Scn_b411_01E01D30;
+
+static s32 func_01E01D30_b411(Scn_b411_01E01D30 *g, Head_b411_01E01D30 *o) {
+    extern s32 b411_01E00080(Vec4f *dst, s32 n, s32 arg2, f32 *src);
+    extern u8 b411_01E01790[];
+    extern u8 b411_01E01B30[];
+    extern u8 b411_01E02580[];
+    extern void b411_01E02F60(Scn_b411_01E01D30 *g, void *data, s32 arg);
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 v[4];
+    f32 *py;
+    f32 *pz;
+    s16 i;
+    Vec4f *t;
+
+    py = &v[1];
+    pz = &v[2];
+    v[0] = g->pt[o->idx].x;
+    *py = g->pt[o->idx].y;
+    *pz = g->pt[o->idx].z;
+    if (o->mode == 1) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        t = g->trail[o->idx];
+        for (i = 0; i < 70; i++) {
+            t[i].x = v[0];
+            t[i].y = *py;
+            t[i].z = *pz;
+        }
+        o->h6 = 20;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->kind = 4;
+        o->f48 = 17.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 90) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x2A;
+        }
+    } else if (o->f48 >= 0.0f) {
+        o->f48 -= 1.5f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick < 50 || o->tick > 80) {
+        b411_01E00080(&g->trail[o->idx][69], 70, 0, v);
+    }
+    if (o->tick < 80) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        } else {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        }
+    }
+    if (o->tick != 0) {
+        if (o->h6 < 50) {
+            o->h6++;
+        }
+    }
+    if (o->tick < 50) {
+        if (g->side != 0) {
+            g->pt[o->idx].z -= 3.5f;
+        } else {
+            g->pt[o->idx].z += 3.5f;
+        }
+        g->pt[o->idx].y -= 0.3f;
+    } else {
+        g->org = g->pt[o->idx];
+        g->flag = 1;
+        if (o->tick % 2 != 0) {
+            b411_01E02F60(g, b411_01E01B30, 0);
+        }
+        if (o->tick % 2 == 1) {
+            b411_01E02F60(g, b411_01E01790, 0);
+        }
+        if (o->tick == 50) {
+            b411_01E02F60(g, b411_01E02580, 0);
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b411:01E02170, 94 insns: on start f4C 40, second colour (0xCF, 0xCF, 0xFF) (alpha 0), colour (0x80, 0x80,
    0xFF), 0x52 = 0, 0x5A/0x5C = 10; the second alpha grows by 0x30 (below 0xC0) for 100 ticks, then fades by 15 and

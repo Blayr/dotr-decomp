@@ -644,7 +644,120 @@ static void func_01E017D0_b259(s32 arg0, u8 *obj, s32 mode, f32 level) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E019A0_b259);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E01B90_b259);
+/* shape b259:01E01B90, 269 insns: b428:01E014F0's grey puff, 10 square growing to 25, drift /400, sliding along z
+   by the scene flag (ctx+0x86C2) at a speed growing from 2.2 by 0.1 to 4.5, sinking 0.4; on tick 44 it copies its
+   position to ctx+0x250, spawns b259:01E023D0 and b259:01E02760 once the scene count (ctx+0x86C6) reaches 159, and
+   ends; blinks grey; past count 300 its tick jumps to 90 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x86C2 - 0x260];
+    s16 flip;
+    u8 pad86C4[2];
+    s16 count;
+} Ctx_b259_01E01B90;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b259_01E01B90;
+
+static s32 func_01E01B90_b259(Ctx_b259_01E01B90 *ctx, Obj_b259_01E01B90 *o) {
+    extern s32 b259_01E023D0(void);
+    extern s32 b259_01E02760(void);
+    extern s32 b259_01E033C0(Ctx_b259_01E01B90 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 d;
+
+    if (o->state == 1) {
+        o->hA = o->h8 = 10;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->f38 = 2.2f;
+        d = (func_0019A5C8() >> 4) % 50 - 25;
+        d /= 20.0f;
+        o->pos.y += d;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->h5A = func_0019A5C8() % 360;
+        o->rot[0] = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot[1] = 0x4000;
+    }
+    if (o->t < 50) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        if (ctx->flip != 0) {
+            o->pos.z -= o->f38;
+        } else {
+            o->pos.z += o->f38;
+        }
+        if (o->f38 < 4.5f) {
+            o->f38 += 0.1f;
+        }
+        o->pos.x += o->f30;
+        o->pos.y += o->f34 - 0.4f;
+        if (o->h8 < 25) {
+            o->h8++;
+        }
+        if (o->hA < 25) {
+            o->hA++;
+        }
+    }
+    if (o->t == 44) {
+        ctx->pos = o->pos;
+        if (ctx->count >= 159) {
+            b259_01E033C0(ctx, b259_01E023D0, 0);
+            b259_01E033C0(ctx, b259_01E02760, 0);
+        }
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+    }
+    o->t++;
+    if (ctx->count > 300) {
+        o->t = 90;
+    }
+    o->h5A += 40;
+    return 0;
+}
 
 /* shape b259:01E01FD0, 96 insns: a red-yellow flicker glow on a model joint: size 0/40, hold 250; second alpha up by 0x50 until the
    hold, then down by 12 until it ends; second colour flickers by frame parity; spins a quarter turn and follows the joint */

@@ -506,7 +506,105 @@ static void func_01E01230_b094(Obj_b094_01E01230 *obj, Cam_b094_01E01230 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01570_b094);
+/* shape b094:01E01570, 225 insns: the effect scene's step: counts the frame (0x4564); frames 100..200 drift the base
+   point's depth by a hundredth of the gap between the camera's two points and turn the sway angle (0x4552) by 8,
+   the sway width (0x44D4) shrinking from frame 170 and cleared at 200; the current point is the base swayed by
+   width * sin; frame 1 puts the scene point on joint 0x44F0 and the base on joint 0x44F2 at height 26, then spawns
+   0x1E01900, 0x1E02290 and 0x1E02480 (selector 0) and, from the current point, 0x1E02290, 0x1E02480 and 0x1E027F0
+   (selector 1); frames 203..213 spawn 0x1E01AF0 at a random spot within 20 of it; from frame 66 0x4556 grows by 20
+   up to 360 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4480 - 0x260];
+    Vec4f cur;
+    Vec4f base;
+    u8 pad44A0[0x44D4 - 0x44A0];
+    f32 amp;
+    u8 pad44D8[0x44F0 - 0x44D8];
+    s16 ja;
+    s16 jb;
+    u8 pad44F4[0x4500 - 0x44F4];
+    s16 jc;
+    u8 pad4502[0x4552 - 0x4502];
+    s16 ang;
+    u8 pad4554[2];
+    s16 h4556;
+    u8 pad4558[4];
+    s16 sel;
+    u8 pad455E[6];
+    s16 t;
+    u8 pad4566[0x4768 - 0x4566];
+    u8 tab[4];
+} Scene_b094_01E01570;
+
+static void func_01E01570_b094(Scene_b094_01E01570 *g) {
+    extern void b094_01E01900(void);
+    extern void b094_01E01AF0(void);
+    extern void b094_01E02290(void);
+    extern void b094_01E02480(void);
+    extern void b094_01E027F0(void);
+    extern void b094_01E02FC0(Scene_b094_01E01570 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_0019A5C8(void);
+    Vec4f v[2];
+    s16 i;
+
+    g->t++;
+    if (g->t >= 100 && g->t <= 200) {
+        func_001F5F90(func_001F5380(), &v[0]);
+        func_001F5F90(func_001F53A0(), &v[1]);
+        func_001F5620(func_001F5380(), g->jc, &v[0]);
+        g->base.z += (v[0].z - v[1].z) / 100.0f;
+        g->ang += 8;
+        if (g->ang >= 360) {
+            g->ang %= 360;
+        }
+        if (g->t >= 170) {
+            if (g->amp > 0.0f) {
+                g->amp -= 1.0f;
+            }
+        }
+        if (g->t == 200) {
+            g->amp = 0.0f;
+        }
+    }
+    g->cur = g->base;
+    g->cur.x += g->amp * func_00108030(g->tab, g->ang, 0);
+    if (g->t == 1) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        func_001F5620(func_001F53A0(), g->jb, &g->base);
+        g->base.y = 26.0f;
+        g->cur = g->base;
+        b094_01E02FC0(g, b094_01E01900, 0);
+        g->sel = 0;
+        b094_01E02FC0(g, b094_01E02290, 0);
+        b094_01E02FC0(g, b094_01E02480, 0);
+        g->pos = g->cur;
+        g->sel = 1;
+        b094_01E02FC0(g, b094_01E02290, 0);
+        b094_01E02FC0(g, b094_01E02480, 0);
+        b094_01E02FC0(g, b094_01E027F0, 0);
+    }
+    if (g->t >= 203 && g->t <= 213) {
+        for (i = 0; i < 1; i++) {
+            g->pos = g->cur;
+            g->pos.x += (f32)(func_0019A5C8() % 40 - 20);
+            g->pos.z += (f32)(func_0019A5C8() % 40 - 20);
+            b094_01E02FC0(g, b094_01E01AF0, 0);
+        }
+    }
+    if (g->t >= 66) {
+        if (g->h4556 <= 359) {
+            g->h4556 += 20;
+        }
+    }
+}
 
 /* shape b094:01E01900, 124 insns: a flashing pair (size 20/13, frame 0..6, f8 4..6): both alphas rise by 12 to 0x80 for 20 ticks, then fall by 6 while the scene timer is under 30; colour flips 0x80/0xC0 every tick; f24 0x8000 (0 when the scene flag is set) until the scene count reaches 150, then grows 0x100 */
 
@@ -1244,4 +1342,112 @@ static void func_01E03260_b094(Game_b094_01E03260 *g, Obj_b094_01E03260 *o, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E03570_b094);
+/* shape b094:01E03570, 224 insns: b016:01E01190's ring band placed at (0, c.y, c.z) with its inner edge (quads 0
+   and 1) pushed out by 10 * c.x */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b094_01E03570;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 texture;
+    u8 pad84[0x34];
+    s16 count;
+    u8 padBA[0x1E];
+    u8 table[1];
+} Obj_b094_01E03570;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec_b094_01E03570 rotation;
+    u8 pad30[4];
+    f32 height;
+    u8 pad38[0x10];
+    f32 inner;
+    f32 outer;
+    u8 pad50[0xA];
+    s16 step;
+    s16 width;
+    u8 pad5E[2];
+    u8 mode0[4];
+    u8 mode1[4];
+} Data_b094_01E03570;
+
+static void func_01E03570_b094(Obj_b094_01E03570 *obj, Data_b094_01E03570 *data, s32 flags, Vec_b094_01E03570 *color) {
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    Vec_b094_01E03570 c;
+    Vec_b094_01E03570 quad[4];
+    Vec_b094_01E03570 pos;
+    Vec_b094_01E03570 scale;
+    f32 matrix[16];
+    f32 depth[4];
+    u8 packet[0x90];
+    s16 alpha;
+    s32 i;
+    s16 width;
+    s32 a;
+    s16 j;
+    f32 inner;
+    u8 *pkt;
+    s32 mode;
+    f32 outer;
+    f32 off;
+
+    pkt = packet;
+    c = *color;
+    width = data->width;
+    j = 0;
+    func_00107990(pkt, data->mode0, 2);
+    func_00107990(pkt, data->mode1, 1);
+    func_001092E0(pkt, 0);
+    func_001094F0(pkt);
+    alpha = flags >> 4;
+    if (alpha == 0) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(pkt, ((s64)alpha << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    scale.x = 0.1f;
+    pos.x = 0.0f;
+    scale.y = 0.1f;
+    pos.y = c.y;
+    scale.z = 0.1f;
+    pos.z = c.z;
+    func_00108EF0(matrix, &scale, &data->rotation, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = data->height;
+    quad[3].y = data->height;
+    off = 10.0f * c.x;
+    inner = data->inner;
+    outer = data->outer;
+    for (i = 0; i < obj->count; i++) {
+        a = data->step + j;
+        quad[0].x = inner * func_00108030(obj->table, a, 1);
+        quad[0].z = inner * func_00108030(obj->table, a, 0);
+        quad[2].x = outer * func_00108030(obj->table, a, 1);
+        quad[2].z = outer * func_00108030(obj->table, a, 0);
+        a = j + (data->step + width);
+        quad[1].x = inner * func_00108030(obj->table, a, 1);
+        quad[1].z = inner * func_00108030(obj->table, a, 0);
+        quad[3].x = outer * func_00108030(obj->table, a, 1);
+        quad[3].z = outer * func_00108030(obj->table, a, 0);
+        quad[0].x += off;
+        quad[1].x += off;
+        if ((flags & 0xF) == 0) {
+            if (func_00205630(quad, 0x70000000, matrix, pkt, depth) != 0) {
+                func_002075F0(pkt, obj->texture, func_001A23B0(depth[0]));
+            }
+        } else if ((flags & 0xF) == 1) {
+            if (func_00205630(quad, 0x70000000, matrix, pkt, depth) != 0) {
+                func_00109380(pkt, 1);
+                func_002075F0(pkt, obj->texture, 0);
+            }
+        }
+        j += data->step;
+    }
+}

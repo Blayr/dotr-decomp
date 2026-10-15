@@ -496,7 +496,87 @@ static void func_01E01320_b426(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E015E0_b426);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E01AD0_b426);
+/* shape b426:01E01AD0, 223 insns: b731:01E01C10 family scene step with homing points: each new point (age 0) aims at
+   the camera point jittered by +-10 and sets its step to a 50th of the gap (the y and twice the z; x is never set);
+   live points move by their step while young (age < 25) or aged 126..148; at scene times 83, 120, 154, 183, 216
+   and 246 a new point starts at the tracked joint (0x5324) with two bursts and a ring of 18 (angles 0, 20, ..),
+   and from 60 to 80 one more effect each frame */
+
+typedef struct Scn_b426_01E01AD0 {
+    u8 pad0[0x250];
+    Vec4f org;
+    u8 pad260[0x5190 - 0x260];
+    Vec4f pos[10];
+    Vec4f vel[10];
+    u8 pad52D0[0x5324 - 0x52D0];
+    s16 joint;
+    u8 pad5326[0xE];
+    s16 cam;
+    u8 pad5336[0xE];
+    s16 age[17];
+    s16 cur;
+    s16 count;
+    u8 pad536A[4];
+    s16 timer;
+} Scn_b426_01E01AD0;
+
+static void func_01E01AD0_b426(Scn_b426_01E01AD0 *g) {
+    extern s32 func_001F53A0();
+    extern s32 func_001F5380();
+    extern void func_001F5620();
+    extern u8 b426_01E01E50[];
+    extern u8 b426_01E02370[];
+    extern u8 b426_01E031D0[];
+    extern u8 b426_01E03530[];
+    extern void b426_01E04630(Scn_b426_01E01AD0 *w, void *data, s32 arg);
+    f32 p[8];
+    s16 i;
+    s16 a;
+    s16 k;
+
+    g->timer++;
+    for (i = 0; i < g->count; i++) {
+        if (g->age[i] == 0) {
+            func_001F5620(func_001F5380(), g->cam, p);
+            p[0] += func_0019A5C8() % 20 - 10;
+            p[1] += func_0019A5C8() % 20 - 10;
+            g->vel[i].z = (p[2] - g->pos[i].z) / 50.0f;
+            g->vel[i].y = (p[1] - g->pos[i].y) / 50.0f;
+            g->vel[i].z = (p[2] - g->pos[i].z) / 50.0f;
+            g->age[i]++;
+        }
+    }
+    for (i = 0; i < g->count; i++) {
+        if (g->age[i] != 0) {
+            if (g->age[i] < 25 || (g->age[i] > 125 && g->age[i] < 149)) {
+                g->pos[i].z += g->vel[i].z;
+                g->pos[i].y += g->vel[i].y;
+                g->pos[i].x += g->vel[i].x;
+                g->age[i]++;
+            } else {
+                g->age[i]++;
+            }
+        }
+    }
+    if (g->timer == 0x53 || g->timer == 0x78 || g->timer == 0x9A || g->timer == 0xB7 || g->timer == 0xD8 ||
+        g->timer == 0xF6) {
+        g->cur = g->count;
+        func_001F5620(func_001F53A0(), g->joint, &g->pos[g->cur]);
+        func_001F5620(func_001F53A0(), g->joint, &g->org);
+        b426_01E04630(g, b426_01E02370, 0);
+        b426_01E04630(g, b426_01E01E50, 0);
+        for (k = 0, a = 0; k < 18; k++) {
+            g->cur = a;
+            b426_01E04630(g, b426_01E031D0, 0);
+            a += 20;
+        }
+        g->count++;
+    }
+    if (g->timer >= 60 && g->timer < 81) {
+        func_001F5620(func_001F53A0(), g->joint, &g->org);
+        b426_01E04630(g, b426_01E03530, 0);
+    }
+}
 
 /* shape b426:01E01E50, 94 insns: a grey flickering spark (frame toggles 0/1) growing 10 a tick from 25 up to 75: both alphas in by 64 up to 0xC0 for 149 ticks, then out by 14 (twice on the first colour) and ends */
 

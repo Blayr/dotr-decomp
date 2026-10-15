@@ -506,7 +506,116 @@ static void func_01E01330_b281(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E015F0_b281);
+/* shape b281:01E015F0, 246 insns: the effect scene's step (b509:01E01BD0 family): counts the frame (0x451C); until 154
+   the marker (0x4470) follows joint 0x44E4, at 155 it measures a 32-step drift toward joint 0x44F4 in y and z and moves
+   until 185; at 186 the scene point takes the marker; frame 40 sets the slot/turn pair twice; frames 212..330 spawn
+   0x1E019D0 at the camera point (5 up, 5 left or right by the frame's parity); frames 41..310 spawn 0x1E01C90 on joint
+   0x44E6; frame 1 spawns 0x1E02230; frames 230..350, every fourth, spawn 0x1E01E40 on each of the 8 joints from
+   0x44F4; both turns (0x450C/0x450E) advance 6 a frame */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f m;
+    u8 pad4480[4];
+    f32 dy;
+    f32 dz;
+    u8 pad448C[0x44E4 - 0x448C];
+    s16 ja;
+    s16 jb;
+    u8 pad44E8[0xC];
+    s16 ids[8];
+    u8 pad4504[2];
+    s16 ang2;
+    u8 pad4508[4];
+    s16 turn2;
+    s16 turn;
+    u8 pad4510[4];
+    s16 slot;
+    u8 pad4516[6];
+    s16 timer;
+} Ctx_b281_01E015F0;
+
+static void func_01E015F0_b281(Ctx_b281_01E015F0 *g) {
+    extern s32 b281_01E019D0(void);
+    extern s32 b281_01E01C90(void);
+    extern s32 b281_01E01E40(void);
+    extern s32 b281_01E02230(void);
+    extern void b281_01E02AB0(Ctx_b281_01E015F0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v[2];
+    s16 i;
+    s32 k;
+
+    g->timer++;
+    if (g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->ja, &g->m);
+    } else {
+        if (g->timer == 155) {
+            func_001F5620(func_001F5380(), g->ids[0], &v[0]);
+            g->dz = (v[0].z - g->m.z) / 32.0f;
+            g->dy = (v[0].y - g->m.y) / 32.0f;
+        }
+        if (g->timer < 186) {
+            g->m.z += g->dz;
+            g->m.y += g->dy;
+        }
+    }
+    if (g->timer == 186) {
+        g->pos = g->m;
+        g->slot = 0;
+    }
+    if (g->timer == 40) {
+        g->slot = 0;
+        g->ang2 = 0;
+        g->slot = 1;
+        g->ang2 = 90;
+    }
+    if (g->timer >= 212 && g->timer < 331) {
+        func_001F5620(func_001F53A0(), g->jb, &v[0]);
+        k = g->timer % 2;
+        if (k == 0) {
+            g->slot = 0;
+            func_001F5F90(func_001F53A0(), &g->pos);
+            g->pos.y += 5.0f;
+            g->pos.x -= 5.0f;
+            b281_01E02AB0(g, b281_01E019D0, 0);
+        } else if (k == 1) {
+            g->slot = 1;
+            func_001F5F90(func_001F53A0(), &g->pos);
+            g->pos.y += 5.0f;
+            g->pos.x += 5.0f;
+            b281_01E02AB0(g, b281_01E019D0, 0);
+        }
+    }
+    if (g->timer >= 41 && g->timer < 311) {
+        g->slot = 0;
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        b281_01E02AB0(g, b281_01E01C90, 0);
+    }
+    if (g->timer == 1) {
+        b281_01E02AB0(g, b281_01E02230, 0);
+    }
+    if (g->timer >= 230 && g->timer < 351 && g->timer % 4 == 0) {
+        for (i = 0; i < 8; i++) {
+            func_001F5620(func_001F5380(), g->ids[i], &v[0]);
+            g->pos = v[0];
+            b281_01E02AB0(g, b281_01E01E40, 0);
+        }
+    }
+    g->turn2 += 6;
+    if (g->turn2 >= 360) {
+        g->turn2 %= 360;
+    }
+    g->turn += 6;
+    if (g->turn >= 360) {
+        g->turn %= 360;
+    }
+}
 
 /* shape b281:01E019D0, 174 insns: b747:01E02170's ring in red (0xFF/0x50/0x50 blinking with 0xC0/0x30/0x30): size 3,
    h5C from the scene's table by kind (g+0x450C), size grows by 6.5 with f4C = size - 3, and the fade starts once the

@@ -986,7 +986,109 @@ static s32 func_01E021E0_b257(Game_b257_01E021E0 *g, Glow_b257_01E021E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E024F0_b257);
+/* shape b257:01E024F0, 240 insns: b257:01E01EB0 cousin: size 100, a green, violet or red glow at random, h30 100..149,
+   speed 5..14, hold 24..33; the first tick it jumps 17 depth steps toward the camera. As b257:01E01EB0: b257:01E021E0's glow in grey 0x70 with a random frame 0..3, start size 53 (63 once
+   g+0x3726 reaches 80) growing by 1, rise 5..9, h8 0..9, held 17..26 ticks fading in by 0x40 */
+
+typedef struct {
+    u8 pad0[0x3708];
+    s16 ja;
+    s16 jb;
+    u8 pad370C[0x1A];
+    s16 h3726;
+} Game_b257_01E024F0;
+
+typedef struct {
+    s16 h0;
+    u8 pad2[2];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b257_01E024F0;
+
+static s32 func_01E024F0_b257(Game_b257_01E024F0 *g, Glow_b257_01E024F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+    s32 k;
+
+    if (o->mode == 1) {
+        o->f38 = 100;
+        o->kind = 0;
+        k = (s16)(func_0019A5C8() % 3);
+        if (k == 0) {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+        } else if ((s16)k == 1) {
+            func_001076F0(o->col, 0x40, 0, 0x80);
+        } else {
+            func_001076F0(o->col, 0x80, 0x10, 0x10);
+        }
+        o->h30 = func_0019A5C8() % 50 + 100;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 10 + 5;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 10 + 24;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0xC1) {
+            o->col[3] += 24;
+        }
+    } else if (o->col[3] > 20) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 40.0f;
+    if (o->tick == 0) {
+        o->h4 = func_001A22C0(o->h4 + 17.0f * v[0].z);
+    }
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->tick % 2 == 1) {
+        o->h0 += o->hC;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 3) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 1;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b257:01E028B0, 194 insns: b008:01E00FB0's puff in grey 0x70, size 70 growing 1, variant 0..3 counting up to 6 every other tick, speed 5..9, 0x8 0..9, hold 3..4; 0xC = the x gap between the tracked points ctx+0x3708 and ctx+0x370C, added to x every other tick; alpha up by 0x40 during the hold, then down by 15; closes a 100th of the camera depth gap */
 

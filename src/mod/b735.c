@@ -750,7 +750,102 @@ static void func_01E01AD0_b735(Scene_b735_01E01AD0 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E01DE0_b735);
+/* shape b735:01E01DE0, 241 insns: b256:01E02A40's spark in pink (0xFF, 0x80, 0x80) with random drift and spin,
+   fading in to 0x80 for 32 ticks; it starts on joint 0xB248 and, for a random 30..49 ticks, moves toward joint
+   0xB24A by a 50th of the gap times a growing step (from 10); frame 0..3 cycles, size grows to 60 */
+
+typedef struct {
+    u8 pad0[0xB248];
+    s16 ja;
+    s16 jb;
+} Ctx_b735_01E01DE0;
+
+typedef struct {
+    s16 h0, h2, h4, h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    Vec4f pos;
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b735_01E01DE0;
+
+static s32 func_01E01DE0_b735(Ctx_b735_01E01DE0 *ctx, Obj_b735_01E01DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[4];
+    f32 k;
+
+    if (o->state == 1) {
+        o->h8 = 10;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f38 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 60.0f;
+        o->f30 /= 60.0f;
+        o->f38 /= 60.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->h6 = func_0019A5C8() % 8;
+        o->hE = func_0019A5C8() % 20 + 30;
+        o->h52 = 10;
+    }
+    if (o->t < 32) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h56++;
+    if (o->h56 > 3) {
+        o->h56 = 0;
+    }
+    if (o->h8 < 60) {
+        o->h8++;
+    }
+    o->hA = o->h8;
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    if (o->t < o->hE) {
+        func_001F5620(func_001F53A0(), ctx->ja, &o->pos);
+        func_001F5620(func_001F53A0(), ctx->jb, v);
+        v[0] = (v[0] - o->pos.x) / 50.0f;
+        v[1] = (v[1] - o->pos.y) / 50.0f;
+        v[2] = (v[2] - o->pos.z) / 50.0f;
+        k = o->h52;
+        o->pos.x += v[0] * k;
+        o->pos.y += v[1] * k;
+        o->pos.z += v[2] * k;
+        o->h52++;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b735:01E021B0, 211 insns: b377:01E01CA0 cousin, a red (0x80/0x30/0x30) spark between scene joints 0xB248 and
    0xB24A: size 5..14, frame 0..2 cycling to 7, speed 16..35, hold 25..27; alpha up by 0x40 to 0x100, then down by 14;

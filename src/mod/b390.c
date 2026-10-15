@@ -496,7 +496,86 @@ static void func_01E01320_b390(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E015E0_b390);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E01AD0_b390);
+/* shape b390:01E01AD0, 250 insns: the scene script of b390: counts g+0x8480; each new point (state 0) aims from its
+   spot at the camera joint +0x83F4 jittered -10..9 on x and y (a 50th of the gap a tick; the x step is never set, z is
+   written twice) and moves for 50 ticks; ticks 100..250, every 13 from +0x847A + 100, a new point on joint +0x83E4
+   with 0x1E023E0, 0x1E01EC0 and eighteen 0x1E03270 (slot 0, 20, 40, ...) */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b390_01E01AD0;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b390_01E01AD0 pos;
+    u8 pad260[0x7D50 - 0x260];
+    V4_b390_01E01AD0 pts[50];
+    V4_b390_01E01AD0 vel[50];
+    u8 pad8390[0x54];
+    s16 jb;
+    u8 pad83E6[0xE];
+    s16 ja;
+    u8 pad83F6[0xE];
+    s16 state[50];
+    u8 pad8468[0xE];
+    s16 cur;
+    s16 n;
+    s16 next;
+    u8 pad847C[4];
+    s16 tick;
+} Ctx_b390_01E01AD0;
+
+static void func_01E01AD0_b390(Ctx_b390_01E01AD0 *g) {
+    extern void b390_01E01EC0();
+    extern void b390_01E023E0();
+    extern void b390_01E03270();
+    extern void b390_01E04820(Ctx_b390_01E01AD0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[8];
+    s16 i;
+    s16 k;
+
+    g->tick++;
+    for (i = 0; i < g->n; i++) {
+        if (g->state[i] == 0) {
+            func_001F5620(func_001F5380(), g->ja, v);
+            v[0] += func_0019A5C8() % 20 - 10;
+            v[1] += func_0019A5C8() % 20 - 10;
+            g->vel[i].z = (v[2] - g->pts[i].z) / 50.0f;
+            g->vel[i].y = (v[1] - g->pts[i].y) / 50.0f;
+            g->vel[i].z = (v[2] - g->pts[i].z) / 50.0f;
+            g->state[i]++;
+        }
+    }
+    for (i = 0; i < g->n; i++) {
+        if (g->state[i] != 0) {
+            if (g->state[i] < 51) {
+                g->pts[i].z += g->vel[i].z;
+                g->pts[i].y += g->vel[i].y;
+                g->pts[i].x += g->vel[i].x;
+                g->state[i]++;
+            } else {
+                g->state[i]++;
+            }
+        }
+    }
+    if (g->tick >= 100 && g->tick < 251 && g->tick == g->next + 100) {
+        g->cur = g->n;
+        func_001F5620(func_001F53A0(), g->jb, &g->pts[g->cur]);
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        b390_01E04820(g, b390_01E023E0, 0);
+        b390_01E04820(g, b390_01E01EC0, 0);
+        for (i = 0, k = 0; i < 18; i++) {
+            g->cur = k;
+            b390_01E04820(g, b390_01E03270, 0);
+            k += 20;
+        }
+        g->next += 13;
+        g->n++;
+    }
+}
 
 /* shape b390:01E01EC0, 94 insns: on start 0x8/0xA = 25, random flip 0x56, both colours (0x20, 0x20, 0xFF) (second
    alpha 0); both alphas grow by 0x40 (below 0xC0) for 0x33 ticks, then the first fades by 14 twice a tick and ends

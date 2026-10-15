@@ -535,9 +535,271 @@ static Vec_b018_01E00EE0 func_01E01520_b080(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E01960_b080);
+/* several callees are called with other argument lists than functions.h gives: hide those prototypes */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E01CF0_b080);
+/* shape b080:01E01960 (SPR_Paint_1), 226 insns: draw a flat sprite 150 units in front of the camera, turned to face
+   it: the b205:01E01F90 packet (texture 0.625 x 0.875, colour 0x80) at the camera position pushed out along the
+   camera's heading, a quad of half-size o->size, z forced to 0xFFFFFF */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b080_01E01960;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b080_01E01960;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b080_01E01960 p;
+} Vtx_b080_01E01960;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b080_01E01960 c;
+    Vtx_b080_01E01960 v[2];
+    u64 tail;
+} Pkt_b080_01E01960;
+
+typedef struct {
+    u8 pad0[0x38];
+    s16 size;
+} Obj_b080_01E01960;
+
+typedef struct {
+    u8 pad0[0xD8];
+    u8 table[0x10];
+} Scn_b080_01E01960;
+
+static inline void tag_b080_01E01960(Pkt_b080_01E01960 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static void func_01E01960_b080(Scn_b080_01E01960 *w, Obj_b080_01E01960 *o) {
+    extern void func_00108EF0();
+    extern void func_001FAFB0();
+    extern void func_00205C40();
+    extern void func_001F9D30();
+    extern f32 *func_001F9AD0();
+    extern f32 func_00108030(void *table, s16 angle, s32 axis);
+    extern void func_00108950();
+    extern s32 func_00205630();
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    extern void func_001FAF60(s32);
+    f32 quad[4][4];
+    f32 pos[4];
+    f32 dir[4];
+    f32 m[4][4];
+    s32 rot[4];
+    s32 ang2[4];
+    f32 z[4];
+    Pkt_b080_01E01960 pkt __attribute__((aligned(8)));
+    u64 a;
+    s32 b[3];
+    s64 h;
+    f32 *cam;
+    s32 s;
+
+    func_00207500();
+    s = func_00207F60();
+    tag_b080_01E01960((Pkt_b080_01E01960 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0x80;
+    pkt.c.g = 0x80;
+    pkt.c.b = 0x80;
+    pkt.c.a = 0x80;
+    pkt.c.q = 1.0f;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_00208460();
+    func_00208800(func_00209E50(), 0, &a, b);
+    func_00208460();
+    func_001F9D30(0);
+    cam = func_001F9AD0(0);
+    func_001FAF60(0);
+    pos[0] = cam[0];
+    pos[1] = cam[1];
+    pos[2] = cam[2];
+    func_001FAFB0(0, rot);
+    h = rot[1] / 180;
+    h -= 180;
+    dir[0] = 50.0f * func_00108030(w->table, h, 0);
+    dir[2] = 50.0f * func_00108030(w->table, h, 1);
+    dir[0] = 0.0f;
+    dir[1] = 0.0f;
+    dir[2] = 150.0f;
+    ang2[1] = h;
+    func_00108950(dir, ang2, 0, w->table);
+    dir[0] *= -1.0f;
+    h = rot[0] / 180;
+    ang2[0] = h;
+    func_00108950(dir, ang2, 1, w->table);
+    pos[1] += dir[1];
+    pos[2] += dir[2];
+    pos[0] += dir[0];
+    func_00205C40(rot);
+    func_00108EF0(m, 0, rot, pos);
+    quad[0][0] = -o->size;
+    quad[0][1] = o->size;
+    quad[0][2] = 0.0f;
+    quad[1][0] = o->size;
+    quad[1][1] = -o->size;
+    quad[1][2] = 0.0f;
+    if (func_00205630(quad, 0x70000000, m, &pkt, z) != 0) {
+        pkt.v[0].p.z = 0xFFFFFF;
+        pkt.v[1].p.z = 0xFFFFFF;
+        func_002075F0(&pkt, 0, 0);
+        func_00207FD0(s, func_00207500(), 0);
+    }
+}
+
+/* func_00108030 really takes an s16 angle (functions.h says s32): hide that prototype */
+
+/* shape b080:01E01CF0, 276 insns: b019:01E01BD0's scene step for module b080 (tick g+0x2D46, scene colour turned
+   red-black): marks joint 0x2D2A at tick 51 and holds the point there until 64; flag 0x2D42 off with 0x1E02680 at 178,
+   back on at 192; eight 0x1E023D0 at joint 0x2D2E on ticks 27/66/97/130/185/270 and at joint 0x2D30 on ticks
+   46/80/114/157/185/270; eight 0x1E02AA0 at the joint over the model on ticks 186/187, and on 186 eight 0x1E02910,
+   twenty 0x1E02760, twenty 0x1E02220, 0x1E025A0 and 0x1E02C70; a 100 x sine sway turning 5 a tick */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0x2A40 - 0x2E0];
+    Vec4f mark;
+    u8 pad2A50[0x2CD0 - 0x2A50];
+    f32 sway;
+    u8 pad2CD4[0x10];
+    u8 col[4];
+    u8 pad2CE8[0x2D2A - 0x2CE8];
+    s16 ja;
+    u8 pad2D2C[2];
+    s16 jb;
+    s16 jc;
+    u8 pad2D32[0xC];
+    s16 ang;
+    u8 pad2D40[2];
+    s16 flag;
+    u8 pad2D44[2];
+    s16 t;
+    u8 pad2D48[0x2E4C - 0x2D48];
+    u8 trig[1];
+} Scene_b080_01E01CF0;
+
+static void func_01E01CF0_b080(Scene_b080_01E01CF0 *g) {
+    extern f32 func_00108030(void *table, s16 angle, s32 axis);
+    extern void b080_01E02220(void);
+    extern void b080_01E023D0(void);
+    extern void b080_01E025A0(void);
+    extern void b080_01E02680(void);
+    extern void b080_01E02760(void);
+    extern void b080_01E02910(void);
+    extern void b080_01E02AA0(void);
+    extern void b080_01E02C70(void);
+    extern s32 b080_01E03AA0(Scene_b080_01E01CF0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v[2];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 51) {
+        func_001F5620(func_001F53A0(), g->ja, &g->mark);
+    }
+    if (g->t > 51 && g->t < 65) {
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        for (i = 0; i < 6; i++) {
+            g->pos.x = g->mark.x;
+            g->pos.y = g->mark.y;
+            g->pos.z = g->mark.z;
+        }
+    }
+    if (g->t == 178) {
+        g->flag = 0;
+        b080_01E03AA0(g, (s32)b080_01E02680, 0);
+    }
+    if (g->t == 192) {
+        g->flag = 1;
+    }
+    if (g->t == 27 || g->t == 66 || g->t == 97 || g->t == 130 || g->t == 185 || g->t == 270) {
+        func_001F5620(func_001F53A0(), g->jb, &v[0]);
+        g->pos.x = v[0].x;
+        g->pos.y = v[0].y;
+        g->pos.z = v[0].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b080_01E03AA0(g, (s32)b080_01E023D0, 0);
+        }
+    }
+    if (g->t == 46 || g->t == 80 || g->t == 114 || g->t == 157 || g->t == 185 || g->t == 270) {
+        func_001F5620(func_001F53A0(), g->jc, &v[0]);
+        g->pos.x = v[0].x;
+        g->pos.y = v[0].y;
+        g->pos.z = v[0].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b080_01E03AA0(g, (s32)b080_01E023D0, 0);
+        }
+    }
+    if (g->t == 186 || g->t == 187) {
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5F90(func_001F5380(), &v[1]);
+        g->pos.x = v[0].x;
+        g->pos.y = v[0].y;
+        g->pos.z = v[1].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b080_01E03AA0(g, (s32)b080_01E02AA0, 0);
+        }
+    }
+    if (g->t == 186) {
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5F90(func_001F5380(), &v[1]);
+        g->pos.x = v[0].x;
+        g->pos.y = v[0].y;
+        g->pos.z = v[1].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b080_01E03AA0(g, (s32)b080_01E02910, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b080_01E03AA0(g, (s32)b080_01E02760, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b080_01E03AA0(g, (s32)b080_01E02220, 0);
+        }
+        b080_01E03AA0(g, (s32)b080_01E025A0, 0);
+        b080_01E03AA0(g, (s32)b080_01E02C70, 0);
+    }
+    g->sway = 100.0f * func_00108030(g->trig, g->ang, 0);
+    g->ang += 5;
+    if (g->ang >= 360) {
+        g->ang %= 360;
+    }
+}
 
 /* shape b080:01E02140, 55 insns: colour (0xFF,0xF0,0xFF); on start f38 50, random direction, f34 0, f30 random
    -15..14; alpha grows by 0x26 (below 0xC0) for 5 ticks; resets f0/f2/f4 to (0, 20, 0) every tick */

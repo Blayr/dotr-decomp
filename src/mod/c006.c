@@ -1,6 +1,121 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c006", func_01E00080_c006);
+/* shape c006:01E00080, 269 insns: the c006 scene's step: colour 0x80/0/0/0, 0x2970 = 20, counts the tick (0x296E);
+   tick 1 sets the scene bytes and the four corner points (0x296A = 0..3 through func_00106DD0) and adds a 0x1E004C0
+   slot; every odd tick four slots at a random point (0x1E005F0 through 0x1E01020, then 0x1E004C0 left or right by
+   0x296C) while over 18 are in use (0x2910); tick 10 sets one white point (chatA, 16 Oct) */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c006_01E00080;
+
+typedef struct {
+    u8 pad0[0x80];
+    V4_c006_01E00080 pos;
+    u8 pad90[0x2910 - 0x90];
+    s32 n;
+    u8 col[4];
+    u8 pad2918[0x296A - 0x2918];
+    s16 corner;
+    s16 side;
+    s16 tick;
+    s16 f2970;
+    u8 b2972;
+    u8 b2973;
+    u8 b2974;
+    u8 pad2975;
+    u8 b2976;
+    u8 b2977;
+    u8 b2978;
+} Scene_c006_01E00080;
+
+static void func_01E00080_c006(Scene_c006_01E00080 *g) {
+    extern void c006_01E004C0(void);
+    extern void c006_01E005F0(void);
+    extern void c006_01E00F00(Scene_c006_01E00080 *, s32);
+    extern void c006_01E01020(Scene_c006_01E00080 *, s32);
+    extern void func_00106DD0(V4_c006_01E00080 *, f32, f32, f32);
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->f2970 = 20;
+    g->tick++;
+    if (g->tick == 1) {
+        g->b2972 = 0x40;
+        g->b2973 = 0x20;
+        g->b2974 = 0x30;
+        g->b2976 = 0xC0;
+        g->b2977 = 0;
+        g->b2978 = 0;
+        g->col[0] = 0x30;
+        g->col[1] = 0x30;
+        g->col[2] = 0x30;
+        g->col[0] = 0x80;
+        g->col[1] = 0x80;
+        g->col[2] = 0x80;
+        g->col[3] = 0;
+        g->corner = 0;
+        func_00106DD0(&g->pos, -100.0f, 100.0f, 0.0f);
+        g->corner = 1;
+        func_00106DD0(&g->pos, 100.0f, 100.0f, 0.0f);
+        g->corner = 2;
+        func_00106DD0(&g->pos, -100.0f, -100.0f, 0.0f);
+        g->corner = 3;
+        func_00106DD0(&g->pos, 0.0f, 0.0f, 0.0f);
+        c006_01E00F00(g, (s32)c006_01E004C0);
+    }
+    if (g->tick % 2 == 1) {
+        for (i = 0; i < 4; i++) {
+            g->col[0] = 0x20;
+            g->col[1] = 0x20;
+            g->col[2] = 0x20;
+            g->pos.x = -(func_0019A5C8() % 150 + 100);
+            g->pos.z = func_0019A5C8() % 400 - 200;
+            g->pos.y = func_0019A5C8() % 40 + 20;
+            if (g->n > 18) {
+                c006_01E01020(g, (s32)c006_01E005F0);
+            }
+        }
+        if (g->side == 0) {
+            for (i = 0; i < 4; i++) {
+                g->col[0] = 0x40;
+                g->col[1] = 0x40;
+                g->col[2] = 0x40;
+                g->pos.x = func_0019A5C8() % 150 + 300;
+                g->pos.z = 0.0f;
+                g->pos.y = func_0019A5C8() % 40 + 60;
+                if (g->n > 18) {
+                    c006_01E00F00(g, (s32)c006_01E004C0);
+                }
+            }
+        } else {
+            for (i = 0; i < 4; i++) {
+                g->col[0] = 0x40;
+                g->col[1] = 0x40;
+                g->col[2] = 0x40;
+                g->pos.x = -(func_0019A5C8() % 150 + 300);
+                g->pos.z = 0.0f;
+                g->pos.y = func_0019A5C8() % 40 + 60;
+                if (g->n > 18) {
+                    c006_01E00F00(g, (s32)c006_01E004C0);
+                }
+            }
+        }
+    }
+    if (g->tick == 10) {
+        for (i = 0; i < 1; i++) {
+            g->col[0] = 0xFF;
+            g->col[1] = 0xFF;
+            g->col[2] = 0xFF;
+            g->pos.x = -(func_0019A5C8() % 150 + 100);
+            g->pos.z = func_0019A5C8() % 400 - 200;
+            g->pos.y = func_0019A5C8() % 40 + 20;
+        }
+    }
+}
 
 /* shape c006:01E004C0, 74 insns: moves by 80 a tick, down to -400 (game flag 0x296C clear) or up to 400 (set), then
    ends; 0x56 wraps at 64; while the game counter at 0x2910 is below 14 both alphas fade by 8 (the second ends it),

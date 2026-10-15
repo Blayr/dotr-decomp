@@ -1023,6 +1023,78 @@ static s32 func_01E043B0_b380(void *arg0, s32 ot, s32 n) {
 }
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/mod/b380", func_01E04980_b380);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b380:01E04980 (b380_vmln), 232 insns (-O1,p): takes one free slot of 100 (0x5C bytes at +0xF0) at the scene
+   joint: kind 0x18, white colour (alpha 0xC0), second colour 0xC0/0x10/0x10 alpha 0x40, sizes 12/15/6, scale 1, a
+   random start angle (2 * (0..359) - 360 + 360) and that plus 60 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b380_01E04980;
+
+typedef struct {
+    u8 pad0[4];
+    u8 b4;
+    u8 b5;
+    u8 pad6[2];
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 padB;
+    f32 a0;
+    f32 a1;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    u8 col[4];
+    u8 col2[4];
+    V4_b380_01E04980 pos;
+    u8 pad3C[0x20];
+} Slot_b380_01E04980;
+
+typedef struct {
+    u8 pad0[4];
+    s32 skel;
+    u8 pad8[8];
+    s32 joint;
+    u8 pad14[0xDC];
+    Slot_b380_01E04980 slot[100];
+} Scene_b380_01E04980;
+
+#pragma optimization_level 1
+
+static void func_01E04980_b380(Scene_b380_01E04980 *g) {
+    extern void func_001F5620(s32, s32, void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    V4_b380_01E04980 p;
+    s32 k;
+
+    func_001F5620(g->skel, g->joint, &p);
+    k = func_00101C30(g->slot, 0x5C, 0x64);
+    if (k >= 0) {
+        func_00101AD0(&g->slot[k], 0x18, 0, 0xFF);
+        g->slot[k].b4 = 0;
+        g->slot[k].b5 = 0;
+        g->slot[k].b8 = 2;
+        g->slot[k].b9 = 0;
+        g->slot[k].bA = 0x10;
+        g->slot[k].f1C = 6.0f;
+        g->slot[k].col2[2] = 0x10;
+        g->slot[k].col2[1] = 0x10;
+        g->slot[k].col2[0] = 0xC0;
+        g->slot[k].col2[3] = 0x40;
+        g->slot[k].col[2] = g->slot[k].col[1] = g->slot[k].col[0] = g->slot[k].col[3] = 0xC0;
+        g->slot[k].pos = p;
+        g->slot[k].f18 = 15.0f;
+        g->slot[k].f14 = 12.0f;
+        g->slot[k].a0 = 360.0f + (f32)((func_0019A5C8() >> 4) % 360 * 200 - 36000) / 100.0f;
+        g->slot[k].a1 = 60.0f + g->slot[k].a0;
+        g->slot[k].f20 = 1.0f;
+    }
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b380", func_01E04D20_b380);

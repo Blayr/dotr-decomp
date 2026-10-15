@@ -515,9 +515,234 @@ static void func_01E012C0_b384(Obj_b279_01E00920 *o, Anim_b279_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E01710_b384);
+/* shape b384:01E01710, 274 insns: the scene script of b384: counts ctx+0x450E; up to tick 117 the mark (ctx+0x4470)
+   takes x from joint 0x44DC and y, z from joint 0x44D8, moves along z by the step ctx+0x44C4 (side flag ctx+0x450A)
+   and rises by 3 x the table sine of ctx+0x44FC (after tick 102 by 3); then until tick 160 it moves 4 along z and
+   sinks 0.3, the burst point (ctx+0x250) follows the mark, and on tick 160 it spawns 0x1E02630, five 0x1E02130, six
+   0x1E01F90 and two 0x1E02130; past tick 15 the step grows by 0.5 up to 10; from 65 to 160 a 0x1E023F0 a tick on
+   joint 0x44D8; on tick 15 a 0x1E02800; 0x1E02A60 from 45 to 90 and 0x1E02D40 from 118 to 160 at the mark; past
+   tick 15 ctx+0x44FC turns by 3 up to 90 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E01B60_b384);
+typedef struct {
+    u8 pad0[0xD8];
+    u8 trig[1];
+    u8 padD9[0x250 - 0xD9];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f m;
+    u8 pad4480[0x44C4 - 0x4480];
+    f32 step;
+    u8 pad44C8[0x44D8 - 0x44C8];
+    s16 id0;
+    u8 pad44DA[2];
+    s16 id1;
+    u8 pad44DE[0x44FC - 0x44DE];
+    s16 ang;
+    u8 pad44FE[0x4506 - 0x44FE];
+    s16 slot;
+    u8 pad4508[2];
+    s16 side;
+    u8 pad450C[2];
+    s16 t;
+} Ctx_b384_01E01710;
+
+static void func_01E01710_b384(Ctx_b384_01E01710 *g) {
+    extern void b384_01E01F90();
+    extern void b384_01E02130();
+    extern void b384_01E023F0();
+    extern void b384_01E02630();
+    extern void b384_01E02800();
+    extern void b384_01E02A60();
+    extern void b384_01E02D40();
+    extern void b384_01E03790(Ctx_b384_01E01710 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[2][4];
+
+    g->t++;
+    if (g->t < 118) {
+        func_001F5620(func_001F53A0(), g->id0, v[0]);
+        func_001F5620(func_001F53A0(), g->id1, v[1]);
+        g->m.x = v[1][0];
+        g->m.y = v[0][1];
+        g->m.z = v[0][2];
+        if (g->side != 0) {
+            g->m.z -= g->step;
+        } else {
+            g->m.z += g->step;
+        }
+        if (g->t < 103) {
+            g->m.y += 3.0f * func_00108030(g->trig, g->ang, 0);
+        } else {
+            g->m.y += 3.0f;
+        }
+    } else {
+        if (g->t < 161) {
+            if (g->side != 0) {
+                g->m.z -= 4.0f;
+            } else {
+                g->m.z += 4.0f;
+            }
+            g->m.y -= 0.3f;
+        }
+        g->pos = g->m;
+        if (g->t == 160) {
+            g->slot = 0;
+            b384_01E03790(g, b384_01E02630, 0);
+            b384_01E03790(g, b384_01E02130, 0);
+            b384_01E03790(g, b384_01E02130, 0);
+            b384_01E03790(g, b384_01E02130, 0);
+            b384_01E03790(g, b384_01E02130, 0);
+            b384_01E03790(g, b384_01E02130, 0);
+            b384_01E03790(g, b384_01E01F90, 0);
+            b384_01E03790(g, b384_01E01F90, 0);
+            b384_01E03790(g, b384_01E01F90, 0);
+            b384_01E03790(g, b384_01E01F90, 0);
+            b384_01E03790(g, b384_01E01F90, 0);
+            b384_01E03790(g, b384_01E01F90, 0);
+            g->slot = 0;
+            b384_01E03790(g, b384_01E02130, 0);
+            b384_01E03790(g, b384_01E02130, 0);
+        }
+    }
+    if (g->t > 15) {
+        if (g->step < 10.0f) {
+            g->step += 0.5f;
+        }
+    }
+    if (g->t >= 65 && g->t < 161) {
+        func_001F5620(func_001F53A0(), g->id0, &g->pos);
+        g->slot = 0;
+        b384_01E03790(g, b384_01E023F0, 0);
+    }
+    if (g->t == 15) {
+        b384_01E03790(g, b384_01E02800, 0);
+    }
+    if (g->t >= 45 && g->t < 91) {
+        g->pos = g->m;
+        b384_01E03790(g, b384_01E02A60, 0);
+    }
+    if (g->t >= 118 && g->t < 161) {
+        g->pos = g->m;
+        b384_01E03790(g, b384_01E02D40, 0);
+    }
+    if (g->t >= 15 && g->ang < 90) {
+        g->ang += 3;
+    }
+}
+
+/* shape b384:01E01B60, 268 insns: b111:01E01D30 with this module's table and side; b149:01E01770 cousin: size 10, grey 0x80, random frame 0..6, turn, spin and hA 0..7,
+   height from 0 growing by 15 up to its limit 100..449 while it fades in by 0x20 for 147 ticks, then fades by 8 and
+   ends; at tick 135 it hands its position to the scene and fires the module's b384:01E01F90 effect three times, then
+   b384:01E023F0 six times in ten at a point jittered -15..14; its swing f34 is 3 x the table sine of h5C; from tick 96
+   to 130 it is pushed 5 a tick in z by the scene side (0x450A) and sinks 1 while above the target's height - 10; from
+   tick 141 it turns 5, rises by hE and 1 and grows 1; h5C turns by 6 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f pos;
+    u8 pad260[0x450A - 0x260];
+    s16 side;
+    u8 pad450C[0x4710 - 0x450C];
+    u8 table[1];
+} Mgr_b384_01E01B60;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec4f pos;
+    u8 pad20[0x14];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b384_01E01B60;
+
+static s32 func_01E01B60_b384(Mgr_b384_01E01B60 *m, Obj_b384_01E01B60 *o) {
+    extern void b384_01E01F90();
+    extern void b384_01E023F0();
+    extern void b384_01E03790(Mgr_b384_01E01B60 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_00108030(void *, s32, s32);
+    f32 v[4];
+
+    if (o->h58 == 1) {
+        o->f48 = 10.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < 147) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x20;
+        }
+        if (o->h52 > o->h50) {
+            o->h50 += 15;
+        }
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 == 135) {
+        m->pos = o->pos;
+        b384_01E03790(m, b384_01E01F90, 0);
+        b384_01E03790(m, b384_01E01F90, 0);
+        b384_01E03790(m, b384_01E01F90, 0);
+        m->pos.x += func_0019A5C8() % 30 - 15;
+        m->pos.y += func_0019A5C8() % 30 - 15;
+        m->pos.z += func_0019A5C8() % 30 - 15;
+        if (func_0019A5C8() % 10 < 6) {
+            b384_01E03790(m, b384_01E023F0, 0);
+        }
+    }
+    func_001F5F90(func_001F5380(), v);
+    o->f34 = 3.0f * func_00108030(m->table, o->h5C, 1);
+    if (o->h54 > 95 && o->h54 < 131) {
+        if (m->side != 0) {
+            o->pos.z -= 5.0f;
+        } else {
+            o->pos.z += 5.0f;
+        }
+        if (v[1] - 10.0f < o->pos.y) {
+            o->pos.y -= 1.0f;
+        }
+    }
+    if (o->h54 > 140) {
+        o->h5A += 5;
+        o->h50 += o->hE;
+        o->pos.y += 1.0f;
+        o->f48 += 1.0f;
+    }
+    o->h5C += 6;
+    o->h54++;
+    return 0;
+}
 
 /* shape b384:01E01F90, 102 insns: on start f48 5, variant 0..3, colour 0x80 grey, random 0x5A, 0xA 0..7, 0xC keeps
    the old 0x50, 0x50 10..59, speed 6..15 (0xE), 0x8 0..34, hold 3..7 (0x6); alpha 0x80 during the hold, then fades by

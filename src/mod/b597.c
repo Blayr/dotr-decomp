@@ -1203,4 +1203,101 @@ static s32 func_01E03E50_b597(Obj_b152_01E03FD0 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E03FE0_b597);
+/* shape b597:01E03FE0, 227 insns: b573:01E04B60's mirrored sprite halves with the ctx point at ctx+0x3BB0,
+   a float size o->f48, colour o+0x60, texture ctx+0x9FDC, ot ctx+0x9FFC and rot[1] cleared */
+
+typedef struct {
+    f32 u, v;
+} Uv_b597_01E03FE0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b597_01E03FE0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b597_01E03FE0 uv;
+    u64 pad18;
+    Xyz_b597_01E03FE0 v[4];
+} Pk_b597_01E03FE0;
+
+typedef struct {
+    u8 pad0[0x3BB0];
+    Vec4f pt;
+    u8 pad3BC0[0x9FDC - 0x3BC0];
+    s32 tex;
+    u8 pad9FE0[0x9FFC - 0x9FE0];
+    s32 ot;
+} Ctx_b597_01E03FE0;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 size;
+    u8 pad4C[0x60 - 0x4C];
+    u8 col[8];
+} Fx_b597_01E03FE0;
+
+static void func_01E03FE0_b597(Ctx_b597_01E03FE0 *g, Fx_b597_01E03FE0 *o, Pk_b597_01E03FE0 *p) {
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 depth[4];
+    Rect_b003_01E00080 r __attribute__((aligned(16)));
+    f32 m[16];
+    s32 rot[4];
+    Uv_b597_01E03FE0 uv __attribute__((aligned(8)));
+
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    func_00107740(&uv, o->col);
+    p->uv = uv;
+    r.x = 1;
+    r.y = 1;
+    r.w = 62;
+    r.h = 127;
+    func_01E00080_b597((Pk_b003_01E00080 *)p, &r, 0);
+    func_00208700(p, g->tex, 1);
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[1] = 0;
+    pos.x = g->pt.x;
+    pos.y = g->pt.y;
+    pos.z = g->pt.z;
+    func_00108EF0(m, &sc, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    *(f32 *)(u32)&quad[1].x = 0.0f;
+    *(f32 *)(u32)&quad[3].x = 0.0f;
+    if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+        p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+        func_002075F0(p, g->ot, 0);
+        func_002075F0(p, g->ot, 0);
+    }
+    func_00108CE0(quad, o->size, o->size);
+    *(f32 *)(u32)&quad[1].x = 0.0f;
+    *(f32 *)(u32)&quad[3].x = 0.0f;
+    quad[0].x *= -1.0f;
+    quad[2].x *= -1.0f;
+    if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+        p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+        func_002075F0(p, g->ot, 0);
+        func_002075F0(p, g->ot, 0);
+    }
+}

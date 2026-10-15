@@ -491,7 +491,94 @@ static void func_01E01380_b292(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b292", func_01E016F0_b292);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b292:01E016F0, 244 insns (B292_W_S): the b292 module's event step: counts ticks; at 50, 71, 90 and 126 a ring
+   of ten b292:01E01AC0 (36 degrees apart) at the first tracked joint (ctx+0xCB44), at 60, 80, 100 and 126 another at
+   the second (ctx+0xCB46); at 107 b292:01E020B0; every other tick from 123 to 150 b292:01E022F0; from 131 to 135 one
+   b292:01E01F30 a tick at the third joint (ctx+0xCB4A), numbered by the scene's counter; at 17 four b292:01E01C90
+   (turns 0/90/45/135, slots 0/0/1/1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCB44 - 0x260];
+    s16 id1;
+    s16 id2;
+    u8 padCB48[2];
+    s16 id3;
+    u8 padCB4C[0xCBA2 - 0xCB4C];
+    s16 turn;
+    u8 padCBA4[4];
+    s16 count;
+    u8 padCBAA[0xCBB2 - 0xCBAA];
+    s16 slot;
+    u8 padCBB4[0xCBBA - 0xCBB4];
+    s16 timer;
+} Ctx_b292_01E016F0;
+
+
+#pragma optimization_level 3
+
+static void func_01E016F0_b292(Ctx_b292_01E016F0 *g) {
+    extern s32 b292_01E01AC0(void);
+    extern s32 b292_01E01C90(void);
+    extern s32 b292_01E01F30(void);
+    extern s32 b292_01E020B0(void);
+    extern s32 b292_01E022F0(void);
+    extern void b292_01E02B60(Ctx_b292_01E016F0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 a;
+
+    g->timer++;
+    if (g->timer == 50 || g->timer == 71 || g->timer == 90 || g->timer == 126) {
+        func_001F5620(func_001F53A0(), g->id1, &g->pos);
+        for (i = 0, a = 0; i < 10; i++) {
+            g->turn = a;
+            b292_01E02B60(g, b292_01E01AC0, 0);
+            a += 36;
+        }
+    }
+    if (g->timer == 60 || g->timer == 80 || g->timer == 100 || g->timer == 126) {
+        func_001F5620(func_001F53A0(), g->id2, &g->pos);
+        for (a = 0, i = 0; a < 10; a++) {
+            g->turn = i;
+            b292_01E02B60(g, b292_01E01AC0, 0);
+            i += 36;
+        }
+    }
+    if (g->timer == 107) {
+        b292_01E02B60(g, b292_01E020B0, 0);
+    }
+    if (g->timer >= 123 && g->timer < 151) {
+        if (g->timer % 2 == 1) {
+            b292_01E02B60(g, b292_01E022F0, 0);
+        }
+    }
+    if (g->timer == 131 || g->timer == 132 || g->timer == 133 || g->timer == 134 || g->timer == 135) {
+        func_001F5620(func_001F53A0(), g->id3, &g->pos);
+        g->slot = g->count;
+        b292_01E02B60(g, b292_01E01F30, 0);
+        g->count++;
+    }
+    if (g->timer == 17) {
+        g->turn = 0;
+        g->slot = 0;
+        b292_01E02B60(g, b292_01E01C90, 0);
+        g->turn = 90;
+        g->slot = 0;
+        b292_01E02B60(g, b292_01E01C90, 0);
+        g->turn = 45;
+        g->slot = 1;
+        b292_01E02B60(g, b292_01E01C90, 0);
+        g->turn = 135;
+        g->slot = 1;
+        b292_01E02B60(g, b292_01E01C90, 0);
+    }
+}
+#pragma optimization_level reset
 
 typedef struct {
     u8 pad0000[0xCDBC];

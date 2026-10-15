@@ -888,7 +888,142 @@ static void func_01E01C90_b718(s32 unused, Beam_b018_01E01320 *an, Vec_b018_01E0
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E020D0_b718);
+/* OVL_WARM */
+
+/* shape b718:01E020D0, 271 insns: b731:01E01C10 family scene timer step in red (0x80, 0, 0): tracks joint 0x32A8 into
+   ctx+0x2A30 and (to 80) ctx+0x320, nudging the latter 10 (later 3) along z by the facing (func_001F6160 / 180);
+   from 50 to 109 two effects a frame; to 81 an effect at joint 0x32AA; from 83 to 110 another there; odd frames
+   cycle slot 0x32B6 through 0..29 into 0x32BA; at 26 a burst at joint 0x32AC (15 + 10), at 83 eight at joint
+   0x32AE's camera point plus one more, at 82 one at ctx+0x320 */
+
+typedef struct Scn_b718_01E020D0 {
+    u8 pad0[0x2D0];
+    f32 at[3];
+    u8 pad2DC[0x44];
+    f32 track[3];
+    u8 pad32C[0x2A30 - 0x32C];
+    Vec4f joint;
+    u8 pad2A40[0x3264 - 0x2A40];
+    u8 col[4];
+    u8 pad3268[0x40];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    s16 j3;
+    u8 pad32B0[6];
+    s16 slot;
+    u8 pad32B8[2];
+    s16 cur;
+    u8 pad32BC[2];
+    s16 timer;
+} Scn_b718_01E020D0;
+
+static void func_01E020D0_b718(Scn_b718_01E020D0 *g) {
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    extern u8 b718_01E02DB0[];
+    extern u8 b718_01E02F40[];
+    extern u8 b718_01E033E0[];
+    extern u8 b718_01E03620[];
+    extern u8 b718_01E03780[];
+    extern u8 b718_01E03950[];
+    extern u8 b718_01E03A30[];
+    extern u8 b718_01E03B90[];
+    extern void b718_01E04BB0(Scn_b718_01E020D0 *w, void *data, s32 arg);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    s32 r[4];
+    s32 side;
+    s32 i;
+    s32 j;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->j0, &g->joint);
+    func_001F6160(func_001F53A0(), r);
+    side = (f32)r[1] / 180.0f;
+    if (g->timer <= 80) {
+        func_001F5620(func_001F53A0(), g->j0, g->track);
+        if (side != 0) {
+            g->track[2] -= 10.0f;
+        } else {
+            g->track[2] += 10.0f;
+        }
+    } else if (side != 0) {
+        g->track[2] -= 3.0f;
+    } else {
+        g->track[2] += 3.0f;
+    }
+    g->cur = 0;
+    if (g->timer > 49 && g->timer < 110) {
+        b718_01E04BB0(g, b718_01E02F40, 0);
+        b718_01E04BB0(g, b718_01E033E0, 0);
+    }
+    if (g->timer <= 81) {
+        func_001F5620(func_001F53A0(), g->j0, a);
+        func_001F5620(func_001F53A0(), g->j1, b);
+        g->at[0] = b[0];
+        g->at[1] = b[1];
+        g->at[2] = b[2];
+        g->cur = 0;
+        b718_01E04BB0(g, b718_01E03A30, 0);
+    }
+    if (g->timer > 82 && g->timer < 111) {
+        func_001F5620(func_001F53A0(), g->j1, b);
+        g->at[0] = b[0];
+        g->at[1] = b[1];
+        g->at[2] = b[2];
+        g->cur = 0;
+        b718_01E04BB0(g, b718_01E03780, 0);
+    }
+    g->cur = 0;
+    if (g->timer % 2 == 1) {
+        g->cur = g->slot;
+        g->slot++;
+        if (g->slot >= 30) {
+            g->slot = 0;
+        }
+    }
+    if (g->timer == 26) {
+        func_001F5620(func_001F53A0(), g->j2, a);
+        g->at[0] = a[0];
+        g->at[1] = a[1];
+        g->at[2] = a[2];
+        g->cur = 1;
+        for (i = 0; i < 15; i++) {
+            b718_01E04BB0(g, b718_01E02F40, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b718_01E04BB0(g, b718_01E02DB0, 0);
+        }
+        g->at[1] = 1.0f + a[1];
+    }
+    if (g->timer == 83) {
+        func_001F5620(func_001F53A0(), g->j3, a);
+        func_001F5F90(func_001F5380(), b);
+        g->at[0] = b[0];
+        g->at[1] = b[1];
+        g->at[2] = b[2];
+        g->cur = 0;
+        for (j = 0; j < 8; j++) {
+            b718_01E04BB0(g, b718_01E03620, 0);
+        }
+        b718_01E04BB0(g, b718_01E03950, 0);
+    }
+    if (g->timer == 82) {
+        g->at[0] = g->track[0];
+        g->at[1] = g->track[1];
+        g->at[2] = g->track[2];
+        g->cur = 1;
+        b718_01E04BB0(g, b718_01E03B90, 0);
+    }
+}
 
 /* shape b718:01E02510, 134 insns: b019:01E01F60 with its sine table at ctx+0x37C4 */
 

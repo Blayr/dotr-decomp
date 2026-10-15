@@ -257,4 +257,127 @@ static void func_01E00990_c020(Obj_c020_01E00990 *obj, s32 arg) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c020", func_01E00A80_c020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c020", func_01E00E50_c020);
+/* OVL_WARM */
+
+/* shape c020:01E00E50, 219 insns: two-pass ring strip: mode 0 sets the material (blend 0x48, the scene's colour
+   0x3194 with the effect's alpha 0x28 on the inner and 0x2A on the outer corners, q = 1, fog 0); other modes build
+   9 quads from the scene's cos/sin tables (0x33BC/0x33E4) between radius h32 and h34 at heights h30 / 0, angle
+   step 40, moved to the effect's x/z and drawn once each */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_c020_01E00E50;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c020_01E00E50;
+
+typedef struct {
+    Rgbaq_c020_01E00E50 c;
+    u8 xyz[8];
+} Vtx_c020_01E00E50;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c020_01E00E50 v[4];
+} Pkt_c020_01E00E50;
+
+typedef struct {
+    f32 x, y, z;
+    u8 pad0C[0x1C];
+    u8 b28;
+    u8 pad29;
+    u8 b2A;
+    u8 pad2B[5];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+} Fx_c020_01E00E50;
+
+typedef struct {
+    u8 pad0[0x130];
+    Vec_c020_01E00E50 q[4];
+    u8 pad170[0x3194 - 0x170];
+    u8 b3194[8];
+    s32 ot;
+    u8 pad31A0[0x48];
+    f32 depth;
+    u8 pad31EC[0x22];
+    s16 h320E;
+    u8 pad3210[0x40];
+    u8 b3250[0x16C];
+    f32 c[10];
+    f32 s[10];
+} Scene_c020_01E00E50;
+
+static void func_01E00E50_c020(Scene_c020_01E00E50 *g, Fx_c020_01E00E50 *o, Pkt_c020_01E00E50 *p, s32 mode) {
+    extern u8 D_01E01208_c020[4];
+    extern void func_00107EC0(void *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00107710(void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    u8 col[4];
+    s32 i;
+    Scene_c020_01E00E50 *q;
+    s32 a;
+
+    *(f32 *)(u32)&col = *(f32 *)(u32)&D_01E01208_c020;
+    if (mode == 0) {
+        if (g->h320E == 0) {
+            func_00107EC0(g->b3194, 0, 0);
+        } else {
+            func_00107EC0(g->b3194, 0, 9);
+        }
+        func_001076F0(col, g->b3194[0], g->b3194[1], g->b3194[2]);
+        p->count = 0x14;
+        p->tag = 8;
+        p->regs = 0x41414141;
+        p->pad = 0;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->v[0].c.q = p->v[1].c.q = p->v[2].c.q = p->v[3].c.q = 1.0f;
+        p->v[0].xyz[7] = 0;
+        p->v[1].xyz[7] = 0;
+        p->v[2].xyz[7] = 0;
+        p->v[3].xyz[7] = 0;
+        col[3] = o->b28;
+        func_00107710(&p->v[0].c, col);
+        func_00107710(&p->v[1].c, col);
+        col[3] = o->b2A;
+        func_00107710(&p->v[2].c, col);
+        func_00107710(&p->v[3].c, col);
+    } else {
+        a = 40;
+        for (i = 0, q = g; i < 9; i++) {
+            g->q[0].x = q->s[0] * o->h32;
+            g->q[0].z = q->c[0] * o->h32;
+            g->q[1].x = o->h32 * func_00108030(g->b3250, a, 1);
+            g->q[1].z = o->h32 * func_00108030(g->b3250, a, 0);
+            g->q[0].y = g->q[1].y = o->h30;
+            g->q[2].x = q->s[0] * o->h34;
+            g->q[2].z = q->c[0] * o->h34;
+            g->q[3].x = o->h34 * func_00108030(g->b3250, a, 1);
+            g->q[3].z = o->h34 * func_00108030(g->b3250, a, 0);
+            g->q[2].y = 0.0f;
+            g->q[3].y = 0.0f;
+            g->q[0].x += o->x;
+            g->q[1].x += o->x;
+            g->q[2].x += o->x;
+            g->q[3].x += o->x;
+            g->q[0].z += o->z;
+            g->q[1].z += o->z;
+            g->q[2].z += o->z;
+            g->q[3].z += o->z;
+            if (func_00205630(g->q, 0x70000000, 0, p, &g->depth) != 0) {
+                func_002075F0(p, g->ot, (u32)g->depth);
+            }
+            q = (Scene_c020_01E00E50 *)((f32 *)q + 1);
+            a += 40;
+        }
+    }
+}

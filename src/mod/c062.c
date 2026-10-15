@@ -749,7 +749,95 @@ static s32 func_01E02650_c062(Game_c062_01E02650 *g, Obj_c062_01E02650 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02780_c062);
+/* shape c062:01E02780, 229 insns: five dark ribbons trailing the scene's five bodies (ctx+0x5A50, 0x70 apart): on start
+   every 6-point trail (ctx+0x65D0, 0x60 apart) is filled with the first body's point (its two vectors summed, pushed
+   by the radius ctx+0x68BC along its angle 0x24, 1 up or down by the scene side 0x693A); each tick the size grows by 1
+   to 7, both alphas sit at 0x80, every trail shifts back one point and takes its own body's point; ends once the
+   scene clock (0x693C) reaches 217 */
+
+typedef struct {
+    Vec4f p;
+    Vec4f q;
+    u8 pad20[4];
+    s16 ang;
+    u8 pad26[0x4A];
+} Body_c062_01E02780;
+
+typedef struct {
+    u8 pad0[0x5A50];
+    Body_c062_01E02780 body[5];
+    u8 pad5C80[0x65D0 - 0x5C80];
+    Vec4f tr[5][6];
+    u8 pad67B0[0x68BC - 0x67B0];
+    f32 rad;
+    u8 pad68C0[0x693A - 0x68C0];
+    s16 side;
+    s16 clock;
+    u8 pad693E[0x6B40 - 0x693E];
+    u8 trig[1];
+} Ctx_c062_01E02780;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 size;
+    u8 pad4C[0xC];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_c062_01E02780;
+
+static s32 func_01E02780_c062(Ctx_c062_01E02780 *g, Fx_c062_01E02780 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    Body_c062_01E02780 *b = g->body;
+    s16 i;
+    s16 k;
+    s16 a;
+
+    if (o->state == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        func_001076F0(o->col2, 0x20, 0x20, 0x20);
+        for (i = 0; i < 5; i++) {
+            a = b->ang;
+            g->tr[i][0].x = b->p.x + b->q.x + g->rad * func_00108030(g->trig, a, 1);
+            g->tr[i][0].y = b->p.y + b->q.y + g->rad * func_00108030(g->trig, a, 0);
+            if (g->side == 0) {
+                g->tr[i][0].z = 1.0f + (b->p.z + b->q.z);
+            } else {
+                g->tr[i][0].z = b->p.z + b->q.z - 1.0f;
+            }
+            g->tr[i][1] = g->tr[i][0];
+            g->tr[i][2] = g->tr[i][0];
+            g->tr[i][3] = g->tr[i][0];
+            g->tr[i][4] = g->tr[i][0];
+        }
+        o->state = 2;
+    }
+    if (o->size < 7.0f) {
+        o->size += 1.0f;
+    }
+    o->col[3] = 0x80;
+    o->col2[3] = 0x80;
+    for (i = 0; i < 5; i++) {
+        b = &g->body[i];
+        for (k = 5; k > 0; k--) {
+            g->tr[i][k] = g->tr[i][k - 1];
+        }
+        a = b->ang;
+        g->tr[i][0].x = b->p.x + b->q.x + g->rad * func_00108030(g->trig, a, 1);
+        g->tr[i][0].y = b->p.y + b->q.y + g->rad * func_00108030(g->trig, a, 0);
+        if (g->side == 0) {
+            g->tr[i][0].z = 1.0f + (b->p.z + b->q.z);
+        } else {
+            g->tr[i][0].z = b->p.z + b->q.z - 1.0f;
+        }
+    }
+    if (g->clock >= 217) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape c062:01E02B20, 198 insns: c063:01E04510's glow pair placed at (0, 70, ctx+0x6808) with size 500, in one of
    three presets (white 22 ticks, warm 15 or 25); fading in by 18 (by 7 for kind 2) to 0x80, then out by 4 (kind 0

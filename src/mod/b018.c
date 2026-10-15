@@ -562,7 +562,119 @@ static void func_01E01320_b018(s32 unused, Beam_b018_01E01320 *an, Vec_b018_01E0
 
 INCLUDE_ASM("asm/nonmatchings/mod/b018", func_01E01760_b018);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b018", func_01E01BD0_b018);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b018:01E01BD0, 225 insns: the effect scene's step: sets the scene colour to dark red, counts the frame
+   (0x387E); frame 51 marks joint 0x386A at 0x36C0 and frames 52..64 keep the scene point on it; frame 1 spawns
+   0x1E02DB0, frame 24 0x1E02560 and 0x1E02AC0; frames 21..25 spawn eight 0x1E02950 on joint 0x3868 (and 0x1E02B70 at
+   21), the point then lifted 1; frames 96..97 spawn eight 0x1E02950 on joint 0x386A at the camera's depth; frame 96
+   also eight 0x1E027C0, thirty 0x1E02610, 0x1E02480 and 0x1E02B70 there. The five-way frame test stays five compares:
+   -O3,p */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0x36C0 - 0x2E0];
+    Vec4f mark;
+    u8 pad36D0[0x3824 - 0x36D0];
+    u8 col[4];
+    u8 pad3828[0x40];
+    s16 ja;
+    s16 jb;
+    u8 pad386C[0xE];
+    s16 flag;
+    u8 pad387C[2];
+    s16 t;
+} Scene_b018_01E01BD0;
+
+
+#pragma optimization_level 3
+
+static void func_01E01BD0_b018(Scene_b018_01E01BD0 *g) {
+    extern void b018_01E02480(void);
+    extern void b018_01E02560(void);
+    extern void b018_01E02610(void);
+    extern void b018_01E027C0(void);
+    extern void b018_01E02950(void);
+    extern void b018_01E02AC0(void);
+    extern void b018_01E02B70(void);
+    extern void b018_01E02DB0(void);
+    extern s32 b018_01E03640(Scene_b018_01E01BD0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v[2];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 51) {
+        func_001F5620(func_001F53A0(), g->jb, &g->mark);
+    }
+    if (g->t > 51 && g->t < 65) {
+        func_001F5620(func_001F53A0(), g->jb, &v[0]);
+        for (i = 0; i < 6; i++) {
+            g->pos.x = g->mark.x;
+            g->pos.y = g->mark.y;
+            g->pos.z = g->mark.z;
+        }
+    }
+    if (g->t == 1) {
+        b018_01E03640(g, (s32)b018_01E02DB0, 0);
+    }
+    if (g->t == 24) {
+        b018_01E03640(g, (s32)b018_01E02560, 0);
+    }
+    if (g->t == 24) {
+        b018_01E03640(g, (s32)b018_01E02AC0, 0);
+    }
+    if (g->t == 21 || g->t == 22 || g->t == 23 || g->t == 24 || g->t == 25) {
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        g->pos.x = v[0].x;
+        g->pos.y = *(f32 *)(u32)&v[0].y;
+        g->pos.z = v[0].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b018_01E03640(g, (s32)b018_01E02950, 0);
+        }
+        g->pos.y = 1.0f + v[0].y;
+        if (g->t == 21) {
+            b018_01E03640(g, (s32)b018_01E02B70, 0);
+        }
+    }
+    if (g->t == 96 || g->t == 97) {
+        func_001F5620(func_001F53A0(), g->jb, &v[0]);
+        func_001F5F90(func_001F5380(), &v[1]);
+        g->pos.x = v[0].x;
+        g->pos.y = v[0].y;
+        g->pos.z = v[1].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b018_01E03640(g, (s32)b018_01E02950, 0);
+        }
+    }
+    if (g->t == 96) {
+        func_001F5620(func_001F53A0(), g->jb, &v[0]);
+        func_001F5F90(func_001F5380(), &v[1]);
+        g->pos.x = v[0].x;
+        g->pos.y = v[0].y;
+        g->pos.z = v[1].z;
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b018_01E03640(g, (s32)b018_01E027C0, 0);
+        }
+        for (i = 0; i < 30; i++) {
+            b018_01E03640(g, (s32)b018_01E02610, 0);
+        }
+        b018_01E03640(g, (s32)b018_01E02480, 0);
+        b018_01E03640(g, (s32)b018_01E02B70, 0);
+    }
+}
+#pragma optimization_level reset
 
 /* shape b018:01E01F60, 134 insns, 2 copies: a violet wisp: set up once (random heading, tilt -15..14); fades in to 0x60
    over 10 frames, then out; its size grows every other frame up to 18, its frame every third up to 7; x and z drift 10 along its heading, y 4 by

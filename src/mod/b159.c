@@ -34,7 +34,112 @@ static s32 func_01E00080_b159(Vec_b004_01E00B40 *trail, s32 n, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E00150_b159);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b159:01E00150, 220 insns: event step (an -O3,p file: the tick tests stay separate compares): colour
+   0x80/0/0/0, tick h3B64; follows joint 3B50 (twice); ticks 56-58 spawn 20 pairs of 0x1E006E0 + 0x1E008E0;
+   tick 48 spawns one 0x1E00A90; ticks 46..65 spawn 2 (3 from 99 on) 0x1E00B30 with flag 3B60 set; then joint 3B52
+   and ticks 93/31/45/54 spawn 10 0x1E004C0, joint 3B54 and ticks 25/37/56 spawn 10 more; every spawn at a random
+   direction from the joint point */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 x, y, z;
+    u8 pad8C[0x3B04 - 0x8C];
+    u8 col[4];
+    u8 pad3B08[0x48];
+    s16 joint0;
+    s16 joint1;
+    s16 joint2;
+    u8 pad3B56[4];
+    s16 dir;
+    u8 pad3B5C[4];
+    s16 flag;
+    u8 pad3B62[2];
+    s16 tick;
+} Scene_b159_01E00150;
+
+#pragma optimization_level 3
+
+static void func_01E00150_b159(Scene_b159_01E00150 *g) {
+    extern s32 b159_01E01260(void *, s32, s32);
+    extern void b159_01E006E0(void);
+    extern void b159_01E008E0(void);
+    extern void b159_01E00A90(void);
+    extern void b159_01E00B30(void);
+    extern void b159_01E004C0(void);
+    extern s32 func_001F53A0();
+    extern void func_001F5620(s32, s32, void *);
+    extern s32 func_0019A5C8(void);
+    f32 v[4];
+    s32 i;
+    s32 n;
+    s32 j;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    func_001F5620(func_001F53A0(), g->joint0, v);
+    func_001F5620(func_001F53A0(), g->joint0, v);
+    if (g->tick == 0x38 || g->tick == 0x39 || g->tick == 0x3A) {
+        for (i = 0; i < 20; i++) {
+            g->dir = func_0019A5C8() % 360;
+            g->x = v[0];
+            g->y = v[1];
+            g->z = v[2];
+            b159_01E01260(g, (s32)b159_01E006E0, 0);
+            b159_01E01260(g, (s32)b159_01E008E0, 0);
+        }
+    }
+    func_001F5620(func_001F53A0(), g->joint0, v);
+    if (g->tick == 0x30) {
+        for (i = 0; i < 1; i++) {
+            g->dir = func_0019A5C8() % 360;
+            g->x = v[0];
+            g->y = v[1];
+            g->z = v[2];
+            b159_01E01260(g, (s32)b159_01E00A90, 0);
+        }
+    }
+    if (g->tick <= 0x41 && g->tick > 0x2D) {
+        if (g->tick <= 0x62) {
+            n = 2;
+        } else {
+            n = 3;
+        }
+        for (j = 0; j < n; j++) {
+            g->dir = func_0019A5C8() % 360;
+            g->x = v[0];
+            g->y = v[1];
+            g->z = v[2];
+            g->flag = 1;
+            b159_01E01260(g, (s32)b159_01E00B30, 0);
+        }
+    }
+    func_001F5620(func_001F53A0(), g->joint1, v);
+    if (g->tick == 0x5D || g->tick == 0x1F || g->tick == 0x2D || g->tick == 0x36) {
+        for (i = 0; i < 10; i++) {
+            g->dir = func_0019A5C8() % 360;
+            g->x = v[0];
+            g->y = v[1];
+            g->z = v[2];
+            b159_01E01260(g, (s32)b159_01E004C0, 0);
+        }
+    }
+    func_001F5620(func_001F53A0(), g->joint2, v);
+    if (g->tick == 0x19 || g->tick == 0x25 || g->tick == 0x38) {
+        for (i = 0; i < 10; i++) {
+            g->dir = func_0019A5C8() % 360;
+            g->x = v[0];
+            g->y = v[1];
+            g->z = v[2];
+            b159_01E01260(g, (s32)b159_01E004C0, 0);
+        }
+    }
+}
+#pragma optimization_level reset
 
 /* shape b159:01E004C0, 134 insns: b019:01E01F60 with its sine table at ctx+0x3B68 */
 

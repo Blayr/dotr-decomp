@@ -393,7 +393,127 @@ static s32 func_01E01E10_c021(Ctx_c021_01E01E10 *c, Obj_c021_01E01E10 *o, s32 ch
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E01F60_c021);
+/* shape c021:01E01F60, 251 insns: steps one of the scene's flying models (model n, n + 245 from 11): only while its bit
+   (21 - n) of g+0x38A0 is set and the model is live; rises by its speed until height 100, then marks it falling, climbs
+   1.2 a tick to 200 and pulls its side drift back inside +-5; bobs 100 x the sine of its height, turns by +0x28,
+   places and turns the model; fades by 3 once falling (counting live ones at +0x38AC); past height 110 (or early in
+   the scene) its scale shrinks to a tenth of that sine */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 padC[4];
+    f32 dx;
+    u8 pad14[4];
+    f32 dz;
+    u8 pad1C[4];
+    s32 rot[2];
+    s16 spin;
+    u8 pad2A[0xA];
+    s32 r34;
+    s32 r38;
+    u8 pad3C[4];
+    f32 scale[3];
+    u8 pad4C[8];
+    f32 speed;
+    u8 pad58[8];
+    u8 col[4];
+    s32 falling;
+} Fly_c021_01E01F60;
+
+typedef struct {
+    u8 pad0[0x3578];
+    s32 frame;
+    u8 pad357C[0x68];
+    u8 trig[0x2BC];
+    u32 mask;
+    u8 pad38A4[8];
+    s16 live;
+} Game_c021_01E01F60;
+
+static s32 func_01E01F60_c021(Game_c021_01E01F60 *g, Fly_c021_01E01F60 *o, s32 n) {
+    extern void func_00107180(s32, void *, s32, s32);
+    extern s32 func_001F5AF0(s32);
+    extern void func_00107130(void *, void *, s32);
+    extern s32 func_001A22C0(f32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00108950(void *, void *, s32, void *);
+    extern void func_001F5B70(s32, void *);
+    extern void func_001F5CA0(s32, void *);
+    extern void func_001F5C40(s32, void *);
+    extern void func_001F5DE0(s32, void *);
+    extern void func_001F5D10(s32, void *);
+    s32 r[4];
+    f32 w[4];
+    f32 v[4];
+    s32 id;
+    s16 a;
+
+    id = n;
+    if (n > 10) {
+        id = n + 245;
+    }
+    func_00107180(id, o, g->frame, 1);
+    if (((g->mask >> (21 - n)) & 1) == 0) {
+        return 0;
+    }
+    if (func_001F5AF0(id) != 0 && id != 0 && id != 0x100) {
+        func_00107130(o, v, 1);
+        if (o->y < 100.0f) {
+            o->y += o->speed;
+        } else {
+            o->falling = 1;
+            if (o->y < 200.0f) {
+                o->y += 1.2f;
+            }
+            if (o->x + o->dx > 5.0f) {
+                o->dx -= 2.0f;
+            }
+            if (o->x + o->dx < -5.0f) {
+                o->dx += 2.0f;
+            }
+            if (o->z + o->dz > 5.0f) {
+                o->dz -= 2.0f;
+            }
+            if (o->z + o->dz < -5.0f) {
+                o->dz += 2.0f;
+            }
+            v[0] += o->dx;
+            v[2] += o->dz;
+        }
+        v[1] = 100.0f * func_00108030(g->trig, func_001A22C0(o->y), 0);
+        o->rot[1] += o->spin;
+        func_00108950(v, o->rot, 0, g->trig);
+        func_00107130(w, v, 0);
+        func_001F5B70(id, w);
+        func_001F5CA0(id, r);
+        r[1] += o->r34;
+        r[2] += o->r38;
+        func_001F5C40(id, r);
+        if (o->falling != 0) {
+            if (o->col[3] > 5) {
+                o->col[3] -= 3;
+            } else {
+                o->col[3] = 0;
+            }
+        }
+        if (o->col[3] != 0) {
+            g->live++;
+        }
+        func_001F5DE0(id, o->col);
+        if (o->y > 110.0f || g->frame < 10) {
+            a = func_001A22C0(o->y);
+            if (o->scale[0] > 0.0f) {
+                o->scale[0] = 0.1 * func_00108030(g->trig, a, 0);
+            }
+            o->scale[1] = o->scale[0];
+            o->scale[2] = o->scale[0];
+            func_001F5D10(id, o->scale);
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E02350_c021);
 

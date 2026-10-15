@@ -790,7 +790,107 @@ static void func_01E01C70_b745(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E01E40_b745);
+/* shape b745:01E01E40, 275 insns: b522:01E01D30's scene step for module b745 (tick g+0xB2BC): at tick 1 it spawns
+   0x1E035F0 and 0x1E03700; at tick 98 0x1E03320 (side 0) and marks the model; ticks 98..112 burst at the mark at height 35
+   (five 0x1E02510, five 0x1E026C0, 0x1E02A70), on tick 98 also four 0x1E02870 (angles 0/90/45/135, sides
+   0/0/1/1) and 0x1E034D0; up to tick 98 a spark at joint 0xB24C; at ticks 75 and 95 thirteen 0x1E02F40 at joints 0xB248 and
+   0xB24A, 1.5 below */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f mark;
+    u8 padB1E0[0xB248 - 0xB1E0];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 padB24E[0xB2A6 - 0xB24E];
+    s16 ang;
+    u8 padB2A8[0xB2B4 - 0xB2A8];
+    s16 side;
+    u8 padB2B6[6];
+    s16 t;
+} Scene_b745_01E01E40;
+
+static void func_01E01E40_b745(Scene_b745_01E01E40 *g) {
+    extern void b745_01E02290(void);
+    extern void b745_01E02510(void);
+    extern void b745_01E026C0(void);
+    extern void b745_01E02870(void);
+    extern void b745_01E02A70(void);
+    extern void b745_01E02F40(void);
+    extern void b745_01E03320(void);
+    extern void b745_01E034D0(void);
+    extern void b745_01E035F0(void);
+    extern void b745_01E03700(void);
+    extern void b745_01E04500(Scene_b745_01E01E40 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 1) {
+        b745_01E04500(g, b745_01E035F0, 0);
+    }
+    if (g->t == 1) {
+        b745_01E04500(g, b745_01E03700, 0);
+    }
+    if (g->t == 98) {
+        g->side = 0;
+        b745_01E04500(g, b745_01E03320, 0);
+    }
+    if (g->t == 98) {
+        func_001F5F90(func_001F5380(), &g->mark);
+    }
+    if (g->t >= 98 && g->t < 113) {
+        g->pos = g->mark;
+        g->pos.y = 35.0f;
+        for (i = 0; i < 5; i++) {
+            b745_01E04500(g, b745_01E02510, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b745_01E04500(g, b745_01E026C0, 0);
+        }
+        g->side = 0;
+        b745_01E04500(g, b745_01E02A70, 0);
+        if (g->t == 98) {
+            g->ang = 0;
+            g->side = 0;
+            b745_01E04500(g, b745_01E02870, 0);
+            g->ang = 90;
+            g->side = 0;
+            b745_01E04500(g, b745_01E02870, 0);
+            g->ang = 45;
+            g->side = 1;
+            b745_01E04500(g, b745_01E02870, 0);
+            g->ang = 135;
+            g->side = 1;
+            b745_01E04500(g, b745_01E02870, 0);
+        }
+        if (g->t == 98) {
+            b745_01E04500(g, b745_01E034D0, 0);
+        }
+    }
+    if (g->t < 99) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        b745_01E04500(g, b745_01E02290, 0);
+    }
+    if (g->t == 75 || g->t == 95) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b745_01E04500(g, b745_01E02F40, 0);
+        }
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b745_01E04500(g, b745_01E02F40, 0);
+        }
+    }
+}
 
 /* shape b745:01E02290, 158 insns: b530:01E01D40 family dark (0x18) puff: size 40..59 before scene count 78 (ctx+0xB2BC), else 80..119, growing 1; frame 0..2, f50 5..14 growing half of 5..14 before count 78 and all of it after, angle 0..359, f8 0..34, life 5..12: alpha up by 64 to 0xC0, then down by 19 */
 

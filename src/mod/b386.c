@@ -509,7 +509,113 @@ static void func_01E013E0_b386(Ctx_b386_01E013E0 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E016B0_b386);
+/* shape b386:01E016B0, 257 insns: b618:01E00E90's spark in pale yellow (0xCF/0xCF/0x40), size 30 growing 0.8 and 0x5A 70 growing 3 to 160 while held, hold 80..99 ((rand>>4)%20); the camera-depth drift only during the hold, then it rises 1.5 a tick; alpha up to 0xC0 during the hold, then down by 12; scene time past 250 jumps to the fade */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 pos[3];
+    u8 pad1C[0x14];
+    f32 vel[3];
+    f32 dz;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b386_01E016B0;
+
+typedef struct {
+    u8 pad0[0xB228];
+    s16 joint;
+    u8 padB22A[0x34];
+    s16 timer;
+} Scn_b386_01E016B0;
+
+static s32 func_01E016B0_b386(Scn_b386_01E016B0 *g, Fx_b386_01E016B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[8];
+
+    if (o->mode == 1) {
+        o->f48 = 30.0f;
+        o->frame = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xCF, 0xCF, 0x40);
+        o->f5A = 70;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->vel[0] /= 60.0f;
+        o->vel[1] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        func_001F5F90(func_001F5380(), v);
+        func_001F5620(func_001F53A0(), g->joint, &v[4]);
+        o->dz = (v[2] - v[6]) / 80.0f;
+        o->h6 = (func_0019A5C8() >> 4) % 20 + 80;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick > 10 && o->tick < 70) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+    }
+    if (o->tick) {
+        if (o->tick < o->h6) {
+            o->pos[2] += o->dz;
+        }
+        if (o->tick >= o->h6) {
+            o->pos[1] += 1.5f;
+        }
+        if (o->tick < o->h6) {
+            o->f48 += 0.8f;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f5A < 160) {
+            o->f5A += 3;
+        }
+    }
+    if (g->timer > 250) {
+        o->tick = 100;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b386:01E01AC0, 148 insns: b394:01E01AA0 family yellow spark (size 6, frame 0..3, angle 0..359 turning 10, fA 0..7, fC = old f50, f50 2..6 growing 1..4, f8 0..34, life 3..7) rising 0..9/15 (rerolled each tick); colour flips yellow/gold every tick; full alpha then down by 8 */
 
@@ -580,7 +686,117 @@ static s32 func_01E01AC0_b386(s32 arg0, Fx_b386_01E01AC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E01D10_b386);
+/* shape b386:01E01D10, 254 insns: b386:01E02110's blinking spark with f50 10..59 growing by its speed, held 10..19
+   ticks while it closes an eightieth of the depth gap between the camera and the joint ctx+0xB228 each tick; past
+   scene count 250 its tick jumps to 100 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 side;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    f32 z;
+    u8 pad1C[0x14];
+    f32 vel[3];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 life;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b386_01E01D10;
+
+typedef struct {
+    u8 pad0[0xB228];
+    s16 joint;
+    u8 padB22A[0xB25E - 0xB22A];
+    s16 count;
+} Ctx_b386_01E01D10;
+
+static s32 func_01E01D10_b386(Ctx_b386_01E01D10 *g, Fx_b386_01E01D10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    f32 c[4];
+    s32 t;
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = 70;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->side = 2;
+        } else {
+            o->side = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 50 + 10;
+        o->life = func_0019A5C8() % 350 + 100;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->vel[0] /= 60.0f;
+        o->vel[1] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), g->joint, b);
+        o->f3C = (a[2] - b[2]) / 80.0f;
+        o->hold = (func_0019A5C8() >> 4) % 10 + 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (g->count % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    func_001F5F90(func_001F5380(), c);
+    t = o->tick;
+    if (t != 0) {
+        if ((s16)t < o->hold) {
+            o->z += o->f3C;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f5A < 160) {
+            o->f5A += 3;
+        }
+    }
+    o->f50 += o->speed;
+    if (g->count > 250) {
+        o->tick = 100;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b386:01E02110, 217 insns: b386:01E02480 cousin: white, size 10, f50 30..479; it blinks white/grey with the
    scene count (0xB25E) parity, drifts by f3C in z while held, then rises 1.5 a tick; f5A climbs by 3 to 160 */

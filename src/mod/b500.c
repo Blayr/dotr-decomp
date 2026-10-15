@@ -679,9 +679,245 @@ static void func_01E01850_b500(Obj_b500_01E01850 *obj, Def_b500_01E01850 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E01D60_b500);
+/* OVL_WARM */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E02180_b500);
+/* shape b500:01E01D60, 262 insns: b383:01E052A0's ring of six camera-facing sprites in an upright circle (y/z, radius
+   0x06, 60 apart from the start angle 0x3A) in its own packet: blend 0x48, 0x44 or 0x42 by flags >> 4; mode
+   (flags & 0xF) 0 sends at the projected depth, 1 also pins z to the far plane. Calls the module's sprite-UV helper
+   (shape b003:01E00080) as a static function. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b500_01E01D60;
+
+typedef struct {
+    f32 u, v;
+} Uv_b500_01E01D60;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b500_01E01D60 uv;
+    u64 pad18;
+    Xyz_b500_01E01D60 v[4];
+    u64 pad60[6];
+} Pk_b500_01E01D60;
+
+typedef struct {
+    u64 tag;
+    Pk_b500_01E01D60 pk;
+} Buf_b500_01E01D60;
+
+typedef struct {
+    s16 x, y, z;
+    s16 rad;
+    u8 pad8[8];
+    s32 rx, ry, rz;
+    u8 pad1C[0xC];
+    u8 tex[8];
+    u8 pad30[8];
+    s16 size;
+    s16 ang;
+} Obj_b500_01E01D60;
+
+static void func_01E01D60_b500(u8 *self, Obj_b500_01E01D60 *obj, s32 flags) {
+    extern void func_00108EF0();
+    extern void func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 m[16];
+    Vec4f pos;
+    f32 world[16];
+    f32 depth[4];
+    s32 rot[4];
+    Buf_b500_01E01D60 buf;
+    Uv_b500_01E01D60 uv;
+    s32 k;
+    s32 t;
+    s32 sel;
+    s16 a;
+    f32 r;
+    Pk_b500_01E01D60 *p;
+    s32 mode;
+
+    a = 0;
+    p = (Pk_b500_01E01D60 *)(u32)&buf.pk;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    buf.pk.uv.v = 0.0f;
+    buf.pk.v[0].fog = 0;
+    buf.pk.v[1].fog = 0;
+    buf.pk.v[2].fog = 0;
+    sel = flags >> 4;
+    buf.pk.v[3].fog = 0;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    } else if (sel == 1) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    }
+    func_00107740(&uv, obj->tex);
+    p->uv = uv;
+    func_01E00150_b500((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)(self + 0x94), *(s16 *)(self + 0xBE));
+    func_00208700(p, *(void **)(self + 0x88), 1);
+    pos.x = obj->x;
+    pos.y = obj->y;
+    pos.z = obj->z;
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    func_00108EF0(world, 0, &obj->rx, &pos);
+    mode = flags & 0xF;
+    pos.x = 0.0f;
+    for (k = 0; k < 6; k++) {
+        r = obj->size;
+        func_00108CE0(m, r, r);
+        func_00109100(m, rot, 0, self + 0xD8);
+        t = obj->ang + a;
+        pos.z = obj->rad * func_00108030(self + 0xD8, t, 1);
+        pos.y = obj->rad * func_00108030(self + 0xD8, t, 0);
+        func_00107070(m, 0, pos.x);
+        func_00107070(m, 1, pos.y);
+        func_00107070(m, 2, pos.z);
+        if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)p, depth) != 0) {
+            if (mode == 0) {
+                func_002075F0((s32)p, *(s32 *)(self + 0x80), (u32)depth[0]);
+            } else if (mode == 1) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0((s32)p, *(s32 *)(self + 0x80), (u32)depth[0]);
+            }
+        }
+        a += 60;
+    }
+}
+
+/* shape b500:01E02180, 269 insns: the b500 module's event step (B500_W_S): scene colour (0x80, 0, 0, 0); counts ticks;
+   at tick 31 spawns the trail head b500:01E025C0 and b500:01E03910; at ticks 221/268/274/280 (tracked point 0x3BDE)
+   and 243/271/277 (0x3BE2) it moves the scene point there and spawns b500:01E02AF0, ten b500:01E02830, seven
+   b500:01E02D10, five b500:01E03260 (slot 0) and b500:01E033E0; at 90/121/150/180 (0x3BE4) and 77/105/135/165/193
+   (0x3BE6) it spawns twelve b500:01E03260 there (slot 0); from tick 80 to 100 it follows point 0x3BE4 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[4];
+    u8 pad260[0x3BB4 - 0x260];
+    u8 col[4];
+    u8 pad3BB8[0x3BDE - 0x3BB8];
+    s16 id1;
+    s16 id2;
+    s16 id3;
+    s16 id4;
+    s16 id5;
+    u8 pad3BE8[0x3BF6 - 0x3BE8];
+    s16 slot;
+    u8 pad3BF8[4];
+    s16 timer;
+} Ctx_b500_01E02180;
+
+static void func_01E02180_b500(Ctx_b500_01E02180 *g) {
+    extern s32 b500_01E025C0(void);
+    extern s32 b500_01E02830(void);
+    extern s32 b500_01E02AF0(void);
+    extern s32 b500_01E02D10(void);
+    extern s32 b500_01E03260(void);
+    extern s32 b500_01E033E0(void);
+    extern s32 b500_01E03910(void);
+    extern void b500_01E046A0(Ctx_b500_01E02180 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 31) {
+        b500_01E046A0(g, b500_01E025C0, 0);
+    }
+    if (g->timer == 31) {
+        b500_01E046A0(g, b500_01E03910, 0);
+    }
+    if (g->timer == 221 || g->timer == 268 || g->timer == 274 || g->timer == 280) {
+        func_001F5620(func_001F53A0(), g->id1, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        b500_01E046A0(g, b500_01E02AF0, 0);
+        for (i = 0; i < 10; i++) {
+            b500_01E046A0(g, b500_01E02830, 0);
+        }
+        for (i = 0; i < 7; i++) {
+            b500_01E046A0(g, b500_01E02D10, 0);
+        }
+        g->slot = 0;
+        for (i = 0; i < 5; i++) {
+            b500_01E046A0(g, b500_01E03260, 0);
+        }
+        b500_01E046A0(g, b500_01E033E0, 0);
+    }
+    if (g->timer == 243 || g->timer == 271 || g->timer == 277) {
+        func_001F5620(func_001F53A0(), g->id3, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        b500_01E046A0(g, b500_01E02AF0, 0);
+        for (i = 0; i < 10; i++) {
+            b500_01E046A0(g, b500_01E02830, 0);
+        }
+        for (i = 0; i < 7; i++) {
+            b500_01E046A0(g, b500_01E02D10, 0);
+        }
+        g->slot = 0;
+        for (i = 0; i < 5; i++) {
+            b500_01E046A0(g, b500_01E03260, 0);
+        }
+        b500_01E046A0(g, b500_01E033E0, 0);
+    }
+    if (g->timer == 90 || g->timer == 121 || g->timer == 150 || g->timer == 180) {
+        g->slot = 0;
+        for (i = 0; i < 12; i++) {
+            func_001F5620(func_001F53A0(), g->id4, v);
+            g->pos[0] = v[0];
+            g->pos[1] = v[1];
+            g->pos[2] = v[2];
+            b500_01E046A0(g, b500_01E03260, 0);
+        }
+    }
+    if (g->timer == 77 || g->timer == 105 || g->timer == 135 || g->timer == 165 || g->timer == 193) {
+        g->slot = 0;
+        for (i = 0; i < 12; i++) {
+            func_001F5620(func_001F53A0(), g->id5, v);
+            g->pos[0] = v[0];
+            g->pos[1] = v[1];
+            g->pos[2] = v[2];
+            b500_01E046A0(g, b500_01E03260, 0);
+        }
+    }
+    if (g->timer >= 80 && g->timer < 101) {
+        func_001F5620(func_001F53A0(), g->id4, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        g->slot = 0;
+        g->slot = 1;
+    }
+}
 
 /* shape b500:01E025C0, 155 insns: b501:01E03310 family red (0x40, 0x10, 0x10) four-trail head: on start fills four 9-point trails (ctx+0x3540.. 0xA0 apart) with the four tracked points (ids at ctx+0x3BDC..E2); alpha 0x60 for 190 ticks, then down by 19; every tick pushes each point into its trail (b500:01E00080, 10 steps) */
 

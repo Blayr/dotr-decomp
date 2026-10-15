@@ -566,7 +566,112 @@ static s32 func_01E014C0_b537(Ctx_b537_01E014C0 *g, Fx_b537_01E014C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b537", func_01E01820_b537);
+/* OVL_WARM */
+
+/* shape b537:01E01820, 223 insns: b008:01E00FB0 family puff, grey 0xA0, size 4 growing 2, frame 0..7 cycling every
+   other tick, kind kept in 0xA, speed 4..6, 0x8 0..24, hold 90..179 (kind 0) or 0..9; nudged 3 toward the scene side
+   (0x3014); alpha up by 0x10 to 0x30 during the hold, then down by 4; closes a 160th of the camera depth gap for 20
+   ticks, then (kind 0, scene time 179..229 a 160th, from 230 a 136th) while growing; turns 6 a tick after tick 20 */
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 h8;
+    s16 kind;
+    u8 padC[2];
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b537_01E01820;
+
+typedef struct {
+    u8 pad0[0x3014];
+    s16 side;
+    u8 pad3016[4];
+    s16 timer;
+} Scn_b537_01E01820;
+
+static s32 func_01E01820_b537(Scn_b537_01E01820 *g, Fx_b537_01E01820 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f38 = 4;
+        o->frame = func_0019A5C8() % 8;
+        o->kind = o->f30;
+        func_001076F0(o->col, 0xA0, 0xA0, 0xA0);
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 3 + 4;
+        o->h8 = func_0019A5C8() % 25;
+        if (o->kind == 0) {
+            o->hold = func_0019A5C8() % 90 + 90;
+        } else {
+            o->hold = func_0019A5C8() % 10;
+        }
+        if (g->side != 0) {
+            o->z += 3;
+        } else {
+            o->z -= 3;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x30) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    *(f32 *)(u32)&v[2] -= v[6];
+    if (o->tick < 20) {
+        *(f32 *)(u32)&v[2] /= 160.0f;
+        o->z = o->z + *(f32 *)(u32)&v[2];
+    } else if (o->kind == 0) {
+        if (g->timer > 178) {
+            if (g->timer < 230) {
+                *(f32 *)(u32)&v[2] /= 160.0f;
+            } else {
+                *(f32 *)(u32)&v[2] /= 136.0f;
+            }
+            o->z = o->z + *(f32 *)(u32)&v[2];
+            o->f38 += 2;
+        } else {
+            o->f38 += 2;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        if (o->frame < 6) {
+            o->frame++;
+        } else {
+            o->frame = 0;
+        }
+    }
+    if (o->tick > 14 && o->tick < 100 && o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick < 20 && o->tick != 0) {
+        o->f38 += 2;
+    }
+    if (o->tick > 20) {
+        o->f3A += 6;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b537", func_01E01BA0_b537);
 

@@ -888,7 +888,97 @@ static s32 func_01E02460_b771(s32 arg0, Mote_b771_01E02460 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E026F0_b771);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E02C10_b771);
+/* shape b771:01E02C10, 240 insns: b144:01E02030's ember in green (0x50, 0xC0, 0x50) on the tracked point
+   (ctx+0xA8F8): kind 0 size 2..6, kind 1 size 6..10; before scene count 280 kind 0 sits 50..149 up rising 5..24 and
+   kind 1 10..39 rising 10..12, later kind 0 30..79 rising 5..14 and kind 1 10..24 rising 4..6; random spin on all
+   three axes; alpha 0x60 for its life, then down by 11 until it ends; it rises by its speed before count 220, by twice
+   it until 280 */
+
+typedef struct {
+    u8 pad0[0xA8F8];
+    s16 id;
+    u8 padA8FA[0xA92E - 0xA8FA];
+    s16 count;
+} Ctx_b771_01E02C10;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 rise;
+    f32 pos[4];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 h;
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Obj_b771_01E02C10;
+
+static s32 func_01E02C10_b771(Ctx_b771_01E02C10 *g, Obj_b771_01E02C10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->size = func_0019A5C8() % 5 + 2;
+        }
+        if (o->kind == 1) {
+            o->size = func_0019A5C8() % 5 + 6;
+        }
+        o->frame = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x50, 0xC0, 0x50);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        if (g->count < 280) {
+            if (o->kind == 0) {
+                o->h = func_0019A5C8() % 100 + 50;
+                o->rise = func_0019A5C8() % 20 + 5;
+            }
+            if (o->kind == 1) {
+                o->h = func_0019A5C8() % 30 + 10;
+                o->rise = func_0019A5C8() % 3 + 10;
+            }
+        } else {
+            if (o->kind == 0) {
+                o->h = func_0019A5C8() % 50 + 30;
+                o->rise = func_0019A5C8() % 10 + 5;
+            }
+            if (o->kind == 1) {
+                o->h = func_0019A5C8() % 15 + 10;
+                o->rise = func_0019A5C8() % 3 + 4;
+            }
+        }
+        o->ang = func_0019A5C8() % 360;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->t < o->life) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5620(func_001F53A0(), g->id, o->pos);
+    if (g->count < 220) {
+        o->h += o->rise;
+    } else if (g->count < 280) {
+        o->h += o->rise * 2;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E02FD0_b771);
 

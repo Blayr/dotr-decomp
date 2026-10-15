@@ -825,7 +825,97 @@ static s32 func_01E02E30_b756(Ctx_b756_01E02E30 *g, Fx_b756_01E02E30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E03170_b756);
+/* shape b756:01E03170 (B756_OBJ_MOVE_9_), 221 insns: a dark-red mote between two joints (game +0xACEE / +0xACF0):
+   on start a random size 2..9, kind 0..3, colour (0x20, 0x10, 0), random angles, spin 6..11, f8 1..8, hold 15..17;
+   alpha 0x60 while held, then fades by 6; each tick it sits on joint A and steps back toward joint B by a 30th of
+   the gap (times its age after the first tick) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 spin;
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 pos[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 f50;
+    s16 age;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b756_01E03170;
+
+typedef struct {
+    u8 pad[0xACEE];
+    s16 ja;
+    s16 jb;
+} Game_b756_01E03170;
+
+static s32 func_01E03170_b756(Game_b756_01E03170 *g, Fx_b756_01E03170 *o) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 t;
+    f32 v[8];
+    f32 *q;
+
+    t = o->age;
+    func_001F5620(func_001F53A0(), g->ja, v);
+    func_001F5620(func_001F53A0(), g->jb, q = (f32 *)(u32)&v[4]);
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 8 + 2;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x20, 0x10, 0);
+        o->pos[0] = func_0019A5C8() % 0xFFFF;
+        o->pos[1] = func_0019A5C8() % 0xFFFF;
+        o->pos[2] = func_0019A5C8() % 0xFFFF;
+        o->age = 1;
+        o->f50 = 0;
+        o->f5A = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 6 + 6;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 15;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 7) {
+        o->col[3] -= 6;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick == 0) {
+        o->x = v[0];
+        o->y = v[1];
+        o->z = v[2];
+        o->x -= (v[0] - q[0]) / 30.0f;
+        o->y -= (v[1] - v[5]) / 30.0f;
+        o->z -= (v[2] - v[6]) / 30.0f;
+    } else {
+        o->x = v[0];
+        o->y = v[1];
+        o->z = v[2];
+        v[0] = (v[0] - q[0]) / 30.0f;
+        v[1] = (v[1] - v[5]) / 30.0f;
+        v[2] = (v[2] - v[6]) / 30.0f;
+        o->x -= v[0] * t;
+        o->y -= v[1] * t;
+        o->z -= v[2] * t;
+    }
+    o->age++;
+    o->f50 += o->spin;
+    o->tick++;
+    return 0;
+}
 
 /* shape b756:01E034F0, 95 insns: a dark flash with a red-purple flicker: size 0 growing by 0.3 up to 1.2 once started, random angle;
    alpha up by 42 for 3 frames, then down by 12 until it ends; second colour flickers by frame parity */
@@ -1578,7 +1668,142 @@ static void func_01E051F0_b756(Game_b756_01E051F0 *g, Obj_b756_01E051F0 *o, s32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E05530_b756);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E05DF0_b756);
+/* shape b756:01E05DF0, 248 insns: b108:01E009A0-style band between the object's two points (0x20 bottom, 0x30 top):
+   two flat quads, one pushed out by the data's (0x48, 0x4C) offset and one by its negative; colours 0x64/0x60
+   alternating on the corners; blend from flags >> 4, at the position (by value) turned by the data's rotation; depth
+   mode flags & 0xF (projected, far after a packet tweak, or front) */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b756_01E05DF0;
+
+typedef struct {
+    Rgbaq_b756_01E05DF0 c;
+    u64 xyz;
+} Vtx_b756_01E05DF0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b756_01E05DF0 v[4];
+} Pkt_b756_01E05DF0;
+
+typedef struct {
+    u8 pad00[0x20];
+    f32 x0, y0, z0;
+    u8 pad2C[4];
+    f32 x1, y1, z1;
+    u8 pad3C[0x44];
+    s32 ot;
+} Obj_b756_01E05DF0;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f rot;
+    u8 pad30[0x18];
+    f32 dx;
+    f32 dz;
+    u8 pad50[0x10];
+    u8 col[4];
+    u8 col2[4];
+} Data_b756_01E05DF0;
+
+static void func_01E05DF0_b756(Obj_b756_01E05DF0 *o, Data_b756_01E05DF0 *data, s32 flags, Vec4f pos) {
+    extern Rgbaq_b756_01E05DF0 func_00107740(void *);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f t;
+    f32 m[16];
+    f32 depth[4];
+    struct {
+        Pkt_b756_01E05DF0 pk;
+        u8 tail[0x40];
+    } buf;
+    s32 i;
+    s16 j;
+    s16 alpha;
+    Pkt_b756_01E05DF0 *p;
+    s32 mode;
+    f32 a;
+    f32 b;
+    f32 na;
+    f32 nb;
+
+    p = &buf.pk;
+    j = 0;
+    p->v[0].c = func_00107740(data->col2);
+    p->v[1].c = func_00107740(data->col);
+    p->v[2].c = func_00107740(data->col2);
+    p->v[3].c = func_00107740(data->col);
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    alpha = flags >> 4;
+    if (alpha == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)alpha << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    t.x = pos.x;
+    t.y = pos.y;
+    t.z = pos.z;
+    func_00108EF0(m, 0, &data->rot, &t);
+    mode = flags & 0xF;
+    quad[0].y = o->y0;
+    quad[1].y = o->y0;
+    quad[2].y = o->y1;
+    quad[3].y = o->y1;
+    a = data->dx;
+    b = data->dz;
+    na = -a;
+    nb = -b;
+    for (i = 0; i < 2; i++) {
+        quad[0].y = o->y0;
+        quad[1].y = o->y0;
+        quad[2].y = o->y1;
+        quad[3].y = o->y1;
+        if (i == 0) {
+            quad[0].x = o->x0 + a;
+            quad[0].z = o->z0 + b;
+            quad[1].x = o->x0;
+            quad[1].z = o->z0;
+            quad[2].x = o->x1 + a;
+            quad[2].z = o->z1 + b;
+            quad[3].x = o->x1;
+            quad[3].z = o->z1;
+        }
+        if (i == 1) {
+            quad[0].x = na + o->x0;
+            quad[0].z = nb + o->z0;
+            quad[1].x = o->x0;
+            quad[1].z = o->z0;
+            quad[2].x = na + o->x1;
+            quad[2].z = nb + o->z1;
+            quad[3].x = o->x1;
+            quad[3].z = o->z1;
+        }
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_00109380(p, 1);
+                func_002075F0(p, o->ot, 0);
+            }
+        } else if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, -1);
+        }
+        j += 60;
+    }
+}
 
 /* shape b756:01E061D0, 170 insns: draw a 4-quad sprite burst at a point with a local packet: the object's colour on all
    corners, the scene's rect (g+0x94, frame g+0xBE) and texture (g+0x88), blend 0x42 or a scaled 0x40 by the mode's high

@@ -677,9 +677,218 @@ static s32 func_01E018E0_b566(Game_b566_01E018E0 *g, Glow_b566_01E018E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E01BD0_b566);
+/* shape b566:01E01BD0, 240 insns: b257:01E024F0's random-colour glow on joints ctx+0x377C/0x377E, rise 3..12, held
+   11..20 ticks fading in by 0x10 to 0x80, then out by 15 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E01F90_b566);
+typedef struct {
+    u8 pad0[0x377C];
+    s16 ja;
+    s16 jb;
+} Game_b566_01E01BD0;
+
+typedef struct {
+    s16 h0;
+    u8 pad2[2];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b566_01E01BD0;
+
+static s32 func_01E01BD0_b566(Game_b566_01E01BD0 *g, Glow_b566_01E01BD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+    s32 k;
+
+    if (o->mode == 1) {
+        o->f38 = 100;
+        o->kind = 0;
+        k = (s16)(func_0019A5C8() % 3);
+        if (k == 0) {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+        } else if ((s16)k == 1) {
+            func_001076F0(o->col, 0x40, 0, 0x80);
+        } else {
+            func_001076F0(o->col, 0x80, 0x10, 0x10);
+        }
+        o->h30 = func_0019A5C8() % 50 + 100;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 10 + 3;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 10 + 11;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 40.0f;
+    if (o->tick == 0) {
+        o->h4 = func_001A22C0(o->h4 + 17.0f * v[0].z);
+    }
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->tick % 2 == 1) {
+        o->h0 += o->hC;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 3) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 1;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
+
+/* OVL_WARM */
+
+/* shape b566:01E01F90, 236 insns: b552:01E01A10 family glow in grey 0x50, size 12..23 growing 2 to 60, frame 0..5, kind kept in 0xA, speed 3..7, 0x8 0..34, hold 32..56; 0xC = the x gap between the joints ctx+0x377C and 0x377E; alpha by the scene count (0x3798, limit 260); once moving closes a 75th of the camera depth gap; turns 2 a tick by the speed's parity */
+
+typedef struct {
+    u8 pad0[0x377C];
+    s16 ja;
+    s16 jb;
+    u8 pad3780[0x18];
+    s16 count;
+} Game_b566_01E01F90;
+
+typedef struct {
+    s16 h0;
+    u8 pad2[2];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b566_01E01F90;
+
+static s32 func_01E01F90_b566(Game_b566_01E01F90 *g, Glow_b566_01E01F90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[12];
+    f32 *q;
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 12 + 12;
+        o->kind = 0;
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        o->hA = o->h30;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 3;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 25 + 32;
+        func_001F5620(func_001F53A0(), g->ja, v);
+        func_001F5620(func_001F53A0(), g->jb, q = (f32 *)(u32)&v[4]);
+        o->hC = q[0] - v[0];
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 260) {
+            if (o->col[3] < 0x81) {
+                o->col[3] += 0x40;
+            }
+        }
+    } else if (g->count < 260) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 260) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 60) {
+            o->f38 += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    if (o->tick != 0) {
+        *(f32 *)(u32)&v[2] -= v[6];
+        *(f32 *)(u32)&v[2] /= 75.0f;
+        o->h4 = o->h4 + *(f32 *)(u32)&v[2];
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    o->h30 += o->hE;
+    if (o->tick % 2 == 1) {
+        o->f38 += 2;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    if (o->hE % 2 == 1) {
+        o->ang += 2;
+    } else {
+        o->ang -= 2;
+    }
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b284:01E020C0, 91 insns, 2 copies: a scene light flash: sets the scene's light block once (colour 4,4,4, range 70,
    at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when

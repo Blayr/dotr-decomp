@@ -842,7 +842,128 @@ static void func_01E01C20_b270(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E02020_b270);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E02940_b270);
+/* shape b270:01E02940, 258 insns: b529:01E01E90's grow-in effect with three start stages (by f50: 0, 2, 4), the six
+   stages growing by 2.5 to 40/30/30/20/20/10, colours 0xFF on odd ticks else 0x80, fade-out after scene tick 460,
+   and from tick 400 a 0x300 turn per step (-0x300 for the middle third) */
+
+/* shape b529:01E01E90, 236 insns: a two-colour grey glow (0x80 / 0x70 flicker) whose stage (0x52: from 0x50, 0 below
+   36, 2 below 72) grows 0x48 by 0.5 to 10 (stage 0) or 6 (stage 2), then 0x4C to 7 / 4; fades in by 8 for 30 ticks,
+   out by 11 past scene time 300; before scene time 176 it spins randomly with x locked at 0x4000, after that its
+   z angle turns by 256 + 0x30 (sign by 0x50), and 0x30 grows by 32 to 512 from scene time 241 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[0x16];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 f30;
+    u8 pad34[0x14];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    s16 stage;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col0[4];
+    u8 col1[4];
+} Fx_b270_01E02940;
+
+typedef struct {
+    u8 pad0[0xDA94];
+    s16 timer;
+} Scn_b270_01E02940;
+
+static s32 func_01E02940_b270(Scn_b270_01E02940 *g, Fx_b270_01E02940 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 k;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 0.0f;
+        o->f56 = 0;
+        o->mode = 2;
+        if (o->f50 < 36) {
+            o->stage = 0;
+        } else if (o->f50 < 72) {
+            o->stage = 2;
+        } else if (o->f50 < 108) {
+            o->stage = 4;
+        }
+        o->h8 = func_0019A5C8() % 3 + 4;
+    }
+    if (o->tick < 30) {
+        if (o->col0[3] < 0x80) {
+            o->col0[3] += 8;
+        }
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 8;
+        }
+    } else if (g->timer > 460) {
+        if (o->col0[3] > 12) {
+            o->col0[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col1[3] > 12) {
+            o->col1[3] -= 11;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col1, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col0, 0x80, 0x80, 0x80);
+        func_001076F0(o->col1, 0x80, 0x80, 0x80);
+    }
+    if (g->timer != 0) {
+        k = o->stage;
+        if (k == 0) {
+            if (o->f48 < 40.0f) {
+                o->f48 += 2.5f;
+            } else {
+                o->stage = k + 1;
+            }
+        } else if (k == 1) {
+            if (o->f4C < 30.0f) {
+                o->f4C += 2.5f;
+            }
+        } else if (k == 2) {
+            if (o->f48 < 30.0f) {
+                o->f48 += 2.5f;
+            } else {
+                o->stage = k + 1;
+            }
+        } else if (k == 3) {
+            if (o->f4C < 20.0f) {
+                o->f4C += 2.5f;
+            }
+        } else if (k == 4) {
+            if (o->f48 < 20.0f) {
+                o->f48 += 2.5f;
+            } else {
+                o->stage = k + 1;
+            }
+        } else if (k == 5) {
+            if (o->f4C < 10.0f) {
+                o->f4C += 2.5f;
+            }
+        }
+    }
+    if (g->timer > 400) {
+        if (o->f50 < 36) {
+            o->rot[1] += 0x300;
+        } else if (o->f50 < 72) {
+            o->rot[1] -= 0x300;
+        } else if (o->f50 < 108) {
+            o->rot[1] += 0x300;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b111:01E02160, 100 insns, 7 copies: spark update, a variant of b018:01E02950 (on spawn: random kind, white
    colour, angle, spin, height, speed, size and lifetime; then fade out after the lifetime, move while

@@ -284,7 +284,104 @@ static void func_01E00920_b618(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b618", func_01E00E90_b618);
+/* shape b618:01E00E90, 223 insns: a pink (0xFF/0x80/0x80) spark, size 15 growing 1.5, frame (rand>>4)%8, random
+   0x5A/0x5C, flip 0 or 2, old 0x50 kept in 0xC, 0x52 100..449, speed 10..29, 0x8 0..34, 0x6 3..7, drift -1/3..+1/3
+   per axis from tick 11 to 69; z closes an 80th of the gap from the camera to the tracked joint (0xB228) each
+   tick; alpha up to 0xC0 for 100 ticks, then down by 11; scene time past 420 jumps to the fade */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 pos[3];
+    u8 pad1C[0x14];
+    f32 vel[3];
+    f32 dz;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b618_01E00E90;
+
+typedef struct {
+    u8 pad0[0xB228];
+    s16 joint;
+    u8 padB22A[0x34];
+    s16 timer;
+} Scn_b618_01E00E90;
+
+static s32 func_01E00E90_b618(Scn_b618_01E00E90 *g, Fx_b618_01E00E90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f48 = 15.0f;
+        o->frame = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->vel[0] /= 60.0f;
+        o->vel[1] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        func_001F5F90(func_001F5380(), v);
+        func_001F5620(func_001F53A0(), g->joint, &v[4]);
+        o->dz = (v[2] - v[6]) / 80.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 100) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick > 10 && o->tick < 70) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+    }
+    func_001F5F90(func_001F5380(), &v[8]);
+    if (o->tick != 0) {
+        o->pos[2] += o->dz;
+        o->f48 += 1.5f;
+    }
+    if (g->timer > 420) {
+        o->tick = 100;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b618", func_01E01210_b618);
 

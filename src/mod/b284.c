@@ -604,9 +604,216 @@ static s32 func_01E01990_b284(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b284", func_01E019A0_b284);
+/* shape b284:01E019A0, 228 insns: b297:01E011F0's glow in violet (0x80, 0x20, 0xFF), size 12..23 growing by 2 to
+   60 (and by 1 every third tick), rise 3..7, held 10..19 ticks fading in by 0x80 while the scene count ctx+0x3798 is
+   under 300, then out by 7 (by 9 past 300); joints ctx+0x377C/0x377E; depth drift /100 after the first tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b284", func_01E01D30_b284);
+typedef struct {
+    u8 pad0[0x377C];
+    s16 ja;
+    s16 jb;
+    u8 pad3780[0x18];
+    s16 count;
+} Game_b284_01E019A0;
+
+typedef struct {
+    u8 pad0[4];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b284_01E019A0;
+
+static s32 func_01E019A0_b284(Game_b284_01E019A0 *g, Glow_b284_01E019A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 12 + 12;
+        o->kind = (func_0019A5C8() >> 4) % 2;
+        func_001076F0(o->col, 0x80, 0x20, 0xFF);
+        o->hA = o->h30;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 3;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 10 + 10;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, (Vec4f *)(u32)&v[1]);
+        o->hC = func_001A22C0(((Vec4f *)(u32)&v[1])->x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 300) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x80;
+            }
+        }
+    } else if (g->count < 300) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 300) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 60) {
+            o->f38 += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    if (o->tick != 0) {
+        *(f32 *)(u32)&v[0].z -= v[1].z;
+        *(f32 *)(u32)&v[0].z /= 100.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    o->h30 += o->hE;
+    if (o->tick % 3 == 1) {
+        o->f38++;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
+
+/* shape b284:01E01D30, 228 insns: b284:01E019A0's violet glow held 32..56 ticks, depth drift /40, growing by 1 on
+   odd ticks */
+
+typedef struct {
+    u8 pad0[0x377C];
+    s16 ja;
+    s16 jb;
+    u8 pad3780[0x18];
+    s16 count;
+} Game_b284_01E01D30;
+
+typedef struct {
+    u8 pad0[4];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b284_01E01D30;
+
+static s32 func_01E01D30_b284(Game_b284_01E01D30 *g, Glow_b284_01E01D30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 12 + 12;
+        o->kind = (func_0019A5C8() >> 4) % 2;
+        func_001076F0(o->col, 0x80, 0x20, 0xFF);
+        o->hA = o->h30;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 3;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 25 + 32;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, (Vec4f *)(u32)&v[1]);
+        o->hC = func_001A22C0(((Vec4f *)(u32)&v[1])->x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 300) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x80;
+            }
+        }
+    } else if (g->count < 300) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 300) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 60) {
+            o->f38 += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    if (o->tick != 0) {
+        *(f32 *)(u32)&v[0].z -= v[1].z;
+        *(f32 *)(u32)&v[0].z /= 40.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    o->h30 += o->hE;
+    if (o->tick % 2 == 1) {
+        o->f38++;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b284:01E020C0, 91 insns, 2 copies: a scene light flash: sets the scene's light block once (colour 4,4,4, range 70,
    at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when

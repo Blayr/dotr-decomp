@@ -1,6 +1,123 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E00080_b004);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM */
+
+/* shape b004:01E00080, 246 insns: the effect scene's step (frame test 79/80/81 kept as three compares: -O3,p): sets
+   the scene colour to dark red, counts the frame (0x34AC), turns the camera heading (b004:01E00C10 / 180 - 180, kept
+   at 0x349C) into a height offset 15 x -cos; frame 79 spawns 0x1E00460, 45 spawns 0x1E004E0; frame 77 copies the
+   point (0x3300) to 0x3440; frame 78 spawns forty 0x1E006B0 with random turns (by the heading's side); frames 79..81
+   spawn thirty 0x1E00560 around the point; frame 79 sixty 0x1E00790 at it; frames 46..83 spawn 0x1E009F0 there */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 qx, qy, qz;
+    s32 w8C;
+    u8 pad90[0x10];
+    s32 rA0;
+    u8 padA4[4];
+    s32 rA8;
+    u8 padAC[0x3300 - 0xAC];
+    f32 px, py, pz;
+    u8 pad330C[0x3440 - 0x330C];
+    f32 mx, my, mz;
+    u8 pad344C[8];
+    u8 col[4];
+    u8 pad3458[0x349C - 0x3458];
+    s16 head;
+    u8 pad349E[2];
+    s16 h34A0;
+    u8 pad34A2[6];
+    s16 h34A8;
+    u8 pad34AA[2];
+    s16 t;
+    u8 pad34AE[0x34E0 - 0x34AE];
+    u8 trig[1];
+} Scene_b004_01E00080;
+
+
+#pragma optimization_level 3
+
+static void func_01E00080_b004(Scene_b004_01E00080 *g) {
+    extern void b004_01E00460(void);
+    extern void b004_01E004E0(void);
+    extern void b004_01E00560(void);
+    extern void b004_01E006B0(void);
+    extern void b004_01E00790(void);
+    extern void b004_01E009F0(void);
+    extern f32 b004_01E00C10(s32);
+    extern s32 b004_01E012B0(Scene_b004_01E00080 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 i;
+    s32 h;
+    s32 z;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    g->head = (s16)(b004_01E00C10(func_001F53A0()) / 180.0f);
+    g->head -= 180;
+    h = (s32)(15.0f * -func_00108030(g->trig, g->head, 1));
+    g->h34A8 = 0;
+    g->w8C = 0;
+    if (g->t == 79) {
+        b004_01E012B0(g, (s32)b004_01E00460, 0);
+    }
+    if (g->t == 45) {
+        b004_01E012B0(g, (s32)b004_01E004E0, 0);
+    }
+    g->col[3] = 0;
+    if (g->t == 77) {
+        g->mx = g->px;
+        g->my = g->py;
+        g->mz = g->pz;
+    }
+    if (g->t == 78) {
+        for (i = 0; i < 40; i++) {
+            if (-g->head < 90) {
+                g->rA0 = func_0019A5C8() % 0x8000 - 0x8000;
+            } else {
+                z = 0;
+                g->rA0 = func_0019A5C8() % 0x8000 + z;
+            }
+            g->rA8 = func_0019A5C8() % 0x8000 + 0x4000;
+            g->qx = 0.0f;
+            g->qy = 0.0f;
+            g->qz = 0.0f;
+            b004_01E012B0(g, (s32)b004_01E006B0, 0);
+        }
+    }
+    if (g->t == 79 || g->t == 80 || g->t == 81) {
+        for (i = 0; i < 30; i++) {
+            g->qx = g->px + (f32)(func_0019A5C8() % 20) - 10.0f;
+            g->qy = g->py + (f32)(func_0019A5C8() % 20) - 10.0f;
+            g->qz = (f32)h + (g->pz + (f32)(func_0019A5C8() % 20) - 10.0f);
+            g->h34A8 = func_0019A5C8() % 80;
+            g->h34A0 = func_0019A5C8() % 360;
+            b004_01E012B0(g, (s32)b004_01E00560, 0);
+        }
+    }
+    if (g->t == 79) {
+        for (i = 0; i < 60; i++) {
+            g->qx = g->px;
+            g->qy = g->py;
+            g->qz = g->pz + h;
+            b004_01E012B0(g, (s32)b004_01E00790, 0);
+        }
+    }
+    if (g->t > 45 && g->t < 84) {
+        g->qx = g->px;
+        g->qy = g->py;
+        g->qz = g->pz;
+        g->h34A8 = 0;
+        g->h34A0 = 0;
+        b004_01E012B0(g, (s32)b004_01E009F0, 0);
+    }
+}
+#pragma optimization_level reset
 
 /* shape b004:01E00460, 32 insns, 5 copies: step of a flash: first rises to alpha 0xF0 (then marks itself done rising),
    afterwards fades by 14 until it ends; keeps its colour at 0x9F/0x5F/0x5F */
@@ -458,7 +575,127 @@ static void func_01E01860_b004(Scene_b004_01E01860 *g, Fx_b004_01E01860 *o, void
     func_00108F90(quad, p, m, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E01A00_b004);
+/* shape b004:01E01A00, 229 insns: b414:01E04810's hanging quad in two passes (b004:01E01860 style): with lit 0 it sets
+   up the packet (rect 0x9C at frame +0x34, colours 0x28 top and 0x2C bottom, scene texture 0xFC) and returns; otherwise
+   it builds the scene matrix (0x40) from the scene point 0x3440 and the anim's rotation, and draws one quad 1 wide at
+   the anim's s16 point hanging 0x6 down, heights kept within 0..200, depth in 0x3484, into 0x345C */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b004_01E01A00;
+
+typedef struct {
+    Rgbaq_b004_01E01A00 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b004_01E01A00;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b004_01E01A00 v[4];
+} Pkt_b004_01E01A00;
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    u8 pad8[8];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[4];
+    s16 h34;
+} Anim_b004_01E01A00;
+
+typedef struct {
+    u8 pad00[0x40];
+    u8 m[0x40];
+    u8 pad80[0x7C];
+    s32 tex;
+    u8 pad100[0x3300 - 0x100];
+    u8 cam[0x140];
+    Vec4f point;
+    u8 pad3450[0xC];
+    s32 ot;
+    u8 pad3460[0x24];
+    f32 depth;
+} Scene_b004_01E01A00;
+
+static void func_01E01A00_b004(Scene_b004_01E01A00 *g, Anim_b004_01E01A00 *an, Pkt_b004_01E01A00 *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b004_01E01A00 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_00107130(void *, void *, s32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 m[16];
+    f32 v[4];
+    f32 rm[4];
+
+    if (lit == 0) {
+        func_00106080(rm, 0x9C, an->h34, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_0020EB40(g->m);
+    func_00107130(g->cam, v, 1);
+    func_0020C940(m, 0, an->rot, &g->point);
+    func_0020BC00(g->m, m);
+    q[0].x = an->x;
+    q[0].y = an->y;
+    q[0].z = an->z;
+    q[1] = q[0];
+    q[1].x += 1.0f;
+    q[2].x = an->x;
+    q[2].y = an->y;
+    q[2].z = an->z;
+    q[2].y -= an->h6;
+    q[3] = q[2];
+    q[3].x += 1.0f;
+    if (q[0].y > 200.0f) {
+        q[0].y = 200.0f;
+    }
+    if (q[1].y > 200.0f) {
+        q[1].y = 200.0f;
+    }
+    if (q[2].y > 200.0f) {
+        q[2].y = 200.0f;
+    }
+    if (q[3].y > 200.0f) {
+        q[3].y = 200.0f;
+    }
+    if (q[0].y < 0.0f) {
+        q[0].y = 0.0f;
+    }
+    if (q[1].y < 0.0f) {
+        q[1].y = 0.0f;
+    }
+    if (q[2].y < 0.0f) {
+        q[2].y = 0.0f;
+    }
+    if (q[3].y < 0.0f) {
+        q[3].y = 0.0f;
+    }
+    if (func_00205630(q, 0x70000000, g->m, p, &g->depth) != 0) {
+        func_002075F0(p, g->ot, (u32)g->depth);
+    }
+}
 
 /* shape b004:01E01DA0, 89 insns: draws a sprite: mode 0 builds the packet (texture page 0x99 frame from the object, its colour,
    the scene texture); other modes turn it at random, place it at the object's point, make a square of its size and queue it

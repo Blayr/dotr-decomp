@@ -603,7 +603,107 @@ static s32 func_01E01690_b631(s32 arg0, Spark_b631_01E01690 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b631", func_01E01920_b631);
+/* shape b631:01E01920, 257 insns: b422:01E01950 family spark: grey, size 8..23, variant (rand>>4)%3, drift -0.62..0.61
+   (x/y, an 80th) and -0.5..0.49 (z, a 100th), random turn 0x5A turning (rand>>4)%20 - 10 a tick, spin -0x400..0x3FF
+   per axis, frame (rand>>4)%4, hold 32..41; alpha up by 0x40 during the hold, down by 9 after it (and from scene time
+   180); once moving it drifts and slides 5 along z (sign by ctx+0xB2B4); on tick 30 (before scene time 180) it
+   hands its position to the scene and starts the module's b631:01E01D30 through b631:01E02520 */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 dir;
+    s16 ddir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b631_01E01920;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f org;
+    u8 pad260[0xB2B4 - 0x260];
+    s16 flip;
+    u8 padB2B6[2];
+    s16 timer;
+} Scn_b631_01E01920;
+
+static s32 func_01E01920_b631(Scn_b631_01E01920 *g, Spark_b631_01E01920 *o) {
+    extern u8 b631_01E01D30[];
+    extern void b631_01E02520(Scn_b631_01E01920 *g, void *data, s32 arg);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = (func_0019A5C8() >> 4) % 16 + 8;
+        o->fA = o->f8;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 80.0f;
+        o->vel[0] /= 80.0f;
+        o->vel[2] /= 100.0f;
+        o->dir = func_0019A5C8() % 360;
+        o->ddir = (func_0019A5C8() >> 4) % 20 - 10;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->hold = func_0019A5C8() % 10 + 32;
+    }
+    if (g->timer < 180) {
+        if (o->tick < o->hold) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x40;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos.x += o->vel[0];
+        o->pos.y += o->vel[1];
+        o->pos.z += o->vel[2];
+        if (g->flip != 0) {
+            o->pos.z -= 5.0f;
+        } else {
+            o->pos.z += 5.0f;
+        }
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    if (g->timer < 180) {
+        if (o->tick == 30) {
+            g->org = o->pos;
+            b631_01E02520(g, b631_01E01D30, 0);
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    o->dir += o->ddir;
+    return 0;
+}
 
 /* shape b631:01E01D30, 105 insns: a grey spark: size 5..19, random sub-frame 0..2, height 10..24, angle, rise 16..35, width 0..34,
    hold 3..5, rising once started; alpha up by 0x40 to 0xC0 until the hold, then down by 14 until it ends */

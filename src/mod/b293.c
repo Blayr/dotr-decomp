@@ -852,7 +852,112 @@ static s32 func_01E02140_b293(s32 arg0, Obj_b293_01E02140 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b293", func_01E022F0_b293);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b293", func_01E02780_b293);
+/* shape b293:01E02780, 225 insns: b746:01E03990's trail light in green (0x20/0xC0/0x20) feeding four 20-point
+   trails from joints 0xCB44..0xCB4A until scene frame 75; alpha up until frame 74 */
+
+typedef struct {
+    f32 x, y, z, w;
+} Pt_b293_01E02780;
+
+typedef struct {
+    u8 pad0[0xB1D0];
+    Pt_b293_01E02780 a[20];
+    Pt_b293_01E02780 b[20];
+    Pt_b293_01E02780 c[20];
+    Pt_b293_01E02780 d[20];
+    u8 padB6D0[0x1474];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    s16 jd;
+    u8 padCB4C[0x6C];
+    s16 frame;
+} Scene_b293_01E02780;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 hE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b293_01E02780;
+
+static s32 func_01E02780_b293(Scene_b293_01E02780 *g, Fx_b293_01E02780 *o) {
+    extern void b293_01E00080(Pt_b293_01E02780 *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[4];
+    s16 i;
+    s16 j;
+    s16 k;
+    s16 l;
+    Pt_b293_01E02780 *q;
+
+    func_001076F0(o->col, 0x20, 0xC0, 0x20);
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        o->hE = 30;
+        func_001F5620(func_001F53A0(), g->ja, p);
+        q = g->a;
+        for (i = 0; i < 19; i++) {
+            q[i].x = p[0];
+            q[i].y = p[1];
+            q[i].z = p[2];
+        }
+        func_001F5620(func_001F53A0(), g->jb, p);
+        q = g->b;
+        for (j = 0; j < 19; j++) {
+            q[j].x = p[0];
+            q[j].y = p[1];
+            q[j].z = p[2];
+        }
+        func_001F5620(func_001F53A0(), g->jc, p);
+        q = g->c;
+        for (k = 0; k < 19; k++) {
+            q[k].x = p[0];
+            q[k].y = p[1];
+            q[k].z = p[2];
+        }
+        func_001F5620(func_001F53A0(), g->jd, p);
+        q = g->d;
+        for (l = 0; l < 19; l++) {
+            q[l].x = p[0];
+            q[l].y = p[1];
+            q[l].z = p[2];
+        }
+        o->mode = 2;
+    }
+    if (g->frame < 74) {
+        if (o->col[3] < 0xF0) {
+            o->col[3] += 0x3C;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (g->frame < 75) {
+        func_001F5620(func_001F53A0(), g->ja, p);
+        b293_01E00080(&g->a[19], 20, 0, p);
+        func_001F5620(func_001F53A0(), g->jb, p);
+        b293_01E00080(&g->b[19], 20, 0, p);
+        func_001F5620(func_001F53A0(), g->jc, p);
+        b293_01E00080(&g->c[19], 20, 0, p);
+        func_001F5620(func_001F53A0(), g->jd, p);
+        b293_01E00080(&g->d[19], 20, 0, p);
+    }
+    o->h6 = 10;
+    o->t++;
+    return 0;
+}
 
 /* shape b293:01E02B10, 64 insns: b764:01E02A60 family ring (white/blue, height 200): in by 48 up to 0xC0 while the scene value is under 115, then out by 15 and ends */
 

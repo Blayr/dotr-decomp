@@ -337,7 +337,133 @@ static void func_01E00E90_b548(Scene_b548_01E00E90 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b548", func_01E01070_b548);
+/* func_00108030 really takes an s16 angle (functions.h says s32): hide that prototype */
+
+/* shape b548:01E01070, 275 insns: a violet (0x80, 0x20, 0xFF) puff of size 70 growing 0.5 a tick: drift (-20..19) /
+   60 and / 70 between ticks 6 and 39 and after 85, a fall toward point ctx->v over 80 ticks until tick 84; fades in
+   for 95 ticks while the scene counter is below 290 and out by 11 after it; its swing angle 0x5C counts 45..140, and
+   at 140 it moves the scene point to its own (height 42) and spawns 0x1E01670 (always before scene time 170, one in
+   four times before 290); either way it ends */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB228 - 0x260];
+    s16 v;
+    u8 padB22A[0x34];
+    s16 count;
+    u8 padB260[0xB460 - 0xB260];
+    u8 trig[1];
+} Ctx_b548_01E01070;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    u8 padA[6];
+    Vec4f pos;
+    u8 pad20[0x10];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b548_01E01070;
+
+static s32 func_01E01070_b548(Ctx_b548_01E01070 *ctx, Obj_b548_01E01070 *o) {
+    extern f32 func_00108030(void *table, s16 angle, s32 axis);
+    extern s32 b548_01E01670(void);
+    extern s32 b548_01E01E50(Ctx_b548_01E01070 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+
+    if (o->state == 1) {
+        o->f48 = 70.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x20, 0xFF);
+        o->h5C = 45;
+        o->h50 = 0;
+        o->h52 = 0;
+        o->h8 = func_0019A5C8() % 35;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 40 - 20;
+        o->f38 = func_0019A5C8() % 40 - 20;
+        o->f30 /= 60.0f;
+        o->f34 /= 70.0f;
+        o->f38 /= 70.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), ctx->v, b);
+        o->f4C = (a[2] - b[2]) / 80.0f;
+        o->state = 2;
+    }
+    if (o->t < 95) {
+        if (ctx->count < 290) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0xC0;
+            }
+        }
+    } else if (ctx->count < 290) {
+        if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t > 5 && o->t < 40) {
+        o->pos.x += o->f30;
+        o->pos.z += o->f38;
+    }
+    if (o->t != 0) {
+        if ((s16)o->t < 85) {
+            o->pos.z += o->f4C;
+        }
+        o->f48 += 0.5f;
+    }
+    if (ctx->count > 290) {
+        if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->h5C < 140) {
+        o->h5C++;
+    }
+    if (o->h5C == 140) {
+        ctx->pos = o->pos;
+        ctx->pos.y -= 120.0f * func_00108030(ctx->trig, 45, 0);
+        ctx->pos.y += 120.0f * func_00108030(ctx->trig, o->h5C, 0);
+        ctx->pos.y = 42.0f;
+        if (ctx->count < 170) {
+            b548_01E01E50(ctx, b548_01E01670, 0);
+        } else if (ctx->count < 290) {
+            if ((func_0019A5C8() >> 4) % 4 == 0) {
+                b548_01E01E50(ctx, b548_01E01670, 0);
+            }
+        }
+        o->state = 0;
+    }
+    if (o->t > 85) {
+        o->pos.x += o->f30;
+        o->pos.z += o->f38;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b548:01E014C0, 107 insns: b593:01E020C0 family: a white spark (size 100 growing 1, random frame 0..3) spinning a random 8..20 a tick from 50..99 (old angle moved to +0xC), random 0..7 at +0xA, size 0..34, held 3..7 ticks at 0xC0, then out by 11 and ends */
 

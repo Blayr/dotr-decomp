@@ -1611,7 +1611,174 @@ static s32 func_01E05710_c059(Scn_c059_01E05710 *g, Obj_c059_01E05710 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E05A70_c059);
+/* OVL_WARM */
+
+/* shape c059:01E05A70, 244 insns: c059:01E05710 cousin: turns -4 a tick; while the scene stage (0x2AA2) is past 7 its
+   spots (0x4E/0x50) shrink by 5 toward 10 i + 5 / 11 i + 5 for the first level i (ctx+0x2AD0) above its top; the top
+   drops 5 a tick to 0, the bottom follows within 28 and then alone until it reaches the top (frees its link, stops);
+   low spots fade; once 0x52 is set and the bottom is above ctx+0x2CD8 it hands itself to the scene (grey 0x50, alpha
+   10, size 155) and from scene stage 17 on restarts itself through c059:01E020E0. Alpha by scene stage and height */
+
+typedef struct Link_c059_01E05A70 {
+    u8 pad0[0x30];
+    s32 f30;
+} Link_c059_01E05A70;
+
+typedef struct Obj_c059_01E05A70 {
+    u8 pad0[2];
+    s16 top;
+    u8 pad4[6];
+    s16 bot;
+    u8 padC[0x24];
+    s32 f30;
+    Link_c059_01E05A70 *link;
+    u8 pad38[8];
+    u8 col0[4];
+    u8 col1[4];
+    s16 h48;
+    s16 ang;
+    u8 pad4C[2];
+    s16 h4E;
+    s16 h50;
+    s16 h52;
+} Obj_c059_01E05A70;
+
+typedef struct Scn_c059_01E05A70 {
+    u8 pad0[0x2A20];
+    s32 f2A20;
+    s32 f2A24;
+    s32 f2A28;
+    u8 pad2A2C[0x14];
+    f32 f2A40;
+    f32 f2A44;
+    f32 f2A48;
+    u8 pad2A4C[4];
+    s32 stage;
+    u8 col[4];
+    u8 pad2A58[4];
+    Obj_c059_01E05A70 *cur;
+    u8 pad2A60[0x30];
+    s16 f2A90;
+    u8 pad2A92[4];
+    s16 f2A96;
+    u8 pad2A98[4];
+    s16 f2A9C;
+    u8 pad2A9E[4];
+    s16 f2AA2;
+    u8 pad2AA4[0x2AD0 - 0x2AA4];
+    f32 lv[8];
+    u8 pad2AF0[0x2CD8 - 0x2AF0];
+    s16 f2CD8;
+} Scn_c059_01E05A70;
+
+static s32 func_01E05A70_c059(Scn_c059_01E05A70 *g, Obj_c059_01E05A70 *o) {
+    extern void c059_01E020E0(Scn_c059_01E05A70 *g, void *fn, void *fn2, s32 arg);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 i;
+
+    o->ang -= 4;
+    if (o->ang <= 360) {
+        o->ang = o->ang % 360;
+    }
+    for (i = 1; i < 8; i++) {
+        if (g->lv[i] > o->top) {
+            if (g->f2AA2 > 7) {
+                if (o->h4E >= i * 10 + 5) {
+                    o->h4E -= 5;
+                }
+                if (o->h50 >= i * 11 + 5) {
+                    o->h50 -= 5;
+                }
+            }
+            i = 8;
+        }
+    }
+    if (o->top > 0) {
+        o->top -= 5;
+        if (o->bot - o->top >= 28) {
+            o->bot -= 5;
+        }
+    } else {
+        o->bot -= 5;
+        if (o->bot < o->top) {
+            o->bot = o->top;
+            if (o->link != NULL) {
+                o->link->f30 = 0;
+            }
+            o->h48 = 0;
+        }
+    }
+    if (o->h50 < 20) {
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 0x10;
+        }
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 0x10;
+        }
+    }
+    if (o->bot < g->f2CD8 && o->h52 > 0) {
+        g->cur = o;
+        g->f2A40 = g->f2A44 = 155.0f;
+        func_001076F0(g->col, 0x50, 0x50, 0x50);
+        g->col[3] = 10;
+        g->f2A96 = 1;
+        g->f2A48 = o->bot;
+        g->f2A9C = 1;
+        g->f2A24 = 0;
+        g->f2A20 = 0;
+        g->f2A28 = 0;
+        g->f2A90 = o->ang;
+        if (g->stage > 16) {
+            c059_01E020E0(g, func_01E05A70_c059, 0, 0);
+        }
+        o->h52 = 0;
+    }
+    if (g->f2AA2 < 8) {
+        if (o->bot > 120) {
+            if (o->f30 != 0) {
+                if (o->col1[3] < 0x60) {
+                    o->col1[3] += 6;
+                }
+            }
+            if (o->col0[3] < 0x60) {
+                o->col0[3] += 6;
+            }
+        } else {
+            if (o->f30 != 0) {
+                if (o->col1[3] < 0x60) {
+                    o->col1[3] += 15;
+                }
+            }
+            if (o->col0[3] < 0x60) {
+                o->col0[3] += 15;
+            }
+        }
+    } else if (g->stage < 10) {
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 0x10;
+        }
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 0x10;
+        }
+    } else if (o->bot > 80) {
+        if (o->f30 != 0) {
+            if (o->col1[3] < 0x60) {
+                o->col1[3] += 5;
+            }
+        }
+        if (o->col0[3] < 0x60) {
+            o->col0[3] += 5;
+        }
+    } else {
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 5;
+        }
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 5;
+        }
+    }
+    return 0;
+}
 
 /* shape c059:01E05E40, 83 insns: a blue glow following a scene point plus its offset (or the scene's own point once the timer
    passes 0x87 with the flag set); fades in by 16 to 0xB0 while the state is at least 11, else out by 15; grows by 4 to 60,

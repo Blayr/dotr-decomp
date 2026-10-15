@@ -337,9 +337,269 @@ static void func_01E00790_b521(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E00CE0_b521);
+/* shape b521:01E00CE0, 248 insns: the scene script of b521: scene colour red 0x80, counts ctx+0x5536; on tick 1 it
+   spawns b521:01E01970, takes the camera point (ctx+0x5470), keeps a point 25 below it (ctx+0x5460) and the depth step
+   between the two views / 50 (ctx+0x5488); on tick 64 it lays 10 orbit points (ctx+0x53C0) at heights -30 + 17 i,
+   radius 3 (the first 0), random angles, dims the colour to 0x20 and spawns b521:01E010C0 at (0, 30, 0); from tick
+   170 to 220 the point moves along z by the step; every tick the orbit points turn 4; from tick 64 to 320 it spawns
+   b521:01E01440 and b521:01E01790 at the point; the model angle (/180, less 180) goes to ctx+0x5528 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E010C0_b521);
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x53C0 - 0x25C];
+    Vec4f pt[10];
+    f32 qx, qy, qz;
+    u8 pad546C[4];
+    f32 cam[4];
+    u8 pad5480[8];
+    f32 step;
+    u8 pad548C[0x54B4 - 0x548C];
+    u8 col[4];
+    u8 pad54B8[0xC];
+    f32 r[10];
+    u8 pad54EC[4];
+    s32 w54F0;
+    u8 pad54F4[0x10];
+    s16 ang[10];
+    u8 pad5518[2];
+    s16 joint;
+    u8 pad551C[0xC];
+    s16 h5528;
+    u8 pad552A[2];
+    s16 h552C;
+    s16 h552E;
+    u8 pad5530[2];
+    s16 h5532;
+    u8 pad5534[2];
+    s16 t;
+    u8 pad5538[0x5638 - 0x5538];
+    u8 trig[1];
+} Ctx_b521_01E00CE0;
+
+static void func_01E00CE0_b521(Ctx_b521_01E00CE0 *g) {
+    extern void b521_01E010C0();
+    extern void b521_01E01440();
+    extern void b521_01E01790();
+    extern void b521_01E01970();
+    extern void b521_01E02050(Ctx_b521_01E00CE0 *, void *, s32);
+    extern void b521_01E021C0(Ctx_b521_01E00CE0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F6160(s32, s32 *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001A22C0(f32);
+    f32 v[4];
+    f32 a[4];
+    f32 b[4];
+    s32 iv[4];
+    s32 i;
+    s32 h;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 1) {
+        b521_01E021C0(g, b521_01E01970, 0);
+    }
+    if (g->t == 64) {
+        for (i = 0, h = -30; i < 10; i++) {
+            g->pt[i].y = h;
+            h += 17;
+        }
+        g->r[0] = 0.0f;
+        for (i = 1; i < 10; i++) {
+            g->r[i] = 3.0f;
+        }
+        for (i = 0; i < 10; i++) {
+            g->ang[i] = func_0019A5C8() % 360;
+        }
+        g->col[0] = 0x20;
+        g->col[1] = 0x20;
+        g->col[2] = 0x20;
+        g->px = 0.0f;
+        g->py = 30.0f;
+        g->pz = 0.0f;
+        for (i = 0; i < 1; i++) {
+            g->h552E = 1;
+            g->w54F0 = 0;
+            g->h5532 = 1;
+            g->h552C = 0;
+            b521_01E02050(g, b521_01E010C0, 0);
+        }
+    }
+    if (g->t == 1) {
+        func_001F5F90(func_001F53A0(), g->cam);
+        g->qx = g->cam[0];
+        g->qy = g->cam[1] - 25.0f;
+        g->qz = g->cam[2];
+        func_001F5F90(func_001F53A0(), a);
+        func_001F5F90(func_001F5380(), b);
+        g->step = (b[2] - a[2]) / 50.0f;
+    }
+    if (g->t >= 170 && g->t < 221) {
+        g->qz += g->step;
+    }
+    func_001F5620(func_001F5380(), g->joint, v);
+    for (i = 0; i < 10; i++) {
+        if (i != 0) {
+            g->pt[i].x = g->r[i] * func_00108030(g->trig, g->ang[i], 1);
+            g->pt[i].z = g->r[i] * func_00108030(g->trig, g->ang[i], 0);
+        } else {
+            g->pt[i].x = g->r[i] * func_00108030(g->trig, g->ang[i], 1);
+            g->pt[i].z = g->r[i] * func_00108030(g->trig, g->ang[i], 0);
+        }
+        g->ang[i] += 4;
+        if (g->ang[i] >= 360) {
+            g->ang[i] %= 360;
+        }
+    }
+    func_001F6160(func_001F53A0(), iv);
+    g->h5528 = func_001A22C0(iv[1] / 180.0f);
+    g->h5528 -= 180;
+    if (g->t >= 64 && g->t < 321) {
+        g->px = g->qx;
+        g->py = g->qy;
+        g->pz = g->qz;
+        b521_01E021C0(g, b521_01E01440, 0);
+        g->px = g->qx;
+        g->py = g->qy;
+        g->pz = g->qz;
+        b521_01E021C0(g, b521_01E01790, 0);
+    }
+}
+
+/* shape b521:01E010C0, 223 insns: a rising pair (lead 0x4, tail 0x14) in grey 0x48: fades in by 10 below 50, out by
+   14 above; finds the first scene path point (ctx+0x53C0, 8 of them) above the lead and fits two frames to that
+   path segment (func_001098E0 into 0x40 and 0x50), growing 0x8A by 7 / 0x8C by 6 up to 20 / 19 per point; the lead
+   climbs 4 a tick to 80 with the tail within 18, then the tail alone until it passes the lead (frees its link,
+   stops); while state 1 and above 0 it hands itself to the scene and, from scene stage 31 on, starts the module's
+   b521:01E02050 (state 2 once it takes) */
+
+typedef struct Link_b521_01E010C0 {
+    u8 pad0[0x70];
+    s32 f70;
+} Link_b521_01E010C0;
+
+typedef struct Obj_b521_01E010C0 {
+    u8 pad0[4];
+    f32 lead;
+    u8 pad8[0xC];
+    f32 tail;
+    u8 pad18[0x18];
+    s32 f30;
+    s32 f34;
+    s32 f38;
+    u8 pad3C[4];
+    Vec4f fa;
+    Vec4f fb;
+    u8 pad60[0x14];
+    Link_b521_01E010C0 *link;
+    u8 pad78[8];
+    u8 col0[4];
+    u8 col1[4];
+    s16 state;
+    s16 h8A;
+    s16 h8C;
+    u8 pad8E[4];
+    s16 ang;
+} Obj_b521_01E010C0;
+
+typedef struct Scn_b521_01E010C0 {
+    u8 pad0[0x53C0];
+    Vec4f pt[8];
+    u8 pad5440[0x54B0 - 0x5440];
+    s32 stage;
+    u8 pad54B4[0xC];
+    Obj_b521_01E010C0 *cur;
+    u8 pad54C4[0x28];
+    f32 f54EC;
+    f32 f54F0;
+    u8 pad54F4[0x38];
+    s16 f552C;
+    s16 f552E;
+    u8 pad5530[2];
+    s16 f5532;
+} Scn_b521_01E010C0;
+
+static s32 func_01E010C0_b521(Scn_b521_01E010C0 *g, Obj_b521_01E010C0 *o) {
+    extern s32 b521_01E02050(Scn_b521_01E010C0 *g, void *fn, s32 arg);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_001098E0(void *, void *, void *, void *, void *);
+    Vec4f v;
+    Vec4f r1;
+    Vec4f r2;
+    s16 i;
+
+    v.y = 0;
+    func_001076F0(o->col0, 0x48, 0x48, 0x48);
+    func_001076F0(o->col1, 0x48, 0x48, 0x48);
+    o->f30 = 0;
+    o->f34 = 0;
+    o->f38 = 0;
+    if (o->lead < 50.0f) {
+        if (o->col0[3] < 0x50) {
+            o->col0[3] += 10;
+        }
+        if (o->col1[3] < 0x50) {
+            o->col1[3] += 10;
+        }
+    } else {
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 14;
+        }
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 14;
+        }
+    }
+    for (i = 1; i < 8; i++) {
+        if (g->pt[i].y > o->lead) {
+            v.x = g->pt[0].x;
+            v.z = g->pt[0].z;
+            func_001098E0(&r1, &v, o, &g->pt[i - 1], &g->pt[i]);
+            o->fa = r1;
+            func_001098E0(&r2, &v, o, &g->pt[i - 1], &g->pt[i]);
+            o->fb = r2;
+            if (o->h8A <= i * 20) {
+                o->h8A += 7;
+            }
+            if (o->h8C <= i * 19) {
+                o->h8C += 6;
+            }
+            i = 8;
+        }
+    }
+    if (o->lead <= 80.0f) {
+        o->lead += 4.0f;
+        if (o->lead - o->tail > 18.0f) {
+            o->tail += 4.0f;
+        }
+    } else {
+        o->tail += 4.0f;
+        if (o->tail > o->lead) {
+            if (o->link != NULL) {
+                o->link->f70 = 0;
+            }
+            o->state = 0;
+        }
+    }
+    if (o->state == 1 && o->tail > 0.0f) {
+        g->f54EC = 14.0f;
+        g->cur = o;
+        g->f552E = 1;
+        g->f54F0 = o->tail;
+        g->f5532 = 1;
+        g->f552C = o->ang - 15;
+        if (g->stage > 30 && b521_01E02050(g, func_01E010C0_b521, 0) != 0) {
+            o->state = 2;
+        }
+    }
+    return 0;
+}
 
 /* shape b521:01E01440, 212 insns: b256:01E02A40 family: a rising spark (size 4..9 growing to 16, scale 5..104, drift /400, random spin and spin speed -2048..2047), fades in for 40 ticks, out by 9; rises 2 a frame and turns */
 

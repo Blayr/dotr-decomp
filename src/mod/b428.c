@@ -489,7 +489,108 @@ static void func_01E01230_b428(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b428", func_01E014F0_b428);
+/* shape b428:01E014F0, 252 insns: b428:01E01A70's grey puff with drift (rand % 100 - 50) / 400 in x and y, sliding
+   1.7 in z (the sign by ctx+0xB2B4) and sinking 0.09; fades in for 90 ticks; at tick 80 it spawns three
+   b428:01E01A70 at its position; the scene counter past 445 pins the tick at 90 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB2B4 - 0x260];
+    s16 flip;
+    u8 padB2B6[2];
+    s16 count;
+} Ctx_b428_01E014F0;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b428_01E014F0;
+
+static s32 func_01E014F0_b428(Ctx_b428_01E014F0 *ctx, Obj_b428_01E014F0 *o) {
+    extern s32 b428_01E01A70(void);
+    extern s32 b428_01E026F0(Ctx_b428_01E014F0 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = func_0019A5C8() % 3 + 3;
+        o->hA = o->h8 + 4;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 90) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->h8 < 11) {
+            o->h8++;
+        }
+        if (o->hA < o->h8 + 4) {
+            o->hA++;
+        }
+    }
+    if (o->t != 0) {
+        if (ctx->flip != 0) {
+            o->pos.z -= 1.7f;
+        } else {
+            o->pos.z += 1.7f;
+        }
+        o->pos.x += o->f30;
+        o->pos.y += o->f34 - 0.09f;
+    }
+    if (o->t == 80) {
+        ctx->pos = o->pos;
+        b428_01E026F0(ctx, b428_01E01A70, 0);
+        b428_01E026F0(ctx, b428_01E01A70, 0);
+        b428_01E026F0(ctx, b428_01E01A70, 0);
+    }
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    o->t++;
+    if (ctx->count > 445) {
+        o->t = 90;
+    }
+    return 0;
+}
 
 /* shape b428:01E018E0, 98 insns, 2 copies: a grey ember: set up once (random size 2..4, frame, angle, speed 16..35, life
    3..5); fades in for its life, then out (b225:01E026A0 family, 0x58-state layout) */

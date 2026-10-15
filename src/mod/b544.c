@@ -467,7 +467,88 @@ static void func_01E00FB0_b544(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01320_b544);
+/* shape b544:01E01320, 242 insns: the b544 module's event step: red scene colour, counts ticks (0xA96C); at 85 spawns
+   b544:01E01F70 (slot 0, then slot 1); at 1 b544:01E02870; at 89 puts the point (0x2D0) on joint 0xA94E and spawns
+   b544:01E01BB0, 40 b544:01E01CA0 and four b544:01E01DE0 (angle 0x95E 0/90/45/135, slots 0/1/2/2); before 75 spawns
+   b544:01E016F0 then b544:01E01950 at joints 0xA950 and 0xA952, x jittered by -10..9 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0xA904 - 0x2E0];
+    u8 col[4];
+    u8 padA908[0xA94E - 0xA908];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    u8 padA954[0xA95E - 0xA954];
+    s16 ang;
+    u8 padA960[6];
+    s16 slot;
+    u8 padA968[4];
+    s16 count;
+} Ctx_b544_01E01320;
+
+static void func_01E01320_b544(Ctx_b544_01E01320 *g) {
+    extern s32 b544_01E016F0(void);
+    extern s32 b544_01E01950(void);
+    extern s32 b544_01E01BB0(void);
+    extern s32 b544_01E01CA0(void);
+    extern s32 b544_01E01DE0(void);
+    extern s32 b544_01E01F70(void);
+    extern s32 b544_01E02870(void);
+    extern void b544_01E031D0(Ctx_b544_01E01320 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->count++;
+    if (g->count == 85) {
+        g->slot = 0;
+        b544_01E031D0(g, b544_01E01F70, 0);
+        g->slot = 1;
+    }
+    if (g->count == 1) {
+        b544_01E031D0(g, b544_01E02870, 0);
+    }
+    if (g->count == 89) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        b544_01E031D0(g, b544_01E01BB0, 0);
+        for (i = 0; i < 40; i++) {
+            b544_01E031D0(g, b544_01E01CA0, 0);
+        }
+        g->ang = 0;
+        g->slot = 0;
+        b544_01E031D0(g, b544_01E01DE0, 0);
+        g->ang = 90;
+        g->slot = 1;
+        b544_01E031D0(g, b544_01E01DE0, 0);
+        g->ang = 45;
+        g->slot = 2;
+        b544_01E031D0(g, b544_01E01DE0, 0);
+        g->ang = 135;
+        g->slot = 2;
+        b544_01E031D0(g, b544_01E01DE0, 0);
+    }
+    if (g->count < 75) {
+        func_001F5620(func_001F53A0(), g->j1, &g->pos);
+        g->pos.x += func_0019A5C8() % 20 - 10;
+        b544_01E031D0(g, b544_01E016F0, 0);
+        func_001F5620(func_001F53A0(), g->j2, &g->pos);
+        g->pos.x += func_0019A5C8() % 20 - 10;
+        b544_01E031D0(g, b544_01E016F0, 0);
+        func_001F5620(func_001F53A0(), g->j1, &g->pos);
+        g->pos.x += func_0019A5C8() % 20 - 10;
+        b544_01E031D0(g, b544_01E01950, 0);
+        func_001F5620(func_001F53A0(), g->j2, &g->pos);
+        g->pos.x += func_0019A5C8() % 20 - 10;
+        b544_01E031D0(g, b544_01E01950, 0);
+    }
+}
 
 /* shape b544:01E016F0, 151 insns: b354:01E022F0's tumbling chip in red (0xFF, 0x40, 0x40), size 100 (half kept in 0xA) */
 
@@ -946,4 +1027,130 @@ static s32 func_01E031D0_b544(Pool_b544_01E031D0 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E03370_b544);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E038C0_b544);
+/* shape b544:01E038C0, 253 insns: b499:01E03F70's hanging quad with texture 0x14 (page an->h56), colours at 0x60/0x64,
+   the matrix from the anim's own float point (0x10) and rotation (0x20), the quad 4.7 wide, its lower edge kept
+   above 0 right away; scene texture 0xA8E4, depth 0xA93C, into 0xA90C */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b544_01E038C0;
+
+typedef struct {
+    Rgbaq_b544_01E038C0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b544_01E038C0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b544_01E038C0 v[4];
+} Pkt_b544_01E038C0;
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    u8 pad8[8];
+    f32 px, py, pz;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x26];
+    s16 page;
+    u8 pad58[8];
+    u8 col[4];
+    u8 col2[4];
+} Anim_b544_01E038C0;
+
+typedef struct {
+    u8 pad00[0x290];
+    u8 m[0x40];
+    u8 pad2D0[0x8FD0 - 0x2D0];
+    u8 cam[0x150];
+    u8 pad9120[0xA8E4 - 0x9120];
+    s32 tex;
+    u8 padA8E8[0xA90C - 0xA8E8];
+    s32 ot;
+    u8 padA910[0xA93C - 0xA910];
+    f32 depth;
+} Scene_b544_01E038C0;
+
+static void func_01E038C0_b544(Scene_b544_01E038C0 *g, Anim_b544_01E038C0 *an, Pkt_b544_01E038C0 *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b544_01E038C0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_00107130(void *, void *, s32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 m[16];
+    f32 v[4];
+    f32 rm[4];
+
+    if (lit == 0) {
+        func_00106080(rm, 0x14, an->page, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_0020EB40(g->m);
+    func_00107130(g->cam, v, 1);
+    v[0] = an->px;
+    v[1] = an->py;
+    v[2] = an->pz;
+    func_0020C940(m, 0, an->rot, v);
+    func_0020BC00(g->m, m);
+    q[0].x = an->x;
+    q[0].y = an->y;
+    q[0].z = an->z;
+    q[1] = q[0];
+    q[1].x += 4.7f;
+    q[2].x = an->x;
+    q[2].y = an->y;
+    q[2].z = an->z;
+    q[2].y -= an->h6;
+    if (q[2].y < 0.0f) {
+        q[2].y = 0.0f;
+    }
+    q[3] = q[2];
+    q[3].x += 4.7f;
+    if (q[0].y > 200.0f) {
+        q[0].y = 200.0f;
+    }
+    if (q[1].y > 200.0f) {
+        q[1].y = 200.0f;
+    }
+    if (q[2].y > 200.0f) {
+        q[2].y = 200.0f;
+    }
+    if (q[3].y > 200.0f) {
+        q[3].y = 200.0f;
+    }
+    if (q[0].y < 0.0f) {
+        q[0].y = 0.0f;
+    }
+    if (q[1].y < 0.0f) {
+        q[1].y = 0.0f;
+    }
+    if (q[2].y < 0.0f) {
+        q[2].y = 0.0f;
+    }
+    if (q[3].y < 0.0f) {
+        q[3].y = 0.0f;
+    }
+    if (func_00205630(q, 0x70000000, g->m, p, &g->depth) != 0) {
+        func_002075F0(p, g->ot, (u32)g->depth);
+    }
+}

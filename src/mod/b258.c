@@ -1026,7 +1026,116 @@ static s32 func_01E02D80_b258(void *arg0, Obj_b258_01E02D80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E02F40_b258);
+/* shape b258:01E02F40, 220 insns: one trail effect's step: on state 1 the trail of slot h30 (49 points) and its
+   head are set from anchor h30 % 4 (state 2, life 30); grow h6 up to 10 for 7 ticks, then shrink it; alpha 0xC0
+   for 7 ticks, then fade by 9 (state 0 below 11) and life -3; colour 0x80 on even ticks, 0xF0 on odd; draw the
+   trail while young; at tick 7 spawn 0x1E033B0, four 0x1E02D80 and fifteen 0x1E02C10 from the trail start */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b258_01E02F40;
+
+typedef struct {
+    Vec_b258_01E02F40 p[50];
+} Trail_b258_01E02F40;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec_b258_01E02F40 pos;
+    u8 pad260[0x28A0 - 0x260];
+    Vec_b258_01E02F40 anchor[16];
+    Vec_b258_01E02F40 head[0x1E];
+    Trail_b258_01E02F40 trail[0x1C];
+    u8 pad[0x89C4 - 0x2B80 - 0x1C * 0x320];
+    s16 slot;
+} Scene_b258_01E02F40;
+
+typedef struct {
+    u8 pad0[6];
+    s16 size;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 id;
+    s16 tick;
+    u8 pad34[2];
+    s16 state;
+    s16 life;
+} Fx_b258_01E02F40;
+
+static s32 func_01E02F40_b258(Scene_b258_01E02F40 *g, Fx_b258_01E02F40 *o) {
+    extern void b258_01E00080(void *, s32, s32, void *);
+    extern s32 b258_01E04E70(void *, s32, s32);
+    extern void b258_01E033B0(void);
+    extern void b258_01E02D80(void);
+    extern void b258_01E02C10(void);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 m;
+    s32 k;
+    s16 i;
+    Vec_b258_01E02F40 *d;
+
+    m = o->id % 4;
+    if (o->state == 1) {
+        o->size = 1;
+        o->col[3] = 0;
+        d = g->trail[o->id].p;
+        for (k = 0; k < 49; k++) {
+            d->x = g->anchor[m].x;
+            d->y = g->anchor[m].y;
+            d->z = g->anchor[m].z;
+            d++;
+        }
+        g->head[o->id] = g->anchor[m];
+        o->life = 30;
+        o->state = 2;
+    }
+    if (o->tick <= 6) {
+        if (o->size <= 9) {
+            o->size++;
+        }
+    } else {
+        if (o->size > 0) {
+            o->size--;
+        }
+    }
+    if (o->tick <= 6) {
+        o->col[3] = 0xC0;
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+        if (o->life > 0) {
+            o->life -= 3;
+        }
+    }
+    if (o->tick % 2 == 0) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+    }
+    if (o->tick <= 6) {
+        b258_01E00080(&g->trail[o->id].p[49], 0x32, 0, &g->head[o->id]);
+    }
+    if (o->tick == 7) {
+        g->slot = o->id;
+        b258_01E04E70(g, (s32)b258_01E033B0, 0);
+        b258_01E04E70(g, (s32)b258_01E02D80, 0);
+        b258_01E04E70(g, (s32)b258_01E02D80, 0);
+        b258_01E04E70(g, (s32)b258_01E02D80, 0);
+        b258_01E04E70(g, (s32)b258_01E02D80, 0);
+        g->pos.x = g->trail[o->id].p[0].x;
+        g->pos.y = g->trail[o->id].p[0].y;
+        g->pos.z = g->trail[o->id].p[0].z;
+        for (i = 0; i < 15; i++) {
+            b258_01E04E70(g, (s32)b258_01E02C10, 0);
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b258:01E032B0, 63 insns: on start 0x38 = 0x32, colour 0xF0 grey, second colour (0xF0, 0x80, 0x10) with alpha
    0, random 0x3A; alpha grows by 0x60 (below 0xC) for 5 ticks, then fades by 15 and stops; the rotation at 0x10

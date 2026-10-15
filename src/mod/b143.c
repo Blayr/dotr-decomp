@@ -761,4 +761,125 @@ static s32 func_01E01980_b143(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
 
 INCLUDE_ASM("asm/nonmatchings/mod/b143", func_01E02510_b143);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b143", func_01E02B60_b143);
+/* shape b143:01E02B60, 228 insns: b169:01E05490's falling-ash ring at g+0xE0 with a second camera block
+   (g+0x2274) moved alongside: while flag 0x1F is set both go towards -30 (else +30), the scene's top flag bit
+   follows the first; each live particle falls by 6 and spreads (x0.8 above the ground, x1.12 below), reborn below
+   -200 at a random angle on the scene radius with a random height (-0.1 * rand % 200), alpha 0x40 from step 43;
+   past step 238 the 0x15B block is cleared; then the module's second emitter (g+0x3280) runs at scale 1, its 0x328B
+   alpha is set at step 43 and cleared from 238, and 60 points are laid out from the particles (x1.5, z pushed by
+   the camera's swing) while their rotations spin by 0x1000 */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 a;
+    u8 pad;
+    s16 d;
+} Part_b143_01E02B60;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 hE;
+} Tab_b143_01E02B60;
+
+typedef struct {
+    f32 x, y, z;
+} Pt_b143_01E02B60;
+
+typedef struct {
+    u8 pad0[0xE0];
+    u8 vE0[0x70];
+    u8 v150[0xB];
+    u8 b15B[0x35];
+    Tab_b143_01E02B60 *tab;
+    u8 pad194[8];
+    f32 radius;
+    u8 pad1A0[4];
+    f32 swing;
+    s16 h1A8;
+    s16 n;
+    u8 pad1AC[4];
+    Part_b143_01E02B60 part[60];
+    u8 pad570[0x2274 - 0x570];
+    u8 cam2[0x3280 - 0x2274];
+    u8 v3280[0xB];
+    u8 b328B[0x25];
+    s32 rot[60][4];
+    Pt_b143_01E02B60 pt[60];
+    u8 pad3940[0x3B04 - 0x3940];
+    s32 step;
+    u8 pad3B08[4];
+    u32 flags;
+} Scene_b143_01E02B60;
+
+static void func_01E02B60_b143(Scene_b143_01E02B60 *g, s32 arg) {
+    extern void b143_01E00250(s32, void *, void *, Vec4f *);
+    extern void b143_01E009D0(s32, void *, void *);
+    extern s32 func_00104520(s32, s32);
+    extern s32 func_00103540(void *, f32, f32);
+    extern s32 func_00103390(void *, f32, f32);
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    extern void func_00103470(void *, s32, s32);
+    s32 i;
+    s32 r;
+    Vec4f sc;
+
+    if (func_00104520(g->flags, 0x1F)) {
+        if (func_00103540(&g->swing, -30.0f, 1.5f) == 0) {
+            g->flags &= 0x7FFFFFFF;
+        }
+        func_00103540(g->cam2, -30.0f, 1.5f);
+    } else {
+        if (func_00103390(&g->swing, 30.0f, 1.5f) == 0) {
+            g->flags |= 0x80000000;
+        }
+        func_00103390(g->cam2, 30.0f, 1.5f);
+    }
+    b143_01E009D0(arg, g->v150, g->vE0);
+    for (i = 0; i < g->n; i++) {
+        if (g->part[i].d < 0) {
+            continue;
+        }
+        g->part[i].y -= 6.0f;
+        if (g->part[i].y > 0.0f) {
+            g->part[i].z *= 0.8f;
+            g->part[i].x *= 0.8f;
+        } else {
+            g->part[i].z *= 1.12f;
+            g->part[i].x *= 1.12f;
+        }
+        if (g->part[i].y < -200.0f) {
+            r = func_0019A5C8() % 0x10000;
+            g->part[i].d = 0;
+            g->part[i].z = g->radius * func_0020B480(r);
+            g->part[i].x = g->radius * func_0020B550(r);
+            g->part[i].y = 0.1f * -(f32)(func_0019A5C8() % 200);
+            if (g->step >= 43) {
+                g->part[i].a = 0x40;
+            } else {
+                g->part[i].a = 0;
+            }
+        }
+    }
+    if (g->step > 238) {
+        func_00103470(g->b15B, 0, 0x10);
+    }
+    sc.x = sc.z = sc.y = 1.0f;
+    b143_01E00250(arg, g->v3280, g->vE0, &sc);
+    if (g->step == 43) {
+        g->b328B[0] = 0x80;
+    }
+    if (g->step >= 238) {
+        func_00103470(g->b328B, 0, 8);
+    }
+    for (i = 0; i < 60; i++) {
+        g->pt[i].y = 1.5f * g->part[i].y;
+        g->pt[i].z = g->part[i].z - g->swing * func_0020B550(g->h1A8 * g->tab[i].hE);
+        g->pt[i].x = 1.5f * g->part[i].x;
+        g->rot[i][0] += 0x1000;
+        g->rot[i][1] += 0x1000;
+        g->rot[i][2] += 0x1000;
+    }
+}

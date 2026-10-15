@@ -793,7 +793,89 @@ static void func_01E01BD0_b632(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b632", func_01E01E90_b632);
+/* shape b632:01E01E90, 230 insns: the effect scene's step: counts the frame (0x5C30); each new orb (age 0) aims at joint
+   0x5BF4 jittered by -10..9 and takes a sixtieth of the gap as its speed (y and z; z set twice), then each orb under
+   age 60 moves; frames 115, 130, .., 190 add an orb on joint 0x5BE4 and spawn 0x1E02750, 0x1E03770 and three
+   0x1E023C0 there; frames 58..158 spawn 0x1E032E0 and, before frame 100, 0x1E03100 and 0x1E02F70 on the joint; frame
+   65 spawns 0x1E038F0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x5A50 - 0x260];
+    Vec4f pts[10];
+    Vec4f vel[10];
+    u8 pad5B90[0x5BE4 - 0x5B90];
+    s16 ja;
+    u8 pad5BE6[0xE];
+    s16 jb;
+    u8 pad5BF6[0xE];
+    s16 age[10];
+    u8 pad5C18[0xE];
+    s16 k;
+    s16 n;
+    u8 pad5C2A[6];
+    s16 t;
+} Scene_b632_01E01E90;
+
+static void func_01E01E90_b632(Scene_b632_01E01E90 *g) {
+    extern void b632_01E023C0(void);
+    extern void b632_01E02750(void);
+    extern void b632_01E02F70(void);
+    extern void b632_01E03100(void);
+    extern void b632_01E032E0(void);
+    extern void b632_01E03770(void);
+    extern void b632_01E038F0(void);
+    extern s32 b632_01E045B0(Scene_b632_01E01E90 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[8];
+    s16 i;
+
+    g->t++;
+    for (i = 0; i < g->n; i++) {
+        if (g->age[i] == 0) {
+            func_001F5620(func_001F5380(), g->jb, v);
+            v[0] += func_0019A5C8() % 20 - 10;
+            v[1] += func_0019A5C8() % 20 - 10;
+            g->vel[i].z = (v[2] - g->pts[i].z) / 60.0f;
+            g->vel[i].y = (v[1] - g->pts[i].y) / 60.0f;
+            g->vel[i].z = (v[2] - g->pts[i].z) / 60.0f;
+            g->age[i]++;
+        }
+    }
+    for (i = 0; i < g->n; i++) {
+        if (g->age[i] != 0 && g->age[i] < 60) {
+            g->pts[i].z += g->vel[i].z;
+            g->pts[i].y += g->vel[i].y;
+            g->pts[i].x += g->vel[i].x;
+            g->age[i]++;
+        }
+    }
+    if (g->t == 115 || g->t == 130 || g->t == 145 || g->t == 160 || g->t == 175 || g->t == 190) {
+        g->k = g->n;
+        func_001F5620(func_001F53A0(), g->ja, &g->pts[g->k]);
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        b632_01E045B0(g, (s32)b632_01E02750, 0);
+        b632_01E045B0(g, (s32)b632_01E03770, 0);
+        b632_01E045B0(g, (s32)b632_01E023C0, 0);
+        b632_01E045B0(g, (s32)b632_01E023C0, 0);
+        b632_01E045B0(g, (s32)b632_01E023C0, 0);
+        g->n++;
+    }
+    if (g->t >= 58 && g->t < 159) {
+        b632_01E045B0(g, (s32)b632_01E032E0, 0);
+        if (g->t < 100) {
+            func_001F5620(func_001F53A0(), g->ja, &g->pos);
+            b632_01E045B0(g, (s32)b632_01E03100, 0);
+            b632_01E045B0(g, (s32)b632_01E02F70, 0);
+        }
+    }
+    if (g->t == 65) {
+        b632_01E045B0(g, (s32)b632_01E038F0, 0);
+    }
+}
 
 /* shape b632:01E02230, 100 insns: on start f48 15, variant 0..6, colour 0x80 grey, random 0x5A, 0xA 0..7, 0xC keeps
    the old 0x50, 0x50 5..24, speed 16..45 (0xE), 0x8 0..34, hold 3..7 (0x6); alpha 0x80 during the hold, then fades by
@@ -961,7 +1043,115 @@ static s32 func_01E02550_b632(s32 unused, Mote_b111_01E022F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b632", func_01E02750_b632);
+/* shape b632:01E02750, 225 insns: b426:01E02370 cousin: pale grey (0xCF) with a red second colour flickering to dull
+   red on even ticks, f48 40 growing by 10 up to 100; alpha up for 60 ticks; at tick 60 it spawns ten 0x1E02230 and
+   four 0x1E02AE0 (ctx+0x5C26 = 0..3) at its point (ctx+0x5A50 table) and bumps ctx+0x5C2A; ticks 60..64 spawn
+   0x1E02E00, ticks up to 60 0x1E03450 and 0x1E035F0 there */
+
+typedef struct {
+    f32 x, y, z, w;
+} V_b632_01E02750;
+
+typedef struct {
+    u8 pad0[0x250];
+    V_b632_01E02750 pos;
+    u8 pad260[0x5A50 - 0x260];
+    V_b632_01E02750 pts[1];
+    u8 pad5A60[0x5C26 - 0x5A60];
+    s16 sel;
+    u8 pad5C28[2];
+    s16 count;
+} Game_b632_01E02750;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 fE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 pt;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b632_01E02750;
+
+static s32 func_01E02750_b632(Game_b632_01E02750 *g, Fx_b632_01E02750 *o) {
+    extern s32 b632_01E02230(void);
+    extern s32 b632_01E02AE0(void);
+    extern s32 b632_01E02E00(void);
+    extern s32 b632_01E03450(void);
+    extern s32 b632_01E035F0(void);
+    extern s32 b632_01E045B0(Game_b632_01E02750 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        o->f48 = 40.0f;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->f5A = func_0019A5C8() % 360;
+        o->fE = func_0019A5C8() % 10 + 1;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f5A = 15;
+        o->f5C = 15;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0xFF, 8, 8);
+    } else {
+        func_001076F0(o->col2, 0xC0, 8, 8);
+    }
+    if (o->tick < 60) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick == 60) {
+        g->pos = g->pts[o->pt];
+        for (i = 0; i < 10; i++) {
+            b632_01E045B0(g, b632_01E02230, 0);
+        }
+        g->sel = 0;
+        b632_01E045B0(g, b632_01E02AE0, 0);
+        g->sel = 1;
+        b632_01E045B0(g, b632_01E02AE0, 0);
+        g->sel = 2;
+        b632_01E045B0(g, b632_01E02AE0, 0);
+        g->sel = 3;
+        b632_01E045B0(g, b632_01E02AE0, 0);
+        g->count++;
+    }
+    if (o->tick >= 60 && o->tick < 65) {
+        g->pos = g->pts[o->pt];
+        b632_01E045B0(g, b632_01E02E00, 0);
+    }
+    if (o->tick < 61) {
+        g->pos = g->pts[o->pt];
+        b632_01E045B0(g, b632_01E03450, 0);
+        b632_01E045B0(g, b632_01E035F0, 0);
+    }
+    if (o->tick != 0) {
+        if (o->f48 < 100.0f) {
+            o->f48 += 10.0f;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b632:01E02AE0, 197 insns: a white/pink flash quad in quarter k (0x50): on start size 20, white colour and a
    pink second colour, turn 0..0x1FFF + 0x4000 k and tilt 0..0x4FFF from the quarter the scene's counter (0x5C2A % 4)

@@ -109,7 +109,126 @@ static void func_01E00080_b260(Obj_b082_01E00920 *o, Data_b082_01E00920 *data, s
     } while (i < 36);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b260", func_01E004E0_b260);
+/* shape b260:01E004E0, 242 insns: a beam trail of 69 points at w+0x18B0: set up once from the source point (0x74A0),
+   size 20, colour (0x80, 0x10, 0x10); alpha held at 0xC0 until the world clock (0x768A) reaches 215, then fades by 7
+   and the size shrinks by 0.5; blinks red/dark red by tick parity; ticks 16..79 grow the size by 7 (13 from clock 135);
+   the head point (0x74B0) sits on joint 0x7654 and the first o->frame points run toward joint 0x7664 in 30ths, the
+   reach growing for 50 ticks; the source point follows the first trail point */
+
+typedef struct {
+    u8 pad0[0x18B0];
+    Vec4f trail[69];
+    u8 pad1D00[0x74A0 - 0x1D00];
+    Vec4f src;
+    Vec4f head;
+    u8 pad74C0[0x7654 - 0x74C0];
+    s16 ja;
+    u8 pad7656[0xE];
+    s16 jb;
+    u8 pad7666[0x24];
+    s16 clock;
+} World_b260_01E004E0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    u8 pad8[0x40];
+    f32 size;
+    u8 pad4C[4];
+    s16 reach;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Beam_b260_01E004E0;
+
+static s32 func_01E004E0_b260(World_b260_01E004E0 *w, Beam_b260_01E004E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[12];
+    f32 *q;
+    Vec4f *p;
+    f32 k;
+    f32 t;
+    s16 i;
+    s16 j;
+
+    if (o->state == 1) {
+        o->frame = 8;
+        o->c0[3] = 0;
+        p = w->trail;
+        for (i = 0; i < 69; i++) {
+            p[i].x = w->src.x;
+            p[i].y = w->src.y;
+            p[i].z = w->src.z;
+        }
+        func_001076F0(o->c1, 0x80, 0x10, 0x10);
+        o->reach = 0;
+        o->size = 20.0f;
+        o->state = 2;
+    }
+    if (o->frame < 68) {
+        o->frame++;
+    }
+    if (w->clock < 215) {
+        o->c0[3] = 0xC0;
+    } else {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->size > 0.0f) {
+            o->size -= 0.5f;
+        }
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0x10, 0x10);
+    } else {
+        func_001076F0(o->c0, 0xE0, 0x10, 0x10);
+    }
+    if (o->t > 15 && o->t < 80) {
+        if (w->clock < 135) {
+            o->size += 7.0f;
+        } else {
+            o->size += 13.0f;
+        }
+    }
+    if (o->t < 50) {
+        o->reach++;
+    }
+    k = o->reach;
+    func_001F5620(func_001F53A0(), w->ja, v);
+    func_001F5620(func_001F5380(), w->jb, q = (f32 *)(u32)&v[4]);
+    w->head = *(Vec4f *)v;
+    q[0] = (q[0] - v[0]) / 30.0f;
+    v[6] = (v[6] - v[2]) / 30.0f;
+    v[5] = (v[5] - v[1]) / 30.0f;
+    for (j = 0; j < 69; j++) {
+        w->trail[j].x = 0.0f;
+        if (j < o->frame) {
+            t = k - j;
+            if (t < 0.0f) {
+                t = 0.0f;
+            }
+            w->trail[j].z = v[2] + v[6] * t;
+            w->trail[j].x = v[0] + q[0] * t;
+            w->trail[j].y = v[1] + v[5] * t;
+        } else {
+            w->trail[j].x = v[0];
+            w->trail[j].z = v[2];
+            w->trail[j].y = v[1];
+        }
+    }
+    w->src = w->trail[0];
+    o->t++;
+    return 0;
+}
 
 /* shape b260:01E008B0, 96 insns: a red flicker flash: size 110 growing by 3 until frame 180, random angle; colour flickers red
    by frame parity; alpha up by 16 while the scene timer is under 240, then down by 12 until it ends; spins a quarter turn */

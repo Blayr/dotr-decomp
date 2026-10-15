@@ -495,7 +495,133 @@ INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E01100_c061);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E014F0_c061);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E01BA0_c061);
+/* shape c061:01E01BA0, 223 insns: b056:01E012E0's rising column on the scene's 8-point spine (g+0x5710): both colours
+   (0x78, 0x78, 0x20), no spin; alpha in by 10 to 0x50 below height 100, else out by 14; the first spine point above its
+   top gives the two side points and widens 0x8A by 7 / 0x8C by 6 up to 20 / 19 per point; the top grows by 4 up to 80
+   with the base kept within 18, then the base until it reaches the top, which ends its parent link; in state 1, with a
+   base above 0, it publishes itself and the base to the scene (g+0x6850..0x68C2) and, while the scene count 0x68C8 is
+   under 880, asks the module to run it (c061:01E033A0), entering state 2 */
+
+typedef struct {
+    u8 pad0[0x70];
+    s32 w70;
+} Link_c061_01E01BA0;
+
+typedef struct {
+    u8 pad0[4];
+    f32 top;
+    u8 pad8[0xC];
+    f32 base;
+    u8 pad18[0x18];
+    s32 w30;
+    s32 w34;
+    s32 w38;
+    u8 pad3C[4];
+    Vec4f a;
+    Vec4f b;
+    u8 pad60[0x14];
+    Link_c061_01E01BA0 *link;
+    u8 pad78[8];
+    u8 c80[4];
+    u8 c84[4];
+    s16 state;
+    s16 h8A;
+    s16 h8C;
+    u8 pad8E[4];
+    s16 ang;
+} Obj_c061_01E01BA0;
+
+typedef struct {
+    u8 pad0[0x5710];
+    Vec4f pts[8];
+    u8 pad5790[0x6850 - 0x5790];
+    Obj_c061_01E01BA0 *obj;
+    u8 pad6854[0x28];
+    f32 size;
+    f32 base;
+    u8 pad6884[0x38];
+    s16 ang;
+    s16 h68BE;
+    u8 pad68C0[2];
+    s16 h68C2;
+    u8 pad68C4[4];
+    s16 step;
+} Scene_c061_01E01BA0;
+
+static s32 func_01E01BA0_c061(Scene_c061_01E01BA0 *g, Obj_c061_01E01BA0 *o) {
+    extern s32 c061_01E033A0(Scene_c061_01E01BA0 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern Vec4f func_001098E0(void *, void *, void *, void *);
+    f32 v[4];
+    s16 i;
+
+    v[1] = 0.0f;
+    func_001076F0(o->c80, 0x78, 0x78, 0x20);
+    func_001076F0(o->c84, 0x78, 0x78, 0x20);
+    o->w30 = 0;
+    o->w34 = 0;
+    o->w38 = 0;
+    if (o->top < 100.0f) {
+        if (o->c80[3] < 0x50) {
+            o->c80[3] += 10;
+        }
+        if (o->c84[3] < 0x50) {
+            o->c84[3] += 10;
+        }
+    } else {
+        if (o->c80[3] > 16) {
+            o->c80[3] -= 14;
+        }
+        if (o->c84[3] > 16) {
+            o->c84[3] -= 14;
+        }
+    }
+    for (i = 1; i < 8; i++) {
+        if (!(g->pts[i].y <= o->top)) {
+            v[0] = g->pts[0].x;
+            v[2] = g->pts[0].z;
+            o->a = func_001098E0(v, o, &g->pts[i - 1], &g->pts[i]);
+            o->b = func_001098E0(v, o, &g->pts[i - 1], &g->pts[i]);
+            if (o->h8A <= i * 20) {
+                o->h8A += 7;
+            }
+            if (o->h8C <= i * 19) {
+                o->h8C += 6;
+            }
+            i = 8;
+        }
+    }
+    if (o->top <= 80.0f) {
+        o->top += 4.0f;
+        if (!(o->top - o->base <= 18.0f)) {
+            o->base += 4.0f;
+        }
+    } else {
+        o->base += 4.0f;
+        if (!(o->base <= o->top)) {
+            if (o->link != 0) {
+                o->link->w70 = 0;
+            }
+            o->state = 0;
+        }
+    }
+    if (o->state == 1) {
+        if (!(o->base <= 0.0f)) {
+            g->size = 14.0f;
+            g->obj = o;
+            g->h68BE = 1;
+            g->base = o->base;
+            g->h68C2 = 1;
+            g->ang = o->ang - 15;
+            if (g->step < 880) {
+                if (c061_01E033A0(g, func_01E01BA0_c061, 0)) {
+                    o->state = 2;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 /* shape c061:01E01F20, 65 insns: a spinning shock wave (grey/red, from 300 growing 26): in by 64 up to 0x80 for 4 ticks, then out by 9 and ends */
 
@@ -800,7 +926,138 @@ static s32 func_01E02660_c061(Ctx_c061_01E02660 *g, Fx_c061_01E02660 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E02940_c061);
+/* shape c061:01E02940, 235 insns (B855_OBJ_MOVE_10_): a swinging light with a 13-point trail in the scene's trail
+   table (g+0x57E0, 0xD0 per object): on start size 100, a random blink phase, both colours grey, the second one
+   clear, scale 13 and step 4, and the whole trail set to its position; for 300 ticks both alphas grow by 0x13 (below
+   0xC0), then the first fades by 14 and the object stops; the blink flag flips each tick; after the first tick it
+   moves along its heading by the step, the heading swinging 20 (first 8 objects) or 10 either way by parity; z
+   moves by 8 with the scene flag at g+0x68C6; for 300 ticks the scene light (g+0x250) follows it; colour 0xC0 on
+   even ticks and 0xFF on odd ones; the trail shifts in the newest point (module K_Point_INPos), the rotation is
+   normalised and the size grows to 12 */
+
+typedef struct {
+    Vec4f pt[13];
+} Trail_c061_01E02940;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f light;
+    u8 pad260[0x57E0 - 0x260];
+    Trail_c061_01E02940 trail[20];
+    u8 pad6820[0x68C6 - 0x6820];
+    s16 flag;
+    u8 pad68C8[0x69CC - 0x68C8];
+    u8 trig[1];
+} Scene_c061_01E02940;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 step;
+    s16 id;
+    u8 pad52[2];
+    s16 t;
+    s16 blink;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_c061_01E02940;
+
+static s32 func_01E02940_c061(Scene_c061_01E02940 *g, Obj_c061_01E02940 *o) {
+    extern s32 c061_01E00080(Vec4f *, s32, s32, Vec4f *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f *p;
+    s16 i;
+
+    if (o->state == 1) {
+        o->h8 = 100;
+        o->hA = 100;
+        o->blink = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->col2[3] = 0;
+        o->f48 = 13.0f;
+        o->step = 4.0f;
+        p = g->trail[o->id].pt;
+        for (i = 0; i < 13; i++) {
+            p[i].x = o->pos.x;
+            p[i].y = o->pos.y;
+            p[i].z = o->pos.z;
+        }
+    }
+    if (o->t < 300) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x13;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x13;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->state = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->blink) {
+        o->blink = 0;
+    } else {
+        o->blink = 1;
+    }
+    if (o->t != 0) {
+        o->pos.y += o->step * func_00108030(g->trig, o->ang, 0);
+        o->pos.x += o->step * func_00108030(g->trig, o->ang, 1);
+        if (o->id < 8) {
+            if (o->id % 2 != 0) {
+                o->ang += 20;
+            } else {
+                o->ang -= 20;
+            }
+        } else {
+            if (o->id % 2 != 0) {
+                o->ang += 10;
+            } else {
+                o->ang -= 10;
+            }
+        }
+    }
+    if (g->flag != 0) {
+        o->pos.z -= 8.0f;
+    } else {
+        o->pos.z += 8.0f;
+    }
+    if (o->t < 300) {
+        g->light = o->pos;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    }
+    c061_01E00080(&g->trail[o->id].pt[12], 13, 0, &o->pos);
+    func_00205C40((s32)o->rot);
+    if (o->t != 0) {
+        if (o->h6 < 12) {
+            o->h6++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

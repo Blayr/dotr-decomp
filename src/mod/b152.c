@@ -1255,7 +1255,131 @@ static s32 func_01E03FD0_b152(Obj_b152_01E03FD0 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b152", func_01E04160_b152);
+/* shape b152:01E04160, 244 insns (B152PAINT_RAIN30): b597:01E03FE0's mirrored halves at the ctx point (ctx+0x3BB0),
+   scale 0.1, size o->f48, drawn as a textured quad packet of its own (12 regs: colour o+0x60 at every corner, q and
+   the corner's s/t divided by its depth, far z, no fog), texture ctx+0x9FDC, ot ctx+0x9FFC */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b152_01E04160;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b152_01E04160;
+
+typedef struct {
+    Rgbaq_b152_01E04160 c;
+    f32 s, t;
+    Xyz_b152_01E04160 xyz;
+} Vtx_b152_01E04160;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b152_01E04160 v[4];
+    u8 tail[0x20];
+} Pkt_b152_01E04160;
+
+static inline void tag_b152_01E04160(Pkt_b152_01E04160 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+typedef struct {
+    u8 pad0[0x3BB0];
+    Vec4f pt;
+    u8 pad3BC0[0x9FDC - 0x3BC0];
+    s32 tex;
+    u8 pad9FE0[0x9FFC - 0x9FE0];
+    s32 ot;
+} Ctx_b152_01E04160;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 size;
+    u8 pad4C[0x60 - 0x4C];
+    u8 col[8];
+} Fx_b152_01E04160;
+
+static void func_01E04160_b152(Ctx_b152_01E04160 *g, Fx_b152_01E04160 *o) {
+    extern Rgbaq_b152_01E04160 func_00107740(void *);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 d[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b152_01E04160 pkt;
+    s32 k;
+
+    tag_b152_01E04160((Pkt_b152_01E04160 *)(u32)&pkt, 0x34, 0xC, ((u64)0x4214 << 32) | 0x21421421);
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[1] = 0;
+    pos.x = g->pt.x;
+    pos.y = g->pt.y;
+    pos.z = g->pt.z;
+    func_00108EF0(m, &sc, rot, &pos);
+    for (k = 0; k < 2; k++) {
+        func_00108CE0(q, o->size, o->size);
+        if (k == 0) {
+            q[1].x = 0.0f;
+            q[3].x = 0.0f;
+        } else if (k == 1) {
+            q[1].x = 0.0f;
+            q[3].x = 0.0f;
+            q[0].x *= -1.0f;
+            q[2].x *= -1.0f;
+        }
+        if (func_00205440(&q[0], m, &pkt.v[0].xyz, &d[0]) != 0 &&
+            func_00205440(&q[1], m, &pkt.v[1].xyz, &d[1]) != 0 &&
+            func_00205440(&q[2], m, &pkt.v[2].xyz, &d[2]) != 0 &&
+            func_00205440(&q[3], m, &pkt.v[3].xyz, &d[3]) != 0) {
+            pkt.v[0].c = func_00107740(o->col);
+            pkt.v[1].c = func_00107740(o->col);
+            pkt.v[2].c = func_00107740(o->col);
+            pkt.v[3].c = func_00107740(o->col);
+            pkt.v[0].c.q = 1.0f / d[0];
+            pkt.v[1].c.q = 1.0f / d[1];
+            pkt.v[2].c.q = 1.0f / d[2];
+            pkt.v[3].c.q = 1.0f / d[3];
+            pkt.v[0].xyz.z = 0xFFFFFF;
+            pkt.v[0].xyz.f = 0;
+            pkt.v[1].xyz.z = 0xFFFFFF;
+            pkt.v[1].xyz.f = 0;
+            pkt.v[2].xyz.z = 0xFFFFFF;
+            pkt.v[2].xyz.f = 0;
+            pkt.v[3].xyz.z = 0xFFFFFF;
+            pkt.v[3].xyz.f = 0;
+            pkt.v[0].s = 0.0f / d[0];
+            pkt.v[0].t = 0.0f / d[0];
+            pkt.v[1].s = 1.0f / d[1];
+            pkt.v[1].t = 0.0f / d[1];
+            pkt.v[2].s = 0.0f / d[2];
+            pkt.v[2].t = 1.0f / d[2];
+            pkt.v[3].s = 1.0f / d[3];
+            pkt.v[3].t = 1.0f / d[3];
+            func_00208700(&pkt, g->tex, 0);
+            func_002075F0(&pkt, g->ot, 0);
+        }
+    }
+}
 
 /* shape b152:01E04530, 153 insns: the scene's draw pass: hands the scene two stack packets (a 5-reg sprite header and a
    12-reg strip header), opens a draw context, takes the camera's light, projects the camera point (raised or lowered

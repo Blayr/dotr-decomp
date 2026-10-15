@@ -383,7 +383,110 @@ static void func_01E00B60_b112(Obj_b112_01E00B60 *o, Ring_b112_01E00B60 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E01000_b112);
+/* OVL_WARM */
+
+/* shape b112:01E01000, 233 insns: the b112 module's event step: red scene colour, counts ticks (0x31F6); at 92 saves
+   joint 0x31D8 (0x3190) and spawns 50 b112:01E018C0 there; at 92/97/103/108 one b112:01E013B0 (slot 0) there; at 92
+   also 50 b112:01E01D20, b112:01E01E90 and b112:01E02420; from 23 to 101 two b112:01E01F70 a tick at joint 0x31DA
+   jittered, pushed along z by 2..11 x sin of the model's turn; from 2 to 101 one b112:01E021A0 at a random angle and
+   one b112:01E022D0 at 90 (0x31EA) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x3190 - 0x260];
+    Vec4f save;
+    u8 pad31A0[4];
+    u8 col[4];
+    u8 pad31A8[0x31D8 - 0x31A8];
+    s16 j0;
+    s16 j1;
+    u8 pad31DC[0x31EA - 0x31DC];
+    s16 ang;
+    u8 pad31EC[6];
+    s16 slot;
+    u8 pad31F4[2];
+    s16 count;
+    u8 pad31F8[0x32F8 - 0x31F8];
+    u8 trig[4];
+} Ctx_b112_01E01000;
+
+static void func_01E01000_b112(Ctx_b112_01E01000 *g) {
+    extern s32 b112_01E013B0(void);
+    extern s32 b112_01E018C0(void);
+    extern s32 b112_01E01D20(void);
+    extern s32 b112_01E01E90(void);
+    extern s32 b112_01E01F70(void);
+    extern s32 b112_01E021A0(void);
+    extern s32 b112_01E022D0(void);
+    extern s32 b112_01E02420(void);
+    extern void b112_01E038C0(Ctx_b112_01E01000 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6160(s32, s32 *);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+    s32 r[4];
+    f32 s;
+    s32 z;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->count++;
+    if (g->count == 92) {
+        func_001F5620(func_001F53A0(), g->j0, &g->save);
+    }
+    if (g->count == 92) {
+        g->pos.x = g->save.x;
+        g->pos.y = g->save.y;
+        g->pos.z = g->save.z;
+        for (i = 0; i < 50; i++) {
+            b112_01E038C0(g, b112_01E018C0, 0);
+        }
+    }
+    if (g->count == 92 || g->count == 97 || g->count == 103 || g->count == 108) {
+        g->pos.x = g->save.x;
+        g->pos.y = g->save.y;
+        g->pos.z = g->save.z;
+        g->slot = 0;
+        for (i = 0; i < 1; i++) {
+            b112_01E038C0(g, b112_01E013B0, 0);
+        }
+    }
+    if (g->count == 92) {
+        g->pos.x = g->save.x;
+        g->pos.y = g->save.y;
+        g->pos.z = g->save.z;
+        for (i = 0; i < 50; i++) {
+            b112_01E038C0(g, b112_01E01D20, 0);
+        }
+        b112_01E038C0(g, b112_01E01E90, 0);
+        b112_01E038C0(g, b112_01E02420, 0);
+    }
+    if (g->count > 22 && g->count < 102) {
+        for (i = 0; i < 2; i++) {
+            func_001F6160(func_001F53A0(), r);
+            s = func_00108030(g->trig, (s32)(r[1] / 180.0f) - 180, 1);
+            z = s * (func_0019A5C8() % 10 + 2);
+            func_001F5620(func_001F53A0(), g->j1, v);
+            g->pos.x = v[0] + func_0019A5C8() % 20 - 10.0f;
+            g->pos.y = v[1] + func_0019A5C8() % 12 - 3.0f;
+            g->pos.z = v[2] + z;
+            b112_01E038C0(g, b112_01E01F70, 0);
+        }
+    }
+    if (g->count > 1 && g->count < 102) {
+        for (i = 0; i < 1; i++) {
+            g->ang = func_0019A5C8() % 360;
+            b112_01E038C0(g, b112_01E021A0, 0);
+            g->ang = 90;
+            b112_01E038C0(g, b112_01E022D0, 0);
+        }
+    }
+}
 
 /* shape b112:01E013B0, 87 insns: a blob: on start f38 8, x 0x4000, y 0, a random variant, life 1; colour
    (0x40,0x20,0) or (0,0x80,0x80) when f30 is set; alpha grows by 0x50 (below 0xA0) for 2 ticks; later fades by 8

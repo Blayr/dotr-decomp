@@ -128,7 +128,177 @@ static s32 func_01E00240_c056(Game_c056_01E00240 *g, P_c056_01E00240 *p, s32 k) 
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00360_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00800_c056);
+/* shape c056:01E00800, 258 insns: scene manager. code >= 0 initialises (clear 0x4730 bytes, textures 14-15 and 2,
+   the 12-step sin/cos tables at 0, 30 .. and 30, 60 .., code, timer 0x88, the step function, the pad state);
+   otherwise runs the scene step, then (from phase 8 on) every live slot's update, a one-shot hook, and every live
+   slot's two draw passes with its own (or for callback 0x1E03FE0 the scene's) transform; before phase 8 the 22
+   cards are shown by the pad bits, after it the 22 objects run their 0x1E00360 (timer > 10) or 0x1E00240 step;
+   the timer counts down, 2 at 8, 8 when done */
+
+typedef struct {
+    u8 pad0[0x60];
+    f32 pos[4];
+    u8 pad70[0x28];
+    s32 (*draw)(void *, void *, void *, s32);
+    void (*fn)(void *, void *);
+    u8 padA0[4];
+    s16 used;
+    u8 padA6[0x1A];
+} Slot_c056_01E00800;
+
+typedef struct {
+    u8 b[0x70];
+} Obj_c056_01E00800;
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 m40[0x40];
+    u8 pad80[0x10];
+    s32 tex[16];
+    u8 padD0[0x10];
+    u8 rot[0x10];
+    u8 padF0[0x170 - 0xF0];
+    Obj_c056_01E00800 obj[22];
+    u8 padB10[0xC60 - 0x170 - 22 * 0x70];
+    Slot_c056_01E00800 slot[70];
+    u8 pad40E0[0x4478 - 0xC60 - 70 * 0xC0];
+    s32 timer;
+    u32 bits;
+    u8 pad4480[8];
+    s32 ot;
+    u8 pad448C[8];
+    void (*hook)(void *);
+    u8 pad4498[0x26];
+    s16 code;
+    u8 pad44C0[2];
+    s16 phase;
+    u8 pad44C4[0xC];
+    u8 b44D0[0x190];
+    f32 s[12];
+    f32 c[12];
+    f32 s2[12];
+    f32 c2[12];
+} Ctx_c056_01E00800;
+
+static s32 func_01E00800_c056(s32 arg0, s32 code) {
+    Ctx_c056_01E00800 *g = (Ctx_c056_01E00800 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_00107C10(void *);
+    extern f32 func_001A6898(f32);
+    extern f32 func_001A6A88(f32);
+    extern s32 func_001F5380();
+    extern void func_00107180(s32, s32, s32, s32);
+    extern void func_00107280(s32, void *, s32);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern void c056_01E00080(void *);
+    extern void c056_01E03090(void *, s32);
+    extern void c056_01E00240(void *, void *, s32);
+    extern void c056_01E00360(void *, void *, s32);
+    extern void c056_01E03FE0(void *, void *);
+    s32 n;
+    u8 pkt[0x90];
+    s32 (*draw)(void *, void *, void *, s32);
+    s32 i;
+    s16 k;
+    s32 d;
+    Ctx_c056_01E00800 *q;
+    s32 d2;
+    s32 m;
+    f32 a;
+
+    n = 0;
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x4730);
+        for (k = 14; k < 16; k++) {
+            g->tex[k] = func_00202BF0(4, k);
+        }
+        g->tex[2] = func_00202BF0(4, 2);
+        func_00107C10(g->b44D0);
+        d2 = 30;
+        for (i = 0, d = 0, q = g; i < 12; i++) {
+            a = 3.1415927f * d / 180.0f;
+            q->s[0] = func_001A6898(a);
+            q->c[0] = func_001A6A88(a);
+            a = 3.1415927f * d2 / 180.0f;
+            q->s2[0] = func_001A6898(a);
+            q->c2[0] = func_001A6A88(a);
+            d += 30;
+            q = (Ctx_c056_01E00800 *)((f32 *)q + 1);
+            d2 += 30;
+        }
+        g->code = code;
+        g->timer = 0x88;
+        c056_01E00080(g);
+        g->bits = func_001F5380();
+        return 0;
+    }
+    c056_01E03090(g, 0);
+    if (g->phase >= 8) {
+        for (i = 0; i < 70; i++) {
+            if (g->slot[i].used != 0) {
+                if (g->slot[i].fn != NULL) {
+                    g->slot[i].fn(g, &g->slot[i]);
+                }
+            }
+        }
+        if (g->hook != NULL) {
+            g->hook(g);
+            g->hook = NULL;
+        }
+        for (i = 0; i < 70; i++) {
+            if (g->slot[i].used != 0) {
+                n++;
+                func_0020EB40(g->m40);
+                if (g->slot[i].fn == c056_01E03FE0) {
+                    func_0020C940(g, NULL, g->rot, NULL);
+                } else {
+                    func_0020C940(g, NULL, NULL, g->slot[i].pos);
+                }
+                func_0020BC00(g->m40, g);
+                draw = g->slot[i].draw;
+                if (draw != NULL) {
+                    draw(g, &g->slot[i], pkt, 0);
+                    draw(g, &g->slot[i], pkt, 1);
+                }
+            }
+        }
+    }
+    if (g->phase <= 7) {
+        for (i = 0; i < 22; i++) {
+            m = i;
+            if (i > 10) {
+                m = i + 245;
+            }
+            func_00107180(m, 0, g->timer, 1);
+            if (!((g->bits >> (21 - i)) & 1)) {
+                func_00107280(m, &g->obj[i], 0);
+            }
+        }
+    } else if (g->timer > 10) {
+        for (i = 0; i < 22; i++) {
+            c056_01E00360(g, &g->obj[i], i);
+        }
+    } else {
+        for (i = 0; i < 22; i++) {
+            c056_01E00240(g, &g->obj[i], i);
+        }
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->timer == 8) {
+        return 2;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape c056:01E00C10, 15 insns: spawn an effect entity from the context's pool (kind 0x46) and store arg in it */
 
@@ -1481,8 +1651,320 @@ static s32 func_01E04830_c056(Ctx_c056_01E04830 *ctx, Obj_c056_01E04830 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E04900_c056);
+/* shape c056:01E04900, 252 insns: a climber on the scene path (g+0x4270, 0x18-byte points from +0x118): its turn
+   0xBA grows by 6 + g->h44C2 % 10 (mod 360); the first path point above it sets its two frames through
+   func_001098E0 and raises 0xA8 / 0xAA by 7 / 6 while they are at most 13 x the point index; it climbs 3 a tick (its
+   top following 18 below), then the top climbs on and stops it when above; while 0xBC is set and the top is above 0 it
+   hands itself to the scene (g+0x448C ...) and, past scene step 13, respawns this handler; early steps grow it and
+   blink it */
+
+typedef struct {
+    Vec4f p;
+    f32 a, b;
+} Pt_c056_01E04900;
+
+typedef struct {
+    u8 pad0[0x118];
+    Pt_c056_01E04900 pt[9];
+} Path_c056_01E04900;
+
+typedef struct {
+    u8 pad0[0x90];
+    s32 w90;
+} Link_c056_01E04900;
+
+typedef struct {
+    Vec4f v[4];
+    Vec4f a40;
+    u8 pad50[0x20];
+    Vec4f a70;
+    u8 pad80[0x14];
+    Link_c056_01E04900 *link;
+    u8 pad98[0xC];
+    s16 hA4;
+    u8 padA6[2];
+    s16 hA8;
+    s16 hAA;
+    u8 padAC[3];
+    u8 bAF;
+    u8 padB0[0xA];
+    s16 hBA;
+    s16 hBC;
+} Obj_c056_01E04900;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 w80;
+    s32 w84;
+    s32 w88;
+    u8 pad8C[0x64];
+    Vec4f vF0;
+    u8 pad100[0x4270 - 0x100];
+    Path_c056_01E04900 path;
+    u8 pad4400[0x4478 - 0x4270 - sizeof(Path_c056_01E04900)];
+    s32 step;
+    u8 pad447C[7];
+    u8 b4483;
+    u8 pad4484[8];
+    Obj_c056_01E04900 *cur;
+    u8 pad4490[0xC];
+    f32 f449C;
+    f32 f44A0;
+    f32 f44A4;
+    u8 pad44A8[0x12];
+    s16 h44BA;
+    s16 h44BC;
+    u8 pad44BE[4];
+    s16 h44C2;
+    u8 pad44C4[4];
+    s16 h44C8;
+} G_c056_01E04900;
+
+static s32 func_01E04900_c056(G_c056_01E04900 *g, Obj_c056_01E04900 *o) {
+    extern void c056_01E012A0(G_c056_01E04900 *, s32 (*)());
+    extern void func_001098E0(Vec4f *, Vec4f *, Obj_c056_01E04900 *, Pt_c056_01E04900 *, Pt_c056_01E04900 *);
+    extern void func_00106BC0(void *, s32, s32);
+    extern s32 func_00106B90(void *, s32, s32);
+    Path_c056_01E04900 *path;
+    s32 i;
+    Pt_c056_01E04900 *cur;
+    Pt_c056_01E04900 *prev;
+    Vec4f a;
+    Vec4f r1;
+    Vec4f r2;
+
+    path = &g->path;
+    a.y = 0.0f;
+    if (path == NULL) {
+        return 0;
+    }
+    o->hBA += (s16)(g->h44C2 % 10 + 6);
+    if (o->hBA >= 360) {
+        o->hBA %= 360;
+    }
+    for (i = 1; i < 8; i++) {
+        if (path->pt[i].p.y > o->v[0].y) {
+            cur = &path->pt[i];
+            a.x = path->pt[0].p.x;
+            prev = &path->pt[i - 1];
+            a.z = path->pt[0].p.z;
+            func_001098E0(&r1, &a, o, prev, cur);
+            o->a70 = r1;
+            func_001098E0(&r2, &a, o, prev, cur);
+            o->a40 = r2;
+            if (o->hA8 <= i * 13) {
+                o->hA8 += 7;
+            }
+            if (o->hAA <= i * 13) {
+                o->hAA += 6;
+            }
+            i = 8;
+        }
+    }
+    if (o->v[0].y <= path->pt[i - 4].p.y) {
+        o->v[1].y = o->v[0].y += 3.0f;
+        if (o->v[0].y - o->v[2].y >= 18.0f) {
+            o->v[3].y = o->v[2].y += 3.0f;
+        }
+    } else {
+        o->v[3].y = o->v[2].y += 3.0f;
+        if (o->v[2].y > o->v[0].y) {
+            if (o->link != NULL) {
+                o->link->w90 = 0;
+            }
+            o->hA4 = 0;
+        }
+    }
+    if (o->hBC > 0 && o->v[2].y > 0.0f) {
+        g->cur = o;
+        g->f449C = o->hAA;
+        g->f44A0 = o->hAA - 3;
+        g->b4483 = o->bAF;
+        g->h44BC = 1;
+        g->f44A4 = o->v[2].y;
+        g->h44C8 = 1;
+        g->vF0 = path->pt[0].p;
+        g->w84 = 0;
+        g->w80 = 0;
+        g->w88 = 0;
+        g->h44BA = o->hBA + 15;
+        if (g->step > 13) {
+            c056_01E012A0(g, func_01E04900_c056);
+        }
+        o->hBC = 0;
+    }
+    if (g->h44C2 < 16) {
+        func_00106BC0(o, 0x17, 0xA0);
+    }
+    if (g->step < 21) {
+        o->hA8 += 3;
+        o->hAA += 3;
+        if (func_00106B90(o, 0xE, 0xF) != 0) {
+            o->hA4 = 0;
+        }
+    }
+    if (g->step < 11) {
+        o->hA4 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E04CF0_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E04FE0_c056);
+/* shape c056:01E04FE0, 252 insns: a climber on the scene path (g+0x4270, 0x18-byte points from +0x118): its turn
+   0xBA grows by 6 + g->h44C2 % 10 (mod 360); the first path point above it sets its two frames through
+   func_001098E0 and raises 0xA8 / 0xAA by 18 / 17 while they are at most 25 x the point index; it climbs 3 a tick (its
+   top following 18 below), then the top climbs on and stops it when above; while 0xBC is set and the top is above 0 it
+   hands itself to the scene (g+0x448C ...) and, past scene step 8, respawns this handler; early steps grow it and
+   blink it */
+
+typedef struct {
+    Vec4f p;
+    f32 a, b;
+} Pt_c056_01E04FE0;
+
+typedef struct {
+    u8 pad0[0x118];
+    Pt_c056_01E04FE0 pt[9];
+} Path_c056_01E04FE0;
+
+typedef struct {
+    u8 pad0[0x90];
+    s32 w90;
+} Link_c056_01E04FE0;
+
+typedef struct {
+    Vec4f v[4];
+    Vec4f a40;
+    u8 pad50[0x20];
+    Vec4f a70;
+    u8 pad80[0x14];
+    Link_c056_01E04FE0 *link;
+    u8 pad98[0xC];
+    s16 hA4;
+    u8 padA6[2];
+    s16 hA8;
+    s16 hAA;
+    u8 padAC[3];
+    u8 bAF;
+    u8 padB0[0xA];
+    s16 hBA;
+    s16 hBC;
+} Obj_c056_01E04FE0;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 w80;
+    s32 w84;
+    s32 w88;
+    u8 pad8C[0x64];
+    Vec4f vF0;
+    u8 pad100[0x4270 - 0x100];
+    Path_c056_01E04FE0 path;
+    u8 pad4400[0x4478 - 0x4270 - sizeof(Path_c056_01E04FE0)];
+    s32 step;
+    u8 pad447C[7];
+    u8 b4483;
+    u8 pad4484[8];
+    Obj_c056_01E04FE0 *cur;
+    u8 pad4490[0xC];
+    f32 f449C;
+    f32 f44A0;
+    f32 f44A4;
+    u8 pad44A8[0x12];
+    s16 h44BA;
+    s16 h44BC;
+    u8 pad44BE[4];
+    s16 h44C2;
+    u8 pad44C4[4];
+    s16 h44C8;
+} G_c056_01E04FE0;
+
+static s32 func_01E04FE0_c056(G_c056_01E04FE0 *g, Obj_c056_01E04FE0 *o) {
+    extern void c056_01E012A0(G_c056_01E04FE0 *, s32 (*)());
+    extern void func_001098E0(Vec4f *, Vec4f *, Obj_c056_01E04FE0 *, Pt_c056_01E04FE0 *, Pt_c056_01E04FE0 *);
+    extern void func_00106BC0(void *, s32, s32);
+    extern s32 func_00106B90(void *, s32, s32);
+    Path_c056_01E04FE0 *path;
+    s32 i;
+    Pt_c056_01E04FE0 *cur;
+    Pt_c056_01E04FE0 *prev;
+    Vec4f a;
+    Vec4f r1;
+    Vec4f r2;
+
+    path = &g->path;
+    a.y = 0.0f;
+    if (path == NULL) {
+        return 0;
+    }
+    o->hBA += (s16)(g->h44C2 % 10 + 6);
+    if (o->hBA >= 360) {
+        o->hBA %= 360;
+    }
+    for (i = 1; i < 8; i++) {
+        if (path->pt[i].p.y > o->v[0].y) {
+            cur = &path->pt[i];
+            a.x = path->pt[0].p.x;
+            prev = &path->pt[i - 1];
+            a.z = path->pt[0].p.z;
+            func_001098E0(&r1, &a, o, prev, cur);
+            o->a70 = r1;
+            func_001098E0(&r2, &a, o, prev, cur);
+            o->a40 = r2;
+            if (o->hA8 <= i * 25) {
+                o->hA8 += 18;
+            }
+            if (o->hAA <= i * 25) {
+                o->hAA += 17;
+            }
+            i = 8;
+        }
+    }
+    if (o->v[0].y <= path->pt[i - 4].p.y) {
+        o->v[1].y = o->v[0].y += 3.0f;
+        if (o->v[0].y - o->v[2].y >= 18.0f) {
+            o->v[3].y = o->v[2].y += 3.0f;
+        }
+    } else {
+        o->v[3].y = o->v[2].y += 3.0f;
+        if (o->v[2].y > o->v[0].y) {
+            if (o->link != NULL) {
+                o->link->w90 = 0;
+            }
+            o->hA4 = 0;
+        }
+    }
+    if (o->hBC > 0 && o->v[2].y > 0.0f) {
+        g->cur = o;
+        g->f449C = o->hAA;
+        g->f44A0 = o->hAA - 3;
+        g->b4483 = o->bAF;
+        g->h44BC = 1;
+        g->f44A4 = o->v[2].y;
+        g->h44C8 = 1;
+        g->vF0 = path->pt[0].p;
+        g->w84 = 0;
+        g->w80 = 0;
+        g->w88 = 0;
+        g->h44BA = o->hBA + 15;
+        if (g->step > 8) {
+            c056_01E012A0(g, func_01E04FE0_c056);
+        }
+        o->hBC = 0;
+    }
+    if (g->h44C2 < 16) {
+        func_00106BC0(o, 0x17, 0xA0);
+    }
+    if (g->step < 21) {
+        o->hA8 += 3;
+        o->hAA += 3;
+        if (func_00106B90(o, 0xE, 0xF) != 0) {
+            o->hA4 = 0;
+        }
+    }
+    if (g->step < 11) {
+        o->hA4 = 0;
+    }
+    return 0;
+}

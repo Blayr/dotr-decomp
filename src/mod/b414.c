@@ -1764,4 +1764,123 @@ static void func_01E04620_b414(Obj_b413_01E04920 *obj, Cam_b413_01E04920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E04810_b414);
+/* shape b414:01E04810, 227 insns: b756:01E061D0-style local packet quad: colours 0x60 (top) and 0x64 (bottom), the
+   scene's rect (g+0x94, frame g+0xBE) and texture (g+0x88); one quad at the object's point (s16 x/y/z), 0x48 wide and
+   hanging 0x6 down, its heights kept within 0..300, turned by the object's rotation at its position (0x10); depth-tested
+   into g+0x80 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b414_01E04810;
+
+typedef struct {
+    Rgbaq_b414_01E04810 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b414_01E04810;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b414_01E04810 v[4];
+} Pkt_b414_01E04810;
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    u8 pad8[8];
+    f32 px, py, pz;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 w;
+    u8 pad4C[0x14];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b414_01E04810;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+} Game_b414_01E04810;
+
+static void func_01E04810_b414(Game_b414_01E04810 *g, Obj_b414_01E04810 *o) {
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b414_01E04810 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 m[16];
+    f32 v[4];
+    f32 depth[4];
+    struct {
+        Pkt_b414_01E04810 pk;
+        u8 tail[0x20];
+    } buf;
+    Pkt_b414_01E04810 *p = &buf.pk;
+
+    func_00109270(p, 0, 0);
+    p->v[0].c = func_00107740(o->col);
+    p->v[1].c = func_00107740(o->col);
+    p->v[2].c = func_00107740(o->col2);
+    p->v[3].c = func_00107740(o->col2);
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    v[0] = o->px;
+    v[1] = o->py;
+    v[2] = o->pz;
+    func_00108EF0(m, 0, o->rot, v);
+    q[0].x = o->x;
+    q[0].y = o->y;
+    q[0].z = o->z;
+    q[1] = q[0];
+    q[1].x += o->w;
+    q[2].x = o->x;
+    q[2].y = o->y;
+    q[2].z = o->z;
+    q[2].y -= o->h6;
+    if (q[2].y < 0.0f) {
+        q[2].y = 0.0f;
+    }
+    q[3] = q[2];
+    q[3].x += o->w;
+    if (q[0].y > 300.0f) {
+        q[0].y = 300.0f;
+    }
+    if (q[1].y > 300.0f) {
+        q[1].y = 300.0f;
+    }
+    if (q[2].y > 300.0f) {
+        q[2].y = 300.0f;
+    }
+    if (q[3].y > 300.0f) {
+        q[3].y = 300.0f;
+    }
+    if (q[0].y < 0.0f) {
+        q[0].y = 0.0f;
+    }
+    if (q[1].y < 0.0f) {
+        q[1].y = 0.0f;
+    }
+    if (q[2].y < 0.0f) {
+        q[2].y = 0.0f;
+    }
+    if (q[3].y < 0.0f) {
+        q[3].y = 0.0f;
+    }
+    if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+        func_002075F0(p, g->ot, (u32)depth[0]);
+    }
+}

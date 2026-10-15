@@ -733,7 +733,91 @@ static void func_01E018F0_b750(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b750", func_01E01C60_b750);
+/* shape b750:01E01C60, 247 insns: the scene script of b750: counts ctx+0xB2B8; from tick 151 to 351 it keeps the saved
+   point (ctx+0xB1D0) on the joint ctx+0xB244 lifted by 3.3 and copies it to the burst point (ctx+0x250); on tick 1 it
+   spawns one 0x1E02B70 and three 0x1E02C80; on tick 72 it puts the burst point on the joint and spawns 0x1E02040, 20
+   each of 0x1E022E0 / 0x1E02580 / 0x1E02770 and four 0x1E02960 at angles 0, 90, 45, 135 (ctx+0xB2A2, side flag
+   ctx+0xB2B0); from tick 72 to 77 it spawns four 0x1E02130 a tick on the joint */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f save;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 joint;
+    u8 padB246[0xB2A2 - 0xB246];
+    s16 ang;
+    u8 padB2A4[0xB2B0 - 0xB2A4];
+    s16 side;
+    u8 padB2B2[0xB2B8 - 0xB2B2];
+    s16 t;
+} Ctx_b750_01E01C60;
+
+static void func_01E01C60_b750(Ctx_b750_01E01C60 *g) {
+    extern void b750_01E02040();
+    extern void b750_01E02130();
+    extern void b750_01E022E0();
+    extern void b750_01E02580();
+    extern void b750_01E02770();
+    extern void b750_01E02960();
+    extern void b750_01E02B70();
+    extern void b750_01E02C80();
+    extern void b750_01E03710(Ctx_b750_01E01C60 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t > 150 && g->t < 352) {
+        func_001F5620(func_001F53A0(), g->joint, &g->save);
+        g->save.y += 3.3f;
+        g->pos = g->save;
+    }
+    if (g->t == 1) {
+        b750_01E03710(g, b750_01E02B70, 0);
+    }
+    if (g->t == 1) {
+        b750_01E03710(g, b750_01E02C80, 0);
+    }
+    if (g->t == 1) {
+        b750_01E03710(g, b750_01E02C80, 0);
+    }
+    if (g->t == 1) {
+        b750_01E03710(g, b750_01E02C80, 0);
+    }
+    if (g->t == 72) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        b750_01E03710(g, b750_01E02040, 0);
+        for (i = 0; i < 20; i++) {
+            b750_01E03710(g, b750_01E022E0, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b750_01E03710(g, b750_01E02580, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b750_01E03710(g, b750_01E02770, 0);
+        }
+        g->ang = 0;
+        g->side = 0;
+        b750_01E03710(g, b750_01E02960, 0);
+        g->ang = 90;
+        g->side = 0;
+        b750_01E03710(g, b750_01E02960, 0);
+        g->ang = 45;
+        g->side = 1;
+        b750_01E03710(g, b750_01E02960, 0);
+        g->ang = 135;
+        g->side = 1;
+        b750_01E03710(g, b750_01E02960, 0);
+    }
+    if (g->t >= 72 && g->t < 78) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        for (i = 0; i < 4; i++) {
+            b750_01E03710(g, b750_01E02130, 0);
+        }
+    }
+}
 
 /* shape b750:01E02040, 59 insns: constant variant of b415:01E022B0 (colour (255, 192, 192)) */
 

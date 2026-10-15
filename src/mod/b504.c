@@ -260,7 +260,80 @@ static void func_01E00920_b504(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E00E70_b504);
+/* shape b504:01E00E70 (B504_W_S), 232 insns: the scene script of b504: colour 0x80/0/0/0, counts g+0xB716; ticks
+   38..180 spawn 0x1E01980; tick 38 spawns 0x1E02470, moves the point to joint 0xB6F8 and spawns 0x1E017A0; ticks
+   50..200 spawn 6..14 0x1E01210 jittered around the joint; ticks 38..200 a 0x1E013F0 jittered around the camera;
+   then reads the joint into g+0xB690 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0xB690 - 0x25C];
+    f32 p[4];
+    u8 padB6A0[0x24];
+    u8 col[4];
+    u8 padB6C8[0x30];
+    s16 joint;
+    u8 padB6FA[0x1C];
+    s16 tick;
+} Ctx_b504_01E00E70;
+
+static void func_01E00E70_b504(Ctx_b504_01E00E70 *g) {
+    extern void b504_01E01210();
+    extern void b504_01E013F0();
+    extern void b504_01E017A0();
+    extern void b504_01E01980();
+    extern void b504_01E02470();
+    extern void b504_01E02E00(Ctx_b504_01E00E70 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    s32 i;
+    s32 n;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick >= 38 && g->tick <= 180) {
+        b504_01E02E00(g, b504_01E01980, 0);
+    }
+    if (g->tick == 38) {
+        b504_01E02E00(g, b504_01E02470, 0);
+    }
+    if (g->tick == 38) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+    }
+    if (g->tick == 38) {
+        b504_01E02E00(g, b504_01E017A0, 0);
+    }
+    if (g->tick >= 50 && g->tick <= 200) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        n = func_0019A5C8() % 9 + 6;
+        for (i = 0; i < n; i++) {
+            g->x = v[0] + func_0019A5C8() % 60 - 30.0f;
+            g->y = v[1] + func_0019A5C8() % 30 - 20.0f;
+            g->z = v[2] + func_0019A5C8() % 30 - 15.0f;
+            b504_01E02E00(g, b504_01E01210, 0);
+        }
+    }
+    if (g->tick >= 38 && g->tick <= 200) {
+        func_001F5F90(func_001F5380(), v);
+        g->x = v[0] + func_0019A5C8() % 30 - 15.0f;
+        g->y = v[1] + func_0019A5C8() % 30 - 15.0f;
+        g->z = v[2] + func_0019A5C8() % 30 - 15.0f;
+        b504_01E02E00(g, b504_01E013F0, 0);
+    }
+    func_001F5620(func_001F53A0(), g->joint, g->p);
+}
 
 /* shape b504:01E01210, 118 insns: sweeping blade flash: on start size 50, rot (50, 8, +-6 by the game's side flag),
    grey, random f50 and heading; solid alpha for 11 ticks then -0xF; it slides 15 sideways (away from the side) and
@@ -554,7 +627,97 @@ static s32 func_01E01880_b504(s32 unused, Obj_b361_01E01040 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E01980_b504);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E02470_b504);
+/* shape b504:01E02470, 229 insns: b361:01E01A00 twin with the scene packet at 0xB6D4 and its clock at 0xB716 (ends at
+   184); a white full-screen flash written into the scene's shared packet (0x5F54): each of
+   the four corners takes the flash colour, the screen corners (0x6BF8/0x93F8 by 0x71F8/0x8DF8, far depth) and the
+   texture corners 0..0.625 by 0..0.875; alpha grows by 16 to 0xC0 until scene frame 200, then fades by 19; the
+   flash ends at frame 166 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b504_01E02470;
+
+typedef struct {
+    Rgbaq_b504_01E02470 c;
+    f32 s, t;
+    u64 x : 16, y : 16, z : 24, f : 8;
+} Vtx_b504_01E02470;
+
+typedef struct {
+    u8 hdr[0x10];
+    Vtx_b504_01E02470 v[4];
+} Pkt_b504_01E02470;
+
+typedef struct {
+    u8 pad0[0xB6D4];
+    Pkt_b504_01E02470 *pk;
+    u8 pad5F58[0x3E];
+    s16 t;
+} Scene_b504_01E02470;
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+} Flash_b504_01E02470;
+
+static s32 func_01E02470_b504(Scene_b504_01E02470 *g, Flash_b504_01E02470 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern Rgbaq_b504_01E02470 func_00107740(void *);
+
+    if (o->state == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+    }
+    g->pk->v[0].c = func_00107740(o->col);
+    g->pk->v[1].c = func_00107740(o->col);
+    g->pk->v[2].c = func_00107740(o->col);
+    g->pk->v[3].c = func_00107740(o->col);
+    g->pk->v[0].x = 0x6BF8;
+    g->pk->v[0].y = 0x71F8;
+    g->pk->v[0].z = 0xFFFFFF;
+    g->pk->v[0].f = 0;
+    g->pk->v[1].x = 0x93F8;
+    g->pk->v[1].y = 0x71F8;
+    g->pk->v[1].z = 0xFFFFFF;
+    g->pk->v[1].f = 0;
+    g->pk->v[2].x = 0x6BF8;
+    g->pk->v[2].y = 0x8DF8;
+    g->pk->v[2].z = 0xFFFFFF;
+    g->pk->v[2].f = 0;
+    g->pk->v[3].x = 0x93F8;
+    g->pk->v[3].y = 0x8DF8;
+    g->pk->v[3].z = 0xFFFFFF;
+    g->pk->v[3].f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.0f;
+    g->pk->v[2].s = 0.0f;
+    g->pk->v[2].t = 0.875f;
+    g->pk->v[3].s = 0.625f;
+    g->pk->v[3].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->t < 200) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 20) {
+        o->col[3] -= 19;
+    } else {
+        o->state = 0;
+    }
+    if (g->t >= 184) {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E02810_b504);
 

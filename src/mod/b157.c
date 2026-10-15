@@ -783,4 +783,102 @@ static s32 func_01E02050_b157(s32 obj, Ring_b001_01E03860 *ring, Cam_b001_01E038
 
 INCLUDE_ASM("asm/nonmatchings/mod/b157", func_01E02540_b157);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b157", func_01E02F20_b157);
+/* OVL_WARM */
+
+/* shape b157:01E02F20, 231 insns: two particle sprays of a scene. The first (g+0x1B0, 16-byte drops) falls 6 a
+   tick, narrowing while above 0 and widening below; past -200 it respawns on a random direction at radius g+0x19C.
+   The second (g+0x2280) rises 2 a tick and widens by 1.2, fading by 8; above 20 it respawns with a random radius up to
+   g+0x226C. The scene clock g+0x4194 past 54 tints the drops, past 310 fades g+0x158's alpha. */
+
+typedef struct {
+    f32 x, y, z;
+    u8 c;
+    u8 pad;
+    s16 delay;
+} Drop_b157_01E02F20;
+
+typedef struct {
+    u8 pad0[0xE0];
+    u8 xE0[0x70];
+    u8 x150[0xB];
+    u8 a15B;
+    u8 pad15C[0x19C - 0x15C];
+    f32 r19C;
+    u8 pad1A0[0x1AA - 0x1A0];
+    s16 n1;
+    u8 pad1AC[4];
+    Drop_b157_01E02F20 p1[0x200];
+    u8 x21B0[0x70];
+    u8 x2220[0xB];
+    u8 a222B;
+    u8 pad222C[0x226C - 0x222C];
+    f32 r226C;
+    u8 pad2270[0x227A - 0x2270];
+    s16 n2;
+    u8 pad227C[4];
+    Drop_b157_01E02F20 p2[0x1F0];
+    u8 pad4180[0x4194 - 0x4180];
+    s32 clock;
+} Scene_b157_01E02F20;
+
+static void func_01E02F20_b157(Scene_b157_01E02F20 *g, s32 arg1) {
+    extern void b157_01E00250(s32, void *, void *);
+    extern void func_001032C0(void *, s32, s32);
+    extern void func_00103470(void *, s32, s32);
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    s32 i;
+    s32 a;
+    s32 r;
+    f32 d;
+
+    b157_01E00250(arg1, g->x150, g->xE0);
+    for (i = 0; i < g->n1; i++) {
+        if (g->p1[i].delay >= 0) {
+            g->p1[i].y -= 6.0f;
+            if (g->p1[i].y > 0.0f) {
+                g->p1[i].z *= 0.8f;
+                g->p1[i].x *= 0.8f;
+            } else {
+                g->p1[i].z *= 1.12f;
+                g->p1[i].x *= 1.12f;
+            }
+            if (g->clock >= 55) {
+                func_001032C0(&g->p1[i].c, 0x80, 0x20);
+            }
+            if (g->p1[i].y < -200.0f) {
+                a = func_0019A5C8() % 0x10000;
+                g->p1[i].delay = -(func_0019A5C8() % 20);
+                g->p1[i].z = g->r19C * func_0020B480(a);
+                g->p1[i].x = g->r19C * func_0020B550(a);
+                g->p1[i].y = func_0019A5C8() % 20;
+                g->p1[i].c = 0;
+            }
+        }
+    }
+    if (g->clock > 310) {
+        func_00103470(&g->a15B, 0, 0x10);
+    }
+    b157_01E00250(arg1, g->x2220, g->x21B0);
+    if (g->clock >= 55) {
+        g->a222B = 0x80;
+    }
+    for (i = 0; i < g->n2; i++) {
+        if (g->p2[i].delay >= 0) {
+            g->p2[i].y += 2.0f;
+            g->p2[i].x *= 1.2f;
+            g->p2[i].z *= 1.2f;
+            func_00103470(&g->p2[i].c, 0, 8);
+            if (g->p2[i].y > 20.0f) {
+                r = (s32)(10.0f * g->r226C);
+                a = func_0019A5C8() % 0x10000;
+                d = 0.1f * (func_0019A5C8() % r);
+                g->p2[i].y = 0.1f * -(f32)(func_0019A5C8() % 40 - 20);
+                g->p2[i].z = d * func_0020B480(a);
+                g->p2[i].x = d * func_0020B550(a);
+                g->p2[i].delay = -(func_0019A5C8() % 12);
+                g->p2[i].c = 0x80;
+            }
+        }
+    }
+}

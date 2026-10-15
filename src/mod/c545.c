@@ -259,4 +259,159 @@ static s32 func_01E00120_c545(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c545", func_01E00CB0_c545);
+/* shape c545:01E00CB0, 242 insns: the c545 module's main step: with a code it clears the scene, sets up its coordinate,
+   keeps the code and a 15-tick timer and two flame emitters (texture 15, flags 0x81, size 12, 16 points jittered
+   -10..9 across and -12..3 / -4..11 up around (0, 5) and (0, 10), rect 16 x 16 from (0xF0, 0) in a 256 x 256 sheet,
+   8 live points each 3 apart, purple-blue (0x40, 0x20, 0x60) and violet (0x80, 0x40, 0x80) at alpha 0x60), reads
+   the effect position; otherwise it turns the coordinate, draws both emitters (c545:01E00120) scaled 1.02 / 1.03
+   and fades them by 8 / 6; counts down and returns 8 when the timer ends */
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_c545_01E00CB0;
+
+typedef struct {
+    f32 x, y, z;
+    s16 hC;
+    s16 hE;
+} Pt_c545_01E00CB0;
+
+typedef struct {
+    s32 texture;
+    s32 flags;
+    Src_c545_01E00CB0 color;
+    f32 size;
+    f32 cx;
+    f32 cy;
+    f32 z0;
+    s32 w1C;
+    s16 rect[8];
+    Pt_c545_01E00CB0 pt[16];
+    s16 count;
+    u8 pad132[4];
+    s16 h136;
+    s16 h138;
+    s16 step;
+    s16 h13C;
+    s16 h13E;
+    s16 h140;
+    u8 pad142[0xE];
+} Emit_c545_01E00CB0;
+
+typedef struct {
+    u8 pad0[0x20];
+    u8 pos[0x50];
+    Emit_c545_01E00CB0 e1;
+    Emit_c545_01E00CB0 e2;
+    s32 timer;
+    s32 code;
+    s32 w318;
+} Scene_c545_01E00CB0;
+
+static s32 func_01E00CB0_c545(s32 arg0, s32 code) {
+    extern void c545_01E00120(s32, Scene_c545_01E00CB0 *, Emit_c545_01E00CB0 *, Vec4f *);
+    Scene_c545_01E00CB0 *g = (Scene_c545_01E00CB0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00103890(void *);
+    extern void func_00103260(void *, s32);
+    extern void func_001039A0(void *);
+    extern void func_001F53B0(s32, void *);
+    Vec4f sc;
+    s32 tex __attribute__((aligned(16)));
+    s32 ot;
+    s32 i;
+
+    ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x320);
+        g->w318 = 0;
+        g->timer = 15;
+        g->code = code;
+        func_00103890(g);
+        func_00103260(&tex, 0xF);
+        g->e1.texture = tex;
+        g->e1.flags = 0x81;
+        g->e1.cx = 0.0f;
+        g->e1.cy = 5.0f;
+        g->e1.z0 = 0.0f;
+        g->e1.w1C = 0;
+        g->e1.rect[4] = 0xF0;
+        g->e1.rect[5] = 0;
+        g->e1.rect[2] = 0x10;
+        g->e1.rect[3] = 0x10;
+        g->e1.rect[6] = 0x100;
+        g->e1.rect[7] = 0x100;
+        g->e1.size = 12.0f;
+        g->e1.count = 8;
+        g->e1.step = 3;
+        g->e1.h13C = 1;
+        g->e1.h140 = 8;
+        g->e1.h136 = 10;
+        g->e1.h138 = 10;
+        g->e1.color.r = 0x40;
+        g->e1.color.g = 0x20;
+        g->e1.color.b = 0x60;
+        g->e1.color.a = 0x60;
+        for (i = 0; i < 16; i++) {
+            g->e1.pt[i].x = g->e1.cx + (func_0019A5C8() % 20 - 10);
+            g->e1.pt[i].y = g->e1.cy + (func_0019A5C8() % 16 - 4);
+            g->e1.pt[i].z = g->e1.z0;
+            g->e1.pt[i].hE = -g->e1.step * i;
+            g->e1.pt[i].hC = 0;
+            g->e1.h13E = g->e1.h140 - 1;
+        }
+        g->e2.texture = tex;
+        g->e2.flags = 0x81;
+        g->e2.cx = 0.0f;
+        g->e2.cy = 10.0f;
+        g->e2.z0 = 0.0f;
+        g->e2.w1C = 0;
+        g->e2.rect[4] = 0xF0;
+        g->e2.rect[5] = 0;
+        g->e2.rect[2] = 0x10;
+        g->e2.rect[3] = 0x10;
+        g->e2.rect[6] = 0x100;
+        g->e2.rect[7] = 0x100;
+        g->e2.size = 12.0f;
+        g->e2.count = 8;
+        g->e2.step = 3;
+        g->e2.h13C = 1;
+        g->e2.h140 = 8;
+        g->e2.h136 = 20;
+        g->e2.h138 = 20;
+        g->e2.color.r = 0x80;
+        g->e2.color.g = 0x40;
+        g->e2.color.b = 0x80;
+        g->e2.color.a = 0x60;
+        for (i = 0; i < 16; i++) {
+            g->e2.pt[i].x = g->e2.cx + (func_0019A5C8() % 20 - 10);
+            g->e2.pt[i].y = g->e2.cy + (func_0019A5C8() % 16 - 4);
+            g->e2.pt[i].z = g->e2.z0;
+            g->e2.pt[i].hE = -g->e2.step * i;
+            g->e2.pt[i].hC = 0;
+            g->e2.h13E = g->e2.h140 - 1;
+        }
+        func_001F53B0(0, g->pos);
+        return 0;
+    }
+    func_001039A0(g);
+    sc.x = sc.y = sc.z = 1.02f;
+    c545_01E00120(ot, g, &g->e1, &sc);
+    if (g->e1.color.a > 8) {
+        g->e1.color.a -= 8;
+    } else {
+        g->e1.color.a = 0;
+    }
+    sc.x = sc.y = sc.z = 1.03f;
+    c545_01E00120(ot, g, &g->e2, &sc);
+    if (g->e2.color.a > 6) {
+        g->e2.color.a -= 6;
+    } else {
+        g->e2.color.a = 0;
+    }
+    if (--g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}

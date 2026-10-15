@@ -257,9 +257,222 @@ static void func_01E00EB0_b068(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b068", func_01E01430_b068);
+/* shape b068:01E01430, 268 insns: the b068 scene's step: colour 0x80/0/0/0, counts the tick (0x3616); tick 45 resets
+   0x3610/0x360A; from tick 100 while over 67 are in use (0x35B0) spawns 0x1E01870 on joints 0x35F8 and 0x35FA; ticks
+   up to 20 spawn 0x1E024E0 there, ticks 100..105 0x1E01E70 one higher; tick 1 puts the point on joints 0x35FA then
+   0x35FE jittered by -3..2 (chatA, 16 Oct) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b068", func_01E01870_b068);
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x35B0 - 0x25C];
+    s32 n;
+    u8 col[4];
+    u8 pad35B8[0x35F8 - 0x35B8];
+    s16 j[4];
+    u8 pad3600[0x360A - 0x3600];
+    s16 f360A;
+    u8 pad360C[4];
+    s16 f3610;
+    u8 pad3612[4];
+    s16 tick;
+} Scene_b068_01E01430;
+
+static void func_01E01430_b068(Scene_b068_01E01430 *g) {
+    extern void b068_01E01870();
+    extern void b068_01E01E70();
+    extern void b068_01E024E0();
+    extern void b068_01E02EA0(Scene_b068_01E01430 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick == 45) {
+        g->f3610 = 0;
+        g->f360A = 0;
+        g->f360A = 90;
+        g->f3610 = 1;
+        g->f360A = 0;
+        g->f360A = 90;
+    }
+    if (g->tick >= 100 && g->n > 67) {
+        func_001F5620(func_001F53A0(), g->j[0], v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->f3610 = 0;
+        b068_01E02EA0(g, b068_01E01870, 0);
+        func_001F5620(func_001F53A0(), g->j[1], v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->f3610 = 0;
+        b068_01E02EA0(g, b068_01E01870, 0);
+    }
+    if (g->tick <= 20) {
+        func_001F5620(func_001F53A0(), g->j[0], v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->f3610 = 0;
+        b068_01E02EA0(g, b068_01E024E0, 0);
+        func_001F5620(func_001F53A0(), g->j[1], v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->f3610 = 0;
+        b068_01E02EA0(g, b068_01E024E0, 0);
+    }
+    if (g->tick >= 100 && g->tick <= 105) {
+        func_001F5620(func_001F53A0(), g->j[0], v);
+        g->x = v[0];
+        g->y = v[1] + 1.0f;
+        g->z = v[2];
+        g->f3610 = 0;
+        b068_01E02EA0(g, b068_01E01E70, 0);
+        func_001F5620(func_001F53A0(), g->j[1], v);
+        g->x = v[0];
+        g->y = v[1] + 1.0f;
+        g->z = v[2];
+        g->f3610 = 0;
+        b068_01E02EA0(g, b068_01E01E70, 0);
+    }
+    if (g->tick == 1) {
+        func_001F5620(func_001F53A0(), g->j[1], v);
+        g->x = v[0] + func_0019A5C8() % 6 - 3.0f;
+        g->y = v[1] + func_0019A5C8() % 6 - 3.0f;
+        g->z = v[2] + func_0019A5C8() % 6 - 3.0f;
+        g->f3610 = 0;
+        func_001F5620(func_001F53A0(), g->j[3], v);
+        g->x = v[0] + func_0019A5C8() % 6 - 3.0f;
+        g->y = v[1] + func_0019A5C8() % 6 - 3.0f;
+        g->z = v[2] + func_0019A5C8() % 6 - 3.0f;
+        g->f3610 = 0;
+    }
+}
+
+/* shape b068:01E01870, 245 insns: b068:01E01E70 cousin: kind 1 up to 4, size 10 x 50, held 45..54 ticks, fading in
+   by 12 from the second tick, drifting by 1/50 (1/40 after tick 10); at tick 45 one in five hands its position to the
+   scene and spawns b068:01E01C50. As b068:01E01E70: b068:01E024E0's glow with f38 70, size 15 x 50 growing by 4, rise 7..11, fading in
+   by 0x30; depth drift /90 for 10 ticks then /80, and it sinks 1 every fifth tick */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b068_01E01870;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x3610 - 0x25C];
+    s16 h3610;
+} Ctx_b068_01E01870;
+
+static s32 func_01E01870_b068(Ctx_b068_01E01870 *g, Glow_b068_01E01870 *o) {
+    extern void b068_01E01C50(void);
+    extern s32 b068_01E02EA0(Ctx_b068_01E01870 *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 70;
+        o->kind = 1;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->col[3] = 0;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 7;
+        o->hC = 50;
+        o->hA = 10;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 45;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->tick != 0) {
+            if (o->col[3] < 97) {
+                o->col[3] += 12;
+            }
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    if (o->tick < 10) {
+        *(f32 *)(u32)&v[0].z /= 50.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    } else {
+        *(f32 *)(u32)&v[0].z /= 40.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    }
+    if (o->tick == 45) {
+        if (func_0019A5C8() % 5 == 1) {
+            g->px = o->h0;
+            g->py = o->h2;
+            g->pz = o->h4;
+            g->h3610 = 0;
+            b068_01E02EA0(g, (s32)b068_01E01C50, 0);
+        }
+    }
+    if (o->tick % 5 == 1) {
+        o->h2--;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 4) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->hC += 4;
+        o->hA += 4;
+        if (o->tick > 10) {
+            if (o->h8 > o->hA) {
+                o->hA += 4;
+            }
+        }
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b068:01E01C50, 133 insns: b350:01E011E0's glow, near-white (0xF0), size 120 growing 8 a tick, height
    200..599 rising 20..29, 0xA 10 / 0xC 50, held 15..24; alpha grows by 0xD (to 0x60) */

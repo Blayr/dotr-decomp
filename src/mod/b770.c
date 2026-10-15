@@ -538,7 +538,104 @@ static void func_01E012D0_b770(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E01820_b770);
+/* shape b770:01E01820 (B770_W_S), 221 insns: the scene script of b770: counts g+0x490E; tick 5 spawns 0x1E02490,
+   tick 200 two 0x1E02C80 (flag 0, then 1); up to tick 189 two 0x1E01F60 effects on joints 0x48A0 / 0x48A2 (plus
+   0x1E022E0 every 8th tick); 190..249 a 0x1E02950 on joint 0x489C; 264..304 a 0x1E020F0 between joint 0x48AA and the
+   camera; 190..263 0x1E01BA0 and 0x1E022E0 on joint 0x489E, six 0x1E01BA0 on tick 190; 50..169 a 0x1E01D80 every
+   16th tick */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x4640];
+    s16 j489C;
+    s16 j489E;
+    s16 j48A0;
+    s16 j48A2;
+    u8 pad48A4[6];
+    s16 j48AA;
+    u8 pad48AC[0x5A];
+    s16 flag;
+    u8 pad4908[6];
+    s16 tick;
+} Ctx_b770_01E01820;
+
+static void func_01E01820_b770(Ctx_b770_01E01820 *g) {
+    extern void b770_01E01BA0();
+    extern void b770_01E01D80();
+    extern void b770_01E01F60();
+    extern void b770_01E020F0();
+    extern void b770_01E022E0();
+    extern void b770_01E02490();
+    extern void b770_01E02950();
+    extern void b770_01E02C80();
+    extern void b770_01E03800(Ctx_b770_01E01820 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    s16 i;
+
+    g->tick++;
+    if (g->tick == 5) {
+        b770_01E03800(g, b770_01E02490, 0);
+    }
+    if (g->tick == 200) {
+        g->flag = 0;
+        b770_01E03800(g, b770_01E02C80, 0);
+        g->flag = 1;
+        b770_01E03800(g, b770_01E02C80, 0);
+    }
+    if (g->tick >= 0 && g->tick <= 189) {
+        func_001F5620(func_001F53A0(), g->j48A0, &g->x);
+        g->flag = 0;
+        b770_01E03800(g, b770_01E01F60, 0);
+        if (g->tick % 8 == 1) {
+            b770_01E03800(g, b770_01E022E0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j48A2, &g->x);
+        g->flag = 0;
+        b770_01E03800(g, b770_01E01F60, 0);
+        if (g->tick % 8 == 1) {
+            b770_01E03800(g, b770_01E022E0, 0);
+        }
+    }
+    if (g->tick >= 190 && g->tick <= 249) {
+        func_001F5620(func_001F53A0(), g->j489C, &g->x);
+        g->flag = 0;
+        b770_01E03800(g, b770_01E02950, 0);
+    }
+    if (g->tick >= 264 && g->tick <= 304) {
+        func_001F5620(func_001F5380(), g->j48AA, v);
+        func_001F5F90(func_001F5380(), &g->x);
+        g->y = v[1];
+        g->flag = 0;
+        b770_01E03800(g, b770_01E020F0, 0);
+    }
+    if (g->tick >= 190 && g->tick <= 263) {
+        func_001F5620(func_001F53A0(), g->j489E, &g->x);
+        g->flag = 0;
+        b770_01E03800(g, b770_01E01BA0, 0);
+        b770_01E03800(g, b770_01E022E0, 0);
+    }
+    if (g->tick == 190) {
+        func_001F5620(func_001F53A0(), g->j489E, &g->x);
+        g->flag = 1;
+        for (i = 0; i < 6; i++) {
+            b770_01E03800(g, b770_01E01BA0, 0);
+        }
+    }
+    if (g->tick >= 50 && g->tick <= 169) {
+        if (g->tick % 16 == 1) {
+            func_001F5620(func_001F53A0(), g->j489E, &g->x);
+            g->flag = 1;
+            b770_01E03800(g, b770_01E01D80, 0);
+        }
+    }
+}
 
 /* shape b770:01E01BA0, 117 insns, 2 copies: a red spark: set up once (size 4, or 10 when its old angle was 1; random frame,
    speed 5..12 or 9..20, life 3..7); full for its life, then fades out; grows 1 and turns by its speed (b225:01E026A0 family, 0x58-state layout) */

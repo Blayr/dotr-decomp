@@ -733,7 +733,117 @@ static void func_01E01940_b203(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E01D40_b203);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E023A0_b203);
+/* shape b203:01E023A0, 268 insns: b111:01E01D30 with this module's table and side; b149:01E01770 cousin: size 10, grey 0x80, random frame 0..6, turn, spin and hA 0..7,
+   height from 0 growing by 15 up to its limit 100..449 while it fades in by 0x20 for 147 ticks, then fades by 8 and
+   ends; at tick 135 it hands its position to the scene and fires the module's b203:01E027D0 effect three times, then
+   b203:01E02B50 six times in ten at a point jittered -15..14; its swing f34 is 3 x the table sine of h5C; from tick 96
+   to 130 it is pushed 5 a tick in z by the scene side (0x4526) and sinks 1 while above the target's height - 10; from
+   tick 141 it turns 5, rises by hE and 1 and grows 1; h5C turns by 6 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f pos;
+    u8 pad260[0x4526 - 0x260];
+    s16 side;
+    u8 pad4528[0x482C - 0x4528];
+    u8 table[1];
+} Mgr_b203_01E023A0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec4f pos;
+    u8 pad20[0x14];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b203_01E023A0;
+
+static s32 func_01E023A0_b203(Mgr_b203_01E023A0 *m, Obj_b203_01E023A0 *o) {
+    extern void b203_01E027D0();
+    extern void b203_01E02B50();
+    extern void b203_01E03FB0(Mgr_b203_01E023A0 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_00108030(void *, s32, s32);
+    f32 v[4];
+
+    if (o->h58 == 1) {
+        o->f48 = 10.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < 147) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x20;
+        }
+        if (o->h52 > o->h50) {
+            o->h50 += 15;
+        }
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 == 135) {
+        m->pos = o->pos;
+        b203_01E03FB0(m, b203_01E027D0, 0);
+        b203_01E03FB0(m, b203_01E027D0, 0);
+        b203_01E03FB0(m, b203_01E027D0, 0);
+        m->pos.x += func_0019A5C8() % 30 - 15;
+        m->pos.y += func_0019A5C8() % 30 - 15;
+        m->pos.z += func_0019A5C8() % 30 - 15;
+        if (func_0019A5C8() % 10 < 6) {
+            b203_01E03FB0(m, b203_01E02B50, 0);
+        }
+    }
+    func_001F5F90(func_001F5380(), v);
+    o->f34 = 3.0f * func_00108030(m->table, o->h5C, 1);
+    if (o->h54 > 95 && o->h54 < 131) {
+        if (m->side != 0) {
+            o->pos.z -= 5.0f;
+        } else {
+            o->pos.z += 5.0f;
+        }
+        if (v[1] - 10.0f < o->pos.y) {
+            o->pos.y -= 1.0f;
+        }
+    }
+    if (o->h54 > 140) {
+        o->h5A += 5;
+        o->h50 += o->hE;
+        o->pos.y += 1.0f;
+        o->f48 += 1.0f;
+    }
+    o->h5C += 6;
+    o->h54++;
+    return 0;
+}
 
 /* shape b203:01E027D0, 95 insns: an orange spark: size 10, random sub-frame 0..3, angle, frame 0..7, start height 5..44 (old one
    kept), rise 6..15, width 0..34, hold 3..7; full alpha until the hold, then down by 8 until it ends */

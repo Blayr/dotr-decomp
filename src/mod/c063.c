@@ -624,7 +624,115 @@ static s32 func_01E02340_c063(Ctx_c063_01E02340 *g, Fx_c063_01E02340 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02640_c063);
+/* shape c063:01E02640, 224 insns: b721:01E020D0 cousin with five kinds (size 10..30 by 5, hold 70..30 by 10), alpha
+   steps of 9 and 5; the scene flag at 0x6C36. As b721:01E020D0: a grey (0x50/0x60 flicker) glow pair by kind 0..2: size 14/20/26 with the inner part
+   6 smaller, frame 0..6, h8 4..6, hold 55/45/35 ticks fading in by 12 to 0x8C, then out by 9 while growing by 1.5 a tick;
+   for its first 10 ticks the angle word 0x24 is 0 or 0x8000 by the scene flag 0x9864, then it turns by 0x80 one way
+   or the other by the kind's parity */
+
+typedef struct {
+    u8 pad0[0x6C36];
+    s16 flag;
+} Game_c063_01E02640;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    u8 padA[0x1A];
+    s32 w24;
+    u8 pad28[0x20];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_c063_01E02640;
+
+static s32 func_01E02640_c063(Game_c063_01E02640 *g, Fx_c063_01E02640 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f48 = 10.0f;
+            o->f4C = o->f48 - 5.0f;
+        } else if (o->kind == 1) {
+            o->f48 = 15.0f;
+            o->f4C = o->f48 - 5.0f;
+        } else if (o->kind == 2) {
+            o->f48 = 20.0f;
+            o->f4C = o->f48 - 5.0f;
+        } else if (o->kind == 3) {
+            o->f48 = 25.0f;
+            o->f4C = o->f48 - 5.0f;
+        } else if (o->kind == 4) {
+            o->f48 = 30.0f;
+            o->f4C = o->f48 - 5.0f;
+        }
+        o->frame = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->h8 = func_0019A5C8() % 3 + 4;
+        if (o->kind == 0) {
+            o->hold = 70;
+        }
+        if (o->kind == 1) {
+            o->hold = 60;
+        }
+        if (o->kind == 2) {
+            o->hold = 50;
+        }
+        if (o->kind == 3) {
+            o->hold = 40;
+        }
+        if (o->kind == 4) {
+            o->hold = 30;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 9;
+        }
+    } else {
+        if (o->col[3] > 6) {
+            o->col[3] -= 5;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 6) {
+            o->col2[3] -= 5;
+        }
+        o->f48 += 1.5f;
+        o->f4C = o->f48 - 6.0f;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        func_001076F0(o->col2, 0x50, 0x50, 0x50);
+    } else {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        func_001076F0(o->col2, 0x60, 0x60, 0x60);
+    }
+    if (o->tick < 10) {
+        if (g->flag != 0) {
+            o->w24 = 0;
+        } else {
+            o->w24 = 0x8000;
+        }
+    } else if (o->kind % 2 == 1) {
+        o->w24 += 0x80;
+    } else {
+        o->w24 -= 0x80;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape c063:01E029C0, 206 insns: c061:01E02030's flake, yellow (0xFF, 0xFF, 0x40) on odd scene counts (ctx+0x6C3A)
    and orange (0xFF, 0x80, 0x40) on even ones */

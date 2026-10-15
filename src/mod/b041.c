@@ -356,7 +356,77 @@ INCLUDE_ASM("asm/nonmatchings/mod/b041", func_01E00CF0_b041);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b041", func_01E00FD0_b041);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b041", func_01E012A0_b041);
+/* shape b041:01E012A0 (B041_W_S), 238 insns: the scene script of b041: tick 1 spawns 0x1E01FC0 twice and 0x1E01DF0
+   with the flag at g+0x876E cleared then set, plus 0x1E01820; every third tick 93..170 spawns 0x1E01940 and
+   150..260 0x1E01A70; tick 93 spawns 0x1E020B0; ticks 93..175 and 150..275 spawn 0x1E01C40 jittered around a joint
+   (chatA, 16 Oct) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x8740 - 0x25C];
+    s16 joint;
+    u8 pad8742[0x8750 - 0x8742];
+    s16 joint2;
+    u8 pad8752[0x876E - 0x8752];
+    s16 flag;
+    u8 pad8770[0x8776 - 0x8770];
+    s16 tick;
+} Ctx_b041_01E012A0;
+
+static void func_01E012A0_b041(Ctx_b041_01E012A0 *g) {
+    extern void b041_01E01820();
+    extern void b041_01E01940();
+    extern void b041_01E01A70();
+    extern void b041_01E01C40();
+    extern void b041_01E01DF0();
+    extern void b041_01E01FC0();
+    extern void b041_01E020B0();
+    extern void b041_01E02C00(Ctx_b041_01E012A0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    g->tick++;
+    if (g->tick == 1) {
+        b041_01E02C00(g, b041_01E01FC0, 0);
+    }
+    if (g->tick == 1) {
+        b041_01E02C00(g, b041_01E01FC0, 0);
+        g->flag = 0;
+        b041_01E02C00(g, b041_01E01DF0, 0);
+        g->flag = 1;
+        b041_01E02C00(g, b041_01E01DF0, 0);
+    }
+    if (g->tick == 1) {
+        b041_01E02C00(g, b041_01E01820, 0);
+    }
+    if (g->tick >= 93 && g->tick % 3 == 1 && g->tick <= 170) {
+        b041_01E02C00(g, b041_01E01940, 0);
+    }
+    if (g->tick >= 150 && g->tick % 3 == 1 && g->tick <= 260) {
+        b041_01E02C00(g, b041_01E01A70, 0);
+    }
+    if (g->tick == 93) {
+        b041_01E02C00(g, b041_01E020B0, 0);
+    }
+    if (g->tick >= 93 && g->tick <= 175) {
+        func_001F5620(func_001F53A0(), g->joint, &g->x);
+        g->x += func_0019A5C8() % 30 - 15;
+        g->y += func_0019A5C8() % 30 - 15;
+        g->z += func_0019A5C8() % 30 - 15;
+        b041_01E02C00(g, b041_01E01C40, 0);
+    }
+    if (g->tick >= 150 && g->tick <= 275) {
+        func_001F5620(func_001F5380(), g->joint2, &g->x);
+        g->x += func_0019A5C8() % 30 - 15;
+        g->y += func_0019A5C8() % 30 - 15;
+        g->z += func_0019A5C8() % 30 - 15;
+        b041_01E02C00(g, b041_01E01C40, 0);
+    }
+}
 
 /* shape b041:01E01660, 112 insns: a purple spark (b434:01E02210 shape): size 1..2, random sub-frame 0..3, height 10 plus 0..twice
    the scene scale, angle, rise 16..35, width 0..34, hold 3..5; alpha up by 0x40 to 0xC0 until the hold, then down by 14 */

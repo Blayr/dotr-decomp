@@ -465,7 +465,86 @@ static void func_01E00E70_b394(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b394", func_01E01420_b394);
+/* shape b394:01E01420, 273 insns: b731:01E01C10 family scene timer step: tracks joint 0x86A4 into ctx+0x8610 until
+   155, then glides it (y and z) a 32nd of the way to the camera point of joint 0x86B4 per tick until 185; at 152
+   starts b394:01E01E40; from 96 to 474 two b394:01E01870 at joints 0x86A4 / 0x86A6; at 221..239 and 292..309 two
+   b394:01E01AA0 at joints 0x86A8 / 0x86AA; at 292..409 three b394:01E01C50 at random spots, all through b394:01E026D0 */
+
+typedef struct Scn_b394_01E01420 {
+    u8 pad0[0x250];
+    f32 org[3];
+    u8 pad25C[0x8610 - 0x25C];
+    Vec4f p;
+    Vec4f vel;
+    u8 pad8630[0x86A4 - 0x8630];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    s16 j3;
+    u8 pad86AC[8];
+    s16 cam;
+    u8 pad86B6[0x24];
+    s16 timer;
+} Scn_b394_01E01420;
+
+static void func_01E01420_b394(Scn_b394_01E01420 *g) {
+    extern s32 func_001F53A0();
+    extern s32 func_001F5380();
+    extern void func_001F5620();
+    extern u8 b394_01E01870[];
+    extern u8 b394_01E01AA0[];
+    extern u8 b394_01E01C50[];
+    extern u8 b394_01E01E40[];
+    extern void b394_01E026D0(Scn_b394_01E01420 *w, void *data, s32 arg);
+    f32 v[8];
+    s16 i;
+
+    g->timer++;
+    if (g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->j0, &g->p);
+    } else {
+        if (g->timer == 155) {
+            func_001F5620(func_001F5380(), g->cam, v);
+            g->vel.z = (v[2] - g->p.z) / 32.0f;
+            g->vel.y = (v[1] - g->p.y) / 32.0f;
+        }
+        if (g->timer < 186) {
+            g->p.z += g->vel.z;
+            g->p.y += g->vel.y;
+        }
+    }
+    if (g->timer == 152) {
+        b394_01E026D0(g, b394_01E01E40, 0);
+    }
+    if (g->timer > 95 && g->timer < 475) {
+        func_001F5620(func_001F53A0(), g->j0, g->org);
+        b394_01E026D0(g, b394_01E01870, 0);
+    }
+    if (g->timer > 95 && g->timer < 475) {
+        func_001F5620(func_001F53A0(), g->j1, g->org);
+        b394_01E026D0(g, b394_01E01870, 0);
+    }
+    if (g->timer > 220 && g->timer < 240) {
+        func_001F5620(func_001F53A0(), g->j2, g->org);
+        b394_01E026D0(g, b394_01E01AA0, 0);
+        func_001F5620(func_001F53A0(), g->j3, g->org);
+        b394_01E026D0(g, b394_01E01AA0, 0);
+    }
+    if (g->timer > 291 && g->timer < 310) {
+        func_001F5620(func_001F53A0(), g->j2, g->org);
+        b394_01E026D0(g, b394_01E01AA0, 0);
+        func_001F5620(func_001F53A0(), g->j3, g->org);
+        b394_01E026D0(g, b394_01E01AA0, 0);
+    }
+    if (g->timer > 291 && g->timer < 410) {
+        for (i = 0; i < 3; i++) {
+            g->org[0] = func_0019A5C8() % 60 - 30;
+            g->org[1] = func_0019A5C8() % 40 + 20;
+            g->org[2] = func_0019A5C8() % 20 - 10;
+            b394_01E026D0(g, b394_01E01C50, 0);
+        }
+    }
+}
 
 /* shape b394:01E01870, 139 insns: b362:01E022B0's spark, size 3, frame 0..7, height 0..14, rise 1..3, flickering white / grey */
 

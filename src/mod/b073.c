@@ -481,7 +481,117 @@ static s32 func_01E01970_b073(s32 arg0, Glow_b073_01E01970 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01B50_b073);
+/* shape b073:01E01B50, 228 insns: b500:01E025C0's four-trail head in blue-grey (0x40, 0x40, 0x80): on start fills four
+   9-point trails (ctx+0x28F0.. 0xA0 apart) with the four tracked points (ids at ctx+0x35B8..BE); alpha 0xC0 for 10
+   ticks, then down by 15; on tick 8 it spawns b073:01E01EE0; h6 counts up to 6; every tick pushes each point into its
+   trail (b073:01E00080, 10 steps) */
+
+typedef struct {
+    Vec4f pt[9];
+    Vec4f head;
+} Trail_b073_01E01B50;
+
+typedef struct {
+    u8 pad0[0x28F0];
+    Trail_b073_01E01B50 tr[4];
+    u8 pad2B70[0x35B8 - 0x2B70];
+    s16 id[4];
+} Ctx_b073_01E01B50;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b073_01E01B50;
+
+static s32 func_01E01B50_b073(Ctx_b073_01E01B50 *g, Fx_b073_01E01B50 *o) {
+    extern void b073_01E00080(Vec4f *, s32, s32, f32 *);
+    extern void b073_01E01EE0();
+    extern void b073_01E03840(Ctx_b073_01E01B50 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+    Vec4f *p;
+    s16 i;
+    s16 j;
+    s16 k;
+    s16 m;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x40, 0x40, 0x80);
+        func_001F5620(func_001F53A0(), g->id[0], v);
+        p = g->tr[0].pt;
+        for (i = 0; i < 9; i++) {
+            p[i].x = v[0];
+            p[i].y = v[1];
+            p[i].z = v[2];
+        }
+        func_001F5620(func_001F53A0(), g->id[1], v);
+        p = g->tr[1].pt;
+        for (j = 0; j < 9; j++) {
+            p[j].x = v[0];
+            p[j].y = v[1];
+            p[j].z = v[2];
+        }
+        func_001F5620(func_001F53A0(), g->id[2], v);
+        p = g->tr[2].pt;
+        for (k = 0; k < 9; k++) {
+            p[k].x = v[0];
+            p[k].y = v[1];
+            p[k].z = v[2];
+        }
+        func_001F5620(func_001F53A0(), g->id[3], v);
+        p = g->tr[3].pt;
+        for (m = 0; m < 9; m++) {
+            p[m].x = v[0];
+            p[m].y = v[1];
+            p[m].z = v[2];
+        }
+        o->hold = 0;
+        o->col[3] = 0;
+        o->fA = func_0019A5C8() % 17 + 44;
+        o->f8 = func_0019A5C8() % 8 + 5;
+        o->f34 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f38 = 30;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick == 8) {
+        b073_01E03840(g, b073_01E01EE0, 0);
+    }
+    if (o->tick != 0) {
+        if (o->hold < 6) {
+            o->hold++;
+        }
+    }
+    func_001F5620(func_001F53A0(), g->id[0], v);
+    b073_01E00080(&g->tr[0].head, 10, 0, v);
+    func_001F5620(func_001F53A0(), g->id[1], v);
+    b073_01E00080(&g->tr[1].head, 10, 0, v);
+    func_001F5620(func_001F53A0(), g->id[2], v);
+    b073_01E00080(&g->tr[2].head, 10, 0, v);
+    func_001F5620(func_001F53A0(), g->id[3], v);
+    b073_01E00080(&g->tr[3].head, 10, 0, v);
+    o->tick++;
+    return 0;
+}
 
 /* shape b073:01E01EE0, 108 insns: on its first tick copies the scene's 4 rows of 10 points (ctx+0x28F0) to the second set (ctx+0x2F30), then a grey glow (size 30, 6 at +6, random 44..60 and 5..12, random angle): in by 64 up to 0xC0 for 7 ticks, then out by 9 and ends */
 

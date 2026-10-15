@@ -22,7 +22,124 @@ static s32 func_01E00080_b089(Vec4f *dst, s32 n, s32 arg2, Vec4f *src) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E00100_b089);
+/* shape b089:01E00100, 220 insns: event step: colour 0x80/0/0/0, tick h3B88; tick 1 spawns 0x1E026B0; follows the
+   joint h3B74; on odd ticks 85..159 spawns three 0x1E00470 sparks at a random height 32..61; follows joint h3B76;
+   at tick 200 places itself there, fills the 9-point trail from joint h3B74, sets a ring of 6 points (radius 14,
+   60 apart) in both point lists, spawns 6 each of 0x1E00A30 / 0x1E014C0 / 0x1E016D0 and resets the 10-point
+   trail; then a 6-step delay loop and the final joint update */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b089_01E00100;
+
+typedef struct {
+    f32 x, y, z;
+    u8 pad0C[0x1230 - 0xC];
+    Vec_b089_01E00100 ringA[6];
+    u8 pad1290[0x1C50 - 0x1290];
+    Vec_b089_01E00100 ringB[6];
+    u8 pad1CB0[0x2640 - 0x1CB0];
+    Vec_b089_01E00100 trail[10];
+    u8 pad26E0[4];
+    u8 col[4];
+    u8 pad26E8[0x3B74 - 0x26E8];
+    s16 joint0;
+    s16 joint1;
+    u8 pad3B78[6];
+    s16 dir;
+    u8 pad3B80[4];
+    s16 slot;
+    u8 pad3B86[2];
+    s16 tick;
+    u8 pad3B8A[2];
+    u8 tbl[1];
+} Scene_b089_01E00100;
+
+static void func_01E00100_b089(Scene_b089_01E00100 *g) {
+    extern s32 b089_01E031D0(void *, s32, s32);
+    extern s32 b089_01E030B0(void *, s32, s32);
+    extern void b089_01E026B0(void);
+    extern void b089_01E00470(void);
+    extern void b089_01E00A30(void);
+    extern void b089_01E014C0(void);
+    extern void b089_01E016D0(void);
+    extern s32 func_001F53A0();
+    extern s32 func_001F5380();
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_0019A5C8(void);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+    f32 w[4];
+    s32 i;
+    s32 a;
+    s32 j;
+    s32 k;
+    Vec_b089_01E00100 *e;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    a = 0;
+    if (g->tick == 1) {
+        b089_01E031D0(g, (s32)b089_01E026B0, 0);
+    }
+    func_001F5620(func_001F53A0(), g->joint0, v);
+    if (g->tick > 0x54 && g->tick % 2 == 1 && g->tick <= 0x9F) {
+        for (i = 0; i < 3; i++) {
+            g->dir = func_0019A5C8() % 360;
+            g->x = v[0];
+            g->y = func_0019A5C8() % 30 + 32;
+            g->z = v[2];
+            b089_01E031D0(g, (s32)b089_01E00470, 0);
+        }
+    }
+    func_001F5620(func_001F53A0(), g->joint1, v);
+    if (g->tick == 200) {
+        g->dir = func_0019A5C8() % 360;
+        e = g->trail;
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        func_001F5620(func_001F53A0(), g->joint0, w);
+        for (k = 0; k < 9; k++) {
+            e->x = w[0];
+            e->y = w[1];
+            e->z = w[2];
+            e++;
+        }
+        for (k = 0; k < 6; k++) {
+            g->ringA[k].x = g->ringB[k].x = v[0] + 14.0f * func_00108030(g->tbl, a, 1);
+            g->ringA[k].y = g->ringB[k].y = v[1] + 14.0f * func_00108030(g->tbl, a, 0);
+            g->ringA[k].z = g->ringB[k].z = v[2];
+            a += 60;
+        }
+        for (i = 0; i < 6; i++) {
+            g->slot = i;
+            b089_01E030B0(g, (s32)b089_01E00A30, 0);
+        }
+        for (i = 0; i < 6; i++) {
+            g->slot = i;
+            b089_01E030B0(g, (s32)b089_01E014C0, 0);
+        }
+        for (i = 0; i < 6; i++) {
+            g->slot = i;
+            b089_01E030B0(g, (s32)b089_01E016D0, 0);
+        }
+        e = g->trail;
+        for (j = 0; j < 10; j++) {
+            e->x = v[0];
+            e->y = v[1];
+            e->z = v[2];
+            e++;
+        }
+    }
+    for (k = 0; k < 6; k++) {
+    }
+    func_001F5F90(func_001F5380(), v);
+}
 
 /* shape b089:01E00470, 73 insns: a grey smoke puff of random size 10..24, frame 0..14 and two random angles: in by 9 up to 0x60 for 10 ticks, then out by 5 and ends */
 
@@ -1004,9 +1121,190 @@ static void func_01E03780_b089(Scene_b089_01E03780 *g, Fx_b089_01E03780 *o, void
     func_00108F90(quad, p, m, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E03930_b089);
+/* OVL_WARM */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E03D60_b089);
+/* shape b089:01E03930, 266 insns: draw the scene's 12 x 12 point grid (g+0x12F0) as 11 rows of 12 quads (the last
+   quad of a row wraps to column 0), each quad turned twice by the object's rotation and offset by the object's
+   per-point shift tables (g+0x2728 / 0x2DE8 / 0x34A8, set o->h30); from o->h36 100 the shifts move by each point's
+   drift (g+0x1D10); mode 0 only sets the packet up */
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f b[6];
+    u8 pad70[0xAC - 0x70];
+    s32 tex;
+    u8 padB0[0x12F0 - 0xB0];
+    Vec4f pts[12][12];
+    Vec4f a[6];
+    Vec4f c[6];
+    u8 pad1CB0[0x1D10 - 0x1CB0];
+    Vec4f vel[11][12];
+    u8 pad2550[0x26EC - 0x2550];
+    s32 ot;
+    u8 pad26F0[0x2714 - 0x26F0];
+    f32 depth;
+    u8 pad2718[0x2728 - 0x2718];
+    s16 tx[6][12][12];
+    s16 ty[6][12][12];
+    s16 tz[6][12][12];
+    u8 pad3B68[0x3B8C - 0x3B68];
+    u8 x3B8C[4];
+} G_b089_01E03930;
+
+typedef struct {
+    u8 pad0[0x10];
+    u8 rot[0x18];
+    u8 x28[8];
+    s16 h30;
+    u8 pad32[2];
+    s16 h34;
+    s16 h36;
+} Obj_b089_01E03930;
+
+static void func_01E03930_b089(G_b089_01E03930 *g, Obj_b089_01E03930 *o, void *pk, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    s32 r;
+    s16 ang;
+    s32 j;
+    Vec4f v[4];
+    f32 m[16];
+    u8 rect[0x10];
+
+    ang = 0;
+    if (mode == 0) {
+        func_00106080(rect, 0x9C, o->h34, rect);
+        func_00109270(pk, 0, 0);
+        func_00107790(pk, o->x28, 0);
+        func_00108500(pk, rect, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+        func_00108EF0(m, &g->a[o->h30], &g->b[o->h30], &g->c[o->h30]);
+        for (r = 0; r < 11; r++) {
+            for (j = 0; j < 12; j++) {
+                if (j < 11) {
+                    v[0] = g->pts[r][j];
+                    v[1] = g->pts[r][j + 1];
+                    v[2] = g->pts[r + 1][j];
+                    v[3] = g->pts[r + 1][j + 1];
+                } else {
+                    v[0] = g->pts[r][j];
+                    v[1] = g->pts[r][0];
+                    v[2] = g->pts[r + 1][j];
+                    v[3] = g->pts[r + 1][0];
+                }
+                func_00109100(v, o->rot, 0, g->x3B8C);
+                func_00109100(v, o->rot, 1, g->x3B8C);
+                func_00107070(v, 0, g->tx[o->h30][r][j]);
+                func_00107070(v, 1, g->ty[o->h30][r][j]);
+                func_00107070(v, 2, g->tz[o->h30][r][j]);
+                if (o->h36 >= 100) {
+                    g->tx[o->h30][r][j] -= g->vel[r][j].x;
+                    g->ty[o->h30][r][j] -= g->vel[r][j].y;
+                    g->tz[o->h30][r][j] -= g->vel[r][j].z;
+                }
+                if (func_00205630(v, 0x70000000, m, pk, &g->depth) != 0) {
+                    func_002075F0(pk, g->ot, (u32)g->depth);
+                }
+                ang += 30;
+            }
+            ang = 0;
+        }
+    }
+}
+
+/* shape b089:01E03D60, 223 insns: a ribbon along the scene's trail points (ctx+0x2640, 0x32 of them): each segment is
+   18 thin quads 20 degrees apart around the segment's two points (radius 1), in the object's colour fading by
+   alpha/count per segment (second colour), drawn flat into the frame's list */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b089_01E03D60;
+
+typedef struct {
+    u8 pad0[0x28];
+    Col_b089_01E03D60 col;
+    u8 pad2C[6];
+    s16 count;
+} Obj_b089_01E03D60;
+
+typedef struct {
+    u8 pad0[0x2640];
+    Vec4f pt[0x50];
+    u8 pad[0x3B8C - 0x2640 - 0x500];
+    u8 trig[1];
+} Scn_b089_01E03D60;
+
+static void func_01E03D60_b089(Scn_b089_01E03D60 *g, Obj_b089_01E03D60 *o) {
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00107990(void *, void *, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 depth[4];
+    Vec4f q[4];
+    struct {
+        u64 tag;
+        u8 pk[0x90];
+    } buf;
+    Col_b089_01E03D60 c;
+    s32 i;
+    s32 ot __attribute__((aligned(8)));
+    s16 n;
+    s32 j;
+    void *pk;
+    s16 a;
+    f32 r;
+
+    ot = (s32)func_00207500();
+    pk = buf.pk;
+    n = o->count;
+    func_001092E0(pk, 0);
+    func_001094F0(pk);
+    c = o->col;
+    r = 1.0f;
+    for (i = 0; i < n - 1; i++) {
+        a = 0;
+        func_00107990(pk, &c, 1);
+        c.a -= o->col.a / n;
+        func_00107990(pk, &c, 2);
+        for (j = 0; j < 18; j++) {
+            q[0].x = g->pt[i].x;
+            q[0].y = g->pt[i].y;
+            q[0].z = g->pt[i].z;
+            q[1].x = g->pt[i].x;
+            q[1].y = g->pt[i].y;
+            q[1].z = g->pt[i].z;
+            q[0].y += r * func_00108030(g->trig, a, 1);
+            q[0].x += r * func_00108030(g->trig, a, 0);
+            q[1].y += r * func_00108030(g->trig, a + 20, 1);
+            q[1].x += r * func_00108030(g->trig, a + 20, 0);
+            q[2].x = g->pt[i + 1].x;
+            q[2].y = g->pt[i + 1].y;
+            q[2].z = g->pt[i + 1].z;
+            q[3].x = g->pt[i + 1].x;
+            q[3].y = g->pt[i + 1].y;
+            q[3].z = g->pt[i + 1].z;
+            q[2].y += r * func_00108030(g->trig, a, 1);
+            q[2].x += r * func_00108030(g->trig, a, 0);
+            q[3].y += r * func_00108030(g->trig, a + 20, 1);
+            q[3].x += r * func_00108030(g->trig, a + 20, 0);
+            if (func_00205630(q, 0x70000000, NULL, pk, depth) != 0) {
+                func_002075F0(pk, ot, 0);
+            }
+            a += 20;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E040E0_b089);
 

@@ -230,7 +230,133 @@ static void func_01E00920_b056(Obj_b056_01E00920 *o, Spr_b056_01E00920 *s, s8 *t
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E00CE0_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E012E0_b056);
+/* shape b056:01E012E0, 223 insns: b053:01E00620-style rising column on the scene's 8-point spine (g+0x3840): both
+   colours 0x28, no spin; alpha in by 10 to 0x50 below height 50, else out by 14; the first spine point above its top
+   gives the two side points (func_001098E0 from the segment below it, at the root's x/z) and widens 0x8A by 7 / 0x8C by
+   6 up to 20 / 19 per point; the top grows by 4 up to 80 with the base kept within 18, then the base until it reaches
+   the top, which ends its parent link; in state 1, with a base above 0, it publishes itself and the base to the scene
+   (g+0x3920..0x3992) and, once the scene step passes 30, asks the module to run it (b056:01E038A0), entering state 2 */
+
+typedef struct {
+    u8 pad0[0x70];
+    s32 w70;
+} Link_b056_01E012E0;
+
+typedef struct {
+    u8 pad0[4];
+    f32 top;
+    u8 pad8[0xC];
+    f32 base;
+    u8 pad18[0x18];
+    s32 w30;
+    s32 w34;
+    s32 w38;
+    u8 pad3C[4];
+    Vec4f a;
+    Vec4f b;
+    u8 pad60[0x14];
+    Link_b056_01E012E0 *link;
+    u8 pad78[8];
+    u8 c80[4];
+    u8 c84[4];
+    s16 state;
+    s16 h8A;
+    s16 h8C;
+    u8 pad8E[4];
+    s16 ang;
+} Obj_b056_01E012E0;
+
+typedef struct {
+    u8 pad0[0x3840];
+    Vec4f pts[8];
+    u8 pad38C0[0x3910 - 0x38C0];
+    s32 step;
+    u8 pad3914[0xC];
+    Obj_b056_01E012E0 *obj;
+    u8 pad3924[0x28];
+    f32 size;
+    f32 base;
+    u8 pad3954[0x38];
+    s16 ang;
+    s16 h398E;
+    u8 pad3990[2];
+    s16 h3992;
+} Scene_b056_01E012E0;
+
+static s32 func_01E012E0_b056(Scene_b056_01E012E0 *g, Obj_b056_01E012E0 *o) {
+    extern s32 b056_01E038A0(Scene_b056_01E012E0 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern Vec4f func_001098E0(void *, void *, void *, void *);
+    f32 v[4];
+    s16 i;
+
+    v[1] = 0.0f;
+    func_001076F0(o->c80, 0x28, 0x28, 0x28);
+    func_001076F0(o->c84, 0x28, 0x28, 0x28);
+    o->w30 = 0;
+    o->w34 = 0;
+    o->w38 = 0;
+    if (o->top < 50.0f) {
+        if (o->c80[3] < 0x50) {
+            o->c80[3] += 10;
+        }
+        if (o->c84[3] < 0x50) {
+            o->c84[3] += 10;
+        }
+    } else {
+        if (o->c80[3] > 16) {
+            o->c80[3] -= 14;
+        }
+        if (o->c84[3] > 16) {
+            o->c84[3] -= 14;
+        }
+    }
+    for (i = 1; i < 8; i++) {
+        if (!(g->pts[i].y <= o->top)) {
+            v[0] = g->pts[0].x;
+            v[2] = g->pts[0].z;
+            o->a = func_001098E0(v, o, &g->pts[i - 1], &g->pts[i]);
+            o->b = func_001098E0(v, o, &g->pts[i - 1], &g->pts[i]);
+            if (o->h8A <= i * 20) {
+                o->h8A += 7;
+            }
+            if (o->h8C <= i * 19) {
+                o->h8C += 6;
+            }
+            i = 8;
+        }
+    }
+    if (o->top <= 80.0f) {
+        o->top += 4.0f;
+        if (!(o->top - o->base <= 18.0f)) {
+            o->base += 4.0f;
+        }
+    } else {
+        o->base += 4.0f;
+        if (!(o->base <= o->top)) {
+            if (o->link != 0) {
+                o->link->w70 = 0;
+            }
+            o->state = 0;
+        }
+    }
+    if (o->state == 1) {
+        if (!(o->base <= 0.0f)) {
+            g->size = 14.0f;
+            g->obj = o;
+            g->h398E = 1;
+            g->base = o->base;
+            g->h3992 = 1;
+            g->ang = o->ang - 15;
+            if (g->step > 30) {
+                if (b056_01E038A0(g, func_01E012E0_b056, 0)) {
+                    o->state = 2;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 /* shape b056:01E01660, 37 insns: pulse: alpha grows by 10 up to 0xA0, then (phase 1) fades by 10; at the bottom it rises
    again, clearing 0x36 once the game value at 0x3996 passes 0x15E; colour (0x5F, 0x3F, 0x3F) */

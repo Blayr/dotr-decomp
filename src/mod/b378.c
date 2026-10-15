@@ -838,7 +838,89 @@ static s32 func_01E02320_b378(Pool_b378_01E02320 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E02440_b378);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E02950_b378);
+/* shape b378:01E02950, 236 insns: b193:01E009B0 family upright ring: mode 0 sets up the packet (two colours, blend
+   0x42); otherwise 36 quads 10 degrees apart between radius 0x38 and 0x38 + 20 (the outer edge pushed out 0x30
+   along z), scale 0.1, at the object's position plus a tenth of its 0x8/0xA/0xC offset, turned by a random angle
+   with x and y cleared and z plus 0x18; flat-shaded into the frame's list */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b378_01E02950;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0xA];
+    s32 spin;
+    u8 pad1C[0xC];
+    u8 col0[4];
+    u8 col1[4];
+    s16 depth;
+    u8 pad32[6];
+    s16 size;
+} Fx_b378_01E02950;
+
+static void func_01E02950_b378(u8 *ctx, Fx_b378_01E02950 *o, void *p, s32 mode) {
+    extern void func_00107990(void *, void *, s32);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b378_01E02950 quad[4];
+    Vec_b378_01E02950 pos;
+    Vec_b378_01E02950 scale;
+    f32 depth __attribute__((aligned(16)));
+    f32 m[16];
+    s32 rot[4];
+    s32 ot;
+    s16 i;
+    s16 a;
+
+    ot = (s32)func_00207500();
+    a = 0;
+    if (mode == 0) {
+        func_001092E0(p, 0);
+        func_001094F0(p);
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+        func_00107990(p, o->col0, 1);
+        func_00107990(p, o->col1, 2);
+    } else {
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
+        pos.x = o->x + o->dx / 10;
+        pos.y = o->y + o->dy / 10;
+        pos.z = o->z + o->dz / 10;
+        func_00205C40((s32)rot);
+        rot[0] = 0;
+        rot[1] = 0;
+        rot[2] += o->spin;
+        func_00108EF0(m, &scale, rot, &pos);
+        for (i = 0; i < 36; i++) {
+            quad[0].z = 0;
+            quad[0].x = o->size * func_00108030(ctx + 0x3C04, a, 0);
+            quad[0].y = o->size * func_00108030(ctx + 0x3C04, a, 1);
+            quad[1].z = 0;
+            quad[1].x = o->size * func_00108030(ctx + 0x3C04, a + 10, 0);
+            quad[1].y = o->size * func_00108030(ctx + 0x3C04, a + 10, 1);
+            quad[2].z = o->depth;
+            quad[2].x = (o->size + 20) * func_00108030(ctx + 0x3C04, a, 0);
+            quad[2].y = (o->size + 20) * func_00108030(ctx + 0x3C04, a, 1);
+            quad[3].z = o->depth;
+            quad[3].x = (o->size + 20) * func_00108030(ctx + 0x3C04, a + 10, 0);
+            quad[3].y = (o->size + 20) * func_00108030(ctx + 0x3C04, a + 10, 1);
+            if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+                func_00109380(p, 1);
+                func_002075F0(p, ot, 0);
+            }
+            a += 10;
+        }
+    }
+}
 
 /* OVL_WARM */
 
@@ -950,7 +1032,117 @@ static void func_01E02D00_b378(Ctx_b378_01E02D00 *c, Band_b378_01E02D00 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E03080_b378);
+/* OVL_WARM */
+
+/* shape b378:01E03080, 241 insns: b378:01E02D00 with texture 0x9B, the band scaled (1.3 x size/750, 2 x size/250,
+   1.3 x size/250) and each of the 9 sectors (40 apart) 20 wide */
+
+typedef struct {
+    u8 pad0[0x15C];
+    void *texture;
+    u8 pad160[0x3BAC - 0x160];
+    s32 ot;
+    u8 pad3BB0[0x3BD4 - 0x3BB0];
+    f32 dep;
+    u8 pad3BD8[0x3C04 - 0x3BD8];
+    u8 trig[1];
+} Ctx_b378_01E03080;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 tilt;
+    u8 pad32[2];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Band_b378_01E03080;
+
+static void func_01E03080_b378(Ctx_b378_01E03080 *c, Band_b378_01E03080 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 m[16];
+    u8 td[0x10];
+    s32 k;
+    s32 j;
+    s16 a;
+    s16 t;
+    s16 tl;
+    f32 sx;
+    f32 sy;
+
+    f32 sc;
+    f32 r0;
+    f32 r1;
+    f32 y;
+    f32 cs;
+    f32 sn;
+
+    if (mode == 0) {
+        func_00106080(td, 0x9B, o->page, td);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, td, 0);
+        func_00208700(p, c->texture, 1);
+    } else {
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    sc = o->size;
+    sc /= 250.0f;
+    sy = 2.0f * sc;
+    func_00106DD0(&scale, 1.3 * (sc / 3.0f), sy, 1.3 * sc);
+    func_00108EF0(m, &scale, o->rot, &pos);
+    for (j = 0; j < 1; j++) {
+        tl = o->tilt;
+        if (o->tilt > 160) {
+            tl = 160;
+        }
+        quad[0].y = 90.0f * func_00108030(c->trig, o->tilt, 0);
+        quad[1].y = quad[0].y;
+        quad[2].y = 90.0f * func_00108030(c->trig, o->tilt + 40, 0);
+        quad[3].y = quad[2].y;
+        r0 = 90.0f * func_00108030(c->trig, tl, 1);
+        r1 = 90.0f * func_00108030(c->trig, tl + 30, 1);
+        a = 0;
+        for (k = 0; k < 9; k++) {
+            t = o->ang + a;
+            cs = func_00108030(c->trig, t, 1);
+            sn = func_00108030(c->trig, t, 0);
+            quad[2].x = cs * r1;
+            quad[2].z = sn * r1;
+            quad[0].x = cs * r0;
+            quad[0].z = sn * r0;
+            t = o->ang + 20 + a;
+            cs = func_00108030(c->trig, t, 1);
+            sn = func_00108030(c->trig, t, 0);
+            quad[3].x = cs * r1;
+            quad[3].z = sn * r1;
+            quad[1].x = cs * r0;
+            quad[1].z = sn * r0;
+            if (func_00205630(quad, 0x70000000, m, p, &c->dep) != 0) {
+                func_002075F0(p, c->ot, (u32)c->dep);
+            }
+            a += 40;
+        }
+    }
+    }
+}
 
 /* OVL_WARM */
 
@@ -1049,4 +1241,120 @@ static void func_01E03450_b378(Obj_b378_01E03450 *o, Anim_b378_01E03450 *an, voi
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E03790_b378);
+/* OVL_WARM */
+
+/* shape b378:01E03790, 256 insns: b378:01E03450's ring of 18 quads 20 degrees wide (radius 0x38, inner 0x6), turned by the anim's rotation plus a quarter on z, at the anim, or at scene times 101..255 at the joint 0x3BEC / 0x3BEE (by kind 0x30) plus a tenth of the scene offset; setup pass page 0x97 */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b378_01E03790;
+
+typedef struct {
+    s16 x, y, z;
+    s16 inner;
+    u8 pad08[8];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[8];
+    s16 kind;
+    u8 pad32[2];
+    s16 h34;
+    u8 pad36[2];
+    s16 radius;
+    s16 start;
+} Anim_b378_01E03790;
+
+typedef struct {
+    u8 pad00[0x15C];
+    s32 texture;
+    u8 pad160[0x3B80 - 0x160];
+    Vec_b378_01E03790 off[2];
+    u8 pad3BA0[0xC];
+    s32 target;
+    u8 pad3BB0[0x3BD4 - 0x3BB0];
+    f32 depth;
+    u8 pad3BD8[0x3BEC - 0x3BD8];
+    s16 joint[2];
+    u8 pad3BF0[0xE];
+    s16 timer;
+    u8 pad3C00[4];
+    u8 trig[1];
+} Obj_b378_01E03790;
+
+static void func_01E03790_b378(Obj_b378_01E03790 *o, Anim_b378_01E03790 *an, void *p, s32 draw) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    Vec_b378_01E03790 quad[4];
+    Vec_b378_01E03790 pos;
+    f32 m[16];
+    f32 rm[8];
+    f32 v[4];
+    s32 r[4];
+    f32 *py;
+    s16 j;
+    f32 *pz;
+    f32 *q;
+    s32 k;
+    s16 a;
+
+    j = 0;
+    if (draw == 0) {
+        func_00106080(rm, 0x97, an->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, an->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, o->texture, 1);
+        return;
+    }
+    py = &pos.y;
+    pz = &pos.z;
+    pos.x = an->x;
+    *py = an->y;
+    *pz = an->z;
+    if (o->timer > 100 && o->timer < 256) {
+        if (an->kind == 0) {
+            func_001F5620(func_001F53A0(), o->joint[0], q = (f32 *)(u32)v);
+            pos.x = q[0] + o->off[0].x / 10.0f;
+            *py = v[1] + o->off[0].y / 10.0f;
+            *pz = v[2] + o->off[0].z / 10.0f;
+        }
+        if (an->kind == 1) {
+            func_001F5620(func_001F53A0(), o->joint[1], q = (f32 *)(u32)v);
+            pos.x = q[0] + o->off[1].x / 10.0f;
+            *py = v[1] + o->off[1].y / 10.0f;
+            *pz = v[2] + o->off[1].z / 10.0f;
+        }
+    }
+    *(Vec_b378_01E03790 *)r = *(Vec_b378_01E03790 *)an->rot;
+    r[2] += 0x4000;
+    func_00108EF0(m, NULL, r, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 18; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->trig, a, 1);
+        quad[2].z = an->radius * func_00108030(o->trig, a, 0);
+        quad[0].x = an->inner * func_00108030(o->trig, a, 1);
+        quad[0].z = an->inner * func_00108030(o->trig, a, 0);
+        a = an->start + 20 + j;
+        quad[3].x = an->radius * func_00108030(o->trig, a, 1);
+        quad[3].z = an->radius * func_00108030(o->trig, a, 0);
+        quad[1].x = an->inner * func_00108030(o->trig, a, 1);
+        quad[1].z = an->inner * func_00108030(o->trig, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &o->depth) != 0) {
+            func_002075F0(p, o->target, (u32)o->depth);
+        }
+        j += 20;
+    }
+}

@@ -435,7 +435,106 @@ static s32 func_01E01030_b356(Ctx_b038_01E01090 *ctx, Obj_b038_01E01090 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b356", func_01E013A0_b356);
+/* shape b356:01E013A0, 225 insns: b038:01E01090 cousin: a grey puff with random drift (-20..19)/60 until tick 70,
+   a fall toward the joint pair ctx->v[h52], ctx->v[h52 + 3] spread over 8 ticks in z and y, size 35 growing 2 a
+   frame; fades in fast for 10 ticks, out by 13; the scene counter past 295 ends it */
+
+typedef struct {
+    u8 pad0[0xB228];
+    s16 v[0x1B];
+    s16 count;
+} Ctx_b356_01E013A0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b356_01E013A0;
+
+static s32 func_01E013A0_b356(Ctx_b356_01E013A0 *ctx, Obj_b356_01E013A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+
+    if (o->state == 1) {
+        o->f48 = 35.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h5A = 225;
+        o->h5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 40 - 20;
+        o->f38 = func_0019A5C8() % 40 - 20;
+        o->f30 /= 60.0f;
+        o->f34 /= 60.0f;
+        o->f38 /= 60.0f;
+        func_001F5620(func_001F53A0(), ctx->v[o->h52], a);
+        func_001F5620(func_001F53A0(), ctx->v[o->h52 + 3], b);
+        o->f3C = (a[2] - b[2]) / 8.0f;
+        o->f4C = (a[1] - b[1]) / 8.0f;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->state = 0;
+    }
+    if (o->t < 70) {
+        o->x += o->f30;
+        o->y += o->f34;
+        o->z += o->f38;
+    }
+    if (o->t != 0) {
+        o->z += o->f3C;
+        o->y += o->f4C;
+        o->f48 += 2.0f;
+    }
+    if (o->t != 0) {
+        o->h5A += 2;
+    }
+    if (ctx->count > 295) {
+        o->t = 100;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b356", func_01E01730_b356);
 

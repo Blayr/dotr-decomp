@@ -339,7 +339,133 @@ static void func_01E00790_b580(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b580", func_01E00CE0_b580);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b580", func_01E01280_b580);
+/* shape b580:01E01280, 223 insns: b521:01E010C0 in grey 0xA0 with the scene block 0x2BC0 further on; a rising pair (lead 0x4, tail 0x14): fades in by 10 below 50, out by
+   14 above; finds the first scene path point (ctx+0x53C0, 8 of them) above the lead and fits two frames to that
+   path segment (func_001098E0 into 0x40 and 0x50), growing 0x8A by 7 / 0x8C by 6 up to 20 / 19 per point; the lead
+   climbs 4 a tick to 80 with the tail within 18, then the tail alone until it passes the lead (frees its link,
+   stops); while state 1 and above 0 it hands itself to the scene and, from scene stage 31 on, starts the module's
+   b580:01E02070 (state 2 once it takes) */
+
+typedef struct Link_b580_01E01280 {
+    u8 pad0[0x70];
+    s32 f70;
+} Link_b580_01E01280;
+
+typedef struct Obj_b580_01E01280 {
+    u8 pad0[4];
+    f32 lead;
+    u8 pad8[0xC];
+    f32 tail;
+    u8 pad18[0x18];
+    s32 f30;
+    s32 f34;
+    s32 f38;
+    u8 pad3C[4];
+    Vec4f fa;
+    Vec4f fb;
+    u8 pad60[0x14];
+    Link_b580_01E01280 *link;
+    u8 pad78[8];
+    u8 col0[4];
+    u8 col1[4];
+    s16 state;
+    s16 h8A;
+    s16 h8C;
+    u8 pad8E[4];
+    s16 ang;
+} Obj_b580_01E01280;
+
+typedef struct Scn_b580_01E01280 {
+    u8 pad0[0x7F80];
+    Vec4f pt[8];
+    u8 pad5440[0x8070 - 0x8000];
+    s32 stage;
+    u8 pad54B4[0xC];
+    Obj_b580_01E01280 *cur;
+    u8 pad54C4[0x28];
+    f32 f54EC;
+    f32 f54F0;
+    u8 pad54F4[0x38];
+    s16 f552C;
+    s16 f552E;
+    u8 pad5530[2];
+    s16 f5532;
+} Scn_b580_01E01280;
+
+static s32 func_01E01280_b580(Scn_b580_01E01280 *g, Obj_b580_01E01280 *o) {
+    extern s32 b580_01E02070(Scn_b580_01E01280 *g, void *fn, s32 arg);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_001098E0(void *, void *, void *, void *, void *);
+    Vec4f v;
+    Vec4f r1;
+    Vec4f r2;
+    s16 i;
+
+    v.y = 0;
+    func_001076F0(o->col0, 0xA0, 0xA0, 0xA0);
+    func_001076F0(o->col1, 0xA0, 0xA0, 0xA0);
+    o->f30 = 0;
+    o->f34 = 0;
+    o->f38 = 0;
+    if (o->lead < 50.0f) {
+        if (o->col0[3] < 0x50) {
+            o->col0[3] += 10;
+        }
+        if (o->col1[3] < 0x50) {
+            o->col1[3] += 10;
+        }
+    } else {
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 14;
+        }
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 14;
+        }
+    }
+    for (i = 1; i < 8; i++) {
+        if (g->pt[i].y > o->lead) {
+            v.x = g->pt[0].x;
+            v.z = g->pt[0].z;
+            func_001098E0(&r1, &v, o, &g->pt[i - 1], &g->pt[i]);
+            o->fa = r1;
+            func_001098E0(&r2, &v, o, &g->pt[i - 1], &g->pt[i]);
+            o->fb = r2;
+            if (o->h8A <= i * 20) {
+                o->h8A += 7;
+            }
+            if (o->h8C <= i * 19) {
+                o->h8C += 6;
+            }
+            i = 8;
+        }
+    }
+    if (o->lead <= 80.0f) {
+        o->lead += 4.0f;
+        if (o->lead - o->tail > 18.0f) {
+            o->tail += 4.0f;
+        }
+    } else {
+        o->tail += 4.0f;
+        if (o->tail > o->lead) {
+            if (o->link != NULL) {
+                o->link->f70 = 0;
+            }
+            o->state = 0;
+        }
+    }
+    if (o->state == 1 && o->tail > 0.0f) {
+        g->f54EC = 14.0f;
+        g->cur = o;
+        g->f552E = 1;
+        g->f54F0 = o->tail;
+        g->f5532 = 1;
+        g->f552C = o->ang - 15;
+        if (g->stage > 30 && b580_01E02070(g, func_01E01280_b580, 0) != 0) {
+            o->state = 2;
+        }
+    }
+    return 0;
+}
 
 /* shape b521:01E01440, 212 insns: b256:01E02A40 family: a rising spark (size 4..9 growing to 16, scale 5..104, drift /400, random spin and spin speed -2048..2047), fades in for 40 ticks, out by 9; rises 2 a frame and turns */
 

@@ -386,7 +386,88 @@ static void func_01E00ED0_b530(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01190_b530);
+/* shape b530:01E01190, 221 insns: the effect scene's step: counts the frame (0xE068) and keeps the scene point on joint
+   0xDFA4; frames 20..170 spawn 0x1E01BA0 + 0x1E01D40 (before 106) or 0x1E01510 + 0x1E019A0; from frame 170 to 295,
+   every tenth frame opens the next of 20 rings (0xE058, wrapping) with size 40 and height 20; each open ring hands its
+   index, size, turn and height to the scene, spawns 0x1E01720 and 0x1E01870, shrinks 1 (closing below 0), sinks 1.2
+   and turns 10 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xDD94 - 0x260];
+    Vec4f b[20];
+    u8 padDED4[0xDEF4 - 0xDED4];
+    f32 fDEF4;
+    u8 padDEF8[0xDF3C - 0xDEF8];
+    f32 fDF3C;
+    u8 padDF40[4];
+    f32 a[20];
+    u8 padDF94[0xDFA4 - 0xDF94];
+    s16 joint;
+    u8 padDFA6[0xE002 - 0xDFA6];
+    s16 hE002;
+    u8 padE004[4];
+    s16 h[20];
+    s16 act[20];
+    s16 n;
+    u8 padE05A[6];
+    s16 cur;
+    u8 padE062[6];
+    s16 t;
+} Scene_b530_01E01190;
+
+static void func_01E01190_b530(Scene_b530_01E01190 *g) {
+    extern void b530_01E01510(void);
+    extern void b530_01E01720(void);
+    extern void b530_01E01870(void);
+    extern void b530_01E019A0(void);
+    extern void b530_01E01BA0(void);
+    extern void b530_01E01D40(void);
+    extern s32 b530_01E031A0(Scene_b530_01E01190 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    func_001F5620(func_001F53A0(), g->joint, &g->pos);
+    if (g->t >= 20 && g->t < 171) {
+        if (g->t < 106) {
+            b530_01E031A0(g, (s32)b530_01E01BA0, 0);
+            b530_01E031A0(g, (s32)b530_01E01D40, 0);
+        } else {
+            b530_01E031A0(g, (s32)b530_01E01510, 0);
+            b530_01E031A0(g, (s32)b530_01E019A0, 0);
+        }
+    }
+    if (g->t >= 170 && g->t < 296 && g->t % 10 == 1) {
+        if (g->n < 20) {
+            g->act[g->n]++;
+            g->a[g->n] = 40.0f;
+            g->b[g->n].x = 20.0f;
+            g->n++;
+            if (g->n >= 20) {
+                g->n = 0;
+            }
+        }
+    }
+    for (i = 0; i < 20; i++) {
+        if (g->act[i] != 0) {
+            g->cur = i;
+            g->fDF3C = g->a[i];
+            g->hE002 = g->h[i];
+            g->fDEF4 = g->b[i].x;
+            b530_01E031A0(g, (s32)b530_01E01720, 0);
+            b530_01E031A0(g, (s32)b530_01E01870, 0);
+            g->a[i] -= 1.0f;
+            g->b[i].x -= 1.2f;
+            if (g->a[i] < 0.0f) {
+                g->act[i] = 0;
+            }
+            g->h[i] += 10;
+        }
+    }
+}
 
 /* shape b530:01E01510, 130 insns: b530:01E01D40 family grey spark (f48 1..4, frame cycling 0..7, f50 from 0 growing 2..5 per tick for 90 ticks, angle 0..359, f8 0..34): alpha up by 64 to 0xC0 for 3..5 ticks, then down by 14; from scene count 108 its z drifts -1 or +1 by the scene flag */
 

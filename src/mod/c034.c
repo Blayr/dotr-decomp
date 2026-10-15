@@ -163,4 +163,121 @@ static void func_01E00610_c034(Ctx_c034_01E00610 *ctx, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c034", func_01E00740_c034);
+/* shape c034:01E00740, 266 insns: the c034 light slot's draw (handler set by c034:01E00610): mode 0 builds a 4-corner
+   colour packet from the scene's current colour; otherwise it draws a 9 x 18 dome of quads (rings of radius
+   35 - 0.389 x latitude, height 16 x sin, 20 degrees apart), turned 90 or -90 by the camera's side, its alpha rising
+   by a ninth of the slot's alpha per ring, each quad submitted 0x1E times (slot field) */
+
+typedef struct {
+    u8 pad0[0x14];
+    u8 col[4];
+    u8 pad18[6];
+    s16 count;
+} Slot_c034_01E00740;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 x : 16, y : 16, z : 24, f : 8;
+} Vtx_c034_01E00740;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c034_01E00740 v[4];
+} Pkt_c034_01E00740;
+
+typedef struct {
+    u8 pad0[0x40];
+    f32 m[16];
+    u8 pad80[0x70];
+    s32 turn;
+    u8 padF4[0xD70 - 0xF4];
+    u8 cur[4];
+    u8 padD74[0xC];
+    s32 ot;
+    u8 padD84[0xDB0 - 0xD84];
+    f32 depth;
+    u8 padDB4[0xDDC - 0xDB4];
+    u8 trig[1];
+} Ctx_c034_01E00740;
+
+static void func_01E00740_c034(Ctx_c034_01E00740 *g, Slot_c034_01E00740 *s, Pkt_c034_01E00740 *p, s32 mode) {
+    extern void func_00107710(void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001F5380(void);
+    extern void func_00108950(void *, s32 *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    s16 a;
+    s16 b;
+    s32 j;
+    s32 k;
+    s32 n;
+    s32 a20;
+    f32 y;
+
+    a = 0;
+    b = 0;
+    if (mode == 0) {
+        p->count = 0x14;
+        p->tag = 8;
+        p->regs = 0x41414141;
+        p->pad = 0;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        func_00107710(&p->v[0], g->cur);
+        func_00107710(&p->v[1], g->cur);
+        func_00107710(&p->v[2], g->cur);
+        func_00107710(&p->v[3], g->cur);
+        p->v[0].q = p->v[1].q = p->v[2].q = p->v[3].q = 1.0f;
+        p->v[0].f = 0;
+        p->v[1].f = 0;
+        p->v[2].f = 0;
+        p->v[3].f = 0;
+        return;
+    }
+    for (k = 0; k < 9; k++) {
+        for (j = 0; j < 18; j++) {
+            a20 = a + 20;
+            q[0].x = (35.0f - 0.3888889f * (b + 10)) * func_00108030(g->trig, a20, 1);
+            q[0].z = (35.0f - 0.3888889f * (b + 10)) * func_00108030(g->trig, a20, 0);
+            q[2].x = (35.0f - 0.3888889f * b) * func_00108030(g->trig, a20, 1);
+            q[2].z = (35.0f - 0.3888889f * b) * func_00108030(g->trig, a20, 0);
+            q[1].x = (35.0f - 0.3888889f * (b + 10)) * func_00108030(g->trig, a, 1);
+            q[1].z = (35.0f - 0.3888889f * (b + 10)) * func_00108030(g->trig, a, 0);
+            q[3].x = (35.0f - 0.3888889f * b) * func_00108030(g->trig, a, 1);
+            q[3].z = (35.0f - 0.3888889f * b) * func_00108030(g->trig, a, 0);
+            y = 16.0f * func_00108030(g->trig, b + 10, 0);
+            q[0].y = y;
+            q[1].y = y;
+            y = 16.0f * func_00108030(g->trig, b, 0);
+            q[3].y = y;
+            q[2].y = y;
+            if ((func_001F5380() >> 8) == 0) {
+                g->turn = 90;
+            } else {
+                g->turn = -90;
+            }
+            func_00108950(&q[0], &g->turn, 1, g->trig);
+            func_00108950(&q[1], &g->turn, 1, g->trig);
+            func_00108950(&q[2], &g->turn, 1, g->trig);
+            func_00108950(&q[3], &g->turn, 1, g->trig);
+            g->cur[3] = (k + 1) * (s->col[3] / 9);
+            func_00107710(&p->v[0], g->cur);
+            func_00107710(&p->v[1], g->cur);
+            g->cur[3] = k * (s->col[3] / 9);
+            func_00107710(&p->v[2], g->cur);
+            func_00107710(&p->v[3], g->cur);
+            if (func_00205630(q, 0x70000000, g->m, p, &g->depth) != 0) {
+                for (n = 0; n < s->count; n++) {
+                    func_002075F0(p, g->ot, (u32)g->depth);
+                }
+            }
+            a += 20;
+        }
+        b += 10;
+    }
+}

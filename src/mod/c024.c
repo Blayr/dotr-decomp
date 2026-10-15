@@ -1,6 +1,119 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E00080_c024);
+/* shape c024:01E00080, 223 insns: the c024 module's scene step: full alpha, 0x3B78 = 20, counts ticks (0x3B6E); at 1
+   white and the grid built (c024:01E01CD0); for the first 32 ticks, while the rise 0x3B7A is under 230, four grey
+   c024:01E00400 sparks a tick at height 0x3B62 + 4 (size 10..18, random angle, scale 1.5); 0x3B62 climbs 4 a tick;
+   the rise climbs 8 to 230 (copied to 0x3B7C once past it), then 0x3B7C drops 3 every other tick; a 180-step delay
+   loop; at 34 and 37 bursts of 30 c024:01E004F0 at the origin in the saved colour (0x3B58) when 0x3B20 is over 17 */
+
+typedef struct {
+    u8 pad0[0xC0];
+    f32 pos[3];
+    u8 padCC[0x124 - 0xCC];
+    f32 scale;
+    u8 pad128[0x3B20 - 0x128];
+    s32 level;
+    u8 col[4];
+    u8 pad3B28[8];
+    s32 w3B30;
+    u8 pad3B34[4];
+    f32 size;
+    u8 pad3B3C[0x3B58 - 0x3B3C];
+    u8 save[3];
+    u8 pad3B5B[3];
+    s16 ang;
+    u8 pad3B60[2];
+    s16 height;
+    u8 pad3B64[0x3B6E - 0x3B64];
+    s16 count;
+    u8 pad3B70[8];
+    s16 h3B78;
+    s16 rise;
+    s16 top;
+    s16 wait;
+} Ctx_c024_01E00080;
+
+static void func_01E00080_c024(Ctx_c024_01E00080 *g) {
+    extern s32 c024_01E00400(void);
+    extern s32 c024_01E004F0(void);
+    extern void c024_01E009B0(Ctx_c024_01E00080 *, s32 (*)(void));
+    extern void c024_01E00AE0(Ctx_c024_01E00080 *, s32 (*)(void));
+    extern void c024_01E01CD0(Ctx_c024_01E00080 *, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    s32 i;
+    s32 k;
+
+    g->col[3] = 0x80;
+    g->h3B78 = 20;
+    g->count++;
+    if (g->count == 1) {
+        g->col[0] = 0xFF;
+        g->col[1] = 0xFF;
+        g->col[2] = 0xFF;
+    }
+    if (g->count == 1) {
+        c024_01E01CD0(g, 0);
+    }
+    if (g->count < 33 && g->rise < 230) {
+        for (i = 0; i < 4; i++) {
+            g->pos[0] = 0.0f;
+            g->pos[1] = g->height + 4;
+            g->pos[2] = 0.0f;
+            g->col[0] = 0x80;
+            g->col[1] = 0x80;
+            g->col[2] = 0x80;
+            g->size = func_0019A5C8() % 9 + 10;
+            g->col[3] = 10;
+            g->ang = func_0019A5C8() % 360;
+            g->scale = 1.5f;
+            c024_01E009B0(g, c024_01E00400);
+        }
+    }
+    g->height += 4;
+    if (g->rise < 230) {
+        g->rise += 8;
+        if (g->rise > 230) {
+            g->top = g->rise;
+        }
+    } else if (g->wait == 0) {
+        g->top -= 3;
+        g->wait = 1;
+    } else {
+        g->wait--;
+    }
+    for (k = 0; k < 180; k++) {
+    }
+    if (g->count == 34) {
+        g->col[3] = 0;
+        g->col[0] = g->save[0];
+        g->col[1] = g->save[1];
+        g->col[2] = g->save[2];
+        func_00106DD0(g->pos, 0.0f, 0.0f, 0.0f);
+        for (i = 0; i < 30; i++) {
+            g->scale = func_0019A5C8() % 10 + 8;
+            g->size = func_0019A5C8() % 140 + 5;
+            g->w3B30 = 0;
+            if (g->level > 17) {
+                c024_01E00AE0(g, c024_01E004F0);
+            }
+        }
+    }
+    if (g->count == 37) {
+        g->col[3] = 0;
+        g->col[0] = g->save[0];
+        g->col[1] = g->save[1];
+        g->col[2] = g->save[2];
+        for (i = 0; i < 30; i++) {
+            func_00106DD0(g->pos, 0.0f, 0.0f, 0.0f);
+            g->size = func_0019A5C8() % 140 + 5;
+            g->scale = func_0019A5C8() % 10 + 8;
+            g->w3B30 = 0;
+            if (g->level > 17) {
+                c024_01E00AE0(g, c024_01E004F0);
+            }
+        }
+    }
+}
 
 /* shape c024:01E00400, 59 insns: an animated sprite: frame steps every 3 ticks up to 7 (then dies), slides by its speed; in by 15 for frames 0-2, then out by 12 and dies */
 
@@ -250,7 +363,127 @@ static void func_01E00AE0_c024(Scene_c024_01E00AE0 *g, s32 arg) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E00CD0_c024);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E01220_c024);
+/* shape c024:01E01220, 233 insns: b004:01E01A00's hanging quad in two passes: with lit 0 it sets up the packet (rect
+   0x8C,0,4,0x7F, colours 0x2A top and 0x2E bottom, scene texture 0x10C) and returns; otherwise it builds the scene
+   matrix (0x40) from the point func_001F53B0 gives and the anim's rotation, and draws one quad 3 wide at the anim's
+   s16 point hanging 60 down, heights kept within 12..200, depth in 0x3B48, into 0x3B2C */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c024_01E01220;
+
+typedef struct {
+    Rgbaq_c024_01E01220 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c024_01E01220;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c024_01E01220 v[4];
+} Pkt_c024_01E01220;
+
+typedef struct {
+    s16 x, y, w, h;
+} Rect_c024_01E01220;
+
+typedef struct {
+    s32 rot[4];
+    u8 pad10[4];
+    s16 x, y, z;
+    u8 pad1A[0x10];
+    u8 col[4];
+    u8 col2[4];
+} Anim_c024_01E01220;
+
+typedef struct {
+    u8 pad00[0x40];
+    u8 m[0x40];
+    u8 pad80[0x8C];
+    s32 tex;
+    u8 pad110[0x3B2C - 0x110];
+    s32 ot;
+    u8 pad3B30[0x18];
+    f32 depth;
+} Scene_c024_01E01220;
+
+static void func_01E01220_c024(Scene_c024_01E01220 *g, Anim_c024_01E01220 *an, Pkt_c024_01E01220 *p, s32 lit) {
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_c024_01E01220 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_001F53B0(s32, void *);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 m[16];
+    f32 v[4];
+    Rect_c024_01E01220 r __attribute__((aligned(16)));
+
+    if (lit == 0) {
+        r.x = 0x8C;
+        r.y = 0;
+        r.w = 4;
+        r.h = 0x7F;
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, &r, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_001F53B0(0, v);
+    func_0020EB40(g->m);
+    func_0020C940(m, 0, an->rot, v);
+    func_0020BC00(g->m, m);
+    q[0].x = an->x;
+    q[0].y = an->y;
+    q[0].z = an->z;
+    q[1] = q[0];
+    q[1].x += 3.0f;
+    q[2].x = an->x;
+    q[2].y = an->y;
+    q[2].z = an->z;
+    q[2].y -= 60.0f;
+    q[3] = q[2];
+    q[3].x += 3.0f;
+    if (q[0].y > 200.0f) {
+        q[0].y = 200.0f;
+    }
+    if (q[1].y > 200.0f) {
+        q[1].y = 200.0f;
+    }
+    if (q[2].y > 200.0f) {
+        q[2].y = 200.0f;
+    }
+    if (q[3].y > 200.0f) {
+        q[3].y = 200.0f;
+    }
+    if (q[0].y < 12.0f) {
+        q[0].y = 12.0f;
+    }
+    if (q[1].y < 12.0f) {
+        q[1].y = 12.0f;
+    }
+    if (q[2].y < 12.0f) {
+        q[2].y = 12.0f;
+    }
+    if (q[3].y < 12.0f) {
+        q[3].y = 12.0f;
+    }
+    if (func_00205630(q, 0x70000000, g->m, p, &g->depth) != 0) {
+        func_002075F0(p, g->ot, (u32)g->depth);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E015D0_c024);
 

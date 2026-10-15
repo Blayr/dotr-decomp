@@ -601,7 +601,90 @@ static void func_01E014E0_b020(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E017A0_b020);
+/* shape b020:01E017A0, 233 insns: the b020 module's event step (b708:01E012D0 family): counts the frame (0x70B2); at
+   1 spawns b020:01E022D0 at angles 0 and 90 (0x709E) and b020:01E023E0; each frame the point (0x250) sits on joint
+   0x707C jittered by -10..9; from 160 to 310 spawns b020:01E01FC0 and 2 (4 from frame 100) b020:01E01B50 with the
+   rolling slot 0x70AC (0..119, copied to 0x70AA); from 134 to 183 spawns 3 b020:01E01E70 at joint 0x7080 jittered and
+   moved 50 along z (forward with the flag 0x70AE); b020:01E024C0 at 128 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x707C - 0x260];
+    s16 j7C;
+    u8 pad707E[2];
+    s16 j80;
+    u8 pad7082[0x709E - 0x7082];
+    s16 ang;
+    u8 pad70A0[0x70AA - 0x70A0];
+    s16 slot;
+    s16 roll;
+    s16 flag;
+    u8 pad70B0[2];
+    s16 t;
+} Scene_b020_01E017A0;
+
+static void func_01E017A0_b020(Scene_b020_01E017A0 *g) {
+    extern s32 b020_01E01B50(void);
+    extern s32 b020_01E01E70(void);
+    extern s32 b020_01E01FC0(void);
+    extern s32 b020_01E022D0(void);
+    extern s32 b020_01E023E0(void);
+    extern s32 b020_01E024C0(void);
+    extern void b020_01E02D90(Scene_b020_01E017A0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    g->t++;
+    if (g->t == 1) {
+        g->ang = 0;
+        b020_01E02D90(g, b020_01E022D0, 0);
+        g->ang = 90;
+        b020_01E02D90(g, b020_01E022D0, 0);
+        b020_01E02D90(g, b020_01E023E0, 0);
+    }
+    func_001F5620(func_001F53A0(), g->j7C, &g->pos);
+    g->pos.x += func_0019A5C8() % 20 - 10;
+    g->pos.y += func_0019A5C8() % 20 - 10;
+    g->pos.z += func_0019A5C8() % 20 - 10;
+    if (g->t >= 160 && g->t < 311) {
+        b020_01E02D90(g, b020_01E01FC0, 0);
+    }
+    if (g->t >= 160 && g->t < 311 && g->t != 0) {
+        if (g->t < 100) {
+            n = 2;
+        } else {
+            n = 4;
+        }
+        for (i = 0; i < n; i++) {
+            g->slot = g->roll;
+            b020_01E02D90(g, b020_01E01B50, 0);
+            g->roll++;
+            if (g->roll >= 120) {
+                g->roll = 0;
+            }
+        }
+    }
+    if (g->t >= 134 && g->t < 184) {
+        for (i = 0; i < 3; i++) {
+            func_001F5620(func_001F53A0(), g->j80, &g->pos);
+            g->pos.x += func_0019A5C8() % 20 - 10;
+            g->pos.y += func_0019A5C8() % 20 - 10;
+            g->pos.z += func_0019A5C8() % 20 - 10;
+            if (g->flag != 0) {
+                g->pos.z += 50.0f;
+            } else {
+                g->pos.z -= 50.0f;
+            }
+            b020_01E02D90(g, b020_01E01E70, 0);
+        }
+    }
+    if (g->t == 128) {
+        b020_01E02D90(g, b020_01E024C0, 0);
+    }
+}
 
 /* shape b020:01E01B50, 199 insns: b020:01E01FC0's drifting sprite with two grey (0x80) colours: on start size 5..34,
    0xE 0..7, variant 0..2, random drift (f10/f18 -20..19, f14 30, f30/f34/f38 random /10), random angle, second alpha 0;

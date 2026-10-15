@@ -571,7 +571,120 @@ static void func_01E01190_b549(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b549", func_01E01700_b549);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b549", func_01E01AE0_b549);
+/* shape b549:01E01AE0, 268 insns: b549:01E02280's flake in violet (0x80, 0, 0xFF), 20..39 tall growing by 1 to 60
+   every third tick (width up to 4 more), frame cycling 0..7; on tick 61, while the scene count is under 339, it
+   copies its position to ctx+0x250 and spawns b549:01E01F10 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f at;
+    u8 pad260[0xB2B4 - 0x260];
+    s16 flag;
+    u8 padB2B6[2];
+    s16 count;
+} Ctx_b549_01E01AE0;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b549_01E01AE0;
+
+static s32 func_01E01AE0_b549(Ctx_b549_01E01AE0 *ctx, Obj_b549_01E01AE0 *o) {
+    extern void b549_01E01F10();
+    extern void b549_01E02CE0(Ctx_b549_01E01AE0 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = func_0019A5C8() % 20 + 20;
+        o->hA = o->h8 + 4;
+        o->h52 = 0;
+        if (o->h52 == 0) {
+            func_001076F0(o->col, 0x80, 0, 0xFF);
+            o->h56 = (func_0019A5C8() >> 4) % 8;
+        } else {
+            func_001076F0(o->col, 0xFF, 0, 0x80);
+            o->h56 = (func_0019A5C8() >> 4) % 3;
+        }
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 200.0f;
+        o->f30 /= 200.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+    }
+    if (ctx->count < 350) {
+        if (o->t < 76) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x40;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->h52 == 0) {
+        o->h56++;
+        if (o->h56 > 7) {
+            o->h56 = 0;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->h8 < 60) {
+            o->h8++;
+        }
+        if (o->hA < o->h8 + 4) {
+            o->hA++;
+        }
+    }
+    if (o->t != 0) {
+        if (ctx->flag != 0) {
+            o->z -= 3.0f;
+        } else {
+            o->z += 3.0f;
+        }
+        o->x += o->f30;
+        o->y += o->f34 - 0.09f;
+    }
+    if (ctx->count < 339 && o->t == 61) {
+        ctx->at = *(Vec4f *)&o->x;
+        b549_01E02CE0(ctx, b549_01E01F10, 0);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    o->t++;
+    return 0;
+}
 
 /* shape b549:01E01F10, 108 insns: b282:01E01C20 family spinning spark: white, size 15, frame 3, angle 10..24, spin 25, size 1..8, held 4..11 ticks at 0xC0, then out by 13 and ends; kind-1 ones blink white/grey */
 
@@ -698,7 +811,107 @@ static s32 func_01E020C0_b549(s32 arg0, Obj_b549_01E020C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b549", func_01E02280_b549);
+/* shape b549:01E02280, 229 insns: b588:01E015B0 cousin: a red, violet or green flake (by h52) of height 43..72 growing
+   2 to 300, frame 0..7, drift /200; alpha held for 76 ticks while the scene count (0xB2B8) is under 350. As
+   b588:01E015B0: b256:01E02540's spark in green (0x40, 0xFF, 0x40), 50..89 wide growing by 5 to
+   130 every third tick, drift /400 in x/y, sinking 0.09 a tick and moving 3 along z by the scene flag (ctx+0xA96A);
+   fades in for 40 ticks then out by 9 */
+
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 flag;
+    u8 padB2B6[2];
+    s16 count;
+} Ctx_b549_01E02280;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b549_01E02280;
+
+static s32 func_01E02280_b549(Ctx_b549_01E02280 *ctx, Obj_b549_01E02280 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = func_0019A5C8() % 30 + 43;
+        o->hA = o->h8 + 4;
+        o->h52 = (func_0019A5C8() >> 4) % 3;
+        if (o->h52 == 0) {
+            func_001076F0(o->col, 0xFF, 0, 0);
+        }
+        if (o->h52 == 1) {
+            func_001076F0(o->col, 0x80, 0, 0xFF);
+        }
+        if (o->h52 == 2) {
+            func_001076F0(o->col, 0, 0xFF, 0);
+        }
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 200.0f;
+        o->f30 /= 200.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+    }
+    if (ctx->count < 350) {
+        if (o->t < 76) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x40;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->h8 < 300) {
+        o->h8 += 2;
+    }
+    o->hA = o->h8;
+    if (o->t != 0) {
+        if (ctx->flag != 0) {
+            o->z -= 3.0f;
+        } else {
+            o->z += 3.0f;
+        }
+        o->x += o->f30;
+        o->y += o->f34 - 0.09f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

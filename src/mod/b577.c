@@ -303,7 +303,112 @@ static void func_01E006E0_b577(Obj_b094_01E00920 *obj, Data_b094_01E00920 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b577", func_01E00A40_b577);
+/* shape b577:01E00A40, 254 insns: the scene script of b577 (b232:01E00480's kind): counts ctx+0x4B06; each tick it
+   puts the mark (ctx+0x4470) on joint 0x4A92, lifts it half way toward joint 0x4A94 and moves it 5 along z by the
+   flag ctx+0x4B00; spawns on ticks 1, 45, 110 (ten, the first three into slots 0..2), 200 and 206; on odd ticks
+   252..380 a 0x1E01250; from tick 202 to 380 it puts the burst point (ctx+0x250) on the camera at height 42, spawns a
+   0x1E01360 on odd ticks and turns ctx+0x4AF6 by 3; from 226 to 300 it puts the point on joint 0x4A90 lifted by 10 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[4];
+    u8 pad260[0x4470 - 0x260];
+    f32 m[4];
+    u8 pad4480[0x4A90 - 0x4480];
+    s16 id2;
+    s16 id0;
+    s16 id1;
+    u8 pad4A96[0x4AF6 - 0x4A96];
+    s16 turn;
+    u8 pad4AF8[4];
+    s16 slot;
+    u8 pad4AFE[2];
+    s16 flag;
+    u8 pad4B02[4];
+    s16 t;
+} Ctx_b577_01E00A40;
+
+static void func_01E00A40_b577(Ctx_b577_01E00A40 *g) {
+    extern void b577_01E00E40();
+    extern void b577_01E01100();
+    extern void b577_01E01250();
+    extern void b577_01E01360();
+    extern void b577_01E01490();
+    extern void b577_01E01590();
+    extern void b577_01E01680();
+    extern void b577_01E018C0();
+    extern void b577_01E01A00();
+    extern void b577_01E01AE0();
+    extern void b577_01E02690(Ctx_b577_01E00A40 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+
+    g->t++;
+    func_001F5620(func_001F53A0(), g->id0, g->m);
+    func_001F5620(func_001F53A0(), g->id0, a);
+    func_001F5620(func_001F53A0(), g->id1, b);
+    a[1] = (b[1] - a[1]) / 2.0f;
+    g->m[1] += a[1];
+    if (g->flag != 0) {
+        g->m[2] -= 5.0f;
+    } else {
+        g->m[2] += 5.0f;
+    }
+    if (g->t == 1) {
+        b577_01E02690(g, b577_01E01A00, 0);
+    }
+    if (g->t == 110) {
+        g->slot = 0;
+        b577_01E02690(g, b577_01E00E40, 0);
+        g->slot = 1;
+        b577_01E02690(g, b577_01E00E40, 0);
+        g->slot = 2;
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+        b577_01E02690(g, b577_01E00E40, 0);
+    }
+    if (g->t == 45) {
+        b577_01E02690(g, b577_01E01AE0, 0);
+    }
+    if (g->t == 200) {
+        b577_01E02690(g, b577_01E01490, 0);
+        b577_01E02690(g, b577_01E01590, 0);
+        b577_01E02690(g, b577_01E01590, 0);
+        b577_01E02690(g, b577_01E01100, 0);
+        b577_01E02690(g, b577_01E01100, 0);
+    }
+    if (g->t == 206) {
+        b577_01E02690(g, b577_01E01680, 0);
+        b577_01E02690(g, b577_01E018C0, 0);
+    }
+    if (g->t >= 252 && g->t < 381) {
+        if (g->t % 2 == 1) {
+            b577_01E02690(g, b577_01E01250, 0);
+        }
+    }
+    if (g->t >= 202 && g->t < 381) {
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        func_001F5F90(func_001F53A0(), g->pos);
+        g->pos[1] = 42.0f;
+        if (g->t % 2 == 1) {
+            b577_01E02690(g, b577_01E01360, 0);
+        }
+        g->turn += 3;
+    }
+    if (g->t >= 226 && g->t < 301) {
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        g->pos[2] = 0.0f;
+        g->pos[1] += 10.0f;
+    }
+}
 
 /* shape b577:01E00E40, 176 insns: b232:01E00710's flickering pair (kinds 2+ also roll three 0..65534 words): variant 0..6, f8 4..6, sway angle 0..359; both
    alphas grow by 12 (below 0x80) until the scene count 0x4B06 reaches 335, then fade by 9 (the first ends it); while the scene count is

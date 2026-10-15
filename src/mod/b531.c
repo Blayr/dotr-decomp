@@ -839,7 +839,135 @@ static s32 func_01E03CF0_b531(Game_b531_01E03CF0 *g, Obj_b531_01E03CF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E03EE0_b531);
+/* shape b531:01E03EE0, 262 insns: a purple (0x80/0x10/0x80) glow on scene point o->f30 (+0x2870, 16 bytes each):
+   on start hA 44..60, h8 5..12, random angle; once the scene count (+0x31AC) passes 188/193/198/205/210/215 for
+   points 0..5, h6 counts up to 8 and the size by 4 up to 40; ends (mode 3) when the camera's z is within 5 of the
+   point's; alpha up by 0x12 below 0x80 for 12 ticks, then down by 0x3F once ending */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b531_01E03EE0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 pt;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+    s16 f3A;
+} Fx_b531_01E03EE0;
+
+typedef struct {
+    u8 pad0[0x2870];
+    V4_b531_01E03EE0 pts[1];
+    u8 pad2880[0x92C];
+    s16 count;
+} Game_b531_01E03EE0;
+
+static s32 func_01E03EE0_b531(Game_b531_01E03EE0 *g, Fx_b531_01E03EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern f32 func_001A6C60(f32);
+    f32 v[8];
+    f32 d;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x80, 0x10, 0x80);
+        o->h6 = 0;
+        o->col[3] = 0;
+        o->hA = func_0019A5C8() % 17 + 44;
+        o->h8 = func_0019A5C8() % 8 + 5;
+        o->f3A = func_0019A5C8() % 360;
+        o->size = 0;
+        o->mode = 2;
+    }
+    if (g->count > 188 && o->pt == 0) {
+        if (o->h6 < 8) {
+            o->h6++;
+        }
+    }
+    if (g->count > 193 && o->pt == 1) {
+        if (o->h6 < 8) {
+            o->h6++;
+        }
+    }
+    if (g->count > 198 && o->pt == 2) {
+        if (o->h6 < 8) {
+            o->h6++;
+        }
+    }
+    if (g->count > 205 && o->pt == 3) {
+        if (o->h6 < 8) {
+            o->h6++;
+        }
+    }
+    if (g->count > 210 && o->pt == 4) {
+        if (o->h6 < 8) {
+            o->h6++;
+        }
+    }
+    if (g->count > 215 && o->pt == 5) {
+        if (o->h6 < 8) {
+            o->h6++;
+        }
+    }
+    if (g->count > 188 && o->pt == 0) {
+        if (o->size < 40) {
+            o->size += 4;
+        }
+    }
+    if (g->count > 193 && o->pt == 1) {
+        if (o->size < 40) {
+            o->size += 4;
+        }
+    }
+    if (g->count > 198 && o->pt == 2) {
+        if (o->size < 40) {
+            o->size += 4;
+        }
+    }
+    if (g->count > 205 && o->pt == 3) {
+        if (o->size < 40) {
+            o->size += 4;
+        }
+    }
+    if (g->count > 210 && o->pt == 4) {
+        if (o->size < 40) {
+            o->size += 4;
+        }
+    }
+    if (g->count > 215 && o->pt == 5) {
+        if (o->size < 40) {
+            o->size += 4;
+        }
+    }
+    func_001F5F90(func_001F5380(), v);
+    d = v[2] - g->pts[o->pt].z;
+    if (func_001A6C60(d * d) < 5.0f) {
+        o->mode = 3;
+    }
+    if (o->tick < 12) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x12;
+        }
+    } else if (o->mode == 3) {
+        if (o->col[3] > 0x40) {
+            o->col[3] -= 0x3F;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b531:01E04300, 88 insns: a grey rising spark (b192:01E01DA0 family): frame 80, sub-frame 1, random turn and angle, rise 80..97, height 0..19,
    hold 3..9; alpha up by 0x40 while at most 0x80, then down by 10 until it ends */

@@ -497,7 +497,108 @@ static void func_01E01330_b362(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E015F0_b362);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E01B10_b362);
+/* shape b362:01E01B10, 242 insns: b428:01E01A70's spark (size 20, grey) that picks a camera point jittered by
+   (-50..49)/7, then from tick 51 flies to it in steps of a 20th (depth an 18.5th) of the gap; at tick 70 it ends,
+   puts the scene point on itself and spawns 0x1E022B0 and 0x1E02490; fades in by 10 until tick 90 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB260 - 0x260];
+    s16 hB260;
+} Ctx_b362_01E01B10;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b362_01E01B10;
+
+static s32 func_01E01B10_b362(Ctx_b362_01E01B10 *ctx, Obj_b362_01E01B10 *o) {
+    extern void b362_01E022B0(void);
+    extern void b362_01E02490(void);
+    extern void b362_01E03290(Ctx_b362_01E01B10 *, void (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    f32 dx;
+    f32 dy;
+
+    if (o->state == 1) {
+        o->h8 = 20;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        o->h52 = (func_0019A5C8() >> 4) % 2;
+        if (o->h52 == 0) {
+            o->h52 = ctx->hB260;
+        } else {
+            o->h52 = ctx->hB260;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->state = 2;
+        func_001F5F90(func_001F5380(), v);
+        dx = (func_0019A5C8() >> 4) % 100 - 50;
+        dy = (func_0019A5C8() >> 4) % 100 - 50;
+        dx /= 7.0f;
+        v[0] += dx;
+        dy /= 7.0f;
+        v[1] += dy;
+        o->f30 = (v[0] - o->pos.x) / 20.0f;
+        o->f34 = (v[1] - o->pos.y) / 20.0f;
+        o->f38 = (v[2] - o->pos.z) / 18.5f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 90) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h56++;
+    if (o->h56 >= 3) {
+        o->h56 = 0;
+    }
+    func_00205C40((s32)o->rot);
+    if (o->t > 50 && o->t < 70) {
+        o->pos.x += o->f30;
+        o->pos.y += o->f34;
+        o->pos.z += o->f38;
+    } else if (o->t == 70) {
+        o->state = 0;
+        ctx->pos = o->pos;
+        b362_01E03290(ctx, b362_01E022B0, 0);
+        b362_01E03290(ctx, b362_01E02490, 0);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b362:01E01EE0, 131 insns: b362:01E020F0 with a start height of 20..119 while the game counter at g+0xB278 is
    under 70, else 10..109 */

@@ -818,7 +818,123 @@ static s32 func_01E01F90_b555(Ctx_b555_01E01F90 *g, Fx_b555_01E01F90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E022B0_b555);
+/* shape b555:01E022B0 (B555_OBJ_MOVE_5_), 232 insns: a grey (0x50) puff on joint +0x3548, pushed 4 along z by the
+   scene flag: on start size 13..27, kind 0..7, spin 2..6, hold 35..69; brightens by 0x10 below 0x80 while held and the
+   scene count (+0x3562) is under 260, then fades by 7, by 9 past 260; grows 2 up to 60, and 2 every other tick up to
+   90; climbs an 80th of the camera-to-scene gap; kind cycles 0..5 every 7th tick */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 hold;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 spin;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 size;
+    s16 f3A;
+} Fx_b555_01E022B0;
+
+typedef struct {
+    u8 pad[0x3548];
+    s16 j;
+    u8 pad354A[0x16];
+    s16 flag;
+    s16 count;
+} Game_b555_01E022B0;
+
+static s32 func_01E022B0_b555(Game_b555_01E022B0 *g, Fx_b555_01E022B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+    extern s16 func_001A22C0(f32);
+    f32 a[4];
+    f32 b[8];
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 15 + 13;
+        o->kind = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        o->hA = o->f30;
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 5 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 35 + 35;
+        func_001F5620(func_001F53A0(), g->j, a);
+        o->x = func_001A22C0(a[0]);
+        o->y = func_001A22C0(a[1]);
+        o->z = func_001A22C0(a[2]);
+        if (g->flag != 0) {
+            o->z -= 4;
+        } else {
+            o->z += 4;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (g->count < 260) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x10;
+            }
+        }
+    } else if (g->count < 260) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 260) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->size < 60) {
+            o->size += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), a);
+    func_001F5F90(func_001F53A0(), b);
+    if (o->tick != 0) {
+        a[2] -= b[2];
+        a[2] /= 80.0f;
+        o->z = func_001A22C0(o->z + a[2]);
+    }
+    if (o->tick % 7 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        } else {
+            o->kind = 0;
+        }
+    }
+    o->f30 += o->spin;
+    if (o->size < 90) {
+        if (o->tick % 2 == 1) {
+            o->size += 2;
+        }
+    }
+    if (o->spin % 2 == 1) {
+        o->f3A++;
+    } else {
+        o->f3A--;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b555:01E02650, 117 insns: a dim yellow rising mote: frame 3..7 counting up, sub-frame 3..6, rising from 0 by 1..3 once
    started, width 0..24, hold 4..11, depth 3..6; nudged one unit sideways by the scene side and one up; alpha up by 0x30 to

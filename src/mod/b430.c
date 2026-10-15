@@ -281,7 +281,131 @@ static void func_01E00BB0_b430(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E00DA0_b430);
+/* shape b430:01E00DA0, 234 insns: b056:01E00920's row of small camera-facing sprites (count, or 20) without the extra
+   axis turn: each is shaken straight by the per-entry table offset that grows along the row; texture corner mode 0
+   (module helper, shape b003:01E00080). */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b430_01E00DA0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b430_01E00DA0 c;
+    struct {
+        u64 tc;
+        u64 x : 16, y : 16, z : 24, f : 8;
+    } v[4];
+    u8 tail[0x38];
+} Pkt_b430_01E00DA0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b003_01E00080 rect;
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[4];
+    s16 mode;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b430_01E00DA0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 off;
+    u8 padA[0x1E];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 size;
+    s16 axis;
+} Spr_b430_01E00DA0;
+
+static void func_01E00DA0_b430(Obj_b430_01E00DA0 *o, Spr_b430_01E00DA0 *s, s8 *tbl, Vec4f pos) {
+    extern Rgbaq_b430_01E00DA0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f p2;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b430_01E00DA0 pkt __attribute__((aligned(8)));
+    s16 i;
+    Pkt_b430_01E00DA0 *p;
+    s32 h;
+    s8 *j;
+    s16 n;
+    f32 f;
+
+    func_00207500();
+    p = (Pkt_b430_01E00DA0 *)(s32)&pkt;
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    pkt.c.q = 0;
+    pkt.v[0].f = 0;
+    pkt.v[1].f = 0;
+    pkt.v[2].f = 0;
+    pkt.v[3].f = 0;
+    pkt.c = func_00107740(s->col);
+    func_01E00080_b430((Pk_b003_01E00080 *)p, &o->rect, 0);
+    func_00208700(p, o->texture, 1);
+    if (o->count != 0) {
+        n = o->count;
+    } else {
+        n = 20;
+    }
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    p2.x = pos.x;
+    p2.y = pos.y;
+    p2.z = pos.z;
+    func_00108EF0(m, &scale, NULL, &p2);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    rot[0] = rot[0] / 180;
+    rot[0] = -rot[0];
+    for (i = 0; i < n; i++) {
+        func_00108CE0(quad, s->size, s->size);
+        func_00109100(quad, rot, 0, o->xD8);
+        func_00109100(quad, rot, 1, o->xD8);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        func_00107070(quad, 0, f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        func_00107070(quad, 1, f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        func_00107070(quad, 2, f * (s->w30 + h));
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, (u32)depth[0]);
+        }
+    }
+}
 
 /* shape b056:01E00920, 240 insns, 5 copies: draws a row of small camera-facing sprites (count, or 20) at a given position,
    each shaken by a per-entry table offset that grows along the row, turned by an extra axis; one texture

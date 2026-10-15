@@ -423,7 +423,184 @@ static void func_01E009B0_c035(Scene_c035_01E009B0 *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c035", func_01E00B80_c035);
+/* shape c035:01E00B80, 247 insns: the c035 module's main step: with a code it clears the scene, sets the scene step
+   (c035:01E00080), fills the cosine table (0..90 degrees at ctx+0x3660), keeps the code and a 180-tick timer,
+   texture (4,2) and the view (its eye, centre, relative and look pointers, look vector and copies of the first three);
+   otherwise it runs the scene step and every live slot's handler (10 of 0x60 bytes), draws them at the camera point
+   (func_001F9D30) turned a quarter, scale (0.5, 0.2, 0.5), two passes each; runs the 40 sound fades
+   (c035:01E00860), then moves and draws the 150 effects (c035:01E00580, c035:01E013A0); counts the timer down and
+   returns 2 from step 158 while more than 2 ticks remain, 8 when the timer ends */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c035_01E00B80;
+
+typedef struct Slot_c035_01E00B80 {
+    u8 pad0[0x38];
+    s32 (*draw)(void *, struct Slot_c035_01E00B80 *, void *, s32);
+    s32 (*fn)(void *, struct Slot_c035_01E00B80 *);
+    u8 pad40[8];
+    s16 used;
+    u8 pad4A[0x16];
+} Slot_c035_01E00B80;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 active;
+    u8 pad14[0x2C];
+} Fade_c035_01E00B80;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 used;
+    u8 pad38[8];
+} Fx_c035_01E00B80;
+
+typedef struct {
+    V4_c035_01E00B80 *sp;
+    V4_c035_01E00B80 *cp;
+    V4_c035_01E00B80 *rel;
+    f32 *look;
+    V4_c035_01E00B80 lookv;
+    V4_c035_01E00B80 sp0;
+    V4_c035_01E00B80 cp0;
+    V4_c035_01E00B80 rel0;
+} View_c035_01E00B80;
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 cam[0x68];
+    s32 tex;
+    u8 padAC[0x34];
+    s32 rot[4];
+    u8 padF0[0x10];
+    V4_c035_01E00B80 sc;
+    Slot_c035_01E00B80 slot[10];
+    View_c035_01E00B80 view;
+    u8 pad520[0x30];
+    Fade_c035_01E00B80 fade[40];
+    Fx_c035_01E00B80 fx[150];
+    s32 timer;
+    u8 pad34D4[8];
+    s32 ot;
+    u8 pad34E0[4];
+    void (*step)(void *, s32);
+    u8 pad34E8[0x3550 - 0x34E8];
+    s16 code;
+    u8 pad3552[2];
+    s16 count;
+    u8 pad3556[0x3660 - 0x3556];
+    f32 cos[91];
+} Ctx_c035_01E00B80;
+
+static s32 func_01E00B80_c035(s32 arg0, s32 code) {
+    extern void c035_01E00080(void *, s32);
+    extern s32 c035_01E00580(Ctx_c035_01E00B80 *, Fx_c035_01E00B80 *);
+    extern s32 c035_01E00860(Ctx_c035_01E00B80 *, Fade_c035_01E00B80 *);
+    extern void c035_01E013A0(Ctx_c035_01E00B80 *, Fx_c035_01E00B80 *, void *, s32);
+    Ctx_c035_01E00B80 *g = (Ctx_c035_01E00B80 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern f32 func_001A6A88(f32);
+    extern V4_c035_01E00B80 *func_001F9AD0(s32);
+    extern V4_c035_01E00B80 *func_001F9D30(s32);
+    extern V4_c035_01E00B80 *func_001FAD10(s32);
+    extern f32 *func_001FAF60(s32);
+    extern void func_001FAFB0(s32, void *);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    s32 n;
+    V4_c035_01E00B80 pos;
+    u8 pkt[0x90];
+    s32 (*draw)(void *, Slot_c035_01E00B80 *, void *, s32);
+    s32 i;
+
+    n = 0;
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x37D0);
+        g->step = c035_01E00080;
+        for (i = 0; i < 91; i++) {
+            g->cos[i] = func_001A6A88(3.1415927f * i / 180.0f);
+        }
+        g->code = code;
+        g->timer = 180;
+        g->tex = func_00202BF0(4, 2);
+        if (&g->view != NULL) {
+            g->view.sp = func_001F9AD0(0);
+            g->view.cp = func_001F9D30(0);
+            g->view.rel = func_001FAD10(0);
+            g->view.look = func_001FAF60(0);
+            func_001FAFB0(0, &g->view.lookv);
+            g->view.sp0 = *g->view.sp;
+            g->view.cp0 = *g->view.cp;
+            g->view.rel0 = *g->view.rel;
+        }
+        return 0;
+    }
+    if (g->step != NULL) {
+        g->step(g, 0);
+    }
+    for (i = 0; i < 10; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn != NULL) {
+                g->slot[i].fn(g, &g->slot[i]);
+            }
+        }
+    }
+    pos.x = pos.y = pos.z = 0.0f;
+    pos.y = 50.0f;
+    pos = *func_001F9D30(0);
+    func_00205C40((s32)g->rot);
+    g->rot[0] += 0x4000;
+    g->sc.y = 0.2f;
+    g->sc.x = 0.5f;
+    g->sc.z = 0.5f;
+    for (i = 0; i < 10; i++) {
+        if (g->slot[i].used != 0) {
+            n++;
+            func_0020EB40(g->cam);
+            func_0020C940(g, &g->sc, g->rot, &pos);
+            func_0020BC00(g->cam, g);
+            draw = g->slot[i].draw;
+            if (draw != NULL) {
+                draw(g, &g->slot[i], pkt, 0);
+                draw(g, &g->slot[i], pkt, 1);
+            }
+        }
+    }
+    n = 0;
+    for (i = 0; i < 40; i++) {
+        if (g->fade[i].active != 0) {
+            n++;
+            c035_01E00860(g, &g->fade[i]);
+        }
+    }
+    for (i = 0; i < 150; i++) {
+        if (g->fx[i].used != 0) {
+            c035_01E00580(g, &g->fx[i]);
+        }
+    }
+    for (i = 0; i < 150; i++) {
+        if (g->fx[i].used != 0) {
+            c035_01E013A0(g, &g->fx[i], pkt, 0);
+        }
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->count >= 158) {
+        if (g->timer > 2) {
+            return 2;
+        }
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape c035:01E00F60, 60 insns: take a free slot (10 of 0x60 bytes at 0x110), clear it, mark it with its index + 1;
    give it a random 0x4A of 5..14, the module's callback c035:01E01280 and arg */

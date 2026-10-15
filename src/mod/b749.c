@@ -1164,7 +1164,137 @@ static s32 func_01E02BF0_b749(s32 arg0, Sp_b749_01E02BF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b749", func_01E02DC0_b749);
+/* shape b749:01E02DC0, 262 insns: b016:01E02B40's full-screen textured fade in pale green (0x5F, 0x80, 0x5F), blend
+   0x44, its scroll f48 starting at 1 and swinging by 0.3 (up below 100, down above 0) in 10-tick steps until tick 70;
+   alpha up by 10 below 0x68 until tick 70, then down by 4 while the scroll runs back to 0 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b749_01E02DC0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b749_01E02DC0 p;
+} Tv_b749_01E02DC0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b749_01E02DC0 v[2];
+    u8 tail[0x20];
+} Tex_b749_01E02DC0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b749_01E02DC0;
+
+static s32 func_01E02DC0_b749(s32 arg0, Fx_b749_01E02DC0 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b749_01E02DC0 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 1.0f;
+        o->mode = 2;
+    }
+    ((Tex_b749_01E02DC0 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b749_01E02DC0 *)(s32)&pk)->size = 5;
+    ((Tex_b749_01E02DC0 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b749_01E02DC0 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x5F;
+    pk.g = 0x80;
+    pk.b = 0x5F;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (o->tick < 10) {
+        if (o->f48 < 100.0f) {
+            o->f48 += 0.3f;
+        }
+    } else if (o->tick < 20) {
+        if (o->f48 > 0.0f) {
+            o->f48 -= 0.3f;
+        }
+    } else if (o->tick < 30) {
+        if (o->f48 < 100.0f) {
+            o->f48 += 0.3f;
+        }
+    } else if (o->tick < 40) {
+        if (o->f48 > 0.0f) {
+            o->f48 -= 0.3f;
+        }
+    } else if (o->tick < 50) {
+        if (o->f48 < 100.0f) {
+            o->f48 += 0.3f;
+        }
+    } else if (o->tick < 60) {
+        if (o->f48 > 0.0f) {
+            o->f48 -= 0.3f;
+        }
+    } else if (o->tick < 70) {
+        if (o->f48 < 100.0f) {
+            o->f48 += 0.3f;
+        }
+    }
+    if (o->tick < 70) {
+        if (o->col[3] < 0x68) {
+            o->col[3] += 10;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->f48 > 0.0f) {
+            o->f48 -= 0.3f;
+        } else {
+            o->f48 = 0.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b749", func_01E031E0_b749);
 

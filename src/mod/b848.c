@@ -719,7 +719,154 @@ static s32 func_01E017F0_b848(s32 obj, Spark_b013_01E010C0 *sp, Cam_b013_01E010C
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E01DD0_b848);
+/* shape b848:01E01DD0 (LkPrim_SortEnemyImage), 237 insns: an enemy image as one textured quad (0.64w x 0.48w at
+   height h) drawn between the module's pre/post callbacks, plus a second untextured colour packet over the same
+   screen corners when the quad is on screen (chatA, 16 Oct) */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b848_01E01DD0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    f32 s;
+    f32 t;
+    Xyz_b848_01E01DD0 xyz;
+} Vtx_b848_01E01DD0;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b848_01E01DD0 v[4];
+    u8 tail[8];
+} PktA_b848_01E01DD0;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    u8 pad1C[4];
+    Xyz_b848_01E01DD0 xyz[4];
+    u8 tail[8];
+} PktB_b848_01E01DD0;
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b848_01E01DD0;
+
+typedef struct {
+    Vec_b848_01E01DD0 v[4];
+} Quad_b848_01E01DD0;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    u8 b, g, r, a;
+    f32 w;
+    f32 h;
+    s32 image;
+} Spr_b848_01E01DD0;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_b848_01E01DD0;
+
+static s32 func_01E01DD0_b848(s32 obj, Spr_b848_01E01DD0 *spr, Cam_b848_01E01DD0 *cam) {
+    extern Quad_b848_01E01DD0 D_01E04400_b848;
+    extern s32 D_01E04510_b848;
+    extern void b848_01E02190(void);
+    extern void b848_01E02240(void);
+    extern s32 func_002058D0(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207FD0();
+    extern s32 func_001F70A0();
+    s32 ot;
+    Quad_b848_01E01DD0 q;
+    f32 depth[6];
+    PktA_b848_01E01DD0 pkt __attribute__((aligned(8)));
+    u64 pre;
+    s32 post[3];
+    PktB_b848_01E01DD0 pkt2 __attribute__((aligned(8)));
+    u8 col[4];
+
+    ot = func_00207F60();
+    q = D_01E04400_b848;
+    q.v[0].x = -0.32f * spr->w;
+    q.v[0].y = spr->h;
+    q.v[0].z = -0.24f * spr->w;
+    q.v[1].x = 0.32f * spr->w;
+    q.v[1].y = spr->h;
+    q.v[1].z = -0.24f * spr->w;
+    q.v[2].x = -0.32f * spr->w;
+    q.v[2].y = spr->h;
+    q.v[2].z = 0.24f * spr->w;
+    q.v[3].x = 0.32f * spr->w;
+    q.v[3].y = spr->h;
+    q.v[3].z = 0.24f * spr->w;
+    if (spr->image != 0) {
+        D_01E04510_b848 = spr->image;
+    } else {
+        D_01E04510_b848 = -1;
+    }
+    ((PktA_b848_01E01DD0 *)(s32)&pkt)->count = 0x34;
+    ((PktA_b848_01E01DD0 *)(s32)&pkt)->tag = 0xC;
+    ((PktA_b848_01E01DD0 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((PktA_b848_01E01DD0 *)(s32)&pkt)->pad = 0;
+    ((PktB_b848_01E01DD0 *)(s32)&pkt2)->count = 4;
+    ((PktB_b848_01E01DD0 *)(s32)&pkt2)->tag = 5;
+    ((PktB_b848_01E01DD0 *)(s32)&pkt2)->regs = 0x44441;
+    ((PktB_b848_01E01DD0 *)(s32)&pkt2)->pad = 0;
+    if (func_00104520(spr->flags, 0xC) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(spr->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(spr->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    func_002086D0(&pkt2, ((u64)0x80 << 32) | 0x44);
+    func_00208460();
+    func_001F70A0(spr->image, 1, &pre, post, b848_01E02190, b848_01E02240);
+    func_00208460();
+    func_00208CB0(&pkt, ((u64)0x700 << 32) | 0xA0000A);
+    col[0] = 0x80;
+    col[1] = 0x80;
+    col[2] = 0x80;
+    col[3] = spr->a;
+    func_01E00080_b848((Vtx_b000_01E00100 *)&pkt, (Src_b000_01E00100 *)col);
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.0f;
+    pkt.v[2].s = 0.0f;
+    pkt.v[2].t = 0.875f;
+    pkt.v[3].s = 0.625f;
+    pkt.v[3].t = 0.875f;
+    if (func_002058D0(&q, 0x70000000, cam->view, &pkt, depth) != 0) {
+        pkt2.r = spr->r;
+        pkt2.g = spr->g;
+        pkt2.b = spr->b;
+        pkt2.a = spr->a;
+        pkt2.xyz[0] = pkt.v[0].xyz;
+        pkt2.xyz[1] = pkt.v[1].xyz;
+        pkt2.xyz[2] = pkt.v[2].xyz;
+        pkt2.xyz[3] = pkt.v[3].xyz;
+        func_002075F0(&pkt2, 0, 0);
+        func_002075F0(&pkt, 0, 0);
+    }
+    func_00207FD0(ot, func_00207500(), 0);
+    return 0;
+}
 
 /* shape b848:01E02190, 43 insns: b848:01E02240 with a camera set up first: copy the module's camera, aim it at (0, 50, 0) from (0, 0, -distance), apply */
 

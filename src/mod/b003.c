@@ -561,7 +561,122 @@ static s32 func_01E01780_b003(void *arg0, Obj_b003_01E01780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E01860_b003);
+/* shape b003:01E01860, 260 insns: b003:01E01400's burst puff (grey 0x40): takes the slot number into its spin field
+   and keeps its height / depth in the scene tables (+0x2D94 / +0x303C, 170 each), the height sinking 0.7 then 0.8 a
+   tick and the depth climbing a 95th of the camera-to-scene gap; size 12..23 growing 2 to 60 (+4 a tick after scene
+   tick 341, +2 every other tick), kind up to 5 every other tick, three random angles a tick; brightens by 0x40 while
+   held (37..61 ticks), then fades by 9; after scene tick 370 its age is pinned to 70 */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 hold;
+    s16 h8;
+    s16 slot;
+    s16 dist;
+    s16 spin;
+    s32 r10;
+    s32 r14;
+    s32 r18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 size;
+    s16 f3A;
+} Fx_b003_01E01860;
+
+typedef struct {
+    u8 pad0[0x2D94];
+    f32 ys[170];
+    f32 zs[170];
+    u8 pad32E4[0xC];
+    s16 ja;
+    s16 jb;
+    u8 pad32F4[0x1C];
+    s16 tick;
+} Game_b003_01E01860;
+
+static s32 func_01E01860_b003(Game_b003_01E01860 *g, Fx_b003_01E01860 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+    extern s16 func_001A22C0(f32);
+    f32 v[12];
+    f32 *q;
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 12 + 12;
+        o->kind = 0;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        o->slot = o->f30;
+        g->ys[o->slot] = o->y;
+        g->zs[o->slot] = o->z;
+        g->ys[o->slot] -= 0.7f;
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 25 + 37;
+        func_001F5620(func_001F53A0(), g->ja, v);
+        func_001F5620(func_001F53A0(), g->jb, q = (f32 *)(u32)&v[4]);
+        o->dist = func_001A22C0(q[0] - v[0]);
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (g->tick > 341) {
+        o->size += 4;
+    }
+    if (o->tick != 0) {
+        if (o->size < 60) {
+            o->size += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    if (o->tick != 0) {
+        v[2] -= v[6];
+        v[2] /= 95.0f;
+        g->zs[o->slot] += v[2];
+    }
+    g->ys[o->slot] -= 0.8f;
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    o->f30 += o->spin;
+    if (o->tick % 2 == 1) {
+        o->size += 2;
+    }
+    o->r10 = func_0019A5C8() % 360;
+    o->r14 = func_0019A5C8() % 360;
+    if (o->spin % 2 == 1) {
+        o->f3A += 2;
+    } else {
+        o->f3A -= 2;
+    }
+    o->r18 = func_0019A5C8() % 360;
+    o->tick++;
+    if (g->tick > 370) {
+        o->tick = 70;
+    }
+    return 0;
+}
 
 typedef struct {
     u8 pad00[2];

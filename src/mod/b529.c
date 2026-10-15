@@ -602,7 +602,120 @@ static Rect_b152_01E014F0 func_01E01800_b529(s32 unused, s16 n) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E01950_b529);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E01E90_b529);
+/* OVL_WARM */
+
+/* shape b529:01E01E90, 236 insns: a two-colour grey glow (0x80 / 0x70 flicker) whose stage (0x52: from 0x50, 0 below
+   36, 2 below 72) grows 0x48 by 0.5 to 10 (stage 0) or 6 (stage 2), then 0x4C to 7 / 4; fades in by 8 for 30 ticks,
+   out by 11 past scene time 300; before scene time 176 it spins randomly with x locked at 0x4000, after that its
+   z angle turns by 256 + 0x30 (sign by 0x50), and 0x30 grows by 32 to 512 from scene time 241 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[0x16];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 f30;
+    u8 pad34[0x14];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    s16 stage;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col0[4];
+    u8 col1[4];
+} Fx_b529_01E01E90;
+
+typedef struct {
+    u8 pad0[0x73B0];
+    s16 timer;
+} Scn_b529_01E01E90;
+
+static s32 func_01E01E90_b529(Scn_b529_01E01E90 *g, Fx_b529_01E01E90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 k;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 0.0f;
+        o->f56 = 0;
+        o->mode = 2;
+        if (o->f50 < 36) {
+            o->stage = 0;
+        } else if (o->f50 < 72) {
+            o->stage = 2;
+        }
+        o->h8 = func_0019A5C8() % 3 + 4;
+    }
+    if (o->tick < 30) {
+        if (o->col0[3] < 0x80) {
+            o->col0[3] += 8;
+        }
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 8;
+        }
+    } else if (g->timer > 300) {
+        if (o->col0[3] > 12) {
+            o->col0[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col1[3] > 12) {
+            o->col1[3] -= 11;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col0, 0x80, 0x80, 0x80);
+        func_001076F0(o->col1, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col0, 0x70, 0x70, 0x70);
+        func_001076F0(o->col1, 0x70, 0x70, 0x70);
+    }
+    if (g->timer != 0) {
+        k = o->stage;
+        if (k == 0) {
+            if (o->f48 < 10.0f) {
+                o->f48 += 0.5f;
+            } else {
+                o->stage = k + 1;
+            }
+        } else if (k == 1) {
+            if (o->f4C < 7.0f) {
+                o->f4C += 0.5f;
+            }
+        } else if (k == 2) {
+            if (o->f48 < 6.0f) {
+                o->f48 += 0.5f;
+            } else {
+                o->stage = k + 1;
+            }
+        } else if (k == 3) {
+            if (o->f4C < 4.0f) {
+                o->f4C += 0.5f;
+            }
+        }
+    }
+    if (g->timer > 175) {
+        if (o->f50 < 36) {
+            o->rot[2] += 256.0f + o->f30;
+        } else {
+            o->rot[2] -= 256.0f + o->f30;
+        }
+    } else {
+        func_00205C40((s32)o->rot);
+        o->rot[0] = 0x4000;
+    }
+    if (g->timer > 240) {
+        if (o->f30 < 512.0f) {
+            o->f30 += 32.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b529:01E02240, 89 insns: a blinking white/blue glow (random size 5..24 unless set, spun 0x4000 a tick): alpha 0xC0 for 3 ticks, then out by 11 and ends */
 

@@ -597,7 +597,116 @@ static void func_01E01880_b615(Scene_b615_01E01880 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b615", func_01E019F0_b615);
+/* shape b615:01E019F0, 271 insns: a grey glow, size 10, variant 0..6, random 0x5A/0x5C, frame 0..7, old 0x50 kept in
+   0xC, 0x52 100..449, speed 10..29, 0x8 0..34, 0x6 3..7; grows 0x50 by 15 up to 0x52 and fades in by 0x20 until tick
+   147, then out by 8; on tick 135 it hands its position to the scene and starts three b615:01E01E30 and (6 in 10) one
+   b615:01E021C0 through b615:01E02910 around it; from tick 96 to 130 it slides 5 along z (sign by ctx+0xBCEE) and sinks
+   1 a tick toward 10 below the camera; after tick 140 it grows, rises 1 and turns 5 a tick; 0x34 = 3 cos(0x5C) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec4f pos;
+    u8 pad20[0x14];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b615_01E019F0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f org;
+    u8 pad260[0xBCEE - 0x260];
+    s16 side;
+    u8 padBCF0[0xBEF4 - 0xBCF0];
+    u8 trig[1];
+} Scn_b615_01E019F0;
+
+static s32 func_01E019F0_b615(Scn_b615_01E019F0 *g, Fx_b615_01E019F0 *o) {
+    extern u8 b615_01E01E30[];
+    extern u8 b615_01E021C0[];
+    extern void b615_01E02910(Scn_b615_01E019F0 *g, void *data, s32 arg);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->kind = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->f50;
+        o->f50 = 0;
+        o->f52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < 147) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x20;
+        }
+        if (o->f52 > o->f50) {
+            o->f50 += 15;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick == 135) {
+        g->org = o->pos;
+        b615_01E02910(g, b615_01E01E30, 0);
+        b615_01E02910(g, b615_01E01E30, 0);
+        b615_01E02910(g, b615_01E01E30, 0);
+        g->org.x += func_0019A5C8() % 30 - 15;
+        g->org.y += func_0019A5C8() % 30 - 15;
+        g->org.z += func_0019A5C8() % 30 - 15;
+        if (func_0019A5C8() % 10 < 6) {
+            b615_01E02910(g, b615_01E021C0, 0);
+        }
+    }
+    func_001F5F90(func_001F5380(), v);
+    o->f34 = 3.0f * func_00108030(g->trig, o->f5C, 1);
+    if (o->tick > 95 && o->tick < 131) {
+        if (g->side != 0) {
+            o->pos.z -= 5.0f;
+        } else {
+            o->pos.z += 5.0f;
+        }
+        if (v[1] - 10.0f < o->pos.y) {
+            o->pos.y -= 1.0f;
+        }
+    }
+    if (o->tick > 140) {
+        o->f5A += 5;
+        o->f50 += o->hE;
+        o->pos.y += 1.0f;
+        o->f48 += 1.0f;
+    }
+    o->f5C += 6;
+    o->tick++;
+    return 0;
+}
 
 /* shape b111:01E02160, 100 insns, 7 copies: spark update, a variant of b018:01E02950 (on spawn: random kind, white
    colour, angle, spin, height, speed, size and lifetime; then fade out after the lifetime, move while

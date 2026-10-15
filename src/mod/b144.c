@@ -733,7 +733,110 @@ static void func_01E018F0_b144(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E01C60_b144);
+/* shape b144:01E01C60, 244 insns (B144_W_S): the b144 module's event step: counts ticks; below 91 spawns
+   b144:01E02C40 and b144:01E02F30, puts the point on the tracked joint (ctx+0x5A9E) and spawns b144:01E03040; at 19
+   two b144:01E02E30 (turns 0 and 90); the point goes to the camera at height 33; every other tick from 110 to 133
+   b144:01E02030 and b144:01E022A0; from 118 to 143 every third tick (and at 118) b144:01E02630, and at 118 eight
+   b144:01E02430 and a ring of 20 b144:01E02750/b144:01E02930 pairs 18 degrees apart; from 118 on one b144:01E02430 and
+   a pair at a random angle each tick; at 43 the point goes back to the joint for b144:01E03210 and six b144:01E03300;
+   at 118 b144:01E02B50 and b144:01E034D0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x5A9E - 0x260];
+    s16 id;
+    u8 pad5AA0[0x5ABE - 0x5AA0];
+    s16 turn;
+    u8 pad5AC0[0x5ACA - 0x5AC0];
+    s16 ang;
+    u8 pad5ACC[0x5AD2 - 0x5ACC];
+    s16 timer;
+} Ctx_b144_01E01C60;
+
+static void func_01E01C60_b144(Ctx_b144_01E01C60 *g) {
+    extern s32 b144_01E02030(void);
+    extern s32 b144_01E022A0(void);
+    extern s32 b144_01E02430(void);
+    extern s32 b144_01E02630(void);
+    extern s32 b144_01E02750(void);
+    extern s32 b144_01E02930(void);
+    extern s32 b144_01E02B50(void);
+    extern s32 b144_01E02C40(void);
+    extern s32 b144_01E02E30(void);
+    extern s32 b144_01E02F30(void);
+    extern s32 b144_01E03040(void);
+    extern s32 b144_01E03210(void);
+    extern s32 b144_01E03300(void);
+    extern s32 b144_01E034D0(void);
+    extern void b144_01E04140(Ctx_b144_01E01C60 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+    s16 a;
+
+    g->timer++;
+    if (g->timer < 91) {
+        b144_01E04140(g, b144_01E02C40, 0);
+        b144_01E04140(g, b144_01E02F30, 0);
+        func_001F5620(func_001F53A0(), g->id, &g->pos);
+        b144_01E04140(g, b144_01E03040, 0);
+    }
+    if (g->timer == 19) {
+        g->turn = 0;
+        b144_01E04140(g, b144_01E02E30, 0);
+        g->turn = 90;
+        b144_01E04140(g, b144_01E02E30, 0);
+    }
+    func_001F5F90(func_001F5380(), &g->pos);
+    g->pos.y = 33.0f;
+    if (g->timer >= 110 && g->timer < 134) {
+        if (g->timer % 2 == 1) {
+            b144_01E04140(g, b144_01E02030, 0);
+            b144_01E04140(g, b144_01E022A0, 0);
+        }
+    }
+    if (g->timer >= 118 && g->timer < 144) {
+        if (g->timer % 3 == 1 || g->timer == 118) {
+            b144_01E04140(g, b144_01E02630, 0);
+        }
+        if (g->timer == 118) {
+            for (i = 0; i < 8; i++) {
+                b144_01E04140(g, b144_01E02430, 0);
+            }
+            for (i = 0, a = 0; i < 20; i++) {
+                g->ang = a;
+                b144_01E04140(g, b144_01E02750, 0);
+                b144_01E04140(g, b144_01E02930, 0);
+                a += 18;
+            }
+        }
+        if (g->timer >= 118) {
+            b144_01E04140(g, b144_01E02430, 0);
+            g->ang = func_0019A5C8() % 360;
+            b144_01E04140(g, b144_01E02750, 0);
+            b144_01E04140(g, b144_01E02930, 0);
+        }
+    }
+    if (g->timer == 43) {
+        func_001F5620(func_001F53A0(), g->id, &g->pos);
+        b144_01E04140(g, b144_01E03210, 0);
+        b144_01E04140(g, b144_01E03300, 0);
+        b144_01E04140(g, b144_01E03300, 0);
+        b144_01E04140(g, b144_01E03300, 0);
+        b144_01E04140(g, b144_01E03300, 0);
+        b144_01E04140(g, b144_01E03300, 0);
+        b144_01E04140(g, b144_01E03300, 0);
+    }
+    if (g->timer == 118) {
+        b144_01E04140(g, b144_01E02B50, 0);
+    }
+    if (g->timer == 118) {
+        b144_01E04140(g, b144_01E034D0, 0);
+    }
+}
 
 /* shape b144:01E02030, 154 insns: a red ember of two kinds: kind 0 size 2..6, height 50..149 rising 5..24; kind 1 size
    6..10, height 10..39 rising 10..12; frame 0..3, colour 0xC0/0x70/0x70, a random spin and angle, frame 1..8, life 2..4;

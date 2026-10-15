@@ -445,7 +445,114 @@ static s32 func_01E01090_b038(Ctx_b038_01E01090 *ctx, Obj_b038_01E01090 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b038", func_01E01400_b038);
+/* shape b038:01E01400 (B038_OBJ_MOVE_3_), 227 insns: b448:01E01350's glow in grey (0x80): size 35 growing 2,
+   f5A from 225 up by 2, drift (-20..19) / 60 for 70 ticks, a climb of an 8th of the gap between joints game
+   +0xB228 and +0xB22A in y and z; brightens by 0xC0 below 0xC0 for 10 ticks, then fades by 13; once the game value
+   at 0xB25E reaches 296 it jumps to the fade */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 spin;
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[0x14];
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 rise;
+    u8 pad40[8];
+    f32 size;
+    f32 rise2;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b038_01E01400;
+
+typedef struct {
+    u8 pad[0xB228];
+    s16 j0;
+    s16 j1;
+    u8 padB22C[0x32];
+    s16 v;
+} Game_b038_01E01400;
+
+static s32 func_01E01400_b038(Game_b038_01E01400 *g, Fx_b038_01E01400 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+
+    if (o->mode == 1) {
+        o->size = 35.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f5A = 225;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->f50;
+        o->f50 = 0;
+        o->f52 = func_0019A5C8() % 350 + 100;
+        o->spin = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->dx = func_0019A5C8() % 40 - 20;
+        o->dy = func_0019A5C8() % 40 - 20;
+        o->dz = func_0019A5C8() % 40 - 20;
+        o->dx /= 60.0f;
+        o->dy /= 60.0f;
+        o->dz /= 60.0f;
+        func_001F5620(func_001F53A0(), g->j0, a);
+        func_001F5620(func_001F53A0(), g->j1, b);
+        o->rise = (a[2] - b[2]) / 8.0f;
+        o->rise2 = (a[1] - b[1]) / 8.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick < 70) {
+        o->x += o->dx;
+        o->y += o->dy;
+        o->z += o->dz;
+    }
+    if (o->tick != 0) {
+        o->z += o->rise;
+        o->y += o->rise2;
+        o->size += 2.0f;
+    }
+    if (o->tick != 0) {
+        o->f5A += 2;
+    }
+    if (g->v > 295) {
+        o->tick = 100;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b038", func_01E01790_b038);
 

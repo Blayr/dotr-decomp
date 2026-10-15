@@ -533,9 +533,183 @@ static s32 func_01E01F30_b760(void *arg0, Spark_b760_01E01F30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02110_b760);
+/* shape b760:01E02110 (B760_OBJ_MOVE_5_), 226 insns: b588:01E01EF0's spark in grey (0xC0): f8/fA 80..119, size
+   5..104 growing 1 up to 150, kind (rand >> 4) % 3, drift (rand % 100 - 50) / 400, f5C -10..9, spin rates
+   -0x800..0x7FF; brightens by 0x60 below 0xC0 for 60 ticks, then fades by 15; every third tick fA grows by 2 up to
+   80; while moving it rises 2.6 and slides 2.4 in z (the sign by the game value at 0xD884) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E024A0_b760);
+typedef struct {
+    s16 r[3];
+    u8 pad6[2];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 pos[3];
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 size;
+    u8 pad4C[6];
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b760_01E02110;
+
+typedef struct {
+    u8 pad[0xD884];
+    s16 v;
+} Game_b760_01E02110;
+
+static s32 func_01E02110_b760(Game_b760_01E02110 *g, Fx_b760_01E02110 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->fA = func_0019A5C8() % 40 + 80;
+        o->f8 = o->fA;
+        o->size = 5.0f + (func_0019A5C8() >> 4) % 100;
+        o->f56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        o->mode = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->f5C = func_0019A5C8() % 20 - 10;
+        o->f5A = func_0019A5C8() % 360;
+        func_00205C40(o->pos);
+        o->r[2] = func_0019A5C8() % 0x1000 - 0x800;
+        o->r[1] = func_0019A5C8() % 0x1000 - 0x800;
+        o->r[0] = func_0019A5C8() % 0x1000 - 0x800;
+        o->pos[0] = func_0019A5C8() % 0xFFFF;
+        o->pos[1] = func_0019A5C8() % 0xFFFF;
+        o->pos[2] = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < 60) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->fA < 80) {
+            o->fA += 2;
+        }
+        o->f8 = o->fA;
+    }
+    if (o->tick != 0) {
+        o->f14 -= 2.6f;
+        if (g->v != 0) {
+            o->f18 -= 2.4f;
+        } else {
+            o->f18 += 2.4f;
+        }
+    }
+    if (o->size < 150.0f) {
+        o->size += 1.0f;
+    }
+    o->tick++;
+    func_00205C40(o->pos);
+    return 0;
+}
+
+/* shape b760:01E024A0, 222 insns: b521:01E01440's puff in white, width 2..7 with height 2.5x, size 5..104 growing
+   by 1 to 150, drift /400, spin -0x800..0x7FF, fading in by 21 for 60 ticks; it rises 2.6 a tick and drifts 2.4
+   along z by the scene flag (ctx+0xD884) */
+
+typedef struct {
+    u8 pad0[0xD884];
+    s16 flag;
+} Ctx_b760_01E024A0;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b760_01E024A0;
+
+static s32 func_01E024A0_b760(Ctx_b760_01E024A0 *ctx, Obj_b760_01E024A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->hA = func_0019A5C8() % 6 + 2;
+        o->h8 = 2.5f * o->hA;
+        o->f48 = 5.0f + (func_0019A5C8() >> 4) % 100;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->h5C = func_0019A5C8() % 20 - 10;
+        o->h5A = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x1000 - 0x800;
+        o->h2 = func_0019A5C8() % 0x1000 - 0x800;
+        o->h0 = func_0019A5C8() % 0x1000 - 0x800;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 60) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 21;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y -= 2.6f;
+        if (ctx->flag != 0) {
+            o->z -= 2.4f;
+        } else {
+            o->z += 2.4f;
+        }
+    }
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    if (o->f48 < 150.0f) {
+        o->f48 += 1.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b760:01E02820, 181 insns: b521:01E01440's tumbling flake in white, size 10..17 (height 2.5 x size), alpha
    up by 21 for 10 ticks, then down by 9; it only spins */

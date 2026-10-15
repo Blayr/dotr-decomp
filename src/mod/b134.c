@@ -295,7 +295,103 @@ static void func_01E00820_b134(Obj_b134_01E00820 *o, Rib_b134_01E00820 *s, Vec_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E00DE0_b134);
+/* shape b134:01E00DE0, 254 insns: b476:01E017C0's ring of 9 textured quads, side 0 drawing only the quads behind
+   (z < 0), side 1 only those in front */
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[4];
+    s16 mode;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b134_01E00DE0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[0xC];
+    s16 size;
+    s16 ang;
+} Ring_b134_01E00DE0;
+
+static void func_01E00DE0_b134(Obj_b134_01E00DE0 *o, Ring_b134_01E00DE0 *s, s32 side) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 m[16];
+    f32 depth[4];
+    u8 pkt[0x90];
+    s32 n;
+    s32 k;
+    s32 t;
+    s16 a;
+    u8 *p;
+
+    p = pkt;
+    a = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, s->col, 0);
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    pos.x = s->x;
+    pos.y = s->y;
+    pos.z = s->z;
+    scale.x = 1.0f;
+    scale.y = 1.0f;
+    scale.z = 1.0f;
+    func_00108EF0(m, &scale, NULL, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 9; k++) {
+        t = s->ang + a;
+        quad[2].x = s->size * func_00108030(o->xD8, t, 1);
+        quad[2].z = s->size * func_00108030(o->xD8, t, 0);
+        quad[0].x = (s->size + 20) * func_00108030(o->xD8, t, 1);
+        quad[0].z = (s->size + 20) * func_00108030(o->xD8, t, 0);
+        t = a + (s->ang + 2);
+        quad[3].x = s->size * func_00108030(o->xD8, t, 1);
+        quad[3].z = s->size * func_00108030(o->xD8, t, 0);
+        quad[1].x = (s->size + 20) * func_00108030(o->xD8, t, 1);
+        quad[1].z = (s->size + 20) * func_00108030(o->xD8, t, 0);
+        func_00109100(quad, s->rot, 0, o->xD8);
+        func_00109100(quad, s->rot, 1, o->xD8);
+        func_00109100(quad, s->rot, 2, o->xD8);
+        if (side == 0) {
+            if (quad[0].z < 0.0f) {
+                if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                    for (n = 0; n < o->count + 1; n++) {
+                        func_002075F0(p, o->ot, (u32)depth[0]);
+                    }
+                }
+            }
+        } else if (quad[0].z > 0.0f && func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            for (n = 0; n < o->count + 1; n++) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        }
+        a += 0x28;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E011E0_b134);
 

@@ -284,7 +284,113 @@ static void func_01E00920_b278(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b278", func_01E00E90_b278);
+/* shape b278:01E00E90, 230 insns: b517:01E015D0 cousin: size 25 growing 2.5, drift (-30..29)/60, sink 1/80 of the
+   camera gap, alpha held for 80 ticks while the scene count is under 240, fading by 15; it also reads the camera
+   point once more each tick. As b517:01E015D0: b098:01E014D0's smoke-puff source in blue (0x80, 0x80, 0xFF), size 35 growing
+   2 a tick, drift (-20..19)/50 in x and /60 in y and z between ticks 11 and 69, a fall toward the joint at
+   ctx+0xB228 spread over 55 ticks; while the scene counter at ctx+0xB25E is below 235 it fades in by 0xC0 for 70
+   ticks, otherwise (and after) it fades out by 11 */
+
+typedef struct {
+    u8 pad0[0xB228];
+    s16 v;
+    u8 padB22A[0xB25E - 0xB22A];
+    s16 count;
+} Ctx_b278_01E00E90;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b278_01E00E90;
+
+static s32 func_01E00E90_b278(Ctx_b278_01E00E90 *ctx, Obj_b278_01E00E90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    f32 c[4];
+
+    if (o->state == 1) {
+        o->f48 = 25.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0xFF);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->f30 = func_0019A5C8() % 60 - 30;
+        o->f34 = func_0019A5C8() % 60 - 30;
+        o->f38 = func_0019A5C8() % 60 - 30;
+        o->f30 /= 60.0f;
+        o->f34 /= 60.0f;
+        o->f38 /= 60.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), ctx->v, b);
+        o->f3C = (a[2] - b[2]) / 80.0f;
+        o->state = 2;
+    }
+    if (ctx->count < 240) {
+        if (o->t < 80) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0xC0;
+            }
+        } else if (o->col[3] > 16) {
+            o->col[3] -= 15;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->state = 0;
+    }
+    if (o->t > 10 && o->t < 70) {
+        o->x += o->f30;
+        o->y += o->f34;
+        o->z += o->f38;
+    }
+    func_001F5F90(func_001F5380(), c);
+    if (o->t != 0) {
+        o->z += o->f3C;
+        o->f48 += 2.5f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b278", func_01E01230_b278);
 

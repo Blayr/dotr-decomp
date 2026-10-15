@@ -1234,7 +1234,143 @@ static s32 func_01E03A50_b034(s32 arg0, Obj_b034_01E03A50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03B50_b034);
+/* shape b034:01E03B50, 266 insns: a five-kind glow (kind 0x50 = 0, 1, 2, 10, 11): size 200 / 1000 / 800 / 230 / 110,
+   white, grey or mid colour with a blue or red second colour; it fades in for 18 / 6 / 18 / 6 / 100 ticks by
+   12 (second colour) / 42 / 7 / 32 / 24 (to 0x60), then fades out by 9 / 9 / 9 after scene time 500 / 6 / 4; kinds 10
+   and 11 spin a quarter turn a tick */
+
+typedef struct {
+    u8 pad0[0xAA12];
+    s16 time;
+} G_b034_01E03B50;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 len;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b034_01E03B50;
+
+static s32 func_01E03B50_b034(G_b034_01E03B50 *g, Fx_b034_01E03B50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            o->f48 = 200.0f;
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col2, 0x10, 0x10, 0xF0);
+        } else if (o->kind == 1) {
+            o->f48 = 1000.0f;
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        } else if (o->kind == 2) {
+            o->f48 = 800.0f;
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        } else if (o->kind == 10) {
+            o->f48 = 230.0f;
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            func_001076F0(o->col2, 0x10, 0x10, 0xF0);
+        } else if (o->kind == 11) {
+            o->f48 = 110.0f;
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            func_001076F0(o->col2, 0x10, 0x10, 0xF0);
+        }
+        o->hE = o->kind;
+        o->state = 2;
+        o->h6 = 0;
+        if (o->kind == 0) {
+            o->len = 18;
+        } else if (o->kind == 1) {
+            o->len = 6;
+        } else if (o->kind == 2) {
+            o->len = 18;
+        } else if (o->kind == 10) {
+            o->len = 6;
+        } else if (o->kind == 11) {
+            o->len = 100;
+        }
+    }
+    if (o->t < o->len) {
+        if (o->kind == 0) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 12;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 42;
+            }
+        }
+        if (o->kind == 2) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 7;
+            }
+        }
+        if (o->kind == 10) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 32;
+            }
+        }
+        if (o->kind == 11) {
+            if (o->col[3] < 0x60) {
+                o->col[3] += 24;
+            }
+        }
+    } else if (o->kind == 0) {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->kind == 1) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->kind == 2) {
+        if (g->time > 500) {
+            if (o->col[3] > 10) {
+                o->col[3] -= 9;
+            } else {
+                o->state = 0;
+            }
+        }
+    } else if (o->kind == 10) {
+        if (o->col[3] > 7) {
+            o->col[3] -= 6;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->kind == 11) {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->kind == 10 || o->kind == 11) {
+        func_00205C40((s32)o->rot);
+        o->rot[0] += 0x4000;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b034:01E03F80, 51 insns: b718:01E03D10 family volume fader (to 0x30 after scene state 30), full volume at state 2 */
 

@@ -741,7 +741,110 @@ static void func_01E01CE0_b219(Ctx_b219_01E01CE0 *ctx) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b219", func_01E01E20_b219);
+/* shape b219:01E01E20, 233 insns: b206:01E01550's white rising ring (size 5 growing by 7.5 to 200, f34 by 0.3 to
+   15, fade-in for 60 ticks, blinking white / yellow); on tick 23 it puts the scene point (ctx+0x250) on joint 0x4C4C,
+   jitters it by the model's spread and, 6 times in 10, spawns three b219:01E02360 and one b219:01E02560; it moves
+   2.5 a tick in y by the scene flag (ctx+0x4C6E) and counts its tick twice */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x4C4C - 0x25C];
+    s16 joint;
+    u8 pad4C4E[0x4C6E - 0x4C4E];
+    s16 down;
+} Game_b219_01E01E20;
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 y;
+    u8 pad1C[4];
+    s32 rot;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 size;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b219_01E01E20;
+
+static s32 func_01E01E20_b219(Game_b219_01E01E20 *g, Obj_b219_01E01E20 *o) {
+    extern void b219_01E02360();
+    extern void b219_01E02560();
+    extern void b219_01E02F70(Game_b219_01E01E20 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern f32 func_001F5860(s32);
+    extern void func_001F5620(s32, s32, void *);
+    extern s32 func_001A22C0(f32);
+    s16 w;
+
+    if (o->mode == 1) {
+        o->size = 5.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 60) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else if (o->c1[3] > 10) {
+        o->c1[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x80, 8);
+    }
+    o->rot = 0x4000;
+    if (o->f34 < 15.0f) {
+        o->f34 += 0.3f;
+    }
+    if (o->f30 < 10.0f) {
+        o->f30 += 0.2f;
+    }
+    if (o->size < 200.0f) {
+        o->size += 7.5f;
+    }
+    o->f4C = o->size - o->f34;
+    o->h5C += 9;
+    o->t++;
+    if (o->t == 23) {
+        w = func_001A22C0(func_001F5860(func_001F5380()));
+        func_001F5620(func_001F5380(), g->joint, &g->px);
+        g->px += (func_0019A5C8() % w - (w >> 1)) * 2;
+        g->py += (func_0019A5C8() % w - (w >> 1)) * 2;
+        g->pz += (func_0019A5C8() % w - (w >> 1)) * 2;
+        if (func_0019A5C8() % 10 < 6) {
+            b219_01E02F70(g, b219_01E02360, 0);
+            b219_01E02F70(g, b219_01E02360, 0);
+            b219_01E02F70(g, b219_01E02360, 0);
+            b219_01E02F70(g, b219_01E02560, 0);
+        }
+    }
+    if (o->t != 0) {
+        if (g->down != 0) {
+            o->y -= 2.5f;
+        } else {
+            o->y += 2.5f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b111:01E02160, 100 insns: spark update, a variant of b018:01E02950 (on spawn: random kind, white
    colour, angle, spin, height, speed, size and lifetime; then fade out after the lifetime, move while

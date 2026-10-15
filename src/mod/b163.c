@@ -731,7 +731,120 @@ static void func_01E01A80_b163(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b163", func_01E01D40_b163);
+/* shape b163:01E01D40, 249 insns: the scene script of b163: counts g+0x4530; before tick 315 the point (+0x4470) rides
+   joint 0x44F8 with z pushed 0.2 x the speed (+0x44E4, growing 1 a tick over 157..189) by the scene side; at 315 it
+   aims at joint 0x4508 (a 15.5th of the gap a tick) and moves 316..330; at 330 ten 0x1E029A0 and a 0x1E026F0, at 352
+   ten 0x1E03120, ten 0x1E02BD0 and a 0x1E026F0; 80..335 a 0x1E02280, 66..335 a 0x1E02F80 (plus 0x1E02400 from 145,
+   0x1E02830 at 148); +0x4518 grows 7 over 81..94 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b163_01E01D40;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b163_01E01D40 pos;
+    u8 pad260[0x4470 - 0x260];
+    V4_b163_01E01D40 pt;
+    f32 vx;
+    f32 vy;
+    f32 vz;
+    u8 pad448C[0xC];
+    f32 lean;
+    u8 pad449C[0x48];
+    f32 speed;
+    u8 pad44E8[0x10];
+    s16 ja;
+    u8 pad44FA[0xE];
+    s16 jb;
+    u8 pad450A[0xE];
+    s16 h4518;
+    u8 pad451A[0xE];
+    s16 flag;
+    u8 pad452A[2];
+    s16 side;
+    u8 pad452E[2];
+    s16 tick;
+} Ctx_b163_01E01D40;
+
+static void func_01E01D40_b163(Ctx_b163_01E01D40 *g) {
+    extern void b163_01E02280();
+    extern void b163_01E02400();
+    extern void b163_01E026F0();
+    extern void b163_01E02830();
+    extern void b163_01E029A0();
+    extern void b163_01E02BD0();
+    extern void b163_01E02F80();
+    extern void b163_01E03120();
+    extern void b163_01E03CD0(Ctx_b163_01E01D40 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[8];
+    s16 i;
+
+    g->tick++;
+    if (g->tick < 315) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pt);
+        if (g->side != 0) {
+            g->lean = -0.2f;
+        } else {
+            g->lean = 0.2f;
+        }
+        g->pt.z += g->lean * g->speed;
+        if (g->tick >= 157 && g->tick < 190) {
+            g->speed += 1.0f;
+        }
+    } else {
+        if (g->tick == 315) {
+            func_001F5620(func_001F5380(), g->jb, v);
+            g->vz = (v[2] - g->pt.z) / 15.5f;
+            g->vy = (v[1] - g->pt.y) / 15.5f;
+            g->vx = (v[0] - g->pt.x) / 15.5f;
+        }
+        if (g->tick > 315 && g->tick < 331) {
+            g->pt.z += g->vz;
+            g->pt.y += g->vy;
+            g->pt.x += g->vx;
+        }
+    }
+    if (g->tick == 330) {
+        g->pos = g->pt;
+        g->flag = 0;
+        for (i = 0; i < 10; i++) {
+            b163_01E03CD0(g, b163_01E029A0, 0);
+        }
+        b163_01E03CD0(g, b163_01E026F0, 0);
+    }
+    if (g->tick == 352) {
+        g->pos = g->pt;
+        g->flag = 1;
+        for (i = 0; i < 10; i++) {
+            b163_01E03CD0(g, b163_01E03120, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b163_01E03CD0(g, b163_01E02BD0, 0);
+        }
+        b163_01E03CD0(g, b163_01E026F0, 0);
+    }
+    if (g->tick >= 80 && g->tick < 336) {
+        g->pos = g->pt;
+        b163_01E03CD0(g, b163_01E02280, 0);
+    }
+    if (g->tick > 65 && g->tick < 336) {
+        g->pos = g->pt;
+        if (g->tick >= 145) {
+            b163_01E03CD0(g, b163_01E02400, 0);
+        }
+        b163_01E03CD0(g, b163_01E02F80, 0);
+        if (g->tick == 148) {
+            b163_01E03CD0(g, b163_01E02830, 0);
+        }
+    }
+    if (g->tick > 80 && g->tick < 95) {
+        g->h4518 += 7;
+    }
+}
 
 /* shape b163:01E02130, 82 insns, 2 copies: a rising red column: set up once (size 50, climb 400/10 a frame, random turn);
    full for 8 frames, then fades out; its top follows 50 below the climb (b016:01E026B0 family) */

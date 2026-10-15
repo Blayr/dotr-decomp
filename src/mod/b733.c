@@ -483,7 +483,97 @@ static void func_01E01F80_b733(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02150_b733);
+/* shape b733:01E02150, 238 insns: the effect scene's step: counts the frame (0xC48E); until frame 150 the camera point
+   is kept at 0xC350; frames 88..150 spawn 0x1E036C0 and 0x1E02EA0 on joint 0xC40A; frames 21..60 spawn four 0x1E02970
+   on joint 0xC40C nudged 0.5 in z by the scene side (0xC48A); frames 166..240 spawn three 0x1E03040 a frame numbered
+   by a wrapping 80-count (0xC478), then 0x1E02D30 and 0x1E027D0 at the camera point; frame 165 spawns 0x1E02C30;
+   frames 75..300 open up to 36 rings (0xC472) at heights 10 apart through 0x1E02510 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xC350 - 0x260];
+    Vec4f cam;
+    u8 padC360[0xC40A - 0xC360];
+    s16 ja;
+    s16 jb;
+    u8 padC40E[0x64];
+    s16 n;
+    s16 h;
+    u8 padC476[2];
+    s16 cnt;
+    u8 padC47A[0xC];
+    s16 idx;
+    u8 padC488[2];
+    s16 side;
+    u8 padC48C[2];
+    s16 t;
+} Scene_b733_01E02150;
+
+static void func_01E02150_b733(Scene_b733_01E02150 *g) {
+    extern void b733_01E02510(void);
+    extern void b733_01E027D0(void);
+    extern void b733_01E02970(void);
+    extern void b733_01E02C30(void);
+    extern void b733_01E02D30(void);
+    extern void b733_01E02EA0(void);
+    extern void b733_01E03040(void);
+    extern void b733_01E036C0(void);
+    extern s32 b733_01E04240(Scene_b733_01E02150 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t < 151) {
+        func_001F5F90(func_001F5380(), &g->cam);
+    }
+    if (g->t > 87 && g->t < 151) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        b733_01E04240(g, (s32)b733_01E036C0, 0);
+        b733_01E04240(g, (s32)b733_01E02EA0, 0);
+    }
+    if (g->t > 20 && g->t < 61) {
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        if (g->side != 0) {
+            g->pos.z -= 0.5f;
+        } else {
+            g->pos.z += 0.5f;
+        }
+        b733_01E04240(g, (s32)b733_01E02970, 0);
+        b733_01E04240(g, (s32)b733_01E02970, 0);
+        b733_01E04240(g, (s32)b733_01E02970, 0);
+        b733_01E04240(g, (s32)b733_01E02970, 0);
+    }
+    if (g->t > 165 && g->t < 241) {
+        for (i = 0; i < 3; i++) {
+            g->idx = g->cnt;
+            b733_01E04240(g, (s32)b733_01E03040, 0);
+            g->cnt++;
+            if (g->cnt >= 80) {
+                g->cnt = 0;
+            }
+        }
+    }
+    if (g->t == 165) {
+        b733_01E04240(g, (s32)b733_01E02C30, 0);
+    }
+    if (g->t > 165 && g->t < 241) {
+        g->pos = g->cam;
+        b733_01E04240(g, (s32)b733_01E02D30, 0);
+        b733_01E04240(g, (s32)b733_01E027D0, 0);
+    }
+    if (g->t >= 75 && g->t < 301) {
+        if (g->n < 36) {
+            g->h = g->n * 10;
+            g->idx = g->n;
+            b733_01E04240(g, (s32)b733_01E02510, 0);
+            g->n++;
+        }
+    }
+}
 
 /* shape b733:01E02510, 174 insns: b733:01E036C0 family white ring by slot (0x50: under 36 kind 0, under 72 kind 2, under 108 kind 4), frame 4..6, both alphas up by 12 to 0xC0 for 30 ticks, then down by 11 once the scene count (ctx+0xC48E) passes 240; cycles h6 0..5 every 10 ticks; while the scene runs kind 0 is 25 wide (f48 5) and kind 2 7 wide (0.8); from count 161 the first two slot bands turn +2 / -2; odd slots spin +3, even -3 */
 

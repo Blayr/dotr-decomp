@@ -1098,7 +1098,94 @@ static void func_01E02660_b267(Game_b267_01E02660 *g, Obj_b267_01E02660 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E028D0_b267);
+/* shape b267:01E028D0, 232 insns: a flat ring of 36 quads (10 apart on the trig table at g+0x3E34) from radius r to
+   r + 20, the outer edge raised to the object's h30, scaled 0.1 at the object's position plus a tenth of its offset;
+   mode 0 sets up the packet (additive blend 0x80/0x42, the object's two colours) */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b267_01E028D0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 h8, hA, hC;
+    u8 padE[0xA];
+    s32 turn;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    u8 pad32[6];
+    s16 r;
+} Obj_b267_01E028D0;
+
+typedef struct {
+    u8 pad0[0x3E34];
+    u8 trig[1];
+} Game_b267_01E028D0;
+
+static void func_01E028D0_b267(Game_b267_01E028D0 *g, Obj_b267_01E028D0 *o, void *p, s32 mode) {
+    extern s32 func_00207500(void);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_002086D0(void *, u64);
+    extern void func_00107990(void *, void *, s32);
+    extern void func_00205C40(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    V4_b267_01E028D0 quad[4];
+    V4_b267_01E028D0 pos;
+    V4_b267_01E028D0 scale;
+    f32 z[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 t;
+    s16 i;
+    s16 j;
+
+    t = func_00207500();
+    j = 0;
+    if (mode == 0) {
+        func_001092E0(p, 0);
+        func_001094F0(p);
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+        func_00107990(p, o->col, 1);
+        func_00107990(p, o->col2, 2);
+    } else {
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
+        pos.x = o->x + o->h8 / 10;
+        pos.y = o->y + o->hA / 10;
+        pos.z = o->z + o->hC / 10;
+        func_00205C40(rot);
+        rot[0] = 0;
+        rot[1] = 0;
+        rot[2] += o->turn;
+        func_00108EF0(m, &scale, rot, &pos);
+        for (i = 0; i < 36; i++) {
+            quad[0].z = 0.0f;
+            quad[0].x = o->r * func_00108030(g->trig, j, 0);
+            quad[0].y = o->r * func_00108030(g->trig, j, 1);
+            quad[1].z = 0.0f;
+            quad[1].x = o->r * func_00108030(g->trig, j + 10, 0);
+            quad[1].y = o->r * func_00108030(g->trig, j + 10, 1);
+            quad[2].z = o->h30;
+            quad[2].x = (o->r + 20) * func_00108030(g->trig, j, 0);
+            quad[2].y = (o->r + 20) * func_00108030(g->trig, j, 1);
+            quad[3].z = o->h30;
+            quad[3].x = (o->r + 20) * func_00108030(g->trig, j + 10, 0);
+            quad[3].y = (o->r + 20) * func_00108030(g->trig, j + 10, 1);
+            if (func_00205630(quad, 0x70000000, m, p, z) != 0) {
+                func_002075F0(p, t, -1);
+            }
+            j += 10;
+        }
+    }
+}
 
 /* shape b267:01E02C70, 170 insns: b573:01E04EE0's two-pass sprite for b267: mode 0 sets the material (frame 0x9B, or 0x14
    for objects run by b267:01E01610, the object's colour, scene texture 0x35C or 0x3DA0); other modes place it at the

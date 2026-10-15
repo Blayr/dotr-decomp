@@ -675,7 +675,111 @@ static void func_01E019C0_b852(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b852", func_01E01D30_b852);
+/* shape b852:01E01D30, 264 insns: b852's scene step: frame count g+0xCBB8, the third trail follows joint 0xCB48;
+   at frame 1 it spawns 0x1E033D0 and 0x1E034E0; before frame 255 two sparks a tick at joint 0xCB44 (from the scene
+   point 0xCAD0); frames 251..256 ten pairs of 0x1E028B0 stepping from joint 0xCB48 toward the third trail's point 1;
+   frame 80 spawns 0x1E03070; frame 253 bursts at the model at height 45: ten 0x1E02A60, twenty 0x1E02E20, four
+   0x1E02C20 (angles 0/90/45/135, kinds 0/0/1/1) and 0x1E032B0 */
+
+typedef struct {
+    f32 x, y, z, w;
+} Pt_b852_01E01D30;
+
+typedef struct {
+    u8 pad0[0x250];
+    Pt_b852_01E01D30 pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Pt_b852_01E01D30 a[20];
+    Pt_b852_01E01D30 b[20];
+    Pt_b852_01E01D30 c[20];
+    u8 padB590[0xCAD0 - 0xB590];
+    Pt_b852_01E01D30 pt;
+    u8 padCAE0[0xCB44 - 0xCAE0];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 padCB4A[0xCBA2 - 0xCB4A];
+    s16 ang;
+    u8 padCBA4[0xCBB0 - 0xCBA4];
+    s16 kind;
+    u8 padCBB2[0xCBB8 - 0xCBB2];
+    s16 frame;
+} Scene_b852_01E01D30;
+
+static void func_01E01D30_b852(Scene_b852_01E01D30 *g) {
+    extern void b852_01E00080(Pt_b852_01E01D30 *, s32, s32, f32 *);
+    extern s32 b852_01E02150(void);
+    extern s32 b852_01E02420(void);
+    extern s32 b852_01E028B0(void);
+    extern s32 b852_01E02A60(void);
+    extern s32 b852_01E02C20(void);
+    extern s32 b852_01E02E20(void);
+    extern s32 b852_01E03070(void);
+    extern s32 b852_01E032B0(void);
+    extern s32 b852_01E033D0(void);
+    extern s32 b852_01E034E0(void);
+    extern s32 b852_01E041C0(Scene_b852_01E01D30 *, s32 (*)(void), s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 p[8];
+    s16 i;
+    f32 f;
+
+    g->frame++;
+    func_001F5620(func_001F53A0(), g->jc, p);
+    b852_01E00080(&g->c[19], 20, 0, p);
+    if (g->frame == 1) {
+        b852_01E041C0(g, b852_01E033D0, 0);
+    }
+    if (g->frame == 1) {
+        b852_01E041C0(g, b852_01E034E0, 0);
+    }
+    if (g->frame < 255) {
+        g->pos = g->pt;
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        b852_01E041C0(g, b852_01E02150, 0);
+        b852_01E041C0(g, b852_01E02420, 0);
+    }
+    if (g->frame > 250 && g->frame < 257) {
+        for (i = 0; i < 10; i++) {
+            func_001F5620(func_001F53A0(), g->jc, &g->pos);
+            f = i;
+            g->pos.x -= f * ((g->pos.x - g->c[1].x) / 10.0f);
+            g->pos.y -= f * ((g->pos.y - g->c[1].y) / 10.0f);
+            g->pos.z -= f * ((g->pos.z - g->c[1].z) / 10.0f);
+            b852_01E041C0(g, b852_01E028B0, 0);
+            b852_01E041C0(g, b852_01E028B0, 0);
+        }
+    }
+    if (g->frame == 80) {
+        b852_01E041C0(g, b852_01E03070, 0);
+    }
+    if (g->frame == 253) {
+        func_001F5F90(func_001F5380(), &g->pos);
+        g->pos.y = 45.0f;
+        for (i = 0; i < 10; i++) {
+            b852_01E041C0(g, b852_01E02A60, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b852_01E041C0(g, b852_01E02E20, 0);
+        }
+        g->ang = 0;
+        g->kind = 0;
+        b852_01E041C0(g, b852_01E02C20, 0);
+        g->ang = 90;
+        g->kind = 0;
+        b852_01E041C0(g, b852_01E02C20, 0);
+        g->ang = 45;
+        g->kind = 1;
+        b852_01E041C0(g, b852_01E02C20, 0);
+        g->ang = 135;
+        g->kind = 1;
+        b852_01E041C0(g, b852_01E02C20, 0);
+        b852_01E041C0(g, b852_01E032B0, 0);
+    }
+}
 
 /* shape b852:01E02150, 179 insns: b377:01E01CA0's joint spark in dark red (0x48/8/0x18), size 30..49, hold 7..10,
    walking fifteenths from joint 0xCB44 to the next one (k counts up each tick); it grows by 1, turns 6 a tick and

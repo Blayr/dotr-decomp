@@ -675,7 +675,93 @@ static void func_01E019C0_b522(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b522", func_01E01D30_b522);
+/* shape b522:01E01D30, 263 insns: the effect scene's step: counts the frame (0xCBB8); frame 1 spawns 0x1E02C20; frame
+   92 spawns 0x1E02770 and marks joint 0xCB48 at 0xCAD0, then the camera's point there; frame 95 puts the scene point
+   on the mark and spawns 0x1E02B00; frames 95..105 spawn ten 0x1E02150; frame 54 spawns four 0x1E02300 at angles
+   0/90 (side 0) and 45/135 (side 1); frames 34/48/62/76/91 (joint 0xCB48) and 28/41/55/70/84/86 (joint 0xCB4A) spawn
+   thirteen 0x1E025A0 1.5 below the joint */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCAD0 - 0x260];
+    Vec4f mark;
+    u8 padCAE0[0xCB48 - 0xCAE0];
+    s16 jc;
+    s16 jd;
+    u8 padCB4C[0xCBA2 - 0xCB4C];
+    s16 ang;
+    u8 padCBA4[0xCBB0 - 0xCBA4];
+    s16 side;
+    u8 padCBB2[6];
+    s16 t;
+} Scene_b522_01E01D30;
+
+static void func_01E01D30_b522(Scene_b522_01E01D30 *g) {
+    extern void b522_01E02150(void);
+    extern void b522_01E02300(void);
+    extern void b522_01E025A0(void);
+    extern void b522_01E02770(void);
+    extern void b522_01E02B00(void);
+    extern void b522_01E02C20(void);
+    extern void b522_01E03380(Scene_b522_01E01D30 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 1) {
+        b522_01E03380(g, b522_01E02C20, 0);
+    }
+    if (g->t == 92) {
+        b522_01E03380(g, b522_01E02770, 0);
+    }
+    if (g->t == 92) {
+        func_001F5620(func_001F53A0(), g->jc, &g->mark);
+    }
+    if (g->t == 92) {
+        func_001F5F90(func_001F5380(), &g->mark);
+    }
+    if (g->t == 95) {
+        g->pos = g->mark;
+        b522_01E03380(g, b522_01E02B00, 0);
+    }
+    if (g->t >= 95 && g->t <= 105) {
+        for (i = 0; i < 10; i++) {
+            b522_01E03380(g, b522_01E02150, 0);
+        }
+    }
+    if (g->t == 54) {
+        g->ang = 0;
+        g->side = 0;
+        b522_01E03380(g, b522_01E02300, 0);
+        g->ang = 90;
+        g->side = 0;
+        b522_01E03380(g, b522_01E02300, 0);
+        g->ang = 45;
+        g->side = 1;
+        b522_01E03380(g, b522_01E02300, 0);
+        g->ang = 135;
+        g->side = 1;
+        b522_01E03380(g, b522_01E02300, 0);
+    }
+    if (g->t == 34 || g->t == 48 || g->t == 62 || g->t == 76 || g->t == 91) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b522_01E03380(g, b522_01E025A0, 0);
+        }
+    }
+    if (g->t == 28 || g->t == 41 || g->t == 55 || g->t == 70 || g->t == 84 || g->t == 86) {
+        func_001F5620(func_001F53A0(), g->jd, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b522_01E03380(g, b522_01E025A0, 0);
+        }
+    }
+}
 
 typedef struct {
     u8 pad00[6];

@@ -448,7 +448,94 @@ static s32 func_01E01160_b490(s32 unused, Obj_b361_01E01040 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E01260_b490);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E01D50_b490);
+/* shape b490:01E01D50, 230 insns: b361:01E01A00's white full-screen flash with the scene packet at ctx+0x8B14 (count
+   at 0x8B56), ending once the count reaches 184 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b490_01E01D50;
+
+typedef struct {
+    Rgbaq_b490_01E01D50 c;
+    f32 s, t;
+    u64 x : 16, y : 16, z : 24, f : 8;
+} Vtx_b490_01E01D50;
+
+typedef struct {
+    u8 hdr[0x10];
+    Vtx_b490_01E01D50 v[4];
+} Pkt_b490_01E01D50;
+
+typedef struct {
+    u8 pad0[0x8B14];
+    Pkt_b490_01E01D50 *pk;
+    u8 pad5F58[0x3E];
+    s16 t;
+} Scene_b490_01E01D50;
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+} Flash_b490_01E01D50;
+
+static s32 func_01E01D50_b490(Scene_b490_01E01D50 *g, Flash_b490_01E01D50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern Rgbaq_b490_01E01D50 func_00107740(void *);
+
+    if (o->state == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+    }
+    g->pk->v[0].c = func_00107740(o->col);
+    g->pk->v[1].c = func_00107740(o->col);
+    g->pk->v[2].c = func_00107740(o->col);
+    g->pk->v[3].c = func_00107740(o->col);
+    g->pk->v[0].x = 0x6BF8;
+    g->pk->v[0].y = 0x71F8;
+    g->pk->v[0].z = 0xFFFFFF;
+    g->pk->v[0].f = 0;
+    g->pk->v[1].x = 0x93F8;
+    g->pk->v[1].y = 0x71F8;
+    g->pk->v[1].z = 0xFFFFFF;
+    g->pk->v[1].f = 0;
+    g->pk->v[2].x = 0x6BF8;
+    g->pk->v[2].y = 0x8DF8;
+    g->pk->v[2].z = 0xFFFFFF;
+    g->pk->v[2].f = 0;
+    g->pk->v[3].x = 0x93F8;
+    g->pk->v[3].y = 0x8DF8;
+    g->pk->v[3].z = 0xFFFFFF;
+    g->pk->v[3].f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.0f;
+    g->pk->v[2].s = 0.0f;
+    g->pk->v[2].t = 0.875f;
+    g->pk->v[3].s = 0.625f;
+    g->pk->v[3].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->t < 200) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 20) {
+        o->col[3] -= 19;
+    } else {
+        o->state = 0;
+    }
+    if (g->t >= 184) {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E020F0_b490);
 

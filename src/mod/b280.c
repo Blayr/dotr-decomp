@@ -487,7 +487,116 @@ static void func_01E012D0_b280(Scene_b280_01E012D0 *g) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E015D0_b280);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E01AA0_b280);
+/* shape b280:01E01AA0, 244 insns (B280_OBJ_MOVE_3_): a two-colour sprite whose side follows the scene flag at
+   ctx+0x4C7A: on start size 5 and both colours (0x80,0x80,0x10), the second one clear; for 7 ticks the flagged
+   colour's alpha grows by 0x40 (below 0x80), then fades by 9 and the object stops; the other colour blinks
+   0x80/0x60 by tick parity; turn 0x4000; f34 swings by 1.6 towards +50 (flag) or -50, f30 grows by 0.2 up to 10,
+   the angle turns 30 a tick from tick 10, the size grows 3.5 a tick and f4C = size - f34; from tick 3 x drifts 0.3
+   a tick, its sign set by the flag and the object's side (h50) */
+
+typedef struct {
+    u8 pad0[0x4C7A];
+    s16 flag;
+} Ctx_b280_01E01AA0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 side;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b280_01E01AA0;
+
+static s32 func_01E01AA0_b280(Ctx_b280_01E01AA0 *g, Obj_b280_01E01AA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 5.0f;
+        if (g->flag) {
+            func_001076F0(o->col, 0x80, 0x80, 0x10);
+            func_001076F0(o->col2, 0x80, 0x80, 0x10);
+        } else {
+            func_001076F0(o->col2, 0x80, 0x80, 0x10);
+            func_001076F0(o->col, 0x80, 0x80, 0x10);
+        }
+        o->state = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 7) {
+        if (g->flag) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 0x40;
+            }
+        } else if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (g->flag) {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (g->flag) {
+        if (o->t % 2 == 1) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        } else {
+            func_001076F0(o->col, 0x60, 0x60, 0x60);
+        }
+    } else if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col2, 0x60, 0x60, 0x60);
+    }
+    o->rot[0] = 0x4000;
+    if (g->flag) {
+        if (o->f34 < 50.0f) {
+            o->f34 += 1.6f;
+        }
+    } else if (o->f34 > -50.0f) {
+        o->f34 -= 1.6f;
+    }
+    if (o->f30 < 10.0f) {
+        o->f30 += 0.2f;
+    }
+    if (o->t >= 10) {
+        o->ang += 30;
+    }
+    o->f48 += 3.5f;
+    o->f4C = o->f48 - o->f34;
+    if (o->t > 2) {
+        if (o->side == 0) {
+            if (g->flag) {
+                o->x += 0.3f;
+            } else {
+                o->x -= 0.3f;
+            }
+        } else if (g->flag) {
+            o->x -= 0.3f;
+        } else {
+            o->x += 0.3f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b206:01E019D0, 106 insns: b183:01E012F0 family: grey ring (size 60 growing 2 a frame, frame 0..6, start 5..14, growth 9..23) */
 

@@ -981,7 +981,106 @@ static s32 func_01E03660_b443(s32 arg0, Glow_b443_01E03660 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E037A0_b443);
+/* shape b443:01E037A0, 224 insns: eight curling blue tendrils of 10 points (ctx+0x28E0, 0xA0 apart): on start every
+   point sits on scene joint 0x2E24, frame 9, size 5..12 x 44..60; alpha 0xC0 for 11 ticks, then down by 35; each tick
+   the module's b443:01E00080 shifts each tendril from the joint, then every point curls by 3 x (sin a - cos b, cos a -
+   sin b) with a = 8 k and b = 90 + 8 k, plus 2 x the tendril's own direction (40 j) */
+
+typedef struct {
+    Vec4f pt[10];
+} Tendril_b443_01E037A0;
+
+typedef struct {
+    u8 pad0[0x28E0];
+    Tendril_b443_01E037A0 tr[8];
+    u8 pad2DE0[0x2E24 - 0x2DE0];
+    s16 joint;
+    u8 pad2E26[0x2F44 - 0x2E26];
+    u8 trig[1];
+} Ctx_b443_01E037A0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    s16 hA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 h34;
+    s16 mode;
+    s16 h38;
+    s16 ang;
+} Fx_b443_01E037A0;
+
+static s32 func_01E037A0_b443(Ctx_b443_01E037A0 *g, Fx_b443_01E037A0 *o) {
+    extern void b443_01E00080(Vec4f *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f v;
+    s32 n;
+    s16 i;
+    s16 k;
+    s16 c;
+    s32 a;
+    Vec4f *p;
+    f32 d;
+    s32 b;
+
+    c = 0;
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0xF0);
+        for (i = 0; i < 8; i++) {
+            p = g->tr[i].pt;
+            func_001F5620(func_001F53A0(), g->joint, &v);
+            for (n = 0; n < 9; n++) {
+                p->x = v.x;
+                p->y = v.y;
+                p->z = v.z;
+                p++;
+            }
+        }
+        o->frame = 9;
+        o->col[3] = 0;
+        o->hA = func_0019A5C8() % 17 + 44;
+        o->h8 = func_0019A5C8() % 8 + 5;
+        o->h34 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->h38 = 1;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 36) {
+        o->col[3] -= 35;
+    } else {
+        o->mode = 0;
+    }
+    for (i = 0; i < 8; i++) {
+        b443_01E00080(&g->tr[i].pt[9], 10, g->joint);
+    }
+    for (k = 0; k < 8; k++) {
+        b = 90;
+        for (i = 0, a = 0; i < 10; i++) {
+            d = 3.0f * func_00108030(g->trig, a, 0);
+            d -= 3.0f * func_00108030(g->trig, b, 1);
+            g->tr[k].pt[i].x += d;
+            d = 3.0f * func_00108030(g->trig, a, 1);
+            d -= 3.0f * func_00108030(g->trig, b, 0);
+            g->tr[k].pt[i].y += d;
+            g->tr[k].pt[i].x += 2.0f * func_00108030(g->trig, c, 1);
+            g->tr[k].pt[i].y += 2.0f * func_00108030(g->trig, c, 0);
+            a += 8;
+            b += 8;
+        }
+        c += 40;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b207:01E03430, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x60, 0x60, 0x60) and fields;
    alpha 0x80 for the first 0x140 ticks, then fade out by 9 and stop */

@@ -535,7 +535,114 @@ static s32 func_01E02940_b363(void *arg0, Obj_b363_01E02940 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E02A40_b363);
+/* shape b363:01E02A40, 229 insns: a white flash at the target's model point jittered -10..9 on x and z, height 35,
+   frame 13, size 160, random turn 0..359 and tilt -90..89; both alphas up by 42 to 0x80 for 3 ticks; its reach f34
+   falls from 1000 by 80 a tick, then it fades by 14; at tick 11 it moves the scene point there plus a tenth of the
+   reach along its turn (camera yaw / 180 taken off), sets the scene turn to -180 x its tilt / turn and spawns
+   b363:01E02940; the rotation is re-read each tick with x cleared */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xDE60 - 0x260];
+    s32 rx;
+    s32 ry;
+    u8 padDE68[0xE0F8 - 0xDE68];
+    u8 table[1];
+} Game_b363_01E02A40;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 reach;
+    u8 pad38[0x1C];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 turn;
+    s16 tilt;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b363_01E02A40;
+
+static s32 func_01E02A40_b363(Game_b363_01E02A40 *g, Fx_b363_01E02A40 *o) {
+    extern s32 b363_01E02940(void);
+    extern s32 b363_01E05C00(Game_b363_01E02A40 *, s32 (*)(void), s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern void func_00108950(void *, void *, s32, void *);
+    f32 v[4];
+    s32 rot[4];
+    s32 cam[4];
+
+    if (o->mode == 1) {
+        o->h8 = 13;
+        o->hA = 160;
+        func_001F5F90(func_001F5380(), &o->pos);
+        o->pos.x += func_0019A5C8() % 20 - 10;
+        o->pos.z += func_0019A5C8() % 20 - 10;
+        o->pos.y = 35.0f;
+        o->reach = 1000.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->turn = func_0019A5C8() % 360;
+        o->tilt = func_0019A5C8() % 180 - 90;
+    }
+    if (o->tick < 3) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    }
+    if (o->tick != 0) {
+        if (!(o->reach <= 0.0f)) {
+            o->reach -= 80.0f;
+        } else {
+            if (o->col[3] > 15) {
+                o->col[3] -= 14;
+            } else {
+                o->mode = 0;
+            }
+            if (o->col[3] > 15) {
+                o->col[3] -= 14;
+            }
+        }
+    }
+    if (o->tick == 11) {
+        g->pos = o->pos;
+        *(f32 *)(u32)&v[1] = o->reach / 10.0f;
+        v[0] = 0.0f;
+        *(f32 *)(u32)&v[2] = 0.0f;
+        rot[0] = o->tilt;
+        *(s32 *)(u32)&rot[1] = o->turn;
+        rot[2] = o->tilt;
+        func_00205C40((s32)cam);
+        *(s32 *)(u32)&rot[1] -= cam[1] / 180;
+        func_00108950(v, rot, 2, g->table);
+        func_00108950(v, rot, 0, g->table);
+        g->pos.x += v[0];
+        g->pos.y = g->pos.y + *(f32 *)(u32)&v[1];
+        g->pos.z = g->pos.z + *(f32 *)(u32)&v[2];
+        g->ry = o->turn * -180;
+        g->rx = o->tilt * -180;
+        b363_01E05C00(g, b363_01E02940, 0, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] = 0;
+    o->tick++;
+    return 0;
+}
 
 /* shape b363:01E02DE0, 100 insns: a pink spark (b434:01E02210 shape): size 2..7, random sub-frame 0..7, height 100..199, angle,
    rise 20..39, width 0..34, hold 3..16; alpha up by 0x60 to 0xC0 until the hold, then down by 14 until it ends */
@@ -641,7 +748,108 @@ static s32 func_01E02F70_b363(s32 arg0, Fx_b363_01E02F70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E03120_b363);
+/* shape b363:01E03120 (B363_OBJ_MOVE_6_), 238 insns: a spark that travels from joint A (g+0xDEC0) toward joint B
+   (g+0xDEC2) in 140 steps, size 100 growing 2 a tick, purple 0x40/0x20/0x80, sinking 1.3 a tick after scene frame 160,
+   stepping 1..n per tick with n = frame - 100 clamped to 1..15 (chatA, 16 Oct) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 fE;
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[0x2C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b363_01E03120;
+
+typedef struct {
+    u8 pad0[0xDEC0];
+    s16 ja;
+    s16 jb;
+    u8 padDEC4[0xDEF6 - 0xDEC4];
+    s16 frame;
+} Scene_b363_01E03120;
+
+static s32 func_01E03120_b363(Scene_b363_01E03120 *g, Fx_b363_01E03120 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[2][4];
+    f32 p[4];
+    f32 k;
+    s16 n;
+
+    func_001F5620(func_001F53A0(), g->ja, v[0]);
+    func_001F5620(func_001F53A0(), g->jb, v[1]);
+    v[1][0] = (v[1][0] - v[0][0]) / 140.0f;
+    v[1][1] = (v[1][1] - v[0][1]) / 140.0f;
+    v[1][2] = (v[1][2] - v[0][2]) / 140.0f;
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        o->f56 = 0;
+        func_001076F0(o->col, 0x40, 0x20, 0x80);
+        o->fA = o->f50;
+        o->f50 = func_0019A5C8() % 15 + 1;
+        o->f5A = func_0019A5C8() % 360;
+        o->fE = func_0019A5C8() % 3 + 2;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 6 + 2;
+        o->fC = func_0019A5C8() % 2;
+        o->f52 = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    k = o->f52;
+    func_001F5620(func_001F53A0(), g->ja, p);
+    o->x = p[0] + v[1][0] * k;
+    o->y = p[1] + v[1][1] * k;
+    o->z = p[2] + v[1][2] * k;
+    if (g->frame > 160) {
+        o->y -= 1.3f;
+    }
+    if (o->tick != 0) {
+        if (o->fC == 0) {
+            o->f5A += 5;
+        } else {
+            o->f5A -= 5;
+        }
+    }
+    o->f48 += 2.0f;
+    if (o->tick != 0) {
+        o->f50 += o->fE;
+    }
+    n = g->frame - 100;
+    if (n <= 0) {
+        n = 1;
+    }
+    if (n > 15) {
+        n = 15;
+    }
+    o->f52 += (s16)(func_0019A5C8() % n + 1);
+    o->tick++;
+    return 0;
+}
 
 /* shape b363:01E034E0, 150 insns: b746:01E03010's turning spark, size 100, frame 0, blue before scene frame 107 (0xDEF6) else red, speed 2..9, drifting 0..0.9 a tick on 0x14, turning 5 a tick */
 

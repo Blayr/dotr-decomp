@@ -495,7 +495,106 @@ static s32 func_01E01110_b294(Game_b294_01E01110 *g, Glow_b294_01E01110 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b294", func_01E01400_b294);
+/* shape b294:01E01400, 240 insns: b257:01E024F0's random-colour glow on joints ctx+0x37A8/0x37AA, rise 3..12, held
+   11..20 ticks fading in by 0x10 to 0x80, then out by 15 */
+
+typedef struct {
+    u8 pad0[0x37A8];
+    s16 ja;
+    s16 jb;
+} Game_b294_01E01400;
+
+typedef struct {
+    s16 h0;
+    u8 pad2[2];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b294_01E01400;
+
+static s32 func_01E01400_b294(Game_b294_01E01400 *g, Glow_b294_01E01400 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+    s32 k;
+
+    if (o->mode == 1) {
+        o->f38 = 100;
+        o->kind = 0;
+        k = (s16)(func_0019A5C8() % 3);
+        if (k == 0) {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+        } else if ((s16)k == 1) {
+            func_001076F0(o->col, 0x40, 0, 0x80);
+        } else {
+            func_001076F0(o->col, 0x80, 0x10, 0x10);
+        }
+        o->h30 = func_0019A5C8() % 50 + 100;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 10 + 3;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 10 + 11;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 40.0f;
+    if (o->tick == 0) {
+        o->h4 = func_001A22C0(o->h4 + 17.0f * v[0].z);
+    }
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->tick % 2 == 1) {
+        o->h0 += o->hC;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 3) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 1;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b294:01E017C0, 90 insns: b115:01E01980 family: a grey/white spark (size 60, random frame 0..6) at two random angles drifting 11 a tick along its angle (sine table ctx+0x38CC): alpha 0x80 for 7 ticks, then out by 13 and ends */
 
