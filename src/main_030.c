@@ -802,7 +802,41 @@ s32 _getpic(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", _decodeOrSkipFrame);
+s32 _decodeOrSkipFrame(void *arg0, s32 arg1, s32 arg2) {
+    s32 var_s2;
+    s32 var_s3;
+    register s32 var_v1 __asm__("$3");
+    void *temp_s0;
+
+    var_s3 = 0;
+    temp_s0 = (*(void **)((u8 *)arg0 + 0x40));
+    if ((arg2 == -1) || (arg1 < arg2)) {
+        if ((*(s32 *)((u8 *)temp_s0 + 8)) == 0) {
+            (*(s32 *)((u8 *)arg0 + 8)) = 0;
+            (*(s32 *)((u8 *)temp_s0 + 8)) = 1;
+        }
+        if (func_0018C680(temp_s0, 0) == 0) {
+            var_v1 = 0;
+        } else {
+            var_v1 = func_0018C520(temp_s0) != 0;
+        }
+        var_s2 = var_v1;
+    } else {
+        var_s2 = func_0018C680(temp_s0, 0);
+        _dispatchMpegCbNodata((s32) arg0);
+        var_s3 = 1;
+    }
+    func_0018C5F0(temp_s0, (*(s32 *)((u8 *)temp_s0 + 0x118)), (*(s32 *)((u8 *)temp_s0 + 4)));
+    if (((*(s32 *)((u8 *)temp_s0 + 0x174)) != 3) && (var_s3 == 0)) {
+        (*(s32 *)((u8 *)temp_s0 + 0x120)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x120)) == 0);
+    }
+    (*(s32 *)((u8 *)arg0 + 8)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) - (*(s32 *)((u8 *)temp_s0 + 0xAC)));
+    if ((*(s32 *)((u8 *)temp_s0 + 0x120)) == 0) {
+        (*(s32 *)((u8 *)temp_s0 + 0x118)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) + 1);
+        (*(s32 *)((u8 *)temp_s0 + 4)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 4)) + 1);
+    }
+    return var_s2;
+}
 
 s32 _decodeOrSkip(void *arg0, s32 arg1, s32 arg2) {
     s32 ret;

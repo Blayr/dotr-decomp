@@ -896,7 +896,6 @@ typedef union cvt_du { double d; u32 i[2]; } cvt_du;
 
 s32 func_0018C680(void *, s32);
 
-s32 _decodeOrSkipFrame(void *, s32, s32);
 
 extern s32 D_002BCCD0;
 
