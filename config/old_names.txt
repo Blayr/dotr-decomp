@@ -2544,6 +2544,7 @@ func_002354A0 = Taku_Camp_TEKI_WINDOW;
 func_00236C50 = Taku_Camp_TIKEI_WINDOW;
 func_00236F90 = Taku_Camp_TIKEI_Map_Hyouji;
 func_002374D0 = Taku_Camp_3D_Poly_Init;
+func_00237730 = TkCamp_Act;
 func_0023B1F0 = TkCamp_Act2;
 func_0023B920 = TkCamp_Term;
 func_0023BB00 = Taku_Camp_Go_Rensyu_Duel;

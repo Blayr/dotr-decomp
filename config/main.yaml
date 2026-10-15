@@ -144,7 +144,7 @@ segments:
       - [0x139FF0, c, main_066]
       - [0x13BDA0, c, big_func_002354A0]
       - [0x13D550, c, main_067]
-      - [0x13E030, asm, big_func_00237730]
+      - [0x13E030, c, big_func_00237730]
       - [0x141AF0, c, main_068]
       - [0x148E80, c, main_069]
       - [0x14BA50, c, main_070]

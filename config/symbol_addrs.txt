@@ -2544,6 +2544,7 @@ Taku_Camp_TEKI_WINDOW = 0x002354A0; // type:func
 Taku_Camp_TIKEI_WINDOW = 0x00236C50; // type:func
 Taku_Camp_TIKEI_Map_Hyouji = 0x00236F90; // type:func
 Taku_Camp_3D_Poly_Init = 0x002374D0; // type:func
+TkCamp_Act = 0x00237730; // type:func size:0x3AC0
 TkCamp_Act2 = 0x0023B1F0; // type:func
 TkCamp_Term = 0x0023B920; // type:func
 Taku_Camp_Go_Rensyu_Duel = 0x0023BB00; // type:func

@@ -201,3 +201,8 @@
 0x001C5DB0 0x3C0100AA 0x0805D6E8  # func_001C5D70: lui $at, 0xAA patched to j func_175BA0
 0x001C5DB4 0x9023C088 0x00000000  # func_001C5D70: lbu $v1, -0x3F78($at) patched to nop
 0x00229F8C 0x0C08EF38 0x00000000  # Taku_Camp_2D: jal Taku_Camp_Help_Window patched to nop (the JP build calls it)
+# TkCamp_Act (0x237730): the US build overwrote 3 words of its compiled code by hand (the JP release SLPM_650.50
+# has the compiled words): the Taku_Camp_Go_Help call nopped, and the hook into the tutorial patch area.
+0x00237EB0 0x0C08EF20 0x00000000  # TkCamp_Act: jal Taku_Camp_Go_Help patched to nop
+0x00239E40 0x0043082A 0x0805D798  # TkCamp_Act: slt $at, $v0, $v1 patched to j func_00175E60 (tutorial patch area)
+0x00239E44 0x10200008 0x00000000  # TkCamp_Act: beqz $at, .L00239E68 patched to nop (func_00175E60 does the compare)
