@@ -790,7 +790,6 @@ typedef struct {
     s32 count;
 } Object_00270030;
 
-extern void func_0024F430(u32, s32);
 
 s32 func_00270030(void *src, void *obj, s32 mode) {
     s32 words[4];
@@ -901,7 +900,6 @@ typedef struct Event_00270260 {
     s32 mode;
 } Event_00270260;
 
-void func_0024F430(u32, s32);
 
 static inline s32 mode_00270260(u32 position) {
     if ((func_001E0700(position >> 24, (position >> 16) & 0xFF) >> 5) == 0) {
@@ -1488,7 +1486,6 @@ typedef struct State_00271630 {
     u8 handle;
 } State_00271630;
 
-void func_0024F430(u32, s32);
 
 s32 func_00271630(void *arg0, void *arg1, s32 arg2) {
     s32 values[4];
@@ -2051,7 +2048,112 @@ s32 func_002724F0(s32 phase, s32 *res) {
     return 0xFF0000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00272CC0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+extern int func_001DEE50_b(int index);
+extern int func_001E1030_b(int a, int b);
+
+int func_00272CC0(int nSide, unsigned char bCond)
+{
+    int i;
+    int gCount_1;
+    int gCount_2;
+
+    for (i = 1; i <= 5; i++) {
+        if (func_001E2100(nSide, i, 4)) {
+            func_00215B10(nSide, func_001E1030_b(nSide, i), 0, 6);
+        } else {
+            func_00215B10(nSide, func_001E1030_b(nSide, i), 0, 4);
+        }
+    }
+    gCount_1 = func_001DEE50_b(nSide);
+    gCount_2 = func_001DEE50_b(nSide == 0 ? 1 : 0);
+    switch (bCond) {
+    case 0:
+        if (gCount_1 < 5) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 40);
+        } else if (gCount_1 < 10) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 32);
+        } else if (gCount_1 < 15) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 24);
+        } else {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 16);
+        }
+        if (gCount_2 < 5) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -32);
+        } else if (gCount_2 < 10) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -24);
+        } else if (gCount_2 < 15) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -16);
+        } else {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -8);
+        }
+        break;
+    case 1:
+        if (gCount_1 < 5) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 32);
+        } else if (gCount_1 < 10) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 24);
+        } else if (gCount_1 < 15) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 16);
+        } else {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 8);
+        }
+        if (gCount_2 < 5) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -28);
+        } else if (gCount_2 < 10) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -20);
+        } else if (gCount_2 < 15) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -12);
+        } else {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -4);
+        }
+        break;
+    case 2:
+        if (gCount_1 < 5) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 44);
+        } else if (gCount_1 < 10) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 36);
+        } else if (gCount_1 < 15) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 28);
+        } else {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 20);
+        }
+        if (gCount_2 < 5) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -36);
+        } else if (gCount_2 < 10) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -28);
+        } else if (gCount_2 < 15) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -20);
+        } else {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -12);
+        }
+        break;
+    case 3:
+        if (gCount_1 < 5) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 48);
+        } else if (gCount_1 < 10) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 40);
+        } else if (gCount_1 < 15) {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 32);
+        } else {
+            func_00215B10(nSide, func_001E1030_b(nSide, 0), 0, 24);
+        }
+        if (gCount_2 < 5) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -40);
+        } else if (gCount_2 < 10) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -32);
+        } else if (gCount_2 < 15) {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -24);
+        } else {
+            func_00215B10(nSide == 0 ? 1 : 0, func_001E1030_b(nSide == 0 ? 1 : 0, 0), 0, -16);
+        }
+        break;
+    default:
+        return -1;
+    }
+    return 1;
+}
 
 typedef struct Context_00273460 {
     u8 pad0[8];
@@ -2076,7 +2178,6 @@ typedef struct Setup_00273460 {
     s32 z;
 } Setup_00273460;
 
-void func_0024F370(s32, s32);
 
 s32 func_00273460(void *arg0, void *arg1, s32 arg2) {
     Setup_00273460 setup;
@@ -2224,7 +2325,6 @@ typedef struct Command_002738B0 {
     s32 argument;
 } Command_002738B0;
 
-void func_0024F370(s32, s32);
 
 s32 func_002738B0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E15E0();
@@ -2372,7 +2472,271 @@ s32 func_002738B0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00273E60);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct jp_6989c_273e60 {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+struct jp_68cb4_273e60 {
+    int fLoad : 1;
+    unsigned char bModNum : 5;
+    unsigned short wModule[24];
+    unsigned char bModCond[24];
+};
+struct jp_69942_273e60 {
+    unsigned short wCount_1;
+    unsigned short wCount_2;
+    unsigned short wLvl;
+    unsigned char eID[24];
+    int ePos[24];
+    struct jp_68cb4_273e60 eMod;
+    unsigned int fObj;
+    unsigned int fObj2;
+    unsigned char oNum;
+    unsigned char unknown_d5[0xb];
+    int camDat[8];
+    unsigned char bCamLvl;
+    unsigned short wCamTime;
+    unsigned char unknown_104[0xc];
+    int nTasakiEfc[0x10c];
+};
+extern int func_00255AC0_273e60(struct jp_69942_273e60 *q, int id);
+extern void func_00260AF0_b(unsigned char who, int packed, int add, int value);
+extern void func_00260A70_273e60(struct jp_69942_273e60 *Temp, unsigned char b);
+extern int func_001E1030_b(int a, int b);
+extern int func_001E1E10_b(int a, int b);
+extern int func_001E1CB0_b(int a, int b);
+
+int func_00273E60(void *eInfo_v, void *Temp_v, int ID)
+{
+    struct jp_6989c_273e60 * eInfo = eInfo_v;
+    struct jp_69942_273e60 * Temp = Temp_v;
+    int stored;
+    struct jp_6989c_273e60 eCall;
+    struct jp_6989c_273e60 *pCall = &eCall;
+    int temp;
+    int i;
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    func_001DE7E0(0);
+    if (eInfo == 0 || Temp == 0 || pCall == 0) {
+        func_001E4530();
+        return 0;
+    }
+    if (ID >= 0) {
+        func_00255960(Temp);
+        if (func_00271740(6, eInfo->dwTo) != 0) {
+            func_00255AC0_273e60(Temp, 557);
+            Temp->wLvl = 16;
+        }
+        if (((eInfo->dwPar >> 20) & 3) != 0 || ((eInfo->dwPar >> 22) & 3) != 0) {
+            func_00255AC0_273e60(Temp, 513);
+        }
+        func_00255AC0_273e60(Temp, 604);
+        func_00255AC0_273e60(Temp, 605);
+        func_00260AF0_b(0, eInfo->dwFrom, 300, 280);
+        Temp->wCount_1 = 128;
+        return 1;
+    }
+    switch (Temp->bCamLvl) {
+    case 0:
+        if (Temp->wCamTime++ == 0) {
+            func_00217710(0, 39);
+            func_001A86A0(6);
+            func_00260AF0_b(12, eInfo->dwFrom, 100, 180);
+            return 1;
+        }
+        if (Temp->wCamTime >= 12) {
+            func_001A86A0(4);
+        }
+        if (Temp->wCamTime >= 24) {
+            if (func_001E1E10_b(eInfo->dwFrom >> 8, eInfo->dwFrom & 0xFF) == 255) {
+                if (func_001E1CB0_b(eInfo->dwFrom >> 8, eInfo->dwFrom & 0xFF) == 128) {
+                    if (func_001F5EC0(eInfo->dwFrom) != 0) {
+                        func_001A86A0(0);
+                        func_00260AF0_b(0, eInfo->dwTo << 8, 300, 280);
+                        Temp->wCamTime = 0;
+                        Temp->bCamLvl++;
+                    }
+                }
+            }
+        }
+        return 1;
+    case 1:
+        if (Temp->wCamTime++ == 0) {
+            func_00217710(0, 39);
+            func_001A86A0(6);
+            func_00260AF0_b(12, eInfo->dwTo << 8, 100, 180);
+            return 1;
+        }
+        if (Temp->wCamTime >= 12) {
+            func_001A86A0(4);
+        }
+        if (Temp->wCamTime >= 24) {
+            if (func_001F5EC0(eInfo->dwTo << 8) != 0) {
+                func_001A86A0(0);
+                func_00260A70_273e60(Temp, 0);
+                Temp->wCamTime = 0;
+                Temp->bCamLvl++;
+            }
+        }
+        return 1;
+    default:
+        break;
+    }
+    if (func_00255B50(Temp) != 1) {
+        return 1;
+    }
+    switch (Temp->wLvl) {
+    case 0:
+        if (func_00255B50(Temp) == 1) {
+            func_001F5970(eInfo->dwFrom, 1);
+            func_001F5970(eInfo->dwTo << 8, 1);
+            if (((eInfo->dwPar >> 20) & 3) != 0) {
+                func_001E42C0(0, -120, 80, 260);
+                pCall->eNO = 513;
+                pCall->dwFrom = 0;
+                pCall->dwTo = (unsigned short)eInfo->dwFrom;
+                pCall->dwPar = 0;
+                
+
+                if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) >= 0) {
+                    Temp->oNum++;
+                }
+            }
+            if (((eInfo->dwPar >> 22) & 3) != 0) {
+                func_001E42C0(0, -120, 80, 260);
+                pCall->eNO = 513;
+                pCall->dwFrom = 0;
+                pCall->dwTo = (unsigned short)eInfo->dwTo;
+                pCall->dwPar = 0;
+                if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) > 0) {
+                    Temp->oNum++;
+                }
+            }
+            Temp->wLvl++;
+        }
+        return 1;
+    case 1:
+        if (Temp->oNum > 0) {
+            for (i = 0; i < Temp->oNum; i++) {
+                if (func_001F51D0(Temp->eID[i]) != 0) {
+                    return 1;
+                }
+            }
+        }
+        func_001E4530();
+        Temp->oNum = 0;
+        Temp->wLvl++;
+        return 1;
+    case 2:
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, -1)) > 0) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+        } else {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+            Temp->wLvl++;
+        }
+        return 1;
+    case 3:
+        temp = func_002670F0(44, (unsigned short)eInfo->dwPar);
+        pCall->eNO = 604;
+        pCall->dwFrom = eInfo->dwFrom;
+        pCall->dwTo = 0;
+        if (temp == 0) {
+            temp = 0x30000;
+        }
+        pCall->dwPar = temp;
+        Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp);
+        Temp->ePos[Temp->oNum] = 0;
+        Temp->oNum++;
+        Temp->wLvl++;
+        return 1;
+    case 4:
+        if (func_001F51D0(Temp->eID[Temp->oNum - 1]) != 0) {
+            if (func_001F52D0(Temp->eID[Temp->oNum - 1]) == 2) {
+                if (Temp->ePos[Temp->oNum - 1] == 1) {
+                    func_00217710(1, 65);
+                }
+                Temp->ePos[Temp->oNum - 1]++;
+            }
+            return 1;
+        }
+        pCall->eNO = 605;
+        pCall->dwFrom = eInfo->dwFrom;
+        pCall->dwTo = 0;
+        pCall->dwPar = 0;
+        Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp);
+        Temp->oNum++;
+        func_001DF490(eInfo->dwTo, 1, func_002670F0(44, (unsigned short)eInfo->dwPar));
+        if (func_001DF470(eInfo->dwTo) > 0) {
+            func_00215B10(eInfo->dwFrom >> 8, func_001E1030_b(eInfo->dwFrom >> 8, eInfo->dwFrom & 0xFF), 0, 20);
+        } else {
+            func_00215B10(eInfo->dwFrom >> 8, func_001E1030_b(eInfo->dwFrom >> 8, eInfo->dwFrom & 0xFF), 0, 24);
+        }
+        func_00215B10(eInfo->dwTo, func_001E1030_b(eInfo->dwTo, 0), 0, -8);
+        Temp->wLvl++;
+        return 1;
+    case 5:
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, 1)) < 128) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+        }
+        if (func_001F51D0(Temp->eID[Temp->oNum - 1]) != 0) {
+            if (Temp->fObj2++ == 20) {
+                func_00217710(0, 2);
+            }
+            return 1;
+        }
+        Temp->wLvl++;
+        break;
+    case 16:
+        func_001E42C0(0, -120, 80, 270);
+        pCall->eNO = 557;
+        pCall->dwFrom = 0;
+        pCall->dwTo = eInfo->dwFrom;
+        pCall->dwPar = 0;
+        Temp->eID[0] = func_00255A30(pCall, Temp);
+        Temp->wLvl++;
+        break;
+    case 17:
+        if (func_001F51D0(Temp->eID[0]) != 0) {
+            return 1;
+        }
+        func_001E4530();
+        Temp->wLvl = 0;
+        break;
+    default:
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, 1)) < 128) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+            return 1;
+        }
+        if ((eInfo->dwFrom >> 16) != 0) {
+            if ((eInfo->dwFrom >> 31) == 0) {
+                func_00250CA0((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 1, (eInfo->dwFrom >> 16) & 0x7FFF);
+                func_00250E80((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 1, (eInfo->dwFrom >> 16) & 0x7FFF);
+            } else {
+                func_00250CA0((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 0, (eInfo->dwFrom >> 16) & 0x7FFF);
+                func_00250E80((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 0, (eInfo->dwFrom >> 16) & 0x7FFF);
+            }
+        }
+        func_001F6CF0(128);
+        func_001F6CE0(128);
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 struct jp_6989c {
     int eNO;
@@ -2759,7 +3123,6 @@ typedef struct {
     s32 z;
 } Params_002755D0;
 
-void func_0024F370(s32, s32);
 
 static inline s32 update_002755D0(void *arg0, void *arg1, void *params_arg, s32 arg2) {
     State_002755D0 *state = arg1;
@@ -2833,7 +3196,6 @@ typedef struct Request_00275740 {
     s32 flag;
 } Request_00275740;
 
-void func_0024F370(s32, s32);
 
 s32 func_00275740(u32 *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1E10();

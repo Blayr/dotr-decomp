@@ -223,7 +223,121 @@ s32 func_00250E80(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_00251060);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct jp_9a20 {
+    unsigned char bCardMax;
+    unsigned char bMode;
+    unsigned char _pad[6];
+    unsigned short wReelBuf[3][21];
+    unsigned short wLine[5];
+};
+struct jp_8d5b_251060 {
+    unsigned char bKind;
+    unsigned char bKindOfs;
+    unsigned char bAttr : 4;
+    unsigned char bLevel : 4;
+    unsigned char bDeckCost;
+    unsigned short wEffIdx;
+    unsigned short wEffNo;
+    unsigned short wAP : 13;
+    unsigned short fPermanent : 1;
+    unsigned short fGetPasswd : 1;
+    unsigned short fGetRecycle : 1;
+    unsigned short wDP : 13;
+    unsigned short fGetSlot : 1;
+    unsigned short fGetFever : 1;
+    unsigned short fAlternate : 1;
+    unsigned char abPasswd[8];
+};
+extern int func_001DEE50_b(int index);
+extern struct jp_8d5b_251060 *func_001DD0E0_251060(int id);
+extern int func_001DE740_b(int index);
+extern int func_00215D30_b(int side, int id);
+
+int func_00251060(int nSide, void *pSlotOrder_v)
+{
+    struct jp_9a20 * pSlotOrder = pSlotOrder_v;
+    unsigned short wGraveLst[120];
+    struct jp_8d5b_251060 *pConstInfo;
+    int bRank;
+    int bKind;
+    int nCardNo;
+    int Count;
+    int i;
+
+    if (pSlotOrder == 0) {
+        return -1;
+    }
+    for (i = 0; i < 120; i++) {
+        wGraveLst[i] = 999;
+    }
+    func_001DEE70(nSide, func_002159D0(nSide, func_002158B0(nSide)));
+    Count = func_001DEE50_b(nSide);
+    if (Count <= 0) {
+        return 0;
+    }
+    for (i = 0; i < Count; i++) {
+        pConstInfo = func_001DD0E0_251060(func_001DEE00(nSide, i));
+        if (!pConstInfo->fGetSlot) {
+            func_001DF000(nSide, i);
+        }
+    }
+    func_001DEF20(nSide);
+    Count = func_001DEE50_b(nSide);
+    if (Count <= 0) {
+        return 0;
+    }
+    for (i = 0; i < Count; i++) {
+        wGraveLst[i] = func_001DEE00(nSide, i);
+    }
+    pSlotOrder->bCardMax = func_00251370(Count, wGraveLst, pSlotOrder);
+    pSlotOrder->bMode = 2;
+    if (func_001DE740_b(nSide == 0 ? 1 : 0) & 0x80) {
+        pSlotOrder->bMode = 0;
+    }
+    nCardNo = func_002159D0(nSide == 0 ? 1 : 0, func_002158B0(nSide == 0 ? 1 : 0));
+    bKind = func_0026FCE0(nCardNo) & 0x1F;
+    bRank = func_00215D30_b(nSide == 0 ? 1 : 0, nCardNo);
+    for (i = 0; i < 5; i++) {
+        pSlotOrder->wLine[i] = 0xFFFE;
+    }
+    switch (bKind) {
+    case 0:
+    case 2:
+    case 5:
+    case 6:
+    case 7:
+    case 9:
+    case 12:
+    case 16:
+    case 19:
+    case 20:
+        pSlotOrder->wLine[0] = 0xFFFE;
+        for (i = 1; i < 5; i++) {
+            pSlotOrder->wLine[i] = 0xFFFF;
+        }
+        break;
+    default:
+        if (bRank <= 0) {
+            pSlotOrder->wLine[0] = 0xFFFF;
+        }
+        if (bRank < 4) {
+            pSlotOrder->wLine[1] = 0xFFFF;
+        }
+        if (bRank < 7) {
+            pSlotOrder->wLine[2] = 0xFFFF;
+        }
+        if (bRank < 10) {
+            pSlotOrder->wLine[3] = 0xFFFF;
+        }
+        if (bRank < 11) {
+            pSlotOrder->wLine[4] = 0xFFFF;
+        }
+        break;
+    }
+    return 1;
+}
 
 s32 func_00251370(s32 count, u16 *src, void *dst) {
     u16 buffer[120];
@@ -275,7 +389,65 @@ s32 func_00251370(s32 count, u16 *src, void *dst) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_073", func_002514F0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct jp_8d5b {
+    unsigned char bKind;
+    unsigned char bKindOfs;
+    unsigned char bAttr : 4;
+    unsigned char bLevel : 4;
+    unsigned char bDeckCost;
+    unsigned short wEffIdx;
+    unsigned short wEffNo;
+    unsigned short wAP : 13;
+    unsigned short fPermanent : 1;
+    unsigned short fGetPasswd : 1;
+    unsigned short fGetRecycle : 1;
+    unsigned short wDP : 13;
+    unsigned short fGetSlot : 1;
+    unsigned short fGetFever : 1;
+    unsigned short fAlternate : 1;
+    unsigned char abPasswd[8];
+};
+struct DotrStateEntry20;
+struct DotrStateEntry20 *func_001DD0E0_b(int id);
+
+int func_002514F0(unsigned short nCardNo)
+{
+    int i;
+    int Count;
+    unsigned short wCardNo[854];
+    struct jp_8d5b *pConstInfo;
+
+    switch (nCardNo) {
+    case 60: return 87;
+    case 837: return 83;
+    case 754: return 699;
+    case 716: return 715;
+    case 272: return 702;
+    case 539: return 700;
+    case 722: return 811;
+    case 61: return 733;
+    }
+    for (i = 0, Count = 0; i < 854; i++) {
+        if (i == 87) continue;
+        if (i == 83) continue;
+        if (i == 699) continue;
+        if (i == 715) continue;
+        if (i == 702) continue;
+        if (i == 700) continue;
+        if (i == 733) continue;
+        if (i == 811) continue;
+        pConstInfo = (struct jp_8d5b *)func_001DD0E0_b(i);
+        if (pConstInfo != 0 && pConstInfo->fGetFever) {
+            wCardNo[Count++] = i;
+        }
+    }
+    if (Count > 0) {
+        return wCardNo[func_0019A5C8() % Count];
+    }
+    return 999;
+}
 
 void func_002516D0(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_001E1900();

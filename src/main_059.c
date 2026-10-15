@@ -1710,7 +1710,78 @@ INCLUDE_ASM("asm/nonmatchings/main_059", func_002138D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00213A40);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00213D00);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+typedef int DotrWalkAddr;
+struct DotrWalkPolygon {
+    int unknown_00[31];
+    unsigned int key;
+};
+struct DotrWalkSortPad {
+    unsigned char unknown_000[0x120];
+    struct DotrWalkPolygon temp;
+};
+#define DOTR_WALK_SORT_PAD ((struct DotrWalkSortPad *)0x70000000)
+#define DOTR_SORT_AT(i) (first + (i) - 1)
+#define DOTR_SORT_COPY(k) ((struct DotrWalkPolygon *)(((k) << 7) + (DotrWalkAddr)first - 128))
+
+void func_00213D00(void *first_v, void *end_v)
+{
+    struct DotrWalkPolygon * first = first_v;
+    struct DotrWalkPolygon * end = end_v;
+    struct DotrWalkSortPad *scratch = DOTR_WALK_SORT_PAD;
+    int k;
+    int j;
+    int i;
+    int n = end - first;
+    struct DotrWalkPolygon *p;
+
+    i = n >> 1;
+    if (i > 0) {
+        p = DOTR_SORT_COPY(i);
+        do {
+            k = i;
+            func_0020B380(&scratch->temp, p, 8);
+            while ((j = k * 2) <= n) {
+                if (j < n && DOTR_SORT_AT(j)->key < DOTR_SORT_AT(j + 1)->key) {
+                    j++;
+                }
+                if (!(scratch->temp.key < DOTR_SORT_AT(j)->key)) {
+                    break;
+                }
+                func_0020B380(DOTR_SORT_COPY(k), DOTR_SORT_COPY(j), 8);
+                k = j;
+            }
+            func_0020B380(DOTR_SORT_COPY(k), &scratch->temp, 8);
+            i--;
+            p--;
+        } while (i > 0);
+    }
+    if (n > 1) {
+        p = DOTR_SORT_COPY(n);
+        do {
+            func_0020B380(&scratch->temp, p, 8);
+            func_0020B380(p, first, 8);
+            p--;
+            n--;
+            k = 1;
+            while ((j = k * 2) <= n) {
+                if (j < n && DOTR_SORT_AT(j)->key < DOTR_SORT_AT(j + 1)->key) {
+                    j++;
+                }
+                if (!(scratch->temp.key < DOTR_SORT_AT(j)->key)) {
+                    break;
+                }
+                func_0020B380(DOTR_SORT_COPY(k), DOTR_SORT_COPY(j), 8);
+                k = j;
+            }
+            func_0020B380(DOTR_SORT_COPY(k), &scratch->temp, 8);
+        } while (n > 1);
+    }
+}
+#undef DOTR_WALK_SORT_PAD
+#undef DOTR_SORT_AT
+#undef DOTR_SORT_COPY
 
 void func_00213F10(u8 *start, u8 *end) {
     s32 *field;

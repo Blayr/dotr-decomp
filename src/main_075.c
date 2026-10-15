@@ -351,7 +351,6 @@ s32 func_0025F400(void *arg0, void *arg1, void *arg2) {
     return 0;
 }
 
-void func_0024F370(s32, s32);
 
 typedef struct {
     u8 pad[8];
@@ -1822,7 +1821,6 @@ typedef struct {
     s32 timer;
 } State_00262BE0;
 
-void func_0024F370(s32, s32);
 
 s32 func_00262BE0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1D10();
@@ -2101,7 +2099,6 @@ typedef struct {
     u16 timer;
 } State_00263500;
 
-void func_0024F370(s32, s32);
 
 s32 func_00263500(void *arg0, void *arg1, s32 arg2) {
     s32 data[4];
@@ -2261,7 +2258,6 @@ typedef struct Request_00265050 {
     s32 flag;
 } Request_00265050;
 
-void func_0024F370(s32, s32);
 
 s32 func_00265050(void *arg0, void *arg1, s32 arg2) {
     Request_00265050 packet;

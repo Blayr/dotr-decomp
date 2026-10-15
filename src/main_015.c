@@ -1990,7 +1990,6 @@ typedef struct {
     u8 result;
 } Out_00166D10;
 
-s32 func_00166EE0(s32);
 
 s32 func_00166D10(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     u16 *unit = arg0;
@@ -2034,7 +2033,63 @@ s32 func_00166D10(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     return func_001664A0(unit, arg1, out, arg3, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_015", func_00166EE0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+extern int func_001DEE50_b(int index);
+struct DotrScanEntry {
+    unsigned char unknown_00[3];
+    unsigned char unknown_03;
+};
+struct DotrScanPair {
+    unsigned word;
+};
+struct DotrScanHeld {
+    struct DotrScanEntry *entry;
+    int unknown_04[23];
+};
+extern struct DotrScanPair *func_001E09E0_b(struct DotrScanHeld *held, int n);
+
+int func_00166EE0(int side)
+{
+    struct DotrScanHeld held;
+    int i;
+    int best;
+    int result;
+    int id;
+    struct DotrScanPair *pair;
+    int n;
+
+    best = 40;
+    result = -1;
+    if (func_001E01F0(side) >= 5) {
+        return result;
+    }
+    for (i = 0; i < func_001DEE50_b(side); i++) {
+        id = func_001DEE00(side, i);
+        if (func_0026FCE0(id) >> 5 != 0) {
+            func_001DCD70((int *)&held, id);
+            pair = func_001E09E0_b(&held, 0);
+            n = held.entry->unknown_03;
+            if (n >= best && pair->word >> 8 != 20) {
+                best = n;
+                result = side << 16 | i;
+            }
+        }
+    }
+    for (i = 0; i < func_001DEE50_b(side == 0 ? 1 : 0); i++) {
+        id = func_001DEE00(side == 0 ? 1 : 0, i);
+        if (func_0026FCE0(id) >> 5 != 0) {
+            func_001DCD70((int *)&held, id);
+            pair = func_001E09E0_b(&held, 0);
+            n = held.entry->unknown_03;
+            if (n >= best && pair->word >> 8 != 20) {
+                best = n;
+                result = i | (side == 0 ? 1 : 0) << 16;
+            }
+        }
+    }
+    return result;
+}
 
 s32 func_001670A0(s32 arg0, s32 arg1) {
     extern s32 func_001E1030();

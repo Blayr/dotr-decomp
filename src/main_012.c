@@ -1433,7 +1433,97 @@ s32 func_0014F3A0(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014F490);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+extern int func_0027D830_b(int, int, int, int, int, int);
+extern int func_001E1030_b(int a, int b);
+extern unsigned *func_001E0B70_b(int a, int b, int n);
+struct DotrStateItem;
+extern struct DotrStateItem *func_001E36E0_b(int x, int y);
+static inline int spot_find(void)
+{
+    int i;
+    int spot;
+
+    for (i = 0; i < 3; i++) {
+        spot = func_0014C9D0(i);
+        if ((func_001E36E0_b(spot & 0xff, spot >> 8) == 0 ? 1 : 0) == 1) {
+            return func_0014C9D0(i);
+        }
+    }
+    return -1;
+}
+
+int func_0014F490(int x, int y)
+{
+    int kind;
+    int pos;
+    int side;
+    unsigned *p;
+    int r;
+    kind = func_001E1030_b(x, y);
+    pos = func_001E1090(x, y);
+    side = func_00250360(x, y);
+    p = func_001E0B70_b(x, y, 0);
+    if (func_001E2100(x, y, 4)) {
+        return 0;
+    }
+    switch (func_001E0700(x, y) >> 5) {
+    case 0:
+        switch (kind) {
+        case 612:
+        case 551:
+            if (func_0014FA10(side, kind) == 1) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830_b(x, y, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_0014F8C0(func_00250360(x, y), kind) == 1) {
+            if (func_001E22B0(pos & 0xFF, pos >> 8) != 9) {
+                return 1;
+            }
+        }
+        break;
+    case 1:
+        if (func_0027D830_b(x, y, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (p == 0) {
+            return 2;
+        }
+        switch (*p >> 8) {
+        case 13:
+            return 1;
+        case 2:
+            r = func_0027C770(func_001DF540(x, y), pos & 0xFF, pos >> 8, 4, 9, 2);
+            if (r >= 0 && r == pos) {
+                return 1;
+            }
+            break;
+        case 4:
+            if ((spot_find() < 0 ? 1 : 0) == 1) {
+                if (func_001E01F0(x) == 0) {
+                    return 1;
+                }
+            }
+            break;
+        case 18:
+            if (func_001E0150(x) >= 4) {
+                return 1;
+            }
+            break;
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 max_0014F7C0(s32 a, s32 b) {
     if (b < a) {
@@ -1611,7 +1701,194 @@ s32 func_0014FB70(s32 arg0, void *arg1) {
     return (u16)ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_0014FD40);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrFinderUnit {
+    unsigned short wUnit;
+    unsigned short wOrder;
+    unsigned short wPurpose;
+    unsigned int dwGoal;
+    unsigned char bCond : 2;
+};
+struct DotrFinderTask {
+    unsigned short wUnit;
+    unsigned char bPurpose;
+    unsigned short wGoal;
+    unsigned char bHand[5];
+    int bOpen;
+    unsigned char bDefense;
+};
+extern void func_0027B1B0_b(struct DotrFinderUnit *unit, int mode);
+extern int func_0027D020_b(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int view, int lvl, int g, int h);
+extern int func_00150470_b(struct DotrFinderUnit *list, int side, struct DotrFinderTask *task);
+extern void func_00150270_b(struct DotrFinderUnit *unit);
+extern int func_00152100_b(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first);
+extern int func_001526D0_b(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first);
+extern int func_00152CD0_b(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int e);
+extern int func_00150C40_b(int pos, int side, struct DotrFinderTask *task);
+static inline int CRun_val(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int done)
+{
+    if (func_001E2100(unit->wUnit >> 8, unit->wUnit & 0xff, 0) == 0) {
+        func_00152100_b(unit, side, task, first);
+        done = 1;
+    }
+    return done;
+}
+static inline int CMove_val(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int e, int done)
+{
+    if (func_001E2100(unit->wUnit >> 8, unit->wUnit & 0xff, 0) == 0) {
+        func_00152CD0_b(unit, side, task, first, e);
+        done = 1;
+    }
+    return done;
+}
+static inline int CEnc_val(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int done)
+{
+    func_0027D020_b(unit, side, task, first, 0, func_00153ED0(side), 5, 1);
+    done = 1;
+    return done;
+}
+static inline void CRun_void(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int *pd)
+{
+    if (func_001E2100(unit->wUnit >> 8, unit->wUnit & 0xff, 0) == 0) {
+        func_00152100_b(unit, side, task, first);
+        *pd = 1;
+    }
+}
+static inline void CMove_void(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int e, int *pd)
+{
+    if (func_001E2100(unit->wUnit >> 8, unit->wUnit & 0xff, 0) == 0) {
+        func_00152CD0_b(unit, side, task, first, e);
+        *pd = 1;
+    }
+}
+static inline void CEnc_void(struct DotrFinderUnit *unit, int side, struct DotrFinderTask *task, int first, int *pd)
+{
+    func_0027D020_b(unit, side, task, first, 0, func_00153ED0(side), 5, 1);
+    *pd = 1;
+}
+
+int func_0014FD40(void *list_v, void *task_v, int owner)
+{
+    struct DotrFinderUnit * list = list_v;
+    struct DotrFinderTask * task = task_v;
+    int side = func_001DE540();
+    int done = 0;
+    int r;
+    int idx;
+
+    (void)owner;
+    if ((r = func_00150470_b(list, side, task)) < 0) {
+        return 0;
+    }
+    idx = func_00276C80(list, r & 0xffff);
+    if (idx < 0) {
+        return 0;
+    }
+    if ((r >> 16) == 1) {
+        if (((list[idx].wPurpose >> 8) & 0xff) == 10) {
+            func_0027B1B0_b(&list[idx], 1);
+        } else {
+            func_0027B1B0_b(&list[idx], 0);
+        }
+        return 1;
+    }
+    func_00150270_b(&list[idx]);
+    switch ((list[idx].wPurpose >> 8) & 0xff) {
+    case 5:
+        CRun_void(&list[idx], side, task, 1, &done);
+        break;
+    case 2:
+        if (func_001E2100(list[idx].wUnit >> 8, list[idx].wUnit & 0xff, 0) == 0) {
+            if (func_001526D0_b(&list[idx], side, task, 1) < 0) {
+                func_0027B1B0_b(&list[idx], 1);
+                return 1;
+            }
+            done = 1;
+        }
+        break;
+    case 10:
+        if (func_00150C40_b(list[idx].wUnit, side, task) < 0) {
+            func_0027B1B0_b(&list[idx], 1);
+            task->bPurpose = 255;
+            task->bOpen = 0;
+            break;
+        }
+        func_0027B1B0_b(&list[idx], 1);
+        done = 1;
+        break;
+    case 6:
+        CMove_void(&list[idx], side, task, 1, 0, &done);
+        break;
+    case 3:
+        CMove_void(&list[idx], side, task, 1, 1, &done);
+        break;
+    case 11:
+        func_00153550(&list[idx], side, task, 1);
+        done = 1;
+        break;
+    case 9:
+        CEnc_void(&list[idx], side, task, 1, &done);
+        break;
+    case 14:
+        func_00276EC0(&list[idx], side, task);
+        done = 1;
+        break;
+    default:
+        done = 0;
+        break;
+    }
+    if (done == 1) {
+        return 1;
+    }
+    done = 0;
+    switch (list[idx].wPurpose & 0xff) {
+    case 5:
+        done = CRun_val(&list[idx], side, task, 0, done);
+        break;
+    case 2:
+        if (func_001E2100(list[idx].wUnit >> 8, list[idx].wUnit & 0xff, 0) == 0) {
+            if (func_001526D0_b(&list[idx], side, task, 0) < 0) {
+                func_00152100_b(&list[idx], side, task, 0);
+            }
+            done = 1;
+        }
+        break;
+    case 10:
+        if (func_00150C40_b(list[idx].wUnit, side, task) < 0) {
+            func_0027B1B0_b(&list[idx], 0);
+            task->bPurpose = 255;
+            done = 1;
+            task->bOpen = 0;
+            break;
+        }
+        func_0027B1B0_b(&list[idx], 0);
+        done = 1;
+        break;
+    case 6:
+        done = CMove_val(&list[idx], side, task, 0, 0, done);
+        break;
+    case 3:
+        done = CMove_val(&list[idx], side, task, 0, 1, done);
+        break;
+    case 11:
+        func_00153550(&list[idx], side, task, 0);
+        done = 1;
+        break;
+    case 9:
+        done = CEnc_val(&list[idx], side, task, 0, done);
+        break;
+    case 14:
+        func_00276EC0(&list[idx], side, task);
+        break;
+    default:
+        return 0;
+    }
+    if (done == 1) {
+        return 1;
+    }
+    return 0;
+}
 
 typedef struct {
     u16 pos;

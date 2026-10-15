@@ -1759,7 +1759,6 @@ typedef struct {
     s32 value;
 } Context_002692D0;
 
-void func_0024F370(s32, s32);
 
 s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
     s32 data[4];
@@ -1869,7 +1868,6 @@ typedef struct State_002695D0 {
     u8 cursor;
 } State_002695D0;
 
-void func_0024F370(s32, s32);
 
 s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -2194,7 +2192,6 @@ typedef struct State_0026A0A0 {
     u16 ticks;
 } State_0026A0A0;
 
-void func_0024F370(s32, s32);
 
 s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
     Packet_0026A0A0 packet_data;
@@ -2785,7 +2782,6 @@ typedef struct State_0026B480 {
     u16 timer;
 } State_0026B480;
 
-void func_0024F370(s32, s32);
 
 s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -3009,7 +3005,6 @@ typedef struct State_0026BB80 {
     u16 timer;
 } State_0026BB80;
 
-void func_0024F370(s32, s32);
 
 s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1E10();
@@ -3171,7 +3166,6 @@ typedef struct {
     s32 field_C;
 } Temp_0026BF50;
 
-void func_0024F370();
 
 s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1030();
@@ -4223,7 +4217,6 @@ s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_0024F370(u32, s32);
 
 typedef struct Context_0026E1F0 {
     u32 unk0;

@@ -1,6 +1,116 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_00228150);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrGlideBoard {
+    signed char mode;
+    signed char unknown_01[2];
+    signed char seen[59];
+    short wins[2];
+    short row_wins[2][32];
+    short ticks;
+    short unknown_c4;
+    signed char kind[3];
+    signed char unknown_c9;
+    signed char streak;
+};
+struct DotrGlideSpot_228150 {
+    float x;
+    float unknown_04;
+    float y;
+    float unknown_0c[6];
+    unsigned char unknown_24[2];
+    short marks[7];
+};
+extern struct DotrGlideBoard D_00299E10_228150;
+extern struct DotrGlideSpot_228150 D_00298BA0_228150[];
+extern int D_0034F6F0;
+static inline short may_score(struct DotrGlideBoard *board)
+{
+    if (board->unknown_01[0] != 0 && board->unknown_01[1] != 0) {
+        board->ticks = 0;
+        return 0;
+    }
+    if (board->seen[board->kind[0]] < 3) {
+        return 1;
+    }
+    if (board->mode == 0 && board->kind[0] == 11) {
+        if (board->unknown_c9 == 1) {
+            return 1;
+        }
+        board->ticks = 0;
+        return 0;
+    }
+    board->ticks = 0;
+    return 0;
+}
+
+void func_00228150(int side)
+{
+    struct DotrGlideBoard *board = &D_00299E10_228150;
+
+    D_00299E10_228150.kind[1] = D_00299E10_228150.kind[2];
+    D_00299E10_228150.kind[0] = D_00299E10_228150.kind[2];
+    D_00299E10_228150.streak++;
+    if (D_00299E10_228150.streak >= 5) {
+        board->streak = 5;
+    }
+    if (side != 0) {
+        board->wins[0]++;
+        if (board->wins[0] >= 9999) {
+            board->wins[0] = 9999;
+        }
+        board->row_wins[0][board->unknown_c4]++;
+        if (board->row_wins[0][board->unknown_c4] >= 9999) {
+            board->row_wins[0][board->unknown_c4] = 9999;
+        }
+    } else {
+        board->wins[1]++;
+        if (board->wins[1] >= 9999) {
+            board->wins[1] = 9999;
+        }
+        board->row_wins[1][board->unknown_c4]++;
+        if (board->row_wins[1][board->unknown_c4] >= 9999) {
+            board->row_wins[1][board->unknown_c4] = 9999;
+        }
+    }
+    if (may_score(board)) {
+        if (side != 0) {
+            switch (board->kind[0]) {
+            case 11:
+                switch (board->unknown_c9) {
+                case 0:
+                    board->ticks = D_00298BA0_228150[board->kind[0]].marks[4];
+                    break;
+                default:
+                    board->ticks = 313;
+                    break;
+                }
+                break;
+            default:
+                board->ticks = D_00298BA0_228150[board->kind[0]].marks[4];
+                break;
+            }
+        } else if ((signed char)side == 0) {
+            switch (board->kind[0]) {
+            case 11:
+                switch (board->unknown_c9) {
+                case 0:
+                    board->ticks = D_00298BA0_228150[board->kind[0]].marks[5];
+                    break;
+                default:
+                    board->ticks = 213;
+                    break;
+                }
+                break;
+            default:
+                board->ticks = D_00298BA0_228150[board->kind[0]].marks[5];
+                break;
+            }
+        }
+    }
+    D_0034F6F0 = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_064", func_00228460);
 

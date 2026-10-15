@@ -1558,7 +1558,85 @@ s32 func_001C07E0(s32 arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C0A30);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+typedef unsigned int DotrCaptionWord;
+extern DotrCaptionWord func_001B0CE0_b(DotrCaptionWord cursor, int a1, int a2, int texture, int x, int y, int w, int h, ...);
+extern char D_002BF000[];
+typedef int DotrCaptionAddress_1c0a30;
+struct DotrCaptionControl_1c0a30 {
+    char unknown_000[0x6d0];
+    DotrCaptionAddress_1c0a30 work;
+    char unknown_6d4[4];
+    unsigned short *list_cards;
+    unsigned short *deck_cards;
+    char unknown_6e0[0xc58 - 0x6e0];
+    int pic_z;
+    char unknown_c5c[0xc8a - 0xc5c];
+    unsigned short list_cursor;
+    char unknown_c8c[2];
+    unsigned short deck_cursor;
+    char unknown_c90[2];
+    short slide;
+    char unknown_c94[0xcc2 - 0xc94];
+    char pass[8];
+    char unknown_cca[0xd36 - 0xcca];
+    unsigned char choice;
+    char unknown_d37[0xd57 - 0xd37];
+    unsigned char step;
+    char unknown_d58[0xd5c - 0xd58];
+    unsigned char side;
+    unsigned char mode;
+    unsigned char list_top;
+    unsigned char deck_top;
+    unsigned char grid_top;
+    unsigned char grid_col;
+    unsigned char grid_row;
+};
+extern struct DotrCaptionControl_1c0a30 D_00317490_1c0a30;
+struct DotrCaptionMsgInfo {
+    int unknown_00[3];
+    int width;
+    int height;
+};
+extern struct DotrCaptionMsgInfo *func_001FEAB0_b(int index);
+extern DotrCaptionWord func_001FE7D0_b(DotrCaptionWord cursor, int index, int x, int y, void *e, void (*function)(void));
+extern void func_001FDFE0_b(void);
+extern char D_00290080_1c0a30[];
+extern DotrCaptionWord func_001B3CC0_1c0a30(DotrCaptionWord cursor, char *def, int x, int y, int a4, int a5, int a6, int a7,
+                                             int a8, int a9, int a10, int a11, int a12, int a13);
+extern DotrCaptionWord func_001B4780_1c0a30(DotrCaptionWord cursor, int a1, int a2, int a3, int x, int y, int a6, int a7, long a8);
+
+unsigned int func_001C0A30(unsigned int cursor, int x, int y)
+{
+    char *text = D_002BF000 + 2;
+    struct DotrCaptionMsgInfo *info;
+    int px;
+    int py;
+
+    cursor = func_001B0CE0_b(cursor, 2, -1, 148, x + 320, y + 142, 346, 164, func_0019BEF0(text), text, 0L);
+    cursor = func_001B6F70(cursor, x + 320, y + 236, 2, 2, 8, D_00317490_1c0a30.pass, 0);
+    px = x + 230 + D_00317490_1c0a30.choice * 22;
+    py = y + 231;
+    cursor = func_001B4780_1c0a30(cursor, -1, -1, 7, px, py, -26, -28, 1L);
+    cursor = func_001FD680(cursor, 1, 170, 0, 22);
+    cursor = func_001FD680(cursor, 2, 173, 0, 44);
+    cursor = func_0020F290(cursor);
+    info = func_001FEAB0_b(1);
+    cursor = func_001FE7D0_b(cursor, 1, x + 234 - (info->width >> 1), y + 272, 0, func_001FDFE0_b);
+    px = x + 1914 - (info->width >> 1);
+    py = y + 2096;
+    cursor = func_001B3CC0_1c0a30(cursor, D_00290080_1c0a30 + 2490, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    px = x + 1938 - (info->width >> 1);
+    cursor = func_001B3CC0_1c0a30(cursor, D_00290080_1c0a30 + 2480, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    info = func_001FEAB0_b(2);
+    px = x + 406 - (info->width >> 1);
+    py = y + 272;
+    cursor = func_001FE7D0_b(cursor, 2, px, py, 0, func_001FDFE0_b);
+    px = x + 2110 - (info->width >> 1);
+    py = y + 2096;
+    return func_001B3CC0_1c0a30(cursor, D_00290080_1c0a30 + 2500, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+}
 
 s32 func_001C0CE0(s32 arg0, s32 arg1, s32 arg2) {
     s32 text;

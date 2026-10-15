@@ -146,7 +146,108 @@ void func_001A6C80(void) {
     *(s32 *)(data + 0x218) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A6FF0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrDigitEntry {
+    int unknown_00;
+    int words[4];
+};
+extern struct DotrDigitEntry *func_001FEAB0_b(int index);
+extern void func_001FE880_b(int a0, int a1, int *words, int a3);
+extern void func_001FE750_b(int a0, int a1, int a2, int a3, void (*draw)(void));
+extern void func_001FDFE0_b(void);
+struct DotrDigitView {
+    unsigned char unknown_000[0x10];
+    unsigned int count[37];
+    int flag[37];
+    unsigned int value[37];
+    unsigned char radix[37];
+    unsigned char unknown_1f1[0x32];
+    unsigned char cursor;
+    unsigned char unknown_224[9];
+    unsigned char page : 3;
+};
+extern struct DotrDigitView D_00317250_1a6ff0;
+extern struct DotrDigitView D_00317250_1a6ff0;
+extern unsigned char D_002BE660_1a6ff0[];
+struct DotrDigitWords {
+    float x, y, z, w;
+};
+
+void func_001A6FF0(void)
+{
+    struct DotrDigitView *view = &D_00317250_1a6ff0;
+    int first;
+    unsigned char *label;
+    int words[4];
+    int source[4];
+    int slot;
+    int digit;
+    struct DotrDigitEntry *low;
+    struct DotrDigitEntry *high;
+    int i;
+    unsigned int j;
+    int label_id;
+    int row;
+    struct DotrDigitEntry *entry;
+    int x;
+    int scale;
+    int y;
+    unsigned char *walk;
+
+    func_001FEA80(source);
+    *(struct DotrDigitWords *)words = *(struct DotrDigitWords *)source;
+    low = func_001FEAB0_b(20);
+    high = func_001FEAB0_b(21);
+    first = D_00317250_1a6ff0.page * 20;
+    func_001FD2D0(0, func_00209E50());
+    label = &D_002BE660_1a6ff0[first];
+    for (i = 0, walk = label; i < 20; i++, walk++) {
+        if ((unsigned int)(first + i) < 29) {
+            func_001FD610(i, *walk + 284, i < 10 ? 0 : 320, (i % 10 + 2) * 22);
+        }
+    }
+    func_001FD610(i, 21, 0, 0);
+    func_001FD610(i + 1, 24, 0, 22);
+    low->words[2] = 22;
+    high->words[2] = 22;
+    func_00208460();
+    for (row = 0, y = 0; row < 20; row++, label++, y += 22) {
+        entry = func_001FEAB0_b(row);
+        if ((unsigned int)(first + row) < 29) {
+            label_id = *label;
+            if (view->cursor == row) {
+                words[2] = entry->words[2];
+                if (view->flag[label_id] != 0) {
+                    words[2] = (view->count[label_id] + 10) * 22;
+                }
+                func_001FE880_b(0, y, words, 0);
+            }
+            func_001FE750_b(row, 0, y, 0, func_001FDFE0_b);
+            if (view->flag[label_id] != 0) {
+                scale = 1;
+                x = 220;
+                for (j = 1; j < view->count[label_id]; j++) {
+                    scale *= view->radix[label_id];
+                }
+                for (j = 0; j < view->count[label_id]; j++) {
+                    digit = view->value[label_id] / scale % view->radix[label_id];
+                    slot = 20;
+                    if (digit < 10) {
+                        low->words[0] = digit * 22;
+                    } else {
+                        slot++;
+                        high->words[0] = (digit - 10) * 22;
+                    }
+                    func_001FE750_b(slot, x, y, 0, func_001FDFE0_b);
+                    x += 22;
+                    scale /= view->radix[label_id];
+                }
+            }
+        }
+        func_001FEAF0(row);
+    }
+}
 
 typedef struct Flags_001A7380 {
     s8 reserved0 : 5;
@@ -756,7 +857,6 @@ typedef struct {
     s8 c;
 } Tail_001A87C0;
 
-void func_001AAAF0(s32, s32);
 extern Tail_001A87C0 D_0031746F;
 
 void func_001A87C0(s32 arg0, s32 arg1) {
@@ -774,7 +874,6 @@ void func_001A87C0(s32 arg0, s32 arg1) {
     }
 }
 
-void func_001AAAF0(s32, s32);
 extern u8 D_00317472;
 
 typedef struct State_001A8870 {
@@ -812,7 +911,6 @@ typedef struct {
     u8 index;
 } State_001A8920;
 
-void func_001AAAF0(s32, s32);
 extern u8 D_00317472;
 
 void func_001A8920(void) {
@@ -880,7 +978,6 @@ struct DotrMovieOperationsStatePrefix {
     } field_22f;
 };
 extern struct DotrMovieOperationsStatePrefix D_00317250_b;
-extern void func_001A8DB0(int);
 
 void func_001A89C0(int arg0, int arg1)
 {
@@ -965,7 +1062,217 @@ void func_001A8BB0(void) {
     func_001F6D00(0x80);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A8DB0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct MovieUpdateBits {
+    signed char unknown_0_6 : 7;
+    signed char bit_7 : 1;
+};
+struct MovieUpdatePrefix {
+    unsigned char unknown_000[0x138];
+    unsigned int menu_nums[37];
+    unsigned char unknown_1cc[0x52];
+    signed char byte_21e;
+    unsigned char unknown_21f[0x0f];
+    struct MovieUpdateBits bits_22e;
+    unsigned char unknown_22f;
+    unsigned char byte_230;
+};
+extern struct MovieUpdatePrefix D_00317250_1a8db0;
+extern char D_002BE80F_b[];
+extern char D_002BE809_b[];
+extern const char *D_0028FF10_b[];
+extern char *func_00197548_1a8db0(const char *);
+extern char *func_001FFF90_b(const char *);
+extern void func_001E7F70(int, int, int);
+extern void func_002051C0_b(int);
+extern void func_001E3850_b(int, int, int);
+extern void func_001FC9B0_b(int);
+extern void func_002009E0_b(int, int);
+extern void func_001E1E70_b(int, int, int, int);
+extern void func_001E1D70_b(int, int, int, int);
+extern void func_001E1C10_b(int, int, int, int);
+extern void func_00217590_b(int, int, int);
+extern void func_001C5D70_1a8db0(int);
+extern void func_001F30B0_b(int, int);
+extern void func_001DDD80_b(int, int);
+
+void func_001A8DB0(int index)
+{
+    struct MovieUpdatePrefix *state = &D_00317250_1a8db0;
+    int value_0, value_1, result_0, result_1;
+    int i, is_one;
+    char path[128];
+    switch (index) {
+    case -1:
+        for (i = 0; i < 84; ++i)
+            func_001F30B0_b(i, 0);
+        state->bits_22e.bit_7 = -1;
+        func_00217590_b(0, 0, 0);
+        break;
+    case 0:
+        func_002009E0_b(1, 0);
+        
+    case 1:
+        if (index == 1)
+            is_one = 1;
+        else
+            is_one = 0;
+        func_002145D0(state->menu_nums[2]);
+        func_002009E0_b(11, 0);
+        func_002009E0_b(12, 0);
+        func_001DDD80_b(1, state->menu_nums[1]);
+        func_001DE500(0, state->menu_nums[3] % 1000);
+        func_001DE500(1, state->menu_nums[4] % 1000);
+        func_001ADD00(state->menu_nums[1], state->menu_nums[2], is_one);
+        break;
+
+    case 5: {
+        func_002009E0_b(12, 0);
+        func_001E7F70(1, 0, 0);
+        func_001E7F70(2, state->menu_nums[index], 0);
+        value_0 = func_002158B0(0);
+        value_1 = func_002158B0(1);
+        result_0 = func_002159D0(0, value_0);
+        result_1 = func_002159D0(1, value_1);
+        if (result_0 == 999)
+            result_0 = 0;
+        if (result_1 == 999)
+            result_1 = 0;
+        func_001AD960();
+        func_001DF580(0, 3, 6, result_0, 1);
+        func_001DF580(1, 3, 0, result_1, 1);
+        func_001E4F00(state->menu_nums[index]);
+        func_001E5260(0, 0);
+        func_001E3850_b(0, 0, 0);
+        func_001E5260(1, 256);
+        func_001E3850_b(1, 0, 0);
+        break;
+    }
+    case 6: {
+        func_002145D0(0);
+        func_002009E0_b(11, 0);
+        func_002009E0_b(4, 1);
+        func_001B8520(state->menu_nums[index]);
+        break;
+    }
+    case 7: {
+        func_001E7F70(4, 1, 0);
+        if (state->byte_21e == -1)
+            func_001C1090(state->menu_nums[index]);
+        func_001C1090(-1);
+        break;
+    }
+    case 8: {
+        func_002145D0(0);
+        func_002009E0_b(11, 0);
+        func_001C21A0();
+        break;
+    }
+    case 9: {
+        func_002145D0(0);
+        func_002009E0_b(11, 0);
+        func_001C5D70_1a8db0(state->menu_nums[index]);
+        break;
+    }
+    case 36: {
+        func_002009E0_b(11, 0);
+        func_001AC510();
+        break;
+    }
+    case 10: {
+        func_002009E0_b(11, 0);
+        func_002009E0_b(15, 0);
+        if (func_00197548_1a8db0(D_002BE80F_b) != 0 && state->menu_nums[index] == 0) {
+            int selected = D_00317250_1a8db0.byte_230;
+            char *directory = func_001FFF90_b(D_002BE80F_b);
+            func_0019B648(path, D_002BE809_b, directory, D_0028FF10_b[selected]);
+            func_001A83E0(path, 1, 1);
+            D_00317250_1a8db0.byte_230 =
+                (D_00317250_1a8db0.byte_230 + 1) % 2;
+        }
+        func_001AC610(state->menu_nums[index]);
+        func_001E7F70(5, 3, 1);
+        func_00217590_b(0, 0, 0);
+        break;
+    }
+    case 11: {
+        func_002145D0(0);
+        D_00317250_1a8db0.menu_nums[28] = 3;
+        D_00317250_1a8db0.menu_nums[29] = 3;
+        func_002009E0_b(11, 0);
+        func_002009E0_b(16, 0);
+        func_002009E0_b(13, 0);
+        func_002009E0_b(14, 0);
+        func_002009E0_b(5, 1);
+        func_001AD960();
+        func_001DF580(0, 3, 6, 0, 1);
+        func_001E1E70_b(0, 0, 4, 1);
+        func_001E1D70_b(0, 0, 0, 255);
+        func_001E1C10_b(0, 0, 1, 0);
+        func_001E77E0(2);
+        func_0021C510(state->menu_nums[index]);
+        func_00246450(0);
+        break;
+    }
+    case 12: {
+        func_001E7F70(3, state->menu_nums[index], 0);
+        func_001E77E0(state->menu_nums[index]);
+        break;
+    }
+    case 13: {
+        func_001E7F70(6, 0, 0);
+        func_001E7F70(0, 0, 0);
+        func_001CC4B0(state->menu_nums[index]);
+        break;
+    }
+    case 14: {
+        func_002009E0_b(13, 0);
+        func_00246450(1);
+        break;
+    }
+    case 15: {
+        func_002009E0_b(11, 0);
+        func_002009E0_b(12, 0);
+        func_002009E0_b(17, 0);
+        if (state->menu_nums[index] != 0)
+            func_002009E0_b(0, 0);
+        func_00285880(state->menu_nums[index]);
+        state->menu_nums[index] = 0;
+        break;
+    }
+    case 18: {
+        func_002009E0_b(11, 0);
+        func_002009E0_b(0, 0);
+        break;
+    }
+    case 19: {
+        func_001E7F70(1, 0, 0);
+        func_001E7F70(2, state->menu_nums[5], 0);
+        func_002051C0_b(0);
+        value_0 = func_002158B0(0);
+        value_1 = func_002158B0(1);
+        result_0 = func_002159D0(0, value_0);
+        result_1 = func_002159D0(1, value_1);
+        if (result_0 == 999)
+            result_0 = 0;
+        if (result_1 == 999)
+            result_1 = 0;
+        func_001AD960();
+        func_001DF580(0, 3, 6, result_0, 1);
+        func_001DF580(1, 3, 0, result_1, 1);
+        func_001E4F00(state->menu_nums[5]);
+        func_001E5260(0, 0);
+        func_001E3850_b(0, 0, 0);
+        func_001E5260(1, 256);
+        func_001E3850_b(1, 0, 0);
+        func_001FC9B0_b(state->menu_nums[index]);
+        break;
+    }
+    default:
+        break;
+    }
+}
 
 typedef struct Flags_001A9800 {
     u8 unused:4;
@@ -995,7 +1302,6 @@ typedef struct Sprite_001A9590 {
     Xyzf_001A9590 v[2];
 } Sprite_001A9590;
 
-void func_001A6FF0(void);
 
 #pragma conditional_move off
 #pragma opt_propagation off
@@ -1661,7 +1967,137 @@ void func_001AA260(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AAAF0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrBgmGame {
+    unsigned char unknown_000[316];
+    int stage;
+    int flag;
+    unsigned char unknown_144[8];
+    int place;
+};
+extern struct DotrBgmGame D_00317250_1aaaf0;
+extern int func_00217A10_b(int n);
+
+void func_001AAAF0(int n, int b)
+{
+    int stage;
+    int flag;
+    int bgm;
+    struct DotrBgmGame *g;
+
+    g = &D_00317250_1aaaf0;
+    switch (n % 1000) {
+    case -2:
+    case -1:
+        func_00217A10_b(256);
+        return;
+    case 0:
+        func_00217980(7, b);
+        break;
+    case 1:
+        stage = g->stage;
+        flag = g->flag;
+        switch (stage) {
+        case 0:
+            stage = 7;
+            break;
+        case 1:
+            stage = 10;
+            break;
+        case 19:
+            stage = 11;
+            break;
+        case 20:
+            stage = 12;
+            break;
+        case 21:
+            stage = 44;
+            break;
+        default:
+            if (stage < 22) {
+                if (flag) {
+                    stage = 9;
+                } else {
+                    stage = 8;
+                }
+            } else {
+                stage = 40;
+            }
+            break;
+        }
+        if (stage >= 0) {
+            stage = n / 1000 * 1000 + stage;
+            func_00217980(stage, b);
+        }
+        break;
+    case 2:
+    case 3:
+    case 4:
+        break;
+    case 5:
+        bgm = -1;
+        switch (g->place) {
+        case 7:
+            bgm = 13;
+            break;
+        case 3:
+            bgm = 14;
+            break;
+        case 2:
+            bgm = 15;
+            break;
+        case 4:
+            bgm = 16;
+            break;
+        case 0:
+            bgm = 17;
+            break;
+        case 1:
+            bgm = 18;
+            break;
+        case 9:
+            bgm = 19;
+            break;
+        case 5:
+            bgm = 20;
+            break;
+        case 6:
+            bgm = 21;
+            break;
+        case 8:
+            bgm = 22;
+            break;
+        }
+        if (bgm >= 0) {
+            func_00217980(bgm, b);
+        }
+        break;
+    case 6:
+        func_00217980(5, b);
+        break;
+    case 7:
+        func_00217980(5, b);
+        break;
+    case 8:
+        func_00217980(41, b);
+        break;
+    case 9:
+        func_00217980(3, b);
+        break;
+    case 10:
+        func_00217980(2, b);
+        break;
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+        break;
+    case 15:
+        func_00217980(21, b);
+        break;
+    }
+}
 
 void func_001AAD50(s32 arg0) {
     extern void func_001C5D70(s32);
@@ -2305,7 +2741,6 @@ typedef struct Block_001AC560 {
     u8 index;
 } Block_001AC560;
 
-void func_001AAAF0(s32, s32);
 extern s32 D_003173B0;
 extern Block_001AC560 D_00317449;
 

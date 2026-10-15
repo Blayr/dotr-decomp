@@ -2837,7 +2837,20 @@ s32 func_0014B390(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_0014B3E0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+extern unsigned char func_0014ACA0_b(int, int, int);
+
+int func_0014B3E0(int a, int b, int c)
+{
+    if (func_0014ACA0_b(a, b, c) == 0) {
+        return 0;
+    }
+    if (func_0024CA40(b, c, a, 1, 30, 18) != 0) {
+        return 0;
+    }
+    return func_0024CA40(b, c, a, 2, 30, 18) != 0 ? 1 : 0;
+}
 
 s32 func_0014B490(s32 arg0) {
     extern s32 func_001DEE50(s32);

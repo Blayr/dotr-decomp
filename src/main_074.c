@@ -1537,7 +1537,6 @@ typedef struct State_00257340 {
     u16 frames;
 } State_00257340;
 
-void func_0024F370(s32, s32);
 
 static inline u8 valid_00257340(u16 value) {
     return value != 0xFF;
@@ -1792,7 +1791,6 @@ typedef struct State_00257AA0 {
     u16 phaseTimer;
 } State_00257AA0;
 
-void func_0024F370(s32, s32);
 
 s32 func_00257AA0(void *arg0, void *arg1, s32 arg2) {
     extern s32 func_001E1CB0();
@@ -2090,7 +2088,6 @@ typedef struct State_00258490 {
     u16 timer;
 } State_00258490;
 
-void func_0024F370(s32, s32);
 
 s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
     Command_00258490 request;
@@ -2183,7 +2180,6 @@ s32 func_00258490(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-void func_0024F370(s32, s32);
 
 typedef struct Request_00258760 {
     s32 command;
@@ -3434,7 +3430,6 @@ typedef struct Source_0025B610 {
     u32 mask;
 } Source_0025B610;
 
-void func_0024F370(s32, s32);
 
 s32 func_0025B610(void *arg0, void *arg1, s32 arg2) {
     s32 event[4];
@@ -3858,7 +3853,6 @@ s32 func_0025C0B0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_0024F370(s32, s32);
 
 typedef struct Command_0025C330 {
     s32 kind;
@@ -4591,7 +4585,6 @@ typedef struct Packet_0025D9D0 {
     s32 flag;
 } Packet_0025D9D0;
 
-void func_0024F370(s32, s32);
 
 s32 func_0025D9D0(void *arg0, void *arg1, s32 arg2) {
     Packet_0025D9D0 data;

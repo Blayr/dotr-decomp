@@ -205,7 +205,413 @@ s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s3
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_062", func_0021C510);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrCampEntryVec {
+    float x, y, z, w;
+};
+struct DotrCampEntryRecord {
+    float x[64];
+    float y[64];
+    short count;
+    short state;                
+};
+struct DotrCampEntryWork {
+    unsigned char unknown_0000[0x30];
+    struct DotrCampEntryVec from;   
+    struct DotrCampEntryVec to;     
+    unsigned char unknown_0050[0x18c - 0x50];
+    signed char all;                
+    unsigned char unknown_018d[0x22c - 0x18d];
+    struct DotrCampEntryRecord records[2][16];  
+    short unknown_42ac[2][16];
+    short unknown_42ec[2][16][64];
+    short rise[32];                 
+    short count[32];                
+    unsigned char unknown_536c[0x53a8 - 0x536c];
+    signed char byte_53a8;          
+    unsigned char unknown_53a9[0x53b3 - 0x53a9];
+    signed char byte_53b3;          
+    unsigned char unknown_53b4[0x53c7 - 0x53b4];
+    signed char byte_53c7;          
+    unsigned char unknown_53c8[0x53f6 - 0x53c8];
+    unsigned short hash;            
+    unsigned short pick[3];         
+    unsigned short deck[3];         
+    short leader;                   
+};
+#define DOTR_CAMP_ENTRY_WORK ((struct DotrCampEntryWork *)0x1ed0000)
+struct DotrCampEntryBoard {
+    signed char side;               
+    signed char done0;              
+    signed char done1;              
+    signed char seen[57];           
+    short started;                  
+    short unknown_3e[66];
+    short ticks;                    
+    short unknown_c4;
+    signed char kind[3];            
+    signed char byte_c9;            
+    unsigned char unknown_ca[332 - 202];
+};
+extern struct DotrCampEntryBoard D_00299E10_b;
+struct DotrCampEntrySpot {
+    float x;
+    float y;
+    float z;
+    unsigned char unknown_0c[8];
+    short list[8];                  
+    short n;                        
+    unsigned char unknown_26[14];
+};
+extern struct DotrCampEntrySpot D_00298BA0_21c510[];
+struct DotrCampEntryQuad {
+    float f[4];
+};
+extern struct DotrCampEntryQuad D_0029A790;
+extern struct DotrCampEntryQuad D_0029A7A0;
+extern signed char D_0034F6F8_21c510;
+struct DotrCampEntryRow {
+    unsigned short id;
+    unsigned short more[5];
+};
+extern unsigned short D_00299CE0_21c510[];
+extern struct DotrCampEntryRow D_00299D00_21c510[];
+extern void func_00233F50_b(int mode);
+extern void func_00195108_b(void *a, int b);
+extern int func_001E7F70(int type, int no, int force);
+extern void func_001F3910_b(int a, int b, int c);
+extern void func_00217980_b(int n, int b);
+extern int func_001F93F0_b(int a, int b, int c, int d);
+#define DOTR_CAMP_ENTRY_MODULES() \
+    func_001F3910_b(0, 400, 0); \
+    func_001F3910_b(0, 401, 0); \
+    func_001F3910_b(0, 402, 0); \
+    func_001F3910_b(0, 403, 0); \
+    func_001F3910_b(0, 404, 0)
+#define DOTR_CAMP_ENTRY_CLEAR_SEEN() \
+    for (i = 0; i < 32; i++) { \
+        board->seen[i] = 0; \
+    }
+
+void func_0021C510(int mode)
+{
+    
+
+
+
+    struct DotrCampEntryQuad pos;
+    struct DotrCampEntryQuad rot;
+    struct DotrCampEntryWork *w = DOTR_CAMP_ENTRY_WORK;
+    struct DotrCampEntryBoard *board = &D_00299E10_b;
+    int deck;
+    int leader;
+    int i;
+    int j;
+    short r;
+    short n;
+    short k;
+    struct DotrCampEntryWork *p;
+    int flag;
+    short m;
+
+    D_0034F710 = 0;
+    func_0021D480();
+    func_0022C450();
+    func_002374D0();
+    func_00233F50_b(3);
+    for (i = 0; i < 2; i++) {
+        func_001F30B0(i + 30, 0);
+    }
+    if (board->done0 != 0 && board->done1 != 0) {
+        DOTR_CAMP_ENTRY_WORK->all = 1;
+    } else {
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+    }
+    func_0021D850();
+    func_001A8320(11, 1);
+    DOTR_CAMP_ENTRY_WORK->byte_53c7 = 2;
+    
+
+    switch (mode) {
+    case 0:
+        func_00195108_b(board, 332);
+        func_001E7F70(3, 4, 0);
+        func_002009E0(10, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 10020;
+        board->started = 1;
+        func_00233F50_b(3);
+        DOTR_CAMP_ENTRY_WORK->byte_53b3 = 1;
+        D_0034F6F8_21c510 = 0;
+        D_0034F700 = 0;
+        func_00217980_b(24, 0);
+        break;
+    case 1:
+    case 2:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+        if (func_001F12A0(30) == 0) {
+            pos = D_0029A790;
+            rot = D_0029A7A0;
+            deck = func_002158B0(0);
+            leader = func_002159D0(0, deck);
+            DOTR_CAMP_ENTRY_WORK->leader = func_002159D0(0, deck);
+            func_001F22B0(30, &pos);
+            func_001F2430(30, &rot);
+            func_001E8780(30, -1, func_001DE1A0(leader), 1);
+        }
+        if (DOTR_CAMP_ENTRY_WORK->all != 0) {
+            func_001E7F70(3, 2, 0);
+            func_001F93F0_b(0, 7, 0, 0);
+            func_001F6E80(7, 1.0f);
+            board->done0 = 1;
+            board->done1 = 1;
+            DOTR_CAMP_ENTRY_WORK->all = 1;
+            board->ticks = 0;
+            if (DOTR_CAMP_ENTRY_WORK->all != 0) {
+                p = DOTR_CAMP_ENTRY_WORK;
+                for (i = 0; i < 32; i++) {
+                    p->rise[i] = 0;
+                    p->count[i] = 0;
+                    board->seen[i] = 3;
+                }
+                p = DOTR_CAMP_ENTRY_WORK;
+                
+                for (m = 0; m < 2; m++) {
+                    for (i = 0; i < 16; i++) {
+                        p->records[m][i].state = 3;
+                    }
+                }
+            }
+            board->ticks = 0;
+            func_00233F50_b(0);
+            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 0;
+            func_00217980_b(4, 0);
+            break;
+        }
+        flag = 0;
+        if (D_0034F708 != 0) {
+            D_0034F708 = 0;
+            func_001E7F70(3, 4, 0);
+            func_002009E0(10, 0);
+            if (board->done0 != 0) {
+                board->side = 1;
+                board->done0 = 1;
+                board->done1 = 0;
+                DOTR_CAMP_ENTRY_WORK->all = 0;
+            } else if (board->done1 != 0) {
+                board->side = 0;
+                board->done0 = 0;
+                board->done1 = 1;
+                DOTR_CAMP_ENTRY_WORK->all = 0;
+            }
+            DOTR_CAMP_ENTRY_CLEAR_SEEN();
+            board->ticks = 10060;
+            board->started = 1;
+            func_00233F50_b(3);
+            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 3;
+            func_00217980_b(25, 1);
+            flag = 1;
+        } else if (board->started != 0) {
+            func_001E7F70(3, 2, 0);
+            func_001F93F0_b(0, 7, 0, 0);
+            func_001F6E80(7, 1.0f);
+            if (board->side == 0) {
+                
+
+
+                n = 0;
+                board->seen[0] = 1;
+                for (j = 1; j <= 11; j++) {
+                    if (board->seen[j] == 3) {
+                        for (r = 0; r < D_00298BA0_21c510[j].n; r++) {
+                            w->records[0][D_00298BA0_21c510[j].list[r]].state = 3;
+                        }
+                    }
+                }
+                for (i = 2; i <= 10; i++) {
+                    if (board->seen[i] >= 3) {
+                        n++;
+                        if (n >= 8) {
+                            w->records[0][12].state = 3;
+                            w->records[0][13].state = 3;
+                            w->records[0][11].state = 3;
+                        }
+                    }
+                }
+            } else {
+                DOTR_CAMP_ENTRY_WORK->records[1][0].state = 3;
+                p = DOTR_CAMP_ENTRY_WORK;
+                
+                for (j = 12, n = 1; j <= 21; j++, n++) {
+                    if (board->seen[j] == 3) {
+                        p->records[1][n].state = 3;
+                    }
+                }
+                if (board->seen[0] == 3) {
+                    DOTR_CAMP_ENTRY_WORK->records[1][11].state = 3;
+                }
+            }
+            board->started = 1;
+            func_00233F50_b(0);
+            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 0;
+            
+
+            DOTR_CAMP_ENTRY_WORK->to.x = D_00298BA0_21c510[board->kind[0]].x;
+            DOTR_CAMP_ENTRY_WORK->to.y = 0.0f;
+            DOTR_CAMP_ENTRY_WORK->to.z = D_00298BA0_21c510[board->kind[0]].z;
+            DOTR_CAMP_ENTRY_WORK->to.x = D_00298BA0_21c510[board->kind[1]].x;
+            DOTR_CAMP_ENTRY_WORK->to.y = 0.0f;
+            DOTR_CAMP_ENTRY_WORK->to.z = D_00298BA0_21c510[board->kind[1]].z;
+            DOTR_CAMP_ENTRY_WORK->from.x = DOTR_CAMP_ENTRY_WORK->to.x;
+            DOTR_CAMP_ENTRY_WORK->from.y = 96.0f + DOTR_CAMP_ENTRY_WORK->to.y;
+            DOTR_CAMP_ENTRY_WORK->from.z = 96.0f + DOTR_CAMP_ENTRY_WORK->to.z;
+            DOTR_CAMP_ENTRY_WORK->from.w = DOTR_CAMP_ENTRY_WORK->to.w;
+            func_001F9FE0(0, &DOTR_CAMP_ENTRY_WORK->from, &DOTR_CAMP_ENTRY_WORK->to);
+            func_00217980_b(4, 0);
+        } else {
+            func_001E7F70(3, 4, 0);
+            func_002009E0(10, 0);
+            if (board->done0 != 0) {
+                board->side = 1;
+                board->done0 = 1;
+                board->done1 = 0;
+                DOTR_CAMP_ENTRY_WORK->all = 0;
+                DOTR_CAMP_ENTRY_WORK->byte_53a8 = 0;
+                board->byte_c9 = 0;
+            } else if (board->done1 != 0) {
+                board->side = 0;
+                board->done0 = 0;
+                board->done1 = 1;
+                DOTR_CAMP_ENTRY_WORK->all = 0;
+                DOTR_CAMP_ENTRY_WORK->byte_53a8 = 1;
+                board->byte_c9 = 2;
+            }
+            DOTR_CAMP_ENTRY_CLEAR_SEEN();
+            board->ticks = 10090;
+            board->started = 1;
+            func_00233F50_b(3);
+            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 3;
+        }
+        DOTR_CAMP_ENTRY_MODULES();
+        if (flag == 0) {
+            func_00217980_b(26, 0);
+        }
+        break;
+    case 3:
+        func_001E7F70(3, 4, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 10040;
+        board->started = 1;
+        func_00233F50_b(2);
+        func_00217980_b(24, 1);
+        break;
+    case 20:
+        func_001E7F70(3, 0, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 11182;
+        board->started = 1;
+        func_00233F50_b(2);
+        func_00217980_b(34, 1);
+        break;
+    case 30:
+        func_001E7F70(3, 0, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 12154;
+        board->started = 1;
+        func_00233F50_b(2);
+        func_00217980_b(38, 1);
+        break;
+    case 40:
+        func_001E7F70(3, 4, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 11000;
+        func_00217980_b(24, 1);
+        break;
+    case 50:
+        func_001E7F70(3, 4, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 1;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 12000;
+        func_00217980_b(24, 1);
+        break;
+    case 60:
+        
+
+        DOTR_CAMP_ENTRY_WORK->hash = 0;
+        p = DOTR_CAMP_ENTRY_WORK;
+        for (k = 0; k < 3; k++) {
+            p->pick[k] = (D_00299CE0_21c510[w->hash] >> (k * 5)) & 0x1f;
+            p->deck[k] = D_00299D00_21c510[p->pick[k]].id & 0x3ff;
+        }
+        func_001E7F70(3, 4, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 10050;
+        board->started = 1;
+        func_00233F50_b(2);
+        func_00217980_b(25, 1);
+        break;
+    case 10:
+        DOTR_CAMP_ENTRY_WORK->hash = 0;
+        p = DOTR_CAMP_ENTRY_WORK;
+        for (k = 0; k < 3; k++) {
+            p->pick[k] = (D_00299CE0_21c510[w->hash] >> (k * 5)) & 0x1f;
+            p->deck[k] = D_00299D00_21c510[p->pick[k]].id & 0x3ff;
+        }
+        func_001E7F70(3, 4, 0);
+        DOTR_CAMP_ENTRY_MODULES();
+        board->side = 0;
+        board->done0 = 0;
+        board->done1 = 0;
+        DOTR_CAMP_ENTRY_WORK->all = 0;
+        DOTR_CAMP_ENTRY_CLEAR_SEEN();
+        board->ticks = 10070;
+        board->started = 1;
+        func_00233F50_b(2);
+        func_00217980_b(25, 1);
+        break;
+    }
+}
+#undef DOTR_CAMP_ENTRY_WORK
+#undef DOTR_CAMP_ENTRY_MODULES
+#undef DOTR_CAMP_ENTRY_CLEAR_SEEN
 
 typedef struct Buffer_0021D480 {
     u32 data[0x3FE8];

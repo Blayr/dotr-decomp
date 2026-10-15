@@ -1155,9 +1155,49 @@ s32 func_0024F2F0(s32 arg0, s32 arg1) {
     return temp_s0 + func_00250B40(arg0, arg1, temp_s1, temp_v0 >> 8);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F370);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024F430);
+struct DotrStateEntry8 {
+    int unknown_words[2];
+};
+int func_001E1030_b(int a, int b);
+struct DotrStateEntry8 *func_00250740_b(int a, int b, int n);
+extern int func_001E1030_b(int a, int b);
+
+int func_0024F370(int a, int b)
+{
+    struct DotrStateEntry8 *entry;
+    func_00215B10(a, func_001E1030_b(a, b), 0, -4);
+    func_001DEE70(a, func_001E1030_b(a, b));
+    func_001DFBB0(a, b);
+    if ((entry = func_00250740_b(a, b, 4)) != 0 && (unsigned)entry->unknown_words[0] >> 8 == 81) {
+        func_001DEE70((unsigned)entry->unknown_words[1] >> 24, entry->unknown_words[1] & 0xffff);
+        func_00215B10((unsigned)entry->unknown_words[1] >> 24, entry->unknown_words[1] & 0xffff, 0, -4);
+    }
+    return 0;
+}
+
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrStateEntry8_24f430 {
+    int unknown_words[2];
+};
+int func_001E1030_b(int a, int b);
+struct DotrStateEntry8_24f430 *func_00250740_24f430(int a, int b, int n);
+extern int func_001E1030_b(int a, int b);
+
+int func_0024F430(int a, int b)
+{
+    struct DotrStateEntry8_24f430 *entry;
+    func_00215B10(func_001DE540(), func_001E1030_b(a, b), 0, -4);
+    func_001DEE70(func_001DE540(), func_001E1030_b(a, b));
+    func_001DFBB0(a, b);
+    if ((entry = func_00250740_24f430(a, b, 4)) != 0 && (unsigned)entry->unknown_words[0] >> 8 == 81) {
+        func_001DEE70((unsigned)entry->unknown_words[1] >> 24, entry->unknown_words[1] & 0xffff);
+        func_00215B10((unsigned)entry->unknown_words[1] >> 24, entry->unknown_words[1] & 0xffff, 0, -4);
+    }
+    return 0;
+}
 
 s32 func_0024F520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     extern s32 func_0024FD10();

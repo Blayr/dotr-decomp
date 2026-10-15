@@ -1362,7 +1362,91 @@ s32 func_0016C6B0(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016C8F0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrStateItem;
+extern int func_001DEE50_b(int index);
+struct DotrScanEntry {
+    unsigned char unknown_00[3];
+    unsigned char unknown_03;
+};
+struct DotrScanPair {
+    unsigned word;
+};
+struct DotrScanHeld {
+    struct DotrScanEntry *entry;
+    int unknown_04[23];
+};
+extern struct DotrScanPair *func_001E09E0_b(struct DotrScanHeld *held, int n);
+struct DotrStateItem;
+
+int func_0016C8F0(int side, int mask, int mode)
+{
+    struct DotrScanHeld held;
+    int i;
+    int best;
+    int result;
+    int id;
+    struct DotrScanPair *pair;
+    int n;
+    int r;
+    
+    int mid;
+    int hi;
+
+    best = 40;
+    result = -1;
+    mode = (unsigned)(mode - 29) < 2 ? mode : (func_0019A5C8() % 2 == 0 ? 29 : 30);
+    if (mode == 29) {
+        if (func_001E0150(side) >= 5) {
+            return -1;
+        }
+        r = func_0027DA40(side, mask);
+        hi = r >> 24;
+        mid = r >> 16;
+        id = func_001DEE00(hi, mid & 0xF);
+        if (func_0026FCE0(id) >> 5 == 0) {
+            func_001DCD70((int *)&held, id);
+            if (func_001E02F0((struct DotrStateItem *)&held, 0) >= 2500) {
+                return hi | (mid & 0xFF);
+            }
+        }
+    } else {
+        if (func_001E01F0(side) >= 5) {
+            return -1;
+        }
+        if (mask & 1) {
+            for (i = 0; i < func_001DEE50_b(side); i++) {
+                id = func_001DEE00(side, i);
+                if (func_0026FCE0(id) >> 5 != 0) {
+                    func_001DCD70((int *)&held, id);
+                    pair = func_001E09E0_b(&held, 0);
+                    n = held.entry->unknown_03;
+                    if (n >= best && pair->word >> 8 != 20) {
+                        best = n;
+                        result = side << 16 | i;
+                    }
+                }
+            }
+        }
+        if ((mask >> 1) & 1) {
+            for (i = 0; i < func_001DEE50_b(side == 0 ? 1 : 0); i++) {
+                id = func_001DEE00(side == 0 ? 1 : 0, i);
+                if (func_0026FCE0(id) >> 5 != 0) {
+                    func_001DCD70((int *)&held, id);
+                    pair = func_001E09E0_b(&held, 0);
+                    n = held.entry->unknown_03;
+                    if (n >= best && pair->word >> 8 != 20) {
+                        best = n;
+                        result = i | (side == 0 ? 1 : 0) << 16;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    return -1;
+}
 
 s32 func_0016CBB0(s32 arg0, s32 *arg1) {
     u16 cells[0x16];
@@ -3602,7 +3686,6 @@ typedef struct {
     s8 value;
 } Output_00171D60;
 
-s32 func_0016C8F0(s32, s32, s32);
 
 s32 func_00171D60(u16 *arg0, s32 arg1, void *arg2, s32 arg3) {
     extern void func_0027B1B0();

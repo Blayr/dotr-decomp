@@ -16,7 +16,192 @@ void func_002336F0(void) {
     func_001A8870(1, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_066", func_002337A0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+typedef int DotrDareWord;
+struct DotrDareItem {
+    short w[8];
+    short unknown_10[10];
+    short code;
+};
+struct DotrDareWindow {
+    unsigned short x, y, w, h;
+    char unknown_08[2];
+};
+struct DotrDareInfo {
+    int unknown_00[3];
+    int w;
+};
+struct DotrDareFace {
+    unsigned char id, no, kind, mode;
+    unsigned short x, y;
+};
+extern struct DotrDareWindow D_00297B40[];
+extern struct DotrDareItem D_00298120[];
+extern struct DotrDareItem D_002983A0[];
+extern unsigned char D_002999CC[][4];
+#define DOTR_DARE_SLIDE0 (*(short *)0x1ed53b6)
+#define DOTR_DARE_SLIDE1 (*(short *)0x1ed53b8)
+#define DOTR_DARE_NAME0 (*(short *)0x1ed53ba)
+#define DOTR_DARE_NAME1 (*(short *)0x1ed53bc)
+#define DOTR_DARE_SIDE0 (*(signed char *)0x1ed53be)
+#define DOTR_DARE_SIDE1 (*(signed char *)0x1ed53bf)
+#define DOTR_DARE_STATE0 (*(signed char *)0x1ed5407)
+#define DOTR_DARE_STATE1 (*(signed char *)0x1ed5408)
+#define DOTR_DARE_FACE0 ((struct DotrDareFace *)0x1ed540c)
+#define DOTR_DARE_FACE1 ((struct DotrDareFace *)0x1ed5414)
+#define DOTR_DARE_LOOK1 (*(signed char *)0x1ed5469)
+#define DOTR_DARE_LOOK0 (*(signed char *)0x1ed546a)
+extern DotrDareWord func_002195E0(DotrDareWord cursor, struct DotrDareWindow *window,
+                                    unsigned short flag, int a3, unsigned short x, int y,
+                                    int a6, int a7, int a8);
+extern DotrDareWord func_00217BD0_b(DotrDareWord cursor, struct DotrDareItem *item, short x,
+                                 short y);
+extern DotrDareWord func_00218020_b(DotrDareWord cursor, struct DotrDareItem *item, short x,
+                                 short y, int a4);
+extern struct DotrDareInfo *func_001FEAB0_b(int index);
+extern void func_001FDFE0_b(void);
+extern DotrDareWord func_001FE660_b(DotrDareWord cursor, int index, int x, int y,
+                                          float sx, float sy, void *e,
+                                          void (*function)(void));
+
+int func_002337A0(int cursor)
+{
+    short xx, yy;
+    unsigned char col[4];
+
+    col[0] = col[1] = col[2] = 128;
+    col[3] = 128;
+    xx = 0;
+    yy = 0;
+    if (DOTR_DARE_SLIDE0 != 0) {
+        short x;
+        short y;
+        signed char n;
+        int no;
+        short w;
+        struct DotrDareInfo *info;
+
+        w = DOTR_DARE_SLIDE0;
+        x = (w * 640 >> 10) - 640;
+        y = (w * 256 >> 10) - 256;
+        n = DOTR_DARE_SIDE0;
+        cursor = func_00217BD0_b(cursor, &D_00298120[n], x + xx, 0);
+        cursor = func_002195E0(cursor, &D_00297B40[0], n, 0, x + xx, 0, 0, 128, 128);
+        no = DOTR_DARE_NAME0 - 195;
+        switch (DOTR_DARE_STATE0) {
+        case 1:
+            DOTR_DARE_FACE0->id = 255;
+            
+        case 2:
+            DOTR_DARE_FACE0->no = no;
+            DOTR_DARE_FACE0->kind = D_002999CC[no][DOTR_DARE_LOOK0];
+            DOTR_DARE_FACE0->mode = 1;
+            DOTR_DARE_FACE0->x = D_00297B40[3].x + xx;
+            DOTR_DARE_FACE0->y = y + (D_00297B40[3].y + yy);
+            func_00245BE0(DOTR_DARE_FACE0);
+            DOTR_DARE_STATE0 = 2;
+            break;
+        case 10:
+            DOTR_DARE_FACE0->no = no;
+            DOTR_DARE_FACE0->kind = D_002999CC[no][DOTR_DARE_LOOK0];
+            DOTR_DARE_FACE0->mode = 3;
+            DOTR_DARE_FACE0->x = D_00297B40[3].x + xx;
+            DOTR_DARE_FACE0->y = y + (D_00297B40[3].y + yy);
+            func_00245BE0(DOTR_DARE_FACE0);
+            DOTR_DARE_STATE0 = 2;
+            break;
+        case 100:
+            func_00245D80(DOTR_DARE_FACE0);
+            DOTR_DARE_STATE0 = 0;
+            break;
+        }
+        cursor = func_002195E0(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = func_00218020_b(cursor, &D_002983A0[2], xx, y + yy, 0);
+        cursor = func_00218020_b(cursor, &D_002983A0[3], xx, y + yy, 0);
+        cursor = func_00218020_b(cursor, &D_002983A0[n], xx, y + yy, 0);
+        cursor = func_001FD680(cursor, 1, DOTR_DARE_NAME0, 0, 22);
+        cursor = func_0020F290(cursor);
+        info = func_001FEAB0_b(1);
+        if (info->w < 324) {
+            cursor = func_001FE660_b(cursor, 1, x + 53, 21, 1.0f, 1.0f, col, func_001FDFE0_b);
+        } else {
+            cursor = func_001FE660_b(cursor, 1, x + 53, 21, 324.0f / (float)info->w, 1.0f, col, func_001FDFE0_b);
+        }
+        func_001FEAF0(1);
+    }
+    if (DOTR_DARE_SLIDE1 != 0) {
+        short x;
+        short y;
+        signed char n;
+        int no;
+        short w;
+        struct DotrDareInfo *info;
+
+        w = DOTR_DARE_SLIDE1;
+        x = 640 - (w * 640 >> 10);
+        y = 256 - (w * 256 >> 10);
+        n = DOTR_DARE_SIDE1;
+        cursor = func_00217BD0_b(cursor, &D_00298120[n], x + 144, 304);
+        cursor = func_002195E0(cursor, &D_00297B40[0], n, 0, x + 144, 304, 0, 128, 128);
+        xx = -480;
+        yy = 320;
+        no = DOTR_DARE_NAME1 - 195;
+        switch (DOTR_DARE_STATE1) {
+        case 1:
+            DOTR_DARE_FACE1->id = 255;
+            
+        case 2:
+            DOTR_DARE_FACE1->no = no;
+            DOTR_DARE_FACE1->kind = D_002999CC[no][DOTR_DARE_LOOK1];
+            DOTR_DARE_FACE1->mode = 1;
+            DOTR_DARE_FACE1->x = D_00297B40[3].x + xx;
+            DOTR_DARE_FACE1->y = y + (D_00297B40[3].y + yy);
+            func_00245BE0(DOTR_DARE_FACE1);
+            DOTR_DARE_STATE1 = 2;
+            break;
+        case 10:
+            DOTR_DARE_FACE1->no = no;
+            DOTR_DARE_FACE1->kind = D_002999CC[no][DOTR_DARE_LOOK1];
+            DOTR_DARE_FACE1->mode = 3;
+            DOTR_DARE_FACE1->x = D_00297B40[3].x + xx;
+            DOTR_DARE_FACE1->y = y + (D_00297B40[3].y + yy);
+            func_00245BE0(DOTR_DARE_FACE1);
+            DOTR_DARE_STATE1 = 2;
+            break;
+        case 100:
+            func_00245D80(DOTR_DARE_FACE1);
+            DOTR_DARE_STATE1 = 0;
+            break;
+        }
+        cursor = func_002195E0(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = func_00218020_b(cursor, &D_002983A0[4], xx, y + 184, 2);
+        cursor = func_00218020_b(cursor, &D_002983A0[5], xx, y + 184, 2);
+        cursor = func_00218020_b(cursor, &D_002983A0[n], xx, y + 176, 0);
+        cursor = func_001FD680(cursor, 1, DOTR_DARE_NAME1, 0, 22);
+        cursor = func_0020F290(cursor);
+        info = func_001FEAB0_b(1);
+        if (info->w < 324) {
+            cursor = func_001FE660_b(cursor, 1, x + 197, 325, 1.0f, 1.0f, col, func_001FDFE0_b);
+        } else {
+            cursor = func_001FE660_b(cursor, 1, x + 197, 325, 324.0f / (float)info->w, 1.0f, col, func_001FDFE0_b);
+        }
+        func_001FEAF0(1);
+    }
+    return cursor;
+}
+#undef DOTR_DARE_SLIDE0
+#undef DOTR_DARE_SLIDE1
+#undef DOTR_DARE_NAME0
+#undef DOTR_DARE_NAME1
+#undef DOTR_DARE_SIDE0
+#undef DOTR_DARE_SIDE1
+#undef DOTR_DARE_STATE0
+#undef DOTR_DARE_STATE1
+#undef DOTR_DARE_FACE0
+#undef DOTR_DARE_FACE1
+#undef DOTR_DARE_LOOK1
+#undef DOTR_DARE_LOOK0
 
 void func_00233F50(s8 arg0) {
     *(s16 *)0x01ED001C = 0;

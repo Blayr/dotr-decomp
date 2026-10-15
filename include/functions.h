@@ -586,6 +586,7 @@ s32 func_0014B140(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5); /
 s32 func_0014B240(s32 arg0, s32 arg1); /* JP: TaLogic013_IsDoCerem */
 s32 func_0014B330(s32 arg0); /* JP: TaLogic_GetWarnHideLvl */
 s32 func_0014B390(void); /* JP: TaLogic013_IsUnitInvader */
+int func_0014B3E0(int a, int b, int c); /* JP: TaLogic013_IsUseHarpySweaper (matched by position) */
 s32 func_0014B490(s32 arg0); /* JP: TaLogic013_IsUseRevive */
 s32 func_0014B730(s32 arg0, void *arg1); /* JP: L013 */
 s32 func_0014B900(void *work, void *arg1, s32 arg2); /* JP: TaLogic_GetMinimumTask */
@@ -612,11 +613,13 @@ s32 func_0014DF80(u16 *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetM
 s32 func_0014E550(void *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetMinimumTask_AtkMission */
 s32 func_0014EB30(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4); /* JP: TaLogic_GetMinimumTask_MoveMission */
 s32 func_0014F3A0(void); /* JP: TaLogic014_IsActiveMode */
+int func_0014F490(int x, int y); /* JP: TaLogic_IsOpenUnit (matched by position) */
 s32 func_0014F7C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5); /* JP: TaLogic014_IsOpenMoveUnit */
 s32 func_0014F8C0(s32 arg0, s32 arg1); /* JP: TaLogic014_IsDoCerem */
 s32 func_0014F9B0(s32 arg0); /* JP: TaLogic_GetWarnHideLvl */
 s32 func_0014FA10(s32 arg0, s32 arg1); /* JP: TaLogic014_IsUnitNaturalEffectUse */
 s32 func_0014FB70(s32 arg0, void *arg1); /* JP: L014 */
+int func_0014FD40(void *list_v, void *task_v, int owner); /* JP: TaLogic_GetMinimumTask (matched by position) */
 s32 func_00150270(void *arg0); /* JP: TaLogic_CommandUnit */
 s32 func_00150470(u16 *arg0, s32 arg1, s32 arg2); /* JP: TaLogic_GetNextActiveUnit */
 void func_00150850(void *order_v); /* JP: TaLogic015_CommandBtlUnit */
@@ -768,6 +771,7 @@ s32 func_001658F0(u16 *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetM
 s32 func_00165EC0(void *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetMinimumTask_AtkMission */
 s32 func_001664A0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4); /* JP: TaLogic_GetMinimumTask_MoveMission */
 s32 func_00166D10(u16 *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetMinimumTask_ReviveMission */
+int func_00166EE0(int side); /* JP: TaLogic020_IsUseRevive (matched by position) */
 s32 func_001670A0(s32 arg0, s32 arg1); /* JP: TaLogic_IsOpenUnit */
 s32 func_00167570(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5); /* JP: TaLogic020_IsOpenMoveUnit */
 s32 func_00167670(s32 arg0, s32 arg1); /* JP: TaLogic020_IsDoCerem */
@@ -798,6 +802,7 @@ s32 func_0016B1F0(s32 arg0, void *arg1); /* JP: L021 */
 s32 func_0016B3C0(s32 arg0); /* JP: TaLogicCom_GetRevoltObj */
 s32 func_0016B610(s32 arg0, s32 arg1, void *arg2); /* JP: TaLogicCom_IsOpenUnit */
 s32 func_0016C6B0(s32 arg0, s32 arg1, s32 arg2); /* JP: TaLogicCom_IsUseObjEffect */
+int func_0016C8F0(int side, int mask, int mode); /* JP: TaLogicCom_IsUseRevive (matched by position) */
 s32 func_0016CBB0(s32 arg0, s32 *arg1); /* JP: TaLogicCom_GetUseXYRangeSpell */
 s32 func_0016CE00(s32 arg0, s32 arg1); /* JP: TaLogicCom_IsDoCerem */
 s32 func_0016CF10(s32 arg0); /* JP: TaLogicCom_IsExzParts */
@@ -1701,6 +1706,7 @@ f32 func_001A6C30(f32 x, f32 y);
 f32 func_001A6C48(f32 y, f32 x);
 f32 func_001A6C60(f32 x);
 void func_001A6C80(void);
+void func_001A6FF0(void); /* JP: SzGame_DrawMenu */
 void func_001A7380(void); /* JP: SzGame_ActMenu */
 s32 func_001A82E0(s32 arg0); /* JP: SzGame_GetMenuNum */
 s32 func_001A8320(s32 arg0, s32 arg1); /* JP: SzGame_SetMenuNum */
@@ -1723,11 +1729,13 @@ void func_001A8870(s32 arg0, s32 arg1); /* JP: SzGame_Push */
 void func_001A8920(void); /* JP: SzGame_Pop */
 void func_001A89C0(int arg0, int arg1); /* JP: SzGame_SetMode */
 void func_001A8BB0(void); /* JP: SzGame_ComInit */
+void func_001A8DB0(int index); /* JP: SzGame_ModeInit (matched by position) */
 void func_001A9590(void); /* JP: SzGame_ModeDraw (matched by position) */
 void func_001A9800(void); /* JP: SzGame_ModeDrawAfter */
 void func_001A98B0(void); /* JP: SzGame_ModeDrawLast */
 void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: lSzGame_TEXTURE_TEST */
 void func_001AA260(void); /* JP: SzGame_ModeAct (matched by position) */
+void func_001AAAF0(int n, int b); /* JP: SzGame_ReqBGM (matched by position) */
 void func_001AAD50(s32 arg0); /* JP: SzGame_ModeTerm */
 s64 func_001AAF60(s32 arg0); /* JP: SzGame_GetMode */
 void func_001AAFA0(s32 arg0); /* JP: SzGame_InitMemCardProc */
@@ -1815,6 +1823,7 @@ s32 func_001BFF00(s32 id, s32 arg1, s32 arg2, s32 arg3); /* JP: lSzDuel_DrawBuil
 s32 func_001C02E0(s32 id, s32 arg1, s32 arg2, s32 arg3); /* JP: lSzDuel_DrawBuildDeck_DeckCursor_Pipe */
 void func_001C05F0(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_Reincarnation_Pipe */
 s32 func_001C07E0(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_ReincarnationDone_Pipe */
+unsigned int func_001C0A30(unsigned int cursor, int x, int y); /* JP: lSzDuel_DrawBuildDeck_Password_Pipe */
 s32 func_001C0CE0(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_PasswordSuccess_Pipe */
 void func_001C0EE0(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_PasswordFail_Pipe */
 void func_001C0F70(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_PasswordDone_Pipe */
@@ -2655,6 +2664,7 @@ u8 *func_00212FD0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: RhModelCpu_Dra
 s32 func_002130A0(s32 arg0); /* JP: lRhModelCpu_SetupGlobal */
 s32 func_00213410(s32 arg0, u32 cursor, s32 size); /* JP: lRhModelCpu_TraceStaticBlock */
 s32 func_002134D0(s32 arg0, s32 *arg1); /* JP: lRhModelCpu_CalcIndepStrip */
+void func_00213D00(void *first_v, void *end_v); /* JP: lRhModelCpu_SortPolygon */
 void func_00213F10(u8 *start, u8 *end); /* JP: lRhModelCpu_CleanupPacket */
 void func_00213F60(s32 arg0, s32 arg1); /* JP: RhZSort_Start */
 void func_00213F90(void); /* JP: RhZSort_Finish */
@@ -2753,6 +2763,7 @@ void func_0021BC10(f32 *outX, f32 *outY, s16 *outCount, f32 *points, f32 *interv
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4); /* JP: func */
 void func_0021C350(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n); /* JP: tri_diag */
 s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6); /* JP: Taku_Bunsyou_Set */
+void func_0021C510(int mode); /* JP: TkCamp_Init (matched by position) */
 void func_0021D480(void); /* JP: Taku_Camp_Data_Init */
 void func_0021D850(void); /* JP: Taku_Screen_Init */
 void func_0021DA60(void); /* JP: TkCamp_Draw */
@@ -2763,6 +2774,7 @@ s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: Taku_Camp_Kazu
 void func_00224A40(void); /* JP: Taku_Camp_Ivent_Name_Set (matched by position) */
 void *func_00226120(void *arg0); /* JP: Taku_Camp_Kumo */
 void func_00226600(void); /* JP: Taku_Camp_System */
+void func_00228150(int side); /* JP: Taku_Camp_What_KATIMAKE */
 void func_00228660(s16 player, s16 side, s8 state, s16 *items, s16 count); /* JP: Taku_Dodai_Root_init */
 void func_00228940(s16 arg0, s16 arg1); /* JP: Taku_Fune_init */
 s32 func_00228970(void); /* JP: Taku_Tyumoku_ido */
@@ -2781,9 +2793,11 @@ s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3); /* JP: Taku_Camp_3D_F
 s32 func_0022D140(void); /* JP: Taku_Camp_BUN_HANTEI (matched by position) */
 s32 func_0022F1C0(s32 arg0, s32 arg1, s16 arg2, s16 arg3); /* JP: Taku_Camp_BOTAN_MATI */
 void func_002336F0(void); /* JP: Taku_Camp_Set_Go_Duel */
+int func_002337A0(int cursor); /* JP: Taku_Camp_BUN_DARE */
 void func_00233F50(s8 arg0); /* JP: Taku_Camp_SINEMA_Init */
 int func_00234040(int cursor, unsigned short fade); /* JP: Taku_Camp_SINEMA_CUT */
 void *func_002351A0(void *arg0); /* JP: Taku_Camp_SYS_ICON */
+int func_002354A0(int cursor); /* JP: Taku_Camp_TEKI_WINDOW (matched by position) */
 s32 func_00236C50(s32 arg0); /* JP: Taku_Camp_TIKEI_WINDOW */
 void func_002374D0(void); /* JP: Taku_Camp_3D_Poly_Init */
 void func_0023B1F0(s32 arg0); /* JP: TkCamp_Act2 */
@@ -2969,6 +2983,8 @@ s32 func_0024F060(s32 arg0, s32 arg1); /* JP: Ta_GetMinimumOrderUnitFromFlagList
 s32 func_0024F150(s32 mask); /* JP: Ta_GetMaximumOrderUnitFromFlagList */
 u32 func_0024F200(s32 arg0); /* JP: Ta_GetMinimumParamUnitFromFlagList */
 s32 func_0024F2F0(s32 arg0, s32 arg1); /* JP: Ta_GetAPPlusDP */
+int func_0024F370(int a, int b); /* JP: Ta_DelUnit */
+int func_0024F430(int a, int b); /* JP: Ta_DelUnit2 */
 s32 func_0024F520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4); /* JP: TaUnit_AddUnitEfc */
 s32 func_0024F780(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4); /* JP: Ta_Do_CompMove */
 s32 func_0024FD10(s32 arg0, s32 arg1, s32 arg2); /* JP: Ta_IsVirus */
@@ -2998,7 +3014,9 @@ void func_00250BC0(s32 arg0, s32 arg1, s32 arg2); /* JP: TaUtil_GetUnitDP2 */
 s32 func_00250C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: TaUtil_GetUnitDP3 */
 s32 func_00250CA0(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: TaUtil_CalcUnitAP */
 s32 func_00250E80(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: TaUtil_CalcUnitDP */
+int func_00251060(int nSide, void *pSlotOrder_v); /* JP: TaSlot_SetSlotInitialDat (matched by position) */
 s32 func_00251370(s32 count, u16 *src, void *dst); /* JP: TaSlot_SetReelData */
+int func_002514F0(unsigned short nCardNo); /* JP: TaSlot_GetFeverGain (matched by position) */
 void func_002516D0(s32 arg0, s32 arg1, s32 arg2); /* JP: TaUtil_DoOpen */
 s32 func_002517D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 *out, s32 arg7); /* JP: Ta_Manage_DestEfc */
 s32 func_00252440(s32 x, s32 y, void *arg2, s32 phase); /* JP: Ta_Open */
@@ -3188,8 +3206,10 @@ u32 func_00272210(s32 arg0, s32 arg1); /* JP: Ta_RemoveObjFromFlagLst */
 u32 func_00272330(s32 arg0, s32 arg1); /* JP: Ta_RemoveObjFromFlagLst2 */
 s32 func_002724C0(s32 arg0); /* JP: Ta_GetLDRange */
 s32 func_002724F0(s32 phase, s32 *res); /* JP: Ta_Do_EndPhase */
+int func_00272CC0(int nSide, unsigned char bCond); /* JP: Ta_Do_DuelEnd */
 s32 func_00273460(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_112 */
 s32 func_002738B0(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_113 */
+int func_00273E60(void *eInfo_v, void *Temp_v, int ID); /* JP: Ta_Eff_BTL_000 */
 int func_002747A0(void *eInfo_v, void *Temp_v, int ID); /* JP: Ta_Eff_BTL_001 */
 s32 func_002755D0(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_BTL_002 */
 s32 func_00275740(u32 *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_070 */
