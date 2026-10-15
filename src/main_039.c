@@ -184,7 +184,7 @@ typedef struct {
 s32 func_001B65F0(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w, s32 h, s32 shadow, s32 style) {
     extern Slice_001B65F0 D_00290080[];
     extern Color_001B65F0 D_002BE840[];
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     Slice_001B65F0 *slices = &D_00290080[style * 9 + 0x8C];
     Color_001B65F0 *color;
     s32 originX;
@@ -454,7 +454,7 @@ s32 func_001B6F70(s32 packet, s32 x, s32 y, s32 font, s32 flags, s32 count, s8 *
     Sprite_001B6F70 sprite __attribute__((aligned(8)));
 
     originX = x + 0x6C0;
-    state = D_00317490;
+    state = D_00317490.b;
     width = D_002BE950[font * 2];
     cursorY = y + 0x720;
     lineHeight = D_002BE951[font * 2];
@@ -762,8 +762,8 @@ s32 func_001B7820(s32 packet, s32 x, s32 y, s32 alpha) {
     Matrix_001B7820 matrix;
     Packet_001B7820 sprite __attribute__((aligned(8)));
 
-    state = (State_001B7820 *)D_00317490;
-    player = D_00317490 + D_003181CC * 0x350;
+    state = (State_001B7820 *)D_00317490.b;
+    player = D_00317490.b + D_003181CC * 0x350;
     texture = (Texture_001B7820 *)D_0029080A;
     originX = x + 0x6C0;
     originY = y + 0x720;
@@ -873,7 +873,7 @@ static inline void set_uv_001B7D60(UV_001B7D60 *p, s32 u, s32 v) {
 s32 func_001B7D60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
                   s64 arg6) {
     extern s32 func_00202E00();
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 x = arg2 + 0x6C0;
     s32 y = arg3 + 0x720;
     void **image;
@@ -962,7 +962,7 @@ static inline void set_uv_001B7F90(UV_001B7F90 *p, s32 u, s32 v) {
 s32 func_001B7F90(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
                   s64 arg6, s32 arg7) {
     extern s32 func_00202E00();
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 x = arg2 + 0x6C0;
     s32 y = arg3 + 0x720;
     void **image;
@@ -1009,7 +1009,7 @@ void func_001B81E0(void) {
 }
 
 s32 func_001B8210(s32 arg0) {
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
 
     if (D_003181CA == 0) {
         return arg0;
@@ -1095,7 +1095,7 @@ typedef struct Draw_001B83F0 {
 s32 func_001B83F0(s32 arg0) {
     extern void func_001CD560();
     extern s32 D_00317B58;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     Draw_001B83F0 draw;
 
     if (D_00317B58 == 0) {
@@ -1133,7 +1133,7 @@ void func_001B8520(s32 arg0) {
     s32 var_v1;
     u8 *var_v0;
 
-    state = D_00317490;
+    state = D_00317490.b;
     temp_s1 = func_002158B0(arg0);
     var_s2 = (s16 *)0x01ED0000;
     var_s3 = (s16 *)0x01ED06AC;

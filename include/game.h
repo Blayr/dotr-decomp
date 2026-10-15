@@ -32,7 +32,25 @@ extern s32 *D_0030FF40;
 extern u8 D_1FE0000;
 
 
-extern u8 D_00317490[];
+typedef struct Duel_00317490_s {
+    u8 players[2][0x350];          /* 0x000: one record per player (callers use their own views) */
+    u8 pad6A0[0x6D8 - 0x6A0];
+    s16 *list;                     /* 0x6D8 */
+    u8 pad6DC[0xC8A - 0x6DC];
+    u16 offset;                    /* 0xC8A */
+    u16 count;                     /* 0xC8C */
+    u8 padC8E[0xD5C - 0xC8E];
+    u8 player;                     /* 0xD5C */
+    u8 padD5D[0xD70 - 0xD5D];
+} Duel_00317490_s;
+
+/* The duel state: old code reads it as bytes (.b), new code by field (.s) */
+typedef union Duel_00317490 {
+    u8 b[0xD70];
+    Duel_00317490_s s;
+} Duel_00317490;
+
+extern Duel_00317490 D_00317490;
 
 
 typedef __int128 Q128_0020F290;

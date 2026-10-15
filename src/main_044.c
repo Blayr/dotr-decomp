@@ -126,13 +126,13 @@ typedef struct {
 } Record_001DE4E0;
 
 u8 func_001DE4E0(s32 arg0) {
-    return ((Record_001DE4E0 *)(D_00317490 + arg0 * 0x350))->value;
+    return ((Record_001DE4E0 *)(D_00317490.b + arg0 * 0x350))->value;
 }
 
 void func_001DE500(s32 arg0, s32 arg1) {
     u8 *entry;
 
-    entry = D_00317490 + (arg0 * 0x350);
+    entry = D_00317490.b + (arg0 * 0x350);
     if (entry[0x33C] != (arg1 & 0xFF)) {
         arg1 &= 0x7F;
         entry[0x33C] = arg1;
@@ -156,7 +156,7 @@ static inline s32 nonnegative_001DE570(s32 value) {
 }
 
 void func_001DE570(s32 arg0) {
-    u8 *dest = D_00317490;
+    u8 *dest = D_00317490.b;
 
     dest[0xD53] = nonnegative_001DE570(arg0) < 0xFF
         ? nonnegative_001DE570(arg0) : 0xFF;
@@ -169,7 +169,7 @@ typedef struct {
 } Entry_001DE5C0;
 
 s32 func_001DE5C0(s32 arg0) {
-    return ((Entry_001DE5C0 *)(D_00317490 + arg0 * 0x350))->value;
+    return ((Entry_001DE5C0 *)(D_00317490.b + arg0 * 0x350))->value;
 }
 
 s32 func_001DE5E0(s32 index, s32 operation, s32 value) {
@@ -177,7 +177,7 @@ s32 func_001DE5E0(s32 index, s32 operation, s32 value) {
     s32 result;
     u8 *entry;
 
-    entry = D_00317490 + index * 0x350;
+    entry = D_00317490.b + index * 0x350;
     current = entry[0x341];
     switch (operation) {
     case 0:
@@ -212,7 +212,7 @@ typedef struct Entry_001DE690 {
 } Entry_001DE690;
 
 u8 func_001DE690(s32 arg0) {
-    return ((Entry_001DE690 *)(D_00317490 + arg0 * 0x350))->value;
+    return ((Entry_001DE690 *)(D_00317490.b + arg0 * 0x350))->value;
 }
 
 typedef struct {
@@ -222,7 +222,7 @@ typedef struct {
 } Entry_001DE6B0;
 
 void func_001DE6B0(s32 arg0, s8 arg1) {
-    ((Entry_001DE6B0 *)(D_00317490 + arg0 * 0x350))->value = arg1;
+    ((Entry_001DE6B0 *)(D_00317490.b + arg0 * 0x350))->value = arg1;
 }
 
 typedef struct {
@@ -232,7 +232,7 @@ typedef struct {
 } Entry_001DE6D0;
 
 s32 func_001DE6D0(s32 arg0) {
-    return ((Entry_001DE6D0 *) (D_00317490 + arg0 * 0x350))->flag ? 1 : 0;
+    return ((Entry_001DE6D0 *) (D_00317490.b + arg0 * 0x350))->flag ? 1 : 0;
 }
 
 typedef struct {
@@ -243,7 +243,7 @@ typedef struct {
 } Flags_001DE700;
 
 void func_001DE700(s32 arg0, s32 arg1) {
-    Flags_001DE700 *record = (Flags_001DE700 *)(D_00317490 + arg0 * 0x350);
+    Flags_001DE700 *record = (Flags_001DE700 *)(D_00317490.b + arg0 * 0x350);
 
     record->enabled = arg1 ? 1 : 0;
 }
@@ -255,11 +255,11 @@ typedef struct {
 } Entry_001DE740;
 
 u8 func_001DE740(s32 arg0) {
-    return ((Entry_001DE740 *)(D_00317490 + arg0 * 0x350))->field_344;
+    return ((Entry_001DE740 *)(D_00317490.b + arg0 * 0x350))->field_344;
 }
 
 void func_001DE760(s32 arg0, s8 arg1) {
-    *(s8 *)(D_00317490 + arg0 * 0x350 + 0x344) = arg1;
+    *(s8 *)(D_00317490.b + arg0 * 0x350 + 0x344) = arg1;
 }
 
 typedef struct {
@@ -280,7 +280,7 @@ typedef struct {
 } Flags_001DE7A0;
 
 void func_001DE7A0(s32 arg0) {
-    Flags_001DE7A0 *flags = (Flags_001DE7A0 *) D_00317490;
+    Flags_001DE7A0 *flags = (Flags_001DE7A0 *) D_00317490.b;
 
     flags->enabled = (s8) (arg0 ? 1 : 0);
 }
@@ -292,7 +292,7 @@ typedef struct {
 } Flags_001DE7E0;
 
 void func_001DE7E0(s32 arg0) {
-    Flags_001DE7E0 *flags = (Flags_001DE7E0 *)D_00317490;
+    Flags_001DE7E0 *flags = (Flags_001DE7E0 *)D_00317490.b;
 
     flags->enabled = (s8)(arg0 ? 1 : 0);
 }
@@ -308,10 +308,8 @@ typedef struct State_001DE820 {
     Flags_001DE820 flags;
 } State_001DE820;
 
-extern u8 D_00317490[];
-
 void func_001DE820(s32 arg0) {
-    State_001DE820 *state = (State_001DE820 *)D_00317490;
+    State_001DE820 *state = (State_001DE820 *)D_00317490.b;
 
     state->flags.enabled = (s8)(arg0 ? 1 : 0);
 }
@@ -321,7 +319,7 @@ s32 func_001DE860(s32 arg0, s32 arg1, s32 arg2) {
     f32 saved[4];
     f32 position[3];
 
-    entity = D_00317490 + arg0 * 0x350;
+    entity = D_00317490.b + arg0 * 0x350;
     if (arg1 < 0 || arg1 >= 7 || arg2 < 0 || arg2 >= 7) {
         return 0;
     }
@@ -342,7 +340,7 @@ void func_001DE970(s32 arg0) {
     s16 *var_a3;
 
     var_a2 = 0;
-    temp_a1 = (s16 *)(D_00317490 + (arg0 * 0x350) + 0x1E0);
+    temp_a1 = (s16 *)(D_00317490.b + (arg0 * 0x350) + 0x1E0);
     var_a3 = temp_a1;
     do {
         var_a2 += 1;
@@ -358,11 +356,11 @@ typedef struct Record_001DE9C0 {
 } Record_001DE9C0;
 
 s32 func_001DE9C0(s32 arg0) {
-    return ((Record_001DE9C0 *)(D_00317490 + arg0 * 0x350))->field230;
+    return ((Record_001DE9C0 *)(D_00317490.b + arg0 * 0x350))->field230;
 }
 
 s32 func_001DE9E0(s32 arg0, s32 arg1) {
-    u16 *values = (u16 *)(D_00317490 + arg0 * 0x350 + 0x1E0);
+    u16 *values = (u16 *)(D_00317490.b + arg0 * 0x350 + 0x1E0);
 
     if ((arg1 < 0) || (arg1 >= 0x28)) {
         return -1;
@@ -380,7 +378,7 @@ s32 func_001DEA30(s32 player, s32 card) {
     CardSlots_001DEA30 *slots;
     s32 index;
 
-    slots = (CardSlots_001DEA30 *)(D_00317490 + player * 0x350 + 0x1E0);
+    slots = (CardSlots_001DEA30 *)(D_00317490.b + player * 0x350 + 0x1E0);
     if (card == 0x29F) {
         card = 0x3E7;
     }
@@ -412,7 +410,7 @@ void func_001DEB20(s32 arg0) {
     u16 card;
     s32 count;
 
-    dest = (CardList_001DEB20 *)(D_00317490 + arg0 * 0x350 + 0x1E0);
+    dest = (CardList_001DEB20 *)(D_00317490.b + arg0 * 0x350 + 0x1E0);
     list.count = 0;
     i = 0;
     src = (u16 *)dest;
@@ -445,7 +443,7 @@ s32 func_001DEC00(s32 arg0, s32 arg1, s32 arg2) {
     SlotList_001DEC00 *list;
     u16 *slot;
 
-    list = (SlotList_001DEC00 *)(D_00317490 + (arg0 * 0x350) + 0x1E0);
+    list = (SlotList_001DEC00 *)(D_00317490.b + (arg0 * 0x350) + 0x1E0);
     if ((arg1 < 0) || (arg1 >= 0x28)) {
         return 0;
     }
@@ -471,7 +469,7 @@ s32 func_001DECC0(s32 arg0, s32 arg1) {
     u8 *temp_a0;
     u16 *temp_a1;
 
-    temp_a0 = D_00317490 + (arg0 * 0x350) + 0x1E0;
+    temp_a0 = D_00317490.b + (arg0 * 0x350) + 0x1E0;
     if ((arg1 < 0) || (arg1 >= 0x28)) {
         return 0;
     }
@@ -489,7 +487,7 @@ s32 func_001DED30(s32 arg0) {
     u8 *field;
     u8 *entry;
 
-    entry = D_00317490 + (arg0 * 0x350);
+    entry = D_00317490.b + (arg0 * 0x350);
     value = *(u16 *)(entry + 0x1E0);
     field = entry + 0x1E0;
     if (value < 0 || value >= 0x3E7) {
@@ -509,7 +507,7 @@ void func_001DEDB0(s32 arg0) {
     s16 *cursor;
 
     count = 0;
-    base = D_00317490 + (arg0 * 0x350) + 0x232;
+    base = D_00317490.b + (arg0 * 0x350) + 0x232;
     cursor = (s16 *)base;
     do {
         count += 1;
@@ -520,7 +518,7 @@ void func_001DEDB0(s32 arg0) {
 }
 
 s32 func_001DEE00(s32 arg0, s32 arg1) {
-    u16 *entries = (u16 *)(D_00317490 + (arg0 * 0x350) + 0x232);
+    u16 *entries = (u16 *)(D_00317490.b + (arg0 * 0x350) + 0x232);
     s32 ret;
 
     if ((arg1 < 0) || (arg1 >= 0x78)) {
@@ -532,7 +530,7 @@ s32 func_001DEE00(s32 arg0, s32 arg1) {
 }
 
 u8 func_001DEE50(s32 arg0) {
-    return *(u8 *)(D_00317490 + (arg0 * 0x350) + 0x322);
+    return *(u8 *)(D_00317490.b + (arg0 * 0x350) + 0x322);
 }
 
 typedef struct {
@@ -544,7 +542,7 @@ typedef struct {
 s32 func_001DEE70(s32 arg0, s32 arg1) {
     CardList_001DEE70 *list;
 
-    list = (CardList_001DEE70 *)(D_00317490 + arg0 * 0x350 + 0x232);
+    list = (CardList_001DEE70 *)(D_00317490.b + arg0 * 0x350 + 0x232);
     if (arg1 == 0x29F) {
         arg1 = 0x3E7;
     }
@@ -564,8 +562,6 @@ typedef struct {
     u8 count;
 } List_001DEF20;
 
-extern u8 D_00317490[];
-
 void func_001DEF20(s32 arg0) {
     List_001DEF20 list;
     s16 *copy;
@@ -576,7 +572,7 @@ void func_001DEF20(s32 arg0) {
     u16 entry;
     s32 fill;
 
-    dest = (s16 *)(D_00317490 + arg0 * 0x350 + 0x232);
+    dest = (s16 *)(D_00317490.b + arg0 * 0x350 + 0x232);
     list.count = 0;
     i = 0;
     src = (u16 *)dest;
@@ -612,7 +608,7 @@ s32 func_001DF000(s32 arg0, s32 arg1) {
     u16 *temp_a1;
 
     offset = arg0 * 0x350;
-    temp_a0 = D_00317490 + offset + 0x232;
+    temp_a0 = D_00317490.b + offset + 0x232;
     if ((arg1 < 0) || (arg1 >= 0x78)) {
         return 0;
     }
@@ -631,7 +627,7 @@ void func_001DF070(s32 arg0) {
     s16 *var_a3;
 
     var_a2 = 0;
-    temp_a1 = (s16 *)(D_00317490 + (arg0 * 0x350) + 0x324);
+    temp_a1 = (s16 *)(D_00317490.b + (arg0 * 0x350) + 0x324);
     var_a3 = temp_a1;
     do {
         var_a2 += 1;
@@ -642,7 +638,7 @@ void func_001DF070(s32 arg0) {
 }
 
 s32 func_001DF0C0(s32 arg0, s32 arg1) {
-    u16 *values = (u16 *)(D_00317490 + arg0 * 0x350 + 0x324);
+    u16 *values = (u16 *)(D_00317490.b + arg0 * 0x350 + 0x324);
     s32 result;
 
     if ((arg1 < 0) || (arg1 >= 5)) {
@@ -660,7 +656,7 @@ typedef struct {
 } Entry_001DF110;
 
 s32 func_001DF110(s32 arg0) {
-    return ((Entry_001DF110 *)(D_00317490 + arg0 * 0x350))->value;
+    return ((Entry_001DF110 *)(D_00317490.b + arg0 * 0x350))->value;
 }
 
 typedef struct {
@@ -671,7 +667,7 @@ typedef struct {
 s32 func_001DF130(s32 arg0, s32 arg1) {
     Hand_001DF130 *hand;
 
-    hand = (Hand_001DF130 *)(D_00317490 + arg0 * 0x350 + 0x324);
+    hand = (Hand_001DF130 *)(D_00317490.b + arg0 * 0x350 + 0x324);
     if (arg1 == 0x29F) {
         arg1 = 0x3E7;
     }
@@ -700,7 +696,7 @@ void func_001DF1E0(s32 index) {
     u16 *out;
     s32 count;
 
-    dest = (Hand_001DF1E0 *)(D_00317490 + index * 0x350 + 0x324);
+    dest = (Hand_001DF1E0 *)(D_00317490.b + index * 0x350 + 0x324);
     hand.count = 0;
     i = 0;
     src = dest->entries;
@@ -729,7 +725,7 @@ s32 func_001DF2C0(s32 arg0, s32 arg1) {
     u8 *temp_a0;
     u16 *temp_a1;
 
-    temp_a0 = D_00317490 + (arg0 * 0x350) + 0x324;
+    temp_a0 = D_00317490.b + (arg0 * 0x350) + 0x324;
     if ((arg1 < 0) || (arg1 >= 5)) {
         return 0;
     }
@@ -746,7 +742,7 @@ s32 func_001DF330(s32 arg0) {
     s32 var_a0;
     u16 *var_a1;
 
-    var_a1 = (u16 *)(D_00317490 + (arg0 * 0x350) + 0x324);
+    var_a1 = (u16 *)(D_00317490.b + (arg0 * 0x350) + 0x324);
     var_a0 = 0;
     do {
         var_a0 += 1;
@@ -765,7 +761,7 @@ s32 func_001DF370(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    var_t0 = (u16 *)(D_00317490 + (arg0 * 0x350) + 0x324);
+    var_t0 = (u16 *)(D_00317490.b + (arg0 * 0x350) + 0x324);
     if ((arg1 < 0) || (arg1 >= 5)) {
         return 0;
     }
@@ -804,7 +800,7 @@ s32 func_001DF370(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_001DF470(s32 arg0) {
-    return *(u16 *)(D_00317490 + arg0 * 0x350 + 0x33A);
+    return *(u16 *)(D_00317490.b + arg0 * 0x350 + 0x33A);
 }
 
 s32 func_001DF490(s32 index, s32 operation, s32 value) {
@@ -812,7 +808,7 @@ s32 func_001DF490(s32 index, s32 operation, s32 value) {
     s32 result;
     u8 *entry;
 
-    entry = D_00317490 + index * 0x350;
+    entry = D_00317490.b + index * 0x350;
     current = *(u16 *)(entry + 0x33A);
     switch (operation) {
     case 0:

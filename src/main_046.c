@@ -1466,7 +1466,7 @@ void func_001E3FE0(void) {
 }
 
 void func_001E3FF0(s32 arg0, s16 arg1, s16 arg2) {
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 i;
     s32 bit;
 
@@ -1497,7 +1497,7 @@ s32 func_001E40A0(s32 arg0) {
     s32 temp_s1;
     s32 temp_s1_2;
 
-    base = D_00317490;
+    base = D_00317490.b;
     if (func_00203A40(arg0, 2, 0x5000) != 0) {
         temp_s1 = base[0xD35];
         if (func_00203A40(arg0, 2, 0x1000) != 0) {
@@ -1544,7 +1544,7 @@ void func_001E42B0(void) {
 }
 
 void func_001E42C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
 
     switch (arg0) {
     case 0:
@@ -1594,7 +1594,7 @@ void func_001E42C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 s32 func_001E4430(s32 arg0) {
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 temp_s1;
 
     if (func_00203A40(arg0, 0, 0xA000) != 0) {

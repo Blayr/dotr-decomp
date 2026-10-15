@@ -3,7 +3,7 @@
 void func_001D7D10(s32 arg0, s32 arg1) {
     u16 ids[4];
     s16 w[4];
-    u8 *g = D_00317490;
+    u8 *g = D_00317490.b;
     u8 *p;
     s32 i;
     s32 x;
@@ -17,7 +17,7 @@ void func_001D7D10(s32 arg0, s32 arg1) {
     s16 r;
     s32 idx;
 
-    p = D_00317490 + arg0 * 0x350;
+    p = D_00317490.b + arg0 * 0x350;
     func_001DF1E0(arg0);
     func_001D89F0(arg0, 0, 999, 0, 0, 0, 0);
     x = -250;
@@ -129,7 +129,7 @@ s32 func_001D8080(s32 arg0) {
     s32 result;
     u8 *candidate;
 
-    base = D_00317490;
+    base = D_00317490.b;
     if (D_00317B5C != 0 && *(void **)(*(u8 **)(base + 0x6CC) + 4) != NULL) {
         if ((slot = D_0031A7C0) != NULL && *(u8 **)slot != NULL) {
             freeSlot_001D8080(slot);
@@ -262,7 +262,7 @@ static inline Model_001D82C0 *get_model_001D82C0(void) {
 s32 func_001D82C0(s32 arg0) {
     extern void *func_001DD130();
     extern void func_001CD560();
-    State_001D82C0 *state = (State_001D82C0 *)D_00317490;
+    State_001D82C0 *state = (State_001D82C0 *)D_00317490.b;
     s32 next;
     Item_001D82C0 *copy;
     Node_001D82C0 *primary;
@@ -569,7 +569,7 @@ s32 func_001D89F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     Slot_001D89F0 *slot;
     Model_001D89F0 *model;
 
-    player = D_00317490 + arg0 * 0x350;
+    player = D_00317490.b + arg0 * 0x350;
     entry = func_001DD130(2, arg1);
     if (entry == NULL) {
         return 0;
@@ -655,7 +655,7 @@ s32 func_001D8CD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     u8 *entry;
     u8 *resource;
 
-    player = D_00317490 + arg0 * 0x350;
+    player = D_00317490.b + arg0 * 0x350;
     object = func_001DD130(2, arg1);
     if (object == NULL) {
         return 0;
@@ -742,7 +742,7 @@ void func_001D90E0(s32 arg0, s32 arg1, s32 arg2) {
     f32 sp60[4];
     u8 *temp_s3;
 
-    temp_s3 = D_00317490 + (D_003181E4 * 0x350);
+    temp_s3 = D_00317490.b + (D_003181E4 * 0x350);
     func_001FC950(temp_s3 + 0x1D0, sp50);
     sp60[0] = (f32) arg1;
     sp60[2] = (f32) arg2;
@@ -770,7 +770,7 @@ void func_001D91B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 angle;
     u8 *cur;
 
-    p = D_00317490 + D_003181E4 * 0x350;
+    p = D_00317490.b + D_003181E4 * 0x350;
     saved = *(Vec4_001D91B0 *)(p + 0x1D0);
     x0 = (s32)(f32)((arg1 - 3) * 50);
     z0 = (s32)(f32)((arg2 - 3) * 50);
@@ -780,7 +780,7 @@ void func_001D91B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *(s32 *)(p + 0x1D0) = 0x96;
     *(s32 *)(p + 0x1D4) = (((angle + 0x80) >> 8) << 8) + 0x4000;
     *(s32 *)(p + 0x1D8) = 0x3800;
-    cur = D_00317490 + D_003181E4 * 0x350;
+    cur = D_00317490.b + D_003181E4 * 0x350;
     func_001FC950(cur + 0x1D0, camera);
     pos[0] = (f32)((x0 + x1) >> 1);
     pos[2] = (f32)((z0 + z1) >> 1);
@@ -804,7 +804,7 @@ typedef struct {
 } Card_001D9420;
 
 s32 func_001D9420(void *arg0) {
-    u8 *duel = D_00317490;
+    u8 *duel = D_00317490.b;
     s32 result;
     void **cell;
     s32 me;
@@ -906,7 +906,7 @@ typedef struct {
 
 void func_001D9820(s32 arg0, s32 arg1) {
     extern s32 func_001A22C0(f32);
-    State_001D9820 *state = (State_001D9820 *)D_00317490;
+    State_001D9820 *state = (State_001D9820 *)D_00317490.b;
     Player_001D9820 *p;
     s32 x;
     s32 z;
@@ -915,10 +915,10 @@ void func_001D9820(s32 arg0, s32 arg1) {
     f32 saved[4];
 
     D_003181E4 = arg1;
-    p = (Player_001D9820 *)(D_00317490 + arg1 * 0x350);
+    p = (Player_001D9820 *)(D_00317490.b + arg1 * 0x350);
     z = func_001A22C0((f32)((p->z - 3) * 50));
     x = func_001A22C0((f32)((p->x - 3) * 50));
-    cur = (Player_001D9820 *)(D_00317490 + D_003181E4 * 0x350);
+    cur = (Player_001D9820 *)(D_00317490.b + D_003181E4 * 0x350);
     func_001FC950(cur->f1D0, saved);
     pos[0] = (f32)x;
     pos[2] = (f32)z;
@@ -956,8 +956,7 @@ s32 func_001D9A30(s32 arg0, s32 arg1) {
     extern s32 func_0020A610();
     extern s32 func_0020A870();
     extern s32 func_0020A760();
-    extern u8 D_00317490[];
-    u8 *base = D_00317490;
+    u8 *base = D_00317490.b;
     s32 sprite;
     s32 length;
     s32 i;
@@ -1018,7 +1017,7 @@ s32 func_001D9C40(s32 arg0, s32 arg1) {
     s32 value;
     s32 i;
 
-    state = (State_001D9C40 *)D_00317490;
+    state = (State_001D9C40 *)D_00317490.b;
     value = D_00318110;
     if (D_00317B30[arg1] != 0) {
         return arg0;
@@ -1158,7 +1157,7 @@ s32 func_001D9F00(void *arg0, s32 arg1) {
     Vec_001D9F00 transformed;
     __int128 matrix[4];
     __int128 projection[4];
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 mode;
     Object_001D9F00 *object = arg0;
     s32 i;
@@ -1278,7 +1277,7 @@ s32 func_001DA2B0(void *arg0, s32 arg1, f32 fparg0, f32 fparg1) {
     u8 *global;
 
     object = arg0;
-    global = D_00317490;
+    global = D_00317490.b;
     temp_s1 = (object->field80.bytes.flags.flag6 == 0) ? NULL : ((u8 *) object + 0x30);
     object->field4A = 0x35;
     object->field48 = 0;
@@ -1811,7 +1810,7 @@ s32 func_001DC790(s32 arg0, s32 arg1, f32 *arg2, s32 arg3, s32 arg4) {
     f32 rotation[4];
     Points_001DC790 matrix;
     Packet_001DC790 packet;
-    Gfx_001DC790 *textures = (Gfx_001DC790 *)D_00317490;
+    Gfx_001DC790 *textures = (Gfx_001DC790 *)D_00317490.b;
     f32 u;
     u8 *entry;
     f32 scale;

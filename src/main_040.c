@@ -106,7 +106,7 @@ static inline s32 check_001BA630(u8 *data, s32 i) {
 }
 
 s32 func_001BA630(s32 arg0, s32 arg1) {
-    u8 *data = D_00317490;
+    u8 *data = D_00317490.b;
     s32 i;
     s32 result = 0;
 
@@ -124,7 +124,7 @@ s32 func_001BA630(s32 arg0, s32 arg1) {
 }
 
 s32 func_001BA710(s32 arg0, s32 arg1) {
-    u8 *base = D_00317490;
+    u8 *base = D_00317490.b;
     s32 i;
     s32 j;
     s32 result = 0;
@@ -209,7 +209,7 @@ typedef struct {
 } Data_001BA930;
 
 s32 func_001BA930(u16 *arg0, u16 *arg1) {
-    Data_001BA930 *data = (Data_001BA930 *)D_00317490;
+    Data_001BA930 *data = (Data_001BA930 *)D_00317490.b;
     s32 temp_a1;
     s64 var_a2;
     s64 var_v0;
@@ -474,7 +474,7 @@ s32 func_001BAEA0(s32 arg0) {
     s32 result;
 
     player = D_003181EC;
-    state = D_00317490;
+    state = D_00317490.b;
     func_0020A470(5, 2, 0x32);
     arg0 = (s32)func_0020A610((void *)arg0);
     value = func_001BB6D0(
@@ -759,7 +759,7 @@ void *func_001BCE20(void *arg0, s32 card, s32 x, s32 y, s32 flag, s32 flag2) {
     extern s32 D_00290986;
     extern s32 D_00290990;
     s32 player = D_003181EC;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 id = (s32)arg0;
     Card_001BCE20 *data;
     s32 level;
@@ -1028,7 +1028,7 @@ s32 func_001BFF00(s32 id, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 D_00290A76;
     extern s32 D_00290864;
     extern u8 D_003181ED;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 flag = (D_003181ED == 3) ? 1 : 0;
     s8 *text1 = D_002BEFE7;
     s8 *text2 = D_002BEFEC;
@@ -1088,7 +1088,7 @@ s32 func_001C02E0(s32 id, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 D_00290A58;
     extern s32 D_00290A4E;
     extern u8 D_003181ED;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 flag = (D_003181ED == 4) ? 1 : 0;
     s8 *text1 = D_002BEFE7;
     s8 *text2 = D_002BEFEC;
@@ -1149,7 +1149,7 @@ void func_001C05F0(s32 arg0, s32 arg1, s32 arg2) {
     s32 res;
     s32 *info;
 
-    state = D_00317490;
+    state = D_00317490.b;
     text0 = (s32)D_002BEF9D;
     text1 = D_002BEF6F;
     text2 = D_002BEF73;
@@ -1183,7 +1183,7 @@ s32 func_001C07E0(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 func_002084D0();
     extern s64 func_00208680();
 
-    state = D_00317490;
+    state = D_00317490.b;
     text = &D_002BEF9D;
     cards = (u16 *)((u8 *)D_00317B60 + 0x20);
     icon = -1;
@@ -1310,7 +1310,7 @@ extern Vec3_001C1090 D_00291420;
 
 
 void func_001C1090(s32 arg0) {
-    u8 *duel = D_00317490;
+    u8 *duel = D_00317490.b;
     s32 i;
     Quad_001C1090 a;
     Block_001C1090 b;
@@ -1542,7 +1542,7 @@ void func_001C21A0(void) {
     s32 result;
     u8 *var_v0;
 
-    state = D_00317490;
+    state = D_00317490.b;
     var_s1 = (s16 *)0x01ED0000;
     var_s2 = (s16 *)0x01ED06AC;
     var_s3 = (s8 *)0x01ED0D58;
@@ -1616,7 +1616,7 @@ void func_001C2300(s32 arg0) {
     u8 *var_s4;
     u8 temp_v1;
 
-    base = D_00317490;
+    base = D_00317490.b;
     if (arg0 != 0) {
         var_s2 = (u16 *)(base + 0xC8E);
     } else {

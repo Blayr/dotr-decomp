@@ -41,7 +41,7 @@ extern Vec_001ADD00 D_002910D0;
 void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
     Vec_001ADD00 spA0;
     Vec_001ADD00 spB0;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 var_s1;
     u8 *temp_s1_2;
     u8 *var_t2;
@@ -276,7 +276,7 @@ void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_001AE520(void) {
-    u8 *data = D_00317490;
+    u8 *data = D_00317490.b;
     s32 var_a1;
     s32 var_s0;
 
@@ -343,8 +343,8 @@ s32 func_001AE5F0(s32 arg0) {
     f32 scale;
     s32 brightness;
 
-    state = D_00317490;
-    player = D_00317490 + D_003181E4 * 0x350;
+    state = D_00317490.b;
+    player = D_00317490.b + D_003181E4 * 0x350;
     mode = func_001AAF60(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     own = D_002910E0;
@@ -588,7 +588,7 @@ s32 func_001AEFD0(s32 arg0, s32 arg1) {
     s32 length;
     s32 i;
 
-    base = D_00317490;
+    base = D_00317490.b;
     addr = func_00209E50();
     addr += func_00202E00(addr, 2);
     arg0 = func_001FD320(arg0, arg1, addr, &length);
@@ -628,7 +628,7 @@ typedef struct {
 } Data_001AF140;
 
 s32 func_001AF140(s32 arg0) {
-    Data_001AF140 *data = (Data_001AF140 *)D_00317490;
+    Data_001AF140 *data = (Data_001AF140 *)D_00317490.b;
 
     if ((arg0 < 0) || (arg0 >= 8)) {
         return 0;
@@ -654,7 +654,7 @@ s32 func_001AF5C0(s32 arg0) {
     s32 y;
     s32 kind;
 
-    state = D_00317490;
+    state = D_00317490.b;
     mode = func_001AAF60(1);
     player = D_003181E4;
     count = func_001DF110(player);
@@ -730,7 +730,7 @@ s32 func_001B1EF0(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaX;
     s32 areaY;
 
-    global = D_00317490;
+    global = D_00317490.b;
     x = arg1 + 3;
     y = arg2 + 3;
     areaX = x + 0x6C0;
@@ -781,7 +781,7 @@ s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaX;
     s32 areaY;
 
-    global = D_00317490;
+    global = D_00317490.b;
     x = arg1 + 3;
     y = arg2 + 3;
     areaX = x + 0x6C0;
@@ -888,8 +888,8 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
     s32 entryY;
     f32 scale;
 
-    state = (State_001B3100 *)D_00317490;
-    player = (State_001B3100 *)(D_00317490 + D_003181CC * 0x350);
+    state = (State_001B3100 *)D_00317490.b;
+    player = (State_001B3100 *)(D_00317490.b + D_003181CC * 0x350);
     x = (s32)arg2 + 4;
     y = (s32)arg3 + 4;
     choice = -1;
@@ -1150,7 +1150,7 @@ s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     extern Params_001B3790 D_002912D0;
     extern s32 D_0031AB80;
     extern s32 func_0020A470(s32, s32, s32);
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     Source_001B3790 *color = &D_002BE840[colorIndex];
     s32 left;
     s32 top;
@@ -1370,7 +1370,7 @@ s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
     s32 width;
     s32 height;
 
-    graphics = (State_001B3CC0 *)D_00317490;
+    graphics = (State_001B3CC0 *)D_00317490.b;
     width = abs_001B3CC0(src[3] - src[1]);
     height = abs_001B3CC0(src[4] - src[2]);
     if (shrink != 0) {

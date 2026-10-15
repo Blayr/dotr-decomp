@@ -2242,7 +2242,7 @@ s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 d
 }
 
 void func_001AD960(void) {
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 x;
     s32 y;
     u8 *cell;
@@ -2251,7 +2251,7 @@ void func_001AD960(void) {
     u8 *entry;
     u8 *row;
 
-    func_0020B3C0((s8 *)D_00317490, 0, 0xD70);
+    func_0020B3C0((s8 *)D_00317490.b, 0, 0xD70);
     func_001CDA10();
     func_001CDD40();
     y = 0;

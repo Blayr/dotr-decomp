@@ -16,7 +16,7 @@ void func_001C2540(void) {
     extern u16 D_00318118;
     extern u8 D_003181F3;
     extern MoveFlags_001C2540 D_003181F4;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     u8 *state2;
     s32 temp_v1;
     s32 var_v0;
@@ -40,7 +40,7 @@ void func_001C2540(void) {
     if ((*(u16 *)(state + 0xC86) == 0) || ((s32)*(u16 *)(state + 0xC86) >= 0x8000)) {
         ((MoveFlags_001C2540 *)(state + 0xD64))->axis_0 = -((MoveFlags_001C2540 *)(state + 0xD64))->axis_0;
     }
-    state2 = D_00317490;
+    state2 = D_00317490.b;
     temp_v1 = (s32)D_003181F4.axis_1 << 0xB;
     var_v0_2 = D_00318118 + temp_v1;
     if (var_v0_2 > 0) {
@@ -66,7 +66,7 @@ void func_001C2540(void) {
 static inline s32 count_001C2720(s32 player) {
     u8 *q;
     s32 sum;
-    u8 *b = D_00317490;
+    u8 *b = D_00317490.b;
     s32 i;
 
     if (player) {
@@ -101,7 +101,7 @@ s32 func_001C2720(s32 player) {
     u8 *state;
     u16 *total;
 
-    base = D_00317490;
+    base = D_00317490.b;
     if (player) {
         list = *(u16 **)(base + 0x6DC);
     } else {
@@ -422,7 +422,7 @@ typedef struct {
 
 
 s32 func_001C32B0(void) {
-    State_001C32B0 *state = (State_001C32B0 *)D_00317490;
+    State_001C32B0 *state = (State_001C32B0 *)D_00317490.b;
     s32 var_s1;
     s32 var_a1;
     s32 var_a2;
@@ -483,7 +483,7 @@ void func_001C33A0(s32 player) {
     s32 opponent;
     State_001C33A0 *state;
 
-    state = (State_001C33A0 *)D_00317490;
+    state = (State_001C33A0 *)D_00317490.b;
     if (player != 0) {
         counts = state->counts1;
     } else {
@@ -525,7 +525,7 @@ typedef struct {
 } State_001C3520;
 
 void func_001C3520(s32 arg0) {
-    State_001C3520 *state = (State_001C3520 *)D_00317490;
+    State_001C3520 *state = (State_001C3520 *)D_00317490.b;
     s32 var_a1;
     void (*var_a3)(void);
 
@@ -574,7 +574,7 @@ s32 func_001BDAF0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern u16 D_0031811C;
 
 s32 func_001C35A0(s32 arg0) {
-    State_001C35A0 *state = (State_001C35A0 *)D_00317490;
+    State_001C35A0 *state = (State_001C35A0 *)D_00317490.b;
     s32 result;
     s32 next;
     extern s32 func_001C3D50();
@@ -729,7 +729,7 @@ s32 func_001C5550(s32 id, s32 player, s32 arg2, s32 arg3, s32 arg4) {
     extern s32 D_00290A58;
     extern s32 D_00290A4E;
     extern s32 D_00290A76;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s8 *text1 = D_002BF030 + 3;
     s8 *text2 = D_002BEFEC;
     s8 *text4 = (s8 *)&D_002BF00B;
@@ -781,7 +781,7 @@ void func_001C5980(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *func_001FEAB0(s32);
     extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
     extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 text = (s32)D_002BEF98;
     s8 *text2 = D_002BEF6F;
     s8 *text3 = D_002BEF73;
@@ -806,7 +806,7 @@ void func_001C5B30(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *func_001FEAB0(s32);
     extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
     extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 text = (s32)&D_002BF00B;
     s8 *text2 = D_002BEF6F;
     s8 *text3 = D_002BEF73;
@@ -1130,7 +1130,7 @@ s32 func_001C8DC0(s32 arg0, u8 *arg1, s32 x, s32 y) {
     extern s32 D_00290A58;
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
     s32 color = (arg1[0xA9C002] & 0xF) + 0x81;
@@ -1278,7 +1278,7 @@ s32 func_001C92C0(s32 arg0, s32 player, s32 x, s32 y) {
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
     extern Pair_001C92C0 D_002914A0;
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
     s32 tmp = (((u8 *)player)[0xA9C002] & 0xF) + 0x81;
@@ -1576,7 +1576,7 @@ extern Vec4_001CC4B0 D_002914B0;
 extern Vec4_001CC4B0 D_002914C0;
 
 void func_001CC4B0(s32 arg0) {
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     s32 i;
     Vec4_001CC4B0 vector0;
     Vec4_001CC4B0 vector1;
@@ -1646,7 +1646,7 @@ extern PulseFlags_001CC620 D_003181F4;
 void func_001CC620(void) {
     extern void *func_002145E0(s32);
     extern s32 func_001E2220();
-    State_001CC620 *state = (State_001CC620 *)D_00317490;
+    State_001CC620 *state = (State_001CC620 *)D_00317490.b;
     s32 row;
     s32 column;
     u8 *cell;
@@ -1660,7 +1660,7 @@ void func_001CC620(void) {
     State_001CC620 *p2;
 
     {
-        p = (State_001CC620 *)D_00317490;
+        p = (State_001CC620 *)D_00317490.b;
         if (D_003181F3 != 0) {
             p->flags.first = 1;
         }
@@ -1672,7 +1672,7 @@ void func_001CC620(void) {
         }
     }
     {
-        p2 = (State_001CC620 *)D_00317490;
+        p2 = (State_001CC620 *)D_00317490.b;
         step = D_003181F4.second << 11;
         p2->second = (D_00318118 + step > 0 ? p2->second + step : 0) < 0x8000 ?
             (p2->second + step > 0 ? p2->second + step : 0) : 0x8000;
@@ -1897,7 +1897,7 @@ s32 func_001CCEA0(s32 arg0, s32 x, s32 y) {
     extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
     extern u8 D_00290080[];
     extern u8 D_002BE8C0[];
-    u8 *state = D_00317490;
+    u8 *state = D_00317490.b;
     u8 cur;
     s32 j;
     s32 i;
@@ -2081,8 +2081,8 @@ s32 func_001AF180(s32);
 s32 func_001CD710(s32 arg0) {
     Vec4_001CD710 position;
     Command_001CD710 command;
-    u8 *base = D_00317490;
-    u8 *selected = D_00317490 + D_003181E4 * 0x350;
+    u8 *base = D_00317490.b;
+    u8 *selected = D_00317490.b + D_003181E4 * 0x350;
     s32 original;
     s64 mode;
     s32 special;

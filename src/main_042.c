@@ -221,8 +221,8 @@ s32 func_001CE430(s32 arg0) {
     u8 alpha;
     f32 fade;
 
-    game = D_00317490;
-    player = D_00317490 + D_003181E4 * 0x350;
+    game = D_00317490.b;
+    player = D_00317490.b + D_003181E4 * 0x350;
     mode = func_001AAF60(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     ownColor = D_002914E0;
@@ -421,9 +421,9 @@ extern s8 D_0034F700;
 extern s8 D_0034F708;
 
 s32 func_001CECF0(s32 arg0, s32 arg1) {
-    u8 *base = D_00317490;
+    u8 *base = D_00317490.b;
     s32 ret = 0;
-    Record_001CECF0 *record = (Record_001CECF0 *)(D_00317490 + arg0 * 0x350);
+    Record_001CECF0 *record = (Record_001CECF0 *)(D_00317490.b + arg0 * 0x350);
     void *selected;
     s32 result;
 
