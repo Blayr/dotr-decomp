@@ -634,7 +634,251 @@ INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB6D0);
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB940);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BC350);
+typedef struct Vertex_001BC350 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001BC350;
+
+typedef struct Header_001BC350 {
+    u16 type;
+    u16 count;
+    u32 pad;
+    u64 registers;
+} Header_001BC350;
+
+typedef struct Packet_001BC350 {
+    Header_001BC350 header;
+    u8 r, g, b, a;
+    f32 q;
+    Vertex_001BC350 first;
+    Vertex_001BC350 second;
+} Packet_001BC350;
+
+extern u8 D_00290080[];
+extern u8 D_00290828[];
+extern u8 D_00290832[];
+extern u8 D_00290896[];
+extern u8 D_002908A0[];
+extern u8 D_0029095E[];
+extern u8 D_00290968[];
+extern u8 D_00290972[];
+extern u8 D_00290A6C[];
+extern u8 D_00290AA8[];
+extern u8 D_00290AB2[];
+extern u8 D_00290ABC[];
+extern u8 D_00290AC6[];
+extern s8 *D_00290FD0[];
+extern u8 D_002BE8A4[];
+extern char D_002BEF93[];
+extern char D_002BEFAB[];
+extern u8 D_003181ED;
+
+static inline s32 text_001BC350(s32 cursor, s32 x, s32 y, s32 align,
+                               s32 flags, s8 *text, void *color) {
+    extern s32 func_001B6F70();
+    s32 length = func_0019BEF0((char *)text);
+    return func_001B6F70(cursor, x, y, align, flags,
+                        length, text, color);
+}
+
+static inline s32 rectangle_001BC350(s32 cursor, Packet_001BC350 *packet,
+                                    s32 x, s32 y, u8 *data) {
+    ((Header_001BC350 *)(s32)&packet->header)->count = 6;
+    ((Header_001BC350 *)(s32)&packet->header)->type = 3;
+    ((Header_001BC350 *)(s32)&packet->header)->registers = 0x441;
+    ((Header_001BC350 *)(s32)&packet->header)->pad = 0;
+    packet->r = 0xA0;
+    packet->g = 0xA0;
+    packet->b = 0xA0;
+    packet->a = 0x80;
+    packet->q = 1.0f;
+    packet->first.x = (x + 0x6CA) << 4;
+    packet->first.y = (y + 0x738) << 4;
+    packet->first.z = *(s32 *)(data + 0xC58);
+    packet->first.fog = 0;
+    packet->second.x = (x + 0x6F2) << 4;
+    packet->second.y = (y + 0x739) << 4;
+    packet->second.z = *(s32 *)(data + 0xC58);
+    packet->second.fog = 0;
+    return func_00207650(cursor, (s32)&packet->header, 0, 0);
+}
+
+#pragma opt_propagation off
+#pragma alignlabel off
+
+void func_001BC350(s32 arg0, s32 arg1, s32 arg2) {
+    extern u8 D_00290A76[];
+    extern s32 func_001B65F0();
+    extern s32 func_001B6F70();
+    extern s32 func_001B6EA0();
+    u8 *data;
+    s32 deckX;
+    u8 *color;
+    s32 baseX;
+    s32 cursor;
+    s32 leader;
+    char *deckText;
+    s8 *sortText;
+    s32 state;
+    s32 flags;
+    s32 special;
+    char *actionText;
+    Packet_001BC350 packet;
+    s32 sortIndex;
+    s32 deckY;
+    u8 *sortData;
+    s32 sortY;
+    s32 textX;
+    s32 textY;
+    s32 sortCursor;
+    s32 cardX;
+    s32 cardY;
+    s32 cardIndex;
+    s32 barX;
+    s32 barY;
+    s32 pageX;
+    s32 pageY;
+    s32 actionCursor;
+    s32 actionX;
+    s32 actionY;
+    s32 deckCursor;
+    s32 selection;
+    s32 enabled;
+    s32 sortX;
+    s32 style;
+
+    leader = D_003181EC;
+    data = D_00317490.b;
+    special = ((D_003181ED == 4) || (data[0xD5D] == 5)) ? 1 : 0;
+    enabled = 0;
+    if (special != 0) {
+        if (func_00203A40(0, 1, 0x100) != 0) {
+            enabled = 1;
+        }
+    }
+    selection = enabled != 0 ? 1 : 0;
+    color = NULL;
+    if (selection != 0) {
+        color = D_002BE8A4;
+    } else {
+        color = NULL;
+    }
+    deckText = D_002BEFAB;
+    if (data[0xD5D] == 5) {
+        actionText = D_002BEF93;
+    } else {
+        actionText = D_002BEF98;
+    }
+    sortText = D_00290FD0[data[0xCB9 + selection]];
+    state = func_002158B0(leader);
+    baseX = arg1 + 0x280;
+    flags = 3;
+    arg0 = func_001B4780(arg0, -1, -1, 11, baseX - 0x50, arg2 + 0x10, -0x40, -0x44, 1);
+    cursor = func_001B7F90(arg0, leader, baseX - 0x4B, arg2 + 0x15, 0x36, 0x3A,
+                        *(s32 *)(data + 0xC58), 1);
+    cursor = func_001B4780(cursor, -1, -1, 4, baseX - 0x4B, arg2 + 0x15, -0x36, -0x3A, 1);
+    cursor = func_001B65F0(cursor, 2, baseX - 0x50, arg2 + 0x54, -0x40, -0x1C, -1, 0);
+    cursor = func_001B3CC0(cursor, D_00290828, baseX + 0x674, arg2 + 0x77C,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    if (special != 0) {
+        cursor = func_001B3CC0(cursor, D_00290AA8, baseX + 0x695, arg2 + 0x77C,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    cursor = func_001B65F0(cursor, 2, baseX - 0x140, arg2 + 0x40, -0xF0, -0x30, -1, 0);
+    cursor = func_001B3CC0(cursor, D_00290896, baseX + 0x58E, arg2 + 0x765,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    if (special != 0) {
+        cursor = func_001B3CC0(cursor, D_00290ABC, baseX + 0x587, arg2 + 0x77E,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    sortX = baseX + 0x5A8;
+    sortY = arg2 + 0x769;
+    sortData = data + selection;
+    sortIndex = 0;
+    do {
+        style = -1;
+        if (sortData[0xCB9] == sortIndex) {
+            style = selection != 0 ? 2 : 1;
+        }
+        cursor = func_001B3CC0(cursor, D_00290080 + (sortIndex + 0xD1) * 10, sortX, sortY,
+                            0, 1, 0, 0, 0, 0, 1, color, style, 0x80);
+        sortIndex++;
+        sortX += 0x10;
+    } while (sortIndex < 10);
+    cursor = func_001B3CC0(cursor, D_002908A0, baseX + 0x64A, arg2 + 0x765,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    sortCursor = cursor;
+    if (special != 0) {
+        sortCursor = func_001B3CC0(cursor, D_00290AC6, baseX + 0x653, arg2 + 0x77E,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    textX = baseX - 0xC8;
+    textY = arg2 + 0x5E;
+    if (color != NULL) {
+        flags |= 8;
+    }
+    cursor = text_001BC350(sortCursor, textX, textY, 0, flags, sortText, color);
+    cardX = baseX - 0x138;
+    cardY = arg2 + 0x70;
+    cardIndex = 0;
+    do {
+        s32 first;
+        first = 0;
+        if (*(u16 *)(data + 0xC8E) == 0) {
+            if (cardIndex == 0) {
+                first = 1;
+            }
+        }
+        cursor = (s32) func_001BCE20((void *) cursor, (*(u16 **)(data + 0x6DC))[*(u16 *)(data + 0xC8E) + cardIndex],
+                            cardX, cardY, first != 0 ? 1 : 0, 0);
+        cardIndex++;
+        cardY += 0x36;
+    } while (cardIndex < 5);
+    barX = baseX - 0x138;
+    barY = arg2 + 0x17E;
+    cursor = func_001B65F0(cursor, 2, barX, barY, -0x3C, -0x32, -1, 0);
+    cursor = rectangle_001BC350(cursor, &packet, barX, barY, data);
+    pageX = baseX - 0x11A;
+    pageY = arg2 + 0x186;
+    cursor = func_001B6EA0(cursor, pageX, pageY, 1, 2, 2, *(u16 *)(data + 0xC8E) + data[0xD5F] + 1);
+    cursor = func_001B6EA0(cursor, pageX, pageY + 0x17, 1, 2, 2, *(u16 *)(data + 0xC90));
+    cursor = func_001B65F0(cursor, 2, baseX - 0xFC, arg2 + 0x17E, -0xEC, -0x32, -1, 0);
+    cursor = func_001B3CC0(cursor, D_00290832, baseX + 0x674, arg2 + 0x8A2,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    deckCursor = cursor;
+    if (special != 0) {
+        deckCursor = func_001B3CC0(cursor, D_00290AB2, baseX + 0x695, arg2 + 0x8A7,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    if (special != 0) {
+        actionCursor = func_001B3CC0(deckCursor, D_00290A6C, baseX + 0x699, arg2 + 0x8BA,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        actionX = baseX - 0x4F;
+        actionY = arg2 + 0x19D;
+        cursor = text_001BC350(actionCursor, actionX, actionY, 1, 0, (s8 *)actionText, NULL);
+        deckCursor = func_001B3CC0(cursor, D_00290A76, baseX + 0x5D8, arg2 + 0x8A2,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    deckX = baseX - 0xCE;
+    deckY = arg2 + 0x184;
+    cursor = text_001BC350(deckCursor, deckX, deckY, 1, 0, (s8 *)deckText, NULL);
+    cursor = func_001B3CC0(cursor, D_0029095E, baseX + 0x5D8, arg2 + 0x8B4,
+                        0, 1, 0, 0, 0, 0, state == 0 ? 1 : 0, 0, -1, 0x80);
+    {
+        s32 x = baseX + 0x608;
+        s32 y = arg2 + 0x8B4;
+        cursor = func_001B3CC0(cursor, D_00290968, x, y, 0, 1, 0, 0, 0, 0, state == 1 ? 1 : 0, 0, -1, 0x80);
+    }
+    {
+        s32 x = baseX + 0x638;
+        s32 y = arg2 + 0x8B4;
+        func_001B3CC0(cursor, D_00290972, x, y, 0, 1, 0, 0, 0, 0, state == 2 ? 1 : 0, 0, -1, 0x80);
+    }
+}
+#pragma alignlabel reset
+#pragma opt_propagation reset
 
 typedef struct Entry_001BCCE0 {
     u16 id;
