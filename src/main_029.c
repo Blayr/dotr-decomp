@@ -4,7 +4,80 @@ void _ipuSetMPEG1(s32 arg0) {
     *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFF7FFFFF) | (arg0 << 0x17);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", _waitBdecOut);
+typedef struct MpegCb_0018A3A0 {
+    s32 type;
+    s32 pad4;
+    s64 a;
+    s64 b;
+    s64 c;
+} MpegCb_0018A3A0;
+
+extern char D_002BC748[];
+
+s32 _waitBdecOut(void *arg0) {
+    MpegCb_0018A3A0 cb;
+    MpegCb_0018A3A0 cb2;
+    s32 ok;
+    s64 top;
+    s32 bp;
+    s32 n;
+
+    ok = 1;
+    func_0018B580(arg0);
+    while (*(volatile s32 *)0x1000B020 != 0 && !(*(volatile s32 *)0x10002010 & 0x4000)) {
+        if (*(volatile s32 *)0x1000B420 == 0 && !(*(volatile s32 *)0x1000B400 & 0x100)) {
+            cb.type = 1;
+            _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+        }
+    }
+    bp = *(volatile s32 *)0x10002020;
+    top = *(s64 *)0x10002030;
+    *(s32 *)((u8 *)arg0 + 0x838) = top;
+    if (top < 0) {
+        if (bp & 0x1F) {
+            n = 0x20 - (bp & 0x1F);
+        } else {
+            n = 0;
+        }
+    } else {
+        n = 0x20;
+    }
+    *(s32 *)((u8 *)arg0 + 0x83C) = n;
+    if (*(volatile s32 *)0x10002010 & 0x4000) {
+        /* Both arms are the same: GCC merges them after register allocation; written twice, arg0 gets the
+           saved register the original gives it (found by decomp-permuter). */
+        if (top) {
+            _Error((s32)arg0, D_002BC748);
+            ok = 0;
+            cb2.type = 2;
+            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            *(volatile s32 *)0x10002010 = 0x40000000;
+            cb2.type = 3;
+            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            func_001843E0();
+            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+            *(volatile s32 *)0x1000B000 = 0;
+            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+            func_00184428();
+            *(volatile s32 *)0x1000B020 = 0;
+        } else {
+            _Error((s32)arg0, D_002BC748);
+            ok = 0;
+            cb2.type = 2;
+            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            *(volatile s32 *)0x10002010 = 0x40000000;
+            cb2.type = 3;
+            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            func_001843E0();
+            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
+            *(volatile s32 *)0x1000B000 = 0;
+            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+            func_00184428();
+            *(volatile s32 *)0x1000B020 = 0;
+        }
+    }
+    return ok;
+}
 
 s32 _dmVector(s32 arg0) {
     return func_0018B6D8(arg0, 3);

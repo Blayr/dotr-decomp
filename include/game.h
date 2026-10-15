@@ -884,7 +884,6 @@ extern s32 D_002BD274[];
 
 typedef union b2d_du { double d; u32 i[2]; } b2d_du;
 
-s32 _waitBdecOut(void *);
 extern s32 D_002BC7A0;
 
 typedef union cvt_du { double d; u32 i[2]; } cvt_du;
