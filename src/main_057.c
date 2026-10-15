@@ -1178,7 +1178,25 @@ s32 func_0020BA80(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BA90);
+asm void func_0020BA90(void *p) {
+    .set noreorder
+    beqz a0, L_0020BAAC
+    nop
+    lqc2 vf28, 0x0(a0)
+    lqc2 vf29, 0x10(a0)
+    lqc2 vf30, 0x20(a0)
+    b L_0020BAC0
+    lqc2 vf31, 0x30(a0)
+L_0020BAAC:
+    vsub.xyzw vf31, vf0, vf0
+    vadd.w vf31, vf31, vf0
+    vmr32.xyzw vf30, vf31
+    vmr32.xyzw vf29, vf30
+    vmr32.xyzw vf28, vf29
+L_0020BAC0:
+    jr ra
+    nop
+}
 
 asm void func_0020BAD0(void *p) {
     .set noreorder
