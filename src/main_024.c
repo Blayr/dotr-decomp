@@ -866,7 +866,35 @@ s32 func_00181260(s32 arg0) {
     return func_00180B38(arg0, 0x10);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_00181280);
+/* Open a file on the IOP (fio RPC 9): take a free iob slot, open, store the handle; returns the slot's index
+   or the open's error. The semaphore calls return int as in Sony's headers (our prototypes say void). */
+
+s32 func_00181280(s32 arg0) {
+    SceIob *slot;
+    s32 r;
+
+    ((s32 (*)(s32))func_0017F708)(9);
+    if (D_0028CAA0 == 0) {
+        func_0017F808();
+    }
+    _cleanup();
+    slot = func_0017F200();
+    if (slot == NULL) {
+        return -0x13;
+    }
+    r = func_00180B38(arg0, 9);
+    if (r < 0) {
+        ((int (*)(int))WaitSema)(D_0028CAA8);
+        slot->inuse = 0;
+        ((int (*)(int))SignalSema)(D_0028CAA8);
+        return r;
+    }
+    ((int (*)(int))WaitSema)(D_0028CAA8);
+    slot->fd = r;
+    r = slot - (SceIob *)D_00313980;
+    ((int (*)(int))SignalSema)(D_0028CAA8);
+    return r;
+}
 
 /* sceDclose: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 

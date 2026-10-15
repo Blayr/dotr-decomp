@@ -2515,6 +2515,7 @@ s32 func_00180EB0(s32 arg0);
 s32 func_00180ED0(u8 *dev, u8 *blockdev, u8 *arg, s32 arglen);
 s32 func_00181140(s32 arg0);
 s32 func_00181260(s32 arg0);
+s32 func_00181280(s32 arg0);
 s32 func_00181348(u32 fd);
 s32 func_001814B0(s32 arg0, s32 arg1);
 s32 func_00181608(u8 *name, void *stat);
