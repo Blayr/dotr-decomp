@@ -551,7 +551,6 @@ typedef struct Sprite_0014D3E0 {
     s16 y;
 } Sprite_0014D3E0;
 
-u16 *TaLogic_GetFusionTree(s32, u16 *, s32, s32, s32, s16 *, s16 *);
 
 s32 TaLogic014_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];
@@ -583,7 +582,7 @@ s32 TaLogic014_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
                 card = *entry;
                 *node = NULL;
                 if ((TaHand_GetCardKind(card) >> 5) == 0) {
-                    *node = TaLogic_GetFusionTree(arg0, *node, i & 0xFF, card & 0xFFFF, 0, &a, &b);
+                    *node = TaLogic_GetFusionTree(arg0, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
                     *node = TaLogic_GetFusionRes(*node);
                     value = TaLogic_GetEnchantQue(arg0, *node, 0, 0);
                     if (TaHand_IsCardSummon2(arg0, card) == 1) {
@@ -2401,7 +2400,6 @@ typedef struct Sprite_001516A0 {
     s16 y;
 } Sprite_001516A0;
 
-u16 *TaLogic_GetFusionTree(s32, u16 *, s32, s32, s32, s16 *, s16 *);
 
 s32 TaLogic015_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];
@@ -2433,7 +2431,7 @@ s32 TaLogic015_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
                 card = *entry;
                 *node = NULL;
                 if ((TaHand_GetCardKind(card) >> 5) == 0 && TaHand_IsCardSummon2(arg0, card) == 1) {
-                    *node = TaLogic_GetFusionTree(arg0, *node, i & 0xFF, card & 0xFFFF, 0, &a, &b);
+                    *node = TaLogic_GetFusionTree(arg0, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
                     *node = TaLogic_GetFusionRes(*node);
                     value = TaLogic_GetEnchantQue(arg0, *node, 0, 0);
                     if (best < value) {

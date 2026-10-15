@@ -1089,7 +1089,57 @@ s32 TaLogic_GetHandFusion(s32 arg0, s32 arg1) {
     return Fusion(temp_s2, temp_s1) & 0xFFFF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", TaLogic_GetFusionTree);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+extern int TaLogic_GetHandFusion_b(unsigned short a, unsigned short b);
+extern struct TreeTag *TaLogic_TreeAloc_b(unsigned short *wSize, unsigned short *wCount);
+extern void TaLogic_InitTree_b(struct TreeTag *pTree, unsigned short nRoot, unsigned char *pCombo, unsigned char nOrder);
+
+void * TaLogic_GetFusionTree(int nSide, struct TreeTag *p_fTree, unsigned char nOrder, unsigned short pRoot, unsigned char *pCombo, unsigned short *wSize, unsigned short *wCount)
+{
+    int arNextHand[5];
+    int i;
+    int j;
+    int Res;
+    int nCardNo;
+
+    TaHand_GetNextHand(nSide, arNextHand);
+    if (pCombo != 0) {
+        nCardNo = arNextHand[nOrder];
+        if (TaHand_IsCardSummon2(nSide, nCardNo) == 0) {
+            return 0;
+        }
+        Res = (unsigned short)TaLogic_GetHandFusion_b(pRoot, nCardNo);
+        if (Res == 999) {
+            return 0;
+        }
+        if ((p_fTree = TaLogic_TreeAloc_b(wSize, wCount)) == 0) {
+            return 0;
+        }
+        TaLogic_InitTree_b(p_fTree, Res, pCombo, nOrder);
+    } else {
+        if ((p_fTree = TaLogic_TreeAloc_b(wSize, wCount)) == 0) {
+            return 0;
+        }
+        Res = pRoot;
+        TaLogic_InitTree_b(p_fTree, Res, pCombo, nOrder);
+    }
+    if ((unsigned char)TaLogic_GetArrayLength(p_fTree->nComboLink) == 5) {
+        return p_fTree;
+    }
+    i = j = 0;
+    while (i < 5) {
+        if (TaLogic_IsUseHandInCombo(i, p_fTree->nComboLink) != 0 || p_fTree->nRoot == 999) {
+            i++;
+            continue;
+        }
+        if ((p_fTree->pNextLink[j] = TaLogic_GetFusionTree(nSide, p_fTree->pNextLink[j], i, Res, p_fTree->nComboLink, wSize, wCount)) != 0) {
+            j++;
+        }
+        i++;
+    }
+    return p_fTree;
+}
 
 void *TaLogic_GetFusionTree2(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                     s32 arg4, u16 *arg5, u16 *arg6) {

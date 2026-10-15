@@ -73,4 +73,11 @@ typedef struct {
     u32 p3[3];
 } sceDmaChan;
 
+/* TaLogic_GetFusionTree's tree node (the dotr-decomp CC0 bundle's TreeTag; TaLogic_TreeAloc, TaLogic_InitTree). */
+struct TreeTag {
+    unsigned short nRoot;
+    unsigned char nComboLink[5];
+    struct TreeTag *pNextLink[4];
+};
+
 #endif
