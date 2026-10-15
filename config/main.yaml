@@ -92,6 +92,7 @@ segments:
       - [0x98550, c, main_032]
       - [0x9A618, c, main_033]
       - [0x9B970, c, main_033b]
+      - [0x9DE70, c, main_033c]
       - [0x9DFB8, c, main_034]
       - [0xA1778, c, main_035]
       - [0xA6F60, c, main_036]
