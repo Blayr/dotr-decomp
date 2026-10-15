@@ -321,7 +321,524 @@ void TaUtil_GetUnitLst(s32 arg0, s32 arg1, s16 *arg2) {
     } while (var_s3 < 0xB);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", SearchUnitByRange);
+s32 SearchUnitByRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    u32 score;
+    u32 hi;
+    u16 lo;
+    u32 bestA;
+    u32 bestB;
+    s32 idx;
+    s32 side;
+    s32 card;
+    s32 v;
+    s32 y;
+    s32 x;
+    s32 id;
+    s32 best2;
+    s32 bestSide;
+    u32 res;
+    s32 i;
+    u16 *p;
+    s32 idxB;
+    s32 sideB;
+    s32 idxC;
+    s32 sideC;
+    u16 list[24];
+
+    p = list;
+    best2 = 0x270F;
+    bestSide = -1;
+    res = 0;
+    bestA = 0;
+    bestB = 0x27100000;
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    func_0024C910(arg2, arg3, (s16 *)list);
+    switch (arg5) {
+    case 22:
+        for (i = 0; i < func_0027C670(list); i++) {
+            if ((*p & 0xFF) > 0) {
+                id = func_001E1090(*p >> 8, *p & 0xFF);
+                if (func_001E22B0(id & 0xFF, id >> 8) == 2) {
+                    v = func_001E0700(*p >> 8, *p & 0xFF);
+                    switch (arg4 & 0xFFFF) {
+                    case 0x1D:
+                        if ((v >> 5) == 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 0x1F:
+                    case 0x34:
+                        res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        break;
+                    }
+                }
+            }
+            p++;
+        }
+        break;
+    case 24:
+        for (i = 0; i < func_0027C670(list); i++) {
+            if ((*p & 0xFF) > 0) {
+                id = func_001E1090(*p >> 8, *p & 0xFF);
+                if (func_001E22B0(id & 0xFF, id >> 8) == 4) {
+                    v = func_001E0700(*p >> 8, *p & 0xFF);
+                    switch (arg4 & 0xFFFF) {
+                    case 0x1D:
+                        if ((v >> 5) == 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 0x1F:
+                    case 0x34:
+                        res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        break;
+                    }
+                }
+            }
+            p++;
+        }
+        break;
+    case 23:
+        for (i = 0; i < func_0027C670(list); i++) {
+            if ((*p & 0xFF) > 0) {
+                id = func_001E1090(*p >> 8, *p & 0xFF);
+                if (func_001E22B0(id & 0xFF, id >> 8) == 3) {
+                    v = func_001E0700(*p >> 8, *p & 0xFF);
+                    switch (arg4 & 0xFFFF) {
+                    case 0x1D:
+                        if ((v >> 5) == 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 0x1F:
+                    case 0x34:
+                        res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        break;
+                    }
+                }
+            }
+            p++;
+        }
+        break;
+    case 20:
+        for (i = 0; i < func_0027C670(list); i++) {
+            if ((*p & 0xFF) > 0) {
+                id = func_001E1090(*p >> 8, *p & 0xFF);
+                if (func_001E22B0(id & 0xFF, id >> 8) == 0) {
+                    v = func_001E0700(*p >> 8, *p & 0xFF);
+                    switch (arg4 & 0xFFFF) {
+                    case 0x1D:
+                        if ((v >> 5) == 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 0x1F:
+                    case 0x34:
+                        res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        break;
+                    }
+                }
+            }
+            p++;
+        }
+        break;
+    case 29:
+        for (i = 0; i < func_0027C670(list); i++) {
+            if ((*p & 0xFF) > 0) {
+                id = func_001E1090(*p >> 8, *p & 0xFF);
+                if (func_001E22B0(id & 0xFF, id >> 8) == 9) {
+                    v = func_001E0700(*p >> 8, *p & 0xFF);
+                    switch (arg4 & 0xFFFF) {
+                    case 0x1D:
+                        if ((v >> 5) == 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 0x1F:
+                    case 0x34:
+                        res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        break;
+                    }
+                }
+            }
+            p++;
+        }
+        break;
+    case 18:
+        for (i = 0; i < func_0027C670(list); i++) {
+            if ((*p & 0xFF) > 0) {
+                id = func_001E1090(*p >> 8, *p & 0xFF);
+                if ((id & 0xFF) == arg0 || (id >> 8) == arg1) {
+                    v = func_001E0700(*p >> 8, *p & 0xFF);
+                    switch (arg4 & 0xFFFF) {
+                    case 29:
+                        if ((v >> 5) == 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 30:
+                        if ((v >> 5) != 0 && func_0024DD80(arg2, func_0024DE70(*p >> 8, *p & 0xFF), arg3) == 1) {
+                            res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        }
+                        break;
+                    case 31:
+                        res = func_0024C780(res, *p >> 8, *p & 0xFF);
+                        break;
+                    }
+                }
+            }
+            p++;
+        }
+        break;
+    default:
+        for (i = 0; i < func_0027C670(list); i++) {
+            id = func_001E1090(*p >> 8, *p & 0xFF);
+            if (((((id & 0xFF) < arg0) ? arg0 : (id & 0xFF)) - ((arg0 < (id & 0xFF)) ? arg0 : (id & 0xFF)) + ((((id >> 8) < arg1) ? arg1 : (id >> 8)) - ((arg1 < (id >> 8)) ? arg1 : (id >> 8))) <= arg5)) {
+                y = id >> 8;
+                x = id & 0xFF;
+                v = func_001E0700(*p >> 8, *p & 0xFF);
+                card = *p;
+                switch (arg4 & 0xFFFF) {
+                case 0x1F:
+                case 0x2D:
+                case 0x34:
+                case 0x3D:
+                    res = func_0024C780(res, card >> 8, card & 0xFF);
+                    break;
+                case 0x1E:
+                    if ((v >> 5) != 0) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 0x1D:
+                    if ((v >> 5) == 0) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 0:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 0) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 1:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 1) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 2:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 2) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 3:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 3) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 4:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 4) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 5:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 5) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 6:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 6) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 7:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 7) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 8:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 8) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 9:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 9) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 10:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 10) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 11:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 11) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 12:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 12) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 13:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 13) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 14:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 14) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 15:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 15) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 16:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 16) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 17:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 17) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 18:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 18) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 19:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 19) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 0x3B:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 20) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 0x14:
+                    side = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idx = card & 0xFF;
+                        if (func_001E0830(side, idx) == 0) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x15:
+                    side = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idx = card & 0xFF;
+                        if (func_001E0830(side, idx) == 1) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x16:
+                    side = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idx = card & 0xFF;
+                        if (func_001E0830(side, idx) == 2) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x18:
+                    side = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idx = card & 0xFF;
+                        if (func_001E0830(side, idx) == 4) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x17:
+                    side = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idx = card & 0xFF;
+                        if (func_001E0830(side, idx) == 3) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x19:
+                    side = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idx = card & 0xFF;
+                        if (func_001E0830(side, idx) == 5) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x3C:
+                    side = card >> 8;
+                    idx = card & 0xFF;
+                    if (func_001E2100(side, idx, 4) == 0) {
+                        res = func_0024C780(res, side, idx);
+                    }
+                    break;
+                case 0x35:
+                    side = card >> 8;
+                    idx = card & 0xFF;
+                    if (func_001E2100(side, idx, 3) == 0) {
+                        res = func_0024C780(res, side, idx);
+                    }
+                    break;
+                case 0x36:
+                    if ((v >> 5) == 4 || (v >> 5) == 3) {
+                        side = card >> 8;
+                        idx = card & 0xFF;
+                        if (func_001E2100(side, idx, 4) != 0) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x21:
+                    sideB = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idxB = card & 0xFF;
+                        id = func_001E1090(sideB, idxB);
+                        score = (func_002509E0(sideB, idxB, id & 0xFF, id >> 8) << 16) | func_00250B40(sideB, idxB, id & 0xFF, id >> 8);
+                        if ((bestA >> 16) < (score >> 16)) {
+                            best2 = func_001E13C0(sideB, idxB);
+                            bestA = score;
+                            bestSide = sideB;
+                            res = func_0024C780(0, sideB, idxB);
+                        } else if ((bestA >> 16) == (score >> 16)) {
+                            lo = bestA;
+                            if (lo == (score & 0xFFFF)) {
+                                if (best2 == func_001E13C0(sideB, idxB)) {
+                                    if (bestSide == arg3) {
+                                        bestA = score;
+                                        bestSide = sideB;
+                                        res = func_0024C780(0, sideB, idxB);
+                                    }
+                                } else if (func_001E13C0(sideB, idxB) < best2) {
+                                    best2 = func_001E13C0(sideB, idxB);
+                                    bestA = score;
+                                    bestSide = sideB;
+                                    res = func_0024C780(0, sideB, idxB);
+                                }
+                            } else if (lo < (score & 0xFFFF)) {
+                                best2 = func_001E13C0(sideB, idxB);
+                                bestA = score;
+                                bestSide = sideB;
+                                res = func_0024C780(0, sideB, idxB);
+                            }
+                        }
+                    }
+                    break;
+                case 0x20:
+                    sideC = card >> 8;
+                    if ((v >> 5) == 0) {
+                        idxC = card & 0xFF;
+                        id = func_001E1090(sideC, idxC);
+                        score = (func_002509E0(sideC, idxC, id & 0xFF, id >> 8) << 16) | func_00250B40(sideC, idxC, id & 0xFF, id >> 8);
+                        hi = score >> 16;
+                        if (hi < (bestB >> 16)) {
+                            best2 = func_001E13C0(sideC, idxC);
+                            bestB = score;
+                            bestSide = sideC;
+                            res = func_0024C780(0, sideC, idxC);
+                        } else {
+                            if (bestB == hi) {
+                            if ((bestB & 0xFFFF) == (score & 0xFFFF)) {
+                                if (best2 == func_001E13C0(sideC, idxC)) {
+                                    if (bestSide == arg3) {
+                                        bestB = score;
+                                        bestSide = sideC;
+                                        res = func_0024C780(0, sideC, idxC);
+                                    }
+                                } else if (func_001E13C0(sideC, idxC) < best2) {
+                                    best2 = func_001E13C0(sideC, idxC);
+                                    bestB = score;
+                                    bestSide = sideC;
+                                    res = func_0024C780(0, sideC, idxC);
+                                }
+                            } else if ((bestB & 0xFFFF) > (score & 0xFFFF)) {
+                                best2 = func_001E13C0(sideC, idxC);
+                                bestB = score;
+                                bestSide = sideC;
+                                res = func_0024C780(0, sideC, idxC);
+                            }
+                        }
+                        }
+                    }
+                    break;
+                case 0x25:
+                    if ((v >> 5) == 0) {
+                        side = card >> 8;
+                        idx = card & 0xFF;
+                        if (func_002509E0(side, idx, x, y) <= (arg4 >> 16 & 0xFFFF)) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x24:
+                    if ((v >> 5) == 0) {
+                        side = card >> 8;
+                        idx = card & 0xFF;
+                        if (func_002509E0(side, idx, x, y) >= (arg4 >> 16 & 0xFFFF)) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x3A:
+                    if ((v >> 5) == 0) {
+                        side = card >> 8;
+                        idx = card & 0xFF;
+                        if (func_00250B40(side, idx, x, y) <= (arg4 >> 16 & 0xFFFF)) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x39:
+                    if ((v >> 5) == 0) {
+                        side = card >> 8;
+                        idx = card & 0xFF;
+                        if (func_00250B40(side, idx, x, y) >= (arg4 >> 16 & 0xFFFF)) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x37:
+                    if ((v >> 5) == 0 && (v & 0x1F) == 0) {
+                        side = card >> 8;
+                        idx = card & 0xFF;
+                        if (func_002509E0(side, idx, x, y) <= (arg4 >> 16 & 0xFFFF)) {
+                            res = func_0024C780(res, side, idx);
+                        }
+                    }
+                    break;
+                case 0x22:
+                    if ((card & 0xFF) == 0) {
+                        res = func_0024C780(res, card >> 8, card & 0xFF);
+                    }
+                    break;
+                case 0x1C: {
+                    extern s32 func_001E1030();
+
+                    side = card >> 8;
+                    idx = card & 0xFF;
+                    if ((arg4 >> 16) == func_001E1030(side, idx)) {
+                        res = func_0024C780(res, side, idx);
+                    }
+                    break;
+                }
+                }
+            }
+            p++;
+        }
+        break;
+    }
+    return res;
+}
 
 s32 Ta_SideMatch(s32 arg0, s32 arg1, s32 arg2) {
     switch (arg2) {

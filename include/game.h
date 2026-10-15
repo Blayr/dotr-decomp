@@ -129,7 +129,6 @@ extern Q128_0020F290 D_0032A600;
 
 extern u8 D_003506C8[];
 
-s32 SearchUnitByRange(s32, s32, s32, s32, s32, s32);
 
 
 
