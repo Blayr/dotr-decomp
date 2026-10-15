@@ -788,7 +788,6 @@ extern s32 D_002BC9D0;
 
 extern f32 D_002BE5D0[]; /* fdlibm kf_tan.c T[13] */
 
-s32 _mbAddressIncrement(void *);                          /* extern */
 extern s32 D_002BC7C0;
 extern s32 D_002BC7E8;
 
@@ -1082,5 +1081,7 @@ extern f32 D_01E06A08_b357;
 extern u8 D_912000[];
 extern char D_002B8F00[], D_002B8F05[], D_002B8F07[], D_002B8F0D[], D_002B8F13[], D_002B8F18[];
 extern char D_002B8F1F[], D_002B8F27[], D_002B8F2C[], D_002B8F32[];
+
+extern s32 D_002BC768;
 
 #endif

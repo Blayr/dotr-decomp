@@ -34,7 +34,41 @@ void _dualPrimeVector(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", _mbAddressIncrement);
+s32 _mbAddressIncrement(void *arg0) {
+    s32 inc;
+    u32 code;
+    s32 n;
+    s32 cont;
+
+    inc = 0;
+    do {
+        code = func_0018B6D8((s32)arg0, 0);
+        switch (code) {
+        case 0x23:
+            cont = 1;
+            inc += 0x21;
+            break;
+        case 0:
+            n = func_0018B850(arg0, 11);
+            if (*(s32 *)((u8 *)arg0 + 0x848) == 0 || n != 15) {
+                goto error;
+            }
+            func_0018B958(arg0, 11);
+        case 0x22:
+            cont = 1;
+            break;
+        error:
+            _Error1((s32)arg0, &D_002BC768, code);
+            *(s32 *)((u8 *)arg0 + 0x11C) = 1;
+            return 1;
+        default:
+            inc += code;
+            cont = 0;
+            break;
+        }
+    } while (cont);
+    return inc;
+}
 
 s32 _pictureData0(void *arg0) {
     s32 n;
