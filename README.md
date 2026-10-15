@@ -9,14 +9,14 @@ This repository contains no game data. You need your own copy of the game to bui
 
 | | Functions in C | Code in C |
 |---|---|---|
-| Main executable (`SLUS_205.15`) | 3,366 of 3,462 (97.2%) | 87.5% of 1.5 MB |
+| Main executable (`SLUS_205.15`) | 3,369 of 3,462 (97.3%) | 89.1% of 1.5 MB |
 | Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 5,775 of 8,620 (67.0%) | 40.4% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
   originals. A function counts as done only when its C is in that build and the check passes.
 - This executable is a revision whose tutorial code was patched after it was built (the tutorial functions at
-  0x27F5B0-0x27FDA0 cut down to stubs, their callers rewired). 22 compiled functions are therefore C plus a few
-  patched words (198 in all), applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above.
+  0x27F5B0-0x27FDA0 cut down to stubs, their callers rewired). 23 compiled functions are therefore C plus a few
+  patched words (201 in all), applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above.
   Functions this revision rewrote by hand stay assembly. Another revision of SLUS_205.15 (sha256 `1df7759b…`)
   has the tutorial compiled in.
 - 22 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
