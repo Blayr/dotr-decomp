@@ -283,6 +283,7 @@ SzMsg_GetInfo_b = 0x001FEAB0;
 Ta_GetUnitEffect_b = 0x00250740;
 Taku_Obj_Set_b = 0x00217BD0;
 Taku_Window_Set_window = 0x002195E0;
+Taku_Window_Set_b = 0x002195E0;
 TaLogic_GetInputQueFromMinimumTask_b = 0x00276290;
 TaLogic_GetHandFusion_b = 0x002789F0;
 TaLogic_InitTree_b = 0x00278930;
