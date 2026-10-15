@@ -67,7 +67,154 @@ void TaLogic_DoSortTaskList(void *arg0) {
     } while (i < 22);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", TaLogic_GetInputQueFromMinimumTask);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrInputQueueCtl {
+    unsigned char unknown_000[0x160];
+    unsigned short ids[32];
+    unsigned char mode : 5;
+    unsigned char unknown_1a0_5 : 3;
+    unsigned char unknown_1a1;
+    unsigned short count_1a2;
+};
+typedef char DotrInputQueueCtlSizeMustBe420[(sizeof(struct DotrInputQueueCtl) == 0x1a4) ? 1 : -1];
+struct DotrInputQueueTask {
+    unsigned short position;
+    unsigned char kind;
+    unsigned short target;
+    unsigned char slots[5];
+    int unknown_0c;
+    unsigned char unknown_10;
+};
+typedef char DotrInputQueueTaskSizeMustBe20[(sizeof(struct DotrInputQueueTask) == 0x14) ? 1 : -1];
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
+#define MOVE_X(d) \
+    for (i = 0; i < ABS(d); i++) { \
+        pCtl->ids[QueCount++] = (d) > 0 ? (tSide == 0 ? 0x8000 : 0x2000) : (tSide == 1 ? 0x8000 : 0x2000); \
+    }
+#define MOVE_Z(d) \
+    for (i = 0; i < ABS(d); i++) { \
+        pCtl->ids[QueCount++] = (d) > 0 ? (tSide == 0 ? 0x1000 : 0x4000) : (tSide == 1 ? 0x1000 : 0x4000); \
+    }
+#define DX (sX - (pTask->target & 0xff))
+#define DZ (sZ - (pTask->target >> 8))
+
+int TaLogic_GetInputQueFromMinimumTask(void *pCtl_v, void *pTask_v, unsigned short wCursorPos)
+{
+    struct DotrInputQueueCtl * pCtl = pCtl_v;
+    struct DotrInputQueueTask * pTask = pTask_v;
+    int i;
+    int j;
+    int tSide;
+    int LOC;
+    int HandCursor;
+    int PadKey;
+    int QueCount;
+    int sX;
+    int sZ;
+
+    tSide = SzDuel_GetTurnOwner();
+    QueCount = 0;
+    if (pTask->kind == 255 || pTask->kind == 14) {
+        return -1;
+    }
+    LOC = SzDuel_GetUnitLoc(pTask->position >> 8, pTask->position & 0xff);
+    sX = (wCursorPos & 0xff) - (LOC & 0xff);
+    MOVE_X(sX)
+    sZ = (wCursorPos >> 8) - (LOC >> 8);
+    MOVE_Z(sZ)
+    switch (pTask->kind) {
+    case 6:
+        pCtl->ids[QueCount++] = 64;
+        sX = (LOC & 0xff) - (pTask->target & 0xff);
+        sZ = (LOC >> 8) - (pTask->target >> 8);
+        if (pTask->position & 0xff) {
+            if (pTask->unknown_0c == 1) {
+                pCtl->ids[QueCount++] = 2;
+            }
+            if (ABS(sX) == 0 && ABS(sZ) == 0) {
+                if (pTask->unknown_10 == 0 && SzDuel_GetUnitStatus(pTask->position >> 8, pTask->position & 0xff, 5)
+                    && SzDuel_GetUnitStatus(pTask->position >> 8, pTask->position & 0xff, 5)) {
+                    pCtl->ids[QueCount++] = 4;
+                } else if (pTask->unknown_10 == 1 && !SzDuel_GetUnitStatus(pTask->position >> 8, pTask->position & 0xff, 5)
+                           && !SzDuel_GetUnitStatus(pTask->position >> 8, pTask->position & 0xff, 5)) {
+                    pCtl->ids[QueCount++] = 8;
+                }
+            }
+        }
+        switch (TaLogic_GetQueueXY_Move1(pTask->position >> 8, pTask->position >> 8, LOC & 0xff, LOC >> 8, pTask->target & 0xff,
+                                         pTask->target >> 8)) {
+        case 1:
+            MOVE_X(sX)
+            MOVE_Z(sZ)
+            break;
+        default:
+            MOVE_Z(sZ)
+            MOVE_X(sX)
+            break;
+        }
+        pCtl->ids[QueCount] = 64;
+        break;
+    case 10:
+        if (SzDuel_InqHandPhase(tSide)) {
+            pCtl->ids[QueCount++] = 128;
+            sX = (LOC & 0xff) - (pTask->target & 0xff);
+            MOVE_X(sX)
+            sZ = (LOC >> 8) - (pTask->target >> 8);
+            MOVE_Z(sZ)
+            pCtl->ids[QueCount++] = 64;
+            HandCursor = 0;
+            for (i = 0; i < 5; i++) {
+                if (pTask->slots[i] < 255) {
+                    if (pTask->slots[i] - HandCursor >= 0) {
+                        PadKey = 0x2000;
+                    } else {
+                        PadKey = 0x8000;
+                    }
+                    for (j = 0; j < ABS(pTask->slots[i] - HandCursor); j++) {
+                        pCtl->ids[QueCount++] = PadKey;
+                    }
+                    pCtl->ids[QueCount++] = 0x1000;
+                    HandCursor = pTask->slots[i];
+                }
+            }
+            pCtl->ids[QueCount++] = 64;
+            pCtl->ids[QueCount++] = 64;
+        }
+        break;
+    case 12:
+        pCtl->ids[QueCount++] = 64;
+        pCtl->ids[QueCount++] = 2;
+        pCtl->ids[QueCount++] = 64;
+        if (pTask->target >> 8 != SzDuel_GetTurnOwner()) {
+            pCtl->ids[QueCount++] = SzDuel_GetTurnOwner() == 0 ? 0x2000 : 0x8000;
+        }
+        for (i = 0; i < (pTask->target & 0xf); i++) {
+            pCtl->ids[QueCount++] = 0x4000;
+        }
+        pCtl->ids[QueCount] = 64;
+        break;
+    case 13:
+        pCtl->ids[QueCount++] = 64;
+        pCtl->ids[QueCount++] = 2;
+        pCtl->ids[QueCount++] = 64;
+        for (i = 0; i < pTask->target; i++) {
+            pCtl->ids[QueCount++] = 0x4000;
+        }
+        pCtl->ids[QueCount] = 64;
+        break;
+    default:
+        pCtl->ids[QueCount] = 64;
+        break;
+    }
+    pCtl->mode++;
+    return 1;
+}
+#undef ABS
+#undef MOVE_X
+#undef MOVE_Z
+#undef DX
+#undef DZ
 
 static inline s32 absolute_00276B60(s32 value) {
     if (value >= 0) {

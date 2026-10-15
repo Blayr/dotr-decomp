@@ -1764,7 +1764,7 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_00130E90;
 
-s32 TaLogic_GetInputQueFromMinimumTask(void *, void *, s32);
+s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
 s32 func_00130E90(s32 arg0, void *arg1) {
     Req_00130E90 req;
@@ -1802,7 +1802,7 @@ s32 func_00130E90(s32 arg0, void *arg1) {
         if (TaLogic_GetMinimumTask_0012BB70(w, &req, arg0) == 0) {
             return 0x800;
         }
-        if (TaLogic_GetInputQueFromMinimumTask(w, &req, arg0) < 0) {
+        if (TaLogic_GetInputQueFromMinimumTask_b(w, &req, arg0) < 0) {
             return 0;
         }
     }
@@ -3523,7 +3523,7 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_00135060;
 
-s32 TaLogic_GetInputQueFromMinimumTask(void *, void *, s32);
+s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
 s32 func_00135060(s32 arg0, void *arg1) {
     Req_00135060 req;
@@ -3561,7 +3561,7 @@ s32 func_00135060(s32 arg0, void *arg1) {
         if (TaLogic_GetMinimumTask_00131060(w, &req, arg0) == 0) {
             return 0x800;
         }
-        if (TaLogic_GetInputQueFromMinimumTask(w, &req, arg0) < 0) {
+        if (TaLogic_GetInputQueFromMinimumTask_b(w, &req, arg0) < 0) {
             return 0;
         }
     }

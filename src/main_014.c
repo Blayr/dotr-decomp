@@ -1238,7 +1238,7 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_0015D180;
 
-s32 TaLogic_GetInputQueFromMinimumTask(void *, void *, s32);
+s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
 s32 func_0015D180(s32 arg0, void *arg1) {
     Req_0015D180 req;
@@ -1276,7 +1276,7 @@ s32 func_0015D180(s32 arg0, void *arg1) {
         if (TaLogic_GetMinimumTask_00158C80(w, &req, arg0) == 0) {
             return 0x800;
         }
-        if (TaLogic_GetInputQueFromMinimumTask(w, &req, arg0) < 0) {
+        if (TaLogic_GetInputQueFromMinimumTask_b(w, &req, arg0) < 0) {
             return 0;
         }
     }

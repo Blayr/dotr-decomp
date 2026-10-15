@@ -1661,6 +1661,7 @@ void *TaLogic_GetFusionTree2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u
 s32 TaLogic_GetGraveCardCount(s32 arg0, s32 arg1, s32 arg2);
 s32 TaLogic_GetGraveEntryAfterScreen(s32 arg0, s32 arg1, s32 arg2);
 s32 TaLogic_GetHandFusion(s32 arg0, s32 arg1);
+int TaLogic_GetInputQueFromMinimumTask(void *pCtl_v, void *pTask_v, unsigned short wCursorPos);
 void TaLogic_GetInvadeRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, u8 arg9, u16 arg10);
 s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8, u16 arg9);
 u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38);
@@ -6241,6 +6242,7 @@ s32 func_00275E80(void *arg0);
 s32 func_002760E0(u16 value, u16 *entries);
 s32 func_00276120(u16 arg0, void *arg1);
 void func_002761D0(void *arg0);
+int func_00276290(void *pCtl_v, void *pTask_v, unsigned short wCursorPos);
 s32 func_00276B60(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_00276C80(u16 *arg0, s32 arg1);
 int func_00276CC0(int nX, int nZ, int nOwnerID, unsigned char bWarnRange, unsigned short bWarnLvl, unsigned char fView);
