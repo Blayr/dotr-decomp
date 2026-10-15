@@ -996,4 +996,107 @@ extern s32 D_00326A20;
 
 extern s32 D_00295060;
 
+extern f32 D_01E01A80_b505;
+extern f32 D_01E01A88_b505;
+
+extern f32 D_01E01E00_b350;
+extern f32 D_01E01E08_b350;
+
+extern f32 D_01E03D00_b267;
+extern f32 D_01E03D08_b267;
+extern f32 D_01E02400_b850;
+extern f32 D_01E02408_b850;
+
+extern f32 D_01E03C00_b378;
+extern f32 D_01E03C08_b378;
+extern f32 D_01E03780_b195;
+extern f32 D_01E03788_b195;
+extern f32 D_01E03580_b266;
+extern f32 D_01E03588_b266;
+extern f32 D_01E02780_b294;
+extern f32 D_01E02788_b294;
+
+extern f32 D_01E02C80_b484;
+extern f32 D_01E02C88_b484;
+
+extern f32 D_01E02D00_b477;
+extern f32 D_01E02D08_b477;
+extern f32 D_01E03180_b397;
+extern f32 D_01E03188_b397;
+
+extern f32 D_01E02E00_b284;
+extern f32 D_01E02E08_b284;
+
+extern f32 D_01E03C00_b192;
+extern f32 D_01E03C08_b192;
+extern f32 D_01E03000_b566;
+extern f32 D_01E03008_b566;
+extern f32 D_01E03380_b513;
+extern f32 D_01E03388_b513;
+extern f32 D_01E02E00_b552;
+extern f32 D_01E02E08_b552;
+extern f32 D_01E03180_b297;
+extern f32 D_01E03188_b297;
+
+extern f32 D_01E03B80_b052;
+extern f32 D_01E03B88_b052;
+
+extern f32 D_01E03D00_b567;
+extern f32 D_01E03D08_b567;
+extern f32 D_01E04000_b555;
+extern f32 D_01E04008_b555;
+
+extern f32 D_01E03E80_b018;
+extern f32 D_01E03E88_b018;
+extern f32 D_01E03E80_b019;
+extern f32 D_01E03E88_b019;
+extern f32 D_01E04000_b080;
+extern f32 D_01E04008_b080;
+extern f32 D_01E04480_b734;
+extern f32 D_01E04488_b734;
+extern f32 D_01E04F00_b430;
+extern f32 D_01E04F08_b430;
+
+extern f32 D_01E03F80_b393;
+extern f32 D_01E03F88_b393;
+
+extern f32 D_01E04300_b046;
+extern f32 D_01E04308_b046;
+
+extern f32 D_01E05100_b225;
+extern f32 D_01E05108_b225;
+
+extern f32 D_01E04680_b527;
+extern f32 D_01E04688_b527;
+extern f32 D_01E04580_b257;
+extern f32 D_01E04588_b257;
+extern f32 D_01E05780_b582;
+extern f32 D_01E05788_b582;
+extern f32 D_01E04800_b476;
+extern f32 D_01E04808_b476;
+
+extern f32 D_01E05B80_b258;
+extern f32 D_01E05B88_b258;
+extern f32 D_01E05480_b573;
+extern f32 D_01E05488_b573;
+extern f32 D_01E05C80_b218;
+extern f32 D_01E05C88_b218;
+
+extern f32 D_01E04B00_b207;
+extern f32 D_01E04B08_b207;
+
+extern f32 D_01E05600_b718;
+extern f32 D_01E05608_b718;
+
+extern f32 D_01E05600_b383;
+extern f32 D_01E05608_b383;
+extern f32 D_01E05600_b148;
+extern f32 D_01E05608_b148;
+extern f32 D_01E06100_b709;
+extern f32 D_01E06108_b709;
+extern f32 D_01E05A00_b417;
+extern f32 D_01E05A08_b417;
+extern f32 D_01E06A00_b357;
+extern f32 D_01E06A08_b357;
+
 #endif

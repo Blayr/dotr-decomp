@@ -1,14 +1,201 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/b047", func_01E00080_b047);
+/* shape b000:01E00100, 38 insns, 169 copies: one colour into the four vertices of a quad (q = 1.0) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b047", func_01E00120_b047);
+typedef struct Src_b000_01E00100 {
+    u8 b, g, r, a;
+} Src_b000_01E00100;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b047", func_01E00250_b047);
+typedef struct Col_b000_01E00100 {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b000_01E00100;
+
+typedef struct Vtx_b000_01E00100 {
+    u8 pad[0x10];
+    Col_b000_01E00100 c;
+} Vtx_b000_01E00100;
+
+
+/* static in its module (callers that include this file #define OVL_LOCAL static first) */
+
+static void func_01E00080_b047(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
+    v[0].c.r = s->r;
+    v[0].c.g = s->g;
+    v[0].c.b = s->b;
+    v[0].c.a = s->a;
+    v[0].c.q = 1.0f;
+    v[1].c.r = s->r;
+    v[1].c.g = s->g;
+    v[1].c.b = s->b;
+    v[1].c.a = s->a;
+    v[1].c.q = 1.0f;
+    v[2].c.r = s->r;
+    v[2].c.g = s->g;
+    v[2].c.b = s->b;
+    v[2].c.a = s->a;
+    v[2].c.q = 1.0f;
+    v[3].c.r = s->r;
+    v[3].c.g = s->g;
+    v[3].c.b = s->b;
+    v[3].c.a = s->a;
+    v[3].c.q = 1.0f;
+}
+
+/* shape b001:01E00900, 73 insns, 54 copies: one GS sprite (RGBAQ, ST, XYZ2, ST, XYZ2) sent with the current texture */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b001_01E00900;
+
+typedef struct {
+    Hdr_b001_01E00900 h;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    u64 x0 : 16;
+    u64 y0 : 16;
+    u64 z0 : 24;
+    u64 f0 : 8;
+    f32 s1, t1;
+    u64 x1 : 16;
+    u64 y1 : 16;
+    u64 z1 : 24;
+    u64 f1 : 8;
+    u8 tail[0x20];
+} Pkt_b001_01E00900;
+
+static s32 func_01E00120_b047(void) {
+    Pkt_b001_01E00900 p __attribute__((aligned(8)));
+
+    ((Hdr_b001_01E00900 *)(s32)&p)->count = 0x26;
+    ((Hdr_b001_01E00900 *)(s32)&p)->tag = 5;
+    ((Hdr_b001_01E00900 *)(s32)&p)->regs = 0x42421;
+    ((Hdr_b001_01E00900 *)(s32)&p)->pad = 0;
+    p.r = 0x80;
+    p.g = 0x80;
+    p.b = 0x80;
+    p.a = 0x60;
+    p.q = 1.0f;
+    p.x0 = 0x6BF8;
+    p.y0 = 0x71F8;
+    p.z0 = 0xFFFFFF;
+    p.f0 = 0;
+    p.x1 = 0x93F8;
+    p.y1 = 0x8DF8;
+    p.z1 = 0xFFFFFF;
+    p.f1 = 0;
+    p.s0 = 0.0f;
+    p.t0 = 0.0f;
+    p.s1 = 0.625f;
+    p.t1 = 0.875f;
+    func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&p, 1);
+    func_002075F0((s32)&p, (s32)func_00207500(), 0);
+    return 0;
+}
+
+/* OVL_WARM: compile warm (DK_WARM=1, after a runtime-helper call as in the original many-files-per-run build).
+   Its float -> int casts are MWCC runtime calls: fptosi = 0x001A22C0, fptoui = 0x001A23B0 (link names). */
+
+/* shape b015:01E01620, 110 insns, 54 copies: scatter the particles on a random ring (flag 0x1D) or at a spawn point */
+
+typedef struct {
+    f32 x, y, z;
+    u8 c;
+    u8 d;
+    s16 t;
+} Part_b015_01E01620;
+
+typedef struct {
+    u8 pad00[4];
+    s32 flags;
+    u8 pad08[3];
+    u8 c;
+    Part_b015_01E01620 *parts;
+    u8 pad10[0x18];
+    f32 radius;
+    s16 count;
+} Obj_b015_01E01620;
+
+static s32 func_01E00250_b047(Obj_b015_01E01620 *obj, s32 life, f32 y) {
+    f32 v[4];
+    s32 a;
+    s32 n;
+    s32 i;
+    f32 r;
+
+    n = (s32)(10.0f * obj->radius);
+    for (i = 0; i < obj->count; i++) {
+        if (func_00104520(obj->flags, 0x1D) != 0) {
+            a = func_0019A5C8() % 0x10000;
+            r = 0.1f * (f32)(func_0019A5C8() % n);
+            obj->parts[i].y = y;
+            obj->parts[i].z = r * func_0020B480(a);
+            obj->parts[i].x = r * func_0020B550(a);
+        } else {
+            func_001043F0(v, y);
+            obj->parts[i].x = v[0];
+            obj->parts[i].y = v[1];
+            obj->parts[i].z = v[2];
+        }
+        obj->parts[i].t = -(func_0019A5C8() % life);
+        obj->parts[i].c = obj->c;
+        obj->parts[i].d = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b047", func_01E00410_b047);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b047", func_01E01170_b047);
+/* shape b047:01E01170, 61 insns, 6 copies: sets up a ring: n points (at most 0x24) on the unit circle, then gives
+   every item the object's alpha. */
+
+typedef struct {
+    f32 x, y;
+} Pt_b047_01E01170;
+
+typedef struct {
+    u8 pad0[0xC];
+    u8 a;
+    u8 padD[3];
+} Item_b047_01E01170;
+
+typedef struct {
+    s32 owner;
+    u8 pad4[3];
+    u8 a;
+    u8 pad8[0x18];
+    Pt_b047_01E01170 pts[0x24];
+    s16 n;
+    u8 pad142[6];
+    Item_b047_01E01170 *items;
+    s16 count;
+} Obj_b047_01E01170;
+
+static s32 func_01E01170_b047(Obj_b047_01E01170 *o, s32 owner) {
+    s32 i;
+    s32 ang;
+    s32 step;
+
+    o->owner = owner;
+    if (o->n > 0x24) {
+        o->n = 0x24;
+    }
+    step = 0x10000 - 0x10000 / o->n;
+    for (i = 0, ang = 0; i < o->n; i++) {
+        o->pts[i].x = func_0020B480(ang);
+        o->pts[i].y = func_0020B550(ang);
+        ang += step;
+    }
+    for (i = 0; i < o->count; i++) {
+        o->items[i].a = o->a;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b047", func_01E01270_b047);
 

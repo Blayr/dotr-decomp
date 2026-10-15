@@ -12,7 +12,10 @@ INCLUDE_ASM("asm/nonmatchings/mod/c022", func_01E00F10_c022);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c022", func_01E010E0_c022);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c022", func_01E01570_c022);
+/* shape b073:01E03BC0, 2 insns, 5 copies: an empty callback */
+
+static void func_01E01570_c022(void) {
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c022", func_01E01580_c022);
 

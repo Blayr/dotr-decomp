@@ -40,7 +40,10 @@ INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E02F40_c059);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E031C0_c059);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03600_c059);
+/* shape b073:01E03BC0, 2 insns, 5 copies: an empty callback */
+
+static void func_01E03600_c059(void) {
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03610_c059);
 
@@ -66,7 +69,42 @@ INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E05F90_c059);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E06280_c059);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E062F0_c059);
+/* shape c059:01E062F0, 41 insns, 1 copy */
+
+typedef struct Obj_c059_01E062F0 {
+    u8 pad0[0x43];
+    u8 c43;
+    u8 pad44[3];
+    u8 c47;
+    s16 f48;
+    u8 pad4A[0xC];
+    s16 f56;
+} Obj_c059_01E062F0;
+
+static s32 func_01E062F0_c059(void *ctx, Obj_c059_01E062F0 *o) {
+    if (o->f56 == 0) {
+        if (o->c47 < 0xE0) {
+            o->c47 += 0x30;
+        }
+        if (o->c43 < 0xE0) {
+            o->c43 += 0x30;
+        } else {
+            o->f56 = 1;
+        }
+    } else if (o->f56 < 4) {
+        o->f56++;
+    } else {
+        if (o->c47 > 0x13) {
+            o->c47 -= 0x10;
+        }
+        if (o->c43 > 0x13) {
+            o->c43 -= 0x10;
+        } else {
+            o->f48 = 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E063A0_c059);
 
