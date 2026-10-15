@@ -1205,7 +1205,46 @@ void func_001B8520(s32 arg0) {
     *(s8 *)(state + 0xD32) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_039", func_001B8720);
+static inline s32 nonnegative_001B8720(s32 value) {
+    if (value > 0) {
+        return value;
+    }
+    return 0;
+}
+
+void func_001B8720(void) {
+    Duel_00317490_s *state;
+    s32 player;
+    s16 *entry;
+    s32 card;
+    s32 limit;
+    s32 offset;
+
+    player = D_00317490.s.player;
+    state = &D_00317490.s;
+    card = 0;
+    entry = D_00317490.s.list;
+    D_00317490.s.count = 0;
+    do {
+        if (func_00216AC0(player, card, -1) > 0) {
+            *entry = card;
+            state->count++;
+        } else {
+            *entry = 999;
+        }
+        card++;
+        entry++;
+    } while (card < 0x356);
+    limit = nonnegative_001B8720(state->count - 5);
+    offset = state->offset;
+    if (nonnegative_001B8720(offset) < limit) {
+        offset = nonnegative_001B8720(offset);
+    } else {
+        offset = limit;
+    }
+    state->offset = offset;
+    func_001BA5F0();
+}
 
 void func_001B8830(void) {
 
