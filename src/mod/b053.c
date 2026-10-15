@@ -4,7 +4,101 @@ INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00080_b053);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00220_b053);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00620_b053);
+/* OVL_WARM */
+
+/* shape b053:01E00620, 148 insns: a rising white column: both colours 0x80 at alpha 0x2F; it turns by 12 (wrapped past
+   -359); its two heights (f4, f14) grow by 2, the top first up to 60 with the base kept within 5, then the base until it
+   reaches the top, which ends its parent link and h68; their halves + 10 are kept as sizes (at least 0); in state 1, with
+   a base above 0, it publishes itself and the base to the scene (g+0x3B10..0x3B5A) and, once the scene step reaches 15,
+   asks the module to run it (b053:01E01730), entering state 2 */
+
+typedef struct {
+    u8 pad0[0x50];
+    s32 w50;
+} Link_b053_01E00620;
+
+typedef struct Obj_b053_01E00620 {
+    u8 pad0[4];
+    f32 top;
+    u8 pad8[0xC];
+    f32 base;
+    u8 pad18[0x3C];
+    Link_b053_01E00620 *link;
+    u8 pad58[8];
+    u8 c60[4];
+    u8 c64[4];
+    s16 state;
+    s16 s6A;
+    s16 s6C;
+    u8 pad6E[4];
+    s16 ang;
+} Obj_b053_01E00620;
+
+typedef struct {
+    u8 pad0[0x3B00];
+    s32 step;
+    u8 pad3B04[0xC];
+    Obj_b053_01E00620 *obj;
+    f32 size;
+    u8 pad3B18[4];
+    f32 base;
+    u8 pad3B20[0x34];
+    s16 ang;
+    u8 pad3B56[2];
+    s16 h3B58;
+    s16 h3B5A;
+} Scene_b053_01E00620;
+
+static s32 func_01E00620_b053(Scene_b053_01E00620 *g, Obj_b053_01E00620 *o) {
+    extern s32 b053_01E01730(Scene_b053_01E00620 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c60, 0x80, 0x80, 0x80);
+    func_001076F0(o->c64, 0x80, 0x80, 0x80);
+    o->c64[3] = o->c60[3] = 0x2F;
+    o->ang -= 12;
+    if (o->ang < -359) {
+        o->ang %= 360;
+    }
+    o->s6A = 10.0f + o->top / 2.0f;
+    o->s6C = 10.0f + o->base / 2.0f;
+    if (o->s6A < 0) {
+        o->s6A = 0;
+    }
+    if (o->s6C < 0) {
+        o->s6C = 0;
+    }
+    if (o->top <= 60.0f) {
+        o->top += 2.0f;
+        if (!(o->top - o->base <= 5.0f)) {
+            o->base += 2.0f;
+        }
+    } else {
+        o->base += 2.0f;
+        if (!(o->base <= o->top)) {
+            if (o->link != 0) {
+                o->link->w50 = 0;
+            }
+            o->state = 0;
+        }
+    }
+    if (o->state == 1) {
+        if (!(o->base <= 0.0f)) {
+            g->size = o->s6C;
+            g->obj = o;
+            g->h3B58 = 1;
+            g->base = o->base;
+            g->h3B5A = 1;
+            g->ang = o->ang - 15;
+            if (g->step > 14) {
+                if (b053_01E01730(g, func_01E00620_b053, 0)) {
+                    o->state = 2;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 /* shape b053:01E00870, 32 insns: b120:01E01EA0 family: fades in by 0x40 to 0x80, then out by 9 and ends; colour (0xF0, 0x80, 0x40) */
 

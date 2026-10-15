@@ -726,7 +726,94 @@ static s32 func_01E02150_b522(s32 unused, Obj_b287_01E01FF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b522", func_01E02300_b522);
+/* shape b522:01E02300, 165 insns: b292:01E01C90 as a red ring, joints at 0xCB44 */
+
+typedef struct {
+    u8 pad0[0xCB44];
+    s16 j0;
+    s16 j1;
+} World_b522_01E02300;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    u8 pad20[0x10];
+    f32 thick;
+    f32 radius;
+    u8 pad38[0x10];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    s16 step;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Ring_b522_01E02300;
+
+static s32 func_01E02300_b522(World_b522_01E02300 *w, Ring_b522_01E02300 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    Vec4f v[2];
+    f32 k;
+
+    if (o->state == 1) {
+        o->size = 6.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0x40, 0x40);
+        if (o->kind == 0) {
+            o->thick = 3.0f;
+            o->radius = 70.0f;
+        }
+        if (o->kind == 1) {
+            o->thick = 3.0f;
+            o->radius = 30.0f;
+        }
+        if (o->kind == 2) {
+            o->thick = 8.0f;
+            o->radius = 400.0f;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+        o->step = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0 && o->t != 0) {
+        o->radius += 30.0f;
+    }
+    if (o->kind == 1 && o->t != 0) {
+        o->radius += 10.0f;
+    }
+    if (o->t != 0) {
+        if (o->step < 0x19) {
+            o->step++;
+        }
+    }
+    o->t++;
+    o->ang += 6;
+    func_001F5620(func_001F53A0(), w->j0, &o->pos);
+    func_001F5620(func_001F53A0(), w->j1, v);
+    k = o->step;
+    v[0].x = (v[0].x - o->pos.x) / 25.0f;
+    v[0].y = (v[0].y - o->pos.y) / 25.0f;
+    v[0].z = (v[0].z - o->pos.z) / 25.0f;
+    o->pos.x += v[0].x * k;
+    o->pos.y += v[0].y * k;
+    o->pos.z += v[0].z * k;
+    return 0;
+}
 
 /* shape b522:01E025A0, 113 insns: a white drifting spark (b567:01E024D0 shape): size 80, sub-frame 2..4, random angle; pushed 6.6
    along it at the start, then drifting 0.5 a frame; alpha up by 0x40 for 10 frames, then down by 9 until it ends; turns */

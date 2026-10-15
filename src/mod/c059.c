@@ -1,6 +1,91 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E00080_c059);
+/* shape c059:01E00080, 173 insns: c006:01E00710 family model setup: picks the first three models flagged in the scene mask (ctx+0x2CC0, bit 21 - i; ids 11..21 become i + 0xF5), switches all 22 on, then readies the three picked ones (random size, spin, speed, turn), registers them, places each 35 out from its scene point (ctx+0x29B0), tags them (ctx+0x2960) and gives them alpha 0x80 */
+
+typedef struct {
+    u8 pad0[4];
+    s32 w4;
+    u8 pad8[0x20];
+    s32 w28;
+    u8 pad2C[8];
+    s32 w34;
+    s32 w38;
+    u8 pad3C[0x14];
+    f32 v50[4];
+    u8 col[4];
+    s32 w64;
+    u8 pad68[8];
+} Obj_c059_01E00080;
+
+typedef struct {
+    u8 pad0[0x2650];
+    Obj_c059_01E00080 obj[3];
+    u8 pad27A0[0x2960 - 0x27A0];
+    f32 tags[3][4];
+    u8 pad2990[0x29B0 - 0x2990];
+    f32 at[3][4];
+    u8 pad29E0[0x2CAC - 0x29E0];
+    s32 ids[3];
+    u8 pad2CB8[8];
+    u32 mask;
+} Scene_c059_01E00080;
+
+static void func_01E00080_c059(Scene_c059_01E00080 *g) {
+    extern void func_001F5970(s32, s32);
+    extern void func_001F5BD0(s32, void *);
+    extern void func_001F5B70(s32, void *);
+    extern void func_001F5CA0(s32, void *);
+    extern void func_001F5E40(s32, void *);
+    extern void func_001F5DE0(s32, void *);
+    extern void func_001099E0(void *, void *, void *, f32);
+    Vec4f v;
+    s16 i;
+    s16 id;
+    s32 n;
+    s32 m;
+    Obj_c059_01E00080 *p;
+
+    n = 0;
+    for (i = 0; i < 22; i++) {
+        if (n < 3) {
+            if ((g->mask >> (21 - i)) & 1) {
+                id = i;
+                if (i > 10) {
+                    id = i + 0xF5;
+                }
+                g->ids[n] = id;
+                n++;
+            }
+        }
+    }
+    for (i = 0; i < 22; i++) {
+        m = i;
+        if (m > 10) {
+            m += 0xF6;
+        }
+        func_001F5970(m, 1);
+    }
+    for (i = 0; i < 3; i++) {
+        n = g->ids[i];
+        p = &g->obj[i];
+        p->w64 = 0;
+        p->v50[1] = (func_0019A5C8() % 26 + 9) / 6;
+        p->w28 = func_0019A5C8() % 8 + 5;
+        p->w34 = func_0019A5C8() % 0x1800 + 0x100;
+        p->w38 = func_0019A5C8() % 0x800 - 0x400;
+        func_001F5BD0(n, p);
+        p->w4 = 0;
+        func_001F5B70(n, p);
+        if (i < 3) {
+            func_001099E0(&v, g->at[i], p, 35.0f);
+            *(Vec4f *)p->v50 = v;
+        }
+        func_001F5CA0(g->ids[i], g->tags[i]);
+        func_001F5E40(n, p->col);
+        p->col[3] = 0x80;
+        func_001F5DE0(n, p->col);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E00340_c059);
 
@@ -781,7 +866,82 @@ static void func_01E02890_c059(Scene_c059_01E02890 *g, s32 a1, s32 a2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E029A0_c059);
+/* shape c059:01E029A0, 153 insns: c059:01E02C10 family band of 8 segments (45 degrees apart) between this object's ring and its linked parent's (or its own inner radius), heights swaying 10 by sines of the scene phase plus 4x the objects' angles; colours from the parent (or this object) and this object */
+
+typedef struct Obj_c059_01E029A0 {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[6];
+    s16 hA;
+    u8 padC[0x24];
+    struct Obj_c059_01E029A0 *link;
+    u8 pad34[0xC];
+    u8 c40[4];
+    u8 c44[4];
+    u8 pad48[2];
+    s16 h4A;
+    u8 pad4C[2];
+    s16 h4E;
+    s16 h50;
+} Obj_c059_01E029A0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f q[4];
+    u8 pad290[0x2644 - 0x290];
+    s32 tex;
+    u8 pad2648[0x2A94 - 0x2648];
+    s16 phase;
+    u8 pad2A96[0x2ACC - 0x2A96];
+    s32 ot;
+    u8 pad2AD0[0x2B30 - 0x2AD0];
+    u8 tab[1];
+} Scn_c059_01E029A0;
+
+static void func_01E029A0_c059(Scn_c059_01E029A0 *g, Obj_c059_01E029A0 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00106CF0(void *, s16, s32, void *);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108FF0(void *, void *, s32, s32);
+    f32 m[4];
+    s32 i;
+    Obj_c059_01E029A0 *prev;
+    s32 a;
+
+    prev = o->link;
+    a = 0;
+    if (lit == 0) {
+        func_00106080(m, 0x9C, 0, m);
+        func_00108500(p, m, 1);
+        func_00208700(p, g->tex, 1);
+    } else {
+    g->q[1].y = g->q[0].y = 10.0f * func_00108030(g->tab, g->phase + o->h2 * 4, 0);
+    g->q[3].y = g->q[2].y = 10.0f * func_00108030(g->tab, g->phase + o->hA * 4, 0);
+    for (i = 0; i < 8; i++) {
+        if (prev != NULL) {
+            func_00106CF0(&g->q[0], a + prev->h4A, prev->h50, g->tab);
+            func_00106CF0(&g->q[1], a + prev->h4A + 35, prev->h50, g->tab);
+            o->h2 = prev->hA;
+        } else {
+            func_00106CF0(&g->q[0], a + o->h4A, o->h4E, g->tab);
+            func_00106CF0(&g->q[1], a + o->h4A + 35, o->h4E, g->tab);
+        }
+        func_00106CF0(&g->q[2], a + o->h4A, o->h50, g->tab);
+        func_00106CF0(&g->q[3], a + o->h4A + 35, o->h50, g->tab);
+        if (prev == NULL) {
+            func_00107790(p, o->c44, 1);
+        } else {
+            func_00107790(p, prev->c40, 1);
+        }
+        func_00107790(p, o->c40, 2);
+        func_00108FF0(g->q, p, 0, g->ot);
+        a = (s16)(a + 45);
+    }
+    }
+}
 
 /* several callees are called with other argument lists than functions.h gives: hide those prototypes */
 
@@ -922,7 +1082,106 @@ static void func_01E02DE0_c059(Ctx_c059_01E02DE0 *c, Fx_c059_01E02DE0 *o, void *
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E02F40_c059);
+/* shape c059:01E02F40, 158 insns: draw one link of c059's trail: mode 0 sets the material (frame 0x97, scene texture
+   0x2644); other modes build the link's quad from the previous link's ring (or its own inner ring when it is the first)
+   and its own outer ring, colour it with the link's colour (alpha from the previous link at the near edge), and draw it
+   three times turned by the scene's three angles (g+0x2D14, in 1/182 degree) */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c059_01E02F40;
+
+typedef struct Ent_c059_01E02F40 {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[6];
+    s16 hA;
+    u8 padC[0x14];
+    Vec4f v20;
+    struct Ent_c059_01E02F40 *prev;
+    u8 pad34[0xC];
+    u8 c40[4];
+    Col_c059_01E02F40 col;
+    u8 pad48[2];
+    s16 ang;
+    u8 pad4C[2];
+    s16 r0;
+    s16 r1;
+} Ent_c059_01E02F40;
+
+typedef struct {
+    u8 pad0[0x80];
+    u8 m[0x40];
+    u8 padC0[0x180];
+    Vec4f sc;
+    Vec4f quad[4];
+    u8 pad290[0x23B4];
+    s32 tex;
+    u8 pad2648[0x484];
+    s32 ot;
+    u8 pad2AD0[0x60];
+    f32 scale;
+    u8 pad2B34[0x1E0];
+    s16 angs[3];
+} Scene_c059_01E02F40;
+
+static void func_01E02F40_c059(Scene_c059_01E02F40 *g, Ent_c059_01E02F40 *e, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00107DD0(void *, void *, void *, s32);
+    extern void func_00106FA0(void *, void *, s32);
+    extern s32 func_00106CF0(void *, s32, s32, f32 *);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern void func_00108FF0(void *, void *, void *, s32);
+    Ent_c059_01E02F40 *q = e->prev;
+    f32 rm[4];
+    s32 rot[4];
+    f32 m[16];
+    Col_c059_01E02F40 c;
+    s32 i;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00108500(p, rm, 1);
+        func_00208700(p, g->tex, 0);
+        return;
+    }
+    if (q != 0) {
+        func_00106CF0(&g->quad[0], q->ang, q->r1, &g->scale);
+        func_00106CF0(&g->quad[1], (s16)(q->ang + 15), q->r1, &g->scale);
+        g->quad[1].y = g->quad[0].y = q->hA;
+        func_00107DD0(&g->quad[0], &q->v20, &e->v20, 0);
+    } else {
+        func_00106CF0(&g->quad[0], e->ang, e->r0, &g->scale);
+        func_00106CF0(&g->quad[1], (s16)(e->ang + 15), e->r0, &g->scale);
+        g->quad[1].y = g->quad[0].y = e->h2;
+    }
+    func_00106CF0(&g->quad[2], e->ang, e->r1, &g->scale);
+    func_00106CF0(&g->quad[3], (s16)(e->ang + 15), e->r1, &g->scale);
+    g->quad[2].y = g->quad[3].y = e->hA;
+    func_00106FA0(&g->quad[0], &e->v20, 0);
+    c = e->col;
+    if (q == 0) {
+        c.a = e->col.a;
+    } else {
+        c.a = q->c40[3];
+    }
+    func_00107790(p, &c, 1);
+    c.a = e->c40[3];
+    func_00107790(p, &c, 2);
+    rot[2] = rot[0] = rot[1] = 0;
+    for (i = 0; i < 3; i++) {
+        func_0020EB40(g->m);
+        func_0020C940(m, &g->sc, rot, 0);
+        func_0020BC00(g->m, m);
+        func_00108FF0(&g->quad[0], p, g->m, g->ot);
+        rot[1] = g->angs[i] * 182;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E031C0_c059);
 
@@ -933,7 +1192,85 @@ static void func_01E03600_c059(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03610_c059);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03B00_c059);
+/* several callees are called with other argument lists than functions.h gives: hide those prototypes */
+
+/* shape c059:01E03B00, 156 insns: draws a pair of mirrored sprites (scale 3) under the camera's turned-back yaw: mode 0
+   sets the material (frame 0x50 at +0x2E, colour 0x24 twice, scene texture 0x2628); otherwise the second copy sits at
+   the negated x/z, the height follows the node's arc (0x0A*y - k*y*y) and then its swing (0x2A times the table's sine
+   of y), and each is sent at the node's turn */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[4];
+    s16 hA;
+    u8 padC[4];
+    s32 rot[4];
+    u8 pad20[4];
+    u8 col[4];
+    u8 pad28[2];
+    s16 swing;
+    u8 pad2C[2];
+    s16 frame;
+} Node_c059_01E03B00;
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 m40[0x210];
+    u8 m[0x23D8];
+    void *tex;
+    u8 pad262C[0x45C];
+    f32 k;
+    u8 pad2A8C[0x40];
+    s32 ot;
+    u8 pad2AD0[0x60];
+    u8 table[0x10];
+} Scene_c059_01E03B00;
+
+static void func_01E03B00_c059(Scene_c059_01E03B00 *g, Node_c059_01E03B00 *o, void *pk, s32 mode) {
+    extern void func_00106080();
+    extern void func_00109100();
+    extern void func_00106ED0();
+    extern void func_00106FA0();
+    extern void func_00108FF0();
+    extern void func_00205C40();
+    extern f32 func_00108030(void *table, s16 angle, s32 axis);
+    Vec4f v;
+    f32 m[4];
+    s32 rot[4];
+    s16 i;
+    s16 j;
+
+    if (mode == 0) {
+        func_00106080(m, 0x50, o->frame, m);
+        func_00107790(pk, o->col, 1);
+        func_00107790(pk, o->col, 2);
+        func_00108500(pk, m, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+    func_00205C40(rot);
+    rot[1] = 0;
+    rot[0] = -rot[0] / 180;
+    rot[2] = 0;
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 1; j++) {
+            func_00108CE0(g->m, 3.0f, 3.0f);
+            func_00109100(g->m, rot, 1, g->table);
+            if (i == 0) {
+                v.x = o->x;
+                v.z = o->z;
+            } else {
+                v.x = -o->x;
+                v.z = -o->z;
+            }
+            v.y = (f32)(o->hA * o->y) - (f32)o->y * (g->k * (f32)o->y);
+            v.y = o->swing * func_00108030(g->table, o->y, 0);
+            func_00106ED0(g->m, o->rot, 0);
+            func_00106FA0(g->m, &v, 0);
+            func_00108FF0(g->m, pk, g->m40, g->ot);
+        }
+    }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03D70_c059);
 

@@ -233,7 +233,76 @@ static void func_01E005A0_b294(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b294", func_01E00B20_b294);
+/* shape b294:01E00B20, 163 insns: the effect scene's step: clears the tint to 0x80/0/0/0 and counts the frame (0x37C6);
+   from frame 113 to 264 it spawns a 0x1E00DB0 two above joint 0x37A8 each frame; on frames 65 and 95 it bursts twenty
+   0x1E017C0 one below each of the four joints 0x37AA..0x37B0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x3508];
+    u8 col[4];
+    u8 pad3768[0x40];
+    s16 joint;
+    s16 j2[4];
+    u8 pad37B2[0x14];
+    s16 t;
+} Scene_b294_01E00B20;
+
+static void func_01E00B20_b294(Scene_b294_01E00B20 *g) {
+    extern void b294_01E00DB0(void);
+    extern void b294_01E017C0(void);
+    extern s32 b294_01E02410(Scene_b294_01E00B20 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t > 112 && g->t < 265) {
+        func_001F5620(func_001F53A0(), g->joint, &v);
+        g->px = v.x;
+        g->py = 2.0f + v.y;
+        g->pz = v.z;
+        for (i = 0; i < 1; i++) {
+            b294_01E02410(g, (s32)b294_01E00DB0, 0);
+        }
+    }
+    if (g->t == 65 || g->t == 95) {
+        func_001F5620(func_001F53A0(), g->j2[0], &v);
+        g->px = v.x;
+        g->py = v.y - 1.0f;
+        g->pz = v.z;
+        for (i = 0; i < 20; i++) {
+            b294_01E02410(g, (s32)b294_01E017C0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j2[1], &v);
+        g->px = v.x;
+        g->py = v.y - 1.0f;
+        g->pz = v.z;
+        for (i = 0; i < 20; i++) {
+            b294_01E02410(g, (s32)b294_01E017C0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j2[2], &v);
+        g->px = v.x;
+        g->py = v.y - 1.0f;
+        g->pz = v.z;
+        for (i = 0; i < 20; i++) {
+            b294_01E02410(g, (s32)b294_01E017C0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j2[3], &v);
+        g->px = v.x;
+        g->py = v.y - 1.0f;
+        g->pz = v.z;
+        for (i = 0; i < 20; i++) {
+            b294_01E02410(g, (s32)b294_01E017C0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b294", func_01E00DB0_b294);
 
@@ -335,7 +404,101 @@ static s32 func_01E01930_b294(s32 arg0, Flash_b257_01E031C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b294", func_01E01A10_b294);
+/* shape b294:01E01A10, 173 insns: b482:01E02E40 family scene flash light (ctx+0x3520, 0xC4 70) at the effect's point: warms by 42/21/10 toward orange while the level rises 0.2 to 1, then cools by 16/16/8 and dims 0.1 to 0.1; ends when ctx+0x3760 is 1 */
+
+typedef struct {
+    f32 c[4];
+    Vec4f pos;
+    f32 fC0;
+    f32 fC4;
+    f32 level;
+} Light_b294_01E01A10;
+
+typedef struct {
+    u8 pad0[0x3520];
+    Light_b294_01E01A10 light;
+    u8 padL[0x3760 - 0x3520 - 0x2C];
+    s32 flag;
+} Scene_b294_01E01A10;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b294_01E01A10;
+
+static s32 func_01E01A10_b294(Scene_b294_01E01A10 *g, Fx_b294_01E01A10 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.c[0] = 0.0f;
+        g->light.c[1] = 0.0f;
+        g->light.c[2] = 0.0f;
+        g->light.c[3] = 0.0f;
+        g->light.fC0 = 0.0f;
+        g->light.fC4 = 70.0f;
+        g->light.level = 0.0f;
+        g->light.pos.x = o->x;
+        g->light.pos.y = o->y;
+        g->light.pos.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->light.level < 1.0f) {
+            g->light.level += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+        if (g->light.c[0] < 128.0f) {
+            g->light.c[0] += 42.0f;
+        } else {
+            g->light.c[0] = 128.0f;
+        }
+        if (g->light.c[1] < 64.0f) {
+            g->light.c[1] += 21.0f;
+        } else {
+            g->light.c[1] = 128.0f;
+        }
+        if (g->light.c[2] < 32.0f) {
+            g->light.c[2] += 10.0f;
+        } else {
+            g->light.c[2] = 64.0f;
+        }
+    } else {
+        if (g->light.level > 0.1f) {
+            g->light.level -= 0.1f;
+        } else {
+            o->mode = 0;
+        }
+        if (g->light.c[0] > 16.0f) {
+            g->light.c[0] -= 16.0f;
+        } else {
+            g->light.c[0] = 0.0f;
+        }
+        if (g->light.c[1] > 16.0f) {
+            g->light.c[1] -= 16.0f;
+        } else {
+            g->light.c[1] = 0.0f;
+        }
+        if (g->light.c[2] > 8.0f) {
+            g->light.c[2] -= 8.0f;
+        } else {
+            g->light.c[2] = 0.0f;
+        }
+    }
+    if (o->mode == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->flag == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b294:01E01CD0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3760 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

@@ -910,7 +910,88 @@ static s32 func_01E03410_b252(void *arg0, Obj_b252_01E03410 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E03530_b252);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E03A40_b252);
+/* shape b252:01E03A40, 150 insns: grey marker (size 22, 20 at scene count 153) on scene point o->h52 (ctx+0xD930), blinking 0xC0/0x70 by h50 parity and the scene flag; both alphas up by 9 to 0x80 until count 255, then the inner one falls by 11 (twice); frame flips 0/1 each tick */
+
+typedef struct {
+    u8 pad0[0xD930];
+    Vec4f pts[(0xDC3E - 0xD930) / 16];
+    u8 padDC30[0xDC3E - 0xD930 - ((0xDC3E - 0xD930) / 16) * 16];
+    s16 count;
+} Ctx_b252_01E03A40;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 h50;
+    s16 h52;
+    s16 tick;
+    s16 h56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b252_01E03A40;
+
+static s32 func_01E03A40_b252(Ctx_b252_01E03A40 *g, Fx_b252_01E03A40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->h8 = 22;
+        o->hA = 22;
+        o->h56 = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        func_001076F0(o->col2, 0x70, 0x70, 0x70);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (g->count < 255) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 9;
+        }
+    } else {
+        if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        }
+    }
+    if (g->count == 153) {
+        o->h8 = 20;
+        o->hA = 20;
+    }
+    if (o->h50 % 2 == 1) {
+        if (g->count == 1) {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        } else {
+            func_001076F0(o->col, 0x70, 0x70, 0x70);
+        }
+    } else if (g->count == 1) {
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->h56 != 0) {
+        o->h56 = 0;
+    } else {
+        o->h56 = 1;
+    }
+    func_00205C40(o->rot);
+    o->pos = g->pts[o->h52];
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E03CA0_b252);
 

@@ -95,7 +95,99 @@ static void func_01E00150_b130(Pk_b008_01E00080 *p, Rect_b008_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E005A0_b130);
+/* shape b130:01E005A0, 186 insns: the b130 module's event step: red scene colour, counts ticks; tracks two points; at 106 spawns 40 pairs of b130:01E00AB0 / b130:01E00E30 at the camera-side point with random turns and 10 b130:01E012D0 (kind 3); at tick 1 spawns b130:01E00FF0 at the first point; before 106 spawns two b130:01E010B0 a tick there (kind 0, 1 from 99) */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 pos[3];
+    u8 pad8C[0x3B04 - 0x8C];
+    u8 col[4];
+    u8 pad3B08[0x3B48 - 0x3B08];
+    s16 id0;
+    s16 id1;
+    u8 pad3B4C[0x3B52 - 0x3B4C];
+    s16 turn;
+    u8 pad3B54[0x3B58 - 0x3B54];
+    s16 kind;
+    u8 pad3B5A[2];
+    s16 timer;
+} Ctx_b130_01E005A0;
+
+static void func_01E005A0_b130(Ctx_b130_01E005A0 *g) {
+    extern s32 b130_01E00AB0(void);
+    extern s32 b130_01E00E30(void);
+    extern s32 b130_01E00FF0(void);
+    extern s32 b130_01E010B0(void);
+    extern s32 b130_01E012D0(void);
+    extern void b130_01E01A00(Ctx_b130_01E005A0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[4];
+    s32 i;
+    s32 n;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->id0, v);
+    func_001F5620(func_001F5380(), g->id1, v);
+    func_001F5F90(func_001F5380(), v);
+    if (g->timer == 106) {
+        for (i = 0; i < 40; i++) {
+            g->turn = func_0019A5C8() % 360;
+            g->pos[0] = v[0];
+            g->pos[1] = v[1];
+            g->pos[2] = v[2];
+            b130_01E01A00(g, b130_01E00AB0, 0);
+            b130_01E01A00(g, b130_01E00E30, 0);
+        }
+    }
+    func_001F5620(func_001F53A0(), g->id0, v);
+    if (g->timer == 1) {
+        for (i = 0; i < 1; i++) {
+            g->turn = func_0019A5C8() % 360;
+            g->pos[0] = v[0];
+            g->pos[1] = v[1];
+            g->pos[2] = v[2];
+            b130_01E01A00(g, b130_01E00FF0, 0);
+        }
+    }
+    if (g->timer < 106) {
+        if (g->timer < 99) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            g->turn = func_0019A5C8() % 360;
+            g->pos[0] = v[0];
+            g->pos[1] = v[1];
+            g->pos[2] = v[2];
+            if (g->timer < 99) {
+                g->kind = 0;
+            } else {
+                g->kind = 1;
+            }
+            b130_01E01A00(g, b130_01E010B0, 0);
+        }
+    }
+    func_001F5620(func_001F5380(), g->id1, v);
+    func_001F5F90(func_001F5380(), v);
+    if (g->timer == 106) {
+        for (i = 0; i < 10; i++) {
+            g->turn = func_0019A5C8() % 360;
+            g->pos[0] = v[0];
+            g->pos[1] = v[1];
+            g->pos[2] = v[2];
+            g->kind = 3;
+            b130_01E01A00(g, b130_01E012D0, 0);
+        }
+    }
+}
 
 /* shape b130:01E00890, 134 insns: b019:01E01F60 with its sine table at ctx+0x3B60 */
 

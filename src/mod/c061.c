@@ -548,11 +548,166 @@ static s32 func_01E01F20_c061(s32 arg0, Obj_c061_01E01F20 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E02030_c061);
+/* shape c061:01E02030, 185 insns: c063:01E04250 family yellow (0xFF, 0xFF, 0x40) flake 200 square growing 5 to 300, frame 0..2, sinking 1.5 and tumbling on all axes */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_c061_01E02030;
+
+static s32 func_01E02030_c061(s32 arg0, Fx_c061_01E02030 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 200;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->hold = 10;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->w < 300) {
+            o->w += 5;
+        }
+        o->h = o->w;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+        o->pos[1] -= 1.5f;
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E02320_c061);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E02660_c061);
+/* shape c061:01E02660, 182 insns: b386:01E02480 family grey (0x60) mote, size 300, frame 0..7, angles 0..359, 0x50 50..399, drift -20..19 unscaled; while the scene count (ctx+0x68C8) is under 500 alpha goes up by 0xC0 for 55 ticks then down by 11, after that down by 9; rises 3.3 a tick with its z pinned to the scene's 0x56B8 plus its drift */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 side;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    f32 z;
+    u8 pad1C[0x14];
+    f32 vel[3];
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 life;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_c061_01E02660;
+
+typedef struct {
+    u8 pad0[0x56B8];
+    f32 z;
+    u8 pad56BC[0x68C8 - 0x56BC];
+    s16 count;
+} Ctx_c061_01E02660;
+
+static s32 func_01E02660_c061(Ctx_c061_01E02660 *g, Fx_c061_01E02660 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 300.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->side = 2;
+        } else {
+            o->side = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 350 + 50;
+        o->life = func_0019A5C8() % 350 + 100;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->mode = 2;
+    }
+    if (g->count < 500) {
+        if (o->tick < 55) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0xC0;
+            }
+        } else if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->y += 3.3f;
+    }
+    o->z = g->z + o->vel[2];
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E02940_c061);
 

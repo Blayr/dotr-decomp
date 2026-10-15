@@ -722,7 +722,66 @@ static void func_01E01A70_b759(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b759", func_01E01D30_b759);
+/* shape b759:01E01D30, 172 insns: scene spawn step (b202:01E01880 family): count++; frame 1 adds 0x1E02C90; on odd
+   frames 166..255 three sparks at point 0x8668, numbered by a 0..119 ring (handler 0x1E01FE0); frames 163..255 add
+   three 0x1E02D90 at point 0x866C scattered by -5..4 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x840C];
+    s16 point;
+    u8 pad866A[2];
+    s16 point2;
+    u8 pad866E[0x28];
+    s16 num;
+    s16 ring;
+    u8 pad869A[4];
+    s16 count;
+} Scene_b759_01E01D30;
+
+static void func_01E01D30_b759(Scene_b759_01E01D30 *g) {
+    extern void b759_01E01FE0(void);
+    extern void b759_01E02C90(void);
+    extern void b759_01E02D90(void);
+    extern void b759_01E03880(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    g->count++;
+    if (g->count == 1) {
+        b759_01E03880(g, b759_01E02C90, 0);
+    }
+    if (g->count >= 166 && g->count < 256) {
+        if (g->count % 2 == 1) {
+            if (g->count < 100) {
+                n = 3;
+            } else {
+                n = 3;
+            }
+            for (i = 0; i < n; i++) {
+                func_001F5620(func_001F53A0(), g->point, g->pos);
+                g->num = g->ring;
+                b759_01E03880(g, b759_01E01FE0, 0);
+                g->ring++;
+                if (g->ring >= 0x78) {
+                    g->ring = 0;
+                }
+            }
+        }
+    }
+    if (g->count >= 163 && g->count < 256) {
+        for (i = 0; i < 3; i++) {
+            func_001F5620(func_001F53A0(), g->point2, g->pos);
+            g->pos[0] += func_0019A5C8() % 10 - 5;
+            g->pos[1] += func_0019A5C8() % 10 - 5;
+            g->pos[2] += func_0019A5C8() % 10 - 5;
+            b759_01E03880(g, b759_01E02D90, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b759", func_01E01FE0_b759);
 
@@ -930,7 +989,73 @@ static s32 func_01E02C90_b759(s32 arg0, Obj_b759_01E02C90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b759", func_01E02D90_b759);
+/* shape b759:01E02D90, 163 insns: b631:01E01690's spark as a dark smoke puff (size 40, frame 2..4, grey 0x18), drift
+   /25 or /45 by the kind at 0x50, alpha grows for 4 ticks then fades by 4; it does not move, only refreshes its turn */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x14];
+    s16 sel;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 dir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b759_01E02D90;
+
+static s32 func_01E02D90_b759(s32 arg0, Spark_b759_01E02D90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 40;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0x18, 0x18, 0x18);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        if (o->sel == 0) {
+            o->vel[1] /= 25.0f;
+            o->vel[0] /= 25.0f;
+            o->vel[2] /= 25.0f;
+        } else if (o->sel == 1) {
+            o->vel[1] /= 45.0f;
+            o->vel[0] /= 45.0f;
+            o->vel[2] /= 45.0f;
+        }
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b759", func_01E03020_b759);
 

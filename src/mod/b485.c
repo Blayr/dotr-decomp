@@ -590,7 +590,78 @@ static void func_01E014F0_b485(Obj_b016_01E018F0 *obj, Cam_b016_01E018F0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E017C0_b485);
+/* shape b485:01E017C0, 165 insns: the effect scene's step: counts the frame (0x44FA); on frame 252 it spawns two
+   0x1E01A60, a 0x1E02690 and two 0x1E02290, on frame 1 a 0x1E02A00 and a 0x1E025B0; on odd frames 245..270 two
+   0x1E01BC0 at joint 0x44C6; from frame 69 to 226 a 0x1E023F0 two below joint 0x44C4; on frame 250 twenty pairs
+   of 0x1E01BC0 and 0x1E02040 at joint 0x44C6 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4264];
+    s16 j0;
+    s16 j1;
+    u8 pad44C8[0x32];
+    s16 t;
+} Scene_b485_01E017C0;
+
+static void func_01E017C0_b485(Scene_b485_01E017C0 *g) {
+    extern void b485_01E01A60(void);
+    extern void b485_01E01BC0(void);
+    extern void b485_01E02040(void);
+    extern void b485_01E02290(void);
+    extern void b485_01E023F0(void);
+    extern void b485_01E025B0(void);
+    extern void b485_01E02690(void);
+    extern void b485_01E02A00(void);
+    extern s32 b485_01E03370(Scene_b485_01E017C0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 252) {
+        b485_01E03370(g, (s32)b485_01E01A60, 0);
+    }
+    if (g->t == 252) {
+        b485_01E03370(g, (s32)b485_01E01A60, 0);
+    }
+    if (g->t == 252) {
+        b485_01E03370(g, (s32)b485_01E02690, 0);
+    }
+    if (g->t == 252) {
+        b485_01E03370(g, (s32)b485_01E02290, 0);
+    }
+    if (g->t == 252) {
+        b485_01E03370(g, (s32)b485_01E02290, 0);
+    }
+    if (g->t == 1) {
+        b485_01E03370(g, (s32)b485_01E02A00, 0);
+    }
+    if (g->t == 1) {
+        b485_01E03370(g, (s32)b485_01E025B0, 0);
+    }
+    if (g->t >= 245 && g->t < 271) {
+        if (g->t % 2 == 1) {
+            for (i = 0; i < 2; i++) {
+                func_001F5620(func_001F53A0(), g->j1, &g->pos);
+                b485_01E03370(g, (s32)b485_01E01BC0, 0);
+            }
+        }
+    }
+    if (g->t >= 69 && g->t < 227) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        g->pos.y -= 2.0f;
+        b485_01E03370(g, (s32)b485_01E023F0, 0);
+    }
+    if (g->t == 250) {
+        for (i = 0; i < 20; i++) {
+            func_001F5620(func_001F53A0(), g->j1, &g->pos);
+            b485_01E03370(g, (s32)b485_01E01BC0, 0);
+            b485_01E03370(g, (s32)b485_01E02040, 0);
+        }
+    }
+}
 
 /* shape b485:01E01A60, 87 insns: a grey-blue flickering flash on the model joint: f4C 165, size 10x10; second alpha up by 24 to 0xC0 until the game
    timer reaches 0x122, then down by 12 until it ends; second colour flickers by the timer's parity; random turn */
@@ -898,7 +969,105 @@ static s32 func_01E025B0_b485(Game_b485_01E025B0 *g, Fx_b485_01E025B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E02690_b485);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E02A00_b485);
+/* shape b485:01E02A00, 142 insns: b205:01E02120's veil in the scene's packet (0x44A8), grey 0x60, brightening until scene count 300 (0x44FA), then fading by 7 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b485_01E02A00;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b485_01E02A00 p;
+} Tv_b485_01E02A00;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b485_01E02A00 v[2];
+} Tex_b485_01E02A00;
+
+typedef struct {
+    u8 pad[0x44A8];
+    Tex_b485_01E02A00 *pk;
+    u8 pad44AC[0x4E];
+    s16 v;
+} Game_b485_01E02A00;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b485_01E02A00;
+
+static s32 func_01E02A00_b485(Game_b485_01E02A00 *g, Fx_b485_01E02A00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->v < 300) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E02C40_b485);
 

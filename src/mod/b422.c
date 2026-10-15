@@ -489,7 +489,60 @@ static void func_01E01230_b422(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b422", func_01E014F0_b422);
+/* shape b422:01E014F0, 167 insns: the b422 module's event step: counts ticks; spawns b422:01E01F00 at tick 1; from 40 to 149 follows the tracked point (ctx+0xB244) 5 higher and spawns two b422:01E01790; at 135 marks the point (ctx+0xB1D0); from 135 to 145 spawns 20 b422:01E01950 a tick 8 above the mark, -10..9 across; at 135 also spawns b422:01E01C60 there and 20 b422:01E01D50 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f mark;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 id0;
+    u8 padB246[0xB2B8 - 0xB246];
+    s16 timer;
+} Ctx_b422_01E014F0;
+
+static void func_01E014F0_b422(Ctx_b422_01E014F0 *g) {
+    extern s32 b422_01E01790(void);
+    extern s32 b422_01E01950(void);
+    extern s32 b422_01E01C60(void);
+    extern s32 b422_01E01D50(void);
+    extern s32 b422_01E01F00(void);
+    extern void b422_01E02630(Ctx_b422_01E014F0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->timer++;
+    if (g->timer == 1) {
+        b422_01E02630(g, b422_01E01F00, 0);
+    }
+    if (g->timer > 39 && g->timer < 150) {
+        func_001F5620(func_001F53A0(), g->id0, &g->pos);
+        g->pos.y -= 5.0f;
+        b422_01E02630(g, b422_01E01790, 0);
+        b422_01E02630(g, b422_01E01790, 0);
+    }
+    if (g->timer == 135) {
+        func_001F5620(func_001F53A0(), g->id0, &g->mark);
+    }
+    if (g->timer >= 135 && g->timer < 146) {
+        for (i = 0; i < 20; i++) {
+            g->pos = g->mark;
+            g->pos.y -= 8.0f;
+            g->pos.x += func_0019A5C8() % 20 - 10;
+            b422_01E02630(g, b422_01E01950, 0);
+        }
+    }
+    if (g->timer == 135) {
+        g->pos = g->mark;
+        g->pos.y -= 8.0f;
+        b422_01E02630(g, b422_01E01C60, 0);
+        for (i = 0; i < 20; i++) {
+            b422_01E02630(g, b422_01E01D50, 0);
+        }
+    }
+}
 
 /* shape b422:01E01790, 111 insns, 2 copies: a white drifter: set up once (size 150, random frame 2..4 and heading); fades in
    over 6 frames, then out; drifts 0.6 a frame along its heading (world trig table) and 2 up or down by the

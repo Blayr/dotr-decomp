@@ -1,6 +1,101 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c035", func_01E00080_c035);
+/* shape c035:01E00080, 161 insns: the c035 module's main step: red scene colour, sizes 20/130; on its first tick sets two colours, eight 160 values, and two scene points (-100,100) / (100,-100) and spawns c035:01E00310; at scene time 29 greys the colour and spawns c035:01E004D0; on the first tick spawns c035:01E00710; from time 17 drops seven c035:01E00580 at random spots 20 high; from 54 runs c035:01E009B0 twice a tick with a counter cycling 0..39 */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 v80[4];
+    u8 pad90[0x34D0 - 0x90];
+    s32 time;
+    u8 col[4];
+    u8 pad34D8[0x3508 - 0x34D8];
+    f32 f3508[8];
+    u8 pad3528[0x354E - 0x3528];
+    s16 h354E;
+    u8 pad3550[4];
+    s16 timer;
+    u8 pad3556[8];
+    s16 h355E;
+    s16 h3560;
+    s16 h3562;
+    u8 pad3564[0x362C - 0x3564];
+    s16 h362C;
+    u8 pad362E[2];
+    u8 c3630[4];
+    u8 c3634[4];
+} Ctx_c035_01E00080;
+
+static void func_01E00080_c035(Ctx_c035_01E00080 *g) {
+    extern void c035_01E00310(void);
+    extern void c035_01E004D0(void);
+    extern void c035_01E00580(void);
+    extern void c035_01E00710(void);
+    extern void c035_01E009B0(Ctx_c035_01E00080 *);
+    extern void c035_01E00F60(Ctx_c035_01E00080 *, void (*)(void));
+    extern void c035_01E01050(Ctx_c035_01E00080 *, void (*)(void));
+    extern void c035_01E01150(Ctx_c035_01E00080 *, void (*)(void));
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->h355E = 20;
+    g->h362C = 130;
+    g->timer++;
+    if (g->timer == 1) {
+        g->h3560 = 0;
+        g->c3630[0] = 0x40;
+        g->c3630[1] = 0x20;
+        g->c3630[2] = 0x30;
+        g->c3634[0] = 0xC0;
+        g->c3634[1] = 0;
+        g->c3634[2] = 0;
+        g->col[0] = 0x30;
+        g->col[1] = 0x30;
+        g->col[2] = 0x30;
+        g->col[0] = 0x80;
+        g->col[1] = 0;
+        g->col[2] = 0;
+        g->col[3] = 0;
+        for (i = 0; i < 8; i++) {
+            g->f3508[i] = 160.0f;
+        }
+        g->h354E = 0;
+        func_00106DD0(g->v80, -100.0f, 100.0f, 0.0f);
+        g->h354E = 1;
+        g->h354E = 2;
+        g->h354E = 3;
+        func_00106DD0(g->v80, 100.0f, -100.0f, 0.0f);
+        c035_01E00F60(g, c035_01E00310);
+    }
+    if (g->time == 29) {
+        func_001076F0(g->col, 0xBF, 0xBF, 0xBF);
+        c035_01E01050(g, c035_01E004D0);
+    }
+    if (g->timer == 1) {
+        c035_01E01050(g, c035_01E00710);
+    }
+    if (g->time > 16 && g->timer != 0) {
+        for (i = 0; i < 7; i++) {
+            g->v80[0] = func_0019A5C8() % 300 - 150;
+            g->v80[1] = 20.0f;
+            g->v80[2] = func_0019A5C8() % 300 - 150;
+            c035_01E01150(g, c035_01E00580);
+        }
+    }
+    if (g->time > 53 && g->timer != 0) {
+        for (i = 0; i < 2; i++) {
+            c035_01E009B0(g);
+            g->h3562++;
+            if (g->h3562 >= 40) {
+                g->h3562 = 0;
+            }
+        }
+    }
+}
 
 /* func_00108030 really takes an s16 angle (functions.h says s32): hide that prototype */
 

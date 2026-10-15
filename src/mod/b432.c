@@ -622,7 +622,89 @@ static void func_01E01520_b432(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E01920_b432);
+/* shape b432:01E01920, 164 insns: b763:01E01920 family event step: counts ticks; from 96 to 154 spawns two b432:01E01BB0 and a b432:01E02FA0 at the first tracked point, then moves to the second (slot 4); from 130 to 230 spawns b432:01E020D0 and b432:01E022D0 (slot 1); at tick 1 reads the camera and spawns b432:01E03360, 01E03460 and 01E03680; at 100 spawns b432:01E02DE0 and b432:01E031D0; from 148, every fourth tick, places up to 30 points (ctx+0x7CB0) and spawns b432:01E02800 and b432:01E01D80 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x7CB0 - 0x25C];
+    Vec4f pts[30];
+    f32 cam[4];
+    u8 pad7EA0[0x7EF4 - 0x7EA0];
+    s16 id1;
+    u8 pad7EF6[2];
+    s16 id0;
+    u8 pad7EFA[0x7F22 - 0x7EFA];
+    s16 slot;
+    s16 n;
+    u8 pad7F26[4];
+    s16 timer;
+} Ctx_b432_01E01920;
+
+static void func_01E01920_b432(Ctx_b432_01E01920 *g) {
+    extern s32 b432_01E01BB0(void);
+    extern s32 b432_01E01D80(void);
+    extern s32 b432_01E020D0(void);
+    extern s32 b432_01E022D0(void);
+    extern s32 b432_01E02800(void);
+    extern s32 b432_01E02DE0(void);
+    extern s32 b432_01E02FA0(void);
+    extern s32 b432_01E031D0(void);
+    extern s32 b432_01E03360(void);
+    extern s32 b432_01E03460(void);
+    extern s32 b432_01E03680(void);
+    extern void b432_01E04130(Ctx_b432_01E01920 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+
+    g->timer++;
+    if (g->timer >= 96 && g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        g->slot = 0;
+        b432_01E04130(g, b432_01E01BB0, 0);
+        b432_01E04130(g, b432_01E01BB0, 0);
+        b432_01E04130(g, b432_01E02FA0, 0);
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        g->slot = 4;
+    }
+    if (g->timer >= 130 && g->timer < 231) {
+        g->slot = 1;
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        b432_01E04130(g, b432_01E020D0, 0);
+        b432_01E04130(g, b432_01E022D0, 0);
+    }
+    if (g->timer == 1) {
+        func_001F5F90(func_001F5380(), g->cam);
+    }
+    if (g->timer == 1) {
+        b432_01E04130(g, b432_01E03360, 0);
+    }
+    if (g->timer == 1) {
+        b432_01E04130(g, b432_01E03460, 0);
+    }
+    if (g->timer == 1) {
+        b432_01E04130(g, b432_01E03680, 0);
+    }
+    if (g->timer == 100) {
+        b432_01E04130(g, b432_01E02DE0, 0);
+    }
+    if (g->timer == 100) {
+        b432_01E04130(g, b432_01E031D0, 0);
+    }
+    if (g->timer >= 148) {
+        if (g->timer % 4 == 1) {
+            if (g->n < 30) {
+                g->slot = g->n;
+                func_001F5620(func_001F53A0(), g->id0, &g->pts[g->slot]);
+                b432_01E04130(g, b432_01E02800, 0);
+                b432_01E04130(g, b432_01E01D80, 0);
+                g->n++;
+            }
+        }
+    }
+}
 
 /* shape b432:01E01BB0, 115 insns: b038:01E01090's smoke puff, short form: on start size 4.0, random frame/headings/
    timings, grey colour; alpha +0x20 (below 0x80) for h6 ticks then -8; heading 0x5C turns 2 per tick. */
@@ -1450,7 +1532,93 @@ static s32 func_01E03460_b432(Ctx_b432_01E03460 *g, Fx_b432_01E03460 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E03680_b432);
+/* shape b432:01E03680, 145 insns: b555:01E02CB0 with a pink (0xFF, 0x30, 0x80) sprite in the scene packet at ctx+0x7ED8, zoomed by f8/10 and fA/10; alpha up by 9 to 0x80 for 140 ticks, then down by 7 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b432_01E03680;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b432_01E03680 p;
+} Tv_b432_01E03680;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b432_01E03680 v[2];
+} Tex_b432_01E03680;
+
+typedef struct {
+    u8 pad[0x7ED8];
+    Tex_b432_01E03680 *pk;
+} Game_b432_01E03680;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b432_01E03680;
+
+static s32 func_01E03680_b432(Game_b432_01E03680 *g, Fx_b432_01E03680 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xFF, 0x30, 0x80);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick < 140) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->tick > 40) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E038D0_b432);
 

@@ -742,7 +742,109 @@ INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E02F60_b034);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03250_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03560_b034);
+/* shape b034:01E03560, 184 insns: a two-colour flash of kind 0x50: kind 0 pale yellow over cream for 70 ticks (alpha up
+   by 32 to 0x80 for 45 ticks, then easing down by 12 to 0x60), kind 1 magenta for 160 ticks (up by 24 to 0x60), kind 2
+   near-white for 16 ticks (up by 18 to 0x80); afterwards both alphas fade by 7 (kind 2 by 4) and it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Flash_b034_01E03560;
+
+static s32 func_01E03560_b034(s32 arg0, Flash_b034_01E03560 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xD0, 0xD0, 0x80);
+            func_001076F0(o->col2, 0xC0, 0xC0, 0x80);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xFF, 0, 0xFF);
+            func_001076F0(o->col2, 0xFF, 0, 0xFF);
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col2, 0xF0, 0xF0, 0xF0);
+        }
+        if (o->kind == 0) {
+            o->hold = 70;
+        }
+        if (o->kind == 1) {
+            o->hold = 160;
+        }
+        if (o->kind == 2) {
+            o->hold = 16;
+        }
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->kind == 0) {
+            if (o->t < 45) {
+                if (o->col[3] < 0x80) {
+                    o->col[3] += 0x20;
+                }
+                if (o->col2[3] < 0x80) {
+                    o->col2[3] += 0x20;
+                }
+            } else if (o->t < 50) {
+                if (o->col[3] > 0x60) {
+                    o->col[3] -= 12;
+                }
+                if (o->col2[3] > 0x60) {
+                    o->col2[3] -= 12;
+                }
+            }
+        } else if (o->kind == 1) {
+            if (o->col[3] < 0x60) {
+                o->col[3] += 0x18;
+            }
+            if (o->col2[3] < 0x60) {
+                o->col2[3] += 0x18;
+            }
+        } else if (o->kind == 2) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x12;
+            }
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 0x12;
+            }
+        }
+    } else if (o->kind != 2) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 8) {
+            o->col2[3] -= 7;
+        } else {
+            o->col2[3] = 0;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 5) {
+            o->col2[3] -= 4;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b034:01E03840, 130 insns: b144:01E02430-style spark: size 30..69, purple or orange at random, spin from 0,
    speed 35..50, held 13..15 at alpha 0x80, then fades by 15 */

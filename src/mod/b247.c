@@ -868,7 +868,80 @@ static s32 func_01E02320_b247(void *arg0, Ring_b247_01E02320 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E02530_b247);
+/* shape b247:01E02530, 153 insns: b751:01E01BF0 rising (70..119)/10 per tick, ended once the scene count (ctx+0xB2B8) reaches 226 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b247_01E02530;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 count;
+} Ctx_b247_01E02530;
+
+static s32 func_01E02530_b247(Ctx_b247_01E02530 *g, Obj_b247_01E02530 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 140.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->c0, 0xC0, 0x20, 0x20);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->c0, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->w = 60;
+        o->h = 60;
+        o->f38 = func_0019A5C8() % 50 + 70;
+        o->f38 /= 10.0f;
+        o->f30 = func_0019A5C8() % 80 + 150;
+        o->f30 /= 10.0f;
+        o->f34 = 100.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 4) {
+        o->c0[3] -= 3;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f38;
+    o->f4C = 0.1f * o->f48;
+    o->t++;
+    if (g->count > 225) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E027A0_b247);
 
@@ -876,7 +949,96 @@ INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E02C50_b247);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E02FC0_b247);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E03300_b247);
+/* shape b247:01E03300, 147 insns: b432:01E03460 in 0x98/0x80/0x80 (0xA8 at scene count 160), alpha up by 22 to 0x58 until count 180 (ctx+0xB2B8), then down by 4 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b247_01E03300;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b247_01E03300 p;
+} Tv_b247_01E03300;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b247_01E03300 v[2];
+    u8 tail[0x20];
+} Tex_b247_01E03300;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 count;
+} Ctx_b247_01E03300;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b247_01E03300;
+
+static s32 func_01E03300_b247(Ctx_b247_01E03300 *g, Fx_b247_01E03300 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    Tex_b247_01E03300 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 2.5f;
+        func_001076F0(o->col, 0x98, 0x80, 0x80);
+        o->mode = 2;
+    }
+    if (g->count == 160) {
+        func_001076F0(o->col, 0xA8, 0x80, 0x80);
+    }
+    ((Tex_b247_01E03300 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b247_01E03300 *)(s32)&pk)->size = 5;
+    ((Tex_b247_01E03300 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b247_01E03300 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->count < 180) {
+        if (o->col[3] < 0x58) {
+            o->col[3] += 0x16;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

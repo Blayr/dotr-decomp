@@ -391,7 +391,75 @@ static void func_01E00AF0_b588(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
 
 INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E00E60_b588);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01300_b588);
+/* shape b588:01E01300, 171 insns: a purple (0x80, 0x40, 0xFF) square flake (size 50 growing 1, kind 2..4, angle 0..359, frame 0..3) drifting (-50..49)/60 per axis and tumbling by random spins; alpha up by 0x40 to 0x80 for 8 ticks, then down by 4 */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b588_01E01300;
+
+static s32 func_01E01300_b588(s32 arg0, Fx_b588_01E01300 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 50;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0x80, 0x40, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+        o->w++;
+        o->h = o->w;
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E015B0_b588);
 
@@ -580,7 +648,71 @@ static s32 func_01E01D00_b588(Mgr_b588_01E01D00 *m, Obj_b588_01E01D00 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01EF0_b588);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E02270_b588);
+/* shape b588:01E02270, 161 insns: b482:01E02180 in purple (0x80, 0x40, 0xFF), size 50 x 25, sinking 1 per tick and spinning by its random spins */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 dir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b588_01E02270;
+
+static s32 func_01E02270_b588(s32 arg0, Spark_b588_01E02270 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 50;
+        o->h = o->w >> 1;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0x80, 0x40, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[1] -= 1.0f;
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b588:01E02500, 59 insns: constant variant of b415:01E022B0 (220.0f->140.0f, colour (192, 255, 192), colour (64, 255, 64)) */
 

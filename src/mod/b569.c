@@ -338,7 +338,111 @@ static void func_01E00BE0_b569(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b569", func_01E00FE0_b569);
+/* shape b569:01E00FE0, 173 insns: b756:01E061D0 family burst draw: corner colours by the mode's high nibble (0: three of col2 then col, 1: two each), the scene rect (g+0x94, frame g+0xBE) and texture (g+0x88); scale 0.05 at the point with a random-free turn, then four quads of f30 x f34 turned by h5A in z through g+0xD8, depth-tested into g+0x80 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b569_01E00FE0;
+
+typedef struct {
+    Rgbaq_b569_01E00FE0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b569_01E00FE0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b569_01E00FE0 v[4];
+} Pkt_b569_01E00FE0;
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x22];
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b569_01E00FE0;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+    u8 padC0[0x18];
+    u8 mD8[1];
+} Game_b569_01E00FE0;
+
+static void func_01E00FE0_b569(Game_b569_01E00FE0 *g, Obj_b569_01E00FE0 *o, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b569_01E00FE0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108D60(void *, s32, s32, s16);
+    extern void func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 pos[4];
+    Vec4f q[4];
+    f32 v[4];
+    f32 sc[4];
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    struct {
+        Pkt_b569_01E00FE0 pk;
+        u8 tail[0x20];
+    } buf;
+    s16 i;
+    Pkt_b569_01E00FE0 *p = &buf.pk;
+    s32 k;
+
+    *(Vec4f *)pos = *in;
+    func_00109270(p, 0, 0);
+    k = mode >> 4;
+    if (k == 0) {
+        p->v[0].c = func_00107740(o->col2);
+        p->v[1].c = func_00107740(o->col2);
+        p->v[2].c = func_00107740(o->col2);
+        p->v[3].c = func_00107740(o->col);
+    } else if (k == 1) {
+        p->v[0].c = func_00107740(o->col2);
+        p->v[1].c = func_00107740(o->col2);
+        p->v[2].c = func_00107740(o->col);
+        p->v[3].c = func_00107740(o->col);
+    }
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    sc[0] = 0.05f;
+    sc[1] = 0.05f;
+    sc[2] = 0.05f;
+    func_00205C40((s32)rot);
+    v[0] = pos[0];
+    v[1] = pos[1];
+    v[2] = pos[2];
+    func_00108EF0(m, sc, rot, v);
+    rot[2] = o->h5A;
+    rot[1] = 0;
+    rot[0] = 0;
+    for (i = 0; i < 4; i++) {
+        func_00108D60(q, o->f30, o->f34, i);
+        func_00109100(q, rot, 2, g->mD8);
+        if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, g->ot, (u32)depth[0]);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b569", func_01E012A0_b569);
 

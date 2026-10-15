@@ -761,7 +761,79 @@ static s32 func_01E02450_b073(void *arg0, Obj_b073_01E02450 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E025C0_b073);
+/* shape b073:01E025C0, 165 insns: b073:01E02860 family: the kind's scene point (ctx+0x20) is set to the first tracked point (ctx+0x35B8 / 0x35BC by kind) and pushed toward the second (0x35BA / 0x35BE) by fE/20 of the gap, fE counting up; alpha up by 0x40 to 0x80 for 11 ticks, then down by 12 */
+
+typedef struct {
+    u8 pad0[0x20];
+    Vec4f pt[2];
+    u8 pad40[0x35B8 - 0x40];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    s16 id3;
+} Ctx_b073_01E025C0;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 fE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b073_01E025C0;
+
+static s32 func_01E025C0_b073(Ctx_b073_01E025C0 *g, Fx_b073_01E025C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x10, 0x10, 8);
+        o->fE = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 11) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        func_001F5620(func_001F53A0(), g->id0, v);
+        func_001F5620(func_001F53A0(), g->id1, &v[4]);
+    } else {
+        func_001F5620(func_001F53A0(), g->id2, v);
+        func_001F5620(func_001F53A0(), g->id3, &v[4]);
+    }
+    g->pt[o->kind].x = v[0];
+    g->pt[o->kind].y = v[1];
+    g->pt[o->kind].z = v[2];
+    v[0] = v[4] - v[0];
+    v[1] = v[5] - v[1];
+    v[2] = v[6] - v[2];
+    v[0] /= 20.0f;
+    v[1] /= 20.0f;
+    v[2] /= 20.0f;
+    g->pt[o->kind].x += v[0] * o->fE;
+    g->pt[o->kind].y += v[1] * o->fE;
+    g->pt[o->kind].z += v[2] * o->fE;
+    o->fE++;
+    o->tick++;
+    return 0;
+}
 
 /* shape b073:01E02860, 132 insns: a marker that follows the tracked point (id at ctx+0x35C0) into scene point o->kind and nudges it 1.3 right (kind 0) or left; alpha up by 64 for 11 ticks, then down by 12 */
 

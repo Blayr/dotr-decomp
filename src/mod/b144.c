@@ -735,7 +735,68 @@ static void func_01E018F0_b144(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E01C60_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02030_b144);
+/* shape b144:01E02030, 154 insns: a red ember of two kinds: kind 0 size 2..6, height 50..149 rising 5..24; kind 1 size
+   6..10, height 10..39 rising 10..12; frame 0..3, colour 0xC0/0x70/0x70, a random spin and angle, frame 1..8, life 2..4;
+   alpha 0x60 for its life, then down by 11 until it ends; it rises by its speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 rise;
+    u8 pad10[0x14];
+    s32 spin;
+    u8 pad28[0x20];
+    f32 size;
+    u8 pad4C[4];
+    s16 h;
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Obj_b144_01E02030;
+
+static s32 func_01E02030_b144(void *g, Obj_b144_01E02030 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->size = func_0019A5C8() % 5 + 2;
+        }
+        if (o->kind == 1) {
+            o->size = func_0019A5C8() % 5 + 6;
+        }
+        o->frame = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xC0, 0x70, 0x70);
+        o->spin = func_0019A5C8() % 0xFFFF;
+        if (o->kind == 0) {
+            o->h = func_0019A5C8() % 100 + 50;
+            o->rise = func_0019A5C8() % 20 + 5;
+        }
+        if (o->kind == 1) {
+            o->h = func_0019A5C8() % 30 + 10;
+            o->rise = func_0019A5C8() % 3 + 10;
+        }
+        o->ang = func_0019A5C8() % 360;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->t < o->life) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->h += o->rise;
+    o->t++;
+    return 0;
+}
 
 /* shape b144:01E022A0, 97 insns: a red-white swirling column: width 10 growing by 6 to 150, height 60 growing by 40, rise 2 growing
    by a random 5..39, random y turn going 0x200 a frame; second alpha up by 42 for 7 frames, then down by 11 until it ends */

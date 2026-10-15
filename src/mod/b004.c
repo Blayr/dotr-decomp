@@ -166,7 +166,68 @@ static s32 func_01E006B0_b004(void *arg0, Obj_b004_01E006B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E00790_b004);
+/* shape b004:01E00790, 150 insns: b019:01E01F60 family ember (yellow, red or orange; frame 0..3) swinging 20 on two sines (angle 90..269 offset by minus the scene value at ctx+0x349C, and 0..359), table at ctx+0x34E0; full alpha 10 ticks then down by 10 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x349C];
+    s16 val;
+    u8 pad349E[0x34E0 - 0x349E];
+    u8 tab[1];
+} Mgr_b004_01E00790;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b004_01E00790;
+
+static s32 func_01E00790_b004(Mgr_b004_01E00790 *m, Fx_b004_01E00790 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s16 a;
+    s16 k;
+
+    a = -m->val;
+    if (o->mode == 1) {
+        o->f38 = 1;
+        o->f34 = func_0019A5C8() % 4;
+        k = func_0019A5C8() % 3;
+        if (k == 0) {
+            func_001076F0(o->col, 0xFF, 0xF0, 0);
+        } else if (k == 1) {
+            func_001076F0(o->col, 0xFF, 0, 0);
+        } else if (k == 2) {
+            func_001076F0(o->col, 0xFF, 0x80, 0);
+        }
+        o->f3A = func_0019A5C8() % 180 + 90;
+        o->f30 = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    o->x = o->x + 20.0f * func_00108030(m->tab, a + o->f3A, 0);
+    o->y = o->y + 20.0f * func_00108030(m->tab, o->f30, 0);
+    o->z = o->z + 20.0f * func_00108030(m->tab, a + o->f3A, 1);
+    return 0;
+}
 
 /* shape b004:01E009F0, 84 insns: a purple pulse: set up once at alpha 0 with frame 22 (6 before game frame 0x4F); alpha up by
    0x50 for 2 frames, then down by 10 until it ends; sub-frame up to 7, frame down by one every third frame; at game frame

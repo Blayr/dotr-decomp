@@ -623,7 +623,82 @@ static s32 func_01E01A70_b052(World_b018_01E01F60 *w, Wisp_b018_01E01F60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E01C90_b052);
+/* OVL_WARM */
+
+/* shape b052:01E01C90, 148 insns: an orange spark on the line between two model joints (g+0x386C / 0x386E): on start
+   size 6, a random step 0..11 along the line, a random spin, rise 7 - step / 2, frame 0..9, life 1..3; alpha 0x80 for its
+   life, then down by 10 until it ends; it rises by its speed and sits step tenths of the way from joint 0 to joint 1 */
+
+typedef struct {
+    u8 pad0[0x386C];
+    s16 j0;
+    s16 j1;
+} Game_b052_01E01C90;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 life;
+    s16 frame;
+    u8 padA[4];
+    s16 rise;
+    u8 pad10[8];
+    s32 spin;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 f34;
+    s16 mode;
+    s16 size;
+    s16 step;
+} Obj_b052_01E01C90;
+
+static s32 func_01E01C90_b052(Game_b052_01E01C90 *g, Obj_b052_01E01C90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[2][4];
+    f32 dx;
+    f32 dz;
+    f32 dy;
+
+    if (o->mode == 1) {
+        o->size = 6;
+        o->step = func_0019A5C8() % 12;
+        o->f34 = 2;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->spin = func_0019A5C8() % 0xFFFF;
+        o->h = 0;
+        o->rise = 7 - (o->step >> 1);
+        o->frame = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->t < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->h += o->rise;
+    o->t++;
+    func_001F5620(func_001F53A0(), g->j0, v[0]);
+    func_001F5620(func_001F53A0(), g->j1, v[1]);
+    dx = v[1][0] - v[0][0];
+    dy = v[1][1] - v[0][1];
+    dz = v[1][2] - v[0][2];
+    dx /= 10.0f;
+    dy /= 10.0f;
+    dz /= 10.0f;
+    o->x = v[0][0] + dx * o->step;
+    o->y = v[0][1] + dy * o->step;
+    o->z = v[0][2] + dz * o->step;
+    return 0;
+}
 
 /* shape b018:01E022E0, 101 insns, 2 copies: a dim arc flash facing away from the model: its turn set once from the model's
    heading (flipped past 180), its roll by side; fades in over 2 frames, then out; its sweep opens 8 a frame to

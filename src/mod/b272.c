@@ -202,7 +202,50 @@ static void func_01E00920_b272(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b272", func_01E00BE0_b272);
+/* shape b272:01E00BE0, 167 insns: the effect scene's step: counts the frame (0x451A); from frame 36 to 180 it spawns a
+   0x1E00E80 scattered +-15 around and up to 9 below joint 0x44E4; from 220 to 350 two 0x1E00FE0 scattered +-20 around
+   the other model's joint 0x44F4 at a height of 70..99 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4284];
+    s16 j0;
+    u8 pad44E6[0xE];
+    s16 j1;
+    u8 pad44F6[0x24];
+    s16 t;
+} Scene_b272_01E00BE0;
+
+static void func_01E00BE0_b272(Scene_b272_01E00BE0 *g) {
+    extern void b272_01E00E80(void);
+    extern void b272_01E00FE0(void);
+    extern s32 b272_01E019E0(Scene_b272_01E00BE0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    g->t++;
+    if (g->t >= 36 && g->t < 181) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        g->pos.x += func_0019A5C8() % 30 - 15;
+        g->pos.y -= func_0019A5C8() % 10;
+        g->pos.z += func_0019A5C8() % 30 - 15;
+        b272_01E019E0(g, (s32)b272_01E00E80, 0);
+    }
+    if (g->t >= 220 && g->t < 351) {
+        func_001F5620(func_001F5380(), g->j1, &g->pos);
+        g->pos.x += func_0019A5C8() % 40 - 20;
+        g->pos.y = func_0019A5C8() % 30 + 70;
+        g->pos.z += func_0019A5C8() % 40 - 20;
+        b272_01E019E0(g, (s32)b272_01E00FE0, 0);
+        func_001F5620(func_001F5380(), g->j1, &g->pos);
+        g->pos.x += func_0019A5C8() % 40 - 20;
+        g->pos.y = func_0019A5C8() % 30 + 70;
+        g->pos.z += func_0019A5C8() % 40 - 20;
+        b272_01E019E0(g, (s32)b272_01E00FE0, 0);
+    }
+}
 
 /* shape b272:01E00E80, 86 insns: on start 0x8/0xA = 10, variant 3, f34 0.5, colour white, random 0x5A, random spin
    direction (0x50); alpha grows by 0x60 (below 0xC0) for 20 ticks, then fades by 9 and stops; f14 grows by 1 after the

@@ -667,7 +667,103 @@ INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E01AC0_b732);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E02610_b732);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E02FC0_b732);
+/* shape b732:01E02FC0, 177 insns: b264:01E03200's joint-walking ring in blue (0x60/0x60/0x80 blinking 0x20/0x20/0x80 and
+   0x30/0x30/0xA0) stepping fifteenths between joints 0xE6E0/0xE6E2; every third tick it drops a 0x1E03290 at its
+   place until scene frame 290 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b732_01E02FC0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz, pw;
+    u8 pad260[0xE480];
+    s16 ja;
+    s16 jb;
+    u8 padE6E4[0x2A];
+    s16 side;
+    u8 padE710[8];
+    s16 timer;
+} Game_b732_01E02FC0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 fw;
+    s32 rot;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 h;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 hh;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b732_01E02FC0;
+
+static s32 func_01E02FC0_b732(Game_b732_01E02FC0 *g, Obj_b732_01E02FC0 *o) {
+    extern void b732_01E03290(void);
+    extern s32 b732_01E054B0(Game_b732_01E02FC0 *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[2][4];
+    f32 k;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x10, 0x10, 0x10);
+        func_001076F0(o->c1, 0x60, 0x60, 0x80);
+        o->hold = 140;
+        o->h = 25.0f;
+        o->w = 20;
+        o->hh = 20;
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (g->timer < 290) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x18;
+        }
+    } else if (o->c1[3] > 13) {
+        o->c1[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    if (g->timer % 2 == 1) {
+        func_001076F0(o->c1, 0x20, 0x20, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x30, 0x30, 0xA0);
+    }
+    k = o->h50;
+    func_001F5620(func_001F53A0(), g->ja, &o->x);
+    func_001F5620(func_001F53A0(), g->ja, v[0]);
+    func_001F5620(func_001F53A0(), g->jb, v[1]);
+    o->x += k * ((v[1][0] - v[0][0]) / 15.0f);
+    o->y += k * ((v[1][1] - v[0][1]) / 15.0f);
+    o->z += k * ((v[1][2] - v[0][2]) / 15.0f);
+    if (o->t % 3 == 1) {
+        *(V4_b732_01E02FC0 *)&g->px = *(V4_b732_01E02FC0 *)&o->x;
+        g->side = 0;
+        if (g->timer < 290) {
+            b732_01E054B0(g, (s32)b732_01E03290, 0);
+        }
+    }
+    func_00205C40((s32)&o->rot);
+    o->rot += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b732:01E03290, 104 insns: a red-blue flicker spark: size 2, sub-frame 3, height 4..11 rising by 1 once started, random
    angle, width 1..8, hold 5..7; alpha 0xC0 until the hold, then down by 11 until it ends; flickers pale blue/dark blue */
@@ -838,7 +934,89 @@ static s32 func_01E03550_b732(s32 arg0, Fx_b732_01E03550 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03650_b732);
+/* shape b732:01E03650, 149 insns: white flicker spark on the tracked point (ctx+0xE6E4) flung 14 along its angle and slowing 0.7 per tick (table at ctx+0xEA1C); the module point follows it and it spawns b732:01E03290 each tick; alpha up by 48 to 0xC0 for 20 ticks, then down by 9; frame cycles 0..3; angle turns 20 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pt;
+    u8 pad260[0xE6E4 - 0x260];
+    s16 id;
+    u8 padE6E6[0xE70E - 0xE6E6];
+    s16 hE70E;
+    u8 padE710[0xEA1C - 0xE710];
+    u8 tab[1];
+} Ctx_b732_01E03650;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b732_01E03650;
+
+static s32 func_01E03650_b732(Ctx_b732_01E03650 *g, Fx_b732_01E03650 *o) {
+    extern s32 b732_01E03290(void);
+    extern void b732_01E054B0(Ctx_b732_01E03650 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->h8 = 8;
+        o->hA = 8;
+        o->f48 = 14.0f;
+        o->f56 = func_0019A5C8() % 4;
+        o->f34 = 0.5f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f56++;
+    if (o->f56 >= 4) {
+        o->f56 = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    func_001F5620(func_001F53A0(), g->id, &o->pos);
+    o->pos.x += o->f48 * func_00108030(g->tab, o->f5A, 1);
+    o->pos.y += o->f48 * func_00108030(g->tab, o->f5A, 0);
+    if (o->f48 > 0.0f) {
+        o->f48 -= 0.7f;
+    }
+    g->pt = o->pos;
+    g->hE70E = 0;
+    b732_01E054B0(g, b732_01E03290, 0);
+    o->f5A += 20;
+    func_00205C40(o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b732:01E038B0, 62 insns: constant variant of b016:01E023F0 (0xA0->0xC0, 0x50->0x60, colour (128, 128, 192)) */
 

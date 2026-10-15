@@ -717,7 +717,104 @@ static void func_01E01F40_b218(Obj_b046_01E00BB0 *o, Spr_b046_01E00BB0 *s, s32 b
 
 INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E02160_b218);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E027F0_b218);
+/* shape b218:01E027F0, 173 insns: a 10-point column effect: on start both colours 0x60/0x60/0xC0 (alpha 0x80 and
+   0x40), both 10-point rows at g+0x2C90/0x2D30 copied from g+0x2A10 with the first one 10 lower, size 10; the first
+   colour holds for 27 ticks, then both fade (by 15 and by 7); from the second tick each row point
+   moves 8 down or up by the sign func_001A22C0 gives for the camera angle */
+
+typedef struct {
+    f32 x, y, z, w;
+} Pt_b218_01E027F0;
+
+typedef struct {
+    u8 pad0[0x2A10];
+    Pt_b218_01E027F0 src[10];
+    u8 pad2AB0[0x1E0];
+    Pt_b218_01E027F0 a[10];
+    Pt_b218_01E027F0 b[10];
+} Game_b218_01E027F0;
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 h38;
+} Fx_b218_01E027F0;
+
+static s32 func_01E027F0_b218(Game_b218_01E027F0 *g, Fx_b218_01E027F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001A22C0(f32);
+    s32 v[4];
+    s16 i;
+    s32 r;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x60, 0x60, 0xC0);
+        func_001076F0(o->col2, 0x60, 0x60, 0xC0);
+        o->h6 = 8;
+        o->col[3] = 0x80;
+        o->col2[3] = 0x40;
+        for (i = 0; i < 10; i++) {
+            g->a[i] = g->src[i];
+            g->b[i] = g->src[i];
+        }
+        for (i = 0; i < 10; i++) {
+            g->a[i].z -= 10.0f;
+        }
+        o->h2 = 0;
+        o->h0 = 0;
+        o->h4 = 0;
+        o->hA = 10;
+        o->h8 = 10;
+        o->hC = 10;
+        for (i = 0; i < 10; i++) {
+        }
+        o->h38 = 6;
+        o->mode = 2;
+    }
+    if (o->t < 27) {
+        o->col[3] = 0x80;
+    } else {
+        if (o->col[3] > 16) {
+            o->col[3] -= 15;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 8) {
+            o->col2[3] -= 7;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    func_001F6160(func_001F53A0(), v);
+    r = (s16)func_001A22C0((f32)v[1] / 180.0f);
+    if (o->t != 0) {
+        for (i = 0; i < 10; i++) {
+            if (r != 0) {
+                g->a[i].z -= 8.0f;
+                g->b[i].z -= 8.0f;
+            } else {
+                g->a[i].z += 8.0f;
+                g->b[i].z += 8.0f;
+            }
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b218:01E02AB0, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x10, 0x60, 0x10) and fields;
    alpha 0x60 for the first 0x78 ticks, then fade out by 9 and stop */
@@ -1273,7 +1370,105 @@ static s32 func_01E03700_b218(s32 arg0, Flash_b218_01E03700 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E037E0_b218);
+/* shape b218:01E037E0, 173 insns: a flash light at g+0x2920 (b490:01E00E90's kind): on start colour 0, height 0/70/0 and the
+   effect's position; it brightens (strength +0.2 to 1, colour +42/+21/+10 up to 128/128/64), then once full fades
+   (strength -0.1, colour -16/-16/-8) until it ends; func_001F6C10 gets the light (or 0 once ended); it also ends when
+   the light's state word is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x11B4];
+    s32 state;
+} Light_b218_01E037E0;
+
+typedef struct {
+    u8 pad0[0x2920];
+    Light_b218_01E037E0 light;
+} Game_b218_01E037E0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x2A];
+    s16 f30;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b218_01E037E0;
+
+static s32 func_01E037E0_b218(Game_b218_01E037E0 *g, Fx_b218_01E037E0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a[0] = 0.0f;
+        g->light.a[1] = 0.0f;
+        g->light.a[2] = 0.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 70.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f30 = 0;
+    }
+    if (o->f30 == 0) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.2f;
+        } else {
+            o->f30 = 1;
+        }
+        if (g->light.a[0] < 128.0f) {
+            g->light.a[0] += 42.0f;
+        } else {
+            g->light.a[0] = 128.0f;
+        }
+        if (g->light.a[1] < 64.0f) {
+            g->light.a[1] += 21.0f;
+        } else {
+            g->light.a[1] = 128.0f;
+        }
+        if (g->light.a[2] < 32.0f) {
+            g->light.a[2] += 10.0f;
+        } else {
+            g->light.a[2] = 64.0f;
+        }
+    } else {
+        if (!(g->light.b[2] <= 0.1f)) {
+            g->light.b[2] -= 0.1f;
+        } else {
+            o->mode = 0;
+        }
+        if (!(g->light.a[0] <= 16.0f)) {
+            g->light.a[0] -= 16.0f;
+        } else {
+            g->light.a[0] = 0.0f;
+        }
+        if (!(g->light.a[1] <= 16.0f)) {
+            g->light.a[1] -= 16.0f;
+        } else {
+            g->light.a[1] = 0.0f;
+        }
+        if (!(g->light.a[2] <= 8.0f)) {
+            g->light.a[2] -= 8.0f;
+        } else {
+            g->light.a[2] = 0.0f;
+        }
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.state == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b218:01E03AA0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3B00 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

@@ -779,7 +779,96 @@ static s32 func_01E02B90_b849(s32 arg0, Fx_b764_01E02E80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E02CD0_b849);
+/* shape b849:01E02CD0, 145 insns: b849:01E029D0 family marker (size 15, frame = f50, size f34 43.5) on the tracked point (ctx+0xF128), drifting 0.5 along z by the scene flag and sinking 0.25; turns start at 180 or 0; both alphas up by 42 for 3 ticks, then down by 9 once scene count 351 is reached; flickers 0x80/0x70 */
+
+typedef struct {
+    u8 pad0[0xF128];
+    s16 pt;
+    u8 padF12A[0xF20A - 0xF12A];
+    s16 flag;
+    u8 padF20C[2];
+    s16 count;
+} Game_b849_01E02CD0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x18];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b849_01E02CD0;
+
+static s32 func_01E02CD0_b849(Game_b849_01E02CD0 *g, Fx_b849_01E02CD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->h8 = 15;
+        o->hA = 15;
+        o->f56 = o->f50;
+        o->f34 = 43.5f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+        if (g->flag != 0) {
+            o->f5C = o->f5A - 56;
+            o->f5A = 180;
+        } else {
+            o->f5C = o->f5A - 56;
+            o->f5A = 0;
+        }
+    }
+    if (o->tick < 3) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x2A;
+        }
+    } else if (g->count > 350) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+    }
+    o->rot[0] = 0;
+    func_001F5620(func_001F53A0(), g->pt, &o->pos);
+    if (g->flag != 0) {
+        o->pos.z += 0.5f;
+    } else {
+        o->pos.z -= 0.5f;
+    }
+    o->pos.y -= 0.25f;
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

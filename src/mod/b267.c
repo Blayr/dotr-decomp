@@ -197,7 +197,108 @@ static s32 func_01E00A80_b267(Game_b267_01E00A80 *g, Glow_b267_01E00A80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E00BF0_b267);
+/* shape b267:01E00BF0, 152 insns: a breathing grey glow: starts black, alpha up by 7 (to 0x90) and grey up by 4 (to 0x60)
+   for 20 ticks; while the scene timer (0x3DD0) is above 20 it pulses its grey between 0x30 and 0xC0 by 4 a tick once
+   its size reached 50, and below 20 it fades by 13; size grows by 2 to 50, and after scene frame 280 (0x3E2E) 0x3A
+   grows by 0x30 to 0x600 and the size by 1 to 90 */
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 dir;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 h3A;
+} Fx_b267_01E00BF0;
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 timer;
+    u8 pad3DD4[0x5A];
+    s16 frame;
+} Scene_b267_01E00BF0;
+
+static s32 func_01E00BF0_b267(Scene_b267_01E00BF0 *g, Fx_b267_01E00BF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 4;
+        func_001076F0(o->col, 0, 0, 0);
+        o->frame = 0;
+        o->hE = 1;
+        o->mode = 2;
+    }
+    if (o->t < 20) {
+        if (o->col[3] < 0x90) {
+            o->col[3] += 7;
+        }
+        if (o->col[0] < 0x60) {
+            o->col[0] += 4;
+        }
+        if (o->col[1] < 0x60) {
+            o->col[1] += 4;
+        }
+        if (o->col[2] < 0x60) {
+            o->col[2] += 4;
+        }
+    }
+    if (g->timer > 20) {
+        if (o->dir == 0) {
+            if (o->size >= 50) {
+                if (o->col[0] < 0xC0) {
+                    o->col[0] += 4;
+                }
+                if (o->col[1] < 0xC0) {
+                    o->col[1] += 4;
+                }
+                if (o->col[2] < 0xC0) {
+                    o->col[2] += 4;
+                } else {
+                    o->dir = 1;
+                }
+            }
+        } else if (o->dir == 1) {
+            if (o->col[0] > 0x30) {
+                o->col[0] -= 4;
+            }
+            if (o->col[1] > 0x30) {
+                o->col[1] -= 4;
+            }
+            if (o->col[2] > 0x30) {
+                o->col[2] -= 4;
+            } else {
+                o->dir = 0;
+            }
+        }
+    }
+    if (g->timer < 20) {
+        if (o->col[3] > 14) {
+            o->col[3] -= 13;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->size < 50) {
+        o->size += 2;
+    }
+    if (g->frame > 0x118) {
+        if (o->h3A < 0x600) {
+            o->h3A += 0x30;
+        }
+    }
+    if (g->frame > 0x118) {
+        if (o->size < 90) {
+            o->size++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b267:01E00E50, 77 insns: a blue column: frame 46, size 2 growing by 5 in height, direction from its angle; both alphas
    up by 0x40 for 2 frames, then down by 13 until the first runs out */
@@ -260,9 +361,192 @@ static s32 func_01E00E50_b267(void *arg0, Obj_b267_01E00E50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E00F90_b267);
+/* shape b267:01E00F90, 178 insns: b267:01E01260's smoke wisp in dark grey 0x2F (set every tick): random size 2..8, cap
+   30..79, no scene angle; fades by 5 after tick 45; the rise goes to 13 before climbing by 4; the angle turns back by 2
+   (3 from scene frame 280), and it fades by 12 once the scene timer is under 17 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01260_b267);
+typedef struct {
+    u8 pad0[6];
+    s16 lean;
+    u8 pad8[6];
+    s16 cap;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 rise;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+    s16 ang;
+} Wisp_b267_01E00F90;
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 timer;
+    u8 pad3DD4[0x5A];
+    s16 frame;
+} Scene_b267_01E00F90;
+
+static s32 func_01E00F90_b267(Scene_b267_01E00F90 *g, Wisp_b267_01E00F90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x2F, 0x2F, 0x2F);
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 7 + 2;
+        o->ang = func_0019A5C8() % 360;
+        o->lean = func_0019A5C8() % 2;
+        o->frame = func_0019A5C8() % 7;
+        o->rise = 0;
+        o->cap = func_0019A5C8() % 50 + 30;
+        o->state = 2;
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 20;
+        }
+    } else if (o->t > 45) {
+        if (o->col[3] > 6) {
+            o->col[3] -= 5;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->size < 5) {
+            o->size++;
+        }
+    }
+    if (o->lean < 10) {
+        if (o->t % 2 == 1) {
+            o->lean++;
+        }
+    } else {
+        if (o->rise < 13) {
+            o->rise++;
+        } else {
+            o->rise += 4;
+            if (o->cap > o->size) {
+                if (o->t % 2 == 1) {
+                    o->size++;
+                }
+            }
+        }
+        if (o->ang < -359) {
+            o->ang %= 360;
+        }
+    }
+    if (g->frame < 280) {
+        o->ang -= 2;
+    } else {
+        o->ang -= 3;
+    }
+    if (g->timer < 17) {
+        if (o->col[3] > 13) {
+            o->col[3] -= 12;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
+
+/* shape b267:01E01260, 165 insns: a smoke wisp's step: on start it takes size 4, grey 0x16, the scene's angle (0x3E26),
+   a random lean 0..1 and frame 0..6, a rise from -20 and a 70 size cap; alpha grows by 12 to 0x60 for 8 frames, then
+   fades by 5 after frame 68 and by 12 once the scene timer is under 17; every other frame the size grows to 5 and the
+   lean to 10; once leaned it rises to 6, then turns grey 0x30, climbs by 4 and keeps growing to the cap; the angle
+   wraps under -359 and turns by 6 (back while still rising) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 lean;
+    u8 pad8[6];
+    s16 cap;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 rise;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+    s16 ang;
+} Wisp_b267_01E01260;
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 timer;
+    u8 pad3DD4[0x52];
+    s16 ang;
+} Scene_b267_01E01260;
+
+static s32 func_01E01260_b267(Scene_b267_01E01260 *g, Wisp_b267_01E01260 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 4;
+        func_001076F0(o->col, 0x16, 0x16, 0x16);
+        o->ang = g->ang;
+        o->lean = func_0019A5C8() % 2;
+        o->frame = func_0019A5C8() % 7;
+        o->rise = -20;
+        o->cap = 70;
+        o->state = 2;
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 12;
+        }
+    } else {
+        if (o->t > 68) {
+            if (o->col[3] > 6) {
+                o->col[3] -= 5;
+            } else {
+                o->state = 0;
+            }
+        }
+        if (g->timer < 17) {
+            if (o->col[3] > 13) {
+                o->col[3] -= 12;
+            } else {
+                o->state = 0;
+            }
+        }
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->size < 5) {
+            o->size++;
+        }
+    }
+    if (o->lean < 10) {
+        if (o->t % 2 == 1) {
+            o->lean++;
+        }
+    } else {
+        if (o->rise < 6) {
+            o->rise++;
+        } else {
+            func_001076F0(o->col, 0x30, 0x30, 0x30);
+            o->rise += 4;
+            if (o->cap > o->size) {
+                if (o->t % 2 == 1) {
+                    o->size++;
+                }
+            }
+        }
+        if (o->ang < -359) {
+            o->ang %= 360;
+        }
+    }
+    if (o->rise < 6) {
+        o->ang -= 6;
+    } else {
+        o->ang += 6;
+    }
+    return 0;
+}
 
 /* shape b267:01E01500, 68 insns: a white spark of size 100 at a random frame that steps every other tick up to 7, growing 10 a tick: in by 24 up to 0x60 for 4 ticks, then out by 19 and ends */
 
@@ -728,17 +1012,276 @@ static s32 func_01E02530_b267(Pool_b267_01E02530 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E02660_b267);
+/* shape b267:01E02660, 154 insns: a two-pass 0.1-scaled sprite strip: mode 0 sets the material (rect 1,1 126x62, mode 10,
+   the object's colour, scene texture 0x3DA4); other modes place it at the object's position plus a tenth of its drift,
+   turn it by the object's spin, and draw count x 2 quads (func_00108D60 with the size and the half), each mirrored in y */
+
+typedef struct {
+    s16 x, y, w, h;
+} Rect_b267_01E02660;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[2];
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    s16 count;
+    u8 pad10[8];
+    s32 spin;
+    u8 pad1C[0xC];
+    u8 c28[4];
+    u8 pad2C[0xC];
+    s16 size;
+} Obj_b267_01E02660;
+
+typedef struct {
+    u8 pad0[0x3DA4];
+    s32 texture;
+} Game_b267_01E02660;
+
+static void func_01E02660_b267(Game_b267_01E02660 *g, Obj_b267_01E02660 *o, void *p, s32 mode) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 q[16];
+    Vec4f v;
+    Vec4f sc;
+    Rect_b267_01E02660 r[2];
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 ctx;
+    s16 i;
+    s16 j;
+
+    ctx = (s32)func_00207500();
+    if (mode == 0) {
+        r[0].x = 1;
+        r[0].y = 1;
+        r[0].w = 0x7E;
+        r[0].h = 0x3E;
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->c28, 0);
+        func_00108500(p, r, 10);
+        func_00208700(p, g->texture, 1);
+    } else {
+        func_00205C40((s32)rot);
+        sc.x = 0.1f;
+        sc.y = 0.1f;
+        sc.z = 0.1f;
+        v.x = o->x + o->dx / 10;
+        v.y = o->y + o->dy / 10;
+        v.z = o->z + o->dz / 10;
+        rot[0] = 0;
+        rot[1] = 0;
+        rot[2] += o->spin;
+        func_00108EF0(m, &sc, rot, &v);
+        for (i = 0; i < o->count; i++) {
+            for (j = 0; j < 2; j++) {
+                func_00108D60(q, o->size, o->size, j);
+                q[9] = -q[1];
+                q[13] = -q[5];
+                if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+                    func_00109380(p, 0);
+                    func_002075F0(p, ctx, (u32)depth[0]);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E028D0_b267);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E02C70_b267);
+/* shape b267:01E02C70, 170 insns: b573:01E04EE0's two-pass sprite for b267: mode 0 sets the material (frame 0x9B, or 0x14
+   for objects run by b267:01E01610, the object's colour, scene texture 0x35C or 0x3DA0); other modes place it at the
+   object plus a tenth of its drift (the depth keeps the y drift tenth twice divided, as in the original), turn it, and draw
+   one quad for b267:01E01610 objects or repeat func_00108F90 for the others */
+
+typedef struct {
+    u8 pad0[0x35C];
+    s32 tex0;
+    u8 pad360[0x3A40];
+    s32 tex1;
+} Game_b267_01E02C70;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[2];
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    u8 padE[0x16];
+    void *fn;
+    u8 c28[4];
+    u8 pad2C[4];
+    s16 count;
+    u8 pad32[2];
+    s16 frame;
+    u8 pad36[2];
+    s16 size;
+} Obj_b267_01E02C70;
+
+static void func_01E02C70_b267(Game_b267_01E02C70 *g, Obj_b267_01E02C70 *o, void *p, s32 mode) {
+    extern void b267_01E01610();
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    f32 q[16];
+    f32 v[4];
+    Vec4f sc;
+    f32 rm[4];
+    f32 m[16];
+    f32 depth[4];
+    s32 rot[4];
+    s32 ctx;
+    f32 f;
+    s16 i;
+
+    ctx = (s32)func_00207500();
+    if (mode == 0) {
+        func_00106080(rm, 0x9B, o->frame, rm);
+        if (o->fn == (void *)b267_01E01610) {
+            func_00106080(rm, 0x14, o->frame, rm);
+        }
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->c28, 0);
+        func_00108500(p, rm, 0);
+        if (o->fn == (void *)b267_01E01610) {
+            func_00208700(p, g->tex1, 1);
+        } else {
+            func_00208700(p, g->tex0, 1);
+        }
+    } else {
+        func_00205C40((s32)rot);
+        f = o->dx;
+        f /= 10.0f;
+        v[0] = o->x;
+        v[0] += f;
+        f = o->dy;
+        f /= 10.0f;
+        v[1] = o->y;
+        v[1] += f;
+        v[2] = o->dz;
+        f /= 10.0f;
+        v[2] = o->z;
+        v[2] += f;
+        sc.x = 0.1f;
+        sc.y = 0.1f;
+        sc.z = 0.1f;
+        func_00108EF0(m, &sc, rot, v);
+        func_00108CE0(q, o->size, o->size);
+        if (o->fn == (void *)b267_01E01610) {
+            if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+                if (o->fn == (void *)b267_01E01610) {
+                    func_00109380(p, 0);
+                }
+                func_002075F0(p, ctx, (u32)depth[0]);
+            }
+        } else {
+            for (i = 0; i < o->count; i++) {
+                func_00108F90(q, p, m, ctx);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E02F20_b267);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E033C0_b267);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E03830_b267);
+/* shape b267:01E03830, 145 insns: b117:01E02C00 family sprite draw: texture 0x14 (0x50 and the second scene texture for callback b267:01E01610), position + speed/10 in integers, scaled 0.1 */
+
+/* OVL_WARM */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x16];
+    void *cb;
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b267_01E03830;
+
+typedef struct {
+    u8 pad0[0x320];
+    s32 tex;
+    u8 pad324[0x1C];
+    s32 tex2;
+} Scene_b267_01E03830;
+
+static void func_01E03830_b267(Scene_b267_01E03830 *g, Fx_b267_01E03830 *o, void *p, s32 lit) {
+    extern void b267_01E01610(void);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 rm[4];
+    f32 m[16];
+    f32 z[4];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x14, o->h34, rm);
+        if (o->cb == b267_01E01610) {
+            func_00106080(rm, 0x50, o->h34, rm);
+        }
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        if (o->cb == b267_01E01610) {
+            func_00208700(p, g->tex2, 1);
+            return;
+        }
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00108EF0(m, &sc, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    if (func_00205630(quad, 0x70000000, m, p, z) != 0) {
+        if (o->cb == b267_01E01610) {
+            func_00109380(p, 0);
+        }
+        func_002075F0((s32)p, v, (u32)z[0]);
+    }
+}
 
 /* shape b267:01E03A80, 139 insns: draws the five edges of the scene's star (points at +0x3C10) as lines in the
    effect's colour: 4-1, 4-0, 1-3, 0-2, 3-2, each sent with the scene's line texture (0x3DDC) */

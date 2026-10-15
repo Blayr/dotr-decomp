@@ -1057,7 +1057,82 @@ static s32 func_01E028B0_b259(Game_b259_01E028B0 *g, Fade_b259_01E028B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E02970_b259);
+/* shape b259:01E02970, 147 insns: b232:01E01130 family still grey (0x80) full-screen window in the scene packet (ctx+0x8670), alpha up by 18 to 0x70 for 250 ticks, then down by 9 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b259_01E02970;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b259_01E02970 p;
+} Tv_b259_01E02970;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b259_01E02970 v[2];
+} Tex_b259_01E02970;
+
+typedef struct {
+    u8 pad[0x8670];
+    Tex_b259_01E02970 *pk;
+} Game_b259_01E02970;
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b259_01E02970;
+
+static s32 func_01E02970_b259(Game_b259_01E02970 *g, Fx_b259_01E02970 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick < 250) {
+        if (o->col[3] < 0x70) {
+            o->col[3] += 18;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E02BC0_b259);
 

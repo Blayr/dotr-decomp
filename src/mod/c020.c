@@ -135,7 +135,77 @@ static s32 func_01E00300_c020(u8 *ctx, Wave_c020_01E00300 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c020", func_01E003C0_c020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c020", func_01E006F0_c020);
+/* OVL_WARM */
+
+/* shape c020:01E006F0, 168 insns: b582:01E04440's slot grab for 220 slots at +0x170 with no argument or result: the
+   slot gets colour 0xFF/0, the scene point (0x80) and three x/z pairs scattered by -75..74, a size 24..33, a step
+   2..5 (signed %4) and a speed 1..2 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c020_01E006F0;
+
+typedef struct {
+    V4_c020_01E006F0 pos;
+    u8 pad10[4];
+    s16 x0;
+    s16 x1;
+    s16 x2;
+    s16 z0;
+    s16 z1;
+    s16 z2;
+    s16 step;
+    s16 size;
+    s16 speed;
+    u8 pad26[2];
+    s16 c28;
+    s16 c2A;
+    s16 used;
+    u8 pad2E[0xA];
+} Slot_c020_01E006F0;
+
+typedef struct {
+    u8 pad0[0x80];
+    V4_c020_01E006F0 pt;
+    u8 pad90[0xE0];
+    Slot_c020_01E006F0 slot[220];
+} Scene_c020_01E006F0;
+
+static void func_01E006F0_c020(Scene_c020_01E006F0 *g) {
+    extern void func_00195108(void *, s32);
+    s16 i;
+    Slot_c020_01E006F0 *s;
+
+    s = NULL;
+    for (i = 0; i < 220; i++) {
+        if (g->slot[i].used == 0) {
+            s = &g->slot[i];
+            func_00195108(s, 0x38);
+            g->slot[i].used = 1;
+            i = 220;
+        }
+    }
+    if (s != NULL) {
+        s->c28 = 0xFF;
+        s->c2A = 0;
+        s->pos = g->pt;
+        s->x0 = g->pt.x;
+        s->z0 = g->pt.z;
+        s->x1 = g->pt.x;
+        s->z1 = g->pt.z;
+        s->x2 = g->pt.x;
+        s->z2 = g->pt.z;
+        s->x0 += (s16)(func_0019A5C8() % 150 - 75);
+        s->z0 += (s16)(func_0019A5C8() % 150 - 75);
+        s->x1 += (s16)(func_0019A5C8() % 150 - 75);
+        s->z1 += (s16)(func_0019A5C8() % 150 - 75);
+        s->x2 += (s16)(func_0019A5C8() % 150 - 75);
+        s->z2 += (s16)(func_0019A5C8() % 150 - 75);
+        s->size = func_0019A5C8() % 10 + 24;
+        s->step = func_0019A5C8() % 4 + 2;
+        s->speed = func_0019A5C8() % 2 + 1;
+    }
+}
 
 /* shape c020:01E00990, 60 insns: take a free slot (0xDC of 0x38 bytes at 0x170), clear it, set 0x28/0x2A = 0x60,
    copy the object's vector at 0x80, store arg and 0x22 = -10 */

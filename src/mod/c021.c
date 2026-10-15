@@ -44,7 +44,92 @@ static s32 func_01E00AF0_c021(Ctx_c021_01E00AF0 *ctx, Obj_c021_01E00AF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00B90_c021);
+/* shape c021:01E00B90, 154 insns: a ribbon node's step: its angle turns by -0x54 (wrapped past +-360), the length 0x34
+   shortens by 1 and the width 0x30 by 2 while above 0; both alphas grow (by 6 when 0x64 is above 120, else by 15, to
+   0x60) for the first 8 scene frames (0x38BA); when the scene timer (0x3578) drops below 13 they fade by 25, when the
+   node gets too short or thin they fade by 10, otherwise they grow by 5 to 0x60; the node ends below timer 11 */
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 ang;
+    u8 pad28[8];
+    f32 w30;
+    f32 len;
+    u8 pad38[0x1C];
+    f32 turn;
+    u8 pad58[0xC];
+    f32 f64;
+    u8 pad68[0x14];
+    u8 col[4];
+    u8 col2[4];
+    s16 live;
+} Node_c021_01E00B90;
+
+typedef struct {
+    u8 pad0[0x3578];
+    s32 timer;
+    u8 pad357C[0x33E];
+    s16 frame;
+} Scene_c021_01E00B90;
+
+static s32 func_01E00B90_c021(Scene_c021_01E00B90 *g, Node_c021_01E00B90 *o) {
+    extern s32 func_001A22C0(f32);
+
+    o->ang = func_001A22C0(o->ang - o->turn);
+    if (o->ang > 360 || o->ang < -360) {
+        o->ang %= 360;
+    }
+    o->len -= 1.0f;
+    if (o->w30 > 0.0f) {
+        o->w30 -= 2.0f;
+    }
+    if (g->frame < 8) {
+        if (o->f64 > 120.0f) {
+            if (o->col[3] < 0x60) {
+                o->col[3] += 6;
+            }
+            if (o->col2[3] < 0x60) {
+                o->col2[3] += 6;
+            }
+        } else {
+            if (o->col[3] < 0x60) {
+                o->col[3] += 15;
+            }
+            if (o->col2[3] < 0x60) {
+                o->col2[3] += 15;
+            }
+        }
+    } else if (g->timer < 13) {
+        if (o->col[3] > 0x19) {
+            o->col[3] -= 25;
+        }
+        if (o->col2[3] > 0x19) {
+            o->col2[3] -= 25;
+        } else {
+            o->live = 0;
+        }
+    } else if (o->len < 50.0f || o->w30 < 8.0f) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 10;
+        }
+        if (o->col2[3] > 0x10) {
+            o->col2[3] -= 10;
+        } else {
+            o->live = 0;
+        }
+    } else {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 5;
+        }
+        if (o->col2[3] < 0x60) {
+            o->col2[3] += 5;
+        }
+    }
+    if (g->timer < 11) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00E00_c021);
 
@@ -303,7 +388,132 @@ found:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E02BE0_c021);
+/* shape c021:01E02BE0, 150 insns: c021 trail link spawner (c017:01E01400 family, 65 slots of 0x94 at ctx+0x120, cleared by func_00106CC0): both colours and alpha from the context, its vector, two sizes as bytes, height kept 18 above for kinds 0/1 and capped at 180, chained after the context's last piece (copying its two vectors) and becomes it; draws with c021:01E03390 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c021_01E02BE0;
+
+typedef struct Ent_c021_01E02BE0 {
+    Vec4f v0;
+    u8 pad10[0x20];
+    Vec4f v30;
+    Vec4f v40;
+    u8 pad50[0x10];
+    f32 f60;
+    f32 f64;
+    struct Ent_c021_01E02BE0 *prev;
+    struct Ent_c021_01E02BE0 *next;
+    void (*cb)(void);
+    s32 arg;
+    f32 f78;
+    Col_c021_01E02BE0 col0;
+    Col_c021_01E02BE0 col1;
+    s16 used;
+    u8 b86;
+    u8 b87;
+    s16 h88;
+    u8 pad8A[2];
+    s16 h8C;
+    s16 h8E;
+    s16 h90;
+    s16 h92;
+} Ent_c021_01E02BE0;
+
+typedef struct {
+    u8 pad0[0xC0];
+    Vec4f v;
+    u8 padD0[0x120 - 0xD0];
+    Ent_c021_01E02BE0 ent[65];
+    u8 padEnd[0x357C - 0x120 - 65 * 0x94];
+    u8 rgba[4];
+    u8 pad3580[8];
+    Ent_c021_01E02BE0 *last;
+    u8 pad358C[4];
+    f32 f3590;
+    f32 f3594;
+    f32 f3598;
+    u8 pad359C[0x38A6 - 0x359C];
+    s16 h38A6;
+    u8 pad38A8[8];
+    s16 h38B0;
+    u8 pad38B2[2];
+    s16 h38B4;
+    u8 pad38B6[0x38C4 - 0x38B6];
+    s16 h38C4;
+} Ctx_c021_01E02BE0;
+
+
+static inline Ent_c021_01E02BE0 *take_c021_01E02BE0(Ctx_c021_01E02BE0 *g) {
+    extern void func_00106CC0(void *, s32);
+    Ent_c021_01E02BE0 *e;
+    s16 i;
+
+    for (i = 0; i < 65; i++) {
+        if (g->ent[i].used == 0) {
+            e = &g->ent[i];
+            func_00106CC0(e, 0x94);
+            g->ent[i].used = i + 1;
+            return e;
+        }
+    }
+    return NULL;
+}
+
+static void func_01E02BE0_c021(Ctx_c021_01E02BE0 *g, s32 arg) {
+    extern void c021_01E03390(void);
+    extern void func_001076F0();
+    Ent_c021_01E02BE0 *e;
+    Ent_c021_01E02BE0 *p;
+    f32 h;
+    f32 d;
+
+    e = take_c021_01E02BE0(g);
+    if (e != NULL) {
+        d = 18.0f;
+        func_001076F0(&e->col0, g->rgba[0], g->rgba[1], g->rgba[2]);
+        e->col0.a = g->rgba[3];
+        func_001076F0(&e->col1, g->rgba[0], g->rgba[1], g->rgba[2]);
+        e->col1.a = g->rgba[3];
+        e->v30 = g->v;
+        e->b86 = g->f3590;
+        e->b87 = g->f3594;
+        e->f78 = g->f3598;
+        e->h8C = g->h38A6;
+        e->prev = g->last;
+        e->h88 = g->h38B4;
+        if (e->h88 == 0) {
+            h = g->f3598;
+            e->f60 = h;
+            e->f64 = h + d;
+            if (e->f64 > 180.0f) {
+                e->f64 = 180.0f;
+            }
+        } else if (e->h88 == 1) {
+            h = g->f3598;
+            e->f60 = h;
+            e->f64 = h + d;
+            if (e->f64 > 180.0f) {
+                e->f64 = 180.0f;
+            }
+        }
+        e->h92 = g->h38C4;
+        e->prev = g->last;
+        p = e->prev;
+        if (p != NULL) {
+            e->v0 = p->v0;
+            e->v40 = p->v40;
+            p->next = e;
+        }
+        e->cb = c021_01E03390;
+        e->arg = arg;
+        e->h8E = g->h38B0;
+        e->h90 = 1;
+        g->last = e;
+    }
+}
 
 /* OVL_WARM */
 

@@ -1130,11 +1130,251 @@ static s32 func_01E02DB0_b718(s32 arg0, Fx_b718_01E02DB0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E02F40_b718);
+/* shape b718:01E02F40, 143 insns: an orange flame at the scene's point (ctx+0x320, height 50) with frame 0..3, turning 5 per tick one way or the other by the old f30, f30 0..4 growing 12..31 per tick (+28 after scene count 188 or 195 by direction), f8 0..49, life 8..24: full alpha then down by 32 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E03180_b718);
+/* OVL_WARM */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E033E0_b718);
+typedef struct {
+    u8 pad0[0x320];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad32C[0x32BE - 0x32C];
+    s16 count;
+} Ctx_b718_01E02F40;
+
+typedef struct {
+    s16 x, y, z;
+    s16 life;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Fx_b718_01E02F40;
+
+static s32 func_01E02F40_b718(Ctx_b718_01E02F40 *g, Fx_b718_01E02F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 11;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->rot = func_0019A5C8() % 360;
+        o->dir = o->f30;
+        o->f30 = func_0019A5C8() % 5;
+        o->speed = func_0019A5C8() % 20 + 12;
+        o->f8 = func_0019A5C8() % 50;
+        o->life = func_0019A5C8() % 17 + 8;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 32) {
+        o->col[3] -= 32;
+    } else {
+        o->mode = 0;
+    }
+    o->x = g->x;
+    o->y = 50;
+    o->z = g->z;
+    if (o->dir != 0) {
+        o->rot += 5;
+    } else {
+        o->rot -= 5;
+    }
+    if (o->dir == 0) {
+        if (g->count < 188) {
+            o->f30 += o->speed;
+        } else {
+            o->f30 += o->speed + 28;
+        }
+    }
+    if (o->dir == 1) {
+        if (g->count < 195) {
+            o->f30 += o->speed;
+        } else {
+            o->f30 += o->speed + 28;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b718:01E03180, 150 insns: amber trail head: on start snaps scene point o->kind (ctx+0x2A30) to the tracked point (10 lower) and fills its 10-point trail (ctx+0x2C10); each tick pushes it by h8 along its angle and by hC up, pushes the trail (b718:01E00080), h8 grows 1 and hC sways by 2 x the sine of the model angle - 180; alpha 0x60 for 10 ticks, then ends */
+
+/* OVL_WARM */
+
+typedef struct {
+    Vec4f pt[10];
+} Trail_b718_01E03180;
+
+typedef struct {
+    u8 pad0[0x2A30];
+    Vec4f pts[(0x2C10 - 0x2A30) / 16];
+    Trail_b718_01E03180 tr[(0x32A8 - 0x2C10) / 0xA0];
+    u8 pad[0x32A8 - 0x2C10 - ((0x32A8 - 0x2C10) / 0xA0) * 0xA0];
+    s16 id;
+    u8 pad32AA[0x37C4 - 0x32AA];
+    u8 tab[1];
+} Ctx_b718_01E03180;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Fx_b718_01E03180;
+
+static s32 func_01E03180_b718(Ctx_b718_01E03180 *g, Fx_b718_01E03180 *o) {
+    extern void b718_01E00080(Vec4f *, s32, s32, Vec4f *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, Vec4f *);
+    extern void func_001F6160(s32, void *);
+    extern f32 func_00108030(void *, s32, s32);
+    s32 a[4];
+    s32 i;
+    Vec4f *src;
+    Vec4f *dst;
+    s32 d;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xA0, 0x80, 8);
+        o->hold = 9;
+        o->col[3] = 0x80;
+        o->ang = func_0019A5C8() % 360;
+        o->f38 = 8;
+        func_001F5620(func_001F53A0(), g->id, &g->pts[o->kind]);
+        g->pts[o->kind].z -= 10.0f;
+        src = &g->pts[o->kind];
+        dst = g->tr[o->kind].pt;
+        for (i = 0; i < 10; i++) {
+            dst[i].x = src->x;
+            dst[i].y = src->y;
+            dst[i].z = src->z;
+        }
+        o->mode = 2;
+    }
+    g->pts[o->kind].x += o->h8 * func_00108030(g->tab, o->ang, 0);
+    g->pts[o->kind].z += o->hC;
+    b718_01E00080(&g->tr[o->kind].pt[9], 10, 0, &g->pts[o->kind]);
+    o->h8++;
+    func_001F6160(func_001F53A0(), a);
+    d = (s16)(2.0f * -func_00108030(g->tab, (s16)(a[1] / 180.0f) - 180, 1));
+    o->hC -= d;
+    if (o->tick < 10) {
+        o->col[3] = 0x60;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* OVL_WARM */
+
+/* shape b718:01E033E0, 141 insns: an orange ember on the scene point (g+0x320/0x328, height 50): on start size 4, frame
+   0..3, a random spin, side = the old height, height 0..4, rise 12..31, frame 0..49, life 8..24; alpha 0x80 for its life,
+   then down by 32 until it ends; it spins by +-5 by side and rises by its speed (both sides, before scene times 188 / 195
+   and after) */
+
+typedef struct {
+    u8 pad0[0x320];
+    f32 x;
+    u8 pad324[4];
+    f32 z;
+    u8 pad32C[0x2F92];
+    s16 time;
+} Game_b718_01E033E0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 life;
+    s16 frame;
+    u8 padA[4];
+    s16 rise;
+    u8 pad10[8];
+    s32 spin;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 f34;
+    s16 mode;
+    s16 size;
+    s16 side;
+} Obj_b718_01E033E0;
+
+static s32 func_01E033E0_b718(Game_b718_01E033E0 *g, Obj_b718_01E033E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 4;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->spin = func_0019A5C8() % 360;
+        o->side = o->h;
+        o->h = func_0019A5C8() % 5;
+        o->rise = func_0019A5C8() % 20 + 12;
+        o->frame = func_0019A5C8() % 50;
+        o->life = func_0019A5C8() % 17 + 8;
+        o->mode = 2;
+    }
+    if (o->t < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 32) {
+        o->col[3] -= 32;
+    } else {
+        o->mode = 0;
+    }
+    o->x = g->x;
+    o->y = 50;
+    o->z = g->z;
+    if (o->side != 0) {
+        o->spin += 5;
+    } else {
+        o->spin -= 5;
+    }
+    if (o->side == 0) {
+        if (g->time < 188) {
+            o->h += o->rise;
+        } else {
+            o->h += o->rise;
+        }
+    }
+    if (o->side == 1) {
+        if (g->time < 195) {
+            o->h += o->rise;
+        } else {
+            o->h += o->rise;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b718:01E03620, 88 insns: a red rising spark (b192:01E01DA0 family): frame 10, random sub-frame 0..3, turn, rise 12..31, height 0..49,
    full-alpha time 14..33, angle from its old height; then fades by 32 until it ends */

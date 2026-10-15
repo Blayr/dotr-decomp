@@ -485,7 +485,101 @@ static void func_01E01F80_b733(s32 arg0, u8 *obj, s32 mode, f32 level) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02150_b733);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02510_b733);
+/* shape b733:01E02510, 174 insns: b733:01E036C0 family white ring by slot (0x50: under 36 kind 0, under 72 kind 2, under 108 kind 4), frame 4..6, both alphas up by 12 to 0xC0 for 30 ticks, then down by 11 once the scene count (ctx+0xC48E) passes 240; cycles h6 0..5 every 10 ticks; while the scene runs kind 0 is 25 wide (f48 5) and kind 2 7 wide (0.8); from count 161 the first two slot bands turn +2 / -2; odd slots spin +3, even -3 */
+
+typedef struct {
+    u8 pad0[0xC48E];
+    s16 count;
+} Game_b733_01E02510;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    s16 kind;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b733_01E02510;
+
+static s32 func_01E02510_b733(Game_b733_01E02510 *g, Fx_b733_01E02510 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 1.5f;
+        o->f56 = 0;
+        o->mode = 2;
+        if (o->f50 < 36) {
+            o->kind = 0;
+        } else if (o->f50 < 72) {
+            o->kind = 2;
+        } else if (o->f50 < 108) {
+            o->kind = 4;
+        }
+        o->h8 = func_0019A5C8() % 3 + 4;
+        o->h6 = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    }
+    if (o->tick < 30) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 12;
+        }
+    } else if (g->count > 240) {
+        if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 12) {
+            o->col2[3] -= 11;
+        }
+    }
+    if (o->tick >= 30) {
+        if (o->tick % 10 == 1) {
+            o->h6++;
+            if (o->h6 > 5) {
+                o->h6 = 0;
+            }
+        }
+    }
+    if (g->count != 0) {
+        if (o->kind == 0) {
+            o->f4C = 25.0f;
+            o->f48 = 5.0f;
+        } else if (o->kind == 1) {
+        } else if (o->kind == 2) {
+            o->f4C = 7.0f;
+            o->f48 = 0.8f;
+        }
+    }
+    if (g->count > 160) {
+        if (o->f50 < 36) {
+            o->f5A += 2;
+        } else if (o->f50 < 72) {
+            o->f5A -= 2;
+        }
+    }
+    if (o->f50 % 2 == 1) {
+        o->f5C += 3;
+    } else {
+        o->f5C -= 3;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b178:01E03090, 102 insns, 2 copies: a white glint: set up once (size 2, frame 4, random turn on all axes, angle
    20..239, speed 15..44, life 2..4); full for its life, then fades out (b225:01E026A0 family, 0x58-state layout) */

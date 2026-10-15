@@ -467,7 +467,91 @@ static s32 func_01E01700_b069(Pool_b008_01E01EB0 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E01830_b069);
+/* shape b069:01E01830, 142 insns: b056:01E04980 family sprite quad into the given packet (rect at ctx+0x94, texture ctx+0x88, needs func_01E00080_b069 static in the file) at the module's point o->h30, scaled 0.1, size o->h38, far z */
+
+typedef struct {
+    f32 u, v;
+} Uv_b069_01E01830;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b069_01E01830;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b069_01E01830 uv;
+    u64 pad18;
+    Xyz_b069_01E01830 v[4];
+} Pk_b069_01E01830;
+
+typedef struct {
+    u8 pad0[0x20];
+    Vec4f pts[6];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex;
+    u8 pad8C[8];
+    Rect_b008_01E00080 rect;
+} Ctx_b069_01E01830;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[8];
+    s16 point;
+    u8 pad32[6];
+    s16 size;
+} Fx_b069_01E01830;
+
+static void func_01E01830_b069(Ctx_b069_01E01830 *g, Fx_b069_01E01830 *o, Pk_b069_01E01830 *p) {
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Uv_b069_01E01830 uv __attribute__((aligned(8)));
+
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    *(s32 *)&p->uv.v = 0;
+    p->v[0].fog = 0;
+    p->v[1].fog = 0;
+    p->v[2].fog = 0;
+    p->v[3].fog = 0;
+    func_00107740(&uv, o->col);
+    p->uv = uv;
+    func_01E00080_b069((Pk_b008_01E00080 *)p, &g->rect, 0);
+    func_00208700(p, g->tex, 1);
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00205C40((s32)rot);
+    pos.x = g->pts[o->point].x;
+    pos.y = g->pts[o->point].y;
+    pos.z = g->pts[o->point].z;
+    func_00108EF0(m, &sc, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+        p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+        func_002075F0(p, g->ot, 0);
+    }
+}
 
 /* shape b069:01E01A70, 166 insns: draws 4 copies of a gradient quad (colour A on three corners, B on the last)
    at one of the object's points (fx->point), each turned by the effect's rotation; far z. The packet is passed

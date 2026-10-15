@@ -1084,7 +1084,90 @@ static void func_01E02530_b148(Obj_b148_01E02530 *o, Anim_b148_01E02530 *an, voi
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02790_b148);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02CD0_b148);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b148:01E02CD0, 155 insns: the b148 module's event step: red scene colour, counts ticks; at 64 moves its point to the tracked point and spawns eight b148:01E037A0, eight b148:01E034C0, one b148:01E03630, ten b148:01E03930, then b148:01E033E0 and b148:01E04020; again b148:01E033E0, ten b148:01E02F40 and b148:01E04020; from 64 to 66 three b148:01E030C0 each tick */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x3614 - 0x25C];
+    u8 col[4];
+    u8 pad3618[0x363C - 0x3618];
+    s16 id;
+    u8 pad363E[0x3656 - 0x363E];
+    s16 flag;
+    u8 pad3658[2];
+    s16 timer;
+} Ctx_b148_01E02CD0;
+
+
+#pragma optimization_level 3
+
+static void func_01E02CD0_b148(Ctx_b148_01E02CD0 *g) {
+    extern s32 b148_01E02F40(void);
+    extern s32 b148_01E030C0(void);
+    extern s32 b148_01E033E0(void);
+    extern s32 b148_01E034C0(void);
+    extern s32 b148_01E03630(void);
+    extern s32 b148_01E037A0(void);
+    extern s32 b148_01E03930(void);
+    extern s32 b148_01E04020(void);
+    extern void b148_01E05120(Ctx_b148_01E02CD0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 64) {
+        func_001F5620(func_001F53A0(), g->id, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b148_01E05120(g, b148_01E037A0, 0);
+        }
+        for (i = 0; i < 8; i++) {
+            b148_01E05120(g, b148_01E034C0, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b148_01E05120(g, b148_01E03630, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b148_01E05120(g, b148_01E03930, 0);
+        }
+        b148_01E05120(g, b148_01E033E0, 0);
+        b148_01E05120(g, b148_01E04020, 0);
+    }
+    if (g->timer == 64) {
+        func_001F5620(func_001F53A0(), g->id, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        g->flag = 1;
+        b148_01E05120(g, b148_01E033E0, 0);
+        for (i = 0; i < 10; i++) {
+            b148_01E05120(g, b148_01E02F40, 0);
+        }
+        b148_01E05120(g, b148_01E04020, 0);
+    }
+    if (g->timer == 64 || g->timer == 65 || g->timer == 66) {
+        func_001F5620(func_001F53A0(), g->id, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        for (i = 0; i < 3; i++) {
+            b148_01E05120(g, b148_01E030C0, 0);
+        }
+    }
+}
+#pragma optimization_level reset
 
 /* shape b148:01E02F40, 96 insns: on start 0x38 = 54, 0x34 = 1, random rotation 0x18, colour (0x20, 0x20, 0x60),
    0xA keeps the old 0x30, 0x30 0..99, random 0x3A, speed 80..109 (0xE), 0x8 0..19, hold 1..2 (0x6); alpha grows by

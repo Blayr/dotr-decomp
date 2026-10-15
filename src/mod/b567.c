@@ -681,7 +681,84 @@ static void func_01E01220_b567(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b567", func_01E01770_b567);
+/* shape b567:01E01770, 159 insns: the b567 module's event step: red scene colour, counts ticks; at 160 spawns b567:01E019F0 (slot 0); at 169 moves its point to the tracked point, halfway to the camera in z, and spawns 8 b567:01E01DB0, 20 b567:01E01C00, 50 b567:01E01F40, b567:01E021D0 and b567:01E028D0; at ticks 87/109/136 and 76/99/131 drops 13 or 6 b567:01E024D0 at the two other tracked points */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 pad2DC[0x6DA4 - 0x2DC];
+    u8 col[4];
+    u8 pad6DA8[0x6DEC - 0x6DA8];
+    s16 id2;
+    s16 id3;
+    s16 id0;
+    u8 pad6DF2[0x6E06 - 0x6DF2];
+    s16 slot;
+    u8 pad6E08[4];
+    s16 timer;
+} Ctx_b567_01E01770;
+
+static void func_01E01770_b567(Ctx_b567_01E01770 *g) {
+    extern s32 b567_01E019F0(void);
+    extern s32 b567_01E01C00(void);
+    extern s32 b567_01E01DB0(void);
+    extern s32 b567_01E01F40(void);
+    extern s32 b567_01E021D0(void);
+    extern s32 b567_01E024D0(void);
+    extern s32 b567_01E028D0(void);
+    extern void b567_01E035A0(Ctx_b567_01E01770 *, s32 (*)(void), s32);
+    extern void b567_01E036C0(Ctx_b567_01E01770 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 160) {
+        g->slot = 0;
+        b567_01E035A0(g, b567_01E019F0, 0);
+    }
+    if (g->timer == 169) {
+        func_001F5620(func_001F53A0(), g->id0, a);
+        func_001F5F90(func_001F5380(), b);
+        g->pos[0] = a[0];
+        g->pos[1] = a[1];
+        g->pos[2] = a[2] + (b[2] - a[2]) / 2.0f;
+        g->slot = 1;
+        for (i = 0; i < 8; i++) {
+            b567_01E035A0(g, b567_01E01DB0, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b567_01E035A0(g, b567_01E01C00, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b567_01E036C0(g, b567_01E01F40, 0);
+        }
+        b567_01E036C0(g, b567_01E021D0, 0);
+        b567_01E035A0(g, b567_01E028D0, 0);
+    }
+    if (g->timer == 87 || g->timer == 109 || g->timer == 136) {
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        g->pos[1] -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b567_01E036C0(g, b567_01E024D0, 0);
+        }
+    }
+    if (g->timer == 76 || g->timer == 99 || g->timer == 131) {
+        func_001F5620(func_001F53A0(), g->id3, g->pos);
+        g->pos[1] -= 1.5f;
+        for (i = 0; i < 6; i++) {
+            b567_01E036C0(g, b567_01E024D0, 0);
+        }
+    }
+}
 
 /* shape b567:01E019F0, 131 insns: b205:01E013C0 twin in red (0xFF, 0x20, 0x20): tracked point ids at ctx+0x6DF0 / 0x6DF2, alpha up by 25 to 0x80 until scene count 176, then down by 29; pushes until 176; f6 = 10 */
 

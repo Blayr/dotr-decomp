@@ -284,9 +284,139 @@ static void func_01E00920_b515(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b515", func_01E00E90_b515);
+/* shape b515:01E00E90, 165 insns: the module's spawn step: ticks the timer (0xDE1E); from frame 120 to 380 it spawns
+   0x1E01130 at three (odd frames) or four joints, the first list on odd frames and the second on even ones; from
+   frame 28 to 340 the same with 0x1E013C0 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b515", func_01E01130_b515);
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xDDE8 - 0x260];
+    s16 ja[3];
+    s16 jb[4];
+    u8 padDDF6[0x28];
+    s16 t;
+} Scene_b515_01E00E90;
+
+static void func_01E00E90_b515(Scene_b515_01E00E90 *s) {
+    extern void b515_01E01130(void);
+    extern void b515_01E013C0(void);
+    extern s32 b515_01E01BD0(Scene_b515_01E00E90 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    s->t++;
+    if (s->t >= 120 && s->t < 381) {
+        if (s->t % 2 == 1) {
+            n = 3;
+        } else {
+            n = 4;
+        }
+        for (i = 0; i < n; i++) {
+            if (s->t % 2 == 1) {
+                func_001F5620(func_001F53A0(), s->ja[i], &s->pos);
+            } else {
+                func_001F5620(func_001F53A0(), s->jb[i], &s->pos);
+            }
+            b515_01E01BD0(s, b515_01E01130, 0);
+        }
+    }
+    if (s->t >= 28 && s->t < 341) {
+        if (s->t % 2 == 1) {
+            n = 3;
+        } else {
+            n = 4;
+        }
+        for (i = 0; i < n; i++) {
+            if (s->t % 2 == 1) {
+                func_001F5620(func_001F53A0(), s->ja[i], &s->pos);
+            } else {
+                func_001F5620(func_001F53A0(), s->jb[i], &s->pos);
+            }
+            b515_01E01BD0(s, b515_01E013C0, 0);
+        }
+    }
+}
+
+/* shape b515:01E01130, 164 insns: yellow (0xFF, 0xFF, 0x80) ember (size 35 growing 4.3, frame 0..7, angle 0..359) drifting (-20..19)/50 x and /60 y/z, sinking 0.2, and closing a fortieth of the camera-to-point z gap each tick; alpha up by 0xC0 for 47 ticks, then down by 14 */
+
+typedef struct {
+    u8 pad0[0xDDE8];
+    s16 id;
+} Ctx_b515_01E01130;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 vx, vy, vz;
+    f32 dz;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b515_01E01130;
+
+static s32 func_01E01130_b515(Ctx_b515_01E01130 *g, Fx_b515_01E01130 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 c[4];
+    f32 t[4];
+
+    if (o->mode == 1) {
+        o->f48 = 35.0f;
+        o->f56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->f5A = 0;
+        o->f5C = func_0019A5C8() % 360;
+        o->f50 = 0;
+        o->f52 = 0;
+        o->vx = func_0019A5C8() % 40 - 20;
+        o->vy = func_0019A5C8() % 40 - 20;
+        o->vz = func_0019A5C8() % 40 - 20;
+        o->vx /= 50.0f;
+        o->vy /= 60.0f;
+        o->vz /= 60.0f;
+        func_001F5F90(func_001F5380(), c);
+        func_001F5620(func_001F53A0(), g->id, t);
+        o->dz = (c[2] - t[2]) / 40.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 47) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->x += o->vx;
+        o->y += o->vy;
+        o->y -= 0.2f;
+        o->z += o->vz;
+    }
+    if (o->tick != 0) {
+        o->z += o->dz;
+        o->f48 += 4.3f;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b515:01E013C0, 107 insns: b593:01E020C0 family: a yellow spark (size 40 growing 3, random frame 0..7) spinning a random 2..9 a tick from 10..59 (old angle moved to +0xC), random 0..7 at +0xA, size 0..34, held 2..5 ticks at 0x80, then out by 8 and ends */
 

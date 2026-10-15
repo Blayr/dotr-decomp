@@ -488,7 +488,74 @@ static s32 func_01E016F0_b465(void *arg0, Obj_b465_01E016F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b465", func_01E01880_b465);
+/* shape b465:01E01880, 163 insns: b413:01E029E0's spark in orange (size 3 x 150 growing 10, turn hC from 0 by 15 through
+   the float-to-int helper) held 10 ticks */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Spark_b465_01E01880;
+
+static s32 func_01E01880_b465(s32 arg0, Spark_b465_01E01880 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001A22C0(f32);
+    f32 f;
+
+    if (o->mode == 1) {
+        o->w = 3;
+        o->h = 150;
+        o->hC = 0;
+        o->kind = 2;
+        func_001076F0(o->col, 0xFF, 0x80, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->hold = 10;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h += 10;
+        f = 15.0f;
+        o->hC = func_001A22C0(o->hC + f);
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b465", func_01E01B10_b465);
 

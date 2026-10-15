@@ -392,7 +392,68 @@ static void func_01E00E90_b098(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E01200_b098);
+/* shape b098:01E01200, 180 insns: b422:01E014F0 family event step: from 116 to 269 sets the point to the mark (ctx+0xB1D0), follows the tracked point (ctx+0xB244) 3 higher and -5..4 across and spawns b098:01E014D0 (three from 251), then moves on again; at tick 1 spawns b098:01E01A30, b098:01E01C50 and four b098:01E01850 (turns 0/90/45/135, slots 0/0/1/1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f mark;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 id;
+    u8 padB246[0xB2A2 - 0xB246];
+    s16 turn;
+    u8 padB2A4[0xB2B0 - 0xB2A4];
+    s16 slot;
+    u8 padB2B2[0xB2B8 - 0xB2B2];
+    s16 timer;
+} Ctx_b098_01E01200;
+
+static void func_01E01200_b098(Ctx_b098_01E01200 *g) {
+    extern s32 b098_01E014D0(void);
+    extern s32 b098_01E01850(void);
+    extern s32 b098_01E01A30(void);
+    extern s32 b098_01E01C50(void);
+    extern void b098_01E024A0(Ctx_b098_01E01200 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    g->timer++;
+    if (g->timer > 115 && g->timer < 270) {
+        g->pos = g->mark;
+        func_001F5620(func_001F53A0(), g->id, &g->pos);
+        g->pos.x += func_0019A5C8() % 10 - 5;
+        g->pos.y += 3.0f;
+        b098_01E024A0(g, b098_01E014D0, 0);
+        if (g->timer > 250) {
+            b098_01E024A0(g, b098_01E014D0, 0);
+            b098_01E024A0(g, b098_01E014D0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->id, &g->pos);
+        g->pos.x += func_0019A5C8() % 10 - 5;
+        g->pos.y += 3.0f;
+    }
+    if (g->timer == 1) {
+        b098_01E024A0(g, b098_01E01A30, 0);
+    }
+    if (g->timer == 1) {
+        b098_01E024A0(g, b098_01E01C50, 0);
+    }
+    if (g->timer == 1) {
+        g->turn = 0;
+        g->slot = 0;
+        b098_01E024A0(g, b098_01E01850, 0);
+        g->turn = 90;
+        g->slot = 0;
+        b098_01E024A0(g, b098_01E01850, 0);
+        g->turn = 45;
+        g->slot = 1;
+        b098_01E024A0(g, b098_01E01850, 0);
+        g->turn = 135;
+        g->slot = 1;
+        b098_01E024A0(g, b098_01E01850, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E014D0_b098);
 
@@ -570,7 +631,93 @@ static s32 func_01E01A30_b098(Ctx_b098_01E01A30 *g, Fx_b098_01E01A30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E01C50_b098);
+/* shape b098:01E01C50, 181 insns: b152:01E03400's full-screen overlay (colour 0xFF/0xFF/0x80) with a fixed inset: one sprite over the
+   whole screen, its texture window inset by the slot's width and height; alpha up by 9 to 0x80 for 140 ticks, then
+   down by 7 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b098_01E01C50;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b098_01E01C50 p;
+    } v[2];
+} Pkt_b098_01E01C50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w, h;
+    u8 padC[0x48];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Slot_b098_01E01C50;
+
+typedef struct {
+    u8 pad0[0xB228];
+    Pkt_b098_01E01C50 *pkt;
+} Scene_b098_01E01C50;
+
+static s32 func_01E01C50_b098(Scene_b098_01E01C50 *s, Slot_b098_01E01C50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 w;
+    f32 h;
+
+    w = o->w;
+    h = o->h;
+    w /= 10.0f;
+    h /= 10.0f;
+    if (o->state == 1) {
+        o->c0[3] = 0;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0x80);
+        o->state = 2;
+    }
+    s->pkt->r = o->c0[0];
+    s->pkt->g = o->c0[1];
+    s->pkt->b = o->c0[2];
+    s->pkt->a = o->c0[3];
+    s->pkt->q = 1.0f;
+    s->pkt->v[0].p.x = 0x6BF8;
+    s->pkt->v[0].p.y = 0x71F8;
+    s->pkt->v[0].p.z = 0xFFFFFF;
+    s->pkt->v[0].p.f = 0;
+    s->pkt->v[1].p.x = 0x93F8;
+    s->pkt->v[1].p.y = 0x8DF8;
+    s->pkt->v[1].p.z = 0xFFFFFF;
+    s->pkt->v[1].p.f = 0;
+    s->pkt->v[0].s = w / 1024.0f;
+    s->pkt->v[0].t = h / 512.0f;
+    s->pkt->v[1].s = (640.0f - w) / 1024.0f;
+    s->pkt->v[1].t = (448.0f - h) / 512.0f;
+    func_002075F0(s->pkt, 0, 0);
+    if (o->t < 140) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 9;
+        }
+    } else if (o->t > 40) {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E01F30_b098);
 

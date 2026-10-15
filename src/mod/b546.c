@@ -719,7 +719,82 @@ static s32 func_01E01ED0_b546(Game_b546_01E01ED0 *g, Fade_b546_01E01ED0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01F90_b546);
+/* shape b546:01E01F90, 147 insns: b259:01E02970 with the scene packet at ctx+0xC810 and 240 ticks */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b546_01E01F90;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b546_01E01F90 p;
+} Tv_b546_01E01F90;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b546_01E01F90 v[2];
+} Tex_b546_01E01F90;
+
+typedef struct {
+    u8 pad[0xC810];
+    Tex_b546_01E01F90 *pk;
+} Game_b546_01E01F90;
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b546_01E01F90;
+
+static s32 func_01E01F90_b546(Game_b546_01E01F90 *g, Fx_b546_01E01F90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick < 240) {
+        if (o->col[3] < 0x70) {
+            o->col[3] += 18;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E021E0_b546);
 

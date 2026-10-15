@@ -412,7 +412,76 @@ static void func_01E00E10_b139(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b139", func_01E01360_b139);
+/* shape b139:01E01360, 174 insns: the b139 module's event step: counts ticks; spawns b139:01E02070 at 97, 255 and 315 (slots 0, 1, 2); from 230 to 300 spawns b139:01E01780 at the camera-side point (ctx+0xC0FA); each tick marks the tracked point (ctx+0xC0EC) and reads the camera; from 97 to 300, every other tick, spawns 3 (5 from 200) pairs of b139:01E01910 / b139:01E01620 in the next of 120 slots */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xBC70 - 0x25C];
+    Vec4f mark;
+    u8 padBC80[0xC0EC - 0xBC80];
+    s16 id0;
+    u8 padC0EE[0xC0FA - 0xC0EE];
+    s16 id1;
+    u8 padC0FC[0xC20A - 0xC0FC];
+    s16 slot;
+    s16 next;
+    u8 padC20E[4];
+    s16 timer;
+} Ctx_b139_01E01360;
+
+static void func_01E01360_b139(Ctx_b139_01E01360 *g) {
+    extern s32 b139_01E01620(void);
+    extern s32 b139_01E01780(void);
+    extern s32 b139_01E01910(void);
+    extern s32 b139_01E02070(void);
+    extern void b139_01E02A60(Ctx_b139_01E01360 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[4];
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    if (g->timer == 97) {
+        g->slot = 0;
+        b139_01E02A60(g, b139_01E02070, 0);
+    }
+    if (g->timer == 255) {
+        g->slot = 1;
+        b139_01E02A60(g, b139_01E02070, 0);
+    }
+    if (g->timer == 315) {
+        g->slot = 2;
+        b139_01E02A60(g, b139_01E02070, 0);
+    }
+    if (g->timer >= 230 && g->timer < 301) {
+        g->slot = 0;
+        func_001F5620(func_001F5380(), g->id1, v);
+        g->pos[0] = v[0];
+        g->pos[1] = v[1];
+        g->pos[2] = v[2];
+        b139_01E02A60(g, b139_01E01780, 0);
+    }
+    func_001F5620(func_001F53A0(), g->id0, &g->mark);
+    func_001F5F90(func_001F53A0(), g->pos);
+    if (g->timer >= 97 && g->timer < 301) {
+        if (g->timer % 2 == 1) {
+            n = g->timer < 200 ? 3 : 5;
+            for (i = 0; i < n; i++) {
+                g->slot = g->next;
+                b139_01E02A60(g, b139_01E01910, 0);
+                b139_01E02A60(g, b139_01E01620, 0);
+                g->next++;
+                if (g->next >= 120) {
+                    g->next = 0;
+                }
+            }
+        }
+    }
+}
 
 /* shape b139:01E01620, 86 insns: a grey flickering spark (b215:01E01FF0 shape): size 10; both alphas up by 42 to 0x80 for 27
    frames, then the first down by 34 twice a frame until it ends; first colour flickers by frame parity; random turn */

@@ -155,7 +155,123 @@ static s32 func_01E00290_c027(Game_c027_01E00290 *g, Fx_c027_01E00290 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c027", func_01E003A0_c027);
+/* shape c027:01E003A0, 176 insns: c027's ribbon node handler: while its delay (0x78) is 2+ it widens by 7 to 120 and
+   counts down; at 1 it becomes the scene's head node and, below 120 wide, hands the scene its length, turn and corner
+   and spawns the next node (c027:01E00AA0 with this handler); at 0 it fades by 32, passing its second colour to the
+   node it points at once gone; every tick it wobbles, flickers between 0x30 and 0xB0 and fades by 16 while the scene
+   count is under 10, else fades back in by 0x3A while still delayed */
+
+typedef struct {
+    u8 c[4];
+} Rgba_c027_01E003A0;
+
+typedef struct Node_c027_01E003A0 {
+    u8 pad0[0xC];
+    f32 fC;
+    u8 pad10[4];
+    f32 f14;
+    u8 pad18[4];
+    f32 f1C;
+    u8 pad20[0x28];
+    s16 h48;
+    u8 pad4A[6];
+    s32 w50;
+    struct Node_c027_01E003A0 *next;
+    u8 pad58[8];
+    Rgba_c027_01E003A0 col;
+    Rgba_c027_01E003A0 col2;
+    s16 h68;
+    u8 pad6A[8];
+    s16 h72;
+    u8 pad74[2];
+    s16 h76;
+    s16 h78;
+    s16 h7A;
+} Node_c027_01E003A0;
+
+typedef struct {
+    u8 pad0[0x80];
+    Vec4f pos;
+    u8 pad90[0x2248];
+    s32 w22D8;
+    u8 pad22DC[0xC];
+    Node_c027_01E003A0 *head;
+    u8 pad22EC[4];
+    f32 len;
+    u8 pad22F4[0x5A];
+    s16 h234E;
+    u8 pad2350[6];
+    s16 corner;
+} Scene_c027_01E003A0;
+
+static s32 func_01E003A0_c027(Scene_c027_01E003A0 *g, Node_c027_01E003A0 *o) {
+    extern void c027_01E00AA0(Scene_c027_01E003A0 *, void *);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    Node_c027_01E003A0 *p;
+    f32 x, y, w;
+
+    if (o->h78 > 1) {
+        if (o->f14 < 120.0f) {
+            o->f14 += 7.0f;
+        }
+        o->h78--;
+    } else if (o->h78 == 1) {
+        if (o->f14 < 120.0f) {
+            g->head = o;
+            g->len = o->h72;
+            g->h234E = o->h48;
+            x = w = y = 0.0f;
+            func_00106DD0(&g->pos, x, y, w);
+            g->corner = o->h7A;
+            c027_01E00AA0(g, func_01E003A0_c027);
+        }
+        o->h78 = 0;
+    } else if (o->h78 == 0) {
+        if (o->col.c[3] > 32) {
+            o->col.c[3] -= 32;
+        } else {
+            p = o->next;
+            if (p != 0) {
+                p->col = o->col2;
+                p->w50 = 0;
+            }
+            o->h68 = 0;
+        }
+        if (o->col2.c[3] > 32) {
+            o->col2.c[3] -= 32;
+        }
+    }
+    o->f1C = func_0019A5C8() % 40 - 20;
+    o->fC = func_0019A5C8() % 20 - 10;
+    if (o->h76 != 0) {
+        func_001076F0(&o->col, 0x30, 0x30, 0);
+        func_001076F0(&o->col2, 0x30, 0x30, 0);
+        o->h76 = 0;
+    } else {
+        func_001076F0(&o->col, 0xB0, 0xB0, 0);
+        func_001076F0(&o->col2, 0xB0, 0xB0, 0);
+        o->h76 = 1;
+    }
+    if (g->w22D8 < 10) {
+        if (o->col.c[3] > 16) {
+            o->col.c[3] -= 16;
+        }
+        if (o->col2.c[3] > 16) {
+            o->col2.c[3] -= 16;
+        } else {
+            o->h68 = 0;
+        }
+    } else if (o->h78 != 0) {
+        if (o->col.c[3] < 0xB0) {
+            o->col.c[3] += 0x3A;
+        }
+        if (o->col2.c[3] < 0xB0) {
+            o->col2.c[3] += 0x3A;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c027", func_01E00660_c027);
 

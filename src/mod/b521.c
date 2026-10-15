@@ -480,7 +480,108 @@ static s32 func_01E01790_b521(void *arg0, Spark_b521_01E01790 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E01970_b521);
+/* shape b521:01E01970, 152 insns: b763:01E032F0 with a blue-grey tint (0x80/0x80/0xB0), offsets biased by 20 (as
+   b721:01E03800), and the alpha driven by the scene: once the step at g+0x54B0 passes 20 it rises by 10 to 0x50 before
+   scene time 216 (g+0x5536) and falls by 6 to 64 after; before that it fades by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b521_01E01970;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b521_01E01970 p;
+} Tv_b521_01E01970;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b521_01E01970 v[2];
+    u8 tail[0x20];
+} Tex_b521_01E01970;
+
+typedef struct {
+    u8 pad0[0x54B0];
+    s32 timer;
+    u8 pad54B4[0x82];
+    s16 time;
+} Ctx_b521_01E01970;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b521_01E01970;
+
+static s32 func_01E01970_b521(Ctx_b521_01E01970 *g, Fx_b521_01E01970 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    Tex_b521_01E01970 pk __attribute__((aligned(8)));
+    f32 z;
+    s32 tm;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0xB0);
+        o->mode = 2;
+    }
+    z = 20.0f;
+    ((Tex_b521_01E01970 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b521_01E01970 *)(s32)&pk)->size = 5;
+    ((Tex_b521_01E01970 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b521_01E01970 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = (o->f48 + z) / 1024.0f;
+    pk.v[0].t = (o->f48 + z) / 512.0f;
+    pk.v[1].s = (640.0f + o->f48 - z) / 1024.0f;
+    pk.v[1].t = (448.0f + o->f48 - z) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    tm = g->time;
+    if (g->timer > 20) {
+        if (tm < 216) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 10;
+            }
+        }
+        if (g->time > 216) {
+            if (o->col[3] > 64) {
+                o->col[3] -= 6;
+            }
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E01BD0_b521);
 

@@ -732,7 +732,88 @@ static s32 func_01E02AB0_b573(Game_b573_01E02AB0 *g, Fx_b573_01E02AB0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E02C00_b573);
+/* shape b573:01E02C00, 152 insns: a rising spark sized by the scene frame (0x2BC0): before frame 195 small, yellow, slow
+   (size 1, rise 1, held 1..3); after it blue (size 4, rise 5, held 4..6); after frame 220 big (size 18, rise 15,
+   held 6..8); frame 0..3, keeps its old height in 0xA, turn 0..359, f8 0..34; alpha grows by 0x40 (to 0x80) while
+   held, then fades by 9 (ends below 11) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 h0;
+    s16 fC;
+    s16 rise;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b573_01E02C00;
+
+typedef struct {
+    u8 pad0[0x2BC0];
+    s16 frame;
+} Scene_b573_01E02C00;
+
+static s32 func_01E02C00_b573(Scene_b573_01E02C00 *g, Fx_b573_01E02C00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (g->frame < 0xC3) {
+            o->size = 1;
+        } else {
+            o->size = 4;
+        }
+        if (g->frame > 0xDC) {
+            o->size = 18;
+        }
+        o->frame = func_0019A5C8() % 4;
+        if (g->frame < 0xC3) {
+            func_001076F0(o->col, 0x80, 0x80, 0x20);
+        } else {
+            func_001076F0(o->col, 0x20, 0x20, 0x80);
+        }
+        o->h0 = o->h;
+        o->h = 0;
+        o->ang = func_0019A5C8() % 360;
+        if (g->frame < 0xC3) {
+            o->rise = 1;
+        } else {
+            o->rise = 5;
+        }
+        if (g->frame > 0xDC) {
+            o->rise = 15;
+        }
+        o->f8 = func_0019A5C8() % 35;
+        if (g->frame < 0xC3) {
+            o->hold = func_0019A5C8() % 3 + 1;
+        } else {
+            o->hold = func_0019A5C8() % 3 + 4;
+        }
+        if (g->frame > 0xDC) {
+            o->hold = func_0019A5C8() % 3 + 6;
+        }
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->h += o->rise;
+    o->t++;
+    return 0;
+}
 
 /* shape b573:01E02E60, 73 insns: a dark-teal puff: frame 23, random angle, its full-alpha time extended by 3..12; fades
    in by 0x40 to 0x80, then out by 14 while its frame grows by 6 */

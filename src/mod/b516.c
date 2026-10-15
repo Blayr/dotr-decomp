@@ -818,7 +818,65 @@ static s32 func_01E02340_b516(void *arg0, Obj_b516_01E02340 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02470_b516);
+/* shape b516:01E02470, 151 insns: b354:01E022F0's green tumbling chip, size 130 (half kept in 0xA), held 10 */
+
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b516_01E02470;
+
+static s32 func_01E02470_b516(s32 arg0, Fx_b516_01E02470 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 130;
+        o->size0 = o->size >> 1;
+        o->frame = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x40, 0xFF, 0x40);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 60.0f;
+        o->vx /= 60.0f;
+        o->vz /= 60.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->rot[2] += o->tz;
+    o->rot[1] += o->ty;
+    o->rot[0] += o->tx;
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b516:01E026D0, 107 insns: b495:01E01D60 family: a white spark (150 x 150, random frame 2..4, random heading) set 7.6 out along its heading, then drifting 1 a tick along it (sine table ctx+0xCDBC): in by 96 up to 0xC0 for 6 ticks, then out by 19 and ends */
 

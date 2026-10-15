@@ -516,9 +516,180 @@ static void func_01E01260_b115(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b115", func_01E01450_b115);
+/* shape b115:01E01450, 156 insns: the scene script of b115: it sets the scene colour to red 0x80 and counts g+0x3730;
+   until tick 110 it spawns two 0x1E016C0 effects a tick; from 45 to 98 it puts the burst point on joints A and B
+   (g+0x3724 / 0x3726) and spawns a 0x1E01980 effect on each; on tick 108 it puts the point on joint C (g+0x371C), reads
+   the camera, raises the scene flag g+0x372C and spawns 8 0x1E01F00, 8 0x1E01D70 and 30 0x1E01BC0 effects, then the
+   0x1E01AE0 and 0x1E02070 ones */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b115", func_01E016C0_b115);
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad2DC[0x3418];
+    u8 col[4];
+    u8 pad36F8[0x24];
+    s16 jc;
+    u8 pad371E[6];
+    s16 ja;
+    s16 jb;
+    u8 pad3728[4];
+    s16 flag;
+    u8 pad372E[2];
+    s16 tick;
+} Ctx_b115_01E01450;
+
+static void func_01E01450_b115(Ctx_b115_01E01450 *g) {
+    extern void b115_01E016C0();
+    extern void b115_01E01980();
+    extern void b115_01E01AE0();
+    extern void b115_01E01BC0();
+    extern void b115_01E01D70();
+    extern void b115_01E01F00();
+    extern void b115_01E02070();
+    extern void b115_01E028F0(Ctx_b115_01E01450 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    f32 cam[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick < 110) {
+        b115_01E028F0(g, b115_01E016C0, 0);
+        b115_01E028F0(g, b115_01E016C0, 0);
+    }
+    if (g->tick >= 45 && g->tick < 99) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        b115_01E028F0(g, b115_01E01980, 0);
+        func_001F5620(func_001F53A0(), g->jb, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        b115_01E028F0(g, b115_01E01980, 0);
+    }
+    if (g->tick == 108) {
+        func_001F5620(func_001F53A0(), g->jc, v);
+        func_001F5F90(func_001F5380(), cam);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b115_01E028F0(g, b115_01E01F00, 0);
+        }
+    }
+    if (g->tick == 108) {
+        func_001F5620(func_001F53A0(), g->jc, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b115_01E028F0(g, b115_01E01D70, 0);
+        }
+        for (i = 0; i < 30; i++) {
+            b115_01E028F0(g, b115_01E01BC0, 0);
+        }
+        b115_01E028F0(g, b115_01E01AE0, 0);
+        b115_01E028F0(g, b115_01E02070, 0);
+    }
+}
+
+/* shape b115:01E016C0, 173 insns: b393:01E023B0's red mote between joints 0x371C/0x371E; after its hold it fades by
+   10 before scene frame 108 and by 8 after (ends below 0x11 / 0xA), and rises twice as fast from frame 106 */
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 rise;
+    u8 pad10[8];
+    s32 spin;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 k;
+} Fx_b115_01E016C0;
+
+typedef struct {
+    u8 pad0[0x371C];
+    s16 ja;
+    s16 jb;
+    u8 pad3720[0x10];
+    s16 frame;
+} Scene_b115_01E016C0;
+
+static s32 func_01E016C0_b115(Scene_b115_01E016C0 *g, Fx_b115_01E016C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    Vec4f v[2];
+    f32 dx;
+    f32 dy;
+    f32 dz;
+
+    if (o->mode == 1) {
+        o->size = 6;
+        o->k = func_0019A5C8() % 4;
+        o->frame = 2;
+        func_001076F0(o->col, 0x80, 0x20, 0x20);
+        o->spin = func_0019A5C8() % 65535;
+        o->h = 0;
+        o->rise = 7 - (o->k >> 1);
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        o->col[3] = 0x80;
+    } else if (g->frame < 108) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 10;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (g->frame < 106) {
+        o->h += o->rise;
+    } else {
+        o->h += o->rise * 2;
+    }
+    o->t++;
+    func_001F5620(func_001F53A0(), g->ja, &v[0]);
+    func_001F5620(func_001F53A0(), g->jb, &v[1]);
+    dx = v[1].x - v[0].x;
+    dy = v[1].y - v[0].y;
+    dz = v[1].z - v[0].z;
+    dx /= 10.0f;
+    dy /= 10.0f;
+    dz /= 10.0f;
+    o->x = func_001A22C0(v[0].x + dx * o->k);
+    o->y = func_001A22C0(v[0].y + dy * o->k);
+    o->z = func_001A22C0(v[0].z + dz * o->k);
+    return 0;
+}
 
 /* shape b115:01E01980, 87 insns: a white spark (size 60, frame 5) at two random angles drifting 16 a tick along its angle (sine table ctx+0x3834): alpha 0x80 for 7 ticks, then out by 15 and ends */
 

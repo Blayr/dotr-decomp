@@ -123,7 +123,109 @@ static void func_01E00100_b116(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E009A0_b116);
+/* shape b116:01E009A0, 182 insns: b183:01E00E70's sprite with the camera's rotation reset by func_00205C40 first, a
+   square view of the camera's size and the colour at camera+0x28 (b016:01E00ED0 kind, fixed blends (sel 0 = 0x42, 1 = 0x44, else 0x48)); draw one sprite quad (GS packet of 9 qwords) at an object's
+   position; mode (flags & 0xF) 0 = depth from the projection, 1 = far z, else -1. Needs func_01E00100_b116 in the
+   same file and static (the original reuses $a0 across the call). The colour is passed by value. */
+
+typedef struct Cam_b116_01E009A0 {
+    u8 pad0[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[0xC];
+    s16 size;
+} Cam_b116_01E009A0;
+
+typedef struct Obj_b116_01E009A0 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 f94[0x2A];
+    s16 fBE;
+} Obj_b116_01E009A0;
+
+typedef struct Xyz_b116_01E009A0 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b116_01E009A0;
+
+typedef struct Uv_b116_01E009A0 {
+    f32 u, v;
+} Uv_b116_01E009A0;
+
+typedef struct Pk_b116_01E009A0 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b116_01E009A0 uv;
+    u64 pad18;
+    Xyz_b116_01E009A0 v[4];
+    u64 pad60[6];
+} Pk_b116_01E009A0;
+
+typedef struct Buf_b116_01E009A0 {
+    u64 tag;
+    Pk_b116_01E009A0 pk;
+} Buf_b116_01E009A0;
+
+static void func_01E009A0_b116(Obj_b116_01E009A0 *obj, Cam_b116_01E009A0 *cam, s32 flags, Vec4f c) {
+    extern void func_00108EF0();
+    f32 view[4][4];
+    Vec4f a;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    Buf_b116_01E009A0 buf;
+    Uv_b116_01E009A0 uv;
+    s32 sel;
+    s32 mode;
+    Pk_b116_01E009A0 *p = &buf.pk;
+
+    sel = (flags >> 4) & 0xF;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else if (sel == 1) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    }
+    func_00107740(&uv, cam->col);
+    p->uv = uv;
+    func_01E00100_b116((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)obj->f94, obj->fBE);
+    func_00208700(p, (void *)obj->f88, 1);
+    s.x = 0.1f;
+    s.y = 0.1f;
+    s.z = 0.1f;
+    func_00205C40((s32)cam->rot);
+    a.x = c.x;
+    a.y = c.y;
+    a.z = c.z;
+    func_00108EF0(m, &s, cam->rot, &a);
+    func_00108CE0(view, cam->size, cam->size);
+    if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out) != 0) {
+        mode = flags & 0xF;
+        if (mode == 0) {
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+        } else if (mode == 1) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0((s32)p, obj->f80, 0);
+        } else {
+            func_002075F0((s32)p, obj->f80, -1);
+        }
+    }
+}
 
 /* shape b081:01E016D0, 342 insns, 3 copies: draws a row of small camera-facing sprites at the object position (b008
    family): each shaken by a per-entry table offset turned by an extra axis and added to all four corners;
@@ -482,7 +584,93 @@ static s32 func_01E01E90_b116(void *arg0, Obj_b003_01E01780 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E01F70_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E02370_b116);
+/* shape b116:01E02370, 175 insns: b008:01E01660's glow aimed between two joints: grey 0x70 of size 50, rise 5..9, holds for
+   30..39 ticks fading in by 0x20 to 0x40; on start hC is the angle from joint g+0x4A42 to g+0x4A44, each tick h4 turns
+   by a fortieth of the camera depth difference between func_001F5380's and func_001F53A0's views, and h30 grows by
+   the rise */
+
+typedef struct {
+    u8 pad0[0x4A42];
+    s16 ja;
+    s16 jb;
+} Game_b116_01E02370;
+
+typedef struct {
+    u8 pad0[4];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b116_01E02370;
+
+static s32 func_01E02370_b116(Game_b116_01E02370 *g, Glow_b116_01E02370 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->kind = 0;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 30;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 40.0f;
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E02630_b116);
 

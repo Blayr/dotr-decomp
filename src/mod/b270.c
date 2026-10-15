@@ -899,7 +899,81 @@ static s32 func_01E02D50_b270(s32 unused, Spark_b111_01E02160 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E02EE0_b270);
+/* shape b270:01E02EE0, 179 insns: b771:01E02460's mote as a spark, kind 0 (white) or 1 (orange 0xFF/0x80/0x10): on start
+   it picks a size 5..14, frame 4, random turns, a radius 10..39 (or 15..64), a start angle, a growth 40..99, h8 0..19
+   and a 4..6-tick hold at alpha 0xC0, then fades by 15; kind 0 flickers white/grey, its radius grows and its size grows
+   by 1 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    u8 padA[4];
+    s16 grow;
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 r;
+    s16 kind;
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Mote_b270_01E02EE0;
+
+static s32 func_01E02EE0_b270(s32 arg0, Mote_b270_01E02EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 10 + 5;
+        o->frame = 4;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xFF, 0x80, 0x10);
+        }
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        if (o->kind == 0) {
+            o->r = func_0019A5C8() % 30 + 10;
+        }
+        if (o->kind == 1) {
+            o->r = func_0019A5C8() % 50 + 15;
+        }
+        o->ang = func_0019A5C8() % 360;
+        o->grow = func_0019A5C8() % 60 + 40;
+        o->h8 = func_0019A5C8() % 20;
+        o->hold = func_0019A5C8() % 3 + 4;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        } else {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        }
+        o->r += o->grow;
+        if (o->tick != 0) {
+            o->size += 1.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b270:01E031B0, 138 insns: b084:01E01A20 family: a white flicker (size 5..34, frames 0..3 then dies at 8, random spin), alternates 0xFF/0xC0 grey every tick */
 

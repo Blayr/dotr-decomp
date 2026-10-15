@@ -577,9 +577,135 @@ static s32 func_01E01F90_b384(s32 arg0, Fx_b384_01E01F90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E02130_b384);
+/* shape b384:01E02130, 174 insns: b384:01E023F0 with the five-way pick on the first colour, size from 10, f5A forced
+   to 45, a random step 1..4 (0x5C); alpha up for 8 ticks; size grows 0.5 (then 0.8 from tick 4), f4C by 0.4 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E023F0_b384);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b384_01E02130;
+
+static s32 func_01E02130_b384(s32 arg0, Fx_b384_01E02130 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        func_001076F0(o->col, 0xCF, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->f52 = func_0019A5C8() % 5;
+        if (o->f52 == 0) {
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        } else if (o->f52 == 1) {
+            func_001076F0(o->col, 0x80, 0xFF, 8);
+        } else if (o->f52 == 2) {
+            func_001076F0(o->col, 0x80, 0x80, 0xFF);
+        } else if (o->f52 == 3) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        } else if (o->f52 == 4) {
+            func_001076F0(o->col, 0x80, 0x40, 0xFF);
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f5A = 45;
+        o->h5C = func_0019A5C8() % 4 + 1;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick < 4) {
+        o->f48 += 0.5f;
+        o->f4C += 0.4f;
+    } else {
+        o->f48 += 0.8f;
+        o->f4C += 0.4f;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b384:01E023F0, 143 insns: b384:01E02630 variant: the second colour is picked once from five by a random 0..4,
+   random spins; alpha up by 64 to 0xC0 for 13 ticks, then down by 9; size grows by 3 with f4C = size - 2 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b384_01E023F0;
+
+static s32 func_01E023F0_b384(s32 arg0, Fx_b384_01E023F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->f52 = func_0019A5C8() % 5;
+        if (o->f52 == 0) {
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        } else if (o->f52 == 1) {
+            func_001076F0(o->col2, 0x80, 0xFF, 8);
+        } else if (o->f52 == 2) {
+            func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        } else if (o->f52 == 3) {
+            func_001076F0(o->col2, 0xFF, 0xFF, 0x80);
+        } else if (o->f52 == 4) {
+            func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < 13) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 3.0f;
+    o->f4C = o->f48 - 2.0f;
+    o->tick++;
+    return 0;
+}
 
 /* shape b384:01E02630, 114 insns: on start f48 300, colour 0xCF grey, random 0x5A, second alpha 0; the second colour
    cycles red / green / blue / yellow / violet by 0x52 (0..4); alpha grows by 0x40 (below 0xC0) for 16 ticks, then fades
@@ -641,9 +767,143 @@ static s32 func_01E02630_b384(s32 arg0, Fx_b384_01E02630 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E02800_b384);
+/* shape b384:01E02800, 149 insns: b384:01E02630's colour-cycling glow, size 5 with a red second colour, brightening by 0x18 for 135 ticks, growing 10 a tick on ticks 16..34 and 0.7 a tick below 30 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E02A60_b384);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[6];
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b384_01E02800;
+
+static s32 func_01E02800_b384(s32 arg0, Fx_b384_01E02800 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 0x40, 0x40);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->f52 == 0) {
+        func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+    } else if (o->f52 == 1) {
+        func_001076F0(o->col2, 0x80, 0xFF, 8);
+    } else if (o->f52 == 2) {
+        func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+    } else if (o->f52 == 3) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0x80);
+    } else if (o->f52 == 4) {
+        func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+    }
+    o->f52++;
+    if (o->f52 > 4) {
+        o->f52 = 0;
+    }
+    if (o->tick < 0x87) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x18;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick > 15 && o->tick < 35) {
+        o->f48 += 10.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->tick != 0) {
+        if (o->f48 < 30.0f) {
+            o->f48 += 0.7f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b384:01E02A60, 181 insns: b279:01E02690's five-colour ring with size 10..29 shrinking by 1 (f4C = size + 6),
+   alpha up for 8 ticks */
+
+typedef struct {
+    u8 pad00[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b384_01E02A60;
+
+static s32 func_01E02A60_b384(void *arg0, Obj_b384_01E02A60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = func_0019A5C8() % 20 + 10;
+        func_001076F0(o->col, 0xCF, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->h52 = func_0019A5C8() % 5;
+        if (o->h52 == 0) {
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        } else if (o->h52 == 1) {
+            func_001076F0(o->col, 0x80, 0xFF, 8);
+            func_001076F0(o->col2, 0x80, 0xFF, 8);
+        } else if (o->h52 == 2) {
+            func_001076F0(o->col, 0x80, 0x80, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        } else if (o->h52 == 3) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+            func_001076F0(o->col2, 0xFF, 0xFF, 0x80);
+        } else if (o->h52 == 4) {
+            func_001076F0(o->col, 0x80, 0x40, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        }
+        o->h5A = func_0019A5C8() % 360;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h5A = 45;
+        o->h5C = 5;
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->f48 -= 1.0f;
+    o->f4C = 6.0f + o->f48;
+    o->t++;
+    return 0;
+}
 
 /* shape b279:01E02690, 180 insns: b183:01E012F0 family: a two-tone flash in one of 5 colour pairs, growing 2 a frame; fades in to 0xC0 for 3 ticks, out by 9 */
 

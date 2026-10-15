@@ -977,7 +977,76 @@ static s32 func_01E02970_b430(Game_b430_01E02970 *g, Glow_b430_01E02970 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02AE0_b430);
+/* OVL_WARM */
+
+/* shape b430:01E02AE0, 142 insns: a scene-timed glow (scene frame at 0x3358): pale blue, alpha 0x80, f38 60, two random
+   turns; fades by 6 after frame 345; turns yellow at frame 237; from frame 236 it keeps 0xEC2 at 342, and from frame
+   256 it raises the scene's three 0x3A0 levels by 0.01 while they are below 0.15 (compared as doubles) */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 ang2;
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Fx_b430_01E02AE0;
+
+typedef struct {
+    u8 pad0[0x3A0];
+    f32 lv[3];
+    u8 pad3AC[0xB16];
+    s16 hEC2;
+    u8 padEC4[0x2494];
+    s16 frame;
+} Scene_b430_01E02AE0;
+
+static s32 func_01E02AE0_b430(Scene_b430_01E02AE0 *g, Fx_b430_01E02AE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        func_001076F0(o->col, 0x50, 0x50, 0x78);
+        o->ang2 = func_0019A5C8() % 180;
+        o->ang = func_0019A5C8() % 360;
+        o->col[3] = 0x80;
+        o->mode = 2;
+    }
+    if (g->frame > 0x159) {
+        if (o->col[3] > 7) {
+            o->col[3] -= 6;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->frame == 0xED) {
+        func_001076F0(o->col, 0xA0, 0xA0, 0xF0);
+    }
+    o->t++;
+    if (g->frame > 0xEB) {
+        if (g->hEC2 < 0x156) {
+            g->hEC2 += 0x156;
+        }
+        if (g->hEC2 > 0x156) {
+            g->hEC2 = 0x156;
+        }
+        if (g->frame > 0xFF) {
+            if (g->lv[0] < 0.15) {
+                g->lv[0] += 0.01f;
+            }
+            if (g->lv[1] < 0.15) {
+                g->lv[1] += 0.01f;
+            }
+            if (g->lv[2] < 0.15) {
+                g->lv[2] += 0.01f;
+            }
+        }
+    }
+    return 0;
+}
 
 /* shape b430:01E02D20, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
    raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the

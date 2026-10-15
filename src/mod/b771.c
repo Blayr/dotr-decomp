@@ -713,7 +713,74 @@ static s32 func_01E022D0_b771(s32 arg0, Fx_b771_01E022D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E02460_b771);
+/* shape b771:01E02460, 163 insns: a dust mote's step, kind 0 or 1 (0x52): on start it picks a size 6..11, a frame 0..3,
+   grey 0x80 (or 0xC0), random turns, a radius 10..39 (or 10..29) growing by 10..12 a tick, a start angle, a step
+   1..8 and a 2..4-tick hold at alpha 0x60, then fades by 11; kind 0 also circles by 3 and sinks 1.5 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    u8 padA[4];
+    s16 grow;
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 r;
+    s16 kind;
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Mote_b771_01E02460;
+
+static s32 func_01E02460_b771(s32 arg0, Mote_b771_01E02460 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 6 + 6;
+        o->frame = func_0019A5C8() % 4;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        }
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        if (o->kind == 0) {
+            o->r = func_0019A5C8() % 30 + 10;
+        }
+        if (o->kind == 1) {
+            o->r = func_0019A5C8() % 20 + 10;
+        }
+        o->ang = func_0019A5C8() % 360;
+        o->grow = func_0019A5C8() % 3 + 10;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->ang += 3;
+        o->pos[1] -= 1.5f;
+    }
+    o->r += o->grow;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E026F0_b771);
 

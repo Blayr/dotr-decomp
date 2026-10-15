@@ -443,17 +443,224 @@ static void func_01E00E90_b386(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E013E0_b386);
+/* shape b386:01E013E0, 180 insns: the b386 module's event step: counts ticks; from 81 to 225 spawns three b386:01E016B0 and three b386:01E01D10 a tick at the tracked point (ctx+0xB228); before 82 spawns b386:01E01AC0 and b386:01E02480 there; from 150 to 250 spawns b386:01E02110 at the camera */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xB228 - 0x25C];
+    s16 id;
+    u8 padB22A[0xB25E - 0xB22A];
+    s16 timer;
+} Ctx_b386_01E013E0;
+
+static void func_01E013E0_b386(Ctx_b386_01E013E0 *g) {
+    extern s32 b386_01E016B0(void);
+    extern s32 b386_01E01AC0(void);
+    extern s32 b386_01E01D10(void);
+    extern s32 b386_01E02110(void);
+    extern s32 b386_01E02480(void);
+    extern void b386_01E02F80(Ctx_b386_01E013E0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    if (g->timer >= 81 && g->timer < 226) {
+        if (g->timer < 100) {
+            n = 3;
+        } else {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->id, g->pos);
+            b386_01E02F80(g, b386_01E016B0, 0);
+        }
+    }
+    if (g->timer < 82) {
+        func_001F5620(func_001F53A0(), g->id, g->pos);
+        b386_01E02F80(g, b386_01E01AC0, 0);
+    }
+    if (g->timer >= 81 && g->timer < 226) {
+        if (g->timer < 100) {
+            n = 3;
+        } else {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->id, g->pos);
+            b386_01E02F80(g, b386_01E01D10, 0);
+        }
+    }
+    if (g->timer >= 150 && g->timer < 251) {
+        for (i = 0; i < 1; i++) {
+            func_001F5F90(func_001F5380(), g->pos);
+            b386_01E02F80(g, b386_01E02110, 0);
+        }
+    }
+    if (g->timer < 82) {
+        for (i = 0; i < 1; i++) {
+            func_001F5620(func_001F53A0(), g->id, g->pos);
+            b386_01E02F80(g, b386_01E02480, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E016B0_b386);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E01AC0_b386);
+/* shape b386:01E01AC0, 148 insns: b394:01E01AA0 family yellow spark (size 6, frame 0..3, angle 0..359 turning 10, fA 0..7, fC = old f50, f50 2..6 growing 1..4, f8 0..34, life 3..7) rising 0..9/15 (rerolled each tick); colour flips yellow/gold every tick; full alpha then down by 8 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[0x1C];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b386_01E01AC0;
+
+static s32 func_01E01AC0_b386(s32 arg0, Fx_b386_01E01AC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x40);
+        o->f5A = func_0019A5C8() % 360;
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 5 + 2;
+        o->spin = func_0019A5C8() % 4 + 1;
+        o->f8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x40);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0x20);
+    }
+    o->f34 = func_0019A5C8() % 10;
+    o->f34 /= 15.0f;
+    if (o->tick != 0) {
+        o->f50 += o->spin;
+    }
+    if (o->tick != 0) {
+        o->y += o->f34;
+    }
+    o->f5A += 10;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E01D10_b386);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E02110_b386);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E02480_b386);
+/* shape b386:01E02480, 177 insns: b852:01E026F0 family pale-yellow (0xCF, 0xCF, 0x40) mote: size 20 growing 0.8 during the hold, frame 0..7, turn 70, angle 0..359, side 0 or 2, keeps the old 0x50 in 0xC, life 100..449, speed 10..29, 0x8 0..34, hold 3..7, drift (-20..19)/60; alpha up by 0xC0 to 0xC0 during the hold, then down by 12 while rising 0.5 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 side;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[0x18];
+    f32 vel[3];
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 life;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b386_01E02480;
+
+static s32 func_01E02480_b386(s32 arg0, Fx_b386_01E02480 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 t;
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xCF, 0xCF, 0x40);
+        o->f5A = 70;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->side = 2;
+        } else {
+            o->side = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = 0;
+        o->life = func_0019A5C8() % 350 + 100;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->vel[0] /= 60.0f;
+        o->vel[1] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    t = o->tick;
+    if (t != 0) {
+        if ((s16)t >= o->hold) {
+            o->y += 0.5f;
+        }
+        if (o->tick < o->hold) {
+            o->f48 += 0.8f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E02750_b386);
 

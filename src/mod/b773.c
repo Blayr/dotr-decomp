@@ -495,7 +495,100 @@ static s32 func_01E025F0_b773(s32 obj, Spr_b007_01E017F0 *spr, Cam_b007_01E017F0
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b773", func_01E02B80_b773);
+/* OVL_WARM */
+
+/* shape b773:01E02B80, 177 insns: b773:01E00120's line packet drawn as horizontal scanlines across the screen
+   (x 0x6000..0xA000): rows step by 0x04 + 3 from y 0x720 in groups of three, colour from the first to the second
+   (the second copies the first unless bit 9 is set), each sent twice with bit 0x1C */
+
+typedef struct {
+    u16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b773_01E02B80;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b773_01E02B80;
+
+typedef struct {
+    Hdr_b773_01E02B80 h;
+    Vtx_b773_01E02B80 v[2];
+    u8 tail[8];
+} Pkt_b773_01E02B80;
+
+typedef struct {
+    u8 b, g, r, a;
+} Col_b773_01E02B80;
+
+typedef struct {
+    s32 id;
+    s32 gap;
+    Col_b773_01E02B80 c;
+    Col_b773_01E02B80 c2;
+} Line_b773_01E02B80;
+
+static s32 func_01E02B80_b773(s32 tex, Line_b773_01E02B80 *o) {
+    extern s32 func_00104520(s32, s32);
+    Pkt_b773_01E02B80 p __attribute__((aligned(8)));
+    s32 n;
+    s32 step;
+    s32 i;
+    s32 j;
+    u16 y;
+
+    step = o->gap + 3;
+    n = 448 / step;
+    ((Hdr_b773_01E02B80 *)(s32)&p)->count = 0x11;
+    ((Hdr_b773_01E02B80 *)(s32)&p)->tag = 4;
+    ((Hdr_b773_01E02B80 *)(s32)&p)->regs = 0x4141;
+    ((Hdr_b773_01E02B80 *)(s32)&p)->pad = 0;
+    if (func_00104520(o->id, 0xC)) {
+        func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(o->id, 0xA)) {
+        func_002086D0(&p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&p, ((u64)0x80 << 32) | 0x48);
+    }
+    ((Hdr_b773_01E02B80 *)(s32)&p)->count |= 0x400;
+    if (func_00104520(o->id, 9) == 0) {
+        o->c2 = o->c;
+    }
+    p.v[0].r = o->c.r;
+    p.v[0].g = o->c.g;
+    p.v[0].b = o->c.b;
+    p.v[0].a = o->c.a;
+    p.v[0].q = 1.0f;
+    p.v[1].r = o->c2.r;
+    p.v[1].g = o->c2.g;
+    p.v[1].b = o->c2.b;
+    p.v[1].a = o->c2.a;
+    p.v[1].q = 1.0f;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < 3; j++) {
+            y = i * step + 0x720 + j;
+            p.v[0].x = 0x6000;
+            p.v[0].y = y << 4;
+            p.v[0].z = 0xFFFFFF;
+            p.v[0].f = 0;
+            p.v[1].x = 0xA000;
+            p.v[1].y = y << 4;
+            p.v[1].z = 0xFFFFFF;
+            p.v[1].f = 0;
+            func_002075F0((s32)&p, tex, 0);
+            if (func_00104520(o->id, 0x1C)) {
+                func_002075F0((s32)&p, tex, 0);
+            }
+        }
+    }
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z;

@@ -388,7 +388,85 @@ static void func_01E00ED0_b434(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b434", func_01E01190_b434);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b434", func_01E01A50_b434);
+/* shape b434:01E01A50, 183 insns: a grey (0x80 / 0x70 flicker) flake 2..7 growing to 16 every third tick, frame cycling 0..7, angle 0..359, drift (-25..24)/55 and /80 in z, f52 25 falling to 5 once the scene count (ctx+0xB2B8) passes 186; alpha up by 12 to 0x80 for 190 ticks, then down by 9 */
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 count;
+} Ctx_b434_01E01A50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b434_01E01A50;
+
+static s32 func_01E01A50_b434(Ctx_b434_01E01A50 *g, Fx_b434_01E01A50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = func_0019A5C8() % 6 + 2;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 50 - 25;
+        o->vel[0] = func_0019A5C8() % 50 - 25;
+        o->vel[2] = func_0019A5C8() % 50 - 25;
+        o->vel[1] /= 55.0f;
+        o->vel[0] /= 55.0f;
+        o->vel[2] /= 80.0f;
+        o->f52 = 25;
+        o->f5C = func_0019A5C8() % 360;
+    }
+    if (o->tick < 190) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+    }
+    o->kind++;
+    if (o->kind > 7) {
+        o->kind = 0;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->w < 16) {
+            o->w++;
+        }
+        if (o->h < 16) {
+            o->h++;
+        }
+    }
+    if (g->count > 186) {
+        if (o->f52 > 5) {
+            o->f52--;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b434", func_01E01D30_b434);
 

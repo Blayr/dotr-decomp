@@ -455,7 +455,80 @@ INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02110_b760);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E024A0_b760);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02820_b760);
+/* shape b760:01E02820, 181 insns: b521:01E01440's tumbling flake in white, size 10..17 (height 2.5 x size), alpha
+   up by 21 for 10 ticks, then down by 9; it only spins */
+
+typedef struct {
+    u8 pad0[0xCBB4];
+    s16 flag;
+    u8 padCBB6[2];
+    s16 count;
+} Ctx_b760_01E02820;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b760_01E02820;
+
+static s32 func_01E02820_b760(Ctx_b760_01E02820 *ctx, Obj_b760_01E02820 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->hA = func_0019A5C8() % 8 + 10;
+        o->h8 = 2.5f * o->hA;
+        o->f48 = 5.0f + (func_0019A5C8() >> 4) % 100;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->h5C = func_0019A5C8() % 20 - 10;
+        o->h5A = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x1000 - 0x800;
+        o->h2 = func_0019A5C8() % 0x1000 - 0x800;
+        o->h0 = func_0019A5C8() % 0x1000 - 0x800;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x15;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02B00_b760);
 

@@ -448,7 +448,85 @@ static s32 func_01E01AC0_b149(void *arg0, Obj_b149_01E01AC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01C60_b149);
+/* shape b149:01E01C60, 156 insns: b479:01E01EB0 variant: size 20, a drift of -1.5..1.4 a tick in y, height 10..29
+   growing by 15 (and the drift) for 12 ticks up to its limit 100..249, rise 40..79; on tick 72 it hands its position to the scene
+   (m+0x250) and fires the module's 0x1E01AC0 effect; h5C turns by 7 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f pos;
+} Mgr_b149_01E01C60;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec4f pos;
+    u8 pad20[0x14];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b149_01E01C60;
+
+static s32 func_01E01C60_b149(Mgr_b149_01E01C60 *m, Obj_b149_01E01C60 *o) {
+    extern void b149_01E01AC0();
+    extern void b149_01E02BA0(Mgr_b149_01E01C60 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = 20.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->f34 = func_0019A5C8() % 30 - 15;
+        o->f34 /= 10.0f;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 20 + 10;
+        o->h52 = func_0019A5C8() % 150 + 100;
+        o->hE = func_0019A5C8() % 40 + 40;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < 3) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x20;
+        }
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 == 72) {
+        m->pos = o->pos;
+        b149_01E02BA0(m, b149_01E01AC0, 0);
+    }
+    if (o->h54 < 12) {
+        if (o->h50 < o->h52) {
+            o->h50 += 15;
+        }
+        o->pos.y += o->f34;
+    }
+    o->h5C += 7;
+    o->h54++;
+    return 0;
+}
 
 /* shape b149:01E01ED0, 135 insns, 2 copies: a yellow trail on a world track: set up once (fills the track's 15 history points
    with its current point); both colours fade in for 110 frames, then the first fades out (its fade-out step is

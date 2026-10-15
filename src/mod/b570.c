@@ -798,7 +798,81 @@ static s32 func_01E02680_b570(s32 arg0, Spark_b570_01E02680 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E028B0_b570);
+/* shape b570:01E028B0, 178 insns: a purple (0x80, 0x20, 0xFF) square spark 3..5, frame 0..2, drifting (-50..49)/400 in x/y and falling 0.29 a tick, with random spins; its z speed covers a tenth of the gap from the tracked point (ctx+0x9F6C) to the camera over 50..149 ticks; alpha up by 0x40 to 0x80 for 10 ticks, then down by 9 */
+
+typedef struct {
+    u8 pad0[0x9F6C];
+    s16 id;
+} Ctx_b570_01E028B0;
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b570_01E028B0;
+
+static s32 func_01E028B0_b570(Ctx_b570_01E028B0 *g, Fx_b570_01E028B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->w = func_0019A5C8() % 3 + 3;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x20, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 400.0f;
+        o->vel[0] /= 400.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        func_001F5620(func_001F53A0(), g->id, v);
+        func_001F5F90(func_001F5380(), &v[4]);
+        o->vel[2] = (v[6] - v[2]) / (func_0019A5C8() % 100 + 50);
+        o->vel[2] /= 10.0f;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[2] += o->vel[2];
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1] - 0.29f;
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b003:01E02110, 41 insns: a glow: colour (0x60,8,8) on start; alpha grows by 8 (up to 0x88) for 0x96 ticks,
    then fades out by 9 and stops */

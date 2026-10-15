@@ -703,7 +703,76 @@ static s32 func_01E02210_b582(void *arg0, Obj_b582_01E02210 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E02300_b582);
+/* shape b582:01E02300, 145 insns: b501:01E02FE0 family grey spark (size 12..23, or half the model scale for kind 0, growing to 60; frame stepping every other tick to 5; fA = old f30, f30 10..109, angle 0..359, step 5..9, f8 0..34, life 2..6): alpha up by 64, then down by 7; rises 1 every other tick */
+
+/* OVL_WARM */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    u8 pad4[2];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b582_01E02300;
+
+static s32 func_01E02300_b582(s32 arg0, Fx_b582_01E02300 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern f32 func_001F5860(s32);
+
+    if (o->mode == 1) {
+        if (o->f30 != 0) {
+            o->f38 = func_0019A5C8() % 12 + 12;
+        } else {
+            o->f38 = func_001F5860(func_001F5380()) / 2.0f;
+        }
+        o->f34 = 0;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        o->fA = o->f30;
+        o->f30 = func_0019A5C8() % 100 + 10;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 60) {
+            o->f38++;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        o->y++;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b582:01E02550, 73 insns: a dark-red turning glow: frame 36; fades in by 9 up to 0x69 until the game timer reaches
    300, then out by 9 until it ends; its angle and height turn by 4 a frame (mod 360) */

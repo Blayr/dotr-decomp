@@ -677,7 +677,93 @@ static void func_01E01A60_b046(Obj_b046_01E01A60 *obj, Def_b046_01E01A60 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b046", func_01E01ED0_b046);
+/* shape b046:01E01ED0, 166 insns: the scene script of b046: it sets the scene colour to red 0x80 and counts g+0x365A;
+   from tick 80 to 130 it spawns a 0x1E022F0 effect on joints A and B (g+0x363C / 0x363E); on tick 94 it moves the burst
+   point to joint C (g+0x3640), raises the flag g+0x3656 and spawns 15 0x1E02450, one 0x1E02770, 10 0x1E02A00, 12
+   0x1E02170, two 0x1E02690 and one 0x1E02F80 effects; from 94 to 130 it keeps the point on joint C */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x33B8];
+    u8 col[4];
+    u8 pad3618[0x24];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 pad3642[0x14];
+    s16 flag;
+    u8 pad3658[2];
+    s16 tick;
+} Ctx_b046_01E01ED0;
+
+static void func_01E01ED0_b046(Ctx_b046_01E01ED0 *g) {
+    extern void b046_01E02170();
+    extern void b046_01E022F0();
+    extern void b046_01E02450();
+    extern void b046_01E02690();
+    extern void b046_01E02770();
+    extern void b046_01E02A00();
+    extern void b046_01E02F80();
+    extern void b046_01E03E20(Ctx_b046_01E01ED0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    f32 v[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick >= 80 && g->tick < 131) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        for (i = 0; i < 1; i++) {
+            b046_01E03E20(g, b046_01E022F0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->jb, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        for (i = 0; i < 1; i++) {
+            b046_01E03E20(g, b046_01E022F0, 0);
+        }
+    }
+    if (g->tick == 94) {
+        func_001F5620(func_001F53A0(), g->jc, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 15; i++) {
+            b046_01E03E20(g, b046_01E02450, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b046_01E03E20(g, b046_01E02770, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b046_01E03E20(g, b046_01E02A00, 0);
+        }
+        for (i = 0; i < 12; i++) {
+            b046_01E03E20(g, b046_01E02170, 0);
+        }
+        b046_01E03E20(g, b046_01E02690, 0);
+        b046_01E03E20(g, b046_01E02690, 0);
+        b046_01E03E20(g, b046_01E02F80, 0);
+    }
+    if (g->tick >= 94 && g->tick < 131) {
+        func_001F5620(func_001F53A0(), g->jc, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->flag = 1;
+    }
+}
 
 /* shape b046:01E02170, 93 insns: b417:01E03910 family: a white spark (size 50, random frame 0..7, random roll and angle) spinning a random 70..109 a tick, size 0..9, held 8..16 ticks at 0x80, then out by 15 and ends */
 

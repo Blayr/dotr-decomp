@@ -233,7 +233,88 @@ static s32 func_01E005F0_b388(Ctx_b388_01E005F0 *g, Fx_b388_01E005F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b388", func_01E007F0_b388);
+/* shape b388:01E007F0, 176 insns: b702:01E02790 family scene light (128, 4, 3, 5): before scene frame 341 it sits at the
+   tracked point (0xB1D0), its radius grows by 5 to 100 and its level by 0.05 to 1, then it flickers between (4, 3, 5)
+   and (5, 3, 6) every other tick; after that the level drops by 0.1 and the light ends; also ends when 0xB210 is 1 */
+
+typedef struct {
+    f32 c[4];
+    Vec4f pos;
+    f32 fC0;
+    f32 fC4;
+    f32 level;
+} Light_b388_01E007F0;
+
+typedef struct {
+    u8 pad0[0xB1A0];
+    Light_b388_01E007F0 light;
+    u8 padB1CC[4];
+    Vec4f src;
+    u8 padB1E0[0x30];
+    s32 flag;
+    u8 padB214[0xA8];
+    s16 frame;
+} Scene_b388_01E007F0;
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b388_01E007F0;
+
+static s32 func_01E007F0_b388(Scene_b388_01E007F0 *g, Fx_b388_01E007F0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.c[0] = 128.0f;
+        g->light.c[1] = 4.0f;
+        g->light.c[2] = 3.0f;
+        g->light.c[3] = 5.0f;
+        g->light.fC0 = 0.0f;
+        g->light.fC4 = 10.0f;
+        g->light.level = 0.0f;
+        o->mode = 2;
+        o->h50 = 0;
+    }
+    if (g->frame < 341) {
+        g->light.pos.x = g->src.x;
+        g->light.pos.y = g->src.y;
+        g->light.pos.z = g->src.z;
+        if (g->light.fC4 < 100.0f) {
+            g->light.fC4 += 5.0f;
+        }
+    }
+    if (g->frame < 341) {
+        if (g->light.level < 1.0f) {
+            g->light.level += 0.05f;
+        } else if (o->t % 2 == 1) {
+            g->light.c[1] = 4.0f;
+            g->light.c[2] = 3.0f;
+            g->light.c[3] = 5.0f;
+        } else {
+            g->light.c[1] = 5.0f;
+            g->light.c[2] = 3.0f;
+            g->light.c[3] = 6.0f;
+        }
+    } else if (g->light.level > 0.1f) {
+        g->light.level -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (g->flag == 1) {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b388:01E00AB0, 136 insns: b763:01E032F0 with offset 4, a grey 0x80 tint, alpha up by 20 to 0x50 while the
    scene timer at g+0xB210 is past 20, then down by 9 */

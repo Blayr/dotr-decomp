@@ -388,7 +388,97 @@ static s32 func_01E01530_b378(Game_b378_01E01530 *g, Obj_b378_01E01530 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E01690_b378);
+/* shape b378:01E01690, 158 insns: an amber rider on scene point o->kind: copies that point's turn (ctx+0xB0, spinning 0x400) and, before scene count 100 (and for 4 ticks after 256), its position (ctx+0xD0) as shorts; between 100 and 255 reads the tracked points (ctx+0x3BEC/E); alpha up by 80 to 0xA0 for 2 ticks, then down by 13 once grown past 8 and by 15 once the scene timer is under 10; grows to 20 */
+
+/* OVL_WARM */
+
+typedef struct {
+    s32 v[4];
+} V4i_b378_01E01690;
+
+typedef struct {
+    u8 pad0[0xB0];
+    V4i_b378_01E01690 rot[2];
+    Vec4f pos[2];
+    u8 padF0[0x3BA0 - 0xF0];
+    s32 timer;
+    u8 pad3BA4[0x3BEC - 0x3BA4];
+    s16 id0;
+    s16 id1;
+    u8 pad3BF0[0x3BFE - 0x3BF0];
+    s16 count;
+} Ctx_b378_01E01690;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    V4i_b378_01E01690 rot;
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 size;
+} Fx_b378_01E01690;
+
+static s32 func_01E01690_b378(Ctx_b378_01E01690 *g, Fx_b378_01E01690 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+
+    if (o->mode == 1) {
+        o->size = 4;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x50;
+        }
+    } else {
+        if (o->size > 8) {
+            if (o->col[3] > 14) {
+                o->col[3] -= 13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->timer < 10) {
+            if (o->col[3] > 16) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (g->count < 100) {
+        o->x = g->pos[o->kind].x;
+        o->y = g->pos[o->kind].y;
+        o->z = g->pos[o->kind].z;
+    } else if (g->count < 256) {
+        if (o->kind == 0) {
+            func_001F5620(func_001F53A0(), g->id0, &v[4]);
+        }
+        if (o->kind == 1) {
+            func_001F5620(func_001F53A0(), g->id1, &v[4]);
+        }
+    } else if (o->tick < 4) {
+        o->x = g->pos[o->kind].x;
+        o->y = g->pos[o->kind].y;
+        o->z = g->pos[o->kind].z;
+    }
+    o->rot = g->rot[o->kind];
+    o->rot.v[1] += 0x400;
+    func_001076F0(o->col, 0x80, 0x40, 0);
+    o->tick++;
+    if (o->size < 20) {
+        o->size++;
+    }
+    return 0;
+}
 
 /* shape b378:01E01910, 87 insns: on start 0x38 = 4, random rotation (0x18 -0x2000..0x1FFF, 0x14), variant 0..6; alpha grows
    by 0x50 (below 0xA0) for 2 ticks, then fades by 13 once 0x38 passes 0x14 and by 15 while the game counter at

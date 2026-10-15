@@ -811,9 +811,192 @@ static s32 func_01E025B0_b721(Game_b721_01E025B0 *g, Obj_b721_01E025B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E02720_b721);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E02D30_b721);
+/* shape b721:01E02D30, 156 insns: c063:01E031E0 in blue/grey or cyan/black for kind 2, size 20, growing by the scene scale (ctx+0x97D8) / 20 per tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E02FA0_b721);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 hold;
+    u8 padA[4];
+    s16 fE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b721_01E02D30;
+
+typedef struct {
+    u8 pad0[0x97D8];
+    f32 scale;
+} Ctx_b721_01E02D30;
+
+static s32 func_01E02D30_b721(Ctx_b721_01E02D30 *g, Fx_b721_01E02D30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        if (o->kind != 2) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        } else {
+            func_001076F0(o->col, 0x10, 0x80, 0x80);
+            func_001076F0(o->col2, 0x10, 0x10, 0x10);
+        }
+        o->fE = o->kind;
+        if (o->kind == 0 || o->kind == 2) {
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+        } else {
+            o->rot[0] = 0x4000;
+            o->rot[1] = 0;
+            o->rot[2] = 0;
+        }
+        o->w = 20;
+        o->h = 20;
+        o->mode = 2;
+        o->col[3] = 0;
+        o->h6 = 0;
+        if (o->kind != 2) {
+            o->hold = 18;
+        } else {
+            o->hold = 30;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (o->kind != 2) {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col2[3] > 8) {
+        o->col2[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    if (o->fE != 2) {
+        o->f4C = o->f48 - 0.5f * o->f48;
+    }
+    if (o->h6 < 0) {
+        o->f4C = 0.0f;
+    }
+    if (o->tick != 0) {
+        o->f48 += g->scale / 20.0f;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b721:01E02FA0, 179 insns: b247:01E01F70's kind of glow, blue (0x10/0x10/0x80) with a grey (kind 0) or white
+   (kind 1) second colour, size 20; kind 0 flickers blue/violet and holds (alpha +0x10 to 0xC0) until the scene count
+   0x9868 reaches 471, kind 1 flickers grey and holds (+0x18) for 30 ticks; then both fade by 9; the size follows the
+   scene's 0x97D8 / 1.5 and the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x97D8];
+    f32 size;
+    u8 pad97DC[0x8C];
+    s16 count;
+} Game_b721_01E02FA0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b721_01E02FA0;
+
+static s32 func_01E02FA0_b721(Game_b721_01E02FA0 *g, Fx_b721_01E02FA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+            func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        }
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+        } else {
+            func_001076F0(o->col, 0x40, 0x10, 0x80);
+        }
+    } else if (o->kind == 1) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x40, 0x40, 0x40);
+        } else {
+            func_001076F0(o->col, 0x60, 0x60, 0x60);
+        }
+    }
+    if (o->kind == 0) {
+        if (g->count < 471) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x10;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind == 0) {
+        o->f48 = g->size / 1.5f;
+    }
+    if (o->kind == 1) {
+        if (o->tick < 30) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x18;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind == 1) {
+        o->f48 = g->size / 1.5f;
+    }
+    func_00205C40(o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b721:01E03270, 97 insns: on start variant 0, colour (0x40, 0x20, 0x80), size 0x5A, alpha 0, f48 = 5 x the game
    float 0x97D8, 0x5A from 0x985A; alpha grows by 0x80 (below 0x80) for 11 ticks, then fades by 9 and stops; the

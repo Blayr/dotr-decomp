@@ -866,7 +866,65 @@ static s32 func_01E020F0_b354(void *arg0, Obj_b354_01E020F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E022F0_b354);
+/* shape b354:01E022F0, 150 insns: b414:01E021C0's tumbling chip in green (0x40, 0xFF, 0x40), size 50, drift / 60, held 12; it tumbles by its tilt (rot += tz/ty/tx) each tick */
+
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b354_01E022F0;
+
+static s32 func_01E022F0_b354(s32 arg0, Fx_b354_01E022F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 50;
+        o->size0 = o->size;
+        o->frame = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x40, 0xFF, 0x40);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 60.0f;
+        o->vx /= 60.0f;
+        o->vz /= 60.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 12) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->rot[2] += o->tz;
+    o->rot[1] += o->ty;
+    o->rot[0] += o->tx;
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b354:01E02550, 68 insns: b764:01E02A60 family ring (white/green, height 10 growing 3 a tick): in by 48 up to 0xC0 for 14 ticks, then out by 15 and ends */
 
@@ -1025,7 +1083,96 @@ static s32 func_01E02780_b354(Game_b236_01E01C60 *g, Fade_b236_01E01C60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E02890_b354);
+/* shape b354:01E02890, 150 insns: b590:01E02450's veil, colour (0x80, 0x90, 0x80), zoom growing 0.8 a tick below 8, brightening until scene frame 190 (0xB2B8) */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b354_01E02890;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b354_01E02890 p;
+} Tv_b354_01E02890;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b354_01E02890 v[2];
+    u8 tail[0x20];
+} Tex_b354_01E02890;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 frame;
+} Ctx_b354_01E02890;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b354_01E02890;
+
+static s32 func_01E02890_b354(Ctx_b354_01E02890 *g, Fx_b354_01E02890 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    Tex_b354_01E02890 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 2.5f;
+        func_001076F0(o->col, 0x80, 0x90, 0x80);
+        o->mode = 2;
+    }
+    ((Tex_b354_01E02890 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b354_01E02890 *)(s32)&pk)->size = 5;
+    ((Tex_b354_01E02890 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b354_01E02890 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (o->f48 < 8.0f) {
+        o->f48 += 0.8f;
+    }
+    if (g->frame < 0xBE) {
+        if (o->col[3] < 0x58) {
+            o->col[3] += 0x16;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

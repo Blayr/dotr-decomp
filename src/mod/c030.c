@@ -2,13 +2,350 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E00080_c030);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E00B60_c030);
+/* shape c030:01E00B60, 179 insns: c560:01E02520 family falling column segment: its angle turns back by 18 (wrapped past
+   -359), the bottom drops by 5 to the floor while the top follows within 13, then the top closes down and ends it
+   (clearing the linked node); while it may still spawn and its top is under 50 it hands the scene one more segment
+   (this function) at its place, angle + 35, grey 0x10, numbered on, side by flag 0x78, once the scene timer is 23 or
+   more; both alphas rise by 8 to 0x40 for 8 frames, fade by 10 when low, else rise by 7 to 0x80 (the second only
+   while linked) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E00E30_c030);
+typedef struct {
+    u8 pad0[0x50];
+    s32 w50;
+} Link_c030_01E00B60;
+
+typedef struct {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x3C];
+    Link_c030_01E00B60 *link;
+    u8 pad58[8];
+    u8 col[4];
+    u8 col2[4];
+    s16 h68;
+    s16 h6A;
+    s16 h6C;
+    u8 pad6E[2];
+    s16 h70;
+    s16 ang;
+    s16 h74;
+    u8 pad76[2];
+    s16 h78;
+} Seg_c030_01E00B60;
+
+typedef struct {
+    u8 pad0[0xF0];
+    s32 timer;
+    u8 col[4];
+    u8 padF8[8];
+    Seg_c030_01E00B60 *parent;
+    u8 pad104[4];
+    f32 px, py, pz;
+    u8 pad114[0x1C0];
+    s16 h2D4;
+    s16 ang;
+    u8 pad2D8[2];
+    s16 h2DA;
+    u8 pad2DC[2];
+    s16 h2DE;
+    u8 pad2E0[4];
+    s16 frame;
+    u8 pad2E6[4];
+    s16 h2EA;
+    u8 pad2EC[4];
+    s16 h2F0;
+} Scene_c030_01E00B60;
+
+static s32 func_01E00B60_c030(Scene_c030_01E00B60 *g, Seg_c030_01E00B60 *o) {
+    extern void c030_01E018C0(Scene_c030_01E00B60 *, void *);
+    extern s16 func_001A22C0(f32);
+
+    o->ang -= 18;
+    if (o->ang < -359) {
+        o->ang %= 360;
+    }
+    o->h6A = func_001A22C0(o->f4);
+    o->h6C = func_001A22C0(o->f14);
+    if (o->f4 > 0.0f) {
+        o->f4 -= 5.0f;
+        if (o->f14 - o->f4 >= 13.0f) {
+            o->f14 -= 5.0f;
+        }
+    } else {
+        o->f14 -= 5.0f;
+        if (o->f14 < o->f4) {
+            o->f14 = o->f4;
+            if (o->link != NULL) {
+                o->link->w50 = 0;
+            }
+            o->h68 = 0;
+        }
+    }
+    if (o->h74 > 0 && o->f14 < 50.0f) {
+        g->parent = o;
+        g->px = o->h6A;
+        g->py = o->h6C;
+        g->col[3] = 0;
+        g->col[0] = 0x10;
+        g->col[1] = 0x10;
+        g->col[2] = 0x10;
+        g->h2DA = 1;
+        g->pz = o->f14;
+        g->h2DE = 1;
+        g->ang = o->ang + 35;
+        if (o->h78 != 0) {
+            g->h2F0 = 0;
+        } else {
+            g->h2F0 = 1;
+        }
+        g->h2D4 = o->h70;
+        g->h2EA = 7;
+        if (g->timer > 22) {
+            c030_01E018C0(g, func_01E00B60_c030);
+        }
+        o->h74 = 0;
+    }
+    if (g->frame < 8) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 8;
+        }
+        if (o->col2[3] < 0x40) {
+            o->col2[3] += 8;
+        }
+    } else if (o->f14 < 15.0f) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 10;
+        }
+        if (o->col2[3] > 16) {
+            o->col2[3] -= 10;
+        }
+    } else {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 7;
+        }
+        if (o->link != NULL) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 7;
+            }
+        }
+    }
+    return 0;
+}
+
+/* shape c030:01E00E30, 182 insns: c030:01E00B60's segment handing on in grey 0x70 with the scene turn (0x80) cleared,
+   through the other spawner (0x1E01AE0), alphas capped at 0xC0 */
+
+typedef struct {
+    u8 pad0[0x50];
+    s32 w50;
+} Link_c030_01E00E30;
+
+typedef struct {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x3C];
+    Link_c030_01E00E30 *link;
+    u8 pad58[8];
+    u8 col[4];
+    u8 col2[4];
+    s16 h68;
+    s16 h6A;
+    s16 h6C;
+    u8 pad6E[2];
+    s16 h70;
+    s16 ang;
+    s16 h74;
+    u8 pad76[2];
+    s16 h78;
+} Seg_c030_01E00E30;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 r80, r84, r88;
+    u8 pad8C[0x64];
+    s32 timer;
+    u8 col[4];
+    u8 padF8[8];
+    Seg_c030_01E00E30 *parent;
+    u8 pad104[4];
+    f32 px, py, pz;
+    u8 pad114[0x1C0];
+    s16 h2D4;
+    s16 ang;
+    u8 pad2D8[2];
+    s16 h2DA;
+    u8 pad2DC[2];
+    s16 h2DE;
+    u8 pad2E0[4];
+    s16 frame;
+    u8 pad2E6[4];
+    s16 h2EA;
+    u8 pad2EC[4];
+    s16 h2F0;
+} Scene_c030_01E00E30;
+
+static s32 func_01E00E30_c030(Scene_c030_01E00E30 *g, Seg_c030_01E00E30 *o) {
+    extern void c030_01E01AE0(Scene_c030_01E00E30 *, void *);
+    extern s16 func_001A22C0(f32);
+
+    o->ang -= 18;
+    if (o->ang < -359) {
+        o->ang %= 360;
+    }
+    o->h6A = func_001A22C0(o->f4);
+    o->h6C = func_001A22C0(o->f14);
+    if (o->f4 > 0.0f) {
+        o->f4 -= 5.0f;
+        if (o->f14 - o->f4 >= 13.0f) {
+            o->f14 -= 5.0f;
+        }
+    } else {
+        o->f14 -= 5.0f;
+        if (o->f14 < o->f4) {
+            o->f14 = o->f4;
+            if (o->link != NULL) {
+                o->link->w50 = 0;
+            }
+            o->h68 = 0;
+        }
+    }
+    if (o->h74 > 0 && o->f14 < 50.0f) {
+        g->parent = o;
+        g->px = o->h6A;
+        g->py = o->h6C;
+        g->col[3] = 0;
+        g->col[0] = 0x70;
+        g->col[1] = 0x70;
+        g->col[2] = 0x70;
+        g->h2DA = 1;
+        g->pz = o->f14;
+        g->h2DE = 1;
+        g->r84 = 0;
+        g->r80 = 0;
+        g->r88 = 0;
+        g->ang = o->ang + 35;
+        g->h2EA = 7;
+        if (o->h78 != 0) {
+            g->h2F0 = 0;
+        } else {
+            g->h2F0 = 1;
+        }
+        g->h2D4 = o->h70;
+        if (g->timer > 22) {
+            c030_01E01AE0(g, func_01E00E30_c030);
+        }
+        o->h74 = 0;
+    }
+    if (g->frame < 8) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 8;
+        }
+        if (o->col2[3] < 0x40) {
+            o->col2[3] += 8;
+        }
+    } else if (o->f14 < 15.0f) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 10;
+        }
+        if (o->col2[3] > 16) {
+            o->col2[3] -= 10;
+        }
+    } else {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 7;
+        }
+        if (o->link != NULL) {
+            if (o->col2[3] < 0xC0) {
+                o->col2[3] += 7;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E01110_c030);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E012A0_c030);
+/* shape c030:01E012A0, 155 insns: c030's camera step for one view (id, or id + 245 past 10): when that view is the active
+   one and is live, from scene time 15 it lowers the view's height by 4 (not below 0) and slides its depth by a 24th of
+   the camera speed (backwards for ids under 11); from time 28 it eases the view's three offsets down by 0.02 to 0; from
+   time 10 it turns the view by 0x1000; then the view is committed */
+
+typedef struct {
+    u8 pad0[0x2E4];
+    s16 time;
+} Ctx_c030_01E012A0;
+
+static s32 func_01E012A0_c030(Ctx_c030_01E012A0 *g, s32 unused, s32 id) {
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5EC0(s32);
+    extern void func_00107450(s32, s32, f32);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_001F5860(s32);
+    extern void func_001F5F00(s32, void *);
+    extern void func_001F5D70(s32, void *);
+    extern void func_001F5D10(s32, void *);
+    extern void func_001F6210(s32, void *);
+    extern void func_001F60D0(s32, void *);
+    extern void func_001F5AF0(s32);
+    f32 v[4];
+    f32 w[4];
+    s32 r[4];
+    s32 k;
+
+    k = id;
+    if (id > 10) {
+        k = id + 245;
+    }
+    if (k != func_001F5380()) {
+        return 0;
+    }
+    if (func_001F5EC0(k)) {
+        if (g->time > 14) {
+            func_00107450(k, 0, 0.08f);
+            func_001F5F90(k, v);
+            v[1] -= 4.0f;
+            if (v[1] < 0.0f) {
+                v[1] = 0.0f;
+            }
+            if (id < 11) {
+                v[2] += -func_001F5860(func_001F5380()) / 24.0f;
+            } else {
+                v[2] += func_001F5860(func_001F5380()) / 24.0f;
+            }
+            func_001F5F00(k, v);
+        }
+        if (g->time >= 28) {
+            func_001F5D70(k, w);
+            if (!(w[0] <= 0.0f)) {
+                w[0] -= 0.02f;
+            } else {
+                w[0] = 0.0f;
+            }
+            if (!(w[1] <= 0.0f)) {
+                w[1] -= 0.02f;
+            } else {
+                w[1] = 0.0f;
+            }
+            if (!(w[2] <= 0.0f)) {
+                w[2] -= 0.02f;
+            } else {
+                w[2] = 0.0f;
+            }
+            func_001F5D10(k, w);
+        }
+        if (g->time > 9) {
+            func_001F6210(k, r);
+            r[1] += 0x1000;
+            func_001F60D0(k, r);
+        }
+    }
+    func_001F5AF0(k);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E01510_c030);
 

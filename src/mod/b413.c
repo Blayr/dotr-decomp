@@ -862,13 +862,288 @@ static s32 func_01E02590_b413(s32 unused, Obj_b287_01E01FF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b413", func_01E02740_b413);
+/* shape b413:01E02740, 167 insns: b413:01E029E0 with size 2 x 40 growing 6 and hC growing 3.0 through a float */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b413", func_01E029E0_b413);
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Spark_b413_01E02740;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b413", func_01E02C70_b413);
+static s32 func_01E02740_b413(s32 arg0, Spark_b413_01E02740 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 d;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b413", func_01E02F40_b413);
+    if (o->mode == 1) {
+        o->w = 2;
+        o->h = 40;
+        o->hC = func_0019A5C8() % 5;
+        o->kind = 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->hold = 6;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h += 6;
+        d = 3.0f;
+        o->hC = o->hC + d;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b413:01E029E0, 161 insns: b205:01E01900 family yellow spark (size 2 x 10 growing 2, frame 2, hC 0..4 growing 3, drift in /20, random spins, frame f52 0..3, random turn) held 6 ticks: alpha up by 64 to 0x80, then down by 9 */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Spark_b413_01E029E0;
+
+static s32 func_01E029E0_b413(s32 arg0, Spark_b413_01E029E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 2;
+        o->h = 10;
+        o->hC = func_0019A5C8() % 5;
+        o->kind = 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->hold = 6;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h += 2;
+        o->hC += 3;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b413:01E02C70, 177 insns: a red (0xFF, 0x40, 0x40) streak 18 x 13, frame 0..2, drifting (-50..49)/100 with random spins; alpha up by 0x40 to 0x80 for 10 ticks, then down by 9; grows 5, 10 or 60 (and 3 wider) by the scene level (ctx+0xB2CC: under 90 / 121); turned +-0x4000 by the scene flag (ctx+0xB2C8) */
+
+typedef struct {
+    u8 pad0[0xB2C8];
+    s16 flag;
+    u8 padF[0xB2CC - 0xB2C8 - 2];
+    s16 level;
+} Ctx_b413_01E02C70;
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b413_01E02C70;
+
+static s32 func_01E02C70_b413(Ctx_b413_01E02C70 *g, Fx_b413_01E02C70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 18;
+        o->h = 13;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 100.0f;
+        o->vel[0] /= 100.0f;
+        o->vel[2] /= 100.0f;
+        o->f5A = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (g->level < 90) {
+            o->h += 5;
+        } else if (g->level < 121) {
+            o->h += 10;
+        } else {
+            o->h += 60;
+            o->w += 3;
+        }
+    }
+    o->rot[1] = 0;
+    o->rot[2] = 0;
+    if (g->flag != 0) {
+        o->rot[0] = 0x4000;
+    } else {
+        o->rot[0] = -0x4000;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b413:01E02F40, 174 insns: b759:01E02D90's puff at size 100 in dull red (0x60/0x30/0x30), alpha grows for 8
+   ticks, and it drifts by its velocity */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x14];
+    s16 sel;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 dir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b413_01E02F40;
+
+static s32 func_01E02F40_b413(s32 arg0, Spark_b413_01E02F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 100;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0x60, 0x30, 0x30);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        if (o->sel == 0) {
+            o->vel[1] /= 25.0f;
+            o->vel[0] /= 25.0f;
+            o->vel[2] /= 25.0f;
+        } else if (o->sel == 1) {
+            o->vel[1] /= 45.0f;
+            o->vel[0] /= 45.0f;
+            o->vel[2] /= 45.0f;
+        }
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->pos[0] += o->vel[0];
+    o->pos[1] += o->vel[1];
+    o->pos[2] += o->vel[2];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b413:01E03200, 117 insns: on start f48 120 with f4C 58 below it, colours by the kind 0x50 (0: (0x50, 0x30, 0x30) / (8, 8, 8),
    1: (0x30, 0x20, 0x40) / (0x18, 0x18, 0x18)), second alpha 0, 0x5A/0x5C = 30, rise speed 20..27.9 (f34), random rotation; alpha 0x80 for 8

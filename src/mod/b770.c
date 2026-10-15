@@ -1064,7 +1064,104 @@ static s32 func_01E02B10_b770(s32 arg0, Obj_b770_01E02B10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02C80_b770);
+/* shape b770:01E02C80, 144 insns: b232:01E01130 with the scene packet at ctx+0x44B8, the sine table at ctx+0x4B10,
+   colour 0x28 and a 90-tick fade-in */
+
+/* OVL_WARM */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b770_01E02C80;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b770_01E02C80 p;
+} Tv_b770_01E02C80;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b770_01E02C80 v[2];
+} Tex_b770_01E02C80;
+
+typedef struct {
+    u8 pad[0x44B8];
+    Tex_b770_01E02C80 *pk;
+    u8 pad44BC[0x4B10 - 0x44BC];
+    u8 tab[1];
+} Game_b770_01E02C80;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x46];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b770_01E02C80;
+
+static s32 func_01E02C80_b770(Game_b770_01E02C80 *g, Fx_b770_01E02C80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 f;
+
+    f = o->f8;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x28, 0x28, 0x28);
+        if (o->kind == 0) {
+            o->ang = 0;
+        }
+        if (o->kind == 1) {
+            o->ang = 180;
+        }
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = (f + 0x6C0) * 16 - 8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = (f + 0x940) * 16 - 8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    func_002075F0((s32)g->pk, 0, 0);
+    o->f8 = 10.0f * func_00108030(g->tab, o->ang, 1);
+    o->ang += 25;
+    if (o->tick < 90) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02EC0_b770);
 

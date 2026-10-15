@@ -624,7 +624,64 @@ static void func_01E014B0_b418(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b418", func_01E018B0_b418);
+/* shape b418:01E018B0, 152 insns: the scene script of b418: it counts g+0xB2B8; from tick 62 to 82 it puts the burst
+   point on the model joint (g+0xB244) and spawns two 0x1E01B10 effects; on tick 65 it spawns a ring of 18 0x1E01C90
+   effects 20 degrees apart (angle at g+0xB2A2) and the 0x1E02540 effect; on tick 68 a ring of 18 triples and two
+   0x1E01FF0 effects */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[4];
+    u8 pad260[0xAFE4];
+    s16 joint;
+    u8 padB246[0x5C];
+    s16 ang;
+    u8 padB2A4[0x14];
+    s16 tick;
+} Ctx_b418_01E018B0;
+
+static void func_01E018B0_b418(Ctx_b418_01E018B0 *g) {
+    extern void b418_01E01B10();
+    extern void b418_01E01C90();
+    extern void b418_01E01E40();
+    extern void b418_01E01FF0();
+    extern void b418_01E020E0();
+    extern void b418_01E02340();
+    extern void b418_01E02540();
+    extern void b418_01E02F30(Ctx_b418_01E018B0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 a;
+
+    g->tick++;
+    if (g->tick >= 62 && g->tick < 83) {
+        func_001F5620(func_001F53A0(), g->joint, g->pos);
+        b418_01E02F30(g, b418_01E01B10, 0);
+        b418_01E02F30(g, b418_01E01B10, 0);
+    }
+    if (g->tick == 65) {
+        func_001F5620(func_001F53A0(), g->joint, g->pos);
+        for (i = 0, a = 0; i < 18; a += 20, i++) {
+            g->ang = a;
+            b418_01E02F30(g, b418_01E01C90, 0);
+        }
+    }
+    if (g->tick == 68) {
+        func_001F5620(func_001F53A0(), g->joint, g->pos);
+        for (a = 0, i = 0; a < 18; i += 20, a++) {
+            g->ang = i;
+            b418_01E02F30(g, b418_01E01E40, 0);
+            b418_01E02F30(g, b418_01E020E0, 0);
+            b418_01E02F30(g, b418_01E02340, 0);
+        }
+        b418_01E02F30(g, b418_01E01FF0, 0);
+        b418_01E02F30(g, b418_01E01FF0, 0);
+    }
+    if (g->tick == 65) {
+        b418_01E02F30(g, b418_01E02540, 0);
+    }
+}
 
 /* shape b418:01E01B10, 93 insns: on start 0x8/0xA = 150, variant 2..4, colour white, random heading 0x5A; alpha grows
    by 0x60 (below 0xC0) for 6 ticks, then fades by 0x13 and stops; after the first tick it drifts 0.6 along its
@@ -987,7 +1044,95 @@ static s32 func_01E02340_b418(void *arg0, Obj_b418_01E02340 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b418", func_01E02540_b418);
+/* shape b418:01E02540, 154 insns: b144:01E034D0 with a warm tint (0x90/0x7F/0x7F) */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b418_01E02540;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b418_01E02540 p;
+    } v[2];
+    u8 tail[0x20];
+} Pkt_b418_01E02540;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 zoom;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Flash_b418_01E02540;
+
+static s32 func_01E02540_b418(void *arg0, Flash_b418_01E02540 *o) {
+    extern void func_002087A0(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_b418_01E02540 pkt __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->zoom = 1.0f;
+        o->state = 2;
+    }
+    ((Pkt_b418_01E02540 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b418_01E02540 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b418_01E02540 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b418_01E02540 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x90;
+    pkt.g = 0x7F;
+    pkt.b = 0x7F;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    pkt.v[0].p.x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = o->zoom / 1024.0f;
+    pkt.v[0].t = o->zoom / 512.0f;
+    pkt.v[1].s = (640.0f - o->zoom) / 1024.0f;
+    pkt.v[1].t = (448.0f - o->zoom) / 512.0f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0(&pkt, (s32)func_00207500(), 0);
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 0x13;
+        }
+        if (o->zoom < 100.0f) {
+            o->zoom += 0.3f;
+        }
+    } else {
+        if (o->c0[3] > 7) {
+            o->c0[3] -= 6;
+        } else {
+            o->state = 0;
+        }
+        if (o->zoom > 0.0f) {
+            o->zoom -= 0.3f;
+        } else {
+            o->zoom = 0.0f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

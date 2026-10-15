@@ -543,7 +543,89 @@ static void func_01E01500_b400(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b400", func_01E016D0_b400);
+/* shape b400:01E016D0, 166 insns: the effect scene's step: counts the frame (0x4522); before frame 155 the orb (0x4470)
+   follows joint 0x44EC, on 155 it aims at the other model's joint 0x44FC over 25 frames and glides there until 176;
+   from 18 to 176 it spawns two 0x1E01970 (sides 0 and 1) and a 0x1E01BA0 at the orb; from 20 the glow 0x44D4 grows
+   by 2 to 100; on 176 it bursts ten 0x1E02190, ten 0x1E01F80, a 0x1E01D30 and a 0x1E01E30 at the orb */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b400_01E016D0;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b400_01E016D0 pos;
+    u8 pad260[0x4210];
+    V4_b400_01E016D0 orb;
+    u8 pad4480[4];
+    f32 vy;
+    f32 vz;
+    u8 pad448C[0x48];
+    f32 glow;
+    u8 pad44D8[0x14];
+    s16 j0;
+    u8 pad44EE[0xE];
+    s16 j1;
+    u8 pad44FE[0x1C];
+    s16 side;
+    u8 pad451C[6];
+    s16 t;
+} Scene_b400_01E016D0;
+
+static void func_01E016D0_b400(Scene_b400_01E016D0 *g) {
+    extern void b400_01E01970(void);
+    extern void b400_01E01BA0(void);
+    extern void b400_01E01D30(void);
+    extern void b400_01E01E30(void);
+    extern void b400_01E01F80(void);
+    extern void b400_01E02190(void);
+    extern s32 b400_01E02A60(Scene_b400_01E016D0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v[2];
+    s16 i;
+
+    g->t++;
+    if (g->t < 155) {
+        func_001F5620(func_001F53A0(), g->j0, &g->orb);
+    } else {
+        if (g->t == 155) {
+            func_001F5620(func_001F5380(), g->j1, &v[0]);
+            g->vz = (v[0].z - g->orb.z) / 25.0f;
+            g->vy = (v[0].y - g->orb.y) / 25.0f;
+        }
+        if (g->t < 176) {
+            g->orb.z += g->vz;
+            g->orb.y += g->vy;
+        }
+    }
+    if (g->t >= 18 && g->t < 177) {
+        g->side = 0;
+        b400_01E02A60(g, (s32)b400_01E01970, 0);
+        g->side = 1;
+        b400_01E02A60(g, (s32)b400_01E01970, 0);
+        g->pos = g->orb;
+        b400_01E02A60(g, (s32)b400_01E01BA0, 0);
+    }
+    if (g->t >= 20 && g->t < 177) {
+        if (g->glow < 100.0f) {
+            g->glow += 2.0f;
+        }
+    }
+    if (g->t == 176) {
+        g->pos = g->orb;
+        g->side = 0;
+        for (i = 0; i < 10; i++) {
+            b400_01E02A60(g, (s32)b400_01E02190, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b400_01E02A60(g, (s32)b400_01E01F80, 0);
+        }
+        b400_01E02A60(g, (s32)b400_01E01D30, 0);
+        b400_01E02A60(g, (s32)b400_01E01E30, 0);
+    }
+}
 
 /* shape b400:01E01970, 137 insns: a dark glow that grows towards the scene's limit (g+0x44D4): on start size 5, a random
    frame, colour 0x10, h52 50; alpha up by 10 for 15 ticks, then down by 8 until it ends; after the first tick f30 and f34

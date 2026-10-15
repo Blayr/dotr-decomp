@@ -564,11 +564,217 @@ static s32 func_01E01890_b751(s32 arg0, Fx_b751_01E01890 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01980_b751);
+/* shape b751:01E01980, 156 insns: b751:01E01BF0 family rising flash with the colours swapped (outer red or pink on black/grey), random height width 6..61, rising (150..229)/10 per tick with f34 growing alongside from 100, tilted +-0x4000 by the scene flag (ctx+0xB2B4) and turning rot[2] 0x100 per tick; full alpha 8 ticks then down by 5; f4C = 0.8 of the height */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01BF0_b751);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b751_01E01980;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01E30_b751);
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 flag;
+} Ctx_b751_01E01980;
+
+static s32 func_01E01980_b751(Ctx_b751_01E01980 *g, Obj_b751_01E01980 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 140.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->c1, 0xC0, 0x20, 0x20);
+            func_001076F0(o->c0, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->c1, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->c0, 0x30, 0x30, 0x30);
+        }
+        o->w = 60;
+        o->h = (func_0019A5C8() >> 4) % 56 + 6;
+        o->f38 = func_0019A5C8() % 80 + 150;
+        o->f38 /= 10.0f;
+        o->f30 = func_0019A5C8() % 80 + 150;
+        o->f30 /= 10.0f;
+        o->f34 = 100.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        if (g->flag != 0) {
+            o->rot0 = 0x4000;
+        } else {
+            o->rot0 = -0x4000;
+        }
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->c1[3] = 0x80;
+    } else if (o->c1[3] > 6) {
+        o->c1[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f38;
+    o->f4C = 0.8f * o->f48;
+    o->f34 += o->f38;
+    o->rot2 += 0x100;
+    o->t++;
+    return 0;
+}
+
+/* shape b751:01E01BF0, 143 insns: b418:01E02340 family rising flash (red on black or light red on grey 0x30), size 60, from 140 rising (120..169)/10 per tick, f30 (150..229)/10, f34 100, f4C = 0.1 of the height; full alpha 8 ticks then down by 3 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b751_01E01BF0;
+
+static s32 func_01E01BF0_b751(void *arg0, Obj_b751_01E01BF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 140.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->c0, 0xC0, 0x20, 0x20);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->c0, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->w = 60;
+        o->h = 60;
+        o->f38 = func_0019A5C8() % 50 + 120;
+        o->f38 /= 10.0f;
+        o->f30 = func_0019A5C8() % 80 + 150;
+        o->f30 /= 10.0f;
+        o->f34 = 100.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 4) {
+        o->c0[3] -= 3;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f38;
+    o->f4C = 0.1f * o->f48;
+    o->t++;
+    return 0;
+}
+
+/* shape b751:01E01E30, 141 insns: b750:01E02770 variant: size 140, blue or white-blue colours, grey 0x40/0x30 shades,
+   h5C 10, growth 12.0..16.9 a tick, f30 15.0..22.9, f34 100, alpha 0x80 for 8 ticks then down by 3, f4C 0.1 */
+
+typedef struct {
+    u8 pad00[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b751_01E01E30;
+
+static s32 func_01E01E30_b751(s32 unused, Obj_b751_01E01E30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = 140.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->c60, 0x20, 0x20, 0xC0);
+            func_001076F0(o->c64, 0x40, 0x40, 0x40);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->c60, 0xA0, 0xA0, 0xFF);
+            func_001076F0(o->c64, 0x30, 0x30, 0x30);
+        }
+        o->h5A = 60;
+        o->h5C = 10;
+        o->f38 = func_0019A5C8() % 50 + 120;
+        o->f38 /= 10.0f;
+        o->f30 = func_0019A5C8() % 80 + 150;
+        o->f30 /= 10.0f;
+        o->f34 = 100.0f;
+        o->h58 = 2;
+        o->c64[3] = 0;
+        o->w20 = func_0019A5C8() % 0xFFFF;
+        o->w24 = func_0019A5C8() % 0xFFFF;
+        o->w28 = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->h54 < 8) {
+        o->c60[3] = 0x80;
+    } else if (o->c60[3] > 4) {
+        o->c60[3] -= 3;
+    } else {
+        o->h58 = 0;
+    }
+    o->f48 += o->f38;
+    o->f4C = 0.1f;
+    o->h54++;
+    return 0;
+}
 
 /* shape b751:01E02070, 112 insns: b550:01E03D30 family: draws the bar sprite in its own colour (set to 0x90/0x80/0x80), alpha in by 20 up to 0x50 for 30 ticks, then out by 9 and ends */
 

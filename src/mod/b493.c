@@ -783,11 +783,139 @@ static void func_01E01CD0_b493(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E01F90_b493);
+/* shape b493:01E01F90, 156 insns: b228:01E01910 family event step: counts ticks; at 100 spawns b493:01E03460 for slots 0 and 1; keeps its point on the tracked point (ctx+0xBCBC) jittered -2..1 on each axis; every other tick from 63 to 100 spawns b493:01E02200 with a slot number cycling 0..119 and a random kind 0..4 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xBCBC - 0x25C];
+    s16 id;
+    u8 padBCBE[0xBCEA - 0xBCBE];
+    s16 slot;
+    s16 kind;
+    s16 next;
+    u8 padBCF0[4];
+    s16 timer;
+} Ctx_b493_01E01F90;
+
+static void func_01E01F90_b493(Ctx_b493_01E01F90 *g) {
+    extern s32 b493_01E02200(void);
+    extern s32 b493_01E03460(void);
+    extern void b493_01E04150(Ctx_b493_01E01F90 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    if (g->timer == 100) {
+        g->slot = 0;
+        b493_01E04150(g, b493_01E03460, 0);
+        g->slot = 1;
+        b493_01E04150(g, b493_01E03460, 0);
+    }
+    func_001F5620(func_001F53A0(), g->id, g->pos);
+    g->pos[0] += func_0019A5C8() % 4 - 2;
+    g->pos[1] += func_0019A5C8() % 4 - 2;
+    g->pos[2] += func_0019A5C8() % 4 - 2;
+    if (g->timer >= 63 && g->timer < 101) {
+        if (g->timer % 2 == 1) {
+            if (g->timer < 100) {
+                n = 1;
+            } else {
+                n = 1;
+            }
+            for (i = 0; i < n; i++) {
+                g->slot = g->next;
+                g->kind = func_0019A5C8() % 5;
+                b493_01E04150(g, b493_01E02200, 0);
+                g->next++;
+                if (g->next >= 120) {
+                    g->next = 0;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E02200_b493);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E02B40_b493);
+/* shape b493:01E02B40, 170 insns: b479:01E01EB0 variant: size 10, frame 0..3, both colours by kind (red, green, blue,
+   yellow, purple), height 10..59 rising 20..59, alpha 0x80 for its fade-in, then down by 8 */
+
+typedef struct {
+    u8 pad0000[0x6DEC];
+    s16 h6DEC;
+} Mgr_b493_01E02B40;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 v10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b493_01E02B40;
+
+static s32 func_01E02B40_b493(Mgr_b493_01E02B40 *m, Obj_b493_01E02B40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = 10.0f;
+        o->h56 = func_0019A5C8() % 4;
+        if (o->h52 == 0) {
+            func_001076F0(o->c60, 0x80, 8, 8);
+            func_001076F0(o->c64, 0x80, 8, 8);
+        } else if (o->h52 == 1) {
+            func_001076F0(o->c60, 8, 0x80, 8);
+            func_001076F0(o->c64, 8, 0x80, 8);
+        } else if (o->h52 == 2) {
+            func_001076F0(o->c60, 8, 8, 0x80);
+            func_001076F0(o->c64, 8, 8, 0x80);
+        } else if (o->h52 == 3) {
+            func_001076F0(o->c60, 0x80, 0x80, 8);
+            func_001076F0(o->c64, 0x80, 0x80, 8);
+        } else if (o->h52 == 4) {
+            func_001076F0(o->c60, 0x40, 8, 0x80);
+            func_001076F0(o->c64, 0x40, 8, 0x80);
+        }
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 50 + 10;
+        o->hE = func_0019A5C8() % 40 + 20;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        o->c60[3] = 0x80;
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->h50 += o->hE;
+    }
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E02DF0_b493);
 

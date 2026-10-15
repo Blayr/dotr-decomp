@@ -546,9 +546,169 @@ static s32 func_01E02E00_c063(s32 arg0, Fx_c063_01E02E00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02F40_c063);
+/* shape c063:01E02F40, 165 insns: b479:01E01EB0 variant: size 50, grey 0x60, frame 0..7, a random parity flag (hA 0 or 2),
+   height 70..169, life 100..449, rise 5..14, a random drift of +-20 in each axis, alpha up by 0xC0 for its fade-in, and
+   a turn of 3 a tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E031E0_c063);
+typedef struct {
+    u8 pad0000[0x6DEC];
+    s16 h6DEC;
+} Mgr_c063_01E02F40;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 v10[0x20];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_c063_01E02F40;
+
+static s32 func_01E02F40_c063(Mgr_c063_01E02F40 *m, Obj_c063_01E02F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = 50.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->c60, 0x60, 0x60, 0x60);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = (func_0019A5C8() >> 4) % 100 + 70;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 10 + 5;
+        o->h8 = (func_0019A5C8() >> 4) % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 40 - 20;
+        o->f38 = func_0019A5C8() % 40 - 20;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0xC0;
+        }
+    } else if (o->c60[3] > 12) {
+        o->c60[3] -= 11;
+    } else {
+        o->h58 = 0;
+    }
+    o->h5A += 3;
+    if (o->h54 != 0) {
+        o->h50 += o->hE;
+    }
+    o->h54++;
+    return 0;
+}
+
+/* shape c063:01E031E0, 148 insns: b081:01E03490 family ring with float sizes (f48 from 0 growing 30 per tick, f4C half of it): blue on grey or yellow on black for kind 2, size 30; outer alpha up by 12 to 0x80 for 18 (kind 2: 30) ticks, then down by 9 (kind 2: 7) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 hold;
+    u8 padA[4];
+    s16 fE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_c063_01E031E0;
+
+static s32 func_01E031E0_c063(s32 arg0, Fx_c063_01E031E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        if (o->kind != 2) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        } else {
+            func_001076F0(o->col, 0x80, 0x80, 0x10);
+            func_001076F0(o->col2, 0x10, 0x10, 8);
+        }
+        o->fE = o->kind;
+        if (o->kind == 0 || o->kind == 2) {
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+        } else {
+            o->rot[0] = 0x4000;
+            o->rot[1] = 0;
+            o->rot[2] = 0;
+        }
+        o->w = 30;
+        o->h = 30;
+        o->mode = 2;
+        o->col[3] = 0;
+        o->h6 = 0;
+        if (o->kind != 2) {
+            o->hold = 18;
+        } else {
+            o->hold = 30;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (o->kind != 2) {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col2[3] > 8) {
+        o->col2[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    if (o->fE != 2) {
+        o->f4C = o->f48 - 0.5f * o->f48;
+    }
+    if (o->h6 < 0) {
+        o->f4C = 0.0f;
+    }
+    if (o->tick != 0) {
+        o->f48 += 30.0f;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape c063:01E03430, 106 insns: a white-yellow expanding flash (b283:01E03260 shape): size 20 growing by 55 with the inner size a
    fifth of it, random turn, sub-frame 4; alpha up by 0x40 for 7 frames, then down by 8 until it ends; second colour flickers */
@@ -614,7 +774,106 @@ static s32 func_01E03430_c063(Game_c063_01E03430 *g, Obj_c063_01E03430 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E035E0_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E03B30_c063);
+/* shape c063:01E03B30, 157 insns: a flash ring's step, kind 0 or 1 (0x50): on start (state 1) it sets the colours
+   (0x80 grey or 0xC0 grey over 0x20), copies the kind to 0x0E, takes the camera turn plus 0x4000 and radius 800 or
+   1000, sets 0x5A/0x5C to 20, alpha 0 and an 8-frame rise; while rising the alpha grows by 0x2A to 0x80 (or 0x40 to
+   0xC0), then fades by 9 (or 15) until it ends; after the first frame the radius grows by 70 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 rise;
+    u8 padA[4];
+    s16 kind2;
+    u8 pad10[0x10];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 r;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Ring_c063_01E03B30;
+
+static s32 func_01E03B30_c063(void *g, Ring_c063_01E03B30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->r = 0.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            func_001076F0(o->col2, 0x20, 0x20, 0x20);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col2, 0x20, 0x20, 0x20);
+        }
+        o->kind2 = o->kind;
+        if (o->kind == 0) {
+            func_00205C40((s32)o->rot);
+            o->rot[0] += 0x4000;
+            o->r = 800.0f;
+        }
+        if (o->kind == 1) {
+            func_00205C40((s32)o->rot);
+            o->rot[0] += 0x4000;
+            o->r = 1000.0f;
+        }
+        o->h5A = 20;
+        o->h5C = 20;
+        o->state = 2;
+        o->col[3] = 0;
+        o->h6 = 0;
+        if (o->kind == 0) {
+            o->rise = 8;
+        }
+        if (o->kind == 1) {
+            o->rise = 8;
+        }
+    }
+    if (o->t < o->rise) {
+        if (o->kind == 0) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x2A;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x40;
+            }
+        }
+    } else {
+        if (o->kind == 0) {
+            if (o->col[3] > 10) {
+                o->col[3] -= 9;
+            } else {
+                o->state = 0;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col[3] > 16) {
+                o->col[3] -= 15;
+            } else {
+                o->state = 0;
+            }
+        }
+    }
+    if (o->kind == 0 && o->t != 0) {
+        o->r += 70.0f;
+    }
+    if (o->kind == 1 && o->t != 0) {
+        o->r += 70.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape c063:01E03DB0, 88 insns: a yellow tumbling spark: random turn on all three axes, scale from the scene, angle 90 climbing
    by 0..6 a frame until 270 (then it ends); alpha up by 0x80 for 8 frames, then down by 9 until it ends */

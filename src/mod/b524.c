@@ -625,7 +625,63 @@ static void func_01E01590_b524(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E018F0_b524);
+/* shape b524:01E018F0, 142 insns: scene spawn step: t++; on odd frames 100..124 a numbered pair of handlers 0x1E01B30
+   and 0x1E025A0 at the first joint, jittered -8..7; on odd frames 60..150 one 0x1E02170 at joint A at height 40;
+   on frames 59..120 three 0x1E02710 a tick at joint B */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x5B90];
+    s16 ja;
+    s16 jb;
+    u8 pad5DF4[0xC];
+    s16 j0;
+    u8 pad5E02[0xE4];
+    s16 num;
+    s16 ring;
+    u8 pad5EEA[4];
+    s16 t;
+} Scene_b524_01E018F0;
+
+static void func_01E018F0_b524(Scene_b524_01E018F0 *g) {
+    extern void b524_01E01B30(void);
+    extern void b524_01E02170(void);
+    extern void b524_01E025A0(void);
+    extern void b524_01E02710(void);
+    extern void b524_01E034A0(void *, void *, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    g->t++;
+    if (g->t >= 0x64 && g->t < 0x7D) {
+        if (g->t % 2 == 1) {
+            func_001F5620(func_001F5380(), g->j0, &g->pos);
+            g->pos.x += func_0019A5C8() % 16 - 8;
+            g->pos.y += func_0019A5C8() % 16 - 8;
+            g->pos.z += func_0019A5C8() % 16 - 8;
+            g->num = g->ring;
+            b524_01E034A0(g, b524_01E01B30, 0);
+            b524_01E034A0(g, b524_01E025A0, 0);
+            g->ring++;
+        }
+    }
+    if (g->t >= 0x3C) {
+        if (g->t % 2 == 1 && g->t < 0x97) {
+            func_001F5620(func_001F53A0(), g->ja, &g->pos);
+            g->pos.y = 40.0f;
+            g->num = 0;
+            b524_01E034A0(g, b524_01E02170, 0);
+        }
+    }
+    if (g->t >= 0x3B && g->t < 0x79) {
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        b524_01E034A0(g, b524_01E02710, 0);
+        b524_01E034A0(g, b524_01E02710, 0);
+        b524_01E034A0(g, b524_01E02710, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E01B30_b524);
 

@@ -683,7 +683,104 @@ static void func_01E01370_b225(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E01560_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E01EA0_b225);
+/* OVL_WARM */
+
+/* shape b225:01E01EA0, 159 insns: a purple swirl on the camera: colour 0x80/0x50/0xC8; on start it faces left or right by
+   the camera's turn (func_001F6160), side = its old height, height 90, size 15; alpha up by 64 for 4 ticks, then down by 13
+   until it ends; after scene time 187 (side 0) or 178 (side 1) it grows by 12; it rises by 2 (4 before time 171 / 161),
+   drifts by 1..3 and turns by 5 */
+
+typedef struct {
+    u8 pad0[0x33E8];
+    s16 time;
+} Game_b225_01E01EA0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 side;
+    u8 pad8[6];
+    s16 drift;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 h34;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Obj_b225_01E01EA0;
+
+static s32 func_01E01EA0_b225(Game_b225_01E01EA0 *g, Obj_b225_01E01EA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 r[4];
+    s16 d;
+
+    d = 0;
+    func_001076F0(o->col, 0x80, 0x50, 0xC8);
+    if (o->mode == 1) {
+        func_001F6160(func_001F53A0(), r);
+        if ((s32)(r[1] / 180.0f)) {
+            o->w10 = -0x4000;
+        } else {
+            o->w10 = -0xC000;
+        }
+        o->w14 = 0;
+        o->w18 = 0x3800;
+        o->h34 = 0;
+        o->side = o->h;
+        o->h = 90;
+        o->size = 15;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->side == 0) {
+        if (g->time > 187) {
+            o->size += 12;
+        }
+    }
+    if (o->side == 1) {
+        if (g->time > 178) {
+            o->size += 12;
+        }
+    }
+    if (o->side == 0) {
+        if (g->time > 170) {
+            d = 2;
+        } else {
+            d = 4;
+        }
+    }
+    if (o->side == 1) {
+        if (g->time > 160) {
+            d = 2;
+        } else {
+            d = 4;
+        }
+    }
+    o->t++;
+    o->drift += (s16)(func_0019A5C8() % 3 + 1);
+    o->h += d;
+    o->ang += 5;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b225:01E02120, 92 insns, 2 copies: a spinning violet ember: set up once (random frame, two turns, speed 7..23,
    size, life 2..3, keeps its old angle); full alpha for its life, then fades out; its angle advances by its speed (b003:01E01780 family) */
@@ -943,7 +1040,82 @@ static s32 func_01E026A0_b225(void *arg0, Ember_b225_01E026A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02810_b225);
+/* shape b225:01E02810, 150 insns: b718:01E02F40 family blue flame (size 2, 13 from scene count 141; frame 0..3, turning 5 one way or the other by the old f30, f30 from 0 growing 4..13, +88 and deep blue after scene count 186 or 193 by direction; f8 0..9, life 9..24): full alpha then down by 10 */
+
+typedef struct {
+    u8 pad0[0x33E8];
+    s16 count;
+} Ctx_b225_01E02810;
+
+typedef struct {
+    s16 x, y, z;
+    s16 life;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Fx_b225_01E02810;
+
+static s32 func_01E02810_b225(Ctx_b225_01E02810 *g, Fx_b225_01E02810 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 2;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col, 0x40, 0x40, 0x80);
+        o->rot = func_0019A5C8() % 360;
+        o->dir = o->f30;
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 10 + 4;
+        o->f8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 16 + 9;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->dir != 0) {
+        o->rot += 5;
+    } else {
+        o->rot -= 5;
+    }
+    if (o->dir == 1) {
+        if (g->count < 186) {
+            o->f30 += o->speed;
+        } else {
+            func_001076F0(o->col, 0x20, 0x20, 0xC0);
+            o->f30 += o->speed + 88;
+        }
+    }
+    if (o->dir == 0) {
+        if (g->count < 193) {
+            o->f30 += o->speed;
+        } else {
+            func_001076F0(o->col, 0x20, 0x20, 0xC0);
+            o->f30 += o->speed + 88;
+        }
+    }
+    if (g->count >= 141) {
+        o->f38 = 13;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b225:01E02A70, 94 insns: on start 0x38 = 26, variant 0..7, random rotation 0x18, colour 0xA0 grey, random
    0x3A, speed 20..37 (0xE), 0x8 0..9, hold 3..9 (0x6); alpha grows by 0x38 (up to 0x70) during the hold,

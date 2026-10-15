@@ -788,7 +788,79 @@ static s32 func_01E02190_b393(Mgr_b393_01E02190 *m, Fx_b393_01E02190 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b393", func_01E023B0_b393);
+/* shape b393:01E023B0, 150 insns: a red mote placed k tenths of the way from joint A to joint B (k 0..3): size 6,
+   frame 2, a random spin word, height rising 7 - k/2 a tick, f8 0..9, held 1..3 at alpha 0x80, then fades by 10
+   (ends below 0x11) */
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 rise;
+    u8 pad10[8];
+    s32 spin;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 k;
+} Fx_b393_01E023B0;
+
+typedef struct {
+    u8 pad0[0x3888];
+    s16 ja;
+    s16 jb;
+} Scene_b393_01E023B0;
+
+static s32 func_01E023B0_b393(Scene_b393_01E023B0 *g, Fx_b393_01E023B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    Vec4f v[2];
+    f32 dx;
+    f32 dy;
+    f32 dz;
+
+    if (o->mode == 1) {
+        o->size = 6;
+        o->k = func_0019A5C8() % 4;
+        o->frame = 2;
+        func_001076F0(o->col, 0x80, 0x20, 0x20);
+        o->spin = func_0019A5C8() % 65535;
+        o->h = 0;
+        o->rise = 7 - (o->k >> 1);
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->h += o->rise;
+    o->t++;
+    func_001F5620(func_001F53A0(), g->ja, &v[0]);
+    func_001F5620(func_001F53A0(), g->jb, &v[1]);
+    dx = v[1].x - v[0].x;
+    dy = v[1].y - v[0].y;
+    dz = v[1].z - v[0].z;
+    dx /= 10.0f;
+    dy /= 10.0f;
+    dz /= 10.0f;
+    o->x = func_001A22C0(v[0].x + dx * o->k);
+    o->y = func_001A22C0(v[0].y + dy * o->k);
+    o->z = func_001A22C0(v[0].z + dz * o->k);
+    return 0;
+}
 
 /* shape b393:01E02610, 87 insns: a grey drifting puff: frame 60, sub-frame 5, random tilt and angle; full alpha for 7 frames,
    then down by 15 until it ends; drifts 16 along its angle (sin to x, cos to z) each frame */

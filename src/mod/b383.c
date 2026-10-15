@@ -654,7 +654,70 @@ static s32 func_01E02AE0_b383(s32 unused, Obj_b383_01E02AE0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E02CC0_b383);
+/* shape b383:01E02CC0, 144 insns: b383:01E02F00 with three random turns, rising 1..2, alpha down by 9 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 rise;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 h;
+} Fx_b383_01E02CC0;
+
+static s32 func_01E02CC0_b383(s32 arg0, Fx_b383_01E02CC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h = 0;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->frame = func_0019A5C8() % 7;
+        o->mode = 2;
+        if (o->kind == 0) {
+            o->rise = func_0019A5C8() % 2 + 1;
+            o->h6 = 1;
+        } else {
+            o->rise = func_0019A5C8() % 2 + 1;
+            o->h6 = 4;
+        }
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->col, 0, 0x80, 0x80);
+        }
+    }
+    if (o->t < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x40, 0);
+    } else {
+        func_001076F0(o->col, 0xB0, 0x80, 0);
+    }
+    if (o->t != 0) {
+        o->h += o->rise;
+    }
+    if (o->kind == 1 && o->t != 0) {
+        o->h6 += 3;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b383:01E02F00, 138 insns: b443:01E030C0 family rising spark (tilt 0..0x3FFF, random spin, frame 0..6; kind 0 orange with life 1, kind 1 cyan with life 4 growing 3 per tick; rising 4..6): alpha up by 64 to 0x80 for 2 ticks, then down by 13; colour flashes orange/gold every tick */
 

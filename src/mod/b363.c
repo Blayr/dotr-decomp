@@ -643,7 +643,83 @@ static s32 func_01E02F70_b363(s32 arg0, Fx_b363_01E02F70 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E03120_b363);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E034E0_b363);
+/* shape b363:01E034E0, 150 insns: b746:01E03010's turning spark, size 100, frame 0, blue before scene frame 107 (0xDEF6) else red, speed 2..9, drifting 0..0.9 a tick on 0x14, turning 5 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[0x30];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b363_01E034E0;
+
+typedef struct {
+    u8 pad0[0xDEF6];
+    s16 frame;
+} Scene_b363_01E034E0;
+
+static s32 func_01E034E0_b363(Scene_b363_01E034E0 *g, Fx_b363_01E034E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 f;
+
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        o->f56 = 0;
+        if (g->frame < 0x6B) {
+            func_001076F0(o->col, 0x20, 0x20, 0x80);
+        } else {
+            func_001076F0(o->col, 0x80, 0x20, 0x20);
+        }
+        o->fA = o->f50;
+        o->f50 = func_0019A5C8() % 15 + 1;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 8 + 2;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 2 + 2;
+        o->fC = func_0019A5C8() % 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    f = (f32)(func_0019A5C8() % 10) / 10.0f;
+    if (o->tick != 0) {
+        o->y += f;
+    }
+    if (o->tick != 0) {
+        if (o->fC == 0) {
+            o->f5A += 5;
+        } else {
+            o->f5A -= 5;
+        }
+    }
+    o->f48 += 1.0f;
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E03740_b363);
 

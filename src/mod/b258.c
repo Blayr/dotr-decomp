@@ -123,7 +123,113 @@ static void func_01E00100_b258(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E009A0_b258);
+/* shape b258:01E009A0, 187 insns: b116:01E009A0's sprite under the camera's own turn (not the object's), the view square
+   then turned by the object's rotation (func_00109100 mode 2). Texture corners by the module helper (shape
+   b003:01E00080). */
+
+typedef struct Cam_b258_01E009A0 {
+    u8 pad0[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[0xC];
+    s16 size;
+} Cam_b258_01E009A0;
+
+typedef struct Obj_b258_01E009A0 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 f94[0x2A];
+    s16 fBE;
+    u8 padC0[0x18];
+    u8 trig[1];
+} Obj_b258_01E009A0;
+
+typedef struct Xyz_b258_01E009A0 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b258_01E009A0;
+
+typedef struct Uv_b258_01E009A0 {
+    f32 u, v;
+} Uv_b258_01E009A0;
+
+typedef struct Pk_b258_01E009A0 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b258_01E009A0 uv;
+    u64 pad18;
+    Xyz_b258_01E009A0 v[4];
+    u64 pad60[6];
+} Pk_b258_01E009A0;
+
+typedef struct Buf_b258_01E009A0 {
+    u64 tag;
+    Pk_b258_01E009A0 pk;
+} Buf_b258_01E009A0;
+
+static void func_01E009A0_b258(Obj_b258_01E009A0 *obj, Cam_b258_01E009A0 *cam, s32 flags, Vec4f c) {
+    extern void func_00108EF0();
+    extern void func_00109100(void *, void *, s32, void *);
+    f32 view[4][4];
+    Vec4f a;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    s32 rot[4];
+    Buf_b258_01E009A0 buf;
+    Uv_b258_01E009A0 uv;
+    s32 sel;
+    s32 mode;
+    Pk_b258_01E009A0 *p = &buf.pk;
+
+    sel = (flags >> 4) & 0xF;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else if (sel == 1) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    }
+    func_00107740(&uv, cam->col);
+    p->uv = uv;
+    func_01E00100_b258((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)obj->f94, obj->fBE);
+    func_00208700(p, (void *)obj->f88, 1);
+    s.x = 0.1f;
+    s.y = 0.1f;
+    s.z = 0.1f;
+    func_00205C40((s32)rot);
+    a.x = c.x;
+    a.y = c.y;
+    a.z = c.z;
+    func_00108EF0(m, &s, rot, &a);
+    func_00108CE0(view, cam->size, cam->size);
+    func_00109100(view, cam->rot, 2, obj->trig);
+    if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out) != 0) {
+        mode = flags & 0xF;
+        if (mode == 0) {
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+        } else if (mode == 1) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0((s32)p, obj->f80, 0);
+        } else {
+            func_002075F0((s32)p, obj->f80, -1);
+        }
+    }
+}
 
 /* shape b119:01E00920, 258 insns, 4 copies: draws a flat ring of 18 quads like shape b112:01E00B60, turned by the ring's own
    rotation instead of the camera's; radii converted once. */

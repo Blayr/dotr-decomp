@@ -712,7 +712,75 @@ static s32 func_01E02B40_b081(Game_b081_01E02B40 *g, Obj_b081_01E02B40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E02D60_b081);
+/* shape b081:01E02D60, 145 insns: b121:01E01DF0 variant: a fresh ember (no height yet) is grey, size 2, frame 0..6;
+   an old one turns red (0xF0/0x60/0x60), size 1..4, frame 0..3; height 100..199, fall 7..16; it turns by 10 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 kind;
+    s16 fall;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b081_01E02D60;
+
+typedef struct {
+    u8 pad0[0x403A];
+    s16 frame;
+} Scene_b081_01E02D60;
+
+static s32 func_01E02D60_b081(Scene_b081_01E02D60 *g, Fx_b081_01E02D60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->h == 0) {
+            o->size = 2;
+            o->frame = func_0019A5C8() % 7;
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        } else {
+            o->size = func_0019A5C8() % 4 + 1;
+            o->frame = func_0019A5C8() % 4;
+            func_001076F0(o->col, 0xF0, 0x60, 0x60);
+        }
+        o->fA = func_0019A5C8() % 8;
+        o->kind = o->h;
+        o->h = func_0019A5C8() % 100 + 100;
+        o->fall = func_0019A5C8() % 10 + 7;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        o->col[3] = 0x80;
+    }
+    if (o->kind == 0 && o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    if (o->t != 0) {
+        if (o->h > 0) {
+            o->h -= o->fall;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->t != 0) {
+        o->ang -= 10;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b081:01E02FB0, 139 insns: b081:01E03BF0 family spark in two kinds: kind 0 white, size 12, f30 0..99, step 1..3; kind 1 dark grey, size 8, f30 0..24, step 2; frame 0..6, fA 0..7, fC = old kind, f8 0..34, life 2..4: full alpha then down by 15; grows 1 and f30 by the step each tick */
 
@@ -896,7 +964,85 @@ static s32 func_01E03310_b081(Game_b081_01E03310 *g, Fx_b081_01E03310 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E03490_b081);
+/* shape b081:01E03490, 148 insns: a growing ring (blue on grey, or cyan on black for kind 2; size from 20 growing 10 per tick, f6 trailing it by 45): kinds 0 and 2 turn randomly, kind 1 lies flat; outer alpha up by 12 to 0x80 for 18 (kind 2: 30) ticks, then down by 9 (kind 2: 7) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 hold;
+    u8 padA[4];
+    s16 fE;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b081_01E03490;
+
+static s32 func_01E03490_b081(s32 arg0, Fx_b081_01E03490 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 20;
+        if (o->kind != 2) {
+            func_001076F0(o->col, 0x10, 0x10, 0x80);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        } else {
+            func_001076F0(o->col, 0x10, 0x80, 0x80);
+            func_001076F0(o->col2, 0x10, 0x10, 0x10);
+        }
+        o->fE = o->kind;
+        if (o->kind == 0 || o->kind == 2) {
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+        } else {
+            o->rot[0] = 0x4000;
+            o->rot[1] = 0;
+            o->rot[2] = 0;
+        }
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col[3] = 0;
+        o->h6 = 0;
+        if (o->kind != 2) {
+            o->hold = 18;
+        } else {
+            o->hold = 30;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (o->kind != 2) {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col2[3] > 8) {
+        o->col2[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    if (o->fE != 2) {
+        o->h6 = o->f38 - 45;
+    }
+    if (o->h6 < 0) {
+        o->h6 = 0;
+    }
+    if (o->tick != 0) {
+        o->f38 += 10;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E036E0_b081);
 

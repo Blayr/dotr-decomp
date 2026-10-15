@@ -683,7 +683,106 @@ INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E01D60_b500);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E02180_b500);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E025C0_b500);
+/* shape b500:01E025C0, 155 insns: b501:01E03310 family red (0x40, 0x10, 0x10) four-trail head: on start fills four 9-point trails (ctx+0x3540.. 0xA0 apart) with the four tracked points (ids at ctx+0x3BDC..E2); alpha 0x60 for 190 ticks, then down by 19; every tick pushes each point into its trail (b500:01E00080, 10 steps) */
+
+typedef struct {
+    Vec4f pt[9];
+    Vec4f head;
+} Trail_b500_01E025C0;
+
+typedef struct {
+    u8 pad0[0x3540];
+    Trail_b500_01E025C0 a;
+    Trail_b500_01E025C0 b;
+    Trail_b500_01E025C0 c;
+    Trail_b500_01E025C0 d;
+    u8 pad37C0[0x3BDC - 0x37C0];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    s16 id3;
+} Ctx_b500_01E025C0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b500_01E025C0;
+
+static s32 func_01E025C0_b500(Ctx_b500_01E025C0 *g, Fx_b500_01E025C0 *o) {
+    extern void b500_01E00080(Vec4f *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, Vec4f *);
+    Vec4f va;
+    Vec4f vb;
+    Vec4f vc;
+    Vec4f vd;
+    Vec4f *p;
+    s32 i;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x40, 0x10, 0x10);
+        p = g->a.pt;
+        func_001F5620(func_001F53A0(), g->id0, &va);
+        for (i = 0; i < 9; i++) {
+            p[i].x = va.x;
+            p[i].y = va.y;
+            p[i].z = va.z;
+        }
+        p = g->b.pt;
+        func_001F5620(func_001F53A0(), g->id1, &vb);
+        for (i = 0; i < 9; i++) {
+            p[i].x = vb.x;
+            p[i].y = vb.y;
+            p[i].z = vb.z;
+        }
+        p = g->c.pt;
+        func_001F5620(func_001F53A0(), g->id2, &vc);
+        for (i = 0; i < 9; i++) {
+            p[i].x = vc.x;
+            p[i].y = vc.y;
+            p[i].z = vc.z;
+        }
+        p = g->d.pt;
+        func_001F5620(func_001F53A0(), g->id3, &vd);
+        for (i = 0; i < 9; i++) {
+            p[i].x = vd.x;
+            p[i].y = vd.y;
+            p[i].z = vd.z;
+        }
+        o->hold = 5;
+        o->col[3] = 0;
+        o->fA = func_0019A5C8() % 17 + 44;
+        o->f8 = func_0019A5C8() % 8 + 5;
+        o->f34 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f38 = 5;
+        o->mode = 2;
+    }
+    if (o->tick < 190) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 20) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    b500_01E00080(&g->a.head, 10, g->id0);
+    b500_01E00080(&g->b.head, 10, g->id1);
+    b500_01E00080(&g->c.head, 10, g->id2);
+    b500_01E00080(&g->d.head, 10, g->id3);
+    o->tick++;
+    return 0;
+}
 
 /* shape b500:01E02830, 108 insns: a spark at a random position: f38 16, variant 0..7, colour set twice (the
    grey one wins), angle 300..349, random direction, spin 10..27, f8 0..9, fC 10, life 2; alpha grows by 0x58 (below

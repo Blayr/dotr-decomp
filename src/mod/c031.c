@@ -1,6 +1,79 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c031", func_01E00080_c031);
+/* shape c031:01E00080, 182 insns: c035:01E00080 family scene start: clears the scene alpha, size 20, counts ticks; on the first tick picks the scene colour by its kind (ctx+0x3EC: red, white, green, blue, yellow, magenta, cyan, pink, violet, orange, else white), sets eight 160 values and spawns c031:01E004B0 at the four corners (+-100, +-100) in slots 0..3 */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 v80[4];
+    u8 pad90[0x370 - 0x90];
+    u8 col[4];
+    u8 pad374[0x3A4 - 0x374];
+    f32 f3A4[8];
+    u8 pad3C4[0x3EA - 0x3C4];
+    s16 slot;
+    s16 kind;
+    u8 pad3EE[2];
+    s16 timer;
+    u8 pad3F2[8];
+    s16 h3FA;
+    s16 h3FC;
+} Ctx_c031_01E00080;
+
+static void func_01E00080_c031(Ctx_c031_01E00080 *g) {
+    extern void c031_01E004B0(void);
+    extern void c031_01E00B90(Ctx_c031_01E00080 *, void (*)(void));
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    s32 i;
+    s16 k;
+
+    g->col[3] = 0;
+    g->h3FA = 20;
+    g->timer++;
+    if (g->timer == 1) {
+        g->h3FC = 0;
+        k = g->kind;
+        if (k == 0) {
+            func_001076F0(g->col, 0xFF, 0, 0);
+        } else if (k == 1) {
+            func_001076F0(g->col, 0xFF, 0xFF, 0xFF);
+        } else if (k == 2) {
+            func_001076F0(g->col, 0, 0xFF, 0);
+        } else if (k == 3) {
+            func_001076F0(g->col, 0, 0, 0xFF);
+        } else if (k == 4) {
+            func_001076F0(g->col, 0xFF, 0xFF, 0);
+        } else if (k == 5) {
+            func_001076F0(g->col, 0xFF, 0, 0xFF);
+        } else if (k == 6) {
+            func_001076F0(g->col, 0, 0xFF, 0xFF);
+        } else if (k == 7) {
+            func_001076F0(g->col, 0xFF, 0x80, 0xFF);
+        } else if (k == 8) {
+            func_001076F0(g->col, 0x80, 0, 0xFF);
+        } else if (k == 9) {
+            func_001076F0(g->col, 0xFF, 0x80, 0);
+        } else {
+            func_001076F0(g->col, 0xFF, 0xFF, 0xFF);
+        }
+        g->col[3] = 0;
+        for (i = 0; i < 8; i++) {
+            g->f3A4[i] = 160.0f;
+        }
+        g->slot = 0;
+        func_00106DD0(g->v80, -100.0f, 100.0f, 0.0f);
+        c031_01E00B90(g, c031_01E004B0);
+        g->slot = 1;
+        func_00106DD0(g->v80, 100.0f, 100.0f, 0.0f);
+        c031_01E00B90(g, c031_01E004B0);
+        g->slot = 2;
+        func_00106DD0(g->v80, -100.0f, -100.0f, 0.0f);
+        c031_01E00B90(g, c031_01E004B0);
+        g->slot = 3;
+        func_00106DD0(g->v80, 100.0f, -100.0f, 0.0f);
+        c031_01E00B90(g, c031_01E004B0);
+    }
+}
 
 /* shape c031:01E00360, 81 insns: turns an effect by its three spin speeds (each angle pinned at 360 once it leaves -360..360);
    fades both alphas by 48 while the scene state is below 6, else holds them at 0xFF; clears its flag below state 2. The conversion is the runtime fptosi (func_001A22C0) declared as returning s16:

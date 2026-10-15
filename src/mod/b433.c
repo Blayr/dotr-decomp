@@ -677,7 +677,90 @@ static s32 func_01E02170_b433(s32 arg0, Fx_b433_01E02170 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E02350_b433);
+/* shape b433:01E02350, 178 insns: a grey (0x80) ring 15 x 15, frame 4, placed at the effect point in its slot's scene entry (ctx+0xE0B0), with a random 0..359 turn (ctx+0xEABC) and radius 5.0..36.9 (ctx+0xE8A4) per slot, f5C 4..17; both alphas up by 42 to 0x80 for 48 ticks, then down by 14; flickers white/grey; spins 5 while the slot turn falls 18; ends past scene count 170 (ctx+0xEBC2) */
+
+typedef struct {
+    u8 pad0[0xE0B0];
+    Vec4f pts[1];
+    u8 padE0C0[0xE8A4 - 0xE0C0];
+    f32 rad[1];
+    u8 padE8A8[0xEABC - 0xE8A8];
+    s16 ang[1];
+    u8 padEABE[0xEBC2 - 0xEABE];
+    s16 count;
+} Ctx_b433_01E02350;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 slot;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b433_01E02350;
+
+static s32 func_01E02350_b433(Ctx_b433_01E02350 *g, Fx_b433_01E02350 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 15;
+        o->h = 15;
+        o->f56 = 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        g->pts[o->slot].x = o->pos[0];
+        g->pts[o->slot].y = o->pos[1];
+        g->pts[o->slot].z = o->pos[2];
+        o->mode = 2;
+        o->col2[3] = 0;
+        g->ang[o->slot] = (func_0019A5C8() >> 4) % 360;
+        g->rad[o->slot] = (func_0019A5C8() >> 4) % 320 + 50;
+        g->rad[o->slot] /= 10.0f;
+        o->f5C = (func_0019A5C8() >> 4) % 14 + 4;
+    }
+    if (o->tick < 48) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 15) {
+            o->col2[3] -= 14;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    func_00205C40((s32)o->rot);
+    o->f5A += 5;
+    g->ang[o->slot] -= 18;
+    o->tick++;
+    if (g->count >= 171) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b433:01E02620, 113 insns: a red rising spark (b433:01E027F0 shape): size 10..19, random sub-frame 0..3 and y turn, frame
    from 1, height 100..199 rising by 10..24, angle, width 1..8, hold 13..22; full alpha until the hold, then down by 11 */
@@ -1261,7 +1344,98 @@ static s32 func_01E03520_b433(s32 unused, Obj_b433_01E03520 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E03740_b433);
+/* shape b433:01E03740, 182 insns: b546:01E01F90's screen sheet in red (0x80 blinking 0x60) at ctx+0xE898 whose top edge
+   rises 16 lines per unit of its height (0x08, growing by 5 to 20); alpha up by 10 for 4 ticks, then down by 9 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b433_01E03740;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b433_01E03740 p;
+} Tv_b433_01E03740;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b433_01E03740 v[2];
+} Tex_b433_01E03740;
+
+typedef struct {
+    u8 pad[0xE898];
+    Tex_b433_01E03740 *pk;
+} Game_b433_01E03740;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[0x3E];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b433_01E03740;
+
+static s32 func_01E03740_b433(Game_b433_01E03740 *g, Fx_b433_01E03740 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 h;
+
+    h = o->h8;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x80, 0, 0);
+        o->f48 = 10.0f;
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = (0x720 - h) * 16 - 8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0, 0);
+    } else {
+        func_001076F0(o->col, 0x60, 0, 0);
+    }
+    if (o->h8 < 20) {
+        o->h8 += 5;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E03A20_b433);
 

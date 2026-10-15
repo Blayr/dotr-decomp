@@ -491,4 +491,68 @@ static void func_01E01520_b159(u8 *ctx, Obj_b053_01E022F0 *o, void *pkt, s32 mod
 
 INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E016C0_b159);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E01B30_b159);
+/* shape b159:01E01B30, 181 insns: b064:01E03F20's ring, 9 sectors of 40 between radius o->size and o->size - 10 at the
+   object's position; mode 0 sets up the packet's texture (0x96, page o->page) */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Obj_b159_01E01B30;
+
+static void func_01E01B30_b159(u8 *ctx, Obj_b159_01E01B30 *o, void *pkt, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f q[4];
+    Vec4f pos;
+    f32 m[16];
+    u8 td[0x10];
+    s32 i;
+    s16 a;
+    s16 k;
+
+    a = 0;
+    if (mode == 0) {
+        func_00106080(td, 0x96, o->page, td);
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0x10C), 1);
+        return;
+    }
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    func_00108EF0(m, NULL, o->rot, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    for (i = 0; i < 9; i++) {
+        k = o->ang + a;
+        q[2].x = o->size * func_00108030(ctx + 0x3B68, k, 1);
+        q[2].z = o->size * func_00108030(ctx + 0x3B68, k, 0);
+        q[0].x = (o->size - 10) * func_00108030(ctx + 0x3B68, k, 1);
+        q[0].z = (o->size - 10) * func_00108030(ctx + 0x3B68, k, 0);
+        k = o->ang + 40 + a;
+        q[3].x = o->size * func_00108030(ctx + 0x3B68, k, 1);
+        q[3].z = o->size * func_00108030(ctx + 0x3B68, k, 0);
+        q[1].x = (o->size - 10) * func_00108030(ctx + 0x3B68, k, 1);
+        q[1].z = (o->size - 10) * func_00108030(ctx + 0x3B68, k, 0);
+        if (func_00205630((s32)q, 0x70000000, (s32)m, (s32)pkt, (f32 *)(ctx + 0x3B3C)) != 0) {
+            func_002075F0((s32)pkt, *(s32 *)(ctx + 0x3B0C), func_001A23B0(*(f32 *)(ctx + 0x3B3C)));
+        }
+        a += 40;
+    }
+}

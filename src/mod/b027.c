@@ -61,7 +61,80 @@ static s32 func_01E00900_b027(World_b027_01E00900 *w, Wisp_b027_01E00900 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E00B20_b027);
+/* shape b027:01E00B20, 158 insns: b019:01E01F60 family wisp (0x3F, 0x38, 0x3F; table at ctx+0x3A34): angle random, or the scene's facing +-60 after scene count 130; f30 -30..29; alpha up by 9 to 0x60 for 10 ticks then down by 10; size counter grows each tick, frame every third tick to 7; swings 20 on x/z and rises 0..4 per tick */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x3914];
+    s16 facing;
+    u8 pad3916[0x3932 - 0x3916];
+    s16 count;
+    u8 pad3934[0x3A34 - 0x3934];
+    u8 tab[1];
+} Mgr_b027_01E00B20;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b027_01E00B20;
+
+static s32 func_01E00B20_b027(Mgr_b027_01E00B20 *m, Fx_b027_01E00B20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 t;
+
+    func_001076F0(o->col, 0x3F, 0x38, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        if (m->count < 130) {
+            o->f3A = func_0019A5C8() % 360;
+        } else {
+            o->f3A = m->facing + (func_0019A5C8() % 120 - 60);
+        }
+        o->f34 = 0;
+        o->f30 = func_0019A5C8() % 60 - 30;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->f38++;
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->x = o->x + 20.0f * func_00108030(m->tab, o->f3A, 0);
+    t = o->tick;
+    if (t != 0) {
+        if ((s16)t < 5) {
+            o->y += (s16)(func_0019A5C8() % 5);
+        } else {
+            o->y += (s16)(func_0019A5C8() % 5);
+        }
+    }
+    o->z = o->z + 20.0f * func_00108030(m->tab, o->f3A, 1);
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

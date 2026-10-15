@@ -1108,7 +1108,101 @@ static s32 func_01E031C0_b257(s32 arg0, Flash_b257_01E031C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E032A0_b257);
+/* shape b257:01E032A0, 173 insns: b482:01E02E40 family scene flash light (ctx+0x3520, 0xC4 70) at the effect's point: warms by 42/21/10 toward orange while the level rises 0.2 to 1, then cools by 16/16/8 and dims 0.1 to 0.1; ends when ctx+0x36C0 is 1 */
+
+typedef struct {
+    f32 c[4];
+    Vec4f pos;
+    f32 fC0;
+    f32 fC4;
+    f32 level;
+} Light_b257_01E032A0;
+
+typedef struct {
+    u8 pad0[0x3520];
+    Light_b257_01E032A0 light;
+    u8 padL[0x36C0 - 0x3520 - 0x2C];
+    s32 flag;
+} Scene_b257_01E032A0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b257_01E032A0;
+
+static s32 func_01E032A0_b257(Scene_b257_01E032A0 *g, Fx_b257_01E032A0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.c[0] = 0.0f;
+        g->light.c[1] = 0.0f;
+        g->light.c[2] = 0.0f;
+        g->light.c[3] = 0.0f;
+        g->light.fC0 = 0.0f;
+        g->light.fC4 = 70.0f;
+        g->light.level = 0.0f;
+        g->light.pos.x = o->x;
+        g->light.pos.y = o->y;
+        g->light.pos.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->light.level < 1.0f) {
+            g->light.level += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+        if (g->light.c[0] < 128.0f) {
+            g->light.c[0] += 42.0f;
+        } else {
+            g->light.c[0] = 128.0f;
+        }
+        if (g->light.c[1] < 64.0f) {
+            g->light.c[1] += 21.0f;
+        } else {
+            g->light.c[1] = 128.0f;
+        }
+        if (g->light.c[2] < 32.0f) {
+            g->light.c[2] += 10.0f;
+        } else {
+            g->light.c[2] = 64.0f;
+        }
+    } else {
+        if (g->light.level > 0.1f) {
+            g->light.level -= 0.1f;
+        } else {
+            o->mode = 0;
+        }
+        if (g->light.c[0] > 16.0f) {
+            g->light.c[0] -= 16.0f;
+        } else {
+            g->light.c[0] = 0.0f;
+        }
+        if (g->light.c[1] > 16.0f) {
+            g->light.c[1] -= 16.0f;
+        } else {
+            g->light.c[1] = 0.0f;
+        }
+        if (g->light.c[2] > 8.0f) {
+            g->light.c[2] -= 8.0f;
+        } else {
+            g->light.c[2] = 0.0f;
+        }
+    }
+    if (o->mode == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->flag == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b257:01E03560, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x36C0 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

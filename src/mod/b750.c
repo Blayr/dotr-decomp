@@ -1156,7 +1156,98 @@ static s32 func_01E02B70_b750(Game_b750_01E02B70 *g, Fade_b750_01E02B70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b750", func_01E02C80_b750);
+/* shape b750:01E02C80, 181 insns: b491:01E03360's window (0x50, 0x20, 0x20) in the scene packet at ctx+0xB228, zoomed by
+   f8/10 and fA/10 without tracking anything, drawn once from alpha 0; alpha up by 9 to 0x80 for 100 ticks, then down
+   by 7 after tick 40 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b750_01E02C80;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b750_01E02C80 p;
+} Tv_b750_01E02C80;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b750_01E02C80 v[2];
+} Tex_b750_01E02C80;
+
+typedef struct {
+    u8 pad[0xB228];
+    Tex_b750_01E02C80 *pk;
+} Game_b750_01E02C80;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b750_01E02C80;
+
+static s32 func_01E02C80_b750(Game_b750_01E02C80 *g, Fx_b750_01E02C80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x50, 0x20, 0x20);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick < 100) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->tick > 40) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b750", func_01E02F60_b750);
 

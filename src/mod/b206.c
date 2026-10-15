@@ -401,7 +401,85 @@ static void func_01E00D80_b206(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E012D0_b206);
+/* shape b206:01E012D0, 160 insns: the b206 module's event step: counts ticks; keeps its point on the tracked point (ctx+0x4C48) pushed 2 along z by the scene flag and every other tick from 64 to 275 spawns b206:01E01550 with a slot cycling 0..119; then on the second point (camera id at ctx+0x4C56) pushed 50 the other way spawns b206:01E01770 until 300; at 100 spawns b206:01E01B80 for slots 0 and 1; at 56 spawns b206:01E019D0 at the two other tracked points */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x4C48 - 0x25C];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    u8 pad4C4E[0x4C56 - 0x4C4E];
+    s16 id3;
+    u8 pad4C58[0x4C76 - 0x4C58];
+    s16 slot;
+    s16 next;
+    s16 flag;
+    u8 pad4C7C[2];
+    s16 timer;
+} Ctx_b206_01E012D0;
+
+static void func_01E012D0_b206(Ctx_b206_01E012D0 *g) {
+    extern s32 b206_01E01550(void);
+    extern s32 b206_01E01770(void);
+    extern s32 b206_01E019D0(void);
+    extern s32 b206_01E01B80(void);
+    extern void b206_01E02320(Ctx_b206_01E012D0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->id0, g->pos);
+    if (g->flag != 0) {
+        g->pos[2] -= 2.0f;
+    } else {
+        g->pos[2] += 2.0f;
+    }
+    if (g->timer >= 64 && g->timer < 276) {
+        if (g->timer % 2 == 1) {
+            if (g->timer < 100) {
+                n = 1;
+            } else {
+                n = 1;
+            }
+            for (i = 0; i < n; i++) {
+                g->slot = g->next;
+                b206_01E02320(g, b206_01E01550, 0);
+                g->next++;
+                if (g->next >= 120) {
+                    g->next = 0;
+                }
+            }
+        }
+    }
+    func_001F5620(func_001F5380(), g->id3, g->pos);
+    if (g->flag != 0) {
+        g->pos[2] += 50.0f;
+    } else {
+        g->pos[2] -= 50.0f;
+    }
+    if (g->timer < 301) {
+        b206_01E02320(g, b206_01E01770, 0);
+    }
+    if (g->timer == 100) {
+        g->slot = 0;
+        b206_01E02320(g, b206_01E01B80, 0);
+        g->slot = 1;
+        b206_01E02320(g, b206_01E01B80, 0);
+    }
+    if (g->timer == 56) {
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        g->slot = 0;
+        b206_01E02320(g, b206_01E019D0, 0);
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        g->slot = 0;
+        b206_01E02320(g, b206_01E019D0, 0);
+    }
+}
 
 /* shape b206:01E01550, 134 insns: a white rising ring: on start size 15, both colours 0x80; alpha up by 64 to 0x80 for
    35 ticks, then down by 9 until it ends; blinks 0x80/0x60 on odd/even ticks; spin 0x4000; f34 grows by 1.6 to 50, f30
@@ -480,7 +558,82 @@ static s32 func_01E01550_b206(Game_b206_01E01550 *g, Obj_b206_01E01550 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E01770_b206);
+/* shape b206:01E01770, 150 insns: red flare swelling on a half sine (height 12 x the model scale x sin(h5C), h5C stepping 9 and ending past 180), base rising 3.8 to 40; outer alpha up by 64 to 0x80 for 15 ticks, then down by 9; flickers 0x80/0xC0; drifts 2.5..5.5 along z by the scene flag */
+
+typedef struct {
+    u8 pad0[0xD8];
+    u8 tab[0x4C7A - 0xD8];
+    s16 flag;
+} Ctx_b206_01E01770;
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b206_01E01770;
+
+static s32 func_01E01770_b206(Ctx_b206_01E01770 *g, Fx_b206_01E01770 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern f32 func_001F5860(s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 sc;
+
+    sc = func_001F5860(func_001F5380());
+    if (o->mode == 1) {
+        o->f48 = 15.0f;
+        func_001076F0(o->col, 0x80, 0x10, 0x10);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 15) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x40;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x10, 0x10);
+    } else {
+        func_001076F0(o->col, 0xC0, 0x10, 0x10);
+    }
+    o->rot[0] = 0x4000;
+    if (o->f34 < 40.0f) {
+        o->f34 += 3.8f;
+    }
+    o->f48 = 12.0f * sc * func_00108030(g->tab, o->ang, 0);
+    o->f4C = o->f48 - o->f34;
+    o->ang += 9;
+    if (o->ang > 180) {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (g->flag != 0) {
+        o->z -= 2.5f + func_0019A5C8() % 4;
+    } else {
+        o->z += 2.5f + func_0019A5C8() % 4;
+    }
+    return 0;
+}
 
 /* shape b206:01E019D0, 106 insns: b183:01E012F0 family: grey ring (size 60 growing 2 a frame, frame 0..6, start 5..14, growth 9..23) */
 

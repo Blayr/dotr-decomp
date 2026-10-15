@@ -508,7 +508,99 @@ static void func_01E01330_b281(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E015F0_b281);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E019D0_b281);
+/* shape b281:01E019D0, 174 insns: b747:01E02170's ring in red (0xFF/0x50/0x50 blinking with 0xC0/0x30/0x30): size 3,
+   h5C from the scene's table by kind (g+0x450C), size grows by 6.5 with f4C = size - 3, and the fade starts once the
+   scene frame (g+0x451C) reaches 351 */
+
+typedef struct {
+    u8 pad0[0x450C];
+    s16 h450C[6];
+    s16 flag;
+    u8 pad451A[2];
+    s16 frame;
+} Game_b281_01E019D0;
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 y;
+    u8 pad1C[4];
+    s32 rot;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 size;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b281_01E019D0;
+
+static s32 func_01E019D0_b281(Game_b281_01E019D0 *g, Obj_b281_01E019D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 3.0f;
+        func_001076F0(o->c1, 0xFF, 0x50, 0x50);
+        o->mode = 2;
+        o->h5C = g->h450C[o->kind];
+        o->c1[3] = 0;
+    }
+    if (o->t < 35) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else if (o->c1[3] > 10) {
+        o->c1[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0x50, 0x50);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0x30, 0x30);
+    }
+    o->rot = 0x4000;
+    if (g->flag != 0) {
+        if (o->f34 < 50.0f) {
+            o->f34 += 1.6f;
+        }
+    } else if (!(o->f34 <= -50.0f)) {
+        o->f34 -= 1.6f;
+    }
+    if (o->f38 < 10.0f) {
+        o->f38 += 0.2f;
+    }
+    if (o->t != 0) {
+        o->size += 6.5f;
+        if (g->flag != 0) {
+            o->f4C = o->size - 3.0f;
+        } else {
+            o->f4C = o->size - 3.0f;
+        }
+    }
+    o->h5C += 9;
+    o->t++;
+    if (o->t != 0) {
+        if (g->flag != 0) {
+            o->y -= 5.0f;
+        } else {
+            o->y += 5.0f;
+        }
+    }
+    if (g->frame > 350) {
+        o->t = 35;
+    }
+    return 0;
+}
 
 /* shape b281:01E01C90, 108 insns: a grey spark (b434:01E02210 shape): size 1..3, random sub-frame 0..7 stepping (reset under 7),
    height 2..16, angle, rise 16..35, width 0..34, hold 3..5; alpha up by 0x40 to 0xC0 until the hold, then down by 14 */

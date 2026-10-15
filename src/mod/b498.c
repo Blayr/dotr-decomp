@@ -203,7 +203,74 @@ static Vec_b018_01E00EE0 func_01E00730_b498(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b498", func_01E00B70_b498);
+/* shape b498:01E00B70, 172 insns: the effect scene's step: clears the tint to 0x80/0/0/0, counts the frame (0xACBC) and
+   reads joint 0xAC9C; every third frame from 151 to 319 it spawns a 0x1E01C20 two above it (side 1), to 349 a
+   0x1E017C0 ten below it (side 0); and every third frame from 150 to 319 a 0x1E01DB0 at the camera point numbered by a
+   0..49 counter (0xACB6) */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 px, py, pz;
+    u8 pad2DC[0xA998];
+    u8 col[4];
+    u8 padAC78[0x24];
+    s16 joint;
+    u8 padAC9E[0x16];
+    s16 side;
+    s16 n;
+    u8 padACB8[4];
+    s16 t;
+} Scene_b498_01E00B70;
+
+static void func_01E00B70_b498(Scene_b498_01E00B70 *g) {
+    extern void b498_01E017C0(void);
+    extern void b498_01E01C20(void);
+    extern void b498_01E01DB0(void);
+    extern s32 b498_01E030B0(Scene_b498_01E00B70 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6160(s32, void *);
+    Vec4f v;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    if (g->t > 150 && g->t < 320 && g->t % 3 == 1) {
+        g->px = v.x;
+        g->py = 2.0f + v.y;
+        g->pz = v.z;
+        g->side = 1;
+        b498_01E030B0(g, (s32)b498_01E01C20, 0);
+    }
+    if ((g->t >= 151) & (g->t % 3 == 1)) {
+        if (g->t < 350) {
+            g->px = v.x;
+            g->py = v.y;
+            g->pz = v.z;
+            g->side = 1;
+            g->py = v.y - 10.0f;
+            g->side = 0;
+            b498_01E030B0(g, (s32)b498_01E017C0, 0);
+        }
+    }
+    if (g->t % 3 == 1 && g->t >= 150 && g->t < 320) {
+        if (g->n < 50) {
+            func_001F6160(func_001F53A0(), &v);
+            g->px = v.x;
+            g->py = v.y;
+            g->pz = v.z;
+            g->side = g->n;
+            b498_01E030B0(g, (s32)b498_01E01DB0, 0);
+        }
+        g->n++;
+        if (g->n >= 50) {
+            g->n = 0;
+        }
+    }
+}
 
 /* shape b120:01E01240, 129 insns, 2 copies: a grey wisp: set up once (random heading, frame, tilt -15..14); fades in to 0x60
    over 10 frames, then out; its size grows every other frame up to 18; x and z drift 10 along its heading, y 4 by
@@ -520,7 +587,92 @@ static s32 func_01E01520_b498(Game_b120_01E01940 *g, Fx_b120_01E01940 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b498", func_01E017C0_b498);
+/* shape b498:01E017C0, 174 insns: b120:01E01940 family: a blue smoke column (dark after its second step): turned
+   -0x4000 on start at alpha 0x80 and spread 2; while the game counter at 0xAC70 is over 30 and it is under 30 ticks
+   old it fades by 16 only once the spread passes 80, otherwise always; the spread grows by 2, z bobs by 7 x the sine
+   of the camera's yaw, and every fourth tick it spawns two 0x1E00E20 puffs at a random angle, x jittered by the
+   spread */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 step;
+    s16 t;
+    s16 h34;
+    s16 mode;
+    s16 spread;
+    s16 f3A;
+} Fx_b498_01E017C0;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 px, py, pz;
+    u8 pad2DC[0xA994];
+    s32 count;
+    u8 padAC74[0x3A];
+    s16 ang;
+    u8 padACB0[0x110];
+    u8 trig[1];
+} Game_b498_01E017C0;
+
+static s32 func_01E017C0_b498(Game_b498_01E017C0 *g, Fx_b498_01E017C0 *o) {
+    extern void b498_01E00E20(void);
+    extern s32 b498_01E030B0(Game_b498_01E017C0 *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 ang[4];
+    s16 i;
+
+    if (o->step < 2) {
+        func_001076F0(o->col, 8, 8, 0x80);
+    } else {
+        func_001076F0(o->col, 0x10, 0x10, 0x20);
+    }
+    if (o->mode == 1) {
+        o->rot[0] = -0x4000;
+        o->rot[1] = 0;
+        o->rot[2] = 0;
+        o->h34 = 0;
+        o->spread = 2;
+        o->mode = 2;
+        o->col[3] = 0x80;
+    }
+    if (g->count > 30 && o->t < 30) {
+        if (o->spread > 80) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 16;
+            } else {
+                o->mode = 0;
+            }
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 16;
+    } else {
+        o->mode = 0;
+    }
+    o->spread += 2;
+    func_001F6160(func_001F53A0(), ang);
+    o->step++;
+    o->z = o->z + 7.0f * func_00108030(g->trig, ang[1] / 180, 1);
+    o->t++;
+    o->f3A += 12;
+    if (o->t % 4 == 1) {
+        for (i = 0; i < 2; i++) {
+            g->ang = func_0019A5C8() % 360;
+            g->px = o->x + (func_0019A5C8() % o->spread - (o->spread >> 1)) * 2;
+            g->py = o->y;
+            g->pz = o->z;
+            b498_01E030B0(g, (s32)b498_01E00E20, 0);
+        }
+    }
+    return 0;
+}
 
 /* shape b120:01E01EA0, 46 insns: colour (0x20,0x20,0); on start f38 = f30, alpha 0x80; alpha drops by 0x40 (while
    below 0x80) for 2 ticks, then fades out by 12 and stops */

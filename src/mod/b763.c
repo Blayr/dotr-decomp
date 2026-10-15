@@ -622,7 +622,86 @@ static void func_01E01520_b763(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b763", func_01E01920_b763);
+/* shape b763:01E01920, 161 insns: the b763 module's event step: counts ticks; from 96 to 154 spawns two b763:01E01BB0 (slots 0 and 4) at the first tracked point; from 180 to 230 alternates b763:01E02200 / b763:01E02400 at the second; at tick 1 reads the camera and spawns b763:01E031F0 and b763:01E032F0; at 153 spawns b763:01E02F10 and b763:01E03060; from 178, every fourth tick, places up to 30 points (ctx+0x7CB0) and spawns b763:01E02930 and b763:01E01EB0 there */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x7CB0 - 0x25C];
+    Vec4f pts[30];
+    f32 cam[4];
+    u8 pad7EA0[0x7EEC - 0x7EA0];
+    s16 id0;
+    u8 pad7EEE[2];
+    s16 id1;
+    u8 pad7EF2[0x7F1A - 0x7EF2];
+    s16 slot;
+    s16 n;
+    u8 pad7F1E[4];
+    s16 timer;
+} Ctx_b763_01E01920;
+
+static void func_01E01920_b763(Ctx_b763_01E01920 *g) {
+    extern s32 b763_01E01BB0(void);
+    extern s32 b763_01E01EB0(void);
+    extern s32 b763_01E02200(void);
+    extern s32 b763_01E02400(void);
+    extern s32 b763_01E02930(void);
+    extern s32 b763_01E02F10(void);
+    extern s32 b763_01E03060(void);
+    extern s32 b763_01E031F0(void);
+    extern s32 b763_01E032F0(void);
+    extern void b763_01E03CB0(Ctx_b763_01E01920 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, f32 *);
+
+    g->timer++;
+    if (g->timer >= 96 && g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        g->slot = 0;
+        b763_01E03CB0(g, b763_01E01BB0, 0);
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        g->slot = 4;
+        b763_01E03CB0(g, b763_01E01BB0, 0);
+    }
+    if (g->timer >= 180 && g->timer < 231) {
+        g->slot = 1;
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        if (g->timer % 2 == 1) {
+            b763_01E03CB0(g, b763_01E02200, 0);
+        } else {
+            b763_01E03CB0(g, b763_01E02400, 0);
+        }
+    }
+    if (g->timer == 1) {
+        func_001F5F90(func_001F5380(), g->cam);
+    }
+    if (g->timer == 1) {
+        b763_01E03CB0(g, b763_01E031F0, 0);
+    }
+    if (g->timer == 1) {
+        b763_01E03CB0(g, b763_01E032F0, 0);
+    }
+    if (g->timer == 153) {
+        b763_01E03CB0(g, b763_01E02F10, 0);
+    }
+    if (g->timer == 153) {
+        b763_01E03CB0(g, b763_01E03060, 0);
+    }
+    if (g->timer >= 178) {
+        if (g->timer % 4 == 1) {
+            if (g->n < 30) {
+                g->slot = g->n;
+                func_001F5620(func_001F53A0(), g->id1, &g->pts[g->slot]);
+                b763_01E03CB0(g, b763_01E02930, 0);
+                b763_01E03CB0(g, b763_01E01EB0, 0);
+                g->n++;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b763", func_01E01BB0_b763);
 

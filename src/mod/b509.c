@@ -653,7 +653,85 @@ static void func_01E01870_b509(Obj_b094_01E00920 *obj, Data_b094_01E00920 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b509", func_01E01BD0_b509);
+/* shape b509:01E01BD0, 176 insns: the b509 module's event step (b232:01E00480's kind): counts ticks; until 154 follows
+   the tracked point (ctx+0x44E4) with its marker (ctx+0x4470), at 155 aims it at the other point over 32 ticks and
+   moves it until 185; spawns b509:01E02E40 at tick 1; at 186 the effect position takes the marker; from 52 to 141
+   spawns b509:01E02A60 on the first point and from 141 to 250 b509:01E027C0 on the other, turning 3 each tick; from 165
+   to 262 every 4th tick spawns b509:01E02D60 and b509:01E02BB0 within 10 of the other point */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f m;
+    u8 pad4480[4];
+    f32 dy;
+    f32 dz;
+    u8 pad448C[0x44E4 - 0x448C];
+    s16 id0;
+    u8 pad44E6[0x44F4 - 0x44E6];
+    s16 id1;
+    u8 pad44F6[0x450E - 0x44F6];
+    s16 turn;
+    u8 pad4510[4];
+    s16 slot;
+    u8 pad4516[6];
+    s16 timer;
+} Ctx_b509_01E01BD0;
+
+static void func_01E01BD0_b509(Ctx_b509_01E01BD0 *g) {
+    extern s32 b509_01E027C0(void);
+    extern s32 b509_01E02A60(void);
+    extern s32 b509_01E02BB0(void);
+    extern s32 b509_01E02D60(void);
+    extern s32 b509_01E02E40(void);
+    extern void b509_01E03650(Ctx_b509_01E01BD0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[8];
+
+    g->timer++;
+    if (g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->id0, &g->m);
+    } else {
+        if (g->timer == 155) {
+            func_001F5620(func_001F5380(), g->id1, v);
+            g->dz = (v[2] - g->m.z) / 32.0f;
+            g->dy = (v[1] - g->m.y) / 32.0f;
+        }
+        if (g->timer < 186) {
+            g->m.z += g->dz;
+            g->m.y += g->dy;
+        }
+    }
+    if (g->timer == 1) {
+        b509_01E03650(g, b509_01E02E40, 0);
+    }
+    if (g->timer == 186) {
+        g->pos = g->m;
+        g->slot = 0;
+    }
+    if (g->timer >= 52 && g->timer < 142) {
+        func_001F5620(func_001F53A0(), g->id0, &g->pos);
+        b509_01E03650(g, b509_01E02A60, 0);
+        g->turn += 3;
+    }
+    if (g->timer >= 141 && g->timer < 251) {
+        func_001F5620(func_001F5380(), g->id1, &g->pos);
+        b509_01E03650(g, b509_01E027C0, 0);
+        g->turn += 3;
+    }
+    if (g->timer >= 165 && g->timer < 263) {
+        if (g->timer % 4 == 1) {
+            func_001F5620(func_001F5380(), g->id1, &g->pos);
+            g->pos.x += func_0019A5C8() % 20 - 10;
+            g->pos.y += func_0019A5C8() % 20 - 10;
+            b509_01E03650(g, b509_01E02D60, 0);
+            b509_01E03650(g, b509_01E02BB0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b509", func_01E01E90_b509);
 

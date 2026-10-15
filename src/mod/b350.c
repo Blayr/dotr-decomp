@@ -285,9 +285,167 @@ static void func_01E00B20_b350(Scene_b350_01E00B20 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00C60_b350);
+/* shape b350:01E00C60, 175 insns: a grey 0x70 smoke puff (size 30 growing 2, frame to 5 every other tick, angle 0..359, speed 5..9, h8 0..24, hold 30..39) spanning the two tracked points (ctx+0x3784 / 0x3786) and closing a fortieth of the camera's depth gap each tick; alpha up by 0x30 to 0x90 during the hold, then down by 9; random turns each tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00F20_b350);
+typedef struct {
+    u8 pad0[0x3784];
+    s16 id0;
+    s16 id1;
+} Ctx_b350_01E00C60;
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b350_01E00C60;
+
+static s32 func_01E00C60_b350(Ctx_b350_01E00C60 *g, Fx_b350_01E00C60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f38 = 30;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 10 + 30;
+        func_001F5620(func_001F53A0(), g->id0, v);
+        func_001F5620(func_001F53A0(), g->id1, &v[4]);
+        o->hC = v[4] - v[0];
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    v[2] = v[2] - v[6];
+    v[2] /= 40.0f;
+    o->z = o->z + v[2];
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38 += 2;
+    }
+    o->rot[0] = func_0019A5C8() % 360;
+    o->rot[1] = func_0019A5C8() % 360;
+    o->rot[2] = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
+
+/* shape b350:01E00F20, 175 insns: a dark 0x20 smoke puff (size 50 growing 1, frame to 5 every other tick, angle 0..359, speed 5..9, h8 0..24, hold 30..39) spanning the two tracked points (ctx+0x3784 / 0x3786) and closing a fortieth of the camera's depth gap each tick; alpha up by 0x20 to 0x60 during the hold, then down by 9; random turns each tick */
+
+typedef struct {
+    u8 pad0[0x3784];
+    s16 id0;
+    s16 id1;
+} Ctx_b350_01E00F20;
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b350_01E00F20;
+
+static s32 func_01E00F20_b350(Ctx_b350_01E00F20 *g, Fx_b350_01E00F20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 10 + 30;
+        func_001F5620(func_001F53A0(), g->id0, v);
+        func_001F5620(func_001F53A0(), g->id1, &v[4]);
+        o->hC = v[4] - v[0];
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x3F) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    v[2] = v[2] - v[6];
+    v[2] /= 40.0f;
+    o->z = o->z + v[2];
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38 += 1;
+    }
+    o->rot[0] = func_0019A5C8() % 360;
+    o->rot[1] = func_0019A5C8() % 360;
+    o->rot[2] = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b350:01E011E0, 126 insns: b383:01E03640 variant: size 30 growing by 1 a tick, height from 0, frame 0..24, fade-in 4..13 ticks up by 48 to 0x60 then down by 9 until it ends, kind steps to 5 */
 

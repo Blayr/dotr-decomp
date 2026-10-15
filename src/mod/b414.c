@@ -774,13 +774,292 @@ static s32 func_01E01FF0_b414(Game_b414_01E01FF0 *g, Obj_b414_01E01FF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E021C0_b414);
+/* shape b414:01E021C0, 150 insns: b432:01E02FA0's tumbling chip in red (0xFF, 0x40, 0x40), frame 0..2, drift / 100, held 10, fading by 9, growing by 5 to 100 (0xA follows) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02420_b414);
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b414_01E021C0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E026F0_b414);
+static s32 func_01E021C0_b414(s32 arg0, Fx_b414_01E021C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E029C0_b414);
+    if (o->mode == 1) {
+        o->size = 30;
+        o->size0 = o->size;
+        o->frame = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 100.0f;
+        o->vx /= 100.0f;
+        o->vz /= 100.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        if (o->size < 100) {
+            o->size += 5;
+        }
+        o->size0 = o->size;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
+
+/* shape b414:01E02420, 177 insns: a red (0xFF, 0x40, 0x40) streak 18 x 10, frame 0..2, drifting (-50..49)/100 with random spins; alpha up by 0x40 to 0x80 for 10 ticks, then down by 9; grows 5, 10 or 60 (and 2 wider) by the scene level (ctx+0xB2BA: under 90 / 121); turned 0x7000 / 0x9000 by the scene flag (ctx+0xB2B6) */
+
+typedef struct {
+    u8 pad0[0xB2B6];
+    s16 flag;
+    u8 padF[0xB2BA - 0xB2B6 - 2];
+    s16 level;
+} Ctx_b414_01E02420;
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b414_01E02420;
+
+static s32 func_01E02420_b414(Ctx_b414_01E02420 *g, Fx_b414_01E02420 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 18;
+        o->h = 10;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 100.0f;
+        o->vel[0] /= 100.0f;
+        o->vel[2] /= 100.0f;
+        o->f5A = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (g->level < 90) {
+            o->h += 5;
+        } else if (g->level < 121) {
+            o->h += 10;
+        } else {
+            o->h += 60;
+            o->w += 2;
+        }
+    }
+    o->rot[1] = 0;
+    o->rot[2] = 0;
+    if (g->flag != 0) {
+        o->rot[0] = 0x7000;
+    } else {
+        o->rot[0] = 0x9000;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b414:01E026F0, 177 insns: b414:01E021C0's chip in grey 0x80, size 25, 0xA from 10 growing 10 (20 from scene
+   frame 90, then 70 with the size growing 2 from 121); it keeps only a yaw of 0x7000 or 0x9000 by the scene flag */
+
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b414_01E026F0;
+
+typedef struct {
+    u8 pad0[0xB2B6];
+    s16 flag;
+    u8 padB2B8[2];
+    s16 frame;
+} Scene_b414_01E026F0;
+
+static s32 func_01E026F0_b414(Scene_b414_01E026F0 *g, Fx_b414_01E026F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 25;
+        o->size0 = 10;
+        o->frame = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 100.0f;
+        o->vx /= 100.0f;
+        o->vz /= 100.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        if (g->frame < 90) {
+            o->size0 += 10;
+        } else if (g->frame < 121) {
+            o->size0 += 20;
+        } else {
+            o->size0 += 70;
+            o->size += 2;
+        }
+    }
+    o->rot[1] = 0;
+    o->rot[2] = 0;
+    if (g->flag != 0) {
+        o->rot[0] = 0x7000;
+    } else {
+        o->rot[0] = 0x9000;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b414:01E029C0, 152 insns: b414:01E021C0 with size 70 growing to 140, size0 twice the size, a dark red colour
+   (0x80/0x40/0x40), and a fade-out by 5 */
+
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b414_01E029C0;
+
+static s32 func_01E029C0_b414(s32 arg0, Fx_b414_01E029C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 70;
+        o->size0 = o->size * 2;
+        o->frame = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x40, 0x40);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 100.0f;
+        o->vx /= 100.0f;
+        o->vz /= 100.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        if (o->size < 140) {
+            o->size += 5;
+        }
+        o->size0 = o->size * 2;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b414:01E02C20, 85 insns: b499:01E01C50 family: a white tumbling shape at three random turns that grows 7 up to 130 and climbs 2 a tick from 5 (size from 10, +1 a tick); ends at 181; past 60 both alphas drop by 9 */
 

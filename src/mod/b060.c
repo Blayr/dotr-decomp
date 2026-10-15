@@ -546,4 +546,92 @@ static void func_01E01D00_b060(u8 *ctx, Obj_b053_01E01E30 *o, void *pkt, s32 mod
     func_00108F90(quad, pkt, m, ot);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E01EB0_b060);
+/* shape b060:01E01EB0, 179 insns: b089:01E04330 family fan of 9 thin triangles 40 apart (8 wide) drawn twice each,
+   first with texture frame 0x8F and then 0x8C; mode 0 sets up the packet (frame 0x8D, one colour) */
+
+typedef struct {
+    u8 pad0[0x108];
+    s32 tex;
+    u8 pad10C[0x3B0C - 0x10C];
+    s32 ot;
+    u8 pad3B10[0x24];
+    f32 depth;
+    u8 pad3B38[0x3B60 - 0x3B38];
+    u8 tab[1];
+} Ctx_b060_01E01EB0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 h34;
+    u8 pad36[2];
+    s16 r;
+    s16 ang;
+} Fx_b060_01E01EB0;
+
+static void func_01E01EB0_b060(Ctx_b060_01E01EB0 *g, Fx_b060_01E01EB0 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    Vec4f pos;
+    f32 m[16];
+    f32 rm[4];
+    s32 i;
+    s16 a;
+    s16 t;
+
+    a = 0;
+    if (lit == 0) {
+        func_00106080(rm, 0x8D, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    func_00108EF0(m, 0, o->rot, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    for (i = 0; i < 9; i++) {
+        t = o->ang + a;
+        q[2].x = o->r * func_00108030(g->tab, t, 1);
+        q[2].z = o->r * func_00108030(g->tab, t, 0);
+        q[0].x = 0.0f;
+        q[0].z = 0.0f;
+        t = o->ang + 8 + a;
+        q[3].x = o->r * func_00108030(g->tab, t, 1);
+        q[3].z = o->r * func_00108030(g->tab, t, 0);
+        q[1].x = 0.0f;
+        q[1].z = 0.0f;
+        func_00106080(rm, 0x8F, o->h34, rm);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        if (func_00205630(q, 0x70000000, m, p, &g->depth) != 0) {
+            func_002075F0(p, g->ot, (u32)g->depth);
+        }
+        func_00106080(rm, 0x8C, o->h34, rm);
+        func_00108500(p, rm, 0);
+        if (func_00205630(q, 0x70000000, m, p, &g->depth) != 0) {
+            func_002075F0(p, g->ot, (u32)g->depth);
+        }
+        a += 40;
+    }
+    }
+}

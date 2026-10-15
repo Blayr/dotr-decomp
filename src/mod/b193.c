@@ -718,9 +718,148 @@ static void func_01E017C0_b193(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E01D70_b193);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02290_b193);
+/* shape b193:01E02290, 165 insns: the b193 module's event step: counts ticks; at 25 spawns b193:01E02780 and b193:01E02910 at the second and third tracked points (slots 0, 1); from 39 to 229 follows the first point sliding 8 in z (back if ctx+0xBCEE is set), spawns b193:01E02530 before 76 and b193:01E02B10; from 77 to 229 follows the camera-side point (ctx+0xBCCA) and spawns b193:01E02E50 every third tick; turns 4 a tick, wrapped at 360 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02530_b193);
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xBCBC - 0x25C];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    u8 padBCC2[0xBCCA - 0xBCC2];
+    s16 id3;
+    u8 padBCCC[0xBCE0 - 0xBCCC];
+    s16 turn;
+    u8 padBCE2[0xBCEA - 0xBCE2];
+    s16 slot;
+    u8 padBCEC[2];
+    s16 back;
+    u8 padBCF0[2];
+    s16 timer;
+} Ctx_b193_01E02290;
+
+static void func_01E02290_b193(Ctx_b193_01E02290 *g) {
+    extern s32 b193_01E02530(void);
+    extern s32 b193_01E02780(void);
+    extern s32 b193_01E02910(void);
+    extern s32 b193_01E02B10(void);
+    extern s32 b193_01E02E50(void);
+    extern void b193_01E03A90(Ctx_b193_01E02290 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+
+    g->timer++;
+    if (g->timer == 25) {
+        g->slot = 0;
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        b193_01E03A90(g, b193_01E02780, 0);
+        b193_01E03A90(g, b193_01E02910, 0);
+        g->slot = 1;
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        b193_01E03A90(g, b193_01E02780, 0);
+        b193_01E03A90(g, b193_01E02910, 0);
+    }
+    if (g->timer > 38 && g->timer < 230) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        if (g->back != 0) {
+            g->pos[2] -= 8.0f;
+        } else {
+            g->pos[2] += 8.0f;
+        }
+        if (g->timer < 76) {
+            b193_01E03A90(g, b193_01E02530, 0);
+        }
+        b193_01E03A90(g, b193_01E02B10, 0);
+    }
+    if (g->timer > 76 && g->timer < 230) {
+        func_001F5620(func_001F5380(), g->id3, g->pos);
+        if (g->timer % 3 == 1) {
+            b193_01E03A90(g, b193_01E02E50, 0);
+        }
+    }
+    g->turn += 4;
+    if (g->turn > 360) {
+        g->turn %= 360;
+    }
+}
+
+/* shape b193:01E02530, 145 insns: a green rising ring (b206:01E01550's kind): on start size 35, both colours 0x80; alpha up
+   by 64 to 0x80 for 2 ticks, then down by 19 until it ends; blinks green 0x80/0x60; spin 0x4000; f34 swings by 5 towards
+   +20 (scene flag at g+0xBCEE set) or -20; f30 grows by 0.2 to 10, f38 by 13 to 30; size grows by 35.5 with
+   f4C = size - f38; h5C turns by 9 */
+
+typedef struct {
+    u8 pad0[0xBCEE];
+    s16 flag;
+} Game_b193_01E02530;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 size;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b193_01E02530;
+
+static s32 func_01E02530_b193(Game_b193_01E02530 *g, Obj_b193_01E02530 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 35.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else if (o->c1[3] > 20) {
+        o->c1[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x10, 0x80, 0x10);
+    } else {
+        func_001076F0(o->c0, 0x10, 0x60, 0x10);
+    }
+    o->rot = 0x4000;
+    if (g->flag != 0) {
+        if (o->f34 < 20.0f) {
+            o->f34 += 5.0f;
+        }
+    } else if (!(o->f34 <= -20.0f)) {
+        o->f34 -= 5.0f;
+    }
+    if (o->f30 < 10.0f) {
+        o->f30 += 0.2f;
+    }
+    if (o->f38 < 30.0f) {
+        o->f38 += 13.0f;
+    }
+    o->size += 35.5f;
+    o->f4C = o->size - o->f38;
+    o->h5C += 9;
+    o->t++;
+    return 0;
+}
 
 /* shape b111:01E02160, 100 insns: spark update, a variant of b018:01E02950 (on spawn: random kind, white
    colour, angle, spin, height, speed, size and lifetime; then fade out after the lifetime, move while

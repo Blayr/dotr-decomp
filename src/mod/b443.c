@@ -559,7 +559,92 @@ static s32 func_01E02B60_b443(void *arg0, Obj_b003_01E01780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E02C40_b443);
+/* shape b443:01E02C40, 149 insns: b207:01E029A0's falling spark, frame 0..3, fall 6..8, flickering blue, riding scene joint 0x2E24 */
+
+typedef struct {
+    u8 pad0000[0x2DF0];
+    s32 w3B00;
+    u8 pad2DF4[0x30];
+    s16 joint;
+} Mgr_b443_01E02C40;
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+} Obj_b443_01E02C40;
+
+static s32 func_01E02C40_b443(Mgr_b443_01E02C40 *m, Obj_b443_01E02C40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    s32 base;
+    Vec4f v;
+
+    if (o->h36 == 1) {
+        o->h38 = 70;
+        base = 0;
+        o->w10 = func_0019A5C8() % 0x4000 + base;
+        o->w14 = func_0019A5C8() % 0xFFFF;
+        o->h34 = func_0019A5C8() % 4;
+        o->h36 = 2;
+        o->hE = func_0019A5C8() % 3 + 6;
+        o->h6 = 1;
+        if (o->h30 == 0) {
+            func_001076F0(o->c28, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->c28, 0, 0x80, 0x80);
+        }
+    }
+    if (o->h32 < 2) {
+        if (o->c28[3] < 0xA0) {
+            o->c28[3] += 0x50;
+        }
+    } else {
+        if (o->h38 < 12) {
+            if (o->c28[3] > 20) {
+                o->c28[3] -= 19;
+            } else {
+                o->h36 = 0;
+            }
+        }
+        if (o->h38 < -12) {
+            o->h36 = 0;
+        }
+        if (m->w3B00 < 10) {
+            if (o->c28[3] > 16) {
+                o->c28[3] -= 15;
+            } else {
+                o->h36 = 0;
+            }
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        func_001076F0(o->c28, 0x40, 0x40, 0x80);
+    } else {
+        func_001076F0(o->c28, 0x80, 0x80, 0xB0);
+    }
+    func_001F5620(func_001F53A0(), m->joint, &v);
+    o->x = func_001A22C0(v.x);
+    o->y = func_001A22C0(v.y);
+    o->z = func_001A22C0(v.z);
+    o->h32++;
+    o->h38 -= o->hE;
+    return 0;
+}
 
 /* shape b443:01E02EA0, 133 insns: a blue spark that rises and falls: random tilt 0..0x3FFF and spin, frame 0..6, rise
    2..3, f6 1; alpha jumps by 0x50 (below 0xA0) for two ticks; after height 80 it fades by 0x13, below -12 it ends,
@@ -750,7 +835,94 @@ static s32 func_01E032E0_b443(s32 unused, Obj_b207_01E03000 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E033B0_b443);
+/* shape b443:01E033B0, 170 insns: b443:01E030C0 variant: three random turns, w1C -4, frame 2, rise 2..3, h6 4, a random
+   angle; orange or grey colours and a red second colour; both alphas up by 32 to 0x40 for 2 ticks, both fade by 7 once
+   above 30 (and the first by 15 near the scene's end); then it is painted blue (0x20/0x20/0x80) and turns by -8 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 rise;
+    u8 padA[6];
+    s32 tilt;
+    s32 spin;
+    s32 w18;
+    s32 w1C;
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 h;
+    s16 ang;
+} Fx_b443_01E033B0;
+
+typedef struct {
+    u8 pad0[0x2DF0];
+    s32 timer;
+} Scene_b443_01E033B0;
+
+static s32 func_01E033B0_b443(Scene_b443_01E033B0 *g, Fx_b443_01E033B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h = 0;
+        o->tilt = func_0019A5C8() % 0x4000 + 0x2000;
+        o->w18 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->spin = func_0019A5C8() % 0x4000 - 0x2000;
+        o->w1C = -4;
+        o->frame = 2;
+        o->mode = 2;
+        o->rise = func_0019A5C8() % 2 + 2;
+        o->h6 = 4;
+        o->ang = func_0019A5C8() % 360;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->col, 0x80, 0x80, 8);
+        }
+        func_001076F0(o->col2, 0x80, 8, 8);
+    }
+    if (o->t < 2) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+        if (o->col2[3] < 0x40) {
+            o->col2[3] += 0x20;
+        }
+    } else {
+        if (o->h > 30) {
+            if (o->col[3] > 8) {
+                o->col[3] -= 7;
+            } else {
+                o->mode = 0;
+            }
+            if (o->col2[3] > 8) {
+                o->col2[3] -= 7;
+            }
+        }
+        if (g->timer < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x60);
+    }
+    func_001076F0(o->col, 0x20, 0x20, 0x80);
+    func_001076F0(o->col2, 0x20, 0x20, 0x80);
+    o->t++;
+    o->h += o->rise;
+    o->ang -= 8;
+    return 0;
+}
 
 /* shape b443:01E03660, 77 insns: a dark arc (size 20) facing left or right of the scene camera (func_001F6160; sign of its angle / 180): in by 64 up to 0x80 for 2 ticks, then out by 5 and ends; sweeps 5 degrees a tick from 90 */
 

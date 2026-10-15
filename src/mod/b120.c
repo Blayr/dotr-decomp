@@ -520,7 +520,93 @@ static s32 func_01E01940_b120(Game_b120_01E01940 *g, Fx_b120_01E01940 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b120", func_01E01BE0_b120);
+/* shape b120:01E01BE0, 174 insns: a violet (0x40, 8, 0x80; dull 0x20/0x10/0x20 after 2 ticks) column upright (turn -0x4000), width from 2 growing 2; holds alpha 0x80 while the scene time (ctx+0xAC70) passes 30 and it is younger than 30 until width 80, else fades by 16; slides 7 along the camera turn; every fourth tick spawns two b120:01E01240 at random spots within its width (random 0..359 turn at ctx+0xACAE) */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 pad2DC[0xADC0 - 0x2DC];
+    u8 trig[1];
+} Ctx_b120_01E01BE0;
+
+typedef struct {
+    u8 pad0[0xAC70];
+    s32 time;
+    u8 padAC74[0xACAE - 0xAC74];
+    s16 turn;
+} CtxB_b120_01E01BE0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 w;
+    s16 f3A;
+} Fx_b120_01E01BE0;
+
+static s32 func_01E01BE0_b120(Ctx_b120_01E01BE0 *g, Fx_b120_01E01BE0 *o) {
+    extern s32 b120_01E01240(void);
+    extern void b120_01E034D0(Ctx_b120_01E01BE0 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 cam[4];
+    s16 i;
+    s16 n;
+
+    if (o->f30 < 2) {
+        func_001076F0(o->col, 0x40, 8, 0x80);
+    } else {
+        func_001076F0(o->col, 0x20, 0x10, 0x20);
+    }
+    if (o->mode == 1) {
+        o->rot[0] = -0x4000;
+        o->rot[1] = 0;
+        o->rot[2] = 0;
+        o->f34 = 0;
+        o->w = 2;
+        o->mode = 2;
+        o->col[3] = 0x80;
+    }
+    if (((CtxB_b120_01E01BE0 *)g)->time > 30 && o->tick < 30) {
+        if (o->w > 80) {
+            if (o->col[3] > 16) {
+                o->col[3] -= 16;
+            } else {
+                o->mode = 0;
+            }
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 16;
+    } else {
+        o->mode = 0;
+    }
+    o->w += 2;
+    func_001F6160(func_001F53A0(), cam);
+    o->f30++;
+    o->z = o->z + 7.0f * func_00108030(g->trig, (s16)(cam[1] / 180), 1);
+    o->tick++;
+    o->f3A += 12;
+    if (o->tick % 4 == 1) {
+        for (i = 0; i < 2; i++) {
+            ((CtxB_b120_01E01BE0 *)g)->turn = func_0019A5C8() % 360;
+            n = o->w;
+            g->pos[0] = o->x + (func_0019A5C8() % n - (n >> 1)) * 2;
+            g->pos[1] = o->y;
+            g->pos[2] = o->z;
+            b120_01E034D0(g, b120_01E01240, 0);
+        }
+    }
+    return 0;
+}
 
 /* shape b120:01E01EA0, 46 insns: colour (0x20,0x20,0); on start f38 = f30, alpha 0x80; alpha drops by 0x40 (while
    below 0x80) for 2 ticks, then fades out by 12 and stops */

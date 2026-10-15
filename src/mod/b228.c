@@ -596,7 +596,59 @@ static void func_01E01360_b228(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b228", func_01E01910_b228);
+/* shape b228:01E01910, 148 insns: the b228 module's event step: counts ticks; keeps its point on the tracked point (ctx+0xBCBC) jittered by -20..19 on each axis and pushed 20 along z by the scene flag; every other tick up to 100 spawns b228:01E01B60 and b228:01E02270 with a slot number cycling 0..119 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xBCBC - 0x25C];
+    s16 id;
+    u8 padBCBE[0xBCEA - 0xBCBE];
+    s16 slot;
+    s16 next;
+    s16 flag;
+    u8 padBCF0[2];
+    s16 timer;
+} Ctx_b228_01E01910;
+
+static void func_01E01910_b228(Ctx_b228_01E01910 *g) {
+    extern s32 b228_01E01B60(void);
+    extern s32 b228_01E02270(void);
+    extern void b228_01E02F80(Ctx_b228_01E01910 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->id, g->pos);
+    g->pos[0] += func_0019A5C8() % 40 - 20;
+    g->pos[1] += func_0019A5C8() % 40 - 20;
+    g->pos[2] += func_0019A5C8() % 40 - 20;
+    if (g->flag != 0) {
+        g->pos[2] -= 20.0f;
+    } else {
+        g->pos[2] += 20.0f;
+    }
+    if (g->timer > 0 && g->timer < 101) {
+        if (g->timer % 2 == 1) {
+            if (g->timer < 100) {
+                n = 1;
+            } else {
+                n = 1;
+            }
+            for (i = 0; i < n; i++) {
+                g->slot = g->next;
+                b228_01E02F80(g, b228_01E01B60, 0);
+                b228_01E02F80(g, b228_01E02270, 0);
+                g->next++;
+                if (g->next >= 120) {
+                    g->next = 0;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b228", func_01E01B60_b228);
 
@@ -715,7 +767,97 @@ static s32 func_01E02070_b228(s32 unused, Spark_b082_01E02050 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b228", func_01E02270_b228);
+/* shape b228:01E02270, 143 insns: b149:01E01ED0's track trail, h56 4, turning 5 a tick for 83 ticks, flickering grey */
+
+typedef struct {
+    Vec4f p[15];
+} Track_b228_01E02270;
+
+typedef struct {
+    u8 pad0[0x4470];
+    Track_b228_01E02270 track[0x50];
+    u8 pad[0xB4F0 - 0x4470 - 0x50 * 0xF0];
+    Vec4f head[1];
+} World_b228_01E02270;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 size;
+    u8 pad4C[4];
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Trail_b228_01E02270;
+
+static s32 func_01E02270_b228(World_b228_01E02270 *w, Trail_b228_01E02270 *o) {
+    extern void b228_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    Vec4f *dst;
+    Vec4f *src;
+
+    if (o->state == 1) {
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        src = &w->head[o->idx];
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 15; i++) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+            dst++;
+        }
+        o->frame = 2;
+        o->c0[3] = 0;
+        o->h8 = 0;
+        o->h56 = 4;
+        o->size = 4.0f;
+        o->state = 2;
+    }
+    if (o->t < 0x6E) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    } else {
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        }
+    }
+    if (o->t < 0x53) {
+        o->h5A += 5;
+    }
+    if (o->t < 0x75) {
+        b228_01E00080(&w->track[o->idx].p[14], 15, 0, &w->head[o->idx]);
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+    }
+    if (o->t != 0) {
+        if (o->frame < 4) {
+            o->frame++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b149:01E020F0, 176 insns: a glow whose kind (f50) picks its look: kinds 0/1 are grey with an orange second
    colour, flickering, brightening for 12 ticks; kind 1 also grows to 400 by 15; kind 2 starts at 840, white with a

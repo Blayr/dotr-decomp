@@ -506,7 +506,76 @@ static void func_01E017B0_b121(Ctx_b121_01E017B0 *g) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E019D0_b121);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E01DF0_b121);
+/* shape b121:01E01DF0, 143 insns: a dark falling flake: size 8 growing by 0..2 to 16, frame 0..6 (stepped every third
+   tick for kind 0), 0xA 0..7, kind from the old height, height 20..119 falling 1..3 a tick (ends at 0), f8 0..34, held
+   2..4 at alpha 0x80, turning -1 a tick; ends at scene frame 211 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 kind;
+    s16 fall;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b121_01E01DF0;
+
+typedef struct {
+    u8 pad0[0x403A];
+    s16 frame;
+} Scene_b121_01E01DF0;
+
+static s32 func_01E01DF0_b121(Scene_b121_01E01DF0 *g, Fx_b121_01E01DF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 8;
+        o->frame = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->fA = func_0019A5C8() % 8;
+        o->kind = o->h;
+        o->h = func_0019A5C8() % 100 + 20;
+        o->fall = func_0019A5C8() % 3 + 1;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        o->col[3] = 0x80;
+    }
+    if (o->kind == 0 && o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    if (o->t != 0) {
+        if (o->h > 0) {
+            o->h -= o->fall;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->t != 0) {
+        o->ang--;
+    }
+    if (o->size < 0x11) {
+        o->size += (s16)(func_0019A5C8() % 3);
+    }
+    o->t++;
+    if (g->frame > 0xD2) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b121:01E02030, 108 insns: on start 0x38 = 38, variant 0..6, colour 0x20 grey, 0xA 0..7, 0xC keeps the old 0x30,
    0x30 0..19, speed 2..11 (0xE), 0x8 0..34, hold 0..2 (0x6), random 0x3A; alpha 0x80 during the hold, then fades by 29

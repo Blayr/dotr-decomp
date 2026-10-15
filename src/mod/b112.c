@@ -455,7 +455,103 @@ static s32 func_01E013B0_b112(Game_b112_01E013B0 *g, Spark_b112_01E013B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E01510_b112);
+/* OVL_WARM */
+
+/* shape b112:01E01510, 166 insns: a dark red streak from joint B (g+0x31E2) towards joint A (g+0x31D8): on start no spin,
+   hold 2 (4 from scene time 50), height 5..19; it sits on joint B, aims at A (pitch from the flat and full distances,
+   func_001082B0), sets its swing to 50 x sin(pitch - 45) and its length to 5 x the depth gap; alpha up by 64 for 2
+   ticks; its phase h3A runs 0..89 */
+
+typedef struct {
+    u8 pad0[0x31D8];
+    s16 ja;
+    u8 pad31DA[8];
+    s16 jb;
+    u8 pad31E4[0x12];
+    s16 time;
+    u8 pad31F8[0x100];
+    u8 tab[1];
+} Game_b112_01E01510;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 hold;
+    u8 pad8[2];
+    s16 swing;
+    s16 len;
+    u8 padE[2];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 h34;
+    s16 mode;
+    s16 h38;
+    s16 phase;
+} Obj_b112_01E01510;
+
+static s32 func_01E01510_b112(Game_b112_01E01510 *g, Obj_b112_01E01510 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_001A6C60(f32);
+    extern s16 func_001082B0(s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[2][4];
+    f32 dy;
+    f32 dz;
+    f32 dx;
+    s16 r;
+    s16 l;
+
+    func_001076F0(o->col, 0x30, 0x10, 0);
+    if (o->mode == 1) {
+        o->w10 = 0;
+        o->w14 = 0;
+        o->w18 = 0;
+        o->h34 = 0;
+        if (g->time < 50) {
+            o->hold = 2;
+        } else {
+            o->hold = 4;
+        }
+        o->h = func_0019A5C8() % 15 + 5;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    func_001F5620(func_001F53A0(), g->ja, v[0]);
+    func_001F5620(func_001F53A0(), g->jb, v[1]);
+    o->x = v[1][0];
+    o->y = v[1][1];
+    o->z = v[1][2];
+    dx = v[0][0] - v[1][0];
+    dy = v[0][1] - v[1][1];
+    dz = v[0][2] - v[1][2];
+    r = func_001A6C60(dx * dx + dz * dz);
+    l = func_001A6C60(dx * dx + (dy * dy + dz * dz));
+    o->swing = 50.0f * func_00108030(g->tab, func_001082B0(r, l) - 45, 1);
+    o->len = 5.0f * dz;
+    if (o->t < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    }
+    func_00108030(g->tab, o->phase, 1);
+    func_00108030(g->tab, o->phase, 0);
+    o->h38 = 20;
+    o->phase++;
+    if (o->phase >= 90) {
+        o->phase %= 90;
+    }
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];
@@ -549,7 +645,86 @@ static s32 func_01E018C0_b112(World_b112_01E018C0 *w, Wisp_b112_01E018C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E01A60_b112);
+/* shape b112:01E01A60, 175 insns: b714:01E02E50 family puff (lilac 0x3F/0x30/0x3F for kinds 0-1, grey 0x10 else), size from 10 growing 5 to 40, frame up to 7 every other tick, angles 0..359 / 0..89; alpha up by 0x20 to 0x60 for 3 ticks, then down by 9; for its first 5 ticks sits on its tracked point (ctx+0x31D8 by kind; kinds 2+ only for 3); drifts 8 along the heading and 2 up */
+
+typedef struct {
+    u8 pad0[0x31D8];
+    s16 ids[4];
+    u8 pad31E0[0x32F8 - 0x31E0];
+    u8 trig[1];
+} Game_b112_01E01A60;
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 heading;
+} Fx_b112_01E01A60;
+
+static s32 func_01E01A60_b112(Game_b112_01E01A60 *g, Fx_b112_01E01A60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+
+    if (o->mode == 1) {
+        if (o->kind < 2) {
+            func_001076F0(o->col, 0x3F, 0x30, 0x3F);
+        } else {
+            func_001076F0(o->col, 0x10, 0x10, 0x10);
+        }
+        o->f38 = 10;
+        o->heading = func_0019A5C8() % 360;
+        o->f34 = 0;
+        o->h6 = func_0019A5C8() % 90;
+        o->mode = 2;
+    }
+    if (o->tick < 3) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->tick < 6) {
+        func_001F5620(func_001F53A0(), g->ids[o->kind], v);
+        if (o->kind < 2) {
+            o->x = v[0];
+            o->y = v[1];
+            o->z = v[2];
+        } else if (o->tick < 4) {
+            o->x = v[0];
+            o->y = v[1];
+            o->z = v[2];
+        }
+    }
+    if (o->f38 < 40) {
+        o->f38 += 5;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->h8 = o->h8 + 8.0f * func_00108030(g->trig, o->heading, 0);
+    o->hA = o->hA + 2.0f * func_00108030(g->trig, o->h6, 1);
+    o->hC = o->hC + 8.0f * func_00108030(g->trig, o->heading, 1);
+    return 0;
+}
 
 /* shape b112:01E01D20, 89 insns: a spark: on start f38 25, random variant, colour (0x20,0x10,8), random
    direction, spin 3..18, f8 0..9, life 5..11; alpha grows by 0x38 (below 0x71) during the life, then fades out by

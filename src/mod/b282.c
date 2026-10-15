@@ -673,9 +673,141 @@ static s32 func_01E01DB0_b282(s32 arg0, Fx_b282_01E01DB0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b282", func_01E01F60_b282);
+/* OVL_WARM */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b282", func_01E021F0_b282);
+/* shape b282:01E01F60, 162 insns: b413:01E029E0 in blue (0x40/0x40/0xFF), w 1, height 30 rising 10 a tick, hC from 0
+   rising 3.0 a tick (as a float), hold 10 */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Spark_b282_01E01F60;
+
+static s32 func_01E01F60_b282(s32 arg0, Spark_b282_01E01F60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 1;
+        o->h = 30;
+        o->hC = 0;
+        o->kind = 2;
+        func_001076F0(o->col, 0x40, 0x40, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->hold = 10;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h += 10;
+        o->hC += 3.0f;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* OVL_WARM */
+
+/* shape b282:01E021F0, 163 insns: b413:01E029E0 in blue (0x40/0x40/0xFF), w 5, height 100 rising 15 a tick, hC from 0
+   rising 10.0 a tick (as a float), hold 10 */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Spark_b282_01E021F0;
+
+static s32 func_01E021F0_b282(s32 arg0, Spark_b282_01E021F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 5;
+        o->h = 100;
+        o->hC = 0;
+        o->kind = 2;
+        func_001076F0(o->col, 0x40, 0x40, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->hold = 10;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h += 15;
+        o->hC += 10.0f;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b282:01E02480, 69 insns: constant variant of b287:01E02C80 (0xE->0xA, 150.0f->200.0f) */
 

@@ -101,7 +101,71 @@ static void func_01E00080_b490(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00920_b490);
+/* shape b490:01E00920, 177 insns: b361:01E00920's scene script for b490: red tint, counts g+0x8B56; from tick 35 to
+   180 it spawns 0x1E01260 each tick; on tick 35 a 0x1E01D50, a 0x1E00D90 at the joint (g+0x8B38) and a 0x1E01080;
+   from 35 to 220 6..14 sparks around the joint (x +-30, y -20..39, z +-15); it tracks the joint into g+0x8AD0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x8874];
+    Vec4f v;
+    u8 pad5F20[0x24];
+    u8 col[4];
+    u8 pad5F48[0x30];
+    s16 joint;
+    u8 pad5F7A[0x1C];
+    s16 tick;
+} Ctx_b490_01E00920;
+
+static void func_01E00920_b490(Ctx_b490_01E00920 *g) {
+    extern void b490_01E00BF0();
+    extern void b490_01E00D90();
+    extern void b490_01E01080();
+    extern void b490_01E01260();
+    extern void b490_01E01D50();
+    extern void b490_01E02670(Ctx_b490_01E00920 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    f32 v[4];
+    s32 i;
+    s32 n;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick >= 35 && g->tick < 181) {
+        b490_01E02670(g, b490_01E01260, 0);
+    }
+    if (g->tick == 35) {
+        b490_01E02670(g, b490_01E01D50, 0);
+    }
+    if (g->tick == 35) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        b490_01E02670(g, b490_01E00D90, 0);
+    }
+    if (g->tick == 35) {
+        b490_01E02670(g, b490_01E01080, 0);
+    }
+    if (g->tick >= 35 && g->tick < 221) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        n = func_0019A5C8() % 9 + 6;
+        for (i = 0; i < n; i++) {
+            g->x = v[0] + func_0019A5C8() % 60 - 30.0f;
+            g->y = v[1] + func_0019A5C8() % 60 - 20.0f;
+            g->z = v[2] + func_0019A5C8() % 30 - 15.0f;
+            b490_01E02670(g, b490_01E00BF0, 0);
+        }
+    }
+    func_001F5620(func_001F53A0(), g->joint, &g->v);
+}
 
 /* shape b490:01E00BF0, 102 insns: a blinking white streak (size 50, 50/8 turns, random tilt and angle, frame 2) sliding 10 a tick on z (direction from the scene flag): alpha 0x80 for 12 ticks, then out by 15 and ends */
 

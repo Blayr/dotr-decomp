@@ -518,7 +518,78 @@ static void func_01E00FB0_b495(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E01500_b495);
+/* shape b495:01E01500, 169 insns: the effect scene's step: clears the tint to 0x80/0/0/0 and counts the frame (0xECEC);
+   on frame 92 it spawns 0x1E02140 for sides 0 and 1, on 19 a 0x1E02C30; on frames 42 and 67 thirteen 0x1E01B90 one
+   and a half below each of joints 0xECD4/0xECD6; on 95 ten 0x1E01EE0 at each of joints 0xECCC/0xECCE, then a
+   0x1E01A50 and (through the other spawner) a 0x1E02A40 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0xE9A4];
+    u8 col[4];
+    u8 padEC88[0x44];
+    s16 ja[2];
+    u8 padECD0[4];
+    s16 jb[2];
+    u8 padECD8[0xE];
+    s16 side;
+    u8 padECE8[4];
+    s16 t;
+} Scene_b495_01E01500;
+
+static void func_01E01500_b495(Scene_b495_01E01500 *g) {
+    extern void b495_01E01A50(void);
+    extern void b495_01E01B90(void);
+    extern void b495_01E01EE0(void);
+    extern void b495_01E02140(void);
+    extern void b495_01E02A40(void);
+    extern void b495_01E02C30(void);
+    extern s32 b495_01E03450(Scene_b495_01E01500 *, s32, s32);
+    extern s32 b495_01E035C0(Scene_b495_01E01500 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 92) {
+        g->side = 0;
+        b495_01E035C0(g, (s32)b495_01E02140, 0);
+        g->side = 1;
+        b495_01E035C0(g, (s32)b495_01E02140, 0);
+    }
+    if (g->t == 19) {
+        b495_01E035C0(g, (s32)b495_01E02C30, 0);
+    }
+    if (g->t == 42 || g->t == 67) {
+        func_001F5620(func_001F53A0(), g->jb[0], &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b495_01E035C0(g, (s32)b495_01E01B90, 0);
+        }
+        func_001F5620(func_001F53A0(), g->jb[1], &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b495_01E035C0(g, (s32)b495_01E01B90, 0);
+        }
+    }
+    if (g->t == 95) {
+        func_001F5620(func_001F53A0(), g->ja[0], &g->pos);
+        for (i = 0; i < 10; i++) {
+            b495_01E035C0(g, (s32)b495_01E01EE0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->ja[1], &g->pos);
+        for (i = 0; i < 10; i++) {
+            b495_01E035C0(g, (s32)b495_01E01EE0, 0);
+        }
+        b495_01E035C0(g, (s32)b495_01E01A50, 0);
+        b495_01E03450(g, (s32)b495_01E02A40, 0);
+    }
+}
 
 /* shape b479:01E020E0, 168 insns: a tumbling spark: on start size 100, a random variant, colour (0xFF,0x40,0x40),
    a random drift (-50..49)/60 per axis, a random direction, normalised rotation and a random spin (-0x400..0x3FF)
@@ -785,7 +856,75 @@ static s32 func_01E01D60_b495(Game_b495_01E01D60 *g, Obj_b495_01E01D60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E01EE0_b495);
+/* shape b495:01E01EE0, 152 insns: b479:01E01EB0 variant: random size 10..24, height 10..29, life 300..749, rise 15..39,
+   fade-in for h6 ticks (3..7) */
+
+typedef struct {
+    u8 pad0000[0x6DEC];
+    s16 h6DEC;
+} Mgr_b495_01E01EE0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 v10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b495_01E01EE0;
+
+static s32 func_01E01EE0_b495(Mgr_b495_01E01EE0 *m, Obj_b495_01E01EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = (func_0019A5C8() >> 4) % 15 + 10;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = (func_0019A5C8() >> 4) % 20 + 10;
+        o->h52 = func_0019A5C8() % 450 + 300;
+        o->hE = func_0019A5C8() % 25 + 15;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x20;
+        }
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 % 2 == 1) {
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c60, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->h54 != 0) {
+        o->h50 += o->hE;
+    }
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02140_b495);
 

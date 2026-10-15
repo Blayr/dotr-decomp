@@ -669,7 +669,73 @@ static void func_01E014D0_b279(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b279", func_01E01A80_b279);
+/* shape b279:01E01A80, 149 insns: scene spawn step: t++; frames 41..90 one 0x1E02500 a tick at joint A (0x44D8), frame
+   41 also 0x1E02960; frames 75..190 one 0x1E01CE0 at joint A; frame 202 a burst of 30 0x1E01E80 at joint B
+   (0x44E8); frame 220 one 0x1E02020 and five each of 0x1E02160 and 0x1E02310 at joint B; from frame 15 0x44FC grows
+   by 3 up to 90 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4278];
+    s16 ja;
+    u8 pad44DA[0xE];
+    s16 jb;
+    u8 pad44EA[0x12];
+    s16 h44FC;
+    u8 pad44FE[0x10];
+    s16 t;
+} Scene_b279_01E01A80;
+
+static void func_01E01A80_b279(Scene_b279_01E01A80 *g) {
+    extern void b279_01E01CE0(void);
+    extern void b279_01E01E80(void);
+    extern void b279_01E02020(void);
+    extern void b279_01E02160(void);
+    extern void b279_01E02310(void);
+    extern void b279_01E02500(void);
+    extern void b279_01E02960(void);
+    extern void b279_01E03220(void *, void *, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t >= 0x29 && g->t < 0x5B) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        b279_01E03220(g, b279_01E02500, 0);
+    }
+    if (g->t == 0x29) {
+        b279_01E03220(g, b279_01E02960, 0);
+    }
+    if (g->t >= 0x4B && g->t < 0xBF) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        b279_01E03220(g, b279_01E01CE0, 0);
+    }
+    if (g->t == 0xCA) {
+        func_001F5620(func_001F5380(), g->jb, &g->pos);
+        for (i = 0; i < 30; i++) {
+            b279_01E03220(g, b279_01E01E80, 0);
+        }
+    }
+    if (g->t == 0xDC) {
+        func_001F5620(func_001F5380(), g->jb, &g->pos);
+        b279_01E03220(g, b279_01E02020, 0);
+        func_001F5620(func_001F5380(), g->jb, &g->pos);
+        for (i = 0; i < 5; i++) {
+            b279_01E03220(g, b279_01E02160, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b279_01E03220(g, b279_01E02310, 0);
+        }
+    }
+    if (g->t >= 0xF) {
+        if (g->h44FC < 0x5A) {
+            g->h44FC += 3;
+        }
+    }
+}
 
 /* shape b279:01E01CE0, 104 insns: a white beam from 20 (random roll, random tilt +-0x1000) growing a quarter of 40 a tick and rising 2.5 for 2 ticks, then both ends move 40 a tick: alpha 0x80 for 19 ticks, then out by 14 and ends; turns 0x100 */
 

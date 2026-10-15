@@ -625,7 +625,77 @@ static void func_01E01630_b593(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E018F0_b593);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E01E80_b593);
+/* shape b593:01E01E80, 144 insns: spinning glow (size 20..99 growing 1, grey over a green or blue that flashes every tick): alpha up by 48 to 0x60 for 2 ticks, then down by 11; spins 0x4000 per tick */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b593_01E01E80;
+
+static s32 func_01E01E80_b593(s32 arg0, Fx_b593_01E01E80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f + func_0019A5C8() % 80;
+        o->f4C = 0.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x48, 0x48, 0x48);
+            func_001076F0(o->col2, 0x40, 0x80, 0x40);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0x48, 0x48, 0x48);
+            func_001076F0(o->col2, 0x40, 0x40, 0x80);
+        }
+        o->w = 15;
+        o->h = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col2, 0x20, 0x80, 0x20);
+        } else {
+            func_001076F0(o->col2, 0x20, 0x40, 0x20);
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col2, 0x20, 0x20, 0x80);
+        } else {
+            func_001076F0(o->col2, 0x20, 0x20, 0x40);
+        }
+    }
+    if (o->tick != 0) {
+        o->f48 += 1.0f;
+    }
+    func_00205C40(o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b593:01E020C0, 97 insns: a white spark (size 20, frame 5, random heading) spinning a random 16..45 a tick from 10..59 (old angle moved to +0xC), random 0..7 at +0xA, size 0..34, held 3..7 ticks at 0x80, then out by 8 and ends */
 
@@ -858,9 +928,161 @@ static s32 func_01E028B0_b593(void *arg0, Obj_b593_01E028B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E029F0_b593);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E02BD0_b593);
+/* shape b593:01E02BD0, 142 insns: b593:01E02250's spark, size 15..34, red or blue-white, height 50..249 falling 15..34 a tick while above 0 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E02E10_b593);
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 delay;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 dir;
+    u8 pad5C[4];
+    u8 col[4];
+} Spark_b593_01E02BD0;
+
+static s32 func_01E02BD0_b593(s32 arg0, Spark_b593_01E02BD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 20 + 15;
+        o->kind = func_0019A5C8() % 4;
+        if (o->f52 == 0) {
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        }
+        if (o->f52 == 1) {
+            func_001076F0(o->col, 0x40, 0x40, 0xFF);
+        }
+        o->x = func_0019A5C8() % 0xFFFF;
+        o->y = func_0019A5C8() % 0xFFFF;
+        o->z = func_0019A5C8() % 0xFFFF;
+        o->f50 = func_0019A5C8() % 200 + 50;
+        o->dir = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 15;
+        o->delay = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->size += 1.0f;
+    if (o->f50 > 0) {
+        o->f50 -= o->speed;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b593:01E02E10, 174 insns: b183:01E01F30 with the packet at ctx+0x45EC and the tracked point at ctx+0x4608 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b593_01E02E10;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b593_01E02E10 p;
+} Tv_b593_01E02E10;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b593_01E02E10 v[2];
+} Tex_b593_01E02E10;
+
+typedef struct {
+    u8 pad[0x45EC];
+    Tex_b593_01E02E10 *pk;
+    u8 pad45F0[0x4608 - 0x45F0];
+    s16 id;
+} Game_b593_01E02E10;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b593_01E02E10;
+
+static s32 func_01E02E10_b593(Game_b593_01E02E10 *g, Fx_b593_01E02E10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 fx;
+    f32 fy;
+    f32 v[4];
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0x78;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        o->mode = 2;
+    }
+    func_001F5620(func_001F53A0(), g->id, v);
+    func_001F5F90(func_001F53A0(), v);
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - 3.0f * fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    o->f8 += (s16)(func_0019A5C8() % 30 + 100);
+    o->fA += (s16)(func_0019A5C8() % 30 + 100);
+    if (o->tick != 0) {
+        if (o->col[3] > 40) {
+            o->col[3] -= 49;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E030D0_b593);
 

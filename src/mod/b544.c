@@ -469,9 +469,125 @@ static void func_01E00FB0_b544(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01320_b544);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E016F0_b544);
+/* shape b544:01E016F0, 151 insns: b354:01E022F0's tumbling chip in red (0xFF, 0x40, 0x40), size 100 (half kept in 0xA) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01950_b544);
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b544_01E016F0;
+
+static s32 func_01E016F0_b544(s32 arg0, Fx_b544_01E016F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 100;
+        o->size0 = o->size >> 1;
+        o->frame = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 60.0f;
+        o->vx /= 60.0f;
+        o->vz /= 60.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 12) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->rot[2] += o->tz;
+    o->rot[1] += o->ty;
+    o->rot[0] += o->tx;
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
+
+/* shape b544:01E01950, 152 insns: b533:01E02090's dark grey tumbling chip, size 200 (half kept in 0xA) */
+
+typedef struct {
+    s16 tx, ty, tz;
+    u8 pad6[2];
+    s16 size;
+    s16 size0;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b544_01E01950;
+
+static s32 func_01E01950_b544(s32 arg0, Fx_b544_01E01950 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 200;
+        o->size0 = o->size >> 1;
+        o->frame = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0x10, 0x10, 0x10);
+        o->mode = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vz = func_0019A5C8() % 100 - 50;
+        o->vy /= 60.0f;
+        o->vx /= 60.0f;
+        o->vz /= 60.0f;
+        o->ang = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->tz = func_0019A5C8() % 0x800 - 0x400;
+        o->ty = func_0019A5C8() % 0x800 - 0x400;
+        o->tx = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->rot[2] += o->tz;
+    o->rot[1] += o->ty;
+    o->rot[0] += o->tx;
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b415:01E022B0, 59 insns: a spinning flash: on start size 220, colours white and (0xFF,0x40,0x40), f5A/f5C
    10, second alpha 0; it grows by 0x60 (below 0xC0) for 14 ticks, then fades out by 9 and stops; the

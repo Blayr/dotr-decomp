@@ -560,7 +560,68 @@ static s32 func_01E01C50_b499(s32 arg0, Glow_b499_01E01C50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01D30_b499);
+/* shape b499:01E01D30, 155 insns: b004:01E00790 with the scene value at ctx+0xBB04 and the table at ctx+0xBC18 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0xBB04];
+    s16 val;
+    u8 padBB06[0xBC18 - 0xBB06];
+    u8 tab[1];
+} Mgr_b499_01E01D30;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b499_01E01D30;
+
+static s32 func_01E01D30_b499(Mgr_b499_01E01D30 *m, Fx_b499_01E01D30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s16 a;
+    s16 k;
+
+    a = -m->val;
+    if (o->mode == 1) {
+        o->f38 = 1;
+        o->f34 = func_0019A5C8() % 4;
+        k = func_0019A5C8() % 3;
+        if (k == 0) {
+            func_001076F0(o->col, 0xFF, 0xF0, 0);
+        } else if (k == 1) {
+            func_001076F0(o->col, 0xFF, 0, 0);
+        } else if (k == 2) {
+            func_001076F0(o->col, 0xFF, 0x80, 0);
+        }
+        o->f3A = func_0019A5C8() % 180 + 90;
+        o->f30 = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    o->x = o->x + 20.0f * func_00108030(m->tab, a + o->f3A, 0);
+    o->y = o->y + 20.0f * func_00108030(m->tab, o->f30, 0);
+    o->z = o->z + 20.0f * func_00108030(m->tab, a + o->f3A, 1);
+    return 0;
+}
 
 /* shape b479:01E01B70, 90 insns, 2 copies: a magenta pulse tied to the scene clock: size 22 (6 early on), fades in, then
    out; its frame climbs to 7, its size shrinks every third frame; dims at clock 96 and ends after it */
@@ -619,7 +680,69 @@ static s32 func_01E01FA0_b499(World_b479_01E01B70 *w, Pulse_b479_01E01B70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02110_b499);
+/* shape b499:01E02110, 151 insns: b570:01E02680 in purple (0x40, 0x10, 0x80), size 3..5, alpha up for 20 ticks, spinning by its own random spins each tick */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 dir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b499_01E02110;
+
+static s32 func_01E02110_b499(s32 arg0, Spark_b499_01E02110 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = func_0019A5C8() % 3 + 3;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x40, 0x10, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 400.0f;
+        o->vel[0] /= 400.0f;
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1] - 0.09f;
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b499:01E02370, 119 insns: b479:01E01CE0 twin: a grey flickering spark (35 x 35 shrinking 2 a tick, frame toggling from random 0/1) on the scene joint, blinking light: both alphas in by 64 up to 0xC0 for 3 ticks, then out by 9 (twice on the first) and ends */
 

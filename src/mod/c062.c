@@ -61,7 +61,66 @@ static void func_01E00080_c062(Pk_b034_01E00110 *p, Rect_b034_01E00110 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E004D0_c062);
+/* shape c062:01E004D0, 152 insns: draws the five arms of a star: mode 0 only clears the packet; otherwise the centre is the
+   average of the ten star points (two per entry, 0x70-byte entries at +0x5A50), and for each of the five point pairs
+   of the module table (0x1E05900) a quad from the two pair points to the centre is sent in the effect's colour */
+
+typedef struct {
+    s32 v[5][2];
+} Pairs_c062_01E004D0;
+
+typedef struct {
+    Vec4f a;
+    Vec4f b;
+    u8 pad20[0x50];
+} Pt_c062_01E004D0;
+
+typedef struct {
+    u8 pad0[0x5A50];
+    Pt_c062_01E004D0 pt[5];
+    u8 pad5C80[0xBCC];
+    s32 tex;
+} Scene_c062_01E004D0;
+
+extern Pairs_c062_01E004D0 D_01E05900_c062 __attribute__((aligned(16)));
+
+static void func_01E004D0_c062(Scene_c062_01E004D0 *g, u8 *fx, void *pk, s32 mode) {
+    extern void func_001092E0(void *, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_00107990(void *, void *, s32);
+    extern void func_00108F90(void *, void *, s32, s32);
+    Vec4f q[4];
+    Pairs_c062_01E004D0 pr __attribute__((aligned(16)));
+    f32 cx;
+    f32 cy;
+    f32 cz;
+    s32 i;
+    s32 j;
+
+    pr = D_01E05900_c062;
+    if (mode == 0) {
+        func_001092E0(pk, 0);
+        return;
+    }
+    cx = (g->pt[0].a.x + g->pt[1].a.x + g->pt[2].a.x + g->pt[3].a.x + g->pt[4].a.x + g->pt[0].b.x + g->pt[1].b.x +
+          g->pt[2].b.x + g->pt[3].b.x + g->pt[4].b.x) / 5.0f;
+    cy = (g->pt[0].a.y + g->pt[1].a.y + g->pt[2].a.y + g->pt[3].a.y + g->pt[4].a.y + g->pt[0].b.y + g->pt[1].b.y +
+          g->pt[2].b.y + g->pt[3].b.y + g->pt[4].b.y) / 5.0f;
+    cz = (g->pt[0].a.z + g->pt[1].a.z + g->pt[2].a.z + g->pt[3].a.z + g->pt[4].a.z + g->pt[0].b.z + g->pt[1].b.z +
+          g->pt[2].b.z + g->pt[3].b.z + g->pt[4].b.z) / 5.0f;
+    for (i = 0; i < 5; i++) {
+        for (j = 0; j < 2; j++) {
+            func_00106DD0(&q[j], g->pt[pr.v[i][j]].a.x + g->pt[pr.v[i][j]].b.x,
+                          g->pt[pr.v[i][j]].a.y + g->pt[pr.v[i][j]].b.y,
+                          g->pt[pr.v[i][j]].a.z + g->pt[pr.v[i][j]].b.z);
+        }
+        q[2].x = q[3].x = cx;
+        q[2].y = q[3].y = cy;
+        q[2].z = q[3].z = cz;
+        func_00107990(pk, fx + 0x60, 0);
+        func_00108F90(q, pk, 0, g->tex);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E00730_c062);
 

@@ -667,7 +667,104 @@ static void func_01E02590_b357(u8 *self, Obj_b357_01E02590 *obj, Pk_b357_01E0259
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E02770_b357);
+/* shape b357:01E02770, 176 insns: twelve camera-facing sprites in a circle (radius 0x06, 30 apart from the start angle
+   0x3A) around the object, each sized obj->size and turned to face the camera's yaw, sent count+1 times (self+0xB8).
+   Calls the module's sprite-UV helper (shape b008:01E00080) as a static function. */
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b357_01E02770;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b357_01E02770 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b357_01E02770;
+
+typedef struct {
+    s16 x, y, z;
+    s16 rad;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    s16 padE;
+    s32 rx, ry, rz;
+    u8 pad1C[0xC];
+    u8 tex[8];
+    s16 scale;
+    u8 pad32[6];
+    s16 size;
+    s16 ang;
+} Obj_b357_01E02770;
+
+static void func_01E02770_b357(u8 *self, Obj_b357_01E02770 *obj, Pk_b357_01E02770 *pk) {
+    extern void func_00108EF0();
+    extern void func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 m[16];
+    Vec4f pos;
+    f32 world[16];
+    f32 depth[4];
+    s32 rot[4];
+    St_b357_01E02770 uv;
+    f32 r;
+    s32 k;
+    s32 t;
+    s32 j;
+    s16 a;
+
+    a = 0;
+    pk->nreg = 0x24;
+    pk->n = 9;
+    pk->regs = 0x24242421 | ((s64)4 << 32);
+    pk->pad4 = 0;
+    pk->nreg |= 0x800;
+    func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+    *(s32 *)&pk->st.t = 0;
+    pk->q0 = 0;
+    pk->q1 = 0;
+    pk->q2 = 0;
+    pk->q3 = 0;
+    func_00107740(&uv, obj->tex);
+    pk->st = uv;
+    func_01E00100_b357((Pk_b008_01E00080 *)pk, (Rect_b008_01E00080 *)(self + 0x94), 0);
+    func_00208700(pk, *(void **)(self + 0x88), 1);
+    pos.x = obj->x;
+    pos.y = obj->y;
+    pos.z = obj->z;
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    func_00108EF0(world, 0, &obj->rx, &pos);
+    for (k = 0; k < 12; k++) {
+        r = obj->size;
+        func_00108CE0(m, r, r);
+        func_00109100(m, rot, 0, self + 0xD8);
+        t = obj->ang + a;
+        pos.x = obj->rad * func_00108030(self + 0xD8, t, 1);
+        pos.y = obj->rad * func_00108030(self + 0xD8, t, 0);
+        func_00107070(m, 0, pos.x);
+        func_00107070(m, 1, pos.y);
+        if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, depth) != 0) {
+            for (j = 0; j < *(s16 *)(self + 0xB8) + 1; j++) {
+                func_002075F0((s32)pk, *(s32 *)(self + 0x80), func_001A23B0(depth[0]));
+            }
+        }
+        a += 30;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E02A30_b357);
 

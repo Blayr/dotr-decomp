@@ -325,7 +325,74 @@ static s32 func_01E01700_b056(Game_b056_01E01700 *g, Obj_b056_01E01700 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E018A0_b056);
+/* OVL_WARM */
+
+/* shape b056:01E018A0, 145 insns: a grey puff drifting along its angle (sine table at g+0x3A98): on start one of three
+   greys (0x80/0xA0/0xC0), frame 0..6, a random angle, alpha 0x30, speed 5..22; for 20 ticks its size steps up every fourth
+   tick to 20, then it fades by 3; each tick it moves by speed along the angle and sinks by half its speed */
+
+typedef struct {
+    u8 pad0[0x3A98];
+    u8 tab[1];
+} Game_b056_01E018A0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    u8 padA[2];
+    s16 y;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Obj_b056_01E018A0;
+
+static s32 func_01E018A0_b056(Game_b056_01E018A0 *g, Obj_b056_01E018A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s16 c;
+
+    o->size = 150;
+    if (o->mode == 1) {
+        c = func_0019A5C8() % 3;
+        if (c == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        }
+        if (c == 1) {
+            func_001076F0(o->col, 0xA0, 0xA0, 0xA0);
+        }
+        if (c == 2) {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        }
+        o->frame = func_0019A5C8() % 7;
+        o->size = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->col[3] = 0x30;
+        o->speed = func_0019A5C8() % 18 + 5;
+        o->mode = 2;
+    }
+    if (o->t < 20) {
+        if (o->size < 20) {
+            if (o->t % 4 == 1) {
+                o->size++;
+            }
+        }
+    } else if (o->col[3] > 4) {
+        o->col[3] -= 3;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    o->x = o->x - o->speed * func_00108030(g->tab, o->ang, 0);
+    o->y = o->y - o->speed * func_00108030(g->tab, o->ang, 1);
+    o->y -= (s16)(o->speed >> 1);
+    return 0;
+}
 
 /* shape b056:01E01AF0, 55 insns: a grey ring that follows the game's point (x, 30, z): set up once at full alpha;
    grows by 5 up to 100, turns 12 a frame, fades by 16 after 30 frames */
@@ -524,7 +591,83 @@ static s32 func_01E01E30_b056(Game_b056_01E01E30 *g, Obj_b056_01E01E30 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01FC0_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E021A0_b056);
+/* shape b056:01E021A0, 142 insns: b056:01E023E0 family scene light (ctx+0x3730) at the camera's x/z: kind 0 brightens red by 12 and green by 3 to 128, height 110, level +0.1 below 1.0 then switches to kind 1; kind 1 dims them by 12 / 3 to 20 / 9 and the level by 0.1 above 0.0, then back to kind 0; off and ended at scene count 305 */
+
+typedef struct {
+    f32 c[4];
+    f32 pos[4];
+    f32 f20;
+    f32 f24;
+    f32 level;
+} Light_b056_01E021A0;
+
+typedef struct {
+    u8 pad0[0x3730];
+    Light_b056_01E021A0 lt;
+    u8 pad375C[0x3996 - 0x375C];
+    s16 count;
+} Ctx_b056_01E021A0;
+
+typedef struct {
+    u8 pad0[0x30];
+    s16 kind;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b056_01E021A0;
+
+static s32 func_01E021A0_b056(Ctx_b056_01E021A0 *g, Fx_b056_01E021A0 *o) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F6C10(void *);
+    f32 v[4];
+
+    func_001F5F90(func_001F53A0(), v);
+    if (o->mode == 1) {
+        g->lt.c[0] = 0.0f;
+        g->lt.c[1] = 0.0f;
+        g->lt.c[2] = 0.0f;
+        g->lt.c[3] = 0.0f;
+        g->lt.level = 0.0f;
+        o->mode = 2;
+    }
+    g->lt.pos[0] = v[0];
+    g->lt.pos[1] = 0.0f;
+    g->lt.pos[2] = v[2];
+    if (o->kind == 0) {
+        if (g->lt.c[0] < 128.0f) {
+            g->lt.c[0] += 12.0f;
+        }
+        if (g->lt.c[1] < 128.0f) {
+            g->lt.c[1] += 3.0f;
+        }
+        g->lt.f20 = 0.0f;
+        g->lt.f24 = 110.0f;
+        if (g->lt.level < 1.0) {
+            g->lt.level += 0.1f;
+        } else {
+            o->kind = 1;
+        }
+    } else {
+        if (g->lt.c[0] > 20.0f) {
+            g->lt.c[0] -= 12.0f;
+        }
+        if (g->lt.c[1] > 9.0f) {
+            g->lt.c[1] -= 3.0f;
+        }
+        if (g->lt.level > 0.1) {
+            g->lt.level -= 0.1f;
+        } else {
+            o->kind = 0;
+        }
+    }
+    if (g->count == 305) {
+        func_001F6C10(NULL);
+        o->mode = 0;
+    } else {
+        func_001F6C10(&g->lt);
+    }
+    return 0;
+}
 
 /* shape b056:01E023E0, 135 insns: scene light (ctx+0x3730, yellow 255/255/0) kept at the camera's x/z: kind 0 sets height 150 and switches the level to 1.0 (double compare), then kind 1; once the scene timer is under 30 the colour fades by 29 and the level by 0.05 (double compare); the light goes off and the effect ends when the timer hits 1 */
 

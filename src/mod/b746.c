@@ -1092,9 +1092,194 @@ static s32 func_01E03010_b746(s32 arg0, Fx_b746_01E03010 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E03210_b746);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E036B0_b746);
+/* shape b746:01E036B0, 183 insns: b065:01E02410 in blue (0x80, 0x80, 0xFF over 0x40, 0x40, 0xFF), kinds 2/70, 2/30, 8/400 growing 5 or 2.5, alpha up by 0x40 for 9 ticks; follows ctx+0xCB5A toward ctx+0xCB58 and adds the scene drift (ctx+0xCAF0) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E03990_b746);
+typedef struct {
+    u8 pad0[0xCAF0];
+    f32 drift[3];
+    u8 padCAFC[0xCB58 - 0xCAFC];
+    s16 id1;
+    s16 id0;
+} Ctx_b746_01E036B0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b746_01E036B0;
+
+static s32 func_01E036B0_b746(Ctx_b746_01E036B0 *g, Fx_b746_01E036B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+    f32 t;
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x40, 0xFF);
+        if (o->kind == 0) {
+            o->f30 = 2.0f;
+            o->f34 = 70.0f;
+        }
+        if (o->kind == 1) {
+            o->f30 = 2.0f;
+            o->f34 = 30.0f;
+        }
+        if (o->kind == 2) {
+            o->f30 = 8.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f52 = 0;
+    }
+    if (o->tick < 9) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0 && o->tick != 0) {
+        o->f34 += 5.0f;
+    }
+    if (o->kind == 1 && o->tick != 0) {
+        o->f34 += 2.5f;
+    }
+    if (o->tick != 0) {
+        if (o->f52 < 0x19) {
+            o->f52++;
+        }
+    }
+    o->tick++;
+    o->f5A += 6;
+    func_001F5620(func_001F53A0(), g->id0, o->pos);
+    func_001F5620(func_001F53A0(), g->id1, v);
+    t = o->f52;
+    v[0] = (v[0] - o->pos[0]) / 25.0f;
+    v[1] = (v[1] - o->pos[1]) / 25.0f;
+    v[2] = (v[2] - o->pos[2]) / 25.0f;
+    o->pos[0] += v[0] * t;
+    o->pos[1] += v[1] * t;
+    o->pos[2] += v[2] * t;
+    o->pos[0] += g->drift[0];
+    o->pos[1] += g->drift[1];
+    o->pos[2] += g->drift[2];
+    return 0;
+}
+
+/* shape b746:01E03990, 183 insns: b852:01E03070's trail light in lilac (0xC0/0x80/0xFF) feeding three 20-point trails
+   from joints 0xCB58, 0xCB5C and 0xCB5A until scene frame 80; alpha up until frame 76 */
+
+typedef struct {
+    f32 x, y, z, w;
+} Pt_b746_01E03990;
+
+typedef struct {
+    u8 pad0[0xB1D0];
+    Pt_b746_01E03990 a[20];
+    Pt_b746_01E03990 b[20];
+    Pt_b746_01E03990 c[20];
+    u8 padB590[0x15C8];
+    s16 ja;
+    s16 jc;
+    s16 jb;
+    u8 padCB5E[0x6E];
+    s16 frame;
+} Scene_b746_01E03990;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 hE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b746_01E03990;
+
+static s32 func_01E03990_b746(Scene_b746_01E03990 *g, Fx_b746_01E03990 *o) {
+    extern void b746_01E00080(Pt_b746_01E03990 *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[4];
+    s16 i;
+    s16 j;
+    s16 k;
+    Pt_b746_01E03990 *q;
+
+    func_001076F0(o->col, 0xC0, 0x80, 0xFF);
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        o->hE = 30;
+        func_001F5620(func_001F53A0(), g->ja, p);
+        q = g->a;
+        for (i = 0; i < 19; i++) {
+            q[i].x = p[0];
+            q[i].y = p[1];
+            q[i].z = p[2];
+        }
+        func_001F5620(func_001F53A0(), g->jb, p);
+        q = g->b;
+        for (j = 0; j < 19; j++) {
+            q[j].x = p[0];
+            q[j].y = p[1];
+            q[j].z = p[2];
+        }
+        func_001F5620(func_001F53A0(), g->jc, p);
+        q = g->c;
+        for (k = 0; k < 19; k++) {
+            q[k].x = p[0];
+            q[k].y = p[1];
+            q[k].z = p[2];
+        }
+        o->mode = 2;
+    }
+    if (g->frame < 76) {
+        if (o->col[3] < 0xF0) {
+            o->col[3] += 0x3C;
+        }
+    } else if (o->col[3] > 30) {
+        o->col[3] -= 29;
+    } else {
+        o->mode = 0;
+    }
+    if (g->frame < 80) {
+        func_001F5620(func_001F53A0(), g->ja, p);
+        b746_01E00080(&g->a[19], 20, 0, p);
+        func_001F5620(func_001F53A0(), g->jb, p);
+        b746_01E00080(&g->b[19], 20, 0, p);
+        func_001F5620(func_001F53A0(), g->jc, p);
+        b746_01E00080(&g->c[19], 20, 0, p);
+    }
+    o->h6 = 5;
+    o->t++;
+    return 0;
+}
 
 /* shape b746:01E03C70, 69 insns: constant variant of b287:01E02C80 (0xE->0x14, 150.0f->200.0f, colour (128, 64, 255)) */
 

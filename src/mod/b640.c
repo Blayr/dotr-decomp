@@ -697,7 +697,69 @@ static void func_01E01910_b640(Obj_b094_01E00920 *obj, Data_b094_01E00920 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E01C70_b640);
+/* shape b640:01E01C70, 168 insns: the b640 module's event step: counts ticks; at 213 spawns b640:01E01F10 and b640:01E02C50 once at the tracked point (ctx+0x9CDC) in the next of 20 slots; at 59 spawns b640:01E030E0 in slots 1 and 2; from 59 to 259 spawns b640:01E02EE0, and from 191 to 210 fades bytes 180..255 of the table at ctx+0xA004 (down 2 when ctx+0x9DFE is set, else up 1); spawns b640:01E036C0 at tick 1 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x9CDC - 0x25C];
+    s16 id;
+    u8 pad9CDE[0x9DFA - 0x9CDE];
+    s16 slot;
+    s16 next;
+    s16 down;
+    u8 pad9E00[2];
+    s16 timer;
+    u8 pad9E04[0xA004 - 0x9E04];
+    s8 tab[0x100];
+} Ctx_b640_01E01C70;
+
+static void func_01E01C70_b640(Ctx_b640_01E01C70 *g) {
+    extern s32 b640_01E01F10(void);
+    extern s32 b640_01E02C50(void);
+    extern s32 b640_01E02EE0(void);
+    extern s32 b640_01E030E0(void);
+    extern s32 b640_01E036C0(void);
+    extern void b640_01E042C0(Ctx_b640_01E01C70 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    s16 i;
+
+    g->timer++;
+    if (g->timer == 213) {
+        for (i = 0; i < 1; i++) {
+            func_001F5620(func_001F53A0(), g->id, g->pos);
+            g->slot = g->next;
+            b640_01E042C0(g, b640_01E01F10, 0);
+            b640_01E042C0(g, b640_01E02C50, 0);
+            g->next++;
+            if (g->next >= 20) {
+                g->next = 0;
+            }
+        }
+    }
+    if (g->timer == 59) {
+        g->slot = 1;
+        b640_01E042C0(g, b640_01E030E0, 0);
+        g->slot = 2;
+        b640_01E042C0(g, b640_01E030E0, 0);
+    }
+    if (g->timer >= 59 && g->timer < 260) {
+        b640_01E042C0(g, b640_01E02EE0, 0);
+        if (g->timer >= 191 && g->timer < 211) {
+            for (i = 180; i < 256; i++) {
+                if (g->down != 0) {
+                    g->tab[i] -= 2;
+                } else {
+                    g->tab[i] += 1;
+                }
+            }
+        }
+    }
+    if (g->timer == 1) {
+        b640_01E042C0(g, b640_01E036C0, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E01F10_b640);
 
@@ -988,7 +1050,87 @@ static s32 func_01E02AD0_b640(void *arg0, Obj_b640_01E02AD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E02C50_b640);
+/* shape b640:01E02C50, 164 insns: a white trail (70 points at ctx+0x3BB0 + kind*0x460, all set to the kind's point ctx+0x9330 on start), size 50 shrinking 2 after tick 82, flickering white/grey every other tick; pushes its point onto the trail for 35 ticks; alpha up by 0x40 to 0xC0; turns 5 a tick to 82; h6 grows from 20 to 65 */
+
+typedef struct {
+    u8 pad0[0x3BB0];
+    Vec4f tr[1][70];
+    u8 pad[0x9330 - 0x3BB0 - 0x460];
+    Vec4f pts[1];
+} Ctx_b640_01E02C50;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b640_01E02C50;
+
+static s32 func_01E02C50_b640(Ctx_b640_01E02C50 *g, Fx_b640_01E02C50 *o) {
+    extern void b640_01E00080(Vec4f *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 v[4];
+    s16 i;
+    Vec4f *p;
+
+    v[0] = g->pts[o->kind].x;
+    v[1] = g->pts[o->kind].y;
+    v[2] = g->pts[o->kind].z;
+    if (o->mode == 1) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        p = g->tr[o->kind];
+        for (i = 0; i < 70; i++) {
+            p->x = v[0];
+            p->y = v[1];
+            p->z = v[2];
+            p++;
+        }
+        o->h6 = 20;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->f56 = 4;
+        o->f48 = 50.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 82) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->f48 >= 0.0f) {
+        o->f48 -= 2.0f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick < 83) {
+        o->f5A += 5;
+    }
+    if (o->tick < 35) {
+        b640_01E00080(&g->tr[o->kind][69], 70, 0, v);
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->tick != 0) {
+        if (o->h6 < 65) {
+            o->h6++;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b640:01E02EE0, 127 insns: b433:01E027F0-style rising spark on a joint: on start size 3..10, variant 4, white,
    random spin 0x28, frame 1, y 150..399, turn 0..359, step 5..14, w 1..8, hold 2..4; alpha 0xC0 while held, then

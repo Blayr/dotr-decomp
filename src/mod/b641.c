@@ -741,9 +741,138 @@ static s32 func_01E01C90_b641(void *arg0, Obj_b396_01E01990 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b641", func_01E01E40_b641);
+/* shape b641:01E01E40, 154 insns: b569:01E01C60's growing puff in four kinds (red, pink, blue, pale blue), 0x5C 2, growth 15..22.9, the third random word also into 0x20, fading by 5, f4C a tenth of the size */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b641", func_01E020B0_b641);
+typedef struct {
+    u8 pad00[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b641_01E01E40;
+
+static s32 func_01E01E40_b641(void *arg0, Obj_b641_01E01E40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 4;
+        if (o->h50 == 0) {
+            func_001076F0(o->col, 0xC0, 0x20, 0x20);
+            func_001076F0(o->col2, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->col, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        if (o->h50 == 2) {
+            func_001076F0(o->col, 0x20, 0x20, 0xC0);
+            func_001076F0(o->col2, 0, 0, 0);
+        }
+        if (o->h50 == 3) {
+            func_001076F0(o->col, 0xA0, 0xA0, 0xFF);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        o->h5A = 60;
+        o->h5C = 2;
+        o->f34 = func_0019A5C8() % 80 + 150;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w20 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = 0.1f * o->f48;
+    o->t++;
+    return 0;
+}
+
+/* shape b641:01E020B0, 147 insns: b287:01E02510 with its table at ctx+0xB4BC */
+
+typedef struct {
+    u8 pad0000[0xB4BC];
+    u8 tab[1];
+} Mgr_b641_01E020B0;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b641_01E020B0;
+
+static s32 func_01E020B0_b641(Mgr_b641_01E020B0 *m, Obj_b641_01E020B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 150;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c60, 0xFF, 0xFF, 0xFF);
+        o->h58 = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->h5C = (func_0019A5C8() >> 4) % 360;
+        o->f14 += 8.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 8.6f * func_00108030(m->tab, o->h5A, 1);
+        o->f18 += 8.6f * func_00108030(m->tab, o->h5C, 1);
+    }
+    if (o->h54 < 26) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x60;
+        }
+    } else if (o->c60[3] > 20) {
+        o->c60[3] -= 0x13;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->f14 += 0.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 0.6f * func_00108030(m->tab, o->h5A, 1);
+        o->f18 += 0.6f * func_00108030(m->tab, o->h5C, 1);
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 /* shape b641:01E02300, 59 insns: constant variant of b415:01E022B0 (colour (64, 64, 255)) */
 

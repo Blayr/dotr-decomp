@@ -274,7 +274,86 @@ static void func_01E00CE0_b505(Scene_b505_01E00CE0 *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E00E00_b505);
+/* shape b505:01E00E00, 176 insns: b056:01E02890 family grey spark: frame 7..26, height 10..159 rising 7..16 a tick,
+   random angle turning 2 one way or the other, width 0..29, hold 30..44; alpha up by 25 to 0x80, then down by 20; the
+   sub-frame steps to 6 except every 15th tick, it jitters up/down 1..4 every tick and moves 4 a tick along z, back
+   when the scene flag (0x2BC6) is set */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    s16 z;
+    s16 hold;
+    s16 w;
+    s16 dir;
+    u8 padC[2];
+    s16 step;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b505_01E00E00;
+
+typedef struct {
+    u8 pad0[0x2BC6];
+    s16 flag;
+} Scene_b505_01E00E00;
+
+static s32 func_01E00E00_b505(Scene_b505_01E00E00 *g, Obj_b505_01E00E00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = func_0019A5C8() % 20 + 7;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->y = func_0019A5C8() % 150 + 10;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 10 + 7;
+        o->w = func_0019A5C8() % 30;
+        o->dir = func_0019A5C8() % 2;
+        o->hold = func_0019A5C8() % 15 + 30;
+        o->sub = 0;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x19;
+        }
+    } else if (o->c0[3] > 0x15) {
+        o->c0[3] -= 0x14;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    if (o->t % 15 != 0) {
+        if (o->sub < 6) {
+            o->sub++;
+        }
+    }
+    if (o->t % 2 == 1) {
+        o->h2 += (s16)(func_0019A5C8() % 4 + 1);
+    } else {
+        o->h2 -= (s16)(func_0019A5C8() % 4 + 1);
+    }
+    o->t++;
+    if (o->dir != 0) {
+        o->ang += 2;
+    } else {
+        o->ang -= 2;
+    }
+    if (g->flag != 0) {
+        o->z -= 4;
+    } else {
+        o->z += 4;
+    }
+    return 0;
+}
 
 /* shape b505:01E010C0, 37 insns: pulse: alpha grows by 10 up to 0xA0, then (phase 1) fades by 10; at the bottom it rises
    again, clearing 0x36 once the game value at 0x2BCA passes 0xD2; colour (0x5F, 0x3F, 0x3F) */

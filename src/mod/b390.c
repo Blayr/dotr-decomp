@@ -1073,7 +1073,95 @@ static s32 func_01E030F0_b390(s32 arg0, Fx_b390_01E030F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E03270_b390);
+/* shape b390:01E03270, 149 insns: b426:01E031D0's rising puff in blue (0x80, 0x80, 0xFF), sine table at +0x8784, up flag at +0x847C */
+
+typedef struct {
+    u8 pad0000[0x847C];
+    s16 up;
+    u8 pad847E[0x306];
+    u8 tab[1];
+} Mgr_b390_01E03270;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x18];
+    s16 h50;
+    u8 pad52[2];
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b390_01E03270;
+
+static s32 func_01E03270_b390(Mgr_b390_01E03270 *m, Obj_b390_01E03270 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 150;
+        o->hA = 150;
+        o->h56 = func_0019A5C8() % 8;
+        o->f30 = 3.5f * func_00108030(m->tab, o->h50, 1);
+        o->f34 = 3.5f * func_00108030(m->tab, o->h50, 0);
+        func_001076F0(o->c60, 0x80, 0x80, 0xFF);
+        func_001076F0(o->c64, 0x80, 0x80, 0xFF);
+        o->h58 = 2;
+        o->c64[3] = 0;
+        o->h5A = 0;
+        o->h5C = 0;
+    }
+    if (o->h54 < 10) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x40;
+        }
+        if (o->c64[3] < 0xC0) {
+            o->c64[3] += 0x40;
+        }
+    } else {
+        if (o->c60[3] > 15) {
+            o->c60[3] -= 14;
+        } else {
+            o->h58 = 0;
+        }
+        if (o->c60[3] > 15) {
+            o->c60[3] -= 14;
+        }
+    }
+    if (o->h54 != 0) {
+        o->h8 += 15;
+        o->hA += 15;
+    }
+    if (o->h54 != 0) {
+        o->f10 += o->f30;
+        o->f14 += o->f34;
+        if (m->up != 0) {
+            o->f18 += 2.0f * func_00108030(m->tab, o->h5A, 0);
+        } else {
+            o->f18 -= 2.0f * func_00108030(m->tab, o->h5A, 0);
+        }
+        if (o->h5A < 90) {
+            o->h5A += 5;
+        }
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 /* shape b390:01E034D0, 69 insns: a rising dark flash: starts at height 100 (f4C = f48 - 500), speed 600/10,
    colours (0x20,0x20,0x20) twice, f5A/f5C 15; alpha 0x80 for 3 ticks, then fades out by 14 and stops; climbs by

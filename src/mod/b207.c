@@ -1396,7 +1396,105 @@ static s32 func_01E03780_b207(s32 arg0, Flash_b207_01E03780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E03860_b207);
+/* shape b207:01E03860, 173 insns: a flash light at g+0x2AA0 (b490:01E00E90's kind): on start colour 0, height 0/70/0 and the
+   effect's position; it brightens (strength +0.2 to 1, colour +42/+21/+10 up to 128/128/64), then once full fades
+   (strength -0.1, colour -16/-16/-8) until it ends; func_001F6C10 gets the light (or 0 once ended); it also ends when
+   the light's state word is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x534];
+    s32 state;
+} Light_b207_01E03860;
+
+typedef struct {
+    u8 pad0[0x2AA0];
+    Light_b207_01E03860 light;
+} Game_b207_01E03860;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x2A];
+    s16 f30;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b207_01E03860;
+
+static s32 func_01E03860_b207(Game_b207_01E03860 *g, Fx_b207_01E03860 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a[0] = 0.0f;
+        g->light.a[1] = 0.0f;
+        g->light.a[2] = 0.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 70.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f30 = 0;
+    }
+    if (o->f30 == 0) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.2f;
+        } else {
+            o->f30 = 1;
+        }
+        if (g->light.a[0] < 128.0f) {
+            g->light.a[0] += 42.0f;
+        } else {
+            g->light.a[0] = 128.0f;
+        }
+        if (g->light.a[1] < 64.0f) {
+            g->light.a[1] += 21.0f;
+        } else {
+            g->light.a[1] = 128.0f;
+        }
+        if (g->light.a[2] < 32.0f) {
+            g->light.a[2] += 10.0f;
+        } else {
+            g->light.a[2] = 64.0f;
+        }
+    } else {
+        if (!(g->light.b[2] <= 0.1f)) {
+            g->light.b[2] -= 0.1f;
+        } else {
+            o->mode = 0;
+        }
+        if (!(g->light.a[0] <= 16.0f)) {
+            g->light.a[0] -= 16.0f;
+        } else {
+            g->light.a[0] = 0.0f;
+        }
+        if (!(g->light.a[1] <= 16.0f)) {
+            g->light.a[1] -= 16.0f;
+        } else {
+            g->light.a[1] = 0.0f;
+        }
+        if (!(g->light.a[2] <= 8.0f)) {
+            g->light.a[2] -= 8.0f;
+        } else {
+            g->light.a[2] = 0.0f;
+        }
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.state == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b207:01E03B20, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3000 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

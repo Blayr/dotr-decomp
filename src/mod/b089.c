@@ -813,7 +813,74 @@ static s32 func_01E031D0_b089(Ctx_b089_01E031D0 *ctx, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E032F0_b089);
+/* shape b089:01E032F0, 186 insns: b089:01E035E0 family flat quad: mode 0 sets texture 0x1E at its angle 0x34, the colour and the scene texture (g+0x7C); else places it at its position plus a tenth of 0x8..0xC and spans the quad between the angles 0x3A and 0x3A + 20 at radius 0x38 (g+0x3B8C), 10 high on the far edge */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Fx_b089_01E032F0;
+
+typedef struct {
+    u8 pad0[0x7C];
+    s32 tex;
+    u8 pad80[0x3B8C - 0x80];
+    u8 trig[1];
+} Scene_b089_01E032F0;
+
+static void func_01E032F0_b089(Scene_b089_01E032F0 *g, Fx_b089_01E032F0 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+    s16 k;
+
+    v = (s32)func_00207500();
+    if (mode == 0) {
+        func_00106080(rm, 0x1E, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    func_00108EF0(m, 0, 0, &pos);
+    k = o->ang;
+    quad[2].x = o->size * func_00108030(g->trig, k, 1);
+    quad[2].z = o->size * func_00108030(g->trig, k, 0);
+    quad[0].x = o->size * func_00108030(g->trig, k, 1);
+    quad[0].z = o->size * func_00108030(g->trig, k, 0);
+    k = o->ang + 20;
+    quad[3].x = o->size * func_00108030(g->trig, k, 1);
+    quad[3].z = o->size * func_00108030(g->trig, k, 0);
+    quad[1].x = o->size * func_00108030(g->trig, k, 1);
+    quad[1].z = o->size * func_00108030(g->trig, k, 0);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 10.0f;
+    quad[3].y = 10.0f;
+    func_00108F90(quad, p, m, v);
+}
 
 /* shape b089:01E035E0, 103 insns: mode 0 sets the drawing state (a 0x14 matrix from its angle 0x34, colour, the scene
    texture 0x78); otherwise draws the effect as a camera-facing square of its size 0x38: camera rotation, world matrix at its position offset by

@@ -758,7 +758,103 @@ static s32 func_01E028C0_b597(void *arg0, Obj_b152_01E02990 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02A20_b597);
+/* shape b597:01E02A20, 168 insns: b152:01E02AF0 with kind 2 white over pink (0xFF, 0x80, 0x80) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b597_01E02A20;
+
+static s32 func_01E02A20_b597(s32 arg0, Fx_b597_01E02A20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f48 = 30.0f;
+            o->f4C = 0.0f;
+            o->hold = 300;
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        }
+        if (o->kind == 1) {
+            o->f48 = 350.0f;
+            o->f4C = 0.0f;
+            o->hold = 12;
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col2, 0xFF, 0xC0, 0xC0);
+        }
+        if (o->kind == 2) {
+            o->f48 = 160.0f;
+            o->f4C = 0.0f;
+            o->hold = 12;
+            func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        }
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->kind == 0) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 14;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x40;
+            }
+        }
+        if (o->kind == 2) {
+            if (o->col2[3] < 0xC0) {
+                o->col2[3] += 0x40;
+            }
+        }
+    } else {
+        if (o->kind == 0 || o->kind == 1) {
+            if (o->col[3] > 12) {
+                o->col[3] -= 11;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (o->kind == 2) {
+            if (o->col2[3] > 16) {
+                o->col2[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x8F, 0x8F, 0x8F);
+        } else {
+            func_001076F0(o->col, 0x70, 0x70, 0x70);
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] = 0x4000;
+    o->rot[1] = 0;
+    o->tick++;
+    return 0;
+}
 
 /* shape b152:01E02D90, 120 insns, 2 copies: a white glint: set up once (random size 8..22, frame 4, random turn on all axes,
    angle 20..49, speed 15..34, life 5..14); full for its life, then fades out; turns by its speed (b225:01E026A0 family, 0x58-state layout) */

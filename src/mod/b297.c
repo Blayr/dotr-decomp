@@ -261,7 +261,75 @@ static void func_01E00920_b297(Obj_b003_01E00920 *obj, Def_b003_01E00920 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E00EA0_b297);
+/* shape b297:01E00EA0, 156 insns: the scene script of b297: it sets the scene colour to red 0x80 and counts g+0x3534;
+   from tick 21 to 75 it puts the burst point 2 above model joint A (g+0x3516) and spawns the 0x1E02010 effect; from 81
+   to 311 the same with the 0x1E011F0 and 0x1E014F0 effects; from 121 to 319 it scatters the point around joint B
+   (g+0x3518) seen from the other camera and spawns the 0x1E01B70 and 0x1E01DC0 effects */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x3298];
+    u8 col[4];
+    u8 pad34F8[0x1E];
+    s16 ja;
+    s16 jb;
+    u8 pad351A[0x1A];
+    s16 tick;
+} Ctx_b297_01E00EA0;
+
+static void func_01E00EA0_b297(Ctx_b297_01E00EA0 *g) {
+    extern void b297_01E011F0();
+    extern void b297_01E014F0();
+    extern void b297_01E01B70();
+    extern void b297_01E01DC0();
+    extern void b297_01E02010();
+    extern void b297_01E03030(Ctx_b297_01E00EA0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    f32 v[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick >= 21 && g->tick < 76) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        g->x = v[0];
+        g->y = 2.0f + v[1];
+        g->z = v[2];
+        for (i = 0; i < 1; i++) {
+            b297_01E03030(g, b297_01E02010, 0);
+        }
+    }
+    if (g->tick > 80 && g->tick < 312) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        g->x = v[0];
+        g->y = 2.0f + v[1];
+        g->z = v[2];
+        for (i = 0; i < 1; i++) {
+            b297_01E03030(g, b297_01E011F0, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b297_01E03030(g, b297_01E014F0, 0);
+        }
+    }
+    if (g->tick > 120 && g->tick < 320) {
+        func_001F5620(func_001F5380(), g->jb, v);
+        g->x = v[0] + func_0019A5C8() % 20 - 10.0f;
+        g->y = v[1] + func_0019A5C8() % 40 - 20.0f;
+        g->z = v[2] + func_0019A5C8() % 20 - 10.0f;
+        for (i = 0; i < 1; i++) {
+            b297_01E03030(g, b297_01E01B70, 0);
+        }
+        b297_01E03030(g, b297_01E01DC0, 0);
+    }
+}
 
 /* shape b003:01E01780, 56 insns, 6 copies: a rising, spinning glow: fades in over 2 frames, then out (variant of b018:01E02480) */
 
@@ -303,7 +371,93 @@ static s32 func_01E01110_b297(void *arg0, Obj_b003_01E01780 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E011F0_b297);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E014F0_b297);
+/* shape b297:01E014F0, 175 insns: b008:01E01660's glow aimed between two joints: grey 0x70 of size 50, rise 5..9, holds for
+   30..39 ticks fading in by 0x20 to 0x40; on start hC is the angle from joint g+0x3514 to g+0x3516, each tick h4 turns
+   by a fortieth of the camera depth difference between func_001F5380's and func_001F53A0's views, and h30 grows by
+   the rise */
+
+typedef struct {
+    u8 pad0[0x3514];
+    s16 ja;
+    s16 jb;
+} Game_b297_01E014F0;
+
+typedef struct {
+    u8 pad0[4];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b297_01E014F0;
+
+static s32 func_01E014F0_b297(Game_b297_01E014F0 *g, Glow_b297_01E014F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->kind = 0;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 30;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 40.0f;
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E017B0_b297);
 
@@ -448,7 +602,101 @@ static s32 func_01E01DC0_b297(void *arg0, Obj_b003_01E01EC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E02010_b297);
+/* shape b297:01E02010, 178 insns: b297:01E014F0's glow in grey 0x50 placed 10 off along z by the scene flag (0x3530) and
+   5 lower; it grows by 2 to 90 and then 2 more a tick, without the camera drift */
+
+typedef struct {
+    u8 pad0[0x3514];
+    s16 ja;
+    s16 jb;
+    u8 pad3518[0x18];
+    s16 flag;
+} Game_b297_01E02010;
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b297_01E02010;
+
+static s32 func_01E02010_b297(Game_b297_01E02010 *g, Glow_b297_01E02010 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 45;
+        o->kind = 0;
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 15;
+        o->h8 = func_0019A5C8() % 35;
+        o->hC = func_0019A5C8() % 3 + 3;
+        o->h6 = func_0019A5C8() % 15 + 10;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        if (g->flag != 0) {
+            o->h4 -= 10;
+        } else {
+            o->h4 += 10;
+        }
+        o->h2 -= 5;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x12;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 90) {
+            o->f38 += 2;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 2;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

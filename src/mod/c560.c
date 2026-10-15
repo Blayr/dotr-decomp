@@ -510,7 +510,72 @@ static s32 func_01E01470_c560(s32 obj, Obj_b000_01E05110 *o, Cam_b000_01E05110 *
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c560", func_01E019D0_c560);
+/* shape c560:01E019D0, 158 insns: c560's quarter-wave table lookup (91 floats, 0..90 degrees): returns the sine of the
+   angle (mode 0) or its cosine (mode != 0), the angle first wrapped into 0..359 */
+
+static f32 func_01E019D0_c560(f32 *tab, s16 a, s32 mode) {
+    s16 b;
+    f32 r;
+
+    if (mode == 0) {
+        if (a >= 360) {
+            a %= 360;
+        }
+        if (a < -359) {
+            a %= 360;
+        }
+        if (a < 0) {
+            a += 360;
+        }
+        if (a < 90) {
+            tab += a;
+            r = *tab;
+        } else if (a < 180) {
+            b = a - 90;
+            tab += 90 - b;
+            r = *tab;
+        } else if (a < 270) {
+            b = a - 180;
+            tab += b;
+            r = *tab;
+            r *= -1.0f;
+        } else {
+            b = a - 270;
+            tab += 90 - b;
+            r = *tab;
+            r *= -1.0f;
+        }
+    } else {
+        if (a >= 360) {
+            a %= 360;
+        }
+        if (a < -359) {
+            a %= 360;
+        }
+        if (a < 0) {
+            a += 360;
+        }
+        if (a < 90) {
+            tab += 90 - a;
+            r = *tab;
+        } else if (a < 180) {
+            b = a - 90;
+            tab += b;
+            r = *tab;
+            r *= -1.0f;
+        } else if (a < 270) {
+            b = a - 180;
+            tab += 90 - b;
+            r = *tab;
+            r *= -1.0f;
+        } else {
+            b = a - 270;
+            tab += b;
+            r = *tab;
+        }
+    }
+    return r;
+}
 
 /* shape c560:01E01C50, 123 insns: c560 trail link in a 20-slot list (0x5C bytes at ctx+0x1FC): takes the first free slot (marks it slot+1), copies the context's colour twice, its size as shorts, height 13 above, both clamped to 50, chains after the context's last piece and becomes it; returns 1, or 0 when full */
 

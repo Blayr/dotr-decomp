@@ -528,7 +528,91 @@ static void func_01E01210_b477(Obj_b476_01E017C0 *o, Ring_b476_01E017C0 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b477", func_01E01600_b477);
+/* shape b477:01E01600, 172 insns: the effect scene's step: clears the tint to 0x80/0/0/0 and counts the frame (0x365A);
+   before frame 137 the spawn point follows joint 0x3646; on 68 it moves to joint 0x3644 (side 1), and from 80 to 100
+   it keeps following it; on frames 78, 84 and 90 it takes joint 0x363C pushed away from joint 0x363E by their
+   distance and spawns eight 0x1E018B0, a 0x1E01D50 and three 0x1E01E30 for each side */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x33B8];
+    u8 col[4];
+    u8 pad3618[0x24];
+    s16 j3C;
+    s16 j3E;
+    u8 pad3640[4];
+    s16 j44;
+    s16 j46;
+    u8 pad3648[0xE];
+    s16 side;
+    u8 pad3658[2];
+    s16 t;
+} Scene_b477_01E01600;
+
+static void func_01E01600_b477(Scene_b477_01E01600 *g) {
+    extern void b477_01E018B0(void);
+    extern void b477_01E01D50(void);
+    extern void b477_01E01E30(void);
+    extern s32 b477_01E02B70(Scene_b477_01E01600 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f v[2];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t < 137) {
+        func_001F5620(func_001F53A0(), g->j46, &a);
+        g->px = a.x;
+        g->py = a.y;
+        g->pz = a.z;
+    }
+    if (g->t == 68) {
+        func_001F5620(func_001F53A0(), g->j44, &a);
+        g->px = a.x;
+        g->py = a.y;
+        g->pz = a.z;
+        g->side = 1;
+    }
+    if (g->t >= 80 && g->t < 101) {
+        func_001F5620(func_001F53A0(), g->j44, &a);
+        g->px = a.x;
+        g->py = a.y;
+        g->pz = a.z;
+        g->px = a.x;
+        g->py = a.y;
+        g->pz = a.z;
+        g->side = 0;
+        g->side = 1;
+    }
+    if (g->t == 78 || g->t == 84 || g->t == 90) {
+        func_001F5620(func_001F53A0(), g->j3C, &v[0]);
+        func_001F5620(func_001F53A0(), g->j3E, &v[1]);
+        v[1].x = v[0].x - v[1].x;
+        v[1].y = v[0].y - v[1].y;
+        v[1].z = v[0].z - v[1].z;
+        g->px = v[0].x + v[1].x;
+        g->py = v[0].y + v[1].y;
+        g->pz = v[0].z + v[1].z;
+        for (i = 0; i < 8; i++) {
+            b477_01E02B70(g, (s32)b477_01E018B0, 0);
+        }
+        b477_01E02B70(g, (s32)b477_01E01D50, 0);
+        g->side = 0;
+        for (i = 0; i < 3; i++) {
+            b477_01E02B70(g, (s32)b477_01E01E30, 0);
+        }
+        g->side = 1;
+        for (i = 0; i < 3; i++) {
+            b477_01E02B70(g, (s32)b477_01E01E30, 0);
+        }
+    }
+}
 
 /* shape b124:01E01500, 93 insns, 3 copies: step of a drifting spark: on state 1 picks a random phase, angle, speed and
    lifetime and a grey colour; full alpha while young, then fades by 15 until it ends; drifts by its speed. */

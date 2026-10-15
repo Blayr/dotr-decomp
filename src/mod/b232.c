@@ -136,9 +136,170 @@ static void func_01E00080_b232(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00480_b232);
+/* shape b232:01E00480, 164 insns: the b232 module's event step: counts ticks; until 154 follows the tracked point (ctx+0x44E4) with its marker (ctx+0x4470), at 155 aims it at the other point over 32 ticks and moves it until 185; spawns b232:01E00EA0 at tick 1, two b232:01E00710 at 35, b232:01E00F80 at 45, b232:01E01130 at 236; from 191 to 240 spawns b232:01E00AC0 every other tick turning 3; from 226 to 300 spawns b232:01E00970 every other tick 10 higher each tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00710_b232);
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x4470 - 0x25C];
+    f32 m[3];
+    u8 pad447C[8];
+    f32 dy;
+    f32 dz;
+    u8 pad448C[0x44E4 - 0x448C];
+    s16 id0;
+    u8 pad44E6[0x44F4 - 0x44E6];
+    s16 id1;
+    u8 pad44F6[0x454A - 0x44F6];
+    s16 turn;
+    u8 pad454C[4];
+    s16 slot;
+    u8 pad4552[8];
+    s16 timer;
+} Ctx_b232_01E00480;
+
+static void func_01E00480_b232(Ctx_b232_01E00480 *g) {
+    extern s32 b232_01E00710(void);
+    extern s32 b232_01E00970(void);
+    extern s32 b232_01E00AC0(void);
+    extern s32 b232_01E00EA0(void);
+    extern s32 b232_01E00F80(void);
+    extern s32 b232_01E01130(void);
+    extern void b232_01E01A50(Ctx_b232_01E00480 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+
+    g->timer++;
+    if (g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->id0, g->m);
+    } else {
+        if (g->timer == 155) {
+            func_001F5620(func_001F5380(), g->id1, v);
+            g->dz = (v[2] - g->m[2]) / 32.0f;
+            g->dy = (v[1] - g->m[1]) / 32.0f;
+        }
+        if (g->timer < 186) {
+            g->m[2] += g->dz;
+            g->m[1] += g->dy;
+        }
+    }
+    if (g->timer == 1) {
+        b232_01E01A50(g, b232_01E00EA0, 0);
+    }
+    if (g->timer == 35) {
+        g->slot = 0;
+        b232_01E01A50(g, b232_01E00710, 0);
+        g->slot = 1;
+        b232_01E01A50(g, b232_01E00710, 0);
+    }
+    if (g->timer == 45) {
+        b232_01E01A50(g, b232_01E00F80, 0);
+    }
+    if (g->timer == 236) {
+        b232_01E01A50(g, b232_01E01130, 0);
+    }
+    if (g->timer >= 191 && g->timer < 241) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        if (g->timer % 2 == 1) {
+            b232_01E01A50(g, b232_01E00AC0, 0);
+        }
+        g->turn += 3;
+    }
+    if (g->timer >= 226 && g->timer < 301) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        g->pos[2] = 0.0f;
+        g->pos[1] += 10.0f;
+        if (g->timer % 2 == 1) {
+            b232_01E01A50(g, b232_01E00970, 0);
+        }
+    }
+}
+
+/* shape b232:01E00710, 149 insns: b094:01E01900-family flickering pair: variant 0..6, f8 4..6, sway angle 0..359; both
+   alphas grow by 12 (below 0x80) for 240 ticks, then fade by 9 (the first ends it); while the scene flag 0x455A is
+   set the size grows by 0.5 to 20 with f4C 7 below it; it sways 20 x sin(0xE), turning 5 a tick, and 0x5A grows 10 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[4];
+    s16 swing;
+    u8 pad10[0x38];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 h5A;
+    s16 sway;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b232_01E00710;
+
+typedef struct {
+    u8 pad0[0x455A];
+    s16 grow;
+    u8 pad455C[0x200];
+    u8 sin[1];
+} Ctx_b232_01E00710;
+
+static s32 func_01E00710_b232(Ctx_b232_01E00710 *g, Fx_b232_01E00710 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+    f32 f;
+
+    if (o->mode == 1) {
+        o->f56 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f8 = func_0019A5C8() % 3 + 4;
+        o->swing = func_0019A5C8() % 360;
+        o->sway = 0;
+        o->h5A = 0;
+    }
+    if (o->tick < 240) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+    }
+    if (g->grow != 0) {
+        if (o->f48 < 20.0f) {
+            o->f48 += 0.5f;
+        }
+        f = o->f4C = o->f48 - 7.0f;
+        if (f < 0.0f) {
+            o->f4C = 0.0f;
+        }
+    }
+    o->sway = func_001A22C0(20.0f * func_00108030(g->sin, o->swing, 0));
+    o->swing += 5;
+    o->h5A += 10;
+    o->tick++;
+    return 0;
+}
 
 /* shape b232:01E00970, 81 insns: a white-grey rising flash (b749:01E028A0 shape, starting x turn by the game's side, no y turn): f48 200 with f4C 58 below, rising by
    f34 = 950 / 10 a frame with f4C 400 below; full alpha for 15 frames, then down by 14 until it ends */
@@ -502,7 +663,103 @@ static s32 func_01E00F80_b232(void *arg0, Obj_b232_01E00F80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01130_b232);
+/* shape b232:01E01130, 144 insns: b555:01E02CB0 family grey (0x38) sprite in the scene packet (ctx+0x44C8), a fixed texture window (0..0.625, 0..0.875) swaying sideways by h8 = 10 sin(h5A) (h5A from 0 or 180, +25 per tick), drawn twice; alpha up by 10 to 0x80 for 80 ticks, then down by 9 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b232_01E01130;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b232_01E01130 p;
+} Tv_b232_01E01130;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b232_01E01130 v[2];
+} Tex_b232_01E01130;
+
+typedef struct {
+    u8 pad[0x44C8];
+    Tex_b232_01E01130 *pk;
+    u8 pad44CC[0x475C - 0x44CC];
+    u8 tab[1];
+} Game_b232_01E01130;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x46];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b232_01E01130;
+
+static s32 func_01E01130_b232(Game_b232_01E01130 *g, Fx_b232_01E01130 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 f;
+
+    f = o->f8;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x38, 0x38, 0x38);
+        if (o->kind == 0) {
+            o->ang = 0;
+        }
+        if (o->kind == 1) {
+            o->ang = 180;
+        }
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = (f + 0x6C0) * 16 - 8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = (f + 0x940) * 16 - 8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.875f;
+    func_002075F0((s32)g->pk, 0, 0);
+    func_002075F0((s32)g->pk, 0, 0);
+    o->f8 = 10.0f * func_00108030(g->tab, o->ang, 1);
+    o->ang += 25;
+    if (o->tick < 80) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01370_b232);
 
