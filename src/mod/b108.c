@@ -522,7 +522,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E01B60_b108);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E01CF0_b108);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E01EB0_b108);
+/* shape b108:01E01EB0, 87 insns: a white/orange glow of size 20 spun 0x4000 a tick, growing 3.3 a tick after 26 ticks; unless held its second colour blinks blue/purple: in by 16 for 50 ticks, then out by 5 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b108_01E01EB0;
+
+static s32 func_01E01EB0_b108(s32 arg0, Obj_b108_01E01EB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x40, 0x10);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 50) {
+        o->col[3] += 0x10;
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t > 25) {
+        o->f48 += 3.3f;
+    }
+    if (o->h50 == 0) {
+        if (o->t % 2 == 1) {
+            func_001076F0(o->col2, 0xF0, 8, 0x80);
+        } else {
+            func_001076F0(o->col2, 0x80, 8, 0x40);
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E02010_b108);
 
@@ -532,7 +581,61 @@ INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E02380_b108);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E025B0_b108);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E027D0_b108);
+/* shape b108:01E027D0, 70 insns: a dark/teal glow of size 200 at a random angle, growing 12 and spun 0x4000 a tick: in by 32 up to 0xC0 for 37 ticks (unless held), then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b108_01E027D0;
+
+static s32 func_01E027D0_b108(s32 arg0, Obj_b108_01E027D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 200.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        func_001076F0(o->col2, 0xF0, 0x40, 0x40);
+        o->col2[3] = 0;
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->t < 37) {
+        if (o->h50 == 0) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x20;
+            }
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 12.0f;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E028F0_b108);
 

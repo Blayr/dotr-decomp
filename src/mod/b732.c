@@ -671,7 +671,65 @@ INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E02FC0_b732);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03290_b732);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03430_b732);
+/* shape b732:01E03430, 71 insns: a white-blue spinning flash on the model joint (b252:01E03210 family): f4C 20, frame
+   count 10, size 10x10; second alpha up by 0x60 to 0xC0 for that many frames, then down by 12 until it ends */
+
+typedef struct {
+    u8 pad0[0xE6E4];
+    s16 joint;
+} Game_b732_01E03430;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b732_01E03430;
+
+static s32 func_01E03430_b732(Game_b732_01E03430 *g, Obj_b732_01E03430 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x50, 0x50, 0x80);
+        o->hold = 0xA;
+        o->f4C = 20.0f;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < o->hold) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b732:01E03550, 63 insns: constant variant of b178:01E03530 (colour (96, 96, 128), colour (96, 96, 128)) */
 
@@ -782,7 +840,56 @@ static s32 func_01E038B0_b732(s32 arg0, Fx_b732_01E038B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E039B0_b732);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03BC0_b732);
+/* shape b732:01E03BC0, 65 insns: a spinning shock wave (white/red, from 50 growing 4): in by 64 up to 0x80 for 4 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b732_01E03BC0;
+
+static s32 func_01E03BC0_b732(s32 arg0, Obj_b732_01E03BC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->f30 = 2.5f;
+        o->f34 = 50.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f34 += 4.0f;
+    }
+    o->t++;
+    o->h5A += 6;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03CD0_b732);
 

@@ -756,7 +756,70 @@ static s32 func_01E01D00_b397(s32 arg0, Fx_b397_01E01D00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b397", func_01E01E20_b397);
+/* shape b397:01E01E20, 91 insns: a white spark (80 x 80, random frame 2..4, random heading) drifting 0.2 a tick along its heading (sine table ctx+0x6F08), turn kept by func_00205C40: in by 64 up to 0x80 for 10 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 f10;
+    u8 pad14[4];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b397_01E01E20;
+
+typedef struct {
+    u8 pad[0x6F08];
+    u8 sin[1];
+} Game_b397_01E01E20;
+
+static s32 func_01E01E20_b397(Game_b397_01E01E20 *g, Obj_b397_01E01E20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 80;
+        o->hA = o->h8;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f18 += 0.2f * func_00108030(g->sin, o->h5A, 0);
+        o->f10 += 0.2f * func_00108030(g->sin, o->h5A, 1);
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;

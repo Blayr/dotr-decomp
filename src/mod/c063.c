@@ -439,9 +439,112 @@ INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02640_c063);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E029C0_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02D00_c063);
+/* shape c063:01E02D00, 61 insns: a white spinning flash (b236:01E01B70 family): scale 300, frame count 0x109, size 10x10;
+   alpha up by 13 to 0xA0 for that many frames, then down by 12 until it ends; a random turn plus a quarter each frame */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02E00_c063);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_c063_01E02D00;
+
+static s32 func_01E02D00_c063(void *arg0, Obj_c063_01E02D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 300.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->hold = 0x109;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0xA0) {
+            o->c0[3] += 0xD;
+        }
+    } else if (o->c0[3] > 0xD) {
+        o->c0[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape c063:01E02E00, 78 insns: on start 0x8/0xA = 0x12C, random flip 0x56, both colours 0x80 grey (second alpha 0);
+   both alphas grow by 0x13 (below 0xC0) for 0x108 ticks, then fade by 14 (the first ends it); 0x56 toggles each tick;
+   func_00205C40 on the rotation at 0x20 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 tick;
+    s16 flip;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_c063_01E02E00;
+
+static s32 func_01E02E00_c063(s32 arg0, Fx_c063_01E02E00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 0x12C;
+        o->fA = 0x12C;
+        o->flip = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0x109) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x13;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x13;
+        }
+    } else {
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->flip != 0) {
+        o->flip = 0;
+    } else {
+        o->flip = 1;
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02F40_c063);
 
@@ -453,7 +556,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E035E0_c063);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E03B30_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E03DB0_c063);
+/* shape c063:01E03DB0, 88 insns: a yellow tumbling spark: random turn on all three axes, scale from the scene, angle 90 climbing
+   by 0..6 a frame until 270 (then it ends); alpha up by 0x80 for 8 frames, then down by 9 until it ends */
+
+typedef struct {
+    u8 pad0[0x5A64];
+    f32 scale;
+} Scene_c063_01E03DB0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 scale;
+    u8 pad4C[4];
+    s16 ang;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_c063_01E03DB0;
+
+static s32 func_01E03DB0_c063(Scene_c063_01E03DB0 *g, Obj_c063_01E03DB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->h56 = 0;
+        func_001076F0(o->c0, 0x80, 0x80, 0x40);
+        o->ang = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+        o->scale = g->scale;
+    }
+    if (o->t < 8) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x80;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->ang < 0x10E) {
+        o->ang += (s16)(func_0019A5C8() % 7);
+    } else {
+        o->state = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E03F10_c063);
 
@@ -509,7 +665,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E047A0_c063);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E04AC0_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E05750_c063);
+/* shape c063:01E05750, 60 insns: take a free slot (0xC8 of 0x70 bytes at 0x2A0), clear it, copy the object's
+   position (0x250), 0x5A and 0x50 from the object (0x6C26, 0x6C32), store arg; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x28];
+    s32 arg;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[0x14];
+} Slot_c063_01E05750;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_c063_01E05750 slots[0xC8];
+    u8 pad5A20[0x6C26 - 0x5A20];
+    s16 f6C26;
+    u8 pad6C28[0xA];
+    s16 f6C32;
+} Obj_c063_01E05750;
+
+static s32 func_01E05750_c063(Obj_c063_01E05750 *obj, s32 arg) {
+    extern void func_00195108();
+    Slot_c063_01E05750 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0xC8; i++) {
+        if (obj->slots[i].used == 0) {
+            func_00195108(&obj->slots[i], 0x70);
+            obj->slots[i].used = 1;
+            s = &obj->slots[i];
+            i = 0xC8;
+        }
+    }
+    if (s != NULL) {
+        s->pos[0] = obj->pos[0];
+        s->pos[1] = obj->pos[1];
+        s->pos[2] = obj->pos[2];
+        s->f5A = obj->f6C26;
+        s->f50 = obj->f6C32;
+        s->arg = arg;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E05840_c063);
 

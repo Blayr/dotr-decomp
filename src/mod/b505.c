@@ -228,7 +228,51 @@ static void func_01E00920_b505(Obj_b056_01E00920 *o, Spr_b056_01E00920 *s, s8 *t
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E00CE0_b505);
+/* shape b505:01E00CE0, 69 insns: sets the scene colour to red 0x80 and counts its timer; on frame 1 spawns a
+   b505:01E010C0 effect, and on frames 1..199 spawns a b505:01E00E00 effect at each of two model joints (b566:01E014D0
+   family) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2B84 - 0x25C];
+    u8 r, g, b, a;
+    u8 pad2B88[0x24];
+    s16 joint0;
+    s16 joint1;
+    u8 pad2BB0[0x1A];
+    s16 t;
+} Scene_b505_01E00CE0;
+
+static void func_01E00CE0_b505(Scene_b505_01E00CE0 *s) {
+    extern void b505_01E00E00(void);
+    extern void b505_01E010C0(void);
+    extern s32 b505_01E01920(Scene_b505_01E00CE0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+
+    s->r = 0x80;
+    s->g = 0;
+    s->b = 0;
+    s->a = 0;
+    s->t++;
+    if (s->t == 1) {
+        b505_01E01920(s, b505_01E010C0, 0);
+    }
+    if (s->t > 0 && s->t < 0xC8) {
+        func_001F5620(func_001F53A0(), s->joint0, &a);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z;
+        b505_01E01920(s, b505_01E00E00, 0);
+        func_001F5620(func_001F53A0(), s->joint1, &a);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z;
+        b505_01E01920(s, b505_01E00E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E00E00_b505);
 

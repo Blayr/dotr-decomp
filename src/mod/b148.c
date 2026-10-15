@@ -1169,13 +1169,174 @@ static s32 func_01E033E0_b148(s32 arg0, Flash_b148_01E033E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E034C0_b148);
+/* shape b148:01E034C0, 90 insns: on start 0x38 = 50, variant 0..3, colour 0x60 grey, rotation (random, -, 0),
+   random 0x3A, speed 20..35 (0xE), 0x8 0..9, hold 5..14 (0x6); alpha 0x80 during the hold, then fades by 15 and
+   stops; 0x30 grows by the speed */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E03630_b148);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    s32 rot10;
+    u8 pad14[4];
+    s32 rot18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b148_01E034C0;
+
+static s32 func_01E034C0_b148(s32 arg0, Fx_b148_01E034C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->rot18 = 0;
+        o->rot10 = func_0019A5C8() % 360;
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 16 + 20;
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 10 + 5;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->f30 += o->speed;
+    o->tick++;
+    return 0;
+}
+
+/* shape b148:01E03630, 92 insns: b357:01E032B0 family: a blinking blue flash (frame 1, turn 0x4000, size growing a random 1..3 a tick, +6 growing 3): in by 0x80 on its first tick; past size 10 out by 19, and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 w10;
+    u8 pad14[0x14];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b148_01E03630;
+
+static s32 func_01E03630_b148(s32 arg0, Glow_b148_01E03630 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->w10 = 0x4000;
+        o->kind = 1;
+        o->mode = 2;
+        o->h8 = func_0019A5C8() % 3 + 1;
+        o->h6 = 8;
+        func_001076F0(o->col, 0x10, 0x10, 0xF0);
+        func_001076F0(o->col2, 0x10, 0x10, 0xF0);
+    }
+    if (o->tick < 1) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else if (o->f38 > 10) {
+        if (o->col[3] > 0x14) {
+            o->col[3] -= 0x13;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0xC0);
+    } else {
+        func_001076F0(o->col, 0x50, 0x50, 0x80);
+    }
+    if (o->tick != 0) {
+        o->f38 += o->h8;
+    }
+    o->h6 += 3;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E037A0_b148);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E03930_b148);
+/* shape b148:01E03930, 90 insns: colour (0x10, 0x10, 0x20); on start the rotation faces the model angle side
+   (-0x4000 / 0x4000), size 0x5A, alpha 0; alpha grows by 0x50 (below 0x50) for 8 ticks, then fades by 9 and stops;
+   0x38 = 500; the size grows by 0..6 a tick up to 0x10E, then it ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 size;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b148_01E03930;
+
+static s32 func_01E03930_b148(s32 arg0, Fx_b148_01E03930 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 ang[4];
+
+    func_001076F0(o->col, 0x10, 0x10, 0x20);
+    if (o->mode == 1) {
+        func_001F6160(func_001F53A0(), ang);
+        if ((s32)(ang[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = 0x4000;
+        }
+        o->rot[1] = 0;
+        o->rot[2] = 0;
+        o->f34 = 0;
+        o->size = 0x5A;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 0x50;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f38 = 500;
+    o->tick++;
+    if (o->size < 0x10E) {
+        o->size += (s16)(func_0019A5C8() % 7);
+    } else {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b148:01E03AA0, 93 insns, 2 copies: a fast white ember: set up once (frame 3, random turn, speed 60..77, size, life
    2..5); fades in for its life, then out; turns by its speed and grows 2 a frame (b225:01E026A0 family) */

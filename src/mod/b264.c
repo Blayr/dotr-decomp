@@ -649,11 +649,172 @@ static void func_01E020D0_b264(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E024D0_b264);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E029E0_b264);
+/* shape b264:01E029E0, 74 insns: b232:01E00AC0 twin: a white/grey beam from 500 growing 10 a tick (tail 350 behind), turning 0x100: alpha 0x60 for 6 ticks, then out by 14 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E02B10_b264);
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    s32 w24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b264_01E029E0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E02C20_b264);
+static s32 func_01E029E0_b264(s32 arg0, Obj_b264_01E029E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 500.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->h50 = 0;
+        o->h5A = 15;
+        o->h5C = 15;
+        o->f34 = 100.0f;
+        o->f34 = o->f34 / 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->w20 = 0x4000;
+    }
+    if (o->t < 6) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 350.0f;
+    o->w24 += 0x100;
+    o->t++;
+    return 0;
+}
+
+/* shape b264:01E02B10, 68 insns: on start f48 300, f4C 0, hold 0x6 = 10, colour white, second colour (0x80, 0x80,
+   0xFF) with alpha 0, 0x5A/0x5C = 15; alpha grows by 0x30 (below 0xC0) during the hold, then fades by 15 (and stops)
+   while f48 grows by 2; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b264_01E02B10;
+
+static s32 func_01E02B10_b264(s32 arg0, Fx_b264_01E02B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 300.0f;
+        o->f4C = 0.0f;
+        o->hold = 10;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x30;
+        }
+    } else {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 15;
+        } else {
+            o->mode = 0;
+        }
+        o->f48 += 2.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
+
+/* shape b264:01E02C20, 74 insns: a pink growing spark on a track point (b252:01E03410 family): size 50, f34 0.5; alpha up
+   by 0x60 to 0xC0 for 50 frames, then down by 9 until it ends; sub-frame flips 3 / 5; random turn; placed at the game's
+   track point h52 */
+
+typedef struct {
+    u8 pad0[0xD930];
+    Vec4f pts[1];
+} Game_b264_01E02C20;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x1A];
+    s16 idx;
+    s16 t;
+    s16 sub;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_b264_01E02C20;
+
+static s32 func_01E02C20_b264(Game_b264_01E02C20 *g, Obj_b264_01E02C20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0x32;
+        o->h = 0x32;
+        o->sub = 3;
+        o->f34 = 0.5f;
+        func_001076F0(o->c0, 0xFF, 0xA0, 0x80);
+        o->state = 2;
+    }
+    if (o->t < 0x32) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->sub == 3) {
+        o->sub = 5;
+    } else {
+        o->sub = 3;
+    }
+    func_00205C40((s32)o->rot);
+    o->pos = g->pts[o->idx];
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E02D50_b264);
 
@@ -661,7 +822,53 @@ INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03030_b264);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03200_b264);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03450_b264);
+/* shape b264:01E03450, 86 insns: a white spark: on start f48 5, variant 0..6, random 0x5A, 0xA 0..7, 0xC keeps the
+   old 0x50, 0x50 10..29, speed 3..7 (0xE), 0x8 0..34, hold 1..2 (0x6); alpha 0xC0 during the hold, then it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 fE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b264_01E03450;
+
+static s32 func_01E03450_b264(s32 arg0, Fx_b264_01E03450 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        o->f56 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = func_0019A5C8() % 360;
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 20 + 10;
+        o->fE = func_0019A5C8() % 5 + 3;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 2 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0xC0;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E035B0_b264);
 
@@ -671,4 +878,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03E00_b264);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E04670_b264);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E04820_b264);
+/* shape b264:01E04820, 84 insns: b183:01E029E0 family draw pass: sprite packet on the stack, then every live slot (250 of 0x70 bytes) whose handler is shape b264:01E03AA0 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b264_01E04820;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b264_01E04820 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b264_01E04820;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b264_01E04820;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b264_01E04820 slot[250];
+    u8 padEnd[0xDE64 - 0x2A0 - 250 * 0x70];
+    s32 ctx;
+    Pkt_b264_01E04820 *pkt;
+} Scene_b264_01E04820;
+
+static void func_01E04820_b264(Scene_b264_01E04820 *s) {
+    extern void b264_01E03AA0(Scene_b264_01E04820 *, Slot_b264_01E04820 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b264_01E04820 pkt __attribute__((aligned(8)));
+    s32 i;
+
+    s->pkt = &pkt;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 250; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b264_01E03AA0) {
+            b264_01E03AA0(s, &s->slot[i]);
+        }
+    }
+    func_00207FD0(s->ctx, func_00207500(), 0);
+}

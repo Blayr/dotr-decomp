@@ -953,7 +953,63 @@ static s32 func_01E02BB0_b731(s32 arg0, Fx_b550_01E02DA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b731", func_01E02D60_b731);
+/* shape b731:01E02D60, 80 insns: a white flickering spinning flash (b550:01E02F50 shape): red flicker */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b731_01E02D60;
+
+static s32 func_01E02D60_b731(void *arg0, Obj_b731_01E02D60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 300.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0x80, 0x80);
+        o->w2 = 0xF;
+        o->h2 = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c1, 0xCF, 0x70, 0x70);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b731", func_01E02EA0_b731);
 
@@ -1185,7 +1241,55 @@ static s32 func_01E03840_b731(void *arg0, Spark_b550_01E03A90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b731", func_01E03A10_b731);
+/* shape b731:01E03A10, 60 insns: volume fade (func_001F6D00 family): starts at 0x80; drops by 10 to 0x40 for 0xD2
+   ticks, then rises by 10 to 0x80 (clamped); when the game value at 0xB970 is 1 the effect stops after the call */
+
+typedef struct {
+    u8 pad0[0xB970];
+    s32 v;
+} Game_b731_01E03A10;
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 v;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b731_01E03A10;
+
+static s32 func_01E03A10_b731(Game_b731_01E03A10 *g, Fx_b731_01E03A10 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (o->tick < 0xD2) {
+        if (o->v > 0x40) {
+            o->v -= 10;
+        } else {
+            o->v = 0x40;
+        }
+    } else {
+        if (o->v < 0x80) {
+            o->v += 10;
+        } else {
+            o->v = 0x80;
+        }
+        if (o->v > 0x80) {
+            o->v = 0x80;
+        }
+    }
+    o->tick++;
+    if (g->v == 1) {
+        func_001F6D00(o->v);
+        o->mode = 0;
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b731", func_01E03B00_b731);
 

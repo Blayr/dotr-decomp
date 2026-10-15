@@ -389,7 +389,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E01150_b425);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E01660_b425);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E01B10_b425);
+/* shape b425:01E01B10, 89 insns: a yellow flicker (130 x 130 growing 3 a tick up to 160, frame re-rolled 0..3 each tick): in by 96 up to 0xC0 for 5 ticks, then out by 9 and ends; its clock jumps to 20 once the scene value reaches 296 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 w20;
+    u8 pad24[4];
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b425_01E01B10;
+
+typedef struct {
+    u8 pad[0xE068];
+    s16 val;
+} Game_b425_01E01B10;
+
+static s32 func_01E01B10_b425(Game_b425_01E01B10 *g, Obj_b425_01E01B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 130;
+        o->hA = 130;
+        o->kind = (func_0019A5C8() >> 4) % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->mode = 2;
+    }
+    if (o->t < 5) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        if (o->h8 < 160) {
+            o->h8 += 3;
+        }
+        if (o->hA < 160) {
+            o->hA += 3;
+        }
+    }
+    o->kind = (func_0019A5C8() >> 4) % 4;
+    func_00205C40((s32)&o->w20);
+    if (g->val > 295) {
+        o->t = 20;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E01C80_b425);
 

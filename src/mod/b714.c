@@ -654,7 +654,67 @@ INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E01940_b714);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E01DB0_b714);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02300_b714);
+/* shape b714:01E02300, 84 insns: follows model point 0x3B88[0x30] (for 0x65 ticks); colour (0xA0, 0x80, 8); alpha
+   grows by 12 (below 0x80) for 0x66 ticks once the game counter 0x3B40 reaches 0x10, then fades by 10; also fades
+   while the counter is below 15; 0x6 = 50 while following */
+
+typedef struct {
+    u8 pad0[0x3B40];
+    s32 count;
+    u8 pad3B44[0x44];
+    s16 pts[1];
+} Game_b714_01E02300;
+
+typedef struct {
+    s16 x, y, z;
+    s16 f6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 pt;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b714_01E02300;
+
+static s32 func_01E02300_b714(Game_b714_01E02300 *g, Fx_b714_01E02300 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[4];
+
+    func_001F5620(func_001F53A0(), g->pts[o->pt], p);
+    func_001076F0(o->col, 0xA0, 0x80, 8);
+    if (o->mode == 1) {
+        o->mode = 2;
+    }
+    if (o->tick < 0x66) {
+        if (g->count > 0xF) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 12;
+            }
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (g->count < 15) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 10;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    if (o->tick < 0x65) {
+        o->x = p[0];
+        o->y = p[1];
+        o->z = p[2];
+        o->f6 = 50;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02450_b714);
 
@@ -927,7 +987,71 @@ static s32 func_01E02DA0_b714(s32 arg0, Glow_b714_01E02DA0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02E50_b714);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02FF0_b714);
+/* shape b714:01E02FF0, 93 insns: a screen fog: on start sets the scene fog block (0x3680: 128, 4.0, 2.0, 0.0, position from
+   the effect, colour (0, 120.0, 0)); its strength 0x36A8 rises by 0.2 to 1, then falls by 0.1 and ends; the block is
+   passed to func_001F6C10 while alive (NULL once ended); it ends at scene counter 1 (0x3B40) */
+
+typedef struct {
+    u8 pad0[0x3680];
+    f32 f2A00;
+    f32 f2A04;
+    f32 f2A08;
+    f32 f2A0C;
+    f32 pos[3];
+    u8 pad2A1C[4];
+    f32 f2A20;
+    f32 f2A24;
+    f32 strength;
+    u8 pad36AC[0x3B40 - 0x36AC];
+    s32 count;
+} Game_b714_01E02FF0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[0x4];
+    s16 mode;
+} Fx_b714_01E02FF0;
+
+static s32 func_01E02FF0_b714(Game_b714_01E02FF0 *g, Fx_b714_01E02FF0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->f2A00 = 128.0f;
+        g->f2A04 = 4.0f;
+        g->f2A08 = 2.0f;
+        g->f2A0C = 0.0f;
+        g->f2A20 = 0.0f;
+        g->f2A24 = 120.0f;
+        g->strength = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->strength < 1.0f) {
+            g->strength += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (!(g->strength <= 0.1f)) {
+        g->strength -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->f2A00);
+    }
+    if (g->count == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b714:01E03170, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3B40 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */
@@ -1066,4 +1190,44 @@ static s32 func_01E040B0_b714(Pool_b714_01E040B0 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E041D0_b714);
+/* shape b714:01E041D0, 67 insns: draws a vertical bar sprite (b045:01E04160 twin): colour from the object, a two-point column from (x, y, z)
+   up by h, projected into the given packet and queued at its depth */
+
+typedef struct {
+    s16 x, y, z, h;
+    u8 pad8[0x20];
+    u8 c0[4];
+} Bar_b714_01E041D0;
+
+typedef struct {
+    u8 pad0[0x18];
+    u16 h18;
+    u8 pad1A[0xE];
+    u16 h28;
+} Pkt_b714_01E041D0;
+
+typedef struct {
+    u8 pad0[0x3B4C];
+    s32 ot;
+} Game_b714_01E041D0;
+
+static void func_01E041D0_b714(Game_b714_01E041D0 *g, Bar_b714_01E041D0 *b, Pkt_b714_01E041D0 *p) {
+    extern void func_001091B0(void *, void *, void *);
+    extern void func_00195108();
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[2];
+    f32 depth __attribute__((aligned(16)));
+
+    func_001091B0(p, b->c0, b->c0);
+    func_00195108(q, 0x20);
+    q[0].y = b->y;
+    q[1].y = q[0].y + b->h;
+    q[0].x = b->x;
+    q[0].z = b->z;
+    q[1].x = b->x;
+    q[1].z = b->z;
+    func_00205630(q, 0x70000000, NULL, p, &depth);
+    p->h28 = p->h18;
+    func_002075F0(p, g->ot, (u32)depth);
+}

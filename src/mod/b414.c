@@ -565,7 +565,62 @@ INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E026F0_b414);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E029C0_b414);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02C20_b414);
+/* shape b414:01E02C20, 85 insns: b499:01E01C50 family: a white tumbling shape at three random turns that grows 7 up to 130 and climbs 2 a tick from 5 (size from 10, +1 a tick); ends at 181; past 60 both alphas drop by 9 */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    u8 pad8[0x18];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[0xC];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b414_01E02C20;
+
+static s32 func_01E02C20_b414(s32 arg0, Obj_b414_01E02C20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h6 < 130) {
+        o->h6 += 7;
+    }
+    o->h2 += 2;
+    func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    if (o->h2 > 180) {
+        o->mode = 0;
+    }
+    if (o->mode == 1) {
+        o->h2 = 5;
+        o->h0 = 0;
+        o->h4 = 0;
+        o->h6 = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->col[3] = 0xC0;
+        o->f48 = 10.0f;
+        o->mode = 2;
+    }
+    if (o->h2 >= 60) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        }
+    }
+    o->f48 += 1.0f;
+    return 0;
+}
 
 /* shape b414:01E02D80, 59 insns: constant variant of b415:01E022B0 (colour (128, 128, 128), colour (128, 64, 64)) */
 

@@ -687,7 +687,64 @@ static s32 func_01E02C20_b482(s32 arg0, Fx_b482_01E02C20 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E02D10_b482);
+/* shape b482:01E02D10, 75 insns: a pink-white spinning flash (b432:01E026D0 shape): f4C 53 growing by 3 up to 200; second alpha up by 0x30
+   for 54 frames */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b482_01E02D10;
+
+static s32 func_01E02D10_b482(void *arg0, Obj_b482_01E02D10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = 53.0f;
+        func_001076F0(o->c1, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->h52 = 0;
+        o->w2 = 0xA;
+        o->h2 = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x36) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x30;
+        }
+    } else if (o->c1[3] > 0x10) {
+        o->c1[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->t != 0) {
+        if (o->f4C < 200.0f) {
+            o->f4C += 3.0f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E02E40_b482);
 

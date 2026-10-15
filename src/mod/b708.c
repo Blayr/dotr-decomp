@@ -405,7 +405,49 @@ INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E012D0_b708);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01610_b708);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01B10_b708);
+/* shape b708:01E01B10, 60 insns: a growing glow: on start f48 5, colour 0xC0 grey, second colour (0x80, 0x10, 0xFF)
+   with alpha 0; alpha grows by 0x40 (below 0x80) for 6 ticks, then fades by 14 and stops; the rotation at 0x20
+   advances 0x4000 and f48 grows by 3.5 each tick */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b708_01E01B10;
+
+static s32 func_01E01B10_b708(s32 arg0, Fx_b708_01E01B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0x80, 0x10, 0xFF);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->f48 += 3.5f;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01C00_b708);
 

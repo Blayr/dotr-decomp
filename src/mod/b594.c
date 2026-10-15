@@ -604,11 +604,147 @@ static void func_01E01500_b594(Obj_b094_01E01230 *obj, Cam_b094_01E01230 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E01840_b594);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E01F30_b594);
+/* shape b594:01E01F30, 88 insns: a green flickering spinning flash (b432:01E026D0 family): f4C from the game each frame,
+   size 10x10; second alpha up by 0x40 to 0x80 for 4 frames, then once the game timer passes 0x1E5 down by 11 until it
+   ends; first colour flickers by frame parity */
+
+typedef struct {
+    u8 pad0[0x70A4];
+    f32 f4C;
+    u8 pad70A8[0x54];
+    s16 timer;
+} Game_b594_01E01F30;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b594_01E01F30;
+
+static s32 func_01E01F30_b594(Game_b594_01E01F30 *g, Obj_b594_01E01F30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = g->f4C;
+        func_001076F0(o->c1, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c0, 0x80, 0xFF, 0x80);
+        o->h52 = 0;
+        o->w2 = 0xA;
+        o->h2 = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else if (g->timer > 0x1E5) {
+        if (o->c1[3] > 0xC) {
+            o->c1[3] -= 0xB;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0x80, 0x80);
+    }
+    o->t++;
+    o->f4C = g->f4C;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E02090_b594);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E02280_b594);
+/* shape b594:01E02280, 91 insns: a grey ring of random height 5 .. 4 + the scene limit (ctx+0x70A4), its first colour blinking red: in by 64 up to 0x80 for 4 ticks, then out by 11 and ends; spun 0x4000 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 f10;
+    u8 pad14[4];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b594_01E02280;
+
+typedef struct {
+    u8 pad[0x70A4];
+    f32 lim;
+} Game_b594_01E02280;
+
+static s32 func_01E02280_b594(Game_b594_01E02280 *g, Obj_b594_01E02280 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s16 func_001A22C0(f32);
+    s16 n;
+
+    n = func_001A22C0(g->lim);
+    if (o->mode == 1) {
+        o->f4C = 5.0f + func_0019A5C8() % n;
+        func_001076F0(o->col2, 0x50, 0x50, 0x50);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x40;
+        }
+    } else if (o->col2[3] > 12) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+    } else {
+        func_001076F0(o->col, 0xC0, 0x30, 0x30);
+    }
+    o->t++;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E023F0_b594);
 
@@ -630,4 +766,68 @@ static s32 func_01E02EB0_b594(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E02EC0_b594);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b594", func_01E03770_b594);
+/* shape b594:01E03770, 82 insns (b020:01E02D90 shape): takes the first free of 250 effect slots (0x70 bytes, b089:01E030B0 shape), colours it from
+   the context, places it at the context's position (copying it in), stores two frames and both arguments */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 c60[4];
+    u8 c64[4];
+    u8 pad68[8];
+} Slot_b594_01E03770;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b594_01E03770 slots[0xFA];
+    u8 pad[0x7084 - 0x2A0 - 0xFA * 0x70];
+    u8 rgba[4];
+    u8 pad7088[0x52];
+    s16 f70DA;
+    u8 pad70DC[0x18];
+    s16 f70F4;
+} Ctx_b594_01E03770;
+
+static s32 func_01E03770_b594(Ctx_b594_01E03770 *ctx, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b594_01E03770 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0xFA; i++) {
+        if (ctx->slots[i].used == 0) {
+            func_00195108(&ctx->slots[i], 0x70);
+            ctx->slots[i].used = 1;
+            s = &ctx->slots[i];
+            i = 0xFA;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c60, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c60[3] = ctx->rgba[3];
+        func_001076F0(s->c64, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c64[3] = ctx->rgba[3];
+        func_00106AB0(s, ctx->pos, 0);
+        s->pos[0] = ctx->pos[0];
+        s->pos[1] = ctx->pos[1];
+        s->pos[2] = ctx->pos[2];
+        s->f5A = ctx->f70DA;
+        s->f50 = ctx->f70F4;
+        s->a2 = arg2;
+        s->a1 = arg1;
+        return 1;
+    }
+    return 0;
+}

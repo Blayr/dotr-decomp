@@ -513,7 +513,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E01580_b191);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E01A70_b191);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E02050_b191);
+/* shape b191:01E02050, 93 insns: a grey-blue flickering flash on the model joint: f4C 165, size 10x10; second alpha up by 24 to 0xC0 until the game
+   timer reaches 0x122, then down by 12 until it ends; second colour flickers by the timer's parity; random turn */
+
+typedef struct {
+    u8 pad0[0xA8BC];
+    s16 joint;
+    u8 padA8BE[0x34];
+    s16 timer;
+} Game_b191_01E02050;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b191_01E02050;
+
+static s32 func_01E02050_b191(Game_b191_01E02050 *g, Obj_b191_01E02050 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c1, 0x80, 0x80, 0x60);
+        o->hold = 0x8C;
+        o->f4C = 165.0f;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (g->timer < 0x122) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x18;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer % 2 == 1) {
+        func_001076F0(o->c1, 0x50, 0x50, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x60, 0x60, 0xA0);
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E021D0_b191);
 
@@ -580,9 +644,130 @@ static s32 func_01E02600_b191(s32 arg0, Fx_b191_01E02600 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E02850_b191);
+/* shape b191:01E02850, 93 insns: a dark-blue flickering flash on the model joint (b485:01E01A60 shape): second alpha up by 0x60 until the game
+   timer reaches 10 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E029D0_b191);
+typedef struct {
+    u8 pad0[0xA8BC];
+    s16 joint;
+    u8 padA8BE[0x34];
+    s16 timer;
+} Game_b191_01E02850;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b191_01E02850;
+
+static s32 func_01E02850_b191(Game_b191_01E02850 *g, Obj_b191_01E02850 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x20, 0x20, 0x20);
+        func_001076F0(o->c1, 0x80, 0x80, 0x60);
+        o->hold = 0x8C;
+        o->f4C = 165.0f;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (g->timer < 0xA) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer % 2 == 1) {
+        func_001076F0(o->c1, 0x20, 0x20, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x30, 0x30, 0xA0);
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
+
+/* shape b191:01E029D0, 93 insns: a grey swaying spark (b354:01E01C30 shape): size 35, random sub-frame 2..4 and angle; alpha up by
+   0x40 to 0x80 for 10 frames, then down by 9 until it ends; sways by 2.2 sin / cos of its angle in z and x; random turn */
+
+typedef struct {
+    u8 pad0[0xAAF4];
+    u8 trig[1];
+} Game_b191_01E029D0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    u8 pad14[4];
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x1C];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b191_01E029D0;
+
+static s32 func_01E029D0_b191(Game_b191_01E029D0 *g, Obj_b191_01E029D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->w = 0x23;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        o->state = 2;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->z += 2.2f * func_00108030(g->trig, o->ang, 0);
+        o->x += 2.2f * func_00108030(g->trig, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b034:01E02290, 120 insns, 2 copies: a grey bloom: set up once (random size 100..129, frame 0..7, angle 100..149, speed
    26..45, life 7..20); fades in for its life, then out; turns for 90 frames and grows 6 a frame for 140 (b225:01E026A0 family, 0x58-state layout) */
@@ -639,7 +824,52 @@ static s32 func_01E02B50_b191(void *arg0, Spark_b034_01E02290 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E02D30_b191);
+/* shape b191:01E02D30, 58 insns: volume fade by game state (b058:01E017A0 shape, layout at 0x50): state at 0xA890 limit
+   0x1E, down 10 to 0x20, up 10 to 0x80 where the fade ends; state 2 plays at 0x80 */
+
+typedef struct {
+    u8 pad[0xA890];
+    s32 state;
+} Game_b191_01E02D30;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[6];
+    s16 mode;
+} Fade_b191_01E02D30;
+
+static s32 func_01E02D30_b191(Game_b191_01E02D30 *g, Fade_b191_01E02D30 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x20) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x20;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+            o->mode = 0;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 2) {
+        func_001F6D00(0x80);
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E02E20_b191);
 

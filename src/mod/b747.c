@@ -778,7 +778,50 @@ INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E02500_b747);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E026D0_b747);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E02860_b747);
+/* shape b747:01E02860, 56 insns: white burst: on start f48 20 then 100, both colours white, 0x8/0xA = 5, variant 4,
+   second alpha 0; alpha grows by 0x60 (below 0xC0) for 4 ticks, then fades by 14 and stops */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x3C];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b747_01E02860;
+
+static s32 func_01E02860_b747(s32 arg0, Fx_b747_01E02860 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        o->f8 = 5;
+        o->fA = 5;
+        o->f48 = 100.0f;
+        o->f56 = 4;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b016:01E02940, 127 insns: a drifting spark: on start pick a random size, variant, position, start value,
    angle, speed, delay and lifetime and colour (0xC0,0x50,0x50); full alpha while younger than its lifetime, then
@@ -844,6 +887,139 @@ INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E02D40_b747);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E02FC0_b747);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E03A50_b747);
+/* shape b747:01E03A50, 82 insns (b020:01E02D90 shape): takes the first free of 150 effect slots (0x70 bytes, b089:01E030B0 shape), colours it from
+   the context, places it at the context's position (copying it in), stores two frames and both arguments */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E03BA0_b747);
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 c60[4];
+    u8 c64[4];
+    u8 pad68[8];
+} Slot_b747_01E03A50;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b747_01E03A50 slots[0x96];
+    u8 pad[0x44B4 - 0x2A0 - 0x96 * 0x70];
+    u8 rgba[4];
+    u8 pad44B8[0x4E];
+    s16 f4506;
+    u8 pad4508[0xA];
+    s16 f4512;
+} Ctx_b747_01E03A50;
+
+static s32 func_01E03A50_b747(Ctx_b747_01E03A50 *ctx, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b747_01E03A50 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (ctx->slots[i].used == 0) {
+            func_00195108(&ctx->slots[i], 0x70);
+            ctx->slots[i].used = 1;
+            s = &ctx->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c60, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c60[3] = ctx->rgba[3];
+        func_001076F0(s->c64, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c64[3] = ctx->rgba[3];
+        func_00106AB0(s, ctx->pos, 0);
+        s->pos[0] = ctx->pos[0];
+        s->pos[1] = ctx->pos[1];
+        s->pos[2] = ctx->pos[2];
+        s->f5A = ctx->f4506;
+        s->f50 = ctx->f4512;
+        s->a2 = arg2;
+        s->a1 = arg1;
+        return 1;
+    }
+    return 0;
+}
+
+/* shape b747:01E03BA0, 68 insns: b183:01E029E0 family draw pass: sprite packet on the stack, then every live slot (150 of 0x70 bytes) whose handler is shape b747:01E02D40 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b747_01E03BA0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b747_01E03BA0 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b747_01E03BA0;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b747_01E03BA0;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b747_01E03BA0 slot[150];
+    u8 padEnd[0x44c4 - 0x2A0 - 150 * 0x70];
+    s32 ctx;
+    Pkt_b747_01E03BA0 *pkt;
+} Scene_b747_01E03BA0;
+
+static void func_01E03BA0_b747(Scene_b747_01E03BA0 *s) {
+    extern void b747_01E02D40(Scene_b747_01E03BA0 *, Slot_b747_01E03BA0 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b747_01E03BA0 pkt __attribute__((aligned(8)));
+    s32 i;
+
+    s->pkt = &pkt;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 150; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b747_01E02D40) {
+            b747_01E02D40(s, &s->slot[i]);
+        }
+    }
+    func_00207FD0(s->ctx, func_00207500(), 0);
+}

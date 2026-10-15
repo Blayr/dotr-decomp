@@ -483,7 +483,70 @@ static s32 func_01E01500_b124(void *arg0, Obj_b124_01E01500 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01680_b124);
+/* shape b124:01E01680, 83 insns: a white streak (size 50) at random angles, flying 7 a tick sideways (direction from the scene flag) and 2 down: alpha 0x80 for 11 ticks, then out by 24 and ends */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    s16 h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[2];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b124_01E01680;
+
+typedef struct {
+    u8 pad[0x381E];
+    s16 flip;
+} Game_b124_01E01680;
+
+static s32 func_01E01680_b124(Game_b124_01E01680 *g, Glow_b124_01E01680 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->w10 = 50;
+        o->w14 = 10;
+        if (g->flip != 0) {
+            o->w18 = 25;
+        } else {
+            o->w18 = -25;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 180;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x19) {
+        o->col[3] -= 0x18;
+    } else {
+        o->mode = 0;
+    }
+    o->kind = 2;
+    if (g->flip != 0) {
+        o->h4 -= 7;
+    } else {
+        o->h4 += 7;
+    }
+    o->h2 -= 2;
+    o->tick++;
+    return 0;
+}
 
 /* shape b124:01E017D0, 54 insns: variant of b257:01E031C0 (flash): start block as below; alpha held at 0x80
    for the first 120 ticks, then fades out by 10 and stops */
@@ -524,7 +587,68 @@ static s32 func_01E017D0_b124(s32 arg0, Flash_b124_01E017D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E018B0_b124);
+/* shape b124:01E018B0, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
+   raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the
+   scene state at 0x37D0 is 1 */
+
+typedef struct {
+    u8 pad0[0x3760];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad377C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad378C[0x44];
+    s32 state;
+} Scene_b124_01E018B0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b124_01E018B0;
+
+static s32 func_01E018B0_b124(Scene_b124_01E018B0 *g, Obj_b124_01E018B0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 2.0f;
+        g->l0[3] = 0.0f;
+        g->f20 = 0.0f;
+        g->range = 120.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b124:01E01A30, 51 insns: volume fade by its own timer (b003:01E02330 family): for 0x82 frames down 10 to 0x30, then up 10 to
    0x80, where the fade ends */
@@ -572,7 +696,55 @@ static s32 func_01E01A30_b124(Game_b124_01E01A30 *g, Fade_b124_01E01A30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01B00_b124);
+/* shape b124:01E01B00, 61 insns: a pulsing screen tint: its alpha rises by 30 to 0xC0 and falls back to 0x40 in turn;
+   two colours from the module's table with all three channels set to the alpha, sent to the scene filter */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b124_01E01B00;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 up;
+    u8 pad32[4];
+    s16 state;
+} Obj_b124_01E01B00;
+
+static s32 func_01E01B00_b124(void *arg0, Obj_b124_01E01B00 *o) {
+    extern Col_b124_01E01B00 D_01E02A80_b124;
+    extern Col_b124_01E01B00 D_01E02A88_b124;
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    Col_b124_01E01B00 a;
+    Col_b124_01E01B00 b;
+
+    a = D_01E02A80_b124;
+    b = D_01E02A88_b124;
+    if (o->state == 1) {
+        o->up = 0;
+        o->c0[3] = 0;
+    }
+    if (o->up == 0) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x1E;
+        } else {
+            o->up = 1;
+        }
+    } else if (o->c0[3] > 0x40) {
+        o->c0[3] -= 0x1E;
+    } else {
+        o->up = 0;
+    }
+    a.b = o->c0[3];
+    b.b = o->c0[3];
+    a.g = o->c0[3];
+    b.g = o->c0[3];
+    a.r = o->c0[3];
+    b.r = o->c0[3];
+    func_001F7170(3, 1, &a, &b, 1);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01C00_b124);
 
@@ -662,4 +834,85 @@ static s32 func_01E027F0_b124(Pool_b124_01E027F0 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E02910_b124);
+/* OVL_WARM */
+
+/* shape b124:01E02910, 82 insns: the module's draw pass (b116:01E06870 shape): opens a sprite packet on the stack, then runs every
+   live slot (210 of 0x40 bytes) through its handler b124:01E01C00 or b124:01E01F50; always queues the batch at the scene
+   depth - 2000. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b124_01E02910;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b124_01E02910 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b124_01E02910;
+
+typedef struct {
+    u8 pad0[0x24];
+    void *fn;
+    u8 pad28[0xE];
+    s16 active;
+    u8 pad38[8];
+} Slot_b124_01E02910;
+
+typedef struct {
+    u8 pad0[0x2E0];
+    Slot_b124_01E02910 slot[210];
+    u8 padEnd[0x37E8 - 0x2E0 - 210 * 0x40];
+    f32 depth;
+    u8 pad37EC[0x10];
+    s32 ctx;
+    Pkt_b124_01E02910 *pkt;
+} Scene_b124_01E02910;
+
+static void func_01E02910_b124(Scene_b124_01E02910 *s) {
+    extern void b124_01E01C00(Scene_b124_01E02910 *, Slot_b124_01E02910 *);
+    extern void b124_01E01F50(Scene_b124_01E02910 *, Slot_b124_01E02910 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b124_01E02910 pkt __attribute__((aligned(8)));
+    s32 i;
+
+    s->pkt = &pkt;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 210; i++) {
+        if (s->slot[i].active != 0) {
+            if (s->slot[i].fn == (void *)b124_01E01C00) {
+                b124_01E01C00(s, &s->slot[i]);
+            }
+            if (s->slot[i].fn == (void *)b124_01E01F50) {
+                b124_01E01F50(s, &s->slot[i]);
+            }
+        }
+    }
+    func_00207FD0(s->ctx, func_00207500(), (u32)(s->depth - 2000.0f));
+}

@@ -505,9 +505,100 @@ INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E020F0_b362);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E022B0_b362);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E02490_b362);
+/* shape b362:01E02490, 67 insns: a white-green growing spinning flash (b202:01E022A0 shape): scale 50 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E025A0_b362);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b362_01E02490;
+
+static s32 func_01E02490_b362(void *arg0, Obj_b362_01E02490 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 50.0f;
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c1, 8, 0x80, 8);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xD) {
+        o->c0[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    o->scale += 1.0f;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape b362:01E025A0, 63 insns: volume fade by game state (b058:01E017A0 shape, layout at 0x50): state at 0xB200 limit
+   0x19, down 10 to 0x70, up 10 to 0x80 where the fade ends; counts frames; state 3 plays at 0x80 and ends it */
+
+typedef struct {
+    u8 pad[0xB200];
+    s32 state;
+} Game_b362_01E025A0;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_b362_01E025A0;
+
+static s32 func_01E025A0_b362(Game_b362_01E025A0 *g, Fade_b362_01E025A0 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x19) {
+        if (o->vol > 0x70) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x70;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+            o->mode = 0;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    o->t++;
+    if (g->state == 3) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E026A0_b362);
 
@@ -577,4 +668,80 @@ static s32 func_01E03290_b362(Obj_b362_01E03290 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E03420_b362);
+/* shape b362:01E03420, 89 insns: b003:01E02FB0 family draw pass: counts every live slot (400 of 0x70 bytes, at +0x2B0) and draws the ones whose handler is shape b362:01E028A0; the packet is sent only when any slot is live */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b362_01E03420;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b362_01E03420 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b362_01E03420;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b362_01E03420;
+
+typedef struct {
+    u8 pad0[0x2B0];
+    Slot_b362_01E03420 slot[400];
+    u8 padEnd[0xB214 - 0x2B0 - 400 * 0x70];
+    s32 ctx;
+    Pkt_b362_01E03420 *pkt;
+} Scene_b362_01E03420;
+
+static void func_01E03420_b362(Scene_b362_01E03420 *s) {
+    extern void b362_01E028A0(Scene_b362_01E03420 *, Slot_b362_01E03420 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b362_01E03420 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    s->pkt = &pkt;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 400; i++) {
+        if (s->slot[i].active != 0) {
+            n++;
+            if (s->slot[i].fn == (void *)b362_01E028A0) {
+                b362_01E028A0(s, &s->slot[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(s->ctx, func_00207500(), 0);
+    }
+}

@@ -603,7 +603,65 @@ static s32 func_01E01D30_b400(s32 arg0, Fx_b400_01E01D30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b400", func_01E01E30_b400);
+/* shape b400:01E01E30, 81 insns: a pink flickering spinning flash (b432:01E026D0 family): f4C 300, size 10x10; second alpha up by 0x60 to
+   0xC0 for 12 frames, then down by 11 until it ends; first colour flickers by frame parity */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b400_01E01E30;
+
+static s32 func_01E01E30_b400(void *arg0, Obj_b400_01E01E30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = 300.0f;
+        o->f4C = 300.0f;
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->h52 = 0;
+        o->w2 = 0xA;
+        o->h2 = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xC) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xC) {
+        o->c1[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0x80, 0x80);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b400", func_01E01F80_b400);
 

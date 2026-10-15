@@ -823,7 +823,61 @@ static s32 func_01E029B0_b527(s32 arg0, Flash_b527_01E029B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b527", func_01E02A90_b527);
+/* shape b527:01E02A90, 92 insns: on start rotation 0x4000, step 1..3 (0x8), 0x6 = 8, both colours (0xF0, 0x10, 0x20);
+   alpha 0x80 on the first tick, fades by 14 once 0x38 passes 5; the colour flickers blue; 0x38 grows by the step, 0x6 by 3 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 step;
+    u8 padA[6];
+    s32 rot;
+    u8 pad14[0x14];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b527_01E02A90;
+
+static s32 func_01E02A90_b527(s32 arg0, Fx_b527_01E02A90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->rot = 0x4000;
+        o->f34 = 1;
+        o->mode = 2;
+        o->step = func_0019A5C8() % 3 + 1;
+        o->f6 = 8;
+        func_001076F0(o->col, 0xF0, 0x10, 0x20);
+        func_001076F0(o->col2, 0xF0, 0x10, 0x20);
+    }
+    if (o->tick <= 0) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else if (o->f38 > 5) {
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+    } else {
+        func_001076F0(o->col, 0x48, 0x10, 0x88);
+    }
+    if (o->tick != 0) {
+        o->f38 += o->step;
+    }
+    o->f6 += 3;
+    o->tick++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];

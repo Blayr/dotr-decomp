@@ -627,7 +627,62 @@ static void func_01E014F0_b354(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E018F0_b354);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E01C30_b354);
+/* shape b354:01E01C30, 83 insns: a white swaying spark (b252:01E03410 family): square size 50, random sub-frame 2..4; alpha up by
+   0x60 to 0xC0 for 6 frames, then down by 19 until it ends; sways by 2 sin / 2 cos of its angle; random turn */
+
+typedef struct {
+    u8 pad0[0xB4BC];
+    u8 trig[1];
+} Game_b354_01E01C30;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x1C];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b354_01E01C30;
+
+static s32 func_01E01C30_b354(Game_b354_01E01C30 *g, Obj_b354_01E01C30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->w = 0x32;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+    }
+    if (o->t < 6) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0x14) {
+        o->c0[3] -= 0x13;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += 2.0f * func_00108030(g->trig, o->ang, 0);
+        o->x += 2.0f * func_00108030(g->trig, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E01D80_b354);
 
@@ -697,7 +752,55 @@ static s32 func_01E020F0_b354(void *arg0, Obj_b354_01E020F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E022F0_b354);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E02550_b354);
+/* shape b354:01E02550, 68 insns: b764:01E02A60 family ring (white/green, height 10 growing 3 a tick): in by 48 up to 0xC0 for 14 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x28];
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b354_01E02550;
+
+static s32 func_01E02550_b354(s32 arg0, Obj_b354_01E02550 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f4C = 10.0f;
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col, 0x80, 0xFF, 0x80);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 14) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x30;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    if (o->t != 0) {
+        o->f4C += 3.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b354:01E02660, 69 insns: constant variant of b287:01E02C80 (150.0f->200.0f, colour (128, 255, 128)) */
 

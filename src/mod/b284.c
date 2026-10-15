@@ -448,7 +448,58 @@ static void func_01E00F70_b284(Obj_b003_01E00EA0 *obj, Def_b003_01E00EA0 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b284", func_01E014D0_b284);
+/* shape b284:01E014D0, 83 insns: sets the scene colour to red 0x80 and counts its timer; on frames 0x47..0x112 spawns one
+   b284:01E01D30 and one b284:01E01620 effect at the model joint, and on frames 0x43..0x112 one b284:01E019A0 (b566:01E014D0
+   family) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x3754 - 0x25C];
+    u8 r, g, b, a;
+    u8 pad3758[0x24];
+    s16 joint;
+    u8 pad377E[0x1A];
+    s16 t;
+} Scene_b284_01E014D0;
+
+static void func_01E014D0_b284(Scene_b284_01E014D0 *s) {
+    extern void b284_01E01620(void);
+    extern void b284_01E019A0(void);
+    extern void b284_01E01D30(void);
+    extern s32 b284_01E02C90(Scene_b284_01E014D0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    s32 i;
+
+    s->r = 0x80;
+    s->g = 0;
+    s->b = 0;
+    s->a = 0;
+    s->t++;
+    if (s->t > 0x46 && s->t < 0x113) {
+        func_001F5620(func_001F53A0(), s->joint, &a);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z;
+        for (i = 0; i < 1; i++) {
+            b284_01E02C90(s, b284_01E01D30, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b284_01E02C90(s, b284_01E01620, 0);
+        }
+    }
+    if (s->t > 0x42 && s->t < 0x113) {
+        func_001F5620(func_001F53A0(), s->joint, &a);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z;
+        for (i = 0; i < 1; i++) {
+            b284_01E02C90(s, b284_01E019A0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b284", func_01E01620_b284);
 

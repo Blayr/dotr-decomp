@@ -909,13 +909,104 @@ static s32 func_01E02A40_b256(Ctx_b256_01E02A40 *ctx, Obj_b256_01E02A40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E02D00_b256);
+/* shape b256:01E02D00, 59 insns: a spinning flash: set up once (scale 140.0, both colours 0xF0, 0xE0, 0xFF, size 10x10),
+   fades in by 0x60 up to 0xC0 for 10 frames, then out by 9 until it ends; a random turn plus a quarter each frame */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 scale;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b256_01E02D00;
+
+static s32 func_01E02D00_b256(void *arg0, Obj_b256_01E02D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 140.0f;
+        func_001076F0(o->c1, 0xF0, 0xE0, 0xFF);
+        func_001076F0(o->c0, 0xF0, 0xE0, 0xFF);
+        o->h52 = 0;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xA) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xA) {
+        o->c1[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E02DF0_b256);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E02FC0_b256);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E03A60_b256);
+/* shape b256:01E03A60, 60 insns: volume fade (layout at 0x50): for 0x1E frames down 10 to 0x30, then while the game
+   state at 0xCB10 is below 0x14 up 10 to 0x80; state 3 plays at 0x80 and ends the fade */
+
+typedef struct {
+    u8 pad[0xCB10];
+    s32 state;
+} Game_b256_01E03A60;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_b256_01E03A60;
+
+static s32 func_01E03A60_b256(Game_b256_01E03A60 *g, Fade_b256_01E03A60 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (o->t < 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else if (g->state < 0x14) {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    o->t++;
+    if (g->state == 3) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E03B50_b256);
 

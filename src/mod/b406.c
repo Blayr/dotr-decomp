@@ -754,9 +754,119 @@ INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E027F0_b406);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02980_b406);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02B80_b406);
+/* shape b406:01E02B80, 89 insns: a white glow sized by the scene (ctx+0x7640) at a random angle, spun 0x4000 a tick, its second colour blinking red: in by 42 up to 0x80 for 80 ticks, then out by 8 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02CF0_b406);
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[0x16];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b406_01E02B80;
+
+typedef struct {
+    u8 pad[0x7640];
+    f32 size;
+} Game_b406_01E02B80;
+
+static s32 func_01E02B80_b406(Game_b406_01E02B80 *g, Obj_b406_01E02B80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = g->size;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 80) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 = g->size;
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+    } else {
+        func_001076F0(o->col2, 0xA0, 0x10, 0x10);
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape b406:01E02CF0, 82 insns: on start kind 0 is white-ish (both 0xF0, hold 0x1A), kind 1 yellow (0xD0/0xC0 with
+   blue 0x80, hold 0x10); both alphas grow by 0x12 (below 0x80) during the hold, then fade by 4 (the first ends it) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b406_01E02CF0;
+
+static s32 func_01E02CF0_b406(s32 arg0, Fx_b406_01E02CF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col2, 0xF0, 0xF0, 0xF0);
+            o->hold = 0x1A;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xD0, 0xD0, 0x80);
+            func_001076F0(o->col2, 0xC0, 0xC0, 0x80);
+            o->hold = 0x10;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x12;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 5) {
+            o->col2[3] -= 4;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02E40_b406);
 

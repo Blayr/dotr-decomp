@@ -582,7 +582,61 @@ INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E023E0_b492);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02570_b492);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02790_b492);
+/* shape b492:01E02790, 59 insns: a grey turning disc: set up once (grey, size 30x30, f34 90, scale 1), fades in by 12
+   to 0x80 until the game timer reaches 200, then out by 9 until it ends; turns 0x200 a frame */
+
+typedef struct {
+    u8 pad0[0xCBB8];
+    s16 timer;
+} Game_b492_01E02790;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x1C];
+    s32 rot;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 scale;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_b492_01E02790;
+
+static s32 func_01E02790_b492(Game_b492_01E02790 *g, Obj_b492_01E02790 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h56 = 0;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->h50 = 0;
+        o->f34 = 90.0f;
+        o->w = 0x1E;
+        o->h = 0x1E;
+        o->state = 2;
+        o->c0[3] = 0;
+        o->scale = 1.0f;
+    }
+    if (g->timer < 0xC8) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0xC;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->rot += 0x200;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02880_b492);
 

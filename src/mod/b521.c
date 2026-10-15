@@ -484,8 +484,150 @@ INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E01970_b521);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E01BD0_b521);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E02050_b521);
+/* shape b521:01E02050, 89 insns: b056:01E038A0 twin: take the first free trail node of 25 (0x98 bytes), copy the scene position, ids and height (minus 18 below), link it after the current head and make it the head */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E021C0_b521);
+typedef struct {
+    f32 x, y, z, w;
+} V4_b521_01E02050;
+
+typedef struct Node_b521_01E02050 {
+    u8 pad0[4];
+    f32 y;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x18];
+    V4_b521_01E02050 pos;
+    u8 pad40[0x30];
+    struct Node_b521_01E02050 *prev;
+    struct Node_b521_01E02050 *next;
+    u8 pad78[0x10];
+    s16 used;
+    u8 pad8A[4];
+    s16 f8E;
+    u8 pad90[2];
+    s16 f92;
+    s16 f94;
+    s16 f96;
+} Node_b521_01E02050;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b521_01E02050 pos;
+    u8 pad260[0x70];
+    Node_b521_01E02050 nodes[0x19];
+    u8 pad11A8[0x54C0 - 0x11A8];
+    Node_b521_01E02050 *head;
+    u8 pad3924[0x2C];
+    f32 y;
+    u8 pad3954[0x38];
+    s16 f398C;
+    u8 pad398E[4];
+    s16 f3992;
+} Scene_b521_01E02050;
+
+static s32 func_01E02050_b521(Scene_b521_01E02050 *g) {
+    extern void func_00195108();
+    Node_b521_01E02050 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x19; i++) {
+        if (g->nodes[i].used == 0) {
+            func_00195108(&g->nodes[i], 0x98);
+            g->nodes[i].used = 1;
+            s = &g->nodes[i];
+            i = 0x19;
+        }
+    }
+    if (s != NULL) {
+        s->pos = g->pos;
+        s->f92 = g->f398C;
+        s->prev = g->head;
+        s->f8E = g->f3992;
+        if (s->prev == NULL) {
+            s->y = g->y;
+            s->f14 = s->y - 18.0f;
+        } else {
+            s->y = g->y;
+            s->f14 = s->y - 18.0f;
+        }
+        s->prev = g->head;
+        if (s->prev != NULL) {
+            s->prev->next = s;
+        }
+        s->f94 = 1;
+        s->f96 = 1;
+        g->head = s;
+        return 1;
+    }
+    return 0;
+}
+
+/* shape b521:01E021C0, 82 insns: c035:01E01150 family: take the first free effect slot of 150 (0x70 bytes each, at ctx+0x11B0), clear it, give it the scene colour twice, the scene position, the scene value twice and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b521_01E021C0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x11b0 - 0x25C];
+    Obj_b521_01E021C0 slot[150];
+    u8 padEnd[0x54b4 - 0x11b0 - 150 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 pad54B8[0x7A];
+    s16 val;
+} Ctx_b521_01E021C0;
+
+static s32 func_01E021C0_b521(Ctx_b521_01E021C0 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b521_01E021C0 *s;
+
+    s = NULL;
+    for (i = 0; i < 150; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 150;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h50 = ctx->val;
+        s->h52 = ctx->val;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b521", func_01E02310_b521);

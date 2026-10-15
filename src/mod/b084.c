@@ -754,9 +754,117 @@ INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02800_b084);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02990_b084);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02B90_b084);
+/* shape b084:01E02B90, 89 insns: on start f48 from the game float 0x7640, colour white, second colour (0x40, 0x10, 0x80) with alpha 0, random
+   0x5A; alpha grows by 0x2A (below 0x80) for 0x50 ticks, then fades by 8 and stops; f48 follows the game float; the second colour
+   flickers purple; the rotation at 0x20 advances 0x4000 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02D00_b084);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b084_01E02B90;
+
+typedef struct {
+    u8 pad0[0x7640];
+    f32 v;
+} Game_b084_01E02B90;
+
+static s32 func_01E02B90_b084(Game_b084_01E02B90 *g, Fx_b084_01E02B90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = g->v;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0x50) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 = g->v;
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+    } else {
+        func_001076F0(o->col2, 0x60, 0x10, 0xA0);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
+
+/* shape b084:01E02D00, 82 insns: a white or blue-yellow glow by kind (b529:01E02C10 shape): both alphas up by 18 to 0x80 for 16
+   frames, then down by 4; it ends when the first runs out */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b084_01E02D00;
+
+static s32 func_01E02D00_b084(void *arg0, Obj_b084_01E02D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->c1, 0xF0, 0xF0, 0xF0);
+            o->hold = 0x10;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0xD0, 0xD0, 0x80);
+            func_001076F0(o->c1, 0xC0, 0xC0, 0x80);
+            o->hold = 0x10;
+        }
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x12;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x12;
+        }
+    } else {
+        if (o->c0[3] > 5) {
+            o->c0[3] -= 4;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 5) {
+            o->c1[3] -= 4;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02E50_b084);
 

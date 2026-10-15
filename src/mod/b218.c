@@ -873,9 +873,108 @@ INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E02F10_b218);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E030E0_b218);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E032F0_b218);
+/* shape b218:01E032F0, 64 insns: b383:01E034A0 twin: a white spark at a random frame and two random angles, growing 2 a tick up to 40: alpha 0x80 for 19 ticks, then out by 11 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E033F0_b218);
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b218_01E032F0;
+
+static s32 func_01E032F0_b218(s32 arg0, Glow_b218_01E032F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->kind = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 19) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->f38 < 40) {
+        o->f38 += 2;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b218:01E033F0, 90 insns: b115:01E01980 family: a grey/white spark (size 60, random frame 0..6) at two random angles drifting 24 a tick along its angle (sine table ctx+0x3C6C): alpha 0x80 for 7 ticks, then out by 0x14 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    s32 w1C;
+    s32 w20;
+    s32 w24;
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+    u8 pad3C[4];
+} Glow_b218_01E033F0;
+
+typedef struct {
+    u8 pad[0x3c6c];
+    u8 sin[1];
+} Game_b218_01E033F0;
+
+static s32 func_01E033F0_b218(Game_b218_01E033F0 *g, Glow_b218_01E033F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        o->kind = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x15) {
+        o->col[3] -= 0x14;
+    } else {
+        o->mode = 0;
+    }
+    o->h8 = func_001A22C0(o->h8 + 24.0f * func_00108030(g->sin, o->ang, 0));
+    o->hC = func_001A22C0(o->hC + 24.0f * func_00108030(g->sin, o->ang, 1));
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E03560_b218);
 

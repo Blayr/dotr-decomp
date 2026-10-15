@@ -434,7 +434,61 @@ static void func_01E009C0_b585(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E00DC0_b585);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E010E0_b585);
+/* shape b585:01E010E0, 75 insns: b764:01E02A60 family ring (white/blue, height 260; grows 2.5 a tick while under 220): in by 64 up to 0xC0 for 14 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    s32 w24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b585_01E010E0;
+
+static s32 func_01E010E0_b585(s32 arg0, Obj_b585_01E010E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f4C = 260.0f;
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col, 0x80, 0x80, 0xFF);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 14) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x40;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    if (o->t != 0) {
+        if (o->f4C < 220.0f) {
+            o->f4C += 2.5f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E01210_b585);
 
@@ -502,9 +556,117 @@ static s32 func_01E01720_b585(void *arg0, Obj_b354_01E020F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E01920_b585);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E01AB0_b585);
+/* shape b585:01E01AB0, 90 insns: on start f4C 60, second colour 0xC0 grey (alpha 0), colour (0x80, 0xFF, 0x80),
+   0x52 = 0, 0x5A/0x5C = 10; the second alpha grows by 12 (below 0xC0) while the game step 0xB2BC is below 0x118,
+   then fades by 15 and stops; the rotation at 0x20 advances 0x4000; f4C grows by 2.5 up to 220 after the first tick;
+   follows the model point 0xB248[0x50] */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E01C20_b585);
+typedef struct {
+    u8 pad0[0xB248];
+    s16 pts[0x3A];
+    s16 step;
+} Game_b585_01E01AB0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[4];
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 f4C;
+    s16 pt;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b585_01E01AB0;
+
+static s32 func_01E01AB0_b585(Game_b585_01E01AB0 *g, Fx_b585_01E01AB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->f4C = 60.0f;
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col, 0x80, 0xFF, 0x80);
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (g->step < 0x118) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 12;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->tick != 0) {
+        if (o->f4C < 220.0f) {
+            o->f4C += 2.5f;
+        }
+    }
+    o->tick++;
+    func_001F5620(func_001F53A0(), g->pts[o->pt], o->pos);
+    return 0;
+}
+
+/* shape b585:01E01C20, 60 insns: volume fade (layout at 0x50): for 0x97 frames down 10 to 0x30, then while the game
+   state at 0xB210 is below 0x1E up 10 to 0x80; state 3 plays at 0x80 and ends the fade */
+
+typedef struct {
+    u8 pad[0xB210];
+    s32 state;
+} Game_b585_01E01C20;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_b585_01E01C20;
+
+static s32 func_01E01C20_b585(Game_b585_01E01C20 *g, Fade_b585_01E01C20 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (o->t < 0x97) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else if (g->state < 0x1E) {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    o->t++;
+    if (g->state == 3) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E01D10_b585);
 

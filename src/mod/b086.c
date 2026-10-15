@@ -199,7 +199,57 @@ static void func_01E004D0_b086(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b086", func_01E00A50_b086);
+/* shape b086:01E00A50, 81 insns: sets the scene colour to red 0x80 and counts its timer; from frame 45 while the game state is
+   past 70, puts the effect point at the model joint and spawns two b086:01E00BA0 then two b086:01E00F70 effects (sides 0, 1) */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x, y, z;
+    u8 pad2DC[0x3950 - 0x2DC];
+    s32 state;
+    u8 r, g, b, a;
+    u8 pad3958[0x40];
+    s16 joint;
+    u8 pad399A[0x16];
+    s16 side;
+    u8 pad39B2[4];
+    s16 t;
+} Scene_b086_01E00A50;
+
+static void func_01E00A50_b086(Scene_b086_01E00A50 *s) {
+    extern void b086_01E00BA0(void);
+    extern void b086_01E00F70(void);
+    extern s32 b086_01E01730(Scene_b086_01E00A50 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+
+    s->r = 0x80;
+    s->g = 0;
+    s->b = 0;
+    s->a = 0;
+    s->t++;
+    if (s->t >= 0x2D && s->state > 0x46) {
+        func_001F5620(func_001F53A0(), s->joint, &a);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z;
+        s->side = 0;
+        b086_01E01730(s, b086_01E00BA0, 0);
+        s->side = 1;
+        b086_01E01730(s, b086_01E00BA0, 0);
+    }
+    if (s->t >= 0x2D && s->state > 0x46) {
+        func_001F5620(func_001F53A0(), s->joint, &a);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z;
+        s->side = 0;
+        b086_01E01730(s, b086_01E00F70, 0);
+        s->side = 1;
+        b086_01E01730(s, b086_01E00F70, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b086", func_01E00BA0_b086);
 

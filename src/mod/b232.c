@@ -140,13 +140,239 @@ INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00480_b232);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00710_b232);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00970_b232);
+/* shape b232:01E00970, 81 insns: a white-grey rising flash (b749:01E028A0 shape, starting x turn by the game's side, no y turn): f48 200 with f4C 58 below, rising by
+   f34 = 950 / 10 a frame with f4C 400 below; full alpha for 15 frames, then down by 14 until it ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00AC0_b232);
+typedef struct {
+    u8 pad0[0x4554];
+    s16 side;
+} Game_b232_01E00970;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00BE0_b232);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b232_01E00970;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E00D50_b232);
+static s32 func_01E00970_b232(Game_b232_01E00970 *g, Obj_b232_01E00970 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        o->h50 = 0;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->f34 = 950.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        if (g->side != 0) {
+            o->rot0 = -0x1800;
+        } else {
+            o->rot0 = 0x1800;
+        }
+    }
+    if (o->t < 0xF) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 400.0f;
+    o->t++;
+    return 0;
+}
+
+/* shape b232:01E00AC0, 70 insns: a white/grey beam from 200 growing 95 a tick (tail 400 behind): alpha 0x80 for 13 ticks, then out by 14 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b232_01E00AC0;
+
+static s32 func_01E00AC0_b232(s32 arg0, Obj_b232_01E00AC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        o->h50 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->f34 = 950.0f;
+        o->f34 = o->f34 / 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 13) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 400.0f;
+    o->t++;
+    return 0;
+}
+
+/* shape b232:01E00BE0, 89 insns: a white shard (3 x 13, random 3..4 at +8, angle from the scene, tipped +-0x1000 by the scene side flag): alpha at least 0x80 for 8 ticks, then out by 11 and ends; grows 11..20 a tick */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[0x16];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b232_01E00BE0;
+
+typedef struct {
+    u8 pad[0x4544];
+    s16 ang;
+    u8 pad4546[0xE];
+    s16 side;
+} Game_b232_01E00BE0;
+
+static s32 func_01E00BE0_b232(Game_b232_01E00BE0 *g, Obj_b232_01E00BE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 3.0f;
+        o->f4C = 13.0f;
+        o->kind = 0;
+        o->mode = 2;
+        o->h8 = func_0019A5C8() % 2 + 3;
+        o->h5C = g->ang;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        if (g->side != 0) {
+            o->w20 = -0x1000;
+        } else {
+            o->w20 = 0x1000;
+        }
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] = 0x80;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f48 += 11.0f + func_0019A5C8() % 10;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b232:01E00D50, 81 insns: a white streak: f48 3 growing by 11..25 a frame, f4C 26, random width 3 or 4, height from the
+   game; full alpha for 25 frames, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[0x4544];
+    s16 h;
+} Game_b232_01E00D50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    u8 padA[0x3E];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[2];
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b232_01E00D50;
+
+static s32 func_01E00D50_b232(Game_b232_01E00D50 *g, Obj_b232_01E00D50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 3.0f;
+        o->f4C = 26.0f;
+        o->h56 = 0;
+        o->state = 2;
+        o->w = func_0019A5C8() % 2 + 3;
+        o->h = g->h;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+    }
+    if (o->t < 0x19) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] = 0x80;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->f48 += 11.0f + func_0019A5C8() % 15;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b232:01E00EA0, 56 insns: volume fade (layout at 0x50): for 0x97 frames down 10 to 0x30, then while the game
    state at 0x44B0 is below 0x1E up 10 to 0x80; state 3 plays at 0x80 and ends the fade */
@@ -266,4 +492,69 @@ static s32 func_01E01A50_b232(Obj_b232_01E01A50 *obj, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01B90_b232);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01EE0_b232);
+/* shape b232:01E01EE0, 73 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x44C8, ot at
+   0x44C4), texture from func_001F5380, then every used slot (0x96 of 0x70 bytes at 0x2A0) whose
+   callback is b232:01E01130 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b232_01E01EE0;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b232_01E01EE0;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b232_01E01EE0 slots[0x96];
+    u8 pad4440[0x84];
+    s32 ot;
+    Pkt_b232_01E01EE0 *pk;
+} Scene_b232_01E01EE0;
+
+static void func_01E01EE0_b232(Scene_b232_01E01EE0 *g) {
+    extern void b232_01E01130(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b232_01E01EE0 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F5380(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b232_01E01130) {
+                b232_01E01130(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

@@ -6,7 +6,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E009B0_b060);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00BB0_b060);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00D80_b060);
+/* shape b060:01E00D80, 84 insns: a dark blue tumbling glow at three random turns, growing a random 2..6 a tick up to 50 and turning 2: in by 48 for 2 ticks; past size 10 out by 9, and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b060_01E00D80;
+
+static s32 func_01E00D80_b060(s32 arg0, Glow_b060_01E00D80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x20, 0x20, 0x40);
+    if (o->mode == 1) {
+        o->w10 = func_0019A5C8() % 65535;
+        o->w14 = func_0019A5C8() % 65535;
+        o->w18 = func_0019A5C8() % 65535;
+        o->hE = func_0019A5C8() % 5 + 2;
+        o->kind = 0;
+        o->f38 = 0;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        o->col[3] += 0x30;
+    }
+    o->tick++;
+    if (o->f38 > 10) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->f38 < 50) {
+        o->f38 += o->hE;
+    }
+    o->ang += 2;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00ED0_b060);
 

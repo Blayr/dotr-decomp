@@ -759,4 +759,51 @@ static s32 func_01E01F00_c536(s32 obj, Spr_b000_01E03420 *spr, Cam_b000_01E03420
 
 INCLUDE_ASM("asm/nonmatchings/mod/c536", func_01E02510_c536);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c536", func_01E03400_c536);
+/* shape c536:01E03400, 90 insns: per-tick model step: run the module's three part updaters (c536:01E018B0 twice, c536:01E00A10, c536:01E01F00) with the scale; grow the scale by 0.2 up to 1, then by 0.005 while setting four part flags; turn all 64 joints by 0x80 on each axis */
+
+typedef struct {
+    s32 x, y, z, w;
+} R_c536_01E03400;
+
+typedef struct {
+    u8 pad0[0x70];
+    f32 sx, sy, sz, sw;
+    u8 pad80[0x60];
+    u8 a[0x60];
+    R_c536_01E03400 rot[64];
+    u8 b[0xA0];
+    u8 c[0x60];
+    u8 d[0x400];
+    u8 e[0x10];
+} Model_c536_01E03400;
+
+static void func_01E03400_c536(Model_c536_01E03400 *m, s32 arg1) {
+    extern void c536_01E00A10(s32, void *, void *, void *);
+    extern void c536_01E018B0(s32, void *, void *);
+    extern void c536_01E01F00(s32, void *, void *);
+    extern void func_00103470(void *, u32, s32);
+    s32 i;
+
+    c536_01E018B0(arg1, m->d, &m->sx);
+    c536_01E018B0(arg1, m->e, &m->sx);
+    c536_01E00A10(arg1, m->c, m->b, &m->sx);
+    c536_01E01F00(arg1, m->a, &m->sx);
+    if (m->sx <= 1.0f) {
+        m->sx += 0.2f;
+        m->sy += 0.2f;
+        m->sz += 0.2f;
+    } else {
+        m->sx += 0.005f;
+        m->sy += 0.005f;
+        m->sz += 0.005f;
+        func_00103470(&m->a[0xB], 0, 2);
+        func_00103470(&m->d[0xB], 0, 2);
+        func_00103470(&m->e[0xB], 0, 2);
+        func_00103470(&m->c[0x37], 0, 3);
+    }
+    for (i = 0; i < 64; i++) {
+        m->rot[i].x += 0x80;
+        m->rot[i].y += 0x80;
+        m->rot[i].z += 0x80;
+    }
+}

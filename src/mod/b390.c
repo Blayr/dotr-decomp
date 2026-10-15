@@ -615,7 +615,55 @@ INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E023E0_b390);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E02720_b390);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E028D0_b390);
+/* shape b390:01E028D0, 80 insns: a pink glow of size 650 at a random angle, spun 0x4000 a tick, its second colour blinking blue: in by 64 up to 0xC0 for 4 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b390_01E028D0;
+
+static s32 func_01E028D0_b390(s32 arg0, Obj_b390_01E028D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 650.0f;
+        func_001076F0(o->col, 0xFF, 0xCF, 0xCF);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 8, 8, 0x80);
+    } else {
+        func_001076F0(o->col2, 8, 8, 0xC0);
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b111:01E02A10, 113 insns, 3 copies: step of a blinking flash (b547:01E02400 family): size 100; the second
    colour blinks red (mode 0) or blue (mode 1) every other tick; fades in by 0x40 for 4 ticks, then out by 9;
@@ -733,7 +781,53 @@ static s32 func_01E02BE0_b390(s32 arg0, Spark_b390_01E02BE0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E02DE0_b390);
+/* shape b390:01E02DE0, 92 insns: a white-blue growing burst: f48 20 growing by 45 with f4C half of it, random angle and turn on
+   all three axes; alpha up by 0x40 to 0xC0 for 5 frames, then down by 9 until it ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b390_01E02DE0;
+
+static s32 func_01E02DE0_b390(void *arg0, Obj_b390_01E02DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 20.0f;
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c1, 8, 8, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot[0] = (func_0019A5C8() >> 4) % 65535;
+        o->rot[1] = (func_0019A5C8() >> 4) % 65535;
+        o->rot[2] = (func_0019A5C8() >> 4) % 65535;
+    }
+    if (o->t < 5) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += 45.0f;
+    o->f4C = 0.5f * o->f48;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E02F50_b390);
 

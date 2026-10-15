@@ -563,7 +563,71 @@ static void func_01E01ED0_b501(Obj_b112_01E00B60 *o, Ring_b112_01E00B60 *s, s32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02370_b501);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E028B0_b501);
+/* shape b501:01E028B0, 92 insns: on start colour (0x20, 0x20, 0xF0), the game's 9 trail points (0x2930) all set to
+   model point 0x2B46, 0x6 = 8, alpha 0, 0xA 44..60, 0x8 5..12, random 0x3A, 0x38 = 5; alpha 0xC0 for 11 ticks, then
+   fades by 0x23 and stops; registers model point 0x2B46 with the game list 0x29C0 (b501:01E00080, kind 10) */
+
+typedef struct {
+    u8 pad0[0x2930];
+    Vec4f pts[9];
+    u8 list[0x2B46 - 0x29C0];
+    s16 point;
+} Game_b501_01E028B0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 f8;
+    s16 fA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b501_01E028B0;
+
+static s32 func_01E028B0_b501(Game_b501_01E028B0 *g, Fx_b501_01E028B0 *o) {
+    extern void b501_01E00080(void *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f pt;
+    Vec4f *q;
+    s32 i;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0xF0);
+        q = g->pts;
+        func_001F5620(func_001F53A0(), g->point, &pt);
+        for (i = 0; i < 9; i++) {
+            q->x = pt.x;
+            q->y = pt.y;
+            q->z = pt.z;
+            q++;
+        }
+        o->f6 = 8;
+        o->col[3] = 0;
+        o->fA = func_0019A5C8() % 17 + 0x2C;
+        o->f8 = func_0019A5C8() % 8 + 5;
+        o->f34 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f38 = 5;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 0x24) {
+        o->col[3] -= 0x23;
+    } else {
+        o->mode = 0;
+    }
+    b501_01E00080(g->list, 10, g->point);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02A20_b501);
 
@@ -611,13 +675,111 @@ static s32 func_01E02D10_b501(s32 arg0, Glow_b501_01E02D10 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02DE0_b501);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02FE0_b501);
+/* shape b501:01E02FE0, 83 insns: on start 0x38 = 6, variant 0..3 (0x34), colour (0x80, 0x10, 0x40), 0xA keeps the old
+   0x30 (0x3A cleared), speed 15..49 (0xE), 0x8 0..34, hold 6..8 (0x6); alpha grows by 0x40 (up to 0x80) during the hold, then fades
+   by 9 and stops; 0x30 grows by the speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b501_01E02FE0;
+
+static s32 func_01E02FE0_b501(s32 arg0, Fx_b501_01E02FE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 6;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x10, 0x40);
+        o->fA = o->f30;
+        o->f30 = 0;
+        o->f3A = 0;
+        o->speed = func_0019A5C8() % 35 + 15;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 6;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f30 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03130_b501);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03310_b501);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03530_b501);
+/* shape b501:01E03530, 82 insns: on start 0x38 = 6, variant 0..3 (0x34), colour (0x80, 0x10, 0x40), 0xA keeps the old
+   0x30, speed 15..49 (0xE), 0x8 0..34, hold 6..8 (0x6); alpha grows by 0x40 (up to 0x80) during the hold, then fades
+   by 9 and stops; 0x30 grows by the speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b501_01E03530;
+
+static s32 func_01E03530_b501(s32 arg0, Fx_b501_01E03530 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 6;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x10, 0x40);
+        o->fA = o->f30;
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 35 + 15;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 6;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f30 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03680_b501);
 

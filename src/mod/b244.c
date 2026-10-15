@@ -449,10 +449,143 @@ INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E021A0_b244);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E02B40_b244);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E030A0_b244);
+/* shape b244:01E030A0, 78 insns: move one of the scene's actors: before its start time it sits on the scene joint, after it it steps along its path (func_00104490 with a countdown) and runs shape b244:01E020C0; then copies its position and applies the camera (func_00103DB0) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E031E0_b244);
+typedef struct {
+    f32 x, y, z, w;
+} V4_b244_01E030A0;
+
+typedef struct {
+    V4_b244_01E030A0 p;
+    u8 pad10[0x60];
+} Ent_b244_01E030A0;
+
+typedef struct {
+    u8 pad0[0x10];
+    V4_b244_01E030A0 p;
+    u8 pad20[0x50];
+} Cam_b244_01E030A0;
+
+typedef struct {
+    u8 pad0[0x40];
+} Path_b244_01E030A0;
+
+typedef union {
+    struct {
+        u8 pad[0x70];
+        Path_b244_01E030A0 path[6];
+        s32 kind[6];
+    } d;
+    struct {
+        u8 pad[0xB30];
+        Ent_b244_01E030A0 a[6];
+    } a;
+    struct {
+        u8 pad[0x1130];
+        Ent_b244_01E030A0 b[5];
+    } b;
+    struct {
+        u8 pad[0x13C0];
+        Cam_b244_01E030A0 c[6];
+    } c;
+    struct {
+        u8 pad[0x4770];
+        s32 t[6];
+        s32 start[6];
+        u8 pad47A0[0x1C];
+        s32 now;
+        u8 pad47C0[4];
+        s32 joint;
+    } s;
+} Scene_b244_01E030A0;
+
+static void func_01E030A0_b244(Scene_b244_01E030A0 *g, s32 arg1, s32 i) {
+    extern void b244_01E020C0(Path_b244_01E030A0 *, s32, Ent_b244_01E030A0 *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern void func_00104490(void *, void *, s32);
+    extern void func_00103DB0(void *, void *, void *);
+    V4_b244_01E030A0 m;
+
+    if (g->s.now < g->s.start[i]) {
+        func_001F5620(func_001F53A0(), g->s.joint, &g->a.a[i]);
+    } else {
+        func_00104490(&g->a.a[i], &g->b.b[i], g->s.t[i]);
+        if (g->s.t[i] != 0) {
+            g->s.t[i]--;
+        }
+        b244_01E020C0(&g->d.path[i], g->d.kind[i], &g->a.a[i]);
+    }
+    func_001F5F90(func_001F53A0(), &m);
+    g->c.c[i].p = g->a.a[i].p;
+    func_00103DB0(&m, &g->b.b[i], &g->c.c[i]);
+}
+
+/* shape b244:01E031E0, 70 insns: updates effect group i once the scene timer reaches its start - 1: builds its matrix
+   from its point (b244:01E003B0) and its band (b244:01E00910); past its fade time shrinks the matrix and fades both
+   alphas (16 and 8 a frame) */
+
+typedef struct {
+    u8 pad0[7];
+    u8 a;
+    u8 pad8[8];
+} Pt_b244_01E031E0;
+
+typedef struct {
+    u8 pad0[0x37];
+    u8 a;
+    u8 pad38[0x28];
+} Band_b244_01E031E0;
+
+typedef struct {
+    u8 pad0[0xB10];
+    f32 m[6][0x1C];
+    Pt_b244_01E031E0 pt[6];
+    Band_b244_01E031E0 band[6];
+    u8 aux[6][0x20];
+    u8 pad1110[0x4788 - 0x1110];
+    s32 start[6];
+    s32 fade[6];
+    u8 pad47B8[4];
+    s32 t;
+} Scene_b244_01E031E0;
+
+static void func_01E031E0_b244(Scene_b244_01E031E0 *s, s32 arg1, s32 i) {
+    extern void b244_01E003B0(s32, void *, f32 *);
+    extern void b244_01E00910(s32, void *, void *, f32 *);
+    extern void func_001033D0(f32 *, f32, f32);
+    extern void func_00103470(u8 *, u8, s32);
+
+    if (s->t >= s->start[i] - 1) {
+        b244_01E003B0(arg1, &s->pt[i], s->m[i]);
+        b244_01E00910(arg1, &s->band[i], s->aux[i], s->m[i]);
+        if (s->t >= s->fade[i]) {
+            func_001033D0(s->m[i], 5.0f, 0.2f);
+            func_00103470(&s->pt[i].a, 0, 0x10);
+            func_00103470(&s->band[i].a, 0, 8);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E03300_b244);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E035B0_b244);
+/* shape b244:01E035B0, 45 insns: if slot idx's flag (s32 at 0x4770) is clear, reset its animation (0x70-byte rows at
+   0xB10, 10.0 / 1.0) and clear its three byte tables (0x10 rows at 0xDB7, 0x60 rows at 0xE47, 0x40 rows at 0x77) */
+
+typedef struct {
+    u8 pad0[0x4770];
+    s32 flag[1];
+} Game_b244_01E035B0;
+
+static void func_01E035B0_b244(Game_b244_01E035B0 *g, s32 arg1, s32 idx) {
+    extern void func_001033D0(f32, f32, void *);
+    extern void func_00103470(void *, s32, s32);
+
+    if (g->flag[idx] == 0) {
+        func_001033D0(10.0f, 1.0f, (u8 *)g + idx * 0x70 + 0xB10);
+        func_00103470((u8 *)g + idx * 0x10 + 0xDB7, 0, 0x10);
+        func_00103470((u8 *)g + idx * 0x60 + 0xE47, 0, 8);
+        func_00103470((u8 *)g + idx * 0x40 + 0x77, 0, 5);
+    }
+}

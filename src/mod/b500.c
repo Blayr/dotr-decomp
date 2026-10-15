@@ -930,7 +930,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E03020_b500);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E03260_b500);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E033E0_b500);
+/* shape b500:01E033E0, 71 insns: reads the model angle (func_001F6160); on start 0x38 = 10, random 0x3A, step 2,
+   colour 0x80 grey; alpha 0x80 on the first tick, then fades by 0x12 and stops; 0x34 counts up to 7 and 0x6 grows by
+   the step after the first tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 step;
+    u8 padA[0x1E];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b500_01E033E0;
+
+static s32 func_01E033E0_b500(s32 arg0, Fx_b500_01E033E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 ang[4];
+
+    func_001F6160(func_001F53A0(), ang);
+    if (o->mode == 1) {
+        o->f38 = 10;
+        o->f34 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->step = 2;
+        o->f6 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    if (o->tick <= 0) {
+        if (o->col[3] < 0x80) {
+            o->col[3] = 0x80;
+        }
+    } else if (o->col[3] > 0x13) {
+        o->col[3] -= 0x12;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f6 += o->step;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E03500_b500);
 

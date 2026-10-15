@@ -224,7 +224,76 @@ static s32 func_01E00C60_b194(World_b194_01E00C60 *w, Wisp_b194_01E00C60 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E00E80_b194);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E01010_b194);
+/* shape b194:01E01010, 89 insns: colour (0x80, 0x40, 0); on start reads the model angle, 0x6 = 20 (game step 0x3E2E
+   from 0x55) or -20 (from 0x4E), alpha 0; alpha grows by 0x40 (below 0x80) for 2 ticks, then fades by 9 and stops;
+   from step 0x55 0x6 counts up; 0x38 = 50; fades by 13 while the counter 0x3DD0 is below 15; 0xE grows by 5 */
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 count;
+    u8 pad3DD4[0x5A];
+    s16 step;
+} Game_b194_01E01010;
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[6];
+    s16 fE;
+    u8 pad10[4];
+    s32 f14;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b194_01E01010;
+
+static s32 func_01E01010_b194(Game_b194_01E01010 *g, Fx_b194_01E01010 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 ang[4];
+
+    func_001076F0(o->col, 0x80, 0x40, 0);
+    if (o->mode == 1) {
+        func_001F6160(func_001F53A0(), ang);
+        if (g->step >= 0x55) {
+            o->f6 = 20;
+        } else if (g->step >= 0x4E) {
+            o->f6 = -20;
+        }
+        o->f14 = 0;
+        o->f34 = 0;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (g->step >= 0x55) {
+        o->f6++;
+    }
+    o->f38 = 50;
+    o->tick++;
+    if (g->count < 15) {
+        if (o->col[3] > 0xE) {
+            o->col[3] -= 13;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->fE += 5;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E01180_b194);
 

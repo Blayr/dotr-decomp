@@ -781,7 +781,53 @@ INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02910_b193);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02B10_b193);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02D40_b193);
+/* shape b193:01E02D40, 67 insns: a grey/yellow glow of size 150 at a random angle, growing 1 and spun 0x4000 a tick: in by 64 up to 0xC0 for 4 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b193_01E02D40;
+
+static s32 func_01E02D40_b193(s32 arg0, Obj_b193_01E02D40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 150.0f;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 0x80, 8);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 1.0f;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02E50_b193);
 

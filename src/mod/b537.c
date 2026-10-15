@@ -413,7 +413,48 @@ static void func_01E00EA0_b537(Obj_b500_01E01850 *obj, Def_b500_01E01850 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b537", func_01E013B0_b537);
+/* shape b537:01E013B0, 57 insns: sets the scene colour to red 0x80, counts its timer and, on frames 0x87..0x93, puts the
+   effect point 1 above the first model's joint and spawns two b537:01E01820 effects (sides 0 and 1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2FD4 - 0x25C];
+    u8 r, g, b, a;
+    u8 pad2FD8[0x24];
+    s16 joint0;
+    s16 joint1;
+    u8 pad3000[0x12];
+    s16 side;
+    u8 pad3014[6];
+    s16 t;
+} Scene_b537_01E013B0;
+
+static void func_01E013B0_b537(Scene_b537_01E013B0 *s) {
+    extern void b537_01E01820(void);
+    extern s32 b537_01E021C0(Scene_b537_01E013B0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f b;
+
+    s->r = 0x80;
+    s->g = 0;
+    s->b = 0;
+    s->a = 0;
+    s->t++;
+    if (s->t >= 0x87 && s->t < 0x94) {
+        func_001F5620(func_001F53A0(), s->joint0, &a);
+        func_001F5620(func_001F53A0(), s->joint1, &b);
+        s->x = a.x;
+        s->y = 1.0f + a.y;
+        s->z = a.z;
+        s->side = 0;
+        b537_01E021C0(s, b537_01E01820, 0);
+        s->side = 1;
+        b537_01E021C0(s, b537_01E01820, 0);
+    }
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

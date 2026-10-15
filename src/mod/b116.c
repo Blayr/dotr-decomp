@@ -582,17 +582,268 @@ INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03360_b116);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E036C0_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03870_b116);
+/* shape b116:01E03870, 74 insns: a white two-colour glow (size 185, 200 x 200, mirrored when it has an angle): in by 7 for 18 ticks; out by 13 once the scene value reaches 327, and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E039A0_b116);
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[8];
+    s32 w24;
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 used;
+    s16 f38;
+    s16 ang;
+    u8 pad3C[4];
+} Glow_b116_01E03870;
+
+typedef struct {
+    u8 pad[0x4A62];
+    s16 val;
+} Game_b116_01E03870;
+
+static s32 func_01E03870_b116(Game_b116_01E03870 *g, Glow_b116_01E03870 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->used == 1) {
+        o->f38 = 185;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->h8 = 200;
+        o->hA = 200;
+        if (o->ang == 0) {
+            o->hE = 0;
+        } else {
+            o->hE = 1;
+        }
+        o->used = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 18) {
+        o->col[3] += 7;
+        o->col2[3] += 7;
+    } else if (g->val >= 327) {
+        if (o->col[3] > 14) {
+            o->col[3] -= 13;
+        } else {
+            o->used = 0;
+        }
+        if (o->col2[3] > 14) {
+            o->col2[3] -= 13;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b116:01E039A0, 62 insns: a white-green burst (b116:01E03D70 shape): frame 5 rising by 10, its h6 trailing 5
+   behind; alpha up by 0x60 for 2 frames, then down by 10 until it ends; x turn a quarter */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[8];
+    s32 rot;
+    u8 pad14[0x14];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b116_01E039A0;
+
+static s32 func_01E039A0_b116(void *arg0, Obj_b116_01E039A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 5;
+        func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+        func_001076F0(o->c1, 0xF0, 0x80, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        o->c0[3] += 0x60;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->rot = 0x4000;
+    o->h6 = o->h38 - 5;
+    o->h38 += 0xA;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03AA0_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03C60_b116);
+/* shape b116:01E03C60, 67 insns: a white-green spinning burst (b116:01E03D70 shape): frame 40, random angle; alpha up by
+   0x60 for 2 frames, then once the game timer passes 0x1B4 down by 9 until it ends; random turn plus a quarter */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03D70_b116);
+typedef struct {
+    u8 pad0[0x4A62];
+    s16 timer;
+} Game_b116_01E03C60;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03E60_b116);
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b116_01E03C60;
+
+static s32 func_01E03C60_b116(Game_b116_01E03C60 *g, Obj_b116_01E03C60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x28;
+        func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+        func_001076F0(o->c1, 0xF0, 0x80, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        o->c0[3] += 0x60;
+    } else if (g->timer > 0x1B4) {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape b116:01E03D70, 59 insns: a white-green spinning burst: set up once (frame 100, random angle), alpha up by 0x60
+   for 2 frames, then down by 10 until it ends; a random turn plus a quarter each frame */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b116_01E03D70;
+
+static s32 func_01E03D70_b116(void *arg0, Obj_b116_01E03D70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x64;
+        func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+        func_001076F0(o->c1, 0xF0, 0x80, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        o->c0[3] += 0x60;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape b116:01E03E60, 92 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 70, at the object's point),
+   raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the
+   scene state at 0x44A0 is 1 */
+
+typedef struct {
+    u8 pad0[0x4470];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad448C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad449C[0x4];
+    s32 state;
+} Scene_b116_01E03E60;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b116_01E03E60;
+
+static s32 func_01E03E60_b116(Scene_b116_01E03E60 *g, Obj_b116_01E03E60 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 0.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 2.0f;
+        g->l0[3] = 0.0f;
+        g->f20 = 0.0f;
+        g->range = 70.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b116:01E03FD0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x44A0 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */
@@ -720,4 +971,85 @@ INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E058C0_b116);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E05D00_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E06870_b116);
+/* OVL_WARM */
+
+/* shape b116:01E06870, 79 insns: the module's draw pass (b593:01E039C0 shape): opens a sprite packet on the stack, then runs every
+   live slot (170 of 0x40 bytes) whose handler is shape b116:01E040E0 through it; queues the batch at the scene depth - 2000
+   if any slot was live. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b116_01E06870;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b116_01E06870 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b116_01E06870;
+
+typedef struct {
+    u8 pad0[0x24];
+    void *fn;
+    u8 pad28[0xE];
+    s16 active;
+    u8 pad38[8];
+} Slot_b116_01E06870;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b116_01E06870 slot[170];
+    u8 padEnd[0x4A14 - 0x2A0 - 170 * 0x40];
+    s32 ctx;
+    Pkt_b116_01E06870 *pkt;
+    f32 depth;
+} Scene_b116_01E06870;
+
+static void func_01E06870_b116(Scene_b116_01E06870 *s) {
+    extern void b116_01E040E0(Scene_b116_01E06870 *, Slot_b116_01E06870 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b116_01E06870 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    s->pkt = &pkt;
+    n = 0;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 170; i++) {
+        if (s->slot[i].active != 0) {
+            n++;
+            if (s->slot[i].fn == (void *)b116_01E040E0) {
+                b116_01E040E0(s, &s->slot[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(s->ctx, func_00207500(), (u32)(s->depth - 2000.0f));
+    }
+}

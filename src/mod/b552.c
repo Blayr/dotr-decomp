@@ -397,7 +397,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E01D60_b552);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E020B0_b552);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E023A0_b552);
+/* shape b552:01E023A0, 93 insns: a screen fog: on start sets the scene fog block (0x3220: 128, 4.0, 2.0, 0.0, position from
+   the effect, colour (0, 120.0, 0)); its strength 0x3248 rises by 0.2 to 1, then falls by 0.1 and ends; the block is
+   passed to func_001F6C10 while alive (NULL once ended); it ends at scene counter 1 (0x3270) */
+
+typedef struct {
+    u8 pad0[0x3220];
+    f32 f2A00;
+    f32 f2A04;
+    f32 f2A08;
+    f32 f2A0C;
+    f32 pos[3];
+    u8 pad2A1C[4];
+    f32 f2A20;
+    f32 f2A24;
+    f32 strength;
+    u8 pad324C[0x3270 - 0x324C];
+    s32 count;
+} Game_b552_01E023A0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[0x4];
+    s16 mode;
+} Fx_b552_01E023A0;
+
+static s32 func_01E023A0_b552(Game_b552_01E023A0 *g, Fx_b552_01E023A0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->f2A00 = 128.0f;
+        g->f2A04 = 4.0f;
+        g->f2A08 = 2.0f;
+        g->f2A0C = 0.0f;
+        g->f2A20 = 0.0f;
+        g->f2A24 = 120.0f;
+        g->strength = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->strength < 1.0f) {
+            g->strength += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (!(g->strength <= 0.1f)) {
+        g->strength -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->f2A00);
+    }
+    if (g->count == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b552:01E02520, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3270 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

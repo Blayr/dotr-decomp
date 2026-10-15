@@ -833,7 +833,51 @@ static s32 func_01E02B80_b759(void *arg0, Obj_b547_01E02400 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b759", func_01E02C90_b759);
+/* shape b759:01E02C90, 63 insns: a red two-colour glow that fades in by 25 (both alphas, up to 0x80) for 290 ticks, then out by 4 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x4C];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b759_01E02C90;
+
+static s32 func_01E02C90_b759(s32 arg0, Obj_b759_01E02C90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x20, 0xF0, 0xF0);
+        func_001076F0(o->col2, 0x20, 0xF0, 0xF0);
+        o->h6 = 290;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x19;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x19;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 5) {
+            o->col2[3] -= 4;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b759", func_01E02D90_b759);
 

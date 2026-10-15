@@ -163,7 +163,65 @@ INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E00780_b195);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E00A00_b195);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E00C20_b195);
+/* shape b195:01E00C20, 89 insns: on start 0x38 = 8, random rotation (0x18 0x2000..0x5FFF, 0x10 -0x2000..0x1FFF,
+   0x14 0), variant 0..6; alpha grows by 0x40 (below 0x80) for 2 ticks, then fades by 13 once 0x38 passes 0x19 and by
+   15 while the game counter at 0x4020 is below 10; colour (0x40, 0x20, 0); 0x38 grows by 2 */
+
+typedef struct {
+    u8 pad0[0x4020];
+    s32 count;
+} Game_b195_01E00C20;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot10;
+    s32 rot14;
+    s32 rot18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b195_01E00C20;
+
+static s32 func_01E00C20_b195(Game_b195_01E00C20 *g, Fx_b195_01E00C20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 8;
+        o->rot18 = func_0019A5C8() % 0x4000 + 0x2000;
+        o->rot10 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot14 = 0;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else {
+        if (o->f38 > 0x19) {
+            if (o->col[3] > 0xE) {
+                o->col[3] -= 13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->count < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    func_001076F0(o->col, 0x40, 0x20, 0);
+    o->tick++;
+    o->f38 += 2;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E00D90_b195);
 
@@ -215,7 +273,48 @@ static s32 func_01E01390_b195(s32 unused, Obj_b112_01E017B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E014A0_b195);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E01730_b195);
+/* shape b195:01E01730, 67 insns: a brown ember of random size 10..39 (frame 6, angle -45) tipped by random turns of +-0x2000: alpha 0x40 for 5 ticks, then out by 7 and ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b195_01E01730;
+
+static s32 func_01E01730_b195(s32 arg0, Glow_b195_01E01730 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 30 + 10;
+        o->kind = 6;
+        o->ang = -45;
+        func_001076F0(o->col, 0x30, 0x18, 8);
+        o->w18 = func_0019A5C8() % 0x4000 + 0x2000;
+        o->w10 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->w14 = 0;
+        o->mode = 2;
+    }
+    if (o->tick < 5) {
+        o->col[3] = 0x40;
+        o->col2[3] = 0;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b018:01E02480, 54 insns, 11 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */

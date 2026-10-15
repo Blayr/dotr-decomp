@@ -138,7 +138,44 @@ INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01290_b117);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01490_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01640_b117);
+/* shape b117:01E01640, 77 insns: a yellow spark: random frame 5..42 and sub-frame 0..3, random turn on all three axes; alpha
+   up by 0x40 for 2 frames, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b117_01E01640;
+
+static s32 func_01E01640_b117(void *arg0, Obj_b117_01E01640 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = func_0019A5C8() % 38 + 5;
+        o->sub = func_0019A5C8() % 4;
+        func_0019A5C8();
+        func_001076F0(o->c0, 0x50, 0x50, 0);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->state = 2;
+    }
+    if (o->t < 2) {
+        o->c0[3] += 0x40;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b117:01E01780, 40 insns: a yellow flash: fades in by 0x40 for 2 ticks, out by 10 and ends */
 
@@ -239,7 +276,53 @@ static s32 func_01E01820_b117(void *arg0, Swell_b117_01E01820 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E019D0_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01BB0_b117);
+/* shape b117:01E01BB0, 82 insns: a grey spark at the game's point (b117:01E01640 shape): frame 25, random sub-frame 0..3 and turn
+   on all three axes; alpha up by 0x40 for 2 frames, then down by 31 until it ends */
+
+typedef struct {
+    u8 pad0[0x3B10];
+    f32 x, y, z;
+} Game_b117_01E01BB0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b117_01E01BB0;
+
+static s32 func_01E01BB0_b117(Game_b117_01E01BB0 *g, Obj_b117_01E01BB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x19;
+        o->sub = func_0019A5C8() % 4;
+        func_0019A5C8();
+        func_001076F0(o->c0, 0x48, 0x48, 0x48);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->state = 2;
+    }
+    o->x = g->x;
+    o->y = g->y;
+    o->z = g->z;
+    if (o->t < 2) {
+        o->c0[3] += 0x40;
+    } else if (o->c0[3] > 0x20) {
+        o->c0[3] -= 0x1F;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b117:01E01D00, 31 insns: func_001F7170(4, 0, &a, &b, 0) with copies of the module's floats at 0x01E02E00 and
    0x01E02E08; when the game value at 0x3B8C is 40 the effect's 0x36 is cleared; return 0 */
@@ -277,7 +360,68 @@ static s32 func_01E01D00_b117(Game_b117_01E01D00 *g, Fx_b117_01E01D00 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01D80_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E02480_b117);
+/* shape b117:01E02480, 85 insns: spawns an effect: handler b117:01E01490 always takes slot 0, others the first free of slots
+   1..219 (0x40 bytes, b089:01E030B0 shape); colours it from the context, places it at the context's position and stores the
+   frame and both arguments */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 a2;
+    s32 a1;
+    u8 c28[4];
+    u8 c2C[4];
+    s16 f30;
+    u8 pad32[4];
+    s16 used;
+    u8 pad38[8];
+} Slot_b117_01E02480;
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 pos[3];
+    u8 pad8C[0x294 - 0x8C];
+    Slot_b117_01E02480 slots[0xDC];
+    u8 pad[0x3B34 - 0x294 - 0xDC * 0x40];
+    u8 rgba[4];
+    u8 pad3B38[0x50];
+    s16 f3B88;
+} Ctx_b117_01E02480;
+
+static s32 func_01E02480_b117(Ctx_b117_01E02480 *ctx, s32 arg1, s32 arg2) {
+    extern void b117_01E01490(void);
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b117_01E02480 *s = NULL;
+    s16 i;
+
+    if ((s32)b117_01E01490 == arg1) {
+        func_00195108(&ctx->slots[0], 0x40);
+        s = &ctx->slots[0];
+        ctx->slots[0].used = 1;
+    } else {
+        for (i = 1; i < 0xDC; i++) {
+            if (ctx->slots[i].used == 0) {
+                func_00195108(&ctx->slots[i], 0x40);
+                ctx->slots[i].used = 1;
+                s = &ctx->slots[i];
+                i = 0xDC;
+            }
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c28, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c28[3] = ctx->rgba[3];
+        func_001076F0(s->c2C, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c2C[3] = ctx->rgba[3];
+        func_00106AB0(s, ctx->pos, 0);
+        s->f30 = ctx->f3B88;
+        s->a2 = arg2;
+        s->a1 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E025E0_b117);
 

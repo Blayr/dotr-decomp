@@ -137,7 +137,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/b170", func_01E00760_b170);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b170", func_01E00980_b170);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b170", func_01E00B00_b170);
+/* shape b170:01E00B00, 86 insns: on start f48 5, colour white, second colour (0x40, 0x10, 0x80) with alpha 0, random
+   0x5A; alpha grows by 0x2A (below 0x80) for 0x50 ticks, then fades by 8 and stops; f48 then 90; the second colour
+   flickers purple; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b170_01E00B00;
+
+static s32 func_01E00B00_b170(s32 arg0, Fx_b170_01E00B00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0x50) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 = 90.0f;
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+    } else {
+        func_001076F0(o->col2, 0x60, 0x10, 0xA0);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b170", func_01E00C60_b170);
 

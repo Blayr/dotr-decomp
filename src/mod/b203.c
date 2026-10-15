@@ -745,7 +745,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E02D10_b203);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E02E90_b203);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E03030_b203);
+/* shape b203:01E03030, 68 insns: on start f48 220, f4C 0, colour white, second colour (0xFF, 0x40, 0x40) with alpha 0,
+   0x5A/0x5C = 15; alpha grows by 0x60 (below 0xC0) for 7 ticks, then fades by 11 and stops; f48 grows by 1 after the
+   first tick; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b203_01E03030;
+
+static s32 func_01E03030_b203(s32 arg0, Fx_b203_01E03030 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 220.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0x40, 0x40);
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 7) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f48 += 1.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E03140_b203);
 
@@ -805,4 +855,71 @@ static s32 func_01E035F0_b203(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E03600_b203);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b203", func_01E03FB0_b203);
+/* shape b203:01E03FB0, 82 insns: c035:01E01150 family: take the first free effect slot of 150 (0x70 bytes each, at ctx+0x2A0), clear it, give it the scene colour twice, the scene position, two angles and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    u8 pad52[6];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b203_01E03FB0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2A0 - 0x25C];
+    Obj_b203_01E03FB0 slot[150];
+    u8 padEnd[0x44c4 - 0x2A0 - 150 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 padA[0x4516 - 0x44c4 - 4];
+    s16 ang;
+    u8 padB[0x4522 - 0x4516 - 2];
+    s16 h30;
+} Ctx_b203_01E03FB0;
+
+static s32 func_01E03FB0_b203(Ctx_b203_01E03FB0 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b203_01E03FB0 *s;
+
+    s = NULL;
+    for (i = 0; i < 150; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 150;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h50 = ctx->h30;
+        s->h5A = ctx->ang;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}

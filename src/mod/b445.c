@@ -760,7 +760,63 @@ static s32 func_01E02330_b445(void *arg0, Obj_b445_01E02330 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b445", func_01E02570_b445);
+/* shape b445:01E02570, 93 insns: a white-grey rising flash (b144:01E02630 shape): rising by 400 / 10 with f4C 400 below, random turn
+   on all three axes, y turning 0x100; alpha 0x60 for 6 frames, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b445_01E02570;
+
+static s32 func_01E02570_b445(void *arg0, Obj_b445_01E02570 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x40, 0x40, 0x40);
+        o->h50 = 0;
+        o->w = 0xF;
+        o->h = 0xF;
+        o->f34 = 400.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 6) {
+        o->c0[3] = 0x60;
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 400.0f;
+    o->rot1 += 0x100;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b445", func_01E026F0_b445);
 

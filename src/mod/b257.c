@@ -666,7 +666,59 @@ static void func_01E01880_b257(Obj_b257_01E01880 *o, Fx_b257_01E01880 *fx, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01B90_b257);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01DB0_b257);
+/* shape b257:01E01DB0, 64 insns: an orange spark (size 50 or 70 by the scene value, random frame 0..3) climbing 6 a tick and growing 20: in by 80 up to 0xA0 for 2 ticks, then out by 15 and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b257_01E01DB0;
+
+typedef struct {
+    u8 pad[0x3726];
+    s16 val;
+} Game_b257_01E01DB0;
+
+static s32 func_01E01DB0_b257(Game_b257_01E01DB0 *g, Glow_b257_01E01DB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (g->val < 80) {
+            o->f38 = 50;
+        } else {
+            o->f38 = 70;
+        }
+        o->kind = func_0019A5C8() % 4;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x50;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_001076F0(o->col, 0x80, 0x40, 0);
+    o->hA += 6;
+    o->tick++;
+    o->f38 += 20;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01EB0_b257);
 
@@ -676,7 +728,62 @@ INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E024F0_b257);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E028B0_b257);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E02BC0_b257);
+/* shape b257:01E02BC0, 76 insns: a grey-red rising flash: frame 6, size 20 by 80 growing by 10; both alphas up by 0x40 to 0x80 for 2
+   frames, then down by 9; ends when the first runs out; turns 7 a frame */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x1C];
+    u8 c0[4];
+    u8 c1[4];
+    s16 kind;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b257_01E02BC0;
+
+static s32 func_01E02BC0_b257(void *arg0, Obj_b257_01E02BC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x20, 0x20, 0x20);
+        func_001076F0(o->c1, 0xC0, 8, 8);
+        o->w = 0x14;
+        o->h34 = 1;
+        o->h = 0x50;
+        o->state = 2;
+        o->c0[3] = 0;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xA) {
+            o->c1[3] -= 9;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    o->h += 0xA;
+    o->t++;
+    o->ang += 7;
+    return 0;
+}
 
 /* shape b257:01E02CF0, 49 insns: b027:01E01600 twin: a red two-colour glow of size 20 at alpha 0x80 for 175 ticks, then out by 9 and ends */
 

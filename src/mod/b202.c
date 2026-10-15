@@ -672,7 +672,50 @@ static s32 func_01E020A0_b202(s32 unused, Spark_b082_01E02050 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b202", func_01E022A0_b202);
+/* shape b202:01E022A0, 67 insns: a white-blue growing spinning flash: scale 150 growing by 1, random angle; alpha up by 0x40 to 0xC0 for
+   4 frames, then down by 12 until it ends; random turn plus a quarter */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b202_01E022A0;
+
+static s32 func_01E022A0_b202(void *arg0, Obj_b202_01E022A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 150.0f;
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c1, 8, 8, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xD) {
+        o->c0[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    o->scale += 1.0f;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b202", func_01E023B0_b202);
 
@@ -742,4 +785,69 @@ static s32 func_01E02EE0_b202(Obj_b202_01E02EE0 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b202", func_01E03070_b202);
+/* shape b202:01E03070, 89 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x8648, ot at
+   0x8644), texture from func_001F53A0, then every used slot (0x12C of 0x70 bytes at 0x2A0) whose
+   callback is b202:01E02560 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b202_01E03070;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b202_01E03070;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b202_01E03070 slots[0x12C];
+    u8 pad85E0[0x64];
+    s32 ot;
+    Pkt_b202_01E03070 *pk;
+} Scene_b202_01E03070;
+
+static void func_01E03070_b202(Scene_b202_01E03070 *g) {
+    extern void b202_01E02560(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b202_01E03070 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0x12C; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b202_01E02560) {
+                b202_01E02560(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

@@ -639,7 +639,74 @@ static s32 func_01E025B0_b597(s32 unused, Obj_b152_01E02680 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02750_b597);
+/* shape b597:01E02750, 90 insns: on start 0x8/0xA = 30/60, f48 0, variant 0..7, f34 0.5, both colours (0x20, 0x20,
+   0x80) (second alpha 0), 0x5C = 0; both alphas grow by 0x40 (below 0x80) for 20 ticks, then the first fades by 6
+   twice a tick and ends it; after the first tick 0x8/0xA grow by 2 and f14 by f34; func_00205C40 on the rotation */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[8];
+    f32 f14;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b597_01E02750;
+
+static s32 func_01E02750_b597(s32 arg0, Fx_b597_01E02750 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 30;
+        o->fA = 60;
+        o->f48 = 0.0f;
+        o->f56 = func_0019A5C8() % 8;
+        o->f34 = 0.5f;
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+        func_001076F0(o->col2, 0x20, 0x20, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f5C = 0;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 7) {
+            o->col[3] -= 6;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 7) {
+            o->col[3] -= 6;
+        }
+    }
+    if (o->tick != 0) {
+        o->f8 += 2;
+        o->fA += 2;
+        o->f14 += o->f34;
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b152:01E02990, 85 insns, 2 copies: a slow grey haze: fades in over 50 frames, then out while drifting; flickers
    between two greys each frame; its angle opens 5 a frame up to 90 (b016:01E01FF0 family) */

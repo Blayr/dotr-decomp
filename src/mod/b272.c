@@ -204,7 +204,65 @@ static void func_01E00920_b272(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b272", func_01E00BE0_b272);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b272", func_01E00E80_b272);
+/* shape b272:01E00E80, 86 insns: on start 0x8/0xA = 10, variant 3, f34 0.5, colour white, random 0x5A, random spin
+   direction (0x50); alpha grows by 0x60 (below 0xC0) for 20 ticks, then fades by 9 and stops; f14 grows by 1 after the
+   first tick; func_00205C40 on the rotation at 0x20; 0x5A turns by 5 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[8];
+    f32 f14;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x18];
+    s16 dir;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b272_01E00E80;
+
+static s32 func_01E00E80_b272(s32 arg0, Fx_b272_01E00E80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 10;
+        o->fA = 10;
+        o->f56 = 3;
+        o->f34 = 0.5f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = func_0019A5C8() % 360;
+        o->dir = (func_0019A5C8() >> 4) % 2;
+        o->mode = 2;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f14 += 1.0f;
+    }
+    func_00205C40((s32)o->rot);
+    if (o->dir == 0) {
+        o->f5A += 5;
+    } else {
+        o->f5A -= 5;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b272", func_01E00FE0_b272);
 

@@ -841,7 +841,68 @@ static s32 func_01E02C10_b080(s32 arg0, Glow_b080_01E02C10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E02C70_b080);
+/* shape b080:01E02C70, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
+   raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the
+   scene state at 0x2CE0 is 1 */
+
+typedef struct {
+    u8 pad0[0x2A00];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad2A1C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad2A2C[0x2B4];
+    s32 state;
+} Scene_b080_01E02C70;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b080_01E02C70;
+
+static s32 func_01E02C70_b080(Scene_b080_01E02C70 *g, Obj_b080_01E02C70 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 2.0f;
+        g->l0[3] = 0.0f;
+        g->f20 = 0.0f;
+        g->range = 120.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b080:01E02DF0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x2CE0 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

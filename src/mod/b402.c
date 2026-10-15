@@ -873,7 +873,58 @@ static s32 func_01E02460_b402(void *arg0, Obj_b189_01E02700 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b402", func_01E025B0_b402);
+/* shape b402:01E025B0, 88 insns: b509:01E027C0 family: a grey beam falling from 1300 by a random 65..94.9 a tick (tail 150 above), spun 0x4000: alpha 0x80 for 2 ticks, ends once under 170 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b402_01E025B0;
+
+static s32 func_01E025B0_b402(s32 arg0, Obj_b402_01E025B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 1300.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        o->h50 = 1;
+        o->h5A = 5;
+        o->h5C = 5;
+        o->f34 = func_0019A5C8() % 300 + 650;
+        o->f34 = o->f34 / 10.0f;
+        o->f38 = 0.05f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 2) {
+        o->col[3] = 0x80;
+    } else if (o->f48 < 170.0f) {
+        o->mode = 0;
+    }
+    o->f48 -= o->f34;
+    o->f4C = 150.0f + o->f48;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b402:01E02710, 84 insns, 2 copies: a red flare: set up once (size 500, random angle); fades in over 4 frames, then
    out; its second colour flickers between two reds each frame while turning (b016:01E01FF0 family) */
@@ -924,7 +975,60 @@ static s32 func_01E02710_b402(void *arg0, Obj_b402_01E02710 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b402", func_01E02860_b402);
+/* shape b402:01E02860, 85 insns: b509:01E027C0 family: a grey beam rising from 60 by a random 10..34.9 a tick (tail 30 behind), spun 0x4000: alpha 0x80 for 2 ticks, then out by 14 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b402_01E02860;
+
+static s32 func_01E02860_b402(s32 arg0, Obj_b402_01E02860 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 60.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        o->h50 = 0;
+        o->h5A = 5;
+        o->h5C = 5;
+        o->f34 = func_0019A5C8() % 250 + 100;
+        o->f34 = o->f34 / 10.0f;
+        o->f38 = 0.05f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 2) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 30.0f;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b402:01E029C0, 107 insns, 2 copies: a white spark: set up once (random size 8..17, frame, angle, speed 15..39, life
    4..7); fades in for its life, then out; turns by its speed (b225:01E026A0 family, 0x58-state layout) */

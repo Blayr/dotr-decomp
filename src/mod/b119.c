@@ -335,7 +335,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E032A0_b119);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E03510_b119);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E03690_b119);
+/* shape b119:01E03690, 93 insns: a grey spark: frame 200, start height 130..629 (old one kept), random angle, rise 30..59, width
+   0..34, hold 2..3, side 0..1; alpha up by 42 to 0x80 until the hold, then down by 13 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 y0;
+    s16 side;
+    s16 step;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b119_01E03690;
+
+static s32 func_01E03690_b119(void *arg0, Obj_b119_01E03690 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0xC8;
+        o->sub = 0;
+        func_0019A5C8();
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->y0 = o->y;
+        o->y = func_0019A5C8() % 500 + 0x82;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 30 + 0x1E;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 2 + 2;
+        o->side = func_0019A5C8() % 2;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+    } else if (o->c0[3] > 0xE) {
+        o->c0[3] -= 0xD;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E03810_b119);
 

@@ -491,7 +491,49 @@ INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E01D30_b363);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E02070_b363);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E02940_b363);
+/* shape b363:01E02940, 63 insns: a violet-white rising flash: set up once (f48 20, f4C 58 below it, size 15x15), full
+   alpha for 2 frames, then fades by 9 until it ends; f48 rises 18 a frame with f4C 30 below it */
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b363_01E02940;
+
+static s32 func_01E02940_b363(void *arg0, Obj_b363_01E02940 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0xC0, 0x80, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->w = 0xF;
+        o->h = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += 18.0f;
+    o->f4C = o->f48 - 30.0f;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E02A40_b363);
 
@@ -572,7 +614,60 @@ static s32 func_01E046A0_b363(s32 arg0, Fx_b363_01E046A0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E04880_b363);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E04B60_b363);
+/* shape b363:01E04B60, 82 insns: b283:01E036C0 twin (white, or blue/teal for kind 1): in by 18 up to 0x80 for 22 ticks, then out by 4 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b363_01E04B60;
+
+static s32 func_01E04B60_b363(s32 arg0, Obj_b363_01E04B60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col2, 0xF0, 0xF0, 0xF0);
+            o->h6 = 22;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xF0, 0xD0, 0xA0);
+            func_001076F0(o->col2, 0xF0, 0xA0, 0xA0);
+            o->h6 = 22;
+        }
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x12;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 5) {
+            o->col2[3] -= 4;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b363:01E04CB0, 53 insns: volume fade by game state (b003:01E02330 family, layout at 0x50): state at 0xDE90
    limit 0x1E, floor 0x50, down 10, up 10, cap 0x80; state 2 sets the volume to 0x80 and ends the fade */

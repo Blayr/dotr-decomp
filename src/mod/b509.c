@@ -814,7 +814,56 @@ static s32 func_01E02670_b509(void *arg0, Obj_b189_01E02700 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b509", func_01E027C0_b509);
+/* shape b509:01E027C0, 84 insns: a grey beam falling from 900 by a random 25..59.9 a tick (tail 65 behind), spun 0x4000: alpha 0x80 for 2 ticks, ends once under 120 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b509_01E027C0;
+
+static s32 func_01E027C0_b509(s32 arg0, Obj_b509_01E027C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 900.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        o->h50 = 1;
+        o->h5A = 5;
+        o->h5C = 5;
+        o->f34 = func_0019A5C8() % 350 + 250;
+        o->f34 = o->f34 / 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 2) {
+        o->col[3] = 0x80;
+    } else if (o->f48 < 120.0f) {
+        o->mode = 0;
+    }
+    o->f48 -= o->f34;
+    o->f4C = o->f48 - 65.0f;
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b402:01E02710, 84 insns, 2 copies: a red flare: set up once (size 500, random angle); fades in over 4 frames, then
    out; its second colour flickers between two reds each frame while turning (b016:01E01FF0 family) */
@@ -865,7 +914,60 @@ static s32 func_01E02910_b509(void *arg0, Obj_b402_01E02710 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b509", func_01E02A60_b509);
+/* shape b509:01E02A60, 82 insns: on start f48 20, f4C 58 below it, both colours 0x40 grey (second alpha 0),
+   0x5A/0x5C = 5, rise speed 10..34.9 (f34); alpha 0x80 for 2 ticks, then fades by 14 and stops; f48 rises by the
+   speed with f4C 30 below it; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 speed;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b509_01E02A60;
+
+static s32 func_01E02A60_b509(s32 arg0, Fx_b509_01E02A60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        o->f50 = 0;
+        o->f5A = 5;
+        o->f5C = 5;
+        o->speed = func_0019A5C8() % 250 + 100;
+        o->speed /= 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 2) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->speed;
+    o->f4C = o->f48 - 30.0f;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b402:01E029C0, 107 insns, 2 copies: a white spark: set up once (random size 8..17, frame, angle, speed 15..39, life
    4..7); fades in for its life, then out; turns by its speed (b225:01E026A0 family, 0x58-state layout) */

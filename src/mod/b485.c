@@ -592,7 +592,71 @@ static void func_01E014F0_b485(Obj_b016_01E018F0 *obj, Cam_b016_01E018F0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E017C0_b485);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E01A60_b485);
+/* shape b485:01E01A60, 87 insns: a grey-blue flickering flash on the model joint: f4C 165, size 10x10; second alpha up by 24 to 0xC0 until the game
+   timer reaches 0x122, then down by 12 until it ends; second colour flickers by the timer's parity; random turn */
+
+typedef struct {
+    u8 pad0[0x44C4];
+    s16 joint;
+    u8 pad44C6[0x34];
+    s16 timer;
+} Game_b485_01E01A60;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b485_01E01A60;
+
+static s32 func_01E01A60_b485(Game_b485_01E01A60 *g, Obj_b485_01E01A60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c1, 0x80, 0x80, 0x60);
+        o->hold = 0x8C;
+        o->f4C = 165.0f;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (g->timer < 0x122) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x18;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer % 2 == 1) {
+        func_001076F0(o->c1, 0x50, 0x50, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x60, 0x60, 0xA0);
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E01BC0_b485);
 
@@ -659,7 +723,71 @@ static s32 func_01E02040_b485(s32 arg0, Fx_b191_01E02600 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E02290_b485);
+/* shape b485:01E02290, 87 insns: a dark-blue flickering flash on the model joint (b485:01E01A60 shape): second alpha up by 0x60 until the game
+   timer reaches 10 */
+
+typedef struct {
+    u8 pad0[0x44C4];
+    s16 joint;
+    u8 pad44C6[0x34];
+    s16 timer;
+} Game_b485_01E02290;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b485_01E02290;
+
+static s32 func_01E02290_b485(Game_b485_01E02290 *g, Obj_b485_01E02290 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x20, 0x20, 0x20);
+        func_001076F0(o->c1, 0x80, 0x80, 0x60);
+        o->hold = 0x8C;
+        o->f4C = 165.0f;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (g->timer < 0xA) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer % 2 == 1) {
+        func_001076F0(o->c1, 0x20, 0x20, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x30, 0x30, 0xA0);
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E023F0_b485);
 
@@ -780,4 +908,69 @@ static s32 func_01E03370_b485(Obj_b485_01E03370 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E034B0_b485);
+/* shape b485:01E034B0, 73 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x44A8, ot at
+   0x44A4), texture from func_001F53A0, then every used slot (0x96 of 0x70 bytes at 0x2A0) whose
+   callback is b485:01E02A00 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b485_01E034B0;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b485_01E034B0;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b485_01E034B0 slots[0x96];
+    u8 pad4440[0x64];
+    s32 ot;
+    Pkt_b485_01E034B0 *pk;
+} Scene_b485_01E034B0;
+
+static void func_01E034B0_b485(Scene_b485_01E034B0 *g) {
+    extern void b485_01E02A00(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b485_01E034B0 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b485_01E02A00) {
+                b485_01E02A00(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

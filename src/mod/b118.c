@@ -899,7 +899,41 @@ static s32 func_01E01F30_b118(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b118", func_01E02AC0_b118);
+/* shape b118:01E02AC0, 60 insns: build an 8 x 16 point hemisphere of radius r (rings every 0x1249 from the pole, 16 points 0x1000 apart) */
+
+typedef struct {
+    f32 x, y, z;
+} P3_b118_01E02AC0;
+
+typedef struct {
+    s32 id;
+    u8 pad4[8];
+    f32 r;
+    u8 pad10[0x10];
+    P3_b118_01E02AC0 p[8][16];
+} Dome_b118_01E02AC0;
+
+static s32 func_01E02AC0_b118(Dome_b118_01E02AC0 *o, s32 id, f32 r) {
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    s32 i;
+    s32 j;
+    f32 a;
+    f32 b;
+
+    o->id = id;
+    o->r = r;
+    for (i = 0; i < 8; i++) {
+        a = r * func_0020B480(0x4000 - i * 0x1249);
+        b = r * func_0020B550(0x4000 - i * 0x1249);
+        for (j = 0; j < 16; j++) {
+            o->p[i][j].z = a * func_0020B480(j * 0x1000);
+            o->p[i][j].x = a * func_0020B550(j * 0x1000);
+            o->p[i][j].y = b;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b118", func_01E02BB0_b118);
 

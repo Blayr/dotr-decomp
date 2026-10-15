@@ -473,7 +473,63 @@ static s32 func_01E01B50_b183(void *arg0, Obj_b183_01E01B50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b183", func_01E01CE0_b183);
+/* shape b183:01E01CE0, 90 insns: a grey spark: f48 5, sub-frame 3, random angle, frame 0..7, rise 6..15, height 0..34 and hold 1..5; its old h50 kept
+   in hC and replaced by a random 4..53; full alpha until the hold, then down by 8 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    s16 hE;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b183_01E01CE0;
+
+static s32 func_01E01CE0_b183(void *arg0, Obj_b183_01E01CE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 5.0f;
+        o->sub = 3;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->h = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 50 + 4;
+        o->hE = func_0019A5C8() % 10 + 6;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 1;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 9) {
+        o->c0[3] -= 8;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b183:01E01E50, 54 insns: volume fade by game state (b058:01E017A0 shape, layout at 0x50): state at 0x44A0 limit
    0x14, down 10 to 0x30, up 10 to 0x80 where the fade ends; state 2 plays at 0x80 */

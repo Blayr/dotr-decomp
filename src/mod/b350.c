@@ -233,7 +233,57 @@ static void func_01E005A0_b350(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00B20_b350);
+/* shape b350:01E00B20, 78 insns: scene colour (0x80, 0, 0, 0); count 0x37A2 up; between 0x2D and 0xC7 place the scene
+   at model point 0x3784 (y + 2) and run b350:01E00C60 and b350:01E00F20 through b350:01E01C70; below 0x14 place it at
+   point 0x3786 and run b350:01E011E0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x3754 - 0x25C];
+    u8 col[4];
+    u8 pad3758[0x2C];
+    s16 point;
+    s16 point2;
+    u8 pad3788[0x1A];
+    s16 count;
+} Scene_b350_01E00B20;
+
+static void func_01E00B20_b350(Scene_b350_01E00B20 *g) {
+    extern void b350_01E00C60(void);
+    extern void b350_01E00F20(void);
+    extern void b350_01E011E0(void);
+    extern void b350_01E01C70(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 pt[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->count++;
+    if (g->count > 0x2C && g->count < 0xC8) {
+        func_001F5620(func_001F53A0(), g->point, pt);
+        g->pos[0] = pt[0];
+        g->pos[1] = 2.0f + pt[1];
+        g->pos[2] = pt[2];
+        for (i = 0; i < 1; i++) {
+            b350_01E01C70(g, b350_01E00C60, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b350_01E01C70(g, b350_01E00F20, 0);
+        }
+    }
+    if (g->count < 0x14) {
+        func_001F5620(func_001F53A0(), g->point2, pt);
+        g->pos[0] = pt[0];
+        g->pos[1] = pt[1];
+        g->pos[2] = pt[2];
+        b350_01E01C70(g, b350_01E011E0, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00C60_b350);
 
@@ -241,7 +291,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00F20_b350);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E011E0_b350);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E013E0_b350);
+/* shape b350:01E013E0, 92 insns: b582:01E03470 family scene light at ctx+0x3510 (white 5/5/5, range 128, height 140): raised by 0.2 to 1, lowered by 0.1 and ended; applied while alive; ends at scene state 1 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Obj_b350_01E013E0;
+
+typedef struct {
+    f32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 h;
+    f32 level;
+    u8 pad2C[0x214];
+    s32 state;
+} Light_b350_01E013E0;
+
+typedef struct {
+    u8 pad[0x3510];
+    Light_b350_01E013E0 l;
+} Game_b350_01E013E0;
+
+static s32 func_01E013E0_b350(Game_b350_01E013E0 *g, Obj_b350_01E013E0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->l.w0 = 128.0f;
+        g->l.r = 5.0f;
+        g->l.g = 5.0f;
+        g->l.b = 5.0f;
+        g->l.w20 = 0;
+        g->l.h = 140.0f;
+        g->l.level = 0.0f;
+        g->l.x = o->x;
+        g->l.y = o->y;
+        g->l.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->l.level < 1.0f) {
+            g->l.level += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (g->l.level > 0.1f) {
+        g->l.level -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->l);
+    }
+    if (g->l.state == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b284:01E02230, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3750 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

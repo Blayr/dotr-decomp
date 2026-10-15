@@ -653,4 +653,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E06E00_b847);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E06FB0_b847);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E07280_b847);
+/* shape b847:01E07280, 84 insns: b183:01E029E0 family draw pass: sprite packet on the stack, then every live slot (230 of 0x70 bytes) whose handler is shape b847:01E05FB0 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b847_01E07280;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b847_01E07280 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b847_01E07280;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b847_01E07280;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b847_01E07280 slot[230];
+    u8 padEnd[0xD634 - 0x2A0 - 230 * 0x70];
+    s32 ctx;
+    Pkt_b847_01E07280 *pkt;
+} Scene_b847_01E07280;
+
+static void func_01E07280_b847(Scene_b847_01E07280 *s) {
+    extern void b847_01E05FB0(Scene_b847_01E07280 *, Slot_b847_01E07280 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b847_01E07280 pkt __attribute__((aligned(8)));
+    s32 i;
+
+    s->pkt = &pkt;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 230; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b847_01E05FB0) {
+            b847_01E05FB0(s, &s->slot[i]);
+        }
+    }
+    func_00207FD0(s->ctx, func_00207500(), 0);
+}

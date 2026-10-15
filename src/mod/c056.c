@@ -2,7 +2,59 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00080_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00240_c056);
+/* shape c056:01E00240, 70 insns: sound voice k (k + 0xF5 above 10) while the game counter at 0x4478 is below 10:
+   if it plays, set its volume byte to 0x80 and (unless bit k of 0x447C) fade it to 0.15; if it is ready, aim it at
+   the game's 16-byte slot 0x40E0[k], clear p->4 and attach p, and (unless bit k) start it (0x18) */
+
+typedef struct {
+    u8 pad0[0x40E0];
+    u8 slot[0x39][16];
+    u8 pad4470[8];
+    s32 count;
+    u32 mask;
+} Game_c056_01E00240;
+
+typedef struct {
+    u8 pad0[4];
+    s32 f4;
+} P_c056_01E00240;
+
+static s32 func_01E00240_c056(Game_c056_01E00240 *g, P_c056_01E00240 *p, s32 k) {
+    extern s32 func_001F5EC0(s32);
+    extern void func_001F6490(s32, void *);
+    extern void func_001F63E0(s32, void *);
+    extern void func_00107370(s32, s32, f32);
+    extern s32 func_001F5AF0(s32);
+    extern void func_001F5C40(s32, void *);
+    extern void func_001F5B70(s32, void *);
+    extern void func_00107650(s32, s32);
+    u8 v[4];
+    s32 ch;
+
+    ch = k;
+    if (k > 10) {
+        ch = k + 0xF5;
+    }
+    if (g->count < 10) {
+        if (func_001F5EC0(ch) != 0) {
+            func_001F6490(ch, v);
+            v[3] = 0x80;
+            func_001F63E0(ch, v);
+            if (!((g->mask >> k) & 1)) {
+                func_00107370(ch, 0, 0.15f);
+            }
+        }
+        if (func_001F5AF0(ch) != 0) {
+            func_001F5C40(ch, g->slot[k]);
+            p->f4 = 0;
+            func_001F5B70(ch, p);
+            if (!((g->mask >> k) & 1)) {
+                func_00107650(ch, 0x18);
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00360_c056);
 
@@ -192,7 +244,73 @@ static void func_01E011C0_c056(Ctx_c056_01E011C0 *ctx, s32 arg) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E012A0_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E01490_c056);
+/* shape c056:01E01490, 66 insns: spawns a grey glow (c056:01E00C50 family): colours 0x20 with the context's alpha, height
+   from the context, placed at the context's position; links to the context's parent effect (copying its vector and
+   pointing it back), draws with c056:01E02790, frame 7 */
+
+typedef struct Ent_c056_01E01490 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x58];
+    Vec4f v;
+    u8 pad80[0x10];
+    struct Ent_c056_01E01490 *parent;
+    struct Ent_c056_01E01490 *child;
+    void (*cb)(void);
+    s32 arg;
+    u8 padA0[0xC];
+    u8 col0[4];
+    u8 col1[4];
+    u8 padB4[4];
+    s16 fB8;
+    s16 fBA;
+    u8 padBC[2];
+    s16 fBE;
+} Ent_c056_01E01490;
+
+typedef struct {
+    u8 pad0[0x84];
+    f32 f84;
+    u8 pad88[0xC60 - 0x88];
+    u8 pool[0x4480 - 0xC60];
+    u8 rgba[4];
+    u8 pad4484[8];
+    Ent_c056_01E01490 *parent;
+    u8 pad4490[0xC];
+    f32 pos[3];
+    u8 pad44A8[0x10];
+    s16 f44B8;
+    s16 f44BA;
+} Ctx_c056_01E01490;
+
+static void func_01E01490_c056(Ctx_c056_01E01490 *ctx, s32 arg) {
+    extern void c056_01E02790(void);
+    extern void func_001076F0();
+    Ent_c056_01E01490 *e = (Ent_c056_01E01490 *)func_00106A00((s32)ctx, (s32)ctx->pool, 0x46, 0);
+    Ent_c056_01E01490 *p;
+
+    if (e != NULL) {
+        func_001076F0(e->col0, 0x20, 0x20, 0x20);
+        e->col0[3] = ctx->rgba[3];
+        func_001076F0(e->col1, 0x20, 0x20, 0x20);
+        e->col1[3] = ctx->rgba[3];
+        e->fBA = ctx->f44BA;
+        e->f14 = e->f4 = ctx->f84;
+        func_00107E40(ctx->pos[0], ctx->pos[1], ctx->pos[2], e);
+        e->parent = ctx->parent;
+        p = e->parent;
+        if (p != NULL) {
+            e->v = p->v;
+            p->child = e;
+        }
+        e->cb = c056_01E02790;
+        e->arg = arg;
+        e->fB8 = ctx->f44B8;
+        e->fBE = 7;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E015A0_c056);
 

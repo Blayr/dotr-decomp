@@ -201,13 +201,135 @@ static void func_01E004D0_b069(Obj_b068_01E00920 *o, Spr_b068_01E00920 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E00A60_b069);
+/* shape b069:01E00A60, 88 insns: scene colour (0x80, 0, 0, 0); count 0x39B6 up; at 0x2D run b069:01E00EF0 and
+   b069:01E010B0 (0x39AA 0 then 0x5A) for both sides (0x39B0 0/1); from 0x5A, once the counter 0x3950 passes 0x43, place
+   the scene at model point 0x399C and run b069:01E00BC0 twice; all through b069:01E01700 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 pad2DC[0x3950 - 0x2DC];
+    s32 count2;
+    u8 col[4];
+    u8 pad3958[0x44];
+    s16 point;
+    u8 pad399E[0xC];
+    s16 f39AA;
+    u8 pad39AC[4];
+    s16 side;
+    u8 pad39B2[4];
+    s16 count;
+} Scene_b069_01E00A60;
+
+static void func_01E00A60_b069(Scene_b069_01E00A60 *g) {
+    extern void b069_01E00BC0(void);
+    extern void b069_01E00EF0(void);
+    extern void b069_01E010B0(void);
+    extern void b069_01E01700(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 pt[4];
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->count++;
+    if (g->count == 0x2D) {
+        g->side = 0;
+        b069_01E01700(g, b069_01E00EF0, 0);
+        g->f39AA = 0;
+        b069_01E01700(g, b069_01E010B0, 0);
+        g->f39AA = 0x5A;
+        b069_01E01700(g, b069_01E010B0, 0);
+        g->side = 1;
+        b069_01E01700(g, b069_01E00EF0, 0);
+        g->f39AA = 0;
+        b069_01E01700(g, b069_01E010B0, 0);
+        g->f39AA = 0x5A;
+        b069_01E01700(g, b069_01E010B0, 0);
+    }
+    if (g->count >= 0x5A) {
+        if (g->count2 > 0x43) {
+            func_001F5620(func_001F53A0(), g->point, pt);
+            g->pos[0] = pt[0];
+            g->pos[1] = pt[1];
+            g->pos[2] = pt[2];
+            g->side = 0;
+            b069_01E01700(g, b069_01E00BC0, 0);
+            b069_01E01700(g, b069_01E00BC0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E00BC0_b069);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E00EF0_b069);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E010B0_b069);
+/* shape b069:01E010B0, 87 insns: a red column (b073:01E02BD0 shape): size 13 by 30 growing by 7, turning 10 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[2];
+    s16 dir;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b069_01E010B0;
+
+static s32 func_01E010B0_b069(void *arg0, Obj_b069_01E010B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x80, 0x30, 0x30);
+        func_001076F0(o->c1, 0x80, 0x30, 0x30);
+        o->w = 0xD;
+        o->h = 0x1E;
+        if (o->ang == 0) {
+            o->dir = 0;
+        } else {
+            o->dir = 1;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 7) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xE) {
+            o->c1[3] -= 0xD;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    if (o->dir == 0) {
+        o->h += 7;
+    } else {
+        o->h += 7;
+    }
+    o->t++;
+    o->ang += 0xA;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E01210_b069);
 

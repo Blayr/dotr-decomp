@@ -541,7 +541,53 @@ static s32 func_01E027D0_b733(void *arg0, Spark_b178_01E03090 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02970_b733);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02B40_b733);
+/* shape b733:01E02B40, 59 insns: a grey-purple spinning flash (b236:01E01B70 family): f4C 5, size 30x30; second alpha up by 0x50 to 0xA0 for
+   3 frames, then down by 12 until it ends; a random turn plus a quarter each frame */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b733_01E02B40;
+
+static s32 func_01E02B40_b733(void *arg0, Obj_b733_01E02B40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 5.0f;
+        func_001076F0(o->c0, 0x70, 0x70, 0x70);
+        func_001076F0(o->c1, 0x40, 0x20, 0x30);
+        o->w = 0x1E;
+        o->h = 0x1E;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 3) {
+        if (o->c1[3] < 0xA0) {
+            o->c1[3] += 0x50;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b733:01E02C30, 63 insns, 3 copies: step of a two-colour glow: on state 1 sets both colours grey and a lifetime
    of 12; fades both in by 0x2A, then out by 12 until the first ends. */
@@ -590,7 +636,56 @@ static s32 func_01E02C30_b733(void *arg0, Obj_b733_01E02C30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02D30_b733);
+/* shape b733:01E02D30, 91 insns: on start f48 100.0f, f4C 130.0f + 0..79, colour 0x70 grey, second colour (0x40, 0x20, 0x30)
+   with alpha 0, random rotation, 0x5A/0x5C = 30; the second alpha grows by 0x50 (below 0xA0) for 3 ticks, then fades
+   by 12 and stops; f4C grows by 20.0f */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b733_01E02D30;
+
+static s32 func_01E02D30_b733(s32 arg0, Fx_b733_01E02D30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        o->f4C = 130.0f + (func_0019A5C8() >> 4) % 80;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        func_001076F0(o->col2, 0x40, 0x20, 0x30);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f5A = 30;
+        o->f5C = 30;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 3) {
+        if (o->col2[3] < 0xA0) {
+            o->col2[3] += 0x50;
+        }
+    } else if (o->col2[3] > 0xD) {
+        o->col2[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    o->f4C += 20.0f;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E02EA0_b733);
 

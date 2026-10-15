@@ -1041,4 +1041,55 @@ static s32 func_01E028A0_b728(s32 ot __attribute__((aligned(8))), Trail_b021_01E
 
 INCLUDE_ASM("asm/nonmatchings/mod/b728", func_01E02C90_b728);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b728", func_01E04270_b728);
+/* OVL_CFLAGS: -O2,p */
+
+/* shape b728:01E04270, 83 insns: for each of the 16 rows whose 0x98 is clear: pick a random sound index 0..49 and a
+   neighbour, then look up three sound ids (0x1D, and the module table b728:01E04400 at both indices) */
+
+typedef struct {
+    u8 b[0x32];
+} Tbl_b728_01E04270;
+
+typedef struct {
+    u8 pad0[0x18];
+    s16 busy;
+    u8 pad1A[0x16];
+} Row_b728_01E04270;
+
+typedef struct {
+    u8 pad0[0x80];
+    Row_b728_01E04270 rows[16];
+    u8 pad380[0x2C84 - 0x380];
+    s32 a;
+    s32 b;
+    s32 id0;
+    s32 id1;
+    s32 id2;
+} Game_b728_01E04270;
+
+
+#pragma optimization_level 2
+
+static void func_01E04270_b728(Game_b728_01E04270 *g) {
+    extern Tbl_b728_01E04270 D_01E04400_b728;
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5560(s32, s32, s32);
+    Tbl_b728_01E04270 tbl;
+    s32 i;
+
+    tbl = D_01E04400_b728;
+    for (i = 0; i < 16; i++) {
+        if (g->rows[i].busy == 0) {
+            g->a = func_0019A5C8() % 50;
+            if (g->a + 1 < 50) {
+                g->b = g->a + 1;
+            } else {
+                g->b = g->a - 1;
+            }
+            g->id0 = func_001F5560(func_001F53A0(), 0x1D, 1);
+            g->id1 = func_001F5560(func_001F53A0(), tbl.b[g->a], 0);
+            g->id2 = func_001F5560(func_001F53A0(), tbl.b[g->b], 0);
+        }
+    }
+}
+#pragma optimization_level reset

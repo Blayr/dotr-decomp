@@ -199,7 +199,51 @@ static void func_01E004D0_b538(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b538", func_01E00A50_b538);
+/* shape b538:01E00A50, 65 insns: scene colour (0x80, 0, 0, 0); count 0x35E8 up; between 0x58 and 0x12D place the
+   scene at the model point 0x35C8 (y - 1, z +/- 3.5 by the side flag 0x35E4) and run the module's b538:01E00B60
+   through b538:01E01220 once */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x3584 - 0x25C];
+    u8 col[4];
+    u8 pad3588[0x40];
+    s16 point;
+    u8 pad35CA[0x1A];
+    s16 side;
+    u8 pad35E6[2];
+    s16 count;
+} Scene_b538_01E00A50;
+
+static void func_01E00A50_b538(Scene_b538_01E00A50 *g) {
+    extern void b538_01E00B60(void);
+    extern void b538_01E01220(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 pt[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->count++;
+    if (g->count > 0x57 && g->count < 0x12E) {
+        func_001F5620(func_001F53A0(), g->point, pt);
+        g->pos[0] = pt[0];
+        g->pos[1] = pt[1] - 1.0f;
+        g->pos[2] = pt[2];
+        if (g->side != 0) {
+            g->pos[2] += 3.5f;
+        } else {
+            g->pos[2] -= 3.5f;
+        }
+        for (i = 0; i < 1; i++) {
+            b538_01E01220(g, b538_01E00B60, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b538", func_01E00B60_b538);
 

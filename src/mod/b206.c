@@ -527,4 +527,69 @@ static s32 func_01E02320_b206(Obj_b206_01E02320 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E02460_b206);
+/* shape b206:01E02460, 73 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x4C28, ot at
+   0x4C24), texture from func_001F5380, then every used slot (0x96 of 0x70 bytes at 0x2A0) whose
+   callback is b206:01E01B80 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b206_01E02460;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b206_01E02460;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b206_01E02460 slots[0x96];
+    u8 pad4440[0x7E4];
+    s32 ot;
+    Pkt_b206_01E02460 *pk;
+} Scene_b206_01E02460;
+
+static void func_01E02460_b206(Scene_b206_01E02460 *g) {
+    extern void b206_01E01B80(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b206_01E02460 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F5380(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b206_01E01B80) {
+                b206_01E01B80(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

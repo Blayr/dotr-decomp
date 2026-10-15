@@ -648,7 +648,52 @@ INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E01B90_b259);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E01FD0_b259);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E02150_b259);
+/* shape b259:01E02150, 63 insns: grey glow with two colours: on start both 0x80 grey, hold 0x6 = 10; both alphas
+   grow by 0x2A (below 0x80) during the hold, then fade by 12 (the first one ends the effect) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x4C];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b259_01E02150;
+
+static s32 func_01E02150_b259(s32 arg0, Fx_b259_01E02150 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->hold = 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x2A;
+        }
+    } else {
+        if (o->col[3] > 0xD) {
+            o->col[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0xD) {
+            o->col2[3] -= 12;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E02250_b259);
 
@@ -820,4 +865,78 @@ static s32 func_01E033C0_b259(Obj_b259_01E033C0 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E03550_b259);
+/* shape b259:01E03550, 89 insns: b183:01E029E0 family draw pass that counts: every live slot (300 of 0x70 bytes) whose handler is shape b259:01E02970 is drawn and counted; the packet is sent only when something drew */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b259_01E03550;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b259_01E03550 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b259_01E03550;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b259_01E03550;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b259_01E03550 slot[300];
+    u8 padEnd[0x866C - 0x2A0 - 300 * 0x70];
+    s32 ctx;
+    Pkt_b259_01E03550 *pkt;
+} Scene_b259_01E03550;
+
+static void func_01E03550_b259(Scene_b259_01E03550 *s) {
+    extern void b259_01E02970(Scene_b259_01E03550 *, Slot_b259_01E03550 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b259_01E03550 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    s->pkt = &pkt;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 300; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b259_01E02970) {
+            n++;
+            b259_01E02970(s, &s->slot[i]);
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(s->ctx, func_00207500(), 0);
+    }
+}

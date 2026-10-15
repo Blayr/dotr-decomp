@@ -605,11 +605,120 @@ INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E017A0_b020);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E01B50_b020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E01E70_b020);
+/* shape b020:01E01E70, 81 insns: on start 0x8 = 10, 0xA = 1, variant 2..7, f34 0.5, colour white; alpha grows by 0x60
+   (below 0xC0) for 15 ticks, then fades by 9 and stops; after the first tick f18 moves by 5 (down when the game flag
+   0x70AE is set) 0x24 = 0x4000; stops once the game step 0x70B2 reaches 0xB8 */
+
+typedef struct {
+    u8 pad0[0x70AE];
+    s16 flag;
+    u8 pad70B0[2];
+    s16 step;
+} Game_b020_01E01E70;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0xC];
+    f32 f18;
+    u8 pad1C[8];
+    s32 f24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x1C];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b020_01E01E70;
+
+static s32 func_01E01E70_b020(Game_b020_01E01E70 *g, Fx_b020_01E01E70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 10;
+        o->fA = 1;
+        o->f56 = func_0019A5C8() % 6 + 2;
+        o->f34 = 0.5f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+    }
+    if (o->tick < 15) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (g->flag != 0) {
+            o->f18 -= 5.0f;
+        } else {
+            o->f18 += 5.0f;
+        }
+    }
+    o->f24 = 0x4000;
+    o->tick++;
+    if (g->step >= 0xB8) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E01FC0_b020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E022D0_b020);
+/* shape b020:01E022D0, 65 insns: on start f48 6, colour 0x80 grey, second colour (0x80, 0x10, 0x10) with alpha 0, 0x30 = 1.5f,
+   0x34 = 5.0f; alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and stops; 0x34 grows by 4.0f after the
+   first tick; 0x5A advances 6 */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b020_01E022D0;
+
+static s32 func_01E022D0_b020(s32 arg0, Fx_b020_01E022D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->f30 = 1.5f;
+        o->f34 = 5.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f34 += 4.0f;
+    }
+    o->tick++;
+    o->f5A += 6;
+    return 0;
+}
 
 /* shape b020:01E023E0, 53 insns: a white flash: set up once (white colours, size 2x2, scale 100), fades in by 0x60
    for 4 frames up to 0xC0, then out by 9 until it ends */
@@ -659,7 +768,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E024C0_b020);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E026E0_b020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E02D90_b020);
+/* shape b020:01E02D90, 82 insns: takes the first free of 250 effect slots (0x70 bytes, b089:01E030B0 shape), colours it from
+   the context, places it at the context's position (copying it in), stores two frames and both arguments */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 c60[4];
+    u8 c64[4];
+    u8 pad68[8];
+} Slot_b020_01E02D90;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b020_01E02D90 slots[0xFA];
+    u8 pad[0x7054 - 0x2A0 - 0xFA * 0x70];
+    u8 rgba[4];
+    u8 pad7058[0x46];
+    s16 f709E;
+    u8 pad70A0[0xA];
+    s16 f70AA;
+} Ctx_b020_01E02D90;
+
+static s32 func_01E02D90_b020(Ctx_b020_01E02D90 *ctx, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b020_01E02D90 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0xFA; i++) {
+        if (ctx->slots[i].used == 0) {
+            func_00195108(&ctx->slots[i], 0x70);
+            ctx->slots[i].used = 1;
+            s = &ctx->slots[i];
+            i = 0xFA;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c60, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c60[3] = ctx->rgba[3];
+        func_001076F0(s->c64, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c64[3] = ctx->rgba[3];
+        func_00106AB0(s, ctx->pos, 0);
+        s->pos[0] = ctx->pos[0];
+        s->pos[1] = ctx->pos[1];
+        s->pos[2] = ctx->pos[2];
+        s->f5A = ctx->f709E;
+        s->f50 = ctx->f70AA;
+        s->a2 = arg2;
+        s->a1 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 /* shape b020:01E011E0, 189 insns: b016:01E00ED0 with fixed blends (sel 0 = 0x42, 1 = 0x44, else 0x48) plus func_00109100(view, {.., .., cam 0x5A}, 2, obj 0xD8) after the view setup; draw one sprite quad (GS packet of 9 qwords) at an object's
    position; mode (flags & 0xF) 0 = depth from the projection, 1 = far z, else -1. Needs func_01E00080_b020 in the

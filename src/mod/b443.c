@@ -545,7 +545,62 @@ static s32 func_01E032E0_b443(s32 unused, Obj_b207_01E03000 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E033B0_b443);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E03660_b443);
+/* shape b443:01E03660, 77 insns: a dark arc (size 20) facing left or right of the scene camera (func_001F6160; sign of its angle / 180): in by 64 up to 0x80 for 2 ticks, then out by 5 and ends; sweeps 5 degrees a tick from 90 */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b443_01E03660;
+
+static s32 func_01E03660_b443(s32 arg0, Glow_b443_01E03660 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    extern s32 func_001A22C0(f32);
+    struct {
+        s32 x, y, z, w;
+    } v;
+
+    func_001076F0(o->col, 0x20, 0x20, 0x20);
+    if (o->mode == 1) {
+        func_001F6160(func_001F53A0(), &v);
+        if (func_001A22C0((f32)v.y / 180.0f) != 0) {
+            o->w10 = -0x4000;
+        } else {
+            o->w10 = 0xFFFF4000;
+        }
+        o->w14 = 0;
+        o->w18 = 0x3800;
+        o->kind = 0;
+        o->h30 = 90;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    o->f38 = 20;
+    o->tick++;
+    o->h30 += 5;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E037A0_b443);
 
@@ -621,7 +676,56 @@ static s32 func_01E03BD0_b443(s32 arg0, Glow_b207_01E034E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E03C80_b443);
+/* shape b443:01E03C80, 69 insns: a grey-blue blinker: set up once (frame 60, x turn a quarter, angle from its h30); alpha
+   rises by 4 for 18 frames, then blinks 0x40 / 0x50 by frame parity; ends after 0xD2 frames or when the game timer hits 0x8A */
+
+typedef struct {
+    u8 pad0[0x2E42];
+    s16 timer;
+} Game_b443_01E03C80;
+
+typedef struct {
+    u8 pad0[0x18];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 c1[4];
+    s16 h30;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b443_01E03C80;
+
+static s32 func_01E03C80_b443(Game_b443_01E03C80 *g, Obj_b443_01E03C80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x3C;
+        func_001076F0(o->c0, 0x70, 0x70, 0x70);
+        func_001076F0(o->c1, 0x10, 0x10, 0xC0);
+        o->rot = 0x4000;
+        o->ang = o->h30;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x12) {
+        o->c0[3] = o->c0[3] + 4;
+    } else if (o->t % 2 == 1) {
+        o->c0[3] = 0x40;
+    } else {
+        o->c0[3] = 0x50;
+    }
+    o->t++;
+    if (o->t > 0xD2) {
+        o->state = 0;
+    }
+    if (g->timer == 0x8A) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b443:01E03DA0, 55 insns: variant of b257:01E031C0 (flash): start block as below; alpha grows by 0x60
    for the first 2 ticks, then fades out by 10 and stops */
@@ -662,7 +766,68 @@ static s32 func_01E03DA0_b443(s32 arg0, Flash_b443_01E03DA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E03E80_b443);
+/* shape b443:01E03E80, 90 insns: a scene light pulse: sets the scene light (white, range 70, at the object's point), raises its
+   strength by 0.2 to 1, then lowers it by 0.1 until it ends; applies the light while live (none once ended) and ends when the
+   scene state is 1 */
+
+typedef struct {
+    u8 pad0[0x2890];
+    s32 l0[4];
+    f32 pos[3];
+    u8 pad28AC[4];
+    f32 f28B0;
+    f32 range;
+    f32 power;
+    u8 pad28BC[0x534];
+    s32 state;
+} Scene_b443_01E03E80;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b443_01E03E80;
+
+static s32 func_01E03E80_b443(Scene_b443_01E03E80 *g, Obj_b443_01E03E80 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 0;
+        g->l0[1] = 0;
+        g->l0[2] = 0;
+        g->l0[3] = 0;
+        g->f28B0 = 0.0f;
+        g->range = 70.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b443:01E03FF0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x2DF0 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

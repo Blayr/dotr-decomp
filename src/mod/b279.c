@@ -730,7 +730,55 @@ static s32 func_01E01E80_b279(s32 unused, Obj_b279_01E01E80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b279", func_01E02020_b279);
+/* shape b279:01E02020, 77 insns: a blinking white/blue glow of size 810 spun 0x4000 a tick (white on odd ticks, grey on even): alpha 0xC0 for 3 ticks, then out by 11 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b279_01E02020;
+
+static s32 func_01E02020_b279(s32 arg0, Obj_b279_01E02020 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 810.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        o->h5A = 15;
+        o->h5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 3) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b279", func_01E02160_b279);
 
@@ -808,7 +856,69 @@ static s32 func_01E02690_b279(void *arg0, Obj_b279_01E02690 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b279", func_01E02960_b279);
+/* shape b279:01E02960, 79 insns: a flickering white spinning flash on the model joint: f48 110, size 15x15; alpha up by 9 to 0xC0 for 20 frames;
+   colour flickers white / grey by frame parity */
+
+typedef struct {
+    u8 pad0[0x44D8];
+    s16 joint;
+} Game_b279_01E02960;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b279_01E02960;
+
+static s32 func_01E02960_b279(Game_b279_01E02960 *g, Obj_b279_01E02960 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 110.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x80, 0x80, 0xFF);
+        o->w2 = 0xF;
+        o->h2 = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x14) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 9;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

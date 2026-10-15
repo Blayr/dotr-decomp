@@ -710,7 +710,59 @@ static s32 func_01E022E0_b770(s32 arg0, Fx_b394_01E01AA0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02490_b770);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02610_b770);
+/* shape b770:01E02610, 87 insns: a blinking grey two-colour shape (17 x 11, random frame 0..6, random 4..6 at +8): both alphas in by 12 up to 0x80 for 20 ticks; white on odd ticks, light grey on even */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b770_01E02610;
+
+static s32 func_01E02610_b770(s32 arg0, Obj_b770_01E02610 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 17.0f;
+        o->f4C = o->f48 - 6.0f;
+        o->kind = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->h8 = func_0019A5C8() % 3 + 4;
+    }
+    if (o->t < 20) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b756:01E03D40, 119 insns, 2 copies: a two-kind flare: kind 0 a small grey one fading in with a flickering
    orange/violet second colour, kind 1 a large white one fading in then out; turns each frame (b402:01E02710
@@ -779,7 +831,61 @@ static s32 func_01E02770_b770(void *arg0, Flare_b756_01E03D40 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02950_b770);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02B10_b770);
+/* shape b770:01E02B10, 90 insns: a grey/red ring (90 x 60) at a random angle held at turn 0x4000; kind 0 fades in its first colour, kind 1 its second (colours swapped), by 32 for 12 ticks; then the first colour fades by 11 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b770_01E02B10;
+
+static s32 func_01E02B10_b770(s32 arg0, Obj_b770_01E02B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 90.0f;
+        o->f4C = o->f48 - 30.0f;
+        if (o->h50 == 0) {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col2, 0xF0, 0x20, 0x20);
+            o->col2[3] = 0;
+        } else if (o->h50 == 1) {
+            func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col, 0xF0, 0x20, 0x20);
+            o->col[3] = 0;
+        }
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->t < 12) {
+        if (o->h50 == 0) {
+            o->col[3] += 0x20;
+        }
+        if (o->h50 == 1) {
+            o->col2[3] += 0x20;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 = 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02C80_b770);
 
@@ -850,4 +956,84 @@ static s32 func_01E03800_b770(Obj_b770_01E03800 *obj, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E03940_b770);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E03C50_b770);
+/* shape b770:01E03C50, 92 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x44B8, ot at
+   0x44B4), texture from func_001F5380, then every used slot (0x96 of 0x70 bytes at 0x2A0) whose
+   callback is b770:01E02C80 is drawn by it; before step 0x490E reaches 0xE6 the packet's first corner is projected from model point 0x489E (depth 0x4888); close
+   the ot at that depth if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b770_01E03C50;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b770_01E03C50;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b770_01E03C50 slots[0x96];
+    u8 pad4440[0x74];
+    s32 ot;
+    Pkt_b770_01E03C50 *pk;
+    u8 pad44BC[0x3CC];
+    f32 depth;
+    u8 pad488C[0x12];
+    s16 point;
+    u8 pad48A0[0x6E];
+    s16 step;
+} Scene_b770_01E03C50;
+
+static void func_01E03C50_b770(Scene_b770_01E03C50 *g) {
+    extern void b770_01E02C80(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_00207FD0(s32, s32, s32);
+    Vec4f pt;
+    Pkt_b770_01E03C50 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F5380(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    if (g->step < 0xE6) {
+        func_001F5620(func_001F53A0(), g->point, &pt);
+        func_00205440(&pt, 0, (u8 *)g->pk + 0x20, &g->depth);
+    }
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b770_01E02C80) {
+                b770_01E02C80(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), (u32)g->depth);
+    }
+}

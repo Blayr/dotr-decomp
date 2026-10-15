@@ -509,7 +509,56 @@ static s32 func_01E01AF0_b499(World_b479_01E01910 *w, Wisp_b479_01E01910 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01C50_b499);
+/* shape b499:01E01C50, 56 insns: a white two-colour shape that grows 4 up to 10 and climbs 2 a tick from 15; ends at 181; past 60 both alphas drop by 12 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[2];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b499_01E01C50;
+
+static s32 func_01E01C50_b499(s32 arg0, Glow_b499_01E01C50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h6 < 10) {
+        o->h6 += 4;
+    }
+    o->h2 += 2;
+    func_001076F0(o->col, 0xFF, 0xF0, 0xFF);
+    if (o->h2 > 180) {
+        o->mode = 0;
+    }
+    if (o->mode == 1) {
+        o->h2 = 15;
+        o->h6 = 0;
+        o->col[3] = 0xC0;
+        o->mode = 2;
+    }
+    if (o->h2 >= 60) {
+        if (o->col[3] > 13) {
+            o->col[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 13) {
+            o->col2[3] -= 12;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01D30_b499);
 

@@ -585,7 +585,53 @@ static s32 func_01E019C0_b236(s32 arg0, Fx_b236_01E019C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b236", func_01E01B70_b236);
+/* shape b236:01E01B70, 59 insns: a spinning flash: set up once (scale 220.0, both colours 0x80, 0x40, 0xFF, size 10x10),
+   fades in by 0x60 up to 0xC0 for 14 frames, then out by 9 until it ends; a random turn plus a quarter each frame */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 scale;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b236_01E01B70;
+
+static s32 func_01E01B70_b236(void *arg0, Obj_b236_01E01B70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 220.0f;
+        func_001076F0(o->c1, 0x80, 0x40, 0xFF);
+        func_001076F0(o->c0, 0x80, 0x40, 0xFF);
+        o->h52 = 0;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xE) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xA) {
+        o->c1[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b236:01E01C60, 66 insns: twin of b180:01E021D0 (volume fade), tick limit 0x14, floor 0x30, state at 0xB210 below 0x14 */
 

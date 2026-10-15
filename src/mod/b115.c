@@ -520,7 +520,58 @@ INCLUDE_ASM("asm/nonmatchings/mod/b115", func_01E01450_b115);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b115", func_01E016C0_b115);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b115", func_01E01980_b115);
+/* shape b115:01E01980, 87 insns: a white spark (size 60, frame 5) at two random angles drifting 16 a tick along its angle (sine table ctx+0x3834): alpha 0x80 for 7 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    u8 padE[2];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b115_01E01980;
+
+typedef struct {
+    u8 pad[0x3834];
+    u8 sin[1];
+} Game_b115_01E01980;
+
+static s32 func_01E01980_b115(Game_b115_01E01980 *g, Glow_b115_01E01980 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        o->kind = 5;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->h8 = func_001A22C0(o->h8 + 16.0f * func_00108030(g->sin, o->ang, 0));
+    o->hC = func_001A22C0(o->hC + 16.0f * func_00108030(g->sin, o->ang, 1));
+    o->tick++;
+    return 0;
+}
 
 /* shape b018:01E02480, 54 insns, 11 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */
@@ -713,7 +764,68 @@ static s32 func_01E01F00_b115(s32 unused, Spark_b018_01E02950 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b115", func_01E02070_b115);
+/* shape b115:01E02070, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
+   raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the
+   scene state at 0x36F0 is 1 */
+
+typedef struct {
+    u8 pad0[0x3650];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad366C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad367C[0x74];
+    s32 state;
+} Scene_b115_01E02070;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b115_01E02070;
+
+static s32 func_01E02070_b115(Scene_b115_01E02070 *g, Obj_b115_01E02070 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 2.0f;
+        g->l0[3] = 0.0f;
+        g->f20 = 0.0f;
+        g->range = 120.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b115:01E021F0, 40 insns: look up the textures: group 4 cells 0-2 and 13-15 into the table at 0x310, group 5
    cell 0 into 0x36D0 (variant of b205:01E02370) */

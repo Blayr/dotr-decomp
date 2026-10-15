@@ -96,7 +96,47 @@ INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E00CA0_b136);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E014B0_b136);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E01670_b136);
+/* shape b136:01E01670, 67 insns: a tumbling spark at three random turns, growing 1 and turning 0x400 a tick: in by 64 for 2 ticks, then orange, out by 10 and ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b136_01E01670;
+
+static s32 func_01E01670_b136(s32 arg0, Glow_b136_01E01670 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        func_001076F0(o->col, 0x8F, 0x1F, 0x10);
+        o->w10 = func_0019A5C8() % 65535;
+        o->w14 = func_0019A5C8() % 65535;
+        o->w18 = func_0019A5C8() % 65535;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        o->col[3] += 0x40;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->w14 += 0x400;
+    o->f38++;
+    o->tick++;
+    return 0;
+}
 
 /* shape b136:01E01780, 48 insns: an orange flash placed at (0x4000, 0x400, 0): fades in by 0x26 for 5 ticks, out by 10 and ends; grows 1 a tick */
 
@@ -139,7 +179,47 @@ static s32 func_01E01780_b136(s32 arg0, Glow_b136_01E01780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E01840_b136);
+/* shape b136:01E01840, 67 insns: a tumbling spark at three random turns, growing 1 and turning 0x400 a tick: in by 64 for 2 ticks, then dark, out by 14 and ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b136_01E01840;
+
+static s32 func_01E01840_b136(s32 arg0, Glow_b136_01E01840 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        func_001076F0(o->col, 0x2F, 0x1F, 0x20);
+        o->w10 = func_0019A5C8() % 65535;
+        o->w14 = func_0019A5C8() % 65535;
+        o->w18 = func_0019A5C8() % 65535;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        o->col[3] += 0x40;
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->w14 += 0x400;
+    o->f38++;
+    o->tick++;
+    return 0;
+}
 
 /* shape b136:01E01950, 31 insns: func_001F7170(6, 2, &a, &b, 0) with copies of the module's floats at 0x01E02600 and
    0x01E02608; when the game value at 0x365C is 94 the effect's 0x36 is cleared; return 0 */

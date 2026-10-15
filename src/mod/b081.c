@@ -289,7 +289,35 @@ static void func_01E00DE0_b081(Obj_b081_01E00DE0 *o, Data_b081_01E00DE0 *data, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E01250_b081);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E015A0_b081);
+/* shape b081:01E015A0, 73 insns: open the draw packet for an object: its two blend modes (+0x28 as 1, +0x2C as 2), alpha test from flags >> 4, then send with a depth from the float unless flags & 0xF is 0 */
+
+static void func_01E015A0_b081(s32 arg0, u8 *obj, s32 flags, f32 depth) {
+    extern s32 func_00207500(void);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001A23B0(f32);
+    u8 packet[0x90];
+    s16 alpha;
+    s32 ctx;
+    u8 *pkt;
+
+    ctx = func_00207500();
+    pkt = packet;
+    func_00107990(pkt, obj + 0x28, 1);
+    func_00107990(pkt, obj + 0x2C, 2);
+    func_001092E0(pkt, 0);
+    func_001094F0(pkt);
+    alpha = flags >> 4;
+    if (alpha == 0) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(pkt, ((s64)alpha << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    if (!(flags & 0xF)) {
+        func_002075F0(pkt, ctx, 0);
+    } else {
+        func_002075F0(pkt, ctx, func_001A23B0(depth));
+    }
+}
 
 /* shape b081:01E016D0, 342 insns, 3 copies: draws a row of small camera-facing sprites at the object position (b008
    family): each shaken by a per-entry table offset turned by an extra axis and added to all four corners;
@@ -445,9 +473,109 @@ static void func_01E016D0_b081(Obj_b081_01E016D0 *o, Spr_b081_01E016D0 *s, s32 f
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E01C30_b081);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E02740_b081);
+/* shape b081:01E02740, 67 insns: a white-brown flash: set up once (frame 6, size 8 by 720), both alphas up by 0x40 to
+   0x80 for 4 frames, then down by 15; it ends when the first runs out */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E02850_b081);
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x1C];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+} Obj_b081_01E02740;
+
+static s32 func_01E02740_b081(void *arg0, Obj_b081_01E02740 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x40, 0x30, 8);
+        o->w = 8;
+        o->h = 0x2D0;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0x10) {
+            o->c0[3] -= 0xF;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0x10) {
+            o->c1[3] -= 0xF;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b081:01E02850, 70 insns: a pale yellow two-colour glow held 8 ticks (28 for kind 2): in by 21 up to 0x80, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b081_01E02850;
+
+static s32 func_01E02850_b081(s32 arg0, Glow_b081_01E02850 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0x80);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0x80);
+        if (o->h30 == 2) {
+            o->h6 = 28;
+        } else {
+            o->h6 = 8;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x15;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x15;
+        }
+    } else {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 15;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0x10) {
+            o->col2[3] -= 15;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E02970_b081);
 
@@ -457,7 +585,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E02D60_b081);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E02FB0_b081);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E031E0_b081);
+/* shape b081:01E031E0, 73 insns: a white/red two-colour flash (size 6, 6 x 20 growing 17 a tick): in by 64 up to 0x80 for 4 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b081_01E031E0;
+
+static s32 func_01E031E0_b081(s32 arg0, Glow_b081_01E031E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 6;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->h8 = 6;
+        o->hA = 20;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    if (o->tick != 0) {
+        o->hA += 17;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E03310_b081);
 
@@ -473,7 +654,53 @@ INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E03DE0_b081);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E03F90_b081);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E04140_b081);
+/* shape b081:01E04140, 63 insns: a grey/olive two-colour glow of size 300 at a random angle, spun by 0x4000 a tick: in by 32 up to 0x80 for 22 ticks, then out by 7 and ends */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[2];
+    s16 h6;
+    u8 pad8[8];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 state;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b081_01E04140;
+
+static s32 func_01E04140_b081(s32 arg0, Glow_b081_01E04140 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 300;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        func_001076F0(o->col2, 0x30, 0x30, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 22) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w10);
+    o->w10 += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E04240_b081);
 

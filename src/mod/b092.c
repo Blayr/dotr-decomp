@@ -499,7 +499,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02420_b092);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E025E0_b092);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02950_b092);
+/* shape b092:01E02950, 87 insns: a white flickering growing spark (b252:01E03410 family): square size 200 growing by 2, random
+   sub-frame 0..2 and angle; alpha up by 0x60 to 0xC0 for 10 frames, then down by 9 until it ends; random turn; colour
+   flickers by frame parity */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 t;
+    s16 sub;
+    s16 state;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 c0[4];
+} Obj_b092_01E02950;
+
+static s32 func_01E02950_b092(void *arg0, Obj_b092_01E02950 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0xC8;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->ang = func_0019A5C8() % 360;
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    o->w += 2;
+    o->h = o->w;
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02AB0_b092);
 

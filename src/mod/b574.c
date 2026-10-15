@@ -610,7 +610,61 @@ INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E02550_b574);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E02720_b574);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E02910_b574);
+/* shape b574:01E02910, 87 insns: a grey/yellow tumbling column (40 wide growing 1, 100 tall growing 55 a tick) at three random turns: in by 80 up to 0xA0 for 3 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b574_01E02910;
+
+static s32 func_01E02910_b574(s32 arg0, Obj_b574_01E02910 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 40.0f;
+        o->f4C = 100.0f;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0x40);
+        o->h5A = 10;
+        o->h5C = 2;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 3) {
+        if (o->col2[3] < 0xA0) {
+            o->col2[3] += 0x50;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 1.0f;
+    o->f4C += 55.0f;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E02A70_b574);
 

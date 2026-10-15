@@ -390,9 +390,126 @@ INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01190_b530);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01510_b530);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01720_b530);
+/* shape b530:01E01720, 81 insns: a violet growing spark (b252:01E03410 shape): size 70 growing to 90, random sub-frame 0..3; alpha up
+   by 0x60 to 0xC0 for 13 frames, then down by 9; skips to frame 20 once the game timer passes 0x127 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01870_b530);
+typedef struct {
+    u8 pad0[0xE068];
+    s16 timer;
+} Game_b530_01E01720;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x1C];
+    s16 t;
+    s16 sub;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_b530_01E01720;
+
+static s32 func_01E01720_b530(Game_b530_01E01720 *g, Obj_b530_01E01720 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0x46;
+        o->h = 0x46;
+        o->sub = (func_0019A5C8() >> 4) % 4;
+        func_001076F0(o->c0, 0xA0, 0xA0, 0xFF);
+        o->state = 2;
+    }
+    if (o->t < 0xD) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        if (o->w < 0x5A) {
+            o->w++;
+        }
+        if (o->h < 0x5A) {
+            o->h++;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    if (g->timer > 0x127) {
+        o->t = 0x14;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b530:01E01870, 75 insns: a pink growing spark (b252:01E03410 family): size 85 growing by 1, random sub-frame 0..3; alpha up by
+   0x60 to 0xC0 for 9 frames, then down by 9 until it ends; random turn; skips to frame 20 once the game timer passes 0x127 */
+
+typedef struct {
+    u8 pad0[0xE068];
+    s16 timer;
+} Game_b530_01E01870;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b530_01E01870;
+
+static s32 func_01E01870_b530(Game_b530_01E01870 *g, Obj_b530_01E01870 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0x55;
+        o->h = 0x55;
+        o->sub = (func_0019A5C8() >> 4) % 4;
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->state = 2;
+    }
+    if (o->t < 9) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->w++;
+        o->h++;
+    }
+    func_00205C40((s32)o->rot);
+    if (g->timer > 0x127) {
+        o->t = 0x14;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E019A0_b530);
 

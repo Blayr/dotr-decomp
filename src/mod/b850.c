@@ -207,7 +207,62 @@ static void func_01E003E0_b850(Obj_b027_01E02590 *o, Anim_b027_01E02590 *an, voi
 
 INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E006E0_b850);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E00C20_b850);
+/* shape b850:01E00C20, 92 insns: scene colour (0x80, 0, 0, 0); count 0x2E38 up; at 0x8B place the scene at model
+   point 0x2E1C and run b850:01E015B0 once and b850:01E00FB0 / b850:01E01160 12 times each; between 0x88 and 0xA9 place
+   it again and run b850:01E012F0; at 1 run b850:01E01A60; all through b850:01E02290 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x2DF4 - 0x25C];
+    u8 col[4];
+    u8 pad2DF8[0x24];
+    s16 point;
+    u8 pad2E1E[0x1A];
+    s16 count;
+} Scene_b850_01E00C20;
+
+static void func_01E00C20_b850(Scene_b850_01E00C20 *g) {
+    extern void b850_01E00FB0(void);
+    extern void b850_01E01160(void);
+    extern void b850_01E012F0(void);
+    extern void b850_01E015B0(void);
+    extern void b850_01E01A60(void);
+    extern void b850_01E02290(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 pt[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->count++;
+    if (g->count == 0x8B) {
+        func_001F5620(func_001F53A0(), g->point, pt);
+        g->pos[0] = pt[0];
+        g->pos[1] = pt[1];
+        g->pos[2] = pt[2];
+        b850_01E02290(g, b850_01E015B0, 0);
+        for (i = 0; i < 12; i++) {
+            b850_01E02290(g, b850_01E00FB0, 0);
+        }
+        for (i = 0; i < 12; i++) {
+            b850_01E02290(g, b850_01E01160, 0);
+        }
+    }
+    if (g->count > 0x87 && g->count < 0xAA) {
+        func_001F5620(func_001F53A0(), g->point, pt);
+        g->pos[0] = pt[0];
+        g->pos[1] = pt[1];
+        g->pos[2] = pt[2];
+        b850_01E02290(g, b850_01E012F0, 0);
+    }
+    if (g->count == 1) {
+        b850_01E02290(g, b850_01E01A60, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E00D90_b850);
 

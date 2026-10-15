@@ -890,9 +890,138 @@ static s32 func_01E02700_b189(void *arg0, Obj_b189_01E02700 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b189", func_01E02850_b189);
+/* shape b189:01E02850, 77 insns: a white-red growing spinning flash (b163:01E026F0 shape) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b189", func_01E02990_b189);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b189_01E02850;
+
+static s32 func_01E02850_b189(void *arg0, Obj_b189_01E02850 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            o->f48 = 250.0f;
+        }
+        if (o->kind == 1) {
+            o->f48 = 300.0f;
+        }
+        o->f4C = 0.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0x40, 0x40);
+        o->w = 0xF;
+        o->h = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xC) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->f48 += 1.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape b189:01E02990, 90 insns: a grey growing spark (b163:01E02830 shape): alphas up for 130 frames */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    s16 hE;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b189_01E02990;
+
+static s32 func_01E02990_b189(void *arg0, Obj_b189_01E02990 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 5;
+        o->h = 5;
+        o->sub = 3;
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        func_001076F0(o->c1, 0x40, 0x40, 0x40);
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x82) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        }
+    }
+    if (o->sub == 3) {
+        o->sub = 5;
+    } else {
+        o->sub = 3;
+    }
+    if (o->t != 0) {
+        if (o->w < 0x1E) {
+            o->w++;
+        }
+        if (o->h < 0x1E) {
+            o->h++;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b189", func_01E02B00_b189);
 

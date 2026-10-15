@@ -639,7 +639,78 @@ static s32 func_01E02680_b152(s32 unused, Obj_b152_01E02680 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b152", func_01E02820_b152);
+/* shape b152:01E02820, 90 insns: a dark rising spark (b215:01E01FF0 family): size 30 by 60 growing by 2, random sub-frame 0..7, rises by f34 0.5;
+   both alphas up by 0x40 to 0x80 for 20 frames, then the first down by 6 twice a frame until it ends; random turn */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    s16 hE;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b152_01E02820;
+
+static s32 func_01E02820_b152(void *arg0, Obj_b152_01E02820 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0x1E;
+        o->h = 0x3C;
+        o->f48 = 0.0f;
+        o->sub = func_0019A5C8() % 8;
+        o->f34 = 0.5f;
+        func_001076F0(o->c0, 0x20, 0x20, 0x20);
+        func_001076F0(o->c1, 0x20, 0x20, 0x20);
+        o->state = 2;
+        o->c1[3] = 0;
+        o->h5C = 0;
+    }
+    if (o->t < 0x14) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 7) {
+            o->c0[3] -= 6;
+        } else {
+            o->state = 0;
+        }
+        if (o->c0[3] > 7) {
+            o->c0[3] -= 6;
+        }
+    }
+    if (o->t != 0) {
+        o->w += 2;
+        o->h += 2;
+        o->y += o->f34;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b152:01E02990, 85 insns, 2 copies: a slow grey haze: fades in over 50 frames, then out while drifting; flickers
    between two greys each frame; its angle opens 5 a frame up to 90 (b016:01E01FF0 family) */

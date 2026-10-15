@@ -645,7 +645,64 @@ static s32 func_01E023D0_b721(s32 arg0, Fx_b611_01E01BD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E025B0_b721);
+/* shape b721:01E025B0, 90 insns: a purple tumbling glow at three random turns, sized by the scene (ctx+0x97D8): in by 0x80 for 8 ticks, then out by 9; its angle climbs a random 0..6 a tick from 90 and it ends at 270 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b721_01E025B0;
+
+typedef struct {
+    u8 pad[0x97D8];
+    f32 size;
+} Game_b721_01E025B0;
+
+static s32 func_01E025B0_b721(Game_b721_01E025B0 *g, Obj_b721_01E025B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->kind = 0;
+        func_001076F0(o->col, 0x40, 0x20, 0x80);
+        o->h50 = 90;
+        o->mode = 2;
+        o->col[3] = 0;
+        o->f48 = g->size;
+    }
+    if (o->t < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    if (o->h50 < 270) {
+        o->h50 += (s16)(func_0019A5C8() % 7);
+    } else {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E02720_b721);
 

@@ -459,7 +459,59 @@ static s32 func_01E02140_b134(s32 arg0, Glow_b134_01E02140 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E021F0_b134);
+/* shape b134:01E021F0, 65 insns: on start both colours (0x60, 0x60, 0xC0), alphas 0x80 / 0x40, 0x6 = 8, position
+   zeroed, 0x8..0xC = 10, 0x38 = 6; alpha 0x80 for 8 ticks, then the first fades by 0x1D (ends the effect) and the
+   second by 15 */
+
+typedef struct {
+    s16 x, y, z;
+    s16 f6;
+    s16 f8, fA, fC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Fx_b134_01E021F0;
+
+static s32 func_01E021F0_b134(s32 arg0, Fx_b134_01E021F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x60, 0x60, 0xC0);
+        func_001076F0(o->col2, 0x60, 0x60, 0xC0);
+        o->f6 = 8;
+        o->col[3] = 0x80;
+        o->col2[3] = 0x40;
+        o->y = 0;
+        o->x = 0;
+        o->z = 0;
+        o->fA = 10;
+        o->f8 = 10;
+        o->fC = 10;
+        o->f38 = 6;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        o->col[3] = 0x80;
+    } else {
+        if (o->col[3] > 0x1E) {
+            o->col[3] -= 0x1D;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0x10) {
+            o->col2[3] -= 15;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];
@@ -610,7 +662,78 @@ static s32 func_01E02750_b134(s32 arg0, Fx_b134_01E02750 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E027F0_b134);
+/* shape b134:01E027F0, 91 insns: a full-screen grey sprite overlay with the object's alpha (far depth, UV 0..0.625/0.875), queued
+   every frame; its alpha rises by 0x50 to 0x50, and it ends after 35 frames */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b134_01E027F0;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    Xyz_b134_01E027F0 p0;
+    f32 s1, t1;
+    Xyz_b134_01E027F0 p1;
+    u8 tail[0x20];
+} Pkt_b134_01E027F0;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+} Obj_b134_01E027F0;
+
+static s32 func_01E027F0_b134(void *arg0, Obj_b134_01E027F0 *o) {
+    extern void func_002087A0(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_b134_01E027F0 pkt __attribute__((aligned(8)));
+
+    ((Pkt_b134_01E027F0 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b134_01E027F0 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b134_01E027F0 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b134_01E027F0 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x80;
+    pkt.g = 0x80;
+    pkt.b = 0x80;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    pkt.p0.x = 0x6BF8;
+    pkt.p0.y = 0x71F8;
+    pkt.p0.z = 0xFFFFFF;
+    pkt.p0.f = 0;
+    pkt.p1.x = 0x93F8;
+    pkt.p1.y = 0x8DF8;
+    pkt.p1.z = 0xFFFFFF;
+    pkt.p1.f = 0;
+    pkt.s0 = 0.0f;
+    pkt.t0 = 0.0f;
+    pkt.s1 = 0.625f;
+    pkt.t1 = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    func_002087A0(&pkt, 1);
+    func_002075F0(&pkt, (s32)func_00207500(), 0);
+    if (o->t < 0x23) {
+        if (o->c0[3] < 0x50) {
+            o->c0[3] += 0x50;
+        }
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b134:01E02960, 40 insns: b734:01E03310 family: textures group 4 cells 0-2 and 11-15, group 5 cell 0 */
 

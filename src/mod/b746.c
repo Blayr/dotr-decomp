@@ -988,4 +988,69 @@ INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E05080_b746);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E05230_b746);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E057A0_b746);
+/* shape b746:01E057A0, 89 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0xCB38, ot at
+   0xCB34), texture from func_001F53A0, then every used slot (0x190 of 0x70 bytes at 0x2A0) whose
+   callback is b746:01E042C0 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b746_01E057A0;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b746_01E057A0;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b746_01E057A0 slots[0x190];
+    u8 padB1A0[0x1994];
+    s32 ot;
+    Pkt_b746_01E057A0 *pk;
+} Scene_b746_01E057A0;
+
+static void func_01E057A0_b746(Scene_b746_01E057A0 *g) {
+    extern void b746_01E042C0(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b746_01E057A0 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0x190; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b746_01E042C0) {
+                b746_01E042C0(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

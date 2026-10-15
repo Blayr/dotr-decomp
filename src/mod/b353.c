@@ -409,7 +409,67 @@ static void func_01E00B40_b353(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E00EA0_b353);
+/* shape b353:01E00EA0, 92 insns: sets the scene colour to red 0x80 and counts its timer; at 0x44 spawns two b353:01E01010 effects
+   (sides 0 and 1); at 0x4B puts the effect point at the model joint (height halfway to the model's centre) and spawns eight
+   b353:01E016A0, fifty b353:01E01830, one b353:01E01AC0 and one b353:01E01C00 effect */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x, y, z;
+    u8 pad2DC[0x6DC4 - 0x2DC];
+    u8 r, g, b, a;
+    u8 pad6DC8[0x46];
+    s16 joint;
+    u8 pad6E10[0x16];
+    s16 side;
+    u8 pad6E28[4];
+    s16 t;
+} Scene_b353_01E00EA0;
+
+static void func_01E00EA0_b353(Scene_b353_01E00EA0 *s) {
+    extern void b353_01E01010(void);
+    extern void b353_01E016A0(void);
+    extern void b353_01E01830(void);
+    extern void b353_01E01AC0(void);
+    extern void b353_01E01C00(void);
+    extern s32 b353_01E02400(Scene_b353_01E00EA0 *, void *, s32);
+    extern s32 b353_01E02520(Scene_b353_01E00EA0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f a;
+    Vec4f c;
+    s32 i;
+
+    s->r = 0x80;
+    s->g = 0;
+    s->b = 0;
+    s->a = 0;
+    s->t++;
+    if (s->t == 0x44) {
+        s->side = 0;
+        b353_01E02400(s, b353_01E01010, 0);
+        s->side = 1;
+        b353_01E02400(s, b353_01E01010, 0);
+    }
+    if (s->t == 0x4B) {
+        func_001F5620(func_001F53A0(), s->joint, &a);
+        func_001F5F90(func_001F5380(), &c);
+        s->x = a.x;
+        s->y = a.y;
+        s->z = a.z + (c.z - a.z) / 2.0f;
+        s->side = 1;
+        for (i = 0; i < 8; i++) {
+            b353_01E02400(s, b353_01E016A0, 0);
+        }
+        for (i = 0; i < 0x32; i++) {
+            b353_01E02520(s, b353_01E01830, 0);
+        }
+        b353_01E02520(s, b353_01E01AC0, 0);
+        b353_01E02400(s, b353_01E01C00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E01010_b353);
 
@@ -596,7 +656,71 @@ static s32 func_01E01AC0_b353(Game_b353_01E01AC0 *g, Fx_b353_01E01AC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E01C00_b353);
+/* shape b353:01E01C00, 93 insns: a screen fog: on start sets the scene fog block (0x6AA0: 128, 4, 2, 0, position from
+   the effect, colour (0, 120, 0)); its strength 0x6AC8 rises by 0.2 to 1, then falls by 0.1 and ends; the block is
+   passed to func_001F6C10 while alive (NULL once ended); it ends at scene counter 1 */
+
+typedef struct {
+    u8 pad0[0x6AA0];
+    f32 f2A00;
+    f32 f2A04;
+    f32 f2A08;
+    f32 f2A0C;
+    f32 pos[3];
+    u8 pad2A1C[4];
+    f32 f2A20;
+    f32 f2A24;
+    f32 strength;
+    u8 pad6ACC[0x6DC0 - 0x6ACC];
+    s32 count;
+} Game_b353_01E01C00;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b353_01E01C00;
+
+static s32 func_01E01C00_b353(Game_b353_01E01C00 *g, Fx_b353_01E01C00 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->f2A00 = 128.0f;
+        g->f2A04 = 4.0f;
+        g->f2A08 = 2.0f;
+        g->f2A0C = 0.0f;
+        g->f2A20 = 0.0f;
+        g->f2A24 = 120.0f;
+        g->strength = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->strength < 1.0f) {
+            g->strength += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (!(g->strength <= 0.1f)) {
+        g->strength -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->f2A00);
+    }
+    if (g->count == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

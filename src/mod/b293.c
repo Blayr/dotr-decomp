@@ -627,7 +627,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/b293", func_01E022F0_b293);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b293", func_01E02780_b293);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b293", func_01E02B10_b293);
+/* shape b293:01E02B10, 64 insns: b764:01E02A60 family ring (white/blue, height 200): in by 48 up to 0xC0 while the scene value is under 115, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x28];
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b293_01E02B10;
+
+typedef struct {
+    u8 pad[0xCBB8];
+    s16 val;
+} Game_b293_01E02B10;
+
+static s32 func_01E02B10_b293(Game_b293_01E02B10 *g, Obj_b293_01E02B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f4C = 200.0f;
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col, 0x80, 0x80, 0xC0);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (g->val < 115) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x30;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b287:01E02DA0, 66 insns: twin of b180:01E021D0 (volume fade), tick limit 0x97, floor 0x30, state at 0xCB10 below 0x1E */
 

@@ -770,7 +770,58 @@ static s32 func_01E026A0_b749(s32 unused, Spark_b082_01E02050 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b749", func_01E028A0_b749);
+/* shape b749:01E028A0, 73 insns: a white-grey rising flash (b144:01E02630 shape): f48 200 with f4C 58 below, rising by
+   f34 = 950 / 10 a frame with f4C 400 below; full alpha for 13 frames, then down by 14 until it ends; y turns 0x100 */
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 rot1;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b749_01E028A0;
+
+static s32 func_01E028A0_b749(void *arg0, Obj_b749_01E028A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        o->h50 = 0;
+        o->w = 0xF;
+        o->h = 0xF;
+        o->f34 = 950.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xD) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 400.0f;
+    o->rot1 += 0x100;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b749", func_01E029D0_b749);
 

@@ -414,7 +414,69 @@ static void func_01E00E10_b139(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b139", func_01E01360_b139);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b139", func_01E01620_b139);
+/* shape b139:01E01620, 86 insns: a grey flickering spark (b215:01E01FF0 shape): size 10; both alphas up by 42 to 0x80 for 27
+   frames, then the first down by 34 twice a frame until it ends; first colour flickers by frame parity; random turn */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[8];
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    s16 sub;
+    s16 state;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b139_01E01620;
+
+static s32 func_01E01620_b139(void *arg0, Obj_b139_01E01620 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0xA;
+        o->h = 0xA;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x1B) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    } else {
+        if (o->c0[3] > 0x23) {
+            o->c0[3] -= 0x22;
+        } else {
+            o->state = 0;
+        }
+        if (o->c0[3] > 0x23) {
+            o->c0[3] -= 0x22;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x60, 0x60, 0x60);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b139", func_01E01780_b139);
 

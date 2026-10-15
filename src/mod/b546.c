@@ -667,4 +667,80 @@ static s32 func_01E027F0_b546(Obj_b546_01E027F0 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E02980_b546);
+/* shape b546:01E02980, 89 insns: the module's draw pass (b016:01E03880 shape): opens a sprite packet on the stack, then
+   runs every live slot (450 of 0x70 bytes) live and whose handler is shape b546:01E01F90 through it; queues the batch only if any
+   slot was live. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b546_01E02980;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b546_01E02980 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b546_01E02980;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b546_01E02980;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b546_01E02980 slot[450];
+    u8 padEnd[0xC80C - 0x2A0 - 450 * 0x70];
+    s32 ctx;
+    Pkt_b546_01E02980 *pkt;
+} Scene_b546_01E02980;
+
+static void func_01E02980_b546(Scene_b546_01E02980 *s) {
+    extern void b546_01E01F90(Scene_b546_01E02980 *, Slot_b546_01E02980 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b546_01E02980 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    s->pkt = &pkt;
+    n = 0;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 450; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b546_01E01F90) {
+            n++;
+            b546_01E01F90(s, &s->slot[i]);
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(s->ctx, func_00207500(), 0);
+    }
+}

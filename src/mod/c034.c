@@ -45,6 +45,61 @@ static s32 func_01E00290_c034(Game_c034_01E00290 *g, Fx_c034_01E00290 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c034", func_01E00350_c034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c034", func_01E00610_c034);
+/* shape c034:01E00610, 75 insns: take the first free light slot of 10 (0x24 bytes each, at ctx+0x110), clear it, mark it with its index + 1, give it the scene colour twice, handler shape c034:01E00740 and the argument; the scene keeps it as current */
+
+typedef struct {
+    u8 pad0[8];
+    s32 fn;
+    s32 arg;
+    u8 pad10[4];
+    u8 col[4];
+    u8 col2[4];
+    s16 used;
+    s16 h1E;
+    u8 pad20[4];
+} Slot_c034_01E00610;
+
+typedef struct {
+    u8 pad0[0x110];
+    Slot_c034_01E00610 slot[10];
+    u8 pad278[0xD70 - 0x278];
+    u8 cur[4];
+    u8 pad74[4];
+    u8 rgba[4];
+    u8 padD7C[8];
+    Slot_c034_01E00610 *last;
+} Ctx_c034_01E00610;
+
+static void func_01E00610_c034(Ctx_c034_01E00610 *ctx, s32 arg) {
+    extern void c034_01E00740();
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    Slot_c034_01E00610 *s;
+
+    s = NULL;
+    for (i = 0; i < 10; i++) {
+        if (ctx->slot[i].used == 0) {
+            s = &ctx->slot[i];
+            func_00195108(s, 0x24);
+            ctx->slot[i].used = i + 1;
+            i = 10;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->col[3] = ctx->rgba[3];
+        func_001076F0(s->col2, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->col2[3] = ctx->rgba[3];
+        s->h1E = 1;
+        ctx->cur[0] = ctx->rgba[0];
+        ctx->cur[1] = ctx->rgba[1];
+        ctx->cur[2] = ctx->rgba[2];
+        ctx->cur[3] = 0;
+        s->fn = (s32)c034_01E00740;
+        s->arg = arg;
+        ctx->last = s;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c034", func_01E00740_c034);

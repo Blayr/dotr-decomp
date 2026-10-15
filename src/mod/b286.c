@@ -65,7 +65,63 @@ INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E004D0_b286);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E009B0_b286);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E00B40_b286);
+/* shape b286:01E00B40, 70 insns: an orange flame: set up once (reads the model's point, clears its y turn), alpha up by
+   0x40 for 2 frames, then down by 9; frame 50; fades faster (13) while the game state is below 15; rises 5 a frame */
+
+typedef struct {
+    u8 pad0[0x6A80];
+    s32 state;
+} Game_b286_01E00B40;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 y;
+    u8 pad10[4];
+    s32 rot1;
+    u8 pad18[0x10];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+} Obj_b286_01E00B40;
+
+static s32 func_01E00B40_b286(Game_b286_01E00B40 *g, Obj_b286_01E00B40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    Vec4f v;
+
+    func_001076F0(o->c0, 0x80, 0x40, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), &v);
+        o->rot1 = 0;
+        o->h34 = 0;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x32;
+    o->t++;
+    if (g->state < 0xF) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->y += 5;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E00C60_b286);
 

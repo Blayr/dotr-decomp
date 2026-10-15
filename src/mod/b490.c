@@ -105,7 +105,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00920_b490);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00BF0_b490);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00D90_b490);
+/* shape b490:01E00D90, 64 insns: an orange glow on the model joint: set up once (scale 630, size 10x10), fades in by
+   0x40 to 0xC0 for 0xAA frames, then out by 10 until it ends; placed at the joint each frame */
+
+typedef struct {
+    u8 pad0[0x8B38];
+    s16 joint;
+} Game_b490_01E00D90;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    u8 pad20[0x28];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b490_01E00D90;
+
+static s32 func_01E00D90_b490(Game_b490_01E00D90 *g, Obj_b490_01E00D90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->scale = 630.0f;
+        func_001076F0(o->c0, 0xC0, 0x70, 0);
+        func_001076F0(o->c1, 0x20, 0x10, 0);
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0x10;
+    }
+    if (o->t < 0xAA) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00E90_b490);
 

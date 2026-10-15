@@ -429,7 +429,62 @@ INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02070_b707);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02240_b707);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02580_b707);
+/* shape b707:01E02580, 66 insns: on start f48 0, colour white, second colour (0x10, 0x10, 0x80) with alpha 0, hold
+   0x6 = 0x12C, 0x5A/0x5C = 10; the second alpha grows by 0x50 (below 0xA0) during the hold, then fades by 12 and
+   stops; f4C follows the game value at 0x8720; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x8720];
+    f32 v;
+} Game_b707_01E02580;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b707_01E02580;
+
+static s32 func_01E02580_b707(Game_b707_01E02580 *g, Fx_b707_01E02580 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x10, 0x10, 0x80);
+        o->hold = 0x12C;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xA0) {
+            o->col2[3] += 0x50;
+        }
+    } else if (o->col2[3] > 0xD) {
+        o->col2[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    o->f4C = g->v;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02690_b707);
 
@@ -501,11 +556,98 @@ static s32 func_01E02810_b707(Ctx_b041_01E01DF0 *ctx, Obj_b041_01E01DF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E029E0_b707);
+/* shape b707:01E029E0, 69 insns: a red blinking flare: on state 1 takes the game's point; on state 2 grows (f48 by 8,
+   f4C by the old f48); second colour blinks by frame parity; spins while not growing */
+
+typedef struct {
+    u8 pad0[0x86D0];
+    Vec4f p;
+} Game_b707_01E029E0;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 state;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[0xE];
+    u8 c1[4];
+} Obj_b707_01E029E0;
+
+static s32 func_01E029E0_b707(Game_b707_01E029E0 *g, Obj_b707_01E029E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->pos = g->p;
+    }
+    if (o->state == 2) {
+        o->f48 += 8.0f;
+        o->f4C += o->f48 - 8.0f;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c1, 0xC0, 0x70, 0x70);
+    }
+    if (o->state != 2) {
+        func_00205C40((s32)o->rot);
+        o->rot[0] += 0x4000;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02B00_b707);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02C90_b707);
+/* shape b707:01E02C90, 58 insns: b718:01E03D10 family volume fader: down by 10 to 0x20 once the scene state passes 30, else up to 0x80 (ending there); full volume at state 2 */
+
+typedef struct {
+    u8 pad[0x8700];
+    s32 state;
+} Game_b707_01E02C90;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[6];
+    s16 mode;
+} Fade_b707_01E02C90;
+
+static s32 func_01E02C90_b707(Game_b707_01E02C90 *g, Fade_b707_01E02C90 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x20) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x20;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+            o->mode = 0;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 2) {
+        func_001F6D00(0x80);
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02D80_b707);
 

@@ -678,13 +678,196 @@ static s32 func_01E01FE0_b524(void *arg0, Spark_b428_01E018E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E02170_b524);
+/* shape b524:01E02170, 76 insns: a grey rising flash (b144:01E02630 shape): f48 100 rising by 350 / 10 with f4C 58 below; both
+   alphas full for 5 frames, then down by 14 until the first runs out */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E022A0_b524);
+typedef struct {
+    u8 pad0[0x24];
+    s32 rot1;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b524_01E02170;
+
+static s32 func_01E02170_b524(void *arg0, Obj_b524_01E02170 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 100.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        o->h50 = 0;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->f34 = 350.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 5) {
+        o->c0[3] = 0x80;
+        o->c1[3] = 0x80;
+    } else {
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xF) {
+            o->c1[3] -= 0xE;
+        }
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 58.0f;
+    o->t++;
+    return 0;
+}
+
+/* shape b524:01E022A0, 81 insns: a yellow flickering spinning flash (b400:01E01E30 shape): f4C 100; second alpha up by 0x40 to 0x80 for 4
+   frames */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b524_01E022A0;
+
+static s32 func_01E022A0_b524(void *arg0, Obj_b524_01E022A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = 100.0f;
+        o->f4C = 100.0f;
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0xFF, 0xFF, 0x80);
+        o->h52 = 0;
+        o->w2 = 0xA;
+        o->h2 = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else if (o->c1[3] > 0xC) {
+        o->c1[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0x80);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0xC0, 0x80);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E023F0_b524);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E025A0_b524);
+/* shape b524:01E025A0, 91 insns: a white/yellow ring (height 60), its first colour blinking: in by 10 up to 0x80 for 70 ticks while its slot value (ctx+0x5E10 table) is under 21, then out by 11 and ends; spun 0x4000 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 f10;
+    u8 pad14[4];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b524_01E025A0;
+
+typedef struct {
+    u8 pad[0x5E10];
+    s16 val[1];
+} Game_b524_01E025A0;
+
+static s32 func_01E025A0_b524(Game_b524_01E025A0 *g, Obj_b524_01E025A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f4C = 60.0f;
+        o->f4C = 60.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 70) {
+        if (g->val[o->h50] < 21) {
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 10;
+            }
+        }
+    } else if (o->col2[3] > 12) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0x80);
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E02710_b524);
 

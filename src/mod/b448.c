@@ -392,11 +392,99 @@ static void func_01E00E90_b448(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b448", func_01E01200_b448);
+/* shape b448:01E01200, 83 insns: counts the scene timer; on frames 0x70..0x104 spawns three b448:01E01350 effects at the model
+   joint, and on frame 25 two b448:01E016E0 effects (angles 0 and 90) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB228 - 0x260];
+    s16 joint;
+    u8 padB22A[0x20];
+    s16 ang;
+    u8 padB24C[0x12];
+    s16 t;
+} Scene_b448_01E01200;
+
+static void func_01E01200_b448(Scene_b448_01E01200 *s) {
+    extern void b448_01E01350(void);
+    extern void b448_01E016E0(void);
+    extern s32 b448_01E01E50(Scene_b448_01E01200 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    s->t++;
+    if (s->t >= 0x70 && s->t < 0x105) {
+        if (s->t < 0x64) {
+            n = 3;
+        } else {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), s->joint, &s->pos);
+            b448_01E01E50(s, b448_01E01350, 0);
+        }
+    }
+    if (s->t == 0x19) {
+        s->ang = 0;
+        b448_01E01E50(s, b448_01E016E0, 0);
+        s->ang = 0x5A;
+        b448_01E01E50(s, b448_01E016E0, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b448", func_01E01350_b448);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b448", func_01E016E0_b448);
+/* shape b448:01E016E0, 65 insns: on start f48 6, colour 0x80 grey, second colour (0x80, 0x10, 0x10) with alpha 0, 0x30 = 6.5f,
+   0x34 = 50.0f; alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and stops; 0x34 grows by 10.0f after the
+   first tick; 0x5A advances 6 */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b448_01E016E0;
+
+static s32 func_01E016E0_b448(s32 arg0, Fx_b448_01E016E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->f30 = 6.5f;
+        o->f34 = 50.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f34 += 10.0f;
+    }
+    o->tick++;
+    o->f5A += 6;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b448", func_01E017F0_b448);
 

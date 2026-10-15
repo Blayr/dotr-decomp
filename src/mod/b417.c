@@ -1225,9 +1225,115 @@ static s32 func_01E03830_b417(void *arg0, Obj_b258_01E027A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b417", func_01E03910_b417);
+/* shape b417:01E03910, 90 insns: b225:01E02540 family: an orange spark (size 20, random frame 0..3, random turn and angle) spinning a random 3..18 a tick, size 0..9, held 5..14 ticks at 0x80, then out by 15 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b417", func_01E03A80_b417);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    s32 w1C;
+    s32 w20;
+    s32 w24;
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+    u8 pad3C[4];
+} Glow_b417_01E03910;
+
+static s32 func_01E03910_b417(s32 arg0, Glow_b417_01E03910 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 20;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->w18 = 0;
+        o->w10 = func_0019A5C8() % 360;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 16 + 3;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 10 + 5;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->h30 += o->hE;
+    o->tick++;
+    return 0;
+}
+
+/* shape b417:01E03A80, 92 insns: a flickering yellow-orange spark: x turn a quarter, sub-frame 1, growth 1..3, height 8 rising by
+   3; full alpha on the first frame, then down by 19 once grown past 10; colour flickers by frame parity */
+
+typedef struct {
+    u8 pad0[6];
+    s16 y;
+    s16 grow;
+    u8 padA[6];
+    s32 rot;
+    u8 pad14[0x14];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 size;
+} Obj_b417_01E03A80;
+
+static s32 func_01E03A80_b417(void *arg0, Obj_b417_01E03A80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 0;
+        o->rot = 0x4000;
+        o->sub = 1;
+        o->state = 2;
+        o->grow = func_0019A5C8() % 3 + 1;
+        o->y = 8;
+        func_001076F0(o->c0, 0xF0, 0x10, 0x20);
+        func_001076F0(o->c1, 0xF0, 0x10, 0x20);
+    }
+    if (o->t < 1) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x80;
+        }
+    } else if (o->size > 0xA) {
+        if (o->c0[3] > 0x14) {
+            o->c0[3] -= 0x13;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x10);
+    } else {
+        func_001076F0(o->c0, 0x88, 0xF0, 8);
+    }
+    if (o->t != 0) {
+        o->size += o->grow;
+    }
+    o->y += 3;
+    o->t++;
+    return 0;
+}
 
 /* shape b052:01E023C0, 97 insns, 3 copies: step of a drifting ember: on state 1 picks random seeds, angle, speed and
    lifetime and an orange colour; full alpha while young, then fades by 15 until it ends; drifts by its speed. */
@@ -1280,7 +1386,61 @@ static s32 func_01E03BF0_b417(void *arg0, Obj_b052_01E023C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b417", func_01E03D80_b417);
+/* shape b417:01E03D80, 90 insns: a dark-red tumbling glow: x turn a quarter one way or the other by the model's facing, angle 90
+   climbing by 0..6 a frame until 270 (then it ends), frame 500; alpha up by 0x50 to 0x50 for 8 frames, then down by 9 */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+} Obj_b417_01E03D80;
+
+static s32 func_01E03D80_b417(void *arg0, Obj_b417_01E03D80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 v[4];
+
+    func_001076F0(o->c0, 0x3F, 0x10, 8);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), v);
+        if ((s32)((f32)v[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = 0x4000;
+        }
+        o->rot[1] = 0;
+        o->rot[2] = 0;
+        o->h34 = 0;
+        o->ang = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 8) {
+        if (o->c0[3] < 0x50) {
+            o->c0[3] += 0x50;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x1F4;
+    o->t++;
+    if (o->ang < 0x10E) {
+        o->ang += (s16)(func_0019A5C8() % 7);
+    } else {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b148:01E03AA0, 93 insns, 2 copies: a fast white ember: set up once (frame 3, random turn, speed 60..77, size, life
    2..5); fades in for its life, then out; turns by its speed and grows 2 a frame (b225:01E026A0 family) */

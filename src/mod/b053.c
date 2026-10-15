@@ -36,11 +36,96 @@ static s32 func_01E00870_b053(s32 arg0, Glow_b053_01E00870 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E008F0_b053);
+/* shape b053:01E008F0, 63 insns: a red sparkle: first tick picks three random turns, then grows by 3 a tick at size 10 and ends past 70 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[2];
+    s16 h6;
+    u8 pad8[8];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 state;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b053_01E008F0;
+
+static s32 func_01E008F0_b053(s32 arg0, Glow_b053_01E008F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 0) {
+        o->h2 = 0;
+        o->col[3] = 0x30;
+        o->col2[3] = 0xFF;
+        o->w10 = func_0019A5C8() % 65535;
+        o->w14 = func_0019A5C8() % 65535;
+        o->w18 = func_0019A5C8() % 65535;
+        o->state = 1;
+    } else if (o->state == 1) {
+        o->h6 = 10;
+        o->h2 += 3;
+        if (o->h2 > 70) {
+            o->mode = 0;
+        }
+    }
+    func_001076F0(o->col, 0xFF, 0x3F, 0x3F);
+    func_001076F0(o->col2, 0xFF, 0x3F, 0x3F);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E009F0_b053);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00BD0_b053);
+/* shape b053:01E00BD0, 76 insns: a dark ring (b130:01E012D0 shape): set up once at alpha 0x60 with a random turn on all three
+   axes and a random growth step 2..6; grows by that step up to 50, fades by 9 after 10, turns 12 a frame */
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 step;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[8];
+    s16 h34;
+    s16 state;
+    s16 size;
+    s16 ang;
+} Obj_b053_01E00BD0;
+
+static s32 func_01E00BD0_b053(void *arg0, Obj_b053_01E00BD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c0, 0x10, 0x10, 8);
+    if (o->state == 1) {
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->step = func_0019A5C8() % 5 + 2;
+        o->h34 = 0;
+        o->size = 0;
+        o->state = 2;
+        o->c0[3] = 0x60;
+    }
+    if (o->size > 0xA) {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->size < 0x32) {
+        o->size += o->step;
+    }
+    o->ang += 0xC;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00D00_b053);
 
@@ -48,7 +133,86 @@ INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00F20_b053);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E010F0_b053);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E01730_b053);
+/* shape b053:01E01730, 87 insns: takes the first free of 15 trail segments (0x7C bytes), copies the context's point and two frames,
+   chains it after the context's last segment (height from the context, its lower edge 18 below), and makes it the new last */
+
+typedef struct Seg_b053_01E01730 {
+    u8 pad0[4];
+    f32 top;
+    u8 pad8[0xC];
+    f32 bottom;
+    u8 pad18[0x18];
+    Vec4f pos;
+    u8 pad40[0x10];
+    struct Seg_b053_01E01730 *prev;
+    struct Seg_b053_01E01730 *next;
+    u8 pad58[0x10];
+    s16 used;
+    u8 pad6A[4];
+    s16 f6E;
+    u8 pad70[2];
+    s16 f72;
+    s16 f74;
+    s16 f76;
+    u8 pad78[4];
+} Seg_b053_01E01730;
+
+typedef struct {
+    u8 pad0[0x80];
+    Vec4f pos;
+    u8 pad90[0x80];
+    Seg_b053_01E01730 segs[0xF];
+    u8 pad[0x3B10 - 0x110 - 0xF * 0x7C];
+    Seg_b053_01E01730 *last;
+    u8 pad3B14[8];
+    f32 height;
+    u8 pad3B20[0x34];
+    s16 f3B54;
+    u8 pad3B56[4];
+    s16 f3B5A;
+} Ctx_b053_01E01730;
+
+static s32 func_01E01730_b053(Ctx_b053_01E01730 *ctx) {
+    extern void func_00195108();
+    Seg_b053_01E01730 *s = NULL;
+    Seg_b053_01E01730 *p;
+    s16 i;
+    f32 h;
+
+    for (i = 0; i < 0xF; i++) {
+        if (ctx->segs[i].used == 0) {
+            func_00195108(&ctx->segs[i], 0x7C);
+            ctx->segs[i].used = 1;
+            s = &ctx->segs[i];
+            i = 0xF;
+        }
+    }
+    if (s != NULL) {
+        s->pos = ctx->pos;
+        s->f72 = ctx->f3B54;
+        s->prev = ctx->last;
+        s->f6E = ctx->f3B5A;
+        if (s->prev == NULL) {
+            h = ctx->height;
+            s->top = h;
+            s->bottom = h - 18.0f;
+        } else {
+            h = ctx->height;
+            s->top = h;
+            s->bottom = h - 18.0f;
+        }
+        s->prev = ctx->last;
+        p = s->prev;
+        if (p != NULL) {
+            p->next = s;
+        }
+        s->f74 = 1;
+        s->f76 = 1;
+        ctx->last = s;
+        return 1;
+    }
+    return 0;
+}
 
 /* shape b053:01E01890, 74 insns: twin of b046:01E03E20: take the first free slot of the 200-slot pool, clear it,
    give it the scene's colour twice, the scene matrix, the scene's value 0x3B5A and 0x3B54 and the two arguments; returns 1 if a

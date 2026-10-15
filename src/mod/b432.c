@@ -757,7 +757,64 @@ INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E022D0_b432);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E024D0_b432);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E026D0_b432);
+/* shape b432:01E026D0, 75 insns: a pink-grey spinning flash (b236:01E01B70 family): f4C 70 growing by 1 up to 150; second alpha up by 0x40 to
+   0xC0 for 7 frames, then down by 15 until it ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b432_01E026D0;
+
+static s32 func_01E026D0_b432(void *arg0, Obj_b432_01E026D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = 70.0f;
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->h52 = 0;
+        o->w2 = 0xA;
+        o->h2 = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 7) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x40;
+        }
+    } else if (o->c1[3] > 0x10) {
+        o->c1[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->t != 0) {
+        if (o->f4C < 150.0f) {
+            o->f4C += 1.0f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E02800_b432);
 
@@ -834,8 +891,136 @@ INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E03680_b432);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E038D0_b432);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E04130_b432);
+/* shape b432:01E04130, 82 insns: take a free effect slot (0x96 of 0x70 bytes at 0x2A0), clear it, colour both colours from
+   the scene colour 0x7EC4, attach it to the scene position (0x250) and copy it, 0x50 and 0x52 from 0x7F22, store the two
+   arguments; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    s16 f52;
+    u8 pad54[4];
+    s16 used;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Slot_b432_01E04130;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b432_01E04130 slots[0x96];
+    u8 pad4440[0x7EC4 - 0x4440];
+    u8 rgba[4];
+    u8 pad7EC8[0x5A];
+    s16 f7F22;
+} Scene_b432_01E04130;
+
+static s32 func_01E04130_b432(Scene_b432_01E04130 *g, s32 a1, s32 a2) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b432_01E04130 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used == 0) {
+            func_00195108(&g->slots[i], 0x70);
+            g->slots[i].used = 1;
+            s = &g->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col[3] = g->rgba[3];
+        func_001076F0(s->col2, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col2[3] = g->rgba[3];
+        func_00106AB0(s, g->pos, 0);
+        s->pos[0] = g->pos[0];
+        s->pos[1] = g->pos[1];
+        s->pos[2] = g->pos[2];
+        s->f50 = g->f7F22;
+        s->f52 = g->f7F22;
+        s->a2 = a2;
+        s->a1 = a1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E04280_b432);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E04C70_b432);
+/* shape b432:01E04C70, 73 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x7ED8, ot at
+   0x7ED4), texture from func_001F53A0, then every used slot (0x96 of 0x70 bytes at 0x2A0) whose
+   callback is b432:01E03680 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b432_01E04C70;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b432_01E04C70;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b432_01E04C70 slots[0x96];
+    u8 pad4440[0x3A94];
+    s32 ot;
+    Pkt_b432_01E04C70 *pk;
+} Scene_b432_01E04C70;
+
+static void func_01E04C70_b432(Scene_b432_01E04C70 *g) {
+    extern void b432_01E03680(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b432_01E04C70 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b432_01E03680) {
+                b432_01E03680(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

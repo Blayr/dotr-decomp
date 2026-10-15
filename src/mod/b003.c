@@ -825,4 +825,70 @@ static s32 func_01E02E90_b003(Pool_b003_01E02E90 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E02FB0_b003);
+/* shape b003:01E02FB0, 79 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x32E8, ot at
+   0x32E4), texture from func_001F53A0, then every used slot (0xAA of 0x40 bytes at 0x2A0) whose
+   callback is b003:01E02440 is drawn by it; close the ot at depth - 2000 if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b003_01E02FB0;
+
+typedef struct {
+    u8 pad0[0x24];
+    void (*cb)(void *, void *);
+    u8 pad28[0xE];
+    s16 used;
+    u8 pad38[8];
+} Slot_b003_01E02FB0;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b003_01E02FB0 slots[0xAA];
+    u8 pad2D20[0x5C4];
+    s32 ot;
+    Pkt_b003_01E02FB0 *pk;
+    f32 depth;
+} Scene_b003_01E02FB0;
+
+static void func_01E02FB0_b003(Scene_b003_01E02FB0 *g) {
+    extern void b003_01E02440(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b003_01E02FB0 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0xAA; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b003_01E02440) {
+                b003_01E02440(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), (u32)(g->depth - 2000.0f));
+    }
+}

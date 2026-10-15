@@ -615,7 +615,58 @@ INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02370_b426);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E026D0_b426);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02880_b426);
+/* shape b426:01E02880, 84 insns: b390:01E028D0 family: a pink glow of size 500, its second colour blinking yellow, at a random angle, spun 0x4000 a tick: in by 64 up to 0xC0 for 4 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b426_01E02880;
+
+static s32 func_01E02880_b426(s32 arg0, Obj_b426_01E02880 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 500.0f;
+        func_001076F0(o->col, 0xFF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 0x80, 8);
+    } else {
+        func_001076F0(o->col2, 0xC0, 0xC0, 8);
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b111:01E02A10, 113 insns, 3 copies: step of a blinking flash (b547:01E02400 family): size 100; the second
    colour blinks red (mode 0) or blue (mode 1) every other tick; fades in by 0x40 for 4 ticks, then out by 9;
@@ -733,7 +784,52 @@ static s32 func_01E02BA0_b426(s32 arg0, Spark_b426_01E02BA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02DA0_b426);
+/* shape b426:01E02DA0, 66 insns: on start f48 20, colour 0xCF grey, second colour (0x80, 0x80, 8) with alpha 0,
+   random 0x5A, rotation 0x4000; alpha grows by 0x40 (below 0xC0) for 13 ticks, then fades by 9 and stops; f48 grows
+   by 20 each tick and f4C = 20 + f48 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b426_01E02DA0;
+
+static s32 func_01E02DA0_b426(s32 arg0, Fx_b426_01E02DA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 0x80, 8);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->rot = 0x4000;
+    }
+    if (o->tick < 0xD) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 20.0f;
+    o->f4C = 20.0f + o->f48;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02EB0_b426);
 

@@ -155,7 +155,47 @@ static s32 func_01E00FF0_b130(Game_b130_01E00FF0 *g, Glow_b130_01E00FF0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E010B0_b130);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E012D0_b130);
+/* shape b130:01E012D0, 67 insns: a blue ring (b056:01E01AF0 shape): set up once at full alpha with a random turn on all
+   three axes; grows by 6 up to 50, counts frames, fades by 16 after 40 */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[8];
+    s16 h34;
+    s16 state;
+    s16 size;
+    s16 t;
+} Obj_b130_01E012D0;
+
+static s32 func_01E012D0_b130(void *arg0, Obj_b130_01E012D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c0, 0x20, 0x20, 0x40);
+    if (o->state == 1) {
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->h34 = 0;
+        o->size = 0;
+        o->state = 2;
+        o->c0[3] = 0x80;
+    }
+    if (o->size > 0x28) {
+        if (o->c0[3] > 0x10) {
+            o->c0[3] -= 0x10;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->size < 0x32) {
+        o->size += 6;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E013E0_b130);
 

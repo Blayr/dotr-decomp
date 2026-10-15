@@ -555,7 +555,52 @@ static s32 func_01E01790_b422(World_b422_01E01790 *w, Drift_b422_01E01790 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b422", func_01E01950_b422);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b422", func_01E01C60_b422);
+/* shape b422:01E01C60, 59 insns: b764:01E02A60 family spinning ring (orange, height 220): in by 96 up to 0xC0 for 14 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x28];
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b422_01E01C60;
+
+static s32 func_01E01C60_b422(s32 arg0, Obj_b422_01E01C60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f4C = 220.0f;
+        func_001076F0(o->col2, 0xFF, 0x80, 0x40);
+        func_001076F0(o->col, 0xFF, 0x80, 0x40);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 14) {
+        if (o->col2[3] < 0xc0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b236:01E019C0, 105 insns: a grey spark: f48 20..59, variant 0..2, f50 10..49, spin 10..29, life 7..14; alpha grows
    by 0x40 (below 0xC0) during the life, then fades by 14; f50 grows by the spin each tick after the first */

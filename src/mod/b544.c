@@ -525,7 +525,57 @@ static s32 func_01E01BB0_b544(s32 arg0, Fx_b415_01E022B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01CA0_b544);
+/* shape b544:01E01CA0, 79 insns: a white rising ring (b004:01E006B0 shape at 0x60): grows by 4 up to 70, rises 2 a frame from 5 and
+   ends past 180, random turn on all three axes; fades both alphas by 12 from height 60 */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 size;
+    u8 pad8[0x18];
+    s32 rot[3];
+    u8 pad2C[0x2C];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b544_01E01CA0;
+
+static s32 func_01E01CA0_b544(void *arg0, Obj_b544_01E01CA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->size < 0x46) {
+        o->size += 4;
+    }
+    o->y += 2;
+    func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    if (o->y > 0xB4) {
+        o->state = 0;
+    }
+    if (o->state == 1) {
+        o->y = 5;
+        o->x = 0;
+        o->z = 0;
+        o->size = 0;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->c0[3] = 0xC0;
+        o->state = 2;
+    }
+    if (o->y >= 0x3C) {
+        if (o->c0[3] > 0xD) {
+            o->c0[3] -= 0xC;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xD) {
+            o->c1[3] -= 0xC;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01DE0_b544);
 

@@ -599,19 +599,233 @@ static s32 func_01E02230_b430(void *arg0, Obj_b258_01E027A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02310_b430);
+/* shape b430:01E02310, 93 insns: on start 0x38 = 20, colour 0x60 grey, 0x30 150..799, random 0x3A, speed 65..124
+   (0xE), 0x8 0..29, hold 6..12 (0x6), 0x34 = 0; alpha grows by 0x80 (below 0x80) during the hold, then fades by 0x14
+   and stops; 0x34 counts up to 6 after the first tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02490_b430);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b430_01E02310;
+
+static s32 func_01E02310_b430(s32 arg0, Fx_b430_01E02310 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 20;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->f30 = func_0019A5C8() % 650 + 150;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 60 + 65;
+        o->f8 = func_0019A5C8() % 30;
+        o->hold = func_0019A5C8() % 7 + 6;
+        o->f34 = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else if (o->col[3] > 0x15) {
+        o->col[3] -= 0x14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->f34 < 6) {
+            o->f34++;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b430:01E02490, 93 insns: a grey high spark: frame 40, height 150..799, random angle, rise 65..124, width 0..29, hold 3..7;
+   alpha up by 25 to 0x80 until the hold, then down by 20 until it ends; sub-frame steps up to 6 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b430_01E02490;
+
+static s32 func_01E02490_b430(void *arg0, Obj_b430_01E02490 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x28;
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        o->y = func_0019A5C8() % 650 + 0x96;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 60 + 0x41;
+        o->w = func_0019A5C8() % 30;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->sub = 0;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x19;
+        }
+    } else if (o->c0[3] > 0x15) {
+        o->c0[3] -= 0x14;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        if (o->sub < 6) {
+            o->sub++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02610_b430);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E027E0_b430);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02970_b430);
+/* shape b430:01E02970, 89 insns: a lavender glow (size 60) at a random angle: from scene value 237 it blinks white, counts up and brightens the scene light by 0.01 a tick; from 243 it fades by 6 and ends */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b430_01E02970;
+
+typedef struct {
+    u8 pad[0x3B0];
+    f32 r, g, b;
+    u8 pad3BC[0x3358 - 0x3BC];
+    s16 val;
+} Game_b430_01E02970;
+
+static s32 func_01E02970_b430(Game_b430_01E02970 *g, Glow_b430_01E02970 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        func_001076F0(o->col, 0x50, 0x50, 0x78);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->col[3] = 0x80;
+        o->mode = 2;
+    }
+    if (g->val > 242) {
+        if (o->col[3] > 7) {
+            o->col[3] -= 6;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->val >= 237) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x50, 0x50, 0x78);
+        } else {
+            func_001076F0(o->col, 0xA0, 0xA0, 0xA0);
+        }
+        o->h30++;
+        g->r += 0.01f;
+        g->g += 0.01f;
+        g->b += 0.01f;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02AE0_b430);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02D20_b430);
+/* shape b430:01E02D20, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
+   raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the
+   scene state at 0xE80 is 1 */
+
+typedef struct {
+    u8 pad0[0xE30];
+    f32 l0[4];
+    f32 pos[3];
+    u8 padE4C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 padE5C[0x24];
+    s32 state;
+} Scene_b430_01E02D20;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b430_01E02D20;
+
+static s32 func_01E02D20_b430(Scene_b430_01E02D20 *g, Obj_b430_01E02D20 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 2.0f;
+        g->l0[3] = 0.0f;
+        g->f20 = 0.0f;
+        g->range = 120.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b430:01E02EA0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0xE80 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

@@ -1074,4 +1074,43 @@ static s32 func_01E02D50_b848(s32 ot __attribute__((aligned(8))), Trail_b021_01E
 
 INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E03140_b848);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E04290_b848);
+/* shape b848:01E04290, 72 insns: for each of 16 idle entries picks a random target 1..n and a neighbour two away, and
+   looks up five model joints (0x36, 0x15, 0x14 and the two picks) */
+
+typedef struct {
+    u8 pad0[0x28];
+    s16 busy;
+    u8 pad2A[6];
+} Ent_b848_01E04290;
+
+typedef struct {
+    u8 pad0[0x70];
+    Ent_b848_01E04290 e[0x10];
+    u8 pad[0x2D08 - 0x70 - 0x10 * 0x30];
+    s32 n;
+    s32 pick;
+    s32 near;
+    s32 j[5];
+} Scene_b848_01E04290;
+
+static void func_01E04290_b848(Scene_b848_01E04290 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5560(s32, s32, s32);
+    s32 i;
+
+    for (i = 0; i < 0x10; i++) {
+        if (s->e[i].busy == 0) {
+            s->pick = func_0019A5C8() % s->n + 1;
+            if (s->pick + 2 < s->n) {
+                s->near = s->pick + 2;
+            } else {
+                s->near = s->pick - 2;
+            }
+            s->j[0] = func_001F5560(func_001F53A0(), 0x36, 1);
+            s->j[1] = func_001F5560(func_001F53A0(), 0x15, 0);
+            s->j[2] = func_001F5560(func_001F53A0(), 0x14, 0);
+            s->j[3] = func_001F5560(func_001F53A0(), s->pick, 0);
+            s->j[4] = func_001F5560(func_001F53A0(), s->near, 0);
+        }
+    }
+}

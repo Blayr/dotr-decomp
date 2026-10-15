@@ -499,7 +499,63 @@ INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E02900_b756);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E02AD0_b756);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E02CE0_b756);
+/* shape b756:01E02CE0, 83 insns: on start f48 12, both colours 0x80 grey (second alpha 0), random 0x5A, rotation
+   0x4000; alpha grows by 9 (below 0x80) for 13 ticks, then once the game step 0xAD5E passes 0x19A both fade by 9 (the
+   first ends it); from step 0x96 the angle at 0x24 turns by -0x100 a tick */
+
+typedef struct {
+    u8 pad0[0xAD5E];
+    s16 step;
+} Game_b756_01E02CE0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot;
+    s32 f24;
+    u8 pad28[0x20];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b756_01E02CE0;
+
+static s32 func_01E02CE0_b756(Game_b756_01E02CE0 *g, Fx_b756_01E02CE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 12.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->rot = 0x4000;
+    }
+    if (o->tick < 13) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (g->step > 0x19A) {
+        if (o->col[3] > 0xA) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0xA) {
+            o->col2[3] -= 9;
+        }
+    }
+    if (g->step >= 0x96) {
+        o->f24 -= 0x100;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E02E30_b756);
 
@@ -509,7 +565,52 @@ INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E034F0_b756);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E03670_b756);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E03880_b756);
+/* shape b756:01E03880, 74 insns: a white-orange growing spinning flash: scale 550 growing by 10 from frame 13, random
+   angle; alpha up by 32 to 0x80 for 15 frames, then down by 6 until it ends; random turn plus a quarter */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b756_01E03880;
+
+static s32 func_01E03880_b756(void *arg0, Obj_b756_01E03880 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 550.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0x80, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xF) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x20;
+        }
+    } else if (o->c0[3] > 7) {
+        o->c0[3] -= 6;
+    } else {
+        o->state = 0;
+    }
+    if (o->t > 0xC) {
+        o->scale += 10.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E039B0_b756);
 

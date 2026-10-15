@@ -52,7 +52,54 @@ INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E00BF0_c026);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E00F20_c026);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E01170_c026);
+/* shape c026:01E01170, 64 insns: takes the first free of 50 effect slots (0x80 bytes, b108:01E02FF0 family), marks it with
+   its index + 1, colours both from the context, hooks c026:01E014F0 with the given argument and remembers it */
+
+typedef struct {
+    u8 pad0[0x58];
+    void (*cb)(void);
+    s32 arg;
+    u8 pad60[4];
+    u8 c64[4];
+    u8 c68[4];
+    s16 used;
+    u8 pad6E[0x12];
+} Slot_c026_01E01170;
+
+typedef struct {
+    u8 pad0[0x140];
+    Slot_c026_01E01170 slots[0x32];
+    u8 pad[0x1A44 - 0x140 - 0x32 * 0x80];
+    u8 rgba[4];
+    u8 pad1A48[8];
+    Slot_c026_01E01170 *last;
+} Ctx_c026_01E01170;
+
+static void func_01E01170_c026(Ctx_c026_01E01170 *ctx, s32 arg) {
+    extern void c026_01E014F0(void);
+    extern void func_001076F0();
+    extern void func_00195108();
+    Slot_c026_01E01170 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x32; i++) {
+        if (ctx->slots[i].used == 0) {
+            s = &ctx->slots[i];
+            func_00195108(s, 0x80);
+            ctx->slots[i].used = i + 1;
+            i = 0x32;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c64, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c64[3] = ctx->rgba[3];
+        func_001076F0(s->c68, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c68[3] = ctx->rgba[3];
+        s->cb = c026_01E014F0;
+        s->arg = arg;
+        ctx->last = s;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E01270_c026);
 

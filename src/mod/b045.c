@@ -652,7 +652,76 @@ static Vec_b018_01E00EE0 func_01E018A0_b045(Vec_b018_01E00EE0 *p, s32 type, f32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E01CE0_b045);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02060_b045);
+/* shape b045:01E02060, 84 insns: a yellow glow pinned to one of the scene joints (table ctx+0x3748, picked by its +0x30) for 101 ticks at size 50: in by 12 up to 0x80 once the scene state reaches 16, out by 10 after 102 ticks or when the state drops under 15, and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b045_01E02060;
+
+typedef struct {
+    u8 pad[0x3700];
+    s32 state;
+    u8 pad3704[0x44];
+    s16 joint[1];
+} Game_b045_01E02060;
+
+static s32 func_01E02060_b045(Game_b045_01E02060 *g, Glow_b045_01E02060 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    Vec4f v;
+
+    func_001F5620(func_001F53A0(), g->joint[o->h30], &v);
+    func_001076F0(o->col, 0xA0, 0x80, 8);
+    if (o->mode == 1) {
+        o->mode = 2;
+    }
+    if (o->tick < 102) {
+        if (g->state > 15) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 12;
+            }
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (g->state < 15) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 10;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    if (o->tick < 101) {
+        o->h0 = func_001A22C0(v.x);
+        o->h2 = func_001A22C0(v.y);
+        o->h4 = func_001A22C0(v.z);
+        o->h6 = 50;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E021B0_b045);
 
@@ -902,7 +971,71 @@ static s32 func_01E03050_b045(s32 arg0, Flash_b045_01E03050 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E03130_b045);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E032D0_b045);
+/* shape b045:01E032D0, 92 insns: a screen fog: on start sets the scene fog block (0x2A00: 128, 4, 4, 4, position from
+   the effect, colour (0, 120, 0)); its strength 0x2A28 rises by 0.2 to 1, then falls by 0.1 and ends; the block is
+   passed to func_001F6C10 while alive (NULL once ended); it ends at scene counter 1 */
+
+typedef struct {
+    u8 pad0[0x2A00];
+    f32 f2A00;
+    f32 f2A04;
+    f32 f2A08;
+    f32 f2A0C;
+    f32 pos[3];
+    u8 pad2A1C[4];
+    f32 f2A20;
+    f32 f2A24;
+    f32 strength;
+    u8 pad2A2C[0x3700 - 0x2A2C];
+    s32 count;
+} Game_b045_01E032D0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b045_01E032D0;
+
+static s32 func_01E032D0_b045(Game_b045_01E032D0 *g, Fx_b045_01E032D0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->f2A00 = 128.0f;
+        g->f2A04 = 4.0f;
+        g->f2A08 = 4.0f;
+        g->f2A0C = 4.0f;
+        g->f2A20 = 0.0f;
+        g->f2A24 = 120.0f;
+        g->strength = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->strength < 1.0f) {
+            g->strength += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (!(g->strength <= 0.1f)) {
+        g->strength -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->f2A00);
+    }
+    if (g->count == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b045:01E03440, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3700 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */
@@ -1065,7 +1198,47 @@ static s32 func_01E04040_b045(Pool_b045_01E04040 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E04160_b045);
+/* shape b045:01E04160, 67 insns: draws a vertical bar sprite: colour from the object, a two-point column from (x, y, z)
+   up by h, projected into the given packet and queued at its depth */
+
+typedef struct {
+    s16 x, y, z, h;
+    u8 pad8[0x20];
+    u8 c0[4];
+} Bar_b045_01E04160;
+
+typedef struct {
+    u8 pad0[0x18];
+    u16 h18;
+    u8 pad1A[0xE];
+    u16 h28;
+} Pkt_b045_01E04160;
+
+typedef struct {
+    u8 pad0[0x370C];
+    s32 ot;
+} Game_b045_01E04160;
+
+static void func_01E04160_b045(Game_b045_01E04160 *g, Bar_b045_01E04160 *b, Pkt_b045_01E04160 *p) {
+    extern void func_001091B0(void *, void *, void *);
+    extern void func_00195108();
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[2];
+    f32 depth __attribute__((aligned(16)));
+
+    func_001091B0(p, b->c0, b->c0);
+    func_00195108(q, 0x20);
+    q[0].y = b->y;
+    q[1].y = q[0].y + b->h;
+    q[0].x = b->x;
+    q[0].z = b->z;
+    q[1].x = b->x;
+    q[1].z = b->z;
+    func_00205630(q, 0x70000000, NULL, p, &depth);
+    p->h28 = p->h18;
+    func_002075F0(p, g->ot, (u32)depth);
+}
 
 /* OVL_WARM */
 

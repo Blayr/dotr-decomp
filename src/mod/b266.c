@@ -169,11 +169,117 @@ static void func_01E004D0_b266(u8 *self, Obj_b018_01E00920 *obj, Pk_b018_01E0092
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E00800_b266);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01060_b266);
+/* shape b266:01E01060, 87 insns: on start 0x38 = 8, random rotation (0x18 -0x2000..0x1FFF, 0x14), variant 0..6; alpha grows
+   by 0x50 (below 0xA0) for 2 ticks, then fades by 13 once 0x38 passes 0x14 and by 15 while the game counter at
+   0x2EA0 is below 10; colour (0x80, 0x40, 0); 0x38 grows by 4 */
+
+typedef struct {
+    u8 pad0[0x2EA0];
+    s32 count;
+} Game_b266_01E01060;
+
+typedef struct {
+    u8 pad0[0x14];
+    s32 rot14;
+    s32 rot18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b266_01E01060;
+
+static s32 func_01E01060_b266(Game_b266_01E01060 *g, Fx_b266_01E01060 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 8;
+        o->rot18 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot14 = func_0019A5C8() % 0xFFFF;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x50;
+        }
+    } else {
+        if (o->f38 > 0x14) {
+            if (o->col[3] > 0xE) {
+                o->col[3] -= 13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->count < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    func_001076F0(o->col, 0x80, 0x40, 0);
+    o->tick++;
+    o->f38 += 4;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E011C0_b266);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01390_b266);
+/* shape b266:01E01390, 59 insns: an orange glow that drops toward the scene joint's height (step = func_001A22C0 of the gap): in by 25 up to 0x80 for 5 ticks */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    u8 pad4[6];
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b266_01E01390;
+
+typedef struct {
+    u8 pad[0x2EEA];
+    s16 joint;
+} Game_b266_01E01390;
+
+static s32 func_01E01390_b266(Game_b266_01E01390 *g, Glow_b266_01E01390 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    Vec4f pos;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x50, 0x20, 0);
+        func_001F5620(func_001F53A0(), g->joint, &pos);
+        o->hE = func_001A22C0(pos.y - o->h2);
+        o->f38 = 50;
+        o->ang = 0;
+        o->kind = 2;
+        o->h30 = 1;
+        o->mode = 2;
+    }
+    if (o->tick < 5) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x19;
+        }
+    }
+    o->tick++;
+    o->hA -= o->hE;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01480_b266);
 

@@ -365,21 +365,347 @@ INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01B50_b073);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01EE0_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02090_b073);
+/* shape b073:01E02090, 57 insns: on start 0x38 = 0x1AE, colour 0xC0 grey and second colour (0x80, 0x80, 0xFF) with
+   alpha 0, random 0x3A; alpha grows by 0x50 (below 0xF0) for 5 ticks, then fades by 0x13 and stops */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02180_b073);
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b073_01E02090;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E022E0_b073);
+static s32 func_01E02090_b073(s32 arg0, Fx_b073_01E02090 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02450_b073);
+    if (o->mode == 1) {
+        o->f38 = 0x1AE;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 5) {
+        if (o->col[3] < 0xF0) {
+            o->col[3] += 0x50;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b073:01E02180, 87 insns: a blue beam (b073:01E02BD0 shape): size 40 by 500 growing by 70; alphas down by 19 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[2];
+    s16 dir;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b073_01E02180;
+
+static s32 func_01E02180_b073(void *arg0, Obj_b073_01E02180 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x30, 0x30, 0xFF);
+        func_001076F0(o->c1, 0x30, 0x30, 0xFF);
+        o->w = 0x28;
+        o->h = 0x1F4;
+        if (o->ang == 0) {
+            o->dir = 0;
+        } else {
+            o->dir = 1;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 7) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0x14) {
+            o->c0[3] -= 0x13;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0x14) {
+            o->c1[3] -= 0x13;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    if (o->dir == 0) {
+        o->h += 0x46;
+    } else {
+        o->h += 0x46;
+    }
+    o->t++;
+    o->ang += 0xA;
+    return 0;
+}
+
+/* shape b073:01E022E0, 92 insns: a blue rising spark (b531:01E04300 family): frame 5, start height 50..249 (old one kept), random angle, rise 5..12,
+   width 0..34, hold 5..9; alpha up by 0x40 while at most 0x80, then down by 7 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    s16 y0;
+    u8 padC[2];
+    s16 step;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b073_01E022E0;
+
+static s32 func_01E022E0_b073(void *arg0, Obj_b073_01E022E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 5;
+        o->sub = 0;
+        func_001076F0(o->c0, 0x40, 0x40, 0xFF);
+        o->y0 = o->y;
+        o->y = func_0019A5C8() % 200 + 0x32;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 8 + 5;
+        o->h8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 5;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] <= 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 8) {
+        o->c0[3] -= 7;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b073:01E02450, 92 insns: a blue rising spark (b073:01E022E0 shape): frame 15, start height 10..59, rise 12..21 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    s16 y0;
+    u8 padC[2];
+    s16 step;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b073_01E02450;
+
+static s32 func_01E02450_b073(void *arg0, Obj_b073_01E02450 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0xF;
+        o->sub = 0;
+        func_001076F0(o->c0, 0x40, 0x40, 0xFF);
+        o->y0 = o->y;
+        o->y = func_0019A5C8() % 50 + 0xA;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 10 + 0xC;
+        o->h8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 5;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] <= 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 8) {
+        o->c0[3] -= 7;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E025C0_b073);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02860_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02A70_b073);
+/* shape b073:01E02A70, 87 insns: a blue column (b073:01E02BD0 shape): size 7 by 25 growing by 20 (2 when turned), alphas up for 11 frames */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02BD0_b073);
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[2];
+    s16 dir;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b073_01E02A70;
+
+static s32 func_01E02A70_b073(void *arg0, Obj_b073_01E02A70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x30, 0x30, 0x80);
+        func_001076F0(o->c1, 0x30, 0x30, 0x80);
+        o->w = 7;
+        o->h = 0x19;
+        if (o->ang == 0) {
+            o->dir = 0;
+        } else {
+            o->dir = 1;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xB) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xE) {
+            o->c1[3] -= 0xD;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    if (o->dir == 0) {
+        o->h += 0x14;
+    } else {
+        o->h += 2;
+    }
+    o->t++;
+    o->ang += 0xA;
+    return 0;
+}
+
+/* shape b073:01E02BD0, 86 insns: a blue column (b573:01E02960 shape): frame 6, size 7 growing by 3 in height, turning 10;
+   both alphas up by 0x40 to 0x80 for 7 frames, then down by 13 until the first runs out */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[2];
+    s16 dir;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b073_01E02BD0;
+
+static s32 func_01E02BD0_b073(void *arg0, Obj_b073_01E02BD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x30, 0x30, 0x80);
+        func_001076F0(o->c1, 0x30, 0x30, 0x80);
+        o->w = 7;
+        o->h = 7;
+        if (o->ang == 0) {
+            o->dir = 0;
+        } else {
+            o->dir = 1;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 7) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xE) {
+            o->c1[3] -= 0xD;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    if (o->dir == 0) {
+        o->h += 3;
+    } else {
+        o->h += 3;
+    }
+    o->t++;
+    o->ang += 0xA;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02D30_b073);
 

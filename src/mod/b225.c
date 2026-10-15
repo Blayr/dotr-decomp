@@ -736,11 +736,163 @@ static s32 func_01E02120_b225(void *arg0, Ember_b225_01E02120 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02290_b225);
+/* shape b225:01E02290, 87 insns: a white spark (size 60, frame 5) at two random angles drifting 16 a tick along its angle (sine table ctx+0x36EC): alpha 0x80 for 7 ticks, then out by 15 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E023F0_b225);
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    u8 padE[2];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b225_01E02290;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02540_b225);
+typedef struct {
+    u8 pad[0x36ec];
+    u8 sin[1];
+} Game_b225_01E02290;
+
+static s32 func_01E02290_b225(Game_b225_01E02290 *g, Glow_b225_01E02290 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        o->kind = 5;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->h8 = func_001A22C0(o->h8 + 16.0f * func_00108030(g->sin, o->ang, 0));
+    o->hC = func_001A22C0(o->hC + 16.0f * func_00108030(g->sin, o->ang, 1));
+    o->tick++;
+    return 0;
+}
+
+/* shape b225:01E023F0, 84 insns: b573:01E02590 family: a purple spark at a random frame 0..7 that spins by a random 27..42 a tick (its old angle moved to the angle slot), size 0..9, hold 3..9 ticks: in by 56 up to 0x70, then out by 15 and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b225_01E023F0;
+
+static s32 func_01E023F0_b225(s32 arg0, Glow_b225_01E023F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 25;
+        o->kind = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x40, 8, 0x80);
+        o->ang = o->h30;
+        o->h30 = 0;
+        o->hE = func_0019A5C8() % 16 + 27;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 7 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x70) {
+            o->col[3] += 0x38;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b225:01E02540, 88 insns: b225:01E023F0 family: an orange spark (size 14, random frame 0..3, random roll) spinning a random 20..37 a tick, rolling 5, size 0..9, held 8..27 ticks at 0x80, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b225_01E02540;
+
+static s32 func_01E02540_b225(s32 arg0, Glow_b225_01E02540 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 14;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->w18 = func_0019A5C8() % 360;
+        o->ang = o->h30;
+        o->h30 = 0;
+        o->hE = func_0019A5C8() % 18 + 20;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 20 + 8;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->w18 += 5;
+    o->h30 += o->hE;
+    o->tick++;
+    return 0;
+}
 
 /* shape b225:01E026A0, 90 insns, 2 copies: a spinning ember: set up once (random frame, turn, speed 5..20, size, life
    2..6); full alpha for its life, then fades out; its angle advances by its speed (b003:01E01780 family) */
@@ -875,7 +1027,68 @@ static s32 func_01E02E70_b225(void *arg0, Obj_b018_01E02480 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02F50_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E03120_b225);
+/* shape b225:01E03120, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
+   raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the
+   scene state at 0x3380 is 1 */
+
+typedef struct {
+    u8 pad0[0x3180];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad319C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad31AC[0x1D4];
+    s32 state;
+} Scene_b225_01E03120;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 down;
+    u8 pad32[4];
+    s16 live;
+} Obj_b225_01E03120;
+
+static s32 func_01E03120_b225(Scene_b225_01E03120 *g, Obj_b225_01E03120 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 2.0f;
+        g->l0[3] = 0.0f;
+        g->f20 = 0.0f;
+        g->range = 120.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    if (o->down == 0) {
+        if (g->power < 1.0f) {
+            g->power += 0.2f;
+        } else {
+            o->down = 1;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.1f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    return 0;
+}
 
 /* shape b225:01E032A0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3380 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */
@@ -1241,4 +1454,69 @@ static void func_01E04BF0_b225(Obj_b225_01E04BF0 *o, Spr_b225_01E04BF0 *s, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E04F60_b225);
+/* shape b225:01E04F60, 73 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x3398, ot at
+   0x3394), texture from func_001F53A0, then every used slot (0xB4 of 0x40 bytes at 0x478) whose
+   callback is b225:01E033B0 is drawn by it; close the ot if any slot was used */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b225_01E04F60;
+
+typedef struct {
+    u8 pad0[0x24];
+    void (*cb)(void *, void *);
+    u8 pad28[0xE];
+    s16 used;
+    u8 pad38[0x8];
+} Slot_b225_01E04F60;
+
+typedef struct {
+    u8 pad0[0x478];
+    Slot_b225_01E04F60 slots[0xB4];
+    u8 pad3178[0x21C];
+    s32 ot;
+    Pkt_b225_01E04F60 *pk;
+} Scene_b225_01E04F60;
+
+static void func_01E04F60_b225(Scene_b225_01E04F60 *g) {
+    extern void b225_01E033B0(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b225_01E04F60 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x26;
+    g->pk->tag = 5;
+    g->pk->regs = 0x42421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 0xB4; i++) {
+        if (g->slots[i].used != 0) {
+            n++;
+            if (g->slots[i].cb == b225_01E033B0) {
+                b225_01E033B0(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

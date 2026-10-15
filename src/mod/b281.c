@@ -582,4 +582,71 @@ static s32 func_01E02430_b281(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E02440_b281);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E02AB0_b281);
+/* shape b281:01E02AB0, 82 insns: c035:01E01150 family: take the first free effect slot of 150 (0x70 bytes each, at ctx+0x2A0), clear it, give it the scene colour twice, the scene position, two angles and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    u8 pad52[6];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b281_01E02AB0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2A0 - 0x25C];
+    Obj_b281_01E02AB0 slot[150];
+    u8 padEnd[0x44b4 - 0x2A0 - 150 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 padA[0x4506 - 0x44b4 - 4];
+    s16 ang;
+    u8 padB[0x4514 - 0x4506 - 2];
+    s16 h30;
+} Ctx_b281_01E02AB0;
+
+static s32 func_01E02AB0_b281(Ctx_b281_01E02AB0 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b281_01E02AB0 *s;
+
+    s = NULL;
+    for (i = 0; i < 150; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 150;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h5A = ctx->ang;
+        s->h50 = ctx->h30;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}

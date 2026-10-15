@@ -206,7 +206,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E00BE0_b494);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E00EE0_b494);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E010D0_b494);
+/* shape b494:01E010D0, 87 insns: a white rising flash (b749:01E028A0 family): f48 20 with f4C 58 below, rising by 950 / 11 a
+   frame with f4C 60 below; y turn a half when the game's side is set; alpha 0xC0 for 15 frames, then down by 14 until it ends;
+   skips to frame 15 once the game timer reaches 0xE7 */
+
+typedef struct {
+    u8 pad0[0x4524];
+    s16 side;
+    u8 pad4526[2];
+    s16 timer;
+} Game_b494_01E010D0;
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 rot1;
+    u8 pad28[0x14];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b494_01E010D0;
+
+static s32 func_01E010D0_b494(Game_b494_01E010D0 *g, Obj_b494_01E010D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->h50 = 0;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->f3C = 950.0f;
+        o->f3C /= 11.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        if (g->side != 0) {
+            o->rot1 = 0x8000;
+        } else {
+            o->rot1 = 0;
+        }
+    }
+    if (o->t < 0xF) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f3C;
+    o->f4C = o->f48 - 60.0f;
+    o->t++;
+    if (g->timer > 0xE6) {
+        o->t = 0xF;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E01230_b494);
 
@@ -218,7 +284,72 @@ static s32 func_01E013B0_b494(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E013C0_b494);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E01940_b494);
+/* shape b494:01E01940, 82 insns: take a free effect slot (0x96 of 0x70 bytes at 0x2A0), clear it, colour both colours from
+   the scene colour 0x44B4, attach it to the scene position (0x250) and copy it, 0x5A and 0x50 from 0x4506 / 0x4520, store the two
+   arguments; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Slot_b494_01E01940;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b494_01E01940 slots[0x96];
+    u8 pad4440[0x44B4 - 0x4440];
+    u8 rgba[4];
+    u8 pad44B8[0x4E];
+    s16 f4506;
+    u8 pad4508[0x18];
+    s16 f4520;
+} Scene_b494_01E01940;
+
+static s32 func_01E01940_b494(Scene_b494_01E01940 *g, s32 a1, s32 a2) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b494_01E01940 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used == 0) {
+            func_00195108(&g->slots[i], 0x70);
+            g->slots[i].used = 1;
+            s = &g->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col[3] = g->rgba[3];
+        func_001076F0(s->col2, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col2[3] = g->rgba[3];
+        func_00106AB0(s, g->pos, 0);
+        s->pos[0] = g->pos[0];
+        s->pos[1] = g->pos[1];
+        s->pos[2] = g->pos[2];
+        s->f5A = g->f4506;
+        s->f50 = g->f4520;
+        s->a2 = a2;
+        s->a1 = a1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E01A90_b494);
 

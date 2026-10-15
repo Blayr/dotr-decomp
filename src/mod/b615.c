@@ -553,7 +553,49 @@ static void func_01E012D0_b615(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b615", func_01E01880_b615);
+/* shape b615:01E01880, 90 insns: count 0xBCF2 up; between 1 and 0x46, on odd ticks, twice: place the scene at model
+   point 0xBCBC, 0xBCEA = 0xBCEC, run b615:01E019F0 through b615:01E02910 and cycle 0xBCEC through 0..0x77 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xBCBC - 0x25C];
+    s16 point;
+    u8 padBCBE[0x2C];
+    s16 fBCEA;
+    s16 fBCEC;
+    u8 padBCEE[4];
+    s16 count;
+} Scene_b615_01E01880;
+
+static void func_01E01880_b615(Scene_b615_01E01880 *g) {
+    extern void b615_01E019F0(void);
+    extern void b615_01E02910(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 n;
+    s16 i;
+
+    g->count++;
+    if (g->count > 0 && g->count < 0x47) {
+        if (g->count % 2 == 1) {
+            if (g->count < 100) {
+                n = 2;
+            } else {
+                n = 2;
+            }
+            for (i = 0; i < n; i++) {
+                func_001F5620(func_001F53A0(), g->point, g->pos);
+                g->fBCEA = g->fBCEC;
+                b615_01E02910(g, b615_01E019F0, 0);
+                g->fBCEC++;
+                if (g->fBCEC >= 0x78) {
+                    g->fBCEC = 0;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b615", func_01E019F0_b615);
 

@@ -694,7 +694,52 @@ static void func_01E01730_b219(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b219", func_01E01CE0_b219);
+/* shape b219:01E01CE0, 80 insns: per-tick scene step: count, put the follower on the scene joint and drift its z by 3 (back when flagged); between ticks 64 and 200 spawn one particle a tick through shape b219:01E02F70 (handler b219:01E01E20), cycling its index 0..119 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x4C3C - 0x25C];
+    s16 joint;
+    u8 pad4C3E[0x2C];
+    s16 cur;
+    s16 next;
+    s16 back;
+    u8 pad4C70[2];
+    s16 tick;
+} Ctx_b219_01E01CE0;
+
+static void func_01E01CE0_b219(Ctx_b219_01E01CE0 *ctx) {
+    extern void b219_01E01E20();
+    extern void b219_01E02F70(Ctx_b219_01E01CE0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    ctx->tick++;
+    func_001F5620(func_001F53A0(), ctx->joint, &ctx->x);
+    if (ctx->back != 0) {
+        ctx->z -= 3.0f;
+    } else {
+        ctx->z += 3.0f;
+    }
+    if (ctx->tick >= 64 && ctx->tick <= 200 && ctx->tick != 0) {
+        if (ctx->tick < 100) {
+            n = 1;
+        } else {
+            n = 1;
+        }
+        for (i = 0; i < n; i++) {
+            ctx->cur = ctx->next;
+            b219_01E02F70(ctx, b219_01E01E20, 0);
+            ctx->next++;
+            if (ctx->next >= 120) {
+                ctx->next = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b219", func_01E01E20_b219);
 
@@ -809,7 +854,49 @@ static s32 func_01E02360_b219(s32 arg0, Spark_b219_01E02360 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b219", func_01E02560_b219);
+/* shape b219:01E02560, 67 insns: a grey-yellow growing spinning flash (b202:01E022A0 shape): scale 120, alpha down by 9 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b219_01E02560;
+
+static s32 func_01E02560_b219(void *arg0, Obj_b219_01E02560 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 120.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 8);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->scale += 1.0f;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b082:01E025B0, 172 insns: variant of b149:01E020F0 (game value at 0x4C72): a glow whose kind (f50) picks its look: kinds 0/1 are grey with an orange second
    colour, flickering, brightening for 12 ticks; kind 1 also grows to 400 by 15; kind 2 starts at 840, white with a

@@ -646,9 +646,103 @@ static s32 func_01E01E90_b112(s32 arg0, Flash_b112_01E01E90 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E01F70_b112);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E021A0_b112);
+/* shape b112:01E021A0, 76 insns: a grey-yellow flash: frame 6, size 6 by 100, random kind 0..4; both alphas up by 0x40 to 0x40 on
+   the first frame, then down by 13; ends when the first runs out; turns 4 a frame */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E022D0_b112);
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x1C];
+    u8 c0[4];
+    u8 c1[4];
+    s16 kind;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b112_01E021A0;
+
+static s32 func_01E021A0_b112(void *arg0, Obj_b112_01E021A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 6;
+        func_001076F0(o->c0, 0x30, 0x30, 0x30);
+        func_001076F0(o->c1, 0x50, 0x50, 0);
+        o->w = 6;
+        o->h = 0x64;
+        o->kind = func_0019A5C8() % 5;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 1) {
+        if (o->c0[3] < 0x40) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x40) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xE) {
+            o->c1[3] -= 0xD;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    o->t++;
+    o->ang += 4;
+    return 0;
+}
+
+/* shape b112:01E022D0, 81 insns: a grey-yellow blinking flash: frame 30, random kind 0..4 and angle; alpha up by 0x40 on the
+   first frame, then down by 19 until it ends; first colour blinks grey by frame parity */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 c1[4];
+    s16 kind;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b112_01E022D0;
+
+static s32 func_01E022D0_b112(void *arg0, Obj_b112_01E022D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x1E;
+        func_001076F0(o->c0, 8, 8, 8);
+        func_001076F0(o->c1, 0x50, 0x50, 0);
+        o->kind = func_0019A5C8() % 5;
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 1) {
+        o->c0[3] += 0x40;
+    } else if (o->c0[3] > 0x14) {
+        o->c0[3] -= 0x13;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x30, 0x30, 0x30);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b112:01E02420, 97 insns: a point light for the scene: on start sets the light (colour 128/6/3, range
    153) at the effect's position; its strength rises by 0.2 up to 1, then falls by 0.08 and the effect ends; the

@@ -741,23 +741,264 @@ INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E022A0_b144);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02430_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02630_b144);
+/* shape b144:01E02630, 72 insns: a white-grey rising flash (b363:01E02940 family): f48 200 with f4C 58 below, rising by
+   f34 = 600 / 10 a frame with f4C 250 below; full alpha for 8 frames, then down by 14 until it ends; y turns 0x100 */
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 rot1;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b144_01E02630;
+
+static s32 func_01E02630_b144(void *arg0, Obj_b144_01E02630 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        o->h50 = 0;
+        o->w = 0xF;
+        o->h = 0xF;
+        o->f34 = 600.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 250.0f;
+    o->rot1 += 0x100;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02750_b144);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02930_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02B50_b144);
+/* shape b144:01E02B50, 60 insns: b764:01E02A60 family ring (white/pink, height 500, scale 2) held at turn 0x4000: in by 42 up to 0x80 for 17 ticks, then out by 7 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b144_01E02B50;
+
+static s32 func_01E02B50_b144(s32 arg0, Obj_b144_01E02B50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 500.0f;
+        o->f34 = 2.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0xFF, 0xA0, 0xA0);
+        o->h5A = 15;
+        o->h5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 17) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x2A;
+        }
+    } else if (o->col2[3] > 8) {
+        o->col2[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 = 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02C40_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02E30_b144);
+/* shape b144:01E02E30, 62 insns: a blue-white growing flash: set up once (f48 6, f30 1.5, size 5 growing by 4 a frame),
+   fades in by 0x40 to 0x80 for 4 frames, then out by 9 until it ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02F30_b144);
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 size;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b144_01E02E30;
+
+static s32 func_01E02E30_b144(void *arg0, Obj_b144_01E02E30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c1, 0x40, 0x40, 0xC0);
+        o->f30 = 1.5f;
+        o->size = 5.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->size += 4.0f;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b144:01E02F30, 67 insns: b144:01E02B50 twin: a grey/red ring of random height 10..59 (scale 2) held at turn 0x4000: in by 64 up to 0x80 for 2 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b144_01E02F30;
+
+static s32 func_01E02F30_b144(s32 arg0, Obj_b144_01E02F30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = func_0019A5C8() % 50 + 10;
+        o->f34 = 2.0f;
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        func_001076F0(o->col, 0x40, 0x20, 0x20);
+        o->h5A = 15;
+        o->h5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x40;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 = 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03040_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03210_b144);
+/* shape b144:01E03210, 60 insns: a pink-white spinning flash (b236:01E01B70 family): f4C 80, f34 2, size 15x15;
+   second alpha up by 42 to 0x80 for 10 frames, then down by 7 until it ends; a random turn, then the x turn reset to a
+   quarter */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b144_01E03210;
+
+static s32 func_01E03210_b144(void *arg0, Obj_b144_01E03210 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 80.0f;
+        o->f34 = 2.0f;
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0xFF, 0xA0, 0xA0);
+        o->w = 0xF;
+        o->h = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xA) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    } else if (o->c1[3] > 8) {
+        o->c1[3] -= 7;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] = 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03300_b144);
 
@@ -855,4 +1096,71 @@ static s32 func_01E034D0_b144(void *arg0, Flash_b144_01E034D0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03740_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E04140_b144);
+/* shape b144:01E04140, 82 insns: c035:01E01150 family: take the first free effect slot of 200 (0x70 bytes each, at ctx+0x2A0), clear it, give it the scene colour twice, the scene position, two angles and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    u8 pad52[6];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b144_01E04140;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2A0 - 0x25C];
+    Obj_b144_01E04140 slot[200];
+    u8 padEnd[0x5a74 - 0x2A0 - 200 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 padA[0x5abe - 0x5a74 - 4];
+    s16 ang;
+    u8 padB[0x5aca - 0x5abe - 2];
+    s16 h30;
+} Ctx_b144_01E04140;
+
+static s32 func_01E04140_b144(Ctx_b144_01E04140 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b144_01E04140 *s;
+
+    s = NULL;
+    for (i = 0; i < 200; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 200;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h5A = ctx->ang;
+        s->h50 = ctx->h30;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}

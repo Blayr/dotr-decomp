@@ -330,11 +330,99 @@ static void func_01E00E60_b034(s32 arg0, u8 *obj, s32 mode, f32 level) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E01030_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E01E70_b034);
+/* shape b034:01E01E70, 73 insns: a blinking yellow glow (yellow on odd ticks, olive on even): in by 12 up to 0x80 for 20 ticks, then out by 9 once the scene state is under 40, and ends */
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b034_01E01E70;
+
+typedef struct {
+    u8 pad[0xA900];
+    s32 state;
+} Game_b034_01E01E70;
+
+static s32 func_01E01E70_b034(Game_b034_01E01E70 *g, Obj_b034_01E01E70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->h56 = 10;
+        o->mode = 2;
+    }
+    if (o->t < 20) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+    } else if (g->state < 40) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x40);
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E01FA0_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E02160_b034);
+/* shape b034:01E02160, 73 insns: a blinking two-colour glow (white/red on odd ticks, grey/deep red on even): in by 16 up to 0xA0 for 10 ticks; out by 13 once the scene state is under 40, and ends */
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b034_01E02160;
+
+typedef struct {
+    u8 pad[0xA900];
+    s32 state;
+} Game_b034_01E02160;
+
+static s32 func_01E02160_b034(Game_b034_01E02160 *g, Obj_b034_01E02160 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h56 = 0;
+        o->mode = 2;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x10;
+        }
+    }
+    if (g->state < 40) {
+        if (o->col[3] > 14) {
+            o->col[3] -= 13;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x20, 0x20);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0xC0, 0x10, 0x10);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b034:01E02290, 120 insns, 2 copies: a grey bloom: set up once (random size 100..129, frame 0..7, angle 100..149, speed
    26..45, life 7..20); fades in for its life, then out; turns for 90 frames and grows 6 a frame for 140 (b225:01E026A0 family, 0x58-state layout) */
@@ -393,7 +481,72 @@ static s32 func_01E02290_b034(void *arg0, Spark_b034_01E02290 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E02470_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E02650_b034);
+/* shape b034:01E02650, 81 insns: a grey-red blinker: fades in by 16 to 0xA0 while the game timer is below 200 and the stage
+   counter is at least 360; fades by 13 while the game state is below 40; colours blink by frame parity */
+
+typedef struct {
+    u8 pad0[0xA900];
+    s32 state;
+    u8 padA904[0xFC];
+    s16 count;
+    u8 padAA02[0x10];
+    s16 timer;
+} Game_b034_01E02650;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w2;
+    s16 h2;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b034_01E02650;
+
+static s32 func_01E02650_b034(Game_b034_01E02650 *g, Obj_b034_01E02650 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->sub = 0;
+        o->state = 2;
+    }
+    if (g->timer < 0xC8) {
+        if (g->count >= 0x168) {
+            if (o->c0[3] < 0xA0) {
+                o->c0[3] += 0x10;
+            }
+        }
+    }
+    if (g->state < 0x28) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x20, 0x20);
+    } else {
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        func_001076F0(o->c1, 0xC0, 0x10, 0x10);
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E027A0_b034);
 
@@ -407,7 +560,59 @@ INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03560_b034);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03840_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03A50_b034);
+/* shape b034:01E03A50, 63 insns: a red rising ring (20 x 3) that turns 0x100 and climbs 1.2 a tick: in by 64 up to 0x80 for 26 ticks, then out by 4 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 hE;
+    u8 pad10[4];
+    f32 f14;
+    u8 pad18[0xC];
+    s32 w24;
+    u8 pad28[0x20];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b034_01E03A50;
+
+static s32 func_01E03A50_b034(s32 arg0, Obj_b034_01E03A50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->hE = o->h50;
+        o->f48 = 20.0f;
+        o->f4C = 3.0f;
+        func_001076F0(o->col, 0x80, 0x10, 0x10);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->h6 = 0;
+    }
+    if (o->t < 26) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->w24 += 0x100;
+    o->f14 += 1.2f;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03B50_b034);
 
@@ -559,4 +764,24 @@ INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E06010_b034);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E06420_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E06CF0_b034);
+/* shape b034:01E06CF0, 60 insns: lerp of a 4-float point: out = a + (b - a) / n * t (xyz) */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b034_01E06CF0;
+
+static void func_01E06CF0_b034(V4_b034_01E06CF0 *out, V4_b034_01E06CF0 *a, V4_b034_01E06CF0 *b, f32 n, f32 t) {
+    V4_b034_01E06CF0 s;
+    V4_b034_01E06CF0 e;
+    V4_b034_01E06CF0 d;
+
+    s = *a;
+    e = *b;
+    d.x = (e.x - s.x) / n;
+    d.y = (e.y - s.y) / n;
+    d.z = (e.z - s.z) / n;
+    d.x = s.x + d.x * t;
+    d.y = s.y + d.y * t;
+    d.z = s.z + d.z * t;
+    *out = d;
+}

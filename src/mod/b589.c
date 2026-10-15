@@ -999,7 +999,71 @@ static s32 func_01E025C0_b589(Mgr_b567_01E02690 *m, Obj_b567_01E02690 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E02800_b589);
+/* shape b589:01E02800, 93 insns: a screen fog: on start sets the scene fog block (0x6AA0: 128, 4.0, 2.0, 0.0, position from
+   the effect, colour (0, 120.0, 0)); its strength 0x6AC8 rises by 0.2 to 1, then falls by 0.1 and ends; the block is
+   passed to func_001F6C10 while alive (NULL once ended); it ends at scene counter 1 (0x6DA0) */
+
+typedef struct {
+    u8 pad0[0x6AA0];
+    f32 f2A00;
+    f32 f2A04;
+    f32 f2A08;
+    f32 f2A0C;
+    f32 pos[3];
+    u8 pad2A1C[4];
+    f32 f2A20;
+    f32 f2A24;
+    f32 strength;
+    u8 pad6ACC[0x6DA0 - 0x6ACC];
+    s32 count;
+} Game_b589_01E02800;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x4A];
+    s16 phase;
+    u8 pad52[0x6];
+    s16 mode;
+} Fx_b589_01E02800;
+
+static s32 func_01E02800_b589(Game_b589_01E02800 *g, Fx_b589_01E02800 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->f2A00 = 128.0f;
+        g->f2A04 = 4.0f;
+        g->f2A08 = 2.0f;
+        g->f2A0C = 0.0f;
+        g->f2A20 = 0.0f;
+        g->f2A24 = 120.0f;
+        g->strength = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->strength < 1.0f) {
+            g->strength += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (!(g->strength <= 0.1f)) {
+        g->strength -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->f2A00);
+    }
+    if (g->count == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b589:01E02980, 31 insns: b018:01E02DB0 family: func_001F7170(2, 0) with the module's two floats, then ends the object when the scene counter is 136 */
 
@@ -1125,6 +1189,72 @@ static s32 func_01E03200_b589(Pool_b205_01E02AB0 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E03320_b589);
+/* shape b589:01E03320, 82 insns: take a free effect slot (0x96 of 0x70 bytes at 0x2900), clear it, colour both colours from
+   the scene colour 0x6DA4, attach it to the scene position (0x2D0) and copy it, 0x50 from 0x6E06 (twice) and 0x5A from 0x6DFE, store the two
+   arguments; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Slot_b589_01E03320;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 pad2DC[0x2624];
+    Slot_b589_01E03320 slots[0x96];
+    u8 pad6AA0[0x6DA4 - 0x6AA0];
+    u8 rgba[4];
+    u8 pad6DA8[0x56];
+    s16 f6DFE;
+    u8 pad6E00[6];
+    s16 f6E06;
+} Scene_b589_01E03320;
+
+static s32 func_01E03320_b589(Scene_b589_01E03320 *g, s32 a1, s32 a2) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b589_01E03320 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (g->slots[i].used == 0) {
+            func_00195108(&g->slots[i], 0x70);
+            g->slots[i].used = 1;
+            s = &g->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col[3] = g->rgba[3];
+        func_001076F0(s->col2, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col2[3] = g->rgba[3];
+        func_00106AB0(s, g->pos, 0);
+        s->pos[0] = g->pos[0];
+        s->pos[1] = g->pos[1];
+        s->pos[2] = g->pos[2];
+        s->f50 = g->f6E06;
+        s->f50 = g->f6E06;
+        s->f5A = g->f6DFE;
+        s->a2 = a2;
+        s->a1 = a1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E03470_b589);
