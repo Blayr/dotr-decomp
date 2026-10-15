@@ -734,7 +734,32 @@ s32 func_0016B0E0(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_0016B0F0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+int func_0016B0F0(int side)
+{
+    int i;
+    int n;
+    int low;
+    int col;
+    int pos;
+    int row;
+    n = 0;
+    pos = func_0024EC50(func_0024CA40(0, 0, side, 3, 33, 14), 0);
+    row = pos >> 8;
+    col = pos & 0xff;
+    if (side != func_00250360(row, col)) {
+        low = func_001E1090(row, col) & 0xff;
+        if (func_002509E0(row, col, low, func_001E1090(row, col) >> 8) >= 3000) {
+            for (i = 1; i < 11; i++) {
+                if (func_001DF540(side, i) != 0) {
+                    n++;
+                }
+            }
+        }
+    }
+    return n < 3 ? 1 : 0;
+}
 
 typedef struct {
     u16 unk0;

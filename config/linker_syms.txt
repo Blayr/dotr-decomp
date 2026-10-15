@@ -267,3 +267,6 @@ func_001E2220_b = 0x001E2220;
 func_002029B0_b = 0x002029B0;
 func_00215920_b = 0x00215920;
 func_00250740_24f830 = 0x00250740;
+/* <name>_b: the dotr-decomp CC0 bundle's view of one of our symbols, with its own C type
+   (chatC/imp/conv.py); same address as <name>. */
+func_0016B0F0_b = 0x0016B0F0;

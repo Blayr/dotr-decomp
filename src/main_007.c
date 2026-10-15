@@ -1,5 +1,7 @@
 #include "common.h"
 
+s32 func_0016B0F0_b(); /* func_0016B0F0, which this file calls without its argument */
+
 s32 func_00124610(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     s32 buf[8];
     s32 i;
@@ -2680,7 +2682,7 @@ s32 func_0012AAC0(void *arg0, s32 arg1, void *arg2, s32 arg3) {
 }
 
 void func_0012B000(void) {
-    func_0016B0F0();
+    func_0016B0F0_b();
 }
 
 s32 func_0012B1B0(s32 arg0) {

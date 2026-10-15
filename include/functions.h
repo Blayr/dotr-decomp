@@ -798,6 +798,7 @@ s32 func_0016A5C0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4); /* JP: Ta
 s32 func_0016AE30(s32 arg0, s32 arg1); /* JP: TaLogic_IsOpenUnit */
 s32 func_0016AFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5); /* JP: TaLogic021_IsOpenMoveUnit */
 s32 func_0016B0E0(void); /* JP: TaLogic_GetWarnHideLvl */
+int func_0016B0F0(int side); /* JP: TaLogic021_IsUseBlackHole (matched by position) */
 s32 func_0016B1F0(s32 arg0, void *arg1); /* JP: L021 */
 s32 func_0016B3C0(s32 arg0); /* JP: TaLogicCom_GetRevoltObj */
 s32 func_0016B610(s32 arg0, s32 arg1, void *arg2); /* JP: TaLogicCom_IsOpenUnit */
