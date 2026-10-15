@@ -149,13 +149,19 @@ fi
 # `lw $2,D_X($3)`, `la`) into the next branch's delay slot (fmodf: `lwc1 $f0,%lo(D_X)($at); b; nop`);
 # binutils moves the expansion's last instruction there. A local label before the branch stops it.
 # The same for GCC's 64-bit constant `li.d` (expanded below as `dli`: scalbn `dsll32; jal dpmul; nop`).
+# It never moved a 64-bit `ld`/`sd` into a delay slot either (every 2.96 function: `ld ..%lo(..)` before a
+# branch 10x, always with a nop slot; pow's `sd` before `bnez`), and never filled the slot of a `jal` that GCC left
+# to it (GCC's own .set noreorder fills stay): __floatdisf's `dsra32 a0; jal litodp; nop`. Adding both changed no
+# 2.96 file's existing code (chatE 16 Oct).
 if [ "$DK_GCC" = 2.96 ]; then
     perl -i -ne 'BEGIN { $n = 0; $held = 0 }
-        print ".Lnofill", $n++, ":\n" if $held
-            && /^\s+(b|j|jal|jr|jalr|bal|beqz?l?|bnez?l?|b[gl][et]zl?|b[gl]tzall?|bgezall?|bc1[tf]l?)\s/;
+        print ".Lnofill", $n++, ":\n" if ($held
+            && /^\s+(b|j|jal|jr|jalr|bal|beqz?l?|bnez?l?|b[gl][et]zl?|b[gl]tzall?|bgezall?|bc1[tf]l?)\s/)
+            || /^\s+jal\s/;
         $held = 0 if /^\s+[a-z]/;
         $held = 1 if /^\s+(l[bhwd]u?|lq|s[bhwdq]|lwc1|swc1|ldc1|sdc1|l\.[sd]|s\.[sd]|d?la)\s+[^,]+,\s*[A-Za-z_]/;
         $held = 1 if /^\s+li\.d\s/;
+        $held = 1 if /^\s+(ld|sd)\s/;
         print' "$TMP/out.s"
 fi
 # Old gas left a label BEFORE the hazard nop after an `mfc1` (powf: `mfc1 $7,$f0` / `.L: nop` /
