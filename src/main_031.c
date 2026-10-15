@@ -53,7 +53,35 @@ void _Error(s32 arg0, void *arg1) {
     _ErrMessage((s32) arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", _sendDataToIPU);
+void _sendDataToIPU(s32 buf, u32 data, s32 size) {
+    u64 *tag;
+    u64 *t;
+    s32 n;
+    s32 id;
+    u64 addr;
+
+    tag = (u64 *)(((u32)(buf + 0x88F) >> 4) << 4);
+    t = tag;
+    while (size > 0) {
+        n = (size > 0xFFF40) ? 0xFFF40 : size;
+        addr = data & 0x0FFFFFFF;
+        size -= n;
+        id = 0;
+        if (size != 0) {
+            id = 3;
+        }
+        *t = (addr << 32) | ((u64)id << 28) | (u32)((n + 15) / 16);
+        __asm__ volatile("sync");
+        data += n;
+        t += 2;
+    }
+    FlushCache(0);
+    func_001843E0();
+    *(volatile u32 *)0x1000B430 = (u32)tag & 0x0FFFFFFF;
+    *(volatile u32 *)0x1000B420 = 0;
+    *(volatile u32 *)0x1000B400 = 0x105;
+    func_00184428();
+}
 
 s32 _RefImageInit(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)arg0 + 4)) = arg1;
