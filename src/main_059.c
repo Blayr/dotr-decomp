@@ -311,7 +311,6 @@ typedef struct {
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-s32 func_0020EDE0(void *, f32);
 
 s32 func_00210310(void *arg0, s32 depth, void *arg2) {
     extern Slot_00210310 D_0032A780[];
@@ -490,7 +489,6 @@ typedef struct {
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-s32 func_0020EDE0(void *, f32);
 
 s32 func_00210940(void *arg0, s32 depth, void *arg2) {
     extern s32 func_00210CF0(void *, u16, f32, void *, void *, void *, f32);
@@ -802,7 +800,6 @@ extern u32 D_0032A728;
 extern s32 D_0032A770;
 extern Slot_00211530 D_0032A780[];
 
-s32 func_0020EDE0(void *, f32);
 
 s32 func_00211530(void *arg0, s32 depth, void *arg2) {
     extern s32 func_002118F0(void *, s64, u16, void *, void *, void *, f32);

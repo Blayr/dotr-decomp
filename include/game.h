@@ -255,7 +255,6 @@ extern volatile s32 D_0035060C;
 
 extern u16 D_002CD8A0[];
 extern u8 D_00318E60[];
-void func_001DF5F0(s32, s32, s32, void *, s32);
 
 s32 func_001FD680(s32, s32, s32, s32, s32);
 
@@ -450,7 +449,6 @@ extern char D_002BEF67[];
 s32 func_0016B0F0();                            /* extern */
 
 
-s32 func_0027D830(s32, s32, s32, s32, s32, s32);
 
 
 

@@ -1097,9 +1097,462 @@ void func_00203CD0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_00203E20);
+struct DotrSmallBits {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrSmallFlagsOwner {
+    int unknown_00[11];
+    struct DotrSmallBits unknown_2c;
+};
+extern struct DotrSmallFlagsOwner D_00325C80_203e20;
+enum {
+    DOTR_DEBUG_MENU = 0,  
+    DOTR_DEBUG_MODEL = 1, 
+    DOTR_DEBUG_DIGIT = 2, 
+    
+    DOTR_DEBUG_EFF_NO = 3,     
+    DOTR_DEBUG_EFF_ARG = 4,    
+    DOTR_DEBUG_EFF_A_HI = 5,   
+    DOTR_DEBUG_EFF_A_LO = 6,   
+    DOTR_DEBUG_EFF_B_HI = 7,   
+    DOTR_DEBUG_EFF_B_LO = 8,   
+    DOTR_DEBUG_EFF_ROW = 9,    
+    DOTR_DEBUG_EFF_COLUMN = 10 
+};
+struct DotrDebugCardConst {
+    unsigned char unknown_00;
+    unsigned char unknown_01;
+    unsigned char unknown_02;
+};
+struct DotrDebugCard {
+    struct DotrDebugCardConst *info; 
+    char unknown_04[0x38];
+    unsigned short unknown_3c;       
+    unsigned char unknown_3e;
+    unsigned char unknown_3f;
+    char unknown_40[4];
+    unsigned char unknown_44;        
+    unsigned char unknown_45;
+};
+struct DotrDebugDigits {
+    int d[3];
+};
+extern struct DotrDebugDigits D_00293D28;
+extern char *D_00293D00[];
+extern int func_001F2980_b(int index);
+extern int func_001AAF60_b(int);
+extern int func_001F2920_b(int index);
+extern struct DotrDebugCard *func_001DD130_b(int a, int b);
+extern struct DotrDebugCardConst *func_001DD0E0_b(int id);
+extern void *func_001DF540_b(int a, int b);
+extern int func_001E18A0_b(int a, int b, int value);
+extern int func_001F33C0_b(int index, int value);
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002047F0);
+void func_00203E20(void)
+{
+    struct DotrSmallFlagsOwner *p = &D_00325C80_203e20;
+    int standby = func_001F1300(p->unknown_00[DOTR_DEBUG_MODEL]);
+    int type = func_001F2980_b(p->unknown_00[DOTR_DEBUG_MODEL]);
+    int menu = func_00205150();
+    int mode = func_001AAF60_b(1);
+
+    if (standby == 0 && p->unknown_00[DOTR_DEBUG_MENU] > 0 && p->unknown_00[DOTR_DEBUG_MENU] < 12) {
+        p->unknown_00[DOTR_DEBUG_MENU] = 0;
+        menu = 0;
+    }
+    if (p->unknown_00[DOTR_DEBUG_MENU] == 2 && type != 4 && type != 5) {
+        p->unknown_00[DOTR_DEBUG_MENU] = 0;
+        menu = 0;
+    }
+    if (!(p->unknown_00[DOTR_DEBUG_MENU] != 3 && p->unknown_00[DOTR_DEBUG_MENU] != 5 && p->unknown_00[DOTR_DEBUG_MENU] != 6) && (type != 5 || mode != 5)) {
+        p->unknown_00[DOTR_DEBUG_MENU] = 0;
+        menu = 0;
+    }
+    if (p->unknown_00[DOTR_DEBUG_MENU] == 4 && (type != 6 || mode != 0)) {
+        p->unknown_00[DOTR_DEBUG_MENU] = 0;
+        menu = 0;
+    }
+    if (p->unknown_2c.unknown_bit_1) {
+        if (func_00203A40(1, 0, 0x800)) {
+            p->unknown_2c.unknown_bit_2 = p->unknown_2c.unknown_bit_2 ? 0 : 1;
+        }
+    } else if (func_00203A40(1, 0, 0x800)) {
+        func_001FC840(0, (func_001FC7F0(0) + 1) % 3);
+    }
+    if (func_00203A40(1, 0, 0x100)) {
+        p->unknown_2c.unknown_bit_0 = p->unknown_2c.unknown_bit_0 ? 0 : 1;
+    }
+    if (p->unknown_2c.unknown_bit_2) {
+        func_002047F0();
+        return;
+    }
+    if (func_00203A40(0, 2, 0x100)) {
+        for (;;) {
+            p->unknown_00[DOTR_DEBUG_MENU] = (p->unknown_00[DOTR_DEBUG_MENU] + 17) % 18;
+            if (standby == 0 && p->unknown_00[DOTR_DEBUG_MENU] > 0 && p->unknown_00[DOTR_DEBUG_MENU] <= 11) {
+                continue;
+            }
+            if (p->unknown_00[DOTR_DEBUG_MENU] == 2 && type != 4 && type != 5) {
+                continue;
+            }
+            if (!(p->unknown_00[DOTR_DEBUG_MENU] != 3 && p->unknown_00[DOTR_DEBUG_MENU] != 5 && p->unknown_00[DOTR_DEBUG_MENU] != 6) && (type != 5 || mode != 5)) {
+                continue;
+            }
+            if (p->unknown_00[DOTR_DEBUG_MENU] == 4 && (type != 6 || mode != 0)) {
+                continue;
+            }
+            break;
+        }
+        func_00217710(0, 0);
+    }
+    if (func_00203A40(0, 2, 0x800)) {
+        for (;;) {
+            p->unknown_00[DOTR_DEBUG_MENU] = (p->unknown_00[DOTR_DEBUG_MENU] + 19) % 18;
+            if (standby == 0 && p->unknown_00[DOTR_DEBUG_MENU] > 0 && p->unknown_00[DOTR_DEBUG_MENU] <= 11) {
+                continue;
+            }
+            if (p->unknown_00[DOTR_DEBUG_MENU] == 2 && type != 4 && type != 5) {
+                continue;
+            }
+            if (!(p->unknown_00[DOTR_DEBUG_MENU] != 3 && p->unknown_00[DOTR_DEBUG_MENU] != 5 && p->unknown_00[DOTR_DEBUG_MENU] != 6) && (type != 5 || mode != 5)) {
+                continue;
+            }
+            if (p->unknown_00[DOTR_DEBUG_MENU] == 4 && (type != 6 || mode != 0)) {
+                continue;
+            }
+            break;
+        }
+        func_00217710(0, 0);
+    }
+    if (menu == 0) {
+        int no = func_001F2920_b(p->unknown_00[DOTR_DEBUG_MODEL]);
+        struct DotrDebugDigits dd = D_00293D28;
+        int n;
+        
+
+        {
+            int *e = dd.d;
+            *e++ = (no / 100) % 10;
+            *e++ = (no / 10) % 10;
+            *e = no % 10;
+        }
+        n = no;
+        if (func_00203A40(0, 2, 0x5000)) {
+            if (func_00203A40(0, 2, 0x1000)) {
+                dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] = (dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] + 11) % 10;
+            } else {
+                dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] = (dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] + 9) % 10;
+            }
+            n = dd.d[0] * 100 + dd.d[1] * 10 + dd.d[2];
+        }
+        if (func_00203A40(0, 2, 2)) {
+            n = (n + 1001) % 1000;
+        }
+        if (func_00203A40(0, 2, 1)) {
+            n = (n + 999) % 1000;
+        }
+        if (func_00203A40(0, 2, 0x2000)) {
+            p->unknown_00[DOTR_DEBUG_DIGIT] = (p->unknown_00[DOTR_DEBUG_DIGIT] + 4) % 3;
+        }
+        if (func_00203A40(0, 2, 0x8000)) {
+            p->unknown_00[DOTR_DEBUG_DIGIT] = (p->unknown_00[DOTR_DEBUG_DIGIT] + 2) % 3;
+        }
+        if (n == no) {
+            if (func_00203A40(0, 2, 8)) {
+                p->unknown_00[DOTR_DEBUG_MODEL] = (p->unknown_00[DOTR_DEBUG_MODEL] + 45) % 44;
+            }
+            if (func_00203A40(0, 2, 4)) {
+                p->unknown_00[DOTR_DEBUG_MODEL] = (p->unknown_00[DOTR_DEBUG_MODEL] + 43) % 44;
+            }
+            type = func_001F2980_b(p->unknown_00[DOTR_DEBUG_MODEL]);
+        } else if (!func_001F12A0(p->unknown_00[DOTR_DEBUG_MODEL])) {
+            struct DotrDebugCard *q = func_001DD130_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]);
+            if (q != 0) {
+                q->unknown_3c = func_001DE130(n);
+                q->info = func_001DD0E0_b(q->unknown_3c);
+                if (q->info != 0) {
+                    q->unknown_3e = q->info->unknown_00;
+                    q->unknown_3f = q->info->unknown_02 & 0xf;
+                }
+            }
+            func_001E7E70(p->unknown_00[DOTR_DEBUG_MODEL], -1, n);
+        }
+        if (func_00203A40(0, 0, 0x30) && !func_001F12A0(p->unknown_00[DOTR_DEBUG_MODEL])) {
+            int flag = func_00203A40(0, 0, 0x10) ? 1 : 0;
+            int none = 0;
+            if ((type == 4 || type == 5) && func_001DF540_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]) == 0) {
+                none = 1;
+            }
+            if (!none && func_001E8780(p->unknown_00[DOTR_DEBUG_MODEL], -1, n, flag) && (type == 4 || type == 5)) {
+                struct DotrDebugCard *q = func_001DD130_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]);
+                if (q != 0 && q->info != 0) {
+                    if (mode == 5 && type == 5) {
+                        func_001E5260(q->unknown_44, (q->unknown_44 << 8) | q->unknown_45);
+                        func_001E3850(q->unknown_44, q->unknown_45, 0);
+                    }
+                    func_001E18A0_b(-1, p->unknown_00[DOTR_DEBUG_MODEL], 7);
+                    func_001E1C10(-1, p->unknown_00[DOTR_DEBUG_MODEL], 1, 0);
+                }
+            }
+        }
+        if (type == 4 || type == 5) {
+            if (func_00203A40(0, 0, 0x80)) {
+                func_001F29E0(p->unknown_00[DOTR_DEBUG_MODEL], 1);
+            }
+            if (func_00203A40(0, 0, 0x40)) {
+                func_001F29E0(p->unknown_00[DOTR_DEBUG_MODEL], 0);
+            }
+            if (func_00203A40(0, 0, 0x600)) {
+                func_001F33C0_b(p->unknown_00[DOTR_DEBUG_MODEL], 1);
+            }
+        }
+    }
+    if (func_00205170()) {
+        return;
+    }
+    func_001F2920_b(p->unknown_00[DOTR_DEBUG_MODEL]);
+    func_0019BEF0(D_00293D00[type]);
+    {
+    int none = 0;
+    if ((type == 4 || type == 5) && func_001DF540_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]) == 0) {
+        none = 1;
+    }
+    if (!none && !func_001F1240(p->unknown_00[DOTR_DEBUG_MODEL]) && !func_001F12A0(p->unknown_00[DOTR_DEBUG_MODEL]) && func_001F1300(p->unknown_00[DOTR_DEBUG_MODEL])) {
+        func_001F1370(p->unknown_00[DOTR_DEBUG_MODEL]);
+    }
+    }
+    func_001F2A70(p->unknown_00[DOTR_DEBUG_MODEL]);
+    if (menu == 0) {
+        int i = p->unknown_00[DOTR_DEBUG_DIGIT];
+        int k = 100;
+        while (i-- != 0) {
+            k /= 10;
+        }
+    }
+}
+
+struct DotrSmallBits_2047f0 {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrSmallFlagsOwner_2047f0 {
+    int unknown_00[11];
+    struct DotrSmallBits_2047f0 unknown_2c;
+};
+extern struct DotrSmallFlagsOwner_2047f0 D_00325C80_2047f0;
+enum {
+    DOTR_DEBUG_MENU_2047f0 = 0,  
+    DOTR_DEBUG_MODEL_2047f0 = 1, 
+    DOTR_DEBUG_DIGIT_2047f0 = 2, 
+    
+    DOTR_DEBUG_EFF_NO_2047f0 = 3,     
+    DOTR_DEBUG_EFF_ARG_2047f0 = 4,    
+    DOTR_DEBUG_EFF_A_HI_2047f0 = 5,   
+    DOTR_DEBUG_EFF_A_LO_2047f0 = 6,   
+    DOTR_DEBUG_EFF_B_HI_2047f0 = 7,   
+    DOTR_DEBUG_EFF_B_LO_2047f0 = 8,   
+    DOTR_DEBUG_EFF_ROW_2047f0 = 9,    
+    DOTR_DEBUG_EFF_COLUMN_2047f0 = 10 
+};
+struct DotrDebugDigits_2047f0 {
+    int d[3];
+};
+extern struct DotrDebugDigits_2047f0 D_00293D38;
+extern struct DotrDebugDigits_2047f0 D_00293D48;
+int func_001F48F0_b(int a, int b, int c, int d, int e);
+
+void func_002047F0(void)
+{
+    struct DotrSmallFlagsOwner_2047f0 *p = &D_00325C80_2047f0;
+
+    if ((func_00203A40(0, 1, 3) & 0xffff) != 3) {
+    struct DotrDebugDigits_2047f0 a = D_00293D38;
+    int no = p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0];
+    struct DotrDebugDigits_2047f0 b;
+    int arg;
+    
+    {
+        int *e = a.d;
+        *e++ = (no / 100) % 10;
+        *e++ = (no / 10) % 10;
+        *e = no % 10;
+    }
+    b = D_00293D48;
+    arg = p->unknown_00[DOTR_DEBUG_EFF_ARG_2047f0];
+    {
+        int *e = b.d;
+        *e++ = (arg / 100) % 10;
+        *e++ = (arg / 10) % 10;
+        *e = arg % 10;
+    }
+    switch (p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0]) {
+    case 0:
+        if (func_00203A40(0, 2, 0x2000)) {
+            if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 2) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 1;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x8000)) {
+            if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 5;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x5000)) {
+            int i = p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0];
+            if (func_00203A40(0, 2, 0x1000)) {
+                a.d[i] = (a.d[i] + 11) % 10;
+            } else {
+                a.d[i] = (a.d[i] + 9) % 10;
+            }
+            p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0] = a.d[0] * 100 + a.d[1] * 10 + a.d[2];
+        }
+        break;
+    case 1:
+        if (func_00203A40(0, 2, 0x2000)) {
+            if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 2) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 2;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x8000)) {
+            if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 0;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 2;
+            }
+        } else if (func_00203A40(0, 2, 0x5000)) {
+            int i = p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0];
+            if (func_00203A40(0, 2, 0x1000)) {
+                b.d[i] = (b.d[i] + 11) % 10;
+            } else {
+                b.d[i] = (b.d[i] + 9) % 10;
+            }
+            p->unknown_00[DOTR_DEBUG_EFF_ARG_2047f0] = b.d[0] * 100 + b.d[1] * 10 + b.d[2];
+        }
+        break;
+    case 2:
+        if (func_00203A40(0, 2, 0x2000)) {
+            if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 3;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x8000)) {
+            if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 1;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 2;
+            }
+        } else if (func_00203A40(0, 2, 0x5000)) {
+            if (func_00203A40(0, 2, 0x1000)) {
+                p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] + 3) % 2;
+            } else {
+                p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] + 1) % 2;
+            }
+        }
+        break;
+    case 3:
+        if (func_00203A40(0, 2, 0x2000)) {
+            if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 4;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x8000)) {
+            if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 2;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x5000)) {
+            if (func_00203A40(0, 2, 0x1000)) {
+                p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 12) % 11;
+            } else {
+                p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 10) % 11;
+            }
+        }
+        break;
+    case 4:
+        if (func_00203A40(0, 2, 0x2000)) {
+            if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 5;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x8000)) {
+            if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 3;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x5000)) {
+            if (func_00203A40(0, 2, 0x1000)) {
+                p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] + 3) % 2;
+            } else {
+                p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] + 1) % 2;
+            }
+        }
+        break;
+    case 5:
+        if (func_00203A40(0, 2, 0x2000)) {
+            if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 0;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x8000)) {
+            if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
+                p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 4;
+                p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
+            }
+        } else if (func_00203A40(0, 2, 0x5000)) {
+            if (func_00203A40(0, 2, 0x1000)) {
+                p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] + 12) % 11;
+            } else {
+                p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] + 10) % 11;
+            }
+        }
+        break;
+    }
+    if (func_00203A40(0, 2, 8)) {
+        p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 12) % 11;
+    }
+    if (func_00203A40(0, 2, 4)) {
+        p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 10) % 11;
+    }
+    if (func_00203A40(0, 0, 0x10)) {
+        func_001F3790();
+    }
+    if (func_00203A40(0, 0, 0x40)) {
+        func_001F4E50(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0]);
+    }
+    if (func_00203A40(0, 0, 0x20)) {
+        func_001F48F0_b(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], p->unknown_00[DOTR_DEBUG_EFF_ARG_2047f0],
+                       (p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] << 8) | p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0],
+                       (p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] << 8) | p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0]);
+    }
+    if (func_00203A40(0, 0, 0x80)) {
+        func_001F5090(0, -1);
+    }
+    if (func_00203A40(0, 0, 0x800)) {
+        func_001F4FD0(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], 0);
+    }
+    if (func_00203A40(0, 0, 0x100)) {
+        func_001F4FD0(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], 1);
+    }
+    }
+    {
+        int i = p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0];
+        int k = 100;
+        while (i-- != 0) {
+            k /= 10;
+        }
+    }
+}
 
 s32 func_00205150(void) {
     return D_00325C80.f00;

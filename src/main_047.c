@@ -1435,7 +1435,103 @@ s32 func_001E8780(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E8BF0);
+struct DotrModelLoadHeader {
+    int node_offset;
+    unsigned int flags;
+    unsigned char unknown_08[80];
+    int gnode_flag;
+};
+struct DotrModelLoadNode {
+    unsigned char unknown_00[0x30];
+    float x, y, z, radius;
+};
+struct DotrModelLoadObject {
+    unsigned char unknown_000[0x90];
+    float pos[4];
+    unsigned char unknown_0a0[0x94];
+    struct DotrModelLoadNode *node;
+    char *base;
+    struct DotrModelLoadHeader *desc;
+    unsigned char unknown_140[0x38];
+    int heads[8];
+    unsigned char unknown_198[0x48];
+    signed char motion[4];
+    float radius;
+    float scale;
+    unsigned char unknown_1ec[6];
+    signed char index;
+    signed char kind;
+    short id;
+    unsigned short look : 14;
+    unsigned char unknown_1f8[6];
+    signed char level;
+    unsigned char unknown_1ff[7];
+    unsigned short loaded_id;
+    unsigned char unknown_208[4];
+    signed char unknown_bit_0 : 3;
+    signed char loading : 1;
+};
+extern struct DotrModelLoadObject *D_0031ABB0_1e8bf0[84];
+extern unsigned short D_002CDF4C[];
+extern char D_002CFA17_1e8bf0[];
+extern char D_002CFA2A[];
+extern char *func_001FFF90_b(const char *label);
+extern void func_001F3910_b(int a, int b, int c);
+
+void func_001E8BF0(int index)
+{
+    struct DotrModelLoadObject *obj;
+    struct DotrModelLoadNode *node;
+    int i;
+    index &= 0x3ff;
+    if (index < 0 || index >= 84) return;
+    obj = D_0031ABB0_1e8bf0[index];
+    if (obj == 0) return;
+    obj->loading = 0;
+    if (obj->base == 0) return;
+    obj->index = index;
+    
+
+    if (obj->kind != 4) if (obj->kind != 5) if (obj->kind != 6) goto skip;
+    {
+        obj->loaded_id = obj->id;
+        obj->look = D_002CDF4C[D_002CD8A0[obj->id]] & 0x3fff;
+    }
+skip:
+    node = (struct DotrModelLoadNode *)(obj->base + obj->desc->node_offset);
+    obj->node = node;
+    obj->level = obj->desc->flags >> 6;
+    func_001EFB40(index, -1, &obj->desc->gnode_flag);
+    obj->pos[0] = node->x;
+    obj->pos[1] = node->y;
+    obj->pos[2] = node->z;
+    obj->pos[3] = 1.0f;
+    obj->radius = node->radius;
+    obj->scale = 40.0f / obj->radius;
+    if (obj->scale > 1.0f) obj->scale = 1.0f;
+    if (obj->scale < 0.3f) obj->scale = 0.3f;
+    if (obj->heads[obj->motion[0]] == 0) {
+        obj->motion[0] = 0;
+        for (i = 0; i < 8; i++) {
+            if (obj->heads[i] != 0) {
+                obj->motion[0] = i;
+                break;
+            }
+        }
+    }
+    for (i = 1; i < 4; i++) {
+        if (obj->motion[i] >= 0 && obj->heads[obj->motion[i]] == 0) {
+            obj->motion[i] = obj->motion[0];
+        }
+    }
+    if (obj->kind != 4) if (obj->kind != 5) if (obj->kind != 6) return;
+    {
+        func_001FFF90_b(D_002CFA17_1e8bf0);
+        func_001FFF90_b(D_002CFA2A);
+        ((struct DotrModelLoadHeader *)obj->base)->flags &= ~0x400;
+        func_001F3910_b(1, obj->id, 0);
+    }
+}
 
 typedef struct {
     u8 pad0[0xC];
@@ -1550,7 +1646,108 @@ s32 func_001E8FA0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E90B0);
+typedef int DotrObjectWord;
+struct DotrObjPackEntry { DotrObjectWord a; DotrObjectWord b; DotrObjectWord c; DotrObjectWord d; };
+struct DotrObjPackDesc { unsigned char unknown_00[0x28]; DotrObjectWord unknown_28; DotrObjectWord unknown_2c; };
+struct DotrObjPackTable { int count; int pad[3]; struct DotrObjPackEntry entries[1]; };
+struct DotrObjPackView { unsigned char unknown_00[0x138]; DotrObjectWord base; struct DotrObjPackDesc *desc; };
+struct DotrResourceSubmitRecord;
+struct DotrLoadObject {
+    unsigned char unknown_000[312];
+    int unknown_138;
+    int unknown_13c;
+    int main_part;
+    int parts[8];
+    unsigned char unknown_164[143];
+    signed char kind;
+    short number;
+};
+extern struct DotrLoadObject *D_0031ABB0_1e90b0[84];
+extern char *D_00292480_1e90b0[];
+extern char D_002CFA17_1e90b0[];
+extern char *func_001FFF90_b(const char *label);
+struct DotrResourceSubmitRecord;
+extern char D_002CFA30[];
+extern char D_002CFA3A[];
+extern char D_002CFA3F[];
+struct DotrResourceQueueRecord {
+    int status;
+    short selector;
+    short priority;
+    unsigned char unknown_008[28];
+};
+typedef char DotrResourceRecordSizeMustBe36[(sizeof(struct DotrResourceQueueRecord) == 36) ? 1 : -1];
+char *func_001FFF90_b(const char *label);
+struct DotrResourceSubmitRecord;
+typedef void (*DotrResourceSubmitCallback)(struct DotrResourceSubmitRecord *record, int completed);
+struct DotrResourceSubmitRecord {
+    int status;
+    short selector;
+    short priority;
+    signed int byte_size : 31;
+    signed int flag_008 : 1;
+    signed int byte_offset : 31;
+    signed int flag_00c : 1;
+    signed int unknown_010 : 31;
+    signed int sector_mode : 1;
+    int unknown_014;
+    DotrResourceSubmitCallback callback;
+    int unknown_01c;
+    int handle;
+};
+struct DotrResourceQueueRecord *func_001FEC70_b(int type, char *name, int unknown_014, int byte_size,
+                                              DotrResourceSubmitCallback callback, int unknown_01c);
+
+int func_001E90B0(int index)
+{
+    char format[128];
+    char name[128];
+    char anim[128];
+    struct DotrLoadObject *obj;
+    struct DotrObjPackView *view;
+    struct DotrObjPackTable *table;
+    struct DotrObjPackEntry *entry;
+    char *base;
+    int number;
+    int count;
+    int i;
+    char *kind;
+    
+
+    if (index < 0 || index >= 84) {
+        return 0;
+    }
+    obj = D_0031ABB0_1e90b0[index];
+    if (obj == 0) {
+        return 0;
+    }
+    base = func_001FFF90_b(D_002CFA17_1e90b0);
+    number = obj->number;
+    view = (struct DotrObjPackView *)obj;
+    if (view->base == 0) {
+        return 1;
+    }
+    if (view->desc->unknown_2c == 0) {
+        return 1;
+    }
+    kind = D_00292480_1e90b0[obj->kind];
+    table = (struct DotrObjPackTable *)(view->base + view->desc->unknown_28);
+    count = table->count;
+    entry = table->entries;
+    func_0019B648(format, D_002CFA30, base, kind);
+    for (i = 0; i < count; i++) {
+        func_0019B648(name, format, number, &entry[i]);
+        func_0019B9D0(name, D_002CFA3A);
+        func_0019B648(anim, format, number, &entry[i]);
+        func_0019B9D0(anim, D_002CFA3F);
+        entry[i].a = 0;
+        entry[i].c = 0;
+        entry[i].d = 0;
+        func_001FEC70_b(index, name, 0, -1, func_001E9280, ((unsigned int)(DotrObjectWord)entry & 0x3ffffff) | ((i & 0x3f) << 26));
+        func_001FEC70_b(index, anim, 0, -1, func_001E92C0, ((unsigned int)(DotrObjectWord)entry & 0x3ffffff) | ((i & 0x3f) << 26));
+    }
+    return 1;
+}
 
 typedef struct Object_001E9280 {
     u8 pad_00[0x14];

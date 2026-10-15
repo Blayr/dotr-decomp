@@ -1179,7 +1179,119 @@ void func_0020ED30(void *arg0, f32 fparg0) {
     func_001A23B0(vector->z / vector->w);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020EDE0);
+typedef __int128 DotrViewWord128;
+struct DotrViewVector {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrViewQuad {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+struct DotrViewBlock {
+    DotrViewWord128 unknown_words[9];
+};
+struct DotrViewMatrix {
+    float unknown_values[16];
+};
+struct DotrViewEntry {
+    struct DotrViewMatrix unknown_000;
+    struct DotrViewMatrix unknown_040;
+    struct DotrViewMatrix unknown_080;
+    struct DotrViewBlock unknown_0c0;
+    float unknown_150;
+    float unknown_154;
+    float unknown_158;
+    float unknown_15c;
+    float unknown_160;
+    float unknown_164;
+    float unknown_168;
+    float unknown_16c;
+    float unknown_170;
+    float unknown_174;
+    float unknown_178;
+    float unknown_17c;
+    float unknown_180;
+    struct DotrViewQuad unknown_184;
+    unsigned char unknown_188[0x18];
+};
+typedef char DotrViewEntryMustBe1a0[(sizeof(struct DotrViewEntry) == 0x1a0) ? 1 : -1];
+extern struct DotrViewEntry D_0032A2A0_20ede0[];
+extern int D_0032A240_b[];
+extern struct DotrViewVector D_0032A230;
+#define DOTR_VIEW_SIDE(x, n, cross, outside) \
+    { \
+        float d = (x); \
+        float q = d * d / (n); \
+        if (d < 0.0f) { \
+            if (q >= rr) { \
+                return outside; \
+            } \
+            cross; \
+        } else if (q <= rr) { \
+            cross; \
+        } \
+    }
+
+int func_0020EDE0(void *centre_v, float radius)
+{
+    struct DotrViewVector * centre = centre_v;
+    float sx;
+    float rr;
+    float z;
+    float sy;
+    float nn;
+    int flags;
+    float ny;
+    float h;
+    struct DotrViewEntry *e;
+    float dist;
+    float nx;
+    float hy;
+    float hx;
+
+    flags = 0;
+    e = &D_0032A2A0_20ede0[D_0032A240_b[0]];
+    centre->unknown_w = 1.0f;
+    func_0020CDD0(&D_0032A230, 0, centre);
+    z = D_0032A230.z;
+    if (e->unknown_16c > z + radius) {
+        return 4;
+    }
+    if (e->unknown_16c > z - radius) {
+        flags = 4;
+    }
+    if (e->unknown_170 < z - radius) {
+        return 4;
+    }
+    if (e->unknown_170 < z + radius) {
+        flags = 4;
+    }
+    sx = e->unknown_164 * (1.0f / e->unknown_158);
+    sy = e->unknown_168 * (1.0f / e->unknown_15c);
+    dist = e->unknown_160;
+    nn = *(float *)&e->unknown_188[0];
+    ny = dist * D_0032A230.y;
+    h = 2046.0f * z;
+    rr = radius * radius;
+    DOTR_VIEW_SIDE(h - ny, nn, flags = 6, 4)
+    DOTR_VIEW_SIDE(h + ny, nn, flags = 6, 4)
+    nx = dist * D_0032A230.x;
+    DOTR_VIEW_SIDE(h - nx, nn, flags = 6, 4)
+    DOTR_VIEW_SIDE(h + nx, nn, flags = 6, 4)
+    nn = *(float *)&e->unknown_188[8];
+    hy = z * sy / 2.0f;
+    DOTR_VIEW_SIDE(hy - ny, nn, flags |= 2, flags | 2)
+    DOTR_VIEW_SIDE(hy + ny, nn, flags |= 2, flags | 2)
+    hx = z * sx / 2.0f;
+    nn = *(float *)&e->unknown_188[4];
+    DOTR_VIEW_SIDE(hx - nx, nn, flags |= 2, flags | 2)
+    DOTR_VIEW_SIDE(hx + nx, nn, flags |= 2, flags | 2)
+    return flags | 1;
+}
+#undef DOTR_VIEW_SIDE
 
 void func_0020F250(s32 arg0) {
     u8 *entry;
@@ -1295,7 +1407,6 @@ typedef struct Transform_0020F4E0 {
     } vector;
 } Transform_0020F4E0;
 
-s32 func_0020EDE0(void *, f32);
 void *func_0020F780(void *, s32);
 void *func_0020FA10(void *);
 extern s32 D_0032A770;

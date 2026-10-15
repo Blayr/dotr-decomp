@@ -1025,7 +1025,82 @@ s32 func_0027D720(u16 *arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027D830);
+struct jp_7b52 {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+extern int func_0026B1F0_b(int nSide, int nID, int stDefense, int IsView);
+
+int func_0027D830(int row, int column, int x, int y, unsigned char n, int last)
+{
+    struct jp_7b52 out;
+    unsigned int *p;
+    int r;
+
+    out.eNO = -1;
+    
+
+    p = &out.dwFrom;
+    *p = -1;
+    p = &out.dwTo;
+    *p = -1;
+    p = &out.dwPar;
+    *p = -1;
+    switch (n) {
+    case 4:
+        r = func_0026B1F0_b(row, column, 1, last);
+        if ((r & 0xffff) != 1) {
+            break;
+        }
+        if (r >> 16 == 1) {
+            return 2;
+        }
+        return 5;
+    case 5:
+        r = func_0026B1F0_b(row, column, 0, last);
+        if ((r & 0xffff) != 1) {
+            break;
+        }
+        return 5;
+    case 0:
+        r = func_0026B1F0_b(row, column, 0, last);
+        if ((r & 0xffff) == 1) {
+            return 5;
+        }
+        r = func_001E1090(x, y);
+        if (r < 0) {
+            break;
+        }
+        if ((func_0024B310(row, column, r & 0xff, r >> 8, &out, ((last & 0xff) + 1) << 16) & 0xff) != 1) {
+            break;
+        }
+        switch (out.eNO) {
+        case 113:
+            return 1;
+        case 44:
+            return 2;
+        case 45:
+        case 46:
+            return 1;
+        }
+        break;
+    case 6:
+        if (func_00266DF0(14) > 0) {
+            return 5;
+        }
+        r = func_0026AB80(func_00250360(row, column) == 0 ? 1 : 0, 14);
+        if (r < 0) {
+            break;
+        }
+        if ((last & 0xff) != 1 && func_001E2100(r >> 8, r & 0xff, 4) == 0) {
+            break;
+        }
+        return 5;
+    }
+    return 0;
+}
 
 s32 func_0027DA40(s32 arg0, s32 arg1) {
     extern s32 func_001DEE50(s32);
@@ -1350,7 +1425,6 @@ typedef struct State_0027E780 {
     u32 destination;
 } State_0027E780;
 
-s32 func_0027D830(s32, s32, s32, s32, s32, s32);
 
 void func_0027E780(void *arg0, s32 arg1, s32 arg2) {
     State_0027E780 *state = arg0;

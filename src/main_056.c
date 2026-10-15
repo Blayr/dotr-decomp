@@ -375,7 +375,181 @@ void func_002075F0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_056", func_00207650);
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00207AA0);
+typedef int DotrDrawWord;
+struct DotrDrawPair {
+    long unknown_00;
+    long unknown_08;
+};
+extern struct DotrDrawPair D_00293D80_207aa0[][7];
+struct DotrDrawFields {
+    unsigned short low_9 : 9;
+    unsigned short unknown_bits_9_15 : 7;
+    unsigned char unknown_02;
+    unsigned char low_4 : 4;
+    unsigned char unknown_bits_4_7 : 4;
+};
+typedef struct DotrDrawSlot {
+    int unknown_00;
+    struct DotrDrawNode *head;
+} DotrDrawSlot;
+typedef struct DotrDrawNode {
+    int unknown_00;
+    struct DotrDrawNode *next;
+} DotrDrawNode;
+typedef struct DotrDrawChain {
+    DotrDrawSlot *slots;
+    int unknown_04;
+    int unknown_08;
+    int shift;
+} DotrDrawChain;
+struct DotrSortHeader {
+    unsigned short count;
+    unsigned short type;
+    int unknown_04;
+    unsigned long regs;
+    unsigned long data[4];
+};
+struct DotrSortVertex {
+    float unknown_00[3];
+    float q;
+    unsigned long xyz;
+    unsigned long colour;
+    unsigned long uv;
+    unsigned long unknown_28;
+};
+struct DotrSortZBuf {
+    struct DotrDrawFields fields;
+    unsigned char mask : 1;
+    unsigned char unknown_bits_1_7 : 7;
+    unsigned char unknown_05[3];
+};
+struct DotrSortTag {
+    unsigned short size;
+    unsigned char unknown_02;
+    unsigned char kind;
+    int next;
+    int unknown_08;
+    int unknown_0c;
+    unsigned short loops : 15;
+    unsigned short end : 1;
+};
+
+int func_00207AA0(int cursor, void *header_v, int count, s32 vertices_v, void *chain_v, int z)
+{
+    struct DotrSortHeader * header = header_v;
+    struct DotrSortVertex * vertices = (struct DotrSortVertex *)vertices_v;
+    DotrDrawChain * chain = chain_v;
+    unsigned long *p = (unsigned long *)cursor;
+    int type = header->type;
+    struct DotrSortVertex *vertex = vertices;
+    int textured = (type & 0x200) ? 1 : 0;
+    int context = (type & 0x1000) ? 1 : 0;
+    unsigned long *start = p;
+    struct DotrSortZBuf zbuf;
+    int depth;
+    int i;
+    int size;
+    unsigned long *q;
+    struct DotrDrawPair *row;
+
+    if ((type & 0xf) == 7) {
+        return cursor;
+    }
+    if (count <= 0) {
+        return cursor;
+    }
+    p[1] = 0;
+    p[0] = 0;
+    ((struct DotrSortTag *)p)->kind = 0x10;
+    if (chain) {
+        size = 1 << chain->shift;
+        if (type & 0x8000) {
+            z = size - 1;
+        } else if ((unsigned int)(size - 2) < (unsigned int)z) {
+            z = size - 2;
+        }
+        
+        z <<= 3;
+        ((struct DotrSortTag *)p)->next = (int)(DotrDrawWord)((DotrDrawSlot *)((DotrDrawWord)chain->slots + z))->head;
+        ((DotrDrawSlot *)((DotrDrawWord)chain->slots + z))->head = (DotrDrawNode *)p;
+    }
+    p[2] = 0x1000000000008000;
+    p[3] = 0xe;
+    p[4] = (unsigned int)(type & 0xf) | ((long)(int)((type & 0x10) ? 1 : 0) << 3) | ((long)(int)((type & 0x20) ? 1 : 0) << 4)
+        | ((long)(int)((type & 0x100) ? 1 : 0) << 5) | ((long)(int)((type & 0x200) ? 1 : 0) << 6) | ((long)(int)((type & 0x400) ? 1 : 0) << 7)
+        | ((long)(int)((type & 0x800) ? 1 : 0) << 8) | ((long)(int)((type & 0x1000) ? 1 : 0) << 9) | ((long)(int)((type & 0x2000) ? 1 : 0) << 10);
+    p[5] = 0;
+    p[6] = (long)(int)(textured ? 1 : 0) | 0x5000c;
+    p[7] = context + 0x47;
+    p += 8;
+    if (type & 0x200) {
+        p[0] = header->data[0];
+        p[1] = context + 0x42;
+        p += 2;
+    }
+    if (type & 0x20) {
+        p[0] = header->data[1];
+        p[1] = context + 6;
+        p[2] = header->data[2];
+        p[3] = context + 0x14;
+        p += 4;
+        if (type & 0x4000) {
+            p[0] = header->data[3];
+            p[1] = context + 8;
+            p += 2;
+        }
+    }
+    depth = type & 0x8000;
+    if (depth) {
+        func_0020A280(&zbuf.fields);
+        zbuf.mask = 0;
+        p[0] = *(unsigned long *)&zbuf;
+        p[1] = context + 0x4e;
+        p += 2;
+    }
+    for (i = 0; i < count; i++, vertex++) {
+        if (i == 0 || (type & 0x10)) {
+            q = p;
+            p[0] = vertex->colour;
+            p[1] = 1;
+            p += 2;
+            if (type & 0x10) {
+                ((float *)q)[1] = 1.0f / vertex->q;
+            }
+        }
+        if (type & 0x20) {
+            q = p;
+            p[0] = vertex->uv;
+            p[1] = (type & 0x800) ? 3 : 2;
+            p += 2;
+            if (!(type & 0x800) && (type & 0x10)) {
+                ((float *)q)[0] /= vertex->q;
+                ((float *)q)[1] /= vertex->q;
+            }
+        }
+        p[0] = vertex->xyz;
+        p[1] = 4;
+        p += 2;
+    }
+    if ((type & 0x20) && (type & 0x4000)) {
+        row = D_00293D80_207aa0[context];
+        p[0] = row[4].unknown_00;
+        p[1] = row[4].unknown_08;
+        p += 2;
+    }
+    if (depth) {
+        zbuf.mask = 1;
+        p[0] = *(unsigned long *)&zbuf;
+        p[1] = context + 0x4e;
+        p += 2;
+    }
+    size = ((p - start) >> 1) - 1;
+    ((struct DotrSortTag *)start)->size = size;
+    ((struct DotrSortTag *)start)->unknown_08 = 0x11000000;
+    ((struct DotrSortTag *)start)->unknown_0c = (size & 0xffff) | 0x51000000;
+    ((struct DotrSortTag *)start)->loops = (size & 0xffff) - 1;
+    return (DotrDrawWord)p;
+}
 
 s32 func_00207F60(void) {
     s32 temp_v0;

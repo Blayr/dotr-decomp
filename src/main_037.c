@@ -1115,7 +1115,174 @@ void func_001A9800(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A98B0);
+typedef int DotrDrawWord;
+struct DotrCursorPacketHeader {
+    unsigned short unknown_00;
+    unsigned short unknown_02;
+    int unknown_04;
+    long unknown_08;
+};
+long func_00208D00_b(int index);
+int func_002086D0_b(struct DotrCursorPacketHeader *packet, long value);
+DotrDrawWord func_00207650_b(DotrDrawWord cursor, void *packet, int a1, int a2);
+struct DotrCursorTex {
+    long word;
+};
+struct DotrCursorSlotUv {
+    unsigned short u : 14;
+    unsigned short v : 14;
+};
+struct DotrCursorSlotXyz {
+    unsigned long x : 16;
+    unsigned long y : 16;
+    unsigned long z : 24;
+    unsigned long f : 8;
+};
+struct DotrCursorSlotRectVertex {
+    long uv;
+    struct DotrCursorSlotXyz xyz;
+};
+struct DotrModeLastView {
+    unsigned char unknown_000[12];
+    unsigned int counter;
+    unsigned char unknown_010[0x218];
+    unsigned char busy;
+    unsigned char alpha;
+    unsigned char unknown_22a[2];
+    signed char unknown_bits_0_1 : 2;
+    signed char step : 2;
+    unsigned char mode : 2;
+    unsigned char unknown_22d;
+    signed char unknown_22e_bits : 4;
+    signed char enabled : 1;
+};
+struct DotrModeLastPacket {
+    long header[2];
+    unsigned char colour[4];
+    float unknown_14;
+    struct DotrCursorSlotRectVertex vertex[2];
+    long unknown_38;
+    struct DotrCursorTex tex0;
+    struct DotrCursorTex tex1;
+    long unknown_50;
+};
+struct DotrModeLastColour {
+    unsigned char b[4];
+};
+extern struct DotrModeLastView D_00317250_1a98b0;
+extern struct DotrModeLastView D_00317250_1a98b0;
+extern struct DotrModeLastColour D_0028FF20;
+extern char D_002BE815[];
+extern int func_001AAF60_b(int a);
+extern int *func_001AF140_b(int index);
+static inline DotrDrawWord Cells(DotrDrawWord cursor, struct DotrModeLastPacket *packet, int *first, int end)
+{
+    int i;
+    for (i = *first; i < end; i++) {
+        int cy;
+        int row;
+        int cx;
+        cx = i % 35 * 18 + 5;
+        row = i / 35;
+        cy = row * 24 + 4;
+        if (row >= 8) {
+            cy += 48;
+        }
+        packet->vertex[0].xyz.x = (cx + 1728) << 4;
+        packet->vertex[0].xyz.y = (cy + 1824) << 4;
+        packet->vertex[1].xyz.x = (cx + 1746) << 4;
+        packet->vertex[1].xyz.y = (cy + 1848) << 4;
+        cursor = func_00207650_b(cursor, packet, 0, 0);
+    }
+    *first = i;
+    return cursor;
+}
+
+void func_001A98B0(void)
+{
+    struct DotrModeLastView *view = &D_00317250_1a98b0;
+    struct DotrModeLastColour colour;
+    int page;
+    unsigned int count;
+    struct DotrModeLastPacket packet;
+    int n;
+    int *texture;
+    int x;
+    int a;
+    int y;
+    int i;
+    DotrDrawWord cursor;
+    const char *text;
+    unsigned char alpha;
+
+    func_001AAF60_b(1);
+    if (D_00317250_1a98b0.mode < 3 && view->busy == 0) {
+        return;
+    }
+    if (view->enabled) {
+        cursor = func_001AEFD0(func_00209D20(), 0);
+        func_001D9EE0(0xffffff);
+        texture = func_001AF140_b(6);
+        if (texture) {
+            count = view->counter;
+            page = count / 560 % 5;
+            n = count % 560;
+            x = (page < 3 ? 200 : 80) + page % 3 * 18;
+            y = page < 3 ? 136 : 128;
+            text = D_002BE815;
+            alpha = view->busy ? view->busy : (count < 128 ? count : 128);
+            colour = D_0028FF20;
+            a = view->alpha + 64;
+            a = a < 128 ? a : 128;
+            colour.b[3] = (alpha * a) >> 7;
+            ((struct DotrCursorPacketHeader *)packet.header)->unknown_02 = 38;
+            ((struct DotrCursorPacketHeader *)packet.header)->unknown_00 = 5;
+            ((struct DotrCursorPacketHeader *)packet.header)->unknown_08 = 0x42421;
+            ((struct DotrCursorPacketHeader *)packet.header)->unknown_04 = 0;
+            ((struct DotrCursorPacketHeader *)packet.header)->unknown_02 |= 0x800;
+            func_00208700((struct DotrCursorPacketHeader *)packet.header, texture, 0);
+            func_002086D0_b((struct DotrCursorPacketHeader *)packet.header, func_00208D00_b(0));
+            ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->u = (x << 4) + 8;
+            ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->v = (y << 4) + 8;
+            ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->u = ((x + 18) << 4) + 8;
+            ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->v = ((y + 24) << 4) + 8;
+            packet.colour[0] = 128;
+            packet.colour[1] = 128;
+            packet.colour[2] = 128;
+            packet.colour[3] = alpha;
+            packet.unknown_14 = 1.0f;
+            packet.vertex[0].xyz.z = 0xffffff;
+            packet.vertex[0].xyz.f = 0;
+            packet.vertex[1].xyz.z = 0xffffff;
+            packet.vertex[1].xyz.f = 0;
+            i = 0;
+            cursor = Cells(cursor, &packet, &i, n);
+            if ((unsigned int)n < view->counter) {
+                page = (page + 4) % 5;
+                x = (page < 3 ? 200 : 80) + page % 3 * 18;
+                y = page < 3 ? 136 : 128;
+                ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->u = (x << 4) + 8;
+                ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->v = (y << 4) + 8;
+                ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->u = ((x + 18) << 4) + 8;
+                ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->v = ((y + 24) << 4) + 8;
+                cursor = Cells(cursor, &packet, &i, 560);
+            }
+            cursor = func_001B6F70(cursor, 320, 212, 2, 3, func_0019BEF0(text), text, colour.b);
+            view->alpha += view->step * 4;
+            if (view->alpha <= 0 || view->alpha >= 128) {
+                view->step = -view->step;
+            }
+            if (view->busy) {
+                view->busy -= 4;
+            }
+            view->counter++;
+        }
+        func_00209D30(func_00208280(func_001AF110(cursor), 0, 0, 0, 0, 12, 0));
+        
+
+        return;
+    }
+}
 
 typedef struct {
     u16 loops;
@@ -1252,10 +1419,8 @@ typedef struct {
 
 extern u8 D_00317472;
 
-void func_001AC700(void);
 s32 func_001CEE60(void);
 void func_001EAA60(s32);
-void func_00203E20(void);
 void func_00237730(void);
 
 void func_001AA260(void) {
@@ -2209,7 +2374,167 @@ void func_001AC6F0(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001AC700);
+typedef unsigned int DotrMovieAddress;
+struct DotrMovieOperationsStatePrefix_1ac700 {
+    unsigned char unknown_000[8];
+    unsigned int field_008; 
+    int field_00c;
+    unsigned char unknown_010[0x14c];
+    int field_15c; 
+    int field_160; 
+    int field_164; 
+    unsigned char unknown_168[0x28];
+    int field_190; 
+    unsigned char unknown_194[0x5d];
+    signed char bytes_1f1[8];
+    unsigned char bytes_1f9[8];
+    unsigned char unknown_201[0xb];
+    unsigned char bytes_20c[4]; 
+    unsigned char unknown_210[4];
+    int field_214; 
+    int field_218;
+    unsigned short field_21c;
+    signed char field_21e;
+    signed char field_21f;
+    signed char field_220;
+    signed char field_221;
+    unsigned char field_222;
+    unsigned char unknown_223;
+    unsigned char field_224; 
+    unsigned char field_225; 
+    unsigned char field_226; 
+    unsigned char field_227;
+    signed char field_228;
+    signed char field_229;
+    unsigned char unknown_22a[2];
+    struct {
+        signed char unknown_0 : 2;
+        signed char field_2 : 2;
+        unsigned char field_4 : 2;
+        signed char unknown_6 : 2;
+    } field_22c;
+    unsigned char unknown_22d;
+    struct {
+        signed char unknown_0 : 4;
+        signed char field_4 : 1;
+        signed char field_5 : 1;
+        signed char unknown_6 : 2;
+    } field_22e;
+    struct {
+        signed char field_0 : 1;
+        signed char field_1 : 1;
+    } field_22f;
+};
+extern void func_001FCC70_b(int, int, int, int, int, int);
+extern void func_001AAAF0_1ac700(int, int);
+extern struct DotrMovieOperationsStatePrefix_1ac700 D_00317250_1ac700;
+extern char *func_00197548_b(const char *label);
+extern char D_002BE80F_b[];
+static inline void SzGame_Push_inline(int arg0, int arg1)
+{
+    struct DotrMovieOperationsStatePrefix_1ac700 *state = &D_00317250_1ac700;
+    if (state->field_222 + 1 < 8) {
+        func_001FCC70_b(0, 1, 1, 0, 60, 0);
+        state->field_21f = -2;
+        state->field_220 = arg0;
+        state->field_221 = 1;
+        ((signed char *)(state->field_221 + (state->field_222 + (DotrMovieAddress)state)))[0x1f9] = arg1;
+        if (arg1 < 2)
+            func_001AAAF0_1ac700(-2, 1);
+    }
+}
+
+void func_001AC700(void)
+{
+    struct DotrMovieOperationsStatePrefix_1ac700 *p = &D_00317250_1ac700;
+    int v;
+
+    switch (func_001AB1D0()) {
+    case 0:
+    case 2:
+        return;
+    case 1:
+        switch (p->field_225) {
+        case 1:
+            p->field_164 = 1;
+            SzGame_Push_inline(11, 0);
+            break;
+        case 2:
+            D_00317250_1ac700.field_15c = (p->field_21c >> 8) - 1;
+            SzGame_Push_inline(9, 0);
+            break;
+        case 3:
+            SzGame_Push_inline(8, 0);
+            break;
+        }
+        func_00217A70(func_00214D00(0, 2));
+        return;
+    }
+    if (p->field_22f.field_1) {
+        if (p->field_224 >= 128) {
+            p->field_227 += p->field_22c.unknown_0 * 4;
+            if (p->field_227 <= 128 || p->field_227 >= 240)
+                p->field_22c.unknown_0 = -p->field_22c.unknown_0;
+            if (func_00197548_b(D_002BE80F_b) != 0) {
+                if (++p->field_008 >= 900) {
+                    D_00317250_1ac700.field_160 = 0;
+                    func_001FCC70_b(0, 1, 1, 0, 60, 0);
+                    D_00317250_1ac700.field_21f = -2;
+                    D_00317250_1ac700.field_220 = 10;
+                    D_00317250_1ac700.field_221 = 0;
+                    (D_00317250_1ac700.bytes_1f9 + D_00317250_1ac700.field_222)[D_00317250_1ac700.field_221] = 0;
+                    func_001AAAF0_1ac700(-2, 1);
+                    return;
+                }
+            }
+            if (func_00203A40(0, 0, 2048)) {
+                func_00217710(0, 4);
+                p->field_22f.field_1 = 0;
+            }
+        } else {
+            if (func_00217530() && !func_002176B0())
+                return;
+            v = p->field_224 + 4;
+            v = v < 128 ? v : 128; p->field_224 = v;
+        }
+    } else if (p->field_226 >= 128) {
+        if (func_00203A40(0, 2, 20480)) {
+            if (func_00203A40(0, 2, 4096))
+                p->field_225 = (p->field_225 + 3) % 4;
+            else
+                p->field_225 = (p->field_225 + 5) % 4;
+            func_00217710(0, 3);
+            return;
+        }
+        if (func_00203A40(0, 0, 192)) {
+            func_00217710(0, 4);
+            switch (p->field_225) {
+            case 0:
+                p->field_164 = 0;
+                SzGame_Push_inline(11, 0);
+                func_00214BB0(0, 0, 1);
+                func_00214BB0(0, 1, 1);
+                func_00214BB0(0, 2, 1);
+                break;
+            case 1:
+                func_001AAFA0(0);
+                break;
+            case 2:
+                func_001AAFA0(3);
+                break;
+            case 3:
+                func_001AAFA0(4);
+                break;
+            }
+            
+
+            return;
+        }
+    } else {
+        v = p->field_226 + 4;
+        v = v < 128 ? v : 128; p->field_226 = v;
+    }
+}
 
 void func_001ACC50(void) {
     func_00209D30(func_001ACC80(func_00209D20()));

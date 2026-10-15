@@ -1268,7 +1268,103 @@ s32 func_00156910(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00156B40);
+struct DotrLogic017SummonBlock {
+    unsigned char unknown_00[0x3c];
+    unsigned short unknown_3c;
+    unsigned char unknown_3e;
+    unsigned char unknown_3f[0x21];
+};
+struct DotrStateItem;
+extern struct DotrStateItem *func_001E36E0_b(int x, int y);
+extern int func_00156EA0_b(int side);
+extern int func_00156F70_b(int side);
+#define MAXI(a, b) ((a) < (b) ? (b) : (a))
+#define MINI(a, b) ((b) < (a) ? (b) : (a))
+static inline int empty_line(int c)
+{
+    int i;
+    for (i = 0; i < 7; i++) {
+        int pos = func_00155520(i, c);
+        if ((func_001E36E0_b(pos & 0xFF, pos >> 8) == 0 ? 1 : 0) == 1) {
+            return func_00155520(i, c);
+        }
+    }
+    return -1;
+}
+
+int func_00156B40(int side, int unused, void *block_v, int unused_3)
+{
+    struct DotrLogic017SummonBlock * block = block_v;
+    int loc;
+    int row;
+    int i;
+    int best;
+    int spot;
+    int ty;
+    int best_spot;
+    unsigned char far;
+    int tx;
+    int y;
+    int x;
+    int pos;
+
+    (void)unused;
+    loc = func_001E1090(side, 0);
+    if (block == 0) {
+        return -1;
+    }
+    far = block->unknown_3e >> 5;
+    if (func_001587E0(block->unknown_3c) == 1) {
+        if (loc == 0x403) {
+            return func_00156EA0_b(side);
+        }
+        return -1;
+    }
+    if (block->unknown_3c == 821 || block->unknown_3c == 824) {
+        if (loc == 0x403) {
+            return func_00156F70_b(side);
+        }
+        return -1;
+    }
+    best = 7;
+    best_spot = -1;
+    row = func_001E1090(side, 0) >> 8;
+    pos = empty_line(far);
+    if (pos < 0) {
+        if (far != 0) {
+            pos = empty_line(0);
+            if (pos < 0) {
+                pos = 0x503;
+            }
+        } else {
+            pos = empty_line(far + 1);
+            if (pos < 0) {
+                pos = 0x503;
+            }
+        }
+    }
+    for (i = 0, ty = pos >> 8, tx = pos & 0xff; i < 8; i++) {
+        spot = func_0024E410(side, i);
+        if (spot >= 0) {
+            x = spot & 0xff;
+            y = spot >> 8;
+            if (func_001E22B0(x, y) != 8 && func_001E22B0(x, y) != 9 && func_001E3790(x, y) < 0) {
+                if ((MAXI(tx, x) - MINI(tx, x)) + (MAXI(ty, y) - MINI(ty, y)) <= best && y >= row) {
+                    best_spot = spot;
+                    best = (MAXI(tx, x) - MINI(tx, x)) + (MAXI(ty, y) - MINI(ty, y));
+                    row = y;
+                }
+            }
+        }
+    }
+    if (best_spot >= 0) {
+        return best_spot;
+    }
+    best_spot = -1;
+    return best_spot;
+}
+#undef MAXI
+#undef MINI
 
 s32 func_00156EA0(void) {
     s32 i;

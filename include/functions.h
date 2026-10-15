@@ -660,6 +660,7 @@ s32 func_001564E0(s32 arg0, u8 *arg1, void *arg2); /* JP: TaLogic017_SetComboQue
 void func_001566D0(s32 arg0, u16 *arg1, s32 *arg2); /* JP: TaLogic_ConvEmptyCombo */
 s32 func_00156870(s32 arg0); /* JP: TaLogic017_IsRefuseEmptyCombo */
 s32 func_00156910(s32 arg0, void *arg1, void *arg2); /* JP: TaLogic017_SetSpecialComboQue */
+int func_00156B40(int side, int unused, void *block_v, int unused_3); /* JP: TaLogic017_GetSummonPiece */
 s32 func_00156EA0(void); /* JP: TaLogic017_GetEmptyExzPiece */
 s32 func_00156F70(void); /* JP: TaLogic017_GetEmptyTrapPiece */
 s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetMinimumTask_AtkMission */
@@ -1721,6 +1722,7 @@ void func_001A89C0(int arg0, int arg1); /* JP: SzGame_SetMode */
 void func_001A8BB0(void); /* JP: SzGame_ComInit */
 void func_001A9590(void); /* JP: SzGame_ModeDraw (matched by position) */
 void func_001A9800(void); /* JP: SzGame_ModeDrawAfter */
+void func_001A98B0(void); /* JP: SzGame_ModeDrawLast */
 void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: lSzGame_TEXTURE_TEST */
 void func_001AA260(void); /* JP: SzGame_ModeAct (matched by position) */
 void func_001AAD50(s32 arg0); /* JP: SzGame_ModeTerm */
@@ -1733,6 +1735,7 @@ void func_001AC560(void); /* JP: lSzGame_ActMemCheck */
 void func_001AC600(void); /* JP: lSzGame_TermMemCheck */
 void func_001AC610(s32 arg0); /* JP: lSzGame_InitTitle */
 void func_001AC6F0(void); /* JP: lSzGame_TermTitle */
+void func_001AC700(void); /* JP: lSzGame_ActTitle */
 void func_001ACC50(void); /* JP: lSzGame_DrawTitle */
 s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 depth); /* JP: lSzGame_DrawTitle_Rose_Pipe */
 void func_001AD960(void); /* JP: SzDuel_Initialize */
@@ -1969,6 +1972,7 @@ s32 func_001DF470(s32 arg0); /* JP: SzDuel_GetLP */
 s32 func_001DF490(s32 index, s32 operation, s32 value); /* JP: SzDuel_CalcLP */
 s32 func_001DF540(s32 arg0, s32 arg1); /* JP: SzDuel_GetUnit */
 void func_001DF580(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4); /* JP: SzDuel_AddUnit */
+int func_001DF5F0(int side, int x, int y, void *src_v, int leader); /* JP: SzDuel_AddUnit2 */
 s32 func_001DFAF0(s32 arg0, s32 arg1, s32 arg2); /* JP: SzDuel_PutUnit */
 s32 func_001DFBB0(s32 arg0, s32 arg1); /* JP: SzDuel_DelUnit */
 void *func_001DFD50(s32 arg0, s32 arg1, s32 x, s32 y); /* JP: SzDuel_MoveUnit */
@@ -2094,8 +2098,10 @@ s32 func_001E7DE0(s32 arg0); /* JP: SzModel_Destroy */
 s32 func_001E7E70(s32 arg0, s32 arg1, s32 arg2); /* JP: SzModel_Preset */
 void func_001E84D0(void *req_v, int ok); /* JP: lSzModel_LoadMergeCB */
 s32 func_001E8780(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: SzModel_Load */
+void func_001E8BF0(int index); /* JP: lSzModel_LoadCB (matched by position) */
 void func_001E8E90(void *arg0, s32 arg1); /* JP: lSzModel_LoadCameraCB */
 s32 func_001E8FA0(s32 arg0); /* JP: SzModel_BindTextureFile */
+int func_001E90B0(int index); /* JP: SzModel_LoadTextureFile */
 void func_001E9280(void *arg0, s32 arg1); /* JP: lSzModel_LoadTextureFileCB */
 void func_001E92C0(void *arg0, s32 arg1); /* JP: lSzModel_LoadTexAnimFileCB */
 s32 func_001EA0F0(s32 arg0); /* JP: SzModel_LoadEffectTextureFile */
@@ -2379,8 +2385,10 @@ s32 func_001FD320(s32 arg0, s32 arg1, s32 arg2, s32 *arg3); /* JP: SzMsg_Init_Pi
 void func_001FD4B0(s32 arg0); /* JP: SzMsg_SetDefPrioZ */
 void func_001FD4C0(u64 *arg0, s32 arg1, s32 arg2); /* JP: SzMsg_LoadClut_Pipe */
 void func_001FD610(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: SzMsg_LoadFont */
+int func_001FDB90(unsigned short *p, char (*half)[53], short (*code)[53], unsigned short *cols, unsigned short *widths, unsigned short *line); /* JP: lSzMsg_FontTrace (matched by position) */
 void func_001FDD70(void *arg0, void *arg1); /* JP: lSzMsg_GetTexInfo */
 s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5); /* JP: SzMsg_DrawRect_Pipe */
+int func_001FE290(int cursor, int index, int x, int y, void *rect_v, unsigned char *colour); /* JP: SzMsg_DrawRectG_Pipe */
 s32 func_001FE660(s32 arg0, s32 arg1, s64 arg2, s64 arg3, f32 scaleX, f32 scaleY, s32 arg4, void (*arg5)(void)); /* JP: SzMsg_DrawRatioX_Pipe */
 void func_001FE750(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4); /* JP: SzMsg_DrawX */
 s32 func_001FE7D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5); /* JP: SzMsg_DrawX_Pipe */
@@ -2454,6 +2462,8 @@ u8 func_00203C40(s32 arg0, s32 arg1); /* JP: SzPad_GetAnalogInfo */
 void func_00203C70(s32 arg0, s32 arg1, s8 arg2); /* JP: SzPad_SetAnalogInfo */
 u8 func_00203CA0(s32 arg0, s32 arg1); /* JP: SzPad_GetPressInfo */
 void func_00203CD0(void); /* JP: SzDebug_Init */
+void func_00203E20(void); /* JP: SzDebug_Act */
+void func_002047F0(void); /* JP: lSzDebug_ActEffect */
 s32 func_00205150(void); /* JP: SzDebug_GetActiveMenu */
 s32 func_00205160(void); /* JP: SzDebug_GetActiveModel */
 s32 func_00205170(void); /* JP: SzDebug_IsHide */
@@ -2485,6 +2495,7 @@ void func_002073D0(u8 *arg0, s32 arg1, s32 arg2); /* JP: ExClearOt */
 u8 *func_00207500(void); /* JP: ExGetMyOT */
 void func_00207510(void *arg0); /* JP: ExBindPrim */
 void func_002075F0(s32 arg0, s32 arg1, s32 arg2); /* JP: ExSortPrim */
+int func_00207AA0(int cursor, void *header_v, int count, s32 vertices_v, void *chain_v, int z); /* JP: ExSortNode_Pipe */
 s32 func_00207F60(void); /* JP: ExSetAnchor */
 s32 func_00207FA0(s32 arg0); /* JP: ExSetAnchor_Pipe */
 void func_00207FD0(s32 arg0, s32 arg1, s32 arg2); /* JP: ExSortAnchor */
@@ -2614,6 +2625,7 @@ void func_0020EBA0(void *arg0); /* JP: RhView_GetWorldViewMatrix */
 void func_0020EC00(void *dst); /* JP: RhView_GetViewScreenMatrix */
 s32 func_0020EC60(s32 arg0); /* JP: RhView_SendViewParameters */
 void func_0020ED30(void *arg0, f32 fparg0); /* JP: RhView_GetSampleZ */
+int func_0020EDE0(void *centre_v, float radius); /* JP: RhView_CheckViewVolume */
 void func_0020F250(s32 arg0); /* JP: RhText_BindAddress */
 s32 func_0020F290(s32 arg0); /* JP: RhText_SetTextureFlush */
 s32 func_0020F370(void *arg0); /* JP: RhModel_BindAddress */
@@ -2756,8 +2768,10 @@ s32 func_002294B0(s32 arg0, s16 arg1); /* JP: Taku_Tyumoku_ido_katimake */
 s32 func_0022A020(s32 arg0); /* JP: Taku_Camp_STON */
 s32 func_0022A140(s32 arg0); /* JP: Taku_DECK_CARD_DISP */
 void func_0022A710(s32 packet); /* JP: Taku_Camp_3D */
+int func_0022B060(int cursor); /* JP: Taku_Camp_3D_LeaderModel */
 s32 func_0022C3C0(s32 arg0); /* JP: My_LedarModel_a_set */
 void func_0022C450(void); /* JP: Taku_spline_init */
+int func_0022C570(int cursor); /* JP: Taku_Camp_3D_BOU */
 s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3); /* JP: Taku_Camp_3D_FUNE */
 s32 func_0022D140(void); /* JP: Taku_Camp_BUN_HANTEI (matched by position) */
 s32 func_0022F1C0(s32 arg0, s32 arg1, s16 arg2, s16 arg3); /* JP: Taku_Camp_BOTAN_MATI */
@@ -3029,6 +3043,7 @@ s32 func_0025D640(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_029 */
 s32 func_0025D9D0(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_028 */
 s32 func_0025DE70(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_030 */
 s32 func_0025E200(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_031 */
+int func_0025E710(void *eInfo_v, void *Temp_v, int ID); /* JP: Ta_Eff_032 */
 void func_0025EBE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: Ta_SwapUnit */
 s32 func_0025ECB0(void); /* JP: Ta_SearchMoveTemp */
 s32 func_0025ED20(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_034 */
@@ -3148,6 +3163,7 @@ s32 func_0026FE20(s32 arg0); /* JP: TaHand_GetNextHandNum */
 s32 func_0026FE70(void *src, void *obj, s32 mode); /* JP: Ta_Eff_Hand_Fail */
 s32 func_00270030(void *src, void *obj, s32 mode); /* JP: Ta_Eff_Hand_Fusion */
 s32 func_00270260(void *src, void *state, s32 mode); /* JP: Ta_Eff_Hand_Enc */
+int func_00270C30(void *eInfo_v, void *Temp_v, int ID); /* JP: Ta_Eff_Hand_Force */
 s32 func_00271630(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_Hand_Dest */
 s32 func_00271740(s32 arg0, s32 arg1); /* JP: Ta_IsLDAbl */
 s32 func_002717A0(s32 arg0); /* JP: Ta_GetLDChgLand */
@@ -3245,6 +3261,7 @@ s32 func_0027C6D0(s32 arg0); /* JP: TaLogic_IsPickUp */
 int func_0027CA50(void *pTask_v, unsigned char bChaseRange, unsigned char bIsView, unsigned char WarLvl); /* JP: TaLogic_CommandEncUnit */
 s32 func_0027D020(void *arg0, s32 arg1, void *arg2, u8 arg3, s32 arg4, s32 cost, s32 arg6, u8 arg7); /* JP: TaLogic_GetMinimumTask_EncMission */
 s32 func_0027D720(u16 *arg0, s32 arg1); /* JP: TaLogic_CommandGunnerUnit */
+int func_0027D830(int row, int column, int x, int y, unsigned char n, int last); /* JP: TaLogic_GetActionReaction */
 s32 func_0027DA40(s32 arg0, s32 arg1); /* JP: TaLogic_GetMaxAPGraveCard */
 s32 func_0027DBC0(s32 arg0, s32 arg1, s32 arg2); /* JP: TaLogic_GetGraveEntryAfterScreen */
 s32 func_0027DD20(s32 arg0, s32 arg1, s32 arg2); /* JP: TaLogic_GetGraveCardCount */

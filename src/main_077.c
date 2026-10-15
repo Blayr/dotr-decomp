@@ -902,7 +902,6 @@ typedef struct Event_00270260 {
 } Event_00270260;
 
 void func_0024F430(u32, s32);
-s32 func_00270C30(void *, void *, s32);
 
 static inline s32 mode_00270260(u32 position) {
     if ((func_001E0700(position >> 24, (position >> 16) & 0xFF) >> 5) == 0) {
@@ -1206,7 +1205,282 @@ s32 func_00270260(void *src, void *state, s32 mode) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_00270C30);
+struct jp_8b329 {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+struct jp_8b5bb {
+    int fLoad : 1;
+    unsigned char bModNum : 5;
+    unsigned short wModule[24];
+    unsigned char bModCond[24];
+};
+struct jp_8b3ce {
+    unsigned short wCount_1;
+    unsigned short wCount_2;
+    unsigned short wLvl;
+    unsigned char eID[24];
+    int ePos[24];
+    struct jp_8b5bb eMod;
+    unsigned int fObj;
+    unsigned int fObj2;
+    unsigned char oNum;
+    unsigned char unknown_d5[0x2b];
+    unsigned char bCamLvl;
+    unsigned short wCamTime;
+    unsigned char unknown_104[0xc];
+    int nTasakiEfc[0x10c];
+};
+extern int func_00255AC0_270c30(struct jp_8b3ce *q, int id);
+extern int func_0024F430_270c30(int a, int b);
+extern int func_001E1E10_b(int a, int b);
+extern int func_001E1030_b(int a, int b);
+extern void func_00260AF0_b(unsigned char who, int packed, int add, int value);
+extern void func_002610D0_b(unsigned char who, int packed, int add, int value);
+extern void func_00260A70_270c30(struct jp_8b3ce *Temp, unsigned char b);
+extern int func_00261570_b(int a, int b, unsigned char c, unsigned char d);
+
+int func_00270C30(void *eInfo_v, void *Temp_v, int ID)
+{
+    struct jp_8b329 * eInfo = eInfo_v;
+    struct jp_8b3ce * Temp = Temp_v;
+    int stored;
+    struct jp_8b329 eCall;
+    struct jp_8b329 *pCall = &eCall;
+    int Unit2;
+    int Unit;
+
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    if (ID >= 0) {
+        func_00255960(Temp);
+        Temp->wCount_1 = func_00248E30(eInfo->dwTo, func_00248EA0());
+        if ((func_001E0700(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff) >> 5 == 0 ? 0 : 3) == 0) {
+            Unit = eInfo->dwFrom >> 16;
+        } else {
+            Unit = eInfo->dwFrom & 0xffff;
+        }
+        if (func_00271740(11, func_001DE540()) == 1 &&
+            (func_001E0700(Unit >> 8, Unit & 0xff) & 0x1f) == (func_001E0700(func_001DE540(), 0) & 0x1f)) {
+            func_00255AC0_270c30(Temp, 537);
+            Temp->wLvl = 2;
+            Temp->wCount_2 = 0;
+        } else if ((Unit = func_0026AB80(eInfo->dwTo, 41)) < 0) {
+            if ((Unit = func_0026AB80(eInfo->dwTo, 43)) < 0) {
+                func_00255AC0_270c30(Temp, 537);
+                Temp->wLvl = 2;
+                Temp->wCount_2 = 0;
+            } else if ((Unit2 = func_0026AB80(eInfo->dwTo, 46)) >= 0) {
+                func_00255AC0_270c30(Temp, 602);
+                func_00255AC0_270c30(Temp, 537);
+                func_001F5970(Unit2, 0);
+                func_002516D0(Unit2 >> 8, Unit2 & 0xff, 1);
+                Temp->fObj = Unit2;
+                Temp->wLvl = 0;
+                Temp->wCount_2 = 0;
+            } else {
+                func_00255AC0_270c30(Temp, 602);
+                func_00255AC0_270c30(Temp, 537);
+                func_001F5970(Unit, 0);
+                func_002516D0(Unit >> 8, Unit & 0xff, 1);
+                Temp->fObj = Unit;
+                Temp->wLvl = 0;
+                Temp->wCount_2 = 1;
+            }
+        } else if ((Unit2 = func_0026AB80(eInfo->dwTo, 46)) >= 0) {
+            func_00255AC0_270c30(Temp, 602);
+            func_00255AC0_270c30(Temp, 537);
+            func_001F5970(Unit2, 0);
+            func_002516D0(Unit2 >> 8, Unit2 & 0xff, 1);
+            Temp->fObj = Unit2;
+            Temp->wLvl = 0;
+            Temp->wCount_2 = 0;
+        } else {
+            func_001DE7E0(0);
+            func_00255AC0_270c30(Temp, 602);
+            func_00255AC0_270c30(Temp, 547);
+            func_001F5970(Unit, 0);
+            func_002516D0(Unit >> 8, Unit & 0xff, 1);
+            Temp->fObj = Unit;
+            Temp->fObj2 = 1;
+            Temp->wLvl = 0;
+            Temp->wCount_2 = 0;
+        }
+        pCall->eNO = 602;
+        pCall->dwFrom = eInfo->dwFrom >> 16;
+        pCall->dwTo = eInfo->dwFrom & 0xffff;
+        pCall->dwPar = 0;
+        func_0027EB00(&Temp->nTasakiEfc, pCall, 0);
+        return 1;
+    }
+    if (Temp->eMod.fLoad == 0) {
+        pCall->eNO = 602;
+        pCall->dwFrom = eInfo->dwFrom >> 16;
+        pCall->dwTo = eInfo->dwFrom & 0xffff;
+        pCall->dwPar = 0;
+        func_0027EB00(&Temp->nTasakiEfc, pCall, -1);
+        if (func_00255B50(Temp) == 1) {
+            Temp->eMod.fLoad = -1;
+        }
+        
+
+
+
+        goto one;
+    } else {
+        switch (Temp->wLvl) {
+        case 0:
+            func_001DE7E0(0);
+            pCall->eNO = 602;
+            pCall->dwFrom = eInfo->dwFrom >> 16;
+            pCall->dwTo = eInfo->dwFrom & 0xffff;
+            pCall->dwPar = 0;
+            if (func_001E1E10_b(Temp->fObj >> 8, Temp->fObj & 0xff) == 255) {
+                if (Temp->wCount_2 == 0 && Temp->fObj2 == 0) {
+                    func_001E42C0(0, -120, 80, func_001DE210(825));
+                } else {
+                    func_001E42C0(0, -120, 80, 259);
+                }
+                func_001DE820(1);
+                func_00260AF0_b(0, Temp->fObj, 180, 180);
+                pCall->eNO = 602;
+                pCall->dwFrom = 0;
+                pCall->dwTo = Temp->fObj;
+                pCall->dwPar = 0;
+                
+
+                if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) >= 0) {
+                    Temp->ePos[Temp->oNum] = 0;
+                    Temp->oNum++;
+                    Temp->wLvl++;
+                } else {
+                    func_001E4530();
+                    return 0;
+                }
+            } else {
+                func_0027EB00(&Temp->nTasakiEfc, pCall, -1);
+            }
+            break;
+        case 1:
+            func_001DE7E0(0);
+            if (func_001F51D0(Temp->eID[Temp->oNum - 1]) != 0) {
+                return 1;
+            }
+            func_001E1E70(Temp->fObj >> 8, Temp->fObj & 0xff, 0, 1);
+            if (Temp->fObj2 != 0) {
+                func_001DE820(1);
+                func_002610D0_b(0, (eInfo->dwTo == 0 ? 1 : 0) << 8, 180, 180);
+                Temp->wLvl = 16;
+            } else {
+                func_001DE7E0(1);
+                pCall->eNO = 5;
+                pCall->dwFrom = eInfo->dwFrom >> 16;
+                pCall->dwTo = eInfo->dwFrom & 0xffff;
+                pCall->dwPar = 0;
+                func_0027EB00(&Temp->nTasakiEfc, pCall, -1);
+                func_001DE820(0);
+                func_00260A70_270c30(Temp, 0);
+                Temp->wLvl++;
+            }
+            break;
+        case 2:
+            pCall->eNO = 5;
+            pCall->dwFrom = eInfo->dwFrom >> 16;
+            pCall->dwTo = eInfo->dwFrom & 0xffff;
+            pCall->dwPar = 0;
+            func_0027EB00(&Temp->nTasakiEfc, pCall, -1);
+            if (Temp->wCount_2 == 1) {
+                func_001E42C0(0, 0, -160, func_001DE210(func_001E1030_b(Temp->fObj >> 8, Temp->fObj & 0xff)));
+            } else {
+                func_001E42C0(0, 0, -160, 268);
+            }
+            pCall->eNO = 537;
+            pCall->dwFrom = eInfo->dwFrom >> 16;
+            pCall->dwTo = eInfo->dwFrom & 0xffff;
+            pCall->dwPar = Temp->wCount_1 << 16 | (Temp->wCount_2 << 8 | (func_001E0700(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff) >> 5 ? 3 : 0));
+            if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) >= 0) {
+                Temp->ePos[Temp->oNum] = 0;
+                Temp->oNum++;
+                Temp->wLvl++;
+            } else {
+                func_001E4530();
+                return 0;
+            }
+            break;
+        case 3:
+            if (func_001F51D0(Temp->eID[Temp->oNum - 1]) != 0) {
+                switch (Temp->fObj2++) {
+                case 1:
+                    func_00217710(1, 76);
+                    break;
+                case 15:
+                    func_00217710(1, 77);
+                    break;
+                case 16:
+                    func_00217710(1, 59);
+                    break;
+                }
+                if (func_001F52D0(Temp->eID[Temp->oNum - 1]) == 2) {
+                    if ((unsigned char)Temp->ePos[Temp->oNum - 1] == 0) {
+                        if (func_001E0700(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff) >> 5 == 0) {
+                            func_00248460(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff, Temp->wCount_2 << 16 | eInfo->dwPar, eInfo->dwTo & 0xff);
+                            func_0024F430_270c30((eInfo->dwFrom & 0xffff) >> 8, eInfo->dwFrom & 0xff);
+                        } else {
+                            func_00248460((eInfo->dwFrom & 0xffff) >> 8, eInfo->dwFrom & 0xff, Temp->wCount_2 << 16 | eInfo->dwPar, eInfo->dwTo & 0xff);
+                            func_0024F430_270c30(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff);
+                        }
+                        Temp->ePos[Temp->oNum - 1] = 0xffff;
+                    }
+                }
+                return 1;
+            }
+            func_001E4530();
+            return 0;
+        case 16:
+            func_001DE7E0(0);
+            func_001E42C0(0, -120, 80, func_001DE210(814));
+            pCall->eNO = 547;
+            pCall->dwFrom = (eInfo->dwTo == 0 ? 1 : 0) << 8;
+            pCall->dwTo = eInfo->dwTo << 8;
+            pCall->dwPar = Temp->wCount_1;
+            if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) >= 0) {
+                Temp->oNum++;
+                Temp->wLvl++;
+            } else {
+                func_001E4530();
+                return 0;
+            }
+            break;
+        case 17:
+            func_001DE7E0(0);
+            if (func_001F51D0(Temp->eID[Temp->oNum - 1]) != 0) {
+                if (Temp->wCamTime++ == 6) {
+                    func_00261570_b(30, eInfo->dwTo << 8, 100, 180);
+                }
+                break;
+            }
+            if (func_001E0700(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff) >> 5 == 0) {
+                func_0024F430_270c30((eInfo->dwFrom & 0xffff) >> 8, eInfo->dwFrom & 0xff);
+            } else {
+                func_0024F430_270c30(eInfo->dwFrom >> 24, (eInfo->dwFrom >> 16) & 0xff);
+            }
+            func_001DF490(eInfo->dwTo, 1, Temp->wCount_1);
+            func_001E4530();
+            func_001DE820(0);
+            func_00260A70_270c30(Temp, 0);
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            return 0;
+        }
+    one:
+        return 1;
+    }
+}
 
 typedef struct State_00271630 {
     u8 pad[4];

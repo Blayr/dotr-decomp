@@ -21,7 +21,343 @@ void func_001DF580(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_001DF5F0(arg0, arg1, arg2, buffer, arg4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_045", func_001DF5F0);
+struct DotrStateBlock {
+    int unknown_words[24];
+};
+struct DotrStateItemBits {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrStateItemPairs {
+    signed char unknown_bits_0_1 : 2;
+    signed char unknown_bits_2_3 : 2;
+    signed char unknown_bits_4_5 : 2;
+    signed char unknown_bits_6_7 : 2;
+};
+struct DotrStateItemFlags {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bits_4_7 : 4;
+};
+struct DotrStateItemObject;
+struct DotrStateItemSource {
+    unsigned char unknown_00;
+    unsigned char unknown_01;
+    unsigned char unknown_02_low : 4;
+    unsigned char unknown_02_high : 4;
+    unsigned char unknown_03;
+    unsigned short unknown_04;
+    unsigned char unknown_06[2];
+    unsigned short unknown_08;
+    unsigned short unknown_0a;
+};
+struct DotrStateEntry8 {
+    int unknown_words[2];
+};
+struct DotrStateItem {
+    struct DotrStateItemSource *unknown_00;
+    struct DotrStateItemObject *unknown_04; 
+    struct DotrStateEntry8 unknown_08[5];
+    int unknown_30;
+    unsigned char unknown_34[4];
+    short unknown_38;
+    short unknown_3a;
+    unsigned short unknown_3c;
+    unsigned char unknown_3e;
+    unsigned char unknown_3f;
+    unsigned char unknown_40;
+    unsigned char unknown_41;
+    unsigned char unknown_42[2];
+    unsigned char unknown_44;
+    unsigned char unknown_45;
+    unsigned char unknown_46;
+    unsigned char unknown_47;
+    unsigned char unknown_48;
+    unsigned char unknown_49;
+    unsigned char unknown_4a;
+    unsigned char unknown_4b;
+    unsigned char unknown_4c[2];
+    unsigned char unknown_4e;
+    unsigned char unknown_4f;
+    unsigned char unknown_50;
+    unsigned char unknown_51;
+    unsigned char unknown_52;
+    unsigned char unknown_53;
+    unsigned char unknown_54;
+    unsigned char unknown_55;
+    struct DotrStateItemPairs unknown_56;
+    struct DotrStateItemBits unknown_57;
+    struct DotrStateItemFlags unknown_58;
+    unsigned char unknown_59[3];
+};
+typedef char DotrStateItemMustBe5c[(sizeof(struct DotrStateItem) == 0x5c) ? 1 : -1];
+struct DotrStateVector {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrStateCellQuad {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+typedef int DotrStateWord;
+struct DotrStateCell {
+    DotrStateWord unknown_00;
+    struct DotrStateCellQuad unknown_04[4];
+    short unknown_14;
+    unsigned char unknown_16;
+    unsigned char unknown_17;
+    unsigned char unknown_18;
+    unsigned char unknown_19;
+    unsigned char unknown_1a;
+};
+typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell) == 0x1c) ? 1 : -1];
+struct DotrStateItemObject {
+    struct DotrStateVector unknown_00;
+    struct DotrStateVector unknown_10;
+    unsigned char unknown_20[0x10];
+    struct DotrStateVector unknown_30;
+    struct DotrStateCellQuad unknown_40;
+};
+extern struct DotrStateItem D_00318280_b[3][11];
+extern struct DotrStateCell D_00318E60_b[7][7];
+extern struct DotrStateEntry8 D_002C3338_1df5f0[][5];
+struct DotrReleaseCurrent;
+struct DotrReleaseObject {
+    unsigned char unknown_00[0x10];
+    int unknown_10[4]; 
+    int unknown_20[4]; 
+    float unknown_30;
+    float unknown_34;
+    float unknown_38;
+    int unknown_3c;
+    unsigned char unknown_40[0x41];
+    signed char unknown_81_bits_0_3 : 4;
+    signed char unknown_81_bit_4 : 1;
+    signed char unknown_81_bit_5 : 1;
+    signed char unknown_81_bit_6 : 1;
+    signed char unknown_81_bit_7 : 1;
+    unsigned char unknown_82;
+    signed char unknown_83_bits_0_5 : 6;
+    signed char unknown_83_bit_6 : 1;
+    signed char unknown_83_bit_7 : 1; 
+    unsigned char unknown_84[0xc];
+    struct DotrReleaseCurrent *unknown_90; 
+    unsigned char unknown_94[0xc];
+};
+extern struct DotrReleaseObject D_003193C0_b[32];
+struct DotrOwnerDrawBlock;
+struct DotrReleaseCurrent {
+    int unknown_00;
+    struct DotrReleaseObject *object;
+    unsigned char unknown_08[0x34];
+    unsigned short unknown_3c; 
+    unsigned char unknown_3e[2];
+    unsigned char unknown_40;
+    unsigned char unknown_41;
+    unsigned char unknown_42[2];
+    unsigned char unknown_44;
+    unsigned char unknown_45;
+    unsigned char unknown_46[2];
+    unsigned char unknown_48;
+    unsigned char unknown_49[0xa];
+    unsigned char unknown_53; 
+    unsigned char unknown_54[3];
+    signed char unknown_57_bits_0_6 : 7;
+    signed char unknown_57_bit_7 : 1;
+    signed char unknown_58_bit_0 : 1;
+    signed char unknown_58_bit_1 : 1;
+    signed char unknown_58_bit_2 : 1;
+    signed char unknown_58_bits_3_7 : 5;
+};
+struct DotrReleaseSide {
+    unsigned char unknown_000[0x33d];
+    unsigned char unknown_33d;
+    unsigned char unknown_33e;
+    unsigned char unknown_33f[4];
+    unsigned char unknown_343; 
+    unsigned char unknown_344[0xc];
+};
+extern struct DotrReleaseSide D_00317490_b[];
+struct DotrReleasePair {
+    float unknown_00;
+    float unknown_04;
+};
+struct DotrReleaseItemPairs {
+    void *unknown_00; 
+    void *unknown_04;
+    struct DotrReleasePair unknown_08[5];
+};
+struct DotrReleaseAngles {
+    int x;
+    int y;
+    int z;
+    int w;
+};
+extern struct DotrStateVector D_002915D0;
+extern struct DotrReleaseAngles D_002915E0;
+extern struct DotrStateVector D_002915F0;
+extern int func_001F1A00_b(int index, int value);
+static inline struct DotrStateCell *cell_1df5f0(int x, int y)
+{
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return 0;
+    }
+    return &D_00318E60_b[y][x];
+}
+static inline struct DotrReleaseObject *free_object(void)
+{
+    struct DotrReleaseObject *p = D_003193C0_b;
+    int i;
+
+    for (i = 0; i < 32; i++, p++) {
+        if (p->unknown_90 == 0) {
+            func_001CD560((struct DotrOwnerDrawBlock *)p);
+            return p;
+        }
+    }
+    return 0;
+}
+static inline int card_index(int id)
+{
+    unsigned short *p = D_002CD8A0;
+    int i;
+
+    if (id == 671) {
+        id = 999;
+    }
+    if (id < 0 || id >= 854) {
+        return 999;
+    }
+    for (i = 0; i < 854; i++, p++) {
+        if (*p == id) {
+            return i;
+        }
+    }
+    return 999;
+}
+static inline void copy_item(struct DotrStateItem *to, struct DotrStateItem *from)
+{
+    int *d = (int *)to;
+    int *s = (int *)from;
+    int n;
+
+    for (n = 23; n > 0; n--) {
+        *d++ = *s++;
+    }
+}
+
+int func_001DF5F0(int side, int x, int y, void *src_v, int leader)
+{
+    struct DotrStateBlock * src = src_v;
+    struct DotrReleaseSide *rec = &D_00317490_b[side];
+    struct DotrStateCell *c = cell_1df5f0(x, y);
+    int count = 1;
+    int first = 0;
+    int id;
+    int i;
+    int n;
+    struct DotrStateItem *unit;
+    int k;
+    int model;
+
+    if (src == 0) {
+        return 0;
+    }
+    if (c == 0) {
+        return 0;
+    }
+    if (c->unknown_00 != 0) {
+        return 0;
+    }
+    id = ((struct DotrStateItem *)src)->unknown_3c;
+    if (id == 671) {
+        id = 999;
+    }
+    if (side < 0 || side >= 2 || id < 0 || id >= 854) {
+        return 0;
+    }
+    if (leader != 0) {
+        if (id >= 683) {
+            return 0;
+        }
+    } else {
+        count = 5;
+        first = 1;
+        if (id >= 683) {
+            first = 6;
+        }
+    }
+    for (i = 0; i < count; i++) {
+        n = first + i;
+        unit = &D_00318280_b[side][n];
+        if (unit->unknown_45 >= 11) {
+            copy_item(unit, (struct DotrStateItem *)src);
+            unit->unknown_48 = func_0026EA80(side, id);
+            unit->unknown_40 = x;
+            unit->unknown_41 = y;
+            unit->unknown_44 = side;
+            unit->unknown_45 = n;
+            c->unknown_00 = (DotrStateWord)unit;
+            if (leader != 0) {
+                for (k = 0; k < 5; k++) {
+                    ((struct DotrReleaseItemPairs *)unit)->unknown_08[k] =
+                        ((struct DotrReleasePair *)D_002C3338_1df5f0[id])[k];
+                }
+            } else {
+                if (unit->unknown_04 == 0) {
+                    unit->unknown_04 = (struct DotrStateItemObject *)free_object();
+                }
+                if (unit->unknown_04 != 0) {
+                    ((struct DotrReleaseObject *)unit->unknown_04)->unknown_90 =
+                        (struct DotrReleaseCurrent *)unit;
+                    func_001E10F0(x, y, 0, (struct DotrStateVector *)unit->unknown_04);
+                }
+                unit->unknown_47 = rec->unknown_343++;
+                func_00216C70(side, id, 1);
+            }
+            k = card_index(id);
+            if (first == 0 || first == 1) {
+                struct DotrStateVector pos = D_002915D0;
+                struct DotrReleaseAngles rot;
+                struct DotrStateVector rotc;
+
+                pos.x = (float)((x - 3) * 50);
+                pos.z = (float)((y - 3) * 50);
+                rot = D_002915E0;
+                rot.y = (side != 0) ? 0 : 0x8000;
+                rotc = D_002915F0;
+                if (first == 0) {
+                    model = side + 30;
+                } else {
+                    model = i + (side * count + 20);
+                }
+                unit->unknown_46 = model;
+                func_001E7E70(model, -1, k);
+                func_001F1830(model, 0);
+                func_001F1A00_b(model, 1);
+                func_001F1A80(model, 1.0f);
+                func_001F22B0(model, &pos);
+                func_001F2430(model, &rot);
+                func_001F24C0(model, &rotc);
+                func_001F26E0(model, 0, 0);
+                func_001F2860(model, 1, 0);
+                func_001DD2D0(c, (DotrStateWord)unit);
+            }
+            return (int)(DotrStateWord)unit;
+        }
+    }
+    return 0;
+}
 
 static inline u8 *check_001DFAF0(s32 a0, s32 a1) {
     extern void *func_001DD130();

@@ -5029,7 +5029,163 @@ s32 func_0025E200(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_0025E710);
+struct jp_6989c_25e710 {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+struct jp_68cb4_25e710 {
+    int fLoad : 1;
+    unsigned char bModNum : 5;
+    unsigned short wModule[24];
+    unsigned char bModCond[24];
+};
+struct jp_69942_25e710 {
+    unsigned short wCount_1;
+    unsigned short wCount_2;
+    unsigned short wLvl;
+    unsigned char eID[24];
+    int ePos[24];
+    struct jp_68cb4_25e710 eMod;
+    unsigned int fObj;
+    unsigned int fObj2;
+    unsigned char oNum;
+    unsigned char unknown_d5[0xb];
+    int camDat[8];
+    unsigned char bCamLvl;
+    unsigned short wCamTime;
+    unsigned char unknown_104[0xc];
+    int nTasakiEfc[0x10c];
+};
+extern int func_00255AC0_25e710(struct jp_69942_25e710 *q, int id);
+extern void func_00260AF0_b(unsigned char who, int packed, int add, int value);
+extern void func_00260740_b(unsigned char who);
+extern void func_00260A70_25e710(struct jp_69942_25e710 *Temp, unsigned char b);
+extern void func_001DFD50_b(int a, int b, int c, int d);
+
+int func_0025E710(void *eInfo_v, void *Temp_v, int ID)
+{
+    struct jp_6989c_25e710 * eInfo = eInfo_v;
+    struct jp_69942_25e710 * Temp = Temp_v;
+    int i;
+    int j;
+    int tCount;
+    int nX;
+    int nZ;
+    int LOC;
+    int uID;
+    struct jp_6989c_25e710 eCall;
+    struct jp_6989c_25e710 *pCall = &eCall;
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    tCount = 0;
+    func_001DE7E0(0);
+    if (ID >= 0) {
+        func_00255960(Temp);
+        Temp->wCount_1 = 128;
+        if (func_0024E910(eInfo->dwTo) == 1) {
+            func_00260AF0_b(0, func_0024EC50(eInfo->dwTo, 0), 100, 180);
+        } else {
+            func_00260740_b(0);
+        }
+        func_00260020(eInfo, Temp, ID, -1, 1, 1);
+        func_00255AC0_25e710(Temp, 531);
+        func_00255AC0_25e710(Temp, 532);
+        return 1;
+    }
+    switch (Temp->wLvl) {
+    case 0:
+        if (Temp->wCount_1 > 48) {
+            Temp->wCount_1 -= 15;
+        } else {
+            Temp->wCount_1 = 48;
+            if (func_00255B50(Temp) == 1) {
+                func_0025F720(eInfo, Temp, pCall, 531);
+                Temp->wLvl++;
+            }
+        }
+        if (Temp->wCount_1 < 48) {
+            Temp->wCount_1 = 48;
+        }
+        func_001F6CF0((unsigned char)Temp->wCount_1);
+        break;
+    case 1:
+        for (i = 0; i < Temp->oNum; i++) {
+            if (func_001F51D0(Temp->eID[i]) == 0) {
+                tCount++;
+            }
+        }
+        if (tCount < Temp->oNum) {
+            return 1;
+        }
+        for (i = 0; i < Temp->oNum; i++) {
+            if (Temp->ePos[i] >= 0) {
+                LOC = func_001E1090(Temp->ePos[i] >> 8, Temp->ePos[i] & 0xFF);
+                nX = LOC >> 8;
+                nZ = LOC & 0xFF;
+                if ((uID = func_001E3790(nX, nZ)) < 0) {
+                    func_001DFD50_b(Temp->ePos[i] >> 8, Temp->ePos[i] & 0xFF, nX, nZ);
+                } else if (uID & 0xFF) {
+                    if (func_00271F90(uID >> 8, uID & 0xFF, nX, nZ, 11) == 0) {
+                        func_0025EBE0(Temp->ePos[i] >> 8, Temp->ePos[i] & 0xFF, uID >> 8, uID & 0xFF);
+                        for (j = 0; j < Temp->oNum; j++) {
+                            if (uID == Temp->ePos[j]) {
+                                Temp->ePos[j] = -1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        func_0025F720(eInfo, Temp, pCall, 532);
+        Temp->wLvl++;
+        break;
+    case 2:
+        if (Temp->wCamTime == 0) {
+            if (func_0024E910(eInfo->dwTo) == 1) {
+                func_00260AF0_b(30, func_0024EC50(eInfo->dwTo, 0), 100, 180);
+            } else {
+                func_00260740_b(16);
+            }
+        }
+        if (Temp->wCamTime++ >= 24) {
+            for (i = 0; i < Temp->oNum; i++) {
+                if (func_001F51D0(Temp->eID[i]) == 0) {
+                    tCount++;
+                }
+            }
+            if (tCount < Temp->oNum) {
+                return 1;
+            }
+            Temp->wLvl++;
+            func_00260A70_25e710(Temp, 16);
+            func_00260020(eInfo, Temp, ID, 1, 0, 1);
+        }
+        break;
+    default:
+        Temp->wCount_1 += 15;
+        if (Temp->wCount_1 > 128) {
+            Temp->wCount_1 = 128;
+        }
+        func_001F6CF0((unsigned char)Temp->wCount_1);
+        if (Temp->wCount_1 == 128) {
+            if (Temp->wCamTime++ > 16) {
+                if (func_0025FD90() == 1) {
+                    if (func_001DE780() != 0) {
+                        func_001DE7E0(1);
+                    }
+                    func_001E4530();
+                    return 0;
+                }
+            }
+        }
+        break;
+    }
+    return 1;
+}
 
 void func_0025EBE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_s0;

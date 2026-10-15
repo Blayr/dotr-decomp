@@ -675,8 +675,6 @@ extern Vector_0022A710 D_00298DDC;
 extern s16 D_00298DEC;
 extern s16 D_00298DEE;
 extern Item_0022A710 D_00298E10;
-void func_0022B060(s32);
-s32 func_0022C570(s32);
 
 void func_0022A710(s32 packet) {
     extern s32 func_001EE4B0();
@@ -920,7 +918,361 @@ control_updated:
     func_0022B060(packet);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022B060);
+struct DotrLeaderModelRoute {
+    float x[64];
+    float z[64];
+    short n;
+    short pad;
+};
+struct DotrLeaderModelWork {
+    short mx;                   
+    short my;                   
+    unsigned char pad4[0x190 - 4];
+    float plane[4];             
+    unsigned char pad1a0[472 - 0x1a0];
+    short state;                
+    short t;                    
+    short pad476;
+    short idx;                  
+    unsigned char pad480[16];
+    float pos[3];               
+    unsigned char pad508[4];
+    int angle;                  
+    unsigned char pad516[0x22c - 516];
+    struct DotrLeaderModelRoute route[2][16];   
+    unsigned char pad17068[21363 - 17068];
+    signed char show;           
+    unsigned char pad21364[21628 - 21364];
+    unsigned char alpha;        
+};
+#define DOTR_LEADER_WORK ((struct DotrLeaderModelWork *)0x1ed0000)
+struct DotrLeaderModelSpot {
+    float x, y, z, w;
+    char unknown_10[36];
+};
+extern struct DotrLeaderModelSpot D_00298BA0_22b060[22];
+struct DotrLeaderModelBoard {
+    signed char pad[199];
+    signed char from;
+    signed char to;
+};
+extern struct DotrLeaderModelBoard D_00299E10_b;
+#define DOTR_LEADER_FROM w[199]
+#define DOTR_LEADER_TO w[200]
+extern signed char D_00299A30[];
+struct DotrLeaderModelVec {
+    float x, y, z, w;
+};
+struct DotrLeaderModelRot {
+    int x, y, z, w;
+};
+struct DotrLeaderModelScale {
+    float x, y, z, w;
+};
+extern int func_001A22C0_b(float value);
+extern void *func_001F9AD0_b(int index);
+extern int func_001F2AD0_b(int index, int value);
+extern int func_001F2800_b(int index, int value);
+#define DOTR_LEADER_X(k) (*(DOTR_LEADER_WORK->route[a][b].x + idx + (k)))
+#define DOTR_LEADER_Z(k) (*(DOTR_LEADER_WORK->route[a][b].z + idx + (k)))
+#define DOTR_LEADER_N DOTR_LEADER_WORK->route[a][b].n
+#define DOTR_LEADER_ANGLE(x, z) (func_001A22C0_b(65536.0f * (func_001A6C18(x, z) / 6.2831855f)) % 65536)
+#define DOTR_LEADER_SPOT D_00298BA0_22b060
+
+int func_0022B060(int cursor)
+{
+    struct DotrLeaderModelRot rot;
+    struct DotrLeaderModelScale scale;
+    struct DotrLeaderModelVec p;
+    struct DotrLeaderModelVec q;
+    struct DotrLeaderModelVec out;
+    signed char *w = (signed char *)&D_00299E10_b;
+    short a, b, fwd, rev;
+    short idx;
+    float *x0;
+    float *z0;
+    float h;
+    float dx2, dz2, dx, dz;
+    float px, pz;
+    signed char from;
+    int lv;
+
+    a = 0;
+    b = 5;
+    fwd = 0;
+    rev = 0;
+    lv = D_00299A30[func_002159D0(0, (short)func_002158B0(0))];
+    scale.x = 0.5f;
+    scale.y = 0.5f;
+    scale.z = 0.5f;
+    h = (float)lv;
+    from = DOTR_LEADER_FROM;
+    switch (from) {
+    case 1:
+        switch (DOTR_LEADER_TO) {
+        case 2:
+            b = 1;
+            a = 0;
+            fwd = 1;
+            break;
+        case 8:
+            b = 2;
+            a = 0;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 2:
+        switch (DOTR_LEADER_TO) {
+        case 3:
+            b = 3;
+            fwd = 1;
+            break;
+        case 5:
+            b = 4;
+            fwd = 1;
+            break;
+        case 7:
+            b = 12;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 3:
+        switch (DOTR_LEADER_TO) {
+        case 2:
+            b = 3;
+            fwd = 1;
+            rev = 1;
+            break;
+        }
+        break;
+    case 5:
+        switch (DOTR_LEADER_TO) {
+        case 2:
+            rev = 1;
+            b = 4;
+            fwd = 1;
+            break;
+        case 6:
+            rev = 1;
+            b = 10;
+            fwd = 1;
+            break;
+        case 7:
+            b = 13;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 6:
+        switch (DOTR_LEADER_TO) {
+        case 5:
+            b = 10;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 7:
+        switch (DOTR_LEADER_TO) {
+        case 11:
+            b = 14;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 8:
+        switch (DOTR_LEADER_TO) {
+        case 6:
+            b = 5;
+            fwd = 1;
+            break;
+        case 7:
+            b = 11;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 9:
+        switch (DOTR_LEADER_TO) {
+        case 8:
+            rev = 1;
+            b = 6;
+            fwd = 1;
+            break;
+        }
+        break;
+    case 11:
+        switch (DOTR_LEADER_TO) {
+        case 7:
+            rev = 1;
+            b = 14;
+            fwd = 1;
+            break;
+        }
+        break;
+    }
+    if (rev == 0 && DOTR_LEADER_WORK->state != 0 && fwd && 0 < DOTR_LEADER_WORK->show && DOTR_LEADER_WORK->t <= 1024) {
+        idx = DOTR_LEADER_WORK->idx;
+        dx2 = DOTR_LEADER_X(2) - DOTR_LEADER_X(1);
+        dz2 = DOTR_LEADER_Z(2) - DOTR_LEADER_Z(1);
+        func_001A6C18(dx2, dz2);
+        dx = DOTR_LEADER_X(1) - DOTR_LEADER_X(0);
+        dz = DOTR_LEADER_Z(1) - DOTR_LEADER_Z(0);
+        DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(dx, dz);
+        if (DOTR_LEADER_WORK->state == 3) {
+            DOTR_LEADER_WORK->pos[0] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].x;
+            DOTR_LEADER_WORK->pos[1] = h + DOTR_LEADER_SPOT[DOTR_LEADER_TO].y;
+            DOTR_LEADER_WORK->pos[2] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].z;
+        } else {
+            px = DOTR_LEADER_X(0);
+            DOTR_LEADER_WORK->pos[0] = px + dx * (float)DOTR_LEADER_WORK->t / 1024.0f;
+            DOTR_LEADER_WORK->pos[1] = DOTR_LEADER_SPOT[0].y + h;
+            pz = DOTR_LEADER_Z(0);
+            DOTR_LEADER_WORK->pos[2] = pz + dz * (float)DOTR_LEADER_WORK->t / 1024.0f;
+        }
+        if (DOTR_LEADER_N <= idx) {
+            DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(DOTR_LEADER_X(0) - DOTR_LEADER_X(-1), DOTR_LEADER_Z(0) - DOTR_LEADER_Z(-1));
+        } else if (DOTR_LEADER_N - 1 <= idx) {
+        } else {
+            short t = DOTR_LEADER_WORK->t;
+            DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(dx * (float)(1024 - t) / 1024.0f + dx2 * (float)t / 1024.0f,
+                             dz * (float)(1024 - t) / 1024.0f + dz2 * (float)t / 1024.0f);
+        }
+        if (DOTR_LEADER_WORK->t < 1024 && DOTR_LEADER_WORK->idx < DOTR_LEADER_N) {
+            DOTR_LEADER_WORK->t += 256;
+            if (DOTR_LEADER_WORK->t >= 1024) {
+                DOTR_LEADER_WORK->idx++;
+                if (DOTR_LEADER_N <= DOTR_LEADER_WORK->idx) {
+                    DOTR_LEADER_WORK->t = 0;
+                    DOTR_LEADER_WORK->state = 3;
+                    DOTR_LEADER_WORK->idx = DOTR_LEADER_N;
+                } else {
+                    DOTR_LEADER_WORK->t = 0;
+                }
+            }
+        }
+        if (DOTR_LEADER_FROM == DOTR_LEADER_TO) {
+            DOTR_LEADER_WORK->t = 0;
+            DOTR_LEADER_WORK->state = 3;
+            DOTR_LEADER_WORK->idx = DOTR_LEADER_N;
+        }
+    } else if (rev && DOTR_LEADER_WORK->state != 0 && fwd && 0 < DOTR_LEADER_WORK->show && DOTR_LEADER_WORK->t <= 1024) {
+        if ((short)DOTR_LEADER_WORK->state == 1) {
+            DOTR_LEADER_WORK->idx = DOTR_LEADER_N - 1;
+            DOTR_LEADER_WORK->state = 2;
+        }
+        idx = DOTR_LEADER_WORK->idx;
+        dx2 = DOTR_LEADER_X(1) - DOTR_LEADER_X(2);
+        dz2 = DOTR_LEADER_Z(1) - DOTR_LEADER_Z(2);
+        func_001A6C18(dx2, dz2);
+        x0 = &DOTR_LEADER_X(0);
+        z0 = &DOTR_LEADER_Z(0);
+        dx = *x0 - DOTR_LEADER_X(1);
+        dz = *z0 - DOTR_LEADER_Z(1);
+        DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(dx, dz);
+        if (DOTR_LEADER_WORK->state == 3) {
+            DOTR_LEADER_WORK->pos[0] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].x;
+            DOTR_LEADER_WORK->pos[1] = h + DOTR_LEADER_SPOT[DOTR_LEADER_TO].y;
+            DOTR_LEADER_WORK->pos[2] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].z;
+        } else {
+            px = DOTR_LEADER_X(1);
+            DOTR_LEADER_WORK->pos[0] = px + dx * (float)DOTR_LEADER_WORK->t / 1024.0f;
+            DOTR_LEADER_WORK->pos[1] = DOTR_LEADER_SPOT[0].y + h;
+            pz = DOTR_LEADER_Z(1);
+            DOTR_LEADER_WORK->pos[2] = pz + dz * (float)DOTR_LEADER_WORK->t / 1024.0f;
+        }
+        if (DOTR_LEADER_N <= idx) {
+            DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(*x0 - DOTR_LEADER_X(-1), *z0 - DOTR_LEADER_Z(-1));
+        } else if (DOTR_LEADER_N - 1 <= idx) {
+        } else {
+            short t = DOTR_LEADER_WORK->t;
+            DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(dx2 * (float)(1024 - t) / 1024.0f + dx * (float)t / 1024.0f,
+                             dz2 * (float)(1024 - t) / 1024.0f + dz * (float)t / 1024.0f);
+        }
+        if (DOTR_LEADER_WORK->state < 3 && DOTR_LEADER_WORK->t < 1024 && 0 <= DOTR_LEADER_WORK->idx) {
+            DOTR_LEADER_WORK->t += 256;
+            if (DOTR_LEADER_WORK->t >= 1024) {
+                DOTR_LEADER_WORK->idx--;
+                if (DOTR_LEADER_WORK->idx < 0) {
+                    DOTR_LEADER_WORK->t = 0;
+                    DOTR_LEADER_WORK->state = 3;
+                    DOTR_LEADER_WORK->idx = 0;
+                } else {
+                    DOTR_LEADER_WORK->t = 0;
+                }
+            }
+        }
+        if (DOTR_LEADER_FROM == DOTR_LEADER_TO) {
+            DOTR_LEADER_WORK->t = 0;
+            DOTR_LEADER_WORK->state = 3;
+            DOTR_LEADER_WORK->idx = 0;
+        }
+    } else if (DOTR_LEADER_WORK->state != 0 && 0 < DOTR_LEADER_WORK->show && DOTR_LEADER_WORK->t <= 1024) {
+        dz = DOTR_LEADER_SPOT[DOTR_LEADER_TO].x - DOTR_LEADER_SPOT[from].x;
+        dx = DOTR_LEADER_SPOT[DOTR_LEADER_TO].z - DOTR_LEADER_SPOT[from].z;
+        DOTR_LEADER_WORK->angle = DOTR_LEADER_ANGLE(dz, dx);
+        if (DOTR_LEADER_WORK->state == 3) {
+            DOTR_LEADER_WORK->pos[0] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].x;
+            DOTR_LEADER_WORK->pos[1] = h + DOTR_LEADER_SPOT[DOTR_LEADER_TO].y;
+            DOTR_LEADER_WORK->pos[2] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].z;
+        } else {
+            DOTR_LEADER_WORK->pos[0] = DOTR_LEADER_SPOT[DOTR_LEADER_FROM].x + dz * (float)DOTR_LEADER_WORK->t / 1024.0f;
+            DOTR_LEADER_WORK->pos[1] = h + DOTR_LEADER_SPOT[DOTR_LEADER_FROM].y;
+            DOTR_LEADER_WORK->pos[2] = DOTR_LEADER_SPOT[DOTR_LEADER_FROM].z + dx * (float)DOTR_LEADER_WORK->t / 1024.0f;
+        }
+        DOTR_LEADER_WORK->t += 16;
+        if (DOTR_LEADER_WORK->t >= 1024) {
+            DOTR_LEADER_WORK->t = 0;
+            DOTR_LEADER_WORK->state = 3;
+            DOTR_LEADER_WORK->idx = 0;
+            DOTR_LEADER_WORK->pos[0] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].x;
+            DOTR_LEADER_WORK->pos[1] = h + DOTR_LEADER_SPOT[DOTR_LEADER_TO].y;
+            DOTR_LEADER_WORK->pos[2] = DOTR_LEADER_SPOT[DOTR_LEADER_TO].z;
+        }
+        if (DOTR_LEADER_FROM == DOTR_LEADER_TO) {
+            DOTR_LEADER_WORK->t = 0;
+            DOTR_LEADER_WORK->state = 3;
+            DOTR_LEADER_WORK->idx = 0;
+        }
+    } else {
+        DOTR_LEADER_WORK->pos[0] = DOTR_LEADER_SPOT[from].x;
+        DOTR_LEADER_WORK->pos[1] = h + DOTR_LEADER_SPOT[DOTR_LEADER_FROM].y;
+        DOTR_LEADER_WORK->pos[2] = DOTR_LEADER_SPOT[DOTR_LEADER_FROM].z;
+        p.x = (float)(DOTR_LEADER_WORK->mx - 320);
+        p.y = (float)(DOTR_LEADER_WORK->my - 224);
+        p.z = 1.0f;
+        p.w = 1.0f;
+        q.x = (float)(DOTR_LEADER_WORK->mx - 320);
+        q.y = (float)(DOTR_LEADER_WORK->my - 224);
+        q.z = 100.0f;
+        q.w = 1.0f;
+        func_00205CB0(&p, p.x, p.y);
+        q = *(struct DotrLeaderModelVec *)func_001F9AD0_b(0);
+        func_00206430(DOTR_LEADER_WORK->plane, &p, &q, &out);
+        DOTR_LEADER_WORK->angle += DOTR_LEADER_ANGLE(out.x - DOTR_LEADER_WORK->pos[0], out.z - DOTR_LEADER_WORK->pos[2]);
+    }
+    func_001F29E0(30, 1);
+    func_001F2AD0_b(30, 32);
+    func_001F25D0(30, &scale);
+    func_001F22B0(30, DOTR_LEADER_WORK->pos);
+    rot.x = 0;
+    rot.y = DOTR_LEADER_WORK->angle + 32767 + 1;
+    rot.z = 0;
+    func_001F24C0(30, &rot);
+    func_001F2800_b(30, DOTR_LEADER_WORK->alpha);
+    DOTR_LEADER_WORK->angle = 0;
+    func_001F30B0(30, 1);
+    return cursor;
+}
+#undef DOTR_LEADER_WORK
+#undef DOTR_LEADER_FROM
+#undef DOTR_LEADER_TO
+#undef DOTR_LEADER_X
+#undef DOTR_LEADER_Z
+#undef DOTR_LEADER_N
+#undef DOTR_LEADER_ANGLE
+#undef DOTR_LEADER_SPOT
 
 s32 func_0022C3C0(s32 arg0) {
     switch (arg0) {
@@ -1000,7 +1352,208 @@ void func_0022C450(void) {
     } while (bank < 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_0022C570);
+struct DotrGlideSpot {
+    float x;
+    float unknown_04;
+    float y;
+    float unknown_0c[6];
+    unsigned char unknown_24[2];
+    short marks[7];
+};
+struct DotrGlideVector3 {
+    float x;
+    float y;
+    float z;
+};
+struct DotrGlideRecord {
+    float x[64];
+    float y[64];
+    short count;
+    short unknown_202;
+};
+struct DotrGlideBank {
+    unsigned char unknown_0000[0x22c];
+    struct DotrGlideRecord records[2][16];
+    short unknown_42ac[2][16];
+    short unknown_42ec[2][16][64];
+    short unknown_52ec[32];
+    short unknown_532c[32];
+    short limit;
+    short unknown_536e;
+    short saved_ticks;
+    unsigned char unknown_5372[4];
+    signed char idle;
+};
+struct DotrGlideList {
+    unsigned char unknown_00[70];
+    short cell;
+    short unknown_48;
+    short other_cell;
+};
+#define DOTR_GLIDE_BANK ((struct DotrGlideBank *)0x1ed0000)
+extern struct DotrGlideSpot D_00298BA0_22c570[];
+extern struct DotrGlideList D_00299020_22c570[2][16];
+int func_001EE4B0_b(int cursor, int index, struct DotrGlideVector3 *position, void *d, int e, int f, int g);
+
+int func_0022C570(int cursor)
+{
+    struct DotrGlideVector3 pos;
+    struct DotrGlideBank *bank = DOTR_GLIDE_BANK;
+    int row;
+    int n;
+    int side;
+    short model;
+    short kind;
+    short count;
+    short state;
+    int i;
+    int k;
+    int j;
+
+    bank->idle = 1;
+    for (side = 0; side < 2; side++) {
+        if (side == 0) {
+            model = 28;
+            n = 16;
+        } else {
+            model = 29;
+            n = 12;
+        }
+        for (row = 0; row < n; row++) {
+            count = bank->records[side][row].count;
+            state = bank->records[side][row].unknown_202;
+            kind = 0;
+            if (side == 0) {
+                switch (row) {
+                case 0:
+                case 15:
+                    kind = 0;
+                    break;
+                default:
+                    switch (state) {
+                    case 1:
+                        kind = 1;
+                        bank->idle = 0;
+                        break;
+                    case 2:
+                        kind = 2;
+                        bank->idle = 0;
+                        bank->unknown_42ac[side][row] = count;
+                        break;
+                    case 3:
+                        kind = 3;
+                        break;
+                    }
+                    break;
+                }
+            } else {
+                switch (row) {
+                case 4:
+                case 5:
+                case 11:
+                    kind = 0;
+                    break;
+                default:
+                    if (state == 1) {
+                        kind = 1;
+                        bank->idle = 0;
+                    } else if (state == 2) {
+                        kind = 2;
+                        bank->idle = 0;
+                    } else if (state == 3) {
+                        kind = 3;
+                    } else {
+                        
+                        kind = 0;
+                    }
+                    break;
+                }
+            }
+            if (kind == 1) {
+                for (i = 0; i <= bank->unknown_42ac[side][row]; i++) {
+                    if (bank->unknown_42ec[side][row][i] < 256) {
+                        pos.x = bank->records[side][row].x[i];
+                        pos.y = D_00298BA0_22c570[0].unknown_04 - 10.0f + 10.0f * (float)bank->unknown_42ec[side][row][i] / 256.0f;
+                        pos.z = bank->records[side][row].y[i];
+                    } else {
+                        pos.x = bank->records[side][row].x[i];
+                        pos.y = D_00298BA0_22c570[0].unknown_04;
+                        pos.z = bank->records[side][row].y[i];
+                    }
+                    cursor = func_001EE4B0_b(cursor, model + 34, &pos, 0, 0, 0, 0);
+                    if (i == bank->unknown_42ac[side][row] && bank->unknown_42ec[side][row][i] >= 64) {
+                        if (bank->unknown_42ac[side][row] < count) {
+                            bank->unknown_42ac[side][row]++;
+                        } else {
+                            bank->unknown_42ac[side][row] = count;
+                        }
+                    }
+                    if (bank->unknown_42ec[side][row][i] < 256) {
+                        bank->unknown_42ec[side][row][i] += 16;
+                        if (bank->unknown_42ec[side][row][i] >= 256) {
+                            bank->unknown_42ec[side][row][i] = 256;
+                        }
+                    }
+                    if (count == bank->unknown_42ac[side][row]) {
+                        if (bank->unknown_42ec[side][row][count] >= 256) {
+                            bank->unknown_52ec[D_00299020_22c570[side][row].cell] = 1;
+                            bank->records[side][row].unknown_202 = 3;
+                            bank->unknown_42ac[side][row] = 0;
+                            for (j = 0; j < 64; j++) {
+                                bank->unknown_42ec[side][row][j] = 0;
+                            }
+                        }
+                    }
+                }
+            } else if (kind == 2) {
+                for (i = count; i >= bank->unknown_42ac[side][row]; i--) {
+                    if (bank->unknown_42ec[side][row][i] < 256) {
+                        pos.x = bank->records[side][row].x[i];
+                        pos.y = D_00298BA0_22c570[0].unknown_04 - 10.0f + 10.0f * (float)bank->unknown_42ec[side][row][i] / 256.0f;
+                        pos.z = bank->records[side][row].y[i];
+                    } else {
+                        pos.x = bank->records[side][row].x[i];
+                        pos.y = D_00298BA0_22c570[0].unknown_04;
+                        pos.z = bank->records[side][row].y[i];
+                    }
+                    cursor = func_001EE4B0_b(cursor, model + 34, &pos, 0, 0, 0, 0);
+                    if (i == bank->unknown_42ac[side][row] && bank->unknown_42ec[side][row][i] >= 64) {
+                        if (0 < bank->unknown_42ac[side][row]) {
+                            bank->unknown_42ac[side][row]--;
+                        } else {
+                            bank->unknown_42ac[side][row] = 0;
+                        }
+                    }
+                    if (bank->unknown_42ec[side][row][i] < 256) {
+                        bank->unknown_42ec[side][row][i] += 16;
+                        if (bank->unknown_42ec[side][row][i] >= 256) {
+                            bank->unknown_42ec[side][row][i] = 256;
+                        }
+                    }
+                    if (bank->unknown_42ac[side][row] == 0) {
+                        if (bank->unknown_42ec[side][row][0] >= 256) {
+                            bank->unknown_52ec[D_00299020_22c570[side][row].other_cell] = 1;
+                            bank->records[side][row].unknown_202 = 3;
+                            bank->unknown_42ac[side][row] = 0;
+                            for (k = 0; k < 64; k++) {
+                                bank->unknown_42ec[side][row][k] = 0;
+                            }
+                        }
+                    }
+                }
+            } else if (kind == 3) {
+                for (i = 0; i <= count; i++) {
+                    pos.x = bank->records[side][row].x[i];
+                    pos.y = D_00298BA0_22c570[0].unknown_04;
+                    pos.z = bank->records[side][row].y[i];
+                    cursor = func_001EE4B0_b(cursor, model + 34, &pos, 0, 0, 0, 0);
+                }
+            }
+        }
+    }
+    return cursor;
+}
+#undef DOTR_GLIDE_BANK
 
 s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
     extern s32 func_001A22C0(f32);

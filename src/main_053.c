@@ -1056,7 +1056,58 @@ void func_001FD610(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD680);
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FDB90);
+struct DotrSlotTableEntry {
+    unsigned int unknown_000 : 31;
+    signed int flag : 1;
+    int unknown_004[4];
+};
+typedef char DotrSlotTableEntrySizeMustBe20[(sizeof(struct DotrSlotTableEntry) == 20) ? 1 : -1];
+struct DotrSlotTable {
+    int words[7];
+    struct DotrSlotTableEntry entries[30];
+    int unknown_274;
+    unsigned short unknown_278;
+};
+extern struct DotrSlotTable D_0031C070_1fdb90;
+extern int D_002D19D0_1fdb90;
+extern unsigned short D_002D49D4_1fdb90[];
+static inline int narrow_p(unsigned short x) { return (x & 0x2000) ? 1 : 0; }
+
+int func_001FDB90(unsigned short *p, char (*half)[53], short (*code)[53], unsigned short *cols, unsigned short *widths, unsigned short *line)
+{
+    struct DotrSlotTable *ml = &D_0031C070_1fdb90;
+    unsigned short word = *p;
+    unsigned short c = word & 0x1fff;
+    unsigned char w = narrow_p(word) ? 12 : 22;
+    int ret = 1;
+    int n;
+    int count;
+    unsigned short *q;
+
+    if (word & 0x4000) {
+        word = *++p;
+        count = c & 0x3f;
+        q = &D_002D49D4_1fdb90[(&D_002D19D0_1fdb90)[word & 0x3fff]];
+        q += (c >> 6) & 0x7f;
+        while (count != 0) {
+            n = func_001FDB90(q, half, code, cols, widths, line);
+            if (q[n - 1] & 0x8000) {
+                break;
+            }
+            count -= n;
+            q += n;
+        }
+        ret = 2;
+    } else if (c == ml->unknown_278) {
+        (*line)++;
+    } else {
+        widths[*line] += w;
+        half[*line][cols[*line]] = w >> 1;
+        code[*line][cols[*line]] = c;
+        cols[*line]++;
+    }
+    return ret;
+}
 
 typedef struct {
     u64 TBP0 : 14;
@@ -1249,7 +1300,138 @@ s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
     return func_00207650(arg0, (s32)&packet, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FE290);
+typedef int DotrDrawWord;
+struct DotrCursorPacketHeader {
+    unsigned short unknown_00;
+    unsigned short unknown_02;
+    int unknown_04;
+    long unknown_08;
+};
+int func_002086D0_b(struct DotrCursorPacketHeader *packet, long value);
+DotrDrawWord func_00207650_b(DotrDrawWord cursor, void *packet, int a1, int a2);
+extern unsigned char D_0031C070_1fe290[];
+struct DotrSlotTableWords {
+    int words[4];
+};
+extern struct DotrSlotTableWords D_002CFCD0_1fe290[];
+struct DotrCursorSlotEntry {
+    unsigned int unknown_000 : 31;
+    signed int flag : 1;
+    int unknown_004[4];
+};
+struct DotrCursorTex {
+    long word;
+};
+extern struct DotrCursorSlotEntry *func_001FEAB0_b(int index);
+struct DotrCursorSlotUv {
+    unsigned short u : 14;
+    unsigned short v : 14;
+};
+struct DotrCursorSlotXyz {
+    unsigned long x : 16;
+    unsigned long y : 16;
+    unsigned long z : 24;
+    unsigned long f : 8;
+};
+struct DotrCursorRectGVertex {
+    unsigned char colour[4];
+    float unknown_04;
+    long uv;
+    struct DotrCursorSlotXyz xyz;
+};
+struct DotrCursorRectGPacket {
+    long header[2];
+    struct DotrCursorRectGVertex vertex[4];
+    long unknown_70;
+    struct DotrCursorTex tex0;
+    struct DotrCursorTex tex1;
+    long unknown_88;
+};
+extern unsigned char D_00293080[];
+
+int func_001FE290(int cursor, int index, int x, int y, void *rect_v, unsigned char *colour)
+{
+    struct DotrSlotTableWords * rect = rect_v;
+    struct DotrCursorRectGPacket packet;
+    int *state = (int *)D_0031C070_1fe290;
+    struct DotrCursorSlotEntry *entry;
+    int left, top, right, bottom;
+    int u, v, u2, v2;
+
+    entry = func_001FEAB0_b(index);
+    if (entry == 0) {
+        return cursor;
+    }
+    if (!entry->flag) {
+        return cursor;
+    }
+    if (rect == 0) {
+        rect = D_002CFCD0_1fe290;
+    }
+    if (colour == 0) {
+        colour = D_00293080;
+    }
+    left = rect->words[0] + x;
+    top = rect->words[1] + y;
+    right = rect->words[2] + left;
+    bottom = rect->words[3] + top;
+    v = entry->unknown_004[1];
+    u = entry->unknown_004[0];
+    u2 = entry->unknown_004[2] + u;
+    v2 = entry->unknown_004[3] + v;
+    ((struct DotrCursorPacketHeader *)packet.header)->unknown_02 = 52;
+    ((struct DotrCursorPacketHeader *)packet.header)->unknown_00 = 12;
+    ((struct DotrCursorPacketHeader *)packet.header)->unknown_08 = 0x421421421421L;
+    ((struct DotrCursorPacketHeader *)packet.header)->unknown_04 = 0;
+    ((struct DotrCursorPacketHeader *)packet.header)->unknown_02 |= 0x800;
+    func_002086D0_b((struct DotrCursorPacketHeader *)packet.header, 0x8000000044L);
+    packet.vertex[0].colour[0] = colour[2];
+    packet.vertex[0].colour[1] = colour[1];
+    packet.vertex[0].colour[2] = colour[0];
+    packet.vertex[0].colour[3] = colour[3];
+    packet.vertex[0].unknown_04 = 1.0f;
+    packet.vertex[1].colour[0] = colour[6];
+    packet.vertex[1].colour[1] = colour[5];
+    packet.vertex[1].colour[2] = colour[4];
+    packet.vertex[1].colour[3] = colour[7];
+    packet.vertex[1].unknown_04 = 1.0f;
+    packet.vertex[2].colour[0] = colour[10];
+    packet.vertex[2].colour[1] = colour[9];
+    packet.vertex[2].colour[2] = colour[8];
+    packet.vertex[2].colour[3] = colour[11];
+    packet.vertex[2].unknown_04 = 1.0f;
+    packet.vertex[3].colour[0] = colour[14];
+    packet.vertex[3].colour[1] = colour[13];
+    packet.vertex[3].colour[2] = colour[12];
+    packet.vertex[3].colour[3] = colour[15];
+    packet.vertex[3].unknown_04 = 1.0f;
+    packet.vertex[0].xyz.x = left << 4;
+    packet.vertex[0].xyz.y = top << 4;
+    packet.vertex[0].xyz.z = state[157];
+    packet.vertex[0].xyz.f = 0;
+    packet.vertex[1].xyz.x = right << 4;
+    packet.vertex[1].xyz.y = top << 4;
+    packet.vertex[1].xyz.z = state[157];
+    packet.vertex[1].xyz.f = 0;
+    packet.vertex[2].xyz.x = left << 4;
+    packet.vertex[2].xyz.y = bottom << 4;
+    packet.vertex[2].xyz.z = state[157];
+    packet.vertex[2].xyz.f = 0;
+    packet.vertex[3].xyz.x = right << 4;
+    packet.vertex[3].xyz.y = bottom << 4;
+    packet.vertex[3].xyz.z = state[157];
+    packet.vertex[3].xyz.f = 0;
+    ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->u = (u << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->v = (v << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->u = (u2 << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->v = (v << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[2].uv)->u = (u << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[2].uv)->v = (v2 << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[3].uv)->u = (u2 << 4) + 8;
+    ((struct DotrCursorSlotUv *)&packet.vertex[3].uv)->v = (v2 << 4) + 8;
+    func_001FDD70(&packet.tex0, &packet.tex1);
+    return func_00207650_b(cursor, &packet, 0, 0);
+}
 
 typedef struct Rect_001FE660 {
     s32 x;

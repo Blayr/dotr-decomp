@@ -1030,7 +1030,6 @@ typedef struct {
     u8 data[0x7FF8];
 } FixedBlock_001F0500;
 
-void func_001E8BF0(s32);
 
 s32 func_001F0500(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_s0;
