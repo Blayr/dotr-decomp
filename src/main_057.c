@@ -1207,7 +1207,31 @@ asm void func_0020BAD0(void *p) {
     sqc2 vf31, 0x30(a0)
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BAF0);
+asm void func_0020BAF0(s32 arg0) {
+    .set noreorder
+    lw a2, D_0032A220
+    la v1, D_00326A20
+    sll a1, a2, 3
+    subu a1, a1, a2
+    sll a1, a1, 4
+    addu v1, v1, a1
+    sqc2 vf28, 0x0(v1)
+    sqc2 vf29, 0x10(v1)
+    sqc2 vf30, 0x20(v1)
+    beqz a0, L_0020BB38
+    sqc2 vf31, 0x30(v1)
+    lqc2 vf28, 0x0(a0)
+    lqc2 vf29, 0x10(a0)
+    lqc2 vf30, 0x20(a0)
+    lqc2 vf31, 0x30(a0)
+    nop
+L_0020BB38:
+    lw v1, D_0032A220
+    addiu v1, v1, 0x1
+    .set reorder
+    sw v1, D_0032A220
+    jr ra
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BB50);
 
