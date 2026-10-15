@@ -1167,6 +1167,7 @@ void func_001847B0(s32 arg0);
 void func_001847D8(s32 arg0, s32 arg1);
 void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3);
 s32 *func_001849A0(void);
+void func_001849B0(void);
 void func_00184A18(void *arg0, s16 psm, s16 w, s16 h, s16 dx, s16 dy);
 s32 func_00184C88(void *arg0);
 s32 func_00184D48(s16 arg0, s16 arg1, s16 arg2);

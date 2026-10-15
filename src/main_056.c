@@ -1234,7 +1234,6 @@ typedef struct Mode_00209510 {
     u32 reserved : 20;
 } Mode_00209510;
 
-void func_001849B0(void);
 extern u8 D_00286980[];
 extern u8 D_00293F10[];
 extern u8 D_00293F14[];

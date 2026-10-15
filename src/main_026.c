@@ -87,7 +87,25 @@ s32 *func_001849A0(void) {
     return &D_0028D8F0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_001849B0);
+/* sceGsResetPath (libgraph): reset VIF1, VU1 and GIF; the VIF1 packet is D_0028D900 (see kfiv-decomp (MIT) graph002, THIRD_PARTY_NOTICES.md) */
+
+extern dk_int128 D_0028D900[2];
+
+void func_001849B0(void) {
+    register u32 s __asm__("$4");
+
+    *(volatile u32 *)0x10003C10 = 1;
+    *(volatile u32 *)0x10003C20 = 2;
+    s = 0;
+    __asm__ __volatile__("sync");
+    __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s) : "0"(s));
+    s |= 0x200;
+    __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
+    __asm__ __volatile__("sync.p");
+    *(volatile dk_int128 *)0x10005000 = D_0028D900[0];
+    *(volatile dk_int128 *)0x10005000 = D_0028D900[1];
+    *(volatile u32 *)0x10003000 = 1;
+}
 
 typedef struct {
     s16 inter;
