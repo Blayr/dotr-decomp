@@ -43,7 +43,6 @@ typedef struct {
     s32 value58;
 } Data_0020FAF0;
 
-void lRhModel_SetupMultiMotion(void *, void *, void *, f32, f32, f32, f32);
 
 void lRhModel_DrawCommonPart(void *arg0) {
     Args_0020FAF0 *arg = arg0;
@@ -289,7 +288,65 @@ void lRhModel_SetupNoMotionRecursive(void *arg0, void *arg1, void *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModel_SetupMultiMotion);
+typedef struct {
+    u8 pad00[0x90];
+    u8 *data;
+    s32 motion94;
+    f32 frame98;
+    s32 count9C;
+    s32 motionA0;
+    f32 frameA4;
+    f32 valueA8;
+    f32 valueAC;
+    u8 padB0[0xE0 - 0xB0];
+    u16 countE0;
+} Spr_00210260;
+
+typedef struct {
+    u8 pad0[4];
+    u16 count;
+    u8 pad6[2];
+    s32 *motion;
+} Motion_00210260;
+
+extern void *D_0032A720;
+extern u8 D_70004000[];
+extern u8 D_00295070[];
+
+s32 lRhModel_SetupMultiMotion(void *arg0, void *arg1, void *arg2, f32 frame, f32 frame2, f32 value, f32 value2) {
+    Spr_00210260 *spr = (Spr_00210260 *)0x70000000;
+    Motion_00210260 *m1 = arg1;
+    Motion_00210260 *m2 = arg2;
+    s32 c1;
+    s32 c2;
+    u8 *data = (u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x10);
+
+    spr->data = data;
+    spr->motion94 = *m1->motion;
+    spr->frame98 = frame;
+    c1 = m1->count;
+    c2 = m2->count;
+    spr->count9C = (c1 < c2) ? c1 : c2;
+    spr->motionA0 = *m2->motion;
+    spr->frameA4 = frame2;
+    spr->valueA8 = value;
+    spr->valueAC = value2;
+    spr->countE0 = ((u16 *)m1->motion)[4];
+    {
+    register void **save = &D_0032A720;
+    asm {
+        sw sp, 0(save)
+        la at, D_70004000
+        addiu sp, at, 0
+    }
+    }
+    lRhModel_SetupMultiMotionRecursive(data, 0, D_00295070);
+    asm {
+        la v0, D_0032A720
+        lw sp, 0(v0)
+    }
+    return 1;
+}
 
 typedef f32 Vec4_00210310[4] __attribute__((aligned(16)));
 
