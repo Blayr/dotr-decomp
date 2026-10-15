@@ -72,7 +72,112 @@ s32 func_00186D78(void *arg0) {
 
 #undef CFC2_00186D78
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00186E58);
+/* libdev: write VU0's registers back from a save area (vf0-vf31, status, MAC, clipping, R, I, Q, vi0-vi15);
+   returns 0 while VU0 is running (func_00186BB8). The reader is func_00186D78. */
+
+typedef struct Vu0Cnd_00186E58 {
+    dk_int128 vf[32];
+    u32 status;
+    u32 mac;
+    u32 clipping;
+    u32 r;
+    u32 i;
+    u32 q;
+    u16 vi[16];
+} Vu0Cnd_00186E58;
+
+#define CTC2_00186E58(src, vi) __asm__ __volatile__("ctc2.ni %0, $" #vi : : "r"(src))
+
+s32 func_00186E58(void *arg0) {
+    dk_int128 *vf;
+    Vu0Cnd_00186E58 *cnd = arg0;
+    u32 s;
+
+    vf = cnd->vf;
+
+    if (func_00186BB8() != 0) {
+        return 0;
+    }
+    __asm__ __volatile__("lqc2 $vf0, 0x0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf1, 0x10(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf2, 0x20(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf3, 0x30(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf4, 0x40(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf5, 0x50(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf6, 0x60(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf7, 0x70(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf8, 0x80(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf9, 0x90(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf10, 0xA0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf11, 0xB0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf12, 0xC0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf13, 0xD0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf14, 0xE0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf15, 0xF0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf16, 0x100(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf17, 0x110(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf18, 0x120(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf19, 0x130(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf20, 0x140(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf21, 0x150(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf22, 0x160(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf23, 0x170(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf24, 0x180(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf25, 0x190(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf26, 0x1A0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf27, 0x1B0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf28, 0x1C0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf29, 0x1D0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf30, 0x1E0(%0)" : : "r"(vf));
+    __asm__ __volatile__("lqc2 $vf31, 0x1F0(%0)" : : "r"(vf));
+    s = cnd->status;
+    CTC2_00186E58(s, vi16);
+    s = cnd->mac;
+    CTC2_00186E58(s, vi17);
+    s = cnd->clipping;
+    CTC2_00186E58(s, vi18);
+    s = cnd->r;
+    CTC2_00186E58(s, vi20);
+    s = cnd->i;
+    CTC2_00186E58(s, vi21);
+    s = cnd->q;
+    CTC2_00186E58(s, vi22);
+    s = cnd->vi[0];
+    CTC2_00186E58(s, vi0);
+    s = cnd->vi[1];
+    CTC2_00186E58(s, vi1);
+    s = cnd->vi[2];
+    CTC2_00186E58(s, vi2);
+    s = cnd->vi[3];
+    CTC2_00186E58(s, vi3);
+    s = cnd->vi[4];
+    CTC2_00186E58(s, vi4);
+    s = cnd->vi[5];
+    CTC2_00186E58(s, vi5);
+    s = cnd->vi[6];
+    CTC2_00186E58(s, vi6);
+    s = cnd->vi[7];
+    CTC2_00186E58(s, vi7);
+    s = cnd->vi[8];
+    CTC2_00186E58(s, vi8);
+    s = cnd->vi[9];
+    CTC2_00186E58(s, vi9);
+    s = cnd->vi[10];
+    CTC2_00186E58(s, vi10);
+    s = cnd->vi[11];
+    CTC2_00186E58(s, vi11);
+    s = cnd->vi[12];
+    CTC2_00186E58(s, vi12);
+    s = cnd->vi[13];
+    CTC2_00186E58(s, vi13);
+    s = cnd->vi[14];
+    CTC2_00186E58(s, vi14);
+    s = cnd->vi[15];
+    CTC2_00186E58(s, vi15);
+    return 1;
+}
+
+#undef CTC2_00186E58
 
 void func_00186FC8(void) {
     *(volatile s32 *)0x10003810 = 1;
