@@ -45,7 +45,6 @@ typedef struct {
 
 void lRhModel_SetupMultiMotion(void *, void *, void *, f32, f32, f32, f32);
 void lRhModel_SetupFloatMotion(void *, void *, f32);
-void lRhModel_SetupPulseMotion(void *, void *, f32);
 
 void lRhModel_DrawCommonPart(void *arg0) {
     Args_0020FAF0 *arg = arg0;
@@ -780,7 +779,38 @@ s32 lRhModel_GetInterpolateMotionItem(void *src, f32 time, s32 flags, f32 *posit
     return flags;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModel_SetupPulseMotion);
+extern void *D_0032A720;  /* the stack pointer saved while the pulse walk runs on the scratchpad */
+extern u8 D_70004000[];   /* the scratchpad stack top */
+extern u8 D_00295070[];
+
+/* Fill the scratchpad header for a pulse-motion walk, then run lRhModel_SetupPulseMotionRecursive with the
+   stack on the scratchpad (0x70004000), the real stack pointer kept in D_0032A720. */
+
+s32 lRhModel_SetupPulseMotion(u8 *model, u8 *motion, f32 time) {
+    u8 *spr = (u8 *)0x70000000;
+    register void **saved;
+
+    model += *(s32 *)(model + 0x10);
+    *(u8 **)(spr + 0x90) = model;
+    *(s32 *)(spr + 0x94) = **(s32 **)(motion + 8);
+    *(f32 *)(spr + 0x98) = time;
+    *(s32 *)(spr + 0x9C) = *(u16 *)(motion + 4);
+    *(u16 *)(spr + 0xE0) = *(u16 *)(*(u8 **)(motion + 8) + 8);
+    saved = &D_0032A720;
+    asm {
+        sw sp, 0x0(saved)
+        la at, D_70004000
+        addiu sp, at, 0x0
+    }
+    lRhModel_SetupPulseMotionRecursive(model, 0, D_00295070);
+    {
+        register void **back = &D_0032A720;
+        asm {
+            lw sp, 0x0(back)
+        }
+    }
+    return 1;
+}
 
 typedef f32 Vec4_00211530[4] __attribute__((aligned(16)));
 
