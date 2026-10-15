@@ -1063,6 +1063,7 @@ s32 SzModel_SetAnimFrameParam(s32 arg0, s32 arg1, f32 value);
 s32 SzModel_SetAnimIntr(s32 arg0, s32 arg1);
 s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2);
 s32 SzModel_SetAnimIntrReverse(s32 arg0);
+s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1);
 s32 SzModel_SetAnimParam(s32 arg0, s32 arg1, s32 arg2);
 s32 SzModel_SetAnimSpeed(s32 arg0, f32 value);
 s32 SzModel_SetAnimSpeedParam(s32 arg0, s32 arg1, f32 value);

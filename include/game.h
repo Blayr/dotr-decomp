@@ -398,7 +398,6 @@ extern s8 D_00318142;
 
 extern s32 D_0031BB10;
 
-s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1);
 
 
 

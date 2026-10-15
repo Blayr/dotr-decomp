@@ -1775,7 +1775,47 @@ s32 SzModel_SetAnimIntrReverse(s32 arg0) {
     return SzModel_SetAnimIntrReverseParam(arg0, 6);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", SzModel_SetAnimIntrReverseParam);
+typedef struct {
+    f32 x, y, z;
+} Vec3_001F16C0;
+
+s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1) {
+    s8 oldLevel;
+    s32 scaled;
+    u8 * bytes;
+    Vec3_001F16C0 temp;
+    Obj_0031ABB0 * obj;
+    Vec3_001F16C0 * first;
+    Vec3_001F16C0 * second;
+    s8 * firstLevel;
+    s8 * secondLevel;
+    if ((arg0 < 0) || (arg0 >= 0x54)) {
+        return 0;
+    }
+    obj = D_0031ABB0[arg0];
+    if (obj == NULL) {
+        return 0;
+    }
+    bytes = (u8 *)obj;
+    first = (Vec3_001F16C0 *)&obj->slots[8];
+    second = (Vec3_001F16C0 *)&obj->slots[11];
+    firstLevel = &obj->lv[0];
+    secondLevel = &obj->lv[1];
+    if (*firstLevel >= 0 && (oldLevel = *secondLevel) >= 0) {
+        temp = *second;
+        *second = *first;
+        *first = temp;
+        *secondLevel = *firstLevel;
+        *firstLevel = oldLevel;
+        bytes[0x1FC] = (f32)(bytes[0x1FC] * arg1) / (f32)(u32)bytes[0x1FB];
+        bytes[0x1FB] = arg1;
+        bytes[0x1FC] = bytes[0x1FB] - bytes[0x1FC];
+        bytes[0x1FD] = 0;
+    } else {
+        return 0;
+    }
+    return 1;
+}
 
 typedef struct {
     u8 unused : 6;
