@@ -201,7 +201,51 @@ s32 sceSifSetIopAddr(s32 arg0, void *arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", sceSifResetIop);
+/* sceSifResetIop: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+/* The reset packet as this function's source sees it: the header's size fields are 64-bit
+   bitfields (unsigned long is 64-bit on the EE GCC), so dsize = 0 is an ld/and/sd. */
+typedef struct {
+    u64 psize : 8;
+    u64 dsize : 24;
+    u32 dest;
+    s32 cid;
+    u32 opt;
+    s32 arglen;
+    s32 mode;
+    char arg[80];
+} Reset_00183898;
+
+s32 sceSifResetIop(char *arg, s32 mode) {
+    sceSifDmaData dma;
+    s32 i;
+    u32 addr;
+
+    sceSifStopDma();
+    addr = ((u32 (*)(u32))sceSifGetReg)(0x80000000);
+    ((Reset_00183898 *)&D_00314040)->mode = mode;
+    for (i = 0; arg[i] != 0; i++) {
+        ((Reset_00183898 *)&D_00314040)->arg[i] = arg[i];
+    }
+    ((Reset_00183898 *)&D_00314040)->arglen = i;
+    ((Reset_00183898 *)&D_00314040)->dest = 0;
+    ((Reset_00183898 *)&D_00314040)->cid = 0x80000003;
+    ((Reset_00183898 *)&D_00314040)->dsize = 0;
+    ((Reset_00183898 *)&D_00314040)->psize = sizeof(Reset_00183898);
+    dma.src = (u32)&D_00314040;
+    dma.dest = addr;
+    dma.size = sizeof(Reset_00183898);
+    dma.u.attr = 0x44;
+    func_0017E190((s32 *)&D_00314040, sizeof(Reset_00183898));
+    ((s32 (*)(s32, s32))sceSifSetReg)(4, 0x40000);
+    if (sceSifSetDma((int *)&dma, 1) != 0) {
+        ((s32 (*)(s32, s32))sceSifSetReg)(4, 0x10000);
+        ((s32 (*)(s32, s32))sceSifSetReg)(4, 0x20000);
+        ((s32 (*)(s32, s32))sceSifSetReg)(0x80000002, 0);
+        ((s32 (*)(s32, s32))sceSifSetReg)(0x80000000, 0);
+        return 1;
+    }
+    return 0;
+}
 
 s32 sceSifIsAliveIop(void) {
     s32 x;
