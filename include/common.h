@@ -22,6 +22,15 @@ typedef int dk_int128 __attribute__((mode(TI)));
 #define __int128 dk_int128
 #endif
 
+/* MW_ALIGN(n): an aligned home for a spilled Metrowerks parameter (OVERLAYS-COMPILER.md, "parameter home
+ * slots"). The prototype dk writes into functions.h keeps it, and GCC rejects alignment on a parameter, so it
+ * is empty outside Metrowerks. */
+#if defined(__MWERKS__)
+#define MW_ALIGN(n) __attribute__((aligned(n)))
+#else
+#define MW_ALIGN(n)
+#endif
+
 #include "dk_asm.h"
 #include "structs.h"
 #include "game.h"
