@@ -10,7 +10,7 @@ table (taken, in order, from the function's asm file), and the compiled table's
 section is renamed so the linker script's /DISCARD/ drops it.
 GCC files (config/gcc_files.txt) get the same on GCC's assembly, before it is assembled:
 GCC writes each table into .rdata (`$L19: .word $L14 ...`), which the linker script drops
-for every file, and loads it with %hi/%lo($L19). The loads get the original table's name
+for every file, and loads it with %hi/%lo($L19) (2.9) or the macro `lw $3,$L19($2)` (2.96). The loads get the original table's name
 (the function's Nth table = the Nth jtbl_ in its asm) and the compiled table goes.
 Usage: jtbl_fix.py object.o   (run from the project root, after pad_functions.py)
        jtbl_fix.py --gcc out.s   (GCC's assembly, from the project root)"""
@@ -29,6 +29,7 @@ SHF_ALLOC = 0x2
 DROPPED = ".jtbl_compiled"
 GCC_LABEL_RE = re.compile(r"^(\$L\d+):")
 GCC_REF_RE = re.compile(r"%(hi|lo)\((\$L\d+)\)")
+GCC_MEM_RE = re.compile(r"(?<=,)(\$L\d+)(?=\()")  # 2.96's macro form: `lw $3,$L170($2)`
 
 
 def fix_gcc(path: Path) -> None:
@@ -54,7 +55,7 @@ def fix_gcc(path: Path) -> None:
         words = line.split()
         if words[:1] == [".ent"]:
             func = words[1]
-        for _, label in GCC_REF_RE.findall(line):
+        for label in [r[1] for r in GCC_REF_RE.findall(line)] + GCC_MEM_RE.findall(line):
             if label in tables and label not in used.setdefault(func, []):
                 used[func].append(label)
     names = {}
@@ -76,7 +77,8 @@ def fix_gcc(path: Path) -> None:
         if m and m.group(1) in names:
             skip = tables[m.group(1)]
             continue
-        out.append(GCC_REF_RE.sub(lambda r: f"%{r.group(1)}({names.get(r.group(2), r.group(2))})", line))
+        line = GCC_REF_RE.sub(lambda r: f"%{r.group(1)}({names.get(r.group(2), r.group(2))})", line)
+        out.append(GCC_MEM_RE.sub(lambda r: names.get(r.group(1), r.group(1)), line))
     path.write_text("".join(out))
 
 
