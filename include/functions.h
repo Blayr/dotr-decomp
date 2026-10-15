@@ -2542,6 +2542,7 @@ void func_0020C8F0(void *arg0, f32 *arg1);
 void func_0020C940(void *arg0, void *p1, void *p2, void *p3);
 void func_0020CB90(s32 arg0, u32 *arg1);
 void func_0020CBD0(s32 arg0);
+void func_0020CC10(void);
 void func_0020D070(f32 *arg0);
 f32 func_0020D0E0(f32 *arg0);
 f32 func_0020D100(f32 *arg0, f32 *arg1);
