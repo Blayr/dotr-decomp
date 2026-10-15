@@ -1,37 +1,23 @@
 #include "common.h"
 
-asm void func_0020CB20(void *arg0, void *arg1) {
-    .set noreorder
-    addiu sp, sp, -0x70
-    sq ra, 0x20(sp)
-    sq s1, 0x10(sp)
-    sq s0, 0x0(sp)
-    paddub s1, a0, zero
-    bnez s1, L_0020CB50
-    paddub s0, a1, zero
-    lqc2 vf8, 0x0(s0)
-    vmulx.xyzw vf28, vf28, vf8x
-    vmuly.xyzw vf29, vf29, vf8y
-    b L_0020CB7C
-    vmulz.xyzw vf30, vf30, vf8z
-L_0020CB50:
-    jal func_0020BBB0
-    addiu a0, sp, 0x30
-    lwc1 f0, 0x0(s0)
-    addiu a1, sp, 0x30
-    paddub a0, s1, zero
-    swc1 f0, 0x30(sp)
-    lwc1 f0, 0x4(s0)
-    swc1 f0, 0x44(sp)
-    lwc1 f0, 0x8(s0)
-    jal func_0020BC00
-    swc1 f0, 0x58(sp)
-L_0020CB7C:
-    lq ra, 0x20(sp)
-    lq s1, 0x10(sp)
-    lq s0, 0x0(sp)
-    jr ra
-    addiu sp, sp, 0x70
+void func_0020CB20(void *arg0, void *arg1) {
+    f32 m[4][4];
+    register f32 *scale = arg1;
+
+    if (arg0 == NULL) {
+        asm {
+            lqc2 vf8, 0x0(scale)
+            vmulx.xyzw vf28, vf28, vf8x
+            vmuly.xyzw vf29, vf29, vf8y
+            vmulz.xyzw vf30, vf30, vf8z
+        }
+    } else {
+        func_0020BBB0(m);
+        m[0][0] = scale[0];
+        m[1][1] = scale[1];
+        m[2][2] = scale[2];
+        func_0020BC00((s32)arg0, m);
+    }
 }
 
 void func_0020CB90(s32 arg0, u32 *arg1) {
@@ -50,121 +36,77 @@ void func_0020CBD0(s32 arg0) {
     func_0020BC00(arg0, matrix);
 }
 
-asm void func_0020CC10(void) {
-    .set noreorder
-    addiu sp, sp, -0xA0
-    sq ra, 0x50(sp)
-    sq s2, 0x40(sp)
-    sq s1, 0x30(sp)
-    sq s0, 0x20(sp)
-    swc1 f24, 0x10(sp)
-    swc1 f23, 0xC(sp)
-    swc1 f22, 0x8(sp)
-    swc1 f21, 0x4(sp)
-    paddub s2, a0, zero
-    swc1 f20, 0x0(sp)
-    paddub s1, a1, zero
-    bnez s2, L_0020CD84
-    paddub s0, a2, zero
-    beqz a3, L_0020CC64
-    nop
-    lqc2 vf8, 0x0(a3)
-    vmulax.xyzw ACC, vf28, vf8x
-    vmadday.xyzw ACC, vf29, vf8y
-    vmaddaz.xyzw ACC, vf30, vf8z
-    vmaddw.xyzw vf31, vf31, vf0w
-L_0020CC64:
-    beqz s0, L_0020CD68
-    nop
-    jal func_0020B480
-    lw a0, 0x0(s0)
-    lw a0, 0x0(s0)
-    jal func_0020B550
-    mov.s f20, f0
-    lw a0, 0x4(s0)
-    jal func_0020B480
-    mov.s f21, f0
-    lw a0, 0x4(s0)
-    jal func_0020B550
-    mov.s f22, f0
-    lw a0, 0x8(s0)
-    jal func_0020B480
-    mov.s f24, f0
-    lw a0, 0x8(s0)
-    jal func_0020B550
-    mov.s f23, f0
-    mul.s f1, f22, f23
-    addiu v1, sp, 0x60
-    mul.s f4, f21, f24
-    swc1 f1, 0x60(sp)
-    mula.s f23, f4
-    msub.s f1, f20, f0
-    mul.s f3, f20, f24
-    swc1 f1, 0x70(sp)
-    mula.s f23, f3
-    madd.s f2, f21, f0
-    swc1 f2, 0x80(sp)
-    mul.s f2, f22, f0
-    mula.s f0, f4
-    swc1 f2, 0x64(sp)
-    madd.s f2, f20, f23
-    mula.s f0, f3
-    swc1 f2, 0x74(sp)
-    msub.s f0, f21, f23
-    swc1 f0, 0x84(sp)
-    neg.s f1, f24
-    mul.s f0, f21, f22
-    swc1 f1, 0x68(sp)
-    swc1 f0, 0x78(sp)
-    mul.s f0, f20, f22
-    swc1 f0, 0x88(sp)
-    sw zero, 0x6C(sp)
-    sw zero, 0x7C(sp)
-    sw zero, 0x8C(sp)
-    lqc2 vf8, 0x0(v1)
-    lqc2 vf9, 0x10(v1)
-    lqc2 vf10, 0x20(v1)
-    vmulax.xyzw ACC, vf28, vf8x
-    vmadday.xyzw ACC, vf29, vf8y
-    vmaddaz.xyzw ACC, vf30, vf8z
-    vmaddw.xyzw vf20, vf31, vf8w
-    vmulax.xyzw ACC, vf28, vf9x
-    vmadday.xyzw ACC, vf29, vf9y
-    vmaddaz.xyzw ACC, vf30, vf9z
-    vmaddw.xyzw vf21, vf31, vf9w
-    vmulax.xyzw ACC, vf28, vf10x
-    vmadday.xyzw ACC, vf29, vf10y
-    vmaddaz.xyzw ACC, vf30, vf10z
-    vmaddw.xyzw vf22, vf31, vf10w
-    vmove.xyzw vf28, vf20
-    vmove.xyzw vf29, vf21
-    vmove.xyzw vf30, vf22
-L_0020CD68:
-    beqz s1, L_0020CD98
-    nop
-    lqc2 vf8, 0x0(s1)
-    vmulx.xyz vf28, vf28, vf8x
-    vmuly.xyz vf29, vf29, vf8y
-    b L_0020CD98
-    vmulz.xyz vf30, vf30, vf8z
-L_0020CD84:
-    jal func_0020C940
-    addiu a0, sp, 0x60
-    addiu a1, sp, 0x60
-    jal func_0020BC00
-    paddub a0, s2, zero
-L_0020CD98:
-    lq ra, 0x50(sp)
-    lq s2, 0x40(sp)
-    lq s1, 0x30(sp)
-    lq s0, 0x20(sp)
-    lwc1 f24, 0x10(sp)
-    lwc1 f23, 0xC(sp)
-    lwc1 f22, 0x8(sp)
-    lwc1 f21, 0x4(sp)
-    lwc1 f20, 0x0(sp)
-    jr ra
-    addiu sp, sp, 0xA0
+/* Apply translate, rotate (X, Y, Z angles) and scale to the current VU0 matrix (vf28-vf31),
+   or with a destination matrix build the transform there (func_0020C940) and multiply. */
+void func_0020CC10(void *dst, register f32 *scale, s32 *rot, register f32 *trans) {
+    f32 m[4][4];
+    f32 a0, b0, a1, b1, a2, b2;
+
+    if (dst == NULL) {
+    if (trans != NULL) {
+        asm {
+            lqc2 vf8, 0x0(trans)
+            vmulax.xyzw ACC, vf28, vf8x
+            vmadday.xyzw ACC, vf29, vf8y
+            vmaddaz.xyzw ACC, vf30, vf8z
+            vmaddw.xyzw vf31, vf31, vf0w
+        }
+    }
+    if (rot != NULL) {
+        a0 = func_0020B480(rot[0]);
+        b0 = func_0020B550(rot[0]);
+        a1 = func_0020B480(rot[1]);
+        b1 = func_0020B550(rot[1]);
+        a2 = func_0020B480(rot[2]);
+        b2 = func_0020B550(rot[2]);
+        m[0][0] = a1 * a2;
+        m[1][0] = a2 * (b0 * b1) - a0 * b2;
+        m[2][0] = a2 * (a0 * b1) + b0 * b2;
+        m[0][1] = a1 * b2;
+        m[1][1] = b2 * (b0 * b1) + a0 * a2;
+        m[2][1] = b2 * (a0 * b1) - b0 * a2;
+        m[0][2] = -b1;
+        m[1][2] = b0 * a1;
+        m[2][2] = a0 * a1;
+        m[0][3] = 0.0f;
+        m[1][3] = 0.0f;
+        m[2][3] = 0.0f;
+        {
+        register f32 *p = m[0];
+        asm {
+            lqc2 vf8, 0x0(p)
+            lqc2 vf9, 0x10(p)
+            lqc2 vf10, 0x20(p)
+            vmulax.xyzw ACC, vf28, vf8x
+            vmadday.xyzw ACC, vf29, vf8y
+            vmaddaz.xyzw ACC, vf30, vf8z
+            vmaddw.xyzw vf20, vf31, vf8w
+            vmulax.xyzw ACC, vf28, vf9x
+            vmadday.xyzw ACC, vf29, vf9y
+            vmaddaz.xyzw ACC, vf30, vf9z
+            vmaddw.xyzw vf21, vf31, vf9w
+            vmulax.xyzw ACC, vf28, vf10x
+            vmadday.xyzw ACC, vf29, vf10y
+            vmaddaz.xyzw ACC, vf30, vf10z
+            vmaddw.xyzw vf22, vf31, vf10w
+            vmove.xyzw vf28, vf20
+            vmove.xyzw vf29, vf21
+            vmove.xyzw vf30, vf22
+        }
+        }
+    }
+    if (scale != NULL) {
+        asm {
+            lqc2 vf8, 0x0(scale)
+            vmulx.xyz vf28, vf28, vf8x
+            vmuly.xyz vf29, vf29, vf8y
+            vmulz.xyz vf30, vf30, vf8z
+        }
+    }
+    } else {
+        func_0020C940(m, scale, rot, trans);
+        func_0020BC00((s32)dst, m);
+    }
 }
 
 asm void func_0020CDD0(void *arg0, void *arg1, void *arg2) {
@@ -446,37 +388,33 @@ void func_0020D8E0(f32 *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f3
     func_0020BC00((s32) arg0, matrix);
 }
 
-asm void func_0020D9F0(void) {
-    .set noreorder
-    addiu sp, sp, -0x20
-    sq ra, 0x10(sp)
-    sq s0, 0x0(sp)
-    jal func_0020DA70
-    paddub s0, a0, zero
-    lqc2 vf8, 0x0(s0)
-    lqc2 vf9, 0x10(s0)
-    lqc2 vf10, 0x20(s0)
-    lqc2 vf11, 0x30(s0)
-    vmulax.xyzw ACC, vf8, vf28x
-    vmadday.xyzw ACC, vf9, vf28y
-    vmaddaz.xyzw ACC, vf10, vf28z
-    vmaddw.xyzw vf28, vf11, vf28w
-    vmulax.xyzw ACC, vf8, vf29x
-    vmadday.xyzw ACC, vf9, vf29y
-    vmaddaz.xyzw ACC, vf10, vf29z
-    vmaddw.xyzw vf29, vf11, vf29w
-    vmulax.xyzw ACC, vf8, vf30x
-    vmadday.xyzw ACC, vf9, vf30y
-    vmaddaz.xyzw ACC, vf10, vf30z
-    vmaddw.xyzw vf30, vf11, vf30w
-    vmulax.xyzw ACC, vf8, vf31x
-    vmadday.xyzw ACC, vf9, vf31y
-    vmaddaz.xyzw ACC, vf10, vf31z
-    vmaddw.xyzw vf31, vf11, vf31w
-    lq ra, 0x10(sp)
-    lq s0, 0x0(sp)
-    jr ra
-    addiu sp, sp, 0x20
+/* normalize the current matrix (func_0020DA70), then multiply it by m */
+void func_0020D9F0(void *arg0) {
+    register void *m = arg0;
+
+    func_0020DA70();
+    asm {
+        lqc2 vf8, 0x0(m)
+        lqc2 vf9, 0x10(m)
+        lqc2 vf10, 0x20(m)
+        lqc2 vf11, 0x30(m)
+        vmulax.xyzw ACC, vf8, vf28x
+        vmadday.xyzw ACC, vf9, vf28y
+        vmaddaz.xyzw ACC, vf10, vf28z
+        vmaddw.xyzw vf28, vf11, vf28w
+        vmulax.xyzw ACC, vf8, vf29x
+        vmadday.xyzw ACC, vf9, vf29y
+        vmaddaz.xyzw ACC, vf10, vf29z
+        vmaddw.xyzw vf29, vf11, vf29w
+        vmulax.xyzw ACC, vf8, vf30x
+        vmadday.xyzw ACC, vf9, vf30y
+        vmaddaz.xyzw ACC, vf10, vf30z
+        vmaddw.xyzw vf30, vf11, vf30w
+        vmulax.xyzw ACC, vf8, vf31x
+        vmadday.xyzw ACC, vf9, vf31y
+        vmaddaz.xyzw ACC, vf10, vf31z
+        vmaddw.xyzw vf31, vf11, vf31w
+    }
 }
 
 asm void func_0020DA70(void) {
@@ -573,124 +511,87 @@ asm void func_0020DB80(void) {
     lqc2 vf27, 0x70(v1)
 }
 
-asm void func_0020DBE0(void *arg0, void *arg1, void *arg2) {
-    .set noreorder
-    addiu sp, sp, -0x90
-    sq ra, 0x40(sp)
-    sq s1, 0x30(sp)
-    sq s0, 0x20(sp)
-    swc1 f24, 0x10(sp)
-    swc1 f23, 0xC(sp)
-    swc1 f22, 0x8(sp)
-    swc1 f21, 0x4(sp)
-    swc1 f20, 0x0(sp)
-    paddub s1, a0, zero
-    beqz a2, L_0020DC24
-    paddub s0, a1, zero
-    lqc2 vf8, 0x0(a2)
-    vmulax.xyzw ACC, vf28, vf8x
-    vmadday.xyzw ACC, vf29, vf8y
-    vmaddaz.xyzw ACC, vf30, vf8z
-    vmaddw.xyzw vf31, vf31, vf0w
-L_0020DC24:
-    beqz s0, L_0020DD64
-    nop
-    jal func_0020B480
-    lw a0, 0x0(s0)
-    lw a0, 0x0(s0)
-    jal func_0020B550
-    mov.s f20, f0
-    lw a0, 0x4(s0)
-    jal func_0020B480
-    mov.s f21, f0
-    lw a0, 0x4(s0)
-    jal func_0020B550
-    mov.s f22, f0
-    lw a0, 0x8(s0)
-    jal func_0020B480
-    mov.s f24, f0
-    lw a0, 0x8(s0)
-    jal func_0020B550
-    mov.s f23, f0
-    mul.s f1, f22, f23
-    addiu v1, sp, 0x50
-    mul.s f4, f21, f24
-    swc1 f1, 0x50(sp)
-    mula.s f23, f4
-    msub.s f1, f20, f0
-    mul.s f3, f20, f24
-    swc1 f1, 0x60(sp)
-    mula.s f23, f3
-    madd.s f2, f21, f0
-    swc1 f2, 0x70(sp)
-    mul.s f2, f22, f0
-    mula.s f0, f4
-    swc1 f2, 0x54(sp)
-    madd.s f2, f20, f23
-    mula.s f0, f3
-    swc1 f2, 0x64(sp)
-    msub.s f0, f21, f23
-    swc1 f0, 0x74(sp)
-    neg.s f1, f24
-    mul.s f0, f21, f22
-    swc1 f1, 0x58(sp)
-    swc1 f0, 0x68(sp)
-    mul.s f0, f20, f22
-    swc1 f0, 0x78(sp)
-    sw zero, 0x5C(sp)
-    sw zero, 0x6C(sp)
-    sw zero, 0x7C(sp)
-    lqc2 vf8, 0x0(v1)
-    lqc2 vf9, 0x10(v1)
-    lqc2 vf10, 0x20(v1)
-    vmulax.xyzw ACC, vf28, vf8x
-    vmadday.xyzw ACC, vf29, vf8y
-    vmaddaz.xyzw ACC, vf30, vf8z
-    vmaddw.xyzw vf20, vf31, vf8w
-    vmulax.xyzw ACC, vf28, vf9x
-    vmadday.xyzw ACC, vf29, vf9y
-    vmaddaz.xyzw ACC, vf30, vf9z
-    vmaddw.xyzw vf21, vf31, vf9w
-    vmulax.xyzw ACC, vf28, vf10x
-    vmadday.xyzw ACC, vf29, vf10y
-    vmaddaz.xyzw ACC, vf30, vf10z
-    vmaddw.xyzw vf22, vf31, vf10w
-    vmove.xyzw vf28, vf20
-    vmove.xyzw vf29, vf21
-    vmove.xyzw vf30, vf22
-    vmulax.xyzw ACC, vf24, vf8x
-    vmadday.xyzw ACC, vf25, vf8y
-    vmaddaz.xyzw ACC, vf26, vf8z
-    vmaddw.xyzw vf20, vf27, vf8w
-    vmulax.xyzw ACC, vf24, vf9x
-    vmadday.xyzw ACC, vf25, vf9y
-    vmaddaz.xyzw ACC, vf26, vf9z
-    vmaddw.xyzw vf21, vf27, vf9w
-    vmulax.xyzw ACC, vf24, vf10x
-    vmadday.xyzw ACC, vf25, vf10y
-    vmaddaz.xyzw ACC, vf26, vf10z
-    vmaddw.xyzw vf22, vf27, vf10w
-    vmove.xyzw vf24, vf20
-    vmove.xyzw vf25, vf21
-    vmove.xyzw vf26, vf22
-L_0020DD64:
-    beqz s1, L_0020DD7C
-    nop
-    lqc2 vf8, 0x0(s1)
-    vmulx.xyzw vf28, vf28, vf8x
-    vmuly.xyzw vf29, vf29, vf8y
-    vmulz.xyzw vf30, vf30, vf8z
-L_0020DD7C:
-    lq ra, 0x40(sp)
-    lq s1, 0x30(sp)
-    lq s0, 0x20(sp)
-    lwc1 f24, 0x10(sp)
-    lwc1 f23, 0xC(sp)
-    lwc1 f22, 0x8(sp)
-    lwc1 f21, 0x4(sp)
-    lwc1 f20, 0x0(sp)
-    jr ra
-    addiu sp, sp, 0x90
+/* func_0020CC10 for the current matrix and its normal matrix: translate (vf28-vf31), rotate both
+   (vf28-vf30 and vf24-vf26), scale (vf28-vf30). */
+void func_0020DBE0(register void *scale, void *rot, register void *trans) {
+    f32 m[4][4];
+    f32 a0, b0, a1, b1, a2, b2;
+
+    if (trans != NULL) {
+        asm {
+            lqc2 vf8, 0x0(trans)
+            vmulax.xyzw ACC, vf28, vf8x
+            vmadday.xyzw ACC, vf29, vf8y
+            vmaddaz.xyzw ACC, vf30, vf8z
+            vmaddw.xyzw vf31, vf31, vf0w
+        }
+    }
+    if (rot != NULL) {
+        a0 = func_0020B480(((s32 *)rot)[0]);
+        b0 = func_0020B550(((s32 *)rot)[0]);
+        a1 = func_0020B480(((s32 *)rot)[1]);
+        b1 = func_0020B550(((s32 *)rot)[1]);
+        a2 = func_0020B480(((s32 *)rot)[2]);
+        b2 = func_0020B550(((s32 *)rot)[2]);
+        m[0][0] = a1 * a2;
+        m[1][0] = a2 * (b0 * b1) - a0 * b2;
+        m[2][0] = a2 * (a0 * b1) + b0 * b2;
+        m[0][1] = a1 * b2;
+        m[1][1] = b2 * (b0 * b1) + a0 * a2;
+        m[2][1] = b2 * (a0 * b1) - b0 * a2;
+        m[0][2] = -b1;
+        m[1][2] = b0 * a1;
+        m[2][2] = a0 * a1;
+        m[0][3] = 0.0f;
+        m[1][3] = 0.0f;
+        m[2][3] = 0.0f;
+        {
+        register f32 *p = m[0];
+        asm {
+            lqc2 vf8, 0x0(p)
+            lqc2 vf9, 0x10(p)
+            lqc2 vf10, 0x20(p)
+            vmulax.xyzw ACC, vf28, vf8x
+            vmadday.xyzw ACC, vf29, vf8y
+            vmaddaz.xyzw ACC, vf30, vf8z
+            vmaddw.xyzw vf20, vf31, vf8w
+            vmulax.xyzw ACC, vf28, vf9x
+            vmadday.xyzw ACC, vf29, vf9y
+            vmaddaz.xyzw ACC, vf30, vf9z
+            vmaddw.xyzw vf21, vf31, vf9w
+            vmulax.xyzw ACC, vf28, vf10x
+            vmadday.xyzw ACC, vf29, vf10y
+            vmaddaz.xyzw ACC, vf30, vf10z
+            vmaddw.xyzw vf22, vf31, vf10w
+            vmove.xyzw vf28, vf20
+            vmove.xyzw vf29, vf21
+            vmove.xyzw vf30, vf22
+            vmulax.xyzw ACC, vf24, vf8x
+            vmadday.xyzw ACC, vf25, vf8y
+            vmaddaz.xyzw ACC, vf26, vf8z
+            vmaddw.xyzw vf20, vf27, vf8w
+            vmulax.xyzw ACC, vf24, vf9x
+            vmadday.xyzw ACC, vf25, vf9y
+            vmaddaz.xyzw ACC, vf26, vf9z
+            vmaddw.xyzw vf21, vf27, vf9w
+            vmulax.xyzw ACC, vf24, vf10x
+            vmadday.xyzw ACC, vf25, vf10y
+            vmaddaz.xyzw ACC, vf26, vf10z
+            vmaddw.xyzw vf22, vf27, vf10w
+            vmove.xyzw vf24, vf20
+            vmove.xyzw vf25, vf21
+            vmove.xyzw vf26, vf22
+        }
+        }
+    }
+    if (scale != NULL) {
+        asm {
+            lqc2 vf8, 0x0(scale)
+            vmulx.xyzw vf28, vf28, vf8x
+            vmuly.xyzw vf29, vf29, vf8y
+            vmulz.xyzw vf30, vf30, vf8z
+        }
+    }
 }
 
 typedef struct Entry_0020DDB0 {
