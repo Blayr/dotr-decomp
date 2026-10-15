@@ -107,6 +107,8 @@ else
 fi
 # Switch tables: GCC's own go to .rdata, which the link drops; load the game's (see there).
 (cd "$ROOT" && python3 tools/jtbl_fix.py --gcc "$TMP/out.s")
+# Double constants the original loaded from its literal pool (`ld $5,sym`) load from the game's (see there).
+(cd "$ROOT" && python3 tools/litpool_fix.py "$TMP/out.s")
 # Sony's EE assembler turned GCC's `move` into a 64-bit daddu; binutils 2.45 makes it `or`.
 # The C library's assembler (the 2.96 files) never moved that macro into a branch's delay
 # slot (`move $2,$4; j $31; nop`, `move $4,$2; jal dptofp; nop`); a plain daddu would be
