@@ -781,7 +781,6 @@ struct DotrWindowControl {
 };
 extern struct DotrWindowControl D_00317490_b;
 extern DotrDrawWord func_001B3790_b(DotrDrawWord cursor, int colour, int field, float f, int x, int y);
-extern DotrDrawWord lSzDuel_DrawWindow_PlayerInfo_Pipe(DotrDrawWord cursor, int side, int x, int y, int active);
 extern DotrDrawWord lSzDuel_DrawWindow_CardInfo_Pipe(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
                                                      unsigned char side, int a5, int a6, int a7, long a8, long a9);
 extern struct DotrWindowUnit *func_001DF540_b(int a, int b);
@@ -945,7 +944,123 @@ int SzDuel_DrawWindow_Pipe(int cursor)
     return cursor;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawWindow_PlayerInfo_Pipe);
+extern u8 D_00290080[];
+extern u8 D_00290882[];
+extern u8 D_002908E6[];
+extern u8 D_0029094A[];
+extern u8 D_00290954[];
+extern u8 D_00290A1C[];
+extern s8 D_002BEF76[];
+
+#pragma opt_propagation off
+
+s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 c0;
+    s32 c1;
+    s32 baseX;
+    s32 screenX;
+    s32 lowLevel;
+    s32 playerOffset;
+    extern s32 SzDuel_GetPlayer();
+    extern s32 lSzDuel_DrawWindow_PicMini_Pipe();
+    extern s32 lSzDuel_DrawWindow_Frame_Pipe();
+    extern s32 SzDuel_DrawWindow_Digit_Pipe();
+    extern s32 lSzDuel_DrawWindow_Board_Pipe();
+    extern s32 lSzDuel_DrawWindow_Icon_Pipe();
+    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
+    extern s32 SzDuel_DrawWindow_Font_Pipe();
+    u8 *playerData;
+    u8 *data;
+    s32 iconX;
+    s32 valueX;
+    s32 baseY;
+    s32 iconY;
+    s32 screenY;
+    s32 rowX;
+    s32 secondValueY;
+    s32 lastX;
+    s32 screenValueX;
+    s32 numberX;
+    s32 numberY;
+    s32 screenRowX;
+    s32 lastY;
+    s32 lowerY;
+    s32 hidden;
+    s32 rowX2;
+
+    data = D_00317490.b;
+    playerData = D_00317490.b + arg1 * 0x350;
+    baseY = arg3 + 3;
+    baseX = arg2 + 3;
+    screenY = baseY + 0x720;
+    hidden = 1;
+    screenX = baseX + 0x6C0;
+    if (playerData[0x33C] < 100) {
+        lowLevel = 1;
+    } else {
+        lowLevel = 0;
+    }
+    if (SzDuel_GetPlayer(0) < 100 && SzDuel_GetPlayer(1) < 100) {
+        hidden = 0;
+    } else {
+        if (SzDuel_GetPlayer(data[0xD3C]) >= 100) {
+            if (data[0xD3C] == arg1) {
+                hidden = 0;
+            }
+        } else if (data[0xD3C] != arg1) {
+            hidden = 0;
+        }
+    }
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, arg1, arg1, 0, arg2 - 13, arg3 - 15, 37, 13, 1);
+    iconX = arg2 + 3 + (arg1 != 0 ? 1 : 127);
+    iconY = arg3 + 4;
+    arg0 = lSzDuel_DrawWindow_PicMini_Pipe(arg0, arg1, iconX, iconY, 48, 48, *(s32 *)(data + 0xC58), arg4);
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, -1, -1, 4, iconX, iconY, 3, 6, arg4);
+    playerOffset = arg1 * 48;
+    numberY = baseY + 6;
+    rowX = baseX + playerOffset;
+    numberX = rowX + 4;
+    arg0 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg1, numberX, numberY, 12, 1, -1);
+    arg0 = SzDuel_DrawWindow_Digit_Pipe(arg0, numberX + 34, numberY + 2, 4, *(u16 *)(playerData + 0x33A), 0);
+    iconX = screenX + (arg1 != 0 ? 1 : 127);
+    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32)(D_00290080 + (lowLevel + (arg1 * 2 + 185)) * 10), iconX, 48 + screenY, 0, 1, 0, 0, arg4, 0, -1);
+    screenRowX = screenX + playerOffset;
+    valueX = screenRowX + 8;
+    iconX = screenRowX + 8;
+    iconY = screenY + 12;
+    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290A1C, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
+    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_002908E6, valueX, screenY + 36, 0, 1, 0, 0, 1, 0, -1);
+    rowX2 = rowX + 26;
+    iconX = rowX + 26;
+    lowerY = baseY + 37;
+    if (hidden != 0) {
+        arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, iconX, lowerY, 0, 0, 2, D_002BEF76, 0);
+    } else {
+        arg0 = SzDuel_DrawWindow_FontDigit_Pipe(arg0, iconX, lowerY, 0, 0, 2, playerData[0x341]);
+    }
+    screenValueX = screenRowX + 64;
+    iconX = screenRowX + 64;
+    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290882, iconX, screenY + 36, 0, 1, 0, 0, 1, 0, -1);
+    lastX = rowX + 82;
+    lowerY = baseY + 37;
+    arg0 = SzDuel_DrawWindow_FontDigit_Pipe(arg0, lastX, lowerY, 0, 0, 2, SzDuel_GetDeckCount(arg1));
+    c0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_0029094A, valueX, screenY + 52, 0, 1, 0, 0, 1, 0, -1);
+    secondValueY = 53 + baseY;
+    if (0 != hidden) {
+        c0 = SzDuel_DrawWindow_Font_Pipe(c0, rowX2, secondValueY, 0, 0, 2, D_002BEF76, 0);
+    } else {
+        c0 = SzDuel_DrawWindow_FontDigit_Pipe(c0, rowX2, secondValueY, 0, 0, 2, SzDuel_GetUnitMonsterCount(arg1));
+    }
+    c1 = lSzDuel_DrawWindow_Icon_Pipe(c0, D_00290954, screenValueX, screenY + 52, 0, 1, 0, 0, 1, 0, -1);
+    lastY = baseY + 53;
+    if (hidden != 0) {
+        c1 = SzDuel_DrawWindow_Font_Pipe(c1, lastX, lastY, 0, 0, 2, D_002BEF76, 0);
+    } else {
+        c1 = SzDuel_DrawWindow_FontDigit_Pipe(c1, lastX, lastY, 0, 0, 2, SzDuel_GetUnitSpellCount(arg1));
+    }
+    return c1;
+}
+#pragma opt_propagation reset
 
 s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();

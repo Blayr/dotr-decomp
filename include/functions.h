@@ -2963,6 +2963,7 @@ void lSzDuel_DrawWindow_Icon_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 ar
 s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2);
 s32 lSzDuel_DrawWindow_PicItem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s64 arg6);
 s32 lSzDuel_DrawWindow_PicMini_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s64 arg6, s32 arg7);
+s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2);
 void lSzDuel_Draw_Fade_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 lSzDuel_GetControl(s32 arg0, s32 arg1);
@@ -4823,6 +4824,7 @@ s32 func_001AF7E0(s32);
 void func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 void func_001B1190(void);
 int func_001B11C0(int cursor);
+s32 func_001B19F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001B1EF0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3);
