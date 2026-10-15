@@ -624,7 +624,98 @@ static s32 func_01E02030_c061(s32 arg0, Fx_c061_01E02030 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c061", func_01E02320_c061);
+/* shape c061:01E02320, 207 insns: c063:01E03430's flash in two kinds (0x50): kind 0 blue-white (0x80, 0x80, 0xFF), size 20
+   growing by 180 with the inner size a fifth, spinning on all axes, alpha up for 15 ticks; kind 1 white, size 3000
+   shrinking by 250 with the inner size half, alpha up for 7 ticks; second colour flickers (grey-yellow / blue) */
+
+typedef struct {
+    u8 pad0[1];
+} Game_c061_01E02320;
+
+typedef struct {
+    s16 spin[3];
+    s16 h6;
+    u8 pad8[0x18];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_c061_01E02320;
+
+static s32 func_01E02320_c061(Game_c061_01E02320 *g, Obj_c061_01E02320 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            o->f48 = 20.0f;
+            o->f4C = 0.0f;
+            func_001076F0(o->c0, 0x80, 0x80, 0xFF);
+            o->h5A = 0x3C;
+            o->h5C = 3;
+            o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+            o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+            o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+            o->h6 = 15;
+        }
+        if (o->kind == 1) {
+            o->f48 = 3000.0f;
+            o->f4C = 0.0f;
+            func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+            o->h5A = 0x3C;
+            o->h5C = 2;
+            o->sub = 3;
+            o->h6 = 7;
+        }
+        o->sub = 4;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < o->h6) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 9) {
+        o->c0[3] -= 8;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0) {
+        if (o->t % 2 == 1) {
+            func_001076F0(o->c1, 0xA0, 0xA0, 0x60);
+        } else {
+            func_001076F0(o->c1, 0xC0, 0xC0, 0x60);
+        }
+        o->f48 += 180.0f;
+        o->f4C = 0.2f * o->f48;
+        o->rot[0] += o->spin[0];
+        o->rot[1] += o->spin[1];
+        o->rot[2] += o->spin[2];
+    }
+    if (o->kind == 1) {
+        if (o->t % 2 == 1) {
+            func_001076F0(o->c1, 0x60, 0x60, 0xA0);
+        } else {
+            func_001076F0(o->c1, 0x60, 0x60, 0xC0);
+        }
+        o->f48 -= 250.0f;
+        o->f4C = 0.5f * o->f48;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape c061:01E02660, 182 insns: b386:01E02480 family grey (0x60) mote, size 300, frame 0..7, angles 0..359, 0x50 50..399, drift -20..19 unscaled; while the scene count (ctx+0x68C8) is under 500 alpha goes up by 0xC0 for 55 ticks then down by 11, after that down by 9; rises 3.3 a tick with its z pinned to the scene's 0x56B8 plus its drift */
 

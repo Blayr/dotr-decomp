@@ -254,6 +254,83 @@ INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E01220_c024);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E015D0_c024);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E01CD0_c024);
+/* shape c024:01E01CD0, 210 insns (C024_MAP_ATTACK_1): builds a 10x24 point bowl at ctx+0x150: rings of radius 100
+   shrinking by 10 (at least 1), 15 degrees between points; each ring is shifted by a random walk (-5..4 a ring on x and
+   z) and each point jittered by up to the ring's spread (70, -7 a ring, 1 from the ninth ring), centred; heights rise
+   by 20 a ring for the first eight rings, then by 3 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V_c024_01E01CD0;
+
+typedef struct {
+    u8 pad0[0x150];
+    V_c024_01E01CD0 p[10][24];
+} Ctx_c024_01E01CD0;
+
+static void func_01E01CD0_c024(Ctx_c024_01E01CD0 *g) {
+    extern f32 func_001A6898(f32);
+    extern f32 func_001A6A88(f32);
+    s32 i;
+    s32 j;
+    s16 a;
+    s16 z;
+    s16 r;
+    s16 x;
+    s16 w;
+    s16 dx;
+    s16 dz;
+    s16 y;
+    f32 t;
+
+    a = 0;
+    z = 0;
+    r = 100;
+    for (i = 0; i < 10; i++) {
+        for (j = 0; j < 24; j++) {
+            t = 3.1415927f * a / 180.0f;
+            g->p[i][j].x = r * func_001A6898(t);
+            g->p[i][j].z = r * func_001A6A88(t);
+            a += 15;
+        }
+        r -= 10;
+        a = 0;
+        if (r <= 0) {
+            r = 1;
+        }
+    }
+    w = 70;
+    x = 0;
+    for (i = 0; i < 10; i++) {
+        x += (s16)(func_0019A5C8() % 10 - 5);
+        z += (s16)(func_0019A5C8() % 10 - 5);
+        for (j = 0; j < 24; j++) {
+            dx = func_0019A5C8() % w;
+            dz = func_0019A5C8() % w;
+            g->p[i][j].x += x + (dx - (w >> 1));
+            g->p[i][j].z += z + (dz - (w >> 1));
+        }
+        if (i < 8) {
+            w -= 7;
+        }
+        if (i == 8) {
+            w = 1;
+        }
+        if (w <= 0) {
+            w = 1;
+        }
+    }
+    y = 0;
+    for (i = 0; i < 10; i++) {
+        for (j = 0; j < 24; j++) {
+            g->p[i][j].y = y;
+        }
+        if (i < 8) {
+            y += 20;
+        } else {
+            y += 3;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E02020_c024);

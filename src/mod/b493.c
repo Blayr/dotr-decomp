@@ -917,7 +917,79 @@ static s32 func_01E02B40_b493(Mgr_b493_01E02B40 *m, Obj_b493_01E02B40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E02DF0_b493);
+/* shape b493:01E02DF0, 195 insns: b493:01E02B40's kind-coloured spark (red, green, blue, yellow, purple from h52),
+   size 13..22, frame 0..3, random turn, h52 then counts ticks; height 170..319 rising 1..3, h8 1..8, held 2..4 ticks
+   at alpha 0x60, then down by 11 */
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b493_01E02DF0;
+
+static s32 func_01E02DF0_b493(s32 arg0, Obj_b493_01E02DF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = func_0019A5C8() % 10 + 13;
+        o->h56 = func_0019A5C8() % 4;
+        if (o->h52 == 0) {
+            func_001076F0(o->c60, 0x80, 8, 8);
+            func_001076F0(o->c64, 0x80, 8, 8);
+        } else if (o->h52 == 1) {
+            func_001076F0(o->c60, 8, 0x80, 8);
+            func_001076F0(o->c64, 8, 0x80, 8);
+        } else if (o->h52 == 2) {
+            func_001076F0(o->c60, 8, 8, 0x80);
+            func_001076F0(o->c64, 8, 8, 0x80);
+        } else if (o->h52 == 3) {
+            func_001076F0(o->c60, 0x80, 0x80, 8);
+            func_001076F0(o->c64, 0x80, 0x80, 8);
+        } else if (o->h52 == 4) {
+            func_001076F0(o->c60, 0x40, 8, 0x80);
+            func_001076F0(o->c64, 0x40, 8, 0x80);
+        }
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h52 = 1;
+        o->h50 = func_0019A5C8() % 150 + 170;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 3 + 1;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 3 + 2;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        o->c60[3] = 0x60;
+    } else if (o->c60[3] > 12) {
+        o->c60[3] -= 11;
+    } else {
+        o->h58 = 0;
+    }
+    o->h52++;
+    o->h50 += o->hE;
+    o->h54++;
+    return 0;
+}
 
 /* shape b493:01E03100, 129 insns: b163:01E025A0 family spinning glow (size 100 growing 1, light grey 0xCF over one of five tints picked by f52: red, green, blue, yellow, purple): alpha up by 64 for 4 ticks, then down by 9; spins 0x4000 per tick */
 

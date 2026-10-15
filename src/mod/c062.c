@@ -124,7 +124,102 @@ static void func_01E004D0_c062(Scene_c062_01E004D0 *g, u8 *fx, void *pk, s32 mod
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E00730_c062);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E00E30_c062);
+/* shape c062:01E00E30, 134 insns: a two-pass 12.8 x 18.4 sprite grid: mode 0 sets the material (rect 256,0 256x384, the
+   object's two colours, scene texture 0x685C); other modes draw it at each of the scene's points (5 rows of 6 at
+   g+0x65D0; 3 per row, 5 once the scene step at g+0x68FC reaches 12), facing +201 or -201 by the flag at g+0x693A */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_c062_01E00E30;
+
+typedef struct {
+    s16 x, y, w, h;
+} Rect_c062_01E00E30;
+
+typedef struct {
+    u8 pad0[0x60];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_c062_01E00E30;
+
+typedef struct {
+    u8 pad0[0x65D0];
+    Vec_c062_01E00E30 pts[5][6];
+    u8 pad67B0[0x9C];
+    s32 target;
+    u8 pad6850[0xC];
+    s32 texture;
+    u8 pad6860[0x9C];
+    s32 step;
+    u8 pad6900[0x3A];
+    s16 flip;
+} Game_c062_01E00E30;
+
+static void func_01E00E30_c062(Game_c062_01E00E30 *g, Obj_c062_01E00E30 *o, u8 *p, s32 mode) {
+    f32 w;
+    f32 h;
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00205440(void *, s32, void *, void *);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 q[16];
+    Rect_c062_01E00E30 r[2];
+    Vec_c062_01E00E30 t[4];
+    Vec_c062_01E00E30 v;
+    f32 m[64];
+    f32 m2[16];
+    f32 depth[7];
+    f32 tmp;
+    s16 n;
+    s32 i;
+    s32 j;
+
+    n = 3;
+    if (mode == 0) {
+        r[0].x = 0x100;
+        r[0].y = 0;
+        r[0].w = 0x100;
+        r[0].h = 0x180;
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->c60, 1);
+        func_00107790(p, o->c64, 2);
+        func_00108500(p, r, 3);
+        func_00208700(p, g->texture, 1);
+    } else {
+        if (g->step >= 12) {
+            n = 5;
+        }
+        w = 12.8f;
+        h = 18.4f;
+        func_00108CE0(q, w, h);
+        v.x = 0.0f;
+        v.y = 0.0f;
+        if (g->flip == 0) {
+            v.z = 201.0f;
+        } else {
+            v.z = -201.0f;
+        }
+        func_00205440(&v, 0, p + 0x20, &tmp);
+        for (j = 0; j < 5; j++) {
+            for (i = 0; i < n; i++) {
+                t[0] = g->pts[j][i];
+                func_0020EB40(m);
+                func_0020C940(m2, 0, 0, t);
+                func_0020BC00(m, m2);
+                if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+                    func_002075F0(p, g->target, (u32)depth[0]);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E01050_c062);
 
@@ -656,7 +751,129 @@ static s32 func_01E02650_c062(Game_c062_01E02650 *g, Obj_c062_01E02650 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02780_c062);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02B20_c062);
+/* shape c062:01E02B20, 198 insns: c063:01E04510's glow pair placed at (0, 70, ctx+0x6808) with size 500, in one of
+   three presets (white 22 ticks, warm 15 or 25); fading in by 18 (by 7 for kind 2) to 0x80, then out by 4 (kind 0
+   only once the scene count ctx+0x693C passes 320); after 270 it drifts 4 along z, back when ctx+0x693A is 1 */
+
+typedef struct {
+    u8 pad0[0x6808];
+    f32 z;
+    u8 pad680C[0x12E];
+    s16 dir;
+    s16 count;
+} Scene_c062_01E02B20;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[8];
+    f32 x, y, z;
+    u8 pad1C[0x2C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 age;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Glow_c062_01E02B20;
+
+static s32 func_01E02B20_c062(Scene_c062_01E02B20 *g, Glow_c062_01E02B20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->z = g->z;
+        o->x = 0.0f;
+        o->y = 70.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->c1, 0xF0, 0xF0, 0xF0);
+            o->life = 22;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0xF0, 0xD0, 0xA0);
+            func_001076F0(o->c1, 0xF0, 0xA0, 0xA0);
+            o->life = 15;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->c0, 0xF0, 0xD0, 0xA0);
+            func_001076F0(o->c1, 0xF0, 0xA0, 0xA0);
+            o->life = 25;
+        }
+        o->f48 = 500.0f;
+        o->state = 2;
+    }
+    if (o->age < o->life) {
+        if (o->kind != 2) {
+            if (o->c0[3] < 0x80) {
+                o->c0[3] += 18;
+            }
+            if (o->c1[3] < 0x80) {
+                o->c1[3] += 18;
+            }
+        }
+        if (o->kind == 2) {
+            if (o->c0[3] < 0x80) {
+                o->c0[3] += 7;
+            }
+            if (o->c1[3] < 0x80) {
+                o->c1[3] += 7;
+            }
+        }
+    } else {
+        if (o->kind == 1) {
+            if (o->c0[3] > 5) {
+                o->c0[3] -= 4;
+            } else {
+                o->state = 0;
+            }
+            if (o->c1[3] > 5) {
+                o->c1[3] -= 4;
+            } else {
+                o->c1[3] = 0;
+            }
+        }
+        if (o->kind == 2) {
+            if (o->c0[3] > 5) {
+                o->c0[3] -= 4;
+            } else {
+                o->state = 0;
+            }
+            if (o->c1[3] > 5) {
+                o->c1[3] -= 4;
+            } else {
+                o->c1[3] = 0;
+            }
+        }
+        if (o->kind == 0) {
+            if (g->count > 320) {
+                if (o->c0[3] > 5) {
+                    o->c0[3] -= 4;
+                } else {
+                    o->state = 0;
+                }
+                if (o->c1[3] > 5) {
+                    o->c1[3] -= 4;
+                } else {
+                    o->c1[3] = 0;
+                }
+            }
+        }
+    }
+    if (g->count > 270) {
+        if (g->dir == 0) {
+            o->z += 4.0f;
+        }
+        if (g->dir == 1) {
+            o->z -= 4.0f;
+        }
+    }
+    o->age++;
+    return 0;
+}
 
 /* shape c062:01E02E40, 137 insns: three-kind ring glow: kind 0 white over grey, held 12, size 600; kind 1 blue under grey,
    held 5, growing from 600 by 10; kind 2 grey under white, held 10, growing from 1800 by 10; the second alpha grows by
@@ -911,7 +1128,105 @@ static s32 func_01E033E0_c062(s32 arg0, Obj_c062_01E033E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E03550_c062);
+/* shape c062:01E03550, 161 insns: b363:01E04D90 family sprite in its own colour (0xA0, 0x80, 0x80; 0x90/0x70/0x80 at scene count 241) zooming out by f48: alpha up by 10 to 0x50 before count 216, eased down by 6 to 0x40 after 216, until tick 280; then down by 9 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_c062_01E03550;
+
+typedef struct {
+    f32 s, t;
+    Xyz_c062_01E03550 p;
+} Tv_c062_01E03550;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_c062_01E03550 v[2];
+    u8 tail[0x20];
+} Tex_c062_01E03550;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_c062_01E03550;
+
+typedef struct {
+    u8 pad0[0x693C];
+    s16 count;
+} Ctx_c062_01E03550;
+
+static s32 func_01E03550_c062(Ctx_c062_01E03550 *g, Fx_c062_01E03550 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    Tex_c062_01E03550 pk __attribute__((aligned(8)));
+    f32 z;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0xA0, 0x80, 0x80);
+        o->mode = 2;
+    }
+    z = 0.0f;
+    ((Tex_c062_01E03550 *)(s32)&pk)->flags = 0x26;
+    ((Tex_c062_01E03550 *)(s32)&pk)->size = 5;
+    ((Tex_c062_01E03550 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_c062_01E03550 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = (o->f48 + z) / 1024.0f;
+    pk.v[0].t = (o->f48 + z) / 512.0f;
+    pk.v[1].s = (640.0f + o->f48 - z) / 1024.0f;
+    pk.v[1].t = (448.0f + o->f48 - z) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->count == 241) {
+        func_001076F0(o->col, 0x90, 0x70, 0x80);
+    }
+    if (o->tick < 280) {
+        if (g->count < 216) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 10;
+            }
+        }
+        if (g->count > 216) {
+            if (o->col[3] > 0x40) {
+                o->col[3] -= 6;
+            }
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape c062:01E037E0, 127 insns: five star points around a centre: each point is cleared to (0, 0, c.z), then placed at
    angle 90 / 18 / 162 / -54 / 234 (the middle four mirrored by the side flag) on a circle of radius c.x around c.y */

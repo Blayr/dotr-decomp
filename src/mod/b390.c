@@ -675,7 +675,102 @@ static s32 func_01E021E0_b390(s32 unused, Mote_b111_01E022F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b390", func_01E023E0_b390);
+/* shape b390:01E023E0, 207 insns: on start f48 100, colour white, second colour (0x80, 0x80, 8) with alpha 0, random
+   0x5A, 0xE = 1..10; the second colour turns blue (8, 8, 0x80) on odd and even ticks alike; alpha grows by 0x40 (below
+   0xC0) up to tick 50, then fades by 14 and stops; at tick 51 the game point moves to point[0x50] and spawns nine
+   b390:01E02BE0, nine b390:01E02040, one b390:01E028D0 and five b390:01E02DE0; before it, every tick spawns
+   b390:01E02F50 and b390:01E030F0 there; the rotation is re-read and turned a quarter each tick */
+
+typedef struct {
+    f32 x, y, z, w;
+} V_b390_01E023E0;
+
+typedef struct {
+    u8 pad0[0x250];
+    V_b390_01E023E0 pos;
+    u8 pad260[0x7D50 - 0x260];
+    V_b390_01E023E0 pts[1];
+} Game_b390_01E023E0;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 fE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 pt;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b390_01E023E0;
+
+static s32 func_01E023E0_b390(Game_b390_01E023E0 *g, Fx_b390_01E023E0 *o) {
+    extern s32 b390_01E02040(void);
+    extern s32 b390_01E028D0(void);
+    extern s32 b390_01E02BE0(void);
+    extern s32 b390_01E02DE0(void);
+    extern s32 b390_01E02F50(void);
+    extern s32 b390_01E030F0(void);
+    extern s32 b390_01E04820(Game_b390_01E023E0 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x80, 8);
+        o->f5A = func_0019A5C8() % 360;
+        o->fE = (func_0019A5C8() >> 4) % 10 + 1;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 8, 8, 0x80);
+    } else {
+        func_001076F0(o->col2, 8, 8, 0x80);
+    }
+    if (o->tick < 51) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick == 51) {
+        g->pos = g->pts[o->pt];
+        for (i = 0; i < 9; i++) {
+            b390_01E04820(g, b390_01E02BE0, 0);
+        }
+        for (i = 0; i < 9; i++) {
+            b390_01E04820(g, b390_01E02040, 0);
+        }
+        b390_01E04820(g, b390_01E028D0, 0);
+    }
+    if (o->tick == 51) {
+        g->pos = g->pts[o->pt];
+        for (i = 0; i < 5; i++) {
+            b390_01E04820(g, b390_01E02DE0, 0);
+        }
+    }
+    if (o->tick < 51) {
+        g->pos = g->pts[o->pt];
+        b390_01E04820(g, b390_01E02F50, 0);
+        b390_01E04820(g, b390_01E030F0, 0);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b390:01E02720, 107 insns: on start f48 0, colour 0xCF grey, second colour (0x80, 8, 8) with alpha 0, random 0x5A
    and rotation; alpha grows by 0x40 (below 0xC0) for 10 ticks, then fades by 14 and stops; f48 grows by 8.5 while the

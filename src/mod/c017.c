@@ -2,7 +2,149 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E00080_c017);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E006B0_c017);
+/* shape c017:01E006B0, 201 insns: c017's column piece step (c017:01E01400 entries): turns 6 a tick (wrapped past -359);
+   its two screen heights are the scene scale (ctx+0x3914[f68] / ctx+0x399E) x height - 20 (ends once the scale drops
+   under 1); above the floor (ctx+0x399A) it falls 3 a tick with its top kept 18 above, below it the top falls until it
+   meets the bottom, unhooking the next piece; while it still has links (f64) and its top is under the ceiling it
+   hands its place, colour, top and turn + 20 to the scene and spawns the next piece with itself as the callback;
+   fades in by 4 to 0x54 while the scene value is under 14, out by 16 while the scene state is under 10, else in by 10 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c017_01E006B0;
+
+typedef struct Ent_c017_01E006B0 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x28];
+    struct Ent_c017_01E006B0 *prev;
+    struct Ent_c017_01E006B0 *next;
+    u8 pad48[8];
+    Col_c017_01E006B0 col0;
+    Col_c017_01E006B0 col1;
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    s16 f60;
+    s16 f62;
+    s16 f64;
+    u8 pad66[2];
+    s16 f68;
+} Ent_c017_01E006B0;
+
+typedef struct {
+    u8 pad0[0x180];
+    s32 v[3];
+    u8 pad18C[0x38DC - 0x18C];
+    s32 state;
+    u8 rgb[4];
+    u8 pad38E4[8];
+    Ent_c017_01E006B0 *last;
+    u8 pad38F0[4];
+    f32 f38F4;
+    f32 f38F8;
+    f32 f38FC;
+    u8 pad3900[0x14];
+    f32 scale[14];
+    f32 f394C;
+    u8 pad3950[2];
+    s16 f3952;
+    u8 pad3954[2];
+    s16 f3956;
+    u8 pad3958[2];
+    s16 f395A;
+    u8 pad395C[4];
+    s16 val;
+    u8 pad3962[0x399A - 0x3962];
+    s16 floor;
+    u8 pad399C[2];
+    s16 top;
+} Ctx_c017_01E006B0;
+
+/* the spawner takes a third argument it never reads (c017:01E01400 matches with two) */
+
+static s32 func_01E006B0_c017(Ctx_c017_01E006B0 *g, Ent_c017_01E006B0 *o) {
+    extern void c017_01E01400(Ctx_c017_01E006B0 *g, s32 arg, s32 h);
+    f32 d;
+    f32 fl;
+    f32 s;
+    s32 h;
+
+    d = g->top;
+    o->f5A -= 6;
+    if (o->f5A < -359) {
+        o->f5A %= 360;
+    }
+    fl = g->floor;
+    s = g->scale[o->f68] / d;
+    o->f60 = (s16)(s * o->f4 - 20.0f);
+    if (g->scale[o->f68] < 1.0f) {
+        o->used = 0;
+    }
+    o->f62 = (s16)(s * o->f14 - 20.0f);
+    if (o->f4 >= fl) {
+        o->f4 -= 3.0f;
+        if (o->f14 - o->f4 >= 18.0f) {
+            o->f14 -= 3.0f;
+        }
+    } else {
+        o->f14 -= 3.0f;
+        if (o->f14 < o->f4) {
+            if (o->next != NULL) {
+                o->next->prev = NULL;
+            }
+            o->used = 0;
+        }
+    }
+    if (o->f64 > 0 && o->f14 < (f32)g->top) {
+        g->last = o;
+        h = o->f60;
+        g->f38F4 = h;
+        g->f38F8 = o->f62;
+        g->rgb[0] = o->col0.r;
+        g->rgb[1] = o->col0.g;
+        g->rgb[2] = o->col0.b;
+        g->rgb[3] = 0;
+        g->f3956 = 1;
+        g->f38FC = o->f14;
+        g->f394C = o->f68;
+        g->f395A = 1;
+        g->v[1] = 0;
+        g->v[0] = 0;
+        g->v[2] = 0;
+        g->f3952 = o->f5A + 20;
+        c017_01E01400(g, (s32)func_01E006B0_c017, h);
+        o->f64 = 0;
+    }
+    if (g->val < 14) {
+        if (o->col0.a < 0x50) {
+            o->col0.a += 4;
+        }
+        if (o->col1.a < 0x50) {
+            o->col1.a += 4;
+        }
+    }
+    if (g->state < 10) {
+        if (o->col0.a > 16) {
+            o->col0.a -= 16;
+        }
+        if (o->col1.a > 16) {
+            o->col1.a -= 16;
+        }
+    } else {
+        if (o->col0.a < 0xB0) {
+            o->col0.a += 10;
+        }
+        if (o->col1.a < 0xB0) {
+            o->col1.a += 10;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E009E0_c017);
 
@@ -182,7 +324,140 @@ static s32 func_01E01020_c017(Game_c017_01E01020 *g, Fx_c017_01E01020 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E010C0_c017);
+/* shape c017:01E010C0, 205 insns: the c017 module's main step: with a code it clears the scene, fills the cosine table
+   (0..90 degrees at ctx+0x39A4), keeps the code and a 156-tick timer and loads texture (4,15); otherwise it runs the
+   scene setup (c017:01E00080), every live slot's handler (85 of 0x6C bytes) and every live trail piece (42 of 0x60
+   bytes, c017:01E00D50), then draws them at the camera point (func_001F9D30) turned a quarter, scale (0.5, 1.5, 0.5):
+   slots through their draw handler, pieces through c017:01E025B0 (falling pieces) or c017:01E02790, two passes each;
+   counts down and returns 8 when the timer ends */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c017_01E010C0;
+
+typedef struct Slot_c017_01E010C0 {
+    u8 pad0[0x48];
+    s32 (*draw)(void *, struct Slot_c017_01E010C0 *, void *, s32);
+    s32 (*fn)(void *, struct Slot_c017_01E010C0 *);
+    u8 pad50[8];
+    s16 used;
+    u8 pad5A[0x12];
+} Slot_c017_01E010C0;
+
+typedef struct {
+    u8 pad0[0x44];
+    s32 (*fn)(void *, void *);
+    u8 pad48[8];
+    s16 used;
+    u8 pad52[0xE];
+} Piece_c017_01E010C0;
+
+typedef struct {
+    u8 pad0[0x140];
+    u8 cam[0xA0];
+    s32 tex[16];
+    s32 rot[4];
+    V4_c017_01E010C0 sc;
+    Slot_c017_01E010C0 slot[0x55];
+    Piece_c017_01E010C0 piece[0x2A];
+    u8 pad3B9C[0x38DC - 0x261C - 0x2A * 0x60];
+    s32 timer;
+    u8 pad38E0[8];
+    s32 ot;
+    u8 pad38EC[0x395C - 0x38EC];
+    s16 code;
+    u8 pad395E[0x39A4 - 0x395E];
+    f32 cos[91];
+} Ctx_c017_01E010C0;
+
+static s32 func_01E010C0_c017(s32 arg0, s32 code) {
+    extern void c017_01E00080(Ctx_c017_01E010C0 *, s32);
+    extern s32 c017_01E00D50(Ctx_c017_01E010C0 *, Piece_c017_01E010C0 *);
+    extern void c017_01E025B0(Ctx_c017_01E010C0 *, Piece_c017_01E010C0 *, void *, s32);
+    extern void c017_01E02790(Ctx_c017_01E010C0 *, Piece_c017_01E010C0 *, void *, s32);
+    Ctx_c017_01E010C0 *g = (Ctx_c017_01E010C0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern f32 func_001A6A88(f32);
+    extern V4_c017_01E010C0 *func_001F9D30(s32);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    s32 n;
+    V4_c017_01E010C0 pos;
+    u8 pkt[0x90];
+    s32 (*draw)(void *, Slot_c017_01E010C0 *, void *, s32);
+    s32 i;
+
+    n = 0;
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x3B10);
+        for (; n < 91; n++) {
+            g->cos[n] = func_001A6A88(3.1415927f * n / 180.0f);
+        }
+        g->code = code;
+        g->timer = 156;
+        for (i = 15; i < 16; i++) {
+            g->tex[i] = func_00202BF0(4, i);
+        }
+        return 0;
+    }
+    c017_01E00080(g, 0);
+    for (i = 0; i < 0x55; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn != NULL) {
+                g->slot[i].fn(g, &g->slot[i]);
+            }
+        }
+    }
+    for (i = 0; i < 0x2A; i++) {
+        if (g->piece[i].used != 0) {
+            c017_01E00D50(g, &g->piece[i]);
+        }
+    }
+    pos.x = pos.y = pos.z = 0.0f;
+    pos.y = 50.0f;
+    func_00205C40((s32)g->rot);
+    pos = *func_001F9D30(0);
+    g->rot[0] += 0x4000;
+    g->sc.y = 1.5f;
+    g->sc.x = 0.5f;
+    g->sc.z = 0.5f;
+    for (i = 0; i < 0x55; i++) {
+        if (g->slot[i].used != 0) {
+            n++;
+            func_0020EB40(g->cam);
+            func_0020C940(g, &g->sc, g->rot, &pos);
+            func_0020BC00(g->cam, g);
+            draw = g->slot[i].draw;
+            if (draw != NULL) {
+                draw(g, &g->slot[i], pkt, 0);
+                draw(g, &g->slot[i], pkt, 1);
+            }
+        }
+    }
+    for (i = 0; i < 0x2A; i++) {
+        if (g->piece[i].used != 0) {
+            n++;
+            func_0020EB40(g->cam);
+            func_0020C940(g, &g->sc, g->rot, &pos);
+            func_0020BC00(g->cam, g);
+            if (g->piece[i].fn == (void *)c017_01E00D50) {
+                c017_01E025B0(g, &g->piece[i], pkt, 0);
+                c017_01E025B0(g, &g->piece[i], pkt, 1);
+            } else {
+                c017_01E02790(g, &g->piece[i], pkt, 0);
+                c017_01E02790(g, &g->piece[i], pkt, 1);
+            }
+        }
+    }
+    if (--g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape c017:01E01400, 131 insns: c017 trail link spawner (c560:01E01C50 family, 85 slots of 0x6C at ctx+0x240): takes the first free slot (marks it slot+1), both colours from the context with alpha 0, the context's vector, its sizes as shorts, height 18 above, both capped by the context's ceiling, chained after the context's last piece and becomes it; draws with c017:01E01BF0 */
 

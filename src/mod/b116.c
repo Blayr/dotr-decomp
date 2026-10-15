@@ -915,7 +915,99 @@ static s32 func_01E02E90_b116(Scene_b116_01E02E90 *g, Light_b116_01E02E90 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03190_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03360_b116);
+/* shape b116:01E03360, 214 insns: one of five scene markers (0x30 = its slot): size 32 (slot 0) or 13, grey 0x80,
+   fades in by 10 for 12 ticks, out by 7 once the scene timer passes 455; flickers 0x80 / 0x60 on odd / even ticks
+   (before it starts, in step with the scene timer's parity); from tick 13 to 42 moves its slot's scene point
+   (ctx+0x2E20) a 30th of the gap between ctx+0x2D30 and ctx+0x2DD0 each tick; its clock starts at scene time 266
+   (slot 0), 236 (1, 2) or 256 (3, 4); random rotation each tick */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    s16 slot;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+} Mark_b116_01E03360;
+
+typedef struct {
+    u8 pad0[0x2D30];
+    Vec4f to[10];
+    Vec4f from[5];
+    Vec4f at[5];
+    u8 pad2E70[0x4A62 - 0x2E70];
+    s16 timer;
+} Scn_b116_01E03360;
+
+static s32 func_01E03360_b116(Scn_b116_01E03360 *g, Mark_b116_01E03360 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->slot == 0) {
+            o->size = 0x20;
+        } else {
+            o->size = 13;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 12) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 10;
+        }
+    } else if (g->timer > 455) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+    }
+    if (o->tick > 12 && o->tick < 43) {
+        g->at[o->slot].x += (g->to[o->slot].x - g->from[o->slot].x) / 30.0f;
+        g->at[o->slot].y += (g->to[o->slot].y - g->from[o->slot].y) / 30.0f;
+        g->at[o->slot].z += (g->to[o->slot].z - g->from[o->slot].z) / 30.0f;
+    }
+    if (o->tick == 0) {
+        if (g->timer % 2 == o->slot % 2) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        } else {
+            func_001076F0(o->col, 0x60, 0x60, 0x60);
+        }
+    }
+    if (g->timer > 200) {
+        if (g->timer > 265 && o->slot == 0) {
+            o->tick++;
+        }
+        if (g->timer > 235 && o->slot == 1) {
+            o->tick++;
+        }
+        if (g->timer > 235 && o->slot == 2) {
+            o->tick++;
+        }
+        if (g->timer > 255 && o->slot == 3) {
+            o->tick++;
+        }
+        if (g->timer > 255 && o->slot == 4) {
+            o->tick++;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    return 0;
+}
 
 /* shape b116:01E036C0, 108 insns: on start 0x38 = 50, both colours 0x80 grey (second alpha 0), 0x8/0xA = 100/200, 0xE
    = 1 when 0x3A is set, 0x18 = 0 for kind 1, 0x10 = 0x4000; both alphas grow by 10 for 12 ticks, then once the game

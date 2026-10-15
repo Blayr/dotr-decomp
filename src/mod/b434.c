@@ -468,7 +468,96 @@ static s32 func_01E01A50_b434(Ctx_b434_01E01A50 *g, Fx_b434_01E01A50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b434", func_01E01D30_b434);
+/* shape b434:01E01D30, 201 insns: b434:01E01A50 cousin: a grey (0x80 / 0x70 flicker) flake 8..14 wide and 5 high,
+   growing to 35 every third tick, frame cycling 0..7, angle 0..359, drift (-50..49)/100 in x and y applied every third
+   tick with a 0.8 sink, pushed 3.8 a tick in z by the scene side (ctx+0xB2B4); alpha up by 0x40 to 0xC0 for 85 ticks,
+   then down by 9; its clock restarts at 90 once the scene count (ctx+0xB2B8) passes 360 */
+
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 side;
+    u8 padB2B6[2];
+    s16 count;
+} Ctx_b434_01E01D30;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b434_01E01D30;
+
+static s32 func_01E01D30_b434(Ctx_b434_01E01D30 *g, Fx_b434_01E01D30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = func_0019A5C8() % 7 + 8;
+        o->h = 5;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 100.0f;
+        o->vel[0] /= 100.0f;
+        o->f5C = func_0019A5C8() % 360;
+    }
+    if (o->tick < 85) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+    }
+    o->kind++;
+    if (o->kind > 7) {
+        o->kind = 0;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->w < 35) {
+            o->w++;
+        }
+    }
+    if (o->tick != 0) {
+        if (g->side != 0) {
+            o->pos[2] -= 3.8f;
+        } else {
+            o->pos[2] += 3.8f;
+        }
+        if (o->tick % 3 == 1) {
+            o->pos[0] += o->vel[0];
+            o->pos[1] += o->vel[1];
+            o->pos[1] -= 0.8f;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    if (g->count > 360) {
+        o->tick = 90;
+    }
+    return 0;
+}
 
 /* shape b434:01E02060, 105 insns: b282:01E01C20 family spinning white spark (random size 4..10, frame 0..2, angle 30..59, spin 16..35, held 3..5 ticks): in by 64 up to 0xC0, then out by 14 and ends */
 

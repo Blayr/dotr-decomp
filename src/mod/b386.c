@@ -582,7 +582,101 @@ static s32 func_01E01AC0_b386(s32 arg0, Fx_b386_01E01AC0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E01D10_b386);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b386", func_01E02110_b386);
+/* shape b386:01E02110, 217 insns: b386:01E02480 cousin: white, size 10, f50 30..479; it blinks white/grey with the
+   scene count (0xB25E) parity, drifts by f3C in z while held, then rises 1.5 a tick; f5A climbs by 3 to 160 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 side;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    f32 z;
+    u8 pad1C[0x14];
+    f32 vel[3];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 life;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b386_01E02110;
+
+typedef struct {
+    u8 pad0[0xB25E];
+    s16 count;
+} Ctx_b386_01E02110;
+
+static s32 func_01E02110_b386(Ctx_b386_01E02110 *g, Fx_b386_01E02110 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 t;
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = 70;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->side = 2;
+        } else {
+            o->side = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = (func_0019A5C8() >> 4) % 450 + 30;
+        o->life = func_0019A5C8() % 350 + 100;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->vel[0] /= 60.0f;
+        o->vel[1] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    if (g->count % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    t = o->tick;
+    if (t != 0) {
+        if ((s16)t < o->hold) {
+            o->z += o->f3C;
+        }
+        if (o->tick >= o->hold) {
+            o->y += 1.5f;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f5A < 160) {
+            o->f5A += 3;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b386:01E02480, 177 insns: b852:01E026F0 family pale-yellow (0xCF, 0xCF, 0x40) mote: size 20 growing 0.8 during the hold, frame 0..7, turn 70, angle 0..359, side 0 or 2, keeps the old 0x50 in 0xC, life 100..449, speed 10..29, 0x8 0..34, hold 3..7, drift (-20..19)/60; alpha up by 0xC0 to 0xC0 during the hold, then down by 12 while rising 0.5 */
 

@@ -133,7 +133,132 @@ static s32 func_01E00B90_c021(Scene_c021_01E00B90 *g, Node_c021_01E00B90 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00E00_c021);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E013C0_c021);
+/* shape c021:01E013C0, 192 insns: c030:01E00E30's segment hand-on: turning back 1 a tick, its two lengths (f60/f64)
+   saved as bytes and shrinking by 4 (the tail follows once 18 behind); while under 200 it hands its colour, lengths
+   and turn + 15 to the scene's next segment (ctx+0x3588..) and spawns it through c021:01E02E40; alphas up by 5 to
+   0x30 for the first 8 scene frames, down by 16 while the scene timer is under 18, else up by 4 to 0x80 */
+
+typedef struct {
+    u8 pad0[0x68];
+    s32 w68;
+} Link_c021_01E013C0;
+
+typedef struct {
+    u8 pad0[0x60];
+    f32 f60;
+    f32 f64;
+    u8 pad68[4];
+    Link_c021_01E013C0 *link;
+    u8 pad70[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h84;
+    u8 c86;
+    u8 c87;
+    u8 pad88[4];
+    s16 ang;
+    s16 h8E;
+    u8 pad90[2];
+    s16 h92;
+} Seg_c021_01E013C0;
+
+typedef struct {
+    u8 pad0[0xC0];
+    s32 rC0, rC4, rC8;
+    u8 padCC[0x3578 - 0xCC];
+    s32 timer;
+    u8 col[4];
+    u8 pad3580[8];
+    Seg_c021_01E013C0 *parent;
+    u8 pad358C[4];
+    f32 px, py, pz;
+    u8 pad359C[0x38A6 - 0x359C];
+    s16 ang;
+    u8 pad38A8[8];
+    s16 h38B0;
+    u8 pad38B2[2];
+    s16 h38B4;
+    u8 pad38B6[4];
+    s16 frame;
+    u8 pad38BC[8];
+    s16 h38C4;
+} Scene_c021_01E013C0;
+
+static s32 func_01E013C0_c021(Scene_c021_01E013C0 *g, Seg_c021_01E013C0 *o) {
+    extern void c021_01E02E40(Scene_c021_01E013C0 *, void *);
+    extern u32 func_001A23B0(f32);
+
+    o->ang -= 1;
+    if (o->ang < -359) {
+        o->ang %= 360;
+    }
+    o->c86 = func_001A23B0(o->f60);
+    o->c87 = func_001A23B0(o->f64);
+    if (o->f60 > 0.0f) {
+        o->f60 -= 4.0f;
+        if (o->f64 - o->f60 >= 18.0f) {
+            o->f64 -= 4.0f;
+        }
+    } else {
+        o->f64 -= 4.0f;
+        if (o->f64 < o->f60) {
+            o->f64 = o->f60;
+            if (o->link != NULL) {
+                o->link->w68 = 0;
+            }
+            o->h84 = 0;
+        }
+    }
+    if (o->h8E > 0 && o->f64 < 200.0f) {
+        g->parent = o;
+        g->px = (f32)(u32)o->c86;
+        g->py = (f32)(u32)o->c87;
+        g->col[3] = 0;
+        g->col[0] = o->col[0];
+        g->col[1] = o->col[1];
+        g->col[2] = o->col[2];
+        g->h38B0 = 1;
+        g->pz = o->f64;
+        g->h38B4 = 1;
+        g->rC4 = 0;
+        g->rC0 = 0;
+        g->rC8 = 0;
+        g->ang = o->ang + 15;
+        if (o->h92 != 0) {
+            g->h38C4 = 0;
+        } else {
+            g->h38C4 = 1;
+        }
+        c021_01E02E40(g, func_01E013C0_c021);
+        o->h8E = 0;
+    }
+    if (g->frame < 8) {
+        if (o->col[3] < 0x30) {
+            o->col[3] += 5;
+        }
+        if (o->col2[3] < 0x30) {
+            o->col2[3] += 5;
+        }
+    } else if (g->timer < 18) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 16;
+        }
+        if (o->col2[3] > 16) {
+            o->col2[3] -= 16;
+        }
+    } else {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 4;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 4;
+        }
+    }
+    if (g->timer < 11) {
+        o->h84 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E016C0_c021);
 

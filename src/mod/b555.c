@@ -721,7 +721,102 @@ static s32 func_01E01ED0_b555(s32 arg0, Glow_b555_01E01ED0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E01F90_b555);
+/* shape b555:01E01F90, 198 insns: b566:01E015D0 cousin, b350:01E00C60 family dark (0x20/0x20/0x08) puff: size 16..25
+   growing 2 to 100 (3 more per tick after tick 72), frame 3 cycling 0..5 every 8 ticks from tick 4, speed 5..9, h8 0..24,
+   hold 40..74, hC 1..3, z nudged 4 by the scene side (0x3560); sinks toward the second point by 1/72 of the gap (1/100
+   after tick 72) */
+
+typedef struct {
+    u8 pad0[0x3560];
+    s16 side;
+} Ctx_b555_01E01F90;
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b555_01E01F90;
+
+static s32 func_01E01F90_b555(Ctx_b555_01E01F90 *g, Fx_b555_01E01F90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+    s32 t;
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 10 + 16;
+        o->f34 = 3;
+        func_001076F0(o->col, 0x20, 0x20, 8);
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 35 + 40;
+        o->hC = func_0019A5C8() % 3 + 1;
+        if (g->side != 0) {
+            o->z -= 4;
+        } else {
+            o->z += 4;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    *(f32 *)(u32)&v[2] -= v[6];
+    t = o->tick;
+    if (t != 0) {
+        if ((s16)t < 72) {
+            *(f32 *)(u32)&v[2] /= 72.0f;
+            o->z = o->z + v[2];
+        } else {
+            *(f32 *)(u32)&v[2] /= 100.0f;
+            o->z = o->z + v[2];
+            o->f30 += o->speed * 6;
+            o->f38 += 3;
+        }
+    }
+    if (o->tick > 3) {
+        if (o->tick % 8 == 1) {
+            if (o->f34 < 5) {
+                o->f34++;
+            } else {
+                o->f34 = 0;
+            }
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->f38 < 100) {
+        o->f38 += 2;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E022B0_b555);
 

@@ -683,7 +683,101 @@ static s32 func_01E02170_b426(s32 unused, Mote_b111_01E022F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02370_b426);
+/* shape b426:01E02370, 216 insns: b390:01E023E0 cousin: grey with a yellow second colour flickering to dull on even
+   ticks, 0xE = 1..10, alpha up for 149 ticks; at tick 149 it spawns ten 0x1E02BA0, ten 0x1E01FD0 and 0x1E02880 at its
+   point (ctx+0x5190 table); from tick 7 to 12 (outside 25..125) every 0xE-th tick 0x1E02DA0; before tick 149, outside
+   ticks 25..125, 0x1E02EB0 and 0x1E03050 there each tick */
+
+typedef struct {
+    f32 x, y, z, w;
+} V_b426_01E02370;
+
+typedef struct {
+    u8 pad0[0x250];
+    V_b426_01E02370 pos;
+    u8 pad260[0x5190 - 0x260];
+    V_b426_01E02370 pts[1];
+} Game_b426_01E02370;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 fE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 pt;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b426_01E02370;
+
+static s32 func_01E02370_b426(Game_b426_01E02370 *g, Fx_b426_01E02370 *o) {
+    extern s32 b426_01E01FD0(void);
+    extern s32 b426_01E02880(void);
+    extern s32 b426_01E02BA0(void);
+    extern s32 b426_01E02DA0(void);
+    extern s32 b426_01E02EB0(void);
+    extern s32 b426_01E03050(void);
+    extern s32 b426_01E04630(Game_b426_01E02370 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 8);
+        o->f5A = func_0019A5C8() % 360;
+        o->fE = func_0019A5C8() % 10 + 1;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 0x80, 8);
+    } else {
+        func_001076F0(o->col2, 0x60, 0x60, 8);
+    }
+    if (o->tick < 149) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick == 149) {
+        g->pos = g->pts[o->pt];
+        for (i = 0; i < 10; i++) {
+            b426_01E04630(g, b426_01E02BA0, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b426_01E04630(g, b426_01E01FD0, 0);
+        }
+        b426_01E04630(g, b426_01E02880, 0);
+    }
+    if (o->tick > 6 && o->tick < 13 && (o->tick < 25 || o->tick > 125) && o->tick % o->fE == 1) {
+        g->pos = g->pts[o->pt];
+        b426_01E04630(g, b426_01E02DA0, 0);
+    }
+    if (o->tick < 149) {
+        if (o->tick < 25 || o->tick > 125) {
+            g->pos = g->pts[o->pt];
+            b426_01E04630(g, b426_01E02EB0, 0);
+            b426_01E04630(g, b426_01E03050, 0);
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b426:01E026D0, 105 insns: a grey/red tumbling column (three random turns, random angle) growing 8.5 a tick (4.5 once the scene value reaches 200), its tail 4 behind: in by 64 up to 0xC0 for 10 ticks, then out by 14 and ends */
 

@@ -704,7 +704,88 @@ static void func_01E01D40_b749(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b749", func_01E02000_b749);
+/* shape b749:01E02000, 195 insns: the b749 module's event step (B749_W_S): counts ticks; keeps its point on the
+   tracked point (ctx+0x707C) jittered by -20..19 on x and z, y fixed at 30, pushed 10 along z by the scene flag;
+   reads the second tracked point (ctx+0x707E) into a scratch vector; ticks 100..120 advance the slot number
+   cycling 0..119; ticks 98..133, every third, spawn b749:01E028A0 and b749:01E02BF0; at 98 and at 118 spawn
+   b749:01E029D0 72 times with slot 0, 5, 10, ...; at 96 spawn b749:01E02DC0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x707C - 0x25C];
+    s16 id0;
+    s16 id1;
+    u8 pad7080[0x70AA - 0x7080];
+    s16 slot;
+    s16 next;
+    s16 flag;
+    u8 pad70B0[2];
+    s16 timer;
+} Ctx_b749_01E02000;
+
+static void func_01E02000_b749(Ctx_b749_01E02000 *g) {
+    extern s32 b749_01E028A0(void);
+    extern s32 b749_01E029D0(void);
+    extern s32 b749_01E02BF0(void);
+    extern s32 b749_01E02DC0(void);
+    extern void b749_01E038F0(Ctx_b749_01E02000 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0();
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+    s16 i;
+    s16 n;
+    s16 k;
+
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->id0, g->pos);
+    func_001F5620(func_001F53A0(), g->id1, v);
+    g->pos[0] += func_0019A5C8() % 40 - 20;
+    g->pos[1] = 30.0f;
+    g->pos[2] += func_0019A5C8() % 40 - 20;
+    if (g->flag != 0) {
+        g->pos[2] -= 10.0f;
+    } else {
+        g->pos[2] += 10.0f;
+    }
+    if (g->timer >= 100 && g->timer < 121 && g->timer != 0) {
+        if (g->timer < 100) {
+            n = 1;
+        } else {
+            n = 1;
+        }
+        for (i = 0; i < n; i++) {
+            g->slot = g->next;
+            g->next++;
+            if (g->next >= 120) {
+                g->next = 0;
+            }
+        }
+    }
+    if (g->timer >= 98 && g->timer < 134) {
+        if (g->timer % 3 == 1) {
+            b749_01E038F0(g, b749_01E028A0, 0);
+            b749_01E038F0(g, b749_01E02BF0, 0);
+        }
+    }
+    if (g->timer == 98) {
+        for (i = 0, k = 0; i < 72; i++) {
+            g->slot = k;
+            b749_01E038F0(g, b749_01E029D0, 0);
+            k += 5;
+        }
+    }
+    if (g->timer == 118) {
+        for (k = 0, i = 0; k < 72; k++) {
+            g->slot = i;
+            b749_01E038F0(g, b749_01E029D0, 0);
+            i += 5;
+        }
+    }
+    if (g->timer == 96) {
+        b749_01E038F0(g, b749_01E02DC0, 0);
+    }
+}
 
 typedef struct {
     u8 pad0000[0x70A0];

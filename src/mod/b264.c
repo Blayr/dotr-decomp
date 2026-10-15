@@ -1110,7 +1110,103 @@ static s32 func_01E03450_b264(s32 arg0, Fx_b264_01E03450 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E035B0_b264);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03AA0_b264);
+/* shape b264:01E03AA0, 215 insns: b016:01E02B40's full-screen sprite through the scene's packet (ctx+0xDE68), in the
+   object's colour (red 0xC0 at start, flickering 0xC0 / 0xB0 past scene time 78), its texture window inset by 0x8
+   and 0xA tenths (the bottom by three times that), sent twice; fades in by 10 until scene time 350, then out by 13 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b264_01E03AA0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b264_01E03AA0 p;
+} Tv_b264_01E03AA0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b264_01E03AA0 v[2];
+} Tex_b264_01E03AA0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b264_01E03AA0;
+
+typedef struct {
+    u8 pad0[0xDE68];
+    Tex_b264_01E03AA0 *pk;
+    u8 padDE6C[0x54];
+    s16 timer;
+} Scn_b264_01E03AA0;
+
+static s32 func_01E03AA0_b264(Scn_b264_01E03AA0 *g, Fx_b264_01E03AA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xC0, 0, 0);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - 3.0f * fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->timer > 78) {
+        if (g->timer % 2 == 1) {
+            func_001076F0(o->col, 0xC0, 0, 0);
+        } else {
+            func_001076F0(o->col, 0xB0, 0, 0);
+        }
+    }
+    if (g->timer < 350) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03E00_b264);
 

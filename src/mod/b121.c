@@ -815,6 +815,109 @@ static s32 func_01E02F60_b121(Pool_b121_01E02F60 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E03090_b121);
+/* shape b139:01E03820: sibling of b016:01E00ED0 (one sprite quad, drawn twice). Needs func_01E00100_b121 in the
+   same file and static (the original reuses $a0 across the call). */
+
+typedef struct Cam_b121_01E03090 {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f pos;
+    u8 pad20[8];
+    u8 col[4];
+} Cam_b121_01E03090;
+
+typedef struct Obj_b121_01E03090 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 f94[0x2A];
+    s16 fBE;
+} Obj_b121_01E03090;
+
+typedef struct Xyz_b121_01E03090 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b121_01E03090;
+
+typedef struct Uv_b121_01E03090 {
+    f32 u, v;
+} Uv_b121_01E03090;
+
+typedef struct Pk_b121_01E03090 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b121_01E03090 uv;
+    u64 pad18;
+    Xyz_b121_01E03090 v[4];
+    u64 pad60[6];
+} Pk_b121_01E03090;
+
+typedef struct Buf_b121_01E03090 {
+    u64 tag;
+    Pk_b121_01E03090 pk;
+} Buf_b121_01E03090;
+
+static void func_01E03090_b121(Obj_b121_01E03090 *obj, Cam_b121_01E03090 *cam, s32 flags, Vec4f c) {
+    extern void func_00108EF0();
+    f32 view[4][4];
+    Vec4f a;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    Buf_b121_01E03090 buf;
+    Uv_b121_01E03090 uv;
+    s32 sel;
+    s32 mode;
+    Pk_b121_01E03090 *p = &buf.pk;
+
+    sel = (flags >> 4) & 0xF;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else if (sel == 1) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    }
+    func_00107740(&uv, cam->col);
+    p->uv = uv;
+    func_01E00100_b121((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)obj->f94, obj->fBE);
+    func_00208700(p, (void *)obj->f88, 1);
+    s.x = 0.1f;
+    a.x = c.x;
+    s.y = 0.1f;
+    a.y = c.y;
+    s.z = 0.1f;
+    a.z = c.z;
+    func_00108EF0(m, &s, &cam->pos, &a);
+    func_00108CE0(view, cam->w, cam->h);
+    if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out) != 0) {
+        mode = flags & 0xF;
+        if (mode == 0) {
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+        } else if (mode == 1) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0((s32)p, obj->f80, 0);
+            func_002075F0((s32)p, obj->f80, 0);
+        } else {
+            func_002075F0((s32)p, obj->f80, -1);
+            func_002075F0((s32)p, obj->f80, -1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E033A0_b121);

@@ -290,7 +290,130 @@ static s32 func_01E01120_b058(Game_b058_01E01120 *g, Glow_b058_01E01120 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E012B0_b058);
+/* shape b058:01E012B0, 210 insns: an orange (0x60, 0x30, 0) trail seed: on start it turns rot[1] to the model angle read
+   through func_001F6160 less 0x4000 plus a random -0x6000..0x5FFF, then lays trail h30 (ctx+0x3100 + 0x80 h30, 8
+   points) out 20 apart in x with z wandering by -30..29 from the previous point; alpha up by 30 to 0xF0 for 28 ticks,
+   then down by 3 */
+
+typedef struct {
+    u8 pad0[0x3100];
+    Vec4f tr[7][8];
+} Ctx_b058_01E012B0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+} Obj_b058_01E012B0;
+
+static s32 func_01E012B0_b058(Ctx_b058_01E012B0 *g, Obj_b058_01E012B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001A22C0(f32);
+    s32 v[4];
+    Vec4f *p;
+    Vec4f *q;
+    s16 i;
+    s32 a;
+
+    func_001076F0(o->col, 0x60, 0x30, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), v);
+        o->rot[1] = func_001A22C0((f32)v[1]);
+        o->rot[1] -= 0x4000;
+        if (o->h30 == 0) {
+            o->rot[1] += 0;
+        } else if (o->h30 == 0) {
+            o->rot[1] += 0x1000;
+        } else if (o->h30 == 0) {
+            o->rot[1] -= 0x1000;
+        } else {
+            o->rot[1] += func_0019A5C8() % 0xC000 - 0x6000;
+        }
+        o->h34 = 0;
+        o->h38 = 60;
+        if (o->h30 == 0) {
+            p = g->tr[0];
+        }
+        if (o->h30 == 1) {
+            p = g->tr[1];
+        }
+        if (o->h30 == 2) {
+            p = g->tr[2];
+        }
+        if (o->h30 == 3) {
+            p = g->tr[3];
+        }
+        if (o->h30 == 4) {
+            p = g->tr[4];
+        }
+        if (o->h30 == 5) {
+            p = g->tr[5];
+        }
+        if (o->h30 == 6) {
+            p = g->tr[6];
+        }
+        for (i = 0, a = 0; i < 8; i++) {
+            p->x = a;
+            a += 20;
+            p++;
+        }
+        if (o->h30 == 0) {
+            q = p = g->tr[0];
+        }
+        if (o->h30 == 1) {
+            q = p = g->tr[1];
+        }
+        if (o->h30 == 2) {
+            q = p = g->tr[2];
+        }
+        if (o->h30 == 3) {
+            q = p = g->tr[3];
+        }
+        if (o->h30 == 4) {
+            q = p = g->tr[4];
+        }
+        if (o->h30 == 5) {
+            q = p = g->tr[5];
+        }
+        if (o->h30 == 6) {
+            q = p = g->tr[6];
+        }
+        for (i = 0; i < 8; i++) {
+            if (i == 0) {
+                p->z = 0.0f;
+            } else {
+                p->z = q->z + func_0019A5C8() % 60 - 30.0f;
+            }
+            if (i == 0) {
+                p++;
+            } else {
+                p++;
+                q++;
+            }
+        }
+        o->state = 2;
+    }
+    if (o->t < 28) {
+        if (o->col[3] < 0xF0) {
+            o->col[3] += 30;
+        }
+    } else if (o->col[3] > 4) {
+        o->col[3] -= 3;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b058:01E01600, 103 insns: b027:01E00F90 family: an olive flame (size 15 shrinking to 0) at a random angle, or (scene value 130 on) within 60 degrees of 0 or of 180 depending on the scene handle being under 10: in by 15 up to 0x60 for 8 ticks, then out by 15 and ends */
 

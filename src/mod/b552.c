@@ -389,11 +389,302 @@ static void func_01E00CE0_b552(Obj_b003_01E00EA0 *obj, Def_b003_01E00EA0 *def, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E01240_b552);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E016A0_b552);
+/* shape b552:01E016A0, 220 insns: b503:01E01E00's glow with rise 7..16, the scene count threshold 210, and a
+   sideways drift h4 of -6 or +6 a tick by the scene flag (ctx+0x32B2) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E01A10_b552);
+typedef struct {
+    u8 pad0[0x32B2];
+    s16 flag;
+    u8 pad32B4[2];
+    s16 count;
+} Game_b552_01E016A0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E01D60_b552);
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b552_01E016A0;
+
+static s32 func_01E016A0_b552(Game_b552_01E016A0 *g, Glow_b552_01E016A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 k;
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 15 + 3;
+        k = func_0019A5C8() % 3;
+        if (k == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        } else if (k == 1) {
+            func_001076F0(o->col, 0xB0, 0xB0, 0xB0);
+        } else {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        }
+        o->h30 = func_0019A5C8() % 150 + 10;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 10 + 7;
+        o->h8 = func_0019A5C8() % 30;
+        o->hA = func_0019A5C8() % 2;
+        o->h6 = func_0019A5C8() % 15 + 30;
+        o->kind = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 210) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 25;
+            }
+        }
+    } else if (g->count < 210) {
+        if (o->col[3] > 21) {
+            o->col[3] -= 20;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 210) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->kind = func_0019A5C8() % 8;
+    if (o->tick % 2 == 1) {
+        o->h2 += (s16)(func_0019A5C8() % 3 + 1);
+    } else {
+        o->h2 -= (s16)(func_0019A5C8() % 4 + 1);
+    }
+    o->tick++;
+    if (o->hA != 0) {
+        o->ang += 2;
+    } else {
+        o->ang -= 2;
+    }
+    if (g->flag != 0) {
+        o->h4 -= 6;
+    } else {
+        o->h4 += 6;
+    }
+    return 0;
+}
+
+/* shape b552:01E01A10, 209 insns: b503:01E01AB0 in blue (0x20/0x20/0x60), the scene count limit 210 instead of 280 */
+
+typedef struct {
+    u8 pad0[0x32AA];
+    s16 joint;
+    u8 pad32AC[6];
+    s16 side;
+    u8 pad32B4[2];
+    s16 count;
+} Game_b552_01E01A10;
+
+typedef struct {
+    u8 pad0[4];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b552_01E01A10;
+
+static s32 func_01E01A10_b552(Game_b552_01E01A10 *g, Glow_b552_01E01A10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 12 + 20;
+        o->kind = 0;
+        func_001076F0(o->col, 0x20, 0x20, 0x60);
+        o->hA = o->h30;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 6 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 210) {
+            if (o->col[3] < 0x81) {
+                o->col[3] += 0x40;
+            }
+        }
+    } else if (g->count < 210) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 210) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 60) {
+            o->f38 += 4;
+        }
+    }
+    func_001F5620(func_001F5380(), g->joint, v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    if (o->tick != 0) {
+        if (g->side != 0) {
+            o->h4--;
+        } else {
+            o->h4++;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    o->h30 += o->hE;
+    if (o->tick % 2 == 1) {
+        o->f38 += 2;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    if (o->hE % 2 == 1) {
+        o->ang++;
+    } else {
+        o->ang--;
+    }
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
+
+/* shape b552:01E01D60, 209 insns: b552:01E020B0 family speck: size 3..17, grey 0x80, 0xB0 or white by a 0..2 pick, 0x30 10..159 growing by 0xE (14..27) once moving, random 0x3A turning 2 a tick (direction 0xA 0..1), 0x8 0..29, hold 30..44; alpha up by 0x19 during the hold, down by 20 after it, down by 9 past scene count 210; frame 0..7 each tick, and 0x2 wobbles up 1..3 / down 1..4 on odd / even ticks */
+
+typedef struct {
+    u8 pad0[0x32B6];
+    s16 count;
+} Game_b552_01E01D60;
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[2];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Speck_b552_01E01D60;
+
+static s32 func_01E01D60_b552(Game_b552_01E01D60 *g, Speck_b552_01E01D60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 k;
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 15 + 3;
+        k = func_0019A5C8() % 3;
+        if (k == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        } else if (k == 1) {
+            func_001076F0(o->col, 0xB0, 0xB0, 0xB0);
+        } else {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        }
+        o->h30 = func_0019A5C8() % 150 + 10;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 14 + 14;
+        o->h8 = func_0019A5C8() % 30;
+        o->hA = func_0019A5C8() % 2;
+        o->h6 = func_0019A5C8() % 15 + 30;
+        o->kind = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 210) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x19;
+            }
+        }
+    } else if (g->count < 210) {
+        if (o->col[3] > 0x15) {
+            o->col[3] -= 0x14;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 210) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->kind = func_0019A5C8() % 8;
+    if (o->tick % 2 == 1) {
+        k = func_0019A5C8() % 3 + 1;
+        o->h2 += k;
+    } else {
+        k = func_0019A5C8() % 4 + 1;
+        o->h2 -= k;
+    }
+    o->tick++;
+    if (o->hA != 0) {
+        o->ang += 2;
+    } else {
+        o->ang -= 2;
+    }
+    return 0;
+}
 
 /* shape b552:01E020B0, 185 insns: b116:01E02370's kind of glow, blue (0x20/0x20/0x60) of size 12..23: alpha up by 0x40 (to 0xC0) for
    40..64 ticks while the scene count 0x32B6 is under 210, then down by 7 (by 9 once the count passes 210); the size

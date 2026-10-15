@@ -667,7 +667,76 @@ static void func_01E025E0_b117(Scene_b117_01E025E0 *g, Fx_b117_01E025E0 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E027F0_b117);
+/* shape b117:01E027F0, 142 insns: b117:01E02A30 family sprite (texture 0x9B) at position + speed/10 in integers, spun by its own rotation plus the scene's (ctx+0x3B20, growing 20/24/20 per draw), 2 wide and o->size tall */
+
+/* OVL_WARM */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[2];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b117_01E027F0;
+
+typedef struct {
+    u8 pad0[0x11C];
+    s32 tex;
+    u8 pad120[0x3B20 - 0x120];
+    s32 spin[3];
+} Scene_b117_01E027F0;
+
+static void func_01E027F0_b117(Scene_b117_01E027F0 *g, Fx_b117_01E027F0 *o, void *p, s32 lit) {
+    f32 w;
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    Vec4f quad[4];
+    f32 z[4];
+    Vec4f pos;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x9B, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    *(Vec4f *)rot = *(Vec4f *)o->rot;
+    g->spin[0] += 20;
+    g->spin[1] += 24;
+    g->spin[2] += 20;
+    rot[0] += g->spin[0];
+    rot[1] += g->spin[1];
+    rot[2] += g->spin[2];
+    func_00108EF0(m, 0, rot, &pos);
+    w = 2.0f;
+    func_00108CE0(quad, w, o->size);
+    if (func_00205630(quad, 0x70000000, m, p, z) != 0) {
+        func_00109380(p, 0);
+        func_002075F0((s32)p, v, (u32)z[0]);
+    }
+}
 
 /* shape b117:01E02A30, 115 insns: draws a small depth-sorted sprite (b004:01E01860 shape): unlit, it sets up the colour and
    texture page; lit, it builds a matrix from its turn at its position plus a tenth of its drift, and sends the square of its

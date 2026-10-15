@@ -245,9 +245,250 @@ static void func_01E00A50_b538(Scene_b538_01E00A50 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b538", func_01E00B60_b538);
+/* shape b538:01E00B60, 207 insns: b566:01E018E0's glow in violet (0xC0, 0x10, 0xFF) on joints g+0x35C8/0x35CA, rise
+   5..9, h8 0..24, held 45..54 ticks fading in by 0x30 to 97 then down by 9; depth drift /40 for 40 ticks then /60;
+   frame steps to 5, f38 grows by 1 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b538", func_01E00EA0_b538);
+typedef struct {
+    u8 pad0[0x35C8];
+    s16 ja;
+    s16 jb;
+} Game_b538_01E00B60;
+
+typedef struct {
+    s16 h0;
+    u8 pad2[2];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b538_01E00B60;
+
+static s32 func_01E00B60_b538(Game_b538_01E00B60 *g, Glow_b538_01E00B60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 70;
+        o->kind = 0;
+        func_001076F0(o->col, 0xC0, 0x10, 0xFF);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 45;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 97) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    if (o->tick < 40) {
+        *(f32 *)(u32)&v[0].z /= 40.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    } else {
+        *(f32 *)(u32)&v[0].z /= 60.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    }
+    if (o->tick % 2 == 1) {
+        o->h0 += o->hC;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 1;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
+
+/* OVL_WARM */
+
+/* shape b538:01E00EA0, 222 insns: the b538 module's main step: keeps two order tables; with a code it clears the scene,
+   sets up its two coordinates, keeps the code and a 372-tick timer, the model's joints 0x22/0x3A/0x40/0x47/0x4E, the
+   camera's turned-back flag (turn / 180), textures (5,0) and (5,1), 256 random offsets -15..14 and eight random
+   0..3 words; otherwise it runs the scene step (b538:01E00A50), every live glow slot (200 of 0x40 bytes,
+   b538:01E00B60), then draws each glow as gas (b538:01E004D0) with texture 0, its frame through func_00106080 and a
+   random 0..3 variant; counts the timer down and returns 1 / 4 / 2 at steps 90 / 370 / 355, 6 between 101 and 349,
+   8 when the timer ends */
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 (*fn)(void *, void *);
+    u8 pad28[0xC];
+    s16 frame;
+    s16 used;
+    u8 pad38[8];
+} Slot_b538_01E00EA0;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex88;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x14];
+    s16 hB8;
+    u8 padBA[4];
+    s16 hBE;
+    s16 hC0[8];
+    u8 padD0[8];
+    u8 crdD8[0x290 - 0xD8];
+    s32 w290;
+    s32 w294;
+    s32 w298;
+    u8 pad29C[0x300 - 0x29C];
+    Slot_b538_01E00EA0 slot[200];
+    s32 tex[2];
+    u8 pad3508[0x3580 - 0x3508];
+    s32 timer;
+    u8 pad3584[8];
+    s32 ot2;
+    u8 pad3590[0x35C8 - 0x3590];
+    s16 joint[5];
+    u8 pad35D2[0x35E4 - 0x35D2];
+    s16 turn;
+    s16 code;
+    s16 step;
+    u8 pad35EA[2];
+    s8 noise[0x100];
+    u8 crd36EC[1];
+} Scene_b538_01E00EA0;
+
+static s32 func_01E00EA0_b538(s32 arg0, s32 code) {
+    extern void b538_01E004D0(Scene_b538_01E00EA0 *, Slot_b538_01E00EA0 *, s32, void *);
+    extern void b538_01E00A50(Scene_b538_01E00EA0 *, s32);
+    extern s32 b538_01E00B60(void *, void *);
+    Scene_b538_01E00EA0 *g = (Scene_b538_01E00EA0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F6160(s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_00106080(void *, s32, s32, void *);
+    f32 pos[4];
+    f32 rm[4];
+    s32 ang[4];
+    s32 n;
+    s32 i;
+
+    n = 0;
+    g->ot = func_00207500();
+    g->ot2 = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x3860);
+        func_00107C10(g->crd36EC);
+        func_00107C10(g->crdD8);
+        g->code = code;
+        g->timer = 372;
+        g->w290 = 0;
+        g->w294 = 0;
+        g->w298 = 0;
+        g->joint[0] = func_001F5560(func_001F53A0(), 0x22, 1);
+        g->joint[1] = func_001F5560(func_001F53A0(), 0x3A, 0);
+        g->joint[2] = func_001F5560(func_001F53A0(), 0x40, 0);
+        g->joint[3] = func_001F5560(func_001F53A0(), 0x47, 0);
+        g->joint[4] = func_001F5560(func_001F53A0(), 0x4E, 0);
+        func_001F6160(func_001F53A0(), ang);
+        g->turn = (s16)(ang[1] / 180.0f);
+        for (; n < 2; n++) {
+            g->tex[n] = func_00202BF0(5, n);
+        }
+        for (i = 0; i < 0x100; i++) {
+            g->noise[i] = func_0019A5C8() % 30 - 15;
+        }
+        for (i = 0; i < 8; i++) {
+            g->hC0[i] = func_0019A5C8() % 4;
+        }
+        return 0;
+    }
+    b538_01E00A50(g, 0);
+    for (i = 0; i < 200; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn == b538_01E00B60) {
+                b538_01E00B60(g, &g->slot[i]);
+            }
+        }
+    }
+    func_001F5F90(func_001F5380(), pos);
+    for (i = 0; i < 200; i++) {
+        if (g->slot[i].used != 0) {
+            n++;
+            if (g->slot[i].fn == b538_01E00B60) {
+                g->tex88 = g->tex[0];
+                func_00106080(rm, 0x14, g->slot[i].frame, 0);
+                g->rect = *(Vec4f *)rm;
+                g->hB8 = 7;
+                g->hBE = func_0019A5C8() % 4;
+                b538_01E004D0(g, &g->slot[i], 0, g->noise);
+                g->hB8 = 0;
+            }
+        }
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->step == 90) {
+        return 1;
+    }
+    if (g->step == 370) {
+        return 4;
+    }
+    if (g->step == 355) {
+        return 2;
+    }
+    if (g->step > 100 && g->step < 350) {
+        return 6;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b538:01E01220, 72 insns: twin of b046:01E03E20: take the first free slot of the 200-slot pool, clear it, give
    it the scene's colour twice, the scene matrix, the scene's value 0x35E2 and the two arguments; returns 1 if a

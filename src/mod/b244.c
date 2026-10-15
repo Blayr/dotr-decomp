@@ -568,7 +568,89 @@ static void func_01E031E0_b244(Scene_b244_01E031E0 *s, s32 arg1, s32 i) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b244", func_01E03300_b244);
+/* shape b244:01E03300, 171 insns: one burst group's step: from its start time (ctx+0x4788 per group) to scene time 184 updates the group (b244:01E01360), clears its flags after ctx+0x47A0, scales every live point by 1.2 and re-throws those above 30 (height 4, a random 0..10*f28 tenths along a random angle, delay 0..11); then updates the second list (b244:01E021A0) and clears each of its entries' flags */
+
+typedef struct {
+    f32 x, y, z;
+    s16 pad;
+    s16 e;
+} Pt_b244_01E03300;
+
+typedef struct {
+    u8 pad0[0xB];
+    u8 c;
+    Pt_b244_01E03300 *pts;
+    u8 pad10[0x18];
+    f32 f28;
+    s16 n;
+    u8 pad2E[2];
+} Grp_b244_01E03300;
+
+typedef struct {
+    u8 pad0[0x3A];
+    s16 n;
+    u8 pad3C[4];
+} Grp2_b244_01E03300;
+
+typedef struct {
+    u8 pad0[0xC];
+    u8 c[4];
+} Ent_b244_01E03300;
+
+typedef struct {
+    u8 pad0[0x70];
+    Grp2_b244_01E03300 g2[6];
+    Ent_b244_01E03300 *ents[6];
+    u8 pad208[0x13B0 - 0x208];
+    u8 x[6][0x70];
+    Grp_b244_01E03300 grp[6];
+    u8 pad1770[0x4788 - 0x1770];
+    s32 start[6];
+    s32 t2[6];
+    u8 pad47B8[4];
+    s32 time;
+} Ctx_b244_01E03300;
+
+static void func_01E03300_b244(Ctx_b244_01E03300 *g, s32 arg1, s32 k) {
+    extern void b244_01E01360(s32, Grp_b244_01E03300 *, void *);
+    extern void b244_01E021A0(s32, Grp2_b244_01E03300 *, Ent_b244_01E03300 *, Ctx_b244_01E03300 *);
+    extern void func_00103470(void *, s32, s32);
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    s32 i;
+    s32 r;
+    s32 h;
+    s32 a;
+    f32 f;
+
+    if (g->time >= g->start[k] && g->time < 185) {
+        b244_01E01360(arg1, &g->grp[k], g->x[k]);
+        i = 0;
+        if (g->time > g->t2[k]) {
+            func_00103470(&g->grp[k].c, 0, 8);
+        }
+        for (i = 0; i < g->grp[k].n; i++) {
+            if (g->grp[k].pts[i].e >= 0) {
+                g->grp[k].pts[i].x *= 1.2f;
+                g->grp[k].pts[i].y *= 1.2f;
+                g->grp[k].pts[i].z *= 1.2f;
+                if (g->grp[k].pts[i].y > 30.0f) {
+                    r = 10.0f * g->grp[k].f28;
+                    a = func_0019A5C8() % 0x10000;
+                    f = 0.1f * (func_0019A5C8() % r);
+                    g->grp[k].pts[i].y = 4.0f;
+                    g->grp[k].pts[i].z = f * func_0020B480(a);
+                    g->grp[k].pts[i].x = f * func_0020B550(a);
+                    g->grp[k].pts[i].e = -(func_0019A5C8() % 12);
+                }
+            }
+        }
+        b244_01E021A0(arg1, &g->g2[k], g->ents[k], g);
+        for (i = 0; i < g->g2[k].n; i++) {
+            func_00103470(g->ents[k][i].c, 0, 8);
+        }
+    }
+}
 
 /* shape b244:01E035B0, 45 insns: if slot idx's flag (s32 at 0x4770) is clear, reset its animation (0x70-byte rows at
    0xB10, 10.0 / 1.0) and clear its three byte tables (0x10 rows at 0xDB7, 0x60 rows at 0xE47, 0x40 rows at 0x77) */

@@ -489,7 +489,106 @@ static void func_01E01190_b627(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E014F0_b627);
+/* shape b627:01E014F0, 207 insns: the b627 module's event step: counts ticks (0x45A2); before 70 the point (0x4470)
+   follows joint 0x4544 raised by 3; at 70 takes a z step of 1/50 of the way to joint 0x4554 of the camera model; until
+   120 walks z by that step (at 100 drops 30 * sin(0x456E), after 100 rises by 0x4494 and turns by 5); then the point is
+   re-read from joint 0x4544, copied to 0x4480 and the spawn point; spawns b627:01E01DB0 and b627:01E01830 at 1,
+   b627:01E01C40 and b627:01E01A30 (and from 70 b627:01E01F40) before 331; at 328 a burst of 36 b627:01E02060 (angles
+   0, 10, ...), 15 b627:01E02210, 20 b627:01E02480, b627:01E02380 and b627:01E02640 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f a;
+    Vec4f b;
+    u8 pad4490[4];
+    f32 rise;
+    f32 step;
+    u8 pad449C[0x4544 - 0x449C];
+    s16 id0;
+    u8 pad4546[0x4554 - 0x4546];
+    s16 id1;
+    u8 pad4556[0x456E - 0x4556];
+    s16 ang;
+    u8 pad4570[0x459A - 0x4570];
+    s16 fan;
+    u8 pad459C[0x45A2 - 0x459C];
+    s16 timer;
+    u8 pad45A4[0x47A4 - 0x45A4];
+    u8 trig[4];
+} Ctx_b627_01E014F0;
+
+static void func_01E014F0_b627(Ctx_b627_01E014F0 *g) {
+    extern s32 b627_01E01830(void);
+    extern s32 b627_01E01A30(void);
+    extern s32 b627_01E01C40(void);
+    extern s32 b627_01E01DB0(void);
+    extern s32 b627_01E01F40(void);
+    extern s32 b627_01E02060(void);
+    extern s32 b627_01E02210(void);
+    extern s32 b627_01E02380(void);
+    extern s32 b627_01E02480(void);
+    extern s32 b627_01E02640(void);
+    extern void b627_01E03010(Ctx_b627_01E014F0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[8];
+    s16 i;
+    s16 a;
+
+    g->timer++;
+    if (g->timer < 70) {
+        func_001F5620(func_001F53A0(), g->id0, &g->a);
+        g->a.y += 3.0f;
+    } else {
+        if (g->timer == 70) {
+            func_001F5620(func_001F5380(), g->id1, v);
+            g->step = (v[2] - g->a.z) / 50.0f;
+        }
+        if (g->timer < 120) {
+            g->a.z += g->step;
+            if (g->timer == 100) {
+                g->a.y -= 30.0f * func_00108030(g->trig, g->ang, 0);
+            }
+            if (g->timer > 100) {
+                g->a.y += g->rise;
+                g->ang += 5;
+            }
+        }
+    }
+    func_001F5620(func_001F53A0(), g->id0, &g->a);
+    g->b = g->a;
+    if (g->timer == 1) {
+        b627_01E03010(g, b627_01E01DB0, 0);
+        b627_01E03010(g, b627_01E01830, 0);
+    }
+    g->pos = g->b;
+    if (g->timer < 331) {
+        b627_01E03010(g, b627_01E01C40, 0);
+        b627_01E03010(g, b627_01E01A30, 0);
+        if (g->timer >= 70) {
+            b627_01E03010(g, b627_01E01F40, 0);
+        }
+    }
+    if (g->timer == 328) {
+        for (i = 0, a = 0; i < 36; i++) {
+            g->fan = a;
+            b627_01E03010(g, b627_01E02060, 0);
+            a += 10;
+        }
+        for (i = 0; i < 15; i++) {
+            b627_01E03010(g, b627_01E02210, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b627_01E03010(g, b627_01E02480, 0);
+        }
+        b627_01E03010(g, b627_01E02380, 0);
+        b627_01E03010(g, b627_01E02640, 0);
+    }
+}
 
 /* shape b627:01E01830, 128 insns: b632:01E03450's grey flash timed by the game counter at g+0x45A2: on start size 25,
    colours 0x60; f56 toggles each tick; alpha up by 10 to 0x80 (both colours) until the counter reaches 330, then down

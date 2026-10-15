@@ -812,7 +812,102 @@ static s32 func_01E026D0_b743(s32 arg0, Spark_b743_01E026D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E028D0_b743);
+/* shape b743:01E028D0, 211 insns: a grey (0x80) spark 7 x 7 dropped from the effect position onto the tracked point
+   (ctx+0xD47C): on start it puts its scene point k (0xCAD0 + 0x10 k) at its position, steps x/z a fifteenth of the way
+   to the tracked point each tick, random angle 0..359 (0xD49C) and radius 0 (0xD28C) for k; both alphas up by 42 to
+   0x80 for 10 ticks, then down by 14 once the point is below 50; flickers white/grey; falls 15 a tick; ends past
+   scene count 153 (ctx+0xD5A2) */
+
+typedef struct {
+    u8 pad0[0xCAD0];
+    Vec4f pts[1];
+    u8 padCAE0[0xD28C - 0xCAE0];
+    f32 rad[1];
+    u8 padD290[0xD47C - 0xD290];
+    s16 id;
+    u8 padD47E[0xD49C - 0xD47E];
+    s16 ang[1];
+    u8 padD49E[0xD5A2 - 0xD49E];
+    s16 count;
+} Ctx_b743_01E028D0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 vx;
+    f32 f34;
+    f32 vz;
+    u8 pad3C[0x14];
+    s16 k;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b743_01E028D0;
+
+static s32 func_01E028D0_b743(Ctx_b743_01E028D0 *g, Fx_b743_01E028D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[4];
+
+    func_001F5620(func_001F53A0(), g->id, v);
+    if (o->mode == 1) {
+        o->w = 7;
+        o->h = 7;
+        o->f56 = 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        g->pts[o->k].x = o->pos[0];
+        g->pts[o->k].y = o->pos[1];
+        g->pts[o->k].z = o->pos[2];
+        o->vx = (v[0] - g->pts[o->k].x) / 15.0f;
+        o->vz = (v[2] - g->pts[o->k].z) / 15.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        g->ang[o->k] = func_0019A5C8() % 360;
+        g->rad[o->k] = 0.0f;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else if (g->pts[o->k].y < 50.0f) {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 15) {
+            o->col2[3] -= 14;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    g->pts[o->k].y -= 15.0f;
+    g->pts[o->k].z += o->vz;
+    g->pts[o->k].x += o->vx;
+    if (g->count >= 154) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b743:01E02C20, 80 insns: on start f48 80, f4C 0, colour white, second colour (0x80, 0xFF, 0x80) with alpha 0,
    0x5A/0x5C = 15; alpha grows by 0x40 (below 0x80) for 2 ticks, then fades by 11 and stops; the second colour
@@ -868,9 +963,215 @@ static s32 func_01E02C20_b743(s32 arg0, Fx_b743_01E02C20 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E02D60_b743);
+/* shape b743:01E02D60, 197 insns: a white trail spark on scene point k (0x50): its head circles the point at the
+   point's radius and angle (0xCAD0 / 0xD28C / 0xD49C); on start it fills the 15-point trail k (0x5A50 + 0xF0 k) with the
+   head, frame 2, size 7; both alphas up by 42 to 0xAA for 110 ticks, then down by 14; turns 5 a tick until 83, pushes
+   the head into the trail until 117, flickers white/grey on odd ticks, frames up to 8 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E03080_b743);
+typedef struct {
+    u8 pad0[0x5A50];
+    Vec4f tr[1][15];
+    u8 pad5B40[0xCAD0 - 0x5B40];
+    Vec4f pt[1];
+    u8 padCAE0[0xD28C - 0xCAE0];
+    f32 rad[1];
+    u8 padD290[0xD49C - 0xD290];
+    s16 ang[1];
+    u8 padD49E[0xD7A4 - 0xD49E];
+    u8 trig[1];
+} Ctx_b743_01E02D60;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 size;
+    u8 pad4C[4];
+    s16 k;
+    u8 pad52[2];
+    s16 tick;
+    s16 h56;
+    s16 mode;
+    s16 turn;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b743_01E02D60;
+
+static s32 func_01E02D60_b743(Ctx_b743_01E02D60 *g, Fx_b743_01E02D60 *o) {
+    extern void b743_01E00080(Vec4f *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+    s16 k;
+    s16 i;
+    Vec4f *p;
+
+    k = o->k;
+    v[0] = g->pt[k].x + g->rad[k] * func_00108030(g->trig, g->ang[k], 1);
+    v[1] = g->pt[o->k].y;
+    k = o->k;
+    v[2] = g->pt[k].z + g->rad[k] * func_00108030(g->trig, g->ang[k], 0);
+    if (o->mode == 1) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        p = g->tr[o->k];
+        for (i = 0; i < 15; i++) {
+            p[i].x = v[0];
+            p[i].y = v[1];
+            p[i].z = v[2];
+        }
+        o->frame = 2;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->h56 = 4;
+        o->size = 7.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 110) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 15) {
+            o->col2[3] -= 14;
+        }
+    }
+    if (o->tick < 83) {
+        o->turn += 5;
+    }
+    if (o->tick < 117) {
+        b743_01E00080(&g->tr[o->k][14], 15, 0, v);
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->tick != 0) {
+        if (o->frame < 8) {
+            o->frame++;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b743:01E03080, 216 insns: b743:01E02D60 cousin: size 5, alpha up for 10 ticks, fading only once the point
+   is under height 50, frames up to 12, and it ends when the scene clock (0xD5A2) reaches 154. As b743:01E02D60: a white trail spark on scene point k (0x50): its head circles the point at the
+   point's radius and angle (0xCAD0 / 0xD28C / 0xD49C); on start it fills the 15-point trail k (0x5A50 + 0xF0 k) with the
+   head, frame 2, size 7; both alphas up by 42 to 0xAA for 110 ticks, then down by 14; turns 5 a tick until 83, pushes
+   the head into the trail until 117, flickers white/grey on odd ticks, frames up to 8 */
+
+typedef struct {
+    u8 pad0[0x5A50];
+    Vec4f tr[1][15];
+    u8 pad5B40[0xCAD0 - 0x5B40];
+    Vec4f pt[1];
+    u8 padCAE0[0xD28C - 0xCAE0];
+    f32 rad[1];
+    u8 padD290[0xD49C - 0xD290];
+    s16 ang[1];
+    u8 padD49E[0xD5A2 - 0xD49E];
+    s16 clock;
+    u8 padD5A4[0xD7A4 - 0xD5A4];
+    u8 trig[1];
+} Ctx_b743_01E03080;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 size;
+    u8 pad4C[4];
+    s16 k;
+    u8 pad52[2];
+    s16 tick;
+    s16 h56;
+    s16 mode;
+    s16 turn;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b743_01E03080;
+
+static s32 func_01E03080_b743(Ctx_b743_01E03080 *g, Fx_b743_01E03080 *o) {
+    extern void b743_01E00080(Vec4f *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+    s16 k;
+    s16 i;
+    Vec4f *p;
+
+    k = o->k;
+    v[0] = g->pt[k].x + g->rad[k] * func_00108030(g->trig, g->ang[k], 1);
+    v[1] = g->pt[o->k].y;
+    k = o->k;
+    v[2] = g->pt[k].z + g->rad[k] * func_00108030(g->trig, g->ang[k], 0);
+    if (o->mode == 1) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        p = g->tr[o->k];
+        for (i = 0; i < 15; i++) {
+            p[i].x = v[0];
+            p[i].y = v[1];
+            p[i].z = v[2];
+        }
+        o->frame = 2;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->h56 = 4;
+        o->size = 5.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else if (g->pt[o->k].y < 50.0f) {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 15) {
+            o->col2[3] -= 14;
+        }
+    }
+    if (o->tick < 83) {
+        o->turn += 5;
+    }
+    if (o->tick < 117) {
+        b743_01E00080(&g->tr[o->k][14], 15, 0, v);
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->tick != 0) {
+        if (o->frame < 12) {
+            o->frame++;
+        }
+    }
+    o->tick++;
+    if (g->clock >= 154) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b743:01E033E0, 93 insns: a green flicker glow on a model joint: size 70; alpha up by 12 until frame 250, then down by 11 until it ends;
    second colour flickers by frame parity; spins a quarter turn and follows the joint */

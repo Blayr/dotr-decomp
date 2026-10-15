@@ -420,7 +420,108 @@ static void func_01E00EA0_b003(Obj_b003_01E00EA0 *obj, Def_b003_01E00EA0 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E01400_b003);
+/* shape b003:01E01400 (B003_W_S), 222 insns: the scene script of b003: scene colour red 0x80, counts g+0x3310; on
+   tick 175 and tick 1 it spawns one 0x1E02110 / 0x1E02440 effect; from tick 181 to 311 it puts the burst point on
+   joint A (+-3 in z by the flag g+0x330E) and spawns a 0x1E01860 effect each tick (g+0x3304 cycles 0..169), twice on
+   tick 311; from tick 191 to 319 it jitters the point around joint B and spawns 0x1E01C70 on odd ticks, 0x1E01EC0 on
+   even ones */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x2B18];
+    u8 col[4];
+    u8 pad2D78[0x578];
+    s16 ja;
+    u8 pad32F2[2];
+    s16 jb;
+    u8 pad32F6[0xE];
+    s16 n;
+    u8 pad3306[4];
+    s16 v;
+    u8 pad330C[2];
+    s16 flag;
+    s16 tick;
+} Ctx_b003_01E01400;
+
+static void func_01E01400_b003(Ctx_b003_01E01400 *g) {
+    extern void b003_01E01860();
+    extern void b003_01E01C70();
+    extern void b003_01E01EC0();
+    extern void b003_01E02110();
+    extern void b003_01E02440();
+    extern void b003_01E02E90(Ctx_b003_01E01400 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern s32 func_0019A5C8(void);
+    f32 v[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick == 175) {
+        b003_01E02E90(g, b003_01E02110, 0);
+    }
+    if (g->tick == 1) {
+        b003_01E02E90(g, b003_01E02440, 0);
+    }
+    if (g->tick > 180 && g->tick <= 311) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        g->x = v[0];
+        g->y = v[1];
+        if (g->flag != 0) {
+            g->z = 3.0f + v[2];
+        } else {
+            g->z = v[2] - 3.0f;
+        }
+        g->v = g->n;
+        for (i = 0; i < 1; i++) {
+            b003_01E02E90(g, b003_01E01860, 0);
+        }
+        g->n++;
+        if (g->n >= 170) {
+            g->n = 0;
+        }
+    }
+    if (g->tick == 311) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        for (i = 0; i < 2; i++) {
+            g->x = v[0];
+            g->y = v[1];
+            if (g->flag != 0) {
+                g->z = 3.0f + v[2];
+            } else {
+                g->z = v[2] - 3.0f;
+            }
+            g->v = g->n;
+            b003_01E02E90(g, b003_01E01860, 0);
+            g->n++;
+            if (g->n >= 170) {
+                g->n = 0;
+            }
+        }
+    }
+    if (g->tick > 190 && g->tick <= 319) {
+        func_001F5620(func_001F5380(), g->jb, v);
+        g->x = (v[0] + (f32)(func_0019A5C8() % 20)) - 10.0f;
+        g->y = (v[1] + (f32)(func_0019A5C8() % 40)) - 20.0f;
+        g->z = (v[2] + (f32)(func_0019A5C8() % 20)) - 10.0f;
+        if (g->tick % 2 == 1) {
+            for (i = 0; i < 1; i++) {
+                b003_01E02E90(g, b003_01E01C70, 0);
+            }
+        }
+        if (g->tick % 2 == 0) {
+            b003_01E02E90(g, b003_01E01EC0, 0);
+        }
+    }
+}
 
 /* shape b003:01E01780, 56 insns, 6 copies: a rising, spinning glow: fades in over 2 frames, then out (variant of b018:01E02480) */
 

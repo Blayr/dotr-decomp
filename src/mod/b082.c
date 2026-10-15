@@ -1015,4 +1015,119 @@ static s32 func_01E02FF0_b082(Scene_b082_01E02FF0 *s, s32 fn, s32 arg) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b082", func_01E03130_b082);
+/* shape b082:01E03130, 203 insns: b020:01E011E0 with the position passed as a pointer (copied to a local first) and every draw sent twice; that is b016:01E00ED0 with fixed blends (sel 0 = 0x42, 1 = 0x44, else 0x48) plus func_00109100(view, {.., .., cam 0x5A}, 2, obj 0xD8) after the view setup; draw one sprite quad (GS packet of 9 qwords) at an object's
+   position; mode (flags & 0xF) 0 = depth from the projection, 1 = far z, else -1. Needs func_01E00080_b082 in the
+   same file and static (the original reuses $a0 across the call). The colour is passed by value. */
+
+typedef struct Cam_b082_01E03130 {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    Vec4f pos;
+    u8 pad30[0x2A];
+    s16 f5A;
+    u8 pad5C[4];
+    Vec4f at;
+} Cam_b082_01E03130;
+
+typedef struct Obj_b082_01E03130 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 f94[0x2A];
+    s16 fBE;
+    u8 padC0[0x18];
+    u8 fD8[4];
+} Obj_b082_01E03130;
+
+typedef struct Xyz_b082_01E03130 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b082_01E03130;
+
+typedef struct Uv_b082_01E03130 {
+    f32 u, v;
+} Uv_b082_01E03130;
+
+typedef struct Pk_b082_01E03130 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b082_01E03130 uv;
+    u64 pad18;
+    Xyz_b082_01E03130 v[4];
+    u64 pad60[6];
+} Pk_b082_01E03130;
+
+typedef struct Buf_b082_01E03130 {
+    u64 tag;
+    Pk_b082_01E03130 pk;
+} Buf_b082_01E03130;
+
+static void func_01E03130_b082(Obj_b082_01E03130 *obj, Cam_b082_01E03130 *cam, s32 flags, Vec4f *in) {
+    extern void func_00108EF0();
+    extern void func_00109100();
+    f32 v[4];
+    f32 view[4][4];
+    Vec4f a;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    s32 arg[4];
+    Buf_b082_01E03130 buf;
+    Uv_b082_01E03130 uv;
+    s32 sel;
+    s32 mode;
+    Pk_b082_01E03130 *p;
+
+    sel = (flags >> 4) & 0xF;
+    *(Vec4f *)v = *in;
+    p = &buf.pk;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else if (sel == 1) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    }
+    func_00107740(&uv, &cam->at);
+    p->uv = uv;
+    func_01E00080_b082((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)obj->f94, obj->fBE);
+    func_00208700(p, (void *)obj->f88, 1);
+    s.x = 0.1f;
+    a.x = v[0];
+    s.y = 0.1f;
+    a.y = v[1];
+    s.z = 0.1f;
+    a.z = v[2];
+    func_00108EF0(m, &s, &cam->pos, &a);
+    func_00108CE0(view, cam->w, cam->h);
+    arg[2] = cam->f5A;
+    func_00109100(view, arg, 2, obj->fD8);
+    if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out) != 0) {
+        mode = flags & 0xF;
+        if (mode == 0) {
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+        } else if (mode == 1) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0((s32)p, obj->f80, 0);
+            func_002075F0((s32)p, obj->f80, 0);
+        } else {
+            func_002075F0((s32)p, obj->f80, -1);
+            func_002075F0((s32)p, obj->f80, -1);
+        }
+    }
+}

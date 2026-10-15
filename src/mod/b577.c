@@ -1102,6 +1102,130 @@ static s32 func_01E02690_b577(Obj_b577_01E02690 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b577", func_01E027D0_b577);
+/* OVL_WARM */
+
+/* shape b577:01E027D0, 220 insns: b232:01E01B90's twisted 18-quad burst at a third of the size (matrix scale 0.3)
+   with b577's scene tables (ot 0x4A5C, frames 0x4AB0, trig 0x4D08) */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 r1;
+    f32 r0;
+    u8 pad50[0xA];
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b577_01E027D0;
+
+typedef struct {
+    u8 pad0[0x88];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+    u8 padC0[0x4A5C - 0xC0];
+    s32 ot;
+    u8 pad4A60[0x4AB0 - 0x4A60];
+    s16 frames[18];
+    u8 pad4AD4[0x4D08 - 0x4AD4];
+    u8 trig[1];
+} Game_b577_01E027D0;
+
+static void func_01E027D0_b577(Game_b577_01E027D0 *g, Obj_b577_01E027D0 *o, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 pos[4];
+    Vec4f q[4];
+    f32 v[4];
+    f32 sc[4];
+    f32 m[16];
+    f32 depth[4];
+    s32 tw[4];
+    f32 rm[4];
+    struct {
+        u8 pk[0x70];
+        u8 tail[0x20];
+    } buf;
+    s32 k;
+    s16 i;
+    s16 s;
+    s16 a;
+    void *p = &buf;
+    f32 r1;
+    f32 r0;
+    f32 c;
+    f32 sn;
+
+    *(Vec4f *)pos = *in;
+    a = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, o->col, 1);
+    func_00107790(p, o->col2, 2);
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    k = mode >> 4;
+    if (k == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)k << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    v[0] = pos[0];
+    v[1] = pos[1];
+    v[2] = pos[2];
+    sc[0] = 0.3f;
+    sc[1] = 0.3f;
+    sc[2] = 0.3f;
+    func_00108EF0(m, sc, o->rot, v);
+    *(f32 *)(u32)&q[0].y = 0.0f;
+    *(f32 *)(u32)&q[1].y = 0.0f;
+    *(f32 *)(u32)&q[2].y = 0.0f;
+    *(f32 *)(u32)&q[3].y = 0.0f;
+    r1 = o->r1;
+    r0 = o->r0;
+    tw[1] = o->h5A;
+    tw[2] = o->h5C;
+    for (i = 0; i < 18; i++) {
+        *(f32 *)(u32)&q[0].y = 0.0f;
+        *(f32 *)(u32)&q[1].y = 0.0f;
+        *(f32 *)(u32)&q[2].y = 0.0f;
+        *(f32 *)(u32)&q[3].y = 0.0f;
+        func_00106080(rm, 0x14, g->frames[i], 0);
+        g->rect = *(Vec4f *)rm;
+        func_00108500(p, &g->rect, g->frame);
+        s = a - 200;
+        c = func_00108030(g->trig, s, 1);
+        sn = func_00108030(g->trig, s, 0);
+        q[2].x = c * r1;
+        q[2].z = sn * r1;
+        q[0].x = c * r0;
+        q[0].z = sn * r0;
+        s = a - 180;
+        c = func_00108030(g->trig, s, 1);
+        sn = func_00108030(g->trig, s, 0);
+        q[3].x = c * r1;
+        q[3].z = sn * r1;
+        q[1].x = c * r0;
+        q[1].z = sn * r0;
+        func_00109100(q, tw, 2, g->trig);
+        func_00109100(q, tw, 0, g->trig);
+        if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, g->ot, (u32)depth[0]);
+        }
+        a += 20;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b577", func_01E02B40_b577);

@@ -653,7 +653,97 @@ static void func_01E01870_b402(Obj_b094_01E00920 *obj, Data_b094_01E00920 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b402", func_01E01BD0_b402);
+/* shape b402:01E01BD0, 211 insns: b509:01E01BD0 cousin: the first stream runs 74..161, the second spawns only on odd
+   frames, and frame 72 also spawns 0x1E01F20 on joints 0x44E6 and 0x44E8. As b509:01E01BD0: the b509 module's event step (b232:01E00480's kind): counts ticks; until 154 follows
+   the tracked point (ctx+0x44E4) with its marker (ctx+0x4470), at 155 aims it at the other point over 32 ticks and
+   moves it until 185; spawns b509:01E02E40 at tick 1; at 186 the effect position takes the marker; from 52 to 141
+   spawns b509:01E02A60 on the first point and from 141 to 250 b509:01E027C0 on the other, turning 3 each tick; from 165
+   to 262 every 4th tick spawns b509:01E02D60 and b509:01E02BB0 within 10 of the other point */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f m;
+    u8 pad4480[4];
+    f32 dy;
+    f32 dz;
+    u8 pad448C[0x44E4 - 0x448C];
+    s16 id0;
+    s16 jb;
+    s16 jc;
+    u8 pad44EA[0x44F4 - 0x44EA];
+    s16 id1;
+    u8 pad44F6[0x450E - 0x44F6];
+    s16 turn;
+    u8 pad4510[4];
+    s16 slot;
+    u8 pad4516[6];
+    s16 timer;
+} Ctx_b402_01E01BD0;
+
+static void func_01E01BD0_b402(Ctx_b402_01E01BD0 *g) {
+    extern s32 b402_01E01F20(void);
+    extern s32 b402_01E025B0(void);
+    extern s32 b402_01E02860(void);
+    extern s32 b402_01E029C0(void);
+    extern s32 b402_01E02B70(void);
+    extern s32 b402_01E02C50(void);
+    extern void b402_01E034C0(Ctx_b402_01E01BD0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[8];
+
+    g->timer++;
+    if (g->timer < 155) {
+        func_001F5620(func_001F53A0(), g->id0, &g->m);
+    } else {
+        if (g->timer == 155) {
+            func_001F5620(func_001F5380(), g->id1, v);
+            g->dz = (v[2] - g->m.z) / 32.0f;
+            g->dy = (v[1] - g->m.y) / 32.0f;
+        }
+        if (g->timer < 186) {
+            g->m.z += g->dz;
+            g->m.y += g->dy;
+        }
+    }
+    if (g->timer == 1) {
+        b402_01E034C0(g, b402_01E02C50, 0);
+    }
+    if (g->timer == 186) {
+        g->pos = g->m;
+        g->slot = 0;
+    }
+    if (g->timer >= 74 && g->timer < 162) {
+        func_001F5620(func_001F53A0(), g->id0, &g->pos);
+        b402_01E034C0(g, b402_01E02860, 0);
+        g->turn += 3;
+    }
+    if (g->timer >= 141 && g->timer < 251) {
+        func_001F5620(func_001F5380(), g->id1, &g->pos);
+        if (g->timer % 2 == 1) {
+            b402_01E034C0(g, b402_01E025B0, 0);
+        }
+        g->turn += 3;
+    }
+    if (g->timer >= 165 && g->timer < 263) {
+        if (g->timer % 4 == 1) {
+            func_001F5620(func_001F5380(), g->id1, &g->pos);
+            g->pos.x += func_0019A5C8() % 20 - 10;
+            g->pos.y += func_0019A5C8() % 20 - 10;
+            b402_01E034C0(g, b402_01E02B70, 0);
+            b402_01E034C0(g, b402_01E029C0, 0);
+        }
+    }
+    if (g->timer == 72) {
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        b402_01E034C0(g, b402_01E01F20, 0);
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        b402_01E034C0(g, b402_01E01F20, 0);
+    }
+}
 
 /* shape b402:01E01F20, 108 insns: a white spark: f48 100, f56 3, f50 10..24, random f5A, spin 10, f8 1..8, life
    30..44; alpha 0xC0 during the life, then fades by 11; f50 grows by the spin each tick after the first; with f52

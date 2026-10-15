@@ -560,7 +560,111 @@ static void func_01E01320_b052(s32 unused, Beam_b018_01E01320 *an, Vec_b018_01E0
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E01760_b052);
+/* shape b052:01E01760, 196 insns: the scene script of b052 (b115:01E01450's kind): scene colour red 0x80, counts
+   g+0x387E; on tick 51 it stores joint A (g+0x386A) at g+0x36C0 and from 52 to 64 puts the burst point there; on
+   tick 24 it spawns 0x1E02160 and 0x1E026C0; every tick two 0x1E01C90; on tick 26 sixteen 0x1E02550 on joint B
+   (g+0x386C), then lifts the point by 1; on tick 76 it raises the scene flag g+0x387A on joint C (g+0x386E) and
+   spawns 8 0x1E02550, 8 0x1E023C0, 30 0x1E02210, then 0x1E02080 and 0x1E02770 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad2DC[0x36C0 - 0x2DC];
+    f32 p[4];
+    u8 pad36D0[0x3824 - 0x36D0];
+    u8 col[4];
+    u8 pad3828[0x386A - 0x3828];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 pad3870[0xA];
+    s16 flag;
+    u8 pad387C[2];
+    s16 tick;
+} Ctx_b052_01E01760;
+
+static void func_01E01760_b052(Ctx_b052_01E01760 *g) {
+    extern void b052_01E01C90();
+    extern void b052_01E02080();
+    extern void b052_01E02160();
+    extern void b052_01E02210();
+    extern void b052_01E023C0();
+    extern void b052_01E02550();
+    extern void b052_01E026C0();
+    extern void b052_01E02770();
+    extern void b052_01E03260(Ctx_b052_01E01760 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    f32 cam[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick == 51) {
+        func_001F5620(func_001F53A0(), g->ja, g->p);
+    }
+    if (g->tick > 51 && g->tick < 65) {
+        func_001F5620(func_001F53A0(), g->ja, v);
+        for (i = 0; i < 6; i++) {
+            g->x = g->p[0];
+            g->y = g->p[1];
+            g->z = g->p[2];
+        }
+    }
+    if (g->tick == 24) {
+        b052_01E03260(g, b052_01E02160, 0);
+    }
+    if (g->tick == 24) {
+        b052_01E03260(g, b052_01E026C0, 0);
+    }
+    b052_01E03260(g, b052_01E01C90, 0);
+    b052_01E03260(g, b052_01E01C90, 0);
+    if (g->tick == 26) {
+        func_001F5620(func_001F53A0(), g->jb, v);
+        g->x = v[0];
+        g->y = *(f32 *)(u32)&v[1];
+        g->z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 16; i++) {
+            b052_01E03260(g, b052_01E02550, 0);
+        }
+        g->y = 1.0f + v[1];
+    }
+    if (g->tick == 76) {
+        func_001F5620(func_001F53A0(), g->jc, v);
+        func_001F5F90(func_001F5380(), cam);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b052_01E03260(g, b052_01E02550, 0);
+        }
+    }
+    if (g->tick == 76) {
+        func_001F5620(func_001F53A0(), g->jc, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->flag = 1;
+        for (i = 0; i < 8; i++) {
+            b052_01E03260(g, b052_01E023C0, 0);
+        }
+        for (i = 0; i < 30; i++) {
+            b052_01E03260(g, b052_01E02210, 0);
+        }
+        b052_01E03260(g, b052_01E02080, 0);
+        b052_01E03260(g, b052_01E02770, 0);
+    }
+}
 
 /* shape b018:01E01F60, 134 insns, 2 copies: a violet wisp: set up once (random heading, tilt -15..14); fades in to 0x60
    over 10 frames, then out; its size grows every other frame up to 18, its frame every third up to 7; x and z drift 10 along its heading, y 4 by

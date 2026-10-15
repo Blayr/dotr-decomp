@@ -625,7 +625,83 @@ static void func_01E014F0_b354(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E018F0_b354);
+/* shape b354:01E018F0, 207 insns: the b354 module's event step: counts ticks (0xB2B8); spawns b354:01E02780 at 1; at 41
+   puts the point on joint 0xB244 and spawns 24 b354:01E01C30 at angles 0, 15, ... (0xB2A2); at 45 saves joint 0xB246
+   (0xB1D0); from 45 to 165 sits on the saved point and spawns b354:01E02660 and b354:01E02550 (at 45 only), 5
+   b354:01E01D80, 3 b354:01E01F40 and one b354:01E020F0 a tick; b354:01E02890 at 150; at 168 b354:01E022F0 2.5 below */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f save;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 id0;
+    s16 id1;
+    u8 padB248[0xB2A2 - 0xB248];
+    s16 ang;
+    u8 padB2A4[0xB2B8 - 0xB2A4];
+    s16 timer;
+} Ctx_b354_01E018F0;
+
+static void func_01E018F0_b354(Ctx_b354_01E018F0 *g) {
+    extern s32 b354_01E01C30(void);
+    extern s32 b354_01E01D80(void);
+    extern s32 b354_01E01F40(void);
+    extern s32 b354_01E020F0(void);
+    extern s32 b354_01E022F0(void);
+    extern s32 b354_01E02550(void);
+    extern s32 b354_01E02660(void);
+    extern s32 b354_01E02780(void);
+    extern s32 b354_01E02890(void);
+    extern void b354_01E032B0(Ctx_b354_01E018F0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 a;
+
+    g->timer++;
+    if (g->timer == 1) {
+        b354_01E032B0(g, b354_01E02780, 0);
+    }
+    if (g->timer == 41) {
+        func_001F5620(func_001F53A0(), g->id0, &g->pos);
+        for (i = 0, a = 0; i < 24; i++) {
+            g->ang = a;
+            b354_01E032B0(g, b354_01E01C30, 0);
+            a += 15;
+        }
+    }
+    if (g->timer == 45) {
+        func_001F5620(func_001F53A0(), g->id1, &g->save);
+    }
+    if (g->timer >= 45 && g->timer < 166) {
+        g->pos = g->save;
+        if (g->timer == 45) {
+            b354_01E032B0(g, b354_01E02660, 0);
+        }
+        if (g->timer == 45) {
+            b354_01E032B0(g, b354_01E02550, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b354_01E032B0(g, b354_01E01D80, 0);
+        }
+        for (i = 0; i < 3; i++) {
+            b354_01E032B0(g, b354_01E01F40, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b354_01E032B0(g, b354_01E020F0, 0);
+        }
+    }
+    if (g->timer == 150) {
+        b354_01E032B0(g, b354_01E02890, 0);
+    }
+    if (g->timer == 168) {
+        g->pos = g->save;
+        g->pos.y -= 2.5f;
+        b354_01E032B0(g, b354_01E022F0, 0);
+    }
+}
 
 /* shape b354:01E01C30, 83 insns: a white swaying spark (b252:01E03410 family): square size 50, random sub-frame 2..4; alpha up by
    0x60 to 0xC0 for 6 frames, then down by 19 until it ends; sways by 2 sin / 2 cos of its angle; random turn */

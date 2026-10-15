@@ -1512,7 +1512,97 @@ INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E04B10_b582);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E04E60_b582);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E05160_b582);
+/* shape b582:01E05160, 193 insns (h1 reads size through a cast so its load is not merged with h0's and the maths is not sunk past the call): a 25 x 40 grid of sprites (the module's static UV helper, shape b003:01E00080), each 0x38 wide and 2x0x38 apart, centred on the object, pushed 30*sin(0x3A) back, its height -10 + 20*sin(row angle) with the row angle starting at 0xA + 60 and stepping 6 */
+
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b582_01E05160;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b582_01E05160 st;
+} Pk_b582_01E05160;
+
+typedef struct {
+    u8 pad0[0xA];
+    s16 fA;
+    u8 padC[0x1C];
+    u8 tex[0x10];
+    s16 size;
+    s16 ang;
+} Fx_b582_01E05160;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *tex;
+    u8 pad8C[8];
+    u8 rect[0x2A];
+    s16 frame;
+    u8 padC0[0x18];
+    u8 trig[1];
+} Obj_b582_01E05160;
+
+static void func_01E05160_b582(Obj_b582_01E05160 *g, Fx_b582_01E05160 *o, Pk_b582_01E05160 *pk, s32 mode) {
+    extern void func_00107070(void *, s32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 m[16];
+    f32 depth[4];
+    St_b582_01E05160 uv;
+    s16 j;
+    s16 i;
+    s16 h0;
+    s16 h1;
+    s16 a;
+    f32 back;
+    f32 y;
+    f32 r;
+    s32 k;
+    f32 z;
+
+    pk->nreg = 0x24;
+    pk->n = 9;
+    pk->regs = 0x24242421 | ((s64)4 << 32);
+    pk->pad4 = 0;
+    k = mode >> 4;
+    pk->nreg |= 0x800;
+    if (k == 0) {
+        func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+    } else if (k == 1) {
+        func_002086D0(pk, 0x44 | ((s64)0x80 << 32));
+    } else {
+        func_002086D0(pk, 0x42 | ((s64)0x80 << 32));
+    }
+    func_00107740(&uv, o->tex);
+    pk->st = uv;
+    func_01E00080_b582((Pk_b003_01E00080 *)pk, (Rect_b003_01E00080 *)g->rect, g->frame);
+    func_00208700(pk, g->tex, 1);
+    h0 = (o->size * 25) >> 1;
+    h1 = (((Fx_b582_01E05160 *)(u32)o)->size * 40) >> 1;
+    back = 30.0f * func_00108030(g->trig, o->ang, 0);
+    a = o->fA + 60;
+    for (j = 0; j < 40; j++) {
+        y = -10.0f + 20.0f * func_00108030(g->trig, a, 0);
+        for (i = 0; i < 25; i++) {
+            r = o->size;
+            func_00108D20(m, r, r);
+            func_00107070(m, 0, i * (o->size * 2) - h0);
+            z = j * (o->size * 2) - h1;
+            func_00107070(m, 2, z + back);
+            func_00107070(m, 1, y);
+            if (func_00205630((s32)m, 0x70000000, 0, (s32)pk, depth) != 0) {
+                func_002075F0((s32)pk, g->ot, (u32)depth[0]);
+            }
+        }
+        a += 6;
+    }
+}
 
 /* shape b582:01E05470, 174 insns: b108:01E00DF0 family: a flat ring of 18 quads around a position plus the object's
    offset (0x20), outer radius 0x08 and inner radius 0x38 / 100, 20 apart from the ring's start angle, two colours,

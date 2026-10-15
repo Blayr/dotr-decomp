@@ -401,7 +401,83 @@ static void func_01E00D80_b708(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E012D0_b708);
+/* shape b708:01E012D0, 206 insns: b280:01E012D0's effect scene step: counts the frame (0x4C7E), places the spawn
+   point on joint 0x4C48 nudged 2 along z (back with the flag 0x4C7A); from frame 30 to 170 spawns three b708:01E01610,
+   at joints 0x4C48..0x4C4C on odd frames or 0x4C4E..0x4C52 on even ones; before frame 195, on even frames, puts the
+   point at the camera jittered by -15..14 and spawns b708:01E01B10 and b708:01E01C00; turns the scene angle by 6 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4C48 - 0x260];
+    s16 ja[3];
+    s16 jb[3];
+    u8 pad4C54[0x4C70 - 0x4C54];
+    s16 ang;
+    u8 pad4C72[4];
+    s16 side;
+    u8 pad4C78[2];
+    s16 flag;
+    u8 pad4C7C[2];
+    s16 t;
+} Scene_b708_01E012D0;
+
+static void func_01E012D0_b708(Scene_b708_01E012D0 *g) {
+    extern s32 b708_01E01610(void);
+    extern s32 b708_01E01B10(void);
+    extern s32 b708_01E01C00(void);
+    extern void b708_01E022D0(Scene_b708_01E012D0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+    s16 n;
+
+    g->t++;
+    func_001F5620(func_001F53A0(), g->ja[0], &g->pos);
+    if (g->flag != 0) {
+        g->pos.z -= 2.0f;
+    } else {
+        g->pos.z += 2.0f;
+    }
+    if (g->t >= 30 && g->t < 171 && g->t != 0) {
+        if (g->t < 100) {
+            n = 3;
+        } else {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            g->side = g->t % 6;
+            if (g->t % 2 == 1) {
+                func_001F5620(func_001F53A0(), g->ja[i], &g->pos);
+            } else {
+                func_001F5620(func_001F53A0(), g->jb[i], &g->pos);
+            }
+            b708_01E022D0(g, b708_01E01610, 0);
+        }
+    }
+    if (g->t < 195) {
+        if (g->t % 2 == 0) {
+            n = 1;
+        } else {
+            n = 0;
+        }
+        for (i = 0; i < n; i++) {
+            g->side = g->t % 2;
+            func_001F5F90(func_001F5380(), &g->pos);
+            g->pos.x += func_0019A5C8() % 30 - 15;
+            g->pos.y += func_0019A5C8() % 30 - 15;
+            g->pos.z += func_0019A5C8() % 30 - 15;
+            b708_01E022D0(g, b708_01E01B10, 0);
+            b708_01E022D0(g, b708_01E01C00, 0);
+        }
+    }
+    g->ang += 6;
+    if (g->ang >= 360) {
+        g->ang %= 360;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01610_b708);
 

@@ -432,7 +432,80 @@ static void func_01E009C0_b585(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E00DC0_b585);
+/* shape b585:01E00DC0, 200 insns: the b585 module's event step (b293:01E01B10 family): counts ticks; spawns
+   b585:01E01C20 at 1, b585:01E01920 at 173 and 245, b585:01E01F30 in slot 0 for the first 6 ticks, b585:01E01AB0
+   (slot 0) and b585:01E01D10 at 205; from 245 to 280 follows joint 0xB248 and, before 275, spawns b585:01E01210 every
+   tick in slot 2 plus on even ticks, and in slot 1 on odd ticks; b585:01E010E0 at 245; from 205 to 280 follows the
+   joint and spawns b585:01E01720 in slot 2 on odd ticks */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB248 - 0x260];
+    s16 joint;
+    u8 padB24A[0xB2B4 - 0xB24A];
+    s16 slot;
+    u8 padB2B6[0xB2BC - 0xB2B6];
+    s16 timer;
+} Ctx_b585_01E00DC0;
+
+static void func_01E00DC0_b585(Ctx_b585_01E00DC0 *g) {
+    extern s32 b585_01E010E0(void);
+    extern s32 b585_01E01210(void);
+    extern s32 b585_01E01720(void);
+    extern s32 b585_01E01920(void);
+    extern s32 b585_01E01AB0(void);
+    extern s32 b585_01E01C20(void);
+    extern s32 b585_01E01D10(void);
+    extern s32 b585_01E01F30(void);
+    extern void b585_01E02A30(Ctx_b585_01E00DC0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    g->timer++;
+    if (g->timer == 1) {
+        b585_01E02A30(g, b585_01E01C20, 0);
+    }
+    if (g->timer == 173) {
+        b585_01E02A30(g, b585_01E01920, 0);
+    }
+    if (g->timer < 7) {
+        g->slot = 0;
+        b585_01E02A30(g, b585_01E01F30, 0);
+    }
+    if (g->timer == 205) {
+        g->slot = 0;
+        b585_01E02A30(g, b585_01E01AB0, 0);
+        b585_01E02A30(g, b585_01E01D10, 0);
+    }
+    if (g->timer >= 245 && g->timer < 281) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        g->slot = 2;
+        if (g->timer < 275) {
+            b585_01E02A30(g, b585_01E01210, 0);
+        }
+        if (g->timer < 275 && g->timer % 2 == 0) {
+            b585_01E02A30(g, b585_01E01210, 0);
+        }
+        g->slot = 1;
+        if (g->timer < 275 && g->timer % 2 == 1) {
+            b585_01E02A30(g, b585_01E01210, 0);
+        }
+        if (g->timer == 245) {
+            b585_01E02A30(g, b585_01E010E0, 0);
+        }
+        if (g->timer == 245) {
+            b585_01E02A30(g, b585_01E01920, 0);
+        }
+    }
+    if (g->timer >= 205 && g->timer < 281) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        g->slot = 2;
+        if (g->timer % 2 == 1) {
+            b585_01E02A30(g, b585_01E01720, 0);
+        }
+    }
+}
 
 /* shape b585:01E010E0, 75 insns: b764:01E02A60 family ring (white/blue, height 260; grows 2.5 a tick while under 220): in by 64 up to 0xC0 for 14 ticks, then out by 15 and ends */
 

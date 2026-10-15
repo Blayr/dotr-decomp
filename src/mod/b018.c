@@ -1336,4 +1336,123 @@ static void func_01E03760_b018(Ctx_b018_01E03760 *c, Fan_b018_01E03760 *o, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b018", func_01E03B10_b018);
+/* OVL_WARM */
+
+/* shape b018:01E03B10, 216 insns: b378:01E03450's ring draw for module b018: with no fourth argument it only sets up
+   the packet (texture 0x9B from page 0x34, flat colour, corners by the module helper of shape b008:01E00080, texture
+   ctx+0x37C), as b018:01E03760's mode 0; otherwise 9 ring quads, radius 0x38 and 17 less, each 40 wide and 40 apart
+   from angle 0x3A, depth kept in ctx+0x3854, target ctx+0x382C */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b018_01E03B10;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b018_01E03B10;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b018_01E03B10 c;
+    struct {
+        u64 tc;
+        Xyz_b018_01E03B10 p;
+    } v[4];
+} Pkt_b018_01E03B10;
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b018_01E03B10;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[0xA];
+    u8 rot[0x18];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 radius;
+    s16 start;
+} Anim_b018_01E03B10;
+
+typedef struct {
+    u8 pad00[0x37C];
+    void *texture;
+    u8 pad380[0x382C - 0x380];
+    s32 target;
+    u8 pad3830[0x3854 - 0x3830];
+    f32 depth;
+    u8 pad3858[0x3984 - 0x3858];
+    u8 trig[1];
+} Obj_b018_01E03B10;
+
+static void func_01E03B10_b018(Obj_b018_01E03B10 *o, Anim_b018_01E03B10 *an, Pkt_b018_01E03B10 *p, s32 draw) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern Rgbaq_b018_01E03B10 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b018_01E03B10 quad[4];
+    Vec_b018_01E03B10 pos;
+    Vec_b018_01E03B10 scale;
+    f32 m[16];
+    u8 td[0x18];
+    s32 k;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    if (draw == 0) {
+        func_00106080(td, 0x9B, an->h34, td);
+        p->count = 0x24;
+        p->tag = 9;
+        p->regs = ((u64)4 << 32) | 0x24242421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->c.q = 0.0f;
+        p->v[0].p.f = 0;
+        p->v[1].p.f = 0;
+        p->v[2].p.f = 0;
+        p->v[3].p.f = 0;
+        p->c = func_00107740(an->col);
+        func_01E00150_b018((Pk_b008_01E00080 *)p, (Rect_b008_01E00080 *)td, 0);
+        func_00208700(p, o->texture, 1);
+        return;
+    }
+    pos.x = an->x;
+    pos.y = an->y;
+    pos.z = an->z;
+    scale.x = 1.0f;
+    scale.y = 1.5f;
+    scale.z = 1.0f;
+    func_00108EF0(m, &scale, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 9; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->trig, a, 1);
+        quad[2].z = an->radius * func_00108030(o->trig, a, 0);
+        quad[0].x = (an->radius - 17) * func_00108030(o->trig, a, 1);
+        quad[0].z = (an->radius - 17) * func_00108030(o->trig, a, 0);
+        a = j + (an->start + 40);
+        quad[3].x = an->radius * func_00108030(o->trig, a, 1);
+        quad[3].z = an->radius * func_00108030(o->trig, a, 0);
+        quad[1].x = (an->radius - 17) * func_00108030(o->trig, a, 1);
+        quad[1].z = (an->radius - 17) * func_00108030(o->trig, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &o->depth) != 0) {
+            func_002075F0(p, o->target, (u32)o->depth);
+        }
+        j += 40;
+    }
+}

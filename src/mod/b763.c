@@ -703,7 +703,82 @@ static void func_01E01920_b763(Ctx_b763_01E01920 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b763", func_01E01BB0_b763);
+/* shape b763:01E01BB0, 191 insns: a grey (0x80) mote, size 4, frame 0..6, angles 0..359, side 0..7, keeps the old 0x50 in 0xC, life 50..149, speed 10..29, 0x8 0..34, hold 3..7; flies to its slot's tracked point (ctx+0x7EEE) over 40 ticks from a spot -10..9 off; alpha up by 0x20 to 0x80 during the hold, then down by 8; turns 2 a tick */
+
+typedef struct {
+    u8 pad0[0x7EEE];
+    s16 ids[1];
+} Ctx_b763_01E01BB0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 side;
+    s16 fC;
+    s16 speed;
+    f32 pos[3];
+    u8 pad1C[0x14];
+    f32 vel[3];
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 slot;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b763_01E01BB0;
+
+static s32 func_01E01BB0_b763(Ctx_b763_01E01BB0 *g, Fx_b763_01E01BB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+
+    if (o->mode == 1) {
+        o->f48 = 4.0f;
+        o->kind = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        o->side = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 100 + 50;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        func_001F5620(func_001F53A0(), g->ids[o->slot], v);
+        o->vel[0] = (v[0] - o->pos[0]) / 40.0f;
+        o->vel[1] = (v[1] - o->pos[1]) / 40.0f;
+        o->vel[2] = (v[2] - o->pos[2]) / 40.0f;
+        o->pos[0] += func_0019A5C8() % 20 - 10;
+        o->pos[1] += func_0019A5C8() % 20 - 10;
+        o->pos[2] += func_0019A5C8() % 20 - 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+    }
+    o->f5C += 2;
+    o->tick++;
+    return 0;
+}
 
 /* shape b432:01E01D80, 102 insns, 2 copies: a white blinker pinned to a model joint: set up once (size 30, frame 4, random
    angle); fades in over 50 frames, then out; blinks white/grey each frame and follows the joint's position */

@@ -866,7 +866,100 @@ static s32 func_01E02480_b593(s32 arg0, Obj_b593_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E025B0_b593);
+/* shape b593:01E025B0, 191 insns: a pink (kind 0) or blue (kind 1) ring pair 45 x 45 sitting on its kind's scene point (ctx+0x4470), flickering green/dark green (kind 0) or blue/dark green (kind 1) every other tick with frame 1/0, random turn; both alphas up by 9 to 0xC0 before scene count 280 (ctx+0x463E), then down by 14 */
+
+typedef struct {
+    u8 pad0[0x4470];
+    Vec4f pts[2];
+    u8 pad4490[0x463E - 0x4490];
+    s16 count;
+} Ctx_b593_01E025B0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b593_01E025B0;
+
+static s32 func_01E025B0_b593(Ctx_b593_01E025B0 *g, Fx_b593_01E025B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 45;
+        o->h = 45;
+        o->frame = func_0019A5C8() % 8;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0x80, 0x80, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f5C = 0;
+    }
+    if (g->count < 280) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 9;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 9;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->kind == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x20, 0xFF, 0x20);
+            func_001076F0(o->col2, 0x20, 0xFF, 0x20);
+        } else {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+            func_001076F0(o->col2, 0x10, 0x80, 0x10);
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x20, 0x20, 0xFF);
+            func_001076F0(o->col2, 0x20, 0x20, 0xFF);
+        } else {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+            func_001076F0(o->col2, 0x10, 0x80, 0x10);
+        }
+    }
+    if (o->tick % 2 == 1) {
+        o->frame = 1;
+    } else {
+        o->frame = 0;
+    }
+    o->f5A = func_0019A5C8() % 360;
+    o->pos = g->pts[o->kind];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b593:01E028B0, 80 insns: a white flickering spinning flash (b550:01E02F50 shape): alpha up by 0x60 to 0xC0 for 14 frames; teal flicker */
 

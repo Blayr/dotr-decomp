@@ -540,7 +540,79 @@ static void func_01E015A0_b590(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b590", func_01E01770_b590);
+/* shape b590:01E01770, 197 insns: the b590 module's event step (B590_W_S): counts ticks; at tick 1 spawns
+   b590:01E02450; from 42 to 100 spawns b590:01E01C40 at each of the four tracked points (ctx+0xB248..0xB24E);
+   from 130 to 250 follows the fifth tracked point (ctx+0xB250); at 168 moves to the target's model point at
+   height 50 and spawns b590:01E02330, b590:01E021A0 (slot 1), four b590:01E01FA0 (turns 0/90/45/135, slots
+   0/0/1/1) and twenty b590:01E01DF0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xB248 - 0x25C];
+    s16 id[5];
+    u8 padB252[0xB2A6 - 0xB252];
+    s16 turn;
+    u8 padB2A8[0xB2B4 - 0xB2A8];
+    s16 slot;
+    u8 padB2B6[0xB2BC - 0xB2B6];
+    s16 timer;
+} Ctx_b590_01E01770;
+
+static void func_01E01770_b590(Ctx_b590_01E01770 *g) {
+    extern s32 b590_01E01C40(void);
+    extern s32 b590_01E01DF0(void);
+    extern s32 b590_01E01FA0(void);
+    extern s32 b590_01E021A0(void);
+    extern s32 b590_01E02330(void);
+    extern s32 b590_01E02450(void);
+    extern void b590_01E02E70(Ctx_b590_01E01770 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    s16 i;
+
+    g->timer++;
+    if (g->timer == 1) {
+        b590_01E02E70(g, b590_01E02450, 0);
+    }
+    if (g->timer >= 42 && g->timer < 101) {
+        func_001F5620(func_001F53A0(), g->id[0], g->pos);
+        b590_01E02E70(g, b590_01E01C40, 0);
+        func_001F5620(func_001F53A0(), g->id[1], g->pos);
+        b590_01E02E70(g, b590_01E01C40, 0);
+        func_001F5620(func_001F53A0(), g->id[2], g->pos);
+        b590_01E02E70(g, b590_01E01C40, 0);
+        func_001F5620(func_001F53A0(), g->id[3], g->pos);
+        b590_01E02E70(g, b590_01E01C40, 0);
+    }
+    if (g->timer >= 130 && g->timer < 251) {
+        func_001F5620(func_001F53A0(), g->id[4], g->pos);
+    }
+    if (g->timer == 168) {
+        func_001F5F90(func_001F5380(), g->pos);
+        g->pos[1] = 50.0f;
+        b590_01E02E70(g, b590_01E02330, 0);
+        g->slot = 1;
+        b590_01E02E70(g, b590_01E021A0, 0);
+        g->turn = 0;
+        g->slot = 0;
+        b590_01E02E70(g, b590_01E01FA0, 0);
+        g->turn = 90;
+        g->slot = 0;
+        b590_01E02E70(g, b590_01E01FA0, 0);
+        g->turn = 45;
+        g->slot = 1;
+        b590_01E02E70(g, b590_01E01FA0, 0);
+        g->turn = 135;
+        g->slot = 1;
+        b590_01E02E70(g, b590_01E01FA0, 0);
+        for (i = 0; i < 20; i++) {
+            b590_01E02E70(g, b590_01E01DF0, 0);
+        }
+    }
+}
 
 /* shape b590:01E01A90, 105 insns: a small grey spark: f48 2..4, variant 0..2, f50 5..9, spin 1..3, life 3..5; alpha grows
    by 0x40 (below 0xC0) during the life, then fades by 14; f50 grows by the spin each tick after the first */

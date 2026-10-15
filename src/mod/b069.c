@@ -262,7 +262,99 @@ static void func_01E00A60_b069(Scene_b069_01E00A60 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E00BC0_b069);
+/* shape b069:01E00BC0, 204 insns: b068:01E021B0 twin: grey 0x80 glow (kind 0, f38 70), size 10 x 50 growing by 4
+   (hA by 4 more after tick 10 while under h8), fading in by 48 to 97 for 45..54 ticks, rising 1 every fifth tick; it
+   drifts with the camera depth by 1/50 of the gap (1/40 after tick 10) */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b069_01E00BC0;
+
+static s32 func_01E00BC0_b069(s32 arg0, Glow_b069_01E00BC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 70;
+        o->kind = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 7;
+        o->hC = 50;
+        o->hA = 10;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 45;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 97) {
+            o->col[3] += 48;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    if (o->tick < 10) {
+        *(f32 *)(u32)&v[0].z /= 50.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    } else {
+        *(f32 *)(u32)&v[0].z /= 40.0f;
+        o->h4 = func_001A22C0(o->h4 + v[0].z);
+    }
+    if (o->tick % 5 == 1) {
+        o->h2--;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->hC += 4;
+        o->hA += 4;
+        if (o->tick > 10) {
+            if (o->h8 > o->hA) {
+                o->hA += 4;
+            }
+        }
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 

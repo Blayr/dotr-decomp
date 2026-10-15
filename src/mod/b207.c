@@ -321,7 +321,114 @@ static Vec_b018_01E00EE0 func_01E00AB0_b207(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E00EF0_b207);
+/* OVL_WARM */
+
+/* shape b207:01E00EF0, 220 insns: variant of b064:01E00C10 (ring of quads around a point): the four corner colours
+   from the anim's two colours (0x28 inner, 0x2C outer), scale 0.1, inner edge at radius/2 and outer at radius,
+   outer corners raised to the anim's h0A, 18 segments 40 apart (step 20), drawn once */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b207_01E00EF0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b207_01E00EF0;
+
+typedef struct {
+    Rgbaq_b207_01E00EF0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b207_01E00EF0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b207_01E00EF0 v[4];
+} Pkt_b207_01E00EF0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[4];
+    s16 h0A;
+    u8 pad0C[4];
+    u8 rot[0x18];
+    u8 col[0x10];
+    s16 radius;
+    s16 start;
+} Anim_b207_01E00EF0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 target;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    u8 b94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 bD8[1];
+} Obj_b207_01E00EF0;
+
+static void func_01E00EF0_b207(Obj_b207_01E00EF0 *o, Anim_b207_01E00EF0 *an, Pkt_b207_01E00EF0 *p) {
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b207_01E00EF0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b207_01E00EF0 quad[4];
+    Vec_b207_01E00EF0 pos;
+    Vec_b207_01E00EF0 scale;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 k;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    func_00109270(p, 0, 0);
+    p->v[0].c = func_00107740(an->col);
+    p->v[1].c = func_00107740(an->col);
+    p->v[2].c = func_00107740(an->col + 4);
+    p->v[3].c = func_00107740(an->col + 4);
+    func_00108500(p, o->b94, o->hBE);
+    func_00208700(p, o->texture, 1);
+    pos.x = an->x;
+    pos.y = an->y;
+    pos.z = an->z;
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00108EF0(m, &scale, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = an->h0A;
+    quad[3].y = an->h0A;
+    for (k = 0; k < 18; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[2].z = an->radius * func_00108030(o->bD8, a, 0);
+        quad[0].x = (an->radius >> 1) * func_00108030(o->bD8, a, 1);
+        quad[0].z = (an->radius >> 1) * func_00108030(o->bD8, a, 0);
+        a = j + (an->start + 40);
+        quad[3].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[3].z = an->radius * func_00108030(o->bD8, a, 0);
+        quad[1].x = (an->radius >> 1) * func_00108030(o->bD8, a, 1);
+        quad[1].z = (an->radius >> 1) * func_00108030(o->bD8, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            func_002075F0(p, o->target, (u32)depth);
+        }
+        j += 20;
+    }
+}
 
 /* shape b134:01E00820, 365 insns, 5 copies: draws a ribbon between two point trails: each segment is 4 spline quads
    (module curve function, shape b018:01E00EE0) from the first trail to the second, colours from two

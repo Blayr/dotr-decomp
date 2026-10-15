@@ -606,7 +606,81 @@ static s32 func_01E01790_b422(World_b422_01E01790 *w, Drift_b422_01E01790 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b422", func_01E01950_b422);
+/* shape b422:01E01950, 194 insns: b413:01E02F40's puff in white, inset 10 growing 40 a tick, variant (rand>>4)%3, drift -2.5..2.45 per axis, spin -0x400..0x3FF, frame (rand>>4)%4; tilt 0..0x5FFF (negated when ctx+0xB2B4 is set) and yaw -0x6000..0x5FFF; alpha up by 0x40 for 10 ticks then down by 9; 0xC follows the z drift */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    u8 padE[0x12];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 dir;
+    u8 pad5C[4];
+    u8 col[4];
+} Spark_b422_01E01950;
+
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 flip;
+} Ctx_b422_01E01950;
+
+static s32 func_01E01950_b422(Ctx_b422_01E01950 *g, Spark_b422_01E01950 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 10;
+        o->fA = 10;
+        o->fC = 0;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        if (g->flip != 0) {
+            o->rot[0] = -(func_0019A5C8() % 0x6000);
+            o->rot[1] = func_0019A5C8() % 0xC000 - 0x6000;
+        } else {
+            o->rot[0] = func_0019A5C8() % 0x6000;
+            o->rot[1] = func_0019A5C8() % 0xC000 - 0x6000;
+        }
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->fA += 40;
+    }
+    o->fC = o->fC + o->vel[2];
+    o->rot[1] = 0;
+    o->rot[2] = 0;
+    o->tick++;
+    return 0;
+}
 
 /* shape b422:01E01C60, 59 insns: b764:01E02A60 family spinning ring (orange, height 220): in by 96 up to 0xC0 for 14 ticks, then out by 9 and ends */
 

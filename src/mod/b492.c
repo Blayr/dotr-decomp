@@ -1298,4 +1298,104 @@ static void func_01E047C0_b492(Pool_b256_01E04FF0 *o) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E04930_b492);
+/* shape b492:01E04930, 151 insns: four-part textured quad (func_00108D60 parts, size h8 x hA) at the given point, scaled 0.5 and turned by the object's rotation, all four corners in the object's colour; blend from flags >> 4; depth from the projection */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b492_01E04930;
+
+typedef struct {
+    Rgbaq_b492_01E04930 c;
+    f32 s, t;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b492_01E04930;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b492_01E04930 v[4];
+    u8 tail[0x20];
+} Pkt_b492_01E04930;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex;
+} Ctx_b492_01E04930;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[0x30];
+    u8 col[4];
+} Fx_b492_01E04930;
+
+static void func_01E04930_b492(Ctx_b492_01E04930 *g, Fx_b492_01E04930 *o, Vec4f *at, s32 flags) {
+    f32 hs;
+    extern Rgbaq_b492_01E04930 func_00107740(void *);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f pos;
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f sc;
+    f32 m[16];
+    f32 depth[4];
+    Pkt_b492_01E04930 pk;
+    Pkt_b492_01E04930 *p;
+    s16 sel;
+    s32 i;
+
+    pos = *at;
+    p = (Pkt_b492_01E04930 *)(u32)&pk;
+    p->count = 0x34;
+    p->tag = 0xC;
+    p->regs = ((u64)0x4214 << 32) | 0x21421421;
+    p->pad = 0;
+    pk.v[0].c = func_00107740(o->col);
+    pk.v[1].c = func_00107740(o->col);
+    pk.v[2].c = func_00107740(o->col);
+    pk.v[3].c = func_00107740(o->col);
+    sel = flags >> 4;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)sel << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    func_00208700(p, g->tex, 0);
+    t.x = pos.x;
+    t.y = pos.y;
+    t.z = pos.z;
+    hs = 0.5f;
+    func_00106DD0(&sc, hs, hs, hs);
+    func_00108EF0(m, &sc, o->rot, &t);
+    p->v[0].s = 0.0f;
+    p->v[0].t = 0.0f;
+    p->v[1].s = 1.0f;
+    p->v[1].t = 0.0f;
+    p->v[2].s = 0.0f;
+    p->v[2].t = 1.0f;
+    p->v[3].s = 1.0f;
+    p->v[3].t = 1.0f;
+    for (i = 0; i < 4; i++) {
+        func_00108D60(quad, o->w, o->h, (s16)i);
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, g->ot, (u32)depth[0]);
+        }
+    }
+}

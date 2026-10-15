@@ -101,7 +101,130 @@ INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E00410_b033);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E011C0_b033);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E01CD0_b033);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b033:01E01CD0, 203 insns (-O2,p): steps n emitters (0x38 bytes each): a live one moves by its velocity
+   and, unless flags 0 & 3 say it is paused, takes a free particle (0x3C bytes) from its pool, copies its settings,
+   colour and velocity into it, snaps to its anchor when 0x5 is set, and places it at a random spread (+-0x14/2
+   hundredths) around itself (flag 2: the spread alone) */
+
+typedef struct {
+    f32 x, y, z;
+} V3_b033_01E01CD0;
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b033_01E01CD0;
+
+typedef struct {
+    u8 pad0[4];
+    u8 b4;
+    u8 b5;
+    u8 pad6[2];
+    u8 b8;
+    u8 b9;
+    u8 padA;
+    u8 bB;
+    u8 bC;
+    u8 bD;
+    u8 padE[2];
+    f32 f10;
+    Col_b033_01E01CD0 col;
+    f32 a[3];
+    f32 b[3];
+    V3_b033_01E01CD0 vel;
+} Part_b033_01E01CD0;
+
+typedef struct {
+    u8 b0;
+    u8 pad1[2];
+    u8 b3;
+    u8 b4;
+    u8 b5;
+    u8 b6;
+    u8 pad7;
+    Part_b033_01E01CD0 *pool;
+    u8 kind;
+    u8 bD;
+    u8 bE;
+    u8 bF;
+    u8 b10;
+    u8 b11;
+    u8 pad12[2];
+    s32 spread;
+    f32 f18;
+    Col_b033_01E01CD0 col;
+    V3_b033_01E01CD0 pos;
+    V3_b033_01E01CD0 vel;
+} Emit_b033_01E01CD0;
+
+#pragma optimization_level 2
+
+static s32 func_01E01CD0_b033(Emit_b033_01E01CD0 *arg0, s32 arg1, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, u8, s32, s32);
+    extern void func_00101BA0(void *, f32 *);
+    f32 v[4];
+    Emit_b033_01E01CD0 *e = arg0;
+    Part_b033_01E01CD0 *pt;
+    s32 i;
+    s32 k;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) != 0) {
+            e->pos.x += e->vel.x;
+            e->pos.y += e->vel.y;
+            e->pos.z += e->vel.z;
+            if (!(e->b0 & e->b3)) {
+                k = func_00101C30(e->pool, 0x3C, e->kind);
+                if (k >= 0) {
+                    pt = &e->pool[k];
+                    func_00101AD0(pt, e->b11, 0, 0xFF);
+                    pt->b5 = e->b5;
+                    pt->b4 = e->b4;
+                    pt->b9 = e->b6;
+                    pt->b8 = e->bD;
+                    pt->bB = e->bE;
+                    pt->bC = e->bF;
+                    pt->bD = e->b10;
+                    pt->f10 = e->f18;
+                    pt->col = e->col;
+                    pt->vel = e->vel;
+                    if (e->b5 != 0) {
+                        func_00101BA0(e, v);
+                        e->pos.x = v[0];
+                        e->pos.y = v[1];
+                        e->pos.z = v[2];
+                    }
+                    dx = (f32)((func_0019A5C8() >> 4) % e->spread - (e->spread >> 1)) / 100.0f;
+                    dy = (f32)((func_0019A5C8() >> 4) % e->spread - (e->spread >> 1)) / 100.0f;
+                    dz = (f32)((func_0019A5C8() >> 4) % e->spread - (e->spread >> 1)) / 100.0f;
+                    if (e->b4 & 2) {
+                        pt->a[0] = dx;
+                        pt->a[1] = dy;
+                        pt->a[2] = dz;
+                    } else {
+                        pt->a[0] = e->pos.x + dx;
+                        pt->a[1] = e->pos.y + dy;
+                        pt->a[2] = e->pos.z + dz;
+                        pt->b[0] = e->pos.x - dx;
+                        pt->b[1] = e->pos.y - dy;
+                        pt->b[2] = e->pos.z - dz;
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E02000_b033);
 

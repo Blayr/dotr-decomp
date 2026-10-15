@@ -944,7 +944,79 @@ static s32 func_01E032B0_b357(s32 arg0, Glow_b357_01E032B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E03420_b357);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E03850_b357);
+/* shape b357:01E03850, 175 insns: a flickering (grey 0x40 / 0xC0 every other tick) column: frame 0..2, random turn, size 1, hold 1..6, h6 6, f38 10..29; on start lays its kind's 8 trail points (ctx+0x30E0 + kind*0x80) as a stack, each 15..39 above the one before; alpha up by 0x60 to 0xC0 for the hold, then down by 39 */
+
+typedef struct {
+    u8 pad0[0x30E0];
+    Vec4f pts[1][8];
+} Ctx_b357_01E03850;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hold;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b357_01E03850;
+
+static s32 func_01E03850_b357(Ctx_b357_01E03850 *g, Fx_b357_01E03850 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        o->f34 = func_0019A5C8() % 3;
+        o->mode = 2;
+        o->rot = func_0019A5C8() % 65535;
+        o->h8 = 1;
+        o->hA = 1;
+        o->hC = 1;
+        o->hold = func_0019A5C8() % 6 + 1;
+        o->h6 = 6;
+        o->f38 = func_0019A5C8() % 20 + 10;
+        func_0019A5C8();
+        func_0019A5C8();
+        for (i = 0; i < 8; i++) {
+            if (i) {
+                g->pts[o->kind][i].y = 15.0f + (g->pts[o->kind][i - 1].y + func_0019A5C8() % 25);
+                g->pts[o->kind][i].z = 0.0f;
+                g->pts[o->kind][i].x = 0.0f;
+            } else {
+                g->pts[o->kind][i].y = 0.0f;
+                g->pts[o->kind][i].z = 0.0f;
+                g->pts[o->kind][i].x = 0.0f;
+            }
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 40) {
+        o->col[3] -= 39;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b357:01E03B10, 134 insns: a rising spark flickering yellow / red / blue: size 10..17, random spin, height
    50..199, turn 0..359, rise 20..29, f8 0..9, held 3..9; alpha grows by 0x30 (to 0x60) while held, then fades by 10

@@ -746,7 +746,116 @@ static s32 func_01E01F90_b406(World_b084_01E01FA0 *w, Spiral_b084_01E01FA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E022D0_b406);
+/* shape b406:01E022D0, 216 insns: b084:01E01FA0 cousin: size 30, alpha held at 0xC0 while the scene clock (0x768A)
+   is under 185, blinking red/dark red, the spiral rising 4.5 a frame against the scene flag until the clock reaches 170,
+   turning 5 a frame and widening by 1 up to radius 8. As b084:01E01FA0: a red spiral trail on a world track (b149:01E01ED0 family): set up once (fills the
+   track's 69 points with the head point); the end point circles the head on a widening spiral, rising or sinking
+   by the scene flag, while the module's shape b084:01E00080 shifts the track; blinks red each frame */
+
+typedef struct {
+    Vec4f p[0x46];
+} Track_b406_01E022D0;
+
+typedef struct {
+    u8 pad0[0x1D10];
+    Track_b406_01E022D0 track[0x14];
+    u8 pad[0x74A0 - 0x1D10 - 0x14 * 0x460];
+    Vec4f head;
+    u8 pad74B0[0x10];
+    Vec4f end[0x1C];
+    u8 pad7680[6];
+    s16 rise;
+    u8 pad7688[2];
+    s16 clock;
+    u8 pad768C[0x200];
+    u8 trig[1];
+} World_b406_01E022D0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    u8 pad8[0x28];
+    f32 r;
+    u8 pad34[0x14];
+    f32 size;
+    u8 pad4C[4];
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Spiral_b406_01E022D0;
+
+static s32 func_01E022D0_b406(World_b406_01E022D0 *w, Spiral_b406_01E022D0 *o) {
+    extern void b406_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f *dst;
+    s16 i;
+
+    if (o->state == 1) {
+        o->frame = 8;
+        o->c0[3] = 0;
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 0x45; i++) {
+            dst->x = w->head.x;
+            dst->y = w->head.y;
+            dst->z = w->head.z;
+            dst++;
+        }
+        w->end[o->idx].x = w->head.x;
+        w->end[o->idx].y = w->head.y;
+        w->end[o->idx].z = w->head.z;
+        func_001076F0(o->c1, 0x80, 0x10, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->size = 30.0f;
+        o->state = 2;
+    }
+    if (o->frame < 0x44) {
+        o->frame++;
+    }
+    if (w->clock < 185) {
+        o->c0[3] = 0xC0;
+    } else {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->size > 0.0f) {
+            o->size -= 1.0f;
+        }
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0x10, 0x10);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x10, 0x10);
+    }
+    if (o->t != 0) {
+        if (w->clock < 170) {
+            if (w->rise != 0) {
+                w->end[o->idx].z -= 4.5f;
+            } else {
+                w->end[o->idx].z += 4.5f;
+            }
+        }
+        w->end[o->idx].x = w->head.x + o->r * func_00108030(w->trig, o->ang, 1);
+        w->end[o->idx].y = w->head.y + o->r * func_00108030(w->trig, o->ang, 0);
+        o->ang += 5;
+        if (o->r < 8.0f) {
+            o->r += 1.0f;
+        }
+    }
+    if (o->t < 0x32) {
+        b406_01E00080(&w->track[o->idx].p[0x45], 0x46, 0, &w->end[o->idx]);
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02630_b406);
 

@@ -963,7 +963,93 @@ static s32 func_01E02550_b632(s32 unused, Mote_b111_01E022F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b632", func_01E02750_b632);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b632", func_01E02AE0_b632);
+/* shape b632:01E02AE0, 197 insns: a white/pink flash quad in quarter k (0x50): on start size 20, white colour and a
+   pink second colour, turn 0..0x1FFF + 0x4000 k and tilt 0..0x4FFF from the quarter the scene's counter (0x5C2A % 4)
+   picks; frames 10; alpha up by 0x60 to 0x120 for 5 ticks, then down by 15; the second colour flickers pink/dull on
+   odd ticks; it grows 35 a tick with 0x4C trailing it by 80 */
+
+typedef struct {
+    u8 pad0[0x5C2A];
+    s16 count;
+} Ctx_b632_01E02AE0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[2];
+    u8 pad28[0x20];
+    f32 size;
+    f32 f4C;
+    s16 k;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b632_01E02AE0;
+
+static s32 func_01E02AE0_b632(Ctx_b632_01E02AE0 *g, Fx_b632_01E02AE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 q;
+    s32 base;
+
+    if (o->mode == 1) {
+        o->size = 20.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        q = g->count % 4;
+        if (q == 0) {
+            base = 0;
+        } else if (q == 1) {
+            base = 0x4000;
+        } else if (q == 2) {
+            base = 0x8000;
+        } else if (q == 3) {
+            base = 0xC000;
+        }
+        if (o->k == 0) {
+            o->rot[1] = func_0019A5C8() % 0x2000;
+            o->rot[0] = base + func_0019A5C8() % 0x5000;
+        }
+        if (o->k == 1) {
+            o->rot[1] = func_0019A5C8() % 0x2000 + 0x4000;
+            o->rot[0] = base + func_0019A5C8() % 0x5000;
+        }
+        if (o->k == 2) {
+            o->rot[1] = func_0019A5C8() % 0x2000 + 0x8000;
+            o->rot[0] = base + func_0019A5C8() % 0x5000;
+        }
+        if (o->k == 3) {
+            o->rot[1] = func_0019A5C8() % 0x2000 + 0xC000;
+            o->rot[0] = base + func_0019A5C8() % 0x5000;
+        }
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 5) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col2, 0xC0, 0x70, 0x70);
+    }
+    o->f4C = (o->size += 35.0f) - 80.0f;
+    o->tick++;
+    return 0;
+}
 
 /* shape b632:01E02E00, 90 insns: on start f48 200..499, f4C 0, colour 0x80 grey, second colour (0xFF, 0x80, 0x80)
    with alpha 0, 0x5A/0x5C = 15; alpha grows by 0x30 (below 0x60) for 2 ticks, then fades by 11 and stops; the second

@@ -681,7 +681,92 @@ static void func_01E01220_b701(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b701", func_01E01770_b701);
+/* shape b701:01E01770, 205 insns: the b701 module's event step (b567:01E01770 family): red scene colour, counts ticks;
+   at 81 spawns b701:01E01AB0 (slot 0); at 87 moves its point to the tracked point, halfway to the camera in z, and
+   spawns 8 b701:01E01EA0, 20 b701:01E01CF0, 50 b701:01E02030, b701:01E022D0 and b701:01E029F0; at ticks 29/58/90
+   drops 13 b701:01E02410 twice at the other tracked point; before tick 88 drops 3 b701:01E025E0 there */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 pad2DC[0xE284 - 0x2DC];
+    u8 col[4];
+    u8 padE288[0xE2CC - 0xE288];
+    s16 id1;
+    s16 id0;
+    u8 padE2D0[0xE2E6 - 0xE2D0];
+    s16 slot;
+    u8 padE2E8[4];
+    s16 timer;
+} Ctx_b701_01E01770;
+
+static void func_01E01770_b701(Ctx_b701_01E01770 *g) {
+    extern s32 b701_01E01AB0(void);
+    extern s32 b701_01E01CF0(void);
+    extern s32 b701_01E01EA0(void);
+    extern s32 b701_01E02030(void);
+    extern s32 b701_01E022D0(void);
+    extern s32 b701_01E02410(void);
+    extern s32 b701_01E025E0(void);
+    extern s32 b701_01E029F0(void);
+    extern void b701_01E034D0(Ctx_b701_01E01770 *, s32 (*)(void), s32);
+    extern void b701_01E03640(Ctx_b701_01E01770 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 81) {
+        g->slot = 0;
+        b701_01E034D0(g, b701_01E01AB0, 0);
+    }
+    if (g->timer == 87) {
+        func_001F5620(func_001F53A0(), g->id0, a);
+        func_001F5F90(func_001F5380(), b);
+        g->pos[0] = a[0];
+        g->pos[1] = a[1];
+        g->pos[2] = a[2] + (b[2] - a[2]) / 2.0f;
+        g->slot = 1;
+        for (i = 0; i < 8; i++) {
+            b701_01E034D0(g, b701_01E01EA0, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b701_01E034D0(g, b701_01E01CF0, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b701_01E03640(g, b701_01E02030, 0);
+        }
+        b701_01E03640(g, b701_01E022D0, 0);
+        b701_01E034D0(g, b701_01E029F0, 0);
+    }
+    if (g->timer == 29 || g->timer == 58 || g->timer == 90) {
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        g->pos[1] -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b701_01E03640(g, b701_01E02410, 0);
+        }
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        g->pos[1] -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b701_01E03640(g, b701_01E02410, 0);
+        }
+    }
+    if (g->timer < 88) {
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        g->pos[1] -= 1.5f;
+        for (i = 0; i < 3; i++) {
+            b701_01E03640(g, b701_01E025E0, 0);
+        }
+    }
+}
 
 /* shape b701:01E01AB0, 143 insns: b567:01E019F0's trail with its red colour, trails at g+0xDFD0, joints
    at g+0xE2CE / 0xE2D0, full alpha while the counter at g+0xE2EC is under 91, hold 10 */

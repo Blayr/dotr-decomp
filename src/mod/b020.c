@@ -603,7 +603,98 @@ static void func_01E014E0_b020(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E017A0_b020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E01B50_b020);
+/* shape b020:01E01B50, 199 insns: b020:01E01FC0's drifting sprite with two grey (0x80) colours: on start size 5..34,
+   0xE 0..7, variant 0..2, random drift (f10/f18 -20..19, f14 30, f30/f34/f38 random /10), random angle, second alpha 0;
+   both alphas grow by 0x2A (below 0x80) for 16 ticks, then the first fades by 14 twice a tick and the sprite stops
+   below 16; the rotation is handed to func_00205C40; after the first tick the angle turns by 4, f18 moves by f38 (down
+   when the game flag 0x70AE is set) plus f34, f10 by f30 */
+
+typedef struct {
+    u8 pad0[0x70AE];
+    s16 flag;
+} Game_b020_01E01B50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[2];
+    s16 fE;
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0x18];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b020_01E01B50;
+
+static s32 func_01E01B50_b020(Game_b020_01E01B50 *g, Fx_b020_01E01B50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = func_0019A5C8() % 30 + 5;
+        o->fA = o->f8;
+        o->fE = func_0019A5C8() % 8;
+        o->f56 = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->f10 = func_0019A5C8() % 40 - 20;
+        o->f14 = 30.0f;
+        o->f18 = func_0019A5C8() % 40 - 20;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 30;
+        o->f38 = func_0019A5C8() % 100 + 30;
+        o->f30 /= 10.0f;
+        o->f34 /= 10.0f;
+        o->f38 /= 10.0f;
+        o->mode = 2;
+        o->f5A = func_0019A5C8() % 360;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 16) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x2A;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    if (o->tick != 0) {
+        o->f5A += 4;
+        if (o->f5A >= 360) {
+            o->f5A %= 360;
+        }
+        if (g->flag != 0) {
+            o->f18 -= o->f38;
+        } else {
+            o->f18 += o->f38;
+        }
+        o->f18 += o->f34;
+        o->f10 += o->f30;
+    }
+    return 0;
+}
 
 /* shape b020:01E01E70, 81 insns: on start 0x8 = 10, 0xA = 1, variant 2..7, f34 0.5, colour white; alpha grows by 0x60
    (below 0xC0) for 15 ticks, then fades by 9 and stops; after the first tick f18 moves by 5 (down when the game flag
@@ -669,7 +760,89 @@ static s32 func_01E01E70_b020(Game_b020_01E01E70 *g, Fx_b020_01E01E70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E01FC0_b020);
+/* shape b020:01E01FC0, 196 insns: on start f48 130, variant 0..6, colour (192, 192, 192), random angle/frame, 0x50
+   5..14, random drift (f10/f18 -20..19, f14 30, f30/f34/f38 random /10), speed 9..23, hold 7..11; alpha 0x80 while
+   held, then fades by 7 and stops; f48 grows by 2; after the first tick 0x50 += speed, f18 moves by f38 (down when
+   the game flag 0x70AE is set) plus f34, f10 by f30 */
+
+typedef struct {
+    u8 pad0[0x70AE];
+    s16 flag;
+} Game_b020_01E01FC0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b020_01E01FC0;
+
+static s32 func_01E01FC0_b020(Game_b020_01E01FC0 *g, Fx_b020_01E01FC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 130.0f;
+        o->f56 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        o->f5A = func_0019A5C8() % 360;
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 10 + 5;
+        o->f10 = func_0019A5C8() % 40 - 20;
+        o->f14 = 30.0f;
+        o->f18 = func_0019A5C8() % 40 - 20;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 30;
+        o->f38 = func_0019A5C8() % 100 + 30;
+        o->f30 /= 10.0f;
+        o->f34 /= 10.0f;
+        o->f38 /= 10.0f;
+        o->speed = func_0019A5C8() % 15 + 9;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 7;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 2.0f;
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+        if (g->flag != 0) {
+            o->f18 -= o->f38;
+        } else {
+            o->f18 += o->f38;
+        }
+        o->f18 += o->f34;
+        o->f10 += o->f30;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b020:01E022D0, 65 insns: on start f48 6, colour 0x80 grey, second colour (0x80, 0x10, 0x10) with alpha 0, 0x30 = 1.5f,
    0x34 = 5.0f; alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and stops; 0x34 grows by 4.0f after the

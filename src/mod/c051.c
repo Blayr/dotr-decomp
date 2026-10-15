@@ -1,6 +1,101 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c051", func_01E00080_c051);
+/* shape c051:01E00080, 197 insns: c031:01E00080 family scene start: counts ticks; on tick 3 picks the scene colour by
+   its kind (0x2F4: grey, red, green, blue, yellow, magenta, cyan, pink, violet, orange, else grey), clears its alpha,
+   spawns c051:01E003A0 once through 0x1E00800 (size 30, 0x2D0 = 0) and six times through 0x1E00EC0 (0x2D0 = 1) on the
+   angle pairs 30/270, 270/150, 150/30 and 210/-30, -30/90, 90/210; size 15 for the first three when func_001DE540()
+   is 0 and for the last three when it is 1, else 30 */
+
+typedef struct {
+    u8 pad0[0x2B4];
+    u8 col[4];
+    u8 pad2B8[0x10];
+    f32 size;
+    u8 pad2CC[4];
+    f32 f2D0;
+    u8 pad2D4[0x16];
+    s16 a0;
+    s16 a1;
+    u8 pad2EE[4];
+    s16 h2F2;
+    s16 kind;
+    u8 pad2F6[2];
+    s16 t;
+} Ctx_c051_01E00080;
+
+static void func_01E00080_c051(Ctx_c051_01E00080 *g) {
+    extern void c051_01E003A0(void);
+    extern void c051_01E00800(Ctx_c051_01E00080 *, void (*)(void));
+    extern void c051_01E00EC0(Ctx_c051_01E00080 *, void (*)(void));
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001DE540(void);
+    s32 n;
+    s16 k;
+
+    n = func_001DE540();
+    g->t++;
+    if (g->t == 3) {
+        k = g->kind;
+        if (k == 0) {
+            func_001076F0(g->col, 0x80, 0x80, 0x80);
+        } else if (k == 1) {
+            func_001076F0(g->col, 0x80, 0, 0);
+        } else if (k == 2) {
+            func_001076F0(g->col, 0, 0x80, 0);
+        } else if (k == 3) {
+            func_001076F0(g->col, 0, 0, 0x80);
+        } else if (k == 4) {
+            func_001076F0(g->col, 0x80, 0x80, 0);
+        } else if (k == 5) {
+            func_001076F0(g->col, 0x80, 0, 0x80);
+        } else if (k == 6) {
+            func_001076F0(g->col, 0, 0x80, 0x80);
+        } else if (k == 7) {
+            func_001076F0(g->col, 0x80, 0x40, 0x80);
+        } else if (k == 8) {
+            func_001076F0(g->col, 0x80, 0, 0xFF);
+        } else if (k == 9) {
+            func_001076F0(g->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(g->col, 0x80, 0x80, 0x80);
+        }
+        g->col[3] = 0;
+        g->size = 30.0f;
+        g->f2D0 = 0.0f;
+        g->h2F2 = 0;
+        c051_01E00800(g, c051_01E003A0);
+        g->f2D0 = 1.0f;
+        g->h2F2 = 1;
+        if (n == 0) {
+            g->size = 15.0f;
+        } else {
+            g->size = 30.0f;
+        }
+        g->a0 = 30;
+        g->a1 = 270;
+        c051_01E00EC0(g, c051_01E003A0);
+        g->a0 = 270;
+        g->a1 = 150;
+        c051_01E00EC0(g, c051_01E003A0);
+        g->a0 = 150;
+        g->a1 = 30;
+        c051_01E00EC0(g, c051_01E003A0);
+        if (n == 1) {
+            g->size = 15.0f;
+        } else {
+            g->size = 30.0f;
+        }
+        g->a0 = 210;
+        g->a1 = -30;
+        c051_01E00EC0(g, c051_01E003A0);
+        g->a0 = -30;
+        g->a1 = 90;
+        c051_01E00EC0(g, c051_01E003A0);
+        g->a0 = 90;
+        g->a1 = 210;
+        c051_01E00EC0(g, c051_01E003A0);
+    }
+}
 
 /* shape c051:01E003A0, 124 insns: a four-colour flash timed by the scene frame (0x2F8): all four alphas grow by 0x2C
    (below 0xB0) for the first 5 frames; kind 0 fades them by 15 from frame 15 (the last ends it); other kinds grow

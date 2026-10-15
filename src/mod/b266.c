@@ -772,7 +772,124 @@ static s32 func_01E02520_b266(Pool_b266_01E02520 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E02640_b266);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E029F0_b266);
+/* OVL_WARM */
+
+/* shape b266:01E029F0, 216 insns: b018:01E03B10's ring draw with b266's ctx (target 0x2EAC, depth 0x2ED4, trig
+   0x3004); the corner helper (shape b008:01E00080) is the module's 0x1E00080 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b266_01E029F0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b266_01E029F0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b266_01E029F0 c;
+    struct {
+        u64 tc;
+        Xyz_b266_01E029F0 p;
+    } v[4];
+} Pkt_b266_01E029F0;
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b266_01E029F0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[0xA];
+    u8 rot[0x18];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 radius;
+    s16 start;
+} Anim_b266_01E029F0;
+
+typedef struct {
+    u8 pad00[0x37C];
+    void *texture;
+    u8 pad380[0x2EAC - 0x380];
+    s32 target;
+    u8 pad2EB0[0x2ED4 - 0x2EB0];
+    f32 depth;
+    u8 pad2ED8[0x3004 - 0x2ED8];
+    u8 trig[1];
+} Obj_b266_01E029F0;
+
+static void func_01E029F0_b266(Obj_b266_01E029F0 *o, Anim_b266_01E029F0 *an, Pkt_b266_01E029F0 *p, s32 draw) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern Rgbaq_b266_01E029F0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b266_01E029F0 quad[4];
+    Vec_b266_01E029F0 pos;
+    Vec_b266_01E029F0 scale;
+    f32 m[16];
+    u8 td[0x18];
+    s32 k;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    if (draw == 0) {
+        func_00106080(td, 0x9B, an->h34, td);
+        p->count = 0x24;
+        p->tag = 9;
+        p->regs = ((u64)4 << 32) | 0x24242421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->c.q = 0.0f;
+        p->v[0].p.f = 0;
+        p->v[1].p.f = 0;
+        p->v[2].p.f = 0;
+        p->v[3].p.f = 0;
+        p->c = func_00107740(an->col);
+        func_01E00080_b266((Pk_b008_01E00080 *)p, (Rect_b008_01E00080 *)td, 0);
+        func_00208700(p, o->texture, 1);
+        return;
+    }
+    pos.x = an->x;
+    pos.y = an->y;
+    pos.z = an->z;
+    scale.x = 1.0f;
+    scale.y = 1.5f;
+    scale.z = 1.0f;
+    func_00108EF0(m, &scale, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 9; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->trig, a, 1);
+        quad[2].z = an->radius * func_00108030(o->trig, a, 0);
+        quad[0].x = (an->radius - 17) * func_00108030(o->trig, a, 1);
+        quad[0].z = (an->radius - 17) * func_00108030(o->trig, a, 0);
+        a = j + (an->start + 40);
+        quad[3].x = an->radius * func_00108030(o->trig, a, 1);
+        quad[3].z = an->radius * func_00108030(o->trig, a, 0);
+        quad[1].x = (an->radius - 17) * func_00108030(o->trig, a, 1);
+        quad[1].z = (an->radius - 17) * func_00108030(o->trig, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &o->depth) != 0) {
+            func_002075F0(p, o->target, (u32)o->depth);
+        }
+        j += 40;
+    }
+}
 
 /* shape b266:01E02D50, 111 insns: draws a small sprite (b089:01E03780 shape): unlit, it sets up the colour and texture page; lit,
    it builds a matrix at a tenth scale from its turn, at its position plus a tenth of its drift, and draws a square of its size

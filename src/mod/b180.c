@@ -538,7 +538,73 @@ static void func_01E01590_b180(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b180", func_01E01760_b180);
+/* shape b180:01E01760, 209 insns: the effect scene's step (b735:01E01AD0 family): counts the frame (0xB2BE); from 151 to
+   199 it marks joint 0xB248 at 0xB1D0, lifts the mark 3.3 a frame and moves the scene point there; from 11 to 199 it
+   spawns 0x1E01AB0 on the joint (0x1E01D00 at frame 10); at frame 1 it spawns 0x1E022E0 and 0x1E021D0; up to frame 200
+   it spawns 0x1E01EB0 at the camera point jittered by -10..9; from 20 to 199, every third frame it spawns 0x1E02040
+   with the side (0xB2B6) alternating by the 0xB2AC count */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f mark;
+    u8 padB1E0[0xB248 - 0xB1E0];
+    s16 joint;
+    u8 padB24A[0x62];
+    s16 count;
+    u8 padB2AE[8];
+    s16 side;
+    u8 padB2B8[6];
+    s16 t;
+} Scene_b180_01E01760;
+
+static void func_01E01760_b180(Scene_b180_01E01760 *g) {
+    extern void b180_01E01AB0(void);
+    extern void b180_01E01D00(void);
+    extern void b180_01E01EB0(void);
+    extern void b180_01E02040(void);
+    extern void b180_01E021D0(void);
+    extern void b180_01E022E0(void);
+    extern s32 b180_01E02C80(Scene_b180_01E01760 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+
+    g->t++;
+    if (g->t > 150 && g->t < 200) {
+        func_001F5620(func_001F53A0(), g->joint, &g->mark);
+        g->mark.y += 3.3f;
+        g->pos = g->mark;
+    }
+    if (g->t > 10 && g->t < 200) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        b180_01E02C80(g, (s32)b180_01E01AB0, 0);
+    }
+    if (g->t == 10) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        b180_01E02C80(g, (s32)b180_01E01D00, 0);
+    }
+    if (g->t == 1) {
+        b180_01E02C80(g, (s32)b180_01E022E0, 0);
+    }
+    if (g->t == 1) {
+        b180_01E02C80(g, (s32)b180_01E021D0, 0);
+    }
+    if (g->t < 201) {
+        func_001F5F90(func_001F5380(), &g->pos);
+        g->pos.x += func_0019A5C8() % 20 - 10;
+        g->pos.y += func_0019A5C8() % 20 - 10;
+        g->pos.z += func_0019A5C8() % 20 - 10;
+        b180_01E02C80(g, (s32)b180_01E01EB0, 0);
+    }
+    if (g->t > 19 && g->t < 200 && g->t % 3 == 1) {
+        g->side = g->count % 2;
+        b180_01E02C80(g, (s32)b180_01E02040, 0);
+        g->count++;
+    }
+}
 
 /* shape b180:01E01AB0, 147 insns: b646:01E02110's glow in purple-blue placed on joint 0xB248 on start, pushed 5 sideways by the scene side flag, always drifting by 9 x f38 and 0.5 x f30 */
 

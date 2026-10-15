@@ -1126,7 +1126,97 @@ static void func_01E041D0_b056(Scene_b056_01E041D0 *g, Fx_b056_01E041D0 *o, void
     func_00108F90(quad, p, m, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E04470_b056);
+/* OVL_WARM */
+
+/* shape b056:01E04470, 215 insns: c022:01E01850's flat packet set up once (lit 0: all four corners from colour 0x28),
+   then b774:01E03BB0's ring: 18 quads 20 degrees wide from 0x3A, outer radius 0x38 and inner 0x38 - 2, at the
+   object's position */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b056_01E04470;
+
+typedef struct {
+    Rgbaq_b056_01E04470 c;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vtx_b056_01E04470;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b056_01E04470 v[4];
+} Pkt_b056_01E04470;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x22];
+    u8 col[4];
+    u8 pad2C[0xC];
+    s16 size;
+    s16 ang;
+} Fx_b056_01E04470;
+
+static void func_01E04470_b056(u8 *ctx, Fx_b056_01E04470 *o, Pkt_b056_01E04470 *p, s32 lit) {
+    extern Rgbaq_b056_01E04470 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f q[4];
+    Vec4f pos;
+    f32 m[16];
+    s32 i;
+    s16 a;
+    s16 k;
+
+    a = 0;
+    if (lit == 0) {
+        p->count = 0x14;
+        p->tag = 8;
+        p->regs = 0x41414141;
+        p->pad = 0;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->v[0].c.q = p->v[1].c.q = p->v[2].c.q = p->v[3].c.q = 1.0f;
+        p->v[0].fog = 0;
+        p->v[1].fog = 0;
+        p->v[2].fog = 0;
+        p->v[3].fog = 0;
+        p->v[0].c = func_00107740(o->col);
+        p->v[1].c = func_00107740(o->col);
+        p->v[2].c = func_00107740(o->col);
+        p->v[3].c = func_00107740(o->col);
+        return;
+    }
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    func_00108EF0(m, NULL, NULL, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    for (i = 0; i < 18; i++) {
+        k = o->ang + a;
+        q[2].x = o->size * func_00108030(ctx + 0x3A98, k, 1);
+        q[2].z = o->size * func_00108030(ctx + 0x3A98, k, 0);
+        q[0].x = (o->size - 2) * func_00108030(ctx + 0x3A98, k, 1);
+        q[0].z = (o->size - 2) * func_00108030(ctx + 0x3A98, k, 0);
+        k = o->ang + 20 + a;
+        q[3].x = o->size * func_00108030(ctx + 0x3A98, k, 1);
+        q[3].z = o->size * func_00108030(ctx + 0x3A98, k, 0);
+        q[1].x = (o->size - 2) * func_00108030(ctx + 0x3A98, k, 1);
+        q[1].z = (o->size - 2) * func_00108030(ctx + 0x3A98, k, 0);
+        if (func_00205630((s32)q, 0x70000000, (s32)m, (s32)p, (f32 *)(ctx + 0x3954)) != 0) {
+            func_002075F0((s32)p, *(s32 *)(ctx + 0x391C), func_001A23B0(*(f32 *)(ctx + 0x3954)));
+        }
+        a += 20;
+    }
+}
 
 /* shape b056:01E047D0, 106 insns: b004:01E01860 family two-pass sprite draw (texture id 0x9B, scene texture at +0x2CC) placed at position + speed/10 in floats and scaled 0.1 */
 

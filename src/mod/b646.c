@@ -639,7 +639,71 @@ static void func_01E016C0_b646(Obj_b180_01E01230 *o, Band_b180_01E01230 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b646", func_01E01A20_b646);
+/* shape b646:01E01A20, 213 insns: the effect scene's step (b735:01E01AD0 family): counts the frame (0xB2BC); frames
+   36, 77 and 100 spawn thirteen 0x1E01D80 on joint 0xB248, frames 59 and 101 thirteen on joint 0xB24A; frame 146
+   spawns 0x1E01F50 on joint 0xB24C; frames 166..280 set the side (0xB2B4) to the frame's parity and spawn 0x1E024D0 on
+   odd frames; frames 146..280 spawn 0x1E02110 and twice 0x1E02340 at the camera point jittered by -10..9 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB248 - 0x260];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 padB24E[0x66];
+    s16 side;
+    u8 padB2B6[6];
+    s16 t;
+} Scene_b646_01E01A20;
+
+static void func_01E01A20_b646(Scene_b646_01E01A20 *g) {
+    extern void b646_01E01D80(void);
+    extern void b646_01E01F50(void);
+    extern void b646_01E02110(void);
+    extern void b646_01E02340(void);
+    extern void b646_01E024D0(void);
+    extern s32 b646_01E02D70(Scene_b646_01E01A20 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 36 || g->t == 77 || g->t == 100) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        for (i = 0; i < 13; i++) {
+            b646_01E02D70(g, (s32)b646_01E01D80, 0);
+        }
+    }
+    if (g->t == 59 || g->t == 101) {
+        func_001F5620(func_001F53A0(), g->jb, &g->pos);
+        for (i = 0; i < 13; i++) {
+            b646_01E02D70(g, (s32)b646_01E01D80, 0);
+        }
+    }
+    if (g->t == 146) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        b646_01E02D70(g, (s32)b646_01E01F50, 0);
+    }
+    if (g->t >= 166 && g->t < 281) {
+        g->side = g->t % 2;
+        if (g->t % 2 == 1) {
+            b646_01E02D70(g, (s32)b646_01E024D0, 0);
+        }
+    }
+    if (g->t >= 146 && g->t < 281) {
+        b646_01E02D70(g, (s32)b646_01E02110, 0);
+        for (i = 0; i < 2; i++) {
+            func_001F5F90(func_001F5380(), &g->pos);
+            g->pos.x += func_0019A5C8() % 20 - 10;
+            g->pos.y += func_0019A5C8() % 20 - 10;
+            g->pos.z += func_0019A5C8() % 20 - 10;
+            b646_01E02D70(g, (s32)b646_01E02340, 0);
+        }
+    }
+}
 
 /* shape b646:01E01D80, 115 insns: a white drifting spark (b567:01E024D0 shape): size 90, sub-frame 2..4,
    random angle; pushed 5.6 along it at the start, then drifting 0.8 a frame; alpha up, then down; turns */

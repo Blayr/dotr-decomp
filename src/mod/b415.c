@@ -679,7 +679,86 @@ static void func_01E01BA0_b415(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E01D70_b415);
+/* shape b415:01E01D70, 213 insns: the effect scene's step (b735:01E01AD0 family): counts the frame (0xCBBC); frame 124
+   spawns 0x1E02A90; frame 112 marks joint 0xCB4C at 0xCAD0; frames 112..120 spawn 0x1E020D0 twice at the mark (0xCBB4
+   = 0, 1); frame 112 also spawns 0x1E022B0, 0x1E02900, 0x1E02CD0 and fifty 0x1E023A0 there; frame 135 spawns on joint
+   0xCB48 0x1E022B0, 0x1E02900, 0x1E02CD0 and four 0x1E026F0 (0xCBA6 = 0, 90, 45, 135; 0xCBB4 = 0, 0, 1, 1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCAD0 - 0x260];
+    Vec4f mark;
+    u8 padCAE0[0xCB48 - 0xCAE0];
+    s16 ja;
+    u8 padCB4A[2];
+    s16 jb;
+    u8 padCB4E[0x58];
+    s16 ang;
+    u8 padCBA8[0xC];
+    s16 kind;
+    u8 padCBB6[6];
+    s16 t;
+} Scene_b415_01E01D70;
+
+static void func_01E01D70_b415(Scene_b415_01E01D70 *g) {
+    extern void b415_01E020D0(void);
+    extern void b415_01E022B0(void);
+    extern void b415_01E023A0(void);
+    extern void b415_01E026F0(void);
+    extern void b415_01E02900(void);
+    extern void b415_01E02A90(void);
+    extern void b415_01E02CD0(void);
+    extern s32 b415_01E03790(Scene_b415_01E01D70 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 124) {
+        b415_01E03790(g, (s32)b415_01E02A90, 0);
+    }
+    if (g->t == 112) {
+        func_001F5620(func_001F53A0(), g->jb, &g->mark);
+    }
+    if (g->t >= 112 && g->t < 121) {
+        g->pos = g->mark;
+        g->kind = 0;
+        b415_01E03790(g, (s32)b415_01E020D0, 0);
+        g->kind = 1;
+        b415_01E03790(g, (s32)b415_01E020D0, 0);
+    }
+    if (g->t == 112) {
+        g->pos = g->mark;
+        g->kind = 0;
+        b415_01E03790(g, (s32)b415_01E022B0, 0);
+        b415_01E03790(g, (s32)b415_01E02900, 0);
+        b415_01E03790(g, (s32)b415_01E02CD0, 0);
+        g->kind = 0;
+        for (i = 0; i < 50; i++) {
+            b415_01E03790(g, (s32)b415_01E023A0, 0);
+        }
+    }
+    if (g->t == 135) {
+        func_001F5620(func_001F53A0(), g->ja, &g->pos);
+        b415_01E03790(g, (s32)b415_01E022B0, 0);
+        g->kind = 1;
+        b415_01E03790(g, (s32)b415_01E02900, 0);
+        b415_01E03790(g, (s32)b415_01E02CD0, 0);
+        g->ang = 0;
+        g->kind = 0;
+        b415_01E03790(g, (s32)b415_01E026F0, 0);
+        g->ang = 90;
+        g->kind = 0;
+        b415_01E03790(g, (s32)b415_01E026F0, 0);
+        g->ang = 45;
+        g->kind = 1;
+        b415_01E03790(g, (s32)b415_01E026F0, 0);
+        g->ang = 135;
+        g->kind = 1;
+        b415_01E03790(g, (s32)b415_01E026F0, 0);
+    }
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 
@@ -793,7 +872,88 @@ static s32 func_01E022B0_b415(s32 arg0, Fx_b415_01E022B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E023A0_b415);
+/* shape b415:01E023A0, 212 insns: b539:01E01F60's flake in grey 0x80, 8..23 square, drift /80 (rising 0..99 in y),
+   turning by f5C (-10..9) a tick, held 22..31 ticks while the scene frame ctx+0xCBBC is under 180, else fading */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b415_01E023A0;
+
+typedef struct {
+    u8 pad0[0xCBBC];
+    s16 frame;
+} Ctx_b415_01E023A0;
+
+static s32 func_01E023A0_b415(Ctx_b415_01E023A0 *g, Fx_b415_01E023A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = (func_0019A5C8() >> 4) % 16 + 8;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 80.0f;
+        o->vel[0] /= 80.0f;
+        o->vel[2] /= 80.0f;
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = (func_0019A5C8() >> 4) % 20 - 10;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->hold = func_0019A5C8() % 10 + 22;
+    }
+    if (g->frame < 180) {
+        if (o->tick < o->hold) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x40;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    o->f5A += o->f5C;
+    return 0;
+}
 
 /* shape b247:01E02320, 129 insns, 2 copies: a blue ring by kind (0 wide and fast, 1 medium, 2 small and pale): set up once
    (thickness, radius); fades in over 6 frames, then out; its radius grows 60/20/5 a frame, turning 6 */

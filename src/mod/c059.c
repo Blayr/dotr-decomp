@@ -1196,7 +1196,109 @@ INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03B00_c059);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E03D70_c059);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E040B0_c059);
+/* OVL_WARM */
+
+/* shape c059:01E040B0, 217 insns: two-pass ring of five quads: mode 0 sets the material (frame 0x96, colours 0x34 /
+   0x38 on the inner / outer corners, scene texture 0x2644); otherwise the inner and outer radii are 65 x the table
+   sine of the node's angle (0x2) and of that angle - 5, the inner corners sit at height angle - 90 and the outer ones
+   12 below; each 72-degree segment is drawn under the first four of the scene's matrices for three of its joints
+   (g+0x1310, 0x40 apart, 0x140 per joint) into the scene order table 0x2ACC */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c059_01E040B0;
+
+typedef struct {
+    Rgbaq_c059_01E040B0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c059_01E040B0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c059_01E040B0 v[4];
+} Pkt_c059_01E040B0;
+
+typedef struct {
+    u8 pad0[2];
+    s16 ang;
+    u8 pad4[0x30];
+    u8 col[4];
+    u8 col2[4];
+} Node_c059_01E040B0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f quad[4];
+    u8 pad290[0x1310 - 0x290];
+    f32 mats[3][5][16];
+    u8 pad16D0[0x2644 - 0x16D0];
+    s32 tex;
+    u8 pad2648[0x2ACC - 0x2648];
+    s32 ot;
+    u8 pad2AD0[0x60];
+    u8 table[1];
+} Scene_c059_01E040B0;
+
+static void func_01E040B0_c059(Scene_c059_01E040B0 *g, Node_c059_01E040B0 *o, Pkt_c059_01E040B0 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_c059_01E040B0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00108FF0(void *, void *, void *, s32);
+    f32 rm[4];
+    s16 r0;
+    s16 r1;
+    s16 k;
+    s16 i;
+    s16 j;
+    f32 c1;
+    f32 c0;
+    f32 s0;
+    f32 s1;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x96, 0, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(o->col);
+        p->v[1].c = func_00107740(o->col);
+        p->v[2].c = func_00107740(o->col2);
+        p->v[3].c = func_00107740(o->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        r0 = 65.0f * func_00108030(g->table, o->ang, 0);
+        r1 = (s16)(65.0f * func_00108030(g->table, o->ang - 5, 0));
+        g->quad[0].y = o->ang - 90;
+        g->quad[1].y = o->ang - 90;
+        g->quad[3].y = g->quad[2].y = g->quad[0].y - 12.0f;
+        for (k = 0; k < 5; k++) {
+            c0 = func_00108030(g->table, k * 72, 1);
+            s0 = func_00108030(g->table, k * 72, 0);
+            c1 = func_00108030(g->table, k * 72 + 72, 1);
+            s1 = func_00108030(g->table, k * 72 + 72, 0);
+            g->quad[0].x = c0 * r0;
+            g->quad[0].z = s0 * r0;
+            g->quad[1].x = c1 * r0;
+            g->quad[1].z = s1 * r0;
+            g->quad[2].x = c0 * r1;
+            g->quad[2].z = s0 * r1;
+            g->quad[3].x = c1 * r1;
+            g->quad[3].z = s1 * r1;
+            for (i = 0; i < 4; i++) {
+                for (j = 0; j < 3; j++) {
+                    func_00108FF0(g->quad, p, g->mats[j][i], g->ot);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E04420_c059);
 
@@ -1365,7 +1467,149 @@ static s32 func_01E05440_c059(Scene_c059_01E05440 *g, Seg_c059_01E05440 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E05710_c059);
+/* OVL_WARM */
+
+/* shape c059:01E05710, 213 insns: c026:01E00BF0's falling pair in whole units: turns -5 a tick; its spots (0x4E/0x50)
+   are 1.3 times the top and bottom (0x2/0xA, at least 10, done in double); the top drops 5 a tick to 0, the bottom
+   follows within 16 and then alone until it reaches the top (frees its link, stops). Once 0x52 is set and the
+   bottom is above ctx+0x2CD0 it hands itself to the scene (ctx+0x2A5C.., grey 0x70) and, from scene stage 3 on,
+   starts the module's c059:01E02F40 through c059:01E01EE0. Alpha by scene stage */
+
+typedef struct Link_c059_01E05710 {
+    u8 pad0[0x30];
+    s32 f30;
+} Link_c059_01E05710;
+
+typedef struct Obj_c059_01E05710 {
+    u8 pad0[2];
+    s16 top;
+    u8 pad4[6];
+    s16 bot;
+    u8 padC[0x28];
+    Link_c059_01E05710 *link;
+    u8 pad38[8];
+    u8 col0[4];
+    u8 col1[4];
+    s16 h48;
+    s16 ang;
+    u8 pad4C[2];
+    s16 h4E;
+    s16 h50;
+    s16 h52;
+} Obj_c059_01E05710;
+
+typedef struct Scn_c059_01E05710 {
+    u8 pad0[0x2A20];
+    s32 f2A20;
+    s32 f2A24;
+    s32 f2A28;
+    u8 pad2A2C[0x14];
+    f32 f2A40;
+    f32 f2A44;
+    f32 f2A48;
+    u8 pad2A4C[4];
+    s32 stage;
+    u8 col[4];
+    u8 pad2A58[4];
+    Obj_c059_01E05710 *cur;
+    u8 pad2A60[0x30];
+    s16 f2A90;
+    u8 pad2A92[4];
+    s16 f2A96;
+    u8 pad2A98[4];
+    s16 f2A9C;
+    u8 pad2A9E[4];
+    s16 f2AA2;
+    u8 pad2AA4[0x2CD0 - 0x2AA4];
+    s16 f2CD0;
+} Scn_c059_01E05710;
+
+static s32 func_01E05710_c059(Scn_c059_01E05710 *g, Obj_c059_01E05710 *o) {
+    extern void c059_01E01EE0(Scn_c059_01E05710 *g, void *fn, void *fn2, s32 arg);
+    extern s32 c059_01E02F40();
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    o->ang -= 5;
+    if (o->ang <= -360) {
+        o->ang = o->ang % 360;
+    }
+    o->h4E = 1.3 * o->top;
+    o->h50 = 1.3 * o->bot;
+    if (o->h4E < 10) {
+        o->h4E = 10;
+    }
+    if (o->h50 < 10) {
+        o->h50 = 10;
+    }
+    if (o->top > 0) {
+        o->top -= 5;
+        if (o->bot - o->top >= 16) {
+            o->bot -= 5;
+        }
+    } else {
+        o->bot -= 5;
+        if (o->bot < o->top) {
+            o->bot = o->top;
+            if (o->link != NULL) {
+                o->link->f30 = 0;
+            }
+            o->h48 = 0;
+        }
+    }
+    if (o->bot < g->f2CD0 && o->h52 > 0) {
+        g->cur = o;
+        g->f2A40 = o->h4E;
+        g->f2A44 = o->h50;
+        g->col[3] = 0;
+        func_001076F0(g->col, 0x70, 0x70, 0x70);
+        g->f2A96 = 1;
+        g->f2A48 = o->bot;
+        g->f2A9C = 1;
+        g->f2A24 = 0;
+        g->f2A20 = 0;
+        g->f2A28 = 0;
+        g->f2A90 = o->ang + 10;
+        if (g->stage > 2) {
+            c059_01E01EE0(g, func_01E05710_c059, c059_01E02F40, 0);
+        }
+        o->h52 = 0;
+    }
+    if (g->f2AA2 < 8) {
+        if (o->col1[3] < 0x40) {
+            o->col1[3] += 12;
+        }
+        if (o->col0[3] < 0x40) {
+            o->col0[3] += 12;
+        }
+    } else if (o->bot < 35) {
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 10;
+        }
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 10;
+        }
+    } else if (g->stage < 10) {
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 10;
+        }
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 10;
+        }
+    } else {
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 12;
+        }
+        if (o->link != NULL) {
+            if (o->col0[3] < 0x80) {
+                o->col0[3] += 12;
+            }
+        }
+    }
+    if (g->stage == 2) {
+        o->h48 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E05A70_c059);
 

@@ -761,4 +761,86 @@ INCLUDE_ASM("asm/nonmatchings/mod/c542", func_01E02510_c542);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c542", func_01E02DE0_c542);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c542", func_01E03DE0_c542);
+/* shape c542:01E03DE0, 191 insns: the c542 scene draw: while the model has flag 0x1E it steps its two trails (c542:01E018B0), the ring (c542:01E00A10) and the ribbon (c542:01E01F00) under the light (0x70), brightening the light by 0.2 to 1 and then by 0.005 (flagging 0x80000000 and clearing four parts), and turns 64 entries by 0x80 on each axis; draws the grid (c542:01E02510) in its own list; with the flag it then stretches the 32 x 10 grid by a tent of (6 - |4 - j|) x (17 - |15 - i|) hundredths and clears its flags, else fades them and flags 0x40000000 once clear */
+
+typedef struct {
+    f32 x, y, z;
+} P3_c542_01E03DE0;
+
+typedef struct {
+    u8 pad0[0x70];
+    f32 light[3];
+    u8 pad7C[0x160 - 0x7C];
+    u8 a160[0x60];
+    s32 rot[64][4];
+    u8 a5C0[0xA0];
+    u8 a660[0x60];
+    u8 a6C0[0x400];
+    u8 aAC0[0x400];
+    u8 aEC0[0x20];
+    P3_c542_01E03DE0 grid[32][16];
+    u8 pad[0x2C98 - 0xEE0 - 32 * 0xC0];
+    s32 model;
+} Obj_c542_01E03DE0;
+
+static void func_01E03DE0_c542(Obj_c542_01E03DE0 *o, s32 arg1) {
+    extern void c542_01E00A10(s32, void *, void *, f32 *);
+    extern void c542_01E018B0(s32, void *, f32 *);
+    extern void c542_01E01F00(s32, void *, f32 *);
+    extern void c542_01E02510(void *, Obj_c542_01E03DE0 *);
+    extern s32 func_00104520(s32, s32);
+    extern void func_00103470(void *, s32, s32);
+    extern s32 func_001032C0(void *, s32, s32);
+    extern s32 func_00207F60(void);
+    extern void func_00207FD0(s32, s32, s32);
+    extern s32 func_00195070(s32);
+    s32 i;
+    s32 j;
+    s32 list;
+    f32 f;
+    f32 s;
+
+    if (func_00104520(o->model, 0x1E) != 0) {
+        c542_01E018B0(arg1, o->a6C0, o->light);
+        c542_01E018B0(arg1, o->aAC0, o->light);
+        c542_01E00A10(arg1, o->a660, o->a5C0, o->light);
+        c542_01E01F00(arg1, o->a160, o->light);
+        if (o->light[0] <= 1.0f) {
+            o->light[0] += 0.2f;
+            o->light[1] += 0.2f;
+            o->light[2] += 0.2f;
+        } else {
+            o->model |= 0x80000000;
+            o->light[0] += 0.005f;
+            o->light[1] += 0.005f;
+            o->light[2] += 0.005f;
+            func_00103470((u8 *)o + 0x16B, 0, 2);
+            func_00103470((u8 *)o + 0x6CB, 0, 2);
+            func_00103470((u8 *)o + 0xACB, 0, 2);
+            func_00103470((u8 *)o + 0x697, 0, 3);
+        }
+        for (i = 0; i < 64; i++) {
+            o->rot[i][0] += 0x80;
+            o->rot[i][1] += 0x80;
+            o->rot[i][2] += 0x80;
+        }
+    }
+    list = func_00207F60();
+    c542_01E02510(o->aEC0, o);
+    func_00207FD0(list, (s32)func_00207500(), 0);
+    if (func_00104520(o->model, 0x1E) != 0) {
+        for (i = 0; i < 32; i++) {
+            for (j = 0; j < 10; j++) {
+                f = 0.1f * (6 - func_00195070(4 - j));
+                s = 1.0f + f * (0.1f * (17 - func_00195070(15 - i)));
+                o->grid[i][j].x *= s;
+                o->grid[i][j].y *= s;
+            }
+        }
+        func_00103470((u8 *)o + 0xECF, 0, 8);
+        return;
+    }
+    if (func_001032C0((u8 *)o + 0xECF, 0x80, 0x10) == 0) {
+        o->model |= 0x40000000;
+    }
+}

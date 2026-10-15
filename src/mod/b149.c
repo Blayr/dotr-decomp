@@ -393,7 +393,103 @@ static void func_01E00E10_b149(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01360_b149);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01770_b149);
+/* shape b149:01E01770, 211 insns: b149:01E01C60 cousin (size 10, alpha up for 80 ticks); from tick 31 to 69 it is
+   pushed 4.7 a tick in z by the scene side (0xBCEE), sinks 1.1 and grows 0.5; from tick 71 it turns 5, rises by hE
+   and grows 3. As b149:01E01C60: b479:01E01EB0 variant: size 20, a drift of -1.5..1.4 a tick in y, height 10..29
+   growing by 15 (and the drift) for 12 ticks up to its limit 100..249, rise 40..79; on tick 72 it hands its position to the scene
+   (m+0x250) and fires the module's 0x1E01AC0 effect; h5C turns by 7 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f pos;
+    u8 pad260[0xBCEE - 0x260];
+    s16 side;
+} Mgr_b149_01E01770;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec4f pos;
+    u8 pad20[0x14];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b149_01E01770;
+
+static s32 func_01E01770_b149(Mgr_b149_01E01770 *m, Obj_b149_01E01770 *o) {
+    extern void b149_01E01AC0();
+    extern void b149_01E02BA0(Mgr_b149_01E01770 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = 10.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->f34 = func_0019A5C8() % 30 - 15;
+        o->f34 /= 10.0f;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 20 + 10;
+        o->h52 = func_0019A5C8() % 150 + 100;
+        o->hE = func_0019A5C8() % 40 + 40;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < 80) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x20;
+        }
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 == 72) {
+        m->pos = o->pos;
+        b149_01E02BA0(m, b149_01E01AC0, 0);
+    }
+    if (o->h54 < 12) {
+        if (o->h50 < o->h52) {
+            o->h50 += 15;
+        }
+        o->pos.y += o->f34;
+    }
+    o->h5C += 7;
+    if (o->h54 > 30 && o->h54 < 70) {
+        if (m->side != 0) {
+            o->pos.z -= 4.7f;
+        } else {
+            o->pos.z += 4.7f;
+        }
+        o->pos.y -= 1.1f;
+        o->f48 += 0.5f;
+    }
+    if (o->h54 > 70) {
+        o->h5A += 5;
+        o->h50 += o->hE;
+        o->f48 += 3.0f;
+    }
+    o->h54++;
+    return 0;
+}
 
 /* shape b149:01E01AC0, 102 insns: a grey spark (b203:01E027D0 shape): size 40, random sub-frame 0..3, angle, frame 0..7,
    start height 10..59 (old one kept), rise 16..45 once started, width 0..34, hold 3..7; full alpha until the hold, then down by 8 */

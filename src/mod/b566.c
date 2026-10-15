@@ -495,7 +495,94 @@ static void func_01E014D0_b566(Scene_b566_01E014D0 *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E015D0_b566);
+/* shape b566:01E015D0, 196 insns: b582:01E02680 cousin, b350:01E00C60 family green (0x20/0x70/0x20) puff: size 70 growing 1 (3 after tick 24), speed 5..9, h8 0..24, hold 26..35, alpha up by 0x30 to 0x90, then down by 9; sinks toward the second point by 1/40 of the gap (1/100 after tick 24); every other tick frames up to 5 */
+
+typedef struct {
+    u8 pad0[0x35DC];
+    s16 id0;
+    s16 id1;
+} Ctx_b566_01E015D0;
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b566_01E015D0;
+
+static s32 func_01E015D0_b566(Ctx_b566_01E015D0 *g, Fx_b566_01E015D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f38 = 70;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x20, 0x70, 0x20);
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 10 + 26;
+        o->hC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    *(f32 *)(u32)&v[2] -= v[6];
+    if (o->tick < 24) {
+        *(f32 *)(u32)&v[2] /= 40.0f;
+        o->z = o->z + v[2];
+    } else {
+        *(f32 *)(u32)&v[2] /= 100.0f;
+        o->z = o->z + v[2];
+        o->f38 += 2;
+        o->f30 += o->speed * 2;
+    }
+    if (o->tick % 2 == 1) {
+        o->x += o->hC;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->rot[0] = func_0019A5C8() % 360;
+    o->rot[1] = func_0019A5C8() % 360;
+    o->rot[2] = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b566:01E018E0, 188 insns: b297:01E014F0's glow, darker (0x40) of size 70 growing by 3, rise 4..8, holds 5..7 ticks
    fading in by 0x20 to 0xA0, then down by 15; every other tick it sways by hC and steps its frame to 6;

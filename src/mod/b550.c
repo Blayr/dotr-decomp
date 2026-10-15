@@ -1012,7 +1012,103 @@ static s32 func_01E02F50_b550(void *arg0, Obj_b550_01E02F50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E03090_b550);
+/* shape b550:01E03090, 205 insns: b743:01E02D60's trail spark with a 70-point trail (0x5A50 + 0x460 k), the head
+   circling in x/y at the point's radius (point 0xB1D0, radius 0xBA34, angle 0xBC44, trig 0xBF4C), frame 20, size 20;
+   alphas up by 42 for 54 ticks, then the size shrinks by 1.5 until below 0; flickers only before tick 80, frames to 40 */
+
+typedef struct {
+    u8 pad0[0x5A50];
+    Vec4f tr[1][70];
+    u8 pad5EB0[0xB1D0 - 0x5EB0];
+    Vec4f pt[1];
+    u8 padB1E0[0xBA34 - 0xB1E0];
+    f32 rad[1];
+    u8 padBA38[0xBC44 - 0xBA38];
+    s16 ang[1];
+    u8 padBC46[0xBF4C - 0xBC46];
+    u8 trig[1];
+} Ctx_b550_01E03090;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 size;
+    u8 pad4C[4];
+    s16 k;
+    u8 pad52[2];
+    s16 tick;
+    s16 h56;
+    s16 mode;
+    s16 turn;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b550_01E03090;
+
+static s32 func_01E03090_b550(Ctx_b550_01E03090 *g, Fx_b550_01E03090 *o) {
+    extern void b550_01E00080(Vec4f *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+    s16 k;
+    s16 i;
+    Vec4f *p;
+
+    k = o->k;
+    v[0] = g->pt[k].x + g->rad[k] * func_00108030(g->trig, g->ang[k], 1);
+    k = o->k;
+    v[1] = g->pt[k].y + g->rad[k] * func_00108030(g->trig, g->ang[k], 0);
+    v[2] = g->pt[o->k].z;
+    if (o->mode == 1) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        p = g->tr[o->k];
+        for (i = 0; i < 70; i++) {
+            p[i].x = v[0];
+            p[i].y = v[1];
+            p[i].z = v[2];
+        }
+        o->frame = 20;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->h56 = 4;
+        o->size = 20.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 54) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else if (o->size >= 0.0f) {
+        o->size -= 1.5f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick < 83) {
+        o->turn += 5;
+    }
+    if (o->tick < 117) {
+        b550_01E00080(&g->tr[o->k][69], 70, 0, v);
+    }
+    if (o->tick < 80) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        } else {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        }
+    }
+    if (o->tick != 0) {
+        if (o->frame < 40) {
+            o->frame++;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b550:01E033D0, 112 insns: b183:01E012F0 family: a slow spinning flake (random 3-axis spin, start 300..649, growth 1..3, frame 1..8, life 2..4) */
 

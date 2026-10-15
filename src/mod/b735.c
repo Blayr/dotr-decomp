@@ -674,13 +674,265 @@ static void func_01E01760_b735(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E01AD0_b735);
+/* shape b735:01E01AD0, 194 insns: the effect scene's step: counts the frame (0xB2BE); frames 42..254 spawn 0x1E021B0 at
+   joint 0xB248, from frame 44 the 0xB2B8 counter climbs to 50, frames 82..259 spawn nine 0x1E02500 at joint 0xB248
+   (0xB2B4 = 18, 24, .. 66); at frame 256 it spawns fourteen 0x1E02850 at joint 0xB24A, then 0x1E02C60 and four
+   0x1E02A50 (0xB2A6 = 0, 90, 45, 135; 0xB2B4 = 0, 0, 1, 1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[4];
+    u8 pad260[0xB248 - 0x260];
+    s16 jA;
+    s16 jB;
+    u8 padB24C[0x5A];
+    s16 ang;
+    u8 padB2A8[0xC];
+    s16 kind;
+    u8 padB2B6[2];
+    s16 grow;
+    u8 padB2BA[4];
+    s16 t;
+} Scene_b735_01E01AD0;
+
+static void func_01E01AD0_b735(Scene_b735_01E01AD0 *g) {
+    extern void b735_01E021B0(void);
+    extern void b735_01E02500(void);
+    extern void b735_01E02850(void);
+    extern void b735_01E02A50(void);
+    extern void b735_01E02C60(void);
+    extern s32 b735_01E036A0(Scene_b735_01E01AD0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+    s16 a;
+
+    g->t++;
+    if (g->t > 41 && g->t < 255) {
+        func_001F5620(func_001F53A0(), g->jA, g->pos);
+        b735_01E036A0(g, (s32)b735_01E021B0, 0);
+    }
+    if (g->t > 43) {
+        if (g->grow < 50) {
+            g->grow++;
+        }
+    }
+    if (g->t > 81 && g->t < 260) {
+        func_001F5620(func_001F53A0(), g->jA, g->pos);
+        for (i = 1, a = 18; i < 10; i++) {
+            g->kind = a;
+            b735_01E036A0(g, (s32)b735_01E02500, 0);
+            a += 6;
+        }
+    }
+    if (g->t == 256) {
+        func_001F5620(func_001F53A0(), g->jB, g->pos);
+        func_001F5F90(func_001F5380(), g->pos);
+        for (i = 1; i < 15; i++) {
+            b735_01E036A0(g, (s32)b735_01E02850, 0);
+        }
+        g->kind = 0;
+        b735_01E036A0(g, (s32)b735_01E02C60, 0);
+        g->ang = 0;
+        g->kind = 0;
+        b735_01E036A0(g, (s32)b735_01E02A50, 0);
+        g->ang = 90;
+        g->kind = 0;
+        b735_01E036A0(g, (s32)b735_01E02A50, 0);
+        g->ang = 45;
+        g->kind = 1;
+        b735_01E036A0(g, (s32)b735_01E02A50, 0);
+        g->ang = 135;
+        g->kind = 1;
+        b735_01E036A0(g, (s32)b735_01E02A50, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E01DE0_b735);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E021B0_b735);
+/* shape b735:01E021B0, 211 insns: b377:01E01CA0 cousin, a red (0x80/0x30/0x30) spark between scene joints 0xB248 and
+   0xB24A: size 5..14, frame 0..2 cycling to 7, speed 16..35, hold 25..27; alpha up by 0x40 to 0x100, then down by 14;
+   it sits k (0x52, from 10) fiftieths of the way from the first joint to the second, k climbing to the scene's 0xB2B8
+   while the size grows by 0.2..0.9 a tick; ends once the scene frame (0xB2BE) reaches 260 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02500_b735);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    f32 pos[3];
+    u8 pad1C[0x2C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 k;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b735_01E021B0;
+
+typedef struct {
+    u8 pad0[0xB248];
+    s16 ja;
+    s16 jb;
+    u8 padB24C[0x6C];
+    s16 kmax;
+    u8 padB2BA[4];
+    s16 t;
+} Scene_b735_01E021B0;
+
+static s32 func_01E021B0_b735(Scene_b735_01E021B0 *g, Fx_b735_01E021B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+    f32 k;
+    f32 d;
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 5;
+        o->f56 = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x30, 0x30);
+        o->f50 = func_0019A5C8() % 10 + 5;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 16;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 25;
+        o->k = 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f56++;
+    if (o->f56 > 7) {
+        o->f56 = 0;
+    }
+    func_001F5620(func_001F53A0(), g->ja, o->pos);
+    func_001F5620(func_001F53A0(), g->jb, &v);
+    v.x = (v.x - o->pos[0]) / 50.0f;
+    *(f32 *)(u32)&v.y = (*(f32 *)(u32)&v.y - o->pos[1]) / 50.0f;
+    *(f32 *)(u32)&v.z = (*(f32 *)(u32)&v.z - o->pos[2]) / 50.0f;
+    o->pos[0] += v.x * (k = o->k);
+    o->pos[1] += *(f32 *)(u32)&v.y * k;
+    o->pos[2] += *(f32 *)(u32)&v.z * k;
+    if (g->kmax > o->k) {
+        o->k++;
+    }
+    d = func_0019A5C8() % 8 + 2;
+    d /= 10.0f;
+    if (o->tick != 0) {
+        if (g->kmax > o->k) {
+            o->f48 += d;
+        }
+    }
+    if (g->t >= 260) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b735:01E02500, 211 insns: b735:01E021B0's red spark placed once (tick 0) k fiftieths of the way from joint
+   0xB248 to 0xB24A; size 8..27 growing by (2 + rand % (k / 3)) / 40, hold 2..4, f50 5..14 growing by 2..4 on odd ticks */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    f32 pos[3];
+    u8 pad1C[0x2C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 k;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b735_01E02500;
+
+typedef struct {
+    u8 pad0[0xB248];
+    s16 ja;
+    s16 jb;
+    u8 padB24C[0x6C];
+    s16 kmax;
+    u8 padB2BA[4];
+    s16 t;
+} Scene_b735_01E02500;
+
+static s32 func_01E02500_b735(Scene_b735_01E02500 *g, Fx_b735_01E02500 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+    f32 k;
+    f32 d;
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 20 + 8;
+        o->f56 = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x30, 0x30);
+        o->f50 = func_0019A5C8() % 10 + 5;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 3 + 2;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f56++;
+    if (o->f56 > 7) {
+        o->f56 = 0;
+    }
+    if (o->tick == 0) {
+        func_001F5620(func_001F53A0(), g->ja, o->pos);
+        func_001F5620(func_001F53A0(), g->jb, &v);
+        v.x = (v.x - o->pos[0]) / 50.0f;
+        *(f32 *)(u32)&v.y = (*(f32 *)(u32)&v.y - o->pos[1]) / 50.0f;
+        *(f32 *)(u32)&v.z = (*(f32 *)(u32)&v.z - o->pos[2]) / 50.0f;
+        o->pos[0] += v.x * (k = o->k);
+        o->pos[1] += *(f32 *)(u32)&v.y * k;
+        o->pos[2] += *(f32 *)(u32)&v.z * k;
+    }
+    d = func_0019A5C8() % (o->k / 3) + 2;
+    d /= 40.0f;
+    if (o->tick != 0) {
+        o->f48 += d;
+    }
+    if (o->tick) {
+        if (o->tick % 2) {
+            o->f50 += o->speed;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b735:01E02850, 125 insns: b203:01E03140 family rising flash, one of two looks (red on black or light red on grey 0x30), size 60, from 200 rising (150..229)/10 per tick, f4C = 0.1 of it, full alpha 8 ticks then down by 5 */
 

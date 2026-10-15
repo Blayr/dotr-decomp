@@ -1466,7 +1466,122 @@ static s32 func_01E03360_b225(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E033B0_b225);
+/* shape b225:01E033B0, 197 insns: b432:01E03680's screen sprite in the scene packet at ctx+0x3398, kind h30: kind 0 grey
+   0x30, growing by 30 after tick 35, alpha up by 9 to 0x80 for 14 ticks, then down by 7 after tick 40; kind 1 pink
+   (0xC0, 0x80, 0x80), alpha up by 13 to 0xC0 while the scene count ctx+0x33E8 is under 220, then down by 7 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b225_01E033B0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b225_01E033B0 p;
+} Tv_b225_01E033B0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b225_01E033B0 v[2];
+} Tex_b225_01E033B0;
+
+typedef struct {
+    u8 pad[0x3398];
+    Tex_b225_01E033B0 *pk;
+    u8 pad339C[0x4C];
+    s16 h33E8;
+} Game_b225_01E033B0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b225_01E033B0;
+
+static s32 func_01E033B0_b225(Game_b225_01E033B0 *g, Fx_b225_01E033B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        if (o->h30 == 0) {
+            func_001076F0(o->col, 0x30, 0x30, 0x30);
+        }
+        if (o->h30 == 1) {
+            func_001076F0(o->col, 0xC0, 0x80, 0x80);
+        }
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->h30 == 0) {
+        if (o->tick > 35) {
+            o->f8 += 30;
+            o->fA += 30;
+        }
+        if (o->tick < 14) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 9;
+            }
+        } else if (o->tick > 40) {
+            if (o->col[3] > 8) {
+                o->col[3] -= 7;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->h30 == 1) {
+        if (g->h33E8 < 220) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 13;
+            }
+        } else if (o->tick > 40) {
+            if (o->col[3] > 8) {
+                o->col[3] -= 7;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b225:01E036D0, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
    cells 0-4 (variant of b205:01E02370) */

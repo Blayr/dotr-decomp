@@ -1230,7 +1230,97 @@ static s32 func_01E02E70_b414(void *arg0, Obj_b414_01E02E70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E03070_b414);
+/* shape b414:01E03070, 197 insns: b388:01E007F0's scene light (128, 4, 0, 0): before scene value 221 it sits 1.5x
+   beyond the effect point, away from joint 0xB246 (the effect point follows joint 0xB250), radius grows by 5 to 100;
+   before 251 the level grows by 0.05 to 1, then c[1] flickers 4/5 every other tick; after that the level drops by 0.1
+   and the light ends; also ends when 0xB210 is 1 */
+
+typedef struct {
+    f32 c[4];
+    Vec4f pos;
+    f32 fC0;
+    f32 fC4;
+    f32 level;
+} Light_b414_01E03070;
+
+typedef struct {
+    u8 pad0[0xB1A0];
+    Light_b414_01E03070 light;
+    u8 padB1CC[0x44];
+    s32 flag;
+    u8 padB214[0x32];
+    s16 joint2;
+    u8 padB248[8];
+    s16 joint;
+    u8 padB252[0x68];
+    s16 val;
+} Scene_b414_01E03070;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x34];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b414_01E03070;
+
+static s32 func_01E03070_b414(Scene_b414_01E03070 *g, Fx_b414_01E03070 *o) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6C10(void *);
+    f32 d[4];
+
+    if (o->mode == 1) {
+        g->light.c[0] = 128.0f;
+        g->light.c[1] = 4.0f;
+        g->light.c[2] = 0.0f;
+        g->light.c[3] = 0.0f;
+        g->light.fC0 = 0.0f;
+        g->light.fC4 = 10.0f;
+        g->light.level = 0.0f;
+        o->mode = 2;
+        o->h50 = 0;
+    }
+    if (g->val < 221) {
+        func_001F5620(func_001F53A0(), g->joint, &o->x);
+        func_001F5620(func_001F53A0(), g->joint2, d);
+        d[0] = 1.5f * (o->x - d[0]);
+        d[1] = 1.5f * (o->y - d[1]);
+        d[2] = 1.5f * (o->z - d[2]);
+        g->light.pos.x = o->x + d[0];
+        g->light.pos.y = o->y + d[1];
+        g->light.pos.z = o->z + d[2];
+        if (g->light.fC4 < 100.0f) {
+            g->light.fC4 += 5.0f;
+        }
+    }
+    if (g->val < 251) {
+        if (g->light.level < 1.0f) {
+            g->light.level += 0.05f;
+        } else if (o->t % 2 == 1) {
+            g->light.c[1] = 4.0f;
+        } else {
+            g->light.c[1] = 5.0f;
+        }
+    } else if (g->light.level > 0.1f) {
+        g->light.level -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (g->flag == 1) {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b414:01E03390, 95 insns: a screen-darkness level: starts at 0x80, drops by 10 to 0x20 until frame 140, by 2 to 0x10 until
    190, rises by 3 to 0x30 until 210, then back up by 10 to 0x80 while the scene timer is under 30; sets the level each frame,

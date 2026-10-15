@@ -287,7 +287,114 @@ static void func_01E00DE0_b081(Obj_b081_01E00DE0 *o, Data_b081_01E00DE0 *data, s
     } while (i < 18);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b081", func_01E01250_b081);
+/* OVL_WARM: compile warm (DK_WARM=1, after a runtime-helper call as in the original many-files-per-run build).
+   Its float -> int casts are MWCC runtime calls: fptosi = 0x001A22C0, fptoui = 0x001A23B0 (link names). */
+
+/* shape b081:01E01250, 211 insns: b020:01E00E70 cousin: the quad size comes straight from the s16 fields h8/hA,
+   the colours sit at 0x28/0x2C and the turn at 0x3A */
+/* as b020:01E00E70: draws 4 copies of a gradient quad (colour A/B per corner, by mode = flags >> 4)
+   around a position, each turned by the effect's rotation; far z. The position is passed by value. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b081_01E01250;
+
+typedef struct {
+    Rgbaq_b081_01E01250 c;
+    u64 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b081_01E01250;
+
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 pad;
+    u64 regs;
+    Vtx_b081_01E01250 v[4];
+    u8 tail[0x20];
+} Pkt_b081_01E01250;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    u8 tex[0x2A];
+    s16 page;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b081_01E01250;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x1C];
+    u8 colB[4];
+    u8 colA[4];
+    u8 pad30[0xA];
+    s16 rz;
+} Fx_b081_01E01250;
+
+static void func_01E01250_b081(Obj_b081_01E01250 *o, Fx_b081_01E01250 *fx, s32 flags, Vec4f pos) {
+    extern s32 func_00109270(void *, s32, s32);
+    extern Rgbaq_b081_01E01250 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b081_01E01250 pkt;
+    s32 mode;
+    s16 i;
+    Pkt_b081_01E01250 *p;
+
+    p = &pkt;
+    func_00109270(p, 0, 0);
+    mode = flags >> 4;
+    if (mode == 0) {
+        p->v[0].c = func_00107740(fx->colA);
+        p->v[1].c = func_00107740(fx->colA);
+        p->v[2].c = func_00107740(fx->colA);
+        p->v[3].c = func_00107740(fx->colB);
+    } else if (mode == 1) {
+        p->v[0].c = func_00107740(fx->colA);
+        p->v[1].c = func_00107740(fx->colA);
+        p->v[2].c = func_00107740(fx->colB);
+        p->v[3].c = func_00107740(fx->colB);
+    }
+    func_00108500(p, o->tex, o->page);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.05f;
+    scale.y = 0.05f;
+    scale.z = 0.05f;
+    func_00205C40((s32)rot);
+    t.x = pos.x;
+    t.y = pos.y;
+    t.z = pos.z;
+    func_00108EF0(m, &scale, rot, &t);
+    rot[2] = fx->rz;
+    rot[1] = 0;
+    rot[0] = 0;
+    for (i = 0; i < 4; i++) {
+        func_00108D60(quad, fx->h8, fx->hA, i);
+        func_00109100(quad, rot, 2, o->xD8);
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0(p, o->ot, (u32)pos.w);
+        }
+    }
+}
 
 /* shape b081:01E015A0, 73 insns: open the draw packet for an object: its two blend modes (+0x28 as 1, +0x2C as 2), alpha test from flags >> 4, then send with a depth from the float unless flags & 0xF is 0 */
 

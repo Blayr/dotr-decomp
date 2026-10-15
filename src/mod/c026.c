@@ -48,7 +48,158 @@ static s32 func_01E00B10_c026(Game_c026_01E00B10 *g, Obj_c026_01E00B10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E00BF0_c026);
+/* OVL_WARM */
+
+/* shape c026:01E00BF0, 202 insns: a falling pair (top 0x14, bottom 0x34) turning 6 a tick: its screen spots
+   (0x74/0x76) scale by the scene's slot height ctx+0x1A78[0x7C] over ctx+0x1B4E; the top drops 3 a tick down to
+   ctx+0x1B4A, the bottom follows within 18 and then alone until it passes the top (frees its link, stops). Once
+   0x78 is set and the bottom is above ctx+0x1B4E it hands itself to the scene (ctx+0x1A50.., state 7) through
+   the module's c026:01E01270. Alpha fades in for 14 frames and out while ctx+0x1A40 is under 6 */
+
+typedef struct Link_c026_01E00BF0 {
+    u8 pad0[0x50];
+    s32 f50;
+} Link_c026_01E00BF0;
+
+typedef struct Obj_c026_01E00BF0 {
+    u8 pad0[0xC];
+    f32 fC;
+    u8 pad10[4];
+    f32 f14;
+    u8 pad18[0xC];
+    f32 f24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0xC];
+    f32 f44;
+    u8 pad48[0xC];
+    Link_c026_01E00BF0 *link;
+    u8 pad58[0xC];
+    u8 col0[4];
+    u8 col1[4];
+    s16 f6C;
+    s16 ang;
+    u8 pad70[4];
+    s16 h74;
+    s16 h76;
+    s16 h78;
+    u8 pad7A[2];
+    s16 idx;
+} Obj_c026_01E00BF0;
+
+typedef struct Scn_c026_01E00BF0 {
+    u8 pad0[0x80];
+    s32 f80;
+    s32 f84;
+    s32 f88;
+    f32 f8C;
+    u8 pad90[0x1A40 - 0x90];
+    s32 f1A40;
+    u8 pad1A44[3];
+    s8 f1A47;
+    u8 pad1A48[8];
+    Obj_c026_01E00BF0 *f1A50;
+    u8 pad1A54[4];
+    f32 f1A58;
+    f32 f1A5C;
+    f32 f1A60;
+    u8 pad1A64[0x14];
+    f32 h[14];
+    f32 f1AB0;
+    u8 pad1AB4[2];
+    s16 f1AB6;
+    u8 pad1AB8[2];
+    s16 f1ABA;
+    u8 pad1ABC[2];
+    s16 f1ABE;
+    u8 pad1AC0[4];
+    s16 f1AC4;
+    u8 pad1AC6[4];
+    s16 f1ACA;
+    u8 pad1ACC[0x1B4A - 0x1ACC];
+    s16 f1B4A;
+    u8 pad1B4C[2];
+    s16 f1B4E;
+} Scn_c026_01E00BF0;
+
+static s32 func_01E00BF0_c026(Scn_c026_01E00BF0 *g, Obj_c026_01E00BF0 *o) {
+    extern void c026_01E01270(Scn_c026_01E00BF0 *g, void *fn, s32 arg);
+    f32 d;
+    f32 lim;
+    f32 r;
+
+    d = g->f1B4E;
+    o->ang -= 6;
+    if (o->ang <= 360) {
+        o->ang = o->ang % 360;
+    }
+    lim = g->f1B4A;
+    r = g->h[o->idx] / d;
+    o->h74 = r * o->f14;
+    if (g->h[o->idx] < 1.0f) {
+        o->f6C = 0;
+    }
+    o->h76 = r * o->f34;
+    if (o->f14 >= lim) {
+        o->f24 = o->f14 -= 3.0f;
+        if (o->f34 - o->f14 >= 18.0f) {
+            o->f44 = o->f34 -= 3.0f;
+        }
+    } else {
+        o->f44 = o->f34 -= 3.0f;
+        if (o->f34 < o->f14) {
+            if (o->link != NULL) {
+                o->link->f50 = 0;
+            }
+            o->f6C = 0;
+        }
+    }
+    if (o->h78 > 0 && o->f34 < g->f1B4E) {
+        g->f1A50 = o;
+        g->f1A58 = o->h74;
+        g->f1A5C = o->h76;
+        g->f1A47 = 0;
+        g->f1ABA = 1;
+        g->f1A60 = o->f34;
+        g->f1AB0 = o->idx;
+        g->f1ABE = 1;
+        g->f84 = 0;
+        g->f80 = 0;
+        g->f88 = 0;
+        g->f8C = o->fC;
+        g->f1AB6 = o->ang + 15;
+        g->f1ACA = 7;
+        c026_01E01270(g, func_01E00BF0_c026, 1);
+        o->h78 = 0;
+    }
+    if (g->f1AC4 < 14) {
+        if (o->col0[3] < 0x80) {
+            o->col0[3] += 4;
+        }
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 4;
+        }
+    }
+    if (g->f1A40 < 6) {
+        if (o->col0[3] > 0x10) {
+            o->col0[3] -= 16;
+        }
+        if (o->col1[3] > 0x10) {
+            o->col1[3] -= 16;
+        }
+    } else {
+        if (o->col0[3] < 0x80) {
+            o->col0[3] += 4;
+        }
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 4;
+        }
+    }
+    if (g->f1A40 < 2) {
+        o->f6C = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c026", func_01E00F20_c026);
 

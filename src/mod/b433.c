@@ -1023,7 +1023,111 @@ static s32 func_01E02C40_b433(void *arg0, Obj_b433_01E02C40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E02D80_b433);
+/* shape b433:01E02D80, 204 insns: b743:01E02D60's white trail spark with b433's scene tables (trail 0x7030 + 0xF0 k,
+   point 0xE0B0, radius 0xE8A4, angle 0xEABC, trig 0xEDC4); alphas rise for 48 ticks, and it ends once the scene
+   count ctx+0xEBC2 reaches 171 */
+
+typedef struct {
+    u8 pad0[0x7030];
+    Vec4f tr[1][15];
+    u8 pad7120[0xE0B0 - 0x7120];
+    Vec4f pt[1];
+    u8 padE0C0[0xE8A4 - 0xE0C0];
+    f32 rad[1];
+    u8 padE8A8[0xEABC - 0xE8A8];
+    s16 ang[1];
+    u8 padEABE[0xEBC2 - 0xEABE];
+    s16 count;
+    u8 padEBC4[0xEDC4 - 0xEBC4];
+    u8 trig[1];
+} Ctx_b433_01E02D80;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 size;
+    u8 pad4C[4];
+    s16 k;
+    u8 pad52[2];
+    s16 tick;
+    s16 h56;
+    s16 mode;
+    s16 turn;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b433_01E02D80;
+
+static s32 func_01E02D80_b433(Ctx_b433_01E02D80 *g, Fx_b433_01E02D80 *o) {
+    extern void b433_01E00080(Vec4f *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 v[4];
+    s16 k;
+    s16 i;
+    Vec4f *p;
+
+    k = o->k;
+    v[0] = g->pt[k].x + g->rad[k] * func_00108030(g->trig, g->ang[k], 1);
+    v[1] = g->pt[o->k].y;
+    k = o->k;
+    v[2] = g->pt[k].z + g->rad[k] * func_00108030(g->trig, g->ang[k], 0);
+    if (o->mode == 1) {
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        p = g->tr[o->k];
+        for (i = 0; i < 15; i++) {
+            p[i].x = v[0];
+            p[i].y = v[1];
+            p[i].z = v[2];
+        }
+        o->frame = 2;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->h56 = 4;
+        o->size = 7.0f;
+        o->mode = 2;
+    }
+    if (o->tick < 48) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 15) {
+            o->col2[3] -= 14;
+        }
+    }
+    if (o->tick < 83) {
+        o->turn += 5;
+    }
+    if (o->tick < 117) {
+        b433_01E00080(&g->tr[o->k][14], 15, 0, v);
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->tick != 0) {
+        if (o->frame < 8) {
+            o->frame++;
+        }
+    }
+    o->tick++;
+    if (g->count >= 171) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b433:01E030B0, 59 insns: b764:01E02A60 family spinning ring (pink, height 200): in by 32 up to 0x80 for 12 ticks, then out by 11 and ends */
 

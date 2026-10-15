@@ -522,7 +522,107 @@ static void func_01E00EC0_b397(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b397", func_01E01220_b397);
+/* shape b397:01E01220, 199 insns: the b397 module's event step (b567:01E01770 family): red scene colour, counts ticks;
+   at 88 spawns b397:01E01540 (slot 0); at 91 moves its point to the tracked point (z from the camera) and spawns 8
+   b397:01E018E0, 20 b397:01E01730, 50 b397:01E01A70, b397:01E01D00 and b397:01E01F90; at ticks 53/66/75/92 and
+   57/67/76 drops 3 b397:01E01E20 at each of two tracked points; the scene sway 0x6D70 = 100 * sin(angle), angle +5 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 pad2DC[0x6D70 - 0x2DC];
+    f32 sway;
+    u8 pad6D74[0x6DA4 - 0x6D74];
+    u8 col[4];
+    u8 pad6DA8[0x6DE6 - 0x6DA8];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    s16 id3;
+    s16 id4;
+    u8 pad6DF0[0x6DFA - 0x6DF0];
+    s16 ang;
+    u8 pad6DFC[2];
+    s16 slot;
+    u8 pad6E00[4];
+    s16 timer;
+    u8 pad6E06[0x6F08 - 0x6E06];
+    u8 trig[4];
+} Ctx_b397_01E01220;
+
+static void func_01E01220_b397(Ctx_b397_01E01220 *g) {
+    extern s32 b397_01E01540(void);
+    extern s32 b397_01E01730(void);
+    extern s32 b397_01E018E0(void);
+    extern s32 b397_01E01A70(void);
+    extern s32 b397_01E01D00(void);
+    extern s32 b397_01E01E20(void);
+    extern s32 b397_01E01F90(void);
+    extern void b397_01E02AB0(Ctx_b397_01E01220 *, s32 (*)(void), s32);
+    extern void b397_01E02BD0(Ctx_b397_01E01220 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 a[4];
+    f32 b[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 88) {
+        g->slot = 0;
+        b397_01E02AB0(g, b397_01E01540, 0);
+    }
+    if (g->timer == 91) {
+        func_001F5620(func_001F53A0(), g->id0, a);
+        func_001F5F90(func_001F5380(), b);
+        g->pos[0] = a[0];
+        g->pos[1] = a[1];
+        g->pos[2] = b[2];
+        g->slot = 1;
+        for (i = 0; i < 8; i++) {
+            b397_01E02AB0(g, b397_01E018E0, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b397_01E02AB0(g, b397_01E01730, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b397_01E02BD0(g, b397_01E01A70, 0);
+        }
+        b397_01E02BD0(g, b397_01E01D00, 0);
+        b397_01E02AB0(g, b397_01E01F90, 0);
+    }
+    if (g->timer == 53 || g->timer == 66 || g->timer == 75 || g->timer == 92) {
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        for (i = 0; i < 3; i++) {
+            b397_01E02BD0(g, b397_01E01E20, 0);
+        }
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        for (i = 0; i < 3; i++) {
+            b397_01E02BD0(g, b397_01E01E20, 0);
+        }
+    }
+    if (g->timer == 57 || g->timer == 67 || g->timer == 76) {
+        func_001F5620(func_001F53A0(), g->id3, g->pos);
+        for (i = 0; i < 3; i++) {
+            b397_01E02BD0(g, b397_01E01E20, 0);
+        }
+        func_001F5620(func_001F53A0(), g->id4, g->pos);
+        for (i = 0; i < 3; i++) {
+            b397_01E02BD0(g, b397_01E01E20, 0);
+        }
+    }
+    g->sway = 100.0f * func_00108030(g->trig, g->ang, 0);
+    g->ang += 5;
+    if (g->ang >= 360) {
+        g->ang %= 360;
+    }
+}
 
 /* shape b397:01E01540, 124 insns: two trails following joints A and B (10 points of 0x10 at scene+0x6AF0 / +0x6B90):
    pink-blue colour; on start (kind 0) hold 10 and fill the first 9 points of each trail with the joint position,

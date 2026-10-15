@@ -461,7 +461,94 @@ static s32 func_01E01300_b588(s32 arg0, Fx_b588_01E01300 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E015B0_b588);
+/* shape b588:01E015B0, 218 insns: b256:01E02540's spark in green (0x40, 0xFF, 0x40), 50..89 wide growing by 5 to
+   130 every third tick, drift /400 in x/y, sinking 0.09 a tick and moving 3 along z by the scene flag (ctx+0xA96A);
+   fades in for 40 ticks then out by 9 */
+
+typedef struct {
+    u8 pad0[0xA96A];
+    s16 flag;
+} Ctx_b588_01E015B0;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b588_01E015B0;
+
+static s32 func_01E015B0_b588(Ctx_b588_01E015B0 *ctx, Obj_b588_01E015B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = func_0019A5C8() % 40 + 50;
+        o->hA = o->h8 + 4;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x40, 0xFF, 0x40);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->h52 = func_0019A5C8() % 4;
+    }
+    if (o->t < 40) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->h8 < 130) {
+            o->h8 += 5;
+        }
+        o->hA = o->h8;
+    }
+    if (o->t != 0) {
+        if (ctx->flag != 0) {
+            o->z -= 3.0f;
+        } else {
+            o->z += 3.0f;
+        }
+        o->x += o->f30;
+        o->y += o->f34 - 0.09f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    o->t++;
+    return 0;
+}
 
 /* shape b588:01E01920, 123 insns: b256:01E02DF0 family spark (size 80, white, kick 8.6, drift 0.6 on z/x, random frame 0..3) */
 

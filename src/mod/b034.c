@@ -83,7 +83,112 @@ static void func_01E00110_b034(Pk_b034_01E00110 *p, Rect_b034_01E00110 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E00560_b034);
+/* shape b034:01E00560, 210 insns: b016:01E01190's ring as 36 flat quads 10 degrees wide from 0x5A, inner radius 0x48 and outer 0x6 (an s16), scaled by the object's 0x10 and turned by the data's 0x20; each quad reuses the previous one's far edge */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b034_01E00560;
+
+typedef struct {
+    u8 pad00[0x10];
+    Vec_b034_01E00560 scale;
+    u8 pad20[0x60];
+    s32 texture;
+    u8 pad84[0x54];
+    u8 table[1];
+} Obj_b034_01E00560;
+
+typedef struct {
+    u8 pad00[6];
+    s16 outer;
+    u8 pad08[0x18];
+    Vec_b034_01E00560 rotation;
+    u8 pad30[0x18];
+    f32 inner;
+    u8 pad4C[0xE];
+    s16 step;
+    u8 pad5C[4];
+    u8 mode0[4];
+    u8 mode1[4];
+} Data_b034_01E00560;
+
+static void func_01E00560_b034(Obj_b034_01E00560 *obj, Data_b034_01E00560 *data, s32 flags, Vec_b034_01E00560 *color) {
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    Vec_b034_01E00560 c;
+    Vec_b034_01E00560 quad[4];
+    Vec_b034_01E00560 pos;
+    f32 matrix[16];
+    f32 depth[4];
+    u8 packet[0x90];
+    s16 alpha;
+    s16 i;
+    s16 j;
+    s16 a;
+    f32 inner;
+    f32 outer;
+    f32 cs;
+    f32 sn;
+    u8 *pkt;
+
+    pkt = packet;
+    c = *color;
+    j = 0;
+    func_00107990(pkt, data->mode0, 2);
+    func_00107990(pkt, data->mode1, 1);
+    func_001092E0(pkt, 0);
+    func_001094F0(pkt);
+    alpha = flags >> 4;
+    if (alpha == 0) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(pkt, ((s64)alpha << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    pos.x = c.x;
+    pos.y = c.y;
+    pos.z = c.z;
+    func_00108EF0(matrix, &obj->scale, &data->rotation, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    outer = data->outer;
+    inner = data->inner;
+    for (i = 0; i < 36; i++) {
+        if (!i) {
+            a = data->step + j;
+            cs = func_00108030(obj->table, a, 1);
+            sn = func_00108030(obj->table, a, 0);
+            quad[0].x = cs * inner;
+            quad[0].z = sn * inner;
+            quad[2].x = cs * outer;
+            quad[2].z = sn * outer;
+        } else {
+            quad[0] = quad[1];
+            quad[2] = quad[3];
+        }
+        a = j + (data->step + 10);
+        cs = func_00108030(obj->table, a, 1);
+        sn = func_00108030(obj->table, a, 0);
+        quad[1].x = cs * inner;
+        quad[1].z = sn * inner;
+        quad[3].x = cs * outer;
+        quad[3].z = sn * outer;
+        if ((flags & 0xF) == 0) {
+            if (func_00205630(quad, 0x70000000, matrix, pkt, depth) != 0) {
+                func_002075F0(pkt, obj->texture, func_001A23B0(depth[0]));
+            }
+        } else if ((flags & 0xF) == 1) {
+            if (func_00205630(quad, 0x70000000, matrix, pkt, depth) != 0) {
+                func_00109380(pkt, 1);
+                func_002075F0(pkt, obj->texture, 0);
+            }
+        }
+        j += 10;
+    }
+}
 
 typedef struct Rect_b003_01E00080 {
     s16 x, y, w, h;
@@ -830,7 +935,89 @@ static s32 func_01E02F60_b034(s32 arg0, Fx_b034_01E02F60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03250_b034);
+/* shape b034:01E03250, 194 insns: b747:01E02500 family mote by kind (0x50: size 15/20, speed 5..10, 10..19 or 150..299, kind 2 dark 0x10 grey), variant 0..3, kind kept in 0xA, 0x50 0..29, random 0x5A, 0x8 0..34, hold 15..24 (3..6 when 0x50 is 2); alpha up by 0x2A to 0x80 during the hold, then down by 5 (8 for kind 2); kind 2 rises 1 and grows 1.8 a tick, the others turn by their speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[2];
+    s16 speed;
+    f32 pos[3];
+    u8 pad1C[0x2C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b034_01E03250;
+
+static s32 func_01E03250_b034(s32 arg0, Fx_b034_01E03250 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 15.0f;
+        if (o->f50 == 1) {
+            o->f48 = 20.0f;
+        }
+        if (o->f50 == 2) {
+            o->f48 = 20.0f;
+        }
+        if (o->f50 == 0) {
+            o->speed = func_0019A5C8() % 6 + 5;
+        }
+        if (o->f50 == 1) {
+            o->speed = func_0019A5C8() % 10 + 10;
+        }
+        if (o->f50 == 2) {
+            o->speed = func_0019A5C8() % 150 + 150;
+        }
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        if (o->f50 == 2) {
+            func_001076F0(o->col, 0x10, 0x10, 0x10);
+        }
+        o->fA = o->f50;
+        o->f50 = func_0019A5C8() % 30;
+        o->f5A = func_0019A5C8() % 360;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 10 + 15;
+        if (o->f50 == 2) {
+            o->hold = func_0019A5C8() % 3 + 4;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->fA != 2) {
+        if (o->col[3] > 6) {
+            o->col[3] -= 5;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->fA != 2 && o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    if (o->fA == 2) {
+        o->pos[1] += 1.0f;
+        o->f48 += 1.8f;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b034:01E03560, 184 insns: a two-colour flash of kind 0x50: kind 0 pale yellow over cream for 70 ticks (alpha up
    by 32 to 0x80 for 45 ticks, then easing down by 12 to 0x60), kind 1 magenta for 160 ticks (up by 24 to 0x60), kind 2

@@ -1099,4 +1099,61 @@ INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E045A0_b089);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E04770_b089);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E048E0_b089);
+/* shape b089:01E048E0, 199 insns (MAP_IN): builds a 12x12 point sphere at ctx+0x12F0 (ring radius 20 * sin of
+   90, 120, ... degrees, 30 degrees between points; height 20 * sin of the row angle), then copies it to
+   ctx+0x1D10 shrunk to a third */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} V_b089_01E048E0;
+
+typedef struct {
+    u8 pad0[0x12F0];
+    V_b089_01E048E0 p[12][12];
+    u8 pad1BF0[0x1D10 - 0x1BF0];
+    V_b089_01E048E0 q[12][12];
+} Ctx_b089_01E048E0;
+
+static void func_01E048E0_b089(Ctx_b089_01E048E0 *g) {
+    extern f32 func_001A6898(f32);
+    extern f32 func_001A6A88(f32);
+    s16 i;
+    s16 j;
+    s16 a;
+    s16 b;
+    f32 r;
+    f32 t;
+
+    a = 0;
+    b = 90;
+    r = 20.0f * func_001A6898(3.1415927f * b / 180.0f);
+    for (i = 0; i < 12; i++) {
+        for (j = 0; j < 12; j++) {
+            t = 3.1415927f * a / 180.0f;
+            g->p[i][j].x = r * func_001A6898(t);
+            g->p[i][j].z = r * func_001A6A88(t);
+            a += 30;
+        }
+        b += 30;
+        r = 20.0f * func_001A6898(3.1415927f * b / 180.0f);
+        a = 0;
+    }
+    a = 0;
+    for (i = 0; i < 12; i++) {
+        for (j = 0; j < 12; j++) {
+            g->p[i][j].y = 20.0f * func_001A6898(3.1415927f * a / 180.0f);
+        }
+        a += 30;
+    }
+    for (i = 0; i < 12; i++) {
+        for (j = 0; j < 12; j++) {
+            g->q[i][j] = g->p[i][j];
+            g->q[i][j].x /= 3.0f;
+            g->q[i][j].y /= 3.0f;
+            g->q[i][j].z /= 3.0f;
+        }
+    }
+}

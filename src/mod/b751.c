@@ -454,7 +454,75 @@ static void func_01E00F40_b751(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01350_b751);
+/* shape b751:01E01350, 220 insns: the effect scene's step (b735:01E01AD0 family): counts the frame (0xB2B8); frame 99
+   spawns twelve 0x1E016C0 on each of joints 0xB244 and 0xB246, frame 103 on joints 0xB248 and 0xB24A; frame 118 spawns
+   0x1E01890, twelve 0x1E01BF0 and twelve 0x1E01E30 on joint 0xB24C; frames 107..118 spawn three 0x1E01980 there; frame
+   107 spawns 0x1E02070 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB244 - 0x260];
+    s16 j[5];
+    u8 padB24E[0x6A];
+    s16 t;
+} Scene_b751_01E01350;
+
+static void func_01E01350_b751(Scene_b751_01E01350 *g) {
+    extern void b751_01E016C0(void);
+    extern void b751_01E01890(void);
+    extern void b751_01E01980(void);
+    extern void b751_01E01BF0(void);
+    extern void b751_01E01E30(void);
+    extern void b751_01E02070(void);
+    extern s32 b751_01E02920(Scene_b751_01E01350 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 99) {
+        func_001F5620(func_001F53A0(), g->j[0], &g->pos);
+        for (i = 0; i < 12; i++) {
+            b751_01E02920(g, (s32)b751_01E016C0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j[1], &g->pos);
+        for (i = 0; i < 12; i++) {
+            b751_01E02920(g, (s32)b751_01E016C0, 0);
+        }
+    }
+    if (g->t == 103) {
+        func_001F5620(func_001F53A0(), g->j[2], &g->pos);
+        for (i = 0; i < 12; i++) {
+            b751_01E02920(g, (s32)b751_01E016C0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j[3], &g->pos);
+        for (i = 0; i < 12; i++) {
+            b751_01E02920(g, (s32)b751_01E016C0, 0);
+        }
+    }
+    if (g->t == 118) {
+        func_001F5620(func_001F53A0(), g->j[4], &g->pos);
+        b751_01E02920(g, (s32)b751_01E01890, 0);
+        for (i = 0; i < 12; i++) {
+            b751_01E02920(g, (s32)b751_01E01BF0, 0);
+        }
+        for (i = 0; i < 12; i++) {
+            b751_01E02920(g, (s32)b751_01E01E30, 0);
+        }
+    }
+    if (g->t < 119) {
+        if (g->t >= 107) {
+            func_001F5620(func_001F53A0(), g->j[4], &g->pos);
+            b751_01E02920(g, (s32)b751_01E01980, 0);
+            b751_01E02920(g, (s32)b751_01E01980, 0);
+            b751_01E02920(g, (s32)b751_01E01980, 0);
+        }
+    }
+    if (g->t == 107) {
+        b751_01E02920(g, (s32)b751_01E02070, 0);
+    }
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 

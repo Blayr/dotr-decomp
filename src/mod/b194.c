@@ -360,7 +360,117 @@ static s32 func_01E01010_b194(Game_b194_01E01010 *g, Fx_b194_01E01010 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E01180_b194);
+/* OVL_WARM */
+
+/* shape b194:01E01180, 202 insns: reads the model angle and keeps whether its turn / 180 is non-zero; on start 0x38 =
+   10..19, no spin, variant 0..6, 0x6 = 5..19, random 0x3A; before game step 0x60 it sits on joint A (g+0x3E18); alpha
+   up by 0x40 (below 0x80) for 2 ticks, then fades by 13 after 0x38 passes 25 and by 15 while the counter 0x3DD0 is
+   below 10; colour (0x20, 0x20, 0); aims at joint B (g+0x3E1C): pitch from the flat and full distances
+   (func_001082B0) times 180, mirrored by the turn, before step 0x60 */
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 count;
+    u8 pad3DD4[0x3E18 - 0x3DD4];
+    s16 ja;
+    u8 pad3E1A[2];
+    s16 jb;
+    u8 pad3E1E[0x3E2E - 0x3E1E];
+    s16 step;
+} Game_b194_01E01180;
+
+typedef struct {
+    s16 x, y, z;
+    s16 f6;
+    u8 pad8[8];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b194_01E01180;
+
+static s32 func_01E01180_b194(Game_b194_01E01180 *g, Fx_b194_01E01180 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_001A6C60(f32);
+    extern s16 func_001082B0(s32, s32);
+    f32 v[8];
+    s32 ang[4];
+    s32 turn;
+    f32 *q;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    s16 r;
+    s16 l;
+    s16 a;
+
+    func_001F6160(func_001F53A0(), ang);
+    turn = (s16)(ang[1] / 180.0f);
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 10 + 10;
+        o->w18 = 0;
+        o->w10 = 0;
+        o->w14 = 0;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f6 = func_0019A5C8() % 15 + 5;
+        o->f3A = func_0019A5C8() % 360;
+    }
+    func_001F5620(func_001F53A0(), g->ja, v);
+    func_001F5620(func_001F53A0(), g->jb, q = (f32 *)(u32)&v[4]);
+    if (g->step < 0x60) {
+        o->x = v[0];
+        o->y = v[1];
+        o->z = v[2];
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else {
+        if (o->f38 > 25) {
+            if (o->col[3] > 14) {
+                o->col[3] -= 13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->count < 10) {
+            if (o->col[3] > 16) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    func_001076F0(o->col, 0x20, 0x20, 0);
+    dx = v[0] - q[0];
+    dy = v[1] - v[5];
+    dz = v[2] - v[6];
+    r = func_001A6C60(dx * dx + dz * dz);
+    l = func_001A6C60(dx * dx + (dy * dy + dz * dz));
+    a = func_001082B0(r, l);
+    if (g->step < 0x60) {
+        if (turn != 0) {
+            o->w10 = a * 180;
+        } else {
+            o->w10 = -a * 180;
+        }
+    }
+    o->tick++;
+    o->f38++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];

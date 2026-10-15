@@ -670,7 +670,97 @@ static s32 func_01E020D0_b611(Game_b611_01E020D0 *g, Fade_b611_01E020D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b611", func_01E021B0_b611);
+/* shape b611:01E021B0, 191 insns: b256:01E03DC0 in dark grey (0x30) through ctx+0xC8F8: its inset 0x8/0xA grows 30 a tick from tick 36, alpha up by 9 to 0x80 for 14 ticks and down by 7 from tick 41 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b611_01E021B0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b611_01E021B0 p;
+} Tv_b611_01E021B0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b611_01E021B0 v[2];
+} Tex_b611_01E021B0;
+
+typedef struct {
+    u8 pad[0xC8F8];
+    Tex_b611_01E021B0 *pk;
+} Game_b611_01E021B0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b611_01E021B0;
+
+static s32 func_01E021B0_b611(Game_b611_01E021B0 *g, Fx_b611_01E021B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x30, 0x30, 0x30);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick > 35) {
+        o->f8 += 30;
+        o->fA += 30;
+    }
+    if (o->tick < 14) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->tick > 40) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b611", func_01E024B0_b611);
 

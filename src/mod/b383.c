@@ -456,7 +456,89 @@ static void func_01E016A0_b383(Obj_b027_01E02590 *o, Anim_b027_01E02590 *an, voi
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E019A0_b383);
+/* OVL_WARM */
+
+/* shape b383:01E019A0, 197 insns: b383:01E01CC0's ring with each outer point jittered by -15..14 (rand() % 30 - 15) */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b383_01E019A0;
+
+typedef struct {
+    s16 x, y, z;
+    s16 w;
+    u8 pad08[8];
+    u8 rot[0x18];
+    u8 col[0x10];
+    s16 radius;
+    s16 start;
+} Anim_b383_01E019A0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 target;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    u8 b94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 bD8[1];
+} Obj_b383_01E019A0;
+
+static void func_01E019A0_b383(Obj_b383_01E019A0 *o, Anim_b383_01E019A0 *an, void *p) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b383_01E019A0 quad[4];
+    Vec_b383_01E019A0 pos;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 k;
+    s32 n;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, an->col, 1);
+    func_00107790(p, an->col + 4, 2);
+    func_00108500(p, o->b94, o->hBE);
+    func_00208700(p, o->texture, 1);
+    pos.x = an->x;
+    pos.y = an->y;
+    pos.z = an->z;
+    func_00108EF0(m, 0, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    quad[0].x = 0.0f;
+    quad[0].z = 0.0f;
+    quad[1].x = 0.0f;
+    quad[1].z = 0.0f;
+    for (k = 0; k < 18; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->bD8, a, 1) + func_0019A5C8() % 30 - 15.0f;
+        quad[2].z = an->radius * func_00108030(o->bD8, a, 0) + func_0019A5C8() % 30 - 15.0f;
+        a = j + (an->start + 60);
+        quad[3].x = an->radius * func_00108030(o->bD8, a, 1) + func_0019A5C8() % 30 - 15.0f;
+        quad[3].z = an->radius * func_00108030(o->bD8, a, 0) + func_0019A5C8() % 30 - 15.0f;
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            for (n = 0; n < o->count + 1; n++) {
+                func_002075F0(p, o->target, (u32)depth);
+            }
+        }
+        j += 20;
+    }
+}
 
 /* OVL_WARM */
 

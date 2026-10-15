@@ -223,7 +223,102 @@ static void func_01E00560_c015(Ctx_c015_01E00560 *ctx, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c015", func_01E00620_c015);
+/* shape c015:01E00620, 134 insns: a two-pass sprite on the player: mode 0 sets the material (frame 0x3D at the object's
+   0xBC, the module's colour with the object's alpha on all four corners, scene texture 0xA8); other modes place a 10x10
+   quad 30 above the player's position with a spin and draw it twice (depth 0x44A8, packet list 0x4488) */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_c015_01E00620;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c015_01E00620;
+
+typedef struct {
+    Rgbaq_c015_01E00620 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c015_01E00620;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c015_01E00620 v[4];
+} Pkt_c015_01E00620;
+
+typedef struct {
+    u8 pad0[0xAF];
+    u8 alpha;
+    u8 padB0[0xC];
+    s16 frame;
+} Obj_c015_01E00620;
+
+typedef struct {
+    u8 pad0[0xA8];
+    s32 texture;
+    u8 padAC[0x43DC];
+    s32 target;
+    u8 pad448C[0x1C];
+    f32 depth;
+} Game_c015_01E00620;
+
+static void func_01E00620_c015(Game_c015_01E00620 *g, Obj_c015_01E00620 *o, Pkt_c015_01E00620 *p, s32 mode) {
+    extern u8 D_01E00A00_c015[4];
+    extern void func_00106080(void *, s32, s32, void *);
+    extern Rgbaq_c015_01E00620 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_001F53B0(s32, void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 q[16];
+    f32 rm[4];
+    f32 m[16];
+    f32 m2[16];
+    s32 rot[4];
+    Vec_c015_01E00620 pos;
+    u8 col[4];
+    f32 w;
+
+    *(f32 *)(u32)&col = *(f32 *)(u32)&D_01E00A00_c015;
+    if (mode == 0) {
+        func_00106080(rm, 0x3D, o->frame, rm);
+        p->count = 0x34;
+        p->tag = 0xC;
+        p->regs = ((u64)0x4214 << 32) | 0x21421421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+        col[3] = o->alpha;
+        p->v[0].c = func_00107740(col);
+        p->v[1].c = func_00107740(col);
+        p->v[2].c = func_00107740(col);
+        p->v[3].c = func_00107740(col);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->texture, 1);
+    } else {
+        func_0020EB40(m);
+        func_001F53B0(0, &pos);
+        func_00205C40((s32)rot);
+        pos.y += 30.0f;
+        func_0020C940(m2, 0, rot, &pos);
+        func_0020BC00(m, m2);
+        w = 10.0f;
+        func_00108CE0(q, w, w);
+        if (func_00205630(q, 0x70000000, m, p, &g->depth) != 0) {
+            func_002075F0(p, g->target, (u32)g->depth);
+            func_002075F0(p, g->target, (u32)g->depth);
+        }
+    }
+}
 
 /* shape c015:01E00840, 105 insns: two-pass draw of a 20 x 20 quad at the scene camera point lifted 10: pass 0 writes the packet header (4 UV pairs from the object's texture rect, func_00107740); pass 1 projects it (func_00205630) and sends it at the stored depth */
 

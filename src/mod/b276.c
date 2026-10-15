@@ -286,7 +286,104 @@ static void func_01E00920_b276(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b276", func_01E00E90_b276);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b276", func_01E01060_b276);
+/* shape b276:01E01060, 216 insns: b038:01E01090's smoke puff in white (0xFF, 0xFF, 0x80): random turn and spin, drift
+   (-20..19)/50 on x and /60 on z between ticks 11 and 69, a fall toward point ctx->v spread over 70 ticks, size 35
+   growing 2 a tick while it rises 1; fades in fast for 65 ticks, out by 11; the scene counter past 245 ends it */
+
+typedef struct {
+    u8 pad0[0xB228];
+    s16 v;
+    u8 padB22A[0x34];
+    s16 count;
+} Ctx_b276_01E01060;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b276_01E01060;
+
+static s32 func_01E01060_b276(Ctx_b276_01E01060 *ctx, Obj_b276_01E01060 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+
+    if (o->state == 1) {
+        o->f48 = 35.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 30;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 40 - 20;
+        o->f38 = func_0019A5C8() % 40 - 20;
+        o->f30 /= 50.0f;
+        o->f34 /= 60.0f;
+        o->f38 /= 60.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), ctx->v, b);
+        o->f3C = (a[2] - b[2]) / 70.0f;
+        o->state = 2;
+    }
+    if (o->t < 65) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->state = 0;
+    }
+    if (o->t > 10 && o->t < 70) {
+        o->x += o->f30;
+        o->z += o->f38;
+    }
+    if (o->t != 0) {
+        o->y += 1.0f;
+        o->f48 += 2.0f;
+    }
+    if (ctx->count > 245) {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b276", func_01E013C0_b276);
 

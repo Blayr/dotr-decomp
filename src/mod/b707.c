@@ -687,7 +687,110 @@ static s32 func_01E02070_b707(s32 arg0, Fx_b707_01E02070 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02240_b707);
+/* shape b707:01E02240, 205 insns: c063:01E031E0-style ring in two kinds: kind 0 purple/grey, random spin, size 0
+   growing by the scene scale (ctx+0x8720) / 20, hold 18, fades by 9; kind 1 red/grey, random spin, size 500 shrinking by
+   the scale / 10, hold 10, fades by 7; inner size 0x4C is half (kind 0) or 0.6 (kind 1) of the size; alpha in by 12 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 hold;
+    u8 padA[4];
+    s16 fE;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b707_01E02240;
+
+typedef struct {
+    u8 pad0[0x8720];
+    f32 scale;
+} Ctx_b707_01E02240;
+
+static s32 func_01E02240_b707(Ctx_b707_01E02240 *g, Fx_b707_01E02240 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x20, 0x10, 0x40);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        } else {
+            func_001076F0(o->col, 0x40, 0, 0);
+            func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        }
+        o->fE = o->kind;
+        if (o->kind == 0) {
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+        }
+        if (o->kind == 1) {
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+            o->f48 = 500.0f;
+        }
+        o->w = 20;
+        o->h = 20;
+        o->mode = 2;
+        o->col[3] = 0;
+        o->h6 = 0;
+        if (o->kind == 0) {
+            o->hold = 18;
+        }
+        if (o->kind == 1) {
+            o->hold = 10;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (o->kind == 0) {
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col2[3] > 8) {
+        o->col2[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->f4C = o->f48 - 0.5f * o->f48;
+        if (o->h6 < 0) {
+            o->f4C = 0.0f;
+        }
+        if (o->tick != 0) {
+            o->f48 += g->scale / 20.0f;
+        }
+    }
+    if (o->kind == 1) {
+        o->f4C = o->f48 - 0.4f * o->f48;
+        if (o->h6 < 0) {
+            o->f4C = 0.0f;
+        }
+        if (o->tick != 0) {
+            o->f48 -= g->scale / 10.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b707:01E02580, 66 insns: on start f48 0, colour white, second colour (0x10, 0x10, 0x80) with alpha 0, hold
    0x6 = 0x12C, 0x5A/0x5C = 10; the second alpha grows by 0x50 (below 0xA0) during the hold, then fades by 12 and

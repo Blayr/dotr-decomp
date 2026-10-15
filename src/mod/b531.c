@@ -179,7 +179,97 @@ static Vec_b018_01E00EE0 func_01E009A0_b531(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E00DE0_b531);
+/* shape b531:01E00DE0, 194 insns: b027:01E02590's ring of 9 quads (radius 0x38 to +20, 2 degrees each, 40 apart from 0x3A) drawn into a local packet at the point passed in */
+
+/* OVL_WARM */
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b531_01E00DE0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[0xA];
+    u8 rot[0x18];
+    u8 col[0x10];
+    s16 radius;
+    s16 start;
+} Anim_b531_01E00DE0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 target;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    u8 b94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 bD8[1];
+} Obj_b531_01E00DE0;
+
+static void func_01E00DE0_b531(Obj_b531_01E00DE0 *o, Anim_b531_01E00DE0 *an, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 v[4];
+    Vec_b531_01E00DE0 quad[4];
+    Vec_b531_01E00DE0 pos;
+    Vec_b531_01E00DE0 scale;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 k;
+    s32 n;
+    s32 a;
+    s16 j;
+    struct {
+        u8 pk[0x70];
+        u8 tail[0x20];
+    } buf;
+    void *p = &buf;
+
+    *(Vec4f *)v = *in;
+    j = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, an->col, 0);
+    func_00108500(p, o->b94, o->hBE);
+    func_00208700(p, o->texture, 1);
+    pos.x = v[0];
+    pos.y = v[1];
+    pos.z = v[2];
+    scale.x = 1.0f;
+    scale.y = 1.0f;
+    scale.z = 1.0f;
+    func_00108EF0(m, &scale, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 9; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[2].z = an->radius * func_00108030(o->bD8, a, 0);
+        quad[0].x = (an->radius + 20) * func_00108030(o->bD8, a, 1);
+        quad[0].z = (an->radius + 20) * func_00108030(o->bD8, a, 0);
+        a = j + (an->start + 2);
+        quad[3].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[3].z = an->radius * func_00108030(o->bD8, a, 0);
+        quad[1].x = (an->radius + 20) * func_00108030(o->bD8, a, 1);
+        quad[1].z = (an->radius + 20) * func_00108030(o->bD8, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            for (n = 0; n < o->count + 1; n++) {
+                func_002075F0(p, o->target, (u32)depth);
+            }
+        }
+        j += 40;
+    }
+}
 
 /* shape b119:01E00920, 258 insns, 4 copies: draws a flat ring of 18 quads like shape b112:01E00B60, turned by the ring's own
    rotation instead of the camera's; radii converted once. */
@@ -804,7 +894,96 @@ static s32 func_01E04300_b531(void *arg0, Obj_b531_01E04300 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E04460_b531);
+/* shape b531:01E04460, 206 insns: a purple (0x40, 0x10, 0x80) ring: on start size 9, random spins, alpha 0, 0xA 44..60,
+   frame 5..12, random turn and angle; alpha up by 0x1B (below 0xC0) for 12 ticks, then, once the camera is within 3
+   of ctx+0x2868 in z, down by 29 until it ends; each tick writes 10 points (20 * sin/cos of angle - 10 * i) into
+   ring 0x30 of the ctx (ctx+0x2D60), angle +18 */
+
+typedef struct {
+    Vec4f v[10];
+} Ring_b531_01E04460;
+
+typedef struct {
+    u8 pad0[0x2868];
+    f32 z;
+    u8 pad286C[0x2D60 - 0x286C];
+    Ring_b531_01E04460 ring[8];
+    u8 pad3260[0x32B0 - 0x3260];
+    u8 trig[4];
+} Ctx_b531_01E04460;
+
+typedef struct {
+    u8 pad0[6];
+    s16 size;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 ring;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b531_01E04460;
+
+static s32 func_01E04460_b531(Ctx_b531_01E04460 *g, Obj_b531_01E04460 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern f32 func_001A6C60(f32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 c[4];
+    f32 d;
+    s16 i;
+    s16 a = 0;
+
+    if (o->state == 1) {
+        func_001076F0(o->col, 0x40, 0x10, 0x80);
+        o->size = 9;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->col[3] = 0;
+        o->hA = func_0019A5C8() % 17 + 44;
+        o->h8 = func_0019A5C8() % 8 + 5;
+        o->hE = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->h38 = 2;
+        o->state = 2;
+    }
+    if (o->t < 12) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x1B;
+        }
+    } else {
+        func_001F5F90(func_001F5380(), c);
+        d = c[2] - g->z;
+        if (func_001A6C60(d * d) < 3.0f) {
+            if (o->col[3] > 30) {
+                o->col[3] -= 29;
+            } else {
+                o->state = 0;
+            }
+        }
+    }
+    o->t++;
+    for (i = 0; i < 10; i++) {
+        g->ring[o->ring].v[i].x = 20.0f * func_00108030(g->trig, o->ang + a, 0);
+        g->ring[o->ring].v[i].y = 20.0f * func_00108030(g->trig, o->ang + a, 1);
+        g->ring[o->ring].v[i].z = 20.0f * func_00108030(g->trig, o->ang + a, 1);
+        a -= 10;
+    }
+    o->ang += 18;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b531:01E047A0, 136 insns: a blue ring marker (size 7 x 25) whose size follows the scene's value/3 and that turns 4 per tick: both alphas up by 48 to 0x60 for 11 ticks; random frame each tick (1 once the scene flag is set); flickers grey 0x48/0x50 while the flag is clear, 0x40 after; once the flag passes 8 alpha falls by 9 */
 

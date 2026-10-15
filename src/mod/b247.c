@@ -945,9 +945,194 @@ static s32 func_01E02530_b247(Ctx_b247_01E02530 *g, Obj_b247_01E02530 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E027A0_b247);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E02C50_b247);
+/* shape b247:01E02C50, 219 insns: b751:01E01980's rising flash with the kind (0x50) given by the spawner: colours red
+   on black or pink on grey by the parity of the scene count (ctx+0xB2B8), width 60, height 6 (kind 0) or 20 (kind 1),
+   f34 starting at 100 (kind 0) or 400 (kind 1); rising (150..229)/10 per tick, tilted +-0x4000 by the scene flag
+   (ctx+0xB2B4), turning rot[2] 0x100 per tick; full alpha 8 ticks then down by 5; f4C = 0.8 of the height */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E02FC0_b247);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b247_01E02C50;
+
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 flag;
+    u8 padB2B6[2];
+    s16 count;
+} Ctx_b247_01E02C50;
+
+static s32 func_01E02C50_b247(Ctx_b247_01E02C50 *g, Obj_b247_01E02C50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 140.0f;
+        o->f4C = o->f48 - 58.0f;
+        if (o->h50 == 0) {
+            if (g->count % 2 == 0) {
+                func_001076F0(o->c1, 0xC0, 0x20, 0x20);
+                func_001076F0(o->c0, 0, 0, 0);
+            }
+            if (g->count % 2 == 1) {
+                func_001076F0(o->c1, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->c0, 0x30, 0x30, 0x30);
+            }
+            o->w = 60;
+            o->h = 6;
+        }
+        if (o->h50 == 1) {
+            if (g->count % 2 == 0) {
+                func_001076F0(o->c1, 0xC0, 0x20, 0x20);
+                func_001076F0(o->c0, 0, 0, 0);
+            }
+            if (g->count % 2 == 1) {
+                func_001076F0(o->c1, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->c0, 0x30, 0x30, 0x30);
+            }
+            o->w = 60;
+            o->h = 20;
+        }
+        o->f38 = func_0019A5C8() % 80 + 150;
+        o->f38 /= 10.0f;
+        o->f30 = func_0019A5C8() % 80 + 150;
+        o->f30 /= 10.0f;
+        if (o->h50 == 0) {
+            o->f34 = 100.0f;
+        }
+        if (o->h50 == 1) {
+            o->f34 = 400.0f;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+        if (g->flag != 0) {
+            o->rot0 = 0x4000;
+        } else {
+            o->rot0 = -0x4000;
+        }
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->c1[3] = 0x80;
+    } else if (o->c1[3] > 6) {
+        o->c1[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f38;
+    o->f4C = 0.8f * o->f48;
+    o->f34 += o->f38;
+    o->rot2 += 0x100;
+    o->t++;
+    return 0;
+}
+
+/* shape b247:01E02FC0, 207 insns: b465:01E01880's tumbling spark, size 10 growing 40 in height, in white (kind 0, held
+   10 ticks) or violet (0x80, 0x40, 0xFF; kind 1, held 22), drift (-50..49)/20, random turn and spin; hC follows the
+   z drift; it ends once the scene count ctx+0xB2B8 passes 225 */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x14];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Spark_b247_01E02FC0;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 count;
+} Ctx_b247_01E02FC0;
+
+static s32 func_01E02FC0_b247(Ctx_b247_01E02FC0 *g, Spark_b247_01E02FC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->h = o->w = 10;
+        o->hC = 0;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        if (o->f50 == 0) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        }
+        if (o->f50 == 1) {
+            func_001076F0(o->col, 0x80, 0x40, 0xFF);
+        }
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->f5A = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        if (o->f50 == 0) {
+            o->hold = 10;
+        }
+        if (o->f50 == 1) {
+            o->hold = 22;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h += 40;
+    }
+    o->hC = func_001A22C0(o->hC + o->vel[2]);
+    o->tick++;
+    if (g->count > 225) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b247:01E03300, 147 insns: b432:01E03460 in 0x98/0x80/0x80 (0xA8 at scene count 160), alpha up by 22 to 0x58 until count 180 (ctx+0xB2B8), then down by 4 */
 

@@ -369,7 +369,99 @@ static s32 func_01E01110_b297(void *arg0, Obj_b003_01E01780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E011F0_b297);
+/* shape b297:01E011F0, 175 insns: b297:01E014F0's glow, grey 0x50 of size 45 growing by 2 (by 4 below 90), rise 5..9, holds for
+   30..54 ticks fading in by 18 to 0x92; on start hC is the angle from joint g+0x3514 to g+0x3516, each tick h4 turns
+   by a fortieth of the camera depth difference between func_001F5380's and func_001F53A0's views, and h30 grows by
+   the rise */
+
+typedef struct {
+    u8 pad0[0x3514];
+    s16 ja;
+    s16 jb;
+} Game_b297_01E011F0;
+
+typedef struct {
+    u8 pad0[4];
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b297_01E011F0;
+
+static s32 func_01E011F0_b297(Game_b297_01E011F0 *g, Glow_b297_01E011F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 45;
+        o->kind = 0;
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 35;
+        o->hC = func_0019A5C8() % 3 + 3;
+        o->h6 = func_0019A5C8() % 25 + 30;
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->hC = func_001A22C0(v[1].x - v[0].x);
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 18;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 90) {
+            o->f38 += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 40.0f;
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 2;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b297:01E014F0, 175 insns: b008:01E01660's glow aimed between two joints: grey 0x70 of size 50, rise 5..9, holds for
    30..39 ticks fading in by 0x20 to 0x40; on start hC is the angle from joint g+0x3514 to g+0x3516, each tick h4 turns

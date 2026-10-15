@@ -1323,7 +1323,93 @@ static s32 func_01E05220_b119(Pool_b119_01E05220 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E05340_b119);
+/* shape b119:01E05340, 216 insns: b119:01E056A0's disc as a ring between the object's two points (0x20 inner, 0x30
+   outer, radius h38 / 10 around the outer one): 18 wedges, 20 apart from the band's start angle, two colours, at the
+   position with no scale or turn; depth mode by flags (projected, far after a packet tweak, or front) */
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f a;
+    Vec4f b;
+    u8 pad40[0x40];
+    s32 ot;
+    u8 pad84[0x54];
+    u8 xD8[1];
+} Obj_b119_01E05340;
+
+typedef struct {
+    u8 pad00[0x28];
+    u8 col0[4];
+    u8 col1[4];
+    u8 pad30[8];
+    s16 r;
+    s16 start;
+} Band_b119_01E05340;
+
+static void func_01E05340_b119(Obj_b119_01E05340 *o, Band_b119_01E05340 *s, s32 flags, Vec4f pos) {
+    extern void func_00107990(void *, void *, s32);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00109380(void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f p2;
+    f32 m[16];
+    f32 depth[4];
+    u8 pkt[0x90];
+    s32 k;
+    s32 t;
+    s16 a;
+    u8 *p;
+    f32 r;
+    f32 ro;
+
+    p = pkt;
+    a = 0;
+    func_00107990(p, s->col0, 2);
+    func_00107990(p, s->col1, 1);
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    p2.x = pos.x;
+    p2.y = pos.y;
+    p2.z = pos.z;
+    func_00108EF0(m, 0, 0, &p2);
+    quad[0].y = o->a.y;
+    quad[1].y = o->a.y;
+    quad[2].y = o->b.y;
+    quad[3].y = o->b.y;
+    ro = 0.0f;
+    r = s->r;
+    r /= 10.0f;
+    for (k = 0; k < 18; k++) {
+        t = s->start + a;
+        quad[0].x = o->a.x + ro * func_00108030(o->xD8, t, 1);
+        quad[0].z = o->a.z + ro * func_00108030(o->xD8, t, 0);
+        quad[2].x = o->b.x + r * func_00108030(o->xD8, t, 1);
+        quad[2].z = o->b.z + r * func_00108030(o->xD8, t, 0);
+        t = a + (s->start + 20);
+        quad[1].x = o->a.x + ro * func_00108030(o->xD8, t, 1);
+        quad[1].z = o->a.z + ro * func_00108030(o->xD8, t, 0);
+        quad[3].x = o->b.x + r * func_00108030(o->xD8, t, 1);
+        quad[3].z = o->b.z + r * func_00108030(o->xD8, t, 0);
+        if (flags == 0) {
+            if (func_00205630(quad, 0x70000000, 0, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (flags == 1) {
+            if (func_00205630(quad, 0x70000000, 0, p, depth) != 0) {
+                func_00109380(p, 1);
+                func_002075F0(p, o->ot, 0);
+            }
+        } else if (func_00205630(quad, 0x70000000, 0, p, depth) != 0) {
+            func_002075F0(p, o->ot, -1);
+        }
+        a += 20;
+    }
+}
 
 /* shape b119:01E056A0, 173 insns: b108:01E00DF0's band as a flat disc: 18 wedges (20 apart from the band's start
    angle) from the centre out to radius h38 / 10, two colours, turned by the band's rotation at the position plus the

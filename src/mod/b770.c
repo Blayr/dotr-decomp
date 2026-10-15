@@ -1228,7 +1228,120 @@ static s32 func_01E03800_b770(Obj_b770_01E03800 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E03940_b770);
+/* shape b770:01E03940, 196 insns: b094:01E03260 twin (scene fields moved), c063:01E05840 cousin without the scale, only the sectors below the scene's limit (0x4900) are drawn; b756:01E061D0 family burst draw: two-colour packet, the scene rect and texture, blend by the mode's high nibble; placed at the point turned by the object; 18 quads 20 degrees wide at angles o->ang + 20 i - 200 between radii f4C and f48, each with its frame from the scene table through func_00106080 into the rect, depth-tested into the scene ot */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 r1;
+    f32 r0;
+    u8 pad50[0xA];
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b770_01E03940;
+
+typedef struct {
+    u8 pad0[0x88];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+    u8 padC0[0x44AC - 0xC0];
+    s32 ot;
+    u8 pad44B0[0x48BC - 0x44B0];
+    s16 frames[18];
+    u8 pad48E0[0x4900 - 0x48E0];
+    s16 lim;
+    u8 pad4902[0x4B10 - 0x4902];
+    u8 trig[1];
+} Game_b770_01E03940;
+
+static void func_01E03940_b770(Game_b770_01E03940 *g, Obj_b770_01E03940 *o, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 pos[4];
+    Vec4f q[4];
+    f32 v[4];
+
+    f32 m[16];
+    f32 depth[4];
+    f32 rm[4];
+    struct {
+        u8 pk[0x70];
+        u8 tail[0x20];
+    } buf;
+    s32 k;
+    s16 i;
+    s16 a;
+    void *p = &buf;
+    s16 s;
+    f32 r1;
+    f32 r0;
+    f32 c;
+    f32 sn;
+    s32 t;
+
+    *(Vec4f *)pos = *in;
+    a = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, o->col, 1);
+    func_00107790(p, o->col2, 2);
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    k = mode >> 4;
+    if (k == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)k << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    v[0] = pos[0];
+    v[1] = pos[1];
+    v[2] = pos[2];
+    func_00108EF0(m, 0, o->rot, v);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    r1 = o->r1;
+    r0 = o->r0;
+    for (i = 0; i < 18; i++) {
+        if (a < g->lim) {
+            func_00106080(rm, 0x14, g->frames[i], 0);
+            g->rect = *(Vec4f *)rm;
+            func_00108500(p, &g->rect, g->frame);
+            s = o->ang + a - 200;
+            c = func_00108030(g->trig, s, 1);
+            sn = func_00108030(g->trig, s, 0);
+            q[2].x = c * r1;
+            q[2].z = sn * r1;
+            q[0].x = c * r0;
+            q[0].z = sn * r0;
+            t = o->ang + 20;
+            s = a + t - 200;
+            c = func_00108030(g->trig, s, 1);
+            sn = func_00108030(g->trig, s, 0);
+            q[3].x = c * r1;
+            q[3].z = sn * r1;
+            q[1].x = c * r0;
+            q[1].z = sn * r0;
+            if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, g->ot, (u32)depth[0]);
+            }
+            a += 20;
+        }
+    }
+}
 
 /* shape b770:01E03C50, 92 insns: draw pass for the effect pool: open a sprite packet on the stack (kept at 0x44B8, ot at
    0x44B4), texture from func_001F5380, then every used slot (0x96 of 0x70 bytes at 0x2A0) whose

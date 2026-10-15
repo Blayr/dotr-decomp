@@ -734,7 +734,96 @@ static s32 func_01E02CE0_b756(Game_b756_01E02CE0 *g, Fx_b756_01E02CE0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E02E30_b756);
+/* shape b756:01E02E30, 205 insns: b756:01E021C0's sprite riding between two joints (0xACEE, 0xACF0): on start f48 10,
+   variant 0..6, colour 0x20 grey, 0xA 0..7, 0xC keeps the old 0x50, 0x50 0..19, speed 1..3, 0x8 0..34, hold 7..11;
+   alpha 0x80 during the hold, then fades by 9 and stops; after the first tick f48 grows by 3.5; each tick it sits at
+   the first joint, moved back by step 0x52 twentieths of the way to the second (one twentieth on the first tick) */
+
+typedef struct {
+    u8 pad0[0xACEE];
+    s16 id0;
+    s16 id1;
+} Ctx_b756_01E02E30;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    f32 x, y, z;
+    u8 pad1C[0x2C];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    s16 step;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b756_01E02E30;
+
+static s32 func_01E02E30_b756(Ctx_b756_01E02E30 *g, Fx_b756_01E02E30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 f = o->step;
+    f32 v[8];
+    f32 *q;
+
+    func_001F5620(func_001F53A0(), g->id0, v);
+    func_001F5620(func_001F53A0(), g->id1, q = (f32 *)(u32)&v[4]);
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->f56 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 20;
+        o->speed = func_0019A5C8() % 3 + 1;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 7;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f48 += 3.5f;
+    }
+    if (o->tick == 0) {
+        o->x = v[0];
+        o->y = v[1];
+        o->z = v[2];
+        o->x -= (v[0] - q[0]) / 20.0f;
+        o->y -= (v[1] - v[5]) / 20.0f;
+        o->z -= (v[2] - v[6]) / 20.0f;
+    } else {
+        o->x = v[0];
+        o->y = v[1];
+        o->z = v[2];
+        v[0] = (v[0] - q[0]) / 20.0f;
+        v[1] = (v[1] - v[5]) / 20.0f;
+        v[2] = (v[2] - v[6]) / 20.0f;
+        o->x -= v[0] * f;
+        o->y -= v[1] * f;
+        o->z -= v[2] * f;
+    }
+    o->step++;
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E03170_b756);
 
@@ -1371,7 +1460,121 @@ static s32 func_01E05060_b756(Obj_b756_01E05060 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E051F0_b756);
+/* shape b756:01E051F0, 206 insns: b721:01E055D0's 18-quad ring with b756's scene tables (ot 0xA90C, frames 0xAD0C,
+   trig 0xAF60), drawing only the quads whose angle step is still under the scene value at 0xAD50 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 r1;
+    f32 r0;
+    u8 pad50[0xA];
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b756_01E051F0;
+
+typedef struct {
+    u8 pad0[0x88];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+    u8 padC0[0xA90C - 0xC0];
+    s32 ot;
+    u8 padA910[0xAD0C - 0xA910];
+    s16 frames[18];
+    u8 padAD30[0xAD50 - 0xAD30];
+    s16 limit;
+    u8 padAD52[0xAF60 - 0xAD52];
+    u8 trig[1];
+} Game_b756_01E051F0;
+
+static void func_01E051F0_b756(Game_b756_01E051F0 *g, Obj_b756_01E051F0 *o, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 pos[4];
+    Vec4f q[4];
+    f32 v[4];
+
+    f32 m[16];
+    f32 depth[4];
+    f32 rm[4];
+    struct {
+        u8 pk[0x70];
+        u8 tail[0x20];
+    } buf;
+    s32 k;
+    s16 i;
+    s16 a;
+    void *p = &buf;
+    s16 s;
+    f32 r1;
+    f32 r0;
+    f32 c;
+    f32 sn;
+    s32 t;
+
+    *(Vec4f *)pos = *in;
+    a = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, o->col, 1);
+    func_00107790(p, o->col2, 2);
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    k = mode >> 4;
+    if (k == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)k << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    v[0] = pos[0];
+    v[1] = pos[1];
+    v[2] = pos[2];
+    func_00108EF0(m, 0, o->rot, v);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    r1 = o->r1;
+    r0 = o->r0;
+    for (i = 0; i < 18; i++) {
+        if (a < g->limit) {
+            func_00106080(rm, 0x14, g->frames[i], 0);
+            g->rect = *(Vec4f *)rm;
+            func_00108500(p, &g->rect, g->frame);
+            s = o->ang + a - 200;
+            c = func_00108030(g->trig, s, 1);
+            sn = func_00108030(g->trig, s, 0);
+            q[2].x = c * r1;
+            q[2].z = sn * r1;
+            q[0].x = c * r0;
+            q[0].z = sn * r0;
+            t = o->ang + 20;
+            s = a + t - 200;
+            c = func_00108030(g->trig, s, 1);
+            sn = func_00108030(g->trig, s, 0);
+            q[3].x = c * r1;
+            q[3].z = sn * r1;
+            q[1].x = c * r0;
+            q[1].z = sn * r0;
+            if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, g->ot, (u32)depth[0]);
+            }
+            a += 20;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E05530_b756);
 

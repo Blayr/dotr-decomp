@@ -519,7 +519,140 @@ static void func_01E00E30_b045(u8 *self, Obj_b045_01E00E30 *obj, Pk_b045_01E00E3
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E011B0_b045);
+/* shape b045:01E011B0, 277 insns: draws a row of small camera-facing sprites (4 wide, the sprite's h38 high) into
+   the given packet, the camera rotation offset by the sprite's own rotation; each is shaken by a per-entry table
+   offset growing along the row, the far corners by 0.7 of it. Calls the module's sprite-UV helper (shape
+   b008:01E00080), included above as a static function. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b045_01E011B0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b045_01E011B0 c;
+    struct {
+        u64 tc;
+        u64 x : 16;
+        u64 y : 16;
+        u64 z : 24;
+        u64 f : 8;
+    } v[4];
+} Pkt_b045_01E011B0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b008_01E00080 rect;
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[0x1E];
+    u8 xD8[1];
+} Obj_b045_01E011B0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 off;
+    u8 padA[6];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 h38;
+} Spr_b045_01E011B0;
+
+static void func_01E011B0_b045(Obj_b045_01E011B0 *o, Spr_b045_01E011B0 *s, Pkt_b045_01E011B0 *p, s8 *tbl) {
+    f32 hh;
+    extern Rgbaq_b045_01E011B0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s16 i;
+    f32 d;
+    s32 h;
+    f32 f;
+    s8 *j;
+    f32 w;
+
+    func_00207500();
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    p->c.q = 0.0f;
+    p->v[0].f = 0;
+    p->v[1].f = 0;
+    p->v[2].f = 0;
+    p->v[3].f = 0;
+    p->c = func_00107740(s->col);
+    func_01E00150_b045((Pk_b008_01E00080 *)p, &o->rect, 0);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[0] += s->rot[0];
+    rot[1] += s->rot[1];
+    rot[2] += s->rot[2];
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    pos.x = s->x;
+    pos.y = s->y;
+    pos.z = s->z;
+    func_00108EF0(m, &scale, NULL, &pos);
+    for (i = 0; i < o->count; i++) {
+        hh = s->h38;
+        func_00108CE0(quad, w = 4.0f, hh);
+        func_00109100(quad, rot, 0, o->xD8);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].x += d;
+        quad[1].x += d;
+        quad[2].x += 0.7f * (f * (s->w30 + h));
+        quad[3].x += 0.7f * (f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].y += d;
+        quad[1].y += d;
+        quad[2].y += 0.7f * (f * (s->w30 + h));
+        quad[3].y += 0.7f * (f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].z += d;
+        quad[1].z += d;
+        quad[2].z += 0.7f * (f * (s->w30 + h));
+        quad[3].z += 0.7f * (f * (s->w30 + h));
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, (u32)depth[0]);
+        }
+    }
+}
 
 /* shape b018:01E00C50: draws a flat ring of 18 quads around a point (radius obj->radius, angle step 0x14),
    scaled 0.1, turned a quarter, through the module's GS packet. */
@@ -650,7 +783,111 @@ static Vec_b018_01E00EE0 func_01E018A0_b045(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E01CE0_b045);
+/* shape b045:01E01CE0, 222 insns: the scene script of b045 (b115:01E01450's kind): scene colour red 0x80, counts
+   g+0x375E; on tick 54 it spawns 16 b045:01E02D00 rings into ring slots 0..15 (g+0x375A); on tick 93 it moves the
+   burst point to the camera, sets slot 1 and spawns 0x1E03050, 8 0x1E02330, 8 0x1E026C0, 3 0x1E02880 and one
+   0x1E032D0; from tick 46 to 109 it puts the point on the joint g+0x3748 and spawns a 0x1E024F0 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad2DC[0x3704 - 0x2DC];
+    u8 col[4];
+    u8 pad3708[0x3748 - 0x3708];
+    s16 joint;
+    u8 pad374A[0x375A - 0x374A];
+    s16 slot;
+    u8 pad375C[2];
+    s16 tick;
+} Ctx_b045_01E01CE0;
+
+static void func_01E01CE0_b045(Ctx_b045_01E01CE0 *g) {
+    extern void b045_01E02330();
+    extern void b045_01E024F0();
+    extern void b045_01E026C0();
+    extern void b045_01E02880();
+    extern void b045_01E02D00();
+    extern void b045_01E03050();
+    extern void b045_01E032D0();
+    extern void b045_01E04040(Ctx_b045_01E01CE0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    f32 c[4];
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick == 54) {
+        g->slot = 0;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 1;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 2;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 3;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 4;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 5;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 6;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 7;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 8;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 9;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 10;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 11;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 12;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 13;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 14;
+        b045_01E04040(g, b045_01E02D00, 0);
+        g->slot = 15;
+        b045_01E04040(g, b045_01E02D00, 0);
+    }
+    if (g->tick == 93) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        func_001F5F90(func_001F5380(), c);
+        g->x = c[0];
+        g->y = c[1];
+        g->z = c[2];
+        g->slot = 1;
+        for (i = 0; i < 1; i++) {
+            b045_01E04040(g, b045_01E03050, 0);
+        }
+        for (i = 0; i < 8; i++) {
+            b045_01E04040(g, b045_01E02330, 0);
+        }
+        for (i = 0; i < 8; i++) {
+            b045_01E04040(g, b045_01E026C0, 0);
+        }
+        for (i = 0; i < 3; i++) {
+            b045_01E04040(g, b045_01E02880, 0);
+        }
+        b045_01E04040(g, b045_01E032D0, 0);
+    }
+    if (g->tick > 45 && g->tick < 110) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        b045_01E04040(g, b045_01E024F0, 0);
+    }
+}
 
 /* shape b045:01E02060, 84 insns: a yellow glow pinned to one of the scene joints (table ctx+0x3748, picked by its +0x30) for 101 ticks at size 50: in by 12 up to 0x80 once the scene state reaches 16, out by 10 after 102 ticks or when the state drops under 15, and ends */
 
@@ -1086,7 +1323,101 @@ static s32 func_01E02B90_b045(s32 arg0, Spark_b045_01E02B90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02D00_b045);
+/* shape b045:01E02D00, 210 insns: b531:01E04460's ring kind: a pink (0x80, 0x10, 0x80) ring of 10 points in ring slot
+   0x30 (ctx+0x2A50, stride 0xA0) around joint ctx+0x3748 (the camera once the scene count ctx+0x375E reaches 93), radius
+   h8 5..12 and height hA 44..60, turning 18 a tick; alpha up by 27 to 0xC0 for 12 ticks, down by 9 from count 93;
+   from count 90 h38 and the radius grow */
+
+typedef struct {
+    Vec4f v[10];
+} Ring_b045_01E02D00;
+
+typedef struct {
+    u8 pad0[0x2A50];
+    Ring_b045_01E02D00 ring[8];
+    u8 pad2F50[0x3748 - 0x2F50];
+    s16 joint;
+    u8 pad374A[0x375E - 0x374A];
+    s16 count;
+    u8 pad3760[0x3A64 - 0x3760];
+    u8 trig[4];
+} Ctx_b045_01E02D00;
+
+typedef struct {
+    u8 pad0[6];
+    s16 size;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 ring;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b045_01E02D00;
+
+static s32 func_01E02D00_b045(Ctx_b045_01E02D00 *g, Obj_b045_01E02D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 c[4];
+    s16 i;
+    s16 a = 0;
+
+    if (o->state == 1) {
+        func_001076F0(o->col, 0x80, 0x10, 0x80);
+        o->size = 9;
+        o->col[3] = 0;
+        o->hA = func_0019A5C8() % 17 + 44;
+        o->h8 = func_0019A5C8() % 8 + 5;
+        o->ang = func_0019A5C8() % 360;
+        o->h38 = 12;
+        o->state = 2;
+    }
+    if (o->t < 12) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x1B;
+        }
+    } else if (g->count >= 93) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    if (g->count < 93) {
+        func_001F5620(func_001F53A0(), g->joint, c);
+    } else {
+        func_001F5F90(func_001F5380(), c);
+    }
+    for (i = 0; i < 10; i++) {
+        g->ring[o->ring].v[i].x = o->h8 * func_00108030(g->trig, o->ang + a, 0);
+        g->ring[o->ring].v[i].z = o->h8 * func_00108030(g->trig, o->ang + a, 1);
+        g->ring[o->ring].v[i].x += c[0];
+        g->ring[o->ring].v[i].z += c[2];
+        g->ring[o->ring].v[i].y = o->hA;
+        a -= 10;
+    }
+    if (g->count >= 90) {
+        o->h38++;
+        o->h8 += 4;
+    }
+    o->ang += 18;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b045:01E03050, 55 insns: variant of b257:01E031C0 (flash): start block as below; alpha grows by 0x40
    for the first 2 ticks, then fades out by 10 and stops */

@@ -588,9 +588,175 @@ static s32 func_01E01C60_b569(void *arg0, Obj_b569_01E01C60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b569", func_01E01E90_b569);
+/* shape b569:01E01E90, 199 insns: b506:01E01240's flake in grey 0x80, 130 square growing 5 to 200, frame 0..2 and a
+   random f52 0..3, held 12 ticks, drifting 0.8 a tick in z against the scene side flag (ctx+0xB2B4) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b569", func_01E021B0_b569);
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b569_01E01E90;
+
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 side;
+} Ctx_b569_01E01E90;
+
+static s32 func_01E01E90_b569(Ctx_b569_01E01E90 *g, Fx_b569_01E01E90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 130;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 12) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->w < 200) {
+            o->w += 5;
+        }
+        o->h = o->w;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+        if (g->side != 0) {
+            o->pos[2] -= 0.8f;
+        } else {
+            o->pos[2] += 0.8f;
+        }
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
+
+/* shape b569:01E021B0, 202 insns: b569:01E01E90's flake 50 x 25 growing 3 to 100 (h stays half of w), rising
+   0..49/60, drift /60 and /80 in z, moving 0.8 a tick along the scene side flag (ctx+0xB2B4) */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b569_01E021B0;
+
+typedef struct {
+    u8 pad0[0xB2B4];
+    s16 side;
+} Ctx_b569_01E021B0;
+
+static s32 func_01E021B0_b569(Ctx_b569_01E021B0 *g, Fx_b569_01E021B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 50;
+        o->h = o->w >> 1;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 80.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 12) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        if (o->w < 100) {
+            o->w += 3;
+        }
+        o->h = o->w >> 1;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+        if (g->side != 0) {
+            o->pos[2] += 0.8f;
+        } else {
+            o->pos[2] -= 0.8f;
+        }
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

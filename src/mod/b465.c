@@ -388,7 +388,67 @@ static void func_01E00ED0_b465(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b465", func_01E01230_b465);
+/* shape b465:01E01230, 202 insns: the b465 module's event step: counts ticks; from 27 to 50 spawns b465:01E01B10 at
+   joints 0xB244 and 0xB246, pushed 0..9 to one side (direction by the scene flag 0xB2B4); for the first 24 ticks
+   spawns b465:01E01560 twice at joint 0xB248, 7..16 to each side and 5 up; at tick 1 spawns b465:01E01F30 and
+   b465:01E02040 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB244 - 0x260];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    u8 padB24A[0xB2B4 - 0xB24A];
+    s16 flag;
+    u8 padB2B6[2];
+    s16 timer;
+} Ctx_b465_01E01230;
+
+static void func_01E01230_b465(Ctx_b465_01E01230 *g) {
+    extern s32 b465_01E01560(void);
+    extern s32 b465_01E01B10(void);
+    extern s32 b465_01E01F30(void);
+    extern s32 b465_01E02040(void);
+    extern void b465_01E02A10(Ctx_b465_01E01230 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    g->timer++;
+    if (g->timer >= 27 && g->timer < 51) {
+        func_001F5620(func_001F53A0(), g->id0, &g->pos);
+        if (g->flag != 0) {
+            g->pos.x += func_0019A5C8() % 10;
+        } else {
+            g->pos.x -= func_0019A5C8() % 10;
+        }
+        b465_01E02A10(g, b465_01E01B10, 0);
+        func_001F5620(func_001F53A0(), g->id1, &g->pos);
+        if (g->flag != 0) {
+            g->pos.x -= func_0019A5C8() % 10;
+        } else {
+            g->pos.x += func_0019A5C8() % 10;
+        }
+        b465_01E02A10(g, b465_01E01B10, 0);
+    }
+    if (g->timer < 25) {
+        func_001F5620(func_001F53A0(), g->id2, &g->pos);
+        g->pos.x += func_0019A5C8() % 10 + 7;
+        g->pos.y += 5.0f;
+        b465_01E02A10(g, b465_01E01560, 0);
+        func_001F5620(func_001F53A0(), g->id2, &g->pos);
+        g->pos.x -= func_0019A5C8() % 10 + 7;
+        g->pos.y += 5.0f;
+        b465_01E02A10(g, b465_01E01560, 0);
+    }
+    if (g->timer == 1) {
+        b465_01E02A10(g, b465_01E01F30, 0);
+    }
+    if (g->timer == 1) {
+        b465_01E02A10(g, b465_01E02040, 0);
+    }
+}
 
 /* shape b465:01E01560, 98 insns: a grey spark: size 6..11, random sub-frame 0..2, height 50..149, angle, rise 16..35, width 0..34,
    hold 3..5; alpha up by 0x40 to 0xC0 until the hold, then down by 14 until it ends */
@@ -557,7 +617,97 @@ static s32 func_01E01880_b465(s32 arg0, Spark_b465_01E01880 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b465", func_01E01B10_b465);
+/* shape b465:01E01B10, 192 insns: b465:01E01880's spark burst source in orange (size 4 x 200, kind 2), drift
+   (-50..49)/20, tilted 0x4000/0xC000 by the scene flag (ctx+0xB2B4), held 22 ticks, moving 5 a tick along z
+   (back when the flag is set); at tick 30 it copies its position to ctx+0x250 and spawns two b465:01E01880 sparks
+   and one b465:01E016F0 through the module's spawn helper */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b465_01E01B10;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b465_01E01B10 at;
+    u8 pad260[0xB054];
+    s16 flag;
+} Ctx_b465_01E01B10;
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    s16 hC;
+    u8 padE[2];
+    V4_b465_01E01B10 pos;
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b465_01E01B10;
+
+static s32 func_01E01B10_b465(Ctx_b465_01E01B10 *g, Fx_b465_01E01B10 *o) {
+    extern s32 b465_01E016F0();
+    extern s32 b465_01E01880();
+    extern void b465_01E02A10(Ctx_b465_01E01B10 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 4;
+        o->h = 200;
+        o->hC = 0;
+        o->kind = 2;
+        func_001076F0(o->col, 0xFF, 0x80, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 20.0f;
+        o->vel[0] /= 20.0f;
+        o->vel[2] /= 20.0f;
+        o->f5A = func_0019A5C8() % 360;
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        if (g->flag != 0) {
+            o->rot[0] = 0x4000;
+        } else {
+            o->rot[0] = 0xC000;
+        }
+        o->hold = 22;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (g->flag != 0) {
+        o->pos.z -= 5.0f;
+    } else {
+        o->pos.z += 5.0f;
+    }
+    if (o->tick == 30) {
+        g->at = o->pos;
+        b465_01E02A10(g, b465_01E01880, 0);
+        b465_01E02A10(g, b465_01E01880, 0);
+        b465_01E02A10(g, b465_01E016F0, 0);
+    }
+    return 0;
+}
 
 /* shape b465:01E01E10, 69 insns: constant variant of b287:01E02C80 (0xE->6, 0x10->0xC, 15->11, 150.0f->70.0f, colour (80, 80, 80), colour (255, 128, 64)) */
 

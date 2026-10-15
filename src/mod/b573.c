@@ -1409,7 +1409,104 @@ static s32 func_01E04A30_b573(Pool_b573_01E04A30 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E04B60_b573);
+/* shape b573:01E04B60, 222 insns: b069:01E01830's sprite quad drawn as two mirrored halves at the ctx point
+   (ctx+0x20), scaled 0.1, size o->h38: texture rect (1, 1, 62, 127) through the module helper (shape b003:01E00080),
+   texture ctx+0x2B04; each half far-z and sent twice to the ot at ctx+0x2B2C */
+
+typedef struct {
+    f32 u, v;
+} Uv_b573_01E04B60;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b573_01E04B60;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b573_01E04B60 uv;
+    u64 pad18;
+    Xyz_b573_01E04B60 v[4];
+} Pk_b573_01E04B60;
+
+typedef struct {
+    u8 pad0[0x20];
+    Vec4f pt;
+    u8 pad30[0x2B04 - 0x30];
+    s32 tex;
+    u8 pad2B08[0x2B2C - 0x2B08];
+    s32 ot;
+} Ctx_b573_01E04B60;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[8];
+    u8 pad30[8];
+    s16 size;
+} Fx_b573_01E04B60;
+
+static void func_01E04B60_b573(Ctx_b573_01E04B60 *g, Fx_b573_01E04B60 *o, Pk_b573_01E04B60 *p) {
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 depth[4];
+    Rect_b003_01E00080 r __attribute__((aligned(16)));
+    f32 m[16];
+    s32 rot[4];
+    Uv_b573_01E04B60 uv __attribute__((aligned(8)));
+
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    func_00107740(&uv, o->col);
+    p->uv = uv;
+    r.x = 1;
+    r.y = 1;
+    r.w = 62;
+    r.h = 127;
+    func_01E00080_b573((Pk_b003_01E00080 *)p, &r, 0);
+    func_00208700(p, g->tex, 1);
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00205C40((s32)rot);
+    pos.x = g->pt.x;
+    pos.y = g->pt.y;
+    pos.z = g->pt.z;
+    func_00108EF0(m, &sc, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    *(f32 *)(u32)&quad[1].x = 0.0f;
+    *(f32 *)(u32)&quad[3].x = 0.0f;
+    if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+        p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+        func_002075F0(p, g->ot, 0);
+        func_002075F0(p, g->ot, 0);
+    }
+    func_00108CE0(quad, o->size, o->size);
+    *(f32 *)(u32)&quad[1].x = 0.0f;
+    *(f32 *)(u32)&quad[3].x = 0.0f;
+    quad[0].x *= -1.0f;
+    quad[2].x *= -1.0f;
+    if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+        p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+        func_002075F0(p, g->ot, 0);
+        func_002075F0(p, g->ot, 0);
+    }
+}
 
 /* shape b573:01E04EE0, 141 insns: draw a 0.1-scaled sprite at the given position: the material is frame 0x9B (0x14 for
    objects run by b573:01E02F90) with the object's colour and the scene texture 0x2AC (0x2B00 for those objects); objects
@@ -1495,4 +1592,103 @@ static void func_01E04EE0_b573(Game_b573_01E04EE0 *g, Obj_b573_01E04EE0 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E05120_b573);
+/* shape b573:01E05120, 202 insns: b531:01E00DE0's ring with two colours, turned a quarter (rot[0] + 0x4000 on a random rotation): 18 quads 20 degrees wide between radius g+0x2B3C and that + 1, each with its frame from g+0x2B74 through func_00106080 into the rect, trig table g+0x2DC4, depth-tested into g+0x2B2C */
+
+/* OVL_WARM */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b573_01E05120;
+
+typedef struct {
+    u8 pad00[0x28];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[0xA];
+    s16 start;
+} Anim_b573_01E05120;
+
+typedef struct {
+    u8 pad00[0x88];
+    s32 texture;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 hBE;
+    u8 padC0[0x2B2C - 0xC0];
+    s32 target;
+    u8 pad2B30[0xC];
+    f32 rad;
+    u8 pad2B40[0x34];
+    s16 frames[18];
+    u8 pad2B98[0x2DC4 - 0x2B98];
+    u8 trig[1];
+} Obj_b573_01E05120;
+
+static void func_01E05120_b573(Obj_b573_01E05120 *o, Anim_b573_01E05120 *an, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 v[4];
+    Vec_b573_01E05120 quad[4];
+    Vec_b573_01E05120 pos;
+    Vec_b573_01E05120 scale;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 rot[4];
+    f32 rm[4];
+    s32 k;
+    s32 a;
+    s16 j;
+    struct {
+        u8 pk[0x70];
+        u8 tail[0x20];
+    } buf;
+    void *p = &buf;
+
+    *(Vec4f *)v = *in;
+    j = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, an->col, 1);
+    func_00107790(p, an->col2, 2);
+    func_00108500(p, &o->rect, o->hBE);
+    func_00208700(p, o->texture, 1);
+    pos.x = v[0];
+    pos.y = v[1];
+    pos.z = v[2];
+    scale.x = 1.0f;
+    scale.y = 1.0f;
+    scale.z = 1.0f;
+    func_00205C40((s32)rot);
+    rot[0] += 0x4000;
+    func_00108EF0(m, &scale, rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 18; k++) {
+        func_00106080(rm, 0x1E, o->frames[k], 0);
+        o->rect = *(Vec4f *)rm;
+        func_00108500(p, &o->rect, o->hBE);
+        a = an->start + j;
+        quad[2].x = o->rad * func_00108030(o->trig, a, 1);
+        quad[2].z = o->rad * func_00108030(o->trig, a, 0);
+        quad[0].x = (1.0f + o->rad) * func_00108030(o->trig, a, 1);
+        quad[0].z = (1.0f + o->rad) * func_00108030(o->trig, a, 0);
+        a = j + (an->start + 20);
+        quad[3].x = o->rad * func_00108030(o->trig, a, 1);
+        quad[3].z = o->rad * func_00108030(o->trig, a, 0);
+        quad[1].x = (1.0f + o->rad) * func_00108030(o->trig, a, 1);
+        quad[1].z = (1.0f + o->rad) * func_00108030(o->trig, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            func_002075F0(p, o->target, (u32)depth);
+        }
+        j += 20;
+    }
+}

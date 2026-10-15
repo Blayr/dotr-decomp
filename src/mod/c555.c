@@ -733,6 +733,112 @@ static s32 func_01E01190_c555(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
 
 INCLUDE_ASM("asm/nonmatchings/mod/c555", func_01E01D20_c555);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c555", func_01E02570_c555);
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape c555:01E02570, 209 insns: b049:01E02690's flat quad for one object: dull red corners (alpha 0x20, the
+   second 0x80), the object's 4 corner points turned by its z angle (0x8) and moved to its position (z only for
+   the first), drawn into the given list when all 4 project */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 xyz;
+} Vtx_c555_01E02570;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c555_01E02570 v[4];
+    u8 tail[8];
+} Pkt_c555_01E02570;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    s32 rz;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    Vec4f v[4];
+} Obj_c555_01E02570;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_c555_01E02570;
+
+static s32 func_01E02570_c555(s32 ot, Obj_c555_01E02570 *o, Cam_c555_01E02570 *cam) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_0020C630(void *, void *);
+    extern void func_0020CDD0(void *, void *, void *);
+    f32 dep[4];
+    f32 m[16];
+    Vec4f p;
+    s32 rot[4];
+    Pkt_c555_01E02570 pkt __attribute__((aligned(8)));
+
+    ((Pkt_c555_01E02570 *)(s32)&pkt)->count = 0x14;
+    ((Pkt_c555_01E02570 *)(s32)&pkt)->tag = 8;
+    ((Pkt_c555_01E02570 *)(s32)&pkt)->regs = 0x41414141;
+    ((Pkt_c555_01E02570 *)(s32)&pkt)->pad = 0;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    pkt.v[0].r = 0x80;
+    pkt.v[0].g = 0x50;
+    pkt.v[0].b = 0x50;
+    pkt.v[0].a = 0x20;
+    pkt.v[0].q = 1.0f;
+    pkt.v[1].r = 0x80;
+    pkt.v[1].g = 0x50;
+    pkt.v[1].b = 0x50;
+    pkt.v[1].a = 0x80;
+    pkt.v[1].q = 1.0f;
+    pkt.v[2].r = 0x80;
+    pkt.v[2].g = 0x50;
+    pkt.v[2].b = 0x50;
+    pkt.v[2].a = 0x20;
+    pkt.v[2].q = 1.0f;
+    pkt.v[3].r = 0x80;
+    pkt.v[3].g = 0x50;
+    pkt.v[3].b = 0x50;
+    pkt.v[3].a = 0x20;
+    pkt.v[3].q = 1.0f;
+    rot[0] = rot[1] = 0;
+    rot[2] = o->rz;
+    func_0020C630(m, rot);
+    func_0020CDD0(&p, m, &o->v[0]);
+    p.x += o->x;
+    *(f32 *)(u32)&p.y += o->y;
+    p.z += o->z;
+    if (func_00205440(&p, cam->view, &pkt.v[0].xyz, &dep[0]) != 0) {
+        o->flags |= 0x100000;
+    }
+    func_0020CDD0(&p, m, &o->v[1]);
+    p.x += o->x;
+    *(f32 *)(u32)&p.y += o->y;
+    if (func_00205440(&p, cam->view, &pkt.v[1].xyz, &dep[1]) != 0) {
+        o->flags |= 0x200000;
+    }
+    func_0020CDD0(&p, m, &o->v[2]);
+    p.x += o->x;
+    *(f32 *)(u32)&p.y += o->y;
+    if (func_00205440(&p, cam->view, &pkt.v[2].xyz, &dep[2]) != 0) {
+        o->flags |= 0x400000;
+    }
+    func_0020CDD0(&p, m, &o->v[3]);
+    p.x += o->x;
+    *(f32 *)(u32)&p.y += o->y;
+    if (func_00205440(&p, cam->view, &pkt.v[3].xyz, &dep[3]) != 0) {
+        o->flags |= 0x800000;
+    }
+    if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+        func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+        func_002075F0(&pkt, ot, (u32)((dep[0] + dep[1] + dep[2] + dep[3]) / 4.0f));
+    }
+    o->flags &= 0xFF0FFFFF;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c555", func_01E028C0_c555);

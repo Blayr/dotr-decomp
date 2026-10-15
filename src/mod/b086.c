@@ -253,7 +253,92 @@ static void func_01E00A50_b086(Scene_b086_01E00A50 *s) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b086", func_01E00BA0_b086);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b086", func_01E00F70_b086);
+/* shape b086:01E00F70, 197 insns: b008:01E00FB0's puff that starts on the joint g+0x3998 (3 higher) and sinks 1 a
+   tick while above the camera height less 15 */
+
+typedef struct {
+    s16 x, y, z;
+    s16 hold;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b086_01E00F70;
+
+typedef struct {
+    u8 pad0[0x3998];
+    s16 j;
+} Game_b086_01E00F70;
+
+static s32 func_01E00F70_b086(Game_b086_01E00F70 *g, Fx_b086_01E00F70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[12];
+
+    if (o->mode == 1) {
+        o->f38 = 40;
+        o->f34 = 0;
+        if (o->f30 == 0) {
+            func_001076F0(o->col, 0x30, 0x30, 0x30);
+        } else {
+            func_001076F0(o->col, 0x40, 0x10, 0x10);
+        }
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 4 + 2;
+        func_001F5620(func_001F53A0(), g->j, v);
+        o->x = v[0];
+        o->y = 3.0f + v[1];
+        o->z = v[2];
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), v);
+    func_001F5F90(func_001F53A0(), &v[4]);
+    v[2] = v[2] - v[6];
+    v[2] /= 63.0f;
+    o->z = o->z + v[2];
+    if (o->y > v[5] - 15.0f) {
+        o->y--;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    o->f38++;
+    o->rot[0] = func_0019A5C8() % 360;
+    o->rot[1] = func_0019A5C8() % 360;
+    o->rot[2] = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b086", func_01E01290_b086);
 
