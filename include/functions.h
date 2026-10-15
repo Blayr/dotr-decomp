@@ -1666,7 +1666,6 @@ void TaLogic_GetInvadeRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8, u16 arg9);
 u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38);
 s32 TaLogic_GetMaxAPGraveCard(s32 arg0, s32 arg1);
-int TaLogic_GetMaxApUnit(unsigned short *words);
 s32 TaLogic_GetMaxApUnit2(void *arg0, s32 arg1);
 s32 TaLogic_GetMaxApUnit3(u16 *arg0, s32 arg1);
 s32 TaLogic_GetMinGoalCount(u8 *arg0);
@@ -6302,7 +6301,7 @@ void func_0027B200(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 s32 func_0027B290(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7);
 s32 func_0027B360(s32 arg0, u16 *arg1, u16 *arg2);
 s32 func_0027B520(void *arg0, u8 arg1);
-int func_0027B650(unsigned short *words);
+s32 func_0027B650(u16 *);
 s32 func_0027B740(void *arg0, s32 arg1);
 s32 func_0027B860(u16 *arg0, s32 arg1);
 s32 func_0027B9B0(s32 arg0);
