@@ -1,6 +1,38 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020CB20);
+asm void func_0020CB20(void *arg0, void *arg1) {
+    .set noreorder
+    addiu sp, sp, -0x70
+    sq ra, 0x20(sp)
+    sq s1, 0x10(sp)
+    sq s0, 0x0(sp)
+    paddub s1, a0, zero
+    bnez s1, L_0020CB50
+    paddub s0, a1, zero
+    lqc2 vf8, 0x0(s0)
+    vmulx.xyzw vf28, vf28, vf8x
+    vmuly.xyzw vf29, vf29, vf8y
+    b L_0020CB7C
+    vmulz.xyzw vf30, vf30, vf8z
+L_0020CB50:
+    jal func_0020BBB0
+    addiu a0, sp, 0x30
+    lwc1 f0, 0x0(s0)
+    addiu a1, sp, 0x30
+    paddub a0, s1, zero
+    swc1 f0, 0x30(sp)
+    lwc1 f0, 0x4(s0)
+    swc1 f0, 0x44(sp)
+    lwc1 f0, 0x8(s0)
+    jal func_0020BC00
+    swc1 f0, 0x58(sp)
+L_0020CB7C:
+    lq ra, 0x20(sp)
+    lq s1, 0x10(sp)
+    lq s0, 0x0(sp)
+    jr ra
+    addiu sp, sp, 0x70
+}
 
 void func_0020CB90(s32 arg0, u32 *arg1) {
     extern void func_0020C630();
