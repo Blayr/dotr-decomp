@@ -163,7 +163,10 @@ fi
 # Old gas never moved into a branch's delay slot an instruction that directly follows a `.set noreorder`
 # block (the slot GCC filled itself); binutils does (sceCdSearchFile: `jal cmd_sem_init; sd` /
 # `lw $4,semid; jal PollSema; nop`). The first instruction after such a block is counted, and a branch
-# right after it gets a local label, which stops the swap.
+# right after it gets a local label, which stops the swap. A label or a `.p2align` in between changes
+# nothing: old gas kept its history across both (_sceCd_cd_callback: `b L2; ld` / `L1: lw $4,sem` /
+# `jal iSignalSema; nop`; sceTtyWrite's sceDeci2Poll loop; _vfprintf_r: `b; addiu` / `.p2align 3` /
+# `$L84: ld $4,504($sp)` / `jal isnan; nop`). All 17 GCC files compile byte-identical otherwise.
 perl -i -ne 'BEGIN { $n = 0; $noreo = 0; $after = 0; $count = 0 }
     if (/^\s+\.set\s+noreorder\b/) { $noreo = 1 }
     elsif (/^\s+\.set\s+reorder\b/) { if ($noreo) { $after = 1; $count = 0 } $noreo = 0 }
@@ -175,7 +178,6 @@ perl -i -ne 'BEGIN { $n = 0; $noreo = 0; $after = 0; $count = 0 }
         $count++;
         $after = 0 if $count > 1;
     }
-    elsif (/^[\$.\w]+:/) { $after = 0 }
     print' "$TMP/out.s"
 # binutils refuses cvt.w.s on the r5900 (the EE's rounds toward zero); Sony's assembler took
 # it (libm's floor/ceil/modf), so write its word: 0x46000024 | fs << 11 | fd << 6.
