@@ -1245,7 +1245,51 @@ s32 func_0018D3A8(s32 ch, void *arg) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018D520);
+extern s32 D_002BC970;
+
+typedef struct IpuDmaState_0018D520 {
+    volatile s32 count;
+    s32 done;
+    s32 remain;
+    s32 addr;
+    s32 n;
+} IpuDmaState_0018D520;
+
+void func_0018D520(void *arg0, s32 arg1, s32 arg2) {
+    s32 sp0[8];
+    IpuDmaState_0018D520 st;
+    s32 hid;
+
+    st.n = arg2 / 1023 + 1;
+    st.done = 0;
+    st.count = 0;
+    st.addr = (arg1 + 0xFFC00) & 0x0FFFFFFF;
+    st.remain = arg2;
+    while (*(volatile s32 *)0x10002010 < 0) {
+    }
+    hid = AddDmacHandler2(3, func_0018D3A8, 0, (u32 *)&st);
+    *(volatile u32 *)0x1000E010 = 8;
+    func_0017C4F8(3);
+    do {
+        func_001843E0();
+        *(volatile u32 *)0x1000B010 = arg1 & 0x0FFFFFFF;
+        *(volatile u32 *)0x1000B020 = 0xFFC0;
+        *(volatile u32 *)0x1000B000 = 0x100;
+        func_00184428();
+        *(volatile u32 *)0x10002000 = 0x700003FF;
+    } while (0);
+    sp0[0] = 4;
+    _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), sp0);
+    while (st.count < st.n) {
+    }
+    if (st.done != 0) {
+        _Error((s32)arg0, &D_002BC970);
+    }
+    while (*(volatile s32 *)0x10002010 < 0) {
+    }
+    func_0017C490(3);
+    RemoveDmacHandler(3, hid);
+}
 
 s32 func_0018D6D0(s32 arg0, void *arg1) {
     u32 temp_v0;
@@ -1274,7 +1318,6 @@ s32 func_0018D6D0(s32 arg0, void *arg1) {
     return 0;
 }
 
-s32 func_0018D520(void *, s32, s32);
 
 typedef struct MpegOut_0018D7D8 {
     s32 type;
