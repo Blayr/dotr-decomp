@@ -10,6 +10,7 @@ and pointing to this file. The licence texts below must stay with the code.
 | the ICO decompilation (github.com/nathanialf/ico), where kfiv's `src/sce/` tree came from | MIT, with a scope notice | the same kfiv files, except the ones kfiv wrote itself (libdev, `strcasecmp`) |
 | gt4-decomp (github.com/gustavocanepa/gt4-decomp, commit c2e6ef51) | MIT | a few Sony SDK and newlib functions |
 | newlib 1.9.0, inside gt4-decomp's newlib files | BSD-style, file by file | `__sfvwrite`, `strcasecmp`, `strncasecmp` |
+| newlib 1.9.0 source release (sourceware.org, md5-checked) | BSD-style, file by file | `__svfscanf` (stdio/vfscanf.c) |
 
 The kfiv C library functions (`malloc`, `free`, `__sfvwrite`, `__sbprintf` and their helpers) are
 the ICO project's rebuilds of newlib; the newlib notices below are kept for them too.
@@ -116,7 +117,7 @@ SOFTWARE.
 ## newlib 1.9.0
 
 The stdio and stdlib files of newlib come from 4.4BSD and carry this notice (`__sfvwrite`'s
-`fvwrite.c` among them):
+`fvwrite.c` and `__svfscanf`'s `vfscanf.c` among them):
 
 ```
 Copyright (c) 1990 The Regents of the University of California.
