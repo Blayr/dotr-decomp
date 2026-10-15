@@ -715,7 +715,67 @@ s32 SzView_Set_Pipe(s32 arg0, s32 arg1) {
     return RhView_SendViewParameters(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", SzView_SetFog_Pipe);
+typedef struct {
+    u8 c[4];
+} Color_001F8B50;
+
+typedef struct {
+    u8 pad0[0x7E0];
+    f32 posA[10][2];   /* 0x7E0 */
+    f32 posB[10][2];   /* 0x830 */
+    Color_001F8B50 color[10]; /* 0x880 */
+    u8 pad8A8[4];
+    u16 maskA;         /* 0x8AC */
+    u16 maskB;         /* 0x8AE */
+} Object_001F8B50;
+
+void *SzView_SetFog_Pipe(void *arg0, s32 arg1, s32 arg2, f32 arg3) {
+    Object_001F8B50 *obj;
+    Color_001F8B50 color;
+    f32 *posA;
+    f32 *posB;
+    u32 idxA;
+    u32 idxB;
+    s32 scale;
+
+    if ((arg1 < 0) || (arg1 > 0)) {
+        return arg0;
+    }
+    obj = (Object_001F8B50 *) D_0031BEB0[arg1];
+    if (obj == NULL) {
+        return arg0;
+    }
+    if ((arg2 < 0) || (arg2 >= 10)) {
+        return arg0;
+    }
+    posA = obj->posA[arg2];
+    posB = obj->posB[arg2];
+    idxB = arg2;
+    idxA = arg2;
+    if (arg2 != 9) {
+        if (!(obj->maskA & (1 << idxA))) {
+            posA = obj->posA[9];
+            idxA = 9;
+        }
+        if (!(obj->maskB & (1 << arg2))) {
+            posB = obj->posB[9];
+            idxB = 9;
+        }
+        if (idxA == 9 && idxB == 9) {
+            arg2 = 9;
+        }
+    }
+    if ((obj->maskA & (1 << idxA)) || (obj->maskB & (1 << idxB))) {
+        color = obj->color[arg2];
+        scale = (u32)(128.0f * arg3) & 0xFF;
+        color.c[2] = (color.c[2] * scale) >> 7;
+        color.c[1] = (color.c[1] * scale) >> 7;
+        color.c[0] = (color.c[0] * scale) >> 7;
+        arg0 = RhBase_SetFogColor(arg0, &color);
+        arg0 = RhVu1Mac_SetFogParameterEx(arg0, posA[0], posA[1], posB[0], posB[1]);
+    }
+    return arg0;
+}
 
 s32 SzView_SetLight_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     u32 sp70[4];
