@@ -2833,6 +2833,7 @@ void func_002423F0(s32 arg0); /* JP: startDisplay */
 void func_00242450(void); /* JP: endDisplay */
 void func_00242470(s32 arg0, s32 arg1, s32 arg2); /* JP: movie_play */
 s32 func_00242580(s32 arg0); /* JP: movie */
+int func_00242600(void *vd_v, void *rb_v, void *file_v); /* JP: readMpeg */
 void func_00242900(void); /* JP: switchThread */
 s32 func_00242910(void); /* JP: isAudioOK */
 void func_00242950(s32 arg0); /* JP: initAll */

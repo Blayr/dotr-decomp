@@ -271,7 +271,6 @@ extern u8 D_0029D580[];
 
 
 
-void func_00242600(void *, s32, void *);
 extern char D_0030F354[];
 extern s32 D_003503B8;
 extern s32 D_003505F0;

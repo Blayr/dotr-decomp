@@ -7,12 +7,111 @@ s32 func_00242580(s32 arg0) {
     D_003503B8 = temp_a1 + 1;
     func_00199B50(D_0030F354, temp_a1);
     func_00242950(arg0);
-    func_00242600(D_00350680, D_00350788, D_00350740);
+    func_00242600((void *)D_00350680, (void *)D_00350788, (void *)D_00350740);
     func_00242C20();
     return D_003505F0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00242600);
+struct DotrMpegDecoder {
+    int unknown_00[2];
+    int unknown_08;
+};
+struct DotrMpegReadBuf {
+    char data[0x50000];
+    int unknown_50000[2];
+    int size;
+};
+struct DotrMpegFile {
+    int unknown_00;
+    int size;
+    int start;
+};
+struct DotrMpegAudio;
+struct DotrMpegVideoOut;
+extern struct DotrMpegVideoOut D_00350600_b;
+extern struct DotrMpegAudio D_00350620_b;
+extern struct DotrMpegDecoder D_00350680_b;
+extern int func_00203320_b(void);
+extern int func_00203840_b(void);
+extern int func_00242D00_b(void);
+extern int func_00243DE0_b(struct DotrMpegFile *file, char *buffer, int byte_count, int position);
+extern int func_0018DEE8_b(struct DotrMpegDecoder *vd, char *data, int size, struct DotrMpegReadBuf *ring, int ring_size);
+
+int func_00242600(void *vd_v, void *rb_v, void *file_v)
+{
+    struct DotrMpegDecoder * vd = vd_v;
+    struct DotrMpegReadBuf * rb = rb_v;
+    struct DotrMpegFile * file = file_v;
+    char *put_ptr;
+    char *get_ptr;
+    int putsize;
+    int getsize;
+    int readrest = file->size;
+    int sector = 0;
+    int writerest = file->size;
+    int count;
+    int proceed;
+    int isStarted = 0;
+    unsigned int button_old = 0;
+    unsigned int pushed;
+    int isPaused = 0;
+    int keep;
+
+    while (isPaused || (writerest > 4 && func_00245150(vd) != 3)) {
+        
+
+
+        keep = isPaused;
+        func_00203320_b();
+        func_002038F0();
+        func_00203840_b();
+        D_003505F0 = func_00203A40(0, 1, 0xffff) & 0xffff;
+        pushed = D_003505F0 & (button_old ^ D_003505F0) & 0x8e0;
+        button_old = D_003505F0;
+        if (D_003503B0 && pushed && vd->unknown_08 > 10 && !isPaused) {
+            func_00242450();
+            if (D_0029B2F0) {
+                func_002431B0(&D_00350620_b);
+            }
+            func_00245140(&D_00350680_b);
+            return -1;
+        }
+        putsize = func_00241AD0(rb, &put_ptr);
+        if (readrest > 0 && putsize >= 0x10000) {
+            count = func_00243DE0_b(file, put_ptr, 0x10000, file->start + sector);
+            func_00241B10(rb, count);
+            sector += count >> 11;
+            readrest -= count;
+        }
+        func_00242900();
+        getsize = func_00241B80(rb, &get_ptr);
+        if (getsize > 0) {
+            proceed = func_0018DEE8_b(vd, get_ptr, getsize, rb, rb->size);
+            func_00241BE0(rb, proceed);
+            writerest -= proceed;
+        }
+        isPaused = keep;
+        func_00242D00_b();
+        if (!isStarted && func_002457E0(&D_00350600_b) && func_00242910()) {
+            func_002423F0(1);
+            if (D_0029B2F0) {
+                func_00243290(&D_00350620_b);
+            }
+            isStarted = 1;
+        }
+    }
+    while (!func_002451A0(vd)) {
+        func_00242900();
+    }
+    while (!func_00245280(vd) && func_00245150(vd) != 3) {
+        func_00242900();
+    }
+    func_00242450();
+    if (D_0029B2F0) {
+        func_002432F0(&D_00350620_b);
+    }
+    return 1;
+}
 
 void func_00242900(void) {
     func_0017B790(0x20);
