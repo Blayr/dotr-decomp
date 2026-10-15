@@ -1389,7 +1389,14 @@ s32 func_00186D18(void) {
     return (s & 0x1) ? 4 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186D58);
+/* sceDevVu0Start (libdev): start VU0 microcode at addr. ctc2.ni is a raw word so the assembler adds no
+   hazard nop; vcallmsr then lands in the return's delay slot, as in the original */
+
+void func_00186D58(s32 addr) {
+    __asm__ __volatile__("andi\t$4,$4,0xFFFF\n"
+                         "\t.word 0x48C4D800 # ctc2.ni $4, $vi27\n"
+                         "\tvcallmsr\t$vi27");
+}
 
 /* sceDevVu0GetTpc: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
