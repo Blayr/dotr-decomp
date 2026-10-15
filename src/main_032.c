@@ -839,7 +839,6 @@ s32 scePadSetWarningLevel(s32 arg0) {
 extern s8 D_002BD038;
 extern s8 D_002BD050;
 extern s8 D_002BD078;
-s32 func_0017E240(s32);
 
 typedef struct McCd_00193808 {
     s32 unk0[9];

@@ -206,7 +206,7 @@ int isceSifSetDChain(void) {
     return ret;
 }
 
-int sceSifSetReg(void) {
+int sceSifSetReg(u32 reg, int val) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x79\n\tsyscall" : "=r" (ret));
     return ret;

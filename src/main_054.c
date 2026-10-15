@@ -622,7 +622,6 @@ extern char D_002D0638[];
 extern File_001FFFC0 D_00293090[];
 extern char D_002D066F[];
 
-void func_0017E240(s32);
 
 s32 RhFile_Init(void) {
     extern s32 RhFile_LoadIopModuleWrapper(s32, s32);

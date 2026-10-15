@@ -595,7 +595,61 @@ void func_0017E190(s32 *ptr, s32 size) {
        );
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E240);
+typedef struct {
+    s32 pid;
+    void *pkt_table;
+    s32 pkt_table_len;
+    s32 unused1;
+    s32 unused2;
+    void *rdata_table;
+    s32 rdata_table_len;
+    void *client_table;
+    s32 client_table_len;
+    s32 client_table_idx;
+} SifRpcData_0017E240;
+
+#define _sif_rpc_data (*(SifRpcData_0017E240 *)&D_00312840)
+extern u8 D_00311040[];
+extern u8 D_00311840[];
+extern u8 D_00312040[];
+
+void func_0017E240(s32 mode) {
+    u32 *cmdp;
+
+    func_001843E0();
+    if (D_0028CA18 != 0) {
+        func_00184428();
+        return;
+    }
+    D_0028CA18 = 1;
+    func_00184428();
+    sceSifInitCmd();
+    func_001843E0();
+    _sif_rpc_data.pkt_table = (void *)((u32)D_00311040 | 0x20000000);
+    _sif_rpc_data.pkt_table_len = 0x20;
+    _sif_rpc_data.unused1 = 0;
+    _sif_rpc_data.unused2 = 0;
+    _sif_rpc_data.rdata_table = (void *)((u32)D_00311840 | 0x20000000);
+    _sif_rpc_data.rdata_table_len = 0x20;
+    _sif_rpc_data.client_table = (void *)((u32)D_00312040 | 0x20000000);
+    _sif_rpc_data.client_table_len = 0x20;
+    _sif_rpc_data.client_table_idx = 0;
+    _sif_rpc_data.pid = 1;
+    sceSifAddCmdHandler(0x80000008, (s32 *)_request_end, (s32)&_sif_rpc_data);
+    sceSifAddCmdHandler(0x80000009, (s32 *)_request_bind, (s32)&_sif_rpc_data);
+    sceSifAddCmdHandler(0x8000000A, (s32 *)_request_call, (s32)&_sif_rpc_data);
+    sceSifAddCmdHandler(0x8000000C, (s32 *)_request_rdata, (s32)&_sif_rpc_data);
+    func_00184428();
+    if (sceSifGetReg(0x80000002) != 0) {
+        return;
+    }
+    cmdp = (u32 *)(D_00311040 + 0x40);
+    cmdp[3] = 1;
+    sceSifSendCmd(0x80000002, cmdp, 0x10, 0, 0, 0);
+    while (sceSifGetSreg(0) == 0) {
+    }
+    sceSifSetReg(0x80000002, 1);
+}
 
 void sceSifExitRpc(void) {
     sceSifExitCmd();

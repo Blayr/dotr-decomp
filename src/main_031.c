@@ -364,7 +364,6 @@ void func_00190498(void) {
     while (*(volatile s32 *)0x10002010 < 0) {}
 }
 
-s32 func_0017E240(s32);
 extern s8 D_002BCBC0;
 extern s32 D_00315680;
 
@@ -654,7 +653,6 @@ extern char D_002BCC30[];
 extern char D_002BCC48[];
 extern char D_002BCC58[];
 extern char D_002BCC68[];
-s32 func_0017E240(s32);
 
 #define scePrintf_00190FF0 ((void (*)(const char *, ...))scePrintf)
 
@@ -750,7 +748,6 @@ extern s32 D_003156D0;
 extern s32 D_003156D8;
 extern char D_002BCC80[];
 extern char D_002BCCA8[];
-s32 func_0017E240(s32);
 
 #define scePrintf_001912F0 ((void (*)(const char *, ...))scePrintf)
 
@@ -861,7 +858,6 @@ extern s32 D_003156D0;
 extern s32 D_003156D8;
 extern char D_002BCCE0[];
 extern char D_002BCD08[];
-s32 func_0017E240(s32);
 
 #define scePrintf_00191608 ((void (*)(const char *, ...))scePrintf)
 
@@ -933,7 +929,6 @@ extern int D_0028DD10;
 extern int D_003156D0;
 extern CdClient_00191778 D_003158E8;
 extern int D_00315940;
-s32 func_0017E240(s32);
 
 /* sceCdInit: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
@@ -1034,7 +1029,6 @@ extern int D_00315950;
 extern char D_002BCD50[];
 extern char D_002BCD60[];
 extern char D_002BCD80[];
-s32 func_0017E240(s32);
 
 #define scePrintf_00191A58 ((void (*)(const char *, ...))scePrintf)
 
