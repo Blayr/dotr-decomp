@@ -179,7 +179,6 @@ s32 func_001FD680(s32, s32, s32, s32, s32);
 
 
 
-void func_0020BCF0(s32, s32);
 
 
 
