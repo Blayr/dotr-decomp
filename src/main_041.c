@@ -836,7 +836,6 @@ void lSzDuel_DrawTrade_Notice_Pipe(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5D70);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5DB8);
 
 void SzDuel_TermCustomDuel(void) {
 
