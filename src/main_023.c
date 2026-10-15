@@ -540,7 +540,59 @@ s32 func_0017E068(s32 ch) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E190);
+/* sceSifWriteBackDCache: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/sifcmd.c; see THIRD_PARTY_NOTICES.md) */
+
+void func_0017E190(s32 *ptr, s32 size) {
+    __asm__ __volatile__(
+        "	.set	noreorder\n"
+        "	lui	$25,(0xFFFFFFC0 >> 16)\n"
+        "	ori	$25,$25,(0xFFFFFFC0 & 0xFFFF)\n"
+        "	blez	$5,_func_0017E190_0017E234\n"
+        "	addu	$10,$4,$5\n"
+        "	and	$8,$4,$25\n"
+        "	addiu	$10,$10,-0x1\n"
+        "	and	$9,$10,$25\n"
+        "	subu	$10,$9,$8\n"
+        "	srl	$11,$10,6\n"
+        "	addiu	$11,$11,0x1\n"
+        "	andi	$9,$11,0x7\n"
+        "	beqz	$9,_func_0017E190_0017E1E0\n"
+        "	srl	$10,$11,3\n"
+        "_func_0017E190_0017E1C4:\n"
+        "	sync\n"
+        "	cache	0x18,0x0($8)\n"
+        "	sync\n"
+        "	addiu	$9,$9,-0x1\n"
+        "	nop\n"
+        "	bgtz	$9,_func_0017E190_0017E1C4\n"
+        "	addiu	$8,$8,0x40\n"
+        "_func_0017E190_0017E1E0:\n"
+        "	beqz	$10,_func_0017E190_0017E234\n"
+        "_func_0017E190_0017E1E4:\n"
+        "	addiu	$10,$10,-0x1\n"
+        "	sync\n"
+        "	cache	0x18,0x0($8)\n"
+        "	sync\n"
+        "	cache	0x18,0x40($8)\n"
+        "	sync\n"
+        "	cache	0x18,0x80($8)\n"
+        "	sync\n"
+        "	cache	0x18,0xC0($8)\n"
+        "	sync\n"
+        "	cache	0x18,0x100($8)\n"
+        "	sync\n"
+        "	cache	0x18,0x140($8)\n"
+        "	sync\n"
+        "	cache	0x18,0x180($8)\n"
+        "	sync\n"
+        "	cache	0x18,0x1C0($8)\n"
+        "	sync\n"
+        "	bgtz	$10,_func_0017E190_0017E1E4\n"
+        "	addiu	$8,$8,0x200\n"
+        "_func_0017E190_0017E234:\n"
+        "	.set	reorder\n"
+       );
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E23C);
 

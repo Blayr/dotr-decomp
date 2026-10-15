@@ -1041,6 +1041,7 @@ s32 func_0017DEB0(s32 cid, s32 mode, s32 pkt, s32 pktsize, s32 src, s32 dest, s3
 s32 func_0017DFE8(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_0017E028(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_0017E068(s32 ch);
+void func_0017E190(s32 *ptr, s32 size);
 void func_0017E3E0(void);
 void *func_0017E408(s32 *data);
 void func_0017E4B0(void *arg0);
