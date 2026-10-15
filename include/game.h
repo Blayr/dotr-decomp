@@ -126,7 +126,6 @@ extern Duel_00317490 D_00317490;
 typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
-extern void sceVif1PkAlign(void *, s32, s32);
 
 extern u8 D_003506C8[];
 

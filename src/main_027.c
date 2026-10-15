@@ -483,7 +483,34 @@ void sceVif1PkCloseGifTag(void *arg0) {
     *(s32 *)arg0 = p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", sceVif1PkAlign);
+/* libvifpk's sceVif1Packet */
+struct sceVif1Packet {
+    u32 *pCurrent;
+    u32 *pBase;
+    u32 *pDmaTag;
+    u32 *pVifCode;
+    u32 numlen;
+    u32 pad;
+};
+
+#define pPacket ((struct sceVif1Packet *)pkt)
+
+void sceVif1PkAlign(void *pkt, s32 bit, s32 pos)
+{
+    u32 ma;
+    u32 end;
+
+    ma = 0xffffffff >> (32 - ((bit + 2) & 0x1f));
+    end = ((u32)pPacket->pCurrent & ~ma) + pos * 4;
+    if (end < (u32)pPacket->pCurrent) {
+        end = end + (ma + 1);
+    }
+    while ((u32)pPacket->pCurrent < end) {
+        *pPacket->pCurrent++ = 0;
+    }
+}
+
+#undef pPacket
 
 void sceVif1PkAddCode(s32 **arg0, s32 arg1) {
     *(*arg0)++ = arg1;
