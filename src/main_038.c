@@ -566,9 +566,9 @@ s32 func_001AEEB0(s32 arg0) {
         sp30 = D_00291120;
         sp30.z = (var_s0 == 4) ? 180.0f : -180.0f;
         if (func_001F1370(var_s0) != 0) {
-            var_s1 = func_001EF8A0(var_s1, var_s0, &sp30, 0, 0, 0, 0);
+            var_s1 = func_001EF8A0(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
             sp30.x *= -1.0f;
-            var_s1 = func_001EF8A0(var_s1, var_s0, &sp30, 0, 0, 0, 0);
+            var_s1 = func_001EF8A0(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
         }
         var_s0 += 1;
     } while ((s32) var_s0 < 5);

@@ -696,7 +696,51 @@ void func_001EE570(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE6C0);
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EF8A0);
+struct DotrExSortVec {
+    float x, y, z, w;
+};
+extern int D_0031BB00_1ef8a0;
+extern long func_00208680_b(int, int);
+extern int func_002084D0_b(int, long);
+extern int func_00207500_b(void);
+
+int func_001EF8A0(int cursor, int index, int c, int d, int e, int f, int g)
+{
+    struct DotrExSortVec position;
+    int chain;
+    int depth;
+    int packet;
+    int out;
+    float dz;
+    float z;
+    int result;
+
+    D_0031BB10 = 0;
+    out = func_002085E0(func_00207FA0(cursor), 2);
+    if (D_0031BB00_1ef8a0 == 0) {
+        out = func_001EDFD0(func_0020A0B0(out, 0), index);
+    }
+    out = func_0020A0B0(func_001EE4B0(func_0020A0B0(out, 1), index, c, d, e, f, g), 0);
+    out = func_002085E0(out, 3);
+    packet = func_002084D0_b(out, func_00208680_b(0, 4));
+    if (func_001F2050(index, &position) != 0) {
+        depth = func_001F3050(index);
+        dz = 0.0f;
+        if (depth < 0) {
+            depth = 0;
+        }
+        if (D_0031BB00_1ef8a0 == 2) {
+            dz = func_001F0F40(index) / 2.0f;
+        }
+        z = func_00205DF0(&position, dz);
+        chain = func_00207500_b();
+        depth = z < (float)depth ? depth : func_001A23B0(z);
+        result = func_00208030(packet, cursor, chain, depth);
+    } else {
+        return cursor;
+    }
+    return result;
+}
 
 s32 func_001EFA80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     s32 saved;

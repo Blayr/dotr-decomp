@@ -194,7 +194,6 @@ typedef union Render_001CE430 {
     s32 words[4];
 } Render_001CE430;
 
-s32 func_001EF8A0(s32, s32, void *, void *, s32, s32, s32);
 extern Color_001CE430 D_002914E0;
 extern Color_001CE430 D_002914E8;
 extern Color_001CE430 D_002914F0;
@@ -319,7 +318,7 @@ s32 func_001CE430(s32 arg0) {
                     if (selected) {
                         func_001F2860(model, 1, tint);
                     }
-                    arg0 = func_001EF8A0(arg0, model, pos, &render, 0, 0, 0x80FFFFF6);
+                    arg0 = func_001EF8A0(arg0, model, (s32)pos, (s32)&render, 0, 0, 0x80FFFFF6);
                     if (selected) {
                         func_001F2860(model, 1, NULL);
                     }

@@ -2121,6 +2121,7 @@ s32 func_001EDFD0(s32 arg0, s32 arg1); /* JP: SzModel_DrawMotionBlur_Pipe */
 void func_001EE4A0(s32 arg0); /* JP: SzModel_SetDrawCache */
 s32 func_001EE4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6); /* JP: SzModel_Draw_Pipe */
 void func_001EE570(s32 arg0); /* JP: lSzModel_Draw_DefFunc */
+int func_001EF8A0(int cursor, int index, int c, int d, int e, int f, int g); /* JP: SzModel_ExSort_Pipe */
 s32 func_001EFA80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6); /* JP: SzModel_DrawWithOutCalc_Pipe */
 s32 func_001EFB40(s32 arg0, s32 arg1, s32 *arg2); /* JP: lSzModel_GetGNode */
 s32 func_001EFBD0(s32 target, s32 base, s32 node, s32 *index, s32 depthAddress, s32 *maxDepth, s32 callbackAddress); /* JP: lSzModel_TraceGNode */
