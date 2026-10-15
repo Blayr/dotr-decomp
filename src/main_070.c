@@ -79,7 +79,70 @@ void func_002452E0(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0xA8) = 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00245340);
+extern int func_00199B50_b(const char *format, ...);
+typedef int DotrSoundAddress;
+struct DotrSoundBig {
+    int state;
+    unsigned char unknown_04[60];
+    unsigned int tags[2][0x99c0]; 
+};
+struct DotrSoundBigQueue {
+    unsigned char (*images)[0x195000]; 
+    struct DotrSoundBig *items;
+    int index;
+    int count;
+    int capacity;
+};
+struct DotrSoundVideoDec {
+    int width;
+    int height;
+    int frame_count;
+    int unknown_0c[39];
+    int state;
+};
+extern struct DotrSoundBigQueue D_00350600_b;
+extern char D_0030F8B0[];
+extern char D_0030F8C8[];
+extern int func_0018EE78_b(struct DotrSoundVideoDec *dec);
+extern void func_00242CF0_b(DotrSoundAddress text);
+extern void func_00241E80_b(unsigned int *tags, void *image, int index, int w, int h);
+
+int func_00245340(void *dec_v)
+{
+    struct DotrSoundVideoDec * dec = dec_v;
+    int ret;
+    DotrSoundAddress data;
+    int i;
+    int w;
+    int h;
+
+    ret = 1;
+    while (func_0018EE58(dec) == 0) {
+        if (dec->state == 1) {
+            ret = -1;
+            func_00199B50_b(D_0030F8B0);
+            break;
+        }
+        while ((data = func_00245890(&D_00350600_b)) == 0) {
+            func_00242900();
+        }
+        if (func_0018ED40(dec, data, 0x654) < 0) {
+            func_00242CF0_b((DotrSoundAddress)D_0030F8C8);
+        }
+        if (dec->frame_count == 0) {
+            w = dec->width;
+            h = dec->height;
+            for (i = 0; i < D_00350600_b.capacity; i++) {
+                func_00241E80_b(D_00350600_b.items[i].tags[0], D_00350600_b.images[i], 0, w, h);
+                func_00241E80_b(D_00350600_b.items[i].tags[1], D_00350600_b.images[i], 1, w, h);
+            }
+        }
+        func_00245800(&D_00350600_b);
+        func_00242900();
+    }
+    func_0018EE78_b(dec);
+    return ret;
+}
 
 s32 func_00245520(void *arg0, void *arg1) {
     func_00199B50(&D_0030F8E9, *(s32 *)((u8 *)arg1 + 4));
@@ -1263,7 +1326,108 @@ s32 func_00248370(u32 arg0, s32 arg1, s32 arg2) {
     return ((D_0029D580 + (offset >> 3))[row] >> (offset % 8)) & 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00248460);
+extern int func_001E1030_b(int a, int b);
+extern unsigned *func_001E0B70_b(int a, int b, int n);
+extern void func_002503B0_b(int a, int b, unsigned char n);
+extern int func_001E15E0_b(int a, int b, int value);
+static inline int apply_kind_00248460(int a, int b, int c, int d, int total, int id)
+{
+    int val;
+    unsigned *p;
+
+    {
+        val = D_0029CF32[id];
+        switch (D_0029D1F0[id]) {
+        case 0:
+            if (val == 0) {
+                id = d & 0xff;
+                total = func_00248E30(id, total);
+                if (c >> 16) {
+                    func_00250CA0(a, b, 1, total);
+                    func_00250E80(a, b, 1, total);
+                } else {
+                    func_00250CA0(a, b, 0, total);
+                    func_00250E80(a, b, 0, total);
+                }
+                func_001DF490(id == 0 ? 1 : 0, 1, total);
+                return c;
+            } else {
+                total = val + total;
+                if (c >> 16) {
+                    func_00250CA0(a, b, 1, total);
+                    func_00250E80(a, b, 1, total);
+                    return c;
+                } else {
+                    func_00250CA0(a, b, 0, total);
+                    func_00250E80(a, b, 0, total);
+                    return c;
+                }
+            }
+        case 1:
+            switch (val) {
+            case 1:
+                p = func_001E0B70_b(a, b, 4);
+                p[0] = 5211;
+                p[1] = 0;
+                p = func_001E0B70_b(a, b, 3);
+                p[0] = 14428;
+                p[1] = 0x1f0129;
+                return c;
+            case 2:
+                p = func_001E0B70_b(a, b, 0);
+                p[0] = 1152;
+                p[1] = 0;
+                return c;
+            case 3:
+                p = func_001E0B70_b(a, b, 0);
+                p[0] = 1159;
+                p[1] = 0;
+                return c;
+            case 4:
+                p = func_001E0B70_b(a, b, 0);
+                p[0] = 1153;
+                p[1] = 0;
+                return c;
+            case 5:
+                p = func_001E0B70_b(a, b, 4);
+                p[0] = 765;
+                p[1] = 0x10009;
+                return c;
+            }
+            break;
+        case 2:
+            func_00250CA0(a, b, 4, 0);
+            func_00250E80(a, b, 4, 0);
+            func_002503B0_b(a, b, 0);
+            func_001E15E0_b(a, b, 0);
+            return c;
+        case 3:
+            func_002503B0_b(a, b, 255);
+            func_001E1E70(a, b, 0, 1);
+            return c;
+        case 4:
+            return c;
+        }
+    }
+    return c;
+}
+
+int func_00248460(int a, int b, int c, int d)
+{
+    int total;
+    int id;
+
+    func_001E1030_b(a, b);
+    total = 0;
+    total += func_00248EA0();
+    id = c & 0x3fff;
+    if (func_00248370(a, b, id) != 0) {
+        c = apply_kind_00248460(a, b, c, d, total, id);
+    } else {
+        c = -1;
+    }
+    return c;
+}
 
 s32 func_002487A0(s32 arg0, s32 arg1) {
     s32 bit;

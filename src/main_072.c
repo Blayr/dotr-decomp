@@ -374,7 +374,215 @@ s32 func_0024DF00(s32 arg0, s32 arg1, s32 arg2) {
     return func_0024DF80(arg0, (void *)func_001DF540(arg1, arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_072", func_0024DF80);
+struct jp_6537d {
+    unsigned char bKind;
+    unsigned char bKindOfs;
+    unsigned char bAttr : 4;
+    unsigned char bLevel : 4;
+    unsigned char bDeckCost;
+    unsigned short wEffIdx;
+    unsigned short wEffNo;
+    unsigned short wAP : 13;
+    unsigned short fPermanent : 1;
+    unsigned short fGetPasswd : 1;
+    unsigned short fGetRecycle : 1;
+    unsigned short wDP : 13;
+    unsigned short fGetSlot : 1;
+    unsigned short fGetFever : 1;
+    unsigned short fAlternate : 1;
+    unsigned char abPasswd[8];
+};
+struct jp_65648 {
+    unsigned int dwID;
+    unsigned int dwParam;
+};
+struct jp_65767;
+struct jp_64b6d {
+    struct jp_6537d *pConstInfo;
+    struct jp_65767 *pCardReq;
+    struct jp_65648 aVarEffIdx[5];
+    int nRotY;
+    short sOfsX;
+    short sOfsZ;
+    short sVarAP;
+    short sVarDP;
+    unsigned short wCardNo;
+    unsigned char bVarKind;
+    unsigned char bVarAttr;
+    unsigned char bMapX;
+    unsigned char bMapZ;
+    unsigned char bPosX;
+    unsigned char bPosZ;
+    unsigned char bOwner;
+    unsigned char bID;
+    unsigned char bModelID;
+    unsigned char bSummonOrder;
+    unsigned char bSummonCost;
+    unsigned char bCurseRest;
+    unsigned char bSpellRest;
+    unsigned char bDelayCount;
+    unsigned char bMovable;
+    unsigned char bDarkRate;
+    unsigned char bCtlModeC;
+    unsigned char bCtlModeM;
+    unsigned char bCtlGoalC;
+    unsigned char bCtlGoalM;
+    unsigned char bCtlRateC;
+    unsigned char bCtlRateM;
+    unsigned char bOpenRate;
+    unsigned char bDefenseRate;
+    int nCtlFlipC : 2;
+    int nCtlFlipM : 2;
+    int nOpenFlip : 2;
+    int nDefenseFlip : 2;
+    int fFinish : 1;
+    int fRevolt : 1;
+    int fOpen : 1;
+    int fDefense : 1;
+    int fOpenF : 1;
+    int fDefenseF : 1;
+    int fPickup : 1;
+    int fCardBusy : 1;
+    int fModelBusy : 1;
+    int fCardColBusy : 1;
+    int fHand : 1;
+    int fCurse : 1;
+    int nEffHandle : 6;
+};
+
+int func_0024DF80(int land, void *vInfo_v)
+{
+    struct jp_64b6d * vInfo = vInfo_v;
+    int kind;
+    int ret;
+
+    if ((vInfo->bVarKind >> 5) != 0) {
+        return 0;
+    }
+    kind = vInfo->bVarKind & 0x1f;
+    switch (land) {
+    case 9:
+        if (kind == 20) {
+            ret = 1;
+        } else {
+            ret = 0;
+        }
+        break;
+    case 7:
+    case 8:
+        ret = 0;
+        break;
+    case 6:
+        if (func_002492F0(vInfo->wCardNo) != 0) {
+            ret = 1;
+        } else {
+            ret = 2;
+        }
+        break;
+    case 3:
+        switch (kind) {
+        case 3:
+        case 4:
+            ret = 1;
+            break;
+        case 1:
+            ret = 2;
+            break;
+        default:
+            ret = 0;
+            break;
+        }
+        break;
+    case 0:
+        switch (kind) {
+        case 4:
+        case 5:
+        case 9:
+        case 17:
+        case 19:
+            ret = 1;
+            break;
+        case 7:
+            ret = 2;
+            break;
+        default:
+            ret = 0;
+            break;
+        }
+        break;
+    case 2:
+        switch (kind) {
+        case 0:
+        case 6:
+        case 8:
+        case 15:
+            ret = 1;
+            break;
+        case 2:
+            ret = 2;
+            break;
+        default:
+            ret = 0;
+            break;
+        }
+        break;
+    case 1:
+        switch (kind) {
+        case 2:
+        case 10:
+        case 14:
+        case 18:
+            ret = 1;
+            break;
+        case 19:
+        case 12:
+        case 13:
+        case 16:
+            ret = 2;
+            break;
+        default:
+            ret = 0;
+            break;
+        }
+        break;
+    case 4:
+        switch (kind) {
+        case 12:
+        case 13:
+        case 15:
+        case 16:
+            ret = 1;
+            break;
+        case 14:
+        case 17:
+            ret = 2;
+            break;
+        default:
+            ret = 0;
+            break;
+        }
+        break;
+    case 5:
+        switch (kind) {
+        case 2:
+        case 1:
+        case 7:
+            ret = 1;
+            break;
+        case 8:
+            ret = 2;
+            break;
+        default:
+            ret = 0;
+            break;
+        }
+        break;
+    default:
+        ret = 0;
+        break;
+    }
+    return ret;
+}
 
 s32 func_0024E220(s32 arg0, s32 arg1) {
     s32 index;

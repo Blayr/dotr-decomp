@@ -1041,7 +1041,181 @@ s32 func_001F3440(s32 arg0) {
     return ((Flags_001F3440 *)((u8 *)temp_v0 + 0x20D))->enabled ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_049", func_001F34A0);
+struct DotrObjectVector3 {
+    float x, y, z;
+};
+struct DotrObjectVector4 {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrObjectLink {
+    int unknown_00;
+    int unknown_04;
+};
+struct DotrObjectPair {
+    signed char unknown_bits_0_5 : 6;
+    signed char unknown_bits_6_7 : 2;
+};
+struct DotrObjectBits {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrObjectLowPair {
+    unsigned char unknown_bits_0_1 : 2;
+    unsigned char unknown_bits_2_3 : 2;
+    unsigned char unknown_bits_4_7 : 4;
+};
+struct DotrObjectQuad {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+struct DotrObject {
+    struct DotrObjectVector4 unknown_000;
+    struct DotrObjectVector4 unknown_010;
+    struct DotrObjectVector4 unknown_020;
+    struct DotrObjectVector4 unknown_030;
+    unsigned char unknown_040[0x40];
+    struct DotrObjectVector4 unknown_080;
+    unsigned char unknown_090[0x10];
+    struct DotrObjectVector4 unknown_0a0[8];
+    struct DotrObjectVector3 unknown_120;
+    struct DotrObjectQuad unknown_12c;
+    struct DotrObjectQuad unknown_130;
+    int unknown_134;
+    struct DotrObjectLink *unknown_138;
+    unsigned char unknown_13c[8];
+    unsigned char unknown_144[0x20];
+    int unknown_164;
+    int unknown_168;
+    int unknown_16c;
+    int unknown_170;
+    unsigned char unknown_174[4];
+    int unknown_178[8];
+    
+
+    struct DotrObjectVector3 unknown_198[2];
+    unsigned short unknown_1b0[8];
+    unsigned unknown_1c0[8];
+    signed char unknown_1e0[4];
+    float unknown_1e4;
+    unsigned char unknown_1e8[8];
+    short unknown_1f0;
+    signed char unknown_1f2;
+    signed char unknown_1f3;
+    short unknown_1f4;
+    unsigned char unknown_1f6;
+    struct DotrObjectPair unknown_1f7;
+    struct DotrObjectLowPair unknown_1f8;
+    unsigned char unknown_1f9;
+    unsigned char unknown_1fa;
+    unsigned char unknown_1fb;
+    unsigned char unknown_1fc;
+    unsigned char unknown_1fd;
+    unsigned char unknown_1fe;
+    unsigned char unknown_1ff;
+    unsigned char unknown_200;
+    unsigned char unknown_201[9];
+    unsigned short unknown_20a;
+    struct DotrObjectBits unknown_20c;
+    struct DotrObjectBits unknown_20d;
+};
+extern struct DotrObject *D_0031ABB0_b[];
+struct DotrObjectShadeHeader {
+    unsigned char unknown_00[0x1c];
+    int unknown_1c;
+    unsigned char unknown_20[8];
+    int unknown_28;
+    int unknown_2c;
+};
+struct DotrObjectShadeNode {
+    unsigned char unknown_00[0x10];
+    struct DotrObjectShadeInfo {
+        int unknown_00;
+        int unknown_04;
+        int unknown_08;
+        int unknown_0c;
+    } unknown_10;
+};
+struct DotrObjectShadeSlot {
+    struct DotrObjectShadeNode *node;
+    int unknown_04[3];
+};
+extern int func_00241A00_b(float scale, unsigned short color, int e);
+
+int func_001F34A0(int index, int value)
+{
+    struct DotrObject *p;
+    struct DotrObjectLink *base;
+    struct DotrObjectShadeHeader *header;
+    int count;
+    int i;
+    unsigned short *words;
+    int left;
+    struct DotrObjectShadeSlot *slot;
+    int level;
+    struct DotrObjectShadeNode *node;
+    int *list;
+    struct DotrObjectShadeInfo *info;
+
+    if (index < 0 || index >= 84) {
+        return 0;
+    }
+    p = D_0031ABB0_b[index];
+    if (p == 0) {
+        return 0;
+    }
+    if (p->unknown_1f2 < 0) {
+        return 0;
+    }
+    base = p->unknown_138;
+    if (base == 0) {
+        return 0;
+    }
+    if (p->unknown_20c.unknown_bit_3) {
+        return 0;
+    }
+    if (base == 0) {
+        return 0;
+    }
+    header = *(struct DotrObjectShadeHeader **)p->unknown_13c;
+    if (header == 0) {
+        return 0;
+    }
+    if (header->unknown_2c == 0) {
+        return 0;
+    }
+    if (!p->unknown_20d.unknown_bit_1) {
+        return 0;
+    }
+    level = value & 0xff;
+    if (level < p->unknown_200) {
+        return 0;
+    }
+    list = (int *)((char *)base + header->unknown_28);
+    count = *list;
+    slot = (struct DotrObjectShadeSlot *)(list + 4);
+    for (i = 0; i < count; i++, slot++) {
+        node = slot->node;
+        if (node != 0 && (info = &node->unknown_10, node->unknown_10.unknown_0c != 0)) {
+            words = (unsigned short *)((char *)node + info->unknown_08 + 96) + p->unknown_200;
+            left = level - p->unknown_200 + 1;
+            while (left-- != 0) {
+                *words = func_00241A00_b(1.0f, *words, 6);
+                words++;
+            }
+        }
+    }
+    p->unknown_200 = value;
+    return 1;
+}
 
 typedef struct {
     s8 unused : 1;

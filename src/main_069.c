@@ -1031,7 +1031,143 @@ s32 func_00244530(u8 *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244680);
+struct DotrSoundStream {
+    int unknown_00;
+    int unknown_04;
+    int unknown_08;
+    int unknown_0c;
+    int unknown_10;
+    int unknown_14;
+    int unknown_18;
+    int unknown_1c[9];
+    int unknown_40;
+    int unknown_44;
+    long unknown_48;
+    int unknown_50;
+    int unknown_54;
+    int unknown_58;
+    int unknown_5c;
+};
+#define DOTR_SOUND_REG(addr) (*(volatile int *)(addr))
+extern void func_001843E0_b(void);
+extern void func_00184428_b(void);
+struct DotrSoundViBuf {
+    unsigned data;
+    unsigned tag;
+    int n;
+    int dmaStart;
+    int dmaN;
+    int readBytes;
+    int buffSize;
+    unsigned d4madr;
+    unsigned d4tadr;
+    unsigned d4qwc;
+    unsigned d4chcr;
+    unsigned d3madr;
+    unsigned d3qwc;
+    unsigned d3chcr;
+    unsigned ipubp;
+    unsigned ipuctrl;
+    int sema;
+    int isActive;
+};
+#define VIBUF_ELM_SIZE 2048
+#define DmaAddr(v) ((unsigned)(v) & 0x0fffffff)
+#define DataAddr(f, i) ((f)->data + VIBUF_ELM_SIZE * (i))
+#define TagAddr(f, i) ((f)->tag + 16 * (i))
+#define IsInRegion(i, start, len, n) (0 <= ((i) + (n) - (start)) % (n) && ((i) + (n) - (start)) % (n) < (len))
+static inline int getFIFOindex(struct DotrSoundViBuf *f, unsigned addr)
+{
+    if (addr == DmaAddr(TagAddr(f, f->n + 1))) {
+        return 0;
+    } else {
+        return (addr - f->data) / VIBUF_ELM_SIZE;
+    }
+}
+static inline void setD3_CHCR(unsigned val)
+{
+    func_001843E0_b();
+    DOTR_SOUND_REG(0x1000f590) = DOTR_SOUND_REG(0x1000f520) | 0x10000;
+    DOTR_SOUND_REG(0x1000b000) = val;
+    DOTR_SOUND_REG(0x1000f590) = DOTR_SOUND_REG(0x1000f520) & ~0x10000;
+    func_00184428_b();
+}
+static inline void setD4_CHCR(unsigned val)
+{
+    func_001843E0_b();
+    DOTR_SOUND_REG(0x1000f590) = DOTR_SOUND_REG(0x1000f520) | 0x10000;
+    DOTR_SOUND_REG(0x1000b400) = val;
+    DOTR_SOUND_REG(0x1000f590) = DOTR_SOUND_REG(0x1000f520) & ~0x10000;
+    func_00184428_b();
+}
+
+int func_00244680(void *p_v)
+{
+    struct DotrSoundStream * p = p_v;
+    struct DotrSoundViBuf *f = (struct DotrSoundViBuf *)p;
+    int bp = f->ipubp & 0x7f;
+    int fp = (f->ipubp >> 16) & 3;
+    int ifc = (f->ipubp >> 8) & 0xf;
+    unsigned d4madr_next = f->d4madr - ((fp + ifc) << 4);
+    unsigned d4qwc_next = f->d4qwc + (fp + ifc);
+    unsigned d4chcr_next = f->d4chcr | 0x100;
+    unsigned d3chcr_next;
+    unsigned d4tadr_next = f->d4tadr;
+    int index;
+    int index_next;
+    int id;
+
+    func_0017B920(f->sema);
+    if (d4madr_next < f->data) {
+        d4qwc_next = (DataAddr(f, 0) - d4madr_next) >> 4;
+        d4madr_next += f->n * 2048;
+        d4tadr_next = DmaAddr(TagAddr(f, 0));
+        id = (f->d4madr == DataAddr(f, 0) || f->d4madr == DataAddr(f, f->n)) ? 0 : 3;
+        d4chcr_next = (f->d4chcr & 0x0fffffff) | (id << 28) | 0x100;
+        if (!IsInRegion(0, f->dmaStart, f->dmaN, f->n)) {
+            f->dmaStart = f->n - 1;
+            f->dmaN++;
+        }
+    } else if ((index = getFIFOindex(f, f->d4madr)) != (index_next = getFIFOindex(f, d4madr_next))) {
+        d4tadr_next = DmaAddr(TagAddr(f, index));
+        d4qwc_next = (DataAddr(f, index) - d4madr_next) >> 4;
+        id = (f->data + (f->d4madr - f->data) % (f->n * 2048) == DataAddr(f, (f->dmaStart + f->dmaN) % f->n)) ? 0 : 3;
+        d4chcr_next = (f->d4chcr & 0x0fffffff) | (id << 28) | 0x100;
+        if (!IsInRegion(index_next, f->dmaStart, f->dmaN, f->n)) {
+            f->dmaStart = index_next;
+            f->dmaN++;
+        }
+    }
+    if (f->d3madr && f->d3qwc) {
+        DOTR_SOUND_REG(0x1000b010) = f->d3madr;
+        DOTR_SOUND_REG(0x1000b020) = f->d3qwc;
+        d3chcr_next = f->d3chcr | 0x100;
+        setD3_CHCR(d3chcr_next);
+    }
+    if (f->dmaN) {
+        while (DOTR_SOUND_REG(0x10002010) < 0) {
+        }
+        DOTR_SOUND_REG(0x10002000) = bp;
+        while (DOTR_SOUND_REG(0x10002010) < 0) {
+        }
+    }
+    DOTR_SOUND_REG(0x1000b410) = d4madr_next;
+    DOTR_SOUND_REG(0x1000b430) = d4tadr_next;
+    DOTR_SOUND_REG(0x1000b420) = d4qwc_next;
+    if (f->dmaN) {
+        setD4_CHCR(d4chcr_next);
+    }
+    DOTR_SOUND_REG(0x10002010) = f->ipuctrl;
+    f->isActive = 1;
+    func_0017B900(f->sema);
+    return 1;
+}
+#undef DOTR_SOUND_REG
+#undef VIBUF_ELM_SIZE
+#undef DmaAddr
+#undef DataAddr
+#undef TagAddr
+#undef IsInRegion
 
 s32 func_00244A40(void *arg0) {
     func_001843E0();

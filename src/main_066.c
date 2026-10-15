@@ -48,7 +48,225 @@ void func_00233F50(s8 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_066", func_00234040);
+typedef int DotrTikeiWord;
+struct DotrTikeiItem {
+    short w[8];
+    short unknown_10[10];
+    short code;
+};
+extern DotrTikeiWord func_00218970_b(DotrTikeiWord cursor, struct DotrTikeiItem *quad, short dx,
+                                 short dy);
+struct DotrSinemaWork {
+    short unknown_00[13];
+    short mode;                 
+    short state;                
+    short cut0;                 
+    short cut1;                 
+    short cut2;                 
+    char unknown_24[72];
+    short hold;                 
+};
+#define DOTR_SINEMA_BLOCK ((struct DotrSinemaWork *)0x1ed0000)
+#define DOTR_SINEMA_MODE (*(short *)0x1ed001a)
+#define DOTR_SINEMA_STATE (*(short *)0x1ed001c)
+#define DOTR_SINEMA_CUT0 (*(short *)0x1ed001e)
+#define DOTR_SINEMA_CUT1 (*(short *)0x1ed0020)
+#define DOTR_SINEMA_CUT2 (*(short *)0x1ed0022)
+#define DOTR_SINEMA_HOLD (*(short *)0x1ed006c)
+struct DotrSinemaQuad {
+    short w[8];
+    unsigned char col[16];
+    signed char flag;
+    char unknown_21;
+    short z;
+    short code;
+};
+extern struct DotrSinemaQuad D_0029AEC0;
+extern struct DotrSinemaQuad D_00298A80[2];
+#define DOTR_SINEMA_C0 (b->cut0 * 64 / 64)
+#define DOTR_SINEMA_C1 (b->cut1 * 64 / 64)
+#define DOTR_SINEMA_C2 (b->cut2 * 116 / 116)
+
+int func_00234040(int cursor, unsigned short fade)
+{
+    struct DotrSinemaWork *b = DOTR_SINEMA_BLOCK;
+    struct DotrSinemaQuad q = D_0029AEC0;
+    int i;
+    int j;
+    int n;
+
+    if (fade == 0) {
+        if (DOTR_SINEMA_STATE == 1 && DOTR_SINEMA_HOLD == 0) {
+            n = 0;
+            if (DOTR_SINEMA_MODE == 0) {
+                if (0 <= DOTR_SINEMA_CUT0) {
+                    DOTR_SINEMA_CUT0 -= 8;
+                    if (DOTR_SINEMA_CUT0 <= 0) {
+                        DOTR_SINEMA_CUT0 = 0;
+                        n++;
+                    }
+                }
+                if (0 <= DOTR_SINEMA_CUT1) {
+                    DOTR_SINEMA_CUT1 -= 8;
+                    if (DOTR_SINEMA_CUT1 <= 0) {
+                        DOTR_SINEMA_CUT1 = 0;
+                        n++;
+                    }
+                }
+                if (0 <= DOTR_SINEMA_CUT2) {
+                    DOTR_SINEMA_CUT2 -= 8;
+                    if (DOTR_SINEMA_CUT2 <= 0) {
+                        DOTR_SINEMA_CUT2 = 0;
+                        n++;
+                    }
+                }
+            } else if (DOTR_SINEMA_MODE == 1) {
+                if (DOTR_SINEMA_CUT0 <= 64) {
+                    DOTR_SINEMA_CUT0 += 8;
+                    if (DOTR_SINEMA_CUT0 >= 64) {
+                        DOTR_SINEMA_CUT0 = 64;
+                        n++;
+                    }
+                }
+                if (0 <= DOTR_SINEMA_CUT1) {
+                    DOTR_SINEMA_CUT1 -= 8;
+                    if (DOTR_SINEMA_CUT1 <= 0) {
+                        DOTR_SINEMA_CUT1 = 0;
+                        n++;
+                    }
+                }
+                if (0 <= DOTR_SINEMA_CUT2) {
+                    DOTR_SINEMA_CUT2 -= 8;
+                    if (DOTR_SINEMA_CUT2 <= 0) {
+                        DOTR_SINEMA_CUT2 = 0;
+                        n++;
+                    }
+                }
+            } else if (DOTR_SINEMA_MODE == 2) {
+                if (DOTR_SINEMA_CUT0 < 64) {
+                    DOTR_SINEMA_CUT0 += 8;
+                    if (DOTR_SINEMA_CUT0 >= 64) {
+                        DOTR_SINEMA_CUT0 = 64;
+                        n++;
+                    }
+                } else {
+                    DOTR_SINEMA_CUT0 = 64;
+                    n++;
+                    if (DOTR_SINEMA_CUT1 <= 64) {
+                        DOTR_SINEMA_CUT1 += 8;
+                        if (DOTR_SINEMA_CUT1 >= 64) {
+                            DOTR_SINEMA_CUT1 = 64;
+                            n++;
+                        }
+                    }
+                }
+                if (0 <= DOTR_SINEMA_CUT2) {
+                    DOTR_SINEMA_CUT2 -= 8;
+                    if (DOTR_SINEMA_CUT2 <= 0) {
+                        DOTR_SINEMA_CUT2 = 0;
+                        n++;
+                    }
+                }
+            } else if (DOTR_SINEMA_MODE == 3) {
+                if (DOTR_SINEMA_CUT0 < 64) {
+                    DOTR_SINEMA_CUT0 += 8;
+                    if (DOTR_SINEMA_CUT0 >= 64) {
+                        DOTR_SINEMA_CUT0 = 64;
+                        n++;
+                    }
+                } else if (DOTR_SINEMA_CUT1 < 64) {
+                    DOTR_SINEMA_CUT0 = 64;
+                    DOTR_SINEMA_CUT1 += 8;
+                    n++;
+                    if (DOTR_SINEMA_CUT1 >= 64) {
+                        DOTR_SINEMA_CUT1 = 64;
+                        n++;
+                    }
+                } else {
+                    DOTR_SINEMA_CUT0 = 64;
+                    DOTR_SINEMA_CUT1 = 64;
+                    DOTR_SINEMA_CUT2 += 8;
+                    n += 2;
+                    if (DOTR_SINEMA_CUT2 >= 116) {
+                        DOTR_SINEMA_CUT2 = 116;
+                        n++;
+                    }
+                }
+            }
+            if (n >= 3) {
+                DOTR_SINEMA_STATE = 2;
+            }
+        }
+        for (i = 0; i < 2; i++) {
+            q = D_00298A80[i];
+            
+            if (i == 0) {
+                q.w[5] = DOTR_SINEMA_C2 + (D_00298A80[i].w[1] + DOTR_SINEMA_C0 + DOTR_SINEMA_C1);
+                q.w[7] = DOTR_SINEMA_C2 + (D_00298A80[i].w[1] + DOTR_SINEMA_C0 + DOTR_SINEMA_C1);
+            } else {
+                q.w[1] = D_00298A80[i].w[1] - DOTR_SINEMA_C0 - DOTR_SINEMA_C1 - DOTR_SINEMA_C2;
+                q.w[3] = D_00298A80[i].w[1] - DOTR_SINEMA_C0 - DOTR_SINEMA_C1 - DOTR_SINEMA_C2;
+            }
+            for (j = 0; j < 16; j++) {
+                if (j % 4 == 3) {
+                    q.col[j] = 128;
+                } else {
+                    q.col[j] = 0;
+                }
+            }
+            q.flag = 0;
+            cursor = func_00218970_b(cursor, (struct DotrTikeiItem *)&q, 0, 0);
+        }
+    } else {
+        if (DOTR_SINEMA_STATE == 1) {
+            if (DOTR_SINEMA_MODE == 0) {
+                if (DOTR_SINEMA_CUT0 < 255) {
+                    DOTR_SINEMA_CUT0 += 32;
+                    if (DOTR_SINEMA_CUT0 >= 255) {
+                        DOTR_SINEMA_CUT0 = 255;
+                        DOTR_SINEMA_MODE = 1;
+                        DOTR_SINEMA_STATE = 0;
+                    }
+                } else {
+                    DOTR_SINEMA_MODE = 1;
+                    DOTR_SINEMA_CUT0 = 255;
+                    DOTR_SINEMA_STATE = 0;
+                }
+            } else {
+                if (0 < DOTR_SINEMA_CUT0) {
+                    DOTR_SINEMA_CUT0 -= 32;
+                    if (DOTR_SINEMA_CUT0 <= 0) {
+                        DOTR_SINEMA_CUT0 = 0;
+                        DOTR_SINEMA_MODE = 0;
+                        DOTR_SINEMA_STATE = 0;
+                    }
+                } else {
+                    DOTR_SINEMA_MODE = 0;
+                    DOTR_SINEMA_CUT0 = 0;
+                    DOTR_SINEMA_STATE = 0;
+                }
+            }
+        }
+        for (i = 0; i < 2; i++) {
+            for (j = 0; j < 8; j++) {
+                q.w[j] = D_00298A80[i].w[j];
+            }
+            q.col[3] = q.col[7] = q.col[11] = q.col[15] = b->cut0;
+            cursor = func_00218970_b(cursor, (struct DotrTikeiItem *)&q, 0, 0);
+        }
+    }
+    return cursor;
+}
+#undef DOTR_SINEMA_BLOCK
+#undef DOTR_SINEMA_MODE
+#undef DOTR_SINEMA_STATE
+#undef DOTR_SINEMA_CUT0
+#undef DOTR_SINEMA_CUT1
+#undef DOTR_SINEMA_CUT2
+#undef DOTR_SINEMA_HOLD
+#undef DOTR_SINEMA_C0
+#undef DOTR_SINEMA_C1
+#undef DOTR_SINEMA_C2
 
 INCLUDE_ASM("asm/nonmatchings/main_066", func_002347D0);
 

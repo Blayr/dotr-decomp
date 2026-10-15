@@ -266,7 +266,6 @@ typedef struct {
     u8 mode;
 } Output_00144EC0;
 
-s32 func_00276CC0(s32, s32, u16, s32, u16, s32);
 
 s32 func_00144EC0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
@@ -1344,7 +1343,71 @@ void func_00147AC0(void *arg0) {
     func_001474F0(action);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", func_00147B90);
+struct DotrSlotOrder {
+    unsigned short position;
+    unsigned short unknown_02;
+    unsigned short unknown_04;
+    unsigned short unknown_06;
+    union {
+        unsigned short half;
+        int word;
+    } flags;
+};
+extern unsigned *func_00250740_b(int a, int b, int n);
+
+void func_00147B90(void *order_v, int flag)
+{
+    struct DotrSlotOrder * order = order_v;
+    int here;
+    int side;
+    unsigned *p;
+    int set;
+    int i;
+    int r;
+    int cell;
+
+    side = func_00250360(order->position >> 8, order->position & 0xff);
+    p = func_00250740_b(order->position >> 8, order->position & 0xff, 0);
+    here = func_001E1090(order->position >> 8, order->position & 0xff);
+    if (p == 0) {
+        order->unknown_04 = 0x5ff;
+        return;
+    }
+    switch (*p >> 8) {
+    case 20:
+        order->unknown_04 = 0xcff;
+        return;
+    case 2:
+        if ((unsigned char)flag == 1) {
+            r = func_0027C770(func_001DF540(order->position >> 8, order->position & 0xff), here & 0xff, here >> 8, 2, 6, 2);
+            if (r >= 0) {
+                order->unknown_04 = 0x6ff;
+                order->flags.word = (r << 16) | order->flags.half;
+            }
+        }
+        break;
+    case 4:
+        if ((unsigned char)flag == 1) {
+            set = func_0024CA40(0, 0, side, 2, 30, 14);
+            for (i = 0; i < func_0024E910(set); i++) {
+                r = func_0024EC50(set, i);
+                cell = func_001E1090(r >> 8, r & 0xff);
+                if (func_0014B3E0(side, here & 0xff, cell >> 8) == 1) {
+                    order->unknown_04 = 0x6ff;
+                    order->flags.word = order->flags.half | ((((cell >> 8) << 8) | (here & 0xff)) << 16);
+                    return;
+                }
+                if (func_0014B3E0(side, cell & 0xff, here >> 8) == 1) {
+                    order->unknown_04 = 0x6ff;
+                    order->flags.word = order->flags.half | ((((here >> 8) << 8) | (cell & 0xff)) << 16);
+                    return;
+                }
+            }
+        }
+        break;
+    }
+    order->unknown_04 = 0x5ff;
+}
 
 s32 func_00147E00(s32 arg0, s32 arg1, s32 arg2) {
     if (arg2 < 3) {
@@ -2072,7 +2135,6 @@ typedef struct Output_00149690 {
     u8 result;
 } Output_00149690;
 
-s32 func_00276CC0(s32, s32, u16, s32, u16, s32);
 
 s32 func_00149690(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00149690 *output = arg2;

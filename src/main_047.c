@@ -1213,7 +1213,74 @@ s32 func_001E7E70(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", func_001E7F70);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001E84D0);
+struct DotrMergeRecord {
+    char unknown_00[0x14];
+    char *data;
+    int unknown_18;
+    int user;
+};
+struct DotrMergeBits {
+    signed char bit_0 : 1;
+    signed char bit_1 : 1;
+    signed char bit_2 : 1;
+    signed char bit_3 : 1;
+    signed char bit_4 : 1;
+    signed char bit_5 : 1;
+    signed char bit_6 : 1;
+    signed char bit_7 : 1;
+};
+struct DotrMergeObject {
+    unsigned char unknown_000[0x1f3];
+    signed char kind;
+    short number;
+    unsigned char unknown_1f6[0x16];
+    struct DotrMergeBits bits;
+};
+struct DotrMergeTable {
+    int v[39];
+};
+struct DotrMergeOffsets {
+    int *v[39];
+};
+extern struct DotrMergeTable D_00292CA0;
+extern struct DotrMergeTable D_00292D40;
+extern struct DotrMergeTable D_00292DE0;
+extern struct DotrMergeOffsets D_00292E80;
+extern unsigned short D_002CF910[];
+extern struct DotrMergeObject *D_0031ABB0_b[];
+
+void func_001E84D0(void *req_v, int ok)
+{
+    struct DotrMergeRecord * req = req_v;
+    int user = req->user;
+    struct DotrMergeTable first = D_00292CA0;
+    struct DotrMergeTable count = D_00292D40;
+    struct DotrMergeTable limit = D_00292DE0;
+    struct DotrMergeOffsets offs = D_00292E80;
+    int j;
+    struct DotrMergeObject *p;
+
+    if (!ok) {
+        for (j = 0; j < count.v[user]; j++) {
+            p = D_0031ABB0_b[first.v[user] + j];
+            if (p) {
+                p->bits.bit_3 = 0;
+            }
+        }
+        return;
+    }
+    for (j = 0; j < count.v[user]; j++) {
+        p = D_0031ABB0_b[first.v[user] + j];
+        if (p) {
+            p->bits.bit_3 = 0;
+            if (p->number < D_002CF910[p->kind] && j < limit.v[user] && *(int *)(req->data + offs.v[user][j]) == 0x304852) {
+                p->bits.bit_0 = 0;
+                func_001E7D00(first.v[user] + j);
+                func_001F0500(first.v[user] + j, req->data + offs.v[user][j]);
+            }
+        }
+    }
+}
 
 typedef struct {
     s8 unused0 : 2;
@@ -1613,7 +1680,6 @@ typedef struct {
     s32 present;
 } Header_001EA2A0;
 
-s32 func_001EA410(s32, s32, s32, void *);
 
 s32 func_001EA2A0(s32 current, s32 object, void *data, s32 *size) {
     extern s32 func_00202E00();
@@ -1657,4 +1723,214 @@ s32 func_001EA2A0(s32 current, s32 object, void *data, s32 *size) {
     return func_0020F290(current);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", func_001EA410);
+typedef int DotrTexAnimWord;
+typedef unsigned long DotrTexAnimLong;
+struct DotrTexAnimTexture {
+    char unknown_00[0x40];
+    unsigned short psm;         
+    unsigned short unknown_42;
+    unsigned short width;       
+};
+struct DotrTexAnimHead {
+    char unknown_00[16];
+    struct DotrTexAnimTexture tex;
+};
+struct DotrTexAnimEntry {
+    unsigned char last : 1;     
+    unsigned char count : 1;    
+    unsigned char type : 3;     
+    unsigned char mode : 3;     
+    unsigned char mask;         
+    unsigned char cols : 4;     
+    unsigned char rows : 4;
+    union {
+        signed char cell;       
+        struct {
+            signed char dir : 2;
+            signed char pos : 6;
+        } swing;                
+        struct {
+            unsigned char on : 1;
+        } gate;                 
+    } u3;                       
+    union {
+        struct {
+            unsigned short a, b;
+        } h;
+        struct {
+            unsigned short a;
+            unsigned char limit, time;
+        } b;
+    } u4;                       
+    unsigned short w, h;        
+    unsigned short sx, sy;      
+    unsigned short dx, dy;      
+    int counter;                
+};
+struct DotrTexAnimRecord {
+    struct DotrTexAnimHead *head;
+    int unknown_4;
+    struct DotrTexAnimEntry *entries;
+};
+extern int func_001F13F0_b(int index);
+
+int func_001EA410(int cursor, int index, int position, void *record_v)
+{
+    struct DotrTexAnimRecord * record = record_v;
+    struct DotrTexAnimEntry *e;
+    DotrTexAnimLong *p = (DotrTexAnimLong *)cursor;
+    DotrTexAnimLong *start;
+    struct DotrTexAnimTexture *tex;
+    int n;
+    int step;
+    int last;
+    int cells;
+    int anim;
+    unsigned int frame;
+    int cell;
+
+    tex = &record->head->tex;
+    e = record->entries;
+    n = tex->width >> 6;
+    start = p;
+    n = (n > 1) ? n : 1;
+    step = func_001F3360(index) ? 0 : 1;
+    for (last = 0; !last; e++) {
+        cells = e->cols * e->rows;
+        anim = func_001F13F0_b(index);
+        frame = func_001A23B0(func_001F1B50(index));
+        cell = 0;
+        if (e->count) {
+            frame = e->counter;
+            e->counter = frame + step;
+        }
+        if (e->last) {
+            last = 1;
+        }
+        if (cells == 0) {
+            continue;
+        }
+        if (!(e->mask & (1 << anim))) {
+            continue;
+        }
+        if (e->type == 0 || e->type == 2) {
+            cells++;
+        }
+        switch (e->type) {
+        case 0:
+        case 1:
+        {
+            unsigned short span = e->u4.h.a;
+            cell = e->u3.cell;
+            if (step && frame && frame % span == 0) {
+                cell = (cell + 1) % cells;
+                e->u3.cell = cell;
+            }
+            break;
+        }
+        case 2:
+        case 3: {
+            unsigned short span;
+            int dir = e->u3.swing.dir;
+            if (dir > 0) {
+                span = e->u4.h.a;
+            } else {
+                span = e->u4.h.b;
+            }
+            cell = e->u3.swing.pos;
+            if (step && frame && frame % span == 0) {
+                cell += dir;
+                cell = ((cell > 0 ? cell : 0) < cells - 1) ? (cell > 0 ? cell : 0) : cells - 1;
+                e->u3.swing.pos = cell;
+                if (cell <= 0 || cell >= cells - 1) {
+                    e->u3.swing.dir = -e->u3.swing.dir;
+                    e->counter = 1;
+                }
+            }
+            break;
+        }
+        case 6:
+            if (e->u3.gate.on) {
+                e->u4.b.time += step;
+                if (e->u4.b.time < e->u4.b.limit) {
+                    break;
+                }
+                e->u3.gate.on = 0;
+                continue;
+            }
+            if (frame % e->u4.h.a) {
+                continue;
+            }
+            if (step && e->u4.b.limit) {
+                e->u3.gate.on = 1;
+                e->u4.b.time = 0;
+            }
+            break;
+        case 5:
+            if (e->u3.gate.on) {
+                if (frame == e->u4.h.a) {
+                    break;
+                }
+                e->u4.b.time += step;
+                if (e->u4.b.time < e->u4.b.limit) {
+                    break;
+                }
+                e->u3.gate.on = 0;
+                continue;
+            }
+            if (frame != e->u4.h.a) {
+                continue;
+            }
+            if (step && e->u4.b.limit) {
+                e->u3.gate.on = 1;
+                e->u4.b.time = 0;
+            }
+            break;
+        case 4:
+            if (frame < e->u4.h.a) {
+                continue;
+            }
+            if (frame > e->u4.h.b) {
+                continue;
+            }
+            break;
+        }
+        if (e->type == 0 || e->type == 2) {
+            if (cell == 0) {
+                continue;
+            }
+            cell--;
+        }
+        if (e->sx == e->dx && e->sy == e->dy) {
+            if (cell == 0) {
+                continue;
+            }
+        }
+        if (e->mode == 2 || e->mode == 3) {
+            cell = -cell;
+        }
+        p[1] = 0;
+        p[0] = 0;
+        ((unsigned char *)p)[3] = 0x10;
+        p[2] = 0x1000000000008004;
+        p[3] = 0xe;
+        p[4] = (DotrTexAnimLong)position | ((DotrTexAnimLong)n << 16) | ((DotrTexAnimLong)tex->psm << 24) | ((DotrTexAnimLong)position << 32) |
+               ((DotrTexAnimLong)n << 48) | ((DotrTexAnimLong)tex->psm << 56);
+        p[5] = 0x50;
+        p[6] = (DotrTexAnimLong)(e->sx + e->w * (cell % e->cols)) | ((DotrTexAnimLong)(e->sy + e->h * (cell / e->cols)) << 16) |
+               ((DotrTexAnimLong)e->dx << 32) | ((DotrTexAnimLong)e->dy << 48);
+        p[7] = 0x51;
+        p[8] = (DotrTexAnimLong)e->w | ((DotrTexAnimLong)e->h << 32);
+        p[9] = 0x52;
+        p[10] = 2;
+        p[11] = 0x53;
+        p += 12;
+    }
+    if (p != start) {
+        unsigned short q = ((p - start) >> 1) - 1;
+        *(unsigned short *)start = q;
+        ((int *)start)[2] = 0x11000000;
+        ((int *)start)[3] = q | 0x51000000;
+    }
+    return (DotrTexAnimWord)p;
+}

@@ -395,7 +395,16 @@ void func_00100E40(void *matrix, f32 *vector) {
     func_0020CB90((s32)matrix, (u32 *)&rotationY);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100F60);
+void func_00100F60(float *out, float *a, float *b, float *c)
+{
+    float v[2][4];
+
+    func_00187B00(v[0], a, b);
+    func_00187B48((float *)v, (float *)v, 0.5f);
+    func_00187B18(v[1], c, v[0]);
+    func_00187B48(v[1], v[1], 0.33333334f);
+    func_00187B00(out, v[1], v[0]);
+}
 
 f32 func_00100FF0(f32 fparg0, f32 fparg1, f32 fparg2) {
     f32 var_f0;

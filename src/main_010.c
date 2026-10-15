@@ -433,7 +433,6 @@ typedef struct {
     s32 status;
 } Record_0013E1D0;
 
-extern void func_0027CA50(void *, s32, s32, s32);
 
 s32 func_0013E1D0(u8 *arg0) {
     s32 category;
@@ -1537,7 +1536,6 @@ static inline s32 max_00140830(s32 a, s32 b) {
     return a > b ? a : b;
 }
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_00140830(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     extern s32 func_00141B90();
@@ -1865,7 +1863,6 @@ typedef struct {
 #define MIN_001415F0(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_001415F0(a, b) ((b) < (a) ? (a) : (b))
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_001415F0(void *arg0, s32 mode) {
     Source_001415F0 *source = arg0;

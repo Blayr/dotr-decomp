@@ -8,7 +8,6 @@ typedef struct {
     s32 unk8;
 } Unit_00135790;
 
-void func_0027CA50(void *, s32, s32, s32);
 
 s32 func_00135790(void *arg0) {
     extern s32 func_001E1030();
@@ -758,7 +757,6 @@ typedef struct {
     u8 mode;
 } Output_001374D0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_001374D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
@@ -898,7 +896,6 @@ typedef struct Coordinate_001379F0 {
     u8 y : 4;
 } Coordinate_001379F0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline s32 destination_001379F0(void *src, u8 mode) {
     Input_001379F0 *input = src;
@@ -1073,7 +1070,6 @@ typedef struct Point_00137FB0 {
     u8 y : 4;
 } Point_00137FB0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 destination_00137FB0(void *unit, s32 side) {
     if (side == 1) {
@@ -2891,7 +2887,6 @@ typedef struct Output_0013BE60 {
     u8 result;
 } Output_0013BE60;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_0013BE60(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_0013BE60 *output = arg2;
@@ -3040,7 +3035,6 @@ typedef struct Output_0013C430 {
     u8 result;
 } Output_0013C430;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 destination_0013C430(void *src, s32 mode) {
     if (mode == 1) {

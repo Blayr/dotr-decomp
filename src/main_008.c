@@ -753,7 +753,6 @@ typedef struct Output_0012E820 {
     u8 result;
 } Output_0012E820;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_0012E820(u16 *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
     Output_0012E820 *output = arg2;
@@ -1051,7 +1050,6 @@ typedef struct Position_0012F350 {
     u8 y : 4;
 } Position_0012F350;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0012F350(void *arg0, u8 which) {
     Source_0012F350 *source = arg0;
@@ -1223,7 +1221,6 @@ typedef struct Point_0012F930 {
     u8 y : 4;
 } Point_0012F930;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 destination_0012F930(void *unit, s32 side) {
     if (side == 1) {
@@ -1423,7 +1420,6 @@ typedef struct {
 #define MIN_00130120(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_00130120(a, b) ((b) < (a) ? (a) : (b))
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_00130120(void *arg0, s32 mode) {
     Source_00130120 *source = arg0;
@@ -1961,7 +1957,6 @@ s32 func_00131060(void *work, void *arg1, s32 arg2) {
 }
 #pragma conditional_move reset
 
-void func_0027CA50(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 
 typedef struct {
     u16 card;
@@ -2897,7 +2892,6 @@ typedef struct {
     u8 mode;
 } Output_001336A0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_001336A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
@@ -3021,7 +3015,6 @@ s32 func_001336A0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     return 0;
 }
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 typedef struct Input_00133BE0 {
     u16 position;
@@ -3215,7 +3208,6 @@ typedef struct Result_001341C0 {
     u8 flags;
 } Result_001341C0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 #define target_001341C0(src, side) ((side) == 1 ? ((((Source_001341C0 *)(src))->target >> 16) & 0xFFFF) : (u32)(u16)((Source_001341C0 *)(src))->target)
 

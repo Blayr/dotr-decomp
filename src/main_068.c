@@ -320,7 +320,97 @@ void func_0023BC80(void) {
     func_001A8870(1, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023BCE0);
+typedef int DotrHelpWord;
+struct DotrHelpWindow {
+    short x, y, w, h;
+    char unknown_08[2];
+};
+struct DotrHelpWindows {
+    struct DotrHelpWindow w[4];
+};
+extern struct DotrHelpWindows D_0029B020;
+extern signed char D_00299E10_b[];
+#define DOTR_HELP_BLOCK ((signed char *)0x1ed0000)
+#define DOTR_HELP_OPEN (*(signed char *)0x1ed543c)
+#define DOTR_HELP_STEP (*(signed char *)0x1ed543d)
+#define DOTR_HELP_PICK (*(signed char *)0x1ed546b)
+extern DotrHelpWord func_002195E0(DotrHelpWord cursor, struct DotrHelpWindow *window,
+                                    unsigned short flag, int a3, unsigned short x,
+                                    unsigned short y, int a6, int a7, int a8);
+extern DotrHelpWord func_001B6F70_b(DotrHelpWord cursor, int x, int y, int a,
+                                                int flags, int n, const char *text, int c);
+extern DotrHelpWord func_0021C450_b(DotrHelpWord cursor, int index, int no, int x, int y,
+                                     int unused, unsigned char *col, float sx, float sy);
+
+int func_0023BCE0(int cursor)
+{
+    signed char *st;
+    short y;
+    short i;
+    int ix;
+    short yy;
+    struct DotrHelpWindows win;
+    unsigned char col[4];
+    short xx;
+    int no;
+    int px;
+    signed char *blk;
+
+    st = D_00299E10_b;
+    win = D_0029B020;
+    col[0] = col[1] = col[2] = 128;
+    col[3] = 128;
+    y = 512 - ((DOTR_HELP_STEP << 9) >> 3);
+    blk = DOTR_HELP_BLOCK;
+    if (DOTR_HELP_OPEN != 0) {
+        cursor = func_002195E0(cursor, &win.w[0], 2, 0, 128, y + 80, 0, 128, 101);
+        cursor = func_002195E0(cursor, &win.w[1], 2, 0, 128, y + 80, 0, 128, 101);
+        cursor = func_002195E0(cursor, &win.w[3], st[0] + 10, 0, 282, y + 94, 0, 128, 128);
+        cursor = func_001B6F70_b(cursor, 296, y + 102, 2, 1, 4, D_0030F113, 0);
+        
+
+
+        px = 160;
+        xx = px;
+        ix = xx;
+        yy = 144;
+        cursor = func_002195E0(cursor, &win.w[2], 2, 0, px, y + ((short)(DOTR_HELP_PICK * 36) + yy), 0, 128, 0);
+        yy += 2;
+        for (i = 0; i < 5; i++) {
+            if (i == blk[0x546b]) {
+                col[0] = col[1] = col[2] = 255;
+                col[3] = 128;
+            } else {
+                col[0] = col[1] = col[2] = 64;
+                col[3] = 128;
+            }
+            switch (i) {
+            case 0:
+                no = 3049;
+                break;
+            case 1:
+                no = 3050;
+                break;
+            case 2:
+                no = 3051;
+                break;
+            case 3:
+                no = 3052;
+                break;
+            default:
+                no = 3053;
+                break;
+            }
+            cursor = func_0021C450_b(cursor, 1, no, ix + 16, (short)(yy + y), 0, col, 1.0f, 1.0f);
+            yy += 36;
+        }
+    }
+    return cursor;
+}
+#undef DOTR_HELP_BLOCK
+#undef DOTR_HELP_OPEN
+#undef DOTR_HELP_STEP
+#undef DOTR_HELP_PICK
 
 typedef struct Flags_0023BFF0 {
     s8 unused : 4;
@@ -3235,7 +3325,65 @@ s32 func_00241190(u16 *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00241200);
+struct DotrColorBytes {
+    unsigned char v[3];
+};
+union DotrColorChannels {
+    struct DotrColorBytes bytes;
+    struct {
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+    } rgb;
+};
+extern struct DotrColorBytes D_0029B2B0;
+
+void func_00241200(float *hls, int r, int g, int b, int max)
+{
+    
+
+    union DotrColorChannels t;
+    int hi;
+    int lo;
+    int i;
+    int sum;
+    int diff;
+    int mn;
+    int mx;
+
+    t.bytes = D_0029B2B0;
+    t.rgb.r = r;
+    t.rgb.g = g;
+    t.rgb.b = b;
+    hi = 0;
+    lo = 0;
+    for (i = 1; i < 3; i++) {
+        if (t.bytes.v[hi] < t.bytes.v[i]) {
+            hi = i;
+        }
+        if (t.bytes.v[i] < t.bytes.v[lo]) {
+            lo = i;
+        }
+    }
+    mx = t.bytes.v[hi];
+    mn = t.bytes.v[lo];
+    sum = mx + mn;
+    diff = mx - mn;
+    hls[0] = 0.0f;
+    hls[1] = (float)sum / (float)((unsigned char)max * 2);
+    hls[2] = hls[1];
+    if (diff != 0 && hls[1] > 0.0f && hls[1] < 1.0f) {
+        if (hls[1] <= 0.5f) {
+            hls[2] = (float)diff / (float)sum;
+        } else {
+            hls[2] = (float)diff / (float)((unsigned char)max * 2 - sum);
+        }
+        hls[0] = (float)(hi * 2) + (float)(t.bytes.v[(hi + 1) % 3] - t.bytes.v[(hi + 2) % 3]) / (float)diff;
+        if (hls[0] < 0.0f) {
+            hls[0] += 6.0f;
+        }
+    }
+}
 
 #define MIN_002413F0(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_002413F0(a, b) ((a) > (b) ? (a) : (b))

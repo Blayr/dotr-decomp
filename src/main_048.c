@@ -195,7 +195,161 @@ s32 func_001ED4A0(s32 index)
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EDA40);
+struct DotrObjectVector3 {
+    float x, y, z;
+};
+struct DotrObjectVector4 {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrObjectLink {
+    int unknown_00;
+    int unknown_04;
+};
+struct DotrObjectPair {
+    signed char unknown_bits_0_5 : 6;
+    signed char unknown_bits_6_7 : 2;
+};
+struct DotrObjectBits {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrObjectLowPair {
+    unsigned char unknown_bits_0_1 : 2;
+    unsigned char unknown_bits_2_3 : 2;
+    unsigned char unknown_bits_4_7 : 4;
+};
+struct DotrObjectQuad {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+struct DotrObject {
+    struct DotrObjectVector4 unknown_000;
+    struct DotrObjectVector4 unknown_010;
+    struct DotrObjectVector4 unknown_020;
+    struct DotrObjectVector4 unknown_030;
+    unsigned char unknown_040[0x40];
+    struct DotrObjectVector4 unknown_080;
+    unsigned char unknown_090[0x10];
+    struct DotrObjectVector4 unknown_0a0[8];
+    struct DotrObjectVector3 unknown_120;
+    struct DotrObjectQuad unknown_12c;
+    struct DotrObjectQuad unknown_130;
+    int unknown_134;
+    struct DotrObjectLink *unknown_138;
+    unsigned char unknown_13c[8];
+    unsigned char unknown_144[0x20];
+    int unknown_164;
+    int unknown_168;
+    int unknown_16c;
+    int unknown_170;
+    unsigned char unknown_174[4];
+    int unknown_178[8];
+    
+
+    struct DotrObjectVector3 unknown_198[2];
+    unsigned short unknown_1b0[8];
+    unsigned unknown_1c0[8];
+    signed char unknown_1e0[4];
+    float unknown_1e4;
+    unsigned char unknown_1e8[8];
+    short unknown_1f0;
+    signed char unknown_1f2;
+    signed char unknown_1f3;
+    short unknown_1f4;
+    unsigned char unknown_1f6;
+    struct DotrObjectPair unknown_1f7;
+    struct DotrObjectLowPair unknown_1f8;
+    unsigned char unknown_1f9;
+    unsigned char unknown_1fa;
+    unsigned char unknown_1fb;
+    unsigned char unknown_1fc;
+    unsigned char unknown_1fd;
+    unsigned char unknown_1fe;
+    unsigned char unknown_1ff;
+    unsigned char unknown_200;
+    unsigned char unknown_201[9];
+    unsigned short unknown_20a;
+    struct DotrObjectBits unknown_20c;
+    struct DotrObjectBits unknown_20d;
+};
+extern struct DotrObject *D_0031ABB0_b[];
+struct DotrObjectCue {
+    unsigned short kind : 4;
+    unsigned short time : 12;
+    unsigned short code;
+};
+extern int func_001A8760_b(void);
+
+int func_001EDA40(int channel, int index)
+{
+    struct DotrObject *p;
+    int kind;
+    struct DotrObjectCue *cue;
+    int i;
+    float previous;
+    float now;
+
+    if (channel != 2 && channel != 3) {
+        return 0;
+    }
+    if (index < 0 || index >= 84) {
+        return 0;
+    }
+    p = D_0031ABB0_b[index];
+    if (p == 0) {
+        return 0;
+    }
+    if (p->unknown_1f2 < 0) {
+        return 0;
+    }
+    if (p->unknown_138 == 0) {
+        return 0;
+    }
+    if (p->unknown_20c.unknown_bit_3) {
+        return 0;
+    }
+    if (!p->unknown_20c.unknown_bit_1) {
+        return 0;
+    }
+    if (p->unknown_20d.unknown_bit_0) {
+        return 0;
+    }
+    if (*(int *)&p->unknown_1e8[4] < 0 && p->unknown_1f7.unknown_bits_6_7 != 1) {
+        return 0;
+    }
+    cue = *(struct DotrObjectCue **)p->unknown_174;
+    if (cue != 0) {
+        kind = p->unknown_1e0[0];
+        previous = func_001A8760_b();
+        now = p->unknown_198[0].y;
+        if (*(int *)&p->unknown_1e8[4] >= 0) {
+            kind = 2;
+            now = func_001F5320(*(int *)&p->unknown_1e8[4]);
+        }
+        previous = now - previous;
+        for (i = 0; i < 64; i++, cue++) {
+            if (cue->kind == 15) {
+                break;
+            }
+            if (cue->kind == kind) {
+                if (cue->time >= previous && cue->time < now) {
+                    func_00217710(channel, cue->code);
+                }
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z;

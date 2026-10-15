@@ -1740,7 +1740,67 @@ void func_001DBFE0(s32 arg0, f32 *arg1, u8 *arg2, s32 arg3) {
     func_00207AA0(temp_s1_2, &sp50, temp_v0_4, 0x70002000, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DC560);
+struct DotrStateCellQuad {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+typedef int DotrStateWord;
+struct DotrStateCell {
+    DotrStateWord unknown_00;
+    struct DotrStateCellQuad unknown_04[4];
+    short unknown_14;
+    unsigned char unknown_16;
+    unsigned char unknown_17;
+    unsigned char unknown_18;
+    unsigned char unknown_19;
+    unsigned char unknown_1a;
+};
+typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell) == 0x1c) ? 1 : -1];
+struct DotrStateCell *func_001DCD00_b(int x, int y);
+
+int func_001DC560(int cursor)
+{
+    int x;
+    int y;
+    struct DotrStateCell *cell;
+    float pos[4];
+    float dx;
+    float dz;
+    struct DotrStateCellQuad c0;
+    struct DotrStateCellQuad c1;
+
+    if (func_001F3130(0) == 0) {
+        return cursor;
+    }
+    for (y = 0; y < 7; y++) {
+        for (x = 0; x < 7; x++) {
+            cell = func_001DCD00_b(x, y);
+            c0 = cell->unknown_04[1];
+            c1 = cell->unknown_04[3];
+            c0.unknown_2 = (c0.unknown_2 * cell->unknown_1a) >> 7;
+            c0.unknown_1 = (c0.unknown_1 * cell->unknown_1a) >> 7;
+            c0.unknown_0 = (c0.unknown_0 * cell->unknown_1a) >> 7;
+            c1.unknown_2 = (c1.unknown_2 * cell->unknown_1a) >> 7;
+            c1.unknown_1 = (c1.unknown_1 * cell->unknown_1a) >> 7;
+            c1.unknown_0 = (c1.unknown_0 * cell->unknown_1a) >> 7;
+            pos[0] = (x - 3) * 50;
+            pos[2] = (y - 3) * 50;
+            pos[1] = -0.2f;
+            if (c0.unknown_3 != 0) {
+                dz = dx = 24.0f;
+                cursor = func_001DBD50(cursor, pos, dx, dz, cell->unknown_19, &c0.unknown_0, 1);
+            }
+            pos[1] = -0.1f;
+            if (c1.unknown_3 != 0) {
+                dz = dx = 24.0f;
+                cursor = func_001DBD50(cursor, pos, dx, dz, 1, &c1.unknown_0, 0);
+            }
+        }
+    }
+    return cursor;
+}
 
 typedef struct {
     s8 unused : 7;
@@ -2159,7 +2219,6 @@ void *func_001DD130(s32 group, s32 index) {
     return group * 0x3F4 + D_00318280 + index * 0x5C;
 }
 
-void func_001DD2D0(u8 *, s32);
 extern u8 D_00318E60[];
 
 static inline u8 *cell_001DD220(s32 x, s32 y, u8 *cell) {
@@ -2192,7 +2251,268 @@ void func_001DD220(void) {
     } while (var_s1 < 7);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", func_001DD2D0);
+struct DotrStateItemBits {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrStateItemPairs {
+    signed char unknown_bits_0_1 : 2;
+    signed char unknown_bits_2_3 : 2;
+    signed char unknown_bits_4_5 : 2;
+    signed char unknown_bits_6_7 : 2;
+};
+struct DotrStateItemFlags {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bits_4_7 : 4;
+};
+struct DotrStateItemObject;
+struct DotrStateItemSource {
+    unsigned char unknown_00;
+    unsigned char unknown_01;
+    unsigned char unknown_02_low : 4;
+    unsigned char unknown_02_high : 4;
+    unsigned char unknown_03;
+    unsigned short unknown_04;
+    unsigned char unknown_06[2];
+    unsigned short unknown_08;
+    unsigned short unknown_0a;
+};
+struct DotrStateEntry8 {
+    int unknown_words[2];
+};
+struct DotrStateItem {
+    struct DotrStateItemSource *unknown_00;
+    struct DotrStateItemObject *unknown_04; 
+    struct DotrStateEntry8 unknown_08[5];
+    int unknown_30;
+    unsigned char unknown_34[4];
+    short unknown_38;
+    short unknown_3a;
+    unsigned short unknown_3c;
+    unsigned char unknown_3e;
+    unsigned char unknown_3f;
+    unsigned char unknown_40;
+    unsigned char unknown_41;
+    unsigned char unknown_42[2];
+    unsigned char unknown_44;
+    unsigned char unknown_45;
+    unsigned char unknown_46;
+    unsigned char unknown_47;
+    unsigned char unknown_48;
+    unsigned char unknown_49;
+    unsigned char unknown_4a;
+    unsigned char unknown_4b;
+    unsigned char unknown_4c[2];
+    unsigned char unknown_4e;
+    unsigned char unknown_4f;
+    unsigned char unknown_50;
+    unsigned char unknown_51;
+    unsigned char unknown_52;
+    unsigned char unknown_53;
+    unsigned char unknown_54;
+    unsigned char unknown_55;
+    struct DotrStateItemPairs unknown_56;
+    struct DotrStateItemBits unknown_57;
+    struct DotrStateItemFlags unknown_58;
+    unsigned char unknown_59[3];
+};
+typedef char DotrStateItemMustBe5c[(sizeof(struct DotrStateItem) == 0x5c) ? 1 : -1];
+struct DotrStateVector {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrStateCellQuad_1dd2d0 {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+typedef int DotrStateWord_1dd2d0;
+struct DotrStateCell_1dd2d0 {
+    DotrStateWord_1dd2d0 unknown_00;
+    struct DotrStateCellQuad_1dd2d0 unknown_04[4];
+    short unknown_14;
+    unsigned char unknown_16;
+    unsigned char unknown_17;
+    unsigned char unknown_18;
+    unsigned char unknown_19;
+    unsigned char unknown_1a;
+};
+typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell_1dd2d0) == 0x1c) ? 1 : -1];
+struct DotrStateItemObject {
+    struct DotrStateVector unknown_00;
+    struct DotrStateVector unknown_10;
+    unsigned char unknown_20[0x10];
+    struct DotrStateVector unknown_30;
+    struct DotrStateCellQuad_1dd2d0 unknown_40;
+};
+struct DotrUnitRequestObject {
+    unsigned char unknown_00[0x14];
+    int unknown_14;
+    int unknown_18;
+    unsigned char unknown_1c[0x14];
+    struct DotrStateVector unknown_30;
+    struct DotrStateCellQuad_1dd2d0 unknown_40;
+};
+extern int func_001AAF60_b(int a);
+extern int func_001F2800_b(int index, int value);
+
+void func_001DD2D0(void *cell_v, int unknown)
+{
+    struct DotrStateCell_1dd2d0 * cell = cell_v;
+    struct DotrUnitRequestObject *o;
+    struct DotrStateVector v;
+    int mode;
+    struct DotrStateItem *u = (struct DotrStateItem *)unknown;
+    int n, flag;
+    signed char d;
+    unsigned char level;
+    float f;
+    mode = func_001AAF60_b(1);
+    if (cell == 0) {
+        return;
+    }
+    if (u == 0) {
+        return;
+    }
+    if (!u->unknown_57.unknown_bit_7) {
+        if (!u->unknown_58.unknown_bit_1) {
+            if (u->unknown_57.unknown_bit_0) {
+                n = u->unknown_4c[1] - 4;
+                n = n > 64 ? n : 64;
+                u->unknown_4c[1] = n;
+            } else {
+                n = u->unknown_4c[1] + 4;
+                n = n < 128 ? n : 128;
+                u->unknown_4c[1] = n;
+            }
+        }
+        if (u->unknown_56.unknown_bits_4_5) {
+            d = u->unknown_56.unknown_bits_4_5;
+            if ((d > 0 && u->unknown_54 >= 255) || (d < 0 && u->unknown_54 <= 0)) {
+                u->unknown_56.unknown_bits_4_5 = 0;
+            } else if (d > 0) {
+                n = u->unknown_54 + 32;
+                n = n < 255 ? n : 255;
+                u->unknown_54 = n;
+            } else {
+                n = u->unknown_54 - 32;
+                n = n > 0 ? n : 0;
+                u->unknown_54 = n;
+            }
+        }
+        if (u->unknown_56.unknown_bits_6_7) {
+            d = u->unknown_56.unknown_bits_6_7;
+            if ((d > 0 && u->unknown_55 >= 255) || (d < 0 && u->unknown_55 <= 0)) {
+                u->unknown_56.unknown_bits_6_7 = 0;
+            } else if (d > 0) {
+                n = u->unknown_55 + 32;
+                n = n < 255 ? n : 255;
+                u->unknown_55 = n;
+            } else {
+                n = u->unknown_55 - 32;
+                n = n > 0 ? n : 0;
+                u->unknown_55 = n;
+            }
+        }
+        n = u->unknown_56.unknown_bits_0_1;
+        if ((n > 0 && u->unknown_52 >= u->unknown_50) || (n < 0 && u->unknown_52 <= 0)) {
+            if (mode == 1) {
+                u->unknown_4e = 1;
+            } else {
+                u->unknown_4e = 0;
+            }
+            u->unknown_56.unknown_bits_0_1 = 0;
+        } else if (n > 0) {
+            int t = u->unknown_52 + 8;
+            t = t < u->unknown_50 ? t : u->unknown_50;
+            u->unknown_52 = t;
+        } else if (n < 0) {
+            int t = u->unknown_52 - 8;
+            t = t > 0 ? t : 0;
+            u->unknown_52 = t;
+        }
+        o = (struct DotrUnitRequestObject *)u->unknown_04;
+        if (o != 0) {
+            if (u->unknown_58.unknown_bit_1) {
+                level = 128;
+            } else {
+                level = cell->unknown_1a;
+            }
+            o->unknown_14 = -((u->unknown_55 << 14) / 255);
+            if (u->unknown_44 == 0) {
+                o->unknown_14 = o->unknown_14 + 0x8000;
+            }
+            o->unknown_18 = (u->unknown_54 << 15) / 255;
+            n = (u->unknown_4c[1] * level) >> 7;
+            o->unknown_40.unknown_0 = n;
+            o->unknown_40.unknown_1 = n;
+            o->unknown_40.unknown_2 = n;
+            if (u->unknown_4e & 1) {
+                o->unknown_40.unknown_3 = u->unknown_52;
+            }
+            if (u->unknown_4e & 2) {
+                f = (float)(unsigned)u->unknown_52 / 1280.0f;
+                o->unknown_30.z = f;
+                o->unknown_30.y = f;
+                o->unknown_30.x = f;
+            }
+        }
+    }
+    if (u->unknown_45 >= 6) {
+        return;
+    }
+    if (u->unknown_58.unknown_bit_0) {
+        return;
+    }
+    flag = 0;
+    if (func_001F1300(u->unknown_46)) {
+        if (u->unknown_45 == 0) {
+            flag = 1;
+        } else if (u->unknown_57.unknown_bit_4) {
+            flag = 1;
+        }
+    }
+    if (flag) {
+        n = u->unknown_56.unknown_bits_2_3;
+        if ((n > 0 && u->unknown_53 >= u->unknown_51) || (n < 0 && u->unknown_53 <= 0)) {
+            if (mode == 1) {
+                u->unknown_4f = 1;
+            } else {
+                u->unknown_4f = 0;
+            }
+            u->unknown_56.unknown_bits_2_3 = 0;
+        } else if (n > 0) {
+            int t = u->unknown_53 + 8;
+            t = t < u->unknown_51 ? t : u->unknown_51;
+            u->unknown_53 = t;
+        } else if (n < 0) {
+            int t = u->unknown_53 - 8;
+            t = t > 0 ? t : 0;
+            u->unknown_53 = t;
+        }
+    }
+    if (u->unknown_4f & 1) {
+        func_001F2800_b(u->unknown_46, u->unknown_53);
+    }
+    if (u->unknown_4f & 2) {
+        f = (float)(unsigned)u->unknown_53 / 128.0f;
+        f = f < 1.0f ? f : 1.0f;
+        v.z = f;
+        v.y = f;
+        v.x = f;
+        func_001F25D0(u->unknown_46, &v);
+    }
+}
 
 s32 func_001DD890(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     u8 *first;

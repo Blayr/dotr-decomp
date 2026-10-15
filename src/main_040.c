@@ -1607,7 +1607,6 @@ typedef struct Vec4_001C12B0 {
     f32 x, y, z, w;
 } Vec4_001C12B0;
 
-void func_001EDA40(s32, s32);
 
 static inline s32 abs_001C12B0(s32 value) {
     return value >= 0 ? value : -value;
@@ -1708,7 +1707,117 @@ void func_001C1AD0(void) {
     func_00209D30(func_001C1B00(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001C1B00);
+struct DotrView3dVector {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+struct DotrView3dAngles {
+    int x;
+    int y;
+    int z;
+    int w;
+};
+struct DotrView3dLight {
+    float unknown_00[4];
+    struct DotrView3dVector position;
+    float unknown_20;
+    float unknown_24;
+    float unknown_28[2];
+};
+struct DotrView3dControl {
+    unsigned char unknown_0000[0xd35];
+    unsigned char unknown_d35;
+};
+extern struct DotrView3dVector D_00291460;
+extern struct DotrView3dAngles D_00291470;
+extern struct DotrView3dVector D_00291480;
+extern struct DotrView3dLight D_00291430;
+extern struct DotrView3dControl D_00317490_b;
+extern void *func_001FAF60_b(int index);
+extern void *func_001F9D30_b(int index);
+extern int func_001F2920_b(int index);
+extern void *func_001F9AD0_b(int index);
+extern int func_001F9940_b(int index, int position, struct DotrView3dLight *in);
+extern int func_001EFA80_b(int cursor, int index, struct DotrView3dVector *c,
+                                        void *d, int e, int f, int g);
+extern int func_001C1FE0_b(int a, struct DotrView3dVector *centre, int alpha,
+                                      float dx, float dz);
+extern int func_001EE4B0_b(int cursor, int index, int c, void *d, int e, int f, int g);
+#define VIEW3D_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define VIEW3D_MIN(a, b) (((a) < (b)) ? (a) : (b))
+
+int func_001C1B00(int cursor)
+{
+    struct DotrView3dControl *control = &D_00317490_b;
+    struct DotrView3dVector pos = D_00291460;
+    struct DotrView3dAngles rot = D_00291470;
+    struct DotrView3dVector centre;
+    struct DotrView3dVector cp;
+    struct DotrView3dVector look;
+    float dist;
+    int i;
+    int j;
+
+    if (func_001F1370(29)) {
+        func_001FAF60_b(0);
+        func_001F0F40(29);
+        if (control->unknown_d35 != 0) {
+            if (func_001F2050(29, &centre)) {
+                cp = *(struct DotrView3dVector *)func_001F9D30_b(0);
+                cp.y += VIEW3D_MIN(VIEW3D_MAX(centre.y - cp.y, -1.0f), 1.0f);
+                func_001F9D80(0, &cp);
+            }
+        } else {
+            if (func_001F2150(29, &centre)) {
+                dist = (float)func_001DE260(func_001DE130(func_001F2920_b(29)));
+                look = D_00291480;
+                centre.x *= -1.0f;
+                centre.y *= -1.0f;
+                centre.z *= -1.0f;
+                look.x = dist;
+                func_001F22B0(29, &centre);
+                func_001FB360(0, &look);
+                D_00291430.unknown_20 = dist;
+                D_00291430.unknown_24 = 2.0f * dist;
+                D_00291430.position = *(struct DotrView3dVector *)func_001F9AD0_b(0);
+                func_001F9940_b(0, 4, &D_00291430);
+            }
+            control->unknown_d35++;
+        }
+    }
+    for (i = 5; i >= -5; i--) {
+        pos.y = (float)(i * 500);
+        cursor = func_001EFA80_b(cursor, 38, &pos, 0, 0, 0, 0);
+    }
+    for (i = 5; i >= -5; i--) {
+        pos.y = (float)(i * 500);
+        for (j = 0; j < 12; j++) {
+            rot.y = j * 0x10000 / 12;
+            cursor = func_001EFA80_b(cursor, 36, &pos, &rot, 0, 0, 0);
+        }
+    }
+    pos.y = 0.0f;
+    for (j = 0; j < 6; j++) {
+        rot.y = j * 0x10000 / 6;
+        cursor = func_001EFA80_b(cursor, 37, &pos, &rot, 0, 0, 0);
+    }
+    for (i = 0; i < 5; i++) {
+        pos.y = (float)(2500 - i * 100);
+        cursor = func_001C1FE0_b(cursor, &pos, 16, 1500.0f, 1500.0f);
+    }
+    for (i = 0; i < 5; i++) {
+        pos.y = (float)(-2500 + i * 100);
+        cursor = func_001C1FE0_b(cursor, &pos, 16, 1500.0f, 1500.0f);
+    }
+    pos.y = -500.0f;
+    cursor = func_001EFA80_b(cursor, 34, &pos, 0, 0, 0, 0);
+    cursor = func_001EFA80_b(cursor, 35, &pos, 0, 0, 0, 0);
+    return func_001EE4B0_b(cursor, 29, 0, 0, 0, 0, 0);
+}
+#undef VIEW3D_MAX
+#undef VIEW3D_MIN
 
 typedef struct Vertex_001C1FE0 {
     f32 x, y, z;

@@ -994,7 +994,187 @@ s32 func_002560C0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", func_00256520);
+struct jp_6989c {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+struct jp_68cb4 {
+    int fLoad : 1;
+    unsigned char bModNum : 5;
+    unsigned short wModule[24];
+    unsigned char bModCond[24];
+};
+struct jp_69942 {
+    unsigned short wCount_1;
+    unsigned short wCount_2;
+    unsigned short wLvl;
+    unsigned char eID[24];
+    int ePos[24];
+    struct jp_68cb4 eMod;
+    unsigned int fObj;
+    unsigned int fObj2;
+    unsigned char oNum;
+    unsigned char unknown_d5[0xb];
+    int camDat[8];
+    unsigned char bCamLvl;
+    unsigned short wCamTime;
+    unsigned char unknown_104[0xc];
+    int nTasakiEfc[0x10c];
+};
+extern int func_00255AC0_b(struct jp_69942 *q, int id);
+extern void func_00260740_b(unsigned char who);
+extern void func_00260A70_b(struct jp_69942 *Temp, unsigned char b);
+extern void func_002614C0_b(unsigned char b, int cell, int value);
+#define E002_MIN(a, b) ((a) < (b) ? (a) : (b))
+#define E002_MAX(a, b) ((b) < (a) ? (a) : (b))
+#define E002_NEAR(x, y) \
+    ((E002_MAX(y, (eInfo->dwFrom & 0xFF)) - E002_MIN(y, (eInfo->dwFrom & 0xFF))) \
+     + (E002_MAX(x, (eInfo->dwFrom >> 8)) - E002_MIN(x, (eInfo->dwFrom >> 8))) <= eInfo->dwTo)
+
+int func_00256520(void *eInfo_v, void *Temp_v, int ID)
+{
+    struct jp_6989c * eInfo = eInfo_v;
+    struct jp_69942 * Temp = Temp_v;
+    int stored;
+    int Buf[49];
+    int tCount;
+    struct jp_6989c eCall;
+    struct jp_6989c *pCall = &eCall;
+    int j;
+    int i;
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    tCount = 0;
+    for (j = 0; j < 49; j++) {
+        Buf[j] = -1;
+    }
+    if (ID >= 0) {
+        func_00255960(Temp);
+        func_0025FC30(eInfo, Temp, ID, -1, 1, 3);
+        for (j = 0; j < 7; j++) {
+            for (i = 0; i < 7; i++) {
+                if (E002_NEAR((unsigned)i, (unsigned)j)) {
+                    Buf[tCount] = (i << 8) | j;
+                    tCount++;
+                }
+            }
+        }
+        if (tCount != 1) {
+            func_00260740_b(30);
+        } else {
+            func_002614C0_b(0, Buf[0], 180);
+        }
+        if (eInfo->dwPar == 8) {
+            func_00255AC0_b(Temp, 503);
+        } else {
+            func_00255AC0_b(Temp, 502);
+        }
+        return 1;
+    }
+    switch (Temp->wLvl) {
+    case 0:
+        if (func_0025FD90() == 0 || func_00255B50(Temp) != 1) {
+            return 1;
+        }
+        for (i = 0; i < 49; i++) {
+            Buf[i] = -1;
+        }
+        switch (eInfo->dwTo) {
+        case 16:
+            for (i = 0; i < 7; i++) {
+                Buf[i] = ((eInfo->dwFrom >> 8) << 8) | i;
+                tCount++;
+            }
+            break;
+        default:
+            for (j = 0; j < 7; j++) {
+                for (i = 0; i < 7; i++) {
+                    if (E002_NEAR((unsigned)i, (unsigned)j)) {
+                        Buf[tCount] = (i << 8) | j;
+                        tCount++;
+                    }
+                }
+            }
+            break;
+        }
+        for (i = 0; i < tCount; i++) {
+            switch (eInfo->dwPar) {
+            case 8:
+                if (i == 0) {
+                    pCall->eNO = 503;
+                    pCall->dwFrom = 1;
+                    pCall->dwTo = Buf[i];
+                    pCall->dwPar = eInfo->dwPar;
+                } else {
+                    pCall->eNO = 503;
+                    pCall->dwFrom = 0;
+                    pCall->dwTo = Buf[i];
+                    pCall->dwPar = eInfo->dwPar;
+                }
+                break;
+            default:
+                if (i == 0) {
+                    if (func_001E22B0(Buf[i] & 0xFF, Buf[i] >> 8) != 8) {
+                        pCall->eNO = 502;
+                        pCall->dwFrom = 1;
+                        pCall->dwTo = Buf[i];
+                        pCall->dwPar = eInfo->dwPar;
+                    }
+                } else {
+                    if (func_001E22B0(Buf[i] & 0xFF, Buf[i] >> 8) != 8) {
+                        pCall->eNO = 502;
+                        pCall->dwFrom = 0;
+                        pCall->dwTo = Buf[i];
+                        pCall->dwPar = eInfo->dwPar;
+                    }
+                }
+                break;
+            }
+            
+
+            if ((stored = (Temp->eID[i] = func_00255A30(pCall, Temp))) >= 0) {
+                Temp->ePos[Temp->oNum] = ((Buf[i] >> 8) << 8) | (Buf[i] & 0xFF);
+                Temp->oNum++;
+            }
+        }
+        Temp->wLvl++;
+        return 1;
+    case 1:
+        for (i = 0; i < Temp->oNum; i++) {
+            if (func_001F51D0(Temp->eID[i]) != 0) {
+                if (func_001F52D0(Temp->eID[i]) == 2) {
+                    if ((Temp->ePos[i] & 0xFFFF) != 0xFFFF) {
+                        Temp->ePos[i] = 0xFFFF;
+                    }
+                }
+            } else {
+                tCount++;
+            }
+        }
+        if (tCount >= Temp->oNum) {
+            Temp->wLvl++;
+            func_00260A70_b(Temp, 30);
+            func_0025FC30(eInfo, Temp, ID, 1, 1, 3);
+        }
+        return 1;
+    default:
+        if (Temp->wCamTime++ > 30) {
+            if (func_0025FD90() == 1) {
+                func_001E4530();
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
+#undef E002_MIN
+#undef E002_MAX
+#undef E002_NEAR
 
 typedef struct State_00256AB0 {
     u8 pad0[4];

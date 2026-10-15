@@ -112,7 +112,50 @@ s32 func_00276C80(u16 *arg0, s32 arg1) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00276CC0);
+struct jp_9a533;
+extern struct jp_9a533 *func_001DF540_b(int a, int b);
+extern int func_00278510_b(struct jp_9a533 *pVarInfo, int wUnit, int bWarnLvl, int x, int z,
+                              unsigned char fView);
+#define LO(a, b) ((a) < (b) ? (a) : (b))
+#define HI(a, b) ((b) < (a) ? (a) : (b))
+
+int func_00276CC0(int nX, int nZ, int nOwnerID, unsigned char bWarnRange, unsigned short bWarnLvl, unsigned char fView)
+{
+    struct jp_9a533 *pVarInfo;
+    unsigned short wUnitLst[22];
+    int Dist;
+    int Danger;
+    int i;
+    int v1;
+    int Loc;
+
+    for (i = 0; i < 22; i++) {
+        wUnitLst[i] = 0xffff;
+    }
+    pVarInfo = func_001DF540_b(nOwnerID >> 8, nOwnerID & 0xff);
+    func_0027C070(func_00250370(pVarInfo) == 0 ? 1 : 0, wUnitLst, 29, fView);
+    Danger = 0;
+    for (i = 0; i < func_0027C670(wUnitLst); i++) {
+        if (func_001DF540_b(wUnitLst[i] >> 8, wUnitLst[i] & 0xff) != 0) {
+            Loc = func_001E1090(wUnitLst[i] >> 8, wUnitLst[i] & 0xff);
+            Dist = (HI(nX, Loc & 0xff) - LO(nX, Loc & 0xff)) + (HI(nZ, Loc >> 8) - LO(nZ, Loc >> 8));
+            if (Dist <= bWarnRange && Dist > 0) {
+                if (Dist < bWarnRange && Dist > 0) {
+                    v1 = func_00278510_b(pVarInfo, wUnitLst[i], bWarnLvl, Loc & 0xff, Loc >> 8, fView);
+                    if (v1 > 0) {
+                        v1 = 0;
+                    } else {
+                        v1 = -v1;
+                    }
+                    Danger += v1 / Dist;
+                }
+            }
+        }
+    }
+    return Danger;
+}
+#undef LO
+#undef HI
 
 typedef struct {
     u16 field_0;

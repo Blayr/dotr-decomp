@@ -829,7 +829,98 @@ void func_001A8920(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001A89C0);
+struct DotrMovieOperationsStatePrefix {
+    unsigned char unknown_000[8];
+    unsigned int field_008; 
+    int field_00c;
+    unsigned char unknown_010[0x14c];
+    int field_15c; 
+    int field_160; 
+    int field_164; 
+    unsigned char unknown_168[0x28];
+    int field_190; 
+    unsigned char unknown_194[0x5d];
+    signed char bytes_1f1[8];
+    unsigned char bytes_1f9[8];
+    unsigned char unknown_201[0xb];
+    unsigned char bytes_20c[4]; 
+    unsigned char unknown_210[4];
+    int field_214; 
+    int field_218;
+    unsigned short field_21c;
+    signed char field_21e;
+    signed char field_21f;
+    signed char field_220;
+    signed char field_221;
+    unsigned char field_222;
+    unsigned char unknown_223;
+    unsigned char field_224; 
+    unsigned char field_225; 
+    unsigned char field_226; 
+    unsigned char field_227;
+    signed char field_228;
+    signed char field_229;
+    unsigned char unknown_22a[2];
+    struct {
+        signed char unknown_0 : 2;
+        signed char field_2 : 2;
+        unsigned char field_4 : 2;
+        signed char unknown_6 : 2;
+    } field_22c;
+    unsigned char unknown_22d;
+    struct {
+        signed char unknown_0 : 4;
+        signed char field_4 : 1;
+        signed char field_5 : 1;
+        signed char unknown_6 : 2;
+    } field_22e;
+    struct {
+        signed char field_0 : 1;
+        signed char field_1 : 1;
+    } field_22f;
+};
+extern struct DotrMovieOperationsStatePrefix D_00317250_b;
+extern void func_001A8DB0(int);
+
+void func_001A89C0(int arg0, int arg1)
+{
+    struct DotrMovieOperationsStatePrefix *state = &D_00317250_b;
+    int flag = 1;
+    unsigned int prior = state->bytes_1f9[state->field_222];
+    state->field_21e = state->bytes_1f1[state->field_222];
+    state->field_222 += arg1;
+    state->bytes_1f1[state->field_222] = arg0;
+    state->field_21f = arg0;
+    if (state->bytes_1f9[state->field_222] == 0 || arg1 <= 0)
+        func_001AAD50(state->field_21e);
+    else
+        flag = 0;
+    func_001A8BB0();
+    if (prior == 0 || arg1 >= 0)
+        func_001A8DB0(state->field_21f);
+    else
+        flag = 0;
+    switch (arg0) {
+    case -3:
+    case -2:
+    case -1:
+    case 10:
+    case 36:
+        flag = 0;
+        break;
+    case 15:
+        if (state->field_21e == 1)
+            flag = 0;
+        break;
+    }
+    state->field_221 = 0;
+    state->field_22c.field_4 = 3;
+    state->field_22e.field_4 = (signed char)flag;
+    state->field_00c = 0;
+    state->field_229 = 0;
+    state->field_228 = 0;
+    state->field_22c.field_2 = 1;
+}
 
 void func_001A8BB0(void) {
     extern s32 func_001F1A80(s32, f32);
@@ -1164,7 +1255,6 @@ extern u8 D_00317472;
 void func_001AC700(void);
 s32 func_001CEE60(void);
 void func_001EAA60(s32);
-void func_001EDA40(s32, s32);
 void func_00203E20(void);
 void func_00237730(void);
 

@@ -181,7 +181,132 @@ s32 func_001F74C0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F7550);
+typedef __int128 DotrBlockWord128;
+struct DotrBlockQuad {
+    unsigned char unknown_bytes[4];
+};
+struct DotrBlockPair {
+    float x, y;
+};
+struct DotrBlockVector4 {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrBlockTriple {
+    struct DotrBlockVector4 unknown_00[3];
+};
+struct DotrBlockElement {
+    struct DotrBlockTriple unknown_00[3];
+};
+union DotrBlockMatrix48 {
+    DotrBlockWord128 unknown_quads[3];
+    struct DotrBlockVector4 unknown_vectors[3];
+};
+struct DotrBlock {
+    unsigned char unknown_000[0x30];
+    unsigned char unknown_030[0x10];
+    int unknown_040;
+    float unknown_044;
+    unsigned char unknown_048[0x18];
+    struct DotrBlockElement unknown_060[10];
+    union DotrBlockMatrix48 unknown_600[10];
+    struct DotrBlockPair unknown_7e0[10];
+    struct DotrBlockPair unknown_830[10];
+    struct DotrBlockQuad unknown_880[10];
+    unsigned short unknown_8a8;
+    unsigned short unknown_8aa;
+    unsigned short unknown_8ac;
+    unsigned short unknown_8ae;
+    int unknown_8b0;
+    int unknown_8b4;
+    unsigned char unknown_8b8[8];
+};
+typedef char DotrBlockMustBe8c0[(sizeof(struct DotrBlock) == 0x8c0) ? 1 : -1];
+extern struct DotrBlock *D_0031BEB0_b[];
+int func_001F9170_b(int index, int position, struct DotrBlockQuad *in);
+
+int func_001F7550(int index)
+{
+    struct DotrBlock *p;
+    struct DotrBlockVector4 *v;
+    float *f;
+    struct DotrBlockElement *e;
+    int *angles;
+    struct DotrBlockPair *a;
+    struct DotrBlockPair *b;
+    int i;
+
+    if (index < 0 || index >= 1) {
+        return 0;
+    }
+    p = D_0031BEB0_b[index];
+    if (p == 0) {
+        return 0;
+    }
+    
+
+    a = &p->unknown_7e0[9];
+    b = &p->unknown_830[9];
+    v = (struct DotrBlockVector4 *)&p->unknown_000[0x20];
+    v->x = 0.0f;
+    v->y = 50.0f;
+    v->z = 300.0f;
+    v->unknown_w = 1.0f;
+    v = (struct DotrBlockVector4 *)p->unknown_030;
+    v->x = 0.0f;
+    v->y = 50.0f;
+    v->z = 0.0f;
+    v->unknown_w = 1.0f;
+    p->unknown_040 = 0;
+    p->unknown_044 = 800.0f;
+    f = (float *)p->unknown_048;
+    f[0] = 1.0f;
+    f[1] = 0.94f;
+    f[2] = 1.0f;
+    f[3] = 4096.0f;
+    e = &p->unknown_060[9];
+    e->unknown_00[0].unknown_00[0].y = 0.5f;
+    e->unknown_00[0].unknown_00[0].z = 0.5f;
+    e->unknown_00[0].unknown_00[0].unknown_w = 0.5f;
+    e->unknown_00[0].unknown_00[0].x = 1.0f;
+    e->unknown_00[1].unknown_00[0].y = 0.0f;
+    e->unknown_00[1].unknown_00[0].z = 0.0f;
+    e->unknown_00[1].unknown_00[0].unknown_w = 0.0f;
+    e->unknown_00[1].unknown_00[0].x = 1.0f;
+    e->unknown_00[2].unknown_00[0].y = 0.0f;
+    e->unknown_00[2].unknown_00[0].z = 0.0f;
+    e->unknown_00[2].unknown_00[0].unknown_w = 0.0f;
+    e->unknown_00[2].unknown_00[0].x = 1.0f;
+    angles = (int *)&e->unknown_00[0].unknown_00[1];
+    angles[0] = -14336;
+    angles[1] = 2048;
+    angles[2] = 0;
+    angles[3] = 0;
+    angles = (int *)&e->unknown_00[1].unknown_00[1];
+    angles[0] = 0;
+    angles[1] = 0;
+    angles[2] = 0;
+    angles[3] = 0;
+    angles = (int *)&e->unknown_00[2].unknown_00[1];
+    angles[0] = 0;
+    angles[1] = 0;
+    angles[2] = 0;
+    angles[3] = 0;
+    p->unknown_8a8 = 512;
+    func_001F95E0(0, 9, 0, 0);
+    func_001F95E0(0, 9, 1, 0);
+    func_001F95E0(0, 9, 2, 0);
+    a->x = 2000.0f;
+    a->y = 4000.0f;
+    b->x = 2000.0f;
+    b->y = 4000.0f;
+    for (i = 0; i < 10; i++) {
+        func_001F9170_b(index, i, 0);
+    }
+    func_001F90E0(index);
+    func_001F8F80(index);
+    return 1;
+}
 
 s32 func_001F7720(s32 arg0) {
     s32 *slot;

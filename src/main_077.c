@@ -19,7 +19,182 @@ s32 func_0026EA80(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EB10);
+struct jp_87592;
+struct jp_87b56;
+struct jp_88243 {
+    unsigned int dwID;
+    unsigned int dwParam;
+};
+struct jp_86d82 {
+    struct jp_87592 *pConstInfo;
+    struct jp_87b56 *pCardReq;
+    struct jp_88243 aVarEffIdx[5];
+    int nRotY;
+    short sOfsX;
+    short sOfsZ;
+    short sVarAP;
+    short sVarDP;
+    unsigned short wCardNo;
+    unsigned char bVarKind;
+    unsigned char bVarAttr;
+    unsigned char bMapX;
+    unsigned char bMapZ;
+    unsigned char bPosX;
+    unsigned char bPosZ;
+    unsigned char bOwner;
+    unsigned char bID;
+    unsigned char bModelID;
+    unsigned char bSummonOrder;
+    unsigned char bSummonCost;
+    unsigned char bCurseRest;
+    unsigned char bSpellRest;
+    unsigned char bDelayCount;
+    unsigned char bMovable;
+    unsigned char bDarkRate;
+    unsigned char bCtlModeC;
+    unsigned char bCtlModeM;
+    unsigned char bCtlGoalC;
+    unsigned char bCtlGoalM;
+    unsigned char bCtlRateC;
+    unsigned char bCtlRateM;
+    unsigned char bOpenRate;
+    unsigned char bDefenseRate;
+    int nCtlFlipC : 2;
+    int nCtlFlipM : 2;
+    int nOpenFlip : 2;
+    int nDefenseFlip : 2;
+    int fFinish : 1;
+    int fRevolt : 1;
+    int fOpen : 1;
+    int fDefense : 1;
+    int fOpenF : 1;
+    int fDefenseF : 1;
+    int fPickup : 1;
+    int fCardBusy : 1;
+    int fModelBusy : 1;
+    int fCardColBusy : 1;
+    int fHand : 1;
+    int fCurse : 1;
+    int nEffHandle : 6;
+};
+
+int func_0026EB10(int nSide, int nCardNo, int nCardNo2)
+{
+    int Ret;
+    int Num;
+    int Combo[6];
+    struct jp_86d82 nVarInfo;
+    int temp;
+    int bKind1;
+    int bKind0;
+    int cBuf;
+    int Hand;
+    int i;
+
+    Hand = func_001DF110(nSide);
+    for (i = 0; i < 6; i++) {
+        Combo[i] = 999;
+    }
+    if (nCardNo != 999) {
+        Combo[0] = nCardNo;
+    }
+    if (nCardNo != 999 && nCardNo2 != 999) {
+        func_001DCD70(&nVarInfo, nCardNo);
+        bKind0 = nVarInfo.bVarKind >> 5;
+        func_001DCD70(&nVarInfo, nCardNo2);
+        bKind1 = nVarInfo.bVarKind >> 5;
+        if (bKind0 == 0 && bKind1 == 0) {
+            Num = func_002495A0(nCardNo, nCardNo2);
+            if (Num != 999) {
+                temp = Num;
+            } else {
+                temp = nCardNo2;
+            }
+        } else if (bKind0 == 2 && bKind1 == 0) {
+            Num = func_002487A0(nCardNo2, nCardNo);
+            if (Num != 999) {
+                if ((Num >> 30) & 1) {
+                    temp = (Num >> 14) & 0x3FFF;
+                } else {
+                    temp = nCardNo2;
+                }
+            } else {
+                temp = nCardNo2;
+            }
+        } else if (bKind1 == 2 && bKind0 == 0) {
+            Num = func_002487A0(nCardNo, nCardNo2);
+            if (Num != 999) {
+                if ((Num >> 30) & 1) {
+                    temp = (Num >> 14) & 0x3FFF;
+                } else {
+                    temp = nCardNo;
+                }
+            } else {
+                temp = nCardNo2;
+            }
+        } else {
+            temp = nCardNo2;
+        }
+        return temp;
+    } else {
+    for (i = 0; i < Hand; i++) {
+        cBuf = func_001DF0C0(nSide, i);
+        temp = (cBuf & 0xF000) >> 12;
+        if (temp > 0) {
+            Combo[temp] = cBuf & 0xFFF;
+        }
+    }
+    Ret = Combo[0];
+    for (i = 0; i < 5; i++) {
+        if (Ret != 999) {
+            func_001DCD70(&nVarInfo, Ret);
+            bKind0 = nVarInfo.bVarKind >> 5;
+        } else {
+            bKind0 = -1;
+        }
+        if (Combo[i + 1] != 999) {
+            func_001DCD70(&nVarInfo, Combo[i + 1]);
+            bKind1 = nVarInfo.bVarKind >> 5;
+        } else {
+            return Ret;
+        }
+        if (bKind0 == 0 && bKind1 == 0) {
+            Num = func_002495A0(Ret, Combo[i + 1]);
+            if (Num != 999) {
+                temp = Num;
+            } else {
+                temp = Combo[i + 1];
+            }
+        } else if (bKind0 == 2 && bKind1 == 0) {
+            Num = func_002487A0(Combo[i + 1], Ret);
+            if (Num != 999) {
+                if ((Num >> 30) & 1) {
+                    temp = (Num >> 14) & 0x3FFF;
+                } else {
+                    temp = Combo[i + 1];
+                }
+            } else {
+                temp = Combo[i + 1];
+            }
+        } else if (bKind1 == 2 && bKind0 == 0) {
+            Num = func_002487A0(Ret, Combo[i + 1]);
+            if (Num != 999) {
+                if ((Num >> 30) & 1) {
+                    temp = (Num >> 14) & 0x3FFF;
+                } else {
+                    temp = Ret;
+                }
+            } else {
+                temp = Combo[i + 1];
+            }
+        } else {
+            temp = Combo[i + 1];
+        }
+        Ret = temp;
+    }
+    }
+    return Ret;
+}
 
 s32 func_0026EEA0(void *arg0, s32 arg1, s32 arg2) {
     ((s32 *)arg0)[0] = 0x96;
@@ -52,7 +227,145 @@ s32 func_0026EED0(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_0026EFD0);
+struct jp_88243_26efd0 {
+    unsigned int dwID;
+    unsigned int dwParam;
+};
+extern int func_001DE4E0_b(int index);
+extern unsigned *func_00250740_b(int a, int b, int n);
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+int func_0026EFD0(int nSide)
+{
+    int i;
+    int j;
+    int Unit;
+    int Loc;
+    int Loc2;
+    int Num;
+    int Num2;
+    int tempAP;
+    int AP;
+    int temp;
+    struct jp_88243_26efd0 *eInfo;
+    int Player;
+    unsigned int eObj;
+
+    Player = func_001DE4E0_b(func_001DE540());
+    if (Player > 99) {
+        eObj = func_0024CA40(0, 0, nSide, 3, 33, 14);
+        Unit = func_0024EC50(eObj, 0);
+        if (func_00250360(Unit >> 8, Unit & 0xff) != nSide) {
+            if ((func_001E0700(Unit >> 8, Unit & 0xff) == 7) & 0x1f) {
+                Loc = func_001E1090(Unit >> 8, Unit & 0xff);
+                Loc2 = func_001E1090(nSide, 0);
+                if ((MAX(Loc & 0xff, Loc2 & 0xff) - MIN(Loc & 0xff, Loc2 & 0xff)) +
+                        (MAX(Loc >> 8, Loc2 >> 8) - MIN(Loc >> 8, Loc2 >> 8)) <= 2) {
+                    if (func_0024E910(func_0024CA40(0, 0, nSide, 2, 7, 14)) >= 3) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        eObj = func_0024CA40(0, 0, nSide, 2, 29, 14);
+        Num = 0;
+        if (func_0024E910(eObj) >= 3) {
+            if ((func_001E0700(nSide, 0) == 9) & 0x1f) {
+                for (i = 0; i < func_0024E910(eObj); i++) {
+                    Unit = func_0024EC50(eObj, i);
+                    Loc = func_001E1090(Unit >> 8, Unit & 0xff);
+                    if (func_0024DF00(0, Unit >> 8, Unit & 0xff) != 1) {
+                        if (func_002509E0(Unit >> 8, Unit & 0xff, Loc & 0xff, Loc >> 8) >= 3000 &&
+                            func_002509E0(Unit >> 8, Unit & 0xff, Loc & 0xff, Loc >> 8) <= 3999) {
+                            Num++;
+                        }
+                    }
+                }
+                if (Num >= 3) {
+                    return 2;
+                }
+            }
+        }
+        eObj = func_0024CA40(0, 0, nSide, 3, 29, 14);
+        Num2 = 0;
+        Num = 0;
+        if (func_0024E910(eObj) >= 3) {
+            for (i = 0; i < 7; i++) {
+                for (j = 0; j < 7; j++) {
+                    if (func_001E22B0(i, j) == 8) {
+                        Num++;
+                    }
+                }
+            }
+            if (Num > 30) {
+                i = 0;
+                for (j = 0; j < func_0024E910(eObj); j++) {
+                    Unit = func_0024EC50(eObj, j);
+                    eInfo = (struct jp_88243_26efd0 *)func_00250740_b(Unit >> 8, Unit & 0xff, 1);
+                    if (eInfo != 0) {
+                        if (eInfo->dwID >> 8 == 8 || eInfo->dwID >> 8 == 9 || eInfo->dwID >> 8 == 10) {
+                            if (func_00250360(Unit >> 8, Unit & 0xff) == nSide) {
+                                i++;
+                            } else {
+                                Num2++;
+                            }
+                        }
+                    }
+                }
+                if (i == 0 && Num2 >= 3) {
+                    return 3;
+                }
+            }
+        }
+        eObj = func_0024CA40(0, 0, nSide, 3, 33, 14);
+        Unit = func_0024EC50(eObj, 0);
+        if (func_00250360(Unit >> 8, Unit & 0xff) != nSide) {
+            Loc = func_001E1090(Unit >> 8, Unit & 0xff);
+            AP = -1;
+            for (i = 0; i < 5; i++) {
+                temp = func_001DF0C0(nSide, i);
+                if (temp != 999) {
+                    tempAP = (unsigned int)func_0026FBB0(temp) >> 16;
+                    if (tempAP > AP) {
+                        AP = tempAP;
+                    }
+                }
+            }
+            if (func_002509E0(Unit >> 8, Unit & 0xff, Loc & 0xff, Loc >> 8) > AP) {
+                tempAP = func_002509E0(Unit >> 8, Unit & 0xff, Loc & 0xff, Loc >> 8) - AP;
+                if (func_001DF470(nSide == 0 ? 1 : 0) >> 1 > tempAP) {
+                    return 4;
+                }
+            }
+        }
+        eObj = func_0024CA40(0, 0, nSide, 3, 33, 14);
+        Unit = func_0024EC50(eObj, 0);
+        Num = 0;
+        if (func_00250360(Unit >> 8, Unit & 0xff) == nSide) {
+            eObj = func_0024CA40(0, 0, nSide, 2, 30, 14);
+            for (i = 0; i < func_0024E910(eObj); i++) {
+                Unit = func_0024EC50(eObj, i);
+                if (func_001DE020(func_001E0700(Unit >> 8, Unit & 0xff) >> 5) == 2) {
+                    Num++;
+                }
+            }
+            if (Num >= 4) {
+                return 5;
+            }
+        }
+    }
+    if (Player > 99) {
+        if (func_001DF470(nSide) <= 249) {
+            return func_0019A5C8() % 2 == 0 ? 6 : 7;
+        }
+    } else {
+        return func_0019A5C8() % 2 == 0 ? 6 : 7;
+    }
+    return -1;
+}
+#undef MAX
+#undef MIN
 
 s32 func_0026F600(s32 arg0, s32 *arg1) {
     extern s32 func_001DE740(s32);
@@ -588,7 +901,6 @@ typedef struct Event_00270260 {
     s32 mode;
 } Event_00270260;
 
-void func_00248460(u32, s32, s32, s32);
 void func_0024F430(u32, s32);
 s32 func_00270C30(void *, void *, s32);
 
@@ -1788,7 +2100,367 @@ s32 func_002738B0(void *arg0, void *arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_077", func_00273E60);
 
-INCLUDE_ASM("asm/nonmatchings/main_077", func_002747A0);
+struct jp_6989c {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+struct jp_68cb4 {
+    int fLoad : 1;
+    unsigned char bModNum : 5;
+    unsigned short wModule[24];
+    unsigned char bModCond[24];
+};
+struct jp_69942 {
+    unsigned short wCount_1;
+    unsigned short wCount_2;
+    unsigned short wLvl;
+    unsigned char eID[24];
+    int ePos[24];
+    struct jp_68cb4 eMod;
+    unsigned int fObj;
+    unsigned int fObj2;
+    unsigned char oNum;
+    unsigned char unknown_d5[0xb];
+    int camDat[8];
+    unsigned char bCamLvl;
+    unsigned short wCamTime;
+    unsigned char unknown_104[0xc];
+    int nTasakiEfc[0x10c];
+};
+extern int func_00255AC0_b(struct jp_69942 *q, int id);
+extern void func_00260AF0_b(unsigned char who, int packed, int add, int value);
+extern void func_00260A70_b(struct jp_69942 *Temp, unsigned char b);
+extern void func_002503B0_b(int a, int b, unsigned char n);
+extern int func_001E1E10_b(int a, int b);
+extern int func_001E1CB0_b(int a, int b);
+extern int func_001DE2A0_b(int side);
+
+int func_002747A0(void *eInfo_v, void *Temp_v, int ID)
+{
+    struct jp_6989c * eInfo = eInfo_v;
+    struct jp_69942 * Temp = Temp_v;
+    int stored;
+    struct jp_6989c eCall;
+    struct jp_6989c *pCall = &eCall;
+    int temp;
+    int i;
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    func_001DE7E0(0);
+    if (eInfo == 0 || Temp == 0 || pCall == 0) {
+        func_001E4530();
+        return 0;
+    }
+    if (ID >= 0) {
+        func_00255960(Temp);
+        Temp->wCount_1 = 128;
+        if (((eInfo->dwPar >> 20) & 3) != 0 || ((eInfo->dwPar >> 22) & 3) != 0) {
+            func_00255AC0_b(Temp, 513);
+        }
+        func_00255AC0_b(Temp, 604);
+        func_00255AC0_b(Temp, 605);
+        func_00260AF0_b(0, (unsigned short)eInfo->dwFrom, 300, 280);
+        return 1;
+    }
+    switch (Temp->bCamLvl) {
+    case 0:
+        if (Temp->wCamTime++ == 0) {
+            func_00217710(0, 39);
+            func_001A86A0(6);
+            func_00260AF0_b(12, (unsigned short)eInfo->dwFrom, 100, 180);
+            return 1;
+        }
+        if (Temp->wCamTime >= 12) {
+            func_001A86A0(4);
+        }
+        if (Temp->wCamTime >= 24) {
+            if (func_001E1E10_b((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF) == 255) {
+                if (func_001E1CB0_b((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF) == 128) {
+                    if (func_001F5EC0((unsigned short)eInfo->dwFrom) != 0) {
+                        func_001A86A0(0);
+                        func_00260AF0_b(0, (unsigned short)eInfo->dwTo, 300, 280);
+                        Temp->wCamTime = 0;
+                        Temp->bCamLvl++;
+                    }
+                }
+            }
+        }
+        return 1;
+    case 1:
+        if (Temp->wCamTime++ == 0) {
+            func_00217710(0, 39);
+            func_001A86A0(6);
+            func_00260AF0_b(12, (unsigned short)eInfo->dwTo, 100, 180);
+            return 1;
+        }
+        if (Temp->wCamTime >= 12) {
+            func_001A86A0(4);
+        }
+        if (Temp->wCamTime >= 24) {
+            if (func_001E1E10_b((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF) == 255) {
+                if (func_001E1CB0_b((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF) == 128) {
+                    if (func_001F5EC0((unsigned short)eInfo->dwTo) != 0) {
+                        func_001A86A0(0);
+                        func_00260A70_b(Temp, 0);
+                        Temp->wCamTime = 0;
+                        Temp->bCamLvl++;
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+    switch (Temp->wLvl) {
+    case 0:
+        if (func_00255B50(Temp) == 1) {
+            func_001F5970((unsigned short)eInfo->dwFrom, 1);
+            func_001F5970((unsigned short)eInfo->dwTo, 1);
+            if (((eInfo->dwPar >> 20) & 3) != 0) {
+                func_001E42C0(0, -120, 80, 260);
+                pCall->eNO = 513;
+                pCall->dwFrom = 0;
+                pCall->dwTo = (unsigned short)eInfo->dwFrom;
+                pCall->dwPar = 0;
+                
+
+                if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) >= 0) {
+                    Temp->oNum++;
+                }
+            }
+            if (((eInfo->dwPar >> 22) & 3) != 0) {
+                func_001E42C0(0, -120, 80, 260);
+                pCall->eNO = 513;
+                pCall->dwFrom = 0;
+                pCall->dwTo = (unsigned short)eInfo->dwTo;
+                pCall->dwPar = 0;
+                if ((stored = (Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp))) > 0) {
+                    Temp->oNum++;
+                }
+            }
+            Temp->wLvl++;
+        }
+        return 1;
+    case 1:
+        if (Temp->oNum > 0) {
+            for (i = 0; i < Temp->oNum; i++) {
+                if (func_001F51D0(Temp->eID[i]) != 0) {
+                    return 1;
+                }
+            }
+        }
+        func_001E4530();
+        Temp->oNum = 0;
+        Temp->wLvl++;
+        return 1;
+    case 2:
+        Temp->wCamTime++;
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, -1)) > 0) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+        } else {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+            if (Temp->wCamTime >= 8) {
+                if ((unsigned short)eInfo->dwPar == 0xFFFF) {
+                    temp = 0;
+                } else {
+                    temp = func_002670F0(44, (unsigned short)eInfo->dwPar);
+                }
+                if (temp == 0) {
+                    if (((eInfo->dwPar >> 28) & 1) == 1) {
+                        pCall->eNO = 604;
+                        pCall->dwFrom = (unsigned short)eInfo->dwFrom;
+                        pCall->dwTo = (unsigned short)eInfo->dwTo;
+                        pCall->dwPar = (((eInfo->dwPar >> 20) & 1) << 19) | (temp | 0x20000) | (((eInfo->dwPar >> 22) & 1) << 20);
+                    } else {
+                        pCall->eNO = 604;
+                        pCall->dwFrom = (unsigned short)eInfo->dwFrom;
+                        pCall->dwTo = (unsigned short)eInfo->dwTo;
+                        pCall->dwPar = (((eInfo->dwPar >> 20) & 1) << 19) | (temp | 0x30000) | (((eInfo->dwPar >> 22) & 1) << 20);
+                    }
+                } else {
+                    if (((eInfo->dwPar >> 28) & 1) == 1) {
+                        pCall->eNO = 604;
+                        pCall->dwFrom = (unsigned short)eInfo->dwFrom;
+                        pCall->dwTo = (unsigned short)eInfo->dwTo;
+                        pCall->dwPar = (((eInfo->dwPar >> 20) & 1) << 19) | (temp | 0x10000) | (((eInfo->dwPar >> 22) & 1) << 20);
+                    } else {
+                        pCall->eNO = 604;
+                        pCall->dwFrom = (unsigned short)eInfo->dwFrom;
+                        pCall->dwTo = (unsigned short)eInfo->dwTo;
+                        pCall->dwPar = (((eInfo->dwPar >> 20) & 1) << 19) | temp | (((eInfo->dwPar >> 22) & 1) << 20);
+                    }
+                }
+                if ((stored = (Temp->eID[0] = func_00255A30(pCall, Temp))) >= 0) {
+                    Temp->ePos[0] = 0;
+                    Temp->oNum++;
+                }
+                pCall->eNO = 605;
+                pCall->dwFrom = (unsigned short)eInfo->dwFrom;
+                pCall->dwTo = (unsigned short)eInfo->dwTo;
+                pCall->dwPar = (((eInfo->dwPar >> 19) & 1) << 1) | ((eInfo->dwPar >> 18) & 1);
+                Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp);
+                Temp->ePos[Temp->oNum] = 0;
+                func_001F4F10(Temp->eID[Temp->oNum], 1);
+                Temp->wLvl++;
+            }
+        }
+        return 1;
+    case 3:
+        if (func_001F51D0(Temp->eID[0]) != 0) {
+            if (func_001F52D0(Temp->eID[0]) == 2) {
+                switch (Temp->ePos[0]) {
+                case 0:
+                    Temp->ePos[0]++;
+                    if (func_001DE2A0_b(func_001DE540()) != 0) {
+                        if ((unsigned short)eInfo->dwPar != 0xFFFF) {
+                            if (func_0027F830(func_001DE540()) == 0) {
+                                func_001F4F10(Temp->eID[0], 1);
+                                return 4;
+                            }
+                        }
+                    }
+                    break;
+                case 1:
+                case 2:
+                    func_00255AC0_b(Temp, 500);
+                    Temp->ePos[0]++;
+                    func_00217710(1, 65);
+                    break;
+                }
+            }
+            return 1;
+        }
+        Temp->wCount_1 = 0;
+        func_001F6CF0((unsigned char)Temp->wCount_1);
+        func_001F6CE0((unsigned char)Temp->wCount_1);
+        if (((eInfo->dwPar >> 16) & 1) == 1 && (temp = (unsigned short)eInfo->dwPar) != 0xFFFF) {
+            func_001DF490(func_00250360((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF), 1, func_002670F0(44, temp));
+        } else if (((eInfo->dwPar >> 17) & 1) == 1 && (temp = (unsigned short)eInfo->dwPar) != 0xFFFF) {
+            func_001DF490(func_00250360((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF), 1, func_002670F0(44, temp));
+        }
+        func_001F4F10(Temp->eID[Temp->oNum++], 0);
+        Temp->fObj2 = 0;
+        Temp->wLvl++;
+        return 1;
+    case 4:
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, 1)) < 128) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+        }
+        if (func_001F51D0(Temp->eID[Temp->oNum - 1]) != 0) {
+            switch (Temp->fObj2++) {
+            case 0:
+                if (((eInfo->dwPar >> 19) & 1) != 0) {
+                    Temp->ePos[Temp->oNum - 1]++;
+                    func_00217710(1, 66);
+                    func_00217710(1, 45);
+                }
+                if (((eInfo->dwPar >> 18) & 1) != 0) {
+                    Temp->ePos[Temp->oNum - 1]++;
+                    func_00217710(1, 66);
+                    func_00217710(1, 45);
+                }
+                break;
+            case 20:
+                if (Temp->ePos[Temp->oNum - 1] == 0) {
+                    if (((eInfo->dwPar >> 19) & 1) == 0) {
+                        func_00217710(0, 2);
+                    }
+                    if (((eInfo->dwPar >> 18) & 1) == 0) {
+                        func_00217710(0, 2);
+                    }
+                }
+                break;
+            case 40:
+                if (Temp->ePos[Temp->oNum - 1] > 0) {
+                    if (((eInfo->dwPar >> 19) & 1) == 0) {
+                        func_00217710(0, 2);
+                    }
+                    if (((eInfo->dwPar >> 18) & 1) == 0) {
+                        func_00217710(0, 2);
+                    }
+                }
+                break;
+            }
+            return 1;
+        }
+        if ((eInfo->dwPar >> 25) != 0) {
+            if (((eInfo->dwPar >> 26) & 1) == 1 && ((eInfo->dwPar >> 19) & 1) == 0) {
+                func_002503B0_b((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 1);
+                func_00260AF0_b(0, (unsigned short)eInfo->dwFrom, 180, 180);
+                func_001E42C0(0, -120, 80, 264);
+                pCall->eNO = 500;
+                pCall->dwFrom = 0;
+                pCall->dwTo = (unsigned short)eInfo->dwFrom;
+                pCall->dwPar = 0;
+                Temp->eID[0] = func_00255A30(pCall, Temp);
+            } else if (((eInfo->dwPar >> 25) & 1) == 1 && ((eInfo->dwPar >> 18) & 1) == 0) {
+                func_001E42C0(0, -120, 80, 264);
+                func_002503B0_b((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF, 1);
+                pCall->eNO = 500;
+                pCall->dwFrom = 0;
+                pCall->dwTo = (unsigned short)eInfo->dwTo;
+                pCall->dwPar = 0;
+                func_00260AF0_b(0, (unsigned short)eInfo->dwTo, 180, 180);
+                Temp->eID[0] = func_00255A30(pCall, Temp);
+            }
+            Temp->wLvl = 5;
+        }
+        Temp->wLvl = 16;
+        return 1;
+    case 5:
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, 1)) < 128) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+        }
+        
+
+        if (func_001F51D0(Temp->eID[0]) == 0) {
+            (void)Temp->wLvl;
+        }
+        break;
+    default:
+        if ((Temp->wCount_1 = func_00250300(Temp->wCount_1, 15, 1)) < 128) {
+            func_001F6CF0((unsigned char)Temp->wCount_1);
+            func_001F6CE0((unsigned char)Temp->wCount_1);
+            return 1;
+        }
+        if (func_001F51D0(Temp->eID[0]) == 1) {
+            return 1;
+        }
+        func_001E4530();
+        func_00260A70_b(Temp, 0);
+        if ((eInfo->dwFrom >> 16) != 0) {
+            if ((eInfo->dwFrom >> 31) == 0) {
+                func_00250CA0((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 1, (eInfo->dwFrom >> 16) & 0x7FFF);
+                func_00250E80((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 1, (eInfo->dwFrom >> 16) & 0x7FFF);
+            } else {
+                func_00250CA0((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 0, (eInfo->dwFrom >> 16) & 0x7FFF);
+                func_00250E80((eInfo->dwFrom & 0xFFFF) >> 8, eInfo->dwFrom & 0xFF, 0, (eInfo->dwFrom >> 16) & 0x7FFF);
+            }
+        }
+        if ((eInfo->dwTo >> 16) != 0) {
+            if ((eInfo->dwTo >> 31) == 0) {
+                func_00250CA0((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF, 1, (eInfo->dwTo >> 16) & 0x7FFF);
+                func_00250E80((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF, 1, (eInfo->dwTo >> 16) & 0x7FFF);
+            } else {
+                func_00250CA0((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF, 0, (eInfo->dwTo >> 16) & 0x7FFF);
+                func_00250E80((eInfo->dwTo & 0xFFFF) >> 8, eInfo->dwTo & 0xFF, 0, (eInfo->dwTo >> 16) & 0x7FFF);
+            }
+        }
+        if (func_001DE780() != 0) {
+            func_001DE7E0(1);
+        }
+        func_001E4530();
+        return 0;
+    }
+    return 1;
+}
 
 typedef struct {
     u32 unknown;

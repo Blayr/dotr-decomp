@@ -909,7 +909,6 @@ typedef struct Output_0014DF80 {
     u8 result;
 } Output_0014DF80;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_0014DF80(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_0014DF80 *output = arg2;
@@ -1622,8 +1621,6 @@ typedef struct {
     s32 unk8;
 } Unit_00150270;
 
-void func_00150850(void *);
-void func_0027CA50(void *, s32, s32, s32);
 
 s32 func_00150270(void *arg0) {
     Unit_00150270 *unit = arg0;
@@ -1735,7 +1732,99 @@ s32 func_00150470(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_012", func_00150850);
+struct DotrTryOrder {
+    unsigned short position;
+    unsigned short unknown_02;
+    unsigned short unknown_04;
+    unsigned short unknown_06;
+    union {
+        unsigned short half;
+        int word;
+    } flags;
+};
+struct DotrTryCell {
+    unsigned short id;
+    unsigned char kind;
+};
+extern void func_0027E770_b(void *buf);
+extern int func_0027B200_b(int a, int b, int c, int d, int e, int f, int g, int h, unsigned char i);
+extern int func_001E1030_b(int a, int b);
+extern int func_00150BE0_b(struct DotrTryOrder *order, int r1, int r2, int r3, int r4, int r5, int r6, int r7, struct DotrTryCell *cells, int s1, unsigned short *a, unsigned short *b, int n, void *buf);
+
+void func_00150850(void *order_v)
+{
+    struct DotrTryOrder * order = order_v;
+    unsigned char buf[112];
+    struct DotrTryCell cells[22];
+    unsigned short a;
+    unsigned short b;
+    int here;
+    int other;
+    int side;
+    int there;
+    int word;
+    int i;
+    int r;
+    unsigned char deep;
+
+    deep = func_00153AB0();
+    if (func_001DF540(order->position >> 8, order->position & 0xff) == 0) {
+        return;
+    }
+    side = func_0024DE70(order->position >> 8, order->position & 0xff);
+    other = (side == 0 ? 1 : 0) << 8;
+    here = func_001E1090(order->position >> 8, order->position & 0xff);
+    there = func_001E1090(other >> 8, other & 0xff);
+    word = func_001DF540(order->position >> 8, order->position & 0xff);
+    func_0027E770_b(buf);
+    if (func_001E1030_b(order->position >> 8, order->position & 0xff) == 686) {
+        order->unknown_04 = 0xcff;
+        return;
+    }
+    for (i = 0; i < 22; i++) {
+        cells[i].id = 0xffff;
+        cells[i].kind = 0xff;
+    }
+    if (func_0027B200_b(order->position >> 8, order->position & 0xff, (unsigned char)here, here >> 8, other >> 8, other & 0xff, (unsigned char)there, there >> 8, 2) > 0) {
+        if ((func_001E0700(order->position >> 8, order->position & 0xff) >> 5) == 0) {
+            order->unknown_04 = 0x2ff;
+        } else {
+            order->unknown_04 = 0xbff;
+        }
+        order->flags.word = (other << 16) | order->flags.half;
+        return;
+    }
+    b = 0;
+    a = 0;
+    for (other = 1; other <= (deep ? 5 : 2); other++) {
+        r = func_00150BE0_b(order, 0, word, (unsigned char)here, here >> 8, func_0024DE70(order->position >> 8, order->position & 0xff) == 0 ? 1 : 0, other & 0xff, func_00153ED0(side), cells, 0, &a, &b, (unsigned char)(deep ? 5 : 2), buf);
+        switch (r) {
+        case 3:
+            order->unknown_04 = 0x6ff;
+            order->flags.word = (here << 16) | order->flags.half;
+            return;
+        case 2:
+            order->unknown_04 = 0x3ff;
+            order->flags.word = (here << 16) | order->flags.half;
+            return;
+        case 1:
+            if (func_001E0700(order->position >> 8, order->position & 0xff) >> 5) {
+                order->unknown_04 = 0xbff;
+            }
+            return;
+        case 0:
+            order->unknown_04 = 0x3ff;
+            order->flags.word = (here << 16) | order->flags.half;
+            return;
+        }
+    }
+    order->unknown_04 = 0x6ff;
+    if (((here >> 8) <= 3 && (there >> 8) <= 3) || ((here >> 8) > 3 && (there >> 8) > 3)) {
+        order->flags.word = (there << 16) | order->flags.half;
+    } else {
+        order->flags.word = (((here & 0xff) | 0x300) << 16) | order->flags.half;
+    }
+}
 
 void func_00150BE0(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7,
                    s32 a8, u16 a9, s32 a10, s32 a11, u8 a12, s32 a13) {
@@ -2333,7 +2422,6 @@ typedef struct Output_00152100 {
     u8 result;
 } Output_00152100;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_00152100(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00152100 *output = arg2;
@@ -2489,7 +2577,6 @@ static inline u32 destination_001526D0(void *src, u8 mode) {
     return *(u16 *)((u8 *)src + 8);
 }
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_001526D0(void *src, s32 arg1, u16 *out, u8 arg3) {
     extern s32 func_00153AE0();
@@ -2838,7 +2925,6 @@ typedef struct Point_00153550 {
 #define MIN_00153550(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_00153550(a, b) ((b) < (a) ? (a) : (b))
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_00153550(void *src, s32 mode) {
     if (mode == 1) {

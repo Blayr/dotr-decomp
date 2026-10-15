@@ -470,7 +470,170 @@ u8 func_001E24E0(s32 x, s32 y) {
     return cell[0x17];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_046", func_001E2570);
+struct DotrStateItemBits {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bit_4 : 1;
+    signed char unknown_bit_5 : 1;
+    signed char unknown_bit_6 : 1;
+    signed char unknown_bit_7 : 1;
+};
+struct DotrStateItemPairs {
+    signed char unknown_bits_0_1 : 2;
+    signed char unknown_bits_2_3 : 2;
+    signed char unknown_bits_4_5 : 2;
+    signed char unknown_bits_6_7 : 2;
+};
+struct DotrStateItemFlags {
+    signed char unknown_bit_0 : 1;
+    signed char unknown_bit_1 : 1;
+    signed char unknown_bit_2 : 1;
+    signed char unknown_bit_3 : 1;
+    signed char unknown_bits_4_7 : 4;
+};
+struct DotrStateItemObject;
+struct DotrStateItemSource {
+    unsigned char unknown_00;
+    unsigned char unknown_01;
+    unsigned char unknown_02_low : 4;
+    unsigned char unknown_02_high : 4;
+    unsigned char unknown_03;
+    unsigned short unknown_04;
+    unsigned char unknown_06[2];
+    unsigned short unknown_08;
+    unsigned short unknown_0a;
+};
+struct DotrStateEntry8 {
+    int unknown_words[2];
+};
+struct DotrStateItem {
+    struct DotrStateItemSource *unknown_00;
+    struct DotrStateItemObject *unknown_04; 
+    struct DotrStateEntry8 unknown_08[5];
+    int unknown_30;
+    unsigned char unknown_34[4];
+    short unknown_38;
+    short unknown_3a;
+    unsigned short unknown_3c;
+    unsigned char unknown_3e;
+    unsigned char unknown_3f;
+    unsigned char unknown_40;
+    unsigned char unknown_41;
+    unsigned char unknown_42[2];
+    unsigned char unknown_44;
+    unsigned char unknown_45;
+    unsigned char unknown_46;
+    unsigned char unknown_47;
+    unsigned char unknown_48;
+    unsigned char unknown_49;
+    unsigned char unknown_4a;
+    unsigned char unknown_4b;
+    unsigned char unknown_4c[2];
+    unsigned char unknown_4e;
+    unsigned char unknown_4f;
+    unsigned char unknown_50;
+    unsigned char unknown_51;
+    unsigned char unknown_52;
+    unsigned char unknown_53;
+    unsigned char unknown_54;
+    unsigned char unknown_55;
+    struct DotrStateItemPairs unknown_56;
+    struct DotrStateItemBits unknown_57;
+    struct DotrStateItemFlags unknown_58;
+    unsigned char unknown_59[3];
+};
+typedef char DotrStateItemMustBe5c[(sizeof(struct DotrStateItem) == 0x5c) ? 1 : -1];
+struct DotrStateVector {
+    float x, y, z;
+    float unknown_w;
+};
+struct DotrStateCellQuad {
+    unsigned char unknown_0;
+    unsigned char unknown_1;
+    unsigned char unknown_2;
+    unsigned char unknown_3;
+};
+typedef int DotrStateWord;
+struct DotrStateCell {
+    DotrStateWord unknown_00;
+    struct DotrStateCellQuad unknown_04[4];
+    short unknown_14;
+    unsigned char unknown_16;
+    unsigned char unknown_17;
+    unsigned char unknown_18;
+    unsigned char unknown_19;
+    unsigned char unknown_1a;
+};
+typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell) == 0x1c) ? 1 : -1];
+struct DotrStateItemObject {
+    struct DotrStateVector unknown_00;
+    struct DotrStateVector unknown_10;
+    unsigned char unknown_20[0x10];
+    struct DotrStateVector unknown_30;
+    struct DotrStateCellQuad unknown_40;
+};
+extern struct DotrStateCell D_00318E60_b[7][7];
+struct DotrStateItem *func_001E36E0_b(int x, int y);
+static inline struct DotrStateCell *cell_1e2570(int x, int y)
+{
+    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
+        return 0;
+    }
+    return &D_00318E60_b[y][x];
+}
+static inline void set_17(int x, int y, int value)
+{
+    struct DotrStateCell *c = cell_1e2570(x, y);
+    if (c != 0) {
+        c->unknown_17 = value;
+    }
+}
+static inline int get_16(int x, int y)
+{
+    struct DotrStateCell *c = cell_1e2570(x, y);
+    if (c != 0) {
+        return c->unknown_16;
+    }
+    return -1;
+}
+
+void func_001E2570(int side, int cx, int cy)
+{
+    int x;
+    int y;
+    int ok;
+    int n;
+    struct DotrStateItem *item;
+
+    for (y = 0; y < 7; y++) {
+        for (x = 0; x < 7; x++) {
+            set_17(x, y, 0xff);
+        }
+    }
+    for (y = cy - 1; y <= cy + 1; y++) {
+        for (x = cx - 1; x <= cx + 1; x++) {
+            if (cx == x && cy == y) {
+                continue;
+            }
+            item = func_001E36E0_b(x, y);
+            ok = 1;
+            if (get_16(x, y) == 8) {
+                ok = 0;
+            }
+            if (item != 0) {
+                n = func_00250360(item->unknown_44, item->unknown_45);
+                if (n != side) {
+                    ok = 0;
+                }
+            }
+            if (ok) {
+                set_17(x, y, 0);
+            }
+        }
+    }
+}
 
 typedef struct {
     u8 pad[0x17];

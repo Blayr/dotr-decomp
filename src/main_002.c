@@ -662,7 +662,49 @@ void func_00108500(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", func_00108950);
+struct DotrPaintVector {
+    float x, y, z, w;
+};
+union DotrMatrixAngles {
+    struct DotrPaintVector f;
+    int i[4];
+};
+extern float func_00108030_b(int unit, short angle, int cosine);
+#define S_108950(a) func_00108030_b(unit, (a), 0)
+#define C_108950(a) func_00108030_b(unit, (a), 1)
+
+int func_00108950(void *row_v, void *v_v, int axis, int unit)
+{
+    struct DotrPaintVector * row = row_v;
+    struct DotrPaintVector * v = v_v;
+    union DotrMatrixAngles rot = *(union DotrMatrixAngles *)v;
+    struct DotrPaintVector out;
+    int a;
+
+    if (axis == 0) {
+        a = rot.i[1];
+        out.x = row->x * C_108950(a) + row->z * -S_108950(a);
+        out.y = row->y;
+        out.z = row->x * S_108950(a) + row->z * C_108950(a);
+        *row = out;
+    }
+    if (axis == 1) {
+        out.x = row->x;
+        out.y = row->y * C_108950(rot.i[0]) + row->z * S_108950(rot.i[0]);
+        out.z = row->y * -S_108950(rot.i[0]) + row->z * C_108950(rot.i[0]);
+        *row = out;
+    }
+    if (axis == 2) {
+        a = rot.i[2];
+        out.x = row->x * C_108950(a) + row->y * S_108950(a);
+        out.y = row->x * -S_108950(a) + row->y * C_108950(a);
+        out.z = row->z;
+        *row = out;
+    }
+    return 0;
+}
+#undef S_108950
+#undef C_108950
 
 typedef struct Vec4_00108BE0 {
     f32 x, y, z, w;
@@ -864,7 +906,6 @@ typedef struct Vec4_00109100 {
     f32 w;
 } Vec4_00109100;
 
-s32 func_00108950(void *, void *, s32, s32);
 
 s32 func_00109100(u8 *arg0, void *arg1, s32 arg2, s32 arg3) {
     Vec4_00109100 sp40 = *(Vec4_00109100 *)arg1;

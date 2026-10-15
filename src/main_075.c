@@ -1974,7 +1974,116 @@ s32 func_00262BE0(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", func_00263180);
+struct jp_6989c {
+    int eNO;
+    unsigned int dwFrom;
+    unsigned int dwTo;
+    unsigned int dwPar;
+};
+struct jp_68cb4 {
+    int fLoad : 1;
+    unsigned char bModNum : 5;
+    unsigned short wModule[24];
+    unsigned char bModCond[24];
+};
+struct jp_69942 {
+    unsigned short wCount_1;
+    unsigned short wCount_2;
+    unsigned short wLvl;
+    unsigned char eID[24];
+    int ePos[24];
+    struct jp_68cb4 eMod;
+    unsigned int fObj;
+    unsigned int fObj2;
+    unsigned char oNum;
+    unsigned char unknown_d5[0xb];
+    int camDat[8];
+    unsigned char bCamLvl;
+    unsigned short wCamTime;
+    unsigned char unknown_104[0xc];
+    int nTasakiEfc[0x10c];
+};
+extern int func_00255AC0_b(struct jp_69942 *q, int id);
+extern void func_00260AF0_b(unsigned char who, int packed, int add, int value);
+extern void func_00260A70_b(struct jp_69942 *Temp, unsigned char b);
+
+int func_00263180(void *eInfo_v, void *Temp_v, int ID)
+{
+    struct jp_6989c * eInfo = eInfo_v;
+    struct jp_69942 * Temp = Temp_v;
+    struct jp_6989c eCall;
+    struct jp_6989c *pCall = &eCall;
+    int Loc2;
+    int Loc;
+    int AP;
+    int DP;
+    int i;
+
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    func_001DE7E0(0);
+    if (ID >= 0) {
+        func_00255960(Temp);
+        func_00260AF0_b(30, eInfo->dwTo, 100, 180);
+        func_00255AC0_b(Temp, 529);
+        return 1;
+    }
+    switch (Temp->wLvl) {
+    case 0:
+        if (func_00255B50(Temp) == 1) {
+            if (Temp->wCamTime++ >= 30) {
+                func_001E42C0(0, -120, 80, 271);
+                pCall->eNO = 529;
+                pCall->dwFrom = 0;
+                pCall->dwTo = eInfo->dwTo;
+                pCall->dwPar = 0;
+                Temp->eID[0] = func_00255A30(pCall, Temp);
+                Temp->ePos[0] = eInfo->dwTo;
+                Temp->wLvl++;
+            }
+        }
+        break;
+    case 1:
+        if (func_001F51D0(Temp->eID[0]) == 1) {
+            return 1;
+        }
+        Loc = func_001E1090(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF);
+        for (i = 0; i < 22; i++) {
+            if (eInfo->dwFrom >> (21 - i) & 1) {
+                if (i < 11) {
+                    Loc2 = func_001E1090(0, i);
+                    AP = func_002509E0(0, i, Loc2 & 0xFF, Loc2 >> 8);
+                    DP = func_00250B40(0, i, Loc2 & 0xFF, Loc2 >> 8);
+                    func_00250CA0(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, 0, AP - func_00250AC0(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, Loc & 0xFF, Loc >> 8));
+                    func_00250E80(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, 0, DP - func_00250C20(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, Loc & 0xFF, Loc >> 8));
+                } else {
+                    Loc2 = func_001E1090(1, i - 11);
+                    AP = func_002509E0(1, i - 11, Loc2 & 0xFF, Loc2 >> 8);
+                    DP = func_00250B40(1, i - 11, Loc2 & 0xFF, Loc2 >> 8);
+                    func_00250CA0(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, 0, AP - func_00250AC0(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, Loc & 0xFF, Loc >> 8));
+                    func_00250E80(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, 0, DP - func_00250C20(eInfo->dwTo >> 8, eInfo->dwTo & 0xFF, Loc & 0xFF, Loc >> 8));
+                }
+            }
+        }
+        func_001E4530();
+        Temp->wLvl++;
+        func_00260A70_b(Temp, 16);
+        Temp->wCamTime = 0;
+        break;
+    default:
+        if (Temp->wCamTime++ > 16) {
+            if (func_001DE780() != 0) {
+                func_001DE7E0(1);
+            }
+            func_001E4530();
+            return 0;
+        }
+        break;
+    }
+    return 1;
+}
 
 typedef struct {
     u8 pad0[8];

@@ -383,7 +383,6 @@ typedef struct Output_0015B250 {
     u8 result;
 } Output_0015B250;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_0015B250(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_0015B250 *output = arg2;
@@ -532,7 +531,6 @@ typedef struct Cell_0015B820 {
     u8 y : 4;
 } Cell_0015B820;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0015B820(Input_0015B820 *input, u8 mode) {
     if (mode == 1) {
@@ -900,7 +898,6 @@ typedef struct {
 #define MIN_0015C670(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_0015C670(a, b) ((b) < (a) ? (a) : (b))
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 target_0015C670(void *arg0, s32 mode) {
     Source_0015C670 *source = arg0;
@@ -2828,7 +2825,6 @@ typedef struct Output_001607D0 {
     u8 result;
 } Output_001607D0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_001607D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_001607D0 *output = arg2;
@@ -2977,7 +2973,6 @@ typedef struct Coord_00160DA0 {
     u8 y : 4;
 } Coord_00160DA0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 destination_00160DA0(void *src, s32 which) {
     if (which == 1) {

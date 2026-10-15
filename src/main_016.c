@@ -185,7 +185,6 @@ typedef struct Output_00169A10 {
     u8 result;
 } Output_00169A10;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_00169A10(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00169A10 *output = arg2;
@@ -342,7 +341,6 @@ static inline u32 destination_00169FE0(void *src, u8 mode) {
     return *(u16 *)((u8 *)src + 8);
 }
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 s32 func_00169FE0(void *src, s32 arg1, u16 *out, u8 arg3) {
     extern s32 func_0016AE30();
@@ -3103,7 +3101,6 @@ s32 func_00170620(s32 arg0, s32 arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 typedef struct Nibbles_00170940 {
     u8 low : 4;
@@ -3264,7 +3261,6 @@ typedef struct Position_00170F10 {
     u8 y : 4;
 } Position_00170F10;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_00170F10(void *arg0, u8 which) {
     Source_00170F10 *source = arg0;

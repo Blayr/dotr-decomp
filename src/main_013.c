@@ -1327,7 +1327,6 @@ typedef struct {
     u8 y : 4;
 } Position_00156FC0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 static inline u32 position_00156FC0(void *src, u8 mode) {
     if (mode == 1) {
@@ -1482,7 +1481,6 @@ typedef struct Output_00157480 {
     u8 result;
 } Output_00157480;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, s32);
 
 s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00157480 *output = arg2;

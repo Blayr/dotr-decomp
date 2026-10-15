@@ -691,7 +691,157 @@ s32 func_0027C6D0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_079", func_0027C770);
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027CA50);
+struct jp_9a533;
+struct PieceTreetag;
+struct jp_9b50e {
+    unsigned short nUnitID;
+    unsigned char bDist;
+};
+struct jp_9add8 {
+    unsigned short wUnit;
+    unsigned short wOrder;
+    unsigned short wPurpose;
+    unsigned int dwGoal;
+    unsigned char bCond : 2;
+};
+extern int func_001E1580_b(int a, int b);
+extern struct PieceTreetag *func_002770E0_b(struct PieceTreetag *pTree, struct jp_9a533 *pVarInfo, int nX, int nZ,
+                                                  int nSide, unsigned char bChase, int fView, int bWarnLvl,
+                                                  struct jp_9b50e *nUnitLst, unsigned short *wUnitNum,
+                                                  unsigned short *wSize, unsigned short *wNodeCount,
+                                                  unsigned short *wIgnoreLst);
+extern struct jp_9a533 *func_001DF540_b(int a, int b);
+extern int func_001E1030_b(int a, int b);
+extern int func_00249580_b(int index);
+extern void func_0027E770_b(unsigned short *wIgnoreLst);
+extern int func_0027D720_b(struct jp_9add8 *pTask, unsigned char fView);
+
+int func_0027CA50(void *pTask_v, unsigned char bChaseRange, unsigned char bIsView, unsigned char WarLvl)
+{
+    struct jp_9add8 * pTask = pTask_v;
+    struct PieceTreetag *pTree;
+    struct jp_9a533 *pVarInfo;
+    unsigned short wIgnoreLst[49];
+    struct jp_9b50e nUnitLst[22];
+    unsigned short wUnitLst[22];
+    unsigned short wSize;
+    unsigned short wNodeCount;
+    unsigned short wUnitNum;
+    int N4;
+    int i;
+    int j;
+    int Loc;
+    int nSide;
+    int Unit;
+    int R2;
+    int F;
+    int nCardNo;
+    int tempAP;
+    int bKind;
+
+    if (func_001DF540_b(pTask->wUnit >> 8, pTask->wUnit & 0xFF) == 0) {
+        return 0;
+    }
+    nCardNo = func_001E1030_b(pTask->wUnit >> 8, pTask->wUnit & 0xFF);
+    nSide = func_00250360(pTask->wUnit >> 8, pTask->wUnit & 0xFF);
+    for (i = 0; i < 22; i++) {
+        nUnitLst[i].nUnitID = 0xFFFF;
+        nUnitLst[i].bDist = 0xFF;
+        wUnitLst[i] = 0xFFFF;
+    }
+    func_0027E770_b(wIgnoreLst);
+    switch (func_00249580_b(nCardNo & 0xFFFF)) {
+    case 3:
+        if (func_0027D720_b(pTask, bIsView) == 1) {
+            bKind = func_001E0700(((pTask->dwGoal >> 16) & 0xFFFF) >> 8, (pTask->dwGoal >> 16) & 0xFF);
+            if (bKind >> 5 == 0 && (bKind & 0x1F) != 14) {
+                return 1;
+            }
+        }
+        pTask->wPurpose = 0x5FF;
+        return 1;
+    case 2:
+        Unit = -1;
+        func_0024C910(nSide, 1, wUnitLst);
+        for (i = 0; i < func_0027C670(wUnitLst); i++) {
+            if (func_001E1580_b(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF) == 0xFF) {
+                if (func_002509E0(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF, func_001E1090(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF) & 0xFF, func_001E1090(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF) >> 8) > -1) {
+                    Unit = wUnitLst[i];
+                }
+            }
+        }
+        if (Unit > 0) {
+            
+
+            j = Unit << 16;
+            pTask->wPurpose = 0x9FF;
+            pTask->dwGoal = j | (pTask->dwGoal & 0xFFFF);
+            return 1;
+        }
+        R2 = -1;
+        for (j = 0; j < 22; j++) {
+            wUnitLst[j] = 0xFFFF;
+        }
+        func_0027C2C0(nSide == 0 ? 1 : 0, wUnitLst, 29, bIsView, bIsView);
+        for (i = 0; i < func_0027C670(wUnitLst); i++) {
+            tempAP = func_001E0290(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF, 0);
+            if (tempAP - func_001E0290(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF, 1) > -1) {
+                R2 = wUnitLst[i];
+            }
+        }
+        if (R2 > 0) {
+            pTask->wPurpose = 0x9FF;
+            pTask->dwGoal = (R2 << 16) | (pTask->dwGoal & 0xFFFF);
+            return 1;
+        }
+        R2 = -1;
+        for (j = 0; j < 22; j++) {
+            wUnitLst[j] = 0xFFFF;
+        }
+        func_0027C2C0(nSide, wUnitLst, 52, 1, 1);
+        for (i = 0; i < func_0027C670(wUnitLst); i++) {
+            if (func_001E1580_b(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF) > -1) {
+                R2 = wUnitLst[i];
+            }
+        }
+        if (R2 > 0) {
+            pTask->wPurpose = 0x9FF;
+            pTask->dwGoal = (R2 << 16) | (pTask->dwGoal & 0xFFFF);
+            return 1;
+        }
+        pTask->wPurpose = 0x5FF;
+        return 1;
+    default:
+        nSide = func_0024DE70(pTask->wUnit >> 8, pTask->wUnit & 0xFF);
+        Loc = func_001E1090(pTask->wUnit >> 8, pTask->wUnit & 0xFF);
+        pVarInfo = func_001DF540_b(pTask->wUnit >> 8, pTask->wUnit & 0xFF);
+        wUnitNum = 0;
+        wNodeCount = 0;
+        wSize = 0;
+        pTree = 0;
+        for (i = 0; i < bChaseRange; i++) {
+            for (N4 = 0; N4 < 22; N4++) {
+                wUnitLst[N4] = 0xFFFF;
+            }
+            F = 0;
+            pTree = func_002770E0_b(pTree, pVarInfo, Loc & 0xFF, Loc >> 8, nSide, i, bIsView, WarLvl, nUnitLst, &wUnitNum, &wSize, &wNodeCount, wIgnoreLst);
+            for (j = 0; j < 22; j++) {
+                if (func_00248370(nUnitLst[j].nUnitID >> 8, nUnitLst[j].nUnitID & 0xFF, nCardNo) == 1) {
+                    wUnitLst[F] = nUnitLst[j].nUnitID;
+                    F++;
+                }
+            }
+            Unit = func_0027B740(wUnitLst, nSide);
+            if (Unit >= 0) {
+                pTask->wPurpose = 0x9FF;
+                pTask->dwGoal = (Unit << 16) | (pTask->dwGoal & 0xFFFF);
+                return 1;
+            }
+        }
+        pTask->wPurpose = 0x5FF;
+        return 1;
+    }
+}
 
 typedef struct Position_0027D020 {
     u8 x : 4;
@@ -714,7 +864,6 @@ typedef struct Result_0027D020 {
     u8 flags;
 } Result_0027D020;
 
-s32 func_00276CC0(s32, s32, s32, u8, u16, u8);
 
 static inline u32 target_word_0027D020(void *src) {
     return ((Source_0027D020 *)src)->targets;

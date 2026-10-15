@@ -705,7 +705,245 @@ void func_001B1190(void) {
     func_00209D30(func_001B11C0(func_00209D20()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B11C0);
+typedef int DotrDrawWord;
+struct DotrWindowUnit {
+    unsigned char unknown_00[64];
+    unsigned char x;
+    unsigned char y;
+    unsigned char unknown_42[2];
+    unsigned char side;
+    unsigned char place;
+    unsigned char unknown_46[17];
+    signed char unknown_57_bit_0 : 1;
+    signed char unknown_57_bits_1_3 : 3;
+    signed char unknown_57_bit_4 : 1;
+    signed char unknown_57_bit_5 : 1;
+    signed char unknown_57_bit_6 : 1;
+    signed char unknown_57_bit_7 : 1;
+};
+struct DotrWindowSide {
+    unsigned char unknown_000[826];
+    unsigned short points;
+    unsigned char player;
+    unsigned char x;
+    unsigned char y;
+    unsigned char unknown_33f[2];
+    unsigned char hand;
+    unsigned char unknown_342[4];
+    signed char unknown_346_bit_0 : 1;
+    signed char unknown_346_high : 7;
+    unsigned char unknown_347[9];
+};
+struct DotrWindowControl {
+    struct DotrWindowSide sides[2];
+    unsigned char unknown_6a0[40];
+    struct DotrWindowUnit *unit_6c8;
+    struct DotrWindowUnit *unit_6cc;
+    unsigned char unknown_6d0[1416];
+    unsigned int unknown_c58;
+    unsigned char unknown_c5c[217];
+    unsigned char unknown_d35;
+    unsigned char unknown_d36[6];
+    unsigned char side;
+    unsigned char unknown_d3d;
+    unsigned char slide;
+    unsigned char slide2;
+    unsigned char x;
+    unsigned char y;
+    unsigned char x2;
+    unsigned char y2;
+    unsigned char unknown_d44;
+    unsigned char unknown_d45;
+    unsigned char unknown_d46;
+    unsigned char unknown_d47;
+    unsigned char unknown_d48;
+    unsigned char unknown_d49[6];
+    unsigned char unknown_d4f;
+    unsigned char unknown_d50[3];
+    unsigned char unknown_d53;
+    unsigned char unknown_d54;
+    unsigned char unknown_d55[2];
+    unsigned char unknown_d57;
+    unsigned char unknown_d58[13];
+    signed char unknown_d65_low : 4;
+    signed char unknown_d65_bit_4 : 1;
+    signed char unknown_d65_high : 3;
+    signed char unknown_d66_low : 3;
+    signed char unknown_d66_bit_3 : 1;
+    signed char unknown_d66_bits_4_6 : 3;
+    signed char unknown_d66_bit_7 : 1;
+    signed char unknown_d67_bit_0 : 1;
+    signed char unknown_d67_bit_1 : 1;
+    signed char unknown_d67_bit_2 : 1;
+    signed char unknown_d67_bit_3 : 1;
+    signed char unknown_d67_bit_4 : 1;
+    signed char unknown_d67_high : 3;
+};
+extern struct DotrWindowControl D_00317490_b;
+extern DotrDrawWord func_001B3790_b(DotrDrawWord cursor, int colour, int field, float f, int x, int y);
+extern DotrDrawWord func_001B19F0(DotrDrawWord cursor, int side, int x, int y, int active);
+extern DotrDrawWord func_001B22F0(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
+                                                     unsigned char side, int a5, int a6, int a7, long a8, long a9);
+extern struct DotrWindowUnit *func_001DF540_b(int a, int b);
+extern struct DotrWindowUnit *func_001E36E0_b(int x, int y);
+extern DotrDrawWord func_001B3100_b(DotrDrawWord cursor, int a1, int a2, int a3);
+extern DotrDrawWord func_001B4780_b(DotrDrawWord cursor, int a1, int a2, int a3, int x, int y, int a6, int a7, long a8);
+extern DotrDrawWord func_001B6EA0_b(DotrDrawWord cursor, int x, int y, int a, int flags, int width, int value);
+
+int func_001B11C0(int cursor)
+{
+    struct DotrWindowControl *g = &D_00317490_b;
+    int off;
+    struct DotrWindowUnit *unit;
+    struct DotrWindowUnit *other;
+    int x;
+    int y;
+    int adv;
+    DotrDrawWord out;
+    struct DotrWindowSide *side;
+    long first = 1;
+    int adv2;
+    int closing = D_00317490_b.unknown_d67_bit_0;
+    int step = 8;
+    struct DotrWindowSide *s;
+    int v;
+    int a;
+    int px;
+    int c1;
+    int c2;
+    int py;
+
+    if (D_00317490_b.unknown_d67_bit_1) {
+        return cursor;
+    }
+    if (g->unknown_d67_bit_2 || g->unknown_d45 != 0 || g->unknown_d47 != 0 || g->unknown_d48 != 0) {
+        if (!g->unknown_d65_bit_4) {
+            closing = 1;
+            step = 16;
+        }
+    }
+    if (closing) {
+        v = g->slide - step;
+        g->slide = v > 0 ? v : 0;
+    } else {
+        v = g->slide + step;
+        g->slide = v < 128 ? v : 128;
+        if (g->slide == 128) {
+            g->side = g->unknown_d54;
+            g->unknown_d3d = g->unknown_d53;
+            g->unknown_d67_bit_0 = g->unknown_d66_bit_7;
+            s = &g->sides[g->side];
+            g->x = s->x;
+            g->y = s->y;
+        }
+    }
+    if (g->slide == 128) {
+        return cursor;
+    }
+    off = g->slide << 7 >> 7;
+    side = &g->sides[g->side];
+    func_001D9EE0(0xfffff8);
+    cursor = func_001B3790_b(cursor, g->side, func_001E22B0(side->x, side->y), 100.0f, g->side != 0 ? 6 : 538,
+                                                off + 336);
+    cursor = func_001AEFD0(cursor, 0);
+    cursor = func_001B19F0(cursor, 0, 18, 20 - off, g->side == 0 ? 1 : 0);
+    out = func_001B19F0(cursor, 1, 440, 20 - off, g->side == 1 ? 1 : 0);
+    if (g->unknown_d45 != 0 || g->unknown_d47 != 0) {
+        other = g->unit_6cc;
+        unit = func_001DF540_b(2, g->unknown_d4f + 1);
+        if (g->unknown_d67_bit_3 || (!g->unknown_d67_bit_4 && g->unknown_d47 != 0)) {
+            v = g->slide2 - 16;
+            g->slide2 = v > 0 ? v : 0;
+        } else {
+            v = g->slide2 + 16;
+            g->slide2 = v < 128 ? v : 128;
+        }
+        
+
+        if (!(g->unknown_d57 != 81 && g->unknown_d57 != 82 && g->unknown_d57 != 83)) {
+            other = g->unit_6c8;
+        } else if (g->unknown_d35 == 83) {
+            if (!(g->unknown_d57 != 32 && g->unknown_d57 != 33 && g->unknown_d57 != 34)) {
+                other = g->unit_6c8;
+            }
+        }
+        a = g->slide2;
+        if (a != 0) {
+            out = func_001B22F0(out, unit, side->x, side->y, unit != 0 ? (int)unit->side : (int)g->side, 104,
+                                                   368 - ((unsigned char)a << 6 >> 7) + off, -1, 6, 1);
+            first = 0;
+        }
+        out = func_001B22F0(out, other, side->x, side->y, other != 0 ? (int)other->side : (int)g->side, 104,
+                                               off + 368, -1, 3, first);
+    } else {
+        x = -1;
+        adv = 1;
+        y = -1;
+        adv2 = 1;
+        if (g->unit_6c8 != 0 && g->unit_6c8->place < 11 && g->unit_6cc != 0 && g->unit_6cc->place < 11) {
+            c1 = func_00250360(g->unit_6c8->side, g->unit_6c8->place);
+            c2 = func_00250360(g->unit_6cc->side, g->unit_6cc->place);
+            if (c1 != c2) {
+            adv = func_002679C0(g->unit_6c8->side, g->unit_6c8->place, g->unit_6cc->side, g->unit_6cc->place);
+            if (adv < 0) {
+                adv2 = adv;
+            } else {
+                adv2 = 2 - adv;
+            }
+            }
+        }
+        px = side->x;
+        py = side->y;
+        if (g->unit_6c8 != 0 && g->unit_6c8->place < 11 && g->unit_6c8->unknown_57_bit_6) {
+            g->x = px = g->unit_6c8->x;
+            g->y = py = g->unit_6c8->y;
+            if (side->x != px || side->y != py) {
+                x = side->x;
+                y = side->y;
+                if (g->slide2 == 0) {
+                    g->x2 = x;
+                    g->y2 = y;
+                }
+            }
+        } else if (g->unknown_d57 == 24 || g->unknown_d57 == 62 || g->unknown_d57 == 48) {
+            g->x = px;
+            g->y = py;
+        }
+        if (g->x2 == x && g->y2 == y && func_001E36E0_b(x, y) != 0) {
+            v = g->slide2 + 16;
+            g->slide2 = v < 128 ? v : 128;
+        } else {
+            v = g->slide2 - 16;
+            g->slide2 = v > 0 ? v : 0;
+        }
+        if (g->slide2 != 0) {
+            unit = func_001E36E0_b(g->x2, g->y2);
+            out = func_001B22F0(out, unit, g->x2, g->y2, unit != 0 ? (int)unit->side : (int)g->side, 104,
+                                                   368 - (g->slide2 << 6 >> 7) + off, adv2, 3, 1);
+            first = 0;
+        }
+        unit = func_001E36E0_b(g->x, g->y);
+        out = func_001B22F0(out, unit, side->x, side->y, unit != 0 ? (int)unit->side : (int)g->side, 104, off + 368,
+                                               adv, 3, first);
+    }
+    cursor = func_001B3100_b(out, g->side, g->side != 0 ? 538 : 6, off + 336);
+    cursor = func_001B3640(cursor, func_001E22B0(side->x, side->y), g->side != 0 ? 6 : 538, off + 336);
+    cursor = func_001B4780_b(cursor, 5, 3, 4, 292, 16 - off, 4, 2, 1);
+    cursor = func_001B6EA0_b(cursor, 320, 22 - off, 2, 34, 2, 100 - g->unknown_d3d);
+    if (g->unknown_d44 != 0) {
+        cursor = func_001B7820(cursor, 320, 72 - off, (unsigned char)((unsigned char)g->unknown_d44 << 7 >> 7));
+    }
+    if (g->unknown_d48 != 0) {
+        y = g->unknown_d45 << 7 >> 7;
+        y = 54 - off + (y - 128);
+        cursor = func_001B1EF0(cursor, 220, y);
+        cursor = func_001B20E0(cursor, 332, y);
+    }
+    func_001D9EE0(0xfffffc);
+    cursor = func_001AF5C0(cursor);
+    func_001FEAF0(0);
+    return cursor;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_038", func_001B19F0);
 

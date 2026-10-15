@@ -905,7 +905,166 @@ void func_0010E6B0(s32 arg0, void *arg1, s32 *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010E890);
+struct DotrFreeBlock {
+    unsigned char unknown_00[0x3c];
+    unsigned short unknown_3c;
+    unsigned char unknown_3e;
+};
+struct DotrFreeNibbles {
+    unsigned char low : 4;
+    unsigned char high : 4;
+};
+struct DotrStateItem;
+extern struct DotrStateItem *func_001E36E0_b(int x, int y);
+extern int func_00278510_b(struct DotrFreeBlock *block, int packed, int c, int d, int e, int skip);
+extern int func_0027A130_b(struct DotrFreeBlock *block, struct DotrFreeNibbles *bytes, int column, int row, int x, int y,
+                              int g, int h, unsigned char i, unsigned short key);
+extern int func_002792C0_b(struct DotrFreeBlock *block, struct DotrFreeNibbles *bytes, int column, int row, int x, int y,
+                              unsigned short id, int n);
+extern int func_0010F850_b(unsigned char mode, unsigned char index);
+
+int func_0010E890(int side, int kind, void *block_v, int packed)
+{
+    struct DotrFreeBlock * block = block_v;
+    struct DotrFreeNibbles bytes[12];
+    int i;
+    int inv;
+    int id;
+    int last_y;
+    int last_x;
+    int here;
+    int lvl;
+    int best_spot;
+    int ny;
+    struct DotrFreeNibbles *p;
+    int cost;
+    int best;
+    int spot;
+    int nx;
+    int j;
+    int m;
+    int mode;
+    int y;
+    int last;
+    int here_y;
+    int field;
+    int round;
+    int near_spot;
+    int near;
+    int to_y;
+    int near_at;
+    int here_x;
+    int to_x;
+    int line;
+    int x;
+    int free_spot;
+    int near_cost;
+
+    if (block == 0) {
+        return -1;
+    }
+    for (i = 0, p = bytes; i < 12; i++, p++) p->low = p->high = 0xf;
+    func_001E1090(side, 0);
+    
+
+
+    if ((mode = (kind = (unsigned char)(block->unknown_3e >> 5))) != 0 && kind != 3) {
+        if (kind != 4) goto tail;
+    }
+    {
+        if (packed >= 0) {
+            best = 0xff;
+            best_spot = 0xffff;
+            here = func_001E1090(packed >> 8, packed & 0xff);
+            lvl = func_0010EDA0(side);
+            here_y = here >> 8;
+            here_x = here & 0xff;
+            inv = func_00278510_b(block, packed, lvl, here_x, here_y, 0);
+            for (i = 0; i < 8; i++) {
+                if ((spot = func_0010ED90(side, i)) >= 0) {
+                    x = spot & 0xff;
+                    y = spot >> 8;
+                    field = func_001E22B0(x, y);
+                    if (field != 8) {
+                        if (func_001E36E0_b(x, y) == 0) {
+                            if (field != 9 || func_0024FE40(block, x, y) != 1) {
+                                for (j = 0, p = bytes; j < 12; j++, p++) p->low = p->high = 0xf;
+                                if (inv >= 0) {
+                                    cost = func_0027A130_b(block, bytes, x, y, here_x, here_y, packed, 0, 2, (unsigned short)func_0010EDA0(side));
+                                } else {
+                                    cost = func_002792C0_b(block, bytes, x, y, here_x, here_y, (unsigned short)packed, 2);
+                                }
+                                if (func_0027AFC0(bytes) > 0 && cost < best && cost >= 0) {
+                                    best = cost;
+                                    best_spot = spot;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (best_spot != 0xffff) {
+                return best_spot;
+            }
+            best_spot = -1;
+            return best_spot;
+        }
+        for (round = 0; round < (mode == 0 ? 6 : 4); round++) {
+            line = (unsigned short)func_0010F850_b(mode == 0 ? 1 : 2, round);
+            near_spot = 0xffff;
+            near = 14;
+            if (line >= 0) {
+                for (j = 0, to_y = line >> 8, to_x = line & 0xff; j < 8; j++) {
+                    if ((near_at = func_0010ED90(side, j)) >= 0) {
+                        nx = near_at & 0xff;
+                        ny = near_at >> 8;
+                        if (func_001E22B0(nx, ny) != 8) {
+                            if (func_001E22B0(nx, ny) != 9) {
+                                if (func_001E3790(nx, ny) < 0) {
+                                    id = func_001E3790(nx, ny);
+                                    if (id < 0) {
+                                        id = 0xffff;
+                                    }
+                                    near_cost = func_002792C0_b(block, bytes, nx, ny, to_x, to_y, (unsigned short)id, 7);
+                                    if (near_cost < near && near_cost >= 0) {
+                                        near_spot = near_at;
+                                        near = near_cost;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (near < 14) {
+                    return near_spot;
+                }
+            }
+        }
+        goto none;
+    }
+tail:
+    last = 0xffff;
+    for (m = 0; m < 8; m++) {
+        if ((free_spot = func_0010ED90(side, m)) >= 0) {
+            last_x = free_spot & 0xff;
+            last_y = free_spot >> 8;
+            if (func_001E22B0(last_x, last_y) != 8) {
+                if (func_001E22B0(last_x, last_y) != 9) {
+                    if (func_001E3790(last_x, last_y) < 0) {
+                        if (last_x >= 0) {
+                            last = free_spot;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (last != 0xffff) {
+        return last;
+    }
+none:
+    return -1;
+}
 
 s32 func_0010ED90(s32 arg0, u32 arg1) {
     return func_0024E410(arg0, arg1);
@@ -1373,7 +1532,6 @@ typedef struct Coord_0010FFF0 {
     u8 y : 4;
 } Coord_0010FFF0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 static inline u32 target_0010FFF0(void *src, u8 mode) {
     if (mode == 1) {
@@ -1575,7 +1733,6 @@ typedef struct Result_001106F0 {
     u8 flags;
 } Result_001106F0;
 
-s32 func_00276CC0(s32, s32, s32, s32, s32, u8);
 
 #define target_001106F0(src, side) ((side) == 1 ? ((((Source_001106F0 *)(src))->target >> 16) & 0xFFFF) : (u32)(u16)((Source_001106F0 *)(src))->target)
 
