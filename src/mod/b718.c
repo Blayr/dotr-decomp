@@ -1885,6 +1885,269 @@ static s32 func_01E04BB0_b718(Pool_b718_01E04BB0 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E04CD0_b718);
+/* shape b718:01E04CD0, 279 insns: variant of b045:01E011B0 (sprite row), far corners shaken by 0.9 (x, y) and 0.7 (z) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E05130_b718);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b718_01E04CD0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b718_01E04CD0 c;
+    struct {
+        u64 tc;
+        u64 x : 16;
+        u64 y : 16;
+        u64 z : 24;
+        u64 f : 8;
+    } v[4];
+} Pkt_b718_01E04CD0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b008_01E00080 rect;
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[0x1E];
+    u8 xD8[1];
+} Obj_b718_01E04CD0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 off;
+    u8 padA[6];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 h38;
+} Spr_b718_01E04CD0;
+
+static void func_01E04CD0_b718(Obj_b718_01E04CD0 *o, Spr_b718_01E04CD0 *s, Pkt_b718_01E04CD0 *p, s8 *tbl) {
+    f32 hh;
+    extern Rgbaq_b718_01E04CD0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s16 i;
+    f32 d;
+    s32 h;
+    f32 f;
+    s8 *j;
+    f32 w;
+
+    func_00207500();
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    p->c.q = 0.0f;
+    p->v[0].f = 0;
+    p->v[1].f = 0;
+    p->v[2].f = 0;
+    p->v[3].f = 0;
+    p->c = func_00107740(s->col);
+    func_01E00100_b718((Pk_b008_01E00080 *)p, &o->rect, 0);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[0] += s->rot[0];
+    rot[1] += s->rot[1];
+    rot[2] += s->rot[2];
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    pos.x = s->x;
+    pos.y = s->y;
+    pos.z = s->z;
+    func_00108EF0(m, &scale, NULL, &pos);
+    for (i = 0; i < o->count; i++) {
+        w = 4.0f;
+        hh = s->h38;
+        func_00108CE0(quad, w, hh);
+        func_00109100(quad, rot, 0, o->xD8);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].x += d;
+        quad[1].x += d;
+        quad[2].x += 0.9f * (f * (s->w30 + h));
+        quad[3].x += 0.9f * (f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].y += d;
+        quad[1].y += d;
+        quad[2].y += 0.9f * (f * (s->w30 + h));
+        quad[3].y += 0.9f * (f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].z += d;
+        quad[1].z += d;
+        quad[2].z += 0.7f * (f * (s->w30 + h));
+        quad[3].z += 0.7f * (f * (s->w30 + h));
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, (u32)depth[0]);
+        }
+    }
+}
+
+/* shape b718:01E05130, 279 insns: variant of b045:01E011B0 (sprite row), corners 0 and 2 shaken fully, 1 and 3 by
+   0.9 (x, y) and 0.5 (z) */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b718_01E05130;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b718_01E05130 c;
+    struct {
+        u64 tc;
+        u64 x : 16;
+        u64 y : 16;
+        u64 z : 24;
+        u64 f : 8;
+    } v[4];
+} Pkt_b718_01E05130;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b008_01E00080 rect;
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[0x1E];
+    u8 xD8[1];
+} Obj_b718_01E05130;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 off;
+    u8 padA[6];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 h38;
+} Spr_b718_01E05130;
+
+static void func_01E05130_b718(Obj_b718_01E05130 *o, Spr_b718_01E05130 *s, Pkt_b718_01E05130 *p, s8 *tbl) {
+    f32 hh;
+    extern Rgbaq_b718_01E05130 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s16 i;
+    s32 h;
+    f32 f;
+    f32 d;
+    s8 *j;
+    f32 w;
+
+    func_00207500();
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    p->c.q = 0.0f;
+    p->v[0].f = 0;
+    p->v[1].f = 0;
+    p->v[2].f = 0;
+    p->v[3].f = 0;
+    p->c = func_00107740(s->col);
+    func_01E00100_b718((Pk_b008_01E00080 *)p, &o->rect, 0);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[0] += s->rot[0];
+    rot[1] += s->rot[1];
+    rot[2] += s->rot[2];
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    pos.x = s->x;
+    pos.y = s->y;
+    pos.z = s->z;
+    func_00108EF0(m, &scale, NULL, &pos);
+    for (i = 0; i < o->count; i++) {
+        w = 4.0f;
+        hh = s->h38;
+        func_00108CE0(quad, w, hh);
+        func_00109100(quad, rot, 0, o->xD8);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].x += d;
+        quad[1].x += 0.9f * (f * (s->w30 + h));
+        quad[2].x += d;
+        quad[3].x += 0.9f * (f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].y += d;
+        quad[1].y += 0.9f * (f * (s->w30 + h));
+        quad[2].y += d;
+        quad[3].y += 0.9f * (f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        d = f * (s->w30 + h);
+        quad[0].z += d;
+        quad[1].z += 0.5f * (f * (s->w30 + h));
+        quad[2].z += d;
+        quad[3].z += 0.5f * (f * (s->w30 + h));
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, (u32)depth[0]);
+        }
+    }
+}
