@@ -14,7 +14,6 @@ extern const char D_002BD518[];
 extern const char D_002BD538[];
 extern const char D_002BD540[];
 extern s32 D_0028FAA0; /* __mb_cur_max */
-extern void *func_00198618(const void *, s32, u32);
 
 #define va_list char *
 #define va_arg(ap, type) __builtin_va_arg(ap, type)

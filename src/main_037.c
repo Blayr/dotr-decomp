@@ -179,7 +179,6 @@ typedef struct File_001A7380 {
     u32 flag : 1;
 } File_001A7380;
 
-void func_002009E0(s32, s32);
 extern u8 D_002BE660[];
 extern char D_002BE7D0[];
 extern char D_002BE7D5[];
@@ -1166,7 +1165,6 @@ void func_001AC700(void);
 s32 func_001CEE60(void);
 void func_001EAA60(s32);
 void func_001EDA40(s32, s32);
-void func_002009E0(s32, s32);
 void func_00203E20(void);
 void func_00237730(void);
 

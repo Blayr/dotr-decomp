@@ -3,7 +3,6 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-void func_002009E0(s32, s32);
 
 static inline s32 nonnegative_001B8840(s32 value) {
     if (value > 0) {
