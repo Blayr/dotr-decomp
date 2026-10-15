@@ -1,6 +1,6 @@
 #include "common.h"
 
-void func_001ED460(s32 arg0) {
+void lSzModel_EffectCB(s32 arg0) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -51,7 +51,7 @@ typedef struct {
     Flags_001ED4A0 options;
 } Fields_001ED4A0;
 
-s32 func_001ED4A0(s32 index)
+s32 SzModel_Motion(s32 index)
 {
     Fields_001ED4A0 *fields;
     Obj_0031ABB0 *obj;
@@ -61,7 +61,7 @@ s32 func_001ED4A0(s32 index)
     s8 *previous_slot;
     s8 *next_slot;
     f32 ticks;
-    extern s32 func_001A8760();
+    extern s32 SzGame_GetFrameSpeed();
 
     if (index < 0 || index >= 0x54) {
         return 0;
@@ -76,7 +76,7 @@ s32 func_001ED4A0(s32 index)
     current_slot = &obj->lv[0];
     previous_slot = &obj->lv[1];
     next_slot = &obj->lv[3];
-    ticks = (f32)func_001A8760();
+    ticks = (f32)SzGame_GetFrameSpeed();
     if (fields->status < 0) {
         return 0;
     }
@@ -289,7 +289,7 @@ struct DotrObjectCue {
 };
 extern int func_001A8760_b(void);
 
-int func_001EDA40(int channel, int index)
+int SzModel_ReqSE(int channel, int index)
 {
     struct DotrObject *p;
     int kind;
@@ -333,7 +333,7 @@ int func_001EDA40(int channel, int index)
         now = p->unknown_198[0].y;
         if (*(int *)&p->unknown_1e8[4] >= 0) {
             kind = 2;
-            now = func_001F5320(*(int *)&p->unknown_1e8[4]);
+            now = SzEffect_GetCount(*(int *)&p->unknown_1e8[4]);
         }
         previous = now - previous;
         for (i = 0; i < 64; i++, cue++) {
@@ -342,7 +342,7 @@ int func_001EDA40(int channel, int index)
             }
             if (cue->kind == kind) {
                 if (cue->time >= previous && cue->time < now) {
-                    func_00217710(channel, cue->code);
+                    SzSound_PlaySE(channel, cue->code);
                 }
             }
         }
@@ -384,7 +384,7 @@ typedef struct {
     u8 pad6C[4];
 } Entry_001EDCB0;
 
-s32 func_001EDCB0(s32 index, s16 duration, s32 mode, void *color0, void *color1, s32 enabled) {
+s32 SzModel_ReqMotionBlur(s32 index, s16 duration, s32 mode, void *color0, void *color1, s32 enabled) {
     extern Entry_001EDCB0 D_0031AD70[];
     Obj_0031ABB0 *obj;
     Entry_001EDCB0 *entry;
@@ -414,7 +414,7 @@ s32 func_001EDCB0(s32 index, s16 duration, s32 mode, void *color0, void *color1,
                 destination += sizeof(Vec3_001EDCB0);
                 j++;
             } while (j < 2);
-            func_0020B380(entry, obj, 4);
+            RhMem_CopyMemory16(entry, obj, 4);
             if (color0 != NULL) {
                 entry->color0 = *(Color_001EDCB0 *)color0;
             } else {
@@ -449,7 +449,7 @@ typedef struct Entry_001EDF20 {
 
 extern Entry_001EDF20 D_0031AD70[];
 
-void func_001EDF20(s32 arg0) {
+void SzModel_CancelMotionBlur(s32 arg0) {
     s32 var_a3;
     Entry_001EDF20 *var_t0;
     s32 temp_v1;
@@ -468,8 +468,8 @@ void func_001EDF20(s32 arg0) {
     } while (var_a3 < 0x20);
 }
 
-void func_001EDF90(s32 arg0) {
-    func_00209D30(func_001EDFD0(func_00209D20(), arg0));
+void SzModel_DrawMotionBlur(s32 arg0) {
+    RhBase_SetVifPacketArea(SzModel_DrawMotionBlur_Pipe(RhBase_GetVifPacketArea(), arg0));
 }
 
 typedef struct Vec3_001EDFD0 {
@@ -513,11 +513,11 @@ typedef struct View_001EDFD0 {
     u8 : 6;
 } View_001EDFD0;
 
-s32 func_001EDFD0(s32 arg0, s32 arg1) {
+s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
     extern Slot_001EDFD0 D_0031AD00;
     extern Slot_001EDFD0 D_0031BA90;
     extern s32 D_0031BB00;
-    extern s32 func_001EF8A0();
+    extern s32 SzModel_ExSort_Pipe();
     Slot_001EDFD0 *scratch;
     s32 ready;
     s32 remaining;
@@ -532,7 +532,7 @@ s32 func_001EDFD0(s32 arg0, s32 arg1) {
     slot = &D_0031BA90;
     do {
         if (slot->index >= 0 && (arg1 < 0 || slot->index == arg1)) {
-            if (func_001F1370(slot->index) == 0) {
+            if (SzModel_IsModelDisp(slot->index) == 0) {
                 slot->index = -1;
             } else {
                 obj = (View_001EDFD0 *)D_0031ABB0[slot->index];
@@ -548,21 +548,21 @@ s32 func_001EDFD0(s32 arg0, s32 arg1) {
                 }
                 {
                     if (!ready) {
-                        func_001EE4A0(0);
+                        SzModel_SetDrawCache(0);
                         ready = 1;
                     }
                     for (i = 0; i < 2; i++) {
                         scratch->pos[i] = obj->pos[i];
                         scratch->level[i] = obj->level[i];
                     }
-                    func_0020B380(scratch, obj, 4);
+                    RhMem_CopyMemory16(scratch, obj, 4);
                     scratch->color = obj->color;
                     scratch->style = obj->style;
                     for (i = 0; i < 2; i++) {
                         obj->pos[i] = slot->pos[i];
                         obj->level[i] = slot->level[i];
                     }
-                    func_0020B380(obj, slot, 4);
+                    RhMem_CopyMemory16(obj, slot, 4);
                     obj->color.b = (slot->color.b * (slot->duration - slot->timer) + slot->target.b * slot->timer) /
                                    slot->duration;
                     obj->color.g = (slot->color.g * (slot->duration - slot->timer) + slot->target.g * slot->timer) /
@@ -573,15 +573,15 @@ s32 func_001EDFD0(s32 arg0, s32 arg1) {
                                    slot->duration;
                     obj->style = slot->style;
                     if (slot->alternate) {
-                        arg0 = func_001EF8A0(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
+                        arg0 = SzModel_ExSort_Pipe(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
                     } else {
-                        arg0 = func_001EE4B0(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
+                        arg0 = SzModel_Draw_Pipe(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
                     }
                     for (i = 0; i < 2; i++) {
                         obj->pos[i] = scratch->pos[i];
                         obj->level[i] = scratch->level[i];
                     }
-                    func_0020B380(obj, scratch, 4);
+                    RhMem_CopyMemory16(obj, scratch, 4);
                     obj->color = scratch->color;
                     obj->style = scratch->style;
                     if (++slot->timer >= slot->duration) {
@@ -595,17 +595,17 @@ s32 func_001EDFD0(s32 arg0, s32 arg1) {
         slot--;
     } while (remaining > 0);
     if (ready) {
-        func_001EE4A0(0);
+        SzModel_SetDrawCache(0);
     }
     D_0031BB00 = 0;
     return arg0;
 }
 
-void func_001EE4A0(s32 arg0) {
+void SzModel_SetDrawCache(s32 arg0) {
     D_0031BB10 = arg0;
 }
 
-s32 func_001EE4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+s32 SzModel_Draw_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     Obj_0031ABB0 *temp_v1;
     s8 temp_v1_2;
     void *temp_t4;
@@ -628,10 +628,10 @@ s32 func_001EE4B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     temp_v1_2 = *(s8 *)((u8 *)temp_v1 + 0x1F3);
     if ((temp_v1_2 == 4) || (temp_v1_2 == 5U) || (temp_v1_2 == 6)) {
         if (*(s32 *)((u8 *)temp_t4 + 0x1C) != 0) {
-            callback = func_001EE570;
+            callback = lSzModel_Draw_DefFunc;
         }
     }
-    return func_001EE6C0(arg0, arg1, arg2, arg3, arg4, arg5, arg6, callback, 0);
+    return SzModel_DrawWithFunc_Pipe(arg0, arg1, arg2, arg3, arg4, arg5, arg6, callback, 0);
 }
 
 typedef struct {
@@ -665,9 +665,9 @@ typedef struct {
     u64 extra[3];
 } Packet_001EE570;
 
-void func_001EE570(s32 arg0) {
-    extern s32 func_00208870();
-    extern s32 func_00209F70();
+void lSzModel_Draw_DefFunc(s32 arg0) {
+    extern s32 ExFrameBuffer2Texture_Pipe();
+    extern s32 RhBase_MaskFBuffer();
     Packet_001EE570 packet;
 
     ((Header_001EE570 *)&packet.header)->kind = 0x26;
@@ -691,10 +691,10 @@ void func_001EE570(s32 arg0) {
     packet.t0 = 0.0f;
     packet.s1 = 0.625f;
     packet.t1 = 0.875f;
-    func_00209F70(func_0020A0B0(func_00207650(func_0020A0B0(func_00209F70(func_0020F290(func_00208870(func_0020F290(arg0), -1, 0, &packet.extra[1], &packet.extra[2])), 0xFF000000), 0), (s32)(&packet.dmatag + 1), 0, 0), 1), 0);
+    RhBase_MaskFBuffer(RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode(RhBase_MaskFBuffer(RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(RhText_SetTextureFlush(arg0), -1, 0, &packet.extra[1], &packet.extra[2])), 0xFF000000), 0), (s32)(&packet.dmatag + 1), 0, 0), 1), 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001EE6C0);
+INCLUDE_ASM("asm/nonmatchings/main_048", SzModel_DrawWithFunc_Pipe);
 
 struct DotrExSortVec {
     float x, y, z, w;
@@ -704,7 +704,7 @@ extern long func_00208680_b(int, int);
 extern int func_002084D0_b(int, long);
 extern int func_00207500_b(void);
 
-int func_001EF8A0(int cursor, int index, int c, int d, int e, int f, int g)
+int SzModel_ExSort_Pipe(int cursor, int index, int c, int d, int e, int f, int g)
 {
     struct DotrExSortVec position;
     int chain;
@@ -716,43 +716,43 @@ int func_001EF8A0(int cursor, int index, int c, int d, int e, int f, int g)
     int result;
 
     D_0031BB10 = 0;
-    out = func_002085E0(func_00207FA0(cursor), 2);
+    out = ExDitherMatrixEz_Pipe(ExSetAnchor_Pipe(cursor), 2);
     if (D_0031BB00_1ef8a0 == 0) {
-        out = func_001EDFD0(func_0020A0B0(out, 0), index);
+        out = SzModel_DrawMotionBlur_Pipe(RhBase_SetZBufferMode(out, 0), index);
     }
-    out = func_0020A0B0(func_001EE4B0(func_0020A0B0(out, 1), index, c, d, e, f, g), 0);
-    out = func_002085E0(out, 3);
+    out = RhBase_SetZBufferMode(SzModel_Draw_Pipe(RhBase_SetZBufferMode(out, 1), index, c, d, e, f, g), 0);
+    out = ExDitherMatrixEz_Pipe(out, 3);
     packet = func_002084D0_b(out, func_00208680_b(0, 4));
-    if (func_001F2050(index, &position) != 0) {
-        depth = func_001F3050(index);
+    if (SzModel_GetCenter(index, &position) != 0) {
+        depth = SzModel_GetMaxOT(index);
         dz = 0.0f;
         if (depth < 0) {
             depth = 0;
         }
         if (D_0031BB00_1ef8a0 == 2) {
-            dz = func_001F0F40(index) / 2.0f;
+            dz = SzModel_GetRadius(index) / 2.0f;
         }
-        z = func_00205DF0(&position, dz);
+        z = Ex3d_GetSampleW(&position, dz);
         chain = func_00207500_b();
         depth = z < (float)depth ? depth : func_001A23B0(z);
-        result = func_00208030(packet, cursor, chain, depth);
+        result = ExSortAnchor_Pipe(packet, cursor, chain, depth);
     } else {
         return cursor;
     }
     return result;
 }
 
-s32 func_001EFA80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+s32 SzModel_DrawWithOutCalc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     s32 saved;
 
-    saved = func_001F3210(arg1);
-    func_001F3190(arg1, 0);
-    arg0 = func_001EE4B0(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-    func_001F3190(arg1, saved);
+    saved = SzModel_GetCalcFlag(arg1);
+    SzModel_SetCalcFlag(arg1, 0);
+    arg0 = SzModel_Draw_Pipe(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+    SzModel_SetCalcFlag(arg1, saved);
     return arg0;
 }
 
-s32 func_001EFB40(s32 arg0, s32 arg1, s32 *arg2) {
+s32 lSzModel_GetGNode(s32 arg0, s32 arg1, s32 *arg2) {
     s32 sp1C;
     Obj_0031ABB0 *temp_v1;
     s32 temp_a2;
@@ -769,7 +769,7 @@ s32 func_001EFB40(s32 arg0, s32 arg1, s32 *arg2) {
         *arg2 = 1;
     }
     temp_a2 = *(s32 *)((u8 *)temp_v1 + 0x134);
-    return func_001EFBD0(arg1, temp_a2, temp_a2, &sp1C, 0, arg2, 0);
+    return lSzModel_TraceGNode(arg1, temp_a2, temp_a2, &sp1C, 0, arg2, 0);
 }
 
 typedef struct Node_001EFBD0 {
@@ -779,7 +779,7 @@ typedef struct Node_001EFBD0 {
     s32 sibling;
 } Node_001EFBD0;
 
-s32 func_001EFBD0(s32 target, s32 base, s32 node, s32 *index,
+s32 lSzModel_TraceGNode(s32 target, s32 base, s32 node, s32 *index,
                   s32 depthAddress, s32 *maxDepth, s32 callbackAddress) {
     s32 nextDepth;
     s32 result;
@@ -802,7 +802,7 @@ s32 func_001EFBD0(s32 target, s32 base, s32 node, s32 *index,
         if (*(s32 *)(node + 0x1C) != 0) {
             currentDepth = depthAddress != 0 ? *(s32 *)depthAddress : 1;
             nextDepth = currentDepth + 1;
-            result = func_001EFBD0(target, base,
+            result = lSzModel_TraceGNode(target, base,
                 base + (*(s32 *)(node + 0x1C) & 0x0FFFFFFF),
                 index, (s32)&nextDepth, maxDepth, callbackAddress);
             if (result != 0) {
@@ -820,8 +820,8 @@ s32 func_001EFBD0(s32 target, s32 base, s32 node, s32 *index,
     return 0;
 }
 
-void func_001EFD30(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    func_00209D30(func_001EFDC0(func_00209D20(), arg0, arg1, arg2, arg3, arg4, arg5));
+void SzModel_ShotTextureWithFunc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    RhBase_SetVifPacketArea(SzModel_ShotTextureWithFunc_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3, arg4, arg5));
 }
 
 typedef struct Bits_001EFDC0 {
@@ -842,25 +842,25 @@ typedef struct Info_001EFDC0 {
     Bits_001EFDC0 bits;
 } Info_001EFDC0;
 
-s32 func_001EFDC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    extern s32 func_001EE6C0();
-    extern s32 func_002084D0();
+s32 SzModel_ShotTextureWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    extern s32 SzModel_DrawWithFunc_Pipe();
+    extern s32 ExClampMode_Pipe();
     Info_001EFDC0 info;
     s32 saved;
     s32 ret;
 
-    saved = func_001F3210(arg1);
+    saved = SzModel_GetCalcFlag(arg1);
     D_0031BB10 = 0;
-    arg0 = func_002085E0(arg0, 2);
-    arg0 = func_0020A0B0(arg0, 1);
-    func_001F3190(arg1, 0);
+    arg0 = ExDitherMatrixEz_Pipe(arg0, 2);
+    arg0 = RhBase_SetZBufferMode(arg0, 1);
+    SzModel_SetCalcFlag(arg1, 0);
     if (arg5 != 0 || arg6 != 0) {
-        arg0 = func_001EE6C0(arg0, arg1, 0, 0, 0, (s32)info.data, 0, arg5, arg6);
+        arg0 = SzModel_DrawWithFunc_Pipe(arg0, arg1, 0, 0, 0, (s32)info.data, 0, arg5, arg6);
     } else {
-        arg0 = func_001EE4B0(arg0, arg1, 0, 0, 0, (s32)info.data, 0);
+        arg0 = SzModel_Draw_Pipe(arg0, arg1, 0, 0, 0, (s32)info.data, 0);
     }
-    func_001F3190(arg1, saved);
-    ret = func_002084D0(func_002085E0(func_0020A0B0(arg0, 0), 3), func_00208680(0, 4));
+    SzModel_SetCalcFlag(arg1, saved);
+    ret = ExClampMode_Pipe(ExDitherMatrixEz_Pipe(RhBase_SetZBufferMode(arg0, 0), 3), ExGetRegVal(0, 4));
     info.bits.flag = info.bits.kind = arg2;
     *(Word_001EFDC0 *)arg3 = info.word;
     *(Bits_001EFDC0 *)arg4 = info.bits;
@@ -874,10 +874,10 @@ typedef struct Flags_001EFF70 {
     s64 rest : 60;
 } Flags_001EFF70;
 
-s32 func_001EFF70(s32 arg0, void *arg1) {
-    extern void func_001F08D0(s32);
-    extern void func_001F01A0();
-    extern s32 func_001FEC70();
+s32 lSzModel_LoadModel(s32 arg0, void *arg1) {
+    extern void lSzModel_FreeModel(s32);
+    extern void lSzModel_LoadModelCB();
+    extern s32 SzFile_ReadRequest();
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -890,9 +890,9 @@ s32 func_001EFF70(s32 arg0, void *arg1) {
     if (((Flags_001EFF70 *)&obj->lv[0x2C])->pending) {
         return 0;
     }
-    func_001F08D0(arg0);
+    lSzModel_FreeModel(arg0);
     ((Flags_001EFF70 *)&obj->lv[0x2C])->loaded = 1;
-    if (func_001FEC70(arg0, arg1, 0, -1, func_001F01A0, arg0) != 0) {
+    if (SzFile_ReadRequest(arg0, arg1, 0, -1, lSzModel_LoadModelCB, arg0) != 0) {
         ((Flags_001EFF70 *)&obj->lv[0x2C])->pending = 1;
     }
     return 1;
@@ -905,10 +905,10 @@ typedef struct {
     s8 bit3 : 1;
 } Obj_001F0060;
 
-s32 func_001F0060(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    extern void func_001F08D0(s32);
-    extern s32 func_001F0390();
-    extern s32 func_001FECB0();
+s32 lSzModel_LoadModelPack(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern void lSzModel_FreeModel(s32);
+    extern s32 lSzModel_LoadModelPackCB();
+    extern s32 SzFile_ReadRequestParam();
     Obj_001F0060 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -921,9 +921,9 @@ s32 func_001F0060(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     if (obj->bit3) {
         return 0;
     }
-    func_001F08D0(arg0);
+    lSzModel_FreeModel(arg0);
     obj->bit0 = (arg2 != 0) ? 0 : 1;
-    if (func_001FECB0(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5, (s32)func_001F0390, arg0) != 0) {
+    if (SzFile_ReadRequestParam(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5, (s32)lSzModel_LoadModelPackCB, arg0) != 0) {
         obj->bit3 = 1;
     }
     return 1;
@@ -950,9 +950,9 @@ typedef struct Request_001F01A0 {
     s32 index;
 } Request_001F01A0;
 
-void func_001F01A0(void *arg0, s32 arg1) {
+void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
     extern void func_0019B648();
-    extern void func_001E8BF0(s32);
+    extern void lSzModel_LoadCB(s32);
     extern s32 D_00292480[];
     extern u8 D_002CFA17[];
     extern u8 D_002CFB94[];
@@ -969,12 +969,12 @@ void func_001F01A0(void *arg0, s32 arg1) {
             obj->busy = 0;
             return;
         }
-        func_001E7D00(index);
+        lSzModel_Clean(index);
         obj->header = ((Request_001F01A0 *)arg0)->header;
         obj->data = obj->header + 4;
         obj->header[1] = 0;
-        func_0020F370(obj->header);
-        func_001E90B0(index);
+        RhModel_BindAddress(obj->header);
+        SzModel_LoadTextureFile(index);
         switch (obj->kind) {
         case 4:
         case 5:
@@ -987,12 +987,12 @@ void func_001F01A0(void *arg0, s32 arg1) {
 
             value = obj->value;
             base = D_00292480[obj->kind];
-            func_0019B648(format, D_002CFB94, func_001FFF90((s32)D_002CFA17), base, base);
+            func_0019B648(format, D_002CFB94, SzFile_GetEnv((s32)D_002CFA17), base, base);
             for (i = 0; i < 8; i++) {
                 func_0019B648(path, format, value, value, i + 0x61);
-                func_001F0760(index, i, (s32)path);
+                lSzModel_LoadMotion(index, i, (s32)path);
             }
-            func_001EA0F0(index);
+            SzModel_LoadEffectTextureFile(index);
             break;
         }
         case 0:
@@ -1005,13 +1005,13 @@ void func_001F01A0(void *arg0, s32 arg1) {
 
             value = obj->value;
             base = D_00292480[obj->kind];
-            func_0019B648(format, D_002CFB94, func_001FFF90((s32)D_002CFA17), base, base);
+            func_0019B648(format, D_002CFB94, SzFile_GetEnv((s32)D_002CFA17), base, base);
             func_0019B648(path, format, value, value, 0x61);
-            func_001F0760(index, 0, (s32)path);
+            lSzModel_LoadMotion(index, 0, (s32)path);
             break;
         }
         }
-        func_001FFC50(index, (s32)func_001E8BF0);
+        SzFile_EntryGroup(index, (s32)lSzModel_LoadCB);
     }
 }
 
@@ -1033,10 +1033,10 @@ typedef struct Request_001F0390 {
     s32 index;
 } Request_001F0390;
 
-void func_001F0390(s32 arg0, s32 arg1) {
+void lSzModel_LoadModelPackCB(s32 arg0, s32 arg1) {
     extern void func_0019B648();
-    extern void func_001F01A0();
-    extern s32 func_001FEC70();
+    extern void lSzModel_LoadModelCB();
+    extern s32 SzFile_ReadRequest();
     extern s32 D_00292480[];
     extern u8 D_002CFA17[];
     extern u8 D_002CFA1D[];
@@ -1057,14 +1057,14 @@ void func_001F0390(s32 arg0, s32 arg1) {
         }
         if (arg1 == 0) {
             base = D_00292480[obj->kind];
-            func_0019B648(format, D_002CFA1D, func_001FFF90((s32)D_002CFA17), base, base);
+            func_0019B648(format, D_002CFA1D, SzFile_GetEnv((s32)D_002CFA17), base, base);
             func_0019B648(path, format, obj->value, obj->value);
             obj->loaded = 1;
-            arg0 = func_001FEC70(index, path, 0, -1, func_001F01A0, index);
+            arg0 = SzFile_ReadRequest(index, path, 0, -1, lSzModel_LoadModelCB, index);
             obj->busy = (arg0 != 0) ? 1 : 0;
         } else {
-            func_001E7D00(index);
-            func_001F0500(index, ((Request_001F0390 *)arg0)->header);
+            lSzModel_Clean(index);
+            lSzModel_BindModelByAddr(index, ((Request_001F0390 *)arg0)->header);
         }
     }
 }
@@ -1075,7 +1075,7 @@ typedef struct {
 } FixedBlock_001F0500;
 
 
-s32 func_001F0500(s32 arg0, void *arg1) {
+s32 lSzModel_BindModelByAddr(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_s0;
     u8 *var_s1;
     s32 var_s2;
@@ -1090,8 +1090,8 @@ s32 func_001F0500(s32 arg0, void *arg1) {
     }
     *(u8 **)&temp_s0->pad040[0xF8] = arg1;
     *(u8 **)((u8 *)temp_s0 + 0x13C) = *(u8 **)&temp_s0->pad040[0xF8] + 0x10;
-    func_0020F370(*(u8 **)&temp_s0->pad040[0xF8]);
-    func_001E8FA0(arg0);
+    RhModel_BindAddress(*(u8 **)&temp_s0->pad040[0xF8]);
+    SzModel_BindTextureFile(arg0);
     temp_v1 = *(u8 **)&temp_s0->pad040[0xF8];
     var_s2 = 0;
     var_s3 = temp_s0;
@@ -1099,7 +1099,7 @@ s32 func_001F0500(s32 arg0, void *arg1) {
     do {
         if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & (1 << var_s2)) {
             var_s3->slots[0] = (ObjSlot_0031ABB0 *)var_s1;
-            func_00214090(var_s3->slots[0]);
+            NjaReloc_Adjust_M3DMOT(var_s3->slots[0]);
             var_s3->vals[0] = var_s3->slots[0]->f14->f4;
             var_s1 += *(s32 *)(var_s1 + 4);
         } else {
@@ -1116,7 +1116,7 @@ s32 func_001F0500(s32 arg0, void *arg1) {
         *(u8 **)((u8 *)temp_s0 + 0x164) = NULL;
     }
     if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x200) {
-        func_0020F250((s32) var_s1);
+        RhText_BindAddress((s32) var_s1);
         *(u8 **)((u8 *)temp_s0 + 0x140) = var_s1;
         var_s1 += *(s32 *)(var_s1 + 8);
     } else {
@@ -1132,7 +1132,7 @@ s32 func_001F0500(s32 arg0, void *arg1) {
     var_s2_2 = temp_s0;
     do {
         if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & (1 << (var_s3_2 + 0xB))) {
-            func_0020F250((s32) var_s1);
+            RhText_BindAddress((s32) var_s1);
             *(u8 **)((u8 *)var_s2_2 + 0x144) = var_s1;
             var_s1 += *(s32 *)(var_s1 + 8);
         } else {
@@ -1156,12 +1156,12 @@ s32 func_001F0500(s32 arg0, void *arg1) {
     } else {
         *(u8 **)((u8 *)temp_s0 + 0x174) = NULL;
     }
-    func_001E8BF0(arg0);
+    lSzModel_LoadCB(arg0);
     return 1;
 }
 
-s32 func_001F0760(s32 arg0, s32 arg1, s32 arg2) {
-    extern void func_001FEC70();
+s32 lSzModel_LoadMotion(s32 arg0, s32 arg1, s32 arg2) {
+    extern void SzFile_ReadRequest();
 
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
@@ -1172,8 +1172,8 @@ s32 func_001F0760(s32 arg0, s32 arg1, s32 arg2) {
     if (D_0031ABB0[arg0] == NULL) {
         return 0;
     }
-    func_001F0C10(arg0, arg1);
-    func_001FEC70(arg0, arg2, 0, -1, func_001F0830, (arg0 << 8) | arg1);
+    lSzModel_FreeMotion(arg0, arg1);
+    SzFile_ReadRequest(arg0, arg2, 0, -1, lSzModel_LoadMotionCB, (arg0 << 8) | arg1);
     return 1;
 }
 
@@ -1185,7 +1185,7 @@ typedef struct {
 } Arg_001F0830;
 
 
-void func_001F0830(void *arg0, s32 arg1) {
+void lSzModel_LoadMotionCB(void *arg0, s32 arg1) {
     Arg_001F0830 *a = (Arg_001F0830 *)arg0;
     s32 v;
     s32 idx;
@@ -1201,7 +1201,7 @@ void func_001F0830(void *arg0, s32 arg1) {
     base = D_0031ABB0[idx];
     if (base != NULL && arg1 != 0) {
         base->slots[sub] = a->f14;
-        func_00214090(base->slots[sub]);
+        NjaReloc_Adjust_M3DMOT(base->slots[sub]);
         base->vals[sub] = base->slots[sub]->f14->f4;
     }
 }
@@ -1231,7 +1231,7 @@ static inline s32 owns_001F08D0(void *obj) {
 
 #pragma global_optimizer off
 
-s32 func_001F08D0(s32 arg0) {
+s32 lSzModel_FreeModel(s32 arg0) {
     u8 *data;
     Obj_0031ABB0 *obj;
 
@@ -1294,11 +1294,11 @@ s32 func_001F08D0(s32 arg0) {
                 do {
                     resource = resources[0];
                     if (resource != 0) {
-                        func_00217B50(resource);
+                        SzMem_Free(resource);
                     }
                     resource = resources[2];
                     if (resource != 0) {
-                        func_00217B50(resource);
+                        SzMem_Free(resource);
                     }
                     k++;
                     resources += 4;
@@ -1307,12 +1307,12 @@ s32 func_001F08D0(s32 arg0) {
         }
         slot = 0;
         do {
-            func_001F0C10(arg0, slot);
+            lSzModel_FreeMotion(arg0, slot);
             slot++;
         } while (slot < 8);
         resource = read_001F08D0(obj, 0x140);
         if (resource != 0) {
-            func_00217B50(resource);
+            SzMem_Free(resource);
             clear_001F08D0(obj, 0x140);
         }
         {
@@ -1324,7 +1324,7 @@ s32 func_001F08D0(s32 arg0) {
             do {
                 resource = *(s32 *)(cursor + 0x144);
                 if (resource != 0) {
-                    func_00217B50(resource);
+                    SzMem_Free(resource);
                     *(s32 *)(cursor + 0x144) = 0;
                 }
                 l++;
@@ -1335,30 +1335,30 @@ s32 func_001F08D0(s32 arg0) {
 
     clear_001F08D0(obj, 0x164);
     clear_001F08D0(obj, 0x168);
-    func_001FA810(0, 1);
+    SzView_FreeRequest(0, 1);
     if (*(s32 *)((u8 *)read_001F08D0(obj, 0x138) + 4) & 0x80000) {
         clear_001F08D0(obj, 0x16C);
     } else if (read_001F08D0(obj, 0x16C) != 0) {
-        func_00217B50(read_001F08D0(obj, 0x16C));
+        SzMem_Free(read_001F08D0(obj, 0x16C));
         clear_001F08D0(obj, 0x16C);
     }
     if (*(s32 *)((u8 *)read_001F08D0(obj, 0x138) + 4) & 0x100000) {
         clear_001F08D0(obj, 0x170);
     } else if (read_001F08D0(obj, 0x170) != 0) {
-        func_00217B50(read_001F08D0(obj, 0x170));
+        SzMem_Free(read_001F08D0(obj, 0x170));
         clear_001F08D0(obj, 0x170);
     }
     if (*(s32 *)((u8 *)read_001F08D0(obj, 0x138) + 4) & 0x200000) {
         clear_001F08D0(obj, 0x174);
     } else if (read_001F08D0(obj, 0x174) != 0) {
-        func_00217B50(read_001F08D0(obj, 0x174));
+        SzMem_Free(read_001F08D0(obj, 0x174));
         clear_001F08D0(obj, 0x174);
     }
     if (read_001F08D0(obj, 0x1EC) >= 0) {
-        func_001F4CB0(read_001F08D0(obj, 0x1EC));
+        SzEffect_Destroy(read_001F08D0(obj, 0x1EC));
     }
     if (owns_001F08D0(obj)) {
-        func_00217B50((s32)(u8 *)read_001F08D0(obj, 0x138));
+        SzMem_Free((s32)(u8 *)read_001F08D0(obj, 0x138));
     }
     {
         s32 n;
@@ -1379,8 +1379,8 @@ s32 func_001F08D0(s32 arg0) {
 }
 #pragma global_optimizer reset
 
-s32 func_001F0C10(s32 arg0, s32 arg1) {
-    void func_00217B50(void *);
+s32 lSzModel_FreeMotion(s32 arg0, s32 arg1) {
+    void SzMem_Free(void *);
     Obj_0031ABB0 *obj;
     ObjSlot_0031ABB0 *slot;
 
@@ -1398,24 +1398,24 @@ s32 func_001F0C10(s32 arg0, s32 arg1) {
     if (slot == NULL) {
         return 1;
     }
-    func_00217B50(slot);
+    SzMem_Free(slot);
     obj->slots[arg1] = NULL;
     obj->vals[arg1] = 1;
     return 1;
 }
 
-s32 func_001F0CD0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_BattleSeq(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
     s32 s1;
     s32 s2;
     s32 index;
     s32 i;
     Obj_0031ABB0 *ptr;
-    extern s32 func_001F4900();
+    extern s32 SzEffect_EntryCallback();
 
-    s1 = func_001E5240(arg0);
-    s2 = func_001E5240(arg0 ^ 1);
-    index = func_001E1360(s1 >> 8, s1 & 0xFF);
+    s1 = SzBattle_InqEntry(arg0);
+    s2 = SzBattle_InqEntry(arg0 ^ 1);
+    index = SzDuel_GetUnitModelID(s1 >> 8, s1 & 0xFF);
     if (index < 0 || index >= 0x54) {
         return 0;
     }
@@ -1423,34 +1423,34 @@ s32 func_001F0CD0(s32 arg0, s32 arg1, s32 arg2) {
     if (obj == NULL) {
         return 0;
     }
-    func_001F1550(index, 2);
-    func_00202D60(5, -1);
-    func_001F56D0(s1, 1);
-    func_001F56D0(s2, 1);
+    SzModel_SetAnimIntr(index, 2);
+    SzText_FreeRequest(5, -1);
+    SzEffect_ClearRefID2(s1, 1);
+    SzEffect_ClearRefID2(s2, 1);
     i = 0;
     ptr = obj;
     do {
-        func_00202810(5, i, NULL, *(s32 *)((u8 *)ptr + 0x144));
+        SzText_AddFile(5, i, NULL, *(s32 *)((u8 *)ptr + 0x144));
         i += 1;
         ptr = (Obj_0031ABB0 *)((u8 *)ptr + 4);
     } while (i < 8);
-    *(s32 *)((u8 *)obj + 0x1EC) = func_001F4900(1, *(u16 *)((u8 *)obj + 0x206), *(u16 *)((u8 *)obj + 0x208), s2, s1, func_001ED460, index);
+    *(s32 *)((u8 *)obj + 0x1EC) = SzEffect_EntryCallback(1, *(u16 *)((u8 *)obj + 0x206), *(u16 *)((u8 *)obj + 0x208), s2, s1, lSzModel_EffectCB, index);
     if (arg1 != 0) {
         if (*(s32 *)((u8 *)obj + 0x16C) != 0) {
-            func_001FA8A0(0, 1, ((arg2 != 0) ? 1 : 0) + 8, *(u16 *)((u8 *)obj + 0x202), index, (void *)*(s32 *)((u8 *)obj + 0x16C));
+            SzView_ReqCamera(0, 1, ((arg2 != 0) ? 1 : 0) + 8, *(u16 *)((u8 *)obj + 0x202), index, (void *)*(s32 *)((u8 *)obj + 0x16C));
         }
     }
     return 1;
 }
 
-s32 func_001F0E50(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_BattleSeq2(s32 arg0, s32 arg1, s32 arg2) {
     s32 index;
     Obj_0031ABB0 *obj;
     void *data;
 
-    index = func_001E5240(arg0);
-    func_001E5240(arg0 ^ 1);
-    index = func_001E1360(index >> 8, index & 0xFF);
+    index = SzBattle_InqEntry(arg0);
+    SzBattle_InqEntry(arg0 ^ 1);
+    index = SzDuel_GetUnitModelID(index >> 8, index & 0xFF);
     if (index < 0 || index >= 0x54) {
         return 0;
     }
@@ -1458,17 +1458,17 @@ s32 func_001F0E50(s32 arg0, s32 arg1, s32 arg2) {
     if (obj == NULL) {
         return 0;
     }
-    func_001F1550(index, 5);
+    SzModel_SetAnimIntr(index, 5);
     if (arg1 != 0) {
         data = *(void **)((u8 *)obj + 0x170);
         if (data != NULL) {
-            func_001FA8A0(0, 1, (arg2 != 0 ? 1 : 0) + 8, 0, index, data);
+            SzView_ReqCamera(0, 1, (arg2 != 0 ? 1 : 0) + 8, 0, index, data);
         }
     }
     return 1;
 }
 
-f32 func_001F0F40(s32 arg0) {
+f32 SzModel_GetRadius(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1481,7 +1481,7 @@ f32 func_001F0F40(s32 arg0) {
     return *(f32 *)((u8 *)temp_v0 + 0x1E4);
 }
 
-u8 *func_001F0FA0(s32 arg0) {
+u8 *SzModel_GetEffTextureB(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1494,7 +1494,7 @@ u8 *func_001F0FA0(s32 arg0) {
     return &temp_v0->pad040[0x104];
 }
 
-s32 func_001F0FF0(s32 arg0) {
+s32 SzModel_GetOverlayM(s32 arg0) {
     Obj_0031ABB0 *obj;
     void *data;
     s32 ret;
@@ -1519,7 +1519,7 @@ s32 func_001F0FF0(s32 arg0) {
     return ret;
 }
 
-s32 func_001F1070(s32 arg0) {
+s32 SzModel_LoadOverlayB(s32 arg0) {
     Obj_0031ABB0 *temp_a1;
     s8 temp_v1;
     void *temp_a3;
@@ -1540,10 +1540,10 @@ s32 func_001F1070(s32 arg0) {
         return 1;
     }
     *(s32 *)((u8 *)temp_a3 + 4) &= ~0x400;
-    return (func_001F3910(1, *(s16 *)((u8 *)temp_a1 + 0x1F4), 0, temp_a3) != 0) ? 1 : 0;
+    return (SzEffect_LoadModule(1, *(s16 *)((u8 *)temp_a1 + 0x1F4), 0, temp_a3) != 0) ? 1 : 0;
 }
 
-s32 func_001F1130(s32 arg0) {
+s32 SzModel_GetOverlayB(s32 arg0) {
     Obj_0031ABB0 *obj;
     void *state;
 
@@ -1564,7 +1564,7 @@ s32 func_001F1130(s32 arg0) {
     return *(s32 *)((u8 *)obj + 0x168);
 }
 
-s32 func_001F11B0(s32 arg0, s32 arg1) {
+s32 SzModel_GetCamera(s32 arg0, s32 arg1) {
     s32 ret = 0;
     Obj_0031ABB0 *temp_a0;
 
@@ -1594,7 +1594,7 @@ typedef struct {
     s8 active : 1;
 } Flags_001F1240;
 
-s32 func_001F1240(s32 arg0) {
+s32 SzModel_IsModelReady(s32 arg0) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1612,7 +1612,7 @@ typedef struct {
     s8 active : 1;
 } Flags_001F12A0;
 
-s32 func_001F12A0(s32 arg0) {
+s32 SzModel_IsModelLoading(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
     s32 ret;
 
@@ -1629,7 +1629,7 @@ s32 func_001F12A0(s32 arg0) {
     return ret;
 }
 
-s32 func_001F1300(s32 arg0) {
+s32 SzModel_IsModelStandby(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1651,7 +1651,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F1370;
 
-s32 func_001F1370(s32 arg0) {
+s32 SzModel_IsModelDisp(s32 arg0) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1667,11 +1667,11 @@ s32 func_001F1370(s32 arg0) {
     return ((Flags_001F1370 *)((u8 *)obj + 0x20C))->enabled ? 1 : 0;
 }
 
-s8 func_001F13F0(s32 arg0) {
-    return func_001F1400(arg0, 0);
+s8 SzModel_GetAnim(s32 arg0) {
+    return SzModel_GetAnimParam(arg0, 0);
 }
 
-s8 func_001F1400(s32 arg0, s32 arg1) {
+s8 SzModel_GetAnimParam(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *base;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1687,11 +1687,11 @@ s8 func_001F1400(s32 arg0, s32 arg1) {
     return base->lv[arg1];
 }
 
-s32 func_001F1480(s32 arg0, s32 arg1) {
-    return func_001F1490(arg0, arg1, 3);
+s32 SzModel_SetAnim(s32 arg0, s32 arg1) {
+    return SzModel_SetAnimParam(arg0, arg1, 3);
 }
 
-s32 func_001F1490(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_SetAnimParam(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1716,8 +1716,8 @@ s32 func_001F1490(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_001F1550(s32 arg0, s32 arg1) {
-    return func_001F1560(arg0, arg1, 6);
+s32 SzModel_SetAnimIntr(s32 arg0, s32 arg1) {
+    return SzModel_SetAnimIntrParam(arg0, arg1, 6);
 }
 
 typedef struct {
@@ -1729,7 +1729,7 @@ typedef struct {
     s8 direction : 2;
 } Flags_001F1560;
 
-s32 func_001F1560(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
     Vec3_001F1560 *current;
     Vec3_001F1560 *previous;
@@ -1771,18 +1771,18 @@ s32 func_001F1560(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_001F16B0(s32 arg0) {
-    return func_001F16C0(arg0, 6);
+s32 SzModel_SetAnimIntrReverse(s32 arg0) {
+    return SzModel_SetAnimIntrReverseParam(arg0, 6);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", func_001F16C0);
+INCLUDE_ASM("asm/nonmatchings/main_048", SzModel_SetAnimIntrReverseParam);
 
 typedef struct {
     u8 unused : 6;
     s8 mode : 2;
 } Flags_001F1830;
 
-s32 func_001F1830(s32 arg0, s32 arg1) {
+s32 SzModel_SetAnimDirect(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *obj;
     f32 *state;
     s8 *next;
@@ -1821,7 +1821,7 @@ s32 func_001F1830(s32 arg0, s32 arg1) {
     return 1;
 }
 
-s32 func_001F1940(s32 arg0, s8 arg1) {
+s32 SzModel_SetMotionDelay(s32 arg0, s8 arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1840,7 +1840,7 @@ typedef struct {
     s8 value : 2;
 } Flags_001F19A0;
 
-s64 func_001F19A0(s32 arg0) {
+s64 SzModel_GetAnimDir(s32 arg0) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1858,7 +1858,7 @@ typedef struct {
     s8 mode : 2;
 } Flags_001F1A00;
 
-s32 func_001F1A00(s32 arg0, s64 arg1) {
+s32 SzModel_SetAnimDir(s32 arg0, s64 arg1) {
     Obj_0031ABB0 *temp_a2;
 
     if (arg0 < 0 || arg0 >= 0x54) {

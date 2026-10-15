@@ -62,7 +62,7 @@ s32 func_0019DDE8(vf_reent *data, vf_FILE *fp_0019DDE8, const char *fmt0, void *
     int prec;                     /* precision from format (%.3d), or -1 */
     char sign;                    /* sign prefix (' ', '+', '-', or \0) */
     wchar_t wc;
-    char *decimal_point = *(char **)func_001977B8();
+    char *decimal_point = *(char **)localeconv();
     char softsign;  /* temporary negative sign for floats */
     double _double; /* double precision arguments %[eEfgG] */
     int expt;       /* integer value of exponent */
@@ -145,7 +145,7 @@ s32 func_0019DDE8(vf_reent *data, vf_FILE *fp_0019DDE8, const char *fmt0, void *
      */
     for (;;) {
         cp = fmt;
-        while ((n = func_001985E0((void *)D_0028FA98, (s32 *)&wc, fmt, D_0028FAA0, &state)) > 0) {
+        while ((n = _mbtowc_r((void *)D_0028FA98, (s32 *)&wc, fmt, D_0028FAA0, &state)) > 0) {
             fmt += n;
             if (wc == '%') {
                 fmt--;

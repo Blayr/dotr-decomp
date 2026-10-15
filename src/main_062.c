@@ -1,6 +1,6 @@
 #include "common.h"
 
-void func_0021BAE0(void *arg0) {
+void Taku_Coord_Init(void *arg0) {
     f32 *values = arg0;
 
     values[3] = 1.0f;
@@ -22,25 +22,25 @@ typedef struct {
     f32 m[4][4];
 } Matrix_0021BB20;
 
-void func_0021BB20(u8 *arg0) {
+void Taku_Coord_Set(u8 *arg0) {
     Matrix_0021BB20 matrix;
 
-    func_0020EB40(arg0 + 0x30);
-    func_0020C940(&matrix, arg0, arg0 + 0x10, arg0 + 0x20);
-    func_0020BC00((s32)(arg0 + 0x30), &matrix);
+    RhView_GetWorldScreenMatrix(arg0 + 0x30);
+    RhGeom_GetScaleRotXYZTransMatrix(&matrix, arg0, arg0 + 0x10, arg0 + 0x20);
+    RhGeom_MulMatrix((s32)(arg0 + 0x30), &matrix);
 }
 
-void func_0021BB70(void *arg0, void *arg1) {
+void Taku_Vector_Set(void *arg0, void *arg1) {
     ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
     ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
     ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
 }
 
-void func_0021BB90(s32 *arg0, s32 *arg1, s32 arg2) {
+void Taku_3D_2D_Set(s32 *arg0, s32 *arg1, s32 arg2) {
     u16 projected[6];
     s32 depth;
 
-    if (func_00205440(arg2, D_00299F90, projected, &depth) != 0) {
+    if (Ex3d_RotTransPers(arg2, D_00299F90, projected, &depth) != 0) {
         *arg0 = ((s32) projected[0] >> 4) - 0x6C0;
         *arg1 = ((s32) projected[1] >> 4) - 0x720;
     } else {
@@ -49,7 +49,7 @@ void func_0021BB90(s32 *arg0, s32 *arg1, s32 arg2) {
     }
 }
 
-void func_0021BC10(f32 *outX, f32 *outY, s16 *outCount, f32 *points,
+void Taku_spline2(f32 *outX, f32 *outY, s16 *outCount, f32 *points,
                    f32 *intervals, s32 count, s16 mode, f32 spacing) {
     f32 lower[64];
     f32 diagonal[64];
@@ -85,7 +85,7 @@ void func_0021BC10(f32 *outX, f32 *outY, s16 *outCount, f32 *points,
                     (points + dimension)[2 * i], (points + dimension)[2 * i + 2],
                     intervals[i - 1], intervals[i]);
             }
-            func_0021C350(lower, diagonal, upper, rhs[dimension], slopes[dimension], count);
+            tri_diag(lower, diagonal, upper, rhs[dimension], slopes[dimension], count);
             dimension++;
             if (dimension > 1) {
                 break;
@@ -177,7 +177,7 @@ f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4) {
     return 3.0f * (((fparg4 * (fparg1 - fparg0)) / fparg3) + ((fparg3 * (fparg2 - fparg1)) / fparg4));
 }
 
-void func_0021C350(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
+void tri_diag(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
     f32 gamma[64];
     f32 denominator;
     s32 i;
@@ -194,14 +194,14 @@ void func_0021C350(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
     }
 }
 
-s32 func_0021C450(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6) {
+s32 Taku_Bunsyou_Set(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6) {
     s32 result;
     s32 object;
 
-    object = func_0020F290(func_001FD680(arg0, arg1, arg2, 0, arg1 * 22));
-    func_001FEAB0(arg1);
-    result = func_001FE660(object, arg1, (s16)arg3, (s16)arg4, 1.0f, 1.0f, arg6, func_001FDFE0);
-    func_001FEAF0(arg1);
+    object = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, arg1, arg2, 0, arg1 * 22));
+    SzMsg_GetInfo(arg1);
+    result = SzMsg_DrawRatioX_Pipe(object, arg1, (s16)arg3, (s16)arg4, 1.0f, 1.0f, arg6, SzMsg_DrawRect_Pipe);
+    SzMsg_Free(arg1);
     return result;
 }
 
@@ -279,7 +279,7 @@ extern unsigned short D_00299CE0_21c510[];
 extern struct DotrCampEntryRow D_00299D00_21c510[];
 extern void func_00233F50_b(int mode);
 extern void func_00195108_b(void *a, int b);
-extern int func_001E7F70(int type, int no, int force);
+extern int SzModel_LoadMerge(int type, int no, int force);
 extern void func_001F3910_b(int a, int b, int c);
 extern void func_00217980_b(int n, int b);
 extern int func_001F93F0_b(int a, int b, int c, int d);
@@ -294,7 +294,7 @@ extern int func_001F93F0_b(int a, int b, int c, int d);
         board->seen[i] = 0; \
     }
 
-void func_0021C510(int mode)
+void TkCamp_Init(int mode)
 {
     
 
@@ -316,28 +316,28 @@ void func_0021C510(int mode)
     short m;
 
     D_0034F710 = 0;
-    func_0021D480();
-    func_0022C450();
-    func_002374D0();
+    Taku_Camp_Data_Init();
+    Taku_spline_init();
+    Taku_Camp_3D_Poly_Init();
     func_00233F50_b(3);
     for (i = 0; i < 2; i++) {
-        func_001F30B0(i + 30, 0);
+        SzModel_SetDrawFlag(i + 30, 0);
     }
     if (board->done0 != 0 && board->done1 != 0) {
         DOTR_CAMP_ENTRY_WORK->all = 1;
     } else {
         DOTR_CAMP_ENTRY_WORK->all = 0;
     }
-    func_0021D850();
-    func_001A8320(11, 1);
+    Taku_Screen_Init();
+    SzGame_SetMenuNum(11, 1);
     DOTR_CAMP_ENTRY_WORK->byte_53c7 = 2;
     
 
     switch (mode) {
     case 0:
         func_00195108_b(board, 332);
-        func_001E7F70(3, 4, 0);
-        func_002009E0(10, 0);
+        SzModel_LoadMerge(3, 4, 0);
+        SzText_LoadMerge(10, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -358,20 +358,20 @@ void func_0021C510(int mode)
     case 5:
     case 6:
     case 7:
-        if (func_001F12A0(30) == 0) {
+        if (SzModel_IsModelLoading(30) == 0) {
             pos = D_0029A790;
             rot = D_0029A7A0;
-            deck = func_002158B0(0);
-            leader = func_002159D0(0, deck);
-            DOTR_CAMP_ENTRY_WORK->leader = func_002159D0(0, deck);
-            func_001F22B0(30, &pos);
-            func_001F2430(30, &rot);
-            func_001E8780(30, -1, func_001DE1A0(leader), 1);
+            deck = SzData_GetCurrentDeck(0);
+            leader = SzData_GetLeader(0, deck);
+            DOTR_CAMP_ENTRY_WORK->leader = SzData_GetLeader(0, deck);
+            SzModel_SetPos(30, &pos);
+            SzModel_SetRot(30, &rot);
+            SzModel_Load(30, -1, SzDuel_New2Xax(leader), 1);
         }
         if (DOTR_CAMP_ENTRY_WORK->all != 0) {
-            func_001E7F70(3, 2, 0);
+            SzModel_LoadMerge(3, 2, 0);
             func_001F93F0_b(0, 7, 0, 0);
-            func_001F6E80(7, 1.0f);
+            SzEffect_SetIntensityOnly(7, 1.0f);
             board->done0 = 1;
             board->done1 = 1;
             DOTR_CAMP_ENTRY_WORK->all = 1;
@@ -400,8 +400,8 @@ void func_0021C510(int mode)
         flag = 0;
         if (D_0034F708 != 0) {
             D_0034F708 = 0;
-            func_001E7F70(3, 4, 0);
-            func_002009E0(10, 0);
+            SzModel_LoadMerge(3, 4, 0);
+            SzText_LoadMerge(10, 0);
             if (board->done0 != 0) {
                 board->side = 1;
                 board->done0 = 1;
@@ -421,9 +421,9 @@ void func_0021C510(int mode)
             func_00217980_b(25, 1);
             flag = 1;
         } else if (board->started != 0) {
-            func_001E7F70(3, 2, 0);
+            SzModel_LoadMerge(3, 2, 0);
             func_001F93F0_b(0, 7, 0, 0);
-            func_001F6E80(7, 1.0f);
+            SzEffect_SetIntensityOnly(7, 1.0f);
             if (board->side == 0) {
                 
 
@@ -475,11 +475,11 @@ void func_0021C510(int mode)
             DOTR_CAMP_ENTRY_WORK->from.y = 96.0f + DOTR_CAMP_ENTRY_WORK->to.y;
             DOTR_CAMP_ENTRY_WORK->from.z = 96.0f + DOTR_CAMP_ENTRY_WORK->to.z;
             DOTR_CAMP_ENTRY_WORK->from.w = DOTR_CAMP_ENTRY_WORK->to.w;
-            func_001F9FE0(0, &DOTR_CAMP_ENTRY_WORK->from, &DOTR_CAMP_ENTRY_WORK->to);
+            SzView_SetCamera(0, &DOTR_CAMP_ENTRY_WORK->from, &DOTR_CAMP_ENTRY_WORK->to);
             func_00217980_b(4, 0);
         } else {
-            func_001E7F70(3, 4, 0);
-            func_002009E0(10, 0);
+            SzModel_LoadMerge(3, 4, 0);
+            SzText_LoadMerge(10, 0);
             if (board->done0 != 0) {
                 board->side = 1;
                 board->done0 = 1;
@@ -507,7 +507,7 @@ void func_0021C510(int mode)
         }
         break;
     case 3:
-        func_001E7F70(3, 4, 0);
+        SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -520,7 +520,7 @@ void func_0021C510(int mode)
         func_00217980_b(24, 1);
         break;
     case 20:
-        func_001E7F70(3, 0, 0);
+        SzModel_LoadMerge(3, 0, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -533,7 +533,7 @@ void func_0021C510(int mode)
         func_00217980_b(34, 1);
         break;
     case 30:
-        func_001E7F70(3, 0, 0);
+        SzModel_LoadMerge(3, 0, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -546,7 +546,7 @@ void func_0021C510(int mode)
         func_00217980_b(38, 1);
         break;
     case 40:
-        func_001E7F70(3, 4, 0);
+        SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -557,7 +557,7 @@ void func_0021C510(int mode)
         func_00217980_b(24, 1);
         break;
     case 50:
-        func_001E7F70(3, 4, 0);
+        SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 1;
         board->done0 = 0;
@@ -576,7 +576,7 @@ void func_0021C510(int mode)
             p->pick[k] = (D_00299CE0_21c510[w->hash] >> (k * 5)) & 0x1f;
             p->deck[k] = D_00299D00_21c510[p->pick[k]].id & 0x3ff;
         }
-        func_001E7F70(3, 4, 0);
+        SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -595,7 +595,7 @@ void func_0021C510(int mode)
             p->pick[k] = (D_00299CE0_21c510[w->hash] >> (k * 5)) & 0x1f;
             p->deck[k] = D_00299D00_21c510[p->pick[k]].id & 0x3ff;
         }
-        func_001E7F70(3, 4, 0);
+        SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
@@ -626,7 +626,7 @@ extern u16 D_00299CE0[];
 extern Entry_0021D480 D_00299D00[];
 extern s8 D_0034F6F8;
 
-void func_0021D480(void) {
+void Taku_Camp_Data_Init(void) {
     u8 *base = (u8 *)0x01ED0000;
     u8 *record = (u8 *)&D_00299E10;
     f32 eye[4];
@@ -660,7 +660,7 @@ void func_0021D480(void) {
     up[0] = 100.0f;
     up[1] = 8.65f;
     up[2] = 0.0f;
-    func_002062F0(eye, target, up, (f32 *)0x01ED0190);
+    Ex3d_GetSurfaceC(eye, target, up, (f32 *)0x01ED0190);
     i = 0;
     do {
         base[0x53CF + i] = 0;
@@ -687,7 +687,7 @@ void func_0021D480(void) {
     *(f32 *)0x01ED0034 = 96.0f + *(f32 *)0x01ED0044;
     *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
     *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
-    func_001F9FE0(0, (void *)0x01ED0030, (void *)0x01ED0040);
+    SzView_SetCamera(0, (void *)0x01ED0030, (void *)0x01ED0040);
 
     i = 0;
     words = (u32 *)0x01ED0000;
@@ -746,7 +746,7 @@ void func_0021D480(void) {
     }
 
     if (D_0034F6F8 != 0) {
-        *(Buffer_0021D480 *)func_002145E0(0) = *(Buffer_0021D480 *)0x01E301E0;
+        *(Buffer_0021D480 *)SzData_GetData(0) = *(Buffer_0021D480 *)0x01E301E0;
         D_0034F6F8 = 0;
     }
     n = 0;
@@ -779,13 +779,13 @@ extern s8 D_00299ED6;
 extern s8 D_00299ED7;
 extern u8 D_00299F60;
 
-void func_0021D850(void) {
+void Taku_Screen_Init(void) {
     s16 var_s0;
     u8 *var_s1;
     s32 *var_s2;
     Coord_0021D850 pos;
 
-    func_0021BB20(&D_00299F60);
+    Taku_Coord_Set(&D_00299F60);
     *(f32 *)0x01ED0040 = *(f32 *)(D_00298BA0 + D_00299ED6 * 0x34);
     *(f32 *)0x01ED0044 = 0.0f;
     *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
@@ -796,7 +796,7 @@ void func_0021D850(void) {
     *(f32 *)0x01ED0034 = 96.0f + *(f32 *)0x01ED0044;
     *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
     *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
-    func_001F9FE0(0, (void *)0x01ED0030, (void *)0x01ED0040);
+    SzView_SetCamera(0, (void *)0x01ED0030, (void *)0x01ED0040);
     var_s1 = D_00298BA0;
     var_s0 = 0;
     var_s2 = (s32 *)0x01ED0000;
@@ -804,7 +804,7 @@ void func_0021D850(void) {
         pos.x = *(f32 *)var_s1;
         pos.y = 8.65f + *(f32 *)(var_s1 + 4);
         pos.z = *(f32 *)(var_s1 + 8);
-        func_0021BB90((s32 *)((u8 *)var_s2 + 0x8C), (s32 *)((u8 *)var_s2 + 0x10C), (s32)&pos);
+        Taku_3D_2D_Set((s32 *)((u8 *)var_s2 + 0x8C), (s32 *)((u8 *)var_s2 + 0x10C), (s32)&pos);
         var_s1 += 0x34;
         var_s2++;
         var_s0++;
@@ -813,9 +813,9 @@ void func_0021D850(void) {
     *(s16 *)0x01ED0002 = 0xBE;
 }
 
-void func_0021DA60(void) {
+void TkCamp_Draw(void) {
     if (D_0034F710 == 0) {
-        func_00209D30(func_0021DDA0(func_00209D20()));
+        RhBase_SetVifPacketArea(TkCamp_Draw_Pipe(RhBase_GetVifPacketArea()));
     }
 }
 
@@ -823,7 +823,7 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_0021DAA0;
 
-void *func_002297C0(s32);
+void *Taku_Camp_2D(s32);
 extern s16 D_00298AD0;
 extern s16 D_00298AD2;
 extern s16 D_00298AD4;
@@ -835,8 +835,8 @@ static inline s32 offset_y_0021DAA0(s32 y) {
     return (s16)y - 0x100;
 }
 
-void func_0021DAA0(void) {
-    extern void *func_00218970(void *, void *, s16, s16);
+void TkCamp_Draw_After(void) {
+    extern void *Taku_G4_Set(void *, void *, s16, s16);
     Vec4_0021DAA0 sp80;
     Vec4_0021DAA0 sp90;
     s8 *state;
@@ -853,29 +853,29 @@ void func_0021DAA0(void) {
     state = &D_00299E10;
     angle = ((*(s16 *)0x01ED5478 << 10) >> 12) - 0x200;
     if (D_0034F710 == 0) {
-        var_s6 = func_002297C0(func_00209D20());
+        var_s6 = Taku_Camp_2D(RhBase_GetVifPacketArea());
         temp_v0 = *(s16 *)0x01ED006C;
         if (temp_v0 != 0) {
             temp_a1 = *(s8 *)0x01ED5440;
             y_offset = offset_y_0021DAA0(temp_v0);
             x_offset = (temp_a1 * -0x280) / 100;
             if (*(s8 *)0x01ED5488 != 0) {
-                var_s6 = func_00218970(var_s6, &D_00298AD0, x_offset, y_offset);
+                var_s6 = Taku_G4_Set(var_s6, &D_00298AD0, x_offset, y_offset);
                 *(s8 *)0x01ED5488 = 0;
             }
-            if (func_001F12A0(0x1F) == 0) {
+            if (SzModel_IsModelLoading(0x1F) == 0) {
                 if ((*(s8 *)0x01ED5406 == 1) && (*(s16 *)0x01ED006C != 0)) {
                     sp80 = D_0029A7B0;
                     sp90 = D_0029A7C0;
-                    *(s16 *)0x01ED5404 = func_002159D0(1, 0);
-                    func_001F22B0(0x1F, &sp80);
-                    func_001F2430(0x1F, &sp90);
-                    func_001E8780(0x1F, -1, func_001DE1A0(*(s16 *)0x01ED5404), 1);
+                    *(s16 *)0x01ED5404 = SzData_GetLeader(1, 0);
+                    SzModel_SetPos(0x1F, &sp80);
+                    SzModel_SetRot(0x1F, &sp90);
+                    SzModel_Load(0x1F, -1, SzDuel_New2Xax(*(s16 *)0x01ED5404), 1);
                     *(s8 *)0x01ED5406 = 2;
                     *(s16 *)0x01ED543A = 0;
                 }
             }
-            if ((func_001F1300(0x1F) != 0) && (*(s8 *)0x01ED5406 == 2)) {
+            if ((SzModel_IsModelStandby(0x1F) != 0) && (*(s8 *)0x01ED5406 == 2)) {
                 temp_v0_2 = *(s16 *)0x01ED543A;
                 if (temp_v0_2 < 0x80) {
                     *(s16 *)0x01ED543A = temp_v0_2 + 8;
@@ -885,23 +885,23 @@ void func_0021DAA0(void) {
                 }
                 temp_s4 = D_00298AD2;
                 temp_s5 = D_00298AD0;
-                var_s6 = func_0021DFF0(var_s6, 0x1F, temp_s5 + x_offset,
-                    temp_s4 + y_offset, (f32)func_001DE260(*(s16 *)0x01ED5404),
+                var_s6 = Taku_Camp_Teki_Model_Disp(var_s6, 0x1F, temp_s5 + x_offset,
+                    temp_s4 + y_offset, (f32)SzDuel_GetCamDist(*(s16 *)0x01ED5404),
                     D_00298AD4 - temp_s5, D_00298ADA - temp_s4, *(s16 *)0x01ED543A);
             }
         }
         if (*(s8 *)0x01ED5472 != 0) {
-            var_s6 = func_0023BFF0(var_s6, (f32)angle, *state ^ 1, 0.0f, *(s32 *)0x01ED5474);
+            var_s6 = Taku_Camp_Card_Get(var_s6, (f32)angle, *state ^ 1, 0.0f, *(s32 *)0x01ED5474);
         }
         *(s8 *)0x01ED5481 = 0;
-        func_00209D30((s32) var_s6);
+        RhBase_SetVifPacketArea((s32) var_s6);
     }
 }
 
-s32 func_0021DDA0(s32 arg0) {
+s32 TkCamp_Draw_Pipe(s32 arg0) {
     extern s16 D_00299ED2;
-    extern s32 func_0022A710();
-    extern s32 func_00226120();
+    extern s32 Taku_Camp_3D();
+    extern s32 Taku_Camp_Kumo();
     u8 *rec;
     s32 v;
 
@@ -911,37 +911,37 @@ s32 func_0021DDA0(s32 arg0) {
         switch (v) {
         case 0x2B98:
             if (*(s16 *)0x01ED536C < 2) {
-                arg0 = func_0022A710(arg0);
+                arg0 = Taku_Camp_3D(arg0);
             } else {
-                arg0 = func_0022A020(arg0);
+                arg0 = Taku_Camp_STON(arg0);
             }
             break;
         case 0x2B9A:
             if (*(s16 *)0x01ED536C >= 9) {
-                arg0 = func_0022A710(arg0);
+                arg0 = Taku_Camp_3D(arg0);
             } else {
-                arg0 = func_0022A020(arg0);
+                arg0 = Taku_Camp_STON(arg0);
             }
             break;
         case 0x2BAC:
             if (*(s16 *)0x01ED536C >= 2) {
-                arg0 = func_0022A020(arg0);
+                arg0 = Taku_Camp_STON(arg0);
             } else {
-                arg0 = func_0022A710(arg0);
+                arg0 = Taku_Camp_3D(arg0);
             }
             break;
         case 0x2F64:
             if (*(s16 *)0x01ED536C < 0xA) {
-                arg0 = func_0022A020(arg0);
+                arg0 = Taku_Camp_STON(arg0);
             } else {
-                arg0 = func_0022A710(arg0);
+                arg0 = Taku_Camp_3D(arg0);
             }
             break;
         case 0x2F76:
             if (*(s16 *)0x01ED536C > 1) {
-                arg0 = func_0022A020(arg0);
+                arg0 = Taku_Camp_STON(arg0);
             } else {
-                arg0 = func_0022A710(arg0);
+                arg0 = Taku_Camp_3D(arg0);
             }
             break;
         case 0x2AF8:
@@ -952,21 +952,21 @@ s32 func_0021DDA0(s32 arg0) {
         case 0x2F78:
         case 0x2F7A:
         case 0x2F7C:
-            arg0 = func_0022A020(arg0);
+            arg0 = Taku_Camp_STON(arg0);
             break;
         default:
             if (v < 0x2AF8) {
-                arg0 = func_0022A020(arg0);
+                arg0 = Taku_Camp_STON(arg0);
             } else {
-                arg0 = func_0022A710(arg0);
+                arg0 = Taku_Camp_3D(arg0);
             }
             break;
         }
     } else {
-        arg0 = func_0022A710(arg0);
+        arg0 = Taku_Camp_3D(arg0);
     }
     if (*(s16 *)(rec + 0xC2) >= 0x2710) {
-        arg0 = func_00226120(arg0);
+        arg0 = Taku_Camp_Kumo(arg0);
     }
     return arg0;
 }
@@ -1036,8 +1036,8 @@ typedef struct {
     f32 w;
 } Vec4_0021DFF0;
 
-void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha) {
-    extern s32 func_0020A470(s32, s32, s32);
+void *Taku_Camp_Teki_Model_Disp(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha) {
+    extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     View_0021DFF0 view;
     Vec4_0021DFF0 position;
     Packet_0021DFF0 sprite __attribute__((aligned(8)));
@@ -1051,7 +1051,7 @@ void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s3
     ((Tag_0021DFF0 *)sprite.tag)->registers = 0x42421;
     ((Tag_0021DFF0 *)sprite.tag)->padding = 0;
     ((Tag_0021DFF0 *)sprite.tag)->flags |= 0x800;
-    func_002086D0(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    ExAssignAlpha(sprite.tag, 0x44 | ((s64)0x80 << 32));
     sprite.color.r = 0x80;
     sprite.color.g = 0x80;
     sprite.color.b = 0x80;
@@ -1061,12 +1061,12 @@ void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s3
     sprite.vertex0.fog = 0;
     sprite.vertex1.z = 0xFFFFFA;
     sprite.vertex1.fog = 0;
-    func_0020DEF0(&view);
-    if (func_0020E460() != 0) {
-        func_0020A470(0, 0xA, 0x31);
-        packet = func_0020A610(packet);
-        packet = func_0020A870(packet, 0);
-        func_001F2050(id, &position);
+    RhView_GetCurView(&view);
+    if (RhView_PushStack() != 0) {
+        RhBase_AssignRenderFrame(0, 0xA, 0x31);
+        packet = RhBase_EnableRenderFrame(packet);
+        packet = RhBase_ClearRenderFrame(packet, 0);
+        SzModel_GetCenter(id, &position);
         view.eyeX = 0.0f;
         view.eyeY = position.y;
         view.eyeZ = -depth;
@@ -1074,15 +1074,15 @@ void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s3
         view.targetY = 0.0f;
         view.targetZ = 1.0f;
         view.roll = 0;
-        func_0020DFD0(1.0f, 512.0f);
-        func_0020E360(&view);
-        packet = (void *)func_0020EC60((s32)packet);
-        func_001F30B0(id, 1);
-        packet = (void *)func_001EE4B0((s32)packet, id, 0, 0, 0, 0, 0);
-        func_001ED4A0(id);
-        func_001F30B0(id, 0);
-        func_0020AA30(&sprite.texture0, &sprite.texture1);
-        output = func_0020F290((s32)func_0020A760(packet));
+        RhView_SetClipZ(1.0f, 512.0f);
+        RhView_Modify(&view);
+        packet = (void *)RhView_SendViewParameters((s32)packet);
+        SzModel_SetDrawFlag(id, 1);
+        packet = (void *)SzModel_Draw_Pipe((s32)packet, id, 0, 0, 0, 0, 0);
+        SzModel_Motion(id);
+        SzModel_SetDrawFlag(id, 0);
+        RhBase_GetTextureInfoForRender(&sprite.texture0, &sprite.texture1);
+        output = RhText_SetTextureFlush((s32)RhBase_DisableRenderFrame(packet));
         half = ((width * 448) / height) >> 1;
         set_uv_0021DFF0((UV_0021DFF0 *)&sprite.uv0, (0x140 - half) << 4, 0);
         set_uv_0021DFF0((UV_0021DFF0 *)&sprite.uv1, (half + 0x140) << 4, 0x1C0 << 4);
@@ -1090,11 +1090,11 @@ void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s3
         sprite.vertex0.y = (y + 0x800) << 4;
         sprite.vertex1.x = (x + 0x800 + width) << 4;
         sprite.vertex1.y = (y + 0x800 + height) << 4;
-        func_0020E4F0();
-        func_0020DEF0(&view);
-        func_0020E360(&view);
-        packet = (void *)func_00207650(func_0020EC60(output), (s32)&sprite, 0, 0);
-        func_0020A9E0();
+        RhView_PopStack();
+        RhView_GetCurView(&view);
+        RhView_Modify(&view);
+        packet = (void *)ExSortPrim_Pipe(RhView_SendViewParameters(output), (s32)&sprite, 0, 0);
+        RhBase_FreeRenderFrame();
     }
     return packet;
 }

@@ -1,6 +1,6 @@
 #include "common.h"
 
-s32 func_0022D140(void) {
+s32 Taku_Camp_BUN_HANTEI(void) {
     extern s16 D_00299ED2;
     s32 player;
     s32 ret;

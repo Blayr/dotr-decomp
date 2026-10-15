@@ -68,7 +68,7 @@ struct DotrTekiWindowCard {
 };
 #define DOTR_TEKI_WINDOW_BASE 0x1ed0000
 #define DOTR_TEKI_WINDOW_FACE ((struct DotrTekiWindowFace *)0x1ed5424)
-extern int func_002195E0(int cursor, struct DotrTekiWindowWindow *window, unsigned short flag, int a3,
+extern int Taku_Window_Set(int cursor, struct DotrTekiWindowWindow *window, unsigned short flag, int a3,
                            unsigned short x, unsigned short y, int a6, int a7, int a8);
 extern int func_00217BD0_b(int cursor, struct DotrTekiWindowItem *item, short x, short y);
 extern int func_00218020_b(int cursor, struct DotrTekiWindowItem *item, short x, short y, int a4);
@@ -94,9 +94,9 @@ extern struct DotrTekiWindowCard *func_001DD0E0_b(int id);
     } else { \
         cursor = func_001FE660_b(cur, 1, xx, yy, limf / (float)info->w, 1.0f, col, func_001FDFE0_b); \
     } \
-    func_001FEAF0(1);
+    SzMsg_Free(1);
 
-int func_002354A0(int cursor)
+int Taku_Camp_TEKI_WINDOW(int cursor)
 {
     struct DotrTekiWindowBoard *b = &D_00299E10_b;
     struct DotrTekiWindowNames names;
@@ -260,10 +260,10 @@ int func_002354A0(int cursor)
             short cost;
 
             cursor = func_00217BD0_b(cursor, &D_00298120[side], 0, y);
-            cursor = func_002195E0(cursor, &D_00297B40[0], side, 0, 0, y, 0, 128, WH(0x224));
-            cursor = func_002195E0(cursor, &D_00297B40[2], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set(cursor, &D_00297B40[0], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set(cursor, &D_00297B40[2], side, 0, 0, y, 0, 128, WH(0x224));
             yy = y - yoff;
-            cursor = func_002195E0(cursor, &D_00297B40[3], side, 0, 0, yy, 1, 128, 0);
+            cursor = Taku_Window_Set(cursor, &D_00297B40[3], side, 0, 0, yy, 1, 128, 0);
             no = b->h196 + 1;
             if (name == 217) {
                 no = b->h196;
@@ -278,7 +278,7 @@ int func_002354A0(int cursor)
                 FACE->mode = 1;
                 FACE->x = D_00297B40[3].x;
                 FACE->y = D_00297B40[3].y + y - yoff;
-                func_00245BE0(FACE);
+                ShFace_Request(FACE);
                 WB(0x540a) = 2;
                 break;
             case 10:
@@ -287,11 +287,11 @@ int func_002354A0(int cursor)
                 FACE->mode = 3;
                 FACE->x = D_00297B40[3].x;
                 FACE->y = D_00297B40[3].y + y - yoff;
-                func_00245BE0(FACE);
+                ShFace_Request(FACE);
                 WB(0x540a) = 2;
                 break;
             case 100:
-                func_00245D80(FACE);
+                ShFace_Close(FACE);
                 WB(0x540a) = 0;
                 break;
             }
@@ -299,13 +299,13 @@ int func_002354A0(int cursor)
             cursor = func_00218020_b(cursor, &D_002983A0[3], 0, yy, 0);
             cursor = func_00218020_b(cursor, &D_002983A0[side], 0, yy, 0);
             if (WB(0x5406) == 0) {
-                func_00214990(1, b->h196 + 26);
+                SzData_SetupFromConstDeck(1, b->h196 + 26);
             }
-            cost = WH(0x5444) = func_00215F00(1, 0);
+            cost = WH(0x5444) = SzData_GetDeckCost(1, 0);
             cursor = func_00217BD0_b(cursor, &D_00298320[0], 0, y);
             cursor = func_001B6EA0_b(cursor, 410, y + 26, 0, 0, 4, cost);
-            cursor = func_001FD680(cursor, 1, name, 0, 22);
-            cursor = func_0020F290(cursor);
+            cursor = SzMsg_LoadFont_Pipe(cursor, 1, name, 0, 22);
+            cursor = RhText_SetTextureFlush(cursor);
             info = func_001FEAB0_b(1);
             if (info->w < 324) {
                 
@@ -318,7 +318,7 @@ int func_002354A0(int cursor)
             } else {
                 cursor = func_001FE660_b(cursor, 1, 53, y + 21, 324.0f / (float)info->w, 1.0f, col, func_001FDFE0_b);
             }
-            func_001FEAF0(1);
+            SzMsg_Free(1);
         }
         if (sel == 0) {
             WB(0x5406) = -1;
@@ -337,10 +337,10 @@ int func_002354A0(int cursor)
             short ty;
 
             WB(0x5488) = 1;
-            id = func_002159D0(1, 0);
-            cursor = func_002195E0(cursor, &D_00297B40[1], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = func_002195E0(cursor, &D_00297B40[4], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = func_002195E0(cursor, &D_00297BCA, side, 0, x, y, 0, 128, WH(0x224));
+            id = SzData_GetLeader(1, 0);
+            cursor = Taku_Window_Set(cursor, &D_00297B40[1], side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set(cursor, &D_00297B40[4], side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set(cursor, &D_00297BCA, side, 0, x, y, 0, 128, WH(0x224));
             xs = x;
             cursor = func_001B6F70_b(cursor, xs + 152, y + 63, 1, 1, 4, D_0030F102, 0);
             cursor = func_001B6F70_b(cursor, xs + 192, y + 63, 1, 1, 6, D_0030F1E8, 0);
@@ -392,8 +392,8 @@ int func_002354A0(int cursor)
             cursor = func_00217BD0_b(cursor, &D_00298320[2], x, y);
             cursor = func_001B6EA0_b(cursor, xs + 324, y + 73, 1, 0, 4, b->h66[b->h196]);
             cursor = func_001B6EA0_b(cursor, xs + 421, y + 73, 1, 0, 4, b->h130[b->h196]);
-            cursor = func_001FD680(cursor, 1, func_001DE210(id), 0, 22);
-            cursor = func_0020F290(cursor);
+            cursor = SzMsg_LoadFont_Pipe(cursor, 1, SzDuel_GetMsgName(id), 0, 22);
+            cursor = RhText_SetTextureFlush(cursor);
             tx = (short)D_00297B40[4].x + 4 + x;
             ty = (short)D_00297B40[4].y + 2 + y;
             RATIO(cursor, tx, ty, 246, 246.0f)
@@ -407,8 +407,8 @@ int func_002354A0(int cursor)
 
         len = func_0019BEF0(names.s[b->b198]);
         len10 = (short)(len * 10);
-        cursor = func_001FD680(cursor, 1, 258, 0, 22);
-        cursor = func_0020F290(cursor);
+        cursor = SzMsg_LoadFont_Pipe(cursor, 1, 258, 0, 22);
+        cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         if (info->w < (short)len10) {
             wd = len10 + 16;
@@ -417,11 +417,11 @@ int func_002354A0(int cursor)
         }
         D_00297B40[7].w = wd;
         tx = 320 - ((short)wd >> 1);
-        cursor = func_002195E0(cursor, &D_00297B40[7], 2, 0, tx, 224, 0, 128, 64);
+        cursor = Taku_Window_Set(cursor, &D_00297B40[7], 2, 0, tx, 224, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, 228, 1.0f, 1.0f, col, func_001FDFE0_b);
-        func_001FEAF0(1);
+        SzMsg_Free(1);
     } else if (WB(0x5374) == 0 && WU(4) == 2 && WB(0x72) == 0 && WB(0x547a) == 0 && WB(0x6e) != 0
-               && WB(0x5481) != 0 && !func_001F5240(-1, -1) && WB(0x5376) != 0 && WB(0x5482) == 0) {
+               && WB(0x5481) != 0 && !SzEffect_IsUse2(-1, -1) && WB(0x5376) != 0 && WB(0x5482) == 0) {
         int cx;
         short wd;
         int tx;
@@ -439,8 +439,8 @@ int func_002354A0(int cursor)
             m = 249;
             WB(0x5446) = 0;
         }
-        cursor = func_001FD680(cursor, 1, m, 0, 22);
-        c = func_0020F290(cursor);
+        cursor = SzMsg_LoadFont_Pipe(cursor, 1, m, 0, 22);
+        c = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         wd = *(short *)&info->w + 16;
         D_00297B40[5].w = wd;
@@ -464,9 +464,9 @@ int func_002354A0(int cursor)
         if (ty >= 290) {
             ty = 290;
         }
-        cursor = func_002195E0(c, &D_00297B40[5], 2, 0, px, ty, 0, 128, 64);
+        cursor = Taku_Window_Set(c, &D_00297B40[5], 2, 0, px, ty, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, ty + 4, 1.0f, 1.0f, col, func_001FDFE0_b);
-        func_001FEAF0(1);
+        SzMsg_Free(1);
     }
     if ((b->b0 == 0 && b->lv[11] >= 3) || WB(0x18c) != 0) {
         if (b->b198 == 11) {

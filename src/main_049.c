@@ -1,7 +1,7 @@
 #include "common.h"
 
-s32 func_001F1A80(s32 arg0, f32 value) {
-    return func_001F1A90(arg0, 0, value);
+s32 SzModel_SetAnimSpeed(s32 arg0, f32 value) {
+    return SzModel_SetAnimSpeedParam(arg0, 0, value);
 }
 
 typedef struct View_001F1A90 {
@@ -9,7 +9,7 @@ typedef struct View_001F1A90 {
     f32 m[4][3];
 } View_001F1A90;
 
-s32 func_001F1A90(s32 arg0, s32 arg1, f32 value) {
+s32 SzModel_SetAnimSpeedParam(s32 arg0, s32 arg1, f32 value) {
     Obj_0031ABB0 *obj;
     View_001F1A90 *view;
     s32 slot;
@@ -36,8 +36,8 @@ s32 func_001F1A90(s32 arg0, s32 arg1, f32 value) {
     return 1;
 }
 
-f32 func_001F1B50(s32 arg0) {
-    return func_001F1B60(arg0, 0);
+f32 SzModel_GetAnimFrame(s32 arg0) {
+    return SzModel_GetAnimFrameParam(arg0, 0);
 }
 
 typedef struct View_001F1B60 {
@@ -45,7 +45,7 @@ typedef struct View_001F1B60 {
     f32 m[4][3];
 } View_001F1B60;
 
-f32 func_001F1B60(s32 arg0, s32 arg1) {
+f32 SzModel_GetAnimFrameParam(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *obj;
     View_001F1B60 *view;
     s8 slot;
@@ -71,8 +71,8 @@ f32 func_001F1B60(s32 arg0, s32 arg1) {
     return view->m[arg1][0];
 }
 
-void func_001F1C40(s32 arg0, f32 value) {
-    func_001F1C50(arg0, 0, value);
+void SzModel_SetAnimFrame(s32 arg0, f32 value) {
+    SzModel_SetAnimFrameParam(arg0, 0, value);
 }
 
 typedef struct View_001F1C50 {
@@ -80,7 +80,7 @@ typedef struct View_001F1C50 {
     f32 m[4][3];
 } View_001F1C50;
 
-s32 func_001F1C50(s32 arg0, s32 arg1, f32 value) {
+s32 SzModel_SetAnimFrameParam(s32 arg0, s32 arg1, f32 value) {
     s32 slot;
     f32 maximum;
     Obj_0031ABB0 *obj;
@@ -112,15 +112,15 @@ s32 func_001F1C50(s32 arg0, s32 arg1, f32 value) {
     return 1;
 }
 
-s32 func_001F1D50(s32 arg0, s32 arg1) {
-    extern s32 func_001F1400();
+s32 SzModel_GetAnimFrameMax(s32 arg0, s32 arg1) {
+    extern s32 SzModel_GetAnimParam();
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
     if (arg1 < 0) {
-        arg1 = func_001F1400(arg0, 0);
+        arg1 = SzModel_GetAnimParam(arg0, 0);
     }
     if (arg1 < 0 || arg1 >= 8) {
         return -1;
@@ -141,7 +141,7 @@ typedef struct {
     f32 z;
 } Vec3_001F1E10;
 
-s32 func_001F1E10(s32 arg0, f32 *arg1) {
+s32 SzModel_GetIntensity(s32 arg0, f32 *arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -155,7 +155,7 @@ s32 func_001F1E10(s32 arg0, f32 *arg1) {
     return 1;
 }
 
-s32 func_001F1E80(s32 arg0, f32 *arg1) {
+s32 SzModel_GetIntensityOnly(s32 arg0, f32 *arg1) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -173,7 +173,7 @@ typedef struct {
     f32 x, y, z;
 } Vec3_001F1EE0;
 
-s32 func_001F1EE0(s32 arg0, f32 *arg1) {
+s32 SzModel_SetIntensity(s32 arg0, f32 *arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -193,7 +193,7 @@ s32 func_001F1EE0(s32 arg0, f32 *arg1) {
     return 1;
 }
 
-s32 func_001F1F70(s32 arg0, f32 fparg0) {
+s32 SzModel_SetIntensityOnly(s32 arg0, f32 fparg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -207,7 +207,7 @@ s32 func_001F1F70(s32 arg0, f32 fparg0) {
     return 1;
 }
 
-s32 func_001F1FD0(s32 arg0, void *arg1) {
+s32 SzModel_GetPos(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -245,7 +245,7 @@ static inline s32 check_001F2050(s32 index) {
     return 0;
 }
 
-s32 func_001F2050(s32 index, void *out) {
+s32 SzModel_GetCenter(s32 index, void *out) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
@@ -286,7 +286,7 @@ static inline s32 ready_001F2150(s32 index) {
     return 0;
 }
 
-s32 func_001F2150(s32 arg0, f32 *arg1) {
+s32 SzModel_GetCenterOfs(s32 arg0, f32 *arg1) {
     s32 sp3C;
     Obj_0031ABB0 *temp_s1;
     f32 temp_f1;
@@ -314,7 +314,7 @@ s32 func_001F2150(s32 arg0, f32 *arg1) {
         var_v0_2 = 0;
     } else {
         temp_a1_2 = *(s32 *)((u8 *)temp_s1 + 0x134);
-        var_v0_2 = func_001EFBD0(1, temp_a1_2, temp_a1_2, &sp3C, 0, NULL, 0);
+        var_v0_2 = lSzModel_TraceGNode(1, temp_a1_2, temp_a1_2, &sp3C, 0, NULL, 0);
     }
     if (var_v0_2 != 0) {
         temp_f1 = *(f32 *)(*(u8 **)((u8 *)temp_s1 + 0x13C) + 0x54);
@@ -326,7 +326,7 @@ s32 func_001F2150(s32 arg0, f32 *arg1) {
     return 1;
 }
 
-s32 func_001F22B0(s32 index, void *src) {
+s32 SzModel_SetPos(s32 index, void *src) {
     Obj_0031ABB0 *dst;
 
     if (index < 0 || index >= 0x54) {
@@ -342,7 +342,7 @@ s32 func_001F22B0(s32 index, void *src) {
     return 1;
 }
 
-s32 func_001F2330(s32 arg0, void *arg1) {
+s32 SzModel_GetRot(s32 arg0, void *arg1) {
     s32 result;
     Obj_0031ABB0 *temp_v0;
 
@@ -362,7 +362,7 @@ s32 func_001F2330(s32 arg0, void *arg1) {
     return result;
 }
 
-s32 func_001F23B0(s32 arg0, void *arg1) {
+s32 SzModel_GetRotC(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -384,7 +384,7 @@ typedef struct {
 
 /* needs shared field: D_0031ABB0 +0x10 f32[4] */
 
-s32 func_001F2430(s32 arg0, void *arg1) {
+s32 SzModel_SetRot(s32 arg0, void *arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -405,7 +405,7 @@ s32 func_001F2430(s32 arg0, void *arg1) {
     return 1;
 }
 
-s32 func_001F24C0(s32 index, void *src) {
+s32 SzModel_SetRotC(s32 index, void *src) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
@@ -426,7 +426,7 @@ s32 func_001F24C0(s32 index, void *src) {
     return 1;
 }
 
-s32 func_001F2550(s32 arg0, void *arg1) {
+s32 SzModel_GetScale(s32 arg0, void *arg1) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -442,7 +442,7 @@ s32 func_001F2550(s32 arg0, void *arg1) {
     return 1;
 }
 
-s32 func_001F25D0(s32 idx, void *src) {
+s32 SzModel_SetScale(s32 idx, void *src) {
     Obj_0031ABB0 *obj;
 
     if (idx < 0 || idx >= 0x54) {
@@ -470,7 +470,7 @@ typedef struct {
     u8 a;
 } Color_001F2660;
 
-s32 func_001F2660(s32 arg0, void *arg1) {
+s32 SzModel_GetRgba(s32 arg0, void *arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -498,7 +498,7 @@ typedef struct {
     u8 a;
 } Color_001F26E0;
 
-s32 func_001F26E0(s32 arg0, s32 arg1, void *arg2) {
+s32 SzModel_SetRgba(s32 arg0, s32 arg1, void *arg2) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -520,7 +520,7 @@ s32 func_001F26E0(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-s32 func_001F27A0(s32 arg0) {
+s32 SzModel_GetAlpha(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -533,7 +533,7 @@ s32 func_001F27A0(s32 arg0) {
     return temp_v0->pad040[0xEF];
 }
 
-s32 func_001F2800(s32 arg0, u8 arg1) {
+s32 SzModel_SetAlpha(s32 arg0, u8 arg1) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -557,7 +557,7 @@ typedef struct {
     u8 r, g, b, a;
 } Color_001F2860;
 
-s32 func_001F2860(s32 arg0, s32 arg1, void *arg2) {
+s32 SzModel_SetFilter(s32 arg0, s32 arg1, void *arg2) {
     Obj_0031ABB0 *temp_a3;
 
     if ((arg0 < 0) || (arg0 >= 0x54)) {
@@ -579,7 +579,7 @@ s32 func_001F2860(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-s16 func_001F2920(s32 arg0) {
+s16 SzModel_GetModelNo(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -592,7 +592,7 @@ s16 func_001F2920(s32 arg0) {
     return *(s16 *)((u8 *)temp_v0 + 0x1F4);
 }
 
-s8 func_001F2980(s32 arg0) {
+s8 SzModel_GetModelType(s32 arg0) {
     Obj_0031ABB0 *obj;
     s8 ret;
 
@@ -616,7 +616,7 @@ typedef struct {
     s8 unused1 : 3;
 } ObjView_001F29E0;
 
-s32 func_001F29E0(s32 arg0, s32 arg1) {
+s32 SzModel_SetDeform(s32 arg0, s32 arg1) {
     ObjView_001F29E0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -638,7 +638,7 @@ typedef struct {
     s8 : 3;
 } Flags_001F2A70;
 
-s32 func_001F2A70(s32 arg0) {
+s32 SzModel_GetDeform(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -651,7 +651,7 @@ s32 func_001F2A70(s32 arg0) {
     return ((Flags_001F2A70 *) ((u8 *) temp_v0 + 0x20C))->active ? 1 : 0;
 }
 
-s32 func_001F2AD0(s32 arg0, s8 arg1) {
+s32 SzModel_SetDeformRatio(s32 arg0, s8 arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -680,7 +680,7 @@ static inline s32 check_001F2B30(s32 index) {
     return 0;
 }
 
-s32 func_001F2B30(s32 index) {
+s32 SzModel_GetRefNum(s32 index) {
     if (index < 0 || index >= 0x54) {
         return -1;
     }
@@ -693,7 +693,7 @@ s32 func_001F2B30(s32 index) {
     return -1;
 }
 
-s32 func_001F2BE0(s32 arg0, s32 arg1) {
+s32 SzModel_InqRefID(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -718,7 +718,7 @@ typedef struct View_001F2C60 {
     u8 max;
 } View_001F2C60;
 
-s32 func_001F2C60(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_SetRefID(s32 arg0, s32 arg1, s32 arg2) {
     View_001F2C60 *obj;
     s32 i;
     s32 group;
@@ -764,7 +764,7 @@ s32 func_001F2C60(s32 arg0, s32 arg1, s32 arg2) {
     return obj->count++;
 }
 
-s32 func_001F2DD0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_SetRefID_RefNo(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
     s32 group;
     u16 current;
@@ -819,7 +819,7 @@ static inline s32 active_001F2EC0(s32 index) {
     return 0;
 }
 
-s32 func_001F2EC0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzModel_GetRef(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -845,7 +845,7 @@ s32 func_001F2EC0(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_001F2FF0(s32 arg0, s16 arg1) {
+s32 SzModel_SetMaxOT(s32 arg0, s16 arg1) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -859,7 +859,7 @@ s32 func_001F2FF0(s32 arg0, s16 arg1) {
     return 1;
 }
 
-s32 func_001F3050(s32 arg0) {
+s32 SzModel_GetMaxOT(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -877,7 +877,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F30B0;
 
-s32 func_001F30B0(s32 arg0, s32 arg1) {
+s32 SzModel_SetDrawFlag(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -898,7 +898,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F3130;
 
-s32 func_001F3130(s32 arg0) {
+s32 SzModel_GetDrawFlag(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -917,7 +917,7 @@ typedef struct {
     s8 high : 1;
 } Flags_001F3190;
 
-s32 func_001F3190(s32 arg0, s32 arg1) {
+s32 SzModel_SetCalcFlag(s32 arg0, s32 arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -937,7 +937,7 @@ typedef struct {
     s8 : 1;
 } Flags_001F3210;
 
-s32 func_001F3210(s32 arg0) {
+s32 SzModel_GetCalcFlag(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -955,7 +955,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F3270;
 
-s32 func_001F3270(s32 arg0, s64 arg1) {
+s32 SzModel_SetFogFlag(s32 arg0, s64 arg1) {
     Obj_0031ABB0 *obj;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -973,7 +973,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F32F0;
 
-s32 func_001F32F0(s32 arg0, s64 arg1) {
+s32 SzModel_SetPauseFlag(s32 arg0, s64 arg1) {
     Obj_0031ABB0 *temp_a2;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -991,7 +991,7 @@ typedef struct {
     s8 active : 1;
 } Flags_001F3360;
 
-s32 func_001F3360(s32 arg0) {
+s32 SzModel_GetPauseFlag(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1009,7 +1009,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F33C0;
 
-s32 func_001F33C0(s32 arg0, s64 arg1) {
+s32 SzModel_SetStoneFlag(s32 arg0, s64 arg1) {
     Obj_0031ABB0 *temp_a2;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1028,7 +1028,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F3440;
 
-s32 func_001F3440(s32 arg0) {
+s32 SzModel_GetStoneFlag(s32 arg0) {
     Obj_0031ABB0 *temp_v0;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1150,7 +1150,7 @@ struct DotrObjectShadeSlot {
 };
 extern int func_00241A00_b(float scale, unsigned short color, int e);
 
-int func_001F34A0(int index, int value)
+int SzModel_SetStoneRatio(int index, int value)
 {
     struct DotrObject *p;
     struct DotrObjectLink *base;
@@ -1222,7 +1222,7 @@ typedef struct {
     s8 active : 1;
 } Flags_001F3690;
 
-s32 func_001F3690(s32 arg0) {
+s32 SzModel_GetStoneRatio(s32 arg0) {
     Obj_0031ABB0 *temp_v1;
 
     if (arg0 < 0 || arg0 >= 0x54) {
@@ -1247,7 +1247,7 @@ typedef struct Table_001F3700 {
 extern Table_001F3700 D_00292FF0[3];
 extern s8 D_0031BB50;
 
-void func_001F3700(void) {
+void SzEffect_Init(void) {
     s32 i;
     s32 *values;
     s32 *count;
@@ -1265,9 +1265,9 @@ void func_001F3700(void) {
         i++;
         table++;
     } while (i < 3);
-    func_0020B3C0(&D_0031BB50, 0, 0x354);
-    func_001F3790();
-    func_001F6CE0(0x80);
-    func_001F6CF0(0x80);
-    func_001F6D00(0x80);
+    RhMem_FillMemory(&D_0031BB50, 0, 0x354);
+    SzEffect_Clear();
+    SzEffect_SetBlackOutForMonster(0x80);
+    SzEffect_SetBlackOutForDuel(0x80);
+    SzEffect_SetBlackOutForBattle(0x80);
 }

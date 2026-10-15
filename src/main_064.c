@@ -45,7 +45,7 @@ static inline short may_score(struct DotrGlideBoard *board)
     return 0;
 }
 
-void func_00228150(int side)
+void Taku_Camp_What_KATIMAKE(int side)
 {
     struct DotrGlideBoard *board = &D_00299E10_228150;
 
@@ -112,7 +112,7 @@ void func_00228150(int side)
     D_0034F6F0 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_00228460);
+INCLUDE_ASM("asm/nonmatchings/main_064", Taku_Nagare2_set);
 
 typedef struct {
     u8 pad[0x46];
@@ -148,7 +148,7 @@ extern Card_00228660 D_00299020[][16];
 extern s8 D_00299E13[];
 extern s8 D_00299ED7;
 
-void func_00228660(s16 player, s16 side, s8 state, s16 *items, s16 count) {
+void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
     extern Side_00228660 D_00298BA0[];
     Work_00228660 *work = (Work_00228660 *)0x01ED0000;
     s8 *status = &D_00299E10;
@@ -206,7 +206,7 @@ void func_00228660(s16 player, s16 side, s8 state, s16 *items, s16 count) {
     }
 }
 
-void func_00228940(s16 arg0, s16 arg1) {
+void Taku_Fune_init(s16 arg0, s16 arg1) {
     *(s16 *)0x01ED01A4 = arg0;
     *(s16 *)0x01ED01B2 = arg1;
     *(s16 *)0x01ED01B0 = 0;
@@ -214,7 +214,7 @@ void func_00228940(s16 arg0, s16 arg1) {
     *(s8 *)0x01ED01B4 = 1;
 }
 
-s32 func_00228970(void) {
+s32 Taku_Tyumoku_ido(void) {
     s16 temp_v1;
     s16 temp_v1_2;
 
@@ -241,7 +241,7 @@ s32 func_00228970(void) {
     return 0;
 }
 
-s32 func_00228AD0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
+s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
     extern f32 D_00298BA0[];
     extern f32 D_00298BA8[];
     s16 *state;
@@ -342,7 +342,7 @@ s32 func_00228AD0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
     return 0;
 }
 
-s32 func_00228F50(s16 arg0, s16 arg1) {
+s32 Taku_Tyumoku_ido1(s16 arg0, s16 arg1) {
     extern f32 D_00298BA0[];
     extern f32 D_00298BA8[];
     s16 sp1E;
@@ -353,7 +353,7 @@ s32 func_00228F50(s16 arg0, s16 arg1) {
     switch (mode) {
     case 0:
         if (*(s16 *)0x01ED536C == 0) {
-            func_00228660(arg0, arg1, 3, &sp1E, 0);
+            Taku_Dodai_Root_init(arg0, arg1, 3, &sp1E, 0);
             *(s16 *)0x01ED536C += 1;
         }
         break;
@@ -398,7 +398,7 @@ typedef struct State_00229140 {
 extern f32 D_00298BA0[];
 extern f32 D_00298BA8[];
 
-s32 func_00229140(s32 arg0, s32 arg1, s16 arg2) {
+s32 Taku_Tyumoku_ido_kettei(s32 arg0, s32 arg1, s16 arg2) {
     State_00229140 *state = (State_00229140 *)&D_00299E10;
     f32 startX;
     f32 startZ;
@@ -452,7 +452,7 @@ s32 func_00229140(s32 arg0, s32 arg1, s16 arg2) {
             break;
         case 3:
             if (*(s8 *)0x01ED53A0 <= 0 && *(s16 *)0x01ED01D8 == 3) {
-                func_002336F0();
+                Taku_Camp_Set_Go_Duel();
             }
             break;
         }
@@ -497,7 +497,7 @@ static inline s16 isSpecial_002294B0(State_00229140 *state) {
     return result;
 }
 
-s32 func_002294B0(s32 arg0, s16 arg1) {
+s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
     State_00229140 *state = (State_00229140 *)&D_00299E10;
 
     *(s8 *)0x01ED53C0 = arg1;
@@ -561,7 +561,7 @@ s32 func_002294B0(s32 arg0, s16 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", func_002297C0);
+INCLUDE_ASM("asm/nonmatchings/main_064", Taku_Camp_2D);
 
 typedef union {
     __int128 value;
@@ -570,7 +570,7 @@ typedef union {
 
 extern Rotation_0022A020 D_0029ABB0;
 
-s32 func_0022A020(s32 arg0) {
+s32 Taku_Camp_STON(s32 arg0) {
     Rotation_0022A020 rotation;
     s8 *state = (s8 *)0x01ED0000;
     s16 i;
@@ -580,15 +580,15 @@ s32 func_0022A020(s32 arg0) {
     for (i = 0; i <= 9; i++) {
         switch (state[0x53B3]) {
         case 1:
-            arg0 = func_001EE4B0(arg0, i + 0x22, 0, (s32)&rotation, 0, 0, 0);
+            arg0 = SzModel_Draw_Pipe(arg0, i + 0x22, 0, (s32)&rotation, 0, 0, 0);
             break;
         default:
-            arg0 = func_001EE4B0(arg0, i + 0x22, 0, 0, 0, 0, 0);
+            arg0 = SzModel_Draw_Pipe(arg0, i + 0x22, 0, 0, 0, 0, 0);
             break;
         }
     }
     for (i = 0; i < 2; i++) {
-        func_001F30B0(i + 0x1E, 0);
+        SzModel_SetDrawFlag(i + 0x1E, 0);
     }
     return arg0;
 }
@@ -612,7 +612,7 @@ typedef struct State_0022A140 {
     s16 value;
 } State_0022A140;
 
-s32 func_0022A140(s32 arg0) {
+s32 Taku_DECK_CARD_DISP(s32 arg0) {
     s32 texture[24];
     s32 draw[36];
     State_0022A140 *progress;
@@ -625,15 +625,15 @@ s32 func_0022A140(s32 arg0) {
     s16 slot;
     s8 *context = &D_00299E10;
 
-    extern s32 func_001D9A20();
-    extern void func_001CD560();
+    extern s32 SzDuel_StartCardSession_Pipe();
+    extern void SzDuel_ClearDrawCard();
 
     if (D_00299ED2 >= 0x2756 &&
         *(s16 *)(context + 0xC2) < 0x2761 &&
         state->phase < 4) {
-        packet = func_001D9A20();
-        func_001D9ED0(0xFFFFF8);
-        func_001CD560(draw);
+        packet = SzDuel_StartCardSession_Pipe();
+        SzDuel_SetCardDefPrioZ(0xFFFFF8);
+        SzDuel_ClearDrawCard(draw);
         draw[12] = 0x3EF00000;
         draw[13] = 0x3EFA6F4E;
         draw[14] = 0x3F800000;
@@ -687,12 +687,12 @@ s32 func_0022A140(s32 arg0) {
                 }
             }
             id = state->ids[slot];
-            func_001DA2B0(draw, 0,
+            SzDuel_GetCardNodeOnScreen(draw, 0,
                          -10.0f + (f32)offset +
                              (f32)(progress->value * 640 / 100 - 640),
                          10.0f);
-            func_001DCD70(texture, id);
-            packet = func_001DBD30(func_001DBC40(packet, (s32)texture, draw), (s32)draw);
+            SzDuel_InitCardInfo(texture, id);
+            packet = SzDuel_DrawCard_Pipe(SzDuel_SetupCard2_Pipe(packet, (s32)texture, draw), (s32)draw);
             if (state->mode < 2) {
                 state->completed = 0;
             }
@@ -700,7 +700,7 @@ s32 func_0022A140(s32 arg0) {
                 progress->value += 18;
                 if (0 < progress->value &&
                     state->sound[index] == 0) {
-                    func_00217710(0, 9);
+                    SzSound_PlaySE(0, 9);
                     state->sound[index] = 1;
                 }
                 if (progress->value >= 100) {
@@ -737,7 +737,7 @@ s32 func_0022A140(s32 arg0) {
             }
             progress = (State_0022A140 *)((u8 *)progress + 2);
         }
-        arg0 = func_001D9E70(packet);
+        arg0 = SzDuel_FinishCardSessionX_Pipe(packet);
     }
     return arg0;
 }
@@ -786,8 +786,8 @@ extern s16 D_00298DEC;
 extern s16 D_00298DEE;
 extern Item_0022A710 D_00298E10;
 
-void func_0022A710(s32 packet) {
-    extern s32 func_001EE4B0();
+void Taku_Camp_3D(s32 packet) {
+    extern s32 SzModel_Draw_Pipe();
     extern f32 D_00298BA0[];
     s16 side;
     s16 choice;
@@ -804,14 +804,14 @@ void func_0022A710(s32 packet) {
     f32 height;
 
     animating = 0;
-    packet = func_001EE4B0(packet, 0x22, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, 0x23, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, 0x24, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, 0x25, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, 0x26, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, 0x27, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, D_00298DEC + 0x22, &D_00298DDC, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, D_00298DEE + 0x22, &D_00298DDC, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x22, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x23, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x24, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x25, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x26, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x27, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, D_00298DEC + 0x22, &D_00298DDC, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, D_00298DEE + 0x22, &D_00298DDC, 0, 0, 0, 0);
     src = (Item_0022A710 *)D_00298BA0;
     dst = positions;
     i = 0;
@@ -832,7 +832,7 @@ void func_0022A710(s32 packet) {
             dst->z = src->z;
             sound = &state->sound[i];
             if (*sound == 0 && row->time[0] != 0 && i != 11) {
-                func_001F48F0(0, 0x194, i, 0, 0);
+                SzEffect_Entry(0, 0x194, i, 0, 0);
                 *sound = 1;
             }
         } else {
@@ -874,7 +874,7 @@ void func_0022A710(s32 packet) {
         state->enabled = 1;
     } else if (*(s16 *)(control + 0xC2) >= 10000) {
         state->enabled = 0;
-    } else if (animating == 0 && state->shown != 0 && func_001F5240(-1, -1) == 0 && state->ready != 0 && state->hidden == 0) {
+    } else if (animating == 0 && state->shown != 0 && SzEffect_IsUse2(-1, -1) == 0 && state->ready != 0 && state->hidden == 0) {
         if (control[0] == 0) {
             if (state->busy == 0) {
                 switch (*(s16 *)(control + 0xC2)) {
@@ -907,7 +907,7 @@ void func_0022A710(s32 packet) {
         if (*(s16 *)(control + 0xC2) != 0) {
             goto disabled;
         }
-        if (state->shown == 0 || func_001F5240(-1, -1) != 0 || state->ready == 0 || state->hidden != 0) {
+        if (state->shown == 0 || SzEffect_IsUse2(-1, -1) != 0 || state->ready == 0 || state->hidden != 0) {
             goto disabled;
         }
         state->enabled = 1;
@@ -916,15 +916,15 @@ disabled:
         state->enabled = 0;
     }
 control_updated:
-    packet = func_001EE4B0(packet, D_00298BB0 + 0x22, positions, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, D_00298BB2 + 0x22, positions, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, D_00298BB0 + 0x22, positions, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, D_00298BB2 + 0x22, positions, 0, 0, 0, 0);
     if (state->all != 0) {
         s32 first = 1;
         Vector_0022A710 *firstPos = &positions[1];
         Item_0022A710 *firstSrc = &D_00298BD4;
         while (1) {
-            packet = func_001EE4B0(packet, firstSrc->draw0 + 0x22, firstPos, 0, 0, 0, 0);
-            packet = func_001EE4B0(packet, firstSrc->draw1 + 0x22, firstPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, firstSrc->draw0 + 0x22, firstPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, firstSrc->draw1 + 0x22, firstPos, 0, 0, 0, 0);
             first++;
             firstPos++;
             firstSrc++;
@@ -941,8 +941,8 @@ control_updated:
         secondPos = &positions[12];
         secondSrc = &D_00298E10;
         while (1) {
-            packet = func_001EE4B0(packet, secondSrc->draw0 + 0x22, secondPos, 0, 0, 0, 0);
-            packet = func_001EE4B0(packet, secondSrc->draw1 + 0x22, secondPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, secondSrc->draw0 + 0x22, secondPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, secondSrc->draw1 + 0x22, secondPos, 0, 0, 0, 0);
             second++;
             secondPos++;
             secondSrc++;
@@ -960,8 +960,8 @@ control_updated:
         firstPos = &positions[1];
         firstSrc = &D_00298BD4;
         while (1) {
-            packet = func_001EE4B0(packet, firstSrc->draw0 + 0x22, firstPos, 0, 0, 0, 0);
-            packet = func_001EE4B0(packet, firstSrc->draw1 + 0x22, firstPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, firstSrc->draw0 + 0x22, firstPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, firstSrc->draw1 + 0x22, firstPos, 0, 0, 0, 0);
             first++;
             firstPos++;
             firstSrc++;
@@ -978,8 +978,8 @@ control_updated:
         secondPos = &positions[12];
         secondSrc = &D_00298E10;
         while (1) {
-            packet = func_001EE4B0(packet, secondSrc->draw0 + 0x22, secondPos, 0, 0, 0, 0);
-            packet = func_001EE4B0(packet, secondSrc->draw1 + 0x22, secondPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, secondSrc->draw0 + 0x22, secondPos, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, secondSrc->draw1 + 0x22, secondPos, 0, 0, 0, 0);
             second++;
             secondPos++;
             secondSrc++;
@@ -989,7 +989,7 @@ control_updated:
             break;
         }
     }
-    packet = func_0022C570(packet);
+    packet = Taku_Camp_3D_BOU(packet);
     switch (state->mode) {
     case 0:
         choice = 15;
@@ -1022,10 +1022,10 @@ control_updated:
     } else {
         state->kind = 1;
     }
-    packet = func_0022CC40(packet, side, choice, kind);
-    packet = func_001EE4B0(packet, 0x29, 0, 0, 0, 0, 0);
-    packet = func_001EE4B0(packet, 0x28, 0, 0, 0, 0, 0);
-    func_0022B060(packet);
+    packet = Taku_Camp_3D_FUNE(packet, side, choice, kind);
+    packet = SzModel_Draw_Pipe(packet, 0x29, 0, 0, 0, 0, 0);
+    packet = SzModel_Draw_Pipe(packet, 0x28, 0, 0, 0, 0, 0);
+    Taku_Camp_3D_LeaderModel(packet);
 }
 
 struct DotrLeaderModelRoute {
@@ -1089,7 +1089,7 @@ extern int func_001F2800_b(int index, int value);
 #define DOTR_LEADER_ANGLE(x, z) (func_001A22C0_b(65536.0f * (func_001A6C18(x, z) / 6.2831855f)) % 65536)
 #define DOTR_LEADER_SPOT D_00298BA0_22b060
 
-int func_0022B060(int cursor)
+int Taku_Camp_3D_LeaderModel(int cursor)
 {
     struct DotrLeaderModelRot rot;
     struct DotrLeaderModelScale scale;
@@ -1111,7 +1111,7 @@ int func_0022B060(int cursor)
     b = 5;
     fwd = 0;
     rev = 0;
-    lv = D_00299A30[func_002159D0(0, (short)func_002158B0(0))];
+    lv = D_00299A30[SzData_GetLeader(0, (short)SzData_GetCurrentDeck(0))];
     scale.x = 0.5f;
     scale.y = 0.5f;
     scale.z = 0.5f;
@@ -1357,22 +1357,22 @@ int func_0022B060(int cursor)
         q.y = (float)(DOTR_LEADER_WORK->my - 224);
         q.z = 100.0f;
         q.w = 1.0f;
-        func_00205CB0(&p, p.x, p.y);
+        Ex3d_GetPointOnScreen(&p, p.x, p.y);
         q = *(struct DotrLeaderModelVec *)func_001F9AD0_b(0);
-        func_00206430(DOTR_LEADER_WORK->plane, &p, &q, &out);
+        Ex3d_IntersectP(DOTR_LEADER_WORK->plane, &p, &q, &out);
         DOTR_LEADER_WORK->angle += DOTR_LEADER_ANGLE(out.x - DOTR_LEADER_WORK->pos[0], out.z - DOTR_LEADER_WORK->pos[2]);
     }
-    func_001F29E0(30, 1);
+    SzModel_SetDeform(30, 1);
     func_001F2AD0_b(30, 32);
-    func_001F25D0(30, &scale);
-    func_001F22B0(30, DOTR_LEADER_WORK->pos);
+    SzModel_SetScale(30, &scale);
+    SzModel_SetPos(30, DOTR_LEADER_WORK->pos);
     rot.x = 0;
     rot.y = DOTR_LEADER_WORK->angle + 32767 + 1;
     rot.z = 0;
-    func_001F24C0(30, &rot);
+    SzModel_SetRotC(30, &rot);
     func_001F2800_b(30, DOTR_LEADER_WORK->alpha);
     DOTR_LEADER_WORK->angle = 0;
-    func_001F30B0(30, 1);
+    SzModel_SetDrawFlag(30, 1);
     return cursor;
 }
 #undef DOTR_LEADER_WORK
@@ -1384,7 +1384,7 @@ int func_0022B060(int cursor)
 #undef DOTR_LEADER_ANGLE
 #undef DOTR_LEADER_SPOT
 
-s32 func_0022C3C0(s32 arg0) {
+s32 My_LedarModel_a_set(s32 arg0) {
     switch (arg0) {
     case 0:
         *(s16 *)0x01ED547C -= 4;
@@ -1411,7 +1411,7 @@ typedef struct PointList_0022C450 {
     u8 padding[8];
 } PointList_0022C450;
 
-void func_0022C450(void) {
+void Taku_spline_init(void) {
     f32 positions[64][2];
     f32 weights[64];
     s32 item;
@@ -1450,7 +1450,7 @@ void func_0022C450(void) {
                     point++;
                 } while (point < count);
             }
-            func_0021BC10((f32 *)(output + 0x22C), (f32 *)(output + 0x32C), (s16 *)(output + 0x42C),
+            Taku_spline2((f32 *)(output + 0x22C), (f32 *)(output + 0x32C), (s16 *)(output + 0x42C),
                           &positions[0][0], weights, count, list->mode, 4.0f);
             item++;
             list++;
@@ -1505,7 +1505,7 @@ extern struct DotrGlideSpot D_00298BA0_22c570[];
 extern struct DotrGlideList D_00299020_22c570[2][16];
 int func_001EE4B0_b(int cursor, int index, struct DotrGlideVector3 *position, void *d, int e, int f, int g);
 
-int func_0022C570(int cursor)
+int Taku_Camp_3D_BOU(int cursor)
 {
     struct DotrGlideVector3 pos;
     struct DotrGlideBank *bank = DOTR_GLIDE_BANK;
@@ -1665,7 +1665,7 @@ int func_0022C570(int cursor)
 }
 #undef DOTR_GLIDE_BANK
 
-s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
+s32 Taku_Camp_3D_FUNE(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
     extern s32 func_001A22C0(f32);
     extern s16 D_00299066[][16][38];
     f32 (*xData)[16][129] = (f32 (*)[16][129])0x01ED022C;
@@ -1716,12 +1716,12 @@ s32 func_0022CC40(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
     }
     *(s32 *)0x01ED01A8 = rotation[1];
     if (*(s8 *)0x01ED01B4 != 0) {
-        arg0 = func_001EE4B0(arg0, arg3 + 0x22, 0x01ED01B8, (s32)rotation, 0, 0, 0);
+        arg0 = SzModel_Draw_Pipe(arg0, arg3 + 0x22, 0x01ED01B8, (s32)rotation, 0, 0, 0);
     }
     if (*(s16 *)0x01ED01A4 > 0) {
         if (*(s16 *)0x01ED01A6 < 1024 && *(s16 *)0x01ED01B0 < countData[arg1][arg2][0]) {
             if (*(s16 *)0x01ED01A4 == 1) {
-                func_001F48F0(0, 0x193, 0, 0, 0);
+                SzEffect_Entry(0, 0x193, 0, 0, 0);
                 *(s16 *)0x01ED01A4 = 2;
             }
             if (*(s16 *)0x01ED01A4 == 2) {

@@ -18,11 +18,11 @@ typedef struct Item_0023B1F0 {
     u8 pad0C[0x28];
 } Item_0023B1F0;
 
-void func_0023B1F0(s32 arg0) {
+void TkCamp_Act2(s32 arg0) {
     extern u8 D_00299F60[];
     extern Item_0023B1F0 D_00298BA0[];
     extern s32 D_0034F6F0;
-    extern void func_0021BB90();
+    extern void Taku_3D_2D_Set();
     Vec4_0023B1F0 top;
     u8 *work;
     s16 show;
@@ -42,7 +42,7 @@ void func_0023B1F0(s32 arg0) {
     state = &D_00299E10;
     work = (u8 *)0x01ED0000;
     result = 0;
-    func_0021BB20(D_00299F60);
+    Taku_Coord_Set(D_00299F60);
     item = D_00298BA0;
     for (i = 0, spot = (s32 *)work; i <= 21; i++) {
         show = 0;
@@ -71,8 +71,8 @@ void func_0023B1F0(s32 arg0) {
             }
         }
         if (show) {
-            func_0021BB90(&spot[0x23], &spot[0x43], &top);
-            func_0021BB90(&sx, &sy, &side);
+            Taku_3D_2D_Set(&spot[0x23], &spot[0x43], &top);
+            Taku_3D_2D_Set(&sx, &sy, &side);
             radius = sx - spot[0x23];
             if (D_0034F6F0 == 0) {
                 if (*(s8 *)(work + 0x5373) != 0) {
@@ -201,7 +201,7 @@ typedef struct Copy_0023B920 {
 
 extern s8 D_0034F6F8;
 
-void func_0023B920(void) {
+void TkCamp_Term(void) {
     s32 a;
     s32 b;
     s32 c;
@@ -210,10 +210,10 @@ void func_0023B920(void) {
     s32 y;
 
     if (D_0034F6F8 != 0) {
-        *(Copy_0023B920 *)0x01E301E0 = *(Copy_0023B920 *)func_002145E0(0);
-        a = func_00214D00(0, 0);
-        b = func_00214D00(0, 1);
-        c = func_00214D00(0, 2);
+        *(Copy_0023B920 *)0x01E301E0 = *(Copy_0023B920 *)SzData_GetData(0);
+        a = SzData_GetOption(0, 0);
+        b = SzData_GetOption(0, 1);
+        c = SzData_GetOption(0, 2);
         switch (*(s8 *)0x01ED546B) {
         case 0:
             i = 0x20;
@@ -241,22 +241,22 @@ void func_0023B920(void) {
             y = 0x1A;
             break;
         }
-        func_001A8320(1, 0);
-        func_001A8320(2, 0);
-        func_001A8320(3, i);
-        func_001A8320(4, i);
-        func_00214990(0, x);
-        func_00214990(1, y);
+        SzGame_SetMenuNum(1, 0);
+        SzGame_SetMenuNum(2, 0);
+        SzGame_SetMenuNum(3, i);
+        SzGame_SetMenuNum(4, i);
+        SzData_SetupFromConstDeck(0, x);
+        SzData_SetupFromConstDeck(1, y);
         for (i = 0; i < 2; i++) {
-            func_00214BB0(i, 0, a);
-            func_00214BB0(i, 1, b);
-            func_00214BB0(i, 2, c);
+            SzData_SetOption(i, 0, a);
+            SzData_SetOption(i, 1, b);
+            SzData_SetOption(i, 2, c);
         }
     }
-    func_001E4530();
+    SzDuel_CloseMsgPopup();
 }
 
-void func_0023BB00(s32 arg0) {
+void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
     s32 var_s0;
     s32 var_s1;
     s32 var_s2;
@@ -288,12 +288,12 @@ void func_0023BB00(s32 arg0) {
         var_s2 = 0x1A;
         break;
     }
-    func_001A8320(1, 0);
-    func_001A8320(2, 0);
-    func_001A8320(3, var_s0);
-    func_001A8320(4, var_s0);
-    func_00214990(0, var_s1);
-    func_00214990(1, var_s2);
+    SzGame_SetMenuNum(1, 0);
+    SzGame_SetMenuNum(2, 0);
+    SzGame_SetMenuNum(3, var_s0);
+    SzGame_SetMenuNum(4, var_s0);
+    SzData_SetupFromConstDeck(0, var_s1);
+    SzData_SetupFromConstDeck(1, var_s2);
     if (D_0034F700 < 3) {
         D_0034F700 += 1;
         if (D_0034F700 > 2) {
@@ -302,9 +302,9 @@ void func_0023BB00(s32 arg0) {
         }
     }
     if (arg0 != 0) {
-        func_001A87C0(1, 0);
+        SzGame_Goto(1, 0);
     } else {
-        func_001A8870(1, 0);
+        SzGame_Push(1, 0);
     }
 }
 
@@ -314,10 +314,10 @@ typedef struct Copy_0023BC80 {
 
 extern s8 D_0034F6F8;
 
-void func_0023BC80(void) {
+void Taku_Camp_Go_Help(void) {
     D_0034F6F8 = 1;
-    *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)func_002145E0(0);
-    func_001A8870(1, 0);
+    *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)SzData_GetData(0);
+    SzGame_Push(1, 0);
 }
 
 typedef int DotrHelpWord;
@@ -334,7 +334,7 @@ extern signed char D_00299E10_b[];
 #define DOTR_HELP_OPEN (*(signed char *)0x1ed543c)
 #define DOTR_HELP_STEP (*(signed char *)0x1ed543d)
 #define DOTR_HELP_PICK (*(signed char *)0x1ed546b)
-extern DotrHelpWord func_002195E0(DotrHelpWord cursor, struct DotrHelpWindow *window,
+extern DotrHelpWord Taku_Window_Set(DotrHelpWord cursor, struct DotrHelpWindow *window,
                                     unsigned short flag, int a3, unsigned short x,
                                     unsigned short y, int a6, int a7, int a8);
 extern DotrHelpWord func_001B6F70_b(DotrHelpWord cursor, int x, int y, int a,
@@ -342,7 +342,7 @@ extern DotrHelpWord func_001B6F70_b(DotrHelpWord cursor, int x, int y, int a,
 extern DotrHelpWord func_0021C450_b(DotrHelpWord cursor, int index, int no, int x, int y,
                                      int unused, unsigned char *col, float sx, float sy);
 
-int func_0023BCE0(int cursor)
+int Taku_Camp_Help_Window(int cursor)
 {
     signed char *st;
     short y;
@@ -363,9 +363,9 @@ int func_0023BCE0(int cursor)
     y = 512 - ((DOTR_HELP_STEP << 9) >> 3);
     blk = DOTR_HELP_BLOCK;
     if (DOTR_HELP_OPEN != 0) {
-        cursor = func_002195E0(cursor, &win.w[0], 2, 0, 128, y + 80, 0, 128, 101);
-        cursor = func_002195E0(cursor, &win.w[1], 2, 0, 128, y + 80, 0, 128, 101);
-        cursor = func_002195E0(cursor, &win.w[3], st[0] + 10, 0, 282, y + 94, 0, 128, 128);
+        cursor = Taku_Window_Set(cursor, &win.w[0], 2, 0, 128, y + 80, 0, 128, 101);
+        cursor = Taku_Window_Set(cursor, &win.w[1], 2, 0, 128, y + 80, 0, 128, 101);
+        cursor = Taku_Window_Set(cursor, &win.w[3], st[0] + 10, 0, 282, y + 94, 0, 128, 128);
         cursor = func_001B6F70_b(cursor, 296, y + 102, 2, 1, 4, D_0030F113, 0);
         
 
@@ -374,7 +374,7 @@ int func_0023BCE0(int cursor)
         xx = px;
         ix = xx;
         yy = 144;
-        cursor = func_002195E0(cursor, &win.w[2], 2, 0, px, y + ((short)(DOTR_HELP_PICK * 36) + yy), 0, 128, 0);
+        cursor = Taku_Window_Set(cursor, &win.w[2], 2, 0, px, y + ((short)(DOTR_HELP_PICK * 36) + yy), 0, 128, 0);
         yy += 2;
         for (i = 0; i < 5; i++) {
             if (i == blk[0x546b]) {
@@ -440,42 +440,42 @@ typedef struct Texture_0023BFF0 {
     u8 pad45[0x1B];
 } Texture_0023BFF0;
 
-void *func_0023BFF0(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2) {
-    extern void func_001CD560();
+void *Taku_Camp_Card_Get(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2) {
+    extern void SzDuel_ClearDrawCard();
     Texture_0023BFF0 texture;
     Draw_0023BFF0 draw;
 
-    func_001CD560(&draw);
+    SzDuel_ClearDrawCard(&draw);
     draw.flags.enabled = 1;
     draw.flags.colored = 1;
     draw.flags.reserved = 0;
     draw.flags.horizontal = 1;
     draw.field30 = 0x3F000000;
     draw.field34 = 0x3F000000;
-    func_001DCD70(&texture, 999);
+    SzDuel_InitCardInfo(&texture, 999);
     texture.field44 = arg1;
-    func_00205C40((s32)draw.vector20);
+    Ex3d_GetLookVector((s32)draw.vector20);
     draw.field10 = 0;
     draw.field14 = arg2;
     draw.field18 = 0;
     draw.field1C = 0;
-    arg0 = (void *)func_001D9A20((s32)arg0);
-    func_001D9ED0(0xFFFFFF);
-    func_00205CB0(&draw, fparg0, fparg1);
-    return (void *)func_001D9E70(func_001DBD30(
-        func_001DBC40((s32)arg0, (s32)(func_001D9F00(&draw, 1) ? &texture : NULL), &draw),
+    arg0 = (void *)SzDuel_StartCardSession_Pipe((s32)arg0);
+    SzDuel_SetCardDefPrioZ(0xFFFFFF);
+    Ex3d_GetPointOnScreen(&draw, fparg0, fparg1);
+    return (void *)SzDuel_FinishCardSessionX_Pipe(SzDuel_DrawCard_Pipe(
+        SzDuel_SetupCard2_Pipe((s32)arg0, (s32)(SzDuel_GetCardNode(&draw, 1) ? &texture : NULL), &draw),
         (s32)&draw));
 }
 
-s32 func_0023C140(void) {
+s32 Taku_Get_Duel5_flg(void) {
     return D_00299EDA;
 }
 
-void func_0023C150(void) {
+void Taku_Set_Duel5_flg(void) {
     D_00299EDA = 0;
 }
 
-s32 func_0023C160(void) {
+s32 Taku_Get_WinCount(void) {
     return (s32) D_00299E4E;
 }
 
@@ -539,7 +539,7 @@ typedef struct State_0023C170 {
 } State_0023C170;
 
 
-s32 func_0023C170(s32 arg0) {
+s32 TakuCard_inti(s32 arg0) {
     extern void *D_0034FAE8;
     extern void *D_0034FAEC;
     extern s8 D_0034FAF0;
@@ -551,8 +551,8 @@ s32 func_0023C170(s32 arg0) {
     s16 i;
     s32 *out;
 
-    D_0034FAE8 = func_002145E0(0);
-    D_0034FAEC = func_002145E0(1);
+    D_0034FAE8 = SzData_GetData(0);
+    D_0034FAEC = SzData_GetData(1);
     D_0034FAF0 = 1;
     func_00195108((s32)&D_0034FB00, 0x840);
     D_0034FB00.field30 = 0;
@@ -640,26 +640,26 @@ typedef struct State_0023E610 {
 
 extern struct State_0023E610 D_0034FB00;
 
-s32 func_0023C3F0(s32 arg0) {
+s32 TkMc_Check_Main(s32 arg0) {
     State_0023C3F0 *state = (State_0023C3F0 *)&D_0034FB00;
     s32 var_s1;
 
     var_s1 = 0;
     if (arg0 == 1) {
-        func_0023C170(0);
+        TakuCard_inti(0);
         state->result = 0;
     }
     switch (state->mode) {
     case 0:
     case 14:
     case 11:
-        var_s1 = func_0023CE40(1);
+        var_s1 = TakuSave_card_kansi(1);
         break;
     case 1:
-        var_s1 = func_0023D170(1);
+        var_s1 = TakuSave_card_filename_check(1);
         break;
     case 3:
-        var_s1 = func_0023CE40(1);
+        var_s1 = TakuSave_card_kansi(1);
         break;
     }
     if (arg0 == 1) {
@@ -688,45 +688,45 @@ s32 func_0023C3F0(s32 arg0) {
     return state->result;
 }
 
-s16 func_0023C560(s32 arg0) {
+s16 TkMc_Save_Main(s32 arg0) {
     State_0023C170 *state = (State_0023C170 *)&D_0034FB00;
     s32 result;
 
     result = 0;
     if (arg0 == 1) {
-        func_0023C170(0);
+        TakuCard_inti(0);
         state->field2BE = 0;
     }
     switch (state->field30) {
     case 0:
-        result = func_0023CE40(0);
+        result = TakuSave_card_kansi(0);
         if (result == 2) {
             state->field30 = 0;
         }
         break;
     case 1:
-        result = func_0023D170(0);
+        result = TakuSave_card_filename_check(0);
         break;
     case 2:
-        result = func_0023D400();
+        result = TakuSave_card_file_open();
         break;
     case 3:
-        result = func_0023CE40(0);
+        result = TakuSave_card_kansi(0);
         break;
     case 4:
-        result = func_0023D920();
+        result = TakuSave_make_file();
         break;
     case 5:
-        result = func_0023DE90();
+        result = TakuSave_card_file_kakikomi();
         break;
     case 10:
-        result = func_0023E610();
+        result = TakuSave_card_format();
         break;
     case 15:
-        result = func_0023E6D0();
+        result = TakuSave_card_unformat();
         break;
     case 11:
-        result = func_0023CE40(0);
+        result = TakuSave_card_kansi(0);
         if (state->field2BE == 0xE && arg0 == 2) {
             state->field30 = 0xA;
             state->field34 = 0;
@@ -735,7 +735,7 @@ s16 func_0023C560(s32 arg0) {
         }
         break;
     case 13:
-        result = func_0023CE40(0);
+        result = TakuSave_card_kansi(0);
         if (state->field2BE == 1 && arg0 == 2) {
             state->field30 = 5;
             state->field34 = 0;
@@ -744,7 +744,7 @@ s16 func_0023C560(s32 arg0) {
         }
         break;
     case 14:
-        result = func_0023CE40(0);
+        result = TakuSave_card_kansi(0);
         if (result == 2) {
             result = 0xA;
         }
@@ -783,30 +783,30 @@ typedef struct State_0023C770 {
 
 extern struct State_0023E610 D_0034FB00;
 
-s32 func_0023C770(s32 arg0) {
+s32 TkMc_Load_Main(s32 arg0) {
     State_0023C770 *data = (State_0023C770 *)&D_0034FB00;
     s32 var_s1;
 
     var_s1 = 0;
     if (arg0 == 1) {
-        func_0023C170(0);
+        TakuCard_inti(0);
         data->result = 0;
     }
     switch (data->state) {
     case 0:
-        var_s1 = func_0023F130(arg0);
+        var_s1 = TakuLoad_card_kansi(arg0);
         if (var_s1 == 2) {
             data->state = 0;
         }
         break;
     case 1:
-        var_s1 = func_0023F340();
+        var_s1 = TakuLoad_card_filename_check();
         break;
     case 2:
-        var_s1 = func_0023F5A0();
+        var_s1 = TakuLoad_card_file_open();
         break;
     case 3:
-        var_s1 = func_0023F130(arg0);
+        var_s1 = TakuLoad_card_kansi(arg0);
         if (var_s1 == 2) {
             var_s1 = 0xA;
         }
@@ -846,30 +846,30 @@ typedef struct State_0023C8B0 {
 
 extern struct State_0023E610 D_0034FB00;
 
-s32 func_0023C8B0(s32 arg0) {
+s32 TkMc_Trade_Load_Main(s32 arg0) {
     State_0023C8B0 *state = (State_0023C8B0 *)&D_0034FB00;
     s32 var_s1;
 
     var_s1 = 0;
     if (arg0 == 1) {
-        func_0023C170(0);
+        TakuCard_inti(0);
         state->field2BE = 0;
     }
     switch (state->field30) {
     case 0:
-        var_s1 = func_0023F130(arg0);
+        var_s1 = TakuLoad_card_kansi(arg0);
         if (var_s1 == 2) {
             state->field30 = 0;
         }
         break;
     case 1:
-        var_s1 = func_0023F340();
+        var_s1 = TakuLoad_card_filename_check();
         break;
     case 2:
-        var_s1 = func_0023FF30();
+        var_s1 = TakuCustom_card_file_open();
         break;
     case 3:
-        var_s1 = func_0023F130(arg0);
+        var_s1 = TakuLoad_card_kansi(arg0);
         if (var_s1 == 2) {
             var_s1 = 0xA;
         }
@@ -912,13 +912,13 @@ typedef struct State_0023CA10 {
     s16 field2BE;
 } State_0023CA10;
 
-s16 func_0023CA10(s32 arg0) {
+s16 TkMc_Trade_Save_Main(s32 arg0) {
     State_0023CA10 *state = (State_0023CA10 *)&D_0034FB00;
     s32 result;
 
     result = 0;
     if (arg0 == 1) {
-        if (func_0023C170(1) != 0) {
+        if (TakuCard_inti(1) != 0) {
             state->field58 = 1;
             return 0x600;
         }
@@ -929,31 +929,31 @@ s16 func_0023CA10(s32 arg0) {
     }
     switch (state->field30) {
     case 0:
-        result = func_002406C0(arg0);
+        result = TakuTrade_Save_card_kansi(arg0);
         if (result == 2) {
             state->field30 = 0;
         }
         break;
     case 1:
-        result = func_0023D170(0);
+        result = TakuSave_card_filename_check(0);
         break;
     case 2:
-        result = func_0023D400();
+        result = TakuSave_card_file_open();
         break;
     case 3:
-        result = func_0023CE40(0);
+        result = TakuSave_card_kansi(0);
         break;
     case 4:
-        result = func_0023D920();
+        result = TakuSave_make_file();
         break;
     case 5:
-        result = func_002409E0();
+        result = TakuTrade_Save_card_file_kakikomi_Ver2();
         break;
     case 10:
-        result = func_0023E610();
+        result = TakuSave_card_format();
         break;
     case 11:
-        result = func_002406C0(arg0);
+        result = TakuTrade_Save_card_kansi(arg0);
         if (state->field2BE == 0xE && arg0 == 2) {
             state->field30 = 0xA;
             state->field34 = 0;
@@ -962,7 +962,7 @@ s16 func_0023CA10(s32 arg0) {
         }
         break;
     case 13:
-        result = func_002406C0(arg0);
+        result = TakuTrade_Save_card_kansi(arg0);
         if (state->field2BE == 1 && arg0 == 2) {
             state->field30 = 5;
             state->field34 = 0;
@@ -971,7 +971,7 @@ s16 func_0023CA10(s32 arg0) {
         }
         break;
     case 14:
-        result = func_002406C0(arg0);
+        result = TakuTrade_Save_card_kansi(arg0);
         if (result == 2) {
             result = 0xA;
         }
@@ -1000,32 +1000,32 @@ s16 func_0023CA10(s32 arg0) {
     return state->field2BE;
 }
 
-s16 func_0023CC50(s32 arg0) {
+s16 TkMc_Custom_Main(s32 arg0) {
     extern struct State_0023E610 D_0034FB00;
     u8 *state = (u8 *)&D_0034FB00;
     s32 result;
 
     result = 0;
     if (arg0 == 1) {
-        func_0023C170(0);
+        TakuCard_inti(0);
         *(s16 *)(state + 0x2BE) = 0;
     }
 
     switch (*(s16 *)(state + 0x30)) {
     case 0:
-        result = func_0023FCE0(arg0);
+        result = TakuCustom_card_kansi(arg0);
         if (result == 2) {
             *(s16 *)(state + 0x30) = 0;
         }
         break;
     case 1:
-        result = func_0023F340();
+        result = TakuLoad_card_filename_check();
         break;
     case 2:
-        result = func_0023FF30();
+        result = TakuCustom_card_file_open();
         break;
     case 3:
-        result = func_0023FCE0(arg0);
+        result = TakuCustom_card_kansi(arg0);
         if (result == 2) {
             result = 0xA;
         }
@@ -1090,7 +1090,7 @@ typedef struct State_0023CE40 {
 } State_0023CE40;
 
 
-s32 func_0023CE40(s32 arg0) {
+s32 TakuSave_card_kansi(s32 arg0) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 D_0034FB04;
     extern s32 D_0034FB08;
@@ -1243,7 +1243,7 @@ extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
-s32 func_0023D170(s32 arg0) {
+s32 TakuSave_card_filename_check(s32 arg0) {
     extern struct State_0023E610 D_0034FB00;
     State_0023D170 *s = (State_0023D170 *)&D_0034FB00;
 
@@ -1353,7 +1353,7 @@ extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 extern struct State_0023E610 D_0034FB00;
 
-s32 func_0023D400(void) {
+s32 TakuSave_card_file_open(void) {
     State_0023D400 *p = (State_0023D400 *)&D_0034FB00;
 
     switch (D_0034FB34) {
@@ -1442,7 +1442,7 @@ s32 func_0023D400(void) {
         }
         break;
     case 2:
-        func_0017BB60(0);
+        FlushCache(0);
         p->request = func_00193F38(p->handles[p->slot], (u8 *)0x1E10000 + p->slot * 0x100F0, 0x100F0);
         p->ready = func_00194248(1, &p->command, &p->result);
         if ((p->ready == 1) && (p->command == 5)) {
@@ -1478,7 +1478,7 @@ s32 func_0023D400(void) {
         }
         break;
     case 3:
-        p->request = func_00193D18(p->handles[p->slot]);
+        p->request = sceMcClose(p->handles[p->slot]);
         p->ready = func_00194248(1, &p->command, &p->result);
         if ((p->ready == 1) && (p->command == 3)) {
             switch (p->result) {
@@ -1536,19 +1536,19 @@ typedef struct State_0023D920 {
     u8 buffer[1];
 } State_0023D920;
 
-s32 func_0023E7A0(void);
+s32 card_icon_tukuru(void);
 extern s16 D_0034FB34;
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
-s32 func_0023D920(void) {
+s32 TakuSave_make_file(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023D920 *state = (State_0023D920 *)&D_0034FB00;
     s32 result;
 
     switch (D_0034FB34) {
     case 0:
-        state->result = func_00193CE0(state->port, state->slot, D_0029B100);
+        state->result = sceMcMkdir(state->port, state->slot, D_0029B100);
         state->status = func_00194248(1, &state->command, &state->code);
         if (state->status == 1) {
             if (state->command == 0xB) {
@@ -1621,7 +1621,7 @@ s32 func_0023D920(void) {
         }
         return 0;
     case 2:
-        result = func_0023E7A0();
+        result = card_icon_tukuru();
         if (result == 1) {
             state->retries = 0;
             state->phase = 3;
@@ -1681,7 +1681,7 @@ s32 func_0023D920(void) {
         }
         return 0;
     case 4:
-        state->result = func_00193D18(state->handles[state->port]);
+        state->result = sceMcClose(state->handles[state->port]);
         state->status = func_00194248(1, &state->command, &state->code);
         if (state->status == 1) {
             if (state->command == 3) {
@@ -1764,7 +1764,7 @@ typedef struct Tail_0023DE90 {
     s32 words[0x53];
 } Tail_0023DE90;
 
-s32 func_0023DE90(void) {
+s32 TakuSave_card_file_kakikomi(void) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 *D_0034FAE8;
     extern Header_0023DE90 D_0034FAF0;
@@ -1879,8 +1879,8 @@ s32 func_0023DE90(void) {
         header = &((Buffer_0023DE90 *)0x01E10000)[data->port].header;
         *header = D_0034FAF0;
         *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)var_v0;
-        func_00241190((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
-        func_0017BB60(0);
+        LkCheckData((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
+        FlushCache(0);
         data->ret = func_00194058(data->handles[data->port], &((Buffer_0023DE90 *)0x01E10000)[data->port], 0x100F0);
         data->status = func_00194248(1, &data->command, &data->result);
         if (data->status == 1) {
@@ -1927,7 +1927,7 @@ s32 func_0023DE90(void) {
         return 0;
     }
     case 3:
-        data->ret = func_00194A98(data->handles[data->port]);
+        data->ret = sceMcFlush(data->handles[data->port]);
         data->status = func_00194248(1, &data->command, &data->result);
         if (data->status == 1) {
             if (data->command == 0xA) {
@@ -1960,7 +1960,7 @@ s32 func_0023DE90(void) {
         }
         return 0;
     case 4:
-        data->ret = func_00193D18(data->handles[data->port]);
+        data->ret = sceMcClose(data->handles[data->port]);
         data->status = func_00194248(1, &data->command, &data->result);
         if (data->status == 1) {
             if (data->command == 3) {
@@ -2004,7 +2004,7 @@ extern s32 D_0034FB0C;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
-s32 func_0023E610(void) {
+s32 TakuSave_card_format(void) {
     State_0023E610 *state = &D_0034FB00;
 
     D_0034FB00.result = func_001948A8(D_0034FB08, D_0034FB0C);
@@ -2023,7 +2023,7 @@ s32 func_0023E610(void) {
     return 0;
 }
 
-s32 func_0023E6D0(void) {
+s32 TakuSave_card_unformat(void) {
     State_0023E610 *state = &D_0034FB00;
 
     D_0034FB00.result = func_00194E90(D_0034FB08, D_0034FB0C);
@@ -2045,9 +2045,9 @@ s32 func_0023E6D0(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023E7A0);
+INCLUDE_ASM("asm/nonmatchings/main_068", card_icon_tukuru);
 
-s32 func_0023F130(s32 arg0) {
+s32 TakuLoad_card_kansi(s32 arg0) {
     extern s32 D_0034FB10;
     extern s32 D_0034FB14;
     extern s32 D_0034FB18;
@@ -2171,7 +2171,7 @@ extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
 
-s32 func_0023F340(void) {
+s32 TakuLoad_card_filename_check(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023F340 *state = (State_0023F340 *)&D_0034FB00;
 
@@ -2294,13 +2294,13 @@ typedef struct Tail_0023F5A0 {
     s32 words[0x53];
 } Tail_0023F5A0;
 
-void func_0023FBE0(s32);
+void TakuLoad_Name_Set(s32);
 extern u8 D_0029B1BE[];
 extern s32 *D_0034FAE8;
 extern Header_0023F5A0 D_0034FAF0;
 extern s16 D_0034FB34;
 
-s32 func_0023F5A0(void) {
+s32 TakuLoad_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023F5A0 *state = (State_0023F5A0 *)&D_0034FB00;
     s32 *destination = (s32 *)&D_00299E10;
@@ -2391,7 +2391,7 @@ s32 func_0023F5A0(void) {
         }
         break;
     case 2:
-        func_0017BB60(0);
+        FlushCache(0);
         state->result = func_00193F38(state->handles[state->index], &((Save_0023F5A0 *)0x1E10000)[state->index], 0x100F0);
         state->status = func_00194248(1, &state->command, &state->response);
         if (state->status == 1 && state->command == 5) {
@@ -2427,7 +2427,7 @@ s32 func_0023F5A0(void) {
         }
         break;
     case 3:
-        state->result = func_00193D18(state->handles[state->index]);
+        state->result = sceMcClose(state->handles[state->index]);
         state->status = func_00194248(1, &state->command, &state->response);
         if (state->status == 1 && state->command == 3) {
                 switch (state->response) {
@@ -2455,8 +2455,8 @@ s32 func_0023F5A0(void) {
                     } while (count > 0);
                     D_0034FAF0 = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((Save_0023F5A0 *)0x1E10000)[state->index].tail;
-                    if (func_00241190((u16 *)&((Save_0023F5A0 *)0x1E10000)[state->index]) != 0) {
-                        func_0023FBE0(state->parameter);
+                    if (LkCheckData((u16 *)&((Save_0023F5A0 *)0x1E10000)[state->index]) != 0) {
+                        TakuLoad_Name_Set(state->parameter);
                         return 0x100;
                     }
                     state->state = 3;
@@ -2493,7 +2493,7 @@ s32 func_0023F5A0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_0023FBE0);
+INCLUDE_ASM("asm/nonmatchings/main_068", TakuLoad_Name_Set);
 
 typedef struct State_0023FCE0 {
     s32 field_0;
@@ -2529,7 +2529,7 @@ static inline void reset_0023FCE0(State_0023FCE0 *state, s32 value) {
     state->field_40 = 0;
 }
 
-s32 func_0023FCE0(s32 arg0) {
+s32 TakuCustom_card_kansi(s32 arg0) {
     extern struct State_0023E610 D_0034FB00;
     State_0023FCE0 *state = (State_0023FCE0 *)&D_0034FB00;
     s32 var_v0;
@@ -2627,7 +2627,7 @@ typedef struct State_0023FF30 {
     s16 offset;
 } State_0023FF30;
 
-s32 func_0023FF30(void) {
+s32 TakuCustom_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
     extern void *D_0034FAEC;
     State_0023FF30 *state;
@@ -2721,7 +2721,7 @@ s32 func_0023FF30(void) {
         }
         return 0;
     case 2:
-        func_0017BB60(0);
+        FlushCache(0);
         state->request = func_00193F38(state->handles[state->port], (u8 *)0x01E10000 + state->port * 0x100F0, 0x100F0);
         state->status = func_00194248(1, &state->operation, &state->result);
         if (state->status == 1) {
@@ -2757,7 +2757,7 @@ s32 func_0023FF30(void) {
         }
         return 0;
     case 3:
-        state->request = func_00193D18(state->handles[state->port]);
+        state->request = sceMcClose(state->handles[state->port]);
         state->status = func_00194248(1, &state->operation, &state->result);
         if (state->status == 1) {
             if (state->operation == 3) {
@@ -2788,8 +2788,8 @@ s32 func_0023FF30(void) {
                         }
                         D_0034FAF0 = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                         *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
-                        if (func_00241190((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
-                            func_0023FBE0(state->port);
+                        if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
+                            TakuLoad_Name_Set(state->port);
                             state->ready[state->port] = 1;
                             state->port = 1;
                             return 0x10;
@@ -2820,8 +2820,8 @@ s32 func_0023FF30(void) {
                     }
                     D_0034FAF0 = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
-                    if (func_00241190((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
-                        func_0023FBE0(state->port);
+                    if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
+                        TakuLoad_Name_Set(state->port);
                         state->ready[state->port] = 1;
                         state->port = 1;
                         return 0x100;
@@ -2888,7 +2888,7 @@ extern s32 D_0034FB18;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
-s32 func_002406C0(s32 arg0) {
+s32 TakuTrade_Save_card_kansi(s32 arg0) {
     State_002406C0 *state = (State_002406C0 *)&D_0034FB00;
     s32 ret;
 
@@ -3044,7 +3044,7 @@ typedef struct IOState_002409E0 {
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
-s32 func_002409E0(void) {
+s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
     extern s32 func_00193DD0();
     extern s32 *D_0034FAE8;
     extern struct State_0023E610 D_0034FB00;
@@ -3168,8 +3168,8 @@ s32 func_002409E0(void) {
             dest[1] = second;
             dest += 2;
         } while (count > 0);
-        func_00241190((u16 *)((u8 *)0x01E10000 + io->slot * 0x100F0));
-        func_0017BB60(0);
+        LkCheckData((u16 *)((u8 *)0x01E10000 + io->slot * 0x100F0));
+        FlushCache(0);
         io->call_result = func_00194058(io->handles[io->slot], (u8 *)0x01E10000 + io->slot * 0x100F0, 0x100F0);
         io->sync_result = func_00194248(1, &io->command, &io->result);
         if (io->sync_result == 1) {
@@ -3223,7 +3223,7 @@ s32 func_002409E0(void) {
         }
         return 0;
     case 3:
-        io->call_result = func_00194A98(io->handles[io->slot]);
+        io->call_result = sceMcFlush(io->handles[io->slot]);
         io->sync_result = func_00194248(1, &io->command, &io->result);
         if (io->sync_result == 1) {
             if (io->command == 0xA) {
@@ -3256,7 +3256,7 @@ s32 func_002409E0(void) {
         }
         return 0;
     case 4:
-        io->call_result = func_00193D18(io->handles[io->slot]);
+        io->call_result = sceMcClose(io->handles[io->slot]);
         io->sync_result = func_00194248(1, &io->command, &io->result);
         if (io->sync_result == 1) {
             if (io->command == 3) {
@@ -3302,7 +3302,7 @@ s32 func_002409E0(void) {
     return 0;
 }
 
-s32 func_00241190(u16 *arg0) {
+s32 LkCheckData(u16 *arg0) {
     u16 checksum;
     u16 saved;
     u16 i;
@@ -3338,7 +3338,7 @@ union DotrColorChannels {
 };
 extern struct DotrColorBytes D_0029B2B0;
 
-void func_00241200(float *hls, int r, int g, int b, int max)
+void SzColor_RGB2HLS(float *hls, int r, int g, int b, int max)
 {
     
 
@@ -3388,7 +3388,7 @@ void func_00241200(float *hls, int r, int g, int b, int max)
 #define MIN_002413F0(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_002413F0(a, b) ((a) > (b) ? (a) : (b))
 
-void func_002413F0(u8 *out, u8 value, f32 hue, f32 light, f32 sat) {
+void SzColor_HLS2RGB(u8 *out, u8 value, f32 hue, f32 light, f32 sat) {
     f32 color[3];
     f32 frac;
     s32 max;
@@ -3431,8 +3431,8 @@ typedef struct Vec_00241840 {
     f32 z;
 } Vec_00241840;
 
-void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) {
-    extern void func_00241200(void *, s32, s32, s32, u8);
+void SzColor_RGB2SEP(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) {
+    extern void SzColor_RGB2HLS(void *, s32, s32, s32, u8);
     Vec_00241840 vec;
     s32 flip;
     s32 isSix;
@@ -3451,7 +3451,7 @@ void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) 
     } else {
         isSix = 0;
     }
-    func_00241200(&vec, r, g, b, max);
+    SzColor_RGB2HLS(&vec, r, g, b, max);
     if (mode < 7) {
         arg4 &= 7;
         if (flip) {
@@ -3464,7 +3464,7 @@ void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) 
     } else {
         vec.z = vec.z * scale;
     }
-    func_002413F0(color, max, vec.x, vec.y, vec.z);
+    SzColor_HLS2RGB(color, max, vec.x, vec.y, vec.z);
     if (flip) {
         color[0] = max - color[0];
         color[1] = max - color[1];
@@ -3475,7 +3475,7 @@ void func_00241840(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) 
     color[2] = (color[2] > 1) ? color[2] : 1;
 }
 
-s32 func_00241A00(s32 arg0, s32 arg1, f32 scale) {
+s32 SzColor_CLUT2SEP(s32 arg0, s32 arg1, f32 scale) {
     u8 color[4];
     s32 temp_v1;
 
@@ -3483,7 +3483,7 @@ s32 func_00241A00(s32 arg0, s32 arg1, f32 scale) {
     if (!(temp_v1 & 0xFFFF7FFF)) {
         return arg0;
     }
-    func_00241840(color, temp_v1 & 0x1F, (temp_v1 >> 5) & 0x1F, (temp_v1 >> 0xA) & 0x1F, arg1, 0x1F, scale);
+    SzColor_RGB2SEP(color, temp_v1 & 0x1F, (temp_v1 >> 5) & 0x1F, (temp_v1 >> 0xA) & 0x1F, arg1, 0x1F, scale);
     return (arg0 & 0x8000) | (((color[2] & 0x1F) << 0xA) | ((color[0] & 0x1F) | ((color[1] & 0x1F) << 5)));
 }
 
@@ -3494,7 +3494,7 @@ typedef struct Buffer_00241A90 {
     s32 field_50008;
 } Buffer_00241A90;
 
-void func_00241A90(void *arg0) {
+void readBufCreate(void *arg0) {
     Buffer_00241A90 *buffer = arg0;
 
     buffer->field_50004 = 0;
@@ -3502,7 +3502,7 @@ void func_00241A90(void *arg0) {
     buffer->field_50008 = 0x50000;
 }
 
-void func_00241AC0(void) {
+void readBufDelete(void) {
 
 }
 
@@ -3513,7 +3513,7 @@ typedef struct Header_00241AD0 {
     s32 end;
 } Header_00241AD0;
 
-s32 func_00241AD0(void *arg0, void **arg1) {
+s32 readBufBeginPut(void *arg0, void **arg1) {
     s32 size = ((Header_00241AD0 *)arg0)->end - ((Header_00241AD0 *)arg0)->start;
 
     if (size != 0) {
@@ -3529,7 +3529,7 @@ typedef struct {
     s32 capacity;
 } Buffer_00241B10;
 
-s32 func_00241B10(void *arg0, s32 arg1) {
+s32 readBufEndPut(void *arg0, s32 arg1) {
     Buffer_00241B10 *buffer = arg0;
     s32 capacity;
     s32 available;
@@ -3549,7 +3549,7 @@ typedef struct {
     s32 capacity;
 } Buffer_00241B80;
 
-s32 func_00241B80(void *arg0, void **arg1) {
+s32 readBufBeginGet(void *arg0, void **arg1) {
     Buffer_00241B80 *buffer = arg0;
     s32 count;
     s32 capacity;
@@ -3562,7 +3562,7 @@ s32 func_00241B80(void *arg0, void **arg1) {
     return buffer->count;
 }
 
-s32 func_00241BE0(s32 *arg0, s32 arg1) {
+s32 readBufEndGet(s32 *arg0, s32 arg1) {
     s32 remaining;
 
     remaining = arg0[0x14001];
@@ -3595,10 +3595,10 @@ typedef struct {
 
 
 
-void func_00241C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void func_00184E10(void *, s32, s64, s64, s32, s32);
-    void func_00186470(s32, s32);
-    extern void func_001872F8();
+void clearGsMem(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void sceGsSetDefDrawEnv(void *, s32, s64, s64, s32, s32);
+    void sceDmaSend(s32, s32);
+    extern void sceGifPkInit();
     extern Quad_00241C20 D_0029B2C0;
     extern GifTag_00241C20 D_00350410;
     extern u8 D_00350420[];
@@ -3609,33 +3609,33 @@ void func_00241C20(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 channel;
 
     tag = D_0029B2C0;
-    channel = func_00186120(2);
+    channel = sceDmaGetChan(2);
     *(__int128 *)&D_00350410 = 0;
     D_00350410.nloop = 8;
     D_00350410.eop = 1;
     D_00350410.nreg = 1;
     D_00350410.reg = 14;
-    func_00184E10(D_00350420, 0, (s64)(s16)arg3,
+    sceGsSetDefDrawEnv(D_00350420, 0, (s64)(s16)arg3,
                  (s64)(s16)(((((arg4 >> 1) + 31) >> 5) + ((arg4 + 31) >> 5)) << 6),
                  0, 0);
     *(s64 *)D_00350440 = 0;
-    func_0017BB60(0);
-    func_00185578(0, 0);
-    func_00185100(&D_00350410);
-    func_001872F8(&packet, (__int128 *)data);
-    func_00187308(&packet);
-    func_00187480(&packet, 0, 0, 0);
-    func_00187510(&packet, *(__int128 *)&tag);
-    func_001875D0(&packet, 0, 6);
-    func_001875D0(&packet, 1, ((s64)arg2 << 16) | ((s64)arg0 | ((s64)arg1 << 8)));
-    func_001875D0(&packet, 5, 0);
-    func_001875D0(&packet, 5, ((s64)0xB400 << 16) | 0x2D00);
-    func_00187528(&packet);
-    func_00187318(&packet);
-    func_0017BB60(0);
-    func_00185578(0, 0);
-    func_00186470(channel, packet.size);
-    func_00185578(0, 0);
+    FlushCache(0);
+    sceGsSyncPath(0, 0);
+    sceGsPutDrawEnv(&D_00350410);
+    sceGifPkInit(&packet, (__int128 *)data);
+    sceGifPkReset(&packet);
+    sceGifPkEnd(&packet, 0, 0, 0);
+    sceGifPkOpenGifTag(&packet, *(__int128 *)&tag);
+    sceGifPkAddGsAD(&packet, 0, 6);
+    sceGifPkAddGsAD(&packet, 1, ((s64)arg2 << 16) | ((s64)arg0 | ((s64)arg1 << 8)));
+    sceGifPkAddGsAD(&packet, 5, 0);
+    sceGifPkAddGsAD(&packet, 5, ((s64)0xB400 << 16) | 0x2D00);
+    sceGifPkCloseGifTag(&packet);
+    sceGifPkTerminate(&packet);
+    FlushCache(0);
+    sceGsSyncPath(0, 0);
+    sceDmaSend(channel, packet.size);
+    sceGsSyncPath(0, 0);
 }
 
 typedef struct {
@@ -3645,8 +3645,8 @@ typedef struct {
 extern Tag_00241E80 D_0029B2D0;
 extern Tag_00241E80 D_0029B2E0;
 
-void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void func_001873E8(void *, u64, s32, s32, s32, s32);
+void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void sceGifPkRef(void *, u64, s32, s32, s32, s32);
     u8 spB0[16];
     Tag_00241E80 spC0;
     Tag_00241E80 spD0;
@@ -3663,14 +3663,14 @@ void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     temp_s7 = arg3 >> 4;
     temp_s0 = arg4 >> 4;
     spD0 = D_0029B2E0;
-    func_001872F8(&spB0, (arg0 & 0x0FFFFFFF) | 0x20000000);
-    func_00187308(&spB0);
+    sceGifPkInit(&spB0, (arg0 & 0x0FFFFFFF) | 0x20000000);
+    sceGifPkReset(&spB0);
     if (arg2 == 0) {
-        func_00187370(&spB0, 0, 0, 0);
-        func_00187510(&spB0, *(__int128 *) &spC0);
-        func_001875D0(&spB0, 0x50, 0xC1B00ULL << 0x20);
-        func_001875D0(&spB0, 0x52, 0x10 | (0x10ULL << 0x20));
-        func_00187528(&spB0);
+        sceGifPkCnt(&spB0, 0, 0, 0);
+        sceGifPkOpenGifTag(&spB0, *(__int128 *) &spC0);
+        sceGifPkAddGsAD(&spB0, 0x50, 0xC1B00ULL << 0x20);
+        sceGifPkAddGsAD(&spB0, 0x52, 0x10 | (0x10ULL << 0x20));
+        sceGifPkCloseGifTag(&spB0);
         var_s1 = 0;
         if (var_s1 < temp_s7) {
             var_s5 = 0;
@@ -3680,15 +3680,15 @@ void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
                     var_s3 = 0;
                     rowBits = (u64) (u32) var_s5 << 0x20;
                     do {
-                        func_00187370(&spB0, 0, 0, 0);
-                        func_00187510(&spB0, *(__int128 *) &spC0);
-                        func_001875D0(&spB0, 0x51, rowBits | ((u64) (u32) var_s3 << 0x30));
-                        func_001875D0(&spB0, 0x53, 0);
-                        func_00187528(&spB0);
-                        temp_v0 = func_001874F8(&spB0, 4);
+                        sceGifPkCnt(&spB0, 0, 0, 0);
+                        sceGifPkOpenGifTag(&spB0, *(__int128 *) &spC0);
+                        sceGifPkAddGsAD(&spB0, 0x51, rowBits | ((u64) (u32) var_s3 << 0x30));
+                        sceGifPkAddGsAD(&spB0, 0x53, 0);
+                        sceGifPkCloseGifTag(&spB0);
+                        temp_v0 = sceGifPkReserve(&spB0, 4);
                         temp_v0[0] = 0x40 | (0x08000000ULL << 0x20);
                         temp_v0[1] = 0;
-                        func_001873E8(&spB0, (u64) (u32) arg1 & 0x0FFFFFFF, 0x40, 0, 0, 0);
+                        sceGifPkRef(&spB0, (u64) (u32) arg1 & 0x0FFFFFFF, 0x40, 0, 0, 0);
                         var_s2 += 1;
                         arg1 += 0x400;
                         var_s3 += 0x10;
@@ -3699,50 +3699,50 @@ void func_00241E80(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
             } while (var_s1 < temp_s7);
         }
     }
-    func_00187480(&spB0, 0, 0, 0);
-    func_00187510(&spB0, *(__int128 *) &spD0);
-    func_001875D0(&spB0, 0x3F, 0);
-    func_001875D0(&spB0, 0x14, 0x60);
-    func_001875D0(&spB0, 6, (0xA803ULL << 0x10) | 0x1B00 | (0xAULL << 0x20));
-    func_001875D0(&spB0, 0, 0x116);
-    func_001875D0(&spB0, 3, 0x80008);
-    func_001875D0(&spB0, 5, 0x79006C00);
-    func_001875D0(&spB0, 3, (s64) ((arg3 * 0x10) + 8) | ((s64) ((arg4 * 0x10) + 8) << 0x10));
-    func_001875D0(&spB0, 5, (0x8700ULL << 0x10) | 0x9400);
-    func_00187528(&spB0);
-    func_00187318(&spB0);
+    sceGifPkEnd(&spB0, 0, 0, 0);
+    sceGifPkOpenGifTag(&spB0, *(__int128 *) &spD0);
+    sceGifPkAddGsAD(&spB0, 0x3F, 0);
+    sceGifPkAddGsAD(&spB0, 0x14, 0x60);
+    sceGifPkAddGsAD(&spB0, 6, (0xA803ULL << 0x10) | 0x1B00 | (0xAULL << 0x20));
+    sceGifPkAddGsAD(&spB0, 0, 0x116);
+    sceGifPkAddGsAD(&spB0, 3, 0x80008);
+    sceGifPkAddGsAD(&spB0, 5, 0x79006C00);
+    sceGifPkAddGsAD(&spB0, 3, (s64) ((arg3 * 0x10) + 8) | ((s64) ((arg4 * 0x10) + 8) << 0x10));
+    sceGifPkAddGsAD(&spB0, 5, (0x8700ULL << 0x10) | 0x9400);
+    sceGifPkCloseGifTag(&spB0);
+    sceGifPkTerminate(&spB0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", func_00242190);
+INCLUDE_ASM("asm/nonmatchings/main_068", vblankHandler);
 
-s32 func_002423A0(void) {
+s32 handler_endimage(void) {
     if (D_00350350 != 0) {
-        func_00245960(&D_00350600);
+        voBufDecCount(&D_00350600);
         D_00350350 = 0;
     }
     asm("sync"); asm("ei");
     return 0;
 }
 
-void func_002423F0(s32 arg0) {
+void startDisplay(s32 arg0) {
     do {
-    } while (arg0 == func_001854E0(0));
+    } while (arg0 == sceGsSyncV(0));
     D_003505F8 = 0;
     D_00350340 = 1;
     (&D_00350340)[2] = 0;
 }
 
-void func_00242450(void) {
+void endDisplay(void) {
     D_00350340 = 0;
     D_003505F8 = 0;
 }
 
-void func_00242470(s32 arg0, s32 arg1, s32 arg2) {
+void movie_play(s32 arg0, s32 arg1, s32 arg2) {
     D_0029B2F0 = arg1;
     D_003503B0 = arg2;
-    func_00241C20(0, 0, 0, 0x280, 0x1C0);
-    func_001851E8(D_003503C0, 0, 0x280, 0xE0, 0, 0, 1);
-    func_0017BB60(0);
+    clearGsMem(0, 0, 0, 0x280, 0x1C0);
+    sceGsSetDefDBuff(D_003503C0, 0, 0x280, 0xE0, 0, 0, 1);
+    FlushCache(0);
     D_00350368 = 0x01200000;
     D_00350370 = 0x0152A000;
     D_00350378 = 0x015C3C80;
@@ -3753,5 +3753,5 @@ void func_00242470(s32 arg0, s32 arg1, s32 arg2) {
     D_00350398 = 0x017EA680;
     D_003503A0 = 0x0186A680;
     D_003503A8 = 0x0186E680;
-    func_00242580(arg0);
+    movie(arg0);
 }

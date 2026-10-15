@@ -17,13 +17,13 @@ extern char D_00310C00[];
 
 /* sceTtyInit: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0017D0C0(void) {
-    extern void func_0017CD08(s32, s32, void *);
+s32 sceTtyInit(void) {
+    extern void sceTtyHandler(s32, s32, void *);
     char *snd;
     char *rcv;
 
-    func_0017BB60(0);
-    D_00310A90.s = func_0017CA80(0x210, (s32)&D_00310A90, (s32)func_0017CD08);
+    FlushCache(0);
+    D_00310A90.s = sceDeci2Open(0x210, (s32)&D_00310A90, (s32)sceTtyHandler);
     if (D_00310A90.s < 0) {
         return 0;
     }
@@ -39,11 +39,11 @@ s32 func_0017D0C0(void) {
     snd[7] = 'H';
     *(s16 *)(snd + 2) = 0;
     *(s32 *)(snd + 8) = 0;
-    D_00310A90.q = func_0017CC60(256);
+    D_00310A90.q = QueueInit(256);
     return 1;
 }
 
-s32 func_0017D180(s32 arg0) {
+s32 kputchar(s32 arg0) {
     do {
 
     } while (*(volatile s32 *)0x1000F130 & 0x8000);
@@ -51,37 +51,37 @@ s32 func_0017D180(s32 arg0) {
     return arg0;
 }
 
-void func_0017D1B8(s32 arg0) {
+void deci2Putchar(s32 arg0) {
     s32 i;
 
     if (D_0028CA08 >= 0x7E) {
         D_0028CA08 = 0;
         D_00310D40[0x7F] = 0;
-        func_0017CC38((s32)D_00310D40);
+        kputs((s32)D_00310D40);
     }
     if (arg0 == '\n') {
         i = D_0028CA08;
         D_0028CA08 = 0;
         D_00310D40[i] = arg0;
         D_00310D40[i + 1] = 0;
-        func_0017CC38((s32)D_00310D40);
+        kputs((s32)D_00310D40);
     } else {
         D_00310D40[D_0028CA08++] = arg0;
     }
 }
 
-void func_0017D268(s32 arg0) {
+void serialPutchar(s32 arg0) {
     if (arg0 == 0xA) {
-        func_0017D180(0xD);
-        func_0017D180(0xA);
+        kputchar(0xD);
+        kputchar(0xA);
         return;
     }
-    func_0017D180(arg0);
+    kputchar(arg0);
 }
 
 /* ftoi: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0017D2A0(u64 a) {
+s32 ftoi(u64 a) {
     u64 m = a;
     s64 e;
 
@@ -112,9 +112,9 @@ s32 func_0017D2A0(u64 a) {
     return (s32)m;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017D330);
+INCLUDE_ASM("asm/nonmatchings/main_023", printfloat);
 
-void func_0017D498(char *fmt, u8 *ap) {
+void _printf(char *fmt, u8 *ap) {
     char buf[32];
     char *p;
     char *pad;
@@ -289,7 +289,7 @@ void func_0017D498(char *fmt, u8 *ap) {
             if (f == 0.0f) {
                 D_0028CA0C('0');
             } else {
-                func_0017D330(((s64 (*)(f32))func_001A2370)(f));
+                printfloat(((s64 (*)(f32))func_001A2370)(f));
             }
             break;
         case 's':
@@ -322,51 +322,51 @@ void func_0017D498(char *fmt, u8 *ap) {
     }
 }
 
-s32 func_0017DA60(const char *arg0, ...) {
-    return ((s32 (*)(const char *, void *))func_0017D498)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
+s32 kprintf(const char *arg0, ...) {
+    return ((s32 (*)(const char *, void *))_printf)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
 }
 
-s32 func_0017DA98(const char *arg0, ...) {
+s32 scePrintf(const char *arg0, ...) {
     void (*old)(s32);
     s32 r;
 
     old = D_0028CA0C;
-    D_0028CA0C = func_0017D1B8;
-    r = ((s32 (*)(const char *, void *))func_0017D498)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
+    D_0028CA0C = deci2Putchar;
+    r = ((s32 (*)(const char *, void *))_printf)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
     D_0028CA0C = old;
     return r;
 }
 
-void func_0017DAF8(s32 *arg0, s32 *arg1) {
+void _set_sreg(s32 *arg0, s32 *arg1) {
     ((s32 **) arg1)[7][arg0[4]] = arg0[5];
 }
 
-void func_0017DB18(void *arg0, void *arg1) {
+void _change_addr(void *arg0, void *arg1) {
     (*(s32 *)((u8 *)arg1 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0x10));
 }
 
-s32 func_0017DB28(s32 arg0) {
+s32 sceSifGetSreg(s32 arg0) {
     return (&D_00310FC0)[arg0];
 }
 
-s32 func_0017DB40(s32 arg0, s32 arg1) {
+s32 sceSifSetSreg(s32 arg0, s32 arg1) {
     (&D_00310FC0)[arg0] = arg1;
     return arg1;
 }
 
-s32 *func_0017DB60(void) {
+s32 *sceSifGetDataTable(void) {
     return &D_00310E98;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017DB70);
+INCLUDE_ASM("asm/nonmatchings/main_023", sceSifInitCmd);
 
-void func_0017DDF0(void) {
+void sceSifExitCmd(void) {
     func_0017C490(5);
-    func_0017B610(5, D_00310E94);
+    RemoveDmacHandler(5, D_00310E94);
     D_0028CA10 = 0;
 }
 
-s32 func_0017DE28(s32 arg0, s32 arg1) {
+s32 sceSifSetCmdBuffer(s32 arg0, s32 arg1) {
     s32 *p = (s32 *)&D_00310E98;
     s32 old = p[5];
     p[5] = arg0;
@@ -374,7 +374,7 @@ s32 func_0017DE28(s32 arg0, s32 arg1) {
     return old;
 }
 
-s32 func_0017DE40(s32 arg0, s32 arg1) {
+s32 sceSifSetSysCmdBuffer(s32 arg0, s32 arg1) {
     s32 *p = (s32 *)&D_00310E98;
     s32 old = p[3];
     p[3] = arg0;
@@ -382,7 +382,7 @@ s32 func_0017DE40(s32 arg0, s32 arg1) {
     return old;
 }
 
-s32 func_0017DE58(s32 cid, s32 *f, s32 data) {
+s32 sceSifAddCmdHandler(s32 cid, s32 *f, s32 data) {
     if (cid < 0) {
         D_00310EA4[cid].func = f;
         D_00310EA4[cid].data = (void *)data;
@@ -392,7 +392,7 @@ s32 func_0017DE58(s32 cid, s32 *f, s32 data) {
     }
 }
 
-s32 func_0017DE88(s32 cid) {
+s32 sceSifRemoveCmdHandler(s32 cid) {
     if (cid < 0) {
         D_00310EA4[cid].func = 0;
     } else {
@@ -402,7 +402,7 @@ s32 func_0017DE88(s32 cid) {
 
 /* _sceSifSendCmd: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0017DEB0(s32 cid, s32 mode, s32 pkt, s32 pktsize, s32 src, s32 dest, s32 size) {
+s32 _sceSifSendCmd(s32 cid, s32 mode, s32 pkt, s32 pktsize, s32 src, s32 dest, s32 size) {
     extern s32 D_00310EA0;
     sceSifDmaData dmat[2];
     SifCmdHeader *header;
@@ -437,17 +437,17 @@ s32 func_0017DEB0(s32 cid, s32 mode, s32 pkt, s32 pktsize, s32 src, s32 dest, s3
     count++;
     func_0017E190((s32 *)pkt, pktsize);
     if (mode & 1) {
-        return ((s32 (*)(sceSifDmaData *, s32))func_0017BCB0)(dmat, count);
+        return ((s32 (*)(sceSifDmaData *, s32))isceSifSetDma)(dmat, count);
     }
-    return func_0017BCA0((s32 *)dmat, count);
+    return sceSifSetDma((s32 *)dmat, count);
 }
 
-s32 func_0017DFE8(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    return func_0017DEB0(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5);
+s32 sceSifSendCmd(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    return _sceSifSendCmd(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5);
 }
 
-s32 func_0017E028(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    return func_0017DEB0(arg0, 1, (s32)arg1, arg2, arg3, arg4, arg5);
+s32 isceSifSendCmd(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    return _sceSifSendCmd(arg0, 1, (s32)arg1, arg2, arg3, arg4, arg5);
 }
 
 /* _sceSifCmdIntrHdlr: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/sifcmd.c; see THIRD_PARTY_NOTICES.md) */
@@ -490,7 +490,7 @@ s32 func_0017E068(s32 ch) {
         "	bnez	$4,_func_0017E068_0017E0C8\n"
         "	nop\n"
         "_func_0017E068_0017E0E4:\n"
-        "	jal	func_0017BCD0\n"
+        "	jal	isceSifSetDChain\n"
         "	nop\n"
         "	lw	$3,0x8($29)\n"
         "	bgez	$3,_func_0017E068_0017E140\n"
@@ -598,14 +598,14 @@ INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E23C);
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E240);
 
-void func_0017E3E0(void) {
-    func_0017DDF0();
+void sceSifExitRpc(void) {
+    sceSifExitCmd();
     D_0028CA18 = 0;
 }
 
 /* _sceRpcGetPacket: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void *func_0017E408(s32 *data) {
+void *_sceRpcGetPacket(s32 *data) {
     SifRpcData *rd = (SifRpcData *)data;
     SifRpcPkt *p;
     s32 i;
@@ -634,12 +634,12 @@ void *func_0017E408(s32 *data) {
     return 0;
 }
 
-void func_0017E4B0(void *arg0) {
+void _sceRpcFreePacket(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x18)) = 0;
     (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) ((*(s32 *)((u8 *)arg0 + 0x10)) & 0xFFFFFFFE);
 }
 
-void *func_0017E4D0(s32 arg0) {
+void *_sceRpcGetFPacket(s32 arg0) {
     u8 *q;
     s32 i;
     u8 *r;
@@ -651,11 +651,11 @@ void *func_0017E4D0(s32 arg0) {
     return r;
 }
 
-void *func_0017E500(void *arg0, s32 arg1) {
+void *_sceRpcGetFPacket2(void *arg0, s32 arg1) {
     void *r;
 
     if (arg1 < 0 || arg1 >= *(s32 *)((u8 *)arg0 + 0x20)) {
-        r = func_0017E4D0((s32)arg0);
+        r = _sceRpcGetFPacket((s32)arg0);
     } else {
         r = *(u8 **)((u8 *)arg0 + 0x1C) + arg1 * 0x40;
     }
@@ -664,7 +664,7 @@ void *func_0017E500(void *arg0, s32 arg1) {
 
 /* _request_end: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0017E540(void *pkt, void *data) {
+void _request_end(void *pkt, void *data) {
     SifRpcRendPkt *rend = pkt;
     sceSifRpcClientData *c;
     sceSifEndFunc fn;
@@ -688,31 +688,31 @@ void func_0017E540(void *pkt, void *data) {
     }
     c = rend->client;
     if (c->sema >= 0) {
-        func_0017B910(c->sema);
+        iSignalSema(c->sema);
     }
-    func_0017E4B0(c->pkt);
+    _sceRpcFreePacket(c->pkt);
     c->pkt = 0;
 }
 
-void func_0017E5F8(void *arg0, s32 arg1) {
+void _request_rdata(void *arg0, s32 arg1) {
     void *temp_v0;
     s32 a;
     s32 b;
 
-    temp_v0 = func_0017E4D0(arg1);
+    temp_v0 = _sceRpcGetFPacket(arg1);
     a = *(s32 *)((u8 *)arg0 + 0x14);
     b = *(s32 *)((u8 *)arg0 + 0x1C);
     (*(s32 *)((u8 *)temp_v0 + 0x14)) = a;
     (*(s32 *)((u8 *)temp_v0 + 0x1C)) = b;
     (*(s32 *)((u8 *)temp_v0 + 0x20)) = 0x8000000C;
-    func_0017E028(0x80000008, temp_v0, 0x40, (*(s32 *)((u8 *)arg0 + 0x20)), (*(s32 *)((u8 *)arg0 + 0x24)), (*(s32 *)((u8 *)arg0 + 0x28)));
+    isceSifSendCmd(0x80000008, temp_v0, 0x40, (*(s32 *)((u8 *)arg0 + 0x20)), (*(s32 *)((u8 *)arg0 + 0x24)), (*(s32 *)((u8 *)arg0 + 0x28)));
 }
 
-s32 func_0017E658(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 sceSifGetOtherData(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 sp0[8];
     void *p;
 
-    p = func_0017E408(&D_00312840);
+    p = _sceRpcGetPacket(&D_00312840);
     if (p == NULL) {
         return -1;
     }
@@ -726,23 +726,23 @@ s32 func_0017E658(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (!(arg4 & 1)) {
         sp0[1] = 1;
         sp0[2] = 0;
-        (*(s32 *)((u8 *)arg0 + 8)) = func_0017B8E0(sp0);
+        (*(s32 *)((u8 *)arg0 + 8)) = CreateSema(sp0);
         if ((*(s32 *)((u8 *)arg0 + 8)) < 0) {
-            func_0017E4B0(p);
+            _sceRpcFreePacket(p);
             return -3;
         }
-        if (func_0017DFE8(0x8000000C, p, 0x40, 0, 0, 0) == 0) {
-            func_0017E4B0(p);
-            func_0017B8F0((*(s32 *)((u8 *)arg0 + 8)));
+        if (sceSifSendCmd(0x8000000C, p, 0x40, 0, 0, 0) == 0) {
+            _sceRpcFreePacket(p);
+            DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
             return -2;
         }
-        func_0017B920((*(s32 *)((u8 *)arg0 + 8)));
-        func_0017B8F0((*(s32 *)((u8 *)arg0 + 8)));
+        WaitSema((*(s32 *)((u8 *)arg0 + 8)));
+        DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
         return 0;
     }
     (*(s32 *)((u8 *)arg0 + 8)) = -1;
-    if (func_0017DFE8(0x8000000C, p, 0x40, 0, 0, 0) == 0) {
-        func_0017E4B0(p);
+    if (sceSifSendCmd(0x8000000C, p, 0x40, 0, 0, 0) == 0) {
+        _sceRpcFreePacket(p);
         return -2;
     }
     return 0;
@@ -761,7 +761,7 @@ typedef struct SifQ_0017E7B0 {
     struct SifQ_0017E7B0 *next;
 } SifQ_0017E7B0;
 
-void *func_0017E7B0(s32 arg0, s32 arg1) {
+void *_search_svdata(s32 arg0, s32 arg1) {
     SifSrv_0017E7B0 *server;
     SifQ_0017E7B0 *queue;
 
@@ -779,17 +779,17 @@ void *func_0017E7B0(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-void func_0017E800(void *arg0, s32 arg1) {
+void _request_bind(void *arg0, s32 arg1) {
     s32 hl0;
     void *temp_v0;
     void *temp_v0_2;
 
-    temp_v0 = func_0017E4D0(arg1);
+    temp_v0 = _sceRpcGetFPacket(arg1);
     hl0 = (s32) (*(s32 *)((u8 *)arg0 + 0x14));
     (*(s32 *)((u8 *)temp_v0 + 0x1C)) = (s32) (*(s32 *)((u8 *)arg0 + 0x1C));
     (*(s32 *)((u8 *)temp_v0 + 0x14)) = hl0;
     (*(s32 *)((u8 *)temp_v0 + 0x20)) = 0x80000009;
-    temp_v0_2 = func_0017E7B0((*(s32 *)((u8 *)arg0 + 0x20)), arg1);
+    temp_v0_2 = _search_svdata((*(s32 *)((u8 *)arg0 + 0x20)), arg1);
     if (temp_v0_2 == NULL) {
         (*(void **)((u8 *)temp_v0 + 0x24)) = NULL;
         (*(s32 *)((u8 *)temp_v0 + 0x28)) = 0;
@@ -799,16 +799,16 @@ void func_0017E800(void *arg0, s32 arg1) {
         (*(s32 *)((u8 *)temp_v0 + 0x28)) = (s32) (*(s64 *)((u8 *)temp_v0_2 + 8));
         (*(s32 *)((u8 *)temp_v0 + 0x2C)) = (s32) (*(s32 *)((u8 *)temp_v0_2 + 0x14));
     }
-    func_0017E028(0x80000008, temp_v0, 0x40, 0, 0, 0);
+    isceSifSendCmd(0x80000008, temp_v0, 0x40, 0, 0, 0);
 }
 
-s32 func_0017E8B0(void *arg0, s32 arg1, s32 arg4) {
+s32 sceSifBindRpc(void *arg0, s32 arg1, s32 arg4) {
     s32 sp0[8];
     void *p;
 
     (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
     (*(s32 *)((u8 *)arg0 + 0x24)) = 0;
-    p = func_0017E408(&D_00312840);
+    p = _sceRpcGetPacket(&D_00312840);
     if (p == NULL) {
         return -1;
     }
@@ -820,23 +820,23 @@ s32 func_0017E8B0(void *arg0, s32 arg1, s32 arg4) {
     if (!(arg4 & 1)) {
         sp0[1] = 1;
         sp0[2] = 0;
-        (*(s32 *)((u8 *)arg0 + 8)) = func_0017B8E0(sp0);
+        (*(s32 *)((u8 *)arg0 + 8)) = CreateSema(sp0);
         if ((*(s32 *)((u8 *)arg0 + 8)) < 0) {
-            func_0017E4B0(p);
+            _sceRpcFreePacket(p);
             return -3;
         }
-        if (func_0017DFE8(0x80000009, p, 0x40, 0, 0, 0) == 0) {
-            func_0017E4B0(p);
-            func_0017B8F0((*(s32 *)((u8 *)arg0 + 8)));
+        if (sceSifSendCmd(0x80000009, p, 0x40, 0, 0, 0) == 0) {
+            _sceRpcFreePacket(p);
+            DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
             return -2;
         }
-        func_0017B920((*(s32 *)((u8 *)arg0 + 8)));
-        func_0017B8F0((*(s32 *)((u8 *)arg0 + 8)));
+        WaitSema((*(s32 *)((u8 *)arg0 + 8)));
+        DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
         return 0;
     }
     (*(s32 *)((u8 *)arg0 + 8)) = -1;
-    if (func_0017DFE8(0x80000009, p, 0x40, 0, 0, 0) == 0) {
-        func_0017E4B0(p);
+    if (sceSifSendCmd(0x80000009, p, 0x40, 0, 0, 0) == 0) {
+        _sceRpcFreePacket(p);
         return -2;
     }
     return 0;
@@ -844,7 +844,7 @@ s32 func_0017E8B0(void *arg0, s32 arg1, s32 arg4) {
 
 /* _request_call: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0017E9F0(void *pkt, void *data) {
+void _request_call(void *pkt, void *data) {
     s32 *req = pkt;
     s32 *sd = (s32 *)req[13];
     s32 *q = (s32 *)sd[16];
@@ -873,12 +873,12 @@ void func_0017E9F0(void *pkt, void *data) {
     if (q[1] != 0) {
         return;
     }
-    func_0017C8D0(q[0]);
+    iWakeupThread(q[0]);
 }
 
 /* sceSifCallRpc: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0017EA80(s32 *client, s32 rpc_number, s32 mode, s32 *sendbuf, s32 ssize, s32 *recvbuf, s32 rsize,
+s32 sceSifCallRpc(s32 *client, s32 rpc_number, s32 mode, s32 *sendbuf, s32 ssize, s32 *recvbuf, s32 rsize,
                   s32 end_func, s32 end_param) {
     sceSifRpcClientData *cd = (sceSifRpcClientData *)client;
     volatile s32 *vc = (volatile s32 *)cd;
@@ -886,7 +886,7 @@ s32 func_0017EA80(s32 *client, s32 rpc_number, s32 mode, s32 *sendbuf, s32 ssize
     struct SemaParam buf;
     s32 pid;
 
-    pkt = func_0017E408(&D_00312840);
+    pkt = _sceRpcGetPacket(&D_00312840);
     if (pkt == 0) {
         return -1;
     }
@@ -921,31 +921,31 @@ s32 func_0017EA80(s32 *client, s32 rpc_number, s32 mode, s32 *sendbuf, s32 ssize
             pkt[12] = 1;
         }
         cd->sema = -1;
-        if (func_0017DFE8(0x8000000A, pkt, 0x40, (s32)sendbuf, cd->buff, ssize) != 0) {
+        if (sceSifSendCmd(0x8000000A, pkt, 0x40, (s32)sendbuf, cd->buff, ssize) != 0) {
             return 0;
         }
-        func_0017E4B0(pkt);
+        _sceRpcFreePacket(pkt);
         return -2;
     }
     buf.maxCount = 1;
     buf.initCount = 0;
-    cd->sema = func_0017B8E0(&buf);
+    cd->sema = CreateSema(&buf);
     if (cd->sema < 0) {
-        func_0017E4B0(pkt);
+        _sceRpcFreePacket(pkt);
         return -3;
     }
     pkt[12] = 1;
-    if (func_0017DFE8(0x8000000A, pkt, 0x40, (s32)sendbuf, cd->buff, ssize) == 0) {
-        func_0017B8F0(cd->sema);
-        func_0017E4B0(pkt);
+    if (sceSifSendCmd(0x8000000A, pkt, 0x40, (s32)sendbuf, cd->buff, ssize) == 0) {
+        DeleteSema(cd->sema);
+        _sceRpcFreePacket(pkt);
         return -2;
     }
-    func_0017B920(cd->sema);
-    func_0017B8F0(cd->sema);
+    WaitSema(cd->sema);
+    DeleteSema(cd->sema);
     return 0;
 }
 
-s32 func_0017EC70(void *arg0) {
+s32 sceSifCheckStatRpc(void *arg0) {
     void *temp_a1;
 
     temp_a1 = (*(void **)arg0);
@@ -955,7 +955,7 @@ s32 func_0017EC70(void *arg0) {
     return 1;
 }
 
-void func_0017ECB0(void *arg0, s32 arg1) {
+void sceSifSetRpcQueue(void *arg0, s32 arg1) {
     u8 *b_D_00312840;
     void *temp_v0;
     void *var_a0;
@@ -1019,7 +1019,7 @@ void func_0017ED48(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     func_00184428();
 }
 
-void *func_0017EE18(void *arg0, void *arg1) {
+void *sceSifRemoveRpc(void *arg0, void *arg1) {
     void *p;
     void *n;
 
@@ -1046,7 +1046,7 @@ typedef struct SifRpcNode_0017EEB0 {
     struct SifRpcNode_0017EEB0 *next;
 } SifRpcNode_0017EEB0;
 
-void *func_0017EEB0(void *arg0) {
+void *sceSifRemoveRpcQueue(void *arg0) {
     SifRpcNode_0017EEB0 *sd = arg0;
     SifRpcNode_0017EEB0 *p;
     u8 *q;
@@ -1069,7 +1069,7 @@ void *func_0017EEB0(void *arg0) {
     return p;
 }
 
-void *func_0017EF40(void *arg0) {
+void *sceSifGetNextRequest(void *arg0) {
     void *temp_s1;
 
     func_001843E0();
@@ -1086,7 +1086,7 @@ void *func_0017EF40(void *arg0) {
 
 /* sceSifExecRequest: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0017EF98(void *data) {
+void sceSifExecRequest(void *data) {
     sceSifServeData *sd = data;
     s32 size = 0;
     void *rec;
@@ -1108,15 +1108,15 @@ void func_0017EF98(void *data) {
     }
     func_001843E0();
     if (sd->rid & 4) {
-        pkt = func_0017E500(&D_00312840, sd->rid >> 16);
+        pkt = _sceRpcGetFPacket2(&D_00312840, sd->rid >> 16);
     } else {
-        pkt = func_0017E4D0((s32)&D_00312840);
+        pkt = _sceRpcGetFPacket((s32)&D_00312840);
     }
     func_00184428();
     pkt->cid = 0x8000000A;
     pkt->client = sd->client;
     if (sd->rmode != 0) {
-        while (func_0017DFE8(0x80000008, pkt, 0x40, (s32)rec, (s32)sd->receive, size) == 0) {
+        while (sceSifSendCmd(0x80000008, pkt, 0x40, (s32)rec, (s32)sd->receive, size) == 0) {
             ;
         }
         return;
@@ -1137,7 +1137,7 @@ void func_0017EF98(void *data) {
     dmat[i].u.attr = 0;
     i++;
     do {
-        r = func_0017BCA0((s32 *)dmat, i);
+        r = sceSifSetDma((s32 *)dmat, i);
         if (r != 0) {
             break;
         }
@@ -1147,14 +1147,14 @@ void func_0017EF98(void *data) {
     } while (r == 0);
 }
 
-void func_0017F160(void *arg0) {
+void sceSifRpcLoop(void *arg0) {
     void *sd;
 
     while (1) {
-        while ((sd = func_0017EF40(arg0)) != NULL) {
-            func_0017EF98(sd);
+        while ((sd = sceSifGetNextRequest(arg0)) != NULL) {
+            sceSifExecRequest(sd);
         }
-        func_0017B800();
+        SleepThread();
     }
 }
 
@@ -1164,8 +1164,8 @@ void func_0017F1A0(void) {
         sp0[2] = 1;
         sp0[1] = 1;
         sp0[5] = 0;
-        D_0028CAA8 = func_0017B8E0(sp0);
-        D_0028CAAC = func_0017B8E0(sp0);
+        D_0028CAA8 = CreateSema(sp0);
+        D_0028CAAC = CreateSema(sp0);
     }
 }
 
@@ -1176,17 +1176,17 @@ void *func_0017F200(void) {
     char *end;
 
     func_0017F1A0();
-    ((s32 (*)(s32))func_0017B920)(D_0028CAA8);
+    ((s32 (*)(s32))WaitSema)(D_0028CAA8);
     p = D_00313980;
     end = p + 0x200;
     while (p < end) {
         if (*(s32 *)(p + 4) == 0) {
             *(s32 *)(p + 4) = 0x10000000;
-            ((s32 (*)(s32))func_0017B900)(D_0028CAA8);
+            ((s32 (*)(s32))SignalSema)(D_0028CAA8);
             return p;
         }
         p += 0x10;
     }
-    ((s32 (*)(s32))func_0017B900)(D_0028CAA8);
+    ((s32 (*)(s32))SignalSema)(D_0028CAA8);
     return 0;
 }

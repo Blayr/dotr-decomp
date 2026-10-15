@@ -1,6 +1,6 @@
 #include "common.h"
 
-s32 func_00245150(void *arg0) {
+s32 videoDecGetState(void *arg0) {
     return *(s32 *)((u8 *)arg0 + 0xA8);
 }
 
@@ -13,14 +13,14 @@ typedef struct Values_00245160 {
 
 extern u8 D_003506C8[];
 
-void func_00245160(void *arg0, s64 arg1, s64 arg2, s32 arg3, s32 arg4) {
+void videoDecPutTs(void *arg0, s64 arg1, s64 arg2, s32 arg3, s32 arg4) {
     Values_00245160 values;
 
     values.first = arg1;
     values.second = arg2;
     values.offset = arg3 - *(s32 *)((u8 *)arg0 + 0x48);
     values.fourth = arg4;
-    func_00244CB0(D_003506C8, &values);
+    viBufPutTs(D_003506C8, &values);
 }
 
 typedef struct {
@@ -36,7 +36,7 @@ typedef struct {
 extern Flt_002451A0 D_0029B300;
 extern u8 D_003506C8[];
 
-s32 func_002451A0(void *arg0) {
+s32 videoDecFlush(void *arg0) {
     Obj_002451A0 *p = (Obj_002451A0 *)arg0;
     s32 sp2C;
     s32 sp30;
@@ -45,34 +45,34 @@ s32 func_002451A0(void *arg0) {
     s32 sp3C;
 
     sp34 = D_0029B300;
-    func_002440F0(p->unk48, &sp2C, &sp38, &sp30, &sp3C);
+    viBufBeginPut(p->unk48, &sp2C, &sp38, &sp30, &sp3C);
     if ((sp38 + sp3C) < 4) {
         return 0;
     }
-    func_002441F0(D_003506C8, func_00245630((sp2C & 0xFFFFFFF) | 0x20000000, sp38, (sp30 & 0xFFFFFFF) | 0x20000000, sp3C, &sp34, 4, 0, 0));
-    func_00244B20(p->unk48);
+    viBufEndPut(D_003506C8, cpy2area((sp2C & 0xFFFFFFF) | 0x20000000, sp38, (sp30 & 0xFFFFFFF) | 0x20000000, sp3C, &sp34, 4, 0, 0));
+    viBufFlush(p->unk48);
     if (p->unkA8 == 0) {
         p->unkA8 = 2;
     }
     return 1;
 }
 
-s32 func_00245280(void *arg0) {
+s32 videoDecIsFlushed(void *arg0) {
     s32 result;
 
     result = 0;
-    if (func_00244AD0((u8 *)arg0 + 0x48) == 0) {
-        if (func_0018EE68(arg0) != 0) {
+    if (viBufCount((u8 *)arg0 + 0x48) == 0) {
+        if (sceMpegIsRefBuffEmpty(arg0) != 0) {
             result = 1;
         }
     }
     return result;
 }
 
-void func_002452E0(void *arg0) {
-    func_00243F60((u8 *)arg0 + 0x48);
-    func_002457D0(D_00350600);
-    func_00245340(arg0);
+void videoDecMain(void *arg0) {
+    viBufReset((u8 *)arg0 + 0x48);
+    voBufReset(D_00350600);
+    decBs0(arg0);
     do {
 
     } while (D_0035060C != 0);
@@ -107,7 +107,7 @@ extern int func_0018EE78_b(struct DotrSoundVideoDec *dec);
 extern void func_00242CF0_b(DotrSoundAddress text);
 extern void func_00241E80_b(unsigned int *tags, void *image, int index, int w, int h);
 
-int func_00245340(void *dec_v)
+int decBs0(void *dec_v)
 {
     struct DotrSoundVideoDec * dec = dec_v;
     int ret;
@@ -117,16 +117,16 @@ int func_00245340(void *dec_v)
     int h;
 
     ret = 1;
-    while (func_0018EE58(dec) == 0) {
+    while (sceMpegIsEnd(dec) == 0) {
         if (dec->state == 1) {
             ret = -1;
             func_00199B50_b(D_0030F8B0);
             break;
         }
-        while ((data = func_00245890(&D_00350600_b)) == 0) {
-            func_00242900();
+        while ((data = voBufGetData(&D_00350600_b)) == 0) {
+            switchThread();
         }
-        if (func_0018ED40(dec, data, 0x654) < 0) {
+        if (sceMpegGetPicture(dec, data, 0x654) < 0) {
             func_00242CF0_b((DotrSoundAddress)D_0030F8C8);
         }
         if (dec->frame_count == 0) {
@@ -137,31 +137,31 @@ int func_00245340(void *dec_v)
                 func_00241E80_b(D_00350600_b.items[i].tags[1], D_00350600_b.images[i], 1, w, h);
             }
         }
-        func_00245800(&D_00350600_b);
-        func_00242900();
+        voBufIncCount(&D_00350600_b);
+        switchThread();
     }
     func_0018EE78_b(dec);
     return ret;
 }
 
-s32 func_00245520(void *arg0, void *arg1) {
+s32 mpegError(void *arg0, void *arg1) {
     func_00199B50(&D_0030F8E9, *(s32 *)((u8 *)arg1 + 4));
     return 1;
 }
 
-s32 func_00245550(void) {
-    func_00242900();
-    func_00244250(D_003506C8);
+s32 mpegNodata(void) {
+    switchThread();
+    viBufAddDMA(D_003506C8);
     return 1;
 }
 
-s32 func_00245580(void) {
-    func_00244530(D_003506C8);
+s32 mpegStopDMA(void) {
+    viBufStopDMA(D_003506C8);
     return 1;
 }
 
-s32 func_002455B0(void) {
-    func_00244680(D_003506C8);
+s32 mpegRestartDMA(void) {
+    viBufRestartDMA(D_003506C8);
     return 1;
 }
 
@@ -171,18 +171,18 @@ typedef struct Entry_002455E0 {
     s32 size;
 } Entry_002455E0;
 
-s32 func_00244DE0(u8 *, void *);
+s32 viBufGetTs(u8 *, void *);
 
-s32 func_002455E0(s32 arg0, void *arg1) {
+s32 mpegTS(s32 arg0, void *arg1) {
     Entry_002455E0 entry;
 
-    func_00244DE0(D_003506C8, &entry);
+    viBufGetTs(D_003506C8, &entry);
     *(s64 *)((u8 *)arg1 + 8) = entry.values[0];
     *(s64 *)((u8 *)arg1 + 0x10) = entry.values[1];
     return 1;
 }
 
-s32 func_00245630(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+s32 cpy2area(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                   void *arg4, s32 arg5, s32 arg6, s32 arg7) {
     s32 temp_fp;
     s32 temp_s0;
@@ -217,7 +217,7 @@ typedef struct State_00245770 {
     s32 count;
 } State_00245770;
 
-void func_00245770(void *arg0, s32 arg1, void *arg2, s32 arg3) {
+void voBufCreate(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     State_00245770 *state = arg0;
     s32 *temp_a2;
     s32 var_t0;
@@ -233,11 +233,11 @@ void func_00245770(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     }
 }
 
-void func_002457C0(void) {
+void voBufDelete(void) {
 
 }
 
-void func_002457D0(void *arg0) {
+void voBufReset(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0xC) = 0;
     *(s32 *)((u8 *)arg0 + 0x8) = 0;
 }
@@ -248,7 +248,7 @@ typedef struct {
     s32 field_10;
 } Fields_002457E0;
 
-s32 func_002457E0(void *arg0) {
+s32 voBufIsFull(void *arg0) {
     return ((Fields_002457E0 *)arg0)->field_C == ((Fields_002457E0 *)arg0)->field_10;
 }
 
@@ -261,7 +261,7 @@ typedef struct {
 } Queue_00245800;
 
 
-void func_00245800(void *arg0) {
+void voBufIncCount(void *arg0) {
     Queue_00245800 *queue = (Queue_00245800 *)arg0;
 
     func_001843E0();
@@ -285,7 +285,7 @@ static inline u8 empty_00245890(void *arg0) {
     return state->current == state->end;
 }
 
-s32 func_00245890(void *arg0) {
+s32 voBufGetData(void *arg0) {
     State_00245890 *state = arg0;
 
     if (empty_00245890(state)) {
@@ -306,7 +306,7 @@ static inline u8 is_empty_002458E0(void *arg0) {
     return ((Buffer_002458E0 *)arg0)->count == 0;
 }
 
-s32 func_002458E0(void *arg0) {
+s32 voBufGetTag(void *arg0) {
     s32 capacity;
     Buffer_002458E0 *buffer = arg0;
 
@@ -322,7 +322,7 @@ typedef struct Counter_00245960 {
     volatile s32 count;
 } Counter_00245960;
 
-void func_00245960(void *arg0) {
+void voBufDecCount(void *arg0) {
     Counter_00245960 *counter = arg0;
 
     if (counter->count > 0) {
@@ -339,7 +339,7 @@ typedef struct Quad_00245980 {
 
 extern Quad_00245980 **D_0029D488[];
 
-void func_00245980(s32 arg0, s32 arg1, void *arg2) {
+void ShAnime_GetPartsRect(s32 arg0, s32 arg1, void *arg2) {
     *(Quad_00245980 *)arg2 = (*D_0029D488[(u8)arg0])[(u8)arg1];
 }
 
@@ -347,7 +347,7 @@ typedef struct Name_002459D0 {
     u8 text[8];
 } Name_002459D0;
 
-void func_002459D0(u8 arg0, u8 arg1, void *arg2) {
+void ShAnime_GetPatInfo(u8 arg0, u8 arg1, void *arg2) {
     *(Name_002459D0 *)arg2 = ((Name_002459D0 **)D_0029D488[arg0])[1][arg1];
 }
 
@@ -364,7 +364,7 @@ typedef struct Data_00245A30 {
     Record_00245A30 *records;
 } Data_00245A30;
 
-void func_00245A30(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+void ShAnime_GetFixInfo(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     extern struct Quad_00245980 **D_0029D488[];
     u8 var_a1;
     u8 temp_a0;
@@ -403,7 +403,7 @@ typedef struct Data_00245AE0 {
     } u;
 } Data_00245AE0;
 
-void func_00245AE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
+void ShAnime_GetAnmDat(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     extern struct Quad_00245980 **D_0029D488[];
     Record_00245AE0 *table;
     u8 var_a1;
@@ -464,7 +464,7 @@ typedef struct Slot_00245BE0 {
     u8 pad30[4];
 } Slot_00245BE0;
 
-s32 func_00245BE0(void *arg0) {
+s32 ShFace_Request(void *arg0) {
     Request_00245BE0 *req = arg0;
     Slot_00245BE0 *entry;
     s32 i;
@@ -508,7 +508,7 @@ typedef struct {
 
 extern Entry_00245D80 D_00350FD0[];
 
-void func_00245D80(u8 *arg0) {
+void ShFace_Close(u8 *arg0) {
     D_00350FD0[*arg0].value = 0;
 }
 
@@ -553,7 +553,7 @@ typedef struct {
     void *texture;
 } Object_00245DB0;
 
-void func_00245DB0(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+void ShFace_Prim(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     extern s32 D_00350FC0;
     Object_00245DB0 *object = arg0;
     u16 *rect = arg1;
@@ -589,12 +589,12 @@ void func_00245DB0(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     ((UV_00245DB0 *)&packet.vertex[2].uv)->v = rect[2] << 4;
     ((UV_00245DB0 *)&packet.vertex[3].uv)->u = rect[3] << 4;
     ((UV_00245DB0 *)&packet.vertex[3].uv)->v = rect[2] << 4;
-    func_00208700(packet.tag, object->texture, 1);
-    func_00208CB0(packet.tag, ((u64)rect[1] << 4) | 0xA | ((u64)rect[3] << 14) |
+    ExAssignTexture(packet.tag, object->texture, 1);
+    ExAssignClamp(packet.tag, ((u64)rect[1] << 4) | 0xA | ((u64)rect[3] << 14) |
                                   ((u64)rect[0] << 24) | ((u64)rect[2] << 34));
-    func_002086D0(packet.tag, 0x44);
+    ExAssignAlpha(packet.tag, 0x44);
     if (D_00350FC0 != 0) {
-        D_00350FC0 = func_00207650(D_00350FC0, (s32)packet.tag, 0, 0);
+        D_00350FC0 = ExSortPrim_Pipe(D_00350FC0, (s32)packet.tag, 0, 0);
     }
 }
 
@@ -629,10 +629,10 @@ typedef struct {
     u8 frame[16];
 } State_002460F0;
 
-void func_002460F0(void *arg0) {
-    extern void func_00245A30(u8, u8, u8, void *);
-    extern void func_00245980(u8, u8, void *);
-    extern void func_00245DB0(void *, void *, u16, u16);
+void ShFace_DrawOne(void *arg0) {
+    extern void ShAnime_GetFixInfo(u8, u8, u8, void *);
+    extern void ShAnime_GetPartsRect(u8, u8, void *);
+    extern void ShFace_Prim(void *, void *, u16, u16);
     u8 header[8];
     Buffer_002460F0 entry;
     Frame_002460F0 frame;
@@ -649,10 +649,10 @@ void func_002460F0(void *arg0) {
 
     randomSmall = (func_0019A5C8() >> 4) & 7;
     if (arg0 != NULL) {
-        func_002459D0(state->resource, state->object, header);
+        ShAnime_GetPatInfo(state->resource, state->object, header);
         slot = 0;
         for (part = 0; part < header[0]; part++) {
-            func_00245A30(state->resource, state->object, part, &entry);
+            ShAnime_GetFixInfo(state->resource, state->object, part, &entry);
             if (entry.record.flags & 0x80) {
                 data = (Entry_002460F0 *)&entry.raw;
                 if (state->mask & (1 << data->mode)) {
@@ -669,9 +669,9 @@ void func_002460F0(void *arg0) {
                     state->frame[slot] = 0;
                 }
                 if (data->length != 0) {
-                    func_00245AE0(state->resource, state->object, (u8)part, state->frame[slot], &frame);
-                    func_00245980(state->resource, frame.image, image);
-                    func_00245DB0(arg0, image, frame.x, frame.y);
+                    ShAnime_GetAnmDat(state->resource, state->object, (u8)part, state->frame[slot], &frame);
+                    ShAnime_GetPartsRect(state->resource, frame.image, image);
+                    ShFace_Prim(arg0, image, frame.x, frame.y);
                     if (state->delay[slot] == 0) {
                         switch (data->mode) {
                         case 0:
@@ -692,8 +692,8 @@ void func_002460F0(void *arg0) {
                 }
                 slot++;
             } else {
-                func_00245980(state->resource, entry.record.mode, image);
-                func_00245DB0(arg0, image, entry.record.length, entry.record.value);
+                ShAnime_GetPartsRect(state->resource, entry.record.mode, image);
+                ShFace_Prim(arg0, image, entry.record.length, entry.record.value);
             }
         }
     }
@@ -707,10 +707,10 @@ typedef struct {
     s32 handle;
 } Entry_00246340;
 
-s32 func_00246340(s32 arg0) {
+s32 ShFace_Draw_Pipe(s32 arg0) {
     extern s32 D_00350FC0;
-    extern s32 func_002460F0();
-    extern s32 func_00202E00();
+    extern s32 ShFace_DrawOne();
+    extern s32 SzText_InitClutManage();
     Entry_00246340 *entry;
     s32 i;
     s32 base;
@@ -718,24 +718,24 @@ s32 func_00246340(s32 arg0) {
     D_00350FC0 = arg0;
     for (i = 0; i < 8; i++) {
         if (((Entry_00246340 *)D_00350FD0)[i].value != 0) {
-            ((Entry_00246340 *)D_00350FD0)[i].handle = func_00202BF0(7, ((Entry_00246340 *)D_00350FD0)[i].kind);
+            ((Entry_00246340 *)D_00350FD0)[i].handle = SzText_LoadRequest(7, ((Entry_00246340 *)D_00350FD0)[i].kind);
         }
     }
-    base = func_00209E50();
-    base += func_00202E00(base, 2);
-    D_00350FC0 = func_00202B00(D_00350FC0, 7, base, NULL);
-    D_00350FC0 = func_0020F290(D_00350FC0);
-    func_00202D60(7, -1);
+    base = RhBase_GetUserGsAddress();
+    base += SzText_InitClutManage(base, 2);
+    D_00350FC0 = SzText_DoRequest_Pipe(D_00350FC0, 7, base, NULL);
+    D_00350FC0 = RhText_SetTextureFlush(D_00350FC0);
+    SzText_FreeRequest(7, -1);
     entry = (Entry_00246340 *)D_00350FD0;
     for (i = 0; i < 8; i++, entry++) {
         if (entry->value != 0 && entry->handle != 0) {
-            func_002460F0(entry);
+            ShFace_DrawOne(entry);
         }
     }
     return D_00350FC0;
 }
 
-void func_00246450(s32 arg0) {
+void ShFace_Init(s32 arg0) {
     extern s32 D_00350FC0;
     s32 i;
     Entry_00245D80 *entry;
@@ -751,17 +751,17 @@ void func_00246450(s32 arg0) {
     D_00350FC0 = 0;
 }
 
-void func_00246490(void) {
-    func_00209D30(func_00246340(func_00209D20()));
+void ShFace_Draw(void) {
+    RhBase_SetVifPacketArea(ShFace_Draw_Pipe(RhBase_GetVifPacketArea()));
 }
 
-void func_002464C0(void) {
+void ShFace_Act(void) {
     if (D_00351170) {
         return;
     }
 }
 
-void func_002464E0(void) {
+void ShFace_Term(void) {
 
 }
 
@@ -788,7 +788,7 @@ typedef struct Card_002464F0 {
     Flags_002464F0 flags;
 } Card_002464F0;
 
-s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
+s32 GetMoveRev(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_s0;
     s32 temp_s1;
     s32 var_s2;
@@ -809,7 +809,7 @@ s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
     }
     var_s2 = 0;
     if (((Card_002464F0 *)arg0)->present == 0) {
-        var_v0 = func_00271740(4, ((Card_002464F0 *)arg0)->type);
+        var_v0 = Ta_IsLDAbl(4, ((Card_002464F0 *)arg0)->type);
         if (var_v0 != 0) {
             var_v0 = 2;
         } else {
@@ -833,7 +833,7 @@ s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
         return var_v0;
     }
     temp_s1 = (arg2 << 8) | arg1;
-    temp_v0 = func_0024DEB0(func_001E22B0(temp_s1 & 0xFF, temp_s1 >> 8), (void *)arg0);
+    temp_v0 = CheckLandAgreement(SzDuel_GetField(temp_s1 & 0xFF, temp_s1 >> 8), (void *)arg0);
     switch (temp_v0) {
     case 0:
     case 2:
@@ -856,9 +856,9 @@ s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
     }
     var_s0 = 0;
     do {
-        if (func_001E2100(0, var_s0, 4) == 1) {
-            if (func_001E2100(0, var_s0, 5) == 1) {
-                temp_v0_2 = func_00250740(0, var_s0, 2);
+        if (SzDuel_GetUnitStatus(0, var_s0, 4) == 1) {
+            if (SzDuel_GetUnitStatus(0, var_s0, 5) == 1) {
+                temp_v0_2 = Ta_GetUnitEffect(0, var_s0, 2);
                 if (temp_v0_2 != NULL) {
                     temp_a1 = temp_v0_2->kind;
                     if ((temp_a1 >> 8) == 6) {
@@ -877,8 +877,8 @@ s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
                 }
             }
         }
-        if ((func_001E2100(1, var_s0, 4) == 1) && (func_001E2100(1, var_s0, 5) == 1)) {
-            temp_v0_3 = func_00250740(1, var_s0, 2);
+        if ((SzDuel_GetUnitStatus(1, var_s0, 4) == 1) && (SzDuel_GetUnitStatus(1, var_s0, 5) == 1)) {
+            temp_v0_3 = Ta_GetUnitEffect(1, var_s0, 2);
             if (temp_v0_3 != NULL) {
                 temp_a1_2 = temp_v0_3->kind;
                 if ((temp_a1_2 >> 8) == 6) {
@@ -898,11 +898,11 @@ s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2) {
         }
         var_s0 += 1;
     } while (var_s0 < 0xB);
-    if (func_00266C70(0x43, 0) >= 0) {
+    if (Ta_SearchUncTypeNaturalEffectUser(0x43, 0) >= 0) {
         var_s2 = ((var_s2 >> 4) << 4) | 1;
     }
     var_v0 = var_s2;
-    if (func_00271F00(temp_s1, ((Card_002464F0 *)arg0)->type, ((Card_002464F0 *)arg0)->affiliation & 0x1F, 0xC) == 1) {
+    if (Ta_IsLDRangeAvilityFromLoc(temp_s1, ((Card_002464F0 *)arg0)->type, ((Card_002464F0 *)arg0)->affiliation & 0x1F, 0xC) == 1) {
         var_v0 = ((var_s2 >> 4) << 4) | 2;
     }
     return var_v0;
@@ -932,10 +932,10 @@ static inline s32 encode_00246810(s32 value) {
     return ((value < 0 ? 1 : 0) << 15) | (value >= 0 ? value : -value);
 }
 
-s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg6) {
-    extern s32 func_001E08F0();
-    extern s32 func_001E1030();
-    extern s32 func_001E1580();
+s32 Battle(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg6) {
+    extern s32 SzDuel_GetUnitLevel();
+    extern s32 SzDuel_GetUnitCardNo();
+    extern s32 SzDuel_GetUnitCurseRest();
     Status_00246810 status;
     Status_00246810 *p = &status;
     s32 *out = arg6;
@@ -983,21 +983,21 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
     p->mode.bit0 = 1;
     p->flags.bit5 = 0;
     p->flags.bit6 = 0;
-    temp_s1 = func_001E0700(arg0, arg1) >> 5;
-    temp_a0 = func_001E0700(arg2, arg3) >> 5;
+    temp_s1 = SzDuel_GetUnitKind(arg0, arg1) >> 5;
+    temp_a0 = SzDuel_GetUnitKind(arg2, arg3) >> 5;
     sp120 = 0;
     var_fp = 0;
     var_s7 = 0;
     if ((temp_s1 == 0) && (temp_a0 == 0)) {
         if (arg1 == 0) {
-            temp_s1_2 = func_00261F20(arg0, arg1, arg2, arg3, p);
-            temp_s5 = func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1);
-            temp_s5_2 = p->value2 + func_001E0290(arg2, arg3, 0);
-            temp_s5_2 = func_002508D0(temp_s5_2 + temp_s5);
-            func_001E0450(arg2, arg3, 0, p->value2);
-            func_001E0570(arg2, arg3, 0, p->value2);
+            temp_s1_2 = Manage_AtkEfc(arg0, arg1, arg2, arg3, p);
+            temp_s5 = Ta_GetParamOfs(SzDuel_GetUnit(arg2, arg3), arg4, arg5, 1);
+            temp_s5_2 = p->value2 + SzDuel_GetUnitAP(arg2, arg3, 0);
+            temp_s5_2 = GetParCap(temp_s5_2 + temp_s5);
+            SzDuel_CalcUnitAP(arg2, arg3, 0, p->value2);
+            SzDuel_CalcUnitDP(arg2, arg3, 0, p->value2);
             p->value2 = encode_00246810(p->value2);
-            if (func_00271740(6, arg0) != 0) {
+            if (Ta_IsLDAbl(6, arg0) != 0) {
                 out[0] = 0x5D;
                 out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
                 out[2] = arg0;
@@ -1010,21 +1010,21 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
             }
             return 1;
         }
-        temp_s1_3 = func_001E0830(arg2, arg3);
-        temp_v0_4 = func_0024EA70(temp_s1_3, func_001E0830(arg0, arg1));
+        temp_s1_3 = SzDuel_GetUnitAttr(arg2, arg3);
+        temp_v0_4 = ChkAttrAdv(temp_s1_3, SzDuel_GetUnitAttr(arg0, arg1));
         switch (temp_v0_4) {                        /* switch 1; irregular */
         case 1:                                     /* switch 1 */
-            if (func_001E1580(arg0, arg1) == 0) {
+            if (SzDuel_GetUnitCurseRest(arg0, arg1) == 0) {
                 var_fp = 1;
             }
             break;
         case -1:                                    /* switch 1 */
-            if (func_001E1580(arg2, arg3) == 0) {
+            if (SzDuel_GetUnitCurseRest(arg2, arg3) == 0) {
                 var_s7 = 1;
             }
             break;
         }
-        temp_v0_5 = func_00261F20(arg0, arg1, arg2, arg3, p);
+        temp_v0_5 = Manage_AtkEfc(arg0, arg1, arg2, arg3, p);
         if ((temp_v0_5 & 0xFF) == 1) {
             temp_a0_2 = (temp_v0_5 >> 0x18) & 1;
             if ((temp_a0_2 == 1) && (((temp_v0_5 >> 0x10) & 1) == 1)) {
@@ -1032,10 +1032,10 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[1] = (s32) ((arg2 << 8) | arg3);
                 out[2] = (s32) ((arg0 << 8) | arg1);
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | 1) << 0x16) | ((((p->flags.bit5 << 1) | 1) << 0x14) | 0xCFFFF)))) | 0x10000000);
-                temp_s0 = func_001E1030(arg0, arg1);
-                                func_00215B10(arg0, temp_s0, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
-                temp_s0_2 = func_001E1030(arg2, arg3);
-                                func_00215B10(arg2, temp_s0_2, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                temp_s0 = SzDuel_GetUnitCardNo(arg0, arg1);
+                                SzData_CalcExp(arg0, temp_s0, 0, (SzDuel_GetUnitLevel(arg2, arg3, 0) + 2) * 2);
+                temp_s0_2 = SzDuel_GetUnitCardNo(arg2, arg3);
+                                SzData_CalcExp(arg2, temp_s0_2, 0, (SzDuel_GetUnitLevel(arg0, arg1, 0) + 2) * 2);
                 return 1;
             }
             if (temp_a0_2 == 1) {
@@ -1043,8 +1043,8 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[1] = (s32) ((arg2 << 8) | arg3);
                 out[2] = (s32) ((arg0 << 8) | arg1);
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | 1) << 0x16) | (((p->flags.bit5 << 1) << 0x14) | 0x8FFFF)))) | 0x10000000);
-                temp_s0_3 = func_001E1030(arg0, arg1);
-                                func_00215B10(arg0, temp_s0_3, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
+                temp_s0_3 = SzDuel_GetUnitCardNo(arg0, arg1);
+                                SzData_CalcExp(arg0, temp_s0_3, 0, (SzDuel_GetUnitLevel(arg2, arg3, 0) + 2) * 2);
                 return 1;
             }
             if (((temp_v0_5 >> 0x10) & 1) == 1) {
@@ -1052,33 +1052,33 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[1] = (s32) ((arg2 << 8) | arg3);
                 out[2] = (s32) ((arg0 << 8) | arg1);
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((p->flags.bit6 << 0x17) | ((((p->flags.bit5 << 1) | 1) << 0x14) | 0x4FFFF)))));
-                temp_s0_4 = func_001E1030(arg2, arg3);
-                                func_00215B10(arg2, temp_s0_4, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                temp_s0_4 = SzDuel_GetUnitCardNo(arg2, arg3);
+                                SzData_CalcExp(arg2, temp_s0_4, 0, (SzDuel_GetUnitLevel(arg0, arg1, 0) + 2) * 2);
                 return 1;
             }
 
         }
-        temp_v0_7 = func_001E2100(arg0, arg1, 3);
+        temp_v0_7 = SzDuel_GetUnitStatus(arg0, arg1, 3);
         switch (temp_v0_7) {                        /* switch 2; irregular */
         case 1:                                     /* switch 2 */
             if (p->flags.bit3 == 1) {
-                func_001E0450(arg0, arg1, 4, 0);
-                func_001E0570(arg0, arg1, 4, 0);
-                sp13C = func_002508D0(func_001E0370(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 0));
+                SzDuel_CalcUnitAP(arg0, arg1, 4, 0);
+                SzDuel_CalcUnitDP(arg0, arg1, 4, 0);
+                sp13C = GetParCap(SzDuel_GetUnitDP(arg0, arg1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg0, arg1), arg4, arg5, 0));
             } else {
-                sp13C = func_002508D0(p->value1 + func_001E0370(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 0));
-                func_001E0450(arg0, arg1, 0, p->value1);
-                func_001E0570(arg0, arg1, 0, p->value1);
+                sp13C = GetParCap(p->value1 + SzDuel_GetUnitDP(arg0, arg1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg0, arg1), arg4, arg5, 0));
+                SzDuel_CalcUnitAP(arg0, arg1, 0, p->value1);
+                SzDuel_CalcUnitDP(arg0, arg1, 0, p->value1);
                 p->value1 = encode_00246810(p->value1);
             }
             if (p->flags.bit4 == 1) {
-                func_001E0450(arg2, arg3, 4, 0);
-                func_001E0570(arg2, arg3, 4, 0);
-                sp138 = func_002508D0(func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
+                SzDuel_CalcUnitAP(arg2, arg3, 4, 0);
+                SzDuel_CalcUnitDP(arg2, arg3, 4, 0);
+                sp138 = GetParCap(SzDuel_GetUnitAP(arg2, arg3, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg2, arg3), arg4, arg5, 1));
             } else {
-                sp138 = func_002508D0(p->value2 + func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
-                func_001E0450(arg2, arg3, 0, p->value2);
-                func_001E0570(arg2, arg3, 0, p->value2);
+                sp138 = GetParCap(p->value2 + SzDuel_GetUnitAP(arg2, arg3, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg2, arg3), arg4, arg5, 1));
+                SzDuel_CalcUnitAP(arg2, arg3, 0, p->value2);
+                SzDuel_CalcUnitDP(arg2, arg3, 0, p->value2);
                 p->value2 = encode_00246810(p->value2);
             }
             if (sp13C > sp138) {
@@ -1105,30 +1105,30 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
                 out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0x40000)))));
-                temp_s0_5 = func_001E1030(arg2, arg3);
-                                func_00215B10(arg2, temp_s0_5, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                temp_s0_5 = SzDuel_GetUnitCardNo(arg2, arg3);
+                                SzData_CalcExp(arg2, temp_s0_5, 0, (SzDuel_GetUnitLevel(arg0, arg1, 0) + 2) * 2);
                 return 1;
             }
             break;
         case 0:                                     /* switch 2 */
             if (p->flags.bit3 == 1) {
-                func_001E0450(arg0, arg1, 4, 0);
-                func_001E0570(arg0, arg1, 4, 0);
-                sp140 = func_002508D0(func_001E0290(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 1));
+                SzDuel_CalcUnitAP(arg0, arg1, 4, 0);
+                SzDuel_CalcUnitDP(arg0, arg1, 4, 0);
+                sp140 = GetParCap(SzDuel_GetUnitAP(arg0, arg1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg0, arg1), arg4, arg5, 1));
             } else {
-                sp140 = func_002508D0(p->value1 + func_001E0290(arg0, arg1, 0) + func_002660E0(func_001DF540(arg0, arg1), arg4, arg5, 1));
-                func_001E0450(arg0, arg1, 0, p->value1);
-                func_001E0570(arg0, arg1, 0, p->value1);
+                sp140 = GetParCap(p->value1 + SzDuel_GetUnitAP(arg0, arg1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg0, arg1), arg4, arg5, 1));
+                SzDuel_CalcUnitAP(arg0, arg1, 0, p->value1);
+                SzDuel_CalcUnitDP(arg0, arg1, 0, p->value1);
                 p->value1 = encode_00246810(p->value1);
             }
             if (p->flags.bit4 == 1) {
-                func_001E0450(arg2, arg3, 4, 0);
-                func_001E0570(arg2, arg3, 4, 0);
-                sp144 = func_002508D0(func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
+                SzDuel_CalcUnitAP(arg2, arg3, 4, 0);
+                SzDuel_CalcUnitDP(arg2, arg3, 4, 0);
+                sp144 = GetParCap(SzDuel_GetUnitAP(arg2, arg3, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg2, arg3), arg4, arg5, 1));
             } else {
-                sp144 = func_002508D0(p->value2 + func_001E0290(arg2, arg3, 0) + func_002660E0(func_001DF540(arg2, arg3), arg4, arg5, 1));
-                func_001E0450(arg2, arg3, 0, p->value2);
-                func_001E0570(arg2, arg3, 0, p->value2);
+                sp144 = GetParCap(p->value2 + SzDuel_GetUnitAP(arg2, arg3, 0) + Ta_GetParamOfs(SzDuel_GetUnit(arg2, arg3), arg4, arg5, 1));
+                SzDuel_CalcUnitAP(arg2, arg3, 0, p->value2);
+                SzDuel_CalcUnitDP(arg2, arg3, 0, p->value2);
                 p->value2 = encode_00246810(p->value2);
             }
             if (sp140 > sp144) {
@@ -1140,11 +1140,11 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0xA0000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14))))) | 0x10000000);
                 if (sp120 <= 0) {
-                    temp_s0_6 = func_001E1030(arg0, arg1);
-                                        func_00215B10(arg0, temp_s0_6, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
+                    temp_s0_6 = SzDuel_GetUnitCardNo(arg0, arg1);
+                                        SzData_CalcExp(arg0, temp_s0_6, 0, (SzDuel_GetUnitLevel(arg2, arg3, 0) + 2) * 2);
                 } else {
-                    temp_s0_7 = func_001E1030(arg0, arg1);
-                                        func_00215B10(arg0, temp_s0_7, 0, func_001E08F0(arg2, arg3, 0) * 4);
+                    temp_s0_7 = SzDuel_GetUnitCardNo(arg0, arg1);
+                                        SzData_CalcExp(arg0, temp_s0_7, 0, SzDuel_GetUnitLevel(arg2, arg3, 0) * 4);
                 }
                 return 1;
             }
@@ -1153,10 +1153,10 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[1] = (s32) ((p->value2 << 0x10) | ((arg2 << 8) | arg3));
                 out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0xC0000)))) | 0x10000000);
-                temp_s0_8 = func_001E1030(arg0, arg1);
-                                func_00215B10(arg0, temp_s0_8, 0, (func_001E08F0(arg2, arg3, 0) + 2) * 2);
-                temp_s0_9 = func_001E1030(arg2, arg3);
-                                func_00215B10(arg2, temp_s0_9, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                temp_s0_8 = SzDuel_GetUnitCardNo(arg0, arg1);
+                                SzData_CalcExp(arg0, temp_s0_8, 0, (SzDuel_GetUnitLevel(arg2, arg3, 0) + 2) * 2);
+                temp_s0_9 = SzDuel_GetUnitCardNo(arg2, arg3);
+                                SzData_CalcExp(arg2, temp_s0_9, 0, (SzDuel_GetUnitLevel(arg0, arg1, 0) + 2) * 2);
                 return 1;
             }
             if (sp140 < sp144) {
@@ -1168,11 +1168,11 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                 out[2] = (s32) ((p->value1 << 0x10) | ((arg0 << 8) | arg1));
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0x50000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14))))));
                 if (sp120 <= 0) {
-                    temp_s0_10 = func_001E1030(arg2, arg3);
-                                        func_00215B10(arg2, temp_s0_10, 0, (func_001E08F0(arg0, arg1, 0) + 2) * 2);
+                    temp_s0_10 = SzDuel_GetUnitCardNo(arg2, arg3);
+                                        SzData_CalcExp(arg2, temp_s0_10, 0, (SzDuel_GetUnitLevel(arg0, arg1, 0) + 2) * 2);
                 } else {
-                    temp_s0_11 = func_001E1030(arg2, arg3);
-                                        func_00215B10(arg2, temp_s0_11, 0, func_001E08F0(arg0, arg1, 0) * 4);
+                    temp_s0_11 = SzDuel_GetUnitCardNo(arg2, arg3);
+                                        SzData_CalcExp(arg2, temp_s0_11, 0, SzDuel_GetUnitLevel(arg0, arg1, 0) * 4);
                 }
                 return 1;
             }
@@ -1188,21 +1188,21 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
         }
         if (temp_s1 == 0) {
             if (temp_a0 == 2) {
-                if (func_00271E40(arg0, arg1, 0xB) == 1) {
+                if (Ta_IsLDRangeAvility(arg0, arg1, 0xB) == 1) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
                     out[3] = 3;
                     return 0x10001;
                 }
-                if (func_00267700(arg0, arg1) != 0) {
+                if (Ta_IsResistAll(arg0, arg1) != 0) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
                     out[3] = 1;
                     return 0x10001;
                 }
-                temp_v0_20 = func_00248AF0(arg0, arg1, func_001E1030(arg2, arg3));
+                temp_v0_20 = Chk_Enc(arg0, arg1, SzDuel_GetUnitCardNo(arg2, arg3));
                 if (temp_v0_20 == 0x3E7) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((arg0 << 8) | arg1);
@@ -1211,7 +1211,7 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                     return 0x10001;
                 }
                 if (((temp_v0_20 >> 0x1E) & 1) == 1) {
-                    func_001E1E70(arg2, arg3, 2, 1);
+                    SzDuel_SetUnitStatus(arg2, arg3, 2, 1);
                     out[0] = 0x2B;
                     out[1] = (s32) ((arg2 << 8) | arg3);
                     out[2] = (s32) ((arg0 << 8) | arg1);
@@ -1219,13 +1219,13 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                     return 0x10001;
                 }
                 if ((temp_v0_20 >> 0xE) == 0x219) {
-                    func_001E1E70(arg2, arg3, 2, 1);
+                    SzDuel_SetUnitStatus(arg2, arg3, 2, 1);
                     out[0] = 0x25;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
-                    out[3] = (s32) ((temp_v0_20 & 0x3FFF) | (func_0024DE70(arg2, arg3) << 0x10));
+                    out[3] = (s32) ((temp_v0_20 & 0x3FFF) | (Ta_GetCurrentSide(arg2, arg3) << 0x10));
                 } else {
-                    func_001E1E70(arg2, arg3, 2, 1);
+                    SzDuel_SetUnitStatus(arg2, arg3, 2, 1);
                     out[0] = 0x24;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
@@ -1237,22 +1237,22 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
 
         if (temp_s1 == 2) {
             if (temp_a0 == 0) {
-                func_00215B10(arg2, func_001E1030(arg2, arg3), 0, 6);
-                if (func_00271E40(arg2, arg3, 0xB) == 1) {
+                SzData_CalcExp(arg2, SzDuel_GetUnitCardNo(arg2, arg3), 0, 6);
+                if (Ta_IsLDRangeAvility(arg2, arg3, 0xB) == 1) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
                     out[3] = 2;
                     return 1;
                 }
-                if (func_00267700(arg2, arg3) != 0) {
+                if (Ta_IsResistAll(arg2, arg3) != 0) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
                     out[3] = 0;
                     return 1;
                 }
-                temp_v0_21 = func_00248AF0(arg2, arg3, func_001E1030(arg0, arg1));
+                temp_v0_21 = Chk_Enc(arg2, arg3, SzDuel_GetUnitCardNo(arg0, arg1));
                 if (temp_v0_21 == 0x3E7) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((arg0 << 8) | arg1);
@@ -1261,7 +1261,7 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                     return 1;
                 }
                 if (((temp_v0_21 >> 0x1E) & 1) == 1) {
-                    func_001E1E70(arg0, arg1, 2, 1);
+                    SzDuel_SetUnitStatus(arg0, arg1, 2, 1);
                     out[0] = 0x2B;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
@@ -1269,13 +1269,13 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
                     return 1;
                 }
                 if ((temp_v0_21 >> 0xE) == 0x219) {
-                    func_001E1E70(arg0, arg1, 2, 1);
+                    SzDuel_SetUnitStatus(arg0, arg1, 2, 1);
                     out[0] = 0x25;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
-                    out[3] = (s32) ((temp_v0_21 & 0x3FFF) | (func_0024DE70(arg0, arg1) << 0x10));
+                    out[3] = (s32) ((temp_v0_21 & 0x3FFF) | (Ta_GetCurrentSide(arg0, arg1) << 0x10));
                 } else {
-                    func_001E1E70(arg0, arg1, 2, 1);
+                    SzDuel_SetUnitStatus(arg0, arg1, 2, 1);
                     out[0] = 0x24;
                     out[1] = (s32) ((arg0 << 8) | arg1);
                     out[2] = (s32) ((arg2 << 8) | arg3);
@@ -1291,7 +1291,7 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
             out[2] = (s32) ((arg2 << 8) | arg3);
             out[3] = 0;
             if (temp_a0 == 0) {
-                func_00215B10(arg2, func_001E1030(arg2, arg3), 0, 6);
+                SzData_CalcExp(arg2, SzDuel_GetUnitCardNo(arg2, arg3), 0, 6);
             }
             return 1;
         }
@@ -1299,10 +1299,10 @@ s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, vo
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", func_00247F40);
+INCLUDE_ASM("asm/nonmatchings/main_070", SelfHeap);
 
-s32 func_00248370(u32 arg0, s32 arg1, s32 arg2) {
-    extern s32 func_001E1030();
+s32 Do_ChkEncMatch(u32 arg0, s32 arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitCardNo();
     s32 offset;
     s32 row;
 
@@ -1313,15 +1313,15 @@ s32 func_00248370(u32 arg0, s32 arg1, s32 arg2) {
     }
 
     if (arg2 == 0x304) {
-        if ((func_001E0700((s32)arg0, arg1) >> 5) == 0) {
-            if ((func_001E0700((s32)arg0, arg1) & 0x1F) == 2) {
+        if ((SzDuel_GetUnitKind((s32)arg0, arg1) >> 5) == 0) {
+            if ((SzDuel_GetUnitKind((s32)arg0, arg1) & 0x1F) == 2) {
                 return 1;
             }
         }
         return 0;
     }
 
-    row = func_001E1030(arg0, arg1) * 7;
+    row = SzDuel_GetUnitCardNo(arg0, arg1) * 7;
     offset = arg2 - 0x2F0;
     return ((D_0029D580 + (offset >> 3))[row] >> (offset % 8)) & 1;
 }
@@ -1341,25 +1341,25 @@ static inline int apply_kind_00248460(int a, int b, int c, int d, int total, int
         case 0:
             if (val == 0) {
                 id = d & 0xff;
-                total = func_00248E30(id, total);
+                total = Ta_GetForceEffection(id, total);
                 if (c >> 16) {
-                    func_00250CA0(a, b, 1, total);
-                    func_00250E80(a, b, 1, total);
+                    TaUtil_CalcUnitAP(a, b, 1, total);
+                    TaUtil_CalcUnitDP(a, b, 1, total);
                 } else {
-                    func_00250CA0(a, b, 0, total);
-                    func_00250E80(a, b, 0, total);
+                    TaUtil_CalcUnitAP(a, b, 0, total);
+                    TaUtil_CalcUnitDP(a, b, 0, total);
                 }
-                func_001DF490(id == 0 ? 1 : 0, 1, total);
+                SzDuel_CalcLP(id == 0 ? 1 : 0, 1, total);
                 return c;
             } else {
                 total = val + total;
                 if (c >> 16) {
-                    func_00250CA0(a, b, 1, total);
-                    func_00250E80(a, b, 1, total);
+                    TaUtil_CalcUnitAP(a, b, 1, total);
+                    TaUtil_CalcUnitDP(a, b, 1, total);
                     return c;
                 } else {
-                    func_00250CA0(a, b, 0, total);
-                    func_00250E80(a, b, 0, total);
+                    TaUtil_CalcUnitAP(a, b, 0, total);
+                    TaUtil_CalcUnitDP(a, b, 0, total);
                     return c;
                 }
             }
@@ -1396,14 +1396,14 @@ static inline int apply_kind_00248460(int a, int b, int c, int d, int total, int
             }
             break;
         case 2:
-            func_00250CA0(a, b, 4, 0);
-            func_00250E80(a, b, 4, 0);
+            TaUtil_CalcUnitAP(a, b, 4, 0);
+            TaUtil_CalcUnitDP(a, b, 4, 0);
             func_002503B0_b(a, b, 0);
             func_001E15E0_b(a, b, 0);
             return c;
         case 3:
             func_002503B0_b(a, b, 255);
-            func_001E1E70(a, b, 0, 1);
+            SzDuel_SetUnitStatus(a, b, 0, 1);
             return c;
         case 4:
             return c;
@@ -1412,16 +1412,16 @@ static inline int apply_kind_00248460(int a, int b, int c, int d, int total, int
     return c;
 }
 
-int func_00248460(int a, int b, int c, int d)
+int Enchant(int a, int b, int c, int d)
 {
     int total;
     int id;
 
     func_001E1030_b(a, b);
     total = 0;
-    total += func_00248EA0();
+    total += Ta_GetEnchantOfs();
     id = c & 0x3fff;
-    if (func_00248370(a, b, id) != 0) {
+    if (Do_ChkEncMatch(a, b, id) != 0) {
         c = apply_kind_00248460(a, b, c, d, total, id);
     } else {
         c = -1;
@@ -1429,7 +1429,7 @@ int func_00248460(int a, int b, int c, int d)
     return c;
 }
 
-s32 func_002487A0(s32 arg0, s32 arg1) {
+s32 Do_Chk_Enc(s32 arg0, s32 arg1) {
     s32 bit;
 
     bit = arg1 - 0x2F0;
@@ -1460,7 +1460,7 @@ s32 func_002487A0(s32 arg0, s32 arg1) {
                 case 0x14C:
                     return arg1 | (((func_0019A5C8() % 32 + 0x65) << 14) | 0x40000000);
                 case 0x17B:
-                    return arg1 | (((u16)func_002494D0() << 14) | 0x40000000);
+                    return arg1 | (((u16)TaEnc_GetRandomElf() << 14) | 0x40000000);
                 }
                 break;
             }
@@ -1492,12 +1492,12 @@ s32 func_002487A0(s32 arg0, s32 arg1) {
     return 0x3E7;
 }
 
-s32 func_00248AF0(s32 arg0, s32 arg1, s32 arg2) {
+s32 Chk_Enc(s32 arg0, s32 arg1, s32 arg2) {
     s32 kind;
-    extern s32 func_001E1030();
+    extern s32 SzDuel_GetUnitCardNo();
 
-    kind = func_001E1030(arg0, arg1);
-    if (func_00248370(arg0, arg1, arg2) != 0) {
+    kind = SzDuel_GetUnitCardNo(arg0, arg1);
+    if (Do_ChkEncMatch(arg0, arg1, arg2) != 0) {
         switch (D_0029D1F0[arg2]) {
         case 4:
             switch (D_0029CF32[arg2]) {
@@ -1524,7 +1524,7 @@ s32 func_00248AF0(s32 arg0, s32 arg1, s32 arg2) {
                 case 0x14C:
                     return arg2 | (((func_0019A5C8() % 32 + 0x65) << 14) | 0x40000000);
                 case 0x17B:
-                    return arg2 | (((u16)func_002494D0() << 14) | 0x40000000);
+                    return arg2 | (((u16)TaEnc_GetRandomElf() << 14) | 0x40000000);
                 }
                 break;
             }
@@ -1556,15 +1556,15 @@ s32 func_00248AF0(s32 arg0, s32 arg1, s32 arg2) {
     return 0x3E7;
 }
 
-s32 func_00248E30(s32 arg0, s32 arg1) {
+s32 Ta_GetForceEffection(s32 arg0, s32 arg1) {
     s32 var_v0;
 
     if (arg0 < 2) {
-        var_v0 = func_001DF470((arg0 == 0) ? 1 : 0) >> 1;
+        var_v0 = SzDuel_GetLP((arg0 == 0) ? 1 : 0) >> 1;
     } else {
-        var_v0 = func_001DF470((func_001DE540() == 0) ? 1 : 0) >> 1;
+        var_v0 = SzDuel_GetLP((SzDuel_GetTurnOwner() == 0) ? 1 : 0) >> 1;
     }
-    var_v0 = func_002670F0(0x2C, var_v0);
+    var_v0 = Ta_GetLPRevByNaturalEffect(0x2C, var_v0);
     var_v0 += arg1;
     return var_v0;
 }
@@ -1575,7 +1575,7 @@ typedef struct Entry_00248EA0 {
 } Entry_00248EA0;
 
 
-s32 func_00248EA0(void) {
+s32 Ta_GetEnchantOfs(void) {
     s32 index;
     s32 total;
     s32 count;
@@ -1584,11 +1584,11 @@ s32 func_00248EA0(void) {
     Entry_00248EA0 *entry;
 
     total = 0;
-    count = func_00266DF0(0x34);
+    count = Ta_SearchUncTypeNaturalEffectUserNum(0x34);
     for (index = 0; index < count; index++) {
-            id = func_00266C70(0x34, index);
+            id = Ta_SearchUncTypeNaturalEffectUser(0x34, index);
             if (id >= 0) {
-                entry = func_00250740(id >> 8, id & 0xFF, 2);
+                entry = Ta_GetUnitEffect(id >> 8, id & 0xFF, 2);
                 kind = entry->value >> 16;
                 switch (kind) {
                 case 0:
@@ -1603,26 +1603,26 @@ s32 func_00248EA0(void) {
     return total;
 }
 
-s32 func_00248F60(s32 arg0, s32 arg1) {
+s32 Ta_GetHandEnchant(s32 arg0, s32 arg1) {
     s32 temp_a2;
 
     temp_a2 = arg1 - 0x2F0;
     if ((D_0029D580[arg0 * 7 + (temp_a2 >> 3)] >> (temp_a2 % 8)) & 1) {
-        return func_00249040(arg0, arg1);
+        return Ta_GetHandEnchant3(arg0, arg1);
     }
     return -1;
 }
 
-s32 func_00248FD0(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 func_001E1030();
+s32 Ta_GetHandEnchant2(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitCardNo();
 
-    if (func_00248370(arg0, arg1, arg2) != 0) {
-        return func_00249040(func_001E1030(arg0, arg1), arg2);
+    if (Do_ChkEncMatch(arg0, arg1, arg2) != 0) {
+        return Ta_GetHandEnchant3(SzDuel_GetUnitCardNo(arg0, arg1), arg2);
     }
     return -1;
 }
 
-s32 func_00249040(s32 arg0, s32 arg1) {
+s32 Ta_GetHandEnchant3(s32 arg0, s32 arg1) {
     s32 result;
 
     switch (D_0029CF32[arg1]) {
@@ -1660,7 +1660,7 @@ s32 func_00249040(s32 arg0, s32 arg1) {
             result = func_0019A5C8() % 32 + 0x65;
             break;
         case 0x17B:
-            result = (u16)func_002494D0();
+            result = (u16)TaEnc_GetRandomElf();
             break;
         default:
             result = -1;
@@ -1674,7 +1674,7 @@ s32 func_00249040(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 func_00249200(s32 arg0) {
+s32 Ta_GetEncEffect(s32 arg0) {
     u8 temp_v1;
     s32 result;
 
@@ -1713,11 +1713,11 @@ s32 func_00249200(s32 arg0) {
     return result;
 }
 
-s32 func_002492F0(s32 arg0) {
+s32 Ta_GetToonAgreement(s32 arg0) {
     return ((s32) D_0029D586[arg0 * 7] >> 1) & 1;
 }
 
-s32 func_00249320(s32 arg0) {
+s32 TaEnc_IsEncDo(s32 arg0) {
     u8 temp_v1;
 
     temp_v1 = D_0029D1F0[arg0];
@@ -1734,7 +1734,7 @@ s32 func_00249320(s32 arg0) {
     }
 }
 
-s64 func_002493A0(s32 arg0) {
+s64 TaEnc_GetEncScore(s32 arg0) {
     switch (D_0029D1F0[arg0]) {
     case 0:
         return D_0029CF32[arg0];
@@ -1746,7 +1746,7 @@ s64 func_002493A0(s32 arg0) {
     }
 }
 
-s32 func_00249410(u16 arg0, u16 *arg1) {
+s32 TaEnc_GetEnchantLst(u16 arg0, u16 *arg1) {
     s32 i;
     u16 card;
     s32 count;

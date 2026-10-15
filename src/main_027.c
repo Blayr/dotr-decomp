@@ -1,7 +1,7 @@
 #include "common.h"
 
 /* libdev: read VU0's control registers (status, MAC, clipping, R, I, Q, vi0-vi15) into a save area;
-   returns 0 while VU0 is running (func_00186BB8) */
+   returns 0 while VU0 is running (sceDevVu0CheckBusy) */
 
 typedef struct Vu0Cnd_00186D78 {
     dk_int128 vf[32];
@@ -16,11 +16,11 @@ typedef struct Vu0Cnd_00186D78 {
 
 #define CFC2_00186D78(dst, vi) __asm__("cfc2.ni %0, $" #vi : "=r"(dst))
 
-s32 func_00186D78(void *arg0) {
+s32 sceDevVu0GetCnd(void *arg0) {
     Vu0Cnd_00186D78 *cnd = arg0;
     register u32 s __asm__("$3");
 
-    if (func_00186BB8() != 0) {
+    if (sceDevVu0CheckBusy() != 0) {
     return 0;
     }
     CFC2_00186D78(s, vi16);
@@ -73,7 +73,7 @@ s32 func_00186D78(void *arg0) {
 #undef CFC2_00186D78
 
 /* libdev: write VU0's registers back from a save area (vf0-vf31, status, MAC, clipping, R, I, Q, vi0-vi15);
-   returns 0 while VU0 is running (func_00186BB8). The reader is func_00186D78. */
+   returns 0 while VU0 is running (sceDevVu0CheckBusy). The reader is sceDevVu0GetCnd. */
 
 typedef struct Vu0Cnd_00186E58 {
     dk_int128 vf[32];
@@ -88,14 +88,14 @@ typedef struct Vu0Cnd_00186E58 {
 
 #define CTC2_00186E58(src, vi) __asm__ __volatile__("ctc2.ni %0, $" #vi : : "r"(src))
 
-s32 func_00186E58(void *arg0) {
+s32 sceDevVu0PutCnd(void *arg0) {
     dk_int128 *vf;
     Vu0Cnd_00186E58 *cnd = arg0;
     u32 s;
 
     vf = cnd->vf;
 
-    if (func_00186BB8() != 0) {
+    if (sceDevVu0CheckBusy() != 0) {
         return 0;
     }
     __asm__ __volatile__("lqc2 $vf0, 0x0(%0)" : : "r"(vf));
@@ -179,15 +179,15 @@ s32 func_00186E58(void *arg0) {
 
 #undef CTC2_00186E58
 
-void func_00186FC8(void) {
+void sceDevVif0Reset(void) {
     *(volatile s32 *)0x10003810 = 1;
     *(volatile s32 *)0x10003820 = 6;
 }
 
-s32 func_00186FF0(s32 arg0) {
+s32 sceDevVif0Pause(s32 arg0) {
     s32 r;
 
-    r = func_001870C8();
+    r = sceDevVif0Sync();
     if (r == 0) {
         return 0;
     }
@@ -202,25 +202,25 @@ s32 func_00186FF0(s32 arg0) {
     return 1;
 }
 
-s32 func_00187058(void) {
-    if (func_001870C8() != 1) {
+s32 sceDevVif0Continue(void) {
+    if (sceDevVif0Sync() != 1) {
         return 0;
     }
     *(volatile u32 *)0x10003810 = 8;
     return 1;
 }
 
-u32 func_00187098(u32 arg0, u32 arg1, u32 arg2) {
+u32 sceDevVif0PutErr(u32 arg0, u32 arg1, u32 arg2) {
     u32 v = arg0 | (arg1 << 1) | (arg2 << 2);
     *(volatile u32 *)0x10003820 = v;
     return v;
 }
 
-s32 func_001870B8(void) {
+s32 sceDevVif0GetErr(void) {
     return *(volatile s32 *)0x10003820;
 }
 
-u32 func_001870C8(void) {
+u32 sceDevVif0Sync(void) {
     s32 temp_a0;
 
     temp_a0 = *(volatile s32 *)0x10003800;
@@ -236,11 +236,11 @@ u32 func_001870C8(void) {
     return (temp_a0 & 0x3000) ? 3U : 4U;
 }
 
-s32 func_00187118(void *arg0) {
+s32 sceDevVif0GetCnd(void *arg0) {
     u32 temp_s4;
 
     temp_s4 = *(volatile u32 *)0x10003840;
-    if (func_001870C8() >= 2U) {
+    if (sceDevVif0Sync() >= 2U) {
         return 0;
     }
     (*(s32 *)arg0) = (s32) *(volatile s32 *)0x10003900;
@@ -265,7 +265,7 @@ s32 func_00187118(void *arg0) {
     return 1;
 }
 
-s32 func_00187298(__int128 *data, s32 n) {
+s32 sceDevVif0PutFifo(__int128 *data, s32 n) {
     s32 i = 0;
 
     while (--n != -1) {
@@ -278,7 +278,7 @@ s32 func_00187298(__int128 *data, s32 n) {
     return i;
 }
 
-void func_001872F8(void *p0, u64 p1) {
+void sceGifPkInit(void *p0, u64 p1) {
     __asm__ __volatile__("\n\
 	sw	%1,0x0(%0)\n\
 	sw	$0,0x8(%0)\n\
@@ -286,12 +286,12 @@ void func_001872F8(void *p0, u64 p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_00187308(void *arg0) {
+void sceGifPkReset(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 8)) = 0;
     (*(s32 *)arg0) = (s32) (*(s32 *)((u8 *)arg0 + 4));
 }
 
-s32 func_00187318(void *arg0) {
+s32 sceGifPkTerminate(void *arg0) {
     s32 *temp_a2;
     s32 var_a1;
 
@@ -311,11 +311,11 @@ s32 func_00187318(void *arg0) {
     return var_a1;
 }
 
-void func_00187370(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void sceGifPkCnt(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     u32 *tag;
     s32 ret;
 
-    ret = func_00187318(arg0);
+    ret = sceGifPkTerminate(arg0);
     tag = *(u32 **)arg0;
     *(u32 **)((u8 *)arg0 + 8) = (u32 *)ret;
     *tag++ = arg3 | 0x10000000;
@@ -325,10 +325,10 @@ void func_00187370(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     tag[0] = 0;
 }
 
-void func_001873E8(void *arg0, s32 addr, s32 size, s32 a3, s32 a4, s32 a5) {
+void sceGifPkRef(void *arg0, s32 addr, s32 size, s32 a3, s32 a4, s32 a5) {
     u32 *tag;
 
-    func_00187318(arg0);
+    sceGifPkTerminate(arg0);
     tag = *(u32 **)arg0;
     size |= 0x30000000;
     *tag++ = a5 | size;
@@ -338,11 +338,11 @@ void func_001873E8(void *arg0, s32 addr, s32 size, s32 a3, s32 a4, s32 a5) {
     *(u32 **)arg0 = tag + 3;
 }
 
-void func_00187480(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void sceGifPkEnd(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     u32 *tag;
     s32 ret;
 
-    ret = func_00187318(arg0);
+    ret = sceGifPkTerminate(arg0);
     tag = *(u32 **)arg0;
     *(u32 **)((u8 *)arg0 + 8) = (u32 *)ret;
     *tag++ = arg3 | 0x70000000;
@@ -352,21 +352,21 @@ void func_00187480(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     tag[0] = 0;
 }
 
-void *func_001874F8(void *p0, s32 p1) {
+void *sceGifPkReserve(void *p0, s32 p1) {
     u32 *cur = *(u32 **)p0;
 
     *(u32 **)p0 = cur + p1;
     return cur;
 }
 
-void func_00187510(s32 *arg0, __int128 arg1) {
+void sceGifPkOpenGifTag(s32 *arg0, __int128 arg1) {
     __int128 *p = (__int128 *) arg0[0];
     *p = arg1;
     arg0[3] = (s32) p;
     arg0[0] = (s32) (p + 1);
 }
 
-void func_00187528(void *arg0) {
+void sceGifPkCloseGifTag(void *arg0) {
     u64 *code = *(u64 **)((u8 *)arg0 + 0xC);
     s32 cur = *(s32 *)arg0;
     u64 v = *code;
@@ -397,20 +397,20 @@ void func_00187528(void *arg0) {
     *(s32 *)arg0 = p;
 }
 
-void func_001875D0(u64 **arg0, u32 arg1, u64 arg2) {
+void sceGifPkAddGsAD(u64 **arg0, u32 arg1, u64 arg2) {
     u64 *p = *arg0;
     *p++ = arg2;
     *p++ = arg1;
     *arg0 = p;
 }
 
-void func_001875F8(s32 *arg0, s32 arg1) {
+void sceVif1PkInit(s32 *arg0, s32 arg1) {
     arg0[1] = arg1;
     arg0[0] = arg1;
     arg0[2] = 0;
 }
 
-s32 func_00187608(void *arg0) {
+s32 sceVif1PkTerminate(void *arg0) {
     s32 *temp_a2;
     s32 var_a1;
 
@@ -430,11 +430,11 @@ s32 func_00187608(void *arg0) {
     return var_a1;
 }
 
-void func_00187660(void *arg0, s32 arg1) {
+void sceVif1PkCnt(void *arg0, s32 arg1) {
     u32 *tag;
     s32 ret;
 
-    ret = func_00187608(arg0);
+    ret = sceVif1PkTerminate(arg0);
     tag = *(u32 **)arg0;
     *(u32 **)((u8 *)arg0 + 8) = (u32 *)ret;
     *tag++ = arg1 | 0x10000000;
@@ -443,7 +443,7 @@ void func_00187660(void *arg0, s32 arg1) {
     tag[0] = 0;
 }
 
-void func_001876B8(void *arg0, __int128 arg1) {
+void sceVif1PkOpenGifTag(void *arg0, __int128 arg1) {
     __int128 *temp_v0;
 
     temp_v0 = (*(__int128 **)arg0);
@@ -452,7 +452,7 @@ void func_001876B8(void *arg0, __int128 arg1) {
     (*(__int128 **)arg0) = (__int128 *) (temp_v0 + 1);
 }
 
-void func_001876D0(void *arg0) {
+void sceVif1PkCloseGifTag(void *arg0) {
     u64 *code = *(u64 **)((u8 *)arg0 + 0x14);
     s32 cur = *(s32 *)arg0;
     u64 v = *code;
@@ -483,17 +483,17 @@ void func_001876D0(void *arg0) {
     *(s32 *)arg0 = p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00187778);
+INCLUDE_ASM("asm/nonmatchings/main_027", sceVif1PkAlign);
 
-void func_001877F8(s32 **arg0, s32 arg1) {
+void sceVif1PkAddCode(s32 **arg0, s32 arg1) {
     *(*arg0)++ = arg1;
 }
 
-void func_00187810(s32 **arg0, s32 arg1) {
+void sceVif1PkAddData(s32 **arg0, s32 arg1) {
     *(*arg0)++ = arg1;
 }
 
-void func_00187828(void *arg0, s32 arg1, s64 arg2) {
+void sceVif1PkAddGsAD(void *arg0, s32 arg1, s64 arg2) {
     u32 *tag;
 
     tag = *(u32 **)arg0;
@@ -504,17 +504,17 @@ void func_00187828(void *arg0, s32 arg1, s64 arg2) {
     tag[2] = 0;
 }
 
-void func_00187858(void *arg0, s32 arg1) {
+void sceVif1PkOpenDirectHLCode(void *arg0, s32 arg1) {
     s32 *temp_a1;
 
-    func_00187778(arg0, 2, 3);
+    sceVif1PkAlign(arg0, 2, 3);
     temp_a1 = (*(s32 **)arg0);
     (*(s32 **)((u8 *)arg0 + 0xC)) = temp_a1;
     (*(s32 **)arg0) = (s32 *) (temp_a1 + 1);
     *temp_a1 = (arg1 != 0) ? 0xD1000000 : 0x51000000;
 }
 
-void func_001878B0(void *arg0) {
+void sceVif1PkCloseDirectHLCode(void *arg0) {
     u32 *tag;
     u32 *end;
 
@@ -524,7 +524,7 @@ void func_001878B0(void *arg0) {
     *tag += (u32)(end - tag) >> 2;
 }
 
-void func_001878E0(void *p0, void *p1, void *p2) {
+void sceVu0ApplyMatrix(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x10(%1)\n\
@@ -539,7 +539,7 @@ void func_001878E0(void *p0, void *p1, void *p2) {
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-void func_00187910(void *p0, void *p1, void *p2) {
+void sceVu0MulMatrix(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x10(%1)\n\
@@ -560,7 +560,7 @@ _func_00187910_00187924:\n\
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-void func_00187958(void *p0, void *p1, void *p2) {
+void sceVu0OuterProduct(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x0(%2)\n\
@@ -571,7 +571,7 @@ void func_00187958(void *p0, void *p1, void *p2) {
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-float func_00187978(void *p0, void *p1) {
+float sceVu0InnerProduct(void *p0, void *p1) {
     float ret;
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
@@ -585,7 +585,7 @@ float func_00187978(void *p0, void *p1) {
     return ret;
 }
 
-void func_001879A0(void *p0, void *p1) {
+void sceVu0Normalize(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	vmul.xyz	$vf5,$vf4,$vf4\n\
@@ -604,7 +604,7 @@ void func_001879A0(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_001879E0(void *m0, void *m1) {
+void sceVu0TransposeMatrix(void *m0, void *m1) {
     __asm__ __volatile__("\n\
 	lq $8,0x0000(%1)\n\
 	lq $9,0x0010(%1)\n\
@@ -625,7 +625,7 @@ void func_001879E0(void *m0, void *m1) {
 	" : : "r" (m0) , "r" (m1));
 }
 
-void func_00187A28(void *p0, void *p1) {
+void sceVu0InversMatrix(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lq	$8,0x0(%1)\n\
 	lq	$9,0x10(%1)\n\
@@ -656,7 +656,7 @@ void func_00187A28(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_00187A98(void *p0, void *p1, float f0) {
+void sceVu0DivVector(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	.set noreorder\n\
@@ -670,7 +670,7 @@ void func_00187A98(void *p0, void *p1, float f0) {
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-void func_00187AB8(void *p0, void *p1, float f0) {
+void sceVu0DivVectorXYZ(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	.set noreorder\n\
@@ -684,7 +684,7 @@ void func_00187AB8(void *p0, void *p1, float f0) {
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-void func_00187AD8(void *p0, void *p1, void *p2, float f0) {
+void sceVu0InterVector(void *p0, void *p1, void *p2, float f0) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x0(%2)\n\
@@ -700,7 +700,7 @@ void func_00187AD8(void *p0, void *p1, void *p2, float f0) {
 	" :  : "r" (p0), "r" (p1), "r" (p2), "f" (f0));
 }
 
-void func_00187B00(void *v0, void *v1, void *v2) {
+void sceVu0AddVector(void *v0, void *v1, void *v2) {
     __asm__ __volatile__("\n\
 	lqc2    $vf4,0x0(%1)\n\
 	lqc2    $vf5,0x0(%2)\n\
@@ -709,7 +709,7 @@ void func_00187B00(void *v0, void *v1, void *v2) {
 	" : : "r" (v0) , "r" (v1), "r" (v2));
 }
 
-void func_00187B18(void *v0, void *v1, void *v2) {
+void sceVu0SubVector(void *v0, void *v1, void *v2) {
     __asm__ __volatile__("\n\
 	lqc2    $vf4,0x0(%1)\n\
 	lqc2    $vf5,0x0(%2)\n\
@@ -718,7 +718,7 @@ void func_00187B18(void *v0, void *v1, void *v2) {
 	" : : "r" (v0) , "r" (v1), "r" (v2));
 }
 
-void func_00187B30(void *p0, void *p1, void *p2) {
+void sceVu0MulVector(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x0(%2)\n\
@@ -727,7 +727,7 @@ void func_00187B30(void *p0, void *p1, void *p2) {
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-void func_00187B48(void *p0, void *p1, float f0) {
+void sceVu0ScaleVector(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	.set noreorder\n\
@@ -739,7 +739,7 @@ void func_00187B48(void *p0, void *p1, float f0) {
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-void func_00187B60(void *p0, void *p1, void *p2) {
+void sceVu0TransMatrix(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%2)\n\
 	lqc2	$vf5,0x30(%1)\n\
@@ -754,14 +754,14 @@ void func_00187B60(void *p0, void *p1, void *p2) {
 	" :  : "r" (p0), "r" (p1), "r" (p2));
 }
 
-void func_00187B90(void *p0, void *p1) {
+void sceVu0CopyVector(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lq	$6,0x0(%1)\n\
 	sq	$6,0x0(%0)\n\
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_00187BA0(void *m0, void *m1) {
+void sceVu0CopyMatrix(void *m0, void *m1) {
     __asm__ __volatile__("\n\
 	lq    $6,0x0(%1)\n\
 	lq    $7,0x10(%1)\n\
@@ -774,7 +774,7 @@ void func_00187BA0(void *m0, void *m1) {
 	" : : "r" (m0) , "r" (m1));
 }
 
-void func_00187BC8(void *p0, void *p1) {
+void sceVu0FTOI4Vector(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	vftoi4.xyzw	$vf5,$vf4\n\
@@ -782,7 +782,7 @@ void func_00187BC8(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_00187BD8(void *p0, void *p1) {
+void sceVu0FTOI0Vector(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	vftoi0.xyzw	$vf5,$vf4\n\

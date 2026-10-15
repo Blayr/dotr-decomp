@@ -115,7 +115,13 @@ def main_syms() -> Path:
         rows.append((addr, kind, name, size))
     # one name per address (splat refuses two): the generated func_/D_/jtbl_ name the headers use wins over an alias
     rows.sort(key=lambda r: (r[0], not re.match(r"^(func|D|jtbl)_[0-9A-F]{8}$", r[2])))
+    # a function's old name (config/old_names.txt, a linker-script alias) has no type or size: it takes its own
+    old_path = ROOT / "config/old_names.txt"
+    old = set(re.findall(r"^(func_[0-9A-F]{8}) = ", old_path.read_text(), re.M)) if old_path.exists() else set()
+    sizes = {r[0]: r[3] for r in rows if r[3]}
     for addr, kind, name, size in rows:
+        if name in old:
+            kind, size = "T", size or sizes.get(addr, 0)
         if addr in seen:
             continue
         seen[addr] = name

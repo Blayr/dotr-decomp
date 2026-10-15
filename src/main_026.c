@@ -16,8 +16,8 @@ void func_00184650(void) {
         t = (KPatch_00184650 *)&D_0028D8C8;
         func_00184580(t[0].addr, t[0].val);
         func_00184590(0x80074000, &D_0028D120, 0x7A8);
-        func_0017BB60(0);
-        func_0017BB60(2);
+        FlushCache(0);
+        FlushCache(2);
         func_00184580(t[1].addr, t[1].val);
         for (i = 2; i < 3; i++) {
             func_00184580(t[i].addr, func_001845D8(t[i].addr));
@@ -31,22 +31,22 @@ void func_00184700(void) {
 
 s32 func_00184708(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_00184700();
-    return func_0017B530(arg0, arg1, arg2, arg3);
+    return ExecPS2(arg0, arg1, arg2, arg3);
 }
 
 void func_00184768(s32 arg0, s32 arg1, s32 arg2) {
     func_00184700();
-    func_0017B520(arg0, arg1, arg2);
+    LoadExecPS2(arg0, arg1, arg2);
 }
 
 void func_001847B0(s32 arg0) {
     func_00184700();
-    func_0017B500(arg0);
+    Exit(arg0);
 }
 
 void func_001847D8(s32 arg0, s32 arg1) {
     func_00184700();
-    func_0017BD00(arg0, arg1);
+    ExecOSD(arg0, arg1);
 }
 
 void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
@@ -54,36 +54,36 @@ void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 
     switch (arg0) {
     case 0:
-        p = (s16 *)func_001849A0();
+        p = (s16 *)sceGsGetGParam();
         *(volatile u64 *)0x12001000 = 0x200;
         p[0] = arg1;
         p[1] = arg2;
         p[3] = (*(volatile u64 *)0x12001000 >> 16) & 0xFF;
-        func_0017BC20(0xFF00);
+        GsPutIMR(0xFF00);
         p[2] = arg3 != 0;
         if (((s32 *)p)[2] != 0) {
             func_0017C3C0(2);
-            func_0017B5E0(2, ((s32 *)p)[3]);
+            RemoveIntcHandler(2, ((s32 *)p)[3]);
             ((s32 *)p)[2] = 0;
             ((s32 *)p)[3] = 0;
         }
-        func_0017B4E0(arg1 & 1, arg2 & 0xFF, arg3 & 1);
+        SetGsCrt(arg1 & 1, arg2 & 0xFF, arg3 & 1);
         break;
     case 1:
         *(volatile u64 *)0x12001000 = 0x100;
         break;
     case 5:
-        p = (s16 *)func_001849A0();
+        p = (s16 *)sceGsGetGParam();
         p[2] = arg3 != 0;
         p[0] = arg1;
         p[1] = arg2;
         p[3] = (*(volatile u64 *)0x12001000 >> 16) & 0xFF;
-        func_0017B4E0(arg1 & 1, arg2 & 0xFF, arg3 & 1);
+        SetGsCrt(arg1 & 1, arg2 & 0xFF, arg3 & 1);
         break;
     }
 }
 
-s32 *func_001849A0(void) {
+s32 *sceGsGetGParam(void) {
     return &D_0028D8F0;
 }
 
@@ -91,7 +91,7 @@ s32 *func_001849A0(void) {
 
 extern dk_int128 D_0028D900[2];
 
-void func_001849B0(void) {
+void sceGsResetPath(void) {
     register u32 s __asm__("$4");
 
     *(volatile u32 *)0x10003C10 = 1;
@@ -126,9 +126,9 @@ extern char D_002BC2A0[];
 
 /* sceGsSetDefDispEnv: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_00184A18(void *arg0, s16 psm, s16 w, s16 h, s16 dx, s16 dy) {
+void sceGsSetDefDispEnv(void *arg0, s16 psm, s16 w, s16 h, s16 dx, s16 dy) {
     GsDispEnv_00184A18 *disp = arg0;
-    GsGParam_00184A18 *gp = (GsGParam_00184A18 *)func_001849A0();
+    GsGParam_00184A18 *gp = (GsGParam_00184A18 *)sceGsGetGParam();
 
     disp->pmode = 0x66;
     if (gp->inter != 0) {
@@ -206,11 +206,11 @@ void func_00184A18(void *arg0, s16 psm, s16 w, s16 h, s16 dx, s16 dy) {
     disp->bgcolor = 0;
 }
 
-s32 func_00184C88(void *arg0) {
+s32 sceGsPutDispEnv(void *arg0) {
     u64 *disp;
 
     disp = arg0;
-    if (((s16 *)func_001849A0())[3] == 1) {
+    if (((s16 *)sceGsGetGParam())[3] == 1) {
         *(volatile u64 *)0x12000000 = disp[0];
         *(volatile u64 *)0x12000070 = disp[2];
         *(volatile u64 *)0x12000080 = disp[3];
@@ -234,12 +234,12 @@ typedef struct GsGParam_00184D48 {
     u64 unk10;
 } GsGParam_00184D48;
 
-s32 func_00184D48(s16 arg0, s16 arg1, s16 arg2) {
+s32 sceGszbufaddr(s16 arg0, s16 arg1, s16 arg2) {
     GsGParam_00184D48 *p;
     s32 bw;
     s32 bh;
 
-    p = (GsGParam_00184D48 *)func_001849A0();
+    p = (GsGParam_00184D48 *)sceGsGetGParam();
     bw = (arg1 + 63) / 64;
     if (arg0 & 2) {
         bh = (arg2 + 63) / 64;
@@ -286,16 +286,16 @@ typedef struct {
     u64 test1addr;
 } sceGsDrawEnv1E10;
 
-s32 func_00184E10(void *arg0, s16 psm, s16 w, s16 h, s16 ztest, s16 zpsm) {
+s32 sceGsSetDefDrawEnv(void *arg0, s16 psm, s16 w, s16 h, s16 ztest, s16 zpsm) {
     sceGsDrawEnv1E10 *dp = arg0;
 
     dp->frame1addr = 0x4C;
     dp->frame1 = ((u64)(((w + 63) >> 6) & 0x3F) << 16) | ((u64)(psm & 0xF) << 24);
     dp->zbuf1addr = 0x4E;
     if (ztest == 0) {
-        dp->zbuf1 = (u64)(s16)func_00184D48(psm, w, h) | ((u64)(zpsm & 0xF) << 24) | ((u64)1 << 32);
+        dp->zbuf1 = (u64)(s16)sceGszbufaddr(psm, w, h) | ((u64)(zpsm & 0xF) << 24) | ((u64)1 << 32);
     } else {
-        dp->zbuf1 = (u64)(s16)func_00184D48(psm, w, h) | ((u64)(zpsm & 0xF) << 24);
+        dp->zbuf1 = (u64)(s16)sceGszbufaddr(psm, w, h) | ((u64)(zpsm & 0xF) << 24);
     }
     dp->xyoffset1addr = 0x18;
     dp->xyoffset1 = (((u64)2048 - (s16)(w >> 1)) << 4) | ((((u64)2048 - (s16)(h >> 1)) << 4) << 32);
@@ -336,7 +336,7 @@ typedef struct {
     u64 testbaddr;
 } sceGsClear;
 
-s32 func_00184FF8(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b, u8 a, u32 z) {
+s32 sceGsSetDefClear(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b, u8 a, u32 z) {
     sceGsClear *cp = arg0;
 
     cp->testaaddr = 0x47;
@@ -359,7 +359,7 @@ s32 func_00184FF8(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g,
     return 6;
 }
 
-s32 func_00185100(void *arg0) {
+s32 sceGsPutDrawEnv(void *arg0) {
     u32 i;
 
     i = 0;
@@ -447,19 +447,19 @@ typedef struct {
     GsClear_001851E8 clear1;
 } GsDBuff_001851E8;
 
-void func_001851E8(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 flag) {
+void sceGsSetDefDBuff(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 flag) {
     GsDBuff_001851E8 *db = arg0;
-    GParam_001851E8 *gp = (GParam_001851E8 *)func_001849A0();
+    GParam_001851E8 *gp = (GParam_001851E8 *)sceGsGetGParam();
     s32 zb;
     s16 fbp;
 
-    func_00184A18(&db->disp0, psm, w, h, 0, 0);
-    func_00184A18(&db->disp1, psm, w, h, 0, 0);
-    func_00184E10(&db->draw0, psm, w, h, ztst, zpsm);
-    func_00184E10(&db->draw1, psm, w, h, ztst, zpsm);
+    sceGsSetDefDispEnv(&db->disp0, psm, w, h, 0, 0);
+    sceGsSetDefDispEnv(&db->disp1, psm, w, h, 0, 0);
+    sceGsSetDefDrawEnv(&db->draw0, psm, w, h, ztst, zpsm);
+    sceGsSetDefDrawEnv(&db->draw1, psm, w, h, ztst, zpsm);
     if (flag) {
-        func_00184FF8(&db->clear0, ztst, 0x800 - (w >> 1), 0x800 - (h >> 1), w, h, 0, 0, 0, 0, 0);
-        func_00184FF8(&db->clear1, ztst, 0x800 - (w >> 1), 0x800 - (h >> 1), w, h, 0, 0, 0, 0, 0);
+        sceGsSetDefClear(&db->clear0, ztst, 0x800 - (w >> 1), 0x800 - (h >> 1), w, h, 0, 0, 0, 0, 0);
+        sceGsSetDefClear(&db->clear1, ztst, 0x800 - (w >> 1), 0x800 - (h >> 1), w, h, 0, 0, 0, 0, 0);
     }
 
     *(__int128 *)&db->giftag0 = 0;
@@ -473,7 +473,7 @@ void func_001851E8(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 fl
     db->giftag1.NREG = 1;
     db->giftag1.REGS0 = 0xE;
 
-    zb = func_00184D48(psm, w, h);
+    zb = sceGszbufaddr(psm, w, h);
     if ((gp->inter == 1 && gp->ffmd == 1) || gp->inter == 0) {
         fbp = zb >> 1;
         db->disp1.dispfb.FBP = fbp;
@@ -481,25 +481,25 @@ void func_001851E8(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 fl
     }
 }
 
-s32 func_00185480(u8 *arg0, s32 arg1) {
+s32 sceGsSwapDBuff(u8 *arg0, s32 arg1) {
     s32 odd;
     s32 ret;
 
     odd = arg1 & 1;
-    func_00184C88(arg0 + odd * 0x28);
+    sceGsPutDispEnv(arg0 + odd * 0x28);
     if (odd != 0) {
-        ret = func_00185100(arg0 + 0x140);
+        ret = sceGsPutDrawEnv(arg0 + 0x140);
     } else {
-        ret = func_00185100(arg0 + 0x50);
+        ret = sceGsPutDrawEnv(arg0 + 0x50);
     }
     return ret;
 }
 
-s32 func_001854E0(s32 arg0) {
+s32 sceGsSyncV(s32 arg0) {
     s32 *p;
     s64 v;
 
-    p = func_001849A0();
+    p = sceGsGetGParam();
     if (p[2] == 0) {
         func_0017BD70();
         if (*(s16 *)p == 1) {
@@ -548,7 +548,7 @@ extern char D_002BC470[];
 
 /* sceGsSyncPath: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00185578(s32 mode, s32 timeout) {
+s32 sceGsSyncPath(s32 mode, s32 timeout) {
     u32 i = 0;
     s32 r;
     s32 v;
@@ -640,7 +640,7 @@ typedef struct {
 
 /* sceGsSetDefStoreImage: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00185890(void *arg0, s16 sbp, s16 sbw, s16 spsm, s16 ssax, s16 ssay, s16 rrw, s16 rrh) {
+s32 sceGsSetDefStoreImage(void *arg0, s16 sbp, s16 sbw, s16 spsm, s16 ssax, s16 ssay, s16 rrw, s16 rrh) {
     StoreImage_00185890 *di = arg0;
 
     di->h0 = 0;
@@ -724,7 +724,7 @@ extern char D_002BC548[];
 #define sp ((StoreImage_59D0 *)arg0)
 #define dstaddr ((__int128 *)arg1)
 
-s32 func_001859D0(void *arg0, void *arg1) {
+s32 sceGsExecStoreImage(void *arg0, void *arg1) {
     u32 timeout = 0;
     s32 dummy = 0;
     s32 rest = 0;
@@ -829,7 +829,7 @@ s32 func_001859D0(void *arg0, void *arg1) {
         }
     }
 
-    imr = func_0017BC20(func_0017BC00() | 0x200);
+    imr = GsPutIMR(GsGetIMR() | 0x200);
     *GS_CSR = 2;
     *D1_QWC = 7;
     SET_MADR(sp);
@@ -915,7 +915,7 @@ s32 func_001859D0(void *arg0, void *arg1) {
 
     *VIF1_STAT = 0;
     *GS_BUSDIR = 0;
-    func_0017BC20(imr);
+    GsPutIMR(imr);
     {
         __int128 code = D_0028D920;
         *GS_CSR = 2;
@@ -935,7 +935,7 @@ typedef struct GsScissor_00186060 {
     u64 pad59 : 5;
 } GsScissor_00186060;
 
-void func_00186060(u8 *arg0, s16 arg1, s16 arg2, s16 arg3) {
+void sceGsSetHalfOffset(u8 *arg0, s16 arg1, s16 arg2, s16 arg3) {
     GsScissor_00186060 *sc;
     u64 x;
     u64 y;
@@ -946,7 +946,7 @@ void func_00186060(u8 *arg0, s16 arg1, s16 arg2, s16 arg3) {
     *(u64 *)((u8 *)arg0 + 0x20) = x | ((arg3 ? y + 8 : y) << 32);
 }
 
-void func_001860E8(s8 *arg0, s32 arg1) {
+void memclr(s8 *arg0, s32 arg1) {
     s32 var_v0;
     s8 *var_a0;
 
@@ -961,14 +961,14 @@ void func_001860E8(s8 *arg0, s32 arg1) {
     }
 }
 
-s32 func_00186120(s32 arg0) {
+s32 sceDmaGetChan(s32 arg0) {
     if ((u32) arg0 < 0xAU) {
         return ((s32 *)&D_0028D930)[arg0];
     }
     return 0;
 }
 
-s32 func_00186148(s32 arg0) {
+s32 sceDmaReset(s32 arg0) {
     s32 sp0[8];
     s32 prev;
     s32 i;
@@ -988,15 +988,15 @@ s32 func_00186148(s32 arg0) {
     }
     *(volatile s32 *)0x1000E010 = 0xFF1F;
     *(volatile s32 *)0x1000E010 &= 0xFF1F0000;
-    func_001860E8((s8 *)sp0, 0x14);
-    func_00186238(sp0);
+    memclr((s8 *)sp0, 0x14);
+    sceDmaPutEnv(sp0);
     if (arg0 == 1) {
         *(volatile s32 *)0x1000E000 = *(volatile s32 *)0x1000E000 | 1;
     }
     return prev;
 }
 
-s32 func_00186228(s32 arg0) {
+s32 sceDmaDebug(s32 arg0) {
     s32 temp_v0;
 
     temp_v0 = D_0028D958;
@@ -1029,7 +1029,7 @@ extern u8 D_0028D9B8[16];
 
 /* sceDmaPutEnv: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00186238(void *arg0) {
+s32 sceDmaPutEnv(void *arg0) {
     DmaEnv_00186238 *env = arg0;
     s32 ctrl = *(volatile s32 *)0x1000E000;
     s32 pcr = *(volatile s32 *)0x1000E020;
@@ -1071,12 +1071,12 @@ s32 func_00186238(void *arg0) {
     return 0;
 }
 
-void *func_00186410(void *arg0) {
+void *sceDmaGetEnv(void *arg0) {
     *(GsDef_00186410 *)arg0 = D_0028D9C8;
     return arg0;
 }
 
-s32 func_00186448(u32 arg0) {
+s32 sceDmaPutStallAddr(u32 arg0) {
     s32 old = *(volatile s32 *)0x1000E060;
     if (arg0 != 0xFFFFFFFF) {
         *(volatile s32 *)0x1000E060 = arg0;
@@ -1084,7 +1084,7 @@ s32 func_00186448(u32 arg0) {
     return old;
 }
 
-void func_00186470(void *arg0, void *tag) {
+void sceDmaSend(void *arg0, void *tag) {
     sceDmaChan *d = arg0;
     s32 i = 0x1000000;
 
@@ -1107,7 +1107,7 @@ void func_00186470(void *arg0, void *tag) {
     d->chcr.STR = 1;
 }
 
-void func_00186548(void *arg0, void *addr, s32 size) {
+void sceDmaSendN(void *arg0, void *addr, s32 size) {
     sceDmaChan *d = arg0;
     s32 i = 0x1000000;
 
@@ -1130,7 +1130,7 @@ void func_00186548(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-void func_00186630(void *arg0, void *addr, s32 size) {
+void sceDmaSendI(void *arg0, void *addr, s32 size) {
     sceDmaChan *d = arg0;
     s32 i = 0x1000000;
 
@@ -1153,7 +1153,7 @@ void func_00186630(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-void func_00186718(void *arg0) {
+void sceDmaRecv(void *arg0) {
     sceDmaChan *d = arg0;
     s32 i = 0x1000000;
 
@@ -1173,7 +1173,7 @@ void func_00186718(void *arg0) {
     d->chcr.STR = 1;
 }
 
-void func_001867E0(void *arg0, void *addr, s32 size) {
+void sceDmaRecvN(void *arg0, void *addr, s32 size) {
     sceDmaChan *d = arg0;
     s32 i = 0x1000000;
 
@@ -1196,7 +1196,7 @@ void func_001867E0(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-void func_001868D0(void *arg0, void *addr, s32 size) {
+void sceDmaRecvI(void *arg0, void *addr, s32 size) {
     sceDmaChan *d = arg0;
     s32 i = 0x1000000;
 
@@ -1219,7 +1219,7 @@ void func_001868D0(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-s32 func_001869C0(void *arg0, s32 mode, s32 timeout) {
+s32 sceDmaSync(void *arg0, s32 mode, s32 timeout) {
     sceDmaChan *d = arg0;
 
     if (mode == 1) {
@@ -1241,7 +1241,7 @@ s32 func_001869C0(void *arg0, s32 mode, s32 timeout) {
     return 0;
 }
 
-s32 func_00186A88(void *arg0, void *addr, s32 mode, s32 timeout) {
+s32 sceDmaWatch(void *arg0, void *addr, s32 mode, s32 timeout) {
     sceDmaChan *d = arg0;
 
     if (mode == 1) {
@@ -1275,7 +1275,7 @@ s32 func_00186BA0(u32 *arg0, u32 arg1) {
 
 /* sceDevVu0IsRunning: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00186BB8(void) {
+s32 sceDevVu0CheckBusy(void) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(s));
@@ -1284,7 +1284,7 @@ s32 func_00186BB8(void) {
 
 /* sceDevVu0Pause: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_00186BD0(void) {
+void sceDevVu0Reset(void) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
@@ -1292,11 +1292,11 @@ void func_00186BD0(void) {
     __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
 }
 
-s32 func_00186BE8(void) {
+s32 sceDevVu0Pause(void) {
     s32 ret;
 
     ret = 0;
-    switch (func_00186D18()) {
+    switch (sceDevVu0Sync()) {
     case 4:
         __asm__ volatile(".set noreorder\n\tcfc2.ni $2, $vi28\n\tori $2, $2, 1\n\tctc2.ni $2, $vi28\n\t.set reorder" : : : "$2");
     case 0:
@@ -1310,15 +1310,15 @@ s32 func_00186BE8(void) {
     return ret;
 }
 
-s32 func_00186C48(void) {
+s32 sceDevVu0Continue(void) {
     s32 temp_v0;
     s32 var_v0;
 
     var_v0 = 0;
-    temp_v0 = func_00186D18();
+    temp_v0 = sceDevVu0Sync();
     if (temp_v0 < 4) {
         if (temp_v0 > 0) {
-            func_00186D58(func_00186D68());
+            sceDevVu0Exec(sceDevVu0GetTpc());
             var_v0 = 1;
         }
     }
@@ -1327,7 +1327,7 @@ s32 func_00186C48(void) {
 
 /* sceDevVu0PutStop: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_00186C98(s32 on) {
+void sceDevVu0PutDBit(s32 on) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
@@ -1341,7 +1341,7 @@ void func_00186C98(s32 on) {
 
 /* sceDevVu0PutDbf: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_00186CC8(s32 on) {
+void sceDevVu0PutTBit(s32 on) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
@@ -1355,7 +1355,7 @@ void func_00186CC8(s32 on) {
 
 /* sceDevVu0GetStop: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00186CF8(void) {
+s32 sceDevVu0GetDBit(void) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
@@ -1364,7 +1364,7 @@ s32 func_00186CF8(void) {
 
 /* sceDevVu0GetDbf: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00186D08(void) {
+s32 sceDevVu0GetTBit(void) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s));
@@ -1373,7 +1373,7 @@ s32 func_00186D08(void) {
 
 /* sceDevVu0GetStat: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00186D18(void) {
+s32 sceDevVu0Sync(void) {
     u32 s;
 
     __asm__ __volatile__("cfc2.ni %0, $vi29" : "=r"(s));
@@ -1392,7 +1392,7 @@ s32 func_00186D18(void) {
 /* sceDevVu0Start (libdev): start VU0 microcode at addr. ctc2.ni is a raw word so the assembler adds no
    hazard nop; vcallmsr then lands in the return's delay slot, as in the original */
 
-void func_00186D58(s32 addr) {
+void sceDevVu0Exec(s32 addr) {
     __asm__ __volatile__("andi\t$4,$4,0xFFFF\n"
                          "\t.word 0x48C4D800 # ctc2.ni $4, $vi27\n"
                          "\tvcallmsr\t$vi27");
@@ -1400,7 +1400,7 @@ void func_00186D58(s32 addr) {
 
 /* sceDevVu0GetTpc: adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-u32 func_00186D68(void) {
+u32 sceDevVu0GetTpc(void) {
     u32 t;
 
     __asm__ __volatile__("cfc2.ni %0, $vi26" : "=r"(t));

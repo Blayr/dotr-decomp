@@ -1,15 +1,15 @@
 #include "common.h"
 #include "sce/libc.h"
 
-s32 func_00195070(s32 arg0) {
+s32 abs(s32 arg0) {
     return arg0 < 0 ? -arg0 : arg0;
 }
 
-void func_00195088(s32 arg0) {
+void atof(s32 arg0) {
     func_0019D3E0(arg0, 0);
 }
 
-s32 func_001950A0(const char *s) {
+s32 atoi(const char *s) {
     return func_0019D750(s, NULL, 10);
 }
 
@@ -42,7 +42,7 @@ void *func_00195140(void *ptr, u32 n, u32 size) {
     u32 sz = n * size;
     void *mem;
 
-    mem = (void *)func_00197EB8((s32)ptr, sz);
+    mem = (void *)_malloc_r((s32)ptr, sz);
     if (mem == 0) {
         return 0;
     } else {
@@ -76,7 +76,7 @@ void *func_00195140(void *ptr, u32 n, u32 size) {
 s32 func_001951F8(s32 *ptr, s32 fd) {
     s32 ret;
     D_003512F8 = 0;
-    if ((ret = ((s32 (*)(s32))func_0017BFC8)(fd)) == -1 && D_003512F8 != 0)
+    if ((ret = ((s32 (*)(s32))close)(fd)) == -1 && D_003512F8 != 0)
         *ptr = D_003512F8;
     return ret;
 }
@@ -150,13 +150,13 @@ s32 func_00195250(i2b_Bigint *b, i2b_Bigint *S) {
 
 INCLUDE_ASM("asm/nonmatchings/main_033b", func_00195480);
 
-void func_001966E8(void) {
+void __env_lock(void) {
 }
 
-void func_001966F0(void) {
+void __env_unlock(void) {
 }
 
-s32 func_001966F8(void) {
+s32 __errno(void) {
     return D_0028FA98;
 }
 
@@ -177,19 +177,19 @@ typedef struct ff_FILE {
     ff_reent *_data;
 } ff_FILE;
 
-s32 func_00196708(nl_FILE *arg0) {
+s32 fflush(nl_FILE *arg0) {
     ff_FILE *fp = (ff_FILE *)arg0;
     u8 *p;
     s32 n, t;
 
     if (fp == NULL)
-        return func_00197488((u8 *)D_0028FA98, func_00196708);
+        return _fwalk((u8 *)D_0028FA98, fflush);
 
     do {
         if (fp->_data == 0)
             fp->_data = (ff_reent *)D_0028FA98;
         if (!fp->_data->__sdidinit)
-            func_00196A30(fp->_data);
+            __sinit(fp->_data);
     } while (0);
 
     t = fp->_flags;
@@ -212,14 +212,14 @@ s32 func_00196708(nl_FILE *arg0) {
     return 0;
 }
 
-void func_00196820(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
+void std(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
     (*(s32 *)((u8 *)arg0 + 0x54)) = arg3;
     (*(s16 *)((u8 *)arg0 + 0xC)) = arg1;
     (*(s16 *)((u8 *)arg0 + 0xE)) = arg2;
-    (*(s32 **)((u8 *)arg0 + 0x20)) = &func_0019B788;
-    (*(s32 **)((u8 *)arg0 + 0x24)) = &func_0019B7F0;
-    (*(s32 **)((u8 *)arg0 + 0x28)) = &func_0019B870;
-    (*(void (**)(void *))((u8 *)arg0 + 0x2C)) = func_0019B8D8;
+    (*(s32 **)((u8 *)arg0 + 0x20)) = &__sread;
+    (*(s32 **)((u8 *)arg0 + 0x24)) = &__swrite;
+    (*(s32 **)((u8 *)arg0 + 0x28)) = &__sseek;
+    (*(void (**)(void *))((u8 *)arg0 + 0x2C)) = __sclose;
     (*(s32 *)((u8 *)arg0 + 4)) = 0;
     (*(s32 *)((u8 *)arg0 + 8)) = 0;
     (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
@@ -229,11 +229,11 @@ void func_00196820(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
     (*(s32 *)arg0) = 0;
 }
 
-nl_mglue *func_00196880(s32 d, s32 n) {
+nl_mglue *__sfmoreglue(s32 d, s32 n) {
     nl_mglue *g;
     nl_mFILE *p;
 
-    g = (nl_mglue *)func_00197EB8(d, sizeof(*g) + n * sizeof(nl_mFILE));
+    g = (nl_mglue *)_malloc_r(d, sizeof(*g) + n * sizeof(nl_mFILE));
     if (g == NULL)
         return NULL;
     p = (nl_mFILE *)(g + 1);
@@ -263,19 +263,19 @@ typedef struct sf_FILE {
 typedef struct sf_glue { struct sf_glue *_next; s32 _niobs; sf_FILE *_iobs; } sf_glue;
 typedef struct sf_reent { s32 _errno; u8 pad04[0x34]; s32 __sdidinit; u8 pad3C[0x19C]; sf_glue __sglue; } sf_reent;
 
-void *func_001968F8(void *arg0) {
+void *__sfp(void *arg0) {
     sf_reent *d = arg0;
     sf_FILE *fp;
     s32 n;
     sf_glue *g;
 
     if (!d->__sdidinit)
-        func_00196A30(d);
+        __sinit(d);
     for (g = &d->__sglue;; g = g->_next) {
         for (fp = g->_iobs, n = g->_niobs; --n >= 0; fp++)
             if (fp->_flags == 0)
                 goto found;
-        if (g->_next == NULL && (g->_next = (sf_glue *)func_00196880((s32)d, 4)) == NULL)
+        if (g->_next == NULL && (g->_next = (sf_glue *)__sfmoreglue((s32)d, 4)) == NULL)
             break;
     }
     d->_errno = 12;
@@ -299,28 +299,28 @@ found:
 }
 
 s32 func_001969F0(s32 ptr) {
-    return func_00197488(ptr, func_00196708);
+    return _fwalk(ptr, fflush);
 }
 
 void func_00196A10(void) {
     func_001969F0(D_0028FA98);
 }
 
-void func_00196A30(void *arg0) {
+void __sinit(void *arg0) {
     void *temp_s1;
 
     temp_s1 = arg0 + 0x1E4;
     (*(s32 (**)(s32))((u8 *)arg0 + 0x3C)) = func_001969F0;
     (*(s32 *)((u8 *)arg0 + 0x38)) = 1;
-    func_00196820(temp_s1, 4, 0, arg0);
-    func_00196820(arg0 + 0x23C, 9, 1, arg0);
-    func_00196820(arg0 + 0x294, 0xA, 2, arg0);
+    std(temp_s1, 4, 0, arg0);
+    std(arg0 + 0x23C, 9, 1, arg0);
+    std(arg0 + 0x294, 0xA, 2, arg0);
     (*(s32 *)((u8 *)arg0 + 0x1D8)) = 0;
     (*(void **)((u8 *)arg0 + 0x1E0)) = temp_s1;
     (*(s32 *)((u8 *)arg0 + 0x1DC)) = 3;
 }
 
-u32 func_00196AC0(void *buf, u32 size, u32 count, void *arg3) {
+u32 fread(void *buf, u32 size, u32 count, void *arg3) {
     fr_FILE *fp = arg3;
     u32 resid;
     char *p;
@@ -348,7 +348,7 @@ u32 func_00196AC0(void *buf, u32 size, u32 count, void *arg3) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196BE0);
+INCLUDE_ASM("asm/nonmatchings/main_033b", _free_r);
 
 #define SIZE_SZ (sizeof(INTERNAL_SIZE_T))
 #define PREV_INUSE 0x1
@@ -361,7 +361,7 @@ INCLUDE_ASM("asm/nonmatchings/main_033b", func_00196BE0);
 
 /* _malloc_trim_r (newlib 1.9.0 mallocr.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00196ED8(s32 reent_ptr, u32 pad) {
+s32 _malloc_trim_r(s32 reent_ptr, u32 pad) {
     long top_size;
     long extra;
     char *current_brk;
@@ -410,10 +410,10 @@ s32 func_00196ED8(s32 reent_ptr, u32 pad) {
 #undef bin_at
 #undef top
 
-s32 func_00197048(s32 *ptr, s32 fd, void *st) {
+s32 _fstat_r(s32 *ptr, s32 fd, void *st) {
     s32 ret;
     D_003512F8 = 0;
-    if ((ret = func_0017C098(fd, st)) == -1 && D_003512F8 != 0)
+    if ((ret = fstat(fd, st)) == -1 && D_003512F8 != 0)
         *ptr = D_003512F8;
     return ret;
 }
@@ -430,7 +430,7 @@ s32 func_00197048(s32 *ptr, s32 fd, void *st) {
 
 /* __sfvwrite (newlib 1.9.0 fvwrite.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_001970A8(void *arg0, void *arg1) {
+s32 __sfvwrite(void *arg0, void *arg1) {
     extern void *func_00198618();
     Fil *fp = arg0;
     struct __suio *uio = arg1;
@@ -476,7 +476,7 @@ s32 func_001970A8(void *arg0, void *arg1) {
             } else if (fp->p > fp->bf.base && len > w) {
                 COPY_001970A8(w);
                 fp->p += w;
-                if (func_00196708((nl_FILE *)fp)) {
+                if (fflush((nl_FILE *)fp)) {
                     goto err;
                 }
             } else if (len >= (w = fp->bf.size)) {
@@ -507,7 +507,7 @@ s32 func_001970A8(void *arg0, void *arg1) {
             if (fp->p > fp->bf.base && s > w) {
                 COPY_001970A8(w);
                 fp->p += w;
-                if (func_00196708((nl_FILE *)fp)) {
+                if (fflush((nl_FILE *)fp)) {
                     goto err;
                 }
             } else if (s >= (w = fp->bf.size)) {
@@ -522,7 +522,7 @@ s32 func_001970A8(void *arg0, void *arg1) {
                 fp->p += w;
             }
             if ((nldist -= w) == 0) {
-                if (func_00196708((nl_FILE *)fp)) {
+                if (fflush((nl_FILE *)fp)) {
                     goto err;
                 }
                 nlknown = 0;
@@ -542,7 +542,7 @@ err:
 #undef COPY_001970A8
 #undef GETIOV_001970A8
 
-s32 func_00197488(u8 *ptr, s32 (*function)(nl_FILE *)) {
+s32 _fwalk(u8 *ptr, s32 (*function)(nl_FILE *)) {
     nl_FILE *fp;
     s32 n, ret = 0;
     nl_glue *g;
@@ -554,11 +554,11 @@ s32 func_00197488(u8 *ptr, s32 (*function)(nl_FILE *)) {
     return ret;
 }
 
-void func_00197520(s32 arg0, s32 arg1) {
-    func_00197570(D_0028FA98, arg0, arg1);
+void _findenv(s32 arg0, s32 arg1) {
+    _findenv_r(D_0028FA98, arg0, arg1);
 }
 
-u8 *func_00197548(s32 arg0) {
+u8 *getenv(s32 arg0) {
     s32 sp0[4];
-    return func_00197570(D_0028FA98, arg0, (s32) sp0);
+    return _findenv_r(D_0028FA98, arg0, (s32) sp0);
 }

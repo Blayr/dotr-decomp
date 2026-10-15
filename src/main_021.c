@@ -1,248 +1,248 @@
 #include "common.h"
 
-int func_0017BAB0(void) {
+int iEnableIntcHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x5C\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BAC0(void) {
+int DisableIntcHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5D\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BAD0(void) {
+int iDisableIntcHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x5D\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BAE0(void) {
+int EnableDmacHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5E\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BAF0(void) {
+int iEnableDmacHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x5E\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB00(void) {
+int DisableDmacHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5F\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB10(void) {
+int iDisableDmacHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x5F\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB20(void) {
+int KSeg0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x60\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB30(void) {
+int EnableCache(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x61\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB40(void) {
+int DisableCache(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x62\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB50(void) {
+int GetCop0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x63\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-void func_0017BB60(int arg0) {
+void FlushCache(int arg0) {
     __asm__ __volatile__("addiu\t$3,$0,0x64\n\tsyscall");
 }
 
-int func_0017BB70(void) {
+int CpuConfig(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x66\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BB80(void) {
+int iGetCop0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x67\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-void func_0017BB90(s32 arg0) {
+void iFlushCache(s32 arg0) {
     __asm__ __volatile__("addiu\t$3,$0,-0x68\n\tsyscall");
 }
 
-int func_0017BBA0(void) {
+int iCpuConfig(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x6A\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BBB0(void) {
+int sceSifStopDma(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x6B\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BBC0(void) {
+int SetCPUTimerHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x6C\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BBD0(void) {
+int SetCPUTimer(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x6D\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BBE0(void) {
+int SetOsdConfigParam2(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x6E\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BBF0(void) {
+int GetOsdConfigParam2(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x6F\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-u64 func_0017BC00(void) {
+u64 GsGetIMR(void) {
     register u64 ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x70\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC10(void) {
+int iGsGetIMR(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x70\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-unsigned long long func_0017BC20(unsigned long long arg0) {
+unsigned long long GsPutIMR(unsigned long long arg0) {
     register unsigned long long ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x71\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC30(void) {
+int iGsPutIMR(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x71\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC40(void) {
+int SetPgifHandler(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x72\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC50(void *arg0, long long *arg1) {
+int SetVSyncFlag(void *arg0, long long *arg1) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x73\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC60(void) {
+int RFU116(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC70(void) {
+int print(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x75\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC80(int arg0) {
+int sceSifDmaStat(int arg0) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x76\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BC90(void) {
+int isceSifDmaStat(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x76\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BCA0(int *arg0, int arg1) {
+int sceSifSetDma(int *arg0, int arg1) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x77\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BCB0(void) {
+int isceSifSetDma(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x77\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BCC0(void) {
+int sceSifSetDChain(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x78\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BCD0(void) {
+int isceSifSetDChain(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x78\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BCE0(void) {
+int sceSifSetReg(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x79\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BCF0(int arg0) {
+int sceSifGetReg(int arg0) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x7A\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BD00(int arg0, int arg1) {
+int ExecOSD(int arg0, int arg1) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x7B\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BD10(int arg0, void *arg1) {
+int Deci2Call(int arg0, void *arg1) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x7C\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BD20(void) {
+int PSMode(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x7D\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BD30(void) {
+int MachineType(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x7E\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
-int func_0017BD40(void) {
+int GetMemorySize(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x7F\n\tsyscall" : "=r" (ret));
     return ret;
@@ -283,7 +283,7 @@ s64 func_0017BE00(void) {
     s32 eie;
 
     done = 0;
-    func_0017BC50((void *)&done, (s64 *)&val);
+    SetVSyncFlag((void *)&done, (s64 *)&val);
     eie = func_001843E0();
     *(volatile s32 *)0x1000F000 = 4;
     __asm__ volatile("sync");
@@ -303,38 +303,38 @@ s64 func_0017BE00(void) {
 
 /* write: adapted from gt4-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0017BEA8(s32 mode, s32 a, s32 b) {
-    extern s32 func_0017CEA0(const char *, s32);
+s32 write(s32 mode, s32 a, s32 b) {
+    extern s32 sceTtyWrite(const char *, s32);
 
     if (mode == 1 || mode == 2) {
         if (D_0028C250 == 0) {
-            if (func_0017D0C0() == 0)
+            if (sceTtyInit() == 0)
                 return -1;
             D_0028C250 = 1;
         }
-        return func_0017CEA0((const char *)a, b);
+        return sceTtyWrite((const char *)a, b);
     }
     return -1;
 }
 
-s32 func_0017BF28(s32 fd, char *buf, s32 n) {
+s32 read(s32 fd, char *buf, s32 n) {
     if (fd == 0) {
         if (D_0028C250 == 0) {
-            if (func_0017D0C0() == 0) {
+            if (sceTtyInit() == 0) {
                 return -1;
             }
             D_0028C250 = 1;
         }
-        return func_0017CFF0(buf, n);
+        return sceTtyRead(buf, n);
     }
     return -1;
 }
 
-s32 func_0017BFA0(void) {
-    *(s32 *)func_001966F8() = 5;
+s32 open(void) {
+    *(s32 *)__errno() = 5;
     return -1;
 }
 
-s32 func_0017BFC8(void) {
+s32 close(void) {
     return -1;
 }

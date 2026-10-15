@@ -1,8 +1,8 @@
 #include "common.h"
 
-static s32 func_001FF9C0(void);
+static s32 lSzFile_NextRequest(void);
 
-void func_001FF250(s8 *p) {
+void lSzFile_StrNormalize(s8 *p) {
     s32 network;
     s32 first;
     s32 c;
@@ -13,7 +13,7 @@ void func_001FF250(s8 *p) {
         (first == '\\' && p[1] == '\\')) {
         network = 1;
     }
-    func_00200300(p);
+    lRhFile_StrUpper(p);
     while ((c = *p) != 0) {
         if (network != 0) {
             if (c == '/') {
@@ -26,12 +26,12 @@ void func_001FF250(s8 *p) {
     }
 }
 
-s32 func_001FF300(void) {
+s32 SzFile_InqRequestEx(void) {
     s32 var_s0;
 
     var_s0 = 0;
 loop_1:
-    if (func_001FF360(var_s0, 1) != 0) {
+    if (SzFile_InqRequestX(var_s0, 1) != 0) {
         return 1;
     }
     var_s0 += 1;
@@ -41,8 +41,8 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_001FF350(s32 arg0) {
-    return func_001FF360(arg0, 0);
+s32 SzFile_InqRequest(s32 arg0) {
+    return SzFile_InqRequestX(arg0, 0);
 }
 
 typedef struct Record_001FF360 {
@@ -53,7 +53,7 @@ typedef struct Record_001FF360 {
 
 extern Record_001FF360 D_00320370[];
 
-s32 func_001FF360(s32 arg0, s32 arg1) {
+s32 SzFile_InqRequestX(s32 arg0, s32 arg1) {
     Record_001FF360 *record;
     s32 remaining;
     s32 shift;
@@ -70,12 +70,12 @@ s32 func_001FF360(s32 arg0, s32 arg1) {
     return (s32) record;
 }
 
-void func_001FF3D0(void) {
+void SzFile_DoRequest(void) {
     s32 start;
 
     start = *(s32 *)0x10000800;
     do {
-        if (func_001FF420() == 0) {
+        if (SzFile_DoRequestS() == 0) {
             break;
         }
     } while (*(s32 *)0x10000800 - start <= 0x40);
@@ -93,20 +93,20 @@ typedef struct Flags_001FF420 {
 } Flags_001FF420;
 
 
-s32 func_001FF420(void) {
+s32 SzFile_DoRequestS(void) {
     extern State_001FF420 D_0031C2F0;
     extern Flags_001FF420 D_00322980;
     State_001FF420 *state = &D_0031C2F0;
     s32 temp_v0;
 
     if (D_00322980.active == 0) {
-        temp_v0 = func_001FF9C0();
+        temp_v0 = lSzFile_NextRequest();
         state->current = temp_v0;
         if (temp_v0 < 0) {
             return 0;
         }
     }
-    return func_001FF480(state->current);
+    return lSzFile_DoRequestMain(state->current);
 }
 
 typedef struct Word_001FF480 {
@@ -147,7 +147,7 @@ extern Progress_001FF480 D_00293CB0;
 extern char D_002D0648[];
 extern char D_002D064D[];
 
-s32 func_001FF480(s32 arg0) {
+s32 lSzFile_DoRequestMain(s32 arg0) {
     extern State_001FF480 D_0031C2F0;
     extern s32 func_0019B648();
     char path[0x88];
@@ -175,8 +175,8 @@ s32 func_001FF480(s32 arg0) {
         }
         progress = D_00293CB0;
         if (entry->size.value != 0 && entry->buffer == 0) {
-            if ((entry->buffer = func_00217B40(entry->size.value)) == 0) {
-                func_001FFAC0(arg0, 0);
+            if ((entry->buffer = SzMem_Alloc(entry->size.value)) == 0) {
+                lSzFile_TermRequest(arg0, 0);
                 return 0;
             }
             entry->offset.flag = 1;
@@ -186,7 +186,7 @@ s32 func_001FF480(s32 arg0) {
         }
         sector = entry->handle + (entry->offset.value >> 11);
         count = entry->length.value >> 11;
-        func_0017BB60(0);
+        FlushCache(0);
         if (func_00191D18(sector, count, entry->buffer, &progress) == 0) {
             return 0;
         }
@@ -197,25 +197,25 @@ s32 func_001FF480(s32 arg0) {
             func_0019B648(path, D_002D0648, D_002D064D, entry->name);
             if (entry->size.value < 0) {
                 if ((entry->handle = func_0017FA98(path, 1)) < 0) {
-                    func_001FFAC0(arg0, 0);
+                    lSzFile_TermRequest(arg0, 0);
                     return 0;
                 }
                 if ((entry->size.value = func_0017FEA0(entry->handle, 0, 2)) < 0) {
-                    func_001FFAC0(arg0, 0);
+                    lSzFile_TermRequest(arg0, 0);
                     return 0;
                 }
                 func_0017FD20(entry->handle);
             }
             entry->handle = func_0017FA98(path, 0x8001);
             if (entry->handle < 0) {
-                func_001FFAC0(arg0, 0);
+                lSzFile_TermRequest(arg0, 0);
                 return 0;
             }
             if (entry->size.value != 0) {
                 entry->size.value = (entry->size.value + 15) & ~15;
                 if (entry->buffer == 0) {
-                    if ((entry->buffer = func_00217B40(entry->size.value)) == 0) {
-                        func_001FFAC0(arg0, 0);
+                    if ((entry->buffer = SzMem_Alloc(entry->size.value)) == 0) {
+                        lSzFile_TermRequest(arg0, 0);
                         return 0;
                     }
                     entry->offset.flag = 1;
@@ -227,30 +227,30 @@ s32 func_001FF480(s32 arg0) {
             entry->length.value = (entry->length.value + 15) & ~15;
             if (entry->offset.value != 0) {
                 if (func_0017FEA0(entry->handle, entry->offset.value, 0) < 0) {
-                    func_001FFAC0(arg0, 0);
+                    lSzFile_TermRequest(arg0, 0);
                     return 0;
                 }
                 do {
                     if (func_00180608(entry->handle, 1, &status) < 0) {
-                        func_001FFAC0(arg0, 0);
+                        lSzFile_TermRequest(arg0, 0);
                         return 0;
                     }
                 } while (status != 0);
             }
-            func_0017BB60(0);
+            FlushCache(0);
             if (func_001800D8(entry->handle, entry->buffer, entry->length.value) < 0) {
-                func_001FFAC0(arg0, 0);
+                lSzFile_TermRequest(arg0, 0);
                 return 0;
             }
             entry->size.flag = 1;
         }
         if (func_00180608(entry->handle, 1, &status) < 0) {
-            func_001FFAC0(arg0, 0);
+            lSzFile_TermRequest(arg0, 0);
             return 0;
         }
         if (status == 0) {
-            func_0017BB60(0);
-            func_001FFAC0(arg0, 1);
+            FlushCache(0);
+            lSzFile_TermRequest(arg0, 1);
             return 1;
         }
     }
@@ -272,7 +272,7 @@ typedef struct {
     u16 count;
 } Queue_001FF9C0;
 
-static s32 func_001FF9C0(void) {
+static s32 lSzFile_NextRequest(void) {
     extern Queue_001FF9C0 D_0031C2F0;
     Queue_001FF9C0 *queue = &D_0031C2F0;
     s32 bestIndex = -1;
@@ -353,10 +353,10 @@ typedef struct State_001FFAC0 {
 } State_001FFAC0;
 
 
-void func_001FFAC0(s32 arg0, s32 arg1) {
+void lSzFile_TermRequest(s32 arg0, s32 arg1) {
     extern State_001FFAC0 D_0031C2F0;
-    extern void *func_001FFCB0();
-    extern void func_00217B50();
+    extern void *SzFile_InqGroup();
+    extern void SzMem_Free();
     State_001FFAC0 *state;
     Entry_001FFAC0 *entry;
     Callback_001FFAC0 *callback;
@@ -373,14 +373,14 @@ void func_001FFAC0(s32 arg0, s32 arg1) {
         entry->handle = -1;
     }
     if (entry->extra != NULL) {
-        func_00217B50(entry->extra);
+        SzMem_Free(entry->extra);
         entry->extra = NULL;
     }
     if (arg1 == 0 && entry->flags0F.set != 0 && entry->allocation != NULL) {
-        func_00217B50(entry->allocation);
+        SzMem_Free(entry->allocation);
     }
-    if (func_001FF360(entry->id, 0) == 0) {
-        if ((callback = func_001FFCB0(entry->id)) != NULL) {
+    if (SzFile_InqRequestX(entry->id, 0) == 0) {
+        if ((callback = SzFile_InqGroup(entry->id)) != NULL) {
             if (callback->callback != NULL) {
                 callback->callback(entry->id);
             }
@@ -402,7 +402,7 @@ typedef struct Entry_001FFC50 {
 
 extern Entry_001FFC50 D_00322770[];
 
-s32 func_001FFC50(s32 arg0, s32 arg1) {
+s32 SzFile_EntryGroup(s32 arg0, s32 arg1) {
     Entry_001FFC50 *entry;
     s32 remaining;
 
@@ -419,8 +419,8 @@ s32 func_001FFC50(s32 arg0, s32 arg1) {
     return 0;
 }
 
-void func_001FFCB0(void *arg0) {
-    func_001FFCC0(arg0, 0);
+void SzFile_InqGroup(void *arg0) {
+    SzFile_InqGroupX(arg0, 0);
 }
 
 typedef struct Entry_001FFCC0 {
@@ -428,7 +428,7 @@ typedef struct Entry_001FFCC0 {
     s32 unknown;
 } Entry_001FFCC0;
 
-void *func_001FFCC0(void *arg0, s32 arg1) {
+void *SzFile_InqGroupX(void *arg0, s32 arg1) {
     extern struct Entry_001FFC50 D_00322770[];
     s32 shift;
     s32 count;
@@ -469,22 +469,22 @@ static inline s32 poll_001FFD30(void) {
     s32 handle;
 
     if (D_00322980.running == 0) {
-        handle = func_001FF9C0();
+        handle = lSzFile_NextRequest();
         queue->handle = handle;
         if (handle < 0) {
             return 0;
         }
     }
-    return func_001FF480(queue->handle);
+    return lSzFile_DoRequestMain(queue->handle);
 }
 
-s32 func_001FFD30(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzFile_Read(s32 arg0, s32 arg1, s32 arg2) {
     extern Queue_001FFD30 D_0031C2F0;
-    extern s32 func_001FECB0();
+    extern s32 SzFile_ReadRequestParam();
     s32 result;
     Queue_001FFD30 *queue = &D_0031C2F0;
 
-    result = func_001FECB0(0x1400, 0, arg0, arg1, arg2, 0, -1, func_001FFF60, (s64)0);
+    result = SzFile_ReadRequestParam(0x1400, 0, arg0, arg1, arg2, 0, -1, lSzFile_ReadCB, (s64)0);
     if (result == 0) {
         return 0;
     }
@@ -492,7 +492,7 @@ s32 func_001FFD30(s32 arg0, s32 arg1, s32 arg2) {
 loop:
     poll_001FFD30();
 check:
-    if (func_001FF360(-1, 0) != 0) {
+    if (SzFile_InqRequestX(-1, 0) != 0) {
         goto loop;
     }
     return queue->flags.completed ? result : 0;
@@ -531,8 +531,8 @@ static inline void *enqueue_001FFE00(s32 arg0, s32 arg1, s32 arg2,
         return NULL;
     }
     request = &queue->requests[(queue->head + queue->count) % 0x100];
-    if (func_001FEDA0(request, 0x1400, arg0, (void *)arg1, arg2, arg3, arg4,
-                      arg5, (s32)func_001FFF60, 0) == 0) {
+    if (lSzFile_SetReadRequestParam(request, 0x1400, arg0, (void *)arg1, arg2, arg3, arg4,
+                      arg5, (s32)lSzFile_ReadCB, 0) == 0) {
         return NULL;
     }
     queue->count++;
@@ -546,16 +546,16 @@ static inline s32 poll_001FFE00(void) {
     s32 handle;
 
     if (D_00322980.running == 0) {
-        handle = func_001FF9C0();
+        handle = lSzFile_NextRequest();
         queue->handle = handle;
         if (handle < 0) {
             return 0;
         }
     }
-    return func_001FF480(queue->handle);
+    return lSzFile_DoRequestMain(queue->handle);
 }
 
-void *func_001FFE00(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+void *SzFile_ReadParam(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                     s32 arg4, s32 arg5) {
     extern Queue_001FFE00 D_0031C2F0;
     Queue_001FFE00 *queue = &D_0031C2F0;
@@ -569,7 +569,7 @@ void *func_001FFE00(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 loop:
     poll_001FFE00();
 check:
-    if (func_001FF360(-1, 0) != 0) {
+    if (SzFile_InqRequestX(-1, 0) != 0) {
         goto loop;
     }
     return queue->flags.completed ? request : NULL;
@@ -582,14 +582,14 @@ typedef struct Flags_001FFF60 {
 
 extern Flags_001FFF60 D_00322980;
 
-void func_001FFF60(s32 arg0, s64 arg1) {
+void lSzFile_ReadCB(s32 arg0, s64 arg1) {
     D_00322980.enabled = (s8)arg1;
 }
 
-u8 *func_001FFF90(s32 unused0) {
+u8 *SzFile_GetEnv(s32 unused0) {
     u8 *ret;
 
-    ret = func_00197548(unused0);
+    ret = getenv(unused0);
     if (ret == NULL) {
         ret = D_002D0655;
     }
@@ -624,9 +624,9 @@ extern char D_002D066F[];
 
 void func_0017E240(s32);
 
-s32 func_001FFFC0(void) {
-    extern s32 func_00200220(s32, s32);
-    extern s32 func_00190FF0(Stat_001FFFC0 *, s32);
+s32 RhFile_Init(void) {
+    extern s32 RhFile_LoadIopModuleWrapper(s32, s32);
+    extern s32 sceCdSearchFile(Stat_001FFFC0 *, s32);
     extern u8 D_0031C2F0[];
     u8 *buf = D_0031C2F0;
     s32 i;
@@ -642,25 +642,25 @@ s32 func_001FFFC0(void) {
     while (func_00183A00() == 0) {
     }
     func_0017E240(0);
-    func_00182838();
-    func_00182CC8();
+    sceSifInitIopHeap();
+    sceSifLoadFileReset();
     func_00191778(0);
     func_00191C50(2);
-    func_0017FA60();
+    sceFsReset();
     while (func_00191A58(0) != 2) {
     }
     for (i = 0, mod = D_002CFCE0; mod->name != 0; i++) {
-        if (func_00200220(mod->name, mod->arg) == 0) {
+        if (RhFile_LoadIopModuleWrapper(mod->name, mod->arg) == 0) {
             return 0;
         }
         mod++;
     }
-    if (func_00197548((s32)D_002D0638) != NULL) {
+    if (getenv((s32)D_002D0638) != NULL) {
         file = D_00293090;
         for (j = 0; j < 0x61; j++) {
             while (func_00191A58(0) != 2) {
             }
-            if (func_00190FF0(&stat, file->name) != 0) {
+            if (sceCdSearchFile(&stat, file->name) != 0) {
                 file->sector = stat.sector;
                 file->size = stat.size >> 11;
             } else {
@@ -669,8 +669,8 @@ s32 func_001FFFC0(void) {
             file++;
         }
     }
-    func_00190C48(0, buf + 0x80, 0x4000);
-    func_00190A90(func_00200170);
+    sceCdInitEeCB(0, buf + 0x80, 0x4000);
+    func_00190A90(lRhFile_CdCallback);
     return 1;
 }
 
@@ -687,15 +687,15 @@ typedef struct State_00200170 {
     Flags_00200170 flags;
 } State_00200170;
 
-void func_00200170(s32 arg0) {
+void lRhFile_CdCallback(s32 arg0) {
     extern State_00200170 D_0031C2F0;
     State_00200170 *state = &D_0031C2F0;
 
     if (arg0 == 1) {
         if (state->flags.active) {
             if (func_00191EF8() == 0) {
-                func_0017BB90(0);
-                func_001FFAC0(state->current, 1);
+                iFlushCache(0);
+                lSzFile_TermRequest(state->current, 1);
             } else {
                 state->flags.active = 0;
             }
@@ -705,15 +705,15 @@ void func_00200170(s32 arg0) {
     asm("ei");
 }
 
-s32 func_00200210(void) {
+s32 RhFile_Term(void) {
     return 1;
 }
 
-void func_00200220(s32 arg0, s32 arg1) {
-    func_00200230(arg0, 0, 0, arg1);
+void RhFile_LoadIopModuleWrapper(s32 arg0, s32 arg1) {
+    RhFile_LoadIopModuleWrapperEx(arg0, 0, 0, arg1);
 }
 
-s32 func_00200230(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 RhFile_LoadIopModuleWrapperEx(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern char D_0031C2F0[];
     extern char D_002D0670[];
     extern char D_002D067D[];
@@ -721,7 +721,7 @@ s32 func_00200230(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern char *func_0019B9D0(char *, const char *);
     char *path = D_0031C2F0;
 
-    func_00200300((s8 *)arg0);
+    lRhFile_StrUpper((s8 *)arg0);
     if (arg3 != 0) {
         func_0019BDD8(path, D_002D0670);
     } else {
@@ -735,7 +735,7 @@ s32 func_00200230(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-void func_00200300(s8 *arg0) {
+void lRhFile_StrUpper(s8 *arg0) {
     s8 *var_a0;
     s32 temp_a1;
 
@@ -748,7 +748,7 @@ void func_00200300(s8 *arg0) {
     }
 }
 
-void func_00200350(void) {
+void RhFile_VSyncProcess(void) {
 
 }
 
@@ -757,22 +757,22 @@ typedef struct State_00200360 {
     char *file;
 } State_00200360;
 
-s32 func_00200360(s32 arg0) {
+s32 RhFile_OpenFile(s32 arg0) {
     extern State_00200360 D_0031C2F0;
     extern char D_002D0680[];
     extern char D_002D0686[];
-    extern u8 *func_00197548();
+    extern u8 *getenv();
     extern void func_0019B648(void *, void *, ...);
     State_00200360 *state = &D_0031C2F0;
     char path[128];
     u8 *directory;
 
-    directory = func_00197548(D_002D0680);
+    directory = getenv(D_002D0680);
     if (directory == NULL) {
         directory = D_002D0655;
     }
     func_0019B648(path, D_002D0686, directory, arg0);
-    state->file = func_00217B60(path);
+    state->file = SzMem_StrDup(path);
     return 0;
 }
 
@@ -787,11 +787,11 @@ typedef struct {
 
 static inline s32 wait_002003E0(s32 file, s32 arg1, s32 arg2, s32 arg3) {
     extern Queue_002003E0 D_0031C2F0;
-    extern s32 func_001FECB0();
+    extern s32 SzFile_ReadRequestParam();
     Queue_002003E0 *queue = &D_0031C2F0;
     s32 result;
 
-    result = func_001FECB0(0x1400, 2, file, arg3, arg2, arg1, arg2, func_001FFF60, (s64)0);
+    result = SzFile_ReadRequestParam(0x1400, 2, file, arg3, arg2, arg1, arg2, lSzFile_ReadCB, (s64)0);
     if (result == 0) {
         return 0;
     }
@@ -799,13 +799,13 @@ static inline s32 wait_002003E0(s32 file, s32 arg1, s32 arg2, s32 arg3) {
 loop:
     poll_001FFE00();
 check:
-    if (func_001FF360(-1, 0) != 0) {
+    if (SzFile_InqRequestX(-1, 0) != 0) {
         goto loop;
     }
     return queue->flags.completed ? result : 0;
 }
 
-s32 func_002003E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 RhFile_ReadAndBlock(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern Queue_002003E0 D_0031C2F0;
     Queue_002003E0 *queue = &D_0031C2F0;
 
@@ -820,7 +820,7 @@ typedef struct State_002004C0 {
     s32 handle;
 } State_002004C0;
 
-s32 func_002004C0(s32 arg0) {
+s32 RhFile_CloseFile(s32 arg0) {
     extern State_002004C0 D_0031C2F0;
     State_002004C0 *state = &D_0031C2F0;
 
@@ -828,7 +828,7 @@ s32 func_002004C0(s32 arg0) {
         return 0;
     }
     if (state->handle != 0) {
-        func_00217B50(state->handle);
+        SzMem_Free(state->handle);
         state->handle = 0;
     }
     return 1;
@@ -868,15 +868,15 @@ static inline Request_00200510 *enqueue_00200510(s32 arg1, s32 arg2, s32 arg3, u
         }
     }
     slot = &queue->requests[idx];
-    if (func_001FEDA0(slot, 0x1400, (arg6 != 0) ? 8 : 7, buf, arg3, arg2, arg1, arg2,
-                      (s32)func_00200680, arg5) == 0) {
+    if (lSzFile_SetReadRequestParam(slot, 0x1400, (arg6 != 0) ? 8 : 7, buf, arg3, arg2, arg1, arg2,
+                      (s32)lRhFile_ReadCB, arg5) == 0) {
         return NULL;
     }
     queue->count++;
     return slot;
 }
 
-s32 func_00200510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void (*arg4)(void), s32 arg5, s32 arg6) {
+s32 RhFile_ReadAndCallbackByFileName(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void (*arg4)(void), s32 arg5, s32 arg6) {
     extern Queue_00200510 D_0031C2F0;
     extern u8 D_002D0680[];
     extern u8 D_002D0686[];
@@ -890,7 +890,7 @@ s32 func_00200510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void (*arg4)(void), s3
     if (arg0 == 0) {
         return 0;
     }
-    text = func_00197548((s32)D_002D0680);
+    text = getenv((s32)D_002D0680);
     if (text == NULL) {
         text = D_002D0655;
     }
@@ -908,7 +908,7 @@ typedef struct CallbackTable_00200680 {
 extern CallbackTable_00200680 D_0031C2F0;
 extern s32 D_00322970;
 
-void func_00200680(void *arg0) {
+void lRhFile_ReadCB(void *arg0) {
     CallbackTable_00200680 *table = &D_0031C2F0;
 
     if (D_00322970 != 0) {
@@ -916,10 +916,10 @@ void func_00200680(void *arg0) {
     }
 }
 
-s32 func_002006C0(s32 arg0) {
+s32 RhFile_ExistFile(s32 arg0) {
     extern char D_002D0680[];
     extern char D_002D0686[];
-    extern u8 *func_00197548();
+    extern u8 *getenv();
     extern void func_0019B648(void *, void *, ...);
     char path[128];
     char full[128];
@@ -929,7 +929,7 @@ s32 func_002006C0(s32 arg0) {
     if (arg0 == 0) {
         return 0;
     }
-    directory = func_00197548(D_002D0680);
+    directory = getenv(D_002D0680);
     if (directory == NULL) {
         directory = D_002D0655;
     }
@@ -938,10 +938,10 @@ s32 func_002006C0(s32 arg0) {
 loop:
     poll_001FFE00();
 check:
-    if (func_001FF360(-1, 0) != 0) {
+    if (SzFile_InqRequestX(-1, 0) != 0) {
         goto loop;
     }
-    func_001FF250((s8 *)path);
+    lSzFile_StrNormalize((s8 *)path);
     func_0019B648(full, D_002D0648, D_002D064D, path);
     handle = func_0017FA98(full, 1);
     if (handle < 0) {
@@ -963,12 +963,12 @@ typedef struct Record_002007D0 {
 
 extern struct Entry_002008A0 D_003229A0[];
 
-void func_002007D0(void) {
+void SzText_Init(void) {
     Record_002007D0 *record;
     s32 i;
 
     record = (Record_002007D0 *)D_003229A0;
-    func_0020B3C0((s8 *)&D_00322990, 0, 6);
+    RhMem_FillMemory((s8 *)&D_00322990, 0, 6);
     i = 0;
     do {
         record->value0 = 0;
@@ -992,7 +992,7 @@ typedef struct Entry_002008A0 {
 
 extern Entry_002008A0 D_003229A0[];
 
-void *func_002008A0(s32 arg0, s32 arg1) {
+void *SzText_GetItem(s32 arg0, s32 arg1) {
     Entry_002008A0 *entry;
     s32 i;
 
@@ -1036,7 +1036,7 @@ static inline Entry_002008A0 *find_00200930(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-void *func_00200930(s32 arg0, s32 arg1) {
+void *SzText_GetReadyItem(s32 arg0, s32 arg1) {
     Entry_002008A0 *entry = find_00200930(arg0, arg1);
 
     if (entry != NULL && !(entry->occupied & 0x80000000)) {

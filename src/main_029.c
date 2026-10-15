@@ -1,16 +1,16 @@
 #include "common.h"
 
-void func_0018A378(s32 arg0) {
+void _ipuSetMPEG1(s32 arg0) {
     *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFF7FFFFF) | (arg0 << 0x17);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018A3A0);
+INCLUDE_ASM("asm/nonmatchings/main_029", _waitBdecOut);
 
-s32 func_0018A590(s32 arg0) {
+s32 _dmVector(s32 arg0) {
     return func_0018B6D8(arg0, 3);
 }
 
-void func_0018A5B0(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy) {
+void _dualPrimeVector(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy) {
     if (*(s32 *)((u8 *)arg0 + 0x174) == 3) {
         if (*(s32 *)((u8 *)arg0 + 0x178)) {
             DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
@@ -34,9 +34,9 @@ void func_0018A5B0(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018A738);
+INCLUDE_ASM("asm/nonmatchings/main_029", _mbAddressIncrement);
 
-s32 func_0018A848(void *arg0) {
+s32 _pictureData0(void *arg0) {
     s32 n;
     s32 ret;
 
@@ -47,10 +47,10 @@ s32 func_0018A848(void *arg0) {
         n >>= 1;
     }
     do {
-        ret = func_0018AA80(arg0, n);
+        ret = _slice0(arg0, n);
     } while (ret == 1 || ret == 3);
     func_0018B580(arg0);
-    if (func_0018A3A0(arg0) == 0) {
+    if (_waitBdecOut(arg0) == 0) {
         ret = 2;
     }
     while ((*(volatile u32 *)0x1000D400 >> 8) & 1) {
@@ -59,12 +59,12 @@ s32 func_0018A848(void *arg0) {
         func_001893A8(arg0, (*(s32 *)((u8 *)arg0 + 0x810)) == 0);
     }
     if (ret == 1 || ret == 2) {
-        func_0018F7B0((s32)arg0, &D_002BC7A0);
+        _Error((s32)arg0, &D_002BC7A0);
     }
     return ret == 0;
 }
 
-s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
+s32 _sliceA0(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
     s32 temp_s3;
     s32 temp_v0;
     s32 temp_v0_2;
@@ -73,15 +73,15 @@ s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
     func_0018BB98(arg0);
     temp_v0 = func_0018B850(arg0, 0x20);
     if ((u32) (temp_v0 - 0x101) >= 0xAFU) {
-        func_0018F778((s32) arg0, &D_002BC7C0, temp_v0);
+        _Error1((s32) arg0, &D_002BC7C0, temp_v0);
         return 2;
     }
     func_0018B958(arg0, 0x20);
     temp_s3 = ((s32 (*)(void *))func_0018BC18)(arg0);
-    temp_v0_2 = func_0018A738(arg0);
+    temp_v0_2 = _mbAddressIncrement(arg0);
     *arg3 = temp_v0_2;
     if ((*(s32 *)((u8 *)arg0 + 0x11C)) != 0) {
-        func_0018F7B0((s32) arg0, &D_002BC7E8);
+        _Error((s32) arg0, &D_002BC7E8);
         return 1;
     }
     *arg2 = (((((temp_s3 << 7) + (temp_v0 & 0xFF)) - 1) * (*(s32 *)((u8 *)arg0 + 0x12C))) + temp_v0_2) - 1;
@@ -98,7 +98,7 @@ s32 func_0018A950(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
     return 0;
 }
 
-s32 func_0018AA80(void *arg0, s32 arg1) {
+s32 _slice0(void *arg0, s32 arg1) {
     s32 dc[8];
     s32 pmv[4];
     s32 mvfs[4];
@@ -111,7 +111,7 @@ s32 func_0018AA80(void *arg0, s32 arg1) {
 
     MBA = 0;
     MBAinc = 0;
-    if ((ret = func_0018A950(arg0, arg1, &MBA, &MBAinc, dc)) != 0) {
+    if ((ret = _sliceA0(arg0, arg1, &MBA, &MBAinc, dc)) != 0) {
         return ret;
     }
     *(s32 *)((u8 *)arg0 + 0x11C) = 0;
@@ -120,7 +120,7 @@ s32 func_0018AA80(void *arg0, s32 arg1) {
             return 0;
         }
         *(s32 *)((u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x810) * 0x140 + 0x6CC) = 0;
-        if (func_0018A3A0(arg0) == 0) {
+        if (_waitBdecOut(arg0) == 0) {
             return 2;
         }
         if (MBAinc == 0) {
@@ -128,23 +128,23 @@ s32 func_0018AA80(void *arg0, s32 arg1) {
                 *(s32 *)((u8 *)arg0 + 0x11C) = 0;
                 return 3;
             }
-            MBAinc = func_0018A738(arg0);
+            MBAinc = _mbAddressIncrement(arg0);
             if (*(s32 *)((u8 *)arg0 + 0x11C) != 0) {
                 goto fault;
             }
         }
         if (MBA >= arg1) {
-            func_0018F7B0((s32)arg0, &D_002BC808);
+            _Error((s32)arg0, &D_002BC808);
             return 2;
         }
         if (MBAinc == 1) {
-            if (func_0018AD30(arg0, &mbtype, &mtype, &dct, dc, pmv, mvfs) == 0) {
+            if (_decMB0(arg0, &mbtype, &mtype, &dct, dc, pmv, mvfs) == 0) {
 fault:
                 *(s32 *)((u8 *)arg0 + 0x11C) = 0;
                 return 1;
             }
         } else {
-            if (func_0018AC70(arg0, dc, &mtype, pmv, &mbtype) == 0) {
+            if (_skipMB0(arg0, dc, &mtype, pmv, &mbtype) == 0) {
                 goto fail;
             }
         }
@@ -162,7 +162,7 @@ fail:
     }
 }
 
-s32 func_0018AC70(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
+s32 _skipMB0(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
     s32 temp_v0;
     s32 var_a5;
 
@@ -184,16 +184,16 @@ s32 func_0018AC70(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
         (*(s32 *)arg3) = temp_v0;
     }
     if ((*(s32 *)((u8 *)arg0 + 0x150)) == 1) {
-        func_0018F7B0((s32) arg0, &D_002BC828);
+        _Error((s32) arg0, &D_002BC828);
         var_a5 = 0;
     }
     *arg4 &= ~1;
     return var_a5;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018AD30);
+INCLUDE_ASM("asm/nonmatchings/main_029", _decMB0);
 
-s32 func_0018B1D8(s32 *pred, s32 r_size, s32 motion_code, s32 motion_residual, s32 full_pel_vector) {
+s32 decode_motion_vector(s32 *pred, s32 r_size, s32 motion_code, s32 motion_residual, s32 full_pel_vector) {
     s32 lim, vec;
 
     lim = 16 << r_size;
@@ -235,21 +235,21 @@ void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5,
 
     code = func_0018B6D8(arg0, 2);
     r = (arg3 != 0 && code != 0) ? func_0018BA48((void *)arg0, arg3) : 0;
-    func_0018B1D8(arg1, arg3, code, r, arg7);
+    decode_motion_vector(arg1, arg3, code, r, arg7);
     if (arg5 != 0) {
-        arg2[0] = func_0018A590(arg0);
+        arg2[0] = _dmVector(arg0);
     }
     code = func_0018B6D8(arg0, 2);
     r = (arg4 != 0 && code != 0) ? func_0018BA48((void *)arg0, arg4) : 0;
     if (arg6 != 0) {
         arg1[1] >>= 1;
     }
-    func_0018B1D8(&arg1[1], arg4, code, r, arg7);
+    decode_motion_vector(&arg1[1], arg4, code, r, arg7);
     if (arg6 != 0) {
         arg1[1] <<= 1;
     }
     if (arg5 != 0) {
-        arg2[1] = func_0018A590(arg0);
+        arg2[1] = _dmVector(arg0);
     }
 }
 
@@ -268,7 +268,7 @@ void func_0018B580(void *arg0) {
     n = 0;
     while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
         if (n++ > 5000) {
-            func_0018EF98((*(s32 *)((u8 *)arg0 + 0x858)));
+            _dispatchMpegCbNodata((*(s32 *)((u8 *)arg0 + 0x858)));
             n = 0;
         }
     }
@@ -281,7 +281,7 @@ s64 func_0018B628(void *arg0) {
     i = 0;
     while ((r = *(volatile s64 *)0x10002000) < 0 && !(*(volatile s32 *)0x10002010 & 0x4000)) {
         if (i++ > 5000) {
-            func_0018EF98(*(s32 *)((u8 *)arg0 + 0x858));
+            _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
             i = 0;
         }
     }
@@ -298,7 +298,7 @@ s32 func_0018B850(void *arg0, s32 arg1) {
         i = 0;
         while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
             if (i++ > 5000) {
-                func_0018EF98(*(s32 *)((u8 *)arg0 + 0x858));
+                _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
                 i = 0;
             }
         }
@@ -322,7 +322,7 @@ s32 func_0018BA48(void *arg0, s32 arg1) {
     i = 0;
     while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
         if (i++ > 5000) {
-            func_0018EF98(*(s32 *)((u8 *)arg0 + 0x858));
+            _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
             i = 0;
         }
     }
@@ -380,7 +380,7 @@ s32 func_0018BC80(void *arg0) {
         code = func_0018BA48(arg0, 32);
         switch (code) {
         case 0x1B3:
-            func_0018F918(arg0);
+            _sequenceHeader(arg0);
             break;
         case 0x1B8:
             ((void (*)(void *))func_0018C230)(arg0);
@@ -390,7 +390,7 @@ s32 func_0018BC80(void *arg0) {
             cb.type = 5;
             cb.a = -1;
             cb.b = -1;
-            func_0018EF48(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+            _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
             *(s64 *)((u8 *)arg0 + 0x828) = cb.a;
             *(s64 *)((u8 *)arg0 + 0x830) = cb.b;
             return *(s32 *)((u8 *)arg0 + 0x150);
@@ -546,10 +546,10 @@ void func_0018C2D0(void *arg0, s32 arg1) {
         func_0018B580(arg0);
     }
     if (func_0018BA48(arg0, 1) != 0) {
-        func_0018F7B0((s32) arg0, &D_002BC8A8);
+        _Error((s32) arg0, &D_002BC8A8);
     }
     if (func_0018BA48(arg0, 1) != 0) {
-        func_0018F7B0((s32) arg0, &D_002BC8D0);
+        _Error((s32) arg0, &D_002BC8D0);
     }
 }
 
@@ -612,7 +612,7 @@ s32 func_0018C520(void *arg0) {
     void *var_s1;
 
     if (((*(s32 *)((u8 *)arg0 + 0x174)) == 3) && ((*(s32 *)((u8 *)arg0 + 0x120)) != 0)) {
-        func_0018F7B0((s32) arg0, &D_002BC900);
+        _Error((s32) arg0, &D_002BC900);
         (*(s32 *)((u8 *)arg0 + 0x120)) = 0;
     }
     switch ((*(s32 *)((u8 *)arg0 + 0x174))) {        /* irregular */
@@ -627,10 +627,10 @@ s32 func_0018C520(void *arg0) {
         break;
     default:
         var_s1 = (*(void **)((u8 *)arg0 + 0x1C0));
-        func_0018F7B0((s32) arg0, &D_002BC920);
+        _Error((s32) arg0, &D_002BC920);
         break;
     }
-    temp_v0 = func_0018A848(arg0);
+    temp_v0 = _pictureData0(arg0);
     if (temp_v0 != 0) {
         (*(s32 *)((u8 *)var_s1 + 0x28)) = 1;
     }
@@ -680,7 +680,7 @@ s32 func_0018C938(void *arg0, s32 *arg1) {
     }
     if (!ok) {
         func_0019B648(buf, &D_002BC940, arg1[1], arg1[2]);
-        func_0018F7B0((s32)arg0, buf);
+        _Error((s32)arg0, buf);
     }
     return ok;
 }
@@ -972,7 +972,7 @@ void func_0018D290(void *arg0, s32 arg1, s32 arg2) {
     func_00184428();
     func_0018B550(arg0, arg2 | 0x70000000);
     sp0[0] = 4;
-    func_0018EF48((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
+    _dispatchMpegCallback((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
     do {
 
     } while (((u32) *(volatile s32 *)0x1000B000 >> 8) & 1);
@@ -1067,7 +1067,7 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
 
     mbs = arg1[3] * arg1[4];
     cb.type = 2;
-    func_0018EF48(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+    _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
     if (*(volatile s32 *)0x10002010 & 0x4000) {
         *(volatile s32 *)0x10002010 = 0x40000000;
     }
@@ -1081,7 +1081,7 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
     cb.qwc = mbs * 0x18;
     cb.addr = addr & 0x0FFFFFFF;
     if (cb.qwc > 0xFFFF) {
-        hid = func_0017B600(4, func_0018D6D0, 0, &cb.qwc);
+        hid = AddDmacHandler2(4, func_0018D6D0, 0, &cb.qwc);
         *(volatile s32 *)0x1000E010 = 0x10;
         func_0017C4F8(4);
         func_001843E0();
@@ -1097,7 +1097,7 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
             func_0018D520(arg0, *(s32 *)((u8 *)arg0 + 0xD8), mbs);
         }
         func_0017C490(4);
-        func_0017B610(4, hid);
+        RemoveDmacHandler(4, hid);
     } else {
         func_001843E0();
         *(volatile u32 *)0x1000B410 = arg1[0] & 0x0FFFFFFF;
@@ -1112,10 +1112,10 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
         }
     }
     cb.type = 3;
-    func_0018EF48(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+    _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
 }
 
-void func_0018DA50(u64 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void _sysbitInit(u64 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)((u8 *)arg0 + 8)) = arg1;
     (*(u64 *)arg0) = 0;
     (*(s32 *)((u8 *)arg0 + 0xC)) = arg1;
@@ -1124,9 +1124,9 @@ void func_0018DA50(u64 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)((u8 *)arg0 + 0x20)) = arg2;
     (*(s32 *)((u8 *)arg0 + 0x24)) = (s32) (arg2 + arg3);
     (*(s32 *)((u8 *)arg0 + 0x28)) = arg3;
-    func_0018DAA8(arg0, 0);
+    _sysbitFlush(arg0, 0);
 }
 
-s32 func_0018DA88(u64 *arg0, s32 arg1) {
+s32 _sysbitNext(u64 *arg0, s32 arg1) {
     return *arg0 >> (64 - arg1);
 }

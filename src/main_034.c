@@ -1,16 +1,16 @@
 #include "common.h"
 #include "sce/libc.h"
 
-void func_001976B8(s32 arg0, s32 arg1) {
+void _getenv_r(s32 arg0, s32 arg1) {
     s32 sp0[4];
-    func_00197570(arg0, arg1, (s32) sp0);
+    _findenv_r(arg0, arg1, (s32) sp0);
 }
 
 char *func_001976D8(char *arg0, s32 arg1) {
     return func_0019BB00(arg0, arg1);
 }
 
-s32 func_001976F0(s32 p, s32 category, s32 locale) {
+s32 _setlocale_r(s32 p, s32 category, s32 locale) {
     if (locale) {
         if (func_0019BC90((const char *)locale, D_002BD270) && func_0019BC90((const char *)locale, D_002BD260))
             return 0;
@@ -20,22 +20,22 @@ s32 func_001976F0(s32 p, s32 category, s32 locale) {
     return (s32)D_002BD270;
 }
 
-s32 *func_00197780(void) {
+s32 *_localeconv_r(void) {
     return &D_002BD230;
 }
 
-void func_00197790(s32 arg0, s32 arg1) {
-    func_001976F0(D_0028FA98, arg0, arg1);
+void setlocale(s32 arg0, s32 arg1) {
+    _setlocale_r(D_0028FA98, arg0, arg1);
 }
 
-s32 *func_001977B8(void) {
-    return ((s32 *(*)(s32))func_00197780)(D_0028FA98);
+s32 *localeconv(void) {
+    return ((s32 *(*)(s32))_localeconv_r)(D_0028FA98);
 }
 
-s32 func_001977D8(s32 *ptr, s32 fd, s32 pos, s32 whence) {
+s32 _lseek_r(s32 *ptr, s32 fd, s32 pos, s32 whence) {
     s32 ret;
     D_003512F8 = 0;
-    if ((ret = ((s32 (*)(s32, s32, s32))func_0017BFD8)(fd, pos, whence)) == -1 && D_003512F8 != 0)
+    if ((ret = ((s32 (*)(s32, s32, s32))lseek)(fd, pos, whence)) == -1 && D_003512F8 != 0)
         *ptr = D_003512F8;
     return ret;
 }
@@ -67,7 +67,7 @@ typedef struct mb_FILE {
 } mb_FILE;
 typedef struct mb_stat { s16 st_dev; u16 st_ino; u32 st_mode; u8 pad8[0x68]; } mb_stat;
 
-void func_00197838(void *arg0) {
+void __smakebuf(void *arg0) {
     mb_FILE *fp = arg0;
     u32 size, couldbetty;
     void *p;
@@ -78,20 +78,20 @@ void func_00197838(void *arg0) {
         fp->_bf._size = 1;
         return;
     }
-    if (fp->_file < 0 || func_00197048((s32 *)fp->_data, fp->_file, &st) < 0) {
+    if (fp->_file < 0 || _fstat_r((s32 *)fp->_data, fp->_file, &st) < 0) {
         couldbetty = 0;
         size = 1024;
         fp->_flags |= 0x800;
     } else {
         couldbetty = (st.st_mode & 0xF000) == 0x2000;
         size = 1024;
-        if ((st.st_mode & 0xF000) == 0x8000 && fp->_seek == (void *)func_0019B870) {
+        if ((st.st_mode & 0xF000) == 0x8000 && fp->_seek == (void *)__sseek) {
             fp->_flags |= 0x400;
             fp->_blksize = 1024;
         } else
             fp->_flags |= 0x800;
     }
-    if ((p = (void *)func_00197EB8((s32)fp->_data, size)) == NULL) {
+    if ((p = (void *)_malloc_r((s32)fp->_data, size)) == NULL) {
         fp->_flags |= 2;
         fp->_bf._base = fp->_p = fp->_nbuf;
         fp->_bf._size = 1;
@@ -100,7 +100,7 @@ void func_00197838(void *arg0) {
         fp->_flags |= 0x80;
         fp->_bf._base = fp->_p = (u8 *)p;
         fp->_bf._size = size;
-        if (couldbetty && ((s32 (*)(s32))func_0017C090)(fp->_file))
+        if (couldbetty && ((s32 (*)(s32))isatty)(fp->_file))
             fp->_flags |= 1;
     }
 }
@@ -109,7 +109,7 @@ void *func_00197990(s32 arg0, s32 arg1) {
     void *temp_s1;
 
     func_00198A08(D_0028FA98);
-    temp_s1 = func_001979F8(D_0028FA98, arg0, arg1);
+    temp_s1 = _memalign_r(D_0028FA98, arg0, arg1);
     func_00198A88(D_0028FA98);
     return temp_s1;
 }
@@ -133,7 +133,7 @@ typedef struct ma_chunk {
 #define ma_long_sub_size_t(x, y) \
     (sizeof(long) > sizeof(u32) && x < y ? -(long)(y - x) : (long)(x - y))
 
-void *func_001979F8(s32 reent_ptr, s32 arg1, s32 arg2) {
+void *_memalign_r(s32 reent_ptr, s32 arg1, s32 arg2) {
     u32 alignment = arg1;
     u32 bytes = arg2;
     u32 nb;
@@ -147,13 +147,13 @@ void *func_001979F8(s32 reent_ptr, s32 arg1, s32 arg2) {
     long remainder_size;
 
     if (alignment <= 16)
-        return (void *)func_00197EB8(reent_ptr, bytes);
+        return (void *)_malloc_r(reent_ptr, bytes);
 
     if (alignment < 16)
         alignment = 16;
 
     nb = ma_request2size(bytes);
-    m = (char *)func_00197EB8(reent_ptr, nb + alignment + 16);
+    m = (char *)_malloc_r(reent_ptr, nb + alignment + 16);
 
     if (m == NULL)
         return NULL;
@@ -175,7 +175,7 @@ void *func_001979F8(s32 reent_ptr, s32 arg1, s32 arg2) {
         ma_set_head(newp, newsize | 0x1);
         ma_set_inuse_bit_at_offset(newp, newsize);
         ma_set_head_size(p, leadsize);
-        func_00196BE0(reent_ptr, (s32)ma_chunk2mem(p));
+        _free_r(reent_ptr, (s32)ma_chunk2mem(p));
         p = newp;
     }
 
@@ -185,7 +185,7 @@ void *func_001979F8(s32 reent_ptr, s32 arg1, s32 arg2) {
         remainder = ma_chunk_at_offset(p, nb);
         ma_set_head(remainder, remainder_size | 0x1);
         ma_set_head_size(p, nb);
-        func_00196BE0(reent_ptr, (s32)ma_chunk2mem(remainder));
+        _free_r(reent_ptr, (s32)ma_chunk2mem(remainder));
     }
 
     func_00198A88(reent_ptr);
@@ -196,14 +196,14 @@ s32 func_00197BC0(s32 arg0) {
     s32 temp_s1;
 
     func_00198A08(D_0028FA98);
-    temp_s1 = func_00197EB8(D_0028FA98, arg0);
+    temp_s1 = _malloc_r(D_0028FA98, arg0);
     func_00198A88(D_0028FA98);
     return temp_s1;
 }
 
 s32 func_00197C18(s32 arg0) {
     func_00198A08(D_0028FA98);
-    func_00196BE0(D_0028FA98, arg0);
+    _free_r(D_0028FA98, arg0);
     return func_00198A88(D_0028FA98);
 }
 
@@ -279,7 +279,7 @@ s32 func_00197C18(s32 arg0) {
 
 /* malloc_extend_top (newlib 1.9.0 mallocr.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_00197C60(s32 reent_ptr, u32 nb) {
+void malloc_extend_top(s32 reent_ptr, u32 nb) {
     char *brk;
     INTERNAL_SIZE_T front_misalign;
     INTERNAL_SIZE_T correction;
@@ -342,7 +342,7 @@ void func_00197C60(s32 reent_ptr, u32 nb) {
             chunk_at_offset(old_top, old_top_size)->size = SIZE_SZ | PREV_INUSE;
             chunk_at_offset(old_top, old_top_size + SIZE_SZ)->size = SIZE_SZ | PREV_INUSE;
             if (old_top_size >= MINSIZE)
-                func_00196BE0(reent_ptr, chunk2mem(old_top));
+                _free_r(reent_ptr, chunk2mem(old_top));
         }
     }
 
@@ -463,8 +463,8 @@ void func_00197C60(s32 reent_ptr, u32 nb) {
 
 /* _malloc_r (newlib 1.9.0 mallocr.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void *func_00197EB8(s32 reent_ptr, s32 bytes) {
-    extern void func_00197C60(s32, u32);
+void *_malloc_r(s32 reent_ptr, s32 bytes) {
+    extern void malloc_extend_top(s32, u32);
     mchunkptr victim;
     INTERNAL_SIZE_T victim_size;
     s32 idx;
@@ -614,7 +614,7 @@ void *func_00197EB8(s32 reent_ptr, s32 bytes) {
 
     remainder_size = long_sub_size_t(chunksize(top), nb);
     if (chunksize(top) < nb || remainder_size < (long)MINSIZE) {
-        func_00197C60(reent_ptr, nb);
+        malloc_extend_top(reent_ptr, nb);
         remainder_size = long_sub_size_t(chunksize(top), nb);
         if (chunksize(top) < nb || remainder_size < (long)MINSIZE) {
             malloc_unlock(reent_ptr);
@@ -666,7 +666,7 @@ void *func_00197EB8(s32 reent_ptr, s32 bytes) {
 #undef clear_last_remainder
 #undef long_sub_size_t
 
-s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state) {
+s32 _mbtowc_r(void *r, s32 *pwc, const char *s, u32 n, s32 *state) {
     s32 dummy;
     u8 *t = (u8 *)s;
 
@@ -682,7 +682,7 @@ s32 func_001985E0(void *r, s32 *pwc, const char *s, u32 n, s32 *state) {
 
 /* memchr: newlib's hand-written r5900 assembly (libc/machine/r5900/memchr.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void *func_00198618(const void *s, s32 c, u32 n) {
+void *memchr(const void *s, s32 c, u32 n) {
     register s32 r4 __asm__("$4");
 
     __asm__ __volatile__(
@@ -753,7 +753,7 @@ void *func_00198618(const void *s, s32 c, u32 n) {
 
 /* memcmp: newlib's hand-written r5900 assembly (libc/machine/r5900/memcmp.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_001986F8(s32 *a, s32 *b, s32 n) {
+s32 memcmp(s32 *a, s32 *b, s32 n) {
 
     __asm__ __volatile__(
         "	.set	noreorder\n"
@@ -804,7 +804,7 @@ s32 func_001986F8(s32 *a, s32 *b, s32 n) {
 
 /* memcpy: newlib's hand-written r5900 assembly (libc/machine/r5900/memcpy.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void *func_00198790(void *dst, const void *src, s32 n) {
+void *memcpy(void *dst, const void *src, s32 n) {
     register s32 r8 __asm__("$8");
 
     __asm__ __volatile__(
@@ -864,7 +864,7 @@ void *func_00198790(void *dst, const void *src, s32 n) {
 
 /* memmove: newlib's hand-written r5900 assembly (libc/machine/r5900/memmove.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00198840(s32 dst, s32 src) {
+s32 memmove(s32 dst, s32 src) {
     register s32 r8 __asm__("$8");
 
     __asm__ __volatile__(
@@ -947,7 +947,7 @@ s32 func_00198840(s32 dst, s32 src) {
 
 /* memset: newlib's hand-written r5900 assembly (libc/machine/r5900/memset.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void *func_00198948(void *dst, s32 c, u32 n) {
+void *memset(void *dst, s32 c, u32 n) {
     register s32 r4 __asm__("$4");
 
     __asm__ __volatile__(
@@ -1010,12 +1010,12 @@ void *func_00198948(void *dst, s32 c, u32 n) {
 }
 
 void func_00198A08(s32 r) {
-    s32 id = func_0017B7D0();
+    s32 id = GetThreadId();
 
     if (D_0028FF00 == id) {
         D_0028FF04++;
     } else {
-        func_0017B920(D_0028D114);
+        WaitSema(D_0028D114);
         D_0028FF00 = id;
         D_0028FF04++;
     }
@@ -1024,11 +1024,11 @@ void func_00198A08(s32 r) {
 s32 func_00198A88(s32 r) {
     if (--D_0028FF04 == 0) {
         D_0028FF00 = -1;
-        return ((s32 (*)(s32))func_0017B900)(D_0028D114);
+        return ((s32 (*)(s32))SignalSema)(D_0028D114);
     }
 }
 
-i2b_Bigint *func_00198AD8(void *ptr, s32 k) {
+i2b_Bigint *_Balloc(void *ptr, s32 k) {
     s32 x;
     i2b_Bigint *rv;
 
@@ -1050,7 +1050,7 @@ i2b_Bigint *func_00198AD8(void *ptr, s32 k) {
     return rv;
 }
 
-void func_00198B80(void *arg0, void *arg1) {
+void _Bfree(void *arg0, void *arg1) {
     void **temp_v0;
 
     if (arg1 != NULL) {
@@ -1078,9 +1078,9 @@ i2b_Bigint *func_00198BB0(void *ptr, i2b_Bigint *b, s32 m, s32 a) {
     } while (++i < wds);
     if (a) {
         if (wds >= b->maxwds) {
-            b1 = func_00198AD8(ptr, b->k + 1);
+            b1 = _Balloc(ptr, b->k + 1);
             func_00198790((char *)&b1->sign, (char *)&b->sign, b->wds * sizeof(s32) + 2 * sizeof(s32));
-            func_00198B80(ptr, b);
+            _Bfree(ptr, b);
             b = b1;
         }
         b->x[wds++] = a;
@@ -1096,7 +1096,7 @@ i2b_Bigint *func_00198CB8(void *ptr, const char *s, s32 nd0, s32 nd, u32 y9) {
 
     x = (nd + 8) / 9;
     for (k = 0, y = 1; x > y; y <<= 1, k++);
-    b = func_00198AD8(ptr, k);
+    b = _Balloc(ptr, k);
     b->x[0] = y9;
     b->wds = 1;
 
@@ -1185,7 +1185,7 @@ s32 func_00198E68(u32 *y) {
 i2b_Bigint *func_00198F28(void *ptr, s32 i) {
     i2b_Bigint *b;
 
-    b = func_00198AD8(ptr, 1);
+    b = _Balloc(ptr, 1);
     b->x[0] = i;
     b->wds = 1;
     return b;
@@ -1211,7 +1211,7 @@ i2b_Bigint *func_00198F60(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
     wc = wa + wb;
     if (wc > a->maxwds)
         k++;
-    c = func_00198AD8(ptr, k);
+    c = _Balloc(ptr, k);
     for (x = c->x, xa = x + wc; x < xa; x++)
         *x = 0;
     xa = a->x;
@@ -1271,7 +1271,7 @@ i2b_Bigint *func_00199170(void *arg0, i2b_Bigint *b, s32 k) {
     for (;;) {
         if (k & 1) {
             b1 = func_00198F60(ptr, b, p5);
-            func_00198B80(ptr, b);
+            _Bfree(ptr, b);
             b = b1;
         }
         if (!(k >>= 1))
@@ -1295,7 +1295,7 @@ i2b_Bigint *func_00199270(void *ptr, i2b_Bigint *b, s32 k) {
     n1 = n + b->wds + 1;
     for (i = b->maxwds; n1 > i; i <<= 1)
         k1++;
-    b1 = func_00198AD8(ptr, k1);
+    b1 = _Balloc(ptr, k1);
     x1 = b1->x;
     for (i = 0; i < n; i++)
         *x1++ = 0;
@@ -1315,7 +1315,7 @@ i2b_Bigint *func_00199270(void *ptr, i2b_Bigint *b, s32 k) {
             *x1++ = *x++;
         while (x < xe);
     b1->wds = n1 - 1;
-    func_00198B80(ptr, b);
+    _Bfree(ptr, b);
     return b1;
 }
 
@@ -1351,7 +1351,7 @@ i2b_Bigint *func_00199430(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
 
     i = func_001993C8((mcmp_Bigint *)a, (mcmp_Bigint *)b);
     if (!i) {
-        c = func_00198AD8(ptr, 0);
+        c = _Balloc(ptr, 0);
         c->wds = 1;
         c->x[0] = 0;
         return c;
@@ -1363,7 +1363,7 @@ i2b_Bigint *func_00199430(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
         i = 1;
     } else
         i = 0;
-    c = func_00198AD8(ptr, a->k);
+    c = _Balloc(ptr, a->k);
     c->sign = i;
     wa = a->wds;
     xa = a->x;
@@ -1638,7 +1638,7 @@ s32 func_0019A5C8(void) {
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     s64 ret;
     D_003512F8 = 0;
-    if ((ret = (s64)func_0017BF28(fd, buf, cnt)) == -1 && D_003512F8 != 0)
+    if ((ret = (s64)read(fd, buf, cnt)) == -1 && D_003512F8 != 0)
         *ptr = D_003512F8;
     return ret;
 }
@@ -1647,7 +1647,7 @@ INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A690);
 
 s32 func_0019AC30(void *arg0) {
     if (((*(u16 *)((u8 *)arg0 + 0xC)) & 9) == 9) {
-        return func_00196708(arg0);
+        return fflush(arg0);
     }
     return 0;
 }
@@ -1685,7 +1685,7 @@ s32 func_0019AC68(void *arg0) {
         if (fp->_data == 0)
             fp->_data = (sr_reent *)D_0028FA98;
         if (!fp->_data->__sdidinit)
-            func_00196A30(fp->_data);
+            __sinit(fp->_data);
     } while (0);
 
     fp->_r = 0;
@@ -1697,7 +1697,7 @@ s32 func_0019AC68(void *arg0) {
         if ((fp->_flags & 0x10) == 0)
             return -1;
         if (fp->_flags & 8) {
-            if (func_00196708((nl_FILE *)fp))
+            if (fflush((nl_FILE *)fp))
                 return -1;
             fp->_flags &= ~8;
             fp->_w = 0;
@@ -1707,7 +1707,7 @@ s32 func_0019AC68(void *arg0) {
     } else {
         if (fp->_ub._base != NULL) {
             if (fp->_ub._base != fp->_ubuf)
-                func_00196BE0((s32)fp->_data, (s32)fp->_ub._base);
+                _free_r((s32)fp->_data, (s32)fp->_ub._base);
             fp->_ub._base = NULL;
             if ((fp->_r = fp->_ur) != 0) {
                 fp->_p = fp->_up;
@@ -1717,10 +1717,10 @@ s32 func_0019AC68(void *arg0) {
     }
 
     if (fp->_bf._base == NULL)
-        func_00197838(fp);
+        __smakebuf(fp);
 
     if (fp->_flags & (1 | 2))
-        func_00197488((u8 *)fp->_data, (s32 (*)(nl_FILE *))func_0019AC30);
+        _fwalk((u8 *)fp->_data, (s32 (*)(nl_FILE *))func_0019AC30);
     fp->_p = fp->_bf._base;
     fp->_r = (*fp->_read)(fp->_cookie, (char *)fp->_p, fp->_bf._size);
     fp->_flags &= ~0x2000;

@@ -4,6 +4,8 @@ include config.mk
 SPLAT_CFG := config/main.yaml
 LD_SCRIPT := linker/main.ld
 LD_SYMS   := config/linker_syms.txt
+# The main program's old func_ names, aliases of its real ones (the code modules use them).
+OLD_NAMES := config/old_names.txt
 WARM_LIST := config/warm_files.txt
 # Words the shipped game overwrote after its build (tools/postpatch.py); applied to the linked ELF.
 POSTPATCH := config/postpatch.txt
@@ -96,9 +98,9 @@ $(BUILD)/%.c.o: %.c
 $(WARM_SRCS:%=$(BUILD)/%.o): $(WARM_LIST)
 $(GCC_SRCS:%=$(BUILD)/%.o): $(GCC_LIST)
 
-$(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS) $(wildcard $(POSTPATCH))
+$(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS) $(OLD_NAMES) $(wildcard $(POSTPATCH))
 	@$(LD) -EL -T $(LD_SCRIPT) -T linker/undefined_syms_auto.txt -T linker/undefined_funcs_auto.txt \
-		-T $(LD_SYMS) -Map $(BUILD)/main.map -o $@
+		-T $(LD_SYMS) -T $(OLD_NAMES) -Map $(BUILD)/main.map -o $@
 	@python3 tools/postpatch.py $@ $(POSTPATCH) || { rm -f $@; exit 1; }
 
 $(OUT_EXE): $(ELF)

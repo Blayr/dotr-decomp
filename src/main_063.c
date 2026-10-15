@@ -19,9 +19,9 @@ typedef struct {
     u8 r, g, b, a;
 } Color_002232F0;
 
-s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern s32 func_001FEAB0();
-    extern s32 func_001FDFE0();
+s32 Taku_Camp_Kazu_Disp(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 SzMsg_GetInfo();
+    extern s32 SzMsg_DrawRect_Pipe();
     Rect_002232F0 rect;
     Scale_002232F0 scale;
     Color_002232F0 color;
@@ -66,9 +66,9 @@ s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             column = 2;
             row = 4;
         }
-        arg0 = func_001FD680(arg0, 1, 7, 0, 0x16);
-        arg0 = func_0020F290(arg0);
-        texture = (Texture_002232F0 *)func_001FEAB0(1);
+        arg0 = SzMsg_LoadFont_Pipe(arg0, 1, 7, 0, 0x16);
+        arg0 = RhText_SetTextureFlush(arg0);
+        texture = (Texture_002232F0 *)SzMsg_GetInfo(1);
         rect = texture->rect;
         color.r = color.g = color.b = 0xFF;
         color.a = 0x80;
@@ -76,14 +76,14 @@ s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         texture->rect.y = rect.y + row * 0x16;
         texture->rect.w = 0x16;
         texture->rect.h = 0x16;
-        arg0 = func_001FDFE0(arg0, 1, x + arg3, 0x110, &scale, &color);
-        func_001FEAF0(1);
+        arg0 = SzMsg_DrawRect_Pipe(arg0, 1, x + arg3, 0x110, &scale, &color);
+        SzMsg_Free(1);
         x += 0x10;
     }
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_063", func_00223600);
+INCLUDE_ASM("asm/nonmatchings/main_063", Taku_Camp_Ivent_Name);
 
 typedef struct Tables_00224A40 {
     s32 pad[8];
@@ -104,7 +104,7 @@ typedef struct State_00224A40 {
     u16 values[3];
 } State_00224A40;
 
-void func_00224A40(void) {
+void Taku_Camp_Ivent_Name_Set(void) {
     extern u16 D_00299CE0[];
     extern u16 D_00299D00[][6];
     extern Tables_00224A40 D_002D19D0;
@@ -186,7 +186,7 @@ void func_00224A40(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_063", func_00224E40);
+INCLUDE_ASM("asm/nonmatchings/main_063", Taku_Camp_Ivent_Window);
 
 typedef struct Packet_00226120 {
     s16 x0, y0, x1, y1, x2, y2, x3, y3;
@@ -203,8 +203,8 @@ extern s16 D_00299ED2;
 extern u8 D_00299F60;
 extern Packet_00226120 D_0029AB80;
 
-void *func_00226120(void *arg0) {
-    extern void *func_00218970();
+void *Taku_Camp_Kumo(void *arg0) {
+    extern void *Taku_G4_Set();
     s8 *context = &D_00299E10;
     u8 *slot = &D_00299F60;
     Packet_00226120 packet = D_0029AB80;
@@ -307,11 +307,11 @@ void *func_00226120(void *arg0) {
         } else {
             packet.a0 = packet.a1 = packet.a2 = packet.a3 =
                 (*(s16 *)0x01ED53A4 << 7) >> 12;
-            arg0 = func_00218970(arg0, &packet, 0, 0);
+            arg0 = Taku_G4_Set(arg0, &packet, 0, 0);
         }
     }
 
-    func_0021BB20(slot);
+    Taku_Coord_Set(slot);
     for (i = 0; i < 16; i++) {
     }
     return arg0;

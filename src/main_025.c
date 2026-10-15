@@ -7,7 +7,7 @@ s32 func_001831A0(void *arg0) {
     s32 var_v0;
 
     var_v0 = 0xFFFF0000;
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return var_v0;
     }
     if (func_00182C38() != 0) {
@@ -17,7 +17,7 @@ s32 func_001831A0(void *arg0) {
     func_0019C2B8((void *)b_D_00313E08, arg0, 0xFCU);
     temp_v1 = (void *)b_D_00313E08 - 8;
     (*(s8 *)((u8 *)temp_v1 + 0x103)) = 0;
-    if (func_0017EA80(&D_00314000, 9, 0, temp_v1, 0x200, temp_v1, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 9, 0, temp_v1, 0x200, temp_v1, 4, 0, 0) < 0) {
         var_v0 = 0xFFFEFFFF;
         /* Duplicate return node #9. Try simplifying control flow for better match */
         return var_v0;
@@ -29,14 +29,14 @@ s32 func_00183240(s32 arg0) {
     s32 var_v0;
 
     var_v0 = -0x10000;
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return var_v0;
     }
     if (func_00182C38() != 0) {
         return -0x10004;
     }
     D_00313E00 = arg0;
-    if (func_0017EA80(&D_00314000, 0xA, 0, &D_00313E00, 4, &D_00313E00, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 0xA, 0, &D_00313E00, 4, &D_00313E00, 4, 0, 0) < 0) {
         var_v0 = -0x10001;
         /* Duplicate return node #7. Try simplifying control flow for better match */
         return var_v0;
@@ -59,7 +59,7 @@ s32 func_00183310(s32 name, s32 arglen, s32 args, s32 ret, s32 rpcno) {
     char *buf;
     s32 r;
 
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     if (func_00182C38() != 0) {
@@ -80,7 +80,7 @@ s32 func_00183310(s32 name, s32 arglen, s32 args, s32 ret, s32 rpcno) {
         buf[0x104] = 0;
         *(s32 *)buf = 0;
     }
-    if (func_0017EA80(&D_00314000, rpcno, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, rpcno, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     r = *(s32 *)((char *)&D_00313E00 + 0);
@@ -99,11 +99,11 @@ s32 func_00183558(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 /* _sceSifLoadElfPart: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00183578(s32 name, s32 sec, s32 out, s32 rpcno) {
+s32 _sceSifLoadElfPart(s32 name, s32 sec, s32 out, s32 rpcno) {
     char *buf;
     s32 r;
 
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     if (func_00182C38() != 0) {
@@ -114,7 +114,7 @@ s32 func_00183578(s32 name, s32 sec, s32 out, s32 rpcno) {
     buf[0x103] = 0;
     func_0019C2B8(((char *)&D_00313E00 + 8) + 252, (char *)sec, 252);
     buf[0x1FF] = 0;
-    if (func_0017EA80(&D_00314000, rpcno, 0, (s32 *)buf, 0x200, (s32 *)buf, 0x10, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, rpcno, 0, (s32 *)buf, 0x200, (s32 *)buf, 0x10, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     r = *(s32 *)buf;
@@ -126,12 +126,12 @@ s32 func_00183578(s32 name, s32 sec, s32 out, s32 rpcno) {
     return 0;
 }
 
-s32 func_00183680(s32 arg0, s32 arg1, s32 arg2) {
-    return func_00183578(arg0, arg1, arg2, 1);
+s32 sceSifLoadElfPart(s32 arg0, s32 arg1, s32 arg2) {
+    return _sceSifLoadElfPart(arg0, arg1, arg2, 1);
 }
 
-s32 func_001836A0(s32 arg0, s32 arg1) {
-    return func_00183578(arg0, (s32) &D_002BC1E8, arg1, 1);
+s32 sceSifLoadElf(s32 arg0, s32 arg1) {
+    return _sceSifLoadElfPart(arg0, (s32) &D_002BC1E8, arg1, 1);
 }
 
 
@@ -140,10 +140,10 @@ typedef struct IopPeek_001836C8 {
     s32 type;
 } IopPeek_001836C8;
 
-s32 func_001836C8(s32 arg0, void *arg1, u32 arg2) {
+s32 sceSifGetIopAddr(s32 arg0, void *arg1, u32 arg2) {
     IopPeek_001836C8 *p;
 
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     if (arg2 >= 3) {
@@ -152,7 +152,7 @@ s32 func_001836C8(s32 arg0, void *arg1, u32 arg2) {
     p = (IopPeek_001836C8 *)&D_00313E00;
     p->addr = arg0;
     p->type = arg2;
-    if (func_0017EA80(&D_00314000, 3, 0, (s32 *)p, 0x20, (s32 *)p, 0x20, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 3, 0, (s32 *)p, 0x20, (s32 *)p, 0x20, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     if (arg2 == 0) {
@@ -177,10 +177,10 @@ typedef struct IopPoke_001837B8 {
     s32 val;
 } IopPoke_001837B8;
 
-s32 func_001837B8(s32 arg0, void *arg1, s32 arg2) {
+s32 sceSifSetIopAddr(s32 arg0, void *arg1, s32 arg2) {
     IopPoke_001837B8 *p;
 
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     p = (IopPoke_001837B8 *)&D_00313E00;
@@ -195,23 +195,23 @@ s32 func_001837B8(s32 arg0, void *arg1, s32 arg2) {
     } else {
         return 0xFFFEFFFE;
     }
-    if (func_0017EA80(&D_00314000, 2, 0, &D_00313E00, 0x20, &D_00313E00, 0x10, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 2, 0, &D_00313E00, 0x20, &D_00313E00, 0x10, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_025", func_00183898);
+INCLUDE_ASM("asm/nonmatchings/main_025", sceSifResetIop);
 
-s32 func_001839D8(void) {
+s32 sceSifIsAliveIop(void) {
     s32 x;
 
-    x = func_0017BCF0(4) & 0x10000;
+    x = sceSifGetReg(4) & 0x10000;
     return x != 0;
 }
 
 s32 func_00183A00(void) {
-    if (func_0017BCF0(4) & 0x40000) {
+    if (sceSifGetReg(4) & 0x40000) {
         func_0017BD60();
         return 1;
     }
@@ -232,11 +232,11 @@ s32 func_00183A38(char *arg) {
 
     for (p = arg; *p != 0; p++) {}
     if ((u32)(p + 11 - arg) > 80) {
-        func_0017DA98(D_002BC200, arg);
+        scePrintf(D_002BC200, arg);
         return 0;
     }
     func_0017E240(0);
-    func_0017E3E0();
+    sceSifExitRpc();
     d = buf;
     while (*s != 0) {
         *d++ = *s++;
@@ -245,14 +245,14 @@ s32 func_00183A38(char *arg) {
         *d++ = *arg++;
     }
     *d = 0;
-    return func_00183898(buf, 0);
+    return sceSifResetIop(buf, 0);
 }
 
 s32 func_00183B48(s32 arg0) {
     D_0028CDF0 = arg0;
-    func_0017B590(1, &func_00184080);
-    func_0017B590(2, &func_00184080);
-    func_0017B590(3, &func_00184080);
+    SetVTLBRefillHandler(1, &func_00184080);
+    SetVTLBRefillHandler(2, &func_00184080);
+    SetVTLBRefillHandler(3, &func_00184080);
     return arg0;
 }
 
@@ -269,9 +269,9 @@ u32 func_00183BA8(s32 arg0, s32 arg1) {
     temp_s0 = *temp_v1;
     *temp_v1 = arg1;
     if (temp_a0 < 3U) {
-        func_0017B590(arg0, &D_001842C0);
+        SetVTLBRefillHandler(arg0, &D_001842C0);
     } else {
-        func_0017B5A0(arg0, &D_001842C0);
+        SetVCommonHandler(arg0, &D_001842C0);
     }
     return temp_s0;
 }
@@ -330,8 +330,8 @@ void func_00183C98(void) {
     t = (KPatch_00183C98 *)&D_0028CE38;
     func_00183C88(t[0].addr, t[0].val);
     func_00183C30(0x80075000, &D_0028CAC8, 0x328);
-    func_0017BB60(0);
-    func_0017BB60(2);
+    FlushCache(0);
+    FlushCache(2);
     func_00183C88(t[1].addr, t[1].val);
     func_00183C88(t[2].addr, t[2].val);
     for (i = 3; i < 8; i++) {
@@ -405,7 +405,7 @@ int func_00183E00(void) {
 }
 
 s32 func_00183E10(void) {
-    if (func_0017BD40() == 0x02000000) {
+    if (GetMemorySize() == 0x02000000) {
         return func_00183E50();
     }
     return func_0017BD50();
@@ -428,13 +428,13 @@ s32 func_00183E50(void) {
     s32 n, j, addr;
 
     d = &D_0028D0E8;
-    func_0017DA60(D_002BC220, d[0] - 1, d[0], d[0] + d[1] - 1, d[0] + d[1], d[0] + d[1] + d[2] - 1);
+    kprintf(D_002BC220, d[0] - 1, d[0], d[0] + d[1] - 1, d[0] + d[1], d[0] + d[1] + d[2] - 1);
     __asm__ volatile("mtc0\t$0, $6");
     __asm__ volatile("sync.p");
     n = d[0];
     i = 0;
     if (n > 48) {
-        func_0017DA60(D_002BC258);
+        kprintf(D_002BC258);
         func_001847B0(1);
     }
     for (e = (TlbEnt *)d[4]; i < n; i++, e++) {
@@ -443,7 +443,7 @@ s32 func_00183E50(void) {
     d = &D_0028D0E8;
     n = i + d[1];
     if (n > 48) {
-        func_0017DA60(D_002BC270);
+        kprintf(D_002BC270);
         func_001847B0(1);
     }
     for (e = (TlbEnt *)d[5]; i < n; i++, e++) {
@@ -456,7 +456,7 @@ s32 func_00183E50(void) {
     if (d[2] > 0) {
         n = i + d[2];
         if (n > 48) {
-            func_0017DA60(D_002BC288);
+            kprintf(D_002BC288);
             func_001847B0(1);
         }
         for (e = (TlbEnt *)d[6]; i < n; i++, e++) {
@@ -508,8 +508,8 @@ void func_00184440(void) {
     a[2] = 1;
     b[1] = 1;
     b[2] = 1;
-    D_0028D114 = func_0017B8E0(a);
-    D_0028D118 = func_0017B8E0(b);
+    D_0028D114 = CreateSema(a);
+    D_0028D118 = CreateSema(b);
 }
 
 s32 *func_00184488(s32 arg0) {
@@ -544,7 +544,7 @@ void func_00184540(void) {
     func_00184440();
     func_001844D0();
     func_0017C648();
-    func_0017C7F8();
+    InitThread();
     func_00184650();
     func_00183C98();
 }
@@ -592,10 +592,10 @@ s32 func_001845E8(void) {
     u32 sp0;
     u32 sp4;
 
-    func_0017B990(&sp0);
+    GetOsdConfigParam(&sp0);
     sp4 = (sp0 & 0xFFFF1FFF) | 0x2000;
-    func_0017B980(&sp4);
-    func_0017B990(&sp4);
-    func_0017B980(&sp0);
+    SetOsdConfigParam(&sp4);
+    GetOsdConfigParam(&sp4);
+    SetOsdConfigParam(&sp0);
     return ((sp4 >> 0xD) & 7) == 0;
 }

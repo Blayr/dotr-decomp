@@ -8,15 +8,15 @@
 
 
 
-s32 func_001ACC80(s32);                             /* extern */
-s32 func_001AF7E0(s32);                             /* extern */
-s32 func_001C7460(s32);                             /* extern */
+s32 lSzGame_DrawTitle_Pipe(s32);                             /* extern */
+s32 SzDuel_DrawDialog_Pipe(s32);                             /* extern */
+s32 SzDuel_DrawCustomDuel_Pipe(s32);                             /* extern */
 
-s32 func_001DA7F0(s32, s32, s32);                   /* extern */
+s32 SzDuel_SetupCard_Pipe(s32, s32, s32);                   /* extern */
 s32 func_00190810(s32, s32, s32, s32); /* extern */
 
 
-s32 func_00207650(s32, s32, s32, s32);              /* extern */
+s32 ExSortPrim_Pipe(s32, s32, s32, s32);              /* extern */
 
 
 
@@ -99,7 +99,7 @@ typedef struct Duel_00317490_s {
         s8 b4 : 1;
         s8 b5 : 1;
         s8 b6 : 1;
-        s8 b7 : 1;                 /* func_001DE780 returns it */
+        s8 b7 : 1;                 /* SzDuel_GetWindowDisp returns it */
     } f66;                         /* 0xD66 */
     struct {
         s8 b0 : 1;
@@ -126,15 +126,15 @@ extern Duel_00317490 D_00317490;
 typedef __int128 Q128_0020F290;
 extern u8 D_0032A5E0[];
 extern Q128_0020F290 D_0032A600;
-extern void func_00187778(void *, s32, s32);
+extern void sceVif1PkAlign(void *, s32, s32);
 
 extern u8 D_003506C8[];
 
-s32 func_0024CA40(s32, s32, s32, s32, s32, s32);
+s32 SearchUnitByRange(s32, s32, s32, s32, s32, s32);
 
 
 
-s32 func_0027B650(u16 *);
+s32 TaLogic_GetMaxApUnit(u16 *);
 
 extern u8 D_00325E80[];
 extern u8 D_00325F50[];
@@ -255,7 +255,7 @@ extern volatile s32 D_0035060C;
 extern u16 D_002CD8A0[];
 extern u8 D_00318E60[];
 
-s32 func_001FD680(s32, s32, s32, s32, s32);
+s32 SzMsg_LoadFont_Pipe(s32, s32, s32, s32, s32);
 
 
 
@@ -290,7 +290,7 @@ extern u8 D_002B90B0[];
 
 
 
-void func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+void lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 extern char D_002BF002[];
 
 
@@ -310,7 +310,7 @@ extern u64 D_00293EE0[];
 
 
 void func_0027F5B0(void);
-void func_001FA220(s32, s32);
+void SzView_DoRequest(s32, s32);
 
 extern s32 D_00292468;
 
@@ -319,16 +319,16 @@ extern u8 D_003181EC;
 extern s8 D_00299E10;
 extern s16 D_00299ED4;
 
-s32 func_0024F830(s32, s32, s32, s32, s32);
+s32 Ta_Do_MoveEfc(s32, s32, s32, s32, s32);
 
 
 
 
 
-s32 func_001EE6C0(s32, s32, s32, s32, s32, s32, s32, void (*)(void), s64);
+s32 SzModel_DrawWithFunc_Pipe(s32, s32, s32, s32, s32, s32, s32, void (*)(void), s64);
 
-u8 *func_002131D0(u8 *, s32, s32);
-s32 func_002138D0(s32, s32 *);
+u8 *lRhModelCpu_TraceDynamicBlock(u8 *, s32, s32);
+s32 lRhModelCpu_CalcSharedStrip(s32, s32 *);
 
 
 
@@ -400,7 +400,7 @@ extern s8 D_00318142;
 
 extern s32 D_0031BB10;
 
-s32 func_001F16C0(s32 arg0, s32 arg1);
+s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1);
 
 
 
@@ -426,7 +426,7 @@ extern s32 D_0031C048;
 extern u8 D_003181CA;
 
 
-s32 func_001B4780(s32, s32, s32, s32, s32, s32, s32, s32, s64);
+s32 lSzDuel_DrawWindow_Frame_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 extern char D_002BF00B;
 
 extern s32 D_0028FF10[];
@@ -447,7 +447,7 @@ extern char D_002BEF67[];
 
 
 
-s32 func_0027C770(s32, s32, s32, s32, s32, s32);
+s32 TaLogic_GetLandChange(s32, s32, s32, s32, s32, s32);
 
 
 
@@ -475,7 +475,7 @@ extern u64 D_00326180;
 
 
 
-extern void func_00147830(void *);
+extern void TaLogic013_CommandInvadeUnit(void *);
 
 
 
@@ -590,7 +590,7 @@ extern u8 D_002BCB88[];
 
 s32 func_0018B6D8(s32, s32);
 
-s32 func_0018DEE8(s32, s32, s32, s32, s32);
+s32 sceMpegDemuxPssRing(s32, s32, s32, s32, s32);
 
 
 
@@ -621,7 +621,7 @@ extern s32 D_0028D108;
 
 
 
-s32 func_00196BE0(s32, s32);                    /* extern */
+s32 _free_r(s32, s32);                    /* extern */
 
 
 extern s32 *D_00315C68;
@@ -728,7 +728,7 @@ extern s32 D_00314000;
 extern s32 D_002BC9F8;
 extern s32 D_0028F748;
 
-void func_0018F808();
+void _sendDataToIPU();
 
 extern char D_002BCA18[];
 
@@ -752,7 +752,7 @@ typedef struct { void (*fn)(s32); s32 arg; } hcall_t;
 extern s32 *D_0028D11C;
 
 extern void (*D_0028CA0C)(s32);
-void func_0017D330(s64);
+void printfloat(s64);
 
 extern s32 D_00316200;
 
@@ -790,7 +790,7 @@ extern s32 D_002BC9D0;
 
 extern f32 D_002BE5D0[]; /* fdlibm kf_tan.c T[13] */
 
-s32 func_0018A738(void *);                          /* extern */
+s32 _mbAddressIncrement(void *);                          /* extern */
 extern s32 D_002BC7C0;
 extern s32 D_002BC7E8;
 
@@ -881,7 +881,7 @@ typedef struct fr_FILE { u8 *_p; s32 _r; } fr_FILE;
 
 
 
-void func_0018FA40(void *);
+void _initSeq(void *);
 extern s32 D_0028DB80;
 extern s32 D_0028DBC0;
 extern s32 D_002BCAA8;
@@ -893,7 +893,7 @@ extern s32 D_002BD274[];
 
 typedef union b2d_du { double d; u32 i[2]; } b2d_du;
 
-s32 func_0018A3A0(void *);
+s32 _waitBdecOut(void *);
 extern s32 D_002BC7A0;
 
 typedef union cvt_du { double d; u32 i[2]; } cvt_du;
@@ -902,7 +902,7 @@ typedef union cvt_du { double d; u32 i[2]; } cvt_du;
 
 s32 func_0018C680(void *, s32);
 
-s32 func_0018F290(void *, s32, s32);
+s32 _decodeOrSkipFrame(void *, s32, s32);
 
 extern s32 D_002BCCD0;
 
@@ -916,7 +916,7 @@ extern s32 D_002BCAC0;
 extern s32 D_002BCAE8;
 
 s32 func_00188630(void *, s32, s32, s32, s32, void *, s32 *, s32 *);
-s32 func_0018AD30(void *, s32 *, s32 *, s32 *, void *, s32 *, s32 *);
+s32 _decMB0(void *, s32 *, s32 *, s32 *, void *, s32 *, s32 *);
 extern s32 D_002BC808;
 
 extern s8 D_002BC2D8;

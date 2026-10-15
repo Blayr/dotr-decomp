@@ -1,19 +1,19 @@
 #include "common.h"
 
-void func_002336F0(void) {
+void Taku_Camp_Set_Go_Duel(void) {
     s16 temp_s0;
 
     temp_s0 = D_00299ED4;
-    func_001A8320(1, (s32) temp_s0);
-    func_001A8320(2, (s32) D_00299E10);
+    SzGame_SetMenuNum(1, (s32) temp_s0);
+    SzGame_SetMenuNum(2, (s32) D_00299E10);
     if (D_00299E10 == 0) {
-        func_001A8320(3, 0x44C);
-        func_001A8320(4, temp_s0 + 0x3E8);
+        SzGame_SetMenuNum(3, 0x44C);
+        SzGame_SetMenuNum(4, temp_s0 + 0x3E8);
     } else {
-        func_001A8320(3, temp_s0 + 0x3E8);
-        func_001A8320(4, 0x44C);
+        SzGame_SetMenuNum(3, temp_s0 + 0x3E8);
+        SzGame_SetMenuNum(4, 0x44C);
     }
-    func_001A8870(1, 0);
+    SzGame_Push(1, 0);
 }
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
@@ -52,7 +52,7 @@ extern unsigned char D_002999CC[][4];
 #define DOTR_DARE_FACE1 ((struct DotrDareFace *)0x1ed5414)
 #define DOTR_DARE_LOOK1 (*(signed char *)0x1ed5469)
 #define DOTR_DARE_LOOK0 (*(signed char *)0x1ed546a)
-extern DotrDareWord func_002195E0(DotrDareWord cursor, struct DotrDareWindow *window,
+extern DotrDareWord Taku_Window_Set(DotrDareWord cursor, struct DotrDareWindow *window,
                                     unsigned short flag, int a3, unsigned short x, int y,
                                     int a6, int a7, int a8);
 extern DotrDareWord func_00217BD0_b(DotrDareWord cursor, struct DotrDareItem *item, short x,
@@ -65,7 +65,7 @@ extern DotrDareWord func_001FE660_b(DotrDareWord cursor, int index, int x, int y
                                           float sx, float sy, void *e,
                                           void (*function)(void));
 
-int func_002337A0(int cursor)
+int Taku_Camp_BUN_DARE(int cursor)
 {
     short xx, yy;
     unsigned char col[4];
@@ -87,7 +87,7 @@ int func_002337A0(int cursor)
         y = (w * 256 >> 10) - 256;
         n = DOTR_DARE_SIDE0;
         cursor = func_00217BD0_b(cursor, &D_00298120[n], x + xx, 0);
-        cursor = func_002195E0(cursor, &D_00297B40[0], n, 0, x + xx, 0, 0, 128, 128);
+        cursor = Taku_Window_Set(cursor, &D_00297B40[0], n, 0, x + xx, 0, 0, 128, 128);
         no = DOTR_DARE_NAME0 - 195;
         switch (DOTR_DARE_STATE0) {
         case 1:
@@ -99,7 +99,7 @@ int func_002337A0(int cursor)
             DOTR_DARE_FACE0->mode = 1;
             DOTR_DARE_FACE0->x = D_00297B40[3].x + xx;
             DOTR_DARE_FACE0->y = y + (D_00297B40[3].y + yy);
-            func_00245BE0(DOTR_DARE_FACE0);
+            ShFace_Request(DOTR_DARE_FACE0);
             DOTR_DARE_STATE0 = 2;
             break;
         case 10:
@@ -108,27 +108,27 @@ int func_002337A0(int cursor)
             DOTR_DARE_FACE0->mode = 3;
             DOTR_DARE_FACE0->x = D_00297B40[3].x + xx;
             DOTR_DARE_FACE0->y = y + (D_00297B40[3].y + yy);
-            func_00245BE0(DOTR_DARE_FACE0);
+            ShFace_Request(DOTR_DARE_FACE0);
             DOTR_DARE_STATE0 = 2;
             break;
         case 100:
-            func_00245D80(DOTR_DARE_FACE0);
+            ShFace_Close(DOTR_DARE_FACE0);
             DOTR_DARE_STATE0 = 0;
             break;
         }
-        cursor = func_002195E0(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = Taku_Window_Set(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[2], xx, y + yy, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[3], xx, y + yy, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[n], xx, y + yy, 0);
-        cursor = func_001FD680(cursor, 1, DOTR_DARE_NAME0, 0, 22);
-        cursor = func_0020F290(cursor);
+        cursor = SzMsg_LoadFont_Pipe(cursor, 1, DOTR_DARE_NAME0, 0, 22);
+        cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         if (info->w < 324) {
             cursor = func_001FE660_b(cursor, 1, x + 53, 21, 1.0f, 1.0f, col, func_001FDFE0_b);
         } else {
             cursor = func_001FE660_b(cursor, 1, x + 53, 21, 324.0f / (float)info->w, 1.0f, col, func_001FDFE0_b);
         }
-        func_001FEAF0(1);
+        SzMsg_Free(1);
     }
     if (DOTR_DARE_SLIDE1 != 0) {
         short x;
@@ -143,7 +143,7 @@ int func_002337A0(int cursor)
         y = 256 - (w * 256 >> 10);
         n = DOTR_DARE_SIDE1;
         cursor = func_00217BD0_b(cursor, &D_00298120[n], x + 144, 304);
-        cursor = func_002195E0(cursor, &D_00297B40[0], n, 0, x + 144, 304, 0, 128, 128);
+        cursor = Taku_Window_Set(cursor, &D_00297B40[0], n, 0, x + 144, 304, 0, 128, 128);
         xx = -480;
         yy = 320;
         no = DOTR_DARE_NAME1 - 195;
@@ -157,7 +157,7 @@ int func_002337A0(int cursor)
             DOTR_DARE_FACE1->mode = 1;
             DOTR_DARE_FACE1->x = D_00297B40[3].x + xx;
             DOTR_DARE_FACE1->y = y + (D_00297B40[3].y + yy);
-            func_00245BE0(DOTR_DARE_FACE1);
+            ShFace_Request(DOTR_DARE_FACE1);
             DOTR_DARE_STATE1 = 2;
             break;
         case 10:
@@ -166,27 +166,27 @@ int func_002337A0(int cursor)
             DOTR_DARE_FACE1->mode = 3;
             DOTR_DARE_FACE1->x = D_00297B40[3].x + xx;
             DOTR_DARE_FACE1->y = y + (D_00297B40[3].y + yy);
-            func_00245BE0(DOTR_DARE_FACE1);
+            ShFace_Request(DOTR_DARE_FACE1);
             DOTR_DARE_STATE1 = 2;
             break;
         case 100:
-            func_00245D80(DOTR_DARE_FACE1);
+            ShFace_Close(DOTR_DARE_FACE1);
             DOTR_DARE_STATE1 = 0;
             break;
         }
-        cursor = func_002195E0(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = Taku_Window_Set(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[4], xx, y + 184, 2);
         cursor = func_00218020_b(cursor, &D_002983A0[5], xx, y + 184, 2);
         cursor = func_00218020_b(cursor, &D_002983A0[n], xx, y + 176, 0);
-        cursor = func_001FD680(cursor, 1, DOTR_DARE_NAME1, 0, 22);
-        cursor = func_0020F290(cursor);
+        cursor = SzMsg_LoadFont_Pipe(cursor, 1, DOTR_DARE_NAME1, 0, 22);
+        cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         if (info->w < 324) {
             cursor = func_001FE660_b(cursor, 1, x + 197, 325, 1.0f, 1.0f, col, func_001FDFE0_b);
         } else {
             cursor = func_001FE660_b(cursor, 1, x + 197, 325, 324.0f / (float)info->w, 1.0f, col, func_001FDFE0_b);
         }
-        func_001FEAF0(1);
+        SzMsg_Free(1);
     }
     return cursor;
 }
@@ -203,7 +203,7 @@ int func_002337A0(int cursor)
 #undef DOTR_DARE_LOOK1
 #undef DOTR_DARE_LOOK0
 
-void func_00233F50(s8 arg0) {
+void Taku_Camp_SINEMA_Init(s8 arg0) {
     *(s16 *)0x01ED001C = 0;
     switch (arg0) {
     case 0:
@@ -272,7 +272,7 @@ extern struct DotrSinemaQuad D_00298A80[2];
 #define DOTR_SINEMA_C1 (b->cut1 * 64 / 64)
 #define DOTR_SINEMA_C2 (b->cut2 * 116 / 116)
 
-int func_00234040(int cursor, unsigned short fade)
+int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
 {
     struct DotrSinemaWork *b = DOTR_SINEMA_BLOCK;
     struct DotrSinemaQuad q = D_0029AEC0;
@@ -453,9 +453,9 @@ int func_00234040(int cursor, unsigned short fade)
 #undef DOTR_SINEMA_C1
 #undef DOTR_SINEMA_C2
 
-INCLUDE_ASM("asm/nonmatchings/main_066", func_002347D0);
+INCLUDE_ASM("asm/nonmatchings/main_066", Taku_Camp_ST_WINDOW);
 
-void *func_002351A0(void *arg0) {
+void *Taku_Camp_SYS_ICON(void *arg0) {
     s16 coords[19];
     u8 *state;
     s64 alpha;
@@ -469,13 +469,13 @@ void *func_002351A0(void *arg0) {
     s8 mode;
     s8 length;
     s8 *text;
-    extern void *func_00218970();
-    extern void *func_00217BD0();
-    extern void *func_001B6F70();
+    extern void *Taku_G4_Set();
+    extern void *Taku_Obj_Set();
+    extern void *SzDuel_DrawWindow_Font_Pipe();
 
     alpha = (s16)(0x80 - ((*(s16 *)0x01ED0070 << 7) >> 8));
     state = (u8 *)0x01ED0000;
-    arg0 = func_00218970(arg0, D_002982F8, 0, alpha);
+    arg0 = Taku_G4_Set(arg0, D_002982F8, 0, alpha);
     row = D_00298260;
     y = (s16)alpha + 0x14F;
     i = 0;
@@ -507,7 +507,7 @@ void *func_002351A0(void *arg0) {
                 }
             }
         }
-        arg0 = func_00217BD0(arg0, coords, 0, alpha);
+        arg0 = Taku_Obj_Set(arg0, coords, 0, alpha);
         mode = *(s8 *)(state + 0x7E);
         if (mode == 1 && i == *(s16 *)(state + 0x80) && mode != 0) {
             if (i == 0) {
@@ -523,19 +523,19 @@ void *func_002351A0(void *arg0) {
                 text = D_0030F113;
                 length = 4;
             }
-            arg0 = func_001B6F70(arg0, 0x232, y, 1, 1, length, text, 0);
+            arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, 0x232, y, 1, 1, length, text, 0);
         }
         i++;
         row += 19;
         fade += 2;
     } while (i < 4);
     if (*(s8 *)0x01ED007E == 0) {
-        arg0 = func_00217BD0(arg0, D_00298B50, 0, alpha);
+        arg0 = Taku_Obj_Set(arg0, D_00298B50, 0, alpha);
     } else {
-        arg0 = func_00217BD0(arg0, D_00298B76, 0, alpha);
+        arg0 = Taku_Obj_Set(arg0, D_00298B76, 0, alpha);
     }
     if (*(s8 *)0x01ED007E == 0) {
-        arg0 = func_001B6F70(arg0, 0x232, y, 1, 1, 6, D_0030F118, 0);
+        arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, 0x232, y, 1, 1, 6, D_0030F118, 0);
     }
     return arg0;
 }

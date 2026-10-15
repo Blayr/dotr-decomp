@@ -1,14 +1,14 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027F700);
+INCLUDE_ASM("asm/nonmatchings/main_080", TaTuto_DrawTrapArea);
 
-s32 func_0027F830(s32 arg0) {
-    extern s32 func_001DE4E0();
+s32 TaTuto_IsTuto(s32 arg0) {
+    extern s32 SzDuel_GetPlayer();
     s32 var_s0;
 
     var_s0 = 0;
-    if (func_001DE4E0(arg0) >= 0x20) {
-        if (func_001DE4E0(arg0) < 0x64) {
+    if (SzDuel_GetPlayer(arg0) >= 0x20) {
+        if (SzDuel_GetPlayer(arg0) < 0x64) {
             var_s0 = 1;
         }
     }
@@ -29,16 +29,16 @@ INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FAB0);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FC20);
 
-void func_0027FFC0(s32 arg0) {
+void TaView_ReqHalfFarView(s32 arg0) {
     void *temp_s0;
     f32 *temp_v0;
 
-    func_001FA810(0, 0);
-    temp_s0 = (void *)func_001F9D30(0);
-    temp_v0 = func_001FAF60(0);
+    SzView_FreeRequest(0, 0);
+    temp_s0 = (void *)SzView_GetCP(0);
+    temp_v0 = SzView_GetLook(0);
     *temp_v0 = 2.0f * *temp_v0;
-    func_001FA8A0(0, 0, 3, (u8)arg0 & 0xFF, 0, temp_s0);
-    func_001FA8A0(0, 0, 4, (u8)arg0, 0, temp_v0);
+    SzView_ReqCamera(0, 0, 3, (u8)arg0 & 0xFF, 0, temp_s0);
+    SzView_ReqCamera(0, 0, 4, (u8)arg0, 0, temp_v0);
 }
 
 typedef struct Constants_00280060 {
@@ -95,9 +95,9 @@ extern s32 D_00351228;
 
 #pragma optimization_level 0
 
-s32 func_00280060(void *arg0, s32 arg1) {
+s32 ShSlot_Flear(void *arg0, s32 arg1) {
     extern s32 func_001A22C0(f32);
-    extern s32 func_00207650(s32, void *, s32, s32);
+    extern s32 ExSortPrim_Pipe(s32, void *, s32, s32);
     Particle_00280060 *particle = arg0;
     Constants_00280060 constants = D_002B8760;
     Packet_00280060 packet;
@@ -116,7 +116,7 @@ s32 func_00280060(void *arg0, s32 arg1) {
             particle++;
         }
         header = (u8 *)particle;
-        if (func_00101AF0(header) != 0) {
+        if (ShFx_isTimer(header) != 0) {
             particle->radius += particle->speed;
             if (header[7] > 9) {
                 divisions = 9;
@@ -142,7 +142,7 @@ s32 func_00280060(void *arg0, s32 arg1) {
             packet.vertex[0].b = particle->centerB;
             packet.vertex[1].b = packet.vertex[2].b = particle->b;
             packet.vertex[0].q = packet.vertex[1].q = packet.vertex[2].q = 1.0f;
-            func_002086D0(&packet, 0x48);
+            ExAssignAlpha(&packet, 0x48);
             packet.vertex[0].a = particle->alpha;
             packet.vertex[1].a = packet.vertex[2].a = 0;
             if (!(header[4] & 0x40)) {
@@ -169,7 +169,7 @@ s32 func_00280060(void *arg0, s32 arg1) {
                 packet.vertex[1].position.coordinates.y = (u16)(func_001A22C0(particle->y + previousY) << 4);
                 packet.vertex[2].position.coordinates.x = (u16)(func_001A22C0(particle->x + offsetX) << 4);
                 packet.vertex[2].position.coordinates.y = (u16)(func_001A22C0(particle->y + offsetY) << 4);
-                D_00351228 = func_00207650(D_00351228, &packet, 0, func_001A23B0(depth));
+                D_00351228 = ExSortPrim_Pipe(D_00351228, &packet, 0, func_001A23B0(depth));
             }
         }
     }
@@ -222,17 +222,17 @@ extern u16 D_00351246;
 
 #pragma optimization_level 0
 
-void func_00280670(void) {
-    extern s32 func_00101AD0();
+void ShSlot_Start(void) {
+    extern s32 ShFx_initTimer();
     s32 i;
 
     for (i = 0; i < 3; i++) {
         D_00351240[i].enabled = 1;
     }
     D_00351240[0].state = 1;
-    func_00217710(0, 0x1E);
+    SzSound_PlaySE(0, 0x1E);
     for (i = 0; i < 3; i++) {
-        func_00101AD0(&D_00351180[i], 0x28, 0, 0xFF);
+        ShFx_initTimer(&D_00351180[i], 0x28, 0, 0xFF);
         D_00351180[i].intensity = 0x80;
         D_00351180[i].mode = 9;
         D_00351180[i].width = 40.0f;
@@ -263,14 +263,14 @@ typedef struct Board_00280920 {
 
 #pragma optimization_level 0
 
-void func_00280920(void) {
+void ShSlot_HitCardRequest(void) {
     extern Board_00280920 D_00351210;
     extern Reel_00280920 *D_00351230;
     extern s32 D_002B8780[];
     extern s16 D_00351252;
     extern u16 D_00351258;
     extern u16 D_00351292;
-    extern s32 func_002514F0(u16, u8);
+    extern s32 TaSlot_GetFeverGain(u16, u8);
     extern u8 D_0035117A;
     extern u16 D_0035117C;
     u16 id;
@@ -311,7 +311,7 @@ void func_00280920(void) {
             if (D_00351210.slots[slot]) {
                 if (D_00351230->stops[slot] == 0xFFFE) {
                     base = D_00351252 / 0x70;
-                    D_0035117C = func_002514F0(D_00351240[0].symbols[(base + D_002B8780[slot]) % D_00351230->count], slot);
+                    D_0035117C = TaSlot_GetFeverGain(D_00351240[0].symbols[(base + D_002B8780[slot]) % D_00351230->count], slot);
                 } else {
                     D_0035117C = D_00351230->stops[D_0035117A - 3];
                 }
@@ -328,7 +328,7 @@ void func_00280920(void) {
 
 #pragma optimization_level 0
 
-void func_00280CB0(s32 arg0) {
+void ShSlot_CheckLine(s32 arg0) {
     extern u8 *D_00351230;
     u16 symbols[3][3];
     s32 row;
@@ -523,7 +523,7 @@ typedef struct {
 
 #pragma optimization_level 0
 
-s32 func_002817C0(void) {
+s32 ShSlot_IsFlashStop(void) {
     extern Board_002817C0 D_00351210;
     s32 i;
     s32 j;
@@ -545,7 +545,7 @@ s32 func_002817C0(void) {
 
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_002818A0);
+INCLUDE_ASM("asm/nonmatchings/main_080", ShSlot_DrawParts);
 
 typedef struct {
     s16 count;
@@ -592,10 +592,10 @@ typedef struct {
 
 #pragma optimization_level 0
 
-void func_002825F0(void) {
-    extern s32 func_00202BF0();
-    extern s32 func_00202E00();
-    extern s32 func_00207650();
+void ShSlot_DrawEye(void) {
+    extern s32 SzText_LoadRequest();
+    extern s32 SzText_InitClutManage();
+    extern s32 ExSortPrim_Pipe();
     extern Pulse_002825F0 D_002B8E40;
     Pulse_002825F0 pulse;
     Packet_002825F0 packet __attribute__((aligned(8)));
@@ -607,12 +607,12 @@ void func_002825F0(void) {
     s32 size;
 
     pulse = D_002B8E40;
-    handle = func_00202BF0(3, 7);
-    size = func_00209E50();
-    size += func_00202E00(size, 1);
-    D_00351228 = func_00202B00(D_00351228, 3, size, NULL);
-    D_00351228 = func_0020F290(D_00351228);
-    func_00202D60(3, -1);
+    handle = SzText_LoadRequest(3, 7);
+    size = RhBase_GetUserGsAddress();
+    size += SzText_InitClutManage(size, 1);
+    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 3, size, NULL);
+    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    SzText_FreeRequest(3, -1);
     ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
     ((Tag_002825F0 *)&packet.header[0])->count = 9;
     ((Tag_002825F0 *)&packet.header[0])->registers = 0x424242421LL;
@@ -664,18 +664,18 @@ void func_002825F0(void) {
                 ((UV_002825F0 *)&packet.v3.texture)->v = 0xC60;
                 break;
             }
-            func_00208700(&packet.header[0], (void *)handle, 0);
-            func_002086D0(&packet.header[0], 0x44);
-            D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+            ExAssignTexture(&packet.header[0], (void *)handle, 0);
+            ExAssignAlpha(&packet.header[0], 0x44);
+            D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
         }
     }
 
-    handle = func_00202BF0(9, 0);
-    size = func_00209E50();
-    size += func_00202E00(size, 1);
-    D_00351228 = func_00202B00(D_00351228, 9, size, NULL);
-    D_00351228 = func_0020F290(D_00351228);
-    func_00202D60(9, -1);
+    handle = SzText_LoadRequest(9, 0);
+    size = RhBase_GetUserGsAddress();
+    size += SzText_InitClutManage(size, 1);
+    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 9, size, NULL);
+    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    SzText_FreeRequest(9, -1);
     ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
     ((Tag_002825F0 *)&packet.header[0])->count = 9;
     ((Tag_002825F0 *)&packet.header[0])->registers = 0x424242421LL;
@@ -703,9 +703,9 @@ void func_002825F0(void) {
             ((UV_002825F0 *)&packet.v2.texture)->v = 0x780;
             ((UV_002825F0 *)&packet.v3.texture)->u = 0x2E0;
             ((UV_002825F0 *)&packet.v3.texture)->v = 0x780;
-            func_00208700(&packet.header[0], (void *)handle, 0);
-            func_002086D0(&packet.header[0], 0x48);
-            D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+            ExAssignTexture(&packet.header[0], (void *)handle, 0);
+            ExAssignAlpha(&packet.header[0], 0x48);
+            D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
         }
     }
 }
@@ -759,10 +759,10 @@ typedef struct {
 
 #pragma optimization_level 0
 
-void func_002831A0(void) {
-    extern s32 func_00202BF0();
-    extern s32 func_00202E00();
-    extern s32 func_00207650();
+void ShSlot_FlashBox(void) {
+    extern s32 SzText_LoadRequest();
+    extern s32 SzText_InitClutManage();
+    extern s32 ExSortPrim_Pipe();
     extern u8 D_002B8740[];
     extern State_002831A0 D_00351210;
     extern s32 D_00351228;
@@ -775,12 +775,12 @@ void func_002831A0(void) {
     s32 i;
     s32 size;
 
-    handle = func_00202BF0(9, 1);
-    size = func_00209E50();
-    size += func_00202E00(size, 1);
-    D_00351228 = func_00202B00(D_00351228, 9, size, NULL);
-    D_00351228 = func_0020F290(D_00351228);
-    func_00202D60(9, -1);
+    handle = SzText_LoadRequest(9, 1);
+    size = RhBase_GetUserGsAddress();
+    size += SzText_InitClutManage(size, 1);
+    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 9, size, NULL);
+    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    SzText_FreeRequest(9, -1);
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
@@ -833,12 +833,12 @@ void func_002831A0(void) {
                         packet.v1.position.y = packet.v0.position.y = packet.v2.position.y + 0x390;
                         break;
                     }
-                    func_00208CB0(&packet.header[0], 0x1C4391F044ALL);
-                    func_00208700(&packet.header[0], (void *)handle, 1);
-                    func_002086D0(&packet.header[0], 0x44);
-                    D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
-                    func_002086D0(&packet.header[0], 0x49);
-                    D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+                    ExAssignClamp(&packet.header[0], 0x1C4391F044ALL);
+                    ExAssignTexture(&packet.header[0], (void *)handle, 1);
+                    ExAssignAlpha(&packet.header[0], 0x44);
+                    D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
+                    ExAssignAlpha(&packet.header[0], 0x49);
+                    D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
                 }
             }
         }
@@ -907,12 +907,12 @@ typedef struct {
 
 #pragma optimization_level 0
 
-void func_00283880(s32 arg0) {
-    extern s32 func_00202BF0();
-    extern s32 func_00202E00();
-    extern s32 func_00207650();
-    extern s32 func_00200930();
-    extern s32 func_00202FB0();
+void ShSlot_DrawReel(s32 arg0) {
+    extern s32 SzText_LoadRequest();
+    extern s32 SzText_InitClutManage();
+    extern s32 ExSortPrim_Pipe();
+    extern s32 SzText_GetReadyItem();
+    extern s32 SzText_Load_Pipe();
     extern s32 D_00351228;
     extern u8 *D_00351230;
 
@@ -934,12 +934,12 @@ void func_00283880(s32 arg0) {
     s32 backgroundX;
     s32 backgroundY;
 
-    work.background = (s32 *) func_00202BF0(9, 0);
-    position = func_00209E50();
-    position += func_00202E00(position, 1);
-    D_00351228 = func_00202B00(D_00351228, 9, position, NULL);
-    D_00351228 = func_0020F290(D_00351228);
-    func_00202D60(9, -1);
+    work.background = (s32 *) SzText_LoadRequest(9, 0);
+    position = RhBase_GetUserGsAddress();
+    position += SzText_InitClutManage(position, 1);
+    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 9, position, NULL);
+    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    SzText_FreeRequest(9, -1);
     scroll = D_00351240[arg0].angle % 176;
 
     ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
@@ -1017,24 +1017,24 @@ void func_00283880(s32 arg0) {
             ((UV_00283880 *) &work.textured.v3.texture)->v = (u16) ((0x100 - scroll) * 16);
             break;
         }
-        func_00208CB0(&work.textured.header[0], ((s64) u0 << 4) | 0xA | ((s64) u1 << 14) | 0x50000000 | ((u64) 0x3FC << 32));
-        func_00208700(&work.textured.header[0], work.background, 1);
-        func_002086D0(&work.textured.header[0], 0x44);
-        D_00351228 = func_00207650(D_00351228, &work.textured.header[0], 0, -1);
+        ExAssignClamp(&work.textured.header[0], ((s64) u0 << 4) | 0xA | ((s64) u1 << 14) | 0x50000000 | ((u64) 0x3FC << 32));
+        ExAssignTexture(&work.textured.header[0], work.background, 1);
+        ExAssignAlpha(&work.textured.header[0], 0x44);
+        D_00351228 = ExSortPrim_Pipe(D_00351228, &work.textured.header[0], 0, -1);
     }
 
     imageIndex = D_00351240[arg0].position / 112;
     scroll = D_00351240[arg0].position % 112;
-    position = func_00209E50();
-    position += func_00202E00(position, 1);
+    position = RhBase_GetUserGsAddress();
+    position += SzText_InitClutManage(position, 1);
     for (i = 0; i < 4; i++) {
-        work.images[i] = func_00200930(1, D_00351240[arg0].symbols[(imageIndex + i) % *D_00351230]);
+        work.images[i] = SzText_GetReadyItem(1, D_00351240[arg0].symbols[(imageIndex + i) % *D_00351230]);
         if (work.images[i] != NULL) {
-            D_00351228 = func_00202FB0(D_00351228, *(s32 *) work.images[i], position, &size);
+            D_00351228 = SzText_Load_Pipe(D_00351228, *(s32 *) work.images[i], position, &size);
             position += size;
         }
     }
-    D_00351228 = func_0020F290(D_00351228);
+    D_00351228 = RhText_SetTextureFlush(D_00351228);
     for (i = 0; i < 4; i++) {
         if (work.images[i] != NULL) {
             ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
@@ -1075,9 +1075,9 @@ void func_00283880(s32 arg0) {
             ((UV_00283880 *) &work.textured.v2.texture)->v = (u16) (bottom << 4);
             ((UV_00283880 *) &work.textured.v3.texture)->u = 0x800;
             ((UV_00283880 *) &work.textured.v3.texture)->v = (u16) (bottom << 4);
-            func_00208CB0(&work.textured.header[0], ((s64) top << 24) | 0x20000A | ((s64) bottom << 34));
-            func_00208700(&work.textured.header[0], *(void **) work.images[i], 1);
-            D_00351228 = func_00207650(D_00351228, &work.textured.header[0], 0, -1);
+            ExAssignClamp(&work.textured.header[0], ((s64) top << 24) | 0x20000A | ((s64) bottom << 34));
+            ExAssignTexture(&work.textured.header[0], *(void **) work.images[i], 1);
+            D_00351228 = ExSortPrim_Pipe(D_00351228, &work.textured.header[0], 0, -1);
         }
     }
     ((Tag_00283880 *) &work.gradient.header[0])->flags = 0x14;
@@ -1128,8 +1128,8 @@ void func_00283880(s32 arg0) {
         work.gradient.v1.xyz.y = work.gradient.v0.xyz.y = (shadeY + 0x720) << 4;
         work.gradient.v3.xyz.x = work.gradient.v1.xyz.x = work.gradient.v0.xyz.x + 0x680;
         work.gradient.v3.xyz.y = work.gradient.v2.xyz.y = work.gradient.v0.xyz.y + (shadeHeight << 4);
-        func_002086D0(&work.gradient.header[0], 0x42 | ((u64) 0x80 << 32));
-        D_00351228 = func_00207650(D_00351228, &work.gradient.header[0], 0, -1);
+        ExAssignAlpha(&work.gradient.header[0], 0x42 | ((u64) 0x80 << 32));
+        D_00351228 = ExSortPrim_Pipe(D_00351228, &work.gradient.header[0], 0, -1);
     }
 }
 
@@ -1141,7 +1141,7 @@ typedef struct Timers_00284D30 {
     u8 grid[3][3];
 } Timers_00284D30;
 
-void func_002818A0(s32);
+void ShSlot_DrawParts(s32);
 extern u8 D_00351178;
 extern u8 D_00351179;
 extern u8 D_0035117A;
@@ -1150,7 +1150,7 @@ extern s16 D_00351248;
 
 #pragma optimization_level 0
 
-s32 func_00284D30(s32 arg0) {
+s32 ShSlot_Draw_Pipe(s32 arg0) {
     extern Timers_00284D30 D_00351210;
     s32 i;
     s32 j;
@@ -1219,21 +1219,21 @@ s32 func_00284D30(s32 arg0) {
             if (!D_00351240[i].countdown) {
                 D_00351240[i].velocity = 0;
                 D_00351240[i].enabled = 4;
-                func_00280CB0(i);
+                ShSlot_CheckLine(i);
             }
             break;
         }
     }
     D_00351228 = arg0;
     if (D_00351228 != 0) {
-        func_002818A0(0);
-        func_002825F0();
+        ShSlot_DrawParts(0);
+        ShSlot_DrawEye();
         for (j = 0; j < 3; j++) {
-            func_00283880(j);
+            ShSlot_DrawReel(j);
         }
         if (D_00351210.enabled != 0) {
-            func_002831A0();
-            func_002818A0(2);
+            ShSlot_FlashBox();
+            ShSlot_DrawParts(2);
             for (i = 0; i < 5; i++) {
                 if (D_00351210.counters[i] > 1) {
                     D_00351210.counters[i]--;
@@ -1247,32 +1247,32 @@ s32 func_00284D30(s32 arg0) {
                 }
             }
         }
-        func_002818A0(1);
+        ShSlot_DrawParts(1);
         if (D_00351240[0].state == 3) {
             switch (D_00351178) {
             case 1:
-                func_00280920();
+                ShSlot_HitCardRequest();
                 if (D_0035117C != 0xFFFF) {
                     if (D_0035117A > 3) {
-                        func_00217710(0, 25);
-                        func_001E42C0(3, 0, 0, D_0035117C);
+                        SzSound_PlaySE(0, 25);
+                        SzDuel_OpenMsgPopup(3, 0, 0, D_0035117C);
                         D_00351178 = 2;
                         D_00351179 = 0;
                     } else {
-                        func_00217710(0, 7);
-                        func_001E42C0(2, 0, 0, D_0035117C);
+                        SzSound_PlaySE(0, 7);
+                        SzDuel_OpenMsgPopup(2, 0, 0, D_0035117C);
                         D_00351178 = 2;
                         D_00351179 = 0;
                     }
                 } else {
-                    func_001E4530();
+                    SzDuel_CloseMsgPopup();
                     D_00351178 = 6;
                     D_00351179 = 8;
                 }
                 break;
             }
         }
-        func_00280060(D_00351180, 3);
+        ShSlot_Flear(D_00351180, 3);
     }
     D_00351246++;
     return D_00351228;
@@ -1317,7 +1317,7 @@ extern s16 D_00351248;
 
 #pragma optimization_level 0
 
-void func_00285880(s32 arg0) {
+void ShSlot_Init(s32 arg0) {
     s32 i;
     s32 j;
     s32 a;
@@ -1326,7 +1326,7 @@ void func_00285880(s32 arg0) {
     Deck_00285880 *deck;
     s32 k;
     extern Flags_00280670 D_00351240[];
-    extern s32 func_00280670();
+    extern s32 ShSlot_Start();
 
     D_00351244 = arg0;
     D_00351230 = (Deck_00285880 *)0x01ED0000;
@@ -1388,7 +1388,7 @@ void func_00285880(s32 arg0) {
         }
     }
     if (!D_00351244) {
-        func_00280670();
+        ShSlot_Start();
     }
 }
 
@@ -1396,10 +1396,10 @@ void func_00285880(s32 arg0) {
 
 #pragma optimization_level 0
 
-s32 func_00284D30(s32);                             /* extern */
+s32 ShSlot_Draw_Pipe(s32);                             /* extern */
 
-void func_00285EE0(void) {
-    func_00209D30(func_00284D30(func_00209D20()));
+void ShSlot_Draw(void) {
+    RhBase_SetVifPacketArea(ShSlot_Draw_Pipe(RhBase_GetVifPacketArea()));
 }
 
 #pragma optimization_level reset
@@ -1414,41 +1414,41 @@ static inline Flags_00280670 *row_00285F20(s32 index) {
 
 #pragma optimization_level 0
 
-void func_00285F20(void) {
-    extern s32 func_001E4530();
-    extern s32 func_001A8920();
-    extern s32 func_00101AD0();
-    extern s32 func_00217710();
-    extern s32 func_00280670();
-    extern s32 func_002817C0();
-    extern s32 func_00285880(s32);
-    extern s32 func_00203C40();
+void ShSlot_Act(void) {
+    extern s32 SzDuel_CloseMsgPopup();
+    extern s32 SzGame_Pop();
+    extern s32 ShFx_initTimer();
+    extern s32 SzSound_PlaySE();
+    extern s32 ShSlot_Start();
+    extern s32 ShSlot_IsFlashStop();
+    extern s32 ShSlot_Init(s32);
+    extern s32 SzPad_GetAnalogInfo();
     s32 i;
     s32 remainder1;
     s32 remainder2;
     s32 remainder3;
 
     if (D_00351244) {
-        if (func_00203A40(0, 0, 0x800) != 0) {
-            func_001E4530();
-            func_00285880(1);
+        if (SzPad_Check(0, 0, 0x800) != 0) {
+            SzDuel_CloseMsgPopup();
+            ShSlot_Init(1);
         }
-        if (func_00203A40(0, 0, 0x100) != 0) {
-            func_001A8920();
+        if (SzPad_Check(0, 0, 0x100) != 0) {
+            SzGame_Pop();
         }
     }
     switch (D_00351240[0].state) {
     case 0:
-        if (func_00203A40(0, 0, 0x4000) != 0 ||
-            (func_00203BC0(0) != 0 && (func_00203C40(0, 3) & 0xFF) > 0xF0)) {
-            func_00217710(0, 0x20);
-            func_00280670();
+        if (SzPad_Check(0, 0, 0x4000) != 0 ||
+            (SzPad_IsAnalog(0) != 0 && (SzPad_GetAnalogInfo(0, 3) & 0xFF) > 0xF0)) {
+            SzSound_PlaySE(0, 0x20);
+            ShSlot_Start();
         }
         break;
     case 1:
-        if (D_00351240[0].enabled == 2 && func_00203A40(0, 0, 0x80) != 0) {
-            func_00217710(0, 0x21);
-            func_00101AD0(object_00285F20(0), 0x10, 0, 0xFF);
+        if (D_00351240[0].enabled == 2 && SzPad_Check(0, 0, 0x80) != 0) {
+            SzSound_PlaySE(0, 0x21);
+            ShFx_initTimer(object_00285F20(0), 0x10, 0, 0xFF);
             object_00285F20(0)->width = 40.0f;
             object_00285F20(0)->height = 1.0f;
             row_00285F20(0)->enabled = 3;
@@ -1459,9 +1459,9 @@ void func_00285F20(void) {
                     (u8)((0x70 / row_00285F20(0)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (D_00351240[1].enabled == 2 && func_00203A40(0, 0, 0x10) != 0) {
-            func_00217710(0, 0x21);
-            func_00101AD0(object_00285F20(1), 0x10, 0, 0xFF);
+        if (D_00351240[1].enabled == 2 && SzPad_Check(0, 0, 0x10) != 0) {
+            SzSound_PlaySE(0, 0x21);
+            ShFx_initTimer(object_00285F20(1), 0x10, 0, 0xFF);
             object_00285F20(1)->width = 40.0f;
             object_00285F20(1)->height = 1.0f;
             row_00285F20(1)->enabled = 3;
@@ -1472,9 +1472,9 @@ void func_00285F20(void) {
                     (u8)((0x70 / row_00285F20(1)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (D_00351240[2].enabled == 2 && func_00203A40(0, 0, 0x20) != 0) {
-            func_00217710(0, 0x21);
-            func_00101AD0(object_00285F20(2), 0x10, 0, 0xFF);
+        if (D_00351240[2].enabled == 2 && SzPad_Check(0, 0, 0x20) != 0) {
+            SzSound_PlaySE(0, 0x21);
+            ShFx_initTimer(object_00285F20(2), 0x10, 0, 0xFF);
             object_00285F20(2)->width = 40.0f;
             object_00285F20(2)->height = 1.0f;
             row_00285F20(2)->enabled = 3;
@@ -1487,11 +1487,11 @@ void func_00285F20(void) {
         }
         if (D_00351240[0].enabled == 4 && D_00351240[1].enabled == 4 && D_00351240[2].enabled == 4) {
             D_00351240[0].state = 2;
-            func_002178C0(0, 0x1E);
+            SzSound_StopSE(0, 0x1E);
         }
         break;
     case 2:
-        if (func_002817C0() != 0) {
+        if (ShSlot_IsFlashStop() != 0) {
             if ((D_00351242 & 0x1F) == 0) {
                 D_00351240[0].state = 3;
                 D_00351178 = 0;
@@ -1542,7 +1542,7 @@ void func_00285F20(void) {
         case 1:
             break;
         case 2:
-            if (func_00203A40(0, 0, 0xF0) != 0) {
+            if (SzPad_Check(0, 0, 0xF0) != 0) {
                 D_00351178 = 1;
                 D_00351179 = 8;
             }
@@ -1558,7 +1558,7 @@ void func_00285F20(void) {
         break;
     case 4:
         if (!D_00351244) {
-            func_001A8920();
+            SzGame_Pop();
         }
         break;
     }
@@ -1566,11 +1566,11 @@ void func_00285F20(void) {
 
 #pragma optimization_level reset
 
-void func_00286900(void) {
+void ShSlot_Term(void) {
 
 }
 
-void func_00286910(void *arg0, void *arg1) {
+void __initialize_cpp_rts(void *arg0, void *arg1) {
     Callback_00286910 *current = arg0;
     Callback_00286910 *end = arg1;
 

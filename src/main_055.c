@@ -51,10 +51,10 @@ static inline Entry_00202220 *empty_00202220(void) {
     return NULL;
 }
 
-s32 func_00202220(s32 arg0, s32 arg1, char *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+s32 SzText_LoadFileEx(s32 arg0, s32 arg1, char *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     Entry_00202220 *entry;
     char path[128];
-    extern s32 func_001FECB0();
+    extern s32 SzFile_ReadRequestParam();
     extern void func_0019B648();
 
     if (arg0 < 0 || arg0 >= 10) {
@@ -73,13 +73,13 @@ s32 func_00202220(s32 arg0, s32 arg1, char *arg2, s32 arg3, s32 arg4, s32 arg5, 
     if ((D_002BD0C1[*(s8 *)arg2] & 3) && ((s8 *)arg2)[1] == ':') {
         func_0019BDD8(path, arg2);
     } else {
-        func_0019B648(path, D_002D0760, func_001FFF90((s32)D_002D074B), arg2);
+        func_0019B648(path, D_002D0760, SzFile_GetEnv((s32)D_002D074B), arg2);
     }
-    if (func_001FECB0(arg0 | 0x1000, 0, (s32)path, arg3, arg4, arg5, arg6,
-                     (s32)func_002024D0, entry) == 0) {
+    if (SzFile_ReadRequestParam(arg0 | 0x1000, 0, (s32)path, arg3, arg4, arg5, arg6,
+                     (s32)lSzText_LoadFileCB, entry) == 0) {
         return 0;
     }
-    entry->name = func_00217B60(arg2);
+    entry->name = SzMem_StrDup(arg2);
     entry->state = 0x80000000;
     entry->flag0 = 0;
     entry->flag1 = 0;
@@ -110,7 +110,7 @@ typedef struct Stream_002024D0 {
     Track_002024D0 *track;
 } Stream_002024D0;
 
-void func_002024D0(void *arg0, s32 arg1) {
+void lSzText_LoadFileCB(void *arg0, s32 arg1) {
     extern u16 D_002CE9FC[];
     Stream_002024D0 *stream = arg0;
     Track_002024D0 *track = stream->track;
@@ -130,13 +130,13 @@ void func_002024D0(void *arg0, s32 arg1) {
 
     if (arg1 != 0 && *stream->data != 0x324852) {
         if (stream->owned) {
-            func_00217B50((s32)stream->data);
+            SzMem_Free((s32)stream->data);
         }
         arg1 = 0;
     }
     if (arg1 == 0) {
         if (track->buffer != 0) {
-            func_00217B50(track->buffer);
+            SzMem_Free(track->buffer);
             track->buffer = 0;
         }
         track->data = NULL;
@@ -170,7 +170,7 @@ void func_002024D0(void *arg0, s32 arg1) {
                             s64 t = offset;
                             dest = (u8 *)(t + 0xB1B000);
                         }
-                        func_0020B380(dest, block, chunk);
+                        RhMem_CopyMemory16(dest, block, chunk);
                     }
                     index++;
                     offset += blockSize;
@@ -184,36 +184,36 @@ void func_002024D0(void *arg0, s32 arg1) {
                 } else {
                     step = ((s32 *)block)[2];
                 }
-                func_0020F250((s32)dest);
+                RhText_BindAddress((s32)dest);
             } else if (remaining < blockSize) {
                 return;
             }
             switch (kind) {
             case 0:
-                func_00202810(1, value, 0, (s32)dest);
+                SzText_AddFile(1, value, 0, (s32)dest);
                 break;
             case 1:
-                func_00202810(1, value, 0, (s32)dest);
+                SzText_AddFile(1, value, 0, (s32)dest);
                 break;
             case 2:
-                func_00202810(2, value, 0, (s32)dest);
+                SzText_AddFile(2, value, 0, (s32)dest);
                 break;
             case 3:
-                func_00202810(3, value, 0, (s32)dest);
+                SzText_AddFile(3, value, 0, (s32)dest);
                 break;
             case 4:
-                func_00202810(4, value, 0, (s32)dest);
+                SzText_AddFile(4, value, 0, (s32)dest);
                 break;
             case 5:
-                func_00202810(7, value, 0, (s32)dest);
+                SzText_AddFile(7, value, 0, (s32)dest);
                 break;
             case 6:
-                func_00202810(8, value, 0, (s32)dest);
+                SzText_AddFile(8, value, 0, (s32)dest);
                 break;
             case 7:
             case 8:
             case 9:
-                func_00202810(9, value, 0, (s32)dest);
+                SzText_AddFile(9, value, 0, (s32)dest);
                 break;
             }
             block += step;
@@ -225,7 +225,7 @@ void func_002024D0(void *arg0, s32 arg1) {
             i++;
         }
     } else {
-        func_0020F250((s32)track->data);
+        RhText_BindAddress((s32)track->data);
     }
 }
 
@@ -241,7 +241,7 @@ typedef struct {
 
 
 static inline void *find_00202810(s32 arg0, s32 arg1) {
-    Slot_00202810 *entry = func_002008A0(arg0, arg1);
+    Slot_00202810 *entry = SzText_GetItem(arg0, arg1);
     if (entry != NULL && !(entry->data & 0x80000000)) {
         return entry;
     }
@@ -265,7 +265,7 @@ static inline void *alloc_00202810(void) {
     return NULL;
 }
 
-s32 func_00202810(s32 arg0, s32 arg1, char *arg2, s32 arg3) {
+s32 SzText_AddFile(s32 arg0, s32 arg1, char *arg2, s32 arg3) {
     Slot_00202810 *entry;
 
     if (arg0 < 0 || arg0 >= 10) {
@@ -281,9 +281,9 @@ s32 func_00202810(s32 arg0, s32 arg1, char *arg2, s32 arg3) {
             return 0;
         }
     } else {
-        func_002029B0(arg0, arg1);
+        SzText_Free(arg0, arg1);
     }
-    entry->name = (arg2 != NULL) ? func_00217B60(arg2) : NULL;
+    entry->name = (arg2 != NULL) ? SzMem_StrDup(arg2) : NULL;
     entry->data = arg3;
     entry->flag0 = 0;
     entry->flag1 = 0;
@@ -303,7 +303,7 @@ typedef struct {
     s16 id;
 } Slot_002029B0;
 
-s32 func_002029B0(s32 arg0, s32 arg1) {
+s32 SzText_Free(s32 arg0, s32 arg1) {
     extern Slot_002029B0 D_003229A0[];
     Slot_002029B0 *entry;
     s32 i;
@@ -316,12 +316,12 @@ s32 func_002029B0(s32 arg0, s32 arg1) {
         if (entry->data != 0 && (arg0 < 0 || entry->category == arg0) &&
             (arg1 < 0 || entry->id == arg1) && !(entry->data & 0x80000000)) {
             if (entry->name != NULL) {
-                func_00217B50((s32)entry->name);
+                SzMem_Free((s32)entry->name);
                 entry->name = NULL;
             }
             if (entry->data != 0) {
                 if (entry->flag2) {
-                    func_00217B50(entry->data);
+                    SzMem_Free(entry->data);
                 }
                 entry->data = 0;
             }
@@ -333,10 +333,10 @@ s32 func_002029B0(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 func_00202AB0(s32 arg0, s32 arg1) {
+s32 SzText_DoRequest(s32 arg0, s32 arg1) {
     s32 sp3C;
 
-    func_00209D30(func_00202B00(func_00209D20(), arg0, arg1, &sp3C));
+    RhBase_SetVifPacketArea(SzText_DoRequest_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, &sp3C));
     return sp3C;
 }
 
@@ -357,7 +357,7 @@ typedef struct Record_00202B00 {
     s16 padding;
 } Record_00202B00;
 
-s32 func_00202B00(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+s32 SzText_DoRequest_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     extern Record_00202B00 D_003229A0[];
     Record_00202B00 *entry;
     s32 start;
@@ -370,7 +370,7 @@ s32 func_00202B00(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     do {
         if (entry->data != 0 && entry->state.flags.active && !entry->state.flags.excluded &&
             (arg1 < 0 || entry->state.category.category == arg1)) {
-            arg0 = func_00202FB0(arg0, entry->data, arg2, (s32) &size);
+            arg0 = SzText_Load_Pipe(arg0, entry->data, arg2, (s32) &size);
             arg2 += size;
         }
         i++;
@@ -393,14 +393,14 @@ typedef struct Entry_00202BF0 {
 static inline Entry_00202BF0 *lookup_00202BF0(s32 arg0, s32 arg1) {
     Entry_00202BF0 *entry;
 
-    entry = func_002008A0(arg0, arg1);
+    entry = SzText_GetItem(arg0, arg1);
     if ((entry != NULL) && !(entry->value & 0x80000000)) {
         return entry;
     }
     return NULL;
 }
 
-s32 func_00202BF0(s32 arg0, s32 arg1) {
+s32 SzText_LoadRequest(s32 arg0, s32 arg1) {
     Entry_00202BF0 *entry;
 
     if ((arg0 < 0) || (arg0 >= 0xA)) {
@@ -439,7 +439,7 @@ typedef struct Entry_00202CB0 {
     s16 id;
 } Entry_00202CB0;
 
-s32 func_00202CB0(s32 category, s32 id, s32 enabled) {
+s32 SzText_SleepRequest(s32 category, s32 id, s32 enabled) {
     extern Entry_00202CB0 D_003229A0[];
     Entry_00202CB0 *entry;
     s32 i;
@@ -472,7 +472,7 @@ typedef struct {
 
 extern Entry_00202D60 D_003229A0[];
 
-s32 func_00202D60(s32 arg0, s32 arg1) {
+s32 SzText_FreeRequest(s32 arg0, s32 arg1) {
     Entry_00202D60 *var_t0;
     s32 var_t1;
     s32 var_v0;
@@ -494,7 +494,7 @@ s32 func_00202D60(s32 arg0, s32 arg1) {
     return var_v0;
 }
 
-u16 func_00202E00(s16 arg0, s32 arg1) {
+u16 SzText_InitClutManage(s16 arg0, s32 arg1) {
     D_00322990 = arg0;
     D_00322992 = (u16) ((s32) ((s32) (arg1 << 0xD) >> 6) >> 2);
     D_00322994 = 0;
@@ -507,7 +507,7 @@ typedef struct Fields_00202E30 {
     u16 field42;
 } Fields_00202E30;
 
-s32 func_00202E30(void *arg0) {
+s32 SzText_GetClutSize(void *arg0) {
     s32 multiplier;
     s32 shift;
     s32 result;
@@ -545,7 +545,7 @@ typedef struct {
     u16 used;
 } Buffer_00202F00;
 
-s32 func_00202F00(s32 arg0) {
+s32 SzText_GetClutGsAddr(s32 arg0) {
     s32 temp_v0;
     Buffer_00202F00 *buffer = (Buffer_00202F00 *)&D_00322990;
 
@@ -557,8 +557,8 @@ s32 func_00202F00(s32 arg0) {
     return temp_v0;
 }
 
-void func_00202F50(s32 arg0, s32 arg1, s32 arg2) {
-    func_00209D30(func_00202FB0(func_00209D20(), arg0, arg1, arg2));
+void SzText_Load(s32 arg0, s32 arg1, s32 arg2) {
+    RhBase_SetVifPacketArea(SzText_Load_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2));
 }
 
 typedef struct Tex0_00202FB0 {
@@ -610,8 +610,8 @@ static inline u16 reset_00202FB0(s16 base) {
     return (u16)(&D_00322990)[1];
 }
 
-s32 func_00202FB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern s32 func_0020B380();
+s32 SzText_Load_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 RhMem_CopyMemory16();
     Header_00202FB0 *header = (Header_00202FB0 *)(arg1 + 0x10);
     Packet_00202FB0 *packet = (Packet_00202FB0 *)arg0;
     s32 clutSize;
@@ -627,7 +627,7 @@ s32 func_00202FB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return arg0;
     }
 
-    if ((clutSize = func_00202E30(header)) > 0) {
+    if ((clutSize = SzText_GetClutSize(header)) > 0) {
         clutBase = allocate_00202FB0(clutSize);
         if (clutBase < 0) {
             arg2 += reset_00202FB0(arg2);
@@ -635,7 +635,7 @@ s32 func_00202FB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
     }
 
-    arg0 = func_0020B380((void *)arg0, (void *)(arg1 + header->dataOffset), header->dataSize >> 4);
+    arg0 = RhMem_CopyMemory16((void *)arg0, (void *)(arg1 + header->dataOffset), header->dataSize >> 4);
     header->tex0.base = arg2;
     header->tex0.clut = clutBase;
     count = header->packetCount;
@@ -670,19 +670,19 @@ typedef struct {
 extern u8 D_00325AC0;
 extern Port_002031F0 D_00325C75[];
 
-void func_002031F0(void) {
-    func_0020B3C0((s8 *) D_003259C0, 0, 0x2C0);
+void SzPad_Init(void) {
+    RhMem_FillMemory((s8 *) D_003259C0, 0, 0x2C0);
     D_00325C75[-1].type = 0xA;
     D_00325C75[0].type = 0xA;
     D_00325C75[-1].mode.low = 4;
     D_00325C75[0].mode.low = 4;
-    func_00192588(0);
-    func_001927E8(0, 0, D_003259C0);
-    func_001927E8(1, 0, &D_00325AC0);
+    scePadInit(0);
+    scePadPortOpen(0, 0, D_003259C0);
+    scePadPortOpen(1, 0, &D_00325AC0);
 }
 
-void func_002032A0(void) {
-    func_0020B400(D_003259C0, 0, 0xB0);
+void SzPad_Term(void) {
+    RhMem_FillMemory4(D_003259C0, 0, 0xB0);
 }
 
 extern s8 D_00325C19[];
@@ -693,7 +693,7 @@ typedef struct {
     s8 high : 4;
 } Flags_002032C0;
 
-void func_002032C0(s32 arg0, s8 arg1, s64 arg2) {
+void SzPad_SetParam(s32 arg0, s8 arg1, s64 arg2) {
     s32 offset;
     Flags_002032C0 *entry;
 
@@ -737,8 +737,8 @@ static inline void reset_00203320(Pad_00203320 *pad) {
     }
 }
 
-void func_00203320(void) {
-    extern s32 func_00192CD0();
+void SzPad_Status(void) {
+    extern s32 scePadGetReqState();
     s32 port;
     Pad_00203320 *pad;
     u8 *base;
@@ -749,7 +749,7 @@ void func_00203320(void) {
     base = D_003259C0;
     for (port = 0; port < 2; port++, base += 0x5C) {
         pad = (Pad_00203320 *)(base + 0x200);
-        state = func_00192BB8(port, 0);
+        state = scePadGetState(port, 0);
         if (state == 0) {
             reset_00203320(pad);
             pad->state = 0;
@@ -771,13 +771,13 @@ void func_00203320(void) {
                 for (state = 0; state < 12; state++) {
                     pad->data[state] = 0;
                 }
-                pad->count = func_00192F98(port, 0, 4, -1);
-                id = func_00192F98(port, 0, 1, 0);
+                pad->count = scePadInfoMode(port, 0, 4, -1);
+                id = scePadInfoMode(port, 0, 1, 0);
                 if (id == 0) {
                     break;
                 }
                 pad->mode = id;
-                id = func_00192F98(port, 0, 2, 0);
+                id = scePadInfoMode(port, 0, 2, 0);
                 if (id > 0) {
                     pad->mode = id;
                 }
@@ -790,8 +790,8 @@ void func_00203320(void) {
             case 1:
                 pad->state = 5;
                 for (offs = 0; offs < pad->count; offs++) {
-                    id = func_00192F98(port, 0, 4, offs);
-                    if (id == 7 && func_001930D0(port, 0, offs, 3) == 1) {
+                    id = scePadInfoMode(port, 0, 4, offs);
+                    if (id == 7 && scePadSetMainMode(port, 0, offs, 3) == 1) {
                         pad->mode = id;
                         pad->state = 2;
                         break;
@@ -799,7 +799,7 @@ void func_00203320(void) {
                 }
                 break;
             case 2:
-                id = func_00192CD0(port, 0);
+                id = scePadGetReqState(port, 0);
                 if (id != 0) {
                     if (id == 1) {
                         pad->state = 1;
@@ -811,12 +811,12 @@ void func_00203320(void) {
                 break;
             case 3:
                 pad->state = 5;
-                if (func_00193488(port, 0) == 1 && func_001934E8(port, 0) == 1) {
+                if (scePadInfoPressMode(port, 0) == 1 && scePadEnterPressMode(port, 0) == 1) {
                     pad->state = 4;
                 }
                 break;
             case 4:
-                id = func_00192CD0(port, 0);
+                id = scePadGetReqState(port, 0);
                 if (id != 0) {
                     if (id == 1) {
                         pad->state = 3;
@@ -838,7 +838,7 @@ typedef struct Flags_00203840 {
     s8 unused : 2;
 } Flags_00203840;
 
-void func_00203840(void) {
+void SzPad_Act(void) {
     s32 var_a2;
     s32 var_a3;
     u8 *temp_t0;
@@ -882,7 +882,7 @@ typedef struct Flags_002038F0 {
 
 extern u8 D_003259C0[];
 
-s32 func_002038F0(void) {
+s32 SzPad_VSync(void) {
     u8 data[20];
     u8 *pressure;
     s32 axisIndex;
@@ -898,9 +898,9 @@ s32 func_002038F0(void) {
     do {
         pad = entry + 0x200;
         if (((Flags_002038F0 *)(entry + 0x25B))->mode == 5) {
-            state = func_00192BB8(port, 0);
+            state = scePadGetState(port, 0);
             if (state == 2 || state == 6) {
-                if (func_00192B38(port, 0, data) != 0) {
+                if (scePadRead(port, 0, data) != 0) {
                     if (((Flags_002038F0 *)(pad + 0x5B))->axes) {
                         axes = data;
                         axisIndex = 0;
@@ -940,7 +940,7 @@ typedef struct State_00203A40 {
     u8 padding5B;
 } State_00203A40;
 
-s32 func_00203A40(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzPad_Check(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_a1;
     State_00203A40 *temp_a3;
     s32 temp_t0;
@@ -971,14 +971,14 @@ s32 func_00203A40(s32 arg0, s32 arg1, s32 arg2) {
             var_a1 += 1;
             var_t1 += 4;
         } while (var_a1 < 0x10);
-        return var_s0 | func_00203A40(arg0, 0, arg2);
+        return var_s0 | SzPad_Check(arg0, 0, arg2);
     case 1:
         return temp_a3->flags & arg2;
     }
     return 0;
 }
 
-s32 func_00203B50(s32 arg0, s32 arg1) {
+s32 SzPad_ResetCounter(s32 arg0, s32 arg1) {
     u8 *temp_a0;
     s32 var_a1;
     u8 *var_a2;
@@ -1005,7 +1005,7 @@ typedef struct {
 
 extern u8 D_003259C0[];
 
-s32 func_00203BC0(s32 arg0) {
+s32 SzPad_IsAnalog(s32 arg0) {
     return ((Flags_00203BC0 *)(D_003259C0 + arg0 * 0x5C))->flag ? 1 : 0;
 }
 
@@ -1015,7 +1015,7 @@ typedef struct {
     s8 flag : 1;
 } Flags_00203C00;
 
-s32 func_00203C00(s32 arg0) {
+s32 SzPad_IsPress(s32 arg0) {
     Flags_00203C00 *flags = (Flags_00203C00 *)(D_003259C0 + arg0 * 0x5C);
 
     return flags->flag ? 1 : 0;
@@ -1026,11 +1026,11 @@ typedef struct Entry_00203C40 {
     u8 value;
 } Entry_00203C40;
 
-u8 func_00203C40(s32 arg0, s32 arg1) {
+u8 SzPad_GetAnalogInfo(s32 arg0, s32 arg1) {
     return ((Entry_00203C40 *)(D_003259C0 + arg0 * 0x5C + arg1))->value;
 }
 
-void func_00203C70(s32 arg0, s32 arg1, s8 arg2) {
+void SzPad_SetAnalogInfo(s32 arg0, s32 arg1, s8 arg2) {
     *(s8 *)(D_003259C0 + arg0 * 0x5C + arg1 + 0x206) = arg2;
 }
 
@@ -1039,7 +1039,7 @@ typedef struct {
     u8 value;
 } Entry_00203CA0;
 
-u8 func_00203CA0(s32 arg0, s32 arg1) {
+u8 SzPad_GetPressInfo(s32 arg0, s32 arg1) {
     return ((Entry_00203CA0 *)(arg1 + (D_003259C0 + arg0 * 0x5C)))->value;
 }
 
@@ -1067,7 +1067,7 @@ typedef struct State_00203CD0 {
 
 extern State_00203CD0 D_00325C80;
 
-void func_00203CD0(void) {
+void SzDebug_Init(void) {
     extern s32 func_0019B648();
     extern u8 D_002D078C;
     extern u8 D_002D07F4[];
@@ -1076,7 +1076,7 @@ void func_00203CD0(void) {
     State_00203CD0 *state = &D_00325C80;
     u8 buffer[0x80];
 
-    func_0020B3C0((s8 *)&D_00325C80, 0, 0x30);
+    RhMem_FillMemory((s8 *)&D_00325C80, 0, 0x30);
     D_00325C80.f00 = 0;
     D_00325C80.f04 = D_002D078C;
     D_00325C80.f08 = 0;
@@ -1091,8 +1091,8 @@ void func_00203CD0(void) {
     D_00325C80.flags.flag0 = 0;
     D_00325C80.flags.flag1 = 0;
     D_00325C80.flags.flag2 = 0;
-    func_0019B648(buffer, D_002D07F4, func_001FFF90((s32)D_002D07FA), D_002D07FF);
-    if (func_00197548((s32)D_002D07FF) != 0) {
+    func_0019B648(buffer, D_002D07F4, SzFile_GetEnv((s32)D_002D07FA), D_002D07FF);
+    if (getenv((s32)D_002D07FF) != 0) {
         state->flags.flag1 = 1;
     }
 }
@@ -1155,12 +1155,12 @@ extern void *func_001DF540_b(int a, int b);
 extern int func_001E18A0_b(int a, int b, int value);
 extern int func_001F33C0_b(int index, int value);
 
-void func_00203E20(void)
+void SzDebug_Act(void)
 {
     struct DotrSmallFlagsOwner *p = &D_00325C80_203e20;
-    int standby = func_001F1300(p->unknown_00[DOTR_DEBUG_MODEL]);
+    int standby = SzModel_IsModelStandby(p->unknown_00[DOTR_DEBUG_MODEL]);
     int type = func_001F2980_b(p->unknown_00[DOTR_DEBUG_MODEL]);
-    int menu = func_00205150();
+    int menu = SzDebug_GetActiveMenu();
     int mode = func_001AAF60_b(1);
 
     if (standby == 0 && p->unknown_00[DOTR_DEBUG_MENU] > 0 && p->unknown_00[DOTR_DEBUG_MENU] < 12) {
@@ -1180,20 +1180,20 @@ void func_00203E20(void)
         menu = 0;
     }
     if (p->unknown_2c.unknown_bit_1) {
-        if (func_00203A40(1, 0, 0x800)) {
+        if (SzPad_Check(1, 0, 0x800)) {
             p->unknown_2c.unknown_bit_2 = p->unknown_2c.unknown_bit_2 ? 0 : 1;
         }
-    } else if (func_00203A40(1, 0, 0x800)) {
-        func_001FC840(0, (func_001FC7F0(0) + 1) % 3);
+    } else if (SzPad_Check(1, 0, 0x800)) {
+        SzView_SetMode(0, (SzView_GetMode(0) + 1) % 3);
     }
-    if (func_00203A40(1, 0, 0x100)) {
+    if (SzPad_Check(1, 0, 0x100)) {
         p->unknown_2c.unknown_bit_0 = p->unknown_2c.unknown_bit_0 ? 0 : 1;
     }
     if (p->unknown_2c.unknown_bit_2) {
-        func_002047F0();
+        lSzDebug_ActEffect();
         return;
     }
-    if (func_00203A40(0, 2, 0x100)) {
+    if (SzPad_Check(0, 2, 0x100)) {
         for (;;) {
             p->unknown_00[DOTR_DEBUG_MENU] = (p->unknown_00[DOTR_DEBUG_MENU] + 17) % 18;
             if (standby == 0 && p->unknown_00[DOTR_DEBUG_MENU] > 0 && p->unknown_00[DOTR_DEBUG_MENU] <= 11) {
@@ -1210,9 +1210,9 @@ void func_00203E20(void)
             }
             break;
         }
-        func_00217710(0, 0);
+        SzSound_PlaySE(0, 0);
     }
-    if (func_00203A40(0, 2, 0x800)) {
+    if (SzPad_Check(0, 2, 0x800)) {
         for (;;) {
             p->unknown_00[DOTR_DEBUG_MENU] = (p->unknown_00[DOTR_DEBUG_MENU] + 19) % 18;
             if (standby == 0 && p->unknown_00[DOTR_DEBUG_MENU] > 0 && p->unknown_00[DOTR_DEBUG_MENU] <= 11) {
@@ -1229,7 +1229,7 @@ void func_00203E20(void)
             }
             break;
         }
-        func_00217710(0, 0);
+        SzSound_PlaySE(0, 0);
     }
     if (menu == 0) {
         int no = func_001F2920_b(p->unknown_00[DOTR_DEBUG_MODEL]);
@@ -1244,77 +1244,77 @@ void func_00203E20(void)
             *e = no % 10;
         }
         n = no;
-        if (func_00203A40(0, 2, 0x5000)) {
-            if (func_00203A40(0, 2, 0x1000)) {
+        if (SzPad_Check(0, 2, 0x5000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] = (dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] + 11) % 10;
             } else {
                 dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] = (dd.d[p->unknown_00[DOTR_DEBUG_DIGIT]] + 9) % 10;
             }
             n = dd.d[0] * 100 + dd.d[1] * 10 + dd.d[2];
         }
-        if (func_00203A40(0, 2, 2)) {
+        if (SzPad_Check(0, 2, 2)) {
             n = (n + 1001) % 1000;
         }
-        if (func_00203A40(0, 2, 1)) {
+        if (SzPad_Check(0, 2, 1)) {
             n = (n + 999) % 1000;
         }
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             p->unknown_00[DOTR_DEBUG_DIGIT] = (p->unknown_00[DOTR_DEBUG_DIGIT] + 4) % 3;
         }
-        if (func_00203A40(0, 2, 0x8000)) {
+        if (SzPad_Check(0, 2, 0x8000)) {
             p->unknown_00[DOTR_DEBUG_DIGIT] = (p->unknown_00[DOTR_DEBUG_DIGIT] + 2) % 3;
         }
         if (n == no) {
-            if (func_00203A40(0, 2, 8)) {
+            if (SzPad_Check(0, 2, 8)) {
                 p->unknown_00[DOTR_DEBUG_MODEL] = (p->unknown_00[DOTR_DEBUG_MODEL] + 45) % 44;
             }
-            if (func_00203A40(0, 2, 4)) {
+            if (SzPad_Check(0, 2, 4)) {
                 p->unknown_00[DOTR_DEBUG_MODEL] = (p->unknown_00[DOTR_DEBUG_MODEL] + 43) % 44;
             }
             type = func_001F2980_b(p->unknown_00[DOTR_DEBUG_MODEL]);
-        } else if (!func_001F12A0(p->unknown_00[DOTR_DEBUG_MODEL])) {
+        } else if (!SzModel_IsModelLoading(p->unknown_00[DOTR_DEBUG_MODEL])) {
             struct DotrDebugCard *q = func_001DD130_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]);
             if (q != 0) {
-                q->unknown_3c = func_001DE130(n);
+                q->unknown_3c = SzDuel_Xax2New(n);
                 q->info = func_001DD0E0_b(q->unknown_3c);
                 if (q->info != 0) {
                     q->unknown_3e = q->info->unknown_00;
                     q->unknown_3f = q->info->unknown_02 & 0xf;
                 }
             }
-            func_001E7E70(p->unknown_00[DOTR_DEBUG_MODEL], -1, n);
+            SzModel_Preset(p->unknown_00[DOTR_DEBUG_MODEL], -1, n);
         }
-        if (func_00203A40(0, 0, 0x30) && !func_001F12A0(p->unknown_00[DOTR_DEBUG_MODEL])) {
-            int flag = func_00203A40(0, 0, 0x10) ? 1 : 0;
+        if (SzPad_Check(0, 0, 0x30) && !SzModel_IsModelLoading(p->unknown_00[DOTR_DEBUG_MODEL])) {
+            int flag = SzPad_Check(0, 0, 0x10) ? 1 : 0;
             int none = 0;
             if ((type == 4 || type == 5) && func_001DF540_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]) == 0) {
                 none = 1;
             }
-            if (!none && func_001E8780(p->unknown_00[DOTR_DEBUG_MODEL], -1, n, flag) && (type == 4 || type == 5)) {
+            if (!none && SzModel_Load(p->unknown_00[DOTR_DEBUG_MODEL], -1, n, flag) && (type == 4 || type == 5)) {
                 struct DotrDebugCard *q = func_001DD130_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]);
                 if (q != 0 && q->info != 0) {
                     if (mode == 5 && type == 5) {
-                        func_001E5260(q->unknown_44, (q->unknown_44 << 8) | q->unknown_45);
-                        func_001E3850(q->unknown_44, q->unknown_45, 0);
+                        SzBattle_Entry(q->unknown_44, (q->unknown_44 << 8) | q->unknown_45);
+                        SzDuel_SetBusyFlag(q->unknown_44, q->unknown_45, 0);
                     }
                     func_001E18A0_b(-1, p->unknown_00[DOTR_DEBUG_MODEL], 7);
-                    func_001E1C10(-1, p->unknown_00[DOTR_DEBUG_MODEL], 1, 0);
+                    SzDuel_SetUnitCtlRateM(-1, p->unknown_00[DOTR_DEBUG_MODEL], 1, 0);
                 }
             }
         }
         if (type == 4 || type == 5) {
-            if (func_00203A40(0, 0, 0x80)) {
-                func_001F29E0(p->unknown_00[DOTR_DEBUG_MODEL], 1);
+            if (SzPad_Check(0, 0, 0x80)) {
+                SzModel_SetDeform(p->unknown_00[DOTR_DEBUG_MODEL], 1);
             }
-            if (func_00203A40(0, 0, 0x40)) {
-                func_001F29E0(p->unknown_00[DOTR_DEBUG_MODEL], 0);
+            if (SzPad_Check(0, 0, 0x40)) {
+                SzModel_SetDeform(p->unknown_00[DOTR_DEBUG_MODEL], 0);
             }
-            if (func_00203A40(0, 0, 0x600)) {
+            if (SzPad_Check(0, 0, 0x600)) {
                 func_001F33C0_b(p->unknown_00[DOTR_DEBUG_MODEL], 1);
             }
         }
     }
-    if (func_00205170()) {
+    if (SzDebug_IsHide()) {
         return;
     }
     func_001F2920_b(p->unknown_00[DOTR_DEBUG_MODEL]);
@@ -1324,11 +1324,11 @@ void func_00203E20(void)
     if ((type == 4 || type == 5) && func_001DF540_b(-1, p->unknown_00[DOTR_DEBUG_MODEL]) == 0) {
         none = 1;
     }
-    if (!none && !func_001F1240(p->unknown_00[DOTR_DEBUG_MODEL]) && !func_001F12A0(p->unknown_00[DOTR_DEBUG_MODEL]) && func_001F1300(p->unknown_00[DOTR_DEBUG_MODEL])) {
-        func_001F1370(p->unknown_00[DOTR_DEBUG_MODEL]);
+    if (!none && !SzModel_IsModelReady(p->unknown_00[DOTR_DEBUG_MODEL]) && !SzModel_IsModelLoading(p->unknown_00[DOTR_DEBUG_MODEL]) && SzModel_IsModelStandby(p->unknown_00[DOTR_DEBUG_MODEL])) {
+        SzModel_IsModelDisp(p->unknown_00[DOTR_DEBUG_MODEL]);
     }
     }
-    func_001F2A70(p->unknown_00[DOTR_DEBUG_MODEL]);
+    SzModel_GetDeform(p->unknown_00[DOTR_DEBUG_MODEL]);
     if (menu == 0) {
         int i = p->unknown_00[DOTR_DEBUG_DIGIT];
         int k = 100;
@@ -1374,11 +1374,11 @@ extern struct DotrDebugDigits_2047f0 D_00293D38;
 extern struct DotrDebugDigits_2047f0 D_00293D48;
 int func_001F48F0_b(int a, int b, int c, int d, int e);
 
-void func_002047F0(void)
+void lSzDebug_ActEffect(void)
 {
     struct DotrSmallFlagsOwner_2047f0 *p = &D_00325C80_2047f0;
 
-    if ((func_00203A40(0, 1, 3) & 0xffff) != 3) {
+    if ((SzPad_Check(0, 1, 3) & 0xffff) != 3) {
     struct DotrDebugDigits_2047f0 a = D_00293D38;
     int no = p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0];
     struct DotrDebugDigits_2047f0 b;
@@ -1400,19 +1400,19 @@ void func_002047F0(void)
     }
     switch (p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0]) {
     case 0:
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 2) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 1;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x8000)) {
+        } else if (SzPad_Check(0, 2, 0x8000)) {
             if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 5;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x5000)) {
+        } else if (SzPad_Check(0, 2, 0x5000)) {
             int i = p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0];
-            if (func_00203A40(0, 2, 0x1000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 a.d[i] = (a.d[i] + 11) % 10;
             } else {
                 a.d[i] = (a.d[i] + 9) % 10;
@@ -1421,19 +1421,19 @@ void func_002047F0(void)
         }
         break;
     case 1:
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 2) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 2;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x8000)) {
+        } else if (SzPad_Check(0, 2, 0x8000)) {
             if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 0;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 2;
             }
-        } else if (func_00203A40(0, 2, 0x5000)) {
+        } else if (SzPad_Check(0, 2, 0x5000)) {
             int i = p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0];
-            if (func_00203A40(0, 2, 0x1000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 b.d[i] = (b.d[i] + 11) % 10;
             } else {
                 b.d[i] = (b.d[i] + 9) % 10;
@@ -1442,18 +1442,18 @@ void func_002047F0(void)
         }
         break;
     case 2:
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 3;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x8000)) {
+        } else if (SzPad_Check(0, 2, 0x8000)) {
             if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 1;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 2;
             }
-        } else if (func_00203A40(0, 2, 0x5000)) {
-            if (func_00203A40(0, 2, 0x1000)) {
+        } else if (SzPad_Check(0, 2, 0x5000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] + 3) % 2;
             } else {
                 p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] + 1) % 2;
@@ -1461,18 +1461,18 @@ void func_002047F0(void)
         }
         break;
     case 3:
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 4;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x8000)) {
+        } else if (SzPad_Check(0, 2, 0x8000)) {
             if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 2;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x5000)) {
-            if (func_00203A40(0, 2, 0x1000)) {
+        } else if (SzPad_Check(0, 2, 0x5000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 12) % 11;
             } else {
                 p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 10) % 11;
@@ -1480,18 +1480,18 @@ void func_002047F0(void)
         }
         break;
     case 4:
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 5;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x8000)) {
+        } else if (SzPad_Check(0, 2, 0x8000)) {
             if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 3;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x5000)) {
-            if (func_00203A40(0, 2, 0x1000)) {
+        } else if (SzPad_Check(0, 2, 0x5000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] + 3) % 2;
             } else {
                 p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] + 1) % 2;
@@ -1499,18 +1499,18 @@ void func_002047F0(void)
         }
         break;
     case 5:
-        if (func_00203A40(0, 2, 0x2000)) {
+        if (SzPad_Check(0, 2, 0x2000)) {
             if (++p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] > 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 0;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x8000)) {
+        } else if (SzPad_Check(0, 2, 0x8000)) {
             if (--p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] < 0) {
                 p->unknown_00[DOTR_DEBUG_EFF_ROW_2047f0] = 4;
                 p->unknown_00[DOTR_DEBUG_EFF_COLUMN_2047f0] = 0;
             }
-        } else if (func_00203A40(0, 2, 0x5000)) {
-            if (func_00203A40(0, 2, 0x1000)) {
+        } else if (SzPad_Check(0, 2, 0x5000)) {
+            if (SzPad_Check(0, 2, 0x1000)) {
                 p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] + 12) % 11;
             } else {
                 p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0] + 10) % 11;
@@ -1518,31 +1518,31 @@ void func_002047F0(void)
         }
         break;
     }
-    if (func_00203A40(0, 2, 8)) {
+    if (SzPad_Check(0, 2, 8)) {
         p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 12) % 11;
     }
-    if (func_00203A40(0, 2, 4)) {
+    if (SzPad_Check(0, 2, 4)) {
         p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] = (p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0] + 10) % 11;
     }
-    if (func_00203A40(0, 0, 0x10)) {
-        func_001F3790();
+    if (SzPad_Check(0, 0, 0x10)) {
+        SzEffect_Clear();
     }
-    if (func_00203A40(0, 0, 0x40)) {
-        func_001F4E50(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0]);
+    if (SzPad_Check(0, 0, 0x40)) {
+        SzEffect_Destroy2(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0]);
     }
-    if (func_00203A40(0, 0, 0x20)) {
+    if (SzPad_Check(0, 0, 0x20)) {
         func_001F48F0_b(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], p->unknown_00[DOTR_DEBUG_EFF_ARG_2047f0],
                        (p->unknown_00[DOTR_DEBUG_EFF_A_HI_2047f0] << 8) | p->unknown_00[DOTR_DEBUG_EFF_A_LO_2047f0],
                        (p->unknown_00[DOTR_DEBUG_EFF_B_HI_2047f0] << 8) | p->unknown_00[DOTR_DEBUG_EFF_B_LO_2047f0]);
     }
-    if (func_00203A40(0, 0, 0x80)) {
-        func_001F5090(0, -1);
+    if (SzPad_Check(0, 0, 0x80)) {
+        SzEffect_Erase2(0, -1);
     }
-    if (func_00203A40(0, 0, 0x800)) {
-        func_001F4FD0(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], 0);
+    if (SzPad_Check(0, 0, 0x800)) {
+        SzEffect_Sleep2(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], 0);
     }
-    if (func_00203A40(0, 0, 0x100)) {
-        func_001F4FD0(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], 1);
+    if (SzPad_Check(0, 0, 0x100)) {
+        SzEffect_Sleep2(0, p->unknown_00[DOTR_DEBUG_EFF_NO_2047f0], 1);
     }
     }
     {
@@ -1554,11 +1554,11 @@ void func_002047F0(void)
     }
 }
 
-s32 func_00205150(void) {
+s32 SzDebug_GetActiveMenu(void) {
     return D_00325C80.f00;
 }
 
-s32 func_00205160(void) {
+s32 SzDebug_GetActiveModel(void) {
     return D_00325C80.f04;
 }
 
@@ -1574,7 +1574,7 @@ typedef struct State_00205170 {
     Flags_00205170 flags;
 } State_00205170;
 
-s32 func_00205170(void) {
+s32 SzDebug_IsHide(void) {
     extern Flags_00205170 D_00325CAC;
     State_00205170 *state = (State_00205170 *)&D_00325C80;
 
@@ -1588,7 +1588,7 @@ typedef struct {
     s8 enabled : 1;
 } Flags_002051C0;
 
-void func_002051C0(s64 arg0) {
+void SzDebug_SetHideFlag(s64 arg0) {
     extern Flags_002051C0 D_00325CAC;
 
     D_00325CAC.enabled = (s8)arg0;
@@ -1601,7 +1601,7 @@ typedef struct {
 
 extern Flags_002051F0 D_00325CAC;
 
-s32 func_002051F0(void) {
+s32 SzDebug_IsEffect(void) {
     return D_00325CAC.flag ? 1 : 0;
 }
 
@@ -1635,7 +1635,7 @@ extern u8 D_002D07FA[];
 extern u8 D_002D0806[];
 extern s32 D_00325CB0;
 
-void func_00205210(void) {
+void SzDebug_OutputFrameBuffer(void) {
     u8 buffer[0x780];
     BitmapInfo_00205210 info;
     BitmapFileHeader_00205210 fileHeader;
@@ -1643,10 +1643,10 @@ void func_00205210(void) {
     u32 fileSize;
     extern s32 func_0019B648();
 
-    while (func_001FF350(-1) != 0) {
-        func_001FF420();
+    while (SzFile_InqRequest(-1) != 0) {
+        SzFile_DoRequestS();
     }
-    func_0020A3B0(0x04000000);
+    RhBase_CopyFrameBuffer(0x04000000);
     fileHeader.type = 0x4D42;
     fileSize = 0x280 * 0x1C0 * 3 + 0x36;
     fileHeader.sizeLow = fileSize;
@@ -1669,7 +1669,7 @@ void func_00205210(void) {
 
     for (;;) {
         func_0019B648(buffer, D_002D0806,
-                     func_001FFF90((s32)D_002D07FA), D_00325CB0);
+                     SzFile_GetEnv((s32)D_002D07FA), D_00325CB0);
         fd = func_0017FA98(buffer, 1);
         if (fd < 0) {
             break;
@@ -1728,7 +1728,7 @@ typedef union {
 } Xyz_00205440;
 
 
-s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
+s32 Ex3d_RotTransPers(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
     extern s64 func_001A23B0(f32);
     f32 mtx[16];
     Vec4_00205440 v;
@@ -1736,13 +1736,13 @@ s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
 
     v = *(Vec4_00205440 *)arg0;
     if (arg1 == NULL) {
-        func_0020EB40(mtx);
+        RhView_GetWorldScreenMatrix(mtx);
         arg1 = mtx;
     }
-    func_0020BAF0((s32)arg1);
+    RhGeom_PushMatrix((s32)arg1);
     v.w = 1.0f;
-    func_0020CDD0(&v, NULL, &v);
-    func_0020BB50();
+    RhGeom_MulMatrixVector(&v, NULL, &v);
+    RhGeom_PopMatrix();
     inv = 1.0f / v.w;
     v.x *= inv;
     v.y *= inv;
@@ -1774,9 +1774,9 @@ typedef union Vertex_00205630 {
     } bits;
 } Vertex_00205630;
 
-void func_0020CF00(s32, s32, s32, s32);
+void RhGeom_MulMatrixVectorArray(s32, s32, s32, s32);
 
-s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
+s32 Ex3d_RotTransPersAuto(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     extern s64 func_001A23B0(f32);
     f32 matrix[4][4];
     f32 *input = (f32 *)arg0;
@@ -1789,7 +1789,7 @@ s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     s32 i;
 
     if (arg2 == 0) {
-        func_0020EB40(matrix);
+        RhView_GetWorldScreenMatrix(matrix);
         arg2 = (s32)matrix;
     }
     for (i = 0; i < length; i++, flags >>= 4) {
@@ -1799,9 +1799,9 @@ s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
             count++;
         }
     }
-    func_0020BAF0(arg2);
-    func_0020CF00(arg1, 0, arg0, count);
-    func_0020BB50();
+    RhGeom_PushMatrix(arg2);
+    RhGeom_MulMatrixVectorArray(arg1, 0, arg0, count);
+    RhGeom_PopMatrix();
 
     flags = *tags;
     for (i = 0; i < length; i++, vertex++, flags >>= 4) {
@@ -1829,48 +1829,48 @@ s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", func_002058D0);
+INCLUDE_ASM("asm/nonmatchings/main_055", Ex3d_RotTransPersAutoCalcQ);
 
-f32 func_00205C40(s32 arg0) {
+f32 Ex3d_GetLookVector(s32 arg0) {
     f32 *temp_s0;
 
-    temp_s0 = func_001FAF60(0);
-    func_001FAFB0(0, arg0);
+    temp_s0 = SzView_GetLook(0);
+    SzView_GetLookVector(0, arg0);
     return *temp_s0;
 }
 
-void func_00205C90(s32 arg0) {
-    func_001FB0B0(0, arg0);
+void Ex3d_GetLookMatrix(s32 arg0) {
+    SzView_GetLookMatrix(0, arg0);
 }
 
-void func_00205CA0(s32 arg0) {
-    func_001FB1D0(0, arg0);
+void Ex3d_GetLookMatrixWithRoll(s32 arg0) {
+    SzView_GetLookMatrixWithRoll(0, arg0);
 }
 
-void func_00205CB0(void *arg0, f32 fparg0, f32 fparg1) {
+void Ex3d_GetPointOnScreen(void *arg0, f32 fparg0, f32 fparg1) {
     f32 matrix[4][4];
     f32 *vector = arg0;
 
     vector[0] = fparg0;
     vector[1] = fparg1;
-    vector[2] = func_001F9A20(0);
+    vector[2] = SzView_GetScreenDistance(0);
     vector[3] = 1.0f;
-    func_0020EBA0(matrix);
-    func_0020BDE0(matrix, matrix);
-    func_0020CDD0(vector, matrix, vector);
+    RhView_GetWorldViewMatrix(matrix);
+    RhGeom_InvertMatrix(matrix, matrix);
+    RhGeom_MulMatrixVector(vector, matrix, vector);
 }
 
-s32 func_00205D10(void *arg0, f32 fparg0) {
+s32 Ex3d_GetSampleZ(void *arg0, f32 fparg0) {
     f32 vector[4];
     f32 matrix1[4][4];
     f32 matrix2[4][4];
 
-    func_0020EBA0(matrix1);
-    func_0020EC00(matrix2);
+    RhView_GetWorldViewMatrix(matrix1);
+    RhView_GetViewScreenMatrix(matrix2);
     ((f32 *)arg0)[3] = 1.0f;
-    func_0020CDD0(vector, matrix1, arg0);
+    RhGeom_MulMatrixVector(vector, matrix1, arg0);
     vector[2] -= fparg0;
-    func_0020CDD0(vector, matrix2, vector);
+    RhGeom_MulMatrixVector(vector, matrix2, vector);
     if (vector[3] <= 0.0f) {
         return 0xFFFFF6;
     }
@@ -1880,17 +1880,17 @@ s32 func_00205D10(void *arg0, f32 fparg0) {
     return func_001A23B0(vector[2] / vector[3]);
 }
 
-f32 func_00205DF0(void *arg0, f32 fparg0) {
+f32 Ex3d_GetSampleW(void *arg0, f32 fparg0) {
     f32 vector[4];
     f32 matrix1[4][4];
     f32 matrix2[4][4];
 
-    func_0020EBA0(matrix1);
-    func_0020EC00(matrix2);
+    RhView_GetWorldViewMatrix(matrix1);
+    RhView_GetViewScreenMatrix(matrix2);
     ((f32 *)arg0)[3] = 1.0f;
-    func_0020CDD0(vector, matrix1, arg0);
+    RhGeom_MulMatrixVector(vector, matrix1, arg0);
     vector[2] -= fparg0;
-    func_0020CDD0(vector, matrix2, vector);
+    RhGeom_MulMatrixVector(vector, matrix2, vector);
     return vector[3];
 }
 
@@ -1901,7 +1901,7 @@ typedef struct Vec4_00205E70 {
 extern Vec4_00205E70 D_00293D60;
 extern Vec4_00205E70 D_00293D70;
 
-s32 func_00205E70(s32 count, void *arg1, f32 *normal) {
+s32 Ex3d_GetSurfaceNormal(s32 count, void *arg1, f32 *normal) {
     Vec4_00205E70 *points = arg1;
     s32 i;
     Vec4_00205E70 *p0;
@@ -1930,7 +1930,7 @@ s32 func_00205E70(s32 count, void *arg1, f32 *normal) {
         b.x = p2->x - p1->x;
         b.y = p2->y - p1->y;
         b.z = p2->z - p1->z;
-        func_0020D140(&c.x, &a.x, &b.x);
+        RhGeom_OuterProduct(&c.x, &a.x, &b.x);
         normal[0] += c.x;
         normal[1] += c.y;
         normal[2] += c.z;
@@ -1938,7 +1938,7 @@ s32 func_00205E70(s32 count, void *arg1, f32 *normal) {
     normal[0] /= (f32)count;
     normal[1] /= (f32)count;
     normal[2] /= (f32)count;
-    func_0020D070(normal);
+    RhGeom_NormalizeVector(normal);
     return 1;
 }
 
@@ -1946,7 +1946,7 @@ typedef struct Vec4_00206030 {
     f32 x, y, z, w;
 } Vec4_00206030;
 
-s32 func_00206030(s32 count, void *arg1, void *arg2) {
+s32 Ex3d_GetPointsAverage(s32 count, void *arg1, void *arg2) {
     Vec4_00206030 *src = arg1;
     Vec4_00206030 *dst = arg2;
     s32 i;
@@ -1974,7 +1974,7 @@ s32 func_00206030(s32 count, void *arg1, void *arg2) {
     return 1;
 }
 
-s32 func_002060F0(f32 *origin, s32 count, f32 *points, f32 *out) {
+s32 Ex3d_GetViewVector(f32 *origin, s32 count, f32 *points, f32 *out) {
     s32 i;
     f32 divisor;
 
@@ -1997,7 +1997,7 @@ s32 func_002060F0(f32 *origin, s32 count, f32 *points, f32 *out) {
     out[0] /= divisor;
     out[1] /= divisor;
     out[2] /= divisor;
-    func_0020D070(out);
+    RhGeom_NormalizeVector(out);
     return 1;
 }
 
@@ -2008,7 +2008,7 @@ typedef struct Point_002061F0 {
     u8 padding[0x24];
 } Point_002061F0;
 
-s32 func_002061F0(f32 *origin, s32 count, void *src, f32 *out) {
+s32 Ex3d_GetViewVectorForNode(f32 *origin, s32 count, void *src, f32 *out) {
     f32 divisor;
     s32 i;
     Point_002061F0 *point;
@@ -2032,11 +2032,11 @@ s32 func_002061F0(f32 *origin, s32 count, void *src, f32 *out) {
     out[0] /= divisor;
     out[1] /= divisor;
     out[2] /= divisor;
-    func_0020D070(out);
+    RhGeom_NormalizeVector(out);
     return 1;
 }
 
-void func_002062F0(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
+void Ex3d_GetSurfaceC(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
     arg3[0] = arg0[1] * (arg1[2] - arg2[2])
             + arg1[1] * (arg2[2] - arg0[2])
             + arg2[1] * (arg0[2] - arg1[2]);

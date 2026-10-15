@@ -27,11 +27,11 @@ static inline s32 aim_001FB500(s32 index) {
     entry->direction[1] = entry->target[1] - entry->origin[1];
     entry->direction[2] = entry->target[2] - entry->origin[2];
     entry->direction[3] = 0.0f;
-    func_0020D070(entry->direction);
+    RhGeom_NormalizeVector(entry->direction);
     return 1;
 }
 
-s32 func_001FB500(s32 index, f32 *src) {
+s32 SzView_SetLookCP(s32 index, f32 *src) {
     Camera_001FB500 *entry;
     f32 matrix[4][4];
     f32 angles[4];
@@ -48,10 +48,10 @@ s32 func_001FB500(s32 index, f32 *src) {
     }
     entry->param = *(Vec4_001FB500 *)src;
     entry->param.y = func_001A6C30(6.2831855f + entry->param.y, 6.2831855f);
-    if (func_001FAFB0(index, (s32)angles) != 0) {
-        func_0020C630(matrix, angles);
+    if (SzView_GetLookVector(index, (s32)angles) != 0) {
+        RhGeom_GetRotXYZMatrix(matrix, angles);
     }
-    func_0020CDD0(entry->direction, matrix, D_00293040);
+    RhGeom_MulMatrixVector(entry->direction, matrix, D_00293040);
     entry->target[0] = entry->origin[0] - entry->direction[0] * entry->param.x;
     entry->target[1] = entry->origin[1] - entry->direction[1] * entry->param.x;
     entry->target[2] = entry->origin[2] - entry->direction[2] * entry->param.x;
@@ -73,7 +73,7 @@ typedef struct Camera_001FB6A0 {
 } Camera_001FB6A0;
 
 
-s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
+s32 SzView_RollCamera(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
     Camera_001FB6A0 *camera;
     f32 *source;
     f32 *destination;
@@ -113,7 +113,7 @@ s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fpar
         if (arg1 == 0) {
             radius = camera->radius + fparg2;
             if (radius < minimum) {
-                func_001FB6A0(arg0, 1, -arg2, 0.0f, 0.0f, minimum - radius);
+                SzView_RollCamera(arg0, 1, -arg2, 0.0f, 0.0f, minimum - radius);
             }
         }
         pitch = camera->pitch;
@@ -128,10 +128,10 @@ s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fpar
     camera->radius += fparg2;
     camera->yaw = func_001A6C30(6.2831855f + (camera->yaw + fparg0), 6.2831855f);
     camera->pitch = func_001A6C30(camera->pitch + fparg1, 6.2831855f);
-    horizontal = camera->radius * func_0020B620(camera->pitch);
-    vertical = camera->radius * func_0020B730(camera->pitch);
-    depth = horizontal * func_0020B730(camera->yaw);
-    horizontal *= func_0020B620(camera->yaw);
+    horizontal = camera->radius * RhMath_Cos(camera->pitch);
+    vertical = camera->radius * RhMath_Sin(camera->pitch);
+    depth = horizontal * RhMath_Sin(camera->yaw);
+    horizontal *= RhMath_Cos(camera->yaw);
     scale = (f32)arg2;
     destination[0] = source[0] + horizontal * scale;
     destination[1] = source[1] + vertical * scale;
@@ -144,7 +144,7 @@ s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fpar
                 camera->direction[1] = camera->target[1] - camera->eye[1];
                 camera->direction[2] = camera->target[2] - camera->eye[2];
                 camera->direction[3] = 0.0f;
-                func_0020D070(camera->direction);
+                RhGeom_NormalizeVector(camera->direction);
             }
         }
     }
@@ -186,7 +186,7 @@ static inline void direction_001FB940(s32 index) {
             camera->direction.y = camera->target.y - camera->eye.y;
             camera->direction.z = camera->target.z - camera->eye.z;
             camera->direction.w = 0.0f;
-            func_0020D070(&camera->direction.x);
+            RhGeom_NormalizeVector(&camera->direction.x);
         }
     }
 }
@@ -216,7 +216,7 @@ static inline void polar_001FB940(s32 index) {
     }
 }
 
-s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, s32 mirror) {
+s32 SzView_SetInterpCameraMotion(s32 index, void *motion, s32 duration, s32 frame, s32 parent, s32 mirror) {
     extern s32 func_001A22C0(f32);
     Vec4_001FB940 translation;
     Vec4_001FB940 rotation;
@@ -253,17 +253,17 @@ s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, 
     angleData = (u8 *)motion + ((Motion_001FB940 *)motion)->angleOffset * 8 + 0x20;
     fovData = (u8 *)motion + ((Motion_001FB940 *)motion)->fovOffset * 8 + 0x20;
     time = ((f32)(((Motion_001FB940 *)motion)->frames - 1) * (f32)frame) / (f32)duration;
-    func_001FBE50(&camera->eye, (u8 *)motion + ((Motion_001FB940 *)motion)->eyeOffset * 8 + 0x20, ((Motion_001FB940 *)motion)->eyeCount, time);
-    func_001FBE50(&camera->target, targetData, ((Motion_001FB940 *)motion)->targetCount, time);
-    angle = func_001FC050(angleData, ((Motion_001FB940 *)motion)->angleCount, time);
-    fov = func_001FC050(fovData, ((Motion_001FB940 *)motion)->fovCount, time);
+    lSzView_CalcInterpCameraMotion(&camera->eye, (u8 *)motion + ((Motion_001FB940 *)motion)->eyeOffset * 8 + 0x20, ((Motion_001FB940 *)motion)->eyeCount, time);
+    lSzView_CalcInterpCameraMotion(&camera->target, targetData, ((Motion_001FB940 *)motion)->targetCount, time);
+    angle = lSzView_CalcInterpCameraMotion1(angleData, ((Motion_001FB940 *)motion)->angleCount, time);
+    fov = lSzView_CalcInterpCameraMotion1(fovData, ((Motion_001FB940 *)motion)->fovCount, time);
     camera->angle = func_001A22C0((32768.0f * angle) / 180.0f);
     halfFov = ((3.1415927f * fov) / 180.0f) / 2.0f;
     if (halfFov < 0.000001f) {
         halfFov = 0.000001f;
     }
-    sine = func_0020B620(halfFov);
-    camera->distance = 224.0f * (sine / func_0020B730(halfFov));
+    sine = RhMath_Cos(halfFov);
+    camera->distance = 224.0f * (sine / RhMath_Sin(halfFov));
     if (camera->distance < camera->minimum) {
         camera->distance = camera->minimum;
     }
@@ -273,14 +273,14 @@ s32 func_001FB940(s32 index, void *motion, s32 duration, s32 frame, s32 parent, 
         camera->angle = -camera->angle;
     }
     if (parent >= 0) {
-        if (func_001F2330(parent, &rotation) != 0) {
-            func_0020C630(matrix, &rotation);
-            func_0020BAF0((s32)matrix);
-            func_0020CDD0(&camera->eye, NULL, &camera->eye);
-            func_0020CDD0(&camera->target, NULL, &camera->target);
-            func_0020BB50();
+        if (SzModel_GetRot(parent, &rotation) != 0) {
+            RhGeom_GetRotXYZMatrix(matrix, &rotation);
+            RhGeom_PushMatrix((s32)matrix);
+            RhGeom_MulMatrixVector(&camera->eye, NULL, &camera->eye);
+            RhGeom_MulMatrixVector(&camera->target, NULL, &camera->target);
+            RhGeom_PopMatrix();
         }
-        if (func_001F1FD0(parent, &translation) != 0) {
+        if (SzModel_GetPos(parent, &translation) != 0) {
             camera->eye.x += translation.x;
             camera->eye.y += translation.y;
             camera->eye.z += translation.z;
@@ -299,7 +299,7 @@ typedef struct Key_001FBE50 {
     f32 value[3];
 } Key_001FBE50;
 
-void func_001FBE50(void *arg0, void *arg1, s32 arg2, f32 fparg0) {
+void lSzView_CalcInterpCameraMotion(void *arg0, void *arg1, s32 arg2, f32 fparg0) {
     f32 var_f0;
     f32 var_f0_2;
     f32 var_f0_3;
@@ -371,7 +371,7 @@ typedef struct Key_001FC050 {
     f32 value;
 } Key_001FC050;
 
-f32 func_001FC050(u8 *arg0, s32 arg1, f32 fparg0) {
+f32 lSzView_CalcInterpCameraMotion1(u8 *arg0, s32 arg1, f32 fparg0) {
     f32 var_f0;
     f32 var_f0_2;
     f32 var_f0_3;
@@ -456,7 +456,7 @@ static inline void direction_001FC210(s32 index) {
         camera->direction.y = camera->target.y - camera->position.y;
         camera->direction.z = camera->target.z - camera->position.z;
         camera->direction.w = 0.0f;
-        func_0020D070(&camera->direction.x);
+        RhGeom_NormalizeVector(&camera->direction.x);
         }
     }
 }
@@ -484,7 +484,7 @@ static inline void polar_001FC210(s32 index) {
     }
 }
 
-s32 func_001FC210(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight) {
+s32 SzView_SetViewCamera(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight) {
     f32 inverse = 1.0f - weight;
     Camera_001FC210 *camera;
     Vec4_001FC210 newTarget;
@@ -503,7 +503,7 @@ s32 func_001FC210(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight) 
     newTarget = camera->target;
     switch (mode) {
     case 1:
-        func_001F2050(otherIndex, &newTarget);
+        SzModel_GetCenter(otherIndex, &newTarget);
         camera->target.x = newTarget.x * weight + target[0] * inverse;
         camera->target.y = newTarget.y * weight + target[1] * inverse;
         camera->target.z = newTarget.z * weight + target[2] * inverse;
@@ -513,7 +513,7 @@ s32 func_001FC210(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight) 
         break;
     case 2:
         oldPolar = camera->polar;
-        func_001F2050(otherIndex, &newTarget);
+        SzModel_GetCenter(otherIndex, &newTarget);
         camera->target.x = newTarget.x * weight + target[0] * inverse;
         camera->target.y = newTarget.y * weight + target[1] * inverse;
         camera->target.z = newTarget.z * weight + target[2] * inverse;
@@ -523,13 +523,13 @@ s32 func_001FC210(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 weight) 
         oldPolar.y -= camera->polar.y;
         oldPolar.z -= camera->polar.z;
         oldPolar.x -= camera->polar.x;
-        func_001FB6A0(index, 0, 1, oldPolar.y, oldPolar.z, oldPolar.x);
+        SzView_RollCamera(index, 0, 1, oldPolar.y, oldPolar.z, oldPolar.x);
         break;
     }
     return 1;
 }
 
-s32 func_001FC6D0(s32 arg0, s32 arg1) {
+s32 SzView_IsFogZ(s32 arg0, s32 arg1) {
     s32 entry;
     u16 flags;
 
@@ -550,7 +550,7 @@ s32 func_001FC6D0(s32 arg0, s32 arg1) {
     return (flags & 0x200) ? 1 : 0;
 }
 
-s32 func_001FC760(s32 arg0, s32 arg1) {
+s32 SzView_IsFogY(s32 arg0, s32 arg1) {
     s32 temp_v1;
     u16 temp_a0;
 
@@ -571,7 +571,7 @@ s32 func_001FC760(s32 arg0, s32 arg1) {
     return !(temp_a0 & 0x200) ? 0 : 1;
 }
 
-s32 func_001FC7F0(s32 arg0) {
+s32 SzView_GetMode(s32 arg0) {
     void *temp_v0;
     s32 result;
 
@@ -588,7 +588,7 @@ s32 func_001FC7F0(s32 arg0) {
     return result;
 }
 
-s32 func_001FC840(s32 arg0, s32 arg1) {
+s32 SzView_SetMode(s32 arg0, s32 arg1) {
     void *temp_v0;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -606,14 +606,14 @@ static inline s32 toAngle_001FC890(f32 radians) {
     return (s32)(32768.0f * radians / 3.1415927f);
 }
 
-void func_001FC890(f32 *src, s32 *dst) {
+void SzView_V2IV(f32 *src, s32 *dst) {
     dst[0] = (s32)src[0];
     dst[1] = toAngle_001FC890(src[1]);
     dst[2] = toAngle_001FC890(src[2]);
     dst[3] = (s32)src[3];
 }
 
-void func_001FC950(void *arg0, void *arg1) {
+void SzView_IV2V(void *arg0, void *arg1) {
     s32 *src = arg0;
     f32 *dst = arg1;
 
@@ -636,19 +636,19 @@ typedef struct {
     Data_001FC9B0 *data;
 } Entry_001FC9B0;
 
-s32 func_001FC9B0(s32 arg0) {
+s32 SzView_InitCamera(s32 arg0) {
     extern char D_002CFC50[];
     extern char D_002CFC67[];
     extern u16 D_00293070;
     extern void func_0019B648();
-    extern void *func_001FFE00();
+    extern void *SzFile_ReadParam();
     char path[128];
     Entry_001FC9B0 *entry;
     Data_001FC9B0 *data;
 
-    func_001FCA70();
-    func_0019B648(path, D_002CFC50, func_001FFF90((s32)D_002CFC67), arg0, arg0);
-    entry = func_001FFE00(1, path, 0, -1, 0, -1);
+    SzView_TermCamera();
+    func_0019B648(path, D_002CFC50, SzFile_GetEnv((s32)D_002CFC67), arg0, arg0);
+    entry = SzFile_ReadParam(1, path, 0, -1, 0, -1);
     if (entry == NULL) {
         return 0;
     }
@@ -660,42 +660,42 @@ s32 func_001FC9B0(s32 arg0) {
     return 1;
 }
 
-void func_001FCA70(void) {
+void SzView_TermCamera(void) {
 
     if (D_0031C048 != 0) {
-        func_00217B50(D_0031C048);
+        SzMem_Free(D_0031C048);
         D_0031C048 = 0;
     }
 }
 
-void func_001FCAB0(void) {
+void SzView_ActCamera(void) {
     extern u16 D_00293070;
     s32 value;
     s32 handle;
     s32 hint = 0;
 
     if (D_0031C048 != 0) {
-        if (func_00203A40(0, 2, 4) != 0) {
+        if (SzPad_Check(0, 2, 4) != 0) {
             value = D_00293070 - 1;
             D_00293070 = (value > 0) ? value : 0;
         }
-        if (func_00203A40(0, 2, 8) != 0) {
+        if (SzPad_Check(0, 2, 8) != 0) {
             value = D_00293070 + 1;
             D_00293070 = (value < 1000) ? value : 1000;
         }
-        if (func_00203A40(0, 0, 0x10) != 0) {
-            func_001FA8A0(0, 0, 8, D_00293070, 7, hint != 0 ? NULL : (void *)D_0031C048);
+        if (SzPad_Check(0, 0, 0x10) != 0) {
+            SzView_ReqCamera(0, 0, 8, D_00293070, 7, hint != 0 ? NULL : (void *)D_0031C048);
         }
-        if (func_00203A40(0, 0, 0xA0) != 0) {
-            value = func_001E5240(0);
-            handle = func_001E1360(value >> 8, value & 0xFF);
-            func_001F1550(handle, func_00203A40(0, 0, 0x80) ? 5 : 2);
-            func_001FA8A0(0, 0, 8, D_00293070, handle, hint != 0 ? NULL : (void *)D_0031C048);
+        if (SzPad_Check(0, 0, 0xA0) != 0) {
+            value = SzBattle_InqEntry(0);
+            handle = SzDuel_GetUnitModelID(value >> 8, value & 0xFF);
+            SzModel_SetAnimIntr(handle, SzPad_Check(0, 0, 0x80) ? 5 : 2);
+            SzView_ReqCamera(0, 0, 8, D_00293070, handle, hint != 0 ? NULL : (void *)D_0031C048);
         }
     }
 }
 
-void func_001FCC20(void) {
+void SzFade_Init(void) {
     Entry_0031C050 *entry;
     s32 count;
 
@@ -721,7 +721,7 @@ typedef struct {
     s8 unused : 7;
 } Flags_001FCC70;
 
-s32 func_001FCC70(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5) {
+s32 SzFade_Entry(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5) {
     Entry_0031C050 *entry;
 
     entry = &D_0031C050[arg0];
@@ -746,7 +746,7 @@ s32 func_001FCC70(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5) {
     return 1;
 }
 
-s32 func_001FCD60(s32 arg0) {
+s32 SzFade_Destroy(s32 arg0) {
     Entry_0031C050 *temp_a2;
 
     temp_a2 = &D_0031C050[arg0];
@@ -754,12 +754,12 @@ s32 func_001FCD60(s32 arg0) {
     return 1;
 }
 
-void func_001FCDA0(void) {
+void SzFade_DispAll(void) {
     s32 i;
 
     i = 0;
     do {
-        func_001FCDE0(i);
+        SzFade_Disp(i);
         i += 1;
     } while (i < 2);
 }
@@ -769,7 +769,7 @@ typedef struct {
     s8 unused : 7;
 } Flags_001FCDE0;
 
-s32 func_001FCDE0(s32 arg0) {
+s32 SzFade_Disp(s32 arg0) {
     u8 color[4];
     Entry_0031C050 *entry;
     s32 next;
@@ -790,7 +790,7 @@ s32 func_001FCDE0(s32 arg0) {
     color[1] = entry->pad0[1];
     color[0] = entry->pad0[0];
     color[3] = (entry->pad0[3] * (amount & 0xFF)) / entry->hi;
-    func_001FCF30(0, (s32)color, 0xFFFFFF);
+    SzFade_Draw(0, (s32)color, 0xFFFFFF);
     if (entry->lo >= entry->hi) {
         if (entry->pad7b != 0) {
             entry->flag = 1;
@@ -806,8 +806,8 @@ s32 func_001FCDE0(s32 arg0) {
     return 1;
 }
 
-void func_001FCF30(s32 arg0, s32 arg1, s32 arg2) {
-    func_00209D30(func_001FCF90(func_00209D20(), arg0, arg1, arg2));
+void SzFade_Draw(s32 arg0, s32 arg1, s32 arg2) {
+    RhBase_SetVifPacketArea(SzFade_Draw_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2));
 }
 
 typedef struct {
@@ -838,11 +838,11 @@ static inline void init_001FCF90(void *tag) {
     ((Header_001FCF90 *)tag)->reserved = 0;
 }
 
-s32 func_001FCF90(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 SzFade_Draw_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Packet_001FCF90 packet;
 
     init_001FCF90((Header_001FCF90 *)packet.tag);
-    func_002086D0(&packet, func_00208D00(arg1));
+    ExAssignAlpha(&packet, ExGetAlphaVal(arg1));
     packet.color[0] = ((u8 *)arg2)[2];
     packet.color[1] = ((u8 *)arg2)[1];
     packet.color[2] = ((u8 *)arg2)[0];
@@ -856,10 +856,10 @@ s32 func_001FCF90(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     packet.vertices[1].y = 0x8E00;
     packet.vertices[1].z = (u32)arg3;
     packet.vertices[1].reserved = 0;
-    return func_00207650(arg0, (s32)&packet, 0, 0);
+    return ExSortPrim_Pipe(arg0, (s32)&packet, 0, 0);
 }
 
-s32 func_001FD0B0(s32 arg0) {
+s32 SzFade_SetKillFlag(s32 arg0) {
     Entry_0031C050 *entry;
 
     if (arg0 < 0 || arg0 >= 2) {
@@ -878,7 +878,7 @@ typedef struct {
     s8 pad : 7;
 } Flags_001FD130;
 
-s32 func_001FD130(s32 arg0, s64 arg1) {
+s32 SzFade_SetPauseFlag(s32 arg0, s64 arg1) {
     Entry_0031C050 *temp_a2;
 
     if (arg0 < 0 || arg0 >= 2) {
@@ -892,7 +892,7 @@ s32 func_001FD130(s32 arg0, s64 arg1) {
     return 1;
 }
 
-s32 func_001FD1B0(s32 arg0) {
+s32 SzFade_GetRestCount(s32 arg0) {
     Entry_0031C050 *e;
 
     if (arg0 < 0 || arg0 >= 2) {
@@ -918,7 +918,7 @@ static inline s32 calc_001FD220(s32 idx) {
     return e->hi - e->lo;
 }
 
-s32 func_001FD220(s32 arg0) {
+s32 SzFade_IsDoing(s32 arg0) {
     s32 i;
     s32 want = arg0 ? 1 : 0;
 
@@ -930,16 +930,16 @@ s32 func_001FD220(s32 arg0) {
     return 0;
 }
 
-void func_001FD2B0(void) {
+void SzMsg_Initialize(void) {
     extern u8 D_0031C070[];
 
-    func_0020B3C0((s8 *)D_0031C070, 0, 0x27C);
+    RhMem_FillMemory((s8 *)D_0031C070, 0, 0x27C);
 }
 
-s32 func_001FD2D0(s32 arg0, s32 arg1) {
+s32 SzMsg_Init(s32 arg0, s32 arg1) {
     s32 sp3C;
 
-    func_00209D30(func_001FD320(func_00209D20(), arg0, arg1, &sp3C));
+    RhBase_SetVifPacketArea(SzMsg_Init_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, &sp3C));
     return sp3C;
 }
 
@@ -956,12 +956,12 @@ typedef struct State_001FD320 {
     u16 unk278;
 } State_001FD320;
 
-s32 func_001FD320(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+s32 SzMsg_Init_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     extern State_001FD320 D_0031C070;
     extern s32 D_002D19D0;
     extern u16 D_002D49D4[];
-    extern s32 func_00202E00();
-    extern s32 func_001FD4C0();
+    extern s32 SzText_InitClutManage();
+    extern s32 SzMsg_LoadClut_Pipe();
     State_001FD320 *state = &D_0031C070;
     s32 start;
     s32 i;
@@ -969,7 +969,7 @@ s32 func_001FD320(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     s32 th;
 
     start = arg2;
-    func_001FEB40();
+    SzMsg_FreeAll();
     D_0031C070.width = 640;
     D_0031C070.height = 384;
     for (tw = 0; (1 << tw) < 640; tw++) {
@@ -978,14 +978,14 @@ s32 func_001FD320(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     }
     state->tw = tw;
     state->th = th;
-    state->cbp = func_00202F00(3);
+    state->cbp = SzText_GetClutGsAddr(3);
     if (state->cbp < 0) {
-        arg2 += func_00202E00(arg2, 1);
-        state->cbp = func_00202F00(3);
+        arg2 += SzText_InitClutManage(arg2, 1);
+        state->cbp = SzText_GetClutGsAddr(3);
     }
     state->tbp = arg2;
     for (i = 0; i < 3; i++) {
-        arg0 = func_001FD4C0(arg0, i, state->cbp + i);
+        arg0 = SzMsg_LoadClut_Pipe(arg0, i, state->cbp + i);
     }
     if (arg3 != NULL) {
         *arg3 = arg2 + 0x1E0 - start;
@@ -996,7 +996,7 @@ s32 func_001FD320(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     return arg0;
 }
 
-void func_001FD4B0(s32 arg0) {
+void SzMsg_SetDefPrioZ(s32 arg0) {
     D_0031C2E4 = arg0;
 }
 
@@ -1012,8 +1012,8 @@ typedef union Packet_001FD4C0 {
     } header;
 } Packet_001FD4C0;
 
-void func_001FD4C0(u64 *arg0, s32 arg1, s32 arg2) {
-    extern void *func_0020B340(void *, void *, s32);
+void SzMsg_LoadClut_Pipe(u64 *arg0, s32 arg1, s32 arg2) {
+    extern void *RhMem_CopyMemory4(void *, void *, s32);
     extern u8 D_002CFC70[][16];
     extern u8 D_002CFCA0[][16];
     Packet_001FD4C0 *packet = (Packet_001FD4C0 *)arg0;
@@ -1043,18 +1043,18 @@ void func_001FD4C0(u64 *arg0, s32 arg1, s32 arg2) {
     arg0[12] = 0x8004 | ((u64)0x08000000 << 32);
     arg0[13] = 0;
     arg0 += 14;
-    end = func_0020B340(arg0, colors, 16);
+    end = RhMem_CopyMemory4(arg0, colors, 16);
     count = ((end - packet->words) >> 1) - 1;
     packet->header.count = count;
     packet->header.dma0 = 0x11000000;
     packet->header.dma1 = (count & 0xFFFF) | 0x51000000;
 }
 
-void func_001FD610(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    func_00209D30(func_001FD680(func_00209D20(), arg0, arg1, arg2, arg3));
+void SzMsg_LoadFont(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    RhBase_SetVifPacketArea(SzMsg_LoadFont_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", func_001FD680);
+INCLUDE_ASM("asm/nonmatchings/main_053", SzMsg_LoadFont_Pipe);
 
 struct DotrSlotTableEntry {
     unsigned int unknown_000 : 31;
@@ -1073,7 +1073,7 @@ extern int D_002D19D0_1fdb90;
 extern unsigned short D_002D49D4_1fdb90[];
 static inline int narrow_p(unsigned short x) { return (x & 0x2000) ? 1 : 0; }
 
-int func_001FDB90(unsigned short *p, char (*half)[53], short (*code)[53], unsigned short *cols, unsigned short *widths, unsigned short *line)
+int lSzMsg_FontTrace(unsigned short *p, char (*half)[53], short (*code)[53], unsigned short *cols, unsigned short *widths, unsigned short *line)
 {
     struct DotrSlotTable *ml = &D_0031C070_1fdb90;
     unsigned short word = *p;
@@ -1090,7 +1090,7 @@ int func_001FDB90(unsigned short *p, char (*half)[53], short (*code)[53], unsign
         q = &D_002D49D4_1fdb90[(&D_002D19D0_1fdb90)[word & 0x3fff]];
         q += (c >> 6) & 0x7f;
         while (count != 0) {
-            n = func_001FDB90(q, half, code, cols, widths, line);
+            n = lSzMsg_FontTrace(q, half, code, cols, widths, line);
             if (q[n - 1] & 0x8000) {
                 break;
             }
@@ -1148,7 +1148,7 @@ typedef struct {
     s32 cbpOffset;
 } TexInfo_001FDD70;
 
-void func_001FDD70(void *arg0, void *arg1) {
+void lSzMsg_GetTexInfo(void *arg0, void *arg1) {
     extern TexInfo_001FDD70 D_0031C070;
     TexInfo_001FDD70 *texture = &D_0031C070;
 
@@ -1236,7 +1236,7 @@ static inline void set_uv_001FDFE0(UV_001FDFE0 *p, s32 u, s32 v) {
     p->v = v;
 }
 
-s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
+s32 SzMsg_DrawRect_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
     extern u8 D_00293078[];
     extern s32 D_002CFCD0[];
     extern State_001FDFE0 D_0031C070;
@@ -1254,7 +1254,7 @@ s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
     s32 *rect = arg4;
     u8 *color = arg5;
 
-    info = func_001FEAB0(arg1);
+    info = SzMsg_GetInfo(arg1);
     if (info == NULL) {
         return arg0;
     }
@@ -1280,7 +1280,7 @@ s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
     ((Tag_001FDFE0 *)packet.tag)->registers = 0x42421;
     ((Tag_001FDFE0 *)packet.tag)->padding = 0;
     ((Tag_001FDFE0 *)packet.tag)->flags |= 0x800;
-    func_002086D0(packet.tag, 0x44 | ((s64)0x80 << 32));
+    ExAssignAlpha(packet.tag, 0x44 | ((s64)0x80 << 32));
     packet.color.r = color[2];
     packet.color.g = color[1];
     packet.color.b = color[0];
@@ -1296,8 +1296,8 @@ s32 func_001FDFE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
     packet.vertex1.fog = 0;
     set_uv_001FDFE0((UV_001FDFE0 *)&packet.uv0, (u0 << 4) + 8, (v0 << 4) + 8);
     set_uv_001FDFE0((UV_001FDFE0 *)&packet.uv1, (u1 << 4) + 8, (v1 << 4) + 8);
-    func_001FDD70(&packet.texture0, &packet.texture1);
-    return func_00207650(arg0, (s32)&packet, 0, 0);
+    lSzMsg_GetTexInfo(&packet.texture0, &packet.texture1);
+    return ExSortPrim_Pipe(arg0, (s32)&packet, 0, 0);
 }
 
 typedef int DotrDrawWord;
@@ -1349,7 +1349,7 @@ struct DotrCursorRectGPacket {
 };
 extern unsigned char D_00293080[];
 
-int func_001FE290(int cursor, int index, int x, int y, void *rect_v, unsigned char *colour)
+int SzMsg_DrawRectG_Pipe(int cursor, int index, int x, int y, void *rect_v, unsigned char *colour)
 {
     struct DotrSlotTableWords * rect = rect_v;
     struct DotrCursorRectGPacket packet;
@@ -1429,7 +1429,7 @@ int func_001FE290(int cursor, int index, int x, int y, void *rect_v, unsigned ch
     ((struct DotrCursorSlotUv *)&packet.vertex[2].uv)->v = (v2 << 4) + 8;
     ((struct DotrCursorSlotUv *)&packet.vertex[3].uv)->u = (u2 << 4) + 8;
     ((struct DotrCursorSlotUv *)&packet.vertex[3].uv)->v = (v2 << 4) + 8;
-    func_001FDD70(&packet.tex0, &packet.tex1);
+    lSzMsg_GetTexInfo(&packet.tex0, &packet.tex1);
     return func_00207650_b(cursor, &packet, 0, 0);
 }
 
@@ -1442,12 +1442,12 @@ typedef struct Rect_001FE660 {
 
 typedef s32 (*Draw_001FE660)(s32, s32, s64, s64, Rect_001FE660 *, s32);
 
-s32 func_001FE660(s32 arg0, s32 arg1, s64 arg2, s64 arg3, f32 scaleX, f32 scaleY, s32 arg4, void (*arg5)(void)) {
+s32 SzMsg_DrawRatioX_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3, f32 scaleX, f32 scaleY, s32 arg4, void (*arg5)(void)) {
     extern Rect_001FE660 D_002CFCD0;
     Rect_001FE660 rect;
     s32 *info;
 
-    info = func_001FEAB0(arg1);
+    info = SzMsg_GetInfo(arg1);
     rect = D_002CFCD0;
     if (info == NULL) {
         return arg0;
@@ -1457,8 +1457,8 @@ s32 func_001FE660(s32 arg0, s32 arg1, s64 arg2, s64 arg3, f32 scaleX, f32 scaleY
     return ((Draw_001FE660)arg5)(arg0, arg1, arg2, arg3, &rect, arg4);
 }
 
-void func_001FE750(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_00209D30(func_001FE7D0(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
+void SzMsg_DrawX(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    RhBase_SetVifPacketArea(SzMsg_DrawX_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3, arg4));
 }
 
 typedef struct Rect_001FE7D0 {
@@ -1470,12 +1470,12 @@ typedef struct Rect_001FE7D0 {
 
 typedef s32 (*Draw_001FE7D0)(s32, s32, s32, s32, Rect_001FE7D0 *, s32);
 
-s32 func_001FE7D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+s32 SzMsg_DrawX_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     extern Rect_001FE7D0 D_002CFCD0;
     Rect_001FE7D0 rect;
     s32 *info;
 
-    info = func_001FEAB0(arg1);
+    info = SzMsg_GetInfo(arg1);
     rect = D_002CFCD0;
     if (info == NULL) {
         return arg0;
@@ -1485,8 +1485,8 @@ s32 func_001FE7D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return ((Draw_001FE7D0)arg5)(arg0, arg1, arg2, arg3, &rect, arg4);
 }
 
-void func_001FE880(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    func_00209D30(func_001FE8F0(func_00209D20(), arg0, arg1, arg2, arg3));
+void SzMsg_DrawGlass(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    RhBase_SetVifPacketArea(SzMsg_DrawGlass_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3));
 }
 
 typedef struct Xyzf_001FE8F0 {
@@ -1519,7 +1519,7 @@ static inline void tag_001FE8F0(void *packet) {
     *(u32 *)((u8 *)packet + 4) = 0;
 }
 
-s32 func_001FE8F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 SzMsg_DrawGlass_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     extern u8 D_00293088[];
     extern s32 D_002CFCD0[];
     extern State_001FE8F0 D_0031C070;
@@ -1543,7 +1543,7 @@ s32 func_001FE8F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     x1 = rect[2] + x0;
     y1 = rect[3] + y0;
     tag_001FE8F0(&packet);
-    func_002086D0(&packet, 0x8000000044LL);
+    ExAssignAlpha(&packet, 0x8000000044LL);
     packet.r = color[2];
     packet.g = color[1];
     packet.b = color[0];
@@ -1557,7 +1557,7 @@ s32 func_001FE8F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     packet.second.y = y1 << 4;
     packet.second.z = state->depth;
     packet.second.fog = 0;
-    return func_00207650(arg0, (s32)&packet, 0, 0);
+    return ExSortPrim_Pipe(arg0, (s32)&packet, 0, 0);
 }
 
 typedef struct Vec4_001FEA80 {
@@ -1566,11 +1566,11 @@ typedef struct Vec4_001FEA80 {
 
 extern Vec4_001FEA80 D_002CFCD0;
 
-void func_001FEA80(void *arg0) {
+void SzMsg_GetDefRect(void *arg0) {
     *(Vec4_001FEA80 *)arg0 = D_002CFCD0;
 }
 
-void *func_001FEAB0(s32 arg0) {
+void *SzMsg_GetInfo(s32 arg0) {
     extern u8 D_0031C070[];
     u8 *data = D_0031C070;
     void *result;
@@ -1599,7 +1599,7 @@ typedef struct {
 
 extern Table_001FEAF0 D_0031C070;
 
-void func_001FEAF0(s32 arg0) {
+void SzMsg_Free(s32 arg0) {
     Table_001FEAF0 *t = &D_0031C070;
 
     if (arg0 >= 0 && arg0 < 0x1E) {
@@ -1616,7 +1616,7 @@ typedef struct {
 
 extern Entry_001FEB40 D_0031C08C[30];
 
-void func_001FEB40(void) {
+void SzMsg_FreeAll(void) {
     Entry_001FEB40 *entry;
     s32 i;
 
@@ -1657,7 +1657,7 @@ extern State_001FEB80 D_0031C2F0;
 extern Entry36_001FEB80 D_00320370[];
 extern Entry8_001FEB80 D_00322770[];
 
-void func_001FEB80(void) {
+void SzFile_Init(void) {
     State_001FEB80 *state;
     Entry8_001FEB80 *small;
     Entry36_001FEB80 *large;
@@ -1667,7 +1667,7 @@ void func_001FEB80(void) {
     large = D_00320370;
     small = D_00322770;
     count = 0x100;
-    func_0020B3C0((s8 *)&D_0031C2F0, 0, 0x66A0);
+    RhMem_FillMemory((s8 *)&D_0031C2F0, 0, 0x66A0);
     while (count--) {
         large->field0 = -1;
         large++;
@@ -1683,8 +1683,8 @@ void func_001FEB80(void) {
     state->field_6690.bit1 = 0;
 }
 
-void func_001FEC70(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s64 arg5) {
-    func_001FECB0(arg0, 0, arg1, arg2, arg3, 0, -1, arg4, arg5);
+void SzFile_ReadRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s64 arg5) {
+    SzFile_ReadRequestParam(arg0, 0, arg1, arg2, arg3, 0, -1, arg4, arg5);
 }
 
 typedef struct Request_001FECB0 {
@@ -1699,7 +1699,7 @@ typedef struct Queue_001FECB0 {
     u16 count;
 } Queue_001FECB0;
 
-s32 func_001FECB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s64 arg8) {
+s32 SzFile_ReadRequestParam(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s64 arg8) {
     Queue_001FECB0 *queue = (Queue_001FECB0 *)&D_0031C2F0;
     Request_001FECB0 *request;
 
@@ -1710,7 +1710,7 @@ s32 func_001FECB0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
         return 0;
     }
     request = &queue->requests[(queue->head + queue->count) % 0x100];
-    if (func_001FEDA0(request, arg0, arg1, (void *)arg2, arg3, arg4, arg5, arg6, arg7, arg8) == 0) {
+    if (lSzFile_SetReadRequestParam(request, arg0, arg1, (void *)arg2, arg3, arg4, arg5, arg6, arg7, arg8) == 0) {
         return 0;
     }
     queue->count++;
@@ -1755,7 +1755,7 @@ static inline void initialize_001FEDA0(Record_001FEDA0 *record,
     record->arg9 = arg9;
 }
 
-s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3,
+s32 lSzFile_SetReadRequestParam(void *arg0, s32 arg1, s32 arg2, void *arg3,
                  s32 arg4, s32 arg5, s32 arg6, s32 arg7,
                  s32 arg8, s32 arg9) {
     char buffer[128];
@@ -1767,7 +1767,7 @@ s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3,
     if (arg3 == 0) {
         return 0;
     }
-    if (func_00197548((s32)D_002D0638) != NULL) {
+    if (getenv((s32)D_002D0638) != NULL) {
         if (!((u32)arg3 & 0x80000000)) {
             s32 name;
             u32 i;
@@ -1790,7 +1790,7 @@ s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3,
                     (((char *)name)[6] == 'G' || ((char *)name)[6] == 'g') &&
                     (((char *)name)[7] == 'R' || ((char *)name)[7] == 'r') &&
                     (((char *)name)[8] == 'P' || ((char *)name)[8] == 'p')) {
-                    arg6 += func_001DE130(digit3 - '0' +
+                    arg6 += SzDuel_Xax2New(digit3 - '0' +
                                          ((digit1 - '0') * 100 +
                                           (digit2 - '0') * 10)) * 0x80800;
                     name = (s32)D_002D063D;
@@ -1800,7 +1800,7 @@ s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3,
                 i = 0;
                 do {
                     char *path = func_0019C478(*entry, '\\');
-                    if (path != NULL && func_0019C028((char *)(name + 1), path + 1, length) == 0) {
+                    if (path != NULL && strncasecmp((char *)(name + 1), path + 1, length) == 0) {
                         arg3 = (void *)(D_00293098[i * 4] | 0x80000000);
                         if (arg5 < 0) {
                             arg5 = D_002930A8[i * 8] << 11;
@@ -1830,12 +1830,12 @@ s32 func_001FEDA0(void *arg0, s32 arg1, s32 arg2, void *arg3,
         record->discFlag = 1;
         record->id = (u32)arg3 & 0x7FFFFFFF;
     } else {
-        char *file = func_00217B60((char *)arg3);
+        char *file = SzMem_StrDup((char *)arg3);
         record->file = file;
         if (file == NULL) {
             return 0;
         }
-        func_001FF250((s8 *)record->file);
+        lSzFile_StrNormalize((s8 *)record->file);
         record->discFlag = 0;
         record->id = 0;
     }

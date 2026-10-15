@@ -1,6 +1,6 @@
 #include "common.h"
 
-void func_00187BE8(void *p0, void *p1) {
+void sceVu0ITOF4Vector(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	vitof4.xyzw	$vf5,$vf4\n\
@@ -8,7 +8,7 @@ void func_00187BE8(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_00187BF8(void *p0, void *p1) {
+void sceVu0ITOF0Vector(void *p0, void *p1) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	vitof0.xyzw	$vf5,$vf4\n\
@@ -16,7 +16,7 @@ void func_00187BF8(void *p0, void *p1) {
 	" :  : "r" (p0), "r" (p1));
 }
 
-void func_00187C08(void *p0) {
+void sceVu0UnitMatrix(void *p0) {
     __asm__ __volatile__("\n\
 	vsub.xyzw	$vf4,$vf0,$vf0\n\
 	vadd.w	$vf4,$vf4,$vf0\n\
@@ -30,7 +30,7 @@ void func_00187C08(void *p0) {
 	" :  : "r" (p0));
 }
 
-void func_00187C30(void *p0, void *p1, void *p2, void *p3) {
+void _sceVu0ecossin(void *p0, void *p1, void *p2, void *p3) {
     __asm__ __volatile__("\n\
 	lui	$8,%%hi(D_0028D9E0)\n\
 	addiu	$8,$8,%%lo(D_0028D9E0)\n\
@@ -64,7 +64,7 @@ _func_00187C30_00187C9C:\n\
 	" :  : "r" (p0), "r" (p1), "r" (p2), "r" (p3));
 }
 
-void func_00187CA8(void *p0, void *p1, float f0) {
+void sceVu0RotMatrixZ(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	.set noat\n\
 	.set noreorder\n\
@@ -89,7 +89,7 @@ _func_00187CA8_00187CD8:\n\
 	qmtc2.ni	$8,$vf6\n\
 	.set reorder\n\
 	daddu	$6,$31,$0\n\
-	jal	func_00187C30\n\
+	jal	_sceVu0ecossin\n\
 	daddu	$31,$6,$0\n\
 	vmove.xyzw	$vf6,$vf5\n\
 	vmove.xyzw	$vf7,$vf5\n\
@@ -117,7 +117,7 @@ _func_00187CA8_00187D1C:\n\
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-void func_00187D50(void *p0, void *p1, float f0) {
+void sceVu0RotMatrixX(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	.set noat\n\
 	.set noreorder\n\
@@ -142,7 +142,7 @@ _func_00187D50_00187D80:\n\
 	qmtc2.ni	$8,$vf6\n\
 	.set reorder\n\
 	daddu	$6,$31,$0\n\
-	jal	func_00187C30\n\
+	jal	_sceVu0ecossin\n\
 	daddu	$31,$6,$0\n\
 	vmove.xyzw	$vf6,$vf5\n\
 	vmove.xyzw	$vf7,$vf5\n\
@@ -171,7 +171,7 @@ _func_00187D50_00187DC8:\n\
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-void func_00187DF8(void *p0, void *p1, float f0) {
+void sceVu0RotMatrixY(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	.set noat\n\
 	.set noreorder\n\
@@ -196,7 +196,7 @@ _func_00187DF8_00187E28:\n\
 	qmtc2.ni	$8,$vf6\n\
 	.set reorder\n\
 	daddu	$6,$31,$0\n\
-	jal	func_00187C30\n\
+	jal	_sceVu0ecossin\n\
 	daddu	$31,$6,$0\n\
 	vmove.xyzw	$vf6,$vf5\n\
 	vmove.xyzw	$vf7,$vf5\n\
@@ -225,13 +225,13 @@ _func_00187DF8_00187E70:\n\
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-void func_00187EA0(s32 arg0, s32 arg1, void *arg2) {
-    func_00187CA8(arg0, arg1, (*(f32 *)((u8 *)arg2 + 8)));
-    func_00187DF8(arg0, arg0, (*(f32 *)((u8 *)arg2 + 4)));
-    func_00187D50(arg0, arg0, (*(f32 *)arg2));
+void sceVu0RotMatrix(s32 arg0, s32 arg1, void *arg2) {
+    sceVu0RotMatrixZ(arg0, arg1, (*(f32 *)((u8 *)arg2 + 8)));
+    sceVu0RotMatrixY(arg0, arg0, (*(f32 *)((u8 *)arg2 + 4)));
+    sceVu0RotMatrixX(arg0, arg0, (*(f32 *)arg2));
 }
 
-void func_00187EF0(void *p0, void *p1, float f0, float f1) {
+void sceVu0ClampVector(void *p0, void *p1, float f0, float f1) {
     __asm__ __volatile__("\n\
 	mfc1	$8,%2\n\
 	mfc1	$9,%3\n\
@@ -244,50 +244,50 @@ void func_00187EF0(void *p0, void *p1, float f0, float f1) {
 	" :  : "r" (p0), "r" (p1), "f" (f0), "f" (f1));
 }
 
-void func_00187F18(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
+void sceVu0CameraMatrix(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     s32 sp0[4];
     s32 sp10[4];
     s32 sp20[8];
     s32 sp40[4];
 
-    func_00187C08(sp0);
-    func_00187958(sp40, arg3, arg2);
-    func_001879A0(sp0, sp40);
-    func_001879A0(sp20, arg2);
-    func_00187958(sp10, sp20, sp0);
-    func_00187B60(sp0, sp0, arg1);
-    func_00187A28(arg0, sp0);
+    sceVu0UnitMatrix(sp0);
+    sceVu0OuterProduct(sp40, arg3, arg2);
+    sceVu0Normalize(sp0, sp40);
+    sceVu0Normalize(sp20, arg2);
+    sceVu0OuterProduct(sp10, sp20, sp0);
+    sceVu0TransMatrix(sp0, sp0, arg1);
+    sceVu0InversMatrix(arg0, sp0);
 }
 
-void func_00187FC8(f32 (*m)[4], f32 *x, f32 *y, f32 *z) {
+void sceVu0NormalLightMatrix(f32 (*m)[4], f32 *x, f32 *y, f32 *z) {
     f32 v[4];
 
-    func_00187B48(v, x, -1.0f);
-    func_001879A0(m[0], v);
-    func_00187B48(v, y, -1.0f);
-    func_001879A0(m[1], v);
-    func_00187B48(v, z, -1.0f);
-    func_001879A0(m[2], v);
+    sceVu0ScaleVector(v, x, -1.0f);
+    sceVu0Normalize(m[0], v);
+    sceVu0ScaleVector(v, y, -1.0f);
+    sceVu0Normalize(m[1], v);
+    sceVu0ScaleVector(v, z, -1.0f);
+    sceVu0Normalize(m[2], v);
     m[3][0] = m[3][1] = m[3][2] = 0.0f;
     m[3][3] = 1.0f;
-    func_001879E0(m, m);
+    sceVu0TransposeMatrix(m, m);
 }
 
-void func_00188088(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_00187B90(arg0, arg1);
-    func_00187B90(arg0 + 0x10, arg2);
-    func_00187B90(arg0 + 0x20, arg3);
-    func_00187B90(arg0 + 0x30, arg4);
+void sceVu0LightColorMatrix(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    sceVu0CopyVector(arg0, arg1);
+    sceVu0CopyVector(arg0 + 0x10, arg2);
+    sceVu0CopyVector(arg0 + 0x20, arg3);
+    sceVu0CopyVector(arg0 + 0x30, arg4);
 }
 
-void func_001880F0(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zmin, f32 zmax, f32 nearz, f32 farz) {
+void sceVu0ViewScreenMatrix(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zmin, f32 zmax, f32 nearz, f32 farz) {
     f32 az, cz;
     f32 mt[4][4];
 
     cz = (-zmax * nearz + zmin * farz) / (-nearz + farz);
     az = farz * nearz * (-zmin + zmax) / (-nearz + farz);
 
-    func_00187C08(m);
+    sceVu0UnitMatrix(m);
     m[0][0] = scrz;
     m[1][1] = scrz;
     m[2][2] = 0.0f;
@@ -295,7 +295,7 @@ void func_001880F0(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zm
     m[2][3] = 1.0f;
     m[3][3] = 0.0f;
 
-    func_00187C08(mt);
+    sceVu0UnitMatrix(mt);
     mt[0][0] = ax;
     mt[1][1] = ay;
     mt[2][2] = az;
@@ -303,10 +303,10 @@ void func_001880F0(f32 (*m)[4], f32 scrz, f32 ax, f32 ay, f32 cx, f32 cy, f32 zm
     mt[3][1] = cy;
     mt[3][2] = cz;
 
-    func_00187910(m, mt, m);
+    sceVu0MulMatrix(m, mt, m);
 }
 
-void func_001881F8(f32 (*m)[4], f32 *lp, f32 a, f32 b, f32 c, s32 mode) {
+void sceVu0DropShadowMatrix(f32 (*m)[4], f32 *lp, f32 a, f32 b, f32 c, s32 mode) {
 
 
 
@@ -360,7 +360,7 @@ void func_001881F8(f32 (*m)[4], f32 *lp, f32 a, f32 b, f32 c, s32 mode) {
     }
 }
 
-void func_00188388(void *p0, void *p1, void *p2, void *p3) {
+void sceVu0RotTransPersN(void *p0, void *p1, void *p2, void *p3) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x10(%1)\n\
@@ -387,7 +387,7 @@ _func_00188388_001883C4:\n\
 	" :  : "r" (p0), "r" (p1), "r" (p2), "r" (p3));
 }
 
-void func_001883E0(void *p0, void *p1, void *p2, void *p3) {
+void sceVu0RotTransPers(void *p0, void *p1, void *p2, void *p3) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x10(%1)\n\
@@ -409,13 +409,13 @@ _func_001883E0_0018841C:\n\
 	" :  : "r" (p0), "r" (p1), "r" (p2), "r" (p3));
 }
 
-void func_00188428(f32 *arg0, f32 *arg1) {
+void sceVu0CopyVectorXYZ(f32 *arg0, f32 *arg1) {
     arg0[0] = arg1[0];
     arg0[1] = arg1[1];
     arg0[2] = arg1[2];
 }
 
-void func_00188448(void *p0, void *p1, void *p2, float f0) {
+void sceVu0InterVectorXYZ(void *p0, void *p1, void *p2, float f0) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	lqc2	$vf5,0x0(%2)\n\
@@ -432,7 +432,7 @@ void func_00188448(void *p0, void *p1, void *p2, float f0) {
 	" :  : "r" (p0), "r" (p1), "r" (p2), "f" (f0));
 }
 
-void func_00188478(void *p0, void *p1, float f0) {
+void sceVu0ScaleVectorXYZ(void *p0, void *p1, float f0) {
     __asm__ __volatile__("\n\
 	lqc2	$vf4,0x0(%1)\n\
 	.set noreorder\n\
@@ -444,7 +444,7 @@ void func_00188478(void *p0, void *p1, float f0) {
 	" :  : "r" (p0), "r" (p1), "f" (f0));
 }
 
-int func_00188490(void *p0) {
+int sceVu0ClipScreen(void *p0) {
     register int ret __asm__("$2");
     __asm__ __volatile__("\n\
 	vsub.xyzw	$vf4,$vf0,$vf0\n\
@@ -468,7 +468,7 @@ int func_00188490(void *p0) {
     return ret;
 }
 
-int func_001884D8(void *p0, void *p1, void *p2) {
+int sceVu0ClipScreen3(void *p0, void *p1, void *p2) {
     register int ret __asm__("$2");
     __asm__ __volatile__("\n\
 	vsub.xyzw	$vf4,$vf0,$vf0\n\
@@ -498,7 +498,7 @@ int func_001884D8(void *p0, void *p1, void *p2) {
     return ret;
 }
 
-int func_00188538(void *p0, void *p1, void *p2, void *p3) {
+int sceVu0ClipAll(void *p0, void *p1, void *p2, void *p3) {
     register int ret __asm__("$2");
     __asm__ __volatile__("\n\
 	lqc2	$vf8,0x0(%4)\n\
@@ -538,7 +538,7 @@ _func_00188538_001885BC:\n\
     return ret;
 }
 
-void func_001885C8(void) {
+void sceVpu0Reset(void) {
     *(volatile int *)0x10003830 = 0;
     *(volatile int *)0x10003820 = 0;
     *(volatile int *)0x10003810 = 1;
@@ -559,9 +559,9 @@ __asm__(".space 12");
 
 INCLUDE_ASM("asm/nonmatchings/main_028", func_00188630);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188880);
+INCLUDE_ASM("asm/nonmatchings/main_028", _getAllRefs);
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188F88);
+INCLUDE_ASM("asm/nonmatchings/main_028", _getRef0);
 
 typedef struct MpegSub_001893A8 {
     u8 b[0x1C];
@@ -604,18 +604,18 @@ void func_001893A8(void *arg0, s32 idx) {
         }
     }
     if (d->bufs[idx].f130 != 0 && d->bufs[idx].f13C != 0) {
-        func_0018F7B0((s32)d, D_002BC730);
+        _Error((s32)d, D_002BC730);
     }
     if (d->bufs[idx].f130 != 0) {
         func_0018A318(d->bufs[idx].p, d->bufs[idx].f4);
     } else if (d->bufs[idx].f13C != 0) {
         func_0018A318(d->bufs[idx].p, d->f81C);
     } else {
-        func_0018A2B8((void *)d->bufs[idx].p, (void *)d->f81C, (void *)d->bufs[idx].f4);
+        _copyAddRefImage((void *)d->bufs[idx].p, (void *)d->f81C, (void *)d->bufs[idx].f4);
     }
 }
 
-void func_001895C8(void *p0) {
+void _rix_000(void *p0) {
     __asm__ __volatile__("\n\
 	lw	$5,0x14(%0)\n\
 	lw	$6,0x18(%0)\n\
@@ -648,7 +648,7 @@ _func_001895C8_001895EC:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189640(void *p0) {
+void _ri0_000(void *p0) {
     __asm__ __volatile__("\n\
 	lw	$5,0x14(%0)\n\
 	lw	$6,0x18(%0)\n\
@@ -692,7 +692,7 @@ _func_00189640_00189668:\n\
 	" :  : "r" (p0));
 }
 
-void func_001896D8(void *p0) {
+void _rix_001(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -742,7 +742,7 @@ _func_001896D8_0018976C:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189790(void *p0) {
+void _ri0_001(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -799,7 +799,7 @@ _func_00189790_00189814:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189860(void *p0) {
+void _rix_010(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -846,7 +846,7 @@ _func_00189860_0018988C:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189910(void *p0) {
+void _ri0_010(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -899,7 +899,7 @@ _func_00189910_00189940:\n\
 	" :  : "r" (p0));
 }
 
-void func_001899C8(void *p0) {
+void _rix_011(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -966,7 +966,7 @@ _func_001899C8_00189AA0:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189AC0(void *p0) {
+void _ri0_011(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1035,7 +1035,7 @@ _func_00189AC0_00189B74:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189BC0(void *p0) {
+void _rix_100(void *p0) {
     __asm__ __volatile__("\n\
 	lw	$5,0x14(%0)\n\
 	lw	$6,0x18(%0)\n\
@@ -1078,7 +1078,7 @@ _func_00189BC0_00189BE4:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189C60(void *p0) {
+void _ri0_100(void *p0) {
     __asm__ __volatile__("\n\
 	lw	$5,0x14(%0)\n\
 	lw	$6,0x18(%0)\n\
@@ -1128,7 +1128,7 @@ _func_00189C60_00189C88:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189D10(void *p0) {
+void _rix_101(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1188,7 +1188,7 @@ _func_00189D10_00189DCC:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189DF0(void *p0) {
+void _ri0_101(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1251,7 +1251,7 @@ _func_00189DF0_00189E8C:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189ED8(void *p0) {
+void _rix_110(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1308,7 +1308,7 @@ _func_00189ED8_00189F04:\n\
 	" :  : "r" (p0));
 }
 
-void func_00189FB0(void *p0) {
+void _ri0_110(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1367,7 +1367,7 @@ _func_00189FB0_00189FE0:\n\
 	" :  : "r" (p0));
 }
 
-void func_0018A080(void *p0) {
+void _rix_111(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1444,7 +1444,7 @@ _func_0018A080_0018A180:\n\
 	" :  : "r" (p0));
 }
 
-void func_0018A1A0(void *p0) {
+void _ri0_111(void *p0) {
     __asm__ __volatile__("\n\
 	pnor	$25,$0,$0\n\
 	psrlh	$25,$25,15\n\
@@ -1519,7 +1519,7 @@ _func_0018A1A0_0018A26C:\n\
 	" :  : "r" (p0));
 }
 
-void func_0018A2B8(void *p0, void *p1, void *p2) {
+void _copyAddRefImage(void *p0, void *p1, void *p2) {
     __asm__ __volatile__("\n\
 	addiu	$12,$0,0x18\n\
 	lui	$10,%%hi(D_0018A360)\n\

@@ -16,7 +16,7 @@ typedef struct {
 
 /* _sysbitFlush: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0018DAA8(void *arg0, s32 n) {
+void _sysbitFlush(void *arg0, s32 n) {
     bs_0018DAA8->buf <<= n;
     bs_0018DAA8->cnt -= n;
     while (bs_0018DAA8->cnt < 57) {
@@ -29,25 +29,25 @@ void func_0018DAA8(void *arg0, s32 n) {
     bs_0018DAA8->pos += n;
 }
 
-s32 func_0018DB40(u64 *arg0, s32 arg1) {
+s32 _sysbitGet(u64 *arg0, s32 arg1) {
     s32 temp_s2;
 
-    temp_s2 = func_0018DA88(arg0, arg1);
-    func_0018DAA8(arg0, arg1);
+    temp_s2 = _sysbitNext(arg0, arg1);
+    _sysbitFlush(arg0, arg1);
     return temp_s2;
 }
 
-s32 func_0018DB90(u64 *arg0) {
+s32 _sysbitMarker(u64 *arg0) {
     s32 temp_s1;
 
-    temp_s1 = func_0018DA88(arg0, 1);
-    func_0018DAA8(arg0, 1);
+    temp_s1 = _sysbitNext(arg0, 1);
+    _sysbitFlush(arg0, 1);
     return temp_s1;
 }
 
 /* _sysbitJump: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0018DBD8(s32 *bs, s32 bytes) {
+void _sysbitJump(s32 *bs, s32 bytes) {
     s64 x = *(s64 *)(bs + 6) + (bytes << 3);
     s32 v;
 
@@ -59,10 +59,10 @@ void func_0018DBD8(s32 *bs, s32 bytes) {
     if ((u32)v >= (u32)bs[9]) {
         bs[3] = v - bs[10];
     }
-    func_0018DAA8(bs, 0);
+    _sysbitFlush(bs, 0);
 }
 
-u32 func_0018DC30(void *arg0, s32 arg1) {
+u32 _sysbitPtr(void *arg0, s32 arg1) {
     u32 var_v1;
 
     var_v1 = (*(s32 *)((u8 *)arg0 + 8)) + (arg1 >> 3);
@@ -74,7 +74,7 @@ u32 func_0018DC30(void *arg0, s32 arg1) {
 
 /* _type2id: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s64 func_0018DC60(s32 type, s32 ch) {
+s64 _type2id(s32 type, s32 ch) {
     s64 id = 0;
     s32 sh = 0;
 
@@ -97,7 +97,7 @@ s64 func_0018DC60(s32 type, s32 ch) {
 
 /* _id2type: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0018DCE8(s32 *type, s32 *num, u64 id) {
+s32 _id2type(s32 *type, s32 *num, u64 id) {
     StrDesc *p = D_0028DAB8;
     u32 i;
     s32 found = 0;
@@ -162,20 +162,20 @@ s32 func_0018DCE8(s32 *type, s32 *num, u64 id) {
     return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018DEE8);
+INCLUDE_ASM("asm/nonmatchings/main_030", sceMpegDemuxPssRing);
 
-s32 func_0018E1E0(s32 arg0, s32 arg1, s32 arg2) {
-    return func_0018DEE8(arg0, arg1, arg2, 0, -1);
+s32 sceMpegDemuxPss(s32 arg0, s32 arg1, s32 arg2) {
+    return sceMpegDemuxPssRing(arg0, arg1, arg2, 0, -1);
 }
 
 /* sceMpegAddStrCallback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0018E200(void *arg0, s32 type, s32 ch, void *func, void *data) {
+s32 sceMpegAddStrCallback(void *arg0, s32 type, s32 ch, void *func, void *data) {
     sceMpeg *mp = arg0;
     s32 ret = 0;
     MpegSys *p = mp->sys;
     StrCb *tbl = p->strCb;
-    s64 id = func_0018DC60(type, ch);
+    s64 id = _type2id(type, ch);
     s32 n = p->nStrCb;
     s32 i;
 
@@ -195,42 +195,42 @@ s32 func_0018E200(void *arg0, s32 type, s32 ch, void *func, void *data) {
     return ret;
 }
 
-s32 func_0018E2F8(u64 *arg0, void *arg1) {
+s32 _pack_header(u64 *arg0, void *arg1) {
     s32 temp_s0;
     s32 temp_s1;
     s32 temp_s2;
     s32 temp_s4;
     u32 var_s5;
 
-    func_0018DB40(arg0, 0x22);
-    temp_s0 = func_0018DB40(arg0, 3);
-    func_0018DB90(arg0);
-    temp_s1 = func_0018DB40(arg0, 0xF);
-    func_0018DB90(arg0);
-    temp_s2 = func_0018DB40(arg0, 0xF);
-    func_0018DB90(arg0);
-    (*(s32 *)arg1) = func_0018DB40(arg0, 9);
-    func_0018DB40(arg0, 0x1E);
-    temp_s4 = func_0018DB40(arg0, 3);
+    _sysbitGet(arg0, 0x22);
+    temp_s0 = _sysbitGet(arg0, 3);
+    _sysbitMarker(arg0);
+    temp_s1 = _sysbitGet(arg0, 0xF);
+    _sysbitMarker(arg0);
+    temp_s2 = _sysbitGet(arg0, 0xF);
+    _sysbitMarker(arg0);
+    (*(s32 *)arg1) = _sysbitGet(arg0, 9);
+    _sysbitGet(arg0, 0x1E);
+    temp_s4 = _sysbitGet(arg0, 3);
     (*(s32 *)((u8 *)arg1 + 8)) = (s32) (((u32) temp_s0 >> 2) & 1);
     (*(s32 *)((u8 *)arg1 + 4)) = (s32) ((temp_s0 << 0x1E) | (temp_s1 << 0xF) | temp_s2);
     for (var_s5 = 0; var_s5 < (u32) temp_s4; var_s5++) {
-        func_0018DB40(arg0, 8);
+        _sysbitGet(arg0, 8);
     }
-    if (func_0018DA88(arg0, 0x20) == 0x1BB) {
+    if (_sysbitNext(arg0, 0x20) == 0x1BB) {
         (*(s32 *)((u8 *)arg1 + 0xC)) = 1;
-        func_0018E448(arg0, arg1);
+        _system_header(arg0, arg1);
     } else {
         (*(s32 *)((u8 *)arg1 + 0xC)) = 0;
     }
     return 1;
 }
 
-s32 func_0018E448(u64 *arg0, void *arg1) {
-    func_0018DB40(arg0, 0x38);
-    func_0018DB40(arg0, 0x28);
-    while (func_0018DA88(arg0, 1) == 1) {
-        func_0018DB40(arg0, 0x18);
+s32 _system_header(u64 *arg0, void *arg1) {
+    _sysbitGet(arg0, 0x38);
+    _sysbitGet(arg0, 0x28);
+    while (_sysbitNext(arg0, 1) == 1) {
+        _sysbitGet(arg0, 0x18);
     }
     return 1;
 }
@@ -259,7 +259,7 @@ extern char D_002BC998[];
 /* _PES_packet (this SDK passes the decoder handle first, for _Error, and keeps the header-bits table on
    the stack): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
+s32 _PES_packet(s32 mp, int *bs, void *arg2) {
     HeaderBits_0018E4B8 headerBits;
     int ptsdts;
     int escr;
@@ -272,21 +272,21 @@ s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
 
     pkt_0018E4B8->startpos = bs[6];
     headerBits = D_002BC988;
-    func_0018DB40(bs_0018E4B8, 0x18);
-    pkt_0018E4B8->id = (long long)func_0018DB40(bs_0018E4B8, 8) << 32;
-    pkt_0018E4B8->length = func_0018DB40(bs_0018E4B8, 0x10);
+    _sysbitGet(bs_0018E4B8, 0x18);
+    pkt_0018E4B8->id = (long long)_sysbitGet(bs_0018E4B8, 8) << 32;
+    pkt_0018E4B8->length = _sysbitGet(bs_0018E4B8, 0x10);
     pkt_0018E4B8->pts = pkt_0018E4B8->dts = -1;
     if (pkt_0018E4B8->id != 0xBC00000000 && pkt_0018E4B8->id != 0xBE00000000 && pkt_0018E4B8->id != 0xBF00000000 &&
         pkt_0018E4B8->id != 0xF000000000 && pkt_0018E4B8->id != 0xF100000000 && pkt_0018E4B8->id != 0xFF00000000 &&
         pkt_0018E4B8->id != 0xF200000000 && pkt_0018E4B8->id != 0xF800000000) {
-        func_0018DB40(bs_0018E4B8, 2);
-        pkt_0018E4B8->scramble = func_0018DB40(bs_0018E4B8, 2);
-        func_0018DB40(bs_0018E4B8, 4);
-        ptsdts = func_0018DB40(bs_0018E4B8, 2);
-        escr = func_0018DB40(bs_0018E4B8, 1);
-        flags = func_0018DB40(bs_0018E4B8, 4);
-        ext = func_0018DB40(bs_0018E4B8, 1);
-        hdrlen = func_0018DB40(bs_0018E4B8, 8);
+        _sysbitGet(bs_0018E4B8, 2);
+        pkt_0018E4B8->scramble = _sysbitGet(bs_0018E4B8, 2);
+        _sysbitGet(bs_0018E4B8, 4);
+        ptsdts = _sysbitGet(bs_0018E4B8, 2);
+        escr = _sysbitGet(bs_0018E4B8, 1);
+        flags = _sysbitGet(bs_0018E4B8, 4);
+        ext = _sysbitGet(bs_0018E4B8, 1);
+        hdrlen = _sysbitGet(bs_0018E4B8, 8);
         base = (int)*(long long *)(bs + 6);
         if (ptsdts & 2) {
             unsigned int a;
@@ -294,13 +294,13 @@ s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
             int c;
             unsigned int low;
 
-            func_0018DB40(bs_0018E4B8, 4);
-            a = func_0018DB40(bs_0018E4B8, 3);
-            func_0018DB90(bs_0018E4B8);
-            b = func_0018DB40(bs_0018E4B8, 0xF);
-            func_0018DB90(bs_0018E4B8);
-            c = func_0018DB40(bs_0018E4B8, 0xF);
-            func_0018DB90(bs_0018E4B8);
+            _sysbitGet(bs_0018E4B8, 4);
+            a = _sysbitGet(bs_0018E4B8, 3);
+            _sysbitMarker(bs_0018E4B8);
+            b = _sysbitGet(bs_0018E4B8, 0xF);
+            _sysbitMarker(bs_0018E4B8);
+            c = _sysbitGet(bs_0018E4B8, 0xF);
+            _sysbitMarker(bs_0018E4B8);
             low = (a << 30) | (b << 15) | c;
             pkt_0018E4B8->pts = ((long long)((a >> 2) & 1) << 32) | low;
         }
@@ -310,21 +310,21 @@ s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
             int c;
             unsigned int low;
 
-            func_0018DB40(bs_0018E4B8, 4);
-            a = func_0018DB40(bs_0018E4B8, 3);
-            func_0018DB90(bs_0018E4B8);
-            b = func_0018DB40(bs_0018E4B8, 0xF);
-            func_0018DB90(bs_0018E4B8);
-            c = func_0018DB40(bs_0018E4B8, 0xF);
-            func_0018DB90(bs_0018E4B8);
+            _sysbitGet(bs_0018E4B8, 4);
+            a = _sysbitGet(bs_0018E4B8, 3);
+            _sysbitMarker(bs_0018E4B8);
+            b = _sysbitGet(bs_0018E4B8, 0xF);
+            _sysbitMarker(bs_0018E4B8);
+            c = _sysbitGet(bs_0018E4B8, 0xF);
+            _sysbitMarker(bs_0018E4B8);
             low = (a << 30) | (b << 15) | c;
             pkt_0018E4B8->dts = ((long long)((a >> 2) & 1) << 32) | low;
         }
         if (escr == 1) {
-            func_0018DB40(bs_0018E4B8, 0x30);
+            _sysbitGet(bs_0018E4B8, 0x30);
         }
         if (flags != 0) {
-            func_0018DB40(bs_0018E4B8, headerBits.b[flags]);
+            _sysbitGet(bs_0018E4B8, headerBits.b[flags]);
         }
         if (ext == 1) {
             int priv;
@@ -335,49 +335,49 @@ s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
             unsigned int i;
             unsigned int cnt;
 
-            priv = func_0018DB40(bs_0018E4B8, 1);
-            pack = func_0018DB40(bs_0018E4B8, 1);
-            seq = func_0018DB40(bs_0018E4B8, 1);
-            pstd = func_0018DB40(bs_0018E4B8, 1);
-            func_0018DB40(bs_0018E4B8, 3);
-            ext2 = func_0018DB40(bs_0018E4B8, 1);
+            priv = _sysbitGet(bs_0018E4B8, 1);
+            pack = _sysbitGet(bs_0018E4B8, 1);
+            seq = _sysbitGet(bs_0018E4B8, 1);
+            pstd = _sysbitGet(bs_0018E4B8, 1);
+            _sysbitGet(bs_0018E4B8, 3);
+            ext2 = _sysbitGet(bs_0018E4B8, 1);
             if (priv == 1) {
-                func_0018DB40(bs_0018E4B8, 0x30);
-                func_0018DB40(bs_0018E4B8, 0x30);
-                func_0018DB40(bs_0018E4B8, 0x20);
+                _sysbitGet(bs_0018E4B8, 0x30);
+                _sysbitGet(bs_0018E4B8, 0x30);
+                _sysbitGet(bs_0018E4B8, 0x20);
             }
             if (pack == 1) {
-                func_0018F7B0(mp, D_002BC998);
+                _Error(mp, D_002BC998);
                 return 0;
             }
             if (seq == 1) {
-                func_0018DB40(bs_0018E4B8, 0x10);
+                _sysbitGet(bs_0018E4B8, 0x10);
             }
             if (pstd == 1) {
-                func_0018DB40(bs_0018E4B8, 0x10);
+                _sysbitGet(bs_0018E4B8, 0x10);
             }
             if (ext2 == 1) {
-                func_0018DB90(bs_0018E4B8);
-                cnt = func_0018DB40(bs_0018E4B8, 7);
+                _sysbitMarker(bs_0018E4B8);
+                cnt = _sysbitGet(bs_0018E4B8, 7);
                 for (i = 0; i < cnt; i++) {
-                    func_0018DB40(bs_0018E4B8, 8);
+                    _sysbitGet(bs_0018E4B8, 8);
                 }
             }
         }
         n = hdrlen - (int)((*(long long *)(bs + 6) - base) >> 3);
         if (n != 0) {
-            func_0018DBD8(bs, n);
+            _sysbitJump(bs, n);
         }
         len = pkt_0018E4B8->length - hdrlen;
         n = len - 3;
         pkt_0018E4B8->datalen = n;
         pkt_0018E4B8->pos = bs[6];
         if (pkt_0018E4B8->id == 0xBD00000000) {
-            pkt_0018E4B8->id = pkt_0018E4B8->id | (unsigned int)func_0018DB40(bs_0018E4B8, 0x20);
+            pkt_0018E4B8->id = pkt_0018E4B8->id | (unsigned int)_sysbitGet(bs_0018E4B8, 0x20);
             n = len - 7;
         }
         if (n != 0) {
-            func_0018DBD8(bs, n);
+            _sysbitJump(bs, n);
         }
     } else if (pkt_0018E4B8->id == 0xBC00000000 || pkt_0018E4B8->id == 0xBF00000000 || pkt_0018E4B8->id == 0xF000000000 ||
                pkt_0018E4B8->id == 0xF100000000 || pkt_0018E4B8->id == 0xFF00000000 || pkt_0018E4B8->id == 0xF200000000 ||
@@ -385,15 +385,15 @@ s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
         len = pkt_0018E4B8->length;
         if (pkt_0018E4B8->id == 0xBF00000000) {
             len = len - 4;
-            pkt_0018E4B8->id = pkt_0018E4B8->id | (unsigned int)func_0018DB40(bs_0018E4B8, 0x20);
+            pkt_0018E4B8->id = pkt_0018E4B8->id | (unsigned int)_sysbitGet(bs_0018E4B8, 0x20);
         }
         if (len != 0) {
-            func_0018DBD8(bs, len);
+            _sysbitJump(bs, len);
         }
     } else if (pkt_0018E4B8->id == 0xBE00000000) {
         n = pkt_0018E4B8->length;
         if (n != 0) {
-            func_0018DBD8(bs, n);
+            _sysbitJump(bs, n);
         }
     }
     return 1;
@@ -402,7 +402,7 @@ s32 func_0018E4B8(s32 mp, int *bs, void *arg2) {
 #undef pkt_0018E4B8
 #undef bs_0018E4B8
 
-void func_0018EA68(void) {
+void sceMpegInit(void) {
     func_001843E0();
     *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
     *(volatile s32 *)0x1000B000 &= 0xFFFFFEFF;
@@ -414,7 +414,7 @@ void func_0018EA68(void) {
     func_00190498();
 }
 
-s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
+s32 sceMpegCreate(void *arg0, s32 arg1, s32 arg2) {
     s32 temp_s2;
     s32 temp_v0;
     s32 ret;
@@ -425,12 +425,12 @@ s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
     temp_s2 = ((u32) (arg1 + 3) >> 2) * 4;
     temp_a2 = arg2 - (temp_s2 - arg1);
     if (temp_a2 < 0x10C0U) {
-        func_0018F7B0(temp_s2, &D_002BC9D0);
+        _Error(temp_s2, &D_002BC9D0);
         ret = 0;
     } else {
     temp_s1 = temp_s2 + 0x108;
     (*(s32 *)((u8 *)arg0 + 0x40)) = temp_s2;
-    func_0018F060(temp_s1, temp_s2 + 0x10C0, temp_a2 - 0x10C0);
+    _alalcInit(temp_s1, temp_s2 + 0x10C0, temp_a2 - 0x10C0);
     (*(s32 *)arg0) = 0;
     (*(s32 *)((u8 *)arg0 + 4)) = 0;
     (*(s32 *)((u8 *)arg0 + 8)) = 0;
@@ -461,9 +461,9 @@ s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)temp_s2 + 0x34)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0x3C)) = 0;
     (*(s64 *)((u8 *)temp_s2 + 0xF0)) = -1;
-    (*(void (**)(void *))((u8 *)temp_s2 + 0x1C)) = func_001900A0;
-    (*(void (**)(void *))((u8 *)temp_s2 + 0x24)) = func_001900B0;
-    temp_v0 = func_0018F098(temp_s2, temp_s1, 0x600, 8);
+    (*(void (**)(void *))((u8 *)temp_s2 + 0x1C)) = _defStopDMA;
+    (*(void (**)(void *))((u8 *)temp_s2 + 0x24)) = _defRestartDMA;
+    temp_v0 = _alalcAlloc(temp_s2, temp_s1, 0x600, 8);
     (*(s32 *)((u8 *)temp_s2 + 0x48)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0xFC)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0x100)) = 0;
@@ -480,9 +480,9 @@ s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
     (*(void **)((u8 *)temp_s2 + 0x858)) = arg0;
     (*(s32 *)((u8 *)temp_s2 + 0x44)) = temp_v0;
     (*(s32 *)((u8 *)temp_s2 + 0xB0)) = 1;
-    func_0018F648(temp_s2);
-    func_0018EE78(arg0);
-    func_0018EEC8(arg0);
+    _clearOnce(temp_s2);
+    sceMpegReset(arg0);
+    sceMpegClearRefBuff(arg0);
     (*(s32 *)((u8 *)temp_s2 + 0x1B8)) = (s32) (temp_s2 + 0x1E8);
     (*(s32 *)((u8 *)temp_s2 + 0x1BC)) = (s32) (temp_s2 + 0x250);
     (*(s32 *)((u8 *)temp_s2 + 0x1C4)) = (s32) (temp_s2 + 0x2B8);
@@ -492,7 +492,7 @@ s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)temp_s2 + 0x1D8)) = (s32) (temp_s2 + 0x458);
     (*(s32 *)((u8 *)temp_s2 + 0x1DC)) = (s32) (temp_s2 + 0x4C0);
     (*(s32 *)((u8 *)temp_s2 + 0x1E4)) = (s32) (temp_s2 + 0x528);
-    func_0018F078(temp_s1);
+    _alalcSetDynamic(temp_s1);
     (*(s32 *)((u8 *)temp_s2 + 0x850)) = -1;
     (*(s32 *)((u8 *)temp_s2 + 0x854)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0x84C)) = 0;
@@ -502,15 +502,15 @@ s32 func_0018EB08(void *arg0, s32 arg1, s32 arg2) {
     return ret;
 }
 
-s32 func_0018ED10(s32 unused0) {
+s32 sceMpegDelete(s32 unused0) {
     return 1;
 }
 
 void func_0018ED18(void *arg0, s32 arg1, s32 arg2) {
-    func_0018F808(*(s32 *)((u8 *)arg0 + 0x40), arg1, (arg2 + 0x13) / 16 * 16);
+    _sendDataToIPU(*(s32 *)((u8 *)arg0 + 0x40), arg1, (arg2 + 0x13) / 16 * 16);
 }
 
-s32 func_0018ED40(void *arg0, s32 arg1, s32 arg2) {
+s32 sceMpegGetPicture(void *arg0, s32 arg1, s32 arg2) {
     void *temp_a3;
 
     temp_a3 = (*(void **)((u8 *)arg0 + 0x40));
@@ -519,10 +519,10 @@ s32 func_0018ED40(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)temp_a3 + 0xE4)) = arg2;
     (*(s32 *)((u8 *)temp_a3 + 0xE0)) = 0;
     (*(s32 *)((u8 *)temp_a3 + 0xDC)) = 0;
-    return func_0018F120(arg0);
+    return _getpic(arg0);
 }
 
-s32 func_0018ED88(void *arg0, s32 arg1, s32 arg2) {
+s32 sceMpegGetPictureRAW8(void *arg0, s32 arg1, s32 arg2) {
     void *temp_a3;
 
     temp_a3 = (*(void **)((u8 *)arg0 + 0x40));
@@ -531,10 +531,10 @@ s32 func_0018ED88(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)temp_a3 + 0xB0)) = 0;
     (*(s32 *)((u8 *)temp_a3 + 0xE0)) = 0;
     (*(s32 *)((u8 *)temp_a3 + 0xDC)) = 0;
-    return func_0018F120(arg0);
+    return _getpic(arg0);
 }
 
-s32 func_0018EDD0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 sceMpegGetPictureRAW8xy(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *temp_v1;
 
     temp_v1 = (*(void **)((u8 *)arg0 + 0x40));
@@ -543,10 +543,10 @@ s32 func_0018EDD0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)((u8 *)temp_v1 + 0xE4)) = (s32) (arg2 * arg3);
     (*(s32 *)((u8 *)temp_v1 + 0xDC)) = (s32) (arg2 * 0x10);
     (*(s32 *)((u8 *)temp_v1 + 0xB0)) = 0;
-    return func_0018F120(arg0);
+    return _getpic(arg0);
 }
 
-void func_0018EE20(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void sceMpegSetDecodeMode(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *temp_v0;
 
     temp_v0 = (*(void **)((u8 *)arg0 + 0x40));
@@ -555,7 +555,7 @@ void func_0018EE20(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)((u8 *)temp_v0 + 0x9C)) = arg3;
 }
 
-void func_0018EE38(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
+void sceMpegGetDecodeMode(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
     void *temp_t0;
 
     temp_t0 = (*(void **)((u8 *)arg0 + 0x40));
@@ -564,15 +564,15 @@ void func_0018EE38(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
     *arg3 = (*(s32 *)((u8 *)temp_t0 + 0x9C));
 }
 
-s32 func_0018EE58(void *arg0) {
+s32 sceMpegIsEnd(void *arg0) {
     return *(*(s32 **)((u8 *)arg0 + 0x40));
 }
 
-s32 func_0018EE68(void *arg0) {
+s32 sceMpegIsRefBuffEmpty(void *arg0) {
     return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 4)) == 0;
 }
 
-void func_0018EE78(void *arg0) {
+void sceMpegReset(void *arg0) {
     void *temp_s0;
 
     temp_s0 = (*(void **)((u8 *)arg0 + 0x40));
@@ -582,12 +582,12 @@ void func_0018EE78(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 8)) = 0;
     (*(s32 *)((u8 *)temp_s0 + 0xAC)) = 0;
     (*(s32 *)((u8 *)temp_s0 + 0x80)) = -1;
-    func_0018F6A8(temp_s0);
+    _clearEach(temp_s0);
     (*(s32 *)((u8 *)temp_s0 + 0x118)) = 0;
-    func_0018F5B8(temp_s0);
+    _initSeqAgain(temp_s0);
 }
 
-s32 func_0018EEC8(void *arg0) {
+s32 sceMpegClearRefBuff(void *arg0) {
     void *temp_v0;
     void *temp_v0_2;
     void *temp_v0_3;
@@ -624,7 +624,7 @@ s32 func_0018EEC8(void *arg0) {
     return 1;
 }
 
-s32 func_0018EF20(void *arg0, s32 arg1, s32 (*arg2)(), s32 arg3) {
+s32 sceMpegAddCallback(void *arg0, s32 arg1, s32 (*arg2)(), s32 arg3) {
     u8 *d;
     s32 (**p)();
     s32 (*old)();
@@ -643,7 +643,7 @@ s32 func_0018EF20(void *arg0, s32 arg1, s32 (*arg2)(), s32 arg3) {
 
 /* _dispatchMpegCallback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0018EF48(s32 arg0, void *arg1) {
+s32 _dispatchMpegCallback(s32 arg0, void *arg1) {
     sceMpeg *mp = (sceMpeg *)arg0;
     s32 *cbdata = arg1;
     s32 rv = 0;
@@ -661,13 +661,13 @@ s32 func_0018EF48(s32 arg0, void *arg1) {
     return rv;
 }
 
-void func_0018EF98(s32 arg0) {
+void _dispatchMpegCbNodata(s32 arg0) {
     s32 sp0[8];
     sp0[0] = /* extra? */ 1;
-    func_0018EF48(arg0, sp0);
+    _dispatchMpegCallback(arg0, sp0);
 }
 
-void func_0018EFC0(void *arg0, s64 arg1) {
+void sceMpegSetDefaultPtsGap(void *arg0, s64 arg1) {
     void *temp_v0;
 
     temp_v0 = (*(void **)((u8 *)arg0 + 0x40));
@@ -675,7 +675,7 @@ void func_0018EFC0(void *arg0, s64 arg1) {
     (*(s64 *)((u8 *)temp_v0 + 0x78)) = arg1;
 }
 
-void func_0018EFD8(void *arg0) {
+void sceMpegResetDefaultPtsGap(void *arg0) {
     u8 *p = *(u8 **)((u8 *)arg0 + 0x40);
 
     *(s32 *)(p + 0x70) = 0;
@@ -686,23 +686,23 @@ void func_0018EFE8(void *arg0, s32 arg1) {
     (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xD8)) = arg1;
 }
 
-s32 func_0018EFF8(void *arg0) {
+s32 sceMpegDispWidth(void *arg0) {
     return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xCC));
 }
 
-s32 func_0018F008(void *arg0) {
+s32 sceMpegDispHeight(void *arg0) {
     return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xD0));
 }
 
-s32 func_0018F018(void *arg0) {
+s32 sceMpegDispCenterOffX(void *arg0) {
     return (*(s32 *)((u8 *)arg0 + 0x40)) + 0xB4;
 }
 
-s32 func_0018F028(void *arg0) {
+s32 sceMpegDispCenterOffY(void *arg0) {
     return (*(s32 *)((u8 *)arg0 + 0x40)) + 0xB4;
 }
 
-s32 func_0018F038(void *arg0, s32 arg1) {
+s32 sceSetBrokenLink(void *arg0, s32 arg1) {
     s32 temp_v0;
     void *temp_v1;
 
@@ -712,7 +712,7 @@ s32 func_0018F038(void *arg0, s32 arg1) {
     return temp_v0;
 }
 
-void func_0018F048(void *arg0, s64 arg1) {
+void sceSetPtm(void *arg0, s64 arg1) {
     void *temp_v1;
 
     temp_v1 = (*(void **)((u8 *)arg0 + 0x40));
@@ -720,22 +720,22 @@ void func_0018F048(void *arg0, s64 arg1) {
     (*(s32 *)((u8 *)temp_v1 + 0xF8)) = 1;
 }
 
-void func_0018F060(void *arg0, s32 arg1, s32 arg2) {
+void _alalcInit(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)arg0 + 4)) = arg2;
     (*(s32 *)arg0) = arg1;
     (*(s32 *)((u8 *)arg0 + 8)) = arg1;
     (*(s32 *)((u8 *)arg0 + 0xC)) = arg1;
 }
 
-void func_0018F078(void *arg0) {
+void _alalcSetDynamic(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) (*(s32 *)((u8 *)arg0 + 8));
 }
 
-void func_0018F088(void *arg0) {
+void _alalcFree(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0xC));
 }
 
-s32 func_0018F098(s32 arg0, void *arg1, s32 arg2, u32 arg3) {
+s32 _alalcAlloc(s32 arg0, void *arg1, s32 arg2, u32 arg3) {
     s32 temp_v0;
     u32 temp_a0;
 
@@ -745,15 +745,15 @@ s32 func_0018F098(s32 arg0, void *arg1, s32 arg2, u32 arg3) {
         (*(u32 *)((u8 *)arg1 + 8)) = temp_a0;
         return temp_v0;
     }
-    func_0018F7B0(arg0, &D_002BC9F8);
+    _Error(arg0, &D_002BC9F8);
     return 0;
 }
 
-s32 func_0018F108(s32 *arg0) {
+s32 _alalcRest(s32 *arg0) {
     return (arg0[0] + arg0[1]) - arg0[2];
 }
 
-s32 func_0018F120(void *arg0) {
+s32 _getpic(void *arg0) {
     s32 *p;
     s32 ret;
     u32 st;
@@ -763,7 +763,7 @@ s32 func_0018F120(void *arg0) {
     p = *(s32 **)((u8 *)arg0 + 0x40);
     p[0] = 0;
     if (p[0xD8 / 4] & 0x3F) {
-        func_0018F778((s32)p, D_002BCA18, p[0xD8 / 4]);
+        _Error1((s32)p, D_002BCA18, p[0xD8 / 4]);
         return -1;
     }
     p[0x820 / 4] = 0;
@@ -775,23 +775,23 @@ s32 func_0018F120(void *arg0) {
         }
         switch (st) {
         case 0:
-            func_0018F550(arg0);
+            _sceMpegFlush(arg0);
             p[0] = 1;
             break;
         case 1:
             p[0xA8 / 4] = 0;
             p[0xA4 / 4] = 0;
             p[0xA0 / 4] = 0;
-            ret = func_0018F3A8(arg0, 0, p[0x94 / 4]);
+            ret = _decodeOrSkip(arg0, 0, p[0x94 / 4]);
             p[0xA0 / 4]++;
             break;
         case 2:
-            ret = func_0018F3A8(arg0, p[0xA4 / 4], p[0x98 / 4]);
+            ret = _decodeOrSkip(arg0, p[0xA4 / 4], p[0x98 / 4]);
             p[0xA4 / 4]++;
             break;
         case 3:
         case 4:
-            ret = func_0018F3A8(arg0, p[0xA8 / 4], p[0x9C / 4]);
+            ret = _decodeOrSkip(arg0, p[0xA8 / 4], p[0x9C / 4]);
             p[0xA8 / 4]++;
             break;
         }
@@ -802,20 +802,20 @@ s32 func_0018F120(void *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", func_0018F290);
+INCLUDE_ASM("asm/nonmatchings/main_030", _decodeOrSkipFrame);
 
-s32 func_0018F3A8(void *arg0, s32 arg1, s32 arg2) {
+s32 _decodeOrSkip(void *arg0, s32 arg1, s32 arg2) {
     s32 ret;
 
     if (*(s32 *)(*(u8 **)((u8 *)arg0 + 0x40) + 0x174) != 3) {
-        ret = func_0018F3F0(arg0, arg1, arg2);
+        ret = _decodeOrSkipField(arg0, arg1, arg2);
     } else {
-        ret = func_0018F290(arg0, arg1, arg2);
+        ret = _decodeOrSkipFrame(arg0, arg1, arg2);
     }
     return ret;
 }
 
-s32 func_0018F3F0(void *arg0, s32 arg1, s32 arg2) {
+s32 _decodeOrSkipField(void *arg0, s32 arg1, s32 arg2) {
     u8 *d;
     s32 skip;
     s32 ret;
@@ -837,7 +837,7 @@ s32 func_0018F3F0(void *arg0, s32 arg1, s32 arg2) {
     }
     *(s32 *)(d + 0x120) = 1;
     if (func_0018BC80(d) == 0) {
-        func_0018F550(arg0);
+        _sceMpegFlush(arg0);
         *(s32 *)d = 1;
         return 0;
     }
@@ -864,12 +864,12 @@ s32 func_0018F3F0(void *arg0, s32 arg1, s32 arg2) {
     *(s32 *)(d + 0x118) += 1;
     *(s32 *)(d + 4) += 1;
     if (skip == 0) {
-        func_0018EF98((s32)arg0);
+        _dispatchMpegCbNodata((s32)arg0);
     }
     return ret;
 }
 
-s32 func_0018F550(void *arg0) {
+s32 _sceMpegFlush(void *arg0) {
     s32 var_a0;
     void *temp_s0;
 
@@ -877,7 +877,7 @@ s32 func_0018F550(void *arg0) {
     var_a0 = 0;
     if ((*(s32 *)((u8 *)temp_s0 + 4)) != 0) {
         if ((*(s32 *)((u8 *)temp_s0 + 8)) != 0) {
-            func_0018F5C8(temp_s0);
+            _lastFrame(temp_s0);
             var_a0 = 1;
             (*(s32 *)((u8 *)arg0 + 8)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) - (*(s32 *)((u8 *)temp_s0 + 0xAC)));
             (*(s32 *)((u8 *)temp_s0 + 4)) = 0;
@@ -886,17 +886,17 @@ s32 func_0018F550(void *arg0) {
     return var_a0;
 }
 
-void func_0018F5B8(void *arg0) {
+void _initSeqAgain(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0x848) = 0;
-    func_0018A378(1);
+    _ipuSetMPEG1(1);
 }
 
-void func_0018F5C8(void *arg0) {
+void _lastFrame(void *arg0) {
     s32 temp_a2;
 
     temp_a2 = (*(s32 *)((u8 *)arg0 + 0x118));
     if ((*(s32 *)((u8 *)arg0 + 0x120)) != 0) {
-        func_0018F7B0((s32) arg0, &D_002BCA78);
+        _Error((s32) arg0, &D_002BCA78);
     } else {
         if ((*(s32 *)((u8 *)arg0 + 0x174)) == 3) {
             func_0018CE00(arg0, (*(s32 *)((u8 *)arg0 + 0x1BC)), temp_a2 - 1);

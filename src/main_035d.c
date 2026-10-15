@@ -8,7 +8,7 @@ s32 func_0019DC70(s32 arg0, void *arg1) {
         (*(s32 *)((u8 *)arg1 + 4)) = 0;
         return 0;
     }
-    temp_v0 = func_001970A8(arg0, arg1);
+    temp_v0 = __sfvwrite(arg0, arg1);
     (*(s32 *)((u8 *)arg1 + 8)) = 0;
     (*(s32 *)((u8 *)arg1 + 4)) = 0;
     return temp_v0;
@@ -34,7 +34,7 @@ s32 func_0019DCB8(void *arg0, const char *fmt, void *ap) {
     fake.lbfsize = 0;
 
     ret = func_0019DD70((vf_FILE *)&fake, fmt, ap);
-    if (ret >= 0 && func_00196708((nl_FILE *)&fake))
+    if (ret >= 0 && fflush((nl_FILE *)&fake))
         ret = -1;
     if (fake.flags & 0x0040)
         fp_0019DCB8->flags |= 0x0040;
@@ -48,7 +48,7 @@ s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap) {
         if ((fp)->_data == 0)
             (fp)->_data = (vf_reent *)D_0028FA98;
         if (!(fp)->_data->__sdidinit)
-            func_00196A30((fp)->_data);
+            __sinit((fp)->_data);
     } while (0);
     return func_0019DDE8(fp->_data, fp, fmt0, ap);
 }

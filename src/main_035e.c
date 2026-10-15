@@ -51,9 +51,9 @@ extern const char D_002BD6E8[]; /* "e%ld" */
 #define sprintf func_0019B648
 #define strtol func_0019D750
 #define strtoul func_0019D9B0
-#define fread(b, s, n, fp) func_00196AC0(b, s, n, fp)
+#define fread(b, s, n, fp) fread(b, s, n, fp)
 #define atol(s) ((long (*)(const char *))func_001950C8)(s)
-#define atof(s) ((double (*)(const char *))func_00195088)(s)
+#define atof(s) ((double (*)(const char *))atof)(s)
 #define fp ((FILE *)fp_0019F6E8)
 
 s32 func_0019F6E8(void *fp_0019F6E8, const char *fmt0, void *ap0)
@@ -702,7 +702,7 @@ char *func_001A0378(char *tab, char *fmt) {
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     s64 ret;
     D_003512F8 = 0;
-    if ((ret = (s64)func_0017BEA8(fd, buf, cnt)) == -1 && D_003512F8 != 0)
+    if ((ret = (s64)write(fd, buf, cnt)) == -1 && D_003512F8 != 0)
         *ptr = D_003512F8;
     return ret;
 }
@@ -740,7 +740,7 @@ s32 func_001A04D8(void *arg0) {
         if (fp->_data == 0)
             fp->_data = (sw_reent *)D_0028FA98;
         if (!fp->_data->__sdidinit)
-            func_00196A30(fp->_data);
+            __sinit(fp->_data);
     } while (0);
 
     if ((fp->_flags & 8) == 0) {
@@ -749,7 +749,7 @@ s32 func_001A04D8(void *arg0) {
         if (fp->_flags & 4) {
             if (fp->_ub._base != NULL) {
                 if (fp->_ub._base != fp->_ubuf)
-                    func_00196BE0((s32)fp->_data, (s32)fp->_ub._base);
+                    _free_r((s32)fp->_data, (s32)fp->_ub._base);
                 fp->_ub._base = NULL;
             }
             fp->_flags &= ~(4 | 0x20);
@@ -760,7 +760,7 @@ s32 func_001A04D8(void *arg0) {
     }
 
     if (fp->_bf._base == NULL)
-        func_00197838(fp);
+        __smakebuf(fp);
 
     if (fp->_flags & 1) {
         fp->_w = 0;

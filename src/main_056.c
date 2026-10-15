@@ -1,6 +1,6 @@
 #include "common.h"
 
-void func_00206430(void *arg0, void *arg1, void *arg2, void *arg3) {
+void Ex3d_IntersectP(void *arg0, void *arg1, void *arg2, void *arg3) {
     f32 *plane = arg0;
     f32 *start = arg1;
     f32 *end = arg2;
@@ -38,7 +38,7 @@ typedef struct PackedUV_00206530 {
     u16 flags_v : 2;
 } PackedUV_00206530;
 
-void func_00206530(void *arg0, void *arg1, s32 flags, void *arg3, f32 factor) {
+void Ex3d_DivideN(void *arg0, void *arg1, s32 flags, void *arg3, f32 factor) {
     ((Vertex_00206530 *)arg3)->position[0] = ((Vertex_00206530 *)arg0)->position[0] +
         factor * (((Vertex_00206530 *)arg1)->position[0] - ((Vertex_00206530 *)arg0)->position[0]);
     ((Vertex_00206530 *)arg3)->position[1] = ((Vertex_00206530 *)arg0)->position[1] +
@@ -82,10 +82,10 @@ void func_00206530(void *arg0, void *arg1, s32 flags, void *arg3, f32 factor) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00206830);
+INCLUDE_ASM("asm/nonmatchings/main_056", Ex3d_InitClipPlane);
 
-void func_00206D00(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_00206D30(6, D_00325CC0, arg0, arg1, arg2, arg3, arg4);
+void Ex3d_ViewClip(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    Ex3d_Clipping(6, D_00325CC0, arg0, arg1, arg2, arg3, arg4);
 }
 
 typedef union {
@@ -98,7 +98,7 @@ typedef struct {
     f32 v;
 } UV_00206D30;
 
-s32 func_00206D30(s32 planeCount, void *planeArg, s32 count, s32 verticesArg,
+s32 Ex3d_Clipping(s32 planeCount, void *planeArg, s32 count, s32 verticesArg,
                   s32 unused, s32 outputArg, s32 flags) {
     f32 *plane = planeArg;
     Vertex_00206D30 intersection;
@@ -135,7 +135,7 @@ s32 func_00206D30(s32 planeCount, void *planeArg, s32 count, s32 verticesArg,
             if (!(distance < 0.0f) && !(nextDistance < 0.0f)) {
                 ((Vertex_00206D30 *)outputArg)[outputCount++] = *current;
             } else {
-                func_00206530(current, next, flags, &intersection,
+                Ex3d_DivideN(current, next, flags, &intersection,
                     (distance >= 0.0f ? distance : -distance) /
                     ((distance >= 0.0f ? distance : -distance) +
                      (nextDistance >= 0.0f ? nextDistance : -nextDistance)));
@@ -168,7 +168,7 @@ typedef struct Vertex_002070F0 {
     u8 padding[0x20];
 } Vertex_002070F0;
 
-s32 func_002070F0(void *matrix, s32 count, void *vertices, s32 arg3, void *arg4, s32 flags, f32 *depth) {
+s32 Ex3d_NodeL2V(void *matrix, s32 count, void *vertices, s32 arg3, void *arg4, s32 flags, f32 *depth) {
     f32 identity[16];
     s32 result;
     s32 i;
@@ -177,19 +177,19 @@ s32 func_002070F0(void *matrix, s32 count, void *vertices, s32 arg3, void *arg4,
 
     sum = 0.0f;
     if (matrix == NULL) {
-        func_0020EBA0(identity);
+        RhView_GetWorldViewMatrix(identity);
         matrix = identity;
     }
-    func_0020BAF0((s32)matrix);
+    RhGeom_PushMatrix((s32)matrix);
     vertex = vertices;
     for (i = 0; i < count; i++) {
         vertex[i].position[3] = 1.0f;
-        func_0020CDD0(&vertex[i], NULL, &vertex[i]);
+        RhGeom_MulMatrixVector(&vertex[i], NULL, &vertex[i]);
         sum += vertex[i].position[2];
     }
-    func_0020BB50();
+    RhGeom_PopMatrix();
     if (flags >= 0) {
-        result = func_00206D30(6, D_00325CC0, count, (s32)vertices, arg3, (s32)arg4, flags);
+        result = Ex3d_Clipping(6, D_00325CC0, count, (s32)vertices, arg3, (s32)arg4, flags);
     }
     if (depth != NULL) {
         *depth = sum / (f32)result;
@@ -217,7 +217,7 @@ typedef struct Vertex_00207230 {
     u8 padding[0x18];
 } Vertex_00207230;
 
-void func_00207230(void *matrix, s32 count, void *vertices) {
+void Ex3d_NodeV2S(void *matrix, s32 count, void *vertices) {
     f32 identity[16];
     s32 i;
     PackedXYZ_00207230 *xyz;
@@ -226,31 +226,31 @@ void func_00207230(void *matrix, s32 count, void *vertices) {
 
     vertex = vertices;
     if (matrix == NULL) {
-        func_0020EC00(identity);
+        RhView_GetViewScreenMatrix(identity);
         matrix = identity;
     }
-    func_0020BAF0((s32)matrix);
+    RhGeom_PushMatrix((s32)matrix);
     for (i = 0; i < count; i++, vertex++) {
         xyz = &vertex->xyz;
         vertex->position[3] = 1.0f;
-        func_0020CDD0(vertex, NULL, vertex);
+        RhGeom_MulMatrixVector(vertex, NULL, vertex);
         reciprocal = 1.0f / vertex->position[3];
         xyz->components.x = func_001A23B0(16.0f * (vertex->position[0] * reciprocal));
         xyz->components.y = func_001A23B0(16.0f * (vertex->position[1] * reciprocal));
         xyz->bits.z = (u32)func_001A23B0(vertex->position[2] * reciprocal);
         xyz->components.flags = 0;
     }
-    func_0020BB50();
+    RhGeom_PopMatrix();
 }
 
-void func_00207360(void) {
-    func_0020BAF0(0);
-    func_002073D0(D_00325D38, 0x01E08000, 0xC);
+void ExInitPrim(void) {
+    RhGeom_PushMatrix(0);
+    ExClearOt(D_00325D38, 0x01E08000, 0xC);
 }
 
-void func_002073A0(void) {
-    func_00207510(D_00325D38);
-    func_0020BB50();
+void ExTermPrim(void) {
+    ExBindPrim(D_00325D38);
+    RhGeom_PopMatrix();
 }
 
 typedef struct Tag_002073D0 {
@@ -275,14 +275,14 @@ typedef struct Context_002073D0 {
     s32 depth;
 } Context_002073D0;
 
-void func_002073D0(u8 *arg0, s32 arg1, s32 arg2) {
+void ExClearOt(u8 *arg0, s32 arg1, s32 arg2) {
     extern u8 D_00293D80[];
     s32 count;
     Node_002073D0 *node;
     u64 *packet;
     Context_002073D0 *ctx;
 
-    packet = (u64 *)func_00209D20();
+    packet = (u64 *)RhBase_GetVifPacketArea();
     count = 1 << arg2;
     packet[1] = 0;
     packet[0] = 0;
@@ -290,7 +290,7 @@ void func_002073D0(u8 *arg0, s32 arg1, s32 arg2) {
     ctx->start = (Tag_002073D0 *)packet;
     packet[2] = 0x100000000000800EULL;
     packet[3] = 0xE;
-    packet = func_0020B380(packet + 4, D_00293D80, 0xE);
+    packet = RhMem_CopyMemory16(packet + 4, D_00293D80, 0xE);
     ctx->start->qwc = 0xF;
     ctx->start->id = 0x10;
     ctx->start->vif0 = 0x11000000;
@@ -299,7 +299,7 @@ void func_002073D0(u8 *arg0, s32 arg1, s32 arg2) {
     packet[0] = 0;
     ctx->head = (Tag_002073D0 *)packet;
     ctx->head->id = 0x10;
-    func_00209D30((s32)(packet + 2));
+    RhBase_SetVifPacketArea((s32)(packet + 2));
     ctx->depth = arg2;
     ctx->table = (Node_002073D0 *)arg1;
     node = (Node_002073D0 *)arg1;
@@ -315,7 +315,7 @@ void func_002073D0(u8 *arg0, s32 arg1, s32 arg2) {
     node->qwc = 0;
 }
 
-u8 *func_00207500(void) {
+u8 *ExGetMyOT(void) {
     return D_00325D38;
 }
 
@@ -333,7 +333,7 @@ typedef struct Context_00207510 {
     s32 depth;
 } Context_00207510;
 
-void func_00207510(void *arg0) {
+void ExBindPrim(void *arg0) {
     Node_00207510 *tail;
     Node_00207510 *node;
     Node_00207510 *next;
@@ -365,15 +365,15 @@ void func_00207510(void *arg0) {
             tail = (Node_00207510 *)((u8 *)tail + 0x10);
         }
         tail->tag = 0x20;
-        tail->next = (Node_00207510 *)func_00209D20();
+        tail->next = (Node_00207510 *)RhBase_GetVifPacketArea();
     }
 }
 
-void func_002075F0(s32 arg0, s32 arg1, s32 arg2) {
-    func_00209D30(func_00207650(func_00209D20(), arg0, arg1, arg2));
+void ExSortPrim(s32 arg0, s32 arg1, s32 arg2) {
+    RhBase_SetVifPacketArea(ExSortPrim_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", func_00207650);
+INCLUDE_ASM("asm/nonmatchings/main_056", ExSortPrim_Pipe);
 
 typedef int DotrDrawWord;
 struct DotrDrawPair {
@@ -434,7 +434,7 @@ struct DotrSortTag {
     unsigned short end : 1;
 };
 
-int func_00207AA0(int cursor, void *header_v, int count, s32 vertices_v, void *chain_v, int z)
+int ExSortNode_Pipe(int cursor, void *header_v, int count, s32 vertices_v, void *chain_v, int z)
 {
     struct DotrSortHeader * header = header_v;
     struct DotrSortVertex * vertices = (struct DotrSortVertex *)vertices_v;
@@ -501,7 +501,7 @@ int func_00207AA0(int cursor, void *header_v, int count, s32 vertices_v, void *c
     }
     depth = type & 0x8000;
     if (depth) {
-        func_0020A280(&zbuf.fields);
+        RhBase_GetZBufInfo(&zbuf.fields);
         zbuf.mask = 0;
         p[0] = *(unsigned long *)&zbuf;
         p[1] = context + 0x4e;
@@ -551,15 +551,15 @@ int func_00207AA0(int cursor, void *header_v, int count, s32 vertices_v, void *c
     return (DotrDrawWord)p;
 }
 
-s32 func_00207F60(void) {
+s32 ExSetAnchor(void) {
     s32 temp_v0;
 
-    temp_v0 = func_00209D20();
-    func_00209D30(func_00207FA0(temp_v0));
+    temp_v0 = RhBase_GetVifPacketArea();
+    RhBase_SetVifPacketArea(ExSetAnchor_Pipe(temp_v0));
     return temp_v0;
 }
 
-s32 func_00207FA0(s32 arg0) {
+s32 ExSetAnchor_Pipe(s32 arg0) {
     ((s64 *)arg0)[3] = 0;
     ((s64 *)arg0)[2] = 0;
     ((s64 *)arg0)[1] = 0;
@@ -569,11 +569,11 @@ s32 func_00207FA0(s32 arg0) {
     return arg0 + 0x20;
 }
 
-void func_00207FD0(s32 arg0, s32 arg1, s32 arg2) {
-    func_00209D30(func_00208030(func_00209D20(), arg0, arg1, arg2));
+void ExSortAnchor(s32 arg0, s32 arg1, s32 arg2) {
+    RhBase_SetVifPacketArea(ExSortAnchor_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2));
 }
 
-s32 func_00208030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 ExSortAnchor_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_t0;
     u32 temp_v0;
 
@@ -590,8 +590,8 @@ s32 func_00208030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return arg0 + 0x10;
 }
 
-void func_00208090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_00209D30(func_00208110(func_00209D20(), arg0, arg1, arg2, arg3, arg4));
+void ExSortDispBlur(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    RhBase_SetVifPacketArea(ExSortDispBlur_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3, arg4));
 }
 
 typedef struct {
@@ -631,9 +631,9 @@ typedef struct {
     u64 extra[4];
 } Packet_00208110;
 
-s32 func_00208110(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+s32 ExSortDispBlur_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     extern Color_00208110 D_00293ED0;
-    extern s32 func_002086D0();
+    extern s32 ExAssignAlpha();
     Color_00208110 def;
     Packet_00208110 packet;
     u8 *color;
@@ -664,9 +664,9 @@ s32 func_00208110(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     packet.t0 = 0.0f;
     packet.s1 = 0.625f;
     packet.t1 = 0.875f;
-    func_002086D0(&packet, arg4);
-    func_002087A0(&packet, arg3);
-    return func_00207650(arg0, (s32)&packet, arg1, arg2);
+    ExAssignAlpha(&packet, arg4);
+    ExAssignFrameBuffer(&packet, arg3);
+    return ExSortPrim_Pipe(arg0, (s32)&packet, arg1, arg2);
 }
 
 typedef struct {
@@ -720,9 +720,9 @@ typedef struct {
     u64 clamp;
 } Regs_00208280;
 
-s32 func_00208280(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 *arg6) {
+s32 ExSortSoftFocus_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 *arg6) {
     extern Color_00208280 D_00293ED8;
-    extern s32 func_00208870();
+    extern s32 ExFrameBuffer2Texture_Pipe();
     Color_00208280 def;
     Packet_00208280 packet;
     Regs_00208280 regs;
@@ -733,7 +733,7 @@ s32 func_00208280(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8
     ((Header_00208280 *)&packet)->count = 5;
     ((Header_00208280 *)&packet)->regs = 0x42421;
     ((Header_00208280 *)&packet)->flags = 0;
-    func_002086D0(&packet, 0x44 | ((s64)0x80 << 32));
+    ExAssignAlpha(&packet, 0x44 | ((s64)0x80 << 32));
     if (arg6 == NULL) {
         arg6 = (u8 *)&def;
     }
@@ -754,21 +754,21 @@ s32 func_00208280(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8
     packet.t0 = 0.0f;
     packet.s1 = 0.625f;
     packet.t1 = 0.875f;
-    arg0 = func_0020F290(arg0);
-    obj = func_0020F290(func_00208870(arg0, func_00209E50(), arg3, &regs.tex0, &regs.tex1));
+    arg0 = RhText_SetTextureFlush(arg0);
+    obj = RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(arg0, RhBase_GetUserGsAddress(), arg3, &regs.tex0, &regs.tex1));
     regs.tex0.tcc = 1;
-    return func_00207650(obj, (s32)&packet, arg1, arg2);
+    return ExSortPrim_Pipe(obj, (s32)&packet, arg1, arg2);
 }
 
-void func_00208460(void) {
-    func_00209D30(func_0020F290(func_00209D20()));
+void ExFlushTexture(void) {
+    RhBase_SetVifPacketArea(RhText_SetTextureFlush(RhBase_GetVifPacketArea()));
 }
 
-void func_00208490(s32 arg0) {
-    func_00209D30(func_0020A0B0(func_00209D20(), arg0));
+void ExZBufferMode(s32 arg0) {
+    RhBase_SetVifPacketArea(RhBase_SetZBufferMode(RhBase_GetVifPacketArea(), arg0));
 }
 
-s32 func_002084D0(s32 arg0, s64 arg1) {
+s32 ExClampMode_Pipe(s32 arg0, s64 arg1) {
     *(s64 *)((u8 *)arg0 + 8) = 0;
     *(s64 *)arg0 = 0;
     *(s8 *)((u8 *)arg0 + 3) = 0x10;
@@ -782,7 +782,7 @@ s32 func_002084D0(s32 arg0, s64 arg1) {
     return arg0 + 0x30;
 }
 
-void *func_00208530(void *arg0, s32 arg1) {
+void *ExDitherMode_Pipe(void *arg0, s32 arg1) {
     *(s64 *)((u8 *)arg0 + 8) = 0;
     *(s64 *)arg0 = 0;
     *((u8 *)arg0 + 3) = 0x10;
@@ -796,11 +796,11 @@ void *func_00208530(void *arg0, s32 arg1) {
     return (u8 *)arg0 + 0x30;
 }
 
-void func_002085A0(s32 arg0) {
-    func_00209D30(func_002085E0(func_00209D20(), arg0));
+void ExDitherMatrixEz(s32 arg0) {
+    RhBase_SetVifPacketArea(ExDitherMatrixEz_Pipe(RhBase_GetVifPacketArea(), arg0));
 }
 
-s32 func_002085E0(s32 arg0, s32 arg1) {
+s32 ExDitherMatrixEz_Pipe(s32 arg0, s32 arg1) {
     u64 value;
 
     if (arg1 < 0 || arg1 >= 4) {
@@ -828,7 +828,7 @@ typedef struct {
 
 extern Entry_00208680 D_00293D80[][7];
 
-s64 func_00208680(s32 arg0, s32 arg1) {
+s64 ExGetRegVal(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 7) {
         return -1;
     }
@@ -842,7 +842,7 @@ typedef struct {
     s64 values[1];
 } Buffer_002086D0;
 
-s32 func_002086D0(void *arg0, s64 arg1) {
+s32 ExAssignAlpha(void *arg0, s64 arg1) {
     Buffer_002086D0 *buffer = arg0;
     u16 index = buffer->index;
     s64 *values = (s64 *)((u8 *)arg0 + 0x10);
@@ -859,7 +859,7 @@ typedef struct {
     u64 reserved9 : 55;
 } Flags_00208700;
 
-s32 func_00208700(void *arg0, void *arg1, s32 arg2) {
+s32 ExAssignTexture(void *arg0, void *arg1, s32 arg2) {
     u8 *base = (u8 *)arg0 + 0x10;
     u16 count = *(u16 *)arg0;
     u64 *dst;
@@ -885,7 +885,7 @@ typedef struct {
 } Header_002087A0;
 
 
-s32 func_002087A0(void *arg0, s32 arg1) {
+s32 ExAssignFrameBuffer(void *arg0, s32 arg1) {
     Header_002087A0 *header = arg0;
     u16 count = header->count;
     u8 *data = header->data;
@@ -893,15 +893,15 @@ s32 func_002087A0(void *arg0, s32 arg1) {
     if (!(header->flags & 0x20)) {
         return 0;
     }
-    func_00208870(0, 0, arg1, data + (count & 0xFFFF) * 8 + 8,
+    ExFrameBuffer2Texture_Pipe(0, 0, arg1, data + (count & 0xFFFF) * 8 + 8,
                  data + (count & 0xFFFF) * 8 + 0x10);
     return 1;
 }
 
-void func_00208800(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern s32 func_00208870();
+void ExFrameBuffer2Texture(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 ExFrameBuffer2Texture_Pipe();
 
-    func_00209D30(func_00208870(func_00209D20(), arg0, arg1, arg2, arg3));
+    RhBase_SetVifPacketArea(ExFrameBuffer2Texture_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3));
 }
 
 typedef struct Tex0_00208870 {
@@ -933,7 +933,7 @@ typedef struct Tex1_00208870 {
     u64 pad3 : 20;
 } Tex1_00208870;
 
-s32 func_00208870(s32 arg0, s32 arg1, s32 arg2, void *arg3, void *arg4) {
+s32 ExFrameBuffer2Texture_Pipe(s32 arg0, s32 arg1, s32 arg2, void *arg3, void *arg4) {
     s32 sp70;
     s32 sp74;
     s32 sp78;
@@ -945,8 +945,8 @@ s32 func_00208870(s32 arg0, s32 arg1, s32 arg2, void *arg3, void *arg4) {
     s64 *packet = (s64 *)arg0;
     s64 *start = packet;
 
-    func_00209EF0(arg1 != 0 ? 1 : 0, &sp70, &sp74, NULL);
-    func_00209D60(&sp78, &sp7C);
+    RhBase_GetBufferFormatEx(arg1 != 0 ? 1 : 0, &sp70, &sp74, NULL);
+    RhBase_GetScreenSize(&sp78, &sp7C);
     for (tw = 0; (1 << tw) < sp78; tw++) {
     }
     for (th = 0; (1 << th) < sp7C; th++) {
@@ -1009,7 +1009,7 @@ typedef struct Buffer_00208CB0 {
     s64 values[1];
 } Buffer_00208CB0;
 
-s32 func_00208CB0(void *arg0, s64 arg1) {
+s32 ExAssignClamp(void *arg0, s64 arg1) {
     Buffer_00208CB0 *buffer = arg0;
     u16 index = buffer->index;
     s64 *values = buffer->values;
@@ -1023,7 +1023,7 @@ s32 func_00208CB0(void *arg0, s64 arg1) {
     return 1;
 }
 
-s64 func_00208D00(s32 arg0) {
+s64 ExGetAlphaVal(s32 arg0) {
     s64 ret;
 
     if (arg0 < 0 || arg0 >= 4) {
@@ -1034,7 +1034,7 @@ s64 func_00208D00(s32 arg0) {
     return ret;
 }
 
-void *func_00208D40(void *arg0, s32 arg1) {
+void *RhVu1Mac_ChangeDrawMethod(void *arg0, s32 arg1) {
     s32 *packet = arg0;
 
     packet[0] = 0x10000001;
@@ -1080,7 +1080,7 @@ typedef struct {
     s32 fieldC;
 } Header_00208E40;
 
-void *func_00208E40(void *arg0) {
+void *RhVu1Mac_ReserveChangeDrawMethod(void *arg0) {
     Header_00208E40 *header = arg0;
 
     header->flags = 0x20000000;
@@ -1090,25 +1090,25 @@ void *func_00208E40(void *arg0) {
     return (u8 *)arg0 + 0x20;
 }
 
-void *func_00208E60(void *arg0, void *arg1) {
+void *RhVu1Mac_SetViewScreenMatrix(void *arg0, void *arg1) {
     ((u32 *)arg0)[0] = 0x10000004;
     ((u32 *)arg0)[1] = 0;
     ((u32 *)arg0)[2] = 0;
     ((u32 *)arg0)[3] = 0x6C040044;
-    func_0020B380((u8 *)arg0 + 0x10, arg1, 4);
+    RhMem_CopyMemory16((u8 *)arg0 + 0x10, arg1, 4);
     return (u8 *)arg0 + 0x50;
 }
 
-void *func_00208EB0(void *arg0, void *arg1) {
+void *RhVu1Mac_SetScreenWorldMatrix(void *arg0, void *arg1) {
     ((s32 *)arg0)[0] = 0x10000004;
     ((s32 *)arg0)[1] = 0;
     ((s32 *)arg0)[2] = 0;
     ((s32 *)arg0)[3] = 0x6C040056;
-    func_0020B380((u8 *)arg0 + 0x10, arg1, 4);
+    RhMem_CopyMemory16((u8 *)arg0 + 0x10, arg1, 4);
     return (u8 *)arg0 + 0x50;
 }
 
-s32 func_00208F00(s32 packet, void *arg1, void *arg2, s32 arg3) {
+s32 RhVu1Mac_SetStraightLightToVu1_Ex(s32 packet, void *arg1, void *arg2, s32 arg3) {
     u8 buffer[0x50];
     s32 matrix;
 
@@ -1145,13 +1145,13 @@ s32 func_00208F00(s32 packet, void *arg1, void *arg2, s32 arg3) {
     if (packet != 0) {
         u32 *tag = (u32 *)packet;
 
-        func_0020B380((void *)matrix, &D_00325D90, 4);
-        func_0020BC00(matrix, &D_00325D50);
+        RhMem_CopyMemory16((void *)matrix, &D_00325D90, 4);
+        RhGeom_MulMatrix(matrix, &D_00325D50);
         tag[0] = 0x10000004;
         tag[1] = 0;
         tag[2] = 0;
         tag[3] = 0x6C04003F;
-        func_0020B380((void *)(packet + 0x10), (void *)matrix, 4);
+        RhMem_CopyMemory16((void *)(packet + 0x10), (void *)matrix, 4);
         packet = (s32)(tag + 4) + 0x40;
     } else if (arg3 < 0) {
         func_00198948(&D_00325D50, 0, 0x40);
@@ -1165,8 +1165,8 @@ typedef struct Packet_00209110 {
     f32 values[8];
 } Packet_00209110;
 
-s32 func_00209110(s32 arg0, void *arg1, void *arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
-    extern void func_0020B340(f32 *, void *, s32);
+s32 RhVu1Mac_SetPointLightToVu1(s32 arg0, void *arg1, void *arg2, f32 fparg0, f32 fparg1, f32 fparg2) {
+    extern void RhMem_CopyMemory4(f32 *, void *, s32);
     extern f32 D_00325E00[4];
     extern f32 D_00325E10[4];
     extern f32 D_00325E20;
@@ -1181,7 +1181,7 @@ s32 func_00209110(s32 arg0, void *arg1, void *arg2, f32 fparg0, f32 fparg1, f32 
         packet->header[1] = 0;
         packet->header[2] = 0x11000000;
         packet->header[3] = 0x6C020054;
-        func_0020B440((s64 *)packet->values, 0, 4);
+        RhMem_FillMemory8((s64 *)packet->values, 0, 4);
         packet++;
         D_00325E2C = 0;
     } else {
@@ -1199,8 +1199,8 @@ s32 func_00209110(s32 arg0, void *arg1, void *arg2, f32 fparg0, f32 fparg1, f32 
         packet->values[6] = ((f32 *)arg2)[2];
         packet->values[7] = fparg2 / temp_f2;
         packet++;
-        func_0020B340(D_00325E00, arg1, 4);
-        func_0020B340(D_00325E10, arg2, 4);
+        RhMem_CopyMemory4(D_00325E00, arg1, 4);
+        RhMem_CopyMemory4(D_00325E10, arg2, 4);
         D_00325E20 = fparg0;
         D_00325E24 = fparg1;
         D_00325E28 = fparg2;
@@ -1223,7 +1223,7 @@ extern f32 D_00325E24;
 extern f32 D_00325E28;
 extern s32 D_00325E2C;
 
-s32 func_00209270(void *arg0, void *arg1, f32 *arg2, f32 *arg3, f32 *arg4) {
+s32 RhVu1Mac_GetPointLight(void *arg0, void *arg1, f32 *arg2, f32 *arg3, f32 *arg4) {
     if (arg0 != NULL) {
         *(Vec4_00209270 *)arg0 = D_00325E00;
     }
@@ -1261,7 +1261,7 @@ typedef struct Packet_00209320 {
     s32 zero6;
 } Packet_00209320;
 
-void *func_00209320(void *arg0, s32 arg1, f32 fparg0, f32 fparg1, f32 fparg2) {
+void *RhVu1Mac_SetClipParameter(void *arg0, s32 arg1, f32 fparg0, f32 fparg1, f32 fparg2) {
     f32 temp_f2;
     s32 enabled;
     Packet_00209320 *packet = arg0;
@@ -1305,7 +1305,7 @@ extern f32 D_00325DF4;
 extern f32 D_00325DF8;
 extern f32 D_00325DFC;
 
-void *func_002093E0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3) {
+void *RhVu1Mac_SetFogParameterEx(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3) {
     Packet_002093E0 *packet = arg0;
     f32 temp_f1;
     f32 temp_f2;
@@ -1344,7 +1344,7 @@ extern f32 D_00325DE4;
 extern f32 D_00325DE8;
 extern f32 D_00325DEC;
 
-void *func_00209490(void *arg0, s32 arg1, s32 arg2) {
+void *RhVu1Mac_SetFogOnOff(void *arg0, s32 arg1, s32 arg2) {
     Packet_00209490 *packet = arg0;
 
     packet->header[0] = 0x10000001;
@@ -1414,8 +1414,8 @@ extern u8 D_00293F14[];
 extern u8 D_00293F18[];
 extern s32 D_003261C8;
 
-s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    void func_00186470(u8 *, s32);
+s32 RhBase_Init(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    void sceDmaSend(u8 *, s32);
     Env_00209510 env;
     Mode_00209510 mode;
     State_00209510 *state = (State_00209510 *)D_00325F50;
@@ -1423,22 +1423,22 @@ s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
 
     func_00198948(D_00325F50, 0, 0x2A0);
     D_003261C8 = arg6;
-    if (func_001FFFC0() == 0) {
+    if (RhFile_Init() == 0) {
         return 0;
     }
-    func_00186FC8();
-    func_00186BD0();
-    func_001849B0();
-    func_00186148(1);
-    func_00186410(&env);
+    sceDevVif0Reset();
+    sceDevVu0Reset();
+    sceGsResetPath();
+    sceDmaReset(1);
+    sceDmaGetEnv(&env);
     env.field6 = 0x100;
-    func_00186238(&env);
+    sceDmaPutEnv(&env);
     func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
                     *(s16 *)(D_00293F14 + arg0 * 0x28),
                     *(s16 *)(D_00293F18 + arg0 * 0x28));
-    state->decoder = (u8 *)func_00186120(1);
+    state->decoder = (u8 *)sceDmaGetChan(1);
     ((Flags_00209510 *)state->decoder)->enabled = 1;
-    func_0020AD10(state, arg0, arg1, arg2);
+    lRhBase_InitScreenVariables(state, arg0, arg1, arg2);
     mode.clock = 3;
     mode.gate = 0;
     mode.gate_source = 0;
@@ -1458,64 +1458,64 @@ s32 func_00209510(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     state->ready = 1;
     state->base = arg3;
     state->current = arg3;
-    func_0017B770(func_0017B7D0(), 0x20);
+    ChangeThreadPriority(GetThreadId(), 0x20);
     state->field294 = 0;
     state->field298 = 0;
-    packet = (s32 *)func_0020B000(state->base);
-    func_0020BA70();
-    func_0020DDB0();
-    func_002173D0();
+    packet = (s32 *)lRhBase_InitGsAndVif(state->base);
+    RhGeom_Init();
+    RhView_Init();
+    RhMemCard_Init();
     packet[0] = 0x70000000;
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0;
-    func_0017BB60(0);
-    func_00185578(0, 0);
-    func_00186470(state->decoder, state->base);
-    func_00185578(0, 0);
-    func_00186470(state->decoder, (s32)D_00286980);
-    func_00185578(0, 0);
-    func_00213F60(state->base, state->base + state->size);
-    func_001854E0(0);
+    FlushCache(0);
+    sceGsSyncPath(0, 0);
+    sceDmaSend(state->decoder, state->base);
+    sceGsSyncPath(0, 0);
+    sceDmaSend(state->decoder, (s32)D_00286980);
+    sceGsSyncPath(0, 0);
+    RhZSort_Start(state->base, state->base + state->size);
+    sceGsSyncV(0);
     return 1;
 }
 
-s32 func_00209870(void) {
-    func_0020DEE0();
-    func_00200210();
-    func_0020BA80();
-    func_002173F0();
+s32 RhBase_Term(void) {
+    RhView_Term();
+    RhFile_Term();
+    RhGeom_Term();
+    RhMemCard_Term();
     return 1;
 }
 
-void func_002098B0(s32 arg0) {
-    void func_00186470(u8 *, s32);
-    extern void func_001869C0(u8 *, s32, s32);
-    extern void func_001885C8(void);
+void RhBase_ResetGsEnv(s32 arg0) {
+    void sceDmaSend(u8 *, s32);
+    extern void sceDmaSync(u8 *, s32, s32);
+    extern void sceVpu0Reset(void);
     extern u8 D_00293F1C[];
     extern u8 D_00293F20[];
     extern u8 *D_003261C4;
     s32 *packet;
 
-    func_001869C0(D_003261C4, 0, 0);
-    func_00186148(1);
-    func_00185578(0, 0);
-    func_001849B0();
-    func_001885C8();
+    sceDmaSync(D_003261C4, 0, 0);
+    sceDmaReset(1);
+    sceGsSyncPath(0, 0);
+    sceGsResetPath();
+    sceVpu0Reset();
     func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
                     *(s16 *)(D_00293F14 + arg0 * 0x28),
                     *(s16 *)(D_00293F18 + arg0 * 0x28));
     D_0032618C = *(s32 *)(D_00293F1C + arg0 * 0x28);
     D_00326190 = *(s32 *)(D_00293F20 + arg0 * 0x28);
-    packet = (s32 *)func_0020B000(*(s32 *)0x003261CC);
+    packet = (s32 *)lRhBase_InitGsAndVif(*(s32 *)0x003261CC);
     packet[0] = 0x70000000;
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0;
-    func_0017BB60(0);
-    func_00185578(0, 0);
-    func_00186470(D_003261C4, *(s32 *)0x003261CC);
-    func_00185578(0, 0);
+    FlushCache(0);
+    sceGsSyncPath(0, 0);
+    sceDmaSend(D_003261C4, *(s32 *)0x003261CC);
+    sceGsSyncPath(0, 0);
 }
 
 typedef struct State_002099D0 {
@@ -1541,9 +1541,9 @@ typedef struct State_002099D0 {
 } State_002099D0;
 
 
-s32 func_002099D0(void) {
-    extern s32 func_00185578();
-    extern s32 func_0020B1E0();
+s32 RhBase_FlipBuffer(void) {
+    extern s32 sceGsSyncPath();
+    extern s32 lRhBase_SetRandomDither();
     extern u8 D_00293F14[];
     extern s32 D_00325E30;
     extern s32 D_00326188;
@@ -1555,17 +1555,17 @@ s32 func_002099D0(void) {
     s32 *packet;
     u8 *display;
 
-    func_00213F90();
-    func_00200350();
-    func_00217400();
+    RhZSort_Finish();
+    RhFile_VSyncProcess();
+    RhMemCard_Act();
     packet = (s32 *)D_003261D0;
     packet[0] = 0x70000000;
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0;
     (void)*(volatile u32 *)0x10000800;
-    if (func_00185578(0, 0) < 0) {
-        func_002098B0(D_00326188);
+    if (sceGsSyncPath(0, 0) < 0) {
+        RhBase_ResetGsEnv(D_00326188);
     }
     if (state->beforeWait != NULL) {
         state->beforeWait();
@@ -1579,10 +1579,10 @@ s32 func_002099D0(void) {
         period = 0x26C;
     }
     while (remaining-- >= 0) {
-        result = func_001854E0(0);
+        result = sceGsSyncV(0);
         if (state->width == width) {
             if (result != 0) {
-                result = func_001854E0(0);
+                result = sceGsSyncV(0);
             }
         }
         if (*(volatile u32 *)0x10000800 > (u32)(period * (D_00325E30 + 1))) {
@@ -1599,18 +1599,18 @@ s32 func_002099D0(void) {
         } else {
             display = (u8 *)state + 0x60;
         }
-        func_00186060(display, state->x, state->y, (s16)result);
+        sceGsSetHalfOffset(display, state->x, state->y, (s16)result);
     }
-    func_0017BB60(0);
-    func_00185480((u8 *)state, state->frame);
-    if (func_001A86D0() != 0) {
+    FlushCache(0);
+    sceGsSwapDBuff((u8 *)state, state->frame);
+    if (SzGame_InqSoftFocus() != 0) {
         func_00100610(1);
     }
-    func_00185578(0, 0);
+    sceGsSyncPath(0, 0);
     *(volatile s32 *)0x10009020 = 0;
     *(volatile s32 *)0x10009030 = (u32)state->dmaAddress & 0x0FFFFFFF;
     *(volatile s32 *)0x1000E010 = 2;
-    func_0017BB60(0);
+    FlushCache(0);
     *(volatile s32 *)0x10009000 = 0x145;
     if (state->currentBuffer != 0) {
         state->dmaAddress = state->buffer1;
@@ -1635,7 +1635,7 @@ s32 func_002099D0(void) {
         result = 2;
     }
     *(volatile u32 *)0x10000800 = 0;
-    func_00213F60(state->dmaAddress, state->dmaAddress + state->dmaSize);
-    func_00209D30(func_0020B1E0(func_00209D20()));
+    RhZSort_Start(state->dmaAddress, state->dmaAddress + state->dmaSize);
+    RhBase_SetVifPacketArea(lRhBase_SetRandomDither(RhBase_GetVifPacketArea()));
     return result;
 }

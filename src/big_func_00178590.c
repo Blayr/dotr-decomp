@@ -11,10 +11,10 @@ typedef struct Tutorial_00178590 {
 } Tutorial_00178590;
 
 s32 func_00178590(s32 arg0, void *tutorial) {
-    extern void func_00203C70();
+    extern void SzPad_SetAnalogInfo();
     extern void func_00178320();
     extern void func_0027F630();
-    extern void func_0027F700();
+    extern void TaTuto_DrawTrapArea();
     extern s32 func_0027F890();
     extern void func_0027FA30();
     extern void func_0027FAB0();
@@ -30,26 +30,26 @@ s32 func_00178590(s32 arg0, void *tutorial) {
     s32 hi;
     s32 t;
 
-    if (func_001DE780() != 0) {
-        func_001DE7E0(1);
+    if (SzDuel_GetWindowDisp() != 0) {
+        SzDuel_SetWindowDraw(1);
     } else {
-        func_001DE7E0(0);
+        SzDuel_SetWindowDraw(0);
     }
-    func_00203C70(0, 0, 0x80);
-    func_00203C70(0, 1, 0x80);
-    func_00203C70(0, 2, 0x80);
-    func_00203C70(0, 3, 0x80);
-    if (func_00203A40(0, 0, 0x800) != 0) {
+    SzPad_SetAnalogInfo(0, 0, 0x80);
+    SzPad_SetAnalogInfo(0, 1, 0x80);
+    SzPad_SetAnalogInfo(0, 2, 0x80);
+    SzPad_SetAnalogInfo(0, 3, 0x80);
+    if (SzPad_Check(0, 0, 0x800) != 0) {
         return -2;
     }
     switch (arg1->step) {
     case 0x0:
-        func_001E4E60(1);
+        SzDuel_SetIgnoreJudge(1);
         arg1->step = 2;
         break;
     case 0x1:
-        if (func_001F5EC0(0) != 0) {
-            if (func_001F5EC0(0x100) != 0) {
+        if (SzEffect_IsModelStandby2(0) != 0) {
+            if (SzEffect_IsModelStandby2(0x100) != 0) {
                 arg1->step = 0xD0;
             }
         }
@@ -494,15 +494,15 @@ s32 func_00178590(s32 arg0, void *tutorial) {
             break;
         }
         if (kind == 2) {
-            func_0027F700(arg1, 0x1E, 3, 5);
+            TaTuto_DrawTrapArea(arg1, 0x1E, 3, 5);
         }
         if (kind == 5) {
-            func_0027F700(arg1, 0x1E, 2, 6);
+            TaTuto_DrawTrapArea(arg1, 0x1E, 2, 6);
         }
         if (func_0027FC20(first + 0x9DC, last + 0x9DC, arg1) == 1) {
             switch (kind) {
             case 6:
-                func_001DE7A0(0);
+                SzDuel_SetWindowDisp(0);
                 return 0x20;
             case 5:
                 arg1->wait = 0;
@@ -517,7 +517,7 @@ s32 func_00178590(s32 arg0, void *tutorial) {
                 arg1->timer = 0;
                 break;
             case 1:
-                func_001DE7A0(0);
+                SzDuel_SetWindowDisp(0);
                 break;
             }
         }
@@ -936,7 +936,7 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         func_0027F630(arg1, 0xA, 0x800, x, y);
         if (arg1->timer++ > 0x3C) {
-            func_001E4E50();
+            SzDuel_CloseHandCursor();
             arg1->wait = 0;
             arg1->timer = 0;
             arg1->step++;
@@ -953,62 +953,62 @@ s32 func_00178590(s32 arg0, void *tutorial) {
             arg1->wait = 0;
                 switch (arg1->step++) {
             case 0x5D:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0xAC:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
-                func_001DF580(0, 3, 4, 7, 0);
-                func_001DF580(0, 4, 4, 0x126, 0);
-                func_001E1E70(0, 1, 4, 1);
-                func_001E1E70(0, 2, 4, 1);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
+                SzDuel_AddUnit(0, 3, 4, 7, 0);
+                SzDuel_AddUnit(0, 4, 4, 0x126, 0);
+                SzDuel_SetUnitStatus(0, 1, 4, 1);
+                SzDuel_SetUnitStatus(0, 2, 4, 1);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
+                SzDuel_SetHandPhase(0, 1);
                 break;
             case 0xC8:
-                func_001DE5E0(0, 4, 8);
-                func_001DF580(0, 2, 5, 0x11D, 0);
-                func_001DF580(0, 4, 5, 5, 0);
-                func_001DF580(0, 2, 6, 0x1A7, 0);
-                func_001DF580(0, 4, 6, 0x141, 0);
-                func_001E1E70(0, 1, 4, 1);
-                func_001E1E70(0, 2, 4, 1);
-                func_001E1E70(0, 3, 4, 1);
-                func_001E1E70(0, 4, 4, 1);
-                func_001E1E70(0, 5, 4, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
+                SzDuel_AddUnit(0, 2, 5, 0x11D, 0);
+                SzDuel_AddUnit(0, 4, 5, 5, 0);
+                SzDuel_AddUnit(0, 2, 6, 0x1A7, 0);
+                SzDuel_AddUnit(0, 4, 6, 0x141, 0);
+                SzDuel_SetUnitStatus(0, 1, 4, 1);
+                SzDuel_SetUnitStatus(0, 2, 4, 1);
+                SzDuel_SetUnitStatus(0, 3, 4, 1);
+                SzDuel_SetUnitStatus(0, 4, 4, 1);
+                SzDuel_SetUnitStatus(0, 5, 4, 1);
                 break;
             case 0xD0:
-                func_001DFBB0(0, 1);
-                func_001DFBB0(0, 2);
-                func_001DFBB0(0, 3);
-                func_001DFBB0(0, 4);
-                func_001DFBB0(0, 5);
-                func_001DF580(0, 3, 3, 0x9C, 0);
-                func_002172D0(0, 0x9C, 0xC);
-                func_001E1E70(0, 1, 4, 1);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_DelUnit(0, 2);
+                SzDuel_DelUnit(0, 3);
+                SzDuel_DelUnit(0, 4);
+                SzDuel_DelUnit(0, 5);
+                SzDuel_AddUnit(0, 3, 3, 0x9C, 0);
+                SzData_SetRankDirect(0, 0x9C, 0xC);
+                SzDuel_SetUnitStatus(0, 1, 4, 1);
                 func_00178320((u16)(arg1->step - 1));
                 break;
             case 0xF2:
-                func_001DFBB0(0, 1);
-                func_001DF580(0, 2, 5, 0x321, 0);
-                func_001DF580(0, 4, 5, 0x33B, 0);
-                func_001E1E70(0, 6, 4, 1);
-                func_001E1E70(0, 7, 4, 1);
-                func_001DFD50(0, 0, 3, 6);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_AddUnit(0, 2, 5, 0x321, 0);
+                SzDuel_AddUnit(0, 4, 5, 0x33B, 0);
+                SzDuel_SetUnitStatus(0, 6, 4, 1);
+                SzDuel_SetUnitStatus(0, 7, 4, 1);
+                SzDuel_MoveUnit(0, 0, 3, 6);
                 break;
             case 0x133:
-                func_001DFBB0(0, 6);
-                func_001DF580(0, 2, 3, 0, 0);
-                func_001DF580(0, 3, 3, 0, 0);
-                func_001DF580(0, 4, 3, 0, 0);
-                func_001DF580(0, 3, 4, 0x345, 0);
-                func_001E1E70(0, 1, 4, 1);
-                func_001E1E70(0, 2, 4, 1);
-                func_001E1E70(0, 3, 4, 1);
+                SzDuel_DelUnit(0, 6);
+                SzDuel_AddUnit(0, 2, 3, 0, 0);
+                SzDuel_AddUnit(0, 3, 3, 0, 0);
+                SzDuel_AddUnit(0, 4, 3, 0, 0);
+                SzDuel_AddUnit(0, 3, 4, 0x345, 0);
+                SzDuel_SetUnitStatus(0, 1, 4, 1);
+                SzDuel_SetUnitStatus(0, 2, 4, 1);
+                SzDuel_SetUnitStatus(0, 3, 4, 1);
                 break;
             case 0x140:
                 break;
@@ -1027,86 +1027,86 @@ s32 func_00178590(s32 arg0, void *tutorial) {
     case 0x11C:
     case 0x12C:
         if (arg1->step == 0x111 || arg1->step == 0x11C || arg1->step == 0x12C) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         if (func_0027F890(0x10, -1, 0) == 1) {
             arg1->wait = 0;
             switch (arg1->step++) {
             case 0x25:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0x3B:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0x48:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0x71:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0x87:
-                func_001DFBB0(0, 1);
-                func_001DFBB0(0, 6);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_DelUnit(0, 6);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0x98:
-                func_001DFBB0(0, 1);
-                func_001DE5E0(0, 4, 8);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_CalcSummonPower(0, 4, 8);
                 func_00178320((u16)(arg1->step - 1));
-                func_001DE700(0, 1);
-                func_001DE860(0, 3, 6);
+                SzDuel_SetHandPhase(0, 1);
+                SzDuel_SetPlayerCur(0, 3, 6);
                 break;
             case 0xB4:
-                func_001DFBB0(0, 1);
-                func_001DFBB0(0, 2);
-                func_001DF580(0, 3, 5, 0x126, 0);
-                func_001E1E70(0, 1, 4, 1);
+                SzDuel_DelUnit(0, 1);
+                SzDuel_DelUnit(0, 2);
+                SzDuel_AddUnit(0, 3, 5, 0x126, 0);
+                SzDuel_SetUnitStatus(0, 1, 4, 1);
                 break;
             case 0x100:
-                func_001DFBB0(0, 6);
-                func_001DFBB0(0, 7);
-                func_001DF580(0, 3, 5, 0x321, 0);
-                func_001DF580(1, 3, 3, 3, 0);
-                func_001E1E70(1, 1, 4, 1);
+                SzDuel_DelUnit(0, 6);
+                SzDuel_DelUnit(0, 7);
+                SzDuel_AddUnit(0, 3, 5, 0x321, 0);
+                SzDuel_AddUnit(1, 3, 3, 3, 0);
+                SzDuel_SetUnitStatus(1, 1, 4, 1);
                 break;
             case 0x111:
-                func_001DFBB0(1, 1);
-                func_001DF580(1, 3, 5, 3, 0);
-                func_001DF580(0, 2, 6, 0x321, 0);
-                func_001E1E70(1, 1, 4, 1);
+                SzDuel_DelUnit(1, 1);
+                SzDuel_AddUnit(1, 3, 5, 3, 0);
+                SzDuel_AddUnit(0, 2, 6, 0x321, 0);
+                SzDuel_SetUnitStatus(1, 1, 4, 1);
                 break;
             case 0x11C:
-                func_001DFBB0(1, 1);
-                func_001DF580(0, 0, 6, 0x33B, 0);
-                func_001DF580(1, 3, 5, 3, 0);
-                func_001DF580(1, 2, 4, 5, 0);
-                func_001DF580(1, 2, 5, 0xC, 0);
-                func_001E1E70(1, 1, 4, 1);
-                func_001E1E70(1, 2, 4, 1);
-                func_001E1E70(1, 3, 4, 1);
+                SzDuel_DelUnit(1, 1);
+                SzDuel_AddUnit(0, 0, 6, 0x33B, 0);
+                SzDuel_AddUnit(1, 3, 5, 3, 0);
+                SzDuel_AddUnit(1, 2, 4, 5, 0);
+                SzDuel_AddUnit(1, 2, 5, 0xC, 0);
+                SzDuel_SetUnitStatus(1, 1, 4, 1);
+                SzDuel_SetUnitStatus(1, 2, 4, 1);
+                SzDuel_SetUnitStatus(1, 3, 4, 1);
                 break;
             case 0x12C:
-                func_001DF580(0, 3, 3, 0x321, 0);
-                func_001E1E70(0, 6, 4, 1);
+                SzDuel_AddUnit(0, 3, 3, 0x321, 0);
+                SzDuel_SetUnitStatus(0, 6, 4, 1);
                 break;
             }
         }
@@ -1124,8 +1124,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0xAD:
-        func_001DE860(0, 4, 4);
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(2) != 0)) {
+        SzDuel_SetPlayerCur(0, 4, 4);
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(2) != 0)) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1133,8 +1133,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0xB5:
-        func_001DE860(0, 3, 6);
-        if (func_001F5EC0(1) != 0) {
+        SzDuel_SetPlayerCur(0, 3, 6);
+        if (SzEffect_IsModelStandby2(1) != 0) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1142,8 +1142,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0xC9:
-        func_001DE860(0, 3, 6);
-        if ((func_001F5EC0(2) != 0) && (func_001F5EC0(3) != 0) && (func_001F5EC0(4) != 0) && (func_001F5EC0(5) != 0)) {
+        SzDuel_SetPlayerCur(0, 3, 6);
+        if ((SzEffect_IsModelStandby2(2) != 0) && (SzEffect_IsModelStandby2(3) != 0) && (SzEffect_IsModelStandby2(4) != 0) && (SzEffect_IsModelStandby2(5) != 0)) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1151,8 +1151,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0xD1:
-        func_001DE860(0, 3, 3);
-        if (func_001F5EC0(1) != 0) {
+        SzDuel_SetPlayerCur(0, 3, 3);
+        if (SzEffect_IsModelStandby2(1) != 0) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1160,15 +1160,15 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0xF3:
-        func_001DE860(0, 3, 6);
+        SzDuel_SetPlayerCur(0, 3, 6);
         if (arg1->wait++ > 0x1E) {
             arg1->wait = 0;
             arg1->step++;
         }
         break;
     case 0x101:
-        func_001DE860(0, 3, 3);
-        if (func_001F5EC0(0x101) != 0) {
+        SzDuel_SetPlayerCur(0, 3, 3);
+        if (SzEffect_IsModelStandby2(0x101) != 0) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1176,8 +1176,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0x112:
-        func_001DE860(0, 3, 6);
-        if (func_001F5EC0(0x101) != 0) {
+        SzDuel_SetPlayerCur(0, 3, 6);
+        if (SzEffect_IsModelStandby2(0x101) != 0) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1185,8 +1185,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0x11D:
-        func_001DE860(0, 3, 6);
-        if ((func_001F5EC0(0x101) != 0) && (func_001F5EC0(0x102) != 0) && (func_001F5EC0(0x103) != 0)) {
+        SzDuel_SetPlayerCur(0, 3, 6);
+        if ((SzEffect_IsModelStandby2(0x101) != 0) && (SzEffect_IsModelStandby2(0x102) != 0) && (SzEffect_IsModelStandby2(0x103) != 0)) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1194,15 +1194,15 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0x12D:
-        func_001DE860(0, 3, 3);
+        SzDuel_SetPlayerCur(0, 3, 3);
         if (arg1->wait++ > 0x1E) {
             arg1->wait = 0;
             arg1->step++;
         }
         break;
     case 0x134:
-        func_001DE860(0, 3, 4);
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(2) != 0) && (func_001F5EC0(3) != 0)) {
+        SzDuel_SetPlayerCur(0, 3, 4);
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(2) != 0) && (SzEffect_IsModelStandby2(3) != 0)) {
             if (arg1->wait++ > 0x1E) {
                 arg1->wait = 0;
                 arg1->step++;
@@ -1227,7 +1227,7 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         if (func_0027F890(8, 1, 1) == 1) {
             if (flag) {
-                func_001DE7A0(1);
+                SzDuel_SetWindowDisp(1);
             }
             arg1->step++;
             arg1->wait = 0;
@@ -1261,7 +1261,7 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         if (func_0027F890(0x10, 1, 1) == 1) {
             if (flag) {
-                func_001DE7A0(1);
+                SzDuel_SetWindowDisp(1);
             }
             arg1->step++;
             arg1->wait = 0;
@@ -1344,14 +1344,14 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         arg1->step++;
         break;
     case 0x109:
-        func_0027F700(arg1, 0x1E, 3, 5);
+        TaTuto_DrawTrapArea(arg1, 0x1E, 3, 5);
         if (arg1->wait++ > 0x3C) {
             arg1->wait = 0;
             arg1->step++;
         }
         break;
     case 0x115:
-        func_0027F700(arg1, 0x1E, 2, 6);
+        TaTuto_DrawTrapArea(arg1, 0x1E, 2, 6);
         if (arg1->wait++ > 0x3C) {
             arg1->wait = 0;
             arg1->step++;
@@ -1373,7 +1373,7 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         if (hi <= 5) {
             return 0x4000;
         }
-        func_001DE860(0, 0, 6);
+        SzDuel_SetPlayerCur(0, 0, 6);
         arg1->step++;
         return 0x10;
     case 0x125:

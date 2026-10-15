@@ -42,8 +42,8 @@ extern double D_002BD378[]; /* tinytens */
 #define memcpy func_00198790
 #define __mprec_bigtens D_002BD350
 #define __mprec_tinytens D_002BD378
-#define _Balloc(p, k) ((_Bigint *)func_00198AD8(p, k))
-#define _Bfree(p, v) func_00198B80(p, v)
+#define _Balloc(p, k) ((_Bigint *)_Balloc(p, k))
+#define _Bfree(p, v) _Bfree(p, v)
 #define _s2b(p, s, a, b, y) ((_Bigint *)func_00198CB8(p, s, a, b, y))
 #define _i2b(p, i) ((_Bigint *)func_00198F28(p, i))
 #define _multiply(p, a, b) ((_Bigint *)func_00198F60(p, (i2b_Bigint *)(a), (i2b_Bigint *)(b)))

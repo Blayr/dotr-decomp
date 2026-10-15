@@ -34,32 +34,32 @@ static inline s32 absolute_00265890(s32 value) {
 
 #pragma opt_strength_reduction off
 
-s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
-    extern void func_001E1E70(u32, s32, s32, s32);
-    extern void func_0024F370(s32, s32);
-    extern void func_002516D0(u32, s32, s32);
-    extern void func_00260A70(void *, s32);
+s32 Ta_Eff_046(void *arg0, void *arg1, s32 arg2) {
+    extern void SzDuel_SetUnitStatus(u32, s32, s32, s32);
+    extern void Ta_DelUnit(s32, s32);
+    extern void TaUtil_DoOpen(u32, s32, s32);
+    extern void TaView_RestoreOriginalView(void *, s32);
     Input_00265890 *input = arg0;
     State_00265890 *state = arg1;
     s32 packet[4];
     Request_00265890 *request = (Request_00265890 *)packet;
     s32 found;
-    extern s32 func_001E1E10();
+    extern s32 SzDuel_GetUnitOpenRate();
 
     packet[0] = 999;
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0;
     found = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(state);
+        InitEffectTemp(state);
         state->value = 0x80;
-        func_002516D0(input->position >> 8, input->position & 0xFF, 1);
-        func_00260AF0(0, input->position, 100, 180);
-        func_00255AC0(state, 0x25A);
-        func_00255AC0(state, 0x25B);
-        func_00255AC0(state, 0x222);
+        TaUtil_DoOpen(input->position >> 8, input->position & 0xFF, 1);
+        TaView_ReqFocusCamera(0, input->position, 100, 180);
+        TaEffect_LoadModule(state, 0x25A);
+        TaEffect_LoadModule(state, 0x25B);
+        TaEffect_LoadModule(state, 0x222);
         return 1;
     }
 
@@ -69,25 +69,25 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
             state->value -= 15;
         } else {
             state->value = 0x30;
-            if (func_001E1E10(input->position >> 8, input->position & 0xFF) == 0xFF &&
-                func_00255B50(state) == 1) {
+            if (SzDuel_GetUnitOpenRate(input->position >> 8, input->position & 0xFF) == 0xFF &&
+                TaEffect_IsLoadModule(state) == 1) {
                 if (input->mode == 1) {
-                    func_001E42C0(0, -120, 80, 0x104);
+                    SzDuel_OpenMsgPopup(0, -120, 80, 0x104);
                 } else {
-                    func_001E42C0(0, -120, 80, 0x103);
+                    SzDuel_OpenMsgPopup(0, -120, 80, 0x103);
                 }
                 request->command = 0x25A;
                 request->unk4 = 0;
                 request->argument = input->position;
                 request->flag = 0;
-                state->effects[0] = func_00255A30(request, state);
+                state->effects[0] = Ta_Do_Effect(request, state);
                 state->phase++;
             }
         }
         if (state->value < 0x30) {
             state->value = 0x30;
         }
-        func_001F6CF0((u8)state->value);
+        SzEffect_SetBlackOutForDuel((u8)state->value);
         break;
     case 1:
         {
@@ -100,20 +100,20 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
             s32 centerHigh;
             s32 distance;
             s32 center;
-            extern __int128 func_00250360();
+            extern __int128 Ta_IsUnitControl();
 
-            if (func_001F51D0(state->effects[0]) != 0) {
+            if (SzEffect_IsUse(state->effects[0]) != 0) {
                 return 1;
             }
-            func_001E1E70(input->position >> 8, input->position & 0xFF, 0, 1);
-            func_00260AF0(0x10, input->position, 500, 500);
+            SzDuel_SetUnitStatus(input->position >> 8, input->position & 0xFF, 0, 1);
+            TaView_ReqFocusCamera(0x10, input->position, 500, 500);
             state->value = 0;
-            center = func_001E1090(input->position >> 8, input->position & 0xFF);
+            center = SzDuel_GetUnitLoc(input->position >> 8, input->position & 0xFF);
             request->command = 0x222;
             request->unk4 = 0;
             request->argument = center;
             request->flag = 1;
-            state->effects[0] = func_00255A30(request, state);
+            state->effects[0] = Ta_Do_Effect(request, state);
             state->entries[0] = input->position;
             outer = -1;
             x = (center & 0xFF) - 1;
@@ -132,9 +132,9 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
                             request->unk4 = 0;
                             request->argument = (y << 8) | x;
                             request->flag = 0;
-                            state->effects[state->effectCount] = func_00255A30(request, state);
-                            if (func_001E36E0(x, y) != 0) {
-                                entry = func_001E3790(x, y);
+                            state->effects[state->effectCount] = Ta_Do_Effect(request, state);
+                            if (SzDuel_GetMapUnit(x, y) != 0) {
+                                entry = SzDuel_GetMapUnitID(x, y);
                                 if (input->mode == 1) {
                                     state->entries[state->effectCount] = entry;
                                     state->value++;
@@ -144,9 +144,9 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
 
                                     high = entry >> 8;
                                     low = entry & 0xFF;
-                                    owner = func_00250360(high, low);
-                                    if (owner != func_00250360(input->position >> 8, input->position & 0xFF)) {
-                                        if (func_00271E40(high, low, 11) == 0 && func_00267700(high, low) != 1) {
+                                    owner = Ta_IsUnitControl(high, low);
+                                    if (owner != Ta_IsUnitControl(input->position >> 8, input->position & 0xFF)) {
+                                        if (Ta_IsLDRangeAvility(high, low, 11) == 0 && Ta_IsResistAll(high, low) != 1) {
                                             state->entries[state->effectCount] = entry;
                                             state->value++;
                                             if (input->mode == 0 && entry == input->target) {
@@ -184,7 +184,7 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
                 request->unk4 = 0;
                 request->argument = input->target;
                 request->flag = 1;
-                state->effects[state->effectCount] = func_00255A30(request, state);
+                state->effects[state->effectCount] = Ta_Do_Effect(request, state);
                 state->entries[state->effectCount] = -1;
                 state->effectCount++;
             }
@@ -203,19 +203,19 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
             for (; i < state->effectCount; entry++, i++) {
                 switch (state->frame) {
                 case 1:
-                    func_00217710(1, 0x31);
+                    SzSound_PlaySE(1, 0x31);
                     break;
                 case 5:
-                    func_00217710(1, 0x31);
-                    func_00217710(1, 0x31);
-                    func_00217710(1, 0x31);
-                    func_00217710(1, 0x31);
+                    SzSound_PlaySE(1, 0x31);
+                    SzSound_PlaySE(1, 0x31);
+                    SzSound_PlaySE(1, 0x31);
+                    SzSound_PlaySE(1, 0x31);
                     break;
                 }
                 effect = &state->effects[i];
-                if (func_001F51D0(*effect) != 0 && func_001F52D0(*effect) == 2 && entry[8] >= 0) {
+                if (SzEffect_IsUse(*effect) != 0 && SzEffect_GetStatus(*effect) == 2 && entry[8] >= 0) {
                     if ((entry[8] & 0xFF) > 0) {
-                        func_002500C0(entry[8] >> 8, entry[8] & 0xFF, -1, 1, 3);
+                        Ta_UnitFade(entry[8] >> 8, entry[8] & 0xFF, -1, 1, 3);
                         state->entries[state->effectCount + state->count] = entry[8];
                         entry[8] = -1;
                     }
@@ -228,7 +228,7 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
             break;
         }
     case 3:
-        if (func_0025FD90() != 0) {
+        if (Ta_IsFinishFade() != 0) {
             s32 i;
             s32 *entry;
 
@@ -236,11 +236,11 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
             entry = (s32 *)state + i;
             for (; i < state->effectCount + state->count; entry++, i++) {
                 if (entry[8] >= 0 && (entry[8] & 0xFF) > 0) {
-                    func_0024F370(entry[8] >> 8, entry[8] & 0xFF);
+                    Ta_DelUnit(entry[8] >> 8, entry[8] & 0xFF);
                 }
             }
             if (input->target != 0) {
-                func_0024F370(input->target >> 8, input->target & 0xFF);
+                Ta_DelUnit(input->target >> 8, input->target & 0xFF);
             }
             state->value = 0x30;
             state->phase++;
@@ -251,20 +251,20 @@ s32 func_00265890(void *arg0, void *arg1, s32 arg2) {
         if (state->value > 0x80) {
             state->value = 0x80;
         }
-        func_001F6CF0((u8)state->value);
+        SzEffect_SetBlackOutForDuel((u8)state->value);
         if (state->value == 0x80) {
             state->phase++;
-            func_001E4530();
-            func_00260A70(state, 0x10);
+            SzDuel_CloseMsgPopup();
+            TaView_RestoreOriginalView(state, 0x10);
             state->timer = 0;
         }
         break;
     default:
-        if (state->timer++ > 16 && func_0025F390(state) == 1 && func_0025FD90() == 1) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+        if (state->timer++ > 16 && Ta_IsFinishEffect(state) == 1 && Ta_IsFinishFade() == 1) {
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -317,7 +317,7 @@ static inline s32 defense_002660E0(Card_002660E0 *card) {
     return value;
 }
 
-s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 Ta_GetParamOfs(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 i;
     s32 side;
     s32 total;
@@ -332,7 +332,7 @@ s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 0;
     }
     total = 0;
-    side = func_00250370((void *)arg0);
+    side = Ta_IsUnitControl2((void *)arg0);
     i = 1;
     if (((Card_002660E0 *)arg0)->id == 0x2A3) {
         if (arg3 == 0) {
@@ -342,27 +342,27 @@ s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
         if (((Card_002660E0 *)arg0)->flags.side) {
             if (arg3 == 0) {
-                total += func_001E0370(side, 0, 1);
+                total += SzDuel_GetUnitDP(side, 0, 1);
             } else {
-                total += func_001E0290(side, 0, 1);
+                total += SzDuel_GetUnitAP(side, 0, 1);
             }
         } else {
             if (arg3 == 0) {
-                total += func_001E0370(side == 0 ? 1 : 0, 0, 1);
+                total += SzDuel_GetUnitDP(side == 0 ? 1 : 0, 0, 1);
             } else {
-                total += func_001E0290(side == 0 ? 1 : 0, 0, 1);
+                total += SzDuel_GetUnitAP(side == 0 ? 1 : 0, 0, 1);
             }
         }
         i = 1;
     }
     while (1) {
-        if (func_001DF540(side, i) != 0 &&
-            func_001E2100(side, i, 4) != 0 &&
-            func_001E2100(side, i, 3) != 0 &&
-            func_001E2100(side, i, 5) != 0) {
-            if ((effect = func_00250740(side, i, 2)) != NULL) {
+        if (SzDuel_GetUnit(side, i) != 0 &&
+            SzDuel_GetUnitStatus(side, i, 4) != 0 &&
+            SzDuel_GetUnitStatus(side, i, 3) != 0 &&
+            SzDuel_GetUnitStatus(side, i, 5) != 0) {
+            if ((effect = Ta_GetUnitEffect(side, i, 2)) != NULL) {
                 flags = effect->flags;
-                if (func_0024ECD0((void *)arg0, func_00250360(side, i),
+                if (Ta_GetUnitAgreeWithVarInfo((void *)arg0, Ta_IsUnitControl(side, i),
                                  (flags >> 6) & 3, flags & 0x3F) != 0) {
                     switch (effect->flags >> 8) {
                     case 19:
@@ -387,14 +387,14 @@ s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
     j = 1;
     while (1) {
-        if (func_001DF540(side == 0 ? 1 : 0, j) != 0 &&
-            func_001E2100(side == 0 ? 1 : 0, j, 4) != 0 &&
-            func_001E2100(side == 0 ? 1 : 0, j, 3) != 0 &&
-            func_001E2100(side == 0 ? 1 : 0, j, 5) != 0) {
-            if ((otherEffect = func_00250740(side == 0 ? 1 : 0, j, 2)) != NULL) {
+        if (SzDuel_GetUnit(side == 0 ? 1 : 0, j) != 0 &&
+            SzDuel_GetUnitStatus(side == 0 ? 1 : 0, j, 4) != 0 &&
+            SzDuel_GetUnitStatus(side == 0 ? 1 : 0, j, 3) != 0 &&
+            SzDuel_GetUnitStatus(side == 0 ? 1 : 0, j, 5) != 0) {
+            if ((otherEffect = Ta_GetUnitEffect(side == 0 ? 1 : 0, j, 2)) != NULL) {
                 otherFlags = otherEffect->flags;
-                if (func_0024ECD0((void *)arg0,
-                                 func_00250360(side == 0 ? 1 : 0, j),
+                if (Ta_GetUnitAgreeWithVarInfo((void *)arg0,
+                                 Ta_IsUnitControl(side == 0 ? 1 : 0, j),
                                  (otherFlags >> 6) & 3, otherFlags & 0x3F) != 0) {
                     switch (otherEffect->flags >> 8) {
                     case 19:
@@ -417,7 +417,7 @@ s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             break;
         }
     }
-    result = func_0024DEB0(func_001E22B0(arg1, arg2), (void *)arg0);
+    result = CheckLandAgreement(SzDuel_GetField(arg1, arg2), (void *)arg0);
     switch (result) {
     case 1:
         total += 500;
@@ -426,13 +426,13 @@ s32 func_002660E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         total -= 500;
         break;
     }
-    total += func_00271AF0((void *)arg0, arg1, arg2);
+    total += Ta_GetLDParamOfs2((void *)arg0, arg1, arg2);
     return total;
 }
 
-s32 func_00266500(s32 arg0, s32 arg1, void *output) {
-    extern s32 func_001E1700();
-    extern s32 func_001DEE50();
+s32 Ta_ManageNaturalEffectInStandbyPhase(s32 arg0, s32 arg1, void *output) {
+    extern s32 SzDuel_GetUnitDelayCount();
+    extern s32 SzDuel_GetGraveCount();
     s32 count;
     void *data;
     s32 target;
@@ -445,7 +445,7 @@ s32 func_00266500(s32 arg0, s32 arg1, void *output) {
     u32 word;
     s32 *out = output;
 
-    if ((data = func_00250740(arg0, arg1, 2)) == NULL) {
+    if ((data = Ta_GetUnitEffect(arg0, arg1, 2)) == NULL) {
         return 0;
     }
     word = *(u32 *)data;
@@ -453,12 +453,12 @@ s32 func_00266500(s32 arg0, s32 arg1, void *output) {
     case 0xD:
         out[0] = 8;
         out[1] = 0;
-        out[2] = func_0024DE70(arg0, arg1);
+        out[2] = Ta_GetCurrentSide(arg0, arg1);
         packed = *(u32 *)((u8 *)data + 4);
         out[3] = ((packed >> 16) << 16) | (packed & 0xFFFF);
         return 1;
     case 0x4D:
-        value = func_0024CA40(0, 0, func_0024DE70(arg0, arg1),
+        value = SearchUnitByRange(0, 0, Ta_GetCurrentSide(arg0, arg1),
                              (word >> 6) & 3, word & 0x3F, 0xE);
         if (value == 0) {
             return 0;
@@ -469,7 +469,7 @@ s32 func_00266500(s32 arg0, s32 arg1, void *output) {
         out[3] = *(u16 *)((u8 *)data + 4);
         return 1;
     case 0x4E:
-        value = func_0024CA40(0, 0, func_0024DE70(arg0, arg1),
+        value = SearchUnitByRange(0, 0, Ta_GetCurrentSide(arg0, arg1),
                              (word >> 6) & 3, word & 0x3F, 0xE);
         if (value == 0) {
             return 0;
@@ -480,9 +480,9 @@ s32 func_00266500(s32 arg0, s32 arg1, void *output) {
         out[3] = *(u16 *)((u8 *)data + 4);
         return 1;
     case 0xC:
-        if (func_001E1700(arg0, arg1) == 1) {
-            func_001E16A0(arg0, arg1, 0);
-            value = func_0024C780(0, arg0, arg1);
+        if (SzDuel_GetUnitDelayCount(arg0, arg1) == 1) {
+            SzDuel_SetUnitDelayCount(arg0, arg1, 0);
+            value = ConvUnitIDtoFlagList(0, arg0, arg1);
             out[0] = 0x3C;
             out[1] = 0;
             out[2] = value;
@@ -491,8 +491,8 @@ s32 func_00266500(s32 arg0, s32 arg1, void *output) {
         }
         return 0;
     case 0x46:
-        if (func_001E1700(arg0, arg1) == 1) {
-            func_001E16A0(arg0, arg1, 0);
+        if (SzDuel_GetUnitDelayCount(arg0, arg1) == 1) {
+            SzDuel_SetUnitDelayCount(arg0, arg1, 0);
             out[0] = 0x2E;
             out[1] = (arg0 << 8) | arg1;
             out[2] = 0;
@@ -501,47 +501,47 @@ s32 func_00266500(s32 arg0, s32 arg1, void *output) {
         }
         return 0;
     case 0x53:
-        target = func_0024C780(0, arg0, arg1);
+        target = ConvUnitIDtoFlagList(0, arg0, arg1);
         count = 0;
-        length0 = func_001DEE50(0);
+        length0 = SzDuel_GetGraveCount(0);
         for (index0 = 0; index0 < length0; index0++) {
-            if ((func_0026FCE0(func_001DEE00(0, index0)) >> 5) == 0) {
-                func_001DF000(0, index0);
+            if ((TaHand_GetCardKind(SzDuel_InqGrave(0, index0)) >> 5) == 0) {
+                SzDuel_DelGrave(0, index0);
                 count++;
             }
         }
-        func_001DEF20(0);
-        length1 = func_001DEE50(1);
+        SzDuel_PackGrave(0);
+        length1 = SzDuel_GetGraveCount(1);
         for (index1 = 0; index1 < length1; index1++) {
-            if ((func_0026FCE0(func_001DEE00(1, index1)) >> 5) == 0) {
-                func_001DF000(1, index1);
+            if ((TaHand_GetCardKind(SzDuel_InqGrave(1, index1)) >> 5) == 0) {
+                SzDuel_DelGrave(1, index1);
                 count++;
             }
         }
-        func_001DEF20(1);
+        SzDuel_PackGrave(1);
         out[0] = 0x1D;
         out[1] = 1;
         out[2] = target;
         out[3] = count * *(u16 *)((u8 *)data + 4);
         return 1;
     case 0x54:
-        value = func_0024C7D0(func_0024CA40(0, 0, func_0024DE70(arg0, arg1),
+        value = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(0, 0, Ta_GetCurrentSide(arg0, arg1),
                                          (word >> 6) & 3, word & 0x3F, 0xE),
                              arg0, arg1);
         if (value == 0) {
             return 0;
         }
         out[0] = 0x48;
-        out[1] = func_001E1090(arg0, arg1);
+        out[1] = SzDuel_GetUnitLoc(arg0, arg1);
         out[2] = value;
-        out[3] = func_0024DE70(arg0, arg1);
+        out[3] = Ta_GetCurrentSide(arg0, arg1);
         return 1;
     }
     return 0;
 }
 
-s32 func_00266910(s32 arg0, s32 arg1, void *arg2) {
-    extern s32 func_001E1640();
+s32 Ta_ManageNaturalEffectInStandbyPhase2(s32 arg0, s32 arg1, void *arg2) {
+    extern s32 SzDuel_GetUnitSpellRest();
     s32 var_s3;
     u32 temp_s3;
     u32 var_s0;
@@ -552,29 +552,29 @@ s32 func_00266910(s32 arg0, s32 arg1, void *arg2) {
     s32 temp_s6;
     s32 temp_s7;
 
-    temp_v0 = func_00250740(arg0, arg1, 2);
+    temp_v0 = Ta_GetUnitEffect(arg0, arg1, 2);
     temp_s3 = *(u32 *)temp_v0;
     var_s0 = 0;
     switch (temp_s3 >> 8) {
     case 0x17:
-        temp_v0_2 = func_0024CA40(0, 0, func_0024DE70(arg0, arg1), (temp_s3 >> 6) & 3, temp_s3 & 0x3F, 0xE);
+        temp_v0_2 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(arg0, arg1), (temp_s3 >> 6) & 3, temp_s3 & 0x3F, 0xE);
         if (temp_v0_2 == 0) {
             return 0;
         }
-        temp_v0_3 = func_0024E910(temp_v0_2);
+        temp_v0_3 = Ta_GetUnitNumFrom22bitFlagList(temp_v0_2);
         var_s3 = 0;
         if (0 < temp_v0_3) {
             do {
-                temp_v0_4 = func_0024EC50(temp_v0_2, var_s3);
+                temp_v0_4 = Ta_GetUnitOwnerIDFromLstCount(temp_v0_2, var_s3);
                 temp_s7 = temp_v0_4 >> 8;
                 temp_s6 = temp_v0_4 & 0xFF;
-                if (func_001E1640(temp_s7, temp_s6) == 0) {
-                    var_s0 = func_0024C780(var_s0, temp_s7, temp_s6);
+                if (SzDuel_GetUnitSpellRest(temp_s7, temp_s6) == 0) {
+                    var_s0 = ConvUnitIDtoFlagList(var_s0, temp_s7, temp_s6);
                 }
                 var_s3 += 1;
             } while (var_s3 < temp_v0_3);
         }
-        if (func_0024E910((s32) var_s0) == 0) {
+        if (Ta_GetUnitNumFrom22bitFlagList((s32) var_s0) == 0) {
             return 0;
         }
         ((s32 *)arg2)[0] = 0;
@@ -586,7 +586,7 @@ s32 func_00266910(s32 arg0, s32 arg1, void *arg2) {
     return 0;
 }
 
-s32 func_00266A80(s32 arg0, s32 arg1) {
+s32 TaPerm_IsPermCurseActive(s32 arg0, s32 arg1) {
     s32 i;
     s32 key;
     u32 *p;
@@ -594,18 +594,18 @@ s32 func_00266A80(s32 arg0, s32 arg1) {
 
     key = (arg0 << 8) | arg1;
     for (i = 0; i < 11; i++) {
-        if (func_001DF540(0, i)) {
-            if ((p = func_00250740(0, i, 2)) != NULL && func_001E2100(0, i, 4) && func_001E2100(0, i, 3) && func_001E2100(0, i, 5)) {
+        if (SzDuel_GetUnit(0, i)) {
+            if ((p = Ta_GetUnitEffect(0, i, 2)) != NULL && SzDuel_GetUnitStatus(0, i, 4) && SzDuel_GetUnitStatus(0, i, 3) && SzDuel_GetUnitStatus(0, i, 5)) {
                 v = *p;
-                if ((v >> 8) == 0x17 && func_0024EA10(key, func_0024CA40(0, 0, func_0024DE70(0, i), (v >> 6) & 3, v & 0x3F, 0xE))) {
+                if ((v >> 8) == 0x17 && Ta_GetAgreeOwnerIDon22bitFlagLst(key, SearchUnitByRange(0, 0, Ta_GetCurrentSide(0, i), (v >> 6) & 3, v & 0x3F, 0xE))) {
                     return 1;
                 }
             }
         }
-        if (func_001DF540(1, i)) {
-            if ((p = func_00250740(1, i, 2)) != NULL && func_001E2100(1, i, 4) && func_001E2100(1, i, 3) && func_001E2100(1, i, 5)) {
+        if (SzDuel_GetUnit(1, i)) {
+            if ((p = Ta_GetUnitEffect(1, i, 2)) != NULL && SzDuel_GetUnitStatus(1, i, 4) && SzDuel_GetUnitStatus(1, i, 3) && SzDuel_GetUnitStatus(1, i, 5)) {
                 v = *p;
-                if ((v >> 8) == 0x17 && func_0024EA10(key, func_0024CA40(0, 0, func_0024DE70(1, i), (v >> 6) & 3, v & 0x3F, 0xE))) {
+                if ((v >> 8) == 0x17 && Ta_GetAgreeOwnerIDon22bitFlagLst(key, SearchUnitByRange(0, 0, Ta_GetCurrentSide(1, i), (v >> 6) & 3, v & 0x3F, 0xE))) {
                     return 1;
                 }
             }
@@ -614,7 +614,7 @@ s32 func_00266A80(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_00266C70(s32 arg0, s32 arg1) {
+s32 Ta_SearchUncTypeNaturalEffectUser(s32 arg0, s32 arg1) {
     s32 count;
     s32 index;
     u32 *data;
@@ -622,10 +622,10 @@ s32 func_00266C70(s32 arg0, s32 arg1) {
     index = 1;
     count = 0;
     do {
-        if (func_001E2100(0, index, 4) != 0 &&
-            func_001E2100(0, index, 3) != 0 &&
-            func_001E2100(0, index, 5) != 0) {
-            data = func_00250740(0, index, 2);
+        if (SzDuel_GetUnitStatus(0, index, 4) != 0 &&
+            SzDuel_GetUnitStatus(0, index, 3) != 0 &&
+            SzDuel_GetUnitStatus(0, index, 5) != 0) {
+            data = Ta_GetUnitEffect(0, index, 2);
             if (data != NULL && (*data >> 8) == arg0) {
                 if (count++ == arg1) {
                     return index;
@@ -637,10 +637,10 @@ s32 func_00266C70(s32 arg0, s32 arg1) {
 
     index = 1;
     do {
-        if (func_001E2100(1, index, 4) != 0 &&
-            func_001E2100(1, index, 3) != 0 &&
-            func_001E2100(1, index, 5) != 0) {
-            data = func_00250740(1, index, 2);
+        if (SzDuel_GetUnitStatus(1, index, 4) != 0 &&
+            SzDuel_GetUnitStatus(1, index, 3) != 0 &&
+            SzDuel_GetUnitStatus(1, index, 5) != 0) {
+            data = Ta_GetUnitEffect(1, index, 2);
             if (data != NULL && (*data >> 8) == arg0) {
                 if (count++ == arg1) {
                     return index | 0x100;
@@ -652,7 +652,7 @@ s32 func_00266C70(s32 arg0, s32 arg1) {
     return -1;
 }
 
-s32 func_00266DF0(s32 arg0) {
+s32 Ta_SearchUncTypeNaturalEffectUserNum(s32 arg0) {
     s32 var_s2;
     s32 var_s0;
     u32 *temp_v0;
@@ -661,14 +661,14 @@ s32 func_00266DF0(s32 arg0) {
     var_s2 = 1;
     var_s0 = 0;
     do {
-        if ((func_001DF540(0, var_s2) != 0) && ((temp_v0 = func_00250740(0, var_s2, 2)) != NULL) && (func_001E2100(0, var_s2, 4) != 0) && (func_001E2100(0, var_s2, 3) != 0) && (func_001E2100(0, var_s2, 5) != 0) && (((u32) *temp_v0 >> 8) == arg0)) {
+        if ((SzDuel_GetUnit(0, var_s2) != 0) && ((temp_v0 = Ta_GetUnitEffect(0, var_s2, 2)) != NULL) && (SzDuel_GetUnitStatus(0, var_s2, 4) != 0) && (SzDuel_GetUnitStatus(0, var_s2, 3) != 0) && (SzDuel_GetUnitStatus(0, var_s2, 5) != 0) && (((u32) *temp_v0 >> 8) == arg0)) {
             var_s0 += 1;
         }
         var_s2 += 1;
     } while (var_s2 < 0xB);
     var_s2 = 1;
     do {
-        if ((func_001DF540(1, var_s2) != 0) && ((temp_v0_2 = func_00250740(1, var_s2, 2)) != NULL) && (func_001E2100(1, var_s2, 4) != 0) && (func_001E2100(1, var_s2, 3) != 0) && (func_001E2100(1, var_s2, 5) != 0) && (((u32) *temp_v0_2 >> 8) == arg0)) {
+        if ((SzDuel_GetUnit(1, var_s2) != 0) && ((temp_v0_2 = Ta_GetUnitEffect(1, var_s2, 2)) != NULL) && (SzDuel_GetUnitStatus(1, var_s2, 4) != 0) && (SzDuel_GetUnitStatus(1, var_s2, 3) != 0) && (SzDuel_GetUnitStatus(1, var_s2, 5) != 0) && (((u32) *temp_v0_2 >> 8) == arg0)) {
             var_s0 += 1;
         }
         var_s2 += 1;
@@ -676,7 +676,7 @@ s32 func_00266DF0(s32 arg0) {
     return var_s0;
 }
 
-s32 func_00266F70(s32 arg0, s32 arg1) {
+s32 Ta_SearchUncTypeNaturalEffectUserNumWithSide(s32 arg0, s32 arg1) {
     s32 var_s0;
     s32 var_s3;
     u32 *temp_v0;
@@ -685,8 +685,8 @@ s32 func_00266F70(s32 arg0, s32 arg1) {
     var_s3 = 1;
     var_s0 = 0;
     do {
-        if ((func_001E2100(0, var_s3, 4) != 0) && (func_001E2100(0, var_s3, 3) != 0) && (func_001E2100(0, var_s3, 5) != 0) && (arg1 == func_0024DE70(0, var_s3))) {
-            temp_v0 = func_00250740(0, var_s3, 2);
+        if ((SzDuel_GetUnitStatus(0, var_s3, 4) != 0) && (SzDuel_GetUnitStatus(0, var_s3, 3) != 0) && (SzDuel_GetUnitStatus(0, var_s3, 5) != 0) && (arg1 == Ta_GetCurrentSide(0, var_s3))) {
+            temp_v0 = Ta_GetUnitEffect(0, var_s3, 2);
             if ((temp_v0 != NULL) && (((u32) *temp_v0 >> 8) == arg0)) {
                 var_s0 += 1;
             }
@@ -695,8 +695,8 @@ s32 func_00266F70(s32 arg0, s32 arg1) {
     } while (var_s3 < 0xB);
     var_s3 = 1;
     do {
-        if ((func_001E2100(1, var_s3, 4) != 0) && (func_001E2100(1, var_s3, 3) != 0) && (func_001E2100(1, var_s3, 5) != 0) && (arg1 == func_0024DE70(1, var_s3))) {
-            temp_v0_2 = func_00250740(1, var_s3, 2);
+        if ((SzDuel_GetUnitStatus(1, var_s3, 4) != 0) && (SzDuel_GetUnitStatus(1, var_s3, 3) != 0) && (SzDuel_GetUnitStatus(1, var_s3, 5) != 0) && (arg1 == Ta_GetCurrentSide(1, var_s3))) {
+            temp_v0_2 = Ta_GetUnitEffect(1, var_s3, 2);
             if ((temp_v0_2 != NULL) && (((u32) *temp_v0_2 >> 8) == arg0)) {
                 var_s0 += 1;
             }
@@ -717,7 +717,7 @@ typedef struct Effect_002670F0 {
     } data;
 } Effect_002670F0;
 
-s32 func_002670F0(s32 arg0, s32 arg1) {
+s32 Ta_GetLPRevByNaturalEffect(s32 arg0, s32 arg1) {
     s32 var_s0;
     s32 var_s0_2;
     s32 var_s1;
@@ -738,8 +738,8 @@ s32 func_002670F0(s32 arg0, s32 arg1) {
     }
     var_s0 = 0;
     do {
-        if ((func_001E2100(0, var_s0, 4) != 0) && (func_001E2100(0, var_s0, 3) != 0) && (func_001E2100(0, var_s0, 5) != 0)) {
-            temp_v0 = func_00250740(0, var_s0, 2);
+        if ((SzDuel_GetUnitStatus(0, var_s0, 4) != 0) && (SzDuel_GetUnitStatus(0, var_s0, 3) != 0) && (SzDuel_GetUnitStatus(0, var_s0, 5) != 0)) {
+            temp_v0 = Ta_GetUnitEffect(0, var_s0, 2);
             if (temp_v0 != NULL) {
                 temp_a1 = temp_v0->flags;
                 if (((temp_a1 >> 8) == 0x3B) && ((temp_a1 & 0x3F) == arg0)) {
@@ -769,8 +769,8 @@ s32 func_002670F0(s32 arg0, s32 arg1) {
     } while (var_s0 < 0xB);
     var_s0_2 = 1;
     do {
-        if ((func_001E2100(1, var_s0_2, 4) != 0) && (func_001E2100(1, var_s0_2, 3) != 0) && (func_001E2100(1, var_s0_2, 5) != 0)) {
-            temp_v0_3 = func_00250740(1, var_s0_2, 2);
+        if ((SzDuel_GetUnitStatus(1, var_s0_2, 4) != 0) && (SzDuel_GetUnitStatus(1, var_s0_2, 3) != 0) && (SzDuel_GetUnitStatus(1, var_s0_2, 5) != 0)) {
+            temp_v0_3 = Ta_GetUnitEffect(1, var_s0_2, 2);
             if (temp_v0_3 != NULL) {
                 temp_a1_3 = temp_v0_3->flags;
                 if (((temp_a1_3 >> 8) == 0x3B) && ((temp_a1_3 & 0x3F) == arg0)) {
@@ -798,7 +798,7 @@ s32 func_002670F0(s32 arg0, s32 arg1) {
         }
         var_s0_2 += 1;
     } while (var_s0_2 < 0xB);
-    return func_002508D0(var_s1);
+    return GetParCap(var_s1);
 }
 
 typedef struct {
@@ -813,7 +813,7 @@ typedef struct {
     s8 linked : 1;
 } Obj_00267380;
 
-s32 func_00267380(s32 arg0, s32 arg1) {
+s32 Ta_IsUnitHide(s32 arg0, s32 arg1) {
     s32 i;
     s32 count;
     Obj_00267380 *obj = (Obj_00267380 *)arg0;
@@ -834,14 +834,14 @@ s32 func_00267380(s32 arg0, s32 arg1) {
     if (obj->linked == 0) {
         return 1;
     }
-    if ((count = func_00266DF0(0x44)) > 0) {
+    if ((count = Ta_SearchUncTypeNaturalEffectUserNum(0x44)) > 0) {
         for (i = 0; i < count; i++) {
-            pos = func_00266C70(0x44, i);
+            pos = Ta_SearchUncTypeNaturalEffectUser(0x44, i);
             y = pos >> 8;
             x = pos & 0xFF;
-            if (func_001E2100(y, x, 4) && func_001E2100(y, x, 3) && func_001E2100(y, x, 5) &&
-                func_00250360(y, x) == func_00250370(obj) &&
-                (card = func_00250740(y, x, 2)) != NULL) {
+            if (SzDuel_GetUnitStatus(y, x, 4) && SzDuel_GetUnitStatus(y, x, 3) && SzDuel_GetUnitStatus(y, x, 5) &&
+                Ta_IsUnitControl(y, x) == Ta_IsUnitControl2(obj) &&
+                (card = Ta_GetUnitEffect(y, x, 2)) != NULL) {
                 switch (*card & 0x3F) {
                 case 29:
                     return ((obj->value3E >> 5) == 0) ? 1 : 0;
@@ -865,7 +865,7 @@ typedef struct {
     s8 swapped : 1;
 } Obj_00267560;
 
-s32 func_00267560(s32 arg0) {
+s32 Ta_IsUnitHide2(s32 arg0) {
     Obj_00267560 *obj = (Obj_00267560 *)arg0;
     s32 player;
     s32 i;
@@ -878,20 +878,20 @@ s32 func_00267560(s32 arg0) {
     if (obj == NULL) {
         return 0;
     }
-    player = func_001DE540();
+    player = SzDuel_GetTurnOwner();
     if (player == ((obj->swapped == 0) ? obj->side : ((obj->side == 0) ? 1 : 0))) {
         return 0;
     }
     if (obj->active == 0) {
         return 0;
     }
-    if ((count = func_00266DF0(0x44)) > 0) {
+    if ((count = Ta_SearchUncTypeNaturalEffectUserNum(0x44)) > 0) {
         for (i = 0; i < count; i++) {
-            pos = func_00266C70(0x44, i);
+            pos = Ta_SearchUncTypeNaturalEffectUser(0x44, i);
             y = pos >> 8;
             x = pos & 0xFF;
-            if (func_001E2100(y, x, 4) && func_001E2100(y, x, 3) && func_001E2100(y, x, 5) &&
-                (card = func_00250740(y, x, 2)) != NULL) {
+            if (SzDuel_GetUnitStatus(y, x, 4) && SzDuel_GetUnitStatus(y, x, 3) && SzDuel_GetUnitStatus(y, x, 5) &&
+                (card = Ta_GetUnitEffect(y, x, 2)) != NULL) {
                 switch (*card & 0x3F) {
                 case 29:
                     return ((obj->value3E >> 5) == 0) ? 1 : 0;
@@ -904,7 +904,7 @@ s32 func_00267560(s32 arg0) {
     return 0;
 }
 
-s32 func_00267700(s32 arg0, s32 arg1) {
+s32 Ta_IsResistAll(s32 arg0, s32 arg1) {
     s32 index;
     s32 count;
     s32 column;
@@ -915,20 +915,20 @@ s32 func_00267700(s32 arg0, s32 arg1) {
     if (arg1 == 0) {
         return 0;
     }
-    if ((count = func_00266DF0(0xB)) > 0) {
+    if ((count = Ta_SearchUncTypeNaturalEffectUserNum(0xB)) > 0) {
             for (index = 0; index < count; index++) {
-            value = func_00266C70(0xB, index);
+            value = Ta_SearchUncTypeNaturalEffectUser(0xB, index);
             row = value >> 8;
             column = value & 0xFF;
-            if ((func_001E2100(row, column, 4) != 0) &&
-                (func_001E2100(row, column, 3) != 0) &&
-                (func_001E2100(row, column, 5) != 0)) {
-                data = func_00250740(row, column, 2);
+            if ((SzDuel_GetUnitStatus(row, column, 4) != 0) &&
+                (SzDuel_GetUnitStatus(row, column, 3) != 0) &&
+                (SzDuel_GetUnitStatus(row, column, 5) != 0)) {
+                data = Ta_GetUnitEffect(row, column, 2);
                 if (data != NULL) {
                     switch (*data & 0x3F) {
                     case 0:
-                        if (!(func_001E0700(arg0, arg1) & 0x1F)) {
-                            if ((func_001E0700(arg0, arg1) >> 5) == 0) {
+                        if (!(SzDuel_GetUnitKind(arg0, arg1) & 0x1F)) {
+                            if ((SzDuel_GetUnitKind(arg0, arg1) >> 5) == 0) {
                                 return 1;
                             }
                         }
@@ -941,7 +941,7 @@ s32 func_00267700(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_00267860(s32 arg0, s32 arg1) {
+s32 Ta_IsResistAllMaster(s32 arg0, s32 arg1) {
     s32 i;
     s32 count;
     s32 entry;
@@ -952,20 +952,20 @@ s32 func_00267860(s32 arg0, s32 arg1) {
     if (arg1 == 0) {
         return 0;
     }
-    if ((count = func_00266DF0(0xB)) > 0) {
+    if ((count = Ta_SearchUncTypeNaturalEffectUserNum(0xB)) > 0) {
         for (i = 0; i < count; i++) {
-            entry = func_00266C70(0xB, i);
+            entry = Ta_SearchUncTypeNaturalEffectUser(0xB, i);
             high = entry >> 8;
             low = entry & 0xFF;
-            if ((func_001E2100(high, low, 4) != 0) &&
-                (func_001E2100(high, low, 3) != 0) &&
-                (func_001E2100(high, low, 5) != 0)) {
-                info = func_00250740(high, low, 2);
+            if ((SzDuel_GetUnitStatus(high, low, 4) != 0) &&
+                (SzDuel_GetUnitStatus(high, low, 3) != 0) &&
+                (SzDuel_GetUnitStatus(high, low, 5) != 0)) {
+                info = Ta_GetUnitEffect(high, low, 2);
                 if (info != NULL) {
                     switch (*info & 0x3F) {
                     case 0:
-                        if (!(func_001E0700(arg0, arg1) & 0x1F) &&
-                            ((func_001E0700(arg0, arg1) >> 5) == 0)) {
+                        if (!(SzDuel_GetUnitKind(arg0, arg1) & 0x1F) &&
+                            ((SzDuel_GetUnitKind(arg0, arg1) >> 5) == 0)) {
                             return entry;
                         }
                         break;
@@ -977,32 +977,32 @@ s32 func_00267860(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_002679C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 Ta_IsVisualAttrAdv(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 state;
     s32 first;
 
-    state = func_001DE540();
-    if ((state == func_0024DE70(arg2, arg3)) ||
-        ((func_001E0700(arg0, arg1) >> 5) != 0) ||
-        ((func_001E0700(arg2, arg3) >> 5) != 0) ||
+    state = SzDuel_GetTurnOwner();
+    if ((state == Ta_GetCurrentSide(arg2, arg3)) ||
+        ((SzDuel_GetUnitKind(arg0, arg1) >> 5) != 0) ||
+        ((SzDuel_GetUnitKind(arg2, arg3) >> 5) != 0) ||
         (arg1 == 0) || (arg3 == 0)) {
         return -1;
     }
-    if (func_00267560(func_001DF540(arg2, arg3)) != 0) {
+    if (Ta_IsUnitHide2(SzDuel_GetUnit(arg2, arg3)) != 0) {
         return -1;
     }
-    if (func_001E2100(arg2, arg3, 4) != 0) {
-        first = func_001E0830(arg0, arg1);
-        return func_0024EA70(first, func_001E0830(arg2, arg3)) + 1;
+    if (SzDuel_GetUnitStatus(arg2, arg3, 4) != 0) {
+        first = SzDuel_GetUnitAttr(arg0, arg1);
+        return ChkAttrAdv(first, SzDuel_GetUnitAttr(arg2, arg3)) + 1;
     }
-    if (func_00266DF0(0x3D) > 0) {
-        first = func_001E0830(arg0, arg1);
-        return func_0024EA70(first, func_001E0830(arg2, arg3)) + 1;
+    if (Ta_SearchUncTypeNaturalEffectUserNum(0x3D) > 0) {
+        first = SzDuel_GetUnitAttr(arg0, arg1);
+        return ChkAttrAdv(first, SzDuel_GetUnitAttr(arg2, arg3)) + 1;
     }
     return -1;
 }
 
-s32 func_00267B30(s32 arg0) {
+s32 Ta_GetSummonCalcRevision(s32 arg0) {
     s32 var_s0;
     s32 temp_v0;
     s32 var_s2;
@@ -1013,19 +1013,19 @@ s32 func_00267B30(s32 arg0) {
     u32 *temp_v0_3;
     u32 temp_a0;
 
-    temp_v0 = func_00266DF0(0x56);
+    temp_v0 = Ta_SearchUncTypeNaturalEffectUserNum(0x56);
     var_s2 = 0;
     for (var_s0 = 0; var_s0 < temp_v0; var_s0++) {
-            temp_v0_2 = func_00266C70(0x56, var_s0);
+            temp_v0_2 = Ta_SearchUncTypeNaturalEffectUser(0x56, var_s0);
             temp_s4 = temp_v0_2 >> 8;
             temp_s3 = temp_v0_2 & 0xFF;
-            temp_v0_3 = func_00250740(temp_s4, temp_s3, 2);
+            temp_v0_3 = Ta_GetUnitEffect(temp_s4, temp_s3, 2);
             if (temp_v0_3 != NULL) {
                 temp_a0 = *temp_v0_3;
                 if ((temp_a0 >> 8) == 0x56) {
                     temp_v1 = (temp_a0 >> 6) & 3;
                     if (temp_v1 == 2) {
-                        if (arg0 != func_0024DE70(temp_s4, temp_s3)) {
+                        if (arg0 != Ta_GetCurrentSide(temp_s4, temp_s3)) {
                             var_s2 -= 1;
                         }
                     } else if (temp_v1 == 3) {
@@ -1065,7 +1065,7 @@ struct jp_6835c {
     unsigned int dwParam;
 };
 
-int func_00267C50(int PrNo, void *eInfo_v)
+int Ta_Do_StandbyPhase(int PrNo, void *eInfo_v)
 {
     struct jp_6826f * eInfo = eInfo_v;
     int i;
@@ -1078,30 +1078,30 @@ int func_00267C50(int PrNo, void *eInfo_v)
     int eID;
     struct jp_6835c *temp;
 
-    TurnOwner = func_001DE540();
+    TurnOwner = SzDuel_GetTurnOwner();
     cRest = func_001DE690_b(TurnOwner);
     Unit = -1;
     if (PrNo == 0) {
-        fTwice = func_00266DF0(85);
+        fTwice = Ta_SearchUncTypeNaturalEffectUserNum(85);
         if (fTwice > 0 || TurnOwner == func_001DE550_b()) {
-            func_001DE570(func_001DE560_b() + 1);
+            SzDuel_SetTurnCount(func_001DE560_b() + 1);
         }
         for (i = 1; i < 11; i++) {
             temp = (struct jp_6835c *)func_00250740_b(0, i, 2);
             if (temp == 0 || temp->dwID >> 8 != 81) {
-                func_001E1E70(0, i, 1, 0);
+                SzDuel_SetUnitStatus(0, i, 1, 0);
             }
             temp = (struct jp_6835c *)func_00250740_b(1, i, 2);
             if (temp == 0 || temp->dwID >> 8 != 81) {
-                func_001E1E70(1, i, 1, 0);
+                SzDuel_SetUnitStatus(1, i, 1, 0);
             }
         }
         for (PrNo = 1; PrNo <= 5; PrNo++) {
-            if ((cRest = func_001E1700_b(TurnOwner, PrNo)) > 0 && func_001E2100(TurnOwner, PrNo, 4) && func_001E2100(TurnOwner, PrNo, 5)) {
+            if ((cRest = func_001E1700_b(TurnOwner, PrNo)) > 0 && SzDuel_GetUnitStatus(TurnOwner, PrNo, 4) && SzDuel_GetUnitStatus(TurnOwner, PrNo, 5)) {
                 if (fTwice > 0) {
-                    func_001E16A0_b(TurnOwner, PrNo, func_00250860(1, cRest - 2));
+                    func_001E16A0_b(TurnOwner, PrNo, GetCap(1, cRest - 2));
                 } else {
-                    func_001E16A0_b(TurnOwner, PrNo, func_00250860(1, cRest - 1));
+                    func_001E16A0_b(TurnOwner, PrNo, GetCap(1, cRest - 1));
                 }
             }
         }
@@ -1110,32 +1110,32 @@ int func_00267C50(int PrNo, void *eInfo_v)
     if (PrNo < 64) {
         if (PrNo - 32 < 6) {
             if (func_001DF540_b(TurnOwner, PrNo - 32) && PrNo - 32 != 0) {
-                if (func_001E2100(TurnOwner, PrNo - 32, 4) && func_001E2100(TurnOwner, PrNo - 32, 5) && func_001E2100(TurnOwner, PrNo - 32, 1) == 0 && func_00250740_b(TurnOwner, PrNo - 32, 2)) {
+                if (SzDuel_GetUnitStatus(TurnOwner, PrNo - 32, 4) && SzDuel_GetUnitStatus(TurnOwner, PrNo - 32, 5) && SzDuel_GetUnitStatus(TurnOwner, PrNo - 32, 1) == 0 && func_00250740_b(TurnOwner, PrNo - 32, 2)) {
                     Unit = TurnOwner << 8 | (PrNo - 32);
                 }
                 if (Unit >= 0) {
-                    Ret = func_00266500(Unit >> 8, Unit & 0xff, (struct jp_65da1 *)eInfo);
+                    Ret = Ta_ManageNaturalEffectInStandbyPhase(Unit >> 8, Unit & 0xff, (struct jp_65da1 *)eInfo);
                     return (PrNo + 1) << 16 | Ret;
                 }
             }
         }
         if (PrNo - 32 < 11) {
             if (func_001DF540_b((TurnOwner == 0 ? 1 : 0), PrNo - 37) && PrNo - 37 != 0) {
-                if (func_001E2100((TurnOwner == 0 ? 1 : 0), PrNo - 37, 4) && func_001E2100((TurnOwner == 0 ? 1 : 0), PrNo - 37, 5) && func_001E2100((TurnOwner == 0 ? 1 : 0), PrNo - 37, 1) == 0 && func_00250740_b((TurnOwner == 0 ? 1 : 0), PrNo - 37, 2)) {
+                if (SzDuel_GetUnitStatus((TurnOwner == 0 ? 1 : 0), PrNo - 37, 4) && SzDuel_GetUnitStatus((TurnOwner == 0 ? 1 : 0), PrNo - 37, 5) && SzDuel_GetUnitStatus((TurnOwner == 0 ? 1 : 0), PrNo - 37, 1) == 0 && func_00250740_b((TurnOwner == 0 ? 1 : 0), PrNo - 37, 2)) {
                     Unit = (TurnOwner == 0 ? 1 : 0) << 8 | (PrNo - 37);
                 }
                 if (Unit >= 0) {
-                    Ret = func_00266910(Unit >> 8, Unit & 0xff, eInfo);
+                    Ret = Ta_ManageNaturalEffectInStandbyPhase2(Unit >> 8, Unit & 0xff, eInfo);
                     return (PrNo + 1) << 16 | Ret;
                 }
             }
         }
         if (func_001DF540_b(TurnOwner, PrNo - 42) && PrNo - 42 != 0) {
-            if (func_001E2100(TurnOwner, PrNo - 42, 4) && func_001E2100(TurnOwner, PrNo - 42, 5) && func_001E2100(TurnOwner, PrNo - 42, 1) && func_00250740_b(TurnOwner, PrNo - 42, 2)) {
+            if (SzDuel_GetUnitStatus(TurnOwner, PrNo - 42, 4) && SzDuel_GetUnitStatus(TurnOwner, PrNo - 42, 5) && SzDuel_GetUnitStatus(TurnOwner, PrNo - 42, 1) && func_00250740_b(TurnOwner, PrNo - 42, 2)) {
                 Unit = TurnOwner << 8 | (PrNo - 42);
             }
             if (Unit >= 0) {
-                Ret = func_00266500(Unit >> 8, Unit & 0xff, (struct jp_65da1 *)eInfo);
+                Ret = Ta_ManageNaturalEffectInStandbyPhase(Unit >> 8, Unit & 0xff, (struct jp_65da1 *)eInfo);
                 return (PrNo + 1) << 16 | Ret;
             }
         }
@@ -1148,33 +1148,33 @@ int func_00267C50(int PrNo, void *eInfo_v)
     }
     if (PrNo < 96) {
         for (PrNo = 0; PrNo < 11; PrNo++) {
-            if (TurnOwner == func_0024DE70(0, PrNo)) {
-                func_001E1E70(0, PrNo, 0, 0);
+            if (TurnOwner == Ta_GetCurrentSide(0, PrNo)) {
+                SzDuel_SetUnitStatus(0, PrNo, 0, 0);
             } else {
-                func_001E1E70(0, PrNo, 0, 1);
+                SzDuel_SetUnitStatus(0, PrNo, 0, 1);
             }
-            if (TurnOwner == func_0024DE70(1, PrNo)) {
-                func_001E1E70(1, PrNo, 0, 0);
+            if (TurnOwner == Ta_GetCurrentSide(1, PrNo)) {
+                SzDuel_SetUnitStatus(1, PrNo, 0, 0);
             } else {
-                func_001E1E70(1, PrNo, 0, 1);
+                SzDuel_SetUnitStatus(1, PrNo, 0, 1);
             }
         }
         for (PrNo = 1; PrNo < 11; PrNo++) {
-            if (func_001E1580_b(TurnOwner, PrNo) > 0 || func_001E1640_b(TurnOwner, PrNo) > 0 || (func_001DE020(func_001E0700(TurnOwner, PrNo) >> 5) == 2 && func_001E2100(TurnOwner, PrNo, 4))) {
-                func_001E1E70(TurnOwner, PrNo, 0, 1);
+            if (func_001E1580_b(TurnOwner, PrNo) > 0 || func_001E1640_b(TurnOwner, PrNo) > 0 || (SzDuel_Kind2Type(SzDuel_GetUnitKind(TurnOwner, PrNo) >> 5) == 2 && SzDuel_GetUnitStatus(TurnOwner, PrNo, 4))) {
+                SzDuel_SetUnitStatus(TurnOwner, PrNo, 0, 1);
             }
         }
         for (PrNo = 1; PrNo < 11; PrNo++) {
-            if (func_001E1580_b((TurnOwner == 0 ? 1 : 0), PrNo) > 0 || func_001E1640_b((TurnOwner == 0 ? 1 : 0), PrNo) > 0 || (func_001DE020(func_001E0700((TurnOwner == 0 ? 1 : 0), PrNo) >> 5) == 2 && func_001E2100((TurnOwner == 0 ? 1 : 0), PrNo, 4))) {
-                func_001E1E70((TurnOwner == 0 ? 1 : 0), PrNo, 0, 1);
+            if (func_001E1580_b((TurnOwner == 0 ? 1 : 0), PrNo) > 0 || func_001E1640_b((TurnOwner == 0 ? 1 : 0), PrNo) > 0 || (SzDuel_Kind2Type(SzDuel_GetUnitKind((TurnOwner == 0 ? 1 : 0), PrNo) >> 5) == 2 && SzDuel_GetUnitStatus((TurnOwner == 0 ? 1 : 0), PrNo, 4))) {
+                SzDuel_SetUnitStatus((TurnOwner == 0 ? 1 : 0), PrNo, 0, 1);
             }
         }
         PrNo = 128;
     }
-    if (PrNo < 160 && func_00268460(TurnOwner) == 4) {
+    if (PrNo < 160 && Ta_IsExzodia(TurnOwner) == 4) {
         if (PrNo == 128) {
-            if ((eID = func_0026AB80((TurnOwner == 0 ? 1 : 0), 17)) >= 0) {
-                if ((Ret = func_0026AB80((TurnOwner == 0 ? 1 : 0), 46)) >= 0) {
+            if ((eID = Ta_IsActiveTrapB((TurnOwner == 0 ? 1 : 0), 17)) >= 0) {
+                if ((Ret = Ta_IsActiveTrapB((TurnOwner == 0 ? 1 : 0), 46)) >= 0) {
                     eInfo->eNO = 102;
                     eInfo->dwFrom = 1;
                     eInfo->dwTo = Ret;
@@ -1189,28 +1189,28 @@ int func_00267C50(int PrNo, void *eInfo_v)
             }
         }
         for (PrNo = 0; PrNo < 4; PrNo++) {
-            U_EXZ[PrNo] = func_00268600(TurnOwner, PrNo);
+            U_EXZ[PrNo] = Ta_GetExzodiaPartsUnit(TurnOwner, PrNo);
         }
         eInfo->eNO = 109;
         eInfo->dwFrom = TurnOwner;
         eInfo->dwTo = (U_EXZ[0] & 0xff) << 9 | ((U_EXZ[1] & 0xff) << 6 | ((U_EXZ[2] & 0xff) << 3 | (U_EXZ[3] & 0xff)));
         eInfo->dwPar = 0;
-        return func_0027F830(func_001DE540()) == 0 ? 0xff0005 : 0xff0001;
+        return TaTuto_IsTuto(SzDuel_GetTurnOwner()) == 0 ? 0xff0005 : 0xff0001;
     }
     if (func_001DE560_b() > 1) {
-        if (func_00266DF0(86) > 0) {
-            func_001DE5E0(TurnOwner, 0, cRest + func_00267B30(TurnOwner));
+        if (Ta_SearchUncTypeNaturalEffectUserNum(86) > 0) {
+            SzDuel_CalcSummonPower(TurnOwner, 0, cRest + Ta_GetSummonCalcRevision(TurnOwner));
         } else {
-            func_001DE5E0(TurnOwner, 0, cRest);
+            SzDuel_CalcSummonPower(TurnOwner, 0, cRest);
         }
     }
     func_001DE740_b(TurnOwner);
     if ((func_001DE740_b(TurnOwner) & 0x80) == 0) {
-        if ((Ret = func_0026EED0(TurnOwner)) > 0) {
+        if ((Ret = Ta_IsDestinyDraw(TurnOwner)) > 0) {
             func_001DE760_b(TurnOwner, Ret & 0xff);
         }
     }
-    func_001DE700(TurnOwner, 1);
+    SzDuel_SetHandPhase(TurnOwner, 1);
     return 0xff0000;
 }
 
@@ -1222,7 +1222,7 @@ extern struct DotrStateItem *func_001E36E0_b(int x, int y);
 extern int func_001E1580_b(int a, int b);
 extern int func_001E1640_b(int a, int b);
 
-int func_00268460(int side)
+int Ta_IsExzodia(int side)
 {
     int flags[4];
     int k;
@@ -1239,16 +1239,16 @@ int func_00268460(int side)
     if (func_001E1030_b(side, 0) == 58) {
     for (k = 0; k < 4; k++) {
         for (i = 0; i < 8; i++) {
-            cell = func_0024E410(side, i);
+            cell = Ta_GetSommonPiecePreference(side, i);
             y = cell & 0xff;
             x = cell >> 8;
             if (func_001E36E0_b(y, x) != 0) {
-                cell = func_001E3790(y, x);
+                cell = SzDuel_GetMapUnitID(y, x);
                 if (cell >= 0) {
                     hi = cell >> 8;
                     lo = cell & 0xff;
                     t = func_001E1030_b(hi, lo);
-                    if (t == func_002686F0(k) && func_001E2100(hi, lo, 4) != 0 && func_001E2100(hi, lo, 0) == 0 && func_001E2100(hi, lo, 1) == 0 && func_001E1580_b(hi, lo) == 0 && func_001E1640_b(hi, lo) == 0 && hi == side) {
+                    if (t == Ta_GetExzodiaPartsCardNo(k) && SzDuel_GetUnitStatus(hi, lo, 4) != 0 && SzDuel_GetUnitStatus(hi, lo, 0) == 0 && SzDuel_GetUnitStatus(hi, lo, 1) == 0 && func_001E1580_b(hi, lo) == 0 && func_001E1640_b(hi, lo) == 0 && hi == side) {
                         flags[k] = 1;
                     }
                 }
@@ -1261,8 +1261,8 @@ int func_00268460(int side)
     return 0;
 }
 
-s32 func_00268600(s32 arg0, s32 arg1) {
-    extern s32 func_001E1030();
+s32 Ta_GetExzodiaPartsUnit(s32 arg0, s32 arg1) {
+    extern s32 SzDuel_GetUnitCardNo();
     s32 type;
     s32 i;
     s32 v;
@@ -1274,11 +1274,11 @@ s32 func_00268600(s32 arg0, s32 arg1) {
     best = -1;
     min = 0xFF;
     for (i = 0; i < 8; i++) {
-        pos = func_0024E410(arg0, i);
-        if ((v = func_001E3790(pos & 0xFF, pos >> 8)) >= 0) {
-            type = func_001E1030(v >> 8, v & 0xFF);
-            if (type == func_002686F0(arg1)) {
-                dist = func_001E13C0(v >> 8, v & 0xFF);
+        pos = Ta_GetSommonPiecePreference(arg0, i);
+        if ((v = SzDuel_GetMapUnitID(pos & 0xFF, pos >> 8)) >= 0) {
+            type = SzDuel_GetUnitCardNo(v >> 8, v & 0xFF);
+            if (type == Ta_GetExzodiaPartsCardNo(arg1)) {
+                dist = SzDuel_GetUnitSummonOrder(v >> 8, v & 0xFF);
                 if (dist < min) {
                     min = dist;
                     best = v;
@@ -1289,7 +1289,7 @@ s32 func_00268600(s32 arg0, s32 arg1) {
     return best;
 }
 
-s32 func_002686F0(s32 arg0) {
+s32 Ta_GetExzodiaPartsCardNo(s32 arg0) {
     s32 result;
 
     switch (arg0) {
@@ -1332,7 +1332,7 @@ typedef struct State_00268760 {
 } State_00268760;
 
 
-s32 func_00268760(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_057(void *arg0, void *arg1, s32 arg2) {
     s32 stackData[4];
     s32 count;
     s32 *data = stackData;
@@ -1345,17 +1345,17 @@ s32 func_00268760(void *arg0, void *arg1, s32 arg2) {
     data[2] = 0;
     data[3] = 0;
     count = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(arg1);
+        InitEffectTemp(arg1);
         state->value = 0x80;
-        if (func_0024E910(command->flags) == 1) {
-            func_00260AF0(0x10, func_0024EC50(command->flags, 0), 100, 180);
+        if (Ta_GetUnitNumFrom22bitFlagList(command->flags) == 1) {
+            TaView_ReqFocusCamera(0x10, Ta_GetUnitOwnerIDFromLstCount(command->flags, 0), 100, 180);
         } else {
-            func_00260740(0x10);
+            TaView_ReqStdCompleteView(0x10);
         }
-        func_00260020(arg0, arg1, arg2, -1, 1, 1);
-        func_00255AC0(arg1, 0x22D);
+        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+        TaEffect_LoadModule(arg1, 0x22D);
         return 1;
     }
 
@@ -1365,43 +1365,43 @@ s32 func_00268760(void *arg0, void *arg1, s32 arg2) {
             state->value -= 15;
         } else {
             state->value = 0x30;
-            if (func_00255B50(arg1) == 1) {
-                func_001E42C0(0, -120, 80, 0x107);
-                func_0025F720(arg0, arg1, data, 0x22D);
+            if (TaEffect_IsLoadModule(arg1) == 1) {
+                SzDuel_OpenMsgPopup(0, -120, 80, 0x107);
+                Ta_SetEffectDependOnFlagLst(arg0, arg1, data, 0x22D);
                 state->stage++;
             }
         }
         if (state->value < 0x30) {
             state->value = 0x30;
         }
-        func_001F6CF0((u8)state->value);
+        SzEffect_SetBlackOutForDuel((u8)state->value);
         break;
 
     case 1:
         for (i = 0; i < state->count; i++) {
-            if (func_001F51D0(state->ids[i]) == 0) {
+            if (SzEffect_IsUse(state->ids[i]) == 0) {
                 count++;
             }
         }
         if (count < state->count) {
             return 1;
         }
-        func_001E4530();
+        SzDuel_CloseMsgPopup();
         count = 0;
         do {
             if ((command->flags >> (21 - count)) & 1) {
                 if (count < 11) {
-                    func_00250E80(0, count, 1, command->value);
-                    func_00250CA0(0, count, 1, command->value);
+                    TaUtil_CalcUnitDP(0, count, 1, command->value);
+                    TaUtil_CalcUnitAP(0, count, 1, command->value);
                 } else {
-                    func_00250E80(1, count - 11, 1, command->value);
-                    func_00250CA0(1, count - 11, 1, command->value);
+                    TaUtil_CalcUnitDP(1, count - 11, 1, command->value);
+                    TaUtil_CalcUnitAP(1, count - 11, 1, command->value);
                 }
             }
             count++;
         } while (count < 22);
-        func_00260020(arg0, arg1, arg2, 1, 0, 1);
-        func_00260A70(arg1, 0x10);
+        Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
+        TaView_RestoreOriginalView(arg1, 0x10);
         state->stage++;
         break;
 
@@ -1410,12 +1410,12 @@ s32 func_00268760(void *arg0, void *arg1, s32 arg2) {
         if (state->value > 0x80) {
             state->value = 0x80;
         }
-        func_001F6CF0((u8)state->value);
-        if (state->value == 0x80 && state->timer++ > 16 && func_0025FD90() == 1) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+        SzEffect_SetBlackOutForDuel((u8)state->value);
+        if (state->value == 0x80 && state->timer++ > 16 && Ta_IsFinishFade() == 1) {
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -1492,7 +1492,7 @@ struct jp_6a917 {
 extern int func_001DEE50_b(int index);
 extern struct jp_6b127 *func_001DD0E0_b(int id);
 
-int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
+int Ta_Eff_058(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c * eInfo = eInfo_v;
     struct jp_69942 * Temp = Temp_v;
@@ -1513,9 +1513,9 @@ int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
     eCall.dwTo = 0;
     eCall.dwPar = 0;
     j = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (ID >= 0) {
-        func_00255960(Temp);
+        InitEffectTemp(Temp);
         func_00260740_b(16);
         func_00255AC0_b(Temp, 508);
         func_00255AC0_b(Temp, 501);
@@ -1523,31 +1523,31 @@ int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
     }
     switch (Temp->wLvl) {
     case 0:
-        if (func_00255B50(Temp) == 1) {
+        if (TaEffect_IsLoadModule(Temp) == 1) {
             pCall->eNO = 508;
             pCall->dwFrom = 0;
             pCall->dwTo = 1;
             pCall->dwPar = eInfo->dwFrom;
-            Temp->eID[0] = func_00255A30(pCall, Temp);
+            Temp->eID[0] = Ta_Do_Effect(pCall, Temp);
             Temp->ePos[0] = 0xFFFF;
             Temp->wLvl++;
         }
         break;
     case 1:
-        if (func_001F51D0(Temp->eID[0])) {
+        if (SzEffect_IsUse(Temp->eID[0])) {
             return 1;
         }
-        func_001DF490(eInfo->dwTo, 1, eInfo->dwFrom);
+        SzDuel_CalcLP(eInfo->dwTo, 1, eInfo->dwFrom);
         Temp->wLvl++;
         break;
     case 2:
         for (; (unsigned)j < eInfo->dwPar; j++) {
-            LOC = func_0024E300(eInfo->dwTo, j, 1);
+            LOC = Ta_GetSummonablePieceWithOrder(eInfo->dwTo, j, 1);
             pCall->eNO = 501;
             pCall->dwFrom = 0;
             pCall->dwTo = LOC;
             pCall->dwPar = 0;
-            Temp->eID[j] = func_00255A30(pCall, Temp);
+            Temp->eID[j] = Ta_Do_Effect(pCall, Temp);
             if (LOC < 0) {
                 Temp->ePos[j] = 0xFFFF;
             } else {
@@ -1561,15 +1561,15 @@ int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
         
 
         for (LOC = 0; LOC < Temp->oNum; LOC++) {
-            if (func_001F51D0(Temp->eID[LOC])) {
-                if (func_001F52D0(Temp->eID[LOC]) == 2) {
+            if (SzEffect_IsUse(Temp->eID[LOC])) {
+                if (SzEffect_GetStatus(Temp->eID[LOC]) == 2) {
                     if ((unsigned short)Temp->ePos[LOC] != 0xFFFF) {
                         MaxNo = 999;
                         MaxEntry = -1;
                         MaxAP = 0;
                         cNum = func_001DEE50_b(eInfo->dwTo);
                         for (j = 0; j < cNum; j++) {
-                            cNO = func_001DEE00(eInfo->dwTo, j);
+                            cNO = SzDuel_InqGrave(eInfo->dwTo, j);
                             if (cNO != 999) {
                                 pInfo = func_001DD0E0_b(cNO);
                                 if (MaxAP <= pInfo->wAP && (pInfo->bKind >> 5) == 0) {
@@ -1582,7 +1582,7 @@ int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
                         }
                         j = func_001DEE50_b(eInfo->dwTo == 0 ? 1 : 0);
                         for (cNum = 0; cNum < j; cNum++) {
-                            cNO = func_001DEE00(eInfo->dwTo == 0 ? 1 : 0, cNum);
+                            cNO = SzDuel_InqGrave(eInfo->dwTo == 0 ? 1 : 0, cNum);
                             if (cNO != 999) {
                                 pInfo = func_001DD0E0_b(cNO);
                                 if (pInfo->wAP > MaxAP && (pInfo->bKind >> 5) == 0) {
@@ -1598,8 +1598,8 @@ int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
                             if (pVarInfo != 0) {
                                 pVarInfo->fFinish = -1;
                             }
-                            func_001DF000(MaxSide, MaxEntry);
-                            func_001DEF20(MaxSide);
+                            SzDuel_DelGrave(MaxSide, MaxEntry);
+                            SzDuel_PackGrave(MaxSide);
                             Temp->ePos[LOC] = 0xFFFF;
                         }
                     }
@@ -1619,10 +1619,10 @@ int func_00268AD0(void *eInfo_v, void *Temp_v, int ID)
         return 1;
     default:
         if (Temp->wCamTime++ > 16) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -1656,7 +1656,7 @@ typedef struct {
 } Req_00268FA0;
 
 
-s32 func_00268FA0(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_059(void *arg0, void *arg1, s32 arg2) {
     Src_00268FA0 *src = (Src_00268FA0 *)arg0;
     Work_00268FA0 *w = (Work_00268FA0 *)arg1;
     Req_00268FA0 req;
@@ -1671,70 +1671,70 @@ s32 func_00268FA0(void *arg0, void *arg1, s32 arg2) {
     req.wC = 0;
     p = &req;
     count = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(arg1);
-        func_00260740(0x10);
-        func_00255AC0(arg1, 0x1FC);
-        func_00255AC0(arg1, 0x211);
-        func_00260740(0x10);
+        InitEffectTemp(arg1);
+        TaView_ReqStdCompleteView(0x10);
+        TaEffect_LoadModule(arg1, 0x1FC);
+        TaEffect_LoadModule(arg1, 0x211);
+        TaView_ReqStdCompleteView(0x10);
         return 1;
     }
     switch (w->state) {
     case 0:
-        if (func_00255B50(arg1) == 1) {
+        if (TaEffect_IsLoadModule(arg1) == 1) {
             p->w0 = 0x1FC;
             p->w4 = 0;
             p->w8 = 1;
-            p->wC = func_002670F0(0x2C, (u16)src->fC);
-            w->ids[0] = func_00255A30(p, arg1);
+            p->wC = Ta_GetLPRevByNaturalEffect(0x2C, (u16)src->fC);
+            w->ids[0] = Ta_Do_Effect(p, arg1);
             w->f20 = 0xFFFF;
             w->nids++;
             w->state++;
         }
         break;
     case 1:
-        if (func_001F51D0(w->ids[0]) == 1) {
+        if (SzEffect_IsUse(w->ids[0]) == 1) {
             return 1;
         }
-        func_001DF490(src->f4, 1, func_002670F0(0x2C, (u16)src->fC));
+        SzDuel_CalcLP(src->f4, 1, Ta_GetLPRevByNaturalEffect(0x2C, (u16)src->fC));
         w->state++;
         break;
     case 2:
-        func_001E42C0(0, -0x78, 0x50, 0x106);
-        func_0025F720(arg0, arg1, p, 0x211);
+        SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x106);
+        Ta_SetEffectDependOnFlagLst(arg0, arg1, p, 0x211);
         w->state++;
         break;
     case 3:
         for (i = 0; i < w->nids; i++) {
-            if (func_001F51D0(w->ids[i]) == 0) {
+            if (SzEffect_IsUse(w->ids[i]) == 0) {
                 count++;
             }
         }
         if (count < w->nids) {
             return 1;
         }
-        func_001E4530();
+        SzDuel_CloseMsgPopup();
         for (j = 0; j < 0x16; j++) {
             if ((src->f8 >> (0x15 - j)) & 1) {
                 if (j < 0xB) {
-                    func_00250E80(0, j, 0, src->fC >> 16);
-                    func_00250CA0(0, j, 0, src->fC >> 16);
+                    TaUtil_CalcUnitDP(0, j, 0, src->fC >> 16);
+                    TaUtil_CalcUnitAP(0, j, 0, src->fC >> 16);
                 } else {
-                    func_00250E80(1, j - 0xB, 0, src->fC >> 16);
-                    func_00250CA0(1, j - 0xB, 0, src->fC >> 16);
+                    TaUtil_CalcUnitDP(1, j - 0xB, 0, src->fC >> 16);
+                    TaUtil_CalcUnitAP(1, j - 0xB, 0, src->fC >> 16);
                 }
             }
         }
-        func_00260A70(arg1, 0x10);
+        TaView_RestoreOriginalView(arg1, 0x10);
         w->state++;
         break;
     default:
         if (w->timer++ > 0x10) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -1760,7 +1760,7 @@ typedef struct {
 } Context_002692D0;
 
 
-s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_060(void *arg0, void *arg1, s32 arg2) {
     s32 data[4];
     s32 *params = data;
     State_002692D0 *state = (State_002692D0 *)arg1;
@@ -1770,14 +1770,14 @@ s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
     params[1] = 0;
     params[2] = 0;
     params[3] = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(arg1);
+        InitEffectTemp(arg1);
         state->alpha = 0x80;
-        state->id = func_0024EFB0(context->mask);
-        func_00260020(arg0, arg1, arg2, -1, 1, 1);
-        func_00260AF0(0x1E, state->id, 0x64, 0xB4);
-        func_00255AC0(arg1, 0x230);
+        state->id = Ta_GetMinimumOrderUnitFromFlagList(context->mask);
+        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+        TaView_ReqFocusCamera(0x1E, state->id, 0x64, 0xB4);
+        TaEffect_LoadModule(arg1, 0x230);
     } else {
         switch (state->state) {
         case 0:
@@ -1786,12 +1786,12 @@ s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
                 state->alpha -= 0xF;
             } else {
                 state->alpha = 0x30;
-                if (func_00255B50(arg1) == 1 && state->timer >= 0x1E) {
+                if (TaEffect_IsLoadModule(arg1) == 1 && state->timer >= 0x1E) {
                     params[0] = 0x230;
                     params[1] = 0;
                     params[2] = state->id;
                     params[3] = 0;
-                    state->handle = func_00255A30(params, arg1);
+                    state->handle = Ta_Do_Effect(params, arg1);
                     state->processed = 0;
                     state->state++;
                 }
@@ -1799,23 +1799,23 @@ s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
             if (state->alpha < 0x30) {
                 state->alpha = 0x30;
             }
-            func_001F6CF0((u8)state->alpha);
+            SzEffect_SetBlackOutForDuel((u8)state->alpha);
             return 1;
         case 1:
-            if (func_001F51D0(state->handle) == 1) {
-                if (func_001F52D0(state->handle) == 2 && state->processed == 0) {
+            if (SzEffect_IsUse(state->handle) == 1) {
+                if (SzEffect_GetStatus(state->handle) == 2 && state->processed == 0) {
                     s32 position;
 
-                    position = func_001E1090(state->id >> 8, state->id & 0xFF);
-                    func_0024F370(state->id >> 8, state->id & 0xFF);
-                    func_001DF580(func_00250360(state->id >> 8, state->id & 0xFF),
+                    position = SzDuel_GetUnitLoc(state->id >> 8, state->id & 0xFF);
+                    Ta_DelUnit(state->id >> 8, state->id & 0xFF);
+                    SzDuel_AddUnit(Ta_IsUnitControl(state->id >> 8, state->id & 0xFF),
                                  position & 0xFF, position >> 8, context->value, 0);
-                    func_001F5970(state->id, 0);
+                    SzEffect_SetBusyFlag2(state->id, 0);
                     state->processed = 1;
                 }
             } else {
-                func_00260020(arg0, arg1, arg2, 1, 0, 1);
-                func_00260A70(arg1, 0x10);
+                Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
+                TaView_RestoreOriginalView(arg1, 0x10);
                 state->timer = 0;
                 state->state++;
             }
@@ -1825,13 +1825,13 @@ s32 func_002692D0(void *arg0, void *arg1, s32 arg2) {
             if (state->alpha > 0x80) {
                 state->alpha = 0x80;
             }
-            func_001F6CF0((u8)state->alpha);
+            SzEffect_SetBlackOutForDuel((u8)state->alpha);
             if (state->alpha == 0x80) {
-                if (state->timer++ > 0x10 && func_0025FD90() == 1) {
-                    if (func_001DE780() != 0) {
-                        func_001DE7E0(1);
+                if (state->timer++ > 0x10 && Ta_IsFinishFade() == 1) {
+                    if (SzDuel_GetWindowDisp() != 0) {
+                        SzDuel_SetWindowDraw(1);
                     }
-                    func_001E4530();
+                    SzDuel_CloseMsgPopup();
                     return 0;
                 }
             }
@@ -1869,9 +1869,9 @@ typedef struct State_002695D0 {
 } State_002695D0;
 
 
-s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
-    extern s32 func_001E1030();
-    extern s32 func_001E1E10();
+s32 Ta_Eff_036(void *arg0, void *arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitCardNo();
+    extern s32 SzDuel_GetUnitOpenRate();
     Command_002695D0 storage;
     Command_002695D0 *command = &storage;
     Command_002695D0 *src = arg0;
@@ -1887,22 +1887,22 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
         s32 target;
         s32 second;
 
-        func_00255960(state);
-        if (func_001E2100(src->target >> 8, src->target & 0xFF, 2)) {
-            func_001E1E70(src->target >> 8, src->target & 0xFF, 4, 1);
+        InitEffectTemp(state);
+        if (SzDuel_GetUnitStatus(src->target >> 8, src->target & 0xFF, 2)) {
+            SzDuel_SetUnitStatus(src->target >> 8, src->target & 0xFF, 4, 1);
         }
-        if (func_001E2100(src->source >> 8, src->source & 0xFF, 2)) {
-            func_001E1E70(src->source >> 8, src->source & 0xFF, 4, 1);
+        if (SzDuel_GetUnitStatus(src->source >> 8, src->source & 0xFF, 2)) {
+            SzDuel_SetUnitStatus(src->source >> 8, src->source & 0xFF, 4, 1);
         }
-        if ((func_001E0700(src->source >> 8, src->source & 0xFF) >> 5) == 0) {
+        if ((SzDuel_GetUnitKind(src->source >> 8, src->source & 0xFF) >> 5) == 0) {
             state->side = 1;
-            func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 1);
+            SzDuel_SetUnitStatus(src->target >> 8, src->target & 0xFF, 2, 1);
         } else {
             state->side = 2;
-            func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 1);
+            SzDuel_SetUnitStatus(src->target >> 8, src->target & 0xFF, 2, 1);
         }
         if (src->value == 999) {
-            func_00255AC0(state, 0x21A);
+            TaEffect_LoadModule(state, 0x21A);
             state->side = 1;
         } else {
             if (state->side == 1) {
@@ -1915,27 +1915,27 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
             } else {
                 target = src->source;
             }
-            if ((first = func_0026AB80(src->source >> 8, 0x2B)) < 0 ||
-                !func_00249560(func_001E1030(target >> 8, target & 0xFF) & 0xFFFF) ||
-                func_00271F90(source >> 8, source & 0xFF,
-                    func_001E1090(source >> 8, source & 0xFF) & 0xFF,
-                    func_001E1090(source >> 8, source & 0xFF) >> 8, 0xB) == 1) {
+            if ((first = Ta_IsActiveTrapB(src->source >> 8, 0x2B)) < 0 ||
+                !TaEnc_IsActReflexEnc(SzDuel_GetUnitCardNo(target >> 8, target & 0xFF) & 0xFFFF) ||
+                Ta_IsLDRangeAvilityWithLocation(source >> 8, source & 0xFF,
+                    SzDuel_GetUnitLoc(source >> 8, source & 0xFF) & 0xFF,
+                    SzDuel_GetUnitLoc(source >> 8, source & 0xFF) >> 8, 0xB) == 1) {
                 state->flag = 0;
-                func_00269D60(src, state);
+                Ta_Eff_036_LoadEffect(src, state);
             } else {
-                func_00255AC0(state, 0x25A);
-                if ((second = func_0026AB80(src->target >> 8, 0x2E)) >= 0) {
-                    func_00260AF0(0, second, 0xB4, 0xB4);
-                    func_001F5970(second, 0);
-                    func_002516D0(second >> 8, second & 0xFF, 1);
+                TaEffect_LoadModule(state, 0x25A);
+                if ((second = Ta_IsActiveTrapB(src->target >> 8, 0x2E)) >= 0) {
+                    TaView_ReqFocusCamera(0, second, 0xB4, 0xB4);
+                    SzEffect_SetBusyFlag2(second, 0);
+                    TaUtil_DoOpen(second >> 8, second & 0xFF, 1);
                     state->mode = 16;
                     state->flag = 0;
                     state->position = second;
                     return 1;
                 }
-                func_00260AF0(0, first, 0xB4, 0xB4);
-                func_001F5970(first, 0);
-                func_002516D0(first >> 8, first & 0xFF, 1);
+                TaView_ReqFocusCamera(0, first, 0xB4, 0xB4);
+                SzEffect_SetBusyFlag2(first, 0);
+                TaUtil_DoOpen(first >> 8, first & 0xFF, 1);
                 state->mode = 16;
                 state->flag = 1;
                 state->position = first;
@@ -1947,7 +1947,7 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
 
     switch (state->mode) {
     case 0:
-        if (func_00255B50(state) == 1) {
+        if (TaEffect_IsLoadModule(state) == 1) {
             if (src->value == 999) {
                 command->id = 0x21A;
                 command->source = src->source;
@@ -1955,7 +1955,7 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
                 command->value = 1;
             }
             if (state->flag != 0) {
-                func_001E42C0(0, 0, -0xA0, func_001DE210(0x330));
+                SzDuel_OpenMsgPopup(0, 0, -0xA0, SzDuel_GetMsgName(0x330));
             } else {
                 s32 target;
                 if (state->side == 1) {
@@ -1963,36 +1963,36 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
                 } else {
                     target = src->source;
                 }
-                if (func_00249560(func_001E1030(target >> 8, target & 0xFF) & 0xFFFF)) {
-                    func_001E42C0(0, 0, -0xA0, 0x106);
+                if (TaEnc_IsActReflexEnc(SzDuel_GetUnitCardNo(target >> 8, target & 0xFF) & 0xFFFF)) {
+                    SzDuel_OpenMsgPopup(0, 0, -0xA0, 0x106);
                 }
             }
             command->id = state->ids[state->cursor];
             command->source = src->source;
             command->target = src->target;
             command->value = state->side;
-            state->handles[state->cursor] = func_00255A30(command, state);
+            state->handles[state->cursor] = Ta_Do_Effect(command, state);
             state->entries.delayed.timers[state->cursor] = 0;
             state->cursor++;
             state->mode++;
         }
         break;
     case 1:
-        if (func_001F51D0(state->handles[state->cursor - 1])) {
-            func_00269EC0(src, state);
-            if (func_001F52D0(state->handles[state->cursor - 1]) == 2) {
+        if (SzEffect_IsUse(state->handles[state->cursor - 1])) {
+            Ta_Eff_036_ManageSound(src, state);
+            if (SzEffect_GetStatus(state->handles[state->cursor - 1]) == 2) {
                 if (state->entries.flagBytes[state->cursor * 4] == 0 && src->value != 999) {
-                    if ((func_001E0700(src->source >> 8, src->source & 0xFF) >> 5) == 0) {
-                        func_00248460(src->source >> 8, src->source & 0xFF, (state->flag << 16) | (src->value & 0x3FFF), 0);
-                        func_0024F370(src->target >> 8, src->target & 0xFF);
-                        if (!func_001E2100(src->source >> 8, src->source & 0xFF, 4)) {
-                            func_001E1E70(src->source >> 8, src->source & 0xFF, 2, 0);
+                    if ((SzDuel_GetUnitKind(src->source >> 8, src->source & 0xFF) >> 5) == 0) {
+                        Enchant(src->source >> 8, src->source & 0xFF, (state->flag << 16) | (src->value & 0x3FFF), 0);
+                        Ta_DelUnit(src->target >> 8, src->target & 0xFF);
+                        if (!SzDuel_GetUnitStatus(src->source >> 8, src->source & 0xFF, 4)) {
+                            SzDuel_SetUnitStatus(src->source >> 8, src->source & 0xFF, 2, 0);
                         }
                     } else {
-                        func_00248460(src->target >> 8, src->target & 0xFF, (state->flag << 16) | (src->value & 0x3FFF), 0);
-                        func_0024F370(src->source >> 8, src->source & 0xFF);
-                        if (!func_001E2100(src->target >> 8, src->target & 0xFF, 4)) {
-                            func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 0);
+                        Enchant(src->target >> 8, src->target & 0xFF, (state->flag << 16) | (src->value & 0x3FFF), 0);
+                        Ta_DelUnit(src->source >> 8, src->source & 0xFF);
+                        if (!SzDuel_GetUnitStatus(src->target >> 8, src->target & 0xFF, 4)) {
+                            SzDuel_SetUnitStatus(src->target >> 8, src->target & 0xFF, 2, 0);
                         }
                     }
                     state->entries.flags[state->cursor] = 0xFFFF;
@@ -2000,40 +2000,40 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
             }
             return 1;
         }
-        func_001E4530();
+        SzDuel_CloseMsgPopup();
         if (src->value == 999) {
-            func_0024F370(src->source >> 8, src->source & 0xFF);
-            if (!func_001E2100(src->target >> 8, src->target & 0xFF, 4)) {
-                func_001E1E70(src->target >> 8, src->target & 0xFF, 2, 0);
+            Ta_DelUnit(src->source >> 8, src->source & 0xFF);
+            if (!SzDuel_GetUnitStatus(src->target >> 8, src->target & 0xFF, 4)) {
+                SzDuel_SetUnitStatus(src->target >> 8, src->target & 0xFF, 2, 0);
             }
         }
-        func_00217710(0, 2);
-        func_001E4530();
+        SzSound_PlaySE(0, 2);
+        SzDuel_CloseMsgPopup();
         return 0;
     case 16:
-        if (func_001E1E10((s32)state->position >> 8, state->position & 0xFF) == 0xFF && func_00255B50(state) == 1) {
+        if (SzDuel_GetUnitOpenRate((s32)state->position >> 8, state->position & 0xFF) == 0xFF && TaEffect_IsLoadModule(state) == 1) {
             if (state->flag != 0) {
-                func_001E42C0(0, -0x78, 0x50, 0x103);
+                SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x103);
             } else {
-                func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+                SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(0x339));
             }
             command->id = 0x25A;
             command->source = 0;
             command->target = state->position;
             command->value = 0;
             state->mode++;
-            state->handles[state->cursor] = func_00255A30(command, state);
+            state->handles[state->cursor] = Ta_Do_Effect(command, state);
             state->entries.delayed.timers[state->cursor] = 0;
             state->cursor++;
         }
         break;
     case 17:
-        if (func_001F51D0(state->handles[state->cursor - 1]) == 1) {
+        if (SzEffect_IsUse(state->handles[state->cursor - 1]) == 1) {
             return 1;
         }
-        func_001E1E70((s32)state->position >> 8, state->position & 0xFF, 0, 1);
-        func_00269D60(src, state);
-        func_00260A70(state, 0);
+        SzDuel_SetUnitStatus((s32)state->position >> 8, state->position & 0xFF, 0, 1);
+        Ta_Eff_036_LoadEffect(src, state);
+        TaView_RestoreOriginalView(state, 0);
         state->mode = 0;
         break;
     default:
@@ -2042,53 +2042,53 @@ s32 func_002695D0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_00269D60(void *arg0, void *arg1) {
+void Ta_Eff_036_LoadEffect(void *arg0, void *arg1) {
     u32 temp_v1;
 
     temp_v1 = *(u32 *)((u8 *)arg0 + 0xC) >> 14;
     switch (temp_v1) {
     case 0x218:
-        func_00255AC0(arg1, 0x218);
+        TaEffect_LoadModule(arg1, 0x218);
         return;
     case 0x21C:
-        func_00255AC0(arg1, 0x21C);
+        TaEffect_LoadModule(arg1, 0x21C);
         return;
     case 0x21D:
-        func_00255AC0(arg1, 0x21D);
+        TaEffect_LoadModule(arg1, 0x21D);
         return;
     case 0x21E:
-        func_00255AC0(arg1, 0x21E);
+        TaEffect_LoadModule(arg1, 0x21E);
         return;
     default:
-        func_00255AC0(arg1, 0x218);
+        TaEffect_LoadModule(arg1, 0x218);
         return;
     }
 }
 
-void func_00269E10(void *arg0) {
+void Ta_Eff_036_GetSound(void *arg0) {
     u32 temp_v1;
 
     temp_v1 = *(u32 *)((u8 *)arg0 + 0xC) >> 0xE;
     switch (temp_v1) {
     case 0x218:
-        func_00217710(1, 0x3B);
+        SzSound_PlaySE(1, 0x3B);
         return;
     case 0x21C:
-        func_00217710(1, 0x4B);
+        SzSound_PlaySE(1, 0x4B);
         return;
     case 0x21D:
-        func_00217710(1, 0x4E);
+        SzSound_PlaySE(1, 0x4E);
         return;
     case 0x21E:
-        func_00217710(1, 0x4F);
+        SzSound_PlaySE(1, 0x4F);
         return;
     default:
-        func_00217710(1, 0x4A);
+        SzSound_PlaySE(1, 0x4A);
         return;
     }
 }
 
-void func_00269EC0(void *arg0, void *arg1) {
+void Ta_Eff_036_ManageSound(void *arg0, void *arg1) {
     u32 *p0;
     s32 *p1;
     u32 temp_a2;
@@ -2122,20 +2122,20 @@ void func_00269EC0(void *arg0, void *arg1) {
         p1[0x34] = temp_v0 + 1;
         switch (temp_v0) {
         case 0:
-            func_00217710(1, 0x38);
+            SzSound_PlaySE(1, 0x38);
             break;
         case 0x14:
-            func_00217710(1, 0x39);
+            SzSound_PlaySE(1, 0x39);
             break;
         case 0x1E:
-            func_00217710(1, 0x4C);
+            SzSound_PlaySE(1, 0x4C);
             break;
         case 0x24:
-            func_00269E10(arg0);
+            Ta_Eff_036_GetSound(arg0);
             break;
         default:
             if (p1[0x34] == var_t0) {
-                func_00217710(1, 0x3C);
+                SzSound_PlaySE(1, 0x3C);
             }
             break;
         }
@@ -2145,25 +2145,25 @@ void func_00269EC0(void *arg0, void *arg1) {
         p1[0x34] = temp_v0 + 1;
         switch (temp_v0) {
         case 0:
-            func_00217710(1, 0x38);
+            SzSound_PlaySE(1, 0x38);
             return;
         case 0x14:
-            func_00217710(1, 0x39);
+            SzSound_PlaySE(1, 0x39);
             return;
         case 0x1E:
-            func_00217710(1, 0x4C);
+            SzSound_PlaySE(1, 0x4C);
             return;
         case 0x24:
-            func_00269E10(arg0);
+            Ta_Eff_036_GetSound(arg0);
             return;
         case 0x25:
             if ((p0[3] >> 0xE) == 0x21D || (p0[3] >> 0xE) == 0x21E) {
-                func_00217710(1, 0x3B);
+                SzSound_PlaySE(1, 0x3B);
             }
             return;
         default:
             if (p1[0x34] == var_t0) {
-                func_00217710(1, 0x3C);
+                SzSound_PlaySE(1, 0x3C);
             }
             return;
         }
@@ -2193,7 +2193,7 @@ typedef struct State_0026A0A0 {
 } State_0026A0A0;
 
 
-s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_037(void *arg0, void *arg1, s32 arg2) {
     Packet_0026A0A0 packet_data;
     Packet_0026A0A0 *packet = &packet_data;
     Packet_0026A0A0 *request = arg0;
@@ -2239,85 +2239,85 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
     u32 temp_v0_8;
     u32 var_v0;
 
-    extern s32 func_001E1E10();
+    extern s32 SzDuel_GetUnitOpenRate();
 
     packet_data.command = 0x3E7;
     packet_data.source = 0;
     packet_data.target = 0;
     packet_data.data = 0;
     if (arg2 >= 0) {
-        func_00255960(arg1);
+        InitEffectTemp(arg1);
         temp_v0 = request->target;
-        if (func_001E2100((s32) (temp_v0 >> 8), temp_v0 & 0xFF, 2) != 0) {
+        if (SzDuel_GetUnitStatus((s32) (temp_v0 >> 8), temp_v0 & 0xFF, 2) != 0) {
             temp_v0_2 = request->target;
-            func_001E1E70(temp_v0_2 >> 8, temp_v0_2 & 0xFF, 4, 1);
+            SzDuel_SetUnitStatus(temp_v0_2 >> 8, temp_v0_2 & 0xFF, 4, 1);
         }
         temp_v0_3 = request->source;
-        if (func_001E2100((s32) (temp_v0_3 >> 8), temp_v0_3 & 0xFF, 2) != 0) {
+        if (SzDuel_GetUnitStatus((s32) (temp_v0_3 >> 8), temp_v0_3 & 0xFF, 2) != 0) {
             temp_v0_4 = request->source;
-            func_001E1E70(temp_v0_4 >> 8, temp_v0_4 & 0xFF, 4, 1);
+            SzDuel_SetUnitStatus(temp_v0_4 >> 8, temp_v0_4 & 0xFF, 4, 1);
         }
         temp_v0_5 = request->source;
-        if ((func_001E0700((s32) (temp_v0_5 >> 8), temp_v0_5 & 0xFF) >> 5) == 0) {
+        if ((SzDuel_GetUnitKind((s32) (temp_v0_5 >> 8), temp_v0_5 & 0xFF) >> 5) == 0) {
             state->card = 1;
             temp_v0_6 = request->target;
-            func_001E1E70(temp_v0_6 >> 8, temp_v0_6 & 0xFF, 2, 1);
+            SzDuel_SetUnitStatus(temp_v0_6 >> 8, temp_v0_6 & 0xFF, 2, 1);
         } else {
             state->card = 2;
             temp_v0_7 = request->target;
-            func_001E1E70(temp_v0_7 >> 8, temp_v0_7 & 0xFF, 2, 1);
+            SzDuel_SetUnitStatus(temp_v0_7 >> 8, temp_v0_7 & 0xFF, 2, 1);
         }
-        var_s0 = func_00248E30((s32) ((u32) request->source >> 8), func_00248EA0());
+        var_s0 = Ta_GetForceEffection((s32) ((u32) request->source >> 8), Ta_GetEnchantOfs());
         temp_v0_8 = request->source;
-        if ((((func_001E0700((s32) (temp_v0_8 >> 8), temp_v0_8 & 0xFF) >> 5) == 0) ? 1 : 2) == 1) {
+        if ((((SzDuel_GetUnitKind((s32) (temp_v0_8 >> 8), temp_v0_8 & 0xFF) >> 5) == 0) ? 1 : 2) == 1) {
             var_v0 = request->source;
         } else {
             var_v0 = request->target;
         }
         temp_s4 = var_v0 & 0xFF;
         temp_s5 = (s32) var_v0 >> 8;
-        temp_s3 = func_001E1090(temp_s5, temp_s4) & 0xFF;
-        if (func_00271F90(temp_s5, temp_s4, temp_s3, func_001E1090(temp_s5, temp_s4) >> 8, 0xB) == 0) {
-            if ((temp_v0_9 = func_0026AB80((s32) ((u32) request->data >> 0x10), 0x29)) >= 0) {
-                func_00255AC0(arg1, 0x25A);
-                if ((temp_v0_10 = func_0026AB80((s32) request->target, 0x2E)) >= 0) {
-                    func_00255AC0(arg1, 0x219);
-                    func_00260AF0(0, temp_v0_10, 0xB4, 0xB4);
-                    func_001F5970(temp_v0_10, 0);
-                    func_002516D0(temp_v0_10 >> 8, temp_v0_10 & 0xFF, 1);
+        temp_s3 = SzDuel_GetUnitLoc(temp_s5, temp_s4) & 0xFF;
+        if (Ta_IsLDRangeAvilityWithLocation(temp_s5, temp_s4, temp_s3, SzDuel_GetUnitLoc(temp_s5, temp_s4) >> 8, 0xB) == 0) {
+            if ((temp_v0_9 = Ta_IsActiveTrapB((s32) ((u32) request->data >> 0x10), 0x29)) >= 0) {
+                TaEffect_LoadModule(arg1, 0x25A);
+                if ((temp_v0_10 = Ta_IsActiveTrapB((s32) request->target, 0x2E)) >= 0) {
+                    TaEffect_LoadModule(arg1, 0x219);
+                    TaView_ReqFocusCamera(0, temp_v0_10, 0xB4, 0xB4);
+                    SzEffect_SetBusyFlag2(temp_v0_10, 0);
+                    TaUtil_DoOpen(temp_v0_10 >> 8, temp_v0_10 & 0xFF, 1);
                     state->card = temp_v0_10;
                     state->phase = 0x10U;
                     state->mode = 0U;
                     state->id = (u16) var_s0;
                     return 1;
                 }
-                func_00255AC0(arg1, 0x223);
-                func_001DE7E0(0);
-                func_00260AF0(0, temp_v0_9, 0xB4, 0xB4);
+                TaEffect_LoadModule(arg1, 0x223);
+                SzDuel_SetWindowDraw(0);
+                TaView_ReqFocusCamera(0, temp_v0_9, 0xB4, 0xB4);
                 state->phase = 0x20U;
-                func_001F5970(temp_v0_9, 0);
-                func_002516D0(temp_v0_9 >> 8, temp_v0_9 & 0xFF, 1);
+                SzEffect_SetBusyFlag2(temp_v0_9, 0);
+                TaUtil_DoOpen(temp_v0_9 >> 8, temp_v0_9 & 0xFF, 1);
                 state->card = temp_v0_9;
                 state->mode = 0U;
                 state->id = (u16) var_s0;
                 return 1;
             }
-            if ((temp_v0_11 = func_0026AB80((s32) ((u32) request->target >> 8), 0x2B)) >= 0) {
-                func_00255AC0(arg1, 0x219);
-                func_00255AC0(arg1, 0x25A);
-                if ((temp_v0_12 = func_0026AB80((s32) request->target, 0x2E)) >= 0) {
-                    func_00260AF0(0, temp_v0_12, 0xB4, 0xB4);
-                    func_001F5970(temp_v0_12, 0);
-                    func_002516D0(temp_v0_12 >> 8, temp_v0_12 & 0xFF, 1);
+            if ((temp_v0_11 = Ta_IsActiveTrapB((s32) ((u32) request->target >> 8), 0x2B)) >= 0) {
+                TaEffect_LoadModule(arg1, 0x219);
+                TaEffect_LoadModule(arg1, 0x25A);
+                if ((temp_v0_12 = Ta_IsActiveTrapB((s32) request->target, 0x2E)) >= 0) {
+                    TaView_ReqFocusCamera(0, temp_v0_12, 0xB4, 0xB4);
+                    SzEffect_SetBusyFlag2(temp_v0_12, 0);
+                    TaUtil_DoOpen(temp_v0_12 >> 8, temp_v0_12 & 0xFF, 1);
                     state->card = temp_v0_12;
                     state->phase = 0x10U;
                     state->mode = 0U;
                     state->id = (u16) var_s0;
                     return 1;
                 }
-                func_00260AF0(0, temp_v0_11, 0xB4, 0xB4);
-                func_001F5970(temp_v0_11, 0);
-                func_002516D0(temp_v0_11 >> 8, temp_v0_11 & 0xFF, 1);
+                TaView_ReqFocusCamera(0, temp_v0_11, 0xB4, 0xB4);
+                SzEffect_SetBusyFlag2(temp_v0_11, 0);
+                TaUtil_DoOpen(temp_v0_11 >> 8, temp_v0_11 & 0xFF, 1);
                 state->card = temp_v0_11;
                 state->phase = 0x10U;
                 state->mode = 1U;
@@ -2325,7 +2325,7 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
                 return 1;
             }
         }
-        func_00255AC0(arg1, 0x219);
+        TaEffect_LoadModule(arg1, 0x219);
         if (var_s0 < 0) {
             var_s0 = 0;
         }
@@ -2334,14 +2334,14 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
         state->mode = 0U;
         return 1;
     }
-    if (func_00255B50(arg1) != 1) {
+    if (TaEffect_IsLoadModule(arg1) != 1) {
         return 1;
     }
     temp_v1 = state->phase;
     switch (temp_v1) {
     case 0:
-        func_001DE7E0(0);
-        func_001E42C0(0, -0x78, 0x50, 0x10B);
+        SzDuel_SetWindowDraw(0);
+        SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10B);
         packet->command = 0x223;
         if (((u32) request->target >> 8) == 0) {
             var_v0_2 = 1;
@@ -2351,104 +2351,104 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
         packet->source = (u32) (var_v0_2 << 8);
         packet->target = (u32) (((u32) request->target >> 8) << 8);
         packet->data = (s32) state->id;
-        state->handle = func_00255A30(packet, arg1);
+        state->handle = Ta_Do_Effect(packet, arg1);
         state->children = (u8) (state->children + 1);
         state->phase = (u16) (state->phase + 1);
         return 1;
     case 1:
-        func_001DE7E0(0);
-        if (func_001F51D0((s32) state->handle) != 0) {
+        SzDuel_SetWindowDraw(0);
+        if (SzEffect_IsUse((s32) state->handle) != 0) {
             temp_a0 = state->ticks;
             state->ticks = (u16) (temp_a0 + 1);
             if (temp_a0 == 6) {
-                func_00261570(0x1E, ((request->target == 0) ? 1 : 0) << 8, 0x64U, 0xB4U);
+                TaView_ReqFireView(0x1E, ((request->target == 0) ? 1 : 0) << 8, 0x64U, 0xB4U);
             }
         } else {
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             temp_v0_13 = request->source;
-            if ((func_001E0700((s32) (temp_v0_13 >> 8), temp_v0_13 & 0xFF) >> 5) == 0) {
+            if ((SzDuel_GetUnitKind((s32) (temp_v0_13 >> 8), temp_v0_13 & 0xFF) >> 5) == 0) {
                 temp_v0_14 = request->target;
-                func_0024F370(temp_v0_14 >> 8, temp_v0_14 & 0xFF);
+                Ta_DelUnit(temp_v0_14 >> 8, temp_v0_14 & 0xFF);
             } else {
                 temp_v0_15 = request->source;
-                func_0024F370(temp_v0_15 >> 8, temp_v0_15 & 0xFF);
+                Ta_DelUnit(temp_v0_15 >> 8, temp_v0_15 & 0xFF);
             }
-            func_001DF490((s32) ((u32) request->source >> 8), 1, (s32) state->id);
-            func_00260A70(arg1, 0x10);
+            SzDuel_CalcLP((s32) ((u32) request->source >> 8), 1, (s32) state->id);
+            TaView_RestoreOriginalView(arg1, 0x10);
             state->ticks = 0U;
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
             state->phase = 0x40U;
         }
         return 1;
     case 2:
         if (state->mode == 1) {
-            func_001E42C0(0, 0, -0xA0, func_001DE210(0x330));
+            SzDuel_OpenMsgPopup(0, 0, -0xA0, SzDuel_GetMsgName(0x330));
         } else {
-            func_001E42C0(0, 0, -0xA0, 0x10C);
+            SzDuel_OpenMsgPopup(0, 0, -0xA0, 0x10C);
         }
         packet->command = 0x219;
         packet->source = (u32) request->source;
         packet->target = (u32) request->target;
         temp_v0_16 = request->source;
-        if ((func_001E0700((s32) (temp_v0_16 >> 8), temp_v0_16 & 0xFF) >> 5) == 0) {
+        if ((SzDuel_GetUnitKind((s32) (temp_v0_16 >> 8), temp_v0_16 & 0xFF) >> 5) == 0) {
             var_a2 = 1;
         } else {
             var_a2 = 2;
         }
         packet->data = (s32) ((state->id << 0x10) | ((state->mode << 8) | var_a2));
-        state->handle = func_00255A30(packet, arg1);
+        state->handle = Ta_Do_Effect(packet, arg1);
         state->phase = (u16) (state->phase + 1);
         break;
     case 3:
-        if (func_001F51D0((s32) state->handle) != 0) {
+        if (SzEffect_IsUse((s32) state->handle) != 0) {
             temp_a0_2 = state->frame;
             state->frame = (s32) (temp_a0_2 + 1);
             switch (temp_a0_2) {
             case 0x0:
-                func_00217710(1, 0x38);
+                SzSound_PlaySE(1, 0x38);
                 break;
             case 0x14:
-                func_00217710(1, 0x39);
+                SzSound_PlaySE(1, 0x39);
                 break;
             case 0x1E:
-                func_00217710(1, 0x4C);
+                SzSound_PlaySE(1, 0x4C);
                 break;
             case 0x24:
-                func_00217710(1, 0x4D);
+                SzSound_PlaySE(1, 0x4D);
                 break;
             case 0x25:
-                func_00217710(1, 0x3B);
+                SzSound_PlaySE(1, 0x3B);
                 break;
             case 0x40:
-                func_00217710(1, 0x3C);
+                SzSound_PlaySE(1, 0x3C);
                 break;
             }
-            if (func_001F52D0((s32) state->handle) == 2) {
+            if (SzEffect_GetStatus((s32) state->handle) == 2) {
                 if (*(u8 *)&state->done != 0xFFFF) {
                     temp_v0_17 = request->source;
-                    if ((func_001E0700((s32) (temp_v0_17 >> 8), temp_v0_17 & 0xFF) >> 5) == 0) {
+                    if ((SzDuel_GetUnitKind((s32) (temp_v0_17 >> 8), temp_v0_17 & 0xFF) >> 5) == 0) {
                         temp_v0_18 = request->data;
                         temp_a1 = request->source;
-                        func_00248460(temp_a1 >> 8, temp_a1 & 0xFF, (state->mode << 0x10) | (temp_v0_18 & 0x3FFF), (temp_v0_18 >> 0x10) & 0xFF);
+                        Enchant(temp_a1 >> 8, temp_a1 & 0xFF, (state->mode << 0x10) | (temp_v0_18 & 0x3FFF), (temp_v0_18 >> 0x10) & 0xFF);
                         temp_v0_19 = request->target;
-                        func_0024F370(temp_v0_19 >> 8, temp_v0_19 & 0xFF);
+                        Ta_DelUnit(temp_v0_19 >> 8, temp_v0_19 & 0xFF);
                         temp_v0_20 = request->source;
-                        if (func_001E2100((s32) (temp_v0_20 >> 8), temp_v0_20 & 0xFF, 4) == 0) {
+                        if (SzDuel_GetUnitStatus((s32) (temp_v0_20 >> 8), temp_v0_20 & 0xFF, 4) == 0) {
                             temp_v0_21 = request->source;
-                            func_001E1E70(temp_v0_21 >> 8, temp_v0_21 & 0xFF, 2, 0);
+                            SzDuel_SetUnitStatus(temp_v0_21 >> 8, temp_v0_21 & 0xFF, 2, 0);
                         }
                     } else {
                         temp_v0_22 = request->data;
                         temp_a1_2 = request->target;
-                        func_00248460(temp_a1_2 >> 8, temp_a1_2 & 0xFF, (state->mode << 0x10) | (temp_v0_22 & 0x3FFF), (temp_v0_22 >> 0x10) & 0xFF);
+                        Enchant(temp_a1_2 >> 8, temp_a1_2 & 0xFF, (state->mode << 0x10) | (temp_v0_22 & 0x3FFF), (temp_v0_22 >> 0x10) & 0xFF);
                         temp_v0_23 = request->source;
-                        func_0024F370(temp_v0_23 >> 8, temp_v0_23 & 0xFF);
+                        Ta_DelUnit(temp_v0_23 >> 8, temp_v0_23 & 0xFF);
                         temp_v0_24 = request->target;
-                        if (func_001E2100((s32) (temp_v0_24 >> 8), temp_v0_24 & 0xFF, 4) == 0) {
+                        if (SzDuel_GetUnitStatus((s32) (temp_v0_24 >> 8), temp_v0_24 & 0xFF, 4) == 0) {
                             temp_v0_25 = request->target;
-                            func_001E1E70(temp_v0_25 >> 8, temp_v0_25 & 0xFF, 2, 0);
+                            SzDuel_SetUnitStatus(temp_v0_25 >> 8, temp_v0_25 & 0xFF, 2, 0);
                         }
                     }
                     state->done = 0xFFFF;
@@ -2456,22 +2456,22 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
             }
             return 1;
         }
-        func_001E4530();
-        func_00217710(0, 2);
-        func_001E4530();
+        SzDuel_CloseMsgPopup();
+        SzSound_PlaySE(0, 2);
+        SzDuel_CloseMsgPopup();
         return 0;
     case 16:
-        if (func_001E1E10((u32)state->card >> 8, state->card & 0xFF) == 0xFF) {
+        if (SzDuel_GetUnitOpenRate((u32)state->card >> 8, state->card & 0xFF) == 0xFF) {
             if (state->mode == 1) {
-                func_001E42C0(0, -0x78, 0x50, 0x103);
+                SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x103);
             } else {
-                func_001E42C0(0, -0x78, 0x50, func_001DE210(0x339));
+                SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(0x339));
             }
             packet->command = 0x25A;
             packet->source = 0U;
             packet->target = (u32) state->card;
             packet->data = 0;
-            state->handle = func_00255A30(packet, arg1);
+            state->handle = Ta_Do_Effect(packet, arg1);
             state->done = 0;
             state->children = (u8) (state->children + 1);
             state->phase = 0x11U;
@@ -2479,24 +2479,24 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
 
         break;
     case 17:
-        if (func_001F51D0((s32) state->handle) == 1) {
+        if (SzEffect_IsUse((s32) state->handle) == 1) {
             return 1;
         }
         temp_v0_26 = state->card;
-        func_001E1E70((u32) temp_v0_26 >> 8, temp_v0_26 & 0xFF, 0, 1);
-        func_001E4530();
-        func_00260A70(arg1, 0);
+        SzDuel_SetUnitStatus((u32) temp_v0_26 >> 8, temp_v0_26 & 0xFF, 0, 1);
+        SzDuel_CloseMsgPopup();
+        TaView_RestoreOriginalView(arg1, 0);
         state->phase = 2U;
         break;
     case 32:
-        func_001DE7E0(0);
-        if (func_001E1E10((u32)state->card >> 8, state->card & 0xFF) == 0xFF) {
-            func_001E42C0(0, -0x78, 0x50, 0x32E);
+        SzDuel_SetWindowDraw(0);
+        if (SzDuel_GetUnitOpenRate((u32)state->card >> 8, state->card & 0xFF) == 0xFF) {
+            SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x32E);
             packet->command = 0x25A;
             packet->source = 0U;
             packet->target = (u32) state->card;
             packet->data = 0;
-            state->handle = func_00255A30(packet, arg1);
+            state->handle = Ta_Do_Effect(packet, arg1);
             state->done = 0;
             state->children = (u8) (state->children + 1);
             state->phase = (u16) (state->phase + 1);
@@ -2504,21 +2504,21 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
         }
         break;
     case 33:
-        func_001DE7E0(0);
-        if (func_001F51D0((s32) state->handle) != 0) {
+        SzDuel_SetWindowDraw(0);
+        if (SzEffect_IsUse((s32) state->handle) != 0) {
             return 1;
         }
         temp_v0_27 = state->card;
-        func_001E1E70((u32) temp_v0_27 >> 8, temp_v0_27 & 0xFF, 0, 1);
-        func_002610D0(0, ((u32) state->card >> 8) << 8, 0x64, 0xB4);
+        SzDuel_SetUnitStatus((u32) temp_v0_27 >> 8, temp_v0_27 & 0xFF, 0, 1);
+        TaView_ReqBackFocusCamera(0, ((u32) state->card >> 8) << 8, 0x64, 0xB4);
         state->phase = 0U;
         break;
     default:
         temp_v1_2 = state->ticks;
         state->ticks = (u16) (temp_v1_2 + 1);
         if ((s32) temp_v1_2 > 0x10) {
-            func_00217710(0, 2);
-            func_001E4530();
+            SzSound_PlaySE(0, 2);
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -2526,7 +2526,7 @@ s32 func_0026A0A0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_0026AB80(s32 arg0, s32 arg1) {
+s32 Ta_IsActiveTrapB(s32 arg0, s32 arg1) {
     switch (arg1) {
     case 0x29:
     case 0x2A:
@@ -2538,20 +2538,20 @@ s32 func_0026AB80(s32 arg0, s32 arg1) {
     case 0x4:
     case 0x30:
     case 0x31:
-        return func_0026AC90(arg0, 2, arg1);
+        return Ta_GetActiveTrapBUnit(arg0, 2, arg1);
     case 0x50:
     case 0x4C:
     case 0x2D:
     case 0x11:
     case 0x2E:
     case 0x2B:
-        return func_0026AC90(arg0, 3, arg1);
+        return Ta_GetActiveTrapBUnit(arg0, 3, arg1);
     default:
         return -1;
     }
 }
 
-s32 func_0026AC90(s32 arg0, s32 arg1, s32 arg2) {
+s32 Ta_GetActiveTrapBUnit(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 best;
     s32 result;
@@ -2559,15 +2559,15 @@ s32 func_0026AC90(s32 arg0, s32 arg1, s32 arg2) {
 
     best = 0xFF;
     result = 0xFF;
-    if (func_00266DF0(0xF) > 0) {
+    if (Ta_SearchUncTypeNaturalEffectUserNum(0xF) > 0) {
         return -1;
     }
     if (arg1 & 1) {
         for (i = 6; i < 11; i++) {
-            if ((entry = func_00250740(arg0, i, 0)) != NULL) {
-                if ((func_001E0700(arg0, i) >> 5) == 4 && (*entry >> 8) == arg2 &&
-                    func_001E13C0(arg0, i) < best) {
-                    best = func_001E13C0(arg0, i);
+            if ((entry = Ta_GetUnitEffect(arg0, i, 0)) != NULL) {
+                if ((SzDuel_GetUnitKind(arg0, i) >> 5) == 4 && (*entry >> 8) == arg2 &&
+                    SzDuel_GetUnitSummonOrder(arg0, i) < best) {
+                    best = SzDuel_GetUnitSummonOrder(arg0, i);
                     result = (arg0 << 8) | i;
                 }
             }
@@ -2575,10 +2575,10 @@ s32 func_0026AC90(s32 arg0, s32 arg1, s32 arg2) {
     }
     if (arg1 >> 1) {
         for (i = 6; i < 11; i++) {
-            if ((entry = func_00250740(arg0 == 0 ? 1 : 0, i, 0)) != NULL) {
-                if ((func_001E0700(arg0 == 0 ? 1 : 0, i) >> 5) == 4 && (*entry >> 8) == arg2 &&
-                    func_001E13C0(arg0 == 0 ? 1 : 0, i) < best) {
-                    best = func_001E13C0(arg0 == 0 ? 1 : 0, i);
+            if ((entry = Ta_GetUnitEffect(arg0 == 0 ? 1 : 0, i, 0)) != NULL) {
+                if ((SzDuel_GetUnitKind(arg0 == 0 ? 1 : 0, i) >> 5) == 4 && (*entry >> 8) == arg2 &&
+                    SzDuel_GetUnitSummonOrder(arg0 == 0 ? 1 : 0, i) < best) {
+                    best = SzDuel_GetUnitSummonOrder(arg0 == 0 ? 1 : 0, i);
                     result = i | ((arg0 == 0 ? 1 : 0) << 8);
                 }
             }
@@ -2590,7 +2590,7 @@ s32 func_0026AC90(s32 arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+s32 Ta_IsTrapBInDecideOperation(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     s32 value;
     s32 position;
     s32 result;
@@ -2598,26 +2598,26 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     s32 special;
 
     special = 0;
-    position = func_001E1090(arg0, arg1);
-    id = func_0024DE70(arg0, arg1);
+    position = SzDuel_GetUnitLoc(arg0, arg1);
+    id = Ta_GetCurrentSide(arg0, arg1);
     if (!arg1) {
         return 0;
     }
-    if (func_00271F90(arg0, arg1, position & 0xFF, position >> 8, 0xB) != 0) {
+    if (Ta_IsLDRangeAvilityWithLocation(arg0, arg1, position & 0xFF, position >> 8, 0xB) != 0) {
         special = 1;
     }
-    if (func_00267700(arg0, arg1) != 0) {
+    if (Ta_IsResistAll(arg0, arg1) != 0) {
         return 0;
     }
     switch (arg2) {
     s32 fallback;
     case 0: {
         s32 value;
-        if ((value = func_0026AB80(id, 0x2C)) >= 0) {
+        if ((value = Ta_IsActiveTrapB(id, 0x2C)) >= 0) {
             if (1 == special) {
                 s32 position;
-                position = func_001E1090(id, 0);
-                func_00260490(position & 0xFF, position >> 8, 0, func_00271740(9, id), 1, 1, 0xB);
+                position = SzDuel_GetUnitLoc(id, 0);
+                Ta_SetRangeVisual(position & 0xFF, position >> 8, 0, Ta_IsLDAbl(9, id), 1, 1, 0xB);
                 arg3[0] = 0xFE;
                 arg3[1] = 0;
                 arg3[2] = id << 8;
@@ -2625,7 +2625,7 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
                 result = 1;
                 break;
             }
-            if ((fallback = func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
+            if ((fallback = Ta_IsActiveTrapB(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
                 arg3[0] = 0x66;
                 arg3[1] = 1;
                 arg3[2] = fallback;
@@ -2645,11 +2645,11 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     }
     default: {
         s32 fallback;
-        if ((value = func_0026AB80(id, 0x4A)) >= 0) {
+        if ((value = Ta_IsActiveTrapB(id, 0x4A)) >= 0) {
             if (special == 1) {
                 s32 position;
-                position = func_001E1090(id, 0);
-                func_00260490(position & 0xFF, position >> 8, 0, func_00271740(9, id), 1, 1, 0xB);
+                position = SzDuel_GetUnitLoc(id, 0);
+                Ta_SetRangeVisual(position & 0xFF, position >> 8, 0, Ta_IsLDAbl(9, id), 1, 1, 0xB);
                 arg3[0] = 0xFE;
                 arg3[1] = 0;
                 arg3[2] = id << 8;
@@ -2657,7 +2657,7 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
                 result = 1;
                 break;
             }
-            if ((fallback = func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
+            if ((fallback = Ta_IsActiveTrapB(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
                 arg3[0] = 0x66;
                 arg3[1] = 1;
                 arg3[2] = fallback;
@@ -2672,11 +2672,11 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
             result = 0x10001;
             break;
         }
-        if ((value = func_0026AB80(id, 0x23)) >= 0) {
+        if ((value = Ta_IsActiveTrapB(id, 0x23)) >= 0) {
             if (special == 1) {
                 s32 position;
-                position = func_001E1090(id, 0);
-                func_00260490(position & 0xFF, position >> 8, 0, func_00271740(9, id), 1, 1, 0xB);
+                position = SzDuel_GetUnitLoc(id, 0);
+                Ta_SetRangeVisual(position & 0xFF, position >> 8, 0, Ta_IsLDAbl(9, id), 1, 1, 0xB);
                 arg3[0] = 0xFE;
                 arg3[1] = 0;
                 arg3[2] = id << 8;
@@ -2684,7 +2684,7 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
                 result = 1;
                 break;
             }
-            if ((fallback = func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
+            if ((fallback = Ta_IsActiveTrapB(arg0 == 0 ? 1 : 0, 0x2E)) >= 0) {
                 arg3[0] = 0x66;
                 arg3[1] = 1;
                 arg3[2] = fallback;
@@ -2706,48 +2706,48 @@ s32 func_0026AE70(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     return result;
 }
 
-s32 func_0026B1F0(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
+s32 Ta_IsTrapBInDecideOperation2(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     s32 s1;
     s32 card;
     s32 pos;
 
-    s1 = func_001E1090(arg0, arg1);
-    card = func_0024DE70(arg0, arg1);
+    s1 = SzDuel_GetUnitLoc(arg0, arg1);
+    card = Ta_GetCurrentSide(arg0, arg1);
     if (arg1 == 0) {
         return 0;
     }
-    if (func_00271F90(arg0, arg1, s1 & 0xFF, s1 >> 8, 0xB) != 0) {
-        s1 = func_00250360(arg0, arg1) == 0 ? 1 : 0;
-        if (func_00267380(func_001DF540(arg0, arg1), s1) == 0) {
+    if (Ta_IsLDRangeAvilityWithLocation(arg0, arg1, s1 & 0xFF, s1 >> 8, 0xB) != 0) {
+        s1 = Ta_IsUnitControl(arg0, arg1) == 0 ? 1 : 0;
+        if (Ta_IsUnitHide(SzDuel_GetUnit(arg0, arg1), s1) == 0) {
             return 1;
         }
     }
-    if (func_00267700(arg0, arg1) != 0) {
+    if (Ta_IsResistAll(arg0, arg1) != 0) {
         return 0;
     }
     switch (arg2) {
     case 0:
-        pos = func_0026AB80(card, 0x2C);
-        if (pos >= 0 && (arg3 != 0 || func_001E2100(pos >> 8, pos & 0xFF, 4) != 0)) {
-            if (func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
+        pos = Ta_IsActiveTrapB(card, 0x2C);
+        if (pos >= 0 && (arg3 != 0 || SzDuel_GetUnitStatus(pos >> 8, pos & 0xFF, 4) != 0)) {
+            if (Ta_IsActiveTrapB(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
                 return 0;
             }
             return 0x10001;
         }
         return 0;
     default:
-        pos = func_0026AB80(card, 0x4A);
+        pos = Ta_IsActiveTrapB(card, 0x4A);
         if (pos >= 0) {
-            if (arg3 != 0 || func_001E2100(pos >> 8, pos & 0xFF, 4) != 0) {
-                if (func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
+            if (arg3 != 0 || SzDuel_GetUnitStatus(pos >> 8, pos & 0xFF, 4) != 0) {
+                if (Ta_IsActiveTrapB(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
                     return 0;
                 }
                 return 0x10001;
             }
         } else {
-            pos = func_0026AB80(card, 0x23);
-            if (pos >= 0 && (arg3 != 0 || func_001E2100(pos >> 8, pos & 0xFF, 4) != 0)) {
-                if (func_0026AB80(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
+            pos = Ta_IsActiveTrapB(card, 0x23);
+            if (pos >= 0 && (arg3 != 0 || SzDuel_GetUnitStatus(pos >> 8, pos & 0xFF, 4) != 0)) {
+                if (Ta_IsActiveTrapB(arg0 == 0 ? 1 : 0, 0x2E) >= 0) {
                     return 0;
                 }
                 return 1;
@@ -2757,10 +2757,10 @@ s32 func_0026B1F0(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     }
 }
 
-s32 func_0026B430(void *arg0) {
+s32 Ta_DoUncTrapB(void *arg0) {
     ((s32 *)arg0)[0] = 0x66;
     ((s32 *)arg0)[1] = 1;
-    ((s32 *)arg0)[2] = func_0026AB80(0, 0x2E);
+    ((s32 *)arg0)[2] = Ta_IsActiveTrapB(0, 0x2E);
     ((s32 *)arg0)[3] = 0;
     return 1;
 }
@@ -2783,10 +2783,10 @@ typedef struct State_0026B480 {
 } State_0026B480;
 
 
-s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
-    extern s32 func_001E1030();
-    extern s32 func_001E1E10();
-    extern s32 func_0025F670();
+s32 Ta_Eff_054(void *arg0, void *arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitCardNo();
+    extern s32 SzDuel_GetUnitOpenRate();
+    extern s32 Ta_IsFinishDestEfc();
     s32 buffer[4];
     s32 *command = buffer;
     Request_0026B480 *request = arg0;
@@ -2801,87 +2801,87 @@ s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
     buffer[1] = 0;
     buffer[2] = 0;
     buffer[3] = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(state);
+        InitEffectTemp(state);
         value = request->command;
-        func_002516D0((value & 0xFFFF) >> 8, value & 0xFF, 1);
-        func_00255AC0(state, 0x22);
-        func_00255AC0(state, 0x22B);
-        func_00255AC0(state, 0x22D);
-        func_00255AC0(state, 0x25A);
-        func_00255AC0(state, 0x25B);
-        func_00260D10(0, (u16)request->command, 180, 180);
+        TaUtil_DoOpen((value & 0xFFFF) >> 8, value & 0xFF, 1);
+        TaEffect_LoadModule(state, 0x22);
+        TaEffect_LoadModule(state, 0x22B);
+        TaEffect_LoadModule(state, 0x22D);
+        TaEffect_LoadModule(state, 0x25A);
+        TaEffect_LoadModule(state, 0x25B);
+        TaView_ReqFocusCamera3(0, (u16)request->command, 180, 180);
         state->phase = 16;
         return 1;
     }
 
     switch (state->phase) {
     case 0:
-        if (func_001F51D0(state->handles[0]) == 1) {
+        if (SzEffect_IsUse(state->handles[0]) == 1) {
             return 1;
         }
         value = request->command;
-        func_001E1E70((value & 0xFFFF) >> 8, value & 0xFF, 0, 1);
+        SzDuel_SetUnitStatus((value & 0xFFFF) >> 8, value & 0xFF, 0, 1);
         value = request->command;
-        func_001E42C0(0, -120, 80,
-            func_001DE210(func_001E1030((value & 0xFFFF) >> 8, value & 0xFF)));
+        SzDuel_OpenMsgPopup(0, -120, 80,
+            SzDuel_GetMsgName(SzDuel_GetUnitCardNo((value & 0xFFFF) >> 8, value & 0xFF)));
         value = request->command;
         if ((value >> 16) != 49) {
-            func_0024F370((value & 0xFFFF) >> 8, value & 0xFF);
+            Ta_DelUnit((value & 0xFFFF) >> 8, value & 0xFF);
         }
-        func_00260AF0(0, request->position, 100, 180);
+        TaView_ReqFocusCamera(0, request->position, 100, 180);
         command[0] = 0x22;
         command[1] = 0;
         command[2] = request->position;
         command[3] = 0;
-        state->handles[0] = func_00255A30(command, state);
+        state->handles[0] = Ta_Do_Effect(command, state);
         state->phase++;
         return 1;
 
     case 1:
-        if (func_001F51D0(state->handles[0]) == 1) {
+        if (SzEffect_IsUse(state->handles[0]) == 1) {
             return 1;
         }
         switch (request->command >> 16) {
         case 4:
             position = request->position;
-            card = func_0024CA40(0, 0,
-                func_0024DE70(position >> 8, position & 0xFF), 2, 0x35, 14);
+            card = SearchUnitByRange(0, 0,
+                Ta_GetCurrentSide(position >> 8, position & 0xFF), 2, 0x35, 14);
             value = request->command;
-            value = func_00272330(card,
-                func_00250360((value & 0xFFFF) >> 8, value & 0xFF));
+            value = Ta_RemoveObjFromFlagLst2(card,
+                Ta_IsUnitControl((value & 0xFFFF) >> 8, value & 0xFF));
             request->result = value;
             if (value == 0) {
                 timer = state->timer++;
                 if (timer > 16) {
-                    func_001E4530();
+                    SzDuel_CloseMsgPopup();
                     return 0;
                 }
                 return 1;
             }
-            if (func_0024E910(request->result) == 1) {
-                func_00260AF0(0, func_0024EC50(request->result, 0), 100, 180);
+            if (Ta_GetUnitNumFrom22bitFlagList(request->result) == 1) {
+                TaView_ReqFocusCamera(0, Ta_GetUnitOwnerIDFromLstCount(request->result, 0), 100, 180);
             } else {
-                func_00260740(0);
+                TaView_ReqStdCompleteView(0);
             }
-            func_0025F720(request, state, command, 0x22B);
+            Ta_SetEffectDependOnFlagLst(request, state, command, 0x22B);
             state->phase = 2;
             return 1;
 
         case 48:
             state->phase = 4;
-            func_001E4530();
-            func_00260A70(state, 16);
+            SzDuel_CloseMsgPopup();
+            TaView_RestoreOriginalView(state, 16);
             break;
 
         case 49:
-            func_00260AF0(0, request->result, 100, 180);
+            TaView_ReqFocusCamera(0, request->result, 100, 180);
             command[0] = 0x22B;
             command[1] = 0;
             command[2] = request->result;
             command[3] = 0;
-            state->handles[state->count] = func_00255A30(command, state);
+            state->handles[state->count] = Ta_Do_Effect(command, state);
             state->slots[state->count] = 1;
             state->phase = 2;
             state->count++;
@@ -2892,20 +2892,20 @@ s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
     case 2:
         switch (request->command >> 16) {
         case 4:
-            if (func_0025F400(request, state, command) != 0) {
+            if (Ta_ManageDestroyEffect(request, state, command) != 0) {
                 state->phase++;
             }
             break;
 
         case 49:
-            if (func_001F51D0(state->handles[state->count - 1]) == 1 &&
-                func_001F52D0(state->handles[state->count - 1]) == 2 &&
+            if (SzEffect_IsUse(state->handles[state->count - 1]) == 1 &&
+                SzEffect_GetStatus(state->handles[state->count - 1]) == 2 &&
                 state->slots[state->count - 1] >= 0) {
                 command[0] = 0x22D;
                 command[1] = 0;
                 command[2] = request->result;
                 command[3] = 0;
-                state->handles[state->count] = func_00255A30(command, state);
+                state->handles[state->count] = Ta_Do_Effect(command, state);
                 state->slots[state->count] = 1;
                 state->phase++;
                 state->count++;
@@ -2913,7 +2913,7 @@ s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
             break;
 
         default:
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -2921,29 +2921,29 @@ s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
     case 3:
         switch (request->command >> 16) {
         case 4:
-            if (func_0025F670(request, state, command) != 0) {
-                func_001E4530();
-                func_00260A70(state, 16);
+            if (Ta_IsFinishDestEfc(request, state, command) != 0) {
+                SzDuel_CloseMsgPopup();
+                TaView_RestoreOriginalView(state, 16);
                 state->phase++;
             }
             break;
 
         case 49:
             for (i = 0; i < state->count; i++) {
-                if (func_001F51D0(state->handles[i]) == 1) {
+                if (SzEffect_IsUse(state->handles[i]) == 1) {
                     return 1;
                 }
             }
             position = request->result;
-            card = func_001E0290(position / 256, position & 0xFF, 0);
-            func_00250CA0(position >> 8, (u8)position, 1, card >> 1);
-            func_001E4530();
-            func_00260A70(state, 16);
+            card = SzDuel_GetUnitAP(position / 256, position & 0xFF, 0);
+            TaUtil_CalcUnitAP(position >> 8, (u8)position, 1, card >> 1);
+            SzDuel_CloseMsgPopup();
+            TaView_RestoreOriginalView(state, 16);
             state->phase++;
             break;
 
         default:
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -2951,18 +2951,18 @@ s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
     case 4:
         timer = state->timer++;
         if (timer > 16) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
 
     case 16:
         value = request->command;
-        if (func_001E1E10((value & 0xFFFF) >> 8, value & 0xFF) == 0xFF &&
-            func_00255B50(state) == 1) {
+        if (SzDuel_GetUnitOpenRate((value & 0xFFFF) >> 8, value & 0xFF) == 0xFF &&
+            TaEffect_IsLoadModule(state) == 1) {
             switch (request->command >> 16) {
             case 49:
                 command[0] = 0x25A;
@@ -2977,9 +2977,9 @@ s32 func_0026B480(void *arg0, void *arg1, s32 arg2) {
                 command[3] = 1;
                 break;
             }
-            state->handles[0] = func_00255A30(command, state);
+            state->handles[0] = Ta_Do_Effect(command, state);
             state->phase = 0;
-            func_001E42C0(0, -120, 80, 0x103);
+            SzDuel_OpenMsgPopup(0, -120, 80, 0x103);
             return 1;
         }
         break;
@@ -3006,8 +3006,8 @@ typedef struct State_0026BB80 {
 } State_0026BB80;
 
 
-s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
-    extern s32 func_001E1E10();
+s32 Ta_Eff_056(void *arg0, void *arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitOpenRate();
     Command_0026BB80 request;
     Command_0026BB80 *command = &request;
     State_0026BB80 *state = arg1;
@@ -3022,58 +3022,58 @@ s32 func_0026BB80(void *arg0, void *arg1, s32 arg2) {
     request.x = 0;
     request.y = 0;
     count = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(arg1);
-        for (i = 0; i < func_0024E910(source->mask); i++) {
-            position = func_0024EC50(source->mask, i);
-            func_002516D0(position >> 8, position & 0xFF, 1);
+        InitEffectTemp(arg1);
+        for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(source->mask); i++) {
+            position = Ta_GetUnitOwnerIDFromLstCount(source->mask, i);
+            TaUtil_DoOpen(position >> 8, position & 0xFF, 1);
         }
-        func_00255AC0(arg1, 0x3B);
-        func_00260740(0x10);
+        TaEffect_LoadModule(arg1, 0x3B);
+        TaView_ReqStdCompleteView(0x10);
         return 1;
     }
 
     switch (state->state) {
     case 0:
-        for (index = 0; index < func_0024E910(source->mask); index++) {
-            position = func_0024EC50(source->mask, index);
-            if (func_001E1E10(position >> 8, position & 0xFF) == 0xFF) {
+        for (index = 0; index < Ta_GetUnitNumFrom22bitFlagList(source->mask); index++) {
+            position = Ta_GetUnitOwnerIDFromLstCount(source->mask, index);
+            if (SzDuel_GetUnitOpenRate(position >> 8, position & 0xFF) == 0xFF) {
                 count++;
             }
         }
         if (count >= 3) {
-            if (func_00255B50(arg1) == 1) {
+            if (TaEffect_IsLoadModule(arg1) == 1) {
                 state->state = 1;
-                func_001E42C0(0, -0x78, 0x50, 0x105);
+                SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x105);
                 command->id = 0x3B;
                 command->mask = source->mask;
                 command->x = source->x;
                 command->y = source->y;
-                state->handle = func_00255A30(command, arg1);
+                state->handle = Ta_Do_Effect(command, arg1);
             }
         }
         return 1;
     case 1:
-        if (func_001F51D0(state->handle) == 1) {
-            if (func_001F52D0(state->handle) == 2) {
-                for (i = 0; i < func_0024E910(source->mask); i++) {
-                    position = func_0024EC50(source->mask, i);
-                    func_0024F370(position >> 8, position & 0xFF);
+        if (SzEffect_IsUse(state->handle) == 1) {
+            if (SzEffect_GetStatus(state->handle) == 2) {
+                for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(source->mask); i++) {
+                    position = Ta_GetUnitOwnerIDFromLstCount(source->mask, i);
+                    Ta_DelUnit(position >> 8, position & 0xFF);
                 }
             }
             return 1;
         }
-        func_001E4530();
-        func_00260A70(arg1, 0x10);
+        SzDuel_CloseMsgPopup();
+        TaView_RestoreOriginalView(arg1, 0x10);
         state->state++;
         break;
     default:
         if (state->timer++ > 0x10) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -3101,8 +3101,8 @@ typedef struct {
     s32 field_C;
 } Temp_0026BE20;
 
-s32 func_0026BE20(void *arg0, void *arg1, s32 arg2) {
-    extern s32 func_001E1E10();
+s32 Ta_Eff_101(void *arg0, void *arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitOpenRate();
     Temp_0026BE20 tempStorage;
     Temp_0026BE20 *temp = &tempStorage;
     State_0026BE20 *state;
@@ -3116,26 +3116,26 @@ s32 func_0026BE20(void *arg0, void *arg1, s32 arg2) {
     state = (State_0026BE20 *)arg1;
 
     if (arg2 >= 0) {
-        func_00255960(state);
-        func_00255AC0(state, 0x259);
-        func_002516D0(obj->field_8 >> 8, obj->field_8 & 0xFF, 1);
+        InitEffectTemp(state);
+        TaEffect_LoadModule(state, 0x259);
+        TaUtil_DoOpen(obj->field_8 >> 8, obj->field_8 & 0xFF, 1);
         return 1;
     }
 
-    if (func_00255B50(state) == 1) {
-        if (func_001E1E10(obj->field_8 >> 8, obj->field_8 & 0xFF) == 0xFF) {
+    if (TaEffect_IsLoadModule(state) == 1) {
+        if (SzDuel_GetUnitOpenRate(obj->field_8 >> 8, obj->field_8 & 0xFF) == 0xFF) {
             if (state->state == 0) {
                 temp->field_0 = 0x259;
                 temp->field_4 = 0;
                 temp->field_8 = obj->field_8;
                 temp->field_C = obj->field_C;
-                state->id = func_00255A30(temp, state);
+                state->id = Ta_Do_Effect(temp, state);
                 state->state++;
             } else {
-                if (func_001F51D0(state->id) == 1) {
+                if (SzEffect_IsUse(state->id) == 1) {
                     return 1;
                 }
-                func_001E4530();
+                SzDuel_CloseMsgPopup();
                 return 0;
             }
         }
@@ -3167,9 +3167,9 @@ typedef struct {
 } Temp_0026BF50;
 
 
-s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
-    extern s32 func_001E1030();
-    extern s32 func_001E1E10();
+s32 Ta_Eff_102(void *arg0, void *arg1, s32 arg2) {
+    extern s32 SzDuel_GetUnitCardNo();
+    extern s32 SzDuel_GetUnitOpenRate();
     Temp_0026BF50 tempStorage;
     Temp_0026BF50 *temp = &tempStorage;
     State_0026BF50 *state;
@@ -3183,49 +3183,49 @@ s32 func_0026BF50(void *arg0, void *arg1, s32 arg2) {
     state = (State_0026BF50 *)arg1;
 
     if (arg2 >= 0) {
-        func_00255960(state);
-        func_002516D0(obj->field_8 >> 8, obj->field_8 & 0xFF, 1);
-        func_00260AF0(0, obj->field_8, 0xB4, 0xB4);
-        func_00255AC0(state, 0x25A);
+        InitEffectTemp(state);
+        TaUtil_DoOpen(obj->field_8 >> 8, obj->field_8 & 0xFF, 1);
+        TaView_ReqFocusCamera(0, obj->field_8, 0xB4, 0xB4);
+        TaEffect_LoadModule(state, 0x25A);
         return 1;
     }
 
     switch (state->state) {
     case 0:
-        if (func_001E1E10(obj->field_8 >> 8, obj->field_8 & 0xFF) == 0xFF) {
-            if (func_00255B50(state) == 1) {
+        if (SzDuel_GetUnitOpenRate(obj->field_8 >> 8, obj->field_8 & 0xFF) == 0xFF) {
+            if (TaEffect_IsLoadModule(state) == 1) {
                 if (obj->field_4 == 1) {
-                    s32 value = func_001E1030(obj->field_8 >> 8, obj->field_8 & 0xFF);
-                    func_001E42C0(0, -0x78, 0x50, func_001DE210(value));
+                    s32 value = SzDuel_GetUnitCardNo(obj->field_8 >> 8, obj->field_8 & 0xFF);
+                    SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(value));
                 } else {
-                    func_001E42C0(0, -0x78, 0x50, 0x10D);
+                    SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10D);
                 }
                 temp->field_0 = 0x25A;
                 temp->field_4 = 0;
                 temp->field_8 = obj->field_8;
                 temp->field_C = 0;
-                state->id = func_00255A30((s32 *)temp, state);
+                state->id = Ta_Do_Effect((s32 *)temp, state);
                 state->state++;
             }
         }
         break;
     case 1:
-        if (func_001F51D0(state->id) != 0) {
+        if (SzEffect_IsUse(state->id) != 0) {
             return 1;
         }
-        func_001E1E70(obj->field_8 >> 8, obj->field_8 & 0xFF, 0, 1);
-        func_001E4530();
-        func_00260A70(state, 0x10);
+        SzDuel_SetUnitStatus(obj->field_8 >> 8, obj->field_8 & 0xFF, 0, 1);
+        SzDuel_CloseMsgPopup();
+        TaView_RestoreOriginalView(state, 0x10);
         if (obj->field_C != 0) {
-            func_0024F370(obj->field_8 >> 8, obj->field_8 & 0xFF);
+            Ta_DelUnit(obj->field_8 >> 8, obj->field_8 & 0xFF);
         } else {
-            func_001F5970(obj->field_8, 0);
+            SzEffect_SetBusyFlag2(obj->field_8, 0);
         }
         state->state++;
         return 1;
     default:
         if (state->counter++ > 0x10) {
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -3276,7 +3276,7 @@ typedef struct Vec4_0026C170 {
     f32 w;
 } Vec4_0026C170;
 
-s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
+s32 Ta_Eff_109(u32 *src, void *arg1, s32 arg2) {
     s32 busy;
     Request_0026C170 data;
     u8 done = 0;
@@ -3294,67 +3294,67 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
     data.value = 0;
     data.cell = 0;
     data.flag = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     color.w = 0.0f;
     color.z = 0.0f;
     color.y = 0.0f;
     color.x = 0.0f;
     busy = 0;
-    card = (Card_0026C170 *)func_001DF540(src[1], 0);
+    card = (Card_0026C170 *)SzDuel_GetUnit(src[1], 0);
     if (arg2 >= 0) {
-        func_00255960(state);
-        func_00217980(0x2B, 0);
-        func_00255AC0(state, 0x3D);
-        func_00255AC0(state, 0x3E);
-        func_00255AC0(state, 0x3F);
-        func_00255AC0(state, 0x26C);
-        if (func_0027F830(func_001DE540()) == 0) {
-            func_001E8780(0x20, -1, 0x2E1, 1);
-            func_001F25D0(0x20, &color);
+        InitEffectTemp(state);
+        SzSound_PlayBGM(0x2B, 0);
+        TaEffect_LoadModule(state, 0x3D);
+        TaEffect_LoadModule(state, 0x3E);
+        TaEffect_LoadModule(state, 0x3F);
+        TaEffect_LoadModule(state, 0x26C);
+        if (TaTuto_IsTuto(SzDuel_GetTurnOwner()) == 0) {
+            SzModel_Load(0x20, -1, 0x2E1, 1);
+            SzModel_SetScale(0x20, &color);
         }
-        func_002516D0(src[1], src[2] & 7, 1);
-        func_002516D0(src[1], (src[2] >> 3) & 7, 1);
-        func_002516D0(src[1], (src[2] >> 6) & 7, 1);
-        func_002516D0(src[1], (src[2] >> 9) & 7, 1);
+        TaUtil_DoOpen(src[1], src[2] & 7, 1);
+        TaUtil_DoOpen(src[1], (src[2] >> 3) & 7, 1);
+        TaUtil_DoOpen(src[1], (src[2] >> 6) & 7, 1);
+        TaUtil_DoOpen(src[1], (src[2] >> 9) & 7, 1);
         state->fade = 0x80;
         for (i = 1; i < 11; i++) {
-            if (func_001DF540((src[1] == 0) ? 1 : 0, i)) {
-                func_002516D0((src[1] == 0) ? 1 : 0, i, 1);
+            if (SzDuel_GetUnit((src[1] == 0) ? 1 : 0, i)) {
+                TaUtil_DoOpen((src[1] == 0) ? 1 : 0, i, 1);
             }
         }
         return 1;
     }
     switch (state->stage) {
     case 0:
-        if (func_002179C0() == 0) {
-            func_00260AF0(0, (src[1] << 8) | (src[2] & 7), 0x32, 0xB4);
-            func_00217980(0x2B, 1);
+        if (SzSound_IsLoadingBGM() == 0) {
+            TaView_ReqFocusCamera(0, (src[1] << 8) | (src[2] & 7), 0x32, 0xB4);
+            SzSound_PlayBGM(0x2B, 1);
             if (card->model == NULL) {
-                card->model = func_001CDAA0();
+                card->model = SzDuel_GetCardRequest();
             }
             if (card->model != NULL) {
                 *(Card_0026C170 **)(card->model + 0x90) = card;
-                func_001E10F0(card->x, card->y, 0, card->model);
+                SzDuel_CalcUnitPos(card->x, card->y, 0, card->model);
                 pos.x = 0.0f;
                 pos.y = 0.0f;
                 pos.z = (src[1] == 0) ? 350.0f : -350.0f;
                 rot.x = 0;
                 rot.y = (src[1] == 0) ? 0x8000 : 0;
                 rot.z = 0;
-                func_001F22B0(0x20, &pos);
-                func_001F2430(0x20, &rot);
+                SzModel_SetPos(0x20, &pos);
+                SzModel_SetRot(0x20, &rot);
             }
-            func_002516D0(src[1], 0, 1);
-            func_001E1970(src[1], 0, 0);
-            func_001E1B70(src[1], 0, -1, 0);
-            func_001E1D70(src[1], 0, 1, 0x80);
+            TaUtil_DoOpen(src[1], 0, 1);
+            SzDuel_SetUnitCtlGoalC(src[1], 0, 0);
+            SzDuel_SetUnitCtlRateC(src[1], 0, -1, 0);
+            SzDuel_SetUnitOpenRate(src[1], 0, 1, 0x80);
             state->stage++;
         }
         break;
     case 1:
         if (state->timer++ > 24) {
-            if (func_001F5EC0((src[1] << 8) | ((src[2] >> 3) & 7))) {
-                func_00260AF0(0, (src[1] << 8) | ((src[2] >> 3) & 7), 0x32, 0xB4);
+            if (SzEffect_IsModelStandby2((src[1] << 8) | ((src[2] >> 3) & 7))) {
+                TaView_ReqFocusCamera(0, (src[1] << 8) | ((src[2] >> 3) & 7), 0x32, 0xB4);
                 state->timer = 0;
                 state->stage++;
             }
@@ -3362,8 +3362,8 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         break;
     case 2:
         if (state->timer++ > 24) {
-            if (func_001F5EC0((src[1] << 8) | ((src[2] >> 6) & 7))) {
-                func_00260AF0(0, (src[1] << 8) | ((src[2] >> 6) & 7), 0x32, 0xB4);
+            if (SzEffect_IsModelStandby2((src[1] << 8) | ((src[2] >> 6) & 7))) {
+                TaView_ReqFocusCamera(0, (src[1] << 8) | ((src[2] >> 6) & 7), 0x32, 0xB4);
                 state->timer = 0;
                 state->stage++;
             }
@@ -3371,8 +3371,8 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         break;
     case 3:
         if (state->timer++ > 24) {
-            if (func_001F5EC0((src[1] << 8) | ((src[2] >> 9) & 7))) {
-                func_00260AF0(0, (src[1] << 8) | ((src[2] >> 9) & 7), 0x32, 0xB4);
+            if (SzEffect_IsModelStandby2((src[1] << 8) | ((src[2] >> 9) & 7))) {
+                TaView_ReqFocusCamera(0, (src[1] << 8) | ((src[2] >> 9) & 7), 0x32, 0xB4);
                 state->timer = 0;
                 state->stage++;
             }
@@ -3380,9 +3380,9 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         break;
     case 4:
         if (state->timer++ > 24) {
-            if (func_001F5EC0(src[1] << 8)) {
-                func_00260AF0(0, src[1] << 8, 0xC8, 0xB4);
-                func_001A86A0(6);
+            if (SzEffect_IsModelStandby2(src[1] << 8)) {
+                TaView_ReqFocusCamera(0, src[1] << 8, 0xC8, 0xB4);
+                SzGame_SetAutoBlur(6);
                 state->timer = 0;
                 state->stage++;
             }
@@ -3390,16 +3390,16 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         break;
     case 5:
         if (state->timer++ == 0) {
-            func_00217710(0, 0x27);
-            func_00260AF0(0xC, src[1] << 8, 0x32, 0xB4);
+            SzSound_PlaySE(0, 0x27);
+            TaView_ReqFocusCamera(0xC, src[1] << 8, 0x32, 0xB4);
             return 1;
         }
         if (state->timer >= 12) {
-            func_001A86A0(4);
+            SzGame_SetAutoBlur(4);
         }
-        if (state->timer >= 24 && func_00255B50(state)) {
-            func_001A86A0(0);
-            func_00260EB0(0, src[1] << 8, 0xB4, 0xB4);
+        if (state->timer >= 24 && TaEffect_IsLoadModule(state)) {
+            SzGame_SetAutoBlur(0);
+            TaView_ReqExzFocusCamera(0, src[1] << 8, 0xB4, 0xB4);
             state->phase++;
             state->timer = 0;
             state->stage++;
@@ -3412,9 +3412,9 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
     case 1:
         req->command = 0x26C;
         req->value = 0;
-        req->cell = func_001E1090(src[1], (src[2] >> 9) & 7);
+        req->cell = SzDuel_GetUnitLoc(src[1], (src[2] >> 9) & 7);
         req->flag = 0;
-        state->handles[state->count] = func_00255A30(req, state);
+        state->handles[state->count] = Ta_Do_Effect(req, state);
         state->count++;
         state->timer = 0;
         state->phase++;
@@ -3423,9 +3423,9 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         if (state->timer++ > 24) {
             req->command = 0x26C;
             req->value = 0;
-            req->cell = func_001E1090(src[1], (src[2] >> 6) & 7);
+            req->cell = SzDuel_GetUnitLoc(src[1], (src[2] >> 6) & 7);
             req->flag = 0;
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->count++;
             state->timer = 0;
             state->phase++;
@@ -3435,9 +3435,9 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         if (state->timer++ > 24) {
             req->command = 0x26C;
             req->value = 0;
-            req->cell = func_001E1090(src[1], (src[2] >> 3) & 7);
+            req->cell = SzDuel_GetUnitLoc(src[1], (src[2] >> 3) & 7);
             req->flag = 0;
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->count++;
             state->timer = 0;
             state->phase++;
@@ -3447,9 +3447,9 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         if (state->timer++ > 24) {
             req->command = 0x26C;
             req->value = 0;
-            req->cell = func_001E1090(src[1], src[2] & 7);
+            req->cell = SzDuel_GetUnitLoc(src[1], src[2] & 7);
             req->flag = 0;
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->count++;
             state->timer = 0;
             state->phase++;
@@ -3457,12 +3457,12 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         break;
     case 5:
         if (state->timer++ > 24) {
-            func_002500C0(src[1], 0, 1, 1, 2);
+            Ta_UnitFade(src[1], 0, 1, 1, 2);
             req->command = 0x26C;
             req->value = 0;
-            req->cell = func_001E1090(src[1], 0);
+            req->cell = SzDuel_GetUnitLoc(src[1], 0);
             req->flag = 0;
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->count++;
             state->timer = 0;
             state->phase++;
@@ -3470,70 +3470,70 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
         break;
     case 6:
         for (i = 0; i < state->count; i++) {
-            if (func_001F51D0(state->handles[i])) {
+            if (SzEffect_IsUse(state->handles[i])) {
                 return 1;
             }
         }
-        if (func_0027F830(func_001DE540()) == 1) {
-            if (func_001F6D20() > 0) {
-                func_001F6CF0((u8)(func_001F6D20() - 4));
+        if (TaTuto_IsTuto(SzDuel_GetTurnOwner()) == 1) {
+            if (SzEffect_GetBlackOutForDuel() > 0) {
+                SzEffect_SetBlackOutForDuel((u8)(SzEffect_GetBlackOutForDuel() - 4));
             } else {
                 done++;
             }
-            if (func_001F6D10() > 0) {
-                func_001F6CE0((u8)(func_001F6D10() - 4));
+            if (SzEffect_GetBlackOutForMonster() > 0) {
+                SzEffect_SetBlackOutForMonster((u8)(SzEffect_GetBlackOutForMonster() - 4));
             } else {
                 done++;
             }
             if (done == 2) {
-                func_001DE7A0(0);
-                func_001E4530();
+                SzDuel_SetWindowDisp(0);
+                SzDuel_CloseMsgPopup();
                 return 0;
             }
             return 1;
         }
         state->count = 0;
-        if (func_001F1300(0x20)) {
-            list = (u32 *)func_001F0FA0(0x20);
-            func_00202D60(5, -1);
+        if (SzModel_IsModelStandby(0x20)) {
+            list = (u32 *)SzModel_GetEffTextureB(0x20);
+            SzText_FreeRequest(5, -1);
             for (i = 0; i < 8; i++) {
-                func_00202810(5, i, 0, *list);
+                SzText_AddFile(5, i, 0, *list);
                 list++;
             }
-            func_001FA810(0, 0);
-            func_001FA8A0(0, 0, 8, 0, 0x20, (void *)func_001F11B0(0x20, 0x13));
+            SzView_FreeRequest(0, 0);
+            SzView_ReqCamera(0, 0, 8, 0, 0x20, (void *)SzModel_GetCamera(0x20, 0x13));
             req->command = 0x3D;
             req->value = src[1];
             req->cell = src[2];
             req->flag = src[3];
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->counters[state->count] = 0x3D;
             state->count++;
             req->command = 0x3E;
             req->value = src[1];
             req->cell = src[2];
             req->flag = src[3];
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->counters[state->count] = 0x3E;
             state->count++;
             req->command = 0x3F;
             req->value = src[1];
             req->cell = src[2];
             req->flag = src[3];
-            state->handles[state->count] = func_00255A30(req, state);
+            state->handles[state->count] = Ta_Do_Effect(req, state);
             state->counters[state->count] = 0x3F;
             state->count++;
             state->phase++;
         }
         break;
     case 7:
-        func_0026CD80(-1);
+        Ta109_BlackOutForExz(-1);
         if (state->timer++ > 100) {
             color.x = 1.0f;
             color.y = 1.0f;
             color.z = 1.0f;
             color.w = 1.0f;
-            func_001F25D0(0x20, &color);
+            SzModel_SetScale(0x20, &color);
             state->phase++;
             state->timer = 0;
         }
@@ -3541,16 +3541,16 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
     case 8:
         for (i = 0; i < state->count; i++) {
             handle = &state->handles[i];
-            if (func_001F51D0(*handle)) {
-                if (func_001F52D0(*handle) == 2) {
-                    func_0026CD80(1);
-                    func_001DFBB0(src[1], src[2] & 7);
-                    func_001DFBB0(src[1], (src[2] >> 3) & 7);
-                    func_001DFBB0(src[1], (src[2] >> 6) & 7);
-                    func_001DFBB0(src[1], (src[2] >> 9) & 7);
-                    func_001E7E70(0x20, -1, 999);
+            if (SzEffect_IsUse(*handle)) {
+                if (SzEffect_GetStatus(*handle) == 2) {
+                    Ta109_BlackOutForExz(1);
+                    SzDuel_DelUnit(src[1], src[2] & 7);
+                    SzDuel_DelUnit(src[1], (src[2] >> 3) & 7);
+                    SzDuel_DelUnit(src[1], (src[2] >> 6) & 7);
+                    SzDuel_DelUnit(src[1], (src[2] >> 9) & 7);
+                    SzModel_Preset(0x20, -1, 999);
                     if (card->model) {
-                        func_001CDA60(card->model);
+                        SzDuel_FreeCardRequest(card->model);
                     }
                     card->model = NULL;
                 }
@@ -3558,8 +3558,8 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
             }
         }
         if (busy == 0) {
-            func_00202D60(5, -1);
-            func_001E4530();
+            SzText_FreeRequest(5, -1);
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -3567,12 +3567,12 @@ s32 func_0026C170(u32 *src, void *arg1, s32 arg2) {
     return 1;
 }
 
-void func_0026CD80(s32 arg0) {
+void Ta109_BlackOutForExz(s32 arg0) {
     f32 v[4];
     f32 *p;
 
     if (arg0 < 0) {
-        func_001F1E10(1, v);
+        SzModel_GetIntensity(1, v);
         if (v[0] - 0.08f < 0.0f) {
             v[0] = 0.0f;
         } else {
@@ -3584,8 +3584,8 @@ void func_0026CD80(s32 arg0) {
         } else {
             *p -= 0.08f;
         }
-        func_001F1EE0(1, v);
-        func_001F1E10(5, v);
+        SzModel_SetIntensity(1, v);
+        SzModel_GetIntensity(5, v);
         if (v[0] - 0.08f < 0.0f) {
             v[0] = 0.0f;
         } else {
@@ -3596,8 +3596,8 @@ void func_0026CD80(s32 arg0) {
         } else {
             *p -= 0.08f;
         }
-        func_001F1EE0(5, v);
-        func_001F1E10(6, v);
+        SzModel_SetIntensity(5, v);
+        SzModel_GetIntensity(6, v);
         if (v[0] - 0.08f < 0.0f) {
             v[0] = 0.0f;
         } else {
@@ -3608,21 +3608,21 @@ void func_0026CD80(s32 arg0) {
         } else {
             *p -= 0.08f;
         }
-        func_001F1EE0(6, v);
+        SzModel_SetIntensity(6, v);
     } else {
-        func_001F1E10(1, v);
+        SzModel_GetIntensity(1, v);
         v[0] = 0.8f;
         p = &v[1];
         *p = 0.8f;
-        func_001F1EE0(1, v);
-        func_001F1E10(5, v);
+        SzModel_SetIntensity(1, v);
+        SzModel_GetIntensity(5, v);
         v[0] = 0.8f;
         *p = 0.8f;
-        func_001F1EE0(5, v);
-        func_001F1E10(6, v);
+        SzModel_SetIntensity(5, v);
+        SzModel_GetIntensity(6, v);
         v[0] = 0.8f;
         *p = 0.8f;
-        func_001F1EE0(6, v);
+        SzModel_SetIntensity(6, v);
     }
 }
 
@@ -3650,7 +3650,7 @@ typedef struct {
 } Input_0026CFC0;
 
 
-s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_072(void *arg0, void *arg1, s32 arg2) {
     Command_0026CFC0 command;
     Command_0026CFC0 *cmd = &command;
     Input_0026CFC0 *input = arg0;
@@ -3661,22 +3661,22 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
     cmd->flags = 0;
     cmd->value = 0;
     cmd->extra = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(state);
+        InitEffectTemp(state);
         state->fade = 0x80;
         i = 0;
         do {
-            func_001F5970(i, 1);
-            func_001F5970(i | 0x100, 1);
+            SzEffect_SetBusyFlag2(i, 1);
+            SzEffect_SetBusyFlag2(i | 0x100, 1);
             i++;
         } while (i < 11);
-        func_00260AF0(30, input->value, 100, 180);
-        func_00255AC0(state, 0x201);
-        func_00255AC0(state, 0x23C);
-        func_00260740(30);
+        TaView_ReqFocusCamera(30, input->value, 100, 180);
+        TaEffect_LoadModule(state, 0x201);
+        TaEffect_LoadModule(state, 0x23C);
+        TaView_ReqStdCompleteView(30);
         state->phase = 2;
-        func_001A86A0(4);
+        SzGame_SetAutoBlur(4);
     } else {
     switch (state->state) {
     case 0:
@@ -3685,12 +3685,12 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
             state->fade -= 15;
         } else {
             state->fade = 0x30;
-            if (state->timer >= 30 && func_00255B50(state) == 1) {
+            if (state->timer >= 30 && TaEffect_IsLoadModule(state) == 1) {
                 cmd->kind = 0x201;
                 cmd->flags = 0;
                 cmd->value = input->value;
                 cmd->extra = 0;
-                state->handles[0] = func_00255A30((s32 *)cmd, state);
+                state->handles[0] = Ta_Do_Effect((s32 *)cmd, state);
                 state->values[0] = input->value;
                 state->state++;
             }
@@ -3698,13 +3698,13 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
         if (state->fade < 0x30) {
             state->fade = 0x30;
         }
-        func_001F6CF0((u8)state->fade);
+        SzEffect_SetBlackOutForDuel((u8)state->fade);
         break;
     case 1:
-        if (func_001F51D0(state->handles[0]) != 0) {
+        if (SzEffect_IsUse(state->handles[0]) != 0) {
             return 1;
         }
-        func_00260740(0);
+        TaView_ReqStdCompleteView(0);
         state->state++;
         break;
     case 2: {
@@ -3712,11 +3712,11 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
         state->count = 0;
         phase = state->phase;
         if (phase >= 14) {
-            func_00260A70(state, 16);
-            func_001A86A0(0);
+            TaView_RestoreOriginalView(state, 16);
+            SzGame_SetAutoBlur(0);
             state->timer = 0;
             state->state = 4;
-        } else if (func_0026D3C0(input, state, phase) > 0) {
+        } else if (Ta_SetGravityEffect(input, state, phase) > 0) {
             state->state++;
         } else {
             state->phase++;
@@ -3727,7 +3727,7 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
         u8 *cursor;
         s32 j;
         for (i = 0; i < state->count; i++) {
-            if (func_001F51D0(state->handles[i]) != 0) {
+            if (SzEffect_IsUse(state->handles[i]) != 0) {
                 return 1;
             }
         }
@@ -3735,7 +3735,7 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
         cursor = (u8 *)state;
         for (; j < state->count; j++) {
             s32 value = *(s32 *)(cursor + 0x20);
-            func_001DFD50(value >> 24, (value >> 16) & 0xFF,
+            SzDuel_MoveUnit(value >> 24, (value >> 16) & 0xFF,
                          value & 0xFF, (value & 0xFFFF) >> 8);
             cursor += 4;
         }
@@ -3752,18 +3752,18 @@ s32 func_0026CFC0(void *arg0, void *arg1, s32 arg2) {
         if (state->fade > 0x80) {
             state->fade = 0x80;
         }
-        func_001F6CF0((u8)state->fade);
+        SzEffect_SetBlackOutForDuel((u8)state->fade);
         if (state->fade == 0x80 && state->timer++ > 16) {
             i = 0;
             do {
-                func_001F5970(i, 0);
-                func_001F5970(i | 0x100, 0);
+                SzEffect_SetBusyFlag2(i, 0);
+                SzEffect_SetBusyFlag2(i | 0x100, 0);
                 i++;
             } while (i < 11);
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -3806,7 +3806,7 @@ struct jp_69942_26d3c0 {
 #define GRAV_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define GRAV_MIN(a, b) ((a) < (b) ? (a) : (b))
 
-int func_0026D3C0(void *eInfo_v, void *Temp_v, int Dist)
+int Ta_SetGravityEffect(void *eInfo_v, void *Temp_v, int Dist)
 {
     struct jp_6989c_26d3c0 * eInfo = eInfo_v;
     struct jp_69942_26d3c0 * Temp = Temp_v;
@@ -3826,26 +3826,26 @@ int func_0026D3C0(void *eInfo_v, void *Temp_v, int Dist)
     for (i = 0; i < 22; i++) {
         Reserve[i] = -1;
     }
-    Num = func_0024E910(eInfo->dwTo);
+    Num = Ta_GetUnitNumFrom22bitFlagList(eInfo->dwTo);
     for (i = 0, eObj = 0; i < Num; i++) {
-        Unit = func_0024EC50(eInfo->dwTo, i);
-        Loc = func_001E1090(Unit >> 8, Unit & 0xFF);
+        Unit = Ta_GetUnitOwnerIDFromLstCount(eInfo->dwTo, i);
+        Loc = SzDuel_GetUnitLoc(Unit >> 8, Unit & 0xFF);
         if (Dist == (int)((GRAV_MAX(eInfo->dwFrom & 0xFF, (unsigned)(Loc & 0xFF)) - GRAV_MIN(eInfo->dwFrom & 0xFF, (unsigned)(Loc & 0xFF))) + (GRAV_MAX(eInfo->dwFrom >> 8, (unsigned)(Loc >> 8)) - GRAV_MIN(eInfo->dwFrom >> 8, (unsigned)(Loc >> 8))))) {
-            eObj = func_0024C780(eObj, Unit >> 8, Unit & 0xFF);
+            eObj = ConvUnitIDtoFlagList(eObj, Unit >> 8, Unit & 0xFF);
         }
     }
-    Num = func_0024E910(eObj);
+    Num = Ta_GetUnitNumFrom22bitFlagList(eObj);
     for (i = 0; i < Num; i++) {
-        Unit = func_0024F060(eObj, eInfo->dwPar);
+        Unit = Ta_GetMinimumOrderUnitFromFlagList2(eObj, eInfo->dwPar);
         if (Unit >= 0) {
-            eObj = func_0024C7D0(eObj, Unit >> 8, Unit & 0xFF);
-            if ((Loc = func_0026D600(eInfo->dwFrom & 0xFF, eInfo->dwFrom >> 8, Unit, Reserve)) >= 0) {
+            eObj = ConvUnitIDtoFlagList_OFF(eObj, Unit >> 8, Unit & 0xFF);
+            if ((Loc = Ta_RequestGravityReserve(eInfo->dwFrom & 0xFF, eInfo->dwFrom >> 8, Unit, Reserve)) >= 0) {
                 Reserve[i] = Loc;
                 pCall->eNO = 572;
                 pCall->dwFrom = 0;
                 pCall->dwTo = Unit;
                 pCall->dwPar = Loc;
-                Temp->eID[Temp->oNum] = func_00255A30(pCall, Temp);
+                Temp->eID[Temp->oNum] = Ta_Do_Effect(pCall, Temp);
                 Temp->ePos[Temp->oNum] = (Unit << 16) | Loc;
                 Temp->oNum++;
             }
@@ -3856,20 +3856,20 @@ int func_0026D3C0(void *eInfo_v, void *Temp_v, int Dist)
 #undef GRAV_MAX
 #undef GRAV_MIN
 
-s32 func_0026D600(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
+s32 Ta_RequestGravityReserve(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     s32 i;
     s32 *p;
     s32 result;
     s32 retry;
     s32 j;
 
-    result = func_0026D6E0(arg0, arg1, arg2, 0);
+    result = Ta_GetUnitGravityLoc(arg0, arg1, arg2, 0);
     if (result >= 0) {
         i = 0;
         p = arg3;
         do {
             if (result == *p) {
-                retry = func_0026D6E0(arg0, arg1, arg2, 1);
+                retry = Ta_GetUnitGravityLoc(arg0, arg1, arg2, 1);
                 if (retry >= 0) {
                     j = 0;
                     do {
@@ -3891,7 +3891,7 @@ s32 func_0026D600(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
     return -1;
 }
 
-s32 func_0026D6E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 Ta_GetUnitGravityLoc(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_s0;
     s32 temp_s1;
     s32 temp_s1_2;
@@ -3901,46 +3901,46 @@ s32 func_0026D6E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_v0;
     s32 var_v0_2;
 
-    temp_v0 = func_001E1090(arg2 >> 8, arg2 & 0xFF);
+    temp_v0 = SzDuel_GetUnitLoc(arg2 >> 8, arg2 & 0xFF);
     temp_s0 = temp_v0 & 0xFF;
     if (arg0 < temp_s0) {
         temp_s1 = temp_s0 - 1;
         temp_s2_2 = temp_v0 >> 8;
-        if (func_001E3790(temp_s1, temp_s2_2) < 0) {
+        if (SzDuel_GetMapUnitID(temp_s1, temp_s2_2) < 0) {
             if (arg3 == 0) {
                 var_v0_2 = (temp_s2_2 << 8) | temp_s1;
             } else {
-                var_v0_2 = func_0026D840(arg0, arg1, temp_s0, temp_s2_2);
+                var_v0_2 = Ta_GetUnitGravityLocSearchOnZ(arg0, arg1, temp_s0, temp_s2_2);
             }
             return var_v0_2;
         }
-        return func_0026D840(arg0, arg1, temp_s0, temp_s2_2);
+        return Ta_GetUnitGravityLocSearchOnZ(arg0, arg1, temp_s0, temp_s2_2);
     }
     if (temp_s0 < arg0) {
         temp_s1_2 = temp_s0 + 1;
         temp_s2 = temp_v0 >> 8;
-        if (func_001E3790(temp_s1_2, temp_s2) < 0) {
+        if (SzDuel_GetMapUnitID(temp_s1_2, temp_s2) < 0) {
             if (arg3 == 0) {
                 var_v0 = (temp_s2 << 8) | temp_s1_2;
             } else {
-                var_v0 = func_0026D840(arg0, arg1, temp_s0, temp_s2);
+                var_v0 = Ta_GetUnitGravityLocSearchOnZ(arg0, arg1, temp_s0, temp_s2);
             }
             return var_v0;
         }
-        return func_0026D840(arg0, arg1, temp_s0, temp_s2);
+        return Ta_GetUnitGravityLocSearchOnZ(arg0, arg1, temp_s0, temp_s2);
     }
-    return func_0026D840(arg0, arg1, temp_s0, temp_v0 >> 8);
+    return Ta_GetUnitGravityLocSearchOnZ(arg0, arg1, temp_s0, temp_v0 >> 8);
 }
 
-s32 func_0026D840(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 Ta_GetUnitGravityLocSearchOnZ(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (arg3 < arg1) {
-        if (func_001E3790(arg2, arg3 + 1) < 0) {
+        if (SzDuel_GetMapUnitID(arg2, arg3 + 1) < 0) {
             return ((arg3 + 1) << 8) | arg2;
         } else {
             return -1;
         }
     } else if (arg1 < arg3) {
-        if (func_001E3790(arg2, arg3 - 1) < 0) {
+        if (SzDuel_GetMapUnitID(arg2, arg3 - 1) < 0) {
             return ((arg3 - 1) << 8) | arg2;
         } else {
             return -1;
@@ -3968,9 +3968,9 @@ typedef struct State_0026D8F0 {
     u16 timer;
 } State_0026D8F0;
 
-s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2) {
-    extern s32 func_001E0760();
-    extern s32 func_001E0890();
+s32 Ta_Eff_066(void *arg0, void *arg1, s32 arg2) {
+    extern s32 SzDuel_SetUnitKind();
+    extern s32 SzDuel_SetUnitAttr();
     s32 stackData[4];
     s32 *data = stackData;
     s32 i;
@@ -3983,17 +3983,17 @@ s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2) {
     data[2] = 0;
     data[3] = 0;
     count = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(arg1);
+        InitEffectTemp(arg1);
         state->value = 0x80;
-        if (func_0024E910(command->flags) == 1) {
-            func_00260AF0(30, func_0024EC50(command->flags, 0), 100, 180);
+        if (Ta_GetUnitNumFrom22bitFlagList(command->flags) == 1) {
+            TaView_ReqFocusCamera(30, Ta_GetUnitOwnerIDFromLstCount(command->flags, 0), 100, 180);
         } else {
-            func_00260740(30);
+            TaView_ReqStdCompleteView(30);
         }
-        func_00260020(arg0, arg1, arg2, -1, 1, 1);
-        func_00255AC0(arg1, 0x201);
+        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+        TaEffect_LoadModule(arg1, 0x201);
         return 1;
     }
 
@@ -4004,14 +4004,14 @@ s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2) {
             state->value -= 15;
         } else {
             state->value = 0x30;
-            if (func_00255B50(arg1) == 1) {
+            if (TaEffect_IsLoadModule(arg1) == 1) {
                 if (state->timer >= 30) {
                     if (command->kind == 54) {
-                        func_001E42C0(0, -120, 80, 0x110);
+                        SzDuel_OpenMsgPopup(0, -120, 80, 0x110);
                     } else {
-                        func_001E42C0(0, -120, 80, 0x111);
+                        SzDuel_OpenMsgPopup(0, -120, 80, 0x111);
                     }
-                    func_0025F720(arg0, arg1, data, 0x201);
+                    Ta_SetEffectDependOnFlagLst(arg0, arg1, data, 0x201);
                     state->stage++;
                     state->timer = 0;
                 }
@@ -4020,20 +4020,20 @@ s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2) {
         if (state->value < 0x30) {
             state->value = 0x30;
         }
-        func_001F6CF0((u8)state->value);
+        SzEffect_SetBlackOutForDuel((u8)state->value);
         return 1;
 
     case 1:
         for (i = 0; i < state->count; i++) {
-            if (func_001F51D0(state->ids[i]) == 1) {
-                if (func_001F52D0(state->ids[i]) == 2 && (u16)state->positions[i] != 0xFFFF &&
-                    func_001F52D0(state->ids[i]) == 2) {
+            if (SzEffect_IsUse(state->ids[i]) == 1) {
+                if (SzEffect_GetStatus(state->ids[i]) == 2 && (u16)state->positions[i] != 0xFFFF &&
+                    SzEffect_GetStatus(state->ids[i]) == 2) {
                 switch (command->kind) {
                 case 54:
-                    func_001E0760(state->positions[i] >> 8, state->positions[i] & 0xFF, command->value);
+                    SzDuel_SetUnitKind(state->positions[i] >> 8, state->positions[i] & 0xFF, command->value);
                     break;
                 case 55:
-                    func_001E0890(state->positions[i] >> 8, state->positions[i] & 0xFF, command->value);
+                    SzDuel_SetUnitAttr(state->positions[i] >> 8, state->positions[i] & 0xFF, command->value);
                     break;
                 }
                 state->positions[i] = 0xFFFF;
@@ -4043,10 +4043,10 @@ s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2) {
             }
         }
         if (count >= state->count) {
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             state->stage++;
-            func_00260A70(arg1, 0x10);
-            func_00260020(arg0, arg1, arg2, 1, 0, 1);
+            TaView_RestoreOriginalView(arg1, 0x10);
+            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
         }
         return 1;
 
@@ -4055,12 +4055,12 @@ s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2) {
         if (state->value > 0x80) {
             state->value = 0x80;
         }
-        func_001F6CF0((u8)state->value);
-        if (state->value == 0x80 && state->timer++ > 16 && func_0025FD90() == 1) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+        SzEffect_SetBlackOutForDuel((u8)state->value);
+        if (state->value == 0x80 && state->timer++ > 16 && Ta_IsFinishFade() == 1) {
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -4092,47 +4092,47 @@ typedef struct Command_0026DCC0 {
 } Command_0026DCC0;
 
 
-s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_067(void *arg0, void *arg1, s32 arg2) {
     Command_0026DCC0 storage;
     Command_0026DCC0 *command = &storage;
     Context_0026DCC0 *context = arg0;
     State_0026DCC0 *state = arg1;
     s32 i;
-    extern void func_001E1E70();
-    extern s32 func_001E1D10();
-    extern s32 func_001E1A90();
-    extern s32 func_001E1580();
-    extern s32 func_001E1640();
+    extern void SzDuel_SetUnitStatus();
+    extern s32 SzDuel_GetUnitCtlRateM();
+    extern s32 SzDuel_GetUnitCtlGoalM();
+    extern s32 SzDuel_GetUnitCurseRest();
+    extern s32 SzDuel_GetUnitSpellRest();
 
     storage.command = 999;
     storage.source = 0;
     storage.destination = 0;
     storage.flags = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(state);
-        func_00255AC0(state, 0x201);
+        InitEffectTemp(state);
+        TaEffect_LoadModule(state, 0x201);
         if (context->mode == 0) {
-            func_00260020(context, state, arg2, -1, 1, 1);
-            if (func_0024E910(context->destination) == 1) {
-                func_00260AF0(30, func_0024EC50(context->destination, 0), 100, 180);
+            Ta_AllUnitFade(context, state, arg2, -1, 1, 1);
+            if (Ta_GetUnitNumFrom22bitFlagList(context->destination) == 1) {
+                TaView_ReqFocusCamera(30, Ta_GetUnitOwnerIDFromLstCount(context->destination, 0), 100, 180);
             } else {
-                func_00260740(30);
+                TaView_ReqStdCompleteView(30);
             }
         } else {
-            func_00255AC0(state, 0x262);
-            func_00255AC0(state, 0x23C);
+            TaEffect_LoadModule(state, 0x262);
+            TaEffect_LoadModule(state, 0x23C);
         }
         return 1;
     }
 
     switch (state->state) {
     case 0:
-        if (func_00255B50(state) == 1) {
+        if (TaEffect_IsLoadModule(state) == 1) {
             if (context->mode == 0) {
                 if (state->timer++ >= 30) {
-                    func_001E42C0(0, -120, 80, 0x113);
-                    func_0025F720(context, state, command, 0x201);
+                    SzDuel_OpenMsgPopup(0, -120, 80, 0x113);
+                    Ta_SetEffectDependOnFlagLst(context, state, command, 0x201);
                     state->state++;
                 }
             } else {
@@ -4140,7 +4140,7 @@ s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
                 command->source = 0;
                 command->destination = context->source;
                 command->flags = 0;
-                state->handles[state->count] = func_00255A30(command, state);
+                state->handles[state->count] = Ta_Do_Effect(command, state);
                 state->count++;
                 state->state++;
             }
@@ -4148,68 +4148,68 @@ s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2) {
         break;
     case 1:
         for (i = 0; i < state->count; i++) {
-            if (func_001F51D0(state->handles[i]) != 0) {
+            if (SzEffect_IsUse(state->handles[i]) != 0) {
                 return 1;
             }
         }
         if (context->mode == 1) {
-            s32 value = func_001E1D10(context->source >> 8, context->source & 0xFF);
-            if (value != func_001E1A90(context->source >> 8, context->source & 0xFF)) {
+            s32 value = SzDuel_GetUnitCtlRateM(context->source >> 8, context->source & 0xFF);
+            if (value != SzDuel_GetUnitCtlGoalM(context->source >> 8, context->source & 0xFF)) {
                 return 1;
             }
-            func_001E42C0(0, -120, 80, 0x112);
+            SzDuel_OpenMsgPopup(0, -120, 80, 0x112);
             command->command = 0x262;
             command->source = context->source;
             command->destination = context->destination;
             command->flags = 0;
-            state->handles[state->count] = func_00255A30(command, state);
+            state->handles[state->count] = Ta_Do_Effect(command, state);
             state->count++;
             state->state++;
             return 1;
         }
         state->state = 4;
         state->timer = 0;
-        func_001E4530();
-        func_00260A70(state, 16);
-        func_00260020(context, state, arg2, 1, 0, 1);
+        SzDuel_CloseMsgPopup();
+        TaView_RestoreOriginalView(state, 16);
+        Ta_AllUnitFade(context, state, arg2, 1, 0, 1);
         break;
     case 2:
-        if (func_001F51D0(state->handles[state->count - 1]) == 1) {
+        if (SzEffect_IsUse(state->handles[state->count - 1]) == 1) {
             return 1;
         }
-        func_001F5970(context->source, 0);
-        func_002500C0(context->source >> 8, context->source & 0xFF, -1, 1, 1);
-        func_001E1970(context->source >> 8, context->source & 0xFF, 0);
-        func_001E1B70(context->source >> 8, context->source & 0xFF, -1, 0);
-        func_002500C0(context->source >> 8, context->source & 0xFF, -1, 1, 1);
+        SzEffect_SetBusyFlag2(context->source, 0);
+        Ta_UnitFade(context->source >> 8, context->source & 0xFF, -1, 1, 1);
+        SzDuel_SetUnitCtlGoalC(context->source >> 8, context->source & 0xFF, 0);
+        SzDuel_SetUnitCtlRateC(context->source >> 8, context->source & 0xFF, -1, 0);
+        Ta_UnitFade(context->source >> 8, context->source & 0xFF, -1, 1, 1);
         state->state++;
         break;
     case 3:
-        if (func_0025FD90() != 1) {
+        if (Ta_IsFinishFade() != 1) {
             return 1;
         }
-        func_001DFBB0(context->source >> 8, context->source & 0xFF);
-        if (func_001E2100(context->destination >> 8, context->destination & 0xFF, 1) != 0) {
-            func_001E1E70(context->destination >> 8, context->destination & 0xFF, 1, 0);
+        SzDuel_DelUnit(context->source >> 8, context->source & 0xFF);
+        if (SzDuel_GetUnitStatus(context->destination >> 8, context->destination & 0xFF, 1) != 0) {
+            SzDuel_SetUnitStatus(context->destination >> 8, context->destination & 0xFF, 1, 0);
         } else {
-            func_001E1E70(context->destination >> 8, context->destination & 0xFF, 1, 1);
+            SzDuel_SetUnitStatus(context->destination >> 8, context->destination & 0xFF, 1, 1);
         }
-        if (func_001E1580(context->destination >> 8, context->destination & 0xFF) == 0) {
-            if (func_001E1640(context->destination >> 8, context->destination & 0xFF) == 0) {
-                func_001E1E70(context->destination >> 8, context->destination & 0xFF, 0, 0);
+        if (SzDuel_GetUnitCurseRest(context->destination >> 8, context->destination & 0xFF) == 0) {
+            if (SzDuel_GetUnitSpellRest(context->destination >> 8, context->destination & 0xFF) == 0) {
+                SzDuel_SetUnitStatus(context->destination >> 8, context->destination & 0xFF, 0, 0);
             }
         }
         state->timer = 0;
-        func_00260A70(state, 16);
-        func_001E4530();
+        TaView_RestoreOriginalView(state, 16);
+        SzDuel_CloseMsgPopup();
         state->state++;
         break;
     default:
-        if (state->timer++ > 16 && func_0025FD90() == 1) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+        if (state->timer++ > 16 && Ta_IsFinishFade() == 1) {
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -4235,68 +4235,68 @@ typedef struct State_0026E1F0 {
     u16 timer;
 } State_0026E1F0;
 
-s32 func_0026E1F0(void *arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_051(void *arg0, void *arg1, s32 arg2) {
     s32 completed;
     s32 command[4];
     s32 *request = command;
     s32 i;
     Context_0026E1F0 *context = arg0;
     State_0026E1F0 *state = arg1;
-    extern s32 func_001E1030();
+    extern s32 SzDuel_GetUnitCardNo();
 
     command[0] = 999;
     command[1] = 0;
     command[2] = 0;
     command[3] = 0;
     completed = 0;
-    func_001DE7E0(0);
+    SzDuel_SetWindowDraw(0);
     if (arg2 >= 0) {
-        func_00255960(state);
-        func_00260AF0(0, context->source, 180, 180);
-        func_00255AC0(state, 0x25A);
-        func_00255AC0(state, 0x33);
+        InitEffectTemp(state);
+        TaView_ReqFocusCamera(0, context->source, 180, 180);
+        TaEffect_LoadModule(state, 0x25A);
+        TaEffect_LoadModule(state, 0x33);
         return 1;
     }
 
     switch (state->step) {
     case 0:
-        if (func_00255B50(state) == 1) {
-            func_001E42C0(0, -120, 80, 0x103);
+        if (TaEffect_IsLoadModule(state) == 1) {
+            SzDuel_OpenMsgPopup(0, -120, 80, 0x103);
             request[0] = 0x25A;
             request[1] = 0;
             request[2] = context->source;
             request[3] = 0;
-            state->handles[state->count] = func_00255A30(request, state);
+            state->handles[state->count] = Ta_Do_Effect(request, state);
             state->flags[state->count] = 0;
             state->count++;
             state->step++;
         }
         break;
     case 1:
-        if (func_001F51D0(state->handles[0]) == 0) {
-            func_001E1E70(context->source >> 8, context->source & 0xFF, 0, 1);
-            func_001E42C0(0, -120, 80,
-                func_001DE210(func_001E1030(context->source >> 8, context->source & 0xFF)));
+        if (SzEffect_IsUse(state->handles[0]) == 0) {
+            SzDuel_SetUnitStatus(context->source >> 8, context->source & 0xFF, 0, 1);
+            SzDuel_OpenMsgPopup(0, -120, 80,
+                SzDuel_GetMsgName(SzDuel_GetUnitCardNo(context->source >> 8, context->source & 0xFF)));
             request[0] = 0x33;
             request[1] = 0;
             request[2] = context->source;
             request[3] = 0;
-            state->handles[state->count] = func_00255A30(request, state);
+            state->handles[state->count] = Ta_Do_Effect(request, state);
             state->flags[state->count] = 0;
             state->count++;
             state->step++;
         }
         break;
     case 2:
-        if (func_001F51D0(state->handles[state->count - 1]) != 0) {
-            if (func_001F52D0(state->handles[state->count - 1]) == 2 &&
+        if (SzEffect_IsUse(state->handles[state->count - 1]) != 0) {
+            if (SzEffect_GetStatus(state->handles[state->count - 1]) == 2 &&
                 state->flags[state->count - 1] == 0) {
-                func_00260AF0(0, context->target, 100, 180);
+                TaView_ReqFocusCamera(0, context->target, 100, 180);
                 request[0] = 0x33;
                 request[1] = 0;
                 request[2] = context->target;
                 request[3] = 0;
-                state->handles[state->count] = func_00255A30(request, state);
+                state->handles[state->count] = Ta_Do_Effect(request, state);
                 state->flags[state->count] = 0;
                 state->flags[state->count - 1] = 1;
                 state->step++;
@@ -4305,32 +4305,32 @@ s32 func_0026E1F0(void *arg0, void *arg1, s32 arg2) {
         }
         return 1;
     case 3:
-        func_00260AF0(16, context->target, 300, 300);
+        TaView_ReqFocusCamera(16, context->target, 300, 300);
         state->step++;
         break;
     case 4:
         for (i = 0; i < state->count; i++) {
-            if (func_001F51D0(state->handles[i]) == 0) {
+            if (SzEffect_IsUse(state->handles[i]) == 0) {
                 completed++;
             }
         }
         if (completed >= state->count) {
             if (context->cleanup_source == 1) {
-                func_0024F370(context->source >> 8, context->source & 0xFF);
+                Ta_DelUnit(context->source >> 8, context->source & 0xFF);
             }
-            func_0024F370(context->target >> 8, context->target & 0xFF);
-            func_001E4530();
-            func_00260A70(state, 16);
+            Ta_DelUnit(context->target >> 8, context->target & 0xFF);
+            SzDuel_CloseMsgPopup();
+            TaView_RestoreOriginalView(state, 16);
             state->step++;
             break;
         }
         return 1;
     default:
         if (state->timer++ > 16) {
-            if (func_001DE780() != 0) {
-                func_001DE7E0(1);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
             }
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return 0;
         }
         break;
@@ -4338,9 +4338,9 @@ s32 func_0026E1F0(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_0026E610);
+INCLUDE_ASM("asm/nonmatchings/main_076", Ta_IsHandHeap);
 
-s32 func_0026E950(void) {
+s32 Ta_GetSummonCost(void) {
     s32 var_s0;
     s32 temp_v0;
     s32 temp_v0_2;
@@ -4348,13 +4348,13 @@ s32 func_0026E950(void) {
     s32 temp_v0_3;
     s32 temp_v0_4;
 
-    temp_v0 = func_001DE540();
-    temp_v0_2 = func_001DF110(temp_v0);
+    temp_v0 = SzDuel_GetTurnOwner();
+    temp_v0_2 = SzDuel_GetHandCount(temp_v0);
     var_s3 = 0;
     for (var_s0 = 0; var_s0 < temp_v0_2; var_s0++) {
-            temp_v0_3 = func_001DF0C0(temp_v0, var_s0);
+            temp_v0_3 = SzDuel_InqHand(temp_v0, var_s0);
             if (((s32) (temp_v0_3 & 0xF000) >> 0xC) > 0) {
-                temp_v0_4 = func_0026FA70(temp_v0_3, temp_v0);
+                temp_v0_4 = TaHand_GetCardSummonCost(temp_v0_3, temp_v0);
                 if (var_s3 < temp_v0_4) {
                     var_s3 = temp_v0_4;
                 }
@@ -4363,20 +4363,20 @@ s32 func_0026E950(void) {
     return var_s3;
 }
 
-s32 func_0026EA00(s32 *arg0) {
-    extern s32 func_00270030();
-    extern s32 func_00270260();
-    extern s32 func_0026FE70();
+s32 Ta_ManageHandEffect(s32 *arg0) {
+    extern s32 Ta_Eff_Hand_Fusion();
+    extern s32 Ta_Eff_Hand_Enc();
+    extern s32 Ta_Eff_Hand_Fail();
     s32 temp_v1;
 
     temp_v1 = *arg0;
     switch (temp_v1) {
     case 0:
-        return func_00270030();
+        return Ta_Eff_Hand_Fusion();
     case 1:
-        return func_00270260();
+        return Ta_Eff_Hand_Enc();
     case 2:
-        return func_0026FE70();
+        return Ta_Eff_Hand_Fail();
     default:
         return 0;
     }

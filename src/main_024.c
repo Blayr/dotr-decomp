@@ -7,15 +7,15 @@ void *func_0017F288(u32 i) {
     char *p;
 
     func_0017F1A0();
-    ((s32 (*)(s32))func_0017B920)(D_0028CAA8);
+    ((s32 (*)(s32))WaitSema)(D_0028CAA8);
     if (i < 0x20) {
         goto ok;
     }
-    ((s32 (*)(s32))func_0017B900)(D_0028CAA8);
+    ((s32 (*)(s32))SignalSema)(D_0028CAA8);
     return 0;
 ok:
     p = &D_00313980[i * 16];
-    ((s32 (*)(s32))func_0017B900)(D_0028CAA8);
+    ((s32 (*)(s32))SignalSema)(D_0028CAA8);
     return p;
 }
 
@@ -90,7 +90,7 @@ void func_0017F2F8(void) {
             }
         }
     } else {
-        func_0017B910(id);
+        iSignalSema(id);
     }
 }
 
@@ -100,18 +100,18 @@ void func_0017F6B8(void) {
         sp0[2] = 1;
         sp0[1] = 1;
         sp0[5] = 0;
-        D_0028CAA4 = func_0017B8E0(sp0);
+        D_0028CAA4 = CreateSema(sp0);
     }
 }
 
 s32 func_0017F708(void) {
     func_0017F6B8();
-    func_0017B920(D_0028CAA4);
+    WaitSema(D_0028CAA4);
     return 0;
 }
 
-void func_0017F738(void) {
-    func_0017B900(D_0028CAA4);
+void _cleanup(void) {
+    SignalSema(D_0028CAA4);
 }
 
 s32 func_0017F748(s32 arg0, s32 arg1) {
@@ -127,7 +127,7 @@ s32 func_0017F748(s32 arg0, s32 arg1) {
     (*(s32 *)(b_D_00313C00 + 4)) = arg1;
     (*(s32 *)(&D_00313C00)) = arg0;
     func_00184428();
-    func_0017F738();
+    _cleanup();
     return temp_s0;
 }
 
@@ -153,7 +153,7 @@ s32 func_0017F9D0(void) {
     return var_s2;
 }
 
-s32 func_0017FA60(void) {
+s32 sceFsReset(void) {
     D_0028CAA0 = 0;
     func_00198948(&D_00313BA8, 0, 4U);
     return 0;
@@ -176,12 +176,12 @@ s32 func_0017FA98(void *name, s32 flags, ...) {
     if (D_0028CAA0 == 0)
         func_0017F808();
     if (func_0017F9D0() != 0) {
-        func_0017F738();
+        _cleanup();
         return 0xFFFEFFFC;
     }
     iob = func_0017F200();
     if (iob == 0) {
-        func_0017F738();
+        _cleanup();
         return -0x13;
     }
     mode = *(s32 *)((char *)__builtin_next_arg(flags) - 0x30);
@@ -201,34 +201,34 @@ s32 func_0017FA98(void *name, s32 flags, ...) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, 0, 0, (s32 *)&D_003128C0, 0x418, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0, 0, (s32 *)&D_003128C0, 0x418, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     rc = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (rc == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     if (result < 0) {
-        func_0017B920(D_0028CAA8);
+        WaitSema(D_0028CAA8);
         iob->inuse = 0;
-        func_0017B900(D_0028CAA8);
+        SignalSema(D_0028CAA8);
         return result;
     }
     rc = idx;
-    ((s32 (*)(s32))func_0017B920)(D_0028CAA8);
+    ((s32 (*)(s32))WaitSema)(D_0028CAA8);
     iob->fd = result;
     iob->inuse |= flags;
-    func_0017B900(D_0028CAA8);
+    SignalSema(D_0028CAA8);
     return rc;
 }
 
@@ -247,11 +247,11 @@ s32 func_0017FD20(u32 fd) {
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(1);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (iob == 0 || iob->inuse == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     handle = iob->fd;
@@ -260,24 +260,24 @@ s32 func_0017FD20(u32 fd) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    D_003128C0.sema = h = func_0017B8E0(&buf);
+    D_003128C0.sema = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, 1, 0, g, 0x14, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 1, 0, g, 0x14, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     iob->inuse = 0;
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     if (result < 0) {
         return result;
     }
@@ -300,11 +300,11 @@ s32 func_0017FEA0(u32 fd, s32 offset, s32 whence) {
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(4);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (iob == 0 || (inuse = iob->inuse) == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     g[3] = iob->fd;
@@ -314,11 +314,11 @@ s32 func_0017FEA0(u32 fd, s32 offset, s32 whence) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    D_003128C0.sema = h = func_0017B8E0(&buf);
+    D_003128C0.sema = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
     if (inuse & 0x8000) {
-        func_0017B920(D_0028CAAC);
+        WaitSema(D_0028CAAC);
         for (i = 0; i < 0x20; i++) {
             if (D_0028CA20[i] == -1) {
                 D_0028CA20[i] = g[0];
@@ -326,26 +326,26 @@ s32 func_0017FEA0(u32 fd, s32 offset, s32 whence) {
                 break;
             }
         }
-        func_0017B900(D_0028CAAC);
+        SignalSema(D_0028CAAC);
     }
-    rc = func_0017EA80(&D_00313B80, 4, 0, (s32 *)&D_003128C0, 0x1C, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 4, 0, (s32 *)&D_003128C0, 0x1C, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
     if (sceFsIsNowait(inuse)) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return 0;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -365,11 +365,11 @@ s32 func_001800D8(s32 fd, s32 buf, s32 nbyte) {
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(2);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (iob == 0 || (inuse = iob->inuse) == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     g->fd = iob->fd;
@@ -379,11 +379,11 @@ s32 func_001800D8(s32 fd, s32 buf, s32 nbyte) {
     sema.maxCount = 1;
     sema.initCount = 0;
     sema.option = 0;
-    D_003128C0.sema = h = func_0017B8E0(&sema);
+    D_003128C0.sema = h = CreateSema(&sema);
     g->result = &result;
     g->mode = 4;
     if (inuse & 0x8000) {
-        func_0017B920(D_0028CAAC);
+        WaitSema(D_0028CAAC);
         for (i = 0; i < 0x20; i++) {
             if (D_0028CA20[i] == -1) {
                 D_0028CA20[i] = g->sema;
@@ -391,31 +391,31 @@ s32 func_001800D8(s32 fd, s32 buf, s32 nbyte) {
                 break;
             }
         }
-        func_0017B900(D_0028CAAC);
+        SignalSema(D_0028CAAC);
     }
     if ((inuse & 0x20000000) == 0) {
         func_0017E190((s32 *)buf, nbyte);
     }
     func_0017E190((s32 *)D_00313540, 0xA4);
     func_0017E190((s32 *)g, 0x20);
-    rc = func_0017EA80(&D_00313B80, 2, 0, (s32 *)&D_003128C0, 0x20, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 2, 0, (s32 *)&D_003128C0, 0x20, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
     if (sceFsIsNowait(inuse)) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return 0;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -438,11 +438,11 @@ s32 func_00180348(s32 fd, void *buf, s32 nbyte) {
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(3);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (iob == 0 || (inuse = iob->inuse) == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     g->fd = iob->fd;
@@ -452,11 +452,11 @@ s32 func_00180348(s32 fd, void *buf, s32 nbyte) {
     sema.maxCount = 1;
     sema.initCount = 0;
     sema.option = 0;
-    D_003128C0.sema = h = func_0017B8E0(&sema);
+    D_003128C0.sema = h = CreateSema(&sema);
     g->result = &result;
     g->mode = 4;
     if (inuse & 0x8000) {
-        func_0017B920(D_0028CAAC);
+        WaitSema(D_0028CAAC);
         for (i = 0; i < 0x20; i++) {
             if (D_0028CA20[i] == -1) {
                 D_0028CA20[i] = g->sema;
@@ -464,7 +464,7 @@ s32 func_00180348(s32 fd, void *buf, s32 nbyte) {
                 break;
             }
         }
-        func_0017B900(D_0028CAAC);
+        SignalSema(D_0028CAAC);
     }
     if (((u32)buf & 0xF) == 0) {
         nb = 0;
@@ -483,24 +483,24 @@ s32 func_00180348(s32 fd, void *buf, s32 nbyte) {
         dst = g->head;
         dst[j] = ((char *)buf)[j];
     }
-    rc = func_0017EA80(&D_00313B80, 3, 0, (s32 *)&D_003128C0, 0x30, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 3, 0, (s32 *)&D_003128C0, 0x30, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
     if (sceFsIsNowait(inuse)) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return 0;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -525,14 +525,14 @@ s32 func_00180608(u32 fd, s32 request, void *argp) {
         func_0017F808();
     }
     if (iob == 0 || iob->inuse == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     g[0x105] = 0;
     g[0x106] = 0;
     switch (request) {
     case 1:
-        func_0017B920(D_0028CAAC);
+        WaitSema(D_0028CAAC);
         for (i = 0; i < 0x20; i++) {
             if (D_0028CA20[i] != -1) {
                 break;
@@ -543,16 +543,16 @@ s32 func_00180608(u32 fd, s32 request, void *argp) {
         } else {
             *(s32 *)D_00312884 = 1;
         }
-        func_0017B900(D_0028CAAC);
-        func_0017F738();
+        SignalSema(D_0028CAAC);
+        _cleanup();
         return 0;
     case 2:
         *(s32 *)argp = *(s32 *)((s32)(D_00313540 + 0x10) | 0x20000000);
-        func_0017F738();
+        _cleanup();
         return 0;
     case 3:
         *(s64 *)argp = *(s64 *)((s32)(D_00313540 + 0x10) | 0x20000000);
-        func_0017F738();
+        _cleanup();
         return 0;
     }
     g[3] = iob->fd;
@@ -566,25 +566,25 @@ s32 func_00180608(u32 fd, s32 request, void *argp) {
     sema.maxCount = 1;
     sema.initCount = 0;
     sema.option = 0;
-    h = func_0017B8E0(&sema);
+    h = CreateSema(&sema);
     g[2] = 4;
     *(void **)(g + 1) = &result;
     g[0] = h;
     func_0017E190((s32 *)&D_003128C0, 0x420);
-    rc = func_0017EA80(&D_00313B80, 5, 0, (s32 *)&D_003128C0, 0x420, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 5, 0, (s32 *)&D_003128C0, 0x420, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -605,11 +605,11 @@ s32 func_00180958(u32 fd, s32 request, void *argp, u32 arglen, void *bufp, u32 b
         func_0017F808();
     }
     if (iob == 0 || iob->inuse == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     if (arglen > 0x400 || buflen > 0x400) {
-        func_0017F738();
+        _cleanup();
         return -0x16;
     }
     if (argp == 0) {
@@ -623,27 +623,27 @@ s32 func_00180958(u32 fd, s32 request, void *argp, u32 arglen, void *bufp, u32 b
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    h = func_0017B8E0(&buf);
+    h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[0x106] = buflen;
     g[2] = 4;
     *(void **)(g + 0x105) = bufp;
     g[0] = h;
     func_0017E190((s32 *)&D_003128C0, 0x420);
-    rc = func_0017EA80(&D_00313B80, 0x1A, 0, (s32 *)&D_003128C0, 0x420, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x1A, 0, (s32 *)&D_003128C0, 0x420, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -675,23 +675,23 @@ s32 func_00180B38(s32 name, s32 code) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, code, 0, (s32 *)&D_003128C0, i + 0xD, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, code, 0, (s32 *)&D_003128C0, i + 0xD, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -728,23 +728,23 @@ s32 func_00180D00(char *name, s32 mode) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, 7, 0, (s32 *)&D_003128C0, i + 0x11, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 7, 0, (s32 *)&D_003128C0, i + 0x11, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -791,7 +791,7 @@ s32 func_00180ED0(u8 *dev, u8 *blockdev, u8 *arg, s32 arglen) {
         }
     }
     if (arglen > 0x400) {
-        func_0017F738();
+        _cleanup();
         return -7;
     }
     for (i = 0; i < arglen; i++) {
@@ -802,24 +802,24 @@ s32 func_00180ED0(u8 *dev, u8 *blockdev, u8 *arg, s32 arglen) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
     func_0017E190((s32 *)&D_003128C0, 0xC10);
-    rc = func_0017EA80(&D_00313B80, 0xE, 0, (s32 *)&D_003128C0, 0xC10, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0xE, 0, (s32 *)&D_003128C0, 0xC10, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -842,23 +842,23 @@ s32 func_00181140(s32 arg0) {
     sp[1] = 1;
     sp[2] = 0;
     sp[5] = 0;
-    sema = func_0017B8E0(sp);
+    sema = CreateSema(sp);
     D_003128C0.sema = sema;
     p->result = &result;
     p->size = 4;
-    if (func_0017EA80(&D_00313B80, 0xF, 0, (s32 *)p, 0x10, &D_00313500, 4, 0, 0) < 0) {
-        func_0017B8F0(sema);
-        func_0017F738();
+    if (sceSifCallRpc(&D_00313B80, 0xF, 0, (s32 *)p, 0x10, &D_00313500, 4, 0, 0) < 0) {
+        DeleteSema(sema);
+        _cleanup();
         return -1;
     }
     r = *(s32 *)((u32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (r == 0) {
-        func_0017B8F0(sema);
+        DeleteSema(sema);
         return -1;
     }
-    func_0017B920(sema);
-    func_0017B8F0(sema);
+    WaitSema(sema);
+    DeleteSema(sema);
     return result;
 }
 
@@ -883,11 +883,11 @@ s32 func_00181348(u32 fd) {
     obj = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(0xA);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (obj == 0 || ((s32 *)obj)[1] == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     handle = ((s32 *)obj)[0];
@@ -895,24 +895,24 @@ s32 func_00181348(u32 fd) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    D_003128C0.sema = h = func_0017B8E0(&buf);
+    D_003128C0.sema = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, 0xA, 0, g, 0x14, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0xA, 0, g, 0x14, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     ((s32 *)obj)[1] = 0;
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     if (result < 0) {
         return result;
     }
@@ -931,11 +931,11 @@ s32 func_001814B0(s32 arg0, s32 arg1) {
     slot = func_0017F288(arg0);
     ((s32 (*)(s32))func_0017F708)(0xB);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (slot == NULL || slot[1] == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     p->arg = slot[0];
@@ -943,23 +943,23 @@ s32 func_001814B0(s32 arg0, s32 arg1) {
     sp[1] = 1;
     sp[2] = 0;
     sp[5] = 0;
-    sema = func_0017B8E0(sp);
+    sema = CreateSema(sp);
     D_003128C0.sema = sema;
     p->result = &result;
     p->size = 4;
-    if (func_0017EA80(&D_00313B80, 0xB, 0, (s32 *)p, 0x20, &D_00313500, 4, 0, 0) < 0) {
-        func_0017B920(sema);
-        func_0017F738();
+    if (sceSifCallRpc(&D_00313B80, 0xB, 0, (s32 *)p, 0x20, &D_00313500, 4, 0, 0) < 0) {
+        WaitSema(sema);
+        _cleanup();
         return -0xB;
     }
     r = *(s32 *)((u32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (r == 0) {
-        func_0017B8F0(sema);
+        DeleteSema(sema);
         return -0xB;
     }
-    func_0017B920(sema);
-    func_0017B8F0(sema);
+    WaitSema(sema);
+    DeleteSema(sema);
     return result;
 }
 
@@ -992,23 +992,23 @@ s32 func_00181608(u8 *name, void *stat) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g->sema = h = func_0017B8E0(&buf);
+    g->sema = h = CreateSema(&buf);
     g->result = &result;
     g->mode = 4;
-    rc = func_0017EA80(&D_00313B80, 0xC, 0, (s32 *)&D_003128C0, i + 0x11, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0xC, 0, (s32 *)&D_003128C0, i + 0x11, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1042,24 +1042,24 @@ s32 func_001817A8(u8 *name, void *stat, s32 mask) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
     func_0017E190((s32 *)&D_003128C0, 0x450);
-    rc = func_0017EA80(&D_00313B80, 0xD, 0, (s32 *)&D_003128C0, i + 0x51, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0xD, 0, (s32 *)&D_003128C0, i + 0x51, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1100,24 +1100,24 @@ s32 func_001819E8(u8 *oldname, u8 *newname) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
     func_0017E190((s32 *)&D_003128C0, 0x80C);
-    rc = func_0017EA80(&D_00313B80, 0x11, 0, (s32 *)&D_003128C0, 0x80C, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x11, 0, (s32 *)&D_003128C0, 0x80C, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1153,23 +1153,23 @@ s32 func_00181BF8(u8 *name, s32 flag) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, 0x13, 0, (s32 *)&D_003128C0, 0x414, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x13, 0, (s32 *)&D_003128C0, 0x414, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1208,7 +1208,7 @@ s32 func_00181D90(u8 *fsname, u8 *devname, s32 flag, u8 *arg, s32 arglen) {
         ((char *)g)[0x80B] = 0;
     }
     if (arglen > 0x400) {
-        func_0017F738();
+        _cleanup();
         return -7;
     }
     for (i = 0; i < arglen; i++) {
@@ -1220,24 +1220,24 @@ s32 func_00181D90(u8 *fsname, u8 *devname, s32 flag, u8 *arg, s32 arglen) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
     func_0017E190((s32 *)&D_003128C0, 0xC14);
-    rc = func_0017EA80(&D_00313B80, 0x14, 0, (s32 *)&D_003128C0, 0xC14, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x14, 0, (s32 *)&D_003128C0, 0xC14, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1261,11 +1261,11 @@ s64 func_00182020(s32 fd, s64 offset, s32 whence) {
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(0x16);
     if (D_0028CAA0 == 0) {
-        func_0017F738();
+        _cleanup();
         return -1;
     }
     if (iob == 0 || (inuse = iob->inuse) == 0) {
-        func_0017F738();
+        _cleanup();
         return -9;
     }
     *(s64 *)(g + 4) = offset;
@@ -1275,12 +1275,12 @@ s64 func_00182020(s32 fd, s64 offset, s32 whence) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    h = func_0017B8E0(&buf);
+    h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 8;
     D_003128C0.sema = h;
     if (inuse & 0x8000) {
-        func_0017B920(D_0028CAAC);
+        WaitSema(D_0028CAAC);
         for (i = 0; i < 0x20; i++) {
             if (D_0028CA20[i] == -1) {
                 D_0028CA20[i] = g[0];
@@ -1288,26 +1288,26 @@ s64 func_00182020(s32 fd, s64 offset, s32 whence) {
                 break;
             }
         }
-        func_0017B900(D_0028CAAC);
+        SignalSema(D_0028CAAC);
     }
-    rc = func_0017EA80(&D_00313B80, 0x16, 0, (s32 *)&D_003128C0, 0x20, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x16, 0, (s32 *)&D_003128C0, 0x20, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
     if (sceFsIsNowait(inuse)) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return 0;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1336,7 +1336,7 @@ s32 func_00182258(u8 *name, s32 cmd, u8 *arg, u32 arglen, void *bufp, u32 buflen
         ((char *)g)[0x40B] = 0;
     }
     if (arglen > 0x400 || buflen > 0x400) {
-        func_0017F738();
+        _cleanup();
         return -0x16;
     }
     for (i = 0; i < arglen; i++) {
@@ -1348,27 +1348,27 @@ s32 func_00182258(u8 *name, s32 cmd, u8 *arg, u32 arglen, void *bufp, u32 buflen
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    h = func_0017B8E0(&buf);
+    h = CreateSema(&buf);
     g[0x206] = buflen;
     *(void **)(g + 1) = &result;
     g[2] = 4;
     *(void **)(g + 0x205) = bufp;
     g[0] = h;
     func_0017E190((s32 *)&D_003128C0, 0x81C);
-    rc = func_0017EA80(&D_00313B80, 0x17, 0, (s32 *)&D_003128C0, 0x81C, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x17, 0, (s32 *)&D_003128C0, 0x81C, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1409,23 +1409,23 @@ s32 func_00182490(u8 *existing, u8 *newpath) {
     buf.maxCount = 1;
     buf.initCount = 0;
     buf.option = 0;
-    g[0] = h = func_0017B8E0(&buf);
+    g[0] = h = CreateSema(&buf);
     *(void **)(g + 1) = &result;
     g[2] = 4;
-    rc = func_0017EA80(&D_00313B80, 0x18, 0, (s32 *)&D_003128C0, 0x80C, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x18, 0, (s32 *)&D_003128C0, 0x80C, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
@@ -1462,35 +1462,35 @@ s32 func_00182670(u8 *name, void *buf, u32 len) {
     sema.maxCount = 1;
     sema.initCount = 0;
     sema.option = 0;
-    g->sema = h = func_0017B8E0(&sema);
+    g->sema = h = CreateSema(&sema);
     g->result = &result;
     g->mode = 4;
-    rc = func_0017EA80(&D_00313B80, 0x19, 0, (s32 *)&D_003128C0, 0x80C, &D_00313500, 4, 0, 0);
+    rc = sceSifCallRpc(&D_00313B80, 0x19, 0, (s32 *)&D_003128C0, 0x80C, &D_00313500, 4, 0, 0);
     if (rc < 0) {
-        func_0017B8F0(h);
-        func_0017F738();
+        DeleteSema(h);
+        _cleanup();
         return -0xB;
     }
     uv = *(s32 *)((s32)&D_00313500 | 0x20000000);
-    func_0017F738();
+    _cleanup();
     if (uv == 0) {
-        func_0017B8F0(h);
+        DeleteSema(h);
         return -0xB;
     }
-    func_0017B920(h);
-    func_0017B8F0(h);
+    WaitSema(h);
+    DeleteSema(h);
     return result;
 }
 
 /* sceSifInitIopHeap: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_00182838(void) {
+s32 sceSifInitIopHeap(void) {
     s32 i;
     s32 ret;
     s32 val;
 
     for (;;) {
-        ret = func_0017E8B0(&D_00313C40, 0x80000003, 0);
+        ret = sceSifBindRpc(&D_00313C40, 0x80000003, 0);
         if (ret < 0)
             return -1;
         val = ((sceSifRpcClientData *)&D_00313C40)->serve;
@@ -1506,12 +1506,12 @@ s32 func_00182838(void) {
     return 0;
 }
 
-s32 func_001828C0(s32 arg0) {
+s32 sceSifAllocIopHeap(s32 arg0) {
     if (D_0028CAB8 < 0) {
         return 0;
     }
     D_00313CC0 = arg0;
-    if (func_0017EA80(&D_00313C40, 1, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00313C40, 1, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
         return 0;
     }
     return D_00313C80;
@@ -1527,25 +1527,25 @@ s32 func_00182930(s32 arg0, s32 arg1, s32 arg2) {
     p[0] = arg1;
     p[1] = arg0;
     p[2] = arg2;
-    if (func_0017EA80(&D_00313C40, 4, 0, p, 0xC, &D_00313C80, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00313C40, 4, 0, p, 0xC, &D_00313C80, 4, 0, 0) < 0) {
         return 0;
     }
     return D_00313C80;
 }
 
-s32 func_001829B0(s32 arg0) {
+s32 sceSifFreeIopHeap(s32 arg0) {
     if (D_0028CAB8 < 0) {
         return 0;
     }
     D_00313CC0 = arg0;
-    if (func_0017EA80(&D_00313C40, 2, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00313C40, 2, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
         return -1;
     }
     return D_00313C80;
 }
 
 s32 func_00182A28(s32 arg0) {
-    return func_001829B0(arg0);
+    return sceSifFreeIopHeap(arg0);
 }
 
 typedef struct IopLoadHeap_00182A48 {
@@ -1555,7 +1555,7 @@ typedef struct IopLoadHeap_00182A48 {
 
 extern IopLoadHeap_00182A48 D_00313D00;
 
-s32 func_00182A48(const char *name, void *addr) {
+s32 sceSifLoadIopHeap(const char *name, void *addr) {
     s32 i;
 
     if (D_0028CAB8 < 0) {
@@ -1572,7 +1572,7 @@ s32 func_00182A48(const char *name, void *addr) {
     }
     D_00313D00.addr = addr;
     D_00313D00.name[251] = 0;
-    if (func_0017EA80(&D_00313C40, 3, 0, &D_00313D00, i + 5, &D_00313C80, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00313C40, 3, 0, &D_00313D00, i + 5, &D_00313C80, 4, 0, 0) < 0) {
         return -1;
     }
     return D_00313C80;
@@ -1590,17 +1590,17 @@ typedef struct IopVer_00182B38 {
     u8 b[4];
 } IopVer_00182B38;
 
-s32 func_00182B38(void) {
+s32 _lf_bind(void) {
     s32 i;
 
     if (D_0028CAC0 < 0) {
         while (1) {
-            if (func_0017E8B0(&D_00314000, 0x80000006, 0) < 0) {
+            if (sceSifBindRpc(&D_00314000, 0x80000006, 0) < 0) {
                 return -1;
             }
             if ((*(IopCd_00182B38 *)&D_00314000).serve != 0) {
                 D_0028CAC0 = 0;
-                if (func_0017EA80(&D_00314000, 0xFF, 0, 0, 0, &D_00313E00, 4, 0, 0) < 0) {
+                if (sceSifCallRpc(&D_00314000, 0xFF, 0, 0, 0, &D_00313E00, 4, 0, 0) < 0) {
                     return 0xFFFEFFFF;
                 }
                 *(IopVer_00182B38 *)&D_00314028 = *(IopVer_00182B38 *)&D_00313E00;
@@ -1624,7 +1624,7 @@ s32 func_00182C38(void) {
     return var_s2;
 }
 
-s32 func_00182CC8(void) {
+s32 sceSifLoadFileReset(void) {
     D_0028CAC0 = -1;
     func_00198948(&D_00314028, 0, 4U);
     return 0;
@@ -1636,7 +1636,7 @@ s32 func_00182D00(s32 addr, s32 arglen, s32 args, s32 *ret) {
     SceLfRpcBuf *p;
     s32 r;
 
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     if (func_00182C38() != 0) {
@@ -1655,7 +1655,7 @@ s32 func_00182D00(s32 addr, s32 arglen, s32 args, s32 *ret) {
     } else {
         p->arglen = 0;
     }
-    if (func_0017EA80(&D_00314000, 6, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 6, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     r = ((SceLfRpcBuf *)&D_00313E00)->addr;
@@ -1669,7 +1669,7 @@ s32 func_00182F08(s32 addr, s32 arglen, s32 args, s32 *ret) {
     SceLfRpcBuf *p;
     s32 r;
 
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     if (func_00182C38() != 0) {
@@ -1688,7 +1688,7 @@ s32 func_00182F08(s32 addr, s32 arglen, s32 args, s32 *ret) {
     } else {
         p->arglen = 0;
     }
-    if (func_0017EA80(&D_00314000, 7, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 7, 0, &D_00313E00, 0x200, &D_00313E00, 8, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     r = ((SceLfRpcBuf *)&D_00313E00)->addr;
@@ -1700,14 +1700,14 @@ s32 func_00183110(s32 arg0) {
     s32 var_v0;
 
     var_v0 = -0x10000;
-    if (func_00182B38() < 0) {
+    if (_lf_bind() < 0) {
         return var_v0;
     }
     if (func_00182C38() != 0) {
         return -0x10004;
     }
     D_00313E00 = arg0;
-    if (func_0017EA80(&D_00314000, 8, 0, &D_00313E00, 4, &D_00313E00, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00314000, 8, 0, &D_00313E00, 4, &D_00313E00, 4, 0, 0) < 0) {
         var_v0 = -0x10001;
         /* Duplicate return node #7. Try simplifying control flow for better match */
         return var_v0;

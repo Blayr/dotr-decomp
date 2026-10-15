@@ -57,7 +57,7 @@ double func_0019AEB8(double x, s32 n) {
 void *func_0019B0A0(s32 *ptr, s32 incr) {
     void *ret;
     D_003512F8 = 0;
-    if ((ret = (void *)func_0017BFE0(incr)) == (void *)-1 && D_003512F8 != 0)
+    if ((ret = (void *)sbrk(incr)) == (void *)-1 && D_003512F8 != 0)
         *ptr = D_003512F8;
     return ret;
 }
@@ -77,19 +77,19 @@ s32 func_0019B148(s32 reent_ptr, s32 name, s32 arg2, s32 rewrite) {
     s32 offset;
     char *S;
 
-    ((void (*)(s32))func_001966E8)(reent_ptr);
+    ((void (*)(s32))__env_lock)(reent_ptr);
     if (*value == '=')
         ++value;
     l_value = func_0019BEF0(value);
-    if ((C = (char *)func_00197570(reent_ptr, name, (s32)&offset))) {
+    if ((C = (char *)_findenv_r(reent_ptr, name, (s32)&offset))) {
         if (!rewrite) {
-            ((void (*)(s32))func_001966F0)(reent_ptr);
+            ((void (*)(s32))__env_unlock)(reent_ptr);
             return 0;
         }
         if ((u32)func_0019BEF0(C) >= (u32)l_value) {
             while ((*C++ = *value++) != 0)
                 ;
-            ((void (*)(s32))func_001966F0)(reent_ptr);
+            ((void (*)(s32))__env_unlock)(reent_ptr);
             return 0;
         }
     } else {
@@ -100,14 +100,14 @@ s32 func_0019B148(s32 reent_ptr, s32 name, s32 arg2, s32 rewrite) {
             ;
         if (D_00317240) {
             if (!(*D_0028FF08 = (char **)func_0019A690((void *)reent_ptr, D_0028F79C, sizeof(char *) * (cnt + 2)))) {
-                ((void (*)(s32))func_001966F0)(reent_ptr);
+                ((void (*)(s32))__env_unlock)(reent_ptr);
                 return -1;
             }
         } else {
             D_00317240 = 1;
-            P = (char **)func_00197EB8(reent_ptr, sizeof(char *) * (cnt + 2));
+            P = (char **)_malloc_r(reent_ptr, sizeof(char *) * (cnt + 2));
             if (!P) {
-                ((void (*)(s32))func_001966F0)(reent_ptr);
+                ((void (*)(s32))__env_unlock)(reent_ptr);
                 return -1;
             }
             ((void (*)(s32, s32, s32))func_001950E8)((s32)*D_0028FF08, (s32)P, cnt * sizeof(char *));
@@ -121,15 +121,15 @@ s32 func_0019B148(s32 reent_ptr, s32 name, s32 arg2, s32 rewrite) {
     }
     for (C = (char *)name; *C && *C != '='; ++C)
         ;
-    if (!((*D_0028FF08)[offset] = S = func_00197EB8(reent_ptr, (C - (char *)name) + l_value + 2))) {
-        ((void (*)(s32))func_001966F0)(reent_ptr);
+    if (!((*D_0028FF08)[offset] = S = _malloc_r(reent_ptr, (C - (char *)name) + l_value + 2))) {
+        ((void (*)(s32))__env_unlock)(reent_ptr);
         return -1;
     }
     for (C = S; (*C = *(char *)name++) && *C != '='; ++C)
         ;
     for (*C++ = '='; (*C++ = *value++) != 0;)
         ;
-    ((void (*)(s32))func_001966F0)(reent_ptr);
+    ((void (*)(s32))__env_unlock)(reent_ptr);
     return 0;
 }
 
@@ -137,12 +137,12 @@ s32 func_0019B418(s32 reent_ptr, s32 name) {
     char **P;
     s32 offset;
 
-    ((void (*)(s32))func_001966E8)(reent_ptr);
-    while (func_00197570(reent_ptr, name, (s32)&offset))
+    ((void (*)(s32))__env_lock)(reent_ptr);
+    while (_findenv_r(reent_ptr, name, (s32)&offset))
         for (P = &(*D_0028FF08)[offset];; ++P)
             if (!(*P = *(P + 1)))
                 break;
-    ((void (*)(s32))func_001966F0)(reent_ptr);
+    ((void (*)(s32))__env_unlock)(reent_ptr);
 }
 
 f32 func_0019B4B8(f32 fparg0, f32 fparg1) {
@@ -220,11 +220,11 @@ s32 func_0019B648(char *str, const char *fmt, ...) {
     return ret;
 }
 
-s32 func_0019B6D8(void) {
+s32 eofread(void) {
     return 0;
 }
 
-s32 func_0019B6E0(const char *str, const char *fmt, ...) {
+s32 sscanf(const char *str, const char *fmt, ...) {
     s32 ret;
     __builtin_va_list ap;
     ssc_FILE f;
@@ -232,7 +232,7 @@ s32 func_0019B6E0(const char *str, const char *fmt, ...) {
     f._flags = 0x0004;
     f._bf_base = f._p = (u8 *)str;
     f._bf_size = f._r = func_0019BEF0(str);
-    f._read = (void *)func_0019B6D8;
+    f._read = (void *)eofread;
     f._ub_base = NULL;
     f._lb_base = NULL;
     f._data = (void *)D_0028FA98;
@@ -242,7 +242,7 @@ s32 func_0019B6E0(const char *str, const char *fmt, ...) {
     return ret;
 }
 
-s32 func_0019B788(void *cookie, char *buf, s32 n) {
+s32 __sread(void *cookie, char *buf, s32 n) {
     sread_FILE *fp = (sread_FILE *)cookie;
     s32 ret;
 
@@ -254,19 +254,19 @@ s32 func_0019B788(void *cookie, char *buf, s32 n) {
     return ret;
 }
 
-s32 func_0019B7F0(void *arg0, s32 arg1, s32 arg2) {
+s32 __swrite(void *arg0, s32 arg1, s32 arg2) {
     if ((*(u16 *)((u8 *)arg0 + 0xC)) & 0x100) {
-        func_001977D8((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)), 0, 2);
+        _lseek_r((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)), 0, 2);
     }
     (*(u16 *)((u8 *)arg0 + 0xC)) = (u16) ((*(s32 *)((u8 *)arg0 + 0xC)) & 0xEFFF);
     return func_001A0478((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)), arg1, arg2);
 }
 
-s64 func_0019B870(void *cookie, s64 offset, s32 whence) {
+s64 __sseek(void *cookie, s64 offset, s32 whence) {
     sseek_FILE *fp = (sseek_FILE *)cookie;
     s64 ret;
 
-    ret = ((s64 (*)(s32 *, s32, s64, s32))func_001977D8)(fp->_data, fp->_file, offset, whence);
+    ret = ((s64 (*)(s32 *, s32, s64, s32))_lseek_r)(fp->_data, fp->_file, offset, whence);
     if (ret == -1L)
         fp->_flags &= ~0x1000;
     else {
@@ -276,7 +276,7 @@ s64 func_0019B870(void *cookie, s64 offset, s32 whence) {
     return ret;
 }
 
-void func_0019B8D8(void *arg0) {
+void __sclose(void *arg0) {
     func_001951F8((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)));
 }
 
@@ -284,7 +284,7 @@ void func_0019B8D8(void *arg0) {
 
 /* strcasecmp (newlib 1.9.0 strcasecmp.c): adapted from kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0019B8F8(const char *s1, const char *s2) {
+s32 strcasecmp(const char *s1, const char *s2) {
     extern const char D_002BD0C0[];
 
     while (*s1 != '\0' && tolower_0019B8F8(*s1) == tolower_0019B8F8(*s2)) {
@@ -299,7 +299,7 @@ s32 func_0019B8F8(const char *s1, const char *s2) {
 
 /* strcat: newlib's hand-written r5900 assembly (libc/machine/r5900/strcat.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-char *func_0019B9D0(char *dst, const char *src) {
+char *strcat(char *dst, const char *src) {
     register char *ret __asm__("$2");
 
     __asm__ __volatile__(
@@ -389,7 +389,7 @@ char *func_0019B9D0(char *dst, const char *src) {
 
 /* strchr: newlib's hand-written r5900 assembly (libc/machine/r5900/strchr.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-char *func_0019BB00(char *s, s32 c) {
+char *strchr(char *s, s32 c) {
     register char *ret __asm__("$2");
 
     __asm__ __volatile__(
@@ -507,7 +507,7 @@ char *func_0019BB00(char *s, s32 c) {
 
 /* strcmp: newlib's hand-written r5900 assembly (libc/machine/r5900/strcmp.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0019BC90(const char *a, const char *b) {
+s32 strcmp(const char *a, const char *b) {
     register s32 ret __asm__("$2");
 
     __asm__ __volatile__(
@@ -607,7 +607,7 @@ s32 func_0019BC90(const char *a, const char *b) {
 
 /* strcpy: newlib's hand-written r5900 assembly (libc/machine/r5900/strcpy.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-char *func_0019BDD8(char *dst, const char *src) {
+char *strcpy(char *dst, const char *src) {
     register s32 r7 __asm__("$7");
 
     __asm__ __volatile__(
@@ -691,7 +691,7 @@ char *func_0019BDD8(char *dst, const char *src) {
 
 /* strlen: newlib's hand-written r5900 assembly (libc/machine/r5900/strlen.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0019BEF0(const char *s) {
+s32 strlen(const char *s) {
     register s32 r4 __asm__("$4");
     register s32 r7 __asm__("$7");
 
@@ -786,7 +786,7 @@ s32 func_0019BEF0(const char *s) {
 
 /* strncasecmp (newlib 1.9.0 strncasecmp.c) via gt4-decomp (MIT, (c) Gustavo Canepa and gt4-decomp contributors; newlib notice in THIRD_PARTY_NOTICES.md) */
 
-s32 func_0019C028(const char *s1, const char *s2, u32 n) {
+s32 strncasecmp(const char *s1, const char *s2, u32 n) {
     extern const char D_002BD0C0[];
 
     if (n == 0)
@@ -806,7 +806,7 @@ s32 func_0019C028(const char *s1, const char *s2, u32 n) {
 
 /* strncmp: newlib's hand-written r5900 assembly (libc/machine/r5900/strncmp.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0019C100(const char *a, const char *b, u32 n) {
+s32 strncmp(const char *a, const char *b, u32 n) {
     register s32 ret __asm__("$2");
 
     __asm__ __volatile__(
@@ -938,7 +938,7 @@ s32 func_0019C100(const char *a, const char *b, u32 n) {
 
 /* strncpy: newlib's hand-written r5900 assembly (libc/machine/r5900/strncpy.S), kept as asm; identified via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void *func_0019C2B8(void *dst, const void *src, u32 n) {
+void *strncpy(void *dst, const void *src, u32 n) {
     register s32 r8 __asm__("$8");
 
     __asm__ __volatile__(
@@ -1063,7 +1063,7 @@ void *func_0019C2B8(void *dst, const void *src, u32 n) {
     return (void *)r8;
 }
 
-char *func_0019C478(const char *s, s32 i) {
+char *strrchr(const char *s, s32 i) {
     const char *last = NULL;
     char c = i;
 

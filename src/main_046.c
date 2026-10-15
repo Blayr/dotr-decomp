@@ -1,8 +1,8 @@
 #include "common.h"
 
 static inline u8 *lookup_001E19D0(void) {
-    extern void *func_001DD130();
-    u8 *entry = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    u8 *entry = SzDuel_GetCardInfo();
 
     if (entry == NULL) {
         return NULL;
@@ -13,7 +13,7 @@ static inline u8 *lookup_001E19D0(void) {
     return entry;
 }
 
-s32 func_001E19D0(s32 arg0, s32 arg1, s8 arg2) {
+s32 SzDuel_SetUnitCtlGoalM(s32 arg0, s32 arg1, s8 arg2) {
     u8 *entry = lookup_001E19D0();
 
     if (entry == NULL) {
@@ -24,10 +24,10 @@ s32 func_001E19D0(s32 arg0, s32 arg1, s8 arg2) {
 }
 
 static inline u8 *get_entry_001E1A30(void) {
-    extern void *func_001DD130();
+    extern void *SzDuel_GetCardInfo();
     u8 *entry;
 
-    entry = func_001DD130();
+    entry = SzDuel_GetCardInfo();
     if (entry == NULL) {
         return NULL;
     }
@@ -37,7 +37,7 @@ static inline u8 *get_entry_001E1A30(void) {
     return entry;
 }
 
-s32 func_001E1A30(void) {
+s32 SzDuel_GetUnitCtlGoalC(void) {
     u8 *entry;
 
     entry = get_entry_001E1A30();
@@ -57,23 +57,23 @@ static inline void *check_001E1A90(void *p) {
     return p;
 }
 
-s32 func_001E1A90(void) {
-    extern void *func_001DD130();
+s32 SzDuel_GetUnitCtlGoalM(void) {
+    extern void *SzDuel_GetCardInfo();
     u8 *p;
 
-    p = check_001E1A90(func_001DD130());
+    p = check_001E1A90(SzDuel_GetCardInfo());
     if (p != NULL) {
         return p[0x51];
     }
     return -1;
 }
 
-s32 func_001E1AF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 SzDuel_SetUnitCtlRate(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_s0;
 
     var_s0 = 0;
-    if (func_001E1B70(arg0, arg1, arg2, arg3) != 0) {
-        if (func_001E1C10(arg0, arg1, arg2, arg3) != 0) {
+    if (SzDuel_SetUnitCtlRateC(arg0, arg1, arg2, arg3) != 0) {
+        if (SzDuel_SetUnitCtlRateM(arg0, arg1, arg2, arg3) != 0) {
             var_s0 = 1;
         }
     }
@@ -95,10 +95,10 @@ typedef struct {
 } Object_001E1B70;
 
 static inline void *check_001E1B70(void) {
-    extern void *func_001DD130();
+    extern void *SzDuel_GetCardInfo();
     Object_001E1B70 *object;
 
-    object = (Object_001E1B70 *) func_001DD130();
+    object = (Object_001E1B70 *) SzDuel_GetCardInfo();
     if (object == NULL) {
         return NULL;
     }
@@ -108,7 +108,7 @@ static inline void *check_001E1B70(void) {
     return object;
 }
 
-s32 func_001E1B70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 SzDuel_SetUnitCtlRateC(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Object_001E1B70 *object;
 
     object = (Object_001E1B70 *) check_001E1B70();
@@ -138,11 +138,11 @@ static inline void *check_001E1C10(void *p) {
     return p;
 }
 
-s32 func_001E1C10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern void *func_001DD130();
+s32 SzDuel_SetUnitCtlRateM(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern void *SzDuel_GetCardInfo();
     void *var_v0;
 
-    var_v0 = check_001E1C10(func_001DD130());
+    var_v0 = check_001E1C10(SzDuel_GetCardInfo());
     if (var_v0 == NULL) {
         return 0;
     }
@@ -154,10 +154,10 @@ s32 func_001E1C10(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 static inline void *get_entry_001E1CB0(void) {
-    extern void *func_001DD130();
+    extern void *SzDuel_GetCardInfo();
     void *entry;
 
-    entry = func_001DD130();
+    entry = SzDuel_GetCardInfo();
     if (entry == NULL) {
         return NULL;
     }
@@ -167,7 +167,7 @@ static inline void *get_entry_001E1CB0(void) {
     return entry;
 }
 
-s32 func_001E1CB0(void) {
+s32 SzDuel_GetUnitCtlRateC(void) {
     void *entry;
 
     entry = get_entry_001E1CB0();
@@ -177,11 +177,11 @@ s32 func_001E1CB0(void) {
     return -1;
 }
 
-s32 func_001E1D10(void) {
-    extern void *func_001DD130();
+s32 SzDuel_GetUnitCtlRateM(void) {
+    extern void *SzDuel_GetCardInfo();
     u8 *ptr;
 
-    ptr = func_001DD130();
+    ptr = SzDuel_GetCardInfo();
     if (ptr == NULL) {
         ptr = NULL;
     } else if ((s32) ptr[0x45] >= 0xB) {
@@ -208,11 +208,11 @@ typedef struct State_001E1D70 {
     Flags_001E1D70 flags;
 } State_001E1D70;
 
-s32 func_001E1D70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern void *func_001DD130();
+s32 SzDuel_SetUnitOpenRate(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern void *SzDuel_GetCardInfo();
     State_001E1D70 *state;
 
-    state = func_001DD130();
+    state = SzDuel_GetCardInfo();
     if (state == NULL) {
         state = NULL;
     } else if (state->kind >= 11) {
@@ -229,10 +229,10 @@ s32 func_001E1D70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 static inline u8 *lookup_001E1E10(void) {
-    extern void *func_001DD130();
+    extern void *SzDuel_GetCardInfo();
     u8 *entry;
 
-    entry = func_001DD130();
+    entry = SzDuel_GetCardInfo();
     if (entry == NULL) {
         return NULL;
     }
@@ -242,7 +242,7 @@ static inline u8 *lookup_001E1E10(void) {
     return entry;
 }
 
-s32 func_001E1E10(void) {
+s32 SzDuel_GetUnitOpenRate(void) {
     u8 *entry;
 
     entry = lookup_001E1E10();
@@ -267,7 +267,7 @@ typedef struct Flags_001E1E70 {
 } Flags_001E1E70;
 
 static inline void *get_001E1E70(s32 arg0, s32 arg1) {
-    u8 *card = func_001DD130(arg0, arg1);
+    u8 *card = SzDuel_GetCardInfo(arg0, arg1);
 
     if (card == NULL) {
         return NULL;
@@ -278,7 +278,7 @@ static inline void *get_001E1E70(s32 arg0, s32 arg1) {
     return card;
 }
 
-s32 func_001E1E70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 SzDuel_SetUnitStatus(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Flags_001E1E70 *card = get_001E1E70(arg0, arg1);
 
     if (card == NULL) {
@@ -327,7 +327,7 @@ typedef struct Flags_001E2100 {
 } Flags_001E2100;
 
 static inline void *get_001E2100(s32 arg0, s32 arg1) {
-    u8 *card = func_001DD130(arg0, arg1);
+    u8 *card = SzDuel_GetCardInfo(arg0, arg1);
 
     if (card == NULL) {
         return NULL;
@@ -338,7 +338,7 @@ static inline void *get_001E2100(s32 arg0, s32 arg1) {
     return card;
 }
 
-s32 func_001E2100(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_GetUnitStatus(s32 arg0, s32 arg1, s32 arg2) {
     Flags_001E2100 *card = get_001E2100(arg0, arg1);
 
     if (card == NULL) {
@@ -369,7 +369,7 @@ static inline u8 *get_001E2220(s32 arg0, s32 arg1) {
     return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
 }
 
-s32 func_001E2220(s32 arg0, s32 arg1, s8 arg2) {
+s32 SzDuel_SetField(s32 arg0, s32 arg1, s8 arg2) {
     u8 *var_v0;
 
     var_v0 = get_001E2220(arg0, arg1);
@@ -387,7 +387,7 @@ static inline u8 *get_001E22B0(s32 arg0, s32 arg1) {
     return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
 }
 
-s32 func_001E22B0(s32 arg0, s32 arg1) {
+s32 SzDuel_GetField(s32 arg0, s32 arg1) {
     u8 *var_v0;
 
     var_v0 = get_001E22B0(arg0, arg1);
@@ -397,7 +397,7 @@ s32 func_001E22B0(s32 arg0, s32 arg1) {
     return var_v0[0x16];
 }
 
-void func_001E2340(void) {
+void SzDuel_InitFieldRate(void) {
     s32 x;
     s32 y;
 
@@ -405,7 +405,7 @@ void func_001E2340(void) {
     do {
         x = 0;
         do {
-            func_001E23A0(x, y, 0);
+            SzDuel_SetFieldRate(x, y, 0);
             x++;
         } while (x < 7);
         y++;
@@ -419,7 +419,7 @@ static inline u8 *cell_001E23A0(s32 x, s32 y) {
     return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
 }
 
-s32 func_001E23A0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetFieldRate(s32 arg0, s32 arg1, s32 arg2) {
     u8 *cell;
 
     cell = cell_001E23A0(arg0, arg1);
@@ -443,7 +443,7 @@ static inline u8 *lookup_001E2450(s32 x, s32 y) {
     return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
 }
 
-s16 func_001E2450(s32 arg0, s32 arg1) {
+s16 SzDuel_GetFieldRate(s32 arg0, s32 arg1) {
     u8 *entry;
 
     entry = lookup_001E2450(arg0, arg1);
@@ -460,7 +460,7 @@ static inline u8 *cell_001E24E0(s32 x, s32 y) {
     return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
 }
 
-u8 func_001E24E0(s32 x, s32 y) {
+u8 SzDuel_GetMapMovable(s32 x, s32 y) {
     u8 *cell;
 
     cell = cell_001E24E0(x, y);
@@ -599,7 +599,7 @@ static inline int get_16(int x, int y)
     return -1;
 }
 
-void func_001E2570(int side, int cx, int cy)
+void lSzDuel_CalcMapSummonEnable(int side, int cx, int cy)
 {
     int x;
     int y;
@@ -623,7 +623,7 @@ void func_001E2570(int side, int cx, int cy)
                 ok = 0;
             }
             if (item != 0) {
-                n = func_00250360(item->unknown_44, item->unknown_45);
+                n = Ta_IsUnitControl(item->unknown_44, item->unknown_45);
                 if (n != side) {
                     ok = 0;
                 }
@@ -686,8 +686,8 @@ static inline s32 get_walk_001E27D0(s32 x, s32 y, Cell_001E27D0 *p) {
     return 0xFF;
 }
 
-void func_001E27D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 *arg7, u8 *arg8, s32 count) {
-    extern void func_0027ACB0();
+void lSzDuel_CalcMapMovable(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 *arg7, u8 *arg8, s32 count) {
+    extern void TaLogic_DoGetShortRoot();
     u8 buffer0[0x40];
     u8 buffer1[0x40];
     s32 x;
@@ -732,7 +732,7 @@ void func_001E27D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
             row += 7;
         } while (y < 7);
     }
-    func_001E2A60(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, count, buffer0, buffer1, 0, 1);
+    lSzDuel_CalcMapMovableRecursive(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, count, buffer0, buffer1, 0, 1);
     for (i = 0; i < count; i++) {
         set_001E27D0(arg7[i], arg8[i], i);
     }
@@ -801,7 +801,7 @@ static inline s32 visited_001E2A60(s32 x, s32 y, u8 *pathX, u8 *pathY, s32 count
     return i < count;
 }
 
-void func_001E2A60(s32 arg0, s32 arg1, s32 arg2, s32 x, s32 y, s32 limit,
+void lSzDuel_CalcMapMovableRecursive(s32 arg0, s32 arg1, s32 arg2, s32 x, s32 y, s32 limit,
                    u8 *oldX, u8 *oldY, s32 oldCount, u8 *pathX, u8 *pathY,
                    s32 depth, s32 allowance) {
     Object_001E2A60 *object;
@@ -812,7 +812,7 @@ void func_001E2A60(s32 arg0, s32 arg1, s32 arg2, s32 x, s32 y, s32 limit,
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return;
     }
-    object = (Object_001E2A60 *)func_001E36E0(x, y);
+    object = (Object_001E2A60 *)SzDuel_GetMapUnit(x, y);
     terrain = terrain_001E2A60(x, y);
     if (depth > 0) {
         for (i = 0; i < oldCount; i++) {
@@ -821,7 +821,7 @@ void func_001E2A60(s32 arg0, s32 arg1, s32 arg2, s32 x, s32 y, s32 limit,
             }
         }
         if (object != NULL) {
-            s32 owner = func_00250360(object->owner, object->state);
+            s32 owner = Ta_IsUnitControl(object->owner, object->state);
             if (arg1 != 0 && owner != arg2) {
                 return;
             }
@@ -850,28 +850,28 @@ void func_001E2A60(s32 arg0, s32 arg1, s32 arg2, s32 x, s32 y, s32 limit,
         return;
     }
     if (!visited_001E2A60(x + 1, y, pathX, pathY, nextDepth)) {
-        func_001E2A60(arg0, arg1, arg2, x + 1, y, limit, oldX, oldY,
+        lSzDuel_CalcMapMovableRecursive(arg0, arg1, arg2, x + 1, y, limit, oldX, oldY,
                       oldCount, pathX, pathY, nextDepth, allowance);
     }
     if (!visited_001E2A60(x - 1, y, pathX, pathY, nextDepth)) {
-        func_001E2A60(arg0, arg1, arg2, x - 1, y, limit, oldX, oldY,
+        lSzDuel_CalcMapMovableRecursive(arg0, arg1, arg2, x - 1, y, limit, oldX, oldY,
                       oldCount, pathX, pathY, nextDepth, allowance);
     }
     if (!visited_001E2A60(x, y + 1, pathX, pathY, nextDepth)) {
-        func_001E2A60(arg0, arg1, arg2, x, y + 1, limit, oldX, oldY,
+        lSzDuel_CalcMapMovableRecursive(arg0, arg1, arg2, x, y + 1, limit, oldX, oldY,
                       oldCount, pathX, pathY, nextDepth, allowance);
     }
     if (!visited_001E2A60(x, y - 1, pathX, pathY, nextDepth)) {
-        func_001E2A60(arg0, arg1, arg2, x, y - 1, limit, oldX, oldY,
+        lSzDuel_CalcMapMovableRecursive(arg0, arg1, arg2, x, y - 1, limit, oldX, oldY,
                       oldCount, pathX, pathY, nextDepth, allowance);
     }
 }
 
-void func_001E2FB0(s32 arg0, s32 arg1, s32 arg2) {
-    func_001E2FC0(arg0, arg1, arg2, 1);
+void SzDuel_InitMapColor(s32 arg0, s32 arg1, s32 arg2) {
+    SzDuel_InitMapColor2(arg0, arg1, arg2, 1);
 }
 
-void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void SzDuel_InitMapColor2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 column;
     s32 row;
 
@@ -879,15 +879,15 @@ void func_001E2FC0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     do {
         column = 0;
         do {
-            func_001E3070(column, row, arg0, arg1, arg2, arg3);
+            SzDuel_SetMapColor2(column, row, arg0, arg1, arg2, arg3);
             column++;
         } while (column < 7);
         row++;
     } while (row < 7);
 }
 
-void func_001E3060(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_001E3070(arg0, arg1, arg2, arg3, arg4, 1);
+void SzDuel_SetMapColor(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    SzDuel_SetMapColor2(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
 typedef struct {
@@ -918,7 +918,7 @@ typedef struct {
 
 extern u16 D_00318118;
 
-s32 func_001E3070(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+s32 SzDuel_SetMapColor2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     Cell_001E3070 *cell;
     u8 inverse;
     u8 channel;
@@ -997,7 +997,7 @@ static inline u8 *lookup_001E3230(s32 x, s32 y) {
     return D_00318E60 + y * 0xC4 + x * 0x1C;
 }
 
-s32 func_001E3230(s32 x, s32 y) {
+s32 SzDuel_CalcMapColor(s32 x, s32 y) {
     u8 *p;
     s32 step;
     u8 current;
@@ -1118,7 +1118,7 @@ static inline u8 *lookup_001E3650(s32 x, s32 y) {
     return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
 }
 
-s32 func_001E3650(s32 arg0, s32 arg1, s8 arg2) {
+s32 SzDuel_SetMapAlpha(s32 arg0, s32 arg1, s8 arg2) {
     u8 *var_v0;
 
     var_v0 = lookup_001E3650(arg0, arg1);
@@ -1136,7 +1136,7 @@ static inline void **cell_001E36E0(s32 x, s32 y) {
     return (void **)(D_00318E60 + y * 0xC4 + x * 0x1C);
 }
 
-s32 func_001E36E0(s32 arg0, s32 arg1) {
+s32 SzDuel_GetMapUnit(s32 arg0, s32 arg1) {
     void **cell;
     void *result;
 
@@ -1161,7 +1161,7 @@ static inline void **lookup_001E3790(s32 arg0, s32 arg1) {
     return (void **)(D_00318E60 + (arg1 * 0xC4) + (arg0 * 0x1C));
 }
 
-s32 func_001E3790(s32 arg0, s32 arg1) {
+s32 SzDuel_GetMapUnitID(s32 arg0, s32 arg1) {
     u8 temp_v1;
     void **var_v0;
     void *temp_a0;
@@ -1190,8 +1190,8 @@ typedef struct Flags_001E3850 {
 } Flags_001E3850;
 
 static inline void *get_001E3850(void) {
-    extern void *func_001DD130();
-    u8 *card = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    u8 *card = SzDuel_GetCardInfo();
 
     if (card == NULL) {
         return NULL;
@@ -1202,7 +1202,7 @@ static inline void *get_001E3850(void) {
     return card;
 }
 
-s32 func_001E3850(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetBusyFlag(s32 arg0, s32 arg1, s32 arg2) {
     u8 *card = get_001E3850();
 
     if (card == NULL) {
@@ -1226,8 +1226,8 @@ typedef struct Entry_001E3900 {
 } Entry_001E3900;
 
 static inline void *get_001E3900(void) {
-    extern void *func_001DD130();
-    Entry_001E3900 *entry = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    Entry_001E3900 *entry = SzDuel_GetCardInfo();
     if (entry == NULL) {
         return NULL;
     }
@@ -1237,7 +1237,7 @@ static inline void *get_001E3900(void) {
     return entry;
 }
 
-s32 func_001E3900(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetCardBusyFlag(s32 arg0, s32 arg1, s32 arg2) {
     Entry_001E3900 *entry = get_001E3900();
     if (entry == NULL) {
         return 0;
@@ -1256,8 +1256,8 @@ typedef struct Object_001E3990 {
 } Object_001E3990;
 
 static inline void *check_001E3990(void) {
-    extern void *func_001DD130();
-    Object_001E3990 *object = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    Object_001E3990 *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         return NULL;
@@ -1268,7 +1268,7 @@ static inline void *check_001E3990(void) {
     return object;
 }
 
-s32 func_001E3990(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetCardColBusyFlag(s32 arg0, s32 arg1, s32 arg2) {
     Object_001E3990 *object = check_001E3990();
 
     if (object == NULL) {
@@ -1286,9 +1286,9 @@ struct ObjectFields_001E3A20 {
     s8 : 7;
 };
 
-s32 func_001E3A20(s32 arg0, s32 arg1, s32 arg2) {
-    extern void *func_001DD130();
-    struct ObjectFields_001E3A20 *object = func_001DD130();
+s32 SzDuel_SetModelBusyFlag(s32 arg0, s32 arg1, s32 arg2) {
+    extern void *SzDuel_GetCardInfo();
+    struct ObjectFields_001E3A20 *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         object = NULL;
@@ -1308,8 +1308,8 @@ typedef struct Vec4_001E3AB0 {
 } Vec4_001E3AB0;
 
 static inline void *get_001E3AB0(void) {
-    extern void *func_001DD130();
-    void *entry = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    void *entry = SzDuel_GetCardInfo();
 
     if (entry == NULL) {
         return NULL;
@@ -1320,7 +1320,7 @@ static inline void *get_001E3AB0(void) {
     return entry;
 }
 
-s32 func_001E3AB0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetCardPos(s32 arg0, s32 arg1, s32 arg2) {
     void *entry;
     Vec4_001E3AB0 *data;
 
@@ -1350,8 +1350,8 @@ typedef struct Object_001E3B50 {
 } Object_001E3B50;
 
 static inline void *get_001E3B50(void) {
-    extern void *func_001DD130();
-    void *object = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    void *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         return NULL;
@@ -1362,7 +1362,7 @@ static inline void *get_001E3B50(void) {
     return object;
 }
 
-s32 func_001E3B50(s32 arg0, s32 arg1, void *arg2) {
+s32 SzDuel_GetCardPos(s32 arg0, s32 arg1, void *arg2) {
     Object_001E3B50 *object;
     Vec4_001E3B50 *position;
 
@@ -1388,10 +1388,10 @@ typedef struct Vec4_001E3BF0 {
 } Vec4_001E3BF0;
 
 static inline void *lookup_001E3BF0(void) {
-    extern void *func_001DD130();
+    extern void *SzDuel_GetCardInfo();
     void *object;
 
-    object = func_001DD130();
+    object = SzDuel_GetCardInfo();
     if (object == NULL) {
         return NULL;
     }
@@ -1401,7 +1401,7 @@ static inline void *lookup_001E3BF0(void) {
     return object;
 }
 
-s32 func_001E3BF0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetCardRot(s32 arg0, s32 arg1, s32 arg2) {
     void *temp_v0;
     void *var_v0;
 
@@ -1427,8 +1427,8 @@ typedef struct Vec4_001E3C90 {
 } Vec4_001E3C90;
 
 static inline void *lookup_001E3C90(void) {
-    extern void *func_001DD130();
-    void *object = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    void *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         return NULL;
@@ -1439,7 +1439,7 @@ static inline void *lookup_001E3C90(void) {
     return object;
 }
 
-s32 func_001E3C90(s32 arg0, s32 arg1, void *arg2) {
+s32 SzDuel_GetCardRot(s32 arg0, s32 arg1, void *arg2) {
     void *temp_v0;
     void *var_v0;
 
@@ -1477,8 +1477,8 @@ typedef struct Entry_001E3D30 {
 } Entry_001E3D30;
 
 static inline void *check_001E3D30(void) {
-    extern void *func_001DD130();
-    Entry_001E3D30 *entry = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    Entry_001E3D30 *entry = SzDuel_GetCardInfo();
 
     if (entry == NULL) {
         return NULL;
@@ -1489,7 +1489,7 @@ static inline void *check_001E3D30(void) {
     return entry;
 }
 
-s32 func_001E3D30(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetCardScale(s32 arg0, s32 arg1, s32 arg2) {
     Entry_001E3D30 *entry;
     Object_001E3D30 *object;
 
@@ -1512,8 +1512,8 @@ typedef struct Vec4_001E3DD0 {
 } Vec4_001E3DD0;
 
 static inline void *get_001E3DD0(void) {
-    extern void *func_001DD130();
-    void *object = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    void *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         return NULL;
@@ -1524,7 +1524,7 @@ static inline void *get_001E3DD0(void) {
     return object;
 }
 
-s32 func_001E3DD0(s32 arg0, s32 arg1, void *arg2) {
+s32 SzDuel_GetCardScale(s32 arg0, s32 arg1, void *arg2) {
     void *object = get_001E3DD0();
     void *data;
 
@@ -1549,8 +1549,8 @@ typedef struct {
 } Color_001E3E70;
 
 static inline void *lookup_001E3E70(void) {
-    extern void *func_001DD130();
-    void *object = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    void *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         return NULL;
@@ -1561,7 +1561,7 @@ static inline void *lookup_001E3E70(void) {
     return object;
 }
 
-s32 func_001E3E70(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzDuel_SetCardRgba(s32 arg0, s32 arg1, s32 arg2) {
     void *object;
     void *data;
 
@@ -1587,8 +1587,8 @@ typedef struct Color_001E3F10 {
 } Color_001E3F10;
 
 static inline void *get_001E3F10(void) {
-    extern void *func_001DD130();
-    void *object = func_001DD130();
+    extern void *SzDuel_GetCardInfo();
+    void *object = SzDuel_GetCardInfo();
 
     if (object == NULL) {
         return NULL;
@@ -1599,7 +1599,7 @@ static inline void *get_001E3F10(void) {
     return object;
 }
 
-s32 func_001E3F10(s32 arg0, s32 arg1, void *arg2) {
+s32 SzDuel_GetCardRgba(s32 arg0, s32 arg1, void *arg2) {
     void *object;
     void *data;
 
@@ -1617,18 +1617,18 @@ s32 func_001E3F10(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-void func_001E3FB0(s32 arg0, s32 arg1, s32 arg2) {
+void SzDuel_OpenHandPopup(s32 arg0, s32 arg1, s32 arg2) {
     *(s8 *)0x00318144 = 0x12;
     *(s16 *)0x0031813E = arg0;
     *(s16 *)0x00318132 = arg1;
     *(s16 *)0x00318134 = arg2;
 }
 
-void func_001E3FE0(void) {
+void SzDuel_CloseHandPopup(void) {
     D_00318144 = 0x18;
 }
 
-void func_001E3FF0(s32 arg0, s16 arg1, s16 arg2) {
+void SzDuel_OpenOptionPopup(s32 arg0, s16 arg1, s16 arg2) {
     u8 *state = D_00317490.b;
     s32 i;
     s32 bit;
@@ -1643,7 +1643,7 @@ void func_001E3FF0(s32 arg0, s16 arg1, s16 arg2) {
         state[0xD36] = 0;
         i = 0;
         do {
-            if (func_00214D00(0, i) != 0) {
+            if (SzData_GetOption(0, i) != 0) {
                 bit = 1;
             } else {
                 bit = 0;
@@ -1654,59 +1654,59 @@ void func_001E3FF0(s32 arg0, s16 arg1, s16 arg2) {
     }
 }
 
-s32 func_001E40A0(s32 arg0) {
+s32 SzDuel_ActOptionPopup(s32 arg0) {
     u8 *base;
     s32 var_s1;
     s32 temp_s1;
     s32 temp_s1_2;
 
     base = D_00317490.b;
-    if (func_00203A40(arg0, 2, 0x5000) != 0) {
+    if (SzPad_Check(arg0, 2, 0x5000) != 0) {
         temp_s1 = base[0xD35];
-        if (func_00203A40(arg0, 2, 0x1000) != 0) {
+        if (SzPad_Check(arg0, 2, 0x1000) != 0) {
             base[0xD35] = (base[0xD35] + 1) % 2;
         } else {
             base[0xD35] = (base[0xD35] + 3) % 2;
         }
         if (base[0xD35] != temp_s1) {
-            func_00217710(0, 3);
+            SzSound_PlaySE(0, 3);
         }
         return 0;
     }
-    if (func_00203A40(arg0, 0, 0xA000) != 0) {
+    if (SzPad_Check(arg0, 0, 0xA000) != 0) {
         temp_s1_2 = base[0xD36];
-        if (func_00203A40(arg0, 0, 0x8000) != 0) {
+        if (SzPad_Check(arg0, 0, 0x8000) != 0) {
             base[0xD36] = base[0xD36] | (1 << (base[0xD35] + 1));
         } else {
             base[0xD36] = base[0xD36] & ~(1 << (base[0xD35] + 1));
         }
         if (base[0xD36] != temp_s1_2) {
-            func_00217710(0, 3);
+            SzSound_PlaySE(0, 3);
         }
         return 0;
     }
-    if (func_00203A40(arg0, 0, 0xC0) != 0) {
+    if (SzPad_Check(arg0, 0, 0xC0) != 0) {
         var_s1 = 0;
         do {
-            func_00214BB0(0, var_s1, base[0xD36] & (1 << var_s1));
-            func_00214BB0(1, var_s1, base[0xD36] & (1 << var_s1));
+            SzData_SetOption(0, var_s1, base[0xD36] & (1 << var_s1));
+            SzData_SetOption(1, var_s1, base[0xD36] & (1 << var_s1));
             var_s1 += 1;
         } while (var_s1 < 3);
-        func_00217710(0, 4);
+        SzSound_PlaySE(0, 4);
         return 1;
     }
-    if (func_00203A40(arg0, 0, 0x20) != 0) {
-        func_00217710(0, 5);
+    if (SzPad_Check(arg0, 0, 0x20) != 0) {
+        SzSound_PlaySE(0, 5);
         return 2;
     }
     return 0;
 }
 
-void func_001E42B0(void) {
+void SzDuel_CloseOptionPopup(void) {
     D_00318142 = 0x18;
 }
 
-void func_001E42C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void SzDuel_OpenMsgPopup(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     u8 *state = D_00317490.b;
 
     switch (arg0) {
@@ -1718,15 +1718,15 @@ void func_001E42C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         break;
     case 2:
         state[0xCB5] = 0xC;
-        if (func_001A82E0(0xF) == 0) {
-            func_00216040(state[0xD50], 0, arg3);
+        if (SzGame_GetMenuNum(0xF) == 0) {
+            SzData_AddBag(state[0xD50], 0, arg3);
         }
         break;
     case 3:
         state[0xCB5] = 0xD;
-        if (func_001A82E0(0xF) == 0) {
-            func_00216040(state[0xD50], 0, arg3);
-            func_00216580(state[0xD50], arg3);
+        if (SzGame_GetMenuNum(0xF) == 0) {
+            SzData_AddBag(state[0xD50], 0, arg3);
+            SzData_RollSpecial(state[0xD50], arg3);
         }
         break;
     case 5:
@@ -1756,38 +1756,38 @@ void func_001E42C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     *(s16 *)(state + 0xCA8) = arg2;
 }
 
-s32 func_001E4430(s32 arg0) {
+s32 SzDuel_ActMsgPopup(s32 arg0) {
     u8 *state = D_00317490.b;
     s32 temp_s1;
 
-    if (func_00203A40(arg0, 0, 0xA000) != 0) {
+    if (SzPad_Check(arg0, 0, 0xA000) != 0) {
         temp_s1 = state[0xD35];
-        if (func_00203A40(arg0, 0, 0x8000) != 0) {
+        if (SzPad_Check(arg0, 0, 0x8000) != 0) {
             state[0xD35] = 1;
         } else {
             state[0xD35] = 0;
         }
         if (state[0xD35] != temp_s1) {
-            func_00217710(0, 3);
+            SzSound_PlaySE(0, 3);
         }
         return 0;
     }
-    if (func_00203A40(arg0, 0, 0xC0) != 0) {
-        func_00217710(0, 4);
+    if (SzPad_Check(arg0, 0, 0xC0) != 0) {
+        SzSound_PlaySE(0, 4);
         return state[0xD35] ? 1 : 2;
     }
-    if (func_00203A40(arg0, 0, 0x20) != 0) {
-        func_00217710(0, 5);
+    if (SzPad_Check(arg0, 0, 0x20) != 0) {
+        SzSound_PlaySE(0, 5);
         return 2;
     }
     return 0;
 }
 
-void func_001E4530(void) {
+void SzDuel_CloseMsgPopup(void) {
     D_00318145 = 0x18;
 }
 
-void func_001E4540(s32 arg0, s32 arg1, s32 arg2) {
+void SzDuel_OpenHandCursor(s32 arg0, s32 arg1, s32 arg2) {
     *(s8 *)0x00318144 = 0x17;
     *(s16 *)0x0031813E = arg0;
     *(s16 *)0x00318132 = arg1;

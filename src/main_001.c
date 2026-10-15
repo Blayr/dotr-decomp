@@ -1,6 +1,6 @@
 #include "common.h"
 
-void func_001031C0(u16 *arg0, s32 arg1) {
+void ShFx_BlackBG(u16 *arg0, s32 arg1) {
     s32 d;
     s32 e;
 
@@ -8,33 +8,33 @@ void func_001031C0(u16 *arg0, s32 arg1) {
     if (d != 0) {
         e = d & 0xFFFF;
         if (e < 6) {
-            func_001F6D00((0x80 - (e * 0x10)) & 0xFF);
+            SzEffect_SetBlackOutForBattle((0x80 - (e * 0x10)) & 0xFF);
         }
     }
     d = ((arg1 - arg0[1]) + 1) & 0xFFFF;
     if (d != 0) {
         e = d & 0xFFFF;
         if (e < 6) {
-            func_001F6D00(((e * 0x10) + 0x30) & 0xFF);
+            SzEffect_SetBlackOutForBattle(((e * 0x10) + 0x30) & 0xFF);
         }
     }
 }
 
-s32 func_00103260(s32 *arg0) {
-    extern s32 func_00202BF0();
+s32 LkInitTex2(s32 *arg0) {
+    extern s32 SzText_LoadRequest();
 
-    *arg0 = func_00202BF0(4);
+    *arg0 = SzText_LoadRequest(4);
     return 0;
 }
 
-s32 func_00103290(s32 *arg0) {
-    extern s32 func_00202BF0();
+s32 LkInitTexBtl(s32 *arg0) {
+    extern s32 SzText_LoadRequest();
 
-    *arg0 = func_00202BF0(5);
+    *arg0 = SzText_LoadRequest(5);
     return 0;
 }
 
-s32 func_001032C0(u8 *arg0, u8 arg1, u8 arg2) {
+s32 LkIncrBYTE(u8 *arg0, u8 arg1, u8 arg2) {
     u8 temp_a3;
 
     temp_a3 = *arg0;
@@ -46,7 +46,7 @@ s32 func_001032C0(u8 *arg0, u8 arg1, u8 arg2) {
     return 0;
 }
 
-s32 func_00103300(s16 *arg0, s32 arg1, s32 arg2) {
+s32 LkIncrSHORT(s16 *arg0, s32 arg1, s32 arg2) {
     s16 temp_a3;
     s32 result;
 
@@ -61,7 +61,7 @@ s32 func_00103300(s16 *arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-s32 func_00103350(s32 *arg0, s32 arg1, s32 arg2) {
+s32 LkIncrINT(s32 *arg0, s32 arg1, s32 arg2) {
     s32 temp_v1;
     s32 result;
 
@@ -76,7 +76,7 @@ s32 func_00103350(s32 *arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1) {
+s32 LkIncrFLOAT(f32 *arg0, f32 fparg0, f32 fparg1) {
     f32 temp_f1;
 
     temp_f1 = *arg0;
@@ -88,7 +88,7 @@ s32 func_00103390(f32 *arg0, f32 fparg0, f32 fparg1) {
     return 0;
 }
 
-s32 func_001033D0(f32 *values, f32 target, f32 step) {
+s32 LkIncrVec(f32 *values, f32 target, f32 step) {
     f32 limit = target - step;
     s32 flags = 0;
 
@@ -116,7 +116,7 @@ s32 func_001033D0(f32 *values, f32 target, f32 step) {
     return flags;
 }
 
-s32 func_00103470(u8 *arg0, u8 arg1, s32 arg2) {
+s32 LkDecrBYTE(u8 *arg0, u8 arg1, s32 arg2) {
     u8 temp_a3;
 
     temp_a3 = *arg0;
@@ -128,7 +128,7 @@ s32 func_00103470(u8 *arg0, u8 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_001034B0(s16 *arg0, s16 arg1, s16 arg2) {
+s32 LkDecrSHORT(s16 *arg0, s16 arg1, s16 arg2) {
     s16 temp_a3;
 
     temp_a3 = *arg0;
@@ -140,7 +140,7 @@ s32 func_001034B0(s16 *arg0, s16 arg1, s16 arg2) {
     return 0;
 }
 
-s32 func_00103500(s32 *arg0, s32 arg1, s32 arg2) {
+s32 LkDecrINT(s32 *arg0, s32 arg1, s32 arg2) {
     s32 temp_v1;
 
     temp_v1 = *arg0;
@@ -152,7 +152,7 @@ s32 func_00103500(s32 *arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_00103540(f32 *arg0, f32 fparg0, f32 fparg1) {
+s32 LkDecrFLOAT(f32 *arg0, f32 fparg0, f32 fparg1) {
     f32 temp_f1;
 
     temp_f1 = *arg0;
@@ -164,7 +164,7 @@ s32 func_00103540(f32 *arg0, f32 fparg0, f32 fparg1) {
     return 0;
 }
 
-s32 func_00103580(void *arg0, f32 fparg0, f32 fparg1) {
+s32 LkDecrVec(void *arg0, f32 fparg0, f32 fparg1) {
     f32 *values = (f32 *)arg0;
     f32 threshold = fparg0 + fparg1;
     s32 flags = 0;
@@ -193,13 +193,13 @@ s32 func_00103580(void *arg0, f32 fparg0, f32 fparg1) {
     return flags;
 }
 
-void func_00103620(void *arg0, void *arg1) {
+void LkAddVector(void *arg0, void *arg1) {
     ((f32 *)arg0)[0] += ((f32 *)arg1)[0];
     ((f32 *)arg0)[1] += ((f32 *)arg1)[1];
     ((f32 *)arg0)[2] += ((f32 *)arg1)[2];
 }
 
-void func_00103660(void *arg0, void *arg1) {
+void LkSubVector(void *arg0, void *arg1) {
     f32 *dst = arg0;
     f32 *src = arg1;
 
@@ -208,7 +208,7 @@ void func_00103660(void *arg0, void *arg1) {
     dst[2] -= src[2];
 }
 
-void func_001036A0(void *arg0, void *arg1) {
+void LkMulVector(void *arg0, void *arg1) {
     f32 *dst = arg0;
     const f32 *src = arg1;
 
@@ -217,7 +217,7 @@ void func_001036A0(void *arg0, void *arg1) {
     dst[2] *= src[2];
 }
 
-void func_001036E0(f32 *arg0, f32 *arg1, f32 *arg2) {
+void LkGetCenter(f32 *arg0, f32 *arg1, f32 *arg2) {
     f32 delta[3];
 
     delta[0] = arg1[0];
@@ -237,26 +237,26 @@ void func_001036E0(f32 *arg0, f32 *arg1, f32 *arg2) {
     arg2[2] += delta[2];
 }
 
-void func_00103760(void *arg0) {
+void LkSetAngleXY_m90(void *arg0) {
     f32 *vector = arg0;
 
     func_001A22C0(90.0f + (360.0f / (6.2831855f / func_001A6C18(vector[1], vector[0]))));
 }
 
-s32 func_001037C0(u8 *arg0, s32 arg1, s32 arg2) {
+s32 LkSetAngleW2S(u8 *arg0, s32 arg1, s32 arg2) {
     extern s32 func_001A22C0(f32);
     u16 point1[4];
     u16 point2[4];
     s32 depth;
 
-    func_00205440(arg1, arg0 + 0x30, point1, &depth);
-    func_00205440(arg2, arg0 + 0x30, point2, &depth);
+    Ex3d_RotTransPers(arg1, arg0 + 0x30, point1, &depth);
+    Ex3d_RotTransPers(arg2, arg0 + 0x30, point2, &depth);
     return func_001A22C0(65536.0f *
         (func_001A6C18((f32)((s32)(point1[0] - point2[0]) >> 4),
                       (f32)((s32)(point1[1] - point2[1]) >> 4)) / 6.2831855f)) % 65536;
 }
 
-void func_00103890(void *arg0) {
+void LkInitCoordinate(void *arg0) {
     f32 *values = arg0;
 
     values[3] = 1.0f;
@@ -285,13 +285,13 @@ typedef struct {
     Matrix_001038D0 matrix;
 } Camera_001038D0;
 
-void func_001038D0(void *arg0) {
+void LkSetCoordinate(void *arg0) {
     Camera_001038D0 *camera = arg0;
     Matrix_001038D0 matrix;
 
-    func_0020EB40(&camera->matrix);
-    func_0020C940(&matrix, camera->eye, camera->target, camera->up);
-    func_0020BC00((s32)&camera->matrix, &matrix);
+    RhView_GetWorldScreenMatrix(&camera->matrix);
+    RhGeom_GetScaleRotXYZTransMatrix(&matrix, camera->eye, camera->target, camera->up);
+    RhGeom_MulMatrix((s32)&camera->matrix, &matrix);
 }
 
 
@@ -302,19 +302,19 @@ typedef struct Transform_00103920 {
     f32 field30[16];
 } Transform_00103920;
 
-s32 func_00103920(void *arg0, f32 fparg0, f32 fparg1) {
+s32 LkChange2D(void *arg0, f32 fparg0, f32 fparg1) {
     Transform_00103920 *transform = arg0;
     f32 vector[4];
     f32 matrix[16];
 
-    func_00205CB0(vector, fparg0, fparg1);
-    func_001039A0(arg0);
+    Ex3d_GetPointOnScreen(vector, fparg0, fparg1);
+    LkRotSF(arg0);
     transform->field20[0] = vector[0];
     transform->field20[1] = vector[1];
     transform->field20[2] = vector[2];
-    func_0020EB40(transform->field30);
-    func_0020C940(matrix, transform->field0, transform->field10, transform->field20);
-    func_0020BC00((s32)transform->field30, matrix);
+    RhView_GetWorldScreenMatrix(transform->field30);
+    RhGeom_GetScaleRotXYZTransMatrix(matrix, transform->field0, transform->field10, transform->field20);
+    RhGeom_MulMatrix((s32)transform->field30, matrix);
     return 0;
 }
 
@@ -334,22 +334,22 @@ typedef struct Object_001039A0 {
 } Object_001039A0;
 
 
-s32 func_001039A0(void *arg0) {
+s32 LkRotSF(void *arg0) {
     s32 vector[4];
     f32 matrix[4][4];
     Object_001039A0 *object = arg0;
 
-    func_00205C40((s32) &vector);
+    Ex3d_GetLookVector((s32) &vector);
     object->values10.y = vector[1] % 0x10000;
     object->values10.x = vector[0];
     object->values10.z = vector[2];
-    func_0020EB40(object->matrix);
-    func_0020C940(matrix, object, &object->values10, &object->values20);
-    func_0020BC00((s32)object->matrix, matrix);
+    RhView_GetWorldScreenMatrix(object->matrix);
+    RhGeom_GetScaleRotXYZTransMatrix(matrix, object, &object->values10, &object->values20);
+    RhGeom_MulMatrix((s32)object->matrix, matrix);
     return vector[1];
 }
 
-s32 func_00103A30(f32 *arg0, s32 *arg1) {
+s32 LkVec2Rot(f32 *arg0, s32 *arg1) {
     arg1[1] = (s32)(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f)) % 65536;
     arg1[0] = (s32)(65536.0f * (func_001A6C18(arg0[2], arg0[1]) / 6.2831855f)) % 65536;
     arg1[2] = (s32)(65536.0f * (func_001A6C18(arg0[1], arg0[0]) / 6.2831855f)) % 65536;
@@ -357,7 +357,7 @@ s32 func_00103A30(f32 *arg0, s32 *arg1) {
     return 0;
 }
 
-s32 func_00103B50(f32 *arg0, s32 *arg1) {
+s32 LkVec2RotXY(f32 *arg0, s32 *arg1) {
     arg1[1] = (s32)(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f)) % 65536;
     arg1[0] = (s32)(65536.0f * (func_001A6C18(func_001A6C60(arg0[0] * arg0[0] + arg0[2] * arg0[2]), arg0[1]) / 6.2831855f)) % 65536;
     arg1[3] = 0;
@@ -365,24 +365,24 @@ s32 func_00103B50(f32 *arg0, s32 *arg1) {
     return 0;
 }
 
-s32 func_00103C40(Vec4f *arg0, void *arg1) {
+s32 LkVec2Mat(Vec4f *arg0, void *arg1) {
     Vec4f sp20;
     Vec4f sp30;
     Vec4f sp40;
-    void func_0020C750();
+    void RhGeom_GetRotVectorMatrix();
 
     sp20 = *arg0;
-    func_0020D070(&sp20.x);
+    RhGeom_NormalizeVector(&sp20.x);
     sp30.z = 0.0f;
     sp30.x = 0.0f;
     sp30.y = 1.0f;
-    func_0020D070(&sp30.x);
-    func_0020D140(&sp40.x, &sp30.x, &sp20.x);
-    func_0020C750(arg1, &sp40, func_001A22C0(65536.0f * (func_001A6C00(func_0020D0E0(&sp40.x)) / 6.2831855f)));
+    RhGeom_NormalizeVector(&sp30.x);
+    RhGeom_OuterProduct(&sp40.x, &sp30.x, &sp20.x);
+    RhGeom_GetRotVectorMatrix(arg1, &sp40, func_001A22C0(65536.0f * (func_001A6C00(RhGeom_GetVectorScalor(&sp40.x)) / 6.2831855f)));
     return 0;
 }
 
-s32 func_00103D00(s32 arg0, s32 arg1) {
+s32 LkRegulateRotBorder(s32 arg0, s32 arg1) {
     s32 result;
 
     if (arg1 < arg0) {
@@ -405,7 +405,7 @@ s32 func_00103D00(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 func_00103DB0(f32 *arg0, f32 *arg1, s32 *arg2) {
+s32 LkChangeAxisY(f32 *arg0, f32 *arg1, s32 *arg2) {
     extern s32 func_001A22C0(f32);
     f32 x;
     f32 y;
@@ -449,7 +449,7 @@ static inline s32 difference_00103EC0(s32 target, s32 current) {
     }
 }
 
-s32 func_00103EC0(f32 *position, f32 *target, f32 *velocity, s32 limit) {
+s32 LkMoveHoming(f32 *position, f32 *target, f32 *velocity, s32 limit) {
     f32 matrix[4][4];
     s32 rotation[4];
     f32 movement[4];
@@ -491,8 +491,8 @@ s32 func_00103EC0(f32 *position, f32 *target, f32 *velocity, s32 limit) {
         rotation[2] = -limit;
     }
 
-    func_0020C630(matrix, rotation);
-    func_0020CDD0(movement, matrix, velocity);
+    RhGeom_GetRotXYZMatrix(matrix, rotation);
+    RhGeom_MulMatrixVector(movement, matrix, velocity);
     position[0] += movement[0];
     position[1] += movement[1];
     position[2] += movement[2];
@@ -509,7 +509,7 @@ typedef struct {
 
 extern Vec4_001043F0 D_0028C220;
 
-s32 func_001043F0(void *arg0, f32 fparg0) {
+s32 LkGetRandVec(void *arg0, f32 fparg0) {
     f32 matrix[4][4];
     Vec4_001043F0 vector;
     s32 angles[3];
@@ -519,12 +519,12 @@ s32 func_001043F0(void *arg0, f32 fparg0) {
     angles[0] = func_0019A5C8() % 0x10000;
     angles[1] = func_0019A5C8() % 0x10000;
     angles[2] = 0;
-    func_0020C630(matrix, angles);
-    func_0020CDD0(arg0, matrix, &vector);
+    RhGeom_GetRotXYZMatrix(matrix, angles);
+    RhGeom_MulMatrixVector(arg0, matrix, &vector);
     return 0;
 }
 
-void func_00104490(f32 *arg0, f32 *arg1, s32 arg2) {
+void LkOBJ_TransitVector(f32 *arg0, f32 *arg1, s32 arg2) {
     f32 x;
     f32 y;
     f32 z;
@@ -549,7 +549,7 @@ void func_00104490(f32 *arg0, f32 *arg1, s32 arg2) {
     }
 }
 
-s32 func_00104520(s32 arg0, s32 arg1) {
+s32 LkCheckFlag(s32 arg0, s32 arg1) {
     return !(arg0 & (1 << arg1)) ? 0 : 1;
 }
 
@@ -579,7 +579,7 @@ typedef struct {
     s16 h;
 } Rect_00104540;
 
-s32 func_00104540(void *arg0, void *arg1, s32 arg2) {
+s32 LkAssignUV(void *arg0, void *arg1, s32 arg2) {
     Sprite_00104540 *s = arg0;
     Rect_00104540 *r = arg1;
 
@@ -734,7 +734,7 @@ static inline s32 flag_00104DC0(Anim_00104DC0 *anim, s32 bit) {
     return (anim->flags & bit) ? 1 : 0;
 }
 
-void func_00104DC0(void *arg0, void *arg1) {
+void LkAssignUVST(void *arg0, void *arg1) {
     Sprite_00104DC0 *sprite = arg0;
     Anim_00104DC0 *anim = arg1;
 
@@ -834,7 +834,7 @@ static inline s32 flag_00105260(State_00105260 *s, s32 bit) {
     return (s->flags & bit) ? 1 : 0;
 }
 
-void func_00105260(void *arg0, void *arg1, s32 arg2) {
+void LkAssignUVST3(void *arg0, void *arg1, s32 arg2) {
     State_00105260 *state = arg1;
     u8 *packet = arg0;
 
@@ -933,7 +933,7 @@ typedef struct {
     Coordinate_00105830 x3, y3;
 } Packet_00105830;
 
-void func_00105830(void *arg0, void *arg1, s32 arg2) {
+void LkAssignUV2(void *arg0, void *arg1, s32 arg2) {
     Packet_00105830 *packet = arg0;
     Animation_00105830 *anim = arg1;
 
@@ -983,7 +983,7 @@ void func_00105830(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-s32 func_00105C40(void *arg0) {
+s32 LkAssignFrameST(void *arg0) {
     Vec4f *v = arg0;
     f32 x_ratio;
     f32 y_ratio;
@@ -1014,7 +1014,7 @@ typedef struct Rect_00105D00 {
     s32 padding[2];
 } Rect_00105D00;
 
-void func_00105D00(void *dst, s16 kind, s16 index) {
+void RH2_DATA_IN(void *dst, s16 kind, s16 index) {
     Rect_00105D00 rect;
 
     if (kind == 0) {
@@ -1107,7 +1107,7 @@ typedef struct Rect_00106080 {
     s32 unkC;
 } Rect_00106080;
 
-void func_00106080(void *arg0, s16 arg1, s16 arg2) {
+void RH2_DATA_IN2(void *arg0, s16 arg1, s16 arg2) {
     Rect_00106080 rect;
 
     if (arg1 == 0x8C) {
@@ -1358,7 +1358,7 @@ void func_00106080(void *arg0, s16 arg1, s16 arg2) {
     *(Rect_00106080 *)arg0 = rect;
 }
 
-s32 func_00106A00(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 SHOKI_OBJ(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 i;
     s32 offset;
     u8 *slot;
@@ -1375,7 +1375,7 @@ s32 func_00106A00(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-void func_00106AB0(s16 *arg0, f32 *arg1, s32 arg2) {
+void PV_IN_(s16 *arg0, f32 *arg1, s32 arg2) {
     if (arg2 == 0) {
         arg0[0] = func_001A22C0(arg1[0]);
         arg0[1] = func_001A22C0(arg1[1]);
@@ -1389,7 +1389,7 @@ void func_00106AB0(s16 *arg0, f32 *arg1, s32 arg2) {
     }
 }
 
-void func_00106B50(void *arg0, void *arg1) {
+void POS_POS(void *arg0, void *arg1) {
     f32 *dst = arg0;
     f32 *src = arg1;
 
@@ -1398,19 +1398,19 @@ void func_00106B50(void *arg0, void *arg1) {
     dst[2] += src[2];
 }
 
-s32 func_00106B90(void *arg0, s32 arg1, s32 arg2) {
+s32 OBJECT_RGB_A_OFF(void *arg0, s32 arg1, s32 arg2) {
     ((u8 *)arg0)[0xAF] = (u8)(((u8 *)arg0)[0xAF] - arg1);
     ((u8 *)arg0)[0xB3] = (u8)(((u8 *)arg0)[0xB3] - arg1);
     return (((u8 *)arg0)[0xAF] < (arg2 & 0xFF)) ? 1 : 0;
 }
 
-s32 func_00106BC0(void *arg0, s32 arg1, s32 arg2) {
+s32 OBJECT_RGB_A_ON(void *arg0, s32 arg1, s32 arg2) {
     *((u8 *)arg0 + 0xAF) = (u8)(*((u8 *)arg0 + 0xAF) + arg1);
     *((u8 *)arg0 + 0xB3) = (u8)(*((u8 *)arg0 + 0xB3) + arg1);
     return *((u8 *)arg0 + 0xAF) > (arg2 & 0xFF) ? 1 : 0;
 }
 
-s32 func_00106BF0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 OBJECT_RGB_INOFF(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (arg3 == 0) {
         arg0[0] += arg1;
         arg0[1] += arg1;
@@ -1428,7 +1428,7 @@ typedef struct Data_00106C50 {
     u8 value;
 } Data_00106C50;
 
-s32 func_00106C50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 OBJECT_RGBA_INOFF(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     Data_00106C50 *data = arg0;
     u8 temp_v1;
     u8 temp_v1_2;
@@ -1451,18 +1451,18 @@ s32 func_00106C50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-s32 func_00106CC0(s32 arg0, s32 arg1) {
+s32 OBJ_ADDRESS_IN(s32 arg0, s32 arg1) {
     func_00195108(arg0, (s16)arg1);
     return arg0;
 }
 
-s32 func_00106CF0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    ((f32 *)arg0)[0] = (f32)arg2 * func_00108030(arg3, arg1, 1);
-    ((f32 *)arg0)[2] = (f32)arg2 * func_00108030(arg3, arg1, 0);
+s32 XC_ZS_IN(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    ((f32 *)arg0)[0] = (f32)arg2 * SIN_COS_INRAD(arg3, arg1, 1);
+    ((f32 *)arg0)[2] = (f32)arg2 * SIN_COS_INRAD(arg3, arg1, 0);
     return 0;
 }
 
-s32 func_00106D80(s32 arg0, s16 *arg1) {
+s32 RAD_IN_360_(s32 arg0, s16 *arg1) {
     *arg1 += arg0;
     if (*arg1 >= 360 || *arg1 < -359) {
         *arg1 %= 360;
@@ -1470,7 +1470,7 @@ s32 func_00106D80(s32 arg0, s16 *arg1) {
     return 0;
 }
 
-void func_00106DD0(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
+void OBJ_SCL2(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
     ((f32 *)arg0)[0] = fparg0;
     ((f32 *)arg0)[1] = fparg1;
     ((f32 *)arg0)[2] = fparg2;

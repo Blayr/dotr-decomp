@@ -38,7 +38,7 @@ typedef struct {
 extern Vec_001ADD00 D_002910C0;
 extern Vec_001ADD00 D_002910D0;
 
-void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
+void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     Vec_001ADD00 spA0;
     Vec_001ADD00 spB0;
     u8 *state = D_00317490.b;
@@ -48,12 +48,12 @@ void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
     u8 *var_t3;
     s32 var_t4;
 
-    func_001DE970(0);
-    func_001DEDB0(0);
-    func_001DF070(0);
-    func_001DE970(1);
-    func_001DEDB0(1);
-    func_001DF070(1);
+    SzDuel_InitDeck(0);
+    SzDuel_InitGrave(0);
+    SzDuel_InitHand(0);
+    SzDuel_InitDeck(1);
+    SzDuel_InitGrave(1);
+    SzDuel_InitHand(1);
     var_s1 = 0;
     if (arg2 != 0) {
         s32 temp_s1;
@@ -69,80 +69,80 @@ void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
         s32 otherPlayer;
         s32 var_s2;
         s32 heading;
-        temp_s1 = func_002158B0(0);
-        temp_s2 = func_002158B0(1);
-        temp_s5 = func_002159D0(0, temp_s1);
-        temp_s4 = func_002159D0(1, temp_s2);
-        func_001CDA10();
-        func_001CDD40();
+        temp_s1 = SzData_GetCurrentDeck(0);
+        temp_s2 = SzData_GetCurrentDeck(1);
+        temp_s5 = SzData_GetLeader(0, temp_s1);
+        temp_s4 = SzData_GetLeader(1, temp_s2);
+        SzDuel_InitCardRequest();
+        SzDuel_InitCardControl();
         var_s3 = 0;
         do {
-            func_001DFBB0(0, var_s3);
-            func_001DFBB0(1, var_s3);
+            SzDuel_DelUnit(0, var_s3);
+            SzDuel_DelUnit(1, var_s3);
             var_s3 += 1;
         } while (var_s3 < 0xB);
-        func_001E2FB0(0, 0, 1);
-        func_001DF580(0, 3, 6, temp_s5, 1);
-        func_001DF580(1, 3, 0, temp_s4, 1);
-        func_001E1C10(0, 0, 0, 0);
-        func_001E18A0(0, 0, 7);
-        func_001E1C10(1, 0, 0, 0);
-        func_001E18A0(1, 0, 7);
+        SzDuel_InitMapColor(0, 0, 1);
+        SzDuel_AddUnit(0, 3, 6, temp_s5, 1);
+        SzDuel_AddUnit(1, 3, 0, temp_s4, 1);
+        SzDuel_SetUnitCtlRateM(0, 0, 0, 0);
+        SzDuel_SetUnitCtlModeM(0, 0, 7);
+        SzDuel_SetUnitCtlRateM(1, 0, 0, 0);
+        SzDuel_SetUnitCtlModeM(1, 0, 7);
         var_s5 = 0;
         do {
-            temp_s3 = func_00215A60(0, temp_s1, var_s5);
-            temp_s4_2 = func_00215A60(1, temp_s2, var_s5);
-            if (func_001A82E0(3) >= 0x3E8) {
-                func_001DEA30(0, temp_s3);
+            temp_s3 = SzData_GetCardNo(0, temp_s1, var_s5);
+            temp_s4_2 = SzData_GetCardNo(1, temp_s2, var_s5);
+            if (SzGame_GetMenuNum(3) >= 0x3E8) {
+                SzDuel_AddDeck(0, temp_s3);
             } else {
-                func_001DEC00(0, var_s5, temp_s3);
+                SzDuel_SetDeck(0, var_s5, temp_s3);
             }
-            if (func_001A82E0(4) >= 0x3E8) {
-                func_001DEA30(1, temp_s4_2);
+            if (SzGame_GetMenuNum(4) >= 0x3E8) {
+                SzDuel_AddDeck(1, temp_s4_2);
             } else {
-                func_001DEC00(1, var_s5, temp_s4_2);
+                SzDuel_SetDeck(1, var_s5, temp_s4_2);
             }
             var_s5 += 1;
         } while (var_s5 < 0x28);
         var_s2 = 0;
         otherPlayer = arg1 ^ 1;
         do {
-            func_00214BB0(otherPlayer, var_s2, func_00214D00(arg1, var_s2));
+            SzData_SetOption(otherPlayer, var_s2, SzData_GetOption(arg1, var_s2));
             var_s2 += 1;
         } while (var_s2 < 3);
         heading = (arg1 != 0) ? 0xC000 : 0x4000;
         spA0 = D_002910C0;
         spB0 = D_002910D0;
         spB0.f[1] = (3.1415927f * (f32) heading) / 32768.0f;
-        func_001F9D80(0, &spA0);
-        func_001FB360(0, spB0.f);
+        SzView_SetCP(0, &spA0);
+        SzView_SetLookSP(0, spB0.f);
         var_s2_2 = 0;
         do {
             var_s1_2 = 0;
             do {
-                func_001E23A0(var_s1_2, var_s2_2, -0x80);
+                SzDuel_SetFieldRate(var_s1_2, var_s2_2, -0x80);
                 var_s1_2 += 1;
             } while (var_s1_2 < 7);
             var_s2_2 += 1;
         } while (var_s2_2 < 7);
         *(u8 *)(state + 0xD34) = 0;
-        func_00217590(1, 0, 0);
+        SzSound_TransferSEGrp(1, 0, 0);
     } else {
         s32 var_s2_3;
         for (var_s1 = 0; var_s1 < 7; var_s1++) {
             for (var_s2_3 = 0; var_s2_3 < 7; var_s2_3++) {
-                func_001E23A0(var_s2_3, var_s1, 0);
+                SzDuel_SetFieldRate(var_s2_3, var_s1, 0);
             }
         }
         *(u8 *)(state + 0xD34) = 0x80;
     }
     *(u8 *)(state + 0xD37) = (u8) arg0;
-    func_001DDE80((s32) *(u8 *)(state + 0xD37));
-    func_001ADA80(arg2);
-    func_00275D00(0, state);
+    SzDuel_SetupMap((s32) *(u8 *)(state + 0xD37));
+    lSzDuel_InitCom(arg2);
+    TaLogic_InitLogicData(0, state);
     *(s32 *)(state + 0x330) = -1;
     if (*(s32 *)(state + 0x334) != 0) {
-        func_00217B50(*(s32 *)(state + 0x334));
+        SzMem_Free(*(s32 *)(state + 0x334));
     }
     *(s32 *)(state + 0x334) = 0;
     *(s16 *)(state + 0x338) = 0;
@@ -161,10 +161,10 @@ void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
     *(s8 *)(state + 0x33D) = 3;
     *(s8 *)(state + 0x33E) = 6;
     temp_s1_2 = state + 0x350;
-    func_00275D00(1, temp_s1_2);
+    TaLogic_InitLogicData(1, temp_s1_2);
     *(s32 *)(temp_s1_2 + 0x330) = -1;
     if (*(s32 *)(temp_s1_2 + 0x334) != 0) {
-        func_00217B50(*(s32 *)(temp_s1_2 + 0x334));
+        SzMem_Free(*(s32 *)(temp_s1_2 + 0x334));
     }
     *(s32 *)(temp_s1_2 + 0x334) = 0;
     *(s16 *)(temp_s1_2 + 0x338) = 0;
@@ -275,7 +275,7 @@ void func_001ADD00(s32 arg0, s32 arg1, s32 arg2) {
     ((Bits_001ADD00 *)(state + 0xD67))->bit5 = 0;
 }
 
-void func_001AE520(void) {
+void SzDuel_Term(void) {
     u8 *data = D_00317490.b;
     s32 var_a1;
     s32 var_s0;
@@ -287,15 +287,15 @@ void func_001AE520(void) {
     } while (var_a1 < 4);
     var_s0 = 1;
     do {
-        func_001DFBB0(0, var_s0);
-        func_001DFBB0(1, var_s0);
+        SzDuel_DelUnit(0, var_s0);
+        SzDuel_DelUnit(1, var_s0);
         var_s0 += 1;
     } while (var_s0 < 0xB);
 }
 
-s32 func_001AE5A0(s32 arg0) {
-    if (func_001F3130(0) != 0) {
-        return func_001AE5F0(arg0);
+s32 SzDuel_DrawStage_Pipe(s32 arg0) {
+    if (SzModel_GetDrawFlag(0) != 0) {
+        return lSzDuel_DrawStage_Pipe(arg0);
     }
     return arg0;
 }
@@ -317,13 +317,13 @@ extern Color_001AE5F0 D_00291108;
 extern Vector_001AE5F0 D_00291110;
 extern u16 D_00318116;
 
-s32 func_001AE5F0(s32 arg0) {
-    extern s32 func_001DBFE0();
-    extern void func_001E2FB0();
-    extern void func_001E3060();
-    extern s32 func_001E24E0();
-    extern s32 func_001E3650();
-    extern s32 func_001F6D20();
+s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
+    extern s32 SzDuel_DrawBoxCursor_Pipe();
+    extern void SzDuel_InitMapColor();
+    extern void SzDuel_SetMapColor();
+    extern s32 SzDuel_GetMapMovable();
+    extern s32 SzDuel_SetMapAlpha();
+    extern s32 SzEffect_GetBlackOutForDuel();
     u8 *player;
     u8 *state;
     u32 opacity;
@@ -345,7 +345,7 @@ s32 func_001AE5F0(s32 arg0) {
 
     state = D_00317490.b;
     player = D_00317490.b + D_003181E4 * 0x350;
-    mode = func_001AAF60(1);
+    mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     own = D_002910E0;
     own.r = D_003181E4 == 1 ? 0x60 : 0;
@@ -363,24 +363,24 @@ s32 func_001AE5F0(s32 arg0) {
     special.b = state[0xD54] == 0 ? 0x80 : 0;
     special.a = alpha;
     color = NULL;
-    opacity = (u8)func_001F6D20();
+    opacity = (u8)SzEffect_GetBlackOutForDuel();
     scale = (f32)opacity / 128.0f;
-    func_001F6E80(0, scale);
-    func_001F6E80(1, scale);
-    func_001F6E80(8, scale);
+    SzEffect_SetIntensityOnly(0, scale);
+    SzEffect_SetIntensityOnly(1, scale);
+    SzEffect_SetIntensityOnly(8, scale);
     brightness = (u8)opacity;
     y = 0;
     do {
         x = 0;
         do {
-            func_001E3650(x, y, brightness);
+            SzDuel_SetMapAlpha(x, y, brightness);
             x++;
         } while (x < 7);
         y++;
     } while (y < 7);
 
     if ((u64)mode < 2U) {
-        func_001E2FB0(0, 0, 0);
+        SzDuel_InitMapColor(0, 0, 0);
     }
     if (mode == 1 && state[0xD57] >= 0x13) {
         s32 row;
@@ -389,7 +389,7 @@ s32 func_001AE5F0(s32 arg0) {
         board = D_002910F8;
         range = D_00291100;
         background = D_00291108;
-        tile = (u8 *)func_001E36E0(player[0x33D], player[0x33E]);
+        tile = (u8 *)SzDuel_GetMapUnit(player[0x33D], player[0x33E]);
         if (tile != NULL && tile[0x44] != state[0xD54]) {
             color = &other;
         } else {
@@ -407,40 +407,40 @@ s32 func_001AE5F0(s32 arg0) {
                     if (player[0x33D] != col && player[0x33E] != row) {
                         continue;
                     }
-                    func_001E3060(col, row, 1, &own, 0);
+                    SzDuel_SetMapColor(col, row, 1, &own, 0);
                 }
             }
             own.a = alpha;
             break;
         case 0x1D:
-            func_001E2FB0(2, &background, 0);
+            SzDuel_InitMapColor(2, &background, 0);
             row = 0;
             do {
                 col = 0;
                 do {
-                    s32 distance = func_001E24E0(col, row);
+                    s32 distance = SzDuel_GetMapMovable(col, row);
                     if (distance < 0xFF) {
                         range.a = distance <= state[0xD5A] ? 0xD0 : 0x40;
-                        func_001E3060(col, row, 1, &range, 0);
+                        SzDuel_SetMapColor(col, row, 1, &range, 0);
                     }
                     col++;
                 } while (col < 7);
                 row++;
             } while (row < 7);
             for (row = 0; row < state[0xD59]; row++) {
-                func_001E3060(state[0xCCA + row], state[0xCFB + row], 1, &special, 0);
+                SzDuel_SetMapColor(state[0xCCA + row], state[0xCFB + row], 1, &special, 0);
             }
             break;
         case 0x21:
             break;
         case 0x3E:
-            func_001E2FB0(2, &background, 0);
+            SzDuel_InitMapColor(2, &background, 0);
             row = 0;
             do {
                 col = 0;
                 do {
-                    if (func_001E24E0(col, row) < 0xFF) {
-                        func_001E3060(col, row, 1, &board, 0);
+                    if (SzDuel_GetMapMovable(col, row) < 0xFF) {
+                        SzDuel_SetMapColor(col, row, 1, &board, 0);
                     }
                     col++;
                 } while (col < 7);
@@ -448,12 +448,12 @@ s32 func_001AE5F0(s32 arg0) {
             } while (row < 7);
             break;
         }
-        func_001E3060(player[0x33D], player[0x33E], 1, color, 0);
+        SzDuel_SetMapColor(player[0x33D], player[0x33E], 1, color, 0);
         row = 0;
         do {
             col = 0;
             do {
-                func_001E3230(col, row);
+                SzDuel_CalcMapColor(col, row);
                 col++;
             } while (col < 7);
             row++;
@@ -462,18 +462,18 @@ s32 func_001AE5F0(s32 arg0) {
     {
         u8 *tile;
         s32 id;
-        tile = func_001DCD00(player[0x33D], player[0x33E]);
+        tile = SzDuel_GetMapInfo(player[0x33D], player[0x33E]);
         id = tile[0x16] + 0x4A;
-        if (func_001F1370(id) != 0 && color != NULL) {
-            func_001E10F0(player[0x33D], player[0x33E], *(s16 *)(tile + 0x14), position);
+        if (SzModel_IsModelDisp(id) != 0 && color != NULL) {
+            SzDuel_CalcUnitPos(player[0x33D], player[0x33E], *(s16 *)(tile + 0x14), position);
             if (*(s16 *)(tile + 0x14) > 0) {
-                arg0 = func_001DBFE0(arg0, position, NULL, 1);
+                arg0 = SzDuel_DrawBoxCursor_Pipe(arg0, position, NULL, 1);
             }
-            arg0 = func_001EFA80(arg0, id, (s32)position, 0, 0, 0, 0);
+            arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, (s32)position, 0, 0, 0, 0);
             color->a = (alpha * tile[0x1A]) >> 7;
-            func_001F2860(id, -1, color);
-            arg0 = func_001EFA80(arg0, id, (s32)position, 0, 0, 0, 0x80FFFFF6);
-            func_001F2860(id, -1, NULL);
+            SzModel_SetFilter(id, -1, color);
+            arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, (s32)position, 0, 0, 0, 0x80FFFFF6);
+            SzModel_SetFilter(id, -1, NULL);
             color->a = alpha;
         }
     }
@@ -486,19 +486,19 @@ s32 func_001AE5F0(s32 arg0) {
         kind = 0;
         do {
             id = kind + 0x4A;
-            if (func_001F1370(id) != 0) {
+            if (SzModel_IsModelDisp(id) != 0) {
                 row = 0;
                 do {
                     col = 0;
                     do {
-                        tile = func_001DCD00(col, row);
+                        tile = SzDuel_GetMapInfo(col, row);
                         if (tile[0x16] == kind) {
                             if (color == NULL || player[0x33D] != col || player[0x33E] != row) {
-                                func_001E10F0(col, row, *(s16 *)(tile + 0x14), position);
+                                SzDuel_CalcUnitPos(col, row, *(s16 *)(tile + 0x14), position);
                                 if (*(s16 *)(tile + 0x14) > 0) {
-                                    arg0 = func_001DBFE0(arg0, position, NULL, 1);
+                                    arg0 = SzDuel_DrawBoxCursor_Pipe(arg0, position, NULL, 1);
                                 }
-                                arg0 = func_001EFA80(arg0, id, (s32)position, 0, 0, 0, 0);
+                                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, (s32)position, 0, 0, 0, 0);
                             }
                         }
                         col++;
@@ -512,8 +512,8 @@ s32 func_001AE5F0(s32 arg0) {
     {
         s32 id = 0;
         do {
-            if (func_001F1370(id) != 0) {
-                arg0 = func_001EFA80(arg0, id, 0, 0, 0, 0, 0);
+            if (SzModel_IsModelDisp(id) != 0) {
+                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, 0, 0, 0, 0, 0);
             }
             id++;
         } while (id < 3);
@@ -525,11 +525,11 @@ s32 func_001AE5F0(s32 arg0) {
             id = x + 5;
             offset = D_00291110;
             offset.coord[1] = x != 0 ? 0 : 0x8000;
-            if (func_001F1370(id) != 0) {
+            if (SzModel_IsModelDisp(id) != 0) {
                 offset.coord[1] -= 0x2000;
-                arg0 = func_001EFA80(arg0, id, 0, (s32)&offset, 0, 0, 0);
+                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, 0, (s32)&offset, 0, 0, 0);
                 offset.coord[1] += 0x4000;
-                arg0 = func_001EFA80(arg0, id, 0, (s32)&offset, 0, 0, 0);
+                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, 0, (s32)&offset, 0, 0, 0);
             }
             x++;
         } while (x < 2);
@@ -537,8 +537,8 @@ s32 func_001AE5F0(s32 arg0) {
     return arg0;
 }
 
-void func_001AEE80(void) {
-    func_00209D30(func_001AEEB0(func_00209D20()));
+void SzDuel_DrawStageAfter(void) {
+    RhBase_SetVifPacketArea(SzDuel_DrawStageAfter_Pipe(RhBase_GetVifPacketArea()));
 }
 
 typedef struct {
@@ -552,73 +552,73 @@ extern Vec4_001AEEB0 D_00291120;
 
 #pragma opt_lifetimes off
 
-s32 func_001AEEB0(s32 arg0) {
+s32 SzDuel_DrawStageAfter_Pipe(s32 arg0) {
     Vec4_001AEEB0 sp30;
     s32 var_s0;
     s32 var_s1;
 
     var_s1 = arg0;
-    if (func_001F3130(0) == 0) {
+    if (SzModel_GetDrawFlag(0) == 0) {
         return var_s1;
     }
     var_s0 = 3;
     do {
         sp30 = D_00291120;
         sp30.z = (var_s0 == 4) ? 180.0f : -180.0f;
-        if (func_001F1370(var_s0) != 0) {
-            var_s1 = func_001EF8A0(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
+        if (SzModel_IsModelDisp(var_s0) != 0) {
+            var_s1 = SzModel_ExSort_Pipe(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
             sp30.x *= -1.0f;
-            var_s1 = func_001EF8A0(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
+            var_s1 = SzModel_ExSort_Pipe(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
         }
         var_s0 += 1;
     } while ((s32) var_s0 < 5);
-    return func_001DC560(var_s1);
+    return SzDuel_DrawLine_Pipe(var_s1);
 }
 #pragma opt_lifetimes reset
 
-s32 func_001AEFC0(s32 arg0) {
-    return func_001AEFD0(arg0, 0);
+s32 SzDuel_StartWindowSession_Pipe(s32 arg0) {
+    return SzDuel_StartWindowSessionWithPalette_Pipe(arg0, 0);
 }
 
-s32 func_001AEFD0(s32 arg0, s32 arg1) {
-    extern s32 *func_001FEAB0(s32);
-    extern s32 func_00202E00(s32, s32);
+s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
+    extern s32 *SzMsg_GetInfo(s32);
+    extern s32 SzText_InitClutManage(s32, s32);
     u8 *base;
     s32 addr;
     s32 length;
     s32 i;
 
     base = D_00317490.b;
-    addr = func_00209E50();
-    addr += func_00202E00(addr, 2);
-    arg0 = func_001FD320(arg0, arg1, addr, &length);
+    addr = RhBase_GetUserGsAddress();
+    addr += SzText_InitClutManage(addr, 2);
+    arg0 = SzMsg_Init_Pipe(arg0, arg1, addr, &length);
     i = 0;
     addr += length;
     do {
         *(s32 *)(base + i * 4 + 0x6A0) = 0;
         i++;
     } while (i < 9);
-    *(s32 *)(base + 0x6B8) = func_00202BF0(3, 6);
-    *(s32 *)(base + 0x6BC) = func_00202BF0(3, 7);
-    arg0 = func_00202B00(arg0, 3, addr, &length);
+    *(s32 *)(base + 0x6B8) = SzText_LoadRequest(3, 6);
+    *(s32 *)(base + 0x6BC) = SzText_LoadRequest(3, 7);
+    arg0 = SzText_DoRequest_Pipe(arg0, 3, addr, &length);
     addr += length;
-    func_00202D60(3, -1);
+    SzText_FreeRequest(3, -1);
     {
         s32 *info;
 
-        arg0 = func_001FD680(arg0, 0, 0x15, 0, 0);
-        info = func_001FEAB0(0);
+        arg0 = SzMsg_LoadFont_Pipe(arg0, 0, 0x15, 0, 0);
+        info = SzMsg_GetInfo(0);
         info[3] = 0x16;
-        arg0 = func_0020F290(arg0);
+        arg0 = RhText_SetTextureFlush(arg0);
     }
     *(s32 *)(base + 0xC7C) = addr;
     *(s32 *)(base + 0xC58) = 0xFFFFF8;
-    func_001FD4B0(0xFFFFF8);
+    SzMsg_SetDefPrioZ(0xFFFFF8);
     return arg0;
 }
 
-s32 func_001AF110(s32 arg0) {
-    func_001FEAF0(0);
+s32 SzDuel_FinishWindowSession_Pipe(s32 arg0) {
+    SzMsg_Free(0);
     return arg0;
 }
 
@@ -627,7 +627,7 @@ typedef struct {
     s32 entries[8];
 } Data_001AF140;
 
-s32 func_001AF140(s32 arg0) {
+s32 SzDuel_GetWindowTexture(s32 arg0) {
     Data_001AF140 *data = (Data_001AF140 *)D_00317490.b;
 
     if ((arg0 < 0) || (arg0 >= 8)) {
@@ -636,13 +636,13 @@ s32 func_001AF140(s32 arg0) {
     return data->entries[arg0];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AF180);
+INCLUDE_ASM("asm/nonmatchings/main_038", SzDuel_DrawHandCard_Pipe);
 
-s32 func_001AF5C0(s32 arg0) {
-    extern s32 func_001AAF60(s32);
-    extern s32 func_001B4780();
-    extern s32 func_001B3C80();
-    extern s32 func_001B6EA0();
+s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
+    extern s32 SzGame_GetMode(s32);
+    extern s32 lSzDuel_DrawWindow_Frame_Pipe();
+    extern s32 lSzDuel_DrawWindow_Icon_Pipe();
+    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
     extern u8 D_002902A6[];
     s32 mode;
     s32 player;
@@ -655,9 +655,9 @@ s32 func_001AF5C0(s32 arg0) {
     s32 kind;
 
     state = D_00317490.b;
-    mode = func_001AAF60(1);
+    mode = SzGame_GetMode(1);
     player = D_003181E4;
-    count = func_001DF110(player);
+    count = SzDuel_GetHandCount(player);
     if (mode != 1) {
         return arg0;
     }
@@ -668,22 +668,22 @@ s32 func_001AF5C0(s32 arg0) {
         return arg0;
     }
     for (i = 0; i < count; i++) {
-        pos = (f32 *)func_001DF540(2, i + 1);
+        pos = (f32 *)SzDuel_GetUnit(2, i + 1);
         if (pos != NULL) {
             pos = ((f32 **)pos)[1];
             if (pos != NULL) {
                 x = (s32)pos[0] + 0x104;
                 y = (s32)pos[1] + 0x8B;
-                kind = func_001DF0C0(player, i);
+                kind = SzDuel_InqHand(player, i);
                 if (kind >= 0) {
                     if (state[0xD4F] == i) {
-                        arg0 = func_001B4780(arg0, -1, -1, 8, x, y - 4, 0xC, 0x13, 1);
+                        arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, -1, -1, 8, x, y - 4, 0xC, 0x13, 1);
                     }
                     if ((kind & 0xFFF) != 0x3E7) {
                         kind = (kind & 0xF000) >> 12;
                         if (kind != 0) {
-                            arg0 = func_001B3C80(arg0, D_002902A6, x + 0x6C0, y + 0x704, 1, 1, 0, 0, 1, 0, -1);
-                            arg0 = func_001B6EA0(arg0, x + 0x10, y - 0x17, 0, 2, 1, kind);
+                            arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_002902A6, x + 0x6C0, y + 0x704, 1, 1, 0, 0, 1, 0, -1);
+                            arg0 = SzDuel_DrawWindow_FontDigit_Pipe(arg0, x + 0x10, y - 0x17, 0, 2, 1, kind);
                         }
                     }
                 }
@@ -693,16 +693,16 @@ s32 func_001AF5C0(s32 arg0) {
     return arg0;
 }
 
-void func_001AF7B0(void) {
-    func_00209D30(func_001AF7E0(func_00209D20()));
+void SzDuel_DrawDialog(void) {
+    RhBase_SetVifPacketArea(SzDuel_DrawDialog_Pipe(RhBase_GetVifPacketArea()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001AF7E0);
+INCLUDE_ASM("asm/nonmatchings/main_038", SzDuel_DrawDialog_Pipe);
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B0CE0);
+INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawDialog_Window_Pipe);
 
-void func_001B1190(void) {
-    func_00209D30(func_001B11C0(func_00209D20()));
+void SzDuel_DrawWindow(void) {
+    RhBase_SetVifPacketArea(SzDuel_DrawWindow_Pipe(RhBase_GetVifPacketArea()));
 }
 
 typedef int DotrDrawWord;
@@ -781,8 +781,8 @@ struct DotrWindowControl {
 };
 extern struct DotrWindowControl D_00317490_b;
 extern DotrDrawWord func_001B3790_b(DotrDrawWord cursor, int colour, int field, float f, int x, int y);
-extern DotrDrawWord func_001B19F0(DotrDrawWord cursor, int side, int x, int y, int active);
-extern DotrDrawWord func_001B22F0(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
+extern DotrDrawWord lSzDuel_DrawWindow_PlayerInfo_Pipe(DotrDrawWord cursor, int side, int x, int y, int active);
+extern DotrDrawWord lSzDuel_DrawWindow_CardInfo_Pipe(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
                                                      unsigned char side, int a5, int a6, int a7, long a8, long a9);
 extern struct DotrWindowUnit *func_001DF540_b(int a, int b);
 extern struct DotrWindowUnit *func_001E36E0_b(int x, int y);
@@ -790,7 +790,7 @@ extern DotrDrawWord func_001B3100_b(DotrDrawWord cursor, int a1, int a2, int a3)
 extern DotrDrawWord func_001B4780_b(DotrDrawWord cursor, int a1, int a2, int a3, int x, int y, int a6, int a7, long a8);
 extern DotrDrawWord func_001B6EA0_b(DotrDrawWord cursor, int x, int y, int a, int flags, int width, int value);
 
-int func_001B11C0(int cursor)
+int SzDuel_DrawWindow_Pipe(int cursor)
 {
     struct DotrWindowControl *g = &D_00317490_b;
     int off;
@@ -842,12 +842,12 @@ int func_001B11C0(int cursor)
     }
     off = g->slide << 7 >> 7;
     side = &g->sides[g->side];
-    func_001D9EE0(0xfffff8);
-    cursor = func_001B3790_b(cursor, g->side, func_001E22B0(side->x, side->y), 100.0f, g->side != 0 ? 6 : 538,
+    SzDuel_SetWindowDefPrioZ(0xfffff8);
+    cursor = func_001B3790_b(cursor, g->side, SzDuel_GetField(side->x, side->y), 100.0f, g->side != 0 ? 6 : 538,
                                                 off + 336);
-    cursor = func_001AEFD0(cursor, 0);
-    cursor = func_001B19F0(cursor, 0, 18, 20 - off, g->side == 0 ? 1 : 0);
-    out = func_001B19F0(cursor, 1, 440, 20 - off, g->side == 1 ? 1 : 0);
+    cursor = SzDuel_StartWindowSessionWithPalette_Pipe(cursor, 0);
+    cursor = lSzDuel_DrawWindow_PlayerInfo_Pipe(cursor, 0, 18, 20 - off, g->side == 0 ? 1 : 0);
+    out = lSzDuel_DrawWindow_PlayerInfo_Pipe(cursor, 1, 440, 20 - off, g->side == 1 ? 1 : 0);
     if (g->unknown_d45 != 0 || g->unknown_d47 != 0) {
         other = g->unit_6cc;
         unit = func_001DF540_b(2, g->unknown_d4f + 1);
@@ -869,11 +869,11 @@ int func_001B11C0(int cursor)
         }
         a = g->slide2;
         if (a != 0) {
-            out = func_001B22F0(out, unit, side->x, side->y, unit != 0 ? (int)unit->side : (int)g->side, 104,
+            out = lSzDuel_DrawWindow_CardInfo_Pipe(out, unit, side->x, side->y, unit != 0 ? (int)unit->side : (int)g->side, 104,
                                                    368 - ((unsigned char)a << 6 >> 7) + off, -1, 6, 1);
             first = 0;
         }
-        out = func_001B22F0(out, other, side->x, side->y, other != 0 ? (int)other->side : (int)g->side, 104,
+        out = lSzDuel_DrawWindow_CardInfo_Pipe(out, other, side->x, side->y, other != 0 ? (int)other->side : (int)g->side, 104,
                                                off + 368, -1, 3, first);
     } else {
         x = -1;
@@ -881,10 +881,10 @@ int func_001B11C0(int cursor)
         y = -1;
         adv2 = 1;
         if (g->unit_6c8 != 0 && g->unit_6c8->place < 11 && g->unit_6cc != 0 && g->unit_6cc->place < 11) {
-            c1 = func_00250360(g->unit_6c8->side, g->unit_6c8->place);
-            c2 = func_00250360(g->unit_6cc->side, g->unit_6cc->place);
+            c1 = Ta_IsUnitControl(g->unit_6c8->side, g->unit_6c8->place);
+            c2 = Ta_IsUnitControl(g->unit_6cc->side, g->unit_6cc->place);
             if (c1 != c2) {
-            adv = func_002679C0(g->unit_6c8->side, g->unit_6c8->place, g->unit_6cc->side, g->unit_6cc->place);
+            adv = Ta_IsVisualAttrAdv(g->unit_6c8->side, g->unit_6c8->place, g->unit_6cc->side, g->unit_6cc->place);
             if (adv < 0) {
                 adv2 = adv;
             } else {
@@ -918,43 +918,43 @@ int func_001B11C0(int cursor)
         }
         if (g->slide2 != 0) {
             unit = func_001E36E0_b(g->x2, g->y2);
-            out = func_001B22F0(out, unit, g->x2, g->y2, unit != 0 ? (int)unit->side : (int)g->side, 104,
+            out = lSzDuel_DrawWindow_CardInfo_Pipe(out, unit, g->x2, g->y2, unit != 0 ? (int)unit->side : (int)g->side, 104,
                                                    368 - (g->slide2 << 6 >> 7) + off, adv2, 3, 1);
             first = 0;
         }
         unit = func_001E36E0_b(g->x, g->y);
-        out = func_001B22F0(out, unit, side->x, side->y, unit != 0 ? (int)unit->side : (int)g->side, 104, off + 368,
+        out = lSzDuel_DrawWindow_CardInfo_Pipe(out, unit, side->x, side->y, unit != 0 ? (int)unit->side : (int)g->side, 104, off + 368,
                                                adv, 3, first);
     }
     cursor = func_001B3100_b(out, g->side, g->side != 0 ? 538 : 6, off + 336);
-    cursor = func_001B3640(cursor, func_001E22B0(side->x, side->y), g->side != 0 ? 6 : 538, off + 336);
+    cursor = lSzDuel_DrawWindow_Field_Pipe(cursor, SzDuel_GetField(side->x, side->y), g->side != 0 ? 6 : 538, off + 336);
     cursor = func_001B4780_b(cursor, 5, 3, 4, 292, 16 - off, 4, 2, 1);
     cursor = func_001B6EA0_b(cursor, 320, 22 - off, 2, 34, 2, 100 - g->unknown_d3d);
     if (g->unknown_d44 != 0) {
-        cursor = func_001B7820(cursor, 320, 72 - off, (unsigned char)((unsigned char)g->unknown_d44 << 7 >> 7));
+        cursor = lSzDuel_DrawWindow_DualShock2_Pipe(cursor, 320, 72 - off, (unsigned char)((unsigned char)g->unknown_d44 << 7 >> 7));
     }
     if (g->unknown_d48 != 0) {
         y = g->unknown_d45 << 7 >> 7;
         y = 54 - off + (y - 128);
-        cursor = func_001B1EF0(cursor, 220, y);
-        cursor = func_001B20E0(cursor, 332, y);
+        cursor = lSzDuel_DrawWindow_Level_Pipe(cursor, 220, y);
+        cursor = lSzDuel_DrawWindow_SummonCost_Pipe(cursor, 332, y);
     }
-    func_001D9EE0(0xfffffc);
-    cursor = func_001AF5C0(cursor);
-    func_001FEAF0(0);
+    SzDuel_SetWindowDefPrioZ(0xfffffc);
+    cursor = SzDuel_DrawHandCursor_Pipe(cursor);
+    SzMsg_Free(0);
     return cursor;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B19F0);
+INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawWindow_PlayerInfo_Pipe);
 
-s32 func_001B1EF0(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 func_001B3C80();
-    extern s32 func_001B65E0();
-    extern s32 func_001B6C90();
-    extern s32 func_001FEAB0();
-    extern s32 func_001E08F0();
-    extern s32 func_001DE4E0();
-    extern s32 func_001FE7D0();
+s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 lSzDuel_DrawWindow_Icon_Pipe();
+    extern s32 lSzDuel_DrawWindow_Board_Pipe();
+    extern s32 SzDuel_DrawWindow_Digit_Pipe();
+    extern s32 SzMsg_GetInfo();
+    extern s32 SzDuel_GetUnitLevel();
+    extern s32 SzDuel_GetPlayer();
+    extern s32 SzMsg_DrawX_Pipe();
     extern u8 D_002901CA[];
     u8 *global;
     s32 x;
@@ -974,39 +974,39 @@ s32 func_001B1EF0(s32 arg0, s32 arg1, s32 arg2) {
     areaX = x + 0x6C0;
     areaY = y + 0x720;
     flag = 0;
-    if (func_001DE4E0(D_003181CC) < 0x20) {
-        if (func_001DE4E0(global[0xD3C] ^ 1) >= 0x64) {
+    if (SzDuel_GetPlayer(D_003181CC) < 0x20) {
+        if (SzDuel_GetPlayer(global[0xD3C] ^ 1) >= 0x64) {
             flag = 1;
         }
     }
 
-    arg0 = func_001B4780(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
-    result = func_001B3C80(arg0, (s32) D_002901CA, areaX + 4, areaY + 3,
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
+    result = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32) D_002901CA, areaX + 4, areaY + 3,
                            0, 1, 0, 0, 1, 0, -1);
     xCoord = x + 0x1E;
     yResult = y + 1;
-    xResult = func_001B65E0(result, global[0xD54], xCoord, yResult, 3, 1, -1);
+    xResult = lSzDuel_DrawWindow_Board_Pipe(result, global[0xD54], xCoord, yResult, 3, 1, -1);
     if (flag != 0) {
-        temp = func_0020F290(func_001FD680(xResult, 1, 0x1C, 0, 0x16));
-        result = func_001FEAB0(1);
+        temp = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(xResult, 1, 0x1C, 0, 0x16));
+        result = SzMsg_GetInfo(1);
         *(s32 *)(result + 0xC) = 0x2C;
-        result = func_001FE7D0(temp, 1, xCoord + 3, yResult + 2, 0, func_001FDFE0);
-        func_001FEAF0(1);
+        result = SzMsg_DrawX_Pipe(temp, 1, xCoord + 3, yResult + 2, 0, SzMsg_DrawRect_Pipe);
+        SzMsg_Free(1);
     } else {
-        temp = func_001E08F0(2, global[0xD4F] + 1, 0);
-        result = func_001B6C90(xResult, xCoord + 3, yResult + 2, 2, temp, 0);
+        temp = SzDuel_GetUnitLevel(2, global[0xD4F] + 1, 0);
+        result = SzDuel_DrawWindow_Digit_Pipe(xResult, xCoord + 3, yResult + 2, 2, temp, 0);
     }
     return result;
 }
 
-s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 func_001B3C80();
-    extern s32 func_001B65E0();
-    extern s32 func_001B6C90();
-    extern s32 func_001FEAB0();
-    extern s32 func_001E08F0();
-    extern s32 func_001DE4E0();
-    extern s32 func_001FE7D0();
+s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 lSzDuel_DrawWindow_Icon_Pipe();
+    extern s32 lSzDuel_DrawWindow_Board_Pipe();
+    extern s32 SzDuel_DrawWindow_Digit_Pipe();
+    extern s32 SzMsg_GetInfo();
+    extern s32 SzDuel_GetUnitLevel();
+    extern s32 SzDuel_GetPlayer();
+    extern s32 SzMsg_DrawX_Pipe();
     u8 *global;
     s32 x;
     s32 xResult;
@@ -1025,33 +1025,33 @@ s32 func_001B20E0(s32 arg0, s32 arg1, s32 arg2) {
     areaX = x + 0x6C0;
     areaY = y + 0x720;
     flag = 0;
-    if (func_001DE4E0(D_003181CC) < 0x20) {
-        if (func_001DE4E0(global[0xD3C] ^ 1) >= 0x64) {
+    if (SzDuel_GetPlayer(D_003181CC) < 0x20) {
+        if (SzDuel_GetPlayer(global[0xD3C] ^ 1) >= 0x64) {
             flag = 1;
         }
     }
 
-    arg0 = func_001B4780(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
-    result = func_001B3C80(arg0, (s32) D_002909B8, areaX + 4, areaY + 3,
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
+    result = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32) D_002909B8, areaX + 4, areaY + 3,
                            0, 1, 0, 0, 1, 0, -1);
     xCoord = x + 0x1E;
     yResult = y + 1;
-    xResult = func_001B65E0(result, global[0xD54], xCoord, yResult, 3, 1, -1);
+    xResult = lSzDuel_DrawWindow_Board_Pipe(result, global[0xD54], xCoord, yResult, 3, 1, -1);
     if (flag != 0) {
-        temp = func_0020F290(func_001FD680(xResult, 1, 0x1C, 0, 0x16));
-        result = func_001FEAB0(1);
+        temp = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(xResult, 1, 0x1C, 0, 0x16));
+        result = SzMsg_GetInfo(1);
         *(s32 *)(result + 0xC) = 0x2C;
-        result = func_001FE7D0(temp, 1, xCoord + 3, yResult + 2, 0, func_001FDFE0);
-        func_001FEAF0(1);
+        result = SzMsg_DrawX_Pipe(temp, 1, xCoord + 3, yResult + 2, 0, SzMsg_DrawRect_Pipe);
+        SzMsg_Free(1);
     } else {
-        temp = func_001E08F0(2, global[0xD4F] + 1, 0);
-        result = func_001B6C90(xResult, xCoord + 3, yResult + 2, 2,
-                             global[0xD4E] != 0 ? func_0026E950() : temp, 0);
+        temp = SzDuel_GetUnitLevel(2, global[0xD4F] + 1, 0);
+        result = SzDuel_DrawWindow_Digit_Pipe(xResult, xCoord + 3, yResult + 2, 2,
+                             global[0xD4E] != 0 ? Ta_GetSummonCost() : temp, 0);
     }
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B22F0);
+INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawWindow_CardInfo_Pipe);
 
 typedef struct {
     s8 bit0 : 1;
@@ -1103,12 +1103,12 @@ extern u8 D_00290080[];
 extern Entry_001B3100 D_00291180[];
 extern u8 D_003181E7;
 
-s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
-    extern s32 func_001B3C80();
-    extern s32 func_001B4780();
-    extern void *func_001FEAB0();
-    extern s32 func_001E24E0();
-    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
+    extern s32 lSzDuel_DrawWindow_Icon_Pipe();
+    extern s32 lSzDuel_DrawWindow_Frame_Pipe();
+    extern void *SzMsg_GetInfo();
+    extern s32 SzDuel_GetMapMovable();
+    extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
     State_001B3100 *state;
     State_001B3100 *player;
     s32 choice;
@@ -1131,15 +1131,15 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
     x = (s32)arg2 + 4;
     y = (s32)arg3 + 4;
     choice = -1;
-    arg0 = func_001B4780(arg0, arg1, 2, 3, arg2, arg3, 9, 0x12, 1);
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, arg1, 2, 3, arg2, arg3, 9, 0x12, 1);
     switch (D_003181E7) {
     case 0x18:
         if (state->card != NULL) {
-            value = func_00250360(state->card->x, state->card->y);
+            value = Ta_IsUnitControl(state->card->x, state->card->y);
             if (state->player == value) {
                 if (state->card->y == 0) {
-                    value = func_001DE9C0(state->player);
-                    otherValue = func_001DF110(state->player);
+                    value = SzDuel_GetDeckCount(state->player);
+                    otherValue = SzDuel_GetHandCount(state->player);
                     if (player->flags.bit0 && value + otherValue > 0) {
                         if (state->card->flags.bit0) {
                             choice = 3;
@@ -1169,7 +1169,7 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
             } else {
                 value = 0;
                 if (state->card->y > 0) {
-                    value = func_00267380((s32)state->card, state->player);
+                    value = Ta_IsUnitHide((s32)state->card, state->player);
                 }
                 choice = value == 0 ? 11 : 0;
             }
@@ -1181,7 +1181,7 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
         if (state->card->y == 0) {
             choice = 5;
             if (state->other != NULL && state->other != state->card) {
-                value = func_00250360(state->other->x, state->other->y);
+                value = Ta_IsUnitControl(state->other->x, state->other->y);
                 if (state->player == value) {
                     choice = 6;
                 }
@@ -1195,7 +1195,7 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
                         choice = 12;
                     }
                 } else {
-                    value = func_00250360(state->other->x, state->other->y);
+                    value = Ta_IsUnitControl(state->other->x, state->other->y);
                     if (state->player == value) {
                         choice = 14;
                     } else {
@@ -1208,7 +1208,7 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
         }
         break;
     case 0x3E:
-        if (func_001E24E0(player->x, player->y) == 0) {
+        if (SzDuel_GetMapMovable(player->x, player->y) == 0) {
             choice = 7;
         }
         break;
@@ -1233,7 +1233,7 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
         }
         break;
     case 0x30:
-        if (func_001FA6F0(-1, -1) == NULL) {
+        if (SzView_InqRequest(-1, -1) == NULL) {
             choice = 19;
         }
         break;
@@ -1253,21 +1253,21 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
         entryY = entry->y;
         text = entry->text;
         if (graphic < 0x3FF) {
-            arg0 = func_001B3C80(arg0, D_00290080 + graphic * 10,
+            arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290080 + graphic * 10,
                                   renderX + 0x6C0 + entryX, y + 0x720 + entryY,
                                   0, 1, 0, 0, 1, 0, -1);
         }
         if (text < 0xFFFF) {
-            arg0 = func_0020F290(func_001FD680(arg0, 1, text, 0, 0x16));
-            info = func_001FEAB0(1);
+            arg0 = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 1, text, 0, 0x16));
+            info = SzMsg_GetInfo(1);
             if (info->width >= 0x2D) {
                 scale = 44.0f / (f32)info->width;
             } else {
                 scale = 1.0f;
             }
-            arg0 = func_001FE660(arg0, 1, renderX + 0x1A, y, scale, 1.0f, 0,
-                                  func_001FDFE0);
-            func_001FEAF0(1);
+            arg0 = SzMsg_DrawRatioX_Pipe(arg0, 1, renderX + 0x1A, y, scale, 1.0f, 0,
+                                  SzMsg_DrawRect_Pipe);
+            SzMsg_Free(1);
         }
         count++;
         y += 0x16;
@@ -1276,25 +1276,25 @@ s32 func_001B3100(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
     return arg0;
 }
 
-s32 func_001B3640(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern s32 func_001B4780();
-    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+s32 lSzDuel_DrawWindow_Field_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 lSzDuel_DrawWindow_Frame_Pipe();
+    extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
     s32 id;
     s32 width;
     s32 result;
     f32 scale;
 
     scale = 1.0f;
-    id = func_0020F290(func_001FD680(arg0, 1, arg1 + 0x47, 0, 0x16));
-    id = func_001B4780(id, -1, 2, 3, arg2, arg3, 9, 0x12, 1);
-    id = func_001B4780(id, 5, -1, 3, arg2, arg3 + 0x40, 9, 2, 1);
-    width = ((s32 *)func_001FEAB0(1))[3];
+    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 1, arg1 + 0x47, 0, 0x16));
+    id = lSzDuel_DrawWindow_Frame_Pipe(id, -1, 2, 3, arg2, arg3, 9, 0x12, 1);
+    id = lSzDuel_DrawWindow_Frame_Pipe(id, 5, -1, 3, arg2, arg3 + 0x40, 9, 2, 1);
+    width = ((s32 *)SzMsg_GetInfo(1))[3];
     if (width > 0x54) {
         scale = 84.0f / (f32)width;
     }
-    result = func_001FE660(id, 1, (arg2 + 0x30) - (s32)((f32)(width >> 1) * scale), arg3 + 0x43,
-                           scale, 1.0f, 0, func_001FDFE0);
-    func_001FEAF0(1);
+    result = SzMsg_DrawRatioX_Pipe(id, 1, (arg2 + 0x30) - (s32)((f32)(width >> 1) * scale), arg3 + 0x43,
+                           scale, 1.0f, 0, SzMsg_DrawRect_Pipe);
+    SzMsg_Free(1);
     return result;
 }
 
@@ -1383,11 +1383,11 @@ static inline void set_uv_001B3790(UV_001B3790 *p, s32 u, s32 v) {
     p->v = v;
 }
 
-s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
+s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     extern Source_001B3790 D_002BE840[];
     extern Params_001B3790 D_002912D0;
     extern s32 D_0031AB80;
-    extern s32 func_0020A470(s32, s32, s32);
+    extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     u8 *state = D_00317490.b;
     Source_001B3790 *color = &D_002BE840[colorIndex];
     s32 left;
@@ -1422,8 +1422,8 @@ s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     box.vertex1.y = (top + height) << 4;
     box.vertex1.z = D_003180E8;
     box.vertex1.fog = 0;
-    id = func_00207650(arg0, (s32)box.tag, 0, 0);
-    if (func_001F1370(card + 0x4A) == 0) {
+    id = ExSortPrim_Pipe(arg0, (s32)box.tag, 0, 0);
+    if (SzModel_IsModelDisp(card + 0x4A) == 0) {
         return id;
     }
     left += 3;
@@ -1435,7 +1435,7 @@ s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     ((Tag_001B3790 *)sprite.tag)->registers = 0x42421;
     ((Tag_001B3790 *)sprite.tag)->padding = 0;
     ((Tag_001B3790 *)sprite.tag)->flags |= 0x800;
-    func_002086D0(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    ExAssignAlpha(sprite.tag, 0x44 | ((s64)0x80 << 32));
     sprite.color.r = 0xFF;
     sprite.color.g = 0xFF;
     sprite.color.b = 0xFF;
@@ -1445,54 +1445,54 @@ s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     sprite.vertex0.fog = 0;
     sprite.vertex1.z = *(s32 *)(state + 0xC58);
     sprite.vertex1.fog = 0;
-    func_0020DEF0(&view);
-    if (func_0020E460() != 0) {
+    RhView_GetCurView(&view);
+    if (RhView_PushStack() != 0) {
         params = D_002912D0;
         params.w[1] = D_0031AB80;
-        func_0020A470(0, 0xA, 0x31);
-        packet = (s32)func_0020A610((void *)id);
-        packet = (s32)func_0020A870((u8 *)packet, 0);
+        RhBase_AssignRenderFrame(0, 0xA, 0x31);
+        packet = (s32)RhBase_EnableRenderFrame((void *)id);
+        packet = (s32)RhBase_ClearRenderFrame((u8 *)packet, 0);
         view.targetZ = func_001A6C60(view.targetX * view.targetX + view.targetZ * view.targetZ);
         view.targetX = 0.0f;
-        func_0020D070(&view.targetX);
+        RhGeom_NormalizeVector(&view.targetX);
         view.eyeX = -(view.targetX * scale);
         view.eyeY = -(view.targetY * scale) - 25.0f;
         view.eyeZ = -(view.targetZ * scale);
         view.roll = 0;
-        func_0020E360(&view);
-        id = func_0020A0B0(func_0020EC60(packet), 1);
-        func_001F1E10(card + 0x4A, &rotation.x);
+        RhView_Modify(&view);
+        id = RhBase_SetZBufferMode(RhView_SendViewParameters(packet), 1);
+        SzModel_GetIntensity(card + 0x4A, &rotation.x);
         front = rotation;
         front.z = 1.0f;
-        func_001F1EE0(card + 0x4A, &front.x);
-        id = func_001EFA80(id, card + 0x4A, 0, (s32)&params, 0, 0, 0);
-        func_001F1EE0(card + 0x4A, &rotation.x);
-        id = func_0020A0B0(id, 0);
-        func_0020AA30(&sprite.texture0, &sprite.texture1);
-        id = func_0020F290((s32)func_0020A760((void *)id));
+        SzModel_SetIntensity(card + 0x4A, &front.x);
+        id = SzModel_DrawWithOutCalc_Pipe(id, card + 0x4A, 0, (s32)&params, 0, 0, 0);
+        SzModel_SetIntensity(card + 0x4A, &rotation.x);
+        id = RhBase_SetZBufferMode(id, 0);
+        RhBase_GetTextureInfoForRender(&sprite.texture0, &sprite.texture1);
+        id = RhText_SetTextureFlush((s32)RhBase_DisableRenderFrame((void *)id));
         set_uv_001B3790((UV_001B3790 *)&sprite.uv0, 0, 0);
         set_uv_001B3790((UV_001B3790 *)&sprite.uv1, 0x280 << 4, 0x1C0 << 4);
         sprite.vertex0.x = (left << 4) - 8;
         sprite.vertex0.y = (top << 4) - 8;
         sprite.vertex1.x = ((left + width) << 4) - 8;
         sprite.vertex1.y = ((top + height) << 4) - 8;
-        func_0020E4F0();
-        func_0020DEF0(&view);
-        func_0020E360(&view);
-        id = func_00207650(func_0020EC60(id), (s32)&sprite, 0, 0);
-        func_0020A9E0();
+        RhView_PopStack();
+        RhView_GetCurView(&view);
+        RhView_Modify(&view);
+        id = ExSortPrim_Pipe(RhView_SendViewParameters(id), (s32)&sprite, 0, 0);
+        RhBase_FreeRenderFrame();
         D_0031AB80 += 0x200;
     }
     return id;
 }
 
-void func_001B3C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+void lSzDuel_DrawWindow_Icon_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                    s32 arg4, s32 arg5, s32 arg6, s32 arg7,
                    s32 arg8, s32 arg9, s32 arg10) {
-    extern void func_001B3CC0(s32, s32, s32, s32, s32, s32, s32, s32,
+    extern void lSzDuel_DrawWindow_ExIcon_Pipe(s32, s32, s32, s32, s32, s32, s32, s32,
                               s64, s64, s64, s64, s64, s64);
 
-    func_001B3CC0(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+    lSzDuel_DrawWindow_ExIcon_Pipe(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
                   0, 0, (s64) arg8, (s64) arg9, (s64) arg10, 0x80);
 }
 
@@ -1598,7 +1598,7 @@ static inline s32 upper_001B3CC0(s32 value) {
     return 0x3FFF;
 }
 
-s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
+s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
                   s32 background, s32 image, s32 border, s32 shrink,
                   s32 flipX, s32 flipY, s32 bright, u8 *rgb,
                   s32 blend, u8 alpha) {
@@ -1617,7 +1617,7 @@ s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
     }
     tag_001B3CC0((Tag_001B3CC0 *)sprite.tag, 5, 0x26, 0x42421);
     ((Tag_001B3CC0 *)sprite.tag)->flags |= 0x800;
-    func_002086D0(&sprite, 0x8000000044LL);
+    ExAssignAlpha(&sprite, 0x8000000044LL);
     sprite.color.r = sprite.color.g = sprite.color.b = intensity_001B3CC0(bright);
     sprite.color.a = alpha;
     sprite.color.q = 1.0f;
@@ -1641,10 +1641,10 @@ s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
         solid.xyz0.y = y * 16;
         solid.xyz1.x = (x + width) * 16;
         solid.xyz1.y = (y + height) * 16;
-        packet = func_00207650(packet, (s32)&solid, 0, 0);
+        packet = ExSortPrim_Pipe(packet, (s32)&solid, 0, 0);
     }
     if (image != 0) {
-        func_00208700(&sprite, graphics->textures[((u8 *)src)[0]], 0);
+        ExAssignTexture(&sprite, graphics->textures[((u8 *)src)[0]], 0);
         if (flipX != 0 && flipY != 0) {
             ((UV_001B3CC0 *)&sprite.uv0)->u = lower_001B3CC0(src[3] * 16 - 8);
             ((UV_001B3CC0 *)&sprite.uv0)->v = lower_001B3CC0(src[4] * 16 - 8);
@@ -1670,14 +1670,14 @@ s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
         sprite.xyz0.y = y * 16;
         sprite.xyz1.x = (x + width) * 16;
         sprite.xyz1.y = (y + height) * 16;
-        packet = func_00207650(packet, (s32)&sprite, 0, 0);
+        packet = ExSortPrim_Pipe(packet, (s32)&sprite, 0, 0);
     }
     if (border != 0) {
-        packet = func_001B3CC0(packet, (u16 *)D_002909F4, x, y, 0, 1, 0, shrink,
+        packet = lSzDuel_DrawWindow_ExIcon_Pipe(packet, (u16 *)D_002909F4, x, y, 0, 1, 0, shrink,
                               0, 0, bright, NULL, -1, 0x80);
     }
     if (blend >= 0) {
-        func_002086D0(&solid, func_00208D00(blend));
+        ExAssignAlpha(&solid, ExGetAlphaVal(blend));
         if (rgb != NULL) {
             solid.color.r = rgb[2];
             solid.color.g = rgb[1];
@@ -1690,9 +1690,9 @@ s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y,
         solid.xyz0.y = y * 16;
         solid.xyz1.x = (x + width) * 16;
         solid.xyz1.y = (y + height) * 16;
-        packet = func_00207650(packet, (s32)&solid, 0, 0);
+        packet = ExSortPrim_Pipe(packet, (s32)&solid, 0, 0);
     }
     return packet;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", func_001B4540);
+INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawWindow_Emblem_Pipe);

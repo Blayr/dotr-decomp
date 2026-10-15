@@ -1,6 +1,6 @@
 #include "common.h"
 
-asm int func_0017B790(int arg0) {
+asm int RotateThreadReadyQueue(int arg0) {
     .set noreorder
     addiu v1, zero, 0x2B
     syscall 0
@@ -8,7 +8,7 @@ asm int func_0017B790(int arg0) {
     nop
 }
 
-asm int func_0017B7A0(void) {
+asm int _iRotateThreadReadyQueue(void) {
     .set noreorder
     addiu v1, zero, -0x2C
     syscall 0
@@ -16,7 +16,7 @@ asm int func_0017B7A0(void) {
     nop
 }
 
-asm int func_0017B7B0(void) {
+asm int ReleaseWaitThread(void) {
     .set noreorder
     addiu v1, zero, 0x2D
     syscall 0
@@ -24,7 +24,7 @@ asm int func_0017B7B0(void) {
     nop
 }
 
-asm int func_0017B7C0(void) {
+asm int iReleaseWaitThread(void) {
     .set noreorder
     addiu v1, zero, -0x2E
     syscall 0
@@ -32,7 +32,7 @@ asm int func_0017B7C0(void) {
     nop
 }
 
-asm int func_0017B7D0(void) {
+asm int GetThreadId(void) {
     .set noreorder
     addiu v1, zero, 0x2F
     syscall 0
@@ -40,7 +40,7 @@ asm int func_0017B7D0(void) {
     nop
 }
 
-asm s32 func_0017B7E0(s32 arg0, s32 *arg1) {
+asm s32 ReferThreadStatus(s32 arg0, s32 *arg1) {
     .set noreorder
     addiu v1, zero, 0x30
     syscall 0
@@ -48,7 +48,7 @@ asm s32 func_0017B7E0(s32 arg0, s32 *arg1) {
     nop
 }
 
-asm int func_0017B7F0(void) {
+asm int iReferThreadStatus(void) {
     .set noreorder
     addiu v1, zero, -0x31
     syscall 0
@@ -56,7 +56,7 @@ asm int func_0017B7F0(void) {
     nop
 }
 
-asm int func_0017B800(void) {
+asm int SleepThread(void) {
     .set noreorder
     addiu v1, zero, 0x32
     syscall 0
@@ -64,7 +64,7 @@ asm int func_0017B800(void) {
     nop
 }
 
-asm int func_0017B810(void) {
+asm int WakeupThread(void) {
     .set noreorder
     addiu v1, zero, 0x33
     syscall 0
@@ -72,7 +72,7 @@ asm int func_0017B810(void) {
     nop
 }
 
-asm int func_0017B820(int arg0) {
+asm int _iWakeupThread(int arg0) {
     .set noreorder
     addiu v1, zero, -0x34
     syscall 0
@@ -80,7 +80,7 @@ asm int func_0017B820(int arg0) {
     nop
 }
 
-asm int func_0017B830(void) {
+asm int CancelWakeupThread(void) {
     .set noreorder
     addiu v1, zero, 0x35
     syscall 0
@@ -88,7 +88,7 @@ asm int func_0017B830(void) {
     nop
 }
 
-asm int func_0017B840(void) {
+asm int iCancelWakeupThread(void) {
     .set noreorder
     addiu v1, zero, -0x36
     syscall 0
@@ -96,7 +96,7 @@ asm int func_0017B840(void) {
     nop
 }
 
-asm int func_0017B850(void) {
+asm int SuspendThread(void) {
     .set noreorder
     addiu v1, zero, 0x37
     syscall 0
@@ -104,7 +104,7 @@ asm int func_0017B850(void) {
     nop
 }
 
-asm int func_0017B860(int arg0) {
+asm int _iSuspendThread(int arg0) {
     .set noreorder
     addiu v1, zero, -0x38
     syscall 0
@@ -112,7 +112,7 @@ asm int func_0017B860(int arg0) {
     nop
 }
 
-asm int func_0017B870(void) {
+asm int ResumeThread(void) {
     .set noreorder
     addiu v1, zero, 0x39
     syscall 0
@@ -120,7 +120,7 @@ asm int func_0017B870(void) {
     nop
 }
 
-asm int func_0017B880(void) {
+asm int iResumeThread(void) {
     .set noreorder
     addiu v1, zero, -0x3A
     syscall 0
@@ -128,7 +128,7 @@ asm int func_0017B880(void) {
     nop
 }
 
-asm int func_0017B890(void) {
+asm int JoinThread(void) {
     .set noreorder
     addiu v1, zero, 0x3B
     syscall 0
@@ -136,7 +136,7 @@ asm int func_0017B890(void) {
     nop
 }
 
-asm int func_0017B8A0(void) {
+asm int RFU060(void) {
     .set noreorder
     addiu v1, zero, 0x3C
     syscall 0
@@ -144,7 +144,7 @@ asm int func_0017B8A0(void) {
     nop
 }
 
-asm int func_0017B8B0(void) {
+asm int RFU061(void) {
     .set noreorder
     addiu v1, zero, 0x3D
     syscall 0
@@ -152,7 +152,7 @@ asm int func_0017B8B0(void) {
     nop
 }
 
-asm unsigned int func_0017B8C0(void) {
+asm unsigned int EndOfHeap(void) {
     .set noreorder
     addiu v1, zero, 0x3E
     syscall 0
@@ -160,7 +160,7 @@ asm unsigned int func_0017B8C0(void) {
     nop
 }
 
-asm int func_0017B8D0(void) {
+asm int RFU063(void) {
     .set noreorder
     addiu v1, zero, 0x3F
     syscall 0
@@ -168,7 +168,7 @@ asm int func_0017B8D0(void) {
     nop
 }
 
-asm int func_0017B8E0(void *arg0) {
+asm int CreateSema(void *arg0) {
     .set noreorder
     addiu v1, zero, 0x40
     syscall 0
@@ -176,7 +176,7 @@ asm int func_0017B8E0(void *arg0) {
     nop
 }
 
-asm int func_0017B8F0(int arg0) {
+asm int DeleteSema(int arg0) {
     .set noreorder
     addiu v1, zero, 0x41
     syscall 0
@@ -184,7 +184,7 @@ asm int func_0017B8F0(int arg0) {
     nop
 }
 
-asm void func_0017B900(int arg0) {
+asm void SignalSema(int arg0) {
     .set noreorder
     addiu v1, zero, 0x42
     syscall 0
@@ -192,7 +192,7 @@ asm void func_0017B900(int arg0) {
     nop
 }
 
-asm void func_0017B910(int arg0) {
+asm void iSignalSema(int arg0) {
     .set noreorder
     addiu v1, zero, -0x43
     syscall 0
@@ -200,7 +200,7 @@ asm void func_0017B910(int arg0) {
     nop
 }
 
-asm void func_0017B920(int arg0) {
+asm void WaitSema(int arg0) {
     .set noreorder
     addiu v1, zero, 0x44
     syscall 0
@@ -208,7 +208,7 @@ asm void func_0017B920(int arg0) {
     nop
 }
 
-asm int func_0017B930(int arg0) {
+asm int PollSema(int arg0) {
     .set noreorder
     addiu v1, zero, 0x45
     syscall 0
@@ -216,7 +216,7 @@ asm int func_0017B930(int arg0) {
     nop
 }
 
-asm int func_0017B940(void) {
+asm int iPollSema(void) {
     .set noreorder
     addiu v1, zero, -0x46
     syscall 0
@@ -224,7 +224,7 @@ asm int func_0017B940(void) {
     nop
 }
 
-asm int func_0017B950(void) {
+asm int ReferSemaStatus(void) {
     .set noreorder
     addiu v1, zero, 0x47
     syscall 0
@@ -232,7 +232,7 @@ asm int func_0017B950(void) {
     nop
 }
 
-asm int func_0017B960(void) {
+asm int iReferSemaStatus(void) {
     .set noreorder
     addiu v1, zero, -0x48
     syscall 0
@@ -240,7 +240,7 @@ asm int func_0017B960(void) {
     nop
 }
 
-asm int func_0017B970(void) {
+asm int RFU073(void) {
     .set noreorder
     addiu v1, zero, 0x49
     syscall 0
@@ -248,7 +248,7 @@ asm int func_0017B970(void) {
     nop
 }
 
-asm int func_0017B980(unsigned int *arg0) {
+asm int SetOsdConfigParam(unsigned int *arg0) {
     .set noreorder
     addiu v1, zero, 0x4A
     syscall 0
@@ -256,7 +256,7 @@ asm int func_0017B980(unsigned int *arg0) {
     nop
 }
 
-asm int func_0017B990(unsigned int *arg0) {
+asm int GetOsdConfigParam(unsigned int *arg0) {
     .set noreorder
     addiu v1, zero, 0x4B
     syscall 0
@@ -264,7 +264,7 @@ asm int func_0017B990(unsigned int *arg0) {
     nop
 }
 
-asm int func_0017B9A0(void) {
+asm int GetGsHParam(void) {
     .set noreorder
     addiu v1, zero, 0x4C
     syscall 0
@@ -272,7 +272,7 @@ asm int func_0017B9A0(void) {
     nop
 }
 
-asm int func_0017B9B0(void) {
+asm int GetGsVParam(void) {
     .set noreorder
     addiu v1, zero, 0x4D
     syscall 0
@@ -280,7 +280,7 @@ asm int func_0017B9B0(void) {
     nop
 }
 
-asm int func_0017B9C0(void) {
+asm int SetGsHParam(void) {
     .set noreorder
     addiu v1, zero, 0x4E
     syscall 0
@@ -288,7 +288,7 @@ asm int func_0017B9C0(void) {
     nop
 }
 
-asm int func_0017B9D0(void) {
+asm int SetGsVParam(void) {
     .set noreorder
     addiu v1, zero, 0x4F
     syscall 0
@@ -296,7 +296,7 @@ asm int func_0017B9D0(void) {
     nop
 }
 
-asm int func_0017B9E0(void) {
+asm int RFU080_CreateEventFlag(void) {
     .set noreorder
     addiu v1, zero, 0x50
     syscall 0
@@ -304,7 +304,7 @@ asm int func_0017B9E0(void) {
     nop
 }
 
-asm int func_0017B9F0(void) {
+asm int RFU081_DeleteEventFlag(void) {
     .set noreorder
     addiu v1, zero, 0x51
     syscall 0
@@ -312,7 +312,7 @@ asm int func_0017B9F0(void) {
     nop
 }
 
-asm int func_0017BA00(void) {
+asm int RFU082_SetEventFlag(void) {
     .set noreorder
     addiu v1, zero, 0x52
     syscall 0
@@ -320,7 +320,7 @@ asm int func_0017BA00(void) {
     nop
 }
 
-asm int func_0017BA10(void) {
+asm int RFU083_iSetEventFlag(void) {
     .set noreorder
     addiu v1, zero, -0x53
     syscall 0
@@ -328,7 +328,7 @@ asm int func_0017BA10(void) {
     nop
 }
 
-asm int func_0017BA20(void) {
+asm int RFU084_ClearEventFlag(void) {
     .set noreorder
     addiu v1, zero, 0x54
     syscall 0
@@ -336,7 +336,7 @@ asm int func_0017BA20(void) {
     nop
 }
 
-asm int func_0017BA30(void) {
+asm int RFU085_iClearEventFlag(void) {
     .set noreorder
     addiu v1, zero, -0x55
     syscall 0
@@ -344,7 +344,7 @@ asm int func_0017BA30(void) {
     nop
 }
 
-asm int func_0017BA40(void) {
+asm int RFU086_WaitEvnetFlag(void) {
     .set noreorder
     addiu v1, zero, 0x56
     syscall 0
@@ -352,7 +352,7 @@ asm int func_0017BA40(void) {
     nop
 }
 
-asm int func_0017BA50(void) {
+asm int RFU087_PollEvnetFlag(void) {
     .set noreorder
     addiu v1, zero, 0x57
     syscall 0
@@ -360,7 +360,7 @@ asm int func_0017BA50(void) {
     nop
 }
 
-asm int func_0017BA60(void) {
+asm int RFU088_iPollEvnetFlag(void) {
     .set noreorder
     addiu v1, zero, -0x58
     syscall 0
@@ -368,7 +368,7 @@ asm int func_0017BA60(void) {
     nop
 }
 
-asm int func_0017BA70(void) {
+asm int RFU089_ReferEventFlagStatus(void) {
     .set noreorder
     addiu v1, zero, 0x59
     syscall 0
@@ -376,7 +376,7 @@ asm int func_0017BA70(void) {
     nop
 }
 
-asm int func_0017BA80(void) {
+asm int RFU090_iReferEventFlagStatus(void) {
     .set noreorder
     addiu v1, zero, -0x5A
     syscall 0
@@ -384,7 +384,7 @@ asm int func_0017BA80(void) {
     nop
 }
 
-asm int func_0017BA90(void) {
+asm int RFU091(void) {
     .set noreorder
     addiu v1, zero, 0x5B
     syscall 0
@@ -392,7 +392,7 @@ asm int func_0017BA90(void) {
     nop
 }
 
-asm int func_0017BAA0(void) {
+asm int EnableIntcHandler(void) {
     .set noreorder
     addiu v1, zero, 0x5C
     syscall 0

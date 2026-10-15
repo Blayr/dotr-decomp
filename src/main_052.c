@@ -13,7 +13,7 @@ typedef struct {
 } Card_001F6F50;
 
 
-s32 func_001F6F50(s32 arg0) {
+s32 SzEffect_GetPlayMotion(s32 arg0) {
     s32 temp_a0;
     s32 temp_a1;
     s32 temp_a2;
@@ -23,8 +23,8 @@ s32 func_001F6F50(s32 arg0) {
     u8 x;
     u8 y;
 
-    temp_v0 = func_001E5240(1);
-    card = (Card_001F6F50 *)func_001DF540(temp_v0 >> 8, temp_v0 & 0xFF);
+    temp_v0 = SzBattle_InqEntry(1);
+    card = (Card_001F6F50 *)SzDuel_GetUnit(temp_v0 >> 8, temp_v0 & 0xFF);
     temp_a2 = (s32) D_0031BE98 >> 8;
     temp_a3 = D_0031BE98 & 0xFF;
     temp_a0 = (s32) D_0031BE9C >> 8;
@@ -37,19 +37,19 @@ s32 func_001F6F50(s32 arg0) {
     }
     x = card->alternate ? card->alternateX : card->x;
     y = card->alternate ? card->alternateY : card->y;
-    return func_001DE2B0(temp_a0, temp_a1, temp_a2, temp_a3, x, y, arg0);
+    return SzDuel_GetPlayMotion(temp_a0, temp_a1, temp_a2, temp_a3, x, y, arg0);
 }
 
-s32 func_001F7060(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    return func_001F70A0(arg0, arg1, arg2, arg3, 0, 0);
+s32 SzEffect_ModelShotTexture2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    return SzEffect_ModelShotTextureWithFunc2(arg0, arg1, arg2, arg3, 0, 0);
 }
 
-void func_001F7070(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_001F70A0(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
+void SzEffect_ModelShotTextureWithFunc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    SzEffect_ModelShotTextureWithFunc2(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
 }
 
-s32 func_001F70A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    extern s32 func_001E1360(s32, s32);
+s32 SzEffect_ModelShotTextureWithFunc2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
 
@@ -58,21 +58,21 @@ s32 func_001F70A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = func_001E1360(hi, lo);
+    arg0 = SzDuel_GetUnitModelID(hi, lo);
     if (arg0 < 0) {
         return 0;
     }
-    func_001EFD30(arg0, arg1, arg2, arg3, arg4, arg5);
+    SzModel_ShotTextureWithFunc(arg0, arg1, arg2, arg3, arg4, arg5);
     return 1;
 }
 
-void func_001F7170(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_001F71A0(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
+void SzEffect_ReqMotionBlur(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    SzEffect_ReqMotionBlur2(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
 }
 
-s32 func_001F71A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    extern s32 func_001E1360(s32, s32);
-    extern s32 func_001EDCB0();
+s32 SzEffect_ReqMotionBlur2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 SzDuel_GetUnitModelID(s32, s32);
+    extern s32 SzModel_ReqMotionBlur();
     s32 hi;
     s32 lo;
 
@@ -81,23 +81,23 @@ s32 func_001F71A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = func_001E1360(hi, lo);
+    arg0 = SzDuel_GetUnitModelID(hi, lo);
     if (arg0 < 0) {
         return 0;
     }
-    return func_001EDCB0(arg0, arg1, arg2, arg3, arg4, arg5);
+    return SzModel_ReqMotionBlur(arg0, arg1, arg2, arg3, arg4, arg5);
 }
 
-void func_001F7260(s32 arg0) {
-    func_001F7350(4, arg0);
-    func_001F7350(5, arg0);
-    func_001F7350(2, arg0);
-    func_001F7350(3, arg0);
-    func_001FA770(-1, -1, arg0);
+void SzEffect_SetPauseFor3DBattle(s32 arg0) {
+    SzEffect_SetModelPauseForType(4, arg0);
+    SzEffect_SetModelPauseForType(5, arg0);
+    SzEffect_SetModelPauseForType(2, arg0);
+    SzEffect_SetModelPauseForType(3, arg0);
+    SzView_PauseRequest(-1, -1, arg0);
 }
 
-s32 func_001F72C0(s32 arg0, s64 arg1) {
-    extern s32 func_001E1360(s32, s32);
+s32 SzEffect_SetModelPause2(s32 arg0, s64 arg1) {
+    extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
 
@@ -106,28 +106,28 @@ s32 func_001F72C0(s32 arg0, s64 arg1) {
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = func_001E1360(hi, lo);
+    arg0 = SzDuel_GetUnitModelID(hi, lo);
     if (arg0 < 0) {
         return 0;
     }
-    return func_001F32F0(arg0, arg1);
+    return SzModel_SetPauseFlag(arg0, arg1);
 }
 
-s32 func_001F7350(s32 arg0, s32 arg1) {
-    extern s32 func_001F2980(s32);
-    extern s32 func_001F32F0(s32, s32);
+s32 SzEffect_SetModelPauseForType(s32 arg0, s32 arg1) {
+    extern s32 SzModel_GetModelType(s32);
+    extern s32 SzModel_SetPauseFlag(s32, s32);
     s32 i;
 
     i = 0;
     do {
-        if (arg0 < 0 || arg0 == func_001F2980(i)) {
-            func_001F32F0(i, arg1);
+        if (arg0 < 0 || arg0 == SzModel_GetModelType(i)) {
+            SzModel_SetPauseFlag(i, arg1);
         }
         i += 1;
     } while (i < 0x54);
 }
 
-void func_001F73C0(void) {
+void SzEffect_StoneProc(void) {
     s32 temp_v0;
     s32 temp_v0_2;
     s32 var_s0;
@@ -140,44 +140,44 @@ void func_001F73C0(void) {
     var_s0 = 0;
     do {
         var_s1 = var_s0 + 0x14;
-        temp_v0 = func_001F3690(var_s1);
+        temp_v0 = SzModel_GetStoneRatio(var_s1);
         if ((temp_v0 >= 0) && (temp_v0 < 0xFF)) {
             var_v0 = temp_v0 + 1;
             var_v0 = var_v0 < 0xFF ? var_v0 : 0xFF;
-            func_001F34A0(var_s1, var_v0 & 0xFF);
+            SzModel_SetStoneRatio(var_s1, var_v0 & 0xFF);
         }
         var_s0 += 1;
     } while (var_s0 < 0xA);
     var_s1_2 = 0;
     do {
         var_s0_2 = var_s1_2 + 0x1E;
-        temp_v0_2 = func_001F3690(var_s0_2);
+        temp_v0_2 = SzModel_GetStoneRatio(var_s0_2);
         if ((temp_v0_2 >= 0) && (temp_v0_2 < 0xFF)) {
             var_v0_2 = temp_v0_2 + 1;
             var_v0_2 = var_v0_2 < 0xFF ? var_v0_2 : 0xFF;
-            func_001F34A0(var_s0_2, var_v0_2 & 0xFF);
+            SzModel_SetStoneRatio(var_s0_2, var_v0_2 & 0xFF);
         }
         var_s1_2 += 1;
     } while (var_s1_2 < 2);
 }
 
-s32 func_001F74B0(void) {
+s32 SzView_Init(void) {
     return 1;
 }
 
-s32 func_001F74C0(s32 arg0) {
+s32 SzView_Create(s32 arg0) {
     s32 temp_v0;
 
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v0 = func_00217B40(0x8C0);
+    temp_v0 = SzMem_Alloc(0x8C0);
     if (temp_v0 == 0) {
         return 0;
     }
     D_0031BEB0[arg0] = temp_v0;
-    func_0020B400((void *) temp_v0, 0, 0x230);
-    func_001F7550(arg0);
+    RhMem_FillMemory4((void *) temp_v0, 0, 0x230);
+    lSzView_InitVars(arg0);
     return 1;
 }
 
@@ -225,7 +225,7 @@ typedef char DotrBlockMustBe8c0[(sizeof(struct DotrBlock) == 0x8c0) ? 1 : -1];
 extern struct DotrBlock *D_0031BEB0_b[];
 int func_001F9170_b(int index, int position, struct DotrBlockQuad *in);
 
-int func_001F7550(int index)
+int lSzView_InitVars(int index)
 {
     struct DotrBlock *p;
     struct DotrBlockVector4 *v;
@@ -293,9 +293,9 @@ int func_001F7550(int index)
     angles[2] = 0;
     angles[3] = 0;
     p->unknown_8a8 = 512;
-    func_001F95E0(0, 9, 0, 0);
-    func_001F95E0(0, 9, 1, 0);
-    func_001F95E0(0, 9, 2, 0);
+    SzView_SetStraightLightDirection(0, 9, 0, 0);
+    SzView_SetStraightLightDirection(0, 9, 1, 0);
+    SzView_SetStraightLightDirection(0, 9, 2, 0);
     a->x = 2000.0f;
     a->y = 4000.0f;
     b->x = 2000.0f;
@@ -303,12 +303,12 @@ int func_001F7550(int index)
     for (i = 0; i < 10; i++) {
         func_001F9170_b(index, i, 0);
     }
-    func_001F90E0(index);
-    func_001F8F80(index);
+    lSzView_CalcRel(index);
+    lSzView_CalcLook(index);
     return 1;
 }
 
-s32 func_001F7720(s32 arg0) {
+s32 SzView_Destroy(s32 arg0) {
     s32 *slot;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -318,7 +318,7 @@ s32 func_001F7720(s32 arg0) {
     if (*slot == 0) {
         return 0;
     }
-    func_00217B50(*slot);
+    SzMem_Free(*slot);
     *slot = 0;
     return 1;
 }
@@ -363,14 +363,14 @@ extern s32 D_0031C040;
 
 #pragma conditional_move off
 
-s32 func_001F7790(s32 arg0) {
-    extern u32 func_00203CA0();
-    extern s32 func_001F2980();
+s32 SzView_Act(s32 arg0) {
+    extern u32 SzPad_GetPressInfo();
+    extern s32 SzModel_GetModelType();
     s32 temp_fp;
     s64 temp_s7;
 
-    temp_fp = func_00205150();
-    temp_s7 = func_001AAF60(1);
+    temp_fp = SzDebug_GetActiveMenu();
+    temp_s7 = SzGame_GetMode(1);
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     } else {
@@ -395,8 +395,8 @@ s32 func_001F7790(s32 arg0) {
         if (temp_s0 == 0) {
             return 0;
         }
-        spBC = func_00205160();
-        temp_v0 = func_001F2980(spBC);
+        spBC = SzDebug_GetActiveModel();
+        temp_v0 = SzModel_GetModelType(spBC);
         spC0 = (temp_s0->lightFlags & (1 << temp_v0)) ? temp_v0 : 9;
         spD0 = (temp_s0->fogFlags & (1 << temp_v0)) ? temp_v0 : 9;
         spE0 = (temp_s0->secondFlags & (1 << temp_v0)) ? temp_v0 : 9;
@@ -410,167 +410,167 @@ s32 func_001F7790(s32 arg0) {
         temp_s4 = (Range_001F7790 *) ((u8 *) temp_s0 + spE0 * 8 + 0x830);
         if (temp_s7 == 0 || temp_s7 == 5 || temp_s7 == 12) {
             if (temp_fp == 0xC) {
-                if (func_00203A40(0, 0, 0x4000) != 0) {
+                if (SzPad_Check(0, 0, 0x4000) != 0) {
                     spF0 = D_00293050;
-                    func_001F95E0(0, spC0, D_0031C040, &spF0);
+                    SzView_SetStraightLightDirection(0, spC0, D_0031C040, &spF0);
                 }
-                if (func_00203A40(0, 2, 0xA000) != 0) {
-                    if (func_00203A40(0, 2, 0x8000) != 0) {
+                if (SzPad_Check(0, 2, 0xA000) != 0) {
+                    if (SzPad_Check(0, 2, 0x8000) != 0) {
                         D_0031C040 = (D_0031C040 + 2) % 3;
                     } else {
                         D_0031C040 = (D_0031C040 + 4) % 3;
                     }
                     }
-                if (func_00203A40(0, 2, 0x80) != 0) {
+                if (SzPad_Check(0, 2, 0x80) != 0) {
                     temp_s2[D_0031C040].y -= 0x100;
                 }
-                if (func_00203A40(0, 2, 0x20) != 0) {
+                if (SzPad_Check(0, 2, 0x20) != 0) {
                     temp_s2[D_0031C040].y += 0x100;
                 }
-                if (func_00203A40(0, 2, 0x40) != 0) {
+                if (SzPad_Check(0, 2, 0x40) != 0) {
                     temp_s2[D_0031C040].x -= 0x100;
                 }
-                if (func_00203A40(0, 2, 0x10) != 0) {
+                if (SzPad_Check(0, 2, 0x10) != 0) {
                     temp_s2[D_0031C040].x += 0x100;
                 }
-                if (func_00203A40(0, 2, 0xFFFF) != 0) {
-                    func_001F95E0(0, spC0, D_0031C040, NULL);
+                if (SzPad_Check(0, 2, 0xFFFF) != 0) {
+                    SzView_SetStraightLightDirection(0, spC0, D_0031C040, NULL);
                 }
             }
             if (temp_fp == 0xD) {
-                if (func_00203A40(0, 0, 0x4000) != 0) {
-                    func_001F93F0(arg0, spC0, D_0031C040, NULL);
+                if (SzPad_Check(0, 0, 0x4000) != 0) {
+                    SzView_SetStraightLightColor(arg0, spC0, D_0031C040, NULL);
                 }
-                if (func_00203A40(0, 2, 0xA000) != 0) {
-                    if (func_00203A40(0, 2, 0x8000) != 0) {
+                if (SzPad_Check(0, 2, 0xA000) != 0) {
+                    if (SzPad_Check(0, 2, 0x8000) != 0) {
                         D_0031C040 = (D_0031C040 + 2) % 3;
                     } else {
                         D_0031C040 = (D_0031C040 + 4) % 3;
                     }
                     }
-                if (func_00203A40(0, 2, 0x81) != 0) {
+                if (SzPad_Check(0, 2, 0x81) != 0) {
                     temp_s2[D_0031C040].rotation[0] -= 0.01f;
                 }
-                if (func_00203A40(0, 2, 0x22) != 0) {
+                if (SzPad_Check(0, 2, 0x22) != 0) {
                     temp_s2[D_0031C040].rotation[0] += 0.01f;
                 }
-                if (func_00203A40(0, 2, 0x41) != 0) {
+                if (SzPad_Check(0, 2, 0x41) != 0) {
                     temp_s2[D_0031C040].rotation[1] -= 0.01f;
                 }
-                if (func_00203A40(0, 2, 0x12) != 0) {
+                if (SzPad_Check(0, 2, 0x12) != 0) {
                     temp_s2[D_0031C040].rotation[1] += 0.01f;
                 }
-                if (func_00203A40(0, 2, 5) != 0) {
+                if (SzPad_Check(0, 2, 5) != 0) {
                     temp_s2[D_0031C040].rotation[2] -= 0.01f;
                 }
-                if (func_00203A40(0, 2, 0xA) != 0) {
+                if (SzPad_Check(0, 2, 0xA) != 0) {
                     temp_s2[D_0031C040].rotation[2] += 0.01f;
                 }
             }
             if (temp_fp == 0xE) {
-                if (func_00203A40(0, 0, 0x4000) != 0) {
+                if (SzPad_Check(0, 0, 0x4000) != 0) {
                     temp_s5->r = 0xFFU;
                     temp_s5->g = 0xFFU;
                     temp_s5->b = 0xFFU;
                 }
-                if (func_00203A40(0, 2, 0x81) != 0) {
+                if (SzPad_Check(0, 2, 0x81) != 0) {
                     if (temp_s5->b > 0) {
                         temp_s5->b--;
                     }
                 }
-                if (func_00203A40(0, 2, 0x22) != 0) {
+                if (SzPad_Check(0, 2, 0x22) != 0) {
                     if (temp_s5->b < 0xFF) {
                         temp_s5->b++;
                     }
                 }
-                if (func_00203A40(0, 2, 0x41) != 0) {
+                if (SzPad_Check(0, 2, 0x41) != 0) {
                     if (temp_s5->g > 0) {
                         temp_s5->g--;
                     }
                 }
-                if (func_00203A40(0, 2, 0x12) != 0) {
+                if (SzPad_Check(0, 2, 0x12) != 0) {
                     if (temp_s5->g < 0xFF) {
                         temp_s5->g++;
                     }
                 }
-                if (func_00203A40(0, 2, 5) != 0) {
+                if (SzPad_Check(0, 2, 5) != 0) {
                     if (temp_s5->r > 0) {
                         temp_s5->r--;
                     }
                 }
-                if (func_00203A40(0, 2, 0xA) != 0) {
+                if (SzPad_Check(0, 2, 0xA) != 0) {
                     if (temp_s5->r < 0xFF) {
                         temp_s5->r++;
                     }
                 }
             }
             if (temp_fp == 0xF) {
-                if (func_00203A40(0, 0, 0x4000) != 0) {
+                if (SzPad_Check(0, 0, 0x4000) != 0) {
                     temp_s3->near = 2000.0f;
                     temp_s3->far = 4000.0f;
                 }
-                if (func_00203A40(0, 0, 0x8000) != 0) {
+                if (SzPad_Check(0, 0, 0x8000) != 0) {
                     temp_s0->fogFlags &= ~(1 << spD0);
                 }
-                if (func_00203A40(0, 0, 0x2000) != 0) {
+                if (SzPad_Check(0, 0, 0x2000) != 0) {
                     temp_s0->fogFlags |= 1 << spD0;
                 }
-                if (func_00203A40(0, 2, 0x80) != 0) {
+                if (SzPad_Check(0, 2, 0x80) != 0) {
                     temp_s3->near -= 10.0f;
                 }
-                if (func_00203A40(0, 2, 0x20) != 0) {
+                if (SzPad_Check(0, 2, 0x20) != 0) {
                     temp_s3->near += 10.0f;
                 }
-                if (func_00203A40(0, 2, 0x40) != 0) {
+                if (SzPad_Check(0, 2, 0x40) != 0) {
                     temp_s3->far -= 10.0f;
                 }
-                if (func_00203A40(0, 2, 0x10) != 0) {
+                if (SzPad_Check(0, 2, 0x10) != 0) {
                     temp_s3->far += 10.0f;
                 }
             }
             if (temp_fp == 0x10) {
-                if (func_00203A40(0, 0, 0x4000) != 0) {
+                if (SzPad_Check(0, 0, 0x4000) != 0) {
                     temp_s4->near = 2000.0f;
                     temp_s4->far = 4000.0f;
                 }
-                if (func_00203A40(0, 0, 0x8000) != 0) {
+                if (SzPad_Check(0, 0, 0x8000) != 0) {
                     temp_s0->secondFlags &= ~(1 << spE0);
                 }
-                if (func_00203A40(0, 0, 0x2000) != 0) {
+                if (SzPad_Check(0, 0, 0x2000) != 0) {
                     temp_s0->secondFlags |= 1 << spE0;
                 }
-                if (func_00203A40(0, 2, 0x80) != 0) {
+                if (SzPad_Check(0, 2, 0x80) != 0) {
                     temp_s4->near -= 10.0f;
                 }
-                if (func_00203A40(0, 2, 0x20) != 0) {
+                if (SzPad_Check(0, 2, 0x20) != 0) {
                     temp_s4->near += 10.0f;
                 }
-                if (func_00203A40(0, 2, 0x40) != 0) {
+                if (SzPad_Check(0, 2, 0x40) != 0) {
                     temp_s4->far -= 10.0f;
                 }
-                if (func_00203A40(0, 2, 0x10) != 0) {
+                if (SzPad_Check(0, 2, 0x10) != 0) {
                     temp_s4->far += 10.0f;
                 }
             }
             if (temp_fp == 0x11) {
-                if (func_00203A40(0, 2, 0xC) != 0) {
-                    temp_s2_2 = func_001FC7F0(0);
-                    if (func_00203A40(0, 2, 4) != 0) {
-                        func_001FC840(0, (s32) (temp_s2_2 + 2) % 3);
+                if (SzPad_Check(0, 2, 0xC) != 0) {
+                    temp_s2_2 = SzView_GetMode(0);
+                    if (SzPad_Check(0, 2, 4) != 0) {
+                        SzView_SetMode(0, (s32) (temp_s2_2 + 2) % 3);
                     } else {
-                        func_001FC840(0, (s32) (temp_s2_2 + 4) % 3);
+                        SzView_SetMode(0, (s32) (temp_s2_2 + 4) % 3);
                     }
                 }
-                if (func_00203A40(0, 2, 0x4000) != 0) {
+                if (SzPad_Check(0, 2, 0x4000) != 0) {
                     temp_s0->radius = 800.0f;
                 }
-                if (func_00203A40(0, 2, 0x80) != 0) {
+                if (SzPad_Check(0, 2, 0x80) != 0) {
                     temp_s0->radius -= 10.0f;
                     if (temp_s0->radius < 10.0f) {
                         temp_s0->radius = 10.0f;
                     }
                 }
-                if (func_00203A40(0, 2, 0x20) != 0) {
+                if (SzPad_Check(0, 2, 0x20) != 0) {
                     temp_s0->radius += 10.0f;
                     if (!(temp_s0->radius <= 10000.0f)) {
                         temp_s0->radius = 10000.0f;
@@ -581,76 +581,76 @@ s32 func_001F7790(s32 arg0) {
         var_f20 = 0.0f;
         var_f21 = 0.0f;
         var_f22 = 0.0f;
-        if (func_001FA6F0(-1, -1) == NULL) {
+        if (SzView_InqRequest(-1, -1) == NULL) {
             if ((u32) (temp_v0 - 4) < 2U) {
-                func_001FC210(arg0, spBC, NULL, temp_s0->mode, 1.0f);
+                SzView_SetViewCamera(arg0, spBC, NULL, temp_s0->mode, 1.0f);
             }
         }
-        if (func_00203C00(1) != 0) {
-            var_f20 += (0.024543693f * (f32) func_00203CA0(1, 1)) / 64.0f;
-            var_f20 -= (0.024543693f * (f32) func_00203CA0(1, 0)) / 64.0f;
-            var_f21 += (0.024543693f * (f32) func_00203CA0(1, 2)) / 64.0f;
-            var_f21 -= (0.024543693f * (f32) func_00203CA0(1, 3)) / 64.0f;
-            var_f22 += (2.0f * (f32) func_00203CA0(1, 8)) / 64.0f;
-            var_f22 -= (2.0f * (f32) func_00203CA0(1, 9)) / 64.0f;
-            func_001FB6A0(arg0, 0, 1, var_f20, var_f21, var_f22);
+        if (SzPad_IsPress(1) != 0) {
+            var_f20 += (0.024543693f * (f32) SzPad_GetPressInfo(1, 1)) / 64.0f;
+            var_f20 -= (0.024543693f * (f32) SzPad_GetPressInfo(1, 0)) / 64.0f;
+            var_f21 += (0.024543693f * (f32) SzPad_GetPressInfo(1, 2)) / 64.0f;
+            var_f21 -= (0.024543693f * (f32) SzPad_GetPressInfo(1, 3)) / 64.0f;
+            var_f22 += (2.0f * (f32) SzPad_GetPressInfo(1, 8)) / 64.0f;
+            var_f22 -= (2.0f * (f32) SzPad_GetPressInfo(1, 9)) / 64.0f;
+            SzView_RollCamera(arg0, 0, 1, var_f20, var_f21, var_f22);
             var_f22 = 0.0f;
             var_f21 = 0.0f;
             var_f20 = 0.0f;
-            var_f20 -= (0.024543693f * (f32) func_00203CA0(1, 7)) / 64.0f;
-            var_f20 += (0.024543693f * (f32) func_00203CA0(1, 5)) / 64.0f;
-            var_f21 -= (0.024543693f * (f32) func_00203CA0(1, 4)) / 64.0f;
-            var_f21 += (0.024543693f * (f32) func_00203CA0(1, 6)) / 64.0f;
-            var_f22 -= (2.0f * (f32) func_00203CA0(1, 0xA)) / 64.0f;
-            var_f22 += (2.0f * (f32) func_00203CA0(1, 0xB)) / 64.0f;
-            func_001FB6A0(arg0, 0, -1, var_f20, var_f21, var_f22);
+            var_f20 -= (0.024543693f * (f32) SzPad_GetPressInfo(1, 7)) / 64.0f;
+            var_f20 += (0.024543693f * (f32) SzPad_GetPressInfo(1, 5)) / 64.0f;
+            var_f21 -= (0.024543693f * (f32) SzPad_GetPressInfo(1, 4)) / 64.0f;
+            var_f21 += (0.024543693f * (f32) SzPad_GetPressInfo(1, 6)) / 64.0f;
+            var_f22 -= (2.0f * (f32) SzPad_GetPressInfo(1, 0xA)) / 64.0f;
+            var_f22 += (2.0f * (f32) SzPad_GetPressInfo(1, 0xB)) / 64.0f;
+            SzView_RollCamera(arg0, 0, -1, var_f20, var_f21, var_f22);
         } else {
-            if (func_00203A40(1, 1, 0x8000) != 0) {
+            if (SzPad_Check(1, 1, 0x8000) != 0) {
                 var_f20 += 0.024543693f;
             }
-            if (func_00203A40(1, 1, 0x2000) != 0) {
+            if (SzPad_Check(1, 1, 0x2000) != 0) {
                 var_f20 -= 0.024543693f;
             }
-            if (func_00203A40(1, 1, 0x1000) != 0) {
+            if (SzPad_Check(1, 1, 0x1000) != 0) {
                 var_f21 += 0.024543693f;
             }
-            if (func_00203A40(1, 1, 0x4000) != 0) {
+            if (SzPad_Check(1, 1, 0x4000) != 0) {
                 var_f21 -= 0.024543693f;
             }
-            if (func_00203A40(1, 1, 4) != 0) {
+            if (SzPad_Check(1, 1, 4) != 0) {
                 var_f22 += 2.0f;
             }
-            if (func_00203A40(1, 1, 8) != 0) {
+            if (SzPad_Check(1, 1, 8) != 0) {
                 var_f22 -= 2.0f;
             }
-            func_001FB6A0(arg0, 0, 1, var_f20, var_f21, var_f22);
+            SzView_RollCamera(arg0, 0, 1, var_f20, var_f21, var_f22);
             var_f22 = 0.0f;
             var_f21 = 0.0f;
             var_f20 = 0.0f;
-            if (func_00203A40(1, 1, 0x80) != 0) {
+            if (SzPad_Check(1, 1, 0x80) != 0) {
                 var_f20 -= 0.024543693f;
             }
-            if (func_00203A40(1, 1, 0x20) != 0) {
+            if (SzPad_Check(1, 1, 0x20) != 0) {
                 var_f20 += 0.024543693f;
             }
-            if (func_00203A40(1, 1, 0x10) != 0) {
+            if (SzPad_Check(1, 1, 0x10) != 0) {
                 var_f21 -= 0.024543693f;
             }
-            if (func_00203A40(1, 1, 0x40) != 0) {
+            if (SzPad_Check(1, 1, 0x40) != 0) {
                 var_f21 += 0.024543693f;
             }
-            if (func_00203A40(1, 1, 1) != 0) {
+            if (SzPad_Check(1, 1, 1) != 0) {
                 var_f22 -= 2.0f;
             }
-            if (func_00203A40(1, 1, 2) != 0) {
+            if (SzPad_Check(1, 1, 2) != 0) {
                 var_f22 += 2.0f;
             }
-            func_001FB6A0(arg0, 0, -1, var_f20, var_f21, var_f22);
+            SzView_RollCamera(arg0, 0, -1, var_f20, var_f21, var_f22);
         }
         if ((temp_s7 == 0) || (temp_s7 == 5) || (temp_s7 == 0xC)) {
-            func_00205170();
+            SzDebug_IsHide();
         }
-        func_00205170();
+        SzDebug_IsHide();
         return 1;
     }
 }
@@ -689,9 +689,9 @@ typedef struct Render_001F8A30 {
     s32 flags80;
 } Render_001F8A30;
 
-void func_00206830(void);
+void Ex3d_InitClipPlane(void);
 
-s32 func_001F8A30(s32 arg0, s32 arg1) {
+s32 SzView_Set_Pipe(s32 arg0, s32 arg1) {
     Render_001F8A30 render;
     Object_001F8A30 *object;
 
@@ -702,22 +702,22 @@ s32 func_001F8A30(s32 arg0, s32 arg1) {
     if (object == 0) {
         return arg0;
     }
-    func_0020DF40(object->value44, 640.0f, 448.0f, 320.0f, 224.0f);
-    func_0020DF90(object->value48, object->value4C);
-    func_0020DFD0(object->value50, object->value54);
-    func_00206830();
-    func_0020E0D0(object->matrix8A4, object->value828, object->value82C,
+    RhView_SetScreen(object->value44, 640.0f, 448.0f, 320.0f, 224.0f);
+    RhView_SetAspect(object->value48, object->value4C);
+    RhView_SetClipZ(object->value50, object->value54);
+    Ex3d_InitClipPlane();
+    RhView_SetFogParameter(object->matrix8A4, object->value828, object->value82C,
                  object->value878, object->value87C);
     render.vector40 = object->vector20;
     render.vector50 = object->vector10;
     render.flags80 = object->flags40;
-    func_0020E260(&render);
-    return func_0020EC60(arg0);
+    RhView_Set(&render);
+    return RhView_SendViewParameters(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001F8B50);
+INCLUDE_ASM("asm/nonmatchings/main_052", SzView_SetFog_Pipe);
 
-s32 func_001F8D30(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_SetLight_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     u32 sp70[4];
     u8 *var_s0;
     u8 *var_s1;
@@ -750,28 +750,28 @@ s32 func_001F8D30(s32 arg0, s32 arg1, s32 arg2) {
             var_s3 = 9;
         }
     }
-    func_00208F00(0, NULL, NULL, -1);
+    RhVu1Mac_SetStraightLightToVu1_Ex(0, NULL, NULL, -1);
     if (*(u16 *)(temp_s4 + 0x8A8) & (1 << var_s2)) {
         *(s32 *)(var_s0 + 0x2C) = 0;
-        func_0020CDD0(sp70, NULL, var_s0 + 0x20);
-        func_00208F00(0, var_s0, sp70, 0);
+        RhGeom_MulMatrixVector(sp70, NULL, var_s0 + 0x20);
+        RhVu1Mac_SetStraightLightToVu1_Ex(0, var_s0, sp70, 0);
         *(s32 *)(var_s0 + 0x5C) = 0;
-        func_0020CDD0(sp70, NULL, var_s0 + 0x50);
-        func_00208F00(0, var_s0 + 0x30, sp70, 1);
+        RhGeom_MulMatrixVector(sp70, NULL, var_s0 + 0x50);
+        RhVu1Mac_SetStraightLightToVu1_Ex(0, var_s0 + 0x30, sp70, 1);
         *(s32 *)(var_s0 + 0x8C) = 0;
-        func_0020CDD0(sp70, NULL, var_s0 + 0x80);
-        func_00208F00(0, var_s0 + 0x60, sp70, 2);
+        RhGeom_MulMatrixVector(sp70, NULL, var_s0 + 0x80);
+        RhVu1Mac_SetStraightLightToVu1_Ex(0, var_s0 + 0x60, sp70, 2);
     }
-    arg0 = func_00208F00(arg0, NULL, NULL, -1);
+    arg0 = RhVu1Mac_SetStraightLightToVu1_Ex(arg0, NULL, NULL, -1);
     if (*(u16 *)(temp_s4 + 0x8AA) & (1 << var_s3)) {
-        func_0020CDD0(sp70, NULL, var_s1 + 0x10);
+        RhGeom_MulMatrixVector(sp70, NULL, var_s1 + 0x10);
         sp70[3] = 0x3F800000;
-        return func_00209110(arg0, var_s1, sp70,
+        return RhVu1Mac_SetPointLightToVu1(arg0, var_s1, sp70,
                              *(f32 *)(var_s1 + 0x20),
                              *(f32 *)(var_s1 + 0x24),
                              *(f32 *)(var_s1 + 0x28));
     }
-    return func_00209110(arg0, NULL, NULL, 0.0f, 0.0f, 0.0f);
+    return RhVu1Mac_SetPointLightToVu1(arg0, NULL, NULL, 0.0f, 0.0f, 0.0f);
 }
 
 typedef struct Vec4_001F8F80 {
@@ -786,7 +786,7 @@ typedef struct Camera_001F8F80 {
 } Camera_001F8F80;
 
 
-s32 func_001F8F80(s32 arg0) {
+s32 lSzView_CalcLook(s32 arg0) {
     Vec4_001F8F80 result;
     Camera_001F8F80 *camera;
     Vec4_001F8F80 *position;
@@ -822,7 +822,7 @@ typedef struct {
     f32 target[4];
 } Direction_001F90E0;
 
-s32 func_001F90E0(s32 arg0) {
+s32 lSzView_CalcRel(s32 arg0) {
     Direction_001F90E0 *entry;
 
     if ((arg0 < 0) || (arg0 > 0)) {
@@ -836,7 +836,7 @@ s32 func_001F90E0(s32 arg0) {
     entry->direction[1] = entry->target[1] - entry->origin[1];
     entry->direction[2] = entry->target[2] - entry->origin[2];
     entry->direction[3] = 0.0f;
-    func_0020D070(entry->direction);
+    RhGeom_NormalizeVector(entry->direction);
     return 1;
 }
 
@@ -852,7 +852,7 @@ typedef struct Palette_001F9170 {
     Color_001F9170 colors[10];
 } Palette_001F9170;
 
-s32 func_001F9170(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_SetFogColor(s32 arg0, s32 arg1, s32 arg2) {
     Palette_001F9170 *palette;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -887,7 +887,7 @@ typedef struct State_001F9230 {
     u16 flags;
 } State_001F9230;
 
-s32 func_001F9230(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_SetFogParamZ(s32 arg0, s32 arg1, s32 arg2) {
     State_001F9230 *state;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -925,7 +925,7 @@ typedef struct Object_001F9310 {
     u16 flags;
 } Object_001F9310;
 
-s32 func_001F9310(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_SetFogParamY(s32 arg0, s32 arg1, s32 arg2) {
     Object_001F9310 *object;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -955,7 +955,7 @@ typedef struct Vec4_001F93F0 {
     f32 x, y, z, w;
 } Vec4_001F93F0;
 
-s32 func_001F93F0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+s32 SzView_SetStraightLightColor(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     u8 *base;
     s32 row;
     s32 offset;
@@ -1003,7 +1003,7 @@ typedef struct Entry_001F9500 {
     Vec4_001F9500 value;
 } Entry_001F9500;
 
-s32 func_001F9500(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+s32 SzView_GetStraightLightVector(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     u8 *base;
     Entry_001F9500 *entries;
 
@@ -1039,7 +1039,7 @@ typedef struct {
 
 extern f32 D_00293040[4][4];
 
-s32 func_001F95E0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+s32 SzView_SetStraightLightDirection(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     f32 matrix[4][4];
     Entry_001F95E0 *entry;
     u8 *base;
@@ -1063,12 +1063,12 @@ s32 func_001F95E0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
         row[arg2].rotation = *(Vec4_001F95E0 *)arg3;
     }
     entry = &row[arg2];
-    func_0020C630(matrix, &entry->rotation);
-    func_0020CDD0(&entry->result, matrix, D_00293040);
+    RhGeom_GetRotXYZMatrix(matrix, &entry->rotation);
+    RhGeom_MulMatrixVector(&entry->result, matrix, D_00293040);
     return 1;
 }
 
-s32 func_001F96F0(s32 arg0, s32 arg1) {
+s32 SzView_InqStraightLight(s32 arg0, s32 arg1) {
     u8 *data;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1088,7 +1088,7 @@ typedef struct {
     __int128 data[9];
 } Block_001F9770;
 
-s32 func_001F9770(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_SetStraightLight(s32 arg0, s32 arg1, s32 arg2) {
     s32 offset;
     u8 *state;
     u8 *slot;
@@ -1108,9 +1108,9 @@ s32 func_001F9770(s32 arg0, s32 arg1, s32 arg2) {
             offset = arg1 * 0x90;
             *(Block_001F9770 *)(offset + (s32)state + 0x60) = *(Block_001F9770 *)arg2;
             slot = state + offset;
-            func_001F95E0(arg0, arg1, 0, slot + 0x70);
-            func_001F95E0(arg0, arg1, 1, slot + 0xA0);
-            func_001F95E0(arg0, arg1, 2, slot + 0xD0);
+            SzView_SetStraightLightDirection(arg0, arg1, 0, slot + 0x70);
+            SzView_SetStraightLightDirection(arg0, arg1, 1, slot + 0xA0);
+            SzView_SetStraightLightDirection(arg0, arg1, 2, slot + 0xD0);
         }
         *(u16 *)(state + 0x8A8) |= 1 << arg1;
     } else {
@@ -1119,7 +1119,7 @@ s32 func_001F9770(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_001F98C0(s32 arg0, s32 arg1) {
+s32 SzView_InqPointLight(s32 arg0, s32 arg1) {
     s32 temp_v1;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1146,7 +1146,7 @@ typedef struct {
     u16 flags;
 } Object_001F9940;
 
-s32 func_001F9940(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_SetPointLight(s32 arg0, s32 arg1, s32 arg2) {
     Object_001F9940 *object;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1171,7 +1171,7 @@ s32 func_001F9940(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-f32 func_001F9A20(s32 arg0) {
+f32 SzView_GetScreenDistance(s32 arg0) {
     s32 temp_v0;
 
     if ((arg0 < 0) || (arg0 > 0)) {
@@ -1189,7 +1189,7 @@ typedef struct Object_001F9A80 {
     f32 value;
 } Object_001F9A80;
 
-s32 func_001F9A80(s32 arg0, f32 fparg0) {
+s32 SzView_SetScreenDistance(s32 arg0, f32 fparg0) {
     Object_001F9A80 *object;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1203,7 +1203,7 @@ s32 func_001F9A80(s32 arg0, f32 fparg0) {
     return 1;
 }
 
-s32 func_001F9AD0(s32 arg0) {
+s32 SzView_GetSP(s32 arg0) {
     s32 temp_v0;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1244,7 +1244,7 @@ static inline s32 direction_001F9B20(s32 arg0) {
     camera->direction.y = camera->target.y - camera->position.y;
     camera->direction.z = camera->target.z - camera->position.z;
     camera->direction.w = 0.0f;
-    func_0020D070(&camera->direction.x);
+    RhGeom_NormalizeVector(&camera->direction.x);
     return 1;
 }
 
@@ -1277,7 +1277,7 @@ static inline s32 polar_001F9B20(s32 arg0) {
     return 1;
 }
 
-s32 func_001F9B20(s32 arg0, void *arg1) {
+s32 SzView_SetSP(s32 arg0, void *arg1) {
     Vec4_001F9B20 *position = arg1;
     Camera_001F9B20 *camera;
 
@@ -1297,7 +1297,7 @@ s32 func_001F9B20(s32 arg0, void *arg1) {
     return 1;
 }
 
-s32 func_001F9D30(s32 arg0) {
+s32 SzView_GetCP(s32 arg0) {
     s32 data;
 
     if (arg0 < 0 || arg0 >= 1) {
@@ -1338,7 +1338,7 @@ static inline s32 direction_001F9D80(s32 arg0) {
     camera->direction.y = camera->target.y - camera->position.y;
     camera->direction.z = camera->target.z - camera->position.z;
     camera->direction.w = 0.0f;
-    func_0020D070(&camera->direction.x);
+    RhGeom_NormalizeVector(&camera->direction.x);
     return 1;
 }
 
@@ -1371,7 +1371,7 @@ static inline s32 polar_001F9D80(s32 arg0) {
     return 1;
 }
 
-s32 func_001F9D80(s32 arg0, void *arg1) {
+s32 SzView_SetCP(s32 arg0, void *arg1) {
     Vec4_001F9D80 *target = arg1;
     Camera_001F9D80 *camera;
 
@@ -1391,7 +1391,7 @@ s32 func_001F9D80(s32 arg0, void *arg1) {
     return 1;
 }
 
-s32 func_001F9F90(s32 arg0, s32 arg1) {
+s32 SzView_SetRoll(s32 arg0, s32 arg1) {
     void *temp_v0;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1431,7 +1431,7 @@ static inline s32 direction_001F9FE0(s32 arg0) {
     camera->direction.y = camera->target.y - camera->position.y;
     camera->direction.z = camera->target.z - camera->position.z;
     camera->direction.w = 0.0f;
-    func_0020D070(&camera->direction.x);
+    RhGeom_NormalizeVector(&camera->direction.x);
     return 1;
 }
 
@@ -1464,7 +1464,7 @@ static inline s32 polar_001F9FE0(s32 arg0) {
     return 1;
 }
 
-s32 func_001F9FE0(s32 arg0, void *arg1, void *arg2) {
+s32 SzView_SetCamera(s32 arg0, void *arg1, void *arg2) {
     extern struct Vec4_001F9B20 D_00293020;
     extern struct Vec4_001F9D80 D_00293030;
     Vec4_001F9FE0 *position = arg1;
@@ -1491,7 +1491,7 @@ s32 func_001F9FE0(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", func_001FA220);
+INCLUDE_ASM("asm/nonmatchings/main_052", SzView_DoRequest);
 
 typedef struct Entry_001FA6F0 {
     s8 active : 1;
@@ -1504,7 +1504,7 @@ typedef struct Entry_001FA6F0 {
 
 extern Entry_001FA6F0 D_0031BEC0[];
 
-void *func_001FA6F0(s32 arg0, s32 arg1) {
+void *SzView_InqRequest(s32 arg0, s32 arg1) {
     Entry_001FA6F0 *entry;
     s32 i;
 
@@ -1533,7 +1533,7 @@ typedef struct Entry_001FA770 {
 
 extern struct Entry_001FA6F0 D_0031BEC0[];
 
-s32 func_001FA770(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzView_PauseRequest(s32 arg0, s32 arg1, s32 arg2) {
     Entry_001FA770 *var_t1;
     s32 var_t2;
     s32 var_v0;
@@ -1567,7 +1567,7 @@ typedef struct Entry_001FA810 {
 
 extern struct Entry_001FA6F0 D_0031BEC0[];
 
-s32 func_001FA810(s32 arg0, s32 arg1) {
+s32 SzView_FreeRequest(s32 arg0, s32 arg1) {
     Entry_001FA810 *entry;
     s32 found;
     s32 i;
@@ -1648,7 +1648,7 @@ static inline f32 toAngle_001FA8A0(f32 radians) {
     return (32768.0f * radians) / 3.1415927f;
 }
 
-s32 func_001FA8A0(s32 owner, s32 target, s32 type, s32 count, s32 value, void *data) {
+s32 SzView_ReqCamera(s32 owner, s32 target, s32 type, s32 count, s32 value, void *data) {
     Camera_001FA8A0 *camera;
     Slot_001FA8A0 *slot;
     f32 fromAngle;
@@ -1737,7 +1737,7 @@ s32 func_001FA8A0(s32 owner, s32 target, s32 type, s32 count, s32 value, void *d
     return 1;
 }
 
-s32 func_001FAD10(s32 arg0) {
+s32 SzView_GetRel(s32 arg0) {
     s32 temp_v0;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1765,7 +1765,7 @@ typedef struct Camera_001FAD60 {
 } Camera_001FAD60;
 
 
-s32 func_001FAD60(s32 arg0, void *arg1) {
+s32 SzView_SetRelSP(s32 arg0, void *arg1) {
     Camera_001FAD60 *camera;
     s32 *entry;
     Vec4_001FAD60 *position;
@@ -1785,7 +1785,7 @@ s32 func_001FAD60(s32 arg0, void *arg1) {
         return 0;
     }
     camera->rotation = *(Vec4_001FAD60 *)arg1;
-    func_0020D070(&camera->rotation);
+    RhGeom_NormalizeVector(&camera->rotation);
     camera->direction.x = camera->position.x - (((Vec4_001FAD60 *)arg1)->x * camera->polar.x);
     camera->direction.y = camera->position.y - (((Vec4_001FAD60 *)arg1)->y * camera->polar.x);
     camera->direction.z = camera->position.z - (((Vec4_001FAD60 *)arg1)->z * camera->polar.x);
@@ -1810,7 +1810,7 @@ s32 func_001FAD60(s32 arg0, void *arg1) {
     return 1;
 }
 
-f32 *func_001FAF60(s32 arg0) {
+f32 *SzView_GetLook(s32 arg0) {
     f32 *var_v0;
 
     if (arg0 < 0 || arg0 > 0) {
@@ -1827,7 +1827,7 @@ static inline f32 angleToFixed_001FAFB0(f32 angle) {
     return (32768.0f * angle) / 3.1415927f;
 }
 
-s32 func_001FAFB0(s32 arg0, s32 arg1) {
+s32 SzView_GetLookVector(s32 arg0, s32 arg1) {
     extern s32 func_001A22C0(f32);
     s32 *out = (s32 *)arg1;
     f32 *angles;
@@ -1878,7 +1878,7 @@ static inline s32 angles_001FB0B0(s32 index, s32 *angles) {
     return 1;
 }
 
-s32 func_001FB0B0(s32 arg0, s32 arg1) {
+s32 SzView_GetLookMatrix(s32 arg0, s32 arg1) {
     s32 angles[4];
 
     if (arg1 == 0) {
@@ -1887,7 +1887,7 @@ s32 func_001FB0B0(s32 arg0, s32 arg1) {
     if (angles_001FB0B0(arg0, angles) == 0) {
         return 0;
     }
-    func_0020C630((void *)arg1, angles);
+    RhGeom_GetRotXYZMatrix((void *)arg1, angles);
     return 1;
 }
 
@@ -1910,7 +1910,7 @@ static inline s32 depth_001FB1D0(s32 index) {
     return *(s32 *)((u8 *)object + 0x40);
 }
 
-s32 func_001FB1D0(s32 arg0, s32 arg1) {
+s32 SzView_GetLookMatrixWithRoll(s32 arg0, s32 arg1) {
     Vec4i_001FB1D0 translation;
     s32 angles[4];
     f32 matrix[4][4];
@@ -1923,9 +1923,9 @@ s32 func_001FB1D0(s32 arg0, s32 arg1) {
     if (angles_001FB0B0(arg0, angles) == 0) {
         return 0;
     }
-    func_0020C630((void *)arg1, angles);
-    func_0020C630(matrix, &translation);
-    func_0020BC00(arg1, matrix);
+    RhGeom_GetRotXYZMatrix((void *)arg1, angles);
+    RhGeom_GetRotXYZMatrix(matrix, &translation);
+    RhGeom_MulMatrix(arg1, matrix);
     return 1;
 }
 
@@ -1956,11 +1956,11 @@ static inline s32 aim_001FB360(s32 index) {
     entry->direction[1] = entry->target[1] - entry->origin[1];
     entry->direction[2] = entry->target[2] - entry->origin[2];
     entry->direction[3] = 0.0f;
-    func_0020D070(entry->direction);
+    RhGeom_NormalizeVector(entry->direction);
     return 1;
 }
 
-s32 func_001FB360(s32 index, f32 *src) {
+s32 SzView_SetLookSP(s32 index, f32 *src) {
     Camera_001FB360 *entry;
     f32 matrix[4][4];
     f32 angles[4];
@@ -1977,10 +1977,10 @@ s32 func_001FB360(s32 index, f32 *src) {
     }
     entry->param = *(Vec4_001FB360 *)src;
     entry->param.y = func_001A6C30(6.2831855f + entry->param.y, 6.2831855f);
-    if (func_001FAFB0(index, (s32)angles) != 0) {
-        func_0020C630(matrix, angles);
+    if (SzView_GetLookVector(index, (s32)angles) != 0) {
+        RhGeom_GetRotXYZMatrix(matrix, angles);
     }
-    func_0020CDD0(entry->direction, matrix, D_00293040);
+    RhGeom_MulMatrixVector(entry->direction, matrix, D_00293040);
     entry->origin[0] = entry->target[0] + entry->direction[0] * entry->param.x;
     entry->origin[1] = entry->target[1] + entry->direction[1] * entry->param.x;
     entry->origin[2] = entry->target[2] + entry->direction[2] * entry->param.x;

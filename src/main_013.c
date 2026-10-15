@@ -1,8 +1,8 @@
 #include "common.h"
 
-s32 func_00153ED0(s32 arg0) {
-    if (func_001DF470(arg0) > 1200) {
-        if (func_001E0150(arg0) >= 4) {
+s32 TaLogic_GetWarnHideLvl_00153ED0(s32 arg0) {
+    if (SzDuel_GetLP(arg0) > 1200) {
+        if (SzDuel_GetUnitMonsterCount(arg0) >= 4) {
             return 500;
         } else {
             return 1000;
@@ -17,8 +17,8 @@ typedef struct Entry_00153F30 {
     u8 rest[0x5C];
 } Entry_00153F30;
 
-s32 func_00153F30(s32 arg0) {
-    extern s32 func_001DEE50(s32);
+s32 TaLogic015_IsUseRevive(s32 arg0) {
+    extern s32 SzDuel_GetGraveCount(s32);
     s32 i;
     s32 bestScore;
     s32 result;
@@ -29,15 +29,15 @@ s32 func_00153F30(s32 arg0) {
 
     bestScore = 0x28;
     result = -1;
-    if (func_001E01F0(arg0) >= 5) {
+    if (SzDuel_GetUnitSpellCount(arg0) >= 5) {
         return result;
     }
 
-    for (i = 0; i < func_001DEE50(arg0 == 0 ? 1 : 0); i++) {
-        card = func_001DEE00(arg0 == 0 ? 1 : 0, i);
-        if ((func_0026FCE0(card) >> 5) != 0) {
-            func_001DCD70(&entry, card);
-            effect = (u32 *)func_001E09E0(&entry, 0);
+    for (i = 0; i < SzDuel_GetGraveCount(arg0 == 0 ? 1 : 0); i++) {
+        card = SzDuel_InqGrave(arg0 == 0 ? 1 : 0, i);
+        if ((TaHand_GetCardKind(card) >> 5) != 0) {
+            SzDuel_InitCardInfo(&entry, card);
+            effect = (u32 *)SzDuel_GetUnitConstEffect2(&entry, 0);
             score = entry.data[3];
             if (score >= bestScore && (*effect >> 8) != 0x14) {
                 bestScore = score;
@@ -68,7 +68,7 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_00154040;
 
-s32 func_00276290(void *, void *, s32);
+s32 TaLogic_GetInputQueFromMinimumTask(void *, void *, s32);
 
 s32 func_00154040(s32 arg0, void *arg1) {
     Req_00154040 req;
@@ -102,11 +102,11 @@ s32 func_00154040(s32 arg0, void *arg1) {
         return 0x800;
     }
     if (w->idx == 0) {
-        func_00275E80(w);
-        if (func_0014FD40(w, &req, arg0) == 0) {
+        TaLogic_DoAdjustLogicData(w);
+        if (TaLogic_GetMinimumTask_0014FD40(w, &req, arg0) == 0) {
             return 0x800;
         }
-        if (func_00276290(w, &req, arg0) < 0) {
+        if (TaLogic_GetInputQueFromMinimumTask(w, &req, arg0) < 0) {
             return 0;
         }
     }
@@ -133,81 +133,81 @@ void func_00154210(void) {
 
 #pragma conditional_move off
 
-s32 func_00154220(void *work, void *arg1, s32 arg2) {
+s32 TaLogic_GetMinimumTask_00154220(void *work, void *arg1, s32 arg2) {
     u16 *arg0 = work;
     s32 side;
     s32 found;
     s32 result;
     s32 index;
 
-    side = func_001DE540();
+    side = SzDuel_GetTurnOwner();
     found = 0;
-    if ((result = func_00154AD0(arg0, side, (s32)arg1)) < 0) {
+    if ((result = TaLogic_GetNextActiveUnit_00154AD0(arg0, side, (s32)arg1)) < 0) {
         return 0;
     }
-    index = func_00276C80(arg0, result & 0xFFFF);
+    index = TaLogic_GetActionUnitFromOwnerID(arg0, result & 0xFFFF);
     if (index < 0) {
         return 0;
     }
     if ((result >> 16) == 1) {
         if (((arg0[index * 8 + 2] >> 8) & 0xFF) == 10) {
-            func_0027B1B0(arg0 + index * 8, 1);
+            TaLogic_InitRogicControl(arg0 + index * 8, 1);
         } else {
-            func_0027B1B0(arg0 + index * 8, 0);
+            TaLogic_InitRogicControl(arg0 + index * 8, 0);
         }
         return 1;
     }
-    func_001547A0(arg0 + index * 8);
+    TaLogic_CommandUnit_001547A0(arg0 + index * 8);
     switch ((arg0[index * 8 + 2] >> 8) & 0xFF) {
     case 2:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            if (func_00156FC0(arg0 + index * 8, side, arg1, 1) < 0) {
-                func_0027B1B0(arg0 + index * 8, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            if (TaLogic_GetMinimumTask_AtkMission_00156FC0(arg0 + index * 8, side, arg1, 1) < 0) {
+                TaLogic_InitRogicControl(arg0 + index * 8, 1);
                 return 1;
             }
             found = 1;
         }
         break;
     case 5:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157480(arg0 + index * 8, side, arg1, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_RunMission_00157480(arg0 + index * 8, side, arg1, 1);
             found = 1;
         }
         break;
     case 10:
-        if (func_00155770(arg0[index * 8], side, (s32)arg1) < 0) {
-            func_0027B1B0(arg0 + index * 8, 1);
+        if (TaLogic_GetMinimumTask_Summon_00155770(arg0[index * 8], side, (s32)arg1) < 0) {
+            TaLogic_InitRogicControl(arg0 + index * 8, 1);
             *(u8 *)((u8 *)arg1 + 2) = 0xFF;
             *(s32 *)((u8 *)arg1 + 0xC) = 0;
         } else {
-            func_0027B1B0(arg0 + index * 8, 1);
+            TaLogic_InitRogicControl(arg0 + index * 8, 1);
             found = 1;
         }
         break;
     case 6:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157A50(arg0 + index * 8, side, arg1, 1, 0, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_00157A50(arg0 + index * 8, side, arg1, 1, 0, 0);
             found = 1;
         }
         break;
     case 7:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157A50(arg0 + index * 8, side, arg1, 1, 0, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_00157A50(arg0 + index * 8, side, arg1, 1, 0, 1);
             found = 1;
         }
         break;
     case 3:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157A50(arg0 + index * 8, side, arg1, 1, 1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_00157A50(arg0 + index * 8, side, arg1, 1, 1, 0);
             found = 1;
         }
         break;
     case 9:
-        func_0027D020(arg0 + index * 8, side, arg1, 1, 0, func_00158780(side), 5, 1);
+        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, arg1, 1, 0, TaLogic_GetWarnHideLvl_00158780(side), 5, 1);
         found = 1;
         break;
     case 14:
-        func_00276EC0(arg0 + index * 8, side, arg1);
+        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, arg1);
         found = 1;
         break;
     default:
@@ -220,54 +220,54 @@ s32 func_00154220(void *work, void *arg1, s32 arg2) {
     found = 0;
     switch (arg0[index * 8 + 2] & 0xFF) {
     case 2:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            if (func_00156FC0(arg0 + index * 8, side, arg1, 0) < 0) {
-                func_00157480(arg0 + index * 8, side, arg1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            if (TaLogic_GetMinimumTask_AtkMission_00156FC0(arg0 + index * 8, side, arg1, 0) < 0) {
+                TaLogic_GetMinimumTask_RunMission_00157480(arg0 + index * 8, side, arg1, 0);
             }
             found = 1;
         }
         break;
     case 5:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157480(arg0 + index * 8, side, arg1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_RunMission_00157480(arg0 + index * 8, side, arg1, 0);
             found = 1;
         }
         break;
     case 10:
-        if (func_00155770(arg0[index * 8], side, (s32)arg1) < 0) {
-            func_0027B1B0(arg0 + index * 8, 0);
+        if (TaLogic_GetMinimumTask_Summon_00155770(arg0[index * 8], side, (s32)arg1) < 0) {
+            TaLogic_InitRogicControl(arg0 + index * 8, 0);
             *(u8 *)((u8 *)arg1 + 2) = 0xFF;
             found = 1;
             *(s32 *)((u8 *)arg1 + 0xC) = 0;
         } else {
-            func_0027B1B0(arg0 + index * 8, 0);
+            TaLogic_InitRogicControl(arg0 + index * 8, 0);
             found = 1;
         }
         break;
     case 6:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157A50(arg0 + index * 8, side, arg1, 0, 0, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_00157A50(arg0 + index * 8, side, arg1, 0, 0, 0);
             found = 1;
         }
         break;
     case 7:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157A50(arg0 + index * 8, side, arg1, 0, 0, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_00157A50(arg0 + index * 8, side, arg1, 0, 0, 1);
             found = 1;
         }
         break;
     case 3:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_00157A50(arg0 + index * 8, side, arg1, 0, 1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_00157A50(arg0 + index * 8, side, arg1, 0, 1, 0);
             found = 1;
         }
         break;
     case 9:
-        func_0027D020(arg0 + index * 8, side, arg1, 0, 0, func_00158780(side), 5, 1);
+        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, arg1, 0, 0, TaLogic_GetWarnHideLvl_00158780(side), 5, 1);
         found = 1;
         break;
     case 14:
-        func_00276EC0(arg0 + index * 8, side, arg1);
+        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, arg1);
         break;
     default:
         return 0;
@@ -294,28 +294,28 @@ typedef struct State_001547A0 {
 } State_001547A0;
 
 
-s32 func_001547A0(void *arg0) {
-    extern s32 func_001E1030();
+s32 TaLogic_CommandUnit_001547A0(void *arg0) {
+    extern s32 SzDuel_GetUnitCardNo();
     State_001547A0 *state = arg0;
     s32 card;
     s32 other;
 
-    func_001E1090((s32)state->id >> 8, state->id & 0xFF);
-    card = func_00250360((s32)state->id >> 8, state->id & 0xFF);
-    if (func_001DF540((s32)state->id >> 8, state->id & 0xFF) != 0) {
-        if (func_001E2100((s32)state->id >> 8, state->id & 0xFF, 0) == 0) {
+    SzDuel_GetUnitLoc((s32)state->id >> 8, state->id & 0xFF);
+    card = Ta_IsUnitControl((s32)state->id >> 8, state->id & 0xFF);
+    if (SzDuel_GetUnit((s32)state->id >> 8, state->id & 0xFF) != 0) {
+        if (SzDuel_GetUnitStatus((s32)state->id >> 8, state->id & 0xFF, 0) == 0) {
             if (state->id != 0xFFFF) {
                 if ((state->id & 0xFF) == 0) {
                     if (state->data.all == -1) {
-                        if (func_0027BBC0((s32)state->id >> 8, state->id & 0xFF, 0) == 1) {
-                            if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                        if (TaLogic_IsAttackedNow((s32)state->id >> 8, state->id & 0xFF, 0) == 1) {
+                            if (SzDuel_InqHandPhase((s32)state->id >> 8) == 1) {
                                 state->action = 0x50A;
                             } else {
                                 state->action = 0x5FF;
                             }
                         } else {
-                            if ((other = func_001E3790(3, 5)) < 0) {
-                                if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                            if ((other = SzDuel_GetMapUnitID(3, 5)) < 0) {
+                                if (SzDuel_InqHandPhase((s32)state->id >> 8) == 1) {
                                     state->action = 0xA06;
                                     state->data.all = (state->data.all & 0xFFFF0000) | 0x403;
                                 } else {
@@ -323,9 +323,9 @@ s32 func_001547A0(void *arg0) {
                                     state->data.all = (u16)state->data.all | 0x04030000;
                                 }
                             } else {
-                                if (func_001E1090((s32)state->id >> 8, state->id & 0xFF) == 0x403 &&
-                                    card == func_00250360(other >> 8, other & 0xFF) && other != state->id) {
-                                    if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                                if (SzDuel_GetUnitLoc((s32)state->id >> 8, state->id & 0xFF) == 0x403 &&
+                                    card == Ta_IsUnitControl(other >> 8, other & 0xFF) && other != state->id) {
+                                    if (SzDuel_InqHandPhase((s32)state->id >> 8) == 1) {
                                         state->action = 0x20A;
                                         state->data.all = (other << 16) | state->data.h.lo;
                                     } else {
@@ -333,7 +333,7 @@ s32 func_001547A0(void *arg0) {
                                         state->data.all = (other << 16) | state->data.h.lo;
                                     }
                                 } else {
-                                    if (func_001DE6D0((s32)state->id >> 8) == 1) {
+                                    if (SzDuel_InqHandPhase((s32)state->id >> 8) == 1) {
                                         state->action = 0xA06;
                                         state->data.all = (state->data.all & 0xFFFF0000) | 0x403;
                                     } else {
@@ -345,22 +345,22 @@ s32 func_001547A0(void *arg0) {
                         }
                     }
                 } else {
-                    other = func_001E0700((s32)state->id >> 8, state->id & 0xFF);
-                    card = func_001E1030((s32)state->id >> 8, state->id & 0xFF);
+                    other = SzDuel_GetUnitKind((s32)state->id >> 8, state->id & 0xFF);
+                    card = SzDuel_GetUnitCardNo((s32)state->id >> 8, state->id & 0xFF);
                     switch (other >> 5) {
                     case 0:
-                        if (func_002507D0((s32)state->id >> 8, state->id & 0xFF) == 1 ||
-                            func_001587E0(card) == 1) {
-                            func_00155070(arg0);
+                        if (TaUtil_IsExMonster((s32)state->id >> 8, state->id & 0xFF) == 1 ||
+                            TaLogic017_IsExzParts(card) == 1) {
+                            TaLogic017_CommandEfcMonster(arg0);
                         } else {
-                            func_00154EB0(arg0);
+                            TaLogic017_CommandBtlUnit(arg0);
                         }
                         break;
                     case 1:
                     case 2:
                     case 3:
                     case 4:
-                        func_00155230(arg0);
+                        TaLogic017_CommandSpellUnit(arg0);
                         break;
                     default:
                         state->action = 0x5FF;
@@ -374,7 +374,7 @@ s32 func_001547A0(void *arg0) {
     return 0;
 }
 
-s32 func_00154AD0(u16 *arg0, s32 arg1, s32 arg2) {
+s32 TaLogic_GetNextActiveUnit_00154AD0(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -384,53 +384,53 @@ s32 func_00154AD0(u16 *arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1D, 1);
-    ret = func_0027B360(arg1, list, arg0);
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1D, 1);
+    ret = TaLogic_GetAtkUnitNow(arg1, list, arg0);
     if (ret >= 0) {
         return ret;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1E, 1);
-    for (i = 0; i < func_0027C670(list); i++) {
-        if ((func_001E0700(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
-            func_0027B9B0(list[i]) == 1 && func_0027C6D0(list[i]) == 1) {
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1E, 1);
+    for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
+        if ((SzDuel_GetUnitKind(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
+            TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1F, 1);
-    for (i = 0; i < func_0027C670(list); i++) {
-        if (func_0027B9B0(list[i]) == 1 && func_0027C6D0(list[i]) == 1) {
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
+        if (TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
     pos = arg1 << 8;
-    idx = func_00276C80(arg0, pos);
-    func_001547A0(arg0 + idx * 8);
+    idx = TaLogic_GetActionUnitFromOwnerID(arg0, pos);
+    TaLogic_CommandUnit_001547A0(arg0 + idx * 8);
     if (((arg0[idx * 8 + 2] >> 8) & 0xFF) == 10) {
-        if (func_001DE6D0(arg1) == 1 && func_00155770(pos, arg1, arg2) >= 0) {
+        if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_00155770(pos, arg1, arg2) >= 0) {
             return pos | 0x10000;
         }
-        if (func_0027B9B0(pos & 0xFFFF) == 1) {
+        if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (func_001E2100(arg1, 0, 0) == 0) {
-        if (func_0027B9B0(pos & 0xFFFF) == 1) {
+    } else if (SzDuel_GetUnitStatus(arg1, 0, 0) == 0) {
+        if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (func_001DE6D0(arg1) == 1 && func_00155770(pos, arg1, arg2) >= 0) {
+    } else if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_00155770(pos, arg1, arg2) >= 0) {
         return pos | 0x10000;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1F, 1);
-    for (i = 0; i < func_0027C670(list); i++) {
-        if (func_001E2100(list[i] >> 8, list[i] & 0xFF, 0) == 0 && func_0027C6D0(list[i]) == 1) {
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
+        if (SzDuel_GetUnitStatus(list[i] >> 8, list[i] & 0xFF, 0) == 0 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
@@ -446,23 +446,23 @@ typedef struct State_00154EB0 {
     u16 destination_high;
 } State_00154EB0;
 
-void func_00154EB0(void *arg0) {
+void TaLogic017_CommandBtlUnit(void *arg0) {
     s32 position;
     u8 kind;
     State_00154EB0 *state = arg0;
     s32 other;
     s32 destination;
 
-    if (func_001DF540(state->position >> 8, state->position & 0xFF) == 0) {
+    if (SzDuel_GetUnit(state->position >> 8, state->position & 0xFF) == 0) {
         return;
     }
-    other = (func_0024DE70(state->position >> 8, state->position & 0xFF) == 0 ? 1 : 0) << 8;
-    position = func_001E1090(state->position >> 8, state->position & 0xFF);
-    func_001E1090(other >> 8, other & 0xFF);
-    func_001DF540(state->position >> 8, state->position & 0xFF);
-    kind = (func_001E0700(state->position >> 8, state->position & 0xFF) >> 5) & 0xFF;
+    other = (Ta_GetCurrentSide(state->position >> 8, state->position & 0xFF) == 0 ? 1 : 0) << 8;
+    position = SzDuel_GetUnitLoc(state->position >> 8, state->position & 0xFF);
+    SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
+    SzDuel_GetUnit(state->position >> 8, state->position & 0xFF);
+    kind = (SzDuel_GetUnitKind(state->position >> 8, state->position & 0xFF) >> 5) & 0xFF;
     state->flags = 0x7FF;
-    if (func_00155670(state->position >> 8, state->position & 0xFF) == 1) {
+    if (TaLogic017_IsLineTop(state->position >> 8, state->position & 0xFF) == 1) {
         *(u32 *)&state->destination = (position << 16) | state->destination;
         return;
     }
@@ -472,17 +472,17 @@ void func_00154EB0(void *arg0) {
 
         x = position & 0xFF;
         y = position >> 8;
-        if (func_001554B0(x, y, kind) == 0 && func_001554B0(x, y, 0) == 0 && y < 6) {
+        if (TaLogic017_IsLinePoint(x, y, kind) == 0 && TaLogic017_IsLinePoint(x, y, 0) == 0 && y < 6) {
             *(u32 *)&state->destination = (((position & 0xFF) | 0x600) << 16) | state->destination;
             return;
         }
     }
-    destination = func_001555F0(kind);
+    destination = TaLogic017_GetEmptyLine(kind);
     if (destination >= 0) {
         *(u32 *)&state->destination = (destination << 16) | state->destination;
         return;
     }
-    destination = func_001555F0(0);
+    destination = TaLogic017_GetEmptyLine(0);
     if (destination >= 0) {
         *(u32 *)&state->destination = (destination << 16) | state->destination;
         return;
@@ -503,8 +503,8 @@ typedef struct Action_00155070 {
 } Action_00155070;
 
 
-void func_00155070(void *arg0) {
-    extern s32 func_001E1030();
+void TaLogic017_CommandEfcMonster(void *arg0) {
+    extern s32 SzDuel_GetUnitCardNo();
     s32 owner;
     s32 i;
     s32 kind;
@@ -514,8 +514,8 @@ void func_00155070(void *arg0) {
     Action_00155070 *action;
 
     action = arg0;
-    owner = func_00250360(action->location >> 8, action->location & 0xFF);
-    kind = func_001E1030(action->location >> 8, action->location & 0xFF);
+    owner = Ta_IsUnitControl(action->location >> 8, action->location & 0xFF);
+    kind = SzDuel_GetUnitCardNo(action->location >> 8, action->location & 0xFF);
     count = 0;
     switch (kind) {
     case 0x38:
@@ -523,31 +523,31 @@ void func_00155070(void *arg0) {
     case 0x36:
     case 0x37:
         action->state = 0x6FF;
-        action->data.value = action->data.low | (func_001E1090(action->location >> 8, action->location & 0xFF) << 16);
+        action->data.value = action->data.low | (SzDuel_GetUnitLoc(action->location >> 8, action->location & 0xFF) << 16);
         return;
     case 0x40:
-        list = func_0024CA40(0, 0, owner, 2, 3, 0xE);
-        for (i = 0; i < func_0024E910(list); i++) {
-            pair = func_0024EC50(list, i);
-            if (func_002781B0(pair >> 8, pair & 0xFF, 0) == 1) {
+        list = SearchUnitByRange(0, 0, owner, 2, 3, 0xE);
+        for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(list); i++) {
+            pair = Ta_GetUnitOwnerIDFromLstCount(list, i);
+            if (TaLogic_IsJudgeUnitDanger(pair >> 8, pair & 0xFF, 0) == 1) {
                 count++;
             }
         }
         if (count > 1) {
-            func_00154EB0(action);
+            TaLogic017_CommandBtlUnit(action);
             action->state = 0x3FF;
             return;
         }
         break;
     case 0x5F:
-        if (func_001DF470(owner) < 0x4B0) {
-            func_00154EB0(action);
+        if (SzDuel_GetLP(owner) < 0x4B0) {
+            TaLogic017_CommandBtlUnit(action);
             action->state = 0x3FF;
             return;
         }
         break;
     }
-    func_00154EB0(action);
+    TaLogic017_CommandBtlUnit(action);
 }
 
 typedef struct State_00155230 {
@@ -559,19 +559,19 @@ typedef struct State_00155230 {
     u16 destination_high;
 } State_00155230;
 
-void func_00155230(void *arg0) {
+void TaLogic017_CommandSpellUnit(void *arg0) {
     s32 position;
     u8 kind;
     State_00155230 *state = arg0;
     s32 card;
     s32 destination;
 
-    extern s32 func_001E1030();
+    extern s32 SzDuel_GetUnitCardNo();
 
-    func_00250360(state->position >> 8, state->position & 0xFF);
-    kind = (func_001E0700(state->position >> 8, state->position & 0xFF) >> 5) & 0xFF;
-    position = func_001E1090(state->position >> 8, state->position & 0xFF);
-    card = func_001E1030(state->position >> 8, state->position & 0xFF);
+    Ta_IsUnitControl(state->position >> 8, state->position & 0xFF);
+    kind = (SzDuel_GetUnitKind(state->position >> 8, state->position & 0xFF) >> 5) & 0xFF;
+    position = SzDuel_GetUnitLoc(state->position >> 8, state->position & 0xFF);
+    card = SzDuel_GetUnitCardNo(state->position >> 8, state->position & 0xFF);
     switch (kind) {
     case 1:
     case 3:
@@ -580,23 +580,23 @@ void func_00155230(void *arg0) {
         s32 x;
 
         state->flags = 0x7FF;
-        if (func_00155670(state->position >> 8, state->position & 0xFF) == 1) {
+        if (TaLogic017_IsLineTop(state->position >> 8, state->position & 0xFF) == 1) {
             *(u32 *)&state->destination = (position << 16) | state->destination;
             break;
         }
         x = position & 0xFF;
         y = position >> 8;
-        if (func_001554B0(x, y, kind) == 0 &&
-            func_001554B0(x, y, 0) == 0 && y < 6) {
+        if (TaLogic017_IsLinePoint(x, y, kind) == 0 &&
+            TaLogic017_IsLinePoint(x, y, 0) == 0 && y < 6) {
             *(u32 *)&state->destination = (((position & 0xFF) | 0x600) << 16) | state->destination;
             break;
         }
-        destination = func_001555F0(kind);
+        destination = TaLogic017_GetEmptyLine(kind);
         if (destination >= 0) {
             *(u32 *)&state->destination = (destination << 16) | state->destination;
             break;
         }
-        destination = func_001555F0(0);
+        destination = TaLogic017_GetEmptyLine(0);
         if (destination >= 0) {
             *(u32 *)&state->destination = (destination << 16) | state->destination;
             break;
@@ -612,12 +612,12 @@ void func_00155230(void *arg0) {
             break;
         }
         state->flags = 0x6FF;
-        destination = func_001555F0(kind);
+        destination = TaLogic017_GetEmptyLine(kind);
         if (destination >= 0) {
             *(u32 *)&state->destination = (destination << 16) | state->destination;
             break;
         }
-        destination = func_001555F0(0);
+        destination = TaLogic017_GetEmptyLine(0);
         if (destination >= 0) {
             *(u32 *)&state->destination = (destination << 16) | state->destination;
             break;
@@ -631,11 +631,11 @@ void func_00155230(void *arg0) {
     }
 }
 
-s32 func_001554B0(s32 arg0, s32 arg1, s32 arg2) {
+s32 TaLogic017_IsLinePoint(s32 arg0, s32 arg1, s32 arg2) {
     s32 i = 0;
 
     do {
-        if (func_00155520(i, arg2) == ((arg1 << 8) | arg0)) {
+        if (TaLogic017_GetLine(i, arg2) == ((arg1 << 8) | arg0)) {
             return 1;
         }
         i++;
@@ -643,8 +643,8 @@ s32 func_001554B0(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_00155520(s32 arg0, s32 arg1) {
-    func_001DE540();
+s32 TaLogic017_GetLine(s32 arg0, s32 arg1) {
+    SzDuel_GetTurnOwner();
     switch (arg0) {
     case 0:
         return (arg1 == 0) ? 0x200 : 0x206;
@@ -665,38 +665,38 @@ s32 func_00155520(s32 arg0, s32 arg1) {
     }
 }
 
-s32 func_001555F0(s32 arg0) {
+s32 TaLogic017_GetEmptyLine(s32 arg0) {
     s32 i;
     s32 temp_v0;
 
     i = 0;
     do {
-        temp_v0 = func_00155520(i, arg0);
-        if (((func_001E36E0(temp_v0 & 0xFF, temp_v0 >> 8) == 0) ? 1 : 0) == 1) {
-            return func_00155520(i, arg0);
+        temp_v0 = TaLogic017_GetLine(i, arg0);
+        if (((SzDuel_GetMapUnit(temp_v0 & 0xFF, temp_v0 >> 8) == 0) ? 1 : 0) == 1) {
+            return TaLogic017_GetLine(i, arg0);
         }
         i++;
     } while (i < 7);
     return -1;
 }
 
-s32 func_00155670(s32 arg0, s32 arg1) {
+s32 TaLogic017_IsLineTop(s32 arg0, s32 arg1) {
     s32 i;
     s32 side;
     s32 otherSide;
     s32 position;
     s32 candidate;
 
-    func_001E1090(arg0, arg1);
-    func_00250360(arg0, arg1);
-    side = func_001E0700(arg0, arg1) >> 5;
+    SzDuel_GetUnitLoc(arg0, arg1);
+    Ta_IsUnitControl(arg0, arg1);
+    side = SzDuel_GetUnitKind(arg0, arg1) >> 5;
     otherSide = side != 0 ? 0 : side + 1;
     arg0 = (arg0 << 8) | arg1;
 
     i = 0;
     do {
-        position = func_00155520(i, side);
-        candidate = func_001E3790(position & 0xFF, position >> 8);
+        position = TaLogic017_GetLine(i, side);
+        candidate = SzDuel_GetMapUnitID(position & 0xFF, position >> 8);
         if (candidate < 0) {
             return 0;
         }
@@ -707,8 +707,8 @@ s32 func_00155670(s32 arg0, s32 arg1) {
 
     i = 0;
     do {
-        position = func_00155520(i, otherSide);
-        candidate = func_001E3790(position & 0xFF, position >> 8);
+        position = TaLogic017_GetLine(i, otherSide);
+        candidate = SzDuel_GetMapUnitID(position & 0xFF, position >> 8);
         if (candidate < 0) {
             return 0;
         }
@@ -735,8 +735,8 @@ typedef struct {
     s32 unkC;
 } Ctx_00155770;
 
-s32 func_00155770(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 func_00278890();
+s32 TaLogic_GetMinimumTask_Summon_00155770(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 TaLogic_GetUnitNum();
     Work_00155770 work;
     s32 ret;
     s32 res;
@@ -745,36 +745,36 @@ s32 func_00155770(s32 arg0, s32 arg1, s32 arg2) {
     Ctx_00155770 *ctx = (Ctx_00155770 *)arg2;
 
     ctx->id = arg0;
-    if (func_001DE6D0(arg1) == 0) {
+    if (SzDuel_InqHandPhase(arg1) == 0) {
         return -1;
     }
-    if (func_00278890(arg1, 0) == 5 && func_00278890(arg1, 1) == 5) {
+    if (TaLogic_GetUnitNum(arg1, 0) == 5 && TaLogic_GetUnitNum(arg1, 1) == 5) {
         return -1;
     }
-    kind = func_00155A00(arg1, &work);
+    kind = TaLogic017_IsHandPlay(arg1, &work);
     if (kind < 0) {
         return -1;
     }
     ctx->kind = 10;
     ctx->unkC = 0;
-    pos = func_001E1090(arg0 >> 8, arg0 & 0xFF);
-    ret = func_00276F10(&work, pos & 0xFF, pos >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, func_00158780(arg1));
+    pos = SzDuel_GetUnitLoc(arg0 >> 8, arg0 & 0xFF);
+    ret = TaLogic_GetNearCard2(&work, pos & 0xFF, pos >> 8, arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 0, TaLogic_GetWarnHideLvl_00158780(arg1));
     if (kind == 0) {
-        if (func_001564E0(arg1, ctx, &work) < 0) {
+        if (TaLogic017_SetComboQue(arg1, ctx, &work) < 0) {
             goto fallback;
         }
         if (ret < 0) {
-            if (func_001E0150(arg1) >= 6) {
+            if (SzDuel_GetUnitMonsterCount(arg1) >= 6) {
                 goto fallback;
             }
-            res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+            res = TaLogic017_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
             if (res < 0) {
                 return -1;
             }
             ctx->value = res;
             return 1;
         }
-        res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+        res = TaLogic017_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
         if (res < 0) {
             return -1;
         }
@@ -782,8 +782,8 @@ s32 func_00155770(s32 arg0, s32 arg1, s32 arg2) {
         return 1;
     }
     if (kind == 2) {
-        func_00156910(arg1, ctx, &work);
-        res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+        TaLogic017_SetSpecialComboQue(arg1, ctx, &work);
+        res = TaLogic017_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
         if (res < 0) {
             return -1;
         }
@@ -791,8 +791,8 @@ s32 func_00155770(s32 arg0, s32 arg1, s32 arg2) {
         return 1;
     }
     if (kind == 3) {
-        func_00155C90(arg1, ctx, &work);
-        res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+        TaLogic017_PlayExzCombo(arg1, ctx, &work);
+        res = TaLogic017_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
         if (res < 0) {
             return -1;
         }
@@ -800,10 +800,10 @@ s32 func_00155770(s32 arg0, s32 arg1, s32 arg2) {
         return 1;
     }
 fallback:
-    if (func_001562E0(arg1, (u8 *)ctx, &work, work.unk3C) < 0) {
+    if (TaLogic017_GetSpellPlay(arg1, (u8 *)ctx, &work, work.unk3C) < 0) {
         return -1;
     }
-    res = func_00156B40(arg1, kind & 0xFF, &work, ret);
+    res = TaLogic017_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
     if (res < 0) {
         return -1;
     }
@@ -811,9 +811,9 @@ fallback:
     return 1;
 }
 
-s32 func_00155A00(s32 arg0, void *arg1) {
-    extern s32 func_00278890();
-    extern s32 func_00158800();
+s32 TaLogic017_IsHandPlay(s32 arg0, void *arg1) {
+    extern s32 TaLogic_GetUnitNum();
+    extern s32 TaLogic017_IsExzSafe();
     s32 entries[8];
     u8 work[32];
     u8 kind0;
@@ -821,46 +821,46 @@ s32 func_00155A00(s32 arg0, void *arg1) {
     s32 i;
     s32 ret;
 
-    kind0 = (u8)func_00278890(arg0, 0);
-    kind1 = (u8)func_00278890(arg0, 1);
+    kind0 = (u8)TaLogic_GetUnitNum(arg0, 0);
+    kind1 = (u8)TaLogic_GetUnitNum(arg0, 1);
     if (arg1 == NULL) {
         return -1;
     }
-    func_0026FD30(arg0, entries);
+    TaHand_GetNextHand(arg0, entries);
     if (kind0 == 5) {
-        if (func_001562E0(arg0, work, arg1, 999) >= 0) {
+        if (TaLogic017_GetSpellPlay(arg0, work, arg1, 999) >= 0) {
             return 1;
         }
         return -1;
     }
     if (kind1 == 5) {
-        for (i = 0; i < func_0026FE20(arg0); i++) {
-            if ((func_0026FCE0(entries[i]) >> 5) == 0 &&
-                func_0026FB10(arg0, entries[i]) == 1) {
-                func_001DCD70(arg1, entries[i]);
+        for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+            if ((TaHand_GetCardKind(entries[i]) >> 5) == 0 &&
+                TaHand_IsCardSummon2(arg0, entries[i]) == 1) {
+                SzDuel_InitCardInfo(arg1, entries[i]);
                 return 0;
             }
         }
         return -1;
     }
-    for (i = 0; i < func_0026FE20(arg0); i++) {
-        if (func_001DE020(func_0026FCE0(entries[i]) >> 5) == 2) {
-            func_001DCD70(arg1, entries[i]);
+    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        if (SzDuel_Kind2Type(TaHand_GetCardKind(entries[i]) >> 5) == 2) {
+            SzDuel_InitCardInfo(arg1, entries[i]);
             return 2;
         }
     }
-    if (func_00158800(arg0) == 1) {
-        if (func_00155C90(arg0, work, arg1) >= 0) {
+    if (TaLogic017_IsExzSafe(arg0) == 1) {
+        if (TaLogic017_PlayExzCombo(arg0, work, arg1) >= 0) {
             return 3;
         }
     }
-    for (i = 0; i < func_0026FE20(arg0); i++) {
-        if ((func_0026FCE0(entries[i]) >> 5) == 0 &&
-            func_0026FB10(arg0, entries[i]) == 1) {
+    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        if ((TaHand_GetCardKind(entries[i]) >> 5) == 0 &&
+            TaHand_IsCardSummon2(arg0, entries[i]) == 1) {
             return 0;
         }
     }
-    ret = func_001562E0(arg0, work, arg1, 999);
+    ret = TaLogic017_GetSpellPlay(arg0, work, arg1, 999);
     if (ret >= 0) {
         return ret;
     }
@@ -874,7 +874,7 @@ typedef struct {
 } Stats_00155C90;
 
 
-s32 func_00155C90(s32 arg0, u8 *arg1, void *arg2) {
+s32 TaLogic017_PlayExzCombo(s32 arg0, u8 *arg1, void *arg2) {
     s32 sortCount;
     s32 cards[5];
     u8 selected[5];
@@ -904,57 +904,57 @@ s32 func_00155C90(s32 arg0, u8 *arg1, void *arg2) {
             n++;
         } while (n < 5);
     }
-    func_0026FD30(arg0, cards);
+    TaHand_GetNextHand(arg0, cards);
     i = 0;
-    if (0 < func_0026FE20(arg0)) {
+    if (0 < TaHand_GetNextHandNum(arg0)) {
         selectedCursor = selectedBase;
         do {
-            if (func_001587E0(cards[i]) == 1) {
+            if (TaLogic017_IsExzParts(cards[i]) == 1) {
                 *selectedCursor++ = i;
                 selectedCount++;
-                i = func_0026FE20(arg0);
+                i = TaHand_GetNextHandNum(arg0);
             }
             i++;
-        } while (i < func_0026FE20(arg0));
+        } while (i < TaHand_GetNextHandNum(arg0));
     }
     if (selectedCount == 0) {
         return -1;
     }
-    func_001DCD70(arg2, cards[selected[0]]);
+    SzDuel_InitCardInfo(arg2, cards[selected[0]]);
     i = 0;
-    if (0 < func_0026FE20(arg0)) {
+    if (0 < TaHand_GetNextHandNum(arg0)) {
         cardCursor = cards;
         appendCursor = selected + selectedCount;
         do {
-            if (func_00248F60(cards[selected[0]], *cardCursor) >= 0 &&
-                (func_0026FCE0(*cardCursor) >> 5) == 2) {
+            if (Ta_GetHandEnchant(cards[selected[0]], *cardCursor) >= 0 &&
+                (TaHand_GetCardKind(*cardCursor) >> 5) == 2) {
                 s32 card = *cardCursor;
                 if (card != 0x31B && card != 0x31C) {
-                    ((Stats_00155C90 *)arg2)->attack += (s16)func_002493A0(card);
-                    ((Stats_00155C90 *)arg2)->defense += (s16)func_002493A0(*cardCursor);
+                    ((Stats_00155C90 *)arg2)->attack += (s16)TaEnc_GetEncScore(card);
+                    ((Stats_00155C90 *)arg2)->defense += (s16)TaEnc_GetEncScore(*cardCursor);
                     selectedCount++;
                     *appendCursor++ = i;
                 }
             }
             cardCursor++;
             i++;
-        } while (i < func_0026FE20(arg0));
+        } while (i < TaHand_GetNextHandNum(arg0));
     }
     j = 0;
-    if (0 < func_0026FE20(arg0)) {
+    if (0 < TaHand_GetNextHandNum(arg0)) {
             sortCards = cards;
             orderCursor = orderBase;
             do {
-                if (func_00156870(*sortCards) == 0) {
+                if (TaLogic017_IsRefuseEmptyCombo(*sortCards) == 0) {
                     *orderCursor++ = j;
                     sortCount++;
                 }
                 sortCards++;
                 j++;
-            } while (j < func_0026FE20(arg0));
+            } while (j < TaHand_GetNextHandNum(arg0));
     }
-    func_00155FB0(order, 0, sortCount - 1, arg0, cards);
-    remaining = func_0026FE20(arg0) - selectedCount;
+    TaLogic017_SortTempArray(order, 0, sortCount - 1, arg0, cards);
+    remaining = TaHand_GetNextHandNum(arg0) - selectedCount;
     copyIndex = 0;
     if (0 < remaining) {
         do {
@@ -975,52 +975,52 @@ s32 func_00155C90(s32 arg0, u8 *arg1, void *arg2) {
     return 1;
 }
 
-void func_00155FB0(u16 *indices, s32 first, s32 last, s32 key, s32 *values) {
+void TaLogic017_SortTempArray(u16 *indices, s32 first, s32 last, s32 key, s32 *values) {
     s32 pivot;
     s32 i;
     u16 *scan;
     s32 score;
 
     if (first < last) {
-        func_001562B0((s32 *)indices, first, (first + last) >> 1);
+        TaLogic017_SortSwap((s32 *)indices, first, (first + last) >> 1);
         i = first + 1;
         pivot = first;
         if (i <= last) {
             scan = &indices[i];
             do {
-                score = func_0026FA80(values[*scan], key);
-                if (func_0026FA80(values[indices[first]], key) < score) {
+                score = TaHand_GetCardSummonCost2(values[*scan], key);
+                if (TaHand_GetCardSummonCost2(values[indices[first]], key) < score) {
                     pivot++;
-                    func_001562B0((s32 *)indices, pivot, i);
+                    TaLogic017_SortSwap((s32 *)indices, pivot, i);
                 }
                 i++;
                 scan++;
             } while (i <= last);
         }
-        func_001562B0((s32 *)indices, first, pivot);
+        TaLogic017_SortSwap((s32 *)indices, first, pivot);
         if (first < pivot) {
             s32 leftPivot;
             s32 j;
             u16 *leftScan;
 
-            func_001562B0((s32 *)indices, first, (first + pivot) >> 1);
+            TaLogic017_SortSwap((s32 *)indices, first, (first + pivot) >> 1);
             j = first + 1;
             leftPivot = first;
             if (j <= pivot) {
                 leftScan = &indices[j];
                 do {
-                    if (func_0026FA80(values[*leftScan], key) >
-                        func_0026FA80(values[indices[first]], key)) {
+                    if (TaHand_GetCardSummonCost2(values[*leftScan], key) >
+                        TaHand_GetCardSummonCost2(values[indices[first]], key)) {
                         leftPivot++;
-                        func_001562B0((s32 *)indices, leftPivot, j);
+                        TaLogic017_SortSwap((s32 *)indices, leftPivot, j);
                     }
                     j++;
                     leftScan++;
                 } while (j <= pivot);
             }
-            func_001562B0((s32 *)indices, first, leftPivot);
-            func_00155FB0(indices, first, leftPivot, key, values);
-            func_00155FB0(indices, leftPivot + 1, pivot, key, values);
+            TaLogic017_SortSwap((s32 *)indices, first, leftPivot);
+            TaLogic017_SortTempArray(indices, first, leftPivot, key, values);
+            TaLogic017_SortTempArray(indices, leftPivot + 1, pivot, key, values);
         }
         if (pivot + 1 < last) {
             s32 rightPivot;
@@ -1028,29 +1028,29 @@ void func_00155FB0(u16 *indices, s32 first, s32 last, s32 key, s32 *values) {
             u16 *rightScan;
             s32 rightScore;
 
-            func_001562B0((s32 *)indices, pivot + 1, (pivot + 1 + last) >> 1);
+            TaLogic017_SortSwap((s32 *)indices, pivot + 1, (pivot + 1 + last) >> 1);
             k = pivot + 2;
             rightPivot = pivot + 1;
             if (k <= last) {
                 rightScan = &indices[k];
                 do {
-                    rightScore = func_0026FA80(values[*rightScan], key);
-                    if (func_0026FA80(values[indices[pivot + 1]], key) < rightScore) {
+                    rightScore = TaHand_GetCardSummonCost2(values[*rightScan], key);
+                    if (TaHand_GetCardSummonCost2(values[indices[pivot + 1]], key) < rightScore) {
                         rightPivot++;
-                        func_001562B0((s32 *)indices, rightPivot, k);
+                        TaLogic017_SortSwap((s32 *)indices, rightPivot, k);
                     }
                     k++;
                     rightScan++;
                 } while (k <= last);
             }
-            func_001562B0((s32 *)indices, pivot + 1, rightPivot);
-            func_00155FB0(indices, pivot + 1, rightPivot, key, values);
-            func_00155FB0(indices, rightPivot + 1, last, key, values);
+            TaLogic017_SortSwap((s32 *)indices, pivot + 1, rightPivot);
+            TaLogic017_SortTempArray(indices, pivot + 1, rightPivot, key, values);
+            TaLogic017_SortTempArray(indices, rightPivot + 1, last, key, values);
         }
     }
 }
 
-void func_001562B0(s32 *arg0, s32 arg1, s32 arg2) {
+void TaLogic017_SortSwap(s32 *arg0, s32 arg1, s32 arg2) {
     s32 temp_a0;
     s32 *temp_a1;
     s32 *temp_a2;
@@ -1062,42 +1062,42 @@ void func_001562B0(s32 *arg0, s32 arg1, s32 arg2) {
     *temp_a2 = temp_a0;
 }
 
-s32 func_001562E0(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
+s32 TaLogic017_GetSpellPlay(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     s32 buf[8];
     s32 i;
 
-    func_0026FD30(arg0, buf);
+    TaHand_GetNextHand(arg0, buf);
     if (arg2 == NULL) {
         return -1;
     }
     for (i = 0; i < 5; i++) {
         arg1[i + 6] = 0xFF;
     }
-    for (i = 0; i < func_0026FE20(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
         if (arg3 == buf[i] && arg3 != 999) {
             arg1[6] = i;
-            func_001DCD70(arg2, buf[i]);
+            SzDuel_InitCardInfo(arg2, buf[i]);
             return 1;
         }
     }
-    for (i = 0; i < func_0026FE20(arg0); i++) {
-        if ((func_0026FCE0(buf[i]) >> 5) != 0 && (func_0026FCE0(buf[i]) >> 5) != 2) {
+    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        if ((TaHand_GetCardKind(buf[i]) >> 5) != 0 && (TaHand_GetCardKind(buf[i]) >> 5) != 2) {
             arg1[6] = i;
-            func_001DCD70(arg2, buf[i]);
+            SzDuel_InitCardInfo(arg2, buf[i]);
             return 1;
         }
     }
-    for (i = 0; i < func_0026FE20(arg0); i++) {
-        if ((func_0026FCE0(buf[i]) >> 5) != 0) {
+    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        if ((TaHand_GetCardKind(buf[i]) >> 5) != 0) {
             arg1[6] = i;
-            func_001DCD70(arg2, buf[i]);
+            SzDuel_InitCardInfo(arg2, buf[i]);
             return 1;
         }
     }
     return -1;
 }
 
-u16 *func_00278A90(s32, u16 *, s32, s32, s32, s16 *, s16 *);
+u16 *TaLogic_GetFusionTree(s32, u16 *, s32, s32, s32, s16 *, s16 *);
 
 typedef struct Info_001564E0 {
     u8 pad[8];
@@ -1112,7 +1112,7 @@ typedef struct Sprite_001564E0 {
     s16 y;
 } Sprite_001564E0;
 
-s32 func_001564E0(s32 arg0, u8 *arg1, void *arg2) {
+s32 TaLogic017_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
     u16 *nodes[8];
     s32 entries[7];
     s16 a;
@@ -1129,11 +1129,11 @@ s32 func_001564E0(s32 arg0, u8 *arg1, void *arg2) {
         s32 *entry;
         u16 **node;
 
-        func_0026FD30(arg0, entries);
+        TaHand_GetNextHand(arg0, entries);
         best = -1;
         top = -1;
         i = 0;
-        if (i < func_0026FE20(arg0)) {
+        if (i < TaHand_GetNextHandNum(arg0)) {
             entry = entries;
             node = nodes;
             do {
@@ -1141,14 +1141,14 @@ s32 func_001564E0(s32 arg0, u8 *arg1, void *arg2) {
                 a = 0;
                 card = *entry;
                 *node = NULL;
-                if ((func_0026FCE0(card) >> 5) == 0 && func_0026FB10(arg0, card) == 1) {
-                    *node = func_00278A90(arg0, *node, i & 0xFF, card & 0xFFFF, 0, &a, &b);
-                    *node = func_00278E40(*node);
-                    value = func_00278F10(arg0, *node, 0, 0);
+                if ((TaHand_GetCardKind(card) >> 5) == 0 && TaHand_IsCardSummon2(arg0, card) == 1) {
+                    *node = TaLogic_GetFusionTree(arg0, *node, i & 0xFF, card & 0xFFFF, 0, &a, &b);
+                    *node = TaLogic_GetFusionRes(*node);
+                    value = TaLogic_GetEnchantQue(arg0, *node, 0, 0);
                     if (best < (value & 0xFFFF)) {
-                        func_001566D0(arg0, *node, entries);
-                        func_00278DD0((u8 *)*node + 2, arg1 + 6);
-                        func_001DCD70(arg2, (s32)**node);
+                        TaLogic_ConvEmptyCombo_001566D0(arg0, *node, entries);
+                        TaLogic_CopyArray((u8 *)*node + 2, arg1 + 6);
+                        SzDuel_InitCardInfo(arg2, (s32)**node);
                         ((Sprite_001564E0 *)arg2)->x = (value >> 16) - (((Sprite_001564E0 *)arg2)->info->x & 0x1FFF);
                         ((Sprite_001564E0 *)arg2)->y = (value & 0xFFFF) - (((Sprite_001564E0 *)arg2)->info->y & 0x1FFF);
                         best = value;
@@ -1162,13 +1162,13 @@ s32 func_001564E0(s32 arg0, u8 *arg1, void *arg2) {
                 entry++;
                 node++;
                 i++;
-            } while (i < func_0026FE20(arg0));
+            } while (i < TaHand_GetNextHandNum(arg0));
         }
         return top;
     }
 }
 
-void func_001566D0(s32 arg0, u16 *arg1, s32 *arg2) {
+void TaLogic_ConvEmptyCombo_001566D0(s32 arg0, u16 *arg1, s32 *arg2) {
     s32 count;
     s32 i;
     s32 id;
@@ -1178,38 +1178,38 @@ void func_001566D0(s32 arg0, u16 *arg1, s32 *arg2) {
     if (arg1 == NULL) {
         return;
     }
-    limit = func_0026FA80(*arg1, arg0);
+    limit = TaHand_GetCardSummonCost2(*arg1, arg0);
     for (i = 0; i < 5; i++) {
         buf[i] = 0xFF;
     }
-    for (i = 0, count = 0; i < func_0026FE20(arg0); i++) {
-        if ((u8)func_00278E00(i, (u8 *)(arg1 + 1)) == 0) {
+    for (i = 0, count = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        if ((u8)TaLogic_IsUseHandInCombo(i, (u8 *)(arg1 + 1)) == 0) {
             buf[count++] = i;
         }
     }
     if (count != 0) {
-        for (i = 0; i < (u8)func_00278D90(buf); i++) {
+        for (i = 0; i < (u8)TaLogic_GetArrayLength(buf); i++) {
             id = arg2[buf[i]];
-            if (id != 999 && func_00156870(id) == 0 && limit >= func_0026FA80(id, arg0) &&
-                (u16)func_002789F0(*arg1, (u16)id) == 999) {
-                func_00278D20((u8 *)(arg1 + 1), buf[i]);
+            if (id != 999 && TaLogic017_IsRefuseEmptyCombo(id) == 0 && limit >= TaHand_GetCardSummonCost2(id, arg0) &&
+                (u16)TaLogic_GetHandFusion(*arg1, (u16)id) == 999) {
+                TaLogic_AddEmptyCombo((u8 *)(arg1 + 1), buf[i]);
             }
         }
     }
 }
 
-s32 func_00156870(s32 arg0) {
-    extern u32 func_0026FBB0();
+s32 TaLogic017_IsRefuseEmptyCombo(s32 arg0) {
+    extern u32 TaHand_GetCardAPDP();
     s32 cost;
 
-    cost = func_0026FBB0(arg0);
-    if ((func_0026FCE0(arg0) >> 5) != 0) {
+    cost = TaHand_GetCardAPDP(arg0);
+    if ((TaHand_GetCardKind(arg0) >> 5) != 0) {
         return 1;
     }
     if ((cost & 0xFFFF) + (cost >> 16) * 2 > 0x1194) {
         return 1;
     }
-    if (func_001587E0(arg0) == 1) {
+    if (TaLogic017_IsExzParts(arg0) == 1) {
         return 1;
     }
     return 0;
@@ -1228,7 +1228,7 @@ typedef struct {
     u16 id;
 } Obj2_00156910;
 
-s32 func_00156910(s32 arg0, void *arg1, void *arg2) {
+s32 TaLogic017_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
     Obj1_00156910 *o1 = arg1;
     Obj2_00156910 *o2 = arg2;
     s32 list[8];
@@ -1238,27 +1238,27 @@ s32 func_00156910(s32 arg0, void *arg1, void *arg2) {
     for (i = 0; i < 5; i++) {
         o1->slot[i] = 0xFF;
     }
-    func_0026FD30(arg0, list);
+    TaHand_GetNextHand(arg0, list);
     if (o2 == NULL) {
         return -1;
     }
-    for (i = 0; i < func_0026FE20(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
         if (i != o1->slot[0] && i != o1->slot[1]) {
-            if (o2->id == list[i] && func_0026FB10(arg0, list[i]) == 1) {
+            if (o2->id == list[i] && TaHand_IsCardSummon2(arg0, list[i]) == 1) {
                 o1->slot[0] = i;
             }
         }
     }
     k = 1;
-    if ((func_0026FCE0(list[o1->slot[0]]) >> 5) == 0) {
-        for (i = 0; i < func_0026FE20(arg0); i++) {
+    if ((TaHand_GetCardKind(list[o1->slot[0]]) >> 5) == 0) {
+        for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
             if (i != o1->slot[0] && i != o1->slot[1]) {
-                if (func_00248F60(list[o1->slot[0]], list[i]) >= 0 && (func_0026FCE0(list[i]) >> 5) == 2) {
+                if (Ta_GetHandEnchant(list[o1->slot[0]], list[i]) >= 0 && (TaHand_GetCardKind(list[i]) >> 5) == 2) {
                     if (list[i] != 0x31B && list[i] != 0x31C) {
                         o1->slot[k] = i;
                         k++;
-                        o2->f38 += (s16)func_002493A0(list[i]);
-                        o2->f3A += (s16)func_002493A0(list[i]);
+                        o2->f38 += (s16)TaEnc_GetEncScore(list[i]);
+                        o2->f3A += (s16)TaEnc_GetEncScore(list[i]);
                     }
                 }
             }
@@ -1283,15 +1283,15 @@ static inline int empty_line(int c)
 {
     int i;
     for (i = 0; i < 7; i++) {
-        int pos = func_00155520(i, c);
+        int pos = TaLogic017_GetLine(i, c);
         if ((func_001E36E0_b(pos & 0xFF, pos >> 8) == 0 ? 1 : 0) == 1) {
-            return func_00155520(i, c);
+            return TaLogic017_GetLine(i, c);
         }
     }
     return -1;
 }
 
-int func_00156B40(int side, int unused, void *block_v, int unused_3)
+int TaLogic017_GetSummonPiece(int side, int unused, void *block_v, int unused_3)
 {
     struct DotrLogic017SummonBlock * block = block_v;
     int loc;
@@ -1308,12 +1308,12 @@ int func_00156B40(int side, int unused, void *block_v, int unused_3)
     int pos;
 
     (void)unused;
-    loc = func_001E1090(side, 0);
+    loc = SzDuel_GetUnitLoc(side, 0);
     if (block == 0) {
         return -1;
     }
     far = block->unknown_3e >> 5;
-    if (func_001587E0(block->unknown_3c) == 1) {
+    if (TaLogic017_IsExzParts(block->unknown_3c) == 1) {
         if (loc == 0x403) {
             return func_00156EA0_b(side);
         }
@@ -1327,7 +1327,7 @@ int func_00156B40(int side, int unused, void *block_v, int unused_3)
     }
     best = 7;
     best_spot = -1;
-    row = func_001E1090(side, 0) >> 8;
+    row = SzDuel_GetUnitLoc(side, 0) >> 8;
     pos = empty_line(far);
     if (pos < 0) {
         if (far != 0) {
@@ -1343,11 +1343,11 @@ int func_00156B40(int side, int unused, void *block_v, int unused_3)
         }
     }
     for (i = 0, ty = pos >> 8, tx = pos & 0xff; i < 8; i++) {
-        spot = func_0024E410(side, i);
+        spot = Ta_GetSommonPiecePreference(side, i);
         if (spot >= 0) {
             x = spot & 0xff;
             y = spot >> 8;
-            if (func_001E22B0(x, y) != 8 && func_001E22B0(x, y) != 9 && func_001E3790(x, y) < 0) {
+            if (SzDuel_GetField(x, y) != 8 && SzDuel_GetField(x, y) != 9 && SzDuel_GetMapUnitID(x, y) < 0) {
                 if ((MAXI(tx, x) - MINI(tx, x)) + (MAXI(ty, y) - MINI(ty, y)) <= best && y >= row) {
                     best_spot = spot;
                     best = (MAXI(tx, x) - MINI(tx, x)) + (MAXI(ty, y) - MINI(ty, y));
@@ -1365,7 +1365,7 @@ int func_00156B40(int side, int unused, void *block_v, int unused_3)
 #undef MAXI
 #undef MINI
 
-s32 func_00156EA0(void) {
+s32 TaLogic017_GetEmptyExzPiece(void) {
     s32 i;
     s32 value;
 
@@ -1387,18 +1387,18 @@ s32 func_00156EA0(void) {
             value = 0x503;
             break;
         }
-        if (func_001E36E0(value & 0xFF, value >> 8) == 0) {
+        if (SzDuel_GetMapUnit(value & 0xFF, value >> 8) == 0) {
             return value;
         }
     }
     return -1;
 }
 
-s32 func_00156F70(void) {
-    if (func_001E36E0(2, 3) == 0) {
+s32 TaLogic017_GetEmptyTrapPiece(void) {
+    if (SzDuel_GetMapUnit(2, 3) == 0) {
         return 0x302;
     }
-    return (func_001E36E0(4, 3) == 0) ? 0x304 : -1;
+    return (SzDuel_GetMapUnit(4, 3) == 0) ? 0x304 : -1;
 }
 
 typedef struct {
@@ -1444,8 +1444,8 @@ static inline s32 closer_00156FC0(Position_00156FC0 *best, Position_00156FC0 *cu
            ((bestHighX - bestLowX) + (bestHighY - bestLowY));
 }
 
-s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
-    extern void func_0027A090();
+s32 TaLogic_GetMinimumTask_AtkMission_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+    extern void TaLogic_GetInvadeRoot();
     s32 sourcePosition;
     s32 targetPosition;
     s32 count;
@@ -1461,14 +1461,14 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
 
     lowPosition = position_00156FC0(arg0, arg3);
     highPosition = position_00156FC0(arg0, arg3);
-    if (func_001DF540(highPosition >> 8, lowPosition & 0xFF) == 0) {
-        func_0027B1B0(arg0, 1);
+    if (SzDuel_GetUnit(highPosition >> 8, lowPosition & 0xFF) == 0) {
+        TaLogic_InitRogicControl(arg0, 1);
         return -1;
     }
-    sourcePosition = func_001E1090(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF);
+    sourcePosition = SzDuel_GetUnitLoc(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF);
     lowPosition = position_00156FC0(arg0, arg3);
     highPosition = position_00156FC0(arg0, arg3);
-    targetPosition = func_001E1090(highPosition >> 8, lowPosition & 0xFF);
+    targetPosition = SzDuel_GetUnitLoc(highPosition >> 8, lowPosition & 0xFF);
     candidate = positions;
     i = 0;
     p = candidate;
@@ -1478,22 +1478,22 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
         p++;
     } while (i < 12);
 
-    card = func_001DF540(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF);
+    card = SzDuel_GetUnit(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF);
     sourceX = sourcePosition & 0xFF;
     sourceY = sourcePosition >> 8;
-    if (func_002464F0(card, sourceX, sourceY) == 0) {
+    if (GetMoveRev(card, sourceX, sourceY) == 0) {
         s32 value;
         ((Result_00156FC0 *)arg2)->id = ((Record_00156FC0 *)arg0)->id;
         ((Result_00156FC0 *)arg2)->kind = 6;
         ((Result_00156FC0 *)arg2)->position = sourcePosition;
-        value = func_00276CC0(sourceX, sourceY, arg1, 3, 1,
-                             (u8)func_00158780(arg1));
-        if (value >= func_001E0290(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF, 0)) {
+        value = TaLogic_GetUnitWarning(sourceX, sourceY, arg1, 3, 1,
+                             (u8)TaLogic_GetWarnHideLvl_00158780(arg1));
+        if (value >= SzDuel_GetUnitAP(((Record_00156FC0 *)arg0)->id >> 8, ((Record_00156FC0 *)arg0)->id & 0xFF, 0)) {
             ((Result_00156FC0 *)arg2)->status = 1;
         } else {
             ((Result_00156FC0 *)arg2)->status = 0;
         }
-        func_0027B1B0(arg0, arg3);
+        TaLogic_InitRogicControl(arg0, arg3);
         return 0;
     } else {
         s32 id;
@@ -1505,12 +1505,12 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
         s32 bestValue;
 
         id = ((Record_00156FC0 *)arg0)->id;
-        flags = (u16)func_00158780(arg1);
-        func_0027A090(id >> 8, id & 0xFF, positions, sourceX, sourceY,
+        flags = (u16)TaLogic_GetWarnHideLvl_00158780(arg1);
+        TaLogic_GetInvadeRoot(id >> 8, id & 0xFF, positions, sourceX, sourceY,
                      targetX = targetPosition & 0xFF, targetY = targetPosition >> 8,
                      position_00156FC0(arg0, arg3),
                      (s64)0, (s64)30, (s64)flags);
-        count = func_0027AFC0((u8 *)positions);
+        count = TaLogic_GetMinGoalCount((u8 *)positions);
         bestIndex = 0xFF;
         if (count > 0) {
             bestValue = 0xFFFF;
@@ -1518,8 +1518,8 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
             if (index < count) {
             do {
                 s32 value;
-                value = func_00276CC0(candidate->x, candidate->y, arg1, 2, 1,
-                                     (u8)func_00158780(arg1));
+                value = TaLogic_GetUnitWarning(candidate->x, candidate->y, arg1, 2, 1,
+                                     (u8)TaLogic_GetWarnHideLvl_00158780(arg1));
                 if (value < bestValue) {
                     bestValue = value;
                     bestIndex = index;
@@ -1539,7 +1539,7 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
             ((Result_00156FC0 *)arg2)->position = sourcePosition;
             ((Result_00156FC0 *)arg2)->action = 2;
             ((Result_00156FC0 *)arg2)->status = 2;
-            func_0027B1B0(arg0, arg3);
+            TaLogic_InitRogicControl(arg0, arg3);
             return -1;
         }
         if (bestIndex != 0xFF) {
@@ -1554,7 +1554,7 @@ s32 func_00156FC0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
             ((Result_00156FC0 *)arg2)->position = sourcePosition;
             ((Result_00156FC0 *)arg2)->action = 2;
             ((Result_00156FC0 *)arg2)->status = 2;
-            func_0027B1B0(arg0, arg3);
+            TaLogic_InitRogicControl(arg0, arg3);
             return -1;
         }
     }
@@ -1577,7 +1577,7 @@ typedef struct Output_00157480 {
 } Output_00157480;
 
 
-s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+s32 TaLogic_GetMinimumTask_RunMission_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     Output_00157480 *output = arg2;
     s32 target;
     u8 endX;
@@ -1587,10 +1587,10 @@ s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
     s32 best;
     s32 i;
     Nibbles_00157480 *p;
-    extern s32 func_00158360();
-    extern s32 func_00279C40(s32, s32, s32, s32, s32, s32, void *, u8);
+    extern s32 TaLogic_IsOpenUnit_00158360();
+    extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
 
-    target = func_001E1090(*arg0 >> 8, *arg0 & 0xFF);
+    target = SzDuel_GetUnitLoc(*arg0 >> 8, *arg0 & 0xFF);
     p = nibbles;
     i = 0;
     do {
@@ -1612,31 +1612,31 @@ s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
         s32 limit;
         u16 initialScore;
 
-        initialScore = func_00158780(arg1);
+        initialScore = TaLogic_GetWarnHideLvl_00158780(arg1);
         centerX = target & 0xFF;
         centerY = target >> 8;
-        if (func_00276CC0(centerX, centerY, *arg0, 3, initialScore, 0) == 0) {
+        if (TaLogic_GetUnitWarning(centerX, centerY, *arg0, 3, initialScore, 0) == 0) {
             output->position = *arg0;
             output->action = 6;
             output->destination = target;
-            output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
-            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
-            func_0027B1B0(arg0, arg3);
+            output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_IsOpenUnit_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            TaLogic_InitRogicControl(arg0, arg3);
             return 0;
         }
-        if ((range = func_002464F0(func_001DF540(*arg0 >> 8, *arg0 & 0xFF), centerX, centerY)) == 0) {
+        if ((range = GetMoveRev(SzDuel_GetUnit(*arg0 >> 8, *arg0 & 0xFF), centerX, centerY)) == 0) {
             output->position = *arg0;
             output->action = 6;
             output->destination = target;
-            output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
-            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
-            func_0027B1B0(arg0, arg3);
+            output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_IsOpenUnit_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            TaLogic_InitRogicControl(arg0, arg3);
             return 0;
         }
-        if (func_001E2100(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
-            if ((func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 1 ||
-                (func_001E0700(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 5) {
-                func_001E1E70(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
+        if (SzDuel_GetUnitStatus(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
+            if ((SzDuel_GetUnitKind(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 1 ||
+                (SzDuel_GetUnitKind(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 5) {
+                SzDuel_SetUnitStatus(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
                 output->position = *arg0;
                 output->action = 0xE;
                 return 0;
@@ -1644,17 +1644,17 @@ s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
         }
         best = 0xFF;
         bestScore = 0xFFFF;
-        minX = (u8)func_00250860(0, centerX - (range & 0xF));
+        minX = (u8)GetCap(0, centerX - (range & 0xF));
         limit = centerX + (range & 0xF);
         endX = limit >= 7 ? 6 : limit;
-        minY = (u8)func_00250860(0, centerY - (range & 0xF));
+        minY = (u8)GetCap(0, centerY - (range & 0xF));
         limit = centerY + (range & 0xF);
         if (limit >= 7) {
             limit = 6;
         }
         maxY = (u8)limit;
         if ((*arg0 & 0xFF) == 0) {
-            extra = (u8)func_0027BBC0(*arg0 >> 8, *arg0 & 0xFF, 0);
+            extra = (u8)TaLogic_IsAttackedNow(*arg0 >> 8, *arg0 & 0xFF, 0);
         } else {
             extra = 0;
         }
@@ -1666,14 +1666,14 @@ s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
                     ((y < centerY ? centerY : y) - (centerY < y ? centerY : y))) > (range & 0xF)) {
                     continue;
                 }
-                if (func_00279C40(*arg0 >> 8, *arg0 & 0xFF, centerX, centerY, x, y, arg0, extra) == 1) {
-                    if (func_0027BE10(*arg0 >> 8, *arg0 & 0xFF, x, y, 0) == 0 || (u8)*arg0 == 0) {
-                        candidateScore = func_00276CC0(x, y, *arg0, 3, (u16)func_00158780(arg1), 0);
+                if (TaLogic_IsRunPassRoot(*arg0 >> 8, *arg0 & 0xFF, centerX, centerY, x, y, arg0, extra) == 1) {
+                    if (TaLogic_IsAttackedNow2(*arg0 >> 8, *arg0 & 0xFF, x, y, 0) == 0 || (u8)*arg0 == 0) {
+                        candidateScore = TaLogic_GetUnitWarning(x, y, *arg0, 3, (u16)TaLogic_GetWarnHideLvl_00158780(arg1), 0);
                         if (candidateScore < bestScore) {
                             bestScore = candidateScore;
                             best = packedY | x;
-                        } else if (candidateScore == bestScore && func_001E36E0(x, y) == 0 &&
-                            func_001E36E0(best & 0xFF, best >> 8) != 0) {
+                        } else if (candidateScore == bestScore && SzDuel_GetMapUnit(x, y) == 0 &&
+                            SzDuel_GetMapUnit(best & 0xFF, best >> 8) != 0) {
                             bestScore = candidateScore;
                             best = packedY | x;
                         }
@@ -1686,19 +1686,19 @@ s32 func_00157480(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
             output->action = 6;
             output->destination = best;
             if (best == target) {
-                output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+                output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
             } else {
-                output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 0, 0);
+                output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 0, 0);
             }
-            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            output->special = TaLogic_IsOpenUnit_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
         } else {
             output->position = *arg0;
             output->action = 6;
             output->destination = target;
-            output->result = func_0027E360(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
-            output->special = func_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_IsOpenUnit_00158360(*arg0 >> 8, *arg0 & 0xFF, arg0);
         }
-        func_0027B1B0(arg0, arg3);
+        TaLogic_InitRogicControl(arg0, arg3);
         return 0;
     }
 }
@@ -1748,18 +1748,18 @@ static inline u32 maxX_00157A50(void *unit, s32 side, u8 coord) {
     return (target_00157A50(unit, side) & 0xFF) < coord ? coord : (target_00157A50(unit, side) & 0xFF);
 }
 
-s32 func_00157A50(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4, u8 arg5) {
-    extern s32 func_00158360();
-    extern s32 func_00276CC0();
-    extern void func_00279230();
-    extern void func_0027A090();
-    extern s32 func_0027E360(s32, s32, s32, u8, s32);
+s32 TaLogic_GetMinimumTask_MoveMission_00157A50(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4, u8 arg5) {
+    extern s32 TaLogic_IsOpenUnit_00158360();
+    extern s32 TaLogic_GetUnitWarning();
+    extern void TaLogic_GetRoot();
+    extern void TaLogic_GetInvadeRoot();
+    extern s32 TaLogic_IsDefStyleUnit(s32, s32, s32, u8, s32);
     Coord_00157A50 coords[12];
     s32 initial;
     s32 cell;
     s32 count;
 
-    initial = func_001E1090(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF);
+    initial = SzDuel_GetUnitLoc(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF);
     {
         s32 bestScore;
         s32 best;
@@ -1771,17 +1771,17 @@ s32 func_00157A50(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4, u8 arg5) {
                 ((Output_00157A50 *)arg2)->position = ((Unit_00157A50 *)arg0)->position;
                 ((Output_00157A50 *)arg2)->kind = 6;
                 ((Output_00157A50 *)arg2)->target = initial;
-                ((Output_00157A50 *)arg2)->flag = func_0027E360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
-                ((Output_00157A50 *)arg2)->value = func_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
-                func_0027B1B0(arg0, arg3);
+                ((Output_00157A50 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
+                ((Output_00157A50 *)arg2)->value = TaLogic_IsOpenUnit_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
+                TaLogic_InitRogicControl(arg0, arg3);
                 return 0;
             }
         }
 
-        if (func_001E2100(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, 4) != 0) {
-            if ((func_001E0700(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF) >> 5) == 1 ||
-                (func_001E0700(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF) >> 5) == 5) {
-                func_001E1E70(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, 0, 1);
+        if (SzDuel_GetUnitStatus(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, 4) != 0) {
+            if ((SzDuel_GetUnitKind(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF) >> 5) == 1 ||
+                (SzDuel_GetUnitKind(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF) >> 5) == 5) {
+                SzDuel_SetUnitStatus(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, 0, 1);
                 ((Output_00157A50 *)arg2)->position = ((Unit_00157A50 *)arg0)->position;
                 ((Output_00157A50 *)arg2)->kind = 14;
                 return 0;
@@ -1799,27 +1799,27 @@ s32 func_00157A50(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4, u8 arg5) {
             } while (i < 12);
         }
 
-        cell = func_001E3790(target_00157A50(arg0, side) & 0xFF, target_00157A50(arg0, side) >> 8);
+        cell = SzDuel_GetMapUnitID(target_00157A50(arg0, side) & 0xFF, target_00157A50(arg0, side) >> 8);
         if (cell < 0) {
             cell = 0xFFFF;
         }
         if (arg5 == 1) {
-            func_0027A090(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF,
+            TaLogic_GetInvadeRoot(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF,
                          coords, initial & 0xFF, initial >> 8, target_00157A50(arg0, side) & 0xFF,
-                         target_00157A50(arg0, side) >> 8, 0xFFFF, 0, 30, (u16)func_00158780(arg1));
+                         target_00157A50(arg0, side) >> 8, 0xFFFF, 0, 30, (u16)TaLogic_GetWarnHideLvl_00158780(arg1));
         } else {
-            func_00279230(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF,
+            TaLogic_GetRoot(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF,
                          coords, initial & 0xFF, initial >> 8, target_00157A50(arg0, side) & 0xFF,
                          target_00157A50(arg0, side) >> 8, (u16)cell, 7);
         }
-        count = func_0027AFC0((u8 *)coords);
+        count = TaLogic_GetMinGoalCount((u8 *)coords);
         {
             if (count > 0) {
                 best = 0xFF;
                 bestScore = 0xFFFF;
                 for (index = 0; index < count; index++) {
-                    if (func_001E36E0(candidate->x, candidate->y) == 0) {
-                        s32 score = func_00276CC0(candidate->x, candidate->y, arg1, 3, 1, (u8)func_00158780(arg1));
+                    if (SzDuel_GetMapUnit(candidate->x, candidate->y) == 0) {
+                        s32 score = TaLogic_GetUnitWarning(candidate->x, candidate->y, arg1, 3, 1, (u8)TaLogic_GetWarnHideLvl_00158780(arg1));
                         if (score < bestScore) {
                             bestScore = score;
                             best = index;
@@ -1860,9 +1860,9 @@ s32 func_00157A50(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4, u8 arg5) {
                 ((Output_00157A50 *)arg2)->position = ((Unit_00157A50 *)arg0)->position;
                 ((Output_00157A50 *)arg2)->kind = 6;
                 ((Output_00157A50 *)arg2)->target = initial;
-                ((Output_00157A50 *)arg2)->flag = func_0027E360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
-                ((Output_00157A50 *)arg2)->value = func_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
-                func_0027B1B0(arg0, arg3);
+                ((Output_00157A50 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
+                ((Output_00157A50 *)arg2)->value = TaLogic_IsOpenUnit_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
+                TaLogic_InitRogicControl(arg0, arg3);
                 return 0;
             }
 
@@ -1870,22 +1870,22 @@ s32 func_00157A50(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4, u8 arg5) {
                 ((Output_00157A50 *)arg2)->position = ((Unit_00157A50 *)arg0)->position;
                 ((Output_00157A50 *)arg2)->kind = 6;
                 ((Output_00157A50 *)arg2)->target = (coords[best].y << 8) | coords[best].x;
-                ((Output_00157A50 *)arg2)->flag = func_0027E360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
-                ((Output_00157A50 *)arg2)->value = func_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
+                ((Output_00157A50 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
+                ((Output_00157A50 *)arg2)->value = TaLogic_IsOpenUnit_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
             } else {
                 ((Output_00157A50 *)arg2)->position = ((Unit_00157A50 *)arg0)->position;
                 ((Output_00157A50 *)arg2)->kind = 6;
                 ((Output_00157A50 *)arg2)->target = initial;
-                ((Output_00157A50 *)arg2)->flag = func_0027E360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
-                ((Output_00157A50 *)arg2)->value = func_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
+                ((Output_00157A50 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, ((Output_00157A50 *)arg2)->target, arg4, 0);
+                ((Output_00157A50 *)arg2)->value = TaLogic_IsOpenUnit_00158360(((Unit_00157A50 *)arg0)->position >> 8, ((Unit_00157A50 *)arg0)->position & 0xFF, arg0);
             }
-            func_0027B1B0(arg0, arg3);
+            TaLogic_InitRogicControl(arg0, arg3);
         }
     }
     return 0;
 }
 
-s32 func_00158360(s32 arg0, s32 arg1) {
+s32 TaLogic_IsOpenUnit_00158360(s32 arg0, s32 arg1) {
     u8 sp70[0x20];
     u8 sp90[0x60];
     s32 spF0[8];
@@ -1894,27 +1894,27 @@ s32 func_00158360(s32 arg0, s32 arg1) {
     s32 mask;
     u32 *data;
 
-    extern s32 func_00158800();
+    extern s32 TaLogic017_IsExzSafe();
 
     count = 0;
-    state = func_001E1030();
-    func_001E1090(arg0, arg1);
-    mask = func_00250360(arg0, arg1);
-    data = func_001E0B70(arg0, arg1, 0);
-    func_0026FD30(arg0, spF0);
-    if (func_001E2100(arg0, arg1, 4) != 0) {
+    state = SzDuel_GetUnitCardNo();
+    SzDuel_GetUnitLoc(arg0, arg1);
+    mask = Ta_IsUnitControl(arg0, arg1);
+    data = SzDuel_GetUnitEffect(arg0, arg1, 0);
+    TaHand_GetNextHand(arg0, spF0);
+    if (SzDuel_GetUnitStatus(arg0, arg1, 4) != 0) {
         return 0;
     }
-    if (func_001587E0(state) == 1) {
-        if (func_00158960(mask) == 4) {
+    if (TaLogic017_IsExzParts(state) == 1) {
+        if (TaLogic017_IsExzodia(mask) == 4) {
             return 1;
         }
     }
-    switch (func_001E0700(arg0, arg1) >> 5) {
+    switch (SzDuel_GetUnitKind(arg0, arg1) >> 5) {
     case 0:
         switch (state) {
         case 0x5F:
-            if (func_001DF470(arg0) < 0x4B0) {
+            if (SzDuel_GetLP(arg0) < 0x4B0) {
                 return 1;
             }
             break;
@@ -1922,10 +1922,10 @@ s32 func_00158360(s32 arg0, s32 arg1) {
             s32 i;
             s32 position;
 
-            mask = func_0024CA40(0, 0, mask, 2, 3, 14);
-            for (i = 0; i < func_0024E910(mask); i++) {
-                position = func_0024EC50(mask, i);
-                if (func_002781B0(position >> 8, position & 0xFF, 0) == 1) {
+            mask = SearchUnitByRange(0, 0, mask, 2, 3, 14);
+            for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(mask); i++) {
+                position = Ta_GetUnitOwnerIDFromLstCount(mask, i);
+                if (TaLogic_IsJudgeUnitDanger(position >> 8, position & 0xFF, 0) == 1) {
                     count++;
                 }
             }
@@ -1937,7 +1937,7 @@ s32 func_00158360(s32 arg0, s32 arg1) {
         }
         return 2;
     case 1:
-        if (func_0027D830(arg0, arg1, 0, 0, 6, 0) == 5) {
+        if (TaLogic_GetActionReaction(arg0, arg1, 0, 0, 6, 0) == 5) {
             return 2;
         }
         if (data == NULL) {
@@ -1945,7 +1945,7 @@ s32 func_00158360(s32 arg0, s32 arg1) {
         }
         switch (*data >> 8) {
         case 0x22:
-            if (func_0024E910(func_0024CA40(0, 0, mask, 2, 0x1D, 14)) > 3) {
+            if (Ta_GetUnitNumFrom22bitFlagList(SearchUnitByRange(0, 0, mask, 2, 0x1D, 14)) > 3) {
                 return 1;
             }
             break;
@@ -1954,10 +1954,10 @@ s32 func_00158360(s32 arg0, s32 arg1) {
             s32 i;
             s32 position;
 
-            list = func_0024CA40(0, 0, mask, 2, 0x34, 14);
-            for (i = 0; i < func_0024E910(list); i++) {
-                position = func_0024EC50(list, i);
-                if ((func_001E1090(position >> 8, position & 0xFF) >> 8) >= 2) {
+            list = SearchUnitByRange(0, 0, mask, 2, 0x34, 14);
+            for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(list); i++) {
+                position = Ta_GetUnitOwnerIDFromLstCount(list, i);
+                if ((SzDuel_GetUnitLoc(position >> 8, position & 0xFF) >> 8) >= 2) {
                     return 1;
                 }
             }
@@ -1968,24 +1968,24 @@ s32 func_00158360(s32 arg0, s32 arg1) {
             s32 i;
 
             i = 0;
-            if (i < func_0026FE20(mask)) {
+            if (i < TaHand_GetNextHandNum(mask)) {
                 p = spF0;
                 do {
-                    if (func_001DE020(func_0026FCE0(*p) >> 5) == 2) {
+                    if (SzDuel_Kind2Type(TaHand_GetCardKind(*p) >> 5) == 2) {
                         return 1;
                     }
                     p++;
                     i++;
-                } while (i < func_0026FE20(mask));
+                } while (i < TaHand_GetNextHandNum(mask));
             }
-            if (func_00158800(mask) == 1 && func_00155C90(mask, sp70, sp90) >= 0) {
+            if (TaLogic017_IsExzSafe(mask) == 1 && TaLogic017_PlayExzCombo(mask, sp70, sp90) >= 0) {
                 return 1;
             }
             break;
         }
         case 0xD:
             if ((*data & 0x3F) == 0x32) {
-                if (func_0024E780(mask == 0 ? 1 : 0, 3) >= 3) {
+                if (Ta_GetUnitNum(mask == 0 ? 1 : 0, 3) >= 3) {
                     return 1;
                 }
             } else {
@@ -2000,9 +2000,9 @@ s32 func_00158360(s32 arg0, s32 arg1) {
     return 2;
 }
 
-s32 func_00158780(s32 arg0) {
-    if (func_001DF470(arg0) > 0x4B0) {
-        if (func_001E0150(arg0) >= 5) {
+s32 TaLogic_GetWarnHideLvl_00158780(s32 arg0) {
+    if (SzDuel_GetLP(arg0) > 0x4B0) {
+        if (SzDuel_GetUnitMonsterCount(arg0) >= 5) {
             return 0x2EE;
         } else {
             return 0x5DC;
@@ -2012,45 +2012,45 @@ s32 func_00158780(s32 arg0) {
     }
 }
 
-s32 func_001587E0(s32 arg0) {
+s32 TaLogic017_IsExzParts(s32 arg0) {
     s32 result;
 
     result = (u32) (arg0 - 0x36) < 4U ? 1 : 0;
     return result;
 }
 
-s32 func_00158800(s32 arg0) {
-    return func_00158810(arg0);
+s32 TaLogic017_IsExzSafe(s32 arg0) {
+    return TaLogic017_IsSetTrap(arg0);
 }
 
-s32 func_00158810(s32 arg0) {
-    if (func_0024CA40(0, 0, arg0, 1, 0x032B001C, 14) == 0) {
-        if (func_0027DD20(arg0, 1, 0x32B) == 0) {
+s32 TaLogic017_IsSetTrap(s32 arg0) {
+    if (SearchUnitByRange(0, 0, arg0, 1, 0x032B001C, 14) == 0) {
+        if (TaLogic_GetGraveCardCount(arg0, 1, 0x32B) == 0) {
             return 0;
         }
     }
-    if (func_0024CA40(0, 0, arg0, 1, 0x0325001C, 14) == 0) {
-        if (func_0027DD20(arg0, 1, 0x325) == 0) {
+    if (SearchUnitByRange(0, 0, arg0, 1, 0x0325001C, 14) == 0) {
+        if (TaLogic_GetGraveCardCount(arg0, 1, 0x325) == 0) {
             return 0;
         }
     }
-    if (func_0024CA40(0, 0, arg0, 1, 0x0335001C, 14) == 0) {
-        if (func_0027DD20(arg0, 1, 0x335) == 0) {
+    if (SearchUnitByRange(0, 0, arg0, 1, 0x0335001C, 14) == 0) {
+        if (TaLogic_GetGraveCardCount(arg0, 1, 0x335) == 0) {
             return 0;
         }
     }
-    if (func_0024CA40(0, 0, arg0, 1, 0x0338001C, 14) == 0) {
-        if (func_0027DD20(arg0, 1, 0x338) == 0) {
+    if (SearchUnitByRange(0, 0, arg0, 1, 0x0338001C, 14) == 0) {
+        if (TaLogic_GetGraveCardCount(arg0, 1, 0x338) == 0) {
             return 0;
         }
     }
     return 1;
 }
 
-s32 func_00158960(s32 arg0) {
-    extern s32 func_001E1030();
-    extern s32 func_001E1580();
-    extern s32 func_001E1640();
+s32 TaLogic017_IsExzodia(s32 arg0) {
+    extern s32 SzDuel_GetUnitCardNo();
+    extern s32 SzDuel_GetUnitCurseRest();
+    extern s32 SzDuel_GetUnitSpellRest();
     s32 i;
     s32 count;
     s32 j;
@@ -2059,17 +2059,17 @@ s32 func_00158960(s32 arg0) {
     s32 found[4];
 
     count = 0;
-    if (func_001E1030(arg0, 0) == 0x3A) {
+    if (SzDuel_GetUnitCardNo(arg0, 0) == 0x3A) {
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 8; j++) {
-                v = func_0024E410(arg0, j);
-                if (func_001E36E0(v & 0xFF, v >> 8) != 0) {
-                    v = func_001E3790(v & 0xFF, v >> 8);
+                v = Ta_GetSommonPiecePreference(arg0, j);
+                if (SzDuel_GetMapUnit(v & 0xFF, v >> 8) != 0) {
+                    v = SzDuel_GetMapUnitID(v & 0xFF, v >> 8);
                     if (v >= 0) {
-                        type = func_001E1030(v >> 8, v & 0xFF);
-                        if (type == func_002686F0(i) &&
-                            func_001E1580(v >> 8, v & 0xFF) == 0 &&
-                            func_001E1640(v >> 8, v & 0xFF) == 0 &&
+                        type = SzDuel_GetUnitCardNo(v >> 8, v & 0xFF);
+                        if (type == Ta_GetExzodiaPartsCardNo(i) &&
+                            SzDuel_GetUnitCurseRest(v >> 8, v & 0xFF) == 0 &&
+                            SzDuel_GetUnitSpellRest(v >> 8, v & 0xFF) == 0 &&
                             (v >> 8) == arg0) {
                             found[i] = 1;
                         }
@@ -2103,7 +2103,7 @@ typedef struct {
     u16 count;       /* 0x1A2 */
 } Work_00158AB0;
 
-s32 func_00276290(void *, void *, s32);
+s32 TaLogic_GetInputQueFromMinimumTask(void *, void *, s32);
 
 s32 func_00158AB0(s32 arg0, void *arg1) {
     Req_00158AB0 req;
@@ -2137,11 +2137,11 @@ s32 func_00158AB0(s32 arg0, void *arg1) {
         return 0x800;
     }
     if (w->idx == 0) {
-        func_00275E80(w);
-        if (func_00154220(w, &req, arg0) == 0) {
+        TaLogic_DoAdjustLogicData(w);
+        if (TaLogic_GetMinimumTask_00154220(w, &req, arg0) == 0) {
             return 0x800;
         }
-        if (func_00276290(w, &req, arg0) < 0) {
+        if (TaLogic_GetInputQueFromMinimumTask(w, &req, arg0) < 0) {
             return 0;
         }
     }
@@ -2162,79 +2162,79 @@ s32 func_00158AB0(s32 arg0, void *arg1) {
 
 #pragma conditional_move off
 
-s32 func_00158C80(void *work, void *arg1, s32 arg2) {
+s32 TaLogic_GetMinimumTask_00158C80(void *work, void *arg1, s32 arg2) {
     u16 *arg0 = work;
     s32 side;
     s32 found;
     s32 result;
     s32 index;
 
-    side = func_001DE540();
+    side = SzDuel_GetTurnOwner();
     found = 0;
-    if ((result = func_00159380(arg0, side, (s32)arg1)) < 0) {
+    if ((result = TaLogic_GetNextActiveUnit_00159380(arg0, side, (s32)arg1)) < 0) {
         return 0;
     }
-    index = func_00276C80(arg0, result & 0xFFFF);
+    index = TaLogic_GetActionUnitFromOwnerID(arg0, result & 0xFFFF);
     if (index < 0) {
         return 0;
     }
     if ((result >> 16) == 1) {
         if (((arg0[index * 8 + 2] >> 8) & 0xFF) == 10) {
-            func_0027B1B0(arg0 + index * 8, 1);
+            TaLogic_InitRogicControl(arg0 + index * 8, 1);
         } else {
-            func_0027B1B0(arg0 + index * 8, 0);
+            TaLogic_InitRogicControl(arg0 + index * 8, 0);
         }
         return 1;
     }
-    func_001591B0(arg0 + index * 8);
+    TaLogic_CommandUnit_001591B0(arg0 + index * 8);
     switch ((arg0[index * 8 + 2] >> 8) & 0xFF) {
     case 5:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_0015B250(arg0 + index * 8, side, arg1, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_RunMission_0015B250(arg0 + index * 8, side, arg1, 1);
             found = 1;
         }
         break;
     case 2:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            if (func_0015B820(arg0 + index * 8, side, arg1, 1) < 0) {
-                func_0027B1B0(arg0 + index * 8, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            if (TaLogic_GetMinimumTask_AtkMission_0015B820(arg0 + index * 8, side, arg1, 1) < 0) {
+                TaLogic_InitRogicControl(arg0 + index * 8, 1);
                 return 1;
             }
             found = 1;
         }
         break;
     case 10:
-        if (func_0015A360(arg0[index * 8], side, (s32)arg1) < 0) {
-            func_0027B1B0(arg0 + index * 8, 1);
+        if (TaLogic_GetMinimumTask_Summon_0015A360(arg0[index * 8], side, (s32)arg1) < 0) {
+            TaLogic_InitRogicControl(arg0 + index * 8, 1);
             *(u8 *)((u8 *)arg1 + 2) = 0xFF;
             *(s32 *)((u8 *)arg1 + 0xC) = 0;
         } else {
-            func_0027B1B0(arg0 + index * 8, 1);
+            TaLogic_InitRogicControl(arg0 + index * 8, 1);
             found = 1;
         }
         break;
     case 6:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_0015BE00(arg0 + index * 8, side, arg1, 1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_0015BE00(arg0 + index * 8, side, arg1, 1, 0);
             found = 1;
         }
         break;
     case 3:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_0015BE00(arg0 + index * 8, side, arg1, 1, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_0015BE00(arg0 + index * 8, side, arg1, 1, 1);
             found = 1;
         }
         break;
     case 9:
-        func_0027D020(arg0 + index * 8, side, arg1, 1, 0, func_0015D120(side), 3, 1);
+        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, arg1, 1, 0, TaLogic_GetWarnHideLvl_0015D120(side), 3, 1);
         found = 1;
         break;
     case 11:
-        func_0015C670(arg0 + index * 8, side, arg1, 1);
+        TaLogic_GetMinimumTask_TrapMission_0015C670(arg0 + index * 8, side, arg1, 1);
         found = 1;
         break;
     case 14:
-        func_00276EC0(arg0 + index * 8, side, arg1);
+        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, arg1);
         found = 1;
         break;
     default:
@@ -2247,52 +2247,52 @@ s32 func_00158C80(void *work, void *arg1, s32 arg2) {
     found = 0;
     switch (arg0[index * 8 + 2] & 0xFF) {
     case 5:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_0015B250(arg0 + index * 8, side, arg1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_RunMission_0015B250(arg0 + index * 8, side, arg1, 0);
             found = 1;
         }
         break;
     case 2:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            if (func_0015B820(arg0 + index * 8, side, arg1, 0) < 0) {
-                func_0015B250(arg0 + index * 8, side, arg1, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            if (TaLogic_GetMinimumTask_AtkMission_0015B820(arg0 + index * 8, side, arg1, 0) < 0) {
+                TaLogic_GetMinimumTask_RunMission_0015B250(arg0 + index * 8, side, arg1, 0);
             }
             found = 1;
         }
         break;
     case 10:
-        if (func_0015A360(arg0[index * 8], side, (s32)arg1) < 0) {
-            func_0027B1B0(arg0 + index * 8, 0);
+        if (TaLogic_GetMinimumTask_Summon_0015A360(arg0[index * 8], side, (s32)arg1) < 0) {
+            TaLogic_InitRogicControl(arg0 + index * 8, 0);
             *(u8 *)((u8 *)arg1 + 2) = 0xFF;
             found = 1;
             *(s32 *)((u8 *)arg1 + 0xC) = 0;
         } else {
-            func_0027B1B0(arg0 + index * 8, 0);
+            TaLogic_InitRogicControl(arg0 + index * 8, 0);
             found = 1;
         }
         break;
     case 6:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_0015BE00(arg0 + index * 8, side, arg1, 0, 0);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_0015BE00(arg0 + index * 8, side, arg1, 0, 0);
             found = 1;
         }
         break;
     case 3:
-        if (func_001E2100(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            func_0015BE00(arg0 + index * 8, side, arg1, 0, 1);
+        if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
+            TaLogic_GetMinimumTask_MoveMission_0015BE00(arg0 + index * 8, side, arg1, 0, 1);
             found = 1;
         }
         break;
     case 9:
-        func_0027D020(arg0 + index * 8, side, arg1, 0, 0, func_0015D120(side), 3, 1);
+        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, arg1, 0, 0, TaLogic_GetWarnHideLvl_0015D120(side), 3, 1);
         found = 1;
         break;
     case 11:
-        func_0015C670(arg0 + index * 8, side, arg1, 0);
+        TaLogic_GetMinimumTask_TrapMission_0015C670(arg0 + index * 8, side, arg1, 0);
         found = 1;
         break;
     case 14:
-        func_00276EC0(arg0 + index * 8, side, arg1);
+        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, arg1);
         break;
     default:
         return 0;
@@ -2304,8 +2304,8 @@ s32 func_00158C80(void *work, void *arg1, s32 arg2) {
 }
 #pragma conditional_move reset
 
-s32 func_001591B0(u16 *arg0) {
-    extern void func_00159760();
+s32 TaLogic_CommandUnit_001591B0(u16 *arg0) {
+    extern void TaLogic018_CommandLDUnit();
     s32 temp_a1;
     s32 temp_v1_2;
     s32 temp_v1_4;
@@ -2313,35 +2313,35 @@ s32 func_001591B0(u16 *arg0) {
     u16 temp_v1;
     s32 temp_s0;
 
-    func_001E1090((s32) arg0[0] >> 8, arg0[0] & 0xFF);
-    temp_s0 = func_00250360((s32) arg0[0] >> 8, arg0[0] & 0xFF);
-    if (func_001DF540((s32) arg0[0] >> 8, arg0[0] & 0xFF) != 0) {
-        if (func_001E2100((s32) arg0[0] >> 8, arg0[0] & 0xFF, 0) == 0) {
+    SzDuel_GetUnitLoc((s32) arg0[0] >> 8, arg0[0] & 0xFF);
+    temp_s0 = Ta_IsUnitControl((s32) arg0[0] >> 8, arg0[0] & 0xFF);
+    if (SzDuel_GetUnit((s32) arg0[0] >> 8, arg0[0] & 0xFF) != 0) {
+        if (SzDuel_GetUnitStatus((s32) arg0[0] >> 8, arg0[0] & 0xFF, 0) == 0) {
             temp_v1 = arg0[0];
             if (temp_v1 != 0xFFFF) {
                 temp_a1 = temp_v1 & 0xFF;
                 if (temp_a1 == 0) {
                     if (*(s32 *)(arg0 + 4) == -1) {
-                        func_00159760(arg0, temp_a1);
+                        TaLogic018_CommandLDUnit(arg0, temp_a1);
                     }
                 } else {
-                    temp_v1_2 = func_001E0700((s32) temp_v1 >> 8, temp_a1) >> 5;
+                    temp_v1_2 = SzDuel_GetUnitKind((s32) temp_v1 >> 8, temp_a1) >> 5;
                     switch (temp_v1_2) {
                     case 0:
-                        if (func_002507D0((s32) arg0[0] >> 8, arg0[0] & 0xFF) == 1) {
-                            func_00159FE0(arg0);
+                        if (TaUtil_IsExMonster((s32) arg0[0] >> 8, arg0[0] & 0xFF) == 1) {
+                            TaLogic018_CommandEfcMonster(arg0);
                         } else {
-                            func_00159D00(arg0);
+                            TaLogic018_CommandBtlUnit(arg0);
                         }
                         break;
                     case 2:
-                        func_0027CA50(arg0, 3, 0, func_0015D120(temp_s0) & 0xFF);
+                        TaLogic_CommandEncUnit(arg0, 3, 0, TaLogic_GetWarnHideLvl_0015D120(temp_s0) & 0xFF);
                         break;
                     case 5:
-                        func_00159D00(arg0);
+                        TaLogic018_CommandBtlUnit(arg0);
                         if ((((s32) arg0[2] >> 8) & 0xFF) == 2) {
                             temp_v1_3 = (u32) *(s32 *)(arg0 + 4) >> 0x10;
-                            temp_v1_4 = func_001E1090((s32) ((temp_v1_3 & 0xFFFF) >> 8), temp_v1_3 & 0xFF) << 0x10;
+                            temp_v1_4 = SzDuel_GetUnitLoc((s32) ((temp_v1_3 & 0xFFFF) >> 8), temp_v1_3 & 0xFF) << 0x10;
                             arg0[2] = 0x6FF;
                             *(s32 *)(arg0 + 4) = temp_v1_4 | arg0[4];
                         }
@@ -2358,7 +2358,7 @@ s32 func_001591B0(u16 *arg0) {
     return 0;
 }
 
-s32 func_00159380(u16 *arg0, s32 arg1, s32 arg2) {
+s32 TaLogic_GetNextActiveUnit_00159380(u16 *arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -2368,62 +2368,62 @@ s32 func_00159380(u16 *arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1D, 1);
-    ret = func_0027B360(arg1, list, arg0);
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1D, 1);
+    ret = TaLogic_GetAtkUnitNow(arg1, list, arg0);
     if (ret >= 0) {
         return ret;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1E, 1);
-    for (i = 0; i < func_0027C670(list); i++) {
-        if ((func_001E0700(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
-            func_0027B9B0(list[i]) == 1 && func_0027C6D0(list[i]) == 1) {
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1E, 1);
+    for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
+        if ((SzDuel_GetUnitKind(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
+            TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
     pos = arg1 << 8;
-    idx = func_00276C80(arg0, pos);
-    func_001591B0(arg0 + idx * 8);
+    idx = TaLogic_GetActionUnitFromOwnerID(arg0, pos);
+    TaLogic_CommandUnit_001591B0(arg0 + idx * 8);
     if (((arg0[idx * 8 + 2] >> 8) & 0xFF) == 10) {
-        if (func_001DE6D0(arg1) == 1 && func_0015A360(pos, arg1, arg2) >= 0) {
+        if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_0015A360(pos, arg1, arg2) >= 0) {
             return pos | 0x10000;
         }
-        if (func_0027B9B0(pos & 0xFFFF) == 1) {
+        if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (func_001E2100(arg1, 0, 0) == 0) {
-        if (func_0027B9B0(pos & 0xFFFF) == 1) {
+    } else if (SzDuel_GetUnitStatus(arg1, 0, 0) == 0) {
+        if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (func_001DE6D0(arg1) == 1 && func_0015A360(pos, arg1, arg2) >= 0) {
+    } else if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_0015A360(pos, arg1, arg2) >= 0) {
         return pos | 0x10000;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1F, 1);
-    for (i = 0; i < func_0027C670(list); i++) {
-        if (func_0027B9B0(list[i]) == 1 && func_0027C6D0(list[i]) == 1) {
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
+        if (TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    func_0027C070(arg1, list, 0x1F, 1);
-    for (i = 0; i < func_0027C670(list); i++) {
-        if (func_001E2100(list[i] >> 8, list[i] & 0xFF, 0) == 0 && func_0027C6D0(list[i]) == 1) {
+    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
+        if (SzDuel_GetUnitStatus(list[i] >> 8, list[i] & 0xFF, 0) == 0 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
     return -1;
 }
 
-s32 func_00159930(s32, s32); /* extern */
-s32 func_00159BE0(s32, s32, s32); /* extern */
-s32 func_0015A5F0(s32, void *); /* extern */
+s32 TaLogic018_GetVirusMove(s32, s32); /* extern */
+s32 TaLogic018_GetSummonPoint(s32, s32, s32); /* extern */
+s32 TaLogic018_IsHandPlay(s32, void *); /* extern */
 
 typedef struct {
     u16 id;
@@ -2433,7 +2433,7 @@ typedef struct {
     u32 code;
 } Object_00159760;
 
-void func_00159760(void *arg0) {
+void TaLogic018_CommandLDUnit(void *arg0) {
     u8 sp40[0x20];
     u8 sp60[0x60];
     Object_00159760 *obj;
@@ -2445,48 +2445,48 @@ void func_00159760(void *arg0) {
     obj = arg0;
     id = obj->id;
     kind = id >> 8;
-    pos = func_001E1090(id >> 8, id & 0xFF);
-    if (func_0027BBC0(obj->id >> 8, obj->id & 0xFF, 0) == 1) {
-        if (func_001DE6D0(kind) == 1) {
+    pos = SzDuel_GetUnitLoc(id >> 8, id & 0xFF);
+    if (TaLogic_IsAttackedNow(obj->id >> 8, obj->id & 0xFF, 0) == 1) {
+        if (SzDuel_InqHandPhase(kind) == 1) {
             obj->status = 0x50A;
         } else {
             obj->status = 0x5FF;
         }
         return;
     }
-    result = func_0015A5F0(kind, sp60);
+    result = TaLogic018_IsHandPlay(kind, sp60);
     if (result < 0) {
-        if (func_001DE6D0(kind) == 1) {
+        if (SzDuel_InqHandPhase(kind) == 1) {
             obj->status = 0x60A;
         } else {
             obj->status = 0x6FF;
         }
-        obj->code = (u16)obj->code | (func_00159930(obj->id >> 8, obj->id & 0xFF) << 16);
+        obj->code = (u16)obj->code | (TaLogic018_GetVirusMove(obj->id >> 8, obj->id & 0xFF) << 16);
     } else {
         if (result == 0) {
-            func_0015AB10(kind, sp40, sp60);
+            TaLogic018_SetComboQue(kind, sp40, sp60);
         }
-        if ((sp60[0x3E] >> 5) == 0 && func_001E02F0(sp60, 0) > 0x5DC) {
-            if (func_001DE6D0(kind) == 1) {
+        if ((sp60[0x3E] >> 5) == 0 && SzDuel_GetUnitAP2(sp60, 0) > 0x5DC) {
+            if (SzDuel_InqHandPhase(kind) == 1) {
                 obj->status = 0x60A;
             } else {
                 obj->status = 0x6FF;
             }
-            obj->code = (u16)obj->code | (func_00159BE0(kind, pos & 0xFF, pos >> 8) << 16);
+            obj->code = (u16)obj->code | (TaLogic018_GetSummonPoint(kind, pos & 0xFF, pos >> 8) << 16);
         }
-        if (func_001DE6D0(kind) == 1) {
+        if (SzDuel_InqHandPhase(kind) == 1) {
             obj->status = 0x60A;
         } else {
             obj->status = 0x6FF;
         }
-        obj->code = (u16)obj->code | (func_00159930(obj->id >> 8, obj->id & 0xFF) << 16);
+        obj->code = (u16)obj->code | (TaLogic018_GetVirusMove(obj->id >> 8, obj->id & 0xFF) << 16);
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", func_00159930);
+INCLUDE_ASM("asm/nonmatchings/main_013", TaLogic018_GetVirusMove);
 
-s32 func_00159BE0(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 func_0015A120();
+s32 TaLogic018_GetSummonPoint(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 TaLogic018_GetOutVirusZone();
     u16 buf[0x31];
     s32 i;
     s32 best;
@@ -2495,14 +2495,14 @@ s32 func_00159BE0(s32 arg0, s32 arg1, s32 arg2) {
     u8 count;
     s32 dist;
 
-    result = func_001E1090(arg0 == 0 ? 1 : 0, 0);
-    count = func_0015A120(result & 0xFF, result >> 8, buf);
+    result = SzDuel_GetUnitLoc(arg0 == 0 ? 1 : 0, 0);
+    count = TaLogic018_GetOutVirusZone(result & 0xFF, result >> 8, buf);
     best = 0xE;
     if (count == 0) {
         return -1;
     }
     for (p = buf, i = 0; i < count; p++, i++) {
-        if (func_001DF540(*p & 0xFF, *p >> 8) == 0) {
+        if (SzDuel_GetUnit(*p & 0xFF, *p >> 8) == 0) {
             dist = (((arg1 < (*p & 0xFF)) ? (*p & 0xFF) : arg1) - (((*p & 0xFF) < arg1) ? (*p & 0xFF) : arg1)) +
                    (((arg2 < (*p >> 8)) ? (*p >> 8) : arg2) - (((*p >> 8) < arg2) ? (*p >> 8) : arg2));
             if (dist < best) {
@@ -2536,10 +2536,10 @@ typedef struct {
     } data;
 } Entry_00159D00;
 
-void func_00159D00(void *arg0) {
-    extern s32 func_0027B200();
-    extern void func_0027E770();
-    extern s32 func_00159F80();
+void TaLogic018_CommandBtlUnit(void *arg0) {
+    extern s32 TaLogic_IsRootOpen();
+    extern void TaLogic_InitIgnoreLst();
+    extern s32 TaLogic018_GetNearUnit();
     Entry_00159D00 *entry = arg0;
     s32 side;
     s32 player;
@@ -2552,18 +2552,18 @@ void func_00159D00(void *arg0) {
     s16 countA;
     s16 countB;
 
-    if (func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
-        func_0027E770(work);
-        side = func_0024DE70(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    if (SzDuel_GetUnit(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        TaLogic_InitIgnoreLst(work);
+        side = Ta_GetCurrentSide(entry->coordinates >> 8, entry->coordinates & 0xFF);
         other = (side == 0 ? 1 : 0) << 8;
-        pos = func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF);
-        otherPos = func_001E1090(other >> 8, other & 0xFF);
-        player = func_001DF540(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        pos = SzDuel_GetUnitLoc(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        otherPos = SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
+        player = SzDuel_GetUnit(entry->coordinates >> 8, entry->coordinates & 0xFF);
         for (i = 0; i < 22; i++) {
             list[i].card = 0xFFFF;
             list[i].flag = 0xFF;
         }
-        if (func_0027B200(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
+        if (TaLogic_IsRootOpen(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
                           other >> 8, other & 0xFF, otherPos & 0xFF, otherPos >> 8, 3) > 0) {
             entry->state = 0x2FF;
             entry->data.word = (other << 16) | entry->data.halves.low;
@@ -2573,9 +2573,9 @@ void func_00159D00(void *arg0) {
         countA = 0;
         i = 1;
         while (1) {
-            switch (func_00159F80(entry, 0, player, pos & 0xFF, pos >> 8,
-                                  func_0024DE70(entry->coordinates >> 8, entry->coordinates & 0xFF) == 0 ? 1 : 0,
-                                  (u8)i, func_0015D120(side), list, 0,
+            switch (TaLogic018_GetNearUnit(entry, 0, player, pos & 0xFF, pos >> 8,
+                                  Ta_GetCurrentSide(entry->coordinates >> 8, entry->coordinates & 0xFF) == 0 ? 1 : 0,
+                                  (u8)i, TaLogic_GetWarnHideLvl_0015D120(side), list, 0,
                                   &countA, &countB, 3, work)) {
             case 3:
                 entry->state = 0x6FF;
@@ -2604,49 +2604,49 @@ void func_00159D00(void *arg0) {
     }
 }
 
-void func_00159F80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
-    func_0027DE20(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+void TaLogic018_GetNearUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
+    TaLogic_GetNearUnit(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
                   arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
                   0, 2500, arg_sp28);
 }
 
-void func_00159FE0(void *arg0) {
-    extern s32 func_001E1030();
+void TaLogic018_CommandEfcMonster(void *arg0) {
+    extern s32 SzDuel_GetUnitCardNo();
     Entry_00159D00 *entry = arg0;
     s32 slot;
 
-    slot = func_00250360(entry->coordinates >> 8, entry->coordinates & 0xFF);
-    switch (func_001E1030(entry->coordinates >> 8, entry->coordinates & 0xFF)) {
+    slot = Ta_IsUnitControl(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    switch (SzDuel_GetUnitCardNo(entry->coordinates >> 8, entry->coordinates & 0xFF)) {
     case 0x293:
-        if (func_001E2100(entry->coordinates >> 8, entry->coordinates & 0xFF, 4) == 0 && func_0027D720(entry, 0) == 1) {
+        if (SzDuel_GetUnitStatus(entry->coordinates >> 8, entry->coordinates & 0xFF, 4) == 0 && TaLogic_CommandGunnerUnit(entry, 0) == 1) {
             return;
         }
         break;
     case 0x287:
-        if (func_0027D720(entry, 0) == 1) {
+        if (TaLogic_CommandGunnerUnit(entry, 0) == 1) {
             entry->state = 0xBFF;
             return;
         }
         break;
     case 0x28F:
-        if (func_0024E910(func_0024CA40(0, 0, slot, 2, 0x34, 0xE)) > 5) {
+        if (Ta_GetUnitNumFrom22bitFlagList(SearchUnitByRange(0, 0, slot, 2, 0x34, 0xE)) > 5) {
             entry->state = 0x3FF;
-            entry->data.word = (func_001E1090(entry->coordinates >> 8, entry->coordinates & 0xFF) << 16) | entry->data.halves.low;
+            entry->data.word = (SzDuel_GetUnitLoc(entry->coordinates >> 8, entry->coordinates & 0xFF) << 16) | entry->data.halves.low;
             return;
         }
         break;
     }
-    func_00159D00(entry);
+    TaLogic018_CommandBtlUnit(entry);
 }
 
-void func_0015A120(s32 a0, s32 a1, u16 *buf) {
+void TaLogic018_GetOutVirusZone(s32 a0, s32 a1, u16 *buf) {
     s32 i;
 
     for (i = 0; i < 0x31; i++) {
         buf[i] = 0xFFFF;
     }
-    func_0015A180(a0, a1, buf);
-    func_0015A320(buf);
+    TaLogic018_GetZoneSide(a0, a1, buf);
+    TaLogic018_GetZoneSize(buf);
 }
 
 static inline s32 upper_0015A180(s32 value) {
@@ -2656,23 +2656,23 @@ static inline s32 upper_0015A180(s32 value) {
     return value;
 }
 
-void func_0015A180(s32 arg0, s32 arg1, u16 *arg2) {
+void TaLogic018_GetZoneSide(s32 arg0, s32 arg1, u16 *arg2) {
     s32 var_s0;
     s32 var_s1;
 
-    if ((func_0015A2E0((arg1 << 8) | arg0, arg2) != 1) && (func_001E22B0(arg0, arg1) == 9)) {
-        arg2[func_0015A320(arg2)] = (arg1 << 8) | arg0;
-        for (var_s0 = func_00250860(0, arg0 - 1); var_s0 <= upper_0015A180(arg0 + 1); var_s0++) {
-            for (var_s1 = func_00250860(0, arg1 - 1); var_s1 <= upper_0015A180(arg1 + 1); var_s1++) {
+    if ((TaLogic018_IsZonePast((arg1 << 8) | arg0, arg2) != 1) && (SzDuel_GetField(arg0, arg1) == 9)) {
+        arg2[TaLogic018_GetZoneSize(arg2)] = (arg1 << 8) | arg0;
+        for (var_s0 = GetCap(0, arg0 - 1); var_s0 <= upper_0015A180(arg0 + 1); var_s0++) {
+            for (var_s1 = GetCap(0, arg1 - 1); var_s1 <= upper_0015A180(arg1 + 1); var_s1++) {
                 if (((((arg0 < var_s0) ? var_s0 : arg0) - ((var_s0 < arg0) ? var_s0 : arg0)) + (((arg1 < var_s1) ? var_s1 : arg1) - ((var_s1 < arg1) ? var_s1 : arg1))) == 1) {
-                    func_0015A180(var_s0, var_s1, arg2);
+                    TaLogic018_GetZoneSide(var_s0, var_s1, arg2);
                 }
             }
         }
     }
 }
 
-s32 func_0015A2E0(s32 arg0, u16 *arg1) {
+s32 TaLogic018_IsZonePast(s32 arg0, u16 *arg1) {
     s32 i;
 
     i = 0;
@@ -2686,7 +2686,7 @@ s32 func_0015A2E0(s32 arg0, u16 *arg1) {
     return 0;
 }
 
-s32 func_0015A320(u16 *arg0) {
+s32 TaLogic018_GetZoneSize(u16 *arg0) {
     s32 i;
     u8 count;
 

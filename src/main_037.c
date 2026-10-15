@@ -28,7 +28,7 @@ void func_001A6C80(void) {
     s32 i;
     s32 *p;
 
-    func_0020B3C0((s8 *) &D_00317250, 0, 0x230);
+    RhMem_FillMemory((s8 *) &D_00317250, 0, 0x230);
     D_00317250 = 0;
     D_00317254 = 0;
     D_0031747A = 1;
@@ -125,9 +125,9 @@ void func_001A6C80(void) {
     ((Flags2E_001A6C80 *)(data + 0x22E))->value = 0;
     ((Flags2E_001A6C80 *)(data + 0x22E))->bit3 = 0;
     ((Flags2E_001A6C80 *)(data + 0x22E))->bit5 = *(s8 *)(data + 0x18C);
-    func_00214BB0(0, 0, *(s32 *)(data + 0x1B8));
-    func_00214BB0(0, 1, *(s32 *)(data + 0x1B4));
-    func_00214BB0(0, 2, *(s32 *)(data + 0x19C));
+    SzData_SetOption(0, 0, *(s32 *)(data + 0x1B8));
+    SzData_SetOption(0, 1, *(s32 *)(data + 0x1B4));
+    SzData_SetOption(0, 2, *(s32 *)(data + 0x19C));
     ((Flags2E_001A6C80 *)(data + 0x22E))->bit6 = 1;
     ((Flags2E_001A6C80 *)(data + 0x22E))->bit7 = 0;
     ((Flags2C_001A6C80 *)(data + 0x22C))->value = 0;
@@ -174,7 +174,7 @@ struct DotrDigitWords {
     float x, y, z, w;
 };
 
-void func_001A6FF0(void)
+void SzGame_DrawMenu(void)
 {
     struct DotrDigitView *view = &D_00317250_1a6ff0;
     int first;
@@ -195,23 +195,23 @@ void func_001A6FF0(void)
     int y;
     unsigned char *walk;
 
-    func_001FEA80(source);
+    SzMsg_GetDefRect(source);
     *(struct DotrDigitWords *)words = *(struct DotrDigitWords *)source;
     low = func_001FEAB0_b(20);
     high = func_001FEAB0_b(21);
     first = D_00317250_1a6ff0.page * 20;
-    func_001FD2D0(0, func_00209E50());
+    SzMsg_Init(0, RhBase_GetUserGsAddress());
     label = &D_002BE660_1a6ff0[first];
     for (i = 0, walk = label; i < 20; i++, walk++) {
         if ((unsigned int)(first + i) < 29) {
-            func_001FD610(i, *walk + 284, i < 10 ? 0 : 320, (i % 10 + 2) * 22);
+            SzMsg_LoadFont(i, *walk + 284, i < 10 ? 0 : 320, (i % 10 + 2) * 22);
         }
     }
-    func_001FD610(i, 21, 0, 0);
-    func_001FD610(i + 1, 24, 0, 22);
+    SzMsg_LoadFont(i, 21, 0, 0);
+    SzMsg_LoadFont(i + 1, 24, 0, 22);
     low->words[2] = 22;
     high->words[2] = 22;
-    func_00208460();
+    ExFlushTexture();
     for (row = 0, y = 0; row < 20; row++, label++, y += 22) {
         entry = func_001FEAB0_b(row);
         if ((unsigned int)(first + row) < 29) {
@@ -245,7 +245,7 @@ void func_001A6FF0(void)
                 }
             }
         }
-        func_001FEAF0(row);
+        SzMsg_Free(row);
     }
 }
 
@@ -286,9 +286,9 @@ extern char D_002BE7D5[];
 extern u8 D_00317473;
 extern u8 D_0031747D;
 
-void func_001A7380(void) {
+void SzGame_ActMenu(void) {
     extern void func_0019B648();
-    extern s32 func_001AB1D0();
+    extern s32 SzGame_ActMemCardProc();
     Menu_001A7380 *menu;
     u32 selectionIndex;
     s32 high;
@@ -302,7 +302,7 @@ void func_001A7380(void) {
 
     menu = (Menu_001A7380 *) &D_00317250;
     selectionIndex = D_00317473 + (D_0031747D & 7) * 20;
-    if (func_001AB1D0() >= 0) {
+    if (SzGame_ActMemCardProc() >= 0) {
         return;
     }
         if (selectionIndex >= 29) {
@@ -310,16 +310,16 @@ void func_001A7380(void) {
             menu->selected = 0;
         }
         item = D_002BE660[selectionIndex];
-        if (func_001FD1B0(0) == 0) {
-            func_001A89C0(menu->x, menu->y);
-            func_001FD0B0(0);
-            func_001FCD60(1);
-            func_001FCC70(1, 0, 1, 0, 60, 0);
-            func_001FD0B0(1);
-            func_001FD130(1, 1);
+        if (SzFade_GetRestCount(0) == 0) {
+            SzGame_SetMode(menu->x, menu->y);
+            SzFade_SetKillFlag(0);
+            SzFade_Destroy(1);
+            SzFade_Entry(1, 0, 1, 0, 60, 0);
+            SzFade_SetKillFlag(1);
+            SzFade_SetPauseFlag(1, 1);
             return;
         }
-        if (func_00203A40(0, 2, 0x5000) != 0) {
+        if (SzPad_Check(0, 2, 0x5000) != 0) {
             s32 high;
             s32 low;
             low = menu->selected;
@@ -327,26 +327,26 @@ void func_001A7380(void) {
             if ((u32) ((menu->page & 7) + 1) < 2) {
                 high = 20;
             }
-            if (func_00203A40(0, 2, 0x1000) != 0) {
+            if (SzPad_Check(0, 2, 0x1000) != 0) {
                 menu->selected = (menu->selected + high - 1) % high;
             } else {
                 menu->selected = (menu->selected + high + 1) % high;
             }
             if (menu->selected != low) {
-                func_00217710(0, 3);
+                SzSound_PlaySE(0, 3);
             }
             return;
         }
-        if (func_00203A40(0, 2, 0xA000) != 0) {
+        if (SzPad_Check(0, 2, 0xA000) != 0) {
             s32 high;
             high = menu->page & 7;
-            if (func_00203A40(0, 2, 0x8000) != 0) {
+            if (SzPad_Check(0, 2, 0x8000) != 0) {
                 menu->page = (menu->page & ~7) | (((menu->page & 7) + 1) & 1);
             } else {
                 menu->page = (menu->page & ~7) | (((menu->page & 7) + 3) & 1);
             }
             if ((menu->page & 7) != high) {
-                func_00217710(0, 3);
+                SzSound_PlaySE(0, 3);
             }
             return;
         }
@@ -361,16 +361,16 @@ void func_001A7380(void) {
                 case 4:
                     high = *value / 1000U;
                     low = *value % 1000U;
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         low = (low + limit - 1) % limit;
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         low = (low + limit + 1) % limit;
                     }
-                    if (func_00203A40(0, 2, 1) != 0) {
+                    if (SzPad_Check(0, 2, 1) != 0) {
                         high = (high + 1) % 2;
                     }
-                    if (func_00203A40(0, 2, 2) != 0) {
+                    if (SzPad_Check(0, 2, 2) != 0) {
                         high = (high + 3) % 2;
                     }
                     *value = low + high * 1000;
@@ -380,16 +380,16 @@ void func_001A7380(void) {
                 case 22:
                     high = *value / 100U;
                     low = *value % 100U;
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         low = (low + 99) % 100;
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         low = (low + 101) % 100;
                     }
-                    if (func_00203A40(0, 2, 1) != 0) {
+                    if (SzPad_Check(0, 2, 1) != 0) {
                         high = (high + 99) % 100;
                     }
-                    if (func_00203A40(0, 2, 2) != 0) {
+                    if (SzPad_Check(0, 2, 2) != 0) {
                         high = (high + 101) % 100;
                     }
                     *value = low + high * 100;
@@ -397,16 +397,16 @@ void func_001A7380(void) {
                 case 23:
                     high = *value / 1000U;
                     low = *value % 1000U;
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         low = (low + 999) % 1000;
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         low = (low + 1001) % 1000;
                     }
-                    if (func_00203A40(0, 2, 1) != 0) {
+                    if (SzPad_Check(0, 2, 1) != 0) {
                         high = (high + 99) % 100;
                     }
-                    if (func_00203A40(0, 2, 2) != 0) {
+                    if (SzPad_Check(0, 2, 2) != 0) {
                         high = (high + 101) % 100;
                     }
                     *value = low + high * 1000;
@@ -416,29 +416,29 @@ void func_001A7380(void) {
                     packed = *value;
                     high = packed >> 8;
                     low = packed & 0xFF;
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         low = (low + 255) % 256;
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         low = (low + 257) % 256;
                     }
-                    if (func_00203A40(0, 2, 1) != 0) {
+                    if (SzPad_Check(0, 2, 1) != 0) {
                         high = (high + 255) % 256;
                     }
-                    if (func_00203A40(0, 2, 2) != 0) {
+                    if (SzPad_Check(0, 2, 2) != 0) {
                         high = (high + 257) % 256;
                     }
                     *value = low + (high << 8);
                     break;
                 }
                 case 26:
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         *value = (*value + limit - 1) % limit;
                         if (*value == 0) {
                             *value = limit - 1;
                         }
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         *value = (*value + limit + 1) % limit;
                         if (*value == 0) {
                             *value = 1;
@@ -446,13 +446,13 @@ void func_001A7380(void) {
                     }
                     break;
                 case 27:
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         *value = (*value + limit - 1) % limit;
                         if (*value == 0) {
                             *value = 12;
                         }
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         *value = (*value + limit + 1) % limit;
                         if (*value == 0) {
                             *value = 1;
@@ -460,16 +460,16 @@ void func_001A7380(void) {
                     }
                     break;
                 default:
-                    if (func_00203A40(0, 2, 4) != 0) {
+                    if (SzPad_Check(0, 2, 4) != 0) {
                         *value = (*value + limit - 1) % limit;
                     }
-                    if (func_00203A40(0, 2, 8) != 0) {
+                    if (SzPad_Check(0, 2, 8) != 0) {
                         *value = (*value + limit + 1) % limit;
                     }
                     break;
                 }
                 if (*value != previous) {
-                    func_00217710(0, 3);
+                    SzSound_PlaySE(0, 3);
                 }
             }
             switch (item) {
@@ -480,74 +480,74 @@ void func_001A7380(void) {
             case 30:
                 return;
             case 6:
-                if (func_00203A40(0, 0, 0x10) != 0) {
+                if (SzPad_Check(0, 0, 0x10) != 0) {
                     if ((s32) menu->values[1] < 22) {
                         high = menu->values[1] + 26;
                         if (menu->values[1] == 0) {
                             high = 17;
                         }
-                        func_00217710(0, 4);
-                        func_00214990(*(u32 *) (offset + (u32) menu + 0x138), high);
+                        SzSound_PlaySE(0, 4);
+                        SzData_SetupFromConstDeck(*(u32 *) (offset + (u32) menu + 0x138), high);
                         return;
                     } else {
-                        func_00217710(0, 6);
+                        SzSound_PlaySE(0, 6);
                         return;
                     }
-                } else if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
-                    func_001A8870(item, 0);
+                } else if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
+                    SzGame_Push(item, 0);
                 }
                 return;
             case 10:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
-                    func_001A8870(item, 0);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
+                    SzGame_Push(item, 0);
                 }
                 return;
             case 13:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     *(u32 *) (offset + (u32) menu + 0x138) = 1;
-                    func_001A8870(item, 0);
+                    SzGame_Push(item, 0);
                 }
                 return;
             case 15:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     *(u32 *) (offset + (u32) menu + 0x138) = 1;
-                    func_001A8870(item, 0);
+                    SzGame_Push(item, 0);
                 }
                 return;
             case 17:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
                     u8 *address;
                     u8 *directory;
                     File_001A7380 *loaded;
                     address = (u8 *) 0x04000000;
-                    directory = func_001FFF90((s32) D_002BE7D0);
+                    directory = SzFile_GetEnv((s32) D_002BE7D0);
                     low = menu->values[17] % 100U;
                     high = menu->values[17] / 100U;
                     menu->secondAddress = 0;
                     menu->firstAddress = 0;
                     func_0019B648(filename, D_002BE7D5, (s32) directory, low);
-                    if ((loaded = (File_001A7380 *) func_001FFD30((s32) filename, (s32) address, -1)) != NULL) {
+                    if ((loaded = (File_001A7380 *) SzFile_Read((s32) filename, (s32) address, -1)) != NULL) {
                         menu->firstAddress = 0x04000000;
-                        func_0020F250(menu->firstAddress);
+                        RhText_BindAddress(menu->firstAddress);
                         address = (u8 *) 0x04000000 + ((loaded->size + 63) & ~63);
                     }
                     if (high != 0) {
                         func_0019B648(filename, D_002BE7D5, directory, high);
-                        if (func_001FFD30((s32) filename, (s32) address, -1) != 0) {
+                        if (SzFile_Read((s32) filename, (s32) address, -1) != 0) {
                             menu->secondAddress = (s32) address;
-                            func_0020F250(menu->secondAddress);
+                            RhText_BindAddress(menu->secondAddress);
                         }
                     }
                     if (menu->firstAddress != 0 || menu->secondAddress != 0) {
-                        func_00217710(0, 4);
-                        func_001A8870(item, 0);
+                        SzSound_PlaySE(0, 4);
+                        SzGame_Push(item, 0);
                         return;
                     } else {
-                        func_00217710(0, 6);
+                        SzSound_PlaySE(0, 6);
                         return;
                     }
                 }
@@ -559,11 +559,11 @@ void func_001A7380(void) {
                 menu->flags.enabled = *(s8 *) &menu->values[21];
                 return;
             case 22:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217980(menu->values[22], 1);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlayBGM(menu->values[22], 1);
                     return;
-                } else if (func_00203A40(0, 0, 0x20) != 0) {
-                    func_00217A10(0x100);
+                } else if (SzPad_Check(0, 0, 0x20) != 0) {
+                    SzSound_StopBGM(0x100);
                     return;
                 }
                 return;
@@ -572,95 +572,95 @@ void func_001A7380(void) {
                 s32 sound;
                 channel = menu->values[23] / 1000U;
                 sound = menu->values[23] % 1000U;
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217590(channel, sound, 1);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_TransferSEGrp(channel, sound, 1);
                 }
                 return;
             }
             case 24: {
                 s32 channel;
                 channel = menu->values[23] / 1000U;
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(channel, menu->values[24]);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(channel, menu->values[24]);
                     return;
-                } else if (func_00203A40(0, 0, 0x20) != 0) {
-                    func_002178C0(channel, menu->values[24]);
+                } else if (SzPad_Check(0, 0, 0x20) != 0) {
+                    SzSound_StopSE(channel, menu->values[24]);
                     return;
                 }
                 return;
             }
             case 25:
-                if (func_00203A40(0, 0, 0x10) != 0) {
+                if (SzPad_Check(0, 0, 0x10) != 0) {
                     if (menu->values[25] != 0) {
-                        func_00109D70(0);
-                        func_00217410();
+                        SD_SuspendSoundSystem(0);
+                        SzSound_Init();
                     } else {
-                        func_00109FC0();
-                        func_00109D70(1);
-                        func_002174D0();
+                        SD_StopAll();
+                        SD_SuspendSoundSystem(1);
+                        SzSound_Term();
                     }
                 }
-                func_00214BB0(0, 2, menu->values[25]);
+                SzData_SetOption(0, 2, menu->values[25]);
                 return;
             case 26:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_0010A160(menu->values[26], 0x80);
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SD_BGMSetSourceLevel(menu->values[26], 0x80);
+                    SzSound_PlaySE(0, 4);
                 }
                 return;
             case 27:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
                     s32 count;
                     s32 i;
                     count = menu->values[27];
                     i = 0;
                     do {
-                        func_002172D0(0, i, count);
-                        func_002172D0(1, i, count);
+                        SzData_SetRankDirect(0, i, count);
+                        SzData_SetRankDirect(1, i, count);
                         i++;
                     } while (i < 854);
-                    func_00217710(0, 4);
+                    SzSound_PlaySE(0, 4);
                 }
                 return;
             case 31:
-                func_00214BB0(0, 1, menu->values[31]);
+                SzData_SetOption(0, 1, menu->values[31]);
                 return;
             case 32:
-                func_00214BB0(0, 0, menu->values[32]);
+                SzData_SetOption(0, 0, menu->values[32]);
                 return;
             case 16:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_001A8360(*(u32 *) (offset + (u32) menu + 0x138), 1, 1);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzGame_PlayMovieNo(*(u32 *) (offset + (u32) menu + 0x138), 1, 1);
                 }
                 return;
             case 33:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    if (func_001FF300() == 0) {
-                        func_002009E0(menu->values[33], 1);
-                        func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    if (SzFile_InqRequestEx() == 0) {
+                        SzText_LoadMerge(menu->values[33], 1);
+                        SzSound_PlaySE(0, 4);
                         return;
                     } else {
-                        func_00217710(0, 6);
+                        SzSound_PlaySE(0, 6);
                         return;
                     }
                 }
                 return;
             case 34:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
-                    func_001AAFA0(0);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
+                    SzGame_InitMemCardProc(0);
                 }
                 return;
             case 35:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
-                    func_001AAFA0(1);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
+                    SzGame_InitMemCardProc(1);
                 }
                 return;
             default:
-                if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
-                    func_001A8870(item, 0);
+                if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
+                    SzGame_Push(item, 0);
                 }
                 return;
             }
@@ -672,7 +672,7 @@ typedef struct {
     s32 entries[0x25];
 } Table_001A82E0;
 
-s32 func_001A82E0(s32 arg0) {
+s32 SzGame_GetMenuNum(s32 arg0) {
     Table_001A82E0 *table = (Table_001A82E0 *)&D_00317250;
     s32 result;
 
@@ -689,7 +689,7 @@ typedef struct State_001A8320 {
     s32 values[0x25];
 } State_001A8320;
 
-s32 func_001A8320(s32 arg0, s32 arg1) {
+s32 SzGame_SetMenuNum(s32 arg0, s32 arg1) {
     State_001A8320 *state = (State_001A8320 *)&D_00317250;
 
     if ((arg0 < 0) || (arg0 >= 0x25)) {
@@ -699,43 +699,43 @@ s32 func_001A8320(s32 arg0, s32 arg1) {
     return 1;
 }
 
-void func_001A8360(s32 arg0, s32 arg1, s32 arg2) {
-    u8 *func_001FFF90(u8 *);
+void SzGame_PlayMovieNo(s32 arg0, s32 arg1, s32 arg2) {
+    u8 *SzFile_GetEnv(u8 *);
     void func_0019B648(void *, void *, ...);
     u8 buf[128];
 
-    func_0019B648(buf, D_002BE809, func_001FFF90(D_002BE80F), D_0028FF10[arg0]);
-    func_001A83E0(buf, arg1, arg2);
+    func_0019B648(buf, D_002BE809, SzFile_GetEnv(D_002BE80F), D_0028FF10[arg0]);
+    SzGame_PlayMovie(buf, arg1, arg2);
 }
 
-s32 func_001A83E0(u8 *arg0, s32 arg1, s32 arg2) {
-    extern s32 func_00242470();
-    extern s32 func_001F2920(s32);
+s32 SzGame_PlayMovie(u8 *arg0, s32 arg1, s32 arg2) {
+    extern s32 movie_play();
+    extern s32 SzModel_GetModelNo(s32);
     s32 flag;
     s32 i;
     s32 result;
 
-    flag = func_00217530();
-    while (func_001FF300() != 0) {
-        func_001FF420();
+    flag = SzSound_IsStandby();
+    while (SzFile_InqRequestEx() != 0) {
+        SzFile_DoRequestS();
     }
     if (flag != 0) {
-        func_00109FC0();
-        func_00109D70(1);
-        func_002174D0();
+        SD_StopAll();
+        SD_SuspendSoundSystem(1);
+        SzSound_Term();
     }
     for (i = 0; i < 10; i++) {
-        func_001E7E70(i + 0x14, -1, func_001F2920(i + 0x14));
+        SzModel_Preset(i + 0x14, -1, SzModel_GetModelNo(i + 0x14));
     }
-    func_002099D0();
-    func_002098B0(1);
-    result = func_00242470(arg0, arg1, arg2);
-    func_001854E0(0);
-    func_002098B0(0);
-    func_001A8520(10, 0, 0, 0, 0x400, 0x400);
+    RhBase_FlipBuffer();
+    RhBase_ResetGsEnv(1);
+    result = movie_play(arg0, arg1, arg2);
+    sceGsSyncV(0);
+    RhBase_ResetGsEnv(0);
+    SzGame_ClearGsMem(10, 0, 0, 0, 0x400, 0x400);
     if (flag != 0) {
-        func_00109D70(0);
-        func_00217410();
+        SD_SuspendSoundSystem(0);
+        SzSound_Init();
     }
     return result;
 }
@@ -747,15 +747,15 @@ typedef union {
 } Packet_001A8520;
 
 
-void func_001A8520(s64 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s64 arg5) {
-    s32 func_00184E10(void *, s64, s64, s64, s64, s64);
-    s32 func_00184FF8(void *, s64, s64, s64, s64, s64, s32, s32, s64, s64, s64);
-    void func_00186470(s32, void *);
+void SzGame_ClearGsMem(s64 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s64 arg5) {
+    s32 sceGsSetDefDrawEnv(void *, s64, s64, s64, s64, s64);
+    s32 sceGsSetDefClear(void *, s64, s64, s64, s64, s64, s32, s32, s64, s64, s64);
+    void sceDmaSend(s32, void *);
     Packet_001A8520 packet[20];
     s32 channel;
     u8 *cursor;
 
-    channel = func_00186120(2);
+    channel = sceDmaGetChan(2);
     cursor = (u8 *)packet;
     *(u32 *)(cursor + 0) = 0x10000010;
     *(u32 *)(cursor + 4) = 0;
@@ -764,22 +764,22 @@ void func_001A8520(s64 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s64 arg5) {
     *(u64 *)(cursor + 16) = 0x1000000000000008ULL;
     *(u64 *)(cursor + 24) = 0xE;
     cursor += 32;
-    cursor += func_00184E10(cursor, (s16)arg0, (s16)arg4, (s16)arg5, 0, 0) * 16;
+    cursor += sceGsSetDefDrawEnv(cursor, (s16)arg0, (s16)arg4, (s16)arg5, 0, 0) * 16;
     *(u64 *)(cursor + 0) = 0x1000000000008006ULL;
     *(u64 *)(cursor + 8) = 0xE;
     cursor += 16;
-    cursor += func_00184FF8(cursor, 2, 0, 0, 0xFFF, 0xFFF, arg1, arg2, arg3, 0, 0) * 16;
+    cursor += sceGsSetDefClear(cursor, 2, 0, 0, 0xFFF, 0xFFF, arg1, arg2, arg3, 0, 0) * 16;
     *(u32 *)(cursor + 0) = 0x70000000;
     *(u32 *)(cursor + 4) = 0;
     *(u32 *)(cursor + 8) = 0;
     *(u32 *)(cursor + 12) = 0;
-    func_0017BB60(0);
-    func_00185578(0, 0);
-    func_00186470(channel, packet);
-    func_00185578(0, 0);
+    FlushCache(0);
+    sceGsSyncPath(0, 0);
+    sceDmaSend(channel, packet);
+    sceGsSyncPath(0, 0);
 }
 
-s8 func_001A8690(void) {
+s8 SzGame_InqAutoBlur(void) {
     return D_0031747B;
 }
 
@@ -790,7 +790,7 @@ typedef struct {
     s8 selected;
 } State_001A86A0;
 
-void func_001A86A0(s32 arg0) {
+void SzGame_SetAutoBlur(s32 arg0) {
     State_001A86A0 *state = (State_001A86A0 *)&D_00317250;
 
     if ((arg0 >= 0) && ((u32)arg0 < state->count)) {
@@ -807,40 +807,40 @@ typedef struct Flags_001A86D0 {
 
 extern Flags_001A86D0 D_0031747E;
 
-s32 func_001A86D0(void) {
+s32 SzGame_InqSoftFocus(void) {
     return D_0031747E.enabled != 0 ? 1 : 0;
 }
 
-s32 func_001A86F0(void) {
+s32 SzGame_VSync(void) {
     D_00317250 += 1;
     return 1;
 }
 
-s32 func_001A8710(void) {
+s32 SzGame_GetHSyncCount(void) {
     return *(s32 *)0x10000800;
 }
 
-s32 func_001A8720(void) {
+s32 SzGame_GetFrameCount(void) {
     return D_00317254;
 }
 
-s32 func_001A8730(void) {
+s32 SzGame_AddFrameCount(void) {
     return ++D_00317254;
 }
 
-void func_001A8750(s32 arg0) {
+void SzGame_SetFrameSpeed(s32 arg0) {
     D_0031747A = (s8) arg0;
 }
 
-u8 func_001A8760(void) {
+u8 SzGame_GetFrameSpeed(void) {
     return D_0031747A;
 }
 
-void func_001A8770(s64 arg0) {
+void SzGame_SetStabilizer(s64 arg0) {
     D_0031747E.flag6 = arg0;
 }
 
-s32 func_001A87A0(void) {
+s32 SzGame_GetStabilizer(void) {
     return D_0031747E.flag6 != 0 ? 1 : 0;
 }
 
@@ -859,10 +859,10 @@ typedef struct {
 
 extern Tail_001A87C0 D_0031746F;
 
-void func_001A87C0(s32 arg0, s32 arg1) {
+void SzGame_Goto(s32 arg0, s32 arg1) {
     State_001A87C0 *state = (State_001A87C0 *)&D_00317250;
 
-    func_001FCC70(0, 1, 1, 0, 60, 0);
+    SzFade_Entry(0, 1, 1, 0, 60, 0);
     D_0031746F.a = -2;
     D_0031746F.b = arg0;
     D_0031746F.c = 0;
@@ -870,7 +870,7 @@ void func_001A87C0(s32 arg0, s32 arg1) {
         *((s8 *)(state->index + (state->base + (s32)state)) + 0x1F9) = arg1;
     }
     if (arg1 < 2) {
-        func_001AAAF0(-2, 1);
+        SzGame_ReqBGM(-2, 1);
     }
 }
 
@@ -885,19 +885,19 @@ typedef struct State_001A8870 {
     u8 field_222;
 } State_001A8870;
 
-void func_001A8870(s32 arg0, s32 arg1) {
+void SzGame_Push(s32 arg0, s32 arg1) {
     State_001A8870 *state = (State_001A8870 *)&D_00317250;
     s8 *entry;
 
     if ((D_00317472 + 1) < 8) {
-        func_001FCC70(0, 1, 1, 0, 60, 0);
+        SzFade_Entry(0, 1, 1, 0, 60, 0);
         state->field_21F = -2;
         state->field_220 = arg0;
         state->field_221 = 1;
         entry = (s8 *)(state->field_222 + (u32)state);
         entry[state->field_221 + 0x1F9] = arg1;
         if (arg1 < 2) {
-            func_001AAAF0(-2, 1);
+            SzGame_ReqBGM(-2, 1);
         }
     }
 }
@@ -913,16 +913,16 @@ typedef struct {
 
 extern u8 D_00317472;
 
-void func_001A8920(void) {
+void SzGame_Pop(void) {
     State_001A8920 *state = (State_001A8920 *)&D_00317250;
 
     if ((D_00317472 - 1) >= 0) {
-        func_001FCC70(0, 1, 1, 0, 60, 0);
+        SzFade_Entry(0, 1, 1, 0, 60, 0);
         state->state = -2;
         state->selected = state->entries[state->index];
         state->previous = -1;
         if (state->entries[state->index + 1] < 2) {
-            func_001AAAF0(-2, 1);
+            SzGame_ReqBGM(-2, 1);
         }
     }
 }
@@ -979,7 +979,7 @@ struct DotrMovieOperationsStatePrefix {
 };
 extern struct DotrMovieOperationsStatePrefix D_00317250_b;
 
-void func_001A89C0(int arg0, int arg1)
+void SzGame_SetMode(int arg0, int arg1)
 {
     struct DotrMovieOperationsStatePrefix *state = &D_00317250_b;
     int flag = 1;
@@ -989,12 +989,12 @@ void func_001A89C0(int arg0, int arg1)
     state->bytes_1f1[state->field_222] = arg0;
     state->field_21f = arg0;
     if (state->bytes_1f9[state->field_222] == 0 || arg1 <= 0)
-        func_001AAD50(state->field_21e);
+        SzGame_ModeTerm(state->field_21e);
     else
         flag = 0;
-    func_001A8BB0();
+    SzGame_ComInit();
     if (prior == 0 || arg1 >= 0)
-        func_001A8DB0(state->field_21f);
+        SzGame_ModeInit(state->field_21f);
     else
         flag = 0;
     switch (arg0) {
@@ -1019,47 +1019,47 @@ void func_001A89C0(int arg0, int arg1)
     state->field_22c.field_2 = 1;
 }
 
-void func_001A8BB0(void) {
-    extern s32 func_001F1A80(s32, f32);
+void SzGame_ComInit(void) {
+    extern s32 SzModel_SetAnimSpeed(s32, f32);
     s32 i;
 
-    func_001E2FB0(0, 0, 1);
-    func_001E2340();
-    func_001F9F90(0, 0);
-    func_001F9A80(0, 800.0f);
-    func_001F9FE0(0, 0, 0);
-    func_001FB6A0(0, 0, 1, 3.0434179f, 0.19634955f, 0.0f);
+    SzDuel_InitMapColor(0, 0, 1);
+    SzDuel_InitFieldRate();
+    SzView_SetRoll(0, 0);
+    SzView_SetScreenDistance(0, 800.0f);
+    SzView_SetCamera(0, 0, 0);
+    SzView_RollCamera(0, 0, 1, 3.0434179f, 0.19634955f, 0.0f);
 
     for (i = 0; i < 10; i++) {
-        func_001F9230(0, i, 0);
-        func_001F9310(0, i, 0);
-        func_001F9770(0, i, 0);
-        func_001F9940(0, i, 0);
+        SzView_SetFogParamZ(0, i, 0);
+        SzView_SetFogParamY(0, i, 0);
+        SzView_SetStraightLight(0, i, 0);
+        SzView_SetPointLight(0, i, 0);
     }
     for (i = 0; i < 10; i++) {
-        func_001F29E0(i + 20, 0);
-        func_001F2AD0(i + 20, 0);
+        SzModel_SetDeform(i + 20, 0);
+        SzModel_SetDeformRatio(i + 20, 0);
     }
     for (i = 0; i < 2; i++) {
-        func_001F29E0(i + 30, 0);
-        func_001F2AD0(i + 30, 0);
+        SzModel_SetDeform(i + 30, 0);
+        SzModel_SetDeformRatio(i + 30, 0);
     }
     for (i = 0; i < 84; i++) {
-        func_001F30B0(i, 0);
-        func_001F25D0(i, NULL);
-        func_001F24C0(i, NULL);
-        func_001F29E0(i, 0);
-        func_001F2AD0(i, 0);
-        func_001F1830(i, 0);
-        func_001F1A00(i, 1);
-        func_001F1A80(i, 1.0f);
-        func_001F26E0(i, 0, NULL);
-        func_001F2860(i, 1, NULL);
-        func_001F1EE0(i, NULL);
+        SzModel_SetDrawFlag(i, 0);
+        SzModel_SetScale(i, NULL);
+        SzModel_SetRotC(i, NULL);
+        SzModel_SetDeform(i, 0);
+        SzModel_SetDeformRatio(i, 0);
+        SzModel_SetAnimDirect(i, 0);
+        SzModel_SetAnimDir(i, 1);
+        SzModel_SetAnimSpeed(i, 1.0f);
+        SzModel_SetRgba(i, 0, NULL);
+        SzModel_SetFilter(i, 1, NULL);
+        SzModel_SetIntensity(i, NULL);
     }
-    func_001F6CE0(0x80);
-    func_001F6CF0(0x80);
-    func_001F6D00(0x80);
+    SzEffect_SetBlackOutForMonster(0x80);
+    SzEffect_SetBlackOutForDuel(0x80);
+    SzEffect_SetBlackOutForBattle(0x80);
 }
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
@@ -1084,7 +1084,7 @@ extern char D_002BE809_b[];
 extern const char *D_0028FF10_b[];
 extern char *func_00197548_1a8db0(const char *);
 extern char *func_001FFF90_b(const char *);
-extern void func_001E7F70(int, int, int);
+extern void SzModel_LoadMerge(int, int, int);
 extern void func_002051C0_b(int);
 extern void func_001E3850_b(int, int, int);
 extern void func_001FC9B0_b(int);
@@ -1097,7 +1097,7 @@ extern void func_001C5D70_1a8db0(int);
 extern void func_001F30B0_b(int, int);
 extern void func_001DDD80_b(int, int);
 
-void func_001A8DB0(int index)
+void SzGame_ModeInit(int index)
 {
     struct MovieUpdatePrefix *state = &D_00317250_1a8db0;
     int value_0, value_1, result_0, result_1;
@@ -1118,66 +1118,66 @@ void func_001A8DB0(int index)
             is_one = 1;
         else
             is_one = 0;
-        func_002145D0(state->menu_nums[2]);
+        SzData_SetRoseFlag(state->menu_nums[2]);
         func_002009E0_b(11, 0);
         func_002009E0_b(12, 0);
         func_001DDD80_b(1, state->menu_nums[1]);
-        func_001DE500(0, state->menu_nums[3] % 1000);
-        func_001DE500(1, state->menu_nums[4] % 1000);
-        func_001ADD00(state->menu_nums[1], state->menu_nums[2], is_one);
+        SzDuel_SetPlayer(0, state->menu_nums[3] % 1000);
+        SzDuel_SetPlayer(1, state->menu_nums[4] % 1000);
+        SzDuel_Init(state->menu_nums[1], state->menu_nums[2], is_one);
         break;
 
     case 5: {
         func_002009E0_b(12, 0);
-        func_001E7F70(1, 0, 0);
-        func_001E7F70(2, state->menu_nums[index], 0);
-        value_0 = func_002158B0(0);
-        value_1 = func_002158B0(1);
-        result_0 = func_002159D0(0, value_0);
-        result_1 = func_002159D0(1, value_1);
+        SzModel_LoadMerge(1, 0, 0);
+        SzModel_LoadMerge(2, state->menu_nums[index], 0);
+        value_0 = SzData_GetCurrentDeck(0);
+        value_1 = SzData_GetCurrentDeck(1);
+        result_0 = SzData_GetLeader(0, value_0);
+        result_1 = SzData_GetLeader(1, value_1);
         if (result_0 == 999)
             result_0 = 0;
         if (result_1 == 999)
             result_1 = 0;
-        func_001AD960();
-        func_001DF580(0, 3, 6, result_0, 1);
-        func_001DF580(1, 3, 0, result_1, 1);
-        func_001E4F00(state->menu_nums[index]);
-        func_001E5260(0, 0);
+        SzDuel_Initialize();
+        SzDuel_AddUnit(0, 3, 6, result_0, 1);
+        SzDuel_AddUnit(1, 3, 0, result_1, 1);
+        SzBattle_Init(state->menu_nums[index]);
+        SzBattle_Entry(0, 0);
         func_001E3850_b(0, 0, 0);
-        func_001E5260(1, 256);
+        SzBattle_Entry(1, 256);
         func_001E3850_b(1, 0, 0);
         break;
     }
     case 6: {
-        func_002145D0(0);
+        SzData_SetRoseFlag(0);
         func_002009E0_b(11, 0);
         func_002009E0_b(4, 1);
-        func_001B8520(state->menu_nums[index]);
+        SzDuel_InitBuildDeck(state->menu_nums[index]);
         break;
     }
     case 7: {
-        func_001E7F70(4, 1, 0);
+        SzModel_LoadMerge(4, 1, 0);
         if (state->byte_21e == -1)
-            func_001C1090(state->menu_nums[index]);
-        func_001C1090(-1);
+            SzDuel_Init3DView(state->menu_nums[index]);
+        SzDuel_Init3DView(-1);
         break;
     }
     case 8: {
-        func_002145D0(0);
+        SzData_SetRoseFlag(0);
         func_002009E0_b(11, 0);
-        func_001C21A0();
+        SzDuel_InitTrade();
         break;
     }
     case 9: {
-        func_002145D0(0);
+        SzData_SetRoseFlag(0);
         func_002009E0_b(11, 0);
         func_001C5D70_1a8db0(state->menu_nums[index]);
         break;
     }
     case 36: {
         func_002009E0_b(11, 0);
-        func_001AC510();
+        lSzGame_InitMemCheck();
         break;
     }
     case 10: {
@@ -1187,17 +1187,17 @@ void func_001A8DB0(int index)
             int selected = D_00317250_1a8db0.byte_230;
             char *directory = func_001FFF90_b(D_002BE80F_b);
             func_0019B648(path, D_002BE809_b, directory, D_0028FF10_b[selected]);
-            func_001A83E0(path, 1, 1);
+            SzGame_PlayMovie(path, 1, 1);
             D_00317250_1a8db0.byte_230 =
                 (D_00317250_1a8db0.byte_230 + 1) % 2;
         }
-        func_001AC610(state->menu_nums[index]);
-        func_001E7F70(5, 3, 1);
+        lSzGame_InitTitle(state->menu_nums[index]);
+        SzModel_LoadMerge(5, 3, 1);
         func_00217590_b(0, 0, 0);
         break;
     }
     case 11: {
-        func_002145D0(0);
+        SzData_SetRoseFlag(0);
         D_00317250_1a8db0.menu_nums[28] = 3;
         D_00317250_1a8db0.menu_nums[29] = 3;
         func_002009E0_b(11, 0);
@@ -1205,30 +1205,30 @@ void func_001A8DB0(int index)
         func_002009E0_b(13, 0);
         func_002009E0_b(14, 0);
         func_002009E0_b(5, 1);
-        func_001AD960();
-        func_001DF580(0, 3, 6, 0, 1);
+        SzDuel_Initialize();
+        SzDuel_AddUnit(0, 3, 6, 0, 1);
         func_001E1E70_b(0, 0, 4, 1);
         func_001E1D70_b(0, 0, 0, 255);
         func_001E1C10_b(0, 0, 1, 0);
-        func_001E77E0(2);
-        func_0021C510(state->menu_nums[index]);
-        func_00246450(0);
+        SzEvent_Init(2);
+        TkCamp_Init(state->menu_nums[index]);
+        ShFace_Init(0);
         break;
     }
     case 12: {
-        func_001E7F70(3, state->menu_nums[index], 0);
-        func_001E77E0(state->menu_nums[index]);
+        SzModel_LoadMerge(3, state->menu_nums[index], 0);
+        SzEvent_Init(state->menu_nums[index]);
         break;
     }
     case 13: {
-        func_001E7F70(6, 0, 0);
-        func_001E7F70(0, 0, 0);
-        func_001CC4B0(state->menu_nums[index]);
+        SzModel_LoadMerge(6, 0, 0);
+        SzModel_LoadMerge(0, 0, 0);
+        SzDuel_InitMapEdit(state->menu_nums[index]);
         break;
     }
     case 14: {
         func_002009E0_b(13, 0);
-        func_00246450(1);
+        ShFace_Init(1);
         break;
     }
     case 15: {
@@ -1237,7 +1237,7 @@ void func_001A8DB0(int index)
         func_002009E0_b(17, 0);
         if (state->menu_nums[index] != 0)
             func_002009E0_b(0, 0);
-        func_00285880(state->menu_nums[index]);
+        ShSlot_Init(state->menu_nums[index]);
         state->menu_nums[index] = 0;
         break;
     }
@@ -1247,24 +1247,24 @@ void func_001A8DB0(int index)
         break;
     }
     case 19: {
-        func_001E7F70(1, 0, 0);
-        func_001E7F70(2, state->menu_nums[5], 0);
+        SzModel_LoadMerge(1, 0, 0);
+        SzModel_LoadMerge(2, state->menu_nums[5], 0);
         func_002051C0_b(0);
-        value_0 = func_002158B0(0);
-        value_1 = func_002158B0(1);
-        result_0 = func_002159D0(0, value_0);
-        result_1 = func_002159D0(1, value_1);
+        value_0 = SzData_GetCurrentDeck(0);
+        value_1 = SzData_GetCurrentDeck(1);
+        result_0 = SzData_GetLeader(0, value_0);
+        result_1 = SzData_GetLeader(1, value_1);
         if (result_0 == 999)
             result_0 = 0;
         if (result_1 == 999)
             result_1 = 0;
-        func_001AD960();
-        func_001DF580(0, 3, 6, result_0, 1);
-        func_001DF580(1, 3, 0, result_1, 1);
-        func_001E4F00(state->menu_nums[5]);
-        func_001E5260(0, 0);
+        SzDuel_Initialize();
+        SzDuel_AddUnit(0, 3, 6, result_0, 1);
+        SzDuel_AddUnit(1, 3, 0, result_1, 1);
+        SzBattle_Init(state->menu_nums[5]);
+        SzBattle_Entry(0, 0);
         func_001E3850_b(0, 0, 0);
-        func_001E5260(1, 256);
+        SzBattle_Entry(1, 256);
         func_001E3850_b(1, 0, 0);
         func_001FC9B0_b(state->menu_nums[index]);
         break;
@@ -1306,57 +1306,57 @@ typedef struct Sprite_001A9590 {
 #pragma conditional_move off
 #pragma opt_propagation off
 
-void func_001A9590(void) {
+void SzGame_ModeDraw(void) {
     u8 *data = (u8 *)&D_00317250;
     s64 temp_v0;
     Sprite_001A9590 sprite;
     Sprite_001A9590 *s;
 
-    temp_v0 = func_001AAF60(1);
+    temp_v0 = SzGame_GetMode(1);
     if (D_0031747C.state < 3) {
         switch (data[0x228]) {
         case 0:
         switch (temp_v0) {
         case -1:
-            func_001A6FF0();
+            SzGame_DrawMenu();
             break;
         case 1:
-            func_001B1190();
+            SzDuel_DrawWindow();
             break;
         case 6:
-            func_001BAE70();
+            SzDuel_DrawBuildDeck();
             break;
         case 7:
-            func_001C1AD0();
+            SzDuel_Draw3DView();
             break;
         case 8:
-            func_001C3570();
+            SzDuel_DrawTrade();
             break;
         case 9:
-            func_001C7430();
+            SzDuel_DrawCustomDuel();
             break;
         case 10:
-            func_001ACC50();
+            lSzGame_DrawTitle();
             break;
         case 11:
-            func_002085A0(1);
-            func_0021DA60();
+            ExDitherMatrixEz(1);
+            TkCamp_Draw();
             break;
         case 12:
-            func_002085A0(1);
-            func_001E7890();
+            ExDitherMatrixEz(1);
+            SzEvent_Draw();
             break;
         case 13:
-            func_001CCB80();
+            SzDuel_DrawMapEdit();
             break;
         case 18:
-            func_001CEA50();
+            SzDuel_DrawCardTest();
             break;
         case 14:
-            func_00246490();
+            ShFace_Draw();
             break;
         case 15:
-            func_00285EE0();
+            ShSlot_Draw();
             break;
         case 17:
             (s = &sprite)->count = 6;
@@ -1376,12 +1376,12 @@ void func_001A9590(void) {
             sprite.v[1].y = 0x8DF8;
             sprite.v[1].z = 0xFFFFF8;
             sprite.v[1].f = 0;
-            func_002075F0((s32)s, 0, 0);
+            ExSortPrim((s32)s, 0, 0);
             if (*(void **)(data + 0x208) != NULL) {
-                func_001A9F50(*(void **)(data + 0x208), 0, 0, 0);
+                lSzGame_TEXTURE_TEST(*(void **)(data + 0x208), 0, 0, 0);
             }
             if (*(void **)(data + 0x204) != NULL) {
-                func_001A9F50(*(void **)(data + 0x204), *(s32 *)(data + 0x214), *(s32 *)(data + 0x218),
+                lSzGame_TEXTURE_TEST(*(void **)(data + 0x204), *(s32 *)(data + 0x214), *(s32 *)(data + 0x218),
                               ((struct { s8 b0:1; s8 rest:7; } *)(data + 0x22F))->b0);
             }
             break;
@@ -1394,11 +1394,11 @@ void func_001A9590(void) {
 #pragma conditional_move reset
 
 
-void func_001A9800(void) {
+void SzGame_ModeDrawAfter(void) {
     u8 *data = (u8 *) &D_00317250;
     s64 temp_v0;
 
-    temp_v0 = func_001AAF60(1);
+    temp_v0 = SzGame_GetMode(1);
     if (D_0031747C.state < 3) {
         switch (data[0x228]) {
         default:
@@ -1406,16 +1406,16 @@ void func_001A9800(void) {
         case 0:
             switch (temp_v0) {
             case 1:
-                func_001B81E0();
-                func_001B83C0();
+                SzDuel_DrawJoinFade();
+                SzDuel_DrawJoinCard();
                 break;
             case 11:
-                func_002085A0(2);
-                func_0021DAA0();
-                func_00246490();
+                ExDitherMatrixEz(2);
+                TkCamp_Draw_After();
+                ShFace_Draw();
                 break;
             }
-            func_001AF7B0();
+            SzDuel_DrawDialog();
             break;
         }
     }
@@ -1504,7 +1504,7 @@ static inline DotrDrawWord Cells(DotrDrawWord cursor, struct DotrModeLastPacket 
     return cursor;
 }
 
-void func_001A98B0(void)
+void SzGame_ModeDrawLast(void)
 {
     struct DotrModeLastView *view = &D_00317250_1a98b0;
     struct DotrModeLastColour colour;
@@ -1526,8 +1526,8 @@ void func_001A98B0(void)
         return;
     }
     if (view->enabled) {
-        cursor = func_001AEFD0(func_00209D20(), 0);
-        func_001D9EE0(0xffffff);
+        cursor = SzDuel_StartWindowSessionWithPalette_Pipe(RhBase_GetVifPacketArea(), 0);
+        SzDuel_SetWindowDefPrioZ(0xffffff);
         texture = func_001AF140_b(6);
         if (texture) {
             count = view->counter;
@@ -1546,7 +1546,7 @@ void func_001A98B0(void)
             ((struct DotrCursorPacketHeader *)packet.header)->unknown_08 = 0x42421;
             ((struct DotrCursorPacketHeader *)packet.header)->unknown_04 = 0;
             ((struct DotrCursorPacketHeader *)packet.header)->unknown_02 |= 0x800;
-            func_00208700((struct DotrCursorPacketHeader *)packet.header, texture, 0);
+            ExAssignTexture((struct DotrCursorPacketHeader *)packet.header, texture, 0);
             func_002086D0_b((struct DotrCursorPacketHeader *)packet.header, func_00208D00_b(0));
             ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->u = (x << 4) + 8;
             ((struct DotrCursorSlotUv *)&packet.vertex[0].uv)->v = (y << 4) + 8;
@@ -1573,7 +1573,7 @@ void func_001A98B0(void)
                 ((struct DotrCursorSlotUv *)&packet.vertex[1].uv)->v = ((y + 24) << 4) + 8;
                 cursor = Cells(cursor, &packet, &i, 560);
             }
-            cursor = func_001B6F70(cursor, 320, 212, 2, 3, func_0019BEF0(text), text, colour.b);
+            cursor = SzDuel_DrawWindow_Font_Pipe(cursor, 320, 212, 2, 3, func_0019BEF0(text), text, colour.b);
             view->alpha += view->step * 4;
             if (view->alpha <= 0 || view->alpha >= 128) {
                 view->step = -view->step;
@@ -1583,7 +1583,7 @@ void func_001A98B0(void)
             }
             view->counter++;
         }
-        func_00209D30(func_00208280(func_001AF110(cursor), 0, 0, 0, 0, 12, 0));
+        RhBase_SetVifPacketArea(ExSortSoftFocus_Pipe(SzDuel_FinishWindowSession_Pipe(cursor), 0, 0, 0, 0, 12, 0));
         
 
         return;
@@ -1615,7 +1615,7 @@ typedef struct {
     u64 extra[4];
 } Sprite_001A9F50;
 
-void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void lSzGame_TEXTURE_TEST(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     Sprite_001A9F50 sprite __attribute__((aligned(8)));
     s32 centerX;
     s32 centerY;
@@ -1626,7 +1626,7 @@ void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 texture;
     u16 textureWidth;
     u16 textureHeight;
-    extern s32 func_00202E00();
+    extern s32 SzText_InitClutManage();
 
     width = *(u16 *)((u8 *)arg0 + 0x54);
     height = *(u16 *)((u8 *)arg0 + 0x56);
@@ -1638,17 +1638,17 @@ void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
         halfWidth *= 2;
         halfHeight *= 2;
     }
-    func_00208460();
-    texture = func_00209E50();
-    texture += func_00202E00(texture, 1);
-    func_00202F50((s32)arg0, texture, 0);
-    func_00208460();
+    ExFlushTexture();
+    texture = RhBase_GetUserGsAddress();
+    texture += SzText_InitClutManage(texture, 1);
+    SzText_Load((s32)arg0, texture, 0);
+    ExFlushTexture();
     ((Tag_001A9F50 *)&sprite.tag)->primitive = 0x26;
     ((Tag_001A9F50 *)&sprite.tag)->loops = 5;
     ((Tag_001A9F50 *)&sprite.tag)->registers = 0x42421;
     ((Tag_001A9F50 *)&sprite.tag)->flags = 0;
-    func_002086D0(&sprite, func_00208D00(0));
-    func_00208700(&sprite, arg0, 0);
+    ExAssignAlpha(&sprite, ExGetAlphaVal(0));
+    ExAssignTexture(&sprite, arg0, 0);
     sprite.r = 0x80;
     sprite.g = 0x80;
     sprite.b = 0x80;
@@ -1674,7 +1674,7 @@ void func_001A9F50(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     sprite.xyz1.y = ((centerY + halfHeight) << 4) - 8;
     sprite.xyz1.z = 0xFFFFF8;
     sprite.xyz1.fog = 0;
-    func_002075F0((s32)&sprite, 0, 0);
+    ExSortPrim((s32)&sprite, 0, 0);
 }
 
 typedef struct {
@@ -1725,12 +1725,12 @@ typedef struct {
 
 extern u8 D_00317472;
 
-s32 func_001CEE60(void);
-void func_001EAA60(s32);
+s32 SzDuel_Act(void);
+void SzModel_Act(s32);
 void func_00237730(void);
 
-void func_001AA260(void) {
-    extern void func_001AAAF0();
+void SzGame_ModeAct(void) {
+    extern void SzGame_ReqBGM();
     State_001AA260 *state;
     s64 event;
     s32 i;
@@ -1741,14 +1741,14 @@ void func_001AA260(void) {
     s32 step;
 
     state = (State_001AA260 *)&D_00317250;
-    event = func_001AAF60(0);
+    event = SzGame_GetMode(0);
     switch (D_0031747C.state) {
     case 3:
-        if (func_001FF300() != 0) {
+        if (SzFile_InqRequestEx() != 0) {
             return;
         }
         if (state->field190 != 0) {
-            func_001AAAF0(event, 1);
+            SzGame_ReqBGM(event, 1);
         }
         if (state->flags.pending != 0) {
             state->wait = 0x80;
@@ -1756,19 +1756,19 @@ void func_001AA260(void) {
         state->mode.mode--;
         return;
     case 2:
-        if (((D_0031747E.enabled != 0 ? 1 : 0) != 0) && (func_002179C0() != 0)) {
+        if (((D_0031747E.enabled != 0 ? 1 : 0) != 0) && (SzSound_IsLoadingBGM() != 0)) {
             return;
         }
         switch (event) {
         case 1:
-            func_002009E0(4, 1);
-            func_002009E0(1, 0);
-            func_002009E0(2, 0);
-            func_002009E0(3, 0);
+            SzText_LoadMerge(4, 1);
+            SzText_LoadMerge(1, 0);
+            SzText_LoadMerge(2, 0);
+            SzText_LoadMerge(3, 0);
             break;
         case 6:
         case 8:
-            func_002009E0(0, 0);
+            SzText_LoadMerge(0, 0);
             break;
         }
         state->mode.mode--;
@@ -1777,28 +1777,28 @@ void func_001AA260(void) {
         if (state->wait != 0) {
             return;
         }
-        func_001FD130(1, 0);
+        SzFade_SetPauseFlag(1, 0);
         state->field00C = 0;
         break;
     }
 
-    if (func_00217530() != 0) {
+    if (SzSound_IsStandby() != 0) {
         for (i = 0; i < 2; i++) {
-            position = func_001E5240(i);
+            position = SzBattle_InqEntry(i);
             if (position < 0) {
                 continue;
             }
-            func_001EDA40(i + 2, func_001E1360(position >> 8, position & 0xFF));
+            SzModel_ReqSE(i + 2, SzDuel_GetUnitModelID(position >> 8, position & 0xFF));
         }
-        func_001F3F20();
+        SzEffect_ReqSE();
     }
     i = 0;
     do {
-        func_001ED4A0(i);
+        SzModel_Motion(i);
         i++;
     } while (i < 0x54);
-    func_001F3870();
-    if (func_001FD220(1) != 0) {
+    SzEffect_TrimModule();
+    if (SzFade_IsDoing(1) != 0) {
         return;
     }
     switch (event) {
@@ -1806,160 +1806,160 @@ void func_001AA260(void) {
         break;
     case -2:
     case -1:
-        func_001A7380();
+        SzGame_ActMenu();
         break;
     case 0:
-        func_00203E20();
-        if (func_002051F0() == 0) {
+        SzDebug_Act();
+        if (SzDebug_IsEffect() == 0) {
             j0 = 0;
             do {
-                func_001EAA60(j0);
+                SzModel_Act(j0);
                 j0++;
             } while (j0 < 0x54);
         }
-        func_001F7790(0);
+        SzView_Act(0);
         break;
     case 1:
         do {
-        } while (func_001CEE60() != 0);
+        } while (SzDuel_Act() != 0);
         break;
     case 5:
-        func_00203E20();
-        if (func_002051F0() == 0) {
+        SzDebug_Act();
+        if (SzDebug_IsEffect() == 0) {
             j5 = 0;
             do {
-                func_001EAA60(j5);
+                SzModel_Act(j5);
                 j5++;
             } while (j5 < 0x54);
         }
-        func_001F7790(0);
+        SzView_Act(0);
         break;
     case 6:
-        func_001B8840();
+        SzDuel_ActBuildDeck();
         break;
     case 7:
-        func_001C12B0();
+        SzDuel_Act3DView();
         break;
     case 8:
-        func_001C2540();
+        SzDuel_ActTrade();
         break;
     case 9:
-        func_001C6130();
+        SzDuel_ActCustomDuel();
         break;
     case 36:
-        func_001AC560();
+        lSzGame_ActMemCheck();
         break;
     case 10:
-        func_001AC700();
+        lSzGame_ActTitle();
         break;
     case 11:
         func_00237730();
-        func_002464C0();
+        ShFace_Act();
         break;
     case 12:
-        func_00203E20();
-        if (func_002051F0() == 0) {
+        SzDebug_Act();
+        if (SzDebug_IsEffect() == 0) {
             j12 = 0;
             do {
-                func_001EAA60(j12);
+                SzModel_Act(j12);
                 j12++;
             } while (j12 < 0x54);
         }
-        func_001F7790(0);
+        SzView_Act(0);
         break;
     case 13:
-        func_001CC620();
+        SzDuel_ActMapEdit();
         break;
     case 18:
-        func_001D95F0();
+        SzDuel_ActCardTest();
         break;
     case 19:
-        func_001FCAB0();
-        func_001F7790(0);
+        SzView_ActCamera();
+        SzView_Act(0);
         break;
     case 14:
-        func_002464C0();
+        ShFace_Act();
         break;
     case 15:
-        func_00285F20();
+        ShSlot_Act();
         break;
     case 17:
         step = 1;
-        if (func_00203A40(0, 0, 0x10) != 0) {
+        if (SzPad_Check(0, 0, 0x10) != 0) {
             state->toggle.enabled = (s8)(state->toggle.enabled != 0 ? 0 : 1);
         }
-        if (func_00203A40(0, 1, 0x20) != 0) {
+        if (SzPad_Check(0, 1, 0x20) != 0) {
             step = 2;
         }
-        if (func_00203A40(0, 1, 0x80) != 0) {
+        if (SzPad_Check(0, 1, 0x80) != 0) {
             step = 2;
         }
-        if (func_00203A40(0, 1, 0xF000) != 0) {
-            if (func_00203A40(0, 1, 0x8000) != 0) {
+        if (SzPad_Check(0, 1, 0xF000) != 0) {
+            if (SzPad_Check(0, 1, 0x8000) != 0) {
                 state->x -= step;
             }
-            if (func_00203A40(0, 1, 0x2000) != 0) {
+            if (SzPad_Check(0, 1, 0x2000) != 0) {
                 state->x += step;
             }
-            if (func_00203A40(0, 1, 0x1000) != 0) {
+            if (SzPad_Check(0, 1, 0x1000) != 0) {
                 state->y -= step;
             }
-            if (func_00203A40(0, 1, 0x4000) != 0) {
+            if (SzPad_Check(0, 1, 0x4000) != 0) {
                 state->y += step;
             }
         }
-        if (func_00203A40(1, 1, 0x1000) != 0) {
-            if (func_00203A40(1, 2, 0x80) != 0) {
+        if (SzPad_Check(1, 1, 0x1000) != 0) {
+            if (SzPad_Check(1, 2, 0x80) != 0) {
                 if (state->alpha > 0) {
                     state->alpha--;
                 }
             }
-            if (func_00203A40(1, 2, 0x20) != 0) {
+            if (SzPad_Check(1, 2, 0x20) != 0) {
                 if (state->alpha < 0xFF) {
                     state->alpha++;
                 }
             }
         } else {
-            if (func_00203A40(1, 2, 0x81) != 0) {
+            if (SzPad_Check(1, 2, 0x81) != 0) {
                 if (state->blue > 0) {
                     state->blue--;
                 }
             }
-            if (func_00203A40(1, 2, 0x22) != 0) {
+            if (SzPad_Check(1, 2, 0x22) != 0) {
                 if (state->blue < 0xFF) {
                     state->blue++;
                 }
             }
-            if (func_00203A40(1, 2, 0x41) != 0) {
+            if (SzPad_Check(1, 2, 0x41) != 0) {
                 if (state->green > 0) {
                     state->green--;
                 }
             }
-            if (func_00203A40(1, 2, 0x12) != 0) {
+            if (SzPad_Check(1, 2, 0x12) != 0) {
                 if (state->green < 0xFF) {
                     state->green++;
                 }
             }
-            if (func_00203A40(1, 2, 5) != 0) {
+            if (SzPad_Check(1, 2, 5) != 0) {
                 if (state->red > 0) {
                     state->red--;
                 }
             }
-            if (func_00203A40(1, 2, 10) != 0) {
+            if (SzPad_Check(1, 2, 10) != 0) {
                 if (state->red < 0xFF) {
                     state->red++;
                 }
             }
         }
-        if (func_00203A40(0, 0, 0x20) != 0) {
+        if (SzPad_Check(0, 0, 0x20) != 0) {
             state = (State_001AA260 *)&D_00317250;
             if ((D_00317472 - 1) >= 0) {
-                func_001FCC70(0, 1, 1, 0, 0x3C, 0);
+                SzFade_Entry(0, 1, 1, 0, 0x3C, 0);
                 state->selection = -2;
                 state->entry = state->entries[state->index];
                 state->field221 = -1;
                 if (state->entries[state->index + 1] < 2) {
-                    func_001AAAF0(-2, 1);
+                    SzGame_ReqBGM(-2, 1);
                 }
             }
         }
@@ -1979,7 +1979,7 @@ struct DotrBgmGame {
 extern struct DotrBgmGame D_00317250_1aaaf0;
 extern int func_00217A10_b(int n);
 
-void func_001AAAF0(int n, int b)
+void SzGame_ReqBGM(int n, int b)
 {
     int stage;
     int flag;
@@ -1993,7 +1993,7 @@ void func_001AAAF0(int n, int b)
         func_00217A10_b(256);
         return;
     case 0:
-        func_00217980(7, b);
+        SzSound_PlayBGM(7, b);
         break;
     case 1:
         stage = g->stage;
@@ -2028,7 +2028,7 @@ void func_001AAAF0(int n, int b)
         }
         if (stage >= 0) {
             stage = n / 1000 * 1000 + stage;
-            func_00217980(stage, b);
+            SzSound_PlayBGM(stage, b);
         }
         break;
     case 2:
@@ -2070,23 +2070,23 @@ void func_001AAAF0(int n, int b)
             break;
         }
         if (bgm >= 0) {
-            func_00217980(bgm, b);
+            SzSound_PlayBGM(bgm, b);
         }
         break;
     case 6:
-        func_00217980(5, b);
+        SzSound_PlayBGM(5, b);
         break;
     case 7:
-        func_00217980(5, b);
+        SzSound_PlayBGM(5, b);
         break;
     case 8:
-        func_00217980(41, b);
+        SzSound_PlayBGM(41, b);
         break;
     case 9:
-        func_00217980(3, b);
+        SzSound_PlayBGM(3, b);
         break;
     case 10:
-        func_00217980(2, b);
+        SzSound_PlayBGM(2, b);
         break;
     case 11:
     case 12:
@@ -2094,68 +2094,68 @@ void func_001AAAF0(int n, int b)
     case 14:
         break;
     case 15:
-        func_00217980(21, b);
+        SzSound_PlayBGM(21, b);
         break;
     }
 }
 
-void func_001AAD50(s32 arg0) {
+void SzGame_ModeTerm(s32 arg0) {
     extern void func_001C5D70(s32);
     s8 *data = (s8 *)&D_00317250;
 
     switch (arg0) {
     case 1:
-        func_001AE520();
+        SzDuel_Term();
         if (data[0x21F] == 9) {
             func_001C5D70(-1);
         }
         break;
     case 5:
-        func_001E77A0();
+        SzBattle_Term();
         break;
     case 6:
-        func_001B8830();
+        SzDuel_TermBuildDeck();
         if (data[0x21F] == 9) {
             func_001C5D70(-1);
         }
         break;
     case 7:
-        func_001C1270();
+        SzDuel_Term3DView();
         break;
     case 8:
-        func_001C2530();
+        SzDuel_TermTrade();
         break;
     case 9:
-        func_001C6120();
+        SzDuel_TermCustomDuel();
         break;
     case 0x24:
-        func_001AC600();
+        lSzGame_TermMemCheck();
         break;
     case 0xA:
-        func_001AC6F0();
+        lSzGame_TermTitle();
         break;
     case 0xB:
-        func_0023B920();
-        func_002464E0();
+        TkCamp_Term();
+        ShFace_Term();
         break;
     case 0xC:
-        func_001E7A50();
+        SzEvent_Term();
         break;
     case 0xD:
-        func_001CC610();
+        SzDuel_TermMapEdit();
         break;
     case 0xE:
-        func_002464E0();
+        ShFace_Term();
         break;
     case 0xF:
-        func_00286900();
+        ShSlot_Term();
         if (data[0x21F] == 9) {
             func_001C5D70(-1);
         }
         break;
     case 0x13:
-        func_001E77A0();
-        func_001FCA70();
+        SzBattle_Term();
+        SzView_TermCamera();
         break;
     }
 }
@@ -2169,7 +2169,7 @@ typedef struct {
     u8 selected;
 } State_001AAF60;
 
-s64 func_001AAF60(s32 arg0) {
+s64 SzGame_GetMode(s32 arg0) {
     s8 value;
     State_001AAF60 *state = (State_001AAF60 *)&D_00317250;
 
@@ -2195,46 +2195,46 @@ typedef struct Flags2E_001AAFA0 {
     u8 high : 4;
 } Flags2E_001AAFA0;
 
-void func_001AAFA0(s32 arg0) {
+void SzGame_InitMemCardProc(s32 arg0) {
     extern char D_002BE7D0[];
     extern char D_002BE821[];
     s8 *data = (s8 *)&D_00317250;
 
     switch (arg0) {
     case 0:
-        func_0023C770(1);
+        TkMc_Load_Main(1);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 2;
         break;
     case 1: {
         u8 path[128];
 
-        func_0019B648(path, D_002BE821, (s32)func_001FFF90((s32)D_002BE7D0));
-        func_001FECB0(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
+        func_0019B648(path, D_002BE821, (s32)SzFile_GetEnv((s32)D_002BE7D0));
+        SzFile_ReadRequestParam(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     }
     case 2: {
         u8 path[128];
 
-        func_0019B648(path, D_002BE821, (s32)func_001FFF90((s32)D_002BE7D0));
-        func_001FECB0(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
+        func_0019B648(path, D_002BE821, (s32)SzFile_GetEnv((s32)D_002BE7D0));
+        SzFile_ReadRequestParam(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     }
     case 3:
-        func_0023CC50(1);
+        TkMc_Custom_Main(1);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     case 4:
-        func_0023C8B0(1);
+        TkMc_Trade_Load_Main(1);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     case 5:
-        func_0023CA10(1);
+        TkMc_Trade_Save_Main(1);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     case 6:
-        func_0023C3F0(1);
+        TkMc_Check_Main(1);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     }
@@ -2262,7 +2262,7 @@ extern u8 D_0031747D;
 #define RESULT (*(s32 *)(data + 0x210))
 #define CODE (*(u16 *)(data + 0x21C))
 
-s32 func_001AB1D0(void) {
+s32 SzGame_ActMemCardProc(void) {
     s8 *data = (s8 *)&D_00317250;
     s32 prev;
     s32 cancel;
@@ -2276,7 +2276,7 @@ s32 func_001AB1D0(void) {
         cancel = 0;
         res = 0;
         prev = F2E->value;
-        if (func_001FF300() != 0) {
+        if (SzFile_InqRequestEx() != 0) {
             return 0;
         }
         mode = F2D->second;
@@ -2288,13 +2288,13 @@ s32 func_001AB1D0(void) {
             case 2:
             case 3:
             case 4:
-                CODE = func_0023C770(F2E->value - 2);
-                res = func_001AC290(F2D->second, CODE, &RESULT);
+                CODE = TkMc_Load_Main(F2E->value - 2);
+                res = lSzGame_GetMCardMsg(F2D->second, CODE, &RESULT);
                 F2E->value = 2;
                 switch (CODE & 0xFF00) {
                 case 0:
-                    if (res != 0 && func_00203A40(0, 0, 0xF0) != 0) {
-                        func_00217710(0, 4);
+                    if (res != 0 && SzPad_Check(0, 0, 0xF0) != 0) {
+                        SzSound_PlaySE(0, 4);
                         F2E->value = 0;
                         RESULT = -1;
                         cancel = 1;
@@ -2311,8 +2311,8 @@ s32 func_001AB1D0(void) {
                 break;
             case 5:
                 res = 1;
-                if (func_00203A40(0, 0, 0xF0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xF0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     F2E->value = 0;
                     RESULT = -1;
                 }
@@ -2324,34 +2324,34 @@ s32 func_001AB1D0(void) {
             switch (F2E->value) {
             case 1:
                 if (mode == 1) {
-                    func_0023C560(1);
+                    TkMc_Save_Main(1);
                     F2E->value = 2;
                     break;
                 }
                 res = 2;
                 RESULT = 0x9C9;
-                if (func_00203A40(0, 0, 0xA000) != 0) {
+                if (SzPad_Check(0, 0, 0xA000) != 0) {
                     old = F2E->bit3;
-                    if (func_00203A40(0, 0, 0x8000) != 0) {
+                    if (SzPad_Check(0, 0, 0x8000) != 0) {
                         F2E->bit3 = 1;
                     } else {
                         F2E->bit3 = 0;
                     }
                     if (F2E->bit3 != old) {
-                        func_00217710(0, 3);
+                        SzSound_PlaySE(0, 3);
                     }
-                } else if (func_00203A40(0, 0, 0xC0) != 0) {
-                    func_00217710(0, 4);
+                } else if (SzPad_Check(0, 0, 0xC0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     if (F2E->bit3) {
-                        func_0023C560(1);
+                        TkMc_Save_Main(1);
                         F2E->value = 2;
                     } else {
                         F2E->value = 0;
                         RESULT = -1;
                         cancel = 1;
                     }
-                } else if (func_00203A40(0, 0, 0x20) != 0) {
-                    func_00217710(0, 5);
+                } else if (SzPad_Check(0, 0, 0x20) != 0) {
+                    SzSound_PlaySE(0, 5);
                     F2E->value = 0;
                     RESULT = -1;
                     cancel = 1;
@@ -2360,25 +2360,25 @@ s32 func_001AB1D0(void) {
             case 2:
             case 3:
             case 4:
-                CODE = func_0023C560(F2E->value - 2);
-                res = func_001AC290(F2D->second, CODE, &RESULT);
+                CODE = TkMc_Save_Main(F2E->value - 2);
+                res = lSzGame_GetMCardMsg(F2D->second, CODE, &RESULT);
                 F2E->value = 2;
                 switch (CODE & 0xFF00) {
                 case 0:
                     if (res == 0) {
                     } else if (res == 2) {
-                        if (func_00203A40(0, 0, 0xA000) != 0) {
+                        if (SzPad_Check(0, 0, 0xA000) != 0) {
                             old = F2E->bit3;
-                            if (func_00203A40(0, 0, 0x8000) != 0) {
+                            if (SzPad_Check(0, 0, 0x8000) != 0) {
                                 F2E->bit3 = 1;
                             } else {
                                 F2E->bit3 = 0;
                             }
                             if (F2E->bit3 != old) {
-                                func_00217710(0, 3);
+                                SzSound_PlaySE(0, 3);
                             }
-                        } else if (func_00203A40(0, 0, 0xC0) != 0) {
-                            func_00217710(0, 4);
+                        } else if (SzPad_Check(0, 0, 0xC0) != 0) {
+                            SzSound_PlaySE(0, 4);
                             if (F2E->bit3) {
                                 F2E->value = 4;
                             } else if (F2D->second == 1) {
@@ -2389,8 +2389,8 @@ s32 func_001AB1D0(void) {
                                 prev = F2E->value = 1;
                                 F2E->bit3 = 1;
                             }
-                        } else if (func_00203A40(0, 0, 0x20) != 0) {
-                            func_00217710(0, 5);
+                        } else if (SzPad_Check(0, 0, 0x20) != 0) {
+                            SzSound_PlaySE(0, 5);
                             if (F2D->second == 1) {
                                 cancel = 1;
                                 F2E->value = 0;
@@ -2401,13 +2401,13 @@ s32 func_001AB1D0(void) {
                             }
                         }
                     } else if (res == 3) {
-                        if (func_00203A40(0, 0, 0xF0) != 0) {
-                            func_00217710(0, 4);
+                        if (SzPad_Check(0, 0, 0xF0) != 0) {
+                            SzSound_PlaySE(0, 4);
                             F2E->value = 4;
                         }
                     } else {
-                        if (func_00203A40(0, 0, 0xF0) != 0) {
-                            func_00217710(0, 4);
+                        if (SzPad_Check(0, 0, 0xF0) != 0) {
+                            SzSound_PlaySE(0, 4);
                             if (F2D->second == 1) {
                                 cancel = 1;
                                 F2E->value = 0;
@@ -2430,8 +2430,8 @@ s32 func_001AB1D0(void) {
                 break;
             case 5:
                 res = 1;
-                if (func_00203A40(0, 0, 0xF0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xF0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     F2E->value = 0;
                     RESULT = -1;
                 }
@@ -2445,13 +2445,13 @@ s32 func_001AB1D0(void) {
             case 2:
             case 3:
             case 4:
-                CODE = func_0023CC50(F2E->value - 2);
-                res = func_001AC290(F2D->second, CODE, &RESULT);
+                CODE = TkMc_Custom_Main(F2E->value - 2);
+                res = lSzGame_GetMCardMsg(F2D->second, CODE, &RESULT);
                 F2E->value = 2;
                 switch (CODE & 0xFF00) {
                 case 0:
-                    if (res != 0 && func_00203A40(0, 0, 0xF0) != 0) {
-                        func_00217710(0, 4);
+                    if (res != 0 && SzPad_Check(0, 0, 0xF0) != 0) {
+                        SzSound_PlaySE(0, 4);
                         F2E->value = 0;
                         RESULT = -1;
                         cancel = 1;
@@ -2472,8 +2472,8 @@ s32 func_001AB1D0(void) {
                 break;
             case 5:
                 res = 1;
-                if (func_00203A40(0, 0, 0xF0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xF0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     F2E->value = 0;
                     RESULT = -1;
                 }
@@ -2487,14 +2487,14 @@ s32 func_001AB1D0(void) {
             case 2:
             case 3:
             case 4:
-                CODE = func_0023C8B0(F2E->value - 2);
-                res = func_001AC290(F2D->second, CODE, &RESULT);
+                CODE = TkMc_Trade_Load_Main(F2E->value - 2);
+                res = lSzGame_GetMCardMsg(F2D->second, CODE, &RESULT);
                 F2E->value = 2;
                 switch (CODE & 0xFF00) {
                 case 0:
                     if (res != 0) {
-                        if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
-                            func_00217710(0, 4);
+                        if (SzPad_Check(0, 0, 0xF0) != 0 || SzPad_Check(1, 0, 0xF0) != 0) {
+                            SzSound_PlaySE(0, 4);
                             F2E->value = 0;
                             RESULT = -1;
                             cancel = 1;
@@ -2512,8 +2512,8 @@ s32 func_001AB1D0(void) {
                 break;
             case 5:
                 res = 1;
-                if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xF0) != 0 || SzPad_Check(1, 0, 0xF0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     F2E->value = 0;
                     RESULT = -1;
                 }
@@ -2527,15 +2527,15 @@ s32 func_001AB1D0(void) {
             case 2:
             case 3:
             case 4:
-                CODE = func_0023CA10(F2E->value - 2);
-                res = func_001AC290(F2D->second, CODE, &RESULT);
+                CODE = TkMc_Trade_Save_Main(F2E->value - 2);
+                res = lSzGame_GetMCardMsg(F2D->second, CODE, &RESULT);
                 F2E->value = 2;
                 switch (CODE & 0xFF00) {
                 case 0:
                     if (res != 0) {
                         res = 1;
-                        if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
-                            func_00217710(0, 4);
+                        if (SzPad_Check(0, 0, 0xF0) != 0 || SzPad_Check(1, 0, 0xF0) != 0) {
+                            SzSound_PlaySE(0, 4);
                             F2E->value = 0;
                             RESULT = -1;
                             cancel = 1;
@@ -2554,8 +2554,8 @@ s32 func_001AB1D0(void) {
                 break;
             case 5:
                 res = 1;
-                if (func_00203A40(0, 0, 0xF0) != 0 || func_00203A40(1, 0, 0xF0) != 0) {
-                    func_00217710(0, 4);
+                if (SzPad_Check(0, 0, 0xF0) != 0 || SzPad_Check(1, 0, 0xF0) != 0) {
+                    SzSound_PlaySE(0, 4);
                     F2E->value = 0;
                     RESULT = -1;
                 }
@@ -2569,16 +2569,16 @@ s32 func_001AB1D0(void) {
             case 2:
             case 3:
             case 4:
-                CODE = func_0023C3F0(F2E->value - 2);
-                res = func_001AC290(F2D->second, CODE, &RESULT);
+                CODE = TkMc_Check_Main(F2E->value - 2);
+                res = lSzGame_GetMCardMsg(F2D->second, CODE, &RESULT);
                 if (RESULT == 0x9B2) {
                     RESULT = -1;
                 }
                 F2E->value = 2;
                 switch (CODE & 0xFF00) {
                 case 0:
-                    if (res != 0 && func_00203A40(0, 0, 0xF0) != 0) {
-                        func_00217710(0, 4);
+                    if (res != 0 && SzPad_Check(0, 0, 0xF0) != 0) {
+                        SzSound_PlaySE(0, 4);
                         F2E->value = 0;
                         RESULT = -1;
                         cancel = 1;
@@ -2598,7 +2598,7 @@ s32 func_001AB1D0(void) {
             break;
         }
         if (RESULT < 0) {
-            func_001E4530();
+            SzDuel_CloseMsgPopup();
             return (cancel != 0) ? 2 : 1;
         }
         switch (res) {
@@ -2618,7 +2618,7 @@ s32 func_001AB1D0(void) {
             cmd = 7;
             break;
         }
-        func_001E42C0(cmd, 0, 0, RESULT);
+        SzDuel_OpenMsgPopup(cmd, 0, 0, RESULT);
         return 0;
     }
     return -1;
@@ -2629,7 +2629,7 @@ s32 func_001AB1D0(void) {
 #undef RESULT
 #undef CODE
 
-s32 func_001AC290(s32 arg0, s32 arg1, s32 *arg2) {
+s32 lSzGame_GetMCardMsg(s32 arg0, s32 arg1, s32 *arg2) {
     s32 alt;
     s32 result;
 
@@ -2722,15 +2722,15 @@ s32 func_001AC290(s32 arg0, s32 arg1, s32 *arg2) {
     return result;
 }
 
-void func_001AC510(void) {
+void lSzGame_InitMemCheck(void) {
     s32 i;
 
     i = 0;
     do {
-        func_001F30B0(i, 0);
+        SzModel_SetDrawFlag(i, 0);
         i += 1;
     } while (i < 0x54);
-    func_001AAFA0(6);
+    SzGame_InitMemCardProc(6);
 }
 
 typedef struct Block_001AC560 {
@@ -2744,19 +2744,19 @@ typedef struct Block_001AC560 {
 extern s32 D_003173B0;
 extern Block_001AC560 D_00317449;
 
-void func_001AC560(void) {
-    if (func_001AB1D0() < 0) {
+void lSzGame_ActMemCheck(void) {
+    if (SzGame_ActMemCardProc() < 0) {
         D_003173B0 = 0;
-        func_001FCC70(0, 1, 1, 0, 60, 0);
+        SzFade_Entry(0, 1, 1, 0, 60, 0);
         D_00317449.mode = -2;
         D_00317449.selected = 10;
         D_00317449.previous = 0;
         D_00317449.entries[D_00317449.index + D_00317449.previous] = 0;
-        func_001AAAF0(-2, 1);
+        SzGame_ReqBGM(-2, 1);
     }
 }
 
-void func_001AC600(void) {
+void lSzGame_TermMemCheck(void) {
 
 }
 
@@ -2779,18 +2779,18 @@ typedef struct State_001AC610 {
 
 extern s32 D_003173B0;
 
-void func_001AC610(s32 arg0) {
+void lSzGame_InitTitle(s32 arg0) {
     State_001AC610 *state = (State_001AC610 *)&D_00317250;
     s32 i;
 
     i = 0;
     do {
-        func_001F30B0(i, 0);
+        SzModel_SetDrawFlag(i, 0);
         i += 1;
     } while (i < 0x54);
     i = 0;
     do {
-        func_001F30B0(i + 0x22, 1);
+        SzModel_SetDrawFlag(i + 0x22, 1);
         i += 1;
     } while (i < 0x28);
     if (arg0 < 2) {
@@ -2805,7 +2805,7 @@ void func_001AC610(s32 arg0) {
     }
 }
 
-void func_001AC6F0(void) {
+void lSzGame_TermTitle(void) {
 
 }
 
@@ -2879,12 +2879,12 @@ static inline void SzGame_Push_inline(int arg0, int arg1)
     }
 }
 
-void func_001AC700(void)
+void lSzGame_ActTitle(void)
 {
     struct DotrMovieOperationsStatePrefix_1ac700 *p = &D_00317250_1ac700;
     int v;
 
-    switch (func_001AB1D0()) {
+    switch (SzGame_ActMemCardProc()) {
     case 0:
     case 2:
         return;
@@ -2902,7 +2902,7 @@ void func_001AC700(void)
             SzGame_Push_inline(8, 0);
             break;
         }
-        func_00217A70(func_00214D00(0, 2));
+        SzSound_SetOutput(SzData_GetOption(0, 2));
         return;
     }
     if (p->field_22f.field_1) {
@@ -2922,43 +2922,43 @@ void func_001AC700(void)
                     return;
                 }
             }
-            if (func_00203A40(0, 0, 2048)) {
-                func_00217710(0, 4);
+            if (SzPad_Check(0, 0, 2048)) {
+                SzSound_PlaySE(0, 4);
                 p->field_22f.field_1 = 0;
             }
         } else {
-            if (func_00217530() && !func_002176B0())
+            if (SzSound_IsStandby() && !SzSound_IsPlaySE())
                 return;
             v = p->field_224 + 4;
             v = v < 128 ? v : 128; p->field_224 = v;
         }
     } else if (p->field_226 >= 128) {
-        if (func_00203A40(0, 2, 20480)) {
-            if (func_00203A40(0, 2, 4096))
+        if (SzPad_Check(0, 2, 20480)) {
+            if (SzPad_Check(0, 2, 4096))
                 p->field_225 = (p->field_225 + 3) % 4;
             else
                 p->field_225 = (p->field_225 + 5) % 4;
-            func_00217710(0, 3);
+            SzSound_PlaySE(0, 3);
             return;
         }
-        if (func_00203A40(0, 0, 192)) {
-            func_00217710(0, 4);
+        if (SzPad_Check(0, 0, 192)) {
+            SzSound_PlaySE(0, 4);
             switch (p->field_225) {
             case 0:
                 p->field_164 = 0;
                 SzGame_Push_inline(11, 0);
-                func_00214BB0(0, 0, 1);
-                func_00214BB0(0, 1, 1);
-                func_00214BB0(0, 2, 1);
+                SzData_SetOption(0, 0, 1);
+                SzData_SetOption(0, 1, 1);
+                SzData_SetOption(0, 2, 1);
                 break;
             case 1:
-                func_001AAFA0(0);
+                SzGame_InitMemCardProc(0);
                 break;
             case 2:
-                func_001AAFA0(3);
+                SzGame_InitMemCardProc(3);
                 break;
             case 3:
-                func_001AAFA0(4);
+                SzGame_InitMemCardProc(4);
                 break;
             }
             
@@ -2971,11 +2971,11 @@ void func_001AC700(void)
     }
 }
 
-void func_001ACC50(void) {
-    func_00209D30(func_001ACC80(func_00209D20()));
+void lSzGame_DrawTitle(void) {
+    RhBase_SetVifPacketArea(lSzGame_DrawTitle_Pipe(RhBase_GetVifPacketArea()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_037", func_001ACC80);
+INCLUDE_ASM("asm/nonmatchings/main_037", lSzGame_DrawTitle_Pipe);
 
 typedef struct {
     u16 count;
@@ -3035,9 +3035,9 @@ static inline void set_uv_001AD670(UV_001AD670 *p, s32 u, s32 v) {
     p->v = v;
 }
 
-s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 depth) {
+s32 lSzGame_DrawTitle_Rose_Pipe(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 depth) {
     extern u8 D_00317476;
-    extern s32 func_0020A470(s32, s32, s32);
+    extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     View_001AD670 view;
     Packet_001AD670 sprite __attribute__((aligned(8)));
 
@@ -3046,7 +3046,7 @@ s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 d
     ((Tag_001AD670 *)sprite.tag)->registers = 0x42421;
     ((Tag_001AD670 *)sprite.tag)->padding = 0;
     ((Tag_001AD670 *)sprite.tag)->flags |= 0x800;
-    func_002086D0(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    ExAssignAlpha(sprite.tag, 0x44 | ((s64)0x80 << 32));
     sprite.color.r = 0x80;
     sprite.color.g = 0x80;
     sprite.color.b = 0x80;
@@ -3056,11 +3056,11 @@ s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 d
     sprite.vertex0.fog = 0;
     sprite.vertex1.z = 0xFFFFF8;
     sprite.vertex1.fog = 0;
-    func_0020DEF0(&view);
-    if (func_0020E460() != 0) {
-        func_0020A470(0, 2, 0x32);
-        packet = (s32)func_0020A610((void *)packet);
-        packet = (s32)func_0020A870((u8 *)packet, 0);
+    RhView_GetCurView(&view);
+    if (RhView_PushStack() != 0) {
+        RhBase_AssignRenderFrame(0, 2, 0x32);
+        packet = (s32)RhBase_EnableRenderFrame((void *)packet);
+        packet = (s32)RhBase_ClearRenderFrame((u8 *)packet, 0);
         view.eyeX = 0.0f;
         view.eyeY = 0.0f;
         view.eyeZ = -depth;
@@ -3068,27 +3068,27 @@ s32 func_001AD670(s32 packet, s32 id, s32 x, s32 y, s32 width, s32 height, f32 d
         view.targetY = 0.0f;
         view.targetZ = 1.0f;
         view.roll = 0;
-        func_0020DFD0(1.0f, 512.0f);
-        func_0020E360(&view);
-        packet = func_001EFA80(func_0020EC60(packet), id, 0, 0, 0, 0, 0);
-        func_0020AA30(&sprite.texture0, &sprite.texture1);
-        packet = func_0020F290((s32)func_0020A760((void *)packet));
+        RhView_SetClipZ(1.0f, 512.0f);
+        RhView_Modify(&view);
+        packet = SzModel_DrawWithOutCalc_Pipe(RhView_SendViewParameters(packet), id, 0, 0, 0, 0, 0);
+        RhBase_GetTextureInfoForRender(&sprite.texture0, &sprite.texture1);
+        packet = RhText_SetTextureFlush((s32)RhBase_DisableRenderFrame((void *)packet));
         set_uv_001AD670((UV_001AD670 *)&sprite.uv0, 0, 0);
         set_uv_001AD670((UV_001AD670 *)&sprite.uv1, 0x280 << 4, 0x1C0 << 4);
         sprite.vertex0.x = (((x + 0x800) - (width >> 1)) << 4) - 8;
         sprite.vertex0.y = (((y + 0x800) - (height >> 1)) << 4) - 8;
         sprite.vertex1.x = (((x + 0x800) + (width >> 1)) << 4) - 8;
         sprite.vertex1.y = (((y + 0x800) + (height >> 1)) << 4) - 8;
-        func_0020E4F0();
-        func_0020DEF0(&view);
-        func_0020E360(&view);
-        packet = func_00207650(func_0020EC60(packet), (s32)&sprite, 0, 0);
-        func_0020A9E0();
+        RhView_PopStack();
+        RhView_GetCurView(&view);
+        RhView_Modify(&view);
+        packet = ExSortPrim_Pipe(RhView_SendViewParameters(packet), (s32)&sprite, 0, 0);
+        RhBase_FreeRenderFrame();
     }
     return packet;
 }
 
-void func_001AD960(void) {
+void SzDuel_Initialize(void) {
     u8 *state = D_00317490.b;
     s32 x;
     s32 y;
@@ -3098,15 +3098,15 @@ void func_001AD960(void) {
     u8 *entry;
     u8 *row;
 
-    func_0020B3C0((s8 *)D_00317490.b, 0, 0xD70);
-    func_001CDA10();
-    func_001CDD40();
+    RhMem_FillMemory((s8 *)D_00317490.b, 0, 0xD70);
+    SzDuel_InitCardRequest();
+    SzDuel_InitCardControl();
     y = 0;
     do {
         x = 0;
         do {
-            cell = func_001DCD00(x, y);
-            func_001DCC90(cell);
+            cell = SzDuel_GetMapInfo(x, y);
+            SzDuel_InitMapInfo(cell);
             cell[0x16] = (y + x) % 10;
             x++;
         } while (x < 7);
@@ -3119,7 +3119,7 @@ void func_001AD960(void) {
         index = 0;
         entry = row;
         do {
-            func_001DCD70(entry, -1);
+            SzDuel_InitCardInfo(entry, -1);
             index++;
             entry += 0x5C;
         } while (index < 11);
@@ -3129,62 +3129,62 @@ void func_001AD960(void) {
 
     state[0x33C] = 100;
     state[0x68C] = 100;
-    func_001ADD00(0, 0, 0);
+    SzDuel_Init(0, 0, 0);
 }
 
-void func_001ADA80(s32 arg0) {
-    extern s32 func_001AAF60();
+void lSzDuel_InitCom(s32 arg0) {
+    extern s32 SzGame_GetMode();
     s32 mode;
     s32 i;
 
-    mode = func_001AAF60(1);
-    func_001F9770(0, 9, 1);
+    mode = SzGame_GetMode(1);
+    SzView_SetStraightLight(0, 9, 1);
     i = 0;
     do {
-        func_001F30B0(i, 0);
+        SzModel_SetDrawFlag(i, 0);
         i++;
     } while (i < 0x54);
     i = 0;
     do {
-        func_001F30B0(i, 1);
+        SzModel_SetDrawFlag(i, 1);
         i++;
     } while (i < 5);
     i = 0;
     do {
-        func_001F30B0(i + 5, 1);
+        SzModel_SetDrawFlag(i + 5, 1);
         i++;
     } while (i < 2);
     i = 0;
     do {
-        func_001F30B0(i + 0x14, 1);
+        SzModel_SetDrawFlag(i + 0x14, 1);
         i++;
     } while (i < 0xA);
     i = 0;
     do {
-        func_001F30B0(i + 0x1E, 1);
+        SzModel_SetDrawFlag(i + 0x1E, 1);
         i++;
     } while (i < 2);
     i = 0;
     do {
-        func_001F30B0(i + 0x20, 1);
+        SzModel_SetDrawFlag(i + 0x20, 1);
         i++;
     } while (i < 2);
     i = 0;
     do {
-        func_001F30B0(i + 0x4A, 1);
+        SzModel_SetDrawFlag(i + 0x4A, 1);
         i++;
     } while (i < 0xA);
     if (mode == 1) {
         s32 j = 0;
         do {
-            func_001F29E0(j + 0x14, 1);
-            func_001F2AD0(j + 0x14, 0x20);
+            SzModel_SetDeform(j + 0x14, 1);
+            SzModel_SetDeformRatio(j + 0x14, 0x20);
             j++;
         } while (j < 0xA);
         j = 0;
         do {
-            func_001F29E0(j + 0x1E, 1);
-            func_001F2AD0(j + 0x1E, 0x20);
+            SzModel_SetDeform(j + 0x1E, 1);
+            SzModel_SetDeformRatio(j + 0x1E, 0x20);
             j++;
         } while (j < 2);
     }
@@ -3195,24 +3195,24 @@ void func_001ADA80(s32 arg0) {
         s32 range = (s32) &D_002910B0;
         s32 position = (s32) &D_002910B8;
 
-        func_001F68D0((s32) position);
-        func_001F6910((s32) position);
-        func_001F69A0(0);
-        func_001F69E0(0);
+        SzEffect_SetFogColorForMonster((s32) position);
+        SzEffect_SetFogColorForDuel((s32) position);
+        SzEffect_SetFogParamZForMonster(0);
+        SzEffect_SetFogParamZForDuel(0);
         if (((f32 *) range)[0] == ((f32 *) range)[1]) {
-            func_001F6A70(0);
-            func_001F6AB0(0);
+            SzEffect_SetFogParamYForMonster(0);
+            SzEffect_SetFogParamYForDuel(0);
         } else {
-            func_001F6A70((s32) range);
-            func_001F6AB0((s32) range);
+            SzEffect_SetFogParamYForMonster((s32) range);
+            SzEffect_SetFogParamYForDuel((s32) range);
         }
-        func_001F6B40((s32) matrix);
-        func_001F6B80((s32) matrix);
-        func_001F6C10(0);
-        func_001F6C50(0);
-        func_001F6D40((s32) ambient);
-        func_001F6D80((s32) color);
-        func_001F6CE0(0x80);
-        func_001F6CF0(0x80);
+        SzEffect_SetStraightLightForMonster((s32) matrix);
+        SzEffect_SetStraightLightForDuel((s32) matrix);
+        SzEffect_SetPointLightForMonster(0);
+        SzEffect_SetPointLightForDuel(0);
+        SzEffect_SetIntensityForMonster((s32) ambient);
+        SzEffect_SetIntensityForDuel((s32) color);
+        SzEffect_SetBlackOutForMonster(0x80);
+        SzEffect_SetBlackOutForDuel(0x80);
     }
 }

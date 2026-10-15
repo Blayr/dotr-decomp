@@ -47,10 +47,10 @@ extern int D_0034F6F0;
 extern int func_00229140_b(int a, int b, int limit);
 extern int func_002294B0_b(int side, int pick);
 extern void func_00217980_b(int n, int b);
-extern void func_0021E330(void);
+extern void Taku_Camp_Ivent(void);
 extern void func_00228940_b(int a, int b);
 extern void func_00228660_b(int side, int row, int value, short *list, int count);
-extern void func_00228460(int side, int row, short *list, int count, int flag);
+extern void Taku_Nagare2_set(int side, int row, short *list, int count, int flag);
 extern int func_00228F50_b(int side, int row);
 #define WB(o) (*(signed char *)(DOTR_CAMP_SYSTEM_BASE + (o)))
 #define WH(o) (*(short *)(DOTR_CAMP_SYSTEM_BASE + (o)))
@@ -58,12 +58,12 @@ extern int func_00228F50_b(int side, int row);
 #define BANK DOTR_CAMP_SYSTEM_BANK
 #define COPY(K) n = spot[K].n; for (i = 0; i < n; i++) { buf[i] = spot[K].list[sd][i]; }
 #define FLOATS WF(0x40) = WF(0x1b8); WF(0x48) = WF(0x1c0);
-#define NAG(C, K, F) case C: COPY(K) func_00228460(side, K, buf, n, F); break;
-#define NAG1(C, K) case C: buf[0] = spot[K].list[sd][0]; func_00228460(side, K, buf, 1, 0); break;
+#define NAG(C, K, F) case C: COPY(K) Taku_Nagare2_set(side, K, buf, n, F); break;
+#define NAG1(C, K) case C: buf[0] = spot[K].list[sd][0]; Taku_Nagare2_set(side, K, buf, 1, 0); break;
 #define KM(C, K) case C: func_002294B0_b(side, K); break;
 #define spot D_00298BA0
 
-void func_00226600(void)
+void Taku_Camp_System(void)
 {
     struct DotrCampSystemBoard *b = &D_00299E10_b;
     int side = b->b0;
@@ -109,7 +109,7 @@ void func_00226600(void)
             break;
         }
     }
-    func_0021E330();
+    Taku_Camp_Ivent();
     sd = side;
     if (sd == 0) {
         switch (b->h194) {
@@ -131,7 +131,7 @@ void func_00226600(void)
                 WH(0x536c)++;
                 break;
             case 1:
-                if (func_0022C3C0(0) && func_00228970() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
                     func_00228940_b(1, 0);
                     WH(0x536c)++;
                 }
@@ -148,7 +148,7 @@ void func_00226600(void)
             case 3:
                 FLOATS
                 if (b->lv[0] != 0) {
-                    if (func_0022C3C0(1)) {
+                    if (My_LedarModel_a_set(1)) {
                         WH(0x1c) = 1;
                         WH(0x1a) = 3;
                         WH(0x536c)++;
@@ -188,7 +188,7 @@ void func_00226600(void)
                 WH(0x536c)++;
                 return;
             case 1:
-                if (func_0022C3C0(0) && func_00228970() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
                     func_00228940_b(1, 1);
                     WH(0x536c)++;
                 }
@@ -202,7 +202,7 @@ void func_00226600(void)
             case 3:
                 FLOATS
                 if (b->lv[1] != 0) {
-                    if (func_0022C3C0(1)) {
+                    if (My_LedarModel_a_set(1)) {
                         WH(0x1c) = 1;
                         WH(0x1a) = 0;
                         b->h194++;
@@ -240,7 +240,7 @@ void func_00226600(void)
             break;
         case 100:
             buf[0] = spot[11].list[sd][0];
-            func_00228460(side, 11, buf, 1, 0);
+            Taku_Nagare2_set(side, 11, buf, 1, 0);
             b->lv[11] = 0;
             break;
         NAG1(101, 12)
@@ -264,7 +264,7 @@ void func_00226600(void)
                 WH(0x536c)++;
                 return;
             case 1:
-                if (func_0022C3C0(0) && func_00228970() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
                     func_00228940_b(1, 2);
                     WH(0x536c)++;
                 }
@@ -280,7 +280,7 @@ void func_00226600(void)
             case 3:
                 FLOATS
                 if (b->lv[spot[15].list[sd][buf[0]]] != 0) {
-                    if (func_0022C3C0(1)) {
+                    if (My_LedarModel_a_set(1)) {
                         WH(0x1c) = 1;
                         WH(0x1a) = 0;
                         BANK->records[sd][buf[0]].flag = 1;
@@ -318,7 +318,7 @@ void func_00226600(void)
                 }
                 return;
             case 2:
-                if (func_0022C3C0(0) && func_00228970() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
                     func_00228940_b(1, 3);
                     WH(0x536c)++;
                 }
@@ -335,7 +335,7 @@ void func_00226600(void)
             case 4:
                 FLOATS
                 if (b->lv[D_00299020[sd][buf[0]].cell] != 0) {
-                    if (func_0022C3C0(1)) {
+                    if (My_LedarModel_a_set(1)) {
                         WH(0x1c) = 1;
                         WH(0x1a) = 0;
                         BANK->records[sd][buf[0]].flag = 1;
@@ -348,7 +348,7 @@ void func_00226600(void)
             break;
         case 106:
             buf[0] = spot[17].list[sd][0];
-            func_00228460(side, 17, buf, 1, 0);
+            Taku_Nagare2_set(side, 17, buf, 1, 0);
             if (WB(0x546c) == 0) {
                 func_00217980_b(4, 1);
                 WB(0x546c) = 1;
@@ -397,7 +397,7 @@ void func_00226600(void)
                 }
                 return;
             case 4:
-                if (func_0022C3C0(0) && func_00228970()) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido()) {
                     func_00228940_b(1, 4);
                     WH(0x536c)++;
                 }
@@ -412,7 +412,7 @@ void func_00226600(void)
             case 6:
                 FLOATS
                 if (b->lv[11] != 0) {
-                    if (func_0022C3C0(1)) {
+                    if (My_LedarModel_a_set(1)) {
                         WH(0x1c) = 1;
                         WH(0x1a) = 0;
                         WH(0x536c)++;

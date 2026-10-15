@@ -1,14 +1,14 @@
 #include "common.h"
 
-s32 func_0017BFD0(void) {
+s32 ioctl(void) {
     return -1;
 }
 
-s32 func_0017BFD8(void) {
+s32 lseek(void) {
     return -1;
 }
 
-u32 func_0017BFE0(s32 incr) {
+u32 sbrk(s32 incr) {
     s32 eie, st, old, new;
     __asm__ volatile("mfc0\t%0, $12" : "=r"(eie));
     eie &= 0x10000;
@@ -20,8 +20,8 @@ u32 func_0017BFE0(s32 incr) {
         if (st & 0x10000) goto again;
     }
     new = D_0028C254 + incr;
-    if (func_0017B8C0() < (u32)new) {
-        *(s32 *)func_001966F8() = 12;
+    if (EndOfHeap() < (u32)new) {
+        *(s32 *)__errno() = 12;
         if (eie) {
             __asm__ volatile("ei");
         }
@@ -35,40 +35,40 @@ u32 func_0017BFE0(s32 incr) {
     return old;
 }
 
-s32 func_0017C090(void) {
+s32 isatty(void) {
     return 1;
 }
 
-s32 func_0017C098(s32 arg0, void *arg1) {
+s32 fstat(s32 arg0, void *arg1) {
     (*(s64 *)((u8 *)arg1 + 0x48)) = 0;
     (*(s32 *)((u8 *)arg1 + 4)) = 0x2000;
     return 0;
 }
 
-s32 func_0017C0B0(void) {
+s32 getpid(void) {
     return 1;
 }
 
-s32 func_0017C0B8(s32 arg0, s32 arg1) {
+s32 kill(s32 arg0, s32 arg1) {
     if (arg0 == 1) {
         func_001847B0(arg1);
     }
     return 0;
 }
 
-s32 func_0017C0E0(void) {
-    *(s32 *)func_001966F8() = 5;
+s32 stat(void) {
+    *(s32 *)__errno() = 5;
     return -1;
 }
 
-s32 func_0017C108(void) {
-    *(s32 *)func_001966F8() = 5;
+s32 unlink(void) {
+    *(s32 *)__errno() = 5;
     return -1;
 }
 
 /* _sceSDC: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/cache.c; see THIRD_PARTY_NOTICES.md) */
 
-void func_0017C130(u32 start, u32 end) {
+void _sceSDC(u32 start, u32 end) {
     __asm__ __volatile__(
         "	.set	noreorder\n"
         "	lui	$7,(0xFFFFF000 >> 16)\n"
@@ -117,26 +117,26 @@ void func_0017C130(u32 start, u32 end) {
        );
 }
 
-void func_0017C1D8(u32 arg0, u32 arg1) {
+void SyncDCache(u32 arg0, u32 arg1) {
     s32 eie;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    func_0017C130(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
+    _sceSDC(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
     if (eie) {
         func_00184428();
     }
 }
 
-void func_0017C258(u32 arg0, u32 arg1) {
-    func_0017C130(arg0 & ~0x3F, arg1 & ~0x3F);
+void iSyncDCache(u32 arg0, u32 arg1) {
+    _sceSDC(arg0 & ~0x3F, arg1 & ~0x3F);
 }
 
 /* _sceIDC: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/cache.c; see THIRD_PARTY_NOTICES.md) */
 
-void func_0017C270(u32 start, u32 end) {
+void _sceIDC(u32 start, u32 end) {
     __asm__ __volatile__(
         "	.set	noreorder\n"
         "	lui	$7,(0xFFFFF000 >> 16)\n"
@@ -185,21 +185,21 @@ void func_0017C270(u32 start, u32 end) {
        );
 }
 
-void func_0017C318(u32 arg0, u32 arg1) {
+void InvalidDCache(u32 arg0, u32 arg1) {
     s32 eie;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    func_0017C270(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
+    _sceIDC(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
     if (eie) {
         func_00184428();
     }
 }
 
-void func_0017C398(u32 arg0, u32 arg1) {
-    func_0017C270(arg0 & ~0x3F, arg1 & ~0x3F);
+void iInvalidDCache(u32 arg0, u32 arg1) {
+    _sceIDC(arg0 & ~0x3F, arg1 & ~0x3F);
 }
 
 s32 func_0017C3B0(void) {
@@ -215,7 +215,7 @@ s32 func_0017C3C0(s32 arg0) {
     if (eie) {
         func_001843E0();
     }
-    ret = func_0017B630(arg0);
+    ret = _DisableIntc(arg0);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -230,7 +230,7 @@ s32 func_0017C428(s32 arg0) {
     if (eie) {
         func_001843E0();
     }
-    ret = func_0017B620(arg0);
+    ret = _EnableIntc(arg0);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -245,7 +245,7 @@ s32 func_0017C490(s32 arg0) {
     if (eie) {
         func_001843E0();
     }
-    ret = func_0017B650(arg0);
+    ret = _DisableDmac(arg0);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -260,7 +260,7 @@ s32 func_0017C4F8(s32 arg0) {
     if (eie) {
         func_001843E0();
     }
-    ret = func_0017B640(arg0);
+    ret = _EnableDmac(arg0);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -268,23 +268,23 @@ s32 func_0017C4F8(s32 arg0) {
     return ret;
 }
 
-void func_0017C560(void) {
-    func_0017B680();
+void iEnableIntc(void) {
+    _iEnableIntc();
     __asm__ volatile("sync");
 }
 
-void func_0017C580(void) {
-    func_0017B690();
+void iDisableIntc(void) {
+    _iDisableIntc();
     __asm__ volatile("sync");
 }
 
-void func_0017C5A0(void) {
-    func_0017B6A0();
+void iEnableDmac(void) {
+    _iEnableDmac();
     __asm__ volatile("sync");
 }
 
-void func_0017C5C0(void) {
-    func_0017B6B0();
+void iDisableDmac(void) {
+    _iDisableDmac();
     __asm__ volatile("sync");
 }
 
@@ -345,8 +345,8 @@ void func_0017C648(void) {
         func_0017C5E0(t[0].addr, t[0].val);
         func_0017C5F0(0x80076000, &D_0028C258, 0x740);
         func_0017C5F0(0x82000, &D_0028C998, 0x28);
-        func_0017BB60(0);
-        func_0017BB60(2);
+        FlushCache(0);
+        FlushCache(2);
         func_0017C5E0(t[1].addr, t[1].val);
         for (i = 2; i < 8; i++) {
             func_0017C5E0(t[i].addr, func_0017C638(t[i].addr));
@@ -369,26 +369,26 @@ extern char D_002BBF78[];
 
 /* topThread: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0017C720(void *arg) {
+void topThread(void *arg) {
     KernEventRing_0017C720 *ring = (KernEventRing_0017C720 *)arg;
     s32 i;
 
     while (1) {
-        ((s32 (*)(s32))func_0017B920)(D_00310510);
+        ((s32 (*)(s32))WaitSema)(D_00310510);
         i = ring->ridx & 0x1FF;
         ring->ridx = i + 1;
         switch (ring->ent[i].code) {
         case 0:
-            ((s32 (*)(s32))func_0017B810)(ring->ent[i].id);
+            ((s32 (*)(s32))WakeupThread)(ring->ent[i].id);
             break;
         case 1:
-            func_0017B790(ring->ent[i].id);
+            RotateThreadReadyQueue(ring->ent[i].id);
             break;
         case 2:
-            ((s32 (*)(s32))func_0017B850)(ring->ent[i].id);
+            ((s32 (*)(s32))SuspendThread)(ring->ent[i].id);
             break;
         default:
-            func_0017DA60(D_002BBF78);
+            kprintf(D_002BBF78);
             break;
         }
     }
@@ -421,7 +421,7 @@ typedef struct {
 extern u8 D_00310110[];
 extern s32 D_00317EF0;
 
-s32 func_0017C7F8(void) {
+s32 InitThread(void) {
     ThParam_0017C7F8 tp;
     SemParam_0017C7F8 sp;
     s32 tid;
@@ -432,33 +432,33 @@ s32 func_0017C7F8(void) {
     }
     sp.init_count = 0;
     sp.max_count = 0xFF;
-    D_00310510 = func_0017B8E0(&sp);
+    D_00310510 = CreateSema(&sp);
     if (D_00310510 < 0) {
         return -1;
     }
-    tp.entry = func_0017C720;
+    tp.entry = topThread;
     tp.stack = D_00310110;
     tp.stackSize = 0x400;
     tp.gpReg = &D_00317EF0;
     tp.initPriority = 0;
-    D_0028CA00 = tid = func_0017B6E0(&tp);
+    D_0028CA00 = tid = CreateThread(&tp);
     if (tid < 0) {
-        func_0017B8F0(D_00310510);
+        DeleteSema(D_00310510);
         return -1;
     }
     r = (ring_t *)&D_00310518;
     r->x0 = 0;
     r->count = 0;
-    func_0017B700(tid, r);
-    func_0017B770(func_0017B7D0(), 1);
+    StartThread(tid, r);
+    ChangeThreadPriority(GetThreadId(), 1);
     return D_0028CA00;
 }
 
-s32 func_0017C8D0(s32 arg0) {
+s32 iWakeupThread(s32 arg0) {
     s32 tid;
     __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
     if (tid != arg0) {
-        return func_0017B820(arg0);
+        return _iWakeupThread(arg0);
     }
     if ((u32)tid >= 0x100 || D_0028CA00 == 0) {
         return -1;
@@ -469,12 +469,12 @@ s32 func_0017C8D0(s32 arg0) {
         r->count = i + 1;
         r->e[i].a = 0;
         r->e[i].b = tid;
-        func_0017B910(D_00310510);
+        iSignalSema(D_00310510);
     }
     return tid;
 }
 
-s32 func_0017C968(u32 arg0) {
+s32 iRotateThreadReadyQueue(u32 arg0) {
     if (arg0 >= 0x80 || D_0028CA00 == 0) {
         return -1;
     }
@@ -484,16 +484,16 @@ s32 func_0017C968(u32 arg0) {
         r->count = i + 1;
         r->e[i].a = 1;
         r->e[i].b = arg0;
-        func_0017B910(D_00310510);
+        iSignalSema(D_00310510);
     }
     return arg0;
 }
 
-s32 func_0017C9E8(s32 arg0) {
+s32 iSuspendThread(s32 arg0) {
     s32 tid;
     __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
     if (tid != arg0) {
-        return func_0017B860(arg0);
+        return _iSuspendThread(arg0);
     }
     if ((u32)tid >= 0x100 || D_0028CA00 == 0) {
         return -1;
@@ -504,40 +504,40 @@ s32 func_0017C9E8(s32 arg0) {
         r->count = i + 1;
         r->e[i].a = 2;
         r->e[i].b = tid;
-        func_0017B910(D_00310510);
+        iSignalSema(D_00310510);
     }
     return tid;
 }
 
-s32 func_0017CA80(s32 arg0, s32 arg1, s32 arg2) {
+s32 sceDeci2Open(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];
     sp0[0] = /* extra? */ (arg0 & 0xFFFF);
     sp0[1] = /* extra? */ arg1;
     sp0[2] = /* extra? */ arg2;
     sp0[3] = /* extra? */ ((s32) &D_00310920 | 0x20000000);
-    return func_0017BD10(1, sp0);
+    return Deci2Call(1, sp0);
 }
 
-void func_0017CAC8(s32 arg0) {
+void sceDeci2Close(s32 arg0) {
     s32 sp0[4];
     sp0[0] = arg0;
-    func_0017BD10(2, sp0);
+    Deci2Call(2, sp0);
 }
 
-void func_0017CAF0(s32 arg0, s8 arg1) {
+void sceDeci2ReqSend(s32 arg0, s8 arg1) {
     s32 sp0[4];
     sp0[0] = arg0;
     sp0[1] = (s32) arg1;
-    func_0017BD10(3, sp0);
+    Deci2Call(3, sp0);
 }
 
-void func_0017CB20(s32 arg0) {
+void sceDeci2Poll(s32 arg0) {
     s32 sp0[4];
     sp0[0] = arg0;
-    func_0017BD10(4, sp0);
+    Deci2Call(4, sp0);
 }
 
-void func_0017CB48(s32 arg0, s32 arg1, s32 arg2) {
+void sceDeci2ExRecv(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];
     s32 temp_a2;
 
@@ -545,10 +545,10 @@ void func_0017CB48(s32 arg0, s32 arg1, s32 arg2) {
     sp0[0] = arg0;
     sp0[1] = arg1;
     sp0[2] = temp_a2;
-    func_0017BD10(-5, sp0);
+    Deci2Call(-5, sp0);
 }
 
-void func_0017CB80(s32 arg0, s32 arg1, s32 arg2) {
+void sceDeci2ExSend(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];
     s32 temp_a2;
 
@@ -556,35 +556,35 @@ void func_0017CB80(s32 arg0, s32 arg1, s32 arg2) {
     sp0[0] = arg0;
     sp0[1] = arg1;
     sp0[2] = temp_a2;
-    func_0017BD10(-6, sp0);
+    Deci2Call(-6, sp0);
 }
 
-void func_0017CBB8(s32 arg0, s8 arg1) {
+void sceDeci2ExReqSend(s32 arg0, s8 arg1) {
     s32 sp0[4];
     sp0[0] = arg0;
     sp0[1] = (s32) arg1;
-    func_0017BD10(-7, sp0);
+    Deci2Call(-7, sp0);
 }
 
-void func_0017CBE8(s32 arg0) {
+void sceDeci2ExLock(s32 arg0) {
     s32 sp0[4];
     sp0[0] = arg0;
-    func_0017BD10(-8, sp0);
+    Deci2Call(-8, sp0);
 }
 
-void func_0017CC10(s32 arg0) {
+void sceDeci2ExUnLock(s32 arg0) {
     s32 sp0[4];
     sp0[0] = arg0;
-    func_0017BD10(-9, sp0);
+    Deci2Call(-9, sp0);
 }
 
-void func_0017CC38(s32 arg0) {
+void kputs(s32 arg0) {
     s32 sp0[4];
     sp0[0] = arg0;
-    func_0017BD10(0x10, sp0);
+    Deci2Call(0x10, sp0);
 }
 
-s32 *func_0017CC60(s32 arg0) {
+s32 *QueueInit(s32 arg0) {
     void *temp_a0;
 
     (*(s32 *)(&D_00310980)) = arg0;
@@ -595,7 +595,7 @@ s32 *func_0017CC60(s32 arg0) {
     return &D_00310980;
 }
 
-void func_0017CC88(void *arg0) {
+void QueuePeekWriteDone(void *arg0) {
     void *temp_a0;
 
     (*(s32 *)((u8 *)arg0 + 4)) = (s32) ((*(s32 *)((u8 *)arg0 + 4)) + 1);
@@ -606,7 +606,7 @@ void func_0017CC88(void *arg0) {
     }
 }
 
-void func_0017CCC8(void *arg0) {
+void QueuePeekReadDone(void *arg0) {
     void *temp_a0;
 
     (*(s32 *)((u8 *)arg0 + 4)) = (s32) ((*(s32 *)((u8 *)arg0 + 4)) - 1);
@@ -642,7 +642,7 @@ extern char D_002BBFF8[];
 
 /* sceTtyHandler: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-void func_0017CD08(s32 event, s32 param, void *opt) {
+void sceTtyHandler(s32 event, s32 param, void *opt) {
     TtyRec_0017CD08 *tty = opt;
     s32 n;
     s32 i;
@@ -653,11 +653,11 @@ void func_0017CD08(s32 event, s32 param, void *opt) {
     case 2:
         if (param != 0) {
             if (320 < (u32)(tty->rlen + param)) {
-                func_0017DA60(D_002BBFA0);
+                kprintf(D_002BBFA0);
             }
-            i = ((s32 (*)(s32, char *, u16))func_0017CB48)(tty->s, tty->rbuf + tty->rlen, (u16)param);
+            i = ((s32 (*)(s32, char *, u16))sceDeci2ExRecv)(tty->s, tty->rbuf + tty->rlen, (u16)param);
             if (i < 0) {
-                func_0017DA60(D_002BBFC8);
+                kprintf(D_002BBFC8);
             }
             tty->rlen = tty->rlen + i;
             return;
@@ -665,15 +665,15 @@ void func_0017CD08(s32 event, s32 param, void *opt) {
         hdr = tty->rbuf;
         for (i = 12; i < *(u16 *)hdr; i++) {
             *tty->q->wp = tty->rbuf[i];
-            func_0017CC88(tty->q);
+            QueuePeekWriteDone(tty->q);
         }
         tty->rlen = 0;
         return;
 
     case 3:
-        n = ((s32 (*)(s32, char *, u16))func_0017CB80)(tty->s, tty->wbuf, (u16)tty->wlen);
+        n = ((s32 (*)(s32, char *, u16))sceDeci2ExSend)(tty->s, tty->wbuf, (u16)tty->wlen);
         if (n < 0) {
-            func_0017DA60(D_002BBFE0, n);
+            kprintf(D_002BBFE0, n);
             break;
         }
         tty->wbuf = tty->wbuf + n;
@@ -682,7 +682,7 @@ void func_0017CD08(s32 event, s32 param, void *opt) {
 
     case 4:
         if (tty->wlen != 0) {
-            func_0017DA60(D_002BBFF8, tty->wlen);
+            kprintf(D_002BBFF8, tty->wlen);
         }
         break;
 
@@ -710,7 +710,7 @@ extern char D_00310AC0[];
 
 /* sceTtyWrite: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
-s32 func_0017CEA0(const char *buf, int len) {
+s32 sceTtyWrite(const char *buf, int len) {
     char *hdr;
     char *out;
     int n = 0;
@@ -744,20 +744,20 @@ s32 func_0017CEA0(const char *buf, int len) {
     }
     (*(TtyRec_0017CD08 *)&D_00310A90).wlen = n + 12;
     *(s16 *)hdr = (*(TtyRec_0017CD08 *)&D_00310A90).wlen;
-    if (((s32 (*)(s32, s8))func_0017CAF0)((*(TtyRec_0017CD08 *)&D_00310A90).s, hdr[7]) < 0) {
+    if (((s32 (*)(s32, s8))sceDeci2ReqSend)((*(TtyRec_0017CD08 *)&D_00310A90).s, hdr[7]) < 0) {
         (*(TtyRec_0017CD08 *)&D_00310A90).busy = 0;
         func_00184428();
         return -1;
     }
     while ((*(TtyRec_0017CD08 *)&D_00310A90).busy != 0) {
-        func_0017CB20((*(TtyRec_0017CD08 *)&D_00310A90).s);
+        sceDeci2Poll((*(TtyRec_0017CD08 *)&D_00310A90).s);
     }
     func_00184428();
     return i;
 }
 
 
-s32 func_0017CFF0(char *arg0, s32 arg1) {
+s32 sceTtyRead(char *arg0, s32 arg1) {
     s32 i;
     char *p;
 
@@ -766,7 +766,7 @@ s32 func_0017CFF0(char *arg0, s32 arg1) {
         while (D_00310A90.q->count == 0) {
         }
         *p = *(*(Deci2Tty_0017CFF0 *)&D_00310A90).q->rptr;
-        func_0017CCC8((*(Deci2Tty_0017CFF0 *)&D_00310A90).q);
+        QueuePeekReadDone((*(Deci2Tty_0017CFF0 *)&D_00310A90).q);
         if (*p == '\n' || *p == '\r') {
             return i + 1;
         }

@@ -1,13 +1,13 @@
 #include "common.h"
 
-void func_001CDD40(void) {
+void SzDuel_InitCardControl(void) {
     u8 *p;
     s32 i;
 
     p = D_0031A7C0;
     i = 0;
     do {
-        func_001CDD90(p);
+        SzDuel_ClearCardControl(p);
         i += 1;
         p += 0xA0;
     } while (i < 6);
@@ -32,7 +32,7 @@ typedef struct Flags_001CDD90 {
     s8 bit7 : 1;
 } Flags_001CDD90;
 
-s32 func_001CDD90(u8 *arg0) {
+s32 SzDuel_ClearCardControl(u8 *arg0) {
     State_001CDD90 *state = (State_001CDD90 *)arg0;
     Flags_001CDD90 *flags;
 
@@ -53,7 +53,7 @@ s32 func_001CDD90(u8 *arg0) {
     return 1;
 }
 
-void *func_001CDE70(s32 arg0) {
+void *SzDuel_GetCardControl(s32 arg0) {
     if (arg0 < 0 || arg0 >= 6) {
         return NULL;
     }
@@ -97,7 +97,7 @@ typedef struct Blend_001CDEB0 {
     Flags_001CDEB0 flags;
 } Blend_001CDEB0;
 
-s32 func_001CDEB0(void *arg0) {
+s32 SzDuel_DoCardControl0(void *arg0) {
     extern s32 func_001A22C0(f32);
     Output_001CDEB0 *output;
     f32 blend;
@@ -143,8 +143,8 @@ s32 func_001CDEB0(void *arg0) {
     return 0;
 }
 
-void func_001CE400(void) {
-    func_00209D30(func_001CE430(func_00209D20()));
+void SzDuel_DrawUnit(void) {
+    RhBase_SetVifPacketArea(SzDuel_DrawUnit_Pipe(RhBase_GetVifPacketArea()));
 }
 
 typedef union Color_001CE430 {
@@ -200,9 +200,9 @@ extern Color_001CE430 D_002914F0;
 extern Render_001CE430 D_00291500;
 extern u16 D_00318116;
 
-s32 func_001CE430(s32 arg0) {
-    extern f32 func_001F1B50();
-    extern s32 func_001AAF60();
+s32 SzDuel_DrawUnit_Pipe(s32 arg0) {
+    extern f32 SzModel_GetAnimFrame();
+    extern s32 SzGame_GetMode();
     u32 mode;
     Color_001CE430 *tint;
     f32 position[4];
@@ -222,7 +222,7 @@ s32 func_001CE430(s32 arg0) {
 
     game = D_00317490.b;
     player = D_00317490.b + D_003181E4 * 0x350;
-    mode = func_001AAF60(1);
+    mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     ownColor = D_002914E0;
     ownColor.channels.r = D_003181E4 == 0 ? 0 : 0x60;
@@ -241,12 +241,12 @@ s32 func_001CE430(s32 arg0) {
     warningColor.channels.a = alpha;
     tint = NULL;
     pos = NULL;
-    fade = (f32)(u32)(u8)func_001F6D10() / 128.0f;
-    func_001F6E80(4, fade);
-    func_001F6E80(5, fade);
+    fade = (f32)(u32)(u8)SzEffect_GetBlackOutForMonster() / 128.0f;
+    SzEffect_SetIntensityOnly(4, fade);
+    SzEffect_SetIntensityOnly(5, fade);
     if (mode == 1) {
         Object_001CE430 *target;
-        target = (Object_001CE430 *)func_001E36E0(player[0x33D], player[0x33E]);
+        target = (Object_001CE430 *)SzDuel_GetMapUnit(player[0x33D], player[0x33E]);
         if (target != NULL && target->owner != game[0xD54]) {
             tint = &otherColor;
         } else {
@@ -263,22 +263,22 @@ s32 func_001CE430(s32 arg0) {
     do {
         column = 0;
         do {
-            object = (Object_001CE430 *)func_001DF540(row, column);
+            object = (Object_001CE430 *)SzDuel_GetUnit(row, column);
             selected = 0;
             render = D_00291500;
             if (object != NULL) {
                 model = object->model;
-                if (func_001F1370(model) != 0 &&
+                if (SzModel_IsModelDisp(model) != 0 &&
                     (object->state == 0 || object->status51 != 0 || object->progress != 0)) {
-                    info = (Info_001CE430 *)func_001DCD00(object->cardX, object->cardZ);
+                    info = (Info_001CE430 *)SzDuel_GetMapInfo(object->cardX, object->cardZ);
                     if (mode == 1 && game[0xD38] == 0) {
                         Object_001CE430 *target;
                         if (object->moving != 0 || object->turning != 0) {
-                            if ((u32)func_001A23B0(func_001F1B50(model)) < 2U) {
-                                func_001F1A00(model, 0);
+                            if ((u32)func_001A23B0(SzModel_GetAnimFrame(model)) < 2U) {
+                                SzModel_SetAnimDir(model, 0);
                             }
                         } else {
-                            func_001F1A00(model, 1);
+                            SzModel_SetAnimDir(model, 1);
                         }
                         target = *(Object_001CE430 **)(game + 0x6C8);
                         if (target != NULL) {
@@ -291,7 +291,7 @@ s32 func_001CE430(s32 arg0) {
                             }
                         }
                         if (selected == 0) {
-                            func_001DD990(object->owner, object->state);
+                            SzDuel_TrimUnitDir1(object->owner, object->state);
                         }
                         render.words[1] = object->render;
                     }
@@ -316,11 +316,11 @@ s32 func_001CE430(s32 arg0) {
                         }
                     }
                     if (selected) {
-                        func_001F2860(model, 1, tint);
+                        SzModel_SetFilter(model, 1, tint);
                     }
-                    arg0 = func_001EF8A0(arg0, model, (s32)pos, (s32)&render, 0, 0, 0x80FFFFF6);
+                    arg0 = SzModel_ExSort_Pipe(arg0, model, (s32)pos, (s32)&render, 0, 0, 0x80FFFFF6);
                     if (selected) {
-                        func_001F2860(model, 1, NULL);
+                        SzModel_SetFilter(model, 1, NULL);
                     }
                 }
             }
@@ -331,8 +331,8 @@ s32 func_001CE430(s32 arg0) {
     extra = 0;
     do {
         extraModel = extra + 0x20;
-        if (func_001F1370(extraModel)) {
-            arg0 = func_001EF8A0(arg0, extraModel, NULL, NULL, 0, 0, 0x80FFFFF6);
+        if (SzModel_IsModelDisp(extraModel)) {
+            arg0 = SzModel_ExSort_Pipe(arg0, extraModel, NULL, NULL, 0, 0, 0x80FFFFF6);
         }
         extra++;
     } while (extra < 2);
@@ -364,47 +364,47 @@ typedef struct Draw_001CEA50 {
 extern Vec4_001CEA50 D_0031825C;
 extern s32 D_00318270;
 
-void func_001CEA50(void) {
-    extern void func_001CD560();
+void SzDuel_DrawCardTest(void) {
+    extern void SzDuel_ClearDrawCard();
     u8 matrix[0x60];
     Draw_001CEA50 draw;
 
-    func_001CD560(&draw);
+    SzDuel_ClearDrawCard(&draw);
     draw.flags.enabled = 1;
     draw.flags.colored = 0;
     draw.flags.reserved = 0;
-    func_001DCD70(matrix, func_001DE130(D_00318270));
-    func_00205C40((s32) draw.bounds);
+    SzDuel_InitCardInfo(matrix, SzDuel_Xax2New(D_00318270));
+    Ex3d_GetLookVector((s32) draw.bounds);
     draw.position = D_0031825C;
-    func_001D99F0();
+    SzDuel_StartCardSession();
     draw.flags.horizontal = 1;
-    func_001DA2B0(&draw, 0, -192.0f, 0.0f);
-    func_001DA7A0((s32) matrix, (s32) &draw);
-    func_001DBCF0((s32) &draw);
+    SzDuel_GetCardNodeOnScreen(&draw, 0, -192.0f, 0.0f);
+    SzDuel_SetupCard((s32) matrix, (s32) &draw);
+    SzDuel_DrawCard((s32) &draw);
     draw.flags.horizontal = 0;
-    func_001DA2B0(&draw, 0, 0.0f, -96.0f);
-    func_001DA7A0((s32) matrix, (s32) &draw);
-    func_001DBCF0((s32) &draw);
+    SzDuel_GetCardNodeOnScreen(&draw, 0, 0.0f, -96.0f);
+    SzDuel_SetupCard((s32) matrix, (s32) &draw);
+    SzDuel_DrawCard((s32) &draw);
     draw.flags.horizontal = 1;
-    func_00205CB0(&draw, 192.0f, 0.0f);
-    func_001DA7A0((s32) (func_001D9F00(&draw, 1) ? matrix : NULL), (s32) &draw);
-    func_001DBCF0((s32) &draw);
+    Ex3d_GetPointOnScreen(&draw, 192.0f, 0.0f);
+    SzDuel_SetupCard((s32) (SzDuel_GetCardNode(&draw, 1) ? matrix : NULL), (s32) &draw);
+    SzDuel_DrawCard((s32) &draw);
     draw.flags.horizontal = 0;
-    func_00205CB0(&draw, 0.0f, 96.0f);
-    func_001DA7A0((s32) (func_001D9F00(&draw, 1) ? matrix : NULL), (s32) &draw);
-    func_001DBCF0((s32) &draw);
-    if (func_00203A40(0, 1, 0x80) != 0) {
+    Ex3d_GetPointOnScreen(&draw, 0.0f, 96.0f);
+    SzDuel_SetupCard((s32) (SzDuel_GetCardNode(&draw, 1) ? matrix : NULL), (s32) &draw);
+    SzDuel_DrawCard((s32) &draw);
+    if (SzPad_Check(0, 1, 0x80) != 0) {
         draw.flags.colored = 1;
         draw.color.x = 0.46875f;
         draw.color.y = 0.489130437f;
         draw.color.z = 1.0f;
         draw.color.w = 0.0f;
         draw.flags.horizontal = 1;
-        func_00205CB0(&draw, 0.0f, 96.0f);
-        func_001DA7A0((s32) (func_001D9F00(&draw, 1) ? matrix : NULL), (s32) &draw);
-        func_001DBCF0((s32) &draw);
+        Ex3d_GetPointOnScreen(&draw, 0.0f, 96.0f);
+        SzDuel_SetupCard((s32) (SzDuel_GetCardNode(&draw, 1) ? matrix : NULL), (s32) &draw);
+        SzDuel_DrawCard((s32) &draw);
     }
-    func_001D9DD0();
+    SzDuel_FinishCardSession();
 }
 
 typedef struct Record_001CECF0 {
@@ -419,7 +419,7 @@ extern s32 (*D_002BAEB0[])(u16, void *);
 extern s8 D_0034F700;
 extern s8 D_0034F708;
 
-s32 func_001CECF0(s32 arg0, s32 arg1) {
+s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
     u8 *base = D_00317490.b;
     s32 ret = 0;
     Record_001CECF0 *record = (Record_001CECF0 *)(D_00317490.b + arg0 * 0x350);
@@ -428,30 +428,30 @@ s32 func_001CECF0(s32 arg0, s32 arg1) {
 
     switch (record->kind) {
     case 0x64:
-        ret = func_00203A40(0, arg1, 0xFFFF) & 0xFFFF;
+        ret = SzPad_Check(0, arg1, 0xFFFF) & 0xFFFF;
         break;
     case 0x65:
-        ret = func_00203A40(1, arg1, 0xFFFF) & 0xFFFF;
+        ret = SzPad_Check(1, arg1, 0xFFFF) & 0xFFFF;
         break;
     default:
         if (record->kind < 0x64) {
             selected = record;
-            if (func_0027F830(arg0) != 0) {
+            if (TaTuto_IsTuto(arg0) != 0) {
                 selected = base;
             }
-            if (func_001FA6F0(-1, -1) == NULL) {
+            if (SzView_InqRequest(-1, -1) == NULL) {
                 result = D_002BAEB0[record->kind]((u16)((record->high << 8) | record->low), selected);
                 if (result < 0) {
                     if (D_0034F700 != 0) {
                         if (result == -1) {
-                            func_0023BB00(1);
+                            Taku_Camp_Go_Rensyu_Duel(1);
                         } else {
                             D_0034F700 = 0;
                             D_0034F708 = 1;
-                            func_001A8920();
+                            SzGame_Pop();
                         }
                     } else {
-                        func_001A8920();
+                        SzGame_Pop();
                     }
                 } else {
                     ret = result & 0xFFFF;

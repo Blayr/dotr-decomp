@@ -175,7 +175,7 @@ s32 func_0019DA00(void *arg0) {
     u8 *p;
 
     if (fp->_ub._base == fp->_ubuf) {
-        if ((p = (u8 *)func_00197EB8((s32)fp->_data, 1024)) == NULL)
+        if ((p = (u8 *)_malloc_r((s32)fp->_data, 1024)) == NULL)
             return -1;
         fp->_ub._base = p;
         fp->_ub._size = 1024;
@@ -232,7 +232,7 @@ s32 func_0019DAE8(s32 c, void *arg1) {
         if (fp->_data == 0)
             fp->_data = (ug_reent *)D_0028FA98;
         if (!fp->_data->__sdidinit)
-            func_00196A30(fp->_data);
+            __sinit(fp->_data);
     } while (0);
 
     fp->_flags &= ~0x20;
@@ -241,7 +241,7 @@ s32 func_0019DAE8(s32 c, void *arg1) {
         if ((fp->_flags & 0x10) == 0)
             return -1;
         if (fp->_flags & 8) {
-            if (func_00196708((nl_FILE *)fp))
+            if (fflush((nl_FILE *)fp))
                 return -1;
             fp->_flags &= ~8;
             fp->_w = 0;

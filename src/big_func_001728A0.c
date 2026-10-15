@@ -10,7 +10,7 @@ s32 func_0027FC20(s32, s32, void *);        /* extern */
 #pragma global_optimizer off
 
 s32 func_001728A0(s32 arg0, u8 *arg1) {
-    extern void func_00203C70();
+    extern void SzPad_SetAnalogInfo();
     s32 temp_a0;
     u16 temp_a0_2;
     u16 temp_a0_3;
@@ -57,16 +57,16 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
     u16 temp_v1_8;
     u16 temp_v1_9;
 
-    if (func_001DE780() != 0) {
-        func_001DE7E0(1);
+    if (SzDuel_GetWindowDisp() != 0) {
+        SzDuel_SetWindowDraw(1);
     } else {
-        func_001DE7E0(0);
+        SzDuel_SetWindowDraw(0);
     }
-    func_00203C70(0, 0, 0x80);
-    func_00203C70(0, 1, 0x80);
-    func_00203C70(0, 2, 0x80);
-    func_00203C70(0, 3, 0x80);
-    if (func_00203A40(0, 0, 0x800) != 0) {
+    SzPad_SetAnalogInfo(0, 0, 0x80);
+    SzPad_SetAnalogInfo(0, 1, 0x80);
+    SzPad_SetAnalogInfo(0, 2, 0x80);
+    SzPad_SetAnalogInfo(0, 3, 0x80);
+    if (SzPad_Check(0, 0, 0x800) != 0) {
         return -2;
     }
     temp_a0 = (*(u16 *)((u8 *)(arg1) + 0x1A2));
@@ -75,8 +75,8 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         (*(u16 *)((u8 *)(arg1) + 0x1A2)) = 2U;
         goto block_296;
     case 0x1:                                       /* switch 1 */
-        if (func_001F5EC0(0) != 0) {
-            if (func_001F5EC0(0x100) != 0) {
+        if (SzEffect_IsModelStandby2(0) != 0) {
+            if (SzEffect_IsModelStandby2(0x100) != 0) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             }
         }
@@ -84,7 +84,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x2:                                       /* switch 1 */
         if (func_0027FC20(0x9DC, 0x9DF, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x3:                                       /* switch 1 */
@@ -96,7 +96,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x4:                                       /* switch 1 */
         if (func_0027F890(0x10, 1, 0) == 1) {
-            func_001E42C0(0, -0x78, 0x50, func_001DE210(0x3C));
+            SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(0x3C));
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x3c) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -113,7 +113,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         }
         goto block_296;
     case 0x7:                                       /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         if (func_0027F890(0x10, 1, 0) == 1) {
             func_0027FC20(0x9E2, 0x9E2, arg1);
         }
@@ -155,7 +155,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
     case 0xE:                                       /* switch 1 */
         func_0027F630(arg1, 0xA, 0x800, -0xE8, -0x8C);
         if (((*(u16 *)((u8 *)(arg1) + 0x162)))++ > 0x3c) {
-            func_001E4E50();
+            SzDuel_CloseHandCursor();
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
             (*(u16 *)((u8 *)(arg1) + 0x162)) = 0U;
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -167,7 +167,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
     case 0x10:                                      /* switch 1 */
         func_0027F630(arg1, 0xA, 0x800, 0x3C, 0x4B);
         if (((*(u16 *)((u8 *)(arg1) + 0x162)))++ > 0x3c) {
-            func_001E4E50();
+            SzDuel_CloseHandCursor();
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
             (*(u16 *)((u8 *)(arg1) + 0x162)) = 0U;
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -215,12 +215,12 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
     case 0x1A:                                      /* switch 1 */
         if (func_0027FC20(0x9F4, 0x9F6, arg1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_00260740(0x1E);
+            TaView_ReqStdCompleteView(0x1E);
         }
         goto block_296;
     case 0x1B:                                      /* switch 1 */
         if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x3c) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
             if (func_0027F890(0x10, -1, 0) == 1) {
                 func_00172510(0);
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
@@ -230,7 +230,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x1C:                                      /* switch 1 */
         if (func_0027F890(0x10, 1, 0) == 1) {
-            func_001E42C0(0, -0x78, 0x50, func_001DE210(0));
+            SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(0));
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x3c) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -248,7 +248,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         }
         goto block_296;
     case 0x1F:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         if (func_0027F890(0x10, 1, 0) == 1) {
             func_0027FC20(0x9F8, 0x9F8, arg1);
         }
@@ -355,38 +355,38 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x37:                                      /* switch 1 */
         if (func_0027FC20(0xA07, 0xA09, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x38:                                      /* switch 1 */
         if (func_0027F890(8, -1, 0) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF490(0, 4, 0xFA0);
-            func_001DF490(1, 4, 0xFA0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 4, 0x9C, 0);
-            func_001DF580(1, 3, 3, 0x15, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
+            SzDuel_CalcLP(0, 4, 0xFA0);
+            SzDuel_CalcLP(1, 4, 0xFA0);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 4, 0x9C, 0);
+            SzDuel_AddUnit(1, 3, 3, 0x15, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x39:                                      /* switch 1 */
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(0x101) != 0)) {
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(0x101) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 4);
+                SzDuel_SetPlayerCur(0, 3, 4);
             }
         }
         goto block_296;
     case 0x3A:                                      /* switch 1 */
         func_00172510(0x9C);
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         if (func_0027F890(8, 1, 1) == 1) {
-            func_001DE7A0(1);
+            SzDuel_SetWindowDisp(1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
@@ -457,34 +457,34 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         break;
     case 0x41:                                      /* switch 1 */
         if (func_0027FC20(0xA10, 0xA11, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x42:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 4, 0x9C, 0);
-            func_001DF580(1, 3, 3, 5, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 4, 0x9C, 0);
+            SzDuel_AddUnit(1, 3, 3, 5, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x43:                                      /* switch 1 */
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(0x101) != 0)) {
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(0x101) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 4);
+                SzDuel_SetPlayerCur(0, 3, 4);
             }
         }
         goto block_296;
     case 0x44:                                      /* switch 1 */
         func_00172510(0x9C);
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
@@ -497,35 +497,35 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x48:                                      /* switch 1 */
         if (func_0027FC20(0xA14, 0xA14, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x49:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF490(0, 4, 0xFA0);
-            func_001DF490(1, 4, 0xFA0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 4, 0x9C, 0);
-            func_001DF580(1, 3, 3, 0x16, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
+            SzDuel_CalcLP(0, 4, 0xFA0);
+            SzDuel_CalcLP(1, 4, 0xFA0);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 4, 0x9C, 0);
+            SzDuel_AddUnit(1, 3, 3, 0x16, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x4A:                                      /* switch 1 */
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(0x101) != 0)) {
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(0x101) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 4);
+                SzDuel_SetPlayerCur(0, 3, 4);
             }
         }
         goto block_296;
     case 0x4B:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         func_00172510(0x9C);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -539,37 +539,37 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x4F:                                      /* switch 1 */
         if (func_0027FC20(0xA17, 0xA18, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x50:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF490(0, 4, 0xFA0);
-            func_001DF490(1, 4, 0xFA0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 4, 0x9C, 0);
-            func_001DF580(1, 3, 3, 0xA9, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
-            func_001E1E70(1, 1, 3, 1);
-            func_001E1E70(1, 1, 5, 1);
+            SzDuel_CalcLP(0, 4, 0xFA0);
+            SzDuel_CalcLP(1, 4, 0xFA0);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 4, 0x9C, 0);
+            SzDuel_AddUnit(1, 3, 3, 0xA9, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 3, 1);
+            SzDuel_SetUnitStatus(1, 1, 5, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x51:                                      /* switch 1 */
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(0x101) != 0)) {
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(0x101) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 4);
+                SzDuel_SetPlayerCur(0, 3, 4);
             }
         }
         goto block_296;
     case 0x52:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         func_00172510(0x9C);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -583,37 +583,37 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x56:                                      /* switch 1 */
         if (func_0027FC20(0xA1D, 0xA1D, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x57:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF490(0, 4, 0xFA0);
-            func_001DF490(1, 4, 0xFA0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 4, 0x9C, 0);
-            func_001DF580(1, 3, 3, 0x64, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
-            func_001E1E70(1, 1, 3, 1);
-            func_001E1E70(1, 1, 5, 1);
+            SzDuel_CalcLP(0, 4, 0xFA0);
+            SzDuel_CalcLP(1, 4, 0xFA0);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 4, 0x9C, 0);
+            SzDuel_AddUnit(1, 3, 3, 0x64, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 3, 1);
+            SzDuel_SetUnitStatus(1, 1, 5, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x58:                                      /* switch 1 */
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(0x101) != 0)) {
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(0x101) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 4);
+                SzDuel_SetPlayerCur(0, 3, 4);
             }
         }
         goto block_296;
     case 0x59:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         func_00172510(0x9C);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -627,37 +627,37 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x5D:                                      /* switch 1 */
         if (func_0027FC20(0xA20, 0xA21, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x5E:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF490(0, 4, 0xFA0);
-            func_001DF490(1, 4, 0xFA0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 4, 0x9C, 0);
-            func_001DF580(1, 3, 3, 0x277, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
-            func_001E1E70(1, 1, 3, 1);
-            func_001E1E70(1, 1, 5, 1);
+            SzDuel_CalcLP(0, 4, 0xFA0);
+            SzDuel_CalcLP(1, 4, 0xFA0);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 4, 0x9C, 0);
+            SzDuel_AddUnit(1, 3, 3, 0x277, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 3, 1);
+            SzDuel_SetUnitStatus(1, 1, 5, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x5F:                                      /* switch 1 */
-        if ((func_001F5EC0(1) != 0) && (func_001F5EC0(0x101) != 0)) {
+        if ((SzEffect_IsModelStandby2(1) != 0) && (SzEffect_IsModelStandby2(0x101) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 4);
+                SzDuel_SetPlayerCur(0, 3, 4);
             }
         }
         goto block_296;
     case 0x60:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         func_00172510(0x9C);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -671,33 +671,33 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x64:                                      /* switch 1 */
         if (func_0027FC20(0xA23, 0xA25, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x65:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF490(0, 4, 0xFA0);
-            func_001DF490(1, 4, 0xED8);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(1, 1);
-            func_001DF580(0, 3, 2, 0x9C, 0);
-            func_001E1E70(0, 1, 4, 1);
+            SzDuel_CalcLP(0, 4, 0xFA0);
+            SzDuel_CalcLP(1, 4, 0xED8);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_AddUnit(0, 3, 2, 0x9C, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x66:                                      /* switch 1 */
-        if (func_001F5EC0(1) != 0) {
+        if (SzEffect_IsModelStandby2(1) != 0) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
-                func_001DE860(0, 3, 2);
+                SzDuel_SetPlayerCur(0, 3, 2);
             }
         }
         goto block_296;
     case 0x67:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         func_00172510(0x9C);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -711,19 +711,19 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x6B:                                      /* switch 1 */
         if (func_0027FC20(0xA2B, 0xA2C, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x6C:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
-            func_001DF580(0, 3, 5, 0x272, 0);
+            SzDuel_AddUnit(0, 3, 5, 0x272, 0);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x6D:                                      /* switch 1 */
-        func_001DE860(0, 3, 5);
-        if (func_001F5EC0(2) != 0) {
+        SzDuel_SetPlayerCur(0, 3, 5);
+        if (SzEffect_IsModelStandby2(2) != 0) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -731,7 +731,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         }
         goto block_296;
     case 0x6E:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
@@ -809,22 +809,22 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x85:                                      /* switch 1 */
         if (func_0027FC20(0xA37, 0xA38, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x86:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DF580(1, 2, 2, 3, 0);
-            func_001DF580(0, 2, 6, 0x2AB, 0);
-            func_001E1E70(1, 1, 4, 1);
+            SzDuel_AddUnit(1, 2, 2, 3, 0);
+            SzDuel_AddUnit(0, 2, 6, 0x2AB, 0);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x87:                                      /* switch 1 */
-        func_001DE860(0, 2, 2);
-        if (func_001F5EC0(0x101) != 0) {
+        SzDuel_SetPlayerCur(0, 2, 2);
+        if (SzEffect_IsModelStandby2(0x101) != 0) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -832,7 +832,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         }
         goto block_296;
     case 0x88:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         func_00172510(3);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -902,34 +902,34 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x92:                                      /* switch 1 */
         if (func_0027FC20(0xA41, 0xA41, arg1) == 1) {
-            func_001DE7A0(0);
+            SzDuel_SetWindowDisp(0);
         }
         goto block_296;
     case 0x93:                                      /* switch 1 */
         if (func_0027F890(8, -1, 1) == 1) {
             func_0027FAB0(arg1 + 0x1B0);
-            func_001DFBB0(0, 1);
-            func_001DFBB0(0, 2);
-            func_001DFBB0(1, 1);
-            func_001DF490(0, 4, 0x320);
-            func_001DF580(1, 2, 6, 0, 0);
-            func_001DF580(1, 3, 5, 0xA0, 0);
-            func_001DF580(1, 4, 5, 0x82, 0);
-            func_001DF580(0, 4, 6, 0x9D, 0);
-            func_001E1E70(0, 1, 4, 1);
-            func_001E1E70(1, 1, 4, 1);
-            func_001E1E70(1, 2, 4, 1);
-            func_001E1E70(1, 3, 4, 1);
+            SzDuel_DelUnit(0, 1);
+            SzDuel_DelUnit(0, 2);
+            SzDuel_DelUnit(1, 1);
+            SzDuel_CalcLP(0, 4, 0x320);
+            SzDuel_AddUnit(1, 2, 6, 0, 0);
+            SzDuel_AddUnit(1, 3, 5, 0xA0, 0);
+            SzDuel_AddUnit(1, 4, 5, 0x82, 0);
+            SzDuel_AddUnit(0, 4, 6, 0x9D, 0);
+            SzDuel_SetUnitStatus(0, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 1, 4, 1);
+            SzDuel_SetUnitStatus(1, 2, 4, 1);
+            SzDuel_SetUnitStatus(1, 3, 4, 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
         }
         goto block_296;
     case 0x94:                                      /* switch 1 */
-        func_001DE860(0, 3, 6);
+        SzDuel_SetPlayerCur(0, 3, 6);
         (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
         goto block_296;
     case 0x95:                                      /* switch 1 */
-        if ((func_001F5EC0(0x101) != 0) && (func_001F5EC0(0x102) != 0) && (func_001F5EC0(0x103) != 0) && (func_001F5EC0(1) != 0)) {
+        if ((SzEffect_IsModelStandby2(0x101) != 0) && (SzEffect_IsModelStandby2(0x102) != 0) && (SzEffect_IsModelStandby2(0x103) != 0) && (SzEffect_IsModelStandby2(1) != 0)) {
             if (((*(u16 *)((u8 *)(arg1) + 0x1A4)))++ > 0x1e) {
                 (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
                 (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
@@ -937,7 +937,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         }
         goto block_296;
     case 0x96:                                      /* switch 1 */
-        func_001DE7A0(1);
+        SzDuel_SetWindowDisp(1);
         if (func_0027F890(8, 1, 1) == 1) {
             (*(u16 *)((u8 *)(arg1) + 0x1A2)) = (u16) ((*(u16 *)((u8 *)(arg1) + 0x1A2)) + 1);
             (*(u16 *)((u8 *)(arg1) + 0x1A4)) = 0U;
@@ -970,7 +970,7 @@ s32 func_001728A0(s32 arg0, u8 *arg1) {
         goto block_296;
     case 0x9C:                                      /* switch 1 */
         func_0027FC20(0xA45, 0xA46, arg1);
-        func_001DE7A0(0);
+        SzDuel_SetWindowDisp(0);
         goto block_296;
     case 0x9D:                                      /* switch 1 */
         if ((func_0027F890(8, -1, 0) == 1) && (func_0027FC20(0xA47, 0xA47, arg1) == 1)) {

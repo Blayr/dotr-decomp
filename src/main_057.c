@@ -1,10 +1,10 @@
 #include "common.h"
 
-s32 func_00209D20(void) {
+s32 RhBase_GetVifPacketArea(void) {
     return D_003261D0;
 }
 
-void func_00209D30(s32 arg0) {
+void RhBase_SetVifPacketArea(s32 arg0) {
     D_003261D0 = arg0;
 }
 
@@ -14,7 +14,7 @@ typedef struct {
     s32 field_248;
 } Data_00209D40;
 
-f32 func_00209D40(s32 *arg0) {
+f32 RhBase_GetAspectY(s32 *arg0) {
     Data_00209D40 *data = (Data_00209D40 *)D_00325F50;
 
     if (arg0 != NULL) {
@@ -23,13 +23,13 @@ f32 func_00209D40(s32 *arg0) {
     return data->field_244;
 }
 
-s32 func_00209D60(s32 *arg0, s32 *arg1) {
+s32 RhBase_GetScreenSize(s32 *arg0, s32 *arg1) {
     *arg0 = D_0032618C;
     *arg1 = D_00326190;
     return 1;
 }
 
-s32 func_00209D80(s32 *arg0, s32 *arg1) {
+s32 RhBase_GetZMinMax(s32 *arg0, s32 *arg1) {
     typedef struct Flags_00209D80 {
         s8 active : 1;
         s8 useSaved : 1;
@@ -72,7 +72,7 @@ s32 func_00209D80(s32 *arg0, s32 *arg1) {
     return 1;
 }
 
-s32 func_00209E30(s32 *arg0, s32 *arg1) {
+s32 RhBase_GetScreenCenter(s32 *arg0, s32 *arg1) {
     *arg0 = D_003261B0;
     *arg1 = D_003261B4;
     return 1;
@@ -91,7 +91,7 @@ typedef struct {
 extern State_00209E50 D_00325F20;
 extern Flags_00209E50 D_00325F40;
 
-s32 func_00209E50(void) {
+s32 RhBase_GetUserGsAddress(void) {
     u8 *base = D_00325F50;
     State_00209E50 *state = &D_00325F20;
     s32 var_v0;
@@ -115,7 +115,7 @@ typedef struct {
 
 extern Slot_00209E90 D_00326050[2];
 
-s32 func_00209E90(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
+s32 RhBase_SetClearColorEx(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
     D_00326050[0].r = arg0;
     D_00326050[0].g = arg1;
     D_00326050[0].b = arg2;
@@ -142,7 +142,7 @@ typedef struct State_00209EF0 {
     s32 flags26C;
 } State_00209EF0;
 
-s32 func_00209EF0(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
+s32 RhBase_GetBufferFormatEx(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
     State_00209EF0 *state = (State_00209EF0 *)D_00325F50;
     u16 *var_v0;
 
@@ -163,14 +163,14 @@ s32 func_00209EF0(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
     return 1;
 }
 
-s32 func_00209F60(void (*arg0)(void)) {
+s32 RhBase_SetVSyncCallback(void (*arg0)(void)) {
     extern void (*D_003261E4)(void);
 
     D_003261E4 = arg0;
     return 1;
 }
 
-void *func_00209F70(void *arg0, u32 arg1) {
+void *RhBase_MaskFBuffer(void *arg0, u32 arg1) {
     typedef struct {
         s8 active : 1;
         s8 custom : 1;
@@ -260,21 +260,21 @@ typedef struct GifTag_0020A0B0 {
     u64 hi;
 } GifTag_0020A0B0;
 
-s32 func_0020A0B0(s32 arg0, s32 arg1) {
+s32 RhBase_SetZBufferMode(s32 arg0, s32 arg1) {
     extern u8 D_00325E40[];
     extern __int128 D_00325E60;
     extern Packet_0020A0B0 D_00325E70;
     extern Packet_0020A0B0 D_00325FC0;
     State_0020A0B0 *state = (State_0020A0B0 *)&D_00325F20;
 
-    func_001875F8((s32 *)D_00325E40, arg0);
-    func_00187660(D_00325E40, 0);
-    func_001877F8((s32 **)D_00325E40, 0x11000000);
-    func_00187778(D_00325E40, 2, 3);
-    func_00187858(D_00325E40, 0);
+    sceVif1PkInit((s32 *)D_00325E40, arg0);
+    sceVif1PkCnt(D_00325E40, 0);
+    sceVif1PkAddCode((s32 **)D_00325E40, 0x11000000);
+    sceVif1PkAlign(D_00325E40, 2, 3);
+    sceVif1PkOpenDirectHLCode(D_00325E40, 0);
     ((u64 *)&D_00325E60)[0] = ((u64)0x10000000 << 32) | 0x8000;
     ((u64 *)&D_00325E60)[1] = 0xE;
-    func_001876B8(D_00325E40, D_00325E60);
+    sceVif1PkOpenGifTag(D_00325E40, D_00325E60);
     if (D_00325F40.enabled && state->flags.apply) {
         D_00325E70.f.value = state->base + state->offset;
         D_00325E70.f.mode = state->mode;
@@ -282,10 +282,10 @@ s32 func_0020A0B0(s32 arg0, s32 arg1) {
         D_00325E70 = D_00325FC0;
     }
     D_00325E70.f.clear = !arg1;
-    func_00187828(D_00325E40, 0x4E, ((u64 *)&D_00325E70)[0]);
-    func_001876D0(D_00325E40);
-    func_001878B0(D_00325E40);
-    return func_00187608(D_00325E40);
+    sceVif1PkAddGsAD(D_00325E40, 0x4E, ((u64 *)&D_00325E70)[0]);
+    sceVif1PkCloseGifTag(D_00325E40);
+    sceVif1PkCloseDirectHLCode(D_00325E40);
+    return sceVif1PkTerminate(D_00325E40);
 }
 
 typedef struct Flags_0020A280 {
@@ -310,7 +310,7 @@ typedef struct Packet_0020A280 {
     u8 other : 4;
 } Packet_0020A280;
 
-void func_0020A280(void *arg0) {
+void RhBase_GetZBufInfo(void *arg0) {
     extern Packet_0020A280 D_00325FC0;
     State_0020A280 *state = (State_0020A280 *)&D_00325F20;
     Packet_0020A280 *packet = arg0;
@@ -324,7 +324,7 @@ void func_0020A280(void *arg0) {
     }
 }
 
-void *func_0020A340(void *arg0, void *arg1) {
+void *RhBase_SetFogColor(void *arg0, void *arg1) {
     *(s32 *)((u8 *)arg0 + 0) = 0x10000002;
     *(s32 *)((u8 *)arg0 + 4) = 0;
     *(s32 *)((u8 *)arg0 + 8) = 0;
@@ -337,20 +337,20 @@ void *func_0020A340(void *arg0, void *arg1) {
     return (u8 *)arg0 + 0x30;
 }
 
-void func_0020A3B0(u32 arg0) {
+void RhBase_CopyFrameBuffer(u32 arg0) {
     u8 *base = D_00325F50;
     u16 *p;
 
-    func_00185578(0, 0);
+    sceGsSyncPath(0, 0);
     if (D_003261BC & 1) {
         p = (u16 *)(base + 0x60);
     } else {
         p = (u16 *)(base + 0x150);
     }
-    func_00185890(D_00325E80, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
-    func_0017BB60(0);
-    func_001859D0(D_00325E80, (void *)(arg0 & 0x0FFFFFFF));
-    func_00185578(0, 0);
+    sceGsSetDefStoreImage(D_00325E80, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
+    FlushCache(0);
+    sceGsExecStoreImage(D_00325E80, (void *)(arg0 & 0x0FFFFFFF));
+    sceGsSyncPath(0, 0);
 }
 
 typedef struct {
@@ -378,7 +378,7 @@ typedef struct {
     s32 pad1C[3];
 } Table_0020A470;
 
-s32 func_0020A470(s32 arg0, s32 arg1, s32 arg2) {
+s32 RhBase_AssignRenderFrame(s32 arg0, s32 arg1, s32 arg2) {
     extern Table_0020A470 D_00293F1C[];
     u8 *base = D_00325F50;
     Full_0020A470 *state = (Full_0020A470 *)&D_00325F20;
@@ -452,7 +452,7 @@ typedef struct Packet_0020A610 {
     s64 registers[10];
 } Packet_0020A610;
 
-void *func_0020A610(void *arg0) {
+void *RhBase_EnableRenderFrame(void *arg0) {
     extern Texture_0020A610 D_00293F1C[];
     State_0020A610 *state = (State_0020A610 *)&D_00325F20;
     Packet_0020A610 *packet = arg0;
@@ -518,7 +518,7 @@ typedef struct Context_0020A760 {
     s32 height;
 } Context_0020A760;
 
-void *func_0020A760(void *arg0) {
+void *RhBase_DisableRenderFrame(void *arg0) {
     Context_0020A760 *context = (Context_0020A760 *)D_00325F50;
     Flags_0020A760 *flags = (Flags_0020A760 *)&D_00325F20;
     s64 *environment;
@@ -590,8 +590,8 @@ static inline s32 color_0020A870(u8 *color, s32 component) {
     return 0;
 }
 
-void *func_0020A870(u8 *packet, u8 *color) {
-    s32 func_00184FF8(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
+void *RhBase_ClearRenderFrame(u8 *packet, u8 *color) {
+    s32 sceGsSetDefClear(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
     Color_0020A870 defaultColor;
     State_0020A870 *state = (State_0020A870 *)&D_00325F20;
     s32 alpha;
@@ -620,19 +620,19 @@ void *func_0020A870(u8 *packet, u8 *color) {
     alpha = color_0020A870(color, 3);
     red = color_0020A870(color, 0);
     green = color_0020A870(color, 1);
-    packet += func_00184FF8(packet, 2, 0, 0, 0xFFF, 0xFFF,
+    packet += sceGsSetDefClear(packet, 2, 0, 0, 0xFFF, 0xFFF,
                            color_0020A870(color, 2), green, red, alpha, 0) * 0x10;
     ((u64 *)packet)[0] = 1;
     ((u64 *)packet)[1] = 0x4A;
     return packet + 0x10;
 }
 
-void func_0020A9E0(void) {
+void RhBase_FreeRenderFrame(void) {
     D_00325F40.enabled = 0;
     D_00325F40.flag1 = 0;
 }
 
-s32 func_0020AA30(void *arg0, void *arg1) {
+s32 RhBase_GetTextureInfoForRender(void *arg0, void *arg1) {
     typedef struct {
         s32 index;
         s32 unk4;
@@ -790,7 +790,7 @@ static inline s32 from_fixed_0020AD10(s32 value) {
     return value >> 6;
 }
 
-void func_0020AD10(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void lRhBase_InitScreenVariables(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern Entry_0020AD10 D_00293F1C[];
     extern Entry_0020AD10 D_00293F20[];
     extern Scale_0020AD10 D_00293F24[];
@@ -831,7 +831,7 @@ void func_0020AD10(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     state->originY = 0x800;
     state->offset = D_00293F30[arg1].values[state->secondIndex] + D_00293F30[arg1].values[state->firstIndex] * 2;
     state->offset = from_fixed_0020AD10((state->offset << 13) >> 2);
-    func_001851E8(arg0, (s16)arg2, (s16)D_00293F1C[arg1].value, (s16)D_00293F20[arg1].value, 3, (s16)arg3, 1);
+    sceGsSetDefDBuff(arg0, (s16)arg2, (s16)D_00293F1C[arg1].value, (s16)D_00293F20[arg1].value, 3, (s16)arg3, 1);
     if (state->firstX.x == state->secondX.x) {
         state->firstX.x = 0;
         state->secondX.x = D_00293F30[arg1].values[state->firstIndex];
@@ -854,34 +854,34 @@ void func_0020AD10(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     state->field26C = 0;
 }
 
-s32 func_0020B000(s32 arg0) {
-    extern void func_00187828();
+s32 lRhBase_InitGsAndVif(s32 arg0) {
+    extern void sceVif1PkAddGsAD();
 
     D_00326180 = 0x63721405 | ((u64)0x72630514 << 32);
-    func_001875F8(D_00325F00, arg0);
-    func_00187660(D_00325F00, 0);
-    func_001877F8(D_00325F00, 0x01000404);
-    func_00187810(D_00325F00, 0x20000000);
-    func_00187810(D_00325F00, 0x05000000);
-    func_00187778(D_00325F00, 2, 3);
-    func_00187858(D_00325F00, 0);
+    sceVif1PkInit(D_00325F00, arg0);
+    sceVif1PkCnt(D_00325F00, 0);
+    sceVif1PkAddCode(D_00325F00, 0x01000404);
+    sceVif1PkAddData(D_00325F00, 0x20000000);
+    sceVif1PkAddData(D_00325F00, 0x05000000);
+    sceVif1PkAlign(D_00325F00, 2, 3);
+    sceVif1PkOpenDirectHLCode(D_00325F00, 0);
     *(u64 *)&D_00325EF0 = 0x8000 | ((u64)0x10000000 << 32);
     *((u64 *)&D_00325EF0 + 1) = 0xE;
-    func_001876B8(D_00325F00, D_00325EF0);
-    func_00187828(D_00325F00, 0x46, 1);
-    func_00187828(D_00325F00, 0x40, ((u64)(D_0032618C - 1) << 16) | ((u64)(D_00326190 - 1) << 48));
-    func_00187828(D_00325F00, 0x1A, 1);
-    func_00187828(D_00325F00, 0x3B, (u64)0x80 << 32);
-    func_00187828(D_00325F00, 0x3D, 0xC0C0C0);
-    func_00187828(D_00325F00, 0x45, 1);
-    func_00187828(D_00325F00, 0x44, D_00326180);
-    func_001876D0(D_00325F00);
-    func_001878B0(D_00325F00);
-    return func_00187608(D_00325F00);
+    sceVif1PkOpenGifTag(D_00325F00, D_00325EF0);
+    sceVif1PkAddGsAD(D_00325F00, 0x46, 1);
+    sceVif1PkAddGsAD(D_00325F00, 0x40, ((u64)(D_0032618C - 1) << 16) | ((u64)(D_00326190 - 1) << 48));
+    sceVif1PkAddGsAD(D_00325F00, 0x1A, 1);
+    sceVif1PkAddGsAD(D_00325F00, 0x3B, (u64)0x80 << 32);
+    sceVif1PkAddGsAD(D_00325F00, 0x3D, 0xC0C0C0);
+    sceVif1PkAddGsAD(D_00325F00, 0x45, 1);
+    sceVif1PkAddGsAD(D_00325F00, 0x44, D_00326180);
+    sceVif1PkCloseGifTag(D_00325F00);
+    sceVif1PkCloseDirectHLCode(D_00325F00);
+    return sceVif1PkTerminate(D_00325F00);
 }
 
-void func_0020B1E0(s32 arg0) {
-    extern void func_00187828();
+void lRhBase_SetRandomDither(s32 arg0) {
+    extern void sceVif1PkAddGsAD();
     u8 buffer[0x40];
     u8 *packet;
     u64 *tag;
@@ -891,21 +891,21 @@ void func_0020B1E0(s32 arg0) {
     tag = (u64 *) (packet + 0x20);
     shift = (func_0019A5C8() % 16) * 4;
     D_00326180 = (D_00326180 >> shift) | (D_00326180 << (0x40 - shift));
-    func_001875F8(packet, arg0);
-    func_00187660(packet, 0);
-    func_00187778(packet, 2, 3);
-    func_00187858(packet, 0);
+    sceVif1PkInit(packet, arg0);
+    sceVif1PkCnt(packet, 0);
+    sceVif1PkAlign(packet, 2, 3);
+    sceVif1PkOpenDirectHLCode(packet, 0);
     tag[0] = 0x1000000000008000ULL;
     tag[1] = 0xE;
-    func_001876B8(packet, *(__int128 *) tag);
-    func_00187828(packet, 0x45, 1);
-    func_00187828(packet, 0x44, D_00326180);
-    func_001876D0(packet);
-    func_001878B0(packet);
-    func_00187608(packet);
+    sceVif1PkOpenGifTag(packet, *(__int128 *) tag);
+    sceVif1PkAddGsAD(packet, 0x45, 1);
+    sceVif1PkAddGsAD(packet, 0x44, D_00326180);
+    sceVif1PkCloseGifTag(packet);
+    sceVif1PkCloseDirectHLCode(packet);
+    sceVif1PkTerminate(packet);
 }
 
-u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2) {
+u8 *RhMem_CopyMemory(u8 *arg0, u8 *arg1, s32 arg2) {
     if (arg2 > 0) {
         do {
             arg2 -= 1;
@@ -917,7 +917,7 @@ u8 *func_0020B300(u8 *arg0, u8 *arg1, s32 arg2) {
     return arg0;
 }
 
-void *func_0020B340(void *dest, void *source, s32 count) {
+void *RhMem_CopyMemory4(void *dest, void *source, s32 count) {
     s32 *dst = dest;
     s32 *src = source;
 
@@ -932,7 +932,7 @@ void *func_0020B340(void *dest, void *source, s32 count) {
     return dst;
 }
 
-void *func_0020B380(void *dest, void *source, s32 count) {
+void *RhMem_CopyMemory16(void *dest, void *source, s32 count) {
     __int128 *dst = dest;
     __int128 *src = source;
 
@@ -947,7 +947,7 @@ void *func_0020B380(void *dest, void *source, s32 count) {
     return dst;
 }
 
-s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2) {
+s8 *RhMem_FillMemory(s8 *arg0, s8 arg1, s32 arg2) {
     if (arg2 > 0) {
         do {
             *arg0 = arg1;
@@ -958,7 +958,7 @@ s8 *func_0020B3C0(s8 *arg0, s8 arg1, s32 arg2) {
     return arg0;
 }
 
-void *func_0020B400(void *dst, s32 val, s32 count) {
+void *RhMem_FillMemory4(void *dst, s32 val, s32 count) {
     s32 *p = dst;
 
     while (count > 0) {
@@ -968,7 +968,7 @@ void *func_0020B400(void *dst, s32 val, s32 count) {
     return p;
 }
 
-s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2) {
+s64 *RhMem_FillMemory8(s64 *arg0, s64 arg1, s32 arg2) {
     while (arg2 > 0) {
         *arg0 = arg1;
         arg2 -= 1;
@@ -977,7 +977,7 @@ s64 *func_0020B440(s64 *arg0, s64 arg1, s32 arg2) {
     return arg0;
 }
 
-f32 func_0020B480(s32 arg0) {
+f32 RhMath_CosI(s32 arg0) {
     f32 sign;
     f32 *samples;
     f32 sample0;
@@ -1003,7 +1003,7 @@ f32 func_0020B480(s32 arg0) {
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
 }
 
-f32 func_0020B550(s32 arg0) {
+f32 RhMath_SinI(s32 arg0) {
     f32 sign;
     f32 *samples;
     f32 sample0;
@@ -1029,7 +1029,7 @@ f32 func_0020B550(s32 arg0) {
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
 }
 
-f32 func_0020B620(f32 angle) {
+f32 RhMath_Cos(f32 angle) {
     s32 phase;
     f32 sign;
     s32 fraction;
@@ -1063,7 +1063,7 @@ f32 func_0020B620(f32 angle) {
     return sign;
 }
 
-f32 func_0020B730(f32 angle) {
+f32 RhMath_Sin(f32 angle) {
     s32 phase;
     f32 sign;
     s32 fraction;
@@ -1097,7 +1097,7 @@ f32 func_0020B730(f32 angle) {
     return sign;
 }
 
-void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
+void RhMath_HeapSortStruct(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
     s32 spA0;
     u8 *var_s3_2;
     u8 *temp_s3;
@@ -1122,7 +1122,7 @@ void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
         spA0 = var_fp * arg2;
         do {
             var_s3 = var_fp;
-            func_0020B300(sentinel, temp_s5 + spA0, arg2);
+            RhMem_CopyMemory(sentinel, temp_s5 + spA0, arg2);
             while ((var_s4 = var_s3 * 2) <= var_s2) {
                 if (var_s4 < var_s2 &&
                     arg3(temp_s5 + (var_s4 * arg2), temp_s5 + ((var_s4 + 1) * arg2)) < 0) {
@@ -1133,10 +1133,10 @@ void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
                     break;
                 }
                 var_v0 = var_s3 * arg2;
-                func_0020B300(temp_s5 + var_v0, temp_s6, arg2);
+                RhMem_CopyMemory(temp_s5 + var_v0, temp_s6, arg2);
                 var_s3 = var_s4;
             }
-            func_0020B300(temp_s5 + (var_s3 * arg2), sentinel, arg2);
+            RhMem_CopyMemory(temp_s5 + (var_s3 * arg2), sentinel, arg2);
             var_fp -= 1;
             spA0 -= arg2;
         } while (var_fp > 0);
@@ -1146,8 +1146,8 @@ void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
         spB0 = temp_s5 + arg2;
         var_s3_2 = temp_s5 + var_fp_2;
         do {
-            func_0020B300(sentinel, var_s3_2, arg2);
-            func_0020B300(var_s3_2, spB0, arg2);
+            RhMem_CopyMemory(sentinel, var_s3_2, arg2);
+            RhMem_CopyMemory(var_s3_2, spB0, arg2);
             var_s2 -= 1;
             var_s4_2 = 1;
             var_fp_2 -= arg2;
@@ -1160,25 +1160,25 @@ void func_0020B840(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
                 if (arg3(sentinel, temp_s3) >= 0) {
                     break;
                 }
-                func_0020B300(temp_s5 + (var_s4_2 * arg2), temp_s3, arg2);
+                RhMem_CopyMemory(temp_s5 + (var_s4_2 * arg2), temp_s3, arg2);
                 var_s4_2 = var_s6;
             }
-            func_0020B300(temp_s5 + (var_s4_2 * arg2), sentinel, arg2);
+            RhMem_CopyMemory(temp_s5 + (var_s4_2 * arg2), sentinel, arg2);
             var_s3_2 = temp_s5 + var_fp_2;
         } while (var_s2 > 1);
     }
 }
 
-s32 func_0020BA70(void) {
+s32 RhGeom_Init(void) {
     D_0032A220 = 0;
     return 1;
 }
 
-s32 func_0020BA80(void) {
+s32 RhGeom_Term(void) {
     return 1;
 }
 
-asm void func_0020BA90(void *p) {
+asm void RhGeom_SetMatrix(void *p) {
     .set noreorder
     beqz a0, L_0020BAAC
     nop
@@ -1198,7 +1198,7 @@ L_0020BAC0:
     nop
 }
 
-asm void func_0020BAD0(void *p) {
+asm void RhGeom_GetMatrix(void *p) {
     .set noreorder
     sqc2 vf28, 0x0(a0)
     sqc2 vf29, 0x10(a0)
@@ -1207,7 +1207,7 @@ asm void func_0020BAD0(void *p) {
     sqc2 vf31, 0x30(a0)
 }
 
-asm void func_0020BAF0(s32 arg0) {
+asm void RhGeom_PushMatrix(s32 arg0) {
     .set noreorder
     lw a2, D_0032A220
     la v1, D_00326A20
@@ -1233,7 +1233,7 @@ L_0020BB38:
     jr ra
 }
 
-asm void func_0020BB50(void) {
+asm void RhGeom_PopMatrix(void) {
     .set noreorder
     lw a0, D_0032A220
     la v1, D_00326A20
@@ -1251,12 +1251,12 @@ asm void func_0020BB50(void) {
     lqc2 vf31, 0x30(v1)
 }
 
-s32 func_0020BBA0(void) {
+s32 RhGeom_ResetMatrixStack(void) {
     D_0032A220 = 0;
     return 1;
 }
 
-asm void func_0020BBB0(void *arg0) {
+asm void RhGeom_UnitMatrix(void *arg0) {
     .set noreorder
     bnez a0, L_0020BBD0
     nop
@@ -1281,7 +1281,7 @@ L_0020BBF4:
     nop
 }
 
-asm void func_0020BC00(s32 arg0, void *arg1) {
+asm void RhGeom_MulMatrix(s32 arg0, void *arg1) {
     .set noreorder
     bnez a0, L_0020BC6C
     nop
@@ -1344,7 +1344,7 @@ L_0020BCDC:
     nop
 }
 
-asm void func_0020BCF0(s32 arg0, s32 arg1) {
+asm void RhGeom_MulMatrixRev(s32 arg0, s32 arg1) {
     .set noreorder
     bnez a0, L_0020BD5C
     nop
@@ -1411,7 +1411,7 @@ typedef struct Matrix_0020BDE0 {
     f32 m[4][4];
 } Matrix_0020BDE0;
 
-void func_0020BDE0(void *dst, void *src) {
+void RhGeom_InvertMatrix(void *dst, void *src) {
     Matrix_0020BDE0 result;
     f32 det;
 
@@ -1475,7 +1475,7 @@ void func_0020BDE0(void *dst, void *src) {
     }
 }
 
-void func_0020C630(void *dst, void *src) {
+void RhGeom_GetRotXYZMatrix(void *dst, void *src) {
     f32 *matrix = dst;
     s32 *angles = src;
     f32 cx;
@@ -1485,12 +1485,12 @@ void func_0020C630(void *dst, void *src) {
     f32 cz;
     f32 sz;
 
-    cx = func_0020B480(angles[0]);
-    sx = func_0020B550(angles[0]);
-    cy = func_0020B480(angles[1]);
-    sy = func_0020B550(angles[1]);
-    cz = func_0020B480(angles[2]);
-    sz = func_0020B550(angles[2]);
+    cx = RhMath_CosI(angles[0]);
+    sx = RhMath_SinI(angles[0]);
+    cy = RhMath_CosI(angles[1]);
+    sy = RhMath_SinI(angles[1]);
+    cz = RhMath_CosI(angles[2]);
+    sz = RhMath_SinI(angles[2]);
     matrix[0] = cy * cz;
     matrix[4] = cz * (sx * sy) - cx * sz;
     matrix[8] = cz * (cx * sy) + sx * sz;
@@ -1517,7 +1517,7 @@ typedef struct Vec4_0020C750 {
 } Vec4_0020C750;
 
 
-void func_0020C750(void *arg0, void *arg1, s32 arg2) {
+void RhGeom_GetRotVectorMatrix(void *arg0, void *arg1, s32 arg2) {
     f32 *m = arg0;
     Vec4_0020C750 v;
     f32 c;
@@ -1525,10 +1525,10 @@ void func_0020C750(void *arg0, void *arg1, s32 arg2) {
     f32 t;
 
     v = *(Vec4_0020C750 *)arg1;
-    c = func_0020B480(arg2);
+    c = RhMath_CosI(arg2);
     t = 1.0f - c;
-    s = func_0020B550(arg2);
-    func_0020D070(&v.x);
+    s = RhMath_SinI(arg2);
+    RhGeom_NormalizeVector(&v.x);
     m[0] = c + t * (v.x * v.x);
     m[4] = t * (v.x * v.y) - v.z * s;
     m[8] = t * (v.x * v.z) + v.y * s;
@@ -1553,10 +1553,10 @@ typedef struct {
 } Matrix_0020C8F0;
 
 
-void func_0020C8F0(void *arg0, f32 *arg1) {
+void RhGeom_GetTransMatrix(void *arg0, f32 *arg1) {
     Matrix_0020C8F0 *matrix = arg0;
 
-    func_0020BBB0(arg0);
+    RhGeom_UnitMatrix(arg0);
     matrix->translation[0] = arg1[0];
     matrix->translation[1] = arg1[1];
     matrix->translation[2] = arg1[2];
@@ -1568,7 +1568,7 @@ typedef struct {
 } Matrix_0020C940;
 
 
-void func_0020C940(void *arg0, void *p1, void *p2, void *p3) {
+void RhGeom_GetScaleRotXYZTransMatrix(void *arg0, void *p1, void *p2, void *p3) {
     Matrix_0020C940 *mtx = arg0;
     f32 *arg1 = p1;
     s32 *arg2 = p2;
@@ -1580,19 +1580,19 @@ void func_0020C940(void *arg0, void *p1, void *p2, void *p3) {
     f32 cz;
     f32 sz;
 
-    func_0020BBB0(arg0);
+    RhGeom_UnitMatrix(arg0);
     if (arg3 != NULL) {
         mtx->t[0] = arg3[0];
         mtx->t[1] = arg3[1];
         mtx->t[2] = arg3[2];
     }
     if (arg2 != NULL) {
-        cx = func_0020B480(arg2[0]);
-        sx = func_0020B550(arg2[0]);
-        cy = func_0020B480(arg2[1]);
-        sy = func_0020B550(arg2[1]);
-        cz = func_0020B480(arg2[2]);
-        sz = func_0020B550(arg2[2]);
+        cx = RhMath_CosI(arg2[0]);
+        sx = RhMath_SinI(arg2[0]);
+        cy = RhMath_CosI(arg2[1]);
+        sy = RhMath_SinI(arg2[1]);
+        cz = RhMath_CosI(arg2[2]);
+        sz = RhMath_SinI(arg2[2]);
         mtx->m[0][0] = cy * cz;
         mtx->m[1][0] = sx * sy * cz - cx * sz;
         mtx->m[2][0] = cx * sy * cz + sx * sz;

@@ -7,7 +7,7 @@ typedef struct {
     u8 flags : 2;
 } Flags_00214FD0;
 
-s32 func_00214FD0(void *arg0) {
+s32 SzData_ClearCardInfo(void *arg0) {
     Flags_00214FD0 *flags = arg0;
 
     if (arg0 == NULL) {
@@ -43,7 +43,7 @@ typedef struct {
     s32 unknownFF9C;
 } Player_00215060;
 
-s32 func_00215060(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
+s32 SzData_CheckDup(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
     extern u8 D_0034F6D0;
     extern Player_00215060 D_0032F790[2];
     Entry_00215060 *entry;
@@ -100,7 +100,7 @@ typedef struct {
 
 extern u8 D_0034F6D0;
 
-s32 func_002151D0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_CheckDeck(s32 arg0, s32 arg1, s32 arg2) {
     extern SideData_002151D0 D_0032F790[];
     s32 i;
     s32 side;
@@ -139,7 +139,7 @@ typedef u8 Slot_00215280[0x54];
 
 extern u8 D_0034F6D0;
 
-s32 func_00215280(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_PushDeckLeader(s32 arg0, s32 arg1, s32 arg2) {
     extern u8 D_0032F790[];
     s32 var_v1;
     u8 *temp_s2;
@@ -163,7 +163,7 @@ s32 func_00215280(s32 arg0, s32 arg1, s32 arg2) {
     if (*(u16 *)(temp_s2 + 0x50) != 0x3E7) {
         return 0;
     }
-    temp_v0 = func_00214DD0(arg0, arg2, 3, 0);
+    temp_v0 = SzData_CheckBag(arg0, arg2, 3, 0);
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -196,7 +196,7 @@ typedef struct Card_002153D0 {
 
 extern u8 D_0034F6D0;
 
-s32 func_002153D0(s32 arg0, s32 arg1) {
+s32 SzData_PullDeckLeader(s32 arg0, s32 arg1) {
     extern Side_002153D0 D_0032F790[];
     s32 side;
     u16 card;
@@ -216,7 +216,7 @@ s32 func_002153D0(s32 arg0, s32 arg1) {
     if (card == 999) {
         return 0;
     }
-    entry = func_00214DD0(arg0, card, arg1, 1);
+    entry = SzData_CheckBag(arg0, card, arg1, 1);
     if (entry == NULL) {
         return 0;
     }
@@ -294,7 +294,7 @@ static inline s32 find_002154E0(s32 player, s32 deck_index, s32 card_id) {
     return -1;
 }
 
-s32 func_002154E0(s32 player, s32 deck_index, s32 card_id) {
+s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
     extern Side_002154E0 D_0032F790[];
     s32 side;
     Deck_002154E0 *deck;
@@ -324,10 +324,10 @@ s32 func_002154E0(s32 player, s32 deck_index, s32 card_id) {
     if (slot < 0) {
         return 0;
     }
-    if ((entry = func_00214DD0(player, card_id, 3, 0)) == NULL) {
+    if ((entry = SzData_CheckBag(player, card_id, 3, 0)) == NULL) {
         return 0;
     }
-    card = func_001DD0E0(card_id);
+    card = SzDuel_GetCardConstInfo(card_id);
     if (card == NULL) {
         return 0;
     }
@@ -345,7 +345,7 @@ typedef struct {
     u8 state : 2;
 } Card_00215770;
 
-s32 func_00215770(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_PullDeck(s32 arg0, s32 arg1, s32 arg2) {
     extern u8 D_0032F790[];
     u8 *hand;
     Card_00215770 *card;
@@ -368,10 +368,10 @@ s32 func_00215770(s32 arg0, s32 arg1, s32 arg2) {
     }
     slot = (u16 *)(hand + arg2 * 2);
     cardId = *slot;
-    if ((card = func_00214DD0(arg0, cardId, arg1, 0)) == NULL) {
+    if ((card = SzData_CheckBag(arg0, cardId, arg1, 0)) == NULL) {
         return 0;
     }
-    info = func_001DD0E0(cardId);
+    info = SzDuel_GetCardConstInfo(cardId);
     if (info == NULL) {
         return 0;
     }
@@ -390,7 +390,7 @@ typedef struct {
 extern State_002158B0 D_0032F790[];
 extern u8 D_0034F6D0;
 
-s32 func_002158B0(s32 arg0) {
+s32 SzData_GetCurrentDeck(s32 arg0) {
     s32 var_v1;
     State_002158B0 *state;
 
@@ -414,7 +414,7 @@ typedef struct {
     u8 : 6;
 } Flags_00215920;
 
-s32 func_00215920(s32 arg0, s32 arg1) {
+s32 SzData_SetCurrentDeck(s32 arg0, s32 arg1) {
     s32 var_v1;
     u8 *temp_a2;
 
@@ -449,7 +449,7 @@ static inline s32 side_002159D0(s32 player) {
     return 1;
 }
 
-s32 func_002159D0(s32 arg0, s32 arg1) {
+s32 SzData_GetLeader(s32 arg0, s32 arg1) {
     u8 *side;
     Entry_002159D0 *entry;
 
@@ -480,7 +480,7 @@ typedef struct Side_00215A60 {
 
 extern u8 D_0034F6D0;
 
-s32 func_00215A60(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_GetCardNo(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_v1;
     u16 *values;
 
@@ -504,7 +504,7 @@ typedef struct Record_00215B10 {
     u16 value;
 } Record_00215B10;
 
-s32 func_00215B10(s32 arg0, s32 arg1, s32 operation, s32 value) {
+s32 SzData_CalcExp(s32 arg0, s32 arg1, s32 operation, s32 value) {
     s32 side;
     u8 *player;
     Record_00215B10 *record;
@@ -553,7 +553,7 @@ s32 func_00215B10(s32 arg0, s32 arg1, s32 operation, s32 value) {
     return 1;
 }
 
-s32 func_00215C40(s32 arg0, s32 arg1) {
+s32 SzData_CalcDeckCost(s32 arg0, s32 arg1) {
     typedef struct {
         u16 cards[40];
         u16 unk50;
@@ -578,7 +578,7 @@ s32 func_00215C40(s32 arg0, s32 arg1) {
     i = 0;
     card = deck->cards;
     do {
-        data = func_001DD0E0(*card);
+        data = SzDuel_GetCardConstInfo(*card);
         if (data != NULL) {
             deck->total += data[3];
         }
@@ -595,7 +595,7 @@ typedef struct Card_00215D30 {
     u64 rest : 48;
 } Card_00215D30;
 
-s64 func_00215D30(s32 arg0, s32 arg1) {
+s64 SzData_GetRank(s32 arg0, s32 arg1) {
     s32 side;
     u8 *base;
 
@@ -627,7 +627,7 @@ typedef struct Card_00215DE0 {
 extern u16 D_002D0868;
 extern u8 D_0034F6D0;
 
-s32 func_00215DE0(s32 player, s32 index) {
+s32 SzData_SetRank(s32 player, s32 index) {
     s32 side;
     u8 *base;
     Card_00215DE0 *card;
@@ -678,7 +678,7 @@ static inline s32 side_00215F00(s32 player) {
     return 1;
 }
 
-s32 func_00215F00(s32 arg0, s32 arg1) {
+s32 SzData_GetDeckCost(s32 arg0, s32 arg1) {
     u8 *side;
     Entry_00215F00 *entry;
 
@@ -690,7 +690,7 @@ s32 func_00215F00(s32 arg0, s32 arg1) {
     return entry->value;
 }
 
-s32 func_00215F90(s32 arg0, s32 arg1) {
+s32 SzData_GetDeckCount(s32 arg0, s32 arg1) {
     s32 i;
     s32 count;
     s32 side;
@@ -758,7 +758,7 @@ static inline s64 random_value_00216040(void) {
     return (s32)func_0019A5C8() & ~0x40000000LL;
 }
 
-s32 func_00216040(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_AddBag(s32 arg0, s32 arg1, s32 arg2) {
     Card_00216040 *card;
     Entry_00216040 *entry;
     s32 count;
@@ -785,10 +785,10 @@ s32 func_00216040(s32 arg0, s32 arg1, s32 arg2) {
         if (entry->card == 0) {
             do {
                 entry->value = random_value_00216040();
-            } while (func_00215060(arg0, arg1, entry->value, arg2) != 0);
+            } while (SzData_CheckDup(arg0, arg1, entry->value, arg2) != 0);
             entry->card = arg1;
             card->assigned = 1;
-            func_00216800(arg0, arg2);
+            SzData_PushBagNew(arg0, arg2);
             return 1;
         }
     }
@@ -831,7 +831,7 @@ static inline Player_00216280 *data_00216280(s32 player, void *base) {
     return &((Player_00216280 *)base)[side_00216280(player)];
 }
 
-s32 func_00216280(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 SzData_AddBag2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Card_00216280 *card;
     Entry_00216280 *entry;
     s32 count;
@@ -851,7 +851,7 @@ s32 func_00216280(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (arg3 < 0 || arg3 >= 0x356) {
         return 0;
     }
-    if (func_00215060(arg0, arg1, arg2, arg3) != 0) {
+    if (SzData_CheckDup(arg0, arg1, arg2, arg3) != 0) {
         return 0;
     }
 
@@ -862,7 +862,7 @@ s32 func_00216280(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             entry->value = arg2;
             entry->card = arg1;
             card->assigned = 1;
-            func_00216800(arg0, arg3);
+            SzData_PushBagNew(arg0, arg3);
             return 1;
         }
     }
@@ -888,7 +888,7 @@ static inline void clear_00216490(void *src) {
     }
 }
 
-s32 func_00216490(s32 arg0, s32 arg1) {
+s32 SzData_DelBag(s32 arg0, s32 arg1) {
     Flags_00216490 *entry;
 
     if ((arg0 < 0) || (arg0 >= 2)) {
@@ -900,7 +900,7 @@ s32 func_00216490(s32 arg0, s32 arg1) {
     if ((arg1 < 0) || (arg1 >= 0x356)) {
         return 0;
     }
-    entry = func_00214DD0(arg0, arg1, 3, 0);
+    entry = SzData_CheckBag(arg0, arg1, 3, 0);
     if (entry == NULL) {
         return 0;
     }
@@ -933,7 +933,7 @@ typedef struct {
 extern Entry_00216580 D_002D0870[];
 extern u8 D_0034F6D0;
 
-s32 func_00216580(s32 arg0, s32 arg1) {
+s32 SzData_RollSpecial(s32 arg0, s32 arg1) {
     s32 i;
     State_002158B0 *player;
     Entry_00216580 *entry;
@@ -959,7 +959,7 @@ s32 func_00216580(s32 arg0, s32 arg1) {
     entry = D_002D0870;
     i = 0;
     do {
-        decodedCard = func_001DE130(entry->card & 0x3FFF);
+        decodedCard = SzDuel_Xax2New(entry->card & 0x3FFF);
         if (decodedCard == arg1) {
             count = (u8 *)(i + (u32)player) + 0xFE90;
             *count = (*count + 1) % (((Flags_00216580 *)&D_002D0870[i])[1].count + 1);
@@ -998,7 +998,7 @@ typedef struct State_002166D0 {
 
 extern u8 D_0034F6D0;
 
-s32 func_002166D0(s32 arg0, s32 arg1) {
+s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
     State_002166D0 *state;
     Entry_00216580 *entry;
     s32 side;
@@ -1026,7 +1026,7 @@ s32 func_002166D0(s32 arg0, s32 arg1) {
         entry = D_002D0870;
         i = 0;
         do {
-            resolved = func_001DE130(entry->card & 0x3FFF);
+            resolved = SzDuel_Xax2New(entry->card & 0x3FFF);
             if (resolved == arg1) {
                 replacement = state->replacements[i];
                 if (replacement != 0) {
@@ -1055,7 +1055,7 @@ typedef struct Record_00216800 {
 
 extern u8 D_0034F6D0;
 
-s32 func_00216800(s32 arg0, s32 arg1) {
+s32 SzData_PushBagNew(s32 arg0, s32 arg1) {
     s32 record_index;
     s32 i;
     Record_00216800 *record;
@@ -1101,7 +1101,7 @@ typedef struct {
 
 extern u8 D_0034F6D0;
 
-s32 func_00216920(s32 arg0, s32 arg1) {
+s32 SzData_IsBagNew(s32 arg0, s32 arg1) {
     s32 side;
     s32 i;
     u8 *data;
@@ -1148,7 +1148,7 @@ typedef struct {
 
 extern u8 D_0034F6D0;
 
-s32 func_002169F0(s32 arg0) {
+s32 SzData_GetBagCountAll(s32 arg0) {
     s32 rowIndex;
     Entry_002169F0 *entry;
     s32 remaining;
@@ -1196,7 +1196,7 @@ typedef struct {
 
 extern u8 D_0034F6D0;
 
-s32 func_00216AC0(s32 player, s32 card, s32 category) {
+s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
     Entry_00216AC0 *entry;
     s32 remaining;
     s32 count;
@@ -1244,8 +1244,8 @@ typedef struct Flags_00216BC0 {
 
 extern u8 D_0034F6D0;
 
-s32 func_00216BC0(s32 arg0, s32 arg1) {
-    extern s32 func_0010B3C0();
+s32 SzData_GetLookFlag(s32 arg0, s32 arg1) {
+    extern s32 SD_iPreparePreBlockOnIOP();
     s32 var_v1;
     u8 *cards;
 
@@ -1280,7 +1280,7 @@ typedef struct Card_00216C70 {
 
 extern u8 D_0034F6D0;
 
-s32 func_00216C70(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_SetLookFlag(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_v1;
     Card_00216C70 *cards;
     Card_00216C70 *card;
@@ -1298,7 +1298,7 @@ s32 func_00216C70(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_00216D30(s32 arg0, s32 arg1) {
+s32 SzData_GetPassFlag(s32 arg0, s32 arg1) {
     typedef struct {
         u8 pad[0x49];
         u8 unused : 7;
@@ -1335,7 +1335,7 @@ typedef struct {
 
 extern u8 D_0034F6D0;
 
-s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_SetPassFlag(s32 arg0, s32 arg1, s32 arg2) {
     s32 side;
     u8 *table;
     Card_00216DF0 *card;
@@ -1360,7 +1360,7 @@ s32 func_00216DF0(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_00216EC0(s32 arg0, s32 arg1) {
+s32 SzData_GetTreasureFlag(s32 arg0, s32 arg1) {
     s32 index;
     u8 *data;
     s32 flags;
@@ -1396,7 +1396,7 @@ static inline s32 player_index_00216F80(s32 player) {
     return 1;
 }
 
-s32 func_00216F80(s32 player, s32 flag, s32 enabled) {
+s32 SzData_SetTreasureFlag(s32 player, s32 flag, s32 enabled) {
     PlayerState_00216F80 *state;
 
     state = &((PlayerState_00216F80 *)D_0032F790)[player_index_00216F80(player)];
@@ -1424,7 +1424,7 @@ typedef struct Entry_002170A0 {
 extern Entry_002170A0 D_002D08D0[];
 extern u16 D_002D08D2[];
 
-u16 func_002170A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+u16 SzData_SearchTreasure(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 i;
     Entry_002170A0 *entry;
     s32 dx;
@@ -1481,7 +1481,7 @@ typedef struct Flags_002171B0 {
 
 extern u8 D_0034F6D0;
 
-s32 func_002171B0(s32 arg0) {
+s32 SzData_GetMapEditFlag(s32 arg0) {
     s32 index;
     State_002158B0 *state;
 
@@ -1512,7 +1512,7 @@ typedef struct Flags_00217230 {
 
 extern u8 D_0034F6D0;
 
-s32 func_00217230(s32 arg0, s32 arg1) {
+s32 SzData_SetMapEditFlag(s32 arg0, s32 arg1) {
     s32 var_v1;
     u8 *temp_a2;
 
@@ -1552,7 +1552,7 @@ typedef struct {
 extern u16 D_002D0850[];
 extern u8 D_0034F6D0;
 
-s32 func_002172D0(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzData_SetRankDirect(s32 arg0, s32 arg1, s32 arg2) {
     extern State_002158B0 D_0032F790[];
     s32 side;
     Card_002172D0 *base;
@@ -1582,16 +1582,16 @@ s32 func_002172D0(s32 arg0, s32 arg1, s32 arg2) {
     return card->flags;
 }
 
-s32 func_002173D0(void) {
+s32 RhMemCard_Init(void) {
     func_00193808();
     return 1;
 }
 
-s32 func_002173F0(void) {
+s32 RhMemCard_Term(void) {
     return 1;
 }
 
-s32 func_00217400(void) {
+s32 RhMemCard_Act(void) {
     return 1;
 }
 
@@ -1605,24 +1605,24 @@ typedef struct State_00217410 {
 extern State_00217410 D_0034F6E0;
 extern u8 D_002D0930[];
 
-void func_00217410(void) {
-    extern u8 *func_00197548();
+void SzSound_Init(void) {
+    extern u8 *getenv();
     State_00217410 *state = &D_0034F6E0;
     s16 *slot;
     s32 i;
 
-    func_0020B3C0((s8 *)&D_0034F6E0, 0, 0xC);
-    state->enabled = func_00197548(D_002D0930) ? 1 : 0;
+    RhMem_FillMemory((s8 *)&D_0034F6E0, 0, 0xC);
+    state->enabled = getenv(D_002D0930) ? 1 : 0;
     if (state->enabled) {
-        func_00109CA0(0x400000);
-        func_0010A160(0x80, 0x80);
+        SD_Init(0x400000);
+        SD_BGMSetSourceLevel(0x80, 0x80);
         slot = state->slots;
         i = 0;
         do {
             i += 1;
             *slot++ = -1;
         } while (i < 4);
-        func_00217A70(1);
+        SzSound_SetOutput(1);
     }
 }
 
@@ -1638,13 +1638,13 @@ typedef struct State_002174D0 {
 struct State_00217410;
 
 
-void func_002174D0(void) {
+void SzSound_Term(void) {
     extern struct State_00217410 D_0034F6E0;
     extern Flags_002174D0 D_0034F6E8;
     State_002174D0 *state = (State_002174D0 *)&D_0034F6E0;
 
     if (D_0034F6E8.active) {
-        func_00109D50();
+        SD_Term();
         state->flags.active = 0;
     }
 }
@@ -1655,7 +1655,7 @@ typedef struct {
 
 extern Flags_00217530 D_0034F6E8;
 
-s32 func_00217530(void) {
+s32 SzSound_IsStandby(void) {
     return D_0034F6E8.active != 0 ? 1 : 0;
 }
 
@@ -1668,16 +1668,16 @@ typedef struct {
 extern Flags_00217530 D_0034F6E8;
 #endif
 
-void func_00217550(void) {
+void SzSound_VSync(void) {
     if (D_0034F6E8.active) {
-        func_00109DC0();
+        SD_CallEveryVSync();
     }
 }
 
-s32 func_00217590(s32 arg0, s32 arg1, s32 arg2) {
+s32 SzSound_TransferSEGrp(s32 arg0, s32 arg1, s32 arg2) {
     extern char *D_00295090[];
     extern void func_0019B648();
-    extern s32 func_0010BBC0();
+    extern s32 SD_iTransferSEGrpToIop();
     State_00217410 *state = &D_0034F6E0;
     char text[0x80];
 
@@ -1691,7 +1691,7 @@ s32 func_00217590(s32 arg0, s32 arg1, s32 arg2) {
         return 1;
     }
     state->slots[arg0] = arg1;
-    func_0010A3B0(arg0, -1);
+    SD_SEStop(arg0, -1);
     switch (arg0) {
     case 0:
     case 1:
@@ -1701,7 +1701,7 @@ s32 func_00217590(s32 arg0, s32 arg1, s32 arg2) {
         func_0019B648(text, D_00295090[arg0], arg1, arg1);
         break;
     }
-    return func_0010BBC0(arg0, text);
+    return SD_iTransferSEGrpToIop(arg0, text);
 }
 
 #ifndef GAME_H
@@ -1711,17 +1711,17 @@ typedef struct {
 extern Flags_002176B0 D_0034F6E8;
 #endif
 
-s32 func_002176B0(void) {
-    extern s64 func_0010A8A0();
+s32 SzSound_IsPlaySE(void) {
+    extern s64 SD_iGetSDStatus();
 
     if (!D_0034F6E8.active) {
         return 0;
     }
-    return !((s32)func_0010A8A0() & 0x4000) ? 1 : 0;
+    return !((s32)SD_iGetSDStatus() & 0x4000) ? 1 : 0;
 }
 
-s32 func_00217710(s32 arg0, s32 arg1) {
-    extern s64 func_0010A8A0();
+s32 SzSound_PlaySE(s32 arg0, s32 arg1) {
+    extern s64 SD_iGetSDStatus();
     State_00217410 *state = &D_0034F6E0;
 
     if (!D_0034F6E8.active) {
@@ -1733,15 +1733,15 @@ s32 func_00217710(s32 arg0, s32 arg1) {
     if (state->slots[arg0] < 0) {
         return 0;
     }
-    if ((s32)func_0010A8A0() & 0x4000) {
+    if ((s32)SD_iGetSDStatus() & 0x4000) {
         return 0;
     }
-    func_0010A390(arg0, arg1 & 0x7FFF, (arg1 & 0x8000) ? 1 : 0);
+    SD_SEPlayOnlyOnce(arg0, arg1 & 0x7FFF, (arg1 & 0x8000) ? 1 : 0);
     return 1;
 }
 
-s32 func_002177E0(s32 arg0, s32 arg1, s32 arg2) {
-    extern s64 func_0010A8A0();
+s32 SzSound_StereoPlaySE(s32 arg0, s32 arg1, s32 arg2) {
+    extern s64 SD_iGetSDStatus();
     State_00217410 *state = &D_0034F6E0;
 
     if (!D_0034F6E8.active) {
@@ -1753,16 +1753,16 @@ s32 func_002177E0(s32 arg0, s32 arg1, s32 arg2) {
     if (state->slots[arg0] < 0) {
         return 0;
     }
-    if ((s32) func_0010A8A0() & 0x4000) {
+    if ((s32) SD_iGetSDStatus() & 0x4000) {
         return 0;
     }
     arg1 &= 0x7FFF;
     arg2 &= 0x7FFF;
-    func_0010A1D0(arg0, arg1, arg2);
+    SD_SEPlay2(arg0, arg1, arg2);
     return 1;
 }
 
-s32 func_002178C0(s32 arg0, s32 arg1) {
+s32 SzSound_StopSE(s32 arg0, s32 arg1) {
     State_00217410 *state = &D_0034F6E0;
 
     if (!D_0034F6E8.active) {
@@ -1774,24 +1774,24 @@ s32 func_002178C0(s32 arg0, s32 arg1) {
     if (state->slots[arg0] < 0) {
         return 0;
     }
-    if ((s64)func_0010A8A0() & 0x4000) {
+    if ((s64)SD_iGetSDStatus() & 0x4000) {
         return 0;
     }
-    func_0010A3B0(arg0, arg1);
+    SD_SEStop(arg0, arg1);
     return 1;
 }
 
-s32 func_00217980(s32 arg0, s32 arg1) {
+s32 SzSound_PlayBGM(s32 arg0, s32 arg1) {
     if (D_0034F6E8.active == 0) {
         return 0;
     }
-    func_00109E80(arg0, arg1);
+    SD_BGMPreLoad(arg0, arg1);
     return 1;
 }
 
-s32 func_002179C0(void) {
+s32 SzSound_IsLoadingBGM(void) {
     if (D_0034F6E8.active == 0) {
         return 0;
     }
-    return (func_00109F10() != 0) ? 1 : 0;
+    return (SD_IsLoadingNow() != 0) ? 1 : 0;
 }

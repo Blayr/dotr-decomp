@@ -1,14 +1,14 @@
 #include "common.h"
 
-s32 func_00242580(s32 arg0) {
+s32 movie(s32 arg0) {
     s32 temp_a1;
 
     temp_a1 = D_003503B8;
     D_003503B8 = temp_a1 + 1;
     func_00199B50(D_0030F354, temp_a1);
-    func_00242950(arg0);
-    func_00242600((void *)D_00350680, (void *)D_00350788, (void *)D_00350740);
-    func_00242C20();
+    initAll(arg0);
+    readMpeg((void *)D_00350680, (void *)D_00350788, (void *)D_00350740);
+    termAll();
     return D_003505F0;
 }
 
@@ -37,7 +37,7 @@ extern int func_00242D00_b(void);
 extern int func_00243DE0_b(struct DotrMpegFile *file, char *buffer, int byte_count, int position);
 extern int func_0018DEE8_b(struct DotrMpegDecoder *vd, char *data, int size, struct DotrMpegReadBuf *ring, int ring_size);
 
-int func_00242600(void *vd_v, void *rb_v, void *file_v)
+int readMpeg(void *vd_v, void *rb_v, void *file_v)
 {
     struct DotrMpegDecoder * vd = vd_v;
     struct DotrMpegReadBuf * rb = rb_v;
@@ -57,69 +57,69 @@ int func_00242600(void *vd_v, void *rb_v, void *file_v)
     int isPaused = 0;
     int keep;
 
-    while (isPaused || (writerest > 4 && func_00245150(vd) != 3)) {
+    while (isPaused || (writerest > 4 && videoDecGetState(vd) != 3)) {
         
 
 
         keep = isPaused;
         func_00203320_b();
-        func_002038F0();
+        SzPad_VSync();
         func_00203840_b();
-        D_003505F0 = func_00203A40(0, 1, 0xffff) & 0xffff;
+        D_003505F0 = SzPad_Check(0, 1, 0xffff) & 0xffff;
         pushed = D_003505F0 & (button_old ^ D_003505F0) & 0x8e0;
         button_old = D_003505F0;
         if (D_003503B0 && pushed && vd->unknown_08 > 10 && !isPaused) {
-            func_00242450();
+            endDisplay();
             if (D_0029B2F0) {
-                func_002431B0(&D_00350620_b);
+                audioDecPause(&D_00350620_b);
             }
-            func_00245140(&D_00350680_b);
+            videoDecAbort(&D_00350680_b);
             return -1;
         }
-        putsize = func_00241AD0(rb, &put_ptr);
+        putsize = readBufBeginPut(rb, &put_ptr);
         if (readrest > 0 && putsize >= 0x10000) {
             count = func_00243DE0_b(file, put_ptr, 0x10000, file->start + sector);
-            func_00241B10(rb, count);
+            readBufEndPut(rb, count);
             sector += count >> 11;
             readrest -= count;
         }
-        func_00242900();
-        getsize = func_00241B80(rb, &get_ptr);
+        switchThread();
+        getsize = readBufBeginGet(rb, &get_ptr);
         if (getsize > 0) {
             proceed = func_0018DEE8_b(vd, get_ptr, getsize, rb, rb->size);
-            func_00241BE0(rb, proceed);
+            readBufEndGet(rb, proceed);
             writerest -= proceed;
         }
         isPaused = keep;
         func_00242D00_b();
-        if (!isStarted && func_002457E0(&D_00350600_b) && func_00242910()) {
-            func_002423F0(1);
+        if (!isStarted && voBufIsFull(&D_00350600_b) && isAudioOK()) {
+            startDisplay(1);
             if (D_0029B2F0) {
-                func_00243290(&D_00350620_b);
+                audioDecStart(&D_00350620_b);
             }
             isStarted = 1;
         }
     }
-    while (!func_002451A0(vd)) {
-        func_00242900();
+    while (!videoDecFlush(vd)) {
+        switchThread();
     }
-    while (!func_00245280(vd) && func_00245150(vd) != 3) {
-        func_00242900();
+    while (!videoDecIsFlushed(vd) && videoDecGetState(vd) != 3) {
+        switchThread();
     }
-    func_00242450();
+    endDisplay();
     if (D_0029B2F0) {
-        func_002432F0(&D_00350620_b);
+        audioDecReset(&D_00350620_b);
     }
     return 1;
 }
 
-void func_00242900(void) {
-    func_0017B790(0x20);
+void switchThread(void) {
+    RotateThreadReadyQueue(0x20);
 }
 
-s32 func_00242910(void) {
+s32 isAudioOK(void) {
     if (D_0029B2F0 != 0) {
-        return func_00243580(D_00350620);
+        return audioDecIsPreset(D_00350620);
     }
     return 1;
 }
@@ -136,7 +136,7 @@ typedef struct ThreadParams_00242950 {
     s32 option;
 } ThreadParams_00242950;
 
-extern void func_00242190(void);
+extern void vblankHandler(void);
 extern char D_0030F39A[];
 extern u8 D_00317EF0[];
 extern s32 D_00350730;
@@ -144,97 +144,97 @@ extern s32 D_00350734;
 extern s32 D_00350778;
 extern s32 D_00350780;
 
-void func_00242950(s32 arg0) {
+void initAll(s32 arg0) {
     ThreadParams_00242950 thread;
     extern s32 func_00190810();
-    extern s32 func_00244FB0();
-    extern s32 func_002450B0(void *, s32, s32, void (*)(), s32);
-    extern void func_00245770();
+    extern s32 videoDecCreate();
+    extern s32 videoDecSetStream(void *, s32, s32, void (*)(), s32);
+    extern void voBufCreate();
 
     *(s32 *)0x1000E000 |= 3;
     *(s32 *)0x1000E010 = 4;
-    func_00241A90((void *)D_00350788);
-    func_0018EA68();
-    func_00244FB0(D_00350680, D_00350380, 0x1C9168, D_00350398,
+    readBufCreate((void *)D_00350788);
+    sceMpegInit();
+    videoDecCreate(D_00350680, D_00350380, 0x1C9168, D_00350398,
                  D_00350378, 0x100, D_003503A8, 0x200);
     func_001906D0();
     func_00190810(1, 0x8000, 0);
-    func_00243060(D_00350620, D_00350390, 0xC000, 0x6000);
-    func_002450B0(D_00350680, 0, 0, (void (*)())func_00242D10, D_00350788);
+    audioDecCreate(D_00350620, D_00350390, 0xC000, 0x6000);
+    videoDecSetStream(D_00350680, 0, 0, (void (*)())videoCallback, D_00350788);
     if (D_0029B2F0 != 0) {
-        func_002450B0(D_00350680, 2, 0, (void (*)())func_00242E40, D_00350788);
+        videoDecSetStream(D_00350680, 2, 0, (void (*)())pcmCallback, D_00350788);
     }
-    func_00245770(D_00350600,
+    voBufCreate(D_00350600,
                  ((u64)((s64)D_00350368 << 36) >> 36) | 0x20000000,
                  (void *)D_00350370, 2);
-    thread.entry = func_00242CD0;
+    thread.entry = defMain;
     thread.stack = D_00350388;
     thread.stack_size = 0x800;
     thread.priority = 0x20;
     thread.gp = D_00317EF0;
     thread.option = 0;
-    D_00350778 = func_0017B6E0(&thread);
-    func_0017B700(D_00350778, NULL);
-    thread.entry = (void (*)())func_002452E0;
+    D_00350778 = CreateThread(&thread);
+    StartThread(D_00350778, NULL);
+    thread.entry = (void (*)())videoDecMain;
     thread.stack = D_003503A0;
     thread.stack_size = 0x4000;
     thread.priority = 0x20;
     thread.gp = D_00317EF0;
     thread.option = 0;
-    D_00350780 = func_0017B6E0(&thread);
-    func_0017B700(D_00350780, D_00350680);
-    if (func_00243A90(D_00350740, arg0) == 0) {
+    D_00350780 = CreateThread(&thread);
+    StartThread(D_00350780, D_00350680);
+    if (strFileOpen(D_00350740, arg0) == 0) {
         do {
             func_00199B50(D_0030F39A, arg0);
-        } while (func_00243A90(D_00350740, arg0) == 0);
+        } while (strFileOpen(D_00350740, arg0) == 0);
     }
-    D_00350734 = func_0017B5C0(2, func_00242190, 0);
+    D_00350734 = AddIntcHandler(2, vblankHandler, 0);
     func_0017C428(2);
-    D_00350730 = func_0017B5F0(2, func_002423A0, 0);
+    D_00350730 = AddDmacHandler(2, handler_endimage, 0);
     func_0017C4F8(2);
 }
 
-void func_00242C20(void) {
-    extern void func_00241AC0();
-    extern void func_002457C0();
-    extern s32 func_0017B730(s32);
-    extern s32 func_0017B6F0(s32);
+void termAll(void) {
+    extern void readBufDelete();
+    extern void voBufDelete();
+    extern s32 TerminateThread(s32);
+    extern s32 DeleteThread(s32);
     extern s32 func_0017C490(s32);
-    extern s32 func_0017B610(s32, s32);
+    extern s32 RemoveDmacHandler(s32, s32);
     extern s32 func_0017C3C0(s32);
-    extern s32 func_0017B5E0(s32, s32);
+    extern s32 RemoveIntcHandler(s32, s32);
     extern s32 D_00350730;
     extern s32 D_00350734;
     extern s32 D_00350778;
     extern s32 D_00350780;
 
-    func_00241AC0(D_00350788);
-    func_002457C0(D_00350600);
-    func_0017B730(D_00350780);
-    func_0017B6F0(D_00350780);
-    func_0017B730(D_00350778);
-    func_0017B6F0(D_00350778);
+    readBufDelete(D_00350788);
+    voBufDelete(D_00350600);
+    TerminateThread(D_00350780);
+    DeleteThread(D_00350780);
+    TerminateThread(D_00350778);
+    DeleteThread(D_00350778);
     func_0017C490(2);
-    func_0017B610(2, D_00350730);
+    RemoveDmacHandler(2, D_00350730);
     func_0017C3C0(2);
-    func_0017B5E0(2, D_00350734);
-    func_00245100(D_00350680);
-    func_00243170(D_00350620);
-    func_00243D90(D_00350740);
+    RemoveIntcHandler(2, D_00350734);
+    videoDecDelete(D_00350680);
+    audioDecDelete(D_00350620);
+    strFileClose(D_00350740);
 }
 
-void func_00242CD0(void) {
+void defMain(void) {
 loop_1:
-    func_0017B790(0x20);
+    RotateThreadReadyQueue(0x20);
     goto loop_1;
 }
 
-void func_00242CF0(s8 *arg0) {
+void ErrMessage(s8 *arg0) {
     func_00199B50(D_0030F3AE, arg0);
 }
 
-void func_00242D00(void) {
-    func_002435A0(D_00350620);
+void proceedAudio(void) {
+    audioDecSendToIOP(D_00350620);
 }
 
 typedef struct Buffer_00242D10 {
@@ -251,8 +251,8 @@ typedef struct Ring_00242D10 {
     s32 capacity;
 } Ring_00242D10;
 
-s32 func_00242D10(s32 arg0, void *arg1, u8 *arg2) {
-    extern s32 func_00245160();
+s32 videoCallback(s32 arg0, void *arg1, u8 *arg2) {
+    extern s32 videoDecPutTs();
     extern char D_0030F5E0[];
     Ring_00242D10 *ring;
     Buffer_00242D10 *buffer;
@@ -273,15 +273,15 @@ s32 func_00242D10(s32 arg0, void *arg1, u8 *arg2) {
     first = buffer->size;
     first = (first < avail) ? first : avail;
     rest = ((Buffer_00242D10 *)arg1)->size - first;
-    func_002450D0(D_00350680, &dst1, &dstSize1, &dst2, &dstSize2);
-    result = func_00242F20((void *)((dst1 & 0x0FFFFFFF) | 0x20000000), dstSize1,
+    videoDecBeginPut(D_00350680, &dst1, &dstSize1, &dst2, &dstSize2);
+    result = copy2area((void *)((dst1 & 0x0FFFFFFF) | 0x20000000), dstSize1,
                            (void *)((dst2 & 0x0FFFFFFF) | 0x20000000), dstSize2,
                            data, first, ring, rest);
-    if (result > 0 && func_00245160(D_00350680, ((Buffer_00242D10 *)arg1)->unk10,
+    if (result > 0 && videoDecPutTs(D_00350680, ((Buffer_00242D10 *)arg1)->unk10,
                                     ((Buffer_00242D10 *)arg1)->unk18, dst1, result) == 0) {
-        func_00242CF0(D_0030F5E0);
+        ErrMessage(D_0030F5E0);
     }
-    func_002450E0(D_00350680, result);
+    videoDecEndPut(D_00350680, result);
     return (result > 0) ? 1 : 0;
 }
 
@@ -298,7 +298,7 @@ typedef struct Ring_00242E40 {
 } Ring_00242E40;
 
 
-s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
+s32 pcmCallback(s32 arg0, void *arg1, u8 *arg2) {
     u8 *data;
     s32 size;
     s32 firstSize;
@@ -321,17 +321,17 @@ s32 func_00242E40(s32 arg0, void *arg1, u8 *arg2) {
     if (size < firstSize) {
         firstSize = size;
     }
-    func_00243390(D_00350620, &dst1, &dstSize1, &dst2, &dstSize2);
-    result = func_00242F20(dst1, dstSize1, dst2, dstSize2,
+    audioDecBeginPut(D_00350620, &dst1, &dstSize1, &dst2, &dstSize2);
+    result = copy2area(dst1, dstSize1, dst2, dstSize2,
                           data, firstSize, arg2, size - firstSize);
-    func_00243450(D_00350620, result);
+    audioDecEndPut(D_00350620, result);
     if (result > 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_00242F20(void *arg0, s32 arg1, void *arg2, s32 arg3,
+s32 copy2area(void *arg0, s32 arg1, void *arg2, s32 arg3,
                   void *arg4, s32 arg5, void *arg6, s32 arg7) {
     s32 gap;
 
@@ -377,7 +377,7 @@ extern char D_0030F600[];
 extern char D_0030F61C[];
 extern u8 D_003507C0[];
 
-s32 func_00243060(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 audioDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     State_00243060 *state = arg0;
     s32 temp_a1;
     s32 temp_a1_2;
@@ -393,14 +393,14 @@ s32 func_00243060(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     state->unk48 = arg3;
     state->unk4C = 0;
     state->unk50 = 0;
-    state->unk44 = func_001828C0(arg3);
+    state->unk44 = sceSifAllocIopHeap(arg3);
     temp_a1 = state->unk44;
     if (temp_a1 < 0) {
         func_00199B50(D_0030F600, temp_a1);
         return 0;
     }
     func_00199B50(D_0030F61C, temp_a1, arg3);
-    state->unk58 = func_001828C0(0x800);
+    state->unk58 = sceSifAllocIopHeap(0x800);
     temp_a1_2 = state->unk58;
     if (temp_a1_2 < 0) {
         func_00199B50(D_0030F600, temp_a1_2);
@@ -408,50 +408,50 @@ s32 func_00243060(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
     func_00199B50(D_0030F61C, temp_a1_2, 0x800);
     func_00198948(D_003507C0, 0, 0x800U);
-    func_00243950(state->unk58, (s32) D_003507C0, 0x800);
-    func_002439D0(0x3FFF);
+    sendToIOP(state->unk58, (s32) D_003507C0, 0x800);
+    changeMasterVolume(0x3FFF);
     return 1;
 }
 
-s32 func_00243170(void *arg0) {
+s32 audioDecDelete(void *arg0) {
     func_00182A28(*(s32 *)((u8 *)arg0 + 0x44));
     func_00182A28(*(s32 *)((u8 *)arg0 + 0x58));
-    func_002439D0(0);
+    changeMasterVolume(0);
     return 1;
 }
 
-void func_002431B0(void *arg0) {
+void audioDecPause(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 func_00190810(s32, ...);
 
     p[0] = 3;
-    func_00243A40(0);
+    changeInputVolume(0);
     p[0x14] = (func_00190810(1, 0x80E0, 0, 2, 0, 0) & 0xFFFFFF) - p[0x11];
     func_00190810(1, 0x80D0, 0, 0, p[0x16], 0x4000, 0x800);
 }
 
-void func_00243230(void *arg0) {
+void audioDecResume(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 func_00190810(s32, s32, s32, s32, s32, s32, s32);
-    func_00243A40(0x7FFF);
+    changeInputVolume(0x7FFF);
     func_00190810(1, 0x80E0, 0, 0x13, p[0x11], (p[0x12] >> 10) << 10, p[0x11] + p[0x14]);
     *(s32 *)arg0 = 2;
 }
 
-void func_00243290(void *arg0) {
+void audioDecStart(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 func_00190810(s32, s32, s32, s32, s32, s32, s32);
-    func_00243A40(0x7FFF);
+    changeInputVolume(0x7FFF);
     func_00190810(1, 0x80E0, 0, 0x13, p[0x11], (p[0x12] >> 10) << 10, p[0x11] + p[0x14]);
     *(s32 *)arg0 = 2;
 }
 
-void func_002432F0(void *arg0) {
+void audioDecReset(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 func_00190810(s32, ...);
 
     p[0] = 3;
-    func_00243A40(0);
+    changeInputVolume(0);
     p[0x14] = (func_00190810(1, 0x80E0, 0, 2, 0, 0) & 0xFFFFFF) - p[0x11];
     func_00190810(1, 0x80D0, 0, 0, p[0x16], 0x4000, 0x800);
     p[0] = 0;
@@ -474,7 +474,7 @@ typedef struct {
     s32 capacity;
 } Buffer_00243390;
 
-void func_00243390(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4) {
+void audioDecBeginPut(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4) {
     s32 available;
     s32 capacity;
     s32 start;
@@ -520,7 +520,7 @@ extern char D_0030F645[];
 extern char D_0030F676[];
 extern char D_0030F7B1[];
 
-void func_00243450(void *arg0, u32 arg1) {
+void audioDecEndPut(void *arg0, u32 arg1) {
     u32 amount;
     State_00243450 *state;
 
@@ -551,7 +551,7 @@ void func_00243450(void *arg0, u32 arg1) {
     state->total += arg1;
 }
 
-s32 func_00243580(void *arg0) {
+s32 audioDecIsPreset(void *arg0) {
     return *(s32 *)((u8 *)arg0 + 0x54) >= *(s32 *)((u8 *)arg0 + 0x48);
 }
 
@@ -570,7 +570,7 @@ typedef struct Stream_002435A0 {
     s32 f54;
 } Stream_002435A0;
 
-s32 func_002435A0(void *arg0) {
+s32 audioDecSendToIOP(void *arg0) {
     s32 sp30;
     s32 sp34;
     s32 sp38;
@@ -595,7 +595,7 @@ s32 func_002435A0(void *arg0) {
         sp3C = 0;
         break;
     case 2:
-        func_00243750(&sp30, &sp38, &sp34, &sp3C, st, (func_00190810(1, 0x8100, 0) & 0xFFFFFF) - st->f44);
+        iopGetArea(&sp30, &sp38, &sp34, &sp3C, st, (func_00190810(1, 0x8100, 0) & 0xFFFFFF) - st->f44);
         break;
     case 3:
         return 0;
@@ -609,7 +609,7 @@ s32 func_002435A0(void *arg0) {
     }
     rest = avail - first;
     if (sp38 + sp3C >= 0x400 && first + rest >= 0x400) {
-        result = func_002437F0(sp30, sp38, sp34, sp3C, pos, first, st->f30, rest);
+        result = sendToIOP2area(sp30, sp38, sp34, sp3C, pos, first, st->f30, rest);
     }
     st->f38 = st->f38 - result;
     st->f54 = st->f54 + result;
@@ -624,7 +624,7 @@ typedef struct Range_00243750 {
     s32 cursor;
 } Range_00243750;
 
-void func_00243750(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 offset) {
+void iopGetArea(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 offset) {
     Range_00243750 *range = arg4;
     s32 length = range->length;
     s32 cursor = range->cursor;
@@ -643,7 +643,7 @@ void func_00243750(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 o
     }
 }
 
-s32 func_002437F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
+s32 sendToIOP2area(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                   s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     s32 temp_s0;
     s32 temp_v0;
@@ -662,24 +662,24 @@ s32 func_002437F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
         }
     }
     if (arg5 >= arg1) {
-        func_00243950(arg0, arg4, arg1);
-        func_00243950(arg2, arg4 + arg1, arg5 - arg1);
-        func_00243950((arg2 + arg5) - arg1, arg6, arg7);
+        sendToIOP(arg0, arg4, arg1);
+        sendToIOP(arg2, arg4 + arg1, arg5 - arg1);
+        sendToIOP((arg2 + arg5) - arg1, arg6, arg7);
     } else {
         temp_s0 = arg1 - arg5;
         if (arg7 >= temp_s0) {
-            func_00243950(arg0, arg4, arg5);
-            func_00243950(arg0 + arg5, arg6, temp_s0);
-            func_00243950(arg2, (arg6 + arg1) - arg5, arg7 - temp_s0);
+            sendToIOP(arg0, arg4, arg5);
+            sendToIOP(arg0 + arg5, arg6, temp_s0);
+            sendToIOP(arg2, (arg6 + arg1) - arg5, arg7 - temp_s0);
         } else {
-            func_00243950(arg0, arg4, arg5);
-            func_00243950(arg0 + arg5, arg6, arg7);
+            sendToIOP(arg0, arg4, arg5);
+            sendToIOP(arg0 + arg5, arg6, arg7);
         }
     }
     return arg5 + arg7;
 }
 
-s32 func_00243950(s32 arg0, s32 arg1, s32 arg2) {
+s32 sendToIOP(s32 arg0, s32 arg1, s32 arg2) {
     s32 request[4];
     s32 id;
 
@@ -690,15 +690,15 @@ s32 func_00243950(s32 arg0, s32 arg1, s32 arg2) {
     request[1] = arg0;
     request[2] = arg2;
     request[3] = 0;
-    func_0017BB60(0);
-    id = func_0017BCA0(request, 1);
+    FlushCache(0);
+    id = sceSifSetDma(request, 1);
     do {
 
-    } while (func_0017BC80(id) >= 0);
+    } while (sceSifDmaStat(id) >= 0);
     return arg2;
 }
 
-void func_002439D0(s32 arg0) {
+void changeMasterVolume(s32 arg0) {
     s32 var_s0;
 
     var_s0 = 0;
@@ -709,7 +709,7 @@ void func_002439D0(s32 arg0) {
     } while (var_s0 < 2);
 }
 
-void func_00243A40(s32 arg0) {
+void changeInputVolume(s32 arg0) {
     func_00190810(1, 0x8010, 0xF80, arg0);
     func_00190810(1, 0x8010, 0x1080, arg0);
 }
@@ -735,7 +735,7 @@ extern char D_0030F839[];
 extern char D_0030F854[];
 extern char D_0030F86F[];
 
-s32 func_00243A90(void *arg0, s32 arg1) {
+s32 strFileOpen(void *arg0, s32 arg1) {
     extern void func_0019B648();
     char path[256];
     char prefix[76];
@@ -780,9 +780,9 @@ s32 func_00243A90(void *arg0, s32 arg1) {
     if (file->disc != 0) {
         do {
         } while (func_00191A58(0) != 2);
-        file->allocation = func_001828C0(0x28010);
-        func_00191F90(0x50, 5, ((file->allocation + 0xF) >> 4) << 4);
-        if (func_00190FF0(&file->handle, path) == 0) {
+        file->allocation = sceSifAllocIopHeap(0x28010);
+        sceCdStInit(0x50, 5, ((file->allocation + 0xF) >> 4) << 4);
+        if (sceCdSearchFile(&file->handle, path) == 0) {
             func_00199B50(D_0030F816, path);
             return 0;
         }
@@ -790,7 +790,7 @@ s32 func_00243A90(void *arg0, s32 arg1) {
         mode[0] = 0;
         mode[1] = 0;
         mode[2] = 0;
-        func_00191FC0(file->handle, mode);
+        sceCdStStart(file->handle, mode);
     } else {
         file->fd = func_0017FA98(path, 1);
         if (file->fd < 0) {
@@ -820,11 +820,11 @@ typedef struct {
 } Obj_00243D90;
 
 
-s32 func_00243D90(void *arg0) {
+s32 strFileClose(void *arg0) {
     Obj_00243D90 *p = (Obj_00243D90 *)arg0;
 
     if (p->unk00 != 0) {
-        func_00192058();
+        sceCdStStop();
         func_00182A28(p->unk2C);
     } else {
         func_0017FD20(p->unk30);
@@ -838,7 +838,7 @@ typedef struct {
 
 extern Float_00243DE0 D_0029B2F8;
 
-s32 func_00243DE0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 strFileRead(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     Float_00243DE0 sp48;
     s32 sp4C;
     s32 result;
@@ -846,19 +846,19 @@ s32 func_00243DE0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (*arg0 != 0) {
         sp48 = D_0029B2F8;
         while (1) {
-            func_0017BB60(0);
-            result = func_00192090(arg2 >> 11, arg1, 1, &sp4C);
+            FlushCache(0);
+            result = sceCdStRead(arg2 >> 11, arg1, 1, &sp4C);
             if (sp4C == 0) {
                 break;
             }
             if (D_0029B2F0 != 0) {
-                func_002431B0(D_00350620);
+                audioDecPause(D_00350620);
             }
-            func_00192058();
-            while (func_00191A58(0) != 2 || func_00191FC0(arg3, (u8 *)&sp48) == 0) {
+            sceCdStStop();
+            while (func_00191A58(0) != 2 || sceCdStStart(arg3, (u8 *)&sp48) == 0) {
             }
             if (D_0029B2F0 != 0) {
-                func_00243230(D_00350620);
+                audioDecResume(D_00350620);
             }
         }
         result <<= 11;
@@ -878,7 +878,7 @@ typedef struct {
 } Sema_00243EE0;
 
 
-s32 func_00243EE0(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+s32 viBufCreate(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     Sema_00243EE0 sema;
 
     *(s32 *)arg0 = arg1;
@@ -889,8 +889,8 @@ s32 func_00243EE0(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     *(s32 *)((u8 *)arg0 + 0x54) = arg5;
     sema.init_count = 1;
     sema.max_count = 1;
-    *(s32 *)((u8 *)arg0 + 0x40) = func_0017B8E0(&sema);
-    func_00243F60(arg0);
+    *(s32 *)((u8 *)arg0 + 0x40) = CreateSema(&sema);
+    viBufReset(arg0);
     *(s64 *)((u8 *)arg0 + 0x48) = 0;
     return 1;
 }
@@ -924,7 +924,7 @@ typedef struct {
 } Obj_00243F60;
 
 
-s32 func_00243F60(void *arg0) {
+s32 viBufReset(void *arg0) {
     Obj_00243F60 *obj = arg0;
     s32 i;
 
@@ -967,14 +967,14 @@ typedef struct Buffer_002440F0 {
     s32 semaphore;
 } Buffer_002440F0;
 
-void func_002440F0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
+void viBufBeginPut(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
     Buffer_002440F0 *buffer = arg0;
     s32 byteOffset;
     s32 start;
     s32 offset;
     s32 length;
 
-    func_0017B920(buffer->semaphore);
+    WaitSema(buffer->semaphore);
     byteOffset = buffer->byteOffset;
     start = (buffer->blockOffset + buffer->reservedBlocks) << 11;
     offset = (start + byteOffset) % buffer->capacity;
@@ -990,7 +990,7 @@ void func_002440F0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
         *arg3 = buffer->base;
         *arg4 = length - (buffer->capacity - offset);
     }
-    func_0017B900(buffer->semaphore);
+    SignalSema(buffer->semaphore);
 }
 
 typedef struct Counter_002441F0 {
@@ -1003,13 +1003,13 @@ typedef struct Counter_002441F0 {
 } Counter_002441F0;
 
 
-void func_002441F0(void *arg0, s32 arg1) {
+void viBufEndPut(void *arg0, s32 arg1) {
     Counter_002441F0 *counter = arg0;
 
-    func_0017B920(counter->semaphore);
+    WaitSema(counter->semaphore);
     counter->count += arg1;
     counter->total += arg1;
-    func_0017B900(counter->semaphore);
+    SignalSema(counter->semaphore);
 }
 
 typedef struct Ring_00244250 {
@@ -1030,7 +1030,7 @@ static inline u64 tag_00244250(u32 address, u32 id) {
     return ((u64)address << 32) | ((u64)id << 28) | 0x80;
 }
 
-s32 func_00244250(void *arg0) {
+s32 viBufAddDMA(void *arg0) {
     s32 chcr;
     s32 patched;
     u32 current;
@@ -1045,9 +1045,9 @@ s32 func_00244250(void *arg0) {
     Ring_00244250 *ring = arg0;
 
     patched = 0;
-    func_0017B920(ring->sema);
+    WaitSema(ring->sema);
     if (ring->active == 0) {
-        func_00242CF0(&D_0030F890);
+        ErrMessage(&D_0030F890);
         return 0;
     }
 
@@ -1098,12 +1098,12 @@ s32 func_00244250(void *arg0) {
         *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
         func_00184428();
     }
-    func_0017B900(ring->sema);
+    SignalSema(ring->sema);
     return 1;
 }
 
-s32 func_00244530(u8 *arg0) {
-    func_0017B920(*(s32 *)(arg0 + 0x40));
+s32 viBufStopDMA(u8 *arg0) {
+    WaitSema(*(s32 *)(arg0 + 0x40));
     *(s32 *)(arg0 + 0x44) = 0;
     func_001843E0();
     *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
@@ -1126,7 +1126,7 @@ s32 func_00244530(u8 *arg0) {
     *(s32 *)(arg0 + 0x34) = *(volatile u32 *)0x1000B000;
     *(s32 *)(arg0 + 0x38) = *(volatile u32 *)0x10002020;
     *(s32 *)(arg0 + 0x3C) = *(volatile u32 *)0x10002010;
-    func_0017B900(*(s32 *)(arg0 + 0x40));
+    SignalSema(*(s32 *)(arg0 + 0x40));
     return 1;
 }
 
@@ -1200,7 +1200,7 @@ static inline void setD4_CHCR(unsigned val)
     func_00184428_b();
 }
 
-int func_00244680(void *p_v)
+int viBufRestartDMA(void *p_v)
 {
     struct DotrSoundStream * p = p_v;
     struct DotrSoundViBuf *f = (struct DotrSoundViBuf *)p;
@@ -1216,7 +1216,7 @@ int func_00244680(void *p_v)
     int index_next;
     int id;
 
-    func_0017B920(f->sema);
+    WaitSema(f->sema);
     if (d4madr_next < f->data) {
         d4qwc_next = (DataAddr(f, 0) - d4madr_next) >> 4;
         d4madr_next += f->n * 2048;
@@ -1258,7 +1258,7 @@ int func_00244680(void *p_v)
     }
     DOTR_SOUND_REG(0x10002010) = f->ipuctrl;
     f->isActive = 1;
-    func_0017B900(f->sema);
+    SignalSema(f->sema);
     return 1;
 }
 #undef DOTR_SOUND_REG
@@ -1268,7 +1268,7 @@ int func_00244680(void *p_v)
 #undef TagAddr
 #undef IsInRegion
 
-s32 func_00244A40(void *arg0) {
+s32 viBufDelete(void *arg0) {
     func_001843E0();
     *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
     *(volatile u32 *)0x1000B400 = 5;
@@ -1277,7 +1277,7 @@ s32 func_00244A40(void *arg0) {
     *(volatile u32 *)0x1000B420 = 0;
     *(volatile u32 *)0x1000B410 = 0;
     *(volatile u32 *)0x1000B430 = 0;
-    func_0017B8F0(*(s32 *)((u8 *)arg0 + 0x40));
+    DeleteSema(*(s32 *)((u8 *)arg0 + 0x40));
     return 1;
 }
 
@@ -1290,13 +1290,13 @@ typedef struct Data_00244AD0 {
 } Data_00244AD0;
 
 
-s32 func_00244AD0(void *arg0) {
+s32 viBufCount(void *arg0) {
     Data_00244AD0 *data = arg0;
     s32 temp_s0;
 
-    func_0017B920(data->field_40);
+    WaitSema(data->field_40);
     temp_s0 = data->field_14 + (data->field_10 << 11);
-    func_0017B900(data->field_40);
+    SignalSema(data->field_40);
     return temp_s0;
 }
 
@@ -1308,12 +1308,12 @@ typedef struct State_00244B20 {
     s32 field_40;
 } State_00244B20;
 
-void func_00244B20(void *arg0) {
+void viBufFlush(void *arg0) {
     State_00244B20 *state = arg0;
 
-    func_0017B920(state->field_40);
+    WaitSema(state->field_40);
     state->field_14 = ((state->field_14 + 0x7FF) >> 11) << 11;
-    func_0017B900(state->field_40);
+    SignalSema(state->field_40);
 }
 
 typedef struct Entry_00244B70 {
@@ -1340,7 +1340,7 @@ static inline s32 clamp_00244B70(s32 count) {
     return count;
 }
 
-s32 func_00244B70(void *arg0, void *arg1) {
+s32 viBufModifyPts(void *arg0, void *arg1) {
     Queue_00244B70 *queue = arg0;
     Entry_00244B70 *request = arg1;
     s32 index;
@@ -1410,14 +1410,14 @@ typedef struct Queue_00244CB0 {
 } Queue_00244CB0;
 
 
-s32 func_00244CB0(void *arg0, void *arg1) {
+s32 viBufPutTs(void *arg0, void *arg1) {
     Record_00244CB0 *record = arg1;
     Queue_00244CB0 *queue = arg0;
     s32 result = 0;
 
-    func_0017B920(queue->semaphore);
+    WaitSema(queue->semaphore);
     if (queue->count < queue->capacity) {
-        func_00244B70(queue, record);
+        viBufModifyPts(queue, record);
         if (record->value0 >= 0 || record->value8 >= 0) {
             queue->records[queue->tail].value0 = record->value0;
             queue->records[queue->tail].value8 = record->value8;
@@ -1428,51 +1428,51 @@ s32 func_00244CB0(void *arg0, void *arg1) {
         }
         result = 1;
     }
-    func_0017B900(queue->semaphore);
+    SignalSema(queue->semaphore);
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", func_00244DE0);
+INCLUDE_ASM("asm/nonmatchings/main_069", viBufGetTs);
 
-s32 func_00244FB0(void *arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    func_0018EB08(arg0, arg1, arg2);
-    func_0018EF20(arg0, 0, func_00245520, 0);
-    func_0018EF20(arg0, 1, func_00245550, 0);
-    func_0018EF20(arg0, 2, func_00245580, 0);
-    func_0018EF20(arg0, 3, func_002455B0, 0);
-    func_0018EF20(arg0, 5, (s32 (*)()) func_002455E0, 0);
-    func_002450F0(arg0);
-    func_00243EE0((u8 *)arg0 + 0x48, arg3, arg4, arg5, arg6, arg7);
+s32 videoDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+    sceMpegCreate(arg0, arg1, arg2);
+    sceMpegAddCallback(arg0, 0, mpegError, 0);
+    sceMpegAddCallback(arg0, 1, mpegNodata, 0);
+    sceMpegAddCallback(arg0, 2, mpegStopDMA, 0);
+    sceMpegAddCallback(arg0, 3, mpegRestartDMA, 0);
+    sceMpegAddCallback(arg0, 5, (s32 (*)()) mpegTS, 0);
+    videoDecReset(arg0);
+    viBufCreate((u8 *)arg0 + 0x48, arg3, arg4, arg5, arg6, arg7);
     return 1;
 }
 
-s32 func_002450B0(void) {
-    extern s32 func_0018E200();
+s32 videoDecSetStream(void) {
+    extern s32 sceMpegAddStrCallback();
 
-    func_0018E200();
+    sceMpegAddStrCallback();
     return 1;
 }
 
-void func_002450D0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
-    func_002440F0((u8 *)arg0 + 0x48, arg1, arg2, arg3, arg4);
+void videoDecBeginPut(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
+    viBufBeginPut((u8 *)arg0 + 0x48, arg1, arg2, arg3, arg4);
 }
 
-void func_002450E0(void *arg0, s32 arg1) {
-    func_002441F0((u8 *)arg0 + 0x48, arg1);
+void videoDecEndPut(void *arg0, s32 arg1) {
+    viBufEndPut((u8 *)arg0 + 0x48, arg1);
 }
 
-void func_002450F0(void *arg0) {
+void videoDecReset(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0xA8) = 0;
 }
 
-s32 func_00245100(u8 *arg0) {
-    s32 func_0018ED10(void *);
+s32 videoDecDelete(u8 *arg0) {
+    s32 sceMpegDelete(void *);
 
-    func_00244A40(arg0 + 0x48);
-    func_0018ED10(arg0);
+    viBufDelete(arg0 + 0x48);
+    sceMpegDelete(arg0);
     return 1;
 }
 
-void func_00245140(void *arg0) {
+void videoDecAbort(void *arg0) {
     *(s32 *)((u8 *)arg0 + 0xA8) = 1;
 }
