@@ -134,7 +134,6 @@ s32 SearchUnitByRange(s32, s32, s32, s32, s32, s32);
 
 
 
-s32 TaLogic_GetMaxApUnit(u16 *);
 
 extern u8 D_00325E80[];
 extern u8 D_00325F50[];

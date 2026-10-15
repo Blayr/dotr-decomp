@@ -252,7 +252,49 @@ s32 TaLogic_IsAtkNowToGoal(void *arg0, u8 arg1) {
                           other & 0xFF, other >> 8, &target) == 1) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", TaLogic_GetMaxApUnit);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+/* Our revision's TaLogic_GetMaxApUnit was rewritten by hand after the build: it keeps the
+   list length in $fp and the unit's low byte in $s7 (neither is saved), starts at entry 0 and
+   skips empty entries. A compiler can't produce that, so this is C laid out word for word like
+   the shipped code, plus 12 patched words (config/postpatch.txt). The volatile read only holds
+   the loop's last block at the shipped length. */
+#pragma alignlabel off
+
+int TaLogic_GetMaxApUnit(unsigned short *words)
+{
+    int i;
+    int best;
+    int result;
+    unsigned short *p;
+    int v;
+    int r;
+    int n;
+    best = -1;
+    result = best;
+    i = 1;
+    n = func_0027C670(words);
+    if (n > 1) {
+        p = words + 1;
+        do {
+            if (*p > 255) {
+                v = func_001E1090(*p >> 8, *p & 0xff);
+                if (func_001E2100(*p >> 8, *p & 0xff, 4)) {
+                    r = func_002509E0(*p >> 8, *p & 0xff, v & 0xff, v >> 8);
+                    if (best < r) {
+                        result = *p;
+                        best = r;
+                    }
+                }
+            }
+            (void)*(volatile unsigned short *)p;
+            p++;
+            i++;
+        } while (i < n);
+    }
+    return result;
+}
+#pragma alignlabel reset
 
 s32 TaLogic_GetMaxApUnit2(void *arg0, s32 arg1) {
     s32 index;

@@ -161,3 +161,15 @@
 0x00276304 0x328300FF 0x00000000  # func_00276290: andi $v1, $s4, 0xFF patched to nop
 0x001C7228 0x72002628 0x0805D17C  # func_001C6170: paddub $a0, $s0, $zero patched to j func_1745F0
 0x001C722C 0x0C080E90 0x00000000  # func_001C6170: jal func_203A40 patched to nop
+0x0027B674 0x70809E28 0x7080A628  # TaLogic_GetMaxApUnit: paddub $s3, $a0, $zero patched to paddub $s4, $a0, $zero
+0x0027B678 0x24100001 0x24100000  # TaLogic_GetMaxApUnit: addiu $s0, $zero, 0x1 patched to addiu $s0, $zero, 0x0
+0x0027B684 0x7040A628 0x0040F025  # TaLogic_GetMaxApUnit: paddub $s4, $v0, $zero patched to move $fp, $v0
+0x0027B688 0x2A810002 0x28410001  # TaLogic_GetMaxApUnit: slti $at, $s4, 0x2 patched to slti $at, $v0, 0x1
+0x0027B694 0x26730002 0x26930000  # TaLogic_GetMaxApUnit: addiu $s3, $s3, 0x2 patched to addiu $s3, $s4, 0x0
+0x0027B69C 0x28410100 0x305700FF  # TaLogic_GetMaxApUnit: slti $at, $v0, 0x100 patched to andi $s7, $v0, 0xFF
+0x0027B6A0 0x14200017 0x12E00017  # TaLogic_GetMaxApUnit: bnez $at, . + 4 + (0x17 << 2) patched to beqz $s7, . + 4 + (0x17 << 2)
+0x0027B6CC 0x1040000C 0x5040000D  # TaLogic_GetMaxApUnit: beqz $v0, . + 4 + (0xC << 2) patched to beql $v0, $zero, . + 4 + (0xD << 2)
+0x0027B6D0 0x00000000 0x26730002  # TaLogic_GetMaxApUnit: nop patched to addiu $s3, $s3, 0x2
+0x0027B700 0x96620000 0x26730002  # TaLogic_GetMaxApUnit: lhu $v0, 0x0($s3) patched to addiu $s3, $s3, 0x2
+0x0027B708 0x0214102A 0x021E102A  # TaLogic_GetMaxApUnit: slt $v0, $s0, $s4 patched to slt $v0, $s0, $fp
+0x0027B710 0x26730002 0x00000000  # TaLogic_GetMaxApUnit: addiu $s3, $s3, 0x2 patched to nop
