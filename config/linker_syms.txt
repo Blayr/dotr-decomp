@@ -270,3 +270,17 @@ func_00250740_24f830 = 0x00250740;
 /* <name>_b: the dotr-decomp CC0 bundle's view of one of our symbols, with its own C type
    (chatC/imp/conv.py); same address as <name>. */
 func_0016B0F0_b = 0x0016B0F0;
+/* <name>_b: the dotr-decomp CC0 bundle's view of one of our symbols, with its own C type
+   (chatC/imp/conv.py); same address as <name>. */
+SzData_GetRank_b = 0x00215D30;
+SzDuel_DrawWindow_FontDigit_Pipe_b = 0x001B6EA0;
+SzDuel_DrawWindow_Font_Pipe_b = 0x001B6F70;
+SzDuel_GetUnitSpellRest_b = 0x001E1640;
+SzDuel_SetField_b = 0x001E2220;
+SzMsg_DrawRatioX_Pipe_b = 0x001FE660;
+SzMsg_DrawRect_Pipe_b = 0x001FDFE0;
+SzMsg_GetInfo_b = 0x001FEAB0;
+Ta_GetUnitEffect_b = 0x00250740;
+Taku_Obj_Set_b = 0x00217BD0;
+Taku_Window_Set_window = 0x002195E0;
+TaLogic_GetInputQueFromMinimumTask_b = 0x00276290;

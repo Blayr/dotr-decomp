@@ -319,7 +319,6 @@ extern u8 D_003181EC;
 extern s8 D_00299E10;
 extern s16 D_00299ED4;
 
-s32 Ta_Do_MoveEfc(s32, s32, s32, s32, s32);
 
 
 
