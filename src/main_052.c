@@ -771,7 +771,10 @@ s32 SzView_SetLight_Pipe(s32 arg0, s32 arg1, s32 arg2) {
                              *(f32 *)(var_s1 + 0x24),
                              *(f32 *)(var_s1 + 0x28));
     }
-    return RhVu1Mac_SetPointLightToVu1(arg0, NULL, NULL, 0.0f, 0.0f, 0.0f);
+    {
+        f32 zero = 0.0f;
+        return RhVu1Mac_SetPointLightToVu1(arg0, NULL, NULL, zero, zero, zero);
+    }
 }
 
 typedef struct Vec4_001F8F80 {
