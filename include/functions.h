@@ -2854,6 +2854,7 @@ s32 lRhModel_GetInterpolateMotionItem(void *src, f32 time, s32 flags, f32 *posit
 s32 lRhModel_GetMultiMotionItem(void *src0, void *src1, s32 flags, f32 time0, f32 weight0, f32 time1, f32 weight1, void *pos, void *rot, void *scl, f32 multiplier);
 s32 lRhModel_GetPulseMotionItem(void *src, u32 time, s32 flags, f32 *position, s32 *rotation, f32 *scale, f32 factor);
 void lRhModel_SetMaterialIntensity(u8 *arg0, u8 *arg1, u8 *arg2, u8 *arg3, u8 *arg4);
+s32 lRhModel_SetupFloatMotion(u8 *model, u8 *motion, f32 time);
 s32 lRhModel_SetupFloatMotionRecursive(void *arg0, s32 depth, void *arg2);
 s32 lRhModel_SetupMultiMotionRecursive(void *arg0, s32 depth, void *arg2);
 s32 lRhModel_SetupNoMotion(void *arg0);
@@ -5681,6 +5682,7 @@ s32 func_0020FF80(void *arg0);
 void func_00210010(void *arg0, void *arg1, void *arg2);
 s32 func_00210310(void *arg0, s32 depth, void *arg2);
 s32 func_002106E0(void *src0, void *src1, s32 flags, f32 time0, f32 weight0, f32 time1, f32 weight1, void *pos, void *rot, void *scl, f32 multiplier);
+s32 func_002108C0(u8 *model, u8 *motion, f32 time);
 s32 func_00210940(void *arg0, s32 depth, void *arg2);
 s32 func_00210CF0(void *src, f32 time, s32 flags, f32 *position, void *rotation, void *scale, f32 multiplier);
 s32 func_002114B0(u8 *model, u8 *motion, f32 time);

@@ -44,7 +44,6 @@ typedef struct {
 } Data_0020FAF0;
 
 void lRhModel_SetupMultiMotion(void *, void *, void *, f32, f32, f32, f32);
-void lRhModel_SetupFloatMotion(void *, void *, f32);
 
 void lRhModel_DrawCommonPart(void *arg0) {
     Args_0020FAF0 *arg = arg0;
@@ -471,7 +470,34 @@ s32 lRhModel_GetMultiMotionItem(void *src0, void *src1, s32 flags, f32 time0, f3
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModel_SetupFloatMotion);
+/* lRhModel_SetupPulseMotion's twin: fill the scratchpad header for a float-motion walk, then run
+   lRhModel_SetupFloatMotionRecursive with the stack on the scratchpad (0x70004000). */
+
+s32 lRhModel_SetupFloatMotion(u8 *model, u8 *motion, f32 time) {
+    u8 *spr = (u8 *)0x70000000;
+    register void **saved;
+
+    model += *(s32 *)(model + 0x10);
+    *(u8 **)(spr + 0x90) = model;
+    *(s32 *)(spr + 0x94) = **(s32 **)(motion + 8);
+    *(f32 *)(spr + 0x98) = time;
+    *(s32 *)(spr + 0x9C) = *(u16 *)(motion + 4);
+    *(u16 *)(spr + 0xE0) = *(u16 *)(*(u8 **)(motion + 8) + 8);
+    saved = &D_0032A720;
+    asm {
+        sw sp, 0x0(saved)
+        la at, D_70004000
+        addiu sp, at, 0x0
+    }
+    lRhModel_SetupFloatMotionRecursive(model, 0, D_00295070);
+    {
+        register void **back = &D_0032A720;
+        asm {
+            lw sp, 0x0(back)
+        }
+    }
+    return 1;
+}
 
 typedef f32 Vec4_00210940[4] __attribute__((aligned(16)));
 
