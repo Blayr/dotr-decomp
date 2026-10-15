@@ -47,7 +47,6 @@ void func_0020FF80(void *);
 void func_00210260(void *, void *, void *, f32, f32, f32, f32);
 void func_002108C0(void *, void *, f32);
 void func_002114B0(void *, void *, f32);
-void func_00212170(void *, void *, void *, s32, s32);
 
 void func_0020FAF0(void *arg0) {
     Args_0020FAF0 *arg = arg0;
@@ -1136,7 +1135,80 @@ void func_00211F70(void *arg0, void *arg1, void *arg2, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_00212170);
+typedef struct Header_00212170 {
+    u8 padding[0x58];
+    s32 offset;
+} Header_00212170;
+
+typedef struct State_00212170 {
+    u8 padding[0x4C];
+    s32 enabled;
+} State_00212170;
+
+static inline void clear_00212170(u32 *target) {
+    target[0] = 0x10000000;
+    target[1] = 0;
+    target[2] = 0;
+    target[3] = 0;
+}
+
+#pragma conditional_move off
+
+s32 func_00212170(void *arg0, void *arg1, void *arg2, s32 arg3, s32 mask) {
+    s32 ret;
+    u8 *base;
+    s32 index;
+    s32 *list;
+    s32 *table;
+    s32 value;
+    s32 offset;
+    u32 kind;
+    u32 *target;
+    State_00212170 *state;
+
+    offset = ((Header_00212170 *)arg0)->offset;
+    state = (State_00212170 *)((u8 *)arg0 + 0x10);
+    if (offset != 0) {
+        if (state->enabled == 0) {
+            return ret;
+        }
+        base = (u8 *)arg0 + offset;
+        index = 0;
+        if (arg3 != 0) {
+            mask = *(u32 *)(base + 0x80);
+        }
+        table = (s32 *)base;
+        do {
+            if (!(mask & (1U << index))) {
+                offset = *table;
+                list = (s32 *)(base + offset);
+                if (offset != 0) {
+                    for (; (value = *list) != 0; list++) {
+                        kind = value & 0xF0000000;
+                        switch (kind) {
+                        case 0x20000000:
+                            target = (u32 *)((u8 *)arg1 + (value & 0x0FFFFFFF));
+                            break;
+                        case 0x40000000:
+                            if (arg2 == 0) {
+                                continue;
+                            }
+                            target = (u32 *)((u8 *)arg2 + (value & 0x0FFFFFFF));
+                            break;
+                        default:
+                            continue;
+                        }
+                        clear_00212170(target);
+                    }
+                }
+            }
+            index++;
+            table++;
+        } while (index < 32);
+    }
+    return ret;
+}
+#pragma conditional_move reset
 
 typedef struct Flags_00212250 {
     u8 reserved0 : 7;
