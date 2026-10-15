@@ -1257,4 +1257,99 @@ static s32 func_01E03FD0_b152(Obj_b152_01E03FD0 *obj, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b152", func_01E04160_b152);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b152", func_01E04530_b152);
+/* shape b152:01E04530, 153 insns: the scene's draw pass: hands the scene two stack packets (a 5-reg sprite header and a
+   12-reg strip header), opens a draw context, takes the camera's light, projects the camera point (raised or lowered
+   30 by the scene flag) for the scene depth, then draws every live effect whose handler is the module's 0x1E03400 and
+   closes the context at that depth */
+
+typedef struct {
+    s16 n;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b152_01E04530;
+
+typedef struct {
+    Hdr_b152_01E04530 h;
+    u8 body[0x30];
+} Pk1_b152_01E04530;
+
+typedef struct {
+    Hdr_b152_01E04530 h;
+    u8 body[0x10];
+} Pk2_b152_01E04530;
+
+typedef struct {
+    u8 pad0[0x44];
+    s32 fn;
+    u8 pad48[0x10];
+    s16 live;
+    u8 pad5A[0x16];
+} Ent_b152_01E04530;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Ent_b152_01E04530 ent[130];
+    u8 pad3B80[0x6484];
+    s32 ctx;
+    Pk1_b152_01E04530 *pk1;
+    Pk2_b152_01E04530 *pk2;
+    u8 padA010[8];
+    f32 depth;
+    u8 padA01C[0x92];
+    s16 flag;
+} Scene_b152_01E04530;
+
+static void func_01E04530_b152(Scene_b152_01E04530 *g) {
+    extern void b152_01E03400(Scene_b152_01E04530 *, Ent_b152_01E04530 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern void func_001F5F90(s32, void *);
+    extern void func_00205440(void *, void *, void *, f32 *);
+    extern void func_00207FD0(s32, s32, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f v;
+    struct {
+        u64 tag;
+        Pk1_b152_01E04530 pk;
+        u8 o98[8];
+    } b1;
+    u8 oA0[0x10];
+    Pk2_b152_01E04530 pk2;
+    u8 out[0x70];
+    s32 i;
+    s32 ot;
+
+    g->pk1 = &b1.pk;
+    g->pk2 = &pk2;
+    g->ctx = func_00207F60();
+    g->pk1->h.count = 0x26;
+    g->pk1->h.n = 5;
+    g->pk1->h.regs = 0x42421;
+    g->pk1->h.pad = 0;
+    g->pk2->h.count = 0x34;
+    g->pk2->h.n = 0xC;
+    g->pk2->h.regs = 0x21421421 | ((s64)0x4214 << 32);
+    g->pk2->h.pad = 0;
+    func_00208460();
+    func_002086D0(g->pk1, 0x48 | ((s64)0x80 << 32));
+    func_001F7060(func_001F53A0(), 0, b1.o98, oA0);
+    func_002086D0(g->pk2, 0x48 | ((s64)0x80 << 32));
+    func_001F5F90(func_001F53A0(), &v);
+    if (g->flag != 0) {
+        v.z += 30.0f;
+    } else {
+        v.z -= 30.0f;
+    }
+    func_00205440(&v, NULL, out, &g->depth);
+    func_00208460();
+    for (i = 0; i < 130; i++) {
+        if (g->ent[i].live != 0 && g->ent[i].fn == (s32)b152_01E03400) {
+            b152_01E03400(g, &g->ent[i]);
+        }
+    }
+    ot = (s32)func_00207500();
+    func_00207FD0(g->ctx, ot, func_001A23B0(g->depth));
+}

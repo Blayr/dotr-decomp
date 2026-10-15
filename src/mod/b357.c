@@ -1223,9 +1223,155 @@ static s32 func_01E04190_b357(s32 arg0, Glow_b207_01E034E0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E04240_b357);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E046D0_b357);
+/* shape b357:01E046D0, 143 insns: a marker on a scene point (16-byte points at +0x1EC0): size 80, frame 0..7 cycling,
+   alpha 0x80, flickering yellow / blue; it ends once the camera is within 7 of it in depth or after 211 ticks;
+   its turn goes 10 a tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E04910_b357);
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 k;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b357_01E046D0;
+
+typedef struct {
+    u8 pad0[0x1EC0];
+    Vec4f pt[1];
+} Scene_b357_01E046D0;
+
+static s32 func_01E046D0_b357(Scene_b357_01E046D0 *g, Fx_b357_01E046D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s16 func_001A22C0(f32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_001A6C60(f32);
+    Vec4f cam;
+    f32 d;
+
+    if (o->mode == 1) {
+        o->size = 80;
+        o->frame = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h6 = 5;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 1) {
+        o->col[3] = 0x80;
+    } else if (o->t % 2 == 1) {
+        o->col[3] = 0x80;
+    } else {
+        o->col[3] = 0x80;
+    }
+    o->x = func_001A22C0(g->pt[o->k].x);
+    o->y = func_001A22C0(g->pt[o->k].y);
+    o->z = func_001A22C0(g->pt[o->k].z);
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0xC0);
+    }
+    func_001F5F90(func_001F5380(), &cam);
+    d = cam.z - g->pt[o->k].z;
+    if (func_001A6C60(d * d) < 7.0f) {
+        o->mode = 0;
+    }
+    if (o->frame < 7) {
+        o->frame++;
+    } else {
+        o->frame = 0;
+    }
+    o->t++;
+    if (o->t > 0xD2) {
+        o->mode = 0;
+    }
+    o->ang += 10;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    return 0;
+}
+
+/* shape b357:01E04910, 143 insns: b357:01E046D0's scene-point marker, size 120, alpha 0x20 flickering with 0x10 */
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 k;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b357_01E04910;
+
+typedef struct {
+    u8 pad0[0x1EC0];
+    Vec4f pt[1];
+} Scene_b357_01E04910;
+
+static s32 func_01E04910_b357(Scene_b357_01E04910 *g, Fx_b357_01E04910 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s16 func_001A22C0(f32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_001A6C60(f32);
+    Vec4f cam;
+    f32 d;
+
+    if (o->mode == 1) {
+        o->size = 120;
+        o->frame = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h6 = 5;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 1) {
+        o->col[3] = 0x20;
+    } else if (o->t % 2 == 1) {
+        o->col[3] = 0x20;
+    } else {
+        o->col[3] = 0x10;
+    }
+    o->x = func_001A22C0(g->pt[o->k].x);
+    o->y = func_001A22C0(g->pt[o->k].y);
+    o->z = func_001A22C0(g->pt[o->k].z);
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0xC0);
+    }
+    func_001F5F90(func_001F5380(), &cam);
+    d = cam.z - g->pt[o->k].z;
+    if (func_001A6C60(d * d) < 7.0f) {
+        o->mode = 0;
+    }
+    if (o->frame < 7) {
+        o->frame++;
+    } else {
+        o->frame = 0;
+    }
+    o->t++;
+    if (o->t > 0xD2) {
+        o->mode = 0;
+    }
+    o->ang += 10;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b357:01E04B50, 114 insns: reads the camera (func_001F6160) and keeps whether its turn / 180 is non-zero; on
    start 0x38 = 5, variant 0, random 0x3A, 0x8 = 2, 0x6 = 0, colour (8, 8, 0x40); alpha 0x80 on the first tick, then

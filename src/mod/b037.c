@@ -954,7 +954,73 @@ static s32 func_01E03260_b037(Ring_b037_01E03260 *o, s32 kind, f32 r1, f32 r2, f
 
 INCLUDE_ASM("asm/nonmatchings/mod/b037", func_01E03420_b037);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b037", func_01E03BD0_b037);
+/* shape b037:01E03BD0, 174 insns: projects four rings (radii r0..r1 in thirds) of 128 points each (step 2pi/128) at height h, in the x/y plane or (when func_00104520 says the model lacks flag 0x1D) the x/z plane, storing the screen x/y of each into the object's point table */
+
+typedef struct {
+    s16 x, y;
+} Sxy_b037_01E03BD0;
+
+typedef struct {
+    s32 model;
+    u8 pad4[0xC];
+    Sxy_b037_01E03BD0 pts[4][128];
+} Obj_b037_01E03BD0;
+
+static s32 func_01E03BD0_b037(Obj_b037_01E03BD0 *o, u8 *arg1, f32 r0, f32 r1, f32 h) {
+    extern s32 func_00104520(s32, s32);
+    extern f32 func_0020B620(f32);
+    extern f32 func_0020B730(f32);
+    extern s32 func_00205440(void *, void *, void *, void *);
+    f32 c[4];
+    f32 q[4];
+    f32 r[4];
+    s16 xy[4] __attribute__((aligned(8)));
+    s32 i;
+    s32 j;
+    f32 t;
+    f32 d;
+
+    if (func_00104520(o->model, 0x1D) != 0) {
+        d = (r1 - r0) / 3.0f;
+        c[2] = h;
+        for (i = 0; i < 4; i++) {
+            r[i] = r0 + d * i;
+        }
+        for (j = 0; j < 128; j++) {
+            t = 0.049087387f * j;
+            c[0] = func_0020B620(t);
+            c[1] = func_0020B730(t);
+            for (i = 0; i < 4; i++) {
+                q[0] = c[0] * r[i];
+                q[1] = c[1] * r[i];
+                q[2] = c[2];
+                func_00205440(q, arg1 + 0x30, xy, &c[3]);
+                o->pts[i][j].x = xy[0];
+                o->pts[i][j].y = xy[1];
+            }
+        }
+    } else {
+        d = (r1 - r0) / 3.0f;
+        c[1] = h;
+        for (i = 0; i < 4; i++) {
+            r[i] = r0 + d * i;
+        }
+        for (j = 0; j < 128; j++) {
+            t = 0.049087387f * j;
+            c[0] = func_0020B620(t);
+            c[2] = func_0020B730(t);
+            for (i = 0; i < 4; i++) {
+                q[0] = c[0] * r[i];
+                q[2] = c[2] * r[i];
+                q[1] = c[1];
+                func_00205440(q, arg1 + 0x30, xy, &c[3]);
+                o->pts[i][j].x = xy[0];
+                o->pts[i][j].y = xy[1];
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b037", func_01E03E90_b037);
 

@@ -395,7 +395,97 @@ INCLUDE_ASM("asm/nonmatchings/mod/b503", func_01E01AB0_b503);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b503", func_01E01E00_b503);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b503", func_01E02150_b503);
+/* shape b503:01E02150, 185 insns: b116:01E02370's kind of glow, red (0x60/0x20/0x20) of size 12..23: alpha up by 0x40 (to 0xC0) for
+   40..64 ticks while the scene count 0x32B6 is under 280, then down by 7 (by 9 once the count passes 280); the size
+   grows by 2 to 60 and by 2 more every other tick, the frame steps to 5, h30 sweeps by hE and the angle turns with
+   hE's parity */
+
+typedef struct {
+    u8 pad0[0x32B6];
+    s16 count;
+} Game_b503_01E02150;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b503_01E02150;
+
+static s32 func_01E02150_b503(Game_b503_01E02150 *g, Glow_b503_01E02150 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 12 + 12;
+        o->kind = 0;
+        func_001076F0(o->col, 0x60, 0x20, 0x20);
+        o->hA = o->h30;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 25 + 40;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (g->count < 280) {
+            if (o->col[3] < 0x81) {
+                o->col[3] += 0x40;
+            }
+        }
+    } else if (g->count < 280) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 280) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 60) {
+            o->f38 += 2;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    o->h30 += o->hE;
+    if (o->tick % 2 == 1) {
+        o->f38 += 2;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    if (o->hE % 2 == 1) {
+        o->ang++;
+    } else {
+        o->ang--;
+    }
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b503", func_01E02440_b503);
 

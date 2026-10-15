@@ -666,7 +666,103 @@ static s32 func_01E01F30_b465(Game_b465_01E01F30 *g, Fade_b465_01E01F30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b465", func_01E02040_b465);
+/* shape b465:01E02040, 188 insns: b746:01E042C0's window, white, in the scene packet at ctx+0xB228, zoomed by f8/10
+   and fA/10, drawn once from alpha 0; alpha up by 9 to 0x80 for 70 ticks, then down by 15 after tick 40; it ends
+   once the scene count 0xB2B8 passes 110 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b465_01E02040;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b465_01E02040 p;
+} Tv_b465_01E02040;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b465_01E02040 v[2];
+} Tex_b465_01E02040;
+
+typedef struct {
+    u8 pad[0xB228];
+    Tex_b465_01E02040 *pk;
+    u8 padB22C[0x8C];
+    s16 count;
+} Game_b465_01E02040;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b465_01E02040;
+
+static s32 func_01E02040_b465(Game_b465_01E02040 *g, Fx_b465_01E02040 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F5F90(s32, f32 *);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick < 70) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->tick > 40) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 15;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->count > 110) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b465", func_01E02330_b465);
 

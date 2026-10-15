@@ -433,7 +433,94 @@ INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E012A0_c063);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E01690_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02340_c063);
+/* shape c063:01E02340, 190 insns: c061:01E02660's mote, grey 0x80 dimming to 0x30 at tick 33, size 480, frame 0..7,
+   angles 0..359, 0x50 50..399, drift -20..19 unscaled; while the scene count (ctx+0x6C3A) is under 500 alpha goes up
+   by 0x80 for 53 ticks then down by 9, after that down by 9; rises 6 a tick with its z pinned to the scene's 0x5A98
+   plus its drift */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 side;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    f32 z;
+    u8 pad1C[0x14];
+    f32 vel[3];
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 life;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_c063_01E02340;
+
+typedef struct {
+    u8 pad0[0x5A98];
+    f32 z;
+    u8 pad5A9C[0x6C3A - 0x5A9C];
+    s16 count;
+} Ctx_c063_01E02340;
+
+static s32 func_01E02340_c063(Ctx_c063_01E02340 *g, Fx_c063_01E02340 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 480.0f;
+        o->kind = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->side = 2;
+        } else {
+            o->side = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 350 + 50;
+        o->life = func_0019A5C8() % 350 + 100;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->vel[0] = func_0019A5C8() % 40 - 20;
+        o->vel[1] = func_0019A5C8() % 40 - 20;
+        o->vel[2] = func_0019A5C8() % 40 - 20;
+        o->mode = 2;
+    }
+    if (o->tick == 33) {
+        func_001076F0(o->col, 0x30, 0x30, 0x30);
+    }
+    if (g->count < 500) {
+        if (o->tick < 53) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x80;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->y += 6.0f;
+    }
+    o->z = g->z + o->vel[2];
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E02640_c063);
 
@@ -932,7 +1019,78 @@ static s32 func_01E03DB0_c063(Scene_c063_01E03DB0 *g, Obj_c063_01E03DB0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E03F10_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E04250_c063);
+/* shape c063:01E04250, 175 insns: b588:01E01300 family grey (0x40) flake 400 x 1600, frame cycling 0..7 from 0..2, held 10 ticks, sinking 1.5 a tick and spinning only on y */
+
+typedef struct {
+    s16 spin[3];
+    s16 hold;
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_c063_01E04250;
+
+static s32 func_01E04250_c063(s32 arg0, Fx_c063_01E04250 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 400;
+        o->h = o->w * 4;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->f5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+        o->hold = 10;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind < 7) {
+        o->kind++;
+    } else {
+        o->kind = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1];
+        o->pos[2] += o->vel[2];
+        o->pos[1] -= 1.5f;
+    }
+    o->rot[1] += o->spin[1];
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 

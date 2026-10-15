@@ -1257,7 +1257,102 @@ static void func_01E03030_b192(Ctx_b192_01E03030 *c, Fan_b192_01E03030 *o, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E03310_b192);
+/* shape b192:01E03310, 188 insns: draws a ribbon between two 10-point trails (g+0x34C0 and g+0x3560) for the effect's
+   first h32 points: one quad per segment, the second row pulled in by half the first segment's height and depth
+   (each widened by a fiftieth / twentieth), its colour fading by alpha / h32 along the ribbon; packets go far after a
+   packet tweak into the current order table */
+
+typedef struct {
+    u8 pad0[0x34C0];
+    Vec4f a[10];
+    Vec4f b[10];
+} Game_b192_01E03310;
+
+typedef struct {
+    u8 c[4];
+} Rgba_b192_01E03310;
+
+typedef struct {
+    u64 tag;
+    u8 pk[0x90];
+} Buf_b192_01E03310;
+
+typedef struct {
+    u8 pad0[0x28];
+    Rgba_b192_01E03310 col;
+    u8 pad2C[6];
+    s16 n;
+} Fx_b192_01E03310;
+
+static void func_01E03310_b192(Game_b192_01E03310 *g, Fx_b192_01E03310 *o) {
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00107990(void *, void *, s32);
+    extern void func_00109380(void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 depth[4];
+    Vec4f q[4];
+    Vec4f d;
+    Vec4f e;
+    Buf_b192_01E03310 buf;
+    Rgba_b192_01E03310 col;
+    s32 i;
+    s32 k;
+    u8 *p;
+    s32 ot;
+    s16 j;
+    s16 n;
+    f32 fk;
+    f32 wy;
+    f32 wz;
+
+    ot = (s32)func_00207500();
+    p = buf.pk;
+    n = o->n;
+    fk = 0.0f;
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    col = o->col;
+    d = g->a[0];
+    e = g->b[0];
+    d.y -= e.y;
+    d.z -= e.z;
+    d.y += d.y / 50.0f;
+    d.z += d.z / 20.0f;
+    wy = d.y;
+    wz = d.z;
+    for (i = 0; i < n - 1; i++) {
+        j = 0;
+        func_00107990(p, &col, 1);
+        col.c[3] -= o->col.c[3] / n;
+        func_00107990(p, &col, 2);
+        for (k = 0; k < 1; k++) {
+            q[0].x = g->a[i].x;
+            q[0].y = g->a[i].y;
+            q[0].z = g->a[i].z;
+            q[1].x = g->b[i].x;
+            q[1].y = g->b[i].y;
+            q[1].z = g->b[i].z;
+            q[2].x = g->a[i + 1].x;
+            q[2].y = g->a[i + 1].y;
+            q[2].z = g->a[i + 1].z;
+            q[3].x = g->b[i + 1].x;
+            q[3].y = g->b[i + 1].y;
+            q[3].z = g->b[i + 1].z;
+            q[1].y -= wy / 2.0f;
+            q[3].y -= wy / 2.0f;
+            q[1].z -= wz / 2.0f;
+            q[3].z -= wz / 2.0f;
+            if (func_00205630(q, 0x70000000, 0, p, depth) != 0) {
+                func_00109380(p, 1);
+                func_002075F0(p, ot, 0);
+            }
+            j += 30;
+        }
+        fk += 1.0f;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E03600_b192);
 

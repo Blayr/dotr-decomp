@@ -688,6 +688,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/b843", func_01E04EA0_b843);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b843", func_01E05C50_b843);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b843", func_01E06660_b843);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b843:01E06660, 170 insns: b162:01E03F70 family id lookup for four sets: set 0 takes four (0x60 first, then 0x68, 0x75, 0x7E); sets 1-3 take 0x63 first, then 0x6B, 0x78, 0x81 and their own (0x40, 0x4D / 0x5A, 0x70 / 0x5D, 0x5C, 0x73, 0x72) */
+
+typedef struct {
+    u8 pad0[4];
+    s32 bank;
+    u8 pad8[4];
+    s32 id[8];
+} Obj_b843_01E06660;
+
+#pragma optimization_level 2
+
+static void func_01E06660_b843(Obj_b843_01E06660 *o, s32 set) {
+    extern s32 func_001F5560(s32, s32, s32);
+
+    switch (set) {
+    case 0:
+        o->id[0] = func_001F5560(o->bank, 0x60, 1);
+        o->id[1] = func_001F5560(o->bank, 0x68, 0);
+        o->id[2] = func_001F5560(o->bank, 0x75, 0);
+        o->id[3] = func_001F5560(o->bank, 0x7E, 0);
+        break;
+    case 1:
+        o->id[0] = func_001F5560(o->bank, 0x63, 1);
+        o->id[1] = func_001F5560(o->bank, 0x6B, 0);
+        o->id[2] = func_001F5560(o->bank, 0x78, 0);
+        o->id[3] = func_001F5560(o->bank, 0x81, 0);
+        o->id[4] = func_001F5560(o->bank, 0x40, 0);
+        o->id[5] = func_001F5560(o->bank, 0x4D, 0);
+        break;
+    case 2:
+        o->id[0] = func_001F5560(o->bank, 0x63, 1);
+        o->id[1] = func_001F5560(o->bank, 0x6B, 0);
+        o->id[2] = func_001F5560(o->bank, 0x78, 0);
+        o->id[3] = func_001F5560(o->bank, 0x81, 0);
+        o->id[4] = func_001F5560(o->bank, 0x5A, 0);
+        o->id[5] = func_001F5560(o->bank, 0x70, 0);
+        break;
+    case 3:
+        o->id[0] = func_001F5560(o->bank, 0x63, 1);
+        o->id[1] = func_001F5560(o->bank, 0x6B, 0);
+        o->id[2] = func_001F5560(o->bank, 0x78, 0);
+        o->id[3] = func_001F5560(o->bank, 0x81, 0);
+        o->id[4] = func_001F5560(o->bank, 0x5D, 0);
+        o->id[5] = func_001F5560(o->bank, 0x5C, 0);
+        o->id[6] = func_001F5560(o->bank, 0x73, 0);
+        o->id[7] = func_001F5560(o->bank, 0x72, 0);
+        break;
+    }
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b843", func_01E06910_b843);

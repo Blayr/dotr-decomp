@@ -748,6 +748,83 @@ static s32 func_01E046F0_b059(void *arg0, s32 ot, s32 n) {
 }
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/mod/b059", func_01E05250_b059);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b059:01E05250, 187 insns: from tick 40 to 120, every other tick, spawns 5 sparks (pool at 0x528, 0x3C each, up to 200) at each of the model's joints 1..4 (ids at 0xC): sprite 0x12 variant 0..3, frame 0..7, white, size 15, life 280, speed 0.05..0.34 */
+
+typedef struct {
+    u8 pad0[4];
+    u8 c4;
+    u8 c5;
+    u8 pad6[2];
+    u8 c8;
+    u8 c9;
+    u8 cA;
+    u8 cB;
+    u8 cC;
+    u8 cD;
+    u8 cE;
+    u8 cF;
+    f32 f10;
+    s32 w14;
+    f32 x, y, z;
+    u8 pad24[4];
+    f32 f28;
+    u8 pad2C[0x10];
+} Part_b059_01E05250;
+
+typedef struct {
+    u16 tick;
+    u8 pad2[2];
+    s32 model;
+    u8 pad8[4];
+    s32 ids[5];
+    u8 pad20[0x528 - 0x20];
+    Part_b059_01E05250 parts[200];
+} Obj_b059_01E05250;
+
+#pragma optimization_level 1
+
+static void func_01E05250_b059(Obj_b059_01E05250 *o) {
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+    s32 k;
+    s32 i;
+    s32 j;
+
+    if (o->tick < 40 || o->tick > 120) {
+        return;
+    }
+    if (o->tick & 1) {
+        return;
+    }
+    for (i = 1; i < 5; i++) {
+        for (j = 0; j < 5; j++) {
+            k = func_00101C30(o->parts, 0x3C, 200);
+            if (k < 0) {
+                return;
+            }
+            func_00101AD0(&o->parts[k], 0x12, func_0019A5C8() & 3, 0xF);
+            o->parts[k].c5 = 0;
+            o->parts[k].c4 = 0;
+            o->parts[k].c8 = 1;
+            o->parts[k].c9 = func_0019A5C8() & 7;
+            o->parts[k].cA = 2;
+            o->parts[k].cB = 0;
+            o->parts[k].cE = o->parts[k].cD = o->parts[k].cC = o->parts[k].cF = 0x80;
+            o->parts[k].f10 = 15.0f;
+            o->parts[k].w14 = 0x118;
+            func_001F5620(o->model, o->ids[i], v);
+            o->parts[k].x = v[0];
+            o->parts[k].y = v[1];
+            o->parts[k].z = v[2];
+            o->parts[k].f28 = 0.2f;
+            o->parts[k].f28 += (f32)((func_0019A5C8() >> 4) % 30 - 15) / 100.0f;
+        }
+    }
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b059", func_01E05540_b059);

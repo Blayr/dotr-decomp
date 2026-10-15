@@ -573,6 +573,104 @@ INCLUDE_ASM("asm/nonmatchings/mod/b598", func_01E047B0_b598);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b598", func_01E055C0_b598);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b598", func_01E05BC0_b598);
+/* shape b598:01E05BC0, 167 insns: n line emitters (0x28 bytes each): each live one projects its two ends straight into a two-vertex line packet (colours from 0x8 and 0xC, alpha scaled by life/8 in its last 8 ticks unless flag 0x40), far z with flag 0x80, drawn at the mean depth */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b598_01E05BC0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b598_01E05BC0 xyz;
+} Vtx_b598_01E05BC0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b598_01E05BC0 v[2];
+    u8 tail[8];
+} Pkt_b598_01E05BC0;
+
+typedef struct {
+    u8 b, g, r, a;
+} Col_b598_01E05BC0;
+
+typedef struct {
+    f32 x, y, z;
+} V3_b598_01E05BC0;
+
+typedef struct {
+    u8 life;
+    u8 pad1[3];
+    u8 flags;
+    u8 pad5[3];
+    Col_b598_01E05BC0 c0;
+    Col_b598_01E05BC0 c1;
+    V3_b598_01E05BC0 a;
+    V3_b598_01E05BC0 b;
+} Line_b598_01E05BC0;
+
+static s32 func_01E05BC0_b598(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    Line_b598_01E05BC0 *e;
+    s32 i;
+    f32 d;
+    f32 mat[16];
+    Vec4f pt[2];
+    Pkt_b598_01E05BC0 pkt __attribute__((aligned(8)));
+    f32 dep[2];
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        pt[0].x = e->a.x;
+        pt[0].y = e->a.y;
+        pt[0].z = e->a.z;
+        pt[1].x = e->b.x;
+        pt[1].y = e->b.y;
+        pt[1].z = e->b.z;
+        func_0020EB40(mat);
+        ((Pkt_b598_01E05BC0 *)(s32)&pkt)->count = 0x11;
+        ((Pkt_b598_01E05BC0 *)(s32)&pkt)->tag = 4;
+        ((Pkt_b598_01E05BC0 *)(s32)&pkt)->regs = 0x4141;
+        ((Pkt_b598_01E05BC0 *)(s32)&pkt)->pad = 0;
+        pkt.v[0].r = e->c0.r;
+        pkt.v[0].g = e->c0.g;
+        pkt.v[0].b = e->c0.b;
+        pkt.v[1].r = e->c1.r;
+        pkt.v[1].g = e->c1.g;
+        pkt.v[1].b = e->c1.b;
+        if (!(e->flags & 0x40) && e->life < 8) {
+            pkt.v[0].a = (e->c0.a >> 3) * e->life;
+            pkt.v[1].a = (e->c1.a >> 3) * e->life;
+        } else {
+            pkt.v[0].a = e->c0.a;
+            pkt.v[1].a = e->c1.a;
+        }
+        if (func_00205440(&pt[0], mat, &pkt.v[0].xyz, &dep[0]) != 0 && func_00205440(&pt[1], mat, &pkt.v[1].xyz, &dep[1]) != 0) {
+            func_002086D0(&pkt, 0x48);
+            ((Pkt_b598_01E05BC0 *)(s32)&pkt)->count |= 0x400;
+            if (e->flags & 0x80) {
+                pkt.v[0].xyz.z = pkt.v[1].xyz.z = 0xFFFFFE;
+                d = 0.0f;
+            } else {
+                d = (dep[0] + dep[1]) / 2.0f;
+            }
+            func_002075F0((s32)&pkt, ot, (u32)d);
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b598", func_01E05E60_b598);

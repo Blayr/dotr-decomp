@@ -1266,7 +1266,112 @@ static s32 func_01E03C50_b845(Game_b445_01E03C90 *g, Fade_b445_01E03C90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b845", func_01E03D10_b845);
+/* shape b845:01E03D10, 166 insns: b445:01E03D50's two-kind veil in warm grey (0x80/0x80/0x68); kind 0 rises while the
+   scene timer at 0xDB30 is above 20 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b845_01E03D10;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b845_01E03D10 p;
+} Tv_b845_01E03D10;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b845_01E03D10 v[2];
+    u8 tail[0x20];
+} Tex_b845_01E03D10;
+
+typedef struct {
+    u8 pad0[0xDB30];
+    s32 timer;
+} Ctx_b845_01E03D10;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b845_01E03D10;
+
+static s32 func_01E03D10_b845(Ctx_b845_01E03D10 *g, Fx_b845_01E03D10 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b845_01E03D10 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->mode = 2;
+    }
+    ((Tex_b845_01E03D10 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b845_01E03D10 *)(s32)&pk)->size = 5;
+    ((Tex_b845_01E03D10 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b845_01E03D10 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x80;
+    pk.g = 0x80;
+    pk.b = 0x68;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    if (o->kind == 0) {
+        func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    }
+    if (o->kind == 1) {
+        func_002086D0(&pk, ((u64)0x80 << 32) | 0x48);
+    }
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (o->kind == 0) {
+        if (g->timer > 20) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 8;
+            }
+        } else if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick < 5) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 0x28;
+            }
+        } else if (o->col[3] > 13) {
+            o->col[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

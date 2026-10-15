@@ -1391,7 +1391,125 @@ static void func_01E03C50_b112(Ctx_b112_01E03C50 *c, Fan_b112_01E03C50 *o, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E03F90_b112);
+/* shape b112:01E03F90, 179 insns: b112:01E03C50's fan of 9 thin triangles scaled 1 x 1.5 x 1 at the object's
+   position (no drift); mode 0 sets up the packet with texture 0x97. Texture corners by the module helper (shape
+   b008:01E00080). */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b112_01E03F90;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b112_01E03F90;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b112_01E03F90 c;
+    struct {
+        u64 tc;
+        Xyz_b112_01E03F90 p;
+    } v[4];
+} Pkt_b112_01E03F90;
+
+typedef struct {
+    u8 pad0[0x2FC];
+    void *texture;
+    u8 pad300[0x2EAC];
+    s32 ot;
+    u8 pad31B0[0x18];
+    f32 dep;
+    u8 pad31CC[0x12C];
+    u8 trig[1];
+} Ctx_b112_01E03F90;
+
+typedef struct {
+    s16 x, y, z;
+    s16 span;
+    s16 vx, vy, vz;
+    u8 padE[2];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[8];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Fan_b112_01E03F90;
+
+static void func_01E03F90_b112(Ctx_b112_01E03F90 *c, Fan_b112_01E03F90 *o, Pkt_b112_01E03F90 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern Rgbaq_b112_01E03F90 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 m[16];
+    u8 td[0x18];
+    s16 span;
+    s32 k;
+    s32 t;
+    s16 a;
+
+    span = o->span;
+    a = 0;
+    if (mode == 0) {
+        func_00106080(td, 0x97, o->page, td);
+        p->count = 0x24;
+        p->tag = 9;
+        p->regs = ((u64)4 << 32) | 0x24242421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->c.q = 0.0f;
+        p->v[0].p.f = 0;
+        p->v[1].p.f = 0;
+        p->v[2].p.f = 0;
+        p->v[3].p.f = 0;
+        p->c = func_00107740(o->col);
+        func_01E00080_b112((Pk_b008_01E00080 *)p, (Rect_b008_01E00080 *)td, 0);
+        func_00208700(p, c->texture, 1);
+        return;
+    }
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    scale.x = 1.0f;
+    scale.y = 1.5f;
+    scale.z = 1.0f;
+    func_00108EF0(m, &scale, o->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 9; k++) {
+        t = o->ang + a;
+        quad[2].x = o->size * func_00108030(c->trig, t, 1);
+        quad[2].z = o->size * func_00108030(c->trig, t, 0);
+        quad[0].x = 0.0f;
+        quad[0].z = 0.0f;
+        t = a + (o->ang + span);
+        quad[3].x = o->size * func_00108030(c->trig, t, 1);
+        quad[3].z = o->size * func_00108030(c->trig, t, 0);
+        quad[1].x = 0.0f;
+        quad[1].z = 0.0f;
+        if (func_00205630(quad, 0x70000000, m, p, &c->dep) != 0) {
+            func_002075F0(p, c->ot, (u32)c->dep);
+        }
+        a += 0x28;
+    }
+}
 
 /* shape b112:01E04260, 134 insns, 2 copies: one textured square of an object (b053:01E022F0 family): texture and page pick
    by its handler (shape b112:01E01A60 or not); mode 0 only sets up the packet's texture, otherwise additive for that

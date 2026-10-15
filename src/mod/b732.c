@@ -1201,7 +1201,73 @@ static s32 func_01E03BC0_b732(s32 arg0, Obj_b732_01E03BC0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03CD0_b732);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E04320_b732);
+/* shape b732:01E04320, 158 insns: a white spark in two kinds: kind 0 size 50, f50 4..11 growing 20, life 5..7; kind 1 size 10, f50 4..11 growing 10, life 30..44 (frame 3, angle 0..359, f8 1..8); alpha 0xC0 then down by 11; blinks white/grey every tick when f52 is 1 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b732_01E04320;
+
+static s32 func_01E04320_b732(s32 arg0, Fx_b732_01E04320 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->f50 == 0) {
+            o->f48 = 50.0f;
+            o->f56 = 3;
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            o->f50 = func_0019A5C8() % 8 + 4;
+            o->f5A = func_0019A5C8() % 360;
+            o->speed = 20;
+            o->f8 = func_0019A5C8() % 8 + 1;
+            o->hold = func_0019A5C8() % 3 + 5;
+        }
+        if (o->f50 == 1) {
+            o->f48 = 10.0f;
+            o->f56 = 3;
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            o->f50 = func_0019A5C8() % 8 + 4;
+            o->f5A = func_0019A5C8() % 360;
+            o->speed = 10;
+            o->f8 = func_0019A5C8() % 8 + 1;
+            o->hold = func_0019A5C8() % 15 + 30;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->tick++;
+    if (o->f52 == 1) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        } else {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        }
+    }
+    return 0;
+}
 
 /* shape b732:01E045A0, 48 insns: variant of b445:01E03C90 (volume fade): game state at 0xE6B0, floor 0x50 */
 

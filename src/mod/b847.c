@@ -579,7 +579,96 @@ INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E02370_b847);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E02D30_b847);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E03D40_b847);
+/* shape b847:01E03D40, 141 insns: a grey/purple ring at the scene height (g+0xD648 + g+0xD650): on start f48 0, grey 0x70
+   and purple 0x80/0x40/0xFF; kind 0 holds 30 ticks at 70 above, kind 1 5 ticks at 20..59 above; the purple alpha rises
+   by 10 (kind 0) or 80 (kind 1) to 0xA0 while held, then falls by 12 (kind 0 once the scene timer at g+0xD6EC passes 770);
+   kind 0 follows the scene height; it spins by 0x4000 */
+
+typedef struct {
+    u8 pad0[0xD648];
+    f32 za;
+    u8 padD64C[4];
+    f32 zc;
+    u8 padD654[0x98];
+    s16 timer;
+} Game_b847_01E03D40;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot;
+    u8 pad24[0x24];
+    f32 f48;
+    f32 h;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 hh;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b847_01E03D40;
+
+static s32 func_01E03D40_b847(Game_b847_01E03D40 *g, Obj_b847_01E03D40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x70, 0x70, 0x70);
+        func_001076F0(o->c1, 0x80, 0x40, 0xFF);
+        if (o->kind == 0) {
+            o->hold = 30;
+            o->h = 70.0f;
+        } else if (o->kind == 1) {
+            o->hold = 5;
+            o->h = g->zc + (g->za + (20.0f + func_0019A5C8() % 40));
+        }
+        o->w = 10;
+        o->hh = 10;
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < o->hold) {
+        if (o->kind == 0) {
+            if (o->c1[3] < 0xA0) {
+                o->c1[3] += 10;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->c1[3] < 0xA0) {
+                o->c1[3] += 0x50;
+            }
+        }
+    } else {
+        if (o->kind == 0) {
+            if (g->timer > 770) {
+                if (o->c1[3] > 13) {
+                    o->c1[3] -= 12;
+                } else {
+                    o->mode = 0;
+                }
+            }
+        }
+        if (o->kind == 1) {
+            if (o->c1[3] > 13) {
+                o->c1[3] -= 12;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 0) {
+        o->h = 70.0f + g->za + g->zc;
+    }
+    func_00205C40((s32)&o->rot);
+    o->rot += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E03F80_b847);
 
@@ -768,7 +857,93 @@ static s32 func_01E046A0_b847(s32 arg0, Obj_b847_01E046A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E04820_b847);
+/* shape b847:01E04820, 155 insns: b849:01E029D0 family glow in two kinds: kind 0 grey/yellow, size 70, 5 ticks of alpha +53; kinds 1+ dark/yellow, size 100, 500 ticks of +13, placed (kind-1)/15 of the way from tracked point 0 to point 1 (ctx+0xD666/8); then down by 12; spins 0x4000 per tick */
+
+typedef struct {
+    u8 pad0[0xD666];
+    s16 pt;
+    s16 pt2;
+} Game_b847_01E04820;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b847_01E04820;
+
+static s32 func_01E04820_b847(Game_b847_01E04820 *g, Fx_b847_01E04820 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f b;
+    f32 f;
+    Vec4f *pb;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        if (o->f50 == 0) {
+            func_001076F0(o->col, 0x70, 0x70, 0x70);
+            func_001076F0(o->col2, 0xC0, 0xC0, 0x40);
+            o->hold = 5;
+            o->f4C = 70.0f;
+        }
+        if (o->f50 > 0) {
+            func_001076F0(o->col, 0x20, 0x20, 0x20);
+            func_001076F0(o->col2, 0x80, 0x80, 0x20);
+            o->hold = 500;
+            o->f4C = 100.0f;
+        }
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->f50 == 0) {
+            if (o->col2[3] < 0xA0) {
+                o->col2[3] += 0x35;
+            }
+        }
+        if (o->f50 > 0) {
+            if (o->col2[3] < 0xA0) {
+                o->col2[3] += 0xD;
+            }
+        }
+    } else if (o->col2[3] > 13) {
+        o->col2[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    if (o->f50 > 0) {
+        f = o->f50 - 1;
+        func_001F5620(func_001F53A0(), g->pt, &o->pos);
+        func_001F5620(func_001F53A0(), g->pt, &a);
+        func_001F5620(func_001F53A0(), g->pt2, pb = &b);
+        o->pos.x += f * ((pb->x - a.x) / 15.0f);
+        o->pos.y += f * ((b.y - a.y) / 15.0f);
+        o->pos.z += f * ((b.z - a.z) / 15.0f);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b847:01E04A90, 127 insns: b397:01E01540's yellow trail with 40 points: on start size 5 and both 40-point trails
    (g+0xCB70, g+0xCDF0) set to the joints at g+0xD666/0xD668; alpha 0xC0 for 200 ticks, then down by 9 until it ends;

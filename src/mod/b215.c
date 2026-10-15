@@ -885,4 +885,96 @@ INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E03AC0_b215);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E04010_b215);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E04520_b215);
+/* shape b215:01E04520, 172 insns: b413:01E04E20 family effect pass over 130 entities: sets up the two packets, draws every live b215:01E02540 entity (then b215:01E02660 on it), then re-sends packet A with the model lights (func_001F7060) and draws every live b215:01E02B70 entity */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x30];
+    u64 t40;
+    u8 t48[0x10];
+} PktA_b215_01E04520;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x68];
+    u64 a;
+    s32 b[4];
+} PktB_b215_01E04520;
+
+typedef struct {
+    u8 pad00[0x44];
+    void *cb;
+    u8 pad48[0x10];
+    s16 state;
+    u8 pad5A[0x16];
+} Ent_b215_01E04520;
+
+typedef struct {
+    u8 pad0000[0x2A0];
+    Ent_b215_01E04520 ents[130];
+    u8 pad[0xA004 - 0x2A0 - 130 * 0x70];
+    s32 list;
+    PktA_b215_01E04520 *pa;
+    PktB_b215_01E04520 *pb;
+} Mgr_b215_01E04520;
+
+static void func_01E04520_b215(Mgr_b215_01E04520 *m) {
+    extern void b215_01E02540(Mgr_b215_01E04520 *, Ent_b215_01E04520 *);
+    extern void b215_01E02660(Mgr_b215_01E04520 *, Ent_b215_01E04520 *);
+    extern void b215_01E02B70(Mgr_b215_01E04520 *, Ent_b215_01E04520 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    PktA_b215_01E04520 a __attribute__((aligned(8)));
+    PktB_b215_01E04520 b __attribute__((aligned(8)));
+    PktB_b215_01E04520 *p;
+    s32 i;
+
+    m->pa = &a;
+    m->pb = &b;
+    m->list = func_00207F60();
+    m->pa->count = 0x26;
+    m->pa->tag = 5;
+    m->pa->regs = 0x42421;
+    m->pa->pad = 0;
+    m->pb->count = 0x34;
+    m->pb->tag = 0xC;
+    m->pb->regs = ((u64)0x4214 << 32) | 0x21421421;
+    m->pb->pad = 0;
+    func_00208460();
+    func_002086D0(m->pb, ((u64)0x80 << 32) | 0x48);
+    p = m->pb;
+    func_00208800(func_00209E50(), 0, &p->a, p->b);
+    func_00208460();
+    for (i = 0; i < 130; i++) {
+        if (m->ents[i].state != 0 && m->ents[i].cb == (void *)b215_01E02540) {
+            b215_01E02540(m, &m->ents[i]);
+            b215_01E02660(m, &m->ents[i]);
+        }
+    }
+    m->pa->count = 0x26;
+    m->pa->tag = 5;
+    m->pa->regs = 0x42421;
+    m->pa->pad = 0;
+    func_00208460();
+    func_002086D0(m->pa, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &a.t40, &a.t48);
+    func_00208460();
+    for (i = 0; i < 130; i++) {
+        if (m->ents[i].state != 0 && m->ents[i].cb == (void *)b215_01E02B70) {
+            b215_01E02B70(m, &m->ents[i]);
+        }
+    }
+    func_00207FD0(m->list, func_00207500(), 0);
+}

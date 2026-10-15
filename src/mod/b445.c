@@ -1264,7 +1264,113 @@ static s32 func_01E03C90_b445(Game_b445_01E03C90 *g, Fade_b445_01E03C90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b445", func_01E03D50_b445);
+/* shape b445:01E03D50, 166 insns: b849:01E031B0's full-screen veil in green-grey (0x68/0x80/0x68) in two kinds (0x50):
+   kind 0 (blend 0x44) rises by 8 to 0x50 until the game counter at 0xDC4C reaches 320, then fades by 7; kind 1
+   (blend 0x48) rises by 0x28 for 5 ticks, then fades by 12 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b445_01E03D50;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b445_01E03D50 p;
+} Tv_b445_01E03D50;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b445_01E03D50 v[2];
+    u8 tail[0x20];
+} Tex_b445_01E03D50;
+
+typedef struct {
+    u8 pad0[0xDC4C];
+    s16 count;
+} Ctx_b445_01E03D50;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b445_01E03D50;
+
+static s32 func_01E03D50_b445(Ctx_b445_01E03D50 *g, Fx_b445_01E03D50 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b445_01E03D50 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->mode = 2;
+    }
+    ((Tex_b445_01E03D50 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b445_01E03D50 *)(s32)&pk)->size = 5;
+    ((Tex_b445_01E03D50 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b445_01E03D50 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x68;
+    pk.g = 0x80;
+    pk.b = 0x68;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    if (o->kind == 0) {
+        func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    }
+    if (o->kind == 1) {
+        func_002086D0(&pk, ((u64)0x80 << 32) | 0x48);
+    }
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (o->kind == 0) {
+        if (g->count < 320) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 8;
+            }
+        } else if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick < 5) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 0x28;
+            }
+        } else if (o->col[3] > 13) {
+            o->col[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

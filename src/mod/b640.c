@@ -1530,7 +1530,113 @@ static s32 func_01E042C0_b640(Obj_b640_01E042C0 *obj, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E04450_b640);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E04EE0_b640);
+/* shape b640:01E04EE0, 190 insns: b178:01E04D20's kind of draw as a 12-segment band: two-colour packet (0x60 / 0x64),
+   the scene rect and texture, blend 0x42 or a scaled 0x40 by the mode's high nibble; placed at the point turned by the
+   object; the rect becomes func_00106080's frame 4 of texture 0x14; then 12 quads of radius f48, 30 apart from
+   0x5A - 200 (g+0xA104), between heights +f34 and -f34, depth-tested into g+0x9ADC */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[0xE];
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b640_01E04EE0;
+
+typedef struct {
+    u8 pad0[0x88];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+    u8 padC0[0x9ADC - 0xC0];
+    s32 ot;
+    u8 pad9AE0[0xA104 - 0x9AE0];
+    u8 trig[1];
+} Game_b640_01E04EE0;
+
+static void func_01E04EE0_b640(Game_b640_01E04EE0 *g, Obj_b640_01E04EE0 *o, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00106080(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001A23B0(f32);
+    f32 pos[4];
+    Vec4f q[4];
+    f32 v[4];
+    f32 m[16];
+    f32 depth[4];
+    f32 rm[4];
+    u8 buf[0x90];
+    s32 k;
+    s16 i;
+    s16 a;
+    void *p = buf;
+    f32 r;
+    f32 c1;
+    f32 c0;
+    s16 s;
+    s32 t;
+
+    *(Vec4f *)pos = *in;
+    a = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, o->col, 1);
+    func_00107790(p, o->col2, 2);
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    k = mode >> 4;
+    if (k == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)k << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    v[0] = pos[0];
+    v[1] = pos[1];
+    v[2] = pos[2];
+    func_00108EF0(m, 0, o->rot, v);
+    q[0].y = o->f34;
+    q[1].y = o->f34;
+    q[2].y = -o->f34;
+    q[3].y = -o->f34;
+    r = o->f48;
+    func_00106080(rm, 0x14, 4, 0);
+    g->rect = *(Vec4f *)rm;
+    func_00108500(p, &g->rect, g->frame);
+    for (i = 0; i < 12; i++) {
+        s = o->ang + a - 200;
+        c1 = func_00108030(g->trig, s, 1);
+        c0 = func_00108030(g->trig, s, 0);
+        q[2].x = c1 * r;
+        q[2].z = c0 * r;
+        q[0].x = c1 * r;
+        q[0].z = c0 * r;
+        t = o->ang + 30;
+        s = a + t - 200;
+        c1 = func_00108030(g->trig, s, 1);
+        c0 = func_00108030(g->trig, s, 0);
+        q[3].x = c1 * r;
+        q[3].z = c0 * r;
+        q[1].x = c1 * r;
+        q[1].z = c0 * r;
+        if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, g->ot, func_001A23B0(depth[0]));
+        }
+        a += 30;
+    }
+}
 
 /* shape b139:01E03820: sibling of b016:01E00ED0 (one sprite quad, drawn twice). Needs func_01E00110_b640 in the
    same file and static (the original reuses $a0 across the call). */

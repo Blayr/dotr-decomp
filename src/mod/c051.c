@@ -144,7 +144,103 @@ static void func_01E00800_c051(Ctx_c051_01E00800 *ctx, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c051", func_01E00950_c051);
+/* shape c051:01E00950, 189 insns: c051:01E00C50's band drawn as a full ring of 24 quads 15 apart (going backwards),
+   outer radius r + 10, inner r, outer edge at height h; mode 0 sets up the packet with frame 3 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c051_01E00950;
+
+typedef struct {
+    Rgbaq_c051_01E00950 c;
+    f32 s, t;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_c051_01E00950;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad;
+    u64 regs;
+    Vtx_c051_01E00950 v[4];
+} Pkt_c051_01E00950;
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 mat[0x2BC - 0x40];
+    s32 ot;
+    u8 pad2C0[0x18];
+    f32 depth;
+    u8 pad2DC[0x300 - 0x2DC];
+    u8 tab[0x4A8 - 0x300];
+    s32 tex;
+} Ctx_c051_01E00950;
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 r;
+    u8 pad1C[4];
+    f32 h;
+    u8 col[4];
+    u8 col2[4];
+    u8 pad2C[0xC];
+    s16 a0;
+    s16 a1;
+} Fx_c051_01E00950;
+
+static void func_01E00950_c051(Ctx_c051_01E00950 *g, Fx_c051_01E00950 *o, Pkt_c051_01E00950 *p, s32 lit) {
+    extern void func_00105D00(void *, s32, s32);
+    extern Rgbaq_c051_01E00950 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 rm[4];
+    Vec4f q[4];
+    s16 a;
+    s32 k;
+
+    a = 0;
+    if (lit == 0) {
+        func_00105D00(rm, 3, 0);
+        p->flags = 0x34;
+        p->size = 0xC;
+        p->regs = ((u64)0x4214 << 32) | 0x21421421;
+        p->pad = 0;
+        p->flags |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->v[0].c = func_00107740(o->col);
+        p->v[1].c = func_00107740(o->col);
+        p->v[2].c = func_00107740(o->col2);
+        p->v[3].c = func_00107740(o->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 0);
+        return;
+    }
+    q[1].y = q[0].y = o->h;
+    q[2].y = q[3].y = 0.0f;
+    for (k = 0; k < 24; k++) {
+        q[0].x = (10.0f + o->r) * func_00108030(g->tab, a, 1);
+        q[0].z = (10.0f + o->r) * func_00108030(g->tab, a, 0);
+        q[2].x = o->r * func_00108030(g->tab, a, 1);
+        q[2].z = o->r * func_00108030(g->tab, a, 0);
+        q[1].x = (10.0f + o->r) * func_00108030(g->tab, a + 15, 1);
+        q[1].z = (10.0f + o->r) * func_00108030(g->tab, a + 15, 0);
+        q[3].x = o->r * func_00108030(g->tab, a + 15, 1);
+        q[3].z = o->r * func_00108030(g->tab, a + 15, 0);
+        if (func_00205630(q, 0x70000000, g->mat, p, &g->depth) != 0) {
+            func_002075F0(p, g->ot, (u32)g->depth);
+        }
+        a -= 15;
+    }
+}
 
 /* shape c051:01E00C50, 156 insns: a cylinder band quad between angles o->h38 and o->h3A at radius o->f18, from 0 up to o->f20 (scene table at ctx+0x300, scene matrix at ctx+0x40); the setup pass builds the gouraud packet (bottom colour 0x28, top 0x24, texture page 2) */
 

@@ -815,7 +815,103 @@ static s32 func_01E02C40_b116(void *arg0, Obj_b003_01E01EC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E02E90_b116);
+/* shape b116:01E02E90, 190 insns: one of five orbiting lights (number 0x30): light 0 is the big centre (size 32,
+   radius 0), lights 1..4 start a quarter turn apart at radius 13.2; from scene frame 368 each places its scene point
+   (g+0x2D80) on its circle (raised by the centre's height g+0x4A34), drifts it 2 a frame along z (back with the scene
+   flag) until frame 411, shrinks its radius by 0.3 to 0 and turns by 8 */
+
+typedef struct {
+    u8 pad0[0x2D80];
+    Vec4f pts[5];
+    u8 pad2DD0[0x1C50];
+    f32 rad[6];
+    u8 pad4A38[0x28];
+    s16 flag;
+    s16 frame;
+    u8 pad4A64[0x100];
+    u8 trig[1];
+} Scene_b116_01E02E90;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    s16 k;
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Light_b116_01E02E90;
+
+static s32 func_01E02E90_b116(Scene_b116_01E02E90 *g, Light_b116_01E02E90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        if (o->k == 0) {
+            o->size = 32;
+        } else {
+            o->size = 13;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        if (o->k == 1) {
+            o->ang = 0;
+        }
+        if (o->k == 2) {
+            o->ang = 180;
+        }
+        if (o->k == 3) {
+            o->ang = 90;
+        }
+        if (o->k == 4) {
+            o->ang = 270;
+        }
+        if (o->k == 0) {
+            g->rad[o->k] = 0.0f;
+        } else {
+            g->rad[o->k] = 13.2f;
+        }
+        o->col2[3] = 0;
+    }
+    if (o->t < 2) {
+        o->col[3] += 0x40;
+        o->col2[3] += 0x40;
+    }
+    if (g->frame > 367) {
+        g->pts[o->k].x = g->rad[o->k] * func_00108030(g->trig, o->ang, 0);
+    }
+    if (g->frame > 367) {
+        g->pts[o->k].y = g->rad[o->k] * func_00108030(g->trig, o->ang, 1);
+    }
+    if (g->frame > 367) {
+        g->pts[o->k].y += g->rad[5];
+    }
+    if (g->frame > 367 && g->frame < 411) {
+        if (g->flag != 0) {
+            g->pts[o->k].z -= 2.0f;
+        } else {
+            g->pts[o->k].z += 2.0f;
+        }
+    }
+    if (g->frame > 367) {
+        if (g->rad[o->k] > 0.0f) {
+            g->rad[o->k] -= 0.3f;
+        }
+    }
+    if (g->frame > 367) {
+        o->t++;
+    }
+    func_00205C40((s32)o->rot);
+    if (g->frame > 367) {
+        o->ang += 8;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03190_b116);
 

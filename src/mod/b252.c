@@ -993,7 +993,91 @@ static s32 func_01E03A40_b252(Ctx_b252_01E03A40 *g, Fx_b252_01E03A40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E03CA0_b252);
+/* shape b252:01E03CA0, 181 insns: b152:01E03400's full-screen overlay (red 0xC0/0/0) with a fixed inset, the bottom inset three times the height: one sprite over the
+   whole screen, its texture window inset by the slot's width and height; alpha up by 10 to 0x80 for 150 ticks, then
+   down by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b252_01E03CA0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b252_01E03CA0 p;
+    } v[2];
+} Pkt_b252_01E03CA0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w, h;
+    u8 padC[0x48];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Slot_b252_01E03CA0;
+
+typedef struct {
+    u8 pad0[0xDBE8];
+    Pkt_b252_01E03CA0 *pkt;
+} Scene_b252_01E03CA0;
+
+static s32 func_01E03CA0_b252(Scene_b252_01E03CA0 *s, Slot_b252_01E03CA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 h;
+    f32 w;
+
+    w = o->w;
+    h = o->h;
+    w /= 10.0f;
+    h /= 10.0f;
+    if (o->state == 1) {
+        o->c0[3] = 0;
+        func_001076F0(o->c0, 0xC0, 0, 0);
+        o->state = 2;
+    }
+    s->pkt->r = o->c0[0];
+    s->pkt->g = o->c0[1];
+    s->pkt->b = o->c0[2];
+    s->pkt->a = o->c0[3];
+    s->pkt->q = 1.0f;
+    s->pkt->v[0].p.x = 0x6BF8;
+    s->pkt->v[0].p.y = 0x71F8;
+    s->pkt->v[0].p.z = 0xFFFFFF;
+    s->pkt->v[0].p.f = 0;
+    s->pkt->v[1].p.x = 0x93F8;
+    s->pkt->v[1].p.y = 0x8DF8;
+    s->pkt->v[1].p.z = 0xFFFFFF;
+    s->pkt->v[1].p.f = 0;
+    s->pkt->v[0].s = w / 1024.0f;
+    s->pkt->v[0].t = h / 512.0f;
+    s->pkt->v[1].s = (640.0f - w) / 1024.0f;
+    s->pkt->v[1].t = (448.0f - 3.0f * h) / 512.0f;
+    func_002075F0(s->pkt, 0, 0);
+    if (o->t < 150) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 10;
+        }
+    } else if (o->c0[3] > 10) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E03F80_b252);
 

@@ -1128,9 +1128,183 @@ static s32 func_01E03A60_b256(Game_b256_01E03A60 *g, Fade_b256_01E03A60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E03B50_b256);
+/* shape b256:01E03B50, 154 insns: b144:01E034D0 with a lilac tint (0x80/0x70/0x90) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E03DC0_b256);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b256_01E03B50;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b256_01E03B50 p;
+    } v[2];
+    u8 tail[0x20];
+} Pkt_b256_01E03B50;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 zoom;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Flash_b256_01E03B50;
+
+static s32 func_01E03B50_b256(void *arg0, Flash_b256_01E03B50 *o) {
+    extern void func_002087A0(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_b256_01E03B50 pkt __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->zoom = 1.0f;
+        o->state = 2;
+    }
+    ((Pkt_b256_01E03B50 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b256_01E03B50 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b256_01E03B50 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b256_01E03B50 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x80;
+    pkt.g = 0x70;
+    pkt.b = 0x90;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    pkt.v[0].p.x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = o->zoom / 1024.0f;
+    pkt.v[0].t = o->zoom / 512.0f;
+    pkt.v[1].s = (640.0f - o->zoom) / 1024.0f;
+    pkt.v[1].t = (448.0f - o->zoom) / 512.0f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0(&pkt, (s32)func_00207500(), 0);
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 0x13;
+        }
+        if (o->zoom < 100.0f) {
+            o->zoom += 0.3f;
+        }
+    } else {
+        if (o->c0[3] > 7) {
+            o->c0[3] -= 6;
+        } else {
+            o->state = 0;
+        }
+        if (o->zoom > 0.0f) {
+            o->zoom -= 0.3f;
+        } else {
+            o->zoom = 0.0f;
+        }
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b256:01E03DC0, 180 insns: b491:01E03360 family full-screen tint in pale violet (0xF0, 0xE0, 0xFF) from alpha 0 through the scene packet (ctx+0xCB28), uv shrunk by a tenth of 0x8/0xA on each side, drawn once; alpha up by 9 to 0x80 before scene count 183 (ctx+0xCBB8), then down by 7 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b256_01E03DC0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b256_01E03DC0 p;
+} Tv_b256_01E03DC0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b256_01E03DC0 v[2];
+} Tex_b256_01E03DC0;
+
+typedef struct {
+    u8 pad[0xCB28];
+    Tex_b256_01E03DC0 *pk;
+    u8 padCB2C[0xCBB8 - 0xCB2C];
+    s16 count;
+} Game_b256_01E03DC0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b256_01E03DC0;
+
+static s32 func_01E03DC0_b256(Game_b256_01E03DC0 *g, Fx_b256_01E03DC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xF0, 0xE0, 0xFF);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->count < 183) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E04090_b256);
 

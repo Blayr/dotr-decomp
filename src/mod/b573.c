@@ -1411,6 +1411,88 @@ static s32 func_01E04A30_b573(Pool_b573_01E04A30 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E04B60_b573);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E04EE0_b573);
+/* shape b573:01E04EE0, 141 insns: draw a 0.1-scaled sprite at the given position: the material is frame 0x9B (0x14 for
+   objects run by b573:01E02F90) with the object's colour and the scene texture 0x2AC (0x2B00 for those objects); objects
+   of b573:01E02F90 draw one quad (depth-tested), the others repeat func_00108F90 for their count */
+
+typedef struct {
+    u8 pad0[0x2AC];
+    s32 tex0;
+    u8 pad2B0[0x2850];
+    s32 tex1;
+} Game_b573_01E04EE0;
+
+typedef struct {
+    u8 pad0[0x24];
+    void *fn;
+    u8 c28[4];
+    u8 pad2C[4];
+    s16 count;
+    u8 pad32[2];
+    s16 frame;
+    u8 pad36[2];
+    s16 size;
+} Obj_b573_01E04EE0;
+
+static void func_01E04EE0_b573(Game_b573_01E04EE0 *g, Obj_b573_01E04EE0 *o, void *p, Vec4f *in) {
+    extern void b573_01E02F90();
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    f32 pos[4];
+    f32 q[16];
+    Vec4f v;
+    Vec4f sc;
+    f32 rm[4];
+    f32 m[16];
+    f32 depth[4];
+    s32 rot[4];
+    s32 ctx;
+    s16 i;
+
+    *(Vec4f *)pos = *in;
+    ctx = (s32)func_00207500();
+    func_00106080(rm, 0x9B, o->frame, rm);
+    if (o->fn == (void *)b573_01E02F90) {
+        func_00106080(rm, 0x14, o->frame, rm);
+    }
+    func_00109270(p, 0, 0);
+    func_00107790(p, o->c28, 0);
+    func_00108500(p, rm, 0);
+    if (o->fn == (void *)b573_01E02F90) {
+        func_00208700(p, g->tex1, 1);
+    } else {
+        func_00208700(p, g->tex0, 1);
+    }
+    func_00205C40((s32)rot);
+    v.x = pos[0];
+    v.y = pos[1];
+    v.z = pos[2];
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00108EF0(m, &sc, rot, &v);
+    func_00108CE0(q, o->size, o->size);
+    if (o->fn == (void *)b573_01E02F90) {
+        if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+            if (o->fn == (void *)b573_01E02F90) {
+                func_00109380(p, 0);
+            }
+            func_002075F0(p, ctx, (u32)depth[0]);
+        }
+    } else {
+        for (i = 0; i < o->count; i++) {
+            func_00108F90(q, p, m, ctx);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E05120_b573);

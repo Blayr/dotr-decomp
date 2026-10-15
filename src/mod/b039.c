@@ -1250,4 +1250,80 @@ static s32 func_01E03820_b039(s32 ot, Trail_b039_01E03820 *o, Pt_b039_01E03820 *
 
 INCLUDE_ASM("asm/nonmatchings/mod/b039", func_01E04200_b039);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b039", func_01E04FB0_b039);
+/* shape b039:01E04FB0, 137 insns: the b039 module's falling-sparks step: flips flag bit 29 when its 1.5-speed approach (to -30 or 30) finishes, runs b039:01E01B70, then for every live spark (16-byte records at ctx+0x22C0) drops it 3 per tick, shrinking its spread by 0.8 above the floor or widening it by 1.05 below; under -200 it respawns at a random angle (alpha 0x40 from scene time 43); clears 16 bytes at ctx+0x226B after scene time 320 */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 a;
+    u8 pad[1];
+    s16 id;
+} Spark_b039_01E04FB0;
+
+typedef struct {
+    u8 pad0[0x21F0];
+    u8 m21F0[0x70];
+    u8 m2260[0xB];
+    u8 m226B[0x2AC - 0x26B];
+    f32 spread;
+    u8 pad22B0[4];
+    u8 m22B4[6];
+    s16 n;
+    u8 pad22BC[4];
+    Spark_b039_01E04FB0 sp[1];
+    u8 pad22D0[0x3958 - 0x22D0];
+    s32 time;
+    u8 pad395C[4];
+    s32 flags;
+} Ctx_b039_01E04FB0;
+
+static void func_01E04FB0_b039(Ctx_b039_01E04FB0 *g, s32 arg) {
+    extern void b039_01E01B70(s32, void *, void *);
+    extern s32 func_00104520(s32, s32);
+    extern s32 func_00103540(void *, f32, f32);
+    extern s32 func_00103390(void *, f32, f32);
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    extern void func_00103470(void *, s32, s32);
+    s32 i;
+    s32 r;
+
+    if (func_00104520(g->flags, 29) != 0) {
+        if (func_00103540(g->m22B4, -30.0f, 1.5f) == 0) {
+            g->flags &= ~0x20000000;
+        }
+    } else {
+        if (func_00103390(g->m22B4, 30.0f, 1.5f) == 0) {
+            g->flags |= 0x20000000;
+        }
+    }
+    b039_01E01B70(arg, g->m2260, g->m21F0);
+    for (i = 0; i < g->n; i++) {
+        if (g->sp[i].id >= 0) {
+            g->sp[i].y -= 3.0f;
+            if (g->sp[i].y > 0.0f) {
+                g->sp[i].z *= 0.8f;
+                g->sp[i].x *= 0.8f;
+            } else {
+                g->sp[i].z *= 1.05f;
+                g->sp[i].x *= 1.05f;
+            }
+            if (g->sp[i].y < -200.0f) {
+                r = func_0019A5C8() % 0x10000;
+                g->sp[i].id = -i;
+                g->sp[i].z = g->spread * func_0020B480(r);
+                g->sp[i].x = g->spread * func_0020B550(r);
+                g->sp[i].y = 0.0f;
+                if (g->time >= 43) {
+                    g->sp[i].a = 0x40;
+                } else {
+                    g->sp[i].a = 0;
+                }
+            }
+        }
+    }
+    if (g->time > 320) {
+        func_00103470(g->m226B, 0, 0x10);
+    }
+}

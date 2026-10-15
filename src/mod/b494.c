@@ -202,7 +202,84 @@ static void func_01E00920_b494(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E00BE0_b494);
+/* shape b494:01E00BE0, 190 insns: the effect scene's step: counts the frame (0x4528); from frame 25 to 234, every 30th
+   frame it picks eight random model joints (the first through the alternate lookup), on every 4th frame it spawns a
+   0x1E00EE0 at each of them (numbered by side); the eight angles turn by 10 (wrapped at 360); in that range it also
+   spawns 0x1E010D0 and 0x1E01230 at the camera point raised to 31 on even frames */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b494_01E00BE0;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b494_01E00BE0 pos;
+    u8 pad260[0x4284];
+    s16 joint[8];
+    u8 pad44F4[0x18];
+    s16 ang[8];
+    u8 pad451C[4];
+    s16 side;
+    u8 pad4522[6];
+    s16 t;
+} Scene_b494_01E00BE0;
+
+static void func_01E00BE0_b494(Scene_b494_01E00BE0 *g) {
+    extern void b494_01E00EE0(void);
+    extern void b494_01E010D0(void);
+    extern void b494_01E01230(void);
+    extern s32 b494_01E01940(Scene_b494_01E00BE0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F54E0(s32);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    V4_b494_01E00BE0 v[2];
+    s16 r;
+    s16 i;
+    s32 n;
+
+    g->t++;
+    if (g->t >= 25 && g->t < 235) {
+        if (g->t % 30 == 1) {
+            for (i = 0; i < 8; i++) {
+                n = func_001F54E0(func_001F53A0());
+                r = func_0019A5C8() % n;
+                if (r == 0) {
+                    r++;
+                }
+                if (!i) {
+                    g->joint[i] = func_001F5560(func_001F53A0(), r, 1);
+                } else {
+                    g->joint[i] = func_001F5560(func_001F53A0(), r, 0);
+                }
+            }
+        } else if (g->t % 4 == 0) {
+            for (i = 0; i < 8; i++) {
+                func_001F5620(func_001F53A0(), g->joint[i], &v[0]);
+                g->pos = v[0];
+                g->side = i;
+                b494_01E01940(g, (s32)b494_01E00EE0, 0);
+            }
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        g->ang[i] += 10;
+        if (g->ang[i] >= 360) {
+            g->ang[i] %= 360;
+        }
+    }
+    if (g->t >= 25 && g->t < 235) {
+        func_001F5F90(func_001F53A0(), &g->pos);
+        g->pos.y = 31.0f;
+        if (g->t % 2 == 0) {
+            b494_01E01940(g, (s32)b494_01E010D0, 0);
+        }
+        if (g->t % 2 == 0) {
+            b494_01E01940(g, (s32)b494_01E01230, 0);
+        }
+    }
+}
 
 /* shape b494:01E00EE0, 124 insns: a blue flickering flame: on start size 12, target size 12..41, a random frame and a
    tilt from the game's per-kind table at g+0x450C; alpha up by 64 to 0x80 for 5 ticks, then down by 9 until it ends; colour

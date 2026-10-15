@@ -429,7 +429,88 @@ static void func_01E00F80_b124(u8 *self, Obj_b018_01E00C50 *obj, void *pk) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01210_b124);
+/* shape b124:01E01210, 185 insns: the scene script of b124 (b361:01E00920's kind): red scene colour 0x80, counts
+   g+0x3822; from tick 222 to 345 it spawns 0x1E01C00 each tick; at 222 also 0x1E01F50 and, 60 above the camera's view
+   point, 0x1E017D0; at 220 0x1E01A30; from 258 to 340 it spawns 4..12 sparks around the joint g+0x3804 (x +-30,
+   y -42..17, z +-15); at 68 the burst point jumps to the joint g+0x380C (and 0x381C is set), and from 80 to 100 it
+   follows that joint */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x3578];
+    u8 col[4];
+    u8 pad37D8[0x2C];
+    s16 joint;
+    u8 pad3806[6];
+    s16 joint2;
+    u8 pad380E[0xE];
+    s16 h381C;
+    u8 pad381E[4];
+    s16 tick;
+} Ctx_b124_01E01210;
+
+static void func_01E01210_b124(Ctx_b124_01E01210 *g) {
+    extern void b124_01E01680();
+    extern void b124_01E017D0();
+    extern void b124_01E01A30();
+    extern void b124_01E01C00();
+    extern void b124_01E01F50();
+    extern void b124_01E027F0(Ctx_b124_01E01210 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 v[4];
+    s32 i;
+    s32 n;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick >= 222 && g->tick < 346) {
+        b124_01E027F0(g, b124_01E01C00, 0);
+    }
+    if (g->tick == 222) {
+        b124_01E027F0(g, b124_01E01F50, 0);
+    }
+    if (g->tick == 222) {
+        func_001F5F90(func_001F53A0(), v);
+        g->x = v[0];
+        g->y = 60.0f + v[1];
+        g->z = v[2];
+        b124_01E027F0(g, b124_01E017D0, 0);
+    }
+    if (g->tick == 220) {
+        b124_01E027F0(g, b124_01E01A30, 0);
+    }
+    if (g->tick >= 258 && g->tick < 341) {
+        func_001F5620(func_001F53A0(), g->joint, v);
+        n = func_0019A5C8() % 9 + 4;
+        for (i = 0; i < n; i++) {
+            g->x = v[0] + func_0019A5C8() % 60 - 30.0f;
+            g->y = v[1] + func_0019A5C8() % 60 - 30.0f - 12.0f;
+            g->z = v[2] + func_0019A5C8() % 30 - 15.0f;
+            b124_01E027F0(g, b124_01E01680, 0);
+        }
+    }
+    if (g->tick == 68) {
+        func_001F5620(func_001F53A0(), g->joint2, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+        g->h381C = 1;
+    }
+    if (g->tick >= 80 && g->tick < 101) {
+        func_001F5620(func_001F53A0(), g->joint2, v);
+        g->x = v[0];
+        g->y = v[1];
+        g->z = v[2];
+    }
+}
 
 /* shape b124:01E01500, 93 insns, 3 copies: step of a drifting spark: on state 1 picks a random phase, angle, speed and
    lifetime and a grey colour; full alpha while young, then fades by 15 until it ends; drifts by its speed. */

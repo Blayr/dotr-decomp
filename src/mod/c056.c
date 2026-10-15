@@ -1190,11 +1190,210 @@ static s32 func_01E03AE0_c056(Ctx_c056_01E03AE0 *g, Fx_c056_01E03AE0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E03DA0_c056);
+/* shape c056:01E03DA0, 142 insns: a rider on the scene's eight-point path (24-byte points at +0x4388): spins 0x300 a
+   tick, its angle 0xBA turns 4..28 a tick; it finds the first path segment rising above its height and takes its x/z
+   from it (func_001098E0); the scene entry it owns sinks 0x250 and sways 3072 x sin(0xBE), 0xBE turning 4 a tick;
+   early in the scene count it calls func_00106BC0 and grows 0xA8/0xAA by 3 until func_00106B90 says done */
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[0xC];
+} Pt_c056_01E03DA0;
+
+typedef struct {
+    u8 pad0[0x118];
+    Pt_c056_01E03DA0 pt[8];
+} Path_c056_01E03DA0;
+
+typedef struct {
+    s32 w100;
+    s32 w104;
+    u8 pad108[8];
+} Ent_c056_01E03DA0;
+
+typedef struct {
+    u8 pad0[0x100];
+    Ent_c056_01E03DA0 ent[1];
+    u8 pad110[0x4160];
+    Path_c056_01E03DA0 path;
+    u8 pad4448[0x30];
+    s32 timer;
+    u8 pad447C[0x46];
+    s16 count;
+    u8 pad44C4[0xC];
+    u8 sin[1];
+} Scene_c056_01E03DA0;
+
+typedef struct {
+    u8 pad0[4];
+    f32 y;
+    u8 pad8[0x4C];
+    s32 spin;
+    u8 pad58[8];
+    f32 x60;
+    u8 pad64[4];
+    f32 z68;
+    u8 pad6C[0x38];
+    s16 hA4;
+    u8 padA6[2];
+    s16 hA8;
+    s16 hAA;
+    u8 padAC[0xE];
+    s16 ang;
+    s16 idx;
+    s16 sway;
+} Fx_c056_01E03DA0;
+
+static s32 func_01E03DA0_c056(Scene_c056_01E03DA0 *g, Fx_c056_01E03DA0 *o) {
+    extern void func_001098E0(void *, void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001A22C0(f32);
+    extern void func_00106BC0(void *, s32, s32);
+    extern s32 func_00106B90(void *, s32, s32);
+    Vec4f out;
+    f32 v[4];
+    Path_c056_01E03DA0 *p;
+    s32 i;
+
+    v[0] = v[1] = v[2] = 0.0f;
+    p = &g->path;
+    o->spin += 0x300;
+    o->ang += (s16)(func_0019A5C8() % 25 + 4);
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    for (i = 1; i < 8; i++) {
+        if (p->pt[i].y > o->y) {
+            v[0] = p->pt[0].x;
+            v[2] = p->pt[0].z;
+            func_001098E0(&out, v, o, &p->pt[i - 1], &p->pt[i]);
+            i = 8;
+            o->x60 = out.x;
+            o->z68 = out.z;
+        }
+    }
+    g->ent[o->idx].w104 -= 0x250;
+    g->ent[o->idx].w100 = func_001A22C0(3072.0f * func_00108030(g->sin, o->sway, 0));
+    o->sway += 4;
+    if (o->sway >= 360) {
+        o->sway %= 360;
+    }
+    if (g->count < 16) {
+        func_00106BC0(o, 0x17, 0xA0);
+    }
+    if (g->timer < 21) {
+        o->hA8 += 3;
+        o->hAA = o->hA8;
+        if (func_00106B90(o, 0x12, 0x14) != 0) {
+            o->hA4 = 0;
+        }
+    }
+    if (g->timer < 11) {
+        o->hA4 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E03FE0_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E044B0_c056);
+/* shape c056:01E044B0, 178 insns: c056:01E03DA0 family orbiter: while its wait (0xBE) is out steps its phase (0xA6: 0 -> 1, then frames 0xBC to 7 and phase 3) and waits 1..2 again; turn 0xB8 = 4, radius 0xAA +3 and 0xA8 +1..3 a tick; phase 3 -> 4 fades by 9 and ends; from scene timer 22 fades in by 14 to 0xA0, under 17 fades out by 15; sits at radius 0xA8 along 0xBA + 0xB8 plus the path's 0x118/0x120 swing along the scene turn / 360 (g+0xE4) */
+
+typedef struct {
+    u8 pad0[0x118];
+    f32 f118;
+    u8 pad11C[4];
+    f32 f120;
+} Path_c056_01E044B0;
+
+typedef struct {
+    u8 pad0[0xE4];
+    s32 turn;
+    u8 padE8[0x4270 - 0xE8];
+    Path_c056_01E044B0 path;
+    u8 pad[0x4478 - 0x4270 - 0x124];
+    s32 timer;
+    u8 pad447C[0x44D0 - 0x447C];
+    u8 sin[1];
+} Scene_c056_01E044B0;
+
+typedef struct {
+    u8 pad0[0x60];
+    f32 x60;
+    u8 pad64[4];
+    f32 z68;
+    u8 pad6C[0x38];
+    s16 hA4;
+    s16 phase;
+    s16 hA8;
+    s16 hAA;
+    u8 col[4];
+    u8 padB0[8];
+    s16 hB8;
+    s16 hBA;
+    s16 frame;
+    s16 wait;
+} Fx_c056_01E044B0;
+
+static s32 func_01E044B0_c056(Scene_c056_01E044B0 *g, Fx_c056_01E044B0 *o) {
+    extern f32 func_00108030(void *, s16, s32);
+    Path_c056_01E044B0 *p;
+    f32 s;
+    f32 c;
+    s16 a;
+
+    p = &g->path;
+    if (o->wait == 0) {
+        if (o->phase == 0) {
+            o->phase++;
+        } else if (o->phase == 1) {
+            if (o->frame < 7) {
+                o->frame++;
+            } else {
+                o->phase = 3;
+                o->frame = 0;
+            }
+        }
+        o->wait = func_0019A5C8() % 2 + 1;
+    }
+    o->hB8 = 4;
+    o->hAA += 3;
+    o->hA8 += (s16)(func_0019A5C8() % 3 + 1);
+    if (o->phase == 3) {
+        o->phase++;
+    } else if (o->phase == 4) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->hA4 = 0;
+        }
+    }
+    if (g->timer > 21 && o->phase != 4) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 14;
+        }
+    }
+    if (g->timer < 17) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 15;
+        } else {
+            o->hA4 = 0;
+        }
+    }
+    s = func_00108030(g->sin, (s16)(o->hBA + o->hB8), 0);
+    c = func_00108030(g->sin, (s16)(o->hBA + o->hB8), 1);
+    o->x60 = c * o->hA8;
+    o->z68 = s * o->hA8;
+    a = g->turn / 360;
+    o->x60 += p->f118 * func_00108030(g->sin, a, 1);
+    o->z68 += p->f120 * func_00108030(g->sin, a, 0);
+    if (o->wait != 0) {
+        o->wait--;
+    }
+    if (g->timer < 11) {
+        o->hA4 = 0;
+    }
+    return 0;
+}
 
 /* shape c056:01E04780, 42 insns: a sprite that fades in by 16 to 0x30 while the scene value is under 16, out by 15 while the counter is under 21, holds size 190 and ends when the counter is under 11 */
 

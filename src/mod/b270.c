@@ -1227,7 +1227,91 @@ static s32 func_01E03780_b270(void *arg0, Obj_b270_01E03780 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E03900_b270);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E03F10_b270);
+/* shape b270:01E03F10, 161 insns: a glow in three kinds: 0 spins and widens 6 to 150 while growing 40 from 300; 1 lies flat, rerolls its turn and grows 40 from 150; 2 grows 100 from 20 with its width 70 behind; red/white for 0-1, gold/grey for 2; outer alpha up by 0x60 to 0xC0 for 12 (kind 2: 4) ticks, then down by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b270_01E03F10;
+
+static s32 func_01E03F10_b270(s32 arg0, Fx_b270_01E03F10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f48 = 0.0f;
+            o->f4C = 300.0f;
+            o->f34 = 2.0f;
+            o->hold = 12;
+        } else if (o->kind == 1) {
+            o->f48 = 0.0f;
+            o->f4C = 150.0f;
+            o->f34 = 2.0f;
+            o->hold = 12;
+        } else if (o->kind == 2) {
+            o->f48 = 0.0f;
+            o->f4C = 20.0f;
+            o->f34 = 2.0f;
+            o->hold = 4;
+        }
+        if (o->kind == 0 || o->kind == 1) {
+            func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->col2, 0x80, 0x80, 0x80);
+            func_001076F0(o->col, 0x80, 0x80, 0x40);
+        }
+        o->w = 15;
+        o->h = 15;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 12) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->rot[1] += 0x200;
+        if (o->f48 < 150.0f) {
+            o->f48 += 6.0f;
+        }
+        o->f4C += 40.0f;
+    } else if (o->kind == 1) {
+        func_00205C40(o->rot);
+        o->rot[0] = 0x4000;
+        o->f4C += 40.0f;
+    } else if (o->kind == 2) {
+        o->f4C += 100.0f;
+        o->f48 = o->f4C - 70.0f;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b270:01E041A0, 102 insns: on start f48 120, f4C 58 below it, colour (0xFF, 0xFF, 0x80), second colour black
    (alpha 0), variant 2, 0x5A = 30, 0x5C = 1, rise speed 2..4.9 (f34), random rotation; alpha 0x80 for 6 ticks, then

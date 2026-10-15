@@ -1021,7 +1021,116 @@ static s32 func_01E02C90_b707(Game_b707_01E02C90 *g, Fade_b707_01E02C90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02D80_b707);
+/* shape b707:01E02D80, 190 insns: b521:01E01970's blue-grey (0x80/0x80/0xB0) screen veil with offsets biased by 10; while
+   the scene time (g+0x8776) is 161..209 the bias swings 10 x cos(0x5A) (0x5A turning 10 a tick), at time 241 the tint
+   turns 0x90/0x70/0x80; for 300 ticks the alpha rises by 10 to 0x50 before time 216 and falls by 6 to 64 after, then it
+   fades by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b707_01E02D80;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b707_01E02D80 p;
+} Tv_b707_01E02D80;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b707_01E02D80 v[2];
+    u8 tail[0x20];
+} Tex_b707_01E02D80;
+
+typedef struct {
+    u8 pad0[0x8776];
+    s16 time;
+    u8 pad8778[0x200];
+    u8 trig[1];
+} Ctx_b707_01E02D80;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b707_01E02D80;
+
+static s32 func_01E02D80_b707(Ctx_b707_01E02D80 *g, Fx_b707_01E02D80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    Tex_b707_01E02D80 pk __attribute__((aligned(8)));
+    f32 z;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0xB0);
+        o->mode = 2;
+    }
+    z = 10.0f;
+    ((Tex_b707_01E02D80 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b707_01E02D80 *)(s32)&pk)->size = 5;
+    ((Tex_b707_01E02D80 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b707_01E02D80 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = (o->f48 + z) / 1024.0f;
+    pk.v[0].t = (o->f48 + z) / 512.0f;
+    pk.v[1].s = (640.0f + o->f48 - z) / 1024.0f;
+    pk.v[1].t = (448.0f + o->f48 - z) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->time > 160 && g->time < 210) {
+        o->f48 = 10.0f * func_00108030(g->trig, o->ang, 0);
+        o->ang += 10;
+    }
+    if (g->time == 241) {
+        func_001076F0(o->col, 0x90, 0x70, 0x80);
+    }
+    if (o->tick < 300) {
+        if (g->time < 216) {
+            if (o->col[3] < 0x50) {
+                o->col[3] += 10;
+            }
+        }
+        if (g->time > 216) {
+            if (o->col[3] > 64) {
+                o->col[3] -= 6;
+            }
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E03080_b707);
 

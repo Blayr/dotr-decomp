@@ -1518,6 +1518,205 @@ static s32 func_01E04F70_b383(Pool_b207_01E04730 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E05090_b383);
+/* shape b383:01E05090, 131 insns: b195:01E03200 with frame 0x14, scene texture 0x2A78, packet list 0x300C and depth 0x3034 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E052A0_b383);
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b383_01E05090;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b383_01E05090 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b383_01E05090;
+
+typedef struct {
+    s16 x, y, z;
+    s16 pad6;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    u8 padE[0x1A];
+    u8 tex[8];
+    u8 pad30[4];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Obj_b383_01E05090;
+
+typedef struct {
+    u8 pad0[0x2A78];
+    void *tex;
+    u8 pad2A7C[0x590];
+    s32 ctx;
+    u8 pad4030[0x24];
+    f32 depth[1];
+} Scene_b383_01E05090;
+
+static void func_01E05090_b383(Scene_b383_01E05090 *g, Obj_b383_01E05090 *obj, Pk_b383_01E05090 *pk, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00108EF0();
+    f32 m[16];
+    Vec4f pos;
+    Vec4f scale;
+    Rect_b008_01E00080 rect[2];
+    Vec4f world[4];
+    s32 rot[4];
+    St_b383_01E05090 uv;
+    f32 r;
+    f32 fx;
+    f32 fy;
+    f32 fz;
+
+    func_00207500();
+    if (mode == 0) {
+        func_00106080(rect, 0x14, obj->h34, rect);
+        pk->nreg = 0x24;
+        pk->n = 9;
+        pk->regs = 0x24242421 | ((s64)4 << 32);
+        pk->pad4 = 0;
+        pk->nreg |= 0x800;
+        func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+        *(s32 *)&pk->st.t = 0;
+        pk->q0 = 0;
+        pk->q1 = 0;
+        pk->q2 = 0;
+        pk->q3 = 0;
+        func_00107740(&uv, obj->tex);
+        pk->st = uv;
+        func_01E00150_b383((Pk_b008_01E00080 *)pk, rect, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
+        func_00205C40((s32)rot);
+        fx = obj->dx;
+        fy = obj->dy;
+        fz = obj->dz;
+        fx /= 10.0f;
+        fy /= 10.0f;
+        fz /= 10.0f;
+        pos.x = obj->x + fx;
+        pos.y = obj->y + fy;
+        pos.z = obj->z + fz;
+        func_00108EF0(world, &scale, rot, &pos);
+        r = obj->size;
+        func_00108CE0(m, r, r);
+        if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, g->depth) != 0) {
+            func_002075F0((s32)pk, g->ctx, func_001A23B0(g->depth[0]));
+        }
+    }
+}
+
+/* shape b383:01E052A0, 185 insns: b357:01E02770's ring as six camera-facing sprites in an upright circle (y/z,
+   radius 0x06, 60 apart from the start angle 0x3A) around the object, each sized obj->size and turned to face the camera's yaw, sent count+1 times (self+0xB8).
+   Calls the module's sprite-UV helper (shape b008:01E00080) as a static function. */
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b383_01E052A0;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b383_01E052A0 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b383_01E052A0;
+
+typedef struct {
+    s16 x, y, z;
+    s16 rad;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    s16 padE;
+    s32 rx, ry, rz;
+    u8 pad1C[0xC];
+    u8 tex[8];
+    s16 scale;
+    u8 pad32[6];
+    s16 size;
+    s16 ang;
+} Obj_b383_01E052A0;
+
+static void func_01E052A0_b383(u8 *self, Obj_b383_01E052A0 *obj, Pk_b383_01E052A0 *pk) {
+    extern void func_00108EF0();
+    extern void func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 m[16];
+    Vec4f pos;
+    f32 world[16];
+    f32 depth[4];
+    s32 rot[4];
+    St_b383_01E052A0 uv;
+    f32 r;
+    s32 k;
+    s32 t;
+    s32 j;
+    s16 a;
+
+    a = 0;
+    pk->nreg = 0x24;
+    pk->n = 9;
+    pk->regs = 0x24242421 | ((s64)4 << 32);
+    pk->pad4 = 0;
+    pk->nreg |= 0x800;
+    func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+    *(s32 *)&pk->st.t = 0;
+    pk->q0 = 0;
+    pk->q1 = 0;
+    pk->q2 = 0;
+    pk->q3 = 0;
+    func_00107740(&uv, obj->tex);
+    pk->st = uv;
+    func_01E00150_b383((Pk_b008_01E00080 *)pk, (Rect_b008_01E00080 *)(self + 0x94), 0);
+    func_00208700(pk, *(void **)(self + 0x88), 1);
+    pos.x = obj->x;
+    pos.y = obj->y;
+    pos.z = obj->z;
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    func_00108EF0(world, 0, &obj->rx, &pos);
+    pos.x = 0.0f;
+    for (k = 0; k < 6; k++) {
+        r = obj->size;
+        func_00108CE0(m, r, r);
+        func_00109100(m, rot, 0, self + 0xD8);
+        t = obj->ang + a;
+        pos.z = obj->rad * func_00108030(self + 0xD8, t, 1);
+        pos.y = obj->rad * func_00108030(self + 0xD8, t, 0);
+        func_00107070(m, 0, pos.x);
+        func_00107070(m, 1, pos.y);
+        func_00107070(m, 2, pos.z);
+        if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, depth) != 0) {
+            for (j = 0; j < *(s16 *)(self + 0xB8) + 1; j++) {
+                func_002075F0((s32)pk, *(s32 *)(self + 0x80), func_001A23B0(depth[0]));
+            }
+        }
+        a += 60;
+    }
+}

@@ -880,7 +880,97 @@ static s32 func_01E047A0_b531(Ctx_b531_01E047A0 *g, Fx_b531_01E047A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E049C0_b531);
+/* shape b531:01E049C0, 167 insns: a blue (0x30, 0x30, 0x80) pair-coloured flicker (grey 0x60 / 0xA0 every other tick), frame 0..7, both alphas up by 0x40 to 0x80 for 11 ticks, then by 0x30 to 0xF0 while the scene stage (ctx+0x31AA) runs; f38 is a third of ctx+0x3198, h18 grows 4; at stage 1 spawns four b531:01E04DB0 5 above the scene point (ctx+0x2860) and ends; from stage 11 fades by 9 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x2860 - 0x25C];
+    f32 at[3];
+    u8 pad286C[0x3194 - 0x286C];
+    s16 slot;
+    u8 pad3196[2];
+    s16 h3198;
+    u8 pad319A[0x31AA - 0x319A];
+    s16 stage;
+} Ctx_b531_01E049C0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0xC];
+    s32 h18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b531_01E049C0;
+
+static s32 func_01E049C0_b531(Ctx_b531_01E049C0 *g, Fx_b531_01E049C0 *o) {
+    extern s32 b531_01E04DB0(void);
+    extern void b531_01E06890(Ctx_b531_01E049C0 *, s32 (*)(void), s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        func_001076F0(o->col, 0x30, 0x30, 0x80);
+        func_001076F0(o->col2, 0x30, 0x30, 0x80);
+        o->h8 = 7;
+        o->hA = 25;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 11) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x40;
+        }
+    } else if (g->stage != 0) {
+        if (o->col[3] < 0xF0) {
+            o->col[3] += 0x30;
+        }
+        if (o->col2[3] < 0xF0) {
+            o->col2[3] += 0x30;
+        }
+    }
+    o->f34 = func_0019A5C8() % 8;
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        func_001076F0(o->col2, 0x60, 0x60, 0x60);
+    } else {
+        func_001076F0(o->col, 0xA0, 0xA0, 0xA0);
+        func_001076F0(o->col2, 0xA0, 0xA0, 0xA0);
+    }
+    o->tick++;
+    o->f38 = g->h3198 / 3;
+    o->h18 += 4;
+    if (g->stage == 1) {
+        g->pos[0] = g->at[0];
+        g->pos[1] = 5.0f + g->at[1];
+        g->pos[2] = g->at[2];
+        g->slot = 0;
+        b531_01E06890(g, b531_01E04DB0, 0);
+        b531_01E06890(g, b531_01E04DB0, 0);
+        b531_01E06890(g, b531_01E04DB0, 0);
+        b531_01E06890(g, b531_01E04DB0, 0);
+        o->mode = 0;
+    }
+    if (g->stage > 10) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b531:01E04C60, 82 insns: a white flicker (alpha 0x90 / 0x80 on odd / even ticks) at a random angle, growing to 20 and rising 4 a tick; ends when it is within 3 of its target's height (the scene camera pair, func_001F5F90, vs target table ctx+0x2870) */
 

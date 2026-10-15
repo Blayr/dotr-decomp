@@ -1047,7 +1047,84 @@ static s32 func_01E03A10_b056(Pool_b056_01E03A10 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E03B40_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E041D0_b056);
+/* shape b056:01E041D0, 168 insns: b117:01E02C00 family sprite draw: texture 0x9B and the scene texture at ctx+0x2CC for callback b056:01E01BD0, else 0x14 and ctx+0x298; random-free turn from func_00205C40, scale 0.1; callback b056:01E018A0 adds a tenth of dx..dz and draws 200 x size, others size x size */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x16];
+    void *cb;
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b056_01E041D0;
+
+typedef struct {
+    u8 pad0[0x298];
+    s32 tex;
+    u8 pad29C[0x2CC - 0x29C];
+    s32 tex2;
+} Scene_b056_01E041D0;
+
+static void func_01E041D0_b056(Scene_b056_01E041D0 *g, Fx_b056_01E041D0 *o, void *p, s32 lit) {
+    extern void b056_01E018A0(void);
+    extern void b056_01E01BD0(void);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        if (o->cb == b056_01E01BD0) {
+            func_00106080(rm, 0x9B, o->h34, rm);
+        } else {
+            func_00106080(rm, 0x14, o->h34, rm);
+        }
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        if (o->cb == b056_01E01BD0) {
+            func_00208700(p, g->tex2, 1);
+            return;
+        }
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    if (o->cb == b056_01E018A0) {
+        pos.x = o->x + o->dx / 10;
+        pos.y = o->y + o->dy / 10;
+        pos.z = o->z + o->dz / 10;
+    } else {
+        pos.x = o->x;
+        pos.y = o->y;
+        pos.z = o->z;
+    }
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00108EF0(m, &sc, rot, &pos);
+    if (o->cb == b056_01E018A0) {
+        func_00108CE0(quad, 200.0f, o->size);
+    } else {
+        func_00108CE0(quad, o->size, o->size);
+    }
+    func_00108F90(quad, p, m, v);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E04470_b056);
 

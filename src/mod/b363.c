@@ -721,7 +721,84 @@ static s32 func_01E034E0_b363(Scene_b363_01E034E0 *g, Fx_b363_01E034E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E03740_b363);
+/* shape b363:01E03740, 187 insns: a grey shock ring of kind 0x52: kind 0 turns randomly on y, starts at size 230
+   growing by 15 to 400 and drifts outward on x by 1..5; kind 1 turns randomly on all axes, starts at 80 and grows by
+   25; both rise from height 90 by 0..6 a tick and end past 270; alpha jumps by 0x60 for 7 ticks */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x;
+    u8 pad14[0xC];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 h;
+    s16 kind;
+    s16 t;
+    s16 h56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Ring_b363_01E03740;
+
+static s32 func_01E03740_b363(s32 arg0, Ring_b363_01E03740 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->size = 230.0f;
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            o->h = 90;
+        }
+        if (o->kind == 1) {
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+            o->size = 80.0f;
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            o->h = 90;
+        }
+        o->h56 = 0;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->t < 7) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] += 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (o->h < 270) {
+            o->h += (s16)(func_0019A5C8() % 7);
+        } else {
+            o->mode = 0;
+        }
+        if (o->size < 400.0f) {
+            o->size += 15.0f;
+        }
+        if (o->x > 0.0f) {
+            o->x += func_0019A5C8() % 5 + 1;
+        } else {
+            o->x -= func_0019A5C8() % 5 + 1;
+        }
+    }
+    if (o->kind == 1) {
+        if (o->h < 270) {
+            o->h += (s16)(func_0019A5C8() % 7);
+        } else {
+            o->mode = 0;
+        }
+        o->size += 25.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E03A30_b363);
 

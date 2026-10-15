@@ -738,7 +738,97 @@ static s32 func_01E027A0_b034(void *arg0, Obj_b034_01E027A0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E02970_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E02F60_b034);
+/* shape b034:01E02F60, 185 insns: a fire glow, kind 0 (size 4, inner 0.4, holds 10 ticks) or 1 (size 20, holds 26):
+   white with an orange rim (0x80/0x40/0x10), three random angle words; alpha up by 0x40 to 0xC0 for the hold, then
+   down by 4; kind 0 grows by 2.45 and its inner part by 0.25 to 15, kind 1 grows by 0.15 with the inner part 7 smaller,
+   rises 1.2 a tick, turns two angles by 0x100 and flickers to 0xC0 white and a 0xA0/0x60/0x30 rim every other
+   tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[6];
+    s16 kind;
+    u8 pad10[4];
+    f32 f14;
+    u8 pad18[8];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b034_01E02F60;
+
+static s32 func_01E02F60_b034(s32 arg0, Fx_b034_01E02F60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->kind = o->f50;
+        if (o->kind == 0) {
+            o->f48 = 4.0f;
+            o->f4C = 0.4f;
+        } else if (o->kind == 1) {
+            o->f48 = 20.0f;
+            o->f4C = 0.0f;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x40, 0x10);
+        o->w20 = func_0019A5C8() % 0xFFFF;
+        o->w24 = func_0019A5C8() % 0xFFFF;
+        o->w28 = func_0019A5C8() % 0xFFFF;
+        o->mode = 2;
+        o->col2[3] = 0;
+        if (o->kind == 0) {
+            o->hold = 10;
+        }
+        if (o->kind == 1) {
+            o->hold = 26;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->f48 += 2.45f;
+        if (o->tick != 0) {
+            if (o->f4C < 15.0f) {
+                o->f4C += 0.25f;
+            }
+        }
+    } else if (o->kind == 1) {
+        o->f48 += 0.15f;
+        o->f4C = o->f48 - 7.0f;
+        if (o->tick != 0) {
+            o->f14 += 1.2f;
+        }
+        o->w24 += 0x100;
+        o->w28 += 0x100;
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            func_001076F0(o->col2, 0x80, 0x40, 0x10);
+        } else {
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col2, 0xA0, 0x60, 0x30);
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03250_b034);
 
@@ -1033,7 +1123,97 @@ static s32 func_01E04050_b034(s32 arg0, Fx_b034_01E04050 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E040D0_b034);
+/* shape b034:01E040D0, 146 insns: b041:01E020B0's purple veil with a 14 zoom offset; the zoom follows 14 x sin of 0x5A (turning 4 a tick, table at scene +0xAD14); brightens by 10 (below 0x40) for 144 ticks, then fades by 9 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b034_01E040D0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b034_01E040D0 p;
+} Tv_b034_01E040D0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b034_01E040D0 v[2];
+    u8 tail[0x20];
+} Tex_b034_01E040D0;
+
+typedef struct {
+    u8 pad0[0xAD14];
+    u8 sin[1];
+} Ctx_b034_01E040D0;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b034_01E040D0;
+
+static s32 func_01E040D0_b034(Ctx_b034_01E040D0 *g, Fx_b034_01E040D0 *o) {
+    extern void func_002087A0(void *, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    Tex_b034_01E040D0 pk __attribute__((aligned(8)));
+    f32 z;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->mode = 2;
+    }
+    z = 14.0f;
+    ((Tex_b034_01E040D0 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b034_01E040D0 *)(s32)&pk)->size = 5;
+    ((Tex_b034_01E040D0 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b034_01E040D0 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x70;
+    pk.g = 0x60;
+    pk.b = 0x80;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = (o->f48 + z) / 1024.0f;
+    pk.v[0].t = (o->f48 + z) / 512.0f;
+    pk.v[1].s = (640.0f + o->f48 - z) / 1024.0f;
+    pk.v[1].t = (448.0f + o->f48 - z) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    o->f48 = 14.0f * func_00108030(g->sin, o->ang, 0);
+    o->ang += 4;
+    if (o->tick < 0x90) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E04320_b034);
 

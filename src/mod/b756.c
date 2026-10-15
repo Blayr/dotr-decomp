@@ -1377,4 +1377,102 @@ INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E05530_b756);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E05DF0_b756);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E061D0_b756);
+/* shape b756:01E061D0, 170 insns: draw a 4-quad sprite burst at a point with a local packet: the object's colour on all
+   corners, the scene's rect (g+0x94, frame g+0xBE) and texture (g+0x88), blend 0x42 or a scaled 0x40 by the mode's high
+   nibble; it places the burst at the point turned by the object, resets the rect to frame 0x14, and draws four quads of
+   the object's size (depth-tested, packet list g+0xA90C) */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b756_01E061D0;
+
+typedef struct {
+    Rgbaq_b756_01E061D0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b756_01E061D0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b756_01E061D0 v[4];
+} Pkt_b756_01E061D0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 size;
+    u8 pad4C[0x14];
+    u8 col[4];
+} Obj_b756_01E061D0;
+
+typedef struct {
+    u8 pad0[0x88];
+    s32 tex;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x1A];
+    s16 frame;
+    u8 padC0[0xA84C];
+    s32 ot;
+} Game_b756_01E061D0;
+
+static void func_01E061D0_b756(Game_b756_01E061D0 *g, Obj_b756_01E061D0 *o, s32 mode, Vec4f *in) {
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b756_01E061D0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 pos[4];
+    Vec4f q[4];
+    f32 v[4];
+    f32 m[16];
+    f32 depth[4];
+    f32 rm[4];
+    struct {
+        Pkt_b756_01E061D0 pk;
+        u8 tail[0x20];
+    } buf;
+    Pkt_b756_01E061D0 *p = &buf.pk;
+    s32 k;
+    s16 i;
+
+    *(Vec4f *)pos = *in;
+    func_00109270(p, 0, 0);
+    p->v[0].c = func_00107740(o->col);
+    p->v[1].c = func_00107740(o->col);
+    p->v[2].c = func_00107740(o->col);
+    p->v[3].c = func_00107740(o->col);
+    func_00108500(p, &g->rect, g->frame);
+    func_00208700(p, g->tex, 1);
+    k = mode >> 4;
+    if (k == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)k << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    v[0] = pos[0];
+    v[1] = pos[1];
+    v[2] = pos[2];
+    func_00108EF0(m, 0, o->rot, v);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    func_00106080(rm, 0x14, 0, 0);
+    g->rect = *(Vec4f *)rm;
+    func_00108500(p, &g->rect, g->frame);
+    for (i = 0; i < 4; i++) {
+        func_00108D60(q, o->size, o->size, i);
+        if (func_00205630(q, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, g->ot, (u32)depth[0]);
+        }
+    }
+}

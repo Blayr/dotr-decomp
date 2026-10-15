@@ -882,7 +882,96 @@ static s32 func_01E03090_b092(s32 arg0, Fx_b092_01E03090 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E03310_b092);
+/* shape b092:01E03310, 187 insns: b256:01E03DC0 in red (0x80, 0x20, 0x20) through ctx+0xCB38, fading out from scene count 125 (ctx+0xCBCE) and ending at 135 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b092_01E03310;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b092_01E03310 p;
+} Tv_b092_01E03310;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b092_01E03310 v[2];
+} Tex_b092_01E03310;
+
+typedef struct {
+    u8 pad[0xCB38];
+    Tex_b092_01E03310 *pk;
+    u8 padCB3C[0xCBCE - 0xCB3C];
+    s16 count;
+} Game_b092_01E03310;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x48];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b092_01E03310;
+
+static s32 func_01E03310_b092(Game_b092_01E03310 *g, Fx_b092_01E03310 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x80, 0x20, 0x20);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->count < 125) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (g->count >= 135) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E03600_b092);
 

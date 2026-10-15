@@ -401,7 +401,89 @@ static void func_01E00D80_b280(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E012D0_b280);
+/* shape b280:01E012D0, 191 insns: the effect scene's step: counts the frame (0x4C7E), places the spawn point on joint
+   0x4C48 nudged 2 along z (back with the flag 0x4C7A); from frame 64 to 320 it spawns a 0x1E015D0 at joint 0x4C4A or
+   0x4C4C by odd/even frame, and every frame a 0x1E01AA0 the same way (0.8 back when flagged); it then parks the point
+   on the other model's joint 0x4C56 pushed 3 x its speed along z, and turns the scene angle by 6 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x49E8];
+    s16 j48;
+    s16 j4A;
+    s16 j4C;
+    u8 pad4C4E[8];
+    s16 j56;
+    u8 pad4C58[0x18];
+    s16 ang;
+    u8 pad4C72[4];
+    s16 side;
+    u8 pad4C78[2];
+    s16 flag;
+    u8 pad4C7C[2];
+    s16 t;
+} Scene_b280_01E012D0;
+
+static void func_01E012D0_b280(Scene_b280_01E012D0 *g) {
+    extern void b280_01E015D0(void);
+    extern void b280_01E01AA0(void);
+    extern s32 b280_01E02530(Scene_b280_01E012D0 *, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_001F5860(s32);
+    s16 i;
+    s16 n;
+
+    g->t++;
+    func_001F5620(func_001F53A0(), g->j48, &g->pos);
+    if (g->flag != 0) {
+        g->pos.z -= 2.0f;
+    } else {
+        g->pos.z += 2.0f;
+    }
+    if (g->t >= 64 && g->t < 321 && g->t != 0) {
+        if (g->t < 100) {
+            n = 1;
+        } else {
+            n = 1;
+        }
+        for (i = 0; i < n; i++) {
+            g->side = g->t % 2;
+            if (g->side != 0) {
+                func_001F5620(func_001F53A0(), g->j4A, &g->pos);
+            } else {
+                func_001F5620(func_001F53A0(), g->j4C, &g->pos);
+            }
+            b280_01E02530(g, (s32)b280_01E015D0, 0);
+        }
+    }
+    if (g->t != 0) {
+        for (i = 0; i < 1; i++) {
+            g->side = g->t % 2;
+            if (g->side != 0) {
+                func_001F5620(func_001F53A0(), g->j4A, &g->pos);
+            } else {
+                func_001F5620(func_001F53A0(), g->j4C, &g->pos);
+            }
+            if (g->flag != 0 && g->flag != 0) {
+                g->pos.z -= 0.8f;
+            }
+            b280_01E02530(g, (s32)b280_01E01AA0, 0);
+        }
+    }
+    func_001F5620(func_001F5380(), g->j56, &g->pos);
+    if (g->flag != 0) {
+        g->pos.z += 3.0f * func_001F5860(func_001F5380());
+    } else {
+        g->pos.z -= 3.0f * func_001F5860(func_001F5380());
+    }
+    g->ang += 6;
+    if (g->ang >= 360) {
+        g->ang %= 360;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E015D0_b280);
 

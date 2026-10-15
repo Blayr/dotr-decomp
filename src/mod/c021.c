@@ -796,9 +796,213 @@ static void func_01E03280_c021(Scene_c021_01E03280 *g, Fx_c021_01E03280 *o, void
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E03390_c021);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E038A0_c021);
+/* shape c021:01E038A0, 189 insns: c021:01E03280 family ribbon draw: mode 0 sets texture 0x97 (frame 1) and the scene texture (g+0xBC); else five 15-degree segments at the scene's angle table (g+0x38C6), the inner edge from the linked object (0x68: its radius 0x87, height 0x64, colour 0x7C, func_00107DD0 between them) or its own radius 0x86, the outer edge at radius 0x87 and its height, coloured 0x80 (or its 0x7C at alpha 10 unless 0x6C), depth-tested into g+0x3584 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E03BA0_c021);
+typedef struct {
+    u8 r, g, b, a;
+} Col_c021_01E038A0;
+
+typedef struct Rib_c021_01E038A0 {
+    u8 pad0[0x40];
+    u8 m40[0x20];
+    f32 f60;
+    f32 f64;
+    struct Rib_c021_01E038A0 *link;
+    s32 w6C;
+    u8 pad70[0xC];
+    u8 c7C[4];
+    u8 c80[4];
+    u8 pad84[2];
+    u8 c86;
+    u8 c87;
+    u8 pad88[4];
+    s16 ang;
+} Rib_c021_01E038A0;
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 m40[0x7C];
+    s32 tex;
+    u8 padC0[0x20];
+    Vec4f q[4];
+    u8 pad120[0x3584 - 0x120];
+    s32 ot;
+    u8 pad3588[0x35E4 - 0x3588];
+    u8 scale[0x38C6 - 0x35E4];
+    s16 angs[5];
+} Game_c021_01E038A0;
+
+static void func_01E038A0_c021(Game_c021_01E038A0 *g, Rib_c021_01E038A0 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00106CF0(void *, s16, s32, void *);
+    extern void func_00107DD0(void *, void *, void *, s32);
+    extern void func_00106FA0(void *, void *, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 rm[4];
+    f32 d[4];
+    Col_c021_01E038A0 c;
+    Rib_c021_01E038A0 *q;
+    s16 a;
+    s32 k;
+
+    q = o->link;
+    a = 0;
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00109270(p, 0, 0);
+        func_00108500(p, rm, 1);
+        func_00208700(p, g->tex, 0);
+    } else {
+        g->q[2].y = g->q[3].y = o->f64;
+        for (k = 0; k < 5; k++) {
+            if (q != NULL) {
+                func_00106CF0(&g->q[0], a + q->ang, q->c87, g->scale);
+                func_00106CF0(&g->q[1], a + q->ang + 15, q->c87, g->scale);
+                g->q[0].y = g->q[1].y = o->f60 = q->f64;
+                func_00107DD0(&g->q[0], q->m40, o->m40, 0);
+            } else {
+                func_00106CF0(&g->q[0], a + o->ang, o->c86, g->scale);
+                func_00106CF0(&g->q[1], a + o->ang + 15, o->c86, g->scale);
+                g->q[0].y = g->q[1].y = o->f60;
+            }
+            func_00106CF0(&g->q[2], a + o->ang, o->c87, g->scale);
+            func_00106CF0(&g->q[3], a + o->ang + 15, o->c87, g->scale);
+            func_00106FA0(&g->q[0], o->m40, 0);
+            func_00107DD0(&g->q[2], o->m40, o, 0);
+            if (q == NULL) {
+                func_00107790(p, o->c80, 1);
+            } else {
+                func_00107790(p, q->c7C, 1);
+            }
+            if (o->w6C != 0) {
+                func_00107790(p, o->c80, 2);
+            } else {
+                c = *(Col_c021_01E038A0 *)o->c7C;
+                c.a = 10;
+                func_00107790(p, &c, 2);
+            }
+            if (func_00205630(&g->q[0], 0x70000000, g->m40, p, d) != 0) {
+                func_002075F0(p, g->ot, (u32)d[0]);
+            }
+            a = g->angs[k];
+        }
+    }
+}
+
+/* shape c021:01E03BA0, 189 insns: c056:01E022F0 family ring: eight segments 45 apart drawn with the scene's quad
+   (g+0xE0, height 10): the outer edge follows the parent's ring (its angle 0x8C, radius 0x87, taking its depth 0x64)
+   or its own at radius 0x86, the inner edge its own at radius 0x87; the slot colour per segment takes the parent's or
+   its own alpha for one corner pair and its own 0x83 for the other; mode 0 sets up the packet (blend by scene flag) */
+
+typedef struct Ring_c021_01E03BA0 {
+    u8 pad0[0x60];
+    f32 f60;
+    f32 f64;
+    struct Ring_c021_01E03BA0 *parent;
+    u8 pad6C[0x13];
+    u8 a7F;
+    u8 pad80[3];
+    u8 a83;
+    u8 pad84[2];
+    u8 r86;
+    u8 r87;
+    u8 pad88[4];
+    s16 ang;
+} Ring_c021_01E03BA0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+} Pk_c021_01E03BA0;
+
+typedef struct {
+    u8 pad0[0xBC];
+    void *tex;
+    u8 padC0[0x20];
+    Vec4f quad[4];
+    u8 pad120[0x3464];
+    s32 ot;
+    u8 pad3588[0x48];
+    f32 depth;
+    u8 pad35D4[0x10];
+    u8 sin[0x2D2];
+    s16 flag;
+    u8 pad38B8[0x18];
+    u8 cols[8][4];
+} Scene_c021_01E03BA0;
+
+static void func_01E03BA0_c021(Scene_c021_01E03BA0 *g, Ring_c021_01E03BA0 *o, Pk_c021_01E03BA0 *pk, s32 mode) {
+    extern void func_00105D00(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, void *, s32);
+    extern void func_00106CF0(void *, s16, s32, void *);
+    extern void func_00107790(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    s16 rm[4] __attribute__((aligned(16)));
+    Ring_c021_01E03BA0 *p;
+    s32 k;
+    s16 a;
+
+    p = o->parent;
+    a = 0;
+    if (mode == 0) {
+        func_00105D00(rm, 3, 0);
+        pk->count = 0x34;
+        pk->tag = 0xC;
+        pk->regs = 0x21421421 | ((u64)0x4214 << 32);
+        pk->pad = 0;
+        pk->count |= 0x800;
+        if (g->flag == 0) {
+            func_002086D0(pk, ((u64)0xF0 << 32) | 0x42);
+        } else {
+            func_002086D0(pk, 0x48);
+        }
+        func_00108500(pk, rm, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+    g->quad[3].y = 10.0f;
+    g->quad[2].y = 10.0f;
+    g->quad[1].y = 10.0f;
+    g->quad[0].y = 10.0f;
+    for (k = 0; k < 8; k++) {
+        if (p != NULL) {
+            func_00106CF0(&g->quad[0], a + p->ang, p->r87, g->sin);
+            func_00106CF0(&g->quad[1], a + p->ang + 45, p->r87, g->sin);
+            o->f60 = p->f64;
+        } else {
+            func_00106CF0(&g->quad[0], a + o->ang, o->r86, g->sin);
+            func_00106CF0(&g->quad[1], a + o->ang + 45, o->r86, g->sin);
+        }
+        func_00106CF0(&g->quad[2], a + o->ang, o->r87, g->sin);
+        func_00106CF0(&g->quad[3], a + o->ang + 45, o->r87, g->sin);
+        if (p == NULL) {
+            g->cols[k][3] = o->a7F;
+        } else {
+            g->cols[k][3] = p->a83;
+        }
+        func_00107790(pk, g->cols[k], 1);
+        g->cols[k][3] = o->a83;
+        func_00107790(pk, g->cols[k], 2);
+        rm[0] = 0x81;
+        rm[1] = 0x81;
+        rm[2] = 0x7F;
+        rm[3] = 0x1E;
+        func_00108500(pk, rm, 0);
+        if (func_00205630(g->quad, 0x70000000, 0, pk, &g->depth) != 0) {
+            func_002075F0(pk, g->ot, (u32)g->depth);
+        }
+        a += 45;
+    }
+    }
+}
 
 /* shape c021:01E03EA0, 71 insns: draws a slot effect (c035:01E01290 shape with the effect colours at 0x7C, blend 0x42): mode 0 builds
    the gouraud packet with q 0, other modes queue it */

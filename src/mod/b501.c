@@ -629,7 +629,97 @@ static s32 func_01E028B0_b501(Game_b501_01E028B0 *g, Fx_b501_01E028B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02A20_b501);
+/* shape b501:01E02A20, 187 insns: b297:01E014F0's glow (grey 0x30, or dull red 0x40/0x10/0x10 when 0x30 was set)
+   without joints: it drifts with the camera depth (/35), sinks one every other tick while above the camera height
+   - 15, and keeps growing by 1 */
+
+typedef struct {
+    u8 pad0[0x3514];
+    s16 ja;
+    s16 jb;
+} Game_b501_01E02A20;
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b501_01E02A20;
+
+static s32 func_01E02A20_b501(Game_b501_01E02A20 *g, Glow_b501_01E02A20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 func_001A22C0(f32);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 40;
+        o->kind = 0;
+        if (o->h30 == 0) {
+            func_001076F0(o->col, 0x30, 0x30, 0x30);
+        } else {
+            func_001076F0(o->col, 0x40, 0x10, 0x10);
+        }
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 20;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 65) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    *(f32 *)(u32)&v[0].z /= 35.0f;
+    o->h4 = func_001A22C0(o->h4 + v[0].z);
+    if (o->h2 > v[1].y - 15.0f) {
+        if (o->tick % 2 == 1) {
+            o->h2--;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->f38++;
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b501:01E02D10, 52 insns: a dark/yellow two-colour ring at the given angle: alpha 0xA0 for 3 ticks, then out by 35 and ends; grows 30 a tick */
 

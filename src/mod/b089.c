@@ -1010,7 +1010,90 @@ INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E03D60_b089);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E040E0_b089);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E04330_b089);
+/* shape b089:01E04330, 155 insns: c022:01E01850 family flat ring segment: one quad between angles o->h3A and +20 at radius o->h38, built at the object (turned by its rotation); blend switches to 0x42 after 16 ticks; the setup pass sets two colours (texture 0x9C, scene texture at ctx+0xAC) */
+
+typedef struct {
+    u8 pad0[0xAC];
+    s32 tex;
+    u8 padB0[0x26EC - 0xB0];
+    s32 ot;
+    u8 pad26F0[0x24];
+    f32 depth;
+    u8 pad2718[0x3B8C - 0x2718];
+    u8 tab[1];
+} Ctx_b089_01E04330;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 h34;
+    u8 pad36[2];
+    s16 r;
+    s16 ang;
+} Fx_b089_01E04330;
+
+static void func_01E04330_b089(Ctx_b089_01E04330 *g, Fx_b089_01E04330 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    Vec4f pos;
+    f32 m[16];
+    f32 rm[4];
+    s32 i;
+    s16 a;
+    s16 t;
+
+    a = 0;
+    if (lit == 0) {
+        func_00106080(rm, 0x9C, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 1);
+        func_00107790(p, o->col2, 2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+    if (o->tick > 16) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    }
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    func_00108EF0(m, 0, o->rot, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    for (i = 0; i < 1; i++) {
+        t = o->ang + a;
+        q[2].x = o->r * func_00108030(g->tab, t, 1);
+        q[2].z = o->r * func_00108030(g->tab, t, 0);
+        q[0].x = 0.0f;
+        q[0].z = 0.0f;
+        t = o->ang + 20 + a;
+        q[3].x = o->r * func_00108030(g->tab, t, 1);
+        q[3].z = o->r * func_00108030(g->tab, t, 0);
+        q[1].x = 0.0f;
+        q[1].z = 0.0f;
+        if (func_00205630(q, 0x70000000, m, p, &g->depth) != 0) {
+            func_002075F0(p, g->ot, (u32)g->depth);
+        }
+        a += 180;
+    }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E045A0_b089);
 

@@ -685,7 +685,102 @@ static s32 func_01E01F20_b721(void *arg0, Obj_b721_01E01F20 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E020D0_b721);
+/* shape b721:01E020D0, 190 insns: a grey (0x50/0x60 flicker) glow pair by kind 0..2: size 14/20/26 with the inner part
+   6 smaller, frame 0..6, h8 4..6, hold 55/45/35 ticks fading in by 12 to 0x8C, then out by 9 while growing by 1.5 a tick;
+   for its first 10 ticks the angle word 0x24 is 0 or 0x8000 by the scene flag 0x9864, then it turns by 0x80 one way
+   or the other by the kind's parity */
+
+typedef struct {
+    u8 pad0[0x9864];
+    s16 flag;
+} Game_b721_01E020D0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 h8;
+    u8 padA[0x1A];
+    s32 w24;
+    u8 pad28[0x20];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b721_01E020D0;
+
+static s32 func_01E020D0_b721(Game_b721_01E020D0 *g, Fx_b721_01E020D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f48 = 14.0f;
+            o->f4C = o->f48 - 6.0f;
+        } else if (o->kind == 1) {
+            o->f48 = 20.0f;
+            o->f4C = o->f48 - 6.0f;
+        } else if (o->kind == 2) {
+            o->f48 = 26.0f;
+            o->f4C = o->f48 - 6.0f;
+        }
+        o->frame = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->h8 = func_0019A5C8() % 3 + 4;
+        if (o->kind == 0) {
+            o->hold = 55;
+        }
+        if (o->kind == 1) {
+            o->hold = 45;
+        }
+        if (o->kind == 2) {
+            o->hold = 35;
+        }
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        }
+        o->f48 += 1.5f;
+        o->f4C = o->f48 - 6.0f;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        func_001076F0(o->col2, 0x50, 0x50, 0x50);
+    } else {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        func_001076F0(o->col2, 0x60, 0x60, 0x60);
+    }
+    if (o->tick < 10) {
+        if (g->flag != 0) {
+            o->w24 = 0;
+        } else {
+            o->w24 = 0x8000;
+        }
+    } else if (o->kind % 2 == 1) {
+        o->w24 += 0x80;
+    } else {
+        o->w24 -= 0x80;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b611:01E01BD0, 120 insns: a white spark: f48 70..99 (+6 per tick until tick 0x8C), variant 0..7, f50
    100..149, random f5A, spin 16..35, f8 0..34, life 3..16; alpha grows by 0x40 (below 0xC0) during the life,

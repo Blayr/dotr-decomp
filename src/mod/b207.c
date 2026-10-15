@@ -1615,4 +1615,101 @@ static s32 func_01E04730_b207(Pool_b207_01E04730 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E04850_b207);
+/* shape b207:01E04850, 142 insns: b069:01E01A70 family four-part quad (func_00108D60 parts, twisted by the scene table at ctx+0x316C) at position + speed/10, scale 1; the setup pass colours it (three colA corners, one colB) */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b207_01E04850;
+
+typedef struct {
+    Rgbaq_b207_01E04850 c;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b207_01E04850;
+
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 pad;
+    u64 regs;
+    Vtx_b207_01E04850 v[4];
+} Pkt_b207_01E04850;
+
+typedef struct {
+    u8 pad0[0x316C];
+    u8 tab[1];
+} Ctx_b207_01E04850;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 colB[4];
+    u8 colA[4];
+    u8 pad30[4];
+    s16 u;
+    u8 pad36[2];
+    s16 v;
+    s16 rz;
+} Fx_b207_01E04850;
+
+static void func_01E04850_b207(Ctx_b207_01E04850 *g, Fx_b207_01E04850 *o, Pkt_b207_01E04850 *p, s32 lit) {
+    extern Rgbaq_b207_01E04850 func_00107740(void *);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 m[16];
+    s32 rot[4];
+    s32 r[4];
+    f32 depth[4];
+    s32 ot;
+    s16 i;
+    f32 ax, ay, az;
+
+    ot = (s32)func_00207500();
+    if (lit == 0) {
+        func_001092E0(p, 0);
+        func_001094F0(p);
+        p->v[0].c = func_00107740(o->colA);
+        p->v[1].c = func_00107740(o->colA);
+        p->v[2].c = func_00107740(o->colA);
+        p->v[3].c = func_00107740(o->colB);
+    } else {
+    sc.x = 1.0f;
+    sc.y = 1.0f;
+    sc.z = 1.0f;
+    func_00205C40((s32)rot);
+    ax = o->dx;
+    ay = o->dy;
+    az = o->dz;
+    ax /= 10.0f;
+    ay /= 10.0f;
+    az /= 10.0f;
+    pos.x = o->x + ax;
+    pos.y = o->y + ay;
+    pos.z = o->z + az;
+    func_00108EF0(m, &sc, rot, &pos);
+    r[2] = o->rz;
+    r[1] = 0;
+    r[0] = 0;
+    for (i = 0; i < 4; i++) {
+        func_00108D60(quad, o->u, o->v, i);
+        func_00109100(quad, r, 2, g->tab);
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, ot, (u32)depth[0]);
+        }
+    }
+    }
+}

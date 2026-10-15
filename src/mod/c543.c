@@ -1161,4 +1161,81 @@ static s32 func_01E02F20_c543(s32 obj, Obj_b000_01E05110 *o, Cam_b000_01E05110 *
 
 INCLUDE_ASM("asm/nonmatchings/mod/c543", func_01E03480_c543);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c543", func_01E04870_c543);
+/* shape c543:01E04870, 162 insns: c543's scene step: it runs the module's layers; before step 100 it eases the scene
+   scale, after that it draws the 1.3-scaled overlay, eases its scale, grows the scene by 0.005 and clears four colour
+   blocks; it spins the 64 particles, runs both sprite blocks, flashes each block (0xFF/0x40 for 5 frames before step 100,
+   then fades it) and restarts a block every 11 frames */
+
+typedef struct {
+    f32 f[3];
+    u8 pad00C[0x64];
+    u8 b70[0xA0];
+    u8 b110[0x60];
+    u8 b170[0x400];
+    u8 b570[0x400];
+    u8 b970[0x70];
+    u8 b9E0[0x60];
+    s32 arr[64][4];
+    u8 bE40[0x2F0];
+    u8 b1130[0x70];
+    u8 blk[2][0x410];
+    s32 cnt[2];
+    u8 pad19C8[0x594];
+    s32 step;
+} Scene_c543_01E04870;
+
+static void func_01E04870_c543(Scene_c543_01E04870 *g, s32 ot) {
+    extern void c543_01E008B0(s32, void *, void *, void *);
+    extern void c543_01E011D0(s32, void *, void *, void *);
+    extern void c543_01E02070(s32, void *, void *);
+    extern void c543_01E026C0(s32, void *, void *);
+    extern void c543_01E02CD0(void *, s32, f32);
+    extern void c543_01E02F20(s32, void *, void *, f32);
+    extern void func_001033D0(void *, f32, f32);
+    extern void func_00103470(void *, s32, s32);
+    extern void func_001032C0(void *, s32, s32);
+    f32 sc[4];
+    s32 i;
+
+    c543_01E02070(ot, g->b170, g);
+    c543_01E02070(ot, g->b570, g);
+    c543_01E011D0(ot, g->b110, g->b70, g);
+    c543_01E026C0(ot, g->b9E0, g->b970);
+    if (g->step < 100) {
+        func_001033D0(g, 1.0f, 0.02f);
+    } else {
+        sc[0] = sc[1] = sc[2] = 1.3f;
+        c543_01E008B0(ot, g->bE40, g->b970, sc);
+        func_001033D0(g->b970, 1.0f, 0.3f);
+        g->f[0] += 0.005f;
+        g->f[1] += 0.005f;
+        g->f[2] += 0.005f;
+        func_00103470(&g->b9E0[0xB], 0, 4);
+        func_00103470(&g->b170[0xB], 0, 2);
+        func_00103470(&g->b570[0xB], 0, 2);
+        func_00103470(&g->b110[0x37], 0, 3);
+    }
+    for (i = 0; i < 64; i++) {
+        g->arr[i][0] += 0x80;
+        g->arr[i][1] += 0x80;
+        g->arr[i][2] += 0x80;
+    }
+    c543_01E02F20(ot, g->blk[0], g->b1130, 20.0f);
+    c543_01E02F20(ot, g->blk[1], g->b1130, 20.0f);
+    for (i = 0; i < 2; i++) {
+        if (g->step < 100) {
+            if (g->cnt[i] < 5) {
+                func_001032C0(&g->blk[i][7], 0xFF, 0x40);
+            } else {
+                func_00103470(&g->blk[i][7], 0, 0x20);
+            }
+        }
+        if (g->cnt[i] > 10) {
+            g->cnt[i] = 0;
+            g->blk[i][7] = 0;
+            c543_01E02CD0(g->blk[i], 0x40, 80.0f);
+        }
+    }
+    g->cnt[0]++;
+    g->cnt[1]++;
+}
