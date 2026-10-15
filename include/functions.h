@@ -2580,6 +2580,7 @@ void func_00184768(s32 arg0, s32 arg1, s32 arg2);
 void func_001847B0(s32 arg0);
 void func_001847D8(s32 arg0, s32 arg1);
 void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3);
+void func_00186B58(volatile u32 *arg0);
 s32 func_00186BA0(u32 *arg0, u32 arg1);
 void func_001893A8(void *arg0, s32 idx);
 void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32 s, s32 count, s32 fmt, s32 h_r, s32 v_r, s32 dmv, s32 mvscale);

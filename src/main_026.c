@@ -1263,7 +1263,17 @@ s32 sceDmaWatch(void *arg0, void *addr, s32 mode, s32 timeout) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_026", func_00186B58);
+void func_00186B58(volatile u32 *arg0) {
+    if (*(volatile s32 *)0x1000F520 == 0) {
+        *(volatile s32 *)0x1000F590 = 0x1000;
+    }
+    {
+        u32 m = 0xFFFFFEFF;
+        m &= *arg0;
+        *arg0 = m;
+    }
+    *(volatile s32 *)0x1000F590 = 0;
+}
 
 s32 func_00186BA0(u32 *arg0, u32 arg1) {
     u32 temp_v0;
