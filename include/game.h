@@ -507,7 +507,6 @@ extern u8 D_002BCB88[];
 
 
 
-s32 func_00197570(s32, s32, s32);               /* extern */
 
 
 s32 func_0019C4C8(s32, s32, s32);               /* extern */
