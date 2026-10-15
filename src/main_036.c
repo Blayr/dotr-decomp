@@ -864,7 +864,24 @@ double func_001A1E70(s64 u) {
     return d;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_036", func_001A1F18);
+/* __floatdisf */
+
+f32 func_001A1F18(s64 u) {
+    double f;
+
+    if (53 < 64 && 53 > (64 - 53 + 24)) {
+        if (!(-((s64)1 << 53) < u && u < ((s64)1 << 53))) {
+            if ((u64)u & (((u64)1 << (64 - 53)) - 1)) {
+                u |= (u64)1 << (64 - 53);
+            }
+        }
+    }
+    f = (s32)(u >> 32);
+    f *= (u64)1 << 16;
+    f *= (u64)1 << 16;
+    f += (u32)(u & (((u64)1 << 32) - 1));
+    return (f32)f;
+}
 
 /* __fixunsdfdi */
 
