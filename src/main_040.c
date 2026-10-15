@@ -630,7 +630,88 @@ s32 func_001BB260(s32 arg0) {
     return func_00207650(arg0, (s32)packet.tag, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB6D0);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+typedef int DotrCaptionTitleWord;
+extern DotrCaptionTitleWord func_001B4780_b(DotrCaptionTitleWord cursor, int a1, int a2, int a3, int x, int y, int a6, int a7, long a8);
+extern DotrCaptionTitleWord func_001B6F70_b(DotrCaptionTitleWord cursor, int x, int y, int font, int flags, int n, const char *text, int c);
+typedef int DotrCaptionAddress;
+struct DotrCaptionControl {
+    char unknown_000[0x6d0];
+    DotrCaptionAddress work;
+    char unknown_6d4[4];
+    unsigned short *list_cards;
+    unsigned short *deck_cards;
+    char unknown_6e0[0xc58 - 0x6e0];
+    int pic_z;
+    char unknown_c5c[0xc8a - 0xc5c];
+    unsigned short list_cursor;
+    char unknown_c8c[2];
+    unsigned short deck_cursor;
+    char unknown_c90[2];
+    short slide;
+    char unknown_c94[0xcc2 - 0xc94];
+    char pass[8];
+    char unknown_cca[0xd36 - 0xcca];
+    unsigned char choice;
+    char unknown_d37[0xd57 - 0xd37];
+    unsigned char step;
+    char unknown_d58[0xd5c - 0xd58];
+    unsigned char side;
+    unsigned char mode;
+    unsigned char list_top;
+    unsigned char deck_top;
+    unsigned char grid_top;
+    unsigned char grid_col;
+    unsigned char grid_row;
+};
+extern struct DotrCaptionControl D_00317490_1bb6d0;
+extern char D_002BEF80[];
+extern char D_00290080_1bb6d0[];
+extern DotrCaptionTitleWord func_001B3CC0_b(DotrCaptionTitleWord cursor, char *def, int x, int y, int a4, int a5, int a6,
+                                                int a7, int a8, int a9, int a10, int a11, int a12, int a13);
+extern DotrCaptionTitleWord func_001B6EA0_b(DotrCaptionTitleWord cursor, int x, int y, int a, int flags, int width, int value);
+
+int func_001BB6D0(int cursor, int x, int y)
+{
+    int side;
+    int deck;
+    char *text;
+    int px;
+    int py;
+    int qx;
+    int qy;
+
+    side = D_00317490_1bb6d0.side;
+    deck = func_002158B0(side);
+    text = D_002BEF80 + 2;
+    px = x + 224;
+    py = y + 32;
+
+    cursor = func_001B62F0(cursor, px, py, 6, 1);
+    cursor = func_001B4780_b(cursor, -1, 115, 4, px, py, 21, 2, 1);
+    px = x + 320;
+    py = y + 39;
+    cursor = func_001B6F70_b(cursor, px, py, 2, 3, func_0019BEF0(text), text, 0);
+    px = x + 432;
+    py = y + 16;
+    cursor = func_001B4780_b(cursor, 12, -1, 11, px, py, -128, -48, 1);
+    px = x + 2202;
+    py = y + 1848;
+    cursor = func_001B3CC0_b(cursor, D_00290080_1bb6d0 + 2330, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    qx = x + 2172;
+    qy = y + 1866;
+    cursor = func_001B3CC0_b(cursor, D_00290080_1bb6d0 + 2160, qx, qy, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    qx = x + 464;
+    qy = y + 44;
+    cursor = func_001B6EA0_b(cursor, qx, qy, 1, 0, 4, func_00215F00(side, deck));
+    qx = x + 2236;
+    qy = y + 1866;
+    cursor = func_001B3CC0_b(cursor, D_00290080_1bb6d0 + 2050, qx, qy, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    qx = x + 528;
+    qy = y + 44;
+    return func_001B6EA0_b(cursor, qx, qy, 1, 0, 2, func_00215F90(side, deck));
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", func_001BB940);
 

@@ -1805,6 +1805,7 @@ s32 func_001BAE40(u16 *arg0, u16 *arg1); /* JP: lSzDuel_NumberCmp */
 void func_001BAE70(void); /* JP: SzDuel_DrawBuildDeck */
 s32 func_001BAEA0(s32 arg0); /* JP: SzDuel_DrawBuildDeck_Pipe */
 s32 func_001BB260(s32 arg0); /* JP: lSzDuel_DrawBuildDeck_Base_Pipe */
+int func_001BB6D0(int cursor, int x, int y); /* JP: lSzDuel_DrawBuildDeck_Title_Pipe */
 void func_001BC350(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_Deck_Pipe */
 s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawBuildDeck_Ghost_Pipe */
 void *func_001BCE20(void *arg0, s32 card, s32 x, s32 y, s32 flag, s32 flag2); /* JP: lSzDuel_DrawBuildDeck_Card_Pipe */
