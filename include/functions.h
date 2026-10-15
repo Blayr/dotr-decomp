@@ -2444,6 +2444,7 @@ u32 fread(void *buf, u32 size, u32 count, void *arg3);
 s32 fstat(s32 arg0, void *arg1);
 s32 ftoi(u64 a);
 void func_00100000(void);
+void func_001000B8(void);
 void func_001000C0(void);
 void func_00100610(s32 arg0);
 s32 func_00110F00(s32 arg0, void *arg1); /* JP: L002 */

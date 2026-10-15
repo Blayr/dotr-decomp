@@ -7,7 +7,13 @@ asm void func_00100000(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100008);
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_001000B8);
+/* Hand-written tail jump (GCC-style move into the delay slot). */
+
+asm void func_001000B8(void) {
+    .set noreorder
+    j func_001847B0
+    .word 0x00002025 /* or a0, zero, zero: the assembler would write paddub */
+}
 
 asm void func_001000C0(void) {
     .set noreorder
