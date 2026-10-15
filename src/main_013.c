@@ -2425,7 +2425,6 @@ s32 func_00159380(u16 *arg0, s32 arg1, s32 arg2) {
 s32 func_00159930(s32, s32); /* extern */
 s32 func_00159BE0(s32, s32, s32); /* extern */
 s32 func_0015A5F0(s32, void *); /* extern */
-void func_0015AB10(s32, void *, void *); /* extern */
 
 typedef struct {
     u16 id;

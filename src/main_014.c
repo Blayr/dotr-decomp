@@ -15,7 +15,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_0015A360;
 
-s32 func_0015AB10(s32 arg0, u8 *arg1, void *arg2);
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
 
@@ -218,7 +217,69 @@ s32 func_0015A910(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_014", func_0015AB10);
+extern int func_002493A0_b(int index);
+struct DotrPickTarget {
+    unsigned char unknown_00[8];
+    unsigned short unknown_08;
+    short unknown_0a;
+};
+struct DotrPickBlock {
+    struct DotrPickTarget *target;
+    unsigned char unknown_04[0x34];
+    short unknown_38;
+    short unknown_3a;
+    unsigned short unknown_3c; 
+    unsigned char unknown_3e;
+};
+
+int func_0015AB10(int side, unsigned char *item, void *block_v)
+{
+    struct DotrPickBlock * block = block_v;
+    int list[8];
+    int n;
+    int id;
+    int i;
+    int *p;
+    int *q;
+    int v;
+    int j;
+
+    n = 1;
+    if (block == 0) {
+        return -1;
+    }
+    func_0026FD30(side, list);
+    id = block->unknown_3c;
+    i = 0;
+    if (0 < func_0026FE20(side)) {
+        p = list;
+        do {
+            if (id == *p && func_0026FCE0(*p) >> 5 == 0) {
+                item[6] = i;
+            }
+            p++;
+            i++;
+        } while (i < func_0026FE20(side));
+    }
+    j = 0;
+    if (0 < func_0026FE20(side)) {
+        do {
+            q = &list[j];
+            if (func_00248F60(id, *q) >= 0 && func_0026FCE0(*q) >> 5 == 2 && (v = *q) != 795 && v != 796) {
+                if (func_001E02F0(block, 0) + func_002493A0_b(v) < 1400) {
+                    block->unknown_38 += (short)func_002493A0_b(*q);
+                    block->unknown_3a += (short)func_002493A0_b(*q);
+                    item[n + 6] = j;
+                    n++;
+                } else {
+                    j = func_0026FE20(side);
+                }
+            }
+            j++;
+        } while (j < func_0026FE20(side));
+    }
+    return 1;
+}
 
 
 typedef struct {

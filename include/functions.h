@@ -691,6 +691,7 @@ s32 func_0015A360(s32 arg0, s32 arg1, s32 arg2); /* JP: TaLogic_GetMinimumTask_S
 s32 func_0015A5F0(s32 arg0, void *arg1); /* JP: TaLogic018_IsHandPlay */
 s32 func_0015A820(s32 arg0, void *arg1, void *arg2, s32 arg3); /* JP: TaLogic018_GetSpecCardPlay */
 s32 func_0015A910(s32 arg0, u8 *arg1, void *arg2, s32 arg3); /* JP: TaLogic018_GetSpellPlay */
+int func_0015AB10(int side, unsigned char *item, void *block_v); /* JP: TaLogic018_SetComboQue */
 s32 func_0015AD00(s32 arg0, void *arg1, void *arg2); /* JP: TaLogic018_SetSpecialComboQue */
 s32 func_0015AF30(s32 arg0, s32 arg1, void *arg2, s32 arg3); /* JP: TaLogic018_GetSummonPiece */
 s32 func_0015B250(u16 *arg0, s32 arg1, void *arg2, u8 arg3); /* JP: TaLogic_GetMinimumTask_RunMission */
