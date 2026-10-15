@@ -9,8 +9,8 @@ This repository contains no game data. You need your own copy of the game to bui
 
 | | Functions in C | Code in C |
 |---|---|---|
-| Main executable (`SLUS_205.15`) | 3,375 of 3,462 (97.5%) | 90.1% of 1.5 MB |
-| Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 6,011 of 8,620 (69.7%) | 41.9% of 11.6 MB |
+| Main executable (`SLUS_205.15`) | 3,378 of 3,462 (97.6%) | 90.2% of 1.5 MB |
+| Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 6,191 of 8,620 (71.8%) | 43.3% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
   originals. A function counts as done only when its C is in that build and the check passes.
