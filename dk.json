@@ -572,6 +572,7 @@
   "patch_pieces": {
     "func_0027F630": "52 blanked words: this revision erased the Japanese build's TaTuto_DrawFinger",
     "func_0027FA30": "a lone nop in this revision's tutorial patch area",
-    "func_0027FAB0": "a lone nop at the top of this revision's tutorial patch area"
+    "func_0027FAB0": "a lone nop at the top of this revision's tutorial patch area",
+    "func_00136B80": "hand-patched in this revision: branches into the middle of its own epilogue, skipping the ra/s6/s7 restores"
   }
 }
