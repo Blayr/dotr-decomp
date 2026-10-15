@@ -1,17 +1,17 @@
 #include "common.h"
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E00080_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E00080_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E00120_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E00120_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E002E0_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E002E0_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E01040_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E01040_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E01300_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E01300_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E017F0_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E017F0_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E01D50_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E01D50_b851);
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b851", func_01E03640_b851);
+INCLUDE_ASM("asm/nonmatchings/mod/b851", func_01E03640_b851);

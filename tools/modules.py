@@ -11,6 +11,8 @@ Commands (run in the game folder, the toolchain loaded):
   extract          read the disc (dk.json `disc`) -> assets/modules/<name>.mwo (untracked, like the exe) and
                    config/modules.tsv (tracked: one row per module with its sha1); checks the sha1s if the table
                    exists
+  split [N ...]    split the modules (make split-modules runs it)
+  ld [N ...]       write linker/mod/<name>.ld again (split does; after a change to the linker script's form)
   pack N ELF OUT   linked module ELF -> MWo3 file (header fields from config/modules.tsv, sizes from the ELF)
   check [N ...]    compare build/modules/<name>.mwo with config/modules.tsv's sha1 (all modules by default)
 """
@@ -186,7 +188,8 @@ def split(jobs: int = 8, only: list[str] | None = None) -> None:
                                                    end=0x80 + r["text"] + r["data"]))
 
     def run(n: str) -> tuple[str, int, str]:
-        p = subprocess.run([sys.executable, "-m", "splat", "split", str(cfg / f"{n}.yaml")], cwd=ROOT,
+        # a relative config path: splat writes INCLUDE_ASM paths relative to it (asm/nonmatchings/mod/<name>)
+        p = subprocess.run([sys.executable, "-m", "splat", "split", f"build/modsplit/{n}.yaml"], cwd=ROOT,
                            capture_output=True, text=True)
         return n, p.returncode, (p.stdout + p.stderr)[-600:]
 
@@ -217,7 +220,7 @@ def pool_start(n: str, r: dict[str, Any]) -> int:
     return min(end, r["text"]) if any(words[end // 4:]) else r["text"]
 
 
-LD = """SECTIONS
+LD = """{aliases}SECTIONS
 {{
     .text 0x1E00080 : SUBALIGN(4)
     {{
@@ -252,7 +255,12 @@ def objects(n: str, r: dict[str, Any]) -> list[str]:
 def write_ld(n: str, r: dict[str, Any]) -> None:
     pool = f"        build/asm/data/mod/{n}_pool.rodata.s.o(.rodata);\n" if pool_start(n, r) < r["text"] else ""
     data = f"        build/asm/data/mod/{n}.data.s.o(.data);\n" if r["data"] else ""
-    (ROOT / f"linker/mod/{n}.ld").write_text(LD.format(n=n, pool=pool, data=data))
+    # every function start also answers to <name>_<VRAM>: C calls a module function by that name when the
+    # compiler must not see its definition (a static callee's C changes the caller's code; dk try knows the name)
+    starts = sorted({p.stem.split("_")[1] for k in ("nonmatchings", "matchings")
+                     for p in (ROOT / f"asm/{k}/mod/{n}").glob(f"func_*_{n}.s")})
+    aliases = "".join(f"{n}_{a} = 0x{a};\n" for a in starts) + ("\n" if starts else "")
+    (ROOT / f"linker/mod/{n}.ld").write_text(LD.format(n=n, pool=pool, data=data, aliases=aliases))
 
 
 def write_mk(table: dict[str, dict[str, Any]]) -> None:
@@ -300,6 +308,10 @@ if __name__ == "__main__":
         extract()
     elif cmd == "split":
         split(only=sys.argv[2:] or None)
+    elif cmd == "ld":
+        table = read_table()
+        for n in sys.argv[2:] or sorted(table):
+            write_ld(n, table[n])
     elif cmd == "pack":
         pack(sys.argv[2], Path(sys.argv[3]), Path(sys.argv[4]))
     elif cmd == "check":

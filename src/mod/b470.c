@@ -1,3 +1,3 @@
 #include "common.h"
 
-INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b470", func_01E00080_b470);
+INCLUDE_ASM("asm/nonmatchings/mod/b470", func_01E00080_b470);

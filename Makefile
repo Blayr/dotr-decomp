@@ -73,6 +73,10 @@ $(BUILD)/modules/%.elf: linker/mod/%.ld $(LD_SYMS)
 $(BUILD)/modules/%.mwo: $(BUILD)/modules/%.elf $(MOD_TABLE)
 	@python3 tools/modules.py pack $* $< $@
 
+# Module C compiles warm (tools/cc.sh): their float casts call fptoui/fptosi as a warm compiler does, and every
+# cold match so far also matches warm (OVERLAYS-COMPILER.md). dk try does the same for module functions.
+$(BUILD)/src/mod/%.c.o: export DK_WARM := 1
+
 -include $(MOD_MK)
 
 $(BUILD)/%.s.o: %.s
