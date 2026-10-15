@@ -734,7 +734,6 @@ typedef struct Record_00164020 {
     } result;
 } Record_00164020;
 
-s32 func_00277160(s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, u16);
 
 void func_00164020(s32 arg0) {
     extern void func_0027E770();
@@ -792,7 +791,7 @@ void func_00164020(s32 arg0) {
                     state = func_002770E0(state, card, position, x, owner == 0 ? 1 : 0,
                                          (u8)attempt, 1, result, entries, &count,
                                          &first, &second, work);
-                    result = func_00277160(card, position, x, entries, 5, 0x34, 0, 2,
+                    result = func_00277160((void *)card, position, x, entries, 5, 0x34, 0, 2,
                                           1, func_001676D0(owner), count);
                     if (result >= 0) {
                         record->mode = 0x2FF;

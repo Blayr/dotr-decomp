@@ -3206,6 +3206,7 @@ int func_00276CC0(int nX, int nZ, int nOwnerID, unsigned char bWarnRange, unsign
 void func_00276EC0(u16 *arg0, s32 arg1, void *arg2); /* JP: TaLogic_GetMinimumTask_DoNone */
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9); /* JP: TaLogic_GetNearCard2 */
 void func_002770E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10, s32 arg11, s32 arg12); /* JP: TaLogic_GetNearUnitL2 */
+int func_00277160(void *pVarInfo_v, int nX, int nZ, void *nUnitLst_v, unsigned char bChase, int sKey, unsigned char fOpen, unsigned char fDef, unsigned char fView, int bWarnLvl, unsigned short wUnitNum); /* JP: TaLogic_GetNearUnitL3 */
 s32 func_002774F0(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u8 arg6, u16 arg7); /* JP: TaLogic_GetFollowNearUnit */
 u8 *func_002777F0(u8 *node, s32 parent, s32 card, s32 x, s32 y, s32 owner, u8 limit, s32 flags, u16 value, u8 depth, u16 *pool, u16 *poolCount, void *visited, u16 *visitCount, s32 context); /* JP: TaLogic_GetNearUnitPickUpTree */
 s32 func_00277C60(void *arg0, s32 arg1, s32 arg2); /* JP: TaLogic_IsAdjustUnitLst */

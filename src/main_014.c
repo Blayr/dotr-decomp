@@ -1925,7 +1925,6 @@ typedef struct Entry_0015E950 {
     u8 pad;
 } Entry_0015E950;
 
-s32 func_00277160(s32, s32, s32, void *, s32, s32, s32, s32, s32, s32, u16);
 
 void func_0015E950(void *arg0) {
     extern s32 func_001E1030();
@@ -2025,7 +2024,7 @@ void func_0015E950(void *arg0) {
             result = func_00162580(owner);
             cursor = func_002770E0(cursor, card, retryY, retryX, owner == 0 ? 1 : 0, (u8)attempt, 0, result,
                                   entries, &count, &outputA, &outputB, buffer);
-            result = func_00277160(card, retryY, retryX, entries, 2, 0x34, 0, 2, 0,
+            result = func_00277160((void *)card, retryY, retryX, entries, 2, 0x34, 0, 2, 0,
                                   func_00162580(owner), count);
             if (result >= 0) {
                 *(u16 *)((u8 *)arg0 + 4) = 0x2FF;

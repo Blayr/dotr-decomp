@@ -183,7 +183,7 @@ typedef struct {
     u8 pad;
 } Slot_00276F10;
 
-s32 func_00277160(void *arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, u8 arg6, u8 arg7, u8 arg8,
+s32 func_00277160_b(void *arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, u8 arg6, u8 arg7, u8 arg8,
                   s32 arg9, s32 arg10);
 
 s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
@@ -213,7 +213,7 @@ s32 func_00276F10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
     state = 0;
     for (i = 1; i <= (u8)arg4; i++) {
         state = func_002770E0(state, arg0, arg1, arg2, arg3, (u8)i, arg8, arg9, slots, &a, &c, &b, work);
-        result = func_00277160(arg0, arg1, arg2, slots, arg4, arg5, arg6, arg7, arg8, arg9, a);
+        result = func_00277160_b(arg0, arg1, arg2, slots, arg4, arg5, arg6, arg7, arg8, arg9, a);
         if (result >= 0) {
             return result;
         }
@@ -234,7 +234,74 @@ void func_002770E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                    (s64) arg8, (s64) arg9, (s64) arg12);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_078", func_00277160);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct jp_9a533_277160;
+struct jp_9b50e {
+    unsigned short nUnitID;
+    unsigned char bDist;
+};
+extern void *func_001DF540_277160(int a, int b);
+extern int func_00278510_277160(struct jp_9a533_277160 *pVarInfo, int wUnit, int bWarnLvl, int x, int z, unsigned char fView);
+#define MIN(a, b) ((b) < (a) ? (b) : (a))
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+#define ID_277160(w) (w) >> 8, (w) & 0xFF
+
+int func_00277160(void *pVarInfo_v, int nX, int nZ, void *nUnitLst_v, unsigned char bChase, int sKey, unsigned char fOpen, unsigned char fDef, unsigned char fView, int bWarnLvl, unsigned short wUnitNum)
+{
+    struct jp_9a533_277160 * pVarInfo = pVarInfo_v;
+    struct jp_9b50e * nUnitLst = nUnitLst_v;
+    int i;
+    int Loc;
+    int Dist;
+    int v1;
+    int v2;
+    unsigned char bMin;
+    unsigned short wUnit;
+    unsigned short wLoc;
+    struct jp_9b50e *p;
+
+    p = nUnitLst;
+    bMin = 7;
+    wUnit = 0xFFFF;
+    wLoc = wUnit;
+    for (i = 0; i < wUnitNum; i++) {
+        if (func_001DF540_277160(ID_277160(p->nUnitID)) != 0) {
+            Loc = func_001E1090(ID_277160(p->nUnitID));
+            if ((MAX(Loc & 0xFF, nX) - MIN(Loc & 0xFF, nX)) + (MAX(Loc >> 8, nZ) - MIN(Loc >> 8, nZ)) <= bChase
+                && func_00278150(func_001E2100(ID_277160(p->nUnitID), 2), fOpen) == 1
+                && func_00278150(func_001E2100(ID_277160(p->nUnitID), 5), fDef) == 1
+                && func_0027C5A0(ID_277160(p->nUnitID), sKey) == 1) {
+                Dist = p->bDist;
+                if (Dist <= bChase && Dist > 0) {
+                    if (Dist < bMin) {
+                        bMin = (MAX(Loc & 0xFF, nX) - MIN(Loc & 0xFF, nX)) + (MAX(Loc >> 8, nZ) - MIN(Loc >> 8, nZ));
+                        wUnit = p->nUnitID;
+                        wLoc = Loc;
+                        bChase = Dist;
+                    } else if (Dist == bMin) {
+                        v1 = func_00278510_277160(pVarInfo, p->nUnitID, bWarnLvl, Loc & 0xFF, Loc >> 8, fView);
+                        v2 = func_00278510_277160(pVarInfo, wUnit, bWarnLvl, wLoc & 0xFF, wLoc >> 8, fView);
+                        if ((v1 > 0 && v2 > 0 && v1 > v2) || (v1 > 0 && v2 <= 0)) {
+                        wUnit = p->nUnitID;
+                        bMin = (MAX(Loc & 0xFF, nX) - MIN(Loc & 0xFF, nX)) + (MAX(Loc >> 8, nZ) - MIN(Loc >> 8, nZ));
+                        wLoc = Loc;
+                        bChase = Dist;
+                        }
+                    }
+                }
+            }
+        }
+        p++;
+    }
+    if (wUnit == 0xFFFF) {
+        return -1;
+    }
+    return wUnit;
+}
+#undef MIN
+#undef MAX
+#undef ID_277160
 
 s32 func_002774F0(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u8 arg6, u16 arg7) {
     extern s32 func_001E1030();
