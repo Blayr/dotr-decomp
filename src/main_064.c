@@ -561,7 +561,190 @@ s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", Taku_Camp_2D);
+void *Taku_Camp_2D(s32 arg0) {
+    extern u8 D_002964A0[];
+    extern u8 D_002964C6[];
+    extern u8 D_002964EC[];
+    extern s32 D_00299DD0[];
+    extern s32 D_00299DD4;
+    extern s16 D_00299ED2;
+    extern s32 func_00202BF0();
+    extern s32 func_00202E00();
+    extern s32 func_00217CB0();
+    s32 *cards = D_00299DD0;
+    u8 *state = (u8 *)&D_00299E10;
+    s32 sp7C;
+    s32 temp_s2;
+    s16 var_s3;
+    s32 temp_s4;
+    s32 var_s0;
+    s32 temp_s5;
+    u16 temp_v1;
+    s32 result;
+
+    temp_s2 = func_001D9EF0();
+    sp7C = func_00209E50();
+    var_s3 = 0;
+    temp_s4 = func_001AEFC0(arg0);
+    D_00299DD0[0] = func_001AF140(7);
+    D_00299DD4 = func_001AF140(6);
+    switch (D_00299ED2) {                           /* irregular */
+    case 0x2B0C:
+        cards[2] = func_00202BF0(8, 0);
+        cards[3] = func_00202BF0(8, 1);
+        cards[4] = (s32) cards[2];
+        cards[5] = (s32) cards[3];
+        var_s3 = 8;
+        break;
+    case 0x2B72:
+        cards[2] = func_00202BF0(8, 3);
+        cards[3] = (s32) cards[2];
+        cards[4] = func_00202BF0(8, 2);
+        cards[5] = (s32) cards[4];
+        var_s3 = 8;
+        break;
+    case 0x2B86:
+        cards[2] = func_00202BF0(8, 5);
+        cards[3] = (s32) cards[2];
+        cards[4] = func_00202BF0(8, 4);
+        cards[5] = (s32) cards[4];
+        var_s3 = 8;
+        break;
+    case 0x2B88:
+        cards[2] = func_00202BF0(8, 6);
+        cards[3] = func_00202BF0(8, 7);
+        cards[4] = (s32) cards[2];
+        cards[5] = (s32) cards[3];
+        var_s3 = 8;
+        break;
+    case 0x2B8A:
+        cards[2] = func_00202BF0(8, 8);
+        cards[3] = (s32) cards[2];
+        cards[4] = (s32) cards[2];
+        cards[5] = (s32) cards[2];
+        var_s3 = 8;
+        break;
+    case 0x2BAE:
+        cards[2] = func_00202BF0(8, 10);
+        cards[3] = func_00202BF0(8, 12);
+        cards[4] = func_00202BF0(8, 9);
+        cards[5] = func_00202BF0(8, 11);
+        var_s3 = 8;
+        break;
+    case 0x2F7A:
+        cards[2] = func_00202BF0(8, 14);
+        cards[3] = func_00202BF0(8, 16);
+        cards[4] = func_00202BF0(8, 13);
+        cards[5] = func_00202BF0(8, 15);
+        var_s3 = 8;
+        break;
+    }
+    *(s8 *)0x01ED5436 = 0;
+    if ((*(s16 *)(state + 0xC2) >= 0x2724) && (*(s16 *)(state + 0xC2) < 0x2738) && (*(s8 *)0x01ED537D >= 3)) {
+        cards[6] = func_00202BF0(8, 20);
+        cards[7] = func_00202BF0(8, 22);
+        cards[8] = func_00202BF0(8, 19);
+        cards[9] = func_00202BF0(8, 18);
+        cards[10] = func_00202BF0(8, 21);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if ((*(s16 *)(state + 0xC2) >= 0x2738) && (*(s16 *)(state + 0xC2) < 0x276B)) {
+        cards[6] = func_00202BF0(8, 17);
+        cards[7] = func_00202BF0(8, 18);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if ((*(s16 *)(state + 0xC2) == 0x2AF8) ||
+        (*(s16 *)(state + 0xC2) == 0x2EE0)) {
+        cards[6] = func_00202BF0(8, 17);
+        cards[7] = func_00202BF0(8, 18);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if ((*(s16 *)(state + 0xC2) >= 0x2B84) && (*(s16 *)(state + 0xC2) < 0x2B86)) {
+        cards[6] = func_00202BF0(8, 20);
+        cards[7] = func_00202BF0(8, 19);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if (*(s16 *)(state + 0xC2) == 0x2B8C) {
+        cards[6] = func_00202BF0(8, 22);
+        cards[7] = func_00202BF0(8, 19);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if ((*(s16 *)(state + 0xC2) >= 0x2B98) && (*(s16 *)(state + 0xC2) < 0x2B9B)) {
+        cards[6] = func_00202BF0(8, 18);
+        cards[7] = func_00202BF0(8, 23);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if (*(s16 *)(state + 0xC2) == 0x2BAC) {
+        cards[6] = func_00202BF0(8, 18);
+        cards[7] = func_00202BF0(8, 23);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if ((*(s16 *)(state + 0xC2) >= 0x2F62) && (*(s16 *)(state + 0xC2) < 0x2F65)) {
+        cards[6] = func_00202BF0(8, 18);
+        cards[7] = func_00202BF0(8, 23);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if (*(s16 *)(state + 0xC2) == 0x2F76) {
+        cards[6] = func_00202BF0(8, 18);
+        cards[7] = func_00202BF0(8, 23);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if (*(s16 *)(state + 0xC2) == 0x2F78) {
+        cards[6] = func_00202BF0(8, 18);
+        *(s8 *)0x01ED5436 = 1;
+        var_s3 = 8;
+    }
+    if (var_s3) {
+        temp_s2 += func_00202E00(temp_s2, 2);
+        temp_s5 = (s16)var_s3;
+        arg0 = func_00202B00(temp_s4, temp_s5, temp_s2, &sp7C);
+        var_s0 = 0;
+        while (1) {
+            func_00202D60(temp_s5, var_s0);
+            var_s0++;
+            if (var_s0 > 23) break;
+        }
+        temp_s4 = func_0020F290(arg0);
+    }
+    result = (s32)func_002351A0((void *)temp_s4);
+    if ((*(s8 *)0x01ED5374 == 0) && (*(s8 *)0x01ED5481 != 0) &&
+        (func_001F5240(-1, -1) == 0) && (*(s8 *)0x01ED5376 != 0) &&
+        (*(s8 *)0x01ED5482 == 0)) {
+        temp_v1 = *(u16 *)0x01ED0004;
+        if (temp_v1 == 0) {
+            result = func_00217CB0(result, D_002964A0, *(s16 *)0x01ED0000, *(s16 *)0x01ED0002);
+        } else if (temp_v1 == 1) {
+            result = func_00217CB0(result, D_002964C6, *(s16 *)0x01ED0000, *(s16 *)0x01ED0002);
+        } else {
+            result = func_00217CB0(result, D_002964C6, *(s16 *)0x01ED0000, *(s16 *)0x01ED0002);
+            result = func_00217CB0(result, D_002964EC, *(s16 *)0x01ED0000, *(s16 *)0x01ED0002);
+        }
+    }
+    if (*(s16 *)(state + 0xC2) >= 0x2710) {
+        result = func_00224E40(func_0022F3C0(result));
+    }
+    result = func_002347D0(result);
+    result = func_002354A0(result);
+    result = func_00236C50(result);
+    if (*(s16 *)0x01ED0080 == 3) {
+        result = Taku_Camp_Help_Window(result);
+    }
+    result = Taku_Camp_SINEMA_CUT(result, 0);
+    result = func_002311D0(result);
+    if (*(s8 *)0x01ED53B4 != 0 || *(s8 *)0x01ED53B5 != 0) {
+        result = Taku_Camp_BUN_DARE_b(result, *(s8 *)0x01ED537E);
+    }
+    return (void *)func_0022A140(func_001AF110(Taku_Camp_BOTAN_MATI_b(result)));
+}
 
 typedef union {
     __int128 value;

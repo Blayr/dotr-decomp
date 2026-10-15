@@ -293,3 +293,5 @@ func_001C5DB8 = 0x001C5DB8; /* inside func_001C5D70: where the tutorial patch (T
 D_00317490_1c5d70 = 0x00317490;
 RhMem_CopyMemory_b = 0x0020B300;
 SzData_GetData_b = 0x002145E0;
+Taku_Camp_BUN_DARE_b = 0x002337A0;
+Taku_Camp_BOTAN_MATI_b = 0x0022F1C0;

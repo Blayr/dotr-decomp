@@ -823,7 +823,6 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_0021DAA0;
 
-void *Taku_Camp_2D(s32);
 extern s16 D_00298AD0;
 extern s16 D_00298AD2;
 extern s16 D_00298AD4;

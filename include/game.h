@@ -1078,4 +1078,13 @@ extern char D_002B8F1F[], D_002B8F27[], D_002B8F2C[], D_002B8F32[];
 
 extern s32 D_002BC768;
 
+s32 func_00224E40(s32);
+s32 func_0022F3C0(s32);
+s32 func_002311D0(s32);
+s32 func_002347D0(s32);
+s32 func_002354A0(s32);
+s32 func_00236C50(s32);
+s32 Taku_Camp_BUN_DARE_b(s32, s8);
+s32 Taku_Camp_BOTAN_MATI_b(s32);
+
 #endif

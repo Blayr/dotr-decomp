@@ -163,3 +163,4 @@
 0x001C722C 0x0C080E90 0x00000000  # func_001C6170: jal func_203A40 patched to nop
 0x001C5DB0 0x3C0100AA 0x0805D6E8  # func_001C5D70: lui $at, 0xAA patched to j func_175BA0
 0x001C5DB4 0x9023C088 0x00000000  # func_001C5D70: lbu $v1, -0x3F78($at) patched to nop
+0x00229F8C 0x0C08EF38 0x00000000  # Taku_Camp_2D: jal Taku_Camp_Help_Window patched to nop (the JP build calls it)
