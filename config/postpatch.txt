@@ -1,0 +1,9 @@
+# Post-build patches: VRAM BUILT SHIPPED (see tools/postpatch.py)
+0x0021EAF8 0x10830025 0x10000025  # func_0021E330: beq $a0, $v1, .L0021EB90 forced to b
+0x0021EB98 0x148311D1 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+0x0021EEF4 0x148310FA 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+0x0021F280 0x14831017 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+0x0021F3E4 0x14830FBE 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+0x0021F7C8 0x14830EC5 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+0x00221ED0 0x14830503 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+0x00221EE4 0x148304FE 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
