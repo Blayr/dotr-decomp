@@ -20,4 +20,8 @@ src/main_033b.c 2.96 0 -O2
 src/main_033c.c 2.96 0 -O2
 src/main_034.c 2.96 0 -O2
 src/main_035.c 2.96 0 -O2
+src/main_035b.c 2.96 0 -O2
+src/main_035c.c 2.96 0 -O2
+src/main_035d.c 2.96 0 -O2
+src/main_035e.c 2.96 0 -O2
 src/main_036.c 2.96 0 -O2

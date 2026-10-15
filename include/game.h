@@ -527,7 +527,7 @@ extern u8 D_002BCB88[];
 
 
 
-s32 func_0019C4C8(s32, s32, s32);               /* extern */
+double func_0019C4C8(void *ptr0, const char *s00, char **se); /* _strtod_r */
 
 
 

@@ -10,7 +10,7 @@ and pointing to this file. The licence texts below must stay with the code.
 | the ICO decompilation (github.com/nathanialf/ico), where kfiv's `src/sce/` tree came from | MIT, with a scope notice | the same kfiv files, except the ones kfiv wrote itself (libdev, `strcasecmp`) |
 | gt4-decomp (github.com/gustavocanepa/gt4-decomp, commit c2e6ef51) | MIT | a few Sony SDK and newlib functions |
 | newlib 1.9.0, inside gt4-decomp's newlib files | BSD-style, file by file | `__sfvwrite`, `strcasecmp`, `strncasecmp` |
-| newlib 1.9.0 source release (sourceware.org, md5-checked) | BSD-style, file by file | `__svfscanf` (stdio/vfscanf.c) |
+| newlib 1.9.0 source release (sourceware.org, md5-checked) | BSD-style; AT&T for strtod.c | `__svfscanf` (stdio/vfscanf.c), `_strtod_r` (stdlib/strtod.c) |
 
 The kfiv C library functions (`malloc`, `free`, `__sfvwrite`, `__sbprintf` and their helpers) are
 the ICO project's rebuilds of newlib; the newlib notices below are kept for them too.
@@ -153,4 +153,23 @@ prior written permission. THIS SOFTWARE IS PROVIDED ``AS IS'' AND
 WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, WITHOUT
 LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
 FOR A PARTICULAR PURPOSE.
+```
+
+`_strtod_r` comes from newlib's `stdlib/strtod.c`, David M. Gay's code, under this notice:
+
+```
+The author of this software is David M. Gay.
+
+Copyright (c) 1991 by AT&T.
+
+Permission to use, copy, modify, and distribute this software for any
+purpose without fee is hereby granted, provided that this entire notice
+is included in all copies of any software which is or includes a copy
+or modification of this software and in all copies of the supporting
+documentation for such software.
+
+THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTY.  IN PARTICULAR, NEITHER THE AUTHOR NOR AT&T MAKES ANY
+REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
 ```
