@@ -345,7 +345,24 @@ s32 func_0018B850(void *arg0, s32 arg1) {
     return *(u32 *)((u8 *)arg0 + 0x838) >> (32 - arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B958);
+void func_0018B958(void *arg0, s32 arg1) {
+    s32 i;
+    s32 cmd;
+    i = 0;
+    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+        if (i++ > 5000) {
+            _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
+            i = 0;
+        }
+    }
+    cmd = arg1 | 0x40000000;
+    *(volatile u32 *)0x10002000 = cmd;
+    *(s32 *)((u8 *)arg0 + 0x818) = (&D_0028DA50)[(u32)cmd >> 28];
+
+    *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
+    *(s32 *)((u8 *)arg0 + 0x83C) = 0x20;
+
+}
 
 s32 func_0018BA48(void *arg0, s32 arg1) {
     s32 i;

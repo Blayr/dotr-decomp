@@ -652,7 +652,6 @@ extern s32 D_0028EEC0;
 extern s32 D_0028F708;
 
 
-s32 func_0018B958(void *, s32);             /* extern */
 extern s32 D_002BC8A8;
 extern s32 D_002BC8D0;
 

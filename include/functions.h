@@ -2592,6 +2592,7 @@ s32 func_0018B550(void *arg0, s32 arg1);
 void func_0018B580(void *arg0);
 s64 func_0018B628(void *arg0);
 s32 func_0018B850(void *arg0, s32 arg1);
+void func_0018B958(void *arg0, s32 arg1);
 s32 func_0018BA48(void *arg0, s32 arg1);
 void func_0018BB98(void *arg0);
 s32 func_0018BC18(void *arg0, s32 arg1);
