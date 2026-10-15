@@ -195,7 +195,6 @@ extern s32 D_0032A770;
 
 void func_0020DB20(void);
 void func_0020DBE0(void *, void *, void *);
-void func_0020DB00(void *);
 void func_0020CB20(void *, void *);
 void func_0020DB80(void);
 
@@ -318,7 +317,6 @@ extern u32 D_0032A728;
 extern s32 D_0032A770;
 
 void func_0020CB20(void *, void *);
-void func_0020DB00(void *);
 void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);
@@ -502,7 +500,6 @@ extern u32 D_0032A728;
 extern s32 D_0032A770;
 
 void func_0020CB20(void *, void *);
-void func_0020DB00(void *);
 void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);
@@ -819,7 +816,6 @@ extern s32 D_0032A770;
 extern Slot_00211530 D_0032A780[];
 
 void func_0020CB20(void *, void *);
-void func_0020DB00(void *);
 void func_0020DB20(void);
 void func_0020DB80(void);
 void func_0020DBE0(void *, void *, void *);

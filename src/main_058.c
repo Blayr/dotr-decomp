@@ -223,7 +223,17 @@ INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D9F0);
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DA70);
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DB00);
+asm void func_0020DB00(void *arg0) {
+    .set noreorder
+    sqc2 vf28, 0x0(a0)
+    sqc2 vf29, 0x10(a0)
+    sqc2 vf30, 0x20(a0)
+    sqc2 vf31, 0x30(a0)
+    sqc2 vf24, 0x40(a0)
+    sqc2 vf25, 0x50(a0)
+    jr ra
+    sqc2 vf26, 0x60(a0)
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DB20);
 
