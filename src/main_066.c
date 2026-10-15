@@ -453,7 +453,243 @@ int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
 #undef DOTR_SINEMA_C1
 #undef DOTR_SINEMA_C2
 
-INCLUDE_ASM("asm/nonmatchings/main_066", Taku_Camp_ST_WINDOW);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrStWindowItem {
+    short w[8];
+    short unknown_10[10];
+    short code;                 
+};
+struct DotrStWindowWindow {
+    short x, y, w, h;
+    char unknown_08[2];
+};
+struct DotrStWindowRec {
+    char unknown_00[16];
+    short kind;                 
+    char unknown_12[34];
+};
+struct DotrStWindowInfo {
+    int unknown_00[3];
+    int w;                      
+};
+struct DotrStWindowBoard {
+    signed char mode;           
+    signed char unknown_01[2];
+    signed char seen[59];       
+    short wins[2];              
+    char unknown_42[132];
+    signed char kind;           
+};
+extern struct DotrStWindowBoard D_00299E10_b;
+extern struct DotrStWindowRec D_00298BA0[];
+extern struct DotrStWindowWindow D_00297B20[];
+extern struct DotrStWindowItem D_002980D0[];
+extern struct DotrStWindowItem D_00297E20[];
+extern struct DotrStWindowItem D_00297BE0[];
+extern struct DotrStWindowItem D_00297C80[];
+extern struct DotrStWindowItem D_00298210[];
+extern struct DotrStWindowItem D_00298170[];
+extern char D_0030F0F7[];
+extern char D_0030F0FC[];
+#define DOTR_ST_WINDOW_BASE 0x1ed0000
+struct DotrStWindowBank {
+    char unknown_000[0x226];
+    short depth;                
+};
+extern int Taku_Window_Set_window(int cursor, struct DotrStWindowWindow *window, unsigned short flag, int a3,
+                           unsigned short x, unsigned short a5, int a6, int a7, int a8);
+extern int Taku_Obj_Set_b(int cursor, struct DotrStWindowItem *item, short x, short y);
+extern int SzData_GetRank_b(int side, int id);
+extern struct DotrStWindowInfo *SzMsg_GetInfo_b(int index);
+extern void SzMsg_DrawRect_Pipe_b(void);
+extern int SzMsg_DrawRatioX_Pipe_b(int cursor, int index, int x, int y, float sx, float sy, void *e,
+                                 void (*function)(void));
+extern int SzDuel_DrawWindow_FontDigit_Pipe_b(int cursor, int x, int y, int a, int flags, int width,
+                                            int value);
+extern int SzDuel_DrawWindow_Font_Pipe_b(int cursor, int x, int y, int a, int flags, int n,
+                                       const char *text, int c);
+#define ST_MODE (*(signed char *)(DOTR_ST_WINDOW_BASE + 0x18c))
+#define ST_SLIDE (*(short *)(DOTR_ST_WINDOW_BASE + 0x70))
+#define ST_OPEN (*(short *)(DOTR_ST_WINDOW_BASE + 0x6c))
+#define ST_LOC11 (*(signed char *)(DOTR_ST_WINDOW_BASE + 0x53c2))
+#define ST_DEPTH (*(short *)(DOTR_ST_WINDOW_BASE + 0x226))
+#define ST_COST (*(short *)(DOTR_ST_WINDOW_BASE + 0x5442))
+
+int Taku_Camp_ST_WINDOW(int cursor)
+{
+    struct DotrStWindowBoard *w;
+    struct DotrStWindowBank *g;
+    unsigned char col[4];
+    short y;
+    int t;
+    int i;
+    short deck;
+    short cost;
+    int leader;
+    short rank;
+    int r;
+    short j;
+    short k;
+    short cnt;
+    int n;
+    unsigned short x;
+    short xx, yy;
+    struct DotrStWindowInfo *info;
+    float sx;
+    float sy;
+
+    w = &D_00299E10_b;
+    y = 128 - (ST_SLIDE * 128 >> 8);
+    col[0] = col[1] = col[2] = 128;
+    col[3] = 128;
+    g = (struct DotrStWindowBank *)DOTR_ST_WINDOW_BASE;
+    if (ST_MODE) {
+        if (w->kind == 11) {
+            if (ST_LOC11 < 2) { t = 1; } else { t = 0; }
+        } else if (D_00298BA0[w->kind].kind == 8) {
+            t = 0;
+        } else {
+            t = 1;
+        }
+        if (w->mode == (signed char)t) {
+            cursor = Taku_Obj_Set_b(cursor, &D_002980D0[w->mode], 0, y);
+            for (i = 0; i < 3; i++) {
+                cursor = Taku_Window_Set_window(cursor, &D_00297B20[i], w->mode + 10, 0, 0, y, 0, 128, g->depth);
+            }
+            if (ST_OPEN == 256) {
+                w->mode ^= 1;
+            }
+        } else {
+            cursor = Taku_Obj_Set_b(cursor, &D_002980D0[w->mode], 0, y);
+            for (i = 0; i < 3; i++) {
+                cursor = Taku_Window_Set_window(cursor, &D_00297B20[i], w->mode, 0, 0, y, 0, 128, g->depth);
+            }
+        }
+    } else {
+        cursor = Taku_Obj_Set_b(cursor, &D_002980D0[w->mode], 0, y);
+        for (i = 0; i < 3; i++) {
+            cursor = Taku_Window_Set_window(cursor, &D_00297B20[i], w->mode, 0, 0, y, 0, 128, g->depth);
+        }
+    }
+    cursor = Taku_Window_Set_window(cursor, &D_00297B20[16], w->mode, 0, 0, y, 0, 128, ST_DEPTH);
+    deck = SzData_GetCurrentDeck(0);
+    cursor = Taku_Obj_Set_b(cursor, &D_00297E20[deck], 0, y);
+    cost = SzData_GetDeckCost(0, deck);
+    ST_COST = cost;
+    leader = SzData_GetLeader(0, deck);
+    rank = SzData_GetRank_b(0, leader);
+    if (rank != 0) {
+        r = rank - 1;
+        cursor = Taku_Obj_Set_b(cursor, &D_00297BE0[(short)(r / 3)], 0, y);
+        switch ((short)(r % 3 + 1)) {
+        case 1:
+            cursor = Taku_Obj_Set_b(cursor, &D_00297C80[2], 0, y);
+            break;
+        case 2:
+            cursor = Taku_Obj_Set_b(cursor, &D_00297C80[0], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &D_00297C80[1], 0, y);
+            break;
+        case 3:
+            cursor = Taku_Obj_Set_b(cursor, &D_00297C80[0], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &D_00297C80[1], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &D_00297C80[2], 0, y);
+            break;
+        }
+    }
+    for (j = 0; j < 2; j++) {
+        if (w->mode == 0) {
+            if (j == 1) {
+                for (n = 0; n < 8; n++) {
+                    x = n * 16;
+                    cursor = Taku_Obj_Set_b(cursor, &D_00298210[j], x, y);
+                }
+            } else {
+                for (k = 0, cnt = 0; k <= 21; k++) {
+                    switch (k) {
+                    case 2:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                        if (w->seen[k] >= 3) {
+                            cnt++;
+                        }
+                        break;
+                    }
+                }
+                for (n = 0; n < cnt; n++) {
+                    x = n * 16;
+                    cursor = Taku_Obj_Set_b(cursor, &D_00298210[j], x, y);
+                }
+            }
+        } else {
+            if (j == 0) {
+                for (n = 0; n < 8; n++) {
+                    x = n * 16;
+                    cursor = Taku_Obj_Set_b(cursor, &D_00298210[j], x, y);
+                }
+            } else {
+                for (k = 0, cnt = 0; k <= 21; k++) {
+                    switch (k) {
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 18:
+                    case 19:
+                    case 20:
+                    case 21:
+                    case 0:
+                        if (w->seen[k] == 3) {
+                            cnt++;
+                        }
+                        break;
+                    }
+                }
+                for (n = 0; n < cnt; n++) {
+                    x = n * 16;
+                    cursor = Taku_Obj_Set_b(cursor, &D_00298210[j], x, y);
+                }
+            }
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        cursor = Taku_Obj_Set_b(cursor, &D_00298170[i], 0, y);
+    }
+    cursor = SzDuel_DrawWindow_FontDigit_Pipe_b(cursor, 157, y + 384, 1, 0, 4, cost);
+    cursor = SzDuel_DrawWindow_FontDigit_Pipe_b(cursor, 253, y + 384, 1, 0, 4, w->wins[0]);
+    cursor = SzDuel_DrawWindow_FontDigit_Pipe_b(cursor, 349, y + 384, 1, 0, 4, w->wins[1]);
+    cursor = SzDuel_DrawWindow_Font_Pipe_b(cursor, 411, y + 375, 1, 1, 4, D_0030F0F7, 0);
+    cursor = SzDuel_DrawWindow_Font_Pipe_b(cursor, 450, y + 375, 1, 1, 5, D_0030F0FC, 0);
+    cursor = SzMsg_LoadFont_Pipe(cursor, 1, 3, 0, 22);
+    cursor = RhText_SetTextureFlush(cursor);
+    sx = sy = 1.0f;
+    cursor = SzMsg_DrawRatioX_Pipe_b(cursor, 1, 54, y + 348, sx, sy, col, SzMsg_DrawRect_Pipe_b);
+    SzMsg_Free(1);
+    cursor = SzMsg_LoadFont_Pipe(cursor, 1, SzDuel_GetMsgName(leader), 0, 22);
+    cursor = RhText_SetTextureFlush(cursor);
+    xx = D_00297B20[2].x + 4;
+    yy = D_00297B20[2].y + 2 + y;
+    info = SzMsg_GetInfo_b(1);
+    if (info->w < 248) {
+        sy = sx = 1.0f;
+        cursor = SzMsg_DrawRatioX_Pipe_b(cursor, 1, xx, yy, sx, sy, col, SzMsg_DrawRect_Pipe_b);
+    } else {
+        cursor = SzMsg_DrawRatioX_Pipe_b(cursor, 1, xx, yy, 248.0f / (float)info->w, 1.0f, col, SzMsg_DrawRect_Pipe_b);
+    }
+    SzMsg_Free(1);
+    return cursor;
+}
+#undef DOTR_ST_WINDOW_BASE
+#undef ST_MODE
+#undef ST_SLIDE
+#undef ST_OPEN
+#undef ST_LOC11
+#undef ST_DEPTH
+#undef ST_COST
 
 void *Taku_Camp_SYS_ICON(void *arg0) {
     s16 coords[19];
