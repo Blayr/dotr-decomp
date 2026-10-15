@@ -377,7 +377,7 @@ void *func_0023BFF0(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2) {
         (s32)&draw));
 }
 
-s8 func_0023C140(void) {
+s32 func_0023C140(void) {
     return D_00299EDA;
 }
 

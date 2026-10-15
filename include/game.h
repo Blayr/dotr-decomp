@@ -34,14 +34,51 @@ extern u8 D_1FE0000;
 
 typedef struct Duel_00317490_s {
     u8 players[2][0x350];          /* 0x000: one record per player (callers use their own views) */
-    u8 pad6A0[0x6D8 - 0x6A0];
-    s16 *list;                     /* 0x6D8 */
-    u8 pad6DC[0xC8A - 0x6DC];
+    u8 pad6A0[0x6D0 - 0x6A0];
+    struct {
+        u8 pad00[0x20];
+        u16 ids[3];                /* 0x20: the three cards picked */
+    } *pick;                       /* 0x6D0 */
+    u8 pad6D4[0x6D8 - 0x6D4];
+    u16 *list;                     /* 0x6D8: the trunk list */
+    u16 *list2;                    /* 0x6DC: the deck list (40) */
+    u8 pad6E0[0xC86 - 0x6E0];
+    u16 wave1;                     /* 0xC86 */
+    u16 wave2;                     /* 0xC88 */
     u16 offset;                    /* 0xC8A */
     u16 count;                     /* 0xC8C */
-    u8 padC8E[0xD5C - 0xC8E];
+    u16 offset2;                   /* 0xC8E */
+    u16 count2;                    /* 0xC90 */
+    s16 scroll;                    /* 0xC92 */
+    s16 scrollTo;                  /* 0xC94 */
+    u16 idle;                      /* 0xC96 */
+    u8 padC98[0xCB6 - 0xC98];
+    u8 sort[3];                    /* 0xCB6 */
+    u8 sort2[3];                   /* 0xCB9 */
+    u8 sort3;                      /* 0xCBC */
+    u8 sort4;                      /* 0xCBD */
+    u8 padCBE[0xCC2 - 0xCBE];
+    char code[8];                  /* 0xCC2: password digits */
+    u8 padCCA[0xD32 - 0xCCA];
+    u8 dirty;                      /* 0xD32 */
+    u8 padD33[0xD35 - 0xD33];
+    u8 prevMode;                   /* 0xD35 */
+    u8 sel;                        /* 0xD36 */
+    u8 padD37[0xD57 - 0xD37];
+    u8 step;                       /* 0xD57 */
+    u8 padD58[0xD5C - 0xD58];
     u8 player;                     /* 0xD5C */
-    u8 padD5D[0xD70 - 0xD5D];
+    u8 mode;                       /* 0xD5D */
+    u8 row;                        /* 0xD5E */
+    u8 row2;                       /* 0xD5F */
+    u8 digit[3];                   /* 0xD60 */
+    u8 hold;                       /* 0xD63 */
+    struct {
+        s8 dir1 : 2;               /* bits 0-1 */
+        s8 dir2 : 2;               /* bits 2-3 */
+        s8 pad : 4;
+    } dirs;                        /* 0xD64 */
+    u8 padD65[0xD70 - 0xD65];
 } Duel_00317490_s;
 
 /* The duel state: old code reads it as bytes (.b), new code by field (.s) */

@@ -1215,7 +1215,7 @@ static inline s32 nonnegative_001B8720(s32 value) {
 void func_001B8720(void) {
     Duel_00317490_s *state;
     s32 player;
-    s16 *entry;
+    u16 *entry;
     s32 card;
     s32 limit;
     s32 offset;

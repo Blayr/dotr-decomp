@@ -62,7 +62,7 @@ typedef struct Entry_001BA520 {
 
 extern Entry_001BA520 *D_00317B60;
 
-s32 func_001BA520(s16 arg0, s32 arg1, s64 arg2, s64 arg3, s64 arg4) {
+s32 func_001BA520(s32 arg0, s32 arg1, s64 arg2, s64 arg3, s64 arg4) {
     Entry_001BA520 *entry;
     s32 i;
 
