@@ -541,7 +541,6 @@ typedef struct {
     u32 value;
 } State_0010DC40;
 
-s32 TaLogic_GetLandChange(s32, s32, s32, s32, s32, s32);
 
 void TaLogic002_CommandMagicUnit(void *arg0) {
     State_0010DC40 *state = arg0;

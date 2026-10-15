@@ -442,7 +442,6 @@ extern char D_002BEF67[];
 
 
 
-s32 TaLogic_GetLandChange(s32, s32, s32, s32, s32, s32);
 
 
 

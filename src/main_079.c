@@ -689,7 +689,73 @@ s32 TaLogic_IsPickUp(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", TaLogic_GetLandChange);
+typedef struct Nibbles_0027C770 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_0027C770;
+
+s32 TaLogic_GetLandChange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 func_002792C0();
+    s32 x;
+    s32 cy;
+    u8 x1;
+    s32 i;
+    s32 bestCount;
+    Nibbles_0027C770 * entry;
+    s32 bestCost;
+    u8 y0;
+    s32 cost;
+    u8 y1;
+    s32 cx;
+    u8 minCount;
+    u8 x0;
+    s32 best;
+    u8 range;
+    u8 kind;
+    Nibbles_0027C770 entries[12];
+    s32 count;
+    s32 y;
+
+    entry = entries;
+    best = -1;
+    bestCount = 0;
+    i = 0;
+    do {
+        entry->low = entry->high = 15;
+        entry++;
+        i++;
+    } while (i < 12);
+    minCount = arg4;
+    bestCost = 14;
+    range = arg5;
+    kind = arg3;
+    for (i = 0; i < 7; i++) {
+        for (x = 0; x < 7; x++) {
+            count = 0;
+            y0 = func_00250860(0, i - range);
+            y1 = i + range >= 7 ? 6 : i + range;
+            x0 = func_00250860(0, x - range);
+            x1 = x + range >= 7 ? 6 : x + range;
+            for (cy = y0; cy <= y1; cy++) {
+                for (cx = x0; cx <= x1; cx++) {
+                    if (((cy < i ? i : cy) - (i < cy ? i : cy)) + ((cx < x ? x : cx) - (x < cx ? x : cx)) <= range &&
+                        kind != func_001E22B0(cy, cx) && func_001E22B0(cy, cx) != 8) {
+                        count++;
+                    }
+                }
+            }
+            if (count >= bestCount && minCount < count) {
+                cost = func_002792C0(arg0, entries, arg1, arg2, i, x, 0, 30);
+                if (cost < bestCost) {
+                    bestCost = cost;
+                    bestCount = count;
+                    best = (x << 8) | i;
+                }
+            }
+        }
+    }
+    return best;
+}
 
 struct jp_9a533;
 struct PieceTreetag;

@@ -213,7 +213,6 @@ typedef struct Entry_0014C870 {
     u32 data;
 } Entry_0014C870;
 
-s32 TaLogic_GetLandChange(s32, s32, s32, s32, s32, s32);
 
 void TaLogic014_CommandSpellUnit(void *arg0) {
     Entry_0014C870 *entry = arg0;

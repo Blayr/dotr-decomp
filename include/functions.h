@@ -1672,6 +1672,7 @@ int TaLogic_GetInputQueFromMinimumTask(void *pCtl_v, void *pTask_v, unsigned sho
 void TaLogic_GetInvadeRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, u8 arg9, u16 arg10);
 s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8, u16 arg9);
 u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38);
+s32 TaLogic_GetLandChange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 TaLogic_GetMaxAPGraveCard(s32 arg0, s32 arg1);
 s32 TaLogic_GetMaxApUnit2(void *arg0, s32 arg1);
 s32 TaLogic_GetMaxApUnit3(u16 *arg0, s32 arg1);
@@ -6364,7 +6365,7 @@ void func_0027C2C0(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, u8 arg4);
 s32 func_0027C5A0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_0027C670(u16 *values);
 s32 func_0027C6D0(s32 arg0);
-s32 func_0027C770(s32, s32, s32, s32, s32, s32);
+s32 func_0027C770(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 int func_0027CA50(void *pTask_v, unsigned char bChaseRange, unsigned char bIsView, unsigned char WarLvl);
 s32 func_0027D020(void *arg0, s32 arg1, void *arg2, u8 arg3, s32 arg4, s32 cost, s32 arg6, u8 arg7);
 s32 func_0027D720(u16 *arg0, s32 arg1);
