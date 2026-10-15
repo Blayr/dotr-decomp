@@ -112,7 +112,48 @@ s32 ftoi(u64 a) {
     return (s32)m;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", printfloat);
+extern char D_002BC010[];
+extern char D_002BC018[];
+extern char D_002BC020[];
+
+/* printfloat: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void printfloat(s64 bits) {
+    union {
+        s64 i;
+        double d;
+    } u;
+    double v;
+    double zero = 0.0;
+    int e = 0;
+    int n;
+
+    u.i = bits;
+    v = u.d;
+    if (v < zero) {
+        v = zero - v;
+        D_0028CA0C('-');
+    }
+    if (v < 0.1) {
+        while (v < 0.1) {
+            v *= 10.0;
+            e--;
+        }
+    } else if (v >= 1.0) {
+        while (v >= 1.0) {
+            v /= 10.0;
+            e++;
+        }
+    }
+    v *= 1000000.0;
+    n = ftoi(v);
+    kprintf(D_002BC010, n);
+    if (e >= 0) {
+        kprintf(D_002BC018, e);
+    } else {
+        kprintf(D_002BC020, e);
+    }
+}
 
 void _printf(char *fmt, u8 *ap) {
     char buf[32];

@@ -747,7 +747,6 @@ typedef struct { void (*fn)(s32); s32 arg; } hcall_t;
 extern s32 *D_0028D11C;
 
 extern void (*D_0028CA0C)(s32);
-void printfloat(s64);
 
 extern s32 D_00316200;
 
