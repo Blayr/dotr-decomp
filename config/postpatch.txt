@@ -7,6 +7,43 @@
 0x0021F7C8 0x14830EC5 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
 0x00221ED0 0x14830503 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
 0x00221EE4 0x148304FE 0x00000000  # func_0021E330: bne $a0, $v1, .L002232E0 patched to nop
+# func_0021E330 Taku_Camp_Ivent: the US build overwrote 35 words of its compiled code by hand; the JP release
+# (SLPM_650.50) still has the compiled words, and src/big_func_0021E330.c builds them (JP disassembly shown).
+0x0021E53C 0x24050190 0x00000000  # func_0021E330: li a1,400 patched to nop
+0x0021E54C 0x0C07D23C 0x00000000  # func_0021E330: jal 1f2580 <SzEffect_Entry> patched to nop
+0x0021E550 0x70004628 0x00000000  # func_0021E330: paddub t0,zero,zero patched to nop
+0x0021E578 0x24040001 0x2404000B  # func_0021E330: li a0,1 patched to addiu $a0, $zero, 0xB
+0x0021E584 0x24030002 0x24030000  # func_0021E330: li v1,2 patched to addiu $v1, $zero, 0x0
+0x0021E588 0x3C0101ED 0x24040002  # func_0021E330: lui at,0x1ed patched to addiu $a0, $zero, 0x2
+0x0021E600 0x8423536C 0x24020005  # func_0021E330: lh v1,21356(at) patched to addiu $v0, $zero, 0x5
+0x0021E604 0x24630001 0x24030008  # func_0021E330: addiu v1,v1,1 patched to addiu $v1, $zero, 0x8
+0x0021E608 0x3C0101ED 0x24052738  # func_0021E330: lui at,0x1ed patched to addiu $a1, $zero, 0x2738
+0x0021E60C 0x10001334 0xA60500C2  # func_0021E330: b 2211e8 <Taku_Camp_Ivent+0x5078> patched to sh $a1, 0xC2($s0)
+0x0021E610 0xA423536C 0x1000132D  # func_0021E330: sh v1,21356(at) patched to b .L002232C8
+0x0021E88C 0x24030002 0x3C0101ED  # func_0021E330: li v1,2 patched to lui $at, (0x1ED0062 >> 16)
+0x0021E890 0x3C0101ED 0x24030006  # func_0021E330: lui at,0x1ed patched to addiu $v1, $zero, 0x6
+0x0021E894 0xA0230062 0xA423536C  # func_0021E330: sb v1,98(at) patched to sh $v1, (0x1ED536C & 0xFFFF)($at)
+0x0021E898 0x3C0101ED 0x2402000E  # func_0021E330: lui at,0x1ed patched to addiu $v0, $zero, 0xE
+0x0021E89C 0x8423536C 0xA422537B  # func_0021E330: lh v1,21356(at) patched to sh $v0, (0x1ED537B & 0xFFFF)($at)
+0x0021E8A0 0x24630001 0x24030003  # func_0021E330: addiu v1,v1,1 patched to addiu $v1, $zero, 0x3
+0x0021E8A4 0x3C0101ED 0xA02353B3  # func_0021E330: lui at,0x1ed patched to sb $v1, (0x1ED53B3 & 0xFFFF)($at)
+0x0021E8A8 0x1000128D 0x24030002  # func_0021E330: b 2211e8 <Taku_Camp_Ivent+0x5078> patched to addiu $v1, $zero, 0x2
+0x0021E8AC 0xA423536C 0xA0230062  # func_0021E330: sh v1,21356(at) patched to sb $v1, (0x1ED0062 & 0xFFFF)($at)
+0x0021E8B0 0x3C0101ED 0x24040019  # func_0021E330: lui at,0x1ed patched to addiu $a0, $zero, 0x19
+0x0021E8B4 0x80230062 0x0C085E60  # func_0021E330: lb v1,98(at) patched to jal func_00217980
+0x0021E8B8 0x14601289 0x24050001  # func_0021E330: bnez v1,2211e8 <Taku_Camp_Ivent+0x5078> patched to addiu $a1, $zero, 0x1
+0x0021E8BC 0x00000000 0x10001288  # func_0021E330: nop patched to b .L002232E0
+0x0021EB9C 0x00000000 0x24052756  # func_0021E330: nop patched to addiu $a1, $zero, 0x2756
+0x0021EF44 0x00000000 0x2405276A  # func_0021E330: nop patched to addiu $a1, $zero, 0x276A
+0x0021EF54 0x3C0101ED 0x24050002  # func_0021E330: lui at,0x1ed patched to addiu $a1, $zero, 0x2
+0x0021EF58 0x100010E1 0x24180000  # func_0021E330: b 2211e8 <Taku_Camp_Ivent+0x5078> patched to addiu $t8, $zero, 0x0
+0x0021EF5C 0xA420536C 0xA03853A8  # func_0021E330: sh zero,21356(at) patched to sb $t8, (0x1ED53A8 & 0xFFFF)($at)
+0x0021EF64 0x8424536C 0x3C0C0034  # func_0021E330: lh a0,21356(at) patched to lui $t4, %hi(D_0033F72C)
+0x0021EF68 0x24030001 0x240E0030  # func_0021E330: li v1,1 patched to addiu $t6, $zero, 0x30
+0x0021EF6C 0x10830024 0xA18EF72C  # func_0021E330: beq a0,v1,21ce40 <Taku_Camp_Ivent+0xcd0> patched to sb $t6, %lo(D_0033F72C)($t4)
+0x0021EF70 0x3C0101ED 0x100010DA  # func_0021E330: lui at,0x1ed patched to b .L002232DC
+0x0021EF74 0x10800004 0xA425536C  # func_0021E330: beqz a0,21cdc8 <Taku_Camp_Ivent+0xc58> patched to sh $a1, (0x1ED536C & 0xFFFF)($at)
+0x0021F624 0x24630001 0x24030005  # func_0021E330: addiu v1,v1,1 patched to addiu $v1, $zero, 0x5
 # Functions from the dotr-decomp CC0 bundle (chatC/imp/patch.py): their C builds the BUILT word; our
 # disc's revision ships the hand-patched word.
 0x001AAB58 0x8CE6013C 0x0809FDC0  # func_001AAAF0: lw $a2, 0x13C($a3) patched to j func_27F700

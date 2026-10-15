@@ -133,7 +133,7 @@ segments:
       - [0x11E310, c, main_061]
       - [0x11FEE0, c, big_func_002195E0]
       - [0x1223E0, c, main_062]
-      - [0x124C30, asm, big_func_0021E330]
+      - [0x124C30, c, big_func_0021E330]
       - [0x129BF0, c, main_063]
       - [0x12CF00, c, big_func_00226600]
       - [0x12EA50, c, main_064]
