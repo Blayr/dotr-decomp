@@ -841,7 +841,7 @@ s32 func_0010E540(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
     } while (j < 5);
     func_0026FD30(arg0, values);
     if (!(arg3 & 255)) {
-        func_0010F290(arg0, arg1, arg2, 0);
+        func_0010F290(arg0, (u8 *)arg1, (void *)arg2, 0);
         count = 2;
         if (func_0023C160() > 3) {
             i = 0;
@@ -1190,7 +1190,68 @@ s32 func_0010F220(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_004", func_0010F290);
+struct DotrStateBlock;
+struct DotrStateItem_10f290;
+extern struct DotrStateItem_10f290 *func_001E36E0_10f290(int x, int y);
+struct DotrPickTarget {
+    unsigned char unknown_00[8];
+    unsigned short unknown_08;
+    short unknown_0a;
+};
+struct DotrPickBlock {
+    struct DotrPickTarget *target;
+    unsigned char unknown_04[0x34];
+    short unknown_38;
+    short unknown_3a;
+    unsigned short unknown_3c; 
+    unsigned char unknown_3e;
+};
+
+int func_0010F290(int side, unsigned char *item, void *block_v, unsigned char mode)
+{
+    struct DotrPickBlock * block = block_v;
+    int ids[8];
+    int i;
+    int found;
+
+    found = 0;
+    func_0026FD30(side, ids);
+    switch (mode) {
+    case 0:
+        if (func_001E36E0_10f290(0, 0) || func_001E1090(side, 0) != 1) {
+            return -1;
+        }
+        i = 0;
+        if (0 < func_0026FE20(side)) {
+            do {
+                if (ids[i] == 798) {
+                    found = 1;
+                    item[6] = i;
+                }
+                i++;
+            } while (i < func_0026FE20(side));
+        }
+        if (found == 1) {
+            i = 0;
+            if (0 < func_0026FE20(side)) {
+                do {
+                    if ((func_0026FCE0(ids[i]) >> 5) == 0) {
+                        if (func_00248F60(ids[i], 798) >= 0) {
+                            if (func_0026FB60(side, ids[i]) == 1) {
+                                item[7] = i;
+                                func_001DCD70((struct DotrStateBlock *)block, ids[i]);
+                                return func_0026FCE0(ids[i]) >> 5;
+                            }
+                        }
+                    }
+                    i++;
+                } while (i < func_0026FE20(side));
+            }
+        }
+        break;
+    }
+    return -1;
+}
 
 s32 func_0010F450(s32 arg0, u8 *arg1, void *arg2) {
     s32 entries[5];

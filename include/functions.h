@@ -216,6 +216,7 @@ s32 func_0010EDA0(s32 arg0); /* JP: TaLogic_GetWarnHideLvl */
 s32 func_0010EE00(s32 arg0, s32 arg1, u32 *arg2); /* JP: TaLogic_IsOpenUnit */
 s32 func_0010F030(void); /* JP: TaLogic002_IsActiveMode */
 s32 func_0010F220(s32 arg0); /* JP: TaLogic002_IsRefuseEmptyCombo */
+int func_0010F290(int side, unsigned char *item, void *block_v, unsigned char mode); /* JP: TaLogic002_GetSpecialComboPlay */
 s32 func_0010F450(s32 arg0, u8 *arg1, void *arg2); /* JP: TaLogic002_GetSpellPlay */
 s32 func_0010F6F0(s32 arg0); /* JP: TaLogic002_IsMakeDefense */
 s32 func_0010F850(s32 arg0, s32 arg1); /* JP: TaLogic002_GetLinePiece */
