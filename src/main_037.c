@@ -1163,7 +1163,6 @@ typedef struct {
 extern u8 D_00317472;
 
 void func_001AC700(void);
-void func_001B8840(void);
 s32 func_001CEE60(void);
 void func_001EAA60(s32);
 void func_001EDA40(s32, s32);
