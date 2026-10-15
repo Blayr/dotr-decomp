@@ -248,7 +248,6 @@ s32 func_001EE6C0(s32, s32, s32, s32, s32, s32, s32, void (*)(void), s64);
 
 u8 *func_002131D0(u8 *, s32, s32);
 void func_00213D00(u8 *, u8 *);
-s32 func_002134D0(s32, s32 *);
 s32 func_002138D0(s32, s32 *);
 
 

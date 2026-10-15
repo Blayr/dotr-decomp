@@ -1575,7 +1575,65 @@ s32 func_00213410(s32 arg0, u32 cursor, s32 size) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_002134D0);
+typedef struct {
+    u32 xy;
+    u32 z : 24;
+    u32 f : 8;
+} Vert_002134D0;
+
+typedef struct {
+    u8 pad00[0x40];
+    Vert_002134D0 v0;
+    u8 pad48[0x10];
+    Vert_002134D0 v1;
+    u8 pad60[0x10];
+    Vert_002134D0 v2;
+    s32 f78;
+    s32 depth;
+} Prim_002134D0;
+
+extern s8 func_00213680(s32, s32 *);
+
+#define prim ((Prim_002134D0 *)arg0)
+
+s32 func_002134D0(s32 arg0, s32 *arg1) {
+    u8 *scratch;
+    u8 *var_s1;
+    s32 var_s2;
+    s32 temp_s3;
+    s32 var_s4;
+
+    var_s1 = (u8 *)arg1 + 0x18;
+    scratch = (u8 *)0x70000000;
+    var_s4 = 0;
+    temp_s3 = arg1[1] & 0x7FFF;
+    for (var_s2 = 0; var_s2 < temp_s3; var_s2++) {
+        register s32 base = arg1[4];
+        asm {
+            ctc2.ni base, vi1
+            vlqi.xyzw vf16, (vi1++)
+            vlqi.xyzw vf17, (vi1++)
+            vlqi.xyzw vf18, (vi1++)
+            vlqi.xyzw vf19, (vi1++)
+        }
+        scratch[0xF0 + var_s4] = func_00213680((s32)(scratch + var_s4 * 0x18 + 0x90), (s32 *)var_s1);
+        if (var_s2 >= 2) {
+            if (scratch[0xF0] && scratch[0xF1] && scratch[0xF2]) {
+                func_0020B380(prim, scratch + 0x60, 8);
+                prim->f78 = 0;
+                prim->depth = ((prim->v0.z > prim->v1.z ? prim->v0.z : prim->v1.z) > prim->v2.z)
+                    ? (prim->v0.z > prim->v1.z ? prim->v0.z : prim->v1.z) : prim->v2.z;
+                arg0 += sizeof(Prim_002134D0);
+            }
+        }
+        var_s1 += 0x12;
+        var_s4 = (var_s4 + 1) % 3;
+    }
+    *(u32 *)(scratch + 0xFC) = (u32)(var_s1 + 3) & ~3;
+    return arg0;
+}
+
+#undef prim
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_00213680);
 
