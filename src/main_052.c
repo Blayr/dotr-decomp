@@ -1554,7 +1554,189 @@ s32 SzView_SetCamera(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_052", SzView_DoRequest);
+typedef struct Camera_001FA220 {
+    Vec4_001F9B20 polar;
+    Vec4_001F9B20 rotation;
+    Vec4_001F9B20 position;
+    Vec4_001F9B20 target;
+    s32 roll;
+    f32 fov;
+} Camera_001FA220;
+
+typedef union Value_001FA220 {
+    s32 i;
+    void *p;
+    Vec4_001F9B20 v;
+} Value_001FA220;
+
+typedef struct Slot_001FA220 {
+    s8 active : 1;
+    s8 type : 7;
+    s8 flag : 1;
+    s8 other : 7;
+    s8 owner;
+    s8 target;
+    u16 count;
+    u16 timer;
+    u8 pad08[8];
+    Value_001FA220 from;
+    Value_001FA220 to;
+} Slot_001FA220;
+
+static inline s32 lerp_001FA220(s32 from, s32 to, f32 t) {
+    s32 d = to - from;
+
+    return from + (s32)(d * t);
+}
+
+static inline s32 setFov_001FA220(s32 index, s32 fov) {
+    Camera_001FA220 *camera;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    if (camera == NULL) {
+        return 0;
+    }
+    camera->fov = fov;
+    return 1;
+}
+
+static inline s32 setRoll_001FA220(s32 index, s32 roll) {
+    Camera_001FA220 *camera;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    if (camera == NULL) {
+        return 0;
+    }
+    camera->roll = (s32)(f32)roll;
+    return 1;
+}
+
+static inline s32 setPosition_001FA220(s32 index, Vec4_001F9B20 *position) {
+    Camera_001FA220 *camera;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    if (camera == NULL) {
+        return 0;
+    }
+    if (position == NULL) {
+        position = &D_00293020;
+    }
+    camera->position = *position;
+    lSzView_CalcRel(index);
+    lSzView_CalcLook(index);
+    return 1;
+}
+
+static inline s32 setTarget_001FA220(s32 index, Vec4_001F9B20 *target) {
+    Camera_001FA220 *camera;
+
+    if (index < 0 || index > 0) {
+        return 0;
+    }
+    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    if (camera == NULL) {
+        return 0;
+    }
+    if (target == NULL) {
+        target = (Vec4_001F9B20 *)&D_00293030;
+    }
+    camera->target = *target;
+    lSzView_CalcRel(index);
+    lSzView_CalcLook(index);
+    return 1;
+}
+
+void SzView_DoRequest(s32 owner, s32 target) {
+    extern Slot_001FA220 D_0031BEC0[];
+    extern s32 SzGame_GetFrameSpeed();
+    Slot_001FA220 *slot;
+    s32 delta;
+    s32 i;
+    s32 done;
+    s32 timer;
+    s32 d;
+    s32 nt;
+    f32 t;
+    Vec4_001F9B20 pos;
+    Vec4_001F9B20 polar;
+
+    slot = D_0031BEC0;
+    delta = SzGame_GetFrameSpeed();
+    i = 0;
+    do {
+        if (slot->active && !slot->flag && (owner < 0 || slot->owner == owner) &&
+            (target < 0 || slot->target == target)) {
+            done = 0;
+            timer = slot->timer + delta;
+            if (timer < 0xFFFF) {
+                nt = timer;
+            } else {
+                nt = 0xFFFF;
+            }
+            slot->timer = nt;
+            if (slot->timer >= slot->count) {
+                done = 1;
+            }
+            t = (f32)slot->timer / (f32)slot->count;
+            switch (slot->type) {
+            case 0:
+                d = slot->to.i - slot->from.i;
+                setFov_001FA220(slot->owner, slot->from.i + (s32)(d * t));
+                break;
+            case 1:
+                d = slot->to.i - slot->from.i;
+                setRoll_001FA220(slot->owner, slot->from.i + (s32)(d * t));
+                break;
+            case 2:
+            case 3:
+                pos.x = slot->from.v.x + t * (slot->to.v.x - slot->from.v.x);
+                pos.y = slot->from.v.y + t * (slot->to.v.y - slot->from.v.y);
+                pos.z = slot->from.v.z + t * (slot->to.v.z - slot->from.v.z);
+                if (slot->type == 2) {
+                    setPosition_001FA220(slot->owner, &pos);
+                } else {
+                    setTarget_001FA220(slot->owner, &pos);
+                }
+                break;
+            case 4:
+            case 5:
+                polar.x = slot->from.v.x + t * (slot->to.v.x - slot->from.v.x);
+                polar.y = slot->from.v.y + t * (slot->to.v.y - slot->from.v.y);
+                polar.z = slot->from.v.z + t * (slot->to.v.z - slot->from.v.z);
+                if (slot->type == 4) {
+                    SzView_SetLookSP(slot->owner, &polar.x);
+                } else {
+                    SzView_SetLookCP(slot->owner, &polar.x);
+                }
+                break;
+            case 6:
+                SzView_SetViewCamera(slot->owner, slot->to.i, &slot->from.v.x, 1, t);
+                break;
+            case 7:
+                SzView_SetViewCamera(slot->owner, slot->to.i, &slot->from.v.x, 2, t);
+                break;
+            case 8:
+            case 9:
+                SzView_SetInterpCameraMotion(slot->owner, slot->from.p, slot->count, slot->timer, slot->to.i, slot->type == 9);
+                break;
+            }
+            if (done) {
+                slot->active = 0;
+            }
+        }
+        i++;
+        slot++;
+    } while (i < 8);
+}
 
 typedef struct Entry_001FA6F0 {
     s8 active : 1;

@@ -309,7 +309,6 @@ extern u64 D_00293EE0[];
 
 
 void func_0027F5B0(void);
-void SzView_DoRequest(s32, s32);
 
 extern s32 D_00292468;
 
