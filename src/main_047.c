@@ -763,7 +763,6 @@ typedef union {
     s32 i[4];
 } Quad_001E60E0;
 
-s32 lSzBattle_DrawFakeShadow(s32, s32, s32, f32, f32);
 extern Quad_001E60E0 D_002922B0;
 extern Quad_001E60E0 D_002922C0;
 extern Quad_001E60E0 D_002922D0;
@@ -908,7 +907,275 @@ s32 lSzBattle_DrawNormal_Pipe(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/main_047", lSzBattle_DrawFakeMirror);
 
-INCLUDE_ASM("asm/nonmatchings/main_047", lSzBattle_DrawFakeShadow);
+typedef struct {
+    f32 f[5];
+} Plane_001E6F90;
+
+typedef struct {
+    f32 matrix[4][4];
+    f32 position[4];
+    f32 direction[4][4];
+} Camera_001E6F90;
+
+typedef struct {
+    f32 f[3][2][2][4];
+} Points_001E6F90;
+
+typedef union {
+    u64 bits;
+    struct {
+        u64 low : 32;
+        u64 flags : 24;
+        u64 high : 8;
+    } fields;
+} Color_001E6F90;
+
+typedef struct {
+    f32 position[4];
+    Color_001E6F90 color;
+    u8 r, g, b, a;
+    f32 q;
+    f32 uv[2];
+    u32 reserved[2];
+} Vertex_001E6F90;
+
+typedef struct {
+    u16 first, type;
+    u32 flags;
+    u64 value;
+    u8 tail[8];
+} Header_001E6F90;
+
+typedef union {
+    s64 packed;
+    f32 f[2];
+} Range_001E6F90;
+
+static inline void tag_001E6F90(Header_001E6F90 *p, s32 first, s32 type, u64 value) { p->type = type; p->first = first; p->value = value; p->flags = 0; }
+#define MAX_001E6F90(a, b) ((a) > (b) ? (a) : (b))
+extern void RhGeom_MulMatrixVectorArray(void *, s32, void *, s32);
+
+
+#pragma opt_dead_assignments off
+
+s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1) {
+    f32 delta;
+    extern s32 func_002070F0(s32, s32, void *, s32, void *, s32, s32);
+    extern void func_0020A470(s32, s32, s32);
+    extern s32 func_0020A870(void *, s32);
+    extern s32 func_00207AA0(s32, void *, s32, void *, s32, s32);
+    extern void func_0020CF00(void *, s32, void *, s32);
+    extern s32 func_0020EC60(void *);
+    extern s32 func_001F2980();
+    extern Plane_001E6F90 D_00292380;
+    extern Points_001E6F90 D_002923A0;
+    extern Range_001E6F90 D_00292460;
+    Plane_001E6F90 plane;
+    Camera_001E6F90 camera;
+    Points_001E6F90 points;
+    f32 position[4];
+    f32 matrix[4][4];
+    f32 midpoint[6];
+    Header_001E6F90 header __attribute__((aligned(8)));
+    s64 saved[3] __attribute__((aligned(8)));
+    Range_001E6F90 range __attribute__((aligned(8)));
+    s32 alpha;
+
+    plane = D_00292380;
+    plane.f[3] = -fparg0;
+    alpha = func_001F2980(arg1, &plane);
+    if (func_001F1370(arg1) == 0) {
+        return (s32)arg0;
+    }
+    if (func_001F96F0(0, alpha) == 0) {
+        alpha = 9;
+    }
+    func_0020DEF0(&camera);
+    func_001F9500(0, alpha, 0, camera.direction[0]);
+    {
+        f32 absolute = camera.direction[0][1];
+        absolute = absolute >= 0.0f ? absolute : -absolute;
+        if (!(absolute < 1.0f)) {
+            camera.direction[0][1] *= 0.999999f;
+            camera.direction[0][2] = 0.000001f;
+        }
+    }
+    if (!(func_0020D1A0(plane.f, camera.direction[0]) <= 0.0f) &&
+        func_0020E460() != 0) {
+        s32 count;
+        s32 endpoint;
+        s32 opacityScale;
+        Vertex_001E6F90 *scratch;
+        s32 i;
+        Vertex_001E6F90 *vertex;
+        Vertex_001E6F90 *current;
+        Vertex_001E6F90 *opposite;
+        s32 packet;
+        s32 drawPacket;
+        s32 band;
+        s32 pair;
+        f32 scale;
+        f32 width;
+        f32 height;
+        u8 *scratchpad;
+
+        opacityScale = (func_001F27A0(arg1) << 6) >> 7;
+        scale = fparg1 / 800.0f;
+        scratchpad = (u8 *)0x70000000;
+        width = 320.0f * scale;
+        height = 224.0f * scale;
+        scratch = (Vertex_001E6F90 *)(0x2000 + scratchpad);
+        points = D_002923A0;
+        points.f[0][0][0][0] = -width;
+        points.f[0][0][0][1] = -height;
+        points.f[0][0][1][0] = -width;
+        points.f[0][0][1][1] = height;
+        points.f[0][1][0][0] = width;
+        points.f[0][1][0][1] = -height;
+        points.f[0][1][1][0] = width;
+        points.f[0][1][1][1] = height;
+        points.f[1][0][0][0] = -width;
+        points.f[1][0][0][1] = -height;
+        points.f[1][0][0][2] = fparg1;
+        points.f[1][0][1][0] = -width;
+        points.f[1][0][1][1] = height;
+        points.f[1][0][1][2] = fparg1;
+        points.f[1][1][0][0] = width;
+        points.f[1][1][0][1] = -height;
+        points.f[1][1][0][2] = fparg1;
+        points.f[1][1][1][0] = width;
+        points.f[1][1][1][1] = height;
+        points.f[1][1][1][2] = fparg1;
+        packet = (s32)func_00208530((void *)arg0, 0);
+        func_0020A470(0, 10, 0x31);
+        packet = func_0020A870(func_0020A610((void *)packet), 0);
+        func_001F2050(arg1, position);
+        camera.position[0] = position[0] + camera.direction[0][0] * fparg1;
+        camera.position[1] = position[1] + camera.direction[0][1] * fparg1;
+        camera.position[2] = position[2] + camera.direction[0][2] * fparg1;
+        camera.direction[0][0] *= -1.0f;
+        camera.direction[0][1] *= -1.0f;
+        camera.direction[0][2] *= -1.0f;
+        { f32 h = 448.0f, cy = 224.0f, d = 800.0f, w = 640.0f, cx = 320.0f; func_0020DF40(d, w, h, cx, cy); }
+        func_0020E360(&camera);
+        count = func_0020EC60((void *)packet);
+        func_0020EBA0(matrix);
+        func_0020BDE0(matrix, matrix);
+        func_0020BAF0((s32)matrix);
+        RhGeom_MulMatrixVectorArray((void *)(u32)&points, 0, (void *)(u32)&points, 8);
+        func_0020BB50();
+        count = func_001EFA80(count, arg1, 0, 0, 0, 0, 0);
+        func_0020AA30(saved, saved + 1);
+        count = func_0020F290((s32)func_0020A760((void *)count));
+        func_0020E4F0();
+        func_0020DEF0(&camera);
+        func_0020E360(&camera);
+        drawPacket = func_0020A0B0(func_0020EC60((void *)count), 0);
+        {
+            tag_001E6F90((Header_001E6F90 *)(u32)&header, 0, 0x35, 0);
+            func_002086D0(&header, 0x8000000044LL);
+        }
+        i = 0;
+        vertex = scratch;
+        do {
+            f32 * p;
+            s32 endpoint;
+            s32 side;
+            side = i >> 1;
+            endpoint = i % 2;
+            p = points.f[0][side][endpoint];
+            vertex->r = 0;
+            vertex->g = 0;
+            vertex->b = 0;
+            vertex->a = opacityScale;
+            vertex->q = 1.0f;
+            func_00206430(plane.f, p, p + 16, p + 32);
+            i++;
+            vertex++;
+        } while (i < 4);
+        band = 0;
+        do {
+            s32 j;
+            s32 side;
+            Vertex_001E6F90 *interpolated;
+            f32 *p;
+            range = D_00292460;
+            range.f[0] = (f32)band / 8.0f;
+            interpolated = scratch;
+            range.f[1] = (f32)(band + 1) / 8.0f;
+            j = 0;
+            do {
+                f32 nextX;
+                f32 x;
+                f32 t;
+                side = j >> 1;
+                p = points.f[0][side][0];
+                x = p[32];
+                endpoint = (j == 0 || j == 3) ? 0 : 1;
+                nextX = p[36];
+                t = range.f[endpoint];
+                delta = nextX - x;
+                interpolated->position[0] = x + delta * t;
+                delta = p[37] - p[33];
+                interpolated->position[1] = p[33] + delta * t;
+                x = p[34];
+                delta = p[38] - x;
+                interpolated->position[2] = x + delta * t;
+                interpolated->position[3] = 1.0f;
+                interpolated->uv[0] = (640.0f * (f32)side) / 1024.0f;
+                j++;
+                interpolated->uv[1] = (448.0f * t) / 512.0f;
+                interpolated++;
+            } while (j < 4);
+            pair = 0;
+            current = scratch;
+            do {
+                f32 distance;
+                s32 opacity;
+                f32 intensity;
+                midpoint[0] = (current->position[0] + (opposite = &scratch[3 - pair])->position[0]) / 2.0f;
+                midpoint[1] = (current->position[1] + opposite->position[1]) / 2.0f;
+                midpoint[2] = (current->position[2] + opposite->position[2]) / 2.0f;
+                distance = func_0020D100(position, midpoint);
+                if (distance < 1.0f) {
+                    distance = 1.0f;
+                }
+                intensity = 1e11f / (distance * (distance * (distance * (distance * distance))));
+                intensity = MAX_001E6F90(intensity, 0.0f) < 1.0f
+                    ? MAX_001E6F90(intensity, 0.0f) : 1.0f;
+                opacity = func_001A23B0((f32)opacityScale * intensity);
+                opposite->a = opacity;
+                current->a = opacity;
+                current++;
+                pair++;
+            } while (pair < 2);
+            count = func_002070F0(0, 4, scratch, 0xAA, scratchpad, 15, 0);
+            if (count >= 3) {
+                func_00207230(0, count, scratch);
+                {
+                    Vertex_001E6F90 * p;
+                    s32 n;
+                    n = 0;
+                    if (n < count) {
+                        p = scratch;
+                        do {
+                            p->color.fields.flags = 0xFFFFF6;
+                            n++;
+                            p++;
+                        } while (n < count);
+                    }
+                }
+                drawPacket = func_00207AA0(drawPacket, &header, count, scratch, 0, 0);
+            }
+            band++;
+        } while (band < 7);
+        opacityScale = func_0020A0B0(drawPacket, 1);
+        func_0020A9E0();
+        arg0 = (s32)func_00208530((void *)opacityScale, 1);
+    }
+    return (s32)arg0;
+}
+#pragma opt_dead_assignments reset
 
 void SzBattle_Term(void) {
     s32 i;
