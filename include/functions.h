@@ -825,6 +825,7 @@ s32 func_00172370(s32 arg0, void *arg1);
 s32 func_001728A0(s32 arg0, u8 *arg1);
 s32 func_001747D0(s32 arg0, void *tutorial);
 s32 func_00175FE0(s32 arg0, void *tutorial);
+s32 func_00178590(s32 arg0, void *tutorial);
 f32 func_0017B340(u64 arg0);
 void func_0017B380(u32 arg0);
 s32 func_0017B3D0(void);
