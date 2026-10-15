@@ -55,7 +55,10 @@ def main(path: Path) -> None:
         value = struct.pack("<d", float(m.group(3)))
         sym = pool[0]
         if read(int(sym[2:], 16)) == value:
-            lines[i] = f"{m.group(1)}ld\t{m.group(2)},{sym}\n"
+            # through $at as Sony's assembler did (today's builds the address in the destination register)
+            ind = m.group(1)
+            lines[i] = (f"{ind}.set\tnoat\n{ind}lui\t$1,%hi({sym})\n{ind}ld\t{m.group(2)},%lo({sym})($1)\n"
+                        f"{ind}.set\tat\n")
             pool.pop(0)
             changed += 1
     if changed:
