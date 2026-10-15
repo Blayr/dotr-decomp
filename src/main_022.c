@@ -66,7 +66,56 @@ s32 func_0017C108(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017C130);
+/* _sceSDC: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/cache.c; see THIRD_PARTY_NOTICES.md) */
+
+void func_0017C130(u32 start, u32 end) {
+    __asm__ __volatile__(
+        "	.set	noreorder\n"
+        "	lui	$7,(0xFFFFF000 >> 16)\n"
+        "	daddu	$6,$0,$0\n"
+        "	ori	$7,$7,(0xFFFFF000 & 0xFFFF)\n"
+        "	nop\n"
+        "_func_0017C130_0017C140:\n"
+        "	sync\n"
+        "	cache	0x10,0x0($6)\n"
+        "	sync\n"
+        "	.word	0x4002E000\n"
+        "	and	$2,$2,$7\n"
+        "	addu	$2,$2,$6\n"
+        "	sltu	$3,$5,$2\n"
+        "	sltu	$2,$2,$4\n"
+        "	bnez	$2,_func_0017C130_0017C17C\n"
+        "	nop\n"
+        "	bnez	$3,_func_0017C130_0017C17C\n"
+        "	nop\n"
+        "	sync\n"
+        "	cache	0x14,0x0($6)\n"
+        "	sync\n"
+        "_func_0017C130_0017C17C:\n"
+        "	sync\n"
+        "	cache	0x10,0x1($6)\n"
+        "	sync\n"
+        "	.word	0x4002E000\n"
+        "	and	$2,$2,$7\n"
+        "	addu	$2,$2,$6\n"
+        "	sltu	$3,$5,$2\n"
+        "	sltu	$2,$2,$4\n"
+        "	bnez	$2,_func_0017C130_0017C1B8\n"
+        "	nop\n"
+        "	bnez	$3,_func_0017C130_0017C1B8\n"
+        "	nop\n"
+        "	sync\n"
+        "	cache	0x14,0x1($6)\n"
+        "	sync\n"
+        "_func_0017C130_0017C1B8:\n"
+        "	sync\n"
+        "	addiu	$6,$6,0x40\n"
+        "	slti	$2,$6,0x1000\n"
+        "	bnez	$2,_func_0017C130_0017C140\n"
+        "	nop\n"
+        "	.set	reorder\n"
+       );
+}
 
 void func_0017C1D8(u32 arg0, u32 arg1) {
     s32 eie;

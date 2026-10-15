@@ -981,6 +981,7 @@ s32 func_0017C0B0(void);
 s32 func_0017C0B8(s32 arg0, s32 arg1);
 s32 func_0017C0E0(void);
 s32 func_0017C108(void);
+void func_0017C130(u32 start, u32 end);
 void func_0017C1D8(u32 arg0, u32 arg1);
 void func_0017C258(u32 arg0, u32 arg1);
 void func_0017C318(u32 arg0, u32 arg1);
