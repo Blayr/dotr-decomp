@@ -367,7 +367,42 @@ asm void func_0020D9F0(void) {
     addiu sp, sp, 0x20
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DA70);
+asm void func_0020DA70(void) {
+    .set noreorder
+    la v1, D_00295060
+    vmul.xyz vf1, vf28, vf28
+    vmul.xyz vf2, vf29, vf29
+    vmul.xyz vf3, vf30, vf30
+    vmove.x vf5, vf1
+    vmove.x vf6, vf2
+    vmove.x vf7, vf3
+    vmr32.xyzw vf1, vf1
+    vmr32.xyzw vf2, vf2
+    vmr32.xyzw vf3, vf3
+    vadd.x vf5, vf5, vf1
+    vadd.x vf6, vf6, vf2
+    vadd.x vf7, vf7, vf3
+    vmr32.xyzw vf1, vf1
+    vmr32.xyzw vf2, vf2
+    vmr32.xyzw vf3, vf3
+    vadd.x vf5, vf5, vf1
+    vadd.x vf6, vf6, vf2
+    vadd.x vf7, vf7, vf3
+    lqc2 vf8, 0x0(v1)
+    vrsqrt Q, vf8x, vf5x
+    vsub.w vf24, vf0, vf0
+    vwaitq
+    vmulq.xyz vf24, vf28, Q
+    vrsqrt Q, vf8x, vf6x
+    vsub.w vf25, vf0, vf0
+    vwaitq
+    vmulq.xyz vf25, vf29, Q
+    vrsqrt Q, vf8x, vf7x
+    vsub.w vf26, vf0, vf0
+    vwaitq
+    jr ra
+    vmulq.xyz vf26, vf30, Q
+}
 
 asm void func_0020DB00(void *arg0) {
     .set noreorder
