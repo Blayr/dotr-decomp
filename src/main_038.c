@@ -1695,4 +1695,51 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     return packet;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawWindow_Emblem_Pipe);
+extern u8 D_00290080[];
+extern u16 D_00290864[];
+
+#pragma opt_propagation off
+
+s32 lSzDuel_DrawWindow_Emblem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    s32 result;
+
+    result = arg0;
+    if (arg3 > 0) {
+        s32 parts;
+        s32 px;
+        s32 py;
+        s32 width;
+        s32 quotient;
+        u16 *src;
+
+        parts = arg4 ? 0xC : 0x10;
+        if (arg3 > 0) {
+            width = ((arg3 - 1) % 3) + 1;
+        } else {
+            width = 0;
+        }
+        quotient = 0;
+        if (arg3 > 0) {
+            quotient = (arg3 - 1) / 3;
+        }
+        src = (u16 *)(D_00290080 + (quotient + 0xC6) * 10);
+        result = func_001B3CC0(arg0, src, arg1 + 0x6C0, arg2 + 0x720,
+                               0, 1, 0, arg4, (arg5 != 0) ? 1 : 0, 0, 1, 0, -1, 0x80);
+        if (width & 1) {
+            px = arg1 + 0x6C0 + ((arg5 != 0) ? 0 : parts);
+            result = func_001B3CC0(result, D_00290864, px, arg2 + 0x720,
+                                   0, 1, 0, arg4, 0, 0, 1, 0, -1, 0x80);
+        }
+        if (width & 2) {
+            px = arg1 + 0x6C0 + ((arg5 != 0) ? parts : 0);
+            result = func_001B3CC0(result, D_00290864, px, arg2 + 0x720, 0, 1, 0, arg4, 0, 0, 1, 0, -1, 0x80);
+            px = arg1 + 0x6C0 + ((arg5 != 0) ? 0 : parts);
+            py = arg2 + 0x720 + parts;
+            result = func_001B3CC0(result, D_00290864, px, py, 0, 1, 0, arg4, 0, 0, 1, 0, -1, 0x80);
+        }
+    }
+    return result;
+}
+
+
+#pragma opt_propagation reset
