@@ -292,7 +292,6 @@ typedef struct Vec4_00100B00 {
     f32 w;
 } Vec4_00100B00;
 
-void Ex3d_RotTransPersAutoCalcQ(void *, void *, s32, s32, s32);
 extern f32 D_0030FF00[];
 
 void GRotTransPers_3(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5) {
@@ -308,7 +307,6 @@ typedef struct Vec4_00100BA0 {
     f32 x, y, z, w;
 } Vec4_00100BA0;
 
-void Ex3d_RotTransPersAutoCalcQ(void *, void *, s32, s32, s32);
 extern f32 D_0030FF00[];
 
 void GRotTransPers_4(void *arg0, void *arg1, void *arg2, void *arg3,

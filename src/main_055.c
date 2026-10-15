@@ -1829,7 +1829,98 @@ s32 Ex3d_RotTransPersAuto(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_055", Ex3d_RotTransPersAutoCalcQ);
+typedef struct Packet_002058D0 {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 types;
+    u8 data[1];
+} Packet_002058D0;
+
+typedef struct Packed_002058D0 {
+    u64 xy : 32;
+    u64 z : 24;
+    u64 fog : 8;
+} Packed_002058D0;
+
+s32 Ex3d_RotTransPersAutoCalcQ(void *src MW_ALIGN(16), f32 *vertices, s32 matrix, s32 packet, s32 average) {
+    extern s64 func_001A23B0(f32);
+    f32 local_matrix[16];
+    f32 *input = src;
+    u64 *type_word = &((Packet_002058D0 *)packet)->types;
+    f32 *attribute1 = NULL;
+    f32 *attribute2 = NULL;
+    u8 *entry = ((Packet_002058D0 *)packet)->data;
+    u64 types = *type_word;
+    u16 count = ((Packet_002058D0 *)packet)->count;
+    f32 total = 0.0f;
+    s32 scale_attributes = 0;
+    s32 vertex_count = 0;
+    u16 flags = ((Packet_002058D0 *)packet)->flags;
+    s32 i;
+
+    if (!(flags & 0x800) && (flags & 0x20) && (flags & 0x10)) {
+        scale_attributes = 1;
+    }
+    if (matrix == 0) {
+        RhView_GetWorldScreenMatrix(local_matrix);
+        matrix = (s32)local_matrix;
+    }
+    for (i = 0; i < (u16)count; i++) {
+        if ((types & 0xF) == 4) {
+            input[3] = 1.0f;
+            input += 4;
+            vertex_count++;
+        }
+        types >>= 4;
+    }
+    RhGeom_PushMatrix(matrix);
+    RhGeom_MulMatrixVectorArray((s32)vertices, 0, (s32)src, vertex_count);
+    RhGeom_PopMatrix();
+    types = *type_word;
+    for (i = 0; i < (u16)count; i++, entry += 8, types >>= 4) {
+        s32 kind = types & 0xF;
+        switch (kind) {
+        case 1:
+            attribute1 = (f32 *)entry;
+            break;
+        case 2:
+            attribute2 = (f32 *)entry;
+            break;
+        case 4: {
+            f32 reciprocal = 1.0f / vertices[3];
+            f32 x, y, z;
+
+            if (scale_attributes && attribute1 != NULL && attribute2 != NULL) {
+                attribute1[1] = reciprocal;
+                attribute1 = NULL;
+                attribute2[0] *= reciprocal;
+                attribute2[1] *= reciprocal;
+                attribute2 = NULL;
+            }
+            vertices[0] *= reciprocal;
+            vertices[1] *= reciprocal;
+            z = vertices[2] * reciprocal;
+            vertices[2] = z;
+            if (z < 1.0f || !(z <= 16777215.0f) ||
+                (x = vertices[0]) < 0.0f || !(x <= 4095.0f) ||
+                (y = vertices[1]) < 0.0f || !(y <= 4095.0f)) {
+                return 0;
+            }
+            *(s16 *)(entry + 0) = func_001A23B0(16.0f * x);
+            *(s16 *)(entry + 2) = func_001A23B0(16.0f * vertices[1]);
+            ((Packed_002058D0 *)entry)->z = func_001A23B0(vertices[2]);
+            total += vertices[3];
+            vertices += 4;
+            break;
+        }
+        }
+    }
+    if (average != 0) {
+        *(f32 *)average = total / (f32)vertex_count;
+    }
+    return 1;
+}
 
 f32 Ex3d_GetLookVector(s32 arg0) {
     f32 *temp_s0;

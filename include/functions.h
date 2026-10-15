@@ -64,6 +64,7 @@ s32 Ex3d_NodeL2V(void *matrix, s32 count, void *vertices, s32 arg3, void *arg4, 
 void Ex3d_NodeV2S(void *matrix, s32 count, void *vertices);
 s32 Ex3d_RotTransPers(s32 arg0, void *arg1, u16 *arg2, s32 *arg3);
 s32 Ex3d_RotTransPersAuto(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4);
+s32 Ex3d_RotTransPersAutoCalcQ(void *src MW_ALIGN(16), f32 *vertices, s32 matrix, s32 packet, s32 average);
 void Ex3d_ViewClip(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 ExAssignAlpha(void *arg0, s64 arg1);
 s32 ExAssignClamp(void *arg0, s64 arg1);
@@ -5531,6 +5532,7 @@ s32 func_002051F0(void);
 void func_00205210(void);
 s32 func_00205440(s32 arg0, void *arg1, u16 *arg2, s32 *arg3);
 s32 func_00205630(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4);
+s32 func_002058D0(void *src MW_ALIGN(16), f32 *vertices, s32 matrix, s32 packet, s32 average);
 f32 func_00205C40(s32 arg0);
 void func_00205C90(s32 arg0);
 void func_00205CA0(s32 arg0);
