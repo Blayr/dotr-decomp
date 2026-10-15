@@ -262,6 +262,7 @@ s32 func_001173E0(s32 arg0); /* JP: TaLogic001_IsUseLifeHourGlass */
 s32 func_00117550(s32 arg0); /* JP: TaLogic001_IsUseBraveHourGlass */
 s32 func_00117600(s32 arg0); /* JP: TaLogic001_IsUseLordOfDragon */
 s32 func_00117680(s32 arg0); /* JP: TaLogic001_IsUseRevive */
+int func_00117870(int x, int y, int z); /* JP: TaLogic_IsOpenUnit */
 s32 func_00117B10(s32 arg0); /* JP: TaLogic001_IsLandNearCntr */
 s32 func_00117BD0(s32 arg0, s32 arg1); /* JP: TaLogic001_IsDoCerem */
 s32 func_00117C30(s32 arg0); /* JP: TaLogic_GetWarnHideLvl */

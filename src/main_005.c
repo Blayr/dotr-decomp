@@ -509,7 +509,6 @@ static inline u32 target_00115E20(void *src, u8 mode) {
     return (u16)input->targets;
 }
 
-void func_00117870(s32, s32, void *);
 
 s32 func_00115E20(void *arg0, s32 arg1, void *arg2, u8 arg3) {
     extern void func_0027A090();
@@ -531,7 +530,7 @@ s32 func_00115E20(void *arg0, s32 arg1, void *arg2, u8 arg3) {
         func_0027B1B0(input, 1);
         return -1;
     }
-    func_00117870(input->position >> 8, input->position & 0xFF, input);
+    func_00117870(input->position >> 8, input->position & 0xFF, (s32)input);
     origin = func_001E1090(input->position >> 8, input->position & 0xFF);
     selected = target_00115E20(input, arg3);
     destination = func_001E1090(target_00115E20(input, arg3) >> 8,
@@ -1123,7 +1122,80 @@ s32 func_00117680(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_005", func_00117870);
+extern int func_001E1030_b(int a, int b);
+extern unsigned *func_001E0B70_b(int a, int b, int n);
+extern int func_00111320_b(int x, int y, int z);
+static inline int func_00117870_either(int side)
+{
+    if (func_0024CA40(0, 0, side, 1, 0x2001C, 14) != 0) {
+        return 1;
+    }
+    if (func_0024CA40(0, 0, side, 1, 28, 14) != 0) {
+        return 1;
+    }
+    return 0;
+}
+
+int func_00117870(int x, int y, int z)
+{
+    int kind;
+    int side;
+    unsigned *p;
+    func_001E1090(x, y);
+    kind = func_001E1030_b(x, y);
+    side = func_00250360(x, y);
+    p = func_001E0B70_b(x, y, 0);
+    if (func_001E2100(x, y, 4)) {
+        return 0;
+    }
+    switch (func_001E0700(x, y) >> 5) {
+    case 0:
+        switch (kind) {
+        case 83:
+            if (func_00117870_either(side) == 1) {
+                return 1;
+            }
+            break;
+        case 146:
+            if (func_00250940(side, 0) >= 6) {
+                return 1;
+            }
+            break;
+        }
+        return 2;
+    case 5:
+        if (func_0027D830(x, y, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        if (func_00117BD0(func_00250360(x, y), kind) == 1) {
+            if (func_001E22B0(x, y) != 9) {
+                return 1;
+            }
+        }
+        break;
+    case 1:
+        if (func_0027D830(x, y, 0, 0, 6, 0) == 5) {
+            return 2;
+        }
+        switch (*p >> 8) {
+        case 13:
+            return 1;
+        case 2:
+            if (func_00117B10(func_001E1090(x, y)) == 1) {
+                return 1;
+            }
+            break;
+        case 20:
+            return 2;
+        default:
+            return func_00111320_b(x, y, z);
+        }
+        break;
+    default:
+        return 2;
+    }
+    return 2;
+}
 
 static inline s32 min_00117B10(s32 a, s32 b) {
     return (a < b) ? a : b;
