@@ -399,9 +399,199 @@ INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01AC0_b149);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01C60_b149);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E01ED0_b149);
+/* shape b149:01E01ED0, 135 insns, 2 copies: a yellow trail on a world track: set up once (fills the track's 15 history points
+   with its current point); both colours fade in for 110 frames, then the first fades out (its fade-out step is
+   applied twice); while young the module's shape b149:01E00080 shifts the track; blinks, frame climbs to 4 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E020F0_b149);
+typedef struct {
+    Vec4f p[15];
+} Track_b149_01E01ED0;
+
+typedef struct {
+    u8 pad0[0x4470];
+    Track_b149_01E01ED0 track[0x50];
+    u8 pad[0xB4F0 - 0x4470 - 0x50 * 0xF0];
+    Vec4f head[1];
+} World_b149_01E01ED0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 h8;
+    u8 padA[0x3E];
+    f32 size;
+    u8 pad4C[4];
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Trail_b149_01E01ED0;
+
+static s32 func_01E01ED0_b149(World_b149_01E01ED0 *w, Trail_b149_01E01ED0 *o) {
+    extern void b149_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    Vec4f *dst;
+    Vec4f *src;
+
+    if (o->state == 1) {
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        src = &w->head[o->idx];
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 15; i++) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+            dst++;
+        }
+        o->frame = 2;
+        o->c0[3] = 0;
+        o->h8 = 0;
+        o->h56 = 0;
+        o->size = 4.0f;
+        o->state = 2;
+    }
+    if (o->t < 0x6E) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    } else {
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        }
+    }
+    if (o->t < 0x75) {
+        b149_01E00080(&w->track[o->idx].p[14], 15, 0, &w->head[o->idx]);
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x10);
+    } else {
+        func_001076F0(o->c0, 0x70, 0x70, 0x10);
+    }
+    if (o->t != 0) {
+        if (o->frame < 4) {
+            o->frame++;
+        }
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b149:01E020F0, 176 insns: a glow whose kind (f50) picks its look: kinds 0/1 are grey with an orange second
+   colour, flickering, brightening for 12 ticks; kind 1 also grows to 400 by 15; kind 2 starts at 840, white with a
+   brown second colour, brightens by 0x20 for 13 ticks then fades by 9; kinds 0/1 fade by 15 once the game value
+   at 0xBCF2 passes 0x140; the position's first word advances 0x4000 each tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b149_01E020F0;
+
+typedef struct {
+    u8 pad[0xBCF2];
+    s16 v;
+} Game_b149_01E020F0;
+
+static s32 func_01E020F0_b149(Game_b149_01E020F0 *g, Fx_b149_01E020F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->f48 = 40.0f;
+        if (o->kind == 2) {
+            o->f48 = 840.0f;
+        }
+        if (o->kind < 2) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            func_001076F0(o->col2, 0xF0, 0x80, 0x10);
+        } else {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x40, 0x10);
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->kind < 2) {
+        if (o->tick < 12) {
+            o->col[3] += 0x10;
+        }
+    }
+    if (o->kind == 2) {
+        if (o->tick < 13) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x20;
+            }
+        } else if (o->col[3] > 0xA) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind < 2) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col2, 0xF0, 8, 0x80);
+        } else {
+            func_001076F0(o->col2, 0x80, 8, 0x40);
+        }
+    }
+    if (o->kind == 1) {
+        if (o->f48 < 400.0f) {
+            o->f48 += 15.0f;
+        }
+        if (g->v > 0x140) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 0) {
+        if (g->v > 0x140) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    func_00205C40(o->pos);
+    o->pos[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b149", func_01E023B0_b149);
 

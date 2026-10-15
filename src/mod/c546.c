@@ -623,7 +623,48 @@ static s32 func_01E01550_c546(s32 obj, Ring_b001_01E03860 *ring, Cam_b001_01E038
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c546", func_01E01A40_c546);
+/* shape c525:01E020F0, 82 insns, 2 copies: sets up a burst: half the given size, the given value, then for each of count
+   entries a random speed (0.5..1.5) and two random directions (any heading, a 40..90 degree pitch) as sin/cos */
+
+typedef struct {
+    s32 w0, w4, w8;
+    f32 speed;
+    f32 s0, c0;
+    f32 s1, c1;
+} Ent_c525_01E020F0;
+
+typedef struct {
+    u8 pad0[0xC];
+    f32 half;
+    u8 pad10[0x10];
+    Ent_c525_01E020F0 ent[16];
+    s32 w220;
+    s32 w224;
+    f32 f228;
+    s16 count;
+} Burst_c525_01E020F0;
+
+static s32 func_01E01A40_c546(Burst_c525_01E020F0 *o, f32 size, f32 v) {
+    extern f32 func_0020B730(f32);
+    extern f32 func_0020B620(f32);
+    s32 i;
+    f32 a;
+
+    o->f228 = v;
+    o->half = size / 2.0f;
+    o->w220 = o->w224 = 0;
+    for (i = 0; i < o->count; i++) {
+        o->ent[i].w0 = o->ent[i].w4 = o->ent[i].w8 = 0;
+        o->ent[i].speed = 0.1f * (func_0019A5C8() % 11 + 5);
+        a = 0.017453292f * (func_0019A5C8() % 360);
+        o->ent[i].s0 = func_0020B730(a);
+        o->ent[i].c0 = func_0020B620(a);
+        a = 0.017453292f * (func_0019A5C8() % 50 + 40);
+        o->ent[i].s1 = func_0020B730(a);
+        o->ent[i].c1 = func_0020B620(a);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c546", func_01E01B90_c546);
 

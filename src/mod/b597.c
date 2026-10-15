@@ -202,7 +202,189 @@ static void func_01E00920_b597(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E00BE0_b597);
+/* amp product in its own variable (u = v * amp) puts it in the amp conversion's register; plus the in-place divide (chatA 16 Oct). */
+
+/* shape b016:01E00920, 362 insns, 90 copies: draw an object's parts as sprite quads, each part shaken on three
+   axes from a signed byte table (scaled by cam->f50 + part / 2); same packet and depth modes as b016:01E00ED0 */
+
+typedef struct Cam_b016_01E00920 {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[6];
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    Vec4f pos;
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[8];
+    s16 f5A;
+    u8 pad5C[4];
+    Vec4f at;
+} Cam_b016_01E00920;
+
+typedef struct Obj_b016_01E00920 {
+    u8 pad0[0x10];
+    Vec4f f10;
+    u8 pad20[0x60];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    Rect_b003_01E00080 rect;
+    u8 pad9C[0x14];
+    s16 fB0;
+    u8 padB2[6];
+    s16 fB8;
+    u8 padBA[6];
+    s16 fC0[12];
+    u8 fD8[0x10];
+} Obj_b016_01E00920;
+
+typedef struct Uv_b016_01E00920 {
+    f32 u, v;
+} Uv_b016_01E00920;
+
+typedef struct Xyz_b016_01E00920 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b016_01E00920;
+
+typedef struct Pk_b016_01E00920 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b016_01E00920 uv;
+    u64 pad18;
+    Xyz_b016_01E00920 v[4];
+    u64 pad60[6];
+} Pk_b016_01E00920;
+
+typedef struct Buf_b016_01E00920 {
+    u64 tag;
+    Pk_b016_01E00920 pk;
+} Buf_b016_01E00920;
+
+static void func_01E00BE0_b597(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s32 flags, s8 *table) {
+    f32 u;
+    extern void func_00108EF0();
+    extern void func_00205C40();
+    extern void func_00108950();
+    extern void func_00109100();
+    s16 off;
+    f32 v;
+    Pk_b016_01E00920 *p;
+    s16 j;
+    s16 i;
+    s32 sel;
+
+    f32 view[4][4];
+    Vec4f pos;
+    f32 out[4];
+    f32 out2[4];
+    f32 m[4][4];
+    s32 rot[4];
+    s32 x[4];
+    Buf_b016_01E00920 buf;
+    Uv_b016_01E00920 uv;
+
+    p = &buf.pk;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    sel = flags >> 4;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)sel << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    func_00107740(&uv, &cam->at);
+    p->uv = uv;
+    func_01E00080_b597((Pk_b003_01E00080 *)p, &obj->rect, 0);
+    func_00208700(p, (void *)obj->f88, 1);
+    func_00205C40(rot);
+    rot[1] /= 180;
+    rot[1] = -rot[1];
+    rot[0] /= 180;
+    rot[0] = -rot[0];
+    pos.x = cam->f10;
+    pos.y = cam->f14;
+    pos.z = cam->f18;
+    if (obj->fB0 == 0) {
+        func_00108EF0(m, &obj->f10, NULL, &pos);
+    } else if (obj->fB0 == 1) {
+        func_00108EF0(m, &obj->f10, &cam->pos, &pos);
+    }
+    x[1] = cam->f5A;
+    for (i = 0; i < obj->fB8; i++) {
+        if (obj->fB0 == 0) {
+            func_01E00080_b597((Pk_b003_01E00080 *)p, &obj->rect, obj->fC0[i]);
+            func_00108CE0(view, cam->f48, cam->f48);
+            func_00109100(view, rot, 1, obj->fD8);
+            func_00109100(view, rot, 0, obj->fD8);
+        } else if (obj->fB0 == 1) {
+            func_00108CE0(view, cam->f48, cam->f48);
+        }
+        for (j = 0; j < 3; j++) {
+            if (j == 0) {
+                off = 0;
+            }
+            if (j == 1) {
+                off = 100;
+            }
+            if (j == 2) {
+                off = 180;
+            }
+            v = (table + i)[cam->h8 + off];
+            v /= 20.0f;
+            u = v * (f32)(cam->f50 + (i >> 1));
+            if (j == 0) {
+                out[0] = u;
+            }
+            if (j == 1) {
+                out[1] = u;
+            }
+            if (j == 2) {
+                out[2] = u;
+            }
+        }
+        if (obj->fB0 == 0) {
+            func_00108950(out, x, 0, obj->fD8);
+        }
+        func_00107070(view, 0, out[0]);
+        func_00107070(view, 1, out[1]);
+        func_00107070(view, 2, out[2]);
+        if (obj->fB0 == 1) {
+            view[0][1] = 0.0f;
+            view[1][1] = 0.0f;
+            view[0][0] = cam->f48;
+            view[1][0] = -cam->f48;
+            view[0][2] = 0.0f;
+            view[1][2] = 0.0f;
+        }
+        if ((flags & 0xF) == 0) {
+            if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out2) != 0) {
+                func_002075F0((s32)p, obj->f80, func_001A23B0(out2[0]));
+            }
+        } else if ((flags & 0xF) == 1) {
+            if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out2) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0((s32)p, obj->f80, 0);
+            }
+        } else if ((flags & 0xF) == 2) {
+            if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out2) != 0) {
+                func_002075F0((s32)p, obj->f80, -1);
+            }
+        }
+    }
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -343,7 +525,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E01640_b597);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E01D70_b597);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02460_b597);
+/* shape b152:01E02530, 84 insns, 2 copies: a rising white puff: set up once (random phase 0..7, climb 2.5 a frame), both
+   colours fade in over 10 frames, then the first fades out (its fade-out step is applied twice); turns each
+   frame (b016:01E01FF0 family) */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[8];
+    f32 y;
+    u8 pad18[8];
+    u8 x20[0x14];
+    f32 climb;
+    u8 pad38[0x10];
+    s32 w48;
+    u8 pad4C[8];
+    s16 t;
+    s16 phase;
+    s16 state;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b152_01E02530;
+
+static s32 func_01E02460_b597(void *arg0, Obj_b152_01E02530 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = 10;
+        o->hA = 6;
+        o->w48 = 0;
+        o->phase = func_0019A5C8() % 8;
+        o->climb = 2.5f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->c1[3] = 0;
+        o->h5C = 0;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        }
+    }
+    if (o->t != 0) {
+        o->y += o->climb;
+    }
+    func_00205C40((s32)o->x20);
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];
@@ -395,17 +641,256 @@ static s32 func_01E025B0_b597(s32 unused, Obj_b152_01E02680 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02750_b597);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E028C0_b597);
+/* shape b152:01E02990, 85 insns, 2 copies: a slow grey haze: fades in over 50 frames, then out while drifting; flickers
+   between two greys each frame; its angle opens 5 a frame up to 90 (b016:01E01FF0 family) */
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 hE;
+    u8 pad10[0x38];
+    f32 ang;
+    u8 pad4C[8];
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_b152_01E02990;
+
+static s32 func_01E028C0_b597(void *arg0, Obj_b152_01E02990 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->ang = 0.0f;
+        func_001076F0(o->c0, 0x10, 0x10, 0x10);
+        o->h56 = 0;
+        o->hE = 1;
+        o->state = 2;
+    }
+    if (o->t < 0x32) {
+        if (o->c0[3] < 0x90) {
+            o->c0[3] += 0xE;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        o->ang += 0.5f;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x60, 0x60, 0x60);
+    }
+    if (o->ang < 90.0f) {
+        o->ang += 5.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02A20_b597);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02CC0_b597);
+/* shape b152:01E02D90, 120 insns, 2 copies: a white glint: set up once (random size 8..22, frame 4, random turn on all axes,
+   angle 20..49, speed 15..34, life 5..14); full for its life, then fades out; turns by its speed (b225:01E026A0 family, 0x58-state layout) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E02EA0_b597);
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 ang;
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+} Spark_b152_01E02D90;
+
+static s32 func_01E02CC0_b597(void *arg0, Spark_b152_01E02D90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 15 + 8;
+        o->frame = 4;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->h52 = 1;
+        o->ang = func_0019A5C8() % 30 + 20;
+        o->h5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 15;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 10 + 5;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->h52++;
+    o->ang += o->speed;
+    o->t++;
+    return 0;
+}
+
+/* shape b152:01E02F70, 103 insns: a white spark at a random position: f48 5..11, f56 4, f50 60..259, random f5A, f8
+   1..8, life 3..7; alpha 0x80 during the life, then fades by 11 and stops */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b152_01E02F70;
+
+static s32 func_01E02EA0_b597(s32 arg0, Fx_b152_01E02F70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 7 + 5;
+        o->f56 = 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->pos[0] = func_0019A5C8() % 0xFFFF;
+        o->pos[1] = func_0019A5C8() % 0xFFFF;
+        o->pos[2] = func_0019A5C8() % 0xFFFF;
+        o->f50 = func_0019A5C8() % 200 + 60;
+        o->f5A = func_0019A5C8() % 360;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E03040_b597);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E03250_b597);
+/* shape b152:01E03400, 202 insns, 2 copies: a full-screen red overlay drawn into the scene's packet (b016:01E02D30 family):
+   one sprite over the whole screen, its texture window inset by the slot's width and height, which grow by a
+   random 23..37 a frame; full on the first frame, then fades out */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b152_01E03400;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b152_01E03400 p;
+    } v[2];
+} Pkt_b152_01E03400;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w, h;
+    u8 padC[0x48];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Slot_b152_01E03400;
+
+typedef struct {
+    u8 pad0[0xA008];
+    Pkt_b152_01E03400 *pkt;
+} Scene_b152_01E03400;
+
+static s32 func_01E03250_b597(Scene_b152_01E03400 *s, Slot_b152_01E03400 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 w;
+    f32 h;
+
+    w = o->w;
+    h = o->h;
+    w /= 10.0f;
+    h /= 10.0f;
+    if (o->state == 1) {
+        o->c0[3] = 0;
+        func_001076F0(o->c0, 0x40, 8, 8);
+        o->state = 2;
+    }
+    s->pkt->r = o->c0[0];
+    s->pkt->g = o->c0[1];
+    s->pkt->b = o->c0[2];
+    s->pkt->a = o->c0[3];
+    s->pkt->q = 1.0f;
+    s->pkt->v[0].p.x = 0x6BF8;
+    s->pkt->v[0].p.y = 0x71F8;
+    s->pkt->v[0].p.z = 0xFFFFFF;
+    s->pkt->v[0].p.f = 0;
+    s->pkt->v[1].p.x = 0x93F8;
+    s->pkt->v[1].p.y = 0x8DF8;
+    s->pkt->v[1].p.z = 0xFFFFFF;
+    s->pkt->v[1].p.f = 0;
+    s->pkt->v[0].s = w / 1024.0f;
+    s->pkt->v[0].t = h / 512.0f;
+    s->pkt->v[1].s = (640.0f - w) / 1024.0f;
+    s->pkt->v[1].t = (448.0f - h) / 512.0f;
+    func_002075F0(s->pkt, 0, 0);
+    o->w += (s16)(func_0019A5C8() % 15 + 23);
+    o->h += (s16)(func_0019A5C8() % 15 + 23);
+    if (o->t <= 0) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xB) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b597", func_01E03580_b597);
 

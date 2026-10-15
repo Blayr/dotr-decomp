@@ -458,7 +458,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E01BD0_b566);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E01F90_b566);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E02340_b566);
+/* shape b284:01E020C0, 91 insns, 2 copies: a scene light flash: sets the scene's light block once (colour 4,4,4, range 70,
+   at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when
+   the flash ends or the scene says so */
+
+typedef struct {
+    s32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 range;
+    f32 strength;
+} Light_b284_01E020C0;
+
+typedef struct {
+    u8 pad0[0x3510];
+    Light_b284_01E020C0 light;
+    u8 pad353C[0x214];
+    s32 w3750;
+} World_b284_01E020C0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 falling;
+    u8 pad32[4];
+    s16 state;
+} Flash_b284_01E020C0;
+
+static s32 func_01E02340_b566(World_b284_01E020C0 *w, Flash_b284_01E020C0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->state == 1) {
+        w->light.w0 = 0;
+        w->light.b = w->light.g = w->light.r = 4.0f;
+        w->light.w20 = 0;
+        w->light.range = 70.0f;
+        w->light.strength = 0.0f;
+        w->light.x = o->x;
+        w->light.y = o->y;
+        w->light.z = o->z;
+        o->state = 2;
+        o->falling = 0;
+    }
+    if (o->falling == 0) {
+        if (w->light.strength < 1.0f) {
+            w->light.strength += 0.2f;
+        } else {
+            o->falling = 1;
+        }
+    } else if (w->light.strength > 0.1f) {
+        w->light.strength -= 0.1f;
+    } else {
+        o->state = 0;
+    }
+    if (o->state == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&w->light);
+    }
+    if (w->w3750 == 1) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b284:01E02230, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3750 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

@@ -473,7 +473,57 @@ INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E016F0_b544);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01950_b544);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01BB0_b544);
+/* shape b415:01E022B0, 59 insns: a spinning flash: on start size 220, colours white and (0xFF,0x40,0x40), f5A/f5C
+   10, second alpha 0; it grows by 0x60 (below 0xC0) for 14 ticks, then fades out by 9 and stops; the
+   rotation turns by 0x4000 each tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 vol;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b415_01E022B0;
+
+static s32 func_01E01BB0_b544(s32 arg0, Fx_b415_01E022B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 220.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0xE) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 0xA) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01CA0_b544);
 
@@ -493,7 +543,75 @@ INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E02A60_b544);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E02B10_b544);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E031D0_b544);
+/* shape b544:01E031D0, 102 insns: b003:01E02E90 family: take the first free slot of the 320-slot pool, clear it,
+   give it the scene's colour twice, the scene matrix and position, two scene values and the two arguments;
+   returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 b;
+    s32 a;
+    u8 pad48[8];
+    s16 v50;
+    u8 pad52[6];
+    s16 used;
+    s16 v5A;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b544_01E031D0;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x, y, z;
+    u8 pad2DC[0xA4];
+    Slot_b544_01E031D0 s[320];
+    u8 pad8F80[0x1984];
+    u8 r, g, b, a;
+    u8 padA908[0x56];
+    s16 v5E;
+    u8 padA960[6];
+    s16 v66;
+} Pool_b544_01E031D0;
+
+static s32 func_01E031D0_b544(Pool_b544_01E031D0 *o, s32 a, s32 b) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, u8, u8, u8);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b544_01E031D0 *s = NULL;
+    s16 i;
+    s32 ret;
+
+    for (i = 0; i < 320; i++) {
+        if (o->s[i].used == 0) {
+            func_00195108(&o->s[i], 0x70);
+            o->s[i].used = 1;
+            s = &o->s[i];
+            i = 320;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c0, o->r, o->g, o->b);
+        s->c0[3] = o->a;
+        func_001076F0(s->c1, o->r, o->g, o->b);
+        s->c1[3] = o->a;
+        func_00106AB0(s, &o->x, 0);
+        ret = 1;
+        s->x = o->x;
+        s->y = o->y;
+        s->z = o->z;
+        s->v50 = o->v66;
+        s->v5A = o->v5E;
+        s->b = b;
+        s->a = a;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E03370_b544);
 

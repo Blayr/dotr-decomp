@@ -125,7 +125,157 @@ static void func_01E00100_b116(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E009A0_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E00C80_b116);
+/* shape b081:01E016D0, 342 insns, 3 copies: draws a row of small camera-facing sprites at the object position (b008
+   family): each shaken by a per-entry table offset turned by an extra axis and added to all four corners;
+   blend from flags >> 4, depth mode flags & 0xF (projected, far, front). Texture corners by the module helper
+   (shape b003:01E00080). */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b081_01E016D0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b081_01E016D0 c;
+    struct {
+        u64 tc;
+        u64 x : 16, y : 16, z : 24, f : 8;
+    } v[4];
+    u8 tail[0x38];
+} Pkt_b081_01E016D0;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f pos;
+    u8 pad30[0x50];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b003_01E00080 rect;
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[6];
+    s16 mode;
+    u8 padC2[0x16];
+    u8 xD8[1];
+} Obj_b081_01E016D0;
+
+typedef struct {
+    u8 pad00[8];
+    s16 off;
+    u8 pad0A[0x1E];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 size;
+    s16 axis;
+} Spr_b081_01E016D0;
+
+static void func_01E00C80_b116(Obj_b081_01E016D0 *o, Spr_b081_01E016D0 *s, s32 flags, s8 *tbl) {
+    extern Rgbaq_b081_01E016D0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern void func_00108950(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f e;
+    Vec4f p2;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 ax[4];
+    Pkt_b081_01E016D0 pkt __attribute__((aligned(8)));
+    f32 f;
+    s16 i;
+    s16 b;
+    Pkt_b081_01E016D0 *p;
+    s32 mode;
+    s32 h;
+    s8 *j;
+
+    func_00207500();
+    p = (Pkt_b081_01E016D0 *)(s32)&pkt;
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    b = flags >> 4;
+    if (b == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((u64)b << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    p->c = func_00107740(s->col);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    rot[0] = rot[0] / 180;
+    rot[0] = -rot[0];
+    ax[2] = s->axis;
+    p2.x = o->pos.x;
+    p2.y = o->pos.y;
+    p2.z = o->pos.z;
+    func_00108EF0(m, &scale, NULL, &p2);
+    func_01E00100_b116((Pk_b003_01E00080 *)p, &o->rect, o->mode);
+    mode = flags & 0xF;
+    for (i = 0; i < o->count; i++) {
+        func_00108CE0(quad, s->size, s->size);
+        func_00109100(quad, rot, 1, o->xD8);
+        func_00109100(quad, rot, 0, o->xD8);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        e.x = f * (s->w30 + h);
+        f = j[s->off + 100];
+        f /= 20.0f;
+        e.y = f * (s->w30 + h);
+        func_00108950(&e, ax, 2, o->xD8);
+        quad[0].x += e.x;
+        quad[1].x += e.x;
+        quad[2].x += e.x;
+        quad[3].x += e.x;
+        quad[0].y += e.y;
+        quad[1].y += e.y;
+        quad[2].y += e.y;
+        quad[3].y += e.y;
+        f = j[s->off + 180];
+        f /= 20.0f;
+        e.z = f * (s->w30 + h);
+        quad[0].z += e.z;
+        quad[1].z += e.z;
+        quad[2].z += e.z;
+        quad[3].z += e.z;
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0(p, o->ot, 0);
+            }
+        } else if (mode == 2) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, -1);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E011E0_b116);
 
@@ -177,7 +327,76 @@ INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E02370_b116);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E02630_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E029F0_b116);
+typedef struct {
+    u8 pad00[2];
+    s16 h2;
+    u8 pad04[2];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b003_01E01C70;
+
+static s32 func_01E029F0_b116(s32 unused, Obj_b003_01E01C70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 45;
+        o->h34 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 300 + 130;
+        o->h3A = func_0019A5C8() % 360;
+        o->hE = 0;
+        o->h8 = func_0019A5C8() % 35;
+        o->hC = func_0019A5C8() % 3 + 2;
+        o->h6 = func_0019A5C8() % 10 + 15;
+        o->h36 = 2;
+    }
+    if (o->h32 < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x12;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->h36 = 0;
+    }
+    if (o->h32 != 0) {
+        if (o->h38 < 90) {
+            o->h38 += 2;
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        if (o->h34 < 5) {
+            o->h34++;
+        }
+    }
+    if (o->h32 != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->h32 != 0) {
+        o->h38 += 2;
+    }
+    o->h2++;
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->h32++;
+    return 0;
+}
 
 /* shape b003:01E01EC0, 146 insns, 4 copies: step of a rising puff: on state 1 sets a grey colour, random start, angle,
    size, layers and lifetime; fades in by 0x12, then out by 9 until it ends; grows, climbs and spins randomly. */

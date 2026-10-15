@@ -510,7 +510,55 @@ static void func_01E01110_b533(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E01660_b533);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E01D00_b533);
+/* shape b533:01E01D00, 59 insns: constant variant of b415:01E022B0 (0xE->0xB, 220.0f->70.0f) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 vol;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b533_01E01D00;
+
+static s32 func_01E01D00_b533(s32 arg0, Fx_b533_01E01D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 70.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0xB) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 0xA) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E01DF0_b533);
 

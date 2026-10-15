@@ -152,7 +152,96 @@ static s32 func_01E01990_b286(Pool_b286_01E01990 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E01AB0_b286);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E01D40_b286);
+/* shape b286:01E01D40, 158 insns: variant of b112:01E039F0 (flat ring of 9 quads, each 2 wide) with the texture at 0x11C, the
+   target/depth/trig table at 0x6A8C/0x6AB4/0x6AE8, and an additive blend (0x80, 0x42) when the anim's w is set */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b286_01E01D40;
+
+typedef struct {
+    s16 x, y, z;
+    s16 w;
+    u8 pad08[8];
+    u8 rot[0x18];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 radius;
+    s16 start;
+} Anim_b286_01E01D40;
+
+typedef struct {
+    u8 pad00[0x11C];
+    s32 texture;
+    u8 pad120[0x6A8C - 0x120];
+    s32 target;
+    u8 pad31B0[0x6AB4 - 0x6A90];
+    f32 depth;
+    u8 pad31CC[0x6AE8 - 0x6AB8];
+    u8 trig[1];
+} Game_b286_01E01D40;
+
+static void func_01E01D40_b286(Game_b286_01E01D40 *g, Anim_b286_01E01D40 *an, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_002086D0(void *, u64);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b286_01E01D40 quad[4];
+    Vec_b286_01E01D40 pos;
+    Vec_b286_01E01D40 scale;
+    f32 m[16];
+    f32 rm[4];
+    s32 k;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    if (mode == 0) {
+        func_00106080(rm, 0x97, an->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, an->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->texture, 1);
+    } else {
+        if (an->w != 0) {
+            func_002086D0(p, 0x8000000042);
+        }
+        pos.x = an->x;
+        pos.y = an->y;
+        pos.z = an->z;
+        scale.x = 1.0f;
+        scale.y = 1.5f;
+        scale.z = 1.0f;
+        func_00108EF0(m, &scale, an->rot, &pos);
+        quad[0].y = 0.0f;
+        quad[1].y = 0.0f;
+        quad[2].y = 0.0f;
+        quad[3].y = 0.0f;
+        for (k = 0; k < 9; k++) {
+            a = an->start + j;
+            quad[2].x = an->radius * func_00108030(g->trig, a, 1);
+            quad[2].z = an->radius * func_00108030(g->trig, a, 0);
+            quad[0].x = 0.0f;
+            quad[0].z = 0.0f;
+            a = j + (an->start + 2);
+            quad[3].x = an->radius * func_00108030(g->trig, a, 1);
+            quad[3].z = an->radius * func_00108030(g->trig, a, 0);
+            quad[1].x = 0.0f;
+            quad[1].z = 0.0f;
+            if (func_00205630(quad, 0x70000000, m, p, &g->depth) != 0) {
+                func_002075F0(p, g->target, (u32)g->depth);
+            }
+            j += 40;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E01FC0_b286);
 

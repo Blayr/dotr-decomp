@@ -462,7 +462,76 @@ static s32 func_01E01780_b003(void *arg0, Obj_b003_01E01780 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E01860_b003);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E01C70_b003);
+typedef struct {
+    u8 pad00[2];
+    s16 h2;
+    u8 pad04[2];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b003_01E01C70;
+
+static s32 func_01E01C70_b003(s32 unused, Obj_b003_01E01C70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 45;
+        o->h34 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 300 + 130;
+        o->h3A = func_0019A5C8() % 360;
+        o->hE = 0;
+        o->h8 = func_0019A5C8() % 35;
+        o->hC = func_0019A5C8() % 3 + 2;
+        o->h6 = func_0019A5C8() % 10 + 15;
+        o->h36 = 2;
+    }
+    if (o->h32 < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x12;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->h36 = 0;
+    }
+    if (o->h32 != 0) {
+        if (o->h38 < 90) {
+            o->h38 += 2;
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        if (o->h34 < 5) {
+            o->h34++;
+        }
+    }
+    if (o->h32 != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->h32 != 0) {
+        o->h38 += 2;
+    }
+    o->h2++;
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->h32++;
+    return 0;
+}
 
 /* shape b003:01E01EC0, 146 insns, 4 copies: step of a rising puff: on state 1 sets a grey colour, random start, angle,
    size, layers and lifetime; fades in by 0x12, then out by 9 until it ends; grows, climbs and spins randomly. */
@@ -534,9 +603,107 @@ static s32 func_01E01EC0_b003(void *arg0, Obj_b003_01E01EC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E02110_b003);
+/* shape b003:01E02110, 41 insns: a glow: colour (0x60,8,8) on start; alpha grows by 8 (up to 0x88) for 0x96 ticks,
+   then fades out by 9 and stops */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b003", func_01E021C0_b003);
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b003_01E02110;
+
+static s32 func_01E02110_b003(s32 arg0, Glow_b003_01E02110 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x60, 8, 8);
+        o->mode = 2;
+    }
+    if (o->tick < 0x96) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 8;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b003:01E021C0, 92 insns, 2 copies: a scene light flash: sets the scene's light block once (colour 4,2,0, range 70,
+   at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when
+   the flash ends or the scene says so */
+
+typedef struct {
+    s32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 range;
+    f32 strength;
+} Light_b003_01E021C0;
+
+typedef struct {
+    u8 pad0[0x2D40];
+    Light_b003_01E021C0 light;
+    u8 pad2D6C[4];
+    s32 w2D70;
+} World_b003_01E021C0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 falling;
+    u8 pad32[4];
+    s16 state;
+} Flash_b003_01E021C0;
+
+static s32 func_01E021C0_b003(World_b003_01E021C0 *w, Flash_b003_01E021C0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->state == 1) {
+        w->light.w0 = 0;
+        w->light.r = 4.0f;
+        w->light.g = 2.0f;
+        w->light.b = 0;
+        w->light.w20 = 0;
+        w->light.range = 70.0f;
+        w->light.strength = 0.0f;
+        w->light.x = o->x;
+        w->light.y = o->y;
+        w->light.z = o->z;
+        o->state = 2;
+        o->falling = 0;
+    }
+    if (o->falling == 0) {
+        if (w->light.strength < 1.0f) {
+            w->light.strength += 0.2f;
+        } else {
+            o->falling = 1;
+        }
+    } else if (w->light.strength > 0.1f) {
+        w->light.strength -= 0.1f;
+    } else {
+        o->state = 0;
+    }
+    if (o->state == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&w->light);
+    }
+    if (w->w2D70 == 1) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b003:01E02330, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x2D70 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

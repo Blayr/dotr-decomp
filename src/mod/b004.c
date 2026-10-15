@@ -76,7 +76,15 @@ static s32 func_01E00B40_b004(Vec_b004_01E00B40 *trail, s32 n, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E00C10_b004);
+/* shape b004:01E00C10, 9 insns: asks func_001F6160 for a pair of ints and returns the second as a float */
+
+static f32 func_01E00C10_b004(s32 arg0) {
+    extern void func_001F6160(s32, s32 *);
+    s32 v[4];
+
+    func_001F6160(arg0, v);
+    return v[1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E00C40_b004);
 

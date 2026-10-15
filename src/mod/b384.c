@@ -531,7 +531,75 @@ INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E02800_b384);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E02A60_b384);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E02D40_b384);
+/* shape b279:01E02690, 180 insns: b183:01E012F0 family: a two-tone flash in one of 5 colour pairs, growing 2 a frame; fades in to 0xC0 for 3 ticks, out by 9 */
+
+typedef struct {
+    u8 pad00[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b279_01E02690;
+
+static s32 func_01E02D40_b384(void *arg0, Obj_b279_01E02690 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = func_0019A5C8() % 10;
+        func_001076F0(o->col, 0xCF, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->h52 = func_0019A5C8() % 5;
+        if (o->h52 == 0) {
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        } else if (o->h52 == 1) {
+            func_001076F0(o->col, 0x80, 0xFF, 8);
+            func_001076F0(o->col2, 0x80, 0xFF, 8);
+        } else if (o->h52 == 2) {
+            func_001076F0(o->col, 0x80, 0x80, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x80, 0xFF);
+        } else if (o->h52 == 3) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+            func_001076F0(o->col2, 0xFF, 0xFF, 0x80);
+        } else if (o->h52 == 4) {
+            func_001076F0(o->col, 0x80, 0x40, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        }
+        o->h5A = func_0019A5C8() % 360;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h5A = 45;
+        o->h5C = 5;
+    }
+    if (o->t < 3) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += 2.0f;
+    o->f4C = o->f48 - 6.0f;
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 
@@ -541,4 +609,65 @@ static s32 func_01E03010_b384(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E03020_b384);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b384", func_01E03790_b384);
+/* shape b279:01E03220, 80 insns: twin of b034:01E05330: take a free effect slot (0x96 of 0x70 bytes), clear
+   it, colour it from the scene colour, copy the scene position and value, store the two arguments; returns 1 if a
+   slot was found */
+
+typedef struct Slot_b279_01E03220 {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 f40;
+    s32 f44;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    u8 pad5A[6];
+    u8 c60[4];
+    u8 c64[4];
+    u8 pad68[8];
+} Slot_b279_01E03220;
+
+typedef struct Obj_b279_01E03220 {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 padA[0x2a0 - 0x250 - 12];
+    Slot_b279_01E03220 slots[0x96];
+    u8 padB[0x44a4 - 0x2a0 - 0x96 * 0x70];
+    u8 rgba[4];
+    u8 padC[0x4506 - 0x44a4 - 4];
+    s16 fB2B0;
+} Obj_b279_01E03220;
+
+static s32 func_01E03790_b384(Obj_b279_01E03220 *obj, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b279_01E03220 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (obj->slots[i].used == 0) {
+            func_00195108(&obj->slots[i], 0x70);
+            obj->slots[i].used = 1;
+            s = &obj->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c60, obj->rgba[0], obj->rgba[1], obj->rgba[2]);
+        s->c60[3] = obj->rgba[3];
+        func_001076F0(s->c64, obj->rgba[0], obj->rgba[1], obj->rgba[2]);
+        s->c64[3] = obj->rgba[3];
+        func_00106AB0(s, obj->pos, 0);
+        s->pos[0] = obj->pos[0];
+        s->pos[1] = obj->pos[1];
+        s->pos[2] = obj->pos[2];
+        s->f50 = obj->fB2B0;
+        s->f40 = arg2;
+        s->f44 = arg1;
+        return 1;
+    }
+    return 0;
+}

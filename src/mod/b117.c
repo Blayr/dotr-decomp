@@ -142,7 +142,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01640_b117);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01780_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01820_b117);
+/* shape b117:01E01820, 108 insns, 2 copies: a blue swell by kind: random turn on all axes once; grows 1/3/2 a frame (kinds
+   0/1/2, the last two capped at 50/30) and fades out after 11/26/21 frames of growth; turns 12 a frame */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 kind;
+    u8 pad32[2];
+    s16 h34;
+    s16 state;
+    s16 size;
+    s16 ang;
+} Swell_b117_01E01820;
+
+static s32 func_01E01820_b117(void *arg0, Swell_b117_01E01820 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c0, 0x30, 0x30, 0x60);
+    if (o->state == 1) {
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->h34 = 0;
+        o->size = 0;
+        o->state = 2;
+        o->c0[3] = 0x80;
+    }
+    if (o->kind == 0) {
+        if (o->size > 0xA) {
+            if (o->c0[3] > 0x10) {
+                o->c0[3] -= 0x10;
+            } else {
+                o->state = 0;
+            }
+        }
+        o->size += 1;
+    } else if (o->kind == 1) {
+        if (o->size > 0x19) {
+            if (o->c0[3] > 0x10) {
+                o->c0[3] -= 0x10;
+            } else {
+                o->state = 0;
+            }
+        }
+        if (o->size < 0x32) {
+            o->size += 3;
+        }
+    } else {
+        if (o->size > 0x14) {
+            if (o->c0[3] > 0x10) {
+                o->c0[3] -= 0x10;
+            } else {
+                o->state = 0;
+            }
+        }
+        if (o->size < 0x1E) {
+            o->size += 2;
+        }
+    }
+    o->ang += 12;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E019D0_b117);
 

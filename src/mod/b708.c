@@ -417,6 +417,69 @@ static s32 func_01E01DB0_b708(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01DC0_b708);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E022D0_b708);
+/* shape b280:01E02530, 82 insns, 2 copies: spawns an effect into the first free slot (150 of 0x70 bytes): clears it, marks it
+   live, both colours from the scene, placed at the scene position, with the caller's handler and argument */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b280_01E02530;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b280_01E02530 slot[150];
+    u8 pad4500[0x4C14 - 0x2A0 - 150 * 0x70];
+    u8 col[4];
+    u8 pad4C18[0x5E];
+    s16 h4C76;
+} Scene_b280_01E02530;
+
+static s32 func_01E022D0_b708(Scene_b280_01E02530 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b280_01E02530 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 150; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 150;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h50 = s->h4C76;
+        sl->h52 = s->h4C76;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E02420_b708);

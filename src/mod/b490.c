@@ -336,6 +336,67 @@ static void func_01E02800_b490(Obj_b361_01E022E0 *obj, Data_b361_01E022E0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E029F0_b490);
+/* shape b361:01E024D0, 126 insns: b018:01E00C50 family: an 18-sector disc of float radius at the object's position */
+
+typedef struct {
+    u8 pad00[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x2C];
+    f32 radius;
+    u8 pad4C[0xE];
+    s16 angle;
+    u8 pad5C[4];
+    s32 tex0;
+    s32 tex1;
+} Obj_b361_01E024D0;
+
+static void func_01E029F0_b490(u8 *self, Obj_b361_01E024D0 *obj, void *pk) {
+    extern f32 func_00108030(s32, s16, s32);
+    extern void func_00108EF0();
+    Vec4f q[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 mat[16];
+    f32 depth[4];
+    s32 rot[4];
+    s32 i;
+    s16 a;
+    s32 k;
+
+    a = 0;
+    func_00107990(pk, (u8 *)&obj->tex0, 1);
+    func_00107990(pk, (u8 *)&obj->tex1, 2);
+    func_001092E0(pk, 0);
+    func_001094F0(pk);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[0] += 0x4000;
+    pos.x = obj->x;
+    pos.y = obj->y;
+    pos.z = obj->z;
+    func_00108EF0(mat, &scale, rot, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    q[0].x = 0.0f;
+    q[0].z = 0.0f;
+    q[1].x = 0.0f;
+    q[1].z = 0.0f;
+    for (i = 0; i < 18; i++) {
+        k = obj->angle + a;
+        q[2].x = obj->radius * func_00108030((s32)(self + 0xD8), k, 1);
+        q[2].z = obj->radius * func_00108030((s32)(self + 0xD8), k, 0);
+        k = a + (obj->angle + 0x14);
+        q[3].x = obj->radius * func_00108030((s32)(self + 0xD8), k, 1);
+        q[3].z = obj->radius * func_00108030((s32)(self + 0xD8), k, 0);
+        if (func_00205630((s32)q, 0x70000000, (s32)mat, (s32)pk, depth) != 0) {
+            func_002075F0((s32)pk, *(s32 *)(self + 0x80), func_001A23B0(depth[0]));
+        }
+        a += 0x14;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E02BF0_b490);

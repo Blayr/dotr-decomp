@@ -705,7 +705,90 @@ static void func_01E01A60_b148(Obj_b046_01E00FC0 *o, Spr_b046_01E00FC0 *s, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E01FC0_b148);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02530_b148);
+/* OVL_WARM */
+
+/* shape b064:01E00C10, 200 insns: variant of b027:01E02590 (ring of quads around a point): two colour sets,
+   ring width from the anim (s16 at 6) instead of 20, 18 segments 20 apart */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b148_01E02530;
+
+typedef struct {
+    s16 x, y, z;
+    s16 w;
+    u8 pad08[8];
+    u8 rot[0x18];
+    u8 col[0x10];
+    s16 radius;
+    s16 start;
+} Anim_b148_01E02530;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 target;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    u8 b94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 bD8[1];
+} Obj_b148_01E02530;
+
+static void func_01E02530_b148(Obj_b148_01E02530 *o, Anim_b148_01E02530 *an, void *p) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b148_01E02530 quad[4];
+    Vec_b148_01E02530 pos;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 k;
+    s32 n;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, an->col, 1);
+    func_00107790(p, an->col + 4, 2);
+    func_00108500(p, o->b94, o->hBE);
+    func_00208700(p, o->texture, 1);
+    pos.x = an->x;
+    pos.y = an->y;
+    pos.z = an->z;
+    func_00108EF0(m, 0, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    quad[0].x = 0.0f;
+    quad[0].z = 0.0f;
+    quad[1].x = 0.0f;
+    quad[1].z = 0.0f;
+    for (k = 0; k < 9; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[2].z = an->radius * func_00108030(o->bD8, a, 0);
+        a = j + (an->start + 20);
+        quad[3].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[3].z = an->radius * func_00108030(o->bD8, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            for (n = 0; n < o->count + 1; n++) {
+                func_002075F0(p, o->target, (u32)depth);
+            }
+        }
+        j += 40;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02790_b148);
 
@@ -802,7 +885,61 @@ INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E037A0_b148);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E03930_b148);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E03AA0_b148);
+/* shape b148:01E03AA0, 93 insns, 2 copies: a fast white ember: set up once (frame 3, random turn, speed 60..77, size, life
+   2..5); fades in for its life, then out; turns by its speed and grows 2 a frame (b225:01E026A0 family) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    s16 grow;
+    u8 padC[2];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Ember_b148_01E03AA0;
+
+static s32 func_01E03AA0_b148(void *arg0, Ember_b148_01E03AA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 100;
+        o->frame = 3;
+        o->rot = func_0019A5C8() % 65535;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->ang = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 18 + 60;
+        o->h8 = func_0019A5C8() % 20;
+        o->grow = 0;
+        o->life = func_0019A5C8() % 4 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] <= 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->ang += o->speed;
+    }
+    o->grow += 2;
+    o->t++;
+    return 0;
+}
 
 /* shape b046:01E02B80, 137 insns, 4 copies: step of a drifting light (variant of b046:01E02DB0): starts at 0 with
    random angle, speed and lifetime; fades in by 0x40, then out by 10; follows a scene point, lowered by 10 and
@@ -1064,7 +1201,29 @@ static s32 func_01E04260_b148(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E042B0_b148);
+/* shape b046:01E03200, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
+   cells 0-2 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x2B0];
+    s32 tex[16];
+    u8 pad2F0[0x3300];
+    s32 tex5[3];
+} Scene_b046_01E03200;
+
+static void func_01E042B0_b148(s32 arg0, Scene_b046_01E03200 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 3; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E04360_b148);
 

@@ -1139,7 +1139,202 @@ static s32 func_01E03BC0_b169(Obj_b039_01E036B0 *obj, Pt_b039_01E036B0 *pts, f32
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b169", func_01E03D30_b169);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape b039:01E03820, 630 insns: draws a ribbon trail through cnt points (0x10 bytes each): each piece between
+   two projected points is one or two textured quads (flag 0x1E: below and above the line, else one quad
+   across it) as wide as func_001018E0(base + grow * age, depth); alpha = min(object alpha, point alpha), first
+   piece fades in from 0. Then every point ages by one. Colour from the module helper b039:01E00080.
+   The point pointer is the compiler's induction variable (last spill slot), so the source indexes pts[i - 1] / pts[i];
+   cam is aligned(16) to put its home at 0xF0. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b039_01E03820;
+
+typedef struct {
+    u16 u : 14;
+    u16 pu : 2;
+    u16 v : 14;
+    u16 pv : 2;
+    u32 pad;
+} Uv_b039_01E03820;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Uv_b039_01E03820 uv;
+    Xyz_b039_01E03820 xyz;
+} Vtx_b039_01E03820;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b039_01E03820 v[4];
+    u8 tail[0x20];
+} Pkt_b039_01E03820;
+
+typedef struct {
+    s16 u, v, w, h;
+} Rect_b039_01E03820;
+
+typedef struct {
+    void *texture;
+    u8 color[3];
+    u8 a;
+    s32 flags;
+    f32 base;
+    Rect_b039_01E03820 rect;
+    u8 pad18[0x1C];
+    f32 grow;
+    u8 pad38[4];
+    s16 tick;
+    u8 pad3E[2];
+    s16 n1;
+    s16 n2;
+} Trail_b039_01E03820;
+
+typedef struct {
+    f32 x, y, z;
+    u8 a;
+    u8 padD;
+    s16 age;
+} Pt_b039_01E03820;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_b039_01E03820;
+
+
+#pragma optimization_level 3
+
+static s32 func_01E03D30_b169(s32 ot, Trail_b039_01E03820 *o, Pt_b039_01E03820 *pts, Cam_b039_01E03820 *cam __attribute__((aligned(16)))) {
+    extern void b169_01E00080(void *, void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00208CB0(void *, u64);
+    extern f32 func_001018E0(f32, f32);
+    Xyz_b039_01E03820 s[2];
+    Vec4f w;
+    Pkt_b039_01E03820 pkt __attribute__((aligned(8)));
+    f32 depth[2];
+    s32 i;
+    s32 j;
+    s32 cnt;
+    s32 nq;
+    f32 w0;
+    f32 w1;
+
+    if (func_00104520(o->flags, 0x1F) != 0) {
+        cnt = o->n1;
+    } else {
+        cnt = o->n2;
+    }
+    nq = func_00104520(o->flags, 0x1E) != 0 ? 2 : 1;
+    ((Pkt_b039_01E03820 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_b039_01E03820 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_b039_01E03820 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_b039_01E03820 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(o->flags, 0xC) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(o->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(o->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    b169_01E00080(&pkt, o->color);
+    ((Pkt_b039_01E03820 *)(s32)&pkt)->count |= 0x800;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[0].uv)->u = o->rect.u << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[0].uv)->v = o->rect.v << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[1].uv)->u = (o->rect.u + o->rect.w) << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[1].uv)->v = o->rect.v << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[2].uv)->u = o->rect.u << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[2].uv)->v = (o->rect.v + o->rect.h) << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[3].uv)->u = (o->rect.u + o->rect.w) << 4;
+    ((Uv_b039_01E03820 *)(s32)&pkt.v[3].uv)->v = (o->rect.v + o->rect.h) << 4;
+    func_00208CB0(&pkt, (u64)0xA | ((u64)o->rect.u << 4) | ((u64)(o->rect.u + o->rect.w - 1) << 14) |
+                            ((u64)o->rect.v << 24) | ((u64)(o->rect.v + o->rect.h - 1) << 34));
+    func_00208700(&pkt, o->texture, 1);
+    for (i = 1; i < cnt; i++) {
+        w.x = pts[i - 1].x;
+        w.y = pts[i - 1].y;
+        w.z = pts[i - 1].z;
+        if (func_00205440(&w, cam->view, &s[0], &depth[0]) != 0) {
+            o->flags |= 0x100000;
+        }
+        w.x = pts[i].x;
+        w.y = pts[i].y;
+        w.z = pts[i].z;
+        if (func_00205440(&w, cam->view, &s[1], &depth[1]) != 0) {
+            o->flags |= 0x200000;
+        }
+        if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0) {
+            w0 = func_001018E0(o->base + o->grow * pts[i - 1].age, depth[0]);
+            w1 = func_001018E0(o->base + o->grow * pts[i].age, depth[1]);
+            if (o->a >= pts[i - 1].a) {
+                pkt.v[0].a = pkt.v[2].a = pts[i - 1].a;
+            } else {
+                pkt.v[0].a = pkt.v[2].a = o->a;
+            }
+            if (o->a >= pts[i].a) {
+                pkt.v[1].a = pkt.v[3].a = pts[i].a;
+            } else {
+                pkt.v[1].a = pkt.v[3].a = o->a;
+            }
+            if (i == 1) {
+                pkt.v[0].a = pkt.v[2].a = 0;
+            }
+            for (j = 0; j < nq; j++) {
+                pkt.v[0].xyz.x = pkt.v[2].xyz.x = s[0].x;
+                pkt.v[1].xyz.x = pkt.v[3].xyz.x = s[1].x;
+                if (func_00104520(o->flags, 0x1E) != 0) {
+                    if (j == 0) {
+                        pkt.v[0].xyz.y = s[0].y - w0;
+                        pkt.v[1].xyz.y = s[1].y - w1;
+                        pkt.v[2].xyz.y = s[0].y;
+                        pkt.v[3].xyz.y = s[1].y;
+                    }
+                    if (j == 1) {
+                        pkt.v[0].xyz.y = s[0].y + w0;
+                        pkt.v[1].xyz.y = s[1].y + w1;
+                        pkt.v[2].xyz.y = s[0].y;
+                        pkt.v[3].xyz.y = s[1].y;
+                    }
+                } else {
+                    pkt.v[0].xyz.y = s[0].y - w0;
+                    pkt.v[1].xyz.y = s[1].y - w1;
+                    pkt.v[2].xyz.y = s[0].y + w0;
+                    pkt.v[3].xyz.y = s[1].y + w1;
+                }
+                if (func_00104520(o->flags, 0x13) != 0) {
+                    pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = pkt.v[3].xyz.z = 0xFFFFFF;
+                    func_002075F0(&pkt, ot, 0);
+                } else {
+                    pkt.v[0].xyz.z = pkt.v[2].xyz.z = s[0].z;
+                    pkt.v[1].xyz.z = pkt.v[3].xyz.z = s[1].z;
+                    func_002075F0(&pkt, ot, (u32)((depth[0] + depth[1]) / 2.0f));
+                }
+            }
+        }
+        o->flags &= 0xFFCFFFFF;
+    }
+    for (i = 0; i < cnt + 1; i++) {
+        pts->age++;
+        pts++;
+    }
+    o->tick++;
+    return 0;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b169", func_01E04710_b169);
 

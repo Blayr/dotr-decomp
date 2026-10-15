@@ -685,7 +685,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E01560_b225);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E01EA0_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02120_b225);
+/* shape b225:01E02120, 92 insns, 2 copies: a spinning violet ember: set up once (random frame, two turns, speed 7..23,
+   size, life 2..3, keeps its old angle); full alpha for its life, then fades out; its angle advances by its speed (b003:01E01780 family) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    s32 rot2;
+    u8 pad14[4];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Ember_b225_01E02120;
+
+static s32 func_01E02120_b225(void *arg0, Ember_b225_01E02120 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 10;
+        o->frame = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0x60, 8, 0xA0);
+        o->rot = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+        o->h3A = o->ang;
+        o->ang = 0;
+        o->speed = func_0019A5C8() % 17 + 7;
+        o->h8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 2 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->ang += o->speed;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02290_b225);
 
@@ -693,7 +742,54 @@ INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E023F0_b225);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02540_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E026A0_b225);
+/* shape b225:01E026A0, 90 insns, 2 copies: a spinning ember: set up once (random frame, turn, speed 5..20, size, life
+   2..6); full alpha for its life, then fades out; its angle advances by its speed (b003:01E01780 family) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Ember_b225_01E026A0;
+
+static s32 func_01E026A0_b225(void *arg0, Ember_b225_01E026A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0x19;
+        o->frame = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0x80, 0x40, 0);
+        o->rot = func_0019A5C8() % 65535;
+        o->ang = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 16 + 5;
+        o->h8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 5 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->ang += o->speed;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02810_b225);
 
@@ -836,7 +932,29 @@ static s32 func_01E03360_b225(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E033B0_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E036D0_b225);
+/* shape b225:01E036D0, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
+   cells 0-4 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 pad380[0x2FE0];
+    s32 tex5[5];
+} Scene_b225_01E036D0;
+
+static void func_01E036D0_b225(s32 arg0, Scene_b225_01E036D0 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 5; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E03780_b225);
 
@@ -900,7 +1018,111 @@ static s32 func_01E04360_b225(Pool_b225_01E04360 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E04480_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E048B0_b225);
+/* shape b225:01E048B0, 206 insns, 2 copies: draws a row of thin bars into the caller's packet (b225:01E04BF0 family): each
+   shaken by a per-entry table offset (/20) that grows along the row, its near edge pinned at x +-1 and its far
+   edge pushed along the object's velocity; placed at the object's point, two colours by the gouraud helper */
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f vel[2];
+    Vec4f pt[2];
+    u8 pad60[0x20];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[0x1E];
+    u8 xD8[1];
+} Obj_b225_01E048B0;
+
+typedef struct {
+    u8 pad00[8];
+    s16 off;
+    u8 padA[6];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col0[4];
+    u8 col1[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 size;
+    s16 idx;
+} Spr_b225_01E048B0;
+
+static void func_01E048B0_b225(Obj_b225_01E048B0 *o, Spr_b225_01E048B0 *s, void *p, s8 *tbl) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s16 i;
+    s32 h;
+    s8 *j;
+    f32 f;
+    f32 vx;
+    f32 vy;
+
+    func_00207500();
+    func_00109270(p, 0, 0);
+    func_00107790(p, s->col1, 1);
+    func_00107790(p, s->col0, 2);
+    func_00108500(p, o->rect, 0);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[0] = s->rot[0];
+    rot[1] = s->rot[1];
+    rot[2] = s->rot[2];
+    vx = 5.0f * o->vel[s->idx].x;
+    vy = 5.0f * o->vel[s->idx].y;
+    pos.x = o->pt[s->idx].x;
+    pos.y = o->pt[s->idx].y;
+    pos.z = o->pt[s->idx].z;
+    func_00108EF0(m, &scale, NULL, &pos);
+    for (i = 0; i < o->count; i++) {
+        func_00108CE0(quad, s->size, s->size);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        func_00107070(quad, 0, f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        func_00107070(quad, 1, f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        func_00107070(quad, 2, f * (s->w30 + h));
+        func_00109100(quad, s->rot, 2, o->xD8);
+        quad[0].y = 0.0f;
+        quad[1].y = 0.0f;
+        quad[0].x = 1.0f;
+        quad[1].x = -1.0f;
+        quad[0].z = 0.0f;
+        quad[1].z = 0.0f;
+        quad[2].x += vx;
+        quad[2].y += vy;
+        quad[3].x += vx;
+        quad[3].y += vy;
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, (u32)depth[0]);
+        }
+    }
+}
 
 /* shape b225:01E04BF0, 220 insns, 3 copies: draws a row of thin bars (count of them) at the sprite's position into the
    caller's packet: each shaken by a per-entry table offset that grows along the row, turned by the sprite's

@@ -570,7 +570,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b268", func_01E02DD0_b268);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b268", func_01E03960_b268);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b268", func_01E03E40_b268);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b268:01E03E40, 102 insns, 2 copies: a full-screen tint: between its start and end frame draws one flat sprite over
+   the whole screen in its colour, depth from its own value */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b268_01E03E40;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b268_01E03E40 p0;
+    Xyz_b268_01E03E40 p1;
+} Pkt_b268_01E03E40;
+
+typedef struct {
+    u16 start;
+    u16 end;
+    u8 pad4[4];
+    f32 depth;
+    u8 b, g, r, a;
+} Tint_b268_01E03E40;
+
+#pragma optimization_level 2
+
+static s32 func_01E03E40_b268(Tint_b268_01E03E40 *o, s32 ctx2, u16 t) {
+    extern s32 func_00207F60(void);
+    extern u64 func_00208D00(s32);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b268_01E03E40 pkt;
+    s32 ctx;
+
+    ctx = func_00207F60();
+    if (t >= o->start && t <= o->end) {
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->count = 6;
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->tag = 3;
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->regs = 0x441;
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->pad = 0;
+        pkt.r = o->r;
+        pkt.g = o->g;
+        pkt.b = o->b;
+        pkt.a = o->a;
+        pkt.q = 1.0f;
+        pkt.p0.x = 0x6BF8;
+        pkt.p0.y = 0x71F8;
+        pkt.p0.z = 0xFFFFFF;
+        pkt.p0.f = 0;
+        pkt.p1.x = 0x93F8;
+        pkt.p1.y = 0x8DF8;
+        pkt.p1.z = 0xFFFFFE;
+        pkt.p1.f = 0;
+        func_002086D0(&pkt, func_00208D00(3));
+        func_002075F0(&pkt, 0, (u32)o->depth);
+        func_00207FD0(ctx, ctx2, 0);
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b268", func_01E03FE0_b268);
 

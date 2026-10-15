@@ -562,11 +562,139 @@ static void func_01E01320_b052(s32 unused, Beam_b018_01E01320 *an, Vec_b018_01E0
 
 INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E01760_b052);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E01A70_b052);
+/* shape b018:01E01F60, 134 insns, 2 copies: a violet wisp: set up once (random heading, tilt -15..14); fades in to 0x60
+   over 10 frames, then out; its size grows every other frame up to 18, its frame every third up to 7; x and z drift 10 along its heading, y 4 by
+   its tilt, by a sine/cosine of its two angles (world trig table) */
+
+typedef struct {
+    u8 pad0[0x3984];
+    u8 trig[1];
+} World_b018_01E01F60;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b018_01E01F60;
+
+static s32 func_01E01A70_b052(World_b018_01E01F60 *w, Wisp_b018_01E01F60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E01C90_b052);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E01EE0_b052);
+/* shape b018:01E022E0, 101 insns, 2 copies: a dim arc flash facing away from the model: its turn set once from the model's
+   heading (flipped past 180), its roll by side; fades in over 2 frames, then out; its sweep opens 8 a frame to
+   160; fades out early when the scene's light is low */
+
+typedef struct {
+    u8 pad0[0x3820];
+    s32 light;
+} World_b018_01E022E0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 sweep;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+} Arc_b018_01E022E0;
+
+static s32 func_01E01EE0_b052(World_b018_01E022E0 *w, Arc_b018_01E022E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 r[4];
+
+    func_001076F0(o->c0, 0x10, 0x10, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), r);
+        if ((s32)(r[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = 0xFFFF4000;
+        }
+        o->rot[1] = 0;
+        if (o->sweep == 0) {
+            o->rot[2] = 0x2000;
+        } else {
+            o->rot[2] = -0x2000;
+        }
+        o->h34 = 0;
+        o->sweep = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x32;
+    o->t++;
+    if (o->sweep < 0xA0) {
+        o->sweep += 8;
+    }
+    if (w->light < 0xF) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b018:01E02480, 54 insns, 11 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */
@@ -830,7 +958,73 @@ static s32 func_01E026C0_b052(s32 arg0, Glow_b018_01E02AC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E02770_b052);
+/* shape b018:01E02B70, 93 insns, 2 copies: a scene light flash: sets the scene's light block once (level 128, colour 4,2,0, range 120,
+   at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when
+   the flash ends or the scene says so */
+
+typedef struct {
+    f32 level;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 range;
+    f32 strength;
+} Light_b018_01E02B70;
+
+typedef struct {
+    u8 pad0[0x3680];
+    Light_b018_01E02B70 light;
+    u8 pad36AC[0x174];
+    s32 w3820;
+} World_b018_01E02B70;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 falling;
+    u8 pad32[4];
+    s16 state;
+} Flash_b018_01E02B70;
+
+static s32 func_01E02770_b052(World_b018_01E02B70 *w, Flash_b018_01E02B70 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->state == 1) {
+        w->light.level = 128.0f;
+        w->light.r = 4.0f;
+        w->light.g = 2.0f;
+        w->light.b = 0;
+        w->light.w20 = 0;
+        w->light.range = 120.0f;
+        w->light.strength = 0.0f;
+        w->light.x = o->x;
+        w->light.y = o->y;
+        w->light.z = o->z;
+        o->state = 2;
+        o->falling = 0;
+    }
+    if (o->falling == 0) {
+        if (w->light.strength < 1.0f) {
+            w->light.strength += 0.2f;
+        } else {
+            o->falling = 1;
+        }
+    } else if (w->light.strength > 0.1f) {
+        w->light.strength -= 0.1f;
+    } else {
+        o->state = 0;
+    }
+    if (o->state == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&w->light);
+    }
+    if (w->w3820 == 1) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b018:01E02CF0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3820 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

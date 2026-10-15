@@ -391,42 +391,917 @@ static void func_01E00C10_b355(Obj_b064_01E00C10 *o, Anim_b064_01E00C10 *an, voi
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E00F30_b355);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E017D0_b355);
+/* shape b064:01E017E0, 134 insns, 2 copies: a violet wisp: set up once (random heading, tilt -15..14); fades in to 0x60
+   over 10 frames, then out; its size grows every other frame up to 18, its frame every third up to 7; x and z drift 10 along its heading, y 4 by
+   its tilt, by a sine/cosine of its two angles (world trig table) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E019F0_b355);
+typedef struct {
+    u8 pad0[0x5344];
+    u8 trig[1];
+} World_b064_01E017E0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E01BF0_b355);
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b064_01E017E0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E01D60_b355);
+static s32 func_01E017D0_b355(World_b064_01E017E0 *w, Wisp_b064_01E017E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E01E70_b355);
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02010_b355);
+/* shape b064:01E01A00, 125 insns: b064:01E01C00 family: a grey puff drifting 13 a frame along a random direction and a tilt of -90..89 (sine table at g+0x5344); fades in by 8 to 0xA0 for 8 ticks, out by 5; f38 grows to 13, kind steps every 5 ticks to 7 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02200_b355);
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b064_01E01A00;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02440_b355);
+static s32 func_01E019F0_b355(u8 * g, Spark_b064_01E01A00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02660_b355);
+    func_001076F0(o->col, 0x3F, 0x3F, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->dir = func_0019A5C8() % 360;
+        o->kind = 0;
+        o->angle = func_0019A5C8() % 180 - 90;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 8;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 < 13) {
+        o->f38++;
+    }
+    if (o->tick % 5 == 1) {
+        if (o->kind < 7) {
+            o->kind++;
+        }
+    }
+    o->f8 = o->f8 + 13.0f * func_00108030(g + 0x5344, o->dir, 0);
+    o->fA = o->fA + 13.0f * func_00108030(g + 0x5344, o->angle, 1);
+    o->fC = o->fC + 13.0f * func_00108030(g + 0x5344, o->dir, 1);
+    return 0;
+}
+
+/* shape b064:01E01C00, 89 insns: a drifting grey puff: colour (0x2F,0x2F,0x2F); on start f38 14, random
+   direction, variant and f30 (-15..14); alpha grows by 0x18 (below 0x60) for 4 ticks, then fades out by 23 and
+   stops; f38 grows to 20; f8 moves by 20 * func_00108030(game 0x5344, direction, 0) each tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    u8 padA[4];
+    s16 spin;
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b064_01E01C00;
+
+static s32 func_01E01BF0_b355(u8 *g, Spark_b064_01E01C00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x2F, 0x2F, 0x2F);
+    if (o->mode == 1) {
+        o->f38 = 14;
+        o->dir = func_0019A5C8() % 360;
+        o->kind = func_0019A5C8() % 7;
+        o->angle = func_0019A5C8() % 30 - 15;
+        o->mode = 2;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 0x18;
+        }
+    } else if (o->col[3] > 0x18) {
+        o->col[3] -= 23;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 < 0x14) {
+        o->f38++;
+    }
+    o->f8 = o->f8 + 20.0f * func_00108030(g + 0x5344, o->dir, 0);
+    return 0;
+}
+
+/* shape b064:01E01D70, 66 insns, 2 copies: a swaying sprite over 18 steps: set up once (colour by stage), then its height
+   follows a sine of the step and its x a sine of its own phase scaled by the world's table entry */
+
+typedef struct {
+    u8 pad0[0x4F18];
+    Vec4f tbl[42];
+    u8 pad51B8[8];
+    s32 stage;
+    u8 pad51C4[0x180];
+    u8 trig[1];
+} World_b064_01E01D70;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[0x1E];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 idx;
+    s16 phase;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 step;
+} Obj_b064_01E01D70;
+
+static s32 func_01E01D60_b355(World_b064_01E01D70 *w, Obj_b064_01E01D70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->h38 = 5;
+        o->h34 = 0;
+        func_0019A5C8();
+        func_001076F0(o->c0, 0x18, 0x18, 0x18);
+        o->step = 0;
+        o->state = 2;
+        if (w->stage > 0x19) {
+            o->c0[3] = 0x40;
+        } else {
+            o->c0[3] = 0;
+        }
+    }
+    o->h34 = 300.0f * func_00108030(w->trig, o->step, 0);
+    o->h8 = 5.0f * w->tbl[o->idx].x * func_00108030(w->trig, o->phase, 0);
+    o->step += 10;
+    if (o->step >= 0xB4) {
+        o->state = 0;
+    }
+    return 0;
+}
+
+/* shape b064:01E01E80, 101 insns, 2 copies: a bobbing blue wisp, alternating its turn direction with each spawn: from
+   stage 18 on it fades in and lingers 50 frames, earlier it fades straight out; bobs on a sine, turns 12 a frame */
+
+typedef struct {
+    u8 pad0[0x51C0];
+    s32 stage;
+    u8 pad51C4[0x46];
+    s16 flip;
+    u8 pad520C[0x138];
+    u8 trig[1];
+} World_b064_01E01E80;
+
+typedef struct {
+    s16 x, y;
+    u8 pad4[0xC];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 dir;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Wisp_b064_01E01E80;
+
+static s32 func_01E01E70_b355(World_b064_01E01E80 *w, Wisp_b064_01E01E80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->rot[2] = o->rot[1] = o->rot[0] = 0;
+        o->h34 = 1;
+        o->h38 = 1;
+        o->state = 2;
+        o->c0[3] = 0x80;
+        o->dir = w->flip;
+        if (w->flip == 0) {
+            w->flip = 1;
+        } else {
+            w->flip = 0;
+        }
+    }
+    o->t++;
+    if (w->stage > 0x11) {
+        if (o->t > 0x32) {
+            if (o->c0[3] > 4) {
+                o->c0[3] -= 3;
+            } else {
+                o->state = 0;
+            }
+        } else if (o->c0[3] < 0x60) {
+            o->c0[3] += 0x13;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 += 5;
+    o->y += 3.0f * func_00108030(w->trig, o->t * 6, 0);
+    if (o->dir == 0) {
+        o->ang += 12;
+    } else {
+        o->ang -= 12;
+    }
+    func_001076F0(o->c0, 0x20, 0x20, 0x68);
+    return 0;
+}
+
+/* shape b064:01E02020, 121 insns: a swaying wisp: on start x 0x4000, variant 0, f38 1, alpha 0x80, angle = game
+   value 0x520A; f4 sways by 9 * -func_00108030(game 0x5344, a - 180, 1) where a = func_001F6160's value / 180;
+   fades in or out by the game state 0x51C0 and age; f8 jitters -10..9, f38 grows by 2, the direction turns by 12
+   (by -12 when angle is set); colour (0x18,0x18,0x30) */
+
+typedef struct {
+    u8 pad0[4];
+    s16 f4;
+    u8 pad6[2];
+    s16 f8;
+    u8 padA[6];
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Wisp_b064_01E02020;
+
+typedef struct {
+    u8 pad[0x51C0];
+    s32 state;
+    u8 pad51C4[0x46];
+    s16 v;
+} Game_b064_01E02020;
+
+static s32 func_01E02010_b355(Game_b064_01E02020 *g, Wisp_b064_01E02020 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern f32 func_00108030(void *, s32, s32);
+    s32 buf[4];
+    s16 a;
+
+    if (o->mode == 1) {
+        o->x = 0x4000;
+        o->y = 0;
+        o->z = 0;
+        o->kind = 0;
+        o->f38 = 1;
+        o->mode = 2;
+        o->col[3] = 0x80;
+        o->angle = g->v;
+    }
+    func_001F6160(func_001F53A0(), buf);
+    a = buf[1] / 180.0f;
+    o->f4 = o->f4 + 9.0f * -func_00108030((u8 *)g + 0x5344, a - 180, 1);
+    o->tick++;
+    if (g->state > 0x11) {
+        if (o->tick > 0xF) {
+            if (o->col[3] > 4) {
+                o->col[3] -= 3;
+            } else {
+                o->mode = 0;
+            }
+        } else if (o->col[3] < 0x60) {
+            o->col[3] += 0x13;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f8 = func_0019A5C8() % 20 - 10;
+    o->f38 += 2;
+    if (o->angle == 0) {
+        o->dir += 12;
+    } else {
+        o->dir -= 12;
+    }
+    func_001076F0(o->col, 0x18, 0x18, 0x30);
+    return 0;
+}
+
+/* shape b064:01E02210, 142 insns: b064:01E02020 family: a white mote placed within 30 of point g->v
+   (func_001F5620), fading in by 0x25 to 0x70 for 3 ticks, out by 12 after 16 ticks or once the scene state is
+   under 17; sinks by 7 * the camera's sine each tick */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x22];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Mote_b064_01E02210;
+
+typedef struct {
+    u8 pad[0x51C0];
+    s32 state;
+    u8 pad51C4[0x38];
+    s16 v;
+} Game_b064_01E02210;
+
+static s32 func_01E02200_b355(Game_b064_01E02210 *g, Mote_b064_01E02210 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F6160(s32, s32 *);
+    extern f32 func_00108030(void *, s32, s32);
+    f32 p[4];
+    s32 buf[4];
+    s16 a;
+
+    func_001076F0(o->col, 0x80, 0x80, 0x80);
+    if (o->mode == 1) {
+        func_001F5620(func_001F53A0(), g->v, p);
+        o->x = p[0] + func_0019A5C8() % 60 - 30.0f;
+        o->y = p[1] + func_0019A5C8() % 60 - 30.0f;
+        o->z = p[2] + func_0019A5C8() % 60 - 30.0f;
+        o->f38 = 1;
+        o->mode = 2;
+    }
+    if (o->tick < 3) {
+        if (o->col[3] < 0x70) {
+            o->col[3] += 0x25;
+        }
+    }
+    if (o->tick > 16) {
+        if (o->col[3] > 13) {
+            o->col[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (g->state < 17) {
+        if (o->col[3] > 13) {
+            o->col[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+    }
+    func_001F6160(func_001F53A0(), buf);
+    a = buf[1] / 180.0f;
+    o->z = o->z - 7.0f * func_00108030((u8 *)g + 0x5344, a - 180, 1);
+    o->tick++;
+    return 0;
+}
+
+/* shape b064:01E02450, 135 insns, 2 copies: a grey wisp born near the model's joint (jittered 30/20/30), random heading,
+   frame and tilt; fades in over 3 frames, then out (faster when the stage is below 17); its size grows to 20 */
+
+typedef struct {
+    u8 pad0[0x51C0];
+    s32 stage;
+} World_b064_01E02450;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x22];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+    s16 a3A;
+} Wisp_b064_01E02450;
+
+static s32 func_01E02440_b355(World_b064_01E02450 *w, Wisp_b064_01E02450 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v;
+
+    func_001076F0(o->c0, 0x10, 0x10, 0x10);
+    if (o->state == 1) {
+        func_001F5F90(func_001F5380(), &v);
+        o->x = v.x + func_0019A5C8() % 30 - 15.0f;
+        o->y = v.y + func_0019A5C8() % 20 - 10.0f;
+        o->z = v.z + func_0019A5C8() % 30 - 15.0f;
+        o->size = 0xE;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = func_0019A5C8() % 7;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 3) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 0x20;
+        }
+    } else if (o->c0[3] > 0x18) {
+        o->c0[3] -= 0x17;
+    } else {
+        o->state = 0;
+    }
+    if (w->stage < 0x11) {
+        if (o->c0[3] > 0xD) {
+            o->c0[3] -= 0xC;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    if (o->size < 0x14) {
+        o->size++;
+    }
+    return 0;
+}
+
+/* shape b064:01E02670, 160 insns, 2 copies: a grey ember tied to the model: size from the model's scale (capped at 26) or
+   random when it already had an angle; fades in for its life, then out (faster before stage 35); grows 1 a
+   frame, its frame climbs every other frame to 5, turns by its speed and sinks or rises by the scene flag */
+
+typedef struct {
+    u8 pad0[0x51C0];
+    s32 stage;
+    u8 pad51C4[0x50];
+    s16 sink;
+} World_b064_01E02670;
+
+typedef struct {
+    s16 x, y, z;
+    s16 life;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 speed;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+} Ember_b064_01E02670;
+
+static s32 func_01E02660_b355(World_b064_01E02670 *w, Ember_b064_01E02670 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern f32 func_001F5860(s32);
+
+    if (o->state == 1) {
+        if (o->ang != 0) {
+            o->size = func_0019A5C8() % 22 + 12;
+        } else {
+            o->size = 2.0f + func_001F5860(func_001F5380());
+            if (o->size > 0x1A) {
+                o->size = 0x1A;
+            }
+        }
+        o->frame = 0;
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        o->hA = o->ang;
+        o->ang = func_0019A5C8() % 30 + 60;
+        o->speed = func_0019A5C8() % 5 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 5 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] <= 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (w->stage < 0x23) {
+        if (o->c0[3] > 0xD) {
+            o->c0[3] -= 0xC;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t != 0) {
+        o->size++;
+    }
+    if (o->t % 2 == 1) {
+        if (o->frame < 5) {
+            o->frame++;
+        }
+    }
+    if (o->t != 0) {
+        o->ang += o->speed;
+    }
+    if (o->t != 0) {
+        if (w->sink != 0) {
+            o->z--;
+        } else {
+            o->z++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E028E0_b355);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02A80_b355);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02C30_b355);
+/* shape b064:01E02C40, 180 insns: b064:01E02670 family: a grey ember, size from the model (capped 26) or random; fades in for 1..2 ticks, out by 11 (by 12 once the scene counter reaches 221); grows to 30, turns 2 and steps its frame 0..5 every other tick, sinks or rises by the scene flag */
+
+typedef struct {
+    u8 pad0[0x5210];
+    s16 count;
+    u8 pad5212[2];
+    s16 sink;
+} World_b064_01E02C40;
+
+typedef struct {
+    s16 x, y, z;
+    s16 life;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 speed;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+} Ember_b064_01E02C40;
+
+static s32 func_01E02C30_b355(World_b064_01E02C40 *w, Ember_b064_01E02C40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern f32 func_001F5860(s32);
+
+    if (o->state == 1) {
+        if (o->ang != 0) {
+            o->size = func_0019A5C8() % 22 + 12;
+        } else {
+            o->size = 2.0f + func_001F5860(func_001F5380());
+            if (o->size > 0x1A) {
+                o->size = 0x1A;
+            }
+        }
+        o->frame = 0;
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        o->hA = o->ang;
+        o->ang = func_0019A5C8() % 60 + 10;
+        o->speed = func_0019A5C8() % 5 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 2 + 1;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] <= 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (w->count > 220) {
+        if (o->c0[3] > 0xD) {
+            o->c0[3] -= 0xC;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t != 0) {
+        if (o->size < 30) {
+            o->size++;
+        }
+    }
+    if (o->t % 2 == 1) {
+        o->ang += 2;
+    }
+    if (o->t % 2 == 1) {
+        if (o->frame < 5) {
+            o->frame++;
+        } else {
+            o->frame = 0;
+        }
+    }
+    if (o->t != 0) {
+        if ((s16)o->t % 2 == 1) {
+            if (w->sink != 0) {
+                o->z--;
+            } else {
+                o->z++;
+            }
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E02F00_b355);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E030D0_b355);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E03A20_b355);
+/* shape b064:01E03A20, 74 insns: twin of b046:01E03E20: take the first free slot of the 300-slot pool, clear it,
+   give it the scene's colour twice, the scene matrix, the scene's values 0x520C and 0x5212 and the two arguments;
+   returns 1 if a slot was found */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E03B50_b355);
+typedef struct {
+    u8 pad[0x20];
+    s32 b;
+    s32 a;
+    u8 c0[4];
+    u8 c1[4];
+    s16 v;
+    s16 v2;
+    u8 pad34[2];
+    s16 used;
+    u8 pad38[8];
+} Slot_b064_01E03A20;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E03D80_b355);
+typedef struct {
+    u8 pad[0x250];
+    u8 m[0x50];
+    Slot_b064_01E03A20 s[300];
+    u8 pad4DA0[0x424];
+    u8 r, g, b, a;
+    u8 pad51C8[0x44];
+    s16 v;
+    u8 pad520E[4];
+    s16 v2;
+} Pool_b064_01E03A20;
+
+static s32 func_01E03A20_b355(Pool_b064_01E03A20 *o, s32 a, s32 b) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, u8, u8, u8);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b064_01E03A20 *s = NULL;
+    s16 i;
+    s32 ret;
+
+    for (i = 0; i < 300; i++) {
+        if (o->s[i].used == 0) {
+            func_00195108(&o->s[i], 0x40);
+            o->s[i].used = 1;
+            s = &o->s[i];
+            i = 300;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c0, o->r, o->g, o->b);
+        s->c0[3] = o->a;
+        func_001076F0(s->c1, o->r, o->g, o->b);
+        s->c1[3] = o->a;
+        func_00106AB0(s, o->m, 0);
+        ret = 1;
+        s->v = o->v;
+        s->v2 = o->v2;
+        s->b = b;
+        s->a = a;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+/* shape b064:01E03B50, 137 insns, 2 copies: one textured upright strip of an object (b053:01E022F0 family, texture 0x99 frame
+   2); mode 0 only sets up the packet's texture, otherwise position = pos + vel / 10, yawed a quarter turn (a bit
+   less when `!o->kind % 3`, which parses as (!o->kind) % 3), height a tenth of its value, drawn via
+   func_00108F90. */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[0x1A];
+    u8 col[8];
+    s16 kind;
+    u8 pad32[2];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+} Obj_b064_01E03B50;
+
+static void func_01E03B50_b355(u8 *ctx, Obj_b064_01E03B50 *o, void *pkt, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern void func_00105D00(void *, s32, s32);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    u8 td[0x10];
+    f32 m[16];
+    s32 rot[4];
+    u8 *ot;
+
+    ot = func_00207500();
+    if (mode == 0) {
+        func_00106080(td, 0x99, 0, td);
+        func_00105D00(td, 2, 0);
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0x29C), 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->vx / 10;
+    pos.y = o->y + o->vy / 10;
+    pos.z = o->z + o->vz / 10;
+    if (!o->kind % 3) {
+        rot[1] = 0x3A00;
+    } else {
+        rot[1] = 0x4000;
+    }
+    rot[0] = 0;
+    rot[2] = 0;
+    func_00108EF0(m, NULL, rot, &pos);
+    func_00108CE0(quad, o->size, o->page / 10);
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    func_00108F90(quad, pkt, m, ot);
+}
+
+/* shape b064:01E03D80, 103 insns: b053:01E022F0 family (one textured camera-facing square; texture 0x14, page at ctx+0x268) */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[0x1A];
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+} Obj_b064_01E03D80;
+
+static void func_01E03D80_b355(u8 *ctx, Obj_b064_01E03D80 *o, void *pkt, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    u8 td[0x10];
+    f32 m[16];
+    Vec4f rot;
+    u8 *ot;
+    f32 size;
+
+    ot = func_00207500();
+    if (mode == 0) {
+        func_00106080(td, 0x14, o->page, td);
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0x268), 1);
+        return;
+    }
+    func_00205C40((s32)&rot);
+    pos.x = o->x + o->vx / 10;
+    pos.y = o->y + o->vy / 10;
+    pos.z = o->z + o->vz / 10;
+    func_00108EF0(m, NULL, &rot, &pos);
+    size = o->size;
+    func_00108CE0(quad, size, size);
+    func_00108F90(quad, pkt, m, ot);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E03F20_b355);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E042A0_b355);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b355", func_01E04650_b355);
+/* shape b064:01E04650, 109 insns, 2 copies: one textured strip of an object (b053:01E022F0 family: turned a quarter, ten
+   times wider than tall); mode 0 only sets up the packet's texture, otherwise position = pos + vel / 10, drawn
+   via func_00108F90. */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[0x1A];
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+} Obj_b064_01E04650;
+
+static void func_01E04650_b355(u8 *ctx, Obj_b064_01E04650 *o, void *pkt, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    u8 td[0x10];
+    f32 m[16];
+    s32 rot[4];
+    u8 *ot;
+
+    ot = func_00207500();
+    if (mode == 0) {
+        func_00106080(td, 0x14, o->page, td);
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0x268), 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    rot[1] = 0x4000;
+    pos.x = o->x + o->vx / 10;
+    pos.y = o->y + o->vy / 10;
+    pos.z = o->z + o->vz / 10;
+    func_00108EF0(m, NULL, rot, &pos);
+    func_00108CE0(quad, o->size * 10, o->size);
+    func_00108F90(quad, pkt, m, ot);
+}

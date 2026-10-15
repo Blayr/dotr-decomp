@@ -859,7 +859,55 @@ static s32 func_01E02900_b393(s32 arg0, Spark_b115_01E01BC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b393", func_01E02AB0_b393);
+/* shape b115:01E01D70, 97 insns: a red spark: set up once (random frame, spin, speed 3..18, life 5..14); full alpha for its life, then fades by 15; turns by its speed */
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Obj_b115_01E01D70;
+
+static s32 func_01E02AB0_b393(void *arg0, Obj_b115_01E01D70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 2;
+        o->frame = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x20, 0x20);
+        o->w18 = func_0019A5C8() % 65535;
+        o->w10 = func_0019A5C8() % 65535;
+        o->ang = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 16 + 3;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 10 + 5;
+        o->state = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->state = 0;
+    }
+    o->ang += o->hE;
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];

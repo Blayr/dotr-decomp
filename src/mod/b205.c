@@ -652,7 +652,73 @@ static s32 func_01E01900_b205(s32 arg0, Spark_b205_01E01900 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01B90_b205);
+/* shape b205:01E01B90, 77 insns: a spinning, growing flash: on start size 180, colours white and (0x80,0xFF,0x80),
+   f5A/f5C 10; the second alpha grows by 0x60 (below 0xC0) for 8 ticks, then fades out by 15 and stops; turns by
+   0x4000 and grows by 0.4 every tick after the first; ends when the game value 0x6E0C is 0xC3 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[4];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b205_01E01B90;
+
+typedef struct {
+    u8 pad[0x6E0C];
+    s16 v;
+} Game_b205_01E01B90;
+
+static s32 func_01E01B90_b205(Game_b205_01E01B90 *g, Fx_b205_01E01B90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 180.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0x80, 0xFF, 0x80);
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 8) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->tick != 0) {
+        o->size += 0.4f;
+    }
+    if (g->v == 0xC3) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -768,9 +834,132 @@ INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01F10_b205);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01F90_b205);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E02120_b205);
+/* shape b205:01E02120, 146 insns: a full-screen textured overlay (0x6BF8,0x71F8 - 0x93F8,0x8DF8) in the effect's
+   colour, written straight into the scene's packet (game 0x6DB8), window scrolled by f8/10 and fA/10; alpha grows
+   by 9 (below 0x80) while the game value 0x6E0C is below 0xB4, then after tick 0x28 fades by 9 and stops */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E02370_b205);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b205_01E02120;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b205_01E02120 p;
+} Tv_b205_01E02120;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b205_01E02120 v[2];
+} Tex_b205_01E02120;
+
+typedef struct {
+    u8 pad[0x6DB8];
+    Tex_b205_01E02120 *pk;
+    u8 pad6DBC[0x50];
+    s16 v;
+} Game_b205_01E02120;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b205_01E02120;
+
+static s32 func_01E02120_b205(Game_b205_01E02120 *g, Fx_b205_01E02120 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 fx;
+    f32 fy;
+
+    fx = o->f8;
+    fy = o->fA;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x30, 0x30, 0x30);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = fx / 1024.0f;
+    g->pk->v[0].t = fy / 512.0f;
+    g->pk->v[1].s = (640.0f - fx) / 1024.0f;
+    g->pk->v[1].t = (448.0f - fy) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (g->v < 0xB4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->tick > 0x28) {
+        if (o->col[3] > 0xA) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b205:01E02370, 41 insns: look up the textures: group 4 cells 0-2 and 11-15, group 5 cells 0-1 */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 pad380[0x6A00];
+    s32 tex5[2];
+} Scene_b205_01E02370;
+
+static void func_01E02370_b205(s32 arg0, Scene_b205_01E02370 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 11; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E02420_b205);
 

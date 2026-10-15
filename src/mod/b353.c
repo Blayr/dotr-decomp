@@ -528,7 +528,73 @@ static s32 func_01E01830_b353(s32 arg0, Spark_b353_01E01830 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E01AC0_b353);
+/* shape b353:01E01AC0, 77 insns: b205:01E01B90 with the game value at 0x6E2C and colour (0x80,0x40,0xFF); a spinning, growing flash: on start size 180, colours white and (0x80,0xFF,0x80),
+   f5A/f5C 10; the second alpha grows by 0x60 (below 0xC0) for 8 ticks, then fades out by 15 and stops; turns by
+   0x4000 and grows by 0.4 every tick after the first; ends when the game value 0x6E2C is 0xC3 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[4];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b353_01E01AC0;
+
+typedef struct {
+    u8 pad[0x6E2C];
+    s16 v;
+} Game_b353_01E01AC0;
+
+static s32 func_01E01AC0_b353(Game_b353_01E01AC0 *g, Fx_b353_01E01AC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 180.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0x80, 0x40, 0xFF);
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 8) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 0x10) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->tick != 0) {
+        o->size += 0.4f;
+    }
+    if (g->v == 0xC3) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E01C00_b353);
 
@@ -538,7 +604,29 @@ static s32 func_01E01D80_b353(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E01D90_b353);
+/* shape b353:01E01D90, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 11-15, group 5
+   cells 0-1 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 pad380[0x6A20];
+    s32 tex5[2];
+} Scene_b353_01E01D90;
+
+static void func_01E01D90_b353(s32 arg0, Scene_b353_01E01D90 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 11; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E01E40_b353);
 
@@ -600,6 +688,67 @@ static s32 func_01E02400_b353(Pool_b353_01E02400 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E02520_b353);
+/* shape b353:01E02520, 80 insns: twin of b034:01E05330: take a free effect slot (0x96 of 0x70 bytes), clear
+   it, colour it from the scene colour, copy the scene position and value, store the two arguments; returns 1 if a
+   slot was found */
+
+typedef struct Slot_b353_01E02520 {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 f40;
+    s32 f44;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    u8 pad5A[6];
+    u8 c60[4];
+    u8 c64[4];
+    u8 pad68[8];
+} Slot_b353_01E02520;
+
+typedef struct Obj_b353_01E02520 {
+    u8 pad0[0x2D0];
+    f32 pos[3];
+    u8 padA[0x2624];
+    Slot_b353_01E02520 slots[0x96];
+    u8 padB[0x324];
+    u8 rgba[4];
+    u8 padC[0x5E];
+    s16 fB2B0;
+} Obj_b353_01E02520;
+
+static s32 func_01E02520_b353(Obj_b353_01E02520 *obj, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b353_01E02520 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (obj->slots[i].used == 0) {
+            func_00195108(&obj->slots[i], 0x70);
+            obj->slots[i].used = 1;
+            s = &obj->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c60, obj->rgba[0], obj->rgba[1], obj->rgba[2]);
+        s->c60[3] = obj->rgba[3];
+        func_001076F0(s->c64, obj->rgba[0], obj->rgba[1], obj->rgba[2]);
+        s->c64[3] = obj->rgba[3];
+        func_00106AB0(s, obj->pos, 0);
+        s->pos[0] = obj->pos[0];
+        s->pos[1] = obj->pos[1];
+        s->pos[2] = obj->pos[2];
+        s->f50 = obj->fB2B0;
+        s->f40 = arg2;
+        s->f44 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b353", func_01E02660_b353);

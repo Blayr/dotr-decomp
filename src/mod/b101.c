@@ -380,7 +380,172 @@ static s32 func_01E016B0_b101(s32 obj, Spr_b007_01E017F0 *spr, Cam_b007_01E017F0
 
 INCLUDE_ASM("asm/nonmatchings/mod/b101", func_01E01C40_b101);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b101", func_01E021A0_b101);
+/* OVL_WARM */
+
+/* shape b101:01E021A0, 492 insns: draws a beam between two points: the line is cut into n pieces (at most 32),
+   all points projected; each visible piece up to the moving head is drawn as four quads (above, below, right,
+   left of the line) as wide as func_001018E0(width, depth). Colour from the module helper b101:01E00080.
+   Both spilled params are aligned(8): that puts their homes at 0xD8/0xD0 like the original. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b101_01E021A0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 uv;
+    Xyz_b101_01E021A0 xyz;
+} Vtx_b101_01E021A0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b101_01E021A0 v[4];
+    u8 tail[0x20];
+} Pkt_b101_01E021A0;
+
+typedef struct {
+    s16 u, v, w, h;
+} Rect_b101_01E021A0;
+
+typedef struct {
+    void *texture;
+    s32 flags;
+    u8 color[4];
+    f32 width;
+    Rect_b101_01E021A0 rect;
+    u8 pad18[0x10];
+    s16 n;
+    u8 pad2A[2];
+    s16 head;
+} Beam_b101_01E021A0;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_b101_01E021A0;
+
+static s32 func_01E021A0_b101(s32 ot __attribute__((aligned(8))), Beam_b101_01E021A0 *b, Cam_b101_01E021A0 *cam __attribute__((aligned(8))), Vec4f *p1, Vec4f *p2) {
+    extern void b101_01E00080(void *, void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern s32 func_00101600(void *);
+    extern s32 func_00104540(void *, void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00208CB0(void *, u64);
+    extern f32 func_001018E0(f32, f32);
+    Vec4f pts[33];
+    Xyz_b101_01E021A0 s[33];
+    f32 depth[33];
+    Pkt_b101_01E021A0 pkt;
+    f32 t;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 w0;
+    f32 w1;
+    s32 vis;
+    s32 i;
+    s32 j;
+
+    vis = 0;
+    if (b->n > 32) {
+        b->n = 32;
+    }
+    ((Pkt_b101_01E021A0 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_b101_01E021A0 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_b101_01E021A0 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_b101_01E021A0 *)(s32)&pkt)->pad = 0;
+    func_00208CB0(&pkt, (u64)0xA | ((u64)b->rect.u << 4) | ((u64)(b->rect.u + b->rect.w - 1) << 14) |
+                            ((u64)b->rect.v << 24) | ((u64)(b->rect.v + b->rect.h - 1) << 34));
+    func_00208700(&pkt, b->texture, 1);
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    b101_01E00080(&pkt, b->color);
+    dx = p2->x - p1->x;
+    dy = p2->y - p1->y;
+    dz = p2->z - p1->z;
+    for (i = 0; i < b->n + 1; i++) {
+        if (i == b->n) {
+            pts[b->n] = *p2;
+        } else {
+            t = (f32)i / b->n;
+            pts[i].x = p1->x + dx * t;
+            pts[i].y = p1->y + dy * t;
+            pts[i].z = p1->z + dz * t;
+        }
+        if (func_00205440(&pts[i], cam->view, &s[i], &depth[i]) != 0) {
+            vis |= 1 << i;
+        }
+    }
+    for (i = 0; i < b->n; i++) {
+        if (i <= b->head) {
+            func_00104540(&pkt, &b->rect, 0);
+            if (func_00104520(vis, i) != 0 && func_00104520(vis, i + 1) != 0) {
+                w0 = func_001018E0(b->width, depth[i]);
+                w1 = func_001018E0(b->width, depth[i + 1]);
+                for (j = 0; j < 4; j++) {
+                    if (j < 2) {
+                        pkt.v[0].xyz.x = pkt.v[2].xyz.x = s[i].x;
+                        pkt.v[1].xyz.x = pkt.v[3].xyz.x = s[i + 1].x;
+                        if (j == 0) {
+                            pkt.v[0].xyz.y = w0 + s[i].y;
+                            pkt.v[1].xyz.y = w1 + s[i + 1].y;
+                            pkt.v[2].xyz.y = s[i].y;
+                            pkt.v[3].xyz.y = s[i + 1].y;
+                        }
+                        if (j == 1) {
+                            pkt.v[0].xyz.y = s[i].y - w0;
+                            pkt.v[1].xyz.y = s[i + 1].y - w1;
+                            pkt.v[2].xyz.y = s[i].y;
+                            pkt.v[3].xyz.y = s[i + 1].y;
+                        }
+                    } else {
+                        pkt.v[0].xyz.y = pkt.v[2].xyz.y = s[i].y;
+                        pkt.v[1].xyz.y = pkt.v[3].xyz.y = s[i + 1].y;
+                        if (j == 2) {
+                            pkt.v[0].xyz.x = w0 + s[i].x;
+                            pkt.v[1].xyz.x = w1 + s[i + 1].x;
+                            pkt.v[2].xyz.x = s[i].x;
+                            pkt.v[3].xyz.x = s[i + 1].x;
+                        }
+                        if (j == 3) {
+                            pkt.v[0].xyz.x = s[i].x - w0;
+                            pkt.v[1].xyz.x = s[i + 1].x - w1;
+                            pkt.v[2].xyz.x = s[i].x;
+                            pkt.v[3].xyz.x = s[i + 1].x;
+                        }
+                    }
+                    if (func_00101600(&pkt.v[0].xyz) != 0) {
+                        b->flags |= 0x100000;
+                    }
+                    if (func_00101600(&pkt.v[1].xyz) != 0) {
+                        b->flags |= 0x200000;
+                    }
+                    if (func_00104520(b->flags, 0x14) != 0 && func_00104520(b->flags, 0x15) != 0) {
+                        pkt.v[0].xyz.z = pkt.v[2].xyz.z = s[i].z;
+                        pkt.v[1].xyz.z = pkt.v[3].xyz.z = s[i + 1].z;
+                        func_002075F0(&pkt, ot, (u32)((depth[i] + depth[i + 1]) / 2.0f));
+                    }
+                    b->flags &= 0xFFCFFFFF;
+                }
+            }
+        }
+    }
+    b->head++;
+    if (b->head >= b->n) {
+        if (func_00104520(b->flags, 0x1A) != 0) {
+            b->head = b->n;
+        } else {
+            b->head = 0;
+        }
+    }
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;

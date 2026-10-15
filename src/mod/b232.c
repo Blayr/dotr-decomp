@@ -156,7 +156,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01130_b232);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01370_b232);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01A50_b232);
+/* shape b232:01E01A50, 80 insns: twin of b034:01E05330: take a free effect slot (0x96 of 0x70 bytes), clear
+   it, colour it from the scene colour, copy the scene position and value, store the two arguments; returns 1 if a
+   slot was found */
+
+typedef struct Slot_b232_01E01A50 {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 f40;
+    s32 f44;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    u8 pad5A[6];
+    u8 c60[4];
+    u8 c64[4];
+    u8 pad68[8];
+} Slot_b232_01E01A50;
+
+typedef struct Obj_b232_01E01A50 {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 padA[0x44];
+    Slot_b232_01E01A50 slots[0x96];
+    u8 padB[0x74];
+    u8 rgba[4];
+    u8 padC[0x98];
+    s16 fB2B0;
+} Obj_b232_01E01A50;
+
+static s32 func_01E01A50_b232(Obj_b232_01E01A50 *obj, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106AB0();
+    extern void func_00195108();
+    Slot_b232_01E01A50 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x96; i++) {
+        if (obj->slots[i].used == 0) {
+            func_00195108(&obj->slots[i], 0x70);
+            obj->slots[i].used = 1;
+            s = &obj->slots[i];
+            i = 0x96;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c60, obj->rgba[0], obj->rgba[1], obj->rgba[2]);
+        s->c60[3] = obj->rgba[3];
+        func_001076F0(s->c64, obj->rgba[0], obj->rgba[1], obj->rgba[2]);
+        s->c64[3] = obj->rgba[3];
+        func_00106AB0(s, obj->pos, 0);
+        s->pos[0] = obj->pos[0];
+        s->pos[1] = obj->pos[1];
+        s->pos[2] = obj->pos[2];
+        s->f50 = obj->fB2B0;
+        s->f40 = arg2;
+        s->f44 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b232", func_01E01B90_b232);
 

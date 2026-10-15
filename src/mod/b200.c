@@ -89,7 +89,206 @@ static void func_01E00080_b200(Obj_b002_01E00080 *arg0) {
 }
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/mod/b200", func_01E00440_b200);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM: compile warm (its (u32) casts are jal fptoui, func_001A23B0) */
+
+/* shape b011:01E00440, 647 insns: n particle emitters (0x38 bytes each), each with up to 8 particles (0x28 bytes,
+   indexes into a shared table): moves each live particle (gravity, floor), sizes it by age, and draws it as a
+   textured screen-space quad of radius func_001018E0(scale, depth), flipped by the particle's flags & 0x30 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b011_01E00440;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b011_01E00440 xyz;
+} Vtx_b011_01E00440;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Vtx_b011_01E00440 v[4];
+    u8 tail[0x20];
+} Pkt_b011_01E00440;
+
+typedef struct {
+    s32 id;
+    u8 sub;
+    u8 b5;
+    u8 pad6[2];
+    s32 u, w, v, h;
+} Tex_b011_01E00440;
+
+typedef struct {
+    f32 x, y, z;
+} V3_b011_01E00440;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 flags;
+    V3_b011_01E00440 pos;
+    V3_b011_01E00440 vel;
+    V3_b011_01E00440 acc;
+} Part_b011_01E00440;
+
+typedef struct {
+    u8 drawn;
+    u8 pad1[3];
+    u8 flags;
+    u8 pad5[3];
+    Part_b011_01E00440 *parts;
+    s16 idx[8];
+    u8 pad1C;
+    u8 count;
+    u8 sub;
+    u8 texid;
+    u8 size;
+    u8 shift;
+    u8 b, g, r, a;
+    f32 scale;
+    f32 dscale;
+    f32 grav;
+    f32 floor;
+} Emit_b011_01E00440;
+
+#pragma optimization_level 1
+
+static s32 func_01E00440_b200(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_001020B0(void *, s32, s32);
+    extern void func_00101D20(void *, void *, void *);
+    extern f32 func_001018E0(f32, f32);
+    f32 mat[16];
+    Vec4f pos;
+    Tex_b011_01E00440 td;
+    Pkt_b011_01E00440 pkt __attribute__((aligned(8)));
+    Xyz_b011_01E00440 xyz;
+    f32 dep;
+    Emit_b011_01E00440 *e;
+    s32 i;
+    Part_b011_01E00440 *parts;
+    Part_b011_01E00440 *p;
+    s32 j;
+    s32 tex;
+    s32 d;
+    s32 sz;
+    f32 r;
+
+    e = arg0;
+    parts = e->parts;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->flags & 4) {
+            tex = func_00202BF0(5, e->texid);
+        } else {
+            tex = func_00202BF0(4, 2);
+        }
+        e->scale += e->dscale;
+        for (j = 0; j < e->count; j++) {
+            if (e->idx[j] == -1) {
+                continue;
+            }
+            p = &parts[e->idx[j]];
+            if (p->life < 2) {
+                e->idx[j] = -1;
+            } else {
+                e->drawn = 1;
+            }
+            if (func_00101B50(p) == 0) {
+                continue;
+            }
+            p->vel.x += p->acc.x;
+            p->vel.y += p->acc.y + e->grav;
+            p->vel.z += p->acc.z;
+            p->pos.x += p->vel.x;
+            p->pos.y += p->vel.y;
+            p->pos.z += p->vel.z;
+            if (p->pos.y < e->floor) {
+                p->pos.y = e->floor;
+            }
+            pos.x = p->pos.x;
+            pos.y = p->pos.y;
+            pos.z = p->pos.z;
+            func_0020EB40(mat);
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->count = 0x24;
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->tag = 9;
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->regs = ((u64)4 << 32) | 0x24242421;
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->pad = 0;
+            pkt.r = e->r;
+            pkt.g = e->g;
+            pkt.b = e->b;
+            pkt.q = 1.0f;
+            d = p->max - p->life;
+            sz = e->size;
+            if (e->flags & 8) {
+                sz = ((d >> e->shift) & 3) + 2;
+                if (d < 3) {
+                    sz = d;
+                }
+                if (p->life < 7) {
+                    sz = 7 - (p->life >> e->shift);
+                }
+            }
+            td.b5 = e->sub;
+            func_001020B0(&td, sz, 0);
+            func_00101D20(&pkt, &td, (void *)tex);
+            if (p->life < 16) {
+                pkt.a = (e->a >> 4) * p->life;
+            } else {
+                pkt.a = e->a;
+            }
+            if (func_00205440(&pos, mat, &xyz, &dep) == 0 || func_00101600(&xyz) == 0) {
+                continue;
+            }
+            r = func_001018E0(e->scale, dep);
+            pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = pkt.v[3].xyz.z = xyz.z;
+            switch (p->flags & 0x30) {
+            case 0x10:
+                pkt.v[0].xyz.x = pkt.v[1].xyz.x = (u32)(xyz.x - r);
+                pkt.v[2].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x + r);
+                pkt.v[1].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y - r);
+                pkt.v[0].xyz.y = pkt.v[2].xyz.y = (u32)(xyz.y + r);
+                break;
+            case 0x20:
+                pkt.v[1].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x - r);
+                pkt.v[0].xyz.x = pkt.v[2].xyz.x = (u32)(xyz.x + r);
+                pkt.v[2].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y - r);
+                pkt.v[0].xyz.y = pkt.v[1].xyz.y = (u32)(xyz.y + r);
+                break;
+            case 0x30:
+                pkt.v[2].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x - r);
+                pkt.v[0].xyz.x = pkt.v[1].xyz.x = (u32)(xyz.x + r);
+                pkt.v[0].xyz.y = pkt.v[2].xyz.y = (u32)(xyz.y - r);
+                pkt.v[1].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y + r);
+                break;
+            default:
+                pkt.v[0].xyz.x = pkt.v[2].xyz.x = (u32)(xyz.x - r);
+                pkt.v[1].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x + r);
+                pkt.v[0].xyz.y = pkt.v[1].xyz.y = (u32)(xyz.y - r);
+                pkt.v[2].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y + r);
+                break;
+            }
+            func_002075F0((s32)&pkt, ot, (u32)dep);
+        }
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 /* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
 
@@ -647,7 +846,165 @@ static s32 func_01E042D0_b200(Obj_b061_01E03440 *arg0, s32 tex) {
 }
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/mod/b200", func_01E04840_b200);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM */
+
+/* shape b200:01E04840, 371 insns, 3 copies: draws n shrinking flat quads (0x3C-byte emitters): width shrinks and height
+   grows with age, turned and placed by the emitter; perspective STQ over the whole texture cell, colour from
+   the emitter, alpha fading at the end. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b200_01E04840;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    f32 s, t;
+    Xyz_b200_01E04840 xyz;
+} Vtx_b200_01E04840;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b200_01E04840 v[4];
+    u8 tail[0x20];
+} Pkt_b200_01E04840;
+
+typedef struct {
+    u8 pad0[5];
+    u8 page;
+    u8 pad6[2];
+    s32 u, w, v, h;
+} Tex_b200_01E04840;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3;
+    u8 flags;
+    u8 pad5[3];
+    u8 texid;
+    u8 b9;
+    u8 bA;
+    u8 bB;
+    u8 b, g, r, a;
+    f32 size;
+    f32 h0;
+    f32 grow;
+    s32 rot[4];
+    Vec4f pos;
+} Emit_b200_01E04840;
+
+#pragma optimization_level 1
+
+static s32 func_01E04840_b200(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00202BF0(s32, s32);
+    extern s32 func_00101AF0(void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_001020B0(void *, s32, s32);
+    extern void func_00101C80(void *, void *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 mat[16];
+    f32 mat2[16];
+    Vec4f quad[4];
+    f32 depth[4];
+    Tex_b200_01E04840 td;
+    Pkt_b200_01E04840 pkt __attribute__((aligned(8)));
+    u8 bl[4];
+    Emit_b200_01E04840 *e;
+    s32 i;
+    void *tex;
+    s32 span;
+    f32 w;
+    f32 h;
+    f32 z;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Emit_b200_01E04840 *)((u8 *)e + 0x3C);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        tex = (void *)func_00202BF0(5, e->texid);
+        span = e->max - e->life;
+        w = e->size - span * (e->size / e->max);
+        h = e->h0 + e->grow * span;
+        quad[0].z = quad[1].z = quad[2].z = quad[3].z = 0.0f;
+        quad[0].x = quad[2].x = -w;
+        quad[1].x = quad[3].x = w;
+        quad[0].y = quad[1].y = -h;
+        quad[2].y = quad[3].y = h;
+        func_00101BA0(e, &e->pos);
+        func_0020EB40(mat);
+        func_0020C940(mat2, NULL, e->rot, &e->pos);
+        func_0020BC00(mat, mat2);
+        ((Pkt_b200_01E04840 *)(s32)&pkt)->count = 0x34;
+        ((Pkt_b200_01E04840 *)(s32)&pkt)->tag = 0xC;
+        ((Pkt_b200_01E04840 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+        ((Pkt_b200_01E04840 *)(s32)&pkt)->pad = 0;
+        pkt.v[0].r = pkt.v[1].r = pkt.v[2].r = pkt.v[3].r = e->r;
+        pkt.v[0].g = pkt.v[1].g = pkt.v[2].g = pkt.v[3].g = e->g;
+        pkt.v[0].b = pkt.v[1].b = pkt.v[2].b = pkt.v[3].b = e->b;
+        if (!(e->flags & 0x40) && e->life < 8) {
+            pkt.v[0].a = pkt.v[1].a = pkt.v[2].a = pkt.v[3].a = (e->a >> 3) * e->life;
+        } else {
+            pkt.v[0].a = pkt.v[1].a = pkt.v[2].a = pkt.v[3].a = e->a;
+        }
+        if (func_00205440(&quad[0], mat, &pkt.v[0].xyz, &depth[0]) == 0) {
+            continue;
+        }
+        if (func_00205440(&quad[1], mat, &pkt.v[1].xyz, &depth[1]) == 0) {
+            continue;
+        }
+        if (func_00205440(&quad[2], mat, &pkt.v[2].xyz, &depth[2]) == 0) {
+            continue;
+        }
+        if (func_00205440(&quad[3], mat, &pkt.v[3].xyz, &depth[3]) == 0) {
+            continue;
+        }
+        td.page = e->bB;
+        func_001020B0(&td, e->bA, e->b9);
+        pkt.v[0].q = 1.0f / depth[0];
+        pkt.v[1].q = 1.0f / depth[1];
+        pkt.v[2].q = 1.0f / depth[2];
+        pkt.v[3].q = 1.0f / depth[3];
+        pkt.v[0].s = 0.0f;
+        pkt.v[0].t = 0.0f;
+        pkt.v[1].s = 1.0f / depth[1];
+        pkt.v[1].t = 0.0f;
+        pkt.v[2].s = 0.0f;
+        pkt.v[2].t = 1.0f / depth[2];
+        pkt.v[3].s = 1.0f / depth[3];
+        pkt.v[3].t = 1.0f / depth[3];
+        func_00208CB0(&pkt, (u64)0xA | ((u64)td.u << 4) | ((u64)(td.w - 1) << 14) | ((u64)td.v << 24) |
+                                ((u64)(td.h - 1) << 34));
+        func_00101C80(&td, bl);
+        func_002086D0(&pkt, (u64)bl[0] | ((u64)bl[1] << 2) | ((u64)bl[2] << 4) | ((u64)bl[3] << 6));
+        func_00208700(&pkt, tex, 1);
+        if (e->flags & 0x80) {
+            pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = pkt.v[3].xyz.z = 0xFFFFFE;
+            z = 0.0f;
+        } else {
+            z = (depth[3] + (depth[2] + (depth[0] + depth[1]))) / 4.0f;
+        }
+        func_002075F0(&pkt, ot, (u32)z);
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 /* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
 /* OVL_WARM */

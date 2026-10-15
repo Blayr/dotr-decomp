@@ -430,7 +430,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E01E90_b572);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E020A0_b572);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E02250_b572);
+/* shape b003:01E021C0, 92 insns, 2 copies: a scene light flash: sets the scene's light block once (colour 4,2,0, range 70,
+   at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when
+   the flash ends or the scene says so */
+
+typedef struct {
+    s32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 range;
+    f32 strength;
+} Light_b003_01E021C0;
+
+typedef struct {
+    u8 pad0[0x2D40];
+    Light_b003_01E021C0 light;
+    u8 pad2D6C[4];
+    s32 w2D70;
+} World_b003_01E021C0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 falling;
+    u8 pad32[4];
+    s16 state;
+} Flash_b003_01E021C0;
+
+static s32 func_01E02250_b572(World_b003_01E021C0 *w, Flash_b003_01E021C0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->state == 1) {
+        w->light.w0 = 0;
+        w->light.r = 4.0f;
+        w->light.g = 2.0f;
+        w->light.b = 0;
+        w->light.w20 = 0;
+        w->light.range = 70.0f;
+        w->light.strength = 0.0f;
+        w->light.x = o->x;
+        w->light.y = o->y;
+        w->light.z = o->z;
+        o->state = 2;
+        o->falling = 0;
+    }
+    if (o->falling == 0) {
+        if (w->light.strength < 1.0f) {
+            w->light.strength += 0.2f;
+        } else {
+            o->falling = 1;
+        }
+    } else if (w->light.strength > 0.1f) {
+        w->light.strength -= 0.1f;
+    } else {
+        o->state = 0;
+    }
+    if (o->state == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&w->light);
+    }
+    if (w->w2D70 == 1) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b003:01E02330, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x2D70 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

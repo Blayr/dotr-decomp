@@ -233,7 +233,114 @@ static void func_01E005A0_b257(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E00B20_b257);
+/* OVL_WARM: compile warm */
+
+/* shape b112:01E00850, 195 insns: b020:01E00E70 family: 4 rotated quads (func_00108D60 from fx->u/v, z rotation fx->rz) at pos, drawn by depth or at far z */
+
+typedef struct {
+    f32 u, v;
+} Uv_b112_01E00850;
+
+typedef struct {
+    Uv_b112_01E00850 st;
+    u64 rgba;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b112_01E00850;
+
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 pad;
+    u64 regs;
+    Vtx_b112_01E00850 v[4];
+    u8 tail[0x20];
+} Pkt_b112_01E00850;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    u8 tex[0x2A];
+    s16 page;
+    u8 padcol2[0x18];
+    u8 xD8[1];
+} Obj_b112_01E00850;
+
+typedef struct {
+    u8 pad00[8];
+    s16 u;
+    s16 v;
+    u8 pad0C[0x1C];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[8];
+    s16 size;
+    s16 rz;
+} Fx_b112_01E00850;
+
+static void func_01E00B20_b257(Obj_b112_01E00850 *o, Fx_b112_01E00850 *fx, s32 mode, Vec4f pos) {
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b112_01E00850 pkt;
+    Uv_b112_01E00850 uv0;
+    Uv_b112_01E00850 uv1;
+    Uv_b112_01E00850 uv2;
+    Uv_b112_01E00850 uv3;
+    s16 i;
+    Pkt_b112_01E00850 *p;
+
+    p = &pkt;
+    func_00109270(p, 0, 0);
+    func_00107740(&uv0, fx->col2);
+    p->v[0].st = uv0;
+    func_00107740(&uv1, fx->col2);
+    p->v[1].st = uv1;
+    func_00107740(&uv2, fx->col2);
+    p->v[2].st = uv2;
+    func_00107740(&uv3, fx->col);
+    p->v[3].st = uv3;
+    func_00108500(p, o->tex, o->page);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.05f;
+    scale.y = 0.05f;
+    scale.z = 0.05f;
+    func_00205C40((s32)rot);
+    t.x = pos.x;
+    t.y = pos.y;
+    t.z = pos.z;
+    func_00108EF0(m, &scale, rot, &t);
+    rot[2] = fx->rz;
+    rot[1] = 0;
+    rot[0] = 0;
+    for (i = 0; i < 4; i++) {
+        func_00108D60(quad, fx->u, fx->v, i);
+        func_00109100(quad, rot, 2, o->xD8);
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0(p, o->ot, 0);
+            }
+        }
+    }
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -293,7 +400,111 @@ static Vec_b018_01E00EE0 func_01E00E30_b257(Vec_b018_01E00EE0 *p, s32 type, f32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01270_b257);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01880_b257);
+/* OVL_WARM: compile warm */
+
+/* shape b257:01E01880, 193 insns: b020:01E00E70 family: 4 copies of a camera-facing square of fx->size at pos (0.05 scale), drawn by depth or at far z */
+
+typedef struct {
+    f32 u, v;
+} Uv_b257_01E01880;
+
+typedef struct {
+    Uv_b257_01E01880 st;
+    u64 rgba;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b257_01E01880;
+
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 pad;
+    u64 regs;
+    Vtx_b257_01E01880 v[4];
+    u8 tail[0x20];
+} Pkt_b257_01E01880;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    u8 tex[0x2A];
+    s16 page;
+    u8 padcol[0x18];
+    u8 xD8[1];
+} Obj_b257_01E01880;
+
+typedef struct {
+    u8 pad00[8];
+    s16 u;
+    s16 v;
+    u8 pad0C[0x1C];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[8];
+    s16 size;
+    s16 rz;
+} Fx_b257_01E01880;
+
+static void func_01E01880_b257(Obj_b257_01E01880 *o, Fx_b257_01E01880 *fx, s32 mode, Vec4f pos) {
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b257_01E01880 pkt;
+    Uv_b257_01E01880 uv0;
+    Uv_b257_01E01880 uv1;
+    Uv_b257_01E01880 uv2;
+    Uv_b257_01E01880 uv3;
+    s16 i;
+    Pkt_b257_01E01880 *p;
+
+    p = &pkt;
+    func_00109270(p, 0, 0);
+    func_00107740(&uv0, fx->col);
+    p->v[0].st = uv0;
+    func_00107740(&uv1, fx->col);
+    p->v[1].st = uv1;
+    func_00107740(&uv2, fx->col);
+    p->v[2].st = uv2;
+    func_00107740(&uv3, fx->col);
+    p->v[3].st = uv3;
+    func_00108500(p, o->tex, o->page);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.05f;
+    scale.y = 0.05f;
+    scale.z = 0.05f;
+    func_00205C40((s32)rot);
+    t.x = pos.x;
+    t.y = pos.y;
+    t.z = pos.z;
+    func_00108EF0(m, &scale, rot, &t);
+    for (i = 0; i < 4; i++) {
+        func_00108CE0(quad, fx->size, fx->size);
+        func_00109100(quad, rot, 2, o->xD8);
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0(p, o->ot, 0);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01B90_b257);
 

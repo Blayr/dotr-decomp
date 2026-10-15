@@ -347,7 +347,37 @@ INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E03ED0_b119);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E04100_b119);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E041C0_b119);
+/* shape b119:01E041C0, 31 insns: calls func_001F7170(2, 0, &a, &b, 0) with the module's two floats, stops the
+   effect after 10 ticks */
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b119_01E041C0;
+
+typedef struct {
+    f32 v;
+} F1_b119_01E041C0;
+
+extern F1_b119_01E041C0 D_01E05980_b119;
+extern F1_b119_01E041C0 D_01E05988_b119;
+
+static s32 func_01E041C0_b119(s32 arg0, Fx_b119_01E041C0 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F1_b119_01E041C0 a;
+    F1_b119_01E041C0 b;
+
+    a = D_01E05980_b119;
+    b = D_01E05988_b119;
+    func_001F7170(2, 0, &a, &b, 0);
+    if (o->tick >= 10) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b119", func_01E04240_b119);
 

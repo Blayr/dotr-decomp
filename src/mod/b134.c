@@ -301,7 +301,45 @@ INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E011E0_b134);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E016D0_b134);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E01B90_b134);
+/* shape b080:01E02140, 55 insns: colour (0xFF,0xF0,0xFF); on start f38 50, random direction, f34 0, f30 random
+   -15..14; alpha grows by 0x26 (below 0xC0) for 5 ticks; resets f0/f2/f4 to (0, 20, 0) every tick */
+
+typedef struct {
+    s16 f0, f2, f4;
+    s16 life;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Glow_b080_01E02140;
+
+static s32 func_01E01B90_b134(s32 arg0, Glow_b080_01E02140 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0xFF, 0xF0, 0xFF);
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->dir = func_0019A5C8() % 360;
+        o->f34 = 0;
+        o->f30 = func_0019A5C8() % 30 - 15;
+        o->mode = 2;
+    }
+    if (o->tick < 5) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x26;
+        }
+    }
+    o->tick++;
+    o->f0 = 0;
+    o->f2 = 20;
+    o->f4 = 0;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E01C70_b134);
 
@@ -396,7 +434,27 @@ static s32 func_01E02300_b134(s32 unused, Spark_b018_01E02950 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E02470_b134);
+/* shape b080:01E02C10, 23 insns: a glow start: on mode 1 set f38 = 0x14, colour (0x10,0x10,0x10), alpha 0x20, mode 2 */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[0xA];
+    s16 mode;
+    s16 f38;
+} Glow_b080_01E02C10;
+
+static s32 func_01E02470_b134(s32 arg0, Glow_b080_01E02C10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0x14;
+        func_001076F0(o->col, 0x10, 0x10, 0x10);
+        o->col[3] = 0x20;
+        o->mode = 2;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E024D0_b134);
 

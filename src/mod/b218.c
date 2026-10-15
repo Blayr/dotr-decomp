@@ -704,7 +704,45 @@ static s32 func_01E02C10_b218(s32 arg0, Glow_b218_01E02C10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E02CC0_b218);
+/* shape b218:01E02CC0, 50 insns: a two-colour glow: (0x60,0x60,0xC0) twice, alphas 0x80/0x40, life 8; alpha held
+   at 0x80 for 0x78 ticks, then fades out by 9 and stops */
+
+typedef struct {
+    s16 f0, f2, f4;
+    s16 life;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Glow_b218_01E02CC0;
+
+static s32 func_01E02CC0_b218(s32 arg0, Glow_b218_01E02CC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x60, 0x60, 0xC0);
+        func_001076F0(o->col2, 0x60, 0x60, 0xC0);
+        o->life = 8;
+        o->col[3] = 0x80;
+        o->col2[3] = 0x40;
+        o->f38 = 6;
+        o->mode = 2;
+    }
+    if (o->tick < 0x78) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E02D90_b218);
 
@@ -882,4 +920,150 @@ INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E049B0_b218);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E05030_b218);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E05710_b218);
+/* OVL_WARM */
+
+/* shape b045:01E04270, 316 insns: b018:01E01320's curved beam, textured, drawn as 2 crossed quads per step. Needs func_01E00620_b218 in the same file and
+   static: the original keeps $a0 (the returned Vec buffer) across each call. */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b045_01E04270;
+
+typedef struct {
+    u8 pad00[6];
+    s16 count;
+    u8 pad08[0x20];
+    Col_b045_01E04270 col;
+    u8 pad2C[0xC];
+    s16 width;
+} Beam_b045_01E04270;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b045_01E04270;
+
+typedef struct {
+    Rgbaq_b045_01E04270 c;
+    u64 uv;
+    u64 xyz;
+} Vtx_b045_01E04270;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b045_01E04270 v[4];
+    u8 tail[0x20];
+} Pkt_b045_01E04270;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x22];
+    s16 mode;
+} Obj_b045_01E04270;
+
+static void func_01E05710_b218(Obj_b045_01E04270 *o, Beam_b045_01E04270 *an, Vec_b018_01E00EE0 *pts) {
+    extern s32 func_00207500(void);
+    extern void func_001094F0(void *);
+    extern Rgbaq_b045_01E04270 func_00107740(void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b018_01E00EE0 ab[2];
+    Vec_b018_01E00EE0 ctrl[4];
+    Vec_b018_01E00EE0 q[4];
+    f32 depth __attribute__((aligned(16)));
+    Vec_b018_01E00EE0 r1;
+    Vec_b018_01E00EE0 r2;
+    Pkt_b045_01E04270 pkt __attribute__((aligned(8)));
+    Col_b045_01E04270 col;
+    s32 x;
+    s32 i;
+    s32 k;
+    s32 j;
+    s16 n;
+    Pkt_b045_01E04270 *p;
+    s32 target;
+    f32 t;
+    f32 w;
+    f32 h;
+
+    w = an->width;
+    target = func_00207500();
+    p = &pkt;
+    w /= 10.0f;
+    n = an->count;
+    func_001094F0(p);
+    func_00109270(p, 0, 0);
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    col = an->col;
+    ctrl[0] = pts[0];
+    ctrl[1] = pts[0];
+    ctrl[2] = pts[1];
+    ctrl[3] = pts[2];
+    for (i = 0; i < n - 1; i++) {
+        t = 0.0f;
+        for (j = 0; j < 4; j++) {
+            if (i != 0) {
+                ab[0] = func_01E00620_b218(&pts[(s16)i - 1], 0, t);
+                t += 0.25f;
+                r1 = func_01E00620_b218(&pts[(s16)i - 1], 0, t);
+                ab[1] = r1;
+            } else {
+                ab[0] = func_01E00620_b218(ctrl, 0, t);
+                t += 0.25f;
+                r2 = func_01E00620_b218(ctrl, 0, t);
+                ab[1] = r2;
+            }
+            p->v[0].c = func_00107740(&col);
+            p->v[1].c = func_00107740(&col);
+            x = col.a - (s16)(an->col.a / (n * 3));
+            if (x <= 0) {
+                col.a = 0;
+            } else {
+                col.a = x;
+            }
+            p->v[2].c = func_00107740(&col);
+            p->v[3].c = func_00107740(&col);
+            for (k = 0; k < 2; k++) {
+                q[0].x = ab[0].x;
+                q[0].y = ab[0].y;
+                q[0].z = ab[0].z;
+                q[1].x = ab[0].x;
+                q[1].y = ab[0].y;
+                q[1].z = ab[0].z;
+                q[2].x = ab[1].x;
+                q[2].y = ab[1].y;
+                q[2].z = ab[1].z;
+                q[3].x = ab[1].x;
+                q[3].y = ab[1].y;
+                q[3].z = ab[1].z;
+                if (k == 0) {
+                    q[0].y += w;
+                    q[2].y += w;
+                    q[1].y -= w;
+                    q[3].y -= w;
+                } else if (k == 1) {
+                    q[0].x += w;
+                    q[2].x += w;
+                    q[1].x -= w;
+                    q[3].x -= w;
+                    q[0].z += w / 2.0f;
+                    q[2].z += w / 2.0f;
+                    q[1].z -= w / 2.0f;
+                    q[3].z -= w / 2.0f;
+                }
+                if (func_00205630(q, 0x70000000, 0, p, &depth) != 0) {
+                    func_002075F0(p, target, (u32)depth);
+                }
+            }
+        }
+    }
+}

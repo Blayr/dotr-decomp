@@ -341,7 +341,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E00CE0_b760);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E01A10_b760);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E01D50_b760);
+/* shape b521:01E01790, 120 insns, 2 copies: a pale bloom: set up once (random size 100..129, frame 0..7, angle 100..149, speed
+   36..55, life 7..16); fades in for its life, then out; turns for 90 frames and grows 6 a frame for 140 (b225:01E026A0 family, 0x58-state layout) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 ang;
+    u8 pad52[2];
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+} Spark_b521_01E01790;
+
+static s32 func_01E01D50_b760(void *arg0, Spark_b521_01E01790 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 30 + 100;
+        o->frame = func_0019A5C8() % 8;
+        func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+        o->ang = func_0019A5C8() % 50 + 100;
+        o->h5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 36;
+        o->h8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 10 + 7;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t < 0x5A && o->t != 0) {
+        o->ang += o->speed;
+    }
+    if (o->t < 0x8C) {
+        o->size += 6.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E01F30_b760);
 

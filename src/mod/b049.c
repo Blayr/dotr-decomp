@@ -871,7 +871,111 @@ static s32 func_01E02080_b049(s32 obj, Spr_b000_01E03420 *spr, Cam_b000_01E03420
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b049", func_01E02690_b049);
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape b049:01E02690, 296 insns: two 8-point trails (a, b) shift one step and take the new points; then for each
+   of the 7 segments draws two flat quads, mid(a,b)[i] / mid(a,b)[i+1] to a[i] / a[i+1] and to b[i] / b[i+1]
+   (colours from the module helper at 01E00100), only when all 4 corners project. */
+
+typedef struct {
+    u64 c;
+    u64 xyz;
+} Vtx_b049_01E02690;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b049_01E02690 v[4];
+    u8 tail[8];
+} Pkt_b049_01E02690;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    u8 f8[8];
+    Vec4f a[8];
+    Vec4f b[8];
+} Trail_b049_01E02690;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_b049_01E02690;
+
+static s32 func_01E02690_b049(Trail_b049_01E02690 *o, Cam_b049_01E02690 *cam, Vec4f *pa, Vec4f *pb) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_001036E0(void *, void *, void *);
+    s32 list;
+    Vec4f ma;
+    Vec4f mb;
+    f32 dep[4];
+    Pkt_b049_01E02690 pkt __attribute__((aligned(8)));
+    s32 i;
+
+    list = func_00207F60();
+    for (i = 6; i > -1; i--) {
+        o->a[i + 1] = o->a[i];
+        o->b[i + 1] = o->b[i];
+        if (i == 0) {
+            o->a[i].x = pa->x;
+            o->a[i].y = pa->y;
+            o->a[i].z = pa->z;
+            o->b[i].x = pb->x;
+            o->b[i].y = pb->y;
+            o->b[i].z = pb->z;
+        }
+    }
+    ((Pkt_b049_01E02690 *)(s32)&pkt)->count = 0x14;
+    ((Pkt_b049_01E02690 *)(s32)&pkt)->tag = 8;
+    ((Pkt_b049_01E02690 *)(s32)&pkt)->regs = 0x41414141;
+    ((Pkt_b049_01E02690 *)(s32)&pkt)->pad = 0;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    for (i = 0; i < 7; i++) {
+        func_001036E0(&o->a[i], &o->b[i], &ma);
+        func_001036E0(&o->a[i + 1], &o->b[i + 1], &mb);
+        func_01E00100_b049((Pkt_b049_01E00100 *)&pkt, o->f8, i);
+        if (func_00205440(&ma, cam->view, &pkt.v[0].xyz, &dep[0]) != 0) {
+            o->flags |= 0x100000;
+        }
+        if (func_00205440(&mb, cam->view, &pkt.v[1].xyz, &dep[1]) != 0) {
+            o->flags |= 0x200000;
+        }
+        if (func_00205440(&o->a[i], cam->view, &pkt.v[2].xyz, &dep[2]) != 0) {
+            o->flags |= 0x400000;
+        }
+        if (func_00205440(&o->a[i + 1], cam->view, &pkt.v[3].xyz, &dep[3]) != 0) {
+            o->flags |= 0x800000;
+        }
+        if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+            func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+            func_002075F0(&pkt, 0, (u32)((dep[0] + dep[1] + dep[2] + dep[3]) / 4.0f));
+        }
+        o->flags &= 0xFF0FFFFF;
+        func_01E00100_b049((Pkt_b049_01E00100 *)&pkt, o->f8, i);
+        if (func_00205440(&ma, cam->view, &pkt.v[0].xyz, &dep[0]) != 0) {
+            o->flags |= 0x100000;
+        }
+        if (func_00205440(&mb, cam->view, &pkt.v[1].xyz, &dep[1]) != 0) {
+            o->flags |= 0x200000;
+        }
+        if (func_00205440(&o->b[i], cam->view, &pkt.v[2].xyz, &dep[2]) != 0) {
+            o->flags |= 0x400000;
+        }
+        if (func_00205440(&o->b[i + 1], cam->view, &pkt.v[3].xyz, &dep[3]) != 0) {
+            o->flags |= 0x800000;
+        }
+        if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+            func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+            func_002075F0(&pkt, 0, (u32)((dep[0] + dep[1] + dep[2] + dep[3]) / 4.0f));
+        }
+        o->flags &= 0xFF0FFFFF;
+    }
+    func_00207FD0(list, (s32)func_00207500(), 0);
+    return 0;
+}
 
 /* shape b000:01E04EC0, 148 insns, 12 copies: seed n points with random positions: flag 0x1D set and v < 0:
    +-50 / +-50 / 0..50, flag set and v >= 0: +-240 / +-240 / 240..480, flag clear: tenths of +-240 / 0..240 */

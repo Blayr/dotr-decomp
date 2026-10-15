@@ -42,7 +42,62 @@ static void func_01E00080_c523(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c523", func_01E00120_c523);
+/* shape b037:01E00280, 86 insns, 2 copies: lays out count trail points at the emitter position, each jittered in x and y by
+   up to the emitter's spread, delayed by a per-point step; their start frame comes from the model's animation
+   unless flag 0 is set */
+
+typedef struct {
+    f32 x, y, z;
+    s16 start;
+    s16 delay;
+} Pt_b037_01E00280;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    u8 pad8[8];
+    f32 x, y, z;
+    u8 pad1C[4];
+    u8 anim[0x10];
+    Pt_b037_01E00280 pt[16];
+    s16 count;
+    u8 pad132[4];
+    s16 jx;
+    s16 jy;
+    s16 step;
+    u8 pad13C[2];
+    s16 end;
+    s16 len;
+} Trail_b037_01E00280;
+
+static s32 func_01E00120_c523(Trail_b037_01E00280 *o) {
+    extern s16 func_00105C40(void *);
+    s32 i;
+    s16 j;
+
+    for (i = 0; i < o->count; i++) {
+        o->pt[i].x = o->x;
+        o->pt[i].y = o->y;
+        j = o->jx;
+        if (j != 0) {
+            o->pt[i].x = o->x + (f32)(func_0019A5C8() % (j * 2) - j);
+        }
+        j = o->jy;
+        if (j != 0) {
+            o->pt[i].y = o->y + (f32)(func_0019A5C8() % (j * 2) - j);
+        }
+        o->pt[i].z = o->z;
+        o->pt[i].delay = -o->step * i;
+        if (func_00104520(o->flags, 0) != 0) {
+            o->pt[i].start = 0;
+            o->end = o->len - 1;
+        } else {
+            o->pt[i].start = func_00105C40(o->anim);
+            o->end = o->pt[i].start + o->len - 1;
+        }
+    }
+    return 0;
+}
 
 /* shape b001:01E00A30, 740 insns, 55 copies: draws an emitter's particles as textured quads. Each point moves
    with the velocity (or func_001036A0), turns around the emitter centre while the angle catches up, and gets a

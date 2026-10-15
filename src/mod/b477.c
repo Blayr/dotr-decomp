@@ -622,7 +622,57 @@ static s32 func_01E01D50_b477(void *arg0, Obj_b258_01E027A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b477", func_01E01E30_b477);
+/* shape b477:01E01E30, 79 insns, 2 copies: a tumbling spark: set up once with a random drift and spin, a random climb rate;
+   fades in over 2 frames, then once it has climbed past 20 fades out (b003:01E01780 family) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 rate;
+    u8 padA[6];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+} Obj_b477_01E01E30;
+
+static s32 func_01E01E30_b477(void *arg0, Obj_b477_01E01E30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = -10;
+        o->w10 = func_0019A5C8() % 20 - 10;
+        o->w14 = func_0019A5C8() % 360;
+        o->w18 = 0;
+        o->h34 = 0;
+        o->state = 2;
+        o->rate = func_0019A5C8() % 3 + 4;
+        o->h6 = 0x14;
+        func_001076F0(o->c0, 0x80, 0x20, 0x20);
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->h38 > 0x14) {
+        if (o->c0[3] > 0x14) {
+            o->c0[3] -= 0x13;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t != 0) {
+        o->h38 += o->rate;
+    }
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -740,7 +790,29 @@ static s32 func_01E021B0_b477(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b477", func_01E02200_b477);
+/* shape b046:01E03200, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
+   cells 0-2 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x2B0];
+    s32 tex[16];
+    u8 pad2F0[0x3300];
+    s32 tex5[3];
+} Scene_b046_01E03200;
+
+static void func_01E02200_b477(s32 arg0, Scene_b046_01E03200 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 3; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b477", func_01E022B0_b477);
 

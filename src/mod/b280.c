@@ -407,7 +407,58 @@ INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E015D0_b280);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E01AA0_b280);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E01E70_b280);
+/* shape b206:01E019D0, 106 insns: b183:01E012F0 family: grey ring (size 60 growing 2 a frame, frame 0..6, start 5..14, growth 9..23) */
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Obj_b206_01E019D0;
+
+static s32 func_01E01E70_b280(void *arg0, Obj_b206_01E019D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 60.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 10 + 5;
+        o->hE = func_0019A5C8() % 15 + 9;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += 2.0f;
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 
@@ -417,4 +468,67 @@ static s32 func_01E02020_b280(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E02030_b280);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b280", func_01E02530_b280);
+/* shape b280:01E02530, 82 insns, 2 copies: spawns an effect into the first free slot (150 of 0x70 bytes): clears it, marks it
+   live, both colours from the scene, placed at the scene position, with the caller's handler and argument */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b280_01E02530;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b280_01E02530 slot[150];
+    u8 pad4500[0x4C14 - 0x2A0 - 150 * 0x70];
+    u8 col[4];
+    u8 pad4C18[0x5E];
+    s16 h4C76;
+} Scene_b280_01E02530;
+
+static s32 func_01E02530_b280(Scene_b280_01E02530 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b280_01E02530 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 150; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 150;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h50 = s->h4C76;
+        sl->h52 = s->h4C76;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}

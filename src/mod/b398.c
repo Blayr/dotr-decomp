@@ -97,7 +97,199 @@ static void func_01E00080_b398(Obj_b010_01E00080 *o) {
 }
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/mod/b398", func_01E00410_b398);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape b173:01E02070, 569 insns, 7 copies: the -O2 twin of b051:01E00DF0 (squares inline, not hoisted): draws n shell emitters (0x54 bytes each, family of b059:01E00440 / b032:01E02820):
+   a half circle of up to 2*9 segments of radius b, and two arched rows above it (heights sqrt(a^2 (1 - x^2/b^2)) and
+   the same for the radius 80% of the way from b to a), optionally spun by e->ang; each segment is two untextured
+   gouraud quads (outer arch to inner arch, then the base circle to the inner arch's lower edge). */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b173_01E02070;
+
+typedef struct {
+    u8 r, g, b, a;
+    s32 pad4;
+    Xyz_b173_01E02070 xyz;
+} Vtx_b173_01E02070;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b173_01E02070 v[4];
+    u8 tail[8];
+} Pkt_b173_01E02070;
+
+typedef struct {
+    u8 b, g, r, a;
+} Col_b173_01E02070;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 span;
+    u8 pad3;
+    u8 flags;
+    u8 pad5[2];
+    u8 seg;
+    Col_b173_01E02070 c0;
+    Col_b173_01E02070 c1;
+    f32 r;
+    f32 k;
+    f32 dr;
+    s32 ang;
+    s32 dang;
+    Vec4f pos;
+    Vec4f vel;
+    Vec4f rot;
+} Emit_b173_01E02070;
+
+#pragma optimization_level 2
+
+static s32 func_01E00410_b398(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_0020BC00(void *, void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_0020CDD0(void *, void *, void *);
+    f32 mat2[16];
+    f32 mat[16];
+    f32 rmat[16];
+    Vec4f pts[3][19];
+    Vec4f tmp;
+    s32 rv[4];
+    f32 depth[4];
+    Emit_b173_01E02070 *e;
+    s32 i;
+    s32 j;
+    s32 nseg;
+    f32 step;
+    f32 sn;
+    f32 cs;
+    f32 x;
+    f32 rm;
+    f32 ra;
+    f32 dep;
+    f32 ang;
+    f32 rb;
+    Pkt_b173_01E02070 pkt __attribute__((aligned(8)));
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        e->pos.x += e->vel.x;
+        e->pos.y += e->vel.y;
+        e->pos.z += e->vel.z;
+        e->r += e->dr;
+        e->ang += e->dang;
+        if (e->seg > 9) {
+            nseg = 9;
+        } else {
+            nseg = e->seg;
+        }
+        step = 90.0f / nseg;
+        if (e->k < 1.0f) {
+            ra = e->r;
+            rb = ra * e->k;
+        } else {
+            rb = e->r;
+            ra = rb * e->k;
+        }
+        rm = rb + 0.8f * (ra - rb);
+        if (e->ang != 0) {
+            rv[0] = rv[2] = 0;
+            rv[1] = e->ang;
+            func_0020C940(rmat, NULL, rv, NULL);
+        }
+        for (j = 0; j < nseg * 2 + 1; j++) {
+            ang = 3.1415927f * (step * j) / 180.0f;
+            sn = func_001A6A88(ang);
+            cs = func_001A6898(ang);
+            x = rb * cs;
+            pts[0][j].x = x;
+            pts[0][j].y = rb * sn;
+            pts[0][j].z = 0.0f;
+            pts[1][j].x = x;
+            pts[1][j].y = func_001A6C60(ra * ra * (1.0f - x * x / (rb * rb)));
+            pts[1][j].z = 0.0f;
+            pts[2][j].x = x;
+            pts[2][j].y = func_001A6C60(rm * rm * (1.0f - x * x / (rb * rb)));
+            pts[2][j].z = 0.0f;
+            if (e->ang != 0) {
+                func_0020CDD0(&tmp, rmat, &pts[0][j]);
+                pts[0][j] = tmp;
+                func_0020CDD0(&tmp, rmat, &pts[1][j]);
+                pts[1][j] = tmp;
+                func_0020CDD0(&tmp, rmat, &pts[2][j]);
+                pts[2][j] = tmp;
+            }
+        }
+        ((Pkt_b173_01E02070 *)(s32)&pkt)->count = 0x14;
+        ((Pkt_b173_01E02070 *)(s32)&pkt)->tag = 8;
+        ((Pkt_b173_01E02070 *)(s32)&pkt)->regs = 0x41414141;
+        ((Pkt_b173_01E02070 *)(s32)&pkt)->pad = 0;
+        func_002086D0(&pkt, 0x48);
+        pkt.v[2].a = pkt.v[3].a = e->c1.a;
+        pkt.v[0].a = pkt.v[1].a = e->c0.a;
+        if (!(e->flags & 0x40) && e->life < 8) {
+            pkt.v[2].a = pkt.v[3].a = (e->c1.a >> 3) * e->life;
+            pkt.v[0].a = pkt.v[1].a = (e->c0.a >> 3) * e->life;
+        }
+        if ((e->flags & 1) && e->span - e->life < 8) {
+            pkt.v[2].a = pkt.v[3].a = (e->c1.a >> 3) * (e->span - e->life + 1);
+            pkt.v[0].a = pkt.v[1].a = (e->c0.a >> 3) * (e->span - e->life + 1);
+        }
+        pkt.v[0].r = pkt.v[1].r = e->c0.r;
+        pkt.v[2].r = pkt.v[3].r = e->c1.r;
+        pkt.v[0].g = pkt.v[1].g = e->c0.g;
+        pkt.v[2].g = pkt.v[3].g = e->c1.g;
+        pkt.v[0].b = pkt.v[1].b = e->c0.b;
+        pkt.v[2].b = pkt.v[3].b = e->c1.b;
+        func_00101BA0(e, &e->pos);
+        func_0020EB40(mat);
+        func_0020C940(mat2, NULL, &e->rot, &e->pos);
+        func_0020BC00(mat, mat2);
+        for (j = 0; j < nseg * 2; j++) {
+            if (func_00205440(&pts[1][j], mat, &pkt.v[0].xyz, &depth[0]) != 0 &&
+                func_00205440(&pts[1][j + 1], mat, &pkt.v[1].xyz, &depth[1]) != 0 &&
+                func_00205440(&pts[2][j], mat, &pkt.v[2].xyz, &depth[2]) != 0 &&
+                func_00205440(&pts[2][j + 1], mat, &pkt.v[3].xyz, &depth[3]) != 0) {
+                pkt.v[0].xyz.f = pkt.v[1].xyz.f = pkt.v[2].xyz.f = pkt.v[3].xyz.f = 0;
+                if (e->flags & 0x80) {
+                    pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = pkt.v[3].xyz.z = 0xFFFFFE;
+                    dep = 0.0f;
+                } else {
+                    dep = (depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f;
+                }
+                func_002075F0((s32)&pkt, ot, (u32)dep);
+                if (func_00205440(&pts[0][j], mat, &pkt.v[0].xyz, &depth[0]) != 0 &&
+                    func_00205440(&pts[0][j + 1], mat, &pkt.v[1].xyz, &depth[1]) != 0) {
+                    pkt.v[0].xyz.f = pkt.v[1].xyz.f = pkt.v[2].xyz.f = pkt.v[3].xyz.f = 0;
+                    if (e->flags & 0x80) {
+                        pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = pkt.v[3].xyz.z = 0xFFFFFE;
+                        dep = 0.0f;
+                    } else {
+                        dep = (depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f;
+                    }
+                    func_002075F0((s32)&pkt, ot, (u32)dep);
+                }
+            }
+        }
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 /* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
 
@@ -598,6 +790,72 @@ INCLUDE_ASM("asm/nonmatchings/mod/b398", func_01E05120_b398);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b398", func_01E05600_b398);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b398", func_01E05CB0_b398);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b268:01E03E40, 102 insns, 2 copies: a full-screen tint: between its start and end frame draws one flat sprite over
+   the whole screen in its colour, depth from its own value */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b268_01E03E40;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b268_01E03E40 p0;
+    Xyz_b268_01E03E40 p1;
+} Pkt_b268_01E03E40;
+
+typedef struct {
+    u16 start;
+    u16 end;
+    u8 pad4[4];
+    f32 depth;
+    u8 b, g, r, a;
+} Tint_b268_01E03E40;
+
+#pragma optimization_level 2
+
+static s32 func_01E05CB0_b398(Tint_b268_01E03E40 *o, s32 ctx2, u16 t) {
+    extern s32 func_00207F60(void);
+    extern u64 func_00208D00(s32);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b268_01E03E40 pkt;
+    s32 ctx;
+
+    ctx = func_00207F60();
+    if (t >= o->start && t <= o->end) {
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->count = 6;
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->tag = 3;
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->regs = 0x441;
+        ((Pkt_b268_01E03E40 *)(s32)&pkt)->pad = 0;
+        pkt.r = o->r;
+        pkt.g = o->g;
+        pkt.b = o->b;
+        pkt.a = o->a;
+        pkt.q = 1.0f;
+        pkt.p0.x = 0x6BF8;
+        pkt.p0.y = 0x71F8;
+        pkt.p0.z = 0xFFFFFF;
+        pkt.p0.f = 0;
+        pkt.p1.x = 0x93F8;
+        pkt.p1.y = 0x8DF8;
+        pkt.p1.z = 0xFFFFFE;
+        pkt.p1.f = 0;
+        func_002086D0(&pkt, func_00208D00(3));
+        func_002075F0(&pkt, 0, (u32)o->depth);
+        func_00207FD0(ctx, ctx2, 0);
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b398", func_01E05E50_b398);

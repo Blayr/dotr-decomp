@@ -605,7 +605,39 @@ INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02680_b570);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E028B0_b570);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02B80_b570);
+/* shape b003:01E02110, 41 insns: a glow: colour (0x60,8,8) on start; alpha grows by 8 (up to 0x88) for 0x96 ticks,
+   then fades out by 9 and stops */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b003_01E02110;
+
+static s32 func_01E02B80_b570(s32 arg0, Glow_b003_01E02110 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x60, 8, 8);
+        o->mode = 2;
+    }
+    if (o->tick < 0x96) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 8;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b257:01E031C0, 55 insns: a flash: on start f38 0x12C, colours (0xF0,0xF0,0xF0) and (0xF0,0xF0,0x10) with
    alpha 0x10, a random direction; alpha grows by 0x60 for the first 2 ticks, then fades out by 10 and stops */

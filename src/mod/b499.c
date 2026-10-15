@@ -465,13 +465,110 @@ static s32 func_01E01A10_b499(void *arg0, Obj_b003_01E01780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01AF0_b499);
+/* shape b479:01E01910, 86 insns, 2 copies: a purple wisp: fades in to 0x60 over 10 frames, then out; each frame its x, y
+   and z drift by 20 times a sine/cosine of its two angles (world trig table) */
+
+typedef struct {
+    u8 pad0[0xBC18];
+    u8 trig[1];
+} World_b479_01E01910;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b479_01E01910;
+
+static s32 func_01E01AF0_b499(World_b479_01E01910 *w, Wisp_b479_01E01910 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    o->h38 = 9;
+    func_001076F0(o->c0, 0x3F, 0, 0x6F);
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    o->x += 20.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 20.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 20.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01C50_b499);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01D30_b499);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E01FA0_b499);
+/* shape b479:01E01B70, 90 insns, 2 copies: a magenta pulse tied to the scene clock: size 22 (6 early on), fades in, then
+   out; its frame climbs to 7, its size shrinks every third frame; dims at clock 96 and ends after it */
+
+typedef struct {
+    u8 pad0[0xBB14];
+    s16 clock;
+} World_b479_01E01B70;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+} Pulse_b479_01E01B70;
+
+static s32 func_01E01FA0_b499(World_b479_01E01B70 *w, Pulse_b479_01E01B70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c0, 0x9F, 0, 0x3F);
+    if (o->state == 1) {
+        o->c0[3] = 0;
+        o->frame = 0;
+        if (w->clock < 0x5E) {
+            o->size = 6;
+        } else {
+            o->size = 0x16;
+        }
+        o->state = 2;
+    }
+    if (o->t < 2) {
+        o->c0[3] += 0x50;
+    } else if (o->c0[3] > 0xB) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    if (o->frame < 7) {
+        o->frame++;
+    }
+    if (o->t % 3 == 1) {
+        if (o->size != 0) {
+            o->size--;
+        }
+    }
+    o->t++;
+    if (w->clock == 0x60) {
+        o->c0[3] = 0x20;
+    }
+    if (w->clock >= 0x61) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02110_b499);
 
@@ -485,7 +582,74 @@ INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02B00_b499);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02B90_b499);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E035D0_b499);
+/* shape b479:01E03300, 100 insns, 2 copies: spawns an effect into the first free slot (200 of 0x40 bytes): clears it, marks it
+   live, both colours from the scene, placed at the scene position, with the caller's handler and argument
+   (b082:01E02FF0 family, small slots) */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    u8 c0[4];
+    u8 c1[4];
+    s16 h30;
+    u8 pad32[4];
+    s16 active;
+    u8 pad38[2];
+    s16 h3A;
+    u8 pad3C[4];
+} Slot_b479_01E03300;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0x10];
+    s32 rot[3];
+    u8 pad2FC[0xF4];
+    Slot_b479_01E03300 slot[200];
+    u8 pad35F0[0xBAB4 - 0x3F0 - 200 * 0x40];
+    u8 col[4];
+    u8 padBAB8[0x50];
+    s16 hBB08;
+    u8 padBB0A[6];
+    s16 hBB10;
+} Scene_b479_01E03300;
+
+static s32 func_01E035D0_b499(Scene_b479_01E03300 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b479_01E03300 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 200; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x40);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 200;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->rot[0] = s->rot[0];
+        sl->rot[1] = s->rot[1];
+        sl->rot[2] = s->rot[2];
+        sl->h3A = s->hBB08;
+        sl->h30 = s->hBB10;
+        sl->w20 = arg;
+        sl->w24 = fn;
+        return 1;
+    }
+    return 0;
+}
 
 /* shape b479:01E03490, 98 insns, 2 copies (b236:01E02330's code, generated by chatG/ovl/gen236.py): take a free effect slot (0x12c of 0x70 bytes), clear it, colour it from the
    owner's colour, place it at the owner's position; returns 1, or 0 if every slot is in use */
@@ -555,4 +719,59 @@ INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E03DD0_b499);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E03F70_b499);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E04350_b499);
+/* shape b479:01E03A40, 94 insns: a billboard: with flag 0 set the packet up (texture cell 0x99/f34 of the
+   scene, colour, texture); otherwise place it at the effect's position (size f38), and send it with the scene's
+   depth when it projects */
+
+typedef struct {
+    u8 pad0[0x34C];
+    void *texture;
+    u8 pad350[0xB76C];
+    s32 ot;
+    u8 padBAC0[0x24];
+    f32 depth;
+} Obj_b479_01E03A40;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x22];
+    u8 col[0xC];
+    s16 f34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b479_01E03A40;
+
+static void func_01E04350_b499(Obj_b479_01E03A40 *o, Fx_b479_01E03A40 *fx, void *p, s32 flag) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    f32 view[16];
+    Vec4f pos;
+    u8 uv[0x10];
+    f32 m[16];
+    s32 rot[4];
+
+    func_00207500();
+    if (flag == 0) {
+        func_00106080(uv, 0x99, fx->f34, uv);
+        func_00109270(p, 0, 0);
+        func_00107790(p, fx->col, 0);
+        func_00108500(p, uv, 0);
+        func_00208700(p, o->texture, 1);
+    } else {
+        func_00205C40((s32)rot);
+        pos.x = fx->x;
+        pos.y = fx->y;
+        pos.z = fx->z;
+        func_00108EF0(m, 0, rot, &pos);
+        func_00108CE0(view, fx->size, fx->size);
+        if (func_00205630(view, 0x70000000, m, p, &o->depth) != 0) {
+            func_00109380(p, 0);
+            func_002075F0((s32)p, o->ot, (u32)o->depth);
+        }
+    }
+}

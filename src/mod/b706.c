@@ -569,7 +569,67 @@ INCLUDE_ASM("asm/nonmatchings/mod/b706", func_01E03790_b706);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b706", func_01E040A0_b706);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b706", func_01E04520_b706);
+/* shape b379:01E020F0, 95 insns: if the value lies in [lo, hi] draw a full-screen flat quad (0x6BF8,0x71F8 -
+   0x93F8,0x8DF8) in the source colour at the source depth, into a fresh draw buffer and close it */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b379_01E020F0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b379_01E020F0 v[2];
+    u64 tail;
+} Flat_b379_01E020F0;
+
+typedef struct {
+    u16 lo;
+    u16 hi;
+    u8 pad4[4];
+    f32 depth;
+    u8 b, g, r, a;
+} Src_b379_01E020F0;
+
+static s32 func_01E04520_b706(Src_b379_01E020F0 *src, s32 arg1, s32 v) {
+    extern s32 func_00207F60(void);
+    extern u64 func_00208D00(s32);
+    extern void func_00207FD0(s32, s32, s32);
+    Flat_b379_01E020F0 flat __attribute__((aligned(8)));
+    s32 buf;
+
+    buf = func_00207F60();
+    if ((u16)v >= src->lo && (u16)v <= src->hi) {
+        ((Flat_b379_01E020F0 *)(s32)&flat)->flags = 6;
+        ((Flat_b379_01E020F0 *)(s32)&flat)->size = 3;
+        ((Flat_b379_01E020F0 *)(s32)&flat)->regs = 0x441;
+        ((Flat_b379_01E020F0 *)(s32)&flat)->pad4 = 0;
+        flat.r = src->r;
+        flat.g = src->g;
+        flat.b = src->b;
+        flat.a = src->a;
+        flat.q = 1.0f;
+        flat.v[0].x = 0x6BF8;
+        flat.v[0].y = 0x71F8;
+        flat.v[0].z = 0xFFFFFF;
+        flat.v[0].f = 0;
+        flat.v[1].x = 0x93F8;
+        flat.v[1].y = 0x8DF8;
+        flat.v[1].z = 0xFFFFFE;
+        flat.v[1].f = 0;
+        func_002086D0(&flat, func_00208D00(3));
+        func_002075F0((s32)&flat, 0, (u32)src->depth);
+        func_00207FD0(buf, arg1, 0);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b706", func_01E046A0_b706);
 

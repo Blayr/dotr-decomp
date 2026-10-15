@@ -179,7 +179,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01480_b266);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01610_b266);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E017B0_b266);
+/* shape b207:01E030D0, 79 insns, 2 copies: a streak flash: size and turn by kind (0..3) once, two colours; full alpha for 5
+   frames, then fades out (b003:01E01780 family) */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 c1[4];
+    s16 kind;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Obj_b207_01E030D0;
+
+static s32 func_01E017B0_b266(void *arg0, Obj_b207_01E030D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 k;
+
+    if (o->state == 1) {
+        if ((k = o->kind) == 0) {
+            o->h38 = 0x19;
+            o->h34 = 6;
+        } else if (k == 1) {
+            o->h38 = 6;
+            o->h34 = 0x19;
+        } else if (k == 2) {
+            o->h38 = 0x15;
+            o->h34 = 6;
+            o->h3A = 0x2D;
+        } else if (k == 3) {
+            o->h38 = 0x15;
+            o->h34 = 6;
+            o->h3A = -0x2D;
+        }
+        func_001076F0(o->c0, 0xC0, 0x70, 0);
+        func_001076F0(o->c1, 0x80, 0x40, 0);
+        o->state = 2;
+    }
+    if (o->t < 5) {
+        o->c0[3] = 0x40;
+        o->c1[3] = 0;
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 7;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];

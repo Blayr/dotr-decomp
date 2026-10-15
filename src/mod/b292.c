@@ -495,7 +495,96 @@ INCLUDE_ASM("asm/nonmatchings/mod/b292", func_01E016F0_b292);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b292", func_01E01AC0_b292);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b292", func_01E01C90_b292);
+/* shape b292:01E01C90, 165 insns, 2 copies: a blue ring travelling between two model joints by kind (radius grows 30/10/0 a
+   frame); fades in over 4 frames, then out; each frame it is placed on the first joint and slides toward the
+   second by up to 25/25 of the way */
+
+typedef struct {
+    u8 pad0[0xCB48];
+    s16 j0;
+    s16 j1;
+} World_b292_01E01C90;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    u8 pad20[0x10];
+    f32 thick;
+    f32 radius;
+    u8 pad38[0x10];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    s16 step;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Ring_b292_01E01C90;
+
+static s32 func_01E01C90_b292(World_b292_01E01C90 *w, Ring_b292_01E01C90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    Vec4f v[2];
+    f32 k;
+
+    if (o->state == 1) {
+        o->size = 6.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x40, 0x40, 0xFF);
+        if (o->kind == 0) {
+            o->thick = 3.0f;
+            o->radius = 70.0f;
+        }
+        if (o->kind == 1) {
+            o->thick = 3.0f;
+            o->radius = 30.0f;
+        }
+        if (o->kind == 2) {
+            o->thick = 8.0f;
+            o->radius = 400.0f;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+        o->step = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0 && o->t != 0) {
+        o->radius += 30.0f;
+    }
+    if (o->kind == 1 && o->t != 0) {
+        o->radius += 10.0f;
+    }
+    if (o->t != 0) {
+        if (o->step < 0x19) {
+            o->step++;
+        }
+    }
+    o->t++;
+    o->ang += 6;
+    func_001F5620(func_001F53A0(), w->j0, &o->pos);
+    func_001F5620(func_001F53A0(), w->j1, v);
+    k = o->step;
+    v[0].x = (v[0].x - o->pos.x) / 25.0f;
+    v[0].y = (v[0].y - o->pos.y) / 25.0f;
+    v[0].z = (v[0].z - o->pos.z) / 25.0f;
+    o->pos.x += v[0].x * k;
+    o->pos.y += v[0].y * k;
+    o->pos.z += v[0].z * k;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b292", func_01E01F30_b292);
 

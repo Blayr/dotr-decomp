@@ -89,7 +89,206 @@ static void func_01E00080_b122(Obj_b002_01E00080 *arg0) {
 }
 #pragma optimization_level reset
 
-INCLUDE_ASM("asm/nonmatchings/mod/b122", func_01E00440_b122);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM: compile warm (its (u32) casts are jal fptoui, func_001A23B0) */
+
+/* shape b011:01E00440, 647 insns: n particle emitters (0x38 bytes each), each with up to 8 particles (0x28 bytes,
+   indexes into a shared table): moves each live particle (gravity, floor), sizes it by age, and draws it as a
+   textured screen-space quad of radius func_001018E0(scale, depth), flipped by the particle's flags & 0x30 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b011_01E00440;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b011_01E00440 xyz;
+} Vtx_b011_01E00440;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Vtx_b011_01E00440 v[4];
+    u8 tail[0x20];
+} Pkt_b011_01E00440;
+
+typedef struct {
+    s32 id;
+    u8 sub;
+    u8 b5;
+    u8 pad6[2];
+    s32 u, w, v, h;
+} Tex_b011_01E00440;
+
+typedef struct {
+    f32 x, y, z;
+} V3_b011_01E00440;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 flags;
+    V3_b011_01E00440 pos;
+    V3_b011_01E00440 vel;
+    V3_b011_01E00440 acc;
+} Part_b011_01E00440;
+
+typedef struct {
+    u8 drawn;
+    u8 pad1[3];
+    u8 flags;
+    u8 pad5[3];
+    Part_b011_01E00440 *parts;
+    s16 idx[8];
+    u8 pad1C;
+    u8 count;
+    u8 sub;
+    u8 texid;
+    u8 size;
+    u8 shift;
+    u8 b, g, r, a;
+    f32 scale;
+    f32 dscale;
+    f32 grav;
+    f32 floor;
+} Emit_b011_01E00440;
+
+#pragma optimization_level 1
+
+static s32 func_01E00440_b122(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_001020B0(void *, s32, s32);
+    extern void func_00101D20(void *, void *, void *);
+    extern f32 func_001018E0(f32, f32);
+    f32 mat[16];
+    Vec4f pos;
+    Tex_b011_01E00440 td;
+    Pkt_b011_01E00440 pkt __attribute__((aligned(8)));
+    Xyz_b011_01E00440 xyz;
+    f32 dep;
+    Emit_b011_01E00440 *e;
+    s32 i;
+    Part_b011_01E00440 *parts;
+    Part_b011_01E00440 *p;
+    s32 j;
+    s32 tex;
+    s32 d;
+    s32 sz;
+    f32 r;
+
+    e = arg0;
+    parts = e->parts;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->flags & 4) {
+            tex = func_00202BF0(5, e->texid);
+        } else {
+            tex = func_00202BF0(4, 2);
+        }
+        e->scale += e->dscale;
+        for (j = 0; j < e->count; j++) {
+            if (e->idx[j] == -1) {
+                continue;
+            }
+            p = &parts[e->idx[j]];
+            if (p->life < 2) {
+                e->idx[j] = -1;
+            } else {
+                e->drawn = 1;
+            }
+            if (func_00101B50(p) == 0) {
+                continue;
+            }
+            p->vel.x += p->acc.x;
+            p->vel.y += p->acc.y + e->grav;
+            p->vel.z += p->acc.z;
+            p->pos.x += p->vel.x;
+            p->pos.y += p->vel.y;
+            p->pos.z += p->vel.z;
+            if (p->pos.y < e->floor) {
+                p->pos.y = e->floor;
+            }
+            pos.x = p->pos.x;
+            pos.y = p->pos.y;
+            pos.z = p->pos.z;
+            func_0020EB40(mat);
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->count = 0x24;
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->tag = 9;
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->regs = ((u64)4 << 32) | 0x24242421;
+            ((Pkt_b011_01E00440 *)(s32)&pkt)->pad = 0;
+            pkt.r = e->r;
+            pkt.g = e->g;
+            pkt.b = e->b;
+            pkt.q = 1.0f;
+            d = p->max - p->life;
+            sz = e->size;
+            if (e->flags & 8) {
+                sz = ((d >> e->shift) & 3) + 2;
+                if (d < 3) {
+                    sz = d;
+                }
+                if (p->life < 7) {
+                    sz = 7 - (p->life >> e->shift);
+                }
+            }
+            td.b5 = e->sub;
+            func_001020B0(&td, sz, 0);
+            func_00101D20(&pkt, &td, (void *)tex);
+            if (p->life < 16) {
+                pkt.a = (e->a >> 4) * p->life;
+            } else {
+                pkt.a = e->a;
+            }
+            if (func_00205440(&pos, mat, &xyz, &dep) == 0 || func_00101600(&xyz) == 0) {
+                continue;
+            }
+            r = func_001018E0(e->scale, dep);
+            pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = pkt.v[3].xyz.z = xyz.z;
+            switch (p->flags & 0x30) {
+            case 0x10:
+                pkt.v[0].xyz.x = pkt.v[1].xyz.x = (u32)(xyz.x - r);
+                pkt.v[2].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x + r);
+                pkt.v[1].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y - r);
+                pkt.v[0].xyz.y = pkt.v[2].xyz.y = (u32)(xyz.y + r);
+                break;
+            case 0x20:
+                pkt.v[1].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x - r);
+                pkt.v[0].xyz.x = pkt.v[2].xyz.x = (u32)(xyz.x + r);
+                pkt.v[2].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y - r);
+                pkt.v[0].xyz.y = pkt.v[1].xyz.y = (u32)(xyz.y + r);
+                break;
+            case 0x30:
+                pkt.v[2].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x - r);
+                pkt.v[0].xyz.x = pkt.v[1].xyz.x = (u32)(xyz.x + r);
+                pkt.v[0].xyz.y = pkt.v[2].xyz.y = (u32)(xyz.y - r);
+                pkt.v[1].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y + r);
+                break;
+            default:
+                pkt.v[0].xyz.x = pkt.v[2].xyz.x = (u32)(xyz.x - r);
+                pkt.v[1].xyz.x = pkt.v[3].xyz.x = (u32)(xyz.x + r);
+                pkt.v[0].xyz.y = pkt.v[1].xyz.y = (u32)(xyz.y - r);
+                pkt.v[2].xyz.y = pkt.v[3].xyz.y = (u32)(xyz.y + r);
+                break;
+            }
+            func_002075F0((s32)&pkt, ot, (u32)dep);
+        }
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 /* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
 
@@ -600,7 +799,183 @@ static s32 func_01E037F0_b122(Ray_b011_01E04380 *obj, s32 target, s32 count) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b122", func_01E04520_b122);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b122", func_01E053E0_b122);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b198:01E05C30, 260 insns, 4 copies: moves n trail emitters (0x7C bytes each) and drops trail particles into the
+   emitter's pool: one at the head (flag 1) or four along a spline through the last three positions. */
+
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec4f out[28];
+} Spline_b097_01E04900;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b097_01E04900;
+
+typedef struct {
+    u8 pad00[4];
+    u8 flags;
+    u8 b5;
+    u8 pad06[2];
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 bB;
+    u8 bC;
+    u8 bD;
+    u8 pad0E[2];
+    s32 w10;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    C4_b097_01E04900 col;
+    Vec4f pos;
+    u8 pad38[0x10];
+    u8 x48[0x10];
+} Part_b097_01E04900;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3;
+    u8 flags;
+    u8 follow;
+    u8 pad6[2];
+    Part_b097_01E04900 *list;
+    s32 w0C;
+    u8 b10;
+    u8 b11;
+    u8 b12;
+    u8 b13;
+    u8 b14;
+    u8 b15;
+    u8 b16;
+    u8 pad17;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    f32 f24;
+    C4_b097_01E04900 col;
+    Vec4f pos;
+    Vec4f prev;
+    Vec4f prev2;
+    Vec4f vel;
+    Vec4f off;
+    Vec4f drift;
+} Trail_b097_01E04900;
+
+#pragma optimization_level 1
+
+static s32 func_01E053E0_b122(void *arg0, s32 arg1, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_00102550(void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_00101940(void *, void *);
+    extern f32 func_0020D0E0(void *);
+    extern void func_0020D070(void *);
+    Spline_b097_01E04900 sp;
+    Vec4f tmp;
+    Trail_b097_01E04900 *e;
+    s32 i;
+    s32 k;
+    s32 cnt;
+    s32 idx;
+    f32 f;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Trail_b097_01E04900 *)((u8 *)e + 0x8C);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->life == e->max - 1) {
+            continue;
+        }
+        e->pos.x += e->vel.x;
+        e->pos.y += e->vel.y;
+        e->pos.z += e->vel.z;
+        func_00101BA0(e, &e->pos);
+        if (e->follow != 0) {
+            e->pos.x += e->off.x;
+            e->pos.y += e->off.y;
+            e->pos.z += e->off.z;
+        }
+        if (e->flags & 1) {
+            sp.out[0] = e->pos;
+            sp.out[1] = e->prev;
+            cnt = 1;
+        } else {
+            sp.n = 3;
+            sp.x[0] = e->pos.x;
+            sp.y[0] = e->pos.y;
+            sp.z[0] = e->pos.z;
+            sp.x[1] = e->prev.x;
+            sp.y[1] = e->prev.y;
+            sp.z[1] = e->prev.z;
+            sp.x[2] = e->prev2.x;
+            sp.y[2] = e->prev2.y;
+            sp.z[2] = e->prev2.z;
+            func_00102550(&sp);
+            cnt = 4;
+        }
+        for (k = 0; k < cnt; k++) {
+            idx = func_00101C30(e->list, 0x58, e->b10);
+            if (idx >= 0) {
+                func_00101AD0(&e->list[idx], e->b11, 0, 0xFF);
+                tmp.x = sp.out[k + 1].x - sp.out[k].x;
+                tmp.y = sp.out[k + 1].y - sp.out[k].y;
+                tmp.z = sp.out[k + 1].z - sp.out[k].z;
+                f = func_0020D0E0(&tmp);
+                if (f < 0.3f) {
+                    tmp.x += e->drift.x;
+                    tmp.y += e->drift.y;
+                    tmp.z += e->drift.z;
+                } else if (f > 1.0f) {
+                    func_0020D070(&tmp);
+                }
+                e->list[idx].f14 = func_0020D0E0(&tmp);
+                if (e->f18) {
+                    e->list[idx].f14 *= e->f18;
+                }
+                e->list[idx].f18 = e->f1C;
+                e->list[idx].flags = 0;
+                if (e->flags & 2) {
+                    e->list[idx].flags |= 4;
+                    e->list[idx].bC = e->b16;
+                }
+                if (e->flags & 4) {
+                    e->list[idx].flags |= 8;
+                }
+                e->list[idx].b5 = 0;
+                e->list[idx].b8 = e->b12;
+                e->list[idx].f1C = e->f20;
+                e->list[idx].f20 = e->f24;
+                e->list[idx].b9 = func_0019A5C8() >> 4;
+                e->list[idx].bA = e->b13;
+                e->list[idx].bB = e->b14;
+                e->list[idx].bD = e->b15;
+                e->list[idx].w10 = e->w0C;
+                e->list[idx].col = e->col;
+                e->list[idx].pos = sp.out[k];
+                func_00101940(&tmp, e->list[idx].x48);
+            }
+        }
+        e->prev2 = e->prev;
+        e->prev = e->pos;
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b122", func_01E05AC0_b122);
 

@@ -567,7 +567,55 @@ INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E029C0_b414);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02C20_b414);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02D80_b414);
+/* shape b414:01E02D80, 59 insns: constant variant of b415:01E022B0 (colour (128, 128, 128), colour (128, 64, 64)) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 vol;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b414_01E02D80;
+
+static s32 func_01E02D80_b414(s32 arg0, Fx_b414_01E02D80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 220.0f;
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        func_001076F0(o->col, 0x80, 0x40, 0x40);
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0xE) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 0xA) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02E70_b414);
 
@@ -759,6 +807,107 @@ static void func_01E042C0_b414(Obj_b180_01E01230 *o, Band_b180_01E01230 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E04620_b414);
+/* shape b413:01E04920, 123 insns: b016:01E00ED0 sprite turned by {0, cam 0x5A, 0} via func_00109100 (mode 0),
+   view [2][1] and [3][1] cleared, always drawn with the projected depth; draws one sprite quad at a position. */
+
+typedef struct Cam_b413_01E04920 {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    Vec4f pos;
+    u8 pad30[0x2A];
+    s16 f5A;
+    u8 pad5C[4];
+    Vec4f at;
+} Cam_b413_01E04920;
+
+typedef struct Obj_b413_01E04920 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 f94[0x2A];
+    s16 fBE;
+    u8 padC0[0x18];
+    u8 fD8[4];
+} Obj_b413_01E04920;
+
+typedef struct Xyz_b413_01E04920 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b413_01E04920;
+
+typedef struct Uv_b413_01E04920 {
+    f32 u, v;
+} Uv_b413_01E04920;
+
+typedef struct Pk_b413_01E04920 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b413_01E04920 uv;
+    u64 pad18;
+    Xyz_b413_01E04920 v[4];
+    u64 pad60[6];
+} Pk_b413_01E04920;
+
+typedef struct Buf_b413_01E04920 {
+    u64 tag;
+    Pk_b413_01E04920 pk;
+} Buf_b413_01E04920;
+
+static void func_01E04620_b414(Obj_b413_01E04920 *obj, Cam_b413_01E04920 *cam, s32 flags, Vec4f c) {
+    extern void func_00108EF0();
+    extern void func_00109100();
+    f32 view[4][4];
+    Vec4f a;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    s32 arg[4];
+    Buf_b413_01E04920 buf;
+    Uv_b413_01E04920 uv;
+    s32 sel;
+    Pk_b413_01E04920 *p = &buf.pk;
+
+    sel = (flags >> 4) & 0xF;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)sel << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    func_00107740(&uv, &cam->at);
+    p->uv = uv;
+    func_01E00080_b414((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)obj->f94, obj->fBE);
+    func_00208700(p, (void *)obj->f88, 1);
+    s.x = 0.1f;
+    a.x = c.x;
+    s.y = 0.1f;
+    a.y = c.y;
+    s.z = 0.1f;
+    a.z = c.z;
+    func_00108EF0(m, &s, &cam->pos, &a);
+    func_00108CE0(view, cam->w, cam->h);
+    arg[0] = 0;
+    arg[1] = cam->f5A;
+    arg[2] = 0;
+    func_00109100(view, arg, 0, obj->fD8);
+    view[2][1] = 0.0f;
+    view[3][1] = 0.0f;
+    if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out) != 0) {
+        func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E04810_b414);

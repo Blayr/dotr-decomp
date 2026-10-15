@@ -426,7 +426,47 @@ INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E05460_b847);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E05B20_b847);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E05D00_b847);
+/* shape b847:01E05D00, 48 insns: variant of b445:01E03C90 (volume fade): game state at 0xD620, floor 0x20 */
+
+typedef struct {
+    u8 pad[0xD620];
+    s32 state;
+} Game_b847_01E05D00;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[6];
+    s16 mode;
+} Fade_b847_01E05D00;
+
+static s32 func_01E05D00_b847(Game_b847_01E05D00 *g, Fade_b847_01E05D00 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x14) {
+        if (o->vol > 0x20) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x20;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+            o->mode = 0;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    func_001F6D00((u8)o->vol);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b847", func_01E05DC0_b847);
 

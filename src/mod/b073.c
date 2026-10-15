@@ -446,7 +446,84 @@ static s32 func_01E03840_b073(Pool_b073_01E03840 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E03970_b073);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b073_01E03970;
+
+typedef struct {
+    u8 pad00[0x28];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    u8 pad32[6];
+    s16 radius;
+    s16 start;
+} Anim_b073_01E03970;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec_b073_01E03970 pts[6];
+    s32 target;
+    u8 pad84[0x54];
+    u8 bD8[1];
+} Obj_b073_01E03970;
+
+static void func_01E03970_b073(Obj_b073_01E03970 *o, Anim_b073_01E03970 *an, void *p) {
+    extern void func_00107990(void *, void *, s32);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00205C40(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b073_01E03970 quad[4];
+    Vec_b073_01E03970 at;
+    Vec_b073_01E03970 scale;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 rot[4];
+    s32 k;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    func_00107990(p, an->c28, 1);
+    func_00107990(p, an->c2C, 2);
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40(rot);
+    rot[0] += 0x4000;
+    at.x = o->pts[an->h30].x;
+    at.y = o->pts[an->h30].y;
+    at.z = o->pts[an->h30].z;
+    func_00108EF0(m, &scale, rot, &at);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    quad[0].x = 0.0f;
+    quad[0].z = 0.0f;
+    quad[1].x = 0.0f;
+    quad[1].z = 0.0f;
+    for (k = 0; k < 18; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[2].z = an->radius * func_00108030(o->bD8, a, 0);
+        a = j + (an->start + 20);
+        quad[3].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[3].z = an->radius * func_00108030(o->bD8, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            func_00109380(p, 1);
+            func_002075F0(p, o->target, (u32)depth);
+        }
+        j += 20;
+    }
+}
 
 /* shape b073:01E03BC0, 2 insns, 5 copies: an empty callback */
 

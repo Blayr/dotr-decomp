@@ -933,7 +933,50 @@ static s32 func_01E021E0_b127(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b127", func_01E02D70_b127);
+/* shape b127:01E02D70, 112 insns: b001:01E01B20 family: 60 points on a ring of random radius 0..19 (in x/y or x/z by flag 0x1D) plus a random 16-bit rotation triple each */
+
+
+typedef struct {
+    f32 x, y, z;
+} V3_b127_01E02D70;
+
+typedef struct {
+    s32 a, b, c, d;
+} R4_b127_01E02D70;
+
+typedef struct {
+    u8 pad00[4];
+    s32 flags;
+    u8 pad08[4];
+    f32 half;
+    u8 pad10[0x20];
+    R4_b127_01E02D70 rot[60];
+    V3_b127_01E02D70 pts[60];
+} Obj_b127_01E02D70;
+
+static s32 func_01E02D70_b127(Obj_b127_01E02D70 *o, f32 size) {
+    s32 i;
+    s32 ang;
+
+    o->half = size / 2.0f;
+    for (i = 0; i < 60; i++) {
+        if (func_00104520(o->flags, 0x1D) != 0) {
+            ang = func_0019A5C8() % 0x10000;
+            o->pts[i].z = func_0019A5C8() % 20;
+            o->pts[i].y = o->pts[i].z * func_0020B550(ang);
+            o->pts[i].x = o->pts[i].z * func_0020B480(ang);
+        } else {
+            ang = func_0019A5C8() % 0x10000;
+            o->pts[i].y = func_0019A5C8() % 20;
+            o->pts[i].z = o->pts[i].y * func_0020B480(ang);
+            o->pts[i].x = o->pts[i].y * func_0020B550(ang);
+        }
+        o->rot[i].a = func_0019A5C8() % 0x10000;
+        o->rot[i].b = func_0019A5C8() % 0x10000;
+        o->rot[i].c = func_0019A5C8() % 0x10000;
+    }
+    return 0;
+}
 
 /* OVL_WARM */
 

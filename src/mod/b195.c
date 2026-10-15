@@ -254,7 +254,70 @@ static s32 func_01E01840_b195(void *arg0, Obj_b018_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E01920_b195);
+/* shape b195:01E01920, 97 insns: b112:01E02420 with the light at game 0x3E80 (end flag 0x4020); a point light for the scene: on start sets the light (colour 128/4/2, range
+   63) at the effect's position; its strength rises by 0.2 up to 1, then falls by 0.08 and the effect ends; the
+   light is switched off (func_001F6C10(0)) once ended, and the effect ends when the game value 0x4020 is 1 */
+
+typedef struct {
+    f32 a, b, c, d;
+    f32 x, y, z;
+    u8 pad1C[4];
+    f32 e, f, g;
+} Light_b195_01E01920;
+
+typedef struct {
+    u8 pad[0x3E80];
+    Light_b195_01E01920 light;
+    u8 pad302C[0x174];
+    s32 v;
+} Game_b195_01E01920;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b195_01E01920;
+
+static s32 func_01E01920_b195(Game_b195_01E01920 *g, Fx_b195_01E01920 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a = 128.0f;
+        g->light.b = 4.0f;
+        g->light.c = 2.0f;
+        g->light.d = 0.0f;
+        g->light.e = 0.0f;
+        g->light.f = 63.0f;
+        g->light.g = 0.0f;
+        g->light.x = o->x;
+        g->light.y = o->y;
+        g->light.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->light.g < 1.0f) {
+            g->light.g += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (g->light.g > 0.1f) {
+        g->light.g -= 0.08f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->v == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b195:01E01AB0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x4020 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

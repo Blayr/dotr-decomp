@@ -101,7 +101,189 @@ static void func_01E00080_b144(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E00920_b144);
+/* amp product in its own variable (u = v * amp) puts it in the amp conversion's register; plus the in-place divide (chatA 16 Oct). */
+
+/* shape b016:01E00920, 362 insns, 90 copies: draw an object's parts as sprite quads, each part shaken on three
+   axes from a signed byte table (scaled by cam->f50 + part / 2); same packet and depth modes as b016:01E00ED0 */
+
+typedef struct Cam_b016_01E00920 {
+    u8 pad0[8];
+    s16 h8;
+    u8 padA[6];
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    Vec4f pos;
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[8];
+    s16 f5A;
+    u8 pad5C[4];
+    Vec4f at;
+} Cam_b016_01E00920;
+
+typedef struct Obj_b016_01E00920 {
+    u8 pad0[0x10];
+    Vec4f f10;
+    u8 pad20[0x60];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    Rect_b003_01E00080 rect;
+    u8 pad9C[0x14];
+    s16 fB0;
+    u8 padB2[6];
+    s16 fB8;
+    u8 padBA[6];
+    s16 fC0[12];
+    u8 fD8[0x10];
+} Obj_b016_01E00920;
+
+typedef struct Uv_b016_01E00920 {
+    f32 u, v;
+} Uv_b016_01E00920;
+
+typedef struct Xyz_b016_01E00920 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b016_01E00920;
+
+typedef struct Pk_b016_01E00920 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b016_01E00920 uv;
+    u64 pad18;
+    Xyz_b016_01E00920 v[4];
+    u64 pad60[6];
+} Pk_b016_01E00920;
+
+typedef struct Buf_b016_01E00920 {
+    u64 tag;
+    Pk_b016_01E00920 pk;
+} Buf_b016_01E00920;
+
+static void func_01E00920_b144(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s32 flags, s8 *table) {
+    f32 u;
+    extern void func_00108EF0();
+    extern void func_00205C40();
+    extern void func_00108950();
+    extern void func_00109100();
+    s16 off;
+    f32 v;
+    Pk_b016_01E00920 *p;
+    s16 j;
+    s16 i;
+    s32 sel;
+
+    f32 view[4][4];
+    Vec4f pos;
+    f32 out[4];
+    f32 out2[4];
+    f32 m[4][4];
+    s32 rot[4];
+    s32 x[4];
+    Buf_b016_01E00920 buf;
+    Uv_b016_01E00920 uv;
+
+    p = &buf.pk;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    sel = flags >> 4;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)sel << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    func_00107740(&uv, &cam->at);
+    p->uv = uv;
+    func_01E00080_b144((Pk_b003_01E00080 *)p, &obj->rect, 0);
+    func_00208700(p, (void *)obj->f88, 1);
+    func_00205C40(rot);
+    rot[1] /= 180;
+    rot[1] = -rot[1];
+    rot[0] /= 180;
+    rot[0] = -rot[0];
+    pos.x = cam->f10;
+    pos.y = cam->f14;
+    pos.z = cam->f18;
+    if (obj->fB0 == 0) {
+        func_00108EF0(m, &obj->f10, NULL, &pos);
+    } else if (obj->fB0 == 1) {
+        func_00108EF0(m, &obj->f10, &cam->pos, &pos);
+    }
+    x[1] = cam->f5A;
+    for (i = 0; i < obj->fB8; i++) {
+        if (obj->fB0 == 0) {
+            func_01E00080_b144((Pk_b003_01E00080 *)p, &obj->rect, obj->fC0[i]);
+            func_00108CE0(view, cam->f48, cam->f48);
+            func_00109100(view, rot, 1, obj->fD8);
+            func_00109100(view, rot, 0, obj->fD8);
+        } else if (obj->fB0 == 1) {
+            func_00108CE0(view, cam->f48, cam->f48);
+        }
+        for (j = 0; j < 3; j++) {
+            if (j == 0) {
+                off = 0;
+            }
+            if (j == 1) {
+                off = 100;
+            }
+            if (j == 2) {
+                off = 180;
+            }
+            v = (table + i)[cam->h8 + off];
+            v /= 20.0f;
+            u = v * (f32)(cam->f50 + (i >> 1));
+            if (j == 0) {
+                out[0] = u;
+            }
+            if (j == 1) {
+                out[1] = u;
+            }
+            if (j == 2) {
+                out[2] = u;
+            }
+        }
+        if (obj->fB0 == 0) {
+            func_00108950(out, x, 0, obj->fD8);
+        }
+        func_00107070(view, 0, out[0]);
+        func_00107070(view, 1, out[1]);
+        func_00107070(view, 2, out[2]);
+        if (obj->fB0 == 1) {
+            view[0][1] = 0.0f;
+            view[1][1] = 0.0f;
+            view[0][0] = cam->f48;
+            view[1][0] = -cam->f48;
+            view[0][2] = 0.0f;
+            view[1][2] = 0.0f;
+        }
+        if ((flags & 0xF) == 0) {
+            if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out2) != 0) {
+                func_002075F0((s32)p, obj->f80, func_001A23B0(out2[0]));
+            }
+        } else if ((flags & 0xF) == 1) {
+            if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out2) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0((s32)p, obj->f80, 0);
+            }
+        } else if ((flags & 0xF) == 2) {
+            if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out2) != 0) {
+                func_002075F0((s32)p, obj->f80, -1);
+            }
+        }
+    }
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -579,7 +761,97 @@ INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03210_b144);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03300_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E034D0_b144);
+/* shape b144:01E034D0, 153 insns, 2 copies: a full-screen zoom flash: draws one textured sprite over the whole screen, its
+   texture window shrinking in by the zoom value; fades in over 10 frames while the zoom grows by 0.3 (to 100),
+   then fades out while it shrinks back to 0 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b144_01E034D0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b144_01E034D0 p;
+    } v[2];
+    u8 tail[0x20];
+} Pkt_b144_01E034D0;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 zoom;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Flash_b144_01E034D0;
+
+static s32 func_01E034D0_b144(void *arg0, Flash_b144_01E034D0 *o) {
+    extern void func_002087A0(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_b144_01E034D0 pkt __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->zoom = 1.0f;
+        o->state = 2;
+    }
+    ((Pkt_b144_01E034D0 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b144_01E034D0 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b144_01E034D0 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b144_01E034D0 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x80;
+    pkt.g = 0x7F;
+    pkt.b = 0x7F;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    pkt.v[0].p.x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = o->zoom / 1024.0f;
+    pkt.v[0].t = o->zoom / 512.0f;
+    pkt.v[1].s = (640.0f - o->zoom) / 1024.0f;
+    pkt.v[1].t = (448.0f - o->zoom) / 512.0f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0(&pkt, (s32)func_00207500(), 0);
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 0x13;
+        }
+        if (o->zoom < 100.0f) {
+            o->zoom += 0.3f;
+        }
+    } else {
+        if (o->c0[3] > 7) {
+            o->c0[3] -= 6;
+        } else {
+            o->state = 0;
+        }
+        if (o->zoom > 0.0f) {
+            o->zoom -= 0.3f;
+        } else {
+            o->zoom = 0.0f;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03740_b144);
 

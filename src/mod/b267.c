@@ -66,7 +66,66 @@ static void func_01E00080_b267(s32 ot, Obj_b058_01E00080 *o, Spr_b058_01E00080 *
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E00260_b267);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E00860_b267);
+/* shape b194:01E00C60, 134 insns, 2 copies: a violet wisp (b018:01E01F60 twin): set up once (random heading, tilt -15..14); fades in to 0x60
+   over 10 frames, then out; its size grows every other frame up to 18, its frame every third up to 7; x and z drift 10 along its heading, y 4 by
+   its tilt, by a sine/cosine of its two angles (world trig table) */
+
+typedef struct {
+    u8 pad0[0x3E34];
+    u8 trig[1];
+} World_b194_01E00C60;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b194_01E00C60;
+
+static s32 func_01E00860_b267(World_b194_01E00C60 *w, Wisp_b194_01E00C60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E00A80_b267);
 
@@ -233,7 +292,29 @@ static void func_01E01B20_b267(Obj_b233_01E01BC0 *o, Fx_b233_01E01BC0 *fx, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01DC0_b267);
+/* shape b267:01E01DC0, 41 insns: look up the textures: group 4 cells 0-4, group 4 cells 14-15, group 5
+   cells 0-1 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x320];
+    s32 tex[16];
+    u8 pad360[0x3A40];
+    s32 tex5[2];
+} Scene_b267_01E01DC0;
+
+static void func_01E01DC0_b267(s32 arg0, Scene_b267_01E01DC0 *o) {
+    s32 i;
+
+    for (i = 0; i < 5; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 14; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01E70_b267);
 

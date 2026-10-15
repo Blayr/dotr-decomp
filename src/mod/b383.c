@@ -458,7 +458,89 @@ static void func_01E016A0_b383(Obj_b027_01E02590 *o, Anim_b027_01E02590 *an, voi
 
 INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E019A0_b383);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E01CC0_b383);
+/* OVL_WARM */
+
+/* shape b383:01E01CC0, 150 insns: constant variant of b148:01E02530 (20->60, 40->20, 9->18) */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b383_01E01CC0;
+
+typedef struct {
+    s16 x, y, z;
+    s16 w;
+    u8 pad08[8];
+    u8 rot[0x18];
+    u8 col[0x10];
+    s16 radius;
+    s16 start;
+} Anim_b383_01E01CC0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 target;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    u8 b94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 bD8[1];
+} Obj_b383_01E01CC0;
+
+static void func_01E01CC0_b383(Obj_b383_01E01CC0 *o, Anim_b383_01E01CC0 *an, void *p) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b383_01E01CC0 quad[4];
+    Vec_b383_01E01CC0 pos;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    s32 k;
+    s32 n;
+    s32 a;
+    s16 j;
+
+    j = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, an->col, 1);
+    func_00107790(p, an->col + 4, 2);
+    func_00108500(p, o->b94, o->hBE);
+    func_00208700(p, o->texture, 1);
+    pos.x = an->x;
+    pos.y = an->y;
+    pos.z = an->z;
+    func_00108EF0(m, 0, an->rot, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    quad[0].x = 0.0f;
+    quad[0].z = 0.0f;
+    quad[1].x = 0.0f;
+    quad[1].z = 0.0f;
+    for (k = 0; k < 18; k++) {
+        a = an->start + j;
+        quad[2].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[2].z = an->radius * func_00108030(o->bD8, a, 0);
+        a = j + (an->start + 60);
+        quad[3].x = an->radius * func_00108030(o->bD8, a, 1);
+        quad[3].z = an->radius * func_00108030(o->bD8, a, 0);
+        if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+            for (n = 0; n < o->count + 1; n++) {
+                func_002075F0(p, o->target, (u32)depth);
+            }
+        }
+        j += 20;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E01F20_b383);
 
@@ -588,7 +670,45 @@ static s32 func_01E038E0_b383(s32 arg0, Glow_b218_01E02C10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E03990_b383);
+/* shape b218:01E02CC0, 50 insns: a two-colour glow: (0x60,0x60,0xC0) twice, alphas 0x80/0x40, life 8; alpha held
+   at 0x80 for 0x78 ticks, then fades out by 9 and stops */
+
+typedef struct {
+    s16 f0, f2, f4;
+    s16 life;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Glow_b218_01E02CC0;
+
+static s32 func_01E03990_b383(s32 arg0, Glow_b218_01E02CC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x60, 0x60, 0xC0);
+        func_001076F0(o->col2, 0x60, 0x60, 0xC0);
+        o->life = 8;
+        o->col[3] = 0x80;
+        o->col2[3] = 0x40;
+        o->f38 = 6;
+        o->mode = 2;
+    }
+    if (o->tick < 0x78) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E03A60_b383);
 

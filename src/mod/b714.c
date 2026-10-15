@@ -807,7 +807,56 @@ static s32 func_01E02AA0_b714(s32 unused, Spark_b018_01E027C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02C30_b714);
+/* shape b045:01E02B90, 90 insns: a spark: on start f38 5, random variant, colour (0x80,0x40,0), random depth,
+   direction, spin 3..18, f8 0..9, life 1..3; alpha 0x80 during the life, then fades out by 10 and stops; turns
+   by the spin every tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    u8 padA[4];
+    s16 spin;
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b045_01E02B90;
+
+static s32 func_01E02C30_b714(s32 arg0, Spark_b045_01E02B90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->z = func_0019A5C8() % 0xFFFF;
+        o->angle = 0;
+        o->dir = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 16 + 3;
+        o->f8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->angle += o->spin;
+    o->tick++;
+    return 0;
+}
 
 /* shape b714:01E02DA0, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0xA0, 0x80, 8) and fields;
    alpha 0x60 for the first 0xC ticks, then fade out by 9 and stop */

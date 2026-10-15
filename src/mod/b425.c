@@ -401,4 +401,80 @@ static s32 func_01E020B0_b425(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E020C0_b425);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E02B60_b425);
+/* shape b425:01E02B60, 114 insns, 2 copies: spawns an effect into the first free slot (500 of 0x70 bytes): clears it, marks it
+   live, both colours from the scene, placed at the scene position, with the caller's handler and argument */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x18];
+    f32 f34;
+    u8 pad38[8];
+    s32 w40;
+    s32 w44;
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b425_01E02B60;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b425_01E02B60 slot[500];
+    u8 padDD60[0xDEF4 - 0x2A0 - 500 * 0x70];
+    f32 fDEF4;
+    u8 padDEF8[0x2C];
+    u8 col[4];
+    u8 padDF28[0x14];
+    f32 fDF3C;
+    u8 padDF40[0xC2];
+    s16 hE002;
+    u8 padE004[0x5C];
+    s16 hE060;
+} Scene_b425_01E02B60;
+
+static s32 func_01E02B60_b425(Scene_b425_01E02B60 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b425_01E02B60 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 500; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 500;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h50 = s->hE060;
+        sl->h52 = s->hE060;
+        sl->h5A = s->hE002;
+        sl->f34 = s->fDEF4;
+        sl->f48 = s->fDF3C;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}

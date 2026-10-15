@@ -424,7 +424,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E016C0_b484);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E01830_b484);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E01A10_b484);
+/* shape b484:01E01A10, 141 insns: b064:01E01C00 family: a grey or purple spark thrown 40 along a random direction (4 along its tilt), random frame each tick (sine table at g+0x3A5C) */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b484_01E01A10;
+
+static s32 func_01E01A10_b484(u8 *g, Spark_b484_01E01A10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 200;
+        if (o->angle == 0) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        } else {
+            func_001076F0(o->col, 0x80, 0x10, 0xF0);
+        }
+        o->angle = func_0019A5C8() % 360;
+        o->dir = func_0019A5C8() % 360;
+        o->f8 = func_0019A5C8() % 4 - 2;
+        o->fA = func_0019A5C8() % 4 - 2;
+        o->fC = func_0019A5C8() % 4 - 2;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->kind = func_0019A5C8() % 8;
+    o->f8 = o->f8 + 40.0f * func_00108030(g + 0x3A5C, o->dir, 0);
+    o->fC = o->fC + 4.0f * func_00108030(g + 0x3A5C, o->angle, 1);
+    o->fA = o->fA + 40.0f * func_00108030(g + 0x3A5C, o->dir, 1);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E01C50_b484);
 
@@ -482,7 +531,28 @@ static s32 func_01E020D0_b484(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E02120_b484);
+/* shape b417:01E04700, 41 insns: look up the textures: group 4 cells 0-2 and 13-15, group 5 cells 0-1 */
+
+typedef struct {
+    u8 pad0[0x2B0];
+    s32 tex[16];
+    u8 pad2F0[0x3300];
+    s32 tex5[2];
+} Scene_b417_01E04700;
+
+static void func_01E02120_b484(s32 arg0, Scene_b417_01E04700 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E021D0_b484);
 

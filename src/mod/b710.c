@@ -91,7 +91,214 @@ static void func_01E00080_b710(Obj_b002_01E00080 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b710", func_01E00440_b710);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b710", func_01E01160_b710);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b380:01E01160, 637 insns, 3 copies: moves n arc emitters (0x5C bytes each: an angle window sweeping one way, a
+   growing radius) and draws the arc as rings of gouraud quads from the centre outwards, colour fading from the
+   inner to the outer colour per ring (or two-tone by flag 1), alpha fading at the end. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b380_01E01160;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b380_01E01160 xyz;
+} Vtx_b380_01E01160;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b380_01E01160 v[4];
+} Pkt_b380_01E01160;
+
+typedef struct {
+    u8 life;
+    u8 pad1[3];
+    u8 flags;
+    u8 pad5[3];
+    u8 n8;
+    u8 grow_until;
+    u8 rings;
+    u8 padB;
+    f32 a0;
+    f32 a1;
+    f32 step;
+    f32 spin;
+    f32 radius;
+    f32 grow;
+    u8 b0, g0, r0, al0;
+    u8 b1, g1, r1, al1;
+    f32 pos[3];
+    u8 pad38[4];
+    f32 vel[3];
+    u8 pad48[4];
+    s32 rot[4];
+} Arc_b380_01E01160;
+
+#pragma optimization_level 1
+
+static s32 func_01E01160_b710(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern f32 func_001A6898(f32);
+    extern f32 func_001A6A88(f32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 mat2[16];
+    f32 mat[16];
+    f32 d[4];
+    Vec4f p;
+    Pkt_b380_01E01160 pkt;
+    Xyz_b380_01E01160 c;
+    s32 al[2];
+    f32 dc;
+    Arc_b380_01E01160 *e;
+    s32 i;
+    s32 dir;
+    s32 k;
+    f32 a;
+    f32 end;
+    f32 astep;
+    f32 ang;
+    f32 rstep;
+    f32 r;
+    f32 dr;
+    f32 dg;
+    f32 db;
+    f32 da;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Arc_b380_01E01160 *)((u8 *)e + 0x5C);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->a1 > e->a0) {
+            dir = 0;
+        } else {
+            dir = 1;
+        }
+        if (dir) {
+            e->a0 -= e->spin;
+            e->a1 -= e->spin;
+        } else {
+            e->a0 += e->spin;
+            e->a1 += e->spin;
+        }
+        e->pos[0] += e->vel[0];
+        e->pos[1] += e->vel[1];
+        e->pos[2] += e->vel[2];
+        if (e->life > e->grow_until) {
+            e->radius += e->grow;
+        }
+        func_00101BA0(e, e->pos);
+        func_0020EB40(mat);
+        func_0020C940(mat2, NULL, e->rot, e->pos);
+        func_0020BC00(mat, mat2);
+        ((Pkt_b380_01E01160 *)(s32)&pkt)->count = 0x14;
+        ((Pkt_b380_01E01160 *)(s32)&pkt)->tag = 8;
+        ((Pkt_b380_01E01160 *)(s32)&pkt)->regs = 0x41414141;
+        ((Pkt_b380_01E01160 *)(s32)&pkt)->pad = 0;
+        pkt.v[0].q = pkt.v[1].q = pkt.v[2].q = pkt.v[3].q = 1.0f;
+        func_002086D0(&pkt, 0x48);
+        if (dir) {
+            a = e->a1;
+            end = e->a0;
+        } else {
+            a = e->a0;
+            end = e->a1;
+        }
+        astep = e->step * e->n8;
+        rstep = e->radius / e->rings;
+        dr = (e->r0 - e->r1) / (f32)e->rings;
+        dg = (e->g0 - e->g1) / (f32)e->rings;
+        db = (e->b0 - e->b1) / (f32)e->rings;
+        da = (e->al0 - e->al1) / (f32)e->rings;
+        p.x = p.y = p.z = 0.0f;
+        if (func_00205440(&p, mat, &c, &dc) == 0) {
+            continue;
+        }
+        for (; a < end; a += astep) {
+            pkt.v[2].xyz = c;
+            pkt.v[3].xyz = c;
+            d[2] = d[3] = dc;
+            for (k = 0; k < e->rings; k++) {
+                pkt.v[0].xyz = pkt.v[2].xyz;
+                d[0] = d[2];
+                pkt.v[1].xyz = pkt.v[3].xyz;
+                d[1] = d[3];
+                if (dir) {
+                    ang = a + e->step * k;
+                } else {
+                    ang = a - e->step * k;
+                }
+                r = (k + 1) * rstep;
+                p.x = r * func_001A6898((3.1415927f * ang) / 180.0f);
+                p.z = r * func_001A6A88((3.1415927f * ang) / 180.0f);
+                if (func_00205440(&p, mat, &pkt.v[2].xyz, &d[2]) == 0) {
+                    continue;
+                }
+                p.x = r * func_001A6898((3.1415927f * (ang + e->step)) / 180.0f);
+                p.z = r * func_001A6A88((3.1415927f * (ang + e->step)) / 180.0f);
+                if (func_00205440(&p, mat, &pkt.v[3].xyz, &d[3]) == 0) {
+                    continue;
+                }
+                al[0] = e->al0 - (s32)(da * k);
+                al[1] = e->al0 - (s32)(1.0f + da * k);
+                if (e->life < 8) {
+                    al[0] = e->life * (al[0] >> 3);
+                    al[1] = e->life * (al[1] >> 3);
+                }
+                pkt.v[1].a = pkt.v[0].a = al[0];
+                pkt.v[3].a = pkt.v[2].a = al[1];
+                if (e->flags & 1) {
+                    if (dir) {
+                        pkt.v[1].a = pkt.v[3].a = al[0] >> 1;
+                        pkt.v[1].r = pkt.v[3].r = e->r1;
+                        pkt.v[1].g = pkt.v[3].g = e->g1;
+                        pkt.v[1].b = pkt.v[3].b = e->b1;
+                        pkt.v[0].r = pkt.v[2].r = e->r0;
+                        pkt.v[0].g = pkt.v[2].g = e->g0;
+                        pkt.v[0].b = pkt.v[2].b = e->b0;
+                    } else {
+                        pkt.v[0].a = pkt.v[2].a = al[0] >> 1;
+                        pkt.v[1].r = pkt.v[3].r = e->r0;
+                        pkt.v[1].g = pkt.v[3].g = e->g0;
+                        pkt.v[1].b = pkt.v[3].b = e->b0;
+                        pkt.v[0].r = pkt.v[2].r = e->r1;
+                        pkt.v[0].g = pkt.v[2].g = e->g1;
+                        pkt.v[0].b = pkt.v[2].b = e->b1;
+                    }
+                } else {
+                    pkt.v[0].r = pkt.v[1].r = e->r0 - (s32)(dr * k);
+                    pkt.v[2].r = pkt.v[3].r = e->r0 - (s32)(dr * (k + 1));
+                    pkt.v[0].g = pkt.v[1].g = e->g0 - (s32)(dg * k);
+                    pkt.v[2].g = pkt.v[3].g = e->g0 - (s32)(dg * (k + 1));
+                    pkt.v[0].b = pkt.v[1].b = e->b0 - (s32)(db * k);
+                    pkt.v[2].b = pkt.v[3].b = e->b0 - (s32)(db * (k + 1));
+                }
+                if (k == e->rings - 1) {
+                    pkt.v[3].a = pkt.v[2].a = 0;
+                }
+                func_002075F0(&pkt, ot, (u32)((d[3] + (d[2] + (d[0] + d[1]))) / 4.0f));
+            }
+        }
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b710", func_01E01B60_b710);
 

@@ -305,7 +305,154 @@ static void func_01E00C80_b377(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E00F40_b377);
+/* OVL_WARM */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b065_01E012B0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b065_01E012B0;
+
+typedef struct {
+    Col_b065_01E012B0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b065_01E012B0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b065_01E012B0 v[4];
+    u8 tail[0x20];
+} Pkt_b065_01E012B0;
+
+typedef struct {
+    u8 pad00[0x20];
+    u8 rot[0x14];
+    f32 y;
+    u8 pad38[0x10];
+    f32 w0;
+    f32 w1;
+    u8 pad50[0xA];
+    s16 step;
+    s16 width;
+    u8 pad5E[2];
+    u8 col0[4];
+    u8 col1[4];
+} Anim_b065_01E012B0;
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 target;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    u8 b94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 bD8[1];
+} Obj_b065_01E012B0;
+
+static void func_01E00F40_b377(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32 mode, Vec_b065_01E012B0 pos) {
+    extern void func_00107990(void *, void *, s32);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00107740(void *, void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b065_01E012B0 quad[4];
+    Vec_b065_01E012B0 at;
+    Vec_b065_01E012B0 scale;
+    f32 m[16];
+    f32 depth __attribute__((aligned(16)));
+    Pkt_b065_01E012B0 pkt;
+    Col_b065_01E012B0 c0;
+    Col_b065_01E012B0 c1;
+    Col_b065_01E012B0 c2;
+    Col_b065_01E012B0 c3;
+    s16 blend;
+    s32 i;
+    s32 a;
+    s16 j;
+    s16 wd;
+    Pkt_b065_01E012B0 *p;
+    s32 width;
+    f32 w0;
+    f32 w1;
+
+    p = &pkt;
+    width = an->width;
+    j = 0;
+    func_00107990(p, an->col0, 2);
+    func_00107990(p, an->col1, 1);
+    blend = mode >> 4;
+    func_00109270(p, 0, 0);
+    func_00107790(p, an->col0, 0);
+    if (blend == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((u64)blend << 2) | ((u64)0x80 << 32) | 0x40);
+    }
+    func_00108500(p, o->b94, o->hBE);
+    func_00208700(p, o->texture, 1);
+    func_00107740(&c0, an->col0);
+    p->v[0].c = c0;
+    func_00107740(&c1, an->col1);
+    p->v[2].c = c1;
+    func_00107740(&c2, an->col0);
+    p->v[1].c = c2;
+    func_00107740(&c3, an->col1);
+    p->v[3].c = c3;
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    at.x = pos.x;
+    at.y = pos.y;
+    at.z = pos.z;
+    func_00108EF0(m, &scale, an->rot, &at);
+    quad[0].y = an->y;
+    quad[1].y = an->y;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    w0 = an->w0;
+    w1 = an->w1;
+    wd = width;
+    for (i = 0; i < o->count; i++) {
+        a = an->step + j;
+        quad[0].x = w0 * func_00108030(o->bD8, a, 1);
+        quad[0].z = w0 * func_00108030(o->bD8, a, 0);
+        quad[2].x = w1 * func_00108030(o->bD8, a, 1);
+        quad[2].z = w1 * func_00108030(o->bD8, a, 0);
+        a = j + (an->step + wd);
+        quad[1].x = w0 * func_00108030(o->bD8, a, 1);
+        quad[1].z = w0 * func_00108030(o->bD8, a, 0);
+        quad[3].x = w1 * func_00108030(o->bD8, a, 1);
+        quad[3].z = w1 * func_00108030(o->bD8, a, 0);
+        if ((mode & 0xF) == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+                func_002075F0(p, o->target, (u32)depth);
+            }
+        } else if ((mode & 0xF) == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, &depth) != 0) {
+                func_00109380(p, 1);
+                func_002075F0(p, o->target, 0);
+            }
+        }
+        j += an->step;
+    }
+}
 
 /* OVL_WARM: compile warm (DK_WARM=1, after a runtime-helper call as in the original many-files-per-run build).
    Its float -> int casts are MWCC runtime calls: fptosi = 0x001A22C0, fptoui = 0x001A23B0 (link names). */

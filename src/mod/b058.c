@@ -249,6 +249,58 @@ static void func_01E020A0_b058(u8 *ctx, Obj_b053_01E022F0 *o, void *pkt, s32 mod
     func_00108F90(quad, pkt, m, ot);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E02240_b058);
+/* shape b058:01E02240, 107 insns, 2 copies: one textured square of an object (b053:01E022F0 with a 0.1 scale); mode 0 only
+   sets up the packet's texture, otherwise position = pos + vel / 10, camera-facing, size from the object, drawn
+   via func_00108F90. */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[0x1A];
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+} Obj_b058_01E02240;
+
+static void func_01E02240_b058(u8 *ctx, Obj_b058_01E02240 *o, void *pkt, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    u8 td[0x10];
+    f32 m[16];
+    Vec4f rot;
+    u8 *ot;
+    f32 size;
+
+    ot = func_00207500();
+    if (mode == 0) {
+        func_00106080(td, 0x14, o->page, td);
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0xD8), 1);
+        return;
+    }
+    func_00205C40((s32)&rot);
+    pos.x = o->x + o->vx / 10;
+    pos.y = o->y + o->vy / 10;
+    pos.z = o->z + o->vz / 10;
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00108EF0(m, &scale, &rot, &pos);
+    size = o->size;
+    func_00108CE0(quad, size, size);
+    func_00108F90(quad, pkt, m, ot);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E023F0_b058);

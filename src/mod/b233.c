@@ -564,9 +564,83 @@ static s32 func_01E02FE0_b233(s32 arg0, Glow_b233_01E02FE0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E03090_b233);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E031F0_b233);
+/* shape b233:01E031F0, 56 insns: a grey two-colour glow: both alphas held at 0x80 for 7 ticks, then both fade
+   out by 11; stops when the first is gone */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E032D0_b233);
+typedef struct {
+    s16 f0, f2, f4;
+    s16 life;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Glow_b233_01E031F0;
+
+static s32 func_01E031F0_b233(s32 arg0, Glow_b233_01E031F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->life = 9;
+        o->col[3] = 0x80;
+        o->col2[3] = 0x80;
+        o->f38 = 6;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+        o->col2[3] = 0x80;
+    } else {
+        if (o->col[3] > 0xC) {
+            o->col[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0xC) {
+            o->col2[3] -= 11;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b233:01E031F0, 56 insns: a grey two-colour glow: both alphas held at 0x80 for 7 ticks, then both fade
+   out by 11; stops when the first is gone */
+
+static s32 func_01E032D0_b233(s32 arg0, Glow_b233_01E031F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->life = 9;
+        o->col[3] = 0x80;
+        o->col2[3] = 0x80;
+        o->f38 = 6;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+        o->col2[3] = 0x80;
+    } else {
+        if (o->col[3] > 0xC) {
+            o->col[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0xC) {
+            o->col2[3] -= 11;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E033B0_b233);
 

@@ -307,7 +307,76 @@ INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E014F0_b297);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E017B0_b297);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b297", func_01E01B70_b297);
+typedef struct {
+    u8 pad00[2];
+    s16 h2;
+    u8 pad04[2];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b003_01E01C70;
+
+static s32 func_01E01B70_b297(s32 unused, Obj_b003_01E01C70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 45;
+        o->h34 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 300 + 130;
+        o->h3A = func_0019A5C8() % 360;
+        o->hE = 0;
+        o->h8 = func_0019A5C8() % 35;
+        o->hC = func_0019A5C8() % 3 + 2;
+        o->h6 = func_0019A5C8() % 10 + 15;
+        o->h36 = 2;
+    }
+    if (o->h32 < o->h6) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x12;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->h36 = 0;
+    }
+    if (o->h32 != 0) {
+        if (o->h38 < 90) {
+            o->h38 += 2;
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        if (o->h34 < 5) {
+            o->h34++;
+        }
+    }
+    if (o->h32 != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->h32 != 0) {
+        o->h38 += 2;
+    }
+    o->h2++;
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->h32++;
+    return 0;
+}
 
 /* shape b003:01E01EC0, 146 insns, 4 copies: step of a rising puff: on state 1 sets a grey colour, random start, angle,
    size, layers and lifetime; fades in by 0x12, then out by 9 until it ends; grows, climbs and spins randomly. */

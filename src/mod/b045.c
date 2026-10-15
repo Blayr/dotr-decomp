@@ -656,11 +656,104 @@ INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02060_b045);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E021B0_b045);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02330_b045);
+/* shape b045:01E02330, 110 insns, 2 copies: a grey ember: set up once (random size, turn, speed 25..44, life 3..9); fades in
+   for its life, then out; its angle advances by its speed, its frame every other frame up to 6 (b003:01E01780 family) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 ang;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Ember_b045_01E02330;
+
+static s32 func_01E02330_b045(void *arg0, Ember_b045_01E02330 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = func_0019A5C8() % 8 + 3;
+        o->frame = 0;
+        o->rot = func_0019A5C8() % 65535;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        o->ang = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 25;
+        o->h8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 7 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] <= 0x60) {
+            o->c0[3] += 0x30;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->ang += o->speed;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->frame < 6) {
+            o->frame++;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E024F0_b045);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E026C0_b045);
+/* shape b045:01E02330, 110 insns, 2 copies: a grey ember: set up once (random size, turn, speed 25..44, life 3..9); fades in
+   for its life, then out; its angle advances by its speed, its frame every other frame up to 6 (b003:01E01780 family) */
+
+static s32 func_01E026C0_b045(void *arg0, Ember_b045_01E02330 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = func_0019A5C8() % 8 + 3;
+        o->frame = 0;
+        o->rot = func_0019A5C8() % 65535;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        o->ang = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 25;
+        o->h8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 7 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] <= 0x60) {
+            o->c0[3] += 0x30;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->ang += o->speed;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->frame < 6) {
+            o->frame++;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02880_b045);
 
@@ -715,7 +808,56 @@ static s32 func_01E02A00_b045(s32 unused, Spark_b018_01E027C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02B90_b045);
+/* shape b045:01E02B90, 90 insns: a spark: on start f38 5, random variant, colour (0x80,0x40,0), random depth,
+   direction, spin 3..18, f8 0..9, life 1..3; alpha 0x80 during the life, then fades out by 10 and stops; turns
+   by the spin every tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    u8 padA[4];
+    s16 spin;
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b045_01E02B90;
+
+static s32 func_01E02B90_b045(s32 arg0, Spark_b045_01E02B90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->z = func_0019A5C8() % 0xFFFF;
+        o->angle = 0;
+        o->dir = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 16 + 3;
+        o->f8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->angle += o->spin;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E02D00_b045);
 
@@ -807,7 +949,29 @@ static s32 func_01E03440_b045(Game_b045_01E03440 *g, Fade_b045_01E03440 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E03500_b045);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E03580_b045);
+/* shape b045:01E03580, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
+   cells 0-1 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 pad380[0x3350];
+    s32 tex5[2];
+} Scene_b045_01E03580;
+
+static void func_01E03580_b045(s32 arg0, Scene_b045_01E03580 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E03630_b045);
 
@@ -871,4 +1035,150 @@ static s32 func_01E04040_b045(Pool_b045_01E04040 *o, s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E04160_b045);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E04270_b045);
+/* OVL_WARM */
+
+/* shape b045:01E04270, 316 insns: b018:01E01320's curved beam, textured, drawn as 2 crossed quads per step. Needs func_01E018A0_b045 in the same file and
+   static: the original keeps $a0 (the returned Vec buffer) across each call. */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b045_01E04270;
+
+typedef struct {
+    u8 pad00[6];
+    s16 count;
+    u8 pad08[0x20];
+    Col_b045_01E04270 col;
+    u8 pad2C[0xC];
+    s16 width;
+} Beam_b045_01E04270;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b045_01E04270;
+
+typedef struct {
+    Rgbaq_b045_01E04270 c;
+    u64 uv;
+    u64 xyz;
+} Vtx_b045_01E04270;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b045_01E04270 v[4];
+    u8 tail[0x20];
+} Pkt_b045_01E04270;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x22];
+    s16 mode;
+} Obj_b045_01E04270;
+
+static void func_01E04270_b045(Obj_b045_01E04270 *o, Beam_b045_01E04270 *an, Vec_b018_01E00EE0 *pts) {
+    extern s32 func_00207500(void);
+    extern void func_001094F0(void *);
+    extern Rgbaq_b045_01E04270 func_00107740(void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b018_01E00EE0 ab[2];
+    Vec_b018_01E00EE0 ctrl[4];
+    Vec_b018_01E00EE0 q[4];
+    f32 depth __attribute__((aligned(16)));
+    Vec_b018_01E00EE0 r1;
+    Vec_b018_01E00EE0 r2;
+    Pkt_b045_01E04270 pkt __attribute__((aligned(8)));
+    Col_b045_01E04270 col;
+    s32 x;
+    s32 i;
+    s32 k;
+    s32 j;
+    s16 n;
+    Pkt_b045_01E04270 *p;
+    s32 target;
+    f32 t;
+    f32 w;
+    f32 h;
+
+    w = an->width;
+    target = func_00207500();
+    p = &pkt;
+    w /= 10.0f;
+    n = an->count;
+    func_001094F0(p);
+    func_00109270(p, 0, 0);
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    col = an->col;
+    ctrl[0] = pts[0];
+    ctrl[1] = pts[0];
+    ctrl[2] = pts[1];
+    ctrl[3] = pts[2];
+    for (i = 0; i < n - 1; i++) {
+        t = 0.0f;
+        for (j = 0; j < 4; j++) {
+            if (i != 0) {
+                ab[0] = func_01E018A0_b045(&pts[(s16)i - 1], 0, t);
+                t += 0.25f;
+                r1 = func_01E018A0_b045(&pts[(s16)i - 1], 0, t);
+                ab[1] = r1;
+            } else {
+                ab[0] = func_01E018A0_b045(ctrl, 0, t);
+                t += 0.25f;
+                r2 = func_01E018A0_b045(ctrl, 0, t);
+                ab[1] = r2;
+            }
+            p->v[0].c = func_00107740(&col);
+            p->v[1].c = func_00107740(&col);
+            x = col.a - (s16)(an->col.a / (n * 3));
+            if (x <= 0) {
+                col.a = 0;
+            } else {
+                col.a = x;
+            }
+            p->v[2].c = func_00107740(&col);
+            p->v[3].c = func_00107740(&col);
+            for (k = 0; k < 2; k++) {
+                q[0].x = ab[0].x;
+                q[0].y = ab[0].y;
+                q[0].z = ab[0].z;
+                q[1].x = ab[0].x;
+                q[1].y = ab[0].y;
+                q[1].z = ab[0].z;
+                q[2].x = ab[1].x;
+                q[2].y = ab[1].y;
+                q[2].z = ab[1].z;
+                q[3].x = ab[1].x;
+                q[3].y = ab[1].y;
+                q[3].z = ab[1].z;
+                if (k == 0) {
+                    q[0].y += w;
+                    q[2].y += w;
+                    q[1].y -= w;
+                    q[3].y -= w;
+                } else if (k == 1) {
+                    q[0].x += w;
+                    q[2].x += w;
+                    q[1].x -= w;
+                    q[3].x -= w;
+                    q[0].z += w / 2.0f;
+                    q[2].z += w / 2.0f;
+                    q[1].z -= w / 2.0f;
+                    q[3].z -= w / 2.0f;
+                }
+                if (func_00205630(q, 0x70000000, 0, p, &depth) != 0) {
+                    func_002075F0(p, target, (u32)depth);
+                }
+            }
+        }
+    }
+}

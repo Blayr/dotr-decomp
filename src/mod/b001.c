@@ -103,7 +103,152 @@ static s32 func_01E00120_b001(s32 arg0, Src_b000_01E00400 *c) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b001", func_01E00280_b001);
+/* shape b000:01E00560, 416 insns, 3 copies: screen-split sprite: projects the position, then for count rows draws the four
+   quadrants around the projected point as 2-vertex sprites, UVs from per-row offsets (u += 10, v += 7) and the
+   point itself; blend from flags 0xC/0xB/0xA, depth far (flag 0x13) or from the position. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b000_01E00560;
+
+typedef struct {
+    u16 s : 14;
+    u16 s_pad : 2;
+    u16 t : 14;
+    u16 t_pad : 2;
+    u32 pad;
+} Uv_b000_01E00560;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        Uv_b000_01E00560 st;
+        Xyz_b000_01E00560 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b000_01E00560;
+
+typedef struct {
+    u8 pad00[0x30];
+    f32 m[16];
+} Cam_b000_01E00560;
+
+typedef struct {
+    s32 flags;
+    u8 b4, b5, b6, b7;
+    u8 pad8[4];
+    s16 count;
+    s16 model;
+} Obj_b000_01E00560;
+
+static s32 func_01E00280_b001(Obj_b000_01E00560 *o, Vec4f *pos) {
+    extern s32 func_00207F60(void);
+    extern void func_00103890(void *);
+    extern void func_001038D0(void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_00208460(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern f32 func_001F5860(s32);
+    extern u64 func_00205D10(void *, f32);
+    extern f32 func_00205DF0(void *, f32);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    s32 h;
+    s32 k;
+    s32 i;
+    s32 j;
+    Cam_b000_01E00560 cam;
+    Pkt_b000_01E00560 pkt __attribute__((aligned(8)));
+    Xyz_b000_01E00560 q;
+    f32 dep;
+
+    h = func_00207F60();
+    func_00103890(&cam);
+    func_001038D0(&cam);
+    if (func_00205440(pos, cam.m, &q, &dep) == 0) {
+        return -1;
+    }
+    ((Pkt_b000_01E00560 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b000_01E00560 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b000_01E00560 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b000_01E00560 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(o->flags, 0xC) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(o->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(o->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    pkt.r = o->b6;
+    pkt.g = o->b5;
+    pkt.b = o->b4;
+    pkt.a = o->b7;
+    pkt.q = 1.0f;
+    func_00208460();
+    func_001F7060(o->model, 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (k = 0; k < o->count; k++) {
+        for (i = 0; i < 2; i++) {
+            for (j = 0; j < 2; j++) {
+                pkt.v[0].p.x = ((((q.x >> 4) - 0x6C0) * j + 0x6C0) << 4) - 8;
+                pkt.v[0].p.y = ((((q.y >> 4) - 0x720) * i + 0x720) << 4) - 8;
+                pkt.v[0].p.f = 0;
+                pkt.v[1].p.x = ((((q.x >> 4) - 0x6C0) * (j + 1) + 0x6C0) << 4) - 8;
+                pkt.v[1].p.y = ((((q.y >> 4) - 0x720) * (i + 1) + 0x720) << 4) - 8;
+                pkt.v[1].p.f = 0;
+                ((Pkt_b000_01E00560 *)(s32)&pkt)->count |= 0x800;
+                if (i == 0) {
+                    if (j == 0) {
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->s = (k * 10) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->t = (k * 7) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->s = ((q.x >> 4) - 0x6C0) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->t = ((q.y >> 4) - 0x720) << 4;
+                    } else {
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->s = ((q.x >> 4) - 0x6C0) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->t = (k * 7) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->s = (0x280 - k * 10) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->t = ((q.y >> 4) - 0x720) << 4;
+                    }
+                } else {
+                    if (j == 0) {
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->s = (k * 10) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->t = ((q.y >> 4) - 0x720) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->s = ((q.x >> 4) - 0x6C0) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->t = (0x1C0 - k * 7) << 4;
+                    } else {
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->s = ((q.x >> 4) - 0x6C0) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[0].st)->t = ((q.y >> 4) - 0x720) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->s = (0x280 - k * 10) << 4;
+                        ((Uv_b000_01E00560 *)(s32)&pkt.v[1].st)->t = (0x1C0 - k * 7) << 4;
+                    }
+                }
+                if (func_00104520(o->flags, 0x13) != 0) {
+                    pkt.v[0].p.z = pkt.v[1].p.z = 0xFFFFFF;
+                    func_002075F0(&pkt, 0, 0);
+                } else {
+                    pkt.v[0].p.z = pkt.v[1].p.z = func_00205D10(pos, -func_001F5860(o->model));
+                    func_002075F0(&pkt, 0, (u32)func_00205DF0(pos, -func_001F5860(o->model)));
+                }
+            }
+        }
+    }
+    func_00207FD0(h, func_00207500(), 0);
+    return 0;
+}
 
 /* shape b001:01E00900, 73 insns, 54 copies: one GS sprite (RGBAQ, ST, XYZ2, ST, XYZ2) sent with the current texture */
 

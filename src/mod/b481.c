@@ -818,13 +818,152 @@ INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02820_b481);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02910_b481);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02AE0_b481);
+/* shape b418:01E020E0, 149 insns: a white spark: f48 30, variant (rand >> 4) % 8, random f5A/f5C, fA 0 or 2, fC = the
+   old f50, f50 5..44, f52 100..449, spin 45..114, f8 0..34, life 3..7; alpha grows by 0xC0 (below 0xC0) during the
+   life, then fades by 15 and stops; f50 grows by the spin each tick after the first; grey flicker */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b418_01E020E0;
+
+static s32 func_01E02AE0_b481(s32 arg0, Fx_b418_01E020E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 30.0f;
+        o->f56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->fA = 2;
+        } else {
+            o->fA = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 40 + 5;
+        o->f52 = func_0019A5C8() % 350 + 100;
+        o->spin = (func_0019A5C8() >> 4) % 70 + 45;
+        o->f8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->spin;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02D40_b481);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02EB0_b481);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02F70_b481);
+/* shape b256:01E02A40, 176 insns: a purple spark with a random drift (-50..49)/60, random spin and spin speed (-1024..1023 per axis), fades in to 0x80 for 10 ticks, out by 9; z spin eased 1.5 by the scene flag */
+
+typedef struct {
+    u8 pad0[0xCBB4];
+    s16 flag;
+} Ctx_b256_01E02A40;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0x16];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b256_01E02A40;
+
+static s32 func_01E02F70_b481(Ctx_b256_01E02A40 *ctx, Obj_b256_01E02A40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = 150;
+        o->hA = o->h8 >> 1;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x40, 0xFF);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f38 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 60.0f;
+        o->f30 /= 60.0f;
+        o->f38 /= 60.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    if (ctx->flag != 0) {
+        o->rot[2] -= 1.5f;
+    } else {
+        o->rot[2] += 1.5f;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E03230_b481);
 

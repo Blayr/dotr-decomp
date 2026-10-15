@@ -857,7 +857,69 @@ static s32 func_01E02300_c518(s32 obj, Spr_b000_01E03420 *spr, Cam_b000_01E03420
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c518", func_01E02910_c518);
+/* shape c518:01E02910, 108 insns: lay out a 10 x 6 grid of points from the module's x and y tables, scaled by
+   the given size (x mirrored when flip is set); each point gets a random variant 0..7 and a random value 0..4;
+   func_0019A5B0 is called with the point's index first */
+
+typedef struct {
+    f32 x[10];
+} Xs_c518_01E02910;
+
+typedef struct {
+    f32 y[6];
+} Ys_c518_01E02910;
+
+typedef struct {
+    f32 x, y;
+    u8 pad8[4];
+    u8 b;
+    u8 kind;
+    s16 v;
+} Pt_c518_01E02910;
+
+typedef struct {
+    u8 pad0[0xC];
+    f32 scale;
+    u8 pad10[0x10];
+    Pt_c518_01E02910 p[60];
+    u8 pad3E0[0xA];
+    s16 f3EA;
+} Grid_c518_01E02910;
+
+extern Xs_c518_01E02910 D_01E03AA0_c518;
+extern Ys_c518_01E02910 D_01E03AD0_c518;
+
+static s32 func_01E02910_c518(Grid_c518_01E02910 *o, s32 flip, f32 scale) {
+    extern void func_0019A5B0(s32);
+    Xs_c518_01E02910 xs;
+    Ys_c518_01E02910 ys;
+    s32 k;
+    s32 j;
+    s32 i;
+
+    xs = D_01E03AA0_c518;
+    ys = D_01E03AD0_c518;
+    o->scale = scale;
+    o->f3EA = 0;
+    for (i = 0; i < 60;) {
+        for (j = 0; j < 6; j++) {
+            for (k = 0; k < 10; k++) {
+                func_0019A5B0(i);
+                if (flip == 0) {
+                    o->p[i].x = o->scale * xs.x[k];
+                } else {
+                    o->p[i].x = o->scale * xs.x[9 - k];
+                }
+                o->p[i].y = o->scale * ys.y[j];
+                o->p[i].b = 0;
+                o->p[i].kind = func_0019A5C8() % 8;
+                o->p[i].v = func_0019A5C8() % 5;
+                i++;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c518", func_01E02AC0_c518);
 

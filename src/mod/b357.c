@@ -252,7 +252,153 @@ static Vec_b018_01E00EE0 func_01E008D0_b357(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E00D10_b357);
+/* OVL_WARM */
+
+/* shape b045:01E04270, 316 insns: b018:01E01320's curved beam, textured, drawn as 2 crossed quads per step. Needs func_01E008D0_b357 in the same file and
+   static: the original keeps $a0 (the returned Vec buffer) across each call. */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b045_01E04270;
+
+typedef struct {
+    u8 pad00[6];
+    s16 count;
+    u8 pad08[0x20];
+    Col_b045_01E04270 col;
+    u8 pad2C[0xC];
+    s16 width;
+} Beam_b045_01E04270;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b045_01E04270;
+
+typedef struct {
+    Rgbaq_b045_01E04270 c;
+    u64 uv;
+    u64 xyz;
+} Vtx_b045_01E04270;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b045_01E04270 v[4];
+    u8 tail[0x20];
+} Pkt_b045_01E04270;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x22];
+    s16 mode;
+} Obj_b045_01E04270;
+
+static void func_01E00D10_b357(Obj_b045_01E04270 *o, Beam_b045_01E04270 *an, Vec_b018_01E00EE0 *pts) {
+    extern s32 func_00207500(void);
+    extern void func_001094F0(void *);
+    extern Rgbaq_b045_01E04270 func_00107740(void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b018_01E00EE0 ab[2];
+    Vec_b018_01E00EE0 ctrl[4];
+    Vec_b018_01E00EE0 q[4];
+    f32 depth __attribute__((aligned(16)));
+    Vec_b018_01E00EE0 r1;
+    Vec_b018_01E00EE0 r2;
+    Pkt_b045_01E04270 pkt __attribute__((aligned(8)));
+    Col_b045_01E04270 col;
+    s32 x;
+    s32 i;
+    s32 k;
+    s32 j;
+    s16 n;
+    Pkt_b045_01E04270 *p;
+    s32 target;
+    f32 t;
+    f32 w;
+    f32 h;
+
+    w = an->width;
+    target = func_00207500();
+    p = &pkt;
+    w /= 10.0f;
+    n = an->count;
+    func_001094F0(p);
+    func_00109270(p, 0, 0);
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    col = an->col;
+    ctrl[0] = pts[0];
+    ctrl[1] = pts[0];
+    ctrl[2] = pts[1];
+    ctrl[3] = pts[2];
+    for (i = 0; i < n - 1; i++) {
+        t = 0.0f;
+        for (j = 0; j < 4; j++) {
+            if (i != 0) {
+                ab[0] = func_01E008D0_b357(&pts[(s16)i - 1], 0, t);
+                t += 0.25f;
+                r1 = func_01E008D0_b357(&pts[(s16)i - 1], 0, t);
+                ab[1] = r1;
+            } else {
+                ab[0] = func_01E008D0_b357(ctrl, 0, t);
+                t += 0.25f;
+                r2 = func_01E008D0_b357(ctrl, 0, t);
+                ab[1] = r2;
+            }
+            p->v[0].c = func_00107740(&col);
+            p->v[1].c = func_00107740(&col);
+            x = col.a - (s16)(an->col.a / (n * 3));
+            if (x <= 0) {
+                col.a = 0;
+            } else {
+                col.a = x;
+            }
+            p->v[2].c = func_00107740(&col);
+            p->v[3].c = func_00107740(&col);
+            for (k = 0; k < 2; k++) {
+                q[0].x = ab[0].x;
+                q[0].y = ab[0].y;
+                q[0].z = ab[0].z;
+                q[1].x = ab[0].x;
+                q[1].y = ab[0].y;
+                q[1].z = ab[0].z;
+                q[2].x = ab[1].x;
+                q[2].y = ab[1].y;
+                q[2].z = ab[1].z;
+                q[3].x = ab[1].x;
+                q[3].y = ab[1].y;
+                q[3].z = ab[1].z;
+                if (k == 0) {
+                    q[0].y += w;
+                    q[2].y += w;
+                    q[1].y -= w;
+                    q[3].y -= w;
+                } else if (k == 1) {
+                    q[0].x += w;
+                    q[2].x += w;
+                    q[1].x -= w;
+                    q[3].x -= w;
+                    q[0].z += w / 2.0f;
+                    q[2].z += w / 2.0f;
+                    q[1].z -= w / 2.0f;
+                    q[3].z -= w / 2.0f;
+                }
+                if (func_00205630(q, 0x70000000, 0, p, &depth) != 0) {
+                    func_002075F0(p, target, (u32)depth);
+                }
+            }
+        }
+    }
+}
 
 /* shape b027:01E02300, 162 insns, 8 copies: a fan of 18 quads (centre at the origin, outer edge on a circle of
    radius data->radius, 20 angle units per step) sent through the caller's packet; same family as b016:01E01190 */

@@ -105,7 +105,97 @@ static void func_01E004D0_b707(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E006A0_b707);
+/* OVL_WARM */
+
+/* shape b041:01E004D0, 156 insns, 2 copies: draws one full-screen textured quad in the sprite's colour (all four corners),
+   blend from flags >> 4, texture window from the object, depth from the caller */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b041_01E004D0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b041_01E004D0;
+
+typedef struct {
+    u8 hdr[0x10];
+    struct {
+        Rgbaq_b041_01E004D0 c;
+        u64 st;
+        Xyz_b041_01E004D0 p;
+    } v[4];
+    u8 tail[0x20];
+} Pkt_b041_01E004D0;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x22];
+    s16 mode;
+} Obj_b041_01E004D0;
+
+typedef struct {
+    u8 pad00[0x60];
+    u8 col[4];
+} Spr_b041_01E004D0;
+
+static void func_01E006A0_b707(Obj_b041_01E004D0 *o, Spr_b041_01E004D0 *s, s32 flags, f32 depth) {
+    extern Rgbaq_b041_01E004D0 func_00107740(void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Pkt_b041_01E004D0 pkt;
+    Pkt_b041_01E004D0 *p;
+    u8 *ot;
+    s16 b;
+    s16 hw;
+    s16 hh;
+
+    ot = func_00207500();
+    p = &pkt;
+    func_00109270(p, 0, 0);
+    b = flags >> 4;
+    if (b == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((u64)b << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    p->v[0].c = func_00107740(s->col);
+    p->v[1].c = func_00107740(s->col);
+    p->v[2].c = func_00107740(s->col);
+    p->v[3].c = func_00107740(s->col);
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    func_00108CE0(quad, 100.0f, 100.0f);
+    hw = 320;
+    hh = 240;
+    p->v[0].p.x = (0x800 - hw) * 16;
+    p->v[0].p.y = (0x800 - hh) * 16;
+    p->v[0].p.z = 0xFFFFFF;
+    p->v[0].p.f = 0;
+    p->v[1].p.x = (0x800 + hw) * 16;
+    p->v[1].p.y = (0x800 - hh) * 16;
+    p->v[1].p.z = 0xFFFFFF;
+    p->v[1].p.f = 0;
+    p->v[2].p.x = (0x800 - hw) * 16;
+    p->v[2].p.y = (0x800 + hh) * 16;
+    p->v[2].p.z = 0xFFFFFF;
+    p->v[2].p.f = 0;
+    p->v[3].p.x = (0x800 + hw) * 16;
+    p->v[3].p.y = (0x800 + hh) * 16;
+    p->v[3].p.z = 0xFFFFFF;
+    p->v[3].p.f = 0;
+    func_002075F0(p, (s32)ot, (u32)depth);
+}
 
 typedef struct {
     f32 x, y, z, w;
@@ -343,7 +433,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02580_b707);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02690_b707);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02810_b707);
+/* shape b041:01E01DF0, 113 insns: a dim two-colour glow: fades both colours in by 4 up to 0x60 for 22 frames, then out by 7 while the scene's counter is under 30; its frame counter runs 0..127 up or down by o->h50 */
+
+
+typedef struct {
+    u8 pad0[0x8700];
+    s32 count;
+} Ctx_b041_01E01DF0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[0x46];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b041_01E01DF0;
+
+static s32 func_01E02810_b707(Ctx_b041_01E01DF0 *ctx, Obj_b041_01E01DF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        func_001076F0(o->col2, 0x20, 0x20, 0x20);
+        o->h6 = 22;
+        o->h8 = func_0019A5C8() % 128;
+        o->state = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 4;
+        }
+        if (o->col2[3] < 0x60) {
+            o->col2[3] += 4;
+        }
+    } else if (ctx->count < 30) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->col2[3] > 8) {
+            o->col2[3] -= 7;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    if (o->h50 == 0) {
+        o->h8++;
+        if (o->h8 >= 128) {
+            o->h8 %= 128;
+        }
+    }
+    if (o->h50 == 1) {
+        o->h8--;
+        if (o->h8 <= 0) {
+            o->h8 = 128 - o->h8 % 128;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E029E0_b707);
 
@@ -355,7 +511,70 @@ INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E02D80_b707);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E03080_b707);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E03C40_b707);
+/* shape b041:01E02C00, 102 insns, 2 copies: spawns an effect into the first free slot (170 of 0x70 bytes): clears it, marks it
+   live, both colours from the scene, placed at the scene position, with the caller's handler and argument */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b041_01E02C00;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b041_01E02C00 slot[170];
+    u8 pad4500[0x8704 - 0x2A0 - 170 * 0x70];
+    u8 col[4];
+    u8 pad8708[0x66];
+    s16 h876E;
+} Scene_b041_01E02C00;
+
+static s32 func_01E03C40_b707(Scene_b041_01E02C00 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b041_01E02C00 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 170; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 170;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h50 = s->h876E;
+        sl->h52 = s->h876E;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}
 
 /* shape b363:01E06930, 264 insns, 4 copies: draws a band of 12 quads (two rings, radius and height from the table at two
    angles 20 apart) around a position, scaled by size / 1500, turned by the object's rotation; blend from

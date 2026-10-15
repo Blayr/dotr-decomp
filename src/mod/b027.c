@@ -70,7 +70,15 @@ static s32 func_01E01960_b027(Vec_b004_01E00B40 *trail, s32 n, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E01A30_b027);
+/* shape b004:01E00C10, 9 insns: asks func_001F6160 for a pair of ints and returns the second as a float */
+
+static f32 func_01E01A30_b027(s32 arg0) {
+    extern void func_001F6160(s32, s32 *);
+    s32 v[4];
+
+    func_001F6160(arg0, v);
+    return v[1];
+}
 
 /* shape b003:01E00080, 552 insns, 183 copies: the module's first function. Texture coordinates of a
    sprite quad from a rectangle, in one of 8 corner orders (flips and quarter turns). Callers in the same
