@@ -2482,7 +2482,67 @@ void TaLogic018_CommandLDUnit(void *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_013", TaLogic018_GetVirusMove);
+static inline s32 min_00159930(s32 a, s32 b) {
+    return (a >= b + 1) ? b : a;
+}
+
+#pragma opt_propagation off
+
+s32 TaLogic018_GetVirusMove(s32 arg0, s32 arg1) {
+    extern s32 TaLogic_IsPassRoot();
+    s32 best;
+    s16 tmp;
+    s32 pos;
+    s32 range;
+    u8 xMin;
+    u8 xMax;
+    u8 yMin;
+    u8 yMax;
+    s32 i;
+    s32 j;
+    s32 d;
+    s32 result;
+
+    best = 0xFFFF;
+    result = 0xFF;
+    tmp = best;
+    pos = SzDuel_GetUnitLoc(arg0, arg1);
+    range = GetMoveRev(SzDuel_GetUnit(arg0, arg1), pos & 0xFF, pos >> 8);
+    xMin = GetCap(0, (pos & 0xFF) - (range & 0xF));
+    xMax = min_00159930((pos & 0xFF) + (range & 0xF), 6);
+    yMin = GetCap(0, (pos >> 8) - (range & 0xF));
+    yMax = min_00159930((pos >> 8) + (range & 0xF), 6);
+    for (i = xMin; i <= xMax; i++) {
+        for (j = yMin; j <= yMax; j++) {
+            if (((pos & 0xFF) > i ? (pos & 0xFF) : i) - ((pos & 0xFF) < i ? (pos & 0xFF) : i) +
+                    (((pos >> 8) > j ? (pos >> 8) : j) - ((pos >> 8) < j ? (pos >> 8) : j)) > (range & 0xF)) {
+                continue;
+            }
+            if (SzDuel_GetField(i, j) != 9) {
+                continue;
+            }
+            if (TaLogic_IsPassRoot(arg0, arg1, pos & 0xFF, pos >> 8, i, j, &tmp) != 1) {
+                continue;
+            }
+            if (TaLogic_IsAttackedNow2(arg0, arg1, i, j, 0) != 0 && arg1 != 0) {
+                continue;
+            }
+            d = TaLogic_GetUnitWarning(i, j, (arg0 << 8) | arg1, 3, (u16)TaLogic_GetWarnHideLvl_0015D120(arg0), 0);
+            if (d < best) {
+                best = d;
+                result = (j << 8) | i;
+            } else if (d == best && SzDuel_GetMapUnit(i, j) == 0 && SzDuel_GetMapUnit(result & 0xFF, result >> 8) != 0) {
+                best = d;
+                result = (j << 8) | i;
+            }
+        }
+    }
+    if (result != 0xFF) {
+        return result;
+    }
+    return 0x303;
+}
+#pragma opt_propagation reset
 
 s32 TaLogic018_GetSummonPoint(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 TaLogic018_GetOutVirusZone();
