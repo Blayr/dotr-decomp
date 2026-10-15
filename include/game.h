@@ -160,7 +160,6 @@ s32 func_0024DF80(s32 arg0, void *arg1);
 
 
 
-void func_0020CDD0(void *, void *, void *);
 
 
 
