@@ -284,7 +284,49 @@ static void func_01E00920_b356(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b356", func_01E00E90_b356);
+/* shape b356:01E00E90, 103 insns: the module's spawn step (b448:01E01200 shape): ticks the timer; from frame 65 to 245 it
+   spawns one b356:01E01030 effect at each of three joints, then one b356:01E013A0 effect at each joint with its index */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB228 - 0x260];
+    s16 joint[3];
+    u8 padB22E[0x28];
+    s16 idx;
+    u8 padB258[6];
+    s16 t;
+} Scene_b356_01E00E90;
+
+static void func_01E00E90_b356(Scene_b356_01E00E90 *s) {
+    extern void b356_01E01030(void);
+    extern void b356_01E013A0(void);
+    extern s32 b356_01E01E20(Scene_b356_01E00E90 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    s->t++;
+    if (s->t >= 0x41 && s->t < 0xF6) {
+        if (s->t < 0x64) {
+            n = 3;
+        } else {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), s->joint[i], &s->pos);
+            b356_01E01E20(s, b356_01E01030, 0);
+        }
+    }
+    if (s->t >= 0x41 && s->t < 0xF6) {
+        for (i = 0; i < 3; i++) {
+            func_001F5620(func_001F53A0(), s->joint[i], &s->pos);
+            s->idx = i;
+            b356_01E01E20(s, b356_01E013A0, 0);
+        }
+    }
+}
 
 /* shape b038:01E01090, 220 insns: a dark smoke puff thrown by the model: random drift (-20..19)/30 that applies
    between ticks 11 and 69, a fall toward point ctx->v spread over 37 ticks, size 35 growing 5 a frame, frame cycling

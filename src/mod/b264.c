@@ -818,7 +818,66 @@ static s32 func_01E02C20_b264(Game_b264_01E02C20 *g, Obj_b264_01E02C20 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E02D50_b264);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03030_b264);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b264_01E03030;
+
+typedef struct {
+    u8 pad0000[0xD930];
+    Vec_b264_01E03030 pts[1];
+} Mgr_b264_01E03030;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec_b264_01E03030 pos;
+    u8 pad20[0x28];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b264_01E03030;
+
+static s32 func_01E03030_b264(Mgr_b264_01E03030 *m, Obj_b264_01E03030 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = 10.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0xFF, 0xFF, 0xFF);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 50 + 20;
+        o->hE = func_0019A5C8() % 5 + 3;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->pos = m->pts[o->h52];
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        o->c60[3] = 0xC0;
+    } else if (o->c60[3] > 13) {
+        o->c60[3] -= 12;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->h50 += o->hE;
+    }
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03200_b264);
 
@@ -876,7 +935,75 @@ INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03AA0_b264);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E03E00_b264);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E04670_b264);
+/* shape b264:01E04670, 106 insns: takes the first free of 250 effect slots (0x70 bytes, b041:01E02C00 shape),
+   clears and marks it, colours both from the scene, places it at the scene point, copies its settings and stores both
+   arguments */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b264_01E04670;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b264_01E04670 slot[250];
+    u8 padEnd[0xDE54 - 0x2A0 - 250 * 0x70];
+    u8 col[4];
+    u8 padDE58[0x52];
+    s16 hDEAA;
+    u8 padDEAC[0xC];
+    s16 hDEB8;
+} Scene_b264_01E04670;
+
+static s32 func_01E04670_b264(Scene_b264_01E04670 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b264_01E04670 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 250; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 250;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h50 = s->hDEB8;
+        sl->h52 = s->hDEB8;
+        sl->h5A = s->hDEAA;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}
 
 /* shape b264:01E04820, 84 insns: b183:01E029E0 family draw pass: sprite packet on the stack, then every live slot (250 of 0x70 bytes) whose handler is shape b264:01E03AA0 */
 

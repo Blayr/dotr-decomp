@@ -686,7 +686,66 @@ INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02850_b735);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02A50_b735);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02C60_b735);
+/* shape b735:01E02C60, 98 insns: a two-colour fade by kind (b180:01E02040 shape: 0 pink both, 1 blue/purple, 2 pale blue both;
+   hold 8, 8 or 22): both alphas up by 0x40 until the hold, then down by 4, the first ending it and the second stopping at 0 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b735_01E02C60;
+
+static s32 func_01E02C60_b735(void *arg0, Obj_b735_01E02C60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0x9F, 0x5F, 0x5F);
+            func_001076F0(o->c1, 0x9F, 0x5F, 0x5F);
+            o->hold = 8;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0, 0x30, 0xF0);
+            func_001076F0(o->c1, 0x30, 0, 0xF0);
+            o->hold = 8;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->c0, 0x58, 0x58, 0x78);
+            func_001076F0(o->c1, 0x58, 0x58, 0x78);
+            o->hold = 0x16;
+        }
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else {
+        if (o->c0[3] > 5) {
+            o->c0[3] -= 4;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 5) {
+            o->c1[3] -= 4;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

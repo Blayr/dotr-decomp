@@ -227,7 +227,88 @@ static s32 func_01E01060_b266(Game_b266_01E01060 *g, Fx_b266_01E01060 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E011C0_b266);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* OVL_WARM */
+
+/* shape b266:01E011C0, 113 insns: swipe that turns to face the camera side, fades in, widens and fades out */
+
+typedef struct Sw_b266_01E011C0 {
+    u8 pad0[0x10];
+    s32 f10;
+    s32 f14;
+    s32 f18;
+    u8 pad1C[0xC];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 w;
+    s16 age;
+    s16 h34;
+    s16 state;
+    s16 h38;
+} Sw_b266_01E011C0;
+
+typedef struct Scn_b266_01E011C0 {
+    u8 pad0[0x2EA0];
+    s32 count;
+} Scn_b266_01E011C0;
+
+static s32 func_01E011C0_b266(Scn_b266_01E011C0 *sc, Sw_b266_01E011C0 *o) {
+    extern s32 func_001076F0();
+    extern s32 func_001F53A0();
+    extern void func_001F6160();
+    s32 v[4];
+    s16 side;
+
+    func_001076F0(o->c28, 0x18, 0x18, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), v);
+        side = (s32)((f32)v[1] / 180.0f);
+        if (side != 0) {
+            o->f10 = -0x4000;
+        } else {
+            o->f10 = -0xC000;
+        }
+        o->f14 = 0;
+        if (side != 0) {
+            if (o->w == 0) {
+                o->f18 = 0x1800;
+            } else {
+                o->f18 = -0x1800;
+            }
+        } else if (o->w == 0) {
+            o->f18 = -0x1800;
+        } else {
+            o->f18 = 0x1800;
+        }
+        o->h34 = 0;
+        o->w = 0x5A;
+        o->state = 2;
+        o->c28[3] = 0;
+    }
+    if (o->age < 2) {
+        if (o->c28[3] < 0x80) {
+            o->c28[3] += 0x40;
+        }
+    } else if (o->c28[3] > 10) {
+        o->c28[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 50;
+    o->age++;
+    if (o->w < 0xA0) {
+        o->w += 8;
+    }
+    if (sc->count < 15) {
+        if (o->c28[3] > 14) {
+            o->c28[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b266:01E01390, 59 insns: an orange glow that drops toward the scene joint's height (step = func_001A22C0 of the gap): in by 25 up to 0x80 for 5 ticks */
 
@@ -281,9 +362,124 @@ static s32 func_01E01390_b266(Game_b266_01E01390 *g, Glow_b266_01E01390 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01480_b266);
+/* shape b266:01E01480, 100 insns: a grey camera-facing slash: frame 3..10, turned by the camera side and by its side flag
+   (+-0x2800 tilt), random sub-frame 0..6; alpha up by 20 to 0x50 for 4 frames, then down by 13 until it ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01610_b266);
+typedef struct {
+    u8 pad0[6];
+    s16 side0;
+    u8 pad8[8];
+    s32 rot0;
+    u8 pad14[4];
+    s32 rot2;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 side;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b266_01E01480;
+
+static s32 func_01E01480_b266(void *arg0, Obj_b266_01E01480 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s16 func_001A22C0(f32);
+    s32 ang[4];
+    s32 flip;
+
+    func_001F6160(func_001F53A0(), ang);
+    flip = func_001A22C0(ang[1] / 180.0f);
+    func_001076F0(o->c0, 0xA0, 0xA0, 0xA0);
+    if (o->state == 1) {
+        o->h38 = func_0019A5C8() % 8 + 3;
+        if (flip != 0) {
+            o->rot0 = 0;
+        } else {
+            o->rot0 = 0x8000;
+        }
+        if (flip != 0) {
+            if (o->side == 0) {
+                o->rot2 = -0x2800;
+            } else {
+                o->rot2 = 0x2800;
+            }
+        } else if (o->side == 0) {
+            o->rot2 = 0x2800;
+        } else {
+            o->rot2 = -0x2800;
+        }
+        o->side0 = o->side;
+        o->sub = func_0019A5C8() % 7;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x50) {
+            o->c0[3] += 0x14;
+        }
+    } else if (o->c0[3] > 0xE) {
+        o->c0[3] -= 0xD;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b266:01E01610, 101 insns: an orange ember (size 13, frame 2) at two random angles drifting 9 a tick on all three axes (sine table ctx+0x3004): alpha 0x80 for 10 ticks, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[2];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b266_01E01610;
+
+typedef struct {
+    u8 pad[0x3004];
+    u8 sin[1];
+} Game_b266_01E01610;
+
+static s32 func_01E01610_b266(Game_b266_01E01610 *g, Glow_b266_01E01610 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 13;
+        o->kind = 2;
+        func_001076F0(o->col, 0x60, 0x40, 8);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    o->h8 = func_001A22C0(o->h8 + 9.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 9.0f * func_00108030(g->sin, o->h30, 1));
+    o->hC = func_001A22C0(o->hC + 9.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 /* shape b207:01E030D0, 79 insns, 2 copies: a streak flash: size and turn by kind (0..3) once, two colours; full alpha for 5
    frames, then fades out (b003:01E01780 family) */
@@ -383,7 +579,83 @@ static s32 func_01E018F0_b266(s32 unused, Spark_b018_01E02950 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E01A60_b266);
+/* shape b266:01E01A60, 119 insns: b582:01E03470 family scene light at ctx+0x2D00 (orange 4/2/0, height 70) whose range swells by 42 to 128 while it rises and shrinks by 16 to 0 while it falls; applied while alive; ends at scene state 1 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Obj_b266_01E01A60;
+
+typedef struct {
+    f32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 h;
+    f32 level;
+    u8 pad2C[0x174];
+    s32 state;
+} Light_b266_01E01A60;
+
+typedef struct {
+    u8 pad[0x2D00];
+    Light_b266_01E01A60 l;
+} Game_b266_01E01A60;
+
+static s32 func_01E01A60_b266(Game_b266_01E01A60 *g, Obj_b266_01E01A60 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->l.w0 = 0.0f;
+        g->l.r = 4.0f;
+        g->l.g = 2.0f;
+        g->l.b = 0.0f;
+        g->l.w20 = 0;
+        g->l.h = 70.0f;
+        g->l.level = 0.0f;
+        g->l.x = o->x;
+        g->l.y = o->y;
+        g->l.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->l.level < 1.0f) {
+            g->l.level += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+        if (g->l.w0 < 128.0f) {
+            g->l.w0 += 42.0f;
+        } else {
+            g->l.w0 = 128.0f;
+        }
+    } else {
+        if (g->l.level > 0.1f) {
+            g->l.level -= 0.1f;
+        } else {
+            o->mode = 0;
+        }
+        if (g->l.w0 > 16.0f) {
+            g->l.w0 -= 16.0f;
+        } else {
+            g->l.w0 = 0.0f;
+        }
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->l);
+    }
+    if (g->l.state == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b266:01E01C40, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x2EA0 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */
@@ -502,7 +774,77 @@ INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E02640_b266);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E029F0_b266);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E02D50_b266);
+/* shape b266:01E02D50, 111 insns: draws a small sprite (b089:01E03780 shape): unlit, it sets up the colour and texture page; lit,
+   it builds a matrix at a tenth scale from its turn, at its position plus a tenth of its drift, and draws a square of its size
+   with the lower texture corners at u 0.5 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b266_01E02D50;
+
+typedef struct {
+    u8 pad0[0x37C];
+    s32 tex;
+} Scene_b266_01E02D50;
+
+static void func_01E02D50_b266(Scene_b266_01E02D50 *g, Fx_b266_01E02D50 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+    f32 f;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x9b, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    scale.z = 0.1f;
+    scale.y = 0.1f;
+    scale.x = 0.1f;
+    func_00205C40((s32)rot);
+    f = o->dx;
+    f /= 10.0f;
+    pos.x = o->x;
+    pos.x += f;
+    f = o->dy;
+    f /= 10.0f;
+    pos.y = o->y;
+    pos.y += f;
+    f = o->dz;
+    f /= 10.0f;
+    pos.z = o->z;
+    pos.z += f;
+    func_00108EF0(m, &scale, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    quad[2].x = 0.5f;
+    quad[3].x = 0.5f;
+    func_00108F90(quad, p, m, v);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b266", func_01E02F10_b266);
 

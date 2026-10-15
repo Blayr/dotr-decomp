@@ -666,7 +666,75 @@ static s32 func_01E02240_b529(s32 arg0, Obj_b529_01E02240 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E023B0_b529);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E02650_b529);
+/* shape b529:01E02650, 102 insns: a white rising ring by kind (0: size 110, 1: size 80, inner 5 less): rise 950 / 10, sub-frame
+   4; both alphas up by 14 to 0xC0 until frame 103, then down by 14, either ending it; held at a quarter turn */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 rise;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b529_01E02650;
+
+static s32 func_01E02650_b529(void *arg0, Obj_b529_01E02650 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            o->f48 = 110.0f;
+            o->f4C = o->f48 - 5.0f;
+        } else if (o->kind == 1) {
+            o->f48 = 80.0f;
+            o->f4C = o->f48 - 5.0f;
+        }
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->kind = 0;
+        o->h5A = 0xA;
+        o->h5C = 0xA;
+        o->rise = 950.0f;
+        o->rise /= 10.0f;
+        o->state = 2;
+        o->sub = 4;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x67) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0xE;
+        }
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0xE;
+        }
+    } else {
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xF) {
+            o->c1[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] = 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E027F0_b529);
 
@@ -776,7 +844,59 @@ static s32 func_01E02C10_b529(void *arg0, Obj_b529_01E02C10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E02D10_b529);
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b529_01E02D10;
+
+static s32 func_01E02D10_b529(s32 unused, Obj_b529_01E02D10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = func_0019A5C8() % 10 + 5;
+        o->h56 = 4;
+        func_001076F0(o->c60, 0xC0, 0x50, 0x50);
+        o->w20 = func_0019A5C8() % 0xFFFF;
+        o->w24 = func_0019A5C8() % 0xFFFF;
+        o->w28 = func_0019A5C8() % 0xFFFF;
+        o->h52 = 1;
+        o->h50 = func_0019A5C8() % 30 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 10 + 5;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        o->c60[3] = 0x80;
+    } else if (o->c60[3] > 12) {
+        o->c60[3] -= 11;
+    } else {
+        o->h58 = 0;
+    }
+    o->h52++;
+    o->h50 += o->hE;
+    o->h54++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];

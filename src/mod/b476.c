@@ -854,7 +854,70 @@ static s32 func_01E02FD0_b476(Game_b476_01E02FD0 *g, Glow_b476_01E02FD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E03090_b476);
+/* shape b476:01E03090, 99 insns: a grey streak: frame -10 growing by 4..6 once started, random tilt -0x2000..0x1FFF, turn and
+   sub-frame 0..6, width 20; alpha up by 0x40 for 2 frames, then down by 19 once grown past 20, and by 15 when the scene timer
+   drops under 10 (b286:01E009B0 shape) */
+
+typedef struct {
+    u8 pad0[0x2DF0];
+    s32 timer;
+} Scene_b476_01E03090;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 grow;
+    u8 padA[6];
+    s32 rot0;
+    s32 rot1;
+    u8 pad18[0x10];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b476_01E03090;
+
+static s32 func_01E03090_b476(Scene_b476_01E03090 *g, Obj_b476_01E03090 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = -0xA;
+        o->rot0 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->sub = func_0019A5C8() % 7;
+        o->state = 2;
+        o->grow = func_0019A5C8() % 3 + 4;
+        o->h6 = 0x14;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else {
+        if (o->h38 > 0x14) {
+            if (o->c0[3] > 0x14) {
+                o->c0[3] -= 0x13;
+            } else {
+                o->state = 0;
+            }
+        }
+        if (g->timer < 0xA) {
+            if (o->c0[3] > 0x10) {
+                o->c0[3] -= 0xF;
+            } else {
+                o->state = 0;
+            }
+        }
+    }
+    if (o->t != 0) {
+        o->h38 += o->grow;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b476:01E03220, 83 insns: on start 0x38 = 20, 0x34 = 1, random rotation 0x18, colour 0x80 grey, 0x3A keeps
    the old 0x30, speed 130..147 (0xE), 0x8 0..9, hold 3..9 (0x6); alpha grows by 0x40 (up to 0x80) during the hold,

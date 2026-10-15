@@ -774,9 +774,122 @@ static s32 func_01E02420_b747(s32 arg0, Flash_b747_01E02420 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E02500_b747);
+/* shape b747:01E02500, 115 insns: on start f48 15..24, variant 4, colour 0x80 grey, random rotation, 0x50 10..59,
+   random 0x5A, speed 20..49 (0xE), 0x8 -6..8, hold 0..4 (0x6); alpha 0x60 during the hold, then fades by 11 and stops;
+   0x50 grows by the speed */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E026D0_b747);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b747_01E02500;
+
+static s32 func_01E02500_b747(s32 arg0, Fx_b747_01E02500 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 15;
+        o->f56 = 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f50 = func_0019A5C8() % 50 + 10;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 30 + 20;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->f50 += o->speed;
+    o->tick++;
+    return 0;
+}
+
+/* shape b747:01E026D0, 98 insns: a grey-green spinning ring by kind (0: width 4.5, height 10 growing by 8, flat; 1: width 4,
+   height 5 growing by 5, turned 90): size 6; alpha up by 0x40 for 4 frames, then down by 9 until it ends; turns by 6 */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 w;
+    f32 h;
+    u8 pad38[0x10];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b747_01E026D0;
+
+static s32 func_01E026D0_b747(void *arg0, Obj_b747_01E026D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 6.0f;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c1, 0x10, 0xFF, 0x10);
+        if (o->kind == 0) {
+            o->w = 4.5f;
+            o->h = 10.0f;
+            o->ang = 0;
+        }
+        if (o->kind == 1) {
+            o->w = 4.0f;
+            o->h = 5.0f;
+            o->ang = 0x5A;
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0 && o->t != 0) {
+        o->h += 8.0f;
+    }
+    if (o->kind == 1 && o->t != 0) {
+        o->h += 5.0f;
+    }
+    if (o->t != 0) {
+        o->ang += 6;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b747:01E02860, 56 insns: white burst: on start f48 20 then 100, both colours white, 0x8/0xA = 5, variant 4,
    second alpha 0; alpha grows by 0x60 (below 0xC0) for 4 ticks, then fades by 14 and stops */

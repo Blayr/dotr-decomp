@@ -111,9 +111,116 @@ static void func_01E00080_b260(Obj_b082_01E00920 *o, Data_b082_01E00920 *data, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b260", func_01E004E0_b260);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b260", func_01E008B0_b260);
+/* shape b260:01E008B0, 96 insns: a red flicker flash: size 110 growing by 3 until frame 180, random angle; colour flickers red
+   by frame parity; alpha up by 16 while the scene timer is under 240, then down by 12 until it ends; spins a quarter turn */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b260", func_01E00A30_b260);
+typedef struct {
+    u8 pad0[0x768A];
+    s16 timer;
+} Game_b260_01E008B0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 size;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b260_01E008B0;
+
+static s32 func_01E008B0_b260(Game_b260_01E008B0 *g, Obj_b260_01E008B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 110.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0x80, 0x10, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0x10, 0x10);
+    } else {
+        func_001076F0(o->c0, 0xD0, 0x10, 0x10);
+    }
+    if (g->timer < 0xF0) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x10;
+        }
+    } else if (o->c0[3] > 0xD) {
+        o->c0[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    if (o->t < 0xB4) {
+        o->size += 3.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
+
+/* shape b260:01E00A30, 99 insns: on start f48 5 then 90, colour white, second colour (0x40, 0x10, 0x80) with alpha 0,
+   random 0x5A; alpha grows by 0x2A (below 0x80) for 0x78 ticks, then fades by 8 and stops; f48 grows by 3 up to 300;
+   the second colour flickers red; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b260_01E00A30;
+
+static s32 func_01E00A30_b260(s32 arg0, Fx_b260_01E00A30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 5.0f;
+        o->f48 = 90.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 0x78) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->f48 < 300.0f) {
+        o->f48 += 3.0f;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+    } else {
+        func_001076F0(o->col2, 0xA0, 0x10, 0x10);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b260", func_01E00BC0_b260);
 

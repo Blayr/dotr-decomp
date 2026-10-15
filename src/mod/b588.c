@@ -455,7 +455,65 @@ static s32 func_01E02500_b588(s32 arg0, Fx_b588_01E02500 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E025F0_b588);
+/* shape b588:01E025F0, 97 insns: b481:01E02690 twin (green): kind 0 from 1000 growing 40, kind 1 from 250 growing 20, kind 2 400 fixed */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b588_01E025F0;
+
+static s32 func_01E025F0_b588(s32 arg0, Obj_b588_01E025F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0x80, 0xFF, 0x80);
+        func_001076F0(o->col2, 0x10, 0xFF, 0x10);
+        if (o->h50 == 0) {
+            o->f30 = 18.0f;
+            o->f34 = 1000.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 18.0f;
+            o->f34 = 250.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 18.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 40.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 20.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

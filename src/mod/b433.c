@@ -679,9 +679,108 @@ static s32 func_01E02170_b433(s32 arg0, Fx_b433_01E02170 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E02350_b433);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E02620_b433);
+/* shape b433:01E02620, 113 insns: a red rising spark (b433:01E027F0 shape): size 10..19, random sub-frame 0..3 and y turn, frame
+   from 1, height 100..199 rising by 10..24, angle, width 1..8, hold 13..22; full alpha until the hold, then down by 11 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E027F0_b433);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x14];
+    s32 rot1;
+    u8 pad28[0x20];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b433_01E02620;
+
+static s32 func_01E02620_b433(void *arg0, Obj_b433_01E02620 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 10 + 0xA;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->rot1 = func_0019A5C8() % 65535;
+        o->frame = 1;
+        o->y = func_0019A5C8() % 100 + 0x64;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 15 + 0xA;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 10 + 0xD;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->frame++;
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
+
+/* shape b433:01E027F0, 106 insns: a red rising spark: size 10..19, random sub-frame 0..3, frame from 1 counting up, height
+   10..29 rising by 10..24, angle, width 1..8, hold 13..22; full alpha until the hold, then down by 11 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b433_01E027F0;
+
+static s32 func_01E027F0_b433(void *arg0, Obj_b433_01E027F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 10 + 0xA;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->frame = 1;
+        o->y = func_0019A5C8() % 20 + 0xA;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+        o->step = func_0019A5C8() % 15 + 0xA;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 10 + 0xD;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->frame++;
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
 
 /* shape b433:01E029A0, 70 insns: a pink growing spark (b252:01E03410 shape): size 70 */
 
@@ -734,7 +833,55 @@ static s32 func_01E029A0_b433(void *arg0, Obj_b433_01E029A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E02AC0_b433);
+/* shape b433:01E02AC0, 96 insns: a red spark (size 70, random frame 0..7, random heading) spinning a random 10..24 a tick from 10..29, size 1..8, held 6..10 ticks at 0x80, then out by 11 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b433_01E02AC0;
+
+static s32 func_01E02AC0_b433(s32 arg0, Obj_b433_01E02AC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 70.0f;
+        o->kind = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        o->h52 = 1;
+        o->h50 = func_0019A5C8() % 20 + 10;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->hE = func_0019A5C8() % 15 + 10;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 5 + 6;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->h52++;
+    o->h50 += o->hE;
+    o->t++;
+    return 0;
+}
 
 /* shape b433:01E02C40, 79 insns: a pink drifting spark (b252:01E03410 family): size 70 growing by 1, random sub-frame 2..7, f34 0.5;
    alpha up by 0x60 to 0xC0 for 3 frames, then down by 9 until it ends; drifts 0.5 in x by direction; random turn */

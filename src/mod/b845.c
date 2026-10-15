@@ -760,7 +760,65 @@ static s32 func_01E02330_b845(void *arg0, Obj_b445_01E02330 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b845", func_01E02570_b845);
+/* shape b845:01E02570, 94 insns: b264:01E029E0 family: a white/grey beam from 200 growing 75 a tick (tail 400 behind) at three random turns, turning 0x100: alpha 0x60 for 6 ticks, then out by 14 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b845_01E02570;
+
+static s32 func_01E02570_b845(s32 arg0, Obj_b845_01E02570 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+        o->h50 = 0;
+        o->h5A = 15;
+        o->h5C = 15;
+        o->f34 = 750.0f;
+        o->f34 = o->f34 / 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 6) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = o->f48 - 400.0f;
+    o->w24 += 0x100;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b845", func_01E026F0_b845);
 

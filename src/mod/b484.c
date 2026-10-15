@@ -471,7 +471,56 @@ static s32 func_01E016C0_b484(void *arg0, Obj_b484_01E016C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E01830_b484);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* OVL_WARM */
+
+/* shape b484:01E01830, 117 insns: mote with a small random offset drifting 30 units a frame along a random angle */
+
+typedef struct Mo_b484_01E01830 {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 age;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Mo_b484_01E01830;
+
+typedef struct Scn_b484_01E01830 {
+    u8 pad0[0x3A5C];
+    u8 table[0x10];
+} Scn_b484_01E01830;
+
+static s32 func_01E01830_b484(Scn_b484_01E01830 *w, Mo_b484_01E01830 *o) {
+    extern s32 func_001076F0();
+    if (o->state == 1) {
+        o->h38 = 100;
+        func_001076F0(o->c28, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->x = func_0019A5C8() % 4 - 2;
+        o->y = func_0019A5C8() % 4 - 2;
+        o->z = func_0019A5C8() % 4 - 2;
+        o->state = 2;
+    }
+    if (o->age < 7) {
+        o->c28[3] = 0x80;
+    } else if (o->c28[3] > 0x10) {
+        o->c28[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    o->h34 = func_0019A5C8() % 8;
+    o->x = (s32)(o->x + 30.0f * func_00108030((s32)w->table, o->ang, 0));
+    o->z = (s32)(o->z + 30.0f * func_00108030((s32)w->table, o->ang, 1));
+    o->age++;
+    return 0;
+}
 
 /* shape b484:01E01A10, 141 insns: b064:01E01C00 family: a grey or purple spark thrown 40 along a random direction (4 along its tilt), random frame each tick (sine table at g+0x3A5C) */
 

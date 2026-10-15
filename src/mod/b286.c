@@ -63,7 +63,72 @@ static void func_01E00080_b286(Pk_b008_01E00080 *p, Rect_b008_01E00080 *r, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E004D0_b286);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E009B0_b286);
+/* shape b286:01E009B0, 99 insns: an orange or teal (by kind) streak: frame 15 growing by 4, random tilt 0..0x3FFF, turn and
+   sub-frame 0..6; alpha up by 0x50 for 2 frames, then down by 13 once grown past 15, and by 15 when the scene timer drops under 10 */
+
+typedef struct {
+    u8 pad0[0x6A80];
+    s32 timer;
+} Scene_b286_01E009B0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[8];
+    s32 rot0;
+    s32 rot1;
+    u8 pad18[0x10];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b286_01E009B0;
+
+static s32 func_01E009B0_b286(Scene_b286_01E009B0 *g, Obj_b286_01E009B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->state == 1) {
+        o->h38 = 0xF;
+        base = 0;
+        o->rot0 = func_0019A5C8() % 0x4000 + base;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->sub = func_0019A5C8() % 7;
+        o->state = 2;
+        o->h6 = 1;
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->c0, 0, 0x80, 0x80);
+        }
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0xA0) {
+            o->c0[3] += 0x50;
+        }
+    } else {
+        if (o->h38 > 0xF) {
+            if (o->c0[3] > 0xE) {
+                o->c0[3] -= 0xD;
+            } else {
+                o->state = 0;
+            }
+        }
+        if (g->timer < 0xA) {
+            if (o->c0[3] > 0x10) {
+                o->c0[3] -= 0xF;
+            } else {
+                o->state = 0;
+            }
+        }
+    }
+    o->t++;
+    o->h38 += 4;
+    return 0;
+}
 
 /* shape b286:01E00B40, 70 insns: an orange flame: set up once (reads the model's point, clears its y turn), alpha up by
    0x40 for 2 frames, then down by 9; frame 50; fades faster (13) while the game state is below 15; rises 5 a frame */
@@ -125,7 +190,59 @@ static s32 func_01E00B40_b286(Game_b286_01E00B40 *g, Obj_b286_01E00B40 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E00C60_b286);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E00F90_b286);
+/* shape b286:01E00F90, 101 insns: an orange ember (size 13, frame 2) at two random angles drifting 13 a tick on all three axes (sine table ctx+0x6AE8): alpha 0x80 for 10 ticks, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[2];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b286_01E00F90;
+
+typedef struct {
+    u8 pad[0x6ae8];
+    u8 sin[1];
+} Game_b286_01E00F90;
+
+static s32 func_01E00F90_b286(Game_b286_01E00F90 *g, Glow_b286_01E00F90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 13;
+        o->kind = 2;
+        func_001076F0(o->col, 0x60, 0x40, 0);
+        o->h30 = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    o->h8 = func_001A22C0(o->h8 + 13.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 13.0f * func_00108030(g->sin, o->h30, 1));
+    o->hC = func_001A22C0(o->hC + 13.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E01130_b286);
 

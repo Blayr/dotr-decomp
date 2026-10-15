@@ -884,7 +884,73 @@ static s32 func_01E01970_b037(s32 obj, Emit_b000_01E01140 *e, Cam_b000_01E01140 
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b037", func_01E03260_b037);
+/* shape b037:01E03260, 111 insns: sets up a ring of 30 points at angles k x pi/15 (k = 1..30): an inner ring of radius
+   r1 at height h and an outer ring of radius r2 at height h + dh, laid in the x/y plane or (when func_00104520 says
+   the model lacks flag 0x1D) the x/z plane; the header keeps the arguments */
+
+typedef struct {
+    s32 kind;
+    s32 model;
+    u8 pad8[4];
+    f32 dh;
+    u8 pad10[0x10];
+    f32 r1;
+    f32 f24;
+    f32 f28;
+    u8 pad2C[4];
+    f32 r2;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[4];
+    Vec4f in[30];
+    Vec4f out[30];
+} Ring_b037_01E03260;
+
+static s32 func_01E03260_b037(Ring_b037_01E03260 *o, s32 kind, f32 r1, f32 r2, f32 h, f32 dh) {
+    extern s32 func_00104520(s32, s32);
+    extern f32 func_0020B620(f32);
+    extern f32 func_0020B730(f32);
+    f32 top;
+    f32 t;
+    s32 i;
+
+    o->kind = kind;
+    o->dh = dh;
+    o->r1 = r1;
+    o->r2 = r2;
+    if (func_00104520(o->model, 0x1D) != 0) {
+        o->f24 = 0.0f;
+        o->f28 = h;
+        o->f34 = 0.0f;
+        top = h + dh;
+        o->f38 = top;
+        for (i = 0; i < 30; i++) {
+            t = 0.20943952f * (f32)(i + 1);
+            o->in[i].x = r1 * func_0020B620(t);
+            o->in[i].y = r1 * func_0020B730(t);
+            o->in[i].z = h;
+            o->out[i].x = r2 * func_0020B620(t);
+            o->out[i].y = r2 * func_0020B730(t);
+            o->out[i].z = top;
+        }
+    } else {
+        top = h + dh;
+        o->f24 = h;
+        o->f28 = 0.0f;
+        o->f34 = top;
+        o->f38 = 0.0f;
+        for (i = 0; i < 30; i++) {
+            t = 0.20943952f * (f32)(i + 1);
+            o->in[i].x = r1 * func_0020B620(t);
+            o->in[i].z = r1 * func_0020B730(t);
+            o->in[i].y = h;
+            o->out[i].x = r2 * func_0020B620(t);
+            o->out[i].z = r2 * func_0020B730(t);
+            o->out[i].y = top;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b037", func_01E03420_b037);
 

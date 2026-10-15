@@ -681,7 +681,65 @@ static void func_01E01BA0_b415(s32 arg0, u8 *obj, s32 mode, f32 level) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E01D70_b415);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E020D0_b415);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape b415:01E020D0, 117 insns: growing ring (two colour presets) with random rotation and growth speed */
+
+typedef struct Ring_b415_01E020D0 {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[8];
+    f32 grow;
+    u8 pad38[0x10];
+    f32 size;
+    f32 inner;
+    s16 kind;
+    u8 pad52[2];
+    s16 age;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Ring_b415_01E020D0;
+
+static s32 func_01E020D0_b415(s32 arg0, Ring_b415_01E020D0 *o) {
+    extern s32 func_001076F0();
+    if (o->state == 1) {
+        o->size = 120.0f;
+        o->inner = o->size - 58.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0xC0, 0x80, 0x80);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0xA0, 0x80, 0xFF);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->h5A = 30;
+        o->h5C = 30;
+        o->grow = func_0019A5C8() % 80 + 200;
+        o->grow = o->grow / 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->age < 15) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->size += o->grow;
+    o->inner = 0.2f * o->size;
+    o->age++;
+    return 0;
+}
 
 /* shape b415:01E022B0, 59 insns: a spinning flash: on start size 220, colours white and (0xFF,0x40,0x40), f5A/f5C
    10, second alpha 0; it grows by 0x60 (below 0xC0) for 14 ticks, then fades out by 9 and stops; the
@@ -813,7 +871,65 @@ static s32 func_01E026F0_b415(void *arg0, Ring_b247_01E02320 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E02900_b415);
+/* shape b415:01E02900, 98 insns: b283:01E036C0 family three-kind glow (kind 0 red/orange, 1 green/purple, 2 lavender held 22): in by 25 up to 0x80 for 8 ticks, then out by 4 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b415_01E02900;
+
+static s32 func_01E02900_b415(s32 arg0, Obj_b415_01E02900 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xF0, 0, 0x30);
+            func_001076F0(o->col2, 0xF0, 0x30, 0);
+            o->h6 = 8;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0, 0x30, 0xF0);
+            func_001076F0(o->col2, 0x30, 0, 0xF0);
+            o->h6 = 8;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->col, 0x58, 0x58, 0x78);
+            func_001076F0(o->col2, 0x58, 0x58, 0x78);
+            o->h6 = 22;
+        }
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x19;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x19;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 5) {
+            o->col2[3] -= 4;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E02A90_b415);
 
@@ -827,6 +943,71 @@ static s32 func_01E02F80_b415(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E02F90_b415);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E03790_b415);
+/* shape b415:01E03790, 102 insns: take a free effect slot (0x190 of 0x70 bytes at 0x2A0), clear it, colour both colours from
+   the scene colour 0xCB14, attach it to the scene position (0x250) and copy it, 0x50 / 0x5A from 0xCBB4 / 0xCBA6, store the two
+   arguments; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    u8 pad52[6];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Slot_b415_01E03790;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b415_01E03790 slots[0x190];
+    u8 padB1A0[0xCB14 - 0xB1A0];
+    u8 rgba[4];
+    u8 padCB18[0x8E];
+    s16 f5As;
+    u8 padCBA8[0xC];
+    s16 f50s;
+} Scene_b415_01E03790;
+
+static s32 func_01E03790_b415(Scene_b415_01E03790 *g, s32 a1, s32 a2) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b415_01E03790 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x190; i++) {
+        if (g->slots[i].used == 0) {
+            func_00195108(&g->slots[i], 0x70);
+            g->slots[i].used = 1;
+            s = &g->slots[i];
+            i = 0x190;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col[3] = g->rgba[3];
+        func_001076F0(s->col2, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col2[3] = g->rgba[3];
+        func_00106AB0(s, g->pos, 0);
+        s->pos[0] = g->pos[0];
+        s->pos[1] = g->pos[1];
+        s->pos[2] = g->pos[2];
+        s->f50 = g->f50s;
+        s->f5A = g->f5As;
+        s->a2 = a2;
+        s->a1 = a1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b415", func_01E03930_b415);

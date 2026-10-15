@@ -676,7 +676,87 @@ static void func_01E01780_b516(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E01CF0_b516);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02170_b516);
+/* shape b516:01E02170, 115 insns: flash puff of the b038/b432 family: size 6.0, green or red colour pair by the
+   game's v (< 0x8D), speed/start by kind h50 (0, 1, 2); alpha +0x40 (below 0x80) for 4 ticks then -0xF. */
+
+typedef struct {
+    u8 pad0[0xCBB8];
+    s16 v;
+} Ctx_b516_01E02170;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b516_01E02170;
+
+static s32 func_01E02170_b516(Ctx_b516_01E02170 *ctx, Obj_b516_01E02170 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 6.0f;
+        if (ctx->v < 0x8D) {
+            func_001076F0(o->col, 0xA0, 0xFF, 0xA0);
+            func_001076F0(o->col2, 0x80, 0xFF, 0x80);
+        } else {
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        }
+        if (o->h50 == 0) {
+            o->f30 = 18.0f;
+            o->f34 = 1000.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 18.0f;
+            o->f34 = 250.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 18.0f;
+            o->f34 = 400.0f;
+        }
+        o->state = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 40.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 20.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b516:01E02340, 76 insns: a green-white / orange-white spinning flash by kind (b432:01E026D0 family): f4C 120, size 10x10;
    second alpha up by 0x60 to 0xC0 for 4 frames, then down by 15 until it ends */
@@ -740,7 +820,73 @@ static s32 func_01E02340_b516(void *arg0, Obj_b516_01E02340 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02470_b516);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E026D0_b516);
+/* shape b516:01E026D0, 107 insns: b495:01E01D60 family: a white spark (150 x 150, random frame 2..4, random heading) set 7.6 out along its heading, then drifting 1 a tick along it (sine table ctx+0xCDBC): in by 96 up to 0xC0 for 6 ticks, then out by 19 and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b516_01E026D0;
+
+typedef struct {
+    u8 pad[0xCDBC];
+    u8 sin[1];
+} Game_b516_01E026D0;
+
+static s32 func_01E026D0_b516(Game_b516_01E026D0 *g, Obj_b516_01E026D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 150;
+        o->hA = o->h8;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->f18 += 7.6f * func_00108030(g->sin, o->h5A, 0);
+        o->f10 += 7.6f * func_00108030(g->sin, o->h5A, 1);
+    }
+    if (o->t < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f18 += func_00108030(g->sin, o->h5A, 0);
+        o->f10 += func_00108030(g->sin, o->h5A, 1);
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02880_b516);
 

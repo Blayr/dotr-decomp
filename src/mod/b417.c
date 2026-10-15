@@ -1086,7 +1086,59 @@ INCLUDE_ASM("asm/nonmatchings/mod/b417", func_01E02790_b417);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b417", func_01E02CD0_b417);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b417", func_01E03390_b417);
+/* shape b417:01E03390, 96 insns: b573:01E02590 family: a grey spark (size 54, frame 1, random roll) spinning a random 80..109 a tick from 0..99 (old angle moved to +0xA), size 0..19, held 1..2 ticks: in by 64 up to 0x80, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b417_01E03390;
+
+static s32 func_01E03390_b417(s32 arg0, Glow_b417_01E03390 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 54;
+        o->kind = 1;
+        o->w18 = func_0019A5C8() % 65535;
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+        o->hA = o->h30;
+        o->h30 = func_0019A5C8() % 100;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 30 + 80;
+        o->h8 = func_0019A5C8() % 20;
+        o->h6 = func_0019A5C8() % 2 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b417:01E03510, 130 insns, 3 copies: step of a flickering spark: on state 1 picks a random spin and speed and an
    orange or cyan colour; the colour cycles orange / yellow / blue every tick; fades in by 0x40 for 2 ticks,

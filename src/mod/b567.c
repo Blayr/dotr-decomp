@@ -984,7 +984,65 @@ static s32 func_01E02310_b567(Ctx_b567_01E02310 *c, Obj_b567_01E02310 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b567", func_01E024D0_b567);
+/* shape b567:01E024D0, 112 insns: a white drifting spark (b092:01E02420 shape): size 130, sub-frame 2..4, random angle; pushed
+   1.6 along it at the start, then drifting 0.6 a frame; alpha up by 0x40 for 10 frames, then down by 9 until it ends; turns */
+
+typedef struct {
+    u8 pad0[0x7010];
+    u8 sin[1];
+} Game_b567_01E024D0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b567_01E024D0;
+
+static s32 func_01E024D0_b567(Game_b567_01E024D0 *g, Obj_b567_01E024D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->w = 0x82;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+        o->z += 1.6f * func_00108030(g->sin, o->ang, 0);
+        o->x += 1.6f * func_00108030(g->sin, o->ang, 1);
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->z += 0.6f * func_00108030(g->sin, o->ang, 0);
+        o->x += 0.6f * func_00108030(g->sin, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     u8 pad0000[0x6DEC];
@@ -1171,7 +1229,87 @@ static s32 func_01E02B10_b567(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b567", func_01E02B60_b567);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b205_01E01F90;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b205_01E01F90;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b205_01E01F90 p;
+} Vtx_b205_01E01F90;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b205_01E01F90 c;
+    Vtx_b205_01E01F90 v[2];
+    u64 tail;
+} Pkt_b205_01E01F90;
+
+typedef struct {
+    u8 pad0000[0x6D70];
+    f32 f6D70;
+} Mgr_b205_01E01F90;
+
+static inline void tag_b205_01E01F90(Pkt_b205_01E01F90 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E02B60_b567(Mgr_b205_01E01F90 *m) {
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b205_01E01F90 pkt __attribute__((aligned(8)));
+    u64 a;
+    s32 b[3];
+    s32 s;
+    s16 h;
+
+    s = func_00207F60();
+    h = m->f6D70;
+    tag_b205_01E01F90((Pkt_b205_01E01F90 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0x80;
+    pkt.c.g = 0x80;
+    pkt.c.b = 0x80;
+    pkt.c.a = 0x80;
+    pkt.c.q = 1.0f;
+    pkt.v[0].p.x = (h + 0x6C0) * 16 - 8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = (h + 0x940) * 16 - 8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_00208460();
+    func_00208800(func_00209E50(), 0, &a, b);
+    func_00208460();
+    func_002075F0(&pkt, 0, 0);
+    func_00207FD0(s, func_00207500(), 0);
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

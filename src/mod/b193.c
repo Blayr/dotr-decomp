@@ -829,7 +829,64 @@ static s32 func_01E02D40_b193(s32 arg0, Obj_b193_01E02D40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02E50_b193);
+/* shape b193:01E02E50, 106 insns: on start f48 130, variant 0..6, colour 0x80 grey, random 0x5A, 0xA 0..7, 0xC keeps
+   the old 0x50, 0x50 5..14, speed 13..27 (0xE), 0x8 0..34, hold 3..7 (0x6); alpha 0x80 during the hold, then fades by
+   9 and stops; f48 grows by 2; 0x50 grows by the speed after the first tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b193_01E02E50;
+
+static s32 func_01E02E50_b193(s32 arg0, Fx_b193_01E02E50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 130.0f;
+        o->f56 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f5A = func_0019A5C8() % 360;
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 10 + 5;
+        o->speed = func_0019A5C8() % 15 + 13;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 2.0f;
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b149:01E01ED0, 135 insns, 2 copies: a yellow trail on a world track: set up once (fills the track's 15 history points
    with its current point); both colours fade in for 110 frames, then the first fades out (its fade-out step is
@@ -923,6 +980,72 @@ static s32 func_01E03000_b193(World_b149_01E01ED0 *w, Trail_b149_01E01ED0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E03220_b193);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E03A90_b193);
+/* shape b193:01E03A90, 82 insns: c035:01E01150 family: take the first free effect slot of 150 (0x70 bytes each, at ctx+0x2A0), clear it, give it the scene colour twice, the scene position, the scene value twice and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b193_01E03A90;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2a0 - 0x25C];
+    Obj_b193_01E03A90 slot[150];
+    u8 padEnd[0xbc94 - 0x2a0 - 150 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 padBC98[0x52];
+    s16 val;
+} Ctx_b193_01E03A90;
+
+static s32 func_01E03A90_b193(Ctx_b193_01E03A90 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b193_01E03A90 *s;
+
+    s = NULL;
+    for (i = 0; i < 150; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 150;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h50 = ctx->val;
+        s->h52 = ctx->val;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E03C30_b193);

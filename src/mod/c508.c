@@ -300,7 +300,93 @@ static s32 func_01E004E0_c508(s32 id, Model_b013_01E004E0 *m, Fx_b013_01E004E0 *
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c508", func_01E010C0_c508);
+/* OVL_WARM */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_c508_01E010C0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_c508_01E010C0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_c508_01E010C0;
+
+typedef struct {
+    Col_c508_01E010C0 c;
+    Xyz_c508_01E010C0 p;
+} Vtx_c508_01E010C0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c508_01E010C0 v[3];
+    u64 tail;
+} Pkt_c508_01E010C0;
+
+typedef struct {
+    Vec_c508_01E010C0 pts[32];
+    u8 pad200[4];
+    u8 col[4];
+} Ring_c508_01E010C0;
+
+
+static inline void tag_c508_01E010C0(Pkt_c508_01E010C0 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E010C0_c508(s32 tgt, Ring_c508_01E010C0 *r) {
+    extern void c508_01E00080(void *, u8 *);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_c508_01E010C0 pkt __attribute__((aligned(8)));
+    s32 i;
+    Vec_c508_01E010C0 *p;
+
+    tag_c508_01E010C0((Pkt_c508_01E010C0 *)(u32)&pkt, 0x13, 6, 0x414141);
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    for (i = 0, p = r->pts; i < 30; i++, p++) {
+        c508_01E00080(&pkt, r->col);
+        pkt.v[0].p.x = ((s32)r->pts[0].x + 0x800) << 4;
+        pkt.v[0].p.y = ((s32)r->pts[0].z + 0x800) << 4;
+        pkt.v[0].p.z = 0xFFFFFF;
+        pkt.v[0].p.f = 0;
+        if (i == 0) {
+            pkt.v[1].p.x = ((s32)r->pts[1].x + 0x800) << 4;
+            pkt.v[1].p.y = ((s32)r->pts[1].z + 0x800) << 4;
+            pkt.v[1].p.z = 0xFFFFFF;
+            pkt.v[1].p.f = 0;
+        } else {
+            pkt.v[1].p.x = ((s32)p[1].x + 0x800) << 4;
+            pkt.v[1].p.y = ((s32)p[1].z + 0x800) << 4;
+            pkt.v[1].p.z = 0xFFFFFF;
+            pkt.v[1].p.f = 0;
+        }
+        if (i != 29) {
+            pkt.v[2].p.x = ((s32)p[2].x + 0x800) << 4;
+            pkt.v[2].p.y = ((s32)p[2].z + 0x800) << 4;
+            pkt.v[2].p.z = 0xFFFFFF;
+            pkt.v[2].p.f = 0;
+        } else {
+            pkt.v[2].p.x = ((s32)r->pts[1].x + 0x800) << 4;
+            pkt.v[2].p.y = ((s32)r->pts[1].z + 0x800) << 4;
+            pkt.v[2].p.z = 0xFFFFFF;
+            pkt.v[2].p.f = 0;
+        }
+        func_002075F0(&pkt, tgt, 0);
+    }
+    return 0;
+}
 
 typedef struct {
     u8 pad00[0xC];

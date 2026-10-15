@@ -576,9 +576,107 @@ static Vec_b018_01E00EE0 func_01E01630_b492(Vec_b018_01E00EE0 *p, s32 type, f32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E01A70_b492);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02230_b492);
+/* shape b492:01E02230, 105 insns: b282:01E01C20 family spinning white spark (random size 10..24, frame 0..2, angle 10..49, spin 16..35, held 3..5 ticks): in by 64 up to 0xC0, then out by 14 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E023E0_b492);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b492_01E02230;
+
+static s32 func_01E02230_b492(s32 arg0, Obj_b492_01E02230 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 15 + 10;
+        o->kind = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h50 = func_0019A5C8() % 40 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 20 + 16;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b492:01E023E0, 98 insns: a grey spark: size 10..24, random sub-frame 0..2, height 10..49, angle, rise 16..35, width 0..34,
+   hold 3..5; alpha up by 0x40 to 0xC0 until the hold, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b492_01E023E0;
+
+static s32 func_01E023E0_b492(void *arg0, Obj_b492_01E023E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 15 + 0xA;
+        o->sub = func_0019A5C8() % 3;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->y = func_0019A5C8() % 40 + 0xA;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 20 + 0x10;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02570_b492);
 
@@ -638,9 +736,153 @@ static s32 func_01E02790_b492(Game_b492_01E02790 *g, Obj_b492_01E02790 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02880_b492);
+/* shape b492:01E02880, 110 insns: on start f48 6, colour (0xFF, 0xA0, 0xA0), second colour (0xFF, 0x40, 0x40) with alpha 0, f30/f34 by the
+   kind 0x50 (4.5f/60.0f, 4.5f/30.0f or 8/400), 0x52 = 0; alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and
+   stops; after the first tick f34 grows by 10.0f (kind 0) or 5.0f (kind 1) and 0x52 counts up to 0x19; 0x5A turns 6 a tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02A40_b492);
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b492_01E02880;
+
+static s32 func_01E02880_b492(s32 arg0, Fx_b492_01E02880 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0xA0, 0xA0);
+        func_001076F0(o->col2, 0xFF, 0x40, 0x40);
+        if (o->kind == 0) {
+            o->f30 = 4.5f;
+            o->f34 = 60.0f;
+        }
+        if (o->kind == 1) {
+            o->f30 = 4.5f;
+            o->f34 = 30.0f;
+        }
+        if (o->kind == 2) {
+            o->f30 = 8.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f52 = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick != 0) {
+            o->f34 += 10.0f;
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick != 0) {
+            o->f34 += 5.0f;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f52 < 0x19) {
+            o->f52++;
+        }
+    }
+    o->tick++;
+    o->f5A += 6;
+    return 0;
+}
+
+/* shape b492:01E02A40, 110 insns: on start f48 6, colour (0xFF, 0xFF, 0xFF), second colour (0x40, 0x40, 0xFF) with alpha 0, f30/f34 by the
+   kind 0x50 (35.0f/700.0f, 35.0f/500.0f or 8/400), 0x52 = 0; alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and
+   stops; after the first tick f34 grows by 50.0f (kind 0) or 30.0f (kind 1) and 0x52 counts up to 0x19; 0x5A turns 6 a tick */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b492_01E02A40;
+
+static s32 func_01E02A40_b492(s32 arg0, Fx_b492_01E02A40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x40, 0xFF);
+        if (o->kind == 0) {
+            o->f30 = 35.0f;
+            o->f34 = 700.0f;
+        }
+        if (o->kind == 1) {
+            o->f30 = 35.0f;
+            o->f34 = 500.0f;
+        }
+        if (o->kind == 2) {
+            o->f30 = 8.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f52 = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick != 0) {
+            o->f34 += 50.0f;
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick != 0) {
+            o->f34 += 30.0f;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f52 < 0x19) {
+            o->f52++;
+        }
+    }
+    o->tick++;
+    o->f5A += 6;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02C00_b492);
 

@@ -577,11 +577,155 @@ static s32 func_01E01CA0_b544(void *arg0, Obj_b544_01E01CA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01DE0_b544);
+/* shape b544:01E01DE0, 97 insns: b481:01E02690 twin (white/red): kind 0 from 800 growing 80, kind 1 from 500 growing 60, kind 2 400 fixed */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b544_01E01DE0;
+
+static s32 func_01E01DE0_b544(s32 arg0, Obj_b544_01E01DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        if (o->h50 == 0) {
+            o->f30 = 18.0f;
+            o->f34 = 800.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 18.0f;
+            o->f34 = 500.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 18.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 80.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 60.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E01F70_b544);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b544", func_01E02870_b544);
+/* shape b544:01E02870, 117 insns: a grey full-screen veil in its own colour (b215:01E02390 shape): one sprite over the whole
+   screen; alpha up by 20 to 0x50 while the scene timer is over 20, then down by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b544_01E02870;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b544_01E02870 p;
+    } v[2];
+    u8 pad38[0x20];
+} Pkt_b544_01E02870;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_b544_01E02870;
+
+typedef struct {
+    u8 pad0[0xA900];
+    s32 timer;
+} Scene_b544_01E02870;
+
+static s32 func_01E02870_b544(Scene_b544_01E02870 *g, Obj_b544_01E02870 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    extern void func_001076F0(void *, s32, s32, s32);
+    Pkt_b544_01E02870 pkt __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->state = 2;
+    }
+    ((Pkt_b544_01E02870 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b544_01E02870 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b544_01E02870 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b544_01E02870 *)(s32)&pkt)->pad = 0;
+    pkt.r = o->c0[0];
+    pkt.g = o->c0[1];
+    pkt.b = o->c0[2];
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    ((Xyz_b544_01E02870 *)(s32)&pkt.v[0].p)->x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0((s32)&pkt, func_00207500(), 0);
+    if (g->timer > 0x14) {
+        if (o->c0[3] < 0x50) {
+            o->c0[3] += 0x14;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

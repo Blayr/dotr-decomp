@@ -981,9 +981,143 @@ static s32 func_01E02670_b064(World_b064_01E02670 *w, Ember_b064_01E02670 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b064", func_01E028F0_b064);
+/* shape b064:01E028F0, 104 insns: b027:01E01310 family: a blinking blue spark (size growing a random 4..6 a tick, frame 0..6, turn 0x4000): in by 32 up to 0x40 for 2 ticks; past size 40 out by 19, and out by 15 once the scene state is under 10; ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b064", func_01E02A90_b064);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[6];
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b064_01E028F0;
+
+typedef struct {
+    u8 pad[0x51C0];
+    s32 state;
+} Game_b064_01E028F0;
+
+static s32 func_01E028F0_b064(Game_b064_01E028F0 *g, Glow_b064_01E028F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->w10 = 0x4000;
+        o->w14 = 0;
+        o->kind = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->h8 = func_0019A5C8() % 3 + 4;
+        o->h6 = 6;
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else {
+        if (o->f38 > 40) {
+            if (o->col[3] > 0x14) {
+                o->col[3] -= 0x13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->state < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 8, 8, 0xF0);
+    } else {
+        func_001076F0(o->col, 0x10, 0x10, 0x80);
+    }
+    o->tick++;
+    o->f38 += o->h8;
+    return 0;
+}
+
+/* shape b064:01E02A90, 107 insns: b064:01E028F0 twin: a blinking dark blue spark (size growing 1 a tick, frame 0..6, turn 0x4000 and a random one): in by 32 up to 0x40 for 2 ticks; past size 20 out by 19, and out by 15 once the scene state is under 10; ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[6];
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b064_01E02A90;
+
+typedef struct {
+    u8 pad[0x51C0];
+    s32 state;
+} Game_b064_01E02A90;
+
+static s32 func_01E02A90_b064(Game_b064_01E02A90 *g, Glow_b064_01E02A90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->w10 = 0x4000;
+        o->w14 = func_0019A5C8() % 65535;
+        o->kind = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->h8 = 1;
+        o->h6 = -3;
+        func_001076F0(o->col2, 8, 8, 0x80);
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else {
+        if (o->f38 > 20) {
+            if (o->col[3] > 0x14) {
+                o->col[3] -= 0x13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->state < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 8, 8, 0x50);
+    } else {
+        func_001076F0(o->col, 0x10, 0x10, 0x30);
+    }
+    if (o->tick != 0) {
+        o->f38 += o->h8;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b064:01E02C40, 180 insns: b064:01E02670 family: a grey ember, size from the model (capped 26) or random; fades in for 1..2 ticks, out by 11 (by 12 once the scene counter reaches 221); grows to 30, turns 2 and steps its frame 0..5 every other tick, sinks or rises by the scene flag */
 
@@ -1078,7 +1212,91 @@ static s32 func_01E02C40_b064(World_b064_01E02C40 *w, Ember_b064_01E02C40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b064", func_01E02F10_b064);
+/* shape b064:01E02F10, 109 insns: a grey full-screen veil (b284:01E02340 shape): one sprite over the whole screen at the object
+   alpha; alpha up by 12 to 0x60 for 8 frames, down by 12 once the scene timer drops under 17, gone when it hits 9 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b064_01E02F10;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b064_01E02F10 p;
+    } v[2];
+    u8 pad38[0x20];
+} Pkt_b064_01E02F10;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+} Obj_b064_01E02F10;
+
+typedef struct {
+    u8 pad0[0x51C0];
+    s32 timer;
+} Scene_b064_01E02F10;
+
+static s32 func_01E02F10_b064(Scene_b064_01E02F10 *g, Obj_b064_01E02F10 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    Pkt_b064_01E02F10 pkt __attribute__((aligned(8)));
+
+    ((Pkt_b064_01E02F10 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b064_01E02F10 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b064_01E02F10 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b064_01E02F10 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x80;
+    pkt.g = 0x80;
+    pkt.b = 0x80;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    ((Xyz_b064_01E02F10 *)(s32)&pkt.v[0].p)->x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0((s32)&pkt, func_00207500(), 0);
+    if (o->t < 8) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 0xC;
+        }
+    }
+    if (g->timer < 0x11) {
+        if (o->c0[3] > 0xD) {
+            o->c0[3] -= 0xC;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    if (g->timer == 9) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b064", func_01E030D0_b064);
 

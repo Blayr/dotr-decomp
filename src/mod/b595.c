@@ -284,7 +284,54 @@ static void func_01E00920_b595(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b595", func_01E00E90_b595);
+/* shape b595:01E00E90, 116 insns: the module's spawn step (b356:01E00E90 shape): ticks the timer; from frame 67 to 280 it spawns
+   two b595:01E01060 effects at one joint and two b595:01E01420 effects at another, each half a unit lower */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xDDE8 - 0x260];
+    s16 joint0;
+    s16 joint1;
+    u8 padDDEC[0x32];
+    s16 t;
+} Scene_b595_01E00E90;
+
+static void func_01E00E90_b595(Scene_b595_01E00E90 *s) {
+    extern void b595_01E01060(void);
+    extern void b595_01E01420(void);
+    extern s32 b595_01E01D50(Scene_b595_01E00E90 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    s->t++;
+    if (s->t >= 0x43 && s->t < 0x119) {
+        if (s->t < 0x64) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), s->joint0, &s->pos);
+            s->pos.y -= 0.5f;
+            b595_01E01D50(s, b595_01E01060, 0);
+        }
+    }
+    if (s->t >= 0x43 && s->t < 0x119) {
+        if (s->t < 0x64) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), s->joint1, &s->pos);
+            s->pos.y -= 0.5f;
+            b595_01E01D50(s, b595_01E01420, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b595", func_01E01060_b595);
 

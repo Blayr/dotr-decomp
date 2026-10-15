@@ -501,9 +501,121 @@ INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E01B10_b362);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E01EE0_b362);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E020F0_b362);
+/* shape b362:01E020F0, 112 insns: a white tumbling spark (b041:01E01C40 shape): size 6, random sub-frame 0..3 and turn on all three
+   axes, height 10..59, angle, step 1..3, width 1..8, hold 2..4; alpha up by 42 to 0x80 until the hold, then down by 11 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E022B0_b362);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b362_01E020F0;
+
+static s32 func_01E020F0_b362(void *arg0, Obj_b362_01E020F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 6.0f;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->y = func_0019A5C8() % 50 + 0xA;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 3 + 1;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b362:01E022B0, 119 insns: b574:01E02170 family: a white tumbling spark (size 30, random frame 0..3, three random turns, angle 5..14, spin 20..59, size 1..8) held 2..4 ticks: in by 42 up to 0x80, then out by 11 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b362_01E022B0;
+
+static s32 func_01E022B0_b362(s32 arg0, Obj_b362_01E022B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 30.0f;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h50 = func_0019A5C8() % 10 + 5;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 40 + 20;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b362:01E02490, 67 insns: a white-green growing spinning flash (b202:01E022A0 shape): scale 50 */
 

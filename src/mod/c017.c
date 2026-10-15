@@ -6,7 +6,84 @@ INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E006B0_c017);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E009E0_c017);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E00D50_c017);
+/* shape c017:01E00D50, 112 insns: a falling trail piece: drops 2 a tick to -50 then fades both colours by 16 and ends; its two screen heights are the scene scale (ctx+0x3914 / ctx+0x399E) x height - 40 (ends when negative); its turn eases by its speed; fades in by 8 while the scene value is under 13, out by 16 while the scene state is under 10; ends at state 2 */
+
+typedef struct {
+    u8 pad0[0x14];
+    f32 y;
+    u8 pad18[0xC];
+    s32 w24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 mode;
+    u8 pad52[4];
+    s16 h56;
+    s16 h58;
+} Obj_c017_01E00D50;
+
+typedef struct {
+    u8 pad[0x38DC];
+    s32 state;
+    u8 pad38E0[0x34];
+    f32 scale;
+    u8 pad3918[0x48];
+    s16 val;
+    u8 pad3962[0x3C];
+    s16 div;
+} Game_c017_01E00D50;
+
+static s32 func_01E00D50_c017(Game_c017_01E00D50 *g, Obj_c017_01E00D50 *o) {
+    extern s32 func_001A22C0(f32);
+    f32 s;
+    f32 d;
+
+    d = g->div;
+    if (o->y > -50.0f) {
+        o->y -= 2.0f;
+    } else {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 0x10;
+        }
+        if (o->col2[3] > 0x10) {
+            o->col2[3] -= 0x10;
+        } else {
+            o->mode = 0;
+        }
+    }
+    s = g->scale / d;
+    o->h56 = func_001A22C0(s * o->y - 40.0f);
+    if (o->h56 < 0) {
+        o->mode = 0;
+    }
+    o->h58 = func_001A22C0(s * o->y - 40.0f);
+    if (o->h58 < 0) {
+        o->mode = 0;
+    }
+    o->w24 = func_001A22C0(o->w24 - o->f34);
+    if (g->val < 13) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 8;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 8;
+        }
+    }
+    if (g->state < 10) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 0x10;
+        }
+        if (o->col2[3] > 0x10) {
+            o->col2[3] -= 0x10;
+        }
+    }
+    if (g->state == 2) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape c017:01E00F10, 66 insns: sinks by its speed (0x34) down to -50, then both alphas fade by 0x10 (the second
    ends it); both grow by 8 (below 0x80) while the game step at 0x3960 is below 13; both fade by 0x10 while the
@@ -321,7 +398,89 @@ INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E01BF0_c017);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E02120_c017);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E025B0_c017);
+/* shape c017:01E025B0, 118 insns: mode 0 sets the drawing state (a 0x9B matrix from the angle 0x5A, colours 0x48/0x4C,
+   the scene texture 0x21C); otherwise sizes the scene quad 0x1A0 to 0x56, puts all four corners at height 0x14,
+   pushes them 0x58 along the heading 0x52 (game table 0x39A4), builds the rotation matrix 0x140 from 0x20 and, when
+   the quad is on screen, sends it with the scene texture 0x38E8 */
+
+typedef struct {
+    u8 pad0[0x14];
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[0x18];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad50[2];
+    s16 heading;
+    u8 pad54[2];
+    s16 size;
+    s16 dist;
+    s16 angle;
+} Fx_c017_01E025B0;
+
+typedef struct {
+    u8 pad0[0x140];
+    f32 m[16];
+    u8 pad180[0x20];
+    Vec4f quad[4];
+    u8 pad1E0[0x3C];
+    s32 tex;
+    u8 pad220[0x38E8 - 0x220];
+    s32 tex2;
+    u8 pad38EC[0x3934 - 0x38EC];
+    f32 depth;
+    u8 pad3938[0x39A4 - 0x3938];
+    u8 trig[1];
+} Scene_c017_01E025B0;
+
+static void func_01E025B0_c017(Scene_c017_01E025B0 *g, Fx_c017_01E025B0 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108D20(void *, f32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_0020C940(void *, s32, void *, s32);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, void *);
+    extern s32 func_001A23B0(f32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 rm[4];
+    f32 m[16];
+    f32 a;
+    f32 b;
+    s16 size;
+
+    size = o->size;
+    if (mode == 0) {
+        func_00106080(rm, 0x9B, o->angle, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 1);
+        func_00107790(p, o->col2, 2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        func_00108D20(g->quad, size, size);
+        g->quad[0].y = g->quad[1].y = g->quad[2].y = g->quad[3].y = o->y;
+        a = o->dist * func_00108030(g->trig, o->heading, 1);
+        b = o->dist * func_00108030(g->trig, o->heading, 0);
+        g->quad[0].x += a;
+        g->quad[0].z += b;
+        g->quad[1].x += a;
+        g->quad[1].z += b;
+        g->quad[2].x += a;
+        g->quad[2].z += b;
+        g->quad[3].x += a;
+        g->quad[3].z += b;
+        func_0020C940(m, 0, o->rot, 0);
+        func_0020BC00(g->m, m);
+        if (func_00205630(g->quad, 0x70000000, g->m, p, &g->depth) != 0) {
+            func_002075F0(p, g->tex2, func_001A23B0(g->depth));
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E02790_c017);
 

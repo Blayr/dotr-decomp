@@ -835,7 +835,71 @@ static s32 func_01E02540_b256(Ctx_b256_01E02540 *ctx, Obj_b256_01E02540 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E028B0_b256);
+/* shape b256:01E028B0, 97 insns: on start f48 6, colours 0xF0, 0xE0, 0xFF / 0xF0, 0xE0, 0xFF (second alpha 0), f30 18 and length f34 by kind
+   (0x50: 1000.0 / 250.0 / 400.0); alpha grows by 0x40 (below 0x80) for 4 ticks, then fades by 9 and stops; after the
+   first tick kinds 0/1 grow by 40.0 / 20.0 */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 len;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b256_01E028B0;
+
+static s32 func_01E028B0_b256(s32 arg0, Fx_b256_01E028B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xF0, 0xE0, 0xFF);
+        func_001076F0(o->col2, 0xF0, 0xE0, 0xFF);
+        if (o->kind == 0) {
+            o->f30 = 18.0f;
+            o->len = 1000.0f;
+        }
+        if (o->kind == 1) {
+            o->f30 = 18.0f;
+            o->len = 250.0f;
+        }
+        if (o->kind == 2) {
+            o->f30 = 18.0f;
+            o->len = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick != 0) {
+            o->len += 40.0f;
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick != 0) {
+            o->len += 20.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b256:01E02A40, 176 insns: a purple spark with a random drift (-50..49)/60, random spin and spin speed (-1024..1023 per axis), fades in to 0x80 for 10 ticks, out by 9; z spin eased 1.5 by the scene flag */
 
@@ -957,7 +1021,63 @@ static s32 func_01E02D00_b256(void *arg0, Obj_b256_01E02D00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E02DF0_b256);
+typedef struct {
+    u8 pad0000[0xCDBC];
+    u8 tab[1];
+} Mgr_b256_01E02DF0;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    u8 pad14[4];
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b256_01E02DF0;
+
+static s32 func_01E02DF0_b256(Mgr_b256_01E02DF0 *m, Obj_b256_01E02DF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 130;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c60, 0xFF, 0xFF, 0xFF);
+        o->h58 = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->f18 += 8.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 8.6f * func_00108030(m->tab, o->h5A, 1);
+    }
+    if (o->h54 < 10) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x40;
+        }
+    } else if (o->c60[3] > 10) {
+        o->c60[3] -= 9;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->f18 += 0.8f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 0.8f * func_00108030(m->tab, o->h5A, 1);
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E02FC0_b256);
 

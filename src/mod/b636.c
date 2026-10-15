@@ -178,7 +178,79 @@ static void func_01E004D0_b636(u8 *self, Obj_b045_01E00E30 *obj, Pk_b045_01E00E3
 
 INCLUDE_ASM("asm/nonmatchings/mod/b636", func_01E00850_b636);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b636", func_01E00A70_b636);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* OVL_WARM */
+
+/* shape b636:01E00A70, 119 insns: spark pinned to a scene object with random spin and life; bigger early in the scene */
+
+typedef struct Sp_b636_01E00A70 {
+    s16 x, y, z;
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 spin;
+    u8 pad10[4];
+    s32 f14;
+    u8 pad18[0x10];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 rot;
+    s16 age;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Sp_b636_01E00A70;
+
+typedef struct Scn_b636_01E00A70 {
+    u8 pad0[0x37E8];
+    s16 id;
+    u8 pad37EA[0x14];
+    s16 timer;
+} Scn_b636_01E00A70;
+
+static s32 func_01E00A70_b636(Scn_b636_01E00A70 *w, Sp_b636_01E00A70 *o) {
+    extern s32 func_001076F0();
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    Vec4f v;
+
+    if (o->state == 1) {
+        if (w->timer < 0x54) {
+            o->h38 = 0x19;
+        } else {
+            o->h38 = 5;
+        }
+        o->h34 = func_0019A5C8() % 8;
+        o->f14 = func_0019A5C8() % 0xFFFF;
+        func_001076F0(o->c28, 0x30, 8, 0x80);
+        o->rot = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 25 + 10;
+        o->h8 = func_0019A5C8() % 10;
+        o->life = func_0019A5C8() % 7 + 2;
+        o->state = 2;
+    }
+    if (o->age < o->life) {
+        if (o->c28[3] < 0x61) {
+            o->c28[3] += 0x30;
+        }
+    } else if (o->c28[3] > 0x10) {
+        o->c28[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    if (o->age != 0) {
+        o->rot += o->spin;
+    }
+    o->age++;
+    func_001F5620(func_001F53A0(), w->id, &v);
+    o->x = (s32)v.x;
+    o->y = (s32)v.y;
+    o->z = (s32)v.z;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b636", func_01E00C50_b636);
 

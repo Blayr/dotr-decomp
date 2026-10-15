@@ -120,7 +120,80 @@ static s32 func_01E005F0_c006(Game_c006_01E005F0 *g, Fx_c006_01E005F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c006", func_01E00710_c006);
+/* shape c006:01E00710, 118 insns: sets up the scene's 22 models (ids 0..10 and 256..266): object 0x1C90 + i x 0x70 gets
+   a random size 1..5 (0x54), 0x28 -2..12, 0x34 0x100..0x18FF, 0x38 -0x3FF..0x3FF; all but models 0 and 11 are
+   switched, it is registered (0x4 cleared, func_001F5B70 for flagged models), tagged from 0x2780 + i x 0x10 and
+   coloured; flagged models get alpha 0x80 */
+
+typedef struct {
+    u8 pad0[4];
+    s32 w4;
+    u8 pad8[0x1C];
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    s32 w34;
+    s32 w38;
+    u8 pad3C[4];
+    f32 scale[3];
+    u8 pad4C[8];
+    f32 f54;
+    u8 pad58[8];
+    u8 col[4];
+    u8 pad64[0xC];
+} Obj_c006_01E00710;
+
+typedef struct {
+    u8 tag[0x10];
+} Tag_c006_01E00710;
+
+typedef struct {
+    u8 pad0[0x1C90];
+    Obj_c006_01E00710 obj[22];
+    u8 pad2630[0x2780 - 0x2630];
+    Tag_c006_01E00710 tags[22];
+} Scene_c006_01E00710;
+
+static void func_01E00710_c006(Scene_c006_01E00710 *g) {
+    extern s32 func_001F5AF0(s32);
+    extern void func_001F5970(s32, s32);
+    extern void func_001F5BD0(s32, void *);
+    extern void func_001F5B70(s32, void *);
+    extern void func_001F5CA0(s32, void *);
+    extern void func_001F5E40(s32, void *);
+    extern void func_001F5DE0(s32, void *);
+    s16 i;
+    s32 id;
+
+    for (i = 0; i < 22; i++) {
+        id = i;
+        if (i > 10) {
+            id = i + 0xF5;
+        }
+        {
+        Obj_c006_01E00710 *p = &g->obj[i];
+        p->f54 = (func_0019A5C8() % 26 + 9) / 6;
+        p->w28 = func_0019A5C8() % 8 + 5;
+        p->w34 = func_0019A5C8() % 0x1800 + 0x100;
+        p->w38 = func_0019A5C8() % 0x800 - 0x400;
+        if (i != 0 && i != 11) {
+            func_001F5970(id, 1);
+        }
+        func_001F5BD0(id, p);
+        p->w4 = 0;
+        if (func_001F5AF0(id) != 0) {
+            func_001F5B70(id, p);
+        }
+        func_001F5CA0(id, &g->tags[i]);
+        func_001F5E40(id, p->col);
+        if (func_001F5AF0(id) != 0) {
+            func_001F5E40(id, p->col);
+            p->col[3] = 0x80;
+            func_001F5DE0(id, p->col);
+        }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c006", func_01E008F0_c006);
 

@@ -506,7 +506,151 @@ static s32 func_01E01A10_b220(Obj_b015_01E01620 *obj, s32 life, f32 y) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b220", func_01E01BD0_b220);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b220", func_01E02930_b220);
+/* OVL_WARM */
+
+/* shape b055:01E02930, 325 insns, 8 copies: a lightning bolt from p0 to p1: 6 jittered points between the ends,
+   a spline through the 8 (func_00102550) gives 28 points, projected and drawn as up to 27 coloured lines (all of
+   them with flag 0x1A, else only the first o->progress); far z with flag 0x13; progress wraps at o->max */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b055_01E02930;
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_b055_01E02930;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b055_01E02930;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b055_01E02930 p;
+} Vtx_b055_01E02930;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Vtx_b055_01E02930 v[2];
+    u8 tail[8];
+} Pk_b055_01E02930;
+
+typedef struct {
+    u64 tag;
+    Pk_b055_01E02930 pk;
+} Buf_b055_01E02930;
+
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec_b055_01E02930 out[28];
+} Spl_b055_01E02930;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    Src_b055_01E02930 col;
+    u8 padC[0x1C];
+    s16 max;
+    s16 jitter;
+    s16 progress;
+} Obj_b055_01E02930;
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 view[1];
+} Cam_b055_01E02930;
+
+static s32 func_01E02930_b220(s32 obj __attribute__((aligned(8))), Obj_b055_01E02930 *o, Cam_b055_01E02930 *cam __attribute__((aligned(8))), Vec_b055_01E02930 *p0,
+                  Vec_b055_01E02930 *p1) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_0019A5C8();
+    Spl_b055_01E02930 s;
+    Vec_b055_01E02930 a[28];
+    Xyz_b055_01E02930 xyz[28];
+    f32 depth[29];
+    Pk_b055_01E02930 pk __attribute__((aligned(8)));
+    u32 mask;
+    s32 i;
+    f32 t;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+
+    mask = 0;
+    if (o->max > 28) {
+        o->max = 28;
+    }
+    ((Pk_b055_01E02930 *)(s32)&pk)->flags = 0x11;
+    ((Pk_b055_01E02930 *)(s32)&pk)->size = 4;
+    ((Pk_b055_01E02930 *)(s32)&pk)->regs = 0x4141;
+    ((Pk_b055_01E02930 *)(s32)&pk)->pad4 = 0;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x48);
+    ((Pk_b055_01E02930 *)(s32)&pk)->flags |= 0x400;
+    pk.v[0].r = pk.v[1].r = o->col.r;
+    pk.v[0].g = pk.v[1].g = o->col.g;
+    pk.v[0].b = pk.v[1].b = o->col.b;
+    pk.v[0].a = pk.v[1].a = o->col.a;
+    pk.v[0].q = pk.v[1].q = 1.0f;
+    dx = p1->x - p0->x;
+    dy = p1->y - p0->y;
+    dz = p1->z - p0->z;
+    s.x[0] = p0->x;
+    s.y[0] = p0->y;
+    s.z[0] = p0->z;
+    for (i = 1; i < 7; i++) {
+        t = (f32)i / 7.0f;
+        s.x[i] = p0->x + dx * t + 0.1f * (func_0019A5C8() % (o->jitter * 2) - o->jitter);
+        s.y[i] = p0->y + dy * t + 0.1f * (func_0019A5C8() % (o->jitter * 2) - o->jitter);
+        s.z[i] = p0->z + dz * t + 0.1f * (func_0019A5C8() % (o->jitter * 2) - o->jitter);
+    }
+    s.x[7] = p1->x;
+    s.y[7] = p1->y;
+    s.z[7] = p1->z;
+    s.n = 8;
+    func_00102550(&s);
+    for (i = 0; i < 28; i++) {
+        a[i].x = s.out[i].x;
+        a[i].y = s.out[i].y;
+        a[i].z = s.out[i].z;
+        if (func_00205440(&a[i], cam->view, &xyz[i], &depth[i]) != 0 && func_00101600(&xyz[i]) != 0) {
+            mask |= 1 << i;
+        }
+    }
+    for (i = 0; i < 27; i++) {
+        if (func_00104520(o->flags, 0x1A) != 0 || i <= o->progress) {
+            pk.v[0].p.x = xyz[i].x;
+            pk.v[1].p.x = xyz[i + 1].x;
+            pk.v[0].p.y = xyz[i].y;
+            pk.v[1].p.y = xyz[i + 1].y;
+            if (func_00104520(mask, i) != 0 && func_00104520(mask, i + 1) != 0) {
+                if (func_00104520(o->flags, 0x13) != 0) {
+                    pk.v[0].p.z = pk.v[1].p.z = 0xFFFFFF;
+                    func_002075F0(&pk, obj, 0);
+                } else {
+                    pk.v[0].p.z = xyz[i].z;
+                    pk.v[1].p.z = xyz[i + 1].z;
+                    func_002075F0(&pk, obj, (s32)(u32)((depth[i] + depth[i + 1]) / 2.0f));
+                }
+            }
+        }
+    }
+    o->progress++;
+    if (o->progress > o->max) {
+        o->progress = 0;
+    }
+    return 0;
+}
 
 /* shape b055:01E02E50, 99 insns: set up a particle ring: nring points evenly spaced over half a turn at radius r,
    then npts particles at random positions (0..0xFFFF each axis), alpha from the emitter and a random negative
@@ -557,6 +701,130 @@ static s32 func_01E02E50_b220(Em_b055_01E02E50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b220", func_01E02FE0_b220);
+/* OVL_WARM */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b055_01E02FE0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b055_01E02FE0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b055_01E02FE0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b055_01E02FE0 c;
+    Xyz_b055_01E02FE0 v[2];
+} Pkt_b055_01E02FE0;
+
+typedef struct {
+    s32 x, y, z;
+    s16 pad;
+    s16 t;
+} Ent_b055_01E02FE0;
+
+typedef struct {
+    u8 pad00[4];
+    s32 w4;
+    u8 r, g, b, a;
+    u8 pad0C[0x14];
+    Ent_b055_01E02FE0 *list;
+    Vec_b055_01E02FE0 *pts;
+    s16 n;
+    s16 count;
+    u8 pad2C[6];
+    s16 step;
+} Obj_b055_01E02FE0;
+
+static inline void tag_b055_01E02FE0(Pkt_b055_01E02FE0 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E02FE0_b220(s32 tgt __attribute__((aligned(8))), Obj_b055_01E02FE0 *o, u8 *cam __attribute__((aligned(8)))) {
+    extern s32 func_00104520(s32, s32);
+    extern void func_0020C630(void *, void *);
+    extern void func_0020BCF0(void *, void *);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    s32 mask;
+    f32 m[16];
+    s32 k;
+    s32 v[4];
+    s32 target;
+    Xyz_b055_01E02FE0 xy[32];
+    f32 dep[32];
+    s32 i;
+    f32 depth;
+    Pkt_b055_01E02FE0 pkt;
+
+    target = tgt;
+    tag_b055_01E02FE0((Pkt_b055_01E02FE0 *)(u32)&pkt, 1, 3, 0x441);
+    mask = 0;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    ((Pkt_b055_01E02FE0 *)(u32)&pkt)->count |= 0x400;
+    pkt.c.r = o->b;
+    pkt.c.g = o->g;
+    pkt.c.b = o->r;
+    pkt.c.a = o->a;
+    pkt.c.q = 1.0f;
+    for (k = 0; k < o->count; k++) {
+        if (o->list[k].t < 0) {
+            o->list[k].t++;
+            continue;
+        }
+        v[0] = o->list[k].x;
+        v[1] = o->list[k].y;
+        v[2] = o->list[k].z;
+        func_0020C630(m, v);
+        func_0020BCF0(m, cam + 0x30);
+        for (i = 0; i < o->n; i++) {
+            if (func_00205440(&o->pts[i], m, &xy[i], &dep[i]) != 0) {
+                mask |= 1 << i;
+            }
+        }
+        for (i = 0; i < o->n - 1; i++) {
+            if (func_00104520(o->w4, 0x1A) == 0 && i > o->list[k].t) {
+                continue;
+            }
+            if (func_00104520(mask, i) != 0 && func_00104520(mask, i + 1) != 0) {
+                pkt.v[0].x = xy[i].x;
+                pkt.v[1].x = xy[i + 1].x;
+                pkt.v[0].y = xy[i].y;
+                pkt.v[1].y = xy[i + 1].y;
+                pkt.v[0].z = xy[i].z;
+                pkt.v[1].z = xy[i + 1].z;
+                depth = (dep[i] + dep[i + 1]) / 2.0f;
+                func_002075F0(&pkt, target, (u32)depth);
+            }
+        }
+        o->list[k].t += o->step;
+        mask = 0;
+        if (o->list[k].t >= o->n) {
+            if (func_00104520(o->w4, 0x1A) != 0) {
+                o->list[k].t = o->n;
+            } else {
+                o->list[k].t = 0;
+                o->list[k].x = func_0019A5C8() % 0x10000;
+                o->list[k].y = func_0019A5C8() % 0x10000;
+                o->list[k].z = func_0019A5C8() % 0x10000;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b220", func_01E03400_b220);

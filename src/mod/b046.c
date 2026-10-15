@@ -911,7 +911,63 @@ static s32 func_01E02890_b046(s32 unused, Spark_b018_01E02950 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b046", func_01E02A00_b046);
+/* shape b046:01E02A00, 95 insns: on start colours (0x8F, 0x4F, 0x10) / (0x40, 0x10, 0x40), the rotation faces the
+   model angle side (-0x4000 / 0x4000), size 0x5A, alpha 0; alpha grows by 0x50 (below 0x50) for 4 ticks, then fades
+   by 6 and stops; 0x38 = 600; the size grows by 3..10 a tick up to 0x10E, then it ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 size;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b046_01E02A00;
+
+static s32 func_01E02A00_b046(s32 arg0, Fx_b046_01E02A00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    s32 ang[4];
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x8F, 0x4F, 0x10);
+        func_001076F0(o->col2, 0x40, 0x10, 0x40);
+        func_001F6160(func_001F53A0(), ang);
+        if ((s32)(ang[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = 0x4000;
+        }
+        o->rot[1] = 0;
+        o->rot[2] = 0;
+        o->f34 = 0;
+        o->size = 0x5A;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 0x50;
+        }
+    } else if (o->col[3] > 7) {
+        o->col[3] -= 6;
+    } else {
+        o->mode = 0;
+    }
+    o->f38 = 600;
+    o->tick++;
+    if (o->size < 0x10E) {
+        o->size += (s16)(func_0019A5C8() % 8 + 3);
+    } else {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b046:01E02B80, 137 insns, 4 copies: step of a drifting light (variant of b046:01E02DB0): starts at 0 with
    random angle, speed and lifetime; fades in by 0x40, then out by 10; follows a scene point, lowered by 10 and

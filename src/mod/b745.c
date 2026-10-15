@@ -794,15 +794,173 @@ INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E01E40_b745);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E02290_b745);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E02510_b745);
+/* shape b745:01E02510, 105 insns: a blue spark: size 30..44, random sub-frame 0..2, height 10..19, angle, rise 20..39, width 0..34,
+   hold 3..5, rising once started; alpha up by 0x40 to 0xC0 until the hold, then down by 14 until it ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E026C0_b745);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b745_01E02510;
+
+static s32 func_01E02510_b745(void *arg0, Obj_b745_01E02510 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 15 + 0x1E;
+        o->sub = func_0019A5C8() % 3;
+        func_001076F0(o->c0, 0x80, 0x80, 0xFF);
+        o->y = func_0019A5C8() % 10 + 0xA;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 20 + 0x14;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b745:01E026C0, 105 insns: a blue spark: size 10..24, random sub-frame 0..2, height 10..19, angle, rise 20..39, width 0..34,
+   hold 3..5, rising once started; alpha up by 0x40 to 0xC0 until the hold, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b745_01E026C0;
+
+static s32 func_01E026C0_b745(void *arg0, Obj_b745_01E026C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 15 + 0xA;
+        o->sub = func_0019A5C8() % 3;
+        func_001076F0(o->c0, 0x80, 0x80, 0xFF);
+        o->y = func_0019A5C8() % 10 + 0xA;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 20 + 0x14;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E02870_b745);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E02A70_b745);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E02F40_b745);
+/* shape b745:01E02F40, 113 insns: a white drifting spark (b522:01E025A0 shape): size 100, sub-frame 2..4, random angle; pushed
+   6.6 along it at the start, then drifting 0.5 a frame; alpha up by 0x40 for 10 frames, then down by 9 until it ends; turns */
+
+typedef struct {
+    u8 pad0[0xB4C0];
+    u8 sin[1];
+} Game_b745_01E02F40;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b745_01E02F40;
+
+static s32 func_01E02F40_b745(Game_b745_01E02F40 *g, Obj_b745_01E02F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->w = 0x64;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+        o->z += 6.6f * func_00108030(g->sin, o->ang, 0);
+        o->x += 6.6f * func_00108030(g->sin, o->ang, 1);
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->z += 0.5f * func_00108030(g->sin, o->ang, 0);
+        o->x += 0.5f * func_00108030(g->sin, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b702:01E01BD0, 131 insns, 3 copies: step of a swirling grey puff (b396:01E01990 family): random size, phase,
    height, turn direction, angle, speed and lifetime; fades in by 0x40, then out by 19; grows, climbs and turns
@@ -866,7 +1024,69 @@ static s32 func_01E03110_b745(void *arg0, Obj_b702_01E01BD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E03320_b745);
+/* shape b745:01E03320, 108 insns: on start the kind 0x50 picks both colours and the hold 0x6 (0: (0x9F, 0x5F, 0x5F) for
+   10 ticks, 1: (0xE0, 0xB0, 0xF0) / (0xD0, 0xA0, 0xF0) for 32, 2: (0x58, 0x58, 0x78) for 22); both alphas grow by 0x78
+   (below 0xF0) during the hold, then fade by 14 (the first ends it, the second clears) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b745_01E03320;
+
+static s32 func_01E03320_b745(s32 arg0, Fx_b745_01E03320 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col2, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col, 0x9F, 0x5F, 0x5F);
+            func_001076F0(o->col2, 0x9F, 0x5F, 0x5F);
+            o->hold = 10;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xE0, 0xB0, 0xF0);
+            func_001076F0(o->col2, 0xD0, 0xA0, 0xF0);
+            o->hold = 0x20;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->col, 0x58, 0x58, 0x78);
+            func_001076F0(o->col2, 0x58, 0x58, 0x78);
+            o->hold = 0x16;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xF0) {
+            o->col[3] += 0x78;
+        }
+        if (o->col2[3] < 0xF0) {
+            o->col2[3] += 0x78;
+        }
+    } else {
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0xF) {
+            o->col2[3] -= 14;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b745:01E034D0, 69 insns: constant variant of b287:01E02C80 (0xE->0x12, 150.0f->120.0f) */
 

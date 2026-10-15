@@ -266,9 +266,133 @@ static void func_01E00C20_b850(Scene_b850_01E00C20 *g) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E00D90_b850);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E00FB0_b850);
+/* shape b850:01E00FB0, 106 insns: on start 0x38 = 0, random rotation, variant 0..6, speed 2..4 (0xE), 0x6 = 1, colour
+   0x80 grey; alpha grows by 0x50 (below 0xA0) for 2 ticks; after that it fades by 19 once 0x38 passes 0x46, stops when
+   0x38 drops below -12, and fades by 15 while the game counter 0x2DF0 is below 10; 0x38 grows by the speed */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E01160_b850);
+typedef struct {
+    u8 pad0[0x2DF0];
+    s32 count;
+} Game_b850_01E00FB0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[6];
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b850_01E00FB0;
+
+static s32 func_01E00FB0_b850(Game_b850_01E00FB0 *g, Fx_b850_01E00FB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->speed = func_0019A5C8() % 3 + 2;
+        o->f6 = 1;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x50;
+        }
+    } else {
+        if (o->f38 > 0x46) {
+            if (o->col[3] > 0x14) {
+                o->col[3] -= 19;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (o->f38 < -12) {
+            o->mode = 0;
+        }
+        if (g->count < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    o->tick++;
+    o->f38 += o->speed;
+    return 0;
+}
+
+/* shape b850:01E01160, 100 insns: a blue tumbling burst: frame 10 growing by 2..3 once started, random turn on all three axes,
+   width 15; both colours blue at full alpha on the first frame, then both down by 7, the first ending it */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 grow;
+    u8 padA[6];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b850_01E01160;
+
+static s32 func_01E01160_b850(void *arg0, Obj_b850_01E01160 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0xA;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->sub = 0;
+        o->state = 2;
+        o->grow = func_0019A5C8() % 2 + 2;
+        o->h6 = 0xF;
+        func_001076F0(o->c0, 0x30, 0x30, 0xA0);
+        func_001076F0(o->c1, 0x30, 0x30, 0xA0);
+    }
+    if (o->t < 1) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] = 0x80;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] = 0x80;
+        }
+    } else {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 8) {
+            o->c1[3] -= 7;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    if (o->t != 0) {
+        o->h38 += o->grow;
+    }
+    o->t++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[0x28];
@@ -405,7 +529,86 @@ static s32 func_01E01A10_b850(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E01A60_b850);
+/* shape b850:01E01A60, 101 insns: a screen tint: builds a grey (0x80) full-screen textured sprite (0x6BF8,0x71F8 -
+   0x93F8,0x8DF8, uv 0..0.625 x 0..0.875) in the effect's alpha on the stack and sends it; the alpha grows by 12
+   (below 0x60) while the game step 0x2E38 is below 0x50, then fades by 9 and stops */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b850_01E01A60;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b850_01E01A60 p;
+} Tv_b850_01E01A60;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b850_01E01A60 v[2];
+    u8 tail[0x20];
+} Tex_b850_01E01A60;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b850_01E01A60;
+
+typedef struct {
+    u8 pad0[0x2E38];
+    s16 step;
+} Game_b850_01E01A60;
+
+static s32 func_01E01A60_b850(Game_b850_01E01A60 *g, Fx_b850_01E01A60 *o) {
+    Tex_b850_01E01A60 pk __attribute__((aligned(8)));
+
+    ((Tex_b850_01E01A60 *)(s32)&pk)->count = 0x26;
+    ((Tex_b850_01E01A60 *)(s32)&pk)->tag = 5;
+    ((Tex_b850_01E01A60 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b850_01E01A60 *)(s32)&pk)->pad = 0;
+    pk.r = 0x80;
+    pk.g = 0x80;
+    pk.b = 0x80;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = 0.0f;
+    pk.v[0].t = 0.0f;
+    pk.v[1].s = 0.625f;
+    pk.v[1].t = 0.875f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->step < 0x50) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 12;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E01C00_b850);
 

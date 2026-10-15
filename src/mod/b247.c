@@ -647,9 +647,150 @@ static void func_01E01640_b247(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
 
 INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E019B0_b247);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E01F70_b247);
+/* shape b247:01E01F70, 117 insns: on start by the kind 0x50 (0: f4C 220, hold 14, colours (0xFF, 0x40, 0x40) / white;
+   1: hold 3, both (0xFF, 0x80, 0x80)), 0x52 = 0, 0x5A/0x5C = 10, second alpha 0; the second alpha grows by 0x60 (below
+   0xC0) during the hold, then fades by 9 (kind 0) or 15 (kind 1) and stops; kind 1 sits on the game point 0xB248 and
+   f48 grows by 25; the rotation at 0x20 advances 0x4000 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E02150_b247);
+typedef struct {
+    u8 pad0[0xB248];
+    s16 pt;
+} Game_b247_01E01F70;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b247_01E01F70;
+
+static s32 func_01E01F70_b247(Game_b247_01E01F70 *g, Fx_b247_01E01F70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f4C = 220.0f;
+            o->hold = 14;
+            func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        }
+        if (o->kind == 1) {
+            o->hold = 3;
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        }
+        o->f52 = 0;
+        o->f5A = 10;
+        o->f5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else {
+        if (o->kind == 0) {
+            if (o->col2[3] > 0xA) {
+                o->col2[3] -= 9;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col2[3] > 0x10) {
+                o->col2[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 1) {
+        func_001F5620(func_001F53A0(), g->pt, &o->pos);
+        o->f48 += 25.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
+
+/* shape b247:01E02150, 116 insns: a red rising spark on a model joint (b631:01E01D30 shape): size 2..4, sub-frame 0..2, height
+   5..14, angle, rise 6..15 once started, width 0..34, hold 3..5; alpha up by 42 to 0x80, then down by 14; follows the joint */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    Vec4f pos;
+    u8 pad20[0x28];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b247_01E02150;
+
+typedef struct {
+    u8 pad0[0xB248];
+    s16 joint;
+} Game_b247_01E02150;
+
+static s32 func_01E02150_b247(Game_b247_01E02150 *g, Obj_b247_01E02150 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 3 + 2;
+        o->sub = func_0019A5C8() % 3;
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->y = func_0019A5C8() % 10 + 5;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 10 + 6;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b247:01E02320, 129 insns, 2 copies: a blue ring by kind (0 wide and fast, 1 medium, 2 small and pale): set up once
    (thickness, radius); fades in over 6 frames, then out; its radius grows 60/20/5 a frame, turning 6 */

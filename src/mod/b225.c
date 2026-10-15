@@ -945,7 +945,59 @@ static s32 func_01E026A0_b225(void *arg0, Ember_b225_01E026A0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02810_b225);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02A70_b225);
+/* shape b225:01E02A70, 94 insns: on start 0x38 = 26, variant 0..7, random rotation 0x18, colour 0xA0 grey, random
+   0x3A, speed 20..37 (0xE), 0x8 0..9, hold 3..9 (0x6); alpha grows by 0x38 (up to 0x70) during the hold,
+   then fades by 10 and stops; 0x30 grows by the speed after the first tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b225_01E02A70;
+
+static s32 func_01E02A70_b225(s32 arg0, Fx_b225_01E02A70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 26;
+        o->f34 = func_0019A5C8() % 8;
+        o->rot = func_0019A5C8() % 0xFFFF;
+        func_001076F0(o->col, 0xA0, 0xA0, 0xA0);
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 18 + 20;
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 7 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x71) {
+            o->col[3] += 0x38;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b225:01E02BF0, 54 insns: variant of b257:01E031C0 (flash): start block as below; alpha held at 0xC0
    for the first 5 ticks, then fades out by 10 and stops */
@@ -986,7 +1038,58 @@ static s32 func_01E02BF0_b225(s32 arg0, Flash_b225_01E02BF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02CD0_b225);
+/* shape b225:01E02CD0, 104 insns: a white spark (size 16, random frame 0..7, two random turns, angle 350..499, spin 10..27, size 0..9, 15 at +0xC), held 2 ticks: in by 88 up to 0xB0, then out by 13 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b225_01E02CD0;
+
+static s32 func_01E02CD0_b225(s32 arg0, Glow_b225_01E02CD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 16;
+        o->kind = func_0019A5C8() % 8;
+        o->w10 = (func_0019A5C8() >> 4) % 65535;
+        o->w14 = (func_0019A5C8() >> 4) % 65535;
+        func_001076F0(o->col, 0xA0, 0xA0, 0x10);
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h30 = func_0019A5C8() % 150 + 350;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 18 + 10;
+        o->h8 = func_0019A5C8() % 10;
+        o->hC = 15;
+        o->h6 = 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0xB0) {
+            o->col[3] += 0x58;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b018:01E02480, 54 insns, 11 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */
@@ -1025,7 +1128,55 @@ static s32 func_01E02E70_b225(void *arg0, Obj_b018_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b225", func_01E02F50_b225);
+typedef struct {
+    u8 pad0000[0x36EC];
+    u8 tab[1];
+} Mgr_b225_01E02F50;
+
+typedef struct {
+    u8 pad00[8];
+    s16 x, y, z;
+    u8 pad0E[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b225_01E02F50;
+
+static s32 func_01E02F50_b225(Mgr_b225_01E02F50 *m, Obj_b225_01E02F50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 123;
+        o->h34 = 0;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        o->h30 = func_0019A5C8() % 360;
+        o->h3A = func_0019A5C8() % 360;
+        o->h36 = 2;
+    }
+    if (o->h32 < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->h36 = 0;
+    }
+    if (o->h32 % 3 == 1) {
+        if (o->h34 < 7) {
+            o->h34++;
+        }
+    }
+    o->h32++;
+    o->x = o->x + 14.0f * func_00108030(m->tab, o->h3A, 0);
+    o->y = o->y + 4.0f * func_00108030(m->tab, o->h30, 1);
+    o->z = o->z + 14.0f * func_00108030(m->tab, o->h3A, 1);
+    return 0;
+}
 
 /* shape b225:01E03120, 93 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
    raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the

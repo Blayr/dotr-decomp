@@ -542,7 +542,73 @@ INCLUDE_ASM("asm/nonmatchings/mod/b180", func_01E01760_b180);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b180", func_01E01AB0_b180);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b180", func_01E01D00_b180);
+/* shape b180:01E01D00, 108 insns: a white-blue glow on a model joint: size 30 growing by 10 to 100; second alpha up by 0x60 to
+   0xC0 until frame 200, then down by 9 until it ends; spins a quarter turn; follows the joint, shifted 5 back or forth by side */
+
+typedef struct {
+    u8 pad0[0xB248];
+    s16 joint;
+    u8 padB24A[0x70];
+    s16 side;
+} Game_b180_01E01D00;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b180_01E01D00;
+
+static s32 func_01E01D00_b180(Game_b180_01E01D00 *g, Obj_b180_01E01D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f4C = 30.0f;
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0x40, 0x40, 0xFF);
+        o->h52 = 0;
+        o->h5A = 0xA;
+        o->h5C = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xC8) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xA) {
+        o->c1[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    if (o->f4C < 100.0f) {
+        o->f4C += 10.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    if (g->side != 0) {
+        o->pos.z -= 5.0f;
+    } else {
+        o->pos.z += 5.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b180:01E01EB0, 98 insns: a grey puff: set up once (size 6..20, frame 0..2, start 50..249, growth 16..35, life 3..5); fades in by 0x40 for its life, then out by 14 */
 
@@ -593,7 +659,66 @@ static s32 func_01E01EB0_b180(void *arg0, Obj_b180_01E01EB0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b180", func_01E02040_b180);
+/* shape b180:01E02040, 98 insns: a two-colour fade by kind (0 blue/black, 1 black/red, 2 pale blue both; hold 4, 4 or 22): both
+   alphas up by 32 until the hold, then down by 7, the first ending it and the second stopping at 0 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b180_01E02040;
+
+static s32 func_01E02040_b180(void *arg0, Obj_b180_01E02040 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0, 0, 0x80);
+            func_001076F0(o->c1, 0, 0, 0);
+            o->hold = 4;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0, 0, 0);
+            func_001076F0(o->c1, 0x80, 0, 0);
+            o->hold = 4;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->c0, 0x58, 0x58, 0x78);
+            func_001076F0(o->c1, 0x58, 0x58, 0x78);
+            o->hold = 0x16;
+        }
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x20;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x20;
+        }
+    } else {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 8) {
+            o->c1[3] -= 7;
+        } else {
+            o->c1[3] = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b180:01E021D0, 66 insns: volume fade for a scene: starts at 0x80, fades down by 10 (floor 0x30) for the
    first 0x97 ticks, then back up by 10 (cap 0x80) while the game state is below 0x1E; state 3 forces full volume */

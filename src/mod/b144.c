@@ -737,7 +737,64 @@ INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E01C60_b144);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02030_b144);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E022A0_b144);
+/* shape b144:01E022A0, 97 insns: a red-white swirling column: width 10 growing by 6 to 150, height 60 growing by 40, rise 2 growing
+   by a random 5..39, random y turn going 0x200 a frame; second alpha up by 42 for 7 frames, then down by 11 until it ends */
+
+typedef struct {
+    u8 pad0[0xA];
+    s16 speed;
+    u8 padC[0x18];
+    s32 rot1;
+    u8 pad28[0xC];
+    f32 rise;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b144_01E022A0;
+
+static s32 func_01E022A0_b144(void *arg0, Obj_b144_01E022A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 10.0f;
+        o->f4C = 60.0f;
+        o->rise = 2.0f;
+        o->speed = func_0019A5C8() % 35 + 5;
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->h5A = 0xF;
+        o->h5C = 2;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 7) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    } else if (o->c1[3] > 0xC) {
+        o->c1[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->rot1 += 0x200;
+    if (o->f48 < 150.0f) {
+        o->f48 += 6.0f;
+    }
+    o->f4C += 40.0f;
+    o->rise += o->speed;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02430_b144);
 
@@ -794,7 +851,86 @@ static s32 func_01E02630_b144(void *arg0, Obj_b144_01E02630 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02750_b144);
+typedef struct {
+    u8 pad0000[0x5DD4];
+    u8 tab[1];
+} Mgr_b144_01E02750;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    u8 pad14[4];
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    u8 pad34[4];
+    f32 f38;
+    u8 pad3C[0x14];
+    s16 h50;
+    u8 pad52[2];
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b144_01E02750;
+
+static s32 func_01E02750_b144(Mgr_b144_01E02750 *m, Obj_b144_01E02750 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 150;
+        o->hA = 150;
+        o->h56 = func_0019A5C8() % 8;
+        o->f30 = 3.5f * func_00108030(m->tab, o->h50, 1);
+        o->f38 = 3.5f * func_00108030(m->tab, o->h50, 0);
+        func_001076F0(o->c60, 0xFF, 0x80, 0x80);
+        func_001076F0(o->c64, 0xFF, 0x80, 0x80);
+        o->h58 = 2;
+        o->c64[3] = 0;
+        o->h5C = 0;
+    }
+    if (o->h54 < 10) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x40;
+        }
+        if (o->c64[3] < 0xC0) {
+            o->c64[3] += 0x40;
+        }
+    } else {
+        if (o->c60[3] > 15) {
+            o->c60[3] -= 14;
+        } else {
+            o->h58 = 0;
+        }
+        if (o->c60[3] > 15) {
+            o->c60[3] -= 14;
+        }
+    }
+    if (o->h54 != 0) {
+        o->h8 += 15;
+        o->hA += 15;
+    }
+    if (o->h54 != 0) {
+        o->f10 += o->f30;
+        o->f18 += o->f38;
+        if (o->h5A < 90) {
+            o->h5A += 5;
+        }
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02930_b144);
 
@@ -946,7 +1082,58 @@ static s32 func_01E02F30_b144(s32 arg0, Obj_b144_01E02F30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03040_b144);
+/* shape b144:01E03040, 116 insns: a white tumbling spark (b034:01E027A0 shape): size 8 + 4, sub-frame 4, random turn on all three
+   axes, rising, angle, width 1..8, hold 4..8; alpha 0x60 until the hold, then down by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b144_01E03040;
+
+static s32 func_01E03040_b144(void *arg0, Obj_b144_01E03040 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 8 + 4;
+        o->sub = 4;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->y = func_0019A5C8() % 100 + 0x32;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 10 + 5;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 5 + 4;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x60;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
 
 /* shape b144:01E03210, 60 insns: a pink-white spinning flash (b236:01E01B70 family): f4C 80, f34 2, size 15x15;
    second alpha up by 42 to 0x80 for 10 frames, then down by 7 until it ends; a random turn, then the x turn reset to a
@@ -1000,7 +1187,58 @@ static s32 func_01E03210_b144(void *arg0, Obj_b144_01E03210 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E03300_b144);
+/* shape b144:01E03300, 116 insns: a white tumbling spark (b034:01E027A0 shape): size 4 + 2, sub-frame 4, random turn on all three
+   axes, rising, angle, width 1..8, hold 4..8; alpha 0x60 until the hold, then down by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b144_01E03300;
+
+static s32 func_01E03300_b144(void *arg0, Obj_b144_01E03300 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 4 + 2;
+        o->sub = 4;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->y = func_0019A5C8() % 30 + 5;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 15 + 0xA;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 5 + 4;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x60;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
 
 /* shape b144:01E034D0, 153 insns, 2 copies: a full-screen zoom flash: draws one textured sprite over the whole screen, its
    texture window shrinking in by the zoom value; fades in over 10 frames while the zoom grows by 0.3 (to 100),

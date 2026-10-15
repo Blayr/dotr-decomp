@@ -789,7 +789,64 @@ static s32 func_01E02290_b485(Game_b485_01E02290 *g, Obj_b485_01E02290 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E023F0_b485);
+/* shape b485:01E023F0, 109 insns: a blue spark (20 x 90, frames 2..4 then cycling 0..7, random heading) rising a random 0.2..0.99 a tick, held 5..9 ticks: in by 16 up to 0x80, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[8];
+    f32 f14;
+    u8 pad18[8];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x1C];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b485_01E023F0;
+
+static s32 func_01E023F0_b485(s32 arg0, Obj_b485_01E023F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->h8 = 20;
+        o->hA = func_001A22C0(4.5f * o->h8);
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0x30, 0x30, 0x80);
+        o->mode = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->h6 = (func_0019A5C8() >> 4) % 5 + 5;
+        o->f34 = func_0019A5C8() % 80 + 20;
+        o->f34 = o->f34 / 100.0f;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f14 += o->f34;
+    }
+    o->kind++;
+    if (o->kind > 7) {
+        o->kind = 0;
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 /* shape b485:01E025B0, 54 insns: volume fade: starts at 0x80; while the game counter at 0x4490 is over 0x1E it drops by
    10 to 0x20, otherwise it rises by 10 (clamped) and stops at 0x80; func_001F6D00 gets 0x80 when the counter is 2,

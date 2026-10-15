@@ -1071,7 +1071,73 @@ static s32 func_01E033D0_b550(void *arg0, Obj_b550_01E033D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E03590_b550);
+/* shape b550:01E03590, 118 insns: on start f48 55, f4C 0, colour 0xDF grey, second colour (0x80, 0x40, 0xFF) with alpha
+   0, random phase 0x52, 0x5A/0x5C = 15; alpha grows by 12 (below 0x80) for 150 ticks, then fades by 11 and stops; the
+   second colour flickers violet; the rotation at 0x20 advances 0x4000; f48 = 55 + 15 x the sine of the phase (game
+   table 0xBF4C), which turns 8 a tick */
+
+typedef struct {
+    u8 pad0[0xBF4C];
+    u8 trig[1];
+} Game_b550_01E03590;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 phase;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b550_01E03590;
+
+static s32 func_01E03590_b550(Game_b550_01E03590 *g, Fx_b550_01E03590 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 55.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->col, 0xDF, 0xDF, 0xDF);
+        func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        o->phase = func_0019A5C8() % 360;
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 150) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+    } else {
+        func_001076F0(o->col2, 0x70, 0x20, 0xCF);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->f48 = 55.0f + 15.0f * func_00108030(g->trig, o->phase, 0);
+    o->phase += 8;
+    if (o->phase >= 360) {
+        o->phase %= 360;
+    }
+    o->tick++;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[0x20];
@@ -1288,7 +1354,87 @@ static s32 func_01E03C60_b550(Game_b550_01E03C60 *g, Fx_b550_01E03C60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E03D30_b550);
+/* shape b550:01E03D30, 106 insns: b378:01E01B80 family: draws the lavender bar sprite at its own alpha, which fades in by 10 up to 0x50 for 175 ticks, then out by 9 and ends */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b550_01E03D30;
+
+typedef struct {
+    Hdr_b550_01E03D30 h;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    u64 x0 : 16;
+    u64 y0 : 16;
+    u64 z0 : 24;
+    u64 f0 : 8;
+    f32 s1, t1;
+    u64 x1 : 16;
+    u64 y1 : 16;
+    u64 z1 : 24;
+    u64 f1 : 8;
+    u8 tail[0x20];
+} Pkt_b550_01E03D30;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b550_01E03D30;
+
+static s32 func_01E03D30_b550(s32 arg0, Obj_b550_01E03D30 *o) {
+    Pkt_b550_01E03D30 p __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->mode = 2;
+    }
+    ((Hdr_b550_01E03D30 *)(s32)&p)->count = 0x26;
+    ((Hdr_b550_01E03D30 *)(s32)&p)->tag = 5;
+    ((Hdr_b550_01E03D30 *)(s32)&p)->regs = 0x42421;
+    ((Hdr_b550_01E03D30 *)(s32)&p)->pad = 0;
+    p.r = 0x70;
+    p.g = 0x60;
+    p.b = 0x80;
+    p.a = o->col[3];
+    p.q = 1.0f;
+    p.x0 = 0x6BF8;
+    p.y0 = 0x71F8;
+    p.z0 = 0xFFFFFF;
+    p.f0 = 0;
+    p.x1 = 0x93F8;
+    p.y1 = 0x8DF8;
+    p.z1 = 0xFFFFFF;
+    p.f1 = 0;
+    p.s0 = 0.0f;
+    p.t0 = 0.0f;
+    p.s1 = 0.625f;
+    p.t1 = 0.875f;
+    func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&p, 1);
+    func_002075F0((s32)&p, (s32)func_00207500(), 0);
+    if (o->t < 175) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E03EE0_b550);
 

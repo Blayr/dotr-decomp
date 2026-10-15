@@ -452,7 +452,98 @@ static s32 func_01E018E0_b267(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01930_b267);
+/* shape b267:01E01930, 123 insns: a grey full-screen veil (b064:01E02F10 shape): alpha up by 4 to 0x30 for 12 frames, up by 8 to
+   0x60 late in the scene, down by 12 once the scene timer drops under 17, gone when it hits 9 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b267_01E01930;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b267_01E01930 p;
+    } v[2];
+    u8 pad38[0x20];
+} Pkt_b267_01E01930;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+} Obj_b267_01E01930;
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 timer;
+    u8 pad3DD4[0x5A];
+    s16 t2;
+} Scene_b267_01E01930;
+
+static s32 func_01E01930_b267(Scene_b267_01E01930 *g, Obj_b267_01E01930 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    Pkt_b267_01E01930 pkt __attribute__((aligned(8)));
+
+    ((Pkt_b267_01E01930 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b267_01E01930 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b267_01E01930 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b267_01E01930 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x80;
+    pkt.g = 0x80;
+    pkt.b = 0x80;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    ((Xyz_b267_01E01930 *)(s32)&pkt.v[0].p)->x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0((s32)&pkt, func_00207500(), 0);
+    if (o->t < 0xC) {
+        if (o->c0[3] < 0x30) {
+            o->c0[3] += 4;
+        }
+    }
+    if (g->t2 >= 0x18C && g->timer > 0x11) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 8;
+        }
+    }
+    if (g->timer < 0x11) {
+        if (o->c0[3] > 0xD) {
+            o->c0[3] -= 0xC;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    if (g->timer == 9) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b233:01E01BC0, 166 insns: b069:01E01A70 with the position passed by value: draws 4 copies of a gradient
    quad (colour A on three corners, B on the last), each turned by the effect's rotation; far z. The packet is

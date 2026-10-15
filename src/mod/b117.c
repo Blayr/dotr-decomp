@@ -274,7 +274,63 @@ static s32 func_01E01820_b117(void *arg0, Swell_b117_01E01820 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E019D0_b117);
+/* shape b117:01E019D0, 119 insns: a yellow drifting mote: frame 5, random angle and turn; alpha up by 0xC0 for 6 frames, then
+   down by 39 until it ends; sub-frame steps up to 7 every fifth frame; drifts 18 along its angle and bobs 18 by its turn */
+
+typedef struct {
+    u8 pad0[0x3B90];
+    u8 sin[1];
+} Game_b117_01E019D0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 turn;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b117_01E019D0;
+
+static s32 func_01E019D0_b117(Game_b117_01E019D0 *g, Obj_b117_01E019D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    func_001076F0(o->c0, 0x80, 0x80, 0x40);
+    if (o->state == 1) {
+        o->h38 = 5;
+        o->ang = func_0019A5C8() % 360;
+        o->sub = 0;
+        o->turn = func_0019A5C8() % 360;
+        o->state = 2;
+    }
+    if (o->t < 6) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0xC0;
+        }
+    } else if (o->c0[3] > 0x28) {
+        o->c0[3] -= 0x27;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 5 == 1) {
+        if (o->sub < 7) {
+            o->sub++;
+        }
+    }
+    o->h8 = func_001A22C0(o->h8 + 18.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 18.0f * func_00108030(g->sin, o->turn, 1));
+    o->hC = func_001A22C0(o->hC + 18.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 /* shape b117:01E01BB0, 82 insns: a grey spark at the game's point (b117:01E01640 shape): frame 25, random sub-frame 0..3 and turn
    on all three axes; alpha up by 0x40 for 2 frames, then down by 31 until it ends */
@@ -427,6 +483,130 @@ INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E025E0_b117);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E027F0_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E02A30_b117);
+/* shape b117:01E02A30, 115 insns: draws a small depth-sorted sprite (b004:01E01860 shape): unlit, it sets up the colour and
+   texture page; lit, it builds a matrix from its turn at its position plus a tenth of its drift, and sends the square of its
+   size at its depth if it lands on screen */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E02C00_b117);
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b117_01E02A30;
+
+typedef struct {
+    u8 pad0[0x11C];
+    s32 tex;
+} Scene_b117_01E02A30;
+
+static void func_01E02A30_b117(Scene_b117_01E02A30 *g, Fx_b117_01E02A30 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 z[4];
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x9b, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    func_00108EF0(m, 0, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    if (func_00205630(quad, 0x70000000, m, p, z) != 0) {
+        func_00109380(p, 0);
+        func_002075F0((s32)p, v, func_001A23B0(z[0]));
+    }
+}
+
+/* shape b117:01E02C00, 106 insns: mode 0 sets the drawing state (a 0x9B matrix from its angle 0x34, colour, the scene
+   texture 0x11C); otherwise draws the effect as a camera-facing square of its size 0x38: camera rotation, world matrix (scale 0.1) at its position offset by
+   a tenth of 0x8..0xC, then func_00108F90 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b117_01E02C00;
+
+typedef struct {
+    u8 pad0[0x11C];
+    s32 tex;
+} Scene_b117_01E02C00;
+
+static void func_01E02C00_b117(Scene_b117_01E02C00 *g, Fx_b117_01E02C00 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+    f32 t;
+
+    v = (s32)func_00207500();
+    if (mode == 0) {
+        func_00106080(rm, 0x9B, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
+        func_00205C40((s32)rot);
+        t = o->dx;
+        t /= 10.0f;
+        pos.x = o->x;
+        pos.x += t;
+        t = o->dy;
+        t /= 10.0f;
+        pos.y = o->y;
+        pos.y += t;
+        t = o->dz;
+        t /= 10.0f;
+        pos.z = o->z;
+        pos.z += t;
+        func_00108EF0(m, &scale, rot, &pos);
+        func_00108CE0(quad, o->size, o->size);
+        func_00108F90(quad, p, m, v);
+    }
+}

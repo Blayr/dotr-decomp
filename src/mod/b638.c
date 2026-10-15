@@ -820,4 +820,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/b638", func_01E034A0_b638);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b638", func_01E03E40_b638);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b638", func_01E05340_b638);
+/* shape b638:01E05340, 107 insns: per-tick step of the 8 b638 swirl parts: update each (shape b638:01E01EF0), from scene state 190 clear its flag byte, then push each live particle 1.4x outward; ones whose age reaches 9 respawn on a random unit point (func_001043F0) with a random negative age and the part's colour index */
+
+typedef struct {
+    f32 x, y, z;
+    u8 c;
+    u8 padD;
+    s16 age;
+} Pa_b638_01E05340;
+
+typedef struct {
+    u8 pad0[0xB];
+    u8 c;
+    Pa_b638_01E05340 *list;
+    u8 pad10[0x1C];
+    s16 n;
+    u8 pad2E[2];
+} Part_b638_01E05340;
+
+typedef struct {
+    u8 pad0[0x3430];
+    u8 q[8][0x70];
+    Part_b638_01E05340 p[8];
+    u8 pad3930[0x5AF4 - 0x3930];
+    s32 state;
+} Scene_b638_01E05340;
+
+static void func_01E05340_b638(Scene_b638_01E05340 *g, s32 arg1) {
+    extern void b638_01E01EF0(s32, Part_b638_01E05340 *, void *);
+    extern void func_00103470(void *, u32, s32);
+    extern void func_001043F0(void *, f32);
+    Vec4f v;
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < 8; i++) {
+        b638_01E01EF0(arg1, &g->p[i], g->q[i]);
+        j = 0;
+        if (g->state > 189) {
+            func_00103470(&g->p[i].c, 0, 8);
+        }
+        for (j = 0; j < g->p[i].n; j++) {
+            if (g->p[i].list[j].age >= 0) {
+                g->p[i].list[j].x *= 1.4f;
+                g->p[i].list[j].y *= 1.4f;
+                g->p[i].list[j].z *= 1.4f;
+                if (g->p[i].list[j].age > 8) {
+                    func_001043F0(&v, 1.0f);
+                    g->p[i].list[j].y = v.y;
+                    g->p[i].list[j].z = v.z;
+                    g->p[i].list[j].x = v.x;
+                    g->p[i].list[j].age = -(func_0019A5C8() % 12);
+                    g->p[i].list[j].c = g->p[i].c;
+                }
+            }
+        }
+    }
+}

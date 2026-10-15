@@ -396,7 +396,60 @@ static s32 func_01E01D50_b760(void *arg0, Spark_b521_01E01790 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E01F30_b760);
+/* shape b760:01E01F30, 120 insns, 2 copies: a pale bloom: set up once (random size 100..129, frame 0..7, angle 100..149, speed
+   36..55, life 7..16); fades in for its life, then out; turns for 90 frames and grows 6 a frame for 140 (b225:01E026A0 family, 0x58-state layout) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 ang;
+    u8 pad52[2];
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+} Spark_b760_01E01F30;
+
+static s32 func_01E01F30_b760(void *arg0, Spark_b760_01E01F30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 30 + 100;
+        o->frame = func_0019A5C8() % 8;
+        func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+        o->ang = func_0019A5C8() % 100 + 200;
+        o->h5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 36;
+        o->h8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 10 + 7;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t < 0x5A && o->t != 0) {
+        o->ang += o->speed;
+    }
+    if (o->t < 0x8C) {
+        o->size += 6.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02110_b760);
 
@@ -406,4 +459,70 @@ INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02820_b760);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E02B00_b760);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b760", func_01E03260_b760);
+/* shape b760:01E03260, 82 insns: c035:01E01150 family: take the first free effect slot of 450 (0x70 bytes each, at ctx+0x11B0), clear it, give it the scene colour twice, the scene position, the scene value twice and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b760_01E03260;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x11b0 - 0x25C];
+    Obj_b760_01E03260 slot[450];
+    u8 padEnd[0xd7f4 - 0x11b0 - 450 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 padD7F8[0x8A];
+    s16 val;
+} Ctx_b760_01E03260;
+
+static s32 func_01E03260_b760(Ctx_b760_01E03260 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b760_01E03260 *s;
+
+    s = NULL;
+    for (i = 0; i < 450; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 450;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h50 = ctx->val;
+        s->h52 = ctx->val;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}

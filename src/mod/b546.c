@@ -501,7 +501,77 @@ INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01510_b546);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01730_b546);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01B90_b546);
+/* shape b546:01E01B90, 119 insns: a red/white blinking spark (size 8, frame 4, angle 10..29, spin 4..10, size 1..8) held 20..22 ticks at 0xC0, then out by 11 and ends; held at tick 30 while the scene count is under 35 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b546_01E01B90;
+
+typedef struct {
+    u8 pad[0xC7F0];
+    s32 val;
+} Game_b546_01E01B90;
+
+static s32 func_01E01B90_b546(Game_b546_01E01B90 *g, Obj_b546_01E01B90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 8.0f;
+        o->kind = 4;
+        func_001076F0(o->col, 0xFF, 0x60, 0x60);
+        o->h50 = func_0019A5C8() % 20 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 7 + 4;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 3 + 20;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x60, 0x60);
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    if (g->val < 35) {
+        o->t = 30;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b259:01E02760, 83 insns, 2 copies: a blinking marker: set up once (white and red, size 80); the second colour fades in
    for the first frames, then out; it blinks between yellow and dim each frame while turning (b016:01E01FF0

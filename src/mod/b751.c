@@ -456,7 +456,63 @@ static void func_01E00F40_b751(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01350_b751);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E016C0_b751);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape b751:01E016C0, 115 insns: spark thrown 8.6 units out at a random angle, drifting 0.6 a frame after that */
+
+typedef struct Sp_b751_01E016C0 {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x;
+    u8 pad14[4];
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 age;
+    s16 h56;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Sp_b751_01E016C0;
+
+typedef struct Scn_b751_01E016C0 {
+    u8 pad0[0xB4BC];
+    u8 table[0x10];
+} Scn_b751_01E016C0;
+
+static s32 func_01E016C0_b751(Scn_b751_01E016C0 *w, Sp_b751_01E016C0 *o) {
+    extern s32 func_001076F0();
+    if (o->state == 1) {
+        o->h8 = 0x78;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+        o->z += 8.6f * func_00108030((s32)w->table, o->ang, 0);
+        o->x += 8.6f * func_00108030((s32)w->table, o->ang, 1);
+    }
+    if (o->age < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->state = 0;
+    }
+    if (o->age != 0) {
+        o->z += 0.6f * func_00108030((s32)w->table, o->ang, 0);
+        o->x += 0.6f * func_00108030((s32)w->table, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->age++;
+    return 0;
+}
 
 /* shape b751:01E01890, 59 insns: constant variant of b415:01E022B0 (colour (255, 192, 192), colour (255, 128, 64)) */
 
@@ -514,7 +570,89 @@ INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01BF0_b751);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E01E30_b751);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b751", func_01E02070_b751);
+/* shape b751:01E02070, 112 insns: b550:01E03D30 family: draws the bar sprite in its own colour (set to 0x90/0x80/0x80), alpha in by 20 up to 0x50 for 30 ticks, then out by 9 and ends */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b751_01E02070;
+
+typedef struct {
+    Hdr_b751_01E02070 h;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    u64 x0 : 16;
+    u64 y0 : 16;
+    u64 z0 : 24;
+    u64 f0 : 8;
+    f32 s1, t1;
+    u64 x1 : 16;
+    u64 y1 : 16;
+    u64 z1 : 24;
+    u64 f1 : 8;
+    u8 tail[0x20];
+} Pkt_b751_01E02070;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b751_01E02070;
+
+static s32 func_01E02070_b751(s32 arg0, Obj_b751_01E02070 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    Pkt_b751_01E02070 p __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0x90, 0x80, 0x80);
+        o->mode = 2;
+    }
+    ((Hdr_b751_01E02070 *)(s32)&p)->count = 0x26;
+    ((Hdr_b751_01E02070 *)(s32)&p)->tag = 5;
+    ((Hdr_b751_01E02070 *)(s32)&p)->regs = 0x42421;
+    ((Hdr_b751_01E02070 *)(s32)&p)->pad = 0;
+    p.r = o->col[0];
+    p.g = o->col[1];
+    p.b = o->col[2];
+    p.a = o->col[3];
+    p.q = 1.0f;
+    p.x0 = 0x6BF8;
+    p.y0 = 0x71F8;
+    p.z0 = 0xFFFFFF;
+    p.f0 = 0;
+    p.x1 = 0x93F8;
+    p.y1 = 0x8DF8;
+    p.z1 = 0xFFFFFF;
+    p.f1 = 0;
+    p.s0 = 0.0f;
+    p.t0 = 0.0f;
+    p.s1 = 0.625f;
+    p.t1 = 0.875f;
+    func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&p, 1);
+    func_002075F0((s32)&p, (s32)func_00207500(), 0);
+    if (o->t < 30) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 0x14;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

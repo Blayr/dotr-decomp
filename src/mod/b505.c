@@ -312,7 +312,71 @@ static s32 func_01E010C0_b505(Game_b505_01E010C0 *g, Fx_b505_01E010C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E01160_b505);
+/* shape b505:01E01160, 92 insns: b582:01E03470 family scene light at ctx+0x2880 (orange 4/2/0, range 128, height 120): raised by 0.2 to 1, lowered by 0.1 and ended; applied while alive; ends at scene state 1 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Obj_b505_01E01160;
+
+typedef struct {
+    f32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 h;
+    f32 level;
+    u8 pad2C[0x2d4];
+    s32 state;
+} Light_b505_01E01160;
+
+typedef struct {
+    u8 pad[0x2880];
+    Light_b505_01E01160 l;
+} Game_b505_01E01160;
+
+static s32 func_01E01160_b505(Game_b505_01E01160 *g, Obj_b505_01E01160 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->l.w0 = 128.0f;
+        g->l.r = 4.0f;
+        g->l.g = 2.0f;
+        g->l.b = 0.0f;
+        g->l.w20 = 0;
+        g->l.h = 120.0f;
+        g->l.level = 0.0f;
+        g->l.x = o->x;
+        g->l.y = o->y;
+        g->l.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->l.level < 1.0f) {
+            g->l.level += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (g->l.level > 0.1f) {
+        g->l.level -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->l);
+    }
+    if (g->l.state == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b505:01E012E0, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x2B80 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

@@ -622,7 +622,88 @@ static s32 func_01E02570_b566(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E025C0_b566);
+/* shape b566:01E025C0, 103 insns: a screen tint: builds a grey (0x80) full-screen textured sprite (0x6BF8,0x71F8 -
+   0x93F8,0x8DF8, uv 0..0.625 x 0..0.875) in the effect's alpha on the stack and sends it; alpha 0 on start, 0x68
+   while the game step 0x3798 is below 0x118, then fades by 12 and stops */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b566_01E025C0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b566_01E025C0 p;
+} Tv_b566_01E025C0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b566_01E025C0 v[2];
+    u8 tail[0x20];
+} Tex_b566_01E025C0;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b566_01E025C0;
+
+typedef struct {
+    u8 pad0[0x3798];
+    s16 step;
+} Game_b566_01E025C0;
+
+static s32 func_01E025C0_b566(Game_b566_01E025C0 *g, Fx_b566_01E025C0 *o) {
+    Tex_b566_01E025C0 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        o->mode = 2;
+    }
+    ((Tex_b566_01E025C0 *)(s32)&pk)->count = 0x26;
+    ((Tex_b566_01E025C0 *)(s32)&pk)->tag = 5;
+    ((Tex_b566_01E025C0 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b566_01E025C0 *)(s32)&pk)->pad = 0;
+    pk.r = 0x80;
+    pk.g = 0x80;
+    pk.b = 0x80;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = 0.0f;
+    pk.v[0].t = 0.0f;
+    pk.v[1].s = 0.625f;
+    pk.v[1].t = 0.875f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->step < 0x118) {
+        o->col[3] = 0x68;
+    } else if (o->col[3] > 0xD) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b566", func_01E02760_b566);
 

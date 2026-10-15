@@ -624,7 +624,75 @@ static void func_01E01520_b432(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E01920_b432);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E01BB0_b432);
+/* shape b432:01E01BB0, 115 insns: b038:01E01090's smoke puff, short form: on start size 4.0, random frame/headings/
+   timings, grey colour; alpha +0x20 (below 0x80) for h6 ticks then -8; heading 0x5C turns 2 per tick. */
+
+typedef struct {
+    u8 pad0[0x7EF8];
+    s16 v;
+} Ctx_b432_01E01BB0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b432_01E01BB0;
+
+static s32 func_01E01BB0_b432(Ctx_b432_01E01BB0 *ctx, Obj_b432_01E01BB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 b[4];
+
+    if (o->state == 1) {
+        o->f48 = 4.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 20 + 10;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        func_001F5620(func_001F53A0(), ctx->v, b);
+        o->state = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->state = 0;
+    }
+    o->h5C += 2;
+    o->t++;
+    return 0;
+}
 
 /* shape b432:01E01D80, 102 insns, 2 copies: a white blinker pinned to a model joint: set up once (size 30, frame 4, random
    angle); fades in over 50 frames, then out; blinks white/grey each frame and follows the joint's position */
@@ -818,11 +886,153 @@ static s32 func_01E026D0_b432(void *arg0, Obj_b432_01E026D0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E02800_b432);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E02DE0_b432);
+/* shape b432:01E02DE0, 111 insns: a red-white glow pushed past a joint: size 50 growing by 3 to 100 after frame 30; second alpha
+   up by 19 to 0xC0 until frame 200, then down by 15 until it ends; spins; sits on one joint, pushed a fifth away from another */
+
+typedef struct {
+    u8 pad0[0x7EF6];
+    s16 joint1;
+    s16 joint0;
+} Game_b432_01E02DE0;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b432_01E02DE0;
+
+static s32 func_01E02DE0_b432(Game_b432_01E02DE0 *g, Obj_b432_01E02DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    struct {
+        f32 x, y, z, w;
+    } v;
+
+    if (o->state == 1) {
+        o->f4C = 50.0f;
+        func_001076F0(o->c1, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->h52 = 0;
+        o->h5A = 0xA;
+        o->h5C = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xC8) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x13;
+        }
+    } else if (o->c1[3] > 0x10) {
+        o->c1[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->t >= 0x1E) {
+        if (o->f4C < 100.0f) {
+            o->f4C += 3.0f;
+        }
+    }
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint0, &o->pos);
+    func_001F5620(func_001F53A0(), g->joint1, &v);
+    o->pos.x += 0.2f * (o->pos.x - v.x);
+    o->pos.y += 0.2f * (o->pos.y - v.y);
+    o->pos.z += 0.2f * (o->pos.z - v.z);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E02FA0_b432);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b432", func_01E031D0_b432);
+/* shape b432:01E031D0, 100 insns: a white light on a model joint: colour 128/4/4/4, range 123; power up by 0.1 to 1 until frame
+   210, then down by 0.3 until it ends; the light follows the joint each frame; ends when the scene state is 1 */
+
+typedef struct {
+    u8 pad0[0x4440];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad445C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad446C[0x7EC0 - 0x446C];
+    s32 state;
+    u8 pad7EC4[0x34];
+    s16 joint;
+} Scene_b432_01E031D0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x34];
+    s16 down;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 live;
+} Obj_b432_01E031D0;
+
+static s32 func_01E031D0_b432(Scene_b432_01E031D0 *g, Obj_b432_01E031D0 *o) {
+    extern void func_001F6C10(void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    struct {
+        f32 x, y, z, w;
+        f32 pad[4];
+    } v;
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 4.0f;
+        g->l0[3] = 4.0f;
+        g->f20 = 0.0f;
+        g->range = 123.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    g->pos[0] = v.x;
+    g->pos[1] = v.y;
+    g->pos[2] = v.z;
+    if (o->t < 0xD2) {
+        if (g->power < 1.0f) {
+            g->power += 0.1f;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.3f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b432:01E03360, 62 insns: volume fade: starts at 0x80, fades down by 10 (floor 0x60) for the first 0x33
    ticks, then back up by 10 (cap 0x80) while the game state is below 0x1E; state 3 forces full volume */

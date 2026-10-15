@@ -288,7 +288,67 @@ INCLUDE_ASM("asm/nonmatchings/mod/b515", func_01E00E90_b515);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b515", func_01E01130_b515);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b515", func_01E013C0_b515);
+/* shape b515:01E013C0, 107 insns: b593:01E020C0 family: a yellow spark (size 40 growing 3, random frame 0..7) spinning a random 2..9 a tick from 10..59 (old angle moved to +0xC), random 0..7 at +0xA, size 0..34, held 2..5 ticks at 0x80, then out by 8 and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b515_01E013C0;
+
+static s32 func_01E013C0_b515(s32 arg0, Obj_b515_01E013C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 40.0f;
+        o->kind = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 50 + 10;
+        o->hE = func_0019A5C8() % 8 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 4 + 2;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->f48 += 3.0f;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b515", func_01E01570_b515);
 

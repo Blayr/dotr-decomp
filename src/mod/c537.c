@@ -818,4 +818,70 @@ static s32 func_01E028A0_c537(s32 obj, Spr_b000_01E03420 *spr, Cam_b000_01E03420
 
 INCLUDE_ASM("asm/nonmatchings/mod/c537", func_01E02EB0_c537);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c537", func_01E03E40_c537);
+/* shape c537:01E03E40, 103 insns: the scene step: runs its five parts, grows the scale by 0.2 a frame up to 1 and by 0.005
+   after, then clears a flag and the five parts' flags; turns all 64 bones by 0x80 on each axis */
+
+typedef struct {
+    s32 rot[3];
+    u8 padC[4];
+} Bone_c537_01E03E40;
+
+typedef struct {
+    f32 scale[3];
+    u8 padC[0x64];
+    u8 part70[0xB];
+    u8 flag7B;
+    u8 pad7C[0x54];
+    Bone_c537_01E03E40 bones[0x40];
+    u8 pad4D0[0xA0];
+    u8 part570[0x37];
+    u8 flag5A7;
+    u8 pad5A8[0x28];
+    u8 part5D0[0xB];
+    u8 flag5DB;
+    u8 pad5DC[0x3F4];
+    u8 part9D0[0xB];
+    u8 flag9DB;
+    u8 pad9DC[0x3F4];
+    u8 partDD0[4];
+    s32 flagsDD4;
+    u8 padDD8[3];
+    u8 flagDDB;
+    u8 padDDC[0x34];
+    u8 partE10[1];
+} Scene_c537_01E03E40;
+
+static void func_01E03E40_c537(Scene_c537_01E03E40 *s, s32 arg1) {
+    extern void c537_01E00A10(s32, void *, void *, void *);
+    extern void c537_01E018B0(s32, void *, void *);
+    extern void c537_01E01FA0(s32, void *, void *);
+    extern void c537_01E028A0(s32, void *, void *);
+    extern void func_00103470(void *, u8, s32);
+    s32 i;
+
+    c537_01E01FA0(arg1, s->partDD0, s->partE10);
+    c537_01E018B0(arg1, s->part5D0, s);
+    c537_01E018B0(arg1, s->part9D0, s);
+    c537_01E00A10(arg1, s->part570, s->pad4D0, s);
+    c537_01E028A0(arg1, s->part70, s);
+    if (s->scale[0] <= 1.0f) {
+        s->scale[0] += 0.2f;
+        s->scale[1] += 0.2f;
+        s->scale[2] += 0.2f;
+    } else {
+        s->scale[0] += 0.005f;
+        s->scale[1] += 0.005f;
+        s->scale[2] += 0.005f;
+        s->flagsDD4 &= ~0x40000;
+        func_00103470(&s->flagDDB, 0, 4);
+        func_00103470(&s->flag7B, 0, 2);
+        func_00103470(&s->flag5DB, 0, 2);
+        func_00103470(&s->flag9DB, 0, 2);
+        func_00103470(&s->flag5A7, 0, 3);
+    }
+    for (i = 0; i < 0x40; i++) {
+        s->bones[i].rot[0] += 0x80;
+        s->bones[i].rot[1] += 0x80;
+        s->bones[i].rot[2] += 0x80;
+    }
+}

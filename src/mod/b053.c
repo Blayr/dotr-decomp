@@ -81,7 +81,54 @@ static s32 func_01E008F0_b053(s32 arg0, Glow_b053_01E008F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E009F0_b053);
+typedef struct {
+    u8 pad0000[0x3B64];
+    u8 tab[1];
+} Mgr_b053_01E009F0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 x, y, z;
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b053_01E009F0;
+
+static s32 func_01E009F0_b053(Mgr_b053_01E009F0 *m, Obj_b053_01E009F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->h36 == 1) {
+        func_0019A5C8();
+        func_001076F0(o->col, 0xFF, 0, 0xFF);
+        o->h3A = func_0019A5C8() % 360;
+        o->h30 = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 10 + 10;
+        o->h6 = func_0019A5C8() % 15 + 1;
+        o->h38 = 6;
+        o->h36 = 2;
+    }
+    if (o->h32 < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->h36 = 0;
+    }
+    o->h32++;
+    o->x = o->x + o->hE * func_00108030(m->tab, o->h3A, 0);
+    o->y = o->y + o->hE * func_00108030(m->tab, o->h30, 1);
+    o->z = o->z + o->hE * func_00108030(m->tab, o->h3A, 1);
+    return 0;
+}
 
 /* shape b053:01E00BD0, 76 insns: a dark ring (b130:01E012D0 shape): set up once at alpha 0x60 with a random turn on all three
    axes and a random growth step 2..6; grows by that step up to 50, fades by 9 after 10, turns 12 a frame */
@@ -129,7 +176,74 @@ static s32 func_01E00BD0_b053(void *arg0, Obj_b053_01E00BD0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00D00_b053);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00F20_b053);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* OVL_WARM */
+
+/* shape b053:01E00F20, 113 insns: glow pinned to a scene object, rising slowly; its size follows a sine ramp */
+
+typedef struct Fl_b053_01E00F20 {
+    s16 x, y, z;
+    u8 pad6[4];
+    s16 ang;
+    u8 padC[0x1C];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 rise;
+    s16 age;
+    s16 h34;
+    s16 state;
+    s16 size;
+    s16 h3A;
+} Fl_b053_01E00F20;
+
+typedef struct Scn_b053_01E00F20 {
+    u8 pad0[0x3B48];
+    s16 id;
+    u8 pad3B4A[0x1A];
+    u8 table[0x10];
+} Scn_b053_01E00F20;
+
+static s32 func_01E00F20_b053(Scn_b053_01E00F20 *w, Fl_b053_01E00F20 *o) {
+    extern s32 func_001076F0();
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    Vec4f v;
+
+    func_001076F0(o->c28, 0x28, 0x10, 0x28);
+    if (o->state == 1) {
+        o->size = 10;
+        o->h3A = func_0019A5C8() % 360;
+        o->h34 = 0;
+        o->rise = 0;
+        o->ang = 20;
+        o->state = 2;
+    }
+    func_001F5620(func_001F53A0(), w->id, &v);
+    o->x = (s32)v.x;
+    o->y = (s32)(v.y - 8.0f + (f32)o->rise);
+    o->z = (s32)v.z;
+    if (o->age % 2 == 1) {
+        o->rise++;
+    }
+    o->size = (s32)(100.0f * func_00108030((s32)w->table, o->ang, 0));
+    if (o->ang < 0x5A) {
+        o->ang += 5;
+    }
+    if (o->age < 8) {
+        if (o->c28[3] < 0x30) {
+            o->c28[3] += 6;
+        }
+    } else if (o->ang >= 0x46) {
+        if (o->c28[3] > 5) {
+            o->c28[3] -= 4;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->age++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E010F0_b053);
 

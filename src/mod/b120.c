@@ -597,7 +597,65 @@ static s32 func_01E01F60_b120(s32 arg0, Flash_b120_01E01F60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b120", func_01E02040_b120);
+/* shape b120:01E02040, 99 insns: on start 0x38 = 10, variant 0..3, colour (0x70, 8, 0xC0), rotation (0, 0x8000 unless
+   the game flag 0xACB8 is set, 0), 0x3A keeps the old 0x30, 0x30 5..14, speed 30..49 (0xE), 0x8 0..49, hold 30..49
+   (0x6); alpha grows by 12 during the hold, then fades by 10 and stops; 0x30 grows by the speed */
+
+typedef struct {
+    u8 pad0[0xACB8];
+    s16 flag;
+} Game_b120_01E02040;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b120_01E02040;
+
+static s32 func_01E02040_b120(Game_b120_01E02040 *g, Fx_b120_01E02040 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 10;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x70, 8, 0xC0);
+        if (g->flag != 0) {
+            o->rot[1] = 0;
+        } else {
+            o->rot[1] = 0x8000;
+        }
+        o->rot[0] = 0;
+        o->rot[2] = 0;
+        o->f3A = o->f30;
+        o->f30 = func_0019A5C8() % 10 + 5;
+        o->speed = func_0019A5C8() % 20 + 30;
+        o->f8 = func_0019A5C8() % 50;
+        o->hold = func_0019A5C8() % 20 + 30;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] += 12;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->f30 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b120", func_01E021D0_b120);
 

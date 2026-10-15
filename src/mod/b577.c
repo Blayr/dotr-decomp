@@ -673,7 +673,92 @@ static s32 func_01E01A00_b577(Game_b577_01E01A00 *g, Fade_b577_01E01A00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b577", func_01E01AE0_b577);
+/* shape b577:01E01AE0, 109 insns: b550:01E03D30 family: draws the pale yellow bar sprite at its own alpha, fading in by 10 up to 0x50 while the scene state is 21 or more, otherwise out by 6 and ending */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b577_01E01AE0;
+
+typedef struct {
+    Hdr_b577_01E01AE0 h;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    u64 x0 : 16;
+    u64 y0 : 16;
+    u64 z0 : 24;
+    u64 f0 : 8;
+    f32 s1, t1;
+    u64 x1 : 16;
+    u64 y1 : 16;
+    u64 z1 : 24;
+    u64 f1 : 8;
+    u8 tail[0x20];
+} Pkt_b577_01E01AE0;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b577_01E01AE0;
+
+typedef struct {
+    u8 pad[0x4A50];
+    s32 state;
+} Game_b577_01E01AE0;
+
+static s32 func_01E01AE0_b577(Game_b577_01E01AE0 *g, Obj_b577_01E01AE0 *o) {
+    Pkt_b577_01E01AE0 p __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->mode = 2;
+    }
+    ((Hdr_b577_01E01AE0 *)(s32)&p)->count = 0x26;
+    ((Hdr_b577_01E01AE0 *)(s32)&p)->tag = 5;
+    ((Hdr_b577_01E01AE0 *)(s32)&p)->regs = 0x42421;
+    ((Hdr_b577_01E01AE0 *)(s32)&p)->pad = 0;
+    p.r = 0x90;
+    p.g = 0x90;
+    p.b = 0x78;
+    p.a = o->col[3];
+    p.q = 1.0f;
+    p.x0 = 0x6BF8;
+    p.y0 = 0x71F8;
+    p.z0 = 0xFFFFFF;
+    p.f0 = 0;
+    p.x1 = 0x93F8;
+    p.y1 = 0x8DF8;
+    p.z1 = 0xFFFFFF;
+    p.f1 = 0;
+    p.s0 = 0.0f;
+    p.t0 = 0.0f;
+    p.s1 = 0.625f;
+    p.t1 = 0.875f;
+    func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&p, 1);
+    func_002075F0((s32)&p, (s32)func_00207500(), 0);
+    if (g->state > 20) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 7) {
+        o->col[3] -= 6;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b577", func_01E01CA0_b577);
 

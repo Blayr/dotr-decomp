@@ -107,6 +107,43 @@ INCLUDE_ASM("asm/nonmatchings/mod/b162", func_01E02750_b162);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b162", func_01E02CF0_b162);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b162", func_01E03F70_b162);
+/* OVL_CFLAGS: -O2,p */
+
+/* shape b162:01E03F70, 94 insns: looks up the sound ids for a set: set 0 takes five (0x28 first, then 0x27, 0x30, 0x2F, 1),
+   set 1 takes eight (0x35 first, then 0x34, 0x3A, 0x39, 0x3F, 0x3E, 0x44, 0x43) */
+
+typedef struct {
+    u8 pad0[4];
+    s32 bank;
+    u8 pad8[4];
+    s32 id[8];
+} Obj_b162_01E03F70;
+
+#pragma optimization_level 2
+
+static void func_01E03F70_b162(Obj_b162_01E03F70 *o, s32 set) {
+    extern s32 func_001F5560(s32, s32, s32);
+
+    switch (set) {
+    case 0:
+        o->id[0] = func_001F5560(o->bank, 0x28, 1);
+        o->id[1] = func_001F5560(o->bank, 0x27, 0);
+        o->id[2] = func_001F5560(o->bank, 0x30, 0);
+        o->id[3] = func_001F5560(o->bank, 0x2F, 0);
+        o->id[4] = func_001F5560(o->bank, 1, 0);
+        break;
+    case 1:
+        o->id[0] = func_001F5560(o->bank, 0x35, 1);
+        o->id[1] = func_001F5560(o->bank, 0x34, 0);
+        o->id[2] = func_001F5560(o->bank, 0x3A, 0);
+        o->id[3] = func_001F5560(o->bank, 0x39, 0);
+        o->id[4] = func_001F5560(o->bank, 0x3F, 0);
+        o->id[5] = func_001F5560(o->bank, 0x3E, 0);
+        o->id[6] = func_001F5560(o->bank, 0x44, 0);
+        o->id[7] = func_001F5560(o->bank, 0x43, 0);
+        break;
+    }
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b162", func_01E040F0_b162);

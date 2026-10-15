@@ -597,7 +597,66 @@ static s32 func_01E01B40_b498(s32 arg0, Flash_b120_01E01F60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b498", func_01E01C20_b498);
+/* shape b498:01E01C20, 99 insns: a blue rising spark: frame 10, random sub-frame 0..3, half turn unless the scene flag is set,
+   start height 5..14 (old one kept), rise 30..49, width 0..49, hold 30..49; alpha up by 12 until the hold, then down by 10 */
+
+typedef struct {
+    u8 pad0[0xACB8];
+    s16 flag;
+} Scene_b498_01E01C20;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 y0;
+} Obj_b498_01E01C20;
+
+static s32 func_01E01C20_b498(Scene_b498_01E01C20 *g, Obj_b498_01E01C20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 0xA;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0x20, 0x20, 0xC0);
+        if (g->flag != 0) {
+            o->rot1 = 0;
+        } else {
+            o->rot1 = 0x8000;
+        }
+        o->rot0 = 0;
+        o->rot2 = 0;
+        o->y0 = o->y;
+        o->y = func_0019A5C8() % 10 + 5;
+        o->step = func_0019A5C8() % 20 + 0x1E;
+        o->w = func_0019A5C8() % 50;
+        o->hold = func_0019A5C8() % 20 + 0x1E;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] += 0xC;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b498", func_01E01DB0_b498);
 

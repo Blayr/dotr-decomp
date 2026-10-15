@@ -577,7 +577,95 @@ INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E01CD0_b357);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E02180_b357);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E02590_b357);
+/* shape b357:01E02590, 118 insns, 7 copies: one camera-facing sprite at the object position plus offset / 10,
+   scaled by obj->size: the single-sprite member of the b018:01E00920 family. Calls the module's
+   sprite-UV helper (shape b008:01E00080) as a static function. */
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b357_01E02590;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b357_01E02590 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b357_01E02590;
+
+typedef struct {
+    s16 x, y, z;
+    s16 pad6;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    s16 padE;
+    s32 rx, ry, rz;
+    u8 pad1C[0xC];
+    u8 tex[8];
+    s16 scale;
+    u8 pad32[6];
+    s16 size;
+} Obj_b357_01E02590;
+
+static void func_01E02590_b357(u8 *self, Obj_b357_01E02590 *obj, Pk_b357_01E02590 *pk, s8 *base) {
+    extern void func_00108EF0();
+    f32 m[16];
+    Vec4f pos;
+    Vec4f scale;
+    f32 depth[4];
+    f32 world[16];
+    s32 rot[4];
+    St_b357_01E02590 uv;
+    f32 r;
+    f32 fx;
+    f32 fy;
+    f32 fz;
+
+    pk->nreg = 0x24;
+    pk->n = 9;
+    pk->regs = 0x24242421 | ((s64)4 << 32);
+    pk->pad4 = 0;
+    pk->nreg |= 0x800;
+    func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+    *(s32 *)&pk->st.t = 0;
+    pk->q0 = 0;
+    pk->q1 = 0;
+    pk->q2 = 0;
+    pk->q3 = 0;
+    func_00107740(&uv, obj->tex);
+    pk->st = uv;
+    func_01E00100_b357((Pk_b008_01E00080 *)pk, (Rect_b008_01E00080 *)(self + 0x94), *(s16 *)(self + 0xBE));
+    func_00208700(pk, *(void **)(self + 0x88), 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    fx = obj->dx;
+    fy = obj->dy;
+    fz = obj->dz;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    fz /= 10.0f;
+    pos.x = obj->x + fx;
+    pos.y = obj->y + fy;
+    pos.z = obj->z + fz;
+    func_00108EF0(world, &scale, rot, &pos);
+    r = obj->size;
+    func_00108CE0(m, r, r);
+    if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, depth) != 0) {
+        func_002075F0((s32)pk, *(s32 *)(self + 0x80), func_001A23B0(depth[0]));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E02770_b357);
 
@@ -650,7 +738,70 @@ INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E03B10_b357);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E03D30_b357);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E03F50_b357);
+/* shape b357:01E03F50, 99 insns: a yellow trail: frame 30, width 6; fills its trail row with its point, then holds alpha 0x30
+   until frame 40 and fades by 9 until it ends; rebuilds the trail tail from the point each frame; flickers yellow/orange */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b357_01E03F50;
+
+typedef struct {
+    u8 pad0[0x1EC0];
+    V4_b357_01E03F50 pts[10];
+    V4_b357_01E03F50 trail[1][10];
+} Game_b357_01E03F50;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x20];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 row;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+} Obj_b357_01E03F50;
+
+static s32 func_01E03F50_b357(Game_b357_01E03F50 *g, Obj_b357_01E03F50 *o) {
+    extern void b357_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 i;
+    V4_b357_01E03F50 *p;
+    V4_b357_01E03F50 *q;
+
+    if (o->state == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 8);
+        o->h6 = 6;
+        o->c0[3] = 0x80;
+        o->h38 = 0x1E;
+        o->state = 2;
+        p = &g->pts[o->row];
+        q = g->trail[o->row];
+        for (i = 0; i < 10; i++) {
+            q->x = p->x;
+            q->y = p->y;
+            q->z = p->z;
+            q++;
+        }
+    }
+    if (o->t < 0x28) {
+        o->c0[3] = 0x30;
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    b357_01E00080(&g->trail[o->row][9], 0xA, 0, &g->pts[o->row]);
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 8);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0x80, 8);
+    }
+    return 0;
+}
 
 /* shape b207:01E03430, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x60, 0x60, 0x60) and fields;
    alpha 0x80 for the first 0x140 ticks, then fade out by 9 and stop */
@@ -730,7 +881,77 @@ INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E046D0_b357);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E04910_b357);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E04B50_b357);
+/* shape b357:01E04B50, 114 insns: reads the camera (func_001F6160) and keeps whether its turn / 180 is non-zero; on
+   start 0x38 = 5, variant 0, random 0x3A, 0x8 = 2, 0x6 = 0, colour (8, 8, 0x40); alpha 0x80 on the first tick, then
+   fades by 18 and stops; the variant cycles 0..7; colour green on tick 1, blue on tick 2; after the first tick 0x6
+   grows by 0x8 and 0x4 moves 2 (up when the camera has turned, else down) */
+
+typedef struct {
+    u8 pad0[4];
+    s16 f4;
+    s16 f6;
+    s16 f8;
+    u8 padA[0x1E];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b357_01E04B50;
+
+static s32 func_01E04B50_b357(s32 arg0, Fx_b357_01E04B50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    extern s32 func_001A22C0(f32);
+    s32 cam[4];
+    s32 turn;
+
+    func_001F6160(func_001F53A0(), cam);
+    turn = (s16)func_001A22C0(cam[1] / 180.0f);
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->f34 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->f8 = 2;
+        o->f6 = 0;
+        func_001076F0(o->col, 8, 8, 0x40);
+    }
+    if (o->tick <= 0) {
+        if (o->col[3] < 0x80) {
+            o->col[3] = 0x80;
+        }
+    } else if (o->col[3] > 0x13) {
+        o->col[3] -= 18;
+    } else {
+        o->mode = 0;
+    }
+    if (o->f34 < 7) {
+        o->f34++;
+    } else {
+        o->f34 = 0;
+    }
+    if (o->tick == 1) {
+        func_001076F0(o->col, 0x10, 0x50, 0x10);
+    } else if (o->tick == 2) {
+        func_001076F0(o->col, 0x18, 0x38, 0x80);
+    }
+    if (o->tick != 0) {
+        o->f6 += o->f8;
+    }
+    if (o->tick != 0) {
+        if (turn != 0) {
+            o->f4 += 2;
+        } else {
+            o->f4 -= 2;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b357:01E04D20, 88 insns: a light grey tumbling flash (size 6 growing a random 3..4 a tick) at three random turns: alpha at least 0x80 on its first tick, then out by 15 and ends */
 

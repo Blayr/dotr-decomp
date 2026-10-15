@@ -574,7 +574,54 @@ static void func_01E012D0_b082(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b082", func_01E01880_b082);
+/* shape b082:01E01880, 114 insns: scene timer step: jitter the effect origin around an object, start the first
+   burst while the timer is under 171 and two more bursts a frame between 50 and 100 */
+
+typedef struct Scn_b082_01E01880 {
+    u8 pad0[0x250];
+    Vec4f org;
+    u8 pad260[0x49DC];
+    s16 id;
+    u8 pad4C3E[0x2C];
+    s16 cur;
+    s16 next;
+    u8 pad4C6E[4];
+    s16 timer;
+} Scn_b082_01E01880;
+
+static void func_01E01880_b082(Scn_b082_01E01880 *w) {
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    extern u8 b082_01E01A50[];
+    extern u8 b082_01E02400[];
+    extern void b082_01E02FF0(Scn_b082_01E01880 *w, void *data, s32 arg);
+    s16 i;
+    s16 n;
+
+    w->timer++;
+    func_001F5620(func_001F53A0(), w->id, &w->org);
+    w->org.x += func_0019A5C8() % 20 - 10;
+    w->org.y += func_0019A5C8() % 20 - 10;
+    w->org.z += func_0019A5C8() % 20 - 10;
+    if (w->timer < 0xAB) {
+        b082_01E02FF0(w, b082_01E02400, 0);
+    }
+    if (w->timer >= 0x32 && w->timer < 0x65 && w->timer != 0) {
+        if (w->timer < 0x64) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            w->cur = w->next;
+            b082_01E02FF0(w, b082_01E01A50, 0);
+            w->next++;
+            if (w->next >= 0x78) {
+                w->next = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b082", func_01E01A50_b082);
 
@@ -691,9 +738,113 @@ static s32 func_01E02050_b082(s32 unused, Spark_b082_01E02050 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b082", func_01E02250_b082);
+/* shape b082:01E02250, 106 insns: a grey growing spark (b203:01E027D0 shape): size 70 growing by 2, random sub-frame
+   0..6, angle, frame 0..7, start height (old one kept), rise 9..23 once started, width 0..34, hold 3..7; full alpha, then fades */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b082", func_01E02400_b082);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 frame;
+    s16 y0;
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b082_01E02250;
+
+static s32 func_01E02250_b082(void *arg0, Obj_b082_01E02250 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 70.0f;
+        o->sub = func_0019A5C8() % 7;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->frame = func_0019A5C8() % 8;
+        o->y0 = o->y;
+        o->y = func_0019A5C8() % 20 + 0xA;
+        o->step = func_0019A5C8() % 15 + 9;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 9) {
+        o->c0[3] -= 8;
+    } else {
+        o->state = 0;
+    }
+    o->size += 2.0f;
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b082:01E02400, 106 insns: a pale growing spark (b203:01E027D0 shape): size 130 growing by 2, random sub-frame
+   0..6, angle, frame 0..7, start height (old one kept), rise 9..23 once started, width 0..34, hold 3..7; full alpha, then fades */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 frame;
+    s16 y0;
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b082_01E02400;
+
+static s32 func_01E02400_b082(void *arg0, Obj_b082_01E02400 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 130.0f;
+        o->sub = func_0019A5C8() % 7;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        o->ang = func_0019A5C8() % 360;
+        o->frame = func_0019A5C8() % 8;
+        o->y0 = o->y;
+        o->y = func_0019A5C8() % 10 + 5;
+        o->step = func_0019A5C8() % 15 + 9;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->size += 2.0f;
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b082:01E025B0, 172 insns: variant of b149:01E020F0 (game value at 0x4C72): a glow whose kind (f50) picks its look: kinds 0/1 are grey with an orange second
    colour, flickering, brightening for 12 ticks; kind 1 also grows to 400 by 15; kind 2 starts at 840, white with a

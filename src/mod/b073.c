@@ -359,11 +359,136 @@ INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E011A0_b073);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01740_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01970_b073);
+/* shape b073:01E01970, 117 insns: b573:01E02590 family: a white spark (size 80 growing 3 a tick, random frame 0..3 stepping every other tick to 6) spinning a random 13..25 a tick from 0..29, size 0..29, held 7..16 ticks: in by 64 up to 0x80, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b073_01E01970;
+
+static s32 func_01E01970_b073(s32 arg0, Glow_b073_01E01970 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 80;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->h30 = func_0019A5C8() % 30;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 13 + 13;
+        o->h8 = func_0019A5C8() % 30;
+        o->h6 = func_0019A5C8() % 10 + 7;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 6) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38 += 3;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01B50_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01EE0_b073);
+/* shape b073:01E01EE0, 108 insns: on its first tick copies the scene's 4 rows of 10 points (ctx+0x28F0) to the second set (ctx+0x2F30), then a grey glow (size 30, 6 at +6, random 44..60 and 5..12, random angle): in by 64 up to 0xC0 for 7 ticks, then out by 9 and ends */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b073_01E01EE0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b073_01E01EE0;
+
+typedef struct {
+    u8 pad[0x28F0];
+    V4_b073_01E01EE0 src[4][10];
+    u8 pad2B70[0x2F30 - 0x2B70];
+    V4_b073_01E01EE0 dst[4][10];
+} Game_b073_01E01EE0;
+
+static s32 func_01E01EE0_b073(Game_b073_01E01EE0 *g, Glow_b073_01E01EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        for (i = 0; i < 10; i++) {
+            g->dst[0][i].x = g->src[0][i].x;
+            g->dst[0][i].y = g->src[0][i].y;
+            g->dst[0][i].z = g->src[0][i].z;
+            g->dst[1][i].x = g->src[1][i].x;
+            g->dst[1][i].y = g->src[1][i].y;
+            g->dst[1][i].z = g->src[1][i].z;
+            g->dst[2][i].x = g->src[2][i].x;
+            g->dst[2][i].y = g->src[2][i].y;
+            g->dst[2][i].z = g->src[2][i].z;
+            g->dst[3][i].x = g->src[3][i].x;
+            g->dst[3][i].y = g->src[3][i].y;
+            g->dst[3][i].z = g->src[3][i].z;
+        }
+        o->h6 = 6;
+        o->col[3] = 0;
+        o->hA = func_0019A5C8() % 17 + 44;
+        o->h8 = func_0019A5C8() % 8 + 5;
+        o->kind = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->f38 = 30;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b073:01E02090, 57 insns: on start 0x38 = 0x1AE, colour 0xC0 grey and second colour (0x80, 0x80, 0xFF) with
    alpha 0, random 0x3A; alpha grows by 0x50 (below 0xF0) for 5 ticks, then fades by 0x13 and stops */

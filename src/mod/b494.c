@@ -274,7 +274,76 @@ static s32 func_01E010D0_b494(Game_b494_01E010D0 *g, Obj_b494_01E010D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E01230_b494);
+/* shape b494:01E01230, 93 insns: a white beam from 20 growing 950/11 a tick (both ends), tipped 0x8000 when the scene flag is set: alpha 0xC0 for 15 ticks, then out by 14 and ends; from scene value 221 its width grows 40 a tick, from 231 its clock holds at 15 */
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 w24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[4];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b494_01E01230;
+
+typedef struct {
+    u8 pad[0x4524];
+    s16 flag;
+    u8 pad4526[2];
+    s16 val;
+} Game_b494_01E01230;
+
+static s32 func_01E01230_b494(Game_b494_01E01230 *g, Obj_b494_01E01230 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        o->h50 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->f3C = 950.0f;
+        o->f3C = o->f3C / 11.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        if (g->flag != 0) {
+            o->w24 = 0x8000;
+        } else {
+            o->w24 = 0;
+        }
+    }
+    if (o->t < 15) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->f3C;
+    o->f4C = o->f48;
+    if (g->val > 220) {
+        o->f34 += 40.0f;
+    }
+    o->t++;
+    if (g->val > 230) {
+        o->t = 15;
+    }
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

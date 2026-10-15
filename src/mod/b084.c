@@ -748,9 +748,134 @@ static s32 func_01E01FA0_b084(World_b084_01E01FA0 *w, Spiral_b084_01E01FA0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E022E0_b084);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02640_b084);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b084_01E02640;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02800_b084);
+typedef struct {
+    u8 pad0000[0x18B0];
+    Vec_b084_01E02640 trail[69];
+    u8 b1D00[0x74A0 - 0x1D00];
+    f32 pos[3];
+    u8 pad74AC[0x768A - 0x74AC];
+    s16 h768A;
+} Mgr_b084_01E02640;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    u8 pad08[0x40];
+    f32 f48;
+    u8 pad4C[8];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+    u8 pad5A[6];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b084_01E02640;
+
+static s32 func_01E02640_b084(Mgr_b084_01E02640 *m, Obj_b084_01E02640 *o) {
+    extern void b084_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    Vec_b084_01E02640 *p;
+
+    if (o->h58 == 1) {
+        o->h6 = 8;
+        o->c60[3] = 0;
+        for (i = 0, p = m->trail; i < 69; i++, p++) {
+            p->x = m->pos[0];
+            p->y = m->pos[1];
+            p->z = m->pos[2];
+        }
+        func_001076F0(o->c64, 0x40, 0x10, 0x80);
+        o->f48 = 100.0f;
+        o->h58 = 2;
+    }
+    if (o->h6 < 68) {
+        o->h6++;
+    }
+    if (m->h768A < 215) {
+        o->c60[3] = 0xC0;
+    } else {
+        if (o->c60[3] > 8) {
+            o->c60[3] -= 7;
+        } else {
+            o->h58 = 0;
+        }
+        if (o->f48 > 0.0f) {
+            o->f48 -= 1.0f;
+        }
+    }
+    if (o->h54 % 2 == 0) {
+        func_001076F0(o->c60, 0x80, 0x10, 0xFF);
+    } else {
+        func_001076F0(o->c60, 0x40, 0x10, 0x80);
+    }
+    if (o->h54 < 50) {
+        b084_01E00080(m->b1D00, 70, 0, m->pos);
+    }
+    o->h54++;
+    return 0;
+}
+
+/* shape b084:01E02800, 99 insns: a white glow of size 200 at a random angle, spun 0x4000 a tick, its second colour blinking purple/orange: in by 14 up to 0xC0 for 140 ticks, then out by 8 and ends; from scene value 173 it shrinks by 10 down to 100 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b084_01E02800;
+
+typedef struct {
+    u8 pad[0x768A];
+    s16 val;
+} Game_b084_01E02800;
+
+static s32 func_01E02800_b084(Game_b084_01E02800 *g, Obj_b084_01E02800 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 200.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 140) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 14;
+        }
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+    } else {
+        func_001076F0(o->col2, 0x70, 0x20, 0xF0);
+    }
+    if (g->val > 172) {
+        if (o->f48 > 100.0f) {
+            o->f48 -= 10.0f;
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02990_b084);
 

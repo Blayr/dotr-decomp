@@ -115,7 +115,70 @@ INCLUDE_ASM("asm/nonmatchings/mod/b388", func_01E00CD0_b388);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b388", func_01E00ED0_b388);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b388", func_01E01570_b388);
+/* shape b388:01E01570, 104 insns: a grey/white tumbling ring (three random turns, width 10 growing 4 a tick, height a tenth of it) on the scene point (ctx+0xB1D0): in by 32 up to 0xC0 for 6 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b388_01E01570;
+
+typedef struct {
+    u8 pad[0xB1D0];
+    f32 x, y, z;
+} Game_b388_01E01570;
+
+static s32 func_01E01570_b388(Game_b388_01E01570 *g, Obj_b388_01E01570 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        o->col2[3] = 0;
+        func_001076F0(o->col, 0x38, 0x38, 0x38);
+        func_001076F0(o->col2, 0xF0, 0xEF, 0xFF);
+        o->mode = 2;
+        o->w20 = func_0019A5C8() % 16777215;
+        o->w24 = func_0019A5C8() % 16777215;
+        o->w28 = func_0019A5C8() % 16777215;
+        o->f48 = 10.0f;
+        o->h5A = 10;
+        o->h5C = 1;
+    }
+    o->f48 += 4.0f;
+    o->f4C = 0.1f * o->f48;
+    if (o->t < 6) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x20;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    o->f10 = g->x;
+    o->f14 = g->y;
+    o->f18 = g->z;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b388", func_01E01710_b388);
 

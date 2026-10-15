@@ -262,11 +262,198 @@ static void func_01E00920_b504(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E00E70_b504);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E01210_b504);
+/* shape b504:01E01210, 118 insns: sweeping blade flash: on start size 50, rot (50, 8, +-6 by the game's side flag),
+   grey, random f50 and heading; solid alpha for 11 ticks then -0xF; it slides 15 sideways (away from the side) and
+   rises 1.5 per tick, flickering grey/light grey on alternate ticks. */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E013F0_b504);
+typedef struct {
+    u8 pad0[0xB712];
+    s16 side;
+} Game_b504_01E01210;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E015B0_b504);
+typedef struct {
+    u8 pad0[0x14];
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 size;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b504_01E01210;
+
+static s32 func_01E01210_b504(Game_b504_01E01210 *g, Fx_b504_01E01210 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 50.0f;
+        o->rot[0] = 50;
+        o->rot[1] = 8;
+        if (g->side != 0) {
+            o->rot[2] = 6;
+        } else {
+            o->rot[2] = -6;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f50 = func_0019A5C8() % 180;
+        o->heading = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 0xF;
+    } else {
+        o->mode = 0;
+    }
+    o->f56 = 2;
+    if (g->side != 0) {
+        o->z -= 15.0f;
+    } else {
+        o->z += 15.0f;
+    }
+    o->y -= 1.5f;
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b504:01E013F0, 112 insns: a grey rising spark (b203:01E027D0 shape): size 10, random sub-frame 0..6, two angles, frame
+   0..7, start height 10..29 (old one kept), rise 20..44 once started, width 0..34, hold 3..7; alpha up by 32, then down by 8 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    s16 frame;
+    s16 y0;
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    s16 ang2;
+    u8 pad5E[2];
+    u8 c0[4];
+} Obj_b504_01E013F0;
+
+static s32 func_01E013F0_b504(void *arg0, Obj_b504_01E013F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 10.0f;
+        o->sub = func_0019A5C8() % 7;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->ang2 = func_0019A5C8() % 360;
+        o->frame = func_0019A5C8() % 8;
+        o->y0 = o->y;
+        o->y = 0;
+        o->y = func_0019A5C8() % 20 + 0xA;
+        o->step = func_0019A5C8() % 25 + 0x14;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x20;
+        }
+    } else if (o->c0[3] > 9) {
+        o->c0[3] -= 8;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b504:01E015B0, 122 insns: a scene light at 0xB640: on start colour/size 128/4/2/0, height 0/120/0 and the effect's
+   position as floats; its strength 0xB668 rises by 0.2 up to 1 (then 0x50 = 1) and falls by 0.1 until it ends
+   the effect; func_001F6C10 gets the light (or 0 once ended); it also ends when the light's 0xB6C0 flag is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x54];
+    s32 done;
+} Light_b504_01E015B0;
+
+typedef struct {
+    u8 pad0[0xB640];
+    Light_b504_01E015B0 light;
+} Game_b504_01E015B0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x4A];
+    s16 f50;
+    u8 pad52[6];
+    s16 mode;
+} Fx_b504_01E015B0;
+
+static s32 func_01E015B0_b504(Game_b504_01E015B0 *g, Fx_b504_01E015B0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a[0] = 128.0f;
+        g->light.a[1] = 4.0f;
+        g->light.a[2] = 2.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 120.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f50 = 0;
+    }
+    if (o->f50 == 0) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.2f;
+        } else {
+            o->f50 = 1;
+        }
+    } else if (g->light.b[2] > 0.1f) {
+        g->light.b[2] -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.done == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b504:01E017A0, 55 insns: volume fade by game state (b124:01E01A30 layout at 0x50): state at 0xB6C0 limit 0x14, down 10 to 0x30,
    up 10 to 0x80 where the fade ends; counts its frames */
@@ -540,4 +727,84 @@ static void func_01E02F90_b504(Obj_b361_01E022E0 *obj, Data_b361_01E022E0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b504", func_01E03180_b504);
+/* shape b504:01E03180, 117 insns: the module's draw pass with two packets on the stack (b092:01E04800 family): opens a 12-reg
+   packet, then runs every live slot (410 of 0x70 bytes) whose handler is b504:01E01980, then those whose handler is
+   b504:01E02470; queues the batch only if any slot drew */
+
+typedef struct {
+    u8 b[0x58];
+} PktA_b504_01E03180;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x68];
+    u64 t78;
+    u64 t80;
+    u8 tail[8];
+} PktB_b504_01E03180;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b504_01E03180;
+
+typedef struct {
+    u8 pad0[0x2E0];
+    Slot_b504_01E03180 slot[410];
+    u8 padEnd[0xB6D4 - 0x2E0 - 410 * 0x70];
+    PktB_b504_01E03180 *pkb;
+    u8 padB6D8[0x18];
+    s32 ctx;
+    PktA_b504_01E03180 *pka;
+} Scene_b504_01E03180;
+
+static void func_01E03180_b504(Scene_b504_01E03180 *s) {
+    extern void b504_01E01980(Scene_b504_01E03180 *, Slot_b504_01E03180 *);
+    extern void b504_01E02470(Scene_b504_01E03180 *, Slot_b504_01E03180 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    PktA_b504_01E03180 pka __attribute__((aligned(8)));
+    PktB_b504_01E03180 pkb __attribute__((aligned(8)));
+    PktB_b504_01E03180 *b;
+    s32 i;
+    s32 n;
+
+    s->pka = &pka;
+    s->pkb = &pkb;
+    n = 0;
+    s->ctx = func_00207F60();
+    s->pkb->count = 0x34;
+    s->pkb->tag = 0xC;
+    s->pkb->regs = 0x421421421421;
+    s->pkb->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkb, ((u64)0x80 << 32) | 0x48);
+    b = s->pkb;
+    func_001F7060(func_001F53A0(), 0, &b->t78, &b->t80);
+    func_00208460();
+    for (i = 0; i < 410; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b504_01E01980) {
+            n++;
+            b504_01E01980(s, &s->slot[i]);
+        }
+    }
+    for (i = 0; i < 410; i++) {
+        if (s->slot[i].active != 0 && s->slot[i].fn == (void *)b504_01E02470) {
+            n++;
+            b504_01E02470(s, &s->slot[i]);
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(s->ctx, func_00207500(), 0);
+    }
+}

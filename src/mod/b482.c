@@ -631,11 +631,123 @@ INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E02180_b482);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E023B0_b482);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E025D0_b482);
+/* shape b482:01E025D0, 108 insns: b282:01E01C20 family spinning spark: grey, random size 8..15, frame 2..3, angle 10..49, spin 16..35, size 0..34 stored, held 3..5 ticks: in by 64 up to 0xC0, then out by 14 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b482_01E025D0;
+
+static s32 func_01E025D0_b482(s32 arg0, Obj_b482_01E025D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 8 + 8;
+        o->kind = func_0019A5C8() % 2 + 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h50 = func_0019A5C8() % 40 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 20 + 16;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E02780_b482);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E02A40_b482);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape b482:01E02A40, 117 insns: growing ring (two colour presets) with random rotation and growth speed */
+
+typedef struct Ring_b482_01E02A40 {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[8];
+    f32 grow;
+    u8 pad38[0x10];
+    f32 size;
+    f32 inner;
+    s16 kind;
+    u8 pad52[2];
+    s16 age;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Ring_b482_01E02A40;
+
+static s32 func_01E02A40_b482(s32 arg0, Ring_b482_01E02A40 *o) {
+    extern s32 func_001076F0();
+    if (o->state == 1) {
+        o->size = 120.0f;
+        o->inner = o->size - 58.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0xC0, 0x80, 0x80);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0xA0, 0x80, 0xFF);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->h5A = 30;
+        o->h5C = 30;
+        o->grow = func_0019A5C8() % 80 + 200;
+        o->grow = o->grow / 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->age < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->size += o->grow;
+    o->inner = 0.2f * o->size;
+    o->age++;
+    return 0;
+}
 
 /* shape b482:01E02C20, 59 insns: constant variant of b415:01E022B0 (0x60->0x30, 0xA->0x10, 9->15, 220.0f->300.0f, colour (255, 128, 128)) */
 

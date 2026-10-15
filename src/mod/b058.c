@@ -68,15 +68,229 @@ INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E00260_b058);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E00B40_b058);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E00D60_b058);
+/* shape b058:01E00D60, 117 insns: a dark smoke puff (size 2 growing to 25, random frame 0..6, random heading, tilt -30..29) swept 50 a tick along its heading and 4 up/down by the tilt (sine table ctx+0x3560): in by 5 up to 0x60 for 20 ticks, then out by 5 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E00F40_b058);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b058_01E00D60;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E01120_b058);
+typedef struct {
+    u8 pad[0x3560];
+    u8 sin[1];
+} Game_b058_01E00D60;
+
+static s32 func_01E00D60_b058(Game_b058_01E00D60 *g, Glow_b058_01E00D60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    func_001076F0(o->col, 0x28, 0x28, 0x28);
+    if (o->mode == 1) {
+        o->f38 = 2;
+        o->ang = func_0019A5C8() % 360;
+        o->kind = func_0019A5C8() % 7;
+        o->h30 = func_0019A5C8() % 60 - 30;
+        o->mode = 2;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 5;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 < 25) {
+        o->f38++;
+    }
+    o->h8 = func_001A22C0(o->h8 + 50.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 4.0f * func_00108030(g->sin, o->h30, 1));
+    o->hC = func_001A22C0(o->hC + 50.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
+
+typedef struct {
+    u8 pad0000[0x3560];
+    u8 tab[1];
+} Mgr_b058_01E00F40;
+
+typedef struct {
+    u8 pad00[8];
+    s16 x, y, z;
+    u8 pad0E[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b058_01E00F40;
+
+static s32 func_01E00F40_b058(Mgr_b058_01E00F40 *m, Obj_b058_01E00F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x60, 0x30, 0);
+    if (o->h36 == 1) {
+        o->h38 = 2;
+        o->h3A = func_0019A5C8() % 360;
+        o->h34 = 0;
+        o->h30 = func_0019A5C8() % 30 - 15;
+        o->h36 = 2;
+    }
+    if (o->h32 < 10) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->h36 = 0;
+    }
+    o->h32++;
+    if (o->h32 % 3 == 1) {
+        if (o->h34 < 7) {
+            o->h34++;
+        }
+    }
+    o->x = o->x + 10.0f * func_00108030(m->tab, o->h3A, 0);
+    o->y = o->y - 10.0f * func_00108030(m->tab, o->h30, 1);
+    o->z = o->z + 10.0f * func_00108030(m->tab, o->h3A, 1);
+    return 0;
+}
+
+/* shape b058:01E01120, 97 insns: an orange spark (size 1, random frame 0..3) at a random angle drifting 16 a tick along it and bobbing 20 x sine of a phase that turns 6 a tick (sine table ctx+0x3560): alpha 0x80 for 10 ticks, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b058_01E01120;
+
+typedef struct {
+    u8 pad[0x3560];
+    u8 sin[1];
+} Game_b058_01E01120;
+
+static s32 func_01E01120_b058(Game_b058_01E01120 *g, Glow_b058_01E01120 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 1;
+        o->kind = func_0019A5C8() % 4;
+        func_0019A5C8();
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    o->h30 += 6;
+    o->h8 = func_001A22C0(o->h8 + 16.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(20.0f * func_00108030(g->sin, o->h30, 0));
+    o->hC = func_001A22C0(o->hC + 16.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E012B0_b058);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E01600_b058);
+/* shape b058:01E01600, 103 insns: b027:01E00F90 family: an olive flame (size 15 shrinking to 0) at a random angle, or (scene value 130 on) within 60 degrees of 0 or of 180 depending on the scene handle being under 10: in by 15 up to 0x60 for 8 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b058_01E01600;
+
+typedef struct {
+    u8 pad[0x355C];
+    s16 val;
+} Game_b058_01E01600;
+
+static s32 func_01E01600_b058(Game_b058_01E01600 *g, Glow_b058_01E01600 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+
+    func_001076F0(o->col, 0x40, 0x40, 0x1F);
+    if (o->mode == 1) {
+        o->f38 = 15;
+        if (func_001F53A0() < 10) {
+            if (g->val < 130) {
+                o->ang = func_0019A5C8() % 360;
+            } else {
+                o->ang = func_0019A5C8() % 120 - 60;
+            }
+        } else if (g->val < 130) {
+            o->ang = func_0019A5C8() % 360;
+        } else {
+            o->ang = func_0019A5C8() % 120 + 120;
+        }
+        o->kind = 0;
+        o->col[3] = 0;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 15;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 != 0) {
+        o->f38--;
+    }
+    return 0;
+}
 
 /* shape b058:01E017A0, 53 insns: volume fade by game state (b003:01E02330 family): state at 0x3500 limit 0x19,
    down 10 to 0x30, up 7 capped at 0x80 */

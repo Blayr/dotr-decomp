@@ -524,9 +524,116 @@ static void func_01E01230_b236(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b236", func_01E01630_b236);
+/* shape b236:01E01630, 107 insns: the b236 scene's script: on tick 52 it reads the scene joint into the burst point; on ticks 52..62 it spawns one shape b236:01E017E0 and three b236:01E019C0 there each tick, on tick 52 also one b236:01E01B70; on tick 1 one b236:01E01C60 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b236", func_01E017E0_b236);
+typedef struct {
+    f32 x, y, z, w;
+} V4_b236_01E01630;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b236_01E01630 pos;
+    u8 pad260[0xB1D0 - 0x260];
+    V4_b236_01E01630 v;
+    u8 padB1E0[0x64];
+    s16 joint;
+    u8 padB246[0x6A];
+    s16 hB2B0;
+    u8 padB2B2[6];
+    s16 tick;
+} Ctx_b236_01E01630;
+
+static void func_01E01630_b236(Ctx_b236_01E01630 *g) {
+    extern void b236_01E017E0();
+    extern void b236_01E019C0();
+    extern void b236_01E01B70();
+    extern void b236_01E01C60();
+    extern void b236_01E02330(Ctx_b236_01E01630 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    g->tick++;
+    if (g->tick == 52) {
+        func_001F5620(func_001F53A0(), g->joint, &g->v);
+    }
+    if (g->tick >= 52 && g->tick < 63) {
+        g->pos = g->v;
+        g->hB2B0 = 0;
+        b236_01E02330(g, b236_01E017E0, 0);
+        b236_01E02330(g, b236_01E019C0, 0);
+        b236_01E02330(g, b236_01E019C0, 0);
+        b236_01E02330(g, b236_01E019C0, 0);
+    }
+    if (g->tick == 52) {
+        g->pos = g->v;
+        g->hB2B0 = 0;
+        b236_01E02330(g, b236_01E01B70, 0);
+    }
+    if (g->tick == 1) {
+        b236_01E02330(g, b236_01E01C60, 0);
+    }
+}
+
+/* shape b236:01E017E0, 117 insns: on start f48 120 with f4C 58 below it, colours by the kind 0x50 (0: (0x80, 0x40, 0xFF) / (0, 0, 0),
+   1: (0xA0, 0x80, 0xFF) / (0x30, 0x30, 0x30)), second alpha 0, 0x5A/0x5C = 30, rise speed 20..27.9 (f34), random rotation; alpha 0x80 for 10
+   ticks, then fades by 7 and stops; f48 rises by the speed with f4C = 0.2 x f48 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[8];
+    f32 speed;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b236_01E017E0;
+
+static s32 func_01E017E0_b236(s32 arg0, Fx_b236_01E017E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 120.0f;
+        o->f4C = o->f48 - 58.0f;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0xFF);
+            func_001076F0(o->col2, 0, 0, 0);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xA0, 0x80, 0xFF);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        o->f5A = 30;
+        o->f5C = 30;
+        o->speed = func_0019A5C8() % 80 + 200;
+        o->speed /= 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += o->speed;
+    o->f4C = 0.2f * o->f48;
+    o->tick++;
+    return 0;
+}
 
 /* shape b236:01E019C0, 105 insns: a grey spark: f48 20..59, variant 0..2, f50 10..49, spin 10..29, life 7..14; alpha grows
    by 0x40 (below 0xC0) during the life, then fades by 14; f50 grows by the spin each tick after the first */

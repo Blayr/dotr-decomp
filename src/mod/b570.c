@@ -525,7 +525,70 @@ INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E016C0_b570);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E01C30_b570);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E020A0_b570);
+/* shape b570:01E020A0, 107 insns: on start 0x38 = 20, variant 0, colour 0x70 grey, 0xA keeps the old 0x30, 0x30 = 0, speed
+   5..9 (0xE), 0x8 0..24, hold 30..39 (0x6), random 0x3A, 0xC = 0; alpha grows by 0x20 (below 0x40) during the
+   hold, then fades by 9 and stops; the variant counts up to 5 every other tick; after the first tick 0x30 grows by
+   the speed and 0x38 by 1 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 f2;
+    u8 pad4[2];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b570_01E020A0;
+
+static s32 func_01E020A0_b570(s32 arg0, Fx_b570_01E020A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 20;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        o->fA = o->f30;
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->f8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 10 + 30;
+        o->f3A = func_0019A5C8() % 360;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b570:01E02250, 9 insns: hand the module's table at 0x01E03F00 to func_00199B50, return 0 */
 
@@ -536,7 +599,73 @@ static s32 func_01E02250_b570(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02280_b570);
+/* shape b570:01E02280, 107 insns: on start 0x38 = 50, variant 0, colour white, 0xA keeps the old 0x30, 0x30 = 0, speed
+   4 (0xE), 0x8 0..24, hold 0..14 (0x6), random 0x3A, 0xC = 0; alpha grows by 0x40 (below 0x80) during the hold, then
+   fades by 13 and stops; after the first tick 0x38 grows by 2; the variant counts up to 3 every other tick; after the
+   first tick 0x30 grows by the speed and 0x2 by 1 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 f2;
+    u8 pad4[2];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b570_01E02280;
+
+static s32 func_01E02280_b570(s32 arg0, Fx_b570_01E02280 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->f34 = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->fA = o->f30;
+        o->f30 = 0;
+        o->speed = 4;
+        o->f8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 8 + 7;
+        o->f3A = func_0019A5C8() % 360;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f38 += 2;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 3) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f2++;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b003:01E01EC0, 146 insns, 4 copies: step of a rising puff: on state 1 sets a grey colour, random start, angle,
    size, layers and lifetime; fades in by 0x12, then out by 9 until it ends; grows, climbs and spins randomly. */
@@ -683,7 +812,71 @@ static s32 func_01E02C30_b570(s32 arg0, Flash_b257_01E031C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02D10_b570);
+/* shape b570:01E02D10, 119 insns: b582:01E03470 family scene light at ctx+0x98C0 (orange 4/2/0, height 70) at the object: rises 0.2 to 1, falls 0.1 and ends; applied while alive; ends at scene state 1 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    u8 pad32[4];
+    s16 mode;
+} Obj_b570_01E02D10;
+
+typedef struct {
+    f32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 h;
+    f32 level;
+    u8 pad2C[0x4];
+    s32 state;
+} Light_b570_01E02D10;
+
+typedef struct {
+    u8 pad[0x98C0];
+    Light_b570_01E02D10 l;
+} Game_b570_01E02D10;
+
+static s32 func_01E02D10_b570(Game_b570_01E02D10 *g, Obj_b570_01E02D10 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->l.w0 = 0.0f;
+        g->l.r = 4.0f;
+        g->l.g = 2.0f;
+        g->l.b = 0.0f;
+        g->l.w20 = 0;
+        g->l.h = 70.0f;
+        g->l.level = 0.0f;
+        g->l.x = o->x;
+        g->l.y = o->y;
+        g->l.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->phase == 0) {
+        if (g->l.level < 1.0f) {
+            g->l.level += 0.2f;
+        } else {
+            o->phase = 1;
+        }
+    } else if (g->l.level > 0.1f) {
+        g->l.level -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->l);
+    }
+    if (g->l.state == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b570:01E02F00, 51 insns: volume fade: starts at 0x80; while the game counter at 0x98F0 is over 0x1E it drops by
    10 to 0x30, otherwise it rises by 10 to 0x80; passed to func_001F6D00 (the same call either way) */

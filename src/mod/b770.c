@@ -642,7 +642,60 @@ static s32 func_01E01D80_b770(void *arg0, Spark_b770_01E01BA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E01F60_b770);
+/* shape b770:01E01F60, 97 insns: on start f48 4, variant 0..3, colour (0xC0, 0x10, 0x10), 0xA 0..7, 0xC keeps the old
+   0x50, 0x50 = 0, speed 5..12 (0xE), 0x8 0..34, hold 3..7 (0x6); alpha 0x80 during the hold, then fades by 8 and
+   stops; after the first tick f48 grows by 1 and 0x50 by the speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b770_01E01F60;
+
+static s32 func_01E01F60_b770(s32 arg0, Fx_b770_01E01F60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 4.0f;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xC0, 0x10, 0x10);
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = 0;
+        o->speed = func_0019A5C8() % 8 + 5;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f48 += 1.0f;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E020F0_b770);
 
@@ -708,7 +761,73 @@ static s32 func_01E022E0_b770(s32 arg0, Fx_b394_01E01AA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02490_b770);
+/* shape b770:01E02490, 96 insns: a purple two-colour pulse: both alphas in by 12 up to 0x80 for 10 ticks, then until tick 355 they swing down to 0x10 and back up by 12, then out by 8 and end */
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b770_01E02490;
+
+static s32 func_01E02490_b770(s32 arg0, Obj_b770_01E02490 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x80, 0x10, 0x40);
+        func_001076F0(o->col2, 0x80, 0x10, 0x40);
+        o->h50 = 0;
+        o->mode = 2;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (o->t < 355) {
+        if (o->h50 == 0) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 12;
+            }
+            if (o->col2[3] > 0x10) {
+                o->col2[3] -= 12;
+            } else {
+                o->h50 = 1;
+            }
+        } else {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 12;
+            }
+            if (o->col2[3] < 0x80) {
+                o->col2[3] += 12;
+            } else {
+                o->h50 = 0;
+            }
+        }
+    } else {
+        if (o->col[3] > 9) {
+            o->col[3] -= 8;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 9) {
+            o->col2[3] -= 8;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b770:01E02610, 87 insns: a blinking grey two-colour shape (17 x 11, random frame 0..6, random 4..6 at +8): both alphas in by 12 up to 0x80 for 20 ticks; white on odd ticks, light grey on even */
 
@@ -829,7 +948,65 @@ static s32 func_01E02770_b770(void *arg0, Flare_b756_01E03D40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E02950_b770);
+/* shape b770:01E02950, 109 insns: a red/white ring (40 x 10.5 for kind 0) spun 0x4000 a tick and rolled 0x200 from a random roll, growing 4, its second colour blinking purple: in by 21 up to 0x80 for 6 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[4];
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b770_01E02950;
+
+static s32 func_01E02950_b770(s32 arg0, Obj_b770_01E02950 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->h50 == 0) {
+            o->f48 = 40.0f;
+            o->f4C = 10.5f;
+        }
+        func_00205C40((s32)&o->w20);
+        o->w20 += 0x4000;
+        o->w28 = func_0019A5C8() % 65535;
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        func_001076F0(o->col, 0xF0, 0x48, 0x48);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 6) {
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x15;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 4.0f;
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 0xF0, 8, 0x80);
+    } else {
+        func_001076F0(o->col2, 0x80, 8, 0x40);
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->w28 += 0x200;
+    o->t++;
+    return 0;
+}
 
 /* shape b770:01E02B10, 90 insns: a grey/red ring (90 x 60) at a random angle held at turn 0x4000; kind 0 fades in its first colour, kind 1 its second (colours swapped), by 32 for 12 ticks; then the first colour fades by 11 */
 

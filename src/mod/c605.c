@@ -726,4 +726,56 @@ INCLUDE_ASM("asm/nonmatchings/mod/c605", func_01E028C0_c605);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c605", func_01E02E40_c605);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c605", func_01E03C10_c605);
+/* shape c605:01E03C10, 116 insns: steps the falling flakes: each live flake sinks by 4, 5 or 6 (by its index) and clears its
+   flags; each dead one is respawned at a random spot near the top at full alpha; clears the block flags when the scroll is 0 */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    s32 z;
+    u8 a;
+    u8 b;
+    s16 live;
+} Flake_c605_01E03C10;
+
+typedef struct {
+    u8 pad0[8];
+    f32 scroll;
+} Scene_c605_01E03C10;
+
+typedef struct {
+    u8 pad0[0xB];
+    u8 flags[0x4F];
+    s16 count;
+} Block_c605_01E03C10;
+
+static void func_01E03C10_c605(Scene_c605_01E03C10 *s, Block_c605_01E03C10 *b, Flake_c605_01E03C10 *f) {
+    extern void func_00103470(void *, u8, s32);
+    s32 i;
+    s32 live;
+
+    for (i = 0; i < b->count; i++) {
+        live = f->live;
+        if (live != 0) {
+            if (i % 3 == 0) {
+                f->y -= 4.0f;
+            } else if (i % 3 == 1) {
+                f->y -= 5.0f;
+            } else {
+                f->y -= 6.0f;
+            }
+            func_00103470(&f->a, 0, 8);
+        } else if ((s16)live == 0) {
+            f->x = 0.1f * (f32)(func_0019A5C8() % 2560 - 0x500);
+            f->y = (184.0f - s->scroll) + 0.1f * (f32)(func_0019A5C8() % 920);
+            f->z = 0;
+            f->live = 0;
+            f->a = 0x80;
+            f->b = 0;
+        }
+        f++;
+    }
+    if (s->scroll == 0.0f) {
+        func_00103470(b->flags, 0, 0x20);
+    }
+}

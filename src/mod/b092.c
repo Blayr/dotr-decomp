@@ -493,9 +493,134 @@ static Vec_b018_01E00EE0 func_01E012B0_b092(Vec_b018_01E00EE0 *p, s32 type, f32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E016F0_b092);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02260_b092);
+typedef struct {
+    u8 pad00[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b092_01E02260;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02420_b092);
+static s32 func_01E02260_b092(s32 unused, Obj_b092_01E02260 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->c60, 0xF0, 0xE0, 0xFF);
+        func_001076F0(o->c64, 0xFF, 0xFF, 0x80);
+        if (o->h50 == 0) {
+            o->f30 = 1.5f;
+            o->f34 = 40.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 1.5f;
+            o->f34 = 20.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 18.0f;
+            o->f34 = 400.0f;
+        }
+        o->h58 = 2;
+        o->c64[3] = 0;
+    }
+    if (o->h54 < 4) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x60;
+        }
+    } else if (o->c60[3] > 16) {
+        o->c60[3] -= 15;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h50 == 0) {
+        if (o->h54 != 0) {
+            o->f34 += 5.0f;
+        }
+    }
+    if (o->h50 == 1) {
+        if (o->h54 != 0) {
+            o->f34 += 2.5f;
+        }
+    }
+    o->h54++;
+    if (o->h52 == 0) {
+        o->h5A += 2;
+    }
+    if (o->h52 == 1) {
+        o->h5A += 2;
+    }
+    return 0;
+}
+
+/* shape b092:01E02420, 109 insns: a white drifting spark: size 50, sub-frame 2..4, frame 0..3; pushed 2.6 along its angle at the
+   start, then drifting 1 a frame; alpha up by 0x60 for 6 frames, then down by 19 until it ends; turns */
+
+typedef struct {
+    u8 pad0[0xCDD0];
+    u8 sin[1];
+} Game_b092_01E02420;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b092_01E02420;
+
+static s32 func_01E02420_b092(Game_b092_01E02420 *g, Obj_b092_01E02420 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->w = 0x32;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->z += 2.6f * func_00108030(g->sin, o->ang, 0);
+        o->x += 2.6f * func_00108030(g->sin, o->ang, 1);
+        o->frame = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->t < 6) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0x14) {
+        o->c0[3] -= 0x13;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->z += func_00108030(g->sin, o->ang, 0);
+        o->x += func_00108030(g->sin, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E025E0_b092);
 
@@ -551,7 +676,67 @@ static s32 func_01E02950_b092(void *arg0, Obj_b092_01E02950 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02AB0_b092);
+/* shape b092:01E02AB0, 100 insns: on start 0x8/0xA = 70/80, variant 0..2, colour white, rotation 0xC000 when the game
+   flag 0xCBCA is set else 0x4000, random 0x5C; alpha grows by 0x60 (below 0xC0) for 8 ticks, then fades by 9 and
+   stops; from tick 3 0xA grows by 40; the colour flickers grey */
+
+typedef struct {
+    u8 pad0[0xCBCA];
+    s16 flag;
+} Game_b092_01E02AB0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x14];
+    s32 rot;
+    u8 pad24[0x30];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b092_01E02AB0;
+
+static s32 func_01E02AB0_b092(Game_b092_01E02AB0 *g, Fx_b092_01E02AB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 70;
+        o->fA = 80;
+        o->f56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        if (g->flag != 0) {
+            o->rot = 0xC000;
+        } else {
+            o->rot = 0x4000;
+        }
+        o->f5C = func_0019A5C8() % 360;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick > 2) {
+        o->fA += 40;
+    }
+    o->tick++;
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E02C40_b092);
 
@@ -612,8 +797,158 @@ INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E03600_b092);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E03950_b092);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E040E0_b092);
+/* shape b092:01E040E0, 106 insns: takes the first free of 400 effect slots (0x70 bytes, b569:01E02B80 shape), clears and
+   marks it, colours both from the scene, places it at the scene point, copies three settings and stores both arguments */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b092_01E040E0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b092_01E040E0 slot[400];
+    u8 padEnd[0xCB24 - 0x2A0 - 400 * 0x70];
+    u8 col[4];
+    u8 padCB28[0x8E];
+    s16 hCBB6;
+    u8 padCBB8[0xC];
+    s16 hCBC4;
+    s16 hCBC6;
+} Scene_b092_01E040E0;
+
+static s32 func_01E040E0_b092(Scene_b092_01E040E0 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b092_01E040E0 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 400; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 400;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h50 = s->hCBC4;
+        sl->h52 = s->hCBC6;
+        sl->h5A = s->hCBB6;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E04290_b092);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E04800_b092);
+/* shape b092:01E04800, 97 insns: the module's draw pass (b016:01E03880 shape): opens a sprite packet on the stack, then
+   runs every live slot (400 of 0x70 bytes) whose handler is shape b092:01E03310 through it; queues the batch only if any
+   slot was live. */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b092_01E04800;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        u64 st;
+        Xyz_b092_01E04800 p;
+    } v[2];
+    u8 pad38[8];
+    u64 t40;
+    u64 t48;
+    u8 pad50[8];
+} Pkt_b092_01E04800;
+
+typedef struct {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Slot_b092_01E04800;
+
+typedef struct {
+    u8 pad0[0x2A0];
+    Slot_b092_01E04800 slot[400];
+    u8 padEnd[0xCB34 - 0x2A0 - 400 * 0x70];
+    s32 ctx;
+    Pkt_b092_01E04800 *pkt;
+} Scene_b092_01E04800;
+
+static void func_01E04800_b092(Scene_b092_01E04800 *s) {
+    extern void b092_01E03310(Scene_b092_01E04800 *, Slot_b092_01E04800 *);
+    extern void b092_01E03600(Scene_b092_01E04800 *, Slot_b092_01E04800 *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b092_01E04800 pkt __attribute__((aligned(8)));
+    s32 i;
+    s32 n;
+
+    s->pkt = &pkt;
+    n = 0;
+    s->ctx = func_00207F60();
+    s->pkt->count = 0x26;
+    s->pkt->tag = 5;
+    s->pkt->regs = 0x42421;
+    s->pkt->pad = 0;
+    func_00208460();
+    func_002086D0(s->pkt, ((u64)0x80 << 32) | 0x48);
+    func_001F7060(func_001F53A0(), 0, &pkt.t40, &pkt.t48);
+    func_00208460();
+    for (i = 0; i < 400; i++) {
+        if (s->slot[i].active != 0) {
+            n++;
+            if (s->slot[i].fn == (void *)b092_01E03310) {
+                b092_01E03310(s, &s->slot[i]);
+            }
+            if (s->slot[i].fn == (void *)b092_01E03600) {
+                b092_01E03600(s, &s->slot[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(s->ctx, func_00207500(), 0);
+    }
+}

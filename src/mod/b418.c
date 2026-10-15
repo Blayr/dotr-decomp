@@ -684,9 +684,125 @@ static s32 func_01E01B10_b418(Game_b418_01E01B10 *g, Fx_b418_01E01B10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b418", func_01E01C90_b418);
+/* shape b418:01E01C90, 107 insns: on start 0x8/0xA = 150, variant 2..4, colour white, and a jump of 8.6 along the heading 0x5A
+   (z by the cosine, x by the sine of the game table 0xB4BC); alpha grows by 0x60 (below 0xC0) for 6 ticks, then fades
+   by 19 and stops; after the first tick it moves 3 (z by the cosine, x by the sine); func_00205C40 on the
+   rotation */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b418", func_01E01E40_b418);
+typedef struct {
+    u8 pad0[0xB4BC];
+    u8 trig[1];
+} Game_b418_01E01C90;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b418_01E01C90;
+
+static s32 func_01E01C90_b418(Game_b418_01E01C90 *g, Fx_b418_01E01C90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 150;
+        o->fA = o->f8;
+        o->f56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->z += 8.6f * func_00108030(g->trig, o->heading, 0);
+        o->x += 8.6f * func_00108030(g->trig, o->heading, 1);
+    }
+    if (o->tick < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->z += 3.0f * func_00108030(g->trig, o->heading, 0);
+        o->x += 3.0f * func_00108030(g->trig, o->heading, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
+
+/* shape b418:01E01E40, 107 insns: on start 0x8/0xA = 150, variant 2..4, colour white, and a jump of 8.6 along the heading 0x5A
+   (z by the cosine, x by the sine of the game table 0xB4BC); alpha grows by 0x60 (below 0xC0) for 6 ticks, then fades
+   by 19 and stops; after the first tick it moves 3 (y by the cosine, x by the sine); func_00205C40 on the
+   rotation */
+
+typedef struct {
+    u8 pad0[0xB4BC];
+    u8 trig[1];
+} Game_b418_01E01E40;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b418_01E01E40;
+
+static s32 func_01E01E40_b418(Game_b418_01E01E40 *g, Fx_b418_01E01E40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 150;
+        o->fA = o->f8;
+        o->f56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->z += 8.6f * func_00108030(g->trig, o->heading, 0);
+        o->x += 8.6f * func_00108030(g->trig, o->heading, 1);
+    }
+    if (o->tick < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->y += 3.0f * func_00108030(g->trig, o->heading, 0);
+        o->x += 3.0f * func_00108030(g->trig, o->heading, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b418:01E01FF0, 59 insns: constant variant of b415:01E022B0 (0xE->0xC, 0xA->0x10, 9->15, 220.0f->230.0f, colour (255, 207, 207), colour (255, 128, 128)) */
 

@@ -664,11 +664,185 @@ static s32 func_01E022F0_b111(s32 unused, Mote_b111_01E022F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b111", func_01E024F0_b111);
+/* shape b111:01E024F0, 109 insns: a white-red growing ring (b111:01E026B0 shape): kind 0 grows by 3.5 outside scene frames
+   132..219 and by 2 inside, the inner size 2 less; random angle and turn; alpha up by 0x40 for 10 frames, then down by 14 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b111", func_01E026B0_b111);
+typedef struct {
+    u8 pad0[0x450A];
+    s16 timer;
+} Game_b111_01E024F0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b111", func_01E02860_b111);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b111_01E024F0;
+
+static s32 func_01E024F0_b111(Game_b111_01E024F0 *g, Obj_b111_01E024F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c1, 0x80, 8, 8);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0) {
+        if (g->timer < 0x84 || g->timer >= 0xDC) {
+            o->f48 += 3.5f;
+            o->f4C = o->f48 - 2.0f;
+        } else {
+            o->f48 += 2.0f;
+            o->f4C = o->f48 - 2.0f;
+        }
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b111:01E026B0, 105 insns: a white-red growing ring: size 0 growing by 8.5 (4.5 once the scene timer reaches 200) with the
+   inner size 4 less, random angle and turn on all three axes; alpha up by 0x40 for 10 frames, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[0x450A];
+    s16 timer;
+} Game_b111_01E026B0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b111_01E026B0;
+
+static s32 func_01E026B0_b111(Game_b111_01E026B0 *g, Obj_b111_01E026B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c1, 0x80, 8, 8);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer < 0xC8) {
+        o->f48 += 8.5f;
+        o->f4C = o->f48 - 4.0f;
+    } else {
+        o->f48 += 4.5f;
+        o->f4C = o->f48 - 4.0f;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b111:01E02860, 105 insns: on start f48 10, colour (0xCF, 0x8F, 0x8F), second colour (0x80, 8, 8) with alpha
+   0, random 0x5A; alpha grows by 0x40 (below 0xC0) while the game step 0x450A is below 0x154, then fades by 9 and
+   stops; the second colour flickers red; f48 grows by 10 up to 100; the rotation at 0x20 advances 0x4000 */
+
+typedef struct {
+    u8 pad0[0x450A];
+    s16 step;
+} Game_b111_01E02860;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b111_01E02860;
+
+static s32 func_01E02860_b111(Game_b111_01E02860 *g, Fx_b111_01E02860 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        func_001076F0(o->col, 0xCF, 0x8F, 0x8F);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (g->step < 0x154) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 0xA) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        o->f48 <= 0.0f;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0x80, 8, 8);
+    } else {
+        func_001076F0(o->col2, 0xC0, 8, 8);
+    }
+    if (o->f48 < 100.0f) {
+        o->f48 += 10.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b111:01E02A10, 113 insns, 3 copies: step of a blinking flash (b547:01E02400 family): size 100; the second
    colour blinks red (mode 0) or blue (mode 1) every other tick; fades in by 0x40 for 4 ticks, then out by 9;

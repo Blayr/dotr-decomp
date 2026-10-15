@@ -716,9 +716,128 @@ static s32 func_01E02300_b714(Game_b714_01E02300 *g, Fx_b714_01E02300 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02450_b714);
+/* shape b714:01E02450, 95 insns: constant variant of b045:01E021B0 (70->10, 20->9, 8->3, 3->5) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E025D0_b714);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[4];
+    s32 rot;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b714_01E02450;
+
+static s32 func_01E02450_b714(s32 arg0, Fx_b714_01E02450 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 10;
+        o->f34 = func_0019A5C8() % 2 + 2;
+        o->rot = func_0019A5C8() % 0xFFFF;
+        func_001076F0(o->col, 0x30, 0x28, 8);
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 9 + 3;
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 7 + 5;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x61) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b714:01E025D0, 99 insns: a dim yellow camera-facing glow (b378:01E01230 shape): turned by the camera side, size 90
+   growing by 8 up to 160; alpha up by 0x40 for 2 frames, then down by 9; fades faster (by 13) once the scene timer drops under 15 */
+
+typedef struct {
+    u8 pad0[0x3B40];
+    s32 timer;
+} Scene_b714_01E025D0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 size;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b714_01E025D0;
+
+static s32 func_01E025D0_b714(Scene_b714_01E025D0 *g, Obj_b714_01E025D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001A22C0(f32);
+    s32 ang[4];
+
+    func_001076F0(o->c0, 0x10, 0x10, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), ang);
+        if (func_001A22C0(ang[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = -0xC000;
+        }
+        o->rot[1] = 0;
+        if (o->size == 0) {
+            o->rot[2] = 0;
+        } else {
+            o->rot[2] = 0;
+        }
+        o->sub = 0;
+        o->size = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x32;
+    o->t++;
+    if (o->size < 0xA0) {
+        o->size += 8;
+    }
+    if (g->timer < 0xF) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b018:01E02480, 54 insns, 11 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */
@@ -985,7 +1104,60 @@ static s32 func_01E02DA0_b714(s32 arg0, Glow_b714_01E02DA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02E50_b714);
+/* shape b714:01E02E50, 101 insns: on start 0x38 = 50, colour 0x20 grey, random 0x30 and heading 0x3A; alpha 0x80 for
+   10 ticks, then fades by 10 and stops; 0x34 counts up to 7 every third tick; it drifts 4 along the heading (0x8 by
+   the sine, 0xC by the cosine of the game table 0x3CA4) */
+
+typedef struct {
+    u8 pad0[0x3CA4];
+    u8 trig[1];
+} Game_b714_01E02E50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    u8 padA[2];
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 heading;
+} Fx_b714_01E02E50;
+
+static s32 func_01E02E50_b714(Game_b714_01E02E50 *g, Fx_b714_01E02E50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->f30 = func_0019A5C8() % 360;
+        o->heading = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->tick++;
+    o->x = o->x + 4.0f * func_00108030(g->trig, o->heading, 0);
+    o->z = o->z + 4.0f * func_00108030(g->trig, o->heading, 1);
+    return 0;
+}
 
 /* shape b714:01E02FF0, 93 insns: a screen fog: on start sets the scene fog block (0x3680: 128, 4.0, 2.0, 0.0, position from
    the effect, colour (0, 120.0, 0)); its strength 0x36A8 rises by 0.2 to 1, then falls by 0.1 and ends; the block is

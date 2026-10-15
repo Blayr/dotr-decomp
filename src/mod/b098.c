@@ -396,7 +396,90 @@ INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E01200_b098);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E014D0_b098);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E01850_b098);
+/* shape b098:01E01850, 117 insns: b413:01E023D0 family shock wave (red, scale 6, width 8) pinned to the scene joint: kind 0 from 200 growing 25, kind 1 from 100 growing 22.5, kind 2 400 fixed; in by 64 up to 0x80 for 9 ticks, then out by 5 and ends; +0x52 counts to 25 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b098_01E01850;
+
+typedef struct {
+    u8 pad[0xB246];
+    s16 joint;
+} Game_b098_01E01850;
+
+static s32 func_01E01850_b098(Game_b098_01E01850 *g, Obj_b098_01E01850 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        func_001076F0(o->col2, 0xFF, 0x40, 0x40);
+        if (o->h50 == 0) {
+            o->f30 = 8.0f;
+            o->f34 = 200.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 8.0f;
+            o->f34 = 100.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 8.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->h52 = 0;
+    }
+    if (o->t < 9) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 25.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 22.5f;
+    }
+    if (o->t != 0) {
+        if (o->h52 < 25) {
+            o->h52++;
+        }
+    }
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint, &o->f10);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b098", func_01E01A30_b098);
 

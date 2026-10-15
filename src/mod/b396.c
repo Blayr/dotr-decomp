@@ -578,7 +578,64 @@ static s32 func_01E01990_b396(void *arg0, Obj_b396_01E01990 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b396", func_01E01B40_b396);
+/* shape b396:01E01B40, 106 insns: a red or pink (by a random kind) rising flash (b445:01E02570 family): size 200 rising by
+   (150..229) / 10 with the inner size a tenth of it, sizes 60; full alpha for 8 frames, then down by 5 until it ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    u8 pad24[0x10];
+    f32 rise;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b396_01E01B40;
+
+static s32 func_01E01B40_b396(void *arg0, Obj_b396_01E01B40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->kind = (func_0019A5C8() >> 4) % 2;
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0xC0, 0x20, 0x20);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c0, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->w = 0x3C;
+        o->h = 0x3C;
+        o->rise = func_0019A5C8() % 80 + 0x96;
+        o->rise /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = 0x4000;
+    }
+    if (o->t < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->rise;
+    o->f4C = 0.1f * o->f48;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b396", func_01E01CF0_b396);
 

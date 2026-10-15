@@ -518,7 +518,72 @@ static void func_01E01260_b513(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E01450_b513);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E01880_b513);
+/* shape b513:01E01880, 99 insns: a red spark on a model joint (first): frame 10, random sub-frame 0..3 with rise 17 less half of it,
+   y turn, width 0..9, hold 1..3; full alpha until the hold, then down by 10 until it ends; takes the joint position each frame */
+
+typedef struct {
+    u8 pad0[0x36C8];
+    s16 joint;
+} Game_b513_01E01880;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[8];
+    s32 rot2;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 sub;
+} Obj_b513_01E01880;
+
+static s32 func_01E01880_b513(Game_b513_01E01880 *g, Obj_b513_01E01880 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    struct {
+        f32 x, y, z, w;
+        f32 pad[4];
+    } v;
+
+    if (o->state == 1) {
+        o->h38 = 0xA;
+        o->sub = func_0019A5C8() % 4;
+        o->h34 = 2;
+        func_001076F0(o->c0, 0x80, 0x20, 0x20);
+        o->rot2 = func_0019A5C8() % 65535;
+        o->h = 0;
+        o->step = 0x11 - (o->sub >> 1);
+        o->w = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 3 + 1;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->h += o->step;
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    o->x = func_001A22C0(v.x);
+    o->y = func_001A22C0(v.y);
+    o->z = func_001A22C0(v.z);
+    return 0;
+}
 
 /* shape b513:01E01A10, 87 insns: b115:01E01980 family drifting white spark (sine table ctx+0x37E8) */
 
@@ -703,11 +768,172 @@ static s32 func_01E01D00_b513(s32 arg0, Spark_b513_01E01D00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E01EB0_b513);
+/* shape b513:01E01EB0, 103 insns: b564:01E018A0 family: a red spark (size 12, random frame 0..3, two random turns) spinning a random 8..23 a tick from 0..15, size 0..9, held 5..14 ticks at 0x80, then out by 15 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E02050_b513);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b513_01E01EB0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E021D0_b513);
+static s32 func_01E01EB0_b513(s32 arg0, Glow_b513_01E01EB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 12;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x20, 0x20);
+        o->w18 = func_0019A5C8() % 65535;
+        o->w10 = func_0019A5C8() % 65535;
+        o->h30 = func_0019A5C8() % 16;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 16 + 8;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 10 + 5;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->h30 += o->hE;
+    o->tick++;
+    return 0;
+}
+
+/* shape b513:01E02050, 96 insns: b417:01E03910 family: an orange spark (size 12, random frame 0..3, random roll and angle) spinning a random 8..23 a tick from 0..15, size 0..9, held 1..3 ticks at 0x80, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b513_01E02050;
+
+static s32 func_01E02050_b513(s32 arg0, Glow_b513_01E02050 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 12;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x40, 0);
+        o->w18 = func_0019A5C8() % 65535;
+        o->h30 = func_0019A5C8() % 16;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 16 + 8;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->h30 += o->hE;
+    o->tick++;
+    return 0;
+}
+
+/* shape b513:01E021D0, 99 insns: a red spark on a model joint (second): frame 10, random sub-frame 0..3 with rise 17 less half of it,
+   y turn, width 0..9, hold 1..3; full alpha until the hold, then down by 10 until it ends; takes the joint position each frame */
+
+typedef struct {
+    u8 pad0[0x36CA];
+    s16 joint;
+} Game_b513_01E021D0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[8];
+    s32 rot2;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 sub;
+} Obj_b513_01E021D0;
+
+static s32 func_01E021D0_b513(Game_b513_01E021D0 *g, Obj_b513_01E021D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    struct {
+        f32 x, y, z, w;
+        f32 pad[4];
+    } v;
+
+    if (o->state == 1) {
+        o->h38 = 0xA;
+        o->sub = func_0019A5C8() % 4;
+        o->h34 = 2;
+        func_001076F0(o->c0, 0x80, 0x20, 0x20);
+        o->rot2 = func_0019A5C8() % 65535;
+        o->h = 0;
+        o->step = 0x11 - (o->sub >> 1);
+        o->w = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 3 + 1;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->h += o->step;
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    o->x = func_001A22C0(v.x);
+    o->y = func_001A22C0(v.y);
+    o->z = func_001A22C0(v.z);
+    return 0;
+}
 
 /* shape b513:01E02360, 93 insns: a screen fog: on start sets the scene fog block (0x34E0: 128, 4.0, 2.0, 0.0, position from
    the effect, colour (0, 120.0, 0)); its strength 0x3508 rises by 0.2 to 1, then falls by 0.1 and ends; the block is

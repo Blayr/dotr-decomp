@@ -518,7 +518,61 @@ static s32 func_01E01A60_b192(void *arg0, Obj_b192_01E01A60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E01BD0_b192);
+/* shape b192:01E01BD0, 116 insns: a green drifting mote (b080:01E023D0 shape): frame 123, random turn and angle; alpha up by 32
+   for 6 frames, then down by 10; sub-frame steps up to 7 every third frame; drifts 14 along its angle and bobs 4 by its turn */
+
+typedef struct {
+    u8 pad0[0x375C];
+    u8 sin[1];
+} Game_b192_01E01BD0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 turn;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b192_01E01BD0;
+
+static s32 func_01E01BD0_b192(Game_b192_01E01BD0 *g, Obj_b192_01E01BD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->state == 1) {
+        o->h38 = 0x7B;
+        o->sub = 0;
+        func_001076F0(o->c0, 0x20, 0x40, 0x20);
+        o->turn = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+    }
+    if (o->t < 6) {
+        o->c0[3] += 0x20;
+    } else if (o->c0[3] > 0xB) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->sub < 7) {
+            o->sub++;
+        }
+    }
+    o->t++;
+    o->h8 = func_001A22C0(o->h8 + 14.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 4.0f * func_00108030(g->sin, o->turn, 1));
+    o->hC = func_001A22C0(o->hC + 14.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 /* shape b192:01E01DA0, 85 insns: a green rising spark: frame 35, random sub-frame 0..3, angle, rise step 3..18, start height
    0..9 and full-alpha time 5..11; then fades by 10 until it ends; rises by its step each frame */
@@ -568,9 +622,118 @@ static s32 func_01E01DA0_b192(void *arg0, Obj_b192_01E01DA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E01F00_b192);
+typedef struct {
+    u8 pad0000[0x375C];
+    u8 tab[1];
+} Mgr_b192_01E01F00;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E020D0_b192);
+typedef struct {
+    u8 pad00[8];
+    s16 x, y, z;
+    u8 pad0E[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b192_01E01F00;
+
+static s32 func_01E01F00_b192(Mgr_b192_01E01F00 *m, Obj_b192_01E01F00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 130;
+        o->h34 = 0;
+        func_001076F0(o->col, 0x20, 0x40, 0x20);
+        o->h30 = func_0019A5C8() % 360;
+        o->h3A = func_0019A5C8() % 360;
+        o->h36 = 2;
+    }
+    if (o->h32 < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->h36 = 0;
+    }
+    if (o->h32 % 3 == 1) {
+        if (o->h34 < 7) {
+            o->h34++;
+        }
+    }
+    o->h32++;
+    o->x = o->x + 14.0f * func_00108030(m->tab, o->h3A, 0);
+    o->y = o->y + 6.0f * func_00108030(m->tab, o->h30, 1);
+    o->z = o->z + 14.0f * func_00108030(m->tab, o->h3A, 1);
+    return 0;
+}
+
+/* shape b192:01E020D0, 95 insns: on start 0x38 = 260, variant 0..6, second alpha 8, green colours (darker before game
+   step 0x365A reaches 0x4A); alpha grows by 0x10 (below 0x20) for 2 ticks, then fades by 12 once 0x38 passes 0x14 and
+   by 15 while the game counter 0x3610 is below 10; 0x38 grows by 4 */
+
+typedef struct {
+    u8 pad0[0x3610];
+    s32 count;
+    u8 pad3614[0x46];
+    s16 step;
+} Game_b192_01E020D0;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b192_01E020D0;
+
+static s32 func_01E020D0_b192(Game_b192_01E020D0 *g, Fx_b192_01E020D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 260;
+        o->f34 = func_0019A5C8() % 7;
+        o->col2[3] = 8;
+        if (g->step < 0x4A) {
+            func_001076F0(o->col, 0x10, 0x60, 0x10);
+            func_001076F0(o->col2, 8, 0x20, 8);
+        } else {
+            func_001076F0(o->col, 0x10, 0x80, 0x10);
+            func_001076F0(o->col2, 8, 0x40, 8);
+        }
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x20) {
+            o->col[3] += 0x10;
+        }
+    } else {
+        if (o->f38 > 0x14) {
+            if (o->col[3] > 0xD) {
+                o->col[3] -= 12;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->count < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    o->tick++;
+    o->f38 += 4;
+    return 0;
+}
 
 /* shape b192:01E02250, 74 insns: a dark spark (size 60, or 110 once the scene value reaches 74) at the scene angle and a random frame, growing 2 and turning 15 a tick: in by 64 up to 0x80 for 2 ticks, then out by 12 and ends */
 

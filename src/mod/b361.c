@@ -103,7 +103,66 @@ static void func_01E00080_b361(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b361", func_01E00920_b361);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b361", func_01E00B80_b361);
+/* shape b361:01E00B80, 94 insns: on start f48 50, 0x20 = 50, 0x24 = 8, colour 0x80 grey, 0x50 0..179, random 0x5A;
+   alpha 0x80 for 11 ticks, then fades by 15 and stops; variant 2; z moves by 7 (down when the game flag 0x5F92 is
+   set); the colour flickers grey */
+
+typedef struct {
+    u8 pad0[0x5F92];
+    s16 flag;
+} Game_b361_01E00B80;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x1A];
+    s32 f20;
+    s32 f24;
+    u8 pad28[0x20];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b361_01E00B80;
+
+static s32 func_01E00B80_b361(Game_b361_01E00B80 *g, Fx_b361_01E00B80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 50.0f;
+        o->f20 = 50;
+        o->f24 = 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f50 = func_0019A5C8() % 180;
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->f56 = 2;
+    if (g->flag != 0) {
+        o->z -= 7;
+    } else {
+        o->z += 7;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b361:01E00D00, 58 insns: an orange two-colour glow of size 630 at alpha 0x80 for 150 ticks, then out by 10 and ends; placed at the scene's joint each tick */
 
@@ -553,4 +612,89 @@ static void func_01E024D0_b361(u8 *self, Obj_b361_01E024D0 *obj, void *pk) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b361", func_01E026D0_b361);
+/* shape b361:01E026D0, 97 insns: draw pass for the effect pool: open a 0x34-qword sprite packet on the stack (kept at
+   0x5F54, a second buffer at 0x5F74, ot at 0x5F70), texture from func_001F53A0, then two passes over the 0xD2 slots
+   (0x70 bytes at 0x2E0): those whose callback is b361:01E01140, then b361:01E01A00, are drawn by it; close the ot if
+   any slot was drawn */
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 body[0x68];
+    u64 t78;
+    u64 t80;
+    u8 pad88[8];
+} Pkt_b361_01E026D0;
+
+typedef struct {
+    u8 buf[0x58];
+} Buf_b361_01E026D0;
+
+typedef struct {
+    u8 pad0[0x44];
+    void (*cb)(void *, void *);
+    u8 pad48[0x10];
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b361_01E026D0;
+
+typedef struct {
+    u8 pad0[0x2E0];
+    Slot_b361_01E026D0 slots[0xD2];
+    u8 pad5EC0[0x94];
+    Pkt_b361_01E026D0 *pk;
+    u8 pad5F58[0x18];
+    s32 ot;
+    Buf_b361_01E026D0 *buf;
+} Scene_b361_01E026D0;
+
+static void func_01E026D0_b361(Scene_b361_01E026D0 *g) {
+    extern void b361_01E01140(void *, void *);
+    extern void b361_01E01A00(void *, void *);
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F7060(s32, s32, void *, void *);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Buf_b361_01E026D0 buf __attribute__((aligned(8)));
+    Pkt_b361_01E026D0 pkt __attribute__((aligned(8)));
+    Pkt_b361_01E026D0 *p;
+    s32 i;
+    s32 n;
+
+    n = 0;
+    g->buf = &buf;
+    g->pk = &pkt;
+    g->ot = func_00207F60();
+    g->pk->count = 0x34;
+    g->pk->tag = 0xC;
+    g->pk->regs = ((u64)0x4214 << 32) | 0x21421421;
+    g->pk->pad = 0;
+    func_00208460();
+    func_002086D0(g->pk, ((u64)0x80 << 32) | 0x48);
+    p = g->pk;
+    func_001F7060(func_001F53A0(), 0, &p->t78, &p->t80);
+    func_00208460();
+    for (i = 0; i < 0xD2; i++) {
+        if (g->slots[i].used != 0) {
+            if (g->slots[i].cb == b361_01E01140) {
+                n++;
+                b361_01E01140(g, &g->slots[i]);
+            }
+        }
+    }
+    for (i = 0; i < 0xD2; i++) {
+        if (g->slots[i].used != 0) {
+            if (g->slots[i].cb == b361_01E01A00) {
+                n++;
+                b361_01E01A00(g, &g->slots[i]);
+            }
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(g->ot, func_00207500(), 0);
+    }
+}

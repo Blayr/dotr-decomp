@@ -542,7 +542,61 @@ static s32 func_01E018E0_b428(void *arg0, Spark_b428_01E018E0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b428", func_01E01A70_b428);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b428", func_01E01DE0_b428);
+/* shape b428:01E01DE0, 100 insns: a green flicker glow: size 3..27 growing by 0.4 once started; second alpha up by 0x30 for 4
+   frames, then down by 15 until it ends; first colour flickers green by frame parity; spins a quarter turn */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 f4C;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b428_01E01DE0;
+
+static s32 func_01E01DE0_b428(void *arg0, Obj_b428_01E01DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = 3.0f + (f32)(func_0019A5C8() % 25);
+        func_001076F0(o->c1, 0x20, 0x20, 0x20);
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->h52 = 0;
+        o->h5A = 0xA;
+        o->h5C = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x30;
+        }
+    } else if (o->c1[3] > 0x10) {
+        o->c1[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x20, 0x40, 0x20);
+    } else {
+        func_001076F0(o->c0, 0x10, 0x30, 0x10);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    if (o->t != 0) {
+        o->f4C += 0.4f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

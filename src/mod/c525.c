@@ -684,7 +684,80 @@ static s32 func_01E016B0_c525(s32 obj, Ring_b001_01E03860 *ring, Cam_b001_01E038
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c525", func_01E01BA0_c525);
+/* shape c525:01E01BA0, 107 insns: set up a ring object: its id (resolved through func_00103260), radius size/2, base height 40 / reach 400, texture rect 0,0 24x32 / 0,0 128x64, scale 20, 8 points at random spread around 40/400 with twist steps from func_00105C40; colour grey at alpha 0x20 */
+
+typedef struct {
+    f32 h;
+    f32 r;
+    f32 w8;
+    s16 hC;
+    s16 hE;
+} Pt_c525_01E01BA0;
+
+typedef struct {
+    s32 id;
+    u8 pad4[4];
+    f32 half;
+    u8 padC[0x14];
+    s32 res;
+    s32 one;
+    u8 r, g, b, a;
+    f32 scale;
+    f32 h;
+    f32 reach;
+    f32 w38;
+    s32 w3C;
+    s16 rect[8];
+    Pt_c525_01E01BA0 pt[16];
+    s16 n;
+    u8 pad152[8];
+    s16 step;
+    s16 h15C;
+    s16 h15E;
+    s16 h160;
+} Ring_c525_01E01BA0;
+
+static s32 func_01E01BA0_c525(Ring_c525_01E01BA0 *o, s32 id __attribute__((aligned(16))), f32 size) {
+    extern void func_00103260(void *, s32);
+    extern s16 func_00105C40(void *);
+    s32 i;
+
+    o->id = id;
+    o->half = size / 2.0f;
+    func_00103260(&id, 1);
+    o->one = 1;
+    o->res = id;
+    o->h = 40.0f;
+    o->reach = 400.0f;
+    o->w38 = 0.0f;
+    o->w3C = 0;
+    o->rect[0] = 0;
+    o->rect[1] = 0;
+    o->rect[2] = 24;
+    o->rect[3] = 32;
+    o->rect[4] = 0;
+    o->rect[5] = 0;
+    o->rect[6] = 0x80;
+    o->rect[7] = 0x40;
+    o->scale = 20.0f;
+    o->n = 8;
+    o->step = 1;
+    o->h15C = 1;
+    o->h160 = 10;
+    o->b = 0x80;
+    o->g = 0x80;
+    o->r = 0x80;
+    o->a = 0x20;
+    for (i = 0; i < o->n; i++) {
+        o->pt[i].h = o->h + (func_0019A5C8() % 20 - 10);
+        o->pt[i].r = o->reach + (func_0019A5C8() % 16 - 4);
+        o->pt[i].w8 = o->w38;
+        o->pt[i].hE = -o->step * i;
+        o->pt[i].hC = func_00105C40(o->rect);
+        o->h15E = o->pt[i].hC + o->h160 - 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c525", func_01E01D50_c525);
 

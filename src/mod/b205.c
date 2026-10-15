@@ -522,7 +522,75 @@ static void func_01E00EC0_b205(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01220_b205);
+/* shape b205:01E01220, 104 insns: the b205 scene's script: sets the scene tint red; tick 70 spawns shape b205:01E013C0; tick 81 places the burst halfway between the joint and the camera and spawns 8 b205:01E01770, 20 b205:01E015C0, 50 b205:01E01900, one b205:01E01B90 and one b205:01E01CD0; tick 42 spawns b205:01E01F10 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b205_01E01220;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x, y, z;
+    u8 pad2DC[0x6DA4 - 0x2DC];
+    u8 rgba[4];
+    u8 pad6DA8[0x46];
+    s16 joint;
+    u8 pad6DF0[0x16];
+    s16 mode;
+    u8 pad6E08[4];
+    s16 tick;
+} Ctx_b205_01E01220;
+
+static void func_01E01220_b205(Ctx_b205_01E01220 *g) {
+    extern void b205_01E013C0();
+    extern void b205_01E015C0();
+    extern void b205_01E01770();
+    extern void b205_01E01900();
+    extern void b205_01E01B90();
+    extern void b205_01E01CD0();
+    extern void b205_01E01F10();
+    extern void b205_01E02AB0(Ctx_b205_01E01220 *, void *, s32);
+    extern void b205_01E02BD0(Ctx_b205_01E01220 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    V4_b205_01E01220 a;
+    V4_b205_01E01220 b;
+    s32 i;
+
+    g->rgba[0] = 0x80;
+    g->rgba[1] = 0;
+    g->rgba[2] = 0;
+    g->rgba[3] = 0;
+    g->tick++;
+    if (g->tick == 70) {
+        g->mode = 0;
+        b205_01E02AB0(g, b205_01E013C0, 0);
+    }
+    if (g->tick == 81) {
+        func_001F5620(func_001F53A0(), g->joint, &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->x = a.x;
+        g->y = a.y;
+        g->z = a.z + (b.z - a.z) / 2.0f;
+        g->mode = 1;
+        for (i = 0; i < 8; i++) {
+            b205_01E02AB0(g, b205_01E01770, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b205_01E02AB0(g, b205_01E015C0, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b205_01E02BD0(g, b205_01E01900, 0);
+        }
+        b205_01E02BD0(g, b205_01E01B90, 0);
+        b205_01E02AB0(g, b205_01E01CD0, 0);
+    }
+    if (g->tick == 42) {
+        b205_01E02AB0(g, b205_01E01F10, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E013C0_b205);
 
@@ -583,7 +651,57 @@ static s32 func_01E015C0_b205(s32 arg0, Spark_b205_01E015C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01770_b205);
+/* shape b205:01E01770, 97 insns: on start 0x38 = 6, variant 0..3, colour (0x40, 0xFF, 0x40), random rotation,
+   random 0x3A, speed 3..18 (0xE), 0x8 0..9, hold 10..29 (0x6); alpha 0x80 during the hold, then fades by 10 and
+   stops; 0x30 grows by the speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    s32 rot10;
+    u8 pad14[4];
+    s32 rot18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b205_01E01770;
+
+static s32 func_01E01770_b205(s32 arg0, Fx_b205_01E01770 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 6;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x40, 0xFF, 0x40);
+        o->rot18 = func_0019A5C8() % 0xFFFF;
+        o->rot10 = func_0019A5C8() % 0xFFFF;
+        o->f30 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 16 + 3;
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 20 + 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->f30 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 /* shape b205:01E01900, 164 insns: variant of b479:01E020E0 (tumbling spark) with a random size 4..11 that does
    not grow and colour (0x40,0xFF,0x40) */
@@ -864,7 +982,87 @@ static s32 func_01E01F10_b205(Game_b205_01E01F10 *g, Fx_b205_01E01F10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01F90_b205);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b205_01E01F90;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b205_01E01F90;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b205_01E01F90 p;
+} Vtx_b205_01E01F90;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b205_01E01F90 c;
+    Vtx_b205_01E01F90 v[2];
+    u64 tail;
+} Pkt_b205_01E01F90;
+
+typedef struct {
+    u8 pad0000[0x6D70];
+    f32 f6D70;
+} Mgr_b205_01E01F90;
+
+static inline void tag_b205_01E01F90(Pkt_b205_01E01F90 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E01F90_b205(Mgr_b205_01E01F90 *m) {
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b205_01E01F90 pkt __attribute__((aligned(8)));
+    u64 a;
+    s32 b[3];
+    s32 s;
+    s16 h;
+
+    s = func_00207F60();
+    h = m->f6D70;
+    tag_b205_01E01F90((Pkt_b205_01E01F90 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0x80;
+    pkt.c.g = 0x80;
+    pkt.c.b = 0x80;
+    pkt.c.a = 0x80;
+    pkt.c.q = 1.0f;
+    pkt.v[0].p.x = (h + 0x6C0) * 16 - 8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = (h + 0x940) * 16 - 8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_00208460();
+    func_00208800(func_00209E50(), 0, &a, b);
+    func_00208460();
+    func_002075F0(&pkt, 0, 0);
+    func_00207FD0(s, func_00207500(), 0);
+    return 0;
+}
 
 /* shape b205:01E02120, 146 insns: a full-screen textured overlay (0x6BF8,0x71F8 - 0x93F8,0x8DF8) in the effect's
    colour, written straight into the scene's packet (game 0x6DB8), window scrolled by f8/10 and fA/10; alpha grows

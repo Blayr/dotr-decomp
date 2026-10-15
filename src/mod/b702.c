@@ -478,7 +478,67 @@ static void func_01E00FD0_b702(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E013E0_b702);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E01A00_b702);
+/* shape b702:01E01A00, 114 insns: b282:01E01C20 family dark smoke puff (random size 100..159 growing 1, frame 0..2, angle 5..14, spin 2..6, size 0..34), held 9..16 ticks: in by 64 up to 0xC0, then out by 19 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b702_01E01A00;
+
+static s32 func_01E01A00_b702(s32 arg0, Obj_b702_01E01A00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 60 + 100;
+        o->kind = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x18, 0x18, 0x18);
+        o->h50 = func_0019A5C8() % 10 + 5;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 8 + 9;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f48 += 1.0f;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b702:01E01BD0, 131 insns, 3 copies: step of a swirling grey puff (b396:01E01990 family): random size, phase,
    height, turn direction, angle, speed and lifetime; fades in by 0x40, then out by 19; grows, climbs and turns
@@ -542,11 +602,125 @@ static s32 func_01E01BD0_b702(void *arg0, Obj_b702_01E01BD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E01DE0_b702);
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b702_01E01DE0;
+
+static s32 func_01E01DE0_b702(s32 unused, Obj_b702_01E01DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = func_0019A5C8() % 60 + 200;
+        o->h56 = func_0019A5C8() % 3;
+        func_001076F0(o->c60, 0xFF, 0xFF, 0xFF);
+        o->h50 = func_0019A5C8() % 10 + 5;
+        o->h52 = func_0019A5C8() % 2;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 70 + 60;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 8 + 15;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x40;
+        }
+    } else if (o->c60[3] > 20) {
+        o->c60[3] -= 19;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->f48 += 5.0f;
+    }
+    if (o->h54 != 0) {
+        o->h50 += o->hE;
+    }
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E01FD0_b702);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E024A0_b702);
+/* shape b702:01E024A0, 113 insns: on start 0x8/0xA = 130, variant 2..4, colour white, random heading 0x5A and a jump of
+   6.6 along it (z by the cosine, x by the sine of the game table 0xB6FC); alpha grows by 0x40 (below 0x80) for 10
+   ticks, then fades by 9 and stops; after the first tick it moves 0.5 along the heading; func_00205C40 on the
+   rotation */
+
+typedef struct {
+    u8 pad0[0xB6FC];
+    u8 trig[1];
+} Game_b702_01E024A0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b702_01E024A0;
+
+static s32 func_01E024A0_b702(Game_b702_01E024A0 *g, Fx_b702_01E024A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 130;
+        o->fA = o->f8;
+        o->f56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->heading = (func_0019A5C8() >> 4) % 360;
+        o->z += 6.6f * func_00108030(g->trig, o->heading, 0);
+        o->x += 6.6f * func_00108030(g->trig, o->heading, 1);
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->z += 0.5f * func_00108030(g->trig, o->heading, 0);
+        o->x += 0.5f * func_00108030(g->trig, o->heading, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b702:01E02670, 69 insns: constant variant of b287:01E02C80 (0xE->0x1E, 150.0f->500.0f, colour (255, 255, 255), colour (255, 128, 128)) */
 

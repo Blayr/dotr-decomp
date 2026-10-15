@@ -581,11 +581,153 @@ static void func_01E01570_b849(Obj_b094_01E01230 *obj, Cam_b094_01E01230 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E018B0_b849);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E020C0_b849);
+/* shape b849:01E020C0, 111 insns: on start f48 0, f4C 30.0f, hold 200 (0x6), colours (0x80, 0x80, 0x40) and (0x80, 0x80, 0x80) (second alpha 0),
+   0x5A/0x5C = 15; the second alpha grows by 0x30 (below 0xC0) during the hold, then fades by 11 and stops; the rotation
+   at 0x20 advances 0x4000; it sits on the game point 0xF128 and moves 0x50 fifths of the way from that point to point
+   0xF12A */
+
+typedef struct {
+    u8 pad0[0xF128];
+    s16 pt;
+    s16 pt2[2];
+} Game_b849_01E020C0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b849_01E020C0;
+
+static s32 func_01E020C0_b849(Game_b849_01E020C0 *g, Fx_b849_01E020C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f b;
+    f32 f;
+    Vec4f *pb;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 30.0f;
+        o->hold = 200;
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        func_001076F0(o->col, 0x80, 0x80, 0x40);
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x30;
+        }
+    } else if (o->col2[3] > 0xC) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    f = o->f50;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    func_001F5620(func_001F53A0(), g->pt, &o->pos);
+    func_001F5620(func_001F53A0(), g->pt, &a);
+    func_001F5620(func_001F53A0(), g->pt2[0], pb = &b);
+    o->pos.x += f * ((pb->x - a.x) / 5.0f);
+    o->pos.y += f * ((b.y - a.y) / 5.0f);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E02280_b849);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E029D0_b849);
+/* shape b849:01E029D0, 111 insns: on start f48 0, f4C 15.0f, hold 200 (0x6), colours (0x80, 0x10, 0x10) and (0x80, 0x10, 0x10) (second alpha 0),
+   0x5A/0x5C = 15; the second alpha grows by 0x30 (below 0xC0) during the hold, then fades by 11 and stops; the rotation
+   at 0x20 advances 0x4000; it sits on the game point 0xF128 and moves 0x50 fifths of the way from that point to point
+   0xF12C */
+
+typedef struct {
+    u8 pad0[0xF128];
+    s16 pt;
+    s16 pt2[2];
+} Game_b849_01E029D0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b849_01E029D0;
+
+static s32 func_01E029D0_b849(Game_b849_01E029D0 *g, Fx_b849_01E029D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f b;
+    f32 f;
+    Vec4f *pb;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 15.0f;
+        o->hold = 200;
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        func_001076F0(o->col, 0x80, 0x10, 0x10);
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x30;
+        }
+    } else if (o->col2[3] > 0xC) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    f = o->f50;
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    func_001F5620(func_001F53A0(), g->pt, &o->pos);
+    func_001F5620(func_001F53A0(), g->pt, &a);
+    func_001F5620(func_001F53A0(), g->pt2[1], pb = &b);
+    o->pos.x += f * ((pb->x - a.x) / 5.0f);
+    o->pos.y += f * ((b.y - a.y) / 5.0f);
+    o->tick++;
+    return 0;
+}
 
 /* shape b764:01E02E80, 80 insns: a random white spark: f48 2, f56 4, f50 8..37, random f5A/f5C angles, f8 0..19,
    life 1..2; alpha 0xC0 during the life, then fades out by 15 and stops */
@@ -645,7 +787,72 @@ static s32 func_01E02F20_b849(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E02F30_b849);
+/* shape b849:01E02F30, 94 insns: on start f48 0, f4C 30, hold 5, second colour white (alpha 0), colour (0x80, 0x80,
+   0x40), 0x5A/0x5C = 15; the second alpha grows by 0x30 (below 0xC0) during the hold, then fades by 11 and stops; the
+   rotation at 0x20 advances 0x4000; follows model point 0xF128 pushed 6 along heading 0x50 (game table 0xF510) */
+
+typedef struct {
+    u8 pad0[0xF128];
+    s16 point;
+    u8 padF12A[0xF510 - 0xF12A];
+    u8 trig[1];
+} Game_b849_01E02F30;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    f32 pos[4];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 heading;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b849_01E02F30;
+
+static s32 func_01E02F30_b849(Game_b849_01E02F30 *g, Fx_b849_01E02F30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->f4C = 30.0f;
+        o->hold = 5;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0x80, 0x80, 0x40);
+        o->f5A = 15;
+        o->f5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x30;
+        }
+    } else if (o->col2[3] > 0xC) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    func_001F5620(func_001F53A0(), g->point, o->pos);
+    o->pos[0] += 6.0f * func_00108030(g->trig, o->heading, 1);
+    o->pos[1] += 6.0f * func_00108030(g->trig, o->heading, 0);
+    o->tick++;
+    return 0;
+}
 
 /* shape b733:01E02C30, 63 insns, 3 copies: step of a two-colour glow: on state 1 sets both colours grey and a lifetime
    of 12; fades both in by 0x2A, then out by 12 until the first ends. */
@@ -704,6 +911,73 @@ static s32 func_01E033C0_b849(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E033D0_b849);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E03DC0_b849);
+/* shape b849:01E03DC0, 106 insns: take a free effect slot (0x12C of 0x70 bytes at 0x2A0), clear it, colour both colours from
+   the scene colour 0xF0F4, attach it to the scene position (0x250) and copy it, 0x5A, 0x50, 0x52 from 0xF1DE / 0xF206 / 0xF206, store the two
+   arguments; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    s16 f52;
+    u8 pad54[4];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Slot_b849_01E03DC0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b849_01E03DC0 slots[0x12C];
+    u8 pad85E0[0xF0F4 - 0x85E0];
+    u8 rgba[4];
+    u8 padF0F8[0xE6];
+    s16 fF1DE;
+    u8 padF1E0[0x26];
+    s16 fF206;
+} Scene_b849_01E03DC0;
+
+static s32 func_01E03DC0_b849(Scene_b849_01E03DC0 *g, s32 a1, s32 a2) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b849_01E03DC0 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0x12C; i++) {
+        if (g->slots[i].used == 0) {
+            func_00195108(&g->slots[i], 0x70);
+            g->slots[i].used = 1;
+            s = &g->slots[i];
+            i = 0x12C;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col[3] = g->rgba[3];
+        func_001076F0(s->col2, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col2[3] = g->rgba[3];
+        func_00106AB0(s, g->pos, 0);
+        s->pos[0] = g->pos[0];
+        s->pos[1] = g->pos[1];
+        s->pos[2] = g->pos[2];
+        s->f5A = g->fF1DE;
+        s->f50 = g->fF206;
+        s->f52 = g->fF206;
+        s->a2 = a2;
+        s->a1 = a1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b849", func_01E03F70_b849);

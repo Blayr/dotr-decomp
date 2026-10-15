@@ -553,9 +553,159 @@ INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E016B0_b414);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E01C10_b414);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E01E00_b414);
+/* shape b414:01E01E00, 119 insns: a white/red ring (size 15, spin 60/6, random angle, turned +-0x1000 by the scene side flag) on the scene joint, rising 30..79 then 13 a tick (65 and growing 2 once the scene value reaches 115, else growing 0.5): in by 96 up to 0xC0 for 4 ticks, then out by 9 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E01FF0_b414);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b414_01E01E00;
+
+typedef struct {
+    u8 pad[0xB250];
+    s16 joint;
+    u8 padB252[0x64];
+    s16 side;
+    u8 padB2B8[2];
+    s16 val;
+} Game_b414_01E01E00;
+
+static s32 func_01E01E00_b414(Game_b414_01E01E00 *g, Obj_b414_01E01E00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->f4C = 15.0f;
+        o->f48 = 15.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->h52 = func_0019A5C8() % 360;
+        o->h5A = 60;
+        o->h5C = 6;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f34 = -(func_0019A5C8() % 50 + 30);
+        if (g->side != 0) {
+            o->w20 = -0x1000;
+        } else {
+            o->w20 = 0x1000;
+        }
+    }
+    if (o->t < 4) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (g->val < 115) {
+        o->f34 -= 13.0f;
+        o->f4C += 0.5f;
+    } else {
+        o->f34 -= 65.0f;
+        o->f4C += 2.0f;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->x);
+    o->t++;
+    return 0;
+}
+
+/* shape b414:01E01FF0, 113 insns: a white-red falling ring: sizes 11 (the outer growing by 0.5, by 2 once the scene timer reaches
+   115), random angle, a sixteenth turn one way or the other by the scene side, falling from -15..-44 by 5 (35 late); second
+   alpha up by 0x60 for 4 frames, then down by 9 until it ends */
+
+typedef struct {
+    u8 pad0[0xB2B6];
+    s16 side;
+    u8 padB2B8[2];
+    s16 timer;
+} Game_b414_01E01FF0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    u8 pad24[0x10];
+    f32 fall;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 ang;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b414_01E01FF0;
+
+static s32 func_01E01FF0_b414(Game_b414_01E01FF0 *g, Obj_b414_01E01FF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f4C = 11.0f;
+        o->f48 = 11.0f;
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0xFF, 0x40, 0x40);
+        o->ang = func_0019A5C8() % 360;
+        o->h5A = 0x3C;
+        o->h5C = 6;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->fall = -(func_0019A5C8() % 30 + 0xF);
+        if (g->side != 0) {
+            o->rot0 = -0x1000;
+        } else {
+            o->rot0 = 0x1000;
+        }
+    }
+    if (o->t < 4) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0xA) {
+        o->c1[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer < 0x73) {
+        o->fall -= 5.0f;
+        o->f4C += 0.5f;
+    } else {
+        o->fall -= 35.0f;
+        o->f4C += 2.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E021C0_b414);
 
@@ -676,9 +826,162 @@ INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02E70_b414);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E03070_b414);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E03390_b414);
+/* shape b414:01E03390, 95 insns: a screen-darkness level: starts at 0x80, drops by 10 to 0x20 until frame 140, by 2 to 0x10 until
+   190, rises by 3 to 0x30 until 210, then back up by 10 to 0x80 while the scene timer is under 30; sets the level each frame,
+   ending at full when the scene timer hits 3 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E03510_b414);
+typedef struct {
+    u8 pad0[0xB210];
+    s32 timer;
+} Scene_b414_01E03390;
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 level;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+} Obj_b414_01E03390;
+
+static s32 func_01E03390_b414(Scene_b414_01E03390 *g, Obj_b414_01E03390 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->state == 1) {
+        o->level = 0x80;
+        o->state = 2;
+    }
+    if (o->t < 0xD2) {
+        if (o->t < 0x8C) {
+            if (o->level > 0x20) {
+                o->level -= 0xA;
+            } else {
+                o->level = 0x20;
+            }
+        } else if (o->t < 0xBE) {
+            if (o->level > 0x10) {
+                o->level -= 2;
+            } else {
+                o->level = 0x10;
+            }
+        } else if (o->t < 0xD2) {
+            if (o->level < 0x30) {
+                o->level += 3;
+            } else {
+                o->level = 0x30;
+            }
+        }
+    } else if (g->timer < 0x1E) {
+        if (o->level < 0x80) {
+            o->level += 0xA;
+        } else {
+            o->level = 0x80;
+        }
+        if (o->level > 0x80) {
+            o->level = 0x80;
+        }
+    }
+    o->t++;
+    if (g->timer == 3) {
+        func_001F6D00(0x80);
+        o->state = 0;
+    } else {
+        func_001F6D00((u8)o->level);
+    }
+    return 0;
+}
+
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape b414:01E03510, 117 insns: draw a fixed screen sprite (one texture cell, far depth) in the object's colour;
+   fades in once the scene counter passes 20 */
+
+typedef struct Xyz_b414_01E03510 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyz_b414_01E03510;
+
+typedef struct Pk_b414_01E03510 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    Xyz_b414_01E03510 v0;
+    f32 s1, t1;
+    Xyz_b414_01E03510 v1;
+    u8 pad40[0x20];
+} Pk_b414_01E03510;
+
+typedef struct Sp_b414_01E03510 {
+    u8 pad0[0x48];
+    s32 f48;
+    u8 pad4C[8];
+    s16 age;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+} Sp_b414_01E03510;
+
+typedef struct Scn_b414_01E03510 {
+    u8 pad0[0xB210];
+    s32 count;
+} Scn_b414_01E03510;
+
+static inline void b414_01E03510_tag(Pk_b414_01E03510 *p, s32 size, s32 flags, u64 regs) {
+    p->flags = flags;
+    p->size = size;
+    p->regs = regs;
+    p->pad4 = 0;
+}
+
+static s32 func_01E03510_b414(Scn_b414_01E03510 *w, Sp_b414_01E03510 *o) {
+    extern s32 func_001076F0();
+    Pk_b414_01E03510 pk __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->f48 = 0;
+        func_001076F0(o->col, 0x98, 0x80, 0x80);
+        o->state = 2;
+    }
+    b414_01E03510_tag((Pk_b414_01E03510 *)(u32)&pk, 5, 0x26, 0x42421);
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v0.x = 0x6BF8;
+    pk.v0.y = 0x71F8;
+    pk.v0.z = 0xFFFFFF;
+    pk.v0.fog = 0;
+    pk.v1.x = 0x93F8;
+    pk.v1.y = 0x8DF8;
+    pk.v1.z = 0xFFFFFF;
+    pk.v1.fog = 0;
+    pk.s0 = 0.0f;
+    pk.t0 = 0.0f;
+    pk.s1 = 0.625f;
+    pk.t1 = 0.875f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (w->count > 0x14) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 0x14;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->age++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

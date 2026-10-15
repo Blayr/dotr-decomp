@@ -564,7 +564,66 @@ static s32 func_01E01C40_b627(Game_b627_01E01C40 *g, Obj_b627_01E01C40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E01DB0_b627);
+/* shape b627:01E01DB0, 99 insns: a white-red flicker flash (b406:01E027F0 shape): size 40 growing by 3 to 75 once the scene
+   timer passes 70; second colour flickers red; alpha up by 0x40 while the timer is under 330, then down by 14 until it ends */
+
+typedef struct {
+    u8 pad0[0x45A2];
+    s16 timer;
+} Game_b627_01E01DB0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 size;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b627_01E01DB0;
+
+static s32 func_01E01DB0_b627(Game_b627_01E01DB0 *g, Obj_b627_01E01DB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 40.0f;
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c1, 0x80, 8, 8);
+        o->h5A = 0xF;
+        o->h5C = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0xFF, 8, 8);
+    } else {
+        func_001076F0(o->c1, 0xC0, 8, 8);
+    }
+    if (g->timer < 0x14A) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (g->timer > 0x46) {
+        if (o->size < 75.0f) {
+            o->size += 3.0f;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b627:01E01F40, 72 insns: a pink-grey growing spark: size 50, random sub-frame 2..6; both alphas up by 0x40 to 0x80
    for 3 frames, then the first down by 13 twice a frame until it ends; random turn */
@@ -621,7 +680,83 @@ static s32 func_01E01F40_b627(void *arg0, Obj_b627_01E01F40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E02060_b627);
+/* shape b627:01E02060, 108 insns: on start 0x8/0xA = 100, variant 0..7, velocity f30/f34 = 1.5 x (sine, cosine) of the
+   heading 0x50 (game table 0x47A4), both colours (0xFF, 0x80, 0x80) (second alpha 0), 0x5C = 0; both alphas grow by
+   0x40 (below 0xC0) for 12 ticks, then the first fades by 14 twice a tick and ends it; after the first tick 0x8/0xA grow
+   by 15; it moves by its velocity; func_00205C40 on the rotation */
+
+typedef struct {
+    u8 pad0[0x47A4];
+    u8 trig[1];
+} Game_b627_01E02060;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    f32 vx;
+    f32 vy;
+    u8 pad38[0x18];
+    s16 heading;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[2];
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b627_01E02060;
+
+static s32 func_01E02060_b627(Game_b627_01E02060 *g, Fx_b627_01E02060 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 100;
+        o->fA = 100;
+        o->f56 = func_0019A5C8() % 8;
+        o->vx = 1.5f * func_00108030(g->trig, o->heading, 1);
+        o->vy = 1.5f * func_00108030(g->trig, o->heading, 0);
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f5C = 0;
+    }
+    if (o->tick < 12) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->tick != 0) {
+        o->f8 += 15;
+        o->fA += 15;
+    }
+    o->x += o->vx;
+    o->y += o->vy;
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b627:01E02210, 92 insns: on start f48 20, f4C 220, f34 2, hold 5, colour white, second colour (0xFF, 0x80,
    0x80) with alpha 0, 0x5A = 15, 0x5C = 1, random rotation; the second alpha grows by 0x40 (below 0xC0) during the
@@ -735,7 +870,63 @@ static s32 func_01E02380_b627(void *arg0, Obj_b627_01E02380 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E02480_b627);
+/* shape b627:01E02480, 109 insns: b574:01E02170 family: a white tumbling spark (size 10, frame 4, three random turns, angle 5..49, spin 15..44, size 0..19), alpha 0xC0 held 7..10 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b627_01E02480;
+
+static s32 func_01E02480_b627(s32 arg0, Obj_b627_01E02480 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->kind = 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h50 = func_0019A5C8() % 45 + 5;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 30 + 15;
+        o->h8 = func_0019A5C8() % 20;
+        o->h6 = func_0019A5C8() % 4 + 7;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b144:01E034D0, 153 insns, 2 copies: a full-screen zoom flash: draws one textured sprite over the whole screen, its
    texture window shrinking in by the zoom value; fades in over 10 frames while the zoom grows by 0.3 (to 100),

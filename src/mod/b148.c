@@ -1086,7 +1086,61 @@ INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02790_b148);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02CD0_b148);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E02F40_b148);
+/* shape b148:01E02F40, 96 insns: on start 0x38 = 54, 0x34 = 1, random rotation 0x18, colour (0x20, 0x20, 0x60),
+   0xA keeps the old 0x30, 0x30 0..99, random 0x3A, speed 80..109 (0xE), 0x8 0..19, hold 1..2 (0x6); alpha grows by
+   0x40 (up to 0x80) during the hold, then fades by 15 and stops; 0x30 grows by the speed after the first tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[2];
+    s16 speed;
+    u8 pad10[8];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b148_01E02F40;
+
+static s32 func_01E02F40_b148(s32 arg0, Fx_b148_01E02F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 54;
+        o->f34 = 1;
+        o->rot = func_0019A5C8() % 0xFFFF;
+        func_001076F0(o->col, 0x20, 0x20, 0x60);
+        o->fA = o->f30;
+        o->f30 = func_0019A5C8() % 100;
+        o->f3A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 30 + 80;
+        o->f8 = func_0019A5C8() % 20;
+        o->hold = func_0019A5C8() % 2 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x81) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E030C0_b148);
 
@@ -1279,7 +1333,56 @@ static s32 func_01E03630_b148(s32 arg0, Glow_b148_01E03630 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E037A0_b148);
+/* shape b148:01E037A0, 97 insns: a blue tumbling spark: frame 2, random sub-frame 0..3, x and z turn, angle, rise 3..18 from 0,
+   width 0..9, hold 5..14; full alpha until the hold, then down by 15 until it ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    s32 rot0;
+    u8 pad14[4];
+    s32 rot2;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b148_01E037A0;
+
+static s32 func_01E037A0_b148(void *arg0, Obj_b148_01E037A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 2;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0x10, 0x10, 0x80);
+        o->rot2 = func_0019A5C8() % 65535;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->y = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 16 + 3;
+        o->w = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 10 + 5;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xF;
+    } else {
+        o->state = 0;
+    }
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
 
 /* shape b148:01E03930, 90 insns: colour (0x10, 0x10, 0x20); on start the rotation faces the model angle side
    (-0x4000 / 0x4000), size 0x5A, alpha 0; alpha grows by 0x50 (below 0x50) for 8 ticks, then fades by 9 and stops;

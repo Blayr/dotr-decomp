@@ -264,7 +264,78 @@ static void func_01E00A60_b069(Scene_b069_01E00A60 *g) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E00BC0_b069);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E00EF0_b069);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape b069:01E00EF0, 110 insns: flash that follows one of two scene objects, fading in and out on the scene timer */
+
+typedef struct Fl_b069_01E00EF0 {
+    u8 pad0[0xE];
+    s16 hE;
+    u8 pad10[0x18];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 which;
+    s16 h32;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 h3A;
+} Fl_b069_01E00EF0;
+
+typedef struct Scn_b069_01E00EF0 {
+    u8 pad0[0x20];
+    Vec4f pts[0x397];
+    u8 pad3990[8];
+    s16 id0;
+    s16 id1;
+    u8 pad399C[0x1A];
+    s16 timer;
+} Scn_b069_01E00EF0;
+
+static s32 func_01E00EF0_b069(Scn_b069_01E00EF0 *w, Fl_b069_01E00EF0 *o) {
+    extern s32 func_001076F0();
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    s16 t;
+    Vec4f v[2];
+
+    if (o->state == 1) {
+        o->h38 = 0x3C;
+        func_001076F0(o->c28, 0x80, 0x80, 0x80);
+        func_001076F0(o->c2C, 0x60, 0x10, 0x10);
+        o->hE = 0;
+        o->h3A = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c2C[3] = 0;
+    }
+    t = w->timer;
+    if (t < 0x14A) {
+        if (t < 0x11A || t > 0x134) {
+            if (o->c28[3] < 0x80) {
+                o->c28[3] += 0x40;
+            }
+        } else if (o->c28[3] > 0x30) {
+            o->c28[3] -= 0x30;
+        } else {
+            o->c28[3] = 0;
+        }
+    } else if (o->c28[3] > 0x20) {
+        o->c28[3] -= 0x14;
+    } else {
+        o->state = 0;
+    }
+    if (o->which == 0) {
+        func_001F5620(func_001F53A0(), w->id0, &v[0]);
+    } else {
+        func_001F5620(func_001F53A0(), w->id1, &v[0]);
+    }
+    w->pts[o->which].x = v[0].x;
+    w->pts[o->which].y = v[0].y;
+    w->pts[o->which].z = v[0].z;
+    o->hE++;
+    o->h32++;
+    return 0;
+}
 
 /* shape b069:01E010B0, 87 insns: a red column (b073:01E02BD0 shape): size 13 by 30 growing by 7, turning 10 */
 

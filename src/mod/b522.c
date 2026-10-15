@@ -728,7 +728,65 @@ static s32 func_01E02150_b522(s32 unused, Obj_b287_01E01FF0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b522", func_01E02300_b522);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b522", func_01E025A0_b522);
+/* shape b522:01E025A0, 113 insns: a white drifting spark (b567:01E024D0 shape): size 80, sub-frame 2..4, random angle; pushed 6.6
+   along it at the start, then drifting 0.5 a frame; alpha up by 0x40 for 10 frames, then down by 9 until it ends; turns */
+
+typedef struct {
+    u8 pad0[0xCDBC];
+    u8 sin[1];
+} Game_b522_01E025A0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b522_01E025A0;
+
+static s32 func_01E025A0_b522(Game_b522_01E025A0 *g, Obj_b522_01E025A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->w = 0x50;
+        o->h = o->w;
+        o->sub = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+        o->z += 6.6f * func_00108030(g->sin, o->ang, 0);
+        o->x += 6.6f * func_00108030(g->sin, o->ang, 1);
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->z += 0.5f * func_00108030(g->sin, o->ang, 0);
+        o->x += 0.5f * func_00108030(g->sin, o->ang, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b522", func_01E02770_b522);
 

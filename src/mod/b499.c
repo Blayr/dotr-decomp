@@ -621,7 +621,90 @@ static s32 func_01E01FA0_b499(World_b479_01E01B70 *w, Pulse_b479_01E01B70 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02110_b499);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02370_b499);
+/* shape b499:01E02370, 119 insns: b479:01E01CE0 twin: a grey flickering spark (35 x 35 shrinking 2 a tick, frame toggling from random 0/1) on the scene joint, blinking light: both alphas in by 64 up to 0xC0 for 3 ticks, then out by 9 (twice on the first) and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b499_01E02370;
+
+typedef struct {
+    u8 pad[0xBAF4];
+    s16 joint;
+} Game_b499_01E02370;
+
+static s32 func_01E02370_b499(Game_b499_01E02370 *g, Obj_b499_01E02370 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->h8 = 35;
+        o->hA = 35;
+        o->kind = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+        func_001F5620(func_001F53A0(), g->joint, &o->x);
+    }
+    if (o->t < 3) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        }
+    }
+    if (o->kind != 0) {
+        o->kind = 0;
+    } else {
+        o->kind = 1;
+    }
+    if (o->t != 0) {
+        o->h8 -= 2;
+        o->hA -= 2;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02550_b499);
 
@@ -796,7 +879,57 @@ static s32 func_01E03760_b499(Obj_b479_01E03490 *obj, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E038F0_b499);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E03DD0_b499);
+/* shape b499:01E03DD0, 103 insns: b004:01E01860 twin two-pass sprite draw (texture id 0x9B, scene texture at +0x34C) */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b499_01E03DD0;
+
+typedef struct {
+    u8 pad0[0x34C];
+    s32 tex;
+} Scene_b499_01E03DD0;
+
+static void func_01E03DD0_b499(Scene_b499_01E03DD0 *g, Fx_b499_01E03DD0 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x9B, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    func_00108EF0(m, 0, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    func_00108F90(quad, p, m, v);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E03F70_b499);
 

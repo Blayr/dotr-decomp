@@ -750,7 +750,63 @@ INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E022D0_b406);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02630_b406);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E027F0_b406);
+/* shape b406:01E027F0, 99 insns: a grey-red flicker flash: size 200, random angle; alpha up by 14 to 0xC0 until frame 140, then
+   down by 8 until it ends; second colour flickers red; shrinks by 10 to 100 once the scene timer reaches 173; spins */
+
+typedef struct {
+    u8 pad0[0x768A];
+    s16 timer;
+} Game_b406_01E027F0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 size;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b406_01E027F0;
+
+static s32 func_01E027F0_b406(Game_b406_01E027F0 *g, Obj_b406_01E027F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 200.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x8C) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0xE;
+        }
+    } else if (o->c0[3] > 9) {
+        o->c0[3] -= 8;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0x80, 0x10, 0x10);
+    } else {
+        func_001076F0(o->c1, 0xF0, 0x20, 0x20);
+    }
+    if (g->timer > 0xAC) {
+        if (o->size > 100.0f) {
+            o->size -= 10.0f;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02980_b406);
 

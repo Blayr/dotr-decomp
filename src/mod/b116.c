@@ -387,7 +387,60 @@ static void func_01E011E0_b116(Obj_b116_01E011E0 *o, Data_b116_01E011E0 *data, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E01650_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E01CE0_b116);
+/* shape b116:01E01CE0, 105 insns: on start 0x38 = 60, variant 0..6, colour (0x20, 0x10, 0x10), 0xA 0..7, 0xC keeps the old 0x30, 0x30
+   0..19, speed 16..45 (0xE), 0x8 0..34, hold 3..7 (0x6), 0x3A 0..2; alpha 0x80 during the hold, then fades by 8 and
+   stops; after the first tick 0x38 grows by 8 and 0x30 by the speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b116_01E01CE0;
+
+static s32 func_01E01CE0_b116(s32 arg0, Fx_b116_01E01CE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        o->f34 = func_0019A5C8() % 7;
+        func_001076F0(o->col, 0x20, 0x10, 0x10);
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f30;
+        o->f30 = func_0019A5C8() % 20;
+        o->speed = func_0019A5C8() % 30 + 16;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 3;
+        o->f3A = func_0019A5C8() % 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f38 += 8;
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b003:01E01780, 56 insns, 6 copies: a rising, spinning glow: fades in over 2 frames, then out (variant of b018:01E02480) */
 
@@ -580,7 +633,89 @@ INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03190_b116);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03360_b116);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E036C0_b116);
+/* shape b116:01E036C0, 108 insns: on start 0x38 = 50, both colours 0x80 grey (second alpha 0), 0x8/0xA = 100/200, 0xE
+   = 1 when 0x3A is set, 0x18 = 0 for kind 1, 0x10 = 0x4000; both alphas grow by 10 for 12 ticks, then once the game
+   step 0x4A62 reaches 0x147 they fade by 13 (the first ends it); after tick 20 0x10 winds down by 0x200 to 0 */
+
+typedef struct {
+    u8 pad0[0x4A62];
+    s16 step;
+} Game_b116_01E036C0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[2];
+    s16 fE;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b116_01E036C0;
+
+static s32 func_01E036C0_b116(Game_b116_01E036C0 *g, Fx_b116_01E036C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 50;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->f8 = 100;
+        o->fA = 200;
+        if (o->f3A == 0) {
+            o->fE = 0;
+        } else {
+            o->fE = 1;
+        }
+        o->mode = 2;
+        if (o->kind == 1) {
+            o->w18 = 0;
+        }
+        o->w10 = 0x4000;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 12) {
+        o->col[3] += 10;
+        o->col2[3] += 10;
+    } else if (g->step >= 0x147) {
+        if (o->col[3] > 0xE) {
+            o->col[3] -= 13;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 0xE) {
+            o->col2[3] -= 13;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    if (o->kind == 0) {
+        if (o->tick > 0x14) {
+            if (o->w10 > 0) {
+                o->w10 -= 0x200;
+            } else {
+                o->w10 = 0;
+            }
+        }
+    } else if (o->tick > 0x14) {
+        if (o->w10 > 0) {
+            o->w10 -= 0x200;
+        } else {
+            o->w10 = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b116:01E03870, 74 insns: a white two-colour glow (size 185, 200 x 200, mirrored when it has an angle): in by 7 for 18 ticks; out by 13 once the scene value reaches 327, and ends */
 
@@ -691,7 +826,70 @@ static s32 func_01E039A0_b116(void *arg0, Obj_b116_01E039A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E03AA0_b116);
+typedef struct {
+    u8 pad00[0x10];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    s16 h38;
+    s16 h3A;
+} Obj_b116_01E03AA0;
+
+static s32 func_01E03AA0_b116(s32 unused, Obj_b116_01E03AA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h36 == 1) {
+        if (o->h30 == 0) {
+            o->h38 = 500;
+            func_001076F0(o->c28, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->c2C, 0xF0, 0x80, 0x10);
+        } else if (o->h30 == 1) {
+            o->h38 = 210;
+            func_001076F0(o->c2C, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->c28, 0xF0, 0x80, 0x10);
+        }
+        o->h3A = func_0019A5C8() % 360;
+        o->h36 = 2;
+        o->c2C[3] = 0;
+    }
+    if (o->h32 < 12) {
+        if (o->h30 == 0) {
+            if (o->c28[3] < 0xC0) {
+                o->c28[3] += 0x18;
+            }
+        }
+        if (o->h30 == 1) {
+            if (o->c28[3] < 0xC0) {
+                o->c2C[3] += 0x18;
+            }
+        }
+    } else {
+        if (o->h30 == 0) {
+            if (o->c28[3] > 10) {
+                o->c28[3] -= 9;
+            } else {
+                o->h36 = 0;
+            }
+        }
+        if (o->h30 == 1) {
+            if (o->c2C[3] > 10) {
+                o->c2C[3] -= 9;
+            } else {
+                o->h36 = 0;
+            }
+        }
+    }
+    func_00205C40(o->rot);
+    o->rot[0] += 0x4000;
+    o->h32++;
+    return 0;
+}
 
 /* shape b116:01E03C60, 67 insns: a white-green spinning burst (b116:01E03D70 shape): frame 40, random angle; alpha up by
    0x60 for 2 frames, then once the game timer passes 0x1B4 down by 9 until it ends; random turn plus a quarter */

@@ -1,6 +1,76 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00080_c056);
+/* shape c056:01E00080, 111 insns: sets up the scene's 22 models (ids 0..10 and 256..266): object 0x170 + i x 0x70 gets a
+   random size 1..5 (0x54), 0x28 -2..12, 0x34 0x100..0x18FF, 0x38 -0x3FF..0x3FF, is registered with the model (0x4 and
+   0x24 cleared), tagged from 0x40E0 + i x 0x10 and coloured; flagged models are switched, and func_00107310 runs for
+   models func_001F5EC0 accepts */
+
+typedef struct {
+    u8 pad0[4];
+    s32 w4;
+    u8 pad8[0x1C];
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    s32 w34;
+    s32 w38;
+    u8 pad3C[4];
+    f32 scale[3];
+    u8 pad4C[8];
+    f32 f54;
+    u8 pad58[8];
+    u8 col[4];
+    u8 pad64[0xC];
+} Obj_c056_01E00080;
+
+typedef struct {
+    u8 tag[0x10];
+} Tag_c056_01E00080;
+
+typedef struct {
+    u8 pad0[0x170];
+    Obj_c056_01E00080 obj[22];
+    u8 padB10[0x40E0 - 0xB10];
+    Tag_c056_01E00080 tags[22];
+} Scene_c056_01E00080;
+
+static void func_01E00080_c056(Scene_c056_01E00080 *g) {
+    extern s32 func_001F5AF0(s32);
+    extern void func_001F5970(s32, s32);
+    extern void func_001F5BD0(s32, void *);
+    extern void func_001F5B70(s32, void *);
+    extern void func_001F5CA0(s32, void *);
+    extern void func_001F5E40(s32, void *);
+    extern s32 func_001F5EC0(s32);
+    extern void func_00107310(s32, s32, s32);
+    s16 i;
+    Obj_c056_01E00080 *p;
+    s32 id;
+
+    for (i = 0; i < 22; i++) {
+        id = i;
+        if (id > 10) {
+            id += 0xF5;
+        }
+        p = &g->obj[i];
+        p->f54 = (func_0019A5C8() % 26 + 9) / 6;
+        p->w28 = func_0019A5C8() % 8 + 5;
+        p->w34 = func_0019A5C8() % 0x1800 + 0x100;
+        p->w38 = func_0019A5C8() % 0x800 - 0x400;
+        func_001F5BD0(id, p);
+        p->w4 = 0;
+        func_001F5B70(id, p);
+        p->w24 = 0;
+        func_001F5CA0(id, &g->tags[i]);
+        func_001F5E40(id, p->col);
+        if (func_001F5AF0(id) != 0) {
+            func_001F5970(id, 1);
+        }
+        if (func_001F5EC0(id) != 0) {
+            func_00107310(id, 0, 1);
+        }
+    }
+}
 
 /* shape c056:01E00240, 70 insns: sound voice k (k + 0xF5 above 10) while the game counter at 0x4478 is below 10:
    if it plays, set its volume byte to 0x80 and (unless bit k of 0x447C) fade it to 0.15; if it is ready, aim it at
@@ -140,7 +210,95 @@ static void func_01E00C50_c056(Ctx_c056_01E00C50 *ctx, s32 arg) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00D30_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00F30_c056);
+/* shape c056:01E00F30, 106 insns: spawns one blue effect (handler c056:01E02020) from the scene pool: colours it with the scene
+   alpha, scales it, puts it at the anchor point (copying x and z first when the mode is 0), picks a random flip and angle and
+   copies the mode, a setting and the argument */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c056_01E00F30;
+
+typedef struct {
+    f32 x, y, z;
+} V3_c056_01E00F30;
+
+typedef struct {
+    u8 pad0[0x118];
+    V4_c056_01E00F30 pt;
+} Anchor_c056_01E00F30;
+
+typedef struct {
+    u8 pad0[0x40];
+    V4_c056_01E00F30 pos;
+    u8 pad50[0x20];
+    V4_c056_01E00F30 at;
+    u8 pad80[0x10];
+    s32 mode;
+    u8 pad94[4];
+    void *fn;
+    s32 arg;
+    f32 flip;
+    u8 padA4[2];
+    s16 hA6;
+    u8 padA8[4];
+    u8 c0[4];
+    u8 c1[4];
+    u8 padB4[4];
+    s16 ang;
+    s16 hBA;
+} Fx_c056_01E00F30;
+
+typedef struct {
+    u8 pad0[0xC60];
+    u8 pool[0x4270 - 0xC60];
+    Anchor_c056_01E00F30 anchor;
+    u8 pad[0x4483 - 0x4270 - sizeof(Anchor_c056_01E00F30)];
+    u8 alpha;
+    u8 pad4484[8];
+    s32 mode;
+    u8 pad4490[0xC];
+    f32 sx, sy, sz;
+    u8 pad44A8[0x12];
+    s16 h44BA;
+    u8 pad44BC[0xC];
+    s16 h44C8;
+} Scene_c056_01E00F30;
+
+static void func_01E00F30_c056(Scene_c056_01E00F30 *g, s32 arg) {
+    extern void c056_01E02020(void);
+    extern Fx_c056_01E00F30 *func_00106A00(void *, void *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00107E40(f32, f32, f32, void *);
+    Anchor_c056_01E00F30 *a;
+    Fx_c056_01E00F30 *p;
+
+    a = &g->anchor;
+    if (a != NULL) {
+        p = func_00106A00(g, g->pool, 0x46, 0);
+        if (p != NULL) {
+            func_001076F0(p->c0, 0xF0, 0xF0, 0x80);
+            p->c0[3] = g->alpha;
+            p->c1[3] = g->alpha;
+            func_00107E40(g->sx, g->sy, g->sz, p);
+            if (g->mode == 0) {
+                p->at.x = a->pt.x;
+                p->at.z = a->pt.z;
+                p->at = a->pt;
+                p->pos = p->at;
+            } else {
+                p->at = a->pt;
+                p->pos = p->at;
+            }
+            p->flip = func_0019A5C8() % 2;
+            p->hBA = g->h44BA;
+            p->ang = func_0019A5C8() % 360;
+            p->mode = g->mode;
+            p->hA6 = g->h44C8;
+            p->arg = arg;
+            p->fn = c056_01E02020;
+        }
+    }
+}
 
 /* shape c056:01E010E0, 53 insns: spawns a green glow (c056:01E00C50 family): colours 0x20/0x38/0x24 with the context's
    alpha, the context's vector at 0x80 copied in, placed at the context's position; draws with c056:01E02E10 */

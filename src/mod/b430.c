@@ -558,9 +558,110 @@ static s32 func_01E01E10_b430(void *arg0, Obj_b148_01E032D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E01F20_b430);
+/* shape b430:01E01F20, 97 insns: b430:01E020B0 family: a dark spark (size 65, frame re-rolled 0..7 each tick) spinning a random 15..19 a tick from 0..249, size 0..29, held 2..8 ticks: in by 64 up to 0x80, then out by 10 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E020B0_b430);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b430_01E01F20;
+
+static s32 func_01E01F20_b430(s32 arg0, Glow_b430_01E01F20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 65;
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        o->h30 = func_0019A5C8() % 250;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 15;
+        o->h8 = func_0019A5C8() % 30;
+        o->h6 = func_0019A5C8() % 7 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->kind = func_0019A5C8() % 8;
+    o->tick++;
+    return 0;
+}
+
+/* shape b430:01E020B0, 96 insns: b573:01E02590 family: a white spark (size 95, random frame 0..7) spinning a random 65..124 a tick from 0..249, size 0..29, held 6..12 ticks: in by 0x80 up to 0x80, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b430_01E020B0;
+
+static s32 func_01E020B0_b430(s32 arg0, Glow_b430_01E020B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 95;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->h30 = func_0019A5C8() % 250;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 60 + 65;
+        o->h8 = func_0019A5C8() % 30;
+        o->h6 = func_0019A5C8() % 7 + 6;
+        o->kind = func_0019A5C8() % 8;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else if (o->col[3] > 11) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b258:01E027A0, 54 insns, 5 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */
@@ -704,9 +805,123 @@ static s32 func_01E02490_b430(void *arg0, Obj_b430_01E02490 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E02610_b430);
+/* shape b430:01E02610, 113 insns: a grey high spark that also drives the camera: frame 8, height 150..799, random angle, rise
+   65..124, width 0..29, hold 8; alpha up by 32 to 0x80 until the hold, then down by 10; once started it swings the camera
+   yaw 0.5 one way or the other by the scene side, pulls it back 0.1 and steps its frame */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E027E0_b430);
+typedef struct {
+    u8 pad0[0x3C4];
+    f32 dist;
+    f32 yaw;
+    u8 pad3CC[0x335A - 0x3CC];
+    s16 side;
+} Game_b430_01E02610;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b430_01E02610;
+
+static s32 func_01E02610_b430(Game_b430_01E02610 *g, Obj_b430_01E02610 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h38 = 8;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->y = func_0019A5C8() % 650 + 0x96;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 60 + 0x41;
+        o->w = func_0019A5C8() % 30;
+        o->hold = 8;
+        o->sub = 0;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x20;
+        }
+    } else if (o->c0[3] > 0xB) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        if (g->side != 0) {
+            g->yaw -= 0.5f;
+        } else {
+            g->yaw += 0.5f;
+        }
+    }
+    if (o->t != 0) {
+        g->dist += 0.1f;
+        o->h38++;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b430:01E027E0, 97 insns: a grey spark (size 20, random frame 0..7, random 0..7 at +0xC) at angle 150..799 with spin 65..124 and size 0..29 stored, held 3..7 ticks: in by 25 up to 0x80, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b430_01E027E0;
+
+static s32 func_01E027E0_b430(s32 arg0, Glow_b430_01E027E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 20;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        o->h30 = func_0019A5C8() % 650 + 150;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 60 + 65;
+        o->h8 = func_0019A5C8() % 30;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->kind = func_0019A5C8() % 8;
+        o->hC = func_0019A5C8() % 8;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x19;
+        }
+    } else if (o->col[3] > 11) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b430:01E02970, 89 insns: a lavender glow (size 60) at a random angle: from scene value 237 it blinks white, counts up and brightens the scene light by 0.01 a tick; from 243 it fades by 6 and ends */
 

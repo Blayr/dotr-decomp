@@ -858,7 +858,60 @@ static s32 func_01E021E0_b491(void *arg0, Obj_b183_01E012F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E02370_b491);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E02810_b491);
+/* shape b491:01E02810, 102 insns: a yellow tumbling glow (random size 12..21 growing 2 a tick, three random turns, random 0..4 at +0x52, angle 45, spin 6): in by 64 up to 0xC0 for 3 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b491_01E02810;
+
+static s32 func_01E02810_b491(s32 arg0, Obj_b491_01E02810 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 12;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        func_001076F0(o->col2, 0xFF, 0xFF, 0x80);
+        o->h52 = func_0019A5C8() % 5;
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h5A = 45;
+        o->h5C = 6;
+    }
+    if (o->t < 3) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 2.0f;
+    o->t++;
+    return 0;
+}
 
 /* shape b183:01E01B50, 97 insns: b183:01E012F0 with size 100, start 20..99 and growth 14..23 */
 
@@ -912,9 +965,121 @@ static s32 func_01E029B0_b491(void *arg0, Obj_b183_01E01B50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E02B40_b491);
+/* shape b491:01E02B40, 110 insns: on start f48 3.0f, variant 0..7, colour white, random 0x5A, 0xA 0..7, 0xC keeps the old
+   0x50, 0x50 4..103, speed (0xE), 0x8 0..34, hold 1..5 (0x6); alpha 0x80 during the hold, then fades by 8 and stops;
+   after the first tick 0x50 grows by the speed; the variant cycles 0..7 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E02D00_b491);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b491_01E02B40;
+
+static s32 func_01E02B40_b491(s32 arg0, Fx_b491_01E02B40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 3.0f;
+        o->f56 = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = func_0019A5C8() % 360;
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 100 + 4;
+        o->speed = func_0019A5C8() % 8 + 2;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->f56++;
+    if (o->f56 > 7) {
+        o->f56 = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b491:01E02D00, 110 insns: on start f48 23.0f, variant 0..7, colour white, random 0x5A, 0xA 0..7, 0xC keeps the old
+   0x50, 0x50 4..103, speed (0xE), 0x8 0..34, hold 1..5 (0x6); alpha 0x80 during the hold, then fades by 8 and stops;
+   after the first tick 0x50 grows by the speed; the variant cycles 0..7 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b491_01E02D00;
+
+static s32 func_01E02D00_b491(s32 arg0, Fx_b491_01E02D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 23.0f;
+        o->f56 = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = func_0019A5C8() % 360;
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 100 + 4;
+        o->speed = func_0019A5C8() % 10 + 10;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 5 + 1;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->f56++;
+    if (o->f56 > 7) {
+        o->f56 = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b491:01E02EC0, 84 insns: b390:01E028D0 family: a grey glow of size 100, its second colour blinking red, at a random angle, spun 0x4000 a tick: in by 64 up to 0xC0 for 4 ticks, then out by 14 and ends */
 

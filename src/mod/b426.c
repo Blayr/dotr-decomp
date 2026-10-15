@@ -498,7 +498,79 @@ INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E015E0_b426);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E01AD0_b426);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E01E50_b426);
+/* shape b426:01E01E50, 94 insns: a grey flickering spark (frame toggles 0/1) growing 10 a tick from 25 up to 75: both alphas in by 64 up to 0xC0 for 149 ticks, then out by 14 (twice on the first colour) and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b426_01E01E50;
+
+static s32 func_01E01E50_b426(s32 arg0, Obj_b426_01E01E50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 25;
+        o->hA = 25;
+        o->kind = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 149) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->kind != 0) {
+        o->kind = 0;
+    } else {
+        o->kind = 1;
+    }
+    if (o->t != 0) {
+        if (o->h8 < 75) {
+            o->h8 += 10;
+        }
+        if (o->hA < 75) {
+            o->hA += 10;
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 /* shape b390:01E02040, 103 insns: a white spark (like b390:01E030F0): f48 30, f50 10..29, spin 16..45; alpha 0x80 during
    the life, then fades by 8; f5A steps by 1 and f50 grows by the spin each tick after the first */
@@ -613,7 +685,64 @@ static s32 func_01E02170_b426(s32 unused, Mote_b111_01E022F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02370_b426);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E026D0_b426);
+/* shape b426:01E026D0, 105 insns: a grey/red tumbling column (three random turns, random angle) growing 8.5 a tick (4.5 once the scene value reaches 200), its tail 4 behind: in by 64 up to 0xC0 for 10 ticks, then out by 14 and ends */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b426_01E026D0;
+
+typedef struct {
+    u8 pad[0x536E];
+    s16 val;
+} Game_b426_01E026D0;
+
+static s32 func_01E026D0_b426(Game_b426_01E026D0 *g, Obj_b426_01E026D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->col2, 0x80, 8, 8);
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (g->val < 200) {
+        o->f48 += 8.5f;
+        o->f4C = o->f48 - 4.0f;
+    } else {
+        o->f48 += 4.5f;
+        o->f4C = o->f48 - 4.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b426:01E02880, 84 insns: b390:01E028D0 family: a pink glow of size 500, its second colour blinking yellow, at a random angle, spun 0x4000 a tick: in by 64 up to 0xC0 for 4 ticks, then out by 9 and ends */
 
@@ -831,7 +960,71 @@ static s32 func_01E02DA0_b426(s32 arg0, Fx_b426_01E02DA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E02EB0_b426);
+/* shape b426:01E02EB0, 103 insns: a yellow spark (150 x 150 shrinking 15 a tick to 20, random frame 0..7, random angle and tilt -90..89): both alphas in by 64 up to 0xC0 for 3 ticks, then out by 14 (twice on the first) and ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[0x14];
+    s32 w20;
+    u8 pad24[0x10];
+    s32 w34;
+    u8 pad38[0x1C];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b426_01E02EB0;
+
+static s32 func_01E02EB0_b426(s32 arg0, Obj_b426_01E02EB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 150;
+        o->hA = 150;
+        o->kind = func_0019A5C8() % 8;
+        o->w34 = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        func_001076F0(o->col2, 0xFF, 0xFF, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 180 - 90;
+    }
+    if (o->t < 3) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->t != 0) {
+        if (o->h8 > 20) {
+            o->h8 -= 15;
+        }
+        if (o->hA > 20) {
+            o->hA -= 15;
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 /* shape b390:01E030F0, 96 insns: a grey spark: on start f48 10, random variant 0..6, random f5A, fA -7..7,
    fC = the old f50, f50 10..89, spin 16..45, f8 0..34, life 2..4; alpha 0x80 during the life, then fades out by 8
@@ -949,7 +1142,64 @@ static s32 func_01E03410_b426(s32 arg0, Fx_b390_01E034D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b426", func_01E03530_b426);
+typedef struct {
+    u8 pad0000[0x5324];
+    s16 joint;
+} Mgr_b426_01E03530;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    u8 pos[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    u8 pad5A[6];
+    u8 c60[4];
+} Obj_b426_01E03530;
+
+static s32 func_01E03530_b426(Mgr_b426_01E03530 *m, Obj_b426_01E03530 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = func_0019A5C8() % 8 + 4;
+        o->h56 = func_0019A5C8() % 4;
+        func_001076F0(o->c60, 0xC0, 0xC0, 0x50);
+        o->h52 = 1;
+        o->h50 = func_0019A5C8() % 200 + 200;
+        o->hE = func_0019A5C8() % 30 + 10;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 3 + 4;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        if (o->c60[3] < 0x60) {
+            o->c60[3] += 0x18;
+        }
+    } else if (o->c60[3] > 12) {
+        o->c60[3] -= 11;
+    } else {
+        o->h58 = 0;
+    }
+    o->h52++;
+    if (o->h50 > 30) {
+        o->h50 -= o->hE;
+    } else {
+        o->h50 = 30;
+    }
+    o->h54++;
+    func_001F5620(func_001F53A0(), m->joint, o->pos);
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

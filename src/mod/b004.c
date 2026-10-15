@@ -345,7 +345,57 @@ static s32 func_01E012B0_b004(Ctx_b004_01E012B0 *ctx, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E013F0_b004);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E01860_b004);
+/* shape b004:01E01860, 103 insns: c035:01E013A0 family sprite draw in two passes: with lit 0 it sets the material (texture id 0x9B at frame +0x34, colour, scene texture) and returns; otherwise it places a size x size quad at position + speed/10 with the object's turn */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b004_01E01860;
+
+typedef struct {
+    u8 pad0[0xfc];
+    s32 tex;
+} Scene_b004_01E01860;
+
+static void func_01E01860_b004(Scene_b004_01E01860 *g, Fx_b004_01E01860 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x9b, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    func_00108EF0(m, 0, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    func_00108F90(quad, p, m, v);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b004", func_01E01A00_b004);
 

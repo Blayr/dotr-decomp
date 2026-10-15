@@ -264,9 +264,156 @@ static s32 func_01E00E80_b272(s32 arg0, Fx_b272_01E00E80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b272", func_01E00FE0_b272);
+/* shape b272:01E00FE0, 118 insns: rising spark: on start size 10/10, frame 3, white, random heading and turn direction;
+   alpha +0x60 (below 0xC0) for 15 ticks, then it grows by 15 up to 100 and finally spawns the module's burst
+   (01E011C0) at its position; it shrinks by 2 every third tick, rises 1 per tick and turns 5 a tick. */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b272", func_01E011C0_b272);
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x42B2];
+    s16 dir;
+} Game_b272_01E00FE0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x18];
+    s16 turn;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b272_01E00FE0;
+
+static s32 func_01E00FE0_b272(Game_b272_01E00FE0 *g, Fx_b272_01E00FE0 *o) {
+    extern void b272_01E011C0(void);
+    extern void b272_01E019E0(void *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 10;
+        o->fA = 10;
+        o->f56 = 3;
+        o->f34 = 0.5f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->heading = func_0019A5C8() % 360;
+        o->turn = (func_0019A5C8() >> 4) % 2;
+        o->mode = 2;
+    }
+    if (o->tick < 15) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else {
+        if (o->fA < 100) {
+            o->fA += 15;
+        } else {
+            g->pos = o->pos;
+            g->dir = o->turn;
+            b272_01E019E0(g, b272_01E011C0, 0);
+            o->mode = 0;
+        }
+        if (o->f8 > 0 && o->tick % 3 == 1) {
+            o->f8 -= 2;
+        }
+    }
+    if (o->tick != 0) {
+        o->pos.y -= 1.0f;
+    }
+    func_00205C40((s32)o->rot);
+    if (o->turn == 0) {
+        o->heading += 5;
+    } else {
+        o->heading -= 5;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b272:01E011C0, 123 insns: a white flickering cross: sizes 0 growing (width by 3, height by 6, both to 30) for 5 frames,
+   random sub-frame and frame 0..7; alpha up by 0x60 for 5 frames, then down by 9 while the width shrinks by 6; sinks 0.5 a
+   frame once started; turns 5 one way or the other by kind */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 kind;
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b272_01E011C0;
+
+static s32 func_01E011C0_b272(void *arg0, Obj_b272_01E011C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 0;
+        o->h = 0;
+        o->sub = (func_0019A5C8() >> 4) % 8;
+        o->frame = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+    }
+    if (o->t < 5) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+        if (o->w > 0) {
+            o->w -= 6;
+        }
+    }
+    if (o->t < 5) {
+        if (o->h < 0x1E) {
+            o->h += 6;
+        }
+        if (o->w < 0x1E) {
+            o->w += 3;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+    }
+    if (o->t != 0) {
+        o->y -= 0.5f;
+    }
+    func_00205C40((s32)o->rot);
+    if (o->kind == 0) {
+        o->ang += 5;
+    } else {
+        o->ang -= 5;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

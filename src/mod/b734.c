@@ -1266,7 +1266,87 @@ static s32 func_01E02EE0_b734(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b734", func_01E02F30_b734);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b205_01E01F90;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b205_01E01F90;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b205_01E01F90 p;
+} Vtx_b205_01E01F90;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b205_01E01F90 c;
+    Vtx_b205_01E01F90 v[2];
+    u64 tail;
+} Pkt_b205_01E01F90;
+
+typedef struct {
+    u8 pad0000[0x6D70];
+    f32 f6D70;
+} Mgr_b205_01E01F90;
+
+static inline void tag_b205_01E01F90(Pkt_b205_01E01F90 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E02F30_b734(Mgr_b205_01E01F90 *m) {
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b205_01E01F90 pkt __attribute__((aligned(8)));
+    u64 a;
+    s32 b[3];
+    s32 s;
+    s16 h;
+
+    s = func_00207F60();
+    h = m->f6D70;
+    tag_b205_01E01F90((Pkt_b205_01E01F90 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0x80;
+    pkt.c.g = 0x80;
+    pkt.c.b = 0x80;
+    pkt.c.a = 0x80;
+    pkt.c.q = 1.0f;
+    pkt.v[0].p.x = (h + 0x6C0) * 16 - 8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = (h + 0x940) * 16 - 8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_00208460();
+    func_00208800(func_00209E50(), 0, &a, b);
+    func_00208460();
+    func_002075F0(&pkt, 0, 0);
+    func_00207FD0(s, func_00207500(), 0);
+    return 0;
+}
 
 /* shape b205:01E02120, 146 insns: a full-screen textured overlay (0x6BF8,0x71F8 - 0x93F8,0x8DF8) in the effect's
    colour, written straight into the scene's packet (game 0x6DB8), window scrolled by f8/10 and fA/10; alpha grows

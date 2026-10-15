@@ -183,7 +183,88 @@ found:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E02460_c059);
+/* shape c059:01E02460, 93 insns: takes the first free of 48 effect slots (0x58 bytes), marks it with its index + 1, colours
+   both from the context, copies its four floats, turns its three angles into shorts, copies four settings, frame 0, and
+   stores both arguments */
+
+typedef struct {
+    f32 x, y, z, w;
+} V3_c059_01E02460;
+
+typedef struct {
+    u8 pad0[0x10];
+    V3_c059_01E02460 v;
+    u8 pad20[0x10];
+    s32 f30;
+    u8 pad34[4];
+    s32 a2;
+    s32 a1;
+    u8 c40[4];
+    u8 c44[4];
+    s16 used;
+    s16 f4A;
+    s16 f4C;
+    s16 f4E;
+    s16 f50;
+    s16 f52;
+    s16 t;
+    s16 f56;
+} Slot_c059_01E02460;
+
+typedef struct {
+    u8 pad0[0x290];
+    Slot_c059_01E02460 slots[0x30];
+    u8 pad[0x2A20 - 0x290 - 0x30 * 0x58];
+    V3_c059_01E02460 v;
+    u8 pad2A30[0x10];
+    f32 r[3];
+    u8 pad2A4C[8];
+    u8 rgba[4];
+    u8 pad2A58[4];
+    s32 f2A5C;
+    u8 pad2A60[0x30];
+    s16 f2A90;
+    u8 pad2A92[4];
+    s16 f2A96;
+    u8 pad2A98[4];
+    s16 f2A9C;
+} Ctx_c059_01E02460;
+
+static void func_01E02460_c059(Ctx_c059_01E02460 *ctx, s32 arg1, s32 arg2) {
+    extern void func_001076F0();
+    extern void func_00106CC0();
+    extern s16 func_001A22C0(f32);
+    s16 i;
+    Slot_c059_01E02460 *s;
+
+    for (i = 0; i < 0x30; i++) {
+        if (ctx->slots[i].used == 0) {
+            s = &ctx->slots[i];
+            func_00106CC0(s, 0x58);
+            ctx->slots[i].used = i + 1;
+            goto found;
+        }
+    }
+    s = NULL;
+found:
+    if (s != NULL) {
+        func_001076F0(s->c44, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c44[3] = ctx->rgba[3];
+        func_001076F0(s->c40, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        s->c40[3] = ctx->rgba[3];
+        s->v = ctx->v;
+        s->f4E = func_001A22C0(ctx->r[0]);
+        s->f50 = func_001A22C0(ctx->r[1]);
+        s->f4C = func_001A22C0(ctx->r[2]);
+        s->f4A = ctx->f2A90;
+        s->f30 = ctx->f2A5C;
+        s->f56 = ctx->f2A9C;
+        s->f52 = ctx->f2A96;
+        s->t = 0;
+        s->a2 = arg2;
+        s->a1 = arg1;
+    }
+}
 
 /* shape c059:01E025E0, 92 insns: c059:01E01BB0 family: take the first free slot of 48 (0x58 bytes), clear it, mark it with its index + 1, give it the scene colour twice, position, three turns (fptosi of ctx+0x2A40..48), ids and both arguments */
 
@@ -379,7 +460,85 @@ static void func_01E02890_c059(Scene_c059_01E02890 *g, s32 a1, s32 a2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E029A0_c059);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E02C10_c059);
+/* several callees are called with other argument lists than functions.h gives: hide those prototypes */
+
+/* OVL_WARM */
+
+/* shape c059:01E02C10, 113 insns: draw a camera-facing quad (40x40 units) at the object, or its screen-space
+   version in mode 0, then the two halves through the module's own drawer */
+
+typedef struct Mat_c059_01E02C10 {
+    f32 m[4][4];
+} Mat_c059_01E02C10;
+
+typedef struct Obj_c059_01E02C10 {
+    u8 pad0[0x10];
+    Vec4f pos;
+    u8 pad20[0x23];
+    u8 a43;
+    u8 pad44[3];
+    u8 a47;
+} Obj_c059_01E02C10;
+
+typedef struct Scn_c059_01E02C10 {
+    u8 pad0[0x80];
+    Mat_c059_01E02C10 mat;
+    u8 padC0[0x190];
+    Vec4f q[4];
+    u8 pad290[0x23A4];
+    void *tex;
+    u8 pad2638[0x494];
+    s32 ot;
+    u8 pad2AD0[0x50];
+    f32 z;
+    u8 pad2B24[0x204];
+    u8 col[4];
+} Scn_c059_01E02C10;
+
+static void func_01E02C10_c059(Scn_c059_01E02C10 *w, Obj_c059_01E02C10 *o, void *pk, s32 mode) {
+    extern void func_00106080();
+    extern void func_00108EF0();
+    extern void func_00205C40();
+    extern s32 func_00205630();
+    extern void c059_01E02DE0(Scn_c059_01E02C10 *w, Obj_c059_01E02C10 *o, void *pk, s32 half);
+    s16 i;
+    f32 m[4];
+    s32 rot[4];
+    Mat_c059_01E02C10 m2;
+
+    if (mode == 0) {
+        func_00106080(m, 0x6E, 1, m);
+        w->col[3] = o->a47;
+        func_00107790(pk, w->col, 1);
+        w->col[3] = o->a43;
+        func_00107790(pk, w->col, 2);
+        func_00108500(pk, m, 0);
+        func_00208700(pk, w->tex, 0);
+        return;
+    }
+    func_00205C40(rot);
+    func_00108EF0(&m2, 0, rot, &o->pos);
+    w->mat = m2;
+    w->q[0].x = -20.0f;
+    w->q[0].y = 40.0f;
+    w->q[1].x = 20.0f;
+    w->q[1].y = 40.0f;
+    w->q[2].x = -20.0f;
+    w->q[2].y = 0.0f;
+    w->q[3].x = 20.0f;
+    w->q[3].y = 0.0f;
+    w->q[0].z = 0.0f;
+    w->q[2].z = 0.0f;
+    w->q[3].z = 0.0f;
+    w->q[1].z = 0.0f;
+    if (func_00205630(w->q, 0x70000000, &w->mat, pk, &w->z) != 0) {
+        for (i = 0; i < 4; i++) {
+            func_002075F0((s32)pk, w->ot, (u32)w->z);
+        }
+    }
+    c059_01E02DE0(w, o, pk, 0);
+    c059_01E02DE0(w, o, pk, 1);
+}
 
 /* shape c059:01E02DE0, 85 insns: draws an effect: mode 0 sets the packet's two colours from the scene colour with the effect's
    alphas and the scene texture; other modes lay the scene's quad (-20..20 by 30..120) and draw it three times with random

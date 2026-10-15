@@ -748,11 +748,123 @@ static void func_01E01860_b235(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E01C70_b235);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E02190_b235);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b235_01E02190;
+
+typedef struct {
+    u8 pad0000[0xD930];
+    Vec_b235_01E02190 pts[1];
+} Mgr_b235_01E02190;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    Vec_b235_01E02190 pos;
+    u8 pad20[0x28];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b235_01E02190;
+
+static s32 func_01E02190_b235(s32 unused, Obj_b235_01E02190 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = func_0019A5C8() % 20 + 15;
+        o->h56 = func_0019A5C8() % 3;
+        func_001076F0(o->c60, 0x80, 0x60, 0x70);
+        o->h50 = func_0019A5C8() % 40 + 10;
+        o->h52 = (func_0019A5C8() >> 8) % 10 - 5;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 40 + 26;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 3 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < o->h6) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x40;
+        }
+    } else if (o->c60[3] > 15) {
+        o->c60[3] -= 14;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->h50 += o->hE;
+    }
+    o->h5A += o->h52;
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E02370_b235);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E02560_b235);
+/* shape b235:01E02560, 96 insns: a red-grey expanding ring: sizes 11 growing by 10 with the outer one four times it, random angle
+   and turn, rise 15..44 growing by 20; alpha up by 0x60 for 4 frames, then down by 19 until it ends */
+
+typedef struct {
+    u8 pad0[0x24];
+    s32 rot1;
+    u8 pad28[0xC];
+    f32 rise;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[2];
+    s16 ang;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b235_01E02560;
+
+static s32 func_01E02560_b235(void *arg0, Obj_b235_01E02560 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = o->f4C = 11.0f;
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        func_001076F0(o->c0, 0x80, 0x40, 0x40);
+        o->ang = func_0019A5C8() % 360;
+        o->h5A = 0x3C;
+        o->h5C = 6;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rise = func_0019A5C8() % 30 + 0xF;
+        o->rot1 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 4) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x60;
+        }
+    } else if (o->c1[3] > 0x14) {
+        o->c1[3] -= 0x13;
+    } else {
+        o->state = 0;
+    }
+    o->rise += 20.0f;
+    o->f48 += 10.0f;
+    o->f4C = 4.0f * o->f48;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E026E0_b235);
 

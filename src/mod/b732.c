@@ -669,7 +669,60 @@ INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E02610_b732);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E02FC0_b732);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E03290_b732);
+/* shape b732:01E03290, 104 insns: a red-blue flicker spark: size 2, sub-frame 3, height 4..11 rising by 1 once started, random
+   angle, width 1..8, hold 5..7; alpha 0xC0 until the hold, then down by 11 until it ends; flickers pale blue/dark blue */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b732_01E03290;
+
+static s32 func_01E03290_b732(void *arg0, Obj_b732_01E03290 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 2.0f;
+        o->sub = 3;
+        func_001076F0(o->c0, 0xFF, 0x60, 0x60);
+        o->y = func_0019A5C8() % 8 + 4;
+        o->ang = func_0019A5C8() % 360;
+        o->step = 1;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 5;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xCF, 0xCF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0x60, 0x60, 0x80);
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b732:01E03430, 71 insns: a white-blue spinning flash on the model joint (b252:01E03210 family): f4C 20, frame
    count 10, size 10x10; second alpha up by 0x60 to 0xC0 for that many frames, then down by 12 until it ends */
@@ -972,4 +1025,72 @@ INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E046E0_b732);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E04900_b732);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b732", func_01E054B0_b732);
+/* shape b732:01E054B0, 106 insns: takes the first free of 280 effect slots (0x70 bytes, b041:01E02C00 shape),
+   clears and marks it, colours both from the scene, places it at the scene point, copies its settings and stores both
+   arguments */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 active;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad68[8];
+} Slot_b732_01E054B0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x40];
+    Slot_b732_01E054B0 slot[280];
+    u8 padEnd[0xE6B4 - 0x2A0 - 280 * 0x70];
+    u8 col[4];
+    u8 padE6B8[0x4A];
+    s16 hE702;
+    u8 padE704[0xA];
+    s16 hE70E;
+} Scene_b732_01E054B0;
+
+static s32 func_01E054B0_b732(Scene_b732_01E054B0 *s, s32 fn, s32 arg) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b732_01E054B0 *sl;
+    s16 i;
+
+    sl = NULL;
+    for (i = 0; i < 280; i++) {
+        if (s->slot[i].active == 0) {
+            func_00195108(&s->slot[i], 0x70);
+            s->slot[i].active = 1;
+            sl = &s->slot[i];
+            i = 280;
+        }
+    }
+    if (sl != NULL) {
+        func_001076F0(sl->c0, s->col[0], s->col[1], s->col[2]);
+        sl->c0[3] = s->col[3];
+        func_001076F0(sl->c1, s->col[0], s->col[1], s->col[2]);
+        sl->c1[3] = s->col[3];
+        func_00106AB0(sl, &s->pos, 0);
+        sl->x = s->pos.x;
+        sl->y = s->pos.y;
+        sl->z = s->pos.z;
+        sl->h5A = s->hE702;
+        sl->h50 = s->hE70E;
+        sl->h52 = s->hE70E;
+        sl->w40 = arg;
+        sl->w44 = fn;
+        return 1;
+    }
+    return 0;
+}

@@ -601,9 +601,119 @@ INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02B20_c062);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02E40_c062);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E03070_c062);
+/* shape c062:01E03070, 103 insns: a red falling spark (b434:01E02210 shape): size 35, random sub-frame 0..3, height 3000..4999
+   falling by 200..399 once started until under 31, angle, width 0..34, hold 3..5; alpha up by 0x40 to 0xC0 until the hold, then down by 14 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E03210_c062);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_c062_01E03070;
+
+static s32 func_01E03070_c062(void *arg0, Obj_c062_01E03070 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 35.0f;
+        o->sub = (func_0019A5C8() >> 4) % 4;
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        o->y = func_0019A5C8() % 2000 + 0xBB8;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 200 + 0xC8;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        if (o->y > 0x1E) {
+            o->y -= o->step;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
+
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape c062:01E03210, 115 insns: far spark (depth 800, growing) with random radius, spin and life */
+
+typedef struct Sp_c062_01E03210 {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 spin;
+    u8 pad10[0x38];
+    f32 depth;
+    u8 pad4C[4];
+    s16 rad;
+    u8 pad52[2];
+    s16 age;
+    s16 h56;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Sp_c062_01E03210;
+
+static s32 func_01E03210_c062(s32 arg0, Sp_c062_01E03210 *o) {
+    extern s32 func_001076F0();
+    if (o->state == 1) {
+        o->depth = 800.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 4;
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+        o->hA = o->rad;
+        o->rad = func_0019A5C8() % 15 + 1;
+        o->ang = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 80 + 80;
+        o->h8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 10 + 8;
+        o->hC = func_0019A5C8() % 2;
+        o->state = 2;
+    }
+    if (o->age < o->life) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->age != 0) {
+        o->depth += 1.0f;
+    }
+    if (o->age != 0) {
+        o->rad += o->spin;
+    }
+    o->age++;
+    return 0;
+}
 
 /* shape c062:01E033E0, 92 insns: b732:01E03BC0 family shock wave (grey/red, scale 6, 200 wide): kind 0 from 2000 growing 140 a tick, kind 1 from 1200 growing 80; in by 64 up to 0x80 for 12 ticks, then out by 7 and ends; spins 6 a tick */
 

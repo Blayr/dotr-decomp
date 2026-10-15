@@ -655,7 +655,90 @@ static s32 func_01E01B70_b479(World_b479_01E01B70 *w, Pulse_b479_01E01B70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b479", func_01E01CE0_b479);
+/* shape b479:01E01CE0, 114 insns: a grey flickering spark (35 x 35 shrinking 2 a tick, frame toggling 5/0) placed on the scene joint once, blinking dark: both alphas in by 64 up to 0xC0 for 3 ticks, then out by 9 (twice on the first) and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b479_01E01CE0;
+
+typedef struct {
+    u8 pad[0xBAF4];
+    s16 joint;
+} Game_b479_01E01CE0;
+
+static s32 func_01E01CE0_b479(Game_b479_01E01CE0 *g, Obj_b479_01E01CE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->h8 = 35;
+        o->hA = 35;
+        o->kind = 5;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->col2[3] = 0;
+        func_001F5620(func_001F53A0(), g->joint, &o->x);
+    }
+    if (o->t < 3) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x40;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        }
+    }
+    if (o->kind != 0) {
+        o->kind = 0;
+    } else {
+        o->kind = 1;
+    }
+    if (o->t != 0) {
+        o->h8 -= 2;
+        o->hA -= 2;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b479", func_01E01EB0_b479);
 

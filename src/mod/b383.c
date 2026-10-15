@@ -600,7 +600,59 @@ static s32 func_01E029C0_b383(void *arg0, Obj_b383_01E029C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E02AE0_b383);
+typedef struct {
+    u8 pad00[0xE];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+} Obj_b383_01E02AE0;
+
+static s32 func_01E02AE0_b383(s32 unused, Obj_b383_01E02AE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 10;
+        o->w10 = func_0019A5C8() % 0x4000 + 0x2000;
+        o->w14 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->w18 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->h34 = func_0019A5C8() % 7;
+        o->h36 = 2;
+        o->hE = func_0019A5C8() % 2 + 2;
+        if (o->h30 == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->col, 0, 0x80, 0x80);
+        }
+    }
+    if (o->h32 < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->h36 = 0;
+    }
+    if (o->h32 % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x40, 0);
+    } else {
+        func_001076F0(o->col, 0xB0, 0x80, 0);
+    }
+    if (o->h32 != 0) {
+        o->h38 += o->hE;
+    }
+    o->h32++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E02CC0_b383);
 
@@ -743,7 +795,63 @@ static s32 func_01E03590_b383(s32 arg0, Glow_b383_01E03590 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E03640_b383);
+/* shape b383:01E03640, 119 insns: a grey spark (size 10, frame 0 stepping every other tick to 6, angle 10..109, spin 4..8, size 0..9) held 3..10 ticks: in by 64 up to 0xC0, then ends; three random turns 0..359 every tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b383_01E03640;
+
+static s32 func_01E03640_b383(s32 arg0, Glow_b383_01E03640 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 10;
+        o->kind = 0;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->h30 = func_0019A5C8() % 100 + 10;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 4;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 8 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 6) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b218:01E02B60, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x60, 0x60, 0x60) and fields;
    alpha 0x80 for the first 0x78 ticks, then fade out by 9 and stop */
@@ -914,7 +1022,60 @@ static s32 func_01E03A60_b383(s32 arg0, Glow_b383_01E03A60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E03B60_b383);
+/* shape b383:01E03B60, 97 insns: on start 0x38 = 0, rotation (-0x2000..0x1FFF, random), variant 0..6, step 2..4,
+   0x6 = 20, 0x30 = 0 (then picks the orange colour), second colour (0xA0, 8, 8); alpha 0x80 for 3 ticks, then fades
+   by 14 and stops; 0x38 grows by the step after the first tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 step;
+    u8 padA[6];
+    s32 rot[2];
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b383_01E03B60;
+
+static s32 func_01E03B60_b383(s32 arg0, Fx_b383_01E03B60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->rot[0] = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->step = func_0019A5C8() % 3 + 2;
+        o->f6 = 20;
+        o->f30 = 0;
+        if (o->f30 == 0) {
+            func_001076F0(o->col, 0xC0, 0x80, 0);
+        } else {
+            func_001076F0(o->col, 0, 0xA0, 0xA0);
+        }
+        func_001076F0(o->col2, 0xA0, 8, 8);
+    }
+    if (o->tick < 3) {
+        if (o->col[3] < 0x80) {
+            o->col[3] = 0x80;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f38 += o->step;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b383:01E03CF0, 61 insns: a blue spark: set up once (blue, frame 9, random size 5..12 and height 44..60),
    fades in by 27 to 0xC0 for 28 frames, then out by 9 until it ends */

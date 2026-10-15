@@ -676,13 +676,193 @@ static void func_01E013F0_b589(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E01760_b589);
+/* shape b589:01E01760, 111 insns: b205:01E01220 family scene script: red tint; tick 110 spawns b589:01E01AB0; tick 117 places the burst halfway between joint and camera and spawns 8 b589:01E01CE0, 50 b589:01E01E70, one b589:01E02100, two b589:01E01920 (45 and 135) and one b589:01E02800; tick 98 spawns b589:01E02980 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E01920_b589);
+typedef struct {
+    f32 x, y, z, w;
+} V4_b589_01E01760;
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 x, y, z;
+    u8 pad2DC[0x6DA4 - 0x2DC];
+    u8 rgba[4];
+    u8 pad6DA8[0x46];
+    s16 joint;
+    u8 pad6DF0[0xE];
+    s16 h6DFE;
+    u8 pad6E00[6];
+    s16 mode;
+    u8 pad6E08[4];
+    s16 tick;
+} Ctx_b589_01E01760;
+
+static void func_01E01760_b589(Ctx_b589_01E01760 *g) {
+    extern void b589_01E01920();
+    extern void b589_01E01AB0();
+    extern void b589_01E01CE0();
+    extern void b589_01E01E70();
+    extern void b589_01E02100();
+    extern void b589_01E02800();
+    extern void b589_01E02980();
+    extern void b589_01E03200(Ctx_b589_01E01760 *, void *, s32);
+    extern void b589_01E03320(Ctx_b589_01E01760 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    V4_b589_01E01760 a;
+    V4_b589_01E01760 b;
+    s32 i;
+
+    g->rgba[0] = 0x80;
+    g->rgba[1] = 0;
+    g->rgba[2] = 0;
+    g->rgba[3] = 0;
+    g->tick++;
+    if (g->tick == 110) {
+        g->mode = 0;
+        b589_01E03320(g, b589_01E01AB0, 0);
+    }
+    if (g->tick == 117) {
+        func_001F5620(func_001F53A0(), g->joint, &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->x = a.x;
+        g->y = a.y;
+        g->z = a.z + (b.z - a.z) / 2.0f;
+        g->mode = 1;
+        for (i = 0; i < 8; i++) {
+            b589_01E03200(g, b589_01E01CE0, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b589_01E03320(g, b589_01E01E70, 0);
+        }
+        b589_01E03320(g, b589_01E02100, 0);
+        g->h6DFE = 45;
+        g->mode = 0;
+        b589_01E03320(g, b589_01E01920, 0);
+        g->h6DFE = 135;
+        g->mode = 1;
+        b589_01E03320(g, b589_01E01920, 0);
+        b589_01E03320(g, b589_01E02800, 0);
+    }
+    if (g->tick == 98) {
+        b589_01E03320(g, b589_01E02980, 0);
+    }
+}
+
+/* shape b589:01E01920, 97 insns: b481:01E02690 family (green, 8 wide for kinds 0/1): kind 0 from 300 growing 60, kind 1 from 100 growing 20, kind 2 400 fixed and 18 wide */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b589_01E01920;
+
+static s32 func_01E01920_b589(s32 arg0, Obj_b589_01E01920 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0x60, 0xFF, 0x60);
+        func_001076F0(o->col2, 0x40, 0xFF, 0x40);
+        if (o->h50 == 0) {
+            o->f30 = 8.0f;
+            o->f34 = 300.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 8.0f;
+            o->f34 = 100.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 18.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 60.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 20.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E01AB0_b589);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E01CE0_b589);
+/* shape b589:01E01CE0, 97 insns: b564:01E018A0 family: a green spark (size 6, random frame 0..3, two random turns) spinning a random 3..18 a tick, size 0..9, held 10..29 ticks at 0x80, then out by 10 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b589_01E01CE0;
+
+static s32 func_01E01CE0_b589(s32 arg0, Glow_b589_01E01CE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 6;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0xFF, 0x80);
+        o->w18 = func_0019A5C8() % 65535;
+        o->w10 = func_0019A5C8() % 65535;
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 16 + 3;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 20 + 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->h30 += o->hE;
+    o->tick++;
+    return 0;
+}
 
 /* shape b589:01E01E70, 164 insns: variant of b479:01E020E0 (tumbling spark) with a random size 4..11 that does
    not grow and colour (0x80,0xFF,0x80) */

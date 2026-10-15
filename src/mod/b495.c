@@ -659,15 +659,202 @@ static s32 func_01E01A50_b495(Game_b495_01E01A50 *g, Obj_b495_01E01A50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E01B90_b495);
+/* shape b495:01E01B90, 115 insns (b702:01E024A0 with other constants): on start 0x8/0xA = 130, variant 2..4, colour white, random heading 0x5A and a jump of
+   8.6 along it (z by the cosine, x by the sine of the game table 0xEEF0); alpha grows by 0x40 (below 0x80) for 10
+   ticks, then fades by 9 and stops; after the first tick it moves 0.8 along the heading; func_00205C40 on the
+   rotation */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E01D60_b495);
+typedef struct {
+    u8 pad0[0xEEF0];
+    u8 trig[1];
+} Game_b495_01E01B90;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x24];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b495_01E01B90;
+
+static s32 func_01E01B90_b495(Game_b495_01E01B90 *g, Fx_b495_01E01B90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 130;
+        o->fA = o->f8;
+        o->f56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->heading = (func_0019A5C8() >> 4) % 360;
+        o->z += 8.6f * func_00108030(g->trig, o->heading, 0);
+        o->x += 8.6f * func_00108030(g->trig, o->heading, 1);
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->z += 0.8f * func_00108030(g->trig, o->heading, 0);
+        o->x += 0.8f * func_00108030(g->trig, o->heading, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
+
+/* shape b495:01E01D60, 93 insns: b397:01E01E20 family: a white spark (150 x 150, random frame 2..4, random heading) drifting 0.6 a tick along its heading (sine table ctx+0xEEF0): in by 96 up to 0xC0 for 6 ticks, then out by 19 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 f10;
+    u8 pad14[4];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0x10];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b495_01E01D60;
+
+typedef struct {
+    u8 pad[0xEEF0];
+    u8 sin[1];
+} Game_b495_01E01D60;
+
+static s32 func_01E01D60_b495(Game_b495_01E01D60 *g, Obj_b495_01E01D60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 150;
+        o->hA = o->h8;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+    }
+    if (o->t < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f18 += 0.6f * func_00108030(g->sin, o->h5A, 0);
+        o->f10 += 0.6f * func_00108030(g->sin, o->h5A, 1);
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E01EE0_b495);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02140_b495);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02A40_b495);
+/* shape b495:01E02A40, 122 insns: a scene light at 0xDF80: on start colour/size 128/4/2/0, height 0/120/0 and the effect's
+   position as floats; its strength 0xDFA8 rises by 0.2 up to 1 (then 0x50 = 1) and falls by 0.1 until it ends
+   the effect; func_001F6C10 gets the light (or 0 once ended); it also ends when the light's 0xEC80 flag is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0xCD4];
+    s32 done;
+} Light_b495_01E02A40;
+
+typedef struct {
+    u8 pad0[0xDF80];
+    Light_b495_01E02A40 light;
+} Game_b495_01E02A40;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x4A];
+    s16 f50;
+    u8 pad52[6];
+    s16 mode;
+} Fx_b495_01E02A40;
+
+static s32 func_01E02A40_b495(Game_b495_01E02A40 *g, Fx_b495_01E02A40 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a[0] = 128.0f;
+        g->light.a[1] = 4.0f;
+        g->light.a[2] = 2.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 120.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f50 = 0;
+    }
+    if (o->f50 == 0) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.2f;
+        } else {
+            o->f50 = 1;
+        }
+    } else if (g->light.b[2] > 0.1f) {
+        g->light.b[2] -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.done == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b495:01E02C30, 31 insns: b018:01E02DB0 family: func_001F7170(2, 0) with the module's two floats, then counts the tick and ends the object once the scene counter reaches 140 */
 

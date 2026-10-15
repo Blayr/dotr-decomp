@@ -468,7 +468,50 @@ static void func_01E00E90_b517(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b517", func_01E01440_b517);
+/* shape b517:01E01440, 98 insns: count 0xB25E up; from 0x3E to 0xCD, twice a tick, place the scene 0.5 below model
+   point 0xB228 and run b517:01E015D0; at 0x3E run b517:01E01960 at points 0xB22A and 0xB22C; all through
+   b517:01E020A0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xB228 - 0x25C];
+    s16 point;
+    s16 point2;
+    s16 point3;
+    u8 padB22E[0x30];
+    s16 count;
+} Scene_b517_01E01440;
+
+static void func_01E01440_b517(Scene_b517_01E01440 *g) {
+    extern void b517_01E015D0(void);
+    extern void b517_01E01960(void);
+    extern void b517_01E020A0(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 n;
+    s16 i;
+
+    g->count++;
+    if (g->count >= 0x3E && g->count < 0xCE) {
+        if (g->count < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->point, g->pos);
+            g->pos[1] -= 0.5f;
+            b517_01E020A0(g, b517_01E015D0, 0);
+        }
+    }
+    if (g->count == 0x3E) {
+        func_001F5620(func_001F53A0(), g->point2, g->pos);
+        b517_01E020A0(g, b517_01E01960, 0);
+        func_001F5620(func_001F53A0(), g->point3, g->pos);
+        b517_01E020A0(g, b517_01E01960, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b517", func_01E015D0_b517);
 

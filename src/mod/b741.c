@@ -506,6 +506,150 @@ static s32 func_01E01A10_b741(Obj_b015_01E01620 *obj, s32 life, f32 y) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b741", func_01E01BD0_b741);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b741", func_01E02930_b741);
+/* OVL_WARM */
+
+/* shape b055:01E02930, 325 insns, 8 copies: a lightning bolt from p0 to p1: 6 jittered points between the ends,
+   a spline through the 8 (func_00102550) gives 28 points, projected and drawn as up to 27 coloured lines (all of
+   them with flag 0x1A, else only the first o->progress); far z with flag 0x13; progress wraps at o->max */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b055_01E02930;
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_b055_01E02930;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b055_01E02930;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b055_01E02930 p;
+} Vtx_b055_01E02930;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Vtx_b055_01E02930 v[2];
+    u8 tail[8];
+} Pk_b055_01E02930;
+
+typedef struct {
+    u64 tag;
+    Pk_b055_01E02930 pk;
+} Buf_b055_01E02930;
+
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec_b055_01E02930 out[28];
+} Spl_b055_01E02930;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    Src_b055_01E02930 col;
+    u8 padC[0x1C];
+    s16 max;
+    s16 jitter;
+    s16 progress;
+} Obj_b055_01E02930;
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 view[1];
+} Cam_b055_01E02930;
+
+static s32 func_01E02930_b741(s32 obj __attribute__((aligned(8))), Obj_b055_01E02930 *o, Cam_b055_01E02930 *cam __attribute__((aligned(8))), Vec_b055_01E02930 *p0,
+                  Vec_b055_01E02930 *p1) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_0019A5C8();
+    Spl_b055_01E02930 s;
+    Vec_b055_01E02930 a[28];
+    Xyz_b055_01E02930 xyz[28];
+    f32 depth[29];
+    Pk_b055_01E02930 pk __attribute__((aligned(8)));
+    u32 mask;
+    s32 i;
+    f32 t;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+
+    mask = 0;
+    if (o->max > 28) {
+        o->max = 28;
+    }
+    ((Pk_b055_01E02930 *)(s32)&pk)->flags = 0x11;
+    ((Pk_b055_01E02930 *)(s32)&pk)->size = 4;
+    ((Pk_b055_01E02930 *)(s32)&pk)->regs = 0x4141;
+    ((Pk_b055_01E02930 *)(s32)&pk)->pad4 = 0;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x48);
+    ((Pk_b055_01E02930 *)(s32)&pk)->flags |= 0x400;
+    pk.v[0].r = pk.v[1].r = o->col.r;
+    pk.v[0].g = pk.v[1].g = o->col.g;
+    pk.v[0].b = pk.v[1].b = o->col.b;
+    pk.v[0].a = pk.v[1].a = o->col.a;
+    pk.v[0].q = pk.v[1].q = 1.0f;
+    dx = p1->x - p0->x;
+    dy = p1->y - p0->y;
+    dz = p1->z - p0->z;
+    s.x[0] = p0->x;
+    s.y[0] = p0->y;
+    s.z[0] = p0->z;
+    for (i = 1; i < 7; i++) {
+        t = (f32)i / 7.0f;
+        s.x[i] = p0->x + dx * t + 0.1f * (func_0019A5C8() % (o->jitter * 2) - o->jitter);
+        s.y[i] = p0->y + dy * t + 0.1f * (func_0019A5C8() % (o->jitter * 2) - o->jitter);
+        s.z[i] = p0->z + dz * t + 0.1f * (func_0019A5C8() % (o->jitter * 2) - o->jitter);
+    }
+    s.x[7] = p1->x;
+    s.y[7] = p1->y;
+    s.z[7] = p1->z;
+    s.n = 8;
+    func_00102550(&s);
+    for (i = 0; i < 28; i++) {
+        a[i].x = s.out[i].x;
+        a[i].y = s.out[i].y;
+        a[i].z = s.out[i].z;
+        if (func_00205440(&a[i], cam->view, &xyz[i], &depth[i]) != 0 && func_00101600(&xyz[i]) != 0) {
+            mask |= 1 << i;
+        }
+    }
+    for (i = 0; i < 27; i++) {
+        if (func_00104520(o->flags, 0x1A) != 0 || i <= o->progress) {
+            pk.v[0].p.x = xyz[i].x;
+            pk.v[1].p.x = xyz[i + 1].x;
+            pk.v[0].p.y = xyz[i].y;
+            pk.v[1].p.y = xyz[i + 1].y;
+            if (func_00104520(mask, i) != 0 && func_00104520(mask, i + 1) != 0) {
+                if (func_00104520(o->flags, 0x13) != 0) {
+                    pk.v[0].p.z = pk.v[1].p.z = 0xFFFFFF;
+                    func_002075F0(&pk, obj, 0);
+                } else {
+                    pk.v[0].p.z = xyz[i].z;
+                    pk.v[1].p.z = xyz[i + 1].z;
+                    func_002075F0(&pk, obj, (s32)(u32)((depth[i] + depth[i + 1]) / 2.0f));
+                }
+            }
+        }
+    }
+    o->progress++;
+    if (o->progress > o->max) {
+        o->progress = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b741", func_01E02E50_b741);

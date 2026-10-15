@@ -589,7 +589,86 @@ static s32 func_01E022A0_b215(Game_b215_01E022A0 *g, Fade_b215_01E022A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E02390_b215);
+/* shape b215:01E02390, 106 insns: a blue-grey full-screen veil (b081:01E044C0 shape): one sprite over the whole screen
+   at the object alpha, sent at once; alpha up by 10 to 0x50 until frame 244, then down by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b215_01E02390;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b215_01E02390 p;
+    } v[2];
+    u8 pad38[0x20];
+} Pkt_b215_01E02390;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+} Obj_b215_01E02390;
+
+static s32 func_01E02390_b215(void *arg0, Obj_b215_01E02390 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    Pkt_b215_01E02390 pkt __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        o->state = 2;
+    }
+    ((Pkt_b215_01E02390 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b215_01E02390 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b215_01E02390 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b215_01E02390 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x78;
+    pkt.g = 0x78;
+    pkt.b = 0xA0;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    ((Xyz_b215_01E02390 *)(s32)&pkt.v[0].p)->x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0((s32)&pkt, func_00207500(), 0);
+    if (o->t < 0xF4) {
+        if (o->c0[3] < 0x50) {
+            o->c0[3] += 0xA;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b215:01E02540, 69 insns: a grey glow at the model joint: set up once (alphas 0 / 0xFF, placed at the joint with
    height 33, f34 from the game, random angle); takes the game's scale each frame and fades by 9 after 6 frames */

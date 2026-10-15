@@ -135,9 +135,139 @@ static s32 func_01E00800_b378(Game_b378_01E00800 *g, Obj_b378_01E00800 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E00970_b378);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E01230_b378);
+/* shape b378:01E01230, 95 insns: a yellow camera-facing glow: turned by the camera's side, size 90 growing by 8 up to 160;
+   alpha up by 0x40 for 2 frames, then down by 5 until it ends; fades faster (by 13) once the scene timer drops under 15 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E013B0_b378);
+typedef struct {
+    u8 pad0[0x3BA0];
+    s32 timer;
+} Scene_b378_01E01230;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 size;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b378_01E01230;
+
+static s32 func_01E01230_b378(Scene_b378_01E01230 *g, Obj_b378_01E01230 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001A22C0(f32);
+    s32 ang[4];
+
+    func_001076F0(o->c0, 0x20, 0x20, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), ang);
+        if (func_001A22C0(ang[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = -0xC000;
+        }
+        o->rot[1] = 0;
+        o->rot[2] = 0x3800;
+        o->sub = 0;
+        o->size = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x32;
+    o->t++;
+    if (o->size < 0xA0) {
+        o->size += 8;
+    }
+    if (g->timer < 0xF) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
+
+/* shape b378:01E013B0, 95 insns: a red camera-facing glow (b378:01E01230 shape): turned by the camera's side, size 90 growing by 8 up to 160;
+   alpha up by 0x40 for 2 frames, then down by 5 until it ends; fades faster (by 13) once the scene timer drops under 15 */
+
+typedef struct {
+    u8 pad0[0x3BA0];
+    s32 timer;
+} Scene_b378_01E013B0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 size;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b378_01E013B0;
+
+static s32 func_01E013B0_b378(Scene_b378_01E013B0 *g, Obj_b378_01E013B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001A22C0(f32);
+    s32 ang[4];
+
+    func_001076F0(o->c0, 0x40, 0, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), ang);
+        if (func_001A22C0(ang[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = -0xC000;
+        }
+        o->rot[1] = 0;
+        o->rot[2] = 0x3800;
+        o->sub = 0;
+        o->size = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x32;
+    o->t++;
+    if (o->size < 0xA0) {
+        o->size += 8;
+    }
+    if (g->timer < 0xF) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b378:01E01530, 87 insns: an orange rising spark (b192:01E015D0 family): frame 4 rising by 2, random tilt -0x7000..-0x1001,
    y turn and sub-frame 0..6; alpha up by 0x50 to 0xA0 for 2 frames, then down by 13 past frame 8, and also by 15 while the
@@ -310,7 +440,80 @@ static s32 func_01E01B30_b378(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E01B80_b378);
+/* shape b378:01E01B80, 98 insns: b001:01E00900 family: draws the grey bar sprite at its own alpha, which fades in by 12 up to 0x60 for 90 ticks, then out by 12 and ends */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b378_01E01B80;
+
+typedef struct {
+    Hdr_b378_01E01B80 h;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    u64 x0 : 16;
+    u64 y0 : 16;
+    u64 z0 : 24;
+    u64 f0 : 8;
+    f32 s1, t1;
+    u64 x1 : 16;
+    u64 y1 : 16;
+    u64 z1 : 24;
+    u64 f1 : 8;
+    u8 tail[0x20];
+} Pkt_b378_01E01B80;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Obj_b378_01E01B80;
+
+static s32 func_01E01B80_b378(s32 arg0, Obj_b378_01E01B80 *o) {
+    Pkt_b378_01E01B80 p __attribute__((aligned(8)));
+
+    ((Hdr_b378_01E01B80 *)(s32)&p)->count = 0x26;
+    ((Hdr_b378_01E01B80 *)(s32)&p)->tag = 5;
+    ((Hdr_b378_01E01B80 *)(s32)&p)->regs = 0x42421;
+    ((Hdr_b378_01E01B80 *)(s32)&p)->pad = 0;
+    p.r = 0x80;
+    p.g = 0x80;
+    p.b = 0x80;
+    p.a = o->col[3];
+    p.q = 1.0f;
+    p.x0 = 0x6BF8;
+    p.y0 = 0x71F8;
+    p.z0 = 0xFFFFFF;
+    p.f0 = 0;
+    p.x1 = 0x93F8;
+    p.y1 = 0x8DF8;
+    p.z1 = 0xFFFFFF;
+    p.f1 = 0;
+    p.s0 = 0.0f;
+    p.t0 = 0.0f;
+    p.s1 = 0.625f;
+    p.t1 = 0.875f;
+    func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&p, 1);
+    func_002075F0((s32)&p, (s32)func_00207500(), 0);
+    if (o->tick < 90) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 12;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E01D10_b378);
 

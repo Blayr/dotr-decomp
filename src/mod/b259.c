@@ -646,7 +646,71 @@ INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E019A0_b259);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E01B90_b259);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E01FD0_b259);
+/* shape b259:01E01FD0, 96 insns: a red-yellow flicker glow on a model joint: size 0/40, hold 250; second alpha up by 0x50 until the
+   hold, then down by 12 until it ends; second colour flickers by frame parity; spins a quarter turn and follows the joint */
+
+typedef struct {
+    u8 pad0[0x8690];
+    s16 joint[1];
+} Game_b259_01E01FD0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 jidx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b259_01E01FD0;
+
+static s32 func_01E01FD0_b259(Game_b259_01E01FD0 *g, Obj_b259_01E01FD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 0.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0xC0, 0x40, 0x40);
+        o->hold = 0xFA;
+        o->f4C = 40.0f;
+        o->h5A = 0xA;
+        o->h5C = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < o->hold) {
+        if (o->c1[3] < 0xA0) {
+            o->c1[3] += 0x50;
+        }
+    } else if (o->c1[3] > 0xD) {
+        o->c1[3] -= 0xC;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0xFF, 0xFF, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x80, 0x80, 0x60);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint[o->jidx], &o->pos);
+    return 0;
+}
 
 /* shape b259:01E02150, 63 insns: grey glow with two colours: on start both 0x80 grey, hold 0x6 = 10; both alphas
    grow by 0x2A (below 0x80) during the hold, then fade by 12 (the first one ends the effect) */
@@ -695,11 +759,205 @@ static s32 func_01E02150_b259(s32 arg0, Fx_b259_01E02150 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E02250_b259);
+/* shape b259:01E02250, 94 insns: follows model point 0x8690 rising by f34; on start 0x8/0xA = 28, f34 3, variant 0,
+   colour 0x80 grey, turned 0x8000 when the game flag 0x86C2 is set; alpha grows by 0x2A (below 0x80) for 8 ticks,
+   then fades by 9 and stops while 0x8/0xA count down and f34 slows by 0.1 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E023D0_b259);
+typedef struct {
+    u8 pad0[0x8690];
+    s16 point;
+    u8 pad8692[0x30];
+    s16 flag;
+} Game_b259_01E02250;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b259", func_01E02590_b259);
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 pos[4];
+    u8 pad20[4];
+    s32 f24;
+    u8 pad28[0xC];
+    f32 rise;
+    u8 pad38[0x1C];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b259_01E02250;
+
+static s32 func_01E02250_b259(Game_b259_01E02250 *g, Fx_b259_01E02250 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->f8 = 28;
+        o->fA = 28;
+        o->rise = 3.0f;
+        o->f56 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        if (g->flag != 0) {
+            o->f24 = 0x8000;
+        } else {
+            o->f24 = 0;
+        }
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else {
+        if (o->col[3] > 0xA) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->f8 > 0) {
+            o->f8--;
+        }
+        if (o->fA > 0) {
+            o->fA--;
+        }
+        if (!(o->rise <= 0.0f)) {
+            o->rise -= 0.1f;
+        }
+    }
+    func_001F5620(func_001F53A0(), g->point, o->pos);
+    o->pos[1] += o->rise;
+    o->tick++;
+    return 0;
+}
+
+/* shape b259:01E023D0, 110 insns: b282:01E01C20 family blinking red spark (size 8, frame 4, angle 10..29, spin 4..10, size 1..8), alpha 0xC0 held 20..22 ticks, then out by 11 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b259_01E023D0;
+
+static s32 func_01E023D0_b259(s32 arg0, Obj_b259_01E023D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 8.0f;
+        o->kind = 4;
+        func_001076F0(o->col, 0xFF, 0x60, 0x60);
+        o->h50 = func_0019A5C8() % 20 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 7 + 4;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 3 + 20;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x60, 0x60);
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
+
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* shape b259:01E02590, 114 insns: blinking spark with random radius, angle and life; dies when the scene timer
+   passes 240 */
+
+typedef struct Sp_b259_01E02590 {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 spin;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 rad;
+    u8 pad52[2];
+    s16 age;
+    s16 h56;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Sp_b259_01E02590;
+
+typedef struct Scn_b259_01E02590 {
+    u8 pad0[0x86C6];
+    s16 timer;
+} Scn_b259_01E02590;
+
+static s32 func_01E02590_b259(Scn_b259_01E02590 *w, Sp_b259_01E02590 *o) {
+    extern s32 func_001076F0();
+    if (o->state == 1) {
+        o->f48 = 2.0f;
+        o->h56 = 3;
+        func_001076F0(o->col, 0xFF, 0x60, 0x60);
+        o->rad = func_0019A5C8() % 8 + 4;
+        o->ang = func_0019A5C8() % 360;
+        o->spin = 1;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 5;
+        o->state = 2;
+    }
+    if (o->age < o->life) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->age % 2 == 1) {
+        func_001076F0(o->col, 0xCF, 0xCF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x60, 0x60, 0x80);
+    }
+    if (o->age != 0) {
+        o->rad += o->spin;
+    }
+    o->age++;
+    if (w->timer >= 0xF1) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b259:01E02760, 83 insns, 2 copies: a blinking marker: set up once (white and red, size 80); the second colour fades in
    for the first frames, then out; it blinks between yellow and dim each frame while turning (b016:01E01FF0

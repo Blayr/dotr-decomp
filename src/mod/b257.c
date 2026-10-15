@@ -928,7 +928,74 @@ static s32 func_01E02F20_b257(s32 arg0, Glow_b207_01E034E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E02FD0_b257);
+/* shape b257:01E02FD0, 123 insns: a yellow-white circling glow on a model joint: frame 40, angle from its start value; alpha up by 4 for
+   18 frames, then flickering 0x40/0x50; sits on the joint, circling 3 around it as the angle turns 10 a frame; ends at frame 211 */
+
+typedef struct {
+    u8 pad0[0x3708];
+    s16 joint;
+    u8 pad370A[0x122];
+    u8 sin[1];
+} Game_b257_01E02FD0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x22];
+    u8 c0[4];
+    u8 c1[4];
+    s16 ang0;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b257_01E02FD0;
+
+static s32 func_01E02FD0_b257(Game_b257_01E02FD0 *g, Obj_b257_01E02FD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    struct {
+        f32 x, y, z, w;
+        f32 pad[4];
+    } v;
+
+    func_00108030(g->sin, o->ang, 0);
+    if (o->state == 1) {
+        o->h38 = 0x28;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0xC0, 0xC0, 0);
+        o->ang = o->ang0;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x12) {
+        o->c0[3] += 4;
+    } else if (o->t % 2 == 1) {
+        o->c0[3] = 0x40;
+    } else {
+        o->c0[3] = 0x50;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    o->x = func_001A22C0(v.x);
+    o->y = func_001A22C0(v.y);
+    o->z = func_001A22C0(v.z);
+    o->x = func_001A22C0(o->x + 3.0f * func_00108030(g->sin, o->ang, 0));
+    o->z = func_001A22C0(o->z + 3.0f * func_00108030(g->sin, o->ang, 1));
+    o->t++;
+    if (o->t > 0xD2) {
+        o->state = 0;
+    }
+    o->ang += 0xA;
+    if (o->ang >= 0x168) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b257:01E031C0, 55 insns: a flash: on start f38 0x12C, colours (0xF0,0xF0,0xF0) and (0xF0,0xF0,0x10) with
    alpha 0x10, a random direction; alpha grows by 0x60 for the first 2 ticks, then fades out by 10 and stops */

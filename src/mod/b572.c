@@ -422,13 +422,139 @@ static void func_01E00EA0_b572(Obj_b003_01E00EA0 *obj, Def_b003_01E00EA0 *def, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E01400_b572);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E01830_b572);
+/* shape b572:01E01830, 107 insns: on start 0x38 = 20, variant 0, colour 0xFF grey, 0xA keeps the old 0x30, 0x30 = 0, speed
+   5..9 (0xE), 0x8 0..24, hold 4..13 (0x6), random 0x3A, 0xC = 0; alpha grows by 0x60 (below 0xC0) during the
+   hold, then fades by 19 and stops; the variant counts up to 5 every other tick; after the first tick 0x30 grows by
+   the speed and 0x38 by 1 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 f2;
+    u8 pad4[2];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b572_01E01830;
+
+static s32 func_01E01830_b572(s32 arg0, Fx_b572_01E01830 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 20;
+        o->f34 = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->fA = o->f30;
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->f8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 10 + 4;
+        o->f3A = func_0019A5C8() % 360;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E019E0_b572);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E01E90_b572);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E020A0_b572);
+/* shape b572:01E020A0, 107 insns: on start 0x38 = 30, variant 0, colour 0xFF grey, 0xA keeps the old 0x30, 0x30 = 0, speed
+   8..12 (0xE), 0x8 0..24, hold 4..13 (0x6), random 0x3A, 0xC = 0; alpha grows by 0x60 (below 0xC0) during the
+   hold, then fades by 19 and stops; the variant counts up to 5 every other tick; after the first tick 0x30 grows by
+   the speed and 0x38 by 2 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 f2;
+    u8 pad4[2];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b572_01E020A0;
+
+static s32 func_01E020A0_b572(s32 arg0, Fx_b572_01E020A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 30;
+        o->f34 = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->fA = o->f30;
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 5 + 8;
+        o->f8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 10 + 4;
+        o->f3A = func_0019A5C8() % 360;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38 += 2;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b003:01E021C0, 92 insns, 2 copies: a scene light flash: sets the scene's light block once (colour 4,2,0, range 70,
    at the object's position), its strength rises by 0.2 to 1 then falls by 0.1; the light is switched off when

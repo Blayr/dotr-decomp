@@ -812,7 +812,65 @@ static void func_01E01CF0_b481(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E020F0_b481);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02690_b481);
+/* shape b481:01E02690, 97 insns: c062:01E033E0 family shock wave (lilac/purple, scale 6, 18 wide): kind 0 from 1000 growing 40, kind 1 from 250 growing 20, kind 2 400 fixed; in by 64 up to 0x80 for 4 ticks, then out by 9 and ends */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b481_01E02690;
+
+static s32 func_01E02690_b481(s32 arg0, Obj_b481_01E02690 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xF0, 0xE0, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        if (o->h50 == 0) {
+            o->f30 = 18.0f;
+            o->f34 = 1000.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 18.0f;
+            o->f34 = 250.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 18.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 40.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 20.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b481:01E02820, 59 insns: b764:01E02A60 family spinning ring (lilac/purple, height 140): in by 96 up to 0xC0 for 10 ticks, then out by 9 and ends */
 
@@ -861,7 +919,65 @@ static s32 func_01E02820_b481(s32 arg0, Obj_b481_01E02820 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02910_b481);
+/* shape b481:01E02910, 115 insns: b702:01E024A0 / b495:01E01B90 family: no random heading, jump 8.6, f52 = rand % 4,
+   alpha +0x60 (below 0xC0) for 6 ticks then -0x13, drift 1.5 along the heading; trig table at 0xCDBC. */
+
+typedef struct {
+    u8 pad0[0xCDBC];
+    u8 trig[1];
+} Game_b481_01E02910;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 heading;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b481_01E02910;
+
+static s32 func_01E02910_b481(Game_b481_01E02910 *g, Fx_b481_01E02910 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 100;
+        o->fA = o->f8;
+        o->f56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+        o->z += 8.6f * func_00108030(g->trig, o->heading, 0);
+        o->x += 8.6f * func_00108030(g->trig, o->heading, 1);
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->z += 1.5f * func_00108030(g->trig, o->heading, 0);
+        o->x += 1.5f * func_00108030(g->trig, o->heading, 1);
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 /* shape b418:01E020E0, 149 insns: a white spark: f48 30, variant (rand >> 4) % 8, random f5A/f5C, fA 0 or 2, fC = the
    old f50, f50 5..44, f52 100..449, spin 45..114, f8 0..34, life 3..7; alpha grows by 0xC0 (below 0xC0) during the

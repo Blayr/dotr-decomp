@@ -632,7 +632,87 @@ static s32 func_01E022F0_b284(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b284", func_01E02340_b284);
+/* shape b284:01E02340, 103 insns: a grey full-screen veil (b081:01E044C0 shape): one sprite over the whole screen at the object
+   alpha, sent at once; alpha 0x68 while the scene timer is under 300, then down by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b284_01E02340;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    struct {
+        f32 s, t;
+        Xyz_b284_01E02340 p;
+    } v[2];
+    u8 pad38[0x20];
+} Pkt_b284_01E02340;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+} Obj_b284_01E02340;
+
+typedef struct {
+    u8 pad0[0x3798];
+    s16 timer;
+} Scene_b284_01E02340;
+
+static s32 func_01E02340_b284(Scene_b284_01E02340 *g, Obj_b284_01E02340 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    Pkt_b284_01E02340 pkt __attribute__((aligned(8)));
+
+    if (o->state == 1) {
+        o->c0[3] = 0;
+        o->state = 2;
+    }
+    ((Pkt_b284_01E02340 *)(s32)&pkt)->count = 0x26;
+    ((Pkt_b284_01E02340 *)(s32)&pkt)->tag = 5;
+    ((Pkt_b284_01E02340 *)(s32)&pkt)->regs = 0x42421;
+    ((Pkt_b284_01E02340 *)(s32)&pkt)->pad = 0;
+    pkt.r = 0x80;
+    pkt.g = 0x80;
+    pkt.b = 0x80;
+    pkt.a = o->c0[3];
+    pkt.q = 1.0f;
+    ((Xyz_b284_01E02340 *)(s32)&pkt.v[0].p)->x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0((s32)&pkt, func_00207500(), 0);
+    if (g->timer < 0x12C) {
+        o->c0[3] = 0x68;
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b284", func_01E024E0_b284);
 

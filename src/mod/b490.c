@@ -103,7 +103,68 @@ static void func_01E00080_b490(Pk_b003_01E00080 *p, Rect_b003_01E00080 *r, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00920_b490);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00BF0_b490);
+/* shape b490:01E00BF0, 102 insns: a blinking white streak (size 50, 50/8 turns, random tilt and angle, frame 2) sliding 10 a tick on z (direction from the scene flag): alpha 0x80 for 12 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b490_01E00BF0;
+
+typedef struct {
+    u8 pad[0x8B52];
+    s16 flip;
+} Game_b490_01E00BF0;
+
+static s32 func_01E00BF0_b490(Game_b490_01E00BF0 *g, Obj_b490_01E00BF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 50.0f;
+        o->w20 = 50;
+        o->w24 = 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h50 = func_0019A5C8() % 180;
+        o->h5A = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->t < 12) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->kind = 2;
+    if (g->flip != 0) {
+        o->f18 -= 10.0f;
+    } else {
+        o->f18 += 10.0f;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b490:01E00D90, 64 insns: an orange glow on the model joint: set up once (scale 630, size 10x10), fades in by
    0x40 to 0xC0 for 0xAA frames, then out by 10 until it ends; placed at the joint each frame */
@@ -157,7 +218,72 @@ static s32 func_01E00D90_b490(Game_b490_01E00D90 *g, Obj_b490_01E00D90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E00E90_b490);
+/* shape b490:01E00E90, 122 insns: a scene light at 0x8A80: on start colour/size 128/4/2/0, height 0/120/0 and the effect's
+   position as floats; its strength 0x8AA8 rises by 0.2 up to 1 (then 0x50 = 1) and falls by 0.1 until it ends
+   the effect; func_001F6C10 gets the light (or 0 once ended); it also ends when the light's 0x8B00 flag is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x54];
+    s32 done;
+} Light_b490_01E00E90;
+
+typedef struct {
+    u8 pad0[0x8A80];
+    Light_b490_01E00E90 light;
+} Game_b490_01E00E90;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x4A];
+    s16 f50;
+    u8 pad52[6];
+    s16 mode;
+} Fx_b490_01E00E90;
+
+static s32 func_01E00E90_b490(Game_b490_01E00E90 *g, Fx_b490_01E00E90 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a[0] = 128.0f;
+        g->light.a[1] = 4.0f;
+        g->light.a[2] = 2.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 120.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f50 = 0;
+    }
+    if (o->f50 == 0) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.2f;
+        } else {
+            o->f50 = 1;
+        }
+    } else if (g->light.b[2] > 0.1f) {
+        g->light.b[2] -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.done == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b490:01E01080, 55 insns: volume fade by game state (b124:01E01A30 layout at 0x50): state at 0x8B00 limit 0x14, down 10 to 0x30,
    up 10 to 0x80 where the fade ends; counts its frames */
@@ -494,4 +620,73 @@ static void func_01E029F0_b490(u8 *self, Obj_b361_01E024D0 *obj, void *pk) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E02BF0_b490);
+/* shape b490:01E02BF0, 117 insns: frame pass of a battle scene: open the scene's packet, then run the two kinds of
+   active effect entries (310 slots) through their handlers and flush if any drew */
+
+typedef struct Pk_b490_01E02BF0 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 pad10[0x68];
+    s32 f78[2];
+    s32 f80[4];
+} Pk_b490_01E02BF0;
+
+typedef struct Ent_b490_01E02BF0 {
+    u8 pad0[0x44];
+    void *fn;
+    u8 pad48[0x10];
+    s16 active;
+    u8 pad5A[0x16];
+} Ent_b490_01E02BF0;
+
+typedef struct Scn_b490_01E02BF0 {
+    u8 pad0[0x2E0];
+    Ent_b490_01E02BF0 ent[0x136];
+    u8 pad8A80[0x94];
+    Pk_b490_01E02BF0 *pk;
+    u8 pad8B18[0x18];
+    s32 ot;
+    void *buf;
+} Scn_b490_01E02BF0;
+
+static void func_01E02BF0_b490(Scn_b490_01E02BF0 *w) {
+    extern s32 func_001F53A0();
+    extern void b490_01E01260(Scn_b490_01E02BF0 *w, Ent_b490_01E02BF0 *e);
+    extern void b490_01E01D50(Scn_b490_01E02BF0 *w, Ent_b490_01E02BF0 *e);
+    s32 i;
+    s32 n;
+    Pk_b490_01E02BF0 *p;
+    u8 buf[0x58] __attribute__((aligned(8)));
+    Pk_b490_01E02BF0 pk __attribute__((aligned(8)));
+
+    w->buf = buf;
+    w->pk = &pk;
+    n = 0;
+    w->ot = func_00207F60();
+    w->pk->flags = 0x34;
+    w->pk->size = 0xC;
+    w->pk->regs = ((u64)0x4214 << 32) | 0x21421421;
+    w->pk->pad4 = 0;
+    func_00208460();
+    func_002086D0(w->pk, ((u64)0x80 << 32) | 0x48);
+    p = w->pk;
+    func_001F7060(func_001F53A0(), 0, (s32)p->f78, (s32)p->f80);
+    func_00208460();
+    for (i = 0; i < 0x136; i++) {
+        if (w->ent[i].active != 0 && w->ent[i].fn == b490_01E01260) {
+            n++;
+            b490_01E01260(w, &w->ent[i]);
+        }
+    }
+    for (i = 0; i < 0x136; i++) {
+        if (w->ent[i].active != 0 && w->ent[i].fn == b490_01E01D50) {
+            n++;
+            b490_01E01D50(w, &w->ent[i]);
+        }
+    }
+    if (n != 0) {
+        func_00207FD0(w->ot, (s32)func_00207500(), 0);
+    }
+}

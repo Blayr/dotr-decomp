@@ -363,7 +363,48 @@ static void func_01E00E70_b183(Obj_b183_01E00E70 *obj, Cam_b183_01E00E70 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b183", func_01E01150_b183);
+/* shape b183:01E01150, 104 insns: the b183 scene's burst script: on ticks 10..20 it spawns two shape b183:01E012F0 sparks a tick at the scene joint lifted 0..6, and on tick 15 one each of b183:01E01480 and b183:01E01E50 lifted 5 and nudged 3 on z (back when flagged) */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x44D4 - 0x25C];
+    s16 joint;
+    u8 pad44D6[0x30];
+    s16 back;
+    u8 pad4508[2];
+    s16 tick;
+} Ctx_b183_01E01150;
+
+static void func_01E01150_b183(Ctx_b183_01E01150 *g) {
+    extern void b183_01E012F0();
+    extern void b183_01E01480();
+    extern void b183_01E01E50();
+    extern void b183_01E028A0(Ctx_b183_01E01150 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    g->tick++;
+    if (g->tick >= 10 && g->tick < 21) {
+        func_001F5620(func_001F53A0(), g->joint, &g->x);
+        g->y += func_0019A5C8() % 7;
+        b183_01E028A0(g, b183_01E012F0, 0);
+        func_001F5620(func_001F53A0(), g->joint, &g->x);
+        g->y += func_0019A5C8() % 7;
+        b183_01E028A0(g, b183_01E012F0, 0);
+    }
+    if (g->tick == 15) {
+        func_001F5620(func_001F53A0(), g->joint, &g->x);
+        g->y += 5.0f;
+        if (g->back != 0) {
+            g->z -= 3.0f;
+        } else {
+            g->z += 3.0f;
+        }
+        b183_01E028A0(g, b183_01E01480, 0);
+        b183_01E028A0(g, b183_01E01E50, 0);
+    }
+}
 
 /* shape b183:01E012F0, 97 insns: a white ring: set up once (size 50, frame 3, start 10..59, growth 6..15, life 3..7); full alpha for its life, then fades by 8; grows after the first frame */
 
@@ -419,7 +460,69 @@ static s32 func_01E012F0_b183(void *arg0, Obj_b183_01E012F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b183", func_01E01480_b183);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b183", func_01E01990_b183);
+/* shape b183:01E01990, 110 insns: b593:01E020C0 family: a grey spark (size 10, frame cycling 0..7 from random) spinning a random 26..35 a tick from 10..59 (old angle moved to +0xC), random 0..7 at +0xA, size 0..34, held 3..7 ticks at 0x80, then out by 8 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b183_01E01990;
+
+static s32 func_01E01990_b183(s32 arg0, Obj_b183_01E01990 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->kind = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 50 + 10;
+        o->hE = func_0019A5C8() % 10 + 26;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->kind++;
+    if (o->kind > 7) {
+        o->kind = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b183:01E01B50, 97 insns: b183:01E012F0 with size 100, start 20..99 and growth 14..23 */
 

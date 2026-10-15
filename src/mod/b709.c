@@ -816,7 +816,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E02BF0_b709);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E02E10_b709);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E03090_b709);
+/* shape b709:01E03090, 113 insns: on start 0x38 = 6, variant 0..3, colour (0xA0, 0x60, 0), random 0x18 and 0x10, 0x3A
+   keeps the old 0x30 (a game point index), 0x30 = 0, speed 7..23 (0xE), 0x8 0..9, hold 1..3 (0x6); alpha 0x80 during
+   the hold, then fades by 10 and stops; its position is the game point 0x31B0 + 0x3A x 16; 0x30 grows by the speed */
+
+typedef struct {
+    u8 pad0[0x31B0];
+    Vec4f pts[1];
+} Game_b709_01E03090;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    s32 w10;
+    u8 pad14[4];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 pt;
+} Fx_b709_01E03090;
+
+static s32 func_01E03090_b709(Game_b709_01E03090 *g, Fx_b709_01E03090 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 6;
+        o->f34 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xA0, 0x60, 0);
+        o->w18 = func_0019A5C8() % 0xFFFF;
+        o->w10 = func_0019A5C8() % 0xFFFF;
+        o->pt = o->f30;
+        o->f30 = 0;
+        o->speed = func_0019A5C8() % 17 + 7;
+        o->f8 = func_0019A5C8() % 10;
+        o->hold = func_0019A5C8() % 2 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->x = func_001A22C0(g->pts[o->pt].x);
+    o->y = func_001A22C0(g->pts[o->pt].y);
+    o->z = func_001A22C0(g->pts[o->pt].z);
+    o->f30 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 /* shape b225:01E02120, 92 insns, 2 copies: a spinning violet ember: set up once (random frame, two turns, speed 7..23,
    size, life 2..3, keeps its old angle); full alpha for its life, then fades out; its angle advances by its speed (b003:01E01780 family) */
@@ -1057,9 +1118,121 @@ static s32 func_01E03750_b709(void *arg0, Ember_b225_01E026A0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E038C0_b709);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E03B20_b709);
+/* shape b709:01E03B20, 94 insns: b225:01E023F0 family: a grey spark (size 16, random frame 0..7, random roll and angle) spinning a random 10..27 a tick, size 0..9, held 3..9 ticks: in by 56 up to 0x70, then out by 10 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E03CA0_b709);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b709_01E03B20;
+
+static s32 func_01E03B20_b709(s32 arg0, Glow_b709_01E03B20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 16;
+        o->kind = func_0019A5C8() % 8;
+        o->w18 = func_0019A5C8() % 65535;
+        func_001076F0(o->col, 0xA0, 0xA0, 0xA0);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 18 + 10;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 7 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x70) {
+            o->col[3] += 0x38;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b709:01E03CA0, 96 insns: a grey/yellow two-colour glow (size 10, frame 1, 9 at +6): alpha 0xC0, dipping by 9 between ticks 40 and 140, then 0xC0 again until 175, then out by 9 and ends; rolls 6 a tick (wrapped at 360) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b709_01E03CA0;
+
+static s32 func_01E03CA0_b709(s32 arg0, Glow_b709_01E03CA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    s16 r;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0);
+        o->h6 = 9;
+        o->col[3] = 0x40;
+        o->kind = 1;
+        o->f38 = 10;
+        o->mode = 2;
+    }
+    if (o->tick < 175) {
+        if (o->tick < 40) {
+            o->col[3] = 0xC0;
+        } else if (o->tick < 140) {
+            if (o->col[3] > 10) {
+                o->col[3] -= 9;
+            } else {
+                o->col[3] = 0;
+            }
+        } else {
+            o->col[3] = 0xC0;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    for (i = 0; i < 10; i++) {
+    }
+    r = o->w18 += 6;
+    if (r >= 360) {
+        r %= 360;
+    }
+    o->w18 = r;
+    return 0;
+}
 
 /* shape b709:01E03E20, 90 insns, 1 copy: blink and fade, an empty delay loop (2.3.3 keeps it, 2.4 drops it),
    angle += 6 wrapped at 360 */
@@ -1213,7 +1386,62 @@ static s32 func_01E04140_b709(void *arg0, Obj_b018_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E04220_b709);
+/* shape b709:01E04220, 115 insns: on start 0x38 = 123, variant 0, colour 0x40 grey, random headings 0x30 and 0x3A; alpha 0x80
+   for 10 ticks, then fades by 10 and stops; the variant counts up to 7 every third tick; it drifts (x by 14.0 x the
+   cosine of 0x3A, y by 4.0 x the sine of 0x30, z by 14.0 x the sine of 0x3A, game table 0x36C4) */
+
+typedef struct {
+    u8 pad0[0x36C4];
+    u8 trig[1];
+} Game_b709_01E04220;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b709_01E04220;
+
+static s32 func_01E04220_b709(Game_b709_01E04220 *g, Fx_b709_01E04220 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 123;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        o->f30 = func_0019A5C8() % 360;
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->tick++;
+    o->x = func_001A22C0(o->x + 14.0f * func_00108030(g->trig, o->f3A, 0));
+    o->y = func_001A22C0(o->y + 4.0f * func_00108030(g->trig, o->f30, 1));
+    o->z = func_001A22C0(o->z + 14.0f * func_00108030(g->trig, o->f3A, 1));
+    return 0;
+}
 
 /* shape b709:01E043F0, 93 insns: a screen fog: on start sets the scene fog block (0x3180: 128, 4.0, 2.0, 0.0, position from
    the effect, colour (0, 120.0, 0)); its strength 0x31A8 rises by 0.2 to 1, then falls by 0.1 and ends; the block is

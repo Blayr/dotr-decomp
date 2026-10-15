@@ -727,7 +727,77 @@ static s32 func_01E02FE0_b501(s32 arg0, Fx_b501_01E02FE0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03130_b501);
+/* shape b501:01E03130, 119 insns: a grey/blue glow (size 60, turn 0x4000, at its own angle) scripted on the scene value: in by 4 up to 0x50 for 18 ticks; flickers 0x40/0x50 until 54, drops by 40 until 69, flashes 0x50 at 69, flickers until 124, then out by 15 and ends; also ends after 211 ticks or at scene value 138 */
+
+typedef struct {
+    u8 pad0[0x18];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b501_01E03130;
+
+typedef struct {
+    u8 pad[0x2B5E];
+    s16 val;
+} Game_b501_01E03130;
+
+static s32 func_01E03130_b501(Game_b501_01E03130 *g, Glow_b501_01E03130 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        func_001076F0(o->col2, 0x10, 0x10, 0xC0);
+        o->w18 = 0x4000;
+        o->ang = o->h30;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 18) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 4;
+        }
+    } else if (g->val < 54) {
+        if (o->tick % 2 == 1) {
+            o->col[3] = 0x40;
+        } else {
+            o->col[3] = 0x50;
+        }
+    } else if (g->val < 69) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 0x28;
+        } else {
+            o->col[3] = 0;
+        }
+    } else if (g->val == 69) {
+        o->col[3] = 0x50;
+    } else if (g->val < 124) {
+        if (o->tick % 2 == 1) {
+            o->col[3] = 0x40;
+        } else {
+            o->col[3] = 0x50;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->tick > 210) {
+        o->mode = 0;
+    }
+    if (g->val == 138) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03310_b501);
 
@@ -781,7 +851,64 @@ static s32 func_01E03530_b501(s32 arg0, Fx_b501_01E03530 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03680_b501);
+/* shape b501:01E03680, 96 insns: b115:01E01980 family: a white spark (size 60, frame 5); flagged ones get a random tilt and drift 10 a tick along their angle (sine table ctx+0x2E60), unflagged ones stay put: alpha 0x80 for 7 ticks, then out by 15 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[8];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b501_01E03680;
+
+typedef struct {
+    u8 pad[0x2e60];
+    u8 sin[1];
+} Game_b501_01E03680;
+
+static s32 func_01E03680_b501(Game_b501_01E03680 *g, Glow_b501_01E03680 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        o->kind = 5;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        if (o->h30 == 0) {
+            o->h30 = func_0019A5C8() % 360;
+        } else {
+            o->h30 = 0;
+        }
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h30 != 0) {
+        o->h8 = func_001A22C0(o->h8 + 10.0f * func_00108030(g->sin, o->ang, 0));
+        o->hC = func_001A22C0(o->hC + 10.0f * func_00108030(g->sin, o->ang, 1));
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b501:01E03800, 31 insns: b018:01E02DB0 family: func_001F7170(2, 0) with the module's two floats, then ends the object when the scene counter is 150 */
 
@@ -817,7 +944,76 @@ static s32 func_01E03800_b501(Ctx_b501_01E03800 *ctx, Obj_b501_01E03800 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03880_b501);
+/* shape b501:01E03880, 103 insns: b582:01E03470 family scene light at ctx+0x2340 (orange 4/2/0, height 120) whose range flickers 128/192: raised by 0.2 to 1 for 21 ticks, then lowered by 0.1 and ended; ends at scene state 1 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x2A];
+    s16 phase;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Obj_b501_01E03880;
+
+typedef struct {
+    f32 w0;
+    f32 r, g, b;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    f32 h;
+    f32 level;
+    u8 pad2C[0x7a4];
+    s32 state;
+} Light_b501_01E03880;
+
+typedef struct {
+    u8 pad[0x2340];
+    Light_b501_01E03880 l;
+} Game_b501_01E03880;
+
+static s32 func_01E03880_b501(Game_b501_01E03880 *g, Obj_b501_01E03880 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->l.w0 = 128.0f;
+        g->l.r = 4.0f;
+        g->l.g = 2.0f;
+        g->l.b = 0.0f;
+        g->l.w20 = 0;
+        g->l.h = 120.0f;
+        g->l.level = 0.0f;
+        g->l.x = o->x;
+        g->l.y = o->y;
+        g->l.z = o->z;
+        o->mode = 2;
+        o->phase = 0;
+    }
+    if (o->tick < 21) {
+        if (g->l.level < 1.0f) {
+            g->l.level += 0.2f;
+        }
+    } else if (g->l.level > 0.1f) {
+        g->l.level -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        g->l.w0 = 128.0f;
+    } else {
+        g->l.w0 = 192.0f;
+    }
+    o->tick++;
+    if (g->l.state == 1) {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->l);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03A20_b501);
 

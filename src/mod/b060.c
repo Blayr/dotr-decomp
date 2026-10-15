@@ -4,7 +4,59 @@ INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00080_b060);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E009B0_b060);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00BB0_b060);
+/* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
+
+/* OVL_WARM */
+
+/* shape b060:01E00BB0, 116 insns: dim mote drifting 13 units a frame along two random angles, fading in and out */
+
+typedef struct Mo_b060_01E00BB0 {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 ang2;
+    s16 age;
+    s16 h34;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Mo_b060_01E00BB0;
+
+typedef struct Scn_b060_01E00BB0 {
+    u8 pad0[0x3B60];
+    u8 table[0x10];
+} Scn_b060_01E00BB0;
+
+static s32 func_01E00BB0_b060(Scn_b060_01E00BB0 *w, Mo_b060_01E00BB0 *o) {
+    extern s32 func_001076F0();
+    func_001076F0(o->c28, 0x10, 0x10, 0x10);
+    if (o->state == 1) {
+        o->h38 = 7;
+        o->ang = func_0019A5C8() % 360;
+        o->h34 = func_0019A5C8() % 7;
+        o->ang2 = func_0019A5C8() % 360;
+        o->state = 2;
+    }
+    if (o->age < 2) {
+        if (o->c28[3] < 0x60) {
+            o->c28[3] += 0x30;
+        }
+    } else if (o->c28[3] > 5) {
+        o->c28[3] -= 4;
+    } else {
+        o->state = 0;
+    }
+    o->age++;
+    if (o->h38 < 10) {
+        o->h38++;
+    }
+    o->x = (s32)(o->x + 13.0f * func_00108030((s32)w->table, o->ang, 0));
+    o->y = (s32)(o->y + 13.0f * func_00108030((s32)w->table, o->ang2, 1));
+    o->z = (s32)(o->z + 13.0f * func_00108030((s32)w->table, o->ang, 1));
+    return 0;
+}
 
 /* shape b060:01E00D80, 84 insns: a dark blue tumbling glow at three random turns, growing a random 2..6 a tick up to 50 and turning 2: in by 48 for 2 ticks; past size 10 out by 9, and ends */
 
@@ -61,11 +113,171 @@ static s32 func_01E00D80_b060(s32 arg0, Glow_b060_01E00D80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00ED0_b060);
+/* shape b060:01E00ED0, 107 insns: a grey drifting puff (b194:01E015C0 shape): frame 5, random sub-frame 0..3 and angles; alpha up by
+   42 for 3 frames, then down by 5 until it ends; drifts 15 along its angle and bobs 15 by its second angle */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E01080_b060);
+typedef struct {
+    u8 pad0[0x3B60];
+    u8 sin[1];
+} Game_b060_01E00ED0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E01220_b060);
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 bob;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b060_01E00ED0;
+
+static s32 func_01E00ED0_b060(Game_b060_01E00ED0 *g, Obj_b060_01E00ED0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->state == 1) {
+        o->h38 = 5;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+        o->bob = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+    }
+    if (o->t < 3) {
+        o->c0[3] += 0x2A;
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    o->h8 = func_001A22C0(o->h8 + 15.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 15.0f * func_00108030(g->sin, o->bob, 1));
+    o->hC = func_001A22C0(o->hC + 15.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
+
+/* shape b060:01E01080, 103 insns: colour (0x8F, 0x50, 0x5F); on start 0x38 = 17 and a heading 0x3A: random, or (game step 0x3B5C from
+   0x82) -60..59 / 120..239 depending on func_001F53A0 below 10; alpha grows by 0x30 (below 0x60) for 2 ticks, then
+   fades by 7 and stops; 0x38 counts up to 0x19 */
+
+typedef struct {
+    u8 pad0[0x3B5C];
+    s16 step;
+} Game_b060_01E01080;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 heading;
+} Fx_b060_01E01080;
+
+static s32 func_01E01080_b060(Game_b060_01E01080 *g, Fx_b060_01E01080 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+
+    func_001076F0(o->col, 0x8F, 0x50, 0x5F);
+    if (o->mode == 1) {
+        o->f38 = 17;
+        if (func_001F53A0() < 10) {
+            if (g->step < 0x82) {
+                o->heading = func_0019A5C8() % 360;
+            } else {
+                o->heading = func_0019A5C8() % 120 - 60;
+            }
+        } else if (g->step < 0x82) {
+            o->heading = func_0019A5C8() % 360;
+        } else {
+            o->heading = func_0019A5C8() % 120 + 120;
+        }
+        o->f34 = 0;
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 0x2A) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 < 0x19) {
+        o->f38++;
+    }
+    return 0;
+}
+
+/* shape b060:01E01220, 103 insns: colour (0x40, 0x40, 0x1F); on start 0x38 = 15 and a heading 0x3A: random, or (game step 0x3B5C from
+   0x82) -60..59 / 120..239 depending on func_001F53A0 below 10; alpha grows by 0xF (below 0x60) for 8 ticks, then
+   fades by 15 and stops; 0x38 counts down to 0 */
+
+typedef struct {
+    u8 pad0[0x3B5C];
+    s16 step;
+} Game_b060_01E01220;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 heading;
+} Fx_b060_01E01220;
+
+static s32 func_01E01220_b060(Game_b060_01E01220 *g, Fx_b060_01E01220 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+
+    func_001076F0(o->col, 0x40, 0x40, 0x1F);
+    if (o->mode == 1) {
+        o->f38 = 15;
+        if (func_001F53A0() < 10) {
+            if (g->step < 0x82) {
+                o->heading = func_0019A5C8() % 360;
+            } else {
+                o->heading = func_0019A5C8() % 120 - 60;
+            }
+        } else if (g->step < 0x82) {
+            o->heading = func_0019A5C8() % 360;
+        } else {
+            o->heading = func_0019A5C8() % 120 + 120;
+        }
+        o->f34 = 0;
+        o->col[3] = 0;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 0xF;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 != 0) {
+        o->f38--;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E013C0_b060);
 

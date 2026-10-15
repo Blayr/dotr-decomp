@@ -624,7 +624,76 @@ static s32 func_01E02180_b019(Game_b019_01E02180 *g, Fx_b019_01E02180 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b019", func_01E022E0_b019);
+/* shape b019:01E022E0, 101 insns: a dim yellow camera-facing glow (b714:01E025D0 shape) tilted by 0x2000 one way or the other:
+   size 90 growing by 8 to 160; alpha up by 0x40 for 2 frames, then down by 9; faster (13) once the scene timer drops under 15 */
+
+typedef struct {
+    u8 pad0[0x3320];
+    s32 timer;
+} Scene_b019_01E022E0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 size;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b019_01E022E0;
+
+static s32 func_01E022E0_b019(Scene_b019_01E022E0 *g, Obj_b019_01E022E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, s32 *);
+    extern s32 func_001A22C0(f32);
+    s32 ang[4];
+
+    func_001076F0(o->c0, 0x10, 0x10, 0);
+    if (o->state == 1) {
+        func_001F6160(func_001F53A0(), ang);
+        if (func_001A22C0(ang[1] / 180.0f) != 0) {
+            o->rot[0] = -0x4000;
+        } else {
+            o->rot[0] = -0xC000;
+        }
+        o->rot[1] = 0;
+        if (o->size == 0) {
+            o->rot[2] = 0x2000;
+        } else {
+            o->rot[2] = -0x2000;
+        }
+        o->sub = 0;
+        o->size = 0x5A;
+        o->state = 2;
+        o->c0[3] = 0;
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->h38 = 0x32;
+    o->t++;
+    if (o->size < 0xA0) {
+        o->size += 8;
+    }
+    if (g->timer < 0xF) {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b018:01E02480, 54 insns, 11 copies: step of a fading effect: on state 1 sets its two colours, a random angle and
    state 2; full alpha for the first 5 ticks, then fades by 10 until state 0 */

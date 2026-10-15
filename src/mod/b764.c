@@ -843,7 +843,77 @@ INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E02FC0_b764);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E035C0_b764);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E03BD0_b764);
+/* shape b764:01E03BD0, 103 insns: a yellow-white glow by kind (0: size 50 for 50 frames, 1: 18 for 4, 2: 20 for 4, with rise 2):
+   second alpha up by 0x30 to 0xC0 until the hold, then down by 11 until it ends; spins a quarter turn */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 rise;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b764_01E03BD0;
+
+static s32 func_01E03BD0_b764(void *arg0, Obj_b764_01E03BD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        if (o->kind == 0) {
+            o->f48 = 0.0f;
+            o->f4C = 50.0f;
+            o->hold = 0x32;
+        } else if (o->kind == 1) {
+            o->f48 = 0.0f;
+            o->f4C = 18.0f;
+            o->rise = 2.0f;
+            o->hold = 4;
+        } else if (o->kind == 2) {
+            o->f48 = 0.0f;
+            o->f4C = 20.0f;
+            o->rise = 2.0f;
+            o->hold = 4;
+        }
+        if (o->kind == 0) {
+            func_001076F0(o->c1, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->c0, 0x80, 0x80, 0x40);
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->c1, 0x40, 0x40, 0x40);
+            func_001076F0(o->c0, 0x40, 0x40, 0x20);
+        }
+        o->h5A = 0xF;
+        o->h5C = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < o->hold) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x30;
+        }
+    } else if (o->c1[3] > 0xC) {
+        o->c1[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b764:01E03D70, 80 insns: on start f48 10, variant 4, colour 0x80 grey, random 0x50 30..129, 0x5A and 0x5C
    0..359, 0x8 0..19, hold 1..2 (0x6); alpha 0xC0 during the hold, then fades by 15 and stops */
@@ -899,7 +969,74 @@ static s32 func_01E03EB0_b764(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E03EC0_b764);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E04D30_b764);
+/* shape b764:01E04D30, 106 insns: take a free effect slot (0xFA of 0x70 bytes at 0x2A0), clear it, colour both colours from
+   the scene colour 0xDAC4, attach it to the scene position (0x250) and copy it, 0x5A, 0x50, 0x52 from 0xDBAE / 0xDBD4 / 0xDBD4, store the two
+   arguments; returns 1 if a slot was found */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 pos[3];
+    u8 pad1C[0x24];
+    s32 a2;
+    s32 a1;
+    u8 pad48[8];
+    s16 f50;
+    s16 f52;
+    u8 pad54[4];
+    s16 used;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Slot_b764_01E04D30;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x44];
+    Slot_b764_01E04D30 slots[0xFA];
+    u8 pad7000[0xDAC4 - 0x7000];
+    u8 rgba[4];
+    u8 padDAC8[0xE6];
+    s16 fDBAE;
+    u8 padDBB0[0x24];
+    s16 fDBD4;
+} Scene_b764_01E04D30;
+
+static s32 func_01E04D30_b764(Scene_b764_01E04D30 *g, s32 a1, s32 a2) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    Slot_b764_01E04D30 *s = NULL;
+    s16 i;
+
+    for (i = 0; i < 0xFA; i++) {
+        if (g->slots[i].used == 0) {
+            func_00195108(&g->slots[i], 0x70);
+            g->slots[i].used = 1;
+            s = &g->slots[i];
+            i = 0xFA;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col[3] = g->rgba[3];
+        func_001076F0(s->col2, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->col2[3] = g->rgba[3];
+        func_00106AB0(s, g->pos, 0);
+        s->pos[0] = g->pos[0];
+        s->pos[1] = g->pos[1];
+        s->pos[2] = g->pos[2];
+        s->f5A = g->fDBAE;
+        s->f50 = g->fDBD4;
+        s->f52 = g->fDBD4;
+        s->a2 = a2;
+        s->a1 = a1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E04EE0_b764);
 

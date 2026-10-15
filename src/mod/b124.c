@@ -748,7 +748,86 @@ static s32 func_01E01B00_b124(void *arg0, Obj_b124_01E01B00 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01C00_b124);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01F50_b124);
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b124_01E01F50;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b124_01E01F50;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b124_01E01F50 p;
+} Vtx_b124_01E01F50;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b124_01E01F50 c;
+    Vtx_b124_01E01F50 v[2];
+    u64 tail;
+} Pkt_b124_01E01F50;
+
+typedef struct {
+    u8 pad0000[0x3800];
+    Pkt_b124_01E01F50 *pkt;
+} Mgr_b124_01E01F50;
+
+typedef struct {
+    u8 pad00[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+} Obj_b124_01E01F50;
+
+static s32 func_01E01F50_b124(Mgr_b124_01E01F50 *m, Obj_b124_01E01F50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002075F0(void *, s32, s32);
+
+    if (o->h36 == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->h36 = 2;
+    }
+    m->pkt->c.r = o->col[0];
+    m->pkt->c.g = o->col[1];
+    m->pkt->c.b = o->col[2];
+    m->pkt->c.a = o->col[3];
+    m->pkt->c.q = 1.0f;
+    m->pkt->v[0].p.x = 0x6BF8;
+    m->pkt->v[0].p.y = 0x71F8;
+    m->pkt->v[0].p.z = 0xFFFFFF;
+    m->pkt->v[0].p.f = 0;
+    m->pkt->v[1].p.x = 0x93F8;
+    m->pkt->v[1].p.y = 0x8DF8;
+    m->pkt->v[1].p.z = 0xFFFFFF;
+    m->pkt->v[1].p.f = 0;
+    m->pkt->v[0].s = 0.0f;
+    m->pkt->v[0].t = 0.0f;
+    m->pkt->v[1].s = 0.625f;
+    m->pkt->v[1].t = 0.875f;
+    func_002075F0(m->pkt, 0, 0);
+    if (o->h32 < 135) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 20) {
+        o->col[3] -= 19;
+    } else {
+        o->h36 = 0;
+    }
+    o->h32++;
+    return 0;
+}
 
 /* shape b124:01E02110, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
    cells 0-2 (variant of b205:01E02370) */

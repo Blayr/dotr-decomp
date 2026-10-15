@@ -883,7 +883,81 @@ static s32 func_01E02F10_b763(Game_b763_01E02F10 *g, Obj_b763_01E02F10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b763", func_01E03060_b763);
+/* shape b763:01E03060, 100 insns: a white light on a model joint (b432:01E031D0 shape, joint at 0x7EF0): colour 128/4/4/4,
+   range 123; power up by 0.1 to 1 until frame 210, then down by 0.3 until it ends; ends when the scene state is 1 */
+
+typedef struct {
+    u8 pad0[0x4440];
+    f32 l0[4];
+    f32 pos[3];
+    u8 pad445C[4];
+    f32 f20;
+    f32 range;
+    f32 power;
+    u8 pad446C[0x7EC0 - 0x446C];
+    s32 state;
+    u8 pad7EC4[0x2C];
+    s16 joint;
+} Scene_b763_01E03060;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x34];
+    s16 down;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 live;
+} Obj_b763_01E03060;
+
+static s32 func_01E03060_b763(Scene_b763_01E03060 *g, Obj_b763_01E03060 *o) {
+    extern void func_001F6C10(void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    struct {
+        f32 x, y, z, w;
+        f32 pad[4];
+    } v;
+
+    if (o->live == 1) {
+        g->l0[0] = 128.0f;
+        g->l0[1] = 4.0f;
+        g->l0[2] = 4.0f;
+        g->l0[3] = 4.0f;
+        g->f20 = 0.0f;
+        g->range = 123.0f;
+        g->power = 0.0f;
+        g->pos[0] = o->x;
+        g->pos[1] = o->y;
+        g->pos[2] = o->z;
+        o->live = 2;
+        o->down = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    g->pos[0] = v.x;
+    g->pos[1] = v.y;
+    g->pos[2] = v.z;
+    if (o->t < 0xD2) {
+        if (g->power < 1.0f) {
+            g->power += 0.1f;
+        }
+    } else if (!(g->power <= 0.1f)) {
+        g->power -= 0.3f;
+    } else {
+        o->live = 0;
+    }
+    if (o->live == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(g->l0);
+    }
+    if (g->state == 1) {
+        o->live = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b432:01E03360, 62 insns: volume fade: starts at 0x80, fades down by 10 (floor 0x60) for the first 0x33
    ticks, then back up by 10 (cap 0x80) while the game state is below 0x1E; state 3 forces full volume */

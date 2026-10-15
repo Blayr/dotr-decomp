@@ -684,9 +684,125 @@ static s32 func_01E01C30_b354(Game_b354_01E01C30 *g, Obj_b354_01E01C30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E01D80_b354);
+/* shape b354:01E01D80, 110 insns: b397:01E01E20 family: a green spark (80 x 80, random frame 2..4, random heading and pitch) drifting 2 a tick on all three axes (sine table ctx+0xB4BC): in by 96 up to 0xC0 for 6 ticks, then out by 19 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b354", func_01E01F40_b354);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b354_01E01D80;
+
+typedef struct {
+    u8 pad[0xB4BC];
+    u8 sin[1];
+} Game_b354_01E01D80;
+
+static s32 func_01E01D80_b354(Game_b354_01E01D80 *g, Obj_b354_01E01D80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->h8 = 80;
+        o->hA = o->h8;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xAF, 0xFF, 0xAF);
+        o->mode = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->h5C = (func_0019A5C8() >> 4) % 360;
+    }
+    if (o->t < 6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->f18 += 2.0f * func_00108030(g->sin, o->h5A, 0);
+        o->f10 += 2.0f * func_00108030(g->sin, o->h5A, 1);
+        o->f14 += 2.0f * func_00108030(g->sin, o->h5C, 0);
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
+
+/* shape b354:01E01F40, 105 insns: b282:01E01C20 family spinning spark (random size 10..19, frame 0..2, angle 10..49, spin 16..35, held 3..5 ticks): in by 64 up to 0xC0, then out by 14 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b354_01E01F40;
+
+static s32 func_01E01F40_b354(s32 arg0, Obj_b354_01E01F40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 10;
+        o->kind = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->h50 = func_0019A5C8() % 40 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 20 + 16;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b354:01E020F0, 125 insns: b183:01E012F0 family: a swelling blue/white glow (one of two colour pairs), random spin, speed 10..14.9 added to its size each frame; full alpha for 8 frames, then out by 5 */
 

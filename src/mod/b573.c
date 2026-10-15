@@ -547,7 +547,70 @@ static s32 func_01E026E0_b573(void *arg0, Obj_b573_01E026E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E027D0_b573);
+/* shape b573:01E027D0, 99 insns: a grey flickering ring: frame 4 growing by 2 to 30 (by 9 more while fading), alpha up by 14 to
+   0x90 until frame 70, then down by 13 until it ends; once the scene timer passes 280 it widens by 0x30 to 0x600 and grows to 90 */
+
+typedef struct {
+    u8 pad0[0x2BC0];
+    s16 timer;
+} Game_b573_01E027D0;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 hE;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 size;
+    s16 width;
+} Obj_b573_01E027D0;
+
+static s32 func_01E027D0_b573(Game_b573_01E027D0 *g, Obj_b573_01E027D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 4;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->sub = 0;
+        o->hE = 1;
+        o->state = 2;
+    }
+    if (o->t < 0x46) {
+        if (o->c0[3] < 0x90) {
+            o->c0[3] += 0xE;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        o->size += 9;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x60, 0x60, 0x60);
+    }
+    if (o->size < 0x1E) {
+        o->size += 2;
+    }
+    if (g->timer > 0x118) {
+        if (o->width < 0x600) {
+            o->width += 0x30;
+        }
+    }
+    if (g->timer > 0x118) {
+        if (o->size < 0x5A) {
+            o->size += 1;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b573:01E02960, 81 insns: a blue column (b267:01E00E50 shape): frame 46, size 3 by 8 growing by 8 in height, turning 10, direction from its angle; both alphas
    up by 0x40 for 2 frames, then down by 13 until the first runs out */
@@ -918,7 +981,88 @@ static s32 func_01E039C0_b573(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E03A10_b573);
+/* shape b573:01E03A10, 106 insns: b378:01E01B80 family: draws the grey bar sprite at its own alpha, which fades in by 11 up to 0x68 for 175 ticks, then out by 12 and ends; also ends at scene state 9 */
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b573_01E03A10;
+
+typedef struct {
+    Hdr_b573_01E03A10 h;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    u64 x0 : 16;
+    u64 y0 : 16;
+    u64 z0 : 24;
+    u64 f0 : 8;
+    f32 s1, t1;
+    u64 x1 : 16;
+    u64 y1 : 16;
+    u64 z1 : 24;
+    u64 f1 : 8;
+    u8 tail[0x20];
+} Pkt_b573_01E03A10;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Obj_b573_01E03A10;
+
+typedef struct {
+    u8 pad[0x2B20];
+    s32 state;
+} Game_b573_01E03A10;
+
+static s32 func_01E03A10_b573(Game_b573_01E03A10 *g, Obj_b573_01E03A10 *o) {
+    Pkt_b573_01E03A10 p __attribute__((aligned(8)));
+
+    ((Hdr_b573_01E03A10 *)(s32)&p)->count = 0x26;
+    ((Hdr_b573_01E03A10 *)(s32)&p)->tag = 5;
+    ((Hdr_b573_01E03A10 *)(s32)&p)->regs = 0x42421;
+    ((Hdr_b573_01E03A10 *)(s32)&p)->pad = 0;
+    p.r = 0x80;
+    p.g = 0x80;
+    p.b = 0x80;
+    p.a = o->col[3];
+    p.q = 1.0f;
+    p.x0 = 0x6BF8;
+    p.y0 = 0x71F8;
+    p.z0 = 0xFFFFFF;
+    p.f0 = 0;
+    p.x1 = 0x93F8;
+    p.y1 = 0x8DF8;
+    p.z1 = 0xFFFFFF;
+    p.f1 = 0;
+    p.s0 = 0.0f;
+    p.t0 = 0.0f;
+    p.s1 = 0.625f;
+    p.t1 = 0.875f;
+    func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&p, 1);
+    func_002075F0((s32)&p, (s32)func_00207500(), 0);
+    if (o->tick < 175) {
+        if (o->col[3] < 0x68) {
+            o->col[3] += 11;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (g->state == 9) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b573:01E03BC0, 41 insns: look up the textures: group 4 cells 0-4, group 4 cells 14-15, group 5
    cells 0-2 (variant of b205:01E02370) */

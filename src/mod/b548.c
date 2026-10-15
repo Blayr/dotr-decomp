@@ -284,13 +284,186 @@ static void func_01E00920_b548(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b548", func_01E00E90_b548);
+/* shape b548:01E00E90, 118 insns: scene timer step: from tick 62 to 250 spawns two drifting puffs (module 01E01070)
+   per tick at the tracked object, nudged sideways by the scene's side flag; at ticks 23 and 43 two bursts
+   (01E014C0) a little higher. */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xAFC8];
+    s16 obj;
+    u8 padB22A[0x2C];
+    s16 b256;
+    u8 padB258[2];
+    s16 side;
+    u8 padB25C[2];
+    s16 t;
+} Scene_b548_01E00E90;
+
+static void func_01E00E90_b548(Scene_b548_01E00E90 *g) {
+    extern void b548_01E01070(void);
+    extern void b548_01E014C0(void);
+    extern void b548_01E01E50(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    g->t++;
+    g->b256 = 0;
+    if (g->t >= 62 && g->t < 251) {
+        if (g->t < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->obj, &g->pos);
+            g->pos.y -= 1.0f;
+            if (g->side != 0) {
+                g->pos.z += 2.0f;
+            } else {
+                g->pos.z -= 2.0f;
+            }
+            b548_01E01E50(g, b548_01E01070, 0);
+        }
+    }
+    if (g->t == 23 || g->t == 43) {
+        func_001F5620(func_001F53A0(), g->obj, &g->pos);
+        g->pos.y -= 4.0f;
+        b548_01E01E50(g, b548_01E014C0, 0);
+        b548_01E01E50(g, b548_01E014C0, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b548", func_01E01070_b548);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b548", func_01E014C0_b548);
+/* shape b548:01E014C0, 107 insns: b593:01E020C0 family: a white spark (size 100 growing 1, random frame 0..3) spinning a random 8..20 a tick from 50..99 (old angle moved to +0xC), random 0..7 at +0xA, size 0..34, held 3..7 ticks at 0xC0, then out by 11 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b548", func_01E01670_b548);
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b548_01E014C0;
+
+static s32 func_01E014C0_b548(s32 arg0, Obj_b548_01E014C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 50 + 50;
+        o->hE = func_0019A5C8() % 13 + 8;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->f48 += 1.0f;
+    o->t++;
+    return 0;
+}
+
+/* shape b548:01E01670, 111 insns: b593:01E020C0 family: a purple spark (size 140 growing 2, random frame 0..3) spinning a random 15..32 a tick from 30..59, size 0..34, held 8..17 ticks: in by 96 up to 0xC0, then out by 11 and ends */
+
+typedef struct {
+    s16 h0;
+    s16 h2;
+    s16 h4;
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 f10, f14, f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b548_01E01670;
+
+static s32 func_01E01670_b548(s32 arg0, Obj_b548_01E01670 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 140.0f;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x10, 0xFF);
+        o->h5A = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = func_0019A5C8() % 30 + 30;
+        o->hE = func_0019A5C8() % 18 + 15;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 10 + 8;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->f48 += 2.0f;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b548", func_01E01830_b548);
 

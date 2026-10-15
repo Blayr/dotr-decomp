@@ -860,7 +860,65 @@ static s32 func_01E03450_b493(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E03460_b493);
+/* shape b493:01E03460, 98 insns: a white-grey flicker glow on a model joint (b743:01E033E0 shape): size 35, random angle;
+   alpha up by 16 until frame 63, then down by 9 until it ends; follows the joint; second colour flickers; spins a quarter turn */
+
+typedef struct {
+    u8 pad0[0xBCBC];
+    s16 joint[1];
+} Game_b493_01E03460;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[4];
+    s16 jidx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b493_01E03460;
+
+static s32 func_01E03460_b493(Game_b493_01E03460 *g, Obj_b493_01E03460 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 35.0f;
+        func_001076F0(o->c0, 0xF0, 0xF0, 0xF0);
+        func_001076F0(o->c1, 0x60, 0x60, 0x60);
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x3F) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x10;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint[o->jidx], &o->pos);
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x70, 0x70, 0x70);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b493:01E035F0, 176 insns: variant of b149:01E020F0 (game value at 0xBCF4): a glow whose kind (f50) picks its look: kinds 0/1 are grey with an orange second
    colour, flickering, brightening for 12 ticks; kind 1 also grows to 400 by 15; kind 2 starts at 840, white with a
@@ -968,7 +1026,74 @@ static s32 func_01E035F0_b493(Game_b493_01E035F0 *g, Fx_b493_01E035F0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E038B0_b493);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E04150_b493);
+/* shape b493:01E04150, 82 insns: c035:01E01150 family: take the first free effect slot of 150 (0x70 bytes each, at ctx+0x2A0), clear it, give it the scene colour twice, the scene position, two scene values and both arguments; returns 1 when it got one */
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x24];
+    s32 w40;
+    s32 w44;
+    u8 pad48[8];
+    s16 h50;
+    s16 h52;
+    u8 pad54[4];
+    s16 used;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad68[8];
+} Obj_b493_01E04150;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x, y, z;
+    u8 pad25C[0x2a0 - 0x25C];
+    Obj_b493_01E04150 slot[150];
+    u8 padEnd[0xbc94 - 0x2a0 - 150 * 0x70];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 padBC98[0x52];
+    s16 v0;
+    s16 v1;
+} Ctx_b493_01E04150;
+
+static s32 func_01E04150_b493(Ctx_b493_01E04150 *ctx, s32 arg1, s32 arg2) {
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106AB0(void *, void *, s32);
+    s16 i;
+    Obj_b493_01E04150 *s;
+
+    s = NULL;
+    for (i = 0; i < 150; i++) {
+        if (ctx->slot[i].used == 0) {
+            func_00195108(&ctx->slot[i], 0x70);
+            ctx->slot[i].used = 1;
+            s = &ctx->slot[i];
+            i = 150;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->col, ctx->r, ctx->g, ctx->b);
+        s->col[3] = ctx->a;
+        func_001076F0(s->col2, ctx->r, ctx->g, ctx->b);
+        s->col2[3] = ctx->a;
+        func_00106AB0(s, &ctx->x, 0);
+        s->x = ctx->x;
+        s->y = ctx->y;
+        s->z = ctx->z;
+        s->h50 = ctx->v0;
+        s->h52 = ctx->v1;
+        s->w40 = arg2;
+        s->w44 = arg1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E042F0_b493);
 

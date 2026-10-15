@@ -554,7 +554,66 @@ static s32 func_01E01720_b585(void *arg0, Obj_b354_01E020F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b585", func_01E01920_b585);
+/* shape b585:01E01920, 98 insns: on start colours and hold by kind (0x50); both alphas grow by 0x19 (below 0x80) during the
+   hold, then fade by 4 (the first ends the effect) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x48];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b585_01E01920;
+
+static s32 func_01E01920_b585(s32 arg0, Fx_b585_01E01920 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+            func_001076F0(o->col2, 0xF0, 0xF0, 0xF0);
+            o->hold = 0xF;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col, 0xE0, 0xB0, 0xF0);
+            func_001076F0(o->col2, 0xD0, 0xA0, 0xF0);
+            o->hold = 0xF;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->col, 0x58, 0x58, 0x78);
+            func_001076F0(o->col2, 0x58, 0x58, 0x78);
+            o->hold = 0x16;
+        }
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x19;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x19;
+        }
+    } else {
+        if (o->col[3] > 5) {
+            o->col[3] -= 4;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 5) {
+            o->col2[3] -= 4;
+        } else {
+            o->col2[3] = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b585:01E01AB0, 90 insns: on start f4C 60, second colour 0xC0 grey (alpha 0), colour (0x80, 0xFF, 0x80),
    0x52 = 0, 0x5A/0x5C = 10; the second alpha grows by 12 (below 0xC0) while the game step 0xB2BC is below 0x118,

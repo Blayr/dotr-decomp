@@ -222,7 +222,72 @@ static s32 func_01E00C60_b194(World_b194_01E00C60 *w, Wisp_b194_01E00C60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E00E80_b194);
+/* shape b194:01E00E80, 99 insns: on start 0x38 = 8, rotation (0..0x3FFF plus a zero offset, random), variant 0..6, 0x6 = 1, colour by
+   kind 0x30 (orange / cyan); alpha grows by 0x50 (below 0xA0) for 2 ticks, then fades by 13 once 0x38 passes 0xF and
+   by 15 while the game counter 0x3DD0 is below 10; 0x38 grows by 2 */
+
+typedef struct {
+    u8 pad0[0x3DD0];
+    s32 count;
+} Game_b194_01E00E80;
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[8];
+    s32 rot[2];
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b194_01E00E80;
+
+static s32 func_01E00E80_b194(Game_b194_01E00E80 *g, Fx_b194_01E00E80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->mode == 1) {
+        o->f38 = 8;
+        base = 0;
+        o->rot[0] = func_0019A5C8() % 0x4000 + base;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->f34 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f6 = 1;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->col, 0, 0x80, 0x80);
+        }
+    }
+    if (o->tick < 2) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x50;
+        }
+    } else {
+        if (o->f38 > 0xF) {
+            if (o->col[3] > 0xE) {
+                o->col[3] -= 13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->count < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    o->tick++;
+    o->f38 += 2;
+    return 0;
+}
 
 /* shape b194:01E01010, 89 insns: colour (0x80, 0x40, 0); on start reads the model angle, 0x6 = 20 (game step 0x3E2E
    from 0x55) or -20 (from 0x4E), alpha 0; alpha grows by 0x40 (below 0x80) for 2 ticks, then fades by 9 and stops;
@@ -341,7 +406,56 @@ static s32 func_01E014B0_b194(s32 unused, Obj_b112_01E017B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E015C0_b194);
+/* shape b194:01E015C0, 101 insns: an orange drifting mote: frame 13, sub-frame 2, random angles; full alpha for 10 frames, then
+   down by 10 until it ends; drifts 9 along its angle and bobs 9 by its second angle */
+
+typedef struct {
+    u8 pad0[0x3E34];
+    u8 sin[1];
+} Game_b194_01E015C0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 bob;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b194_01E015C0;
+
+static s32 func_01E015C0_b194(Game_b194_01E015C0 *g, Obj_b194_01E015C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    if (o->state == 1) {
+        o->h38 = 0xD;
+        o->sub = 2;
+        func_001076F0(o->c0, 0x60, 0x40, 0);
+        o->bob = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        o->state = 2;
+    }
+    if (o->t < 0xA) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 0xA;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    o->h8 = func_001A22C0(o->h8 + 9.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 9.0f * func_00108030(g->sin, o->bob, 1));
+    o->hC = func_001A22C0(o->hC + 9.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E01760_b194);
 

@@ -872,7 +872,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E02D60_b743);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E03080_b743);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E033E0_b743);
+/* shape b743:01E033E0, 93 insns: a green flicker glow on a model joint: size 70; alpha up by 12 until frame 250, then down by 11 until it ends;
+   second colour flickers by frame parity; spins a quarter turn and follows the joint */
+
+typedef struct {
+    u8 pad0[0xD47C];
+    s16 joint[1];
+} Game_b743_01E033E0;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 jidx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b743_01E033E0;
+
+static s32 func_01E033E0_b743(Game_b743_01E033E0 *g, Obj_b743_01E033E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->f48 = 70.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->c0, 0xDF, 0xDF, 0xDF);
+        func_001076F0(o->c1, 0x80, 0xFF, 0x80);
+        o->h5A = 0xF;
+        o->h5C = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 250) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0xC;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0x80, 0xFF, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x70, 0xCF, 0x70);
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    func_001F5620(func_001F53A0(), g->joint[o->jidx], &o->pos);
+    o->t++;
+    return 0;
+}
 
 /* shape b743:01E03560, 176 insns: variant of b149:01E020F0 (game value at 0xD5A2): a glow whose kind (f50) picks its look: kinds 0/1 are grey with an orange second
    colour, flickering, brightening for 12 ticks; kind 1 also grows to 400 by 15; kind 2 starts at 840, white with a
