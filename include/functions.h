@@ -2682,6 +2682,7 @@ void func_00195108(s32 arg0, s32 arg1);
 void *func_00195140(void *ptr, u32 n, u32 size);
 s32 func_001951F8(s32 *ptr, s32 fd);
 s32 func_00195250(i2b_Bigint *b, i2b_Bigint *S);
+char *func_00195480(void *ptr, double _d , int mode , int ndigits , int *decpt , int *sign , char **rve);
 s32 func_001969F0(s32 ptr);
 void func_00196A10(void);
 char *func_001976D8(char *arg0, s32 arg1);
