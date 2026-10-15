@@ -706,7 +706,55 @@ typedef struct Deci2Tty_0017CFF0 {
 
 extern Deci2Tty_0017CFF0 D_00310A90;
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CEA0);
+extern char D_00310AC0[];
+
+/* sceTtyWrite: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 func_0017CEA0(const char *buf, int len) {
+    char *hdr;
+    char *out;
+    int n = 0;
+    int i = 0;
+
+    if ((*(TtyRec_0017CD08 *)&D_00310A90).busy != 0) {
+        return -1;
+    }
+    func_001843E0();
+    (*(TtyRec_0017CD08 *)&D_00310A90).busy = 1;
+    hdr = (char *)((u32)D_00310AC0 | 0x20000000);
+    (*(TtyRec_0017CD08 *)&D_00310A90).wbuf = hdr;
+    out = hdr + 12;
+    while (len-- != 0) {
+        if (*buf == '\n') {
+            *out = '\r';
+            n++;
+            out++;
+            if (n >= 256) {
+                break;
+            }
+        }
+        *out = *buf;
+        n++;
+        buf++;
+        out++;
+        i++;
+        if (n >= 256) {
+            break;
+        }
+    }
+    (*(TtyRec_0017CD08 *)&D_00310A90).wlen = n + 12;
+    *(s16 *)hdr = (*(TtyRec_0017CD08 *)&D_00310A90).wlen;
+    if (((s32 (*)(s32, s8))func_0017CAF0)((*(TtyRec_0017CD08 *)&D_00310A90).s, hdr[7]) < 0) {
+        (*(TtyRec_0017CD08 *)&D_00310A90).busy = 0;
+        func_00184428();
+        return -1;
+    }
+    while ((*(TtyRec_0017CD08 *)&D_00310A90).busy != 0) {
+        func_0017CB20((*(TtyRec_0017CD08 *)&D_00310A90).s);
+    }
+    func_00184428();
+    return i;
+}
 
 
 s32 func_0017CFF0(char *arg0, s32 arg1) {

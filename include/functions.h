@@ -1021,6 +1021,7 @@ s32 *func_0017CC60(s32 arg0);
 void func_0017CC88(void *arg0);
 void func_0017CCC8(void *arg0);
 void func_0017CD08(s32 event, s32 param, void *opt);
+s32 func_0017CEA0(const char *buf, int len);
 s32 func_0017CFF0(char *arg0, s32 arg1);
 s32 func_0017D0C0(void);
 s32 func_0017D180(s32 arg0);
