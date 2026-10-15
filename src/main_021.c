@@ -254,7 +254,11 @@ int func_0017BD50(void) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_021", func_0017BD60);
+/* sceResetttyinit (JP symbol beside it): the tty-init done flag back to 0 */
+
+void func_0017BD60(void) {
+    D_0028C250 = 0;
+}
 
 void func_0017BD70(void) {
     s32 temp_v0;

@@ -2473,6 +2473,7 @@ s32 func_001747D0(s32 arg0, void *tutorial); /* JP: L033 */
 s32 func_00175FE0(s32 arg0, void *tutorial); /* JP: L034 */
 s32 func_00178590(s32 arg0, void *tutorial); /* JP: L035 */
 int func_0017BD50(void);
+void func_0017BD60(void);
 void func_0017BD70(void);
 s64 func_0017BE00(void);
 s32 func_0017C3B0(void);
