@@ -1,0 +1,21 @@
+#include "common.h"
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E00080_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E00120_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E00250_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E003B0_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E00910_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E011A0_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E01360_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E020C0_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E021A0_b274);
+
+INCLUDE_ASM("/home/mdoss/decomp/games/dotr/asm/nonmatchings/mod/b274", func_01E02B40_b274);
