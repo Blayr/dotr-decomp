@@ -439,7 +439,27 @@ asm void func_0020DB20(void) {
     jr ra
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DB80);
+asm void func_0020DB80(void) {
+    .set noreorder
+    lw a0, D_0032A220
+    la v1, D_00326A20
+    addiu a0, a0, -0x1
+    sw a0, D_0032A220
+    lw a1, D_0032A220
+    sll a0, a1, 3
+    subu a0, a0, a1
+    sll a0, a0, 4
+    addu v1, v1, a0
+    lqc2 vf28, 0x0(v1)
+    lqc2 vf29, 0x10(v1)
+    lqc2 vf30, 0x20(v1)
+    lqc2 vf31, 0x30(v1)
+    lqc2 vf24, 0x40(v1)
+    lqc2 vf25, 0x50(v1)
+    lqc2 vf26, 0x60(v1)
+    jr ra
+    lqc2 vf27, 0x70(v1)
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DBE0);
 
