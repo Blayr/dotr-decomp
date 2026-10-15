@@ -802,7 +802,52 @@ static s32 func_01E02F70_b152(s32 arg0, Fx_b152_01E02F70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b152", func_01E03110_b152);
+/* shape b152:01E03110, 54 insns: volume fade by its own timer (b003:01E02330 family, layout at 0x50): for 0xFA frames
+   down 10 to 0x30, then up 10 to 0x80; state 3 at 0x9FF0 sets the volume to 0x80 and ends the fade */
+
+typedef struct {
+    u8 pad[0x9FF0];
+    s32 state;
+} Game_b152_01E03110;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_b152_01E03110;
+
+static s32 func_01E03110_b152(Game_b152_01E03110 *g, Fade_b152_01E03110 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (o->t < 0xFA) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    o->t++;
+    if (g->state == 3) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b152", func_01E031F0_b152);
 

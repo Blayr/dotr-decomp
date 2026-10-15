@@ -707,7 +707,40 @@ static s32 func_01E03FF0_b443(Game_b443_01E03FF0 *g, Fade_b443_01E03FF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E040B0_b443);
+/* shape b443:01E040B0, 38 insns: func_001F7170(3, 0, &a, &b, 0) with copies of the module's floats at 0x01E04E00 and
+   0x01E04E08; mode 1 becomes 2; the effect stops once its tick (0x32) reaches 0x23; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b443_01E040B0;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b443_01E040B0;
+
+extern F_b443_01E040B0 D_01E04E00_b443;
+extern F_b443_01E040B0 D_01E04E08_b443;
+
+static s32 func_01E040B0_b443(s32 arg0, Fx_b443_01E040B0 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b443_01E040B0 a;
+    F_b443_01E040B0 b;
+
+    a = D_01E04E00_b443;
+    b = D_01E04E08_b443;
+    if (o->mode == 1) {
+        o->mode = 2;
+    }
+    func_001F7170(3, 0, &a, &b, 0);
+    if (o->tick >= 0x23) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

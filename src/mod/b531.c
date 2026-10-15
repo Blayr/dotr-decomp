@@ -577,7 +577,48 @@ INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E054D0_b531);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E05630_b531);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E05760_b531);
+/* shape b531:01E05760, 49 insns: b718:01E03D10 family volume fader (to 0x30 after scene state 30), full volume and the end at state 2 */
+
+typedef struct {
+    u8 pad[0x3150];
+    s32 state;
+} Game_b531_01E05760;
+
+typedef struct {
+    u8 pad[0x30];
+    s16 vol;
+    u8 padV[0x4];
+    s16 mode;
+} Fade_b531_01E05760;
+
+static s32 func_01E05760_b531(Game_b531_01E05760 *g, Fade_b531_01E05760 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 2) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E05830_b531);
 

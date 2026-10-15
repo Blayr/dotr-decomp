@@ -526,7 +526,51 @@ static s32 func_01E017D0_b124(s32 arg0, Flash_b124_01E017D0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E018B0_b124);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01A30_b124);
+/* shape b124:01E01A30, 51 insns: volume fade by its own timer (b003:01E02330 family): for 0x82 frames down 10 to 0x30, then up 10 to
+   0x80, where the fade ends */
+
+typedef struct {
+    u8 pad[0x37D0];
+    s32 state;
+} Game_b124_01E01A30;
+
+typedef struct {
+    u8 pad[0x30];
+    s16 vol;
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+} Fade_b124_01E01A30;
+
+static s32 func_01E01A30_b124(Game_b124_01E01A30 *g, Fade_b124_01E01A30 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (o->t < 0x82) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+            o->mode = 0;
+        }
+    }
+    o->t++;
+    if (g->state == 1) {
+        func_001F6D00((u8)o->vol);
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b124", func_01E01B00_b124);
 

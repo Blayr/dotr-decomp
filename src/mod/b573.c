@@ -472,7 +472,46 @@ INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E02E60_b573);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E02F90_b573);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E03080_b573);
+/* shape b573:01E03080, 55 insns: a yellow flash (b267:01E01740 twin): set up once (yellow, frame 10), fades in by 12 for 20 frames,
+   then once the game timer passes 0xDC fades out by 9 until it ends */
+
+typedef struct {
+    u8 pad0[0x2BC0];
+    s16 timer;
+} Game_b573_01E03080;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 h34;
+    s16 state;
+} Obj_b573_01E03080;
+
+static s32 func_01E03080_b573(Game_b573_01E03080 *g, Obj_b573_01E03080 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x20);
+        func_001076F0(o->c0, 0x80, 0x80, 0x20);
+        o->h34 = 0xA;
+        o->state = 2;
+    }
+    if (o->t < 0x14) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0xC;
+        }
+    } else if (g->timer > 0xDC) {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E03160_b573);
 
@@ -482,7 +521,53 @@ INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E03570_b573);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E036E0_b573);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E038E0_b573);
+/* shape b573:01E038E0, 54 insns: volume fade: starts at 0x80; while the game counter at 0x2B20 is over 0x14 it drops by
+   10 to 0x30, otherwise it rises by 10 (clamped) and stops at 0x80; func_001F6D00 gets it when the counter is 1,
+   else the volume */
+
+typedef struct {
+    u8 pad0[0x2B20];
+    s32 count;
+} Game_b573_01E038E0;
+
+typedef struct {
+    u8 pad0[0x30];
+    s16 v;
+    u8 pad32[0x4];
+    s16 mode;
+} Fx_b573_01E038E0;
+
+static s32 func_01E038E0_b573(Game_b573_01E038E0 *g, Fx_b573_01E038E0 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (g->count > 0x14) {
+        if (o->v > 0x30) {
+            o->v -= 10;
+        } else {
+            o->v = 0x30;
+        }
+    } else {
+        if (o->v < 0x80) {
+            o->v += 10;
+        } else {
+            o->v = 0x80;
+            o->mode = 0;
+        }
+        if (o->v > 0x80) {
+            o->v = 0x80;
+        }
+    }
+    if (g->count == 1) {
+        func_001F6D00(o->v);
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
 
 static s32 func_01E039C0_b573(void) {
     f32 a;

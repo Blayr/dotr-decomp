@@ -721,7 +721,34 @@ static s32 func_01E017F0_b848(s32 obj, Spark_b013_01E010C0 *sp, Cam_b013_01E010C
 
 INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E01DD0_b848);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E02190_b848);
+/* shape b848:01E02190, 43 insns: b848:01E02240 with a camera set up first: copy the module's camera, aim it at (0, 50, 0) from (0, 0, -distance), apply */
+
+typedef struct {
+    u8 pad0[0x40];
+    Vec4f at;
+    Vec4f eye;
+    u8 pad60[0x30];
+} Cam_b848_01E02190;
+
+extern Cam_b848_01E02190 D_01E04480_b848;
+extern s32 D_01E04510_b848;
+
+static void func_01E02190_b848(s32 arg) {
+    Cam_b848_01E02190 c;
+
+    func_0020DEF0(&D_01E04480_b848);
+    c = D_01E04480_b848;
+    c.at.x = 0.0f;
+    c.at.y = 50.0f;
+    c.at.z = 0.0f;
+    c.at.w = 1.0f;
+    c.eye.x = 0.0f;
+    c.eye.y = 0.0f;
+    c.eye.z = -1.0f * D_01E04510_b848;
+    c.eye.w = 1.0f;
+    func_0020E360(&c);
+    func_0020EC60(arg);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E02240_b848);
 

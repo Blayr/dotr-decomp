@@ -209,7 +209,110 @@ static void func_01E00920_b770(Obj_b108_01E009A0 *o, Data_b108_01E009A0 *data, s
     } while (i < 36);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E00D70_b770);
+/* shape b108:01E00DF0, 227 insns, 2 copies: draws a band of 6 quads around a position (outer and inner radius, outer and
+   inner height, 4 wide, 60 apart from the band's start angle), two colours, turned by the band's rotation; blend
+   from flags >> 4, depth mode flags & 0xF (projected, far after a packet tweak, or front) (b180:01E01230 family) */
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[0x54];
+    u8 xD8[1];
+} Obj_b108_01E00DF0;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f rot;
+    u8 pad30[4];
+    f32 h0;
+    u8 pad38[4];
+    f32 h1;
+    u8 pad40[8];
+    f32 outer;
+    f32 inner;
+    u8 pad50[0xA];
+    s16 start;
+    u8 pad5C[4];
+    u8 col0[4];
+    u8 col1[4];
+} Band_b108_01E00DF0;
+
+static void func_01E00D70_b770(Obj_b108_01E00DF0 *o, Band_b108_01E00DF0 *s, s32 flags, Vec4f pos) {
+    extern void func_00107990(void *, void *, s32);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00109380(void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f p2;
+    Vec4f scale;
+    f32 m[16];
+    f32 depth[4];
+    u8 pkt[0x90];
+    s32 k;
+    s32 t;
+    s16 b;
+    s16 a;
+    u8 *p;
+    s32 mode;
+    f32 ro;
+    f32 ri;
+
+    p = pkt;
+    a = 0;
+    func_00107990(p, s->col0, 2);
+    func_00107990(p, s->col1, 1);
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    b = flags >> 4;
+    if (b == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((u64)b << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    p2.x = pos.x;
+    p2.y = pos.y;
+    p2.z = pos.z;
+    func_00108EF0(m, &scale, &s->rot, &p2);
+    mode = flags & 0xF;
+    quad[0].y = -s->h0;
+    quad[1].y = -s->h0;
+    quad[2].y = -s->h1;
+    quad[3].y = -s->h1;
+    ro = s->outer;
+    ri = s->inner;
+    for (k = 0; k < 6; k++) {
+        t = s->start + a;
+        quad[0].x = ro * func_00108030(o->xD8, t, 1);
+        quad[0].z = ro * func_00108030(o->xD8, t, 0);
+        quad[2].x = ri * func_00108030(o->xD8, t, 1);
+        quad[2].z = ri * func_00108030(o->xD8, t, 0);
+        t = a + (s->start + 4);
+        quad[1].x = ro * func_00108030(o->xD8, t, 1);
+        quad[1].z = ro * func_00108030(o->xD8, t, 0);
+        quad[3].x = ri * func_00108030(o->xD8, t, 1);
+        quad[3].z = ri * func_00108030(o->xD8, t, 0);
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_00109380(p, 1);
+                func_002075F0(p, o->ot, 0);
+            }
+        } else if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, -1);
+        }
+        a += 0x3C;
+    }
+}
 
 /* shape b034:01E00E60, 115 insns, 33 copies: builds a 4-vertex sprite packet from the object's two
    texture refs, sets the blend mode from arg2 >> 4 and, when arg2 & 0xF is 0, puts every vertex at the

@@ -48,7 +48,45 @@ static s32 func_01E008D0_b159(void) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E008E0_b159);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E00A90_b159);
+/* shape b159:01E00A90, 40 insns: b120:01E01890 family: a purple glow held at the model point, alpha 0x30 */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b159_01E00A90;
+
+typedef struct {
+    u8 pad[0x3b00];
+    s32 state;
+    u8 padS[0x4c];
+    s16 val;
+} Game_b159_01E00A90;
+
+static s32 func_01E00A90_b159(Game_b159_01E00A90 *g, Glow_b159_01E00A90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s32 buf[4];
+
+    func_001076F0(o->col, 0x1F, 0x10, 0x50);
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->mode = 2;
+    }
+    func_001F5620(func_001F53A0(), g->val, buf);
+    o->col[3] = 0x30;
+    o->tick = 10;
+    if (g->state == 0x32) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b117:01E01820, 108 insns, 2 copies: a blue swell by kind: random turn on all axes once; grows 1/3/2 a frame (kinds
    0/1/2, the last two capped at 50/30) and fades out after 11/26/21 frames of growth; turns 12 a frame */

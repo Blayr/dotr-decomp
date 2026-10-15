@@ -228,7 +228,113 @@ static void func_01E00C90_b258(Obj_b119_01E00920 *o, Ring_b119_01E00920 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E010A0_b258);
+/* shape b116:01E011E0, 282 insns: full ring of 36 segments (10 table steps each) between an s16 inner and outer
+   radius, variant of b082:01E00920 with a smaller data layout; blend from flags >> 4, depth mode flags & 0xF */
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[0x54];
+    u8 table[1];
+} Obj_b116_01E011E0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 outer;
+    u8 pad08[8];
+    Vec4f rot;
+    u8 pad20[8];
+    u8 mode0[4];
+    u8 mode1[4];
+    u8 pad30[8];
+    s16 inner;
+    s16 step;
+} Data_b116_01E011E0;
+
+static void func_01E010A0_b258(Obj_b116_01E011E0 *o, Data_b116_01E011E0 *data, s32 flags, Vec4f pos) {
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 m[16];
+    f32 depth[4];
+    u8 packet[0x90];
+    s32 i;
+    f32 inner;
+    s16 j;
+    s16 alpha;
+    f32 outer;
+    u8 *pkt;
+    s32 a;
+    s32 mode;
+
+    pkt = packet;
+    j = 0;
+    func_00107990(pkt, data->mode0, 2);
+    func_00107990(pkt, data->mode1, 1);
+    func_001092E0(pkt, 0);
+    func_001094F0(pkt);
+    alpha = flags >> 4;
+    if (alpha == 0) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(pkt, ((s64)alpha << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    scale.x = 0.1f;
+    t.x = pos.x;
+    scale.y = 0.1f;
+    t.y = pos.y;
+    scale.z = 0.1f;
+    t.z = pos.z;
+    func_00108EF0(m, &scale, &data->rot, &t);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    mode = flags & 0xF;
+    inner = data->inner;
+    outer = data->outer;
+    i = 0;
+    do {
+        if (i == 0) {
+            a = data->step + j;
+            quad[0].x = inner * func_00108030(o->table, a, 1);
+            quad[0].z = inner * func_00108030(o->table, a, 0);
+            quad[2].x = outer * func_00108030(o->table, a, 1);
+            quad[2].z = outer * func_00108030(o->table, a, 0);
+            a = j + (data->step + 10);
+            quad[1].x = inner * func_00108030(o->table, a, 1);
+            quad[1].z = inner * func_00108030(o->table, a, 0);
+            quad[3].x = outer * func_00108030(o->table, a, 1);
+            quad[3].z = outer * func_00108030(o->table, a, 0);
+        } else {
+            quad[0] = quad[1];
+            quad[2] = quad[3];
+            a = j + (data->step + 10);
+            quad[1].x = inner * func_00108030(o->table, a, 1);
+            quad[1].z = inner * func_00108030(o->table, a, 0);
+            quad[3].x = outer * func_00108030(o->table, a, 1);
+            quad[3].z = outer * func_00108030(o->table, a, 0);
+        }
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, pkt, depth) != 0) {
+                func_002075F0(pkt, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, pkt, depth) != 0) {
+                func_00109380(pkt, 1);
+                func_002075F0(pkt, o->ot, 0);
+            }
+        } else if (func_00205630(quad, 0x70000000, m, pkt, depth) != 0) {
+            func_002075F0(pkt, o->ot, -1);
+        }
+        j += 10;
+        i++;
+    } while (i < 36);
+}
 
 /* shape b003:01E00EA0, 342 insns, 15 copies: draws obj->count sprites along a curve read from three s8 tables
    (0x64 apart), each turned by the object's angles; mode (flags & 0xF) 0 = depth from the projection,
@@ -452,7 +558,48 @@ INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E034A0_b258);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E036B0_b258);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E03830_b258);
+/* shape b258:01E03830, 51 insns: constant variant of b205:01E01E50 (volume fade by game state, b003:01E02330 family): state at 0x8970
+   limit 0x1E, floor 0x30, down 10, up 10, cap 0x80 */
+
+typedef struct {
+    u8 pad[0x8970];
+    s32 state;
+} Game_b258_01E03830;
+
+typedef struct {
+    u8 pad[0x30];
+    s16 vol;
+    u8 pad32[4];
+    s16 mode;
+} Fade_b258_01E03830;
+
+static s32 func_01E03830_b258(Game_b258_01E03830 *g, Fade_b258_01E03830 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 1) {
+        func_001F6D00((u8)o->vol);
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 static s32 func_01E03900_b258(void) {
     f32 a;
@@ -464,7 +611,28 @@ static s32 func_01E03900_b258(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E03950_b258);
+/* shape b258:01E03950, b734:01E03310 family: textures group 4 cells 0-2 and 13-15, group 5 cells 0-4 (table past 0x8000) */
+
+typedef struct {
+    u8 pad0[0x2b0];
+    s32 tex[16];
+    u8 padT[0x8660];
+    s32 tex5[5];
+} Scene_b258_01E03950;
+
+static void func_01E03950_b258(s32 arg0, Scene_b258_01E03950 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 5; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E03A00_b258);
 

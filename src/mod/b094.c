@@ -512,7 +512,51 @@ INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01900_b094);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01AF0_b094);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E02000_b094);
+/* shape b094:01E02000, 54 insns: a red spinning flash: set up once (scale 80, colours pink and white, size 15x15),
+   full alpha for 2 frames, then fades out by 14; turns a quarter each frame after a random turn */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 scale;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b094_01E02000;
+
+static s32 func_01E02000_b094(void *arg0, Obj_b094_01E02000 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 80.0f;
+        o->f4C = 0.0f;
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->w = 0xF;
+        o->h = 0xF;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 2) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E020E0_b094);
 
@@ -524,7 +568,50 @@ INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E025F0_b094);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E026F0_b094);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E027F0_b094);
+/* shape b094:01E027F0, 49 insns: b718:01E03D10 family: volume eased by 10 toward 0x50 once the scene state passes 30, else toward 0x80; full volume and the end at state 3 */
+
+typedef struct {
+    u8 pad[0x44C0];
+    s32 state;
+} Game_b094_01E027F0;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_b094_01E027F0;
+
+static s32 func_01E027F0_b094(Game_b094_01E027F0 *g, Fade_b094_01E027F0 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x50) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x50;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 3) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E028C0_b094);
 

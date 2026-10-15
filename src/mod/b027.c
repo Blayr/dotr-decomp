@@ -30,9 +30,80 @@ INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E01310_b027);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E014A0_b027);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E01600_b027);
+/* shape b027:01E01600, 49 insns: a blue two-colour glow of size 120 at alpha 0x60 for 175 ticks, then out by 9 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E016D0_b027);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+} Glow_b027_01E01600;
+
+static s32 func_01E01600_b027(s32 arg0, Glow_b027_01E01600 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+        func_001076F0(o->col2, 0x20, 0x20, 0x80);
+        o->h6 = 6;
+        o->col[3] = 0;
+        o->kind = 1;
+        o->f38 = 120;
+        o->mode = 2;
+    }
+    if (o->tick < 175) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b027:01E016D0, 52 insns: on start 0x38 = 0x140, colour 0xC0 grey and second colour (0x80, 0x80, 0x20) with
+   alpha 0, random 0x3A; alpha 0xA0 on the first tick, then fades by 0x30 and stops */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b027_01E016D0;
+
+static s32 func_01E016D0_b027(s32 arg0, Fx_b027_01E016D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0x140;
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0x80, 0x80, 0x20);
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick <= 0) {
+        o->col[3] = 0xA0;
+    } else if (o->col[3] > 0x32) {
+        o->col[3] -= 0x30;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E017A0_b027);
 

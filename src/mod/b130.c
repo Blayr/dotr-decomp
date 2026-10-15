@@ -105,7 +105,53 @@ INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E00CA0_b130);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E00E30_b130);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E00FF0_b130);
+/* shape b130:01E00FF0, 46 insns: b120:01E01890 family: a purple glow held at alpha 0x80, fading by 15 once the scene value passes 106; ends at scene state 50 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[8];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b130_01E00FF0;
+
+typedef struct {
+    u8 pad[0x3B00];
+    s32 state;
+    u8 pad3B04[0x58];
+    s16 val;
+} Game_b130_01E00FF0;
+
+static s32 func_01E00FF0_b130(Game_b130_01E00FF0 *g, Glow_b130_01E00FF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x1F, 0x10, 0x8F);
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->col[3] = 0x80;
+        o->mode = 2;
+    }
+    if (g->val > 106) {
+        if (o->col[3] > 0x10) {
+            o->col[3] -= 15;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->tick = 7;
+    if (g->state == 0x32) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E010B0_b130);
 

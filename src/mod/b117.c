@@ -140,7 +140,36 @@ INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01490_b117);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01640_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01780_b117);
+/* shape b117:01E01780, 40 insns: a yellow flash: fades in by 0x40 for 2 ticks, out by 10 and ends */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b117_01E01780;
+
+static s32 func_01E01780_b117(s32 arg0, Glow_b117_01E01780 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 17;
+        func_001076F0(o->col, 0x8F, 0x8F, 0);
+        o->mode = 2;
+    }
+    if (o->tick < 2) {
+        o->col[3] += 0x40;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b117:01E01820, 108 insns, 2 copies: a blue swell by kind: random turn on all axes once; grows 1/3/2 a frame (kinds
    0/1/2, the last two capped at 50/30) and fades out after 11/26/21 frames of growth; turns 12 a frame */
@@ -212,7 +241,39 @@ INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E019D0_b117);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01BB0_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01D00_b117);
+/* shape b117:01E01D00, 31 insns: func_001F7170(4, 0, &a, &b, 0) with copies of the module's floats at 0x01E02E00 and
+   0x01E02E08; when the game value at 0x3B8C is 40 the effect's 0x36 is cleared; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b117_01E01D00;
+
+typedef struct {
+    u8 pad0[0x3B8C];
+    s16 v;
+} Game_b117_01E01D00;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 f36;
+} Fx_b117_01E01D00;
+
+extern F_b117_01E01D00 D_01E02E00_b117;
+extern F_b117_01E01D00 D_01E02E08_b117;
+
+static s32 func_01E01D00_b117(Game_b117_01E01D00 *g, Fx_b117_01E01D00 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b117_01E01D00 a;
+    F_b117_01E01D00 b;
+
+    a = D_01E02E00_b117;
+    b = D_01E02E08_b117;
+    func_001F7170(4, 0, &a, &b, 0);
+    if (g->v == 40) {
+        o->f36 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01D80_b117);
 

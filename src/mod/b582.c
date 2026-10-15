@@ -631,7 +631,34 @@ INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E02F20_b582);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E030B0_b582);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E032D0_b582);
+/* shape b582:01E032D0, 33 insns: a counter-driven fade: starts at 0x80, after tick 61 drops by 19 down to 20, ends after tick 91 once under 20; the tick steps by 15 */
+
+typedef struct {
+    u8 pad0[0x28];
+    s16 level;
+    u8 pad2A[2];
+    s16 state;
+    u8 pad2E[4];
+    s16 tick;
+} Fade_b582_01E032D0;
+
+static s32 func_01E032D0_b582(s32 arg0, Fade_b582_01E032D0 *o) {
+    if (o->state == 1) {
+        o->tick = 0;
+        o->state = 2;
+        o->level = 0x80;
+    }
+    if (o->tick > 60) {
+        if (o->level > 20) {
+            o->level -= 19;
+        }
+    }
+    if (o->tick > 90 && o->level < 20) {
+        o->state = 0;
+    }
+    o->tick += 15;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E03360_b582);
 

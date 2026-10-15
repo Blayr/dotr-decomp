@@ -974,9 +974,83 @@ static s32 func_01E03010_b491(s32 arg0, Spark_b491_01E03010 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E03210_b491);
+/* shape b491:01E03210, 49 insns: b718:01E03D10 family volume fader (to 0x30 after scene state 30), full volume and the end at state 6 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E032E0_b491);
+typedef struct {
+    u8 pad[0x44a0];
+    s32 state;
+} Game_b491_01E03210;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 padV[0x6];
+    s16 mode;
+} Fade_b491_01E03210;
+
+static s32 func_01E03210_b491(Game_b491_01E03210 *g, Fade_b491_01E03210 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 6) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
+
+/* shape b491:01E032E0, 31 insns: b018:01E02DB0 family: func_001F7170(3, 1) with the module's two floats, then ends the object after 200 ticks; counts the tick */
+
+extern f32 D_01E04100_b491;
+extern f32 D_01E04108_b491;
+
+typedef struct {
+    u8 pad0[0x10];
+    s16 v;
+} Ctx_b491_01E032E0;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b491_01E032E0;
+
+static s32 func_01E032E0_b491(Ctx_b491_01E032E0 *ctx, Obj_b491_01E032E0 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E04100_b491;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E04108_b491;
+    func_001F7170(3, 1, (s32)&a, (s32)&b, 0);
+    if (o->h54 > 200) {
+        o->h58 = 0;
+    }
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E03360_b491);
 

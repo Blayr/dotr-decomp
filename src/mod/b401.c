@@ -533,4 +533,49 @@ static s32 func_01E029C0_b401(s32 obj, Spr_b000_01E03420 *spr, Cam_b000_01E03420
 
 INCLUDE_ASM("asm/nonmatchings/mod/b401", func_01E02FD0_b401);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b401", func_01E03B90_b401);
+/* shape b401:01E03B90, 23 insns: reset the five panels: copy 0x46C4 to 0x46F4; per panel 0x10 into the s32 at 0x46E0, clear two
+   s16 (0x30-byte rows at 0x94), alpha 0x20 (0x460-byte rows, byte 0x30DB) and 0xFF (0x10-byte rows, byte 0x2E57) */
+
+typedef struct {
+    s16 f94;
+    u8 pad96[4];
+    s16 f9A;
+    u8 pad9C[0x28];
+} Row30_b401_01E03B90;
+
+typedef struct {
+    u8 a;
+    u8 pad[0xF];
+} Row10_b401_01E03B90;
+
+typedef struct {
+    u8 a;
+    u8 pad[0x45F];
+} Row460_b401_01E03B90;
+
+typedef struct {
+    u8 pad0[0x94];
+    Row30_b401_01E03B90 r30[5];
+    u8 pad184[0x2E57 - 0x184];
+    Row10_b401_01E03B90 r10[5];
+    u8 pad2EA7[0x30DB - 0x2EA7];
+    Row460_b401_01E03B90 r460[5];
+    u8 pad46BB[0x46C4 - 0x46BB];
+    s32 f46C4;
+    u8 pad46C8[0x18];
+    s32 f46E0[5];
+    s32 f46F4;
+} Game_b401_01E03B90;
+
+static void func_01E03B90_b401(Game_b401_01E03B90 *g) {
+    s32 i;
+
+    g->f46F4 = g->f46C4;
+    for (i = 0; i < 5; i++) {
+        g->f46E0[i] = 0x10;
+        g->r30[i].f9A = 0;
+        g->r30[i].f94 = 0;
+        g->r460[i].a = 0x20;
+        g->r10[i].a = 0xFF;
+    }
+}

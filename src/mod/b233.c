@@ -240,7 +240,130 @@ static void func_01E00E50_b233(Obj_b027_01E02300 *obj, Data_b027_01E02300 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E010E0_b233);
+/* shape b218:01E00ED0, 325 insns: b134:01E00820 family: a textured ribbon between two point trails, each segment 4
+   spline quads (module curve function, shape b018:01E00EE0), the alpha fading along it; no matrix, far order 0;
+   the first segment runs on local copies (each trail's first point doubled) */
+
+typedef struct {
+    f32 u, v;
+} Uv_b218_01E00ED0;
+
+typedef struct {
+    Uv_b218_01E00ED0 st;
+    u64 rgba;
+    u64 xyz;
+} Vtx_b218_01E00ED0;
+
+typedef struct {
+    u8 hdr[0x10];
+    Vtx_b218_01E00ED0 v[4];
+    u8 tail[0x20];
+} Pk_b218_01E00ED0;
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b218_01E00ED0;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    u8 rect[0x2A];
+    s16 mode;
+} Obj_b218_01E00ED0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 n;
+    u8 pad08[0x20];
+    u8 col[4];
+} Rib_b218_01E00ED0;
+
+static void func_01E010E0_b233(Obj_b218_01E00ED0 *o, Rib_b218_01E00ED0 *s, Vec_b018_01E00EE0 *pa, Vec_b018_01E00EE0 *pb) {
+    extern s32 func_00109270();
+    f32 depth[4];
+    Vec_b018_01E00EE0 quad[4];
+    Vec_b018_01E00EE0 A[2];
+    Vec_b018_01E00EE0 B[2];
+    Vec_b018_01E00EE0 a4[4];
+    Vec_b018_01E00EE0 b4[4];
+    Pk_b218_01E00ED0 pkt __attribute__((aligned(8)));
+    Uv_b218_01E00ED0 uv0;
+    Uv_b218_01E00ED0 uv1;
+    Uv_b218_01E00ED0 uv2;
+    Uv_b218_01E00ED0 uv3;
+    Col_b218_01E00ED0 col;
+    s32 k;
+    s32 j;
+    s16 n;
+    Pk_b218_01E00ED0 *p;
+    u8 *ot;
+    Vec_b018_01E00EE0 *qa;
+    Vec_b018_01E00EE0 *qb;
+    f32 t;
+
+    ot = func_00207500();
+    n = s->n;
+    p = (Pk_b218_01E00ED0 *)(s32)&pkt;
+    func_00109270(p, 0, 0);
+    func_00107740(&uv0, s->col);
+    pkt.v[0].st = uv0;
+    func_00107740(&uv1, s->col);
+    pkt.v[1].st = uv1;
+    func_00107740(&uv2, s->col);
+    pkt.v[2].st = uv2;
+    func_00107740(&uv3, s->col);
+    pkt.v[3].st = uv3;
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    col = *(Col_b218_01E00ED0 *)s->col;
+    a4[0] = pa[0];
+    a4[1] = pa[0];
+    a4[2] = pa[1];
+    a4[3] = pa[2];
+    b4[0] = pb[0];
+    b4[1] = pb[0];
+    b4[2] = pb[1];
+    b4[3] = pb[2];
+    for (k = 0; k < n - 1; k++) {
+        func_00107790(p, &col.r, 1);
+        col.a -= (u8)(s->col[3] / n);
+        func_00107790(p, &col.r, 2);
+        t = 0.0f;
+        qa = pa + (k - 1);
+        qb = pb + (k - 1);
+        for (j = 0; j < 4; j++) {
+            if (k != 0) {
+                A[0] = func_01E005A0_b233(qa, 0, t);
+                B[0] = func_01E005A0_b233(qb, 0, t);
+                t += 0.25f;
+                A[1] = func_01E005A0_b233(qa, 0, t);
+                B[1] = func_01E005A0_b233(qb, 0, t);
+            } else {
+                A[0] = func_01E005A0_b233(a4, 0, t);
+                B[0] = func_01E005A0_b233(b4, 0, t);
+                t += 0.25f;
+                A[1] = func_01E005A0_b233(a4, 0, t);
+                B[1] = func_01E005A0_b233(b4, 0, t);
+            }
+            quad[0].x = A[0].x;
+            quad[0].y = A[0].y;
+            quad[0].z = A[0].z;
+            quad[1].x = A[1].x;
+            quad[1].y = A[1].y;
+            quad[1].z = A[1].z;
+            quad[2].x = B[0].x;
+            quad[2].y = B[0].y;
+            quad[2].z = B[0].z;
+            quad[3].x = B[1].x;
+            quad[3].y = B[1].y;
+            quad[3].z = B[1].z;
+            if (func_00205630((s32)quad, 0x70000000, 0, (s32)p, depth) != 0) {
+                func_002075F0((s32)p, (s32)ot, 0);
+            }
+        }
+    }
+}
 
 /* shape b134:01E00820, 365 insns, 5 copies: draws a ribbon between two point trails: each segment is 4 spline quads
    (module curve function, shape b018:01E00EE0) from the first trail to the second, colours from two
@@ -524,7 +647,47 @@ static s32 func_01E02C50_b233(s32 unused, Obj_b112_01E017B0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E02D60_b233);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E02F10_b233);
+/* shape b233:01E02F10, 52 insns: a blue glow at a random angle: in by 0x1B up to 0xC0 for 10 ticks, then out by 11 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x10];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b233_01E02F10;
+
+static s32 func_01E02F10_b233(s32 arg0, Glow_b233_01E02F10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+        o->h6 = 9;
+        o->col[3] = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->f38 = 2;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x1B;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b233:01E02FE0, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x80, 0x10, 0xF0) and fields;
    alpha 0x60 for the first 0x7 ticks, then fade out by 9 and stop */
@@ -730,7 +893,40 @@ static s32 func_01E03840_b233(Game_b233_01E03840 *g, Fade_b233_01E03840 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E03900_b233);
+/* shape b233:01E03900, 31 insns: b018:01E02DB0 family: func_001F7170(4, 0) with the module's two floats, then ends the object while its tick is under 65; counts the tick */
+
+extern f32 D_01E04E00_b233;
+extern f32 D_01E04E08_b233;
+
+typedef struct {
+    u8 pad0[0x10];
+    s16 v;
+} Ctx_b233_01E03900;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b233_01E03900;
+
+static s32 func_01E03900_b233(Ctx_b233_01E03900 *ctx, Obj_b233_01E03900 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E04E00_b233;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E04E08_b233;
+    func_001F7170(4, 0, (s32)&a, (s32)&b, 0);
+    if (o->h32 < 65) {
+        o->h36 = 0;
+    }
+    o->h32++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E03980_b233);
 

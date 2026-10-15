@@ -1001,7 +1001,39 @@ static s32 func_01E025C0_b589(Mgr_b567_01E02690 *m, Obj_b567_01E02690 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E02800_b589);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E02980_b589);
+/* shape b589:01E02980, 31 insns: b018:01E02DB0 family: func_001F7170(2, 0) with the module's two floats, then ends the object when the scene counter is 136 */
+
+extern f32 D_01E03980_b589;
+extern f32 D_01E03988_b589;
+
+typedef struct {
+    u8 pad0[0x6E0C];
+    s16 v;
+} Ctx_b589_01E02980;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b589_01E02980;
+
+static s32 func_01E02980_b589(Ctx_b589_01E02980 *ctx, Obj_b589_01E02980 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E03980_b589;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E03988_b589;
+    func_001F7170(2, 0, (s32)&a, (s32)&b, 0);
+    if (ctx->v == 136) {
+        o->h58 = 0;
+    }
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

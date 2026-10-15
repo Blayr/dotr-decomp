@@ -578,7 +578,39 @@ INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02550_b499);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02770_b499);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02B00_b499);
+/* shape b499:01E02B00, 31 insns: b018:01E02DB0 family: func_001F7170(1, 0) with the module's two floats, then ends the object when the scene counter is 115 */
+
+extern f32 D_01E04500_b499;
+extern f32 D_01E04508_b499;
+
+typedef struct {
+    u8 pad0[0xBB14];
+    s16 v;
+} Ctx_b499_01E02B00;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b499_01E02B00;
+
+static s32 func_01E02B00_b499(Ctx_b499_01E02B00 *ctx, Obj_b499_01E02B00 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E04500_b499;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E04508_b499;
+    func_001F7170(1, 0, (s32)&a, (s32)&b, 0);
+    if (ctx->v == 115) {
+        o->h58 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02B90_b499);
 

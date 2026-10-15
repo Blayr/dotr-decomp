@@ -564,7 +564,45 @@ INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E01DF0_b533);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E02090_b533);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E022F0_b533);
+/* shape b533:01E022F0, 51 insns: a red flash: the two alphas jump to 0xF0 (the step after marks it lit), then both fall
+   by 14 a frame and the effect ends below 0x10; colours stay 0x9F/0x5F/0x5F */
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 lit;
+    u8 pad52[6];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b533_01E022F0;
+
+static s32 func_01E022F0_b533(void *arg0, Obj_b533_01E022F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->lit == 0) {
+        if (o->c0[3] < 0xF0) {
+            o->c0[3] = 0xF0;
+        } else {
+            o->lit = 1;
+        }
+        if (o->c1[3] < 0xF0) {
+            o->c1[3] = 0xF0;
+        }
+    } else {
+        if (o->c0[3] > 0xF) {
+            o->c0[3] -= 0xE;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 0xF) {
+            o->c1[3] -= 0xE;
+        }
+    }
+    func_001076F0(o->c0, 0x9F, 0x5F, 0x5F);
+    func_001076F0(o->c1, 0x9F, 0x5F, 0x5F);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E023C0_b533);
 

@@ -372,7 +372,45 @@ INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E015D0_b192);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E01710_b192);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E019C0_b192);
+/* shape b192:01E019C0, 40 insns: b120:01E01890 family: a yellow glow held at the model point, alpha 0x50 */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b192_01E019C0;
+
+typedef struct {
+    u8 pad[0x3610];
+    s32 state;
+    u8 padS[0x34];
+    s16 val;
+} Game_b192_01E019C0;
+
+static s32 func_01E019C0_b192(Game_b192_01E019C0 *g, Glow_b192_01E019C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s32 buf[4];
+
+    func_001076F0(o->col, 0x50, 0x50, 0);
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->mode = 2;
+    }
+    func_001F5620(func_001F53A0(), g->val, buf);
+    o->col[3] = 0x50;
+    o->tick = 10;
+    if (g->state == 0x32) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b192", func_01E01A60_b192);
 

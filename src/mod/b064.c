@@ -1253,7 +1253,84 @@ static void func_01E03D80_b064(u8 *ctx, Obj_b064_01E03D80 *o, void *pkt, s32 mod
     func_00108F90(quad, pkt, m, ot);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b064", func_01E03F20_b064);
+/* shape b064:01E03F20, 222 insns: mode 0 sets up the packet's texture (0x96, page o->page), otherwise an 18-sector
+   ring of outer radius o->size around pos + vel / 10; the hole is 50 for the b064:01E01E80 object and 10 for the
+   b064:01E02020 one, else none */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[2];
+    s32 rot[4];
+    u8 pad20[4];
+    s32 func;
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Obj_b064_01E03F20;
+
+static void func_01E03F20_b064(u8 *ctx, Obj_b064_01E03F20 *o, void *pkt, s32 mode) {
+    extern s32 b064_01E01E80();
+    extern s32 b064_01E02020();
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f q[4];
+    Vec4f pos;
+    f32 m[16];
+    u8 td[0x10];
+    f32 inner;
+    s32 i;
+    s16 a;
+    s16 k;
+
+    inner = 0.0f;
+    a = 0;
+    if (mode == 0) {
+        func_00106080(td, 0x96, o->page, td);
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0x29C), 1);
+        return;
+    }
+    pos.x = o->x + o->vx / 10;
+    pos.y = o->y + o->vy / 10;
+    pos.z = o->z + o->vz / 10;
+    func_00108EF0(m, NULL, o->rot, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    if (o->func == (s32)b064_01E01E80) {
+        inner = 50.0f;
+    }
+    if (o->func == (s32)b064_01E02020) {
+        inner = 10.0f;
+    }
+    for (i = 0; i < 18; i++) {
+        k = o->ang + a;
+        q[2].x = o->size * func_00108030(ctx + 0x5344, k, 1);
+        q[2].z = o->size * func_00108030(ctx + 0x5344, k, 0);
+        q[0].x = (o->size - inner) * func_00108030(ctx + 0x5344, k, 1);
+        q[0].z = (o->size - inner) * func_00108030(ctx + 0x5344, k, 0);
+        k = o->ang + 20 + a;
+        q[3].x = o->size * func_00108030(ctx + 0x5344, k, 1);
+        q[3].z = o->size * func_00108030(ctx + 0x5344, k, 0);
+        q[1].x = (o->size - inner) * func_00108030(ctx + 0x5344, k, 1);
+        q[1].z = (o->size - inner) * func_00108030(ctx + 0x5344, k, 0);
+        if (func_00205630((s32)q, 0x70000000, (s32)m, (s32)pkt, (f32 *)(ctx + 0x51EC)) != 0) {
+            func_002075F0((s32)pkt, *(s32 *)(ctx + 0x51CC), (u32)*(f32 *)(ctx + 0x51EC));
+        }
+        a += 20;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b064", func_01E042A0_b064);
 

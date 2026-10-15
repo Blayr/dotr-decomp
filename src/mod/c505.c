@@ -170,7 +170,114 @@ static s32 func_01E00270_c505(s32 arg0, Src_b000_01E00400 *c) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c505", func_01E003D0_c505);
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape c505:01E003D0, 298 insns: draws the two quads of a 2-part strip (shape family of b001:01E03860): colour
+   from the module's colour helper (shape b000:01E00100, static copy below), per-quad setup by func_00105830,
+   corners p[1] or p[0], p[i + 2], p[i * 5], p[i + 3]; texture rect unless flag 0x18; far z under flag 0x13. */
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_c505_01E003D0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_c505_01E003D0;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c505_01E003D0 v[4];
+    u8 tail[0x20];
+} Pkt_c505_01E003D0;
+
+typedef struct {
+    s16 u, v, w, h;
+    u8 pad8[0x2C];
+    Src_c505_01E003D0 color;
+    s32 flags;
+} Def_c505_01E003D0;
+
+typedef struct {
+    void *texture;
+    s32 flags;
+    u8 pad8[0x18];
+    Vec4f p[8];
+} Obj_c505_01E003D0;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_c505_01E003D0;
+
+static s32 func_01E003D0_c505(s32 ot, Def_c505_01E003D0 *d, Obj_c505_01E003D0 *o, Cam_c505_01E003D0 *cam) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00105830(void *, void *, s32);
+    f32 depth[4];
+    Pkt_c505_01E003D0 pkt;
+    s32 i;
+
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(d->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(d->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    func_01E00080_c505(&pkt, &d->color);
+    for (i = 0; i < 2; i++) {
+        func_00105830(&pkt, d, i);
+        if (i == 0) {
+            if (func_00205440(&o->p[1], cam->view, &pkt.v[0].st + 1, &depth[0]) != 0) {
+                o->flags |= 0x100000;
+            }
+        } else {
+            if (func_00205440(&o->p[0], cam->view, &pkt.v[0].st + 1, &depth[0]) != 0) {
+                o->flags |= 0x100000;
+            }
+        }
+        if (func_00205440(&o->p[i + 2], cam->view, &pkt.v[1].st + 1, &depth[1]) != 0) {
+            o->flags |= 0x200000;
+        }
+        if (func_00205440(&o->p[i * 5], cam->view, &pkt.v[2].st + 1, &depth[2]) != 0) {
+            o->flags |= 0x400000;
+        }
+        if (func_00205440(&o->p[i + 3], cam->view, &pkt.v[3].st + 1, &depth[3]) != 0) {
+            o->flags |= 0x800000;
+        }
+        if (func_00104520(d->flags, 0x18) != 0) {
+            func_00208700(&pkt, o->texture, 0);
+        } else {
+            if (func_00104520(d->flags, 0) != 0) {
+                func_00208CB0(&pkt, (u64)0xA | ((u64)d->u << 4) | ((u64)(d->u + d->w - 1) << 14) |
+                                        ((u64)d->v << 24) | ((u64)(d->v + d->h - 1) << 34));
+            }
+            func_00208700(&pkt, o->texture, 1);
+        }
+        if (func_00104520(d->flags, 0x13) != 0) {
+            pkt.v[0].z = pkt.v[1].z = pkt.v[2].z = pkt.v[3].z = 0xFFFFFF;
+            func_002075F0(&pkt, ot, 0);
+        } else if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+                   func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+            func_002075F0(&pkt, ot, func_001A23B0((depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f));
+        }
+        o->flags &= 0xFF0FFFFF;
+    }
+    return 0;
+}
 
 /* shape c500:01E003D0, 149 insns: set up a 6-corner billboard: copy the module's corner template, store the id and
    half the size, then stretch x or y so the shape keeps the source's aspect (s16 w/h when flag 0 is set and flag
@@ -1134,6 +1241,131 @@ static s32 func_01E02CA0_c505(s32 ot __attribute__((aligned(8))), Trail_b021_01E
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c505", func_01E03090_c505);
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape c505:01E03090, 322 insns: draws a 3-quad strip with fixed texture rows (0/0x500/0xA00 to 0x4F0/0x9F0/0xEF0),
+   columns 0x60..0xAF shifted by 0x50 on even d->f48; corners from the object's points; colour from the module's
+   colour helper (shape b000:01E00100, static copy below). */
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_c505_01E03090;
+
+typedef struct {
+    u16 u : 14;
+    u16 pu : 2;
+    u16 v : 14;
+    u16 pv : 2;
+    u32 pad;
+} Uv_c505_01E03090;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Uv_c505_01E03090 uv;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_c505_01E03090;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c505_01E03090 v[4];
+    u8 tail[0x20];
+} Pkt_c505_01E03090;
+
+typedef struct {
+    u8 pad0[0x34];
+    Src_c505_01E03090 color;
+    u8 pad38[0x10];
+    s16 f48;
+} Def_c505_01E03090;
+
+typedef struct {
+    void *texture;
+    u8 pad4[0xC];
+    Vec4f q;
+    Vec4f p[8];
+} Obj_c505_01E03090;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_c505_01E03090;
+
+static s32 func_01E03090_c505(s32 ot __attribute__((aligned(8))), Def_c505_01E03090 *d __attribute__((aligned(16))), Obj_c505_01E03090 *o, Cam_c505_01E03090 *cam) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 depth[4];
+    Pkt_c505_01E03090 pkt;
+    s32 i;
+    s32 off;
+
+    ((Pkt_c505_01E03090 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_c505_01E03090 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_c505_01E03090 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_c505_01E03090 *)(s32)&pkt)->pad = 0;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    func_01E00080_c505(&pkt, &d->color);
+    for (i = 0; i < 3; i++) {
+        off = (d->f48 % 2 == 0) ? 0x50 : 0;
+        ((Pkt_c505_01E03090 *)(s32)&pkt)->count |= 0x800;
+        if (i == 0) {
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[0].uv)->u = (off + 0x60) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[0].uv)->v = 0;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[1].uv)->u = (off + 0xAF) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[1].uv)->v = 0;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[2].uv)->u = (off + 0x60) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[2].uv)->v = 0x4F0;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[3].uv)->u = (off + 0xAF) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[3].uv)->v = 0x4F0;
+        } else if (i == 1) {
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[0].uv)->u = (off + 0x60) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[0].uv)->v = 0x500;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[1].uv)->u = (off + 0xAF) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[1].uv)->v = 0x500;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[2].uv)->u = (off + 0x60) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[2].uv)->v = 0x9F0;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[3].uv)->u = (off + 0xAF) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[3].uv)->v = 0x9F0;
+        } else {
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[0].uv)->u = (off + 0x60) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[0].uv)->v = 0xA00;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[1].uv)->u = (off + 0xAF) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[1].uv)->v = 0xA00;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[2].uv)->u = (off + 0x60) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[2].uv)->v = 0xEF0;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[3].uv)->u = (off + 0xAF) << 4;
+            ((Uv_c505_01E03090 *)(s32)&pkt.v[3].uv)->v = 0xEF0;
+        }
+        func_00205440(&o->p[i], cam->view, &pkt.v[0].uv + 1, &depth[0]);
+        if (i == 0) {
+            func_00205440(&o->q, cam->view, &pkt.v[1].uv + 1, &depth[1]);
+        } else {
+            func_00205440(&o->p[i + 1], cam->view, &pkt.v[1].uv + 1, &depth[1]);
+        }
+        if (i == 0) {
+            func_00205440(&o->p[7], cam->view, &pkt.v[2].uv + 1, &depth[2]);
+        } else if (i == 1) {
+            func_00205440(&o->p[0], cam->view, &pkt.v[2].uv + 1, &depth[2]);
+        } else {
+            func_00205440(&o->q, cam->view, &pkt.v[2].uv + 1, &depth[2]);
+        }
+        if (i == 0) {
+            func_00205440(&o->p[6], cam->view, &pkt.v[3].uv + 1, &depth[3]);
+        } else if (i == 1) {
+            func_00205440(&o->q, cam->view, &pkt.v[3].uv + 1, &depth[3]);
+        } else {
+            func_00205440(&o->p[4], cam->view, &pkt.v[3].uv + 1, &depth[3]);
+        }
+        func_00208700(&pkt, o->texture, 0);
+        func_002075F0(&pkt, ot, func_001A23B0((depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f));
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c505", func_01E035A0_c505);

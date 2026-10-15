@@ -349,7 +349,162 @@ INCLUDE_ASM("asm/nonmatchings/mod/b181", func_01E01170_b181);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b181", func_01E01E90_b181);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b181", func_01E02D50_b181);
+/* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b181:01E02D50, 346 insns (b198:01E05C30 at -O1): moves n trail emitters (0x7C bytes each) and drops trail particles into the
+   emitter's pool: one at the head (flag 1) or four along a spline through the last three positions. */
+
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec4f out[28];
+} Spline_b181_01E02D50;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b181_01E02D50;
+
+typedef struct {
+    u8 pad00[4];
+    u8 flags;
+    u8 b5;
+    u8 pad06[2];
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 bB;
+    u8 bC;
+    u8 bD;
+    u8 pad0E[2];
+    s32 w10;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    C4_b181_01E02D50 col;
+    Vec4f pos;
+    u8 pad38[0x10];
+    u8 x48[0x10];
+} Part_b181_01E02D50;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3;
+    u8 flags;
+    u8 follow;
+    u8 pad6[2];
+    Part_b181_01E02D50 *list;
+    s32 w0C;
+    u8 b10;
+    u8 b11;
+    u8 b12;
+    u8 b13;
+    u8 b14;
+    u8 b15;
+    u8 b16;
+    u8 pad17;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    f32 f24;
+    C4_b181_01E02D50 col;
+    Vec4f pos;
+    Vec4f prev;
+    Vec4f prev2;
+    Vec4f vel;
+    Vec4f off;
+} Trail_b181_01E02D50;
+
+#pragma optimization_level 1
+
+static s32 func_01E02D50_b181(void *arg0, s32 arg1, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_00102550(void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_00101940(void *, void *);
+    Spline_b181_01E02D50 sp;
+    Vec4f tmp;
+    Trail_b181_01E02D50 *e;
+    s32 i;
+    s32 k;
+    s32 cnt;
+    s32 idx;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Trail_b181_01E02D50 *)((u8 *)e + 0x7C);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->life == e->max - 1) {
+            continue;
+        }
+        e->pos.x += e->vel.x;
+        e->pos.y += e->vel.y;
+        e->pos.z += e->vel.z;
+        func_00101BA0(e, &e->pos);
+        if (e->follow != 0) {
+            e->pos.x += e->off.x;
+            e->pos.y += e->off.y;
+            e->pos.z += e->off.z;
+        }
+        if (e->flags & 1) {
+            sp.out[0] = e->pos;
+            sp.out[1] = e->prev;
+            cnt = 1;
+        } else {
+            sp.n = 3;
+            sp.x[0] = e->pos.x;
+            sp.y[0] = e->pos.y;
+            sp.z[0] = e->pos.z;
+            sp.x[1] = e->prev.x;
+            sp.y[1] = e->prev.y;
+            sp.z[1] = e->prev.z;
+            sp.x[2] = e->prev2.x;
+            sp.y[2] = e->prev2.y;
+            sp.z[2] = e->prev2.z;
+            func_00102550(&sp);
+            cnt = 4;
+        }
+        for (k = 0; k < cnt; k++) {
+            idx = func_00101C30(e->list, 0x58, e->b10);
+            if (idx >= 0) {
+                func_00101AD0(&e->list[idx], e->b11, 0, 0xFF);
+                e->list[idx].f14 = e->f18;
+                e->list[idx].f18 = e->f1C;
+                e->list[idx].flags = 5;
+                if (e->flags & 2) {
+                    e->list[idx].flags |= 8;
+                }
+                e->list[idx].bC = e->b16;
+                e->list[idx].b5 = 0;
+                e->list[idx].b8 = e->b12;
+                e->list[idx].f1C = e->f20;
+                e->list[idx].f20 = e->f24;
+                e->list[idx].b9 = func_0019A5C8() >> 4;
+                e->list[idx].bA = e->b13;
+                e->list[idx].bB = e->b14;
+                e->list[idx].bD = e->b15;
+                e->list[idx].w10 = e->w0C;
+                e->list[idx].col = e->col;
+                e->list[idx].pos = sp.out[k];
+                func_00101940(&tmp, e->list[idx].x48);
+            }
+        }
+        e->prev2 = e->prev;
+        e->prev = e->pos;
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 /* OVL_CFLAGS: -O1,p -sdatathreshold 0 -relax_pointers */
 

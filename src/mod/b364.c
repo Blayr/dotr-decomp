@@ -896,7 +896,129 @@ static s32 func_01E01F00_b364(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
 
 INCLUDE_ASM("asm/nonmatchings/mod/b364", func_01E02A90_b364);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b364", func_01E02B80_b364);
+/* shape b364:01E02B80, 434 insns, 2 copies: draws a textured cylinder-like grid of 15 x 32 quads from a 16 x 32 point mesh
+   (each column wrapping to the last one), texture spread over the grid; corners' visibility flagged on the object
+   (bits 20..23), drawn when all four project, far by flag 0x13; blend by flags 0xC/0xB/0xA. Colour by the module
+   helper (shape b000:01E00100). */
+
+typedef struct {
+    f32 x, y, z;
+} V3_b364_01E02B80;
+
+typedef struct {
+    u16 s : 14;
+    u16 s_pad : 2;
+    u16 t : 14;
+    u16 t_pad : 2;
+    u32 pad;
+} Uv_b364_01E02B80;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Uv_b364_01E02B80 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b364_01E02B80;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b364_01E02B80 v[4];
+    u8 tail[0x20];
+} Pkt_b364_01E02B80;
+
+typedef struct {
+    void *texture;
+    s32 flags;
+    u8 col[8];
+    s16 u, v, w, h;
+    u8 pad18[8];
+    V3_b364_01E02B80 p[16][32];
+} Grid_b364_01E02B80;
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 m[16];
+} Cam_b364_01E02B80;
+
+static s32 func_01E02B80_b364(s32 ot, Grid_b364_01E02B80 *o, Cam_b364_01E02B80 *cam) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 d[4];
+    Pkt_b364_01E02B80 pkt;
+    s32 r;
+    s32 c;
+    s16 us;
+    s16 vs;
+
+    ((Pkt_b364_01E02B80 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_b364_01E02B80 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_b364_01E02B80 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_b364_01E02B80 *)(s32)&pkt)->pad = 0;
+    ((Pkt_b364_01E02B80 *)(s32)&pkt)->count |= 0x800;
+    func_00208CB0(&pkt, ((u64)o->v << 24) | (((u64)(o->w - 1) << 4) | 0xB | ((u64)o->u << 14)) |
+                            ((u64)(o->v + o->h - 1) << 34));
+    func_00208700(&pkt, o->texture, 1);
+    if (func_00104520(o->flags, 0xC) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(o->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(o->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    func_01E00080_b364((Vtx_b000_01E00100 *)&pkt, (Src_b000_01E00100 *)o->col);
+    us = o->w >> 5;
+    vs = o->h >> 4;
+    for (r = 1; r < 16; r++) {
+        for (c = 0; c < 32; c++) {
+            if (c == 0) {
+                if (func_00205440(&o->p[r - 1][31], cam->m, &pkt.v[0].st + 1, &d[0]) != 0) {
+                    o->flags |= 0x100000;
+                }
+                if (func_00205440(&o->p[r][31], cam->m, &pkt.v[1].st + 1, &d[1]) != 0) {
+                    o->flags |= 0x200000;
+                }
+            } else {
+                if (func_00205440(&o->p[r - 1][c - 1], cam->m, &pkt.v[0].st + 1, &d[0]) != 0) {
+                    o->flags |= 0x100000;
+                }
+                if (func_00205440(&o->p[r][c - 1], cam->m, &pkt.v[1].st + 1, &d[1]) != 0) {
+                    o->flags |= 0x200000;
+                }
+            }
+            if (func_00205440(&o->p[r - 1][c], cam->m, &pkt.v[2].st + 1, &d[2]) != 0) {
+                o->flags |= 0x400000;
+            }
+            if (func_00205440(&o->p[r][c], cam->m, &pkt.v[3].st + 1, &d[3]) != 0) {
+                o->flags |= 0x800000;
+            }
+            pkt.v[0].st.s = (c * us) * 16;
+            ((Uv_b364_01E02B80 *)(s32)&pkt.v[0].st)->t = (vs * (r - 1)) * 16;
+            pkt.v[1].st.s = (c * us) * 16;
+            ((Uv_b364_01E02B80 *)(s32)&pkt.v[1].st)->t = (r * vs) * 16;
+            pkt.v[2].st.s = (us * (c + 1)) * 16;
+            ((Uv_b364_01E02B80 *)(s32)&pkt.v[2].st)->t = (vs * (r - 1)) * 16;
+            pkt.v[3].st.s = (us * (c + 1)) * 16;
+            ((Uv_b364_01E02B80 *)(s32)&pkt.v[3].st)->t = (r * vs) * 16;
+            if (func_00104520(o->flags, 0x13) != 0) {
+                pkt.v[0].z = pkt.v[1].z = pkt.v[2].z = pkt.v[3].z = 0xFFFFFF;
+                func_002075F0(&pkt, ot, 0);
+            } else if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+                       func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+                func_002075F0(&pkt, ot, (u32)((d[3] + (d[2] + (d[0] + d[1]))) / 4.0f));
+            }
+            o->flags &= 0xFF0FFFFF;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b364", func_01E03250_b364);
 

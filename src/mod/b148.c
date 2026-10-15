@@ -551,7 +551,149 @@ static void func_01E01350_b148(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E01540_b148);
+/* shape b148:01E01540, 325 insns: b046:01E00FC0 family: a row of small sprites (count, or 20) at the object position, each
+   shaken by the table offsets and turned on all three axes by the sprite rotation; depth mode 0/1/2. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b148_01E01540;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b148_01E01540 c;
+    struct {
+        u64 tc;
+        u64 x : 16, y : 16, z : 24, f : 8;
+    } v[4];
+    u8 tail[0x38];
+} Pkt_b148_01E01540;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f pos;
+    u8 pad30[0x50];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b003_01E00080 rect;
+    u8 pad9C[8];
+    f32 blend;
+    u8 padA8[0x10];
+    s16 count;
+    u8 padBA[4];
+    s16 mode;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b148_01E01540;
+
+typedef struct {
+    u8 pad00[8];
+    s16 off;
+    u8 pad0A[6];
+    Vec4f rot;
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 size;
+} Spr_b148_01E01540;
+
+static void func_01E01540_b148(Obj_b148_01E01540 *o, Spr_b148_01E01540 *s, s32 mode, s8 *tbl) {
+    extern Rgbaq_b148_01E01540 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f p2;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b148_01E01540 pkt __attribute__((aligned(8)));
+    s16 i;
+    f32 f;
+    s16 n;
+    Pkt_b148_01E01540 *p;
+    s32 h;
+    s8 *j;
+
+    func_00207500();
+    p = (Pkt_b148_01E01540 *)(s32)&pkt;
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    pkt.c.q = 0;
+    pkt.v[0].f = 0;
+    pkt.v[1].f = 0;
+    pkt.v[2].f = 0;
+    pkt.v[3].f = 0;
+    if (o->blend == 0.0f) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    } else if (o->blend == 1.0f) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else if (o->blend == 2.0f) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    }
+    p->c = func_00107740(s->col);
+    func_01E00080_b148((Pk_b003_01E00080 *)p, &o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    if (o->count != 0) {
+        n = o->count;
+    } else {
+        n = 20;
+    }
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    p2.x = o->pos.x;
+    p2.y = o->pos.y;
+    p2.z = o->pos.z;
+    func_00108EF0(m, &scale, rot, &p2);
+    for (i = 0; i < n; i++) {
+        func_00108CE0(quad, s->size, s->size);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        func_00107070(quad, 0, f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        func_00107070(quad, 1, f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        func_00107070(quad, 2, f * (s->w30 + h));
+        func_00109100(quad, &s->rot, 0, o->xD8);
+        func_00109100(quad, &s->rot, 1, o->xD8);
+        func_00109100(quad, &s->rot, 2, o->xD8);
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0(p, o->ot, 0);
+            }
+        } else if (mode == 2) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, -1);
+            }
+        }
+    }
+}
 
 /* shape b046:01E00FC0, 343 insns, 4 copies: draws a row of small sprites (count, or 20) at the object position: each a
    standing quad turned by the sprite rotation, shaken by a per-entry table offset that grows along the row, its
@@ -703,7 +845,157 @@ static void func_01E01A60_b148(Obj_b046_01E00FC0 *o, Spr_b046_01E00FC0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E01FC0_b148);
+/* shape b148:01E01FC0, 345 insns (b046:01E00FC0 with the side corners' x zeroed): draws a row of small sprites (count, or 20) at the object position: each a
+   standing quad turned by the sprite rotation, shaken by a per-entry table offset that grows along the row, its
+   lower edge pinned at +-size/2; blend from the object's float mode, depth mode 0/1/2. Texture corners by the
+   module helper (shape b003:01E00080). */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b148_01E01FC0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b148_01E01FC0 c;
+    struct {
+        u64 tc;
+        u64 x : 16, y : 16, z : 24, f : 8;
+    } v[4];
+    u8 tail[0x38];
+} Pkt_b148_01E01FC0;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f pos;
+    u8 pad30[0x50];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    Rect_b003_01E00080 rect;
+    u8 pad9C[8];
+    f32 blend;
+    u8 padA8[0x10];
+    s16 count;
+    u8 padBA[4];
+    s16 mode;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b148_01E01FC0;
+
+typedef struct {
+    u8 pad00[8];
+    s16 off;
+    u8 pad0A[6];
+    Vec4f rot;
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 w30;
+    u8 pad32[6];
+    s16 size;
+} Spr_b148_01E01FC0;
+
+static void func_01E01FC0_b148(Obj_b148_01E01FC0 *o, Spr_b148_01E01FC0 *s, s32 mode, s8 *tbl) {
+    extern Rgbaq_b148_01E01FC0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern void func_00107070(void *, s32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f p2;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    Pkt_b148_01E01FC0 pkt __attribute__((aligned(8)));
+    s16 i;
+    f32 f;
+    s16 n;
+    Pkt_b148_01E01FC0 *p;
+    s32 h;
+    s8 *j;
+
+    func_00207500();
+    p = (Pkt_b148_01E01FC0 *)(s32)&pkt;
+    p->count = 0x24;
+    p->tag = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad = 0;
+    p->count |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    pkt.c.q = 0;
+    pkt.v[0].f = 0;
+    pkt.v[1].f = 0;
+    pkt.v[2].f = 0;
+    pkt.v[3].f = 0;
+    if (o->blend == 0.0f) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    } else if (o->blend == 1.0f) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x44);
+    } else if (o->blend == 2.0f) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    }
+    p->c = func_00107740(s->col);
+    func_01E00080_b148((Pk_b003_01E00080 *)p, &o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    if (o->count != 0) {
+        n = o->count;
+    } else {
+        n = 20;
+    }
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    p2.x = o->pos.x;
+    p2.y = o->pos.y;
+    p2.z = o->pos.z;
+    func_00108EF0(m, &scale, NULL, &p2);
+    for (i = 0; i < n; i++) {
+        func_00108CE0(quad, s->size, s->size);
+        func_00109100(quad, &s->rot, 0, o->xD8);
+        j = tbl + i;
+        h = i >> 1;
+        f = j[s->off];
+        f /= 20.0f;
+        func_00107070(quad, 0, f * (s->w30 + h));
+        f = j[s->off + 100];
+        f /= 20.0f;
+        func_00107070(quad, 1, f * (s->w30 + h));
+        f = j[s->off + 180];
+        f /= 20.0f;
+        func_00107070(quad, 2, f * (s->w30 + h));
+        quad[2].z = -(s->size >> 1);
+        quad[2].y = 0.0f;
+        quad[2].x = 0.0f;
+        quad[3].z = s->size >> 1;
+        quad[3].y = 0.0f;
+        quad[3].x = 0.0f;
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+                func_002075F0(p, o->ot, 0);
+            }
+        } else if (mode == 2) {
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, o->ot, -1);
+            }
+        }
+    }
+}
 
 /* OVL_WARM */
 
@@ -1284,4 +1576,96 @@ static s32 func_01E05120_b148(Pool_b046_01E03E20 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E05240_b148);
+/* shape b148:01E05240, 210 insns: b046:01E03F40 family: a dome band of 12 sectors 30 apart */
+
+typedef struct {
+    u8 pad0[0x2EC];
+    void *texture;
+    u8 pad2F0[0x332C];
+    s32 ot;
+    u8 pad3620[0xC];
+    f32 dep;
+    u8 pad3630[0x42C];
+    u8 trig[1];
+} Ctx_b148_01E05240;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 tilt;
+    u8 pad32[2];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Band_b148_01E05240;
+
+static void func_01E05240_b148(Ctx_b148_01E05240 *c, Band_b148_01E05240 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 m[16];
+    u8 td[0x10];
+    s32 k;
+    s32 j;
+    s16 a;
+    s16 t;
+    f32 sc;
+    f32 r0;
+    f32 r1;
+    f32 y;
+
+    if (mode == 0) {
+        func_00106080(td, 0x97, o->page, td);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, td, 0);
+        func_00208700(p, c->texture, 1);
+    } else {
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    sc = o->size;
+    sc /= 1500.0f;
+    func_00106DD0(&scale, sc, sc, sc);
+    func_00108EF0(m, &scale, o->rot, &pos);
+    for (j = 0; j < 1; j++) {
+        quad[0].y = 90.0f * func_00108030(c->trig, o->tilt, 0) - 90.0f;
+        quad[1].y = quad[0].y;
+        quad[2].y = 90.0f * func_00108030(c->trig, o->tilt + 0x14, 0) - 90.0f;
+        quad[3].y = quad[2].y;
+        r0 = 90.0f * func_00108030(c->trig, o->tilt, 1);
+        r1 = 90.0f * func_00108030(c->trig, o->tilt + 0x14, 1);
+        a = 0;
+        for (k = 0; k < 12; k++) {
+            t = o->ang + a;
+            quad[2].x = r1 * func_00108030(c->trig, t, 1);
+            quad[2].z = r1 * func_00108030(c->trig, t, 0);
+            quad[0].x = r0 * func_00108030(c->trig, t, 1);
+            quad[0].z = r0 * func_00108030(c->trig, t, 0);
+            t = o->ang + 30 + a;
+            quad[3].x = r1 * func_00108030(c->trig, t, 1);
+            quad[3].z = r1 * func_00108030(c->trig, t, 0);
+            quad[1].x = r0 * func_00108030(c->trig, t, 1);
+            quad[1].z = r0 * func_00108030(c->trig, t, 0);
+            if (func_00205630(quad, 0x70000000, m, p, &c->dep) != 0) {
+                func_002075F0(p, c->ot, (u32)c->dep);
+            }
+            a += 0x1E;
+        }
+    }
+    }
+}

@@ -461,7 +461,49 @@ INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E04250_c063);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E04510_c063);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E046E0_c063);
+/* shape c063:01E046E0, 48 insns: b718:01E03D10 family: volume eased by 10 toward 0x30 once the scene state passes 30, else toward 0x80; counts its tick */
+
+typedef struct {
+    u8 pad[0x6B30];
+    s32 state;
+} Game_c063_01E046E0;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_c063_01E046E0;
+
+static s32 func_01E046E0_c063(Game_c063_01E046E0 *g, Fade_c063_01E046E0 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    o->t++;
+    func_001F6D00((u8)o->vol);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E047A0_c063);
 

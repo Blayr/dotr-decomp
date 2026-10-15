@@ -6,7 +6,35 @@ INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00220_b053);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00620_b053);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00870_b053);
+/* shape b053:01E00870, 32 insns: b120:01E01EA0 family: fades in by 0x40 to 0x80, then out by 9 and ends; colour (0xF0, 0x80, 0x40) */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Glow_b053_01E00870;
+
+static s32 func_01E00870_b053(s32 arg0, Glow_b053_01E00870 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->f30 == 0) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        } else {
+            o->f30 = 1;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001076F0(o->col, 0xF0, 0x80, 0x40);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E008F0_b053);
 

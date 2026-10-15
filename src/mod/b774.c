@@ -24,9 +24,86 @@ INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E01CD0_b774);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E01E30_b774);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E02080_b774);
+/* shape b774:01E02080, 55 insns: volume fade by game state (b058:01E017A0 shape): state at 0x36D0 limit 0x1E, down 10
+   to 0x30, up 10 capped at 0x80; state 2 plays at 0x80 and ends the fade */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E02160_b774);
+typedef struct {
+    u8 pad[0x36D0];
+    s32 state;
+} Game_b774_01E02080;
+
+typedef struct {
+    u8 pad[0x30];
+    s16 vol;
+    u8 pad32[4];
+    s16 mode;
+} Fade_b774_01E02080;
+
+static s32 func_01E02080_b774(Game_b774_01E02080 *g, Fade_b774_01E02080 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 2) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
+
+/* shape b774:01E02160, 31 insns: func_001F7170(3, 0, &a, &b, 0) with copies of the module's floats at 0x01E04880 and
+   0x01E04888; when the game value at 0x371E is 0x3A the effect's 0x36 is cleared; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b774_01E02160;
+
+typedef struct {
+    u8 pad0[0x371E];
+    s16 v;
+} Game_b774_01E02160;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 f;
+} Fx_b774_01E02160;
+
+extern F_b774_01E02160 D_01E04880_b774;
+extern F_b774_01E02160 D_01E04888_b774;
+
+static s32 func_01E02160_b774(Game_b774_01E02160 *g, Fx_b774_01E02160 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b774_01E02160 a;
+    F_b774_01E02160 b;
+
+    a = D_01E04880_b774;
+    b = D_01E04888_b774;
+    func_001F7170(3, 0, &a, &b, 0);
+    if (g->v == 0x3A) {
+        o->f = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E021E0_b774);
 

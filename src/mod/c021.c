@@ -60,7 +60,40 @@ INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E01F60_c021);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E02350_c021);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E02820_c021);
+/* shape c021:01E02820, 49 insns: take the first free slot of the 65-slot pool (0x94 bytes each), clear it, mark it with its index + 1 and give it the argument */
+
+typedef struct {
+    u8 pad0[0x74];
+    s32 arg;
+    u8 pad78[0xC];
+    s16 used;
+    u8 pad86[0xE];
+} Slot_c021_01E02820;
+
+typedef struct {
+    u8 pad0[0x120];
+    Slot_c021_01E02820 s[65];
+} Pool_c021_01E02820;
+
+static void func_01E02820_c021(Pool_c021_01E02820 *o, s32 arg) {
+    extern void func_00106CC0(void *, s32);
+    s16 i;
+    Slot_c021_01E02820 *s;
+
+    for (i = 0; i < 65; i++) {
+        if (o->s[i].used == 0) {
+            func_00106CC0(&o->s[i], 0x94);
+            o->s[i].used = i + 1;
+            s = &o->s[i];
+            goto done;
+        }
+    }
+    s = NULL;
+done:
+    if (s != NULL) {
+        s->arg = arg;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E028F0_c021);
 

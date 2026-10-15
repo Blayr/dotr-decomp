@@ -758,7 +758,26 @@ static s32 func_01E025B0_b112(Game_b112_01E025B0 *g, Fade_b112_01E025B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E02670_b112);
+/* shape b112:01E02670, 20 insns: func_001F7170(2, 2, &a, &b, 1) with copies of the module's two floats at
+   0x01E04880 and 0x01E04888, return 0 */
+
+typedef struct {
+    f32 v;
+} F_b112_01E02670;
+
+extern F_b112_01E02670 D_01E04880_b112;
+extern F_b112_01E02670 D_01E04888_b112;
+
+static s32 func_01E02670_b112(void) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b112_01E02670 a;
+    F_b112_01E02670 b;
+
+    a = D_01E04880_b112;
+    b = D_01E04888_b112;
+    func_001F7170(2, 2, &a, &b, 1);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E026C0_b112);
 

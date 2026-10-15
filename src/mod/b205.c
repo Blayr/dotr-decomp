@@ -830,7 +830,39 @@ static s32 func_01E01E50_b205(Game_b205_01E01E50 *g, Fade_b205_01E01E50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01F10_b205);
+/* shape b205:01E01F10, 31 insns: func_001F7170(3, 0, &a, &b, 0) with copies of the module's floats at 0x01E03200 and
+   0x01E03208; when the game value at 0x6E0C is 82 the effect's 0x36 is cleared; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b205_01E01F10;
+
+typedef struct {
+    u8 pad0[0x6E0C];
+    s16 v;
+} Game_b205_01E01F10;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 f36;
+} Fx_b205_01E01F10;
+
+extern F_b205_01E01F10 D_01E03200_b205;
+extern F_b205_01E01F10 D_01E03208_b205;
+
+static s32 func_01E01F10_b205(Game_b205_01E01F10 *g, Fx_b205_01E01F10 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b205_01E01F10 a;
+    F_b205_01E01F10 b;
+
+    a = D_01E03200_b205;
+    b = D_01E03208_b205;
+    func_001F7170(3, 0, &a, &b, 0);
+    if (g->v == 82) {
+        o->f36 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b205", func_01E01F90_b205);
 

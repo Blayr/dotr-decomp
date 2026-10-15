@@ -1139,7 +1139,144 @@ static s32 func_01E03260_b052(Pool_b018_01E03640 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b052", func_01E03380_b052);
+/* shape b018:01E03760, 233 insns, 2 copies: a cone of 9 quads (b112:01E03C50 family): latitudes from the object's tilt (capped
+   at 160) and tilt+30, heights 45 x sines of tilt and tilt+35, inner and outer radius 3 and 20, each segment 40
+   wide and 40 apart; mode 0 only sets up the packet (texture 0x97, flat colour). Texture corners by the module
+   helper (shape b008:01E00080). */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b018_01E03760;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b018_01E03760;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Rgbaq_b018_01E03760 c;
+    struct {
+        u64 tc;
+        Xyz_b018_01E03760 p;
+    } v[4];
+} Pkt_b018_01E03760;
+
+typedef struct {
+    u8 pad0[0x37C];
+    void *texture;
+    u8 pad380[0x34AC];
+    s32 ot;
+    u8 pad3830[0x24];
+    f32 dep;
+    u8 pad3858[0x12C];
+    u8 trig[1];
+} Ctx_b018_01E03760;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 tilt;
+    u8 pad32[2];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Fan_b018_01E03760;
+
+static void func_01E03380_b052(Ctx_b018_01E03760 *c, Fan_b018_01E03760 *o, Pkt_b018_01E03760 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern Rgbaq_b018_01E03760 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 m[16];
+    u8 td[0x18];
+    s32 k;
+    s32 j;
+    s16 tl;
+    s32 t2;
+    s16 a;
+    s16 t;
+    f32 r0;
+    f32 r1;
+    f32 r2;
+    f32 r3;
+    f32 sn;
+    f32 cs;
+
+    if (mode == 0) {
+        func_00106080(td, 0x97, o->page, td);
+        p->count = 0x24;
+        p->tag = 9;
+        p->regs = ((u64)4 << 32) | 0x24242421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->c.q = 0.0f;
+        p->v[0].p.f = 0;
+        p->v[1].p.f = 0;
+        p->v[2].p.f = 0;
+        p->v[3].p.f = 0;
+        p->c = func_00107740(o->col);
+        func_01E00150_b052((Pk_b008_01E00080 *)p, (Rect_b008_01E00080 *)td, 0);
+        func_00208700(p, c->texture, 1);
+    } else {
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    func_00108EF0(m, NULL, o->rot, &pos);
+    for (j = 0; j < 1; j++) {
+        tl = o->tilt;
+        if (o->tilt > 0xA0) {
+            tl = 0xA0;
+        }
+        quad[0].y = 45.0f * func_00108030(c->trig, o->tilt, 0);
+        quad[1].y = quad[0].y;
+        quad[2].y = 45.0f * func_00108030(c->trig, o->tilt + 0x23, 0);
+        quad[3].y = quad[2].y;
+        r0 = 20.0f * func_00108030(c->trig, tl, 1);
+        t2 = tl + 0x1E;
+        r1 = 20.0f * func_00108030(c->trig, t2, 1);
+        r2 = 3.0f * func_00108030(c->trig, tl, 1);
+        r3 = 3.0f * func_00108030(c->trig, t2, 1);
+        a = 0;
+        for (k = 0; k < 9; k++) {
+            t = o->ang + a;
+            sn = func_00108030(c->trig, t, 1);
+            cs = func_00108030(c->trig, t, 0);
+            quad[2].x = sn * r2;
+            quad[2].z = cs * r1;
+            quad[0].x = sn * r3;
+            quad[0].z = cs * r0;
+            t = o->ang + 0x28 + a;
+            sn = func_00108030(c->trig, t, 1);
+            cs = func_00108030(c->trig, t, 0);
+            quad[3].x = sn * r2;
+            quad[3].z = cs * r1;
+            quad[1].x = sn * r3;
+            quad[1].z = cs * r0;
+            if (func_00205630(quad, 0x70000000, m, p, &c->dep) != 0) {
+                func_002075F0(p, c->ot, (u32)c->dep);
+            }
+            a += 0x28;
+        }
+    }
+    }
+}
 
 /* OVL_WARM */
 

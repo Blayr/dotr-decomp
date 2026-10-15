@@ -607,7 +607,40 @@ INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02140_b495);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02A40_b495);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02C30_b495);
+/* shape b495:01E02C30, 31 insns: b018:01E02DB0 family: func_001F7170(2, 0) with the module's two floats, then counts the tick and ends the object once the scene counter reaches 140 */
+
+extern f32 D_01E03D00_b495;
+extern f32 D_01E03D08_b495;
+
+typedef struct {
+    u8 pad0[0xECEC];
+    s16 v;
+} Ctx_b495_01E02C30;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b495_01E02C30;
+
+static s32 func_01E02C30_b495(Ctx_b495_01E02C30 *ctx, Obj_b495_01E02C30 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E03D00_b495;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E03D08_b495;
+    func_001F7170(2, 0, (s32)&a, (s32)&b, 0);
+    o->h54++;
+    if (ctx->v >= 140) {
+        o->h58 = 0;
+    }
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 
@@ -615,7 +648,28 @@ static s32 func_01E02CC0_b495(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02CD0_b495);
+/* shape b495:01E02CD0, b734:01E03310 family: textures group 4 cells 0-2 and 14-15, group 5 cells 0-1 (table past 0x8000) */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 padT[0xe8e0];
+    s32 tex5[2];
+} Scene_b495_01E02CD0;
+
+static void func_01E02CD0_b495(s32 arg0, Scene_b495_01E02CD0 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 14; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b495", func_01E02D80_b495);
 

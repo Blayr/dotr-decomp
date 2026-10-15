@@ -620,7 +620,49 @@ static s32 func_01E025A0_b080(void *arg0, Obj_b018_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E02680_b080);
+/* shape b080:01E02680, 54 insns: an orange flash: colour 0x80/0x40/8; set up once (frame 5, full-alpha time 10 for
+   kind 0, 7 for kind 1), full alpha until then, then fades out by 0x1D */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 hold;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+} Obj_b080_01E02680;
+
+static s32 func_01E02680_b080(void *arg0, Obj_b080_01E02680 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c0, 0x80, 0x40, 8);
+    if (o->state == 1) {
+        o->h38 = 5;
+        if (o->kind == 0) {
+            o->hold = 0xA;
+        }
+        if (o->kind == 1) {
+            o->hold = 7;
+        }
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0x1E) {
+        o->c0[3] -= 0x1D;
+    } else {
+        o->state = 0;
+    }
+    o->h6 = 0xA;
+    o->t++;
+    return 0;
+}
 
 /* shape b018:01E02610, 108 insns: a twinkling sprite: on start pick a random variant, position, angle, spin speed,
    delay and lifetime and colour (0x20,0x10,8); fade in by 0x38 while younger than its lifetime, then fade out by

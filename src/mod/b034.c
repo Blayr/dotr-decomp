@@ -411,9 +411,79 @@ INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03A50_b034);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03B50_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E03F80_b034);
+/* shape b034:01E03F80, 51 insns: b718:01E03D10 family volume fader (to 0x30 after scene state 30), full volume at state 2 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E04050_b034);
+typedef struct {
+    u8 pad[0xa900];
+    s32 state;
+} Game_b034_01E03F80;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 padV[0x6];
+    s16 mode;
+} Fade_b034_01E03F80;
+
+static s32 func_01E03F80_b034(Game_b034_01E03F80 *g, Fade_b034_01E03F80 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x1E) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+    }
+    if (g->state == 2) {
+        func_001F6D00(0x80);
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
+
+/* shape b034:01E04050, 31 insns: func_001F7170(3, 2, &a, &b, 0) with copies of the module's floats at 0x01E06E00 and
+   0x01E06E08; the effect stops after tick 0x40; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b034_01E04050;
+
+typedef struct {
+    u8 pad0[0x54];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b034_01E04050;
+
+extern F_b034_01E04050 D_01E06E00_b034;
+extern F_b034_01E04050 D_01E06E08_b034;
+
+static s32 func_01E04050_b034(s32 arg0, Fx_b034_01E04050 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b034_01E04050 a;
+    F_b034_01E04050 b;
+
+    a = D_01E06E00_b034;
+    b = D_01E06E08_b034;
+    func_001F7170(3, 2, &a, &b, 0);
+    o->tick++;
+    if (o->tick >= 0x41) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E040D0_b034);
 

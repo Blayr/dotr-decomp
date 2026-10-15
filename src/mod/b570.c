@@ -527,7 +527,14 @@ INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E01C30_b570);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E020A0_b570);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02250_b570);
+/* shape b570:01E02250, 9 insns: hand the module's table at 0x01E03F00 to func_00199B50, return 0 */
+
+extern u8 D_01E03F00_b570[];
+
+static s32 func_01E02250_b570(void) {
+    func_00199B50(D_01E03F00_b570);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02280_b570);
 
@@ -678,7 +685,46 @@ static s32 func_01E02C30_b570(s32 arg0, Flash_b257_01E031C0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02D10_b570);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02F00_b570);
+/* shape b570:01E02F00, 51 insns: volume fade: starts at 0x80; while the game counter at 0x98F0 is over 0x1E it drops by
+   10 to 0x30, otherwise it rises by 10 to 0x80; passed to func_001F6D00 (the same call either way) */
+
+typedef struct {
+    u8 pad0[0x98F0];
+    s32 count;
+} Game_b570_01E02F00;
+
+typedef struct {
+    u8 pad0[0x30];
+    s16 v;
+    u8 pad32[0x4];
+    s16 mode;
+} Fx_b570_01E02F00;
+
+static s32 func_01E02F00_b570(Game_b570_01E02F00 *g, Fx_b570_01E02F00 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (g->count > 0x1E) {
+        if (o->v > 0x30) {
+            o->v -= 10;
+        } else {
+            o->v = 0x30;
+        }
+    } else if (o->v < 0x80) {
+        o->v += 10;
+    } else {
+        o->v = 0x80;
+    }
+    if (g->count == 1) {
+        func_001F6D00(o->v);
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
 
 /* shape b003:01E023F0: b018:01E02DB0 with other constants (chatG) */
 

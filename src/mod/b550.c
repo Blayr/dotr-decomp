@@ -1185,7 +1185,51 @@ static s32 func_01E03A90_b550(void *arg0, Spark_b550_01E03A90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E03C60_b550);
+/* shape b550:01E03C60, 51 insns: volume fade: starts at 0x80; while the game counter at 0xBA10 is over 0x1E it drops
+   by 10 to 0x40, otherwise it rises by 10 (clamped) and stops at 0x80; tick, func_001F6D00 */
+
+typedef struct {
+    u8 pad0[0xBA10];
+    s32 count;
+} Game_b550_01E03C60;
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 v;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b550_01E03C60;
+
+static s32 func_01E03C60_b550(Game_b550_01E03C60 *g, Fx_b550_01E03C60 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (g->count > 0x1E) {
+        if (o->v > 0x40) {
+            o->v -= 10;
+        } else {
+            o->v = 0x40;
+        }
+    } else {
+        if (o->v < 0x80) {
+            o->v += 10;
+        } else {
+            o->v = 0x80;
+            o->mode = 0;
+        }
+        if (o->v > 0x80) {
+            o->v = 0x80;
+        }
+    }
+    o->tick++;
+    func_001F6D00(o->v);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E03D30_b550);
 

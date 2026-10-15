@@ -650,7 +650,165 @@ static void func_01E01970_b709(u8 *self, Obj_b045_01E00E30 *obj, Pk_b045_01E00E3
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E01CF0_b709);
+/* OVL_WARM */
+
+/* shape b257:01E01270, 386 insns, 2 copies: a textured curved beam along the module's spline (shape b018:01E00EE0, here at
+   b257:01E00E30) through the given points (b018:01E01320 family): 4 sub-steps per segment, each drawn as a
+   4-quad cross (two tilted by half the width), gouraud between the two colours, alpha fading along the beam,
+   depth far. The spline must be in the same file and static: the original keeps $a0/$a1 across each call. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b257_01E01270;
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b257_01E01270;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b257_01E01270;
+
+typedef struct {
+    u8 hdr[0x10];
+    struct {
+        Rgbaq_b257_01E01270 c;
+        u64 st;
+        Xyz_b257_01E01270 p;
+    } v[4];
+    u8 tail[0x20];
+} Pkt_b257_01E01270;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x22];
+    s16 mode;
+} Ctx_b257_01E01270;
+
+typedef struct {
+    u8 pad00[6];
+    s16 count;
+    u8 pad08[0x20];
+    Col_b257_01E01270 col0;
+    Col_b257_01E01270 col1;
+    u8 pad30[8];
+    s16 width;
+} Beam_b257_01E01270;
+
+static void func_01E01CF0_b709(Ctx_b257_01E01270 *c, Beam_b257_01E01270 *an, Vec_b018_01E00EE0 *pts) {
+    extern s32 func_00207500(void);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b257_01E01270 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b018_01E00EE0 ab[2];
+    Vec_b018_01E00EE0 ctrl[4];
+    Vec_b018_01E00EE0 q[4];
+    f32 depth __attribute__((aligned(16)));
+    s32 rot[4];
+    Vec_b018_01E00EE0 r1;
+    Vec_b018_01E00EE0 r2;
+    Pkt_b257_01E01270 pkt __attribute__((aligned(8)));
+    Col_b257_01E01270 col;
+    s32 x;
+    s32 i;
+    s32 k;
+    s32 j;
+    s16 n;
+    Pkt_b257_01E01270 *p;
+    s32 target;
+    f32 t;
+    f32 w;
+
+    w = an->width;
+    target = func_00207500();
+    p = &pkt;
+    w /= 10.0f;
+    n = an->count;
+    func_00109270(p, 0, 0);
+    p->v[0].c = func_00107740(&an->col0);
+    p->v[1].c = func_00107740(&an->col1);
+    p->v[2].c = func_00107740(&an->col0);
+    p->v[3].c = func_00107740(&an->col1);
+    func_00108500(p, c->rect, c->mode);
+    func_00208700(p, c->texture, 1);
+    col = an->col0;
+    ctrl[0] = pts[0];
+    ctrl[1] = pts[0];
+    ctrl[2] = pts[1];
+    ctrl[3] = pts[2];
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    for (i = 0; i < n - 1; i++) {
+        t = 0.0f;
+        for (j = 0; j < 4; j++) {
+            if (i != 0) {
+                ab[0] = func_01E010C0_b709(&pts[(s16)i - 1], 0, t);
+                t += 0.25f;
+                r1 = func_01E010C0_b709(&pts[(s16)i - 1], 0, t);
+                ab[1] = r1;
+            } else {
+                ab[0] = func_01E010C0_b709(ctrl, 0, t);
+                t += 0.25f;
+                r2 = func_01E010C0_b709(ctrl, 0, t);
+                ab[1] = r2;
+            }
+            func_00107790(p, &col, 1);
+            x = col.a - (s16)(an->col0.a / (n * 3));
+            if (x <= 0) {
+                col.a = 0;
+            } else {
+                col.a = x;
+            }
+            func_00107790(p, &col, 2);
+            for (k = 0; k < 4; k++) {
+                q[0].x = ab[0].x;
+                q[0].y = ab[0].y;
+                q[0].z = ab[0].z;
+                q[1].x = ab[0].x;
+                q[1].y = ab[0].y;
+                q[1].z = ab[0].z;
+                q[2].x = ab[1].x;
+                q[2].y = ab[1].y;
+                q[2].z = ab[1].z;
+                q[3].x = ab[1].x;
+                q[3].y = ab[1].y;
+                q[3].z = ab[1].z;
+                if (k == 0) {
+                    q[1].y += w;
+                    q[3].y += w;
+                } else if (k == 1) {
+                    q[1].y -= w;
+                    q[3].y -= w;
+                } else if (k == 2) {
+                    q[1].x += w;
+                    q[3].x += w;
+                    q[1].z += w / 2.0f;
+                    q[3].z += w / 2.0f;
+                } else if (k == 3) {
+                    q[1].x -= w;
+                    q[3].x -= w;
+                    q[1].z -= w / 2.0f;
+                    q[3].z -= w / 2.0f;
+                }
+                if (func_00205630(q, 0x70000000, 0, p, &depth) != 0) {
+                    p->v[0].p.z = p->v[1].p.z = p->v[2].p.z = p->v[3].p.z = 0xFFFFFF;
+                    func_002075F0(p, target, 0);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b709", func_01E02300_b709);
 

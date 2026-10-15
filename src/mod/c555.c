@@ -1,6 +1,49 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c555", func_01E00080_c555);
+/* shape c555:01E00080, 40 insns: colour three vertices of a packet from a (b, g, r, a) colour, q 1.0, alpha dimmed
+   by 4/8, 7/8 and 8/8 of a eighth steps (a - (a >> 3) * 4, * 7, * 8); clear the three vertices' top xyz bytes */
+
+typedef struct {
+    u8 b, g, r, a;
+} Col_c555_01E00080;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_c555_01E00080;
+
+typedef struct {
+    u8 head[0x10];
+    Vtx_c555_01E00080 v[3];
+} Pkt_c555_01E00080;
+
+static void func_01E00080_c555(Pkt_c555_01E00080 *p, Col_c555_01E00080 *c) {
+    s32 s;
+
+    s = c->a >> 3;
+    p->v[0].r = c->r;
+    p->v[0].g = c->g;
+    p->v[0].b = c->b;
+    p->v[0].a = c->a - s * 4;
+    p->v[0].q = 1.0f;
+    p->v[1].r = c->r;
+    p->v[1].g = c->g;
+    p->v[1].b = c->b;
+    p->v[1].a = c->a - s * 7;
+    p->v[1].q = 1.0f;
+    p->v[2].r = c->r;
+    p->v[2].g = c->g;
+    p->v[2].b = c->b;
+    p->v[2].a = c->a - s * 8;
+    p->v[2].q = 1.0f;
+    p->v[0].f = 0;
+    p->v[1].f = 0;
+    p->v[2].f = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c555", func_01E00120_c555);
 

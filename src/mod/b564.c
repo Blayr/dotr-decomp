@@ -662,7 +662,28 @@ INCLUDE_ASM("asm/nonmatchings/mod/b564", func_01E02230_b564);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b564", func_01E02420_b564);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b564", func_01E02700_b564);
+/* shape b564:01E02700, b734:01E03310 family: textures group 4 cells 0-2 and 11-15, group 5 cells 0-1 (table past 0x8000) */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 padT[0x95c0];
+    s32 tex5[2];
+} Scene_b564_01E02700;
+
+static void func_01E02700_b564(s32 arg0, Scene_b564_01E02700 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 11; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 2; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b564", func_01E027B0_b564);
 

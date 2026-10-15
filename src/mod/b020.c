@@ -611,7 +611,49 @@ INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E01FC0_b020);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E022D0_b020);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E023E0_b020);
+/* shape b020:01E023E0, 53 insns: a white flash: set up once (white colours, size 2x2, scale 100), fades in by 0x60
+   for 4 frames up to 0xC0, then out by 9 until it ends */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x3C];
+    f32 scale;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b020_01E023E0;
+
+static s32 func_01E023E0_b020(void *arg0, Obj_b020_01E023E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->scale = 6.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->w = 2;
+        o->h = 2;
+        o->scale = 100.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xA) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b020", func_01E024C0_b020);
 

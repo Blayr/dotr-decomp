@@ -584,7 +584,46 @@ INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E03F20_b756);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E040D0_b756);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E04260_b756);
+/* shape b756:01E04260, 51 insns: volume fade: starts at 0x80; while the game counter at 0xA900 is over 0x1E it drops by
+   10 to 0x30, otherwise it rises by 10 to 0x80; passed to func_001F6D00 (the same call either way) */
+
+typedef struct {
+    u8 pad0[0xA900];
+    s32 count;
+} Game_b756_01E04260;
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 v;
+    u8 pad52[0x6];
+    s16 mode;
+} Fx_b756_01E04260;
+
+static s32 func_01E04260_b756(Game_b756_01E04260 *g, Fx_b756_01E04260 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (g->count > 0x1E) {
+        if (o->v > 0x30) {
+            o->v -= 10;
+        } else {
+            o->v = 0x30;
+        }
+    } else if (o->v < 0x80) {
+        o->v += 10;
+    } else {
+        o->v = 0x80;
+    }
+    if (g->count == 1) {
+        func_001F6D00(o->v);
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
 
 /* shape b756:01E04330, 31 insns: variant of b402:01E02C50 (func_001F7170(3, ...), stops after 0xA5 ticks) */
 

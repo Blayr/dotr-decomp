@@ -110,6 +110,42 @@ INCLUDE_ASM("asm/nonmatchings/mod/b543", func_01E00270_b543);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b543", func_01E00C30_b543);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b543", func_01E04F30_b543);
+/* shape b543:01E04F30, 45 insns: refresh the scene's camera (0xAE40, func_0020DEF0), copy it, aim the copy along
+   (0, 50, 0) / (0, 0, -c) with c the scene's s32 at 0xC, load it (func_0020E360) and func_0020EC60(arg) */
+
+typedef struct {
+    f32 m[16];
+    Vec4f a;
+    Vec4f b;
+    __int128 pad60[3];
+} Cam_b543_01E04F30;
+
+typedef struct {
+    u8 pad0[0xC];
+    s32 c;
+    u8 pad10[0xAE40 - 0x10];
+    Cam_b543_01E04F30 cam;
+} Scene_b543_01E04F30;
+
+extern Scene_b543_01E04F30 *D_01E05100_b543;
+
+static void func_01E04F30_b543(s32 arg) {
+    Scene_b543_01E04F30 *s;
+    Cam_b543_01E04F30 cam;
+
+    s = D_01E05100_b543;
+    func_0020DEF0(&s->cam);
+    cam = s->cam;
+    cam.a.x = 0.0f;
+    cam.a.y = 50.0f;
+    cam.a.z = 0.0f;
+    cam.a.w = 1.0f;
+    cam.b.x = 0.0f;
+    cam.b.y = 0.0f;
+    cam.b.z = -1.0f * s->c;
+    cam.b.w = 1.0f;
+    func_0020E360(&cam);
+    func_0020EC60(arg);
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b543", func_01E04FF0_b543);

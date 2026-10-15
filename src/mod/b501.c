@@ -567,7 +567,47 @@ INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E028B0_b501);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02A20_b501);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02D10_b501);
+/* shape b501:01E02D10, 52 insns: a dark/yellow two-colour ring at the given angle: alpha 0xA0 for 3 ticks, then out by 35 and ends; grows 30 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x10];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b501_01E02D10;
+
+static s32 func_01E02D10_b501(s32 arg0, Glow_b501_01E02D10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 30;
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        func_001076F0(o->col2, 0x70, 0x70, 0xF0);
+        o->w18 = 0x4000;
+        o->ang = o->h30;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 3) {
+        o->col[3] = 0xA0;
+    } else if (o->col[3] > 0x36) {
+        o->col[3] -= 35;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    o->f38 += 30;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02DE0_b501);
 
@@ -581,7 +621,39 @@ INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03530_b501);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03680_b501);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03800_b501);
+/* shape b501:01E03800, 31 insns: b018:01E02DB0 family: func_001F7170(2, 0) with the module's two floats, then ends the object when the scene counter is 150 */
+
+extern f32 D_01E04D00_b501;
+extern f32 D_01E04D08_b501;
+
+typedef struct {
+    u8 pad0[0x2B5E];
+    s16 v;
+} Ctx_b501_01E03800;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b501_01E03800;
+
+static s32 func_01E03800_b501(Ctx_b501_01E03800 *ctx, Obj_b501_01E03800 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E04D00_b501;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E04D08_b501;
+    func_001F7170(2, 0, (s32)&a, (s32)&b, 0);
+    if (ctx->v == 150) {
+        o->h36 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03880_b501);
 
@@ -650,4 +722,120 @@ static s32 func_01E04690_b501(Pool_b501_01E04690 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E047C0_b501);
+/* shape b476:01E042E0, 311 insns: b256:01E04AB0's ribbon (4 spline quads per segment between two trails, module
+   curve function shape b018:01E00EE0), one colour fading by alpha / (2 * n) per quad on the far edge. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b476_01E042E0;
+
+typedef struct {
+    Rgbaq_b476_01E042E0 c;
+    u64 xyz;
+} Vtx_b476_01E042E0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b476_01E042E0 v[4];
+    u8 tail[0x40];
+} Pkt_b476_01E042E0;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b476_01E042E0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 n;
+    u8 pad08[0x20];
+    C4_b476_01E042E0 col;
+} Rib_b476_01E042E0;
+
+static void func_01E047C0_b501(void *o, Rib_b476_01E042E0 *s, Vec_b018_01E00EE0 *pa, Vec_b018_01E00EE0 *pb __attribute__((aligned(16)))) {
+    extern Rgbaq_b476_01E042E0 func_00107740(void *);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 depth[4];
+    Vec_b018_01E00EE0 quad[4];
+    Vec_b018_01E00EE0 A[2];
+    Vec_b018_01E00EE0 B[2];
+    Vec_b018_01E00EE0 a4[4];
+    Vec_b018_01E00EE0 b4[4];
+    Pkt_b476_01E042E0 pkt __attribute__((aligned(8)));
+    C4_b476_01E042E0 col;
+    s32 k;
+    s32 j;
+    s16 n;
+    s32 x;
+    s32 ot;
+    Pkt_b476_01E042E0 *p;
+    Vec_b018_01E00EE0 *pp;
+    Vec_b018_01E00EE0 *pq;
+    f32 t;
+
+    ot = (s32)func_00207500();
+    n = s->n;
+    p = (Pkt_b476_01E042E0 *)(s32)&pkt;
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    col = s->col;
+    a4[0] = pa[0];
+    a4[1] = pa[0];
+    a4[2] = pa[1];
+    a4[3] = pa[2];
+    b4[0] = pb[0];
+    b4[1] = pb[0];
+    b4[2] = pb[1];
+    b4[3] = pb[2];
+    for (k = 0; k < n - 1; k++) {
+        t = 0.0f;
+        pp = pa + (k - 1);
+        pq = pb + (k - 1);
+        for (j = 0; j < 4; j++) {
+            p->v[0].c = func_00107740(&col);
+            p->v[2].c = func_00107740(&col);
+            x = col.a - (s16)(s->col.a / (n * 2));
+            if (x > 0) {
+                col.a = x;
+            } else {
+                col.a = 0;
+            }
+            p->v[1].c = func_00107740(&col);
+            p->v[3].c = func_00107740(&col);
+            if (k != 0) {
+                A[0] = func_01E009F0_b501(pp, 0, t);
+                B[0] = func_01E009F0_b501(pq, 0, t);
+                t += 0.25f;
+                A[1] = func_01E009F0_b501(pp, 0, t);
+                B[1] = func_01E009F0_b501(pq, 0, t);
+            } else {
+                A[0] = func_01E009F0_b501(a4, 0, t);
+                B[0] = func_01E009F0_b501(b4, 0, t);
+                t += 0.25f;
+                A[1] = func_01E009F0_b501(a4, 0, t);
+                B[1] = func_01E009F0_b501(b4, 0, t);
+            }
+            quad[0].x = A[0].x;
+            quad[0].y = A[0].y;
+            quad[0].z = A[0].z;
+            quad[1].x = A[1].x;
+            quad[1].y = A[1].y;
+            quad[1].z = A[1].z;
+            quad[2].x = B[0].x;
+            quad[2].y = B[0].y;
+            quad[2].z = B[0].z;
+            quad[3].x = B[1].x;
+            quad[3].y = B[1].y;
+            quad[3].z = B[1].z;
+            if (func_00205630(quad, 0x70000000, NULL, p, depth) != 0) {
+                func_002075F0(p, ot, 0);
+            }
+        }
+    }
+}

@@ -373,7 +373,104 @@ static Vec_b018_01E00EE0 func_01E00E70_b476(Vec_b018_01E00EE0 *p, s32 type, f32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E012B0_b476);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E017C0_b476);
+/* shape b476:01E017C0, 251 insns, 2 copies: a ring of 9 textured quads (radius size to size+20, 2 wide, 40 apart) turned on
+   all three axes by the sprite's angles; side 0 draws only the quads behind (x < 0), side 1 only those in
+   front, each count+1 times */
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x1C];
+    s16 count;
+    u8 padBA[4];
+    s16 mode;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b476_01E017C0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[4];
+    u8 pad2C[0xC];
+    s16 size;
+    s16 ang;
+} Ring_b476_01E017C0;
+
+static void func_01E017C0_b476(Obj_b476_01E017C0 *o, Ring_b476_01E017C0 *s, s32 side) {
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    f32 m[16];
+    f32 depth[4];
+    u8 pkt[0x90];
+    s32 n;
+    s32 k;
+    s32 t;
+    s16 a;
+    u8 *p;
+
+    p = pkt;
+    a = 0;
+    func_00109270(p, 0, 0);
+    func_00107790(p, s->col, 0);
+    func_00108500(p, o->rect, o->mode);
+    func_00208700(p, o->texture, 1);
+    pos.x = s->x;
+    pos.y = s->y;
+    pos.z = s->z;
+    scale.x = 1.0f;
+    scale.y = 1.0f;
+    scale.z = 1.0f;
+    func_00108EF0(m, &scale, NULL, &pos);
+    quad[0].y = 0.0f;
+    quad[1].y = 0.0f;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    for (k = 0; k < 9; k++) {
+        t = s->ang + a;
+        quad[2].x = s->size * func_00108030(o->xD8, t, 1);
+        quad[2].z = s->size * func_00108030(o->xD8, t, 0);
+        quad[0].x = (s->size + 20) * func_00108030(o->xD8, t, 1);
+        quad[0].z = (s->size + 20) * func_00108030(o->xD8, t, 0);
+        t = a + (s->ang + 2);
+        quad[3].x = s->size * func_00108030(o->xD8, t, 1);
+        quad[3].z = s->size * func_00108030(o->xD8, t, 0);
+        quad[1].x = (s->size + 20) * func_00108030(o->xD8, t, 1);
+        quad[1].z = (s->size + 20) * func_00108030(o->xD8, t, 0);
+        func_00109100(quad, s->rot, 0, o->xD8);
+        func_00109100(quad, s->rot, 1, o->xD8);
+        func_00109100(quad, s->rot, 2, o->xD8);
+        if (side == 0) {
+            if (quad[0].x < 0.0f) {
+                if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                    for (n = 0; n < o->count + 1; n++) {
+                        func_002075F0(p, o->ot, (u32)depth[0]);
+                    }
+                }
+            }
+        } else if (quad[0].x > 0.0f && func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            for (n = 0; n < o->count + 1; n++) {
+                func_002075F0(p, o->ot, (u32)depth[0]);
+            }
+        }
+        a += 0x28;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E01BB0_b476);
 
@@ -628,7 +725,49 @@ static s32 func_01E02EF0_b476(void *arg0, Obj_b258_01E027A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E02FD0_b476);
+/* shape b476:01E02FD0, 46 insns: a red glow at alpha 0x80 until the scene counter reaches 230, then fades by 9 and ends */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[8];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b476_01E02FD0;
+
+typedef struct {
+    u8 pad[0x2E3A];
+    s16 val;
+} Game_b476_01E02FD0;
+
+static s32 func_01E02FD0_b476(Game_b476_01E02FD0 *g, Glow_b476_01E02FD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xFF, 0x20, 0x20);
+        o->h6 = 3;
+        o->col[3] = 0x80;
+        o->f38 = 6;
+        o->mode = 2;
+    }
+    if (g->val < 230) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E03090_b476);
 
@@ -775,4 +914,120 @@ static s32 func_01E041C0_b476(Pool_b476_01E041C0 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E042E0_b476);
+/* shape b476:01E042E0, 311 insns: b256:01E04AB0's ribbon (4 spline quads per segment between two trails, module
+   curve function shape b018:01E00EE0), one colour fading by alpha / (2 * n) per quad on the far edge. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b476_01E042E0;
+
+typedef struct {
+    Rgbaq_b476_01E042E0 c;
+    u64 xyz;
+} Vtx_b476_01E042E0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b476_01E042E0 v[4];
+    u8 tail[0x40];
+} Pkt_b476_01E042E0;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b476_01E042E0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 n;
+    u8 pad08[0x20];
+    C4_b476_01E042E0 col;
+} Rib_b476_01E042E0;
+
+static void func_01E042E0_b476(void *o, Rib_b476_01E042E0 *s, Vec_b018_01E00EE0 *pa, Vec_b018_01E00EE0 *pb __attribute__((aligned(16)))) {
+    extern Rgbaq_b476_01E042E0 func_00107740(void *);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 depth[4];
+    Vec_b018_01E00EE0 quad[4];
+    Vec_b018_01E00EE0 A[2];
+    Vec_b018_01E00EE0 B[2];
+    Vec_b018_01E00EE0 a4[4];
+    Vec_b018_01E00EE0 b4[4];
+    Pkt_b476_01E042E0 pkt __attribute__((aligned(8)));
+    C4_b476_01E042E0 col;
+    s32 k;
+    s32 j;
+    s16 n;
+    s32 x;
+    s32 ot;
+    Pkt_b476_01E042E0 *p;
+    Vec_b018_01E00EE0 *pp;
+    Vec_b018_01E00EE0 *pq;
+    f32 t;
+
+    ot = (s32)func_00207500();
+    n = s->n;
+    p = (Pkt_b476_01E042E0 *)(s32)&pkt;
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    col = s->col;
+    a4[0] = pa[0];
+    a4[1] = pa[0];
+    a4[2] = pa[1];
+    a4[3] = pa[2];
+    b4[0] = pb[0];
+    b4[1] = pb[0];
+    b4[2] = pb[1];
+    b4[3] = pb[2];
+    for (k = 0; k < n - 1; k++) {
+        t = 0.0f;
+        pp = pa + (k - 1);
+        pq = pb + (k - 1);
+        for (j = 0; j < 4; j++) {
+            p->v[0].c = func_00107740(&col);
+            p->v[2].c = func_00107740(&col);
+            x = col.a - (s16)(s->col.a / (n * 2));
+            if (x > 0) {
+                col.a = x;
+            } else {
+                col.a = 0;
+            }
+            p->v[1].c = func_00107740(&col);
+            p->v[3].c = func_00107740(&col);
+            if (k != 0) {
+                A[0] = func_01E00E70_b476(pp, 0, t);
+                B[0] = func_01E00E70_b476(pq, 0, t);
+                t += 0.25f;
+                A[1] = func_01E00E70_b476(pp, 0, t);
+                B[1] = func_01E00E70_b476(pq, 0, t);
+            } else {
+                A[0] = func_01E00E70_b476(a4, 0, t);
+                B[0] = func_01E00E70_b476(b4, 0, t);
+                t += 0.25f;
+                A[1] = func_01E00E70_b476(a4, 0, t);
+                B[1] = func_01E00E70_b476(b4, 0, t);
+            }
+            quad[0].x = A[0].x;
+            quad[0].y = A[0].y;
+            quad[0].z = A[0].z;
+            quad[1].x = A[1].x;
+            quad[1].y = A[1].y;
+            quad[1].z = A[1].z;
+            quad[2].x = B[0].x;
+            quad[2].y = B[0].y;
+            quad[2].z = B[0].z;
+            quad[3].x = B[1].x;
+            quad[3].y = B[1].y;
+            quad[3].z = B[1].z;
+            if (func_00205630(quad, 0x70000000, NULL, p, depth) != 0) {
+                func_002075F0(p, ot, 0);
+            }
+        }
+    }
+}

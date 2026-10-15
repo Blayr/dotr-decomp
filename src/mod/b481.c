@@ -891,7 +891,42 @@ static s32 func_01E02AE0_b481(s32 arg0, Fx_b418_01E020E0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02D40_b481);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E02EB0_b481);
+/* shape b481:01E02EB0, 47 insns: a purple two-colour flash of size 100: full alpha for 16 ticks, then out by 19 and ends */
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    u8 pad08[0x40];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b481_01E02EB0;
+
+static s32 func_01E02EB0_b481(void *arg0, Obj_b481_01E02EB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x80, 0x40, 0xFF);
+    func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+    if (o->state == 1) {
+        o->f48 = 100.0f;
+        o->state = 2;
+    }
+    if (o->t < 16) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 20) {
+        o->col[3] -= 19;
+    } else {
+        o->state = 0;
+    }
+    o->h6 = 10;
+    o->t++;
+    return 0;
+}
 
 /* shape b256:01E02A40, 176 insns: a purple spark with a random drift (-50..49)/60, random spin and spin speed (-1024..1023 per axis), fades in to 0x80 for 10 ticks, out by 9; z spin eased 1.5 by the scene flag */
 

@@ -564,9 +564,87 @@ static s32 func_01E01460_b403(Game_b112_01E02420 *g, Fx_b112_01E02420 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b403", func_01E015F0_b403);
+/* shape b403:01E015F0, 54 insns: volume fade: starts at 0x80; while the game counter at 0x31A0 is over 0x14 it drops by
+   10 to 0x30, otherwise it rises by 10 (clamped) and stops at 0x80; func_001F6D00 gets it when the counter is 1,
+   else the volume */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b403", func_01E016D0_b403);
+typedef struct {
+    u8 pad0[0x31A0];
+    s32 count;
+} Game_b403_01E015F0;
+
+typedef struct {
+    u8 pad0[0x30];
+    s16 v;
+    u8 pad32[0x4];
+    s16 mode;
+} Fx_b403_01E015F0;
+
+static s32 func_01E015F0_b403(Game_b403_01E015F0 *g, Fx_b403_01E015F0 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (g->count > 0x14) {
+        if (o->v > 0x30) {
+            o->v -= 10;
+        } else {
+            o->v = 0x30;
+        }
+    } else {
+        if (o->v < 0x80) {
+            o->v += 10;
+        } else {
+            o->v = 0x80;
+            o->mode = 0;
+        }
+        if (o->v > 0x80) {
+            o->v = 0x80;
+        }
+    }
+    if (g->count == 1) {
+        func_001F6D00(o->v);
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
+
+/* shape b403:01E016D0, 31 insns: b018:01E02DB0 family: func_001F7170(3, 0) with the module's two floats, then ends the object when the scene value is 10 */
+
+extern f32 D_01E02680_b403;
+extern f32 D_01E02688_b403;
+
+typedef struct {
+    u8 pad0[0x31A0];
+    s32 v;
+} Ctx_b403_01E016D0;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+    u8 pad38[0x1C];
+    s16 h54;
+    u8 pad56[2];
+    s16 h58;
+} Obj_b403_01E016D0;
+
+static s32 func_01E016D0_b403(Ctx_b403_01E016D0 *ctx, Obj_b403_01E016D0 *o) {
+    f32 a;
+    f32 b;
+
+    *(f32 *)(u32)&a = *(f32 *)(u32)&D_01E02680_b403;
+    *(f32 *)(u32)&b = *(f32 *)(u32)&D_01E02688_b403;
+    func_001F7170(3, 0, (s32)&a, (s32)&b, 0);
+    if (ctx->v == 10) {
+        o->h36 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b403", func_01E01750_b403);
 

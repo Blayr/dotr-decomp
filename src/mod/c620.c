@@ -42,7 +42,140 @@ static void func_01E00080_c620(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c620", func_01E00120_c620);
+/* shape c610:01E00120, 374 insns, 2 copies: draws a frame of 4 gouraud quads around an object's 4 corner points (each quad
+   from a corner and the previous one, outer edge pushed out by 1/6, inner edge black, outer edge in the object's
+   colour or random greys by flag 0xC); each corner's visibility is flagged on the object (bits 20..23) and a quad
+   is drawn only when all four of its points project; blend by flags 0xB/0xA, depth far by flag 0x13 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_c610_01E00120;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    struct {
+        u8 r, g, b, a;
+        f32 q;
+        Xyz_c610_01E00120 p;
+    } v[4];
+    u8 tail[8];
+} Pkt_c610_01E00120;
+
+typedef struct {
+    u8 pad0[4];
+    s32 flags;
+    u8 b, g, r, a;
+    u8 padC[4];
+    Vec4f pts[4];
+} Frame_c610_01E00120;
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 m[16];
+} Cam_c610_01E00120;
+
+static s32 func_01E00120_c620(s32 ot, Frame_c610_01E00120 *o, Cam_c610_01E00120 *cam) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 d[4];
+    Vec4f p;
+    Pkt_c610_01E00120 pkt __attribute__((aligned(8)));
+    s32 k;
+    s32 prev;
+
+    ((Pkt_c610_01E00120 *)(s32)&pkt)->count = 0x14;
+    ((Pkt_c610_01E00120 *)(s32)&pkt)->tag = 8;
+    ((Pkt_c610_01E00120 *)(s32)&pkt)->regs = 0x41414141;
+    ((Pkt_c610_01E00120 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(o->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(o->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    pkt.v[0].r = 0;
+    pkt.v[0].g = 0;
+    pkt.v[0].b = 0;
+    pkt.v[0].a = o->a;
+    pkt.v[0].q = 1.0f;
+    pkt.v[1].r = 0;
+    pkt.v[1].g = 0;
+    pkt.v[1].b = 0;
+    pkt.v[1].a = o->a;
+    pkt.v[1].q = 1.0f;
+    if (func_00104520(o->flags, 0xC) != 0) {
+        pkt.v[2].r = func_0019A5C8() % 128;
+        pkt.v[2].g = func_0019A5C8() % 128;
+        pkt.v[2].b = func_0019A5C8() % 128;
+        pkt.v[2].a = o->a;
+        pkt.v[2].q = 1.0f;
+        pkt.v[3].r = func_0019A5C8() % 128;
+        pkt.v[3].g = func_0019A5C8() % 128;
+        pkt.v[3].b = func_0019A5C8() % 128;
+        pkt.v[3].a = o->a;
+        pkt.v[3].q = 1.0f;
+    } else {
+        pkt.v[2].r = o->r;
+        pkt.v[2].g = o->g;
+        pkt.v[2].b = o->b;
+        pkt.v[2].a = o->a;
+        pkt.v[2].q = 1.0f;
+        pkt.v[3].r = o->r;
+        pkt.v[3].g = o->g;
+        pkt.v[3].b = o->b;
+        pkt.v[3].a = o->a;
+        pkt.v[3].q = 1.0f;
+    }
+    for (k = 3; k > -1; k--) {
+        if (k == 0) {
+            prev = 3;
+        } else {
+            prev = k - 1;
+        }
+        p.x = o->pts[k].x + o->pts[k].x / 6.0f;
+        p.y = o->pts[k].y + o->pts[k].y / 6.0f;
+        p.z = o->pts[k].z + o->pts[k].z / 6.0f;
+        if (func_00205440(&p, cam->m, &pkt.v[0].p, &d[0]) != 0) {
+            o->flags |= 0x100000;
+        }
+        p.x = o->pts[prev].x + o->pts[prev].x / 6.0f;
+        p.y = o->pts[prev].y + o->pts[prev].y / 6.0f;
+        p.z = o->pts[prev].z + o->pts[prev].z / 6.0f;
+        if (func_00205440(&p, cam->m, &pkt.v[1].p, &d[1]) != 0) {
+            o->flags |= 0x200000;
+        }
+        p.x = o->pts[k].x;
+        p.y = o->pts[k].y;
+        p.z = o->pts[k].z;
+        if (func_00205440(&p, cam->m, &pkt.v[2].p, &d[2]) != 0) {
+            o->flags |= 0x400000;
+        }
+        p.x = o->pts[prev].x;
+        p.y = o->pts[prev].y;
+        p.z = o->pts[prev].z;
+        if (func_00205440(&p, cam->m, &pkt.v[3].p, &d[3]) != 0) {
+            o->flags |= 0x800000;
+        }
+        if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+            func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+            if (func_00104520(o->flags, 0x13) != 0) {
+                pkt.v[0].p.z = pkt.v[1].p.z = pkt.v[2].p.z = pkt.v[3].p.z = 0xFFFFFF;
+                func_002075F0(&pkt, ot, 0);
+            } else {
+                func_002075F0(&pkt, ot, (u32)((d[3] + (d[2] + (d[0] + d[1]))) / 4.0f));
+            }
+        }
+        o->flags &= 0xFF0FFFFF;
+    }
+    return 0;
+}
 
 /* shape b001:01E00A30, 740 insns, 55 copies: draws an emitter's particles as textured quads. Each point moves
    with the velocity (or func_001036A0), turns around the emitter centre while the angle catches up, and gets a

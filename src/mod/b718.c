@@ -800,7 +800,38 @@ static s32 func_01E02A70_b718(void *arg0, Obj_b018_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b718", func_01E02B50_b718);
+/* shape b718:01E02B50, 42 insns: colour (0x40, 0x30, 0); on start 0x38 = 5; alpha 0x30 for 0x4B ticks, then fades by 9
+   and stops; 0x6 = 10 each tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Fx_b718_01E02B50;
+
+static s32 func_01E02B50_b718(s32 arg0, Fx_b718_01E02B50 *o) {
+    func_001076F0(o->col, 0x40, 0x30, 0);
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->mode = 2;
+    }
+    if (o->tick < 0x4B) {
+        o->col[3] = 0x30;
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f6 = 10;
+    o->tick++;
+    return 0;
+}
 
 /* shape b718:01E02C00, 108 insns: variant of b018:01E02610 (f38 20): a twinkling sprite: on start pick a random variant, position, angle, spin speed,
    delay and lifetime and colour (0x20,0x10,8); fade in by 0x38 while younger than its lifetime, then fade out by

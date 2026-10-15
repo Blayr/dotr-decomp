@@ -345,9 +345,83 @@ INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E01C70_b134);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E01E20_b134);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E01FB0_b134);
+/* shape b134:01E01FB0, 52 insns: a white/red two-colour glow of size 130 at a random angle: alpha 0x80 on its first tick, then out by 15 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E02080_b134);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x10];
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b134_01E01FB0;
+
+static s32 func_01E01FB0_b134(s32 arg0, Glow_b134_01E01FB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0x82;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 1) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b134:01E02080, 45 insns: red flash (0x80, 0x20, 0x20): on start 0x38 = 13 and a hold of 8 ticks (0xE);
+   alpha 0x80 during the hold, then fades by 0x1D and stops; 0x6 = 9 each tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[6];
+    s16 hold;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Fx_b134_01E02080;
+
+static s32 func_01E02080_b134(s32 arg0, Fx_b134_01E02080 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x80, 0x20, 0x20);
+    if (o->mode == 1) {
+        o->f38 = 13;
+        o->hold = 8;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x1E) {
+        o->col[3] -= 0x1D;
+    } else {
+        o->mode = 0;
+    }
+    o->f6 = 9;
+    o->tick++;
+    return 0;
+}
 
 /* shape b134:01E02140, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x60, 0x60, 0x60) and fields;
    alpha 0x80 for the first 0xD ticks, then fade out by 29 and stop */
@@ -501,11 +575,65 @@ static s32 func_01E02690_b134(Game_b134_01E02690 *g, Fade_b134_01E02690 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E02750_b134);
+/* shape b134:01E02750, 38 insns: func_001F7170(10, 0, &a, &b, 0) with copies of the module's floats at 0x01E03F80 and
+   0x01E03F88; mode 1 becomes 2; the effect stops once its tick (0x32) reaches 0x50; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b134_01E02750;
+
+typedef struct {
+    u8 pad0[0x32];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b134_01E02750;
+
+extern F_b134_01E02750 D_01E03F80_b134;
+extern F_b134_01E02750 D_01E03F88_b134;
+
+static s32 func_01E02750_b134(s32 arg0, Fx_b134_01E02750 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b134_01E02750 a;
+    F_b134_01E02750 b;
+
+    a = D_01E03F80_b134;
+    b = D_01E03F88_b134;
+    if (o->mode == 1) {
+        o->mode = 2;
+    }
+    func_001F7170(10, 0, &a, &b, 0);
+    if (o->tick >= 0x50) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E027F0_b134);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E02960_b134);
+/* shape b134:01E02960, 40 insns: b734:01E03310 family: textures group 4 cells 0-2 and 11-15, group 5 cell 0 */
+
+typedef struct {
+    u8 pad0[0x340];
+    s32 tex[16];
+    u8 pad380[0x2c20];
+    s32 tex5[3];
+} Scene_b134_01E02960;
+
+static void func_01E02960_b134(s32 arg0, Scene_b134_01E02960 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 11; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 1; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E02A00_b134);
 

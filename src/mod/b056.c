@@ -232,17 +232,130 @@ INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E00CE0_b056);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E012E0_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01660_b056);
+/* shape b056:01E01660, 37 insns: pulse: alpha grows by 10 up to 0xA0, then (phase 1) fades by 10; at the bottom it rises
+   again, clearing 0x36 once the game value at 0x3996 passes 0x15E; colour (0x5F, 0x3F, 0x3F) */
+
+typedef struct {
+    u8 pad0[0x3996];
+    s16 v;
+} Game_b056_01E01660;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 phase;
+    u8 pad32[4];
+    s16 f36;
+} Fx_b056_01E01660;
+
+static s32 func_01E01660_b056(Game_b056_01E01660 *g, Fx_b056_01E01660 *o) {
+    if (o->phase == 0) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 10;
+        } else {
+            o->phase = 1;
+        }
+    } else if (o->col[3] > 0xB) {
+        o->col[3] -= 10;
+    } else {
+        if (g->v > 0x15E) {
+            o->f36 = 0;
+        }
+        o->phase = 0;
+    }
+    func_001076F0(o->col, 0x5F, 0x3F, 0x3F);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01700_b056);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E018A0_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01AF0_b056);
+/* shape b056:01E01AF0, 55 insns: a grey ring that follows the game's point (x, 30, z): set up once at full alpha;
+   grows by 5 up to 100, turns 12 a frame, fades by 16 after 30 frames */
+
+typedef struct {
+    u8 pad0[0x3760];
+    f32 x;
+    f32 y;
+    f32 z;
+} Game_b056_01E01AF0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x22];
+    u8 c0[4];
+    u8 pad2C[0xA];
+    s16 state;
+    s16 size;
+    s16 ang;
+} Obj_b056_01E01AF0;
+
+static s32 func_01E01AF0_b056(Game_b056_01E01AF0 *g, Obj_b056_01E01AF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->c0, 0x40, 0x40, 0x40);
+    o->x = g->x;
+    o->y = 0x1E;
+    o->z = g->z;
+    if (o->state == 1) {
+        o->size = 0;
+        o->state = 2;
+        o->c0[3] = 0x80;
+    }
+    if (o->size > 0x1E) {
+        if (o->c0[3] > 0x10) {
+            o->c0[3] -= 0x10;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->size < 0x64) {
+        o->size += 5;
+    }
+    o->ang += 0xC;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01BD0_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01D80_b056);
+/* shape b056:01E01D80, 44 insns: a yellow glow: fades in by 0x16 up to 0x70 for 5 ticks, then out by 13 while growing 7 a tick; turns 10 a tick */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Glow_b056_01E01D80;
+
+static s32 func_01E01D80_b056(s32 arg0, Glow_b056_01E01D80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x40, 0x40, 0);
+    o->size = 15;
+    if (o->tick < 5) {
+        if (o->col[3] < 0x70) {
+            o->col[3] += 0x16;
+        }
+    } else {
+        if (o->col[3] > 14) {
+            o->col[3] -= 13;
+        } else {
+            o->mode = 0;
+        }
+        o->size += 7;
+    }
+    o->tick++;
+    o->ang += 10;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01E30_b056);
 

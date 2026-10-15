@@ -94,7 +94,114 @@ static void func_01E00100_c529(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c529", func_01E001A0_c529);
+/* OVL_WARM: compile warm (its (u32) cast is jal fptoui, func_001A23B0) */
+
+/* shape c505:01E003D0, 298 insns: draws the two quads of a 2-part strip (shape family of b001:01E03860): colour
+   from the module's colour helper (shape b000:01E00100, static copy below), per-quad setup by func_00105830,
+   corners p[1] or p[0], p[i + 2], p[i * 5], p[i + 3]; texture rect unless flag 0x18; far z under flag 0x13. */
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_c505_01E003D0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_c505_01E003D0;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c505_01E003D0 v[4];
+    u8 tail[0x20];
+} Pkt_c505_01E003D0;
+
+typedef struct {
+    s16 u, v, w, h;
+    u8 pad8[0x2C];
+    Src_c505_01E003D0 color;
+    s32 flags;
+} Def_c505_01E003D0;
+
+typedef struct {
+    void *texture;
+    s32 flags;
+    u8 pad8[0x18];
+    Vec4f p[8];
+} Obj_c505_01E003D0;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_c505_01E003D0;
+
+static s32 func_01E001A0_c529(s32 ot, Def_c505_01E003D0 *d, Obj_c505_01E003D0 *o, Cam_c505_01E003D0 *cam) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00105830(void *, void *, s32);
+    f32 depth[4];
+    Pkt_c505_01E003D0 pkt;
+    s32 i;
+
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_c505_01E003D0 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(d->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(d->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    func_01E00100_c529(&pkt, &d->color);
+    for (i = 0; i < 2; i++) {
+        func_00105830(&pkt, d, i);
+        if (i == 0) {
+            if (func_00205440(&o->p[1], cam->view, &pkt.v[0].st + 1, &depth[0]) != 0) {
+                o->flags |= 0x100000;
+            }
+        } else {
+            if (func_00205440(&o->p[0], cam->view, &pkt.v[0].st + 1, &depth[0]) != 0) {
+                o->flags |= 0x100000;
+            }
+        }
+        if (func_00205440(&o->p[i + 2], cam->view, &pkt.v[1].st + 1, &depth[1]) != 0) {
+            o->flags |= 0x200000;
+        }
+        if (func_00205440(&o->p[i * 5], cam->view, &pkt.v[2].st + 1, &depth[2]) != 0) {
+            o->flags |= 0x400000;
+        }
+        if (func_00205440(&o->p[i + 3], cam->view, &pkt.v[3].st + 1, &depth[3]) != 0) {
+            o->flags |= 0x800000;
+        }
+        if (func_00104520(d->flags, 0x18) != 0) {
+            func_00208700(&pkt, o->texture, 0);
+        } else {
+            if (func_00104520(d->flags, 0) != 0) {
+                func_00208CB0(&pkt, (u64)0xA | ((u64)d->u << 4) | ((u64)(d->u + d->w - 1) << 14) |
+                                        ((u64)d->v << 24) | ((u64)(d->v + d->h - 1) << 34));
+            }
+            func_00208700(&pkt, o->texture, 1);
+        }
+        if (func_00104520(d->flags, 0x13) != 0) {
+            pkt.v[0].z = pkt.v[1].z = pkt.v[2].z = pkt.v[3].z = 0xFFFFFF;
+            func_002075F0(&pkt, ot, 0);
+        } else if (func_00104520(o->flags, 0x14) != 0 && func_00104520(o->flags, 0x15) != 0 &&
+                   func_00104520(o->flags, 0x16) != 0 && func_00104520(o->flags, 0x17) != 0) {
+            func_002075F0(&pkt, ot, func_001A23B0((depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f));
+        }
+        o->flags &= 0xFF0FFFFF;
+    }
+    return 0;
+}
 
 /* shape b013:01E010C0, 376 insns, 42 copies: 60-point spark sprite draw (sibling of b001:01E03860).
    Calls the module colour helper at 0x1E00100 (shape b000:01E00100) as a plain extern: nothing is kept

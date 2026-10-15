@@ -666,7 +666,50 @@ static s32 func_01E02EF0_b529(s32 unused, Obj_b152_01E02680 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E03090_b529);
+/* shape b529:01E03090, 55 insns: volume fade by game state (b058:01E017A0 shape, layout at 0x50): state at 0x72B0
+   limit 0x14, down 10 to 0x40, up 10 capped at 0x80; state 2 ends the fade */
+
+typedef struct {
+    u8 pad[0x72B0];
+    s32 state;
+} Game_b529_01E03090;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[6];
+    s16 mode;
+} Fade_b529_01E03090;
+
+static s32 func_01E03090_b529(Game_b529_01E03090 *g, Fade_b529_01E03090 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x14) {
+        if (o->vol > 0x40) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x40;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+        }
+        if (o->vol > 0x80) {
+            o->vol = 0x80;
+        }
+    }
+    func_001F6D00((u8)o->vol);
+    if (g->state == 2) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E03170_b529);
 

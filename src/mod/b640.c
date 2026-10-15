@@ -931,7 +931,50 @@ static s32 func_01E03400_b640(Game_b640_01E03400 *g, Fx_b640_01E03400 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E036C0_b640);
+/* shape b640:01E036C0, 54 insns: volume fade: starts at 0x80; drops by 10 to 0x30 for 0x140 ticks, then rises by 10
+   to 0x80; when the game value at 0x9AD0 is 3 func_001F6D00 gets 0x80 and the effect stops, else the volume */
+
+typedef struct {
+    u8 pad0[0x9AD0];
+    s32 v;
+} Game_b640_01E036C0;
+
+typedef struct {
+    u8 pad0[0x50];
+    s16 v;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b640_01E036C0;
+
+static s32 func_01E036C0_b640(Game_b640_01E036C0 *g, Fx_b640_01E036C0 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (o->tick < 0x140) {
+        if (o->v > 0x30) {
+            o->v -= 10;
+        } else {
+            o->v = 0x30;
+        }
+    } else if (o->v < 0x80) {
+        o->v += 10;
+    } else {
+        o->v = 0x80;
+    }
+    o->tick++;
+    if (g->v == 3) {
+        func_001F6D00(0x80);
+        o->mode = 0;
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E037A0_b640);
 

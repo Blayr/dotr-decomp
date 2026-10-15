@@ -713,7 +713,29 @@ static s32 func_01E025A0_b513(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E025F0_b513);
+/* shape b513:01E025F0, 40 insns: look up the textures: group 4 cells 0-2 and 4 cells 13-15 into the table at 0x2A0,
+   group 5 cell 0 into 0x3680 (variant of b205:01E02370) */
+
+typedef struct {
+    u8 pad0[0x2A0];
+    s32 tex[16];
+    u8 pad2E0[0x3680 - 0x2E0];
+    s32 tex5[1];
+} Scene_b513_01E025F0;
+
+static void func_01E025F0_b513(s32 arg0, Scene_b513_01E025F0 *o) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 13; i < 16; i++) {
+        o->tex[i] = func_00202BF0(4, i);
+    }
+    for (i = 0; i < 1; i++) {
+        o->tex5[i] = func_00202BF0(5, i);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E02690_b513);
 

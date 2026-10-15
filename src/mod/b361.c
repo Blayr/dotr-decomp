@@ -109,7 +109,52 @@ INCLUDE_ASM("asm/nonmatchings/mod/b361", func_01E00D00_b361);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b361", func_01E00DF0_b361);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b361", func_01E00F70_b361);
+/* shape b361:01E00F70, 51 insns: volume fade by game state (b124:01E01A30 layout at 0x50): state at 0x5F40 limit 0x14, down 10 to 0x30,
+   up 10 to 0x80 where the fade ends; counts its frames */
+
+typedef struct {
+    u8 pad[0x5F40];
+    s32 state;
+} Game_b361_01E00F70;
+
+typedef struct {
+    u8 pad[0x50];
+    s16 vol;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fade_b361_01E00F70;
+
+static s32 func_01E00F70_b361(Game_b361_01E00F70 *g, Fade_b361_01E00F70 *o) {
+    extern void func_001F6D00(s32);
+
+    if (o->mode == 1) {
+        o->vol = 0x80;
+        o->mode = 2;
+    }
+    if (g->state > 0x14) {
+        if (o->vol > 0x30) {
+            o->vol -= 10;
+        } else {
+            o->vol = 0x30;
+        }
+    } else {
+        if (o->vol < 0x80) {
+            o->vol += 10;
+        } else {
+            o->vol = 0x80;
+            o->mode = 0;
+        }
+    }
+    o->t++;
+    if (g->state == 1) {
+        func_001F6D00((u8)o->vol);
+    } else {
+        func_001F6D00((u8)o->vol);
+    }
+    return 0;
+}
 
 typedef struct {
     u8 r, g, b, a;

@@ -398,7 +398,165 @@ static Vec_b018_01E00EE0 func_01E00E30_b257(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01270_b257);
+/* OVL_WARM */
+
+/* shape b257:01E01270, 386 insns, 2 copies: a textured curved beam along the module's spline (shape b018:01E00EE0, here at
+   b257:01E00E30) through the given points (b018:01E01320 family): 4 sub-steps per segment, each drawn as a
+   4-quad cross (two tilted by half the width), gouraud between the two colours, alpha fading along the beam,
+   depth far. The spline must be in the same file and static: the original keeps $a0/$a1 across each call. */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b257_01E01270;
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b257_01E01270;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b257_01E01270;
+
+typedef struct {
+    u8 hdr[0x10];
+    struct {
+        Rgbaq_b257_01E01270 c;
+        u64 st;
+        Xyz_b257_01E01270 p;
+    } v[4];
+    u8 tail[0x20];
+} Pkt_b257_01E01270;
+
+typedef struct {
+    u8 pad00[0x88];
+    void *texture;
+    u8 pad8C[8];
+    s16 rect[4];
+    u8 pad9C[0x22];
+    s16 mode;
+} Ctx_b257_01E01270;
+
+typedef struct {
+    u8 pad00[6];
+    s16 count;
+    u8 pad08[0x20];
+    Col_b257_01E01270 col0;
+    Col_b257_01E01270 col1;
+    u8 pad30[8];
+    s16 width;
+} Beam_b257_01E01270;
+
+static void func_01E01270_b257(Ctx_b257_01E01270 *c, Beam_b257_01E01270 *an, Vec_b018_01E00EE0 *pts) {
+    extern s32 func_00207500(void);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b257_01E01270 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b018_01E00EE0 ab[2];
+    Vec_b018_01E00EE0 ctrl[4];
+    Vec_b018_01E00EE0 q[4];
+    f32 depth __attribute__((aligned(16)));
+    s32 rot[4];
+    Vec_b018_01E00EE0 r1;
+    Vec_b018_01E00EE0 r2;
+    Pkt_b257_01E01270 pkt __attribute__((aligned(8)));
+    Col_b257_01E01270 col;
+    s32 x;
+    s32 i;
+    s32 k;
+    s32 j;
+    s16 n;
+    Pkt_b257_01E01270 *p;
+    s32 target;
+    f32 t;
+    f32 w;
+
+    w = an->width;
+    target = func_00207500();
+    p = &pkt;
+    w /= 10.0f;
+    n = an->count;
+    func_00109270(p, 0, 0);
+    p->v[0].c = func_00107740(&an->col0);
+    p->v[1].c = func_00107740(&an->col1);
+    p->v[2].c = func_00107740(&an->col0);
+    p->v[3].c = func_00107740(&an->col1);
+    func_00108500(p, c->rect, c->mode);
+    func_00208700(p, c->texture, 1);
+    col = an->col0;
+    ctrl[0] = pts[0];
+    ctrl[1] = pts[0];
+    ctrl[2] = pts[1];
+    ctrl[3] = pts[2];
+    func_00205C40((s32)rot);
+    rot[1] = rot[1] / 180;
+    rot[1] = -rot[1];
+    for (i = 0; i < n - 1; i++) {
+        t = 0.0f;
+        for (j = 0; j < 4; j++) {
+            if (i != 0) {
+                ab[0] = func_01E00E30_b257(&pts[(s16)i - 1], 0, t);
+                t += 0.25f;
+                r1 = func_01E00E30_b257(&pts[(s16)i - 1], 0, t);
+                ab[1] = r1;
+            } else {
+                ab[0] = func_01E00E30_b257(ctrl, 0, t);
+                t += 0.25f;
+                r2 = func_01E00E30_b257(ctrl, 0, t);
+                ab[1] = r2;
+            }
+            func_00107790(p, &col, 1);
+            x = col.a - (s16)(an->col0.a / (n * 3));
+            if (x <= 0) {
+                col.a = 0;
+            } else {
+                col.a = x;
+            }
+            func_00107790(p, &col, 2);
+            for (k = 0; k < 4; k++) {
+                q[0].x = ab[0].x;
+                q[0].y = ab[0].y;
+                q[0].z = ab[0].z;
+                q[1].x = ab[0].x;
+                q[1].y = ab[0].y;
+                q[1].z = ab[0].z;
+                q[2].x = ab[1].x;
+                q[2].y = ab[1].y;
+                q[2].z = ab[1].z;
+                q[3].x = ab[1].x;
+                q[3].y = ab[1].y;
+                q[3].z = ab[1].z;
+                if (k == 0) {
+                    q[1].y += w;
+                    q[3].y += w;
+                } else if (k == 1) {
+                    q[1].y -= w;
+                    q[3].y -= w;
+                } else if (k == 2) {
+                    q[1].x += w;
+                    q[3].x += w;
+                    q[1].z += w / 2.0f;
+                    q[3].z += w / 2.0f;
+                } else if (k == 3) {
+                    q[1].x -= w;
+                    q[3].x -= w;
+                    q[1].z -= w / 2.0f;
+                    q[3].z -= w / 2.0f;
+                }
+                if (func_00205630(q, 0x70000000, 0, p, &depth) != 0) {
+                    p->v[0].p.z = p->v[1].p.z = p->v[2].p.z = p->v[3].p.z = 0xFFFFFF;
+                    func_002075F0(p, target, 0);
+                }
+            }
+        }
+    }
+}
 
 /* OVL_WARM: compile warm */
 
@@ -520,9 +678,76 @@ INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E028B0_b257);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E02BC0_b257);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E02CF0_b257);
+/* shape b257:01E02CF0, 49 insns: b027:01E01600 twin: a red two-colour glow of size 20 at alpha 0x80 for 175 ticks, then out by 9 and ends */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E02DC0_b257);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+} Glow_b257_01E02CF0;
+
+static s32 func_01E02CF0_b257(s32 arg0, Glow_b257_01E02CF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xC0, 0x10, 0x10);
+        func_001076F0(o->col2, 0xC0, 0x10, 0x10);
+        o->h6 = 9;
+        o->col[3] = 0;
+        o->kind = 1;
+        o->f38 = 20;
+        o->mode = 2;
+    }
+    if (o->tick < 175) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b257:01E02DC0, 44 insns: grey glow: on start colour 0x20, alpha 0, 0x38 = 100; alpha grows by 9 up to 0x60
+   for 0x140 ticks, then fades by 9 and stops */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Fx_b257_01E02DC0;
+
+static s32 func_01E02DC0_b257(s32 arg0, Fx_b257_01E02DC0 *o) {
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->col[3] = 0;
+        o->f38 = 100;
+        o->mode = 2;
+    }
+    if (o->tick < 0x140) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b207:01E03430, 43 insns: constant variant of b018:01E02AC0 (glow): on start colour (0x60, 0x60, 0x60) and fields;
    alpha 0x80 for the first 0x140 ticks, then fade out by 9 and stop */

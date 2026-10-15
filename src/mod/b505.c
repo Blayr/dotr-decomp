@@ -232,7 +232,41 @@ INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E00CE0_b505);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E00E00_b505);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E010C0_b505);
+/* shape b505:01E010C0, 37 insns: pulse: alpha grows by 10 up to 0xA0, then (phase 1) fades by 10; at the bottom it rises
+   again, clearing 0x36 once the game value at 0x2BCA passes 0xD2; colour (0x5F, 0x3F, 0x3F) */
+
+typedef struct {
+    u8 pad0[0x2BCA];
+    s16 v;
+} Game_b505_01E010C0;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 phase;
+    u8 pad32[4];
+    s16 f36;
+} Fx_b505_01E010C0;
+
+static s32 func_01E010C0_b505(Game_b505_01E010C0 *g, Fx_b505_01E010C0 *o) {
+    if (o->phase == 0) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 10;
+        } else {
+            o->phase = 1;
+        }
+    } else if (o->col[3] > 0xB) {
+        o->col[3] -= 10;
+    } else {
+        if (g->v > 0xD2) {
+            o->f36 = 0;
+        }
+        o->phase = 0;
+    }
+    func_001076F0(o->col, 0x5F, 0x3F, 0x3F);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b505", func_01E01160_b505);
 

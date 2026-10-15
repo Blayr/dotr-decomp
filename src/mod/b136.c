@@ -98,11 +98,82 @@ INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E014B0_b136);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E01670_b136);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E01780_b136);
+/* shape b136:01E01780, 48 insns: an orange flash placed at (0x4000, 0x400, 0): fades in by 0x26 for 5 ticks, out by 10 and ends; grows 1 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[8];
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Glow_b136_01E01780;
+
+static s32 func_01E01780_b136(s32 arg0, Glow_b136_01E01780 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 5;
+        func_001076F0(o->col, 0x8F, 0x1F, 0xF0);
+        o->w10 = 0x4000;
+        o->w14 = 0x400;
+        o->w18 = 0;
+        o->mode = 2;
+    }
+    if (o->tick < 5) {
+        o->col[3] += 0x26;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->f38++;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E01840_b136);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E01950_b136);
+/* shape b136:01E01950, 31 insns: func_001F7170(6, 2, &a, &b, 0) with copies of the module's floats at 0x01E02600 and
+   0x01E02608; when the game value at 0x365C is 94 the effect's 0x36 is cleared; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b136_01E01950;
+
+typedef struct {
+    u8 pad0[0x365C];
+    s16 v;
+} Game_b136_01E01950;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 f36;
+} Fx_b136_01E01950;
+
+extern F_b136_01E01950 D_01E02600_b136;
+extern F_b136_01E01950 D_01E02608_b136;
+
+static s32 func_01E01950_b136(Game_b136_01E01950 *g, Fx_b136_01E01950 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b136_01E01950 a;
+    F_b136_01E01950 b;
+
+    a = D_01E02600_b136;
+    b = D_01E02608_b136;
+    func_001F7170(6, 2, &a, &b, 0);
+    if (g->v == 94) {
+        o->f36 = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E019D0_b136);
 
@@ -164,7 +235,32 @@ static s32 func_01E01F00_b136(Pool_b136_01E01F00 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E02020_b136);
+/* shape b136:01E02020, 41 insns: mode 0 sets up the drawing state: a 0x96 matrix from the anim's angle at 0x34,
+   colour, texture group 4 cell 15 */
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 col[0xC];
+    s16 h34;
+} Anim_b136_01E02020;
+
+static void func_01E02020_b136(s32 arg0, Anim_b136_01E02020 *an, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    f32 rm[4];
+
+    func_00207500();
+    if (mode == 0) {
+        func_00106080(rm, 0x96, an->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, an->col, 0);
+        func_00108500(p, rm, 1);
+        func_00208700(p, func_00202BF0(4, 15), 1);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b136", func_01E020D0_b136);
 

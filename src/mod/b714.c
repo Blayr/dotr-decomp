@@ -697,7 +697,38 @@ static s32 func_01E02760_b714(void *arg0, Obj_b018_01E02480 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E02840_b714);
+/* shape b714:01E02840, 42 insns: colour (0x40, 0x30, 0); on start 0x38 = 5; alpha 0x60 for 0xC ticks, then fades by 9
+   and stops; 0x6 = 10 each tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Fx_b714_01E02840;
+
+static s32 func_01E02840_b714(s32 arg0, Fx_b714_01E02840 *o) {
+    func_001076F0(o->col, 0x40, 0x30, 0);
+    if (o->mode == 1) {
+        o->f38 = 5;
+        o->mode = 2;
+    }
+    if (o->tick < 0xC) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f6 = 10;
+    o->tick++;
+    return 0;
+}
 
 /* shape b018:01E02610, 108 insns: a twinkling sprite: on start pick a random variant, position, angle, spin speed,
    delay and lifetime and colour (0x20,0x10,8); fade in by 0x38 while younger than its lifetime, then fade out by
@@ -941,7 +972,39 @@ static s32 func_01E03170_b714(Game_b714_01E03170 *g, Fade_b714_01E03170 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E03230_b714);
+/* shape b714:01E03230, 31 insns: func_001F7170(2, 0, &a, &b, 0) with copies of the module's floats at 0x01E04300 and
+   0x01E04308; when the game value at 0x3B40 is 0xA the effect's 0x36 is cleared; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b714_01E03230;
+
+typedef struct {
+    u8 pad0[0x3B40];
+    s32 v;
+} Game_b714_01E03230;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 f;
+} Fx_b714_01E03230;
+
+extern F_b714_01E03230 D_01E04300_b714;
+extern F_b714_01E03230 D_01E04308_b714;
+
+static s32 func_01E03230_b714(Game_b714_01E03230 *g, Fx_b714_01E03230 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b714_01E03230 a;
+    F_b714_01E03230 b;
+
+    a = D_01E04300_b714;
+    b = D_01E04308_b714;
+    func_001F7170(2, 0, &a, &b, 0);
+    if (g->v == 0xA) {
+        o->f = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E032B0_b714);
 

@@ -73,7 +73,53 @@ INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E00F90_b286);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E01130_b286);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E013F0_b286);
+/* shape b286:01E013F0, 54 insns: volume fade: starts at 0x80; while the game counter at 0x6A80 is over 0x1E it drops by
+   10 to 0x30, otherwise it rises by 10 (clamped) and stops at 0x80; func_001F6D00 gets it when the counter is 1,
+   else the volume */
+
+typedef struct {
+    u8 pad0[0x6A80];
+    s32 count;
+} Game_b286_01E013F0;
+
+typedef struct {
+    u8 pad0[0x30];
+    s16 v;
+    u8 pad32[0x4];
+    s16 mode;
+} Fx_b286_01E013F0;
+
+static s32 func_01E013F0_b286(Game_b286_01E013F0 *g, Fx_b286_01E013F0 *o) {
+    extern void func_001F6D00(u8);
+
+    if (o->mode == 1) {
+        o->v = 0x80;
+        o->mode = 2;
+    }
+    if (g->count > 0x1E) {
+        if (o->v > 0x30) {
+            o->v -= 10;
+        } else {
+            o->v = 0x30;
+        }
+    } else {
+        if (o->v < 0x80) {
+            o->v += 10;
+        } else {
+            o->v = 0x80;
+            o->mode = 0;
+        }
+        if (o->v > 0x80) {
+            o->v = 0x80;
+        }
+    }
+    if (g->count == 1) {
+        func_001F6D00(o->v);
+    } else {
+        func_001F6D00(o->v);
+    }
+    return 0;
+}
 
 /* shape b194:01E01AE0: b018:01E02DB0 with other constants (chatG) */
 

@@ -578,7 +578,43 @@ INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E01BE0_b555);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E01DC0_b555);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E01ED0_b555);
+/* shape b555:01E01ED0, 48 insns: a white one-tick flash at a random frame 0..6 that steps to 6 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+} Glow_b555_01E01ED0;
+
+static s32 func_01E01ED0_b555(s32 arg0, Glow_b555_01E01ED0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        o->f38 = 3;
+        o->kind = func_0019A5C8() % 7;
+        o->mode = 2;
+    }
+    if (o->tick < 1) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x80;
+        }
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind < 6) {
+        o->kind++;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b555", func_01E01F90_b555);
 

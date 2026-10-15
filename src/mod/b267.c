@@ -141,7 +141,46 @@ INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01500_b267);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01610_b267);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E01740_b267);
+/* shape b267:01E01740, 55 insns: a grey flash: set up once (grey, frame 10), fades in by 6 for 20 frames, then once
+   the game timer passes 0x96 fades out by 9 until it ends */
+
+typedef struct {
+    u8 pad0[0x3E2E];
+    s16 timer;
+} Game_b267_01E01740;
+
+typedef struct {
+    u8 pad0[0x28];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    s16 h34;
+    s16 state;
+} Obj_b267_01E01740;
+
+static s32 func_01E01740_b267(Game_b267_01E01740 *g, Obj_b267_01E01740 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->h34 = 0xA;
+        o->state = 2;
+    }
+    if (o->t < 0x14) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 6;
+        }
+    } else if (g->timer > 0x96) {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b194:01E01A20, 47 insns: constant variant of b205:01E01E50 (volume fade by game state): state at 0x3DD0 limit 0x1F,
    floor 0x30, down 10, up 10, cap 0x80 */

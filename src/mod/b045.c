@@ -947,7 +947,39 @@ static s32 func_01E03440_b045(Game_b045_01E03440 *g, Fade_b045_01E03440 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b045", func_01E03500_b045);
+/* shape b045:01E03500, 31 insns: func_001F7170(2, 0, &a, &b, 0) with copies of the module's floats at 0x01E04780 and
+   0x01E04788; when the game value at 0x3700 is 10 the effect's 0x36 is cleared; return 0 */
+
+typedef struct {
+    f32 v;
+} F_b045_01E03500;
+
+typedef struct {
+    u8 pad0[0x3700];
+    s32 v;
+} Game_b045_01E03500;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 f36;
+} Fx_b045_01E03500;
+
+extern F_b045_01E03500 D_01E04780_b045;
+extern F_b045_01E03500 D_01E04788_b045;
+
+static s32 func_01E03500_b045(Game_b045_01E03500 *g, Fx_b045_01E03500 *o) {
+    extern void func_001F7170(s32, s32, void *, void *, s32);
+    F_b045_01E03500 a;
+    F_b045_01E03500 b;
+
+    a = D_01E04780_b045;
+    b = D_01E04788_b045;
+    func_001F7170(2, 0, &a, &b, 0);
+    if (g->v == 10) {
+        o->f36 = 0;
+    }
+    return 0;
+}
 
 /* shape b045:01E03580, 41 insns: look up the textures: group 4 cells 0-2, group 4 cells 13-15, group 5
    cells 0-1 (variant of b205:01E02370) */

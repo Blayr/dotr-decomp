@@ -101,7 +101,159 @@ INCLUDE_ASM("asm/nonmatchings/mod/b133", func_01E00410_b133);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b133", func_01E00BA0_b133);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b133", func_01E01440_b133);
+/* OVL_CFLAGS: -O2,p -sdatathreshold 0 -relax_pointers */
+/* OVL_WARM: compile warm (its (u32) casts are jal fptoui, func_001A23B0) */
+
+/* shape b133:01E01440, 325 insns: n burst emitters (0x60 bytes each): move and spin, then draw count radial lines
+   from a random byte table: angle steps by 20 + table[idx], radius and height from the next two table bytes,
+   length 1 + (mask & table), pushed out by the emitter's age; each line drawn twice */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b133_01E01440;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b133_01E01440 xyz;
+} Vtx_b133_01E01440;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Vtx_b133_01E01440 v[2];
+    u8 tail[8];
+} Pk_b133_01E01440;
+
+typedef struct {
+    u8 b, g, r, a;
+} Col_b133_01E01440;
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[4];
+} V3_b133_01E01440;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3[5];
+    u8 count;
+    u8 idx;
+    u8 mask;
+    u8 padB;
+    u8 *tab;
+    f32 hscale;
+    f32 rscale;
+    Col_b133_01E01440 c1;
+    Col_b133_01E01440 c0;
+    V3_b133_01E01440 pos;
+    V3_b133_01E01440 vel;
+    s32 rot[4];
+    s32 drot[4];
+} Emit_b133_01E01440;
+
+#pragma optimization_level 2
+
+static s32 func_01E01440_b133(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_0020BC00(void *, void *);
+    f32 m2[16];
+    f32 m[16];
+    f32 p[8];
+    Pk_b133_01E01440 pk __attribute__((aligned(8)));
+    f32 dep;
+    Emit_b133_01E01440 *e;
+    s32 i;
+    s32 j;
+    s32 len;
+    s32 k;
+    f32 ang;
+    f32 step;
+    f32 c;
+    f32 r;
+    f32 a;
+    f32 h;
+    f32 s;
+    f32 fl;
+    f32 w;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        e->pos.x += e->vel.x;
+        e->pos.y += e->vel.y;
+        e->pos.z += e->vel.z;
+        e->rot[0] += e->drot[0];
+        e->rot[1] += e->drot[1];
+        e->rot[2] += e->drot[2];
+        func_00101BA0(e, &e->pos);
+        func_0020EB40(m);
+        func_0020C940(m2, NULL, e->rot, &e->pos);
+        func_0020BC00(m, m2);
+        j = e->idx;
+        step = 20.0f + e->tab[j];
+        j = (u8)(j + 1);
+        ang = 0.0f;
+        len = e->max - e->life;
+        ((Pk_b133_01E01440 *)(s32)&pk)->flags = 0x11;
+        ((Pk_b133_01E01440 *)(s32)&pk)->size = 4;
+        ((Pk_b133_01E01440 *)(s32)&pk)->regs = 0x4141;
+        ((Pk_b133_01E01440 *)(s32)&pk)->pad4 = 0;
+        pk.v[0].r = e->c0.r;
+        pk.v[0].g = e->c0.g;
+        pk.v[0].b = e->c0.b;
+        pk.v[1].r = e->c1.r;
+        pk.v[1].g = e->c1.g;
+        pk.v[1].b = e->c1.b;
+        pk.v[0].q = pk.v[1].q = 1.0f;
+        if (e->life < 8) {
+            pk.v[0].a = pk.v[1].a = (e->c1.a >> 3) * e->life;
+        } else {
+            pk.v[0].a = pk.v[1].a = e->c1.a;
+        }
+        func_002086D0(&pk, 0x48);
+        ((Pk_b133_01E01440 *)(s32)&pk)->flags |= 0x400;
+        for (k = 0; k < e->count; k++) {
+            ang += step;
+            if (!(ang <= 360.0f)) {
+                ang -= 360.0f;
+            }
+            r = e->rscale * e->tab[(u8)j] / 255.0f;
+            a = 3.1415927f * ang / 180.0f;
+            c = r * func_001A6898(a);
+            s = r * func_001A6A88(a);
+            h = e->hscale * e->tab[(u8)(j + 1)] / 255.0f;
+            fl = len;
+            p[0] = c * fl;
+            p[1] = h * fl;
+            p[2] = s * fl;
+            w = 1.0f + (e->mask & e->tab[(u8)(j + 2)]);
+            j = (u8)(j + 3);
+            p[4] = p[0] + c * w;
+            p[5] = p[1] + h * w;
+            p[6] = p[2] + s * w;
+            if (func_00205440(p, m, &pk.v[0].xyz, &dep) != 0 && func_00205440(&p[4], m, &pk.v[1].xyz, &dep) != 0) {
+                func_002075F0((s32)&pk, ot, (u32)dep);
+                func_002075F0((s32)&pk, ot, (u32)dep);
+            }
+        }
+    }
+    return 1;
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b133", func_01E01960_b133);
 

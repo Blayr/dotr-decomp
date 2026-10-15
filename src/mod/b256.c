@@ -745,7 +745,95 @@ static s32 func_01E022E0_b256(s32 arg0, Fx_b256_01E022E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E02540_b256);
+/* shape b256:01E02540, 218 insns: b256:01E02A40 family: a drifting spark (drift /100, random spin and spin speed), fades in for 6 ticks, out by 11; grows every third tick; the scene counter past 445 ends it */
+
+typedef struct {
+    u8 pad0[0xCBB4];
+    s16 flag;
+    u8 padCBB6[2];
+    s16 count;
+} Ctx_b256_01E02540;
+
+typedef struct {
+    s16 h0, h2, h4;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b256_01E02540;
+
+static s32 func_01E02540_b256(Ctx_b256_01E02540 *ctx, Obj_b256_01E02540 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->h8 = func_0019A5C8() % 3 + 3;
+        o->hA = o->h8 + 4;
+        o->h56 = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f38 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 100.0f;
+        o->f30 /= 100.0f;
+        o->f38 /= 100.0f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->h4 = func_0019A5C8() % 0x800 - 0x400;
+        o->h2 = func_0019A5C8() % 0x800 - 0x400;
+        o->h0 = func_0019A5C8() % 0x800 - 0x400;
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+    }
+    if (o->t < 6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->h8 < 11) {
+            o->h8++;
+        }
+        if (o->hA < o->h8 + 4) {
+            o->hA++;
+        }
+    }
+    if (o->t != 0) {
+        o->x += o->f30;
+        o->y += o->f34;
+        o->z += o->f38;
+    }
+    o->rot[2] += o->h4;
+    o->rot[1] += o->h2;
+    o->rot[0] += o->h0;
+    o->t++;
+    if (ctx->count > 445) {
+        o->t = 90;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b256", func_01E028B0_b256);
 
