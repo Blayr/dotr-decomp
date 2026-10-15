@@ -348,7 +348,182 @@ u32 fread(void *buf, u32 size, u32 count, void *arg3) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_033b", _free_r);
+#define malloc_unlock(r) ((void (*)(s32))func_00198A88)(r)
+#define SIZE_SZ (sizeof(INTERNAL_SIZE_T))
+#define PREV_INUSE 0x1
+#define SIZE_BITS 0x3
+#define chunksize(p) ((p)->size & ~(SIZE_BITS))
+#define set_head(p, s) ((p)->size = (s))
+#define set_foot(p, s) (((mchunkptr)((char *)(p) + (s)))->prev_size = (s))
+#define chunk_at_offset(p, s) ((mchunkptr)(((char *)(p)) + (s)))
+#define bin_at(i) ((mchunkptr)((char *)&(D_0028FAA8[2 * (i) + 2]) - 2 * SIZE_SZ))
+#define top (bin_at(0)->fd)
+#define last_remainder (bin_at(1))
+#define binblocks (bin_at(0)->size)
+#define MAX_SMALLBIN_SIZE 512
+#define BINBLOCKWIDTH 4
+#define smallbin_index(sz) (((unsigned long)(sz)) >> 3)
+#define bin_index(sz)                                                                              \
+    ((((sz) >> 9) == 0)      ? ((sz) >> 3)                                                         \
+     : (((sz) >> 9) <= 4)    ? 56 + ((sz) >> 6)                                                    \
+     : (((sz) >> 9) <= 20)   ? 91 + ((sz) >> 9)                                                    \
+     : (((sz) >> 9) <= 84)   ? 110 + ((sz) >> 12)                                                  \
+     : (((sz) >> 9) <= 340)  ? 119 + ((sz) >> 15)                                                  \
+     : (((sz) >> 9) <= 1364) ? 124 + ((sz) >> 18)                                                  \
+                             : 126)
+#define idx2binblock(ix) ((unsigned long)1 << ((ix) / BINBLOCKWIDTH))
+#define mark_binblock(ii) (binblocks |= idx2binblock(ii))
+#define unlink(P, BK, FD)                                                                          \
+    {                                                                                              \
+        BK = P->bk;                                                                                \
+        FD = P->fd;                                                                                \
+        FD->bk = BK;                                                                               \
+        BK->fd = FD;                                                                               \
+    }
+#define link_last_remainder(P)                                                                     \
+    {                                                                                              \
+        last_remainder->fd = last_remainder->bk = P;                                               \
+        P->fd = P->bk = last_remainder;                                                            \
+    }
+#define frontlink(P, S, IDX, BK, FD)                                                               \
+    {                                                                                              \
+        if (S < MAX_SMALLBIN_SIZE) {                                                               \
+            IDX = smallbin_index(S);                                                               \
+            mark_binblock(IDX);                                                                    \
+            BK = bin_at(IDX);                                                                      \
+            FD = BK->fd;                                                                           \
+            P->bk = BK;                                                                            \
+            P->fd = FD;                                                                            \
+            FD->bk = BK->fd = P;                                                                   \
+        } else {                                                                                   \
+            IDX = bin_index(S);                                                                    \
+            BK = bin_at(IDX);                                                                      \
+            FD = BK->fd;                                                                           \
+            if (FD == BK) {                                                                        \
+                mark_binblock(IDX);                                                                \
+            } else {                                                                               \
+                while (FD != BK && S < chunksize(FD))                                              \
+                    FD = FD->fd;                                                                   \
+                BK = FD->bk;                                                                       \
+            }                                                                                      \
+            P->bk = BK;                                                                            \
+            P->fd = FD;                                                                            \
+            FD->bk = BK->fd = P;                                                                   \
+        }                                                                                          \
+    }
+#define MINSIZE 16
+#define mem2chunk(mem) ((mchunkptr)((char *)(mem) - 2 * SIZE_SZ))
+#define inuse_bit_at_offset(p, s) (((mchunkptr)((char *)(p) + (s)))->size & PREV_INUSE)
+
+/* _free_r (newlib 1.9.0 mallocr.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void _free_r(s32 self, void *mem) {
+    extern s32 _malloc_trim_r(s32, u32);
+    mchunkptr p;
+    INTERNAL_SIZE_T hd;
+    INTERNAL_SIZE_T sz;
+    s32 idx;
+    mchunkptr next;
+    INTERNAL_SIZE_T nextsz;
+    INTERNAL_SIZE_T prevsz;
+    mchunkptr bck;
+    mchunkptr fwd;
+    s32 islr;
+
+    if (mem == 0) {
+        return;
+    }
+
+    func_00198A08(self);
+    p = mem2chunk(mem);
+    hd = p->size;
+
+    sz = hd & ~PREV_INUSE;
+    next = chunk_at_offset(p, sz);
+    nextsz = chunksize(next);
+
+    if (next == top) {
+        sz += nextsz;
+
+        if (!(hd & PREV_INUSE)) {
+            prevsz = p->prev_size;
+            p = chunk_at_offset(p, -((long)prevsz));
+            sz += prevsz;
+            unlink(p, bck, fwd);
+        }
+
+        {
+            unsigned long thr = D_0028FEB0;
+            set_head(p, sz | PREV_INUSE);
+            top = p;
+            if ((unsigned long)(sz) >= thr) {
+            _malloc_trim_r(self, D_0028FEB8);
+        }
+        }
+        malloc_unlock(self);
+        return;
+    }
+
+    set_head(next, nextsz);
+
+    islr = 0;
+
+    if (!(hd & PREV_INUSE)) {
+        prevsz = p->prev_size;
+        p = chunk_at_offset(p, -((long)prevsz));
+        sz += prevsz;
+
+        if (p->fd == last_remainder) {
+            islr = 1;
+        } else {
+            unlink(p, bck, fwd);
+        }
+    }
+
+    if (!(inuse_bit_at_offset(next, nextsz))) {
+        sz += nextsz;
+
+        if (!islr && next->fd == last_remainder) {
+            islr = 1;
+            link_last_remainder(p);
+        } else {
+            unlink(next, bck, fwd);
+        }
+    }
+
+    set_head(p, sz | PREV_INUSE);
+    set_foot(p, sz);
+    if (!islr) {
+        frontlink(p, sz, idx, bck, fwd);
+    }
+
+    malloc_unlock(self);
+}
+
+#undef malloc_unlock
+#undef SIZE_SZ
+#undef PREV_INUSE
+#undef SIZE_BITS
+#undef chunksize
+#undef set_head
+#undef set_foot
+#undef chunk_at_offset
+#undef bin_at
+#undef top
+#undef last_remainder
+#undef binblocks
+#undef MAX_SMALLBIN_SIZE
+#undef BINBLOCKWIDTH
+#undef smallbin_index
+#undef bin_index
+#undef idx2binblock
+#undef mark_binblock
+#undef unlink
+#undef link_last_remainder
+#undef frontlink
+#undef MINSIZE
+#undef mem2chunk
+#undef inuse_bit_at_offset
 
 #define SIZE_SZ (sizeof(INTERNAL_SIZE_T))
 #define PREV_INUSE 0x1

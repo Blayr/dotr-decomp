@@ -2327,6 +2327,7 @@ void _dualPrimeVector(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy)
 f32 _f_ulltof(u64 arg0);
 void _findenv(s32 arg0, s32 arg1);
 s32 _findenv_r(s32 reent_ptr, s32 arg1, s32 arg2);
+void _free_r(s32 self, void *mem);
 s32 _fstat_r(s32 *ptr, s32 fd, void *st);
 s32 _fwalk(u8 *ptr, s32 (*function)(nl_FILE *));
 void _getenv_r(s32 arg0, s32 arg1);
@@ -4708,7 +4709,7 @@ nl_mglue *func_00196880(s32 d, s32 n);
 void *func_001968F8(void *arg0);
 void func_00196A30(void *arg0);
 u32 func_00196AC0(void *buf, u32 size, u32 count, void *arg3);
-s32 func_00196BE0(s32, s32);
+void func_00196BE0(s32 self, void *mem);
 s32 func_00196ED8(s32 reent_ptr, u32 pad);
 s32 func_00197048(s32 *ptr, s32 fd, void *st);
 s32 func_001970A8(void *arg0, void *arg1);

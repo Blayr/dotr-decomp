@@ -618,7 +618,6 @@ extern s32 D_0028D108;
 
 
 
-s32 _free_r(s32, s32);                    /* extern */
 
 
 extern s32 *D_00315C68;
