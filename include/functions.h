@@ -984,6 +984,7 @@ s32 func_0017C108(void);
 void func_0017C130(u32 start, u32 end);
 void func_0017C1D8(u32 arg0, u32 arg1);
 void func_0017C258(u32 arg0, u32 arg1);
+void func_0017C270(u32 start, u32 end);
 void func_0017C318(u32 arg0, u32 arg1);
 void func_0017C398(u32 arg0, u32 arg1);
 s32 func_0017C3B0(void);
