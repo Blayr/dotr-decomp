@@ -834,7 +834,178 @@ void lSzDuel_DrawTrade_Notice_Pipe(s32 arg0, s32 arg1, s32 arg2) {
                   0x140, 0x7A, length, text, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C5D70);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrMiscLargeEntry {
+    int unknown_words[16360];
+};
+struct DotrMiscLargeEntry *SzData_GetData_b(int value);
+struct DotrMiscControlPair {
+    unsigned short top;
+    unsigned short count;
+};
+struct DotrMiscControlLists {
+    unsigned char unknown_000[0x6d4];
+    void *table;
+    short *lists[2];
+    unsigned char *counts[2];
+    unsigned char unknown_6e8[0x5a2];
+    struct DotrMiscControlPair pairs[2];
+    short unknown_c92;
+    short unknown_c94;
+    short unknown_c96;
+    short unknown_c98;
+    unsigned char unknown_c9a[0x1c];
+    unsigned char unknown_cb6[6];
+    unsigned char unknown_cbc[2];
+    unsigned char unknown_cbe[2];
+    unsigned char modes[2];
+    unsigned char unknown_cc2[0x9a];
+    unsigned char side;         
+    unsigned char unknown_d5d;
+    unsigned char rows[2];
+};
+extern struct DotrMiscControlLists D_00317490_1c5d70;
+struct DotrCustomDuelSide {
+    unsigned char unknown_000[0x33a];
+    unsigned short lp;
+    unsigned char deck;
+    unsigned char unknown_33d[5];
+    unsigned char n;
+    unsigned char unknown_343[0xd];
+};
+struct DotrCustomDuelControl {
+    struct DotrCustomDuelSide side[2];
+    unsigned char unknown_6a0[0x692];
+    unsigned char a;
+    unsigned char b;
+};
+struct DotrCustomDuel {
+    unsigned char f0[2];
+    unsigned char f2[2];
+    unsigned char deck[2];
+    unsigned char f6[2];
+    unsigned char f8[2];
+    unsigned char fa[2];
+    unsigned char fc[2];
+    unsigned char fe[2];
+    unsigned short lp[2];
+    unsigned short lp2[2];
+    unsigned short list[56];
+    unsigned char mode;
+    unsigned char last;
+    unsigned char count;
+    unsigned char f8b;
+    unsigned char f8c;
+    unsigned char f8d;
+};
+#define DOTR_CUSTOM_DUEL ((struct DotrCustomDuel *)0xa9c000)
+struct DotrCustomDuelFlags {
+    unsigned char unknown_0000[0xff9c];
+    unsigned int b0 : 5;
+    unsigned int b5 : 1;
+};
+extern unsigned char *RhMem_CopyMemory_b(unsigned char *destination, unsigned char *source, int count);
+
+void func_001C5D70(int mode)
+{
+    struct DotrCustomDuelControl *c = (struct DotrCustomDuelControl *)&D_00317490_1c5d70;
+    unsigned short *p = DOTR_CUSTOM_DUEL->list;
+    int deck = 101;
+    int i;
+    struct DotrMiscLargeEntry *src;
+    struct DotrMiscLargeEntry *dst;
+
+    if (mode >= 0) {
+        DOTR_CUSTOM_DUEL->mode = mode;
+    }
+    switch (DOTR_CUSTOM_DUEL->mode) {
+    case 0:
+        break;
+    case 1:
+        src = SzData_GetData_b(0);
+        dst = SzData_GetData_b(1);
+        RhMem_CopyMemory_b((unsigned char *)dst, (unsigned char *)src, 0xffa0);
+        ((struct DotrCustomDuelFlags *)dst)->b5 = 0;
+        deck = 22;
+        break;
+    case 2:
+        SzData_SetupFromConstDeck(1, 50);
+        deck = 25;
+        break;
+    case 3:
+        SzData_SetupFromConstDeck(1, 49);
+        deck = 24;
+        break;
+    case 4:
+        SzData_SetupFromConstDeck(1, 48);
+        deck = 23;
+        break;
+    }
+    SzText_Free(0, 1);
+    SzText_Free(0, 0);
+    SzText_Free(1, -1);
+    if (mode >= 0) {
+        c->side[0].deck = 100;
+        c->side[0].lp = 4000;
+        c->side[0].n = 3;
+        c->side[1].deck = deck;
+        c->side[1].lp = 4000;
+        c->side[1].n = 3;
+        DOTR_CUSTOM_DUEL->f0[0] = 0;
+        DOTR_CUSTOM_DUEL->f2[0] = 0;
+        DOTR_CUSTOM_DUEL->deck[0] = SzData_GetCurrentDeck(0);
+        DOTR_CUSTOM_DUEL->lp[0] = 4000;
+        DOTR_CUSTOM_DUEL->lp2[0] = 4000;
+        DOTR_CUSTOM_DUEL->f6[0] = 3;
+        DOTR_CUSTOM_DUEL->f8[0] = 1;
+        DOTR_CUSTOM_DUEL->fa[0] = 1;
+        DOTR_CUSTOM_DUEL->fc[0] = 1;
+        DOTR_CUSTOM_DUEL->fe[0] = 1;
+        DOTR_CUSTOM_DUEL->f0[1] = 0;
+        DOTR_CUSTOM_DUEL->f2[1] = 0;
+        DOTR_CUSTOM_DUEL->deck[1] = SzData_GetCurrentDeck(1);
+        DOTR_CUSTOM_DUEL->lp[1] = 4000;
+        DOTR_CUSTOM_DUEL->lp2[1] = 4000;
+        DOTR_CUSTOM_DUEL->f6[1] = 3;
+        DOTR_CUSTOM_DUEL->f8[1] = 1;
+        DOTR_CUSTOM_DUEL->fa[1] = 1;
+        DOTR_CUSTOM_DUEL->fc[1] = 1;
+        DOTR_CUSTOM_DUEL->fe[1] = 1;
+        DOTR_CUSTOM_DUEL->f8c = 0;
+        DOTR_CUSTOM_DUEL->f8d = 0;
+        DOTR_CUSTOM_DUEL->count = 24;
+        for (i = 0; i < 24; i++) {
+            *p++ = i | 0x200;
+        }
+        if (SzData_GetMapEditFlag(0)) {
+            DOTR_CUSTOM_DUEL->count += 5;
+            for (i = 0; i < 5; i++) {
+                *p++ = i;
+            }
+            DOTR_CUSTOM_DUEL->f8d = 5;
+            DOTR_CUSTOM_DUEL->f8c = DOTR_CUSTOM_DUEL->f8d - 2;
+        }
+        if (SzData_GetMapEditFlag(1)) {
+            DOTR_CUSTOM_DUEL->count += 5;
+            for (i = 0; i < 5; i++) {
+                *p++ = i | 0x100;
+            }
+        }
+        DOTR_CUSTOM_DUEL->last = DOTR_CUSTOM_DUEL->count - 2;
+        DOTR_CUSTOM_DUEL->f8b = 0;
+    } else {
+        c->side[0].deck = 100;
+        c->side[0].lp = DOTR_CUSTOM_DUEL->lp2[0];
+        c->side[1].deck = deck;
+        c->side[1].lp = DOTR_CUSTOM_DUEL->lp2[1];
+    }
+    SzText_LoadMerge(4, 1);
+    SzText_LoadMerge(7, 1);
+    c->a = 0;
+    c->b = 0;
+}
+#undef DOTR_CUSTOM_DUEL
 
 
 void SzDuel_TermCustomDuel(void) {

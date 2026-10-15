@@ -288,3 +288,8 @@ TaLogic_GetHandFusion_b = 0x002789F0;
 TaLogic_InitTree_b = 0x00278930;
 TaLogic_TreeAloc_b = 0x002788D0;
 func_001C5DB8 = 0x001C5DB8; /* inside func_001C5D70: where the tutorial patch (TaTuto_FocusUnit_00175BA0) jumps back */
+/* <name>_b: the dotr-decomp CC0 bundle's view of one of our symbols, with its own C type
+   (chatC/imp/conv.py); same address as <name>. */
+D_00317490_1c5d70 = 0x00317490;
+RhMem_CopyMemory_b = 0x0020B300;
+SzData_GetData_b = 0x002145E0;

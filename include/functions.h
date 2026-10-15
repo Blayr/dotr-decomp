@@ -2781,6 +2781,7 @@ f32 func_001A6C30(f32 x, f32 y);
 f32 func_001A6C48(f32 y, f32 x);
 f32 func_001A6C60(f32 x);
 void func_001A6C80(void);
+void func_001C5D70(int mode);
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4); /* JP: func */
 u8 *getenv(s32 arg0);
 s32 getpid(void);
