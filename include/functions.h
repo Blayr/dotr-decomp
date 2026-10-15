@@ -1630,6 +1630,7 @@ s32 func_0019DCB8(void *arg0, const char *fmt, void *ap);
 s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap);
 char *func_0019F448(void *data, double value, s32 ndigits, s32 flags, char *sign, s32 *decpt, s32 ch, s32 *length);
 s32 func_0019F608(char *p0, s32 exp, s32 fmtch);
+s32 func_0019F6E8(void *fp_0019F6E8, const char *fmt0, void *ap0);
 char *func_001A0378(char *tab, char *fmt);
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt);
 s32 func_001A04D8(void *arg0);
