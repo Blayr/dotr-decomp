@@ -225,7 +225,108 @@ s32 _skipMB0(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
     return var_a5;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", _decMB0);
+s32 _decMB0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 *arg5, s32 *arg6) {
+    u8 *d;
+    s32 (*PMV)[2][2];
+    s32 t;
+    s32 ps;
+    s32 count;
+    s32 fmt;
+    s32 mvscale;
+    s32 v;
+    s32 dmv;
+
+    d = arg0;
+    PMV = arg4;
+    *(volatile s32 *)0x10002010 = (*(volatile s32 *)0x10002010 & 0xF8FFFFFF) | (*(s32 *)(d + 0x150) << 24);
+    t = func_0018B6D8((s32)d, 1);
+    *arg1 = t;
+    if (t == 0) {
+        _Error((s32)d, &D_002BC858);
+        *(s32 *)(d + 0x11C) = 1;
+        return 0;
+    }
+    if (t & 0xC) {
+        if (*(s32 *)(d + 0x174) == 3 && *(s32 *)(d + 0x17C) != 0) {
+            *arg2 = 2;
+        } else {
+            *arg2 = func_0018BA48(d, 2);
+        }
+    } else if ((t & 1) && *(s32 *)(d + 0x180) != 0) {
+        *arg2 = (*(s32 *)(d + 0x174) == 3) ? 2 : 1;
+    }
+    ps = *(s32 *)(d + 0x174);
+    if (ps == 3) {
+        count = 1;
+        if (*arg2 == 1) {
+            count = 2;
+        }
+        fmt = *arg2 == 2;
+    } else {
+        count = (*arg2 == 2) ? 2 : 1;
+        fmt = 0;
+    }
+    dmv = *arg2 == 3;
+    mvscale = 0;
+    if (fmt == 0) {
+        mvscale = ps == 3;
+    }
+    *arg3 = (ps == 3 && *(s32 *)(d + 0x17C) == 0 && (*arg1 & 3)) ? func_0018BA48(d, 1) : 0;
+    if (*arg1 & 0x10) {
+        *(s32 *)(d + 0x1B4) = func_0018BA48(d, 5);
+    }
+    if ((*arg1 & 8) || ((*arg1 & 1) && *(s32 *)(d + 0x180) != 0)) {
+        if (*(s32 *)(d + 0x848) != 0) {
+            func_0018B260((s32)d, PMV, arg6, (s32 (*)[2])arg5, 0, count, fmt, *(s32 *)(d + 0x164) - 1, *(s32 *)(d + 0x168) - 1, dmv, mvscale);
+        } else {
+            func_0018B400((s32)d, PMV[0][0], arg6, *(s32 *)(d + 0x158) - 1, *(s32 *)(d + 0x158) - 1, 0, 0, *(s32 *)(d + 0x154));
+        }
+    }
+    if (*(s32 *)(d + 0x11C) != 0) {
+        return 0;
+    }
+    if (*arg1 & 4) {
+        if (*(s32 *)(d + 0x848) != 0) {
+            func_0018B260((s32)d, PMV, arg6, (s32 (*)[2])arg5, 1, count, fmt, *(s32 *)(d + 0x16C) - 1, *(s32 *)(d + 0x170) - 1, 0, mvscale);
+        } else {
+            func_0018B400((s32)d, PMV[0][1], arg6, *(s32 *)(d + 0x160) - 1, *(s32 *)(d + 0x160) - 1, 0, 0, *(s32 *)(d + 0x15C));
+        }
+    }
+    if (*(s32 *)(d + 0x11C) != 0) {
+        return 0;
+    }
+    if ((*arg1 & 1) && *(s32 *)(d + 0x180) != 0) {
+        func_0018B958(d, 1);
+    }
+    if (*arg1 & 3) {
+        func_0018D220(*(s32 *)(d + *(s32 *)(d + 0x810) * 0x140 + 0x594), 0x300);
+        func_0018B580(d);
+        func_0018B550(d, 0x20000000 | ((*arg1 & 1) << 27) | (*(s32 *)(d + 0x1B0) << 26) | (*arg3 << 25) | (*(s32 *)(d + 0x1B4) << 16));
+    } else {
+        *(s32 *)(d + *(s32 *)(d + 0x810) * 0x140 + 0x6CC) = 1;
+    }
+    *(s32 *)(d + 0x1B0) = 0;
+    if (*(s32 *)(d + 0x11C) != 0) {
+        return 0;
+    }
+    if (!(*arg1 & 1)) {
+        *(s32 *)(d + 0x1B0) = 1;
+    }
+    if ((*arg1 & 1) && *(s32 *)(d + 0x180) == 0) {
+        PMV[0][0][0] = PMV[0][0][1] = PMV[1][0][0] = PMV[1][0][1] = 0;
+        PMV[0][1][0] = PMV[0][1][1] = PMV[1][1][0] = PMV[1][1][1] = 0;
+    }
+    if (*(s32 *)(d + 0x150) == 2 && !(*arg1 & 9)) {
+        PMV[0][0][0] = PMV[0][0][1] = PMV[1][0][0] = PMV[1][0][1] = 0;
+        if (*(s32 *)(d + 0x174) == 3) {
+            *arg2 = 2;
+        } else {
+            *arg2 = 1;
+            arg5[0] = *(s32 *)(d + 0x174) == 2;
+        }
+    }
+    return 1;
+}
 
 s32 decode_motion_vector(s32 *pred, s32 r_size, s32 motion_code, s32 motion_residual, s32 full_pel_vector) {
     s32 lim, vec;

@@ -907,7 +907,6 @@ extern s32 D_002BCAC0;
 extern s32 D_002BCAE8;
 
 s32 func_00188630(void *, s32, s32, s32, s32, void *, s32 *, s32 *);
-s32 _decMB0(void *, s32 *, s32 *, s32 *, void *, s32 *, s32 *);
 extern s32 D_002BC808;
 
 extern s8 D_002BC2D8;
@@ -1086,5 +1085,7 @@ s32 func_002354A0(s32);
 s32 func_00236C50(s32);
 s32 Taku_Camp_BUN_DARE_b(s32, s8);
 s32 Taku_Camp_BOTAN_MATI_b(s32);
+
+extern s32 D_002BC858;
 
 #endif
