@@ -590,11 +590,10 @@ void func_0017E190(s32 *ptr, s32 size) {
         "	bgtz	$10,_func_0017E190_0017E1E4\n"
         "	addiu	$8,$8,0x200\n"
         "_func_0017E190_0017E234:\n"
-        "	.set	reorder\n"
+        "	jr	$31\n"
+        "	nop\n"
        );
 }
-
-INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E23C);
 
 INCLUDE_ASM("asm/nonmatchings/main_023", func_0017E240);
 

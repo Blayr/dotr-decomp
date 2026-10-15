@@ -3087,3 +3087,4 @@ ShSlot_Act = 0x00285F20; // type:func
 ShSlot_Term = 0x00286900; // type:func
 __initialize_cpp_rts = 0x00286910; // type:func
 func_001C5D70 = 0x001C5D70; // type:func size:0x3A4
+func_0017E190 = 0x0017E190; // type:func size:0xB0
