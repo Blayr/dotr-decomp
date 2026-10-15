@@ -9,14 +9,20 @@ This repository contains no game data. You need your own copy of the game to bui
 
 | | Functions in C | Code in C |
 |---|---|---|
-| Main executable (`SLUS_205.15`) | 3,248 of 3,464 (93.8%) | 76.3% of 1.5 MB |
-| Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 5,779 of 8,620 (67.0%) | 40.4% of 11.6 MB |
+| Main executable (`SLUS_205.15`) | 3,330 of 3,464 (96.1%) | 83.3% of 1.5 MB |
+| Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 5,775 of 8,620 (67.0%) | 40.4% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
   originals. A function counts as done only when its C is in that build and the check passes.
-- 34 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
-  build, hand-written assembly). They count as not done. About 110 others, mostly Sony's system-call stubs and a
-  few vector-unit helpers, are written as assembly inside the C files and do count.
+- This executable is a revision whose tutorial code was patched after it was built (the tutorial functions at
+  0x27F5B0-0x27FDA0 cut down to stubs, their callers rewired). 18 functions are therefore C plus a few patched
+  words, applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above. Another
+  revision of SLUS_205.15 (sha256 `1df7759b…`) has the tutorial compiled in.
+- 22 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
+  build). They count as not done. About 110 others, mostly Sony's system-call stubs and a few vector-unit
+  helpers, are written as assembly inside the C files and do count.
+- 82 of the main-program functions came from the dotr-decomp project's CC0 bundle (another team decompiling
+  the same game), adapted to this revision.
 - Module functions repeat across modules; one C file per distinct function is renamed into every module that has
   a copy.
 
@@ -50,9 +56,11 @@ and our helper kit for reading the disc image; expect to adapt a few paths.
 
 ## Names
 
-Functions are still named by address (`func_001F5620`). The Japanese release (`SLPM_650.50`) shipped with its
-symbol table; its real names (for example `SzDuel_Act`, `SzEffect_GetRef2`) are being matched to these addresses
-and will replace them.
+The Japanese release (`SLPM_650.50`) shipped with its symbol table. 3,087 main-program functions carry their
+real names from it (for example `SzDuel_Act`, `SzEffect_GetRef2`), matched to this executable by code (199 of
+them by their position between code matches). The old address names (`func_001F5620`) still work as aliases
+(`config/old_names.txt`); the code modules still use them. The module functions keep their address names for
+now.
 
 ## License
 
