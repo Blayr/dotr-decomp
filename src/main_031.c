@@ -420,7 +420,30 @@ s32 func_00190A90(void (*arg0)(void)) {
     return old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", func_00190AE8);
+#define cbfunc_num_00190AE8 (*(volatile s32 *)&D_0028DD14)
+
+/* _sceCd_cd_callback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void func_00190AE8(void *data) {
+    s32 *result = data;
+
+    cbfunc_num_00190AE8 = result[0];
+    *(volatile s32 *)&D_0028DD18 = cbfunc_num_00190AE8;
+    if (cbfunc_num_00190AE8 == 11) {
+        cbfunc_num_00190AE8 = 0;
+        *(volatile s32 *)&D_0028DCF0 = 0;
+        return;
+    }
+    ((s32 (*)(s32))func_0017B910)(*(volatile s32 *)&D_0028DCE8);
+    if (D_0028DCD4 != 0 && D_003156C0 != 0) {
+        ((s32 (*)(s32))func_0017B910)(*(volatile s32 *)&D_0028DCE0);
+    } else {
+        D_0028DCF0 = 0;
+    }
+    cbfunc_num_00190AE8 = 0;
+}
+
+#undef cbfunc_num_00190AE8
 
 void func_00190B88(void) {
     while (1) {
@@ -477,7 +500,6 @@ s32 func_00190C48(s32 arg0, void *arg1, s32 arg2) {
     return ret;
 }
 
-void func_00190AE8(s32 *);
 
 typedef struct CdDirBuf_00190D20 {
     s32 n1;
