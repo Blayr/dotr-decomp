@@ -450,7 +450,6 @@ typedef struct {
     f32 vector80[4];
 } State_0020E1A0;
 
-s32 func_0020BBB0(void *);
 
 s32 func_0020E1A0(void *state) {
     if (state == NULL) {

@@ -1216,7 +1216,30 @@ s32 func_0020BBA0(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_057", func_0020BBB0);
+asm void func_0020BBB0(void *arg0) {
+    .set noreorder
+    bnez a0, L_0020BBD0
+    nop
+    vsub.xyzw vf31, vf0, vf0
+    vadd.w vf31, vf31, vf0
+    vmr32.xyzw vf30, vf31
+    vmr32.xyzw vf29, vf30
+    b L_0020BBF4
+    vmr32.xyzw vf28, vf29
+L_0020BBD0:
+    vsub.xyzw vf4, vf0, vf0
+    vadd.w vf4, vf4, vf0
+    vmr32.xyzw vf5, vf4
+    vmr32.xyzw vf6, vf5
+    vmr32.xyzw vf7, vf6
+    sqc2 vf4, 0x30(a0)
+    sqc2 vf5, 0x20(a0)
+    sqc2 vf6, 0x10(a0)
+    sqc2 vf7, 0x0(a0)
+L_0020BBF4:
+    jr ra
+    nop
+}
 
 asm void func_0020BC00(s32 arg0, void *arg1) {
     .set noreorder
@@ -1489,7 +1512,6 @@ typedef struct {
     f32 translation[3];
 } Matrix_0020C8F0;
 
-void func_0020BBB0(void *arg0);
 
 void func_0020C8F0(void *arg0, f32 *arg1) {
     Matrix_0020C8F0 *matrix = arg0;
@@ -1505,7 +1527,6 @@ typedef struct {
     f32 t[3];
 } Matrix_0020C940;
 
-void func_0020BBB0(void *arg0);
 
 void func_0020C940(void *arg0, void *p1, void *p2, void *p3) {
     Matrix_0020C940 *mtx = arg0;

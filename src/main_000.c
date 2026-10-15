@@ -375,7 +375,6 @@ extern Config_00100E00 D_0028C210;
 #endif
 
 
-void func_0020BBB0(void *);
 
 void func_00100E40(void *matrix, f32 *vector) {
     Config_00100E00 rotationZ;
