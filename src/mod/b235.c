@@ -931,7 +931,84 @@ static s32 func_01E02E10_b235(Ctx_b065_01E02240 *ctx, Obj_b065_01E02240 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E02FE0_b235);
+/* shape b235:01E02FE0, 136 insns: b490:01E00E90's scene light at g+0xB1A0 on a model joint: on start colour 128/10/10/10,
+   height 0/123/0 and the effect's position; each tick the light follows the joint at g+0xB246; its strength rises by
+   0.3 up to 1 for 160 ticks, then falls by 0.3 until it ends; func_001F6C10 gets the light (or 0 once ended); it
+   also ends when the scene word at g+0xB210 is 2 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x44];
+    s32 state;
+} Light_b235_01E02FE0;
+
+typedef struct {
+    u8 pad0[0xB1A0];
+    Light_b235_01E02FE0 light;
+    u8 padB214[0x32];
+    s16 joint;
+} Game_b235_01E02FE0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[0x34];
+    s16 f50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b235_01E02FE0;
+
+static s32 func_01E02FE0_b235(Game_b235_01E02FE0 *g, Fx_b235_01E02FE0 *o) {
+    extern void func_001F6C10(void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[8];
+
+    if (o->mode == 1) {
+        g->light.a[0] = 128.0f;
+        g->light.a[1] = 10.0f;
+        g->light.a[2] = 10.0f;
+        g->light.a[3] = 10.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 123.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f50 = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, p);
+    g->light.pos[0] = p[0];
+    g->light.pos[1] = p[1];
+    g->light.pos[2] = p[2];
+    if (o->t < 160) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.3f;
+        }
+    } else if (g->light.b[2] > 0.1f) {
+        g->light.b[2] -= 0.3f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.state == 2) {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b235:01E03200, 66 insns: twin of b180:01E021D0 (volume fade), tick limit 0x28, floor 0x40, state at 0xB210 below 0x1E */
 

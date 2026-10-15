@@ -780,7 +780,80 @@ static s32 func_01E02670_b702(s32 arg0, Fx_b702_01E02670 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E02790_b702);
+/* shape b702:01E02790, 137 insns: b757:01E029A0's joint-following scene light in (128, 10, 5, 5), joint 0xB388, 180 ticks, ends when 0xB350 is 2 */
+
+typedef struct {
+    f32 c[4];
+    Vec4f pos;
+    f32 fC0;
+    f32 fC4;
+    f32 level;
+} Light_b702_01E02790;
+
+typedef struct {
+    u8 pad0[0xB1A0];
+    Light_b702_01E02790 light;
+    u8 padB1CC[0x184];
+    s32 flag;
+    u8 padB354[0x34];
+    s16 joint;
+} Scene_b702_01E02790;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x34];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b702_01E02790;
+
+static s32 func_01E02790_b702(Scene_b702_01E02790 *g, Fx_b702_01E02790 *o) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6C10(void *);
+    Vec4f v[2];
+
+    if (o->mode == 1) {
+        g->light.c[0] = 128.0f;
+        g->light.c[1] = 10.0f;
+        g->light.c[2] = 5.0f;
+        g->light.c[3] = 5.0f;
+        g->light.fC0 = 0.0f;
+        g->light.fC4 = 123.0f;
+        g->light.level = 0.0f;
+        g->light.pos.x = o->x;
+        g->light.pos.y = o->y;
+        g->light.pos.z = o->z;
+        o->mode = 2;
+        o->h50 = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, v);
+    g->light.pos.x = v[0].x;
+    g->light.pos.y = v[0].y;
+    g->light.pos.z = v[0].z;
+    if (o->t < 0xB4) {
+        if (g->light.level < 1.0f) {
+            g->light.level += 0.3f;
+        }
+    } else if (g->light.level > 0.1f) {
+        g->light.level -= 0.3f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->flag == 2) {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b702:01E029C0, 66 insns: twin of b180:01E021D0 (volume fade), tick limit 0x97, floor 0x30, state at 0xB350 below 0x1E */
 

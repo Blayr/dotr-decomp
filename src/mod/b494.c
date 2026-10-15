@@ -204,7 +204,77 @@ static void func_01E00920_b494(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E00BE0_b494);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b494", func_01E00EE0_b494);
+/* shape b494:01E00EE0, 124 insns: a blue flickering flame: on start size 12, target size 12..41, a random frame and a
+   tilt from the game's per-kind table at g+0x450C; alpha up by 64 to 0x80 for 5 ticks, then down by 9 until it ends; colour
+   blinks 0x80/0x80/0xFF and 0x70/0x70/0xC0; frame wraps at 8; after the first tick it rises 0.6 a tick and grows f48 by 0.1 to 0.8 */
+
+typedef struct {
+    u8 pad0[0x450C];
+    s16 tilt[1];
+} Game_b494_01E00EE0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 size;
+    s16 size0;
+    u8 padC[8];
+    f32 y;
+    u8 pad18[8];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b494_01E00EE0;
+
+static s32 func_01E00EE0_b494(Game_b494_01E00EE0 *g, Fx_b494_01E00EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 12;
+        o->size0 = func_0019A5C8() % 30 + 12;
+        o->f48 = 0.0f;
+        o->frame = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->ang = g->tilt[o->kind];
+    }
+    if (o->t < 5) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x70, 0x70, 0xC0);
+    }
+    o->frame++;
+    if (o->frame > 7) {
+        o->frame = 0;
+    }
+    if (o->t != 0) {
+        o->y += 0.6f;
+        if (o->f48 < 0.8f) {
+            o->f48 += 0.1f;
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 /* shape b494:01E010D0, 87 insns: a white rising flash (b749:01E028A0 family): f48 20 with f4C 58 below, rising by 950 / 11 a
    frame with f4C 60 below; y turn a half when the game's side is set; alpha 0xC0 for 15 frames, then down by 14 until it ends;

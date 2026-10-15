@@ -545,7 +545,85 @@ static void func_01E01500_b400(s32 arg0, u8 *obj, s32 mode, f32 level) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b400", func_01E016D0_b400);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b400", func_01E01970_b400);
+/* shape b400:01E01970, 137 insns: a dark glow that grows towards the scene's limit (g+0x44D4): on start size 5, a random
+   frame, colour 0x10, h52 50; alpha up by 10 for 15 ticks, then down by 8 until it ends; after the first tick f30 and f34
+   grow towards the limit (by 3 and 3 before scene time 140, by 5 and 2.5 after); for 15 ticks it sits on the scene point
+   g+0x4470; it spins, and its clock runs twice as fast from scene time 178 */
+
+typedef struct {
+    u8 pad0[0x4470];
+    Vec4f v;
+    u8 pad4480[0x54];
+    f32 lim;
+    u8 pad44D8[0x4A];
+    s16 time;
+} Game_b400_01E01970;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 size;
+    u8 pad4C[6];
+    s16 h52;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b400_01E01970;
+
+static s32 func_01E01970_b400(Game_b400_01E01970 *g, Obj_b400_01E01970 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 5.0f;
+        o->frame = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->c0, 0x10, 0x10, 0x10);
+        o->mode = 2;
+        o->h52 = 50;
+        o->h5A = 0;
+    }
+    if (o->t < 15) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 10;
+        }
+    } else if (o->c0[3] > 9) {
+        o->c0[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        if (g->time < 140) {
+            if (!(g->lim <= o->f30)) {
+                o->f30 += 3.0f;
+            }
+        } else if (!(g->lim <= o->f30)) {
+            o->f30 += 5.0f;
+        }
+        if (g->time < 140) {
+            if (!(g->lim <= o->f34)) {
+                o->f34 += 3.0f;
+            }
+        } else if (!(g->lim <= o->f34)) {
+            o->f34 += 2.5f;
+        }
+    }
+    if (o->t < 15) {
+        o->pos = g->v;
+    }
+    func_00205C40((s32)o->rot);
+    if (g->time < 178) {
+        o->t += 1;
+    } else {
+        o->t += 2;
+    }
+    return 0;
+}
 
 /* shape b400:01E01BA0, 98 insns: a white spark (random size 10..19, frame 0..2, heading, angle 10..49, spin 16..35 and size 0..34 stored) held 3..5 ticks: in by 64 up to 0xC0, then out by 14 and ends */
 
@@ -711,7 +789,61 @@ static s32 func_01E01E30_b400(void *arg0, Obj_b400_01E01E30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b400", func_01E01F80_b400);
+/* shape b400:01E01F80, 130 insns: b193:01E02910 family white spark (f48 15..24, f50 7..26 growing 10..29 after the first tick), alpha 0xF0 for 10..14 ticks then down by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b400_01E01F80;
+
+static s32 func_01E01F80_b400(s32 arg0, Fx_b400_01E01F80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 15;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f52 = 1;
+        o->f50 = func_0019A5C8() % 20 + 7;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 5 + 10;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0xF0;
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->f52++;
+    if (o->tick != 0) {
+        o->f50 += o->speed;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b400:01E02190, 127 insns: constant variant of b016:01E02940 (spark set-up) */
 

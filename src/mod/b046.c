@@ -772,7 +772,63 @@ static s32 func_01E022F0_b046(void *arg0, Obj_b046_01E022F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b046", func_01E02450_b046);
+/* shape b046:01E02450, 141 insns: b019:01E01F60 family light wisp (0xF0 grey, or yellow for kind 1), table at ctx+0x3A5C: size 200, drift -2..1 on each axis, random frame each tick; full alpha 7 ticks then down by 8; swings 40 along f3A on x/y and 4 by f30 on z */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x3A5C];
+    u8 tab[1];
+} Mgr_b046_01E02450;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b046_01E02450;
+
+static s32 func_01E02450_b046(Mgr_b046_01E02450 *m, Fx_b046_01E02450 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 200;
+        if (o->f30 == 0) {
+            func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        } else {
+            func_001076F0(o->col, 0xF0, 0xF0, 0x20);
+        }
+        o->f30 = func_0019A5C8() % 360;
+        o->f3A = func_0019A5C8() % 360;
+        o->x = func_0019A5C8() % 4 - 2;
+        o->y = func_0019A5C8() % 4 - 2;
+        o->z = func_0019A5C8() % 4 - 2;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    o->f34 = func_0019A5C8() % 8;
+    o->x = o->x + 40.0f * func_00108030(m->tab, o->f3A, 0);
+    o->z = o->z + 4.0f * func_00108030(m->tab, o->f30, 1);
+    o->y = o->y + 40.0f * func_00108030(m->tab, o->f3A, 1);
+    o->tick++;
+    return 0;
+}
 
 /* shape b046:01E02690, 53 insns: variant of b257:01E031C0 (flash): start block as below; alpha held at 0x80
    for the first 5 ticks, then fades out by 10 and stops */

@@ -767,7 +767,91 @@ static s32 func_01E01F50_b646(Game_b646_01E01F50 *g, Obj_b646_01E01F50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b646", func_01E02110_b646);
+/* shape b646:01E02110, 139 insns: b414:01E01E00 variant without the joint: size 11, white and blue, random fall
+   15..44, spread 15..44 and weight 5..14, spin 0x4000 / 0xC000 by the scene side; before scene time 115 it falls by 5 and
+   grows by 0.5, after by 5 x weight and 0.5 x spread */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[4];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b646_01E02110;
+
+typedef struct {
+    u8 pad[0xB2B8];
+    s16 side;
+    u8 padB2BA[2];
+    s16 val;
+} Game_b646_01E02110;
+
+static s32 func_01E02110_b646(Game_b646_01E02110 *g, Obj_b646_01E02110 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->f4C = 11.0f;
+        o->f48 = 11.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col, 0, 0, 0xFF);
+        o->h52 = func_0019A5C8() % 360;
+        o->h5A = 60;
+        o->h5C = 6;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f34 = -(func_0019A5C8() % 30 + 15);
+        o->f30 = func_0019A5C8() % 30 + 15;
+        o->f38 = func_0019A5C8() % 10 + 5;
+        if (g->side != 0) {
+            o->w20 = 0x4000;
+        } else {
+            o->w20 = 0xC000;
+        }
+    }
+    if (o->t < 4) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else if (o->col2[3] > 10) {
+        o->col2[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (g->val < 115) {
+        o->f34 -= 5.0f;
+        o->f4C += 0.5f;
+    } else {
+        o->f34 -= 5.0f * o->f38;
+        o->f4C += 0.5f * o->f30;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b180:01E01EB0, 98 insns: a grey puff: set up once (size 6..20, frame 0..2, start 50..249, growth 16..35, life 3..5); fades in by 0x40 for its life, then out by 14 */
 

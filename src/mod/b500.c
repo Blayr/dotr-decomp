@@ -975,7 +975,87 @@ static s32 func_01E02E90_b500(void *arg0, Obj_b052_01E023C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b500", func_01E03020_b500);
+/* shape b500:01E03020, 141 insns: b555:01E02830's glow that, once past its hold, sits on scene joint 0x3BE8 pushed 3 sideways by the scene side flag */
+
+typedef struct {
+    s16 x, y, z;
+    s16 h6;
+    s16 h8;
+    u8 padA[2];
+    s16 hC;
+    s16 hE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b500_01E03020;
+
+typedef struct {
+    u8 pad0[0x3BE8];
+    s16 joint;
+    u8 pad3BEA[0xE];
+    s16 side;
+} Scene_b500_01E03020;
+
+static s32 func_01E03020_b500(Scene_b500_01E03020 *g, Glow_b500_01E03020 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    Vec4f v;
+
+    if (o->mode == 1) {
+        o->f38 = 3;
+        o->kind = 0;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->h30 = 0;
+        o->hE = func_0019A5C8() % 5 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->hC = func_0019A5C8() % 3 + 3;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x12;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick > o->h6) {
+        func_001F5620(func_001F53A0(), g->joint, &v);
+        o->x = func_001A22C0(v.x);
+        o->y = func_001A22C0(v.y);
+        o->z = func_001A22C0(v.z);
+        if (g->side != 0) {
+            o->z -= 3;
+        } else {
+            o->z += 3;
+        }
+    }
+    if (o->tick != 0) {
+        if (o->f38 < 20) {
+            o->f38++;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b500:01E03260, 96 insns: b115:01E01980 family: a pink spark (size 60, frame 5); flagged ones get a random tilt and drift 10 a tick along their angle (sine table ctx+0x4100), unflagged ones stay put: alpha 0x80 for 7 ticks, then out by 15 and ends */
 

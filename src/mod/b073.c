@@ -357,7 +357,71 @@ static void func_01E00F10_b073(u8 *self, Obj_b018_01E00C50 *obj, void *pk) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E011A0_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E01740_b073);
+/* shape b073:01E01740, 137 insns: a grey flash (size 200, frame 1) whose speed is a fifth of the way between two tracked points (ids at ctx+0x35BA/0x35B8 for kind 0, 0x35BE/0x35BC for kind 1); full alpha for 7 ticks */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x35B8];
+    s16 id[4];
+} Ctx_b073_01E01740;
+
+typedef struct {
+    u8 pad0[8];
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b073_01E01740;
+
+static s32 func_01E01740_b073(Ctx_b073_01E01740 *g, Fx_b073_01E01740 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+    f32 *q;
+
+    if (o->mode == 1) {
+        o->f38 = 200;
+        o->f34 = 1;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        if (o->kind == 0) {
+            func_001F5620(func_001F53A0(), g->id[1], v);
+            func_001F5620(func_001F53A0(), g->id[0], q = (f32 *)(u32)&v[4]);
+            v[0] = (q[0] - v[0]) / 5.0f;
+            v[1] = (v[5] - v[1]) / 5.0f;
+            v[2] = (v[6] - v[2]) / 5.0f;
+            o->dx = v[0];
+            o->dy = v[1];
+            o->dz = v[2];
+        }
+        if (o->kind == 1) {
+            func_001F5620(func_001F53A0(), g->id[3], v);
+            func_001F5620(func_001F53A0(), g->id[2], q = (f32 *)(u32)&v[4]);
+            v[0] = (q[0] - v[0]) / 5.0f;
+            v[1] = (v[5] - v[1]) / 5.0f;
+            v[2] = (v[6] - v[2]) / 5.0f;
+            o->dx = v[0];
+            o->dy = v[1];
+            o->dz = v[2];
+        }
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 7) {
+        o->col[3] = 0x80;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b073:01E01970, 117 insns: b573:01E02590 family: a white spark (size 80 growing 3 a tick, random frame 0..3 stepping every other tick to 6) spinning a random 13..25 a tick from 0..29, size 0..29, held 7..16 ticks: in by 64 up to 0x80, then out by 15 and ends */
 
@@ -699,7 +763,77 @@ static s32 func_01E02450_b073(void *arg0, Obj_b073_01E02450 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E025C0_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E02860_b073);
+/* shape b073:01E02860, 132 insns: a marker that follows the tracked point (id at ctx+0x35C0) into scene point o->kind and nudges it 1.3 right (kind 0) or left; alpha up by 64 for 11 ticks, then down by 12 */
+
+typedef struct {
+    u8 pad0[0x20];
+    Vec4f pt[1];
+    u8 pad30[0x35C0 - 0x30];
+    s16 id;
+} Ctx_b073_01E02860;
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 fE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b073_01E02860;
+
+static s32 func_01E02860_b073(Ctx_b073_01E02860 *g, Fx_b073_01E02860 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+
+    if (o->mode == 1) {
+        o->f38 = 60;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x10, 0x10, 8);
+        o->fE = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 11) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 12;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        func_001F5620(func_001F53A0(), g->id, v);
+    } else {
+        func_001F5620(func_001F53A0(), g->id, v);
+    }
+    g->pt[o->kind].x = v[0];
+    g->pt[o->kind].y = v[1];
+    g->pt[o->kind].z = v[2];
+    if (o->kind == 0) {
+        v[0] = 1.3f;
+        v[1] = 0.0f;
+        v[2] = 0.0f;
+    } else {
+        v[0] = -1.3f;
+        v[1] = 0.0f;
+        v[2] = 0.0f;
+    }
+    g->pt[o->kind].x += v[0];
+    g->pt[o->kind].y += v[1];
+    g->pt[o->kind].z += v[2];
+    o->fE++;
+    o->tick++;
+    return 0;
+}
 
 /* shape b073:01E02A70, 87 insns: a blue column (b073:01E02BD0 shape): size 7 by 25 growing by 20 (2 when turned), alphas up for 11 frames */
 
@@ -1079,4 +1213,95 @@ INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E03E70_b073);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E04890_b073);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E05290_b073);
+/* shape b073:01E05290, 126 insns: b069:01E01A70's four-quad sprite at the effect's own position (s16 x/y/z) at 1/20 scale,
+   turned by its 0x3A; each quad that lands on screen is sent at its depth (fptoui) */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b073_01E05290;
+
+typedef struct {
+    Rgbaq_b073_01E05290 c;
+    u64 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b073_01E05290;
+
+typedef struct {
+    s16 count;
+    u16 flags;
+    s32 pad;
+    u64 regs;
+    Vtx_b073_01E05290 v[4];
+    u8 tail[0x20];
+} Pkt_b073_01E05290;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f pts[6];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    u8 tex[0x2A];
+    s16 page;
+    u8 padC0[0x18];
+    u8 xD8[1];
+} Obj_b073_01E05290;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[2];
+    s16 u, v;
+    u8 pad0C[0x1C];
+    u8 colB[4];
+    u8 colA[4];
+    u8 pad30[0xA];
+    s16 rz;
+} Fx_b073_01E05290;
+
+static void func_01E05290_b073(Obj_b073_01E05290 *o, Fx_b073_01E05290 *fx, Pkt_b073_01E05290 *p) {
+    extern s32 func_00109270(void *, s32, s32);
+    extern Rgbaq_b073_01E05290 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001A23B0(f32);
+    extern s32 func_00109100(void *, void *, s32, void *);
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s16 i;
+
+    func_00109270(p, 0, 0);
+    p->v[0].c = func_00107740(fx->colA);
+    p->v[1].c = func_00107740(fx->colA);
+    p->v[2].c = func_00107740(fx->colA);
+    p->v[3].c = func_00107740(fx->colB);
+    func_00108500(p, o->tex, o->page);
+    func_00208700(p, o->texture, 1);
+    scale.x = 0.05f;
+    scale.y = 0.05f;
+    scale.z = 0.05f;
+    func_00205C40((s32)rot);
+    t.x = fx->x;
+    t.y = fx->y;
+    t.z = fx->z;
+    func_00108EF0(m, &scale, rot, &t);
+    rot[2] = fx->rz;
+    rot[1] = 0;
+    rot[0] = 0;
+    for (i = 0; i < 4; i++) {
+        func_00108D60(quad, fx->u, fx->v, i);
+        func_00109100(quad, rot, 2, o->xD8);
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, o->ot, func_001A23B0(depth[0]));
+        }
+    }
+}

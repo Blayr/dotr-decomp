@@ -672,6 +672,176 @@ static void func_01E02550_b194(Game_b194_01E02550 *g, Anim_b194_01E02550 *an, vo
 
 INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E027D0_b194);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E02AB0_b194);
+/* shape b194:01E02AB0, 133 insns: b120:01E03DF0's two-pass quad with 9 quads: mode 0 sets the material (frame 0x97, two
+   colours, scene texture 0x12C); other modes place it at the object with a 0.4 x-scale and a -0x4000 turn, then draw each of
+   the 9 quads at scene 0x130 against the matrix at 0x40 (depth 0x3E04, packet list 0x3DDC) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E02CD0_b194);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b194_01E02AB0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b194_01E02AB0;
+
+typedef struct {
+    Rgbaq_b194_01E02AB0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b194_01E02AB0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b194_01E02AB0 v[4];
+} Pkt_b194_01E02AB0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[0xA];
+    s32 r0;
+    s32 r1;
+    s32 r2;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+} Anim_b194_01E02AB0;
+
+typedef struct {
+    u8 pad00[0x40];
+    u8 m[0x40];
+    u8 pad80[0xAC];
+    s32 texture;
+    Vec_b194_01E02AB0 quad[9][4];
+    u8 pad370[0x3A6C];
+    s32 target;
+    u8 pad3DE0[0x24];
+    f32 depth;
+} Game_b194_01E02AB0;
+
+static void func_01E02AB0_b194(Game_b194_01E02AB0 *g, Anim_b194_01E02AB0 *an, Pkt_b194_01E02AB0 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b194_01E02AB0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b194_01E02AB0 pos;
+    f32 rm[4];
+    s32 rot[4];
+    Vec_b194_01E02AB0 sc;
+    f32 m[16];
+    s16 i;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->texture, 1);
+    } else {
+        func_0020EB40(g->m);
+        func_00106DD0(&pos, an->x, an->y, an->z);
+        sc.x = 0.4f;
+        sc.y = 1.0f;
+        sc.z = 1.0f;
+        rot[0] = an->r0 - 0x4000;
+        rot[1] = 0;
+        rot[2] = an->r2;
+        func_0020C940(m, &sc, rot, &pos);
+        func_0020BC00(g->m, m);
+        for (i = 0; i < 9; i++) {
+            if (func_00205630(g->quad[i], 0x70000000, g->m, p, &g->depth) != 0) {
+                func_00109380(p, 0);
+                func_002075F0(p, g->target, (u32)g->depth);
+            }
+        }
+    }
+}
+
+/* shape b194:01E02CD0, 134 insns: b112:01E04260 with the handler b194:01E01760 and scene textures at 0xF8 / 0x12C */
+
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[0x16];
+    void *fn;
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+} Obj_b194_01E02CD0;
+
+static void func_01E02CD0_b194(u8 *ctx, Obj_b194_01E02CD0 *o, void *pkt, s32 mode) {
+    extern s32 b194_01E01760();
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    u8 td[0x10];
+    f32 m[16];
+    Vec4f rot;
+    u8 *ot;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 size;
+
+    ot = func_00207500();
+    if (mode == 0) {
+        if (o->fn == (void *)b194_01E01760) {
+            func_00106080(td, 0x14, o->page, td);
+        } else {
+            func_00106080(td, 0x9B, o->page, td);
+        }
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        if (o->fn == (void *)b194_01E01760) {
+            func_00208700(pkt, *(void **)(ctx + 0xF8), 1);
+            return;
+        }
+        func_00208700(pkt, *(void **)(ctx + 0x12C), 1);
+        return;
+    }
+    if (o->fn == (void *)b194_01E01760) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    }
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)&rot);
+    dx = o->vx;
+    dy = o->vy;
+    dz = o->vz;
+    dx /= 10.0f;
+    dy /= 10.0f;
+    dz /= 10.0f;
+    pos.x = o->x + dx;
+    pos.y = o->y + dy;
+    pos.z = o->z + dz;
+    func_00108EF0(m, &scale, &rot, &pos);
+    size = o->size;
+    func_00108CE0(quad, size, size);
+    func_00108F90(quad, pkt, m, ot);
+}

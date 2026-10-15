@@ -802,7 +802,53 @@ static void func_01E01B50_b491(Obj_b279_01E00920 *o, Anim_b279_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b491", func_01E01FA0_b491);
+/* shape b491:01E01FA0, 141 insns: scene spawn step: t++; frame 1 starts handlers 0x1E03210, 0x1E03360 and 0x1E032E0;
+   before frame 210 one 0x1E02B40 a tick at one of seven joints (by t % 7), jittered -5..4 on each axis; on frames
+   86..199, every fifth, one 0x1E02370 at the first joint, jittered on x and y */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4274];
+    s16 joint[7];
+    u8 pad44E2[0x28];
+    s16 t;
+} Scene_b491_01E01FA0;
+
+static void func_01E01FA0_b491(Scene_b491_01E01FA0 *g) {
+    extern void b491_01E02370(void);
+    extern void b491_01E02B40(void);
+    extern void b491_01E03210(void);
+    extern void b491_01E032E0(void);
+    extern void b491_01E03360(void);
+    extern void b491_01E03E70(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 t;
+
+    g->t++;
+    if (g->t == 1) {
+        b491_01E03E70(g, b491_01E03210, 0);
+        b491_01E03E70(g, b491_01E03360, 0);
+        b491_01E03E70(g, b491_01E032E0, 0);
+    }
+    t = g->t;
+    if (t < 0xD2) {
+        func_001F5620(func_001F53A0(), g->joint[t % 7], &g->pos);
+        g->pos.x += func_0019A5C8() % 10 - 5;
+        g->pos.y += func_0019A5C8() % 10 - 5;
+        g->pos.z += func_0019A5C8() % 10 - 5;
+        b491_01E03E70(g, b491_01E02B40, 0);
+    }
+    if (g->t > 0x55 && g->t < 0xC8) {
+        if (g->t % 5 == 1) {
+            func_001F5620(func_001F53A0(), g->joint[0], &g->pos);
+            g->pos.x += func_0019A5C8() % 10 - 5;
+            g->pos.y += func_0019A5C8() % 10 - 5;
+            b491_01E03E70(g, b491_01E02370, 0);
+        }
+    }
+}
 
 /* shape b183:01E012F0, 97 insns: a white ring: set up once (size 50, frame 3, start 10..59, growth 6..15, life 3..7); full alpha for its life, then fades by 8; grows after the first frame */
 

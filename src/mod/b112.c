@@ -644,7 +644,65 @@ static s32 func_01E01E90_b112(s32 arg0, Flash_b112_01E01E90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b112", func_01E01F70_b112);
+/* shape b112:01E01F70, 139 insns: a rising ember in a random warm colour (yellow, orange or brown): size 3..11, frame
+   0..3, rise 3..10, f8 0..9, fA 2..6, fC 2..16, f6 5..11; alpha grows by 0x30 (to 0x60) for 3 ticks, then fades by 10
+   (ends below 0x11); rises every tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 rise;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Fx_b112_01E01F70;
+
+static s32 func_01E01F70_b112(s32 arg0, Fx_b112_01E01F70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 c;
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 9 + 3;
+        o->frame = func_0019A5C8() % 4;
+        c = func_0019A5C8() % 3;
+        if (c == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 8);
+        } else if (c == 1) {
+            func_001076F0(o->col, 0x80, 0x40, 8);
+        } else if (c == 2) {
+            func_001076F0(o->col, 0x60, 0x40, 0x20);
+        }
+        o->h = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->rise = func_0019A5C8() % 8 + 3;
+        o->f8 = func_0019A5C8() % 10;
+        o->fA = func_0019A5C8() % 5 + 2;
+        o->fC = func_0019A5C8() % 15 + 2;
+        o->f6 = func_0019A5C8() % 7 + 5;
+        o->mode = 2;
+    }
+    if (o->t < 3) {
+        if (o->col[3] <= 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->h += o->rise;
+    o->t++;
+    return 0;
+}
 
 /* shape b112:01E021A0, 76 insns: a grey-yellow flash: frame 6, size 6 by 100, random kind 0..4; both alphas up by 0x40 to 0x40 on
    the first frame, then down by 13; ends when the first runs out; turns 4 a frame */

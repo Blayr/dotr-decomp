@@ -274,7 +274,80 @@ static s32 func_01E013A0_b089(Game_b089_01E013A0 *g, Glow_b089_01E013A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E014C0_b089);
+/* OVL_WARM */
+
+/* shape b089:01E014C0, 131 insns: a dark red glow riding a scene point: random spin words, frame 0..4, size 7; alpha
+   grows by 9 (below 0x60) for 10 ticks; the frame cycles 0..6 after the first tick; it sits on point[k]; the point's
+   state grows the size to 12 (state 1) or sets 14 (state 2); fades by 9 once the scene timer drops below 20 */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 k;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+} Fx_b089_01E014C0;
+
+typedef struct {
+    u8 pad0[0x1C50];
+    Vec4f pt[0xA9];
+    s32 timer;
+    u8 pad26E4[0x1484];
+    s16 state[1];
+} Scene_b089_01E014C0;
+
+static s32 func_01E014C0_b089(Scene_b089_01E014C0 *g, Fx_b089_01E014C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    func_001076F0(o->col, 0x40, 0x20, 0x20);
+    if (o->mode == 1) {
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->frame = func_0019A5C8() % 5;
+        o->size = 7;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    }
+    if (o->t != 0) {
+        if (o->frame < 6) {
+            o->frame++;
+        } else {
+            o->frame = 0;
+        }
+    }
+    o->t++;
+    o->x = g->pt[o->k].x;
+    o->y = g->pt[o->k].y;
+    o->z = g->pt[o->k].z;
+    if (g->state[o->k] == 1) {
+        if (o->size < 12) {
+            o->size++;
+        }
+    }
+    if (g->state[o->k] == 2) {
+        o->size = 14;
+    }
+    if (g->timer < 20) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E016D0_b089);
 
@@ -464,7 +537,77 @@ static s32 func_01E020E0_b089(Game_b089_01E020E0 *g, Obj_b089_01E020E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E022C0_b089);
+/* shape b089:01E022C0, 139 insns: b056:01E023E0 family scene light (ctx+0x2610) at the camera: until scene count 380 red rises by 25 to 128 and green by 6 to 32, height 30, level +0.2 below 1.0 (double compare); after it they fall by 12 / 3 to 20 / 9 and the level by 0.1 above 0.1; off and ended from 391 */
+
+typedef struct {
+    f32 c[4];
+    f32 pos[4];
+    f32 f20;
+    f32 f24;
+    f32 level;
+} Light_b089_01E022C0;
+
+typedef struct {
+    u8 pad0[0x2610];
+    Light_b089_01E022C0 lt;
+    u8 pad263C[0x3B88 - 0x263C];
+    s16 count;
+} Ctx_b089_01E022C0;
+
+typedef struct {
+    u8 pad0[0x36];
+    s16 mode;
+} Fx_b089_01E022C0;
+
+static s32 func_01E022C0_b089(Ctx_b089_01E022C0 *g, Fx_b089_01E022C0 *o) {
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F6C10(void *);
+    f32 v[4];
+
+    func_001F5F90(func_001F5380(), v);
+    if (o->mode == 1) {
+        g->lt.c[0] = 0.0f;
+        g->lt.c[1] = 0.0f;
+        g->lt.c[2] = 0.0f;
+        g->lt.c[3] = 0.0f;
+        g->lt.level = 0.0f;
+        o->mode = 2;
+    }
+    g->lt.pos[0] = v[0];
+    g->lt.pos[1] = v[1];
+    g->lt.pos[2] = v[2];
+    if (g->count < 380) {
+        if (g->lt.c[0] < 128.0f) {
+            g->lt.c[0] += 25.0f;
+        }
+        if (g->lt.c[1] < 32.0f) {
+            g->lt.c[1] += 6.0f;
+        }
+        g->lt.f20 = 0.0f;
+        g->lt.f24 = 30.0f;
+        if (g->lt.level < 1.0) {
+            g->lt.level += 0.2f;
+        }
+    } else {
+        if (g->lt.c[0] > 20.0f) {
+            g->lt.c[0] -= 12.0f;
+        }
+        if (g->lt.c[1] > 9.0f) {
+            g->lt.c[1] -= 3.0f;
+        }
+        if (g->lt.level > 0.1) {
+            g->lt.level -= 0.1f;
+        }
+    }
+    if (g->count > 390) {
+        func_001F6C10(NULL);
+        o->mode = 0;
+    } else {
+        func_001F6C10(&g->lt);
+    }
+    return 0;
+}
 
 typedef struct {
     u8 pad0000[0x3B8C];

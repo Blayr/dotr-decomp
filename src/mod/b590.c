@@ -689,7 +689,81 @@ static s32 func_01E01DF0_b590(s32 arg0, Obj_b590_01E01DF0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b590", func_01E01FA0_b590);
+/* shape b590:01E01FA0, 125 insns: b588:01E025F0 family (red/blue): kind 0 from 300 growing 160 and width 10 growing 1, kind 1 from 200 growing 80 and width 10 growing 0.5, kind 2 400 width 8 fixed; frame counter to 25 */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b590_01E01FA0;
+
+static s32 func_01E01FA0_b590(s32 arg0, Obj_b590_01E01FA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        func_001076F0(o->col2, 0x40, 0x40, 0xFF);
+        if (o->h50 == 0) {
+            o->f30 = 10.0f;
+            o->f34 = 300.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 10.0f;
+            o->f34 = 200.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 8.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->h52 = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0) {
+        if (o->t != 0) {
+            o->f34 += 160.0f;
+        }
+        if (o->t != 0) {
+            o->f30 += 1.0f;
+        }
+    }
+    if (o->h50 == 1) {
+        if (o->t != 0) {
+            o->f34 += 80.0f;
+        }
+        if (o->t != 0) {
+            o->f30 += 0.5f;
+        }
+    }
+    if (o->t != 0) {
+        if (o->h52 < 25) {
+            o->h52++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b590:01E021A0, 98 insns: on start colours and hold by kind (0x50); both alphas grow by 0x2A (below 0x80) during the
    hold, then fade by 7 (the first ends the effect) */
@@ -810,7 +884,93 @@ static s32 func_01E02330_b590(s32 arg0, Fx_b590_01E02330 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b590", func_01E02450_b590);
+/* shape b590:01E02450, 136 insns: b763:01E032F0's full-screen veil, brightening until scene frame 185 (s16 at 0xB2BC) */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b590_01E02450;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b590_01E02450 p;
+} Tv_b590_01E02450;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b590_01E02450 v[2];
+    u8 tail[0x20];
+} Tex_b590_01E02450;
+
+typedef struct {
+    u8 pad0[0xB2BC];
+    s16 frame;
+} Ctx_b590_01E02450;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b590_01E02450;
+
+static s32 func_01E02450_b590(Ctx_b590_01E02450 *g, Fx_b590_01E02450 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    Tex_b590_01E02450 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 2.5f;
+        func_001076F0(o->col, 0x80, 0x80, 0x90);
+        o->mode = 2;
+    }
+    ((Tex_b590_01E02450 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b590_01E02450 *)(s32)&pk)->size = 5;
+    ((Tex_b590_01E02450 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b590_01E02450 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->frame < 0xB9) {
+        if (o->col[3] < 0x58) {
+            o->col[3] += 0x16;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

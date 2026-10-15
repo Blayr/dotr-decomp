@@ -1006,7 +1006,76 @@ static s32 func_01E02F10_b218(Mgr_b218_01E02F10 *m, Obj_b218_01E02F10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b218", func_01E030E0_b218);
+/* shape b218:01E030E0, 129 insns: blue trail head for trail f30 (of the scene's 0xA0-byte trails at ctx+0x2E70): on start fills all 10 points with the tracked point (ctx+0x2C90 for trail 15, else ctx+0x2D00); alpha up by 27 to 0xC0 for 28 ticks, then down by 9; each tick pushes the point into the trail (b218:01E00150, 10 steps) */
+
+typedef struct {
+    Vec4f pt[10];
+} Trail_b218_01E030E0;
+
+typedef struct {
+    u8 pad0[0x2C90];
+    Vec4f pa;
+    u8 pad2CA0[0x60];
+    Vec4f pb;
+    u8 pad2D10[0x2E70 - 0x2D10];
+    Trail_b218_01E030E0 tr[1];
+} Ctx_b218_01E030E0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+} Fx_b218_01E030E0;
+
+static s32 func_01E030E0_b218(Ctx_b218_01E030E0 *g, Fx_b218_01E030E0 *o) {
+    extern void b218_01E00150(Vec4f *, s32, s32, Vec4f *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    Vec4f v;
+    s32 i;
+    Vec4f *p;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x30, 0x30, 0x80);
+        o->hold = 9;
+        o->col[3] = 0;
+        o->fA = func_0019A5C8() % 17 + 44;
+        o->f8 = func_0019A5C8() % 8 + 5;
+        if (o->kind == 15) {
+            *(Vec4f *)(u32)&v = g->pa;
+        } else {
+            *(Vec4f *)(u32)&v = g->pb;
+        }
+        p = g->tr[o->kind].pt;
+        for (i = 0; i < 10; i++) {
+            p[i].x = v.x;
+            p[i].y = v.y;
+            p[i].z = v.z;
+        }
+        o->mode = o->f38 = 2;
+    }
+    if (o->tick < 28) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 27;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    *(Vec4f *)(u32)&v = *(o->kind == 15 ? &g->pa : &g->pb);
+    b218_01E00150(&g->tr[o->kind].pt[9], 10, 0, &v);
+    return 0;
+}
 
 /* shape b218:01E032F0, 64 insns: b383:01E034A0 twin: a white spark at a random frame and two random angles, growing 2 a tick up to 40: alpha 0x80 for 19 ticks, then out by 11 and ends */
 

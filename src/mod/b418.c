@@ -925,7 +925,67 @@ static s32 func_01E020E0_b418(s32 arg0, Fx_b418_01E020E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b418", func_01E02340_b418);
+/* shape b418:01E02340, 125 insns: b203:01E03140 family rising flash, one of two looks (pink on black or light red on grey 0x30), from 200 rising (550..849)/10 per tick, f4C = 0.3 of it, full alpha 8 ticks then down by 14 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b418_01E02340;
+
+static s32 func_01E02340_b418(void *arg0, Obj_b418_01E02340 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->c0, 0xC0, 0x80, 0x80);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->c0, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->w = 30;
+        o->h = 30;
+        o->f34 = func_0019A5C8() % 300 + 550;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 15) {
+        o->c0[3] -= 14;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = 0.3f * o->f48;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b418", func_01E02540_b418);
 

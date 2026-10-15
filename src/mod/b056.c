@@ -526,7 +526,86 @@ INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01FC0_b056);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E021A0_b056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E023E0_b056);
+/* shape b056:01E023E0, 135 insns: scene light (ctx+0x3730, yellow 255/255/0) kept at the camera's x/z: kind 0 sets height 150 and switches the level to 1.0 (double compare), then kind 1; once the scene timer is under 30 the colour fades by 29 and the level by 0.05 (double compare); the light goes off and the effect ends when the timer hits 1 */
+
+typedef struct {
+    f32 c[4];
+    f32 pos[4];
+    f32 f20;
+    f32 f24;
+    f32 level;
+} Light_b056_01E023E0;
+
+typedef struct {
+    u8 pad0[0x3730];
+    Light_b056_01E023E0 lt;
+    u8 pad375C[0x3910 - 0x375C];
+    s32 timer;
+} Ctx_b056_01E023E0;
+
+typedef struct {
+    u8 pad0[0x30];
+    s16 kind;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b056_01E023E0;
+
+static s32 func_01E023E0_b056(Ctx_b056_01E023E0 *g, Fx_b056_01E023E0 *o) {
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F6C10(void *);
+    f32 v[4];
+
+    func_001F5F90(func_001F5380(), v);
+    if (o->mode == 1) {
+        g->lt.c[0] = 255.0f;
+        g->lt.c[1] = 255.0f;
+        g->lt.c[2] = 0.0f;
+        g->lt.c[3] = 0.0f;
+        g->lt.level = 0.0f;
+        o->mode = 2;
+    }
+    g->lt.pos[0] = v[0];
+    g->lt.pos[1] = 0.0f;
+    g->lt.pos[2] = v[2];
+    if (o->kind == 0) {
+        g->lt.f20 = 0.0f;
+        g->lt.f24 = 150.0f;
+        if (g->lt.level < 1.0) {
+            g->lt.level = 1.0f;
+        } else {
+            o->kind = 1;
+        }
+    } else if (g->timer < 30) {
+        if (g->lt.c[0] > 30.0f) {
+            g->lt.c[0] -= 29.0f;
+        } else {
+            g->lt.c[0] = 0.0f;
+        }
+        if (g->lt.c[1] > 30.0f) {
+            g->lt.c[1] -= 29.0f;
+        } else {
+            g->lt.c[2] = 0.0f;
+        }
+        if (g->lt.c[2] > 30.0f) {
+            g->lt.c[2] -= 29.0f;
+        } else {
+            g->lt.c[2] = 0.0f;
+        }
+        if (g->lt.level > 0.05) {
+            g->lt.level -= 0.05f;
+        } else {
+            g->lt.level = 0.0f;
+        }
+    }
+    if (g->timer == 1) {
+        func_001F6C10(NULL);
+        o->mode = 0;
+    } else {
+        func_001F6C10(&g->lt);
+    }
+    return 0;
+}
 
 /* shape b056:01E02600, 93 insns: a grey drifting puff (b393:01E02610 shape): frame 8, random sub-frame 0..6, tilt and angle; full
    alpha for 7 frames, then down by 20 until it ends; drifts 11 along its angle and sinks 2 a frame */
@@ -896,4 +975,99 @@ static void func_01E047D0_b056(Scene_b056_01E047D0 *g, Fx_b056_01E047D0 *o, void
     func_00108F90(quad, p, m, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E04980_b056);
+/* shape b056:01E04980, 124 insns: one sprite quad (texture 0x14, frame o->h34, b003:01E00080 rect) into the given packet at position + speed/10, scaled 0.1, with the scene's depth (needs func_01E00080_b056 static in the file) */
+
+/* OVL_WARM */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b056_01E04980;
+
+typedef struct {
+    u8 pad0[0x38F0];
+    s32 tex;
+    u8 pad38F4[0x391C - 0x38F4];
+    s32 ot;
+    u8 pad3920[0x3954 - 0x3920];
+    f32 depth;
+} Scene_b056_01E04980;
+
+typedef struct {
+    f32 u, v;
+} Uv_b056_01E04980;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b056_01E04980;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b056_01E04980 uv;
+    u64 pad18;
+    Xyz_b056_01E04980 v[4];
+} Pk_b056_01E04980;
+
+static void func_01E04980_b056(Scene_b056_01E04980 *g, Fx_b056_01E04980 *o, Pk_b056_01E04980 *p) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 r[4];
+    f32 m[16];
+    s32 rot[4];
+    Uv_b056_01E04980 uv __attribute__((aligned(8)));
+    f32 ax, ay, az;
+
+    func_00207500();
+    func_00106080(r, 0x14, o->h34, r);
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    *(s32 *)&p->uv.v = 0;
+    p->v[0].fog = 0;
+    p->v[1].fog = 0;
+    p->v[2].fog = 0;
+    p->v[3].fog = 0;
+    func_00107740(&uv, o->col);
+    p->uv = uv;
+    func_01E00080_b056((Pk_b003_01E00080 *)p, (Rect_b003_01E00080 *)r, 0);
+    func_00208700(p, g->tex, 1);
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00205C40((s32)rot);
+    ax = o->dx;
+    ay = o->dy;
+    az = o->dz;
+    ax /= 10.0f;
+    ay /= 10.0f;
+    az /= 10.0f;
+    pos.x = o->x + ax;
+    pos.y = o->y + ay;
+    pos.z = o->z + az;
+    func_00108EF0(m, &sc, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    if (func_00205630((s32)quad, 0x70000000, (s32)m, (s32)p, &g->depth) != 0) {
+        func_002075F0((s32)p, g->ot, (u32)g->depth);
+    }
+}

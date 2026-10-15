@@ -1010,7 +1010,75 @@ static s32 func_01E033B0_b258(s32 arg0, Glow_b258_01E033B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b258", func_01E034A0_b258);
+/* shape b258:01E034A0, 131 insns: a white/grey double flash timed by the game counter at g+0x89CA: on start size 32,
+   white and grey colours, a random angle and frame 0..7; both alphas up by 32 for 5 ticks, then the white one blinks
+   0x80/0x70 until the counter reaches 390, after which both fade by 9 until it ends; the colours blink bright/dim on
+   the counter's parity; it spins by 0x4000 */
+
+typedef struct {
+    u8 pad0[0x89CA];
+    s16 count;
+} Game_b258_01E034A0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[8];
+    s32 rot;
+    u8 pad14[0x14];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Obj_b258_01E034A0;
+
+static s32 func_01E034A0_b258(Game_b258_01E034A0 *g, Obj_b258_01E034A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 0x20;
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->frame = func_0019A5C8() % 8;
+        o->mode = 2;
+    }
+    o->f6 = 0;
+    if (o->t < 5) {
+        o->c1[3] += 0x20;
+        o->c0[3] += 0x20;
+    } else if (g->count < 390) {
+        if (o->t % 2 == 1) {
+            o->c1[3] = 0x80;
+        } else {
+            o->c1[3] = 0x70;
+        }
+    } else {
+        if (o->c1[3] > 10) {
+            o->c1[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->c0[3] > 10) {
+            o->c0[3] -= 9;
+        }
+    }
+    if (g->count % 2 == 1) {
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c1, 0xCF, 0xCF, 0xCF);
+        func_001076F0(o->c0, 0x40, 0x40, 0x40);
+    }
+    o->t++;
+    func_00205C40((s32)&o->rot);
+    o->rot += 0x4000;
+    return 0;
+}
 
 /* shape b258:01E036B0, 95 insns: a scene light pulse (b443:01E03E80 shape): sets the scene light (range 120, at the object's point),
    raises its strength by 0.2f to 1, then lowers it by 0.1f until it ends; applies the light while live and ends when the

@@ -760,7 +760,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E02680_b582);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E02970_b582);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E02D30_b582);
+/* shape b582:01E02D30, 124 insns: a grey smoke puff: on start a random spin start 5..34 / -5..4 / 5..34, angle 0..359,
+   alpha 0x80, size 10..69, life 15..64; kind 0 starts at frame 0, kind 1 at life - 2; a random tint 0..9; alpha up by 64
+   to 0x80 for 4 ticks, then down by 9 until it ends; it spins by 0x4000 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[2];
+    s16 fE;
+    s32 i10;
+    s32 i14;
+    s32 i18;
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 c1[4];
+    s16 kind;
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Obj_b582_01E02D30;
+
+static s32 func_01E02D30_b582(void *g, Obj_b582_01E02D30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0x28;
+        func_001076F0(o->c0, 0x70, 0x70, 0x70);
+        func_001076F0(o->c1, 0x70, 0x70, 0x70);
+        o->i10 = func_0019A5C8() % 30 + 5;
+        o->i14 = func_0019A5C8() % 10 - 5;
+        o->i18 = func_0019A5C8() % 30 + 5;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->c0[3] = 0x80;
+        o->c1[3] = 0;
+        o->fA = func_0019A5C8() % 60 + 10;
+        o->f38 = func_0019A5C8() % 50 + 15;
+        if (o->kind == 0) {
+            o->f8 = 0;
+        }
+        if (o->kind == 1) {
+            o->f8 = o->f38 - 2;
+        }
+        o->fE = func_0019A5C8() % 10;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 10) {
+        o->c0[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->i10);
+    o->i10 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b582:01E02F20, 97 insns: a two-colour glow (size 20; kind 0 white/orange, 1 green, 2 blue) at a random angle, spun 0x4000 a tick: in by 96 up to 0xC0 for 3 ticks, then out by 15 and ends */
 
@@ -820,7 +881,82 @@ static s32 func_01E02F20_b582(s32 arg0, Glow_b582_01E02F20 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E030B0_b582);
+/* OVL_WARM */
+
+/* shape b582:01E030B0, 133 insns: a pink glow whose brightness follows how straight the camera looks at the scene point:
+   on start it reads the joint point (raised 2), turns it camera-relative and stores the cosine between it and the view
+   direction; for 3 ticks both alphas are 128 x that cosine, then they fade by 0xB (ends below 0xD) */
+
+typedef struct {
+    u8 pad0[0xE];
+    s16 hE;
+    u8 pad10[0x18];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b582_01E030B0;
+
+typedef struct {
+    u8 pad0[0x3560];
+    f32 x, y, z;
+    u8 pad356C[0x5C];
+    f32 cosv;
+    u8 pad35CC[0x18];
+    s16 joint;
+} Scene_b582_01E030B0;
+
+static s32 func_01E030B0_b582(Scene_b582_01E030B0 *g, Fx_b582_01E030B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 *func_001F9D30(s32);
+    extern f32 *func_001F9AD0(s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_001A6C60(f32);
+    f32 *cam;
+    f32 *look;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 dot;
+    f32 len;
+
+    cam = func_001F9D30(0);
+    look = func_001F9AD0(0);
+    if (o->mode == 1) {
+        func_001076F0(o->c0, 0x80, 0x60, 0x60);
+        func_001076F0(o->c1, 0x80, 0x60, 0x60);
+        o->mode = 2;
+        o->c0[3] = 0;
+        o->c1[3] = 0;
+        o->hE = func_0019A5C8() % 10;
+        func_001F5620(func_001F53A0(), g->joint, &g->x);
+        g->y += 2.0f;
+        g->x = g->x - cam[0];
+        g->y = g->y - cam[1];
+        g->z = g->z - cam[2];
+        dx = look[0] - cam[0];
+        dy = look[1] - cam[1];
+        dz = look[2] - cam[2];
+        dot = g->x * dx + g->y * dy + g->z * dz;
+        len = func_001A6C60(dx * dx + dy * dy + dz * dz);
+        g->cosv = dot / (len * func_001A6C60(g->x * g->x + g->y * g->y + g->z * g->z));
+    }
+    if (o->t < 3) {
+        o->c1[3] = o->c0[3] = 128.0f * g->cosv;
+    } else {
+        if (o->c0[3] > 0xC) {
+            o->c0[3] -= 0xB;
+        } else {
+            o->mode = 0;
+        }
+        o->c1[3] = o->c0[3];
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b582:01E032D0, 33 insns: a counter-driven fade: starts at 0x80, after tick 61 drops by 19 down to 20, ends after tick 91 once under 20; the tick steps by 15 */
 

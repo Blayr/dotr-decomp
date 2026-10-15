@@ -888,7 +888,73 @@ static s32 func_01E026D0_b516(Game_b516_01E026D0 *g, Obj_b516_01E026D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02880_b516);
+/* shape b516:01E02880, 141 insns: b418:01E020E0's flickering spark, size 60, without the f52 random */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b516_01E02880;
+
+static s32 func_01E02880_b516(s32 arg0, Fx_b516_01E02880 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 60.0f;
+        o->f56 = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->fA = 2;
+        } else {
+            o->fA = 0;
+        }
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 40 + 5;
+        o->spin = (func_0019A5C8() >> 4) % 70 + 45;
+        o->f8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 5 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->spin;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02AC0_b516);
 

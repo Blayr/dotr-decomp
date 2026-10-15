@@ -864,9 +864,126 @@ static s32 func_01E03080_b573(Game_b573_01E03080 *g, Obj_b573_01E03080 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E03160_b573);
+/* shape b573:01E03160, 131 insns: b573:01E03370 family flickering spark (size 10..29, frame cycling every third tick, fA = old f30, f30 30..59, fE 15, held 10..12 ticks: alpha up by 64, then down by 9); colour flips 0xC0/0x40 every third tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E03370_b573);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 fE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b573_01E03160;
+
+static s32 func_01E03160_b573(s32 arg0, Fx_b573_01E03160 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 20 + 10;
+        o->f34 = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->fA = o->f30;
+        o->f30 = func_0019A5C8() % 30 + 30;
+        o->f3A = func_0019A5C8() % 360;
+        o->fE = 15;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 10;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        } else {
+            o->f34 = 0;
+        }
+    }
+    o->tick++;
+    return 0;
+}
+
+/* shape b573:01E03370, 126 insns: a flickering spark (size 40..69, frame cycling 0..7, fA = old f30, f30 80..179 growing 45 per tick, held 3..5 ticks: alpha up by 64, then down by 29); colour flips 0xC0/0x40 on every third tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 fE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b573_01E03370;
+
+static s32 func_01E03370_b573(s32 arg0, Fx_b573_01E03370 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 30 + 40;
+        o->f34 = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->fA = o->f30;
+        o->f30 = func_0019A5C8() % 100 + 80;
+        o->f3A = func_0019A5C8() % 360;
+        o->fE = 45;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 30) {
+        o->col[3] -= 29;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+    }
+    if (o->f34 < 7) {
+        o->f34++;
+    } else {
+        o->f34 = 0;
+    }
+    o->f30 += o->fE;
+    o->tick++;
+    return 0;
+}
 
 /* shape b573:01E03570, 89 insns: a grey-yellow blinker: frame 500, random angle, full-alpha time 4; alpha up by 0x40 to 0x80,
    then blinks grey by the game timer's parity until 0x177, then fades by 14 until it ends */
@@ -921,7 +1038,65 @@ static s32 func_01E03570_b573(Game_b573_01E03570 *g, Obj_b573_01E03570 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b573", func_01E036E0_b573);
+/* shape b573:01E036E0, 126 insns: b573:01E03370 with a blue start colour and f30 growing 125 per tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 fE;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b573_01E036E0;
+
+static s32 func_01E036E0_b573(s32 arg0, Fx_b573_01E036E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 30 + 40;
+        o->f34 = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+        o->fA = o->f30;
+        o->f30 = func_0019A5C8() % 100 + 80;
+        o->f3A = func_0019A5C8() % 360;
+        o->fE = 125;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 30) {
+        o->col[3] -= 29;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 3 == 1) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+    }
+    if (o->f34 < 7) {
+        o->f34++;
+    } else {
+        o->f34 = 0;
+    }
+    o->f30 += o->fE;
+    o->tick++;
+    return 0;
+}
 
 /* shape b573:01E038E0, 54 insns: volume fade: starts at 0x80; while the game counter at 0x2B20 is over 0x14 it drops by
    10 to 0x30, otherwise it rises by 10 (clamped) and stops at 0x80; func_001F6D00 gets it when the counter is 1,

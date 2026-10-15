@@ -1084,7 +1084,81 @@ static s32 func_01E02830_b163(void *arg0, Obj_b163_01E02830 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b163", func_01E029A0_b163);
+/* shape b163:01E029A0, 137 insns: b189:01E02B00 in grey (0x50 under 0x80): inner alpha 0x20 and outer 0x80 for 20 ticks, f4C kept at 0 or above, rot[2] turning 0x200 per tick */
+
+typedef struct {
+    u8 pad0[0x4734];
+    u8 tab[1];
+} Ctx_b163_01E029A0;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b163_01E029A0;
+
+static s32 func_01E029A0_b163(Ctx_b163_01E029A0 *g, Obj_b163_01E029A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->f48 = 100.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0x50, 0x50, 0x50);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        o->h50 = 0;
+        o->sub = func_0019A5C8() % 8;
+        o->w = 0xF;
+        o->h = 0xA;
+        o->f34 = 250.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 20) {
+        o->c1[3] = 0x80;
+        o->c0[3] = 0x20;
+    } else if (o->f48 < 80.0f) {
+        o->state = 0;
+    }
+    o->f48 = 600.0f * func_00108030(g->tab, o->h50, 0);
+    o->f4C = o->f48 - 400.0f;
+    if (o->f4C < 0.0f) {
+        o->f4C = 0.0f;
+    }
+    if (o->h50 > 90) {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        }
+    }
+    if (o->h50 < 90) {
+        o->h50 += 8;
+    } else {
+        o->h50 += 6;
+    }
+    o->rot2 += 0x200;
+    o->t++;
+    return 0;
+}
 
 /* shape b163:01E02BD0, 102 insns: a purple spark (b203:01E027D0 shape): size 20, random sub-frame 0..3, angle, frame 0..7,
    start height 10..59 (old one kept), rise 16..45 once started, width 0..34, hold 3..7; full alpha until the hold, then down by 8 */
@@ -1139,7 +1213,60 @@ static s32 func_01E02BD0_b163(void *arg0, Obj_b163_01E02BD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b163", func_01E02D70_b163);
+/* shape b163:01E02D70, 130 insns: b193:01E02910 family light grey (0xCF) spark (f48 35..44, f50 500..899 growing 1..3), alpha 0x70 for 2..4 ticks then down by 9, turning rot[2] by 0x100 per tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b163_01E02D70;
+
+static s32 func_01E02D70_b163(s32 arg0, Fx_b163_01E02D70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 35;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f52 = 1;
+        o->f50 = func_0019A5C8() % 400 + 500;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 3 + 1;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x70;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f52++;
+    o->f50 += o->speed;
+    o->tick++;
+    o->rot[2] += 0x100;
+    return 0;
+}
 
 /* shape b163:01E02F80, 103 insns: on start f48 10, f4C 0, colour 0x80 grey, second colour 0x10 grey (alpha 0), 0x50 =
    0, 0x5A = 20, 0x5C = 2, variant 4, random rotation; alpha grows by 0x40 (below 0xC0) for 10 ticks, then fades by 8

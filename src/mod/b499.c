@@ -706,7 +706,71 @@ static s32 func_01E02370_b499(Game_b499_01E02370 *g, Obj_b499_01E02370 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02550_b499);
+/* shape b499:01E02550, 133 insns: b567:01E02690's flickering grey spark without the joint follow, h50 5..29 */
+
+typedef struct {
+    u8 pad0000[0x6DEC];
+    s16 h6DEC;
+} Mgr_b499_01E02550;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    u8 v10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+} Obj_b499_01E02550;
+
+static s32 func_01E02550_b499(Mgr_b499_01E02550 *m, Obj_b499_01E02550 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->h58 == 1) {
+        o->f48 = 10.0f;
+        o->h56 = func_0019A5C8() % 7;
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        o->hA = func_0019A5C8() % 8;
+        o->hC = o->h50;
+        o->h50 = (func_0019A5C8() >> 4) % 25 + 5;
+        o->h52 = func_0019A5C8() % 450 + 300;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->h6 = func_0019A5C8() % 5 + 3;
+        o->h58 = 2;
+    }
+    if (o->h54 < 5) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] += 0x20;
+        }
+    } else if (o->c60[3] > 9) {
+        o->c60[3] -= 8;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 % 2 == 1) {
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c60, 0xC0, 0xC0, 0xC0);
+    }
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b499", func_01E02770_b499);
 

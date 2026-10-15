@@ -508,7 +508,80 @@ static void func_01E01230_b094(Obj_b094_01E01230 *obj, Cam_b094_01E01230 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01570_b094);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01900_b094);
+/* shape b094:01E01900, 124 insns: a flashing pair (size 20/13, frame 0..6, f8 4..6): both alphas rise by 12 to 0x80 for 20 ticks, then fall by 6 while the scene timer is under 30; colour flips 0x80/0xC0 every tick; f24 0x8000 (0 when the scene flag is set) until the scene count reaches 150, then grows 0x100 */
+
+typedef struct {
+    u8 pad0[0x44C0];
+    s32 timer;
+    u8 pad44C4[0x4560 - 0x44C4];
+    s16 flag;
+    u8 pad4562[2];
+    s16 count;
+} Ctx_b094_01E01900;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x1A];
+    s32 f24;
+    u8 pad28[0x20];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b094_01E01900;
+
+static s32 func_01E01900_b094(Ctx_b094_01E01900 *g, Fx_b094_01E01900 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 7.0f;
+        o->f56 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f8 = func_0019A5C8() % 3 + 4;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (g->timer < 30) {
+        if (o->col[3] > 7) {
+            o->col[3] -= 6;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 7) {
+            o->col2[3] -= 6;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+    }
+    if (g->count < 150) {
+        if (g->flag != 0) {
+            o->f24 = 0;
+        } else {
+            o->f24 = 0x8000;
+        }
+    } else {
+        o->f24 += 0x100;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01AF0_b094);
 
@@ -611,7 +684,90 @@ static s32 func_01E020E0_b094(s32 arg0, Obj_b094_01E020E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E02290_b094);
+/* shape b094:01E02290, 124 insns: a blinking red-white glow sized by the model's motion: alpha up by 12 to 0x80 for 10 frames,
+   then while the game state is below 30 down by 9 until it ends; the colour blinks bright/dim on odd/even frames; kind 1
+   follows the model joint at height 26 once the game timer passes 100; size 10 times the model's speed, 80 to 220 */
+
+typedef struct {
+    u8 pad0[0x44C0];
+    s32 state;
+    u8 pad44C4[0x2C];
+    s16 joint;
+    u8 pad44F2[0x72];
+    s16 timer;
+} Game_b094_01E02290;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x;
+    f32 y;
+    u8 pad18[0x1C];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b094_01E02290;
+
+static s32 func_01E02290_b094(Game_b094_01E02290 *g, Obj_b094_01E02290 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_001F5860(s32);
+
+    if (o->state == 1) {
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->w = 0xF;
+        o->h = 0xF;
+        o->f34 = 1300.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0xA) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0xC;
+        }
+    } else if (g->state < 0x1E) {
+        if (o->c0[3] > 0xA) {
+            o->c0[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x40, 0x40);
+    }
+    if (o->kind == 1) {
+        if (g->timer > 0x64) {
+            func_001F5620(func_001F53A0(), g->joint, &o->x);
+            o->y = 26.0f;
+        }
+    }
+    o->f48 = 180.0f;
+    o->f4C = 0.0f;
+    o->f48 = 10.0f * func_001F5860(func_001F5380());
+    if (!(o->f48 <= 220.0f)) {
+        o->f48 = 220.0f;
+    }
+    if (o->f48 < 80.0f) {
+        o->f48 = 80.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b094:01E02480, 91 insns: a red-white glow sized by the model's motion: alpha up by 12 to 0x80 for 10 frames, then while the
    game state is below 30 down by 9 until it ends; kind 1 follows the model joint at height 26 once the game timer passes 100;

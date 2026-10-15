@@ -458,7 +458,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E01EA0_b443);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E02330_b443);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E02940_b443);
+/* shape b443:01E02940, 134 insns: b019:01E01F60 with its sine table at ctx+0x2F44 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x2F44];
+    u8 tab[1];
+} Mgr_b443_01E02940;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b443_01E02940;
+
+static s32 func_01E02940_b443(Mgr_b443_01E02940 *m, Fx_b443_01E02940 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x3F, 0x30, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f34 = 0;
+        o->f30 = func_0019A5C8() % 30 - 15;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->tick % 2 == 1) {
+        if (o->f38 < 18) {
+            o->f38++;
+        }
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->x = o->x + 10.0f * func_00108030(m->tab, o->f3A, 0);
+    o->y = o->y + 4.0f * func_00108030(m->tab, o->f30, 1);
+    o->z = o->z + 10.0f * func_00108030(m->tab, o->f3A, 1);
+    return 0;
+}
 
 /* shape b003:01E01780, 56 insns, 6 copies: a rising, spinning glow: fades in over 2 frames, then out (variant of b018:01E02480) */
 
@@ -500,9 +561,155 @@ static s32 func_01E02B60_b443(void *arg0, Obj_b003_01E01780 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E02C40_b443);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E02EA0_b443);
+/* shape b443:01E02EA0, 133 insns: a blue spark that rises and falls: random tilt 0..0x3FFF and spin, frame 0..6, rise
+   2..3, f6 1; alpha jumps by 0x50 (below 0xA0) for two ticks; after height 80 it fades by 0x13, below -12 it ends,
+   and it fades by 15 once the scene timer drops below 10; colour stays blue */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b443", func_01E030C0_b443);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 rise;
+    s32 tilt;
+    s32 spin;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 h;
+} Fx_b443_01E02EA0;
+
+typedef struct {
+    u8 pad0[0x2DF0];
+    s32 timer;
+} Scene_b443_01E02EA0;
+
+static s32 func_01E02EA0_b443(Scene_b443_01E02EA0 *g, Fx_b443_01E02EA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->mode == 1) {
+        o->h = 0;
+        base = 0;
+        o->tilt = func_0019A5C8() % 0x4000 + base;
+        o->spin = func_0019A5C8() % 65535;
+        o->frame = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->rise = func_0019A5C8() % 2 + 2;
+        o->h6 = 1;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x20, 0x20, 0x80);
+        } else {
+            func_001076F0(o->col, 0x20, 0x20, 0x80);
+        }
+    }
+    if (o->t < 2) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 0x50;
+        }
+    } else {
+        if (o->h > 0x50) {
+            if (o->col[3] > 0x14) {
+                o->col[3] -= 0x13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (o->h < -0xC) {
+            o->mode = 0;
+        }
+        if (g->timer < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x60);
+    } else {
+        func_001076F0(o->col, 0x20, 0x20, 0x60);
+    }
+    o->t++;
+    o->h += o->rise;
+    return 0;
+}
+
+/* shape b443:01E030C0, 134 insns: b443:01E02EA0 family rising spark (orange or cyan by kind, tilt 0x2000..0x5FFF, spin -0x2000..0x1FFF, frame 0..6, rising 2..3): alpha up by 32 to 0x40 for 2 ticks; past height 40 it fades by 19, and by 15 once the scene timer is under 10; colour flashes blue/grey every tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 rise;
+    u8 padA[6];
+    s32 tilt;
+    s32 spin;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 col2[4];
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 h;
+} Fx_b443_01E030C0;
+
+typedef struct {
+    u8 pad0[0x2DF0];
+    s32 timer;
+} Scene_b443_01E030C0;
+
+static s32 func_01E030C0_b443(Scene_b443_01E030C0 *g, Fx_b443_01E030C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->h = 0;
+        o->tilt = func_0019A5C8() % 0x4000 + 0x2000;
+        o->spin = func_0019A5C8() % 0x4000 - 0x2000;
+        o->frame = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->rise = func_0019A5C8() % 2 + 2;
+        o->h6 = 10;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->col, 0, 0x80, 0x80);
+        }
+        func_001076F0(o->col2, 8, 8, 0x80);
+    }
+    if (o->t < 2) {
+        if (o->col[3] < 0x40) {
+            o->col[3] += 0x20;
+        }
+    } else {
+        if (o->h > 40) {
+            if (o->col[3] > 0x14) {
+                o->col[3] -= 0x13;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (g->timer < 10) {
+            if (o->col[3] > 0x10) {
+                o->col[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x20, 0x80);
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x60);
+    }
+    o->t++;
+    o->h += o->rise;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[0x28];

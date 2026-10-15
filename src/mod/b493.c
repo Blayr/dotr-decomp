@@ -791,7 +791,65 @@ INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E02B40_b493);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E02DF0_b493);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b493", func_01E03100_b493);
+/* shape b493:01E03100, 129 insns: b163:01E025A0 family spinning glow (size 100 growing 1, light grey 0xCF over one of five tints picked by f52: red, green, blue, yellow, purple): alpha up by 64 for 4 ticks, then down by 9; spins 0x4000 per tick */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[6];
+    s16 tint;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b493_01E03100;
+
+static s32 func_01E03100_b493(s32 arg0, Fx_b493_01E03100 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->f48 = 100.0f;
+        if (o->tint == 0) {
+            func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+            func_001076F0(o->col2, 0x80, 8, 8);
+        } else if (o->tint == 1) {
+            func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+            func_001076F0(o->col2, 8, 0x80, 8);
+        } else if (o->tint == 2) {
+            func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+            func_001076F0(o->col2, 8, 8, 0x80);
+        } else if (o->tint == 3) {
+            func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+            func_001076F0(o->col2, 0x80, 0x80, 8);
+        } else if (o->tint == 4) {
+            func_001076F0(o->col, 0xCF, 0xCF, 0xCF);
+            func_001076F0(o->col2, 0x40, 8, 0x80);
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->f48 += 1.0f;
+    func_00205C40(o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
 
 /* shape b493:01E03310, 80 insns: a growing grey glow: on start f8/fA 80, f48 5, f56 0; alpha grows by 0x60 (below
    0xC0) for 5 ticks, then fades out by 9 and stops; from tick 2 f56 steps up every other tick (max 5); f8/fA grow

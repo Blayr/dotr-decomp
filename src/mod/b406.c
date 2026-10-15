@@ -808,7 +808,71 @@ static s32 func_01E027F0_b406(Game_b406_01E027F0 *g, Obj_b406_01E027F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E02980_b406);
+/* shape b406:01E02980, 125 insns: constant variant of b084:01E02990 (0x107->0xB4, second 0x23->0xA, second 300.0f->330.0f, colour (128, 16, 16)) */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b406_01E02980;
+
+typedef struct {
+    u8 pad0[0x768A];
+    s16 frame;
+} Scene_b406_01E02980;
+
+static s32 func_01E02980_b406(Scene_b406_01E02980 *g, Fx_b406_01E02980 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 50.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x10, 0x10);
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (g->frame < 0xB4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0 && o->t > 0xA) {
+        if (o->size < 300.0f) {
+            o->size += 10.0f;
+        }
+    }
+    if (o->kind == 1) {
+        if (g->frame < 0xAC) {
+            if (o->t > 0x23) {
+                if (o->size < 330.0f) {
+                    o->size += 10.0f;
+                }
+            }
+        } else if (o->size > 100.0f) {
+            o->size -= 10.0f;
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b406:01E02B80, 89 insns: a white glow sized by the scene (ctx+0x7640) at a random angle, spun 0x4000 a tick, its second colour blinking red: in by 42 up to 0x80 for 80 ticks, then out by 8 and ends */
 

@@ -261,7 +261,70 @@ INCLUDE_ASM("asm/nonmatchings/mod/b068", func_01E01430_b068);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b068", func_01E01870_b068);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b068", func_01E01C50_b068);
+/* shape b068:01E01C50, 133 insns: b350:01E011E0's glow, near-white (0xF0), size 120 growing 8 a tick, height
+   200..599 rising 20..29, 0xA 10 / 0xC 50, held 15..24; alpha grows by 0xD (to 0x60) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b068_01E01C50;
+
+static s32 func_01E01C50_b068(s32 arg0, Glow_b068_01E01C50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 120;
+        o->kind = 0;
+        func_001076F0(o->col, 0xF0, 0xF0, 0xF0);
+        o->h30 = func_0019A5C8() % 400 + 200;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 10 + 20;
+        o->hC = 50;
+        o->hA = 10;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 15;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x60) {
+            o->col[3] += 0xD;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 6) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->f38 += 8;
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b068", func_01E01E70_b068);
 

@@ -941,7 +941,94 @@ static s32 func_01E028A0_b749(void *arg0, Obj_b749_01E028A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b749", func_01E029D0_b749);
+/* shape b749:01E029D0, 133 insns: a grey puff (size 150 growing 15 to 400) drifting 5 along its angle h50 each tick, frame stepping every other tick and looping 3..7 for 40 ticks; both alphas up by 64 to 0xC0 for 40 ticks, then the inner one falls by 4 (twice) */
+
+typedef struct {
+    u8 pad0[0x72B4];
+    u8 tab[1];
+} Mgr_b749_01E029D0;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    u8 pad34[4];
+    f32 f38;
+    u8 pad3C[0x14];
+    s16 h50;
+    u8 pad52[2];
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b749_01E029D0;
+
+static s32 func_01E029D0_b749(Mgr_b749_01E029D0 *m, Obj_b749_01E029D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 150;
+        o->hA = 150;
+        o->h56 = func_0019A5C8() % 8;
+        o->f30 = 5.0f * func_00108030(m->tab, o->h50, 1);
+        o->f38 = 5.0f * func_00108030(m->tab, o->h50, 0);
+        func_001076F0(o->c60, 0x80, 0x80, 0x80);
+        func_001076F0(o->c64, 0x80, 0x80, 0x80);
+        o->h58 = 2;
+        o->c64[3] = 0;
+        o->h5C = 0;
+    }
+    if (o->h54 < 40) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x40;
+        }
+        if (o->c64[3] < 0xC0) {
+            o->c64[3] += 0x40;
+        }
+    } else {
+        if (o->c60[3] > 5) {
+            o->c60[3] -= 4;
+        } else {
+            o->h58 = 0;
+        }
+        if (o->c60[3] > 5) {
+            o->c60[3] -= 4;
+        }
+    }
+    if (o->h54 != 0) {
+        if (o->h8 < 400) {
+            o->h8 += 15;
+        }
+    }
+    if (o->h54 != 0) {
+        o->f10 += o->f30;
+        o->f18 += o->f38;
+    }
+    if (o->h54 < 40) {
+        if (o->h54 % 2 == 1) {
+            o->h56++;
+        }
+        if (o->h56 > 7) {
+            o->h56 = 3;
+        }
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 

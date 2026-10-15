@@ -990,7 +990,73 @@ static s32 func_01E02AD0_b640(void *arg0, Obj_b640_01E02AD0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E02C50_b640);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E02EE0_b640);
+/* shape b640:01E02EE0, 127 insns: b433:01E027F0-style rising spark on a joint: on start size 3..10, variant 4, white,
+   random spin 0x28, frame 1, y 150..399, turn 0..359, step 5..14, w 1..8, hold 2..4; alpha 0xC0 while held, then
+   fades by 0xB (ends below 0xD); sits on the scene joint, spins 0x100 a tick from scene frame 196 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    Vec4f pos;
+    u8 pad20[8];
+    s32 spin;
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    s16 frame;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b640_01E02EE0;
+
+typedef struct {
+    u8 pad0[0x9CDC];
+    s16 joint;
+    u8 pad9CDE[0x124];
+    s16 frame;
+} Game_b640_01E02EE0;
+
+static s32 func_01E02EE0_b640(Game_b640_01E02EE0 *g, Obj_b640_01E02EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 8 + 3;
+        o->sub = 4;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->spin = func_0019A5C8() % 65535;
+        o->frame = 1;
+        o->y = func_0019A5C8() % 250 + 150;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 10 + 5;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    if (g->frame > 0xC3) {
+        o->spin += 0x100;
+    }
+    o->frame++;
+    o->y += o->step;
+    o->t++;
+    return 0;
+}
 
 /* shape b640:01E030E0, 80 insns: a white flickering spinning flash (b550:01E02F50 shape): f48 110; alpha up by 12 to 0x80 for 250 frames; violet
    flicker */

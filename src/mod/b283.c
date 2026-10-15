@@ -590,7 +590,70 @@ static void func_01E01490_b283(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b283", func_01E01890_b283);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b283", func_01E01EA0_b283);
+/* shape b283:01E01EA0, 134 insns: b703:01E02370's grey rising mote placed on start at the scene part picked by its 0x50 (0x460-byte parts at +0x48D0) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    f32 x, y0, z;
+    u8 pad1C[0x2C];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b283_01E01EA0;
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[0x454];
+} Part_b283_01E01EA0;
+
+typedef struct {
+    u8 pad0[0x48D0];
+    Part_b283_01E01EA0 part[1];
+} Scene_b283_01E01EA0;
+
+static s32 func_01E01EA0_b283(Scene_b283_01E01EA0 *g, Obj_b283_01E01EA0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 10 + 10;
+        o->sub = func_0019A5C8() % 3;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->x = g->part[o->y].x;
+        o->y0 = g->part[o->y].y;
+        o->z = g->part[o->y].z;
+        o->y = func_0019A5C8() % 60 + 0xA;
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 10 + 6;
+        o->w = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xF) {
+        o->c0[3] -= 0xE;
+    } else {
+        o->state = 0;
+    }
+    if (o->t != 0) {
+        o->y += o->step;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b283:01E020C0, 122 insns: base = the game value 0xA280 / 1.4; on start f48 20, variant 4, colour 0x80 grey,
    random rotation, 0x50 base..base+99, random 0x5A, speed 1..3 (0xE), 0x8 -6..8, hold 1..3 (0x6); alpha grows by 0x40
@@ -655,7 +718,69 @@ static s32 func_01E020C0_b283(Game_b283_01E020C0 *g, Fx_b283_01E020C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b283", func_01E022B0_b283);
+/* shape b283:01E022B0, 126 insns: b084:01E01DB0 with the game value at 0xA280: a dark spark at a random position */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b283_01E022B0;
+
+typedef struct {
+    u8 pad[0xA280];
+    f32 v;
+} Game_b283_01E022B0;
+
+static s32 func_01E022B0_b283(Game_b283_01E022B0 *g, Fx_b283_01E022B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 base;
+
+    base = g->v / 1.4f;
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f56 = 4;
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->pos[0] = func_0019A5C8() % 0xFFFF;
+        o->pos[1] = func_0019A5C8() % 0xFFFF;
+        o->pos[2] = func_0019A5C8() % 0xFFFF;
+        o->f50 = base + func_0019A5C8() % 100;
+        o->f5A = func_0019A5C8() % 360;
+        o->spin = func_0019A5C8() % 30 + 20;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 80;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x14) {
+        o->col[3] -= 19;
+    } else {
+        o->mode = 0;
+    }
+    o->f50 += o->spin;
+    o->tick++;
+    return 0;
+}
 
 /* shape b283:01E024B0, 79 insns: a white-green flickering spinning flash: f48 100, size 10x10; alpha up by 38 to 0xC0 until the game timer reaches
    0x122, then down by 8 until it ends; second colour flickers by frame parity */

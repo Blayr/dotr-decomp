@@ -42,7 +42,84 @@ static void func_01E00080_b773(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b773", func_01E00120_b773);
+/* shape b773:01E00120, 129 insns: draw a 2-point screen line in the object's colour (bytes 4..7 as b, g, r, a) from
+   (x0, y0) to (x1, y1) around the screen centre; blend 0x44 when the object has flag 0xC, 0x42 with flag 0xA, else
+   0x48; it is drawn twice when the object has flag 0x1C */
+
+typedef struct {
+    u16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+} Hdr_b773_01E00120;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b773_01E00120;
+
+typedef struct {
+    Hdr_b773_01E00120 h;
+    Vtx_b773_01E00120 v[2];
+    u8 tail[8];
+} Pkt_b773_01E00120;
+
+typedef struct {
+    s32 id;
+    u8 b;
+    u8 g;
+    u8 r;
+    u8 a;
+    u16 x0;
+    u16 y0;
+    u16 x1;
+    u16 y1;
+} Line_b773_01E00120;
+
+static s32 func_01E00120_b773(s32 tex, Line_b773_01E00120 *o) {
+    extern s32 func_00104520(s32, s32);
+    Pkt_b773_01E00120 p __attribute__((aligned(8)));
+
+    ((Hdr_b773_01E00120 *)(s32)&p)->count = 0x11;
+    ((Hdr_b773_01E00120 *)(s32)&p)->tag = 4;
+    ((Hdr_b773_01E00120 *)(s32)&p)->regs = 0x4141;
+    ((Hdr_b773_01E00120 *)(s32)&p)->pad = 0;
+    if (func_00104520(o->id, 0xC)) {
+        func_002086D0(&p, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(o->id, 0xA)) {
+        func_002086D0(&p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&p, ((u64)0x80 << 32) | 0x48);
+    }
+    ((Hdr_b773_01E00120 *)(s32)&p)->count |= 0x400;
+    p.v[0].r = o->r;
+    p.v[0].g = o->g;
+    p.v[0].b = o->b;
+    p.v[0].a = o->a;
+    p.v[0].q = 1.0f;
+    p.v[1].r = o->r;
+    p.v[1].g = o->g;
+    p.v[1].b = o->b;
+    p.v[1].a = o->a;
+    p.v[1].q = 1.0f;
+    p.v[0].x = (o->x0 + 0x6C0) << 4;
+    p.v[0].y = (o->y0 + 0x720) << 4;
+    p.v[0].z = 0xFFFFFF;
+    p.v[0].f = 0;
+    p.v[1].x = (o->x1 + 0x6C0) << 4;
+    p.v[1].y = (o->y1 + 0x720) << 4;
+    p.v[1].z = 0xFFFFFF;
+    p.v[1].f = 0;
+    func_002075F0((s32)&p, tex, 0);
+    if (func_00104520(o->id, 0x1C)) {
+        func_002075F0((s32)&p, tex, 0);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b773", func_01E00330_b773);
 

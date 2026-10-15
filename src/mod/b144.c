@@ -796,7 +796,58 @@ static s32 func_01E022A0_b144(void *arg0, Obj_b144_01E022A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02430_b144);
+/* shape b144:01E02430, 127 insns: b747:01E02500 family white spark (f48 25..44 growing 1, frame 0..3, random turn, f50 10..29 growing 60..109 per tick, angle 0..359, f8 1..8): alpha 0x60 for 4..8 ticks, then down by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b144_01E02430;
+
+static s32 func_01E02430_b144(s32 arg0, Fx_b144_01E02430 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 20 + 25;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f50 = func_0019A5C8() % 20 + 10;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 50 + 60;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 5 + 4;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->f50 += o->speed;
+    o->f48 += 1.0f;
+    o->tick++;
+    return 0;
+}
 
 /* shape b144:01E02630, 72 insns: a white-grey rising flash (b363:01E02940 family): f48 200 with f4C 58 below, rising by
    f34 = 600 / 10 a frame with f4C 250 below; full alpha for 8 frames, then down by 14 until it ends; y turns 0x100 */
@@ -932,7 +983,92 @@ static s32 func_01E02750_b144(Mgr_b144_01E02750 *m, Obj_b144_01E02750 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02930_b144);
+/* shape b144:01E02930, 135 insns: b749:01E029D0 family pink puff (size 100 growing 15 on both axes) that waits 6 ticks rising 4, then drifts 3.5 along h50 rising 1.5 and turning to 90; alphas up by 64 to 0xC0 for 12 ticks, then the inner one falls by 14 (twice) */
+
+typedef struct {
+    u8 pad0[0x5DD4];
+    u8 tab[1];
+} Mgr_b144_01E02930;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    u8 pad34[4];
+    f32 f38;
+    u8 pad3C[0x14];
+    s16 h50;
+    u8 pad52[2];
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b144_01E02930;
+
+static s32 func_01E02930_b144(Mgr_b144_01E02930 *m, Obj_b144_01E02930 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 100;
+        o->hA = 100;
+        o->h56 = func_0019A5C8() % 8;
+        o->f30 = 3.5f * func_00108030(m->tab, o->h50, 1);
+        o->f38 = 3.5f * func_00108030(m->tab, o->h50, 0);
+        func_001076F0(o->c60, 0xFF, 0x80, 0x80);
+        func_001076F0(o->c64, 0xFF, 0x80, 0x80);
+        o->h58 = 2;
+        o->c64[3] = 0;
+        o->h5C = 0;
+    }
+    if (o->h54 < 12) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x40;
+        }
+        if (o->c64[3] < 0xC0) {
+            o->c64[3] += 0x40;
+        }
+    } else {
+        if (o->c60[3] > 15) {
+            o->c60[3] -= 14;
+        } else {
+            o->h58 = 0;
+        }
+        if (o->c60[3] > 15) {
+            o->c60[3] -= 14;
+        }
+    }
+    if (o->h54 != 0) {
+        o->h8 += 15;
+        o->hA += 15;
+    }
+    if (o->h54 > 5) {
+        o->f10 += o->f30;
+        o->f18 += o->f38;
+        o->f14 += 1.5f;
+        if (o->h5A < 90) {
+            o->h5A += 5;
+        }
+    }
+    if (o->h54 < 6) {
+        o->f14 += 4.0f;
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 /* shape b144:01E02B50, 60 insns: b764:01E02A60 family ring (white/pink, height 500, scale 2) held at turn 0x4000: in by 42 up to 0x80 for 17 ticks, then out by 7 and ends */
 

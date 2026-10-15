@@ -682,9 +682,142 @@ INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E021B0_b735);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02500_b735);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02850_b735);
+/* shape b735:01E02850, 125 insns: b203:01E03140 family rising flash, one of two looks (red on black or light red on grey 0x30), size 60, from 200 rising (150..229)/10 per tick, f4C = 0.1 of it, full alpha 8 ticks then down by 5 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b735", func_01E02A50_b735);
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b735_01E02850;
+
+static s32 func_01E02850_b735(void *arg0, Obj_b735_01E02850 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->c0, 0xC0, 0x20, 0x20);
+            func_001076F0(o->c1, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->c0, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->c1, 0x30, 0x30, 0x30);
+        }
+        o->w = 60;
+        o->h = 60;
+        o->f34 = func_0019A5C8() % 80 + 150;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 6) {
+        o->c0[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = 0.1f * o->f48;
+    o->t++;
+    return 0;
+}
+
+/* shape b735:01E02A50, 129 insns: constant variant of b247:01E02320 (first 6->4, 0xA->0xE, 9->13, 28.0f->18.0f, 1600.0f->1000.0f, colour (255, 96, 96), colour (255, 64, 64), colour (255, 64, 64)) */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 thick;
+    f32 radius;
+    u8 pad38[0x10];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Ring_b735_01E02A50;
+
+static s32 func_01E02A50_b735(void *arg0, Ring_b735_01E02A50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 6.0f;
+        func_001076F0(o->c0, 0xFF, 0x60, 0x60);
+        func_001076F0(o->c1, 0xFF, 0x40, 0x40);
+        if (o->kind == 0) {
+            o->thick = 18.0f;
+            o->radius = 1000.0f;
+        }
+        if (o->kind == 1) {
+            o->thick = 18.0f;
+            o->radius = 500.0f;
+        }
+        if (o->kind == 2) {
+            o->thick = 6.0f;
+            o->radius = 100.0f;
+            func_001076F0(o->c0, 0x80, 0x80, 0xC0);
+            func_001076F0(o->c1, 0xFF, 0x40, 0x40);
+        }
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x60;
+        }
+    } else if (o->c0[3] > 0xE) {
+        o->c0[3] -= 13;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0) {
+        if (o->t != 0) {
+            o->radius += 60.0f;
+        }
+        o->ang += 6;
+    }
+    if (o->kind == 1) {
+        if (o->t != 0) {
+            o->radius += 20.0f;
+        }
+        o->ang += 6;
+    }
+    if (o->kind == 2) {
+        if (o->t != 0) {
+            o->radius += 5.0f;
+        }
+        o->ang += 6;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b735:01E02C60, 98 insns: a two-colour fade by kind (b180:01E02040 shape: 0 pink both, 1 blue/purple, 2 pale blue both;
    hold 8, 8 or 22): both alphas up by 0x40 until the hold, then down by 4, the first ending it and the second stopping at 0 */

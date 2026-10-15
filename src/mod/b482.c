@@ -627,9 +627,131 @@ static void func_01E014F0_b482(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E018F0_b482);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E02180_b482);
+/* shape b482:01E02180, 140 insns: b205:01E01900 family red spark (size 80, frame 2..4, random spin and drift in /60, frame f52 0..3), not moving: alpha up by 64 to 0x80 for 8 ticks, then down by 4 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b482", func_01E023B0_b482);
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 dir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b482_01E02180;
+
+static s32 func_01E02180_b482(s32 arg0, Spark_b482_01E02180 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 0x50;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->col, 0xFF, 0x80, 0x80);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[2] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 60.0f;
+        o->vel[0] /= 60.0f;
+        o->vel[2] /= 60.0f;
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+        o->f52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
+
+/* shape b482:01E023B0, 136 insns: b530:01E01D40 family grey spark (f48 8..15; before scene count 175 frame 0..1 and f50 10..49, after it frame 2..3 and f50 40..79; angle 0..359, f8 0..34): alpha up by 64 to 0xC0 for 3..5 ticks, then down by 14 */
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 count;
+} Ctx_b482_01E023B0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b482_01E023B0;
+
+static s32 func_01E023B0_b482(Ctx_b482_01E023B0 *g, Fx_b482_01E023B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 8 + 8;
+        if (g->count < 175) {
+            o->f56 = func_0019A5C8() % 2;
+        } else {
+            o->f56 = func_0019A5C8() % 2 + 2;
+        }
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        if (g->count < 175) {
+            o->f50 = func_0019A5C8() % 40 + 10;
+        } else {
+            o->f50 = func_0019A5C8() % 40 + 40;
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 16;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b482:01E025D0, 108 insns: b282:01E01C20 family spinning spark: grey, random size 8..15, frame 2..3, angle 10..49, spin 16..35, size 0..34 stored, held 3..5 ticks: in by 64 up to 0xC0, then out by 14 and ends */
 

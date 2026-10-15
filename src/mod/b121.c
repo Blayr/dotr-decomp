@@ -439,7 +439,70 @@ static void func_01E01250_b121(Obj_b081_01E016D0 *o, Spr_b081_01E016D0 *s, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E017B0_b121);
+/* shape b121:01E017B0, 135 insns: the b121 module's event step: red scene colour, counts ticks; at 61 spawns b121:01E02560; every fifth tick from 137 places up to 8 points at the camera (50 up or down by the scene flag, jittered -3..2.9 on x/y) and spawns b121:01E019D0 and b121:01E021E0 there; every other tick from 61 to 180 spawns b121:01E01DF0 */
+
+typedef struct {
+    u8 pad0[0x28D0];
+    Vec4f pts[8];
+    u8 pad2950[0x3FF4 - 0x2950];
+    u8 col[4];
+    u8 pad3FF8[0x4028 - 0x3FF8];
+    s16 flag;
+    u8 pad402A[6];
+    s16 n;
+    u8 pad4032[4];
+    s16 cur;
+    u8 pad4038[2];
+    s16 timer;
+} Ctx_b121_01E017B0;
+
+static void func_01E017B0_b121(Ctx_b121_01E017B0 *g) {
+    extern s32 b121_01E019D0(void);
+    extern s32 b121_01E01DF0(void);
+    extern s32 b121_01E021E0(void);
+    extern s32 b121_01E02560(void);
+    extern void b121_01E02F60(Ctx_b121_01E017B0 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, Vec4f *);
+    f32 a;
+    s32 b;
+    f32 c;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 61) {
+        b121_01E02F60(g, b121_01E02560, 0);
+    }
+    if (g->timer % 5 == 1) {
+        if (g->n < 8 && g->timer >= 137) {
+            g->cur = g->n;
+            func_001F5F90(func_001F53A0(), &g->pts[g->cur]);
+            if (g->flag != 0) {
+                g->pts[g->cur].z += 50.0f;
+            } else {
+                g->pts[g->cur].z -= 50.0f;
+            }
+            a = func_0019A5C8() % 60 - 30;
+            b = func_0019A5C8() % 60 - 30;
+            a /= 10.0f;
+            g->pts[g->cur].x += a;
+            c = b;
+            c /= 10.0f;
+            g->pts[g->cur].y += c;
+            b121_01E02F60(g, b121_01E019D0, 0);
+            b121_01E02F60(g, b121_01E021E0, 0);
+            g->n++;
+        }
+    }
+    if (g->timer >= 61) {
+        if (g->timer % 2 == 1 && g->timer < 181) {
+            b121_01E02F60(g, b121_01E01DF0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b121", func_01E019D0_b121);
 

@@ -388,7 +388,67 @@ static void func_01E00ED0_b611(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b611", func_01E01190_b611);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b611", func_01E019C0_b611);
+/* shape b611:01E019C0, 131 insns: white spark (size 2, frame 0..3, random turn, f50 20..119 before scene count 70 else 10..29, angle 0..359, f8 1..8): alpha up by 42 to 0x80 for 2..4 ticks, then down by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    f32 pos[4];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b611_01E019C0;
+
+typedef struct {
+    u8 pad0[0xCA08];
+    s16 count;
+} Ctx_b611_01E019C0;
+
+static s32 func_01E019C0_b611(Ctx_b611_01E019C0 *g, Fx_b611_01E019C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 2.0f;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        if (g->count < 70) {
+            o->f50 = func_0019A5C8() % 100 + 20;
+        } else {
+            o->f50 = func_0019A5C8() % 20 + 10;
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 3 + 1;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b611:01E01BD0, 120 insns: a white spark: f48 70..99 (+6 per tick until tick 0x8C), variant 0..7, f50
    100..149, random f5A, spin 16..35, f8 0..34, life 3..16; alpha grows by 0x40 (below 0xC0) during the life,

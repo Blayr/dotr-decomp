@@ -665,7 +665,89 @@ static s32 func_01E03C00_b531(Game_b531_01E03C00 *g, Fx_b531_01E03C00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E03CF0_b531);
+/* shape b531:01E03CF0, 124 insns: a red-white marker that waits for the camera: on start colours 0xC0 grey and 0xF0/0x20/0x20,
+   a random angle; alpha 0xA0 on the first tick, then blinking 0xA0/0x80; f38 grows by 2 to 40; once the camera's depth is
+   within 5 of the target point (g+0x2870 + 16*point) it copies the point to g+0x250, sets g+0x3194, fires the module's
+   three effects and ends; it spins by 0x4000 */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Pt_b531_01E03CF0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad25C[0x2614];
+    Pt_b531_01E03CF0 pt[1];
+    u8 pad2880[0x914];
+    s16 f3194;
+} Game_b531_01E03CF0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot;
+    u8 pad14[0x14];
+    u8 c0[4];
+    u8 c1[4];
+    s16 point;
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Obj_b531_01E03CF0;
+
+static s32 func_01E03CF0_b531(Game_b531_01E03CF0 *g, Obj_b531_01E03CF0 *o) {
+    extern void b531_01E04300(void);
+    extern void b531_01E05630(void);
+    extern void b531_01E06890(Game_b531_01E03CF0 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_001A6C60(f32);
+    f32 cam[8];
+    f32 d;
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->c1, 0xF0, 0x20, 0x20);
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t <= 0) {
+        o->c0[3] = 0xA0;
+    } else if (o->t % 2 == 1) {
+        o->c0[3] = 0xA0;
+    } else {
+        o->c0[3] = 0x80;
+    }
+    if (o->f38 < 0x28) {
+        o->f38 += 2;
+    }
+    o->t++;
+    func_001F5F90(func_001F5380(), cam);
+    d = cam[2] - g->pt[o->point].z;
+    if (func_001A6C60(d * d) < 5.0f) {
+        g->x = g->pt[o->point].x;
+        g->y = g->pt[o->point].y;
+        g->z = g->pt[o->point].z;
+        g->f3194 = 1;
+        b531_01E06890(g, b531_01E05630, 0);
+        b531_01E06890(g, b531_01E04300, 0);
+        b531_01E06890(g, b531_01E04300, 0);
+        o->mode = 0;
+    }
+    func_00205C40((s32)&o->rot);
+    o->rot += 0x4000;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E03EE0_b531);
 
@@ -724,7 +806,79 @@ static s32 func_01E04300_b531(void *arg0, Obj_b531_01E04300 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E04460_b531);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E047A0_b531);
+/* shape b531:01E047A0, 136 insns: a blue ring marker (size 7 x 25) whose size follows the scene's value/3 and that turns 4 per tick: both alphas up by 48 to 0x60 for 11 ticks; random frame each tick (1 once the scene flag is set); flickers grey 0x48/0x50 while the flag is clear, 0x40 after; once the flag passes 8 alpha falls by 9 */
+
+typedef struct {
+    u8 pad0[0x3198];
+    s16 val;
+    u8 pad319A[0x31AA - 0x319A];
+    s16 flag;
+} Ctx_b531_01E047A0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0xC];
+    s32 rot;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad30[2];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+} Fx_b531_01E047A0;
+
+static s32 func_01E047A0_b531(Ctx_b531_01E047A0 *g, Fx_b531_01E047A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0;
+        func_001076F0(o->col, 0x30, 0x30, 0x80);
+        func_001076F0(o->col2, 0x30, 0x30, 0x80);
+        o->f8 = 7;
+        o->fA = 25;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < 11) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 0x30;
+        }
+        if (o->col2[3] < 0x60) {
+            o->col2[3] += 0x30;
+        }
+    }
+    o->f34 = func_0019A5C8() % 8;
+    if (g->flag == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col, 0x48, 0x48, 0x48);
+            func_001076F0(o->col2, 0x48, 0x48, 0x48);
+        } else {
+            func_001076F0(o->col, 0x50, 0x50, 0x50);
+            func_001076F0(o->col2, 0x50, 0x50, 0x50);
+        }
+    } else {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+        func_001076F0(o->col2, 0x40, 0x40, 0x40);
+    }
+    o->tick++;
+    o->f38 = g->val / 3;
+    o->rot += 4;
+    if (g->flag != 0) {
+        o->f34 = 1;
+    }
+    if (g->flag > 8) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b531", func_01E049C0_b531);
 

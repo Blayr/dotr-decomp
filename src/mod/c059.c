@@ -105,11 +105,334 @@ found:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E01CE0_c059);
+/* OVL_WARM */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E01EE0_c059);
+/* shape c059:01E01CE0, 127 insns: spawn a trail sprite: take the first free one of the 48 0x58-byte slots at g+0x290
+   (cleared, marked with its index + 1), copy the scene's colour (g+0x2A54) into both colours, the position g+0x2A20, the
+   rotation g+0x2A40..48 as integers, the scene's mode words, height = g+0x2A48 and height + 20, each at most 200, and link
+   it at the head of the scene's list (g+0x2A5C) with the two arguments */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E020E0_c059);
+typedef struct {
+    f32 x, y, z, w;
+} V4_c059_01E01CE0;
+
+typedef struct Ent_c059_01E01CE0 {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[6];
+    s16 hA;
+    u8 padC[4];
+    V4_c059_01E01CE0 pos;
+    u8 pad20[0x10];
+    struct Ent_c059_01E01CE0 *prev;
+    struct Ent_c059_01E01CE0 *next;
+    s32 w38;
+    s32 w3C;
+    u8 c40[4];
+    u8 c44[4];
+    s16 active;
+    s16 h4A;
+    s16 h4C;
+    s16 h4E;
+    s16 h50;
+    s16 h52;
+    u8 pad54[2];
+    s16 h56;
+} Ent_c059_01E01CE0;
+
+typedef struct {
+    u8 pad0[0x290];
+    Ent_c059_01E01CE0 ent[48];
+    u8 pad1310[0x1710];
+    V4_c059_01E01CE0 pos;
+    u8 pad2A30[0x10];
+    f32 rx;
+    f32 ry;
+    f32 rz;
+    u8 pad2A4C[8];
+    u8 col[4];
+    u8 pad2A58[4];
+    Ent_c059_01E01CE0 *head;
+    u8 pad2A60[0x30];
+    s16 h2A90;
+    u8 pad2A92[4];
+    s16 h2A96;
+    u8 pad2A98[4];
+    s16 h2A9C;
+} Scene_c059_01E01CE0;
+
+static void func_01E01CE0_c059(Scene_c059_01E01CE0 *g, s32 a, s32 b) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106CC0(void *, s32);
+    s16 i;
+    Ent_c059_01E01CE0 *e;
+
+    for (i = 0; i < 48; i++) {
+        if (g->ent[i].active == 0) {
+            e = &g->ent[i];
+            func_00106CC0(e, 0x58);
+            g->ent[i].active = i + 1;
+            goto found;
+        }
+    }
+    e = 0;
+found:
+    if (e != 0) {
+        func_001076F0(e->c44, g->col[0], g->col[1], g->col[2]);
+        e->c44[3] = g->col[3];
+        func_001076F0(e->c40, g->col[0], g->col[1], g->col[2]);
+        e->c40[3] = g->col[3];
+        e->pos = g->pos;
+        e->h4E = g->rx;
+        e->h50 = g->ry;
+        e->h4C = g->rz;
+        e->h4A = g->h2A90;
+        e->prev = g->head;
+        e->h56 = g->h2A9C;
+        e->h52 = g->h2A96;
+        if (e->prev == 0) {
+            e->h2 = g->rz;
+            e->hA = e->h2 + 20;
+        } else {
+            e->h2 = g->rz;
+            e->hA = e->h2 + 20;
+        }
+        if (e->h2 > 200) {
+            e->h2 = 200;
+        }
+        if (e->hA > 200) {
+            e->hA = 200;
+        }
+        e->prev = g->head;
+        if (e->prev != 0) {
+            e->prev->next = e;
+        }
+        e->w38 = b;
+        e->w3C = a;
+        g->head = e;
+    }
+}
+
+/* OVL_WARM */
+
+/* shape c059:01E01EE0, 127 insns: spawn a trail sprite: take the first free one of the 48 0x58-byte slots at g+0x290
+   (cleared, marked with its index + 1), copy the scene's colour (g+0x2A54) into both colours, the position g+0x2A20, the
+   rotation g+0x2A40..48 as integers, the scene's mode words, height = g+0x2A48 and height + 20, each at most the scene's limit (g+0x2CD0), and link
+   it at the head of the scene's list (g+0x2A5C) with the two arguments */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c059_01E01EE0;
+
+typedef struct Ent_c059_01E01EE0 {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[6];
+    s16 hA;
+    u8 padC[4];
+    V4_c059_01E01EE0 pos;
+    u8 pad20[0x10];
+    struct Ent_c059_01E01EE0 *prev;
+    struct Ent_c059_01E01EE0 *next;
+    s32 w38;
+    s32 w3C;
+    u8 c40[4];
+    u8 c44[4];
+    s16 active;
+    s16 h4A;
+    s16 h4C;
+    s16 h4E;
+    s16 h50;
+    s16 h52;
+    u8 pad54[2];
+    s16 h56;
+} Ent_c059_01E01EE0;
+
+typedef struct {
+    u8 pad0[0x290];
+    Ent_c059_01E01EE0 ent[48];
+    u8 pad1310[0x1710];
+    V4_c059_01E01EE0 pos;
+    u8 pad2A30[0x10];
+    f32 rx;
+    f32 ry;
+    f32 rz;
+    u8 pad2A4C[8];
+    u8 col[4];
+    u8 pad2A58[4];
+    Ent_c059_01E01EE0 *head;
+    u8 pad2A60[0x30];
+    s16 h2A90;
+    u8 pad2A92[4];
+    s16 h2A96;
+    u8 pad2A98[4];
+    s16 h2A9C;
+    u8 pad2A9E[0x232];
+    s16 limit;
+} Scene_c059_01E01EE0;
+
+static void func_01E01EE0_c059(Scene_c059_01E01EE0 *g, s32 a, s32 b) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106CC0(void *, s32);
+    s16 i;
+    Ent_c059_01E01EE0 *e;
+
+    for (i = 0; i < 48; i++) {
+        if (g->ent[i].active == 0) {
+            e = &g->ent[i];
+            func_00106CC0(e, 0x58);
+            g->ent[i].active = i + 1;
+            goto found;
+        }
+    }
+    e = 0;
+found:
+    i = g->limit;
+    if (e != 0) {
+        func_001076F0(e->c44, g->col[0], g->col[1], g->col[2]);
+        e->c44[3] = g->col[3];
+        func_001076F0(e->c40, g->col[0], g->col[1], g->col[2]);
+        e->c40[3] = g->col[3];
+        e->pos = g->pos;
+        e->h4E = g->rx;
+        e->h50 = g->ry;
+        e->h4C = g->rz;
+        e->h4A = g->h2A90;
+        e->prev = g->head;
+        e->h56 = g->h2A9C;
+        e->h52 = g->h2A96;
+        if (e->prev == 0) {
+            e->h2 = g->rz;
+            e->hA = e->h2 + 20;
+        } else {
+            e->h2 = g->rz;
+            e->hA = e->h2 + 20;
+        }
+        if (e->h2 > i) {
+            e->h2 = i;
+        }
+        if (e->hA > i) {
+            e->hA = i;
+        }
+        e->prev = g->head;
+        if (e->prev != 0) {
+            e->prev->next = e;
+        }
+        e->w38 = b;
+        e->w3C = a;
+        g->head = e;
+    }
+}
+
+/* OVL_WARM */
+
+/* shape c059:01E020E0, 139 insns: c059:01E01CE0's ribbon node: kinds 0 and 1 get height rz and width rz + 28 (capped 180), the node copies the previous node's point, handler 0x1E031C0, flag 0x54 set */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c059_01E020E0;
+
+typedef struct Ent_c059_01E020E0 {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[6];
+    s16 hA;
+    u8 padC[4];
+    V4_c059_01E020E0 pos;
+    V4_c059_01E020E0 p20;
+    struct Ent_c059_01E020E0 *prev;
+    struct Ent_c059_01E020E0 *next;
+    s32 w38;
+    s32 w3C;
+    u8 c40[4];
+    u8 c44[4];
+    s16 active;
+    s16 h4A;
+    s16 h4C;
+    s16 h4E;
+    s16 h50;
+    s16 h52;
+    s16 h54;
+    s16 h56;
+} Ent_c059_01E020E0;
+
+typedef struct {
+    u8 pad0[0x290];
+    Ent_c059_01E020E0 ent[48];
+    u8 pad1310[0x1710];
+    V4_c059_01E020E0 pos;
+    u8 pad2A30[0x10];
+    f32 rx;
+    f32 ry;
+    f32 rz;
+    u8 pad2A4C[8];
+    u8 col[4];
+    u8 pad2A58[4];
+    Ent_c059_01E020E0 *head;
+    u8 pad2A60[0x30];
+    s16 h2A90;
+    u8 pad2A92[4];
+    s16 h2A96;
+    u8 pad2A98[4];
+    s16 h2A9C;
+} Scene_c059_01E020E0;
+
+static void func_01E020E0_c059(Scene_c059_01E020E0 *g, s32 a) {
+    extern void c059_01E031C0();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00106CC0(void *, s32);
+    s16 i;
+    Ent_c059_01E020E0 *e;
+    Ent_c059_01E020E0 *p;
+
+    for (i = 0; i < 48; i++) {
+        if (g->ent[i].active == 0) {
+            e = &g->ent[i];
+            func_00106CC0(e, 0x58);
+            g->ent[i].active = i + 1;
+            goto found;
+        }
+    }
+    e = 0;
+found:
+    if (e != 0) {
+        func_001076F0(e->c44, g->col[0], g->col[1], g->col[2]);
+        e->c44[3] = g->col[3];
+        func_001076F0(e->c40, g->col[0], g->col[1], g->col[2]);
+        e->c40[3] = g->col[3];
+        e->pos = g->pos;
+        e->h4E = g->rx;
+        e->h50 = g->ry;
+        e->h4C = g->rz;
+        e->h4A = g->h2A90;
+        e->prev = g->head;
+        e->h56 = g->h2A9C;
+        e->h52 = g->h2A96;
+        if (e->h56 == 0) {
+            e->h2 = g->rz;
+            e->hA = e->h2 + 28;
+            if (e->hA > 180) {
+                e->hA = 180;
+            }
+        } else if (e->h56 == 1) {
+            e->h2 = g->rz;
+            e->hA = e->h2 + 28;
+            if (e->hA > 180) {
+                e->hA = 180;
+            }
+        }
+        e->prev = g->head;
+        p = e->prev;
+        if (p != 0) {
+            e->p20 = p->p20;
+            p->next = e;
+        }
+        e->w38 = (s32)c059_01E031C0;
+        e->w3C = a;
+        e->h54 = 1;
+        g->head = e;
+    }
+}
 
 /* shape c059:01E02310, 84 insns: takes the first free of 40 effect slots (0x30 bytes, c059:01E01BB0 shape), marks it with its
    index + 1, colours both from the context at alpha 0, copies two frames, links it to the context's parent effect (taking

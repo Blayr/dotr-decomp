@@ -495,7 +495,45 @@ static void func_01E01190_b631(Obj_b041_01E00CF0 *obj, Cam_b041_01E00CF0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b631", func_01E01470_b631);
+/* shape b631:01E01470, 133 insns: the b631 module's event step: counts ticks; from 47 to 169 it moves its point to the tracked point and spawns three b631:01E01920; from 41 to 169 it snaps the point to each of the three tracked points, jitters x by -8..7 and spawns a b631:01E01690 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0xB244 - 0x25C];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+    u8 padB24A[0xB2B8 - 0xB24A];
+    s16 timer;
+} Ctx_b631_01E01470;
+
+static void func_01E01470_b631(Ctx_b631_01E01470 *g) {
+    extern s32 b631_01E01690(void);
+    extern s32 b631_01E01920(void);
+    extern void b631_01E02520(Ctx_b631_01E01470 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+
+    g->timer++;
+    if (g->timer > 46 && g->timer < 170) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        b631_01E02520(g, b631_01E01920, 0);
+        b631_01E02520(g, b631_01E01920, 0);
+        b631_01E02520(g, b631_01E01920, 0);
+    }
+    if (g->timer > 40 && g->timer < 170) {
+        func_001F5620(func_001F53A0(), g->id0, g->pos);
+        g->pos[0] += func_0019A5C8() % 16 - 8;
+        b631_01E02520(g, b631_01E01690, 0);
+        func_001F5620(func_001F53A0(), g->id1, g->pos);
+        g->pos[0] += func_0019A5C8() % 16 - 8;
+        b631_01E02520(g, b631_01E01690, 0);
+        func_001F5620(func_001F53A0(), g->id2, g->pos);
+        g->pos[0] += func_0019A5C8() % 16 - 8;
+        b631_01E02520(g, b631_01E01690, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b631", func_01E01690_b631);
 

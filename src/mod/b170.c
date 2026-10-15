@@ -131,9 +131,157 @@ static void func_01E00110_b170(Obj_b082_01E00920 *o, Data_b082_01E00920 *data, s
     } while (i < 36);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b170", func_01E00570_b170);
+/* shape b170:01E00570, 123 insns: the module's script step: ticks the timer, follows two joints with the effect point (x from the
+   first, z from it until frame 74, then sliding 6.5 one way or the other until 118, y 1.3 above the second until 220), keeps a
+   copy until 170, and at frames 73/74 spawns the b170:01E00980 pair, the b170:01E00760 effect and the b170:01E00B00 effect */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b170", func_01E00760_b170);
+typedef struct {
+    f32 x, y, z, w;
+} V4_b170_01E00570;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b170_01E00570 spawn;
+    u8 pad260[0x74A0 - 0x260];
+    V4_b170_01E00570 pt;
+    V4_b170_01E00570 copy;
+    u8 pad74C0[0x7654 - 0x74C0];
+    s16 joint1;
+    u8 pad7656[2];
+    s16 joint0;
+    u8 pad765A[0x28];
+    s16 idx;
+    u8 pad7684[2];
+    s16 side;
+    u8 pad7688[2];
+    s16 t;
+} Scene_b170_01E00570;
+
+static void func_01E00570_b170(Scene_b170_01E00570 *s) {
+    extern void b170_01E00760(void);
+    extern void b170_01E00980(void);
+    extern void b170_01E00B00(void);
+    extern s32 b170_01E01090(Scene_b170_01E00570 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    V4_b170_01E00570 a;
+    V4_b170_01E00570 b[2];
+
+    s->t++;
+    func_001F5620(func_001F53A0(), s->joint0, &a);
+    func_001F5620(func_001F53A0(), s->joint1, b);
+    s->pt.x = a.x;
+    if (s->t < 0x4A) {
+        s->pt.z = a.z;
+    } else if (s->t < 0x76) {
+        if (s->side != 0) {
+            s->pt.z -= 6.5f;
+        } else {
+            s->pt.z += 6.5f;
+        }
+    }
+    if (s->t < 0xAA) {
+        s->copy = s->pt;
+    }
+    if (s->t < 0xDC) {
+        s->pt.y = 1.3f + b[0].y;
+    }
+    if (s->t == 0x4A) {
+        s->spawn = s->pt;
+        b170_01E01090(s, b170_01E00B00, 0);
+    }
+    if (s->t == 0x49) {
+        s->idx = 0;
+        b170_01E01090(s, b170_01E00980, 0);
+        s->idx = 1;
+        b170_01E01090(s, b170_01E00980, 0);
+    }
+    if (s->t == 0x49) {
+        s->idx = 0;
+        s->idx = 1;
+    }
+    if (s->t == 0x49) {
+        b170_01E01090(s, b170_01E00760, 0);
+    }
+}
+
+/* shape b170:01E00760, 135 insns: purple trail (70 points at ctx+0x18B0) from the scene's point (ctx+0x74A0): on start fills it, length grows to 68; alpha 0xC0 until scene count 215, then down by 7 while the width shrinks 0.5; colour flips every tick; between ticks 16 and 79 the width grows 7 (13 after count 135); pushes the point for 50 ticks (b170:01E00080) */
+
+typedef struct {
+    u8 pad0[0x18B0];
+    Vec4f tr[70];
+    u8 pad1D10[0x74A0 - 0x1D10];
+    Vec4f at;
+    u8 pad74B0[0x768A - 0x74B0];
+    s16 count;
+} Ctx_b170_01E00760;
+
+typedef struct {
+    u8 pad0[6];
+    s16 len;
+    u8 pad8[0x40];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b170_01E00760;
+
+static s32 func_01E00760_b170(Ctx_b170_01E00760 *g, Fx_b170_01E00760 *o) {
+    extern void b170_01E00080(Vec4f *, s32, s32, Vec4f *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    Vec4f *p;
+
+    if (o->mode == 1) {
+        o->len = 8;
+        o->col[3] = 0;
+        p = g->tr;
+        for (i = 0; i < 69; i++) {
+            p[i].x = g->at.x;
+            p[i].y = g->at.y;
+            p[i].z = g->at.z;
+        }
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+        o->f48 = 20.0f;
+        o->mode = 2;
+    }
+    if (o->len < 68) {
+        o->len++;
+    }
+    if (g->count < 215) {
+        o->col[3] = 0xC0;
+    } else {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+        if (o->f48 > 0.0f) {
+            o->f48 -= 0.5f;
+        }
+    }
+    if (o->tick % 2 == 0) {
+        func_001076F0(o->col, 0x80, 0x10, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x40, 0x10, 0x80);
+    }
+    if (o->tick > 15 && o->tick < 80) {
+        if (g->count < 135) {
+            o->f48 += 7.0f;
+        } else {
+            o->f48 += 13.0f;
+        }
+    }
+    if (o->tick < 50) {
+        b170_01E00080(&g->tr[69], 70, 0, &g->at);
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b170:01E00980, 96 insns: on start f48 30, colour white, second colour (0x40, 0x10, 0x80) with alpha 0, random
    0x5A; the colour flickers purple; alpha grows by 0x10 (below 0xC0) while the game step 0x768A is below 0x6F, then

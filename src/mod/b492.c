@@ -678,7 +678,81 @@ static s32 func_01E023E0_b492(void *arg0, Obj_b492_01E023E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E02570_b492);
+/* shape b492:01E02570, 134 insns: b763:01E02600 family glow in two kinds: kind 0 red/white, size 220, 14 ticks then down by 9; kind 1 dark grey/blue with a random turn, from 80 growing 40 per tick with f4C = 0.6 of it, 8 ticks then down by 15; outer alpha up by 0x60 to 0xC0 while alive */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b492_01E02570;
+
+static s32 func_01E02570_b492(s32 arg0, Fx_b492_01E02570 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f4C = 220.0f;
+            o->hold = 14;
+            func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        }
+        if (o->kind == 1) {
+            o->hold = 8;
+            func_001076F0(o->col2, 0x20, 0x20, 0x68);
+            func_001076F0(o->col, 0x18, 0x18, 0x18);
+            o->rot[0] = func_0019A5C8() % 65535;
+            o->rot[1] = func_0019A5C8() % 65535;
+            o->rot[2] = func_0019A5C8() % 65535;
+            o->f48 = 80.0f;
+            o->f4C = 0.6f * o->f48;
+        }
+        o->f52 = 0;
+        o->w = 10;
+        o->h = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->tick < o->hold) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x60;
+        }
+    } else {
+        if (o->kind == 0) {
+            if (o->col2[3] > 10) {
+                o->col2[3] -= 9;
+            } else {
+                o->mode = 0;
+            }
+        }
+        if (o->kind == 1) {
+            if (o->col2[3] > 16) {
+                o->col2[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 1) {
+        o->f48 += 40.0f;
+        o->f4C = 0.6f * o->f48;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b492:01E02790, 59 insns: a grey turning disc: set up once (grey, size 30x30, f34 90, scale 1), fades in by 12
    to 0x80 until the game timer reaches 200, then out by 9 until it ends; turns 0x200 a frame */

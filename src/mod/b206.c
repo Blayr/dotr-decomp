@@ -403,7 +403,82 @@ static void func_01E00D80_b206(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E012D0_b206);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E01550_b206);
+/* shape b206:01E01550, 134 insns: a white rising ring: on start size 15, both colours 0x80; alpha up by 64 to 0x80 for
+   35 ticks, then down by 9 until it ends; blinks 0x80/0x60 on odd/even ticks; spin 0x4000; f34 grows by 1.6 to 50, f30
+   by 0.2 to 10; size grows by 7.5 with f4C = size - f34; h5C turns by 9; after the first tick it moves its height by 5
+   (down when the game flag at g+0x4C7A is set) */
+
+typedef struct {
+    u8 pad0[0x4C7A];
+    s16 down;
+} Game_b206_01E01550;
+
+typedef struct {
+    u8 pad0[0x18];
+    f32 y;
+    u8 pad1C[4];
+    s32 rot;
+    u8 pad24[0xC];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 size;
+    f32 f4C;
+    u8 pad50[4];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b206_01E01550;
+
+static s32 func_01E01550_b206(Game_b206_01E01550 *g, Obj_b206_01E01550 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 15.0f;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 35) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x40;
+        }
+    } else if (o->c1[3] > 10) {
+        o->c1[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x60, 0x60, 0x60);
+    }
+    o->rot = 0x4000;
+    if (o->f34 < 50.0f) {
+        o->f34 += 1.6f;
+    }
+    if (o->f30 < 10.0f) {
+        o->f30 += 0.2f;
+    }
+    o->size += 7.5f;
+    o->f4C = o->size - o->f34;
+    o->h5C += 9;
+    o->t++;
+    if (o->t != 0) {
+        if (g->down != 0) {
+            o->y -= 5.0f;
+        } else {
+            o->y += 5.0f;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E01770_b206);
 
@@ -460,7 +535,102 @@ static s32 func_01E019D0_b206(void *arg0, Obj_b206_01E019D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E01B80_b206);
+/* shape b206:01E01B80, 140 insns: a swaying full-screen veil written into the scene's own packet (0x4C28): grey, both
+   corners shifted sideways by the effect's sway (0x8), fixed texture window (0..0.625, 0..0.875), drawn with
+   func_002075F0; the sway follows 15 x the sine of an angle turning 25 a tick (starting 0 or 180 by kind); alpha up
+   by 10 (below 0x80) for 200 ticks, then down by 9 (ends below 11) */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b206_01E01B80;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b206_01E01B80 p;
+} Tv_b206_01E01B80;
+
+typedef struct {
+    u8 pad0[0x10];
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b206_01E01B80 v[2];
+} Tex_b206_01E01B80;
+
+typedef struct {
+    u8 pad0[0x4C28];
+    Tex_b206_01E01B80 *pk;
+    u8 pad4C2C[0x254];
+    u8 sin[1];
+} Scene_b206_01E01B80;
+
+typedef struct {
+    u8 pad0[8];
+    s16 sway;
+    u8 padA[0x46];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b206_01E01B80;
+
+static s32 func_01E01B80_b206(Scene_b206_01E01B80 *g, Fx_b206_01E01B80 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+    extern void func_002075F0(void *, s32, s32);
+    s16 w;
+
+    w = o->sway;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        if (o->kind == 0) {
+            o->ang = 0;
+        }
+        if (o->kind == 1) {
+            o->ang = 180;
+        }
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = (w + 0x6C0) * 16 - 8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = (w + 0x940) * 16 - 8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = 0.0f;
+    g->pk->v[0].t = 0.0f;
+    g->pk->v[1].s = 0.625f;
+    g->pk->v[1].t = 0.875f;
+    func_002075F0(g->pk, 0, 0);
+    o->sway = func_001A22C0(15.0f * func_00108030(g->sin, o->ang, 1));
+    o->ang += 25;
+    if (o->t < 200) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E01DB0_b206);
 

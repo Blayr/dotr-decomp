@@ -563,7 +563,69 @@ static s32 func_01E01C90_b281(void *arg0, Obj_b281_01E01C90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E01E40_b281);
+/* shape b281:01E01E40, 124 insns: on start size 30..59 (kept in 0xA), frame 0..7, grey colour, turn 0..359; alpha grows
+   by 0x40 (below 0x80) for 7 ticks, then fades by 9 (ends below 11); colour flickers blue 0xFF / 0xC0; frame cycles
+   0..7, size grows by one every third tick up to 35; after the first tick it rises 0.7 a tick; turns 0x20 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 size;
+    s16 size0;
+    u8 padC[8];
+    f32 y;
+    u8 pad18[8];
+    s32 w20;
+    u8 pad24[0x30];
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b281_01E01E40;
+
+static s32 func_01E01E40_b281(s32 arg0, Fx_b281_01E01E40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 30 + 30;
+        o->size0 = o->size;
+        o->frame = (func_0019A5C8() >> 4) % 8;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->ang = func_0019A5C8() % 360;
+    }
+    if (o->t < 7) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x30, 0x30, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x30, 0x30, 0xC0);
+    }
+    o->frame++;
+    if (o->frame > 7) {
+        o->frame = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->size < 0x23) {
+            o->size++;
+        }
+    }
+    if (o->t != 0) {
+        o->y += 0.7f;
+    }
+    func_00205C40((s32)&o->w20);
+    o->t++;
+    return 0;
+}
 
 /* shape b016:01E02940, 127 insns: a drifting spark: on start pick a random size, variant, position, start value,
    angle, speed, delay and lifetime and colour (0xC0,0x50,0x50); full alpha while younger than its lifetime, then
@@ -623,7 +685,91 @@ static s32 func_01E02030_b281(s32 arg0, Spark_b016_01E02940 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b281", func_01E02230_b281);
+/* shape b281:01E02230, 128 insns: b594:01E02CB0 with a reddish (0xA0, 0x78, 0x78) sprite starting at 1, scene count at ctx+0x451C */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b281_01E02230;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b281_01E02230 p;
+} Tv_b281_01E02230;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b281_01E02230 v[2];
+    u8 tail[0x20];
+} Tex_b281_01E02230;
+
+typedef struct {
+    u8 pad0[0x451C];
+    s16 count;
+} Ctx_b281_01E02230;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b281_01E02230;
+
+static s32 func_01E02230_b281(Ctx_b281_01E02230 *g, Fx_b281_01E02230 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b281_01E02230 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 1.0f;
+        o->mode = 2;
+    }
+    ((Tex_b281_01E02230 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b281_01E02230 *)(s32)&pk)->size = 5;
+    ((Tex_b281_01E02230 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b281_01E02230 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0xA0;
+    pk.g = 0x78;
+    pk.b = 0x78;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->count < 355) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 8;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

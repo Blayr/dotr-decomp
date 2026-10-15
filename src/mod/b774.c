@@ -53,7 +53,76 @@ static s32 func_01E00E50_b774(Game_b774_01E00E50 *g, Fx_b774_01E00E50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E00F90_b774);
+/* shape b774:01E00F90, 138 insns: a purple glow at the scene's point (ctx+0x610) with a random turn: fades in over 1..5 ticks (more as scene count passes 140/145/150/155), then down by 9; size grows 3 per tick up to the scene's limit */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x610];
+    f32 at[3];
+    u8 pad61C[0x36F4 - 0x61C];
+    f32 limit;
+    u8 pad36F8[0x371E - 0x36F8];
+    s16 count;
+} Ctx_b774_01E00F90;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+} Fx_b774_01E00F90;
+
+static s32 func_01E00F90_b774(Ctx_b774_01E00F90 *g, Fx_b774_01E00F90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 n;
+
+    if (g->count < 140) {
+        n = 1;
+    } else if (g->count < 145) {
+        n = 2;
+    } else if (g->count < 150) {
+        n = 3;
+    } else if (g->count < 155) {
+        n = 4;
+    } else {
+        n = 5;
+    }
+    if (o->mode == 1) {
+        o->size = 0;
+        func_0019A5C8();
+        if (g->count < 140) {
+            func_001076F0(o->col, 0x2F, 0x1F, 0x40);
+        } else {
+            func_001076F0(o->col, 0x4F, 0x2F, 0x80);
+        }
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        o->mode = 2;
+    }
+    if (o->tick < n) {
+        o->col[3] += 0x80 / n;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->size < g->limit) {
+        o->size += 3;
+    }
+    o->tick++;
+    o->x = g->at[0];
+    o->y = g->at[1];
+    o->z = g->at[2];
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E011C0_b774);
 

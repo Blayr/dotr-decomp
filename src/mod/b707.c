@@ -419,7 +419,72 @@ static void func_01E01220_b707(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E014E0_b707);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E01B20_b707);
+/* shape b707:01E01B20, 131 insns: white spark (size 10, frame 0..3, f50 10.. + random below twice the scene scale at ctx+0x8720, angle 0..359, f8 0..34): alpha up by 64 to 0xC0 for 3..5 ticks, then down by 14; after scene count 240 f50 grows 15..34 per tick; between 161 and 209 rot[2] turns -0x300 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    f32 pos[4];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b707_01E01B20;
+
+typedef struct {
+    u8 pad0[0x8720];
+    f32 scale;
+    u8 pad8724[0x8776 - 0x8724];
+    s16 count;
+} Ctx_b707_01E01B20;
+
+static s32 func_01E01B20_b707(Ctx_b707_01E01B20 *g, Fx_b707_01E01B20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 r;
+
+    r = 2.0f * g->scale;
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->f56 = (func_0019A5C8() >> 4) % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->f50 = func_0019A5C8() % r + 10;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 15;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    if (g->count > 240) {
+        if (o->tick != 0) {
+            o->f50 += o->speed;
+        }
+    }
+    if (g->count > 160 && g->count < 210) {
+        o->rot[2] -= 0x300;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b707:01E01D30, 104 insns: a white orbiting spark: size 10, random sub-frame 2..7 and orbit angle, scale 0.5; alpha up by
    0x60 for 15 frames, then down by 9 until it ends; sits on the scene point, circling it at a radius from 30 shrinking by 1 */

@@ -1057,7 +1057,102 @@ static s32 func_01E03720_b721(Game_b721_01E03720 *g, Fade_b721_01E03720 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E03800_b721);
+/* shape b721:01E03800, 127 insns: b016:01E02B40 with a grey full-screen tint (0x80), offsets written with a zero
+   bias, blend 0x44, alpha up by 9 to 0x48 for 312 ticks, then down by 9 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b721_01E03800;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b721_01E03800 p;
+} Tv_b721_01E03800;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b721_01E03800 v[2];
+    u8 tail[0x20];
+} Tex_b721_01E03800;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b721_01E03800;
+
+static s32 func_01E03800_b721(s32 arg0, Fx_b721_01E03800 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b721_01E03800 pk __attribute__((aligned(8)));
+    f32 z;
+
+    if (o->mode == 1) {
+        o->f48 = 0.0f;
+        o->mode = 2;
+    }
+    z = 0.0f;
+    ((Tex_b721_01E03800 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b721_01E03800 *)(s32)&pk)->size = 5;
+    ((Tex_b721_01E03800 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b721_01E03800 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x80;
+    pk.g = 0x80;
+    pk.b = 0x80;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = (o->f48 + z) / 1024.0f;
+    pk.v[0].t = (o->f48 + z) / 512.0f;
+    pk.v[1].s = (640.0f + o->f48 - z) / 1024.0f;
+    pk.v[1].t = (448.0f + o->f48 - z) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (o->tick < 0x138) {
+        if (o->col[3] < 0x48) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b721", func_01E03A00_b721);
 

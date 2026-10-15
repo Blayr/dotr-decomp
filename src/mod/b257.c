@@ -664,7 +664,81 @@ static void func_01E01880_b257(Obj_b257_01E01880 *o, Fx_b257_01E01880 *fx, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b257", func_01E01B90_b257);
+/* shape b257:01E01B90, 135 insns: scene spawn step: red scene colour; t++; on frames 78..282 one each of handlers
+   0x1E01EB0, 0x1E021E0 and 0x1E024F0 at joint A raised 2; frames 37..54 one 0x1E028B0 at joint B raised 2; frame 20
+   fires 0x1E02BC0 twice (0x371A 0 then 90), 0x1E02CF0 and 0x1E02DC0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x3464];
+    u8 col[4];
+    u8 pad36C8[0x40];
+    s16 ja;
+    u8 pad370A[2];
+    s16 jb;
+    u8 pad370E[0xC];
+    s16 ang;
+    u8 pad371C[0xA];
+    s16 t;
+} Scene_b257_01E01B90;
+
+static void func_01E01B90_b257(Scene_b257_01E01B90 *g) {
+    extern void b257_01E01EB0(void);
+    extern void b257_01E021E0(void);
+    extern void b257_01E024F0(void);
+    extern void b257_01E028B0(void);
+    extern void b257_01E02BC0(void);
+    extern void b257_01E02CF0(void);
+    extern void b257_01E02DC0(void);
+    extern void b257_01E04400(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t >= 0x4E && g->t < 0x11B) {
+        func_001F5620(func_001F53A0(), g->ja, &v);
+        g->pos.x = v.x;
+        g->pos.y = 2.0f + v.y;
+        g->pos.z = v.z;
+        for (i = 0; i < 1; i++) {
+            b257_01E04400(g, b257_01E01EB0, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b257_01E04400(g, b257_01E021E0, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b257_01E04400(g, b257_01E024F0, 0);
+        }
+    }
+    if (g->t >= 0x25 && g->t < 0x37) {
+        func_001F5620(func_001F53A0(), g->jb, &v);
+        g->pos.x = v.x;
+        g->pos.y = 2.0f + v.y;
+        g->pos.z = v.z;
+        for (i = 0; i < 1; i++) {
+            b257_01E04400(g, b257_01E028B0, 0);
+        }
+    }
+    if (g->t == 0x14) {
+        g->ang = 0;
+        b257_01E04400(g, b257_01E02BC0, 0);
+        g->ang += 0x5A;
+        b257_01E04400(g, b257_01E02BC0, 0);
+    }
+    if (g->t == 0x14) {
+        b257_01E04400(g, b257_01E02CF0, 0);
+    }
+    if (g->t == 0x14) {
+        b257_01E04400(g, b257_01E02DC0, 0);
+    }
+}
 
 /* shape b257:01E01DB0, 64 insns: an orange spark (size 50 or 70 by the scene value, random frame 0..3) climbing 6 a tick and growing 20: in by 80 up to 0xA0 for 2 ticks, then out by 15 and ends */
 

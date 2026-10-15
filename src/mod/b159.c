@@ -36,9 +36,124 @@ static s32 func_01E00080_b159(Vec_b004_01E00B40 *trail, s32 n, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E00150_b159);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E004C0_b159);
+/* shape b159:01E004C0, 134 insns: b019:01E01F60 with its sine table at ctx+0x3B68 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b159", func_01E006E0_b159);
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x3B68];
+    u8 tab[1];
+} Mgr_b159_01E004C0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b159_01E004C0;
+
+static s32 func_01E004C0_b159(Mgr_b159_01E004C0 *m, Fx_b159_01E004C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x3F, 0x30, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f34 = 0;
+        o->f30 = func_0019A5C8() % 30 - 15;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->tick % 2 == 1) {
+        if (o->f38 < 18) {
+            o->f38++;
+        }
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->x = o->x + 10.0f * func_00108030(m->tab, o->f3A, 0);
+    o->y = o->y + 4.0f * func_00108030(m->tab, o->f30, 1);
+    o->z = o->z + 10.0f * func_00108030(m->tab, o->f3A, 1);
+    return 0;
+}
+
+/* shape b159:01E006E0, 124 insns: b064:01E01A00 with a tilt of 0..359 and the sine table at g+0x3B68: a grey puff drifting 13 a
+   frame; fades in by 8 to 0xA0 for 8 ticks, out by 5; f38 grows to 13, kind steps every 5 ticks to 7 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b159_01E006E0;
+
+static s32 func_01E006E0_b159(u8 * g, Spark_b159_01E006E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x3F, 0x3F, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->dir = func_0019A5C8() % 360;
+        o->kind = 0;
+        o->angle = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0xA0) {
+            o->col[3] += 8;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 < 13) {
+        o->f38++;
+    }
+    if (o->tick % 5 == 1) {
+        if (o->kind < 7) {
+            o->kind++;
+        }
+    }
+    o->f8 = o->f8 + 13.0f * func_00108030(g + 0x3B68, o->dir, 0);
+    o->fA = o->fA + 13.0f * func_00108030(g + 0x3B68, o->angle, 1);
+    o->fC = o->fC + 13.0f * func_00108030(g + 0x3B68, o->dir, 1);
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

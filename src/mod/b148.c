@@ -1142,7 +1142,64 @@ static s32 func_01E02F40_b148(s32 arg0, Fx_b148_01E02F40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b148", func_01E030C0_b148);
+/* shape b148:01E030C0, 130 insns: b417:01E03510's tumbling spark in blue/white tones (kind 0 blue, else grey),
+   start angle 30, flickering blue / grey / dark blue */
+
+typedef struct {
+    u8 pad00[0xE];
+    s16 speed;
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    s16 h34;
+    s16 state;
+    s16 ang;
+} Obj_b148_01E030C0;
+
+static s32 func_01E030C0_b148(void *arg0, Obj_b148_01E030C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 k;
+
+    if (o->state == 1) {
+        o->ang = 30;
+        o->rot[0] = func_0019A5C8() % 0x4000 + 0x2000;
+        o->rot[1] = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot[2] = func_0019A5C8() % 0x4000 - 0x2000;
+        o->h34 = func_0019A5C8() % 7;
+        o->state = 2;
+        o->speed = func_0019A5C8() % 10 + 2;
+        if (o->kind == 0) {
+            func_001076F0(o->c0, 0x40, 0x40, 0x80);
+        } else {
+            func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        }
+    }
+    if (o->t < 2) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 10) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    k = o->t % 3;
+    if (k == 1) {
+        func_001076F0(o->c0, 0x40, 0x40, 0x80);
+    } else if (k == 2) {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c0, 0x20, 0x20, 0x80);
+    }
+    if (o->t != 0) {
+        o->ang += o->speed;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b148:01E032D0, 65 insns: step of a fading effect (like b258:01E027A0): on state 1 sets its colour, two
    random angles and state 2; full alpha for 7 ticks, then fades by 15; picks a random frame every tick. */

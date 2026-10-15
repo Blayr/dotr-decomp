@@ -464,7 +464,74 @@ static s32 func_01E01C40_b771(s32 arg0, Obj_b771_01E01C40 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E01D90_b771);
+/* OVL_WARM */
+
+/* shape b771:01E01D90, 134 insns: a rising spark scaled by the scene value at g+0xA8E4 (s): on start size 10, h56 5, grey
+   0x80, random spins, height 6s + rand % 5s, a random angle, speed 1..3, frame 1..8, fade-in 1..3 ticks; alpha up by 64
+   to 0xC0 during the fade-in, then down by 13 until it ends; it rises by 2.5 a tick */
+
+typedef struct {
+    u8 pad0[0xA8E4];
+    f32 scale;
+} Game_b771_01E01D90;
+
+typedef struct {
+    u8 pad0[6];
+    s16 fadein;
+    s16 frame;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[8];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b771_01E01D90;
+
+static s32 func_01E01D90_b771(Game_b771_01E01D90 *g, Obj_b771_01E01D90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 k;
+
+    if (o->mode == 1) {
+        o->size = 10.0f;
+        o->h56 = 5;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        k = 5.0f * g->scale;
+        o->h50 = 6.0f * g->scale + func_0019A5C8() % k;
+        o->ang = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 3 + 1;
+        o->frame = func_0019A5C8() % 8 + 1;
+        o->fadein = func_0019A5C8() % 3 + 1;
+        o->mode = 2;
+    }
+    if (o->t < o->fadein) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 0x40;
+        }
+    } else if (o->c0[3] > 0xE) {
+        o->c0[3] -= 0xD;
+    } else {
+        o->mode = 0;
+    }
+    o->y += 2.5f;
+    o->t++;
+    return 0;
+}
 
 /* shape b771:01E01FB0, 96 insns: a grey ring sized 10 x the scene scale (ctx+0xA8E4), its second colour blinking green: in by 64 up to 0xC0 for 4 ticks; out by 11 once the scene value reaches 486, and ends */
 

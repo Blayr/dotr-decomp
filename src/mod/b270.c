@@ -1010,7 +1010,80 @@ static s32 func_01E033E0_b270(s32 arg0, Fx_b270_01E033E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E03580_b270);
+/* shape b270:01E03580, 125 insns: a growing yellow-white ring: on start size 20 and height 80 (kind 0) or 100 (kind 1),
+   f34 = 2, fade-in 3 ticks, random spins; alpha up by 42 to 0x80 during the fade-in, then down by 13 until it ends; each tick
+   the size grows by 6 and the height by 10 (kind 0) or 80 (kind 1) */
+
+typedef struct {
+    u8 pad0[6];
+    s16 fadein;
+    u8 pad8[0x18];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 size;
+    f32 height;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b270_01E03580;
+
+static s32 func_01E03580_b270(void *g, Obj_b270_01E03580 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->size = 20.0f;
+            o->height = 80.0f;
+            o->f34 = 2.0f;
+            o->fadein = 3;
+        }
+        if (o->kind == 1) {
+            o->size = 20.0f;
+            o->height = 100.0f;
+            o->f34 = 2.0f;
+            o->fadein = 3;
+        }
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x40);
+        o->w = 0xF;
+        o->h = 2;
+        o->w20 = func_0019A5C8() % 0xFFFF;
+        o->w24 = func_0019A5C8() % 0xFFFF;
+        o->w28 = func_0019A5C8() % 0xFFFF;
+        o->mode = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < o->fadein) {
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    } else if (o->c1[3] > 0xE) {
+        o->c1[3] -= 0xD;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->size += 6.0f;
+        o->height += 10.0f;
+    }
+    if (o->kind == 1) {
+        o->size += 6.0f;
+        o->height += 80.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b270:01E03780, 95 insns: a pale-yellow growing ring: size 200 growing by 10, random angle and tilt -90..89; both alphas up
    by 29 under 0x58 for 3 frames, then down by 14 until it ends; sub-frame 5 then 4; turns */
@@ -1176,7 +1249,91 @@ static s32 func_01E04340_b270(Ctx_b270_01E04340 *ctx, Obj_b270_01E04340 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b270", func_01E04400_b270);
+/* shape b270:01E04400, 130 insns: b594:01E02CB0 with a 0x90/0x90/0x78 sprite starting at 1, scene count at ctx+0xDA94, fading out from 460 */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b270_01E04400;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b270_01E04400 p;
+} Tv_b270_01E04400;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b270_01E04400 v[2];
+    u8 tail[0x20];
+} Tex_b270_01E04400;
+
+typedef struct {
+    u8 pad0[0xDA94];
+    s16 count;
+} Ctx_b270_01E04400;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b270_01E04400;
+
+static s32 func_01E04400_b270(Ctx_b270_01E04400 *g, Fx_b270_01E04400 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b270_01E04400 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 1.0f;
+        o->mode = 2;
+    }
+    ((Tex_b270_01E04400 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b270_01E04400 *)(s32)&pk)->size = 5;
+    ((Tex_b270_01E04400 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b270_01E04400 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x90;
+    pk.g = 0x90;
+    pk.b = 0x78;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->count < 460) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 8;
+        }
+    } else if (o->col[3] > 8) {
+        o->col[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

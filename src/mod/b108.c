@@ -822,9 +822,153 @@ static s32 func_01E021B0_b108(Scn_b108_01E021B0 *w, Glow_b108_01E021B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E02380_b108);
+/* shape b108:01E02380, 137 insns: spinning glow in two kinds: kind 0 (size 20, grey over green) alpha +16 for 12 ticks, then down by 9 once scene count 211 is passed, outer colour flashing red/purple; kind 1 (size 300, white over orange) alpha up by 27 to 0xC0 for 12 ticks, then down by 9; spins 0x4000 per tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E025B0_b108);
+typedef struct {
+    u8 pad0[0x6AE4];
+    s16 count;
+} Ctx_b108_01E02380;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b108_01E02380;
+
+static s32 func_01E02380_b108(Ctx_b108_01E02380 *g, Fx_b108_01E02380 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        if (o->kind == 1) {
+            o->f48 = 300.0f;
+        }
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+            func_001076F0(o->col2, 0xF0, 0x80, 0x10);
+        } else {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x40, 0x10);
+        }
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick < 12) {
+            o->col[3] += 0x10;
+        } else if (g->count > 210) {
+            if (o->col[3] > 10) {
+                o->col[3] -= 9;
+            } else {
+                o->mode = 0;
+            }
+        }
+    }
+    if (o->kind == 1) {
+        if (o->tick < 12) {
+            if (o->col[3] < 0xC0) {
+                o->col[3] += 0x1B;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind == 0) {
+        if (o->tick % 2 == 1) {
+            func_001076F0(o->col2, 0xF0, 8, 0x80);
+        } else {
+            func_001076F0(o->col2, 0x80, 8, 0x40);
+        }
+    }
+    func_00205C40(o->rot);
+    o->rot[0] += 0x4000;
+    o->tick++;
+    return 0;
+}
+
+/* shape b108:01E025B0, 134 insns: a spinning glow in two kinds: kind 0 grows 4 from 10 (f4C 2.5), alpha up by 21 to 0x80 for 12 ticks then down by 9; kind 1 grows 10 from 90 (f4C 90), alpha +16 for 12 ticks; the outer colour flashes red/purple every tick; rot[0] fixed at 0x4000, rot[2] turns 0x200 */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b108_01E025B0;
+
+static s32 func_01E025B0_b108(s32 arg0, Fx_b108_01E025B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->f48 = 10.0f;
+            o->f4C = 2.5f;
+        }
+        if (o->kind == 1) {
+            o->f48 = 90.0f;
+            o->f4C = 90.0f;
+        }
+        o->rot[2] = func_0019A5C8() % 65535;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0xF0, 8, 8);
+        o->f5A = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->kind == 0) {
+        if (o->tick < 12) {
+            if (o->col[3] < 0x80) {
+                o->col[3] += 0x15;
+            }
+        } else if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->kind == 1 && o->tick < 12) {
+        o->col[3] += 0x10;
+    }
+    if (o->kind == 0) {
+        o->f48 += 4.0f;
+    }
+    if (o->kind == 1) {
+        o->f48 += 10.0f;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col2, 0xF0, 8, 0x80);
+    } else {
+        func_001076F0(o->col2, 0x80, 8, 0x40);
+    }
+    o->rot[0] = 0x4000;
+    o->rot[2] += 0x200;
+    o->tick++;
+    return 0;
+}
 
 /* shape b108:01E027D0, 70 insns: a dark/teal glow of size 200 at a random angle, growing 12 and spun 0x4000 a tick: in by 32 up to 0xC0 for 37 ticks (unless held), then out by 9 and ends */
 

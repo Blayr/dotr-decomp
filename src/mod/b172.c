@@ -107,6 +107,65 @@ INCLUDE_ASM("asm/nonmatchings/mod/b172", func_01E04DF0_b172);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b172", func_01E05700_b172);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b172", func_01E061E0_b172);
+/* shape b172:01E061E0, 128 insns: b062:01E05A10's 30-piece ring, with the pieces past 0x8000 (0x8508) and the centre
+   after the scales (0x8EE0); pieces turn on the x/z plane (y = 0) */
+
+typedef struct {
+    u8 n;
+    u8 pad1;
+    u8 step;
+    u8 pad3;
+    u8 flags;
+    u8 pad5[0x33];
+    f32 x, y, z;
+} Piece_b172_01E061E0;
+
+typedef struct {
+    u8 m[0xC];
+} Mtx_b172_01E061E0;
+
+typedef struct {
+    u8 pad0[0x8508];
+    Piece_b172_01E061E0 pieces[30];
+    Mtx_b172_01E061E0 mats[30];
+    f32 scale[30];
+    f32 cx, cy, cz;
+} Scene_b172_01E061E0;
+
+static void func_01E061E0_b172(Scene_b172_01E061E0 *s) {
+    extern void func_00101A00(void *, void *);
+    extern f32 func_001A6898(f32);
+    extern f32 func_001A6A88(f32);
+    extern void func_0020CDD0(void *, void *, void *);
+    Vec4f v;
+    Vec4f out;
+    f32 mtx[16];
+    f32 r;
+    f32 a;
+    s32 d;
+    s32 i;
+
+    for (i = 0; i < 0x1E; i++) {
+        if (s->pieces[i].n != 0) {
+            if (s->pieces[i].n < 4) {
+                s->pieces[i].flags |= 8;
+            }
+            func_00101A00(&s->mats[i], mtx);
+            d = s->pieces[i].step - s->pieces[i].n;
+            r = (f32)(s->pieces[i].n - 4) * s->scale[i];
+            if (r < 0.0f) {
+                r = 0.0f;
+            }
+            a = (3.1415927f * (45.0f * i + 16.0f * d)) / 180.0f;
+            v.x = r * func_001A6898(a);
+            v.y = 0.0f;
+            v.z = r * func_001A6A88(a);
+            func_0020CDD0(&out, mtx, &v);
+            s->pieces[i].x = s->cx + out.x;
+            s->pieces[i].y = s->cy + out.y;
+            s->pieces[i].z = s->cz + out.z;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b172", func_01E063E0_b172);

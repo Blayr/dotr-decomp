@@ -467,7 +467,72 @@ static void func_01E00E70_b394(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b394", func_01E01420_b394);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b394", func_01E01870_b394);
+/* shape b394:01E01870, 139 insns: b362:01E022B0's spark, size 3, frame 0..7, height 0..14, rise 1..3, flickering white / grey */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b394_01E01870;
+
+static s32 func_01E01870_b394(s32 arg0, Obj_b394_01E01870 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 3.0f;
+        o->kind = func_0019A5C8() % 8;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h50 = func_0019A5C8() % 15;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 3 + 1;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->h6 = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    if (o->t != 0) {
+        o->h50 += o->hE;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b394:01E01AA0, 108 insns: a grey spark: f48 4 (+2 per tick), fA -7..7, fC = the old f50, f50 0, spin 5..12
    (9..20 when fC was 1), f8 0..34, life 3..7; alpha 0x80 during the life, then fades by 8; f50 grows by the spin
@@ -531,7 +596,75 @@ static s32 func_01E01AA0_b394(s32 arg0, Fx_b394_01E01AA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b394", func_01E01C50_b394);
+/* shape b394:01E01C50, 123 insns: b394:01E01AA0 twin, life 25..29, and f38 = (camera z - f18) / 25 so it reaches the camera over 25 ticks */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[8];
+    f32 z;
+    u8 pad1C[0x1C];
+    f32 dz;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b394_01E01C50;
+
+static s32 func_01E01C50_b394(s32 arg0, Fx_b394_01E01C50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, f32 *);
+    f32 v[4];
+
+    if (o->mode == 1) {
+        o->f48 = 4.0f;
+        o->f56 = 0;
+        func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = 0;
+        o->spin = func_0019A5C8() % 8 + 5;
+        if (o->fC == 1) {
+            o->spin = func_0019A5C8() % 12 + 9;
+        }
+        o->f8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 5 + 25;
+        func_001F5F90(func_001F5380(), v);
+        o->dz = (v[2] - o->z) / 25.0f;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f48 += 2.0f;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->spin;
+        o->z += o->dz;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b394", func_01E01E40_b394);
 

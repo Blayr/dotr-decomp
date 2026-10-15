@@ -208,7 +208,109 @@ static void func_01E00C50_c056(Ctx_c056_01E00C50 *ctx, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E00D30_c056);
+/* shape c056:01E00D30, 127 insns: c056:01E012A0's trail link with the scene's colour (ctx+0x4480), the height split
+   by kind (0 and 1 get a floor 22 below, never under 0), ctx+0x44B8 copied, and the module's 0x1E015A0 callback */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c056_01E00D30;
+
+typedef struct Ent_c056_01E00D30 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0xC];
+    f32 f24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[8];
+    Vec4f a;
+    u8 pad50[0x10];
+    Vec4f v;
+    Vec4f b;
+    u8 pad80[0x10];
+    struct Ent_c056_01E00D30 *prev;
+    struct Ent_c056_01E00D30 *next;
+    void (*cb)(void);
+    s32 arg;
+    u8 padA0[6];
+    s16 fA6;
+    u8 padA8[4];
+    Col_c056_01E00D30 col0;
+    Col_c056_01E00D30 col1;
+    u8 padB4[4];
+    s16 fB8;
+    s16 fBA;
+    s16 fBC;
+    s16 fBE;
+} Ent_c056_01E00D30;
+
+typedef struct {
+    u8 pad0[0x80];
+    Vec4f v;
+    u8 pad90[0xC60 - 0x90];
+    u8 pool[0x4480 - 0xC60];
+    u8 rgba[4];
+    u8 pad4484[8];
+    Ent_c056_01E00D30 *last;
+    u8 pad4490[0x449C - 0x4490];
+    f32 pos[3];
+    u8 pad44A8[0x10];
+    s16 f44B8;
+    s16 f44BA;
+    s16 f44BC;
+    u8 pad44BE[0xA];
+    s16 f44C8;
+} Ctx_c056_01E00D30;
+
+static void func_01E00D30_c056(Ctx_c056_01E00D30 *ctx, s32 arg) {
+    extern void c056_01E015A0(void);
+    extern void func_001076F0();
+    Ent_c056_01E00D30 *e = (Ent_c056_01E00D30 *)func_00106A00((s32)ctx, (s32)ctx->pool, 0x46, 0);
+    Ent_c056_01E00D30 *p;
+    f32 h;
+
+    if (e != NULL) {
+        func_001076F0(&e->col0, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        e->col0.a = ctx->rgba[3];
+        func_001076F0(&e->col1, ctx->rgba[0], ctx->rgba[1], ctx->rgba[2]);
+        e->col1.a = ctx->rgba[3];
+        e->v = ctx->v;
+        func_00107E40(ctx->pos[0], ctx->pos[1], ctx->pos[2], e);
+        e->fBA = ctx->f44BA;
+        e->prev = ctx->last;
+        e->fA6 = ctx->f44C8;
+        if (e->fA6 == 0) {
+            h = ctx->pos[2];
+            e->f4 = e->f14 = h;
+            e->f34 = e->f24 = h - 22.0f;
+            if (e->f24 < 0.0f) {
+                e->f34 = e->f24 = 0.0f;
+            }
+        } else if (e->fA6 == 1) {
+            h = ctx->pos[2];
+            e->f4 = e->f14 = h;
+            e->f34 = e->f24 = h - 22.0f;
+            if (e->f24 < 0.0f) {
+                e->f34 = e->f24 = 0.0f;
+            }
+        }
+        e->prev = ctx->last;
+        p = e->prev;
+        if (p != NULL) {
+            e->a = p->a;
+            e->b = p->b;
+            p->next = e;
+        }
+        e->fB8 = ctx->f44B8;
+        e->cb = c056_01E015A0;
+        e->arg = arg;
+        e->fBC = ctx->f44BC;
+        e->fBE = 1;
+        ctx->last = e;
+    }
+}
 
 /* shape c056:01E00F30, 106 insns: spawns one blue effect (handler c056:01E02020) from the scene pool: colours it with the scene
    alpha, scales it, puts it at the anchor point (copying x and z first when the mode is 0), picks a random flip and angle and
@@ -400,7 +502,104 @@ static void func_01E011C0_c056(Ctx_c056_01E011C0 *ctx, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E012A0_c056);
+/* shape c056:01E012A0, 123 insns: c056:01E010E0 family trail link: spawns a dark grey (0x15) piece with the context's alpha and vector, at the context's position, ground height 18 below it (0 when that falls below 0); chained after the context's last piece, copying its two vectors, and becomes the new last piece; draws with c056:01E022F0 */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c056_01E012A0;
+
+typedef struct Ent_c056_01E012A0 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0xC];
+    f32 f24;
+    u8 pad28[0xC];
+    f32 f34;
+    u8 pad38[8];
+    Vec4f a;
+    u8 pad50[0x10];
+    Vec4f v;
+    Vec4f b;
+    u8 pad80[0x10];
+    struct Ent_c056_01E012A0 *prev;
+    struct Ent_c056_01E012A0 *next;
+    void (*cb)(void);
+    s32 arg;
+    u8 padA0[6];
+    s16 fA6;
+    u8 padA8[4];
+    Col_c056_01E012A0 col0;
+    Col_c056_01E012A0 col1;
+    u8 padB4[6];
+    s16 fBA;
+    s16 fBC;
+    s16 fBE;
+} Ent_c056_01E012A0;
+
+typedef struct {
+    u8 pad0[0x80];
+    Vec4f v;
+    u8 pad90[0xC60 - 0x90];
+    u8 pool[0x4480 - 0xC60];
+    u8 rgba[4];
+    u8 pad4484[8];
+    Ent_c056_01E012A0 *last;
+    u8 pad4490[0x449C - 0x4490];
+    f32 pos[3];
+    u8 pad44A8[0x12];
+    s16 f44BA;
+    s16 f44BC;
+    u8 pad44BE[0xA];
+    s16 f44C8;
+} Ctx_c056_01E012A0;
+
+static void func_01E012A0_c056(Ctx_c056_01E012A0 *ctx, s32 arg) {
+    extern void c056_01E022F0(void);
+    extern void func_001076F0();
+    Ent_c056_01E012A0 *e = (Ent_c056_01E012A0 *)func_00106A00((s32)ctx, (s32)ctx->pool, 0x46, 0);
+    Ent_c056_01E012A0 *p;
+    f32 h;
+
+    if (e != NULL) {
+        func_001076F0(&e->col0, 0x15, 0x15, 0x15);
+        e->col0.a = ctx->rgba[3];
+        func_001076F0(&e->col1, 0x15, 0x15, 0x15);
+        e->col1.a = ctx->rgba[3];
+        e->v = ctx->v;
+        func_00107E40(ctx->pos[0], ctx->pos[1], ctx->pos[2], e);
+        e->fBA = ctx->f44BA;
+        e->prev = ctx->last;
+        e->fA6 = ctx->f44C8;
+        if (e->prev == NULL) {
+            h = ctx->pos[2];
+            e->f4 = e->f14 = h;
+            e->f34 = e->f24 = h - 18.0f;
+        } else {
+            h = ctx->pos[2];
+            e->f4 = e->f14 = h;
+            e->f34 = e->f24 = h - 18.0f;
+        }
+        if (ctx->pos[2] - 18.0f >= 0.0f) {
+            e->f34 = e->f24 = e->f4 - 18.0f;
+        } else {
+            e->f34 = e->f24 = 0.0f;
+        }
+        e->prev = ctx->last;
+        p = e->prev;
+        if (p != NULL) {
+            e->a = p->a;
+            e->b = p->b;
+            p->next = e;
+        }
+        e->cb = c056_01E022F0;
+        e->arg = arg;
+        e->fBC = ctx->f44BC;
+        e->fBE = 1;
+        ctx->last = e;
+    }
+}
 
 /* shape c056:01E01490, 66 insns: spawns a grey glow (c056:01E00C50 family): colours 0x20 with the context's alpha, height
    from the context, placed at the context's position; links to the context's parent effect (copying its vector and
@@ -476,11 +675,182 @@ INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E02020_c056);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E022F0_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E02560_c056);
+/* shape c056:01E02560, 139 insns: b194:01E02AB0's two-pass material with a 12-segment ring: mode 0 sets the material
+   (frame 0x97, the object's two colours, scene texture 0xCC); other modes turn by the scene's rotation entry for the
+   object, set the ring's height to twice its depth from the top, and draw 12 segments of 30 degrees between the radii at
+   0xA8 and 0xAA (scale g+0x44D0, depth 0x44A8, packet list 0x4488) */
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_c056_01E02560;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c056_01E02560;
+
+typedef struct {
+    Rgbaq_c056_01E02560 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c056_01E02560;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c056_01E02560 v[4];
+} Pkt_c056_01E02560;
+
+
+typedef struct {
+    Vec_c056_01E02560 q[4];
+    u8 pad40[0x60];
+    f32 top;
+    u8 padA4[4];
+    s16 r0;
+    s16 r1;
+    u8 col[4];
+    u8 col2[4];
+    u8 padB4[8];
+    s16 rot;
+} Ring_c056_01E02560;
+
+typedef struct {
+    u8 pad00[0x40];
+    u8 m[0x40];
+    u8 pad80[0x4C];
+    s32 texture;
+    u8 padD0[0x30];
+    Vec_c056_01E02560 rots[1];
+    u8 pad110[0x4378];
+    s32 target;
+    u8 pad448C[0x1C];
+    f32 depth;
+    u8 pad44AC[0x24];
+    f32 scale;
+} Game_c056_01E02560;
+
+static void func_01E02560_c056(Game_c056_01E02560 *g, Ring_c056_01E02560 *an, Pkt_c056_01E02560 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_c056_01E02560 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern void func_00106CF0(void *, s16, s32, f32 *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 rm[4];
+    f32 m[16];
+    f32 d;
+    s32 i;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->texture, 1);
+    } else {
+        func_0020C940(m, 0, &g->rots[an->rot], 0);
+        func_0020BC00(g->m, m);
+        d = 2.0f * (an->q[0].y - an->top);
+        an->q[3].y = an->q[2].y = d;
+        for (i = 0; i < 12; i++) {
+            func_00106CF0(&an->q[0], i * 30, an->r0, &g->scale);
+            func_00106CF0(&an->q[1], i * 30 + 30, an->r0, &g->scale);
+            func_00106CF0(&an->q[2], i * 30, an->r1, &g->scale);
+            func_00106CF0(&an->q[3], i * 30 + 30, an->r1, &g->scale);
+            if (func_00205630(an->q, 0x70000000, g->m, p, &g->depth) != 0) {
+                func_002075F0(p, g->target, (u32)g->depth);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E02790_c056);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E02BE0_c056);
+/* shape c056:01E02BE0, 139 insns: a ring of twelve flat quads: mode 0 sets the four corner colours (two of each of
+   the effect's colours); otherwise the quad's inner edge sits at the centre (y 10) and its outer corners sweep a
+   radius-150 circle 30 degrees apart from the effect's angle, each quad sent at the scene depth */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c056_01E02BE0;
+
+typedef struct {
+    Rgbaq_c056_01E02BE0 c;
+    u64 st;
+} Vtx_c056_01E02BE0;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vtx_c056_01E02BE0 v[4];
+} Pkt_c056_01E02BE0;
+
+typedef struct {
+    Vec4f q[4];
+    u8 pad40[0x6C];
+    u8 col[4];
+    u8 col2[4];
+    u8 padB4[6];
+    s16 ang;
+} Fx_c056_01E02BE0;
+
+typedef struct {
+    u8 pad0[0x4488];
+    s32 ot;
+    u8 pad448C[0x1C];
+    f32 depth;
+    u8 pad44AC[0x24];
+    u8 sin[1];
+} Scene_c056_01E02BE0;
+
+static void func_01E02BE0_c056(Scene_c056_01E02BE0 *g, Fx_c056_01E02BE0 *o, Pkt_c056_01E02BE0 *p, s32 mode) {
+    extern void func_001092E0(void *, s32);
+    extern Rgbaq_c056_01E02BE0 func_00107740(void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001A23B0(f32);
+    s32 i;
+    s16 a;
+
+    a = 0;
+    if (mode == 0) {
+        func_001092E0(p, 0);
+        p->v[0].c = func_00107740(o->col);
+        p->v[1].c = func_00107740(o->col);
+        p->v[2].c = func_00107740(o->col2);
+        p->v[3].c = func_00107740(o->col2);
+        return;
+    }
+    o->q[0].x = 0.0f;
+    o->q[0].z = 0.0f;
+    o->q[1].x = o->q[0].x;
+    o->q[1].z = o->q[0].z;
+    o->q[0].y = 10.0f;
+    o->q[1].y = 10.0f;
+    o->q[2].y = 10.0f;
+    o->q[3].y = 10.0f;
+    for (i = 0; i < 12; i++) {
+        o->q[2].x = 150.0f * func_00108030(g->sin, o->ang + a, 1);
+        o->q[2].z = 150.0f * func_00108030(g->sin, o->ang + a, 0);
+        o->q[3].x = 150.0f * func_00108030(g->sin, o->ang + 30 + a, 1);
+        o->q[3].z = 150.0f * func_00108030(g->sin, o->ang + 30 + a, 0);
+        if (func_00205630(o, 0x70000000, 0, p, &g->depth) != 0) {
+            func_002075F0(p, g->ot, func_001A23B0(g->depth));
+        }
+        a += 30;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E02E10_c056);
 

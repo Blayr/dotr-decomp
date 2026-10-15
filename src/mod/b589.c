@@ -811,7 +811,102 @@ static s32 func_01E01920_b589(s32 arg0, Obj_b589_01E01920 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b589", func_01E01AB0_b589);
+/* shape b589:01E01AB0, 137 insns: b567:01E019F0's green trail on the 0x60-colour object layout: joints at g+0x6DEE /
+   0x6DF0, size 0.4, alpha up by 18 for 11 ticks then down by 29, the trail kept while the counter is under 119, h6
+   counting up to 8 */
+
+typedef struct {
+    Vec4f pt[9];
+    Vec4f head;
+} Trail_b589_01E01AB0;
+
+typedef struct {
+    u8 pad0[0x6AF0];
+    Trail_b589_01E01AB0 a;
+    Trail_b589_01E01AB0 b;
+    u8 pad6C30[0x6DEE - 0x6C30];
+    s16 id2;
+    s16 id1;
+    u8 pad6DF2[0x6E0C - 0x6DF2];
+    s16 count;
+} Ctx_b589_01E01AB0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[6];
+    s16 fE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b589_01E01AB0;
+
+static s32 func_01E01AB0_b589(Ctx_b589_01E01AB0 *g, Fx_b589_01E01AB0 *o) {
+    extern void b589_01E00080(void *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[4];
+    s32 i;
+    s32 j;
+    Vec4f *p;
+
+    func_001076F0(o->col, 0x60, 0xA0, 0x60);
+    if (o->mode == 1) {
+        o->f48 = 0.4f;
+        if (o->kind == 0) {
+            o->fE = 30;
+            func_001F5620(func_001F53A0(), g->id2, v);
+            p = g->a.pt;
+            for (i = 0; i < 9; i++) {
+                p[i].x = v[0];
+                p[i].y = v[1];
+                p[i].z = v[2];
+            }
+            func_001F5620(func_001F53A0(), g->id1, v);
+            p = g->b.pt;
+            for (j = 0; j < 9; j++) {
+                p[j].x = v[0];
+                p[j].y = v[1];
+                p[j].z = v[2];
+            }
+        }
+        if (o->kind == 1) {
+            o->fE = 7;
+        }
+        o->hold = 1;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 18;
+        }
+    } else if (o->col[3] > 30) {
+        o->col[3] -= 29;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        if (g->count < 119) {
+            func_001F5620(func_001F53A0(), g->id2, v);
+            b589_01E00080(&g->a.head, 10, 0, v);
+            func_001F5620(func_001F53A0(), g->id1, v);
+            b589_01E00080(&g->b.head, 10, 0, v);
+        }
+    }
+    if (o->hold < 8) {
+        o->hold++;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b589:01E01CE0, 97 insns: b564:01E018A0 family: a green spark (size 6, random frame 0..3, two random turns) spinning a random 3..18 a tick, size 0..9, held 10..29 ticks at 0x80, then out by 10 and ends */
 

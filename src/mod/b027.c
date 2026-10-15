@@ -2,7 +2,64 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E00080_b027);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E00900_b027);
+/* shape b027:01E00900, 134 insns: b194:01E00C60 with colour 0x3F/0x38/0x3F and the sine table at g+0x3A34 */
+
+typedef struct {
+    u8 pad0[0x3A34];
+    u8 trig[1];
+} World_b027_01E00900;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b027_01E00900;
+
+static s32 func_01E00900_b027(World_b027_01E00900 *w, Wisp_b027_01E00900 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->c0, 0x3F, 0x38, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E00B20_b027);
 
@@ -1123,4 +1180,72 @@ static void func_01E03F70_b027(Scene_b027_01E03F70 *g, Fx_b027_01E03F70 *o, void
     func_00108F90(quad, p, m, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b027", func_01E04110_b027);
+/* shape b027:01E04110, 113 insns: b004:01E01860 family two-pass sprite draw with depth: pass 0 sets the material (texture id 0x99, alpha test 0x42, scene texture at +0x2BC); pass 1 places a size x size quad at position + speed/10 scaled 0.1, projects it (func_00205630) and sends it at its depth */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b027_01E04110;
+
+typedef struct {
+    u8 pad0[0x2BC];
+    s32 tex;
+    u8 pad2C0[0x38DC - 0x2C0];
+    s32 ot;
+} Scene_b027_01E04110;
+
+static void func_01E04110_b027(Scene_b027_01E04110 *g, Fx_b027_01E04110 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f sc;
+    f32 rm[4];
+    f32 m[16];
+    f32 depth[4];
+    s32 rot[4];
+    f32 ax, ay, az;
+
+    func_00207500();
+    if (lit == 0) {
+        func_00106080(rm, 0x99, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    ax = o->dx;
+    ay = o->dy;
+    az = o->dz;
+    ax /= 10.0f;
+    ay /= 10.0f;
+    az /= 10.0f;
+    pos.x = o->x + ax;
+    pos.y = o->y + ay;
+    pos.z = o->z + az;
+    sc.x = 0.1f;
+    sc.y = 0.1f;
+    sc.z = 0.1f;
+    func_00108EF0(m, &sc, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+        func_002075F0(p, g->ot, func_001A23B0(depth[0]));
+    }
+}

@@ -544,7 +544,66 @@ static s32 func_01E01930_b606(s32 arg0, Obj_b606_01E01930 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b606", func_01E01AE0_b606);
+/* shape b606:01E01AE0, 133 insns: b530:01E01D40 family grey spark (f48 4..8, frame 0..2, f50 20..69, angle 0..359, f8 0..34) rising 0.5..1.4 per tick with a sideways f30 of -0.5..0.4: alpha up by 64 to 0xC0 for 3..5 ticks, then down by 14 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[4];
+    f32 y;
+    u8 pad18[0x18];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b606_01E01AE0;
+
+static s32 func_01E01AE0_b606(s32 arg0, Fx_b606_01E01AE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 5 + 4;
+        o->f56 = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f50 = func_0019A5C8() % 50 + 20;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 20 + 16;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->f34 = func_0019A5C8() % 10 + 5;
+        o->f34 /= 10.0f;
+        o->f30 = func_0019A5C8() % 10 - 5;
+        o->f30 /= 10.0f;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->y -= o->f34;
+    o->tick++;
+    return 0;
+}
 
 /* shape b606:01E01D00, 113 insns, 2 copies: a white drifter: set up once (size 100, random frame 2..4 and heading, pushed 6.6
    along it); fades in over 10 frames, then out; drifts 0.5 a frame along its heading (world trig table);

@@ -843,7 +843,81 @@ static s32 func_01E02A60_b852(s32 arg0, Spr_b852_01E02A60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b852", func_01E02C20_b852);
+/* shape b852:01E02C20, 127 insns: constant variant of b745:01E02870 (4->10, 160.0f->200.0f, 1.0f->4.0f, 80.0f->100.0f, 0.5f->2.0f) */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b852_01E02C20;
+
+static s32 func_01E02C20_b852(s32 arg0, Obj_b852_01E02C20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0xFF, 0x40, 0x40);
+        if (o->h50 == 0) {
+            o->f30 = 20.0f;
+            o->f34 = 870.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 20.0f;
+            o->f34 = 630.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 8.0f;
+            o->f34 = 400.0f;
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->h52 = 0;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0) {
+        if (o->t != 0) {
+            o->f34 += 200.0f;
+        }
+        if (o->t != 0) {
+            o->f30 += 4.0f;
+        }
+    }
+    if (o->h50 == 1) {
+        if (o->t != 0) {
+            o->f34 += 100.0f;
+        }
+        if (o->t != 0) {
+            o->f30 += 2.0f;
+        }
+    }
+    if (o->t != 0) {
+        if (o->h52 < 25) {
+            o->h52++;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b852", func_01E02E20_b852);
 

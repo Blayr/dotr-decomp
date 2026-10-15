@@ -1082,7 +1082,76 @@ static s32 func_01E02990_b189(void *arg0, Obj_b189_01E02990 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b189", func_01E02B00_b189);
+/* shape b189:01E02B00, 127 insns: b203:01E03140 family dark grey flash swinging on a sine: f48 = 600 sin(h50) (f4C 400 below), h50 stepping 8 up to 90 then 6; full alpha 20 ticks, ends when f48 drops under 80; past 90 alpha falls by 7 */
+
+typedef struct {
+    u8 pad0[0x4734];
+    u8 tab[1];
+} Ctx_b189_01E02B00;
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 rot0;
+    s32 rot1;
+    s32 rot2;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b189_01E02B00;
+
+static s32 func_01E02B00_b189(Ctx_b189_01E02B00 *g, Obj_b189_01E02B00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->f48 = 100.0f;
+        o->f4C = o->f48 - 58.0f;
+        func_001076F0(o->c0, 0x20, 0x20, 0x20);
+        func_001076F0(o->c1, 0x20, 0x20, 0x20);
+        o->h50 = 0;
+        o->sub = func_0019A5C8() % 8;
+        o->w = 0xF;
+        o->h = 0xA;
+        o->f34 = 250.0f;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot0 = func_0019A5C8() % 65535;
+        o->rot1 = func_0019A5C8() % 65535;
+        o->rot2 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 20) {
+        o->c0[3] = 0x80;
+    } else if (o->f48 < 80.0f) {
+        o->state = 0;
+    }
+    o->f48 = 600.0f * func_00108030(g->tab, o->h50, 0);
+    o->f4C = o->f48 - 400.0f;
+    if (o->h50 > 90) {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        }
+    }
+    if (o->h50 < 90) {
+        o->h50 += 8;
+    } else {
+        o->h50 += 6;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b189:01E02D00, 102 insns: b593:01E020C0 twin: a red spark (size 20, random frame 0..3) */
 

@@ -499,7 +499,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E015F0_b362);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E01B10_b362);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E01EE0_b362);
+/* shape b362:01E01EE0, 131 insns: b362:01E020F0 with a start height of 20..119 while the game counter at g+0xB278 is
+   under 70, else 10..109 */
+
+typedef struct {
+    u8 pad0[0xB278];
+    s16 count;
+} Game_b362_01E01EE0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 w;
+    u8 padA[4];
+    s16 step;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 y;
+    u8 pad52[2];
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b362_01E01EE0;
+
+static s32 func_01E01EE0_b362(Game_b362_01E01EE0 *g, Obj_b362_01E01EE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 6.0f;
+        o->sub = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 65535;
+        o->rot[1] = func_0019A5C8() % 65535;
+        o->rot[2] = func_0019A5C8() % 65535;
+        if (g->count < 70) {
+            o->y = func_0019A5C8() % 100 + 20;
+        } else {
+            o->y = func_0019A5C8() % 100 + 10;
+        }
+        o->ang = func_0019A5C8() % 360;
+        o->step = func_0019A5C8() % 3 + 1;
+        o->w = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b362:01E020F0, 112 insns: a white tumbling spark (b041:01E01C40 shape): size 6, random sub-frame 0..3 and turn on all three
    axes, height 10..59, angle, step 1..3, width 1..8, hold 2..4; alpha up by 42 to 0x80 until the hold, then down by 11 */
@@ -712,7 +773,100 @@ static s32 func_01E025A0_b362(Game_b362_01E025A0 *g, Fade_b362_01E025A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E026A0_b362);
+/* shape b362:01E026A0, 125 insns: b016:01E02B40 with a pale green full-screen tint (0x78/0xA0/0x78), start offset 10,
+   blend 0x44, alpha up by 10 to 0x50 for 235 ticks, then down by 4 until it ends */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b362_01E026A0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b362_01E026A0 p;
+} Tv_b362_01E026A0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b362_01E026A0 v[2];
+    u8 tail[0x20];
+} Tex_b362_01E026A0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 spin;
+    u8 pad10[0x10];
+    s32 pos[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 size;
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b362_01E026A0;
+
+static s32 func_01E026A0_b362(s32 arg0, Fx_b362_01E026A0 *o) {
+    extern void func_002087A0(void *, s32);
+    Tex_b362_01E026A0 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 10.0f;
+        o->mode = 2;
+    }
+    ((Tex_b362_01E026A0 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b362_01E026A0 *)(s32)&pk)->size = 5;
+    ((Tex_b362_01E026A0 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b362_01E026A0 *)(s32)&pk)->pad4 = 0;
+    pk.r = 0x78;
+    pk.g = 0xA0;
+    pk.b = 0x78;
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (o->tick < 0xEB) {
+        if (o->col[3] < 0x50) {
+            o->col[3] += 0xA;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E028A0_b362);
 

@@ -418,7 +418,71 @@ static s32 func_01E01AB0_b569(s32 arg0, Obj_b569_01E01AB0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b569", func_01E01C60_b569);
+/* shape b569:01E01C60, 139 insns: b763:01E02200's growing puff in three kinds (purple / blue / green over grey 0x30), size 200, growth 55..59.9, fading by 14, f4C 0.3 of the size */
+
+typedef struct {
+    u8 pad00[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b569_01E01C60;
+
+static s32 func_01E01C60_b569(void *arg0, Obj_b569_01E01C60 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 200.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 3;
+        if (o->h50 == 0) {
+            func_001076F0(o->col, 0xC0, 0x80, 0xFF);
+            func_001076F0(o->col2, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->col, 0xA0, 0xA0, 0xFF);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        if (o->h50 == 2) {
+            func_001076F0(o->col, 0x80, 0xFF, 0x80);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        o->h5A = 30;
+        o->h5C = 30;
+        o->f34 = func_0019A5C8() % 300 + 550;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 8) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 15) {
+        o->col[3] -= 14;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = 0.3f * o->f48;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b569", func_01E01E90_b569);
 

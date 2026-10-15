@@ -553,7 +553,59 @@ static void func_01E012D0_b202(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b202", func_01E01880_b202);
+/* shape b202:01E01880, 126 insns: scene spawn step (b615:01E01880 family): count++; on even frames 78..200 one spark
+   (ten on frame 78) at the scene point raised 0..19, numbered by a 0..119 ring (handler 0x1E01A80); frames 1..4 add
+   handler 0x1E02560, frame 1 also 0x1E023B0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 pos[3];
+    u8 pad25C[0x8664 - 0x25C];
+    s16 point;
+    u8 pad8666[0x2C];
+    s16 num;
+    s16 ring;
+    u8 pad8696[4];
+    s16 count;
+} Scene_b202_01E01880;
+
+static void func_01E01880_b202(Scene_b202_01E01880 *g) {
+    extern void b202_01E01A80(void);
+    extern void b202_01E023B0(void);
+    extern void b202_01E02560(void);
+    extern void b202_01E02EE0(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    g->count++;
+    if (g->count >= 0x4E && g->count < 0xC9) {
+        if (g->count % 2 == 0) {
+            if (g->count == 0x4E) {
+                n = 10;
+            } else {
+                n = 1;
+            }
+            for (i = 0; i < n; i++) {
+                func_001F5620(func_001F53A0(), g->point, g->pos);
+                g->pos[1] += func_0019A5C8() % 20;
+                g->num = g->ring;
+                b202_01E02EE0(g, b202_01E01A80, 0);
+                g->ring++;
+                if (g->ring >= 0x78) {
+                    g->ring = 0;
+                }
+            }
+        }
+    }
+    if (g->count > 0 && g->count < 5) {
+        b202_01E02EE0(g, b202_01E02560, 0);
+    }
+    if (g->count == 1) {
+        b202_01E02EE0(g, b202_01E023B0, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b202", func_01E01A80_b202);
 

@@ -1161,7 +1161,105 @@ static s32 func_01E03420_b433(Game_b433_01E03420 *g, Fade_b433_01E03420 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E03520_b433);
+/* shape b433:01E03520, 133 insns: b233:01E03980's zooming full-screen veil in pink (0xA0, 0x78, 0x78), on the
+   standard 0x60-colour effect layout */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b433_01E03520;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b433_01E03520;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b433_01E03520 p;
+} Vtx_b433_01E03520;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b433_01E03520 c;
+    Vtx_b433_01E03520 v[2];
+    u8 tail[0x20];
+} Pkt_b433_01E03520;
+
+typedef struct {
+    u8 pad00[0x50];
+    s16 h30;
+    u8 pad52[2];
+    s16 h32;
+    u8 pad56[2];
+    s16 h36;
+    u8 pad5A[6];
+    u8 col[4];
+} Obj_b433_01E03520;
+
+static inline void tag_b433_01E03520(Pkt_b433_01E03520 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E03520_b433(s32 unused, Obj_b433_01E03520 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_b433_01E03520 pkt __attribute__((aligned(8)));
+    f32 n;
+
+    n = o->h30;
+    tag_b433_01E03520((Pkt_b433_01E03520 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0xA0;
+    pkt.c.g = 0x78;
+    pkt.c.b = 0x78;
+    pkt.c.a = o->col[3];
+    pkt.c.q = 1.0f;
+    pkt.v[0].p.x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    if (o->h30 == 0) {
+        pkt.v[0].s = n / 1024.0f;
+        pkt.v[0].t = n / 512.0f;
+        pkt.v[1].s = 0.625f;
+        pkt.v[1].t = 0.875f;
+    } else {
+        pkt.v[0].s = n / 1024.0f;
+        pkt.v[0].t = n / 512.0f;
+        pkt.v[1].s = 0.625f;
+        pkt.v[1].t = 0.875f;
+    }
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0(&pkt, func_00207500(), 0);
+    if (o->h32 < 0x41) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 12;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->h36 = 0;
+    }
+    o->h32++;
+    if (o->h30 < 30) {
+        o->h30++;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b433", func_01E03740_b433);
 

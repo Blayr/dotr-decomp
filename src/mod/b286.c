@@ -464,4 +464,77 @@ static void func_01E01D40_b286(Game_b286_01E01D40 *g, Anim_b286_01E01D40 *an, vo
 
 INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E01FC0_b286);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E022A0_b286);
+/* shape b286:01E022A0, 134 insns: b112:01E04260's textured square with handler shape b286:01E01130 and scene textures 0xE8 / 0x11C */
+
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 vx, vy, vz;
+    u8 padE[0x16];
+    void *fn;
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+} Obj_b286_01E022A0;
+
+static void func_01E022A0_b286(u8 *ctx, Obj_b286_01E022A0 *o, void *pkt, s32 mode) {
+    extern s32 b286_01E01130();
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f pos;
+    Vec4f scale;
+    u8 td[0x10];
+    f32 m[16];
+    Vec4f rot;
+    u8 *ot;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 size;
+
+    ot = func_00207500();
+    if (mode == 0) {
+        if (o->fn == (void *)b286_01E01130) {
+            func_00106080(td, 0x14, o->page, td);
+        } else {
+            func_00106080(td, 0x9B, o->page, td);
+        }
+        func_00109270(pkt, 0, 0);
+        func_00107790(pkt, o->col, 0);
+        func_00108500(pkt, td, 0);
+        if (o->fn == (void *)b286_01E01130) {
+            func_00208700(pkt, *(void **)(ctx + 0xE8), 1);
+            return;
+        }
+        func_00208700(pkt, *(void **)(ctx + 0x11C), 1);
+        return;
+    }
+    if (o->fn == (void *)b286_01E01130) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    }
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)&rot);
+    dx = o->vx;
+    dy = o->vy;
+    dz = o->vz;
+    dx /= 10.0f;
+    dy /= 10.0f;
+    dz /= 10.0f;
+    pos.x = o->x + dx;
+    pos.y = o->y + dy;
+    pos.z = o->z + dz;
+    func_00108EF0(m, &scale, &rot, &pos);
+    size = o->size;
+    func_00108CE0(quad, size, size);
+    func_00108F90(quad, pkt, m, ot);
+}

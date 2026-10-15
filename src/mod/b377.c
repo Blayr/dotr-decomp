@@ -630,7 +630,84 @@ INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E02320_b377);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E027B0_b377);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E02A50_b377);
+/* shape b377:01E02A50, 136 insns: b490:01E00E90's scene light at g+0xB1A0 on a model joint: on start colour 128/400/2/0,
+   height 0/123/0 and the effect's position; each tick the light follows the joint at g+0xB244; its strength rises by
+   0.3 up to 1 for 210 ticks, then falls by 0.3 until it ends; func_001F6C10 gets the light (or 0 once ended); it
+   also ends when the scene word at g+0xB210 is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x44];
+    s32 state;
+} Light_b377_01E02A50;
+
+typedef struct {
+    u8 pad0[0xB1A0];
+    Light_b377_01E02A50 light;
+    u8 padB214[0x30];
+    s16 joint;
+} Game_b377_01E02A50;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[0x34];
+    s16 f50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b377_01E02A50;
+
+static s32 func_01E02A50_b377(Game_b377_01E02A50 *g, Fx_b377_01E02A50 *o) {
+    extern void func_001F6C10(void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[8];
+
+    if (o->mode == 1) {
+        g->light.a[0] = 128.0f;
+        g->light.a[1] = 400.0f;
+        g->light.a[2] = 2.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 123.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f50 = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, p);
+    g->light.pos[0] = p[0];
+    g->light.pos[1] = p[1];
+    g->light.pos[2] = p[2];
+    if (o->t < 210) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.3f;
+        }
+    } else if (g->light.b[2] > 0.1f) {
+        g->light.b[2] -= 0.3f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.state == 1) {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E02C80_b377);
 

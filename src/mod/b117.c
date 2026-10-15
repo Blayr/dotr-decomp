@@ -132,9 +132,132 @@ static s32 func_01E00C30_b117(Vec4f *dst, s32 n, s32 arg2, Vec4f *src) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E00CB0_b117);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01070_b117);
+/* shape b117:01E01070, 133 insns: b117:01E019D0's drifting mote in grey-purple: alpha up by 9 (below 0x60) for 10
+   ticks, then fades by 10; h38 grows to 18 on odd ticks, the frame to 7 every third tick; drifts 12 a tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01290_b117);
+typedef struct {
+    u8 pad0[0x3B90];
+    u8 sin[1];
+} Game_b117_01E01070;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 turn;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b117_01E01070;
+
+static s32 func_01E01070_b117(Game_b117_01E01070 *g, Obj_b117_01E01070 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->sub = 0;
+        o->turn = func_0019A5C8() % 360;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 18) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->sub < 7) {
+            o->sub++;
+        }
+    }
+    o->h8 = func_001A22C0(o->h8 + 12.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 12.0f * func_00108030(g->sin, o->turn, 1));
+    o->hC = func_001A22C0(o->hC + 12.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
+
+/* shape b117:01E01290, 126 insns: b117:01E019D0's drifting mote in yellow, placed at the scene point on start, alpha up by 0xF0
+   on its first tick, drifting 10 a tick */
+
+typedef struct {
+    u8 pad0[0x3A70];
+    f32 x, y, z;
+    u8 pad3A7C[0x114];
+    u8 sin[1];
+} Game_b117_01E01290;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 turn;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b117_01E01290;
+
+static s32 func_01E01290_b117(Game_b117_01E01290 *g, Obj_b117_01E01290 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    func_001076F0(o->c0, 0x80, 0x80, 0);
+    if (o->state == 1) {
+        o->h38 = 1;
+        o->ang = func_0019A5C8() % 360;
+        o->sub = 0;
+        o->turn = func_0019A5C8() % 360;
+        o->x = func_001A22C0(g->x);
+        o->y = func_001A22C0(g->y);
+        o->z = func_001A22C0(g->z);
+        o->state = 2;
+    }
+    if (o->t < 1) {
+        if (o->c0[3] < 0xF0) {
+            o->c0[3] += 0xF0;
+        }
+    } else if (o->c0[3] > 0x28) {
+        o->c0[3] -= 0x27;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 5 == 1) {
+        if (o->sub < 7) {
+            o->sub++;
+        }
+    }
+    o->h8 = func_001A22C0(o->h8 + 10.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 10.0f * func_00108030(g->sin, o->turn, 1));
+    o->hC = func_001A22C0(o->hC + 10.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01490_b117);
 
@@ -479,7 +602,70 @@ static s32 func_01E02480_b117(Ctx_b117_01E02480 *ctx, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E025E0_b117);
+/* shape b117:01E025E0, 132 insns: b117:01E02C00 family sprite draw for two callbacks (texture 0x99 for b117:01E01070, 0x9B for b117:01E01290), position + speed/10 in integers, no scale */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x16];
+    void *cb;
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b117_01E025E0;
+
+typedef struct {
+    u8 pad0[0x11C];
+    s32 tex;
+} Scene_b117_01E025E0;
+
+static void func_01E025E0_b117(Scene_b117_01E025E0 *g, Fx_b117_01E025E0 *o, void *p, s32 mode) {
+    extern void b117_01E01070(void);
+    extern void b117_01E01290(void);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+
+    v = (s32)func_00207500();
+    if (mode == 0) {
+        if (o->cb == b117_01E01070) {
+            func_00106080(rm, 0x99, o->h34, rm);
+        }
+        if (o->cb == b117_01E01290) {
+            func_00106080(rm, 0x9B, o->h34, rm);
+        }
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        if (o->cb == b117_01E01070) {
+            func_00208700(p, g->tex, 1);
+        }
+        if (o->cb == b117_01E01290) {
+            func_00208700(p, g->tex, 1);
+        }
+    } else {
+        func_00205C40((s32)rot);
+        pos.x = o->x + o->dx / 10;
+        pos.y = o->y + o->dy / 10;
+        pos.z = o->z + o->dz / 10;
+        func_00108EF0(m, NULL, rot, &pos);
+        func_00108CE0(quad, o->size, o->size);
+        func_00108F90(quad, p, m, v);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E027F0_b117);
 

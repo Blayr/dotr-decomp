@@ -683,7 +683,91 @@ static void func_01E01220_b734(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b734", func_01E01770_b734);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b734", func_01E01CE0_b734);
+/* shape b734:01E01CE0, 127 insns: b397:01E01540 with joints at g+0x6DEC/0x6DEE, hold 30, h6 10, and the trail and the
+   full alpha kept while the scene timer at g+0x6E0C is below 160 */
+
+typedef struct {
+    f32 x, y, z, w;
+} Pt_b734_01E01CE0;
+
+typedef struct {
+    u8 pad0[0x6AF0];
+    Pt_b734_01E01CE0 a[10];
+    Pt_b734_01E01CE0 b[10];
+    u8 pad6C30[0x1BC];
+    s16 ja;
+    s16 jb;
+    u8 pad6DF0[0x1C];
+    s16 timer;
+} Scene_b734_01E01CE0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 hold;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 h38;
+} Fx_b734_01E01CE0;
+
+static s32 func_01E01CE0_b734(Scene_b734_01E01CE0 *g, Fx_b734_01E01CE0 *o) {
+    extern void b734_01E00080(Pt_b734_01E01CE0 *, s32, s32, f32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[4];
+    s32 i;
+    s32 j;
+    Pt_b734_01E01CE0 *q;
+
+    func_001076F0(o->col, 0x80, 0x20, 0xFF);
+    if (o->mode == 1) {
+        o->h38 = 5;
+        if (o->kind == 0) {
+            o->hold = 30;
+            func_001F5620(func_001F53A0(), g->ja, p);
+            q = g->a;
+            for (i = 0; i < 9; i++) {
+                q[i].x = p[0];
+                q[i].y = p[1];
+                q[i].z = p[2];
+            }
+            func_001F5620(func_001F53A0(), g->jb, p);
+            q = g->b;
+            for (j = 0; j < 9; j++) {
+                q[j].x = p[0];
+                q[j].y = p[1];
+                q[j].z = p[2];
+            }
+        }
+        if (o->kind == 1) {
+            o->hold = 7;
+        }
+        o->mode = 2;
+    }
+    if (g->timer < 0xA0) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x1E) {
+        o->col[3] -= 0x1D;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0 && g->timer < 0xA0) {
+        func_001F5620(func_001F53A0(), g->ja, p);
+        b734_01E00080(&g->a[9], 10, 0, p);
+        func_001F5620(func_001F53A0(), g->jb, p);
+        b734_01E00080(&g->b[9], 10, 0, p);
+    }
+    o->h6 = 10;
+    o->t++;
+    return 0;
+}
 
 /* shape b734:01E01EE0, 108 insns: variant of b018:01E02610 (col (40, 16, 8)): a twinkling sprite: on start pick a random variant, position, angle, spin speed,
    delay and lifetime and colour (0x20,0x10,8); fade in by 0x38 while younger than its lifetime, then fade out by

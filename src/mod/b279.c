@@ -894,7 +894,62 @@ static s32 func_01E02160_b279(s32 arg0, Obj_b279_01E02160 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b279", func_01E02310_b279);
+/* shape b279:01E02310, 124 insns: on start size 20..39, kind 0..3, blue colour, three random words, f52 1, f50 500..899,
+   dir 0..359, speed 1..3, delay 1..8, life 2..4; alpha 0x60 while alive, then fades by 13 (ends below 15);
+   f50 += speed */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 delay;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 dir;
+    u8 pad5C[4];
+    u8 col[4];
+} Spark_b279_01E02310;
+
+static s32 func_01E02310_b279(s32 arg0, Spark_b279_01E02310 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 20 + 20;
+        o->kind = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x80, 0x80, 0xFF);
+        o->x = func_0019A5C8() % 0xFFFF;
+        o->y = func_0019A5C8() % 0xFFFF;
+        o->z = func_0019A5C8() % 0xFFFF;
+        o->f52 = 1;
+        o->f50 = func_0019A5C8() % 400 + 500;
+        o->dir = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 3 + 1;
+        o->delay = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 0xE) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    o->f50 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 /* shape b279:01E02500, 100 insns: a blue tumbling shard: size 10..29 shrinking by 1 with the outer size 6 more, random turn on
    all three axes, angle 45; alpha up by 0x40 for 8 frames, then down by 9 until it ends */

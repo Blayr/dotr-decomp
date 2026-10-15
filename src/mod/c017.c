@@ -184,9 +184,251 @@ static s32 func_01E01020_c017(Game_c017_01E01020 *g, Fx_c017_01E01020 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E010C0_c017);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E01400_c017);
+/* shape c017:01E01400, 131 insns: c017 trail link spawner (c560:01E01C50 family, 85 slots of 0x6C at ctx+0x240): takes the first free slot (marks it slot+1), both colours from the context with alpha 0, the context's vector, its sizes as shorts, height 18 above, both capped by the context's ceiling, chained after the context's last piece and becomes it; draws with c017:01E01BF0 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E01610_c017);
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c017_01E01400;
+
+typedef struct Ent_c017_01E01400 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x18];
+    Vec4f v;
+    struct Ent_c017_01E01400 *prev;
+    struct Ent_c017_01E01400 *next;
+    void (*cb)(void);
+    s32 arg;
+    Col_c017_01E01400 col0;
+    Col_c017_01E01400 col1;
+    s16 used;
+    s16 f5A;
+    u8 pad5C[2];
+    s16 f5E;
+    s16 f60;
+    s16 f62;
+    s16 f64;
+    s16 f66;
+    s16 f68;
+    u8 pad6A[2];
+} Ent_c017_01E01400;
+
+typedef struct {
+    u8 pad0[0x180];
+    Vec4f v;
+    u8 pad190[0x240 - 0x190];
+    Ent_c017_01E01400 ent[85];
+    u8 padEnd[0x38E0 - 0x240 - 85 * 0x6C];
+    u8 rgb[4];
+    u8 pad38E4[8];
+    Ent_c017_01E01400 *last;
+    u8 pad38F0[4];
+    f32 f38F4;
+    f32 f38F8;
+    f32 f38FC;
+    u8 pad3900[0x394C - 0x3900];
+    f32 f394C;
+    u8 pad3950[2];
+    s16 f3952;
+    u8 pad3954[2];
+    s16 f3956;
+    u8 pad3958[2];
+    s16 f395A;
+    u8 pad395C[0x399E - 0x395C];
+    s16 top;
+} Ctx_c017_01E01400;
+
+static void func_01E01400_c017(Ctx_c017_01E01400 *g, s32 arg) {
+    extern void c017_01E01BF0(void);
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0();
+    s32 i;
+    Ent_c017_01E01400 *e = NULL;
+    Ent_c017_01E01400 *p;
+    f32 h;
+    f32 d;
+
+    for (i = 0; i < 85; i++) {
+        if (g->ent[i].used == 0) {
+            e = &g->ent[i];
+            func_00195108(e, 0x6C);
+            g->ent[i].used = i + 1;
+            i = 85;
+        }
+    }
+    if (e != NULL) {
+        d = 18.0f;
+        func_001076F0(&e->col0, g->rgb[0], g->rgb[1], g->rgb[2]);
+        e->col0.a = 0;
+        func_001076F0(&e->col1, g->rgb[0], g->rgb[1], g->rgb[2]);
+        e->col1.a = 0;
+        e->v = g->v;
+        e->f60 = (s16)g->f38F4;
+        e->f62 = (s16)g->f38F8;
+        e->f5E = (s16)g->f38FC;
+        e->f5A = g->f3952;
+        e->prev = g->last;
+        e->f66 = g->f395A;
+        if (e->prev == NULL) {
+            h = g->f38FC;
+            e->f4 = h;
+            e->f14 = h + d;
+        } else {
+            h = g->f38FC;
+            e->f4 = h;
+            e->f14 = h + d;
+        }
+        if ((f32)g->top < e->f4) {
+            e->f4 = g->top;
+        }
+        if ((f32)g->top < e->f14) {
+            e->f14 = g->top;
+        }
+        e->f68 = (s16)g->f394C;
+        e->prev = g->last;
+        p = e->prev;
+        if (p != NULL) {
+            p->next = e;
+        }
+        e->f64 = g->f3956;
+        e->cb = c017_01E01BF0;
+        e->arg = arg;
+        g->last = e;
+    }
+}
+
+/* shape c017:01E01610, 139 insns: c017:01E01400 with three more copied words (f5C, f6A, and the position's y/w at
+   f24/f2C) and the c017:01E02120 draw callback */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c017_01E01610;
+
+typedef struct Ent_c017_01E01610 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0xC];
+    f32 f24;
+    u8 pad28[4];
+    f32 f2C;
+    Vec4f v;
+    struct Ent_c017_01E01610 *prev;
+    struct Ent_c017_01E01610 *next;
+    void (*cb)(void);
+    s32 arg;
+    Col_c017_01E01610 col0;
+    Col_c017_01E01610 col1;
+    s16 used;
+    s16 f5A;
+    s16 f5C;
+    s16 f5E;
+    s16 f60;
+    s16 f62;
+    s16 f64;
+    s16 f66;
+    s16 f68;
+    s16 f6A;
+} Ent_c017_01E01610;
+
+typedef struct {
+    u8 pad0[0x180];
+    Vec4f v;
+    u8 pad190[0x240 - 0x190];
+    Ent_c017_01E01610 ent[85];
+    u8 padEnd[0x38E0 - 0x240 - 85 * 0x6C];
+    u8 rgb[4];
+    u8 pad38E4[8];
+    Ent_c017_01E01610 *last;
+    u8 pad38F0[4];
+    f32 f38F4;
+    f32 f38F8;
+    f32 f38FC;
+    u8 pad3900[8];
+    f32 f3908;
+    u8 pad390C[4];
+    f32 f3910;
+    u8 pad3914[0x394C - 0x3914];
+    f32 f394C;
+    u8 pad3950[2];
+    s16 f3952;
+    s16 f3954;
+    s16 f3956;
+    s16 f3958;
+    s16 f395A;
+    u8 pad395C[0x399E - 0x395C];
+    s16 top;
+} Ctx_c017_01E01610;
+
+static void func_01E01610_c017(Ctx_c017_01E01610 *g, s32 arg) {
+    extern void c017_01E02120(void);
+    extern void func_00195108(void *, s32);
+    extern void func_001076F0();
+    s32 i;
+    Ent_c017_01E01610 *e = NULL;
+    Ent_c017_01E01610 *p;
+    f32 h;
+    f32 d;
+
+    for (i = 0; i < 85; i++) {
+        if (g->ent[i].used == 0) {
+            e = &g->ent[i];
+            func_00195108(e, 0x6C);
+            g->ent[i].used = i + 1;
+            i = 85;
+        }
+    }
+    if (e != NULL) {
+        d = 18.0f;
+        func_001076F0(&e->col0, g->rgb[0], g->rgb[1], g->rgb[2]);
+        e->col0.a = 0;
+        func_001076F0(&e->col1, g->rgb[0], g->rgb[1], g->rgb[2]);
+        e->col1.a = 0;
+        e->v = g->v;
+        e->f60 = (s16)g->f38F4;
+        e->f62 = (s16)g->f38F8;
+        e->f5E = (s16)g->f38FC;
+        e->f5A = g->f3952;
+        e->f5C = g->f3954;
+        e->prev = g->last;
+        e->f66 = g->f395A;
+        if (e->prev == NULL) {
+            h = g->f38FC;
+            e->f4 = h;
+            e->f14 = h + d;
+        } else {
+            h = g->f38FC;
+            e->f4 = h;
+            e->f14 = h + d;
+        }
+        if ((f32)g->top < e->f4) {
+            e->f4 = g->top;
+        }
+        if ((f32)g->top < e->f14) {
+            e->f14 = g->top;
+        }
+        e->f6A = g->f3958;
+        e->f68 = (s16)g->f394C;
+        e->prev = g->last;
+        p = e->prev;
+        if (p != NULL) {
+            p->next = e;
+        }
+        e->f24 = g->f3908;
+        e->f2C = g->f3910;
+        e->f64 = g->f3956;
+        e->cb = c017_01E02120;
+        e->arg = arg;
+        g->last = e;
+    }
+}
 
 /* shape c017:01E01840, 91 insns: take a free row (0x32 of 0x60 bytes at 0x261C, mark = index + 1), clear it, two
    colours from the scene colour 0x38E0 with alpha 0x80, copy the scene vector 0x180, 0x56/0x58 from the scene floats

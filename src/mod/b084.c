@@ -877,7 +877,74 @@ static s32 func_01E02800_b084(Game_b084_01E02800 *g, Obj_b084_01E02800 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E02990_b084);
+/* shape b084:01E02990, 125 insns: a scene-timed glow: on start size 50, white colour, purple second colour (alpha 0),
+   turn 0..359; alpha grows by 0x10 (below 0xC0) until scene frame 263, then fades by 5 (ends below 7); kind 0 grows
+   by 10 up to 300 after tick 36; kind 1 does the same before scene frame 172 and shrinks by 10 down to 100 after;
+   turns 0x20 by 0x4000 a tick */
+
+typedef struct {
+    u8 pad0[0x20];
+    s32 w20;
+    u8 pad24[0x24];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b084_01E02990;
+
+typedef struct {
+    u8 pad0[0x768A];
+    s16 frame;
+} Scene_b084_01E02990;
+
+static s32 func_01E02990_b084(Scene_b084_01E02990 *g, Fx_b084_01E02990 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 50.0f;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col2, 0x40, 0x10, 0x80);
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (g->frame < 0x107) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x10;
+        }
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0 && o->t > 0x23) {
+        if (o->size < 300.0f) {
+            o->size += 10.0f;
+        }
+    }
+    if (o->kind == 1) {
+        if (g->frame < 0xAC) {
+            if (o->t > 0x23) {
+                if (o->size < 300.0f) {
+                    o->size += 10.0f;
+                }
+            }
+        } else if (o->size > 100.0f) {
+            o->size -= 10.0f;
+        }
+    }
+    func_00205C40((s32)&o->w20);
+    o->w20 += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape b084:01E02B90, 89 insns: on start f48 from the game float 0x7640, colour white, second colour (0x40, 0x10, 0x80) with alpha 0, random
    0x5A; alpha grows by 0x2A (below 0x80) for 0x50 ticks, then fades by 8 and stops; f48 follows the game float; the second colour

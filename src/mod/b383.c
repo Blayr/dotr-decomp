@@ -656,9 +656,130 @@ static s32 func_01E02AE0_b383(s32 unused, Obj_b383_01E02AE0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E02CC0_b383);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E02F00_b383);
+/* shape b383:01E02F00, 138 insns: b443:01E030C0 family rising spark (tilt 0..0x3FFF, random spin, frame 0..6; kind 0 orange with life 1, kind 1 cyan with life 4 growing 3 per tick; rising 4..6): alpha up by 64 to 0x80 for 2 ticks, then down by 13; colour flashes orange/gold every tick */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b383", func_01E03130_b383);
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 rise;
+    s32 tilt;
+    s32 spin;
+    u8 pad18[0x10];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 kind;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 h;
+} Fx_b383_01E02F00;
+
+static s32 func_01E02F00_b383(s32 arg0, Fx_b383_01E02F00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->mode == 1) {
+        o->h = 0;
+        base = 0;
+        o->tilt = func_0019A5C8() % 0x4000 + base;
+        o->spin = func_0019A5C8() % 65535;
+        o->frame = func_0019A5C8() % 7;
+        o->mode = 2;
+        if (o->kind == 0) {
+            o->rise = func_0019A5C8() % 3 + 4;
+            o->h6 = 1;
+        } else {
+            o->rise = func_0019A5C8() % 3 + 4;
+            o->h6 = 4;
+        }
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->col, 0, 0x80, 0x80);
+        }
+    }
+    if (o->t < 2) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x40, 0);
+    } else {
+        func_001076F0(o->col, 0xB0, 0x80, 0);
+    }
+    if (o->t != 0) {
+        o->h += o->rise;
+    }
+    if (o->kind == 1 && o->t != 0) {
+        o->h6 += 3;
+    }
+    o->t++;
+    return 0;
+}
+
+/* shape b383:01E03130, 126 insns: b383:01E03640 with a random size 30..109, start height 100..349 and rise 5..9 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b383_01E03130;
+
+static s32 func_01E03130_b383(s32 arg0, Glow_b383_01E03130 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = func_0019A5C8() % 80 + 30;
+        o->kind = 0;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->h30 = func_0019A5C8() % 250 + 100;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 10;
+        o->h6 = func_0019A5C8() % 8 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 6) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b383:01E03330, 90 insns: b115:01E01980 family: a grey/white spark (size 60, random frame 0..6) at two random angles drifting 11 a tick along its angle (sine table ctx+0x316C): alpha 0xF0 for 7 ticks, then out by 0x14 and ends */
 

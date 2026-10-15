@@ -461,7 +461,80 @@ INCLUDE_ASM("asm/nonmatchings/mod/b539", func_01E01480_b539);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b539", func_01E01A50_b539);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b539", func_01E01D40_b539);
+/* shape b539:01E01D40, 136 insns: b388:01E005F0 family red glow spinning 0x4000 per tick, placed at the scene's point (until scene count 114) plus h52 fifths of the way from tracked point 3 to tracked point 2; outer alpha up by 24 to 0xC0 for 55 ticks, then down by 15 */
+
+typedef struct {
+    u8 pad0[0xB1D0];
+    Vec4f at;
+    u8 padB1E0[0xB248 - 0xB1E0];
+    s16 id2;
+    s16 id3;
+    u8 padB24C[0xB2BC - 0xB24C];
+    s16 count;
+} Ctx_b539_01E01D40;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x1C];
+    f32 f4C;
+    u8 pad50[2];
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b539_01E01D40;
+
+static s32 func_01E01D40_b539(Ctx_b539_01E01D40 *g, Fx_b539_01E01D40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 v[8];
+    f32 f;
+    f32 *q;
+
+    if (o->mode == 1) {
+        o->f4C = 10.0f;
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        func_001076F0(o->col, 0xFF, 0x40, 0x40);
+        o->w = 10;
+        o->h = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    func_001F5620(func_001F53A0(), g->id2, v);
+    func_001F5620(func_001F53A0(), g->id3, q = (f32 *)(u32)&v[4]);
+    v[0] = (v[0] - q[0]) / 5.0f;
+    v[1] = (v[1] - v[5]) / 5.0f;
+    v[2] = (v[2] - v[6]) / 5.0f;
+    if (o->tick < 55) {
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 0x18;
+        }
+    } else if (o->col2[3] > 16) {
+        o->col2[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    f = o->f52;
+    func_00205C40(o->rot);
+    o->rot[0] += 0x4000;
+    if (g->count < 114) {
+        o->pos = g->at;
+        o->pos.x += v[0] * f;
+        o->pos.y += v[1] * f;
+        o->pos.z += v[2] * f;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b539", func_01E01F60_b539);
 

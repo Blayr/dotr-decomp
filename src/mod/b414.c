@@ -551,7 +551,74 @@ static void func_01E012B0_b414(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E016B0_b414);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E01C10_b414);
+/* shape b414:01E01C10, 123 insns: b588:01E025F0 family (orange 0xF0/0xE0 + 0x80/0x40): kind 0 from 1000 growing 60, kind 1 from 250 growing 20, kind 2 from 100 growing 5 in grey/blue and turning 6 per tick */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b414_01E01C10;
+
+static s32 func_01E01C10_b414(s32 arg0, Obj_b414_01E01C10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xF0, 0xE0, 0xFF);
+        func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        if (o->h50 == 0) {
+            o->f30 = 18.0f;
+            o->f34 = 1000.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 18.0f;
+            o->f34 = 250.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 6.0f;
+            o->f34 = 100.0f;
+            func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+            func_001076F0(o->col2, 0x40, 0x40, 0xFF);
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0 && o->t != 0) {
+        o->f34 += 60.0f;
+    }
+    if (o->h50 == 1 && o->t != 0) {
+        o->f34 += 20.0f;
+    }
+    if (o->h50 == 2) {
+        if (o->t != 0) {
+            o->f34 += 5.0f;
+        }
+        o->ang += 6;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b414:01E01E00, 119 insns: a white/red ring (size 15, spin 60/6, random angle, turned +-0x1000 by the scene side flag) on the scene joint, rising 30..79 then 13 a tick (65 and growing 2 once the scene value reaches 115, else growing 0.5): in by 96 up to 0xC0 for 4 ticks, then out by 9 and ends */
 
@@ -822,7 +889,67 @@ static s32 func_01E02D80_b414(s32 arg0, Fx_b414_01E02D80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E02E70_b414);
+/* shape b414:01E02E70, 125 insns: constant variant of b354:01E020F0 (50->80, 100->160, 8->18, 80.0f->120.0f, colour (192, 128, 128), colour (192, 128, 128), colour (255, 160, 160), colour (48, 48, 48)) */
+
+typedef struct {
+    u8 pad00[0x20];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    f32 f4C;
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b414_01E02E70;
+
+static s32 func_01E02E70_b414(void *arg0, Obj_b414_01E02E70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->f48 = 120.0f;
+        o->f4C = o->f48 - 58.0f;
+        o->h50 = (func_0019A5C8() >> 4) % 2;
+        if (o->h50 == 0) {
+            func_001076F0(o->col, 0xC0, 0x80, 0x80);
+            func_001076F0(o->col2, 0, 0, 0);
+        }
+        if (o->h50 == 1) {
+            func_001076F0(o->col, 0xFF, 0xA0, 0xA0);
+            func_001076F0(o->col2, 0x30, 0x30, 0x30);
+        }
+        o->h5A = 30;
+        o->h5C = 30;
+        o->f34 = func_0019A5C8() % 80 + 160;
+        o->f34 /= 10.0f;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+    }
+    if (o->t < 18) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 6) {
+        o->col[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    o->f48 += o->f34;
+    o->f4C = 0.2f * o->f48;
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E03070_b414);
 

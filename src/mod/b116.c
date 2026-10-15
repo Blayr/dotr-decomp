@@ -1101,7 +1101,89 @@ static s32 func_01E04090_b116(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E040E0_b116);
+/* shape b116:01E040E0, 132 insns: b555:01E02CB0 with the scene packet at ctx+0x4A18; while fading the zoom f8 grows 7 per tick */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b116_01E040E0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b116_01E040E0 p;
+} Tv_b116_01E040E0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b116_01E040E0 v[2];
+} Tex_b116_01E040E0;
+
+typedef struct {
+    u8 pad[0x4A18];
+    Tex_b116_01E040E0 *pk;
+} Game_b116_01E040E0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x1E];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    u8 pad34[2];
+    s16 mode;
+} Fx_b116_01E040E0;
+
+static s32 func_01E040E0_b116(Game_b116_01E040E0 *g, Fx_b116_01E040E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 f;
+
+    f = o->f8;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->mode = 2;
+    }
+    g->pk->r = o->col[0];
+    g->pk->g = o->col[1];
+    g->pk->b = o->col[2];
+    g->pk->a = o->col[3];
+    g->pk->q = 1.0f;
+    g->pk->v[0].p.x = 0x6BF8;
+    g->pk->v[0].p.y = 0x71F8;
+    g->pk->v[0].p.z = 0xFFFFFF;
+    g->pk->v[0].p.f = 0;
+    g->pk->v[1].p.x = 0x93F8;
+    g->pk->v[1].p.y = 0x8DF8;
+    g->pk->v[1].p.z = 0xFFFFFF;
+    g->pk->v[1].p.f = 0;
+    g->pk->v[0].s = f / 1024.0f;
+    g->pk->v[0].t = f / 512.0f;
+    g->pk->v[1].s = (640.0f - f) / 1024.0f;
+    g->pk->v[1].t = (448.0f - f) / 512.0f;
+    func_002075F0((s32)g->pk, 0, 0);
+    if (o->tick < 29) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        o->f8 += 7;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E042F0_b116);
 

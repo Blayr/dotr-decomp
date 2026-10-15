@@ -66,7 +66,64 @@ static void func_01E00080_b058(s32 ot, Obj_b058_01E00080 *o, Spr_b058_01E00080 *
 
 INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E00260_b058);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b058", func_01E00B40_b058);
+/* shape b058:01E00B40, 134 insns: b194:01E00C60 with colour 0x2F/0x20/0x2F and the sine table at g+0x3560 */
+
+typedef struct {
+    u8 pad0[0x3560];
+    u8 trig[1];
+} World_b058_01E00B40;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b058_01E00B40;
+
+static s32 func_01E00B40_b058(World_b058_01E00B40 *w, Wisp_b058_01E00B40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->c0, 0x2F, 0x20, 0x2F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 /* shape b058:01E00D60, 117 insns: a dark smoke puff (size 2 growing to 25, random frame 0..6, random heading, tilt -30..29) swept 50 a tick along its heading and 4 up/down by the tilt (sine table ctx+0x3560): in by 5 up to 0x60 for 20 ticks, then out by 5 and ends */
 

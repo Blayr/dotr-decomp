@@ -673,7 +673,69 @@ static s32 func_01E02D10_b501(s32 arg0, Glow_b501_01E02D10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02DE0_b501);
+/* shape b501:01E02DE0, 128 insns: a red drifting ember: on start a random parity frame, life 20..54 fall speed, frame
+   0..34, fade-in 2..4 ticks; alpha 0x80 during the fade-in, then down by 15 until it ends; the frame steps every third
+   tick to 7; it blinks grey 0x80 / 0xC0 on odd/even ticks, falls by its speed and turns by 2 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 fadein;
+    s16 frame;
+    s16 oldy;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 y;
+    s16 t;
+    s16 step;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Obj_b501_01E02DE0;
+
+static s32 func_01E02DE0_b501(void *g, Obj_b501_01E02DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 0x2E;
+        o->step = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x80, 0x20, 0x20);
+        o->oldy = o->y;
+        o->y = 0;
+        o->ang = 0;
+        o->speed = func_0019A5C8() % 35 + 20;
+        o->frame = func_0019A5C8() % 35;
+        o->fadein = func_0019A5C8() % 3 + 2;
+        o->fC = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->mode = 2;
+    }
+    if (o->t < o->fadein) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 0xF;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->step < 7) {
+            o->step++;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    o->y += o->speed;
+    if (o->t != 0) {
+        o->ang -= 2;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b501:01E02FE0, 83 insns: on start 0x38 = 6, variant 0..3 (0x34), colour (0x80, 0x10, 0x40), 0xA keeps the old
    0x30 (0x3A cleared), speed 15..49 (0xE), 0x8 0..34, hold 6..8 (0x6); alpha grows by 0x40 (up to 0x80) during the hold, then fades
@@ -799,7 +861,95 @@ static s32 func_01E03130_b501(Game_b501_01E03130 *g, Glow_b501_01E03130 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E03310_b501);
+/* shape b501:01E03310, 134 insns: blue (0x40, 0x40, 0x80) three-trail head: on start fills the scene's three 9-point trails (ctx+0x2750/0x27F0/0x2890) with the three tracked points (ids at ctx+0x2B40..44); alpha 0xC0 for 11 ticks, then down by 35; every tick pushes each point into its trail (b501:01E00080, 10 steps) */
+
+typedef struct {
+    Vec4f pt[9];
+    Vec4f head;
+} Trail_b501_01E03310;
+
+typedef struct {
+    u8 pad0[0x2750];
+    Trail_b501_01E03310 a;
+    Trail_b501_01E03310 b;
+    Trail_b501_01E03310 c;
+    u8 pad2930[0x2B40 - 0x2930];
+    s16 id0;
+    s16 id1;
+    s16 id2;
+} Ctx_b501_01E03310;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[6];
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b501_01E03310;
+
+static s32 func_01E03310_b501(Ctx_b501_01E03310 *g, Fx_b501_01E03310 *o) {
+    extern void b501_01E00080(Vec4f *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, Vec4f *);
+    Vec4f va;
+    Vec4f vb;
+    Vec4f vc;
+    Vec4f *p;
+    s32 i;
+
+    if (o->mode == 1) {
+        func_001076F0(o->col, 0x40, 0x40, 0x80);
+        p = g->a.pt;
+        func_001F5620(func_001F53A0(), g->id0, &va);
+        for (i = 0; i < 9; i++) {
+            p[i].x = va.x;
+            p[i].y = va.y;
+            p[i].z = va.z;
+        }
+        p = g->b.pt;
+        func_001F5620(func_001F53A0(), g->id1, &vb);
+        for (i = 0; i < 9; i++) {
+            p[i].x = vb.x;
+            p[i].y = vb.y;
+            p[i].z = vb.z;
+        }
+        p = g->c.pt;
+        func_001F5620(func_001F53A0(), g->id2, &vc);
+        for (i = 0; i < 9; i++) {
+            p[i].x = vc.x;
+            p[i].y = vc.y;
+            p[i].z = vc.z;
+        }
+        o->hold = 6;
+        o->col[3] = 0;
+        o->fA = func_0019A5C8() % 17 + 44;
+        o->f8 = func_0019A5C8() % 8 + 5;
+        o->f34 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f38 = 30;
+        o->mode = 2;
+    }
+    if (o->tick < 11) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 36) {
+        o->col[3] -= 35;
+    } else {
+        o->mode = 0;
+    }
+    b501_01E00080(&g->a.head, 10, g->id0);
+    b501_01E00080(&g->b.head, 10, g->id1);
+    b501_01E00080(&g->c.head, 10, g->id2);
+    o->tick++;
+    return 0;
+}
 
 /* shape b501:01E03530, 82 insns: on start 0x38 = 6, variant 0..3 (0x34), colour (0x80, 0x10, 0x40), 0xA keeps the old
    0x30, speed 15..49 (0xE), 0x8 0..34, hold 6..8 (0x6); alpha grows by 0x40 (up to 0x80) during the hold, then fades

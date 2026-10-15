@@ -66,7 +66,68 @@ static void func_01E00080_b378(s32 ot, Obj_b058_01E00080 *o, Spr_b058_01E00080 *
 
 INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E00260_b378);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b378", func_01E005E0_b378);
+/* shape b378:01E005E0, 134 insns: b019:01E01F60 with its sine table at ctx+0x3C04 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x3C04];
+    u8 tab[1];
+} Mgr_b378_01E005E0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b378_01E005E0;
+
+static s32 func_01E005E0_b378(Mgr_b378_01E005E0 *m, Fx_b378_01E005E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x3F, 0x30, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->f3A = func_0019A5C8() % 360;
+        o->f34 = 0;
+        o->f30 = func_0019A5C8() % 30 - 15;
+        o->mode = 2;
+    }
+    if (o->tick < 10) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 10;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->tick % 2 == 1) {
+        if (o->f38 < 18) {
+            o->f38++;
+        }
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->x = o->x + 10.0f * func_00108030(m->tab, o->f3A, 0);
+    o->y = o->y + 4.0f * func_00108030(m->tab, o->f30, 1);
+    o->z = o->z + 10.0f * func_00108030(m->tab, o->f3A, 1);
+    return 0;
+}
 
 /* shape b378:01E00800, 92 insns: a dark swirl: frame 90, random angle, sinking to -30 by 4; alpha up by 8 to 0xA0 for 20 frames,
    then while the game state is below 20 down by 13 until it ends; past game frame 0x118 it spins up by 0x30 a frame (to 0x600)

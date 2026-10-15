@@ -289,7 +289,68 @@ INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00C60_b350);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E00F20_b350);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b350", func_01E011E0_b350);
+/* shape b350:01E011E0, 126 insns: b383:01E03640 variant: size 30 growing by 1 a tick, height from 0, frame 0..24, fade-in 4..13 ticks up by 48 to 0x60 then down by 9 until it ends, kind steps to 5 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b350_01E011E0;
+
+static s32 func_01E011E0_b350(s32 arg0, Glow_b350_01E011E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 30;
+        o->kind = 0;
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+        o->h30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 5 + 5;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 4;
+        o->mode = 2;
+    }
+    if (o->tick < o->h6) {
+        if (o->col[3] <= 0x60) {
+            o->col[3] += 0x30;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->h30 += o->hE;
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 /* shape b350:01E013E0, 92 insns: b582:01E03470 family scene light at ctx+0x3510 (white 5/5/5, range 128, height 140): raised by 0.2 to 1, lowered by 0.1 and ended; applied while alive; ends at scene state 1 */
 

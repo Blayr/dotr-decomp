@@ -264,7 +264,82 @@ static void func_01E00C20_b850(Scene_b850_01E00C20 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E00D90_b850);
+/* shape b850:01E00D90, 134 insns: b207:01E029A0 with the manager count at 0x2DF0 */
+
+typedef struct {
+    u8 pad0000[0x2DF0];
+    s32 w3B00;
+} Mgr_b850_01E00D90;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+} Obj_b850_01E00D90;
+
+static s32 func_01E00D90_b850(Mgr_b850_01E00D90 *m, Obj_b850_01E00D90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->h36 == 1) {
+        o->h38 = 70;
+        base = 0;
+        o->w10 = func_0019A5C8() % 0x4000 + base;
+        o->w14 = func_0019A5C8() % 0xFFFF;
+        o->h34 = func_0019A5C8() % 7;
+        o->h36 = 2;
+        o->hE = func_0019A5C8() % 3 + 4;
+        o->h6 = 1;
+        if (o->h30 == 0) {
+            func_001076F0(o->c28, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->c28, 0, 0x80, 0x80);
+        }
+    }
+    if (o->h32 < 2) {
+        if (o->c28[3] < 0xA0) {
+            o->c28[3] += 0x50;
+        }
+    } else {
+        if (o->h38 < 12) {
+            if (o->c28[3] > 20) {
+                o->c28[3] -= 19;
+            } else {
+                o->h36 = 0;
+            }
+        }
+        if (o->h38 < -12) {
+            o->h36 = 0;
+        }
+        if (m->w3B00 < 10) {
+            if (o->c28[3] > 16) {
+                o->c28[3] -= 15;
+            } else {
+                o->h36 = 0;
+            }
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        func_001076F0(o->c28, 0x80, 0x40, 0);
+    } else {
+        func_001076F0(o->c28, 0xB0, 0x80, 0);
+    }
+    o->h32++;
+    o->h38 -= o->hE;
+    return 0;
+}
 
 /* shape b850:01E00FB0, 106 insns: on start 0x38 = 0, random rotation, variant 0..6, speed 2..4 (0xE), 0x6 = 1, colour
    0x80 grey; alpha grows by 0x50 (below 0xA0) for 2 ticks; after that it fades by 19 once 0x38 passes 0x46, stops when
@@ -433,7 +508,74 @@ static s32 func_01E012F0_b850(s32 unused, Obj_b207_01E03000 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b850", func_01E013C0_b850);
+/* shape b850:01E013C0, 123 insns: a yellow-white circling glow on a model joint: frame 40, angle from its start value; alpha up by 4 for
+   18 frames, then flickering 0x40/0x50; sits on the joint, circling 3 around it as the angle turns 10 a frame; ends at frame 211 */
+
+typedef struct {
+    u8 pad0[0x2E1C];
+    s16 joint;
+    u8 pad2E1E[0x11E];
+    u8 sin[1];
+} Game_b850_01E013C0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x22];
+    u8 c0[4];
+    u8 c1[4];
+    s16 ang0;
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b850_01E013C0;
+
+static s32 func_01E013C0_b850(Game_b850_01E013C0 *g, Obj_b850_01E013C0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001A22C0(f32);
+    struct {
+        f32 x, y, z, w;
+        f32 pad[4];
+    } v;
+
+    func_00108030(g->sin, o->ang, 0);
+    if (o->state == 1) {
+        o->h38 = 0x28;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0xC0, 0xC0, 0);
+        o->ang = o->ang0;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x12) {
+        o->c0[3] += 4;
+    } else if (o->t % 2 == 1) {
+        o->c0[3] = 0x40;
+    } else {
+        o->c0[3] = 0x50;
+    }
+    func_001F5620(func_001F53A0(), g->joint, &v);
+    o->x = func_001A22C0(v.x);
+    o->y = func_001A22C0(v.y);
+    o->z = func_001A22C0(v.z);
+    o->x = func_001A22C0(o->x + 3.0f * func_00108030(g->sin, o->ang, 0));
+    o->z = func_001A22C0(o->z + 3.0f * func_00108030(g->sin, o->ang, 1));
+    o->t++;
+    if (o->t > 0xD2) {
+        o->state = 0;
+    }
+    o->ang += 0xA;
+    if (o->ang >= 0x168) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b850:01E015B0, 54 insns: variant of b257:01E031C0 (flash): start block as below; alpha grows by 0x60
    for the first 2 ticks, then fades out by 15 and stops */

@@ -489,7 +489,78 @@ static s32 func_01E01830_b572(s32 arg0, Fx_b572_01E01830 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E019E0_b572);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b572", func_01E01E90_b572);
+/* shape b572:01E01E90, 129 insns: b572:01E020A0 variant: dark (0x10) ember starting 20..169 high, speed 5..9, fade-in
+   4..10 ticks up by 64 to 0x80, then down by 9; once the game counter at g+0x3310 passes 296 it turns 0x20 grey; it
+   grows by 1 a tick and counts f2 */
+
+typedef struct {
+    u8 pad0[0x3310];
+    s16 count;
+} Game_b572_01E01E90;
+
+typedef struct {
+    u8 pad0[2];
+    s16 f2;
+    u8 pad4[2];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[0x18];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b572_01E01E90;
+
+static s32 func_01E01E90_b572(Game_b572_01E01E90 *g, Fx_b572_01E01E90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f38 = 70;
+        o->f34 = 0;
+        func_001076F0(o->col, 0x10, 0x10, 0x10);
+        o->fA = o->f30;
+        o->f30 = func_0019A5C8() % 150 + 20;
+        o->speed = func_0019A5C8() % 5 + 5;
+        o->f8 = func_0019A5C8() % 25;
+        o->hold = func_0019A5C8() % 7 + 4;
+        o->f3A = func_0019A5C8() % 360;
+        o->fC = 0;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (g->count >= 0x129) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+    }
+    if (o->tick % 2 == 1) {
+        if (o->f34 < 5) {
+            o->f34++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f30 += o->speed;
+    }
+    if (o->tick != 0) {
+        o->f38 += 1;
+    }
+    o->f2++;
+    o->tick++;
+    return 0;
+}
 
 /* shape b572:01E020A0, 107 insns: on start 0x38 = 30, variant 0, colour 0xFF grey, 0xA keeps the old 0x30, 0x30 = 0, speed
    8..12 (0xE), 0x8 0..24, hold 4..13 (0x6), random 0x3A, 0xC = 0; alpha grows by 0x60 (below 0xC0) during the

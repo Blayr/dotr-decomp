@@ -737,7 +737,66 @@ static s32 func_01E02430_b570(void *arg0, Obj_b003_01E01EC0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E02680_b570);
+/* shape b570:01E02680, 140 insns: b205:01E01900 family purple spark (size 2..4, frame 0..2, random spin) drifting x/y by (-50..49)/400 and sinking 0.09 per tick: alpha up by 64 to 0x80 for 90 ticks, then down by 9 */
+
+typedef struct {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    s32 rot[3];
+    u8 pad2C[4];
+    f32 vel[3];
+    u8 pad3C[0x16];
+    s16 f52;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    u8 pad5A[2];
+    s16 dir;
+    u8 pad5E[2];
+    u8 col[4];
+} Spark_b570_01E02680;
+
+static s32 func_01E02680_b570(s32 arg0, Spark_b570_01E02680 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = func_0019A5C8() % 3 + 2;
+        o->h = o->w;
+        o->kind = (func_0019A5C8() >> 4) % 3;
+        func_001076F0(o->col, 0x80, 0x20, 0xFF);
+        o->mode = 2;
+        o->vel[1] = func_0019A5C8() % 100 - 50;
+        o->vel[0] = func_0019A5C8() % 100 - 50;
+        o->vel[1] /= 400.0f;
+        o->vel[0] /= 400.0f;
+        o->dir = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->spin[2] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[1] = func_0019A5C8() % 0x800 - 0x400;
+        o->spin[0] = func_0019A5C8() % 0x800 - 0x400;
+    }
+    if (o->tick < 90) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xA) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->pos[0] += o->vel[0];
+        o->pos[1] += o->vel[1] - 0.09f;
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E028B0_b570);
 

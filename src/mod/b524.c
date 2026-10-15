@@ -920,7 +920,79 @@ static s32 func_01E025A0_b524(Game_b524_01E025A0 *g, Obj_b524_01E025A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E02710_b524);
+/* shape b524:01E02710, 127 insns: a grey mote thrown from joint A toward joint B: size 12, f48 5, frame 2..7; its speed is
+   a tenth of the gap (a quarter on z) with a random 0..14 - 4 lift; alpha grows by 0x40 (below 0x80) for 15 ticks,
+   then fades by 9 (ends below 11); frame cycles 0..3; moves from the second tick; turns 0x20 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 vx, vy, vz;
+    u8 pad3C[0xC];
+    f32 f48;
+    u8 pad4C[8];
+    s16 t;
+    s16 frame;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b524_01E02710;
+
+typedef struct {
+    u8 pad0[0x5DF0];
+    s16 ja;
+    s16 jb;
+} Scene_b524_01E02710;
+
+static s32 func_01E02710_b524(Scene_b524_01E02710 *g, Fx_b524_01E02710 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v[2];
+
+    if (o->mode == 1) {
+        func_001F5620(func_001F53A0(), g->ja, &v[0]);
+        func_001F5620(func_001F53A0(), g->jb, &v[1]);
+        o->w = 12;
+        o->h = 12;
+        o->f48 = 5.0f;
+        o->frame = func_0019A5C8() % 6 + 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->vx = v[1].x - v[0].x;
+        o->vy = v[1].y - v[0].y + func_0019A5C8() % 15 - 4.0f;
+        o->vz = v[1].z - v[0].z;
+        o->vx /= 10.0f;
+        o->vy /= 10.0f;
+        o->vz /= 4.0f;
+        o->mode = 2;
+    }
+    if (o->t < 15) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    o->frame++;
+    if (o->frame >= 4) {
+        o->frame = 0;
+    }
+    if (o->t != 0) {
+        o->x += o->vx;
+        o->y += o->vy;
+        o->z += o->vz;
+    }
+    func_00205C40((s32)o->rot);
+    o->t++;
+    return 0;
+}
 
 /* shape b493:01E03310, 80 insns: a growing grey glow: on start f8/fA 80, f48 5, f56 0; alpha grows by 0x60 (below
    0xC0) for 5 ticks, then fades out by 9 and stops; from tick 2 f56 steps up every other tick (max 5); f8/fA grow

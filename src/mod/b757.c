@@ -881,7 +881,82 @@ static s32 func_01E02880_b757(s32 arg0, Fx_b757_01E02880 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b757", func_01E029A0_b757);
+/* shape b757:01E029A0, 136 insns: a scene light that follows joint 0xB248: on start colour (128, 100, 100, 100),
+   0xB1C0 0, 0xB1C4 123, level 0, placed at the effect position; it brightens by 0.3 (to 1) for 210 ticks, then dims by
+   0.3 and ends at 0.1; the light is handed to func_001F6C10 while alive (NULL once ended); ends when 0xB210 is 1 */
+
+typedef struct {
+    f32 c[4];
+    Vec4f pos;
+    f32 fC0;
+    f32 fC4;
+    f32 level;
+} Light_b757_01E029A0;
+
+typedef struct {
+    u8 pad0[0xB1A0];
+    Light_b757_01E029A0 light;
+    u8 padB1CC[0x44];
+    s32 flag;
+    u8 padB214[0x34];
+    s16 joint;
+} Scene_b757_01E029A0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x34];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+} Fx_b757_01E029A0;
+
+static s32 func_01E029A0_b757(Scene_b757_01E029A0 *g, Fx_b757_01E029A0 *o) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6C10(void *);
+    Vec4f v[2];
+
+    if (o->mode == 1) {
+        g->light.c[0] = 128.0f;
+        g->light.c[1] = 100.0f;
+        g->light.c[2] = 100.0f;
+        g->light.c[3] = 100.0f;
+        g->light.fC0 = 0.0f;
+        g->light.fC4 = 123.0f;
+        g->light.level = 0.0f;
+        g->light.pos.x = o->x;
+        g->light.pos.y = o->y;
+        g->light.pos.z = o->z;
+        o->mode = 2;
+        o->h50 = 0;
+    }
+    func_001F5620(func_001F53A0(), g->joint, v);
+    g->light.pos.x = v[0].x;
+    g->light.pos.y = v[0].y;
+    g->light.pos.z = v[0].z;
+    if (o->t < 0xD2) {
+        if (g->light.level < 1.0f) {
+            g->light.level += 0.3f;
+        }
+    } else if (g->light.level > 0.1f) {
+        g->light.level -= 0.3f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(NULL);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->flag == 1) {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b180:01E021D0, 66 insns: volume fade for a scene: starts at 0x80, fades down by 10 (floor 0x30) for the
    first 0x97 ticks, then back up by 10 (cap 0x80) while the game state is below 0x1E; state 3 forces full volume */
@@ -933,7 +1008,93 @@ static s32 func_01E02BC0_b757(Game_b180_01E021D0 *g, Fade_b180_01E021D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b757", func_01E02CD0_b757);
+/* shape b757:01E02CD0, 136 insns: b763:01E032F0's full-screen veil, brightening until scene frame 250 (s16 at 0xB2B8) */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b757_01E02CD0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b757_01E02CD0 p;
+} Tv_b757_01E02CD0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b757_01E02CD0 v[2];
+    u8 tail[0x20];
+} Tex_b757_01E02CD0;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 frame;
+} Ctx_b757_01E02CD0;
+
+typedef struct {
+    u8 pad0[0x48];
+    f32 f48;
+    u8 pad4C[8];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b757_01E02CD0;
+
+static s32 func_01E02CD0_b757(Ctx_b757_01E02CD0 *g, Fx_b757_01E02CD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_002087A0(void *, s32);
+    Tex_b757_01E02CD0 pk __attribute__((aligned(8)));
+
+    if (o->mode == 1) {
+        o->f48 = 2.5f;
+        func_001076F0(o->col, 0x80, 0x80, 0x90);
+        o->mode = 2;
+    }
+    ((Tex_b757_01E02CD0 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b757_01E02CD0 *)(s32)&pk)->size = 5;
+    ((Tex_b757_01E02CD0 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b757_01E02CD0 *)(s32)&pk)->pad4 = 0;
+    pk.r = o->col[0];
+    pk.g = o->col[1];
+    pk.b = o->col[2];
+    pk.a = o->col[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = o->f48 / 1024.0f;
+    pk.v[0].t = o->f48 / 512.0f;
+    pk.v[1].s = (640.0f - o->f48) / 1024.0f;
+    pk.v[1].t = (448.0f - o->f48) / 512.0f;
+    func_002086D0(&pk, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pk, 1);
+    func_002075F0((s32)&pk, (s32)func_00207500(), 0);
+    if (g->frame < 0xFA) {
+        if (o->col[3] < 0x58) {
+            o->col[3] += 0x16;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

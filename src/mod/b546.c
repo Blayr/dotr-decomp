@@ -497,7 +497,55 @@ static void func_01E011B0_b546(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01510_b546);
+/* shape b546:01E01510, 135 insns: scene spawn step: t++; on the first frame it starts handlers 0x1E01F90 and 0x1E01ED0
+   (0xC85E 0 then 1); on frames 63..199 three sparks a tick (handler 0x1E01730) at the scene joint, each lifted by
+   -1.0..0.9 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xC5D0];
+    s16 joint;
+    u8 padC832[0x2C];
+    s16 hC85E;
+    u8 padC860[6];
+    s16 t;
+} Scene_b546_01E01510;
+
+static void func_01E01510_b546(Scene_b546_01E01510 *g) {
+    extern void b546_01E01730(void);
+    extern void b546_01E01ED0(void);
+    extern void b546_01E01F90(void);
+    extern void b546_01E027F0(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 f;
+
+    g->t++;
+    if (g->t == 1) {
+        b546_01E027F0(g, b546_01E01F90, 0);
+        g->hC85E = 0;
+        g->hC85E = 1;
+        b546_01E027F0(g, b546_01E01ED0, 0);
+    }
+    if (g->t > 0x3E && g->t < 0xC8) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        f = (func_0019A5C8() >> 4) % 20 - 10;
+        f /= 10.0f;
+        g->pos.y += f;
+        b546_01E027F0(g, b546_01E01730, 0);
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        f = (func_0019A5C8() >> 4) % 20 - 10;
+        f /= 10.0f;
+        g->pos.y += f;
+        b546_01E027F0(g, b546_01E01730, 0);
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        f = (func_0019A5C8() >> 4) % 20 - 10;
+        f /= 10.0f;
+        g->pos.y += f;
+        b546_01E027F0(g, b546_01E01730, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01730_b546);
 

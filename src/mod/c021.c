@@ -305,9 +305,231 @@ found:
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E02BE0_c021);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E02E40_c021);
+/* OVL_WARM */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E03060_c021);
+/* shape c021:01E02E40, 135 insns: c030:01E018C0-style ribbon node: takes the first free of 65 (0x94 bytes at ctx+0x120),
+   clears it, colours both from the scene colour, copies the scene point, two byte levels (fptoui), the width and
+   settings, links it after the scene's last node, widths clamped to 200, handler 0x1E03BA0 and the argument */
+
+typedef struct Ent_c021_01E02E40 {
+    u8 pad0[0x30];
+    Vec4f v;
+    u8 pad40[0x20];
+    f32 f60;
+    f32 f64;
+    struct Ent_c021_01E02E40 *prev;
+    struct Ent_c021_01E02E40 *next;
+    void (*cb)(void);
+    s32 arg;
+    f32 f78;
+    u8 col0[4];
+    u8 col1[4];
+    s16 used;
+    u8 b86;
+    u8 b87;
+    s16 h88;
+    u8 pad8A[2];
+    s16 h8C;
+    s16 h8E;
+    u8 pad90[2];
+    s16 h92;
+} Ent_c021_01E02E40;
+
+typedef struct {
+    u8 pad0[0xC0];
+    Vec4f v;
+    u8 padD0[0x50];
+    Ent_c021_01E02E40 ent[65];
+    u8 pad26B4[0x357C - 0x26B4];
+    u8 col[4];
+    u8 pad3580[8];
+    Ent_c021_01E02E40 *last;
+    u8 pad358C[4];
+    f32 f3590;
+    f32 f3594;
+    f32 f3598;
+    u8 pad359C[0x30A];
+    s16 h38A6;
+    u8 pad38A8[8];
+    s16 h38B0;
+    u8 pad38B2[2];
+    s16 h38B4;
+    u8 pad38B6[0xE];
+    s16 h38C4;
+} Ctx_c021_01E02E40;
+
+static void func_01E02E40_c021(Ctx_c021_01E02E40 *g, s32 arg) {
+    extern void c021_01E03BA0(void);
+    extern void func_00106CC0(void *, s32);
+    extern void func_001076F0();
+    s16 i;
+    Ent_c021_01E02E40 *e;
+    Ent_c021_01E02E40 *p;
+    f32 h;
+    f32 d;
+
+    for (i = 0; i < 65; i++) {
+        if (g->ent[i].used == 0) {
+            e = &g->ent[i];
+            func_00106CC0(e, 0x94);
+            g->ent[i].used = i + 1;
+            goto found;
+        }
+    }
+    e = NULL;
+found:
+    if (e != NULL) {
+        d = 18.0f;
+        func_001076F0(e->col0, g->col[0], g->col[1], g->col[2]);
+        e->col0[3] = g->col[3];
+        func_001076F0(e->col1, g->col[0], g->col[1], g->col[2]);
+        e->col1[3] = g->col[3];
+        e->v = g->v;
+        e->b86 = g->f3590;
+        e->b87 = g->f3594;
+        e->f78 = g->f3598;
+        e->h8C = g->h38A6;
+        e->prev = g->last;
+        e->h88 = g->h38B4;
+        if (e->prev == NULL) {
+            h = g->f3598;
+            e->f60 = h;
+            e->f64 = h + d;
+        } else {
+            h = g->f3598;
+            e->f60 = h;
+            e->f64 = h + d;
+        }
+        if (200.0f < e->f60) {
+            e->f60 = 200.0f;
+        }
+        if (200.0f < e->f64) {
+            e->f64 = 200.0f;
+        }
+        e->h92 = g->h38C4;
+        e->prev = g->last;
+        p = e->prev;
+        if (p != NULL) {
+            p->next = e;
+        }
+        e->cb = c021_01E03BA0;
+        e->arg = arg;
+        e->h8E = g->h38B0;
+        g->last = e;
+    }
+}
+
+/* OVL_WARM */
+
+/* shape c021:01E03060, 135 insns: c021:01E02E40's ribbon node with widths clamped to 180 and handler 0x1E038A0 */
+
+typedef struct Ent_c021_01E03060 {
+    u8 pad0[0x30];
+    Vec4f v;
+    u8 pad40[0x20];
+    f32 f60;
+    f32 f64;
+    struct Ent_c021_01E03060 *prev;
+    struct Ent_c021_01E03060 *next;
+    void (*cb)(void);
+    s32 arg;
+    f32 f78;
+    u8 col0[4];
+    u8 col1[4];
+    s16 used;
+    u8 b86;
+    u8 b87;
+    s16 h88;
+    u8 pad8A[2];
+    s16 h8C;
+    s16 h8E;
+    u8 pad90[2];
+    s16 h92;
+} Ent_c021_01E03060;
+
+typedef struct {
+    u8 pad0[0xC0];
+    Vec4f v;
+    u8 padD0[0x50];
+    Ent_c021_01E03060 ent[65];
+    u8 pad26B4[0x357C - 0x26B4];
+    u8 col[4];
+    u8 pad3580[8];
+    Ent_c021_01E03060 *last;
+    u8 pad358C[4];
+    f32 f3590;
+    f32 f3594;
+    f32 f3598;
+    u8 pad359C[0x30A];
+    s16 h38A6;
+    u8 pad38A8[8];
+    s16 h38B0;
+    u8 pad38B2[2];
+    s16 h38B4;
+    u8 pad38B6[0xE];
+    s16 h38C4;
+} Ctx_c021_01E03060;
+
+static void func_01E03060_c021(Ctx_c021_01E03060 *g, s32 arg) {
+    extern void c021_01E038A0(void);
+    extern void func_00106CC0(void *, s32);
+    extern void func_001076F0();
+    s16 i;
+    Ent_c021_01E03060 *e;
+    Ent_c021_01E03060 *p;
+    f32 h;
+    f32 d;
+
+    for (i = 0; i < 65; i++) {
+        if (g->ent[i].used == 0) {
+            e = &g->ent[i];
+            func_00106CC0(e, 0x94);
+            g->ent[i].used = i + 1;
+            goto found;
+        }
+    }
+    e = NULL;
+found:
+    if (e != NULL) {
+        d = 18.0f;
+        func_001076F0(e->col0, g->col[0], g->col[1], g->col[2]);
+        e->col0[3] = g->col[3];
+        func_001076F0(e->col1, g->col[0], g->col[1], g->col[2]);
+        e->col1[3] = g->col[3];
+        e->v = g->v;
+        e->b86 = g->f3590;
+        e->b87 = g->f3594;
+        e->f78 = g->f3598;
+        e->h8C = g->h38A6;
+        e->prev = g->last;
+        e->h88 = g->h38B4;
+        if (e->prev == NULL) {
+            h = g->f3598;
+            e->f60 = h;
+            e->f64 = h + d;
+        } else {
+            h = g->f3598;
+            e->f60 = h;
+            e->f64 = h + d;
+        }
+        if (180.0f < e->f60) {
+            e->f60 = 180.0f;
+        }
+        if (180.0f < e->f64) {
+            e->f64 = 180.0f;
+        }
+        e->h92 = g->h38C4;
+        e->prev = g->last;
+        p = e->prev;
+        if (p != NULL) {
+            p->next = e;
+        }
+        e->cb = c021_01E038A0;
+        e->arg = arg;
+        e->h8E = g->h38B0;
+        g->last = e;
+    }
+}
 
 /* shape c021:01E03280, 67 insns: mode 0 sets up the drawing state (a 0x9B matrix from the effect's angle at 0x8E,
    colours at 0x7C/0x80, the scene texture at 0xBC); otherwise sizes the scene quad (0xE0) to (h / 2, h) from the

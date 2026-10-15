@@ -1188,4 +1188,78 @@ static void func_01E03BC0_b080(Scn_b080_01E03BC0 *w, Obj_b080_01E03BC0 *o, void 
     func_00108F90(m3, pk, m2, ot);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E03D90_b080);
+/* shape b080:01E03D90, 128 insns: b117:01E02C00-family sprite draw in two passes: with mode 0 it sets the material
+   (texture frame 0x83 at +0x34, colour, scene texture at 0x374); otherwise a tenth-scale matrix at position + drift / 10
+   (the z offset reuses the y drift, divided twice, as in the original) and four size x size quads, each sent at its
+   depth when it lands on screen */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b080_01E03D90;
+
+typedef struct {
+    u8 pad0[0x374];
+    s32 tex;
+} Scene_b080_01E03D90;
+
+static void func_01E03D90_b080(Scene_b080_01E03D90 *g, Fx_b080_01E03D90 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f quad[4];
+    Vec4f scale;
+    f32 pos[4];
+    f32 rm[4];
+    f32 m[16];
+    f32 depth[4];
+    s32 rot[4];
+    s32 v;
+    s16 i;
+    f32 t;
+
+    v = (s32)func_00207500();
+    if (mode == 0) {
+        func_00106080(rm, 0x83, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
+        func_00205C40((s32)rot);
+        t = o->dx;
+        t /= 10.0f;
+        pos[0] = o->x;
+        pos[0] += t;
+        t = o->dy;
+        t /= 10.0f;
+        pos[1] = o->y;
+        pos[1] += t;
+        pos[2] = o->dz;
+        t /= 10.0f;
+        pos[2] = o->z;
+        pos[2] += t;
+        func_00108EF0(m, &scale, rot, pos);
+        for (i = 0; i < 4; i++) {
+            func_00108D60(quad, o->size, o->size, i);
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, v, func_001A23B0(depth[0]));
+            }
+        }
+    }
+}

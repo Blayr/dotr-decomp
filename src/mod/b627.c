@@ -491,9 +491,153 @@ static void func_01E01190_b627(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E014F0_b627);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E01830_b627);
+/* shape b627:01E01830, 128 insns: b632:01E03450's grey flash timed by the game counter at g+0x45A2: on start size 25,
+   colours 0x60; f56 toggles each tick; alpha up by 10 to 0x80 (both colours) until the counter reaches 330, then down
+   by 14 until it ends; the colour blinks 0xFF / 0xAF on even/odd ticks; past 70 the size grows by 5 up to 50 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b627", func_01E01A30_b627);
+typedef struct {
+    u8 pad0[0x45A2];
+    s16 count;
+} Game_b627_01E01830;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    s16 fA;
+    u8 padC[0x14];
+    s32 rot[4];
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x1C];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b627_01E01830;
+
+static s32 func_01E01830_b627(Game_b627_01E01830 *g, Fx_b627_01E01830 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f8 = 25;
+        o->fA = 25;
+        o->f56 = 0;
+        o->f34 = 0.0f;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        func_001076F0(o->col2, 0x60, 0x60, 0x60);
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->f5A = func_0019A5C8() % 360;
+        o->f5C = func_0019A5C8() % 180 - 90;
+    }
+    if (o->f56 != 0) {
+        o->f56 = 0;
+    } else {
+        o->f56 = 1;
+    }
+    if (g->count < 330) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 10;
+        }
+    } else {
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 0xF) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->tick % 2 == 0) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xAF, 0xAF, 0xAF);
+    }
+    if (g->count > 70) {
+        if (o->f8 < 50) {
+            o->f8 += 5;
+        }
+        if (o->fA < 50) {
+            o->fA += 5;
+        }
+    }
+    func_00205C40((s32)o->rot);
+    o->tick++;
+    return 0;
+}
+
+/* shape b627:01E01A30, 129 insns: b627:01E02480 variant: size 2..4 while the game counter at g+0x45A2 is under 100,
+   else 4..6; speed 40..99, fade-in 5..8 ticks at 0x80, then down by 15 until it ends; no rise */
+
+typedef struct {
+    u8 pad0[0x45A2];
+    s16 count;
+} Game_b627_01E01A30;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    u8 pad10[0x10];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b627_01E01A30;
+
+static s32 func_01E01A30_b627(Game_b627_01E01A30 *g, Obj_b627_01E01A30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (g->count < 100) {
+            o->f48 = func_0019A5C8() % 3 + 2;
+        } else {
+            o->f48 = func_0019A5C8() % 3 + 4;
+        }
+        o->kind = 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+        o->h50 = func_0019A5C8() % 45 + 5;
+        o->h5A = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 60 + 40;
+        o->h8 = func_0019A5C8() % 20;
+        o->h6 = func_0019A5C8() % 4 + 5;
+        o->mode = 2;
+    }
+    if (o->t < o->h6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b627:01E01C40, 91 insns: a grey/red ring (height 1..20, or 2..41 once the scene value reaches 70; scale 2), held 3 ticks: in by 96 up to 0xC0, then out by 11 and ends; spun 0x4000 a tick */
 

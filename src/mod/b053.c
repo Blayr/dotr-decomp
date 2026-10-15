@@ -174,7 +174,68 @@ static s32 func_01E00BD0_b053(void *arg0, Obj_b053_01E00BD0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00D00_b053);
+/* shape b053:01E00D00, 135 insns: b019:01E01F60 family wisp (0x3F, 0x20, 0x3F), table at ctx+0x3B64: size from 2 stepping every fourth tick to 12, f30 -30..29, alpha up by 6 to 0x30 for 8 ticks then down by 4, swinging 16 / 4 / 16 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 pad0[0x3B64];
+    u8 tab[1];
+} Mgr_b053_01E00D00;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 f30;
+    s16 tick;
+    s16 f34;
+    s16 mode;
+    s16 f38;
+    s16 f3A;
+} Fx_b053_01E00D00;
+
+static s32 func_01E00D00_b053(Mgr_b053_01E00D00 *m, Fx_b053_01E00D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x3F, 0x20, 0x3F);
+    if (o->mode == 1) {
+        o->f38 = 2;
+        o->f3A = func_0019A5C8() % 360;
+        o->f34 = 0;
+        o->f30 = func_0019A5C8() % 60 - 30;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x30) {
+            o->col[3] += 6;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->tick % 4 == 1) {
+        if (o->f38 < 12) {
+            o->f38++;
+        }
+    }
+    if (o->tick % 3 == 1) {
+        if (o->f34 < 7) {
+            o->f34++;
+        }
+    }
+    o->x = o->x + 16.0f * func_00108030(m->tab, o->f3A, 0);
+    o->y = o->y + 4.0f * func_00108030(m->tab, o->f30, 1);
+    o->z = o->z + 16.0f * func_00108030(m->tab, o->f3A, 1);
+    return 0;
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 

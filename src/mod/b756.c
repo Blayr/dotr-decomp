@@ -616,7 +616,65 @@ static s32 func_01E02900_b756(Game_b756_01E02900 *g, Obj_b756_01E02900 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E02AD0_b756);
+/* shape b756:01E02AD0, 131 insns: brown (0x40, 0x20, 0) spark at the scene's point (ctx+0xA870) (f48 6..15, frame 0..3, random turn, h52 counting from 1, f50 from 0 growing 7..12, angle 0..359, f8 1..8): alpha 0x60 for 15..17 ticks, then down by 6 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    f32 pos[4];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b756_01E02AD0;
+
+typedef struct {
+    u8 pad0[0xA870];
+    Vec4f at;
+} Ctx_b756_01E02AD0;
+
+static s32 func_01E02AD0_b756(Ctx_b756_01E02AD0 *g, Fx_b756_01E02AD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 6;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x40, 0x20, 0x00);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f52 = 1;
+        o->f50 = 0;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 6 + 7;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 15;
+        o->mode = 2;
+        *(Vec4f *)o->pos = g->at;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 7) {
+        o->col[3] -= 6;
+    } else {
+        o->mode = 0;
+    }
+    o->f52++;
+    o->f50 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 /* shape b756:01E02CE0, 83 insns: on start f48 12, both colours 0x80 grey (second alpha 0), random 0x5A, rotation
    0x4000; alpha grows by 9 (below 0x80) for 13 ticks, then once the game step 0xAD5E passes 0x19A both fade by 9 (the
@@ -730,7 +788,79 @@ static s32 func_01E034F0_b756(void *arg0, Obj_b756_01E034F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E03670_b756);
+/* shape b756:01E03670, 130 insns: b094:01E01900's flickering pair: size 17 (f4C 11), fading by 9 after scene count 410,
+   spin held at 0 / 0x8000 by the scene flag before count 150, then 0x100 a tick */
+
+typedef struct {
+    u8 pad0[0xAD5A];
+    s16 flag;
+    u8 pad4562[2];
+    s16 count;
+} Ctx_b756_01E03670;
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x1A];
+    s32 f24;
+    u8 pad28[0x20];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b756_01E03670;
+
+static s32 func_01E03670_b756(Ctx_b756_01E03670 *g, Fx_b756_01E03670 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 17.0f;
+        o->f4C = o->f48 - 6.0f;
+        o->f56 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f8 = func_0019A5C8() % 3 + 4;
+    }
+    if (o->tick < 20) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 12;
+        }
+    } else if (g->count > 0x19A) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 10) {
+            o->col2[3] -= 9;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+    }
+    if (g->count < 150) {
+        if (g->flag != 0) {
+            o->f24 = 0;
+        } else {
+            o->f24 = 0x8000;
+        }
+    } else {
+        o->f24 += 0x100;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b756:01E03880, 74 insns: a white-orange growing spinning flash: scale 550 growing by 10 from frame 13, random
    angle; alpha up by 32 to 0x80 for 15 frames, then down by 6 until it ends; random turn plus a quarter */
@@ -779,7 +909,70 @@ static s32 func_01E03880_b756(void *arg0, Obj_b756_01E03880 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b756", func_01E039B0_b756);
+/* shape b756:01E039B0, 123 insns: on start f48 40, 0x4C 0, variant 0..6, 0x8 4..6, three random words 0x20/0x24/0x28;
+   both alphas grow by 0x15 (below 0x80) for 9 ticks, then fade by 8 (the first ends it); both colours flicker
+   0x80 / 0xC0 grey; f48 grows by 2 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x16];
+    s32 w20;
+    s32 w24;
+    s32 w28;
+    u8 pad2C[0x1C];
+    f32 f48;
+    s32 w4C;
+    u8 pad50[4];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b756_01E039B0;
+
+static s32 func_01E039B0_b756(s32 arg0, Fx_b756_01E039B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 40.0f;
+        o->w4C = 0;
+        o->f56 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f8 = func_0019A5C8() % 3 + 4;
+        o->w20 = func_0019A5C8() % 65535;
+        o->w24 = func_0019A5C8() % 65535;
+        o->w28 = func_0019A5C8() % 65535;
+    }
+    if (o->tick < 9) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x15;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x15;
+        }
+    } else {
+        if (o->col[3] > 9) {
+            o->col[3] -= 8;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 9) {
+            o->col2[3] -= 8;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col2, 0xC0, 0xC0, 0xC0);
+    }
+    o->f48 += 2.0f;
+    o->tick++;
+    return 0;
+}
 
 /* shape b756:01E03BA0, 101 insns: on start f48 50, variant 0..6, colour 0x18 grey, 0xA 0..7, 0xC keeps the old 0x50,
    0x50 0..19, speed (0xE), 0x8 0..34, hold (0x6); alpha 0x80 during the hold, then fades by 12 and stops;

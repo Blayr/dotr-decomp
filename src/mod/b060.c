@@ -2,7 +2,60 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E00080_b060);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b060", func_01E009B0_b060);
+/* shape b060:01E009B0, 125 insns: b064:01E01A00's drifting spark, grey-purple, tilt -15..14, speeds 6/4/6 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 angle;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 dir;
+} Spark_b060_01E009B0;
+
+static s32 func_01E009B0_b060(u8 * g, Spark_b060_01E009B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->col, 0x2F, 0x20, 0x2F);
+    if (o->mode == 1) {
+        o->f38 = 0;
+        o->dir = func_0019A5C8() % 360;
+        o->kind = 0;
+        o->angle = func_0019A5C8() % 30 - 15;
+        o->mode = 2;
+    }
+    if (o->tick < 8) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 9;
+        }
+    } else if (o->col[3] > 5) {
+        o->col[3] -= 4;
+    } else {
+        o->mode = 0;
+    }
+    o->tick++;
+    if (o->f38 < 0x28) {
+        o->f38 += 5;
+    }
+    if (o->tick % 3 == 1) {
+        if (o->kind < 7) {
+            o->kind++;
+        }
+    }
+    o->f8 = o->f8 + 6.0f * func_00108030(g + 0x3B60, o->dir, 0);
+    o->fA = o->fA + 4.0f * func_00108030(g + 0x3B60, o->angle, 1);
+    o->fC = o->fC + 6.0f * func_00108030(g + 0x3B60, o->dir, 1);
+    return 0;
+}
 
 /* func_001076F0 takes plain ints here (functions.h says s8): hide that prototype */
 

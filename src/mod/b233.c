@@ -593,7 +593,67 @@ static void func_01E01BC0_b233(Obj_b233_01E01BC0 *o, Fx_b233_01E01BC0 *fx, Pkt_b
 
 INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E01E60_b233);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E02640_b233);
+/* shape b233:01E02640, 134 insns: b117:01E01070's grey-purple drifting mote with a -15..14 tilt, drifting 10 sideways and 4 up */
+
+typedef struct {
+    u8 pad0[0x3A74];
+    u8 sin[1];
+} Game_b233_01E02640;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 turn;
+    s16 t;
+    s16 sub;
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b233_01E02640;
+
+static s32 func_01E02640_b233(Game_b233_01E02640 *g, Obj_b233_01E02640 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s16 func_001A22C0(f32);
+
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->sub = 0;
+        o->turn = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 18) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->sub < 7) {
+            o->sub++;
+        }
+    }
+    o->h8 = func_001A22C0(o->h8 + 10.0f * func_00108030(g->sin, o->ang, 0));
+    o->hA = func_001A22C0(o->hA + 4.0f * func_00108030(g->sin, o->turn, 1));
+    o->hC = func_001A22C0(o->hC + 10.0f * func_00108030(g->sin, o->ang, 1));
+    return 0;
+}
 
 /* shape b233:01E02860, 87 insns: an orange spark (size 8 growing 4 a tick, random frame 0..6) tipped by a random +-0x2000 and turned at random: in by 80 up to 0xA0 for 2 ticks; past size 20 out by 13, and out by 15 once the scene state is under 10; ends */
 
@@ -1398,7 +1458,104 @@ static s32 func_01E03900_b233(Ctx_b233_01E03900 *ctx, Obj_b233_01E03900 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E03980_b233);
+/* shape b233:01E03980, 132 insns: b233:01E03B90's full-screen veil zooming in from its 0x30 counter (s = n / 1024,
+   t = n / 512), alpha up by 12 (below 0x60) for 65 ticks, then fades by 12 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b233_01E03980;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b233_01E03980;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b233_01E03980 p;
+} Vtx_b233_01E03980;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b233_01E03980 c;
+    Vtx_b233_01E03980 v[2];
+    u8 tail[0x20];
+} Pkt_b233_01E03980;
+
+typedef struct {
+    u8 pad00[0x28];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    s16 h32;
+    u8 pad34[2];
+    s16 h36;
+} Obj_b233_01E03980;
+
+static inline void tag_b233_01E03980(Pkt_b233_01E03980 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E03980_b233(s32 unused, Obj_b233_01E03980 *o) {
+    extern void func_002087A0(void *, s32);
+    extern s32 func_00207500(void);
+    extern void func_002075F0(void *, s32, s32);
+    Pkt_b233_01E03980 pkt __attribute__((aligned(8)));
+    f32 n;
+
+    n = o->h30;
+    tag_b233_01E03980((Pkt_b233_01E03980 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0x80;
+    pkt.c.g = 0x80;
+    pkt.c.b = 0x80;
+    pkt.c.a = o->col[3];
+    pkt.c.q = 1.0f;
+    pkt.v[0].p.x = 0x6BF8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = 0x93F8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    if (o->h30 == 0) {
+        pkt.v[0].s = n / 1024.0f;
+        pkt.v[0].t = n / 512.0f;
+        pkt.v[1].s = 0.625f;
+        pkt.v[1].t = 0.875f;
+    } else {
+        pkt.v[0].s = n / 1024.0f;
+        pkt.v[0].t = n / 512.0f;
+        pkt.v[1].s = 0.625f;
+        pkt.v[1].t = 0.875f;
+    }
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_002087A0(&pkt, 1);
+    func_002075F0(&pkt, func_00207500(), 0);
+    if (o->h32 < 0x41) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 12;
+        }
+    } else if (o->col[3] > 13) {
+        o->col[3] -= 12;
+    } else {
+        o->h36 = 0;
+    }
+    o->h32++;
+    if (o->h30 < 30) {
+        o->h30++;
+    }
+    return 0;
+}
 
 typedef struct {
     u8 r, g, b, a;
@@ -1559,6 +1716,94 @@ static s32 func_01E04760_b233(Pool_b233_01E04760 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E04890_b233);
+/* shape b233:01E04890, 119 insns: b045:01E005A0's camera-facing sprite with a func_00207500 call first; calls the module's
+   sprite-UV helper (shape b008:01E00080) as a static function */
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b233_01E04890;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b233_01E04890 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b233_01E04890;
+
+typedef struct {
+    s16 x, y, z;
+    s16 pad6;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    s16 padE;
+    s32 rx, ry, rz;
+    u8 pad1C[0xC];
+    u8 tex[8];
+    s16 scale;
+    u8 pad32[6];
+    s16 size;
+} Obj_b233_01E04890;
+
+static void func_01E04890_b233(u8 *self, Obj_b233_01E04890 *obj, Pk_b233_01E04890 *pk, s8 *base) {
+    extern void func_00108EF0();
+    f32 m[16];
+    Vec4f pos;
+    Vec4f scale;
+    f32 depth[4];
+    f32 world[16];
+    s32 rot[4];
+    St_b233_01E04890 uv;
+    f32 r;
+    f32 fx;
+    f32 fy;
+    f32 fz;
+
+    func_00207500();
+    pk->nreg = 0x24;
+    pk->n = 9;
+    pk->regs = 0x24242421 | ((s64)4 << 32);
+    pk->pad4 = 0;
+    pk->nreg |= 0x800;
+    func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+    *(s32 *)&pk->st.t = 0;
+    pk->q0 = 0;
+    pk->q1 = 0;
+    pk->q2 = 0;
+    pk->q3 = 0;
+    func_00107740(&uv, obj->tex);
+    pk->st = uv;
+    func_01E00150_b233((Pk_b008_01E00080 *)pk, (Rect_b008_01E00080 *)(self + 0x94), 0);
+    func_00208700(pk, *(void **)(self + 0x88), 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    fx = obj->dx;
+    fy = obj->dy;
+    fz = obj->dz;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    fz /= 10.0f;
+    pos.x = obj->x + fx;
+    pos.y = obj->y + fy;
+    pos.z = obj->z + fz;
+    func_00108EF0(world, &scale, rot, &pos);
+    r = obj->size;
+    func_00108CE0(m, r, r);
+    if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, depth) != 0) {
+        func_002075F0((s32)pk, *(s32 *)(self + 0x80), func_001A23B0(depth[0]));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E04A70_b233);

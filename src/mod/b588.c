@@ -395,11 +395,188 @@ INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01300_b588);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E015B0_b588);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01920_b588);
+/* shape b588:01E01920, 123 insns: b256:01E02DF0 family spark (size 80, white, kick 8.6, drift 0.6 on z/x, random frame 0..3) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01B10_b588);
+typedef struct {
+    u8 pad0000[0xAB70];
+    u8 tab[1];
+} Mgr_b588_01E01920;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01D00_b588);
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b588_01E01920;
+
+static s32 func_01E01920_b588(Mgr_b588_01E01920 *m, Obj_b588_01E01920 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 0x50;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c60, 0xFF, 0xFF, 0xFF);
+        o->h58 = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->f18 += 8.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 8.6f * func_00108030(m->tab, o->h5A, 1);
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->h54 < 6) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x60;
+        }
+    } else if (o->c60[3] > 20) {
+        o->c60[3] -= 0x13;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->f18 += 0.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 0.6f * func_00108030(m->tab, o->h5A, 1);
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
+
+/* shape b588:01E01B10, 123 insns: b256:01E02DF0 family spark (size 130, green, kick 3.6, drift 1.6 on y/x, random frame 0..3) */
+
+typedef struct {
+    u8 pad0000[0xAB70];
+    u8 tab[1];
+} Mgr_b588_01E01B10;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b588_01E01B10;
+
+static s32 func_01E01B10_b588(Mgr_b588_01E01B10 *m, Obj_b588_01E01B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 0x82;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c60, 0x40, 0xFF, 0x40);
+        o->h58 = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->f18 += 3.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 3.6f * func_00108030(m->tab, o->h5A, 1);
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->h54 < 6) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x60;
+        }
+    } else if (o->c60[3] > 20) {
+        o->c60[3] -= 0x13;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->f14 += 1.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 1.6f * func_00108030(m->tab, o->h5A, 1);
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
+
+/* shape b588:01E01D00, 123 insns: b256:01E02DF0 family spark (size 130, orange, kick 3.6, drift 1.8 on y/x, random frame 0..3) */
+
+typedef struct {
+    u8 pad0000[0xAB70];
+    u8 tab[1];
+} Mgr_b588_01E01D00;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    s16 hA;
+    u8 pad0C[4];
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x22];
+    s16 h52;
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 c60[4];
+} Obj_b588_01E01D00;
+
+static s32 func_01E01D00_b588(Mgr_b588_01E01D00 *m, Obj_b588_01E01D00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00205C40(void *);
+
+    if (o->h58 == 1) {
+        o->h8 = 0x82;
+        o->hA = o->h8;
+        o->h56 = (func_0019A5C8() >> 4) % 3 + 2;
+        func_001076F0(o->c60, 0x80, 0x10, 0xFF);
+        o->h58 = 2;
+        o->h5A = (func_0019A5C8() >> 4) % 360;
+        o->f18 += 3.6f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 3.6f * func_00108030(m->tab, o->h5A, 1);
+        o->h52 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->h54 < 6) {
+        if (o->c60[3] < 0xC0) {
+            o->c60[3] += 0x60;
+        }
+    } else if (o->c60[3] > 20) {
+        o->c60[3] -= 0x13;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        o->f14 += 1.8f * func_00108030(m->tab, o->h5A, 0);
+        o->f10 += 1.8f * func_00108030(m->tab, o->h5A, 1);
+    }
+    func_00205C40(o->rot);
+    o->h54++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E01EF0_b588);
 

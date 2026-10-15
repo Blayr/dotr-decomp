@@ -557,7 +557,80 @@ static void func_01E01FE0_b252(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E022A0_b252);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E02C90_b252);
+/* shape b252:01E02C90, 138 insns: a white spark riding a scene point: size 4 before scene frame 140, else 6; frame 4,
+   random spin words, height 3..22, turn 0..359, rise 2..6, f8 0..29, held 2..4; alpha grows by 0x40 (to 0xC0) while
+   held, then fades by 15 (ends below 0x11); rises after the first tick; sits on point[0x52] (16-byte points at
+   +0xD930) */
+
+typedef struct {
+    f32 x, y, z, w;
+} Pt_b252_01E02C90;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 rise;
+    Pt_b252_01E02C90 pos;
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 h;
+    s16 k;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b252_01E02C90;
+
+typedef struct {
+    u8 pad0[0xD930];
+    Pt_b252_01E02C90 pt[1];
+    u8 padD940[0x2FE];
+    s16 frame;
+} Scene_b252_01E02C90;
+
+static s32 func_01E02C90_b252(Scene_b252_01E02C90 *g, Fx_b252_01E02C90 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        if (g->frame < 0x8C) {
+            o->size = 4.0f;
+        } else {
+            o->size = 6.0f;
+        }
+        o->frame = 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->h = func_0019A5C8() % 20 + 3;
+        o->ang = func_0019A5C8() % 360;
+        o->rise = func_0019A5C8() % 5 + 2;
+        o->f8 = func_0019A5C8() % 30;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t != 0) {
+        o->h += o->rise;
+    }
+    o->t++;
+    o->pos = g->pt[o->k];
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;

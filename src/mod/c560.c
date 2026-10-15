@@ -512,10 +512,205 @@ static s32 func_01E01470_c560(s32 obj, Obj_b000_01E05110 *o, Cam_b000_01E05110 *
 
 INCLUDE_ASM("asm/nonmatchings/mod/c560", func_01E019D0_c560);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c560", func_01E01C50_c560);
+/* shape c560:01E01C50, 123 insns: c560 trail link in a 20-slot list (0x5C bytes at ctx+0x1FC): takes the first free slot (marks it slot+1), copies the context's colour twice, its size as shorts, height 13 above, both clamped to 50, chains after the context's last piece and becomes it; returns 1, or 0 when full */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c560_01E01C50;
+
+typedef struct Ent_c560_01E01C50 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x18];
+    Col_c560_01E01C50 col0;
+    Col_c560_01E01C50 col1;
+    struct Ent_c560_01E01C50 *prev;
+    struct Ent_c560_01E01C50 *next;
+    u8 pad40[8];
+    s16 f48;
+    s16 f4A;
+    s16 f4C;
+    s16 f4E;
+    s16 f50;
+    s16 f52;
+    s16 f54;
+    u8 pad56[0x5C - 0x56];
+} Ent_c560_01E01C50;
+
+typedef struct {
+    u8 pad0[0x34];
+    Col_c560_01E01C50 col;
+    u8 pad38[8];
+    Ent_c560_01E01C50 *last;
+    f32 f44;
+    f32 f48;
+    f32 f4C;
+    u8 pad50[0x1E0 - 0x50];
+    s16 f1E0;
+    s16 f1E2;
+    u8 pad1E4[2];
+    s16 f1E6;
+    u8 pad1E8[2];
+    s16 f1EA;
+    u8 pad1EC[0x1FC - 0x1EC];
+    Ent_c560_01E01C50 ent[20];
+} Ctx_c560_01E01C50;
+
+static s32 func_01E01C50_c560(Ctx_c560_01E01C50 *g) {
+    extern void func_00195108(void *, s32);
+    s16 i;
+    Ent_c560_01E01C50 *e = NULL;
+    Ent_c560_01E01C50 *p;
+    f32 h;
+    f32 d;
+
+    for (i = 0; i < 20; i++) {
+        if (g->ent[i].f48 == 0) {
+            e = &g->ent[i];
+            func_00195108(e, 0x5C);
+            g->ent[i].f48 = i + 1;
+            i = 20;
+        }
+    }
+    if (e != NULL) {
+        d = 13.0f;
+        e->col0 = g->col;
+        e->col1 = g->col;
+        e->f4A = (s16)g->f44;
+        e->f4C = (s16)g->f48;
+        e->f52 = g->f1E2;
+        e->prev = g->last;
+        e->f4E = g->f1EA;
+        if (e->prev == NULL) {
+            h = g->f4C;
+            e->f4 = h;
+            e->f14 = h + d;
+        } else {
+            h = g->f4C;
+            e->f4 = h;
+            e->f14 = h + d;
+        }
+        e->f50 = g->f1E0;
+        if (50.0f < e->f4) {
+            e->f4 = 50.0f;
+        }
+        if (50.0f < e->f14) {
+            e->f14 = 50.0f;
+        }
+        e->prev = g->last;
+        p = e->prev;
+        if (p != NULL) {
+            p->next = e;
+        }
+        e->f54 = g->f1E6;
+        g->last = e;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c560", func_01E01E40_c560);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c560", func_01E02520_c560);
+/* shape c560:01E02520, 128 insns: the c560 trail link's step (c560:01E01C50 links): sinks both heights by 4 (the top stops 13 above the bottom; at the ground the top drops onto the bottom, unlinks the next piece and clears f48), and while the top is under 50 hands its position to the context and spawns the next link; fades by 15 when n < 10, else alpha up by 6 to 0x50 */
+
+/* OVL_WARM */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c560_01E02520;
+
+typedef struct Ent_c560_01E02520 {
+    u8 pad0[4];
+    f32 f4;
+    u8 pad8[0xC];
+    f32 f14;
+    u8 pad18[0x18];
+    Col_c560_01E02520 col0;
+    Col_c560_01E02520 col1;
+    struct Ent_c560_01E02520 *prev;
+    struct Ent_c560_01E02520 *next;
+    u8 pad40[8];
+    s16 f48;
+    s16 f4A;
+    s16 f4C;
+    s16 f4E;
+    s16 f50;
+    s16 f52;
+    s16 f54;
+    u8 pad56[0x5C - 0x56];
+} Ent_c560_01E02520;
+
+typedef struct {
+    u8 pad0[0x34];
+    Col_c560_01E02520 col;
+    u8 pad38[8];
+    Ent_c560_01E02520 *last;
+    f32 f44;
+    f32 f48;
+    f32 f4C;
+    u8 pad50[0x1E0 - 0x50];
+    s16 f1E0;
+    s16 f1E2;
+    u8 pad1E4[2];
+    s16 f1E6;
+    u8 pad1E8[2];
+    s16 f1EA;
+    u8 pad1EC[0x1FC - 0x1EC];
+    Ent_c560_01E02520 ent[20];
+} Ctx_c560_01E02520;
+
+static s32 func_01E02520_c560(Ctx_c560_01E02520 *g, Ent_c560_01E02520 *e, s32 n) {
+    extern s32 c560_01E01C50();
+    e->f52 -= 7;
+    e->f4A = (s16)e->f4;
+    e->f4C = (s16)e->f14;
+    if (e->f4 > 0.0f) {
+        e->f4 -= 4.0f;
+        if (e->f14 - e->f4 >= 13.0f) {
+            e->f14 -= 4.0f;
+        }
+    } else {
+        e->f14 -= 4.0f;
+        if (e->f14 < e->f4) {
+            e->f14 = e->f4;
+            if (e->next != NULL) {
+                e->next->prev = NULL;
+            }
+            e->f48 = 0;
+        }
+    }
+    if (e->f54 > 0) {
+        if (e->f14 < 50.0f) {
+            g->last = e;
+            g->f44 = e->f4A;
+            g->f48 = e->f4C;
+            g->col.a = 0;
+            g->f1E6 = 1;
+            g->f4C = e->f14;
+            g->f1EA = 1;
+            g->f1E2 = e->f52 + 12;
+            g->f1E0 = e->f50;
+            if (c560_01E01C50(g, func_01E02520_c560) != 0) {
+                e->f54 = 0;
+            }
+        }
+    }
+    if (n < 10) {
+        if (e->col0.a > 16) {
+            e->col0.a -= 15;
+        }
+        if (e->col1.a > 16) {
+            e->col1.a -= 15;
+        }
+    } else if (e->col0.a < 0x50) {
+        e->col0.a += 6;
+    }
+    e->col1.a = 0;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c560", func_01E02720_c560);

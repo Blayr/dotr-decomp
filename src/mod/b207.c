@@ -717,7 +717,64 @@ static void func_01E01DB0_b207(Obj_b064_01E00C10 *o, Anim_b064_01E00C10 *an, voi
 
 INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E020D0_b207);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E026A0_b207);
+/* shape b207:01E026A0, 134 insns: b194:01E00C60 with the sine table at g+0x316C */
+
+typedef struct {
+    u8 pad0[0x316C];
+    u8 trig[1];
+} World_b207_01E026A0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b207_01E026A0;
+
+static s32 func_01E026A0_b207(World_b207_01E026A0 *w, Wisp_b207_01E026A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 /* shape b003:01E01780, 56 insns, 6 copies: a rising, spinning glow: fades in over 2 frames, then out (variant of b018:01E02480) */
 
@@ -757,11 +814,234 @@ static s32 func_01E028C0_b207(void *arg0, Obj_b003_01E01780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E029A0_b207);
+/* shape b207:01E029A0, 134 insns: b207:01E02BC0 falling from 70: it fades out once below 12 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E02BC0_b207);
+typedef struct {
+    u8 pad0000[0x3000];
+    s32 w3B00;
+} Mgr_b207_01E029A0;
 
-INCLUDE_ASM("asm/nonmatchings/mod/b207", func_01E02DE0_b207);
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+} Obj_b207_01E029A0;
+
+static s32 func_01E029A0_b207(Mgr_b207_01E029A0 *m, Obj_b207_01E029A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->h36 == 1) {
+        o->h38 = 70;
+        base = 0;
+        o->w10 = func_0019A5C8() % 0x4000 + base;
+        o->w14 = func_0019A5C8() % 0xFFFF;
+        o->h34 = func_0019A5C8() % 7;
+        o->h36 = 2;
+        o->hE = func_0019A5C8() % 3 + 4;
+        o->h6 = 1;
+        if (o->h30 == 0) {
+            func_001076F0(o->c28, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->c28, 0, 0x80, 0x80);
+        }
+    }
+    if (o->h32 < 2) {
+        if (o->c28[3] < 0xA0) {
+            o->c28[3] += 0x50;
+        }
+    } else {
+        if (o->h38 < 12) {
+            if (o->c28[3] > 20) {
+                o->c28[3] -= 19;
+            } else {
+                o->h36 = 0;
+            }
+        }
+        if (o->h38 < -12) {
+            o->h36 = 0;
+        }
+        if (m->w3B00 < 10) {
+            if (o->c28[3] > 16) {
+                o->c28[3] -= 15;
+            } else {
+                o->h36 = 0;
+            }
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        func_001076F0(o->c28, 0x80, 0x40, 0);
+    } else {
+        func_001076F0(o->c28, 0xB0, 0x80, 0);
+    }
+    o->h32++;
+    o->h38 -= o->hE;
+    return 0;
+}
+
+/* shape b207:01E02BC0, 133 insns: b207:01E02DE0 variant: spin start 0..0x3FFF, fall speed in hE, h6 1, one colour,
+   a fade-in by 80 to 0xA0, the fade-out past 80 and an end below -12, and a gold blink */
+
+typedef struct {
+    u8 pad0000[0x3000];
+    s32 w3B00;
+} Mgr_b207_01E02BC0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+} Obj_b207_01E02BC0;
+
+static s32 func_01E02BC0_b207(Mgr_b207_01E02BC0 *m, Obj_b207_01E02BC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 base;
+
+    if (o->h36 == 1) {
+        o->h38 = 0;
+        base = 0;
+        o->w10 = func_0019A5C8() % 0x4000 + base;
+        o->w14 = func_0019A5C8() % 0xFFFF;
+        o->h34 = func_0019A5C8() % 7;
+        o->h36 = 2;
+        o->hE = func_0019A5C8() % 3 + 4;
+        o->h6 = 1;
+        if (o->h30 == 0) {
+            func_001076F0(o->c28, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->c28, 0, 0x80, 0x80);
+        }
+    }
+    if (o->h32 < 2) {
+        if (o->c28[3] < 0xA0) {
+            o->c28[3] += 0x50;
+        }
+    } else {
+        if (o->h38 > 80) {
+            if (o->c28[3] > 20) {
+                o->c28[3] -= 19;
+            } else {
+                o->h36 = 0;
+            }
+        }
+        if (o->h38 < -12) {
+            o->h36 = 0;
+        }
+        if (m->w3B00 < 10) {
+            if (o->c28[3] > 16) {
+                o->c28[3] -= 15;
+            } else {
+                o->h36 = 0;
+            }
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        func_001076F0(o->c28, 0x80, 0x40, 0);
+    } else {
+        func_001076F0(o->c28, 0xB0, 0x80, 0);
+    }
+    o->h32++;
+    o->h38 += o->hE;
+    return 0;
+}
+
+/* shape b207:01E02DE0, 133 insns: b218:01E02F10 with orange (0x80/0x40/0) or teal (0/0x80/0x80) and red 0x80/8/8
+   colours, h6 10, a fade-in by 32 to 0x40, the manager count at 0x3000, a brown blink on odd/even ticks, and the
+   growth applied every tick after the count */
+
+typedef struct {
+    u8 pad0000[0x3000];
+    s32 w3B00;
+} Mgr_b207_01E02DE0;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    u8 pad0A[6];
+    s32 w10;
+    s32 w14;
+    u8 pad18[0x10];
+    u8 c28[4];
+    u8 c2C[4];
+    s16 h30;
+    s16 h32;
+    s16 h34;
+    s16 h36;
+    s16 h38;
+} Obj_b207_01E02DE0;
+
+static s32 func_01E02DE0_b207(Mgr_b207_01E02DE0 *m, Obj_b207_01E02DE0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h36 == 1) {
+        o->h38 = 0;
+        o->w10 = func_0019A5C8() % 0x4000 - 0x2000;
+        o->w14 = func_0019A5C8() % 0xFFFF;
+        o->h34 = func_0019A5C8() % 7;
+        o->h36 = 2;
+        o->h8 = func_0019A5C8() % 3 + 4;
+        o->h6 = 10;
+        if (o->h30 == 0) {
+            func_001076F0(o->c28, 0x80, 0x40, 0);
+        } else {
+            func_001076F0(o->c28, 0, 0x80, 0x80);
+        }
+        func_001076F0(o->c2C, 0x80, 8, 8);
+    }
+    if (o->h32 < 2) {
+        if (o->c28[3] < 0x40) {
+            o->c28[3] += 0x20;
+        }
+    } else {
+        if (o->h38 > 40) {
+            if (o->c28[3] > 20) {
+                o->c28[3] -= 19;
+            } else {
+                o->h36 = 0;
+            }
+        }
+        if (m->w3B00 < 10) {
+            if (o->c28[3] > 16) {
+                o->c28[3] -= 15;
+            } else {
+                o->h36 = 0;
+            }
+        }
+    }
+    if (o->h32 % 2 == 1) {
+        func_001076F0(o->c28, 0x30, 0x20, 0);
+    } else {
+        func_001076F0(o->c28, 0x50, 0x40, 0);
+    }
+    o->h32++;
+    o->h38 += o->h8;
+    return 0;
+}
 
 typedef struct {
     u8 pad00[0x28];

@@ -450,4 +450,103 @@ static s32 func_01E02410_b294(Pool_b294_01E02410 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b294", func_01E02530_b294);
+/* shape b294:01E02530, 124 insns: one camera-facing sprite into a 9-reg packet: texture frame 0x14 at obj+0x34 through
+   the module's sprite-UV helper (shape b008:01E00080, static), object colour, scene texture; a tenth-scale matrix from
+   its turn at its position plus drift / 10, sent at size x size with the depth kept in the scene (0x3794) */
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b294_01E02530;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b294_01E02530 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b294_01E02530;
+
+typedef struct {
+    s16 x, y, z;
+    s16 pad6;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    u8 padE[0x1A];
+    u8 tex[8];
+    u8 pad30[4];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Obj_b294_01E02530;
+
+typedef struct {
+    u8 pad0[0x3500];
+    void *tex;
+    u8 pad3504[0x268];
+    s32 ctx;
+    u8 pad3770[0x24];
+    f32 depth[1];
+} Scene_b294_01E02530;
+
+static void func_01E02530_b294(Scene_b294_01E02530 *g, Obj_b294_01E02530 *obj, Pk_b294_01E02530 *pk) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00108EF0();
+    f32 m[16];
+    Vec4f pos;
+    Vec4f scale;
+    Rect_b008_01E00080 rect[2];
+    Vec4f world[4];
+    s32 rot[4];
+    St_b294_01E02530 uv;
+    f32 r;
+    f32 fx;
+    f32 fy;
+    f32 fz;
+
+    func_00207500();
+    func_00106080(rect, 0x14, obj->h34, rect);
+    pk->nreg = 0x24;
+    pk->n = 9;
+    pk->regs = 0x24242421 | ((s64)4 << 32);
+    pk->pad4 = 0;
+    pk->nreg |= 0x800;
+    func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+    *(s32 *)&pk->st.t = 0;
+    pk->q0 = 0;
+    pk->q1 = 0;
+    pk->q2 = 0;
+    pk->q3 = 0;
+    func_00107740(&uv, obj->tex);
+    pk->st = uv;
+    func_01E00150_b294((Pk_b008_01E00080 *)pk, rect, 0);
+    func_00208700(pk, g->tex, 1);
+    scale.x = 0.1f;
+    scale.y = 0.1f;
+    scale.z = 0.1f;
+    func_00205C40((s32)rot);
+    fx = obj->dx;
+    fy = obj->dy;
+    fz = obj->dz;
+    fx /= 10.0f;
+    fy /= 10.0f;
+    fz /= 10.0f;
+    pos.x = obj->x + fx;
+    pos.y = obj->y + fy;
+    pos.z = obj->z + fz;
+    func_00108EF0(world, &scale, rot, &pos);
+    r = obj->size;
+    func_00108CE0(m, r, r);
+    if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, g->depth) != 0) {
+        func_002075F0((s32)pk, g->ctx, func_001A23B0(g->depth[0]));
+    }
+}

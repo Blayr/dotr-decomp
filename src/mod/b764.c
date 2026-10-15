@@ -740,7 +740,83 @@ static s32 func_01E02A60_b764(s32 arg0, Obj_b764_01E02A60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E02B50_b764);
+/* shape b764:01E02B50, 137 insns: a white spark riding a scene joint: size 5 before scene frame 164, else 10; frame 3;
+   spin +-0x4000 by the scene side flag; height 5..14, two turns, rise 3..12 (3..10 later), f8 0..19, held 1..2; alpha
+   0xC0 while held, then fades by 15 (ends below 0x11); rises every tick and sits on joint 0xDAF8 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 rise;
+    Vec4f pos;
+    s32 spin;
+    u8 pad24[0x24];
+    f32 size;
+    u8 pad4C[4];
+    s16 h;
+    u8 pad52[2];
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 ang;
+    s16 ang2;
+    u8 pad5E[2];
+    u8 col[4];
+} Fx_b764_01E02B50;
+
+typedef struct {
+    u8 pad0[0xDAF8];
+    s16 joint;
+    u8 padDAFA[0xDE];
+    s16 side;
+    u8 padDBDA[2];
+    s16 frame;
+} Scene_b764_01E02B50;
+
+static s32 func_01E02B50_b764(Scene_b764_01E02B50 *g, Fx_b764_01E02B50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        if (g->frame < 0xA4) {
+            o->size = 5.0f;
+        } else {
+            o->size = 10.0f;
+        }
+        o->frame = 3;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        if (g->side != 0) {
+            o->spin = -0x4000;
+        } else {
+            o->spin = 0x4000;
+        }
+        o->h = func_0019A5C8() % 10 + 5;
+        o->ang = func_0019A5C8() % 360;
+        o->ang2 = func_0019A5C8() % 360;
+        if (g->frame < 0xA4) {
+            o->rise = func_0019A5C8() % 10 + 3;
+        } else {
+            o->rise = func_0019A5C8() % 8 + 3;
+        }
+        o->f8 = func_0019A5C8() % 20;
+        o->hold = func_0019A5C8() % 2 + 1;
+        o->mode = 2;
+    }
+    if (o->t < o->hold) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 0x10) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    o->h += o->rise;
+    o->t++;
+    func_001F5620(func_001F53A0(), g->joint, &o->pos);
+    return 0;
+}
 
 /* shape b733:01E02C30, 63 insns, 3 copies: step of a two-colour glow: on state 1 sets both colours grey and a lifetime
    of 12; fades both in by 0x2A, then out by 12 until the first ends. */

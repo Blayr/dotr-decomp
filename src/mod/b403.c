@@ -274,7 +274,84 @@ static void func_01E00850_b403(Obj_b112_01E00B60 *o, Ring_b112_01E00B60 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b403", func_01E00CF0_b403);
+/* shape b403:01E00CF0, 127 insns: scene spawn step: red scene colour; t++; frame 1 starts handlers 0x1E015F0 and
+   0x1E016D0; on frame 87 it reads the joint point and fires 50 of 0x1E01060, 50 of 0x1E01210, then 0x1E01380 and
+   0x1E01460 from it; frames 87/92/98/103 fire one 0x1E00EF0 there */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b403_01E00CF0;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b403_01E00CF0 pos;
+    u8 pad260[0x2F30];
+    V4_b403_01E00CF0 pt;
+    u8 pad31A0[4];
+    u8 col[4];
+    u8 pad31A8[0x30];
+    s16 joint;
+    u8 pad31DA[0x18];
+    s16 h31F2;
+    u8 pad31F4[2];
+    s16 t;
+} Scene_b403_01E00CF0;
+
+static void func_01E00CF0_b403(Scene_b403_01E00CF0 *g) {
+    extern void b403_01E00EF0(void);
+    extern void b403_01E01060(void);
+    extern void b403_01E01210(void);
+    extern void b403_01E01380(void);
+    extern void b403_01E01460(void);
+    extern void b403_01E015F0(void);
+    extern void b403_01E016D0(void);
+    extern void b403_01E01D90(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 0x57) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pt);
+    }
+    if (g->t == 1) {
+        b403_01E01D90(g, b403_01E015F0, 0);
+    }
+    if (g->t == 1) {
+        b403_01E01D90(g, b403_01E016D0, 0);
+    }
+    if (g->t == 0x57) {
+        g->pos.x = g->pt.x;
+        g->pos.y = g->pt.y;
+        g->pos.z = g->pt.z;
+        for (i = 0; i < 50; i++) {
+            b403_01E01D90(g, b403_01E01060, 0);
+        }
+    }
+    if (g->t == 0x57 || g->t == 0x5C || g->t == 0x62 || g->t == 0x67) {
+        g->pos.x = g->pt.x;
+        g->pos.y = g->pt.y;
+        g->pos.z = g->pt.z;
+        g->h31F2 = 0;
+        for (i = 0; i < 1; i++) {
+            b403_01E01D90(g, b403_01E00EF0, 0);
+        }
+    }
+    if (g->t == 0x57) {
+        g->pos.x = g->pt.x;
+        g->pos.y = g->pt.y;
+        g->pos.z = g->pt.z;
+        for (i = 0; i < 50; i++) {
+            b403_01E01D90(g, b403_01E01210, 0);
+        }
+        b403_01E01D90(g, b403_01E01380, 0);
+        b403_01E01D90(g, b403_01E01460, 0);
+    }
+}
 
 /* shape b112:01E013B0, 87 insns: a blob: on start f38 8, x 0x4000, y 0, a random variant, life 1; colour
    (0x40,0x20,0) or (0,0x80,0x80) when f30 is set; alpha grows by 0x50 (below 0xA0) for 2 ticks; later fades by 8

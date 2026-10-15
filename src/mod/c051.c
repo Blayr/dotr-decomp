@@ -2,7 +2,81 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/c051", func_01E00080_c051);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c051", func_01E003A0_c051);
+/* shape c051:01E003A0, 124 insns: a four-colour flash timed by the scene frame (0x2F8): all four alphas grow by 0x2C
+   (below 0xB0) for the first 5 frames; kind 0 fades them by 15 from frame 15 (the last ends it); other kinds grow
+   0x20 by 6 on frames 6..12, by 12 on frames 13..15, then by 3 while the alphas fade by 20 */
+
+typedef struct {
+    u8 pad0[0x20];
+    f32 size;
+    u8 c0[4];
+    u8 c1[4];
+    u8 c2[4];
+    u8 c3[4];
+    s16 kind;
+    s16 mode;
+} Fx_c051_01E003A0;
+
+typedef struct {
+    u8 pad0[0x2F8];
+    s16 frame;
+} Scene_c051_01E003A0;
+
+static s32 func_01E003A0_c051(Scene_c051_01E003A0 *g, Fx_c051_01E003A0 *o) {
+    if (o->kind == 0) {
+        if (g->frame > 14) {
+            if (o->c0[3] > 0x19) {
+                o->c0[3] -= 15;
+            }
+            if (o->c1[3] > 0x19) {
+                o->c1[3] -= 15;
+            }
+            if (o->c2[3] > 0x19) {
+                o->c2[3] -= 15;
+            }
+            if (o->c3[3] > 0x19) {
+                o->c3[3] -= 15;
+            } else {
+                o->mode = 0;
+            }
+        }
+    } else if (g->frame < 13 && g->frame > 5) {
+        o->size += 6.0f;
+    } else if (g->frame > 15) {
+        o->size += 3.0f;
+        if (o->c0[3] > 0x19) {
+            o->c0[3] -= 20;
+        }
+        if (o->c1[3] > 0x19) {
+            o->c1[3] -= 20;
+        }
+        if (o->c2[3] > 0x19) {
+            o->c2[3] -= 20;
+        }
+        if (o->c3[3] > 0x19) {
+            o->c3[3] -= 20;
+        } else {
+            o->mode = 0;
+        }
+    } else if (g->frame >= 13) {
+        o->size += 12.0f;
+    }
+    if (g->frame < 5) {
+        if (o->c0[3] < 0xB0) {
+            o->c0[3] += 0x2C;
+        }
+        if (o->c1[3] < 0xB0) {
+            o->c1[3] += 0x2C;
+        }
+        if (o->c2[3] < 0xB0) {
+            o->c2[3] += 0x2C;
+        }
+        if (o->c3[3] < 0xB0) {
+            o->c3[3] += 0x2C;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c051", func_01E00590_c051);
 

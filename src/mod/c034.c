@@ -1,6 +1,67 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c034", func_01E00080_c034);
+/* shape c034:01E00080, 132 insns: scene step: grey scene colour (alpha 0), 0xDDA 20; on the first frame the colour is
+   picked by the scene's colour kind (0..9: white, white, green, blue, yellow, magenta, cyan, pink, purple, orange; else
+   white), the scene size set to 200 and the effect chain started (c034:01E00610, handler 0x1E00290); 0xF4 = -20 */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 size;
+    u8 pad84[0x70];
+    s32 wF4;
+    u8 padF8[0xC80];
+    u8 col[4];
+    u8 padD7C[8];
+    s32 wD84;
+    u8 padD88[0x44];
+    s16 kind;
+    u8 padDCE[2];
+    s16 t;
+    u8 padDD2[8];
+    s16 hDDA;
+} Scene_c034_01E00080;
+
+static void func_01E00080_c034(Scene_c034_01E00080 *g) {
+    extern void c034_01E00290();
+    extern void c034_01E00610(Scene_c034_01E00080 *, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    g->col[0] = 0x80;
+    g->col[1] = 0x80;
+    g->col[2] = 0x80;
+    g->col[3] = 0;
+    g->hDDA = 20;
+    g->t++;
+    if (g->t == 1) {
+        if (g->kind == 0) {
+            func_001076F0(g->col, 0xFF, 0xFF, 0xFF);
+        } else if (g->kind == 1) {
+            func_001076F0(g->col, 0xFF, 0xFF, 0xFF);
+        } else if (g->kind == 2) {
+            func_001076F0(g->col, 0, 0xFF, 0);
+        } else if (g->kind == 3) {
+            func_001076F0(g->col, 0, 0, 0xFF);
+        } else if (g->kind == 4) {
+            func_001076F0(g->col, 0xFF, 0xFF, 0);
+        } else if (g->kind == 5) {
+            func_001076F0(g->col, 0xFF, 0, 0xFF);
+        } else if (g->kind == 6) {
+            func_001076F0(g->col, 0, 0xFF, 0xFF);
+        } else if (g->kind == 7) {
+            func_001076F0(g->col, 0xFF, 0x80, 0xFF);
+        } else if (g->kind == 8) {
+            func_001076F0(g->col, 0x80, 0, 0xFF);
+        } else if (g->kind == 9) {
+            func_001076F0(g->col, 0xFF, 0x80, 0);
+        } else {
+            func_001076F0(g->col, 0xFF, 0xFF, 0xFF);
+        }
+        g->size = 200.0f;
+        g->wD84 = 0;
+        c034_01E00610(g, c034_01E00290);
+    }
+    g->wF4 = -20;
+}
 
 /* shape c034:01E00290, 45 insns: both alphas grow by 0x20 (below 0xB0) until the game step at 0xDD0 reaches 0x12;
    then phase 0 sets 0x1E = 3 and moves to phase 1, which fades both by 0x10 and stops */

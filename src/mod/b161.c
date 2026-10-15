@@ -475,7 +475,78 @@ static s32 func_01E01970_b161(Game_b161_01E01970 *g, Obj_b161_01E01970 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b161", func_01E01B50_b161);
+/* shape b161:01E01B50, 137 insns: blinking grey spark (size 10) that blinks on/off every other tick in two phases by h50; alpha up by 0x60 to 0xC0 for 15 ticks, then down by 9 once scene count 121 is passed; frame flips 0/1 each tick */
+
+typedef struct {
+    u8 pad0[0xC3C4];
+    s16 ids[(0xC3FC - 0xC3C4) / 2];
+    s16 count;
+} Ctx_b161_01E01B50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    f32 pos[4];
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 h50;
+    u8 pad52[2];
+    s16 tick;
+    s16 h56;
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Fx_b161_01E01B50;
+
+static s32 func_01E01B50_b161(Ctx_b161_01E01B50 *g, Fx_b161_01E01B50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, f32 *);
+
+    if (o->mode == 1) {
+        o->h8 = 10;
+        o->hA = 10;
+        o->h56 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+    }
+    if (o->tick < 15) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (g->count > 121) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->h50 % 2 == 1) {
+        if (o->tick % 4 == 1) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        } else if (o->tick % 4 == 3) {
+            func_001076F0(o->col, 0, 0, 0);
+        }
+    } else {
+        if (o->tick % 4 == 1) {
+            func_001076F0(o->col, 0, 0, 0);
+        } else if (o->tick % 4 == 3) {
+            func_001076F0(o->col, 0x80, 0x80, 0x80);
+        }
+    }
+    if (o->tick % 2 == 0) {
+        o->h56 = 0;
+    } else {
+        o->h56 = 1;
+    }
+    func_00205C40(o->rot);
+    o->tick++;
+    func_001F5620(func_001F53A0(), g->ids[o->h50], o->pos);
+    return 0;
+}
 
 typedef struct {
     u8 pad00[6];

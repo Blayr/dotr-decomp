@@ -388,7 +388,83 @@ static void func_01E00ED0_b530(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01190_b530);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E01510_b530);
+/* shape b530:01E01510, 130 insns: b530:01E01D40 family grey spark (f48 1..4, frame cycling 0..7, f50 from 0 growing 2..5 per tick for 90 ticks, angle 0..359, f8 0..34): alpha up by 64 to 0xC0 for 3..5 ticks, then down by 14; from scene count 108 its z drifts -1 or +1 by the scene flag */
+
+typedef struct {
+    u8 pad0[0xE064];
+    s16 flag;
+    u8 padE066[2];
+    s16 count;
+} Ctx_b530_01E01510;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[8];
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b530_01E01510;
+
+static s32 func_01E01510_b530(Ctx_b530_01E01510 *g, Fx_b530_01E01510 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 4 + 1;
+        o->f56 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f50 = 0;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 4 + 2;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f56++;
+    if (o->f56 > 7) {
+        o->f56 = 0;
+    }
+    if (o->tick < 90) {
+        if (o->tick != 0) {
+            o->f50 += o->speed;
+        }
+    }
+    if (g->count >= 108) {
+        if (g->flag != 0) {
+            o->z -= 1.0f;
+        } else {
+            o->z += 1.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b530:01E01720, 81 insns: a violet growing spark (b252:01E03410 shape): size 70 growing to 90, random sub-frame 0..3; alpha up
    by 0x60 to 0xC0 for 13 frames, then down by 9; skips to frame 20 once the game timer passes 0x127 */
@@ -511,7 +587,79 @@ static s32 func_01E01870_b530(Game_b530_01E01870 *g, Obj_b530_01E01870 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b530", func_01E019A0_b530);
+/* shape b530:01E019A0, 127 insns: b530:01E01D40's grey puff that also slides 1 a tick on y (0x18) from scene frame 108,
+   down or up by the scene side flag */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 speed;
+    u8 pad10[8];
+    f32 y;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 f4C;
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_b530_01E019A0;
+
+typedef struct {
+    u8 pad0[0xE064];
+    s16 side;
+    u8 padE066[2];
+    s16 frame;
+} Scene_b530_01E019A0;
+
+static s32 func_01E019A0_b530(Scene_b530_01E019A0 *g, Fx_b530_01E019A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 3 + 1;
+        o->f56 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->f50 = func_0019A5C8() % 30 + 10;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 4 + 2;
+        o->f8 = func_0019A5C8() % 35;
+        o->hold = func_0019A5C8() % 3 + 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 0xF) {
+        o->col[3] -= 14;
+    } else {
+        o->mode = 0;
+    }
+    o->f56++;
+    if (o->f56 > 7) {
+        o->f56 = 0;
+    }
+    if (g->frame >= 0x6C) {
+        if (g->side != 0) {
+            o->y -= 1.0f;
+        } else {
+            o->y += 1.0f;
+        }
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b530:01E01BA0, 103 insns: on start f48 1..4, colour 0x80 grey, 0x50 0, random 0x5A, speed 2..5 (0xE),
    0x8 0..34, hold 3..5 (0x6); alpha grows by 0x40 (below 0xC0) during the hold, then fades by 14 and stops; the

@@ -161,7 +161,64 @@ static void func_01E00330_b195(Pk_b008_01E00080 *p, Rect_b008_01E00080 *r, s32 m
 
 INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E00780_b195);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E00A00_b195);
+/* shape b195:01E00A00, 134 insns: b194:01E00C60 with the sine table at g+0x4084 */
+
+typedef struct {
+    u8 pad0[0x4084];
+    u8 trig[1];
+} World_b195_01E00A00;
+
+typedef struct {
+    u8 pad0[8];
+    s16 x, y, z;
+    u8 padE[0x1A];
+    u8 c0[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 h38;
+    s16 a3A;
+} Wisp_b195_01E00A00;
+
+static s32 func_01E00A00_b195(World_b195_01E00A00 *w, Wisp_b195_01E00A00 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    func_001076F0(o->c0, 0x3F, 0x30, 0x3F);
+    if (o->state == 1) {
+        o->h38 = 0;
+        o->a3A = func_0019A5C8() % 360;
+        o->frame = 0;
+        o->a30 = func_0019A5C8() % 30 - 15;
+        o->state = 2;
+    }
+    if (o->t < 10) {
+        if (o->c0[3] < 0x60) {
+            o->c0[3] += 9;
+        }
+    } else if (o->c0[3] > 0x10) {
+        o->c0[3] -= 10;
+    } else {
+        o->state = 0;
+    }
+    o->t++;
+    if (o->t % 2 == 1) {
+        if (o->h38 < 0x12) {
+            o->h38++;
+        }
+    }
+    if (o->t % 3 == 1) {
+        if (o->frame < 7) {
+            o->frame++;
+        }
+    }
+    o->x += 10.0f * func_00108030(w->trig, o->a3A, 0);
+    o->y += 4.0f * func_00108030(w->trig, o->a30, 1);
+    o->z += 10.0f * func_00108030(w->trig, o->a3A, 1);
+    return 0;
+}
 
 /* shape b195:01E00C20, 89 insns: on start 0x38 = 8, random rotation (0x18 0x2000..0x5FFF, 0x10 -0x2000..0x1FFF,
    0x14 0), variant 0..6; alpha grows by 0x40 (below 0x80) for 2 ticks, then fades by 13 once 0x38 passes 0x19 and by
@@ -610,8 +667,206 @@ INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E02A40_b195);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E02D00_b195);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E02FE0_b195);
+/* shape b195:01E02FE0, 133 insns: b120:01E03DF0's two-pass quad with 9 quads: mode 0 sets the material (frame 0x97, two
+   colours, scene texture 0x37C); other modes place it at the object with a 0.4 x-scale and a -0x4000 turn, then draw each of
+   the 9 quads at scene 0x380 against the matrix at 0x290 (depth 0x4054, packet list 0x402C) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E03200_b195);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b195_01E02FE0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b195_01E02FE0;
+
+typedef struct {
+    Rgbaq_b195_01E02FE0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_b195_01E02FE0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b195_01E02FE0 v[4];
+} Pkt_b195_01E02FE0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad06[0xA];
+    s32 r0;
+    s32 r1;
+    s32 r2;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+} Anim_b195_01E02FE0;
+
+typedef struct {
+    u8 pad00[0x290];
+    u8 m[0x40];
+    u8 pad2D0[0xAC];
+    s32 texture;
+    Vec_b195_01E02FE0 quad[9][4];
+    u8 pad5C0[0x3A6C];
+    s32 target;
+    u8 pad4030[0x24];
+    f32 depth;
+} Game_b195_01E02FE0;
+
+static void func_01E02FE0_b195(Game_b195_01E02FE0 *g, Anim_b195_01E02FE0 *an, Pkt_b195_01E02FE0 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b195_01E02FE0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b195_01E02FE0 pos;
+    f32 rm[4];
+    s32 rot[4];
+    Vec_b195_01E02FE0 sc;
+    f32 m[16];
+    s16 i;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(an->col);
+        p->v[1].c = func_00107740(an->col);
+        p->v[2].c = func_00107740(an->col2);
+        p->v[3].c = func_00107740(an->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->texture, 1);
+    } else {
+        func_0020EB40(g->m);
+        func_00106DD0(&pos, an->x, an->y, an->z);
+        sc.x = 0.4f;
+        sc.y = 1.0f;
+        sc.z = 1.0f;
+        rot[0] = an->r0 - 0x4000;
+        rot[1] = 0;
+        rot[2] = an->r2;
+        func_0020C940(m, &sc, rot, &pos);
+        func_0020BC00(g->m, m);
+        for (i = 0; i < 9; i++) {
+            if (func_00205630(g->quad[i], 0x70000000, g->m, p, &g->depth) != 0) {
+                func_00109380(p, 0);
+                func_002075F0(p, g->target, (u32)g->depth);
+            }
+        }
+    }
+}
+
+/* shape b195:01E03200, 131 insns: b294:01E02530's sprite in two passes: mode 0 sets the material (frame 0x9B, colour,
+   scene texture 0x37C), other modes draw it (depth kept at scene 0x4054, packet list 0x402C) */
+
+typedef struct {
+    f32 s;
+    f32 t;
+} St_b195_01E03200;
+
+typedef struct {
+    s16 n;
+    u16 nreg;
+    s32 pad4;
+    u64 regs;
+    St_b195_01E03200 st;
+    u8 pad18[0xF];
+    u8 q0;
+    u8 pad28[0xF];
+    u8 q1;
+    u8 pad38[0xF];
+    u8 q2;
+    u8 pad48[0xF];
+    u8 q3;
+} Pk_b195_01E03200;
+
+typedef struct {
+    s16 x, y, z;
+    s16 pad6;
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    u8 padE[0x1A];
+    u8 tex[8];
+    u8 pad30[4];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Obj_b195_01E03200;
+
+typedef struct {
+    u8 pad0[0x37C];
+    void *tex;
+    u8 pad380[0x3CAC];
+    s32 ctx;
+    u8 pad4030[0x24];
+    f32 depth[1];
+} Scene_b195_01E03200;
+
+static void func_01E03200_b195(Scene_b195_01E03200 *g, Obj_b195_01E03200 *obj, Pk_b195_01E03200 *pk, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00108EF0();
+    f32 m[16];
+    Vec4f pos;
+    Vec4f scale;
+    Rect_b008_01E00080 rect[2];
+    Vec4f world[4];
+    s32 rot[4];
+    St_b195_01E03200 uv;
+    f32 r;
+    f32 fx;
+    f32 fy;
+    f32 fz;
+
+    func_00207500();
+    if (mode == 0) {
+        func_00106080(rect, 0x9B, obj->h34, rect);
+        pk->nreg = 0x24;
+        pk->n = 9;
+        pk->regs = 0x24242421 | ((s64)4 << 32);
+        pk->pad4 = 0;
+        pk->nreg |= 0x800;
+        func_002086D0(pk, 0x48 | ((s64)0x80 << 32));
+        *(s32 *)&pk->st.t = 0;
+        pk->q0 = 0;
+        pk->q1 = 0;
+        pk->q2 = 0;
+        pk->q3 = 0;
+        func_00107740(&uv, obj->tex);
+        pk->st = uv;
+        func_01E00330_b195((Pk_b008_01E00080 *)pk, rect, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
+        func_00205C40((s32)rot);
+        fx = obj->dx;
+        fy = obj->dy;
+        fz = obj->dz;
+        fx /= 10.0f;
+        fy /= 10.0f;
+        fz /= 10.0f;
+        pos.x = obj->x + fx;
+        pos.y = obj->y + fy;
+        pos.z = obj->z + fz;
+        func_00108EF0(world, &scale, rot, &pos);
+        r = obj->size;
+        func_00108CE0(m, r, r);
+        if (func_00205630((s32)m, 0x70000000, (s32)world, (s32)pk, g->depth) != 0) {
+            func_002075F0((s32)pk, g->ctx, func_001A23B0(g->depth[0]));
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b195", func_01E03410_b195);

@@ -207,7 +207,76 @@ INCLUDE_ASM("asm/nonmatchings/mod/b008", func_01E00FB0_b008);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b008", func_01E012A0_b008);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b008", func_01E01660_b008);
+/* shape b008:01E01660, 136 insns: b350:01E011E0 variant: red glow (0xC0/0x40/0x40) of size 40, rise 7..13, fade-in
+   for 15 ticks by 13 to 0x60; each tick the camera depth difference between func_001F5380's and func_001F53A0's views is
+   taken, and h2 turns by 3 */
+
+typedef struct {
+    u8 pad0[2];
+    s16 h2;
+    u8 pad4[2];
+    s16 h6;
+    s16 h8;
+    u8 padA[4];
+    s16 hE;
+    s32 w10;
+    s32 w14;
+    s32 w18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h30;
+    s16 tick;
+    s16 kind;
+    s16 mode;
+    s16 f38;
+    s16 ang;
+} Glow_b008_01E01660;
+
+static s32 func_01E01660_b008(s32 arg0, Glow_b008_01E01660 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v[3];
+
+    if (o->mode == 1) {
+        o->f38 = 40;
+        o->kind = 0;
+        func_001076F0(o->col, 0xC0, 0x40, 0x40);
+        o->ang = func_0019A5C8() % 360;
+        o->hE = func_0019A5C8() % 7 + 7;
+        o->h8 = func_0019A5C8() % 25;
+        o->h6 = func_0019A5C8() % 10 + 55;
+        o->mode = 2;
+    }
+    if (o->tick < 15) {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 13;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    func_001F5F90(func_001F5380(), &v[0]);
+    func_001F5F90(func_001F53A0(), &v[1]);
+    *(f32 *)(u32)&v[0].z -= v[1].z;
+    o->h2 += 3;
+    if (o->tick % 2 == 1) {
+        if (o->kind < 5) {
+            o->kind++;
+        }
+    }
+    if (o->tick != 0) {
+        o->f38++;
+    }
+    o->w10 = func_0019A5C8() % 360;
+    o->w14 = func_0019A5C8() % 360;
+    o->w18 = func_0019A5C8() % 360;
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b008", func_01E01880_b008);
 

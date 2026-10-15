@@ -284,7 +284,59 @@ static void func_01E00920_b038(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b038", func_01E00E90_b038);
+/* shape b038:01E00E90, 126 insns: scene spawn step (b548:01E00E90 family): t++; on frames 90..245 three sparks a tick at
+   the scene joint, pushed 4 sideways and 1.5 down each (handler 0x1E01090); before frame 151 one more (handler
+   0x1E01400) the same way */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xAFC8];
+    s16 obj;
+    u8 padB22A[0x30];
+    s16 side;
+    u8 padB25C[2];
+    s16 t;
+} Scene_b038_01E00E90;
+
+static void func_01E00E90_b038(Scene_b038_01E00E90 *g) {
+    extern void b038_01E01090(void);
+    extern void b038_01E01400(void);
+    extern void b038_01E01E10(void *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    g->t++;
+    if (g->t >= 90 && g->t < 246) {
+        if (g->t < 100) {
+            n = 3;
+        } else {
+            n = 3;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->obj, &g->pos);
+            if (g->side != 0) {
+                g->pos.z -= 4.0f;
+            } else {
+                g->pos.z += 4.0f;
+            }
+            g->pos.y -= 1.5f;
+            b038_01E01E10(g, b038_01E01090, 0);
+        }
+    }
+    if (g->t < 151) {
+        func_001F5620(func_001F53A0(), g->obj, &g->pos);
+        if (g->side != 0) {
+            g->pos.z -= 4.0f;
+        } else {
+            g->pos.z += 4.0f;
+        }
+        g->pos.y -= 1.5f;
+        b038_01E01E10(g, b038_01E01400, 0);
+    }
+}
 
 /* shape b038:01E01090, 220 insns: a dark smoke puff thrown by the model: random drift (-20..19)/30 that applies
    between ticks 11 and 69, a fall toward point ctx->v spread over 37 ticks, size 35 growing 5 a frame, frame cycling

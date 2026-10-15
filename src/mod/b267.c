@@ -740,4 +740,55 @@ INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E033C0_b267);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E03830_b267);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E03A80_b267);
+/* shape b267:01E03A80, 139 insns: draws the five edges of the scene's star (points at +0x3C10) as lines in the
+   effect's colour: 4-1, 4-0, 1-3, 0-2, 3-2, each sent with the scene's line texture (0x3DDC) */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b267_01E03A80;
+
+typedef struct {
+    V4_b267_01E03A80 a;
+    V4_b267_01E03A80 b;
+} Line_b267_01E03A80;
+
+typedef struct {
+    u8 pad0[0x3C10];
+    V4_b267_01E03A80 pt[5];
+    u8 pad3C60[0x17C];
+    s32 tex;
+} Scene_b267_01E03A80;
+
+static void func_01E03A80_b267(Scene_b267_01E03A80 *g, u8 *fx, void *pk) {
+    extern void func_001091B0(void *, void *, void *);
+    extern void func_00195108(void *, s32);
+    extern void func_00109050(void *, void *, s32, s32);
+    Line_b267_01E03A80 line;
+    s32 i;
+
+    func_001091B0(pk, fx + 0x28, fx + 0x28);
+    for (i = 0; i < 5; i++) {
+        func_00195108(&line, 0x20);
+        if (i == 0) {
+            line.a = g->pt[4];
+            line.b = g->pt[1];
+        }
+        if (i == 1) {
+            line.a = g->pt[4];
+            line.b = g->pt[0];
+        }
+        if (i == 2) {
+            line.a = g->pt[1];
+            line.b = g->pt[3];
+        }
+        if (i == 3) {
+            line.a = g->pt[0];
+            line.b = g->pt[2];
+        }
+        if (i == 4) {
+            line.a = g->pt[3];
+            line.b = g->pt[2];
+        }
+        func_00109050(&line, pk, 0, g->tex);
+    }
+}

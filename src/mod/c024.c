@@ -169,7 +169,84 @@ static void func_01E009B0_c024(Scene_c024_01E009B0 *g, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E00AE0_c024);
+/* shape c024:01E00AE0, 123 insns: take a free slot (0x50 of 0x34 bytes at 0x2A90, byte flag at 0x25 = index + 1),
+   clear it, colour both colours from the scene colour 0x3B24, position (0xC0..0xC8), two random words 0x0/0x8
+   (-0x4000..0x3FF0), 0x26/0x28 from the scene 0x3B38/0x3B5E, a random half-size flag 0x24 (0x1C = scene 0x124,
+   halved when set), 0x20 random 0..19, store arg */
+
+typedef struct {
+    s32 w0;
+    u8 pad4[4];
+    s32 w8;
+    u8 padC[4];
+    s32 arg;
+    s16 x, y, z;
+    u8 pad1A[2];
+    s16 f1C;
+    u8 pad1E[2];
+    s16 f20;
+    u8 pad22[2];
+    s8 half;
+    s8 used;
+    s16 f26;
+    s16 f28;
+    u8 c2A[4];
+    u8 c2E[4];
+    u8 pad32[2];
+} Slot_c024_01E00AE0;
+
+typedef struct {
+    u8 pad0[0xC0];
+    f32 pos[3];
+    u8 padCC[0x58];
+    f32 f124;
+    u8 pad128[0x2A90 - 0x128];
+    Slot_c024_01E00AE0 slots[0x50];
+    u8 pad3AD0[0x54];
+    u8 rgba[4];
+    u8 pad3B28[0x10];
+    f32 f3B38;
+    u8 pad3B3C[0x22];
+    s16 f3B5E;
+} Scene_c024_01E00AE0;
+
+static void func_01E00AE0_c024(Scene_c024_01E00AE0 *g, s32 arg) {
+    extern void func_00195108();
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 i;
+    Slot_c024_01E00AE0 *s = NULL;
+
+    for (i = 0; i < 0x50; i++) {
+        if (g->slots[i].used == 0) {
+            s = &g->slots[i];
+            func_00195108(s, 0x34);
+            g->slots[i].used = i + 1;
+            i = 0x50;
+        }
+    }
+    if (s != NULL) {
+        func_001076F0(s->c2A, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->c2A[3] = g->rgba[3];
+        func_001076F0(s->c2E, g->rgba[0], g->rgba[1], g->rgba[2]);
+        s->c2E[3] = g->rgba[3];
+        s->x = g->pos[0];
+        s->y = g->pos[1];
+        s->z = g->pos[2];
+        func_0019A5C8();
+        s->w8 = func_0019A5C8() % 0x800 * 16 - 0x4000;
+        s->w0 = func_0019A5C8() % 0x800 * 16 - 0x4000;
+        s->f26 = g->f3B38;
+        s->f28 = g->f3B5E;
+        s->half = func_0019A5C8() % 2;
+        if (s->half == 0) {
+            s->f1C = g->f124;
+        } else {
+            s->f1C = g->f124 / 2.0f;
+        }
+        s->f20 = func_0019A5C8() % 20;
+        s->arg = arg;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E00CD0_c024);
 

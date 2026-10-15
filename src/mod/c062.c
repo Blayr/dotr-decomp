@@ -599,7 +599,86 @@ INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02780_c062);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02B20_c062);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E02E40_c062);
+/* shape c062:01E02E40, 137 insns: three-kind ring glow: kind 0 white over grey, held 12, size 600; kind 1 blue under grey,
+   held 5, growing from 600 by 10; kind 2 grey under white, held 10, growing from 1800 by 10; the second alpha grows by
+   0x50 (below 0xA0) while held, then fades by 12 (kind 1: by 7); turns 0x20 by 0x4000 a tick */
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x18];
+    s32 rot[4];
+    u8 pad30[0x18];
+    s32 w48;
+    f32 size;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Fx_c062_01E02E40;
+
+static s32 func_01E02E40_c062(s32 arg0, Fx_c062_01E02E40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w48 = 0;
+        if (o->kind == 0) {
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col2, 0x80, 0x80, 0x80);
+            o->hold = 12;
+        }
+        if (o->kind == 1) {
+            func_001076F0(o->col2, 0x80, 0x80, 0x80);
+            func_001076F0(o->col, 0x40, 0x40, 0x80);
+            o->hold = 5;
+            o->size = 600.0f;
+        }
+        if (o->kind == 2) {
+            func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+            func_001076F0(o->col, 0x40, 0x40, 0x40);
+            o->hold = 10;
+            o->size = 1800.0f;
+        }
+        o->h5A = 10;
+        o->h5C = 10;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < o->hold) {
+        if (o->col2[3] < 0xA0) {
+            o->col2[3] += 0x50;
+        }
+    } else if (o->kind != 1) {
+        if (o->col2[3] > 0xD) {
+            o->col2[3] -= 12;
+        } else {
+            o->mode = 0;
+        }
+    } else if (o->col2[3] > 8) {
+        o->col2[3] -= 7;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->size = 600.0f;
+    }
+    if (o->kind == 1) {
+        o->size += 10.0f;
+    }
+    if (o->kind == 2) {
+        o->size += 10.0f;
+    }
+    func_00205C40((s32)o->rot);
+    o->rot[0] += 0x4000;
+    o->t++;
+    return 0;
+}
 
 /* shape c062:01E03070, 103 insns: a red falling spark (b434:01E02210 shape): size 35, random sub-frame 0..3, height 3000..4999
    falling by 200..399 once started until under 31, angle, width 0..34, hold 3..5; alpha up by 0x40 to 0xC0 until the hold, then down by 14 */
@@ -775,7 +854,63 @@ static s32 func_01E033E0_c062(s32 arg0, Obj_c062_01E033E0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E03550_c062);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E037E0_c062);
+/* shape c062:01E037E0, 127 insns: five star points around a centre: each point is cleared to (0, 0, c.z), then placed at
+   angle 90 / 18 / 162 / -54 / 234 (the middle four mirrored by the side flag) on a circle of radius c.x around c.y */
+
+typedef struct {
+    u8 pad0[0xD8];
+    u8 sin[1];
+} Scene_c062_01E037E0;
+
+static s32 func_01E037E0_c062(Scene_c062_01E037E0 *g, Vec4f *out, Vec4f *src, s32 side) {
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f c;
+    f32 cz;
+    f32 cy;
+    s16 a;
+    s16 i;
+
+    c = *src;
+    cz = c.z;
+    cy = c.y;
+    for (i = 0; i < 5; i++) {
+        func_00106DD0(out, 0.0f, 0.0f, cz);
+        if (i == 0) {
+            a = 90;
+        } else if (i == 1) {
+            if (side == 0) {
+                a = 18;
+            } else {
+                a = 162;
+            }
+        } else if (i == 2) {
+            if (side == 0) {
+                a = 162;
+            } else {
+                a = 18;
+            }
+        } else if (i == 3) {
+            if (side == 0) {
+                a = -54;
+            } else {
+                a = 234;
+            }
+        } else if (i == 4) {
+            if (side == 0) {
+                a = 234;
+            } else {
+                a = -54;
+            }
+        }
+        out->y = cy + c.x * func_00108030(g->sin, a, 0);
+        out->x = c.x * func_00108030(g->sin, a, 1);
+        if (i < 5) {
+            out++;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E039E0_c062);
 
@@ -853,4 +988,82 @@ static s32 func_01E05520_c062(Ctx_c062_01E05520 *ctx, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c062", func_01E05670_c062);
+/* shape c062:01E05670, 138 insns: two-colour sprite quad at an object's position (b016:01E00920 packet): blend from flags >> 4, size o->f48; mode (flags & 0xF) 0 = far z, else the given depth */
+
+/* OVL_WARM */
+
+typedef struct {
+    f32 u, v;
+} Uv_c062_01E05670;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_c062_01E05670;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_c062_01E05670 uv;
+    Xyz_c062_01E05670 v[4];
+    u64 pad58[7];
+} Pk_c062_01E05670;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x2C];
+    f32 size;
+    u8 pad4C[0x14];
+    u8 col[4];
+    u8 col2[4];
+} Obj_c062_01E05670;
+
+static void func_01E05670_c062(s32 arg0, Obj_c062_01E05670 *o, s32 flags, f32 depth) {
+    extern void func_00107990(void *, void *, s32);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f quad[4];
+    Vec4f v;
+    f32 d[4];
+    f32 m[16];
+    Pk_c062_01E05670 pk;
+    s32 ot;
+    Pk_c062_01E05670 *p;
+    s16 sel;
+
+    ot = (s32)func_00207500();
+    p = (Pk_c062_01E05670 *)(u32)&pk;
+    func_00107990(p, o->col, 1);
+    func_00107990(p, o->col2, 2);
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    sel = flags >> 4;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)sel << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    v.x = o->x;
+    v.y = o->y;
+    v.z = o->z;
+    func_00108EF0(m, NULL, NULL, &v);
+    func_00108CE0(quad, o->size, o->size);
+    if (func_00205630(quad, 0x70000000, m, p, d) != 0) {
+        if ((flags & 0xF) == 0) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0(p, ot, 0);
+            return;
+        }
+        func_002075F0(p, ot, (u32)depth);
+    }
+}

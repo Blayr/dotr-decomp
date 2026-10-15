@@ -777,9 +777,138 @@ static s32 func_01E02780_b193(s32 unused, Spark_b193_01E02780 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02910_b193);
+/* shape b193:01E02910, 127 insns: b144:01E02430 family green spark (f48 10..19, frame 0..3, random turn, h52 counting from 1, f50 150..299 growing 1..3 per tick, angle 0..359, f8 1..8): alpha 0x60 for 2..4 ticks, then down by 11 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b193", func_01E02B10_b193);
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    s16 f8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b193_01E02910;
+
+static s32 func_01E02910_b193(s32 arg0, Fx_b193_01E02910 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = func_0019A5C8() % 10 + 10;
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0x10, 0x80, 0x00);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->f52 = 1;
+        o->f50 = func_0019A5C8() % 150 + 150;
+        o->f5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 3 + 1;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->hold = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->hold) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->f52++;
+    o->f50 += o->speed;
+    o->tick++;
+    return 0;
+}
+
+/* shape b193:01E02B10, 139 insns: b749:01E02310's ring glow, size 3/4, spin 0x4000, grey 0x50, held 25, also sliding 6 a tick on y by the scene side flag */
+
+typedef struct {
+    u8 pad0000[0xBCE0];
+    s16 h70A0;
+    u8 padBCE2[0xC];
+    s16 side;
+} Mgr_b193_01E02B10;
+
+typedef struct {
+    u8 pad00[8];
+    s16 h8;
+    u8 pad0A[0xE];
+    f32 f18;
+    u8 pad1C[4];
+    s32 w20;
+    u8 pad24[0xC];
+    f32 f30;
+    u8 pad34[8];
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    f32 f4C;
+    u8 pad50[4];
+    s16 h54;
+    s16 h56;
+    s16 h58;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c60[4];
+    u8 c64[4];
+} Obj_b193_01E02B10;
+
+static s32 func_01E02B10_b193(Mgr_b193_01E02B10 *m, Obj_b193_01E02B10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->h58 == 1) {
+        o->f48 = 3.0f;
+        o->f4C = 4.0f;
+        o->w20 = 0x4000;
+        o->h56 = 0;
+        o->h58 = 2;
+        o->h8 = func_0019A5C8() % 2 + 3;
+        o->h5C = m->h70A0;
+        func_001076F0(o->c60, 0x50, 0x50, 0x50);
+        func_001076F0(o->c64, 0x50, 0x50, 0x50);
+    }
+    if (o->h54 < 25) {
+        if (o->c60[3] < 0x80) {
+            o->c60[3] = 0x80;
+        }
+    } else if (o->c60[3] > 15) {
+        o->c60[3] -= 14;
+    } else {
+        o->h58 = 0;
+    }
+    if (o->h54 != 0) {
+        if (o->f3C < 3.0f) {
+            o->f3C += 1.0f;
+        }
+        if (o->f30 < 15.0f) {
+            o->f30 += 1.5f;
+        }
+        if (o->f4C < 20.0f) {
+            o->f4C += 0.8f;
+        }
+        if (m->side != 0) {
+            o->f18 -= 6.0f;
+        } else {
+            o->f18 += 6.0f;
+        }
+        o->f48 += 0.8f;
+    }
+    o->h5C += 9;
+    o->h54++;
+    return 0;
+}
 
 /* shape b193:01E02D40, 67 insns: a grey/yellow glow of size 150 at a random angle, growing 1 and spun 0x4000 a tick: in by 64 up to 0xC0 for 4 ticks, then out by 9 and ends */
 

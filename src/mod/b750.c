@@ -1032,7 +1032,80 @@ static s32 func_01E02770_b750(s32 unused, Obj_b750_01E02770 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b750", func_01E02960_b750);
+/* shape b750:01E02960, 130 insns: b414:01E01C10 family (red/blue): kind 0 from 1300 growing 80, kind 1 from 800 growing 40 (both width 23), kind 2 from 100 growing 5 in lilac/red, all turning 6 per tick; alpha up by 0x60 to 0xC0 for 4 ticks, then down by 13 */
+
+typedef struct {
+    u8 pad0[0x30];
+    f32 f30;
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b750_01E02960;
+
+static s32 func_01E02960_b750(s32 arg0, Obj_b750_01E02960 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 6.0f;
+        func_001076F0(o->col, 0xFF, 0x60, 0x60);
+        func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+        if (o->h50 == 0) {
+            o->f30 = 23.0f;
+            o->f34 = 1300.0f;
+        }
+        if (o->h50 == 1) {
+            o->f30 = 23.0f;
+            o->f34 = 800.0f;
+        }
+        if (o->h50 == 2) {
+            o->f30 = 6.0f;
+            o->f34 = 100.0f;
+            func_001076F0(o->col, 0x80, 0x80, 0xC0);
+            func_001076F0(o->col2, 0xFF, 0x40, 0x40);
+        }
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 14) {
+        o->col[3] -= 13;
+    } else {
+        o->mode = 0;
+    }
+    if (o->h50 == 0) {
+        if (o->t != 0) {
+            o->f34 += 80.0f;
+        }
+        o->ang += 6;
+    }
+    if (o->h50 == 1) {
+        if (o->t != 0) {
+            o->f34 += 40.0f;
+        }
+        o->ang += 6;
+    }
+    if (o->h50 == 2) {
+        if (o->t != 0) {
+            o->f34 += 5.0f;
+        }
+        o->ang += 6;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b750:01E02B70, 66 insns: twin of b180:01E021D0 (volume fade), tick limit 0x28, floor 0x30, state at 0xB210 below 0x1E */
 
