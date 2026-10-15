@@ -98,6 +98,7 @@ segments:
       - [0xA2DC8, c, main_035b]
       - [0xA3D30, c, main_035c]
       - [0xA4570, c, main_035d]
+      - [0xA46E8, c, main_035d2]
       - [0xA5FE8, c, main_035e]
       - [0xA6F60, c, main_036]
       - [0xAD580, c, main_037]
