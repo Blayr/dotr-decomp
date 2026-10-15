@@ -581,9 +581,10 @@ typedef struct {
 static void func_01E035B0_b244(Game_b244_01E035B0 *g, s32 arg1, s32 idx) {
     extern void func_001033D0(f32, f32, void *);
     extern void func_00103470(void *, s32, s32);
+    f32 s;
 
     if (g->flag[idx] == 0) {
-        func_001033D0(10.0f, 1.0f, (u8 *)g + idx * 0x70 + 0xB10);
+        func_001033D0(10.0f, s = 1.0f, (u8 *)g + idx * 0x70 + 0xB10);
         func_00103470((u8 *)g + idx * 0x10 + 0xDB7, 0, 0x10);
         func_00103470((u8 *)g + idx * 0x60 + 0xE47, 0, 8);
         func_00103470((u8 *)g + idx * 0x40 + 0x77, 0, 5);

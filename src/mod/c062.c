@@ -927,6 +927,7 @@ static s32 func_01E037E0_c062(Scene_c062_01E037E0 *g, Vec4f *out, Vec4f *src, s3
     Vec4f c;
     f32 cz;
     f32 cy;
+    f32 z0;
     s16 a;
     s16 i;
 
@@ -934,7 +935,8 @@ static s32 func_01E037E0_c062(Scene_c062_01E037E0 *g, Vec4f *out, Vec4f *src, s3
     cz = c.z;
     cy = c.y;
     for (i = 0; i < 5; i++) {
-        func_00106DD0(out, 0.0f, 0.0f, cz);
+        z0 = 0.0f;
+        func_00106DD0(out, z0, z0, cz);
         if (i == 0) {
             a = 90;
         } else if (i == 1) {
