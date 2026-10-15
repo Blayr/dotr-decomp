@@ -97,6 +97,8 @@ if [[ "$DK_GCC" == mwcps2-* ]]; then
     exit 0
 fi
 "$PRE/bin/ee-gcc" -B"$PRE_LIB/" -E $CPP_FLAGS "$IN" -o "$TMP/in.i"
+# GCC 2.96 code changes once the headers pass a size: only the prototypes the file uses go in (see there).
+python3 "$ROOT/tools/trim_protos.py" "$TMP/in.i"
 if [ -x "$EE/bin/ee-gcc" ]; then
     LIB="$(dirname "$(find "$EE/lib" -name cc1 | head -1)")"
     (cd "$TMP" && "$EE/bin/ee-gcc" -B"$LIB/" -S "-G$G" $DK_CFLAGS in.i -o out.s)
