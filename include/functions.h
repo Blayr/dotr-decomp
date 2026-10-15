@@ -3116,6 +3116,7 @@ s32 func_00267860(s32 arg0, s32 arg1); /* JP: Ta_IsResistAllMaster */
 s32 func_002679C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3); /* JP: Ta_IsVisualAttrAdv */
 s32 func_00267B30(s32 arg0); /* JP: Ta_GetSummonCalcRevision */
 int func_00267C50(int PrNo, void *eInfo_v); /* JP: Ta_Do_StandbyPhase */
+int func_00268460(int side); /* JP: Ta_IsExzodia */
 s32 func_00268600(s32 arg0, s32 arg1); /* JP: Ta_GetExzodiaPartsUnit */
 s32 func_002686F0(s32 arg0); /* JP: Ta_GetExzodiaPartsCardNo */
 s32 func_00268760(void *arg0, void *arg1, s32 arg2); /* JP: Ta_Eff_057 */

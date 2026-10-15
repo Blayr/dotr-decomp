@@ -1052,7 +1052,6 @@ extern int func_001DE690_b(int index);
 extern unsigned *func_00250740_b(int a, int b, int n);
 extern int func_001E1700_b(int a, int b);
 extern int func_001E16A0_b(int a, int b, int value);
-extern int func_00268460(int side);
 extern int func_001DE740_b(int index);
 extern void func_001DE760_b(int index, int value);
 struct jp_6826f {
@@ -1215,7 +1214,52 @@ int func_00267C50(int PrNo, void *eInfo_v)
     return 0xff0000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", func_00268460);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrStateItem;
+extern int func_001E1030_b(int a, int b);
+extern struct DotrStateItem *func_001E36E0_b(int x, int y);
+extern int func_001E1580_b(int a, int b);
+extern int func_001E1640_b(int a, int b);
+
+int func_00268460(int side)
+{
+    int flags[4];
+    int k;
+    int total;
+    int i;
+    int x;
+    int y;
+    int t;
+    int lo;
+    int hi;
+    int cell;
+
+    total = 0;
+    if (func_001E1030_b(side, 0) == 58) {
+    for (k = 0; k < 4; k++) {
+        for (i = 0; i < 8; i++) {
+            cell = func_0024E410(side, i);
+            y = cell & 0xff;
+            x = cell >> 8;
+            if (func_001E36E0_b(y, x) != 0) {
+                cell = func_001E3790(y, x);
+                if (cell >= 0) {
+                    hi = cell >> 8;
+                    lo = cell & 0xff;
+                    t = func_001E1030_b(hi, lo);
+                    if (t == func_002686F0(k) && func_001E2100(hi, lo, 4) != 0 && func_001E2100(hi, lo, 0) == 0 && func_001E2100(hi, lo, 1) == 0 && func_001E1580_b(hi, lo) == 0 && func_001E1640_b(hi, lo) == 0 && hi == side) {
+                        flags[k] = 1;
+                    }
+                }
+            }
+        }
+        total += flags[k];
+    }
+    return total;
+    }
+    return 0;
+}
 
 s32 func_00268600(s32 arg0, s32 arg1) {
     extern s32 func_001E1030();
