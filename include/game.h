@@ -101,7 +101,6 @@ extern s16 D_00322994;
 
 extern u8 D_00325CC0[];
 
-void func_0020BB50(void);
 extern u8 D_00325D38[];
 
 extern s32 D_0032A240;

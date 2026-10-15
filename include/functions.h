@@ -2530,6 +2530,7 @@ s32 func_0020BA80(void);
 void func_0020BA90(void *p);
 void func_0020BAD0(void *p);
 void func_0020BAF0(s32 arg0);
+void func_0020BB50(void);
 s32 func_0020BBA0(void);
 void func_0020BBB0(void *arg0);
 void func_0020BC00(s32 arg0, void *arg1);
