@@ -1207,6 +1207,7 @@ s32 func_00186CF8(void);
 s32 func_00186D08(void);
 s32 func_00186D18(void);
 u32 func_00186D68(void);
+s32 func_00186D78(void *arg0);
 void func_00186FC8(void);
 s32 func_00186FF0(s32 arg0);
 s32 func_00187058(void);

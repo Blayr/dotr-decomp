@@ -1,6 +1,76 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_027", func_00186D78);
+/* libdev: read VU0's control registers (status, MAC, clipping, R, I, Q, vi0-vi15) into a save area;
+   returns 0 while VU0 is running (func_00186BB8) */
+
+typedef struct Vu0Cnd_00186D78 {
+    dk_int128 vf[32];
+    u32 status;
+    u32 mac;
+    u32 clipping;
+    u32 r;
+    u32 i;
+    u32 q;
+    u16 vi[16];
+} Vu0Cnd_00186D78;
+
+#define CFC2_00186D78(dst, vi) __asm__("cfc2.ni %0, $" #vi : "=r"(dst))
+
+s32 func_00186D78(void *arg0) {
+    Vu0Cnd_00186D78 *cnd = arg0;
+    register u32 s __asm__("$3");
+
+    if (func_00186BB8() != 0) {
+    return 0;
+    }
+    CFC2_00186D78(s, vi16);
+    cnd->status = s;
+    CFC2_00186D78(s, vi17);
+    cnd->mac = s;
+    CFC2_00186D78(s, vi18);
+    cnd->clipping = s;
+    CFC2_00186D78(s, vi20);
+    cnd->r = s;
+    CFC2_00186D78(s, vi21);
+    cnd->i = s;
+    CFC2_00186D78(s, vi22);
+    cnd->q = s;
+    CFC2_00186D78(s, vi0);
+    cnd->vi[0] = s;
+    CFC2_00186D78(s, vi1);
+    cnd->vi[1] = s;
+    CFC2_00186D78(s, vi2);
+    cnd->vi[2] = s;
+    CFC2_00186D78(s, vi3);
+    cnd->vi[3] = s;
+    CFC2_00186D78(s, vi4);
+    cnd->vi[4] = s;
+    CFC2_00186D78(s, vi5);
+    cnd->vi[5] = s;
+    CFC2_00186D78(s, vi6);
+    cnd->vi[6] = s;
+    CFC2_00186D78(s, vi7);
+    cnd->vi[7] = s;
+    CFC2_00186D78(s, vi8);
+    cnd->vi[8] = s;
+    CFC2_00186D78(s, vi9);
+    cnd->vi[9] = s;
+    CFC2_00186D78(s, vi10);
+    cnd->vi[10] = s;
+    CFC2_00186D78(s, vi11);
+    cnd->vi[11] = s;
+    CFC2_00186D78(s, vi12);
+    cnd->vi[12] = s;
+    CFC2_00186D78(s, vi13);
+    cnd->vi[13] = s;
+    CFC2_00186D78(s, vi14);
+    cnd->vi[14] = s;
+    CFC2_00186D78(s, vi15);
+    cnd->vi[15] = s;
+    return 1;
+}
+
+#undef CFC2_00186D78
 
 INCLUDE_ASM("asm/nonmatchings/main_027", func_00186E58);
 
