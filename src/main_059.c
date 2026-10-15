@@ -193,7 +193,6 @@ extern Vec3_00210010 D_00295080;
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-void func_0020DBE0(void *, void *, void *);
 
 void func_00210010(void *arg0, void *arg1, void *arg2) {
     extern Entry_00210010 D_0032A780[];
@@ -313,7 +312,6 @@ typedef struct {
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
 
 s32 func_00210310(void *arg0, s32 depth, void *arg2) {
@@ -493,7 +491,6 @@ typedef struct {
 extern u32 D_0032A728;
 extern s32 D_0032A770;
 
-void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
 
 s32 func_00210940(void *arg0, s32 depth, void *arg2) {
@@ -806,7 +803,6 @@ extern u32 D_0032A728;
 extern s32 D_0032A770;
 extern Slot_00211530 D_0032A780[];
 
-void func_0020DBE0(void *, void *, void *);
 s32 func_0020EDE0(void *, f32);
 
 s32 func_00211530(void *arg0, s32 depth, void *arg2) {

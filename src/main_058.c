@@ -573,7 +573,125 @@ asm void func_0020DB80(void) {
     lqc2 vf27, 0x70(v1)
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DBE0);
+asm void func_0020DBE0(void *arg0, void *arg1, void *arg2) {
+    .set noreorder
+    addiu sp, sp, -0x90
+    sq ra, 0x40(sp)
+    sq s1, 0x30(sp)
+    sq s0, 0x20(sp)
+    swc1 f24, 0x10(sp)
+    swc1 f23, 0xC(sp)
+    swc1 f22, 0x8(sp)
+    swc1 f21, 0x4(sp)
+    swc1 f20, 0x0(sp)
+    paddub s1, a0, zero
+    beqz a2, L_0020DC24
+    paddub s0, a1, zero
+    lqc2 vf8, 0x0(a2)
+    vmulax.xyzw ACC, vf28, vf8x
+    vmadday.xyzw ACC, vf29, vf8y
+    vmaddaz.xyzw ACC, vf30, vf8z
+    vmaddw.xyzw vf31, vf31, vf0w
+L_0020DC24:
+    beqz s0, L_0020DD64
+    nop
+    jal func_0020B480
+    lw a0, 0x0(s0)
+    lw a0, 0x0(s0)
+    jal func_0020B550
+    mov.s f20, f0
+    lw a0, 0x4(s0)
+    jal func_0020B480
+    mov.s f21, f0
+    lw a0, 0x4(s0)
+    jal func_0020B550
+    mov.s f22, f0
+    lw a0, 0x8(s0)
+    jal func_0020B480
+    mov.s f24, f0
+    lw a0, 0x8(s0)
+    jal func_0020B550
+    mov.s f23, f0
+    mul.s f1, f22, f23
+    addiu v1, sp, 0x50
+    mul.s f4, f21, f24
+    swc1 f1, 0x50(sp)
+    mula.s f23, f4
+    msub.s f1, f20, f0
+    mul.s f3, f20, f24
+    swc1 f1, 0x60(sp)
+    mula.s f23, f3
+    madd.s f2, f21, f0
+    swc1 f2, 0x70(sp)
+    mul.s f2, f22, f0
+    mula.s f0, f4
+    swc1 f2, 0x54(sp)
+    madd.s f2, f20, f23
+    mula.s f0, f3
+    swc1 f2, 0x64(sp)
+    msub.s f0, f21, f23
+    swc1 f0, 0x74(sp)
+    neg.s f1, f24
+    mul.s f0, f21, f22
+    swc1 f1, 0x58(sp)
+    swc1 f0, 0x68(sp)
+    mul.s f0, f20, f22
+    swc1 f0, 0x78(sp)
+    sw zero, 0x5C(sp)
+    sw zero, 0x6C(sp)
+    sw zero, 0x7C(sp)
+    lqc2 vf8, 0x0(v1)
+    lqc2 vf9, 0x10(v1)
+    lqc2 vf10, 0x20(v1)
+    vmulax.xyzw ACC, vf28, vf8x
+    vmadday.xyzw ACC, vf29, vf8y
+    vmaddaz.xyzw ACC, vf30, vf8z
+    vmaddw.xyzw vf20, vf31, vf8w
+    vmulax.xyzw ACC, vf28, vf9x
+    vmadday.xyzw ACC, vf29, vf9y
+    vmaddaz.xyzw ACC, vf30, vf9z
+    vmaddw.xyzw vf21, vf31, vf9w
+    vmulax.xyzw ACC, vf28, vf10x
+    vmadday.xyzw ACC, vf29, vf10y
+    vmaddaz.xyzw ACC, vf30, vf10z
+    vmaddw.xyzw vf22, vf31, vf10w
+    vmove.xyzw vf28, vf20
+    vmove.xyzw vf29, vf21
+    vmove.xyzw vf30, vf22
+    vmulax.xyzw ACC, vf24, vf8x
+    vmadday.xyzw ACC, vf25, vf8y
+    vmaddaz.xyzw ACC, vf26, vf8z
+    vmaddw.xyzw vf20, vf27, vf8w
+    vmulax.xyzw ACC, vf24, vf9x
+    vmadday.xyzw ACC, vf25, vf9y
+    vmaddaz.xyzw ACC, vf26, vf9z
+    vmaddw.xyzw vf21, vf27, vf9w
+    vmulax.xyzw ACC, vf24, vf10x
+    vmadday.xyzw ACC, vf25, vf10y
+    vmaddaz.xyzw ACC, vf26, vf10z
+    vmaddw.xyzw vf22, vf27, vf10w
+    vmove.xyzw vf24, vf20
+    vmove.xyzw vf25, vf21
+    vmove.xyzw vf26, vf22
+L_0020DD64:
+    beqz s1, L_0020DD7C
+    nop
+    lqc2 vf8, 0x0(s1)
+    vmulx.xyzw vf28, vf28, vf8x
+    vmuly.xyzw vf29, vf29, vf8y
+    vmulz.xyzw vf30, vf30, vf8z
+L_0020DD7C:
+    lq ra, 0x40(sp)
+    lq s1, 0x30(sp)
+    lq s0, 0x20(sp)
+    lwc1 f24, 0x10(sp)
+    lwc1 f23, 0xC(sp)
+    lwc1 f22, 0x8(sp)
+    lwc1 f21, 0x4(sp)
+    lwc1 f20, 0x0(sp)
+    jr ra
+    addiu sp, sp, 0x90
+}
 
 typedef struct Entry_0020DDB0 {
     u8 pad0[0xC0];

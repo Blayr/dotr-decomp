@@ -2559,6 +2559,7 @@ void func_0020DA70(void);
 void func_0020DB00(void *arg0);
 void func_0020DB20(void);
 void func_0020DB80(void);
+void func_0020DBE0(void *arg0, void *arg1, void *arg2);
 s32 func_0020DDB0(void);
 s32 func_0020DEE0(void);
 s32 func_0020DEF0(void *arg0);
