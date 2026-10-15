@@ -692,8 +692,6 @@ void func_0017CD08(s32 event, s32 param, void *opt) {
     tty->busy = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CEA0);
-
 typedef struct Deci2Q_0017CFF0 {
     s32 unk0;
     volatile s32 count;
@@ -707,6 +705,9 @@ typedef struct Deci2Tty_0017CFF0 {
 } Deci2Tty_0017CFF0;
 
 extern Deci2Tty_0017CFF0 D_00310A90;
+
+INCLUDE_ASM("asm/nonmatchings/main_022", func_0017CEA0);
+
 
 s32 func_0017CFF0(char *arg0, s32 arg1) {
     s32 i;
