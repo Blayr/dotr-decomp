@@ -1536,7 +1536,6 @@ typedef struct State_0023D920 {
     u8 buffer[1];
 } State_0023D920;
 
-s32 card_icon_tukuru(void);
 extern s16 D_0034FB34;
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
@@ -2045,7 +2044,380 @@ s32 TakuSave_card_unformat(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", card_icon_tukuru);
+typedef struct State_0023E7A0 {
+    s32 ret;
+    s32 sync;
+    s32 port;
+    s32 slot;
+    u8 pad10[0x10];
+    s32 command;
+    s32 result;
+    u8 pad28[8];
+    s16 state;
+    u8 pad32[2];
+    s16 phase;
+    s16 sub;
+    u8 pad38[8];
+    s16 retries;
+    s16 index;
+    u8 pad44[4];
+    s32 handles[2];
+} State_0023E7A0;
+
+typedef struct IconSys_0023E7A0 {
+    char head[4];
+    u16 unk04;
+    u16 offset;
+    u32 unk08;
+    u32 trans;
+    u8 bgColor[0x40];
+    u8 lightDir[0x30];
+    u8 lightColor[0x30];
+    u8 ambient[0x10];
+    char title[0x44];
+    char view[0x40];
+    char copy[0x40];
+    char del[0x40];
+} IconSys_0023E7A0;
+
+s32 card_icon_tukuru(void) {
+    extern struct State_0023E610 D_0034FB00;
+    extern s16 D_0034FB36;
+    extern u8 D_0034F720[];
+    extern char D_0034F7E0[];
+    extern u16 D_0034F726;
+    extern u32 D_0034F72C;
+    extern u8 D_0034F730[];
+    extern u8 D_0034F770[];
+    extern u8 D_0034F7A0[];
+    extern u8 D_0034F7D0[];
+    extern char D_0034F824[];
+    extern char D_0034F864[];
+    extern char D_0034F8A4[];
+    extern char *D_0029B06C;
+    extern char *D_0029B070;
+    extern u8 D_0029B100[];
+    extern char D_0030F321[];
+    extern char D_0030F32B[];
+    extern char D_0030F330[];
+    extern u8 D_0029B200[];
+    extern u8 D_0029B240[];
+    extern u8 D_0029B270[];
+    extern u8 D_0029B2A0[];
+    extern char *D_0029B068[];
+    extern u32 D_0029B050[];
+    extern u32 D_0029B054[];
+    State_0023E7A0 *s;
+    char path[0x40];
+    char *end;
+
+    s = (State_0023E7A0 *)&D_0034FB00;
+    func_0019BDD8(path, D_0029B100);
+    end = path + func_0019BEF0(path);
+    func_0019BDD8(end, D_0030F321);
+    switch (D_0034FB36) {
+    case 0:
+        s->ret = func_00193BA8(s->port, s->slot, path, 0x203);
+        s->sync = func_00194248(0, &s->command, &s->result);
+        if (s->sync == 1) {
+            if (s->command == 2) {
+                if (0 <= s->result) {
+                    s->handles[s->port] = s->result;
+                    s->retries = 0;
+                    s->sub = 1;
+                } else {
+                    switch (s->result) {
+                    case -2:
+                        s->retries++;
+                        if (s->retries >= 3) {
+                            s->phase = 0;
+                            s->sub = 0;
+                            s->retries = 3;
+                            s->state = 0xB;
+                        }
+                        break;
+                    case -3:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -4:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -5:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -7:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    default:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    }
+                }
+            }
+        }
+        break;
+    case 1:
+        func_00198948(D_0034F720, 0, 0x3C4);
+        func_0019BDD8((char *)D_0034F720, D_0030F32B);
+        func_0019BDD8(D_0034F7E0, D_0030F330);
+        D_0034F726 = 0x1E;
+        D_0034F72C = 0x60;
+        func_00198790(D_0034F730, D_0029B200, 0x40);
+        func_00198790(D_0034F770, D_0029B240, 0x30);
+        func_00198790(D_0034F7A0, D_0029B270, 0x30);
+        func_00198790(D_0034F7D0, D_0029B2A0, 0x10);
+        func_0019BDD8(D_0034F824, D_0029B068[0]);
+        func_0019BDD8(D_0034F864, D_0029B06C);
+        func_0019BDD8(D_0034F8A4, D_0029B070);
+        s->ret = func_00194058(s->handles[s->port], D_0034F720, 0x3C4);
+        s->sync = func_00194248(0, &s->command, &s->result);
+        if (s->sync == 1) {
+            if (s->command == 6) {
+                if (0 <= s->result) {
+                    s->retries = 0;
+                    s->sub = 2;
+                } else {
+                    switch (s->result) {
+                    case -2:
+                        s->retries++;
+                        if (s->retries >= 3) {
+                            s->phase = 0;
+                            s->sub = 0;
+                            s->retries = 3;
+                            s->state = 0xB;
+                        }
+                        break;
+                    case -3:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -4:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -5:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    default:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    }
+                }
+            }
+        }
+        break;
+    case 2:
+        s->ret = func_00193D18(s->handles[s->port]);
+        s->sync = func_00194248(0, &s->command, &s->result);
+        if (s->sync == 1) {
+            if (s->command == 3) {
+                switch (s->result) {
+                case 0:
+                    s->sub = 3;
+                    s->retries = 0;
+                    break;
+                case -2:
+                    s->retries++;
+                    if (s->retries >= 3) {
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->retries = 3;
+                        s->state = 0xB;
+                    }
+                    break;
+                case -4:
+                    s->phase = 0;
+                    s->sub = 0;
+                    s->state = 0xE;
+                    s->retries = 0;
+                    return 0xA;
+                default:
+                    s->phase = 0;
+                    s->sub = 0;
+                    s->state = 0xE;
+                    s->retries = 0;
+                    return 0xA;
+                }
+            }
+        }
+        break;
+    case 3:
+        *end = '/';
+        func_0019BDD8(end + 1, D_0029B068[s->index]);
+        s->ret = func_00193BA8(s->port, s->slot, path, 0x203);
+        s->sync = func_00194248(1, &s->command, &s->result);
+        if (s->sync == 1) {
+            if (s->command == 2) {
+                if (0 <= s->result) {
+                    s->handles[s->port] = s->result;
+                    s->retries = 0;
+                    s->sub = 4;
+                } else {
+                    switch (s->result) {
+                    case -2:
+                        s->retries++;
+                        if (s->retries >= 3) {
+                            s->phase = 0;
+                            s->sub = 0;
+                            s->retries = 3;
+                            s->state = 0xB;
+                        }
+                        break;
+                    case -3:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -4:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -5:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -7:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    default:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    }
+                }
+            }
+        }
+        break;
+    case 4:
+        {
+            s32 size = D_0029B054[s->index] - D_0029B050[s->index];
+            s->ret = func_00194058(s->handles[s->port], (u8 *)0x1E301E0 + D_0029B050[s->index], size);
+        }
+        s->sync = func_00194248(1, &s->command, &s->result);
+        if (s->sync == 1) {
+            if (s->command == 6) {
+                if (0 <= s->result) {
+                    s->retries = 0;
+                    s->sub = 5;
+                } else {
+                    switch (s->result) {
+                    case -2:
+                        s->retries++;
+                        if (s->retries >= 3) {
+                            s->phase = 0;
+                            s->sub = 0;
+                            s->retries = 3;
+                            s->state = 0xB;
+                        }
+                        break;
+                    case -3:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -4:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    case -5:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    default:
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->state = 0xE;
+                        s->retries = 0;
+                        return 0xA;
+                    }
+                }
+            }
+        }
+        break;
+    case 5:
+        s->ret = func_00193D18(s->handles[s->port]);
+        s->sync = func_00194248(1, &s->command, &s->result);
+        if (s->sync == 1) {
+            if (s->command == 3) {
+                switch (s->result) {
+                case 0:
+                    s->index++;
+                    if (s->index >= 3) {
+                        s->sub = 0;
+                        s->retries = 0;
+                        return 1;
+                    }
+                    s->sub = 3;
+                    s->retries = 0;
+                    break;
+                case -2:
+                    s->retries++;
+                    if (s->retries >= 3) {
+                        s->state = 0xB;
+                        s->phase = 0;
+                        s->sub = 0;
+                        s->retries = 3;
+                    }
+                    break;
+                case -4:
+                    s->phase = 0;
+                    s->sub = 0;
+                    s->state = 0xE;
+                    s->retries = 0;
+                    return 0xA;
+                default:
+                    s->phase = 0;
+                    s->sub = 0;
+                    s->state = 0xE;
+                    s->retries = 0;
+                    return 0xA;
+                }
+            }
+        }
+        break;
+    }
+    return 0;
+}
 
 s32 TakuLoad_card_kansi(s32 arg0) {
     extern s32 D_0034FB10;
