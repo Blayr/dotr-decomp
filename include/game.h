@@ -1079,4 +1079,8 @@ extern f32 D_01E05A08_b417;
 extern f32 D_01E06A00_b357;
 extern f32 D_01E06A08_b357;
 
+extern u8 D_912000[];
+extern char D_002B8F00[], D_002B8F05[], D_002B8F07[], D_002B8F0D[], D_002B8F13[], D_002B8F18[];
+extern char D_002B8F1F[], D_002B8F27[], D_002B8F2C[], D_002B8F32[];
+
 #endif

@@ -21,7 +21,25 @@ asm void func_001000C0(void) {
     syscall 0
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_000", main);
+s32 main(void) {
+    asm {
+        la sp, D_912000
+    }
+    SzMem_Init();
+    func_0019B0F8((s32)D_002B8F00, (s32)D_002B8F05, 1);
+    func_0019B0F8((s32)D_002B8F07, (s32)D_002B8F05, 1);
+    func_0019B0F8((s32)D_002B8F0D, (s32)D_002B8F05, 1);
+    func_0019B0F8((s32)D_002B8F13, (s32)D_002B8F18, 1);
+    func_0019B0F8((s32)D_002B8F1F, (s32)D_002B8F18, 1);
+    func_0019B0F8((s32)D_002B8F27, (s32)D_002B8F18, 1);
+    func_0019B0F8((s32)D_002B8F2C, (s32)D_002B8F32, 1);
+    if (Main_Init() == 0) {
+        return 0;
+    }
+    Main_Loop();
+    Main_Term();
+    return 0;
+}
 
 s32 Main_Init(void) {
     SzFile_Init();

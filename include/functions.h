@@ -3013,6 +3013,7 @@ s32 lSzView_CalcRel(s32 arg0);
 int lSzView_InitVars(int index);
 s32 *localeconv(void);
 s32 lseek(void);
+s32 main(void);
 void malloc_extend_top(s32 reent_ptr, u32 nb);
 void mceGetInfoApdx(s32 arg0);
 void mceIntrReadFixAlign(void *arg0);
@@ -3360,6 +3361,7 @@ s32 func_0019C100(const char *a, const char *b, u32 n);
 void *func_0019C2B8(void *dst, const void *src, u32 n);
 char *func_0019C478(const char *s, s32 i);
 #ifndef __GNUC_MINOR__ /* not EE GCC */
+s32 func_001000D0(void);
 s32 func_001001D0(void);
 s32 func_00100350(void);
 void func_001004C0(void);
