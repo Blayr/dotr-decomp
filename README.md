@@ -9,19 +9,20 @@ This repository contains no game data. You need your own copy of the game to bui
 
 | | Functions in C | Code in C |
 |---|---|---|
-| Main executable (`SLUS_205.15`) | 3,330 of 3,464 (96.1%) | 83.3% of 1.5 MB |
+| Main executable (`SLUS_205.15`) | 3,335 of 3,463 (96.3%) | 83.8% of 1.5 MB |
 | Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 5,775 of 8,620 (67.0%) | 40.4% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
   originals. A function counts as done only when its C is in that build and the check passes.
 - This executable is a revision whose tutorial code was patched after it was built (the tutorial functions at
-  0x27F5B0-0x27FDA0 cut down to stubs, their callers rewired). 18 functions are therefore C plus a few patched
-  words, applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above. Another
-  revision of SLUS_205.15 (sha256 `1df7759b…`) has the tutorial compiled in.
-- 22 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
+  0x27F5B0-0x27FDA0 cut down to stubs, their callers rewired). 20 compiled functions are therefore C plus a few
+  patched words, applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above.
+  Functions this revision rewrote by hand stay assembly. Another revision of SLUS_205.15 (sha256 `1df7759b…`)
+  has the tutorial compiled in.
+- 18 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
   build). They count as not done. About 110 others, mostly Sony's system-call stubs and a few vector-unit
   helpers, are written as assembly inside the C files and do count.
-- 82 of the main-program functions came from the dotr-decomp project's CC0 bundle (another team decompiling
+- 87 of the main-program functions came from the dotr-decomp project's CC0 bundle (another team decompiling
   the same game), adapted to this revision.
 - Module functions repeat across modules; one C file per distinct function is renamed into every module that has
   a copy.
