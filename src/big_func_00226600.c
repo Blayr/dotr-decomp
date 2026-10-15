@@ -47,7 +47,6 @@ extern int D_0034F6F0;
 extern int func_00229140_b(int a, int b, int limit);
 extern int func_002294B0_b(int side, int pick);
 extern void func_00217980_b(int n, int b);
-extern void Taku_Camp_Ivent(void);
 extern void func_00228940_b(int a, int b);
 extern void func_00228660_b(int side, int row, int value, short *list, int count);
 extern void Taku_Nagare2_set(int side, int row, short *list, int count, int flag);

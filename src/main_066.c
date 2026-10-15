@@ -52,7 +52,7 @@ extern unsigned char D_002999CC[][4];
 #define DOTR_DARE_FACE1 ((struct DotrDareFace *)0x1ed5414)
 #define DOTR_DARE_LOOK1 (*(signed char *)0x1ed5469)
 #define DOTR_DARE_LOOK0 (*(signed char *)0x1ed546a)
-extern DotrDareWord Taku_Window_Set(DotrDareWord cursor, struct DotrDareWindow *window,
+extern DotrDareWord Taku_Window_Set_b(DotrDareWord cursor, struct DotrDareWindow *window,
                                     unsigned short flag, int a3, unsigned short x, int y,
                                     int a6, int a7, int a8);
 extern DotrDareWord func_00217BD0_b(DotrDareWord cursor, struct DotrDareItem *item, short x,
@@ -87,7 +87,7 @@ int Taku_Camp_BUN_DARE(int cursor)
         y = (w * 256 >> 10) - 256;
         n = DOTR_DARE_SIDE0;
         cursor = func_00217BD0_b(cursor, &D_00298120[n], x + xx, 0);
-        cursor = Taku_Window_Set(cursor, &D_00297B40[0], n, 0, x + xx, 0, 0, 128, 128);
+        cursor = Taku_Window_Set_b(cursor, &D_00297B40[0], n, 0, x + xx, 0, 0, 128, 128);
         no = DOTR_DARE_NAME0 - 195;
         switch (DOTR_DARE_STATE0) {
         case 1:
@@ -116,7 +116,7 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_STATE0 = 0;
             break;
         }
-        cursor = Taku_Window_Set(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = Taku_Window_Set_b(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[2], xx, y + yy, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[3], xx, y + yy, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[n], xx, y + yy, 0);
@@ -143,7 +143,7 @@ int Taku_Camp_BUN_DARE(int cursor)
         y = 256 - (w * 256 >> 10);
         n = DOTR_DARE_SIDE1;
         cursor = func_00217BD0_b(cursor, &D_00298120[n], x + 144, 304);
-        cursor = Taku_Window_Set(cursor, &D_00297B40[0], n, 0, x + 144, 304, 0, 128, 128);
+        cursor = Taku_Window_Set_b(cursor, &D_00297B40[0], n, 0, x + 144, 304, 0, 128, 128);
         xx = -480;
         yy = 320;
         no = DOTR_DARE_NAME1 - 195;
@@ -174,7 +174,7 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_STATE1 = 0;
             break;
         }
-        cursor = Taku_Window_Set(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = Taku_Window_Set_b(cursor, &D_00297B40[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
         cursor = func_00218020_b(cursor, &D_002983A0[4], xx, y + 184, 2);
         cursor = func_00218020_b(cursor, &D_002983A0[5], xx, y + 184, 2);
         cursor = func_00218020_b(cursor, &D_002983A0[n], xx, y + 176, 0);

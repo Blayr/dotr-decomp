@@ -68,7 +68,7 @@ struct DotrTekiWindowCard {
 };
 #define DOTR_TEKI_WINDOW_BASE 0x1ed0000
 #define DOTR_TEKI_WINDOW_FACE ((struct DotrTekiWindowFace *)0x1ed5424)
-extern int Taku_Window_Set(int cursor, struct DotrTekiWindowWindow *window, unsigned short flag, int a3,
+extern int Taku_Window_Set_window(int cursor, struct DotrTekiWindowWindow *window, unsigned short flag, int a3,
                            unsigned short x, unsigned short y, int a6, int a7, int a8);
 extern int func_00217BD0_b(int cursor, struct DotrTekiWindowItem *item, short x, short y);
 extern int func_00218020_b(int cursor, struct DotrTekiWindowItem *item, short x, short y, int a4);
@@ -260,10 +260,10 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             short cost;
 
             cursor = func_00217BD0_b(cursor, &D_00298120[side], 0, y);
-            cursor = Taku_Window_Set(cursor, &D_00297B40[0], side, 0, 0, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set(cursor, &D_00297B40[2], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &D_00297B40[0], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &D_00297B40[2], side, 0, 0, y, 0, 128, WH(0x224));
             yy = y - yoff;
-            cursor = Taku_Window_Set(cursor, &D_00297B40[3], side, 0, 0, yy, 1, 128, 0);
+            cursor = Taku_Window_Set_window(cursor, &D_00297B40[3], side, 0, 0, yy, 1, 128, 0);
             no = b->h196 + 1;
             if (name == 217) {
                 no = b->h196;
@@ -338,9 +338,9 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
 
             WB(0x5488) = 1;
             id = SzData_GetLeader(1, 0);
-            cursor = Taku_Window_Set(cursor, &D_00297B40[1], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set(cursor, &D_00297B40[4], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set(cursor, &D_00297BCA, side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &D_00297B40[1], side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &D_00297B40[4], side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &D_00297BCA, side, 0, x, y, 0, 128, WH(0x224));
             xs = x;
             cursor = func_001B6F70_b(cursor, xs + 152, y + 63, 1, 1, 4, D_0030F102, 0);
             cursor = func_001B6F70_b(cursor, xs + 192, y + 63, 1, 1, 6, D_0030F1E8, 0);
@@ -417,7 +417,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         }
         D_00297B40[7].w = wd;
         tx = 320 - ((short)wd >> 1);
-        cursor = Taku_Window_Set(cursor, &D_00297B40[7], 2, 0, tx, 224, 0, 128, 64);
+        cursor = Taku_Window_Set_window(cursor, &D_00297B40[7], 2, 0, tx, 224, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, 228, 1.0f, 1.0f, col, func_001FDFE0_b);
         SzMsg_Free(1);
     } else if (WB(0x5374) == 0 && WU(4) == 2 && WB(0x72) == 0 && WB(0x547a) == 0 && WB(0x6e) != 0
@@ -464,7 +464,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         if (ty >= 290) {
             ty = 290;
         }
-        cursor = Taku_Window_Set(c, &D_00297B40[5], 2, 0, px, ty, 0, 128, 64);
+        cursor = Taku_Window_Set_window(c, &D_00297B40[5], 2, 0, px, ty, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, ty + 4, 1.0f, 1.0f, col, func_001FDFE0_b);
         SzMsg_Free(1);
     }

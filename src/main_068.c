@@ -334,7 +334,7 @@ extern signed char D_00299E10_b[];
 #define DOTR_HELP_OPEN (*(signed char *)0x1ed543c)
 #define DOTR_HELP_STEP (*(signed char *)0x1ed543d)
 #define DOTR_HELP_PICK (*(signed char *)0x1ed546b)
-extern DotrHelpWord Taku_Window_Set(DotrHelpWord cursor, struct DotrHelpWindow *window,
+extern DotrHelpWord Taku_Window_Set_window(DotrHelpWord cursor, struct DotrHelpWindow *window,
                                     unsigned short flag, int a3, unsigned short x,
                                     unsigned short y, int a6, int a7, int a8);
 extern DotrHelpWord func_001B6F70_b(DotrHelpWord cursor, int x, int y, int a,
@@ -363,9 +363,9 @@ int Taku_Camp_Help_Window(int cursor)
     y = 512 - ((DOTR_HELP_STEP << 9) >> 3);
     blk = DOTR_HELP_BLOCK;
     if (DOTR_HELP_OPEN != 0) {
-        cursor = Taku_Window_Set(cursor, &win.w[0], 2, 0, 128, y + 80, 0, 128, 101);
-        cursor = Taku_Window_Set(cursor, &win.w[1], 2, 0, 128, y + 80, 0, 128, 101);
-        cursor = Taku_Window_Set(cursor, &win.w[3], st[0] + 10, 0, 282, y + 94, 0, 128, 128);
+        cursor = Taku_Window_Set_window(cursor, &win.w[0], 2, 0, 128, y + 80, 0, 128, 101);
+        cursor = Taku_Window_Set_window(cursor, &win.w[1], 2, 0, 128, y + 80, 0, 128, 101);
+        cursor = Taku_Window_Set_window(cursor, &win.w[3], st[0] + 10, 0, 282, y + 94, 0, 128, 128);
         cursor = func_001B6F70_b(cursor, 296, y + 102, 2, 1, 4, D_0030F113, 0);
         
 
@@ -374,7 +374,7 @@ int Taku_Camp_Help_Window(int cursor)
         xx = px;
         ix = xx;
         yy = 144;
-        cursor = Taku_Window_Set(cursor, &win.w[2], 2, 0, px, y + ((short)(DOTR_HELP_PICK * 36) + yy), 0, 128, 0);
+        cursor = Taku_Window_Set_window(cursor, &win.w[2], 2, 0, px, y + ((short)(DOTR_HELP_PICK * 36) + yy), 0, 128, 0);
         yy += 2;
         for (i = 0; i < 5; i++) {
             if (i == blk[0x546b]) {
