@@ -155,3 +155,9 @@
 0x0014B468 0x70601628 0x00000000  # func_0014B3E0: paddub $v0, $v1, $zero patched to nop
 0x0021C6D8 0x24050194 0x24050001  # func_0021C510: addiu $a1, $zero, 0x194 patched to addiu $a1, $zero, 0x1
 0x0021C6F0 0xA2200002 0xA2250002  # func_0021C510: sb $zero, 0x2($s1) patched to sb $a1, 0x2($s1)
+0x0024F89C 0x70403628 0x0805E0F0  # func_0024F830: paddub $a2, $v0, $zero patched to j func_1783C0
+0x0024F8A0 0x72A02628 0x00000000  # func_0024F830: paddub $a0, $s5, $zero patched to nop
+0x00276300 0x328AFFFF 0x0805E0C8  # func_00276290: andi $t2, $s4, 0xFFFF patched to j func_178320
+0x00276304 0x328300FF 0x00000000  # func_00276290: andi $v1, $s4, 0xFF patched to nop
+0x001C7228 0x72002628 0x0805D17C  # func_001C6170: paddub $a0, $s0, $zero patched to j func_1745F0
+0x001C722C 0x0C080E90 0x00000000  # func_001C6170: jal func_203A40 patched to nop

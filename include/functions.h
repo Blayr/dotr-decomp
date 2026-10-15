@@ -1852,6 +1852,7 @@ void func_001C5B30(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawTrade_Do_Pi
 void func_001C5CE0(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawTrade_Notice_Pipe */
 void func_001C6120(void); /* JP: SzDuel_TermCustomDuel */
 s32 func_001C6130(void); /* JP: SzDuel_ActCustomDuel */
+int func_001C6170(int side); /* JP: lSzDuel_ActCustomDuelProc (matched by position) */
 void func_001C7430(void); /* JP: SzDuel_DrawCustomDuel */
 s32 func_001C7790(s32 arg0); /* JP: lSzDuel_DrawCustomDuel_Base_Pipe */
 void func_001C7C00(s32 arg0, s32 arg1, s32 arg2); /* JP: lSzDuel_DrawCustomDuel_Title_Pipe */

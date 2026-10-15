@@ -851,7 +851,461 @@ s32 func_001C6130(void) {
     return func_001C6170(1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", func_001C6170);
+/* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
+
+struct DotrCustomProcControlSide {
+    unsigned char unknown_000[0x33c];
+    unsigned char deck;                 
+    unsigned char unknown_33d[0x13];
+};
+struct DotrCustomProcControl {
+    struct DotrCustomProcControlSide side[2];
+    unsigned char unknown_6a0[0x692];
+    unsigned char reload[2];            
+};
+extern signed char D_00317490_b[];
+struct DotrCustomProc {
+    unsigned char cur[2];               
+    unsigned char menu[2];              
+    unsigned char deck[2];              
+    unsigned char charge[2];            
+    unsigned char f8[2];                
+    unsigned char fa[2];                
+    unsigned char fc[2];                
+    unsigned char fe[2];                
+    short lp[2];                        
+    short lp2[2];                       
+    unsigned short list[56];            
+    unsigned char mode;                 
+    unsigned char last;                 
+    unsigned char count;                
+    unsigned char f8b;                  
+    unsigned char map;                  
+    unsigned char maps;                 
+    unsigned char yes;                  
+};
+struct DotrCustomProcAt {
+    unsigned char pad[0xa9c000];
+    unsigned char cur;
+    unsigned char pad01;
+    unsigned char menu;
+    unsigned char pad03;
+    unsigned char deck;
+    unsigned char pad05;
+    unsigned char charge;
+    unsigned char pad07;
+    unsigned char f8;
+    unsigned char pad09;
+    unsigned char fa;
+    unsigned char pad0b;
+    unsigned char fc;
+    unsigned char pad0d;
+    unsigned char fe;
+    unsigned char pad0f;
+    short lp;
+    short pad12;
+    short lp2;
+};
+#define DOTR_CUSTOM_PROC ((struct DotrCustomProc *)0xa9c000)
+#define DOTR_CUSTOM_PROC_BYTES_AT(i) ((struct DotrCustomProcAt *)(i))
+#define DOTR_CUSTOM_PROC_WORDS_AT(i) ((struct DotrCustomProcAt *)((i) * 2))
+struct DotrCustomProcSave {
+    unsigned char pad[0xfea3];
+    unsigned char map[1][7][7];
+};
+extern unsigned char D_002BEAC0_1c6170[2][2][5];
+extern void func_00215920_b(int side, int deck);
+extern void func_002029B0_b(int a, int b);
+extern int func_001DE690_b(int index);
+extern void func_001DE6B0_b(int index, int value);
+extern int func_001E2220_b(int x, int y, int value);
+#define MENU(i) (DOTR_CUSTOM_PROC_BYTES_AT(i)->menu)
+#define LP(i) (DOTR_CUSTOM_PROC_WORDS_AT(i)->lp)
+#define LP2(i) (DOTR_CUSTOM_PROC_WORDS_AT(i)->lp2)
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define CLAMP(v, lo, hi) MIN(MAX(v, lo), hi)
+static inline int DotrCustomProcIsDeckReady(int side, int list)
+{
+    int count = func_00215F90(side, list);
+    int value = func_002159D0(side, list);
+
+    if (count >= 40) {
+        if (value == 999) {
+            if (!list && !count) {
+            }
+        } else {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int func_001C6170(int side)
+{
+    struct DotrCustomProcControl *c = (struct DotrCustomProcControl *)D_00317490_b;
+    int deck = func_002158B0(side);
+    unsigned char *reload = side ? &c->reload[1] : &c->reload[0];
+    
+
+
+    struct DotrCustomProcAt *w = (struct DotrCustomProcAt *)side;
+
+
+
+    int m;
+    int old;
+    int x;
+    int y;
+    int v;
+    int row;
+
+    if (func_001FF300() == 0 && *reload) {
+        func_002009E0(side + 5, 1);
+        *reload = 0;
+        if (DOTR_CUSTOM_PROC->mode == 1) {
+            func_002009E0(6, 1);
+        }
+    }
+    
+
+    m = w->menu;
+    if (m & 0xf0) {
+    switch (m & 0xf0) {
+    case 0x10:
+        switch (m & 0xf) {
+        case 0:
+            if (func_00203A40(side, 2, 0xa000) || func_00203A40(side, 2, 12)) {
+                if (func_00203A40(side, 2, 0x8004)) {
+                    w->deck = (w->deck + 2) % 3;
+                } else {
+                    w->deck = (w->deck + 4) % 3;
+                }
+                func_00217710(0, 3);
+            } else if (func_00203A40(side, 0, 192)) {
+                if (DotrCustomProcIsDeckReady(side, w->deck)) {
+                    if (deck != w->deck) {
+                        func_00217710(0, 4);
+                        func_00215920_b(side, w->deck);
+                        func_002029B0_b(2, side);
+                        *reload = 1;
+                        if (DOTR_CUSTOM_PROC->mode == 1) {
+                            func_00215920_b(1, w->deck);
+                            func_002029B0_b(2, 1);
+                        }
+                    }
+                } else {
+                    func_00217710(0, 6);
+                }
+            } else if (func_00203A40(side, 0, 32)) {
+                func_00217710(0, 5);
+                w->menu &= 0xf;
+            }
+            break;
+        case 1:
+            if (func_00203A40(side, 2, 0xa000) || func_00203A40(side, 2, 12)) {
+                short *p = &LP(side);
+
+                old = *p;
+                if (func_00203A40(side, 2, 0x8004)) {
+                    *p = ((*p + 50) / 100 - 1) * 100;
+                } else {
+                    *p = ((*p + 50) / 100 + 1) * 100;
+                }
+                *p = CLAMP(*p, 1, 9999);
+                if (*p == old) {
+                    func_00217710(0, 6);
+                } else {
+                    func_00217710(0, 3);
+                }
+            } else if (func_00203A40(side, 0, 192)) {
+                short *p = &LP(side);
+
+                if (*p != func_001DF470(side)) {
+                    func_00217710(0, 4);
+                    func_001DF490(side, 4, *p);
+                    LP2(side) = *p;
+                    if (DOTR_CUSTOM_PROC->mode) {
+                        
+
+                        v = MAX(*p, 4000);
+                        side ^= 1;
+                        func_001DF490(side, 4, v);
+                        LP2(side) = MAX(*p, 4000);
+                    }
+                }
+            } else if (func_00203A40(side, 0, 32)) {
+                func_00217710(0, 5);
+                w->menu &= 0xf;
+            }
+            break;
+        case 2:
+            if (func_00203A40(side, 2, 0xa000) || func_00203A40(side, 2, 12)) {
+                old = w->charge;
+                if (func_00203A40(side, 2, 0x8004)) {
+                    w->charge = MAX(w->charge - 1, 1);
+                } else {
+                    w->charge = MIN(w->charge + 1, 12);
+                }
+                if (w->charge == old) {
+                    func_00217710(0, 6);
+                } else {
+                    func_00217710(0, 3);
+                }
+            } else if (func_00203A40(side, 0, 192)) {
+                if (w->charge != func_001DE690_b(side)) {
+                    func_00217710(0, 4);
+                    func_001DE6B0_b(side, w->charge);
+                    if (DOTR_CUSTOM_PROC->mode) {
+                        func_001DE6B0_b(side ^ 1, (unsigned char)MAX(w->charge, 3));
+                    }
+                }
+            } else if (func_00203A40(side, 0, 32)) {
+                func_00217710(0, 5);
+                w->menu &= 0xf;
+            }
+            break;
+        case 3:
+            if (func_00203A40(side, 2, 0xa000)) {
+                old = w->f8;
+                if (func_00203A40(side, 2, 0x8000)) {
+                    w->f8 = 0;
+                } else {
+                    w->f8 = 1;
+                }
+                if (w->f8 != old) {
+                    func_00217710(0, 3);
+                }
+            } else if (func_00203A40(side, 0, 192)) {
+                if (w->f8 != w->fa) {
+                    func_00217710(0, 4);
+                    w->fa = w->f8;
+                }
+            } else if (func_00203A40(side, 0, 32)) {
+                func_00217710(0, 5);
+                w->menu &= 0xf;
+            }
+            break;
+        case 4:
+            if (func_00203A40(side, 2, 0xa000)) {
+                old = w->fc;
+                if (func_00203A40(side, 2, 0x8000)) {
+                    w->fc = 0;
+                } else {
+                    w->fc = 1;
+                }
+                if (w->fc != old) {
+                    func_00217710(0, 3);
+                }
+            } else if (func_00203A40(side, 0, 192)) {
+                if (w->fc != w->fe) {
+                    func_00217710(0, 4);
+                    w->fe = w->fc;
+                }
+            } else if (func_00203A40(side, 0, 32)) {
+                func_00217710(0, 5);
+                w->menu &= 0xf;
+            }
+            break;
+        case 5:
+            w->menu &= 0xf;
+            break;
+        case 6:
+            if (func_001AB1D0() < 0) {
+                w->menu &= 0xf;
+            }
+            break;
+        case 7:
+            if (func_00203A40(side, 2, 0x5000)) {
+                if (func_00203A40(side, 2, 0x1000)) {
+                    DOTR_CUSTOM_PROC->map = (DOTR_CUSTOM_PROC->map + DOTR_CUSTOM_PROC->maps - 1) % DOTR_CUSTOM_PROC->maps;
+                } else {
+                    DOTR_CUSTOM_PROC->map = (DOTR_CUSTOM_PROC->map + DOTR_CUSTOM_PROC->maps + 1) % DOTR_CUSTOM_PROC->maps;
+                }
+                func_00217710(0, 3);
+            } else if (func_00203A40(side, 0, 192)) {
+                struct DotrCustomProcSave *d = func_002145E0(side);
+                int n = (DOTR_CUSTOM_PROC->map + 2) % DOTR_CUSTOM_PROC->maps;
+
+                for (y = 0; y < 7; y++) {
+                    for (x = 0; x < 7; x++) {
+                        func_001E2220_b(x, y, d->map[n][y][x]);
+                    }
+                }
+                func_00217710(0, 4);
+                func_001A8320(13, 0);
+                func_001A8870(13, 2);
+            } else if (func_00203A40(side, 0, 32)) {
+                func_00217710(0, 5);
+                w->menu &= 0xf;
+            }
+            break;
+        }
+        break;
+    case 0x20:
+        if (func_00203A40(side, 0, 32)) {
+            func_00217710(0, 5);
+            w->menu &= 0xf;
+        }
+        break;
+    case 0x30:
+        if (func_00203A40(side, 0, 0xa000)) {
+            old = DOTR_CUSTOM_PROC->yes;
+            if (func_00203A40(side, 0, 0x8000)) {
+                DOTR_CUSTOM_PROC->yes = 1;
+            } else {
+                DOTR_CUSTOM_PROC->yes = 0;
+            }
+            if (DOTR_CUSTOM_PROC->yes != old) {
+                func_00217710(0, 3);
+            }
+        } else if (func_00203A40(side, 0, 192)) {
+            func_00217710(0, 4);
+            if (DOTR_CUSTOM_PROC->yes) {
+                func_001A8920();
+            } else {
+                DOTR_CUSTOM_PROC->menu[0] &= 0xf;
+                DOTR_CUSTOM_PROC->menu[1] &= 0xf;
+            }
+        } else if (func_00203A40(side, 0, 32)) {
+            func_00217710(0, 5);
+            DOTR_CUSTOM_PROC->menu[0] &= 0xf;
+            DOTR_CUSTOM_PROC->menu[1] &= 0xf;
+        }
+        break;
+    case 0x40:
+        if (func_00203A40(side, 2, 12)) {
+            if (func_00203A40(side, 2, 4)) {
+                DOTR_CUSTOM_PROC->last = (DOTR_CUSTOM_PROC->last + DOTR_CUSTOM_PROC->count - 5) % DOTR_CUSTOM_PROC->count;
+            } else {
+                DOTR_CUSTOM_PROC->last = (DOTR_CUSTOM_PROC->last + DOTR_CUSTOM_PROC->count + 5) % DOTR_CUSTOM_PROC->count;
+            }
+            func_00217710(0, 3);
+        } else if (func_00203A40(side, 2, 0x5000)) {
+            if (func_00203A40(side, 2, 0x1000)) {
+                DOTR_CUSTOM_PROC->last = (DOTR_CUSTOM_PROC->last + DOTR_CUSTOM_PROC->count - 1) % DOTR_CUSTOM_PROC->count;
+            } else {
+                DOTR_CUSTOM_PROC->last = (DOTR_CUSTOM_PROC->last + DOTR_CUSTOM_PROC->count + 1) % DOTR_CUSTOM_PROC->count;
+            }
+            func_00217710(0, 3);
+        } else if (func_00203A40(side, 0, 192)) {
+            
+            v = DOTR_CUSTOM_PROC->list[(DOTR_CUSTOM_PROC->last + 2) % DOTR_CUSTOM_PROC->count];
+            row = v >> 8;
+            v = v & 0xff;
+            if (row < 2) {
+                v += row * 5 + 46;
+            } else {
+                v += 22;
+            }
+            func_001A8320(2, 0);
+            func_001A8320(1, v);
+            func_001A8320(3, c->side[0].deck + 1000);
+            func_001A8320(4, c->side[1].deck + 1000);
+            func_001A8320(28, (DOTR_CUSTOM_PROC->f8[0] ? 1 : 0) | (DOTR_CUSTOM_PROC->f8[1] ? 2 : 0));
+            func_001A8320(29, (DOTR_CUSTOM_PROC->fc[0] ? 1 : 0) | (DOTR_CUSTOM_PROC->fc[1] ? 2 : 0));
+            func_001A8870(1, 1);
+            func_00217710(0, 4);
+            return 1;
+        } else if (func_00203A40(side, 0, 32)) {
+            func_00217710(0, 5);
+            DOTR_CUSTOM_PROC->menu[0] &= 0xf;
+            DOTR_CUSTOM_PROC->menu[1] &= 0xf;
+            if (DOTR_CUSTOM_PROC->mode == 0) {
+                MENU(side ^ 1) |= 0x20;
+            }
+        }
+        break;
+    }
+    return 0;
+    }
+    switch (m) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            if (func_00203A40(side, 2, 0xf000)) {
+                
+                int row;
+                int col;
+                unsigned char (*t)[5];
+
+                row = w->cur / 5;
+                col = w->cur % 5;
+                t = D_002BEAC0_1c6170[DOTR_CUSTOM_PROC->mode ? 1 : 0];
+                do {
+                    if (func_00203A40(side, 2, 0x1000)) {
+                        col = (col + 4) % 5;
+                    } else if (func_00203A40(side, 2, 0x4000)) {
+                        col = (col + 6) % 5;
+                    } else if (func_00203A40(side, 2, 0x8000)) {
+                        row = (row + 1) % 2;
+                    } else if (func_00203A40(side, 2, 0x2000)) {
+                        row = (row + 3) % 2;
+                    }
+                    v = t[row][col];
+                } while (v == 255 || (v == 7 && !func_002171B0(side)));
+                if (w->menu != v) {
+                    w->cur = col + row * 5;
+                    w->menu = v;
+                    func_00217710(0, 3);
+                }
+            } else if (func_00203A40(side, 0, 2048)) {
+                unsigned char *q = &MENU(side ^ 1);
+
+                if ((*q & 0xf0) == 0x20) {
+                    func_00217710(0, 4);
+                    *q &= 0xf;
+                    DOTR_CUSTOM_PROC->menu[0] |= 0x40;
+                    DOTR_CUSTOM_PROC->menu[1] |= 0x40;
+                } else {
+                    func_00217710(0, 4);
+                    if (DOTR_CUSTOM_PROC->mode) {
+                        DOTR_CUSTOM_PROC->menu[0] |= 0x40;
+                        DOTR_CUSTOM_PROC->menu[1] |= 0x40;
+                    } else {
+                        w->menu |= 0x20;
+                    }
+                }
+            } else if (func_00203A40(side, 0, 192)) {
+                func_00217710(0, 4);
+                switch (w->menu) {
+                case 5:
+                    func_001A8320(6, 0);
+                    func_001A8870(6, 1);
+                    break;
+                case 6:
+                    func_001AAFA0(1);
+                    break;
+                }
+                w->menu |= 0x10;
+            } else if (func_00203A40(side, 0, 32)) {
+                if (MENU(side ^ 1) < 8) {
+                    func_00217710(0, 5);
+                    DOTR_CUSTOM_PROC->menu[0] |= 0x30;
+                    DOTR_CUSTOM_PROC->menu[1] |= 0x30;
+                    DOTR_CUSTOM_PROC->yes = 0;
+                } else {
+                    func_00217710(0, 6);
+                }
+            }
+            break;
+        }
+    return 0;
+}
+#undef DOTR_CUSTOM_PROC
+#undef DOTR_CUSTOM_PROC_BYTES_AT
+#undef DOTR_CUSTOM_PROC_WORDS_AT
+#undef MENU
+#undef LP
+#undef LP2
+#undef MAX
+#undef MIN
+#undef CLAMP
 
 void func_001C7430(void) {
     func_00209D30(func_001C7460(func_00209D20()));

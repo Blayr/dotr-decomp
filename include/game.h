@@ -433,7 +433,6 @@ extern s32 D_0028FF10[];
 extern u8 D_002BE809[];
 extern u8 D_002BE80F[];
 
-s32 func_001C6170(s32);
 
 
 
