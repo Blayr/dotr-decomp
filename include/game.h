@@ -911,4 +911,6 @@ extern s32 D_00350350;
 
 extern s32 D_00326A20;
 
+extern void func_0020DA70();
+
 #endif

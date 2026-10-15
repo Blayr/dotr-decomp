@@ -334,7 +334,38 @@ void func_0020D8E0(f32 *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f3
     func_0020BC00((s32) arg0, matrix);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_058", func_0020D9F0);
+asm void func_0020D9F0(void) {
+    .set noreorder
+    addiu sp, sp, -0x20
+    sq ra, 0x10(sp)
+    sq s0, 0x0(sp)
+    jal func_0020DA70
+    paddub s0, a0, zero
+    lqc2 vf8, 0x0(s0)
+    lqc2 vf9, 0x10(s0)
+    lqc2 vf10, 0x20(s0)
+    lqc2 vf11, 0x30(s0)
+    vmulax.xyzw ACC, vf8, vf28x
+    vmadday.xyzw ACC, vf9, vf28y
+    vmaddaz.xyzw ACC, vf10, vf28z
+    vmaddw.xyzw vf28, vf11, vf28w
+    vmulax.xyzw ACC, vf8, vf29x
+    vmadday.xyzw ACC, vf9, vf29y
+    vmaddaz.xyzw ACC, vf10, vf29z
+    vmaddw.xyzw vf29, vf11, vf29w
+    vmulax.xyzw ACC, vf8, vf30x
+    vmadday.xyzw ACC, vf9, vf30y
+    vmaddaz.xyzw ACC, vf10, vf30z
+    vmaddw.xyzw vf30, vf11, vf30w
+    vmulax.xyzw ACC, vf8, vf31x
+    vmadday.xyzw ACC, vf9, vf31y
+    vmaddaz.xyzw ACC, vf10, vf31z
+    vmaddw.xyzw vf31, vf11, vf31w
+    lq ra, 0x10(sp)
+    lq s0, 0x0(sp)
+    jr ra
+    addiu sp, sp, 0x20
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_058", func_0020DA70);
 
