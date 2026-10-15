@@ -3,6 +3,7 @@
    name; these are their places in the game. */
 fptodp = 0x001A2370; /* float to double (func_001A2370) */
 _dpfgt = 0x0017B3F0; /* double a > b (func_0017B3F0) */
+_dpflt = 0x0017B3D0; /* double a < b (func_0017B3D0): Metrowerks calls it for a double < compare in the code modules */
 fptosi = 0x001A22C0;
 fptoui = 0x001A23B0; /* float to unsigned (func_001A23B0): Metrowerks calls it for (u32) casts in the code modules */
 _f_ulltof = 0x0017B340; /* u64 to float (func_0017B340): Metrowerks calls it for (f32) casts of u64 values in the code modules */
