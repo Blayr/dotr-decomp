@@ -1,6 +1,9 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_000", func_00100000);
+asm void func_00100000(void) {
+    .set noreorder
+    nop
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_000", func_00100008);
 
