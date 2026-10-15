@@ -42,7 +42,9 @@ typedef struct Duel_00317490_s {
     u8 pad6D4[0x6D8 - 0x6D4];
     u16 *list;                     /* 0x6D8: the trunk list */
     u16 *list2;                    /* 0x6DC: the deck list (40) */
-    u8 pad6E0[0xC86 - 0x6E0];
+    u8 pad6E0[0xC58 - 0x6E0];
+    s32 depth;                     /* 0xC58: GS z of the duel screen sprites */
+    u8 padC5C[0xC86 - 0xC5C];
     u16 wave1;                     /* 0xC86 */
     u16 wave2;                     /* 0xC88 */
     u16 offset;                    /* 0xC8A */
@@ -57,7 +59,7 @@ typedef struct Duel_00317490_s {
     u8 sort2[3];                   /* 0xCB9 */
     u8 sort3;                      /* 0xCBC */
     u8 sort4;                      /* 0xCBD */
-    u8 padCBE[0xCC2 - 0xCBE];
+    u8 pstate[4];                  /* 0xCBE: per-player state bytes, [player] */
     char code[8];                  /* 0xCC2: password digits */
     u8 padCCA[0xD32 - 0xCCA];
     u8 dirty;                      /* 0xD32 */
@@ -76,9 +78,42 @@ typedef struct Duel_00317490_s {
     struct {
         s8 dir1 : 2;               /* bits 0-1 */
         s8 dir2 : 2;               /* bits 2-3 */
-        s8 pad : 4;
+        s8 b4 : 1;
+        s8 b5 : 1;
+        s8 b6 : 1;
+        s8 b7 : 1;
     } dirs;                        /* 0xD64 */
-    u8 padD65[0xD70 - 0xD65];
+    struct {
+        s8 b0 : 1;
+        s8 b1 : 1;
+        s8 b2 : 1;
+        s8 b3 : 1;
+        s8 b4 : 1;
+        s8 b5 : 1;
+        s8 b6 : 1;
+        s8 b7 : 1;
+    } f65;                         /* 0xD65: one-bit flags (bit 0 first) */
+    struct {
+        s8 b0 : 1;
+        u8 b1 : 1;                 /* read unsigned (lbu/dsrl32) */
+        s8 b2 : 1;
+        s8 b3 : 1;
+        s8 b4 : 1;
+        s8 b5 : 1;
+        s8 b6 : 1;
+        s8 b7 : 1;                 /* func_001DE780 returns it */
+    } f66;                         /* 0xD66 */
+    struct {
+        s8 b0 : 1;
+        s8 b1 : 1;
+        s8 b2 : 1;
+        s8 b3 : 1;
+        s8 b4 : 1;
+        s8 b5 : 1;
+        s8 b6 : 1;
+        s8 b7 : 1;
+    } f67;                         /* 0xD67 */
+    u8 padD68[0xD70 - 0xD68];
 } Duel_00317490_s;
 
 /* The duel state: old code reads it as bytes (.b), new code by field (.s) */
