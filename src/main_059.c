@@ -43,7 +43,6 @@ typedef struct {
     s32 value58;
 } Data_0020FAF0;
 
-void lRhModel_SetupNoMotion(void *);
 void lRhModel_SetupMultiMotion(void *, void *, void *, f32, f32, f32, f32);
 void lRhModel_SetupFloatMotion(void *, void *, f32);
 void lRhModel_SetupPulseMotion(void *, void *, f32);
@@ -158,7 +157,42 @@ void lRhModel_DynamicAddressBind(void *arg0, void *arg1, void *arg2, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModel_SetupNoMotion);
+typedef struct {
+    f32 x, y, z, w;
+} V4_0020FF80;
+
+typedef struct {
+    u8 pad00[0x90];
+    u8 *data;
+    u8 pad94[0xB8 - 0x94];
+    V4_0020FF80 *dst;
+} Spr_0020FF80;
+
+extern void *D_0032A720;
+extern u8 D_70004000[];
+extern u8 D_00295070[];
+
+s32 lRhModel_SetupNoMotion(void *arg0) {
+    Spr_0020FF80 *spr = (Spr_0020FF80 *)0x70000000;
+    u8 *data = (u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x10);
+
+    if (spr->dst != NULL) {
+        *spr->dst = *(V4_0020FF80 *)(data + 0x20);
+    }
+    spr->data = data;
+    asm {
+        la v0, D_0032A720
+        sw sp, 0(v0)
+        la at, D_70004000
+        addiu sp, at, 0
+    }
+    lRhModel_SetupNoMotionRecursive((void *)0x70000000, data, D_00295070);
+    asm {
+        la v0, D_0032A720
+        lw sp, 0(v0)
+    }
+    return 1;
+}
 
 typedef struct Vec3_00210010 {
     f32 x, y, z;
