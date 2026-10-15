@@ -1489,7 +1489,64 @@ u8 *func_00212FD0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", func_002130A0);
+typedef struct Spr_002130A0 {
+    f32 m[4][4];
+    u8 pad40[0x1C];
+    f32 f5C;
+    u32 tag[8];
+    u64 f80;
+    u64 f88;
+    u8 pad90[0x64];
+    f32 fF4;
+    f32 fF8;
+    u8 padFC[8];
+    s32 f104;
+    u8 pad108[8];
+    f32 f110;
+    f32 f114;
+} Spr_002130A0;
+
+s32 func_002130A0(s32 arg0) {
+    Spr_002130A0 *spr = (Spr_002130A0 *)0x70000000;
+    u8 e[4];
+    f32 near;
+    f32 far;
+    f32 c;
+    f32 d;
+
+    func_0020EC00(spr);
+    {
+        register u8 *m = (u8 *)0x70000000;
+        asm {
+            lqc2 vf20, 0x0(m)
+            lqc2 vf21, 0x10(m)
+            lqc2 vf22, 0x20(m)
+            lqc2 vf23, 0x30(m)
+        }
+    }
+    spr->tag[0] = 0x10000000;
+    spr->tag[1] = 0;
+    spr->tag[2] = 0;
+    spr->tag[3] = 0;
+    spr->tag[4] = 0x10000006;
+    spr->tag[5] = 0;
+    spr->tag[6] = 0;
+    spr->tag[7] = 0x51000006;
+    spr->f80 = 0x3400000000008003;
+    spr->f88 = 0x412;
+    func_0020E090(&spr->fF4, &spr->fF8);
+    spr->f104 = func_00186120(8);
+    spr->f5C = 1.0f;
+    func_0020E130(&near, &far, &c, &d, e);
+    if (arg0 != 0) {
+        spr->f110 = 255.0f * far / (far - near);
+        spr->f114 = 255.0f / (far - near);
+    } else {
+        spr->f110 = 255.0f;
+        spr->f114 = 0.0f;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_059", func_002131D0);
 

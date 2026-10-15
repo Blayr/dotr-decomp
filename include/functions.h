@@ -2604,6 +2604,7 @@ void func_00212DE0(void);
 s32 func_00212DF0(s32 id);
 s32 func_00212E60(s32 arg0, void *arg1);
 u8 *func_00212FD0(u8 *arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 func_002130A0(s32 arg0);
 s32 func_00213410(s32 arg0, u32 cursor, s32 size);
 void func_00213F10(u8 *start, u8 *end);
 void func_00213F60(s32 arg0, s32 arg1);
