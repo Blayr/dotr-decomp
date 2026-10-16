@@ -9,7 +9,7 @@ This repository contains no game data. You need your own copy of the game to bui
 
 | | Functions in C | Code in C |
 |---|---|---|
-| Main executable (`SLUS_205.15`) | 3,398 of 3,462 (98.2%) | 91.4% of 1.5 MB |
+| Main executable (`SLUS_205.15`) | 3,402 of 3,461 (98.3%) | 91.7% of 1.5 MB |
 | Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 6,191 of 8,620 (71.8%) | 43.3% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
@@ -19,7 +19,7 @@ This repository contains no game data. You need your own copy of the game to bui
   patched words (201 in all), applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above.
   Functions this revision rewrote by hand stay assembly. Another revision of SLUS_205.15 (sha256 `1df7759b…`)
   has the tutorial compiled in.
-- 24 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
+- 22 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
   build). They count as not done. About 110 others, mostly Sony's system-call stubs and a few vector-unit
   helpers, are written as assembly inside the C files and do count.
 - 87 of the main-program functions came from the dotr-decomp project's CC0 bundle (another team decompiling
