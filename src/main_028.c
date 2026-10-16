@@ -692,7 +692,7 @@ typedef struct MpegDec_00188880 {
 extern char D_002BC6D0[];
 extern char D_002BC6F0[];
 extern char D_002BC710[];
-extern void _getRef0(MpegDec_00188880 *d, s32 ref, s32 sfield, s32 dfield, s32 yoff, s32 h, s32 bx, s32 by,
+extern void _getRef0(void *d, s32 ref, s32 sfield, s32 dfield, s32 yoff, s32 h, s32 bx, s32 by,
                           s32 dx, s32 dy, s32 fld, s32 avg);
 
 void _getAllRefs(void *arg0, s32 bx, s32 by, s32 mb_type, s32 motion_type, s32 PMV[2][2][2],
