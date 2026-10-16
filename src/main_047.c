@@ -2053,7 +2053,6 @@ typedef struct State_001E92C0 {
     s32 packed;
 } State_001E92C0;
 
-u8 *lSzModel_TexAnimConv(s32, u8 *);
 
 void lSzModel_LoadTexAnimFileCB(void *arg0, s32 arg1) {
     void SzMem_Free(u8 *);
@@ -2076,7 +2075,276 @@ void lSzModel_LoadTexAnimFileCB(void *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", lSzModel_TexAnimConv);
+typedef union B3_001E9340 {
+    u8 raw;
+    struct {
+        s8 a : 2;
+        s8 b : 6;
+    } s;
+    struct {
+        u8 c : 1;
+        u8 : 7;
+    } u;
+} B3_001E9340;
+
+typedef union V6_001E9340 {
+    u16 w;
+    struct {
+        u8 lo;
+        u8 hi;
+    } b;
+} V6_001E9340;
+
+typedef struct Entry_001E9340 {
+    u8 last : 1;
+    u8 plain : 1;
+    u8 kind : 3;
+    u8 align : 3;
+    u8 mask;
+    u8 lo : 4;
+    u8 hi : 4;
+    B3_001E9340 b3;
+    u16 v4;
+    V6_001E9340 v6;
+    u16 x8;
+    u16 xA;
+    u16 xC;
+    u16 xE;
+    u16 x10;
+    u16 x12;
+    s32 x14;
+} Entry_001E9340;
+
+typedef struct Hdr_001E9340 {
+    u8 pad[0x44];
+    u16 w;
+    u16 h;
+} Hdr_001E9340;
+
+#define MAX_001E9340(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_001E9340(a, b) ((a) < (b) ? (a) : (b))
+#define CLAMP_001E9340(x, lo, hi) MIN_001E9340(MAX_001E9340(x, lo), hi)
+
+extern char D_002CFA72[];
+extern char D_002CFA75[];
+extern char D_002CFAA2[];
+extern char D_002CFAC2[];
+extern char D_002CFAF2[];
+extern char D_002CFB16[];
+extern char D_002CFB18[];
+extern char D_002CFB32[];
+extern char D_002CFB34[];
+extern char D_002CFB3A[];
+extern char D_002CFB3C[];
+extern char D_002CFB40[];
+extern char D_002CFB45[];
+extern char D_002CFB4B[];
+extern char D_002CFB4D[];
+extern char *D_00292F40[];
+
+u8 *lSzModel_TexAnimConv(s32 arg0, u8 *arg1) {
+    char buf[0x400];
+    char name[0x80];
+    char flags[0x80];
+    char place[0x80];
+    char size[0x80];
+    s32 x8;
+    s32 xA;
+    s32 xC;
+    s32 xE;
+    s32 x10;
+    s32 x12;
+    s32 a4;
+    s32 b4;
+    s32 b6;
+    s32 c4;
+    s32 c6;
+    s32 d4;
+    s32 d6;
+    s32 e4;
+    s32 e6;
+    s32 sizeX;
+    s32 sizeY;
+    s32 count;
+    s32 i;
+    s32 kind;
+    char **names;
+    char *c;
+    char *line;
+    Entry_001E9340 *e;
+    char *p;
+    Entry_001E9340 *entries;
+    char *tok;
+    Hdr_001E9340 *hdr;
+
+    line = buf;
+    hdr = (Hdr_001E9340 *)(arg0 + 0x10);
+    p = line;
+    count = 0;
+    tok = func_0019D430((char *)arg1, D_002CFA72);
+    while (tok != NULL) {
+        if (*(u8 *)tok != '#') {
+            func_0019BDD8(p, tok);
+            p += func_0019BEF0(tok) + 1;
+            count++;
+        }
+        tok = func_0019D430(NULL, D_002CFA72);
+    }
+    entries = count > 0 ? (Entry_001E9340 *)SzMem_Alloc(count * 24) : NULL;
+    if (entries == NULL) {
+        e = (Entry_001E9340 *)arg1;
+        e->last = 1;
+        e->lo = 0;
+        e->hi = 0;
+        return 0;
+    }
+    e = entries;
+    for (i = 0; i < count; i++) {
+        e->last = 1;
+        e->lo = 0;
+        e->hi = 0;
+        kind = 0;
+        names = D_00292F40;
+        do {
+            if (strncasecmp(line, *names, func_0019BEF0(*names)) == 0) {
+                break;
+            }
+            kind++;
+            names++;
+        } while (kind < 7);
+        switch (kind) {
+        case 0:
+        case 1:
+            if (sscanf(line, D_002CFA75, name, flags, place, size, &a4, &x8, &xA, &xC, &xE, &x10, &x12) < 11) {
+                scePrintf(D_002CFAA2, name);
+                goto next;
+            }
+            e->b3.raw = 0;
+            e->v4 = CLAMP_001E9340(a4, 1, 0xFFFF);
+            break;
+        case 2:
+        case 3:
+            if (sscanf(line, D_002CFAC2, name, flags, place, size, &b4, &b6, &x8, &xA, &xC, &xE, &x10, &x12) < 12) {
+                scePrintf(D_002CFAA2, name);
+                goto next;
+            }
+            e->b3.s.a = 1;
+            e->b3.s.b = 0;
+            e->v4 = CLAMP_001E9340(b4, 1, 0xFFFF);
+            e->v6.w = CLAMP_001E9340(b6, 1, 0xFFFF);
+            break;
+        case 6:
+            if (sscanf(line, D_002CFAF2, name, flags, &c4, &c6, &x8, &xA, &xC, &xE, &x10, &x12) < 10) {
+                scePrintf(D_002CFAA2, name);
+                goto next;
+            }
+            func_0019BDD8(place, D_002CFB16);
+            e->b3.u.c = 0;
+            e->v4 = CLAMP_001E9340(c4, 1, 0xFFFF);
+            e->v6.b.lo = CLAMP_001E9340(c6, 0, 0xFF);
+            e->v6.b.hi = 0;
+            break;
+        case 5:
+            if (sscanf(line, D_002CFAF2, name, flags, &d4, &d6, &x8, &xA, &xC, &xE, &x10, &x12) < 10) {
+                scePrintf(D_002CFAA2, name);
+                goto next;
+            }
+            func_0019BDD8(place, D_002CFB16);
+            e->b3.u.c = 0;
+            e->v4 = CLAMP_001E9340(d4, 1, 0xFFFF);
+            e->v6.b.lo = CLAMP_001E9340(d6, 0, 0xFF);
+            e->v6.b.hi = 0;
+            break;
+        case 4:
+            if (sscanf(line, D_002CFAF2, name, flags, &e4, &e6, &x8, &xA, &xC, &xE, &x10, &x12) < 10) {
+                scePrintf(D_002CFAA2, name);
+                goto next;
+            }
+            func_0019BDD8(place, D_002CFB16);
+            e->v4 = CLAMP_001E9340(e4, 1, 0xFFFF);
+            e->v6.w = CLAMP_001E9340(e6, 1, 0xFFFF);
+            break;
+        default:
+            scePrintf(D_002CFB18);
+            goto next;
+        }
+        e->kind = kind;
+        e->align = 0;
+        if (strcasecmp(place, D_002CFB16) == 0) {
+            e->align = 0;
+        } else if (strcasecmp(place, D_002CFB32) == 0) {
+            e->align = 1;
+        } else if (strcasecmp(place, D_002CFB34) == 0) {
+            e->align = 2;
+        } else if (strcasecmp(place, D_002CFB34 + 3) == 0) {
+            e->align = 3;
+        } else if (strcasecmp(place, D_002CFB3A) == 0) {
+            e->align = 0;
+        } else if (strcasecmp(place, D_002CFB3C) == 0) {
+            e->align = 1;
+        } else if (strcasecmp(place, D_002CFB3C + 2) == 0) {
+            e->align = 2;
+        } else if (strcasecmp(place, D_002CFB40) == 0) {
+            e->align = 3;
+        } else if (strcasecmp(place, D_002CFB40 + 2) == 0) {
+            e->align = 4;
+        }
+        e->lo = 1;
+        e->hi = 1;
+        switch (e->align) {
+        case 0:
+        case 2:
+            e->lo = CLAMP_001E9340(atoi(size), 1, 0xF);
+            break;
+        case 1:
+        case 3:
+            e->hi = CLAMP_001E9340(atoi(size), 1, 0xF);
+            break;
+        case 4:
+            sizeX = 1;
+            sizeY = 1;
+            sscanf(size, D_002CFB45, &sizeX, &sizeY);
+            e->lo = CLAMP_001E9340(sizeX, 1, 0xF);
+            e->hi = CLAMP_001E9340(sizeY, 1, 0xF);
+            break;
+        }
+        e->mask = 0;
+        e->plain = 1;
+        if (func_0019BC90(flags, D_002CFB4B) == 0) {
+            e->mask = 0xFF;
+            e->plain = 0;
+        } else if (func_0019BC90(flags, D_002CFB4D) == 0) {
+            e->mask = 0xFF;
+        } else {
+            kind = 0;
+            if (kind < (u32)func_0019BEF0(flags)) {
+                c = flags;
+                do {
+                    if (*c >= 'A' && *c < 'I') {
+                        e->mask |= 1 << (*(u8 *)c - 'A');
+                        e->plain = 0;
+                    } else if (*c >= 'a' && *c < 'i') {
+                        e->mask |= 1 << (*(u8 *)c - 'a');
+                    }
+                    c++;
+                    kind++;
+                } while (kind < (u32)func_0019BEF0(flags));
+            }
+        }
+        e->last = (i + 1 >= count) ? 1 : 0;
+        e->x8 = CLAMP_001E9340(x8, 1, hdr->w);
+        e->xA = CLAMP_001E9340(xA, 1, hdr->h);
+        e->xC = CLAMP_001E9340(xC, 0, hdr->w - 1);
+        e->xE = CLAMP_001E9340(xE, 0, hdr->h - 1);
+        e->x10 = CLAMP_001E9340(x10, 0, hdr->w - 1);
+        e->x12 = CLAMP_001E9340(x12, 0, hdr->h - 1);
+        e->x14 = 0;
+        e++;
+    next:
+        line += func_0019BEF0(line) + 1;
+    }
+    return (u8 *)entries;
+}
 
 s32 SzModel_LoadEffectTextureFile(s32 arg0) {
     extern u8 D_002CFA17[];
