@@ -281,7 +281,6 @@ extern u8 D_002B90B0[];
 
 
 
-void lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 extern char D_002BF002[];
 
 

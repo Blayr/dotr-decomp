@@ -2996,6 +2996,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SummonCharge_Pipe(s32 arg0, u8 *arg1, s32 x, s32
 s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void lSzDuel_DrawCustomDuel_Title_Pipe(s32 arg0, s32 arg1, s32 arg2);
+s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10);
 void lSzDuel_DrawFadeBoard_Pipe(s32 arg0, f32 *position, u8 alpha, f32 width, f32 height);
 s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y);
 s32 lSzDuel_DrawStage_Pipe(s32 arg0);
@@ -4896,7 +4897,7 @@ s32 func_001AF180(s32 arg0, CardNode_001AF180 *object);
 s32 func_001AF5C0(s32 arg0);
 void func_001AF7B0(void);
 s32 func_001AF7E0(s32);
-void func_001B0CE0(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+s32 func_001B0CE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10);
 void func_001B1190(void);
 int func_001B11C0(int cursor);
 s32 func_001B19F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);

@@ -834,7 +834,118 @@ void SzDuel_DrawDialog(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main_038", SzDuel_DrawDialog_Pipe);
 
-INCLUDE_ASM("asm/nonmatchings/main_038", lSzDuel_DrawDialog_Window_Pipe);
+static inline s32 abs_001B0CE0(s32 value) {
+    if (value >= 0) {
+        return value;
+    }
+    return -value;
+}
+
+s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                  s32 arg8, s32 arg9, s32 arg10) {
+    extern u8 D_00290080[];
+    extern s32 func_001B3C80();
+    extern s32 func_001B4780();
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    u8 *state;
+    s32 frame;
+    s32 flip;
+    s32 card;
+    s32 textW;
+    s32 textH;
+    s32 minW;
+    s32 minH;
+    s32 id;
+    s32 *info;
+    f32 scale;
+    s32 nw;
+
+    state = D_00317490.b;
+    frame = (u32)func_001A8720() / 5;
+    if (arg6 < 0) {
+        flip = 1;
+    } else {
+        flip = 0;
+    }
+    card = (arg2 >= 0x8000) ? 1 : 0;
+    scale = 1.0f;
+    arg6 = abs_001B0CE0(arg6);
+    if (card) {
+        arg2 -= 0x8000;
+    }
+    if (arg8 > 0) {
+        func_001B76E0(2, 3, arg8, (s8 *)arg9, &textW, &textH);
+        textW += 0x18;
+        textH += 0xC;
+    } else {
+        textH = 0;
+        textW = 0;
+    }
+    if (arg3 >= 0) {
+        arg0 = func_001FD680(arg0, 1, arg3, 0, 0x16);
+        arg0 = func_0020F290(arg0);
+        info = func_001FEAB0(1);
+        if (flip) {
+            if (arg6 - 0x18 < info[3]) {
+                scale = (f32)(arg6 - 0x18) / (f32)info[3];
+            }
+            minW = arg6;
+        } else {
+            minW = ((info[3] > textW) ? info[3] : textW) + 0x18;
+        }
+        minH = info[4] + ((arg8 > 0) ? textH + 0x18 : 0xC) + 0xC;
+    } else {
+        minW = textW + 0x18;
+        minH = (arg8 > 0) ? textH + 0x18 : 0xC;
+    }
+    if (card) {
+        minH += 0x3C;
+    } else if (arg2 >= 0) {
+        minH += 0x8C;
+    }
+    if (arg10 != 0) {
+        minH += 0x1C;
+    }
+    if (arg6 < minW) {
+        arg6 = minW;
+    }
+    if (arg7 < minH) {
+        arg7 = minH;
+    }
+    nw = -arg6;
+    (void)nw; /* keeps the negation at its own statement, ahead of the frame call's argument copies, as in the original */
+    id = func_001B4780(arg0, 0xD, -1, 1, arg4 - (arg6 >> 1) - 4, arg5, nw, -arg7, 1);
+    if (arg8 > 0) {
+        id = func_001B4780(id, arg1, -1, 0xB, arg4 - (textW >> 1), arg5 + 0xC, -textW, -textH, 1);
+        id = func_001B6F70(id, arg4, arg5 + 0x14, 2, 3, arg8, (s8 *)arg9, 0);
+    }
+    if (card) {
+        minW = arg4 - 0x18;
+        minH = arg5 + ((arg8 > 0) ? textH + 0x18 : 0xC);
+        id = func_001B7F90(id, arg2, minW, minH, 0x30, 0x30, *(s32 *)(state + 0xC58), 1);
+        id = func_001B4780(id, -1, -1, 4, minW, minH, 3, 6, 1);
+    } else if (arg2 >= 0) {
+        id = func_001B7D60(id, arg2, arg4 - 0x40, arg5 + ((arg8 > 0) ? textH + 0x18 : 0xC), 0x80, 0x80,
+                           *(s32 *)(state + 0xC58));
+    }
+    if (arg3 >= 0) {
+        minW = arg4 - (s32)((f32)info[3] * scale / 2.0f);
+        minH = arg5 + ((arg8 > 0) ? textH + 0x18 : 0x10);
+        if (card) {
+            minH += 0x3C;
+        } else if (arg2 >= 0) {
+            minH += 0x8C;
+        }
+        id = func_001FE660(id, 1, minW, minH, scale, 1.0f, 0, SzMsg_DrawRect_Pipe);
+        func_001FEAF0(1);
+    }
+    if (arg10 != 0) {
+        id = func_001B3C80(id, D_00290080 + (frame % 3 + 0xBE) * 10, arg4 + 0x6B8, arg5 + 0x704 + arg7,
+                           0, 1, 0, 0, 1, 0, -1);
+    }
+    return id;
+}
 
 void SzDuel_DrawWindow(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawWindow_Pipe(RhBase_GetVifPacketArea()));
