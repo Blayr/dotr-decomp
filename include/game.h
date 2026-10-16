@@ -1089,4 +1089,6 @@ extern s32 D_0028DCB0;
 extern s32 D_0028DCB4;
 extern s32 D_0028DCB8;
 
+extern char D_002BE940[];
+
 #endif

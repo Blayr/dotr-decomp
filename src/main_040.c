@@ -1334,7 +1334,54 @@ s32 lSzDuel_DrawBuildDeck_Detail_Special_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe);
+s32 lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 *SzMsg_GetInfo(s32);
+    extern u8 TaEnc_GetEnchantLst(u16, u16 *);
+    extern s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    s32 count;
+    u16 list[24];
+    s32 offset;
+    s32 i;
+    s32 y;
+    s32 x;
+    s32 *size;
+    s32 id;
+    f32 scale;
+
+    offset = arg4 ? 0x280 : -0x140;
+    if (arg1 >= 0x2AB) {
+        return arg0;
+    } else {
+        count = TaEnc_GetEnchantLst(arg1 & 0xFFFF, list);
+        i = 0;
+        if (i < count) {
+            do {
+                arg0 = SzMsg_LoadFont_Pipe(arg0, i + 1, SzDuel_GetMsgName(list[i]), 0, (i + 1) * 22);
+                i++;
+            } while (i < count);
+        }
+        arg0 = RhText_SetTextureFlush(arg0);
+        i = 0;
+        if (i < count) {
+            y = arg3 + 0x30;
+            x = arg2 + offset + 0x1C;
+            do {
+                size = SzMsg_GetInfo(i + 1);
+                scale = 1.0f;
+                id = lSzDuel_DrawWindow_ExBoard_Pipe(arg0, arg5, x, y, -0x106, -0x1A, -1, 0);
+                if (size[3] > 0xFE) {
+                    scale = 254.0f / size[3];
+                }
+                arg0 = SzMsg_DrawRatioX_Pipe(id, i + 1, x + 5, y + 2, scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+                SzMsg_Free(i + 1);
+                i++;
+                y += 0x1A;
+            } while (i < count);
+        }
+        return arg0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_040", lSzDuel_DrawBuildDeck_Detail_Ability_Pipe);
 
