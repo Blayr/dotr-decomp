@@ -713,7 +713,272 @@ int lSzDuel_DrawBuildDeck_Title_Pipe(int cursor, int x, int y)
     return func_001B6EA0_b(cursor, qx, qy, 1, 0, 2, SzData_GetDeckCount(side, deck));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", lSzDuel_DrawBuildDeck_Bag_Pipe);
+typedef struct Vertex_001BB940 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001BB940;
+
+typedef struct Header_001BB940 {
+    u16 type;
+    u16 count;
+    u32 pad;
+    u64 registers;
+} Header_001BB940;
+
+typedef struct Packet_001BB940 {
+    u64 tag;
+    Header_001BB940 header;
+    u8 r, g, b, a;
+    f32 q;
+    Vertex_001BB940 first;
+    Vertex_001BB940 second;
+} Packet_001BB940;
+
+typedef union Color_001BB940 {
+    f32 value;
+    u8 bytes[4];
+} Color_001BB940;
+
+extern u8 D_00290080[];
+extern u8 D_00290828[];
+extern u8 D_00290832[];
+extern u8 D_00290896[];
+extern u8 D_002908A0[];
+extern u8 D_00290A6C[];
+extern u8 D_00290AA8[];
+extern u8 D_00290AB2[];
+extern u8 D_00290ABC[];
+extern u8 D_00290AC6[];
+extern s8 *D_00290FD0[];
+extern Color_001BB940 D_00291360;
+extern u8 D_002BE8A4[];
+extern char D_002BEF8D[];
+extern char D_002BEF93[];
+extern u8 D_003181EC;
+extern u8 D_003181ED;
+extern u16 D_00318118;
+
+static inline s32 text_001BB940(s32 cursor, s32 x, s32 y, s32 align,
+                               s32 flags, s8 *text, void *color) {
+    extern s32 SzDuel_DrawWindow_Font_Pipe();
+    s32 length = func_0019BEF0((char *)text);
+    return SzDuel_DrawWindow_Font_Pipe(cursor, x, y, align, flags,
+                        length, text, color);
+}
+
+static inline s32 rectangle_001BB940(s32 cursor, Packet_001BB940 *packet,
+                                    s32 x, s32 y, u8 *data) {
+    ((Header_001BB940 *)(s32)&packet->header)->count = 6;
+    ((Header_001BB940 *)(s32)&packet->header)->type = 3;
+    ((Header_001BB940 *)(s32)&packet->header)->registers = 0x441;
+    ((Header_001BB940 *)(s32)&packet->header)->pad = 0;
+    packet->r = 0xA0;
+    packet->g = 0xA0;
+    packet->b = 0xA0;
+    packet->a = 0x80;
+    packet->q = 1.0f;
+    packet->first.x = (x + 0x6CA) << 4;
+    packet->first.y = (y + 0x738) << 4;
+    packet->first.z = *(s32 *)(data + 0xC58);
+    packet->first.fog = 0;
+    packet->second.x = (x + 0x6F2) << 4;
+    packet->second.y = (y + 0x739) << 4;
+    packet->second.z = *(s32 *)(data + 0xC58);
+    packet->second.fog = 0;
+    return ExSortPrim_Pipe(cursor, (s32)&packet->header, 0, 0);
+}
+
+static inline s32 number_001BB940(s32 cursor, s32 x, s32 y, s32 player) {
+    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
+    s32 count = SzData_GetBagCountAll(player);
+    return SzDuel_DrawWindow_FontDigit_Pipe(cursor, x, y, 1, 0, 4, count);
+}
+
+static inline s32 ready_001BB940(s32 player, s32 deck) {
+    s32 count;
+    s32 card;
+
+    count = SzData_GetDeckCount(player, deck);
+    card = SzData_GetLeader(player, deck);
+    return (count >= 0x28 && card != 0x3E7) ? 1 : 0;
+}
+
+#pragma opt_propagation off
+
+s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+    extern s32 lSzDuel_DrawWindow_ExBoard_Pipe();
+    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
+    extern s32 SzDuel_DrawWindow_Font_Pipe();
+    extern u8 D_0029086E[];
+    extern char D_002BEF9D[];
+    u8 *data;
+    s32 player;
+    u8 *color;
+    s8 *sortText;
+    s32 special;
+    char *titleText;
+    char *descText;
+    s32 cursor;
+    s32 sortIndex;
+    s32 selection;
+    Packet_001BB940 packet;
+    Color_001BB940 shine;
+    s32 enabled;
+    u8 *sortData;
+    s32 sortX;
+    s32 sortY;
+    s32 numY;
+    s32 style;
+    s32 sortCursor;
+    s32 flags;
+    s32 textX;
+    s32 textY;
+    s32 numX;
+    s32 cardX;
+    s32 cardY;
+    s32 cardIndex;
+    s32 deckCursor;
+    s32 actionCursor;
+    s32 eligible;
+    s32 barX;
+    s32 barY;
+    s32 pageX;
+    s32 pageY;
+
+    data = D_00317490.b;
+    player = D_003181EC;
+    special = ((D_003181ED == 3) || (data[0xD5D] == 2)) ? 1 : 0;
+    enabled = 0;
+    if (special != 0) {
+        if (SzPad_Check(0, 1, 0x100) != 0) {
+            enabled = 1;
+        }
+    }
+    selection = enabled != 0 ? 1 : 0;
+    color = NULL;
+    if (selection != 0) {
+        color = D_002BE8A4;
+    } else {
+        color = NULL;
+    }
+    titleText = D_002BEF8D;
+    if (data[0xD5D] == 2) {
+        descText = D_002BEF93;
+    } else {
+        descText = D_002BEF98;
+    }
+    sortText = D_00290FD0[data[0xCB6 + selection]];
+    textX = arg1 + 0x10;
+    textY = arg2 + 0x10;
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, 0xC, -1, 11, textX, textY, -0xC0, -0x30, 1);
+    textX = arg1 + 0x70;
+    textY = arg2 + 0x1F;
+    cursor = text_001BB940(arg0, textX, textY, 2, 3, (s8 *)titleText, NULL);
+    cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 5, arg1 + 0x10, arg2 + 0x40, -0x40, -0x14, 1);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_0029086E, arg1 + 0x6D2, arg2 + 0x762,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    {
+        s32 c = cursor;
+        s32 x = arg1 + 0x27;
+        s32 y = arg2 + 0x44;
+        cursor = number_001BB940(c, x, y, player);
+    }
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 2, arg1 + 0x10, arg2 + 0x54, -0x40, -0x1C, -1, 0);
+    if (special != 0) {
+        cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AA8, arg1 + 0x6D5, arg2 + 0x77D,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290828, arg1 + 0x6EC, arg2 + 0x77C,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 2, arg1 + 0x50, arg2 + 0x40, -0xF0, -0x30, -1, 0);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290896, arg1 + 0x71E, arg2 + 0x765,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    if (special != 0) {
+        cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290ABC, arg1 + 0x717, arg2 + 0x77E,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    sortX = arg1 + 0x738;
+    sortY = arg2 + 0x769;
+    sortData = data + selection;
+    sortIndex = 0;
+    do {
+        style = -1;
+        if (sortData[0xCB6] == sortIndex) {
+            style = selection != 0 ? 2 : 1;
+        }
+        cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290080 + (sortIndex + 0xD1) * 10, sortX, sortY,
+                            0, 1, 0, 0, 0, 0, 1, color, style, 0x80);
+        sortIndex++;
+        sortX += 0x10;
+    } while (sortIndex < 10);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_002908A0, arg1 + 0x7DA, arg2 + 0x765,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    sortCursor = cursor;
+    if (special != 0) {
+        sortCursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AC6, arg1 + 0x7E3, arg2 + 0x77E,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    }
+    textX = arg1 + 0xC8;
+    textY = arg2 + 0x5E;
+    flags = func_0019BEF0((char *)sortText);
+    cursor = SzDuel_DrawWindow_Font_Pipe(sortCursor, textX, textY, 0, (color != NULL ? 8 : 0) | 3, flags, sortText, color);
+    cardX = arg1 + 8;
+    cardY = arg2 + 0x70;
+    cardIndex = 0;
+    do {
+        cursor = (s32) lSzDuel_DrawBuildDeck_Card_Pipe((void *) cursor, (*(u16 **)(data + 0x6D8))[*(u16 *)(data + 0xC8A) + cardIndex],
+                            cardX, cardY, 0, 1);
+        cardIndex++;
+        cardY += 0x36;
+    } while (cardIndex < 5);
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 2, arg1 + 0x10, arg2 + 0x17E, -0xEC, -0x32, -1, 0);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290832, arg1 + 0x6EC, arg2 + 0x8A2,
+                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    deckCursor = cursor;
+    if (special != 0) {
+        actionCursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AB2, arg1 + 0x6D5, arg2 + 0x8A7,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        actionCursor = lSzDuel_DrawWindow_ExIcon_Pipe(actionCursor, D_00290A6C, arg1 + 0x6D7, arg2 + 0x8BA,
+                            0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        {
+            s32 c = actionCursor;
+            s32 x = arg1 + 0x2C;
+            s32 y = arg2 + 0x19D;
+            deckCursor = text_001BB940(c, x, y, 1, 0, (s8 *)descText, NULL);
+        }
+    }
+    if (special != 0) {
+        eligible = SzData_GetBagCount(player, (*(u16 **)(data + 0x6D8))[*(u16 *)(data + 0xC8A) + data[0xD5E]], 3);
+        if (SzFile_InqRequestEx() != 0) {
+            eligible = 0;
+        }
+        if (Taku_Get_Duel5_flg() < 5) {
+            eligible = 0;
+        }
+        if (!ready_001BB940(player, 0) && !ready_001BB940(player, 1) && !ready_001BB940(player, 2)) {
+            eligible = 0;
+        }
+        if (eligible > 0) {
+            shine = D_00291360;
+            shine.bytes[3] = D_00318118 >> 8;
+            titleText = D_002BEF9D;
+            textX = arg1 + 0xA4;
+            textY = arg2 + 0x191;
+            deckCursor = text_001BB940(deckCursor, textX, textY, 0, 3, (s8 *)titleText, &shine);
+        }
+    }
+    barX = arg1 + 0xFC;
+    barY = arg2 + 0x17E;
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(deckCursor, 2, barX, barY, -0x3C, -0x32, -1, 0);
+    cursor = rectangle_001BB940(cursor, &packet, barX, barY, data);
+    pageX = arg1 + 0x11A;
+    pageY = arg2 + 0x186;
+    cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, pageX, pageY, 1, 2, 3, *(u16 *)(data + 0xC8A) + data[0xD5E] + 1);
+    return SzDuel_DrawWindow_FontDigit_Pipe(cursor, pageX, pageY + 0x17, 1, 2, 3, *(u16 *)(data + 0xC8C));
+}
+#pragma opt_propagation reset
 
 typedef struct Vertex_001BC350 {
     u64 x : 16;
