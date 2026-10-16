@@ -1977,7 +1977,6 @@ typedef struct {
     s32 depth;
 } Prim_002134D0;
 
-extern s8 lRhModelCpu_CalcIndepPoint(s32, s32 *);
 
 #define prim ((Prim_002134D0 *)arg0)
 
@@ -2020,7 +2019,88 @@ s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
 
 #undef prim
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModelCpu_CalcIndepPoint);
+typedef struct Spr_00213680 {
+    u8 pad00[0x40];
+    f32 res[4];
+    f32 in[4];
+    u8 pad60[0x98];
+    f32 fF8;
+    u8 padFC[4];
+    u32 f100;
+    u8 pad104[0xC];
+    f32 f110;
+    f32 f114;
+} Spr_00213680;
+
+typedef struct Out_00213680 {
+    f32 s;
+    f32 t;
+    u32 color;
+    f32 q;
+    u16 x;
+    u16 y;
+    u32 z : 24;
+    u32 fog : 8;
+} Out_00213680;
+
+typedef struct In_00213680 {
+    s16 u;
+    s16 v;
+    u8 pad4[8];
+    s16 x;
+    s16 y;
+    s16 z;
+} In_00213680;
+
+#define OUT_00213680 ((Out_00213680 *)arg0)
+#define IN_00213680 ((In_00213680 *)arg1)
+
+s8 lRhModelCpu_CalcIndepPoint(s32 arg0, s32 *arg1) {
+    Spr_00213680 *spr = (Spr_00213680 *)0x70000000;
+    register f32 *src = spr->in;
+    register f32 *dst = spr->res;
+    f32 w;
+    f32 fog;
+
+    OUT_00213680->color = spr->f100;
+    spr->in[0] = IN_00213680->x;
+    spr->in[1] = IN_00213680->y;
+    spr->in[2] = IN_00213680->z;
+    asm {
+        lqc2 vf1, 0x0(src)
+        vmulax.xyzw ACC, vf16, vf1x
+        vmadday.xyzw ACC, vf17, vf1y
+        vmaddaz.xyzw ACC, vf18, vf1z
+        vmaddw.xyzw vf1, vf19, vf1w
+        vdiv Q, vf0w, vf1w
+        vwaitq
+        vmulq.xyz vf1, vf1, Q
+        sqc2 vf1, 0x0(dst)
+    }
+    w = spr->res[3];
+    if (w < 1.0f || !(w < spr->fF8) || spr->res[0] <= 1.0f || !(spr->res[0] < 4095.0f) || spr->res[1] <= 1.0f ||
+        !(spr->res[1] < 4095.0f)) {
+        return 0;
+    }
+    OUT_00213680->x = (u32)(16.0f * spr->res[0]);
+    OUT_00213680->y = (u32)(16.0f * spr->res[1]);
+    OUT_00213680->z = (u32)(spr->res[2]);
+    fog = spr->f110 - spr->f114 * spr->res[3];
+    if (fog <= 0.0f) {
+        OUT_00213680->fog = 0;
+    } else if (!(fog < 255.0f)) {
+        OUT_00213680->fog = 0xFF;
+    } else {
+        OUT_00213680->fog = (u32)(fog);
+    }
+    OUT_00213680->s = IN_00213680->u / spr->res[3] / 4096.0f;
+    OUT_00213680->t = IN_00213680->v / spr->res[3] / 4096.0f;
+    OUT_00213680->q = 1.0f / spr->res[3];
+    return 1;
+}
+
+#undef OUT_00213680
+#undef IN_00213680
 
 typedef struct {
     u32 xy;
@@ -2082,7 +2162,129 @@ s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
 }
 #pragma opt_lifetimes reset
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModelCpu_CalcSharedPoint);
+typedef struct Spr_00213A40 {
+    u8 pad00[0x40];
+    f32 res[4];
+    f32 in[4];
+    u8 pad60[0x98];
+    f32 fF8;
+    u8 padFC[4];
+    u32 f100;
+    u8 pad104[0xC];
+    f32 f110;
+    f32 f114;
+} Spr_00213A40;
+
+typedef struct Out_00213A40 {
+    f32 s;
+    f32 t;
+    u32 color;
+    f32 q;
+    u16 x;
+    u16 y;
+    u32 z : 24;
+    u32 fog : 8;
+} Out_00213A40;
+
+typedef struct Weight_00213A40 {
+    u16 matrix;
+    u16 weight;
+    u8 pad4[8];
+    s16 x;
+    s16 y;
+    s16 z;
+} Weight_00213A40;
+
+typedef struct In_00213A40 {
+    s16 u;
+    s16 v;
+    u16 count;
+    Weight_00213A40 w[1];
+} In_00213A40;
+
+#define OUT_00213A40 ((Out_00213A40 *)arg0)
+#define IN_00213A40 ((In_00213A40 *)arg1)
+
+s8 lRhModelCpu_CalcSharedPoint(s32 arg0, s32 *arg1) {
+    Spr_00213A40 *spr = (Spr_00213A40 *)0x70000000;
+    register Weight_00213A40 *rec;
+    s32 i;
+    s32 n;
+    s32 last;
+    register f32 *src;
+    f32 w;
+    f32 fog;
+
+    asm {
+        vsub.xyzw vf1, vf0, vf0
+    }
+    n = IN_00213A40->count;
+    last = -1;
+    rec = IN_00213A40->w;
+    src = spr->in;
+    for (i = 0; i < n; i++, rec++) {
+        register u32 m = rec->matrix;
+        register u32 wgt;
+        if (last != m) {
+            last = m;
+            asm {
+                ctc2.ni m, vi1
+                vlqi.xyzw vf16, (vi1++)
+                vlqi.xyzw vf17, (vi1++)
+                vlqi.xyzw vf18, (vi1++)
+                vlqi.xyzw vf19, (vi1++)
+            }
+        }
+        spr->in[0] = rec->x;
+        spr->in[1] = rec->y;
+        spr->in[2] = rec->z;
+        wgt = rec->weight;
+        asm {
+            qmtc2.ni wgt, vf4
+            lqc2 vf2, 0x0(src)
+            vitof12.x vf4, vf4
+            vmulax.xyzw ACC, vf16, vf2x
+            vmadday.xyzw ACC, vf17, vf2y
+            vmaddaz.xyzw ACC, vf18, vf2z
+            vmaddw.xyzw vf3, vf19, vf2w
+            vmulx.xyzw vf2, vf3, vf4x
+            vadd.xyzw vf1, vf1, vf2
+        }
+    }
+    {
+        register f32 *dst = spr->res;
+        asm {
+            vdiv Q, vf0w, vf1w
+            vwaitq
+            vmulq.xyz vf1, vf1, Q
+            sqc2 vf1, 0x0(dst)
+        }
+    }
+    w = spr->res[3];
+    if (w < 1.0f || !(w < spr->fF8) || spr->res[0] <= 1.0f || !(spr->res[0] < 4095.0f) || spr->res[1] <= 1.0f ||
+        !(spr->res[1] < 4095.0f)) {
+        return 0;
+    }
+    OUT_00213A40->x = (u32)(16.0f * spr->res[0]);
+    OUT_00213A40->y = (u32)(16.0f * spr->res[1]);
+    OUT_00213A40->z = (u32)(spr->res[2]);
+    fog = spr->f110 - spr->f114 * spr->res[3];
+    if (fog <= 0.0f) {
+        OUT_00213A40->fog = 0;
+    } else if (!(fog < 255.0f)) {
+        OUT_00213A40->fog = 0xFF;
+    } else {
+        OUT_00213A40->fog = (u32)(fog);
+    }
+    OUT_00213A40->color = spr->f100;
+    OUT_00213A40->s = IN_00213A40->u / spr->res[3] / 4096.0f;
+    OUT_00213A40->t = IN_00213A40->v / spr->res[3] / 4096.0f;
+    OUT_00213A40->q = 1.0f / spr->res[3];
+    return 1;
+}
+
+#undef OUT_00213A40
+#undef IN_00213A40
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
 
