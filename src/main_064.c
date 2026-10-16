@@ -112,7 +112,66 @@ void Taku_Camp_What_KATIMAKE(int side)
     D_0034F6F0 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_064", Taku_Nagare2_set);
+/* Taku_Nagare2_set at optimisation level 3: the shape from the dotr_decomp project's near-miss drop
+ * (dotr-big/dev/near-misses-2026-10-16, CC0), in this project's names. */
+
+typedef struct {
+    u8 pad[0x26];
+    s16 slots[7];
+} Side_00228460;
+
+typedef struct {
+    f32 x[64];
+    f32 z[64];
+    s16 count;
+    s16 value;
+} Path_00228460;
+
+typedef struct {
+    u8 pad0[0x22C];
+    Path_00228460 paths[2][16];
+} Work_00228460;
+
+#pragma optimization_level 3
+
+void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
+    extern Side_00228460 D_00298BA0[];
+    Work_00228460 *work;
+    s16 i;
+
+    switch (*(s16 *)0x01ED536C) {
+    case 0:
+        *(s16 *)0x01ED001C = 1;
+        *(s16 *)0x01ED001A = 0;
+        Taku_Dodai_Root_init(player, side, 3, items, count);
+        (*(s16 *)0x01ED536C)++;
+    case 1:
+        if (*(s16 *)0x01ED001C == 2) {
+            if (player == 0) {
+                work = (Work_00228460 *)0x01ED0000;
+                for (i = 0; i < count; i++) {
+                    if (work->paths[player][items[i]].value != 3) {
+                        work->paths[player][items[i]].value = D_00298BA0[side].slots[i];
+                    } else {
+                        work->paths[player][items[i]].value = 3;
+                    }
+                }
+            } else {
+                s16 n = items[0];
+                if (((Work_00228460 *)0x01ED0000)->paths[player][n].value != 3) {
+                    ((Work_00228460 *)0x01ED0000)->paths[player][n].value = 1;
+                } else {
+                    ((Work_00228460 *)0x01ED0000)->paths[player][n].value = 3;
+                }
+            }
+            (*(s16 *)0x01ED536C)++;
+        }
+        break;
+    }
+    Taku_Tyumoku_ido0(player, side, items, count);
+    Taku_Tyumoku_ido_kettei(player, side, 2);
+}
+#pragma optimization_level reset
 
 typedef struct {
     u8 pad[0x46];
