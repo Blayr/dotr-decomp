@@ -665,7 +665,122 @@ s32 func_00188630(void *arg0, s32 MBA, s32 MBAinc, s32 mb_type, s32 motion_type,
 
 #undef IPU_BUSY_00188630
 
-INCLUDE_ASM("asm/nonmatchings/main_028", _getAllRefs);
+/* libmpeg form_predictions (mpeg2decode recon.c, Sony's IPU version) */
+
+typedef struct MpegDec_00188880 {
+    u8 unk0[0x120];
+    s32 second_field;
+    u8 unk124[0x2C];
+    s32 picture_coding_type;
+    u8 unk154[0x20];
+    s32 picture_structure;
+    u8 unk178[0x40];
+    s32 fwd;
+    s32 bwd;
+    s32 unk1C0[2];
+    s32 fwd_top;
+    s32 bwd_top;
+    s32 unk1D0[2];
+    s32 fwd_bot;
+    s32 bwd_bot;
+    u8 unk1E0[0x4DC];
+    s32 n;
+    u8 unk6C0[0x150];
+    s32 cur;
+} MpegDec_00188880;
+
+extern char D_002BC6D0[];
+extern char D_002BC6F0[];
+extern char D_002BC710[];
+extern void _getRef0(MpegDec_00188880 *d, s32 ref, s32 sfield, s32 dfield, s32 yoff, s32 h, s32 bx, s32 by,
+                          s32 dx, s32 dy, s32 fld, s32 avg);
+
+void _getAllRefs(void *arg0, s32 bx, s32 by, s32 mb_type, s32 motion_type, s32 PMV[2][2][2],
+                   s32 mvfs[2][2], s32 *dmvector) {
+    MpegDec_00188880 *d = arg0;
+    s32 currentfield;
+    s32 DMV[2][2];
+    s32 pf[2][2];
+    s32 ptype;
+    s32 avg;
+    s32 one;
+
+    one = 1;
+    avg = 0;
+    *(s32 *)((u8 *)&d->n + d->cur * 0x140) = 0;
+    if ((mb_type & 8) || d->picture_coding_type == 2) {
+        if (d->picture_structure == 3) {
+            if (motion_type == 2 || !(mb_type & 8)) {
+                _getRef0(d, d->fwd, 0, 0, 0, 16, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+            } else if (motion_type == 1) {
+                _getRef0(d, d->fwd, mvfs[0][0], 0, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1] >> 1, one, 0);
+                _getRef0(d, d->fwd, mvfs[1][0], 1, 0, 8, bx, by, PMV[1][0][0], PMV[1][0][1] >> 1, one, 0);
+            } else if (motion_type == 3) {
+                _dualPrimeVector(d, DMV, dmvector, PMV[0][0][0], PMV[0][0][1] >> 1);
+                _getRef0(d, d->fwd, 0, 0, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1] >> 1, one, 0);
+                _getRef0(d, d->fwd, 1, 0, 0, 8, bx, by, DMV[0][0], DMV[0][1], one, 1);
+                _getRef0(d, d->fwd, 1, 1, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1] >> 1, one, 0);
+                _getRef0(d, d->fwd, 0, 1, 0, 8, bx, by, DMV[1][0], DMV[1][1], one, 1);
+            } else {
+                _Error1((s32)d, D_002BC6D0, motion_type);
+            }
+        } else {
+            currentfield = d->picture_structure == 2;
+            pf[0][0] = d->fwd_top;
+            pf[0][1] = d->fwd_bot;
+            pf[1][0] = d->bwd_top;
+            pf[1][1] = d->bwd_bot;
+            ptype = 2;
+            one = 0;
+            if (d->picture_coding_type == ptype && d->second_field != 0) {
+                one = currentfield != mvfs[0][0];
+            }
+            if (motion_type == 1 || !(mb_type & 8)) {
+                _getRef0(d, pf[one][mvfs[0][0]], 0, 0, 0, 16, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+            } else if (motion_type == 2) {
+                _getRef0(d, pf[one][mvfs[0][0]], 0, 0, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+                one = d->picture_coding_type == 2 && d->second_field != 0 && currentfield != mvfs[1][0];
+                _getRef0(d, pf[one][mvfs[1][0]], 0, 0, 8, 8, bx, by, PMV[1][0][0], PMV[1][0][1], 0, 0);
+            } else if (motion_type == 3) {
+                if (d->second_field != 0) {
+                    one = 1;
+                } else {
+                    one = 0;
+                }
+                _dualPrimeVector(d, DMV, dmvector, PMV[0][0][0], PMV[0][0][1]);
+                _getRef0(d, pf[0][currentfield], 0, 0, 0, 16, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+                _getRef0(d, pf[one][!currentfield], 0, 0, 0, 16, bx, by, DMV[0][0], DMV[0][1], 0, 1);
+            } else {
+                _Error1((s32)d, D_002BC6F0, motion_type);
+            }
+        }
+        avg = 1;
+    }
+
+    if (mb_type & 4) {
+        if (d->picture_structure == 3) {
+            one = 1;
+            if (motion_type == 2) {
+                _getRef0(d, d->bwd, 0, 0, 0, 16, bx, by, PMV[0][1][0], PMV[0][1][1], 0, avg);
+            } else {
+                _getRef0(d, d->bwd, mvfs[0][1], 0, 0, 8, bx, by, PMV[0][1][0], PMV[0][1][1] >> 1, one, avg);
+                _getRef0(d, d->bwd, mvfs[1][1], 1, 0, 8, bx, by, PMV[1][1][0], PMV[1][1][1] >> 1, one, avg);
+            }
+        } else {
+            if (motion_type == 1) {
+                _getRef0(d, mvfs[0][1] ? d->bwd_bot : d->bwd_top, 0, 0, 0, 16, bx, by, PMV[0][1][0],
+                              PMV[0][1][1], 0, avg);
+            } else if (motion_type == 2) {
+                _getRef0(d, mvfs[0][1] ? d->bwd_bot : d->bwd_top, 0, 0, 0, 8, bx, by, PMV[0][1][0],
+                              PMV[0][1][1], 0, avg);
+                _getRef0(d, mvfs[1][1] ? d->bwd_bot : d->bwd_top, 0, 0, 8, 8, bx, by, PMV[1][1][0],
+                              PMV[1][1][1], 0, avg);
+            } else {
+                _Error1((s32)d, D_002BC710, motion_type);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_028", _getRef0);
 
