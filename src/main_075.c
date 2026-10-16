@@ -2240,7 +2240,616 @@ s32 Ta_Eff_065(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_075", Ta_Manage_ActEfc);
+struct ActEfcInfo_00263930_s {
+    u32 dwID;
+    u32 dwParam;
+};
+
+struct ActEfcEffect_00263930_s {
+    s32 eNO;
+    u32 dwFrom;
+    u32 dwTo;
+    u32 dwPar;
+};
+
+struct ActEfcKind_00263930_s {
+    u8 bType;
+    u8 bKind;
+};
+
+#pragma conditional_move on
+
+s32 Ta_Manage_ActEfc(ActEfcInfo_00263930 *eInfo, s32 nSide, s32 nID, s32 eSide, s32 eID, s32 nX, s32 nZ,
+                     ActEfcEffect_00263930 *Effect, ActEfcKind_00263930 *pInfo, u8 bHeap)
+{
+    extern s32 SzDuel_SetUnitDelayCount();
+    extern s32 SzDuel_GetUnitCardNo();
+    s32 i;
+    s32 temp;
+    s32 Num;
+    s32 LOC;
+    s32 eObj;
+    s32 Unit;
+    s32 Unit2;
+    s32 EFC;
+    s32 NUM;
+    s32 fN;
+    s32 fE;
+    s32 pKindP;
+    s32 pKindS;
+    ActEfcInfo_00263930 *eTemp;
+
+    eObj = 0;
+    pKindP = 0;
+    i = 0;
+    do {
+        i++;
+    } while (i < 0x31);
+    pInfo->bType = 0;
+    pInfo->bKind = 0;
+    fE = 0;
+    fN = 0;
+    switch ((u32)(Unit = eInfo->dwID) >> 8) {
+    case 2:
+        switch ((u16)eInfo->dwParam) {
+        case 8:
+            Effect->eNO = 2;
+            Effect->dwFrom = (nZ << 8) | nX;
+            Effect->dwTo = eInfo->dwParam >> 16;
+            Effect->dwPar = (u16)eInfo->dwParam;
+            break;
+        default:
+            Effect->eNO = 2;
+            Effect->dwFrom = (nZ << 8) | nX;
+            Effect->dwTo = eInfo->dwParam >> 16;
+            Effect->dwPar = (u16)eInfo->dwParam;
+            break;
+        }
+        return 1;
+    case 0x12:
+        if ((eInfo->dwParam >> 16) == 0x16) {
+            NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, Unit & 0x3F, 0x16);
+        } else {
+            NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3,
+                                    ((eInfo->dwParam >> 16) << 16) | (Unit & 0x3F), 0xE);
+        }
+        if (NUM == 0) {
+            return 0;
+        }
+        Effect->eNO = 0x1D;
+        Effect->dwFrom = 1;
+        Effect->dwTo = NUM;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        return 1;
+    case 0x13:
+        if (eID > 0 && eSide >= 0 && (bHeap & 0xFF) != 2) {
+            eObj = ConvUnitIDtoFlagList(0, eSide, eID);
+        } else {
+            return 0;
+        }
+        Effect->eNO = 0x39;
+        Effect->dwFrom = 0;
+        Effect->dwTo = eObj;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        return eObj == 0 ? 0 : 1;
+    case 0x33:
+        NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3,
+                                ((eInfo->dwParam >> 16) << 16) | (0x3F & Unit), 0xE);
+        Effect->eNO = 0x3F;
+        Effect->dwFrom = 0;
+        Effect->dwTo = NUM;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        return NUM == 0 ? 0 : 1;
+    case 0x17:
+        if (0x1A == (pKindP = Unit & 0x3F)) {
+            if (eID > 0 && eSide >= 0 && (bHeap & 0xFF) != 2) {
+                NUM = ConvUnitIDtoFlagList(0, eSide, eID);
+            } else {
+                return 0;
+            }
+        } else {
+            NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, pKindP, 0xE);
+        }
+        Effect->eNO = 0;
+        Effect->dwFrom = 0;
+        Effect->dwTo = NUM;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        if (0 == NUM) {
+            return 0;
+        }
+        return 1;
+    case 0xD:
+        Effect->eNO = 8;
+        Effect->dwFrom = 0;
+        Effect->dwTo = Ta_GetEOwnerSide(Ta_GetCurrentSide(nSide, nID), (eInfo->dwID >> 6) & 3);
+        Effect->dwPar = ((eInfo->dwParam >> 16) << 16) | (eInfo->dwParam & 0xFFFF);
+        return 1;
+    case 0x14:
+        if ((Unit = Ta_IsUnitControl(nSide, nID)) != SzDuel_GetTurnOwner()) {
+            return 0;
+        }
+        if ((Unit = Ta_IsActiveTrapB(nSide == 0 ? 1 : 0, 0x4C)) >= 0) {
+            if (Ta_IsActiveTrapB(nSide == 0 ? 1 : 0, 0x2E) >= 0) {
+                Effect->eNO = 1;
+                Effect->dwFrom = Ta_GetCurrentSide(nSide, nID) | 0x20000;
+                Effect->dwTo = Ta_GetSummonablePiece(Ta_GetCurrentSide(nSide, nID), 1);
+                Effect->dwPar = 0;
+                switch ((eInfo->dwID >> 6) & 3) {
+                case 3:
+                    LOC = 2;
+                    break;
+                case 1:
+                    LOC = Ta_GetCurrentSide(nSide, nID) != 0 ? 1 : 0;
+                    break;
+                }
+                Num = 0;
+                switch (eInfo->dwID & 0x3F) {
+                case 0x1E:
+                    if (LOC == 2) {
+                        Num += TaUtil_GetGraveCardNum(0, 1);
+                        Num += TaUtil_GetGraveCardNum(1, 1);
+                        Num += TaUtil_GetGraveCardNum(0, 2);
+                        Num += TaUtil_GetGraveCardNum(1, 2);
+                        Num += TaUtil_GetGraveCardNum(0, 3);
+                        Num += TaUtil_GetGraveCardNum(1, 3);
+                        Num += TaUtil_GetGraveCardNum(0, 4);
+                        Num += TaUtil_GetGraveCardNum(1, 4);
+                        Num += TaUtil_GetGraveCardNum(0, 5);
+                        Num += TaUtil_GetGraveCardNum(1, 5);
+                    } else {
+                        Num += TaUtil_GetGraveCardNum(LOC, 1);
+                        Num += TaUtil_GetGraveCardNum(LOC, 2);
+                        Num += TaUtil_GetGraveCardNum(LOC, 3);
+                        Num += TaUtil_GetGraveCardNum(LOC, 4);
+                        Num += TaUtil_GetGraveCardNum(LOC, 5);
+                    }
+                    if (Num == 0) {
+                        return 0;
+                    }
+                    pKindS = 2;
+                    break;
+                default:
+                    return 0;
+                }
+                pInfo->bType = 0;
+                pInfo->bKind = (LOC << 4) | pKindS;
+                return 4;
+            } else {
+                Effect->eNO = 0x66;
+                Effect->dwFrom = 1;
+                Effect->dwTo = Unit;
+                Effect->dwPar = 0;
+                return 1;
+            }
+        } else {
+            if (Ta_GetSummonablePiece(Ta_GetCurrentSide(nSide, nID), 1) < 0) {
+                return 0;
+            }
+            Effect->eNO = 1;
+            Effect->dwFrom = Ta_GetCurrentSide(nSide, nID) | 0x20000;
+            Effect->dwTo = Ta_GetSummonablePiece(Ta_GetCurrentSide(nSide, nID), 1);
+            Effect->dwPar = 0;
+            switch ((eInfo->dwID >> 6) & 3) {
+            case 3:
+                LOC = 2;
+                break;
+            case 1:
+                LOC = Ta_GetCurrentSide(nSide, nID) != 0 ? 1 : 0;
+                break;
+            }
+            Num = 0;
+            switch (eInfo->dwID & 0x3F) {
+            case 0x1E:
+                if (LOC == 2) {
+                    Num += TaUtil_GetGraveCardNum(0, 1);
+                    Num += TaUtil_GetGraveCardNum(1, 1);
+                    Num += TaUtil_GetGraveCardNum(0, 2);
+                    Num += TaUtil_GetGraveCardNum(1, 2);
+                    Num += TaUtil_GetGraveCardNum(0, 3);
+                    Num += TaUtil_GetGraveCardNum(1, 3);
+                    Num += TaUtil_GetGraveCardNum(0, 4);
+                    Num += TaUtil_GetGraveCardNum(1, 4);
+                    Num += TaUtil_GetGraveCardNum(0, 5);
+                    Num += TaUtil_GetGraveCardNum(1, 5);
+                } else {
+                    Num += TaUtil_GetGraveCardNum(LOC, 1);
+                    Num += TaUtil_GetGraveCardNum(LOC, 2);
+                    Num += TaUtil_GetGraveCardNum(LOC, 3);
+                    Num += TaUtil_GetGraveCardNum(LOC, 4);
+                    Num += TaUtil_GetGraveCardNum(LOC, 5);
+                }
+                if (Num == 0) {
+                    return 0;
+                }
+                pKindS = 2;
+                break;
+            default:
+                return 0;
+            }
+            pInfo->bType = 0;
+            pInfo->bKind = (LOC << 4) | pKindS;
+            return pKindS;
+        }
+    case 0x23:
+        NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, Unit & 0x3F, 0xE);
+        NUM = ConvUnitIDtoFlagList_OFF(NUM, nSide, nID);
+        if (eID > 0 && eSide >= 0 && (bHeap & 0xFF) == 2) {
+            NUM = ConvUnitIDtoFlagList_OFF(NUM, eSide, eID);
+        }
+        Effect->eNO = 0xD;
+        Effect->dwFrom = 5;
+        Effect->dwTo = NUM;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        return NUM == 0 ? 0 : 1;
+    case 0x18:
+        NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3,
+                                ((eInfo->dwParam >> 16) << 16) | (0x3F & Unit), 0xE);
+        NUM = ConvUnitIDtoFlagList_OFF(NUM, nSide, nID);
+        if ((eInfo->dwID & 0x3F) == 0x2D) {
+            Unit2 = Ta_GetMaximumOrderUnitFromFlagList(NUM);
+            NUM = ConvUnitIDtoFlagList(0, Unit2 >> 8, Unit2 & 0xFF);
+        }
+        Effect->eNO = 0xD;
+        Effect->dwFrom = 4;
+        Effect->dwTo = NUM;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        if (NUM == 0) {
+            return 0;
+        }
+        return 1;
+    case 4:
+        if (0x1A == (pKindP = 0x3F & Unit)) {
+            if (eID <= 0 || eSide < 0 || (bHeap & 0xFF) == 2) {
+                return 0;
+            }
+            switch (eInfo->dwParam >> 16) {
+            case 2:
+                if ((SzDuel_GetUnitKind(eSide, eID) & 0x1F) == 2) {
+                    eObj = ConvUnitIDtoFlagList(0, eSide, eID);
+                }
+                break;
+            default:
+                eObj = ConvUnitIDtoFlagList(0, eSide, eID);
+                break;
+            }
+        } else if (pKindP == 0x30) {
+            Unit2 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), 3, 0x1F, 0xE);
+            Unit2 = ConvUnitIDtoFlagList_OFF(Unit2, nSide, nID);
+            Unit2 = Ta_GetRandomUnit(Unit2);
+            if (Unit2 < 0) {
+                return 0;
+            }
+            eObj = ConvUnitIDtoFlagList(0, Unit2 >> 8, 0xFF & Unit2);
+        } else if ((eInfo->dwParam >> 16) != 0) {
+            temp = SzDuel_GetUnitLoc(nSide, nID);
+            Unit = eInfo->dwID;
+            eObj = SearchUnitByRange(temp & 0xFF, temp >> 8, Ta_GetCurrentSide(nSide, nID),
+                                     ((u32)Unit >> 6) & 3, Unit & 0x3F, eInfo->dwParam >> 16);
+        } else {
+            eObj = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, pKindP, 0xE);
+        }
+        Effect->eNO = 0x15;
+        Effect->dwFrom = 0;
+        Effect->dwTo = eObj;
+        Effect->dwPar = 0;
+        if (0 == eObj) {
+            return 0;
+        }
+        if (eID > 0 && eSide >= 0) {
+            if (Ta_GetAgreeOwnerIDon22bitFlagLst((eSide << 8) | eID, eObj) != 0) {
+                if ((bHeap & 0xFF) > 0) {
+                    return 0x201;
+                }
+                return 1;
+            }
+            if (Ta_GetAgreeOwnerIDon22bitFlagLst((nSide << 8) | nID, eObj) != 0) {
+                if ((0xFF & bHeap) > 0) {
+                    return 0x401;
+                }
+                return 1;
+            }
+        }
+        return 1;
+    case 0x38:
+        switch (eInfo->dwParam >> 16) {
+        case 0x1F:
+            if ((Unit = Ta_GetSummonablePiece(Ta_IsUnitControl(nSide, nID), 1)) > 0 &&
+                Ta_GetUnitNum(Ta_IsUnitControl(nSide, nID), 4) < 5) {
+                if (SzDuel_GetUnitCardNo(nSide, nID) != 0x129 && SzDuel_GetUnitCardNo(nSide, nID) != 0x112) {
+                    Effect->eNO = 1;
+                    Effect->dwFrom = Ta_GetCurrentSide(nSide, nID) | 0x10000;
+                    Effect->dwTo = Unit;
+                    Effect->dwPar = (u16)eInfo->dwParam;
+                } else {
+                    Effect->eNO = 1;
+                    Effect->dwFrom = Ta_GetCurrentSide(nSide, nID);
+                    Effect->dwTo = Unit;
+                    Effect->dwPar = (u16)eInfo->dwParam;
+                }
+            } else {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+        return 1;
+    case 0x16:
+        if ((Unit = eInfo->dwParam >> 16) == 0x1A) {
+            if (eID > 0 && eSide >= 0 && (bHeap & 0xFF) != 2) {
+                NUM = ConvUnitIDtoFlagList(0, eSide, eID);
+            } else {
+                return 0;
+            }
+        } else {
+            NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), 3, Unit, 0xE);
+        }
+        Effect->eNO = 0x40;
+        Effect->dwFrom = NUM;
+        Effect->dwTo = (nSide << 8) | nID;
+        Effect->dwPar = 0;
+        if (NUM == 0) {
+            return 0;
+        }
+        return 1;
+    case 0x1A:
+        Effect->eNO = 0x41;
+        Effect->dwFrom = 0;
+        Effect->dwTo = Ta_GetCurrentSide(nSide, nID);
+        Effect->dwPar = (u16)eInfo->dwParam;
+        return 1;
+    case 0x26:
+        Effect->eNO = 0x21;
+        Effect->dwFrom = 0;
+        Effect->dwTo = Ta_GetCurrentSide(nSide, nID);
+        Effect->dwPar = 0;
+        return 1;
+    case 0x35:
+        Unit = ConvUnitIDtoFlagList(0, nSide, nID);
+        if (Unit == 0) {
+            return 0;
+        }
+        switch ((EFC = eInfo->dwID) & 0x3F) {
+        case 0x22:
+            Effect->eNO = 0x1D;
+            Effect->dwFrom = 1;
+            Effect->dwTo = Unit;
+            Effect->dwPar = (u16)eInfo->dwParam;
+            return (eInfo->dwParam >> 16) == SzDuel_GetUnitCardNo(Ta_GetCurrentSide(nSide, nID), 0) ? 1 : 0;
+        case 0x38:
+            Effect->eNO = 0x1D;
+            Effect->dwFrom = 1;
+            Effect->dwTo = Unit;
+            Effect->dwPar = (u16)eInfo->dwParam;
+            return (eInfo->dwParam >> 16) == (SzDuel_GetUnitKind(Ta_GetCurrentSide(nSide, nID), 0) & 0x1F) ? 1 : 0;
+        case 0x2E:
+            Unit2 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), 3, eInfo->dwParam >> 16, 0xE);
+            NUM = (u16)eInfo->dwParam * Ta_GetUnitNumFrom22bitFlagList(Unit2);
+            Effect->eNO = 0x1D;
+            Effect->dwFrom = 1;
+            Effect->dwTo = Unit;
+            Effect->dwPar = NUM;
+            return NUM != 0 ? 1U : 0U;
+        case 0x2F:
+            Unit = ConvUnitIDtoFlagList(Unit, nSide, nID);
+            if ((eInfo->dwParam >> 16) == 0x1D) {
+                temp = (u16)eInfo->dwParam * TaUtil_GetGraveCardNum(Ta_IsUnitControl(nSide, nID), 0);
+            } else if ((eInfo->dwParam >> 16) == 0x1C) {
+                temp = (u16)eInfo->dwParam * (TaLogic_GetGraveCardCount(nSide, 3, 0x3C) +
+                                              TaLogic_GetGraveCardCount(nSide, 3, 0x57));
+            }
+            if (temp <= 0) {
+                return 0;
+            }
+            Effect->eNO = 0x1D;
+            Effect->dwFrom = 1;
+            Effect->dwTo = Unit;
+            Effect->dwPar = temp;
+            return 1;
+        default:
+            return 0;
+        }
+    case 0x1E:
+        NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, Unit & 0x3F, 0xE);
+        NUM = ConvUnitIDtoFlagList_OFF(NUM, nSide, nID);
+        Effect->eNO = 0xF;
+        Effect->dwFrom = 0;
+        Effect->dwTo = NUM;
+        Effect->dwPar = 0;
+        return NUM == 0 ? 0 : 1;
+    case 0x36:
+    case 0x37:
+        if ((pKindP = Unit & 0x3F) == 0x1A) {
+            if (eID > 0 && eSide >= 0 && (bHeap & 0xFF) != 2) {
+                NUM = ConvUnitIDtoFlagList(0, eSide, eID);
+            } else {
+                return 0;
+            }
+        } else {
+            NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, pKindP, 0xE);
+        }
+        NUM = ConvUnitIDtoFlagList_OFF(NUM, nSide, nID);
+        Effect->eNO = 0x42;
+        Effect->dwFrom = eInfo->dwID >> 8;
+        Effect->dwTo = NUM;
+        Effect->dwPar = (u16)eInfo->dwParam;
+        if (NUM == 0) {
+            return 0;
+        }
+        return 1;
+    case 0x24:
+        if ((Unit & 0x3F) == 0x1A) {
+            if (eID > 0 && eSide >= 0 && (0xFF & bHeap) != 2) {
+                eObj = ConvUnitIDtoFlagList(0, eSide, eID);
+                Effect->eNO = 0x1E;
+                Effect->dwFrom = 0;
+                Effect->dwTo = eObj;
+                Effect->dwPar = Ta_GetCurrentSide(eSide, nID);
+            } else {
+                return 0;
+            }
+        } else if ((Unit & 0x3F) == 0x1B) {
+            eObj = ConvUnitIDtoFlagList(0, nSide, nID);
+            Effect->eNO = 0x1E;
+            Effect->dwFrom = 0;
+            Effect->dwTo = eObj;
+            Effect->dwPar = Ta_GetCurrentSide(nSide, nID);
+        }
+        if (eID > 0 && eSide >= 0 && (0xFF & bHeap) != 2 &&
+            Ta_GetAgreeOwnerIDon22bitFlagLst((eSide << 8) | eID, eObj) != 0) {
+            fE = 1;
+        }
+        if (nSide >= 0 && nID >= 0 &&
+            Ta_GetAgreeOwnerIDon22bitFlagLst((nSide << 8) | nID, eObj) != 0) {
+            fN = 1;
+        }
+        if ((0xFF & bHeap) == 1) {
+            return (fN << 10) | ((fE << 9) | 1);
+        }
+        return 1;
+    case 0x1F:
+        if (Ta_SearchUncTypeNaturalEffectUserNum(0x39) > 0) {
+            return 0;
+        }
+        Unit = eInfo->dwID;
+        switch (pKindP = Unit & 0x3F) {
+        case 0x1A:
+            if (eID <= 0 || eSide < 0 || (bHeap & 0xFF) == 2) {
+                return 0;
+            }
+            switch (eInfo->dwParam >> 16) {
+            case 0xE:
+                if ((SzDuel_GetUnitKind(Ta_GetCurrentSide(eSide, eID), eID) & 0x1F) == 0xE) {
+                    NUM = ConvUnitIDtoFlagList(0, eSide, eID);
+                } else {
+                    return 0;
+                }
+                break;
+            default:
+                NUM = ConvUnitIDtoFlagList(0, eSide, eID);
+                break;
+            }
+            Effect->eNO = 0x1A;
+            Effect->dwFrom = Ta_GetCurrentSide(nSide, nID);
+            Effect->dwTo = NUM;
+            Effect->dwPar = 0xFFFE;
+            if (NUM == 0) {
+                return 0;
+            }
+            if ((bHeap & 0xFF) == 1) {
+                return 0x101;
+            }
+            return 1;
+        default:
+            NUM = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), ((u32)Unit >> 6) & 3, pKindP, 0xE);
+            Effect->eNO = 0x1A;
+            Effect->dwFrom = Ta_GetCurrentSide(nSide, nID);
+            Effect->dwTo = NUM;
+            Effect->dwPar = 0xFFFE;
+            if (NUM == 0) {
+                return 0;
+            }
+            if (Ta_GetAgreeOwnerIDon22bitFlagLst((eSide << 8) | eID, NUM) == 1) {
+                if ((bHeap & 0xFF) == 1) {
+                    return 0x101;
+                }
+                return 1;
+            }
+            return 1;
+        }
+    case 0x25:
+        switch (eInfo->dwParam >> 16) {
+        case 0x1E:
+            if ((NUM = Ta_GetSummonablePiece(Ta_GetCurrentSide(nSide, nID) == 0 ? 1 : 0, 1)) >= 0) {
+                Effect->eNO = 0x1F;
+                Effect->dwFrom = (nSide << 8) | nID;
+                Effect->dwTo = 0;
+                Effect->dwPar = NUM;
+                if ((0xFF & bHeap) == 1) {
+                    return 0x801;
+                }
+                return 1;
+            }
+            break;
+        case 0x1F:
+            if ((NUM = Ta_GetSummonablePiece(Ta_GetCurrentSide(nSide, nID), 1)) >= 0) {
+                Effect->eNO = 0x1F;
+                Effect->dwFrom = (nSide << 8) | nID;
+                Effect->dwTo = 0;
+                Effect->dwPar = NUM;
+                if ((bHeap & 0xFF) == 1) {
+                    return 0x801;
+                }
+                return 1;
+            }
+            break;
+        case 0x20:
+            break;
+        }
+        return 0;
+    case 0x3C:
+        Unit = SzDuel_GetUnitLoc(nSide, nID);
+        NUM = SearchUnitByRange(0xFF & Unit, Unit >> 8, Ta_GetCurrentSide(nSide, nID), 3,
+                                 ((u16)eInfo->dwParam << 16) | (eInfo->dwID & 0x3F), 1);
+        if (NUM > 0 && (Unit = Ta_GetSummonablePiece(Ta_GetCurrentSide(nSide, nID) == 0 ? 1 : 0, 1)) >= 0) {
+            Unit2 = Ta_GetMinimumOrderUnitFromFlagList(NUM);
+            Effect->eNO = 0x1F;
+            Effect->dwFrom = Unit2;
+            Effect->dwTo = 0;
+            Effect->dwPar = Unit;
+            if (Unit2 == ((eSide << 8) | eID)) {
+                if ((0xFF & bHeap) == 2) {
+                    return 0x201;
+                }
+                return 1;
+            }
+            return 1;
+        }
+        return 0;
+    case 0x46:
+    case 0xC:
+        NUM = ConvUnitIDtoFlagList(0, nSide, nID);
+        Effect->eNO = 0x43;
+        Effect->dwFrom = 0;
+        Effect->dwTo = NUM;
+        Effect->dwPar = 0;
+        SzDuel_SetUnitDelayCount(nSide, nID, (eInfo->dwParam >> 16) + 1);
+        return NUM != 0 ? 1U : 0U;
+    case 0x57:
+        Effect->eNO = 0xE;
+        Effect->dwFrom = 0;
+        Effect->dwTo = Ta_GetCurrentSide(nSide, nID) == 0 ? 1 : 0;
+        Effect->dwPar = 1;
+        return 1;
+    case 0x51:
+        if (Ta_SearchUncTypeNaturalEffectUserNum(0x39) > 0) {
+            return 0;
+        }
+        if (eID > 0 && eSide >= 0 && (bHeap & 0xFF) != 2) {
+            Effect->eNO = 0x43;
+            Effect->dwFrom = (nSide << 8) | nID;
+            Effect->dwTo = (eSide << 8) | eID;
+            Effect->dwPar = 1;
+            eTemp = SzDuel_GetUnitEffect(eSide, eID, 2);
+            if (eTemp != NULL) {
+                eTemp->dwID = 0x51FD;
+                eTemp->dwParam = 0;
+            }
+            eTemp = SzDuel_GetUnitEffect(eSide, eID, 4);
+            if (eTemp != NULL) {
+                eTemp->dwID = 0x515C;
+                eTemp->dwParam = (((Ta_IsUnitControl(nSide, nID) << 8) | 0x1F) << 16) | 0x2A0;
+            }
+            TaUtil_DoOpen(eSide, eID, 1);
+            return ((bHeap & 0xFF) == 1) ? 0x101 : 1;
+        }
+        break;
+    default:
+        return 0;
+    }
+    return 0;
+}
+#pragma conditional_move reset
 
 typedef struct State_00265050 {
     u32 unk0;
