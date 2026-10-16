@@ -2590,7 +2590,234 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_074", Ta_Eff_009);
+typedef struct EffInfo_002594D0 {
+    s32 eNO;
+    u32 dwFrom;
+    u32 dwTo;
+    u32 dwPar;
+} EffInfo_002594D0;
+
+typedef struct EffTemp_002594D0 {
+    u16 wCount_1;
+    u16 wCount_2;
+    u16 wLvl;
+    u8 eID[24];
+    u8 pad1E[2];
+    s32 ePos[24];
+    u8 eMod[76];
+    u32 fObj;
+    u32 fObj2;
+    u8 oNum;
+    u8 padD5[11];
+    u8 camDat[32];
+    u8 bCamLvl;
+    u8 pad101;
+    u16 wCamTime;
+} EffTemp_002594D0;
+
+s32 Ta_Eff_009(void *arg0, void *arg1, s32 ID) {
+    extern s32 SzDuel_GetUnitOpenRate();
+    EffInfo_002594D0 *eInfo = arg0;
+    EffTemp_002594D0 *Temp = arg1;
+    s32 Unit;
+    s32 Unit2;
+    s32 Par;
+    EffInfo_002594D0 eCall;
+    EffInfo_002594D0 *pCall;
+
+    pCall = &eCall;
+    eCall.eNO = 999;
+    eCall.dwFrom = 0;
+    eCall.dwTo = 0;
+    eCall.dwPar = 0;
+    Par = Ta_GetLPRevByNaturalEffect(0x2C, (u16)eInfo->dwPar);
+    if (Par == 0) {
+        return 1;
+    }
+    SzDuel_SetWindowDraw(0);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        Temp->wCount_1 = 0x80;
+        SzEffect_SetCardColBusyFlag2(0, 1);
+        SzEffect_SetModelBusyFlag2(0, 1);
+        SzEffect_SetCardColBusyFlag2(0x100, 1);
+        SzEffect_SetModelBusyFlag2(0x100, 1);
+        TaEffect_LoadModule(Temp, 0x1FD);
+        if ((Unit = Ta_IsActiveTrapB(eInfo->dwTo == 0 ? 1 : 0, 0x29)) >= 0) {
+            TaEffect_LoadModule(Temp, 0x25A);
+            if ((Unit2 = Ta_IsActiveTrapB(eInfo->dwTo, 0x2E)) >= 0) {
+                TaView_ReqFocusCamera(0, Unit2, 0xB4, 0xB4);
+                SzEffect_SetCardColBusyFlag2(Unit2, 1);
+                SzEffect_SetModelBusyFlag2(Unit2, 1);
+            } else {
+                TaView_ReqFocusCamera2(0, eInfo->dwFrom, 0xFA);
+                SzEffect_SetCardColBusyFlag2(Unit, 1);
+                SzEffect_SetModelBusyFlag2(Unit, 1);
+                TaEffect_LoadModule(Temp, 0x223);
+            }
+        } else {
+            TaView_ReqFocusCamera2(0, eInfo->dwFrom, 0xFA);
+        }
+        return 1;
+    }
+    switch (Temp->wLvl) {
+    case 0:
+        if (Temp->wCount_1 > 0x30) {
+            Temp->wCount_1 -= 0xF;
+        } else {
+            Temp->wCount_1 = 0x30;
+            if (TaEffect_IsLoadModule(Temp) == 1) {
+                if ((Unit = Ta_IsActiveTrapB(eInfo->dwTo == 0 ? 1 : 0, 0x29)) < 0) {
+                    SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10B);
+                    TaView_ReqFireView(0x16, eInfo->dwTo << 8, 0x64, 0xB4);
+                    pCall->eNO = 0x1FD;
+                    pCall->dwFrom = eInfo->dwFrom;
+                    pCall->dwTo = eInfo->dwTo << 8;
+                    pCall->dwPar = Par;
+                    Temp->wLvl = 1;
+                } else {
+                    if ((Unit2 = Ta_IsActiveTrapB(eInfo->dwTo, 0x2E)) >= 0) {
+                        TaUtil_DoOpen(Unit2 >> 8, Unit2 & 0xFF, 1);
+                        Temp->wLvl = 0x10;
+                        Temp->wCount_2 = Unit2;
+                        return 1;
+                    }
+                    TaView_ReqFireView(0x16, eInfo->dwTo << 8, 0x64, 0xB4);
+                    pCall->eNO = 0x1FD;
+                    pCall->dwFrom = eInfo->dwFrom;
+                    pCall->dwTo = eInfo->dwTo << 8;
+                    pCall->dwPar = Par | 0x10000;
+                    Temp->wLvl = 2;
+                    Temp->wCount_2 = Unit;
+                    Temp->bCamLvl = 1;
+                }
+                Temp->eID[0] = Ta_Do_Effect(pCall, Temp);
+                Temp->oNum++;
+            }
+        }
+        if (Temp->wCount_1 < 0x30) {
+            Temp->wCount_1 = 0x30;
+        }
+        SzEffect_SetBlackOutForDuel((u8)Temp->wCount_1);
+        break;
+    case 1:
+        if (SzEffect_IsUse(Temp->eID[Temp->oNum - 1]) != 0) {
+            return 1;
+        }
+        SzDuel_CloseMsgPopup();
+        Ta_CalcLPinEffectSeq(eInfo->dwTo, eInfo->dwPar >> 16, eInfo->dwPar & 0xFFFF);
+        TaView_RestoreOriginalView(Temp, 0x10);
+        Temp->wCamTime = 0;
+        Temp->wLvl = 7;
+        break;
+    case 2:
+        if (SzEffect_IsUse(Temp->eID[Temp->oNum - 1]) == 0) {
+            Temp->wLvl++;
+            TaView_ReqFocusCamera(0, Temp->wCount_2, 0xB4, 0xB4);
+        }
+        return 1;
+    case 3:
+        if (SzDuel_GetUnitOpenRate(Temp->wCount_2 >> 8, Temp->wCount_2 & 0xFF) != 0xFF) {
+            if (SzDuel_GetUnitStatus(Temp->wCount_2 >> 8, Temp->wCount_2 & 0xFF, 4) == 0) {
+                TaUtil_DoOpen(Temp->wCount_2 >> 8, Temp->wCount_2 & 0xFF, 1);
+            }
+        } else {
+            SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(0x32E));
+            pCall->eNO = 0x25A;
+            pCall->dwFrom = 0;
+            pCall->dwTo = Temp->wCount_2;
+            pCall->dwPar = 0;
+            Temp->eID[Temp->oNum] = Ta_Do_Effect(pCall, Temp);
+            Temp->oNum++;
+            Temp->wLvl++;
+        }
+        break;
+    case 4:
+        if (SzEffect_IsUse(Temp->eID[Temp->oNum - 1]) == 0) {
+            SzDuel_SetUnitStatus(Temp->wCount_2 >> 8, Temp->wCount_2 & 0xFF, 0, 1);
+            Temp->wLvl++;
+            TaView_ReqBackFocusCamera(0, eInfo->dwTo << 8, 0xB4, 0xB4);
+        }
+        break;
+    case 5:
+        SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10B);
+        pCall->eNO = 0x223;
+        pCall->dwFrom = eInfo->dwTo << 8;
+        pCall->dwTo = (eInfo->dwTo == 0 ? 1 : 0) << 8;
+        pCall->dwPar = (u16)eInfo->dwPar;
+        Temp->eID[Temp->oNum] = Ta_Do_Effect(pCall, Temp);
+        Temp->oNum++;
+        Temp->wLvl++;
+        Temp->wCamTime = 0;
+        return 1;
+    case 6:
+        if (SzEffect_IsUse(Temp->eID[Temp->oNum - 1]) != 0) {
+            if (Temp->wCamTime++ == 6) {
+                TaView_ReqFireView(0x16, (eInfo->dwTo == 0 ? 1 : 0) << 8, 0x64, 0xB4);
+            }
+        } else {
+            SzDuel_CloseMsgPopup();
+            Ta_CalcLPinEffectSeq(eInfo->dwTo == 0 ? 1 : 0, eInfo->dwPar >> 16, eInfo->dwPar & 0xFFFF);
+            TaView_RestoreOriginalView(Temp, 0x10);
+            Temp->wCamTime = 0;
+            Temp->wLvl++;
+        }
+        break;
+    case 7:
+        Temp->wCount_1 += 0xF;
+        if (Temp->wCount_1 > 0x80) {
+            Temp->wCount_1 = 0x80;
+        }
+        SzEffect_SetBlackOutForDuel((u8)Temp->wCount_1);
+        if (Temp->wCount_1 == 0x80 && Temp->wCamTime++ > 0x10) {
+            SzEffect_SetCardColBusyFlag2(0, 0);
+            SzEffect_SetModelBusyFlag2(0, 0);
+            SzEffect_SetCardColBusyFlag2(0x100, 0);
+            SzEffect_SetModelBusyFlag2(0x100, 0);
+            SzEffect_SetCardColBusyFlag2(Temp->wCount_2, 0);
+            SzEffect_SetModelBusyFlag2(Temp->wCount_2, 0);
+            if (SzDuel_GetWindowDisp() != 0) {
+                SzDuel_SetWindowDraw(1);
+            }
+            SzDuel_CloseMsgPopup();
+            return 0;
+        }
+        break;
+    case 16:
+        if (SzDuel_GetUnitOpenRate(Temp->wCount_2 >> 8, Temp->wCount_2 & 0xFF) >= 0xFF) {
+            SzDuel_OpenMsgPopup(0, -0x78, 0x50, SzDuel_GetMsgName(0x339));
+            pCall->eNO = 0x25A;
+            pCall->dwFrom = 0;
+            pCall->dwTo = Temp->wCount_2;
+            pCall->dwPar = 0;
+            Temp->eID[Temp->oNum] = Ta_Do_Effect(pCall, Temp);
+            Temp->oNum++;
+            TaView_ReqFocusCamera2(0, eInfo->dwFrom, 0xFA);
+            Temp->wLvl++;
+        }
+        break;
+    case 17:
+        if (SzEffect_IsUse(Temp->eID[Temp->oNum - 1]) == 0) {
+            SzDuel_SetUnitStatus(Temp->wCount_2 >> 8, Temp->wCount_2 & 0xFF, 0, 1);
+            Temp->wLvl++;
+        }
+        return 1;
+    case 18:
+        TaView_ReqFireView(0x16, eInfo->dwTo << 8, 0x64, 0xB4);
+        pCall->eNO = 0x1FD;
+        pCall->dwFrom = eInfo->dwFrom;
+        pCall->dwTo = eInfo->dwTo << 8;
+        pCall->dwPar = Par;
+        Temp->eID[Temp->oNum] = Ta_Do_Effect(pCall, Temp);
+        Temp->oNum++;
+        Temp->wLvl = 1;
+        SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10B);
+        return 1;
+    default:
+        return 1;
+    }
+    return 1;
+}
 
 
 typedef struct Task_00259D90 {
