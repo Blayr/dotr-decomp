@@ -2243,6 +2243,7 @@ int Taku_Camp_Help_Window(int cursor);
 void Taku_Camp_Ivent(void);
 s32 Taku_Camp_Ivent_Ga(s32 cursor);
 void Taku_Camp_Ivent_Name_Set(void);
+s32 Taku_Camp_Ivent_Window(s32 arg0);
 s32 Taku_Camp_Kazu_Disp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void *Taku_Camp_Kumo(void *arg0);
 int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade);
@@ -5931,6 +5932,7 @@ void *func_0021DFF0(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s3
 void func_0021E330(void);
 s32 func_002232F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_00224A40(void);
+s32 func_00224E40(s32 arg0);
 void *func_00226120(void *arg0);
 void func_00226600(void);
 void func_00228150(int side);
