@@ -781,8 +781,6 @@ struct DotrWindowControl {
 };
 extern struct DotrWindowControl D_00317490_b;
 extern DotrDrawWord func_001B3790_b(DotrDrawWord cursor, int colour, int field, float f, int x, int y);
-extern DotrDrawWord lSzDuel_DrawWindow_CardInfo_Pipe(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
-                                                     unsigned char side, int a5, int a6, int a7, long a8, long a9);
 extern struct DotrWindowUnit *func_001DF540_b(int a, int b);
 extern struct DotrWindowUnit *func_001E36E0_b(int x, int y);
 extern DotrDrawWord func_001B3100_b(DotrDrawWord cursor, int a1, int a2, int a3);
@@ -791,6 +789,8 @@ extern DotrDrawWord func_001B6EA0_b(DotrDrawWord cursor, int x, int y, int a, in
 
 int SzDuel_DrawWindow_Pipe(int cursor)
 {
+    extern DotrDrawWord lSzDuel_DrawWindow_CardInfo_Pipe(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
+        unsigned char side, int a5, int a6, int a7, long a8, long a9);
     struct DotrWindowControl *g = &D_00317490_b;
     int off;
     struct DotrWindowUnit *unit;

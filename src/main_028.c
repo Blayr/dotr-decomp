@@ -650,6 +650,7 @@ s32 func_00188630(void *arg0, s32 MBA, s32 MBAinc, s32 mb_type, s32 motion_type,
     if (MBAinc == 1 && (mb_type & 2)) {
         skipped[d->idx * 80] = MBAinc;
     } else {
+        /* the original's own bug: zero is never set on the intra path (GCC folds it to $zero) */
         skipped[d->idx * 80] = zero;
     }
     intra_p[d->idx * 80] = intra;
