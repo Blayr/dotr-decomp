@@ -539,7 +539,6 @@ extern s32 D_0028D8F0;
 
 extern s32 D_002BD230;
 
-s32 func_001A3130();                                /* extern */
 
 
 
