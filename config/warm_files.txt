@@ -18,3 +18,4 @@ src/main_048.c
 src/big_func_0022F3C0.c
 src/main_067.c
 src/main_038.c
+src/main_059.c
