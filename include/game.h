@@ -251,7 +251,6 @@ extern volatile s32 D_0035060C;
 extern u16 D_002CD8A0[];
 extern u8 D_00318E60[];
 
-s32 SzMsg_LoadFont_Pipe(s32, s32, s32, s32, s32);
 
 
 

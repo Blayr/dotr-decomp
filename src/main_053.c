@@ -1054,7 +1054,227 @@ void SzMsg_LoadFont(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     RhBase_SetVifPacketArea(SzMsg_LoadFont_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_053", SzMsg_LoadFont_Pipe);
+typedef struct {
+    u32 count : 8;
+    u32 width : 12;
+    u32 height : 11;
+    s32 used : 1;
+    s32 x;
+    s32 y;
+    s32 pixelWidth;
+    s32 pixelHeight;
+} Texture_001FD680;
+
+typedef struct {
+    s32 width;
+    u8 pad[0x10];
+    s32 tbp;
+} Context_001FD680;
+
+s32 SzMsg_LoadFont_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    extern s32 D_002D19D0[];
+    extern u16 D_002D49D4[];
+    extern u8 D_002F8DEC[];
+    extern Context_001FD680 D_0031C070;
+    Context_001FD680 *context = &D_0031C070;
+    u8 *glyphs[17][53];
+    u8 runs[17][53];
+    u16 indices[17][53];
+    u16 counts[17];
+    u16 advances[17];
+    u16 lineCount;
+    s64 *packet = (s64 *)arg0;
+    Texture_001FD680 *texture;
+    u16 *stream;
+    u16 width;
+    u16 height;
+    u16 *count;
+    u16 *advance;
+    s32 n;
+    s32 clearIndex;
+    u16 *clearCount;
+    u16 *clearAdvance;
+    u8 *data;
+    u8 *out;
+    u16 maxCount;
+    s32 pixelHeight;
+    s32 maxWidth;
+    s32 glyphIndex;
+    u16 *nextId;
+    u8 **next;
+    s32 num;
+    s32 offset;
+    u16 *id;
+    s32 outputRow;
+    u8 **nextGlyph;
+    s32 rowSize;
+    u16 *nextCount;
+    s32 bytes;
+    u8 **lineGlyphs;
+    s32 lineIndex;
+    u8 *run;
+    u8 **glyph;
+    s32 outputGlyph;
+    u16 currentAdvance;
+    s32 pixelWidth;
+    s32 rows;
+    u8 *lineRuns;
+    s64 dimensions;
+    s64 coordinates;
+    s32 length;
+
+    texture = (Texture_001FD680 *)SzMsg_GetInfo(arg1);
+    stream = &D_002D49D4[D_002D19D0[arg2]];
+    width = 16;
+    height = 16;
+    lineCount = 0;
+    if (texture == 0) {
+        return arg0;
+    }
+    if (texture->used) {
+        return arg0;
+    }
+    count = counts;
+    advance = advances;
+    clearIndex = 0;
+    clearCount = count;
+    clearAdvance = advance;
+    do {
+        clearIndex++;
+        *clearCount++ = 0;
+        *clearAdvance++ = 0;
+    } while (clearIndex < 17);
+
+    do {
+        n = lSzMsg_FontTrace(stream, (char (*)[53])runs, (short (*)[53])indices, counts, advances, &lineCount);
+        if (stream[n - 1] & 0x8000) {
+            break;
+        }
+        stream += n;
+    } while (1);
+
+    lineCount++;
+    lineGlyphs = glyphs[0];
+    id = indices[0];
+    maxWidth = 0;
+    maxCount = maxWidth;
+    lineIndex = 0;
+    nextGlyph = lineGlyphs;
+    nextCount = count;
+    while (lineIndex < lineCount) {
+        num = *nextCount;
+        glyphIndex = 0;
+        nextId = id;
+        next = nextGlyph;
+        goto glyph_test;
+    glyph_loop:
+        *next = D_002F8DEC + *nextId * 242;
+        glyphIndex++;
+        nextId++;
+        next++;
+    glyph_test:
+        if (glyphIndex < num) {
+            goto glyph_loop;
+        }
+        if ((u16)maxWidth < (currentAdvance = *advance)) {
+            maxCount = *nextCount;
+            maxWidth = (u16)currentAdvance;
+        }
+        id += 53;
+        nextGlyph += 53;
+        nextCount++;
+        advance++;
+        lineIndex++;
+    }
+
+    pixelHeight = (u16)(lineCount * 22);
+    pixelWidth = (u16)maxWidth;
+    while (pixelWidth > (u16)width) {
+        width = (u16)(width * 2);
+    }
+    rows = (u16)pixelHeight;
+    while (rows > (u16)height) {
+        height = (u16)(height * 2);
+    }
+
+    dimensions = (s64)(u16)maxWidth | ((s64)(u16)pixelHeight << 32);
+    texture->used = 1;
+    texture->count = maxCount;
+    texture->width = width;
+    texture->height = height;
+    texture->x = arg3;
+    texture->y = arg4;
+    texture->pixelWidth = pixelWidth;
+    texture->pixelHeight = rows;
+
+    packet[1] = 0;
+    packet[0] = 0;
+    ((u8 *)packet)[3] = 16;
+    packet[2] = 4 | ((s64)0x10000000 << 32);
+    packet[3] = 14;
+    coordinates = ((s64)arg3 << 32) | ((s64)arg4 << 48);
+    packet[4] = ((s64)context->tbp << 32) |
+                      ((s64)(context->width >> 6) << 48) |
+                      ((s64)0x14000000 << 32);
+    packet[5] = 0x50;
+    packet[6] = coordinates;
+    packet[7] = 0x51;
+    packet[8] = dimensions;
+    packet[9] = 0x52;
+    packet[10] = 0;
+    packet[11] = 0x53;
+    n = pixelWidth >> 1;
+    packet[12] = (s64)((n * rows + 15) >> 4) |
+                       (0x8000 | ((s64)0x08000000 << 32));
+    out = (u8 *)(packet + 14);
+    packet[13] = 0;
+    lineRuns = runs[0];
+    lineIndex = 0;
+    while (lineIndex < lineCount) {
+        outputRow = 0;
+        do {
+            rowSize = 0;
+            outputGlyph = 0;
+            run = lineRuns;
+            glyph = lineGlyphs;
+            while (outputGlyph < *count) {
+                bytes = *run;
+                offset = 0;
+                if (0 < bytes) {
+                    do {
+                        *out++ = (*glyph)[offset++];
+                    } while (offset < (s32)bytes);
+                }
+                rowSize += bytes;
+                run++;
+                outputGlyph++;
+                *glyph += 11;
+                glyph++;
+            }
+            goto padding_test;
+        padding_loop:
+            *out++ = 0;
+            rowSize++;
+        padding_test:
+            if (rowSize < n) {
+                goto padding_loop;
+            }
+            outputRow++;
+        } while (outputRow < 22);
+        lineRuns += 53;
+        lineGlyphs += 53;
+        count++;
+        lineIndex++;
+    }
+    while ((s32)out % 16 != 0) {
+        out++;
+    }
+    length = (((s64 *)out - packet) >> 1) - 1;
+    *(u16 *)packet = length;
+    ((s32 *)packet)[2] = 0x11000000;
+    ((s32 *)packet)[3] = (u16)length | 0x51000000;
+    return (s32)out;
+}
 
 struct DotrSlotTableEntry {
     unsigned int unknown_000 : 31;
