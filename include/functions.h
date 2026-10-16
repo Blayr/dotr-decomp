@@ -3034,6 +3034,7 @@ s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s3
 s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y, s32 background, s32 image, s32 border, s32 shrink, s32 flipX, s32 flipY, s32 bright, u8 *rgb, s32 blend, u8 alpha);
 s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale);
 s32 lSzDuel_DrawWindow_Field_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 style, s32 x, s32 y, s32 cols, s32 rows, s64 bright);
 void lSzDuel_DrawWindow_Icon_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10);
 s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2);
 s32 lSzDuel_DrawWindow_PicItem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s64 arg6);
@@ -4927,7 +4928,7 @@ s32 func_001B3790(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale);
 void func_001B3C80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10);
 s32 func_001B3CC0(s32 packet, u16 *src, s32 x, s32 y, s32 background, s32 image, s32 border, s32 shrink, s32 flipX, s32 flipY, s32 bright, u8 *rgb, s32 blend, u8 alpha);
 s32 func_001B4540(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
-s32 func_001B4780(s32, s32, s32, s32, s32, s32, s32, s32, s64);
+s32 func_001B4780(s32 packet, s32 colorIndex, s32 icons, s32 style, s32 x, s32 y, s32 cols, s32 rows, s64 bright);
 s32 func_001B62F0(s32 packet, s32 x, s32 y, s32 columns, s32 rows);
 void func_001B65E0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 s32 func_001B65F0(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w, s32 h, s32 shadow, s32 style);

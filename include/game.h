@@ -407,7 +407,6 @@ extern s32 D_0031C048;
 extern u8 D_003181CA;
 
 
-s32 lSzDuel_DrawWindow_Frame_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s64);
 extern char D_002BF00B;
 
 extern s32 D_0028FF10[];
