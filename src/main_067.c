@@ -85,7 +85,147 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_067", Taku_Camp_TIKEI_Map_Hyouji);
+typedef struct Sprite_00236F90 {
+    s16 xy[8];
+    u8 pad10[0x14];
+    s16 tile;
+} Sprite_00236F90;
+
+typedef struct Work_00236F90 {
+    s16 pad0[3];
+    s16 counts[10];
+} Work_00236F90;
+
+s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
+    extern s32 Taku_Obj_Set(s32, void *, s16, s16);
+    extern s32 Taku_G4_Set(s32, void *, s16, s16);
+    extern s32 Taku_G4_Set2(s32, void *, s16, s16, s16, s16);
+    extern s32 SzDuel_DrawWindow_FontDigit_Pipe(s32, s32, s32, s32, s32, s32, s32);
+    extern Sprite_00236F90 D_0029AFA0;
+    extern Sprite_00236F90 D_0029AFD0;
+    extern u8 D_002CEE5C[];
+    extern Sprite_00236F90 D_002986B0[][2];
+    extern s16 D_00297BAE;
+    extern s16 D_00297BB0;
+    extern s16 D_00297BB2;
+    extern s16 D_00297BB4;
+    Work_00236F90 *work;
+    s8 *mode;
+    s32 row;
+    u8 *grid;
+    s32 col;
+    Sprite_00236F90 card;
+    Sprite_00236F90 bar;
+    s32 j;
+    s32 i;
+    s16 dy;
+    s32 cx;
+    s16 tile;
+    s32 cy;
+    f32 scale;
+    u8 *cell;
+    s32 k;
+
+    mode = &D_00299E10;
+    work = (Work_00236F90 *)0x01ED0000;
+    card = D_0029AFA0;
+    bar = D_0029AFD0;
+    for (i = 0; i < 10; i++) {
+        work->counts[i] = 0;
+    }
+    for (row = 0, grid = &D_002CEE5C[deck * 49]; row < 7; row++) {
+        cell = grid;
+        for (col = 0; col < 7; col++) {
+            switch ((s16)*cell) {
+            case 0:
+                tile = 'A';
+                work->counts[0]++;
+                break;
+            case 1:
+                tile = 'B';
+                work->counts[1]++;
+                break;
+            case 2:
+                tile = 'C';
+                work->counts[2]++;
+                break;
+            case 3:
+                tile = 'D';
+                work->counts[3]++;
+                break;
+            case 4:
+                tile = 'E';
+                work->counts[4]++;
+                break;
+            case 5:
+                tile = 'F';
+                work->counts[5]++;
+                break;
+            case 6:
+                tile = 'G';
+                work->counts[6]++;
+                break;
+            case 7:
+                tile = 'H';
+                work->counts[7]++;
+                break;
+            case 8:
+                tile = 'I';
+                work->counts[8]++;
+                break;
+            case 9:
+                tile = 'J';
+                work->counts[9]++;
+                break;
+            default:
+                tile = 'A';
+                break;
+            }
+            card.tile = tile;
+            if (*mode == 1) {
+                cx = 6 - col;
+                cy = 6 - row;
+            } else {
+                cx = col;
+                cy = row;
+            }
+            gp = Taku_Obj_Set(gp, &card, x + cx * 16, y + cy * 16);
+            cell++;
+        }
+        grid += 7;
+    }
+    for (i = 0, dy = 0; i < 10; i++) {
+        bar.xy[0] = D_00297BAE;
+        bar.xy[1] = D_00297BB0;
+        bar.xy[2] = D_00297BB2;
+        bar.xy[3] = D_00297BB0;
+        bar.xy[4] = D_00297BAE;
+        bar.xy[5] = D_00297BB4;
+        bar.xy[6] = D_00297BB2;
+        bar.xy[7] = D_00297BB4;
+        gp = Taku_G4_Set(gp, &bar, x, y + dy);
+        dy += 16;
+    }
+    for (i = 0, dy = 0; i < 10; i++, dy += 16) {
+        if (work->counts[i] >= 49) {
+            scale = 76.0f;
+        } else if (work->counts[i] <= 0) {
+            scale = 0.0f;
+        } else {
+            scale = (76.0f * work->counts[i]) / 49.0f;
+        }
+        for (k = 0; k < 2; k++) {
+            for (j = 0; j < 8; j++) {
+                D_002986B0[i][k].xy[j] = D_002986B0[0][k].xy[j];
+            }
+            gp = Taku_G4_Set2(gp, &D_002986B0[i][k], x, y + dy, scale, 0);
+        }
+        gp = SzDuel_DrawWindow_FontDigit_Pipe(gp, x + ((D_00297BAE + D_00297BB2) >> 1),
+                                              y + (dy + D_002986B0[i][0].xy[1]), 1, 2,
+                                              (u16)((work->counts[i] < 10) ? 1 : 2), work->counts[i]);
+    }
+    return gp;
+}
 
 extern u8 D_00298BA0[];
 extern u8 D_00299F60[];
