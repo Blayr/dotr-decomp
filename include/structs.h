@@ -83,4 +83,7 @@ struct TreeTag {
 /* The hand-card node SzDuel_DrawHandCard_Pipe takes as its second parameter (main_038). */
 typedef struct CardNode_001AF180_s CardNode_001AF180;
 
+/* SzDuel_SetupCard_Pipe's third parameter (main_043): the card being drawn. */
+typedef struct Draw_001DA7F0_s Draw_001DA7F0;
+
 #endif

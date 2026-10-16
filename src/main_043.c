@@ -1474,7 +1474,7 @@ s32 SzDuel_GetCardNodeUnitOnScreen(s32 arg0, f32 x, f32 y, void *arg1, void *arg
 }
 
 void SzDuel_SetupCard(s32 arg0, s32 arg1) {
-    RhBase_SetVifPacketArea(SzDuel_SetupCard_Pipe(RhBase_GetVifPacketArea(), arg0, arg1));
+    RhBase_SetVifPacketArea(SzDuel_SetupCard_Pipe(RhBase_GetVifPacketArea(), arg0, (Draw_001DA7F0 *)arg1));
 }
 
 INCLUDE_ASM("asm/nonmatchings/main_043", SzDuel_SetupCard_Pipe);
@@ -1507,7 +1507,7 @@ s32 SzDuel_SetupCard2_Pipe(s32 arg0, s32 arg1, void *arg2) {
     s32 i;
     Data_001DBC40 *data = arg2;
 
-    arg0 = SzDuel_SetupCard_Pipe(arg0, arg1, (s32)arg2);
+    arg0 = SzDuel_SetupCard_Pipe(arg0, arg1, arg2);
     if (data->update) {
         for (i = 0; i < data->count; i++) {
             data->packets[i].red = data->red;
