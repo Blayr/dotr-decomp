@@ -373,7 +373,170 @@ void ExSortPrim(s32 arg0, s32 arg1, s32 arg2) {
     RhBase_SetVifPacketArea(ExSortPrim_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", ExSortPrim_Pipe);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+    u64 data[1];
+} Source_00207650;
+
+typedef struct {
+    u32 tag;
+    void *next;
+} Link_00207650;
+
+typedef struct {
+    Link_00207650 *links;
+    u8 padding[8];
+    s32 shift;
+} Table_00207650;
+
+typedef struct {
+    u64 lower : 32;
+    u64 enabled : 1;
+    u64 upper : 31;
+} Register_00207650;
+
+typedef struct {
+    u16 loops : 15;
+    u16 end : 1;
+} Tag_00207650;
+
+
+s32 ExSortPrim_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern u8 D_00293D80[];
+    u64 *cursor;
+    u64 *start;
+    u64 registers;
+    s32 flags;
+    s32 context;
+    u64 *data;
+    s32 replace;
+    u16 count;
+    s32 texture;
+    s32 alpha;
+    s32 alphaMask;
+    s32 contextMask;
+    u32 primitive;
+    s32 restore;
+    s32 i;
+    u64 reg;
+    u16 length;
+    u64 prim64;
+    Register_00207650 saved;
+
+    cursor = (u64 *)arg0;
+    start = cursor;
+    registers = ((Source_00207650 *)arg1)->registers;
+    count = ((Source_00207650 *)arg1)->count;
+    data = ((Source_00207650 *)arg1)->data;
+    flags = ((Source_00207650 *)arg1)->flags;
+    alphaMask = flags & 0x200;
+    contextMask = flags & 0x1000;
+    if (alphaMask != 0) {
+        alpha = 1;
+    } else {
+        alpha = 0;
+    }
+    if (contextMask != 0) {
+        context = 1;
+    } else {
+        context = 0;
+    }
+    primitive = flags & 0xF;
+    if (primitive == 7) {
+        return arg0;
+    }
+    cursor[1] = 0;
+    cursor[0] = 0;
+    *((u8 *)cursor + 3) = 0x10;
+    if (arg2 != 0) {
+        Table_00207650 *table = (Table_00207650 *)arg2;
+        s32 limit = 1 << table->shift;
+        if (flags & 0x8000) {
+            arg3 = limit - 1;
+        } else if ((u32)(limit - 2) < (u32)arg3) {
+            arg3 = limit - 2;
+        }
+        *(void **)((u8 *)cursor + 4) =
+            *(void **)((s32)table->links + arg3 * 8 + 4);
+        *(void **)((s32)table->links + arg3 * 8 + 4) = cursor;
+    }
+    prim64 = primitive;
+    cursor[2] = 0x1000000000008000ULL;
+    cursor[3] = 0xE;
+    texture = flags & 0x20;
+    replace = flags & 0x800;
+    cursor[4] = ((s64)((flags & 0x2000) ? 1 : 0) << 10) |
+        (((s64)(contextMask ? 1 : 0) << 9) |
+        (((s64)(replace ? 1 : 0) << 8) |
+        (((s64)((flags & 0x400) ? 1 : 0) << 7) |
+        (((s64)(alphaMask ? 1 : 0) << 6) |
+        (((s64)((flags & 0x100) ? 1 : 0) << 5) |
+        (prim64 |
+        ((s64)((flags & 0x10) ? 1 : 0) * 8) |
+        ((s64)(texture ? 1 : 0) * 16)))))));
+    cursor[5] = 0;
+    cursor[6] = (s64)(alpha ? 1 : 0) | 0x5000C;
+    cursor[7] = (s64)(context + 0x47);
+    cursor += 8;
+    if (alphaMask != 0) {
+        cursor[0] = data[(u16)count];
+        cursor[1] = (s64)(context + 0x42);
+        cursor += 2;
+    }
+    if (texture != 0) {
+        u64 *extra = &data[(u16)count];
+        cursor[0] = extra[1];
+        cursor[1] = (s64)(context + 6);
+        cursor[2] = extra[2];
+        cursor[3] = (s64)(context + 0x14);
+        cursor += 4;
+        if (flags & 0x4000) {
+            cursor[0] = extra[3];
+            cursor[1] = (s64)(context + 8);
+            cursor += 2;
+        }
+    }
+    restore = flags & 0x8000;
+    if (restore != 0) {
+        RhBase_GetZBufInfo(&saved);
+        saved.enabled = 0;
+        cursor[0] = *(u64 *)&saved;
+        cursor[1] = (s64)(context + 0x4E);
+        cursor += 2;
+    }
+    for (i = 0; i < (u16)count; i++) {
+        reg = registers & 0xF;
+        if (replace != 0 && reg == 2) {
+            reg = 3;
+        }
+        registers >>= 4;
+        cursor[0] = *data;
+        cursor[1] = reg;
+        cursor += 2;
+        data++;
+    }
+    if (texture != 0 && (flags & 0x4000)) {
+        u64 *extra = (u64 *)(D_00293D80 + context * 0x70);
+        cursor[0] = extra[8];
+        cursor[1] = extra[9];
+        cursor += 2;
+    }
+    if (restore != 0) {
+        saved.enabled = 1;
+        cursor[0] = *(u64 *)&saved;
+        cursor[1] = (s64)(context + 0x4E);
+        cursor += 2;
+    }
+    length = ((cursor - start) >> 1) - 1;
+    *(u16 *)start = length;
+    *(u32 *)((u8 *)start + 8) = 0x11000000;
+    *(u32 *)((u8 *)start + 0xC) = length | 0x51000000;
+    ((Tag_00207650 *)((u8 *)start + 0x10))->loops = length - 1;
+    return (s32)cursor;
+}
 
 typedef int DotrDrawWord;
 struct DotrDrawPair {

@@ -14,7 +14,6 @@ s32 SzDuel_DrawDialog_Pipe(s32);                             /* extern */
 s32 SzDuel_SetupCard_Pipe(s32, s32, s32);                   /* extern */
 
 
-s32 ExSortPrim_Pipe(s32, s32, s32, s32);              /* extern */
 
 
 
