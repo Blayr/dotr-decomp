@@ -1952,6 +1952,9 @@ int TaSlot_GetFeverGain(unsigned short nCardNo);
 s32 TaSlot_SetReelData(s32 count, u16 *src, void *dst);
 int TaSlot_SetSlotInitialDat(int nSide, void *pSlotOrder_v);
 s32 TaTrapA_IsTrapAct(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+void TaTuto_DrawTrapArea(void *arg0, s32 arg1, s32 nX, s32 nZ);
+void TaTuto_FocusUnit_001745F0(s32 arg0);
+void TaTuto_FocusUnit_00175BA0(s32 arg0);
 void TaTuto_Init032(void);
 void TaTuto_InitTutoData(s32 arg0);
 void TaTuto_InitTutorial(u8 arg0, s32 arg1);
@@ -2831,6 +2834,15 @@ f32 func_001A6C60(f32 x);
 void func_001A6C80(void);
 void func_001C5D70(int mode);
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4); /* JP: func */
+void func_0027F5B0(void); /* JP: TaTuto_Init036 */
+s32 func_0027F630(void *arg0, s32 arg1, s32 nRoll, s32 nX, s32 nZ); /* JP: TaTuto_DrawFinger */
+s32 func_0027F890(s32 FadeSpd, s32 Flip, s32 arg2); /* JP: TaTuto_ControlFade */
+s32 func_0027FA30(void *arg0, s32 nSpeed); /* JP: TaTuto_RestoreOriginalView */
+s32 func_0027FAB0(void *arg0); /* JP: TaTuto_BkupOriginalView */
+s32 func_0027FB30(s32 nMsgID, u16 *wTime); /* JP: TaTuto_OpenMsgPopup */
+s32 func_0027FBA0(s32 nMsgID, u16 *wTime); /* JP: TaTuto_CloseMsgPopup */
+s32 func_0027FC20(s32 nStartMsgID, s32 nEndMsgID, void *arg2); /* JP: TaTuto_OpenTutoMsg */
+s32 func_0027FDA0(s32 nMsgID); /* JP: TaTuto_GetCardNameMsgID */
 u8 *getenv(s32 arg0);
 s32 getpid(void);
 s32 handler_endimage(void);
@@ -4237,6 +4249,8 @@ s32 func_00171D60(u16 *arg0, s32 arg1, void *arg2, s32 arg3);
 s32 func_00172000(u16 *arg0, s32 arg1, void *arg2, u8 arg3);
 s32 func_00172210(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_00172310(s32 arg0);
+void func_001745F0(s32 arg0);
+void func_00175BA0(s32 arg0);
 f32 func_0017B340(u64 arg0);
 void func_0017B380(u32 arg0);
 s32 func_0017B3D0(void);
@@ -6447,6 +6461,7 @@ void func_0027F3A0(void *arg0, void *arg1);
 void func_0027F3E0(u8 arg0, s32 arg1);
 void func_0027F480(s32 arg0);
 void func_0027F5A0(void);
+void func_0027F700(void *arg0, s32 arg1, s32 nX, s32 nZ);
 s32 func_0027F830(s32 arg0);
 void func_0027FFC0(s32 arg0);
 s32 func_00280060(void *arg0, s32 arg1);

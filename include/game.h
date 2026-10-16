@@ -304,7 +304,6 @@ extern u64 D_00293EE0[];
 
 
 
-void func_0027F5B0(void);
 
 extern s32 D_00292468;
 

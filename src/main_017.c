@@ -1,6 +1,48 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_017", TaTuto_FocusUnit_001745F0);
+void TaTuto_FocusUnit_001745F0(s32 arg0) {
+    s32 rot[4];
+    f32 vec[4];
+    s32 unit;
+    s32 x;
+    s32 d;
+
+    SzView_FreeRequest(0, 0);
+    switch (arg0) {
+    case 0x3A:
+        unit = SzDuel_GetUnit(0, 0);
+        SzEffect_GetModelRot2(0, rot);
+        rot[0] += 63;
+        x = *(s32 *)(unit + 0x30);
+        d = 0x47FF - x;
+        if (d < 0) {
+            d = 0x147FE - x;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, vec);
+        vec[0] += SzEffect_GetRadius2(0);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(0, 0), NULL);
+        SzView_ReqCamera(0, 0, 4, 0, 0, vec);
+        break;
+    case 0x9C:
+        unit = SzDuel_GetUnit(0, 1);
+        SzEffect_GetModelRot2(1, rot);
+        rot[0] += 63;
+        x = *(s32 *)(unit + 0x30);
+        d = 0xC7FF - x;
+        if (d < 0) {
+            d = 0x1C7FE - x;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, vec);
+        vec[0] += SzEffect_GetRadius2(1);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(0, 1), NULL);
+        SzView_ReqCamera(0, 0, 4, 0, 0, vec);
+        break;
+    }
+}
 
 typedef struct Tutorial_001747D0 {
     u8 pad0[0x162];
@@ -12,12 +54,6 @@ typedef struct Tutorial_001747D0 {
     u8 text[1];
 } Tutorial_001747D0;
 
-void TaTuto_FocusUnit_001745F0(s32 arg0);
-void func_0027F630(Tutorial_001747D0 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-s32 func_0027F890(s32 arg0, s32 arg1, s32 arg2);
-void func_0027FA30(void *arg0, s32 arg1);
-void func_0027FAB0(void *arg0);
-s32 func_0027FC20(s32 arg0, s32 arg1, Tutorial_001747D0 *arg2);
 
 s32 func_001747D0(s32 arg0, void *tutorial) {
     extern void SzPad_SetAnalogInfo();
@@ -500,6 +536,64 @@ s32 func_001747D0(s32 arg0, void *tutorial) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_017", TaTuto_FocusUnit_00175BA0);
+void TaTuto_FocusUnit_00175BA0(s32 arg0) {
+    s32 rot[4];
+    f32 vec[4];
+    s32 unit;
+    s32 x;
+    s32 d;
+
+    SzView_FreeRequest(0, 0);
+    switch (arg0) {
+    case 0x170:
+        unit = SzDuel_GetUnit(0, 1);
+        SzEffect_GetModelRot2(1, rot);
+        rot[0] += 63;
+        x = *(s32 *)(unit + 0x30);
+        d = 0x47FF - x;
+        if (d < 0) {
+            d = 0x147FE - x;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, vec);
+        vec[0] += SzEffect_GetRadius2(1);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(0, 1), NULL);
+        SzView_ReqCamera(0, 0, 4, 0, 0, vec);
+        break;
+    case 0x1D:
+        unit = SzDuel_GetUnit(1, 1);
+        SzEffect_GetModelRot2(0x101, rot);
+        rot[0] += 63;
+        x = *(s32 *)(unit + 0x30);
+        d = 0x47FF - x;
+        if (d < 0) {
+            d = 0x147FE - x;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, vec);
+        vec[0] += SzEffect_GetRadius2(0x101);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(1, 1), NULL);
+        SzView_ReqCamera(0, 0, 4, 0, 0, vec);
+        break;
+    case 0x9C:
+        unit = SzDuel_GetUnit(0, 1);
+        SzEffect_GetModelRot2(1, rot);
+        rot[0] += 63;
+        x = *(s32 *)(unit + 0x30);
+        d = 0xC7FF - x;
+        if (d < 0) {
+            d = 0x1C7FE - x;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, vec);
+        vec[0] += SzEffect_GetRadius2(1);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(0, 1), NULL);
+        SzView_ReqCamera(0, 0, 4, 0, 0, vec);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main_017", func_00175E60);

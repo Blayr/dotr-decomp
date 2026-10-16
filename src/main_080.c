@@ -1,6 +1,44 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_080", TaTuto_DrawTrapArea);
+typedef struct TutoCtl_0027F700 {
+    u8 pad0[0x162];
+    u16 timer;
+} TutoCtl_0027F700;
+
+typedef struct RGBA_0027F700 {
+    u8 r, g, b, a;
+} RGBA_0027F700;
+
+#define MAX_0027F700(a, b) ((a) > (b) ? (a) : (b))
+#define MIN_0027F700(a, b) ((a) < (b) ? (a) : (b))
+
+void TaTuto_DrawTrapArea(void *arg0, s32 arg1, s32 nX, s32 nZ) {
+    extern void SzDuel_SetMapColor();
+    TutoCtl_0027F700 *pCtl = arg0;
+    u8 bDif = arg1;
+    s32 i;
+    s32 j;
+    RGBA_0027F700 *pRGBA;
+    RGBA_0027F700 RGBA;
+
+    RGBA.b = 0xC0;
+    RGBA.g = 0;
+    RGBA.r = 0xC0;
+    RGBA.a = 0x80;
+    pRGBA = &RGBA;
+    if (pCtl->timer++ % bDif == 0) {
+        for (i = 0; i <= 6; i++) {
+            for (j = 0; j <= 6; j++) {
+                if ((MAX_0027F700(nX, i) - MIN_0027F700(nX, i)) + (MAX_0027F700(nZ, j) - MIN_0027F700(nZ, j)) < 2) {
+                    SzDuel_SetMapColor(i, j, 0, pRGBA, 1);
+                }
+            }
+        }
+    }
+    if (pCtl->timer > bDif) {
+        pCtl->timer = 0;
+    }
+}
 
 s32 TaTuto_IsTuto(s32 arg0) {
     extern s32 SzDuel_GetPlayer();
@@ -15,19 +53,213 @@ s32 TaTuto_IsTuto(s32 arg0) {
     return (var_s0 != 0) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027F890);
+s32 func_0027F890(s32 FadeSpd, s32 Flip, s32 arg2) {
+    u8 EndCond;
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FA30);
+    EndCond = 0;
+    if (Flip > 0) {
+        if (SzEffect_GetBlackOutForDuel() < 0x80) {
+            SzEffect_SetBlackOutForDuel((u8)(SzEffect_GetBlackOutForDuel() + FadeSpd));
+        } else {
+            EndCond++;
+        }
+        if (SzEffect_GetBlackOutForMonster() < 0x80) {
+            SzEffect_SetBlackOutForMonster((u8)(SzEffect_GetBlackOutForMonster() + FadeSpd));
+        } else {
+            EndCond++;
+        }
+    } else if (Flip < 0) {
+        if (SzEffect_GetBlackOutForDuel() > 0) {
+            if (SzEffect_GetBlackOutForDuel() - FadeSpd < 0) {
+                SzEffect_SetBlackOutForDuel(0);
+            } else {
+                SzEffect_SetBlackOutForDuel((u8)(SzEffect_GetBlackOutForDuel() - FadeSpd));
+            }
+        } else {
+            EndCond++;
+        }
+        if (SzEffect_GetBlackOutForMonster() > 0) {
+            if (SzEffect_GetBlackOutForMonster() - FadeSpd < 0) {
+                SzEffect_SetBlackOutForMonster(0);
+            } else {
+                SzEffect_SetBlackOutForMonster((u8)(SzEffect_GetBlackOutForMonster() - FadeSpd));
+            }
+        } else {
+            EndCond++;
+        }
+    }
+    if (EndCond == 2) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FAB0);
+typedef struct Vec_0027FA30 {
+    f32 x, y, z, w;
+} Vec_0027FA30;
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FB30);
+typedef struct Cam_0027FA30 {
+    Vec_0027FA30 pnt;
+    Vec_0027FA30 vec;
+} Cam_0027FA30;
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FBA0);
+s32 func_0027FA30(void *arg0, s32 nSpeed) {
+    Cam_0027FA30 *pCam = arg0;
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FC20);
+    SzView_FreeRequest(0, 0);
+    SzView_ReqCamera(0, 0, 3, (u8)nSpeed & 0xFF, 0, &pCam->pnt);
+    SzView_ReqCamera(0, 0, 4, (u8)nSpeed, 0, &pCam->vec);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FDA0);
+typedef struct Vec_0027FAB0 {
+    f32 x, y, z, w;
+} Vec_0027FAB0;
+
+typedef struct Cam_0027FAB0 {
+    Vec_0027FAB0 pnt;
+    Vec_0027FAB0 vec;
+} Cam_0027FAB0;
+
+s32 func_0027FAB0(void *arg0) {
+    Cam_0027FAB0 *pCam = arg0;
+    Vec_0027FAB0 *pVec;
+    Vec_0027FAB0 *pPnt;
+
+    pPnt = (Vec_0027FAB0 *)SzView_GetCP(0);
+    pVec = (Vec_0027FAB0 *)SzView_GetLook(0);
+    pCam->pnt.x = pPnt->x;
+    pCam->pnt.y = pPnt->y;
+    pCam->pnt.z = pPnt->z;
+    pCam->pnt.w = pPnt->w;
+    pCam->vec.x = pVec->x;
+    pCam->vec.y = pVec->y;
+    pCam->vec.z = pVec->z;
+    pCam->vec.w = pVec->w;
+}
+
+s32 func_0027FB30(s32 nMsgID, u16 *wTime) {
+    extern s32 func_0027FDA0(s32);
+
+    if (*wTime < 480) {
+        nMsgID = func_0027FDA0(nMsgID);
+        SzDuel_OpenMsgPopup(1, 0, 480 - (*wTime += 80), nMsgID);
+    } else {
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_0027FBA0(s32 nMsgID, u16 *wTime) {
+    extern s32 func_0027FDA0(s32);
+
+    if (*wTime > 0) {
+        nMsgID = func_0027FDA0(nMsgID);
+        SzDuel_OpenMsgPopup(1, 0, 480 - (*wTime -= 80), nMsgID);
+    } else {
+        SzDuel_CloseMsgPopup();
+        return 1;
+    }
+    return 0;
+}
+
+typedef struct TutoCtl_0027FC20 {
+    u8 pad0[0x160];
+    u16 msg;
+    u16 timer;
+    u8 pad164[0x3E];
+    u16 step;
+    u16 wait;
+} TutoCtl_0027FC20;
+
+s32 func_0027FC20(s32 nStartMsgID, s32 nEndMsgID, void *arg2) {
+    extern s32 func_0027FB30(s32, u16 *);
+    extern s32 func_0027FBA0(s32, u16 *);
+    extern s32 func_0027FDA0(s32);
+    TutoCtl_0027FC20 *pCtl = arg2;
+
+    if (pCtl->msg == 0xFFFF) {
+        pCtl->msg = nStartMsgID;
+    }
+    if (pCtl->msg == nStartMsgID) {
+        if (func_0027FB30(pCtl->msg, &pCtl->wait) == 1) {
+            if (SzPad_Check(0, 0, 0xF0)) {
+                if (nStartMsgID == nEndMsgID) {
+                    SzSound_PlaySE(0, 4);
+                    pCtl->msg = 0xFFFE;
+                } else {
+                    SzSound_PlaySE(0, 3);
+                    pCtl->msg++;
+                }
+            }
+        }
+    } else if (pCtl->msg == 0xFFFE) {
+        if (func_0027FBA0(nEndMsgID, &pCtl->wait) == 1) {
+            pCtl->msg = 0xFFFF;
+            pCtl->step++;
+            pCtl->wait = 0;
+            return 1;
+        }
+    } else {
+        SzDuel_OpenMsgPopup(1, 0, 0, func_0027FDA0(pCtl->msg));
+        if (SzPad_Check(0, 0, 0xF0)) {
+            if (pCtl->msg == nEndMsgID) {
+                SzSound_PlaySE(0, 4);
+                pCtl->msg = 0xFFFE;
+            } else {
+                SzSound_PlaySE(0, 3);
+                pCtl->msg++;
+            }
+        }
+    }
+    return 0;
+}
+
+s32 func_0027FDA0(s32 nMsgID) {
+    if (SzData_GetOption(SzDuel_GetTurnOwner(), 0) == 0) {
+        return nMsgID;
+    }
+    switch (nMsgID - 2524) {
+    case 27:
+        return 3054;
+    case 479:
+        return 3055;
+    case 480:
+        return 3056;
+    case 481:
+        return 3057;
+    case 311:
+        return 3058;
+    case 319:
+        return 3059;
+    case 325:
+        return 3060;
+    case 328:
+        return 3061;
+    case 338:
+        return 3062;
+    case 339:
+        return 3063;
+    case 341:
+        return 3064;
+    case 353:
+        return 3065;
+    case 358:
+        return 3066;
+    case 360:
+        return 3067;
+    case 381:
+        return 3068;
+    case 386:
+        return 3069;
+    case 388:
+        return 3070;
+    case 427:
+        return 3071;
+    case 430:
+        return 3072;
+    }
+    return nMsgID;
+}
 
 void TaView_ReqHalfFarView(s32 arg0) {
     void *temp_s0;

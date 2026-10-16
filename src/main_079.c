@@ -2058,6 +2058,36 @@ void TaTuto_Init032(void) {
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F5B0);
+void func_0027F5B0(void) {
+    SzDuel_AddGrave(0, 0);
+    SzDuel_AddGrave(0, 3);
+    SzDuel_AddGrave(0, 6);
+    SzDuel_AddGrave(0, 700);
+    SzDuel_AddGrave(1, 0);
+    SzDuel_AddGrave(1, 3);
+    SzDuel_AddGrave(1, 6);
+    SzDuel_AddGrave(1, 699);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main_079", func_0027F630);
+typedef struct TutoCtl_0027F630 {
+    u8 pad0[0x1A2];
+    u16 step;
+    u16 wait;
+} TutoCtl_0027F630;
+
+s32 func_0027F630(void *arg0, s32 arg1, s32 nRoll, s32 nX, s32 nZ) {
+    TutoCtl_0027F630 *pCtl = arg0;
+    u8 bDif = arg1;
+
+    if (pCtl->wait % bDif == 0) {
+        SzSound_PlaySE(0, 19);
+    }
+    if (pCtl->wait++ % bDif < (bDif >> 1)) {
+        SzDuel_OpenHandCursor(nRoll, nX, nZ);
+    } else {
+        SzDuel_CloseHandCursor();
+    }
+    if (pCtl->wait > bDif) {
+        pCtl->wait = 0;
+    }
+}
