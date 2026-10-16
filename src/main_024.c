@@ -139,7 +139,56 @@ void func_0017F7D8(s32 arg0, hcall_t *arg1) {
     __asm__ volatile("ei");
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_024", func_0017F808);
+/* sceFsInit (libkernl fileio EE side). The hook record D_00313C00 is an hcall_t (its 0x13 handler
+ * func_0017F7D8 takes hcall_t *, func_0017F748 writes .fn/.arg): zeroing it as fn (pointer) + arg (int)
+ * gives the two stores different GCC alias sets, so sched2 sees no store-store dependence and the
+ * prologue comes out as sd s0; lui s0; sd s4 (an s32 pair ties lui with sd s4 and LUID picks the sd).
+ * Fable, 16 Oct 2026. */
+
+extern void *D_00312880;
+extern s32 D_00313BC0;
+
+s32 func_0017F808(void) {
+    extern void func_0017E240(s32);
+    char *p;
+    char *end;
+    s32 i;
+    hcall_t *q = &D_00313C00;
+
+    func_0017E240(0);
+    q->fn = NULL;
+    q->arg = 0;
+    func_001843E0();
+    sceSifAddCmdHandler(0x80000011, (s32 *)func_0017F2F8, (s32)&D_00313BC0);
+    sceSifAddCmdHandler(0x80000013, (s32 *)func_0017F7D8, (s32)q);
+    func_00184428();
+    for (;;) {
+        if (sceSifBindRpc(&D_00313B80, 0x80000001, 0) < 0) {
+            return -1;
+        }
+        if (((sceSifRpcClientData *)&D_00313B80)->serve != 0) {
+            break;
+        }
+        for (i = 0x100000; i != -1; i--) {
+        }
+    }
+    func_0017F1A0();
+    ((s32 (*)(s32))WaitSema)(D_0028CAA8);
+    p = D_00313980;
+    end = D_00313980 + 0x200;
+    while (p < end) {
+        ((s32 *)p)[1] = 0;
+        p += 0x10;
+    }
+    ((s32 (*)(s32))SignalSema)(D_0028CAA8);
+    D_00312880 = D_00313540;
+    if (sceSifCallRpc(&D_00313B80, 0xFF, 0, (s32 *)&D_00312880, 4, &D_00313500, 4, 0, 0) < 0) {
+        return 0xFFFEFFFF;
+    }
+    *(SceFsVersion *)&D_00313BA8 = *(SceFsVersion *)((s32)&D_00313500 | 0x20000000);
+    D_0028CAA0 = 1;
+    return 0;
+}
 
 s32 func_0017F9D0(void) {
     s32 *a_D_0028C24C = &D_0028C24C;

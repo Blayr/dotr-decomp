@@ -2545,6 +2545,7 @@ void func_0017F6B8(void);
 s32 func_0017F708(void);
 s32 func_0017F748(s32 arg0, s32 arg1);
 void func_0017F7D8(s32 arg0, hcall_t *arg1);
+s32 func_0017F808(void);
 s32 func_0017F9D0(void);
 s32 func_0017FA98(void *name, s32 flags, ...);
 s32 func_0017FD20(u32 fd);
