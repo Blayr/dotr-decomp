@@ -13,7 +13,6 @@ s32 SzDuel_DrawDialog_Pipe(s32);                             /* extern */
 s32 SzDuel_DrawCustomDuel_Pipe(s32);                             /* extern */
 
 s32 SzDuel_SetupCard_Pipe(s32, s32, s32);                   /* extern */
-s32 func_00190810(s32, s32, s32, s32); /* extern */
 
 
 s32 ExSortPrim_Pipe(s32, s32, s32, s32);              /* extern */
@@ -579,7 +578,6 @@ extern u8 D_002BCB88[];
 
 
 
-s32 func_0018B6D8(s32, s32);
 
 s32 sceMpegDemuxPssRing(s32, s32, s32, s32, s32);
 
@@ -1082,5 +1080,14 @@ s32 Taku_Camp_BOTAN_MATI_b(s32);
 extern s32 D_002BC858;
 
 typedef struct { f32 x, y, z, w; } Vec4_00109830;
+
+extern s32 D_00315640[];
+extern s32 D_00315680;
+extern s32 D_0028DCA4;
+extern s32 D_0028DCA8;
+extern s32 D_0028DCAC;
+extern s32 D_0028DCB0;
+extern s32 D_0028DCB4;
+extern s32 D_0028DCB8;
 
 #endif

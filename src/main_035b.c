@@ -54,7 +54,6 @@ extern double D_002BD378[]; /* tinytens */
 #define _ulp(x) func_001995C0(x)
 #define _d2b(p, d, e, b) ((_Bigint *)func_00199828(p, d, e, b))
 #define _ratio(a, b) func_001999B0((i2b_Bigint *)(a), (i2b_Bigint *)(b))
-extern void *func_00199828();
 #define ptr ((struct _reent *)ptr0)
 
 double func_0019C4C8(void *ptr0, const char *s00, char **se)

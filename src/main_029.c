@@ -496,7 +496,44 @@ s64 func_0018B628(void *arg0) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018B6D8);
+s32 func_0018B6D8(s32 arg0, s32 arg1) {
+    s32 n;
+    s32 m;
+    s32 cmd;
+    s64 r;
+    s64 top;
+    s32 bp;
+
+    n = 0;
+    m = 0;
+    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+        if (m++ > 5000) {
+            _dispatchMpegCbNodata(*(s32 *)(arg0 + 0x858));
+            m = 0;
+        }
+    }
+    cmd = (arg1 << 26) | 0x30000000;
+    *(volatile s32 *)0x10002000 = cmd;
+    *(s32 *)(arg0 + 0x818) = (&D_0028DA50)[cmd >> 28];
+    r = *(volatile s64 *)0x10002000;
+    while (r < 0) {
+        if (n++ > 5000) {
+            _dispatchMpegCbNodata(*(s32 *)(arg0 + 0x858));
+            n = 0;
+        }
+        r = *(volatile s64 *)0x10002000;
+    }
+    bp = *(volatile s32 *)0x10002020;
+    top = *(s64 *)0x10002030;
+    *(s32 *)(arg0 + 0x838) = top;
+    if (top < 0) {
+        *(s32 *)(arg0 + 0x83C) = -(bp & 0x1F) & 0x1F;
+    } else {
+        *(s32 *)(arg0 + 0x83C) = 0x20;
+    }
+    *(s32 *)(arg0 + 0x11C) = (s32)r == 0;
+    return (s16)r;
+}
 
 s32 func_0018B850(void *arg0, s32 arg1) {
     s32 i;

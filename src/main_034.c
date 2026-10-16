@@ -1445,7 +1445,56 @@ ret_d:
     return d.d;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_00199828);
+typedef union {
+    double d;
+    unsigned int i[2];
+} MpDouble_00199828;
+
+#define word0_00199828(x) ((x).i[1])
+#define word1_00199828(x) ((x).i[0])
+
+/* _d2b (newlib 1.9.0 mprec.c): adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+i2b_Bigint *func_00199828(void *ptr, double dd, s32 *e, s32 *bits) {
+    i2b_Bigint *b;
+    int de, i, k;
+    unsigned int y, z, *x;
+    MpDouble_00199828 d;
+
+    d.d = dd;
+    b = _Balloc(ptr, 1);
+    x = b->x;
+    z = word0_00199828(d) & 0xFFFFF;
+    word0_00199828(d) &= 0x7FFFFFFF;
+    if ((de = (int)(word0_00199828(d) >> 20)))
+        z |= 0x100000;
+    if (word1_00199828(d)) {
+        y = word1_00199828(d);
+        if ((k = func_00198E68(&y))) {
+            x[0] = y | z << (32 - k);
+            z >>= k;
+        } else {
+            x[0] = y;
+        }
+        i = b->wds = (x[1] = z) ? 2 : 1;
+    } else {
+        k = func_00198E68(&z);
+        x[0] = z;
+        i = b->wds = 1;
+        k += 32;
+    }
+    if (de != 0) {
+        *e = de - 1023 - 52 + k;
+        *bits = 53 - k;
+    } else {
+        *e = de - 1023 - 52 + 1 + k;
+        *bits = 32 * i - func_00198DE8(x[i - 1]);
+    }
+    return b;
+}
+
+#undef word0_00199828
+#undef word1_00199828
 
 double func_001999B0(i2b_Bigint *a, i2b_Bigint *b) {
     ratio_du da, db;
