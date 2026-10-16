@@ -1858,7 +1858,82 @@ s32 lRhModelCpu_SetupGlobal(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModelCpu_TraceDynamicBlock);
+#define P_002131D0 ((u8 *)data)
+
+u8 *lRhModelCpu_TraceDynamicBlock(u8 *out, s32 data, s32 size) {
+    u8 *spr = (u8 *)0x70000000;
+    u32 cmd;
+
+    size = data + size;
+    while (P_002131D0 < (u8 *)size) {
+        cmd = *(u32 *)P_002131D0;
+        if (cmd == 0x10000008) {
+            *(__int128 *)(spr + 0x60) = *(__int128 *)P_002131D0;
+            *(u32 *)(spr + 0x60) = 0x30000008;
+            *(u8 **)(spr + 0x64) = P_002131D0 + 0x10;
+            data += 0x90;
+        } else if (cmd == 0x10000000) {
+            data += 0x10;
+        } else if (cmd == 0x10000003) {
+            u8 *q = P_002131D0;
+
+            func_0020B380(spr, q, 4);
+            *(u32 *)(spr + 0x100) = (u8)(u32)(*(f32 *)(spr + 0x20) / 2.0f + *(f32 *)(spr + 0x10));
+            *(u32 *)(spr + 0x100) |= (u8)(u32)(*(f32 *)(spr + 0x24) / 2.0f + *(f32 *)(spr + 0x14)) << 8;
+            *(u32 *)(spr + 0x100) |= (u8)(u32)(*(f32 *)(spr + 0x28) / 2.0f + *(f32 *)(spr + 0x18)) << 16;
+            *(u32 *)(spr + 0x100) |= (u32)*(f32 *)(spr + 0x2C) << 24;
+            data = (s32)(q + 0x40);
+        } else if ((cmd & 0xF0000000) == 0x30000000) {
+            s32 x = *(s32 *)(P_002131D0 + 0xC);
+
+            if (x == 0) {
+                u8 *q = P_002131D0;
+
+                out = (u8 *)func_00213410((s32)out, (s32)*(u32 *)(q + 4), *(u16 *)q << 4);
+                data = (s32)(q + 0x10);
+            } else {
+                register u8 *m;
+                register u32 dst = x & 0x3FF;
+                u8 *q = P_002131D0;
+
+                data = (s32)(q + 0x10);
+                m = *(u8 **)(q + 4);
+                asm {
+                    lqc2 vf16, 0x0(m)
+                    lqc2 vf17, 0x10(m)
+                    lqc2 vf18, 0x20(m)
+                    lqc2 vf19, 0x30(m)
+                    ctc2.ni dst, vi1
+                    vmulax.xyzw ACC, vf20, vf16x
+                    vmadday.xyzw ACC, vf21, vf16y
+                    vmaddaz.xyzw ACC, vf22, vf16z
+                    vmaddw.xyzw vf16, vf23, vf16w
+                    vmulax.xyzw ACC, vf20, vf17x
+                    vmadday.xyzw ACC, vf21, vf17y
+                    vmaddaz.xyzw ACC, vf22, vf17z
+                    vmaddw.xyzw vf17, vf23, vf17w
+                    vmulax.xyzw ACC, vf20, vf18x
+                    vmadday.xyzw ACC, vf21, vf18y
+                    vmaddaz.xyzw ACC, vf22, vf18z
+                    vmaddw.xyzw vf18, vf23, vf18w
+                    vmulax.xyzw ACC, vf20, vf19x
+                    vmadday.xyzw ACC, vf21, vf19y
+                    vmaddaz.xyzw ACC, vf22, vf19z
+                    vmaddw.xyzw vf19, vf23, vf19w
+                    vsqi.xyzw vf16, (vi1++)
+                    vsqi.xyzw vf17, (vi1++)
+                    vsqi.xyzw vf18, (vi1++)
+                    vsqi.xyzw vf19, (vi1++)
+                }
+            }
+        } else {
+            return NULL;
+        }
+    }
+    return out;
+}
+
+#undef P_002131D0
 
 s32 lRhModelCpu_TraceStaticBlock(s32 arg0, u32 cursor, s32 size) {
     u32 end = cursor + size;

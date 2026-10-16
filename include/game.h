@@ -313,7 +313,6 @@ extern s16 D_00299ED4;
 
 s32 SzModel_DrawWithFunc_Pipe(s32, s32, s32, s32, s32, s32, s32, void (*)(void), s64);
 
-u8 *lRhModelCpu_TraceDynamicBlock(u8 *, s32, s32);
 
 
 
