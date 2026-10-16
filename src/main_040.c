@@ -2137,7 +2137,89 @@ s32 lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", lSzDuel_DrawBuildDeck_Detail_Ability_Pipe);
+typedef struct {
+    f32 x;
+    f32 y;
+} Point_001BF470;
+
+typedef struct State_001BF470 {
+    u8 header[8];
+    Point_001BF470 points[5];
+    u8 padding[0x14];
+    u8 flag;
+    u8 tail[0x1B];
+} State_001BF470;
+
+extern u8 D_00290080[];
+extern Point_001BF470 D_002C3338[][5];
+extern char D_002BE940[];
+
+s32 lSzDuel_DrawBuildDeck_Detail_Ability_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    u8 flag;
+    s32 count = 0;
+    s32 j;
+    s32 offset;
+    s32 i;
+    State_001BF470 state;
+    s32 width;
+    f32 scale;
+    s32 item;
+    s32 x;
+    s32 n;
+    s32 pipe;
+    s32 y;
+    s32 ty;
+    s32 tx;
+
+    flag = D_003181EC;
+    offset = arg4 != 0 ? 0x280 : -0x140;
+    if (arg1 >= 0x2AB) {
+        return arg0;
+    } else {
+        SzDuel_InitCardInfo(&state, arg1);
+        state.flag = flag;
+        j = 0;
+        do {
+            state.points[j] = D_002C3338[arg1][j];
+            j++;
+        } while (j < 5);
+        i = 4;
+        do {
+            item = i - 4;
+            arg0 = SzMsg_LoadFont_Pipe(arg0, item + 1, item + 0x65, 0, (item + 1) * 22);
+            i++;
+        } while (i < 0x11);
+        pipe = RhText_SetTextureFlush(arg0);
+        i = 4;
+        y = arg3 + 0x751;
+        ty = arg3 + 0x30;
+        x = arg2 + 0x6DC + offset;
+        tx = arg2 + offset + 0x36;
+        do {
+            n = i - 4;
+            if (SzDuel_GetUnitLeaderAbility3(&state, i, 0, 1)) {
+                arg0 = lSzDuel_DrawWindow_ExBoard_Pipe(lSzDuel_DrawWindow_ExIcon_Pipe(pipe, (u16 *)&D_00290080[(i + 0x1E) * 10], x, y,
+                                                   0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80),
+                                     arg5, tx, ty, -0xEC, -0x1A, -1, 0);
+                width = *(s32 *)((u8 *)SzMsg_GetInfo(n + 1) + 0xC);
+                if ((width < 0xE3) ^ 1) {
+                    scale = 226.0f / (f32)width;
+                } else {
+                    scale = 1.0f;
+                }
+                pipe = SzMsg_DrawRatioX_Pipe(arg0, n + 1, tx + 5, ty + 2,
+                                    scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+                y += 0x1A;
+                ty += 0x1A;
+                count++;
+            }
+            SzMsg_Free(n + 1);
+            i++;
+        } while (i < 0x11);
+    }
+    return pipe;
+}
 
 extern u8 D_00290080[];
 extern char D_002BEF93[];
