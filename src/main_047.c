@@ -905,7 +905,254 @@ s32 lSzBattle_DrawNormal_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", lSzBattle_DrawFakeMirror);
+typedef struct Quad_001E6650 {
+    f32 points[4][4];
+} Quad_001E6650;
+
+typedef struct Vec3_001E6650 {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3_001E6650;
+
+typedef struct Tag_001E6650 {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001E6650;
+
+typedef struct UV_001E6650 {
+    u64 u : 14;
+    u64 pad0 : 2;
+    u64 v : 14;
+    u64 pad1 : 34;
+} UV_001E6650;
+
+typedef struct Vertex_001E6650 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001E6650;
+
+typedef struct Tex0_001E6650 {
+    u64 tbp : 14;
+    u64 tbw : 6;
+    u64 psm : 6;
+    u64 tw : 4;
+    u64 th : 4;
+    u64 tcc : 1;
+    u64 rest : 29;
+} Tex0_001E6650;
+
+typedef struct Packet_001E6650 {
+    u64 tag[2];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    u64 uv0;
+    Vertex_001E6650 xyz0;
+    u64 uv1;
+    Vertex_001E6650 xyz1;
+    u64 test;
+    Tex0_001E6650 tex0;
+    u64 tex1;
+    u64 clamp;
+} Packet_001E6650;
+
+#define ABS_001E6650(x) ((x) >= 0 ? (x) : -(x))
+#define RANDOM_001E6650(n) ((s32)((n) * (func_0019A5C8() / 2147483648.0f)))
+
+s32 lSzBattle_DrawFakeMirror(s32 arg0, s32 arg1) {
+    extern Quad_001E6650 D_00292310;
+    extern Vec3_001E6650 D_00292350;
+    extern s16 D_00292360[4];
+    extern s16 D_00292368[4];
+    extern s16 D_00292370;
+    extern s16 D_00292378;
+    extern s32 func_0020A470(s32, s32, s32);
+    extern s32 func_00207650(s32, void *, s32, s32);
+    Quad_001E6650 quad;
+    f32 center[4];
+    f32 normal[4];
+    f32 view[4];
+    u8 screen[0x90];
+    f32 previous[4];
+    Vec3_001E6650 light __attribute__((aligned(16)));
+    Packet_001E6650 packet;
+    f32 saved;
+    u8 color[4];
+    u8 *card;
+    s32 flag;
+    s32 id;
+    s32 j;
+    s32 state;
+    s32 *slot;
+    s32 out;
+    f32 scale;
+
+    slot = (s32 *)&D_0031AB88;
+    out = arg0;
+    quad = D_00292310;
+    light = D_00292350;
+    func_00206030(4, &quad, center);
+    func_00205E70(4, &quad, normal);
+    func_002060F0((f32 *)func_001F9AD0(0), 4, quad.points[0], view);
+    if (!(func_0020D1A0(view, normal) <= 0.0f) && func_0020E520(center, normal, screen) != 0) {
+        if ((func_001A8720() & 1) == 0) {
+            s32 range;
+            s32 n;
+            s32 dx;
+            s32 dy;
+            s16 *x;
+            s16 *y;
+            f32 distance;
+
+            range = 6;
+            distance = func_0020D0E0((f32 *)func_001F9AD0(0));
+            if (distance <= 600.0f) {
+                n = (s32)(600.0f / distance);
+                range += (n < 6) ? n : 6;
+            }
+            if (func_001F3360(8) == 0) {
+                for (j = 2; j >= 0; j--) {
+                    D_00292360[j + 1] = D_00292360[j];
+                    D_00292368[j + 1] = D_00292368[j];
+                }
+                if (RANDOM_001E6650(3.0f) != 0) {
+                    dx = D_00292370;
+                } else {
+                    dx = 0;
+                }
+                D_00292360[0] += dx;
+                if (RANDOM_001E6650(3.0f) != 0) {
+                    dy = D_00292378;
+                } else {
+                    dy = 0;
+                }
+                D_00292368[0] += dy;
+                if (ABS_001E6650(D_00292360[0]) > range ||
+                    (ABS_001E6650(D_00292360[0]) > range >> 1 && RANDOM_001E6650(3.0f) == 0)) {
+                    D_00292370 = (D_00292360[0] > 0) ? -1 : 1;
+                }
+                if (D_00292368[0] > range * 2 || D_00292368[0] < 0 ||
+                    (D_00292368[0] > range && RANDOM_001E6650(3.0f) == 0)) {
+                    D_00292378 = (D_00292368[0] > range) ? -1 : 1;
+                }
+            }
+        }
+        arg0 = (s32)func_00208530((void *)arg0, 0);
+        func_0020A470(0, 10, 0x31);
+        out = (s32)func_0020A610((void *)arg0);
+        out = (s32)func_0020A870((u8 *)out, NULL);
+        func_0020E360(screen);
+        out = func_0020EC60(out);
+        out = (s32)func_00209F70((void *)out, 0xFFFFFF);
+        out = func_0020A0B0(out, 0);
+        out = func_001EFA80(out, arg1, 0, 0, 0, 0, 0);
+        out = (s32)func_00209F70((void *)out, 0xFF000000);
+        out = func_0020A0B0(out, 1);
+        {
+        s32 i;
+        for (i = 0; i < 2; i++, slot++) {
+            if (*slot < 0) {
+                continue;
+            }
+            card = (u8 *)func_001DF540(*slot >> 8, *slot & 0xFF);
+            flag = 0;
+            saved = 1.0f;
+            if (card == NULL) {
+                continue;
+            }
+            id = card[0x46];
+            if (func_001F1370(id) == 0) {
+                continue;
+            }
+            state = func_001F2660(id, color);
+            func_001F26E0(id, 0, NULL);
+            if (color[3] != 0x80) {
+                flag = 1;
+            }
+            if (flag) {
+                scale = color[3] / 128.0f;
+                (void)scale; /* a use right after the assignment keeps scale at its own statement, as in the original */
+                func_001F1E80(id, &saved);
+                func_001F1F70(id, scale);
+            }
+            out = func_001EFA80(out, id, 0, 0, 0, 0, 0);
+            if (flag) {
+                func_001F1F70(id, saved);
+            }
+            func_001F26E0(id, state, color);
+        }
+        }
+        out = func_001EFA80(out, 7, 0, 0, 0, 0, 0);
+        func_001F1E10(0x10, previous);
+        func_001F1EE0(0x10, &light.x);
+        out = func_001EFA80(out, 0x10, 0, 0, 0, 0, 0);
+        func_001F1EE0(0x10, previous);
+        ((Tag_001E6650 *)packet.tag)->flags = 0x26;
+        ((Tag_001E6650 *)packet.tag)->count = 5;
+        ((Tag_001E6650 *)packet.tag)->registers = 0x42421;
+        ((Tag_001E6650 *)packet.tag)->padding = 0;
+        ((Tag_001E6650 *)packet.tag)->flags |= 0x800;
+        func_002086D0(&packet, 0x8000000048LL);
+        packet.r = 0x80;
+        packet.g = 0x80;
+        packet.b = 0x80;
+        packet.a = 0x10;
+        packet.q = 1.0f;
+        packet.xyz0.z = 0xFFFFF6;
+        packet.xyz0.fog = 0;
+        packet.xyz1.z = 0xFFFFF6;
+        packet.xyz1.fog = 0;
+        ((UV_001E6650 *)&packet.uv0)->u = 0x2800;
+        ((UV_001E6650 *)&packet.uv0)->v = 0;
+        ((UV_001E6650 *)&packet.uv1)->u = 0;
+        ((UV_001E6650 *)&packet.uv1)->v = 0x1C00;
+        func_0020AA30(&packet.tex0, &packet.tex1);
+        packet.tex0.tcc = 0;
+        out = (s32)func_0020A760((void *)out);
+        out = func_0020F290(out);
+        func_0020E970(screen);
+        func_0020E360(screen);
+        out = func_0020EC60(out);
+        out = func_0020A0B0(out, 0);
+        packet.xyz0.x = ((D_00292360[0] + 0x6BA) << 4) - 8;
+        packet.xyz0.y = 0x7198;
+        packet.xyz1.x = ((D_00292360[0] + 0x946) << 4) - 8;
+        packet.xyz1.y = ((D_00292368[0] + 0x8E6) << 4) - 8;
+        out = func_00207650(out, &packet, 0, 0);
+        packet.xyz0.x = ((D_00292360[1] + 0x6BA) << 4) - 8;
+        packet.xyz0.y = 0x7198;
+        packet.xyz1.x = ((D_00292360[1] + 0x946) << 4) - 8;
+        packet.xyz1.y = ((D_00292368[1] + 0x8E6) << 4) - 8;
+        out = func_00207650(out, &packet, 0, 0);
+        packet.xyz0.x = ((D_00292360[2] + 0x6BA) << 4) - 8;
+        packet.xyz0.y = 0x7198;
+        packet.xyz1.x = ((D_00292360[2] + 0x946) << 4) - 8;
+        packet.xyz1.y = ((D_00292368[2] + 0x8E6) << 4) - 8;
+        out = func_00207650(out, &packet, 0, 0);
+        packet.xyz0.x = ((D_00292360[3] + 0x6BA) << 4) - 8;
+        packet.xyz0.y = 0x7198;
+        packet.xyz1.x = ((D_00292360[3] + 0x946) << 4) - 8;
+        packet.xyz1.y = ((D_00292368[3] + 0x8E6) << 4) - 8;
+        out = func_00207650(out, &packet, 0, 0);
+        packet.a = 0x30;
+        packet.xyz0.x = 0x6B98;
+        packet.xyz0.y = 0x7198;
+        packet.xyz1.x = 0x9458;
+        packet.xyz1.y = 0x8E58;
+        out = func_00207650(out, &packet, 0, 0);
+        out = func_0020A0B0(out, 1);
+        func_0020A9E0();
+        out = (s32)func_00208530((void *)out, 1);
+    }
+    return out;
+}
 
 typedef struct {
     f32 f[5];
