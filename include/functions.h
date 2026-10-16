@@ -2963,6 +2963,7 @@ void *lSzDuel_DrawBuildDeck_Card_Pipe(void *arg0, s32 card, s32 x, s32 y, s32 fl
 void lSzDuel_DrawBuildDeck_Caution_Pipe(s32 arg0, s32 arg1, s32 arg2);
 s32 lSzDuel_DrawBuildDeck_DeckCursor_Pipe(s32 id, s32 arg1, s32 arg2, s32 arg3);
 void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 arg0, s32 arg1, s32 arg2);
+s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 lSzDuel_DrawBuildDeck_Detail_Special_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 lSzDuel_DrawBuildDeck_GhostCard_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5);
@@ -4945,6 +4946,7 @@ void func_001BC350(s32 arg0, s32 arg1, s32 arg2);
 s32 func_001BCCE0(s32 arg0, s32 arg1, s32 arg2);
 void *func_001BCE20(void *arg0, s32 card, s32 x, s32 y, s32 flag, s32 flag2);
 s32 func_001BD8A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5);
+s32 func_001BE5F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001BF180(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001BF2A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_001BFF00(s32 id, s32 arg1, s32 arg2, s32 arg3);
