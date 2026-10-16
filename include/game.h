@@ -577,7 +577,6 @@ extern u8 D_002BCB88[];
 
 
 
-s32 sceMpegDemuxPssRing(s32, s32, s32, s32, s32);
 
 
 

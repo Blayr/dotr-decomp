@@ -162,7 +162,121 @@ s32 _id2type(s32 *type, s32 *num, u64 id) {
     return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_030", sceMpegDemuxPssRing);
+typedef struct {
+    int scrExt;
+    int scrBase;
+    int scrBase32;
+    int hasSysHdr;
+} PackHeader_0018DEE8;
+
+typedef struct {
+    long long id;
+    int length;
+    int scramble;
+    long long pts;
+    long long dts;
+    int pos;
+    int datalen;
+    int startpos;
+} PesPkt_0018DEE8;
+
+typedef struct {
+    PackHeader_0018DEE8 pack;
+    int pad10[2];
+    PesPkt_0018DEE8 pes;
+    int pad48[2];
+} PssPkt_0018DEE8;
+
+typedef struct {
+    int type;
+    unsigned char *header;
+    unsigned char *data;
+    unsigned int len;
+    long long pts;
+    long long dts;
+} DemuxRec_0018DEE8;
+
+#define mp_0018DEE8 ((sceMpeg *)arg0)
+
+/* sceMpegDemuxPssRing: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+s32 sceMpegDemuxPssRing(void *arg0, s32 buf, s32 size, s32 ring, s32 ringSize) {
+    int bsbuf[12];
+    PssPkt_0018DEE8 pktbuf;
+    int *bs;
+    PssPkt_0018DEE8 *pkt = &pktbuf;
+    DemuxRec_0018DEE8 rec;
+    MpegSys *p = mp_0018DEE8->sys;
+    sceMpegCallback func = 0;
+    void *arg = 0;
+    StrCb *tbl = p->strCb;
+    int ret = 0;
+    int i;
+    int cont = 1;
+
+    _sysbitInit((u64 *)bsbuf, buf, ring, ringSize);
+    bs = bsbuf;
+    i = 0;
+    if (p->nStrCb > 0) {
+        do {
+            if (tbl[i].id == 0xBDFF000000LL) {
+                func = tbl[i].func;
+                arg = tbl[i].arg;
+            }
+            if (func != 0) {
+                break;
+            }
+            i++;
+        } while (i < p->nStrCb);
+    }
+    do {
+        if (_sysbitNext((u64 *)bs, 32) == 0x1BA) {
+            _pack_header((u64 *)bs, &pkt->pack);
+        }
+        while (_sysbitNext((u64 *)bs, 24) == 1 && _sysbitNext((u64 *)bs, 32) != 0x1BA &&
+               _sysbitNext((u64 *)bs, 32) != 0x1B9 && *(unsigned long long *)(bs + 6) < size * 8 &&
+               cont != 0) {
+            _PES_packet((s32)p, bs, &pkt->pes);
+            if (*(unsigned long long *)(bs + 6) > size * 8) {
+                continue;
+            }
+            for (i = 0; i < p->nStrCb; i++) {
+                if (tbl[i].id == (pkt->pes.id & tbl[i].mask)) {
+                    int st = pkt->pes.startpos;
+                    rec.type = 6;
+                    rec.header = (unsigned char *)_sysbitPtr(bs, st);
+                    rec.data = (unsigned char *)_sysbitPtr(bs, pkt->pes.pos);
+                    rec.len = pkt->pes.datalen;
+                    rec.pts = pkt->pes.pts;
+                    rec.dts = pkt->pes.dts;
+                    cont = tbl[i].func(mp_0018DEE8, &rec, tbl[i].arg);
+                    break;
+                }
+            }
+            if (i == p->nStrCb && func != 0) {
+                {
+                int st = pkt->pes.startpos;
+                rec.type = 6;
+                rec.header = (unsigned char *)_sysbitPtr(bs, st);
+                }
+                rec.data = (unsigned char *)_sysbitPtr(bs, pkt->pes.pos);
+                rec.len = pkt->pes.datalen;
+                rec.pts = pkt->pes.pts;
+                rec.dts = pkt->pes.dts;
+                cont = func(mp_0018DEE8, &rec, arg);
+            }
+            if (cont != 0) {
+                ret = (int)(*(unsigned long long *)(bs + 6) >> 3);
+            }
+        }
+        if (size * 8 < *(unsigned long long *)(bs + 6)) {
+            break;
+        }
+    } while (_sysbitNext((u64 *)bs, 32) == 0x1BA);
+    return ret;
+}
+
+#undef mp_0018DEE8
 
 s32 sceMpegDemuxPss(s32 arg0, s32 arg1, s32 arg2) {
     return sceMpegDemuxPssRing(arg0, arg1, arg2, 0, -1);
