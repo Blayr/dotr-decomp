@@ -1947,7 +1947,65 @@ s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main_059", lRhModelCpu_CalcIndepPoint);
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModelCpu_CalcSharedStrip);
+typedef struct {
+    u32 xy;
+    u32 z : 24;
+    u32 f : 8;
+} Vert_002138D0;
+
+typedef struct {
+    u8 data[0x12];
+} Item_002138D0;
+
+typedef struct {
+    u8 pad00[0x40];
+    Vert_002138D0 v0;
+    u8 pad48[0x10];
+    Vert_002138D0 v1;
+    u8 pad60[0x10];
+    Vert_002138D0 v2;
+    s32 f78;
+    s32 depth;
+} Prim_002138D0;
+
+#pragma opt_lifetimes off
+
+s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
+    extern s8 lRhModelCpu_CalcSharedPoint(s32, s32 *);
+    u8 *scratch;
+    u8 *var_s1;
+    s32 var_s2;
+    s32 temp_s3;
+    s32 var_s4;
+    Prim_002138D0 *prim;
+    u32 z0;
+    u32 z1;
+
+    var_s1 = (u8 *)arg1 + 0x14;
+    prim = (Prim_002138D0 *)arg0;
+    scratch = (u8 *)0x70000000;
+    var_s4 = 0;
+    temp_s3 = arg1[1] & 0x7FFF;
+    for (var_s2 = 0; var_s2 < temp_s3; var_s2++) {
+        scratch[0xF0 + var_s4] = lRhModelCpu_CalcSharedPoint((s32)(scratch + var_s4 * 0x18 + 0x90), (s32 *)var_s1);
+        if (var_s2 >= 2) {
+            if (scratch[0xF0] && scratch[0xF1] && scratch[0xF2]) {
+                RhMem_CopyMemory16(prim, scratch + 0x60, 8);
+                prim->f78 = 0;
+                z0 = prim->v0.z;
+                z1 = prim->v1.z;
+                z0 = ((z0 > z1 ? z0 : z1) > prim->v2.z) ? (z0 > z1 ? z0 : z1) : prim->v2.z;
+                prim->depth = z0;
+                prim++;
+            }
+        }
+        var_s1 = (u8 *)((Item_002138D0 *)(var_s1 + 6) + *(u16 *)(var_s1 + 4));
+        var_s4 = (var_s4 + 1) % 3;
+    }
+    *(u32 *)0x700000FC = (u32)(var_s1 + 3) & ~3;
+    return (s32)prim;
+}
+#pragma opt_lifetimes reset
 
 INCLUDE_ASM("asm/nonmatchings/main_059", lRhModelCpu_CalcSharedPoint);
 
