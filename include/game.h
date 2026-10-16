@@ -814,7 +814,7 @@ typedef struct i2b_Bigint { struct i2b_Bigint *next; s32 k, maxwds, sign, wds; u
 
 
 s32 func_0017F808();                            /* extern */
-extern s32 D_00313C00;
+extern hcall_t D_00313C00;
 
 extern s32 D_0028FF04;
 extern s32 D_0028FF00;
