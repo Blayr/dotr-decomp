@@ -9,7 +9,7 @@ This repository contains no game data. You need your own copy of the game to bui
 
 | | Functions in C | Code in C |
 |---|---|---|
-| Main executable (`SLUS_205.15`) | 3,452 of 3,463 (99.7%) | 95.5% of 1.5 MB |
+| Main executable (`SLUS_205.15`) | 3,454 of 3,463 (99.7%) | 95.6% of 1.5 MB |
 | Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 6,191 of 8,620 (71.8%) | 43.3% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
@@ -17,7 +17,8 @@ This repository contains no game data. You need your own copy of the game to bui
 - The target is the retail US release: `SLUS_205.15` sha256
   `1df7759b68e6aee73d8deab2efd2e556ec553d952af00fe8bf0f499a57298719`, the same executable as the dotr-decomp
   project. The code modules are the retail disc's `DATA/BMODULE.MRG`, `CMODULE.MRG` and `MMODULE.MRG`.
-- 2 main-program functions are kept as assembly on purpose (vector-unit code). They count as not done. About 110 others, mostly Sony's system-call stubs and a few vector-unit
+- No main-program function is kept as assembly on purpose any more: the vector-unit functions are C with a
+  small inline-assembly block for the VU0 instructions. About 110 others, mostly Sony's system-call stubs and a few vector-unit
   helpers, are written as assembly inside the C files and do count.
 - 87 of the main-program functions came from the dotr-decomp project's CC0 bundle (another team decompiling
   the same game).
