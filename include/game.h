@@ -9,7 +9,6 @@
 
 
 
-s32 SzDuel_SetupCard_Pipe(s32, s32, Draw_001DA7F0 *);                   /* extern */
 
 
 

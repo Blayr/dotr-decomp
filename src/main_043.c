@@ -1477,7 +1477,434 @@ void SzDuel_SetupCard(s32 arg0, s32 arg1) {
     RhBase_SetVifPacketArea(SzDuel_SetupCard_Pipe(RhBase_GetVifPacketArea(), arg0, (Draw_001DA7F0 *)arg1));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_043", SzDuel_SetupCard_Pipe);
+typedef struct {
+    u16 count;
+    u16 prim;
+    u32 flags;
+    u64 regs;
+} Tag_001DA7F0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} XYZ_001DA7F0;
+
+typedef struct {
+    u64 tag[2];
+    u8 r, g, b, a;
+    f32 q;
+    u64 uv0;
+    XYZ_001DA7F0 xyz0;
+    u64 uv1;
+    XYZ_001DA7F0 xyz1;
+    u64 pad[4];
+} Sprite_001DA7F0;
+
+typedef struct {
+    u64 tag[2];
+    u8 r, g, b, a;
+    f32 q;
+    XYZ_001DA7F0 xyz0;
+    XYZ_001DA7F0 xyz1;
+    u64 end;
+} Solid_001DA7F0;
+
+typedef struct {
+    u16 u : 14;
+    u16 pad0 : 2;
+    u16 v : 14;
+    u16 pad1 : 2;
+} UV_001DA7F0;
+
+typedef struct {
+    u8 tex;
+    u8 pad;
+    u16 u0;
+    u16 v0;
+    u16 u1;
+    u16 v1;
+} Entry_001DA7F0;
+
+typedef struct {
+    u16 x;
+    u16 y;
+} Pos_001DA7F0;
+
+typedef struct {
+    Pos_001DA7F0 name;
+    Pos_001DA7F0 attr;
+    Pos_001DA7F0 stars;
+    Pos_001DA7F0 pic;
+    Pos_001DA7F0 atkLabel;
+    Pos_001DA7F0 atk;
+    Pos_001DA7F0 defLabel;
+    Pos_001DA7F0 def;
+} Layout_001DA7F0;
+
+typedef struct {
+    s8 unused0 : 5;
+    s8 card : 1;
+    s8 unused6 : 2;
+} GameFlags_001DA7F0;
+
+typedef struct {
+    u8 pad0[0x6A0];
+    s32 slots[9];
+    u8 pad6C4[0xD64 - 0x6C4];
+    GameFlags_001DA7F0 flags;
+} Game_001DA7F0;
+
+
+typedef struct {
+    s8 unused0 : 6;
+    s8 alt : 1;
+    s8 unused7 : 1;
+} CardFlags_001DA7F0;
+
+typedef struct {
+    u8 pad0[0x3C];
+    u16 id;
+    u8 kind;
+    u8 attr;
+    u8 atk0;
+    u8 def0;
+    u8 atk1;
+    u8 def1;
+    u8 owner;
+    u8 pad45[0x57 - 0x45];
+    CardFlags_001DA7F0 flags;
+} Card_001DA7F0;
+
+extern Entry_001DA7F0 D_0028FF30[2][10];
+extern Entry_001DA7F0 D_00290020[];
+extern Entry_001DA7F0 D_00290080[];
+extern Layout_001DA7F0 D_002BED50[];
+extern u16 D_002BED52[][16];
+extern u16 D_002BED54[][16];
+extern u16 D_002BED56[][16];
+extern u16 D_002BED5C[][16];
+extern u16 D_002BED5E[][16];
+extern u16 D_002BED60[][16];
+extern u16 D_002BED62[][16];
+extern u16 D_002BED68[][16];
+extern u16 D_002BED6A[][16];
+extern char D_002BE940[];
+
+static inline void SetSprite_001DA7F0(Sprite_001DA7F0 *p, Entry_001DA7F0 *e, s32 x, s32 y, s32 w, s32 h) {
+    ((UV_001DA7F0 *)&p->uv0)->u = (e->u0 << 4) + 8;
+    ((UV_001DA7F0 *)&p->uv0)->v = (e->v0 << 4) + 8;
+    ((UV_001DA7F0 *)&p->uv1)->u = (e->u1 << 4) + 8;
+    ((UV_001DA7F0 *)&p->uv1)->v = (e->v1 << 4) + 8;
+    p->xyz0.x = x << 4;
+    p->xyz0.y = y << 4;
+    p->xyz0.z = 0xFFFFFF;
+    p->xyz0.f = 0;
+    p->xyz1.x = (x + w) << 4;
+    p->xyz1.y = (y + h) << 4;
+    p->xyz1.z = 0xFFFFFF;
+    p->xyz1.f = 0;
+}
+
+struct Draw_001DA7F0_s {
+    u8 pad0[0x44];
+    u8 b, g, r, a;
+    u8 pad48[0x81 - 0x48];
+    s8 unused81 : 4;
+    s8 large : 1;
+    s8 unused81b : 3;
+    u8 pad82;
+    u8 unused83 : 4;
+    u8 blend : 2;
+    u8 unused83b : 2;
+};
+
+s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
+    extern s32 SzGame_GetMode();
+    extern s32 *SzMsg_GetInfo(s32);
+    extern s32 ExSortPrim_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+    Game_001DA7F0 *game;
+    s32 sx;
+    s32 sy;
+    s32 mode;
+    s32 picSize;
+    s32 width;
+    s32 fade;
+    s32 kind;
+    Entry_001DA7F0 *frameEntry;
+    Entry_001DA7F0 *attrEntry;
+    s32 level;
+    s32 cardId;
+    u16 starY;
+    s32 large;
+    s32 starW;
+    s32 frame;
+    s32 back;
+    s32 hide;
+    s32 digitW;
+    s32 height;
+    Entry_001DA7F0 *entry;
+    s32 out;
+    s32 tex;
+    s32 attr;
+    s32 p1;
+    u8 p2;
+    s8 alt;
+    s32 altw;
+    s32 atk;
+    s32 def;
+    s32 i;
+    s32 n;
+    s32 exch;
+    s32 w;
+    f32 scale;
+    s32 *digits;
+    s32 div;
+    Layout_001DA7F0 *lay;
+    Sprite_001DA7F0 sprite __attribute__((aligned(8)));
+    Solid_001DA7F0 solid __attribute__((aligned(8)));
+
+    game = (Game_001DA7F0 *)D_00317490.b;
+    sx = 0x6C0;
+    sy = 0x720;
+    mode = SzGame_GetMode(1);
+    if (arg1 != 0) {
+        cardId = ((Card_001DA7F0 *)arg1)->id;
+    } else {
+        cardId = -1;
+    }
+    picSize = 0x60;
+    width = 0x78;
+    frame = 0x20;
+    digitW = 0x14;
+    starW = 8;
+    height = 0xB4;
+    large = 0;
+    fade = 0;
+    back = 0;
+    hide = 0;
+    if (!arg2) {
+        return (s32)arg2;
+    }
+    if (arg2->large) {
+        picSize = 0xC0;
+        large = 1;
+        frame = 0x1F;
+        digitW = 0x16;
+        starW = 0x10;
+        height = 0x170;
+        width = 0x100;
+    }
+    if (arg2->blend != 0) {
+        if (arg2->a != 0) {
+            fade = 1;
+        }
+    }
+    ((Tag_001DA7F0 *)sprite.tag)->prim = 0x26;
+    ((Tag_001DA7F0 *)sprite.tag)->count = 5;
+    ((Tag_001DA7F0 *)sprite.tag)->regs = 0x42421;
+    ((Tag_001DA7F0 *)sprite.tag)->flags = 0;
+    ((Tag_001DA7F0 *)sprite.tag)->prim |= 0x800;
+    ExAssignAlpha(sprite.tag, 0x44 | ((s64)0x80 << 32));
+    sprite.r = 0x80;
+    sprite.g = 0x80;
+    sprite.b = 0x80;
+    sprite.a = 0x80;
+    sprite.q = 1.0f;
+    arg0 = (s32)RhBase_EnableRenderFrame((void *)arg0);
+    if (game->flags.card != arg2->large) {
+        arg0 = (s32)RhBase_ClearRenderFrame((u8 *)arg0, 0);
+        game->flags.card = arg2->large;
+    }
+    if (cardId >= 0x356) {
+        if (((Card_001DA7F0 *)arg1)->owner <= 1) {
+            back = 1;
+        } else {
+            cardId = -1;
+        }
+    }
+    if (cardId == 0x29F) {
+        cardId = -1;
+    }
+    if (SzGame_GetMenuNum(0x1E) != 0 && mode == 1 && arg1 != 0) {
+        hide = lSzDuel_IsUnitHide((void *)arg1);
+    }
+    if (back) {
+        entry = &D_0028FF30[large][((Card_001DA7F0 *)arg1)->owner + 8];
+        arg0 = lSzDuel_SetupCardTexture(arg0, 8);
+        ExAssignTexture(&sprite, (void *)game->slots[8], 0);
+        SetSprite_001DA7F0(&sprite, entry, sx, sy, width, height);
+        out = ExSortPrim_Pipe(arg0, (s32)&sprite, 0, 0);
+    } else if (hide) {
+        entry = &D_0028FF30[large][((Card_001DA7F0 *)arg1)->owner + 8];
+        tex = lSzDuel_SetupCardTexture(arg0, entry->tex);
+        ExAssignTexture(&sprite, (void *)game->slots[entry->tex], 0);
+        SetSprite_001DA7F0(&sprite, entry, sx, sy, width, height);
+        out = ExSortPrim_Pipe(tex, (s32)&sprite, 0, 0);
+    } else if (cardId >= 0) {
+        kind = ((Card_001DA7F0 *)arg1)->kind >> 5;
+        attr = SzDuel_Kind2Attr(kind, ((Card_001DA7F0 *)arg1)->attr);
+        entry = &D_0028FF30[large][kind];
+        frameEntry = &D_00290080[frame];
+        attrEntry = &D_00290020[attr];
+        level = SzDuel_GetUnitLevel2((void *)arg1, 0);
+        altw = ((Card_001DA7F0 *)arg1)->flags.alt;
+        alt = altw;
+        p1 = (u8)(altw ? ((Card_001DA7F0 *)arg1)->atk1 : ((Card_001DA7F0 *)arg1)->atk0);
+        p2 = alt ? ((Card_001DA7F0 *)arg1)->def1 : ((Card_001DA7F0 *)arg1)->def0;
+        atk = Ta_GetParamOfs(arg1, p1, p2, 1);
+        def = Ta_GetParamOfs(arg1, p1, p2, 0);
+        atk += SzDuel_GetUnitAP2((void *)arg1, 0);
+        def += SzDuel_GetUnitDP2((void *)arg1, 0);
+        atk = ((atk > 0 ? atk : 0) < 9999) ? (atk > 0 ? atk : 0) : 9999;
+        def = ((def > 0 ? def : 0) < 9999) ? (def > 0 ? def : 0) : 9999;
+        if (kind == 0 && SzDuel_GetUnitConstEffect2((void *)arg1, 0) != NULL) {
+            entry = &D_0028FF30[large][6];
+        }
+        if (arg2->large) {
+            arg0 = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 9, SzDuel_GetMsgName(cardId), 0, 0xC6));
+        }
+        arg0 = lSzDuel_SetupCardTexture(arg0, entry->tex);
+        ExAssignTexture(&sprite, (void *)game->slots[entry->tex], 0);
+        ((UV_001DA7F0 *)&sprite.uv0)->u = (entry->u0 << 4) + 8;
+        ((UV_001DA7F0 *)&sprite.uv0)->v = (entry->v0 << 4) + 8;
+        ((UV_001DA7F0 *)&sprite.uv1)->u = (entry->u1 << 4) + 8;
+        ((UV_001DA7F0 *)&sprite.uv1)->v = (entry->v1 << 4) + 8;
+        sprite.xyz0.x = sx << 4;
+        sprite.xyz0.y = sy << 4;
+        sprite.xyz0.z = 0xFFFFFF;
+        sprite.xyz0.f = 0;
+        sprite.xyz1.x = (sx + width) << 4;
+        sprite.xyz1.y = (sy + height) << 4;
+        sprite.xyz1.z = 0xFFFFFF;
+        sprite.xyz1.f = 0;
+        arg0 = ExSortPrim_Pipe(arg0, (s32)&sprite, 0, 0);
+        ExAssignTexture(&sprite, (void *)game->slots[frameEntry->tex], 0);
+        ((UV_001DA7F0 *)&sprite.uv0)->u = (frameEntry->u0 << 4) + 8;
+        ((UV_001DA7F0 *)&sprite.uv0)->v = (frameEntry->v0 << 4) + 8;
+        ((UV_001DA7F0 *)&sprite.uv1)->u = (frameEntry->u1 << 4) + 8;
+        ((UV_001DA7F0 *)&sprite.uv1)->v = (frameEntry->v1 << 4) + 8;
+        i = 0;
+        if (i < level) {
+            do {
+                starY = sy + starW;
+                n = 11 - i;
+                sprite.xyz0.x = (sx + starW * n + D_002BED50[large].stars.x + (u16)(large * n)) << 4;
+                sprite.xyz0.y = (sy + D_002BED50[large].stars.y) << 4;
+                sprite.xyz0.z = 0xFFFFFF;
+                sprite.xyz0.f = 0;
+                sprite.xyz1.x = (sx + starW * (n + 1) + D_002BED50[large].stars.x + (u16)(large * n)) << 4;
+                sprite.xyz1.y = (starY + D_002BED50[large].stars.y) << 4;
+                sprite.xyz1.z = 0xFFFFFF;
+                sprite.xyz1.f = 0;
+                arg0 = ExSortPrim_Pipe(arg0, (s32)&sprite, 0, 0);
+                i++;
+            } while (i < level);
+        }
+        exch = SzData_ExchSpecial(((Card_001DA7F0 *)arg1)->owner, cardId);
+        if (exch != cardId && SzText_GetReadyItem(1, exch) == NULL) {
+            exch = cardId;
+        }
+        out = lSzDuel_DrawWindow_PicItem_Pipe(arg0, exch, D_002BED5C[large][0], D_002BED5E[large][0], picSize, picSize, 0xFFFFFF);
+        if (arg2->large) {
+            ExAssignTexture(&sprite, (void *)game->slots[attrEntry->tex], 0);
+            ((UV_001DA7F0 *)&sprite.uv0)->u = (attrEntry->u0 << 4) + 8;
+            ((UV_001DA7F0 *)&sprite.uv0)->v = (attrEntry->v0 << 4) + 8;
+            ((UV_001DA7F0 *)&sprite.uv1)->u = (attrEntry->u1 << 4) + 8;
+            ((UV_001DA7F0 *)&sprite.uv1)->v = (attrEntry->v1 << 4) + 8;
+            sprite.xyz0.x = (sx + D_002BED54[large][0]) << 4;
+            sprite.xyz0.y = (sy + D_002BED56[large][0]) << 4;
+            sprite.xyz0.z = 0xFFFFFF;
+            sprite.xyz0.f = 0;
+            sprite.xyz1.x = (sx + 0x18 + D_002BED54[large][0]) << 4;
+            sprite.xyz1.y = (sy + 0x18 + D_002BED56[large][0]) << 4;
+            sprite.xyz1.z = 0xFFFFFF;
+            sprite.xyz1.f = 0;
+            out = ExSortPrim_Pipe(out, (s32)&sprite, 0, 0);
+            w = SzMsg_GetInfo(9)[3];
+            if ((s32)(w >= 0xC1) != 0) {
+                scale = 192.0f / (f32)w;
+            } else {
+                scale = 1.0f;
+            }
+            out = SzMsg_DrawRatioX_Pipe(out, 9, D_002BED50[large].name.x, D_002BED52[large][0], scale, 1.0f, (s32)D_002BE940, (void (*)(void))SzMsg_DrawRect_Pipe);
+            SzMsg_Free(9);
+        }
+        if (kind == 0) {
+            extern s32 Ta_GetParamOfs(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+            extern void *SzText_GetReadyItem(s32 arg0, s32 arg1);
+            w = SzMsg_GetInfo(1)[3];
+            if (w > 22) {
+                scale = 22.0f / (f32)w;
+            } else {
+                scale = 1.0f;
+            }
+            out = SzMsg_DrawRatioX_Pipe(out, 1, D_002BED60[large][0], D_002BED62[large][0], scale, 1.0f, (s32)D_002BE940, (void (*)(void))SzMsg_DrawRect_Pipe);
+            digits = SzMsg_GetInfo(0);
+            div = 1;
+            lay = &D_002BED50[large];
+            i = 0;
+            do {
+                digits[1] = (atk / div % 10) * 22;
+                out = SzMsg_DrawX_Pipe(out, 0, lay->atk.x + digitW * (4 - i), lay->atk.y, (s32)D_002BE940, (s32)SzMsg_DrawRect_Pipe);
+                div *= 10;
+                if (atk < div) {
+                    break;
+                }
+                i++;
+            } while (i < 4);
+            w = SzMsg_GetInfo(2)[3];
+            if (w > 22) {
+                scale = 22.0f / (f32)w;
+            } else {
+                scale = 1.0f;
+            }
+            out = SzMsg_DrawRatioX_Pipe(out, 2, D_002BED68[large][0], D_002BED6A[large][0], scale, 1.0f, (s32)D_002BE940, (void (*)(void))SzMsg_DrawRect_Pipe);
+            digits = SzMsg_GetInfo(0);
+            div = 1;
+            i = 0;
+            do {
+                digits[1] = (def / div % 10) * 22;
+                out = SzMsg_DrawX_Pipe(out, 0, lay->def.x + digitW * (4 - i), lay->def.y, (s32)D_002BE940, (s32)SzMsg_DrawRect_Pipe);
+                div *= 10;
+                if (def < div) {
+                    break;
+                }
+                i++;
+            } while (i < 4);
+        }
+    } else {
+        entry = &D_0028FF30[large][7];
+        tex = lSzDuel_SetupCardTexture(arg0, entry->tex);
+        ExAssignTexture(&sprite, (void *)game->slots[entry->tex], 0);
+        SetSprite_001DA7F0(&sprite, entry, sx, sy, width, height);
+        out = ExSortPrim_Pipe(tex, (s32)&sprite, 0, 0);
+    }
+    if (fade) {
+        ((Tag_001DA7F0 *)solid.tag)->prim = 6;
+        ((Tag_001DA7F0 *)solid.tag)->count = 3;
+        ((Tag_001DA7F0 *)solid.tag)->regs = 0x441;
+        ((Tag_001DA7F0 *)solid.tag)->flags = 0;
+        ExAssignAlpha(solid.tag, ExGetAlphaVal(arg2->blend));
+        solid.r = arg2->r;
+        solid.g = arg2->g;
+        solid.b = arg2->b;
+        solid.a = arg2->a;
+        solid.q = 1.0f;
+        solid.xyz0.x = 0x6C00;
+        solid.xyz0.y = 0x7200;
+        solid.xyz0.z = 0xFFFFFF;
+        solid.xyz0.f = 0;
+        solid.xyz1.x = 0x8000;
+        solid.xyz1.y = 0x8E00;
+        solid.xyz1.z = 0xFFFFFF;
+        solid.xyz1.f = 0;
+        out = (s32)RhBase_MaskFBuffer((void *)ExSortPrim_Pipe((s32)RhBase_MaskFBuffer((void *)RhBase_SetZBufferMode(out, 0), 0xFF000000), (s32)&solid, 0, 0), 0);
+    }
+    RhBase_GetTextureInfoForRender((u8 *)arg2 + 0x60, (u8 *)arg2 + 0x68);
+    return RhText_SetTextureFlush((s32)RhBase_DisableRenderFrame((void *)out));
+}
 
 typedef struct Packet_001DBC40 {
     u8 pad00[0x18];
