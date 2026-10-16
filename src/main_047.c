@@ -1477,7 +1477,217 @@ s32 SzModel_Preset(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_047", SzModel_LoadMerge);
+typedef struct {
+    s16 *values[9];
+} Sources_001E7F70;
+
+typedef struct {
+    s32 values[9];
+} Table_001E7F70;
+
+typedef struct {
+    s32 file;
+    u16 base;
+    u16 mask;
+} File_001E7F70;
+
+typedef struct {
+    s8 unused0 : 2;
+    s8 pending : 1;
+    s8 active : 1;
+    s8 unused4 : 4;
+} Flags_001E7F70;
+
+s32 SzModel_LoadMerge(s32 arg0, s32 arg1, s32 arg2) {
+    s32 *start;
+    s32 value;
+    s32 id;
+    Sources_001E7F70 sources;
+    extern s32 SzFile_ReadRequestParam();
+    extern s32 SzModel_GetModelNo();
+    extern s32 D_00292A50[];
+    extern s32 D_00292A54[];
+    extern File_001E7F70 D_00292BA0[];
+    extern u16 D_00292BA4[];
+    extern Sources_001E7F70 D_00292BE0;
+    extern Table_001E7F70 D_00292C10;
+    extern Table_001E7F70 D_00292C40;
+    extern Table_001E7F70 D_00292C70;
+    extern u8 D_002CEBBC[];
+    extern s16 D_002CEBC6[];
+    extern u8 D_002CEBC8[];
+    extern u8 D_002CECB8[];
+    extern u8 D_002CEE48[];
+    extern u16 D_002CF910[];
+    extern u8 D_002CF9DD[];
+    extern u8 D_002CF9F0[];
+    s32 fileIndex;
+    s32 offset;
+    s32 length;
+    s32 file;
+    Table_001E7F70 types;
+    Table_001E7F70 counts;
+    Table_001E7F70 starts;
+    u8 *path;
+    u8 name[128];
+    File_001E7F70 *info;
+    s16 *commonSource;
+    s32 i;
+
+    if (arg0 < 0 || arg0 >= 7) {
+        return 0;
+    }
+
+    sources = D_00292BE0;
+    sources.values[0] = (s16 *)&D_002CEBBC[arg1 * 10];
+    sources.values[1] = &D_002CEBC6[arg1];
+    sources.values[2] = (s16 *)&D_002CEBC8[24 * arg1];
+    commonSource = (s16 *)&D_002CECB8[arg1 * 80];
+    sources.values[3] = commonSource;
+    sources.values[4] = commonSource;
+    sources.values[5] = commonSource;
+    sources.values[6] = (s16 *)&D_002CEE48[arg1 * 20];
+    types = D_00292C10;
+    counts = D_00292C40;
+    starts = D_00292C70;
+    fileIndex = arg1 + *(u16 *)((u8 *)D_00292BA4 + arg0 * 8);
+    offset = D_00292A50[fileIndex];
+    length = D_00292A54[fileIndex] - offset;
+    info = &D_00292BA0[arg0];
+    file = info->file;
+    path = name;
+    func_0019B648(path, D_002CF9DD, (s32)SzFile_GetEnv((s32)D_002CF9F0));
+    if (4 != arg0) {
+        if (SzText_GetItem(0, 0) != NULL) {
+            SzText_Free(0, 0);
+            SzText_Free(1, -1);
+        }
+    }
+    if (3 != arg0) {
+        SzText_Free(0, 5);
+        SzText_Free(0, 6);
+        SzText_Free(7, -1);
+        SzText_Free(8, -1);
+    }
+    if (arg0 == 4) {
+        counts.values[7] = 9;
+    }
+
+    if (arg2 == 0) {
+        s32 j;
+        s32 id;
+        s32 count;
+        s32 *start;
+        s32 *amount;
+
+        start = starts.values;
+        amount = counts.values;
+        i = 0;
+        do {
+            if ((1 << i) & info->mask) {
+                id = *start;
+                count = *amount;
+                j = 0;
+                goto test;
+                body:
+                    if (SzModel_IsModelStandby(id) != 0) {
+                        arg2 = 1;
+                    }
+                    id++;
+                    j++;
+                test:
+                if (j < count) goto body;
+            }
+            i++;
+            start++;
+            amount++;
+        } while (i < 9);
+
+        {
+            s32 *start;
+            u16 *limit;
+            s32 *amount;
+            s16 *source;
+            s32 i;
+
+            source = sources.values[arg0];
+            if (source != NULL) {
+                i = 0;
+                start = &starts.values[arg0];
+                amount = &counts.values[arg0];
+                limit = &D_002CF910[types.values[arg0]];
+                while (i < *amount) {
+                    value = *source;
+                    id = i + *start;
+                    if (value < *limit && value != SzModel_GetModelNo(id)) {
+                        arg2 = 1;
+                    }
+                    source++;
+                    i++;
+                }
+            }
+        }
+    }
+
+    if (0 == arg2) {
+        return 1;
+    }
+
+    {
+        s32 *amount;
+        s32 *type;
+        s32 i;
+        s32 j;
+
+        start = starts.values;
+        amount = counts.values;
+        type = types.values;
+        i = 0;
+        do {
+            if ((1 << i) & info->mask) {
+                j = 0;
+                while (j < *amount) {
+                    SzModel_Preset(j + *start, -1, 999);
+                    j++;
+                }
+                if (*type == 4) {
+                    j = 1;
+                    do {
+                        SzDuel_DelUnit(0, j);
+                        SzDuel_DelUnit(1, j);
+                        j++;
+                    } while (j < 11);
+                }
+            }
+            i++;
+            start++;
+            amount++;
+            type++;
+        } while (i < 9);
+    }
+
+    {
+        i = 0;
+        while (i < counts.values[arg0]) {
+            SzModel_Preset(starts.values[arg0] + i, -1, sources.values[arg0][i]);
+            i++;
+        }
+        if (SzFile_ReadRequestParam(arg0, 0, (s32)path, file, length, offset, length,
+                          (s32)lSzModel_LoadMergeCB, fileIndex) == 0) {
+            return 0;
+        }
+        i = 0;
+        while (i < counts.values[arg0]) {
+            Obj_0031ABB0 *obj = D_0031ABB0[i + starts.values[arg0]];
+            if (obj != NULL) {
+                ((Flags_001E7F70 *)((u8 *)obj + 0x20C))->pending = 0;
+                ((Flags_001E7F70 *)((u8 *)obj + 0x20C))->active = 1;
+            }
+            i++;
+        }
+    }
+    return 1;
+}
 
 struct DotrMergeRecord {
     char unknown_00[0x14];

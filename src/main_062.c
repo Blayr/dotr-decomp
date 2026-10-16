@@ -279,7 +279,6 @@ extern unsigned short D_00299CE0_21c510[];
 extern struct DotrCampEntryRow D_00299D00_21c510[];
 extern void func_00233F50_b(int mode);
 extern void func_00195108_b(void *a, int b);
-extern int SzModel_LoadMerge(int type, int no, int force);
 extern void func_001F3910_b(int a, int b, int c);
 extern void func_00217980_b(int n, int b);
 extern int func_001F93F0_b(int a, int b, int c, int d);

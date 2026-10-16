@@ -1084,7 +1084,6 @@ extern char D_002BE809_b[];
 extern const char *D_0028FF10_b[];
 extern char *func_00197548_1a8db0(const char *);
 extern char *func_001FFF90_b(const char *);
-extern void SzModel_LoadMerge(int, int, int);
 extern void func_002051C0_b(int);
 extern void func_001E3850_b(int, int, int);
 extern void func_001FC9B0_b(int);

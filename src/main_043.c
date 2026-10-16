@@ -2661,7 +2661,6 @@ s32 SzDuel_TrimUnitDir2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return result;
 }
 
-void SzModel_LoadMerge(s32, s32, s32);
 extern u8 D_002BF080[];
 
 static inline u8 *lookup_001DDD80(s32 index) {
