@@ -782,7 +782,166 @@ void _getAllRefs(void *arg0, s32 bx, s32 by, s32 mb_type, s32 motion_type, s32 P
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_028", _getRef0);
+/* libmpeg form_prediction (mpeg2decode recon.c, adapted to the IPU sub-records): luma, then chroma reusing
+ * xx/yy/xh/yh with halved parameters. The field types are the alias sets the original's schedule shows (int
+ * stores keep d->cur reloads, the pointer fields don't); the two cnt pointers keep np first in np + cur*320.
+ * chatF, 16 Oct 2026. */
+
+typedef struct MpegSub_00188F88 {
+    u8 *dst;
+    s32 xr;
+    s32 h1;
+    s32 h2;
+    s32 step;
+    void *p0;
+    void *p1;
+} MpegSub_00188F88;
+
+typedef struct MpegBuf_00188F88 {
+    u8 *blk;
+    s32 f4;
+    void *src1[4];
+    void *src2[4];
+    void (*fn1[4])();
+    void (*fn2[4])();
+    MpegSub_00188F88 sub1[4];
+    MpegSub_00188F88 sub2[4];
+    s32 p;
+    s32 n;
+    s32 f130;
+    s32 unk134;
+    s32 f138;
+    s32 f13C;
+} MpegBuf_00188F88;
+
+typedef struct MpegDec_00188F88 {
+    u8 unk0[0x590];
+    MpegBuf_00188F88 bufs[2];
+    s32 cur;
+    s32 unk814[2];
+    u8 *out;
+} MpegDec_00188F88;
+
+typedef struct MpegRef_00188F88 {
+    u8 *base;
+    s32 unk4[3];
+    s32 width;
+} MpegRef_00188F88;
+
+extern void (*D_0028DA10[])();
+extern void (*D_0028DA30[])();
+
+void _getRef0(void *d_v, s32 ref_v, s32 sfield, s32 dfield, s32 yoff, s32 h, s32 bx, s32 by,
+                   s32 dx, s32 dy, s32 fld, s32 avg) {
+    MpegDec_00188F88 *d = (MpegDec_00188F88 *)d_v;
+    MpegRef_00188F88 *ref = (MpegRef_00188F88 *)ref_v;
+    s32 n;
+    MpegSub_00188F88 *s1;
+    MpegSub_00188F88 *s2;
+    s32 xx, yy, xb, yb, cxb, cyb, k;
+    u8 *blk, *blk2;
+    u8 *out;
+    s32 h2, o2, dx2, dy2;
+    s32 idx1;
+    s32 mb;
+    s32 xh, yh;
+    s32 *np;
+    s32 *cnt;
+    s32 *cnt2;
+
+    np = &d->bufs[0].n;
+    cnt = np + d->cur * 80;
+    n = *cnt;
+    out = d->out;
+    s1 = &d->bufs[d->cur].sub1[n];
+    s2 = &d->bufs[d->cur].sub2[n];
+
+    xx = (dx >> 1) + bx;
+    if (fld) {
+        yy = ((dy >> 1) << 1) + (yoff + sfield) + by;
+    } else {
+        yy = (dy >> 1) + (yoff + sfield) + by;
+    }
+    xb = xx >> 4;
+    yb = yy >> 4;
+    mb = xb * ref->width + yb;
+    yy -= yb << 4;
+    s1->xr = xx - (xb << 4);
+    s1->dst = out + (dfield + yoff) * 32;
+    xh = dx & 1;
+    yh = dy & 1;
+    if (yh) {
+        if (yy + (h << fld) < 16) {
+            s1->h1 = h;
+            s1->h2 = 0;
+        } else {
+            k = (16 >> fld) - (yy >> fld) - 1;
+            s1->h1 = k;
+            s1->h2 = h - k;
+        }
+    } else {
+        if (yy + (h << fld) > 16) {
+            k = (16 >> fld) - (yy >> fld);
+            s1->h1 = k;
+            s1->h2 = h - k;
+        } else {
+            s1->h1 = h;
+            s1->h2 = 0;
+        }
+    }
+    blk = d->bufs[d->cur].blk + n * 0x600;
+    s1->p0 = blk + yy * 16;
+    s1->p1 = blk + (yy * 16 + 0x300);
+    s1->step = 16 << fld;
+    idx1 = (avg << 2) | (xh << 1) | yh;
+
+    o2 = yoff >> 1;
+    h2 = h >> 1;
+    dx2 = dx / 2;
+    dy2 = dy / 2;
+    xx = (dx2 >> 1) + (bx >> 1);
+    if (fld) {
+        yy = ((dy2 >> 1) << 1) + (o2 + sfield) + (by >> 1);
+    } else {
+        yy = (dy2 >> 1) + (o2 + sfield) + (by >> 1);
+    }
+    cxb = xx >> 3;
+    cyb = yy >> 3;
+    yy -= cyb << 3;
+    xh = dx2 & 1;
+    yh = dy2 & 1;
+    s2->xr = xx - (cxb << 3);
+    s2->dst = out + ((dfield + o2) * 16 + 0x200);
+    if (yh) {
+        if (yy + (h2 << fld) < 8) {
+            s2->h1 = h2;
+            s2->h2 = 0;
+        } else {
+            k = (8 >> fld) - (yy >> fld) - 1;
+            s2->h1 = k;
+            s2->h2 = h2 - k;
+        }
+    } else {
+        if (yy + (h2 << fld) > 8) {
+            k = (8 >> fld) - (yy >> fld);
+            s2->h1 = k;
+            s2->h2 = h2 - k;
+        } else {
+            s2->h1 = h2;
+            s2->h2 = 0;
+        }
+    }
+    blk2 = blk + (((cxb - xb) << 1) + (cyb - yb)) * 0x180;
+    s2->p0 = blk2 + (yy * 8 + 0x100);
+    s2->p1 = blk2 + (yy * 8 + 0x400);
+    s2->step = 8 << fld;
+    d->bufs[d->cur].fn1[n] = D_0028DA10[idx1];
+    d->bufs[d->cur].src1[n] = ref->base + mb * 0x180;
+    d->bufs[d->cur].src2[n] = ref->base + (mb + ref->width) * 0x180;
+    d->bufs[d->cur].fn2[n] = D_0028DA30[(avg << 2) | (xh << 1) | yh];
+    cnt2 = np + d->cur * 80;
+    (*cnt2)++;
+}
 
 typedef struct MpegSub_001893A8 {
     u8 b[0x1C];
