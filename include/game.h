@@ -10,7 +10,6 @@
 
 s32 lSzGame_DrawTitle_Pipe(s32);                             /* extern */
 s32 SzDuel_DrawDialog_Pipe(s32);                             /* extern */
-s32 SzDuel_DrawCustomDuel_Pipe(s32);                             /* extern */
 
 s32 SzDuel_SetupCard_Pipe(s32, s32, s32);                   /* extern */
 

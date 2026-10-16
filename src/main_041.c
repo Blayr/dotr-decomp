@@ -2020,7 +2020,69 @@ void SzDuel_DrawCustomDuel(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawCustomDuel_Pipe(RhBase_GetVifPacketArea()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", SzDuel_DrawCustomDuel_Pipe);
+#pragma opt_propagation off
+#pragma opt_lifetimes off
+
+s32 SzDuel_DrawCustomDuel_Pipe(s32 arg0) {
+    extern char D_002BF03A[];
+    extern s32 lSzDuel_DrawCustomDuel_Title_Pipe();
+    extern s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe();
+    extern s32 lSzDuel_DrawCustomDuel_Menu_Pipe();
+    extern s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe();
+    extern s32 lSzDuel_DrawCustomDuel_Exit_Pipe();
+    extern s32 lSzDuel_DrawWindow_Frame_Pipe();
+    extern s32 SzDuel_DrawWindow_Font_Pipe();
+    extern s32 lSzDuel_Draw_Fade_Pipe();
+    s8 *text;
+    s32 id;
+    s32 textY;
+    s32 height;
+    s32 width;
+    s32 height2;
+    s32 width2;
+    s32 mode;
+    s32 fy;
+
+    id = lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(lSzDuel_DrawCustomDuel_Title_Pipe(lSzDuel_DrawCustomDuel_Base_Pipe(SzDuel_StartWindowSessionWithPalette_Pipe(arg0, 2)), 0, 0), 0, 0x10, 0x40), 1, 0x140, 0x40);
+    mode = *(u8 *)0xA9C002 & 0xF0;
+    if (mode == 0x40 || (*(u8 *)0xA9C003 & 0xF0) == 0x40) {
+        id = lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(id, 0, 0x1E, 0xE0);
+    } else {
+        if (mode == 0x20) {
+            text = D_002BF03A;
+            lSzDuel_GetFontSize(2, 3, strlen(text), text, &width, &height);
+            width += 0x18;
+            height += 0xC;
+            fy = 0x144 - height / 2;
+            id = lSzDuel_DrawWindow_Frame_Pipe(id, 0xC, -1, 0xB, 0xA0 - width / 2, fy, -width, -height, 1);
+            textY = 0x14C - height / 2;
+            id = SzDuel_DrawWindow_Font_Pipe(id, 0xA0, textY, 2, 3, strlen(text), text, 0);
+        } else {
+            id = lSzDuel_DrawCustomDuel_Menu_Pipe(id, 0, 0x10, 0xE6);
+        }
+        if (*(u8 *)0xA9C088 == 0) {
+            if ((*(u8 *)0xA9C003 & 0xF0) == 0x20) {
+                text = D_002BF03A;
+                lSzDuel_GetFontSize(2, 3, strlen(text), text, &width2, &height2);
+                width2 += 0x18;
+                height2 += 0xC;
+                fy = 0x144 - height2 / 2;
+                id = lSzDuel_DrawWindow_Frame_Pipe(id, 0xC, -1, 0xB, 0x1E0 - width2 / 2, fy, -width2, -height2, 1);
+                textY = 0x14C - height2 / 2;
+                id = SzDuel_DrawWindow_Font_Pipe(id, 0x1E0, textY, 2, 3, strlen(text), text, 0);
+            } else {
+                id = lSzDuel_DrawCustomDuel_Menu_Pipe(id, 1, 0x140, 0xE6);
+            }
+        }
+    }
+    if ((*(u8 *)0xA9C002 & 0xF0) == 0x30 || (*(u8 *)0xA9C003 & 0xF0) == 0x30) {
+        id = lSzDuel_DrawCustomDuel_Exit_Pipe(lSzDuel_Draw_Fade_Pipe(id, 0, 0, 0x280, 0x1C0, 0x40), 0, 0);
+    }
+    SzMsg_Free(0);
+    return id;
+}
+#pragma opt_lifetimes reset
+#pragma opt_propagation reset
 
 typedef struct {
     u16 count;
