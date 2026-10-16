@@ -689,7 +689,6 @@ typedef struct Render_001F8A30 {
     s32 flags80;
 } Render_001F8A30;
 
-void Ex3d_InitClipPlane(void);
 
 s32 SzView_Set_Pipe(s32 arg0, s32 arg1) {
     Render_001F8A30 render;

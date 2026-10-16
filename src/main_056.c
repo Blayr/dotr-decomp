@@ -82,7 +82,67 @@ void Ex3d_DivideN(void *arg0, void *arg1, s32 flags, void *arg3, f32 factor) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_056", Ex3d_InitClipPlane);
+static inline void surface_00206830(f32 *v0, f32 *v1, f32 *v2, f32 *plane) {
+    plane[0] = v0[1] * (v1[2] - v2[2])
+             + v1[1] * (v2[2] - v0[2])
+             + v2[1] * (v0[2] - v1[2]);
+    plane[1] = v0[2] * (v1[0] - v2[0])
+             + v1[2] * (v2[0] - v0[0])
+             + v2[2] * (v0[0] - v1[0]);
+    plane[2] = v0[0] * (v1[1] - v2[1])
+             + v1[0] * (v2[1] - v0[1])
+             + v2[0] * (v0[1] - v1[1]);
+    plane[3] = v0[0] * (v1[2] * v2[1] - v1[1] * v2[2])
+             + v0[1] * (v1[0] * v2[2] - v1[2] * v2[0])
+             + v0[2] * (v1[1] * v2[0] - v1[0] * v2[1]);
+    plane[4] = func_001A6C60(plane[0] * plane[0]
+                            + plane[1] * plane[1]
+                            + plane[2] * plane[2]);
+}
+
+void Ex3d_InitClipPlane(void)
+{
+    f32 near;
+    f32 far;
+    f32 cx;
+    f32 cy;
+    f32 dist;
+    f32 v[5][3];
+    f32 nw;
+    f32 w;
+    f32 f;
+    f32 *planes = (f32 *)D_00325CC0;
+    f32 *p;
+
+    RhView_GetClipZ(&near, &far);
+    RhView_GetScreenCenter(&cx, &cy);
+    RhView_GetScreenDist(&dist);
+    cx += 10.0f;
+    cy += 10.0f;
+    nw = -cx;
+    w = cx;
+    f = dist;
+    v[0][0] = 0.0f; v[0][1] = 0.0f; v[0][2] = 0.0f;
+    v[1][0] = nw; v[1][1] = nw;
+    v[2][1] = nw;
+    v[4][0] = nw;
+    v[2][0] = v[3][0] = v[3][1] = v[4][1] = w;
+    v[1][2] = v[2][2] = v[3][2] = v[4][2] = f;
+    p = (f32 *)D_00325CC0;
+    surface_00206830(v[0], v[1], v[2], p);
+    p = planes + 5;
+    surface_00206830(v[0], v[4], v[1], p);
+    p = planes + 10;
+    surface_00206830(v[0], v[3], v[4], p);
+    p = planes + 15;
+    surface_00206830(v[0], v[2], v[3], p);
+    v[1][2] = near; v[2][2] = near; v[4][2] = near;
+    p = planes + 20;
+    surface_00206830(v[1], v[2], v[4], p);
+    v[1][2] = far; v[2][2] = far; v[4][2] = far;
+    p = planes + 25;
+    surface_00206830(v[4], v[2], v[1], p);
+}
 
 void Ex3d_ViewClip(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     Ex3d_Clipping(6, D_00325CC0, arg0, arg1, arg2, arg3, arg4);
