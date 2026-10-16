@@ -131,7 +131,6 @@ extern u8 D_003506C8[];
 
 
 
-s32 TaLogic_GetMaxApUnit(u16 *);
 
 extern u8 D_00325E80[];
 extern u8 D_00325F50[];
@@ -1088,6 +1087,5 @@ extern s32 D_0028DCB8;
 
 extern char D_002BE940[];
 
-s32 func_0012B000(s32 arg0);
 
 #endif

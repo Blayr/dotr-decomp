@@ -303,7 +303,6 @@ typedef struct {
     s32 unkC;
 } Ctx_00136210;
 
-s32 TaLogic009_SetComboQue(s32, void *, void *);
 
 s32 TaLogic_GetMinimumTask_Summon_00136210(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 TaLogic_GetUnitNum();
@@ -537,7 +536,76 @@ s32 TaLogic009_GetSpellPlay(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_009", TaLogic009_SetComboQue);
+typedef struct Info_00136B80 {
+    u8 pad00[8];
+    u16 x;
+    s16 y;
+} Info_00136B80;
+
+typedef struct Sprite_00136B80 {
+    Info_00136B80 *info;
+    u8 pad04[0x34];
+    s16 x;
+    s16 y;
+} Sprite_00136B80;
+
+s32 TaLogic009_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
+    u16 *nodes[8];
+    s32 entries[7];
+    s16 a;
+    s16 b;
+    s32 i;
+    s32 card;
+    s32 value;
+    s32 best;
+
+    if (arg2 == NULL) {
+        return -1;
+    } else {
+        s32 top;
+        s32 *entry;
+        u16 **node;
+
+        TaHand_GetNextHand(arg0, entries);
+        best = -1;
+        top = -1;
+        i = 0;
+        if (i < TaHand_GetNextHandNum(arg0)) {
+            entry = entries;
+            node = nodes;
+            do {
+                b = 0;
+                a = 0;
+                card = *entry;
+                *node = NULL;
+                if ((TaHand_GetCardKind(card) >> 5) == 0) {
+                    *node = TaLogic_GetFusionTree(arg0, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
+                    *node = TaLogic_GetFusionRes(*node);
+                    value = TaLogic_GetEnchantQue(arg0, *node, 0, 0);
+                    if (TaHand_IsCardSummon2(arg0, card) == 1) {
+                        if (best < value) {
+                            TaLogic_ConvEmptyCombo_00136D60(arg0, *node, entries);
+                            TaLogic_CopyArray((u8 *)*node + 2, arg1 + 6);
+                            SzDuel_InitCardInfo(arg2, **node);
+                            ((Sprite_00136B80 *)arg2)->x = (value >> 16) - (((Sprite_00136B80 *)arg2)->info->x & 0x1FFF);
+                            ((Sprite_00136B80 *)arg2)->y = (value & 0xFFFF) - (((Sprite_00136B80 *)arg2)->info->y & 0x1FFF);
+                            best = value;
+                            if (top < value) {
+                                top = value;
+                            }
+                        }
+                    } else if (top < value) {
+                        top = value;
+                    }
+                }
+                entry++;
+                node++;
+                i++;
+            } while (i < TaHand_GetNextHandNum(arg0));
+        }
+        return top;
+    }
+}
 
 typedef struct {
     u16 id;

@@ -1298,7 +1298,122 @@ s32 Battle(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_070", SelfHeap);
+s32 SelfHeap(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 *eInfo) {
+    s32 type0;
+    s32 type1;
+
+    extern s32 SzDuel_GetUnitCardNo();
+
+    if (ID_2 == 0) {
+        eInfo[0] = 0x5F;
+        eInfo[1] = (nSide_1 << 8) | ID_1;
+        eInfo[2] = (nSide_2 << 8) | ID_2;
+        eInfo[3] = 0;
+        return 1;
+    }
+    type0 = SzDuel_GetUnitKind(nSide_1, ID_1) >> 5;
+    type1 = SzDuel_GetUnitKind(nSide_2, ID_2) >> 5;
+    if (type0 == 0 && type1 == 0) {
+        s32 card0;
+        u32 result;
+
+        if (ID_1 == 0) {
+            eInfo[0] = 0x5F;
+            eInfo[1] = (nSide_2 << 8) | ID_2;
+            eInfo[2] = (nSide_1 << 8) | ID_1;
+            eInfo[3] = 1;
+            return 1;
+        }
+        card0 = SzDuel_GetUnitCardNo(nSide_1, ID_1);
+        result = Fusion(card0, SzDuel_GetUnitCardNo(nSide_2, ID_2));
+        eInfo[0] = 0x64;
+        eInfo[1] = (nSide_1 << 8) | ID_1;
+        eInfo[2] = (nSide_2 << 8) | ID_2;
+        eInfo[3] = result;
+        return 1;
+    }
+    if (type0 == 0 && type1 == 2) {
+        s32 result;
+
+        if (ID_1 == 0) {
+            eInfo[0] = 0x5F;
+            eInfo[1] = (nSide_2 << 8) | ID_2;
+            eInfo[2] = (nSide_1 << 8) | ID_1;
+            eInfo[3] = 1;
+            return 1;
+        }
+        result = Chk_Enc(nSide_1, ID_1, SzDuel_GetUnitCardNo(nSide_2, ID_2));
+        if (result == 0x3E7) {
+            eInfo[0] = 0x24;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = 0x3E7;
+            return 1;
+        }
+        if (((result >> 30) & 1) == 1) {
+            eInfo[0] = 0x2B;
+            eInfo[1] = (nSide_2 << 8) | ID_2;
+            eInfo[2] = (nSide_1 << 8) | ID_1;
+            eInfo[3] = (result >> 14) & 0x3FFF;
+            return 0x10001;
+        }
+        if ((result >> 14) == 0x219) {
+            eInfo[0] = 0x25;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = (result & 0x3FFF) | (Ta_GetCurrentSide(nSide_1, ID_1) << 16);
+        } else {
+            eInfo[0] = 0x24;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = result;
+        }
+        return 0x10001;
+    }
+    if (type0 == 2 && type1 == 0) {
+        s32 result;
+
+        if (ID_2 == 0) {
+            eInfo[0] = 0x5F;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = 0;
+            return 1;
+        }
+        result = Chk_Enc(nSide_2, ID_2, SzDuel_GetUnitCardNo(nSide_1, ID_1));
+        if (result == 0x3E7) {
+            eInfo[0] = 0x24;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = 0x3E7;
+            return 1;
+        }
+        if (((result >> 30) & 1) == 1) {
+            eInfo[0] = 0x2B;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = (result >> 14) & 0x3FFF;
+            return 1;
+        }
+        if ((result >> 14) == 0x219) {
+            eInfo[0] = 0x25;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = (result & 0x3FFF) | (Ta_GetCurrentSide(nSide_2, ID_2) << 16);
+        } else {
+            eInfo[0] = 0x24;
+            eInfo[1] = (nSide_1 << 8) | ID_1;
+            eInfo[2] = (nSide_2 << 8) | ID_2;
+            eInfo[3] = result;
+        }
+        return 1;
+    }
+    eInfo[0] = 0x5F;
+    eInfo[1] = (nSide_1 << 8) | ID_1;
+    eInfo[2] = (nSide_2 << 8) | ID_2;
+    eInfo[3] = 0;
+    return 1;
+}
 
 s32 Do_ChkEncMatch(u32 arg0, s32 arg1, s32 arg2) {
     extern s32 SzDuel_GetUnitCardNo();

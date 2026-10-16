@@ -22,7 +22,6 @@ extern int func_001E1030_b(int a, int b);
 extern unsigned *func_00250740_b(int a, int b, int n);
 extern int Ta_Manage_ActEfc(unsigned *e, int a, int b, int c, int d, int x, int z,
                                     struct DotrFinishMoveInfo *info, struct DotrFinishMoveSub *sub, int mode);
-extern int SelfHeap(int a, int b, int c, int d, struct DotrFinishMoveInfo *info);
 extern int func_0024F830_b(int a, int b, int x, int y, struct DotrFinishMoveInfo *info);
 #define P8 ((PrNo >> 8) & 1)
 #define P9 ((PrNo >> 9) & 1)

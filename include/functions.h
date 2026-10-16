@@ -445,6 +445,7 @@ void SIN_IN_PSYS(f32 *arg0);
 void SIN_IN_PSYS2(void *arg0, s32 arg1, s32 arg2);
 void S_I_P_IN(void *arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 SearchUnitByRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+s32 SelfHeap(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 *eInfo);
 int SetCPUTimer(void);
 int SetCPUTimerHandler(void);
 int SetGsCrt(int arg0, int arg1, int arg2);
@@ -1369,6 +1370,7 @@ s32 TaLogic009_IsHandPlay(s32 arg0, void *arg1);
 s32 TaLogic009_IsOpenMoveUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 TaLogic009_IsUseCopyCat(s32 arg0);
 s32 TaLogic009_IsUseCurseDragonPot(s32 arg0);
+s32 TaLogic009_SetComboQue(s32 arg0, u8 *arg1, void *arg2);
 s32 TaLogic009_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2);
 void TaLogic010_CommandBtlUnit(void *arg0, s32 arg1, s32 arg2);
 void TaLogic010_CommandInvadeUnit(void *arg0, s32 arg1);
@@ -1683,6 +1685,7 @@ s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38);
 s32 TaLogic_GetLandChange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 TaLogic_GetMaxAPGraveCard(s32 arg0, s32 arg1);
+s32 TaLogic_GetMaxApUnit(u16 *wUnitLst);
 s32 TaLogic_GetMaxApUnit2(void *arg0, s32 arg1);
 s32 TaLogic_GetMaxApUnit3(u16 *arg0, s32 arg1);
 s32 TaLogic_GetMinGoalCount(u8 *arg0);
@@ -2147,6 +2150,7 @@ s32 Ta_IsFinishDestEfc(void *arg0, void *arg1);
 s32 Ta_IsFinishEffect(void *arg0);
 s32 Ta_IsFinishFade(void);
 s32 Ta_IsGraveEntryHit(s32 arg0, s32 arg1, s32 arg2);
+s32 Ta_IsHandHeap(s32 nSide0, s32 nID0, s32 nSide1, s32 nID1, s32 *eInfo);
 s32 Ta_IsLDAbl(s32 arg0, s32 arg1);
 s32 Ta_IsLDRange(s32 arg0, s32 arg1, s32 arg2);
 s32 Ta_IsLDRangeAvility(s32 arg0, s32 arg1, s32 arg2);
@@ -2489,6 +2493,7 @@ s32 func_00117C90(s32 arg0, void *arg1); /* JP: L001 */
 s32 func_0011C430(s32 arg0, void *arg1); /* JP: L003 */
 s32 func_00121630(s32 arg0, void *arg1); /* JP: L004 */
 s32 func_00126AB0(s32 arg0, void *arg1); /* JP: L005 */
+s32 func_0012B000(s32 side); /* JP: TaLogic006_IsBlackHoleCondition */
 s32 func_0012B9A0(s32 arg0, void *arg1); /* JP: L006 */
 s32 func_00130E90(s32 arg0, void *arg1); /* JP: L007 */
 s32 func_00135060(s32 arg0, void *arg1); /* JP: L008 */
@@ -3888,6 +3893,7 @@ s32 func_00136210(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00136490(s32 arg0, void *arg1);
 s32 func_00136890(s32 arg0, void *arg1, void *arg2, s32 arg3);
 s32 func_00136980(s32 arg0, u8 *arg1, void *arg2, s32 arg3);
+s32 func_00136B80(s32 arg0, u8 *arg1, void *arg2);
 void func_00136D60(s32 arg0, void *arg1, s32 *arg2);
 s32 func_00136F30(s32 arg0, void *arg1, void *arg2);
 s32 func_00137120(s32 arg0, u8 arg1, void *arg2, s32 arg3);
@@ -6086,6 +6092,7 @@ void func_002464C0(void);
 void func_002464E0(void);
 s32 func_002464F0(s32 arg0, s32 arg1, s32 arg2);
 s32 func_00246810(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg6);
+s32 func_00247F40(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 *eInfo);
 s32 func_00248370(u32 arg0, s32 arg1, s32 arg2);
 int func_00248460(int a, int b, int c, int d);
 s32 func_002487A0(s32 arg0, s32 arg1);
@@ -6324,6 +6331,7 @@ s32 func_0026D840(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_0026D8F0(void *arg0, void *arg1, s32 arg2);
 s32 func_0026DCC0(void *arg0, void *arg1, s32 arg2);
 s32 func_0026E1F0(void *arg0, void *arg1, s32 arg2);
+s32 func_0026E610(s32 nSide0, s32 nID0, s32 nSide1, s32 nID1, s32 *eInfo);
 s32 func_0026E950(void);
 s32 func_0026EA00(s32 *arg0);
 s32 func_0026EA80(s32 arg0, s32 arg1);
@@ -6436,7 +6444,7 @@ void func_0027B200(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 s32 func_0027B290(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7);
 s32 func_0027B360(s32 arg0, u16 *arg1, u16 *arg2);
 s32 func_0027B520(void *arg0, u8 arg1);
-s32 func_0027B650(u16 *);
+s32 func_0027B650(u16 *wUnitLst);
 s32 func_0027B740(void *arg0, s32 arg1);
 s32 func_0027B860(u16 *arg0, s32 arg1);
 s32 func_0027B9B0(s32 arg0);

@@ -4338,7 +4338,106 @@ s32 Ta_Eff_051(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_076", Ta_IsHandHeap);
+s32 Ta_IsHandHeap(s32 nSide0, s32 nID0, s32 nSide1, s32 nID1, s32 *eInfo) {
+    extern s32 func_001E1030();
+    s32 cNo1;
+    s32 cNo2;
+    u8 *pInfo1;
+    u8 *pInfo2;
+    s32 kind1;
+    s32 Ret;
+
+    cNo1 = func_001E1030(nSide0, nID0);
+    cNo2 = func_001E1030(nSide1, nID1);
+    pInfo1 = func_001DD0E0(cNo1);
+    pInfo2 = func_001DD0E0(cNo2);
+    if ((pInfo1 == NULL) || (pInfo2 == NULL)) {
+        return -1;
+    }
+    kind1 = (s32) *pInfo1 >> 5;
+    if ((kind1 == 0) && (((s32) *pInfo2 >> 5) == 0)) {
+        Ret = func_002495A0(cNo1, cNo2);
+        if (Ret == 999) {
+            eInfo[0] = 2;
+            eInfo[1] = (nSide0 << 8) | nID0;
+            eInfo[2] = (nSide0 << 8) | nID1;
+            eInfo[3] = 0;
+            return -1;
+        }
+        eInfo[0] = 0;
+        eInfo[1] = (nSide0 << 8) | nID0;
+        eInfo[2] = (nSide0 << 8) | nID1;
+        eInfo[3] = Ret;
+        return 0;
+    }
+    if (kind1 == 0) {
+        switch ((s32) *pInfo2 >> 5) {
+        case 2:
+            Ret = func_00248FD0(nSide0, nID0, cNo2);
+            if (Ret < 0) {
+                eInfo[0] = 2;
+                eInfo[1] = (nSide0 << 8) | nID0;
+                eInfo[2] = (nSide0 << 8) | nID1;
+                eInfo[3] = 0;
+                return -1;
+            }
+            if ((Ret >> 16) == 0) {
+                eInfo[0] = 0;
+                eInfo[1] = (nSide0 << 8) | nID0;
+                eInfo[2] = (nSide0 << 8) | nID1;
+                eInfo[3] = Ret & 0xFFFF;
+                return 0;
+            }
+            eInfo[0] = 1;
+            eInfo[1] = (((nSide0 << 8) | nID0) << 16) | ((nSide0 << 8) | nID1);
+            eInfo[2] = func_001DE540();
+            eInfo[3] = cNo2;
+            return 1;
+        default:
+            eInfo[0] = 2;
+            eInfo[1] = (nSide0 << 8) | nID0;
+            eInfo[2] = (nSide0 << 8) | nID1;
+            eInfo[3] = 0;
+            return -1;
+        }
+    }
+    if (kind1 == 2) {
+        switch ((s32) *pInfo2 >> 5) {
+        case 0:
+            Ret = func_00248FD0(nSide1, nID1, cNo1);
+            if (Ret < 0) {
+                eInfo[0] = 2;
+                eInfo[1] = (nSide0 << 8) | nID0;
+                eInfo[2] = (nSide0 << 8) | nID1;
+                eInfo[3] = 0;
+                return -1;
+            }
+            if ((Ret >> 16) == 0) {
+                eInfo[0] = 0;
+                eInfo[1] = (nSide0 << 8) | nID0;
+                eInfo[2] = (nSide0 << 8) | nID1;
+                eInfo[3] = Ret & 0xFFFF;
+                return 0;
+            }
+            eInfo[0] = 1;
+            eInfo[1] = (((nSide0 << 8) | nID0) << 16) | ((nSide0 << 8) | nID1);
+            eInfo[2] = func_001DE540();
+            eInfo[3] = cNo1;
+            return 0x10001;
+        default:
+            eInfo[0] = 2;
+            eInfo[1] = (nSide0 << 8) | nID0;
+            eInfo[2] = (nSide0 << 8) | nID1;
+            eInfo[3] = 0;
+            return -1;
+        }
+    }
+    eInfo[0] = 2;
+    eInfo[1] = (nSide0 << 8) | nID0;
+    eInfo[2] = (nSide0 << 8) | nID1;
+    eInfo[3] = 0;
+    return -1;
+}
 
 s32 Ta_GetSummonCost(void) {
     s32 var_s0;

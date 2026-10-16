@@ -252,7 +252,26 @@ s32 TaLogic_IsAtkNowToGoal(void *arg0, u8 arg1) {
                           other & 0xFF, other >> 8, &target) == 1) ? 1 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_079", TaLogic_GetMaxApUnit);
+s32 TaLogic_GetMaxApUnit(u16 *wUnitLst) {
+    s32 Loc;
+    s32 i;
+    s32 curAP;
+    s32 tempAP;
+    s32 temp;
+
+    temp = curAP = -1;
+    for (i = 1; i < TaLogic_GetUnitCtlLstLen(wUnitLst); i++) {
+        Loc = SzDuel_GetUnitLoc(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF);
+        if (SzDuel_GetUnitStatus(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF, 4) != 0) {
+            tempAP = TaUtil_GetUnitAP(wUnitLst[i] >> 8, wUnitLst[i] & 0xFF, Loc & 0xFF, Loc >> 8);
+            if (curAP < tempAP) {
+                temp = wUnitLst[i];
+                curAP = tempAP;
+            }
+        }
+    }
+    return temp;
+}
 
 s32 TaLogic_GetMaxApUnit2(void *arg0, s32 arg1) {
     s32 index;

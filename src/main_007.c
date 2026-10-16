@@ -2679,7 +2679,47 @@ s32 TaLogic_GetMinimumTask_TrapMission_0012AAC0(void *arg0, s32 arg1, void *arg2
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B000);
+s32 func_0012B000(s32 side) {
+    s32 i;
+    s32 n;
+    s32 ownLow;
+    s32 enemyAP;
+    s32 enemy;
+    s32 low;
+    s32 own;
+    s32 ownCol;
+    s32 col;
+    u16 list[22];
+
+    n = 0;
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    TaLogic_GetUnitCtlLst2(side == 0 ? 1 : 0, list, 0x1D, 0, 0);
+    enemy = TaLogic_GetMaxApUnit(list);
+    for (i = 0; i < 22; i++) {
+        list[i] = 0xFFFF;
+    }
+    TaLogic_GetUnitCtlLst2(side, list, 0x1D, 1, 1);
+    own = TaLogic_GetMaxApUnit(list);
+    col = enemy & 0xFF;
+    enemy = enemy >> 8;
+    low = SzDuel_GetUnitLoc(enemy, col) & 0xFF;
+    enemyAP = TaUtil_GetUnitAP(enemy, col, low, SzDuel_GetUnitLoc(enemy, col) >> 8);
+    ownCol = own & 0xFF;
+    own = own >> 8;
+    ownLow = SzDuel_GetUnitLoc(own, ownCol) & 0xFF;
+    if (TaUtil_GetUnitAP(own, ownCol, ownLow, SzDuel_GetUnitLoc(own, ownCol) >> 8) < enemyAP) {
+        if (enemyAP >= 3000) {
+            for (i = 1; i < 11; i++) {
+                if (SzDuel_GetUnit(side, i) != 0) {
+                    n++;
+                }
+            }
+        }
+    }
+    return n < 3 ? 1 : 0;
+}
 
 s32 TaLogic_GetWarnHideLvl_0012B1B0(s32 arg0) {
     if (SzDuel_GetLP(arg0) > 0x4B0) {
