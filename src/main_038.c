@@ -832,7 +832,444 @@ void SzDuel_DrawDialog(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawDialog_Pipe(RhBase_GetVifPacketArea()));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", SzDuel_DrawDialog_Pipe);
+typedef struct Flags_001AF7E0 {
+    s8 unused : 4;
+    s8 horizontal : 1;
+    s8 enabled : 1;
+    s8 colored : 1;
+    s8 reserved : 1;
+} Flags_001AF7E0;
+
+typedef struct Draw_001AF7E0 {
+    u8 pad00[0x30];
+    s32 scale[4];
+    u8 pad40[0x41];
+    Flags_001AF7E0 flags;
+    u8 pad82[0xE];
+} Draw_001AF7E0;
+
+typedef struct Card_001AF7E0 {
+    u8 pad00[0x44];
+    s8 owner;
+    u8 pad45[0x1B];
+} Card_001AF7E0;
+
+extern char *D_00291130[];
+extern u8 D_00290080[];
+extern u8 D_00290828[];
+extern u8 D_00290832[];
+extern u8 D_00290AA8[];
+extern u8 D_00290AB2[];
+extern u8 D_00290AF8[];
+extern u8 D_00290B02[];
+
+s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
+    extern s32 lSzDuel_DrawDialog_Window_Pipe();
+    extern s32 lSzDuel_DrawWindow_Icon_Pipe();
+    extern s32 lSzDuel_DrawWindow_Frame_Pipe();
+    extern s32 lSzDuel_DrawWindow_Board_Pipe();
+    extern s32 func_001BDAF0();
+    extern s32 SzMsg_LoadFont_Pipe();
+    extern s32 SzMsg_DrawX_Pipe();
+    extern s32 SzDuel_DrawWindow_Font_Pipe();
+    extern s32 SzData_GetRank();
+    extern s32 lSzDuel_OpenHandCursor_Pipe();
+    extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern void SzDuel_ClearDrawCard();
+    s32 x_c21;
+    s32 x_c20;
+    s32 y_c21;
+    s32 y_c20;
+    char *text_c12;
+    s32 x_c12;
+    s32 value_c21;
+    s32 x_c18;
+    s32 width_c21;
+    s32 value_c20;
+    s32 i_c18;
+    s32 width_c20;
+    char *text_c8;
+    char *text_c7;
+    s32 side_c7;
+    s32 width;
+    char *text1_c8;
+    Card_001AF7E0 card;
+    s32 y_c7;
+    char *text2_c8;
+    Draw_001AF7E0 draw;
+    Draw_001AF7E0 draw2;
+    s32 slot_c7;
+    Card_001AF7E0 card2;
+    s32 mode2;
+    u8 *entry;
+    u8 *state = D_00317490.b;
+    s32 mode4;
+    char *text;
+    s32 x_c7;
+    s32 index;
+    u8 *p2;
+    s32 lowB;
+    u8 type;
+    s32 icon;
+    s32 extra_c9;
+    s32 packet;
+    char *text_c14;
+    u16 *list;
+    f32 scale;
+    s32 y;
+    s32 start;
+    s32 page;
+    s32 end;
+    s32 cardId;
+    s32 count;
+    s32 value;
+    s32 row;
+    s32 side;
+    s32 cursor;
+    s32 on;
+    s32 color;
+    s32 x;
+    s32 lowA;
+    s32 dir;
+    s32 w;
+    s32 msg;
+    s32 id;
+    u8 *pic;
+    u8 *p4;
+    char *text1;
+    char *text2;
+    s32 y_c22;
+    s32 value_c22_c22;
+    s32 width_c22;
+    s32 i;
+    s32 side_c9;
+    s32 id_c9;
+    s32 res;
+
+    index = count = 0;
+    for (; index < 4; index++) {
+        if (state[index + 0xCB2] != 0x18) {
+            count++;
+        }
+    }
+    if (count == 0) {
+        return arg0;
+    }
+    packet = SzDuel_StartWindowSessionWithPalette_Pipe(arg0, 0);
+    SzDuel_SetWindowDefPrioZ(0xFFFFFE);
+    SzMsg_SetDefPrioZ(0xFFFFFE);
+    for (index = 0, p4 = state, p2 = state; index < 4; p4 += 4, index++, p2 += 2) {
+        type = state[index + 0xCB2];
+        if (type == 0x18) {
+            continue;
+        }
+        switch (type) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            side = state[0xD54];
+            text = D_00291130[type];
+            y = 0x200 - ((*(s16 *)(p4 + 0xC9C) << 9) >> 6);
+            cardId = *(u16 *)(p2 + 0xCAA);
+            color = side | 0x8000;
+            if (type == 2U || type == 3U || type == 4U || type == 5U) {
+                cardId = -1;
+            }
+            if (type == 6) {
+                cardId = -1;
+                side = 2;
+            }
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, side, color, cardId, 0x140, y + 0x80, 0x15A, 0, func_0019BEF0(text), (s32)text, 1);
+            break;
+        case 7:
+            y_c7 = *(s16 *)(p4 + 0xC9C);
+            x_c7 = y_c7 + 0xD9;
+            text_c7 = D_00291130[type];
+            slot_c7 = state[0xD35];
+            side_c7 = state[0xD54];
+            mode2 = state[0xD36] & 2;
+            mode4 = state[0xD36] & 4;
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, side_c7, -1, -1, 0x140, y_c7 + 0x94, 0x234, 0x98, func_0019BEF0(text_c7), (s32)text_c7, 0);
+            packet = SzMsg_LoadFont_Pipe(packet, 4, 0x73, 0, 0x58);
+            packet = SzMsg_LoadFont_Pipe(packet, 5, 0x77, 0, 0x6E);
+            packet = SzMsg_LoadFont_Pipe(packet, 6, 0x78, 0, 0x84);
+            packet = SzMsg_LoadFont_Pipe(packet, 7, 0x74, 0, 0x9A);
+            packet = SzMsg_LoadFont_Pipe(packet, 8, 0x7A, 0, 0xB0);
+            packet = SzMsg_LoadFont_Pipe(packet, 9, 0x79, 0, 0xC6);
+            packet = RhText_SetTextureFlush(packet);
+            packet = SzMsg_DrawX_Pipe(packet, 4, 0x3E, x_c7, 0, SzMsg_DrawRect_Pipe);
+            packet = SzMsg_DrawX_Pipe(packet, 5, 0x11A, x_c7, (s32)(mode2 != 0 ? NULL : D_002BE944), SzMsg_DrawRect_Pipe);
+            packet = SzMsg_DrawX_Pipe(packet, 6, 0x1BA, x_c7, (s32)(mode2 != 0 ? D_002BE944 : NULL), SzMsg_DrawRect_Pipe);
+            packet = SzMsg_DrawX_Pipe(packet, 7, 0x3E, x_c7 + 0x28, 0, SzMsg_DrawRect_Pipe);
+            packet = SzMsg_DrawX_Pipe(packet, 8, 0x11A, x_c7 + 0x28, (s32)(mode4 != 0 ? NULL : D_002BE944), SzMsg_DrawRect_Pipe);
+            packet = SzMsg_DrawX_Pipe(packet, 9, 0x1BA, x_c7 + 0x28, (s32)(mode4 != 0 ? D_002BE944 : NULL), SzMsg_DrawRect_Pipe);
+            SzMsg_Free(1);
+            SzMsg_Free(2);
+            SzMsg_Free(3);
+            SzMsg_Free(4);
+            SzMsg_Free(5);
+            SzMsg_Free(6);
+            SzMsg_Free(7);
+            SzMsg_Free(8);
+            SzMsg_Free(9);
+            packet = lSzDuel_DrawWindow_Frame_Pipe(packet, -1, -1, 7, 0x3E, x_c7 + slot_c7 * 0x28, -0x204, -0x16, 1);
+            break;
+        case 8:
+            side = state[0xD54];
+            text_c8 = D_00291130[type];
+            text1_c8 = D_002BEF6F;
+            text2_c8 = D_002BEF73;
+            y = 0x200 - ((*(s16 *)(p4 + 0xC9C) << 9) >> 6);
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, side, -1, 0x7B, 0x140, y + 0x9F, 0x15A, 0x82, func_0019BEF0(text_c8), (s32)text_c8, 0);
+            res = SzDuel_DrawWindow_Font_Pipe(packet, 0xEA, y + 0xFD, 2, 3, func_0019BEF0(text1_c8), text1_c8, state[0xD35] != 0 ? 0 : (s32)D_002BE944);
+            packet = SzDuel_DrawWindow_Font_Pipe(res, 0x196, y + 0xFD, 2, 3, func_0019BEF0(text2_c8), text2_c8, state[0xD35] != 0 ? (s32)D_002BE944 : 0);
+            break;
+        case 9:
+        case 10:
+            value = *(u16 *)(p2 + 0xCAA);
+            text = D_00291130[type + ((value & 0x4000) ? 1 : 0)];
+            y = 0x200 - ((*(s16 *)(p4 + 0xC9C) << 9) >> 6);
+            id_c9 = value & 0x3FFF;
+            if (value & 0x8000) {
+                side_c9 = 1;
+            } else {
+                side_c9 = 0;
+            }
+            msg = (value & 0x4000) ? 0x60 : 0x5F;
+            icon = SzDuel_GetMsgName(id_c9);
+            extra_c9 = SzData_GetRank(side_c9, id_c9);
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, side_c9, id_c9, icon, 0x140, y + 0x4C, -0x1CC, 0x128, func_0019BEF0(text), (s32)text, 1);
+            packet = SzMsg_LoadFont_Pipe(packet, 1, extra_c9 + 0x52, 0, 0x16);
+            packet = SzMsg_LoadFont_Pipe(packet, 2, msg, 0, 0x2C);
+            packet = RhText_SetTextureFlush(packet);
+            SzMsg_GetInfo(1);
+            packet = SzMsg_DrawX_Pipe(packet, 2, 0x140 - (*(s32 *)((u8 *)SzMsg_GetInfo(2) + 0xC) >> 1), y + 0x136, 0, SzMsg_DrawRect_Pipe);
+            SzMsg_Free(1);
+            SzMsg_Free(2);
+            break;
+        case 11:
+            value = *(u16 *)(p2 + 0xCAA);
+            text = D_00291130[type];
+            y = 0x200 - ((*(s16 *)(p4 + 0xC9C) << 9) >> 6);
+            icon = SzDuel_GetMsgName(value);
+            width = 0x15A;
+            res = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(SzMsg_LoadFont_Pipe(packet, 2, icon, 0, 0x16), 3, 0x98, 0, 0x2C));
+            w = *(s32 *)((u8 *)SzMsg_GetInfo(2) + 0xC) + 0x18;
+            if (w > 0x15A) {
+                width = w;
+            }
+            w = *(s32 *)((u8 *)SzMsg_GetInfo(3) + 0xC) + 0x18;
+            if (width < w) {
+                width = w;
+            }
+            packet = lSzDuel_DrawDialog_Window_Pipe(res, 2, -1, -1, 0x140, y + 0x32, width, 0x15C, func_0019BEF0(text), (s32)text, 1);
+            packet = SzMsg_DrawX_Pipe(packet, 2, 0x140 - (*(s32 *)((u8 *)SzMsg_GetInfo(2) + 0xC) >> 1), y + 0x12E, 0, SzMsg_DrawRect_Pipe);
+            packet = SzMsg_DrawX_Pipe(packet, 3, 0x140 - (*(s32 *)((u8 *)SzMsg_GetInfo(3) + 0xC) >> 1), y + 0x150, 0, SzMsg_DrawRect_Pipe);
+            SzMsg_Free(2);
+            SzMsg_Free(3);
+            SzDuel_InitCardInfo(&card, value);
+            SzDuel_ClearDrawCard(&draw);
+            draw.scale[0] = 0x3EF00000;
+            draw.scale[1] = 0x3EFA6F4E;
+            draw.scale[2] = 0x3F800000;
+            draw.scale[3] = 0;
+            draw.flags.reserved = 0;
+            SzMsg_Free(0);
+            packet = SzDuel_StartCardSession_Pipe(packet);
+            SzDuel_SetCardDefPrioZ(0xFFFFFE);
+            SzDuel_GetCardNodeOnScreen(&draw, 0, 0.0f, (f32)(y - 0x18));
+            packet = SzDuel_DrawCard_Pipe(SzDuel_SetupCard2_Pipe(packet, (s32)&card, &draw), (s32)&draw);
+            packet = SzDuel_StartWindowSessionWithPalette_Pipe(SzDuel_FinishCardSessionX_Pipe(packet), 0);
+            SzDuel_SetWindowDefPrioZ(0xFFFFFE);
+            SzMsg_SetDefPrioZ(0xFFFFFE);
+            break;
+        case 12:
+        case 13:
+            value = *(u16 *)(p2 + 0xCAA);
+            x_c12 = *(s16 *)(p4 + 0xC9A);
+            text_c12 = D_00291130[type];
+            y = *(s16 *)(p4 + 0xC9C);
+            icon = SzDuel_GetMsgName(value);
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, value, icon, x_c12 + 0x140, y + 0x4C, 0x15A, 0x128, func_0019BEF0(text_c12), (s32)text_c12, 1);
+            packet = SzMsg_LoadFont_Pipe(packet, 1, 0x99, 0, 0x16);
+            packet = RhText_SetTextureFlush(packet);
+            entry = (u8 *)SzMsg_GetInfo(1);
+            packet = SzMsg_DrawX_Pipe(packet, 1, (0x140 - (*(s32 *)(entry + 0xC) >> 1)) + x_c12, y + 0x136, 0, SzMsg_DrawRect_Pipe);
+            SzMsg_Free(1);
+            break;
+        case 14:
+            text_c14 = D_00291130[type];
+            lowA = SzDuel_GetPlayer(0);
+            lowB = SzDuel_GetPlayer(1);
+            lowA = (lowA & 0xFF) < 0x64 ? 1 : 0;
+            lowB = (lowB & 0xFF) < 0x64 ? 1 : 0;
+            y = 0x200 - ((*(s16 *)(p4 + 0xC9C) << 9) >> 6);
+            on = (state[0xD36] & 0x80) ? 1 : 0;
+            page = state[0xD36] & 0x7F;
+            start = page != 0 ? *(u16 *)(state + 0xC8E) : *(u16 *)(state + 0xC8A);
+            end = page != 0 ? *(u16 *)(state + 0xC90) : *(u16 *)(state + 0xC8C);
+            cursor = page != 0 ? state[0xD5F] : state[0xD5E];
+            list = page != 0 ? *(u16 **)(state + 0x6DC) : *(u16 **)(state + 0x6D8);
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, -1, 0x140, y + 0x68, 0x15A, 0xF0, func_0019BEF0(text_c14), (s32)text_c14, 0);
+            if (on != 0) {
+                w = y + 0x7BE;
+                if (page == 0) {
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowA + 0xB9) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
+                } else {
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowB + 0xBB) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
+                }
+            } else {
+                dir = page == 0 ? 1 : -1;
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowA + 0xB9) * 10, 0x7B8, y + 0x7BE, 0, 1, 0, 0, (page == 0 ? 1 : 0), 0, dir);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290B02, 0x7F1, y + 0x7C3, 0, 1, 0, 0, 1, 0, -1);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AF8, 0x804, y + 0x7C3, 0, 1, 0, 0, 1, 0, -1);
+                w = y + 0x7BE;
+                if (page == 1) {
+                    dir = 1;
+                } else {
+                    dir = -1;
+                }
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowB + 0xBB) * 10, 0x818, w, 0, 1, 0, 0, (page == 1 ? 1 : 0), 0, dir);
+            }
+            packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290828, 0x867, y + 0x7C2, 0, 1, 0, 0, 1, 0, -1);
+            packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AA8, 0x88B, y + 0x7C7, 0, 1, 0, 0, 1, 0, -1);
+            packet = lSzDuel_DrawWindow_Board_Pipe(packet, page + 0xE, 0xB4, y + 0xB8, -0x118, -0x7E, page + 0xE);
+            packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290832, 0x867, y + 0x85C, 0, 1, 0, 0, 1, 0, -1);
+            packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AB2, 0x88B, y + 0x85C, 0, 1, 0, 0, 1, 0, -1);
+            for (i = 0, w = y + 0xBB; i < 5 && start + i < end; w += 0x18, i++) {
+                id = list[start + i];
+                entry = SzDuel_GetCardConstInfo(id);
+                if (entry != NULL) {
+                    msg = *entry >> 5;
+                    value = *entry & 0x1F;
+                    if (msg == 0) {
+                        pic = D_00290080 + value * 10;
+                    } else {
+                        pic = D_00290080 + (msg + 0x14) * 10;
+                    }
+                    scale = 1.0f;
+                    packet = SzMsg_LoadFont_Pipe(packet, 1, SzDuel_GetMsgName(id), 0, 0x16);
+                    packet = RhText_SetTextureFlush(packet);
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, pic, 0x777, w + 0x720, 0, 1, 0, 0, 1, 0, -1);
+                    width = *(s32 *)((u8 *)SzMsg_GetInfo(1) + 0xC);
+                    if (width > 0xFA) {
+                        scale = 250.0f / (f32)width;
+                    }
+                    packet = SzMsg_DrawRatioX_Pipe(packet, 1, 0xCF, w, scale, 1.0f, 0, SzMsg_DrawRect_Pipe);
+                    SzMsg_Free(1);
+                }
+            }
+            if (end != 0) {
+                w = y + 0xBB;
+                w += cursor * 0x18;
+                packet = lSzDuel_DrawWindow_Frame_Pipe(packet, -1, -1, 7, 0xB7, w, -0x112, -0x18, 1);
+            }
+            break;
+        case 15:
+        case 16:
+            x = *(s16 *)(p4 + 0xC9A);
+            y = *(s16 *)(p4 + 0xC9C);
+            text = D_00291130[type];
+            value = *(u16 *)(p2 + 0xCAA);
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, value, x + 0x140, y + 0xE0, 0, 0, func_0019BEF0(text), (s32)text, 0);
+            break;
+        case 17:
+            y = 0x200 - ((state[0xD3A] << 9) >> 6);
+            if (state[0xD35] == 24) {
+                value = *(u16 *)(*(u8 **)(state + 0x6C8) + 0x3C);
+                state[0xD5C] = *(u8 *)(*(u8 **)(state + 0x6C8) + 0x44);
+            } else if (state[0xD35] == 45) {
+                value = *(u16 *)(p2 + 0xCAA);
+                state[0xD5C] = state[0xD36] & 0x7F;
+            } else if (state[0xD35] == 48) {
+                value = *(u16 *)(p2 + 0xCAA);
+                state[0xD5C] = state[0xD36] & 0x7F;
+            } else {
+                value = SzDuel_InqHand(state[0xD54], state[0xD4F]);
+                if (value < 0) {
+                    value = 0x3E7;
+                } else {
+                    value &= 0xFFF;
+                }
+                state[0xD5C] = state[0xD54];
+            }
+            packet = func_001BDAF0(packet, value, -0x1E0, y, 1, 1, 1, 0);
+            break;
+        case 18:
+            x_c18 = *(s16 *)(p4 + 0xC9A);
+            y = *(s16 *)(p4 + 0xC9C);
+            value = *(u16 *)(p2 + 0xCAA);
+            SzMsg_Free(0);
+            packet = SzDuel_StartCardSession_Pipe(packet);
+            SzDuel_SetCardDefPrioZ(0xFFFFFE);
+            SzDuel_ClearDrawCard(&draw2);
+            row = -0xFA;
+            draw2.flags.horizontal = 0;
+            draw2.flags.colored = 0;
+            for (i_c18 = 0; i_c18 < 5; i_c18++) {
+                id = SzDuel_InqHand(value, i_c18);
+                if (id >= 0) {
+                    id &= 0xFFF;
+                    if (id != 0x3E7) {
+                        SzDuel_InitCardInfo(&card2, id);
+                        card2.owner = value;
+                        SzDuel_GetCardNodeOnScreen(&draw2, 0, (f32)(x_c18 + row), (f32)y);
+                        packet = SzDuel_DrawCard_Pipe(SzDuel_SetupCard2_Pipe(packet, (s32)&card2, &draw2), (s32)&draw2);
+                    }
+                }
+                row += 0x7D;
+            }
+            packet = SzDuel_StartWindowSessionWithPalette_Pipe(SzDuel_FinishCardSessionX_Pipe(packet), 0);
+            SzDuel_SetWindowDefPrioZ(0xFFFFFE);
+            SzMsg_SetDefPrioZ(0xFFFFFE);
+            break;
+        case 19:
+            packet = lSzDuel_DrawDialog_Window_Pipe(packet, -1, -1, *(u16 *)(p2 + 0xCAA), *(s16 *)(p4 + 0xC9A) + 0x140, *(s16 *)(p4 + 0xC9C) + 0xE0, 0, 0, 0, 0, 0);
+            break;
+        case 20:
+            value_c20 = *(u16 *)(p2 + 0xCAA);
+            x_c20 = *(s16 *)(p4 + 0xC9A);
+            y_c20 = *(s16 *)(p4 + 0xC9C);
+            res = SzMsg_LoadFont_Pipe(packet, 1, value_c20, 0, 0x16);
+            res = RhText_SetTextureFlush(res);
+            width_c20 = *(s32 *)((u8 *)SzMsg_GetInfo(1) + 0x10) + 0x18;
+            SzMsg_Free(1);
+            packet = lSzDuel_DrawDialog_Window_Pipe(res, -1, -1, value_c20, x_c20 + 0x140, (0xE0 - (width_c20 / 2)) + y_c20, 0, width_c20, 0, 0, 0);
+            break;
+        case 21:
+            value_c21 = *(u16 *)(p2 + 0xCAA);
+            x_c21 = *(s16 *)(p4 + 0xC9A);
+            y_c21 = *(s16 *)(p4 + 0xC9C);
+            res = SzMsg_LoadFont_Pipe(packet, 1, value_c21, 0, 0x16);
+            res = RhText_SetTextureFlush(res);
+            width_c21 = *(s32 *)((u8 *)SzMsg_GetInfo(1) + 0x10) + 0x34;
+            SzMsg_Free(1);
+            packet = lSzDuel_DrawDialog_Window_Pipe(res, -1, -1, value_c21, x_c21 + 0x140, (0xE0 - (width_c21 / 2)) + y_c21, 0, width_c21, 0, 0, 1);
+            break;
+        case 22:
+            text1 = D_002BEF6F;
+            y_c22 = *(s16 *)(p4 + 0xC9C);
+            text2 = D_002BEF73;
+            value_c22_c22 = *(u16 *)(p2 + 0xCAA);
+            res = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, value_c22_c22, 0, 0x16));
+            width_c22 = *(s32 *)((u8 *)SzMsg_GetInfo(1) + 0x10) + 0x3C;
+            SzMsg_Free(1);
+            packet = lSzDuel_DrawDialog_Window_Pipe(res, 2, -1, value_c22_c22, 0x140, (0xE0 - (width_c22 >> 1)) + y_c22, 0x15A, width_c22, 0, 0, 0);
+            res = SzDuel_DrawWindow_Font_Pipe(packet, 0xEA, (width_c22 >> 1) + 0xBC + y_c22, 2, 3, func_0019BEF0(text1), text1, state[0xD35] != 0 ? 0 : (s32)D_002BE944);
+            packet = SzDuel_DrawWindow_Font_Pipe(res, 0x196, (width_c22 >> 1) + 0xBC + y_c22, 2, 3, func_0019BEF0(text2), text2, state[0xD35] != 0 ? (s32)D_002BE944 : 0);
+            break;
+        case 23:
+            packet = lSzDuel_OpenHandCursor_Pipe(packet, *(u16 *)(p2 + 0xCAA), *(s16 *)(p4 + 0xC9A), *(s16 *)(p4 + 0xC9C));
+            break;
+        }
+    }
+    SzMsg_Free(0);
+    return packet;
+}
 
 static inline s32 abs_001B0CE0(s32 value) {
     if (value >= 0) {
