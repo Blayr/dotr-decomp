@@ -399,7 +399,88 @@ s32 *sceSifGetDataTable(void) {
     return &D_00310E98;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_023", sceSifInitCmd);
+typedef struct {
+    void (*fn)();
+    void *data;
+} SifCmdEntry_0017DB70;
+
+typedef struct {
+    s32 sendbuf;
+    s32 ackbuf;
+    s32 iopbuf;
+    SifCmdEntry_0017DB70 *systbl;
+    s32 nsys;
+    SifCmdEntry_0017DB70 *usrtbl;
+    s32 nusr;
+    s32 *sreg;
+} SifCmdData_0017DB70;
+
+extern s32 D_00310DC0[32];
+extern s32 D_00310E40[16];
+extern s32 D_00310E80[5];
+extern SifCmdEntry_0017DB70 D_00310EC0[32];
+
+#define cmdData_0017DB70 (*(SifCmdData_0017DB70 *)&D_00310E98)
+
+/* sceSifInitCmd: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
+
+void sceSifInitCmd(void) {
+    SifCmdEntry_0017DB70 *h;
+    s32 i;
+
+    func_001843E0();
+    if (D_0028CA10 != 0) {
+        func_00184428();
+        return;
+    }
+    D_0028CA10 = 1;
+    cmdData_0017DB70.sendbuf = (s32)D_00310DC0 | 0x20000000;
+    cmdData_0017DB70.ackbuf = (s32)D_00310E40 | 0x20000000;
+    cmdData_0017DB70.iopbuf = 0;
+    cmdData_0017DB70.systbl = D_00310EC0;
+    cmdData_0017DB70.nsys = 0x20;
+    cmdData_0017DB70.usrtbl = 0;
+    cmdData_0017DB70.nusr = 0;
+    cmdData_0017DB70.sreg = &D_00310FC0;
+    h = D_00310EC0;
+    for (i = 0; i < 32; i++) {
+        h->fn = 0;
+        h->data = 0;
+        h++;
+    }
+    for (i = 0; i < 32; i++) {
+        (&D_00310FC0)[i] = 0;
+    }
+    D_00310EC0[0].fn = (void (*)())_change_addr;
+    D_00310EC0[0].data = &cmdData_0017DB70;
+    D_00310EC0[1].fn = (void (*)())_set_sreg;
+    D_00310EC0[1].data = &cmdData_0017DB70;
+    func_00184428();
+    FlushCache(0);
+    if (*(volatile u32 *)0x1000E010 & 0x20) {
+        *(volatile u32 *)0x1000E010 = 0x20;
+    }
+    if ((*(volatile u32 *)0x1000C000 & 0x100) == 0) {
+        sceSifSetDChain();
+    }
+    D_00310E94 = AddDmacHandler(5, func_0017E068, 0);
+    func_0017C4F8(5);
+    cmdData_0017DB70.iopbuf = ((u32 (*)(u32))sceSifGetReg)(0x80000000);
+    if (cmdData_0017DB70.iopbuf != 0) {
+        D_00310E80[4] = (s32)D_00310DC0;
+        sceSifSendCmd(0x80000000, D_00310E80, 0x14, 0, 0, 0);
+        return;
+    }
+    while ((sceSifGetReg(4) & 0x20000) == 0) {
+        ;
+    }
+    cmdData_0017DB70.iopbuf = sceSifGetReg(2);
+    ((s32 (*)(s32, s32))sceSifSetReg)(0x80000000, cmdData_0017DB70.iopbuf);
+    ((s32 (*)(s32, s32))sceSifSetReg)(0x80000001, (s32)&cmdData_0017DB70);
+    D_00310E80[4] = (s32)D_00310DC0;
+    D_00310E80[3] = 0;
+    sceSifSendCmd(0x80000002, D_00310E80, 0x14, 0, 0, 0);
+}
 
 void sceSifExitCmd(void) {
     func_0017C490(5);
