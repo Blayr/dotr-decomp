@@ -694,7 +694,495 @@ void lSzModel_Draw_DefFunc(s32 arg0) {
     RhBase_MaskFBuffer(RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode(RhBase_MaskFBuffer(RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(RhText_SetTextureFlush(arg0), -1, 0, &packet.extra[1], &packet.extra[2])), 0xFF000000), 0), (s32)(&packet.dmatag + 1), 0, 0), 1), 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_048", SzModel_DrawWithFunc_Pipe);
+typedef union { __int128 q; f32 f[4]; } Vector_001EE6C0;
+typedef union { __int128 q[4]; f32 f[16]; } Matrix_001EE6C0;
+typedef union { __int128 q[9]; u8 bytes[0x90]; } Effect_001EE6C0;
+typedef struct {
+    s8 b0:1, b1:1, b2:1, b3:1, b4:1, b5:1, b6:1, b7:1;
+} ObjectFlags_001EE6C0;
+typedef struct {
+    u8 b0:1, b1:1, b2:1, b3:1, b4:1, b5:1, b6:1, b7:1;
+} Flags_001EE6C0;
+typedef struct {
+    u8 base:2, overlay:2, other:4;
+} TextureFlags_001EE6C0;
+typedef struct {
+    Vector_001EE6C0 position;
+    Vector_001EE6C0 extra;
+    s32 rotation[4];
+    Vector_001EE6C0 scale;
+} Transform_001EE6C0;
+typedef struct {
+    s32 model;
+    Flags_001EE6C0 flags0, flags1;
+    u8 pad06[2];
+    ObjSlot_0031ABB0 *slot0;
+    f32 value0;
+    ObjSlot_0031ABB0 *slot1;
+    f32 value1, value2, value3;
+    u8 pad20[0xC];
+    s32 depth;
+    f32 values[4];
+    u8 pad40[0x10];
+} Model_001EE6C0;
+typedef struct {
+    u16 count, type;
+    s32 pad04;
+    u64 tag;
+} Header_001EE6C0;
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Xyzf_001EE6C0;
+typedef struct {
+    u16 low : 5;
+    u16 flag : 1;
+    u16 type : 3;
+    u16 high : 7;
+} PrimitiveFlags_001EE6C0;
+typedef struct {
+    Header_001EE6C0 header;
+    u8 r, g, b, a;
+    f32 q;
+    f32 s0, t0;
+    Xyzf_001EE6C0 v0;
+    f32 s1, t1;
+    Xyzf_001EE6C0 v1;
+    u64 extra[4];
+} Primitive_001EE6C0;
+typedef struct {
+    Header_001EE6C0 header;
+    u8 r, g, b, a;
+    f32 q;
+    Xyzf_001EE6C0 v0;
+    Xyzf_001EE6C0 v1;
+    u8 tail[4];
+} Sprite_001EE6C0;
+
+extern Vector_001EE6C0 D_00292FD0;
+extern Vector_001EE6C0 D_00292FE0;
+extern s32 D_0031BB00;
+
+/* Missing fields in the shared Obj_0031ABB0 declaration, accessed by casts:
+ * needs shared field: D_0031ABB0 +0x080 f32[4]
+ * needs shared field: D_0031ABB0 +0x090 f32[4]
+ * needs shared field: D_0031ABB0 +0x0A0 f32[8][4]
+ * needs shared field: D_0031ABB0 +0x120 f32
+ * needs shared field: D_0031ABB0 +0x124 f32
+ * needs shared field: D_0031ABB0 +0x128 f32
+ * needs shared field: D_0031ABB0 +0x134 u8*
+ * needs shared field: D_0031ABB0 +0x138 s32
+ * needs shared field: D_0031ABB0 +0x13C u8*
+ * needs shared field: D_0031ABB0 +0x19C f32
+ * needs shared field: D_0031ABB0 +0x1A0 f32
+ * needs shared field: D_0031ABB0 +0x1A8 f32
+ * needs shared field: D_0031ABB0 +0x1AC f32
+ * needs shared field: D_0031ABB0 +0x1B0 u16[8]
+ * needs shared field: D_0031ABB0 +0x1E4 f32
+ * needs shared field: D_0031ABB0 +0x1E8 f32
+ * needs shared field: D_0031ABB0 +0x1F0 u16
+ * needs shared field: D_0031ABB0 +0x1F2 s8
+ * needs shared field: D_0031ABB0 +0x1F3 s8
+ * needs shared field: D_0031ABB0 +0x1F8 TextureFlags_001EE6C0
+ * needs shared field: D_0031ABB0 +0x1FE u8
+ * needs shared field: D_0031ABB0 +0x1FF u8
+ * needs shared field: D_0031ABB0 +0x20C ObjectFlags_001EE6C0
+ */
+
+static inline f32 abs_001EE6C0(f32 x) {
+    return (x >= 0.0f) ? x : -x;
+}
+
+#pragma global_optimizer off
+
+s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
+                 s32 arg5, s32 arg6, void (*arg7)(void), s32 arg_sp0) {
+    Matrix_001EE6C0 matrix;
+    Vector_001EE6C0 origin;
+    Vector_001EE6C0 offset;
+    Transform_001EE6C0 transform;
+    Effect_001EE6C0 effect0;
+    Model_001EE6C0 model;
+    Vector_001EE6C0 position;
+    Effect_001EE6C0 effect1;
+    Primitive_001EE6C0 primitive;
+    s32 overlay;
+    s32 enabled;
+    Obj_0031ABB0 *obj;
+    f32 scale;
+    f32 scaledY;
+    u32 depth;
+    void *packet;
+    s32 k;
+    s32 draw;
+    s32 i;
+    u8 *p;
+    Flags_001EE6C0 *fl;
+    Flags_001EE6C0 *f0;
+    f32 *sx;
+    f32 *sy;
+    f32 *sz;
+    PrimitiveFlags_001EE6C0 *pflags;
+    Xyzf_001EE6C0 *pv0;
+    Xyzf_001EE6C0 *pv1;
+    Xyzf_001EE6C0 *sv0;
+    Xyzf_001EE6C0 *sv1;
+    Sprite_001EE6C0 sprite __attribute__((aligned(8)));
+
+    origin = D_00292FD0;
+    offset = D_00292FE0;
+    enabled = 1;
+    overlay = 0;
+    draw = 0;
+    if (!(SzEffect_IsUse2(0, -1) & 1) && !(SzEffect_IsUse2(1, -1) & 1) &&
+        !(SzEffect_IsUse2(2, -1) & 1)) {
+        enabled = 0;
+    }
+    if (arg5) {
+        Header_001EE6C0 *header = (Header_001EE6C0 *)arg5;
+        header->type = 7;
+        header->count = 0;
+        header->tag = 0;
+        header->pad04 = 0;
+    }
+    if (arg1 < 0 || arg1 >= 0x54) {
+        return arg0;
+    }
+    obj = D_0031ABB0[arg1];
+    if (obj == NULL) {
+        return arg0;
+    }
+    if (*(s8 *)((u8 *)obj + 0x1F2) < 0) {
+        return arg0;
+    }
+    if (*(s32 *)((u8 *)obj + 0x138) == 0) {
+        return arg0;
+    }
+    if (((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b3) {
+        return arg0;
+    }
+    if (!((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b1) {
+        return arg0;
+    }
+    if (arg5 == 0) {
+        s32 type;
+        if (obj->pad040[0xEF] == 0) {
+            return arg0;
+        }
+        type = *(s8 *)((u8 *)obj + 0x1F3);
+        if (type != 4 && type != 5 && type != 6) {
+            if (abs_001EE6C0(*(f32 *)((u8 *)obj + 0x128)) <= 0.000001f) {
+                return arg0;
+            }
+            if (abs_001EE6C0(*(f32 *)((u8 *)obj + 0x120)) <= 0.000001f &&
+                abs_001EE6C0(*(f32 *)((u8 *)obj + 0x124)) <= 0.000001f) {
+                return arg0;
+            }
+        }
+    }
+    RhMem_CopyMemory16(&transform, obj, 4);
+    if (0 != arg2) {
+        transform.position.f[0] += ((f32 *)arg2)[0];
+        transform.position.f[1] += ((f32 *)arg2)[1];
+        transform.position.f[2] += ((f32 *)arg2)[2];
+    }
+    if (arg3 != 0) {
+        transform.rotation[0] += ((s32 *)arg3)[0];
+        transform.rotation[1] += ((s32 *)arg3)[1];
+        transform.rotation[2] += ((s32 *)arg3)[2];
+    }
+    if (0 != arg4) {
+        transform.scale.f[0] *= ((f32 *)arg4)[0];
+        transform.scale.f[1] *= ((f32 *)arg4)[1];
+        transform.scale.f[2] *= ((f32 *)arg4)[2];
+    }
+    sx = &transform.scale.f[0];
+    sy = &transform.scale.f[1];
+    sz = &transform.scale.f[2];
+    scale = *sx;
+    scaledY = 1.0638298f * *sy;
+    scale = (scale > scaledY) ? scale : scaledY;
+    if (scale < *sz) {
+        scale = *sz;
+    }
+    if (abs_001EE6C0(scale) <= 0.000001f) {
+        return arg0;
+    }
+    if (((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->overlay && obj->pad040[0xF3]) {
+        overlay = 1;
+    }
+    if (arg5 || overlay || D_0031BB00 || ((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->base ||
+        obj->pad040[0xEE] != 0x80 || obj->pad040[0xED] != 0x80 ||
+        obj->pad040[0xEC] != 0x80 || obj->pad040[0xEF] != 0x80) {
+        if (enabled) {
+            draw = RhBase_AssignRenderFrame(0, 2, 0x32);
+        } else {
+            draw = RhBase_AssignRenderFrame(0, 0xA, 0x31);
+        }
+    }
+    if (draw) {
+        if (D_0031BB00 != 1) {
+            D_0031BB10 = 0;
+        }
+        arg0 = (s32)RhBase_EnableRenderFrame((void *)arg0);
+        arg0 = (s32)RhBase_ClearRenderFrame((u8 *)arg0, 0);
+        if (enabled && RhView_PushStack()) {
+            RhView_GetCurView(&effect0);
+            RhView_SetClipZ(1.0f, 1024.0f);
+            RhView_Modify(&effect0);
+            arg0 = RhView_SendViewParameters(arg0);
+        }
+        if (arg7) {
+            arg0 = ((s32 (*)(s32))arg7)(arg0);
+        }
+    }
+    arg0 = SzView_SetLight_Pipe((s32)SzView_SetFog_Pipe((void *)arg0, 0, *(s8 *)((u8 *)obj + 0x1F3),
+                        *(f32 *)((u8 *)obj + 0x128)), 0, *(s8 *)((u8 *)obj + 0x1F3));
+    if (D_0031BB10 != *(s32 *)((u8 *)obj + 0x138)) {
+        s32 result;
+        arg0 = SzModel_LoadTexture_Pipe(arg0, arg1, *(void **)((u8 *)obj + 0x138), &result);
+        D_0031BB10 = *(s32 *)((u8 *)obj + 0x138);
+    }
+    {
+        s8 *lv = &obj->lv[0];
+        s8 *lvNext = &obj->lv[1];
+        f32 *slotpos = (f32 *)&obj->slots[8];
+        f32 *slotpos2 = (f32 *)&obj->slots[11];
+        RhMem_FillMemory4(&model, 0, 0x18);
+        model.model = *(s32 *)((u8 *)obj + 0x138);
+        if (*(ObjSlot_0031ABB0 **)((*lv << 2) + (u32)obj + 0x178) != NULL) {
+            ((Flags_001EE6C0 *)&model.flags0)->b2 = 1;
+            ((Flags_001EE6C0 *)&model.flags0)->b4 = 1;
+            model.slot0 = *(ObjSlot_0031ABB0 **)((*lv << 2) + (u32)obj + 0x178);
+            model.value0 = slotpos[1];
+            model.value2 = slotpos[2];
+            if (*lvNext >= 0 && *lvNext != *lv && *(ObjSlot_0031ABB0 **)((*lvNext << 2) + (u32)obj + 0x178) != NULL) {
+                ((Flags_001EE6C0 *)&model.flags0)->b3 = 1;
+                model.slot1 = *(ObjSlot_0031ABB0 **)((*lvNext << 2) + (u32)obj + 0x178);
+                model.value1 = slotpos2[1];
+                model.value3 = slotpos2[2];
+            }
+        }
+    }
+    if (((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b7) {
+        model.flags0.b1 = SzView_IsFogZ(0, *(s8 *)((u8 *)obj + 0x1F3));
+        model.flags1.b2 = SzView_IsFogY(0, *(s8 *)((u8 *)obj + 0x1F3));
+    }
+    fl = &model.flags1;
+    if (!fl->b2 && SzView_InqPointLight(0, *(s8 *)((u8 *)obj + 0x1F3))) {
+        model.flags0.b0 = 1;
+    }
+    fl->b3 = 1;
+    f0 = (Flags_001EE6C0 *)&model.flags0;
+    f0->b7 = 1;
+    model.values[0] = *(f32 *)((u8 *)obj + 0x120) * *(f32 *)((u8 *)obj + 0x128);
+    model.values[1] = *(f32 *)((u8 *)obj + 0x124) * *(f32 *)((u8 *)obj + 0x128);
+    model.values[2] = 1.0f;
+    if (*(s8 *)((u8 *)obj + 0x1F3) == 4 || *(s8 *)((u8 *)obj + 0x1F3) == 5 ||
+        *(s8 *)((u8 *)obj + 0x1F3) == 6) {
+        GetAnyCoordinateInit();
+        if (*(u8 *)((u8 *)obj + 0x1FE) &&
+            ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
+            BookingGetAnyCoordinate(1);
+            if (0 == D_0031BB00) {
+                if (*(u8 *)((u8 *)obj + 0x1F0) < 0xFF) {
+                    BookingGetAnyCoordinate(*(u8 *)((u8 *)obj + 0x1F0));
+                }
+                *(u16 *)((u8 *)obj + 0x1F0) &= 0x7FFF;
+                i = 0;
+                p = (u8 *)obj;
+                do {
+                    if (*(u8 *)(p + 0x1B0) < 0xFF) {
+                        BookingGetAnyCoordinate(*(u8 *)(0x1B0 + p));
+                    }
+                    *(u16 *)(p + 0x1B0) &= 0x7FFF;
+                    p += 2;
+                    i++;
+                } while (i < 8);
+            }
+            if (((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b5) {
+                RhGeom_PushMatrix(0);
+                *(Vec4f *)&position = *(Vec4f *)((u8 *)obj + 0x80);
+                RhGeom_MulMatrixVector(&position, NULL, &position);
+                fl->b4 = 1;
+                RhGeom_PopMatrix();
+            }
+            ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b5 = 0;
+        }
+    }
+    RhGeom_PushMatrix(0);
+    *(f32 *)(*(u8 **)((u8 *)obj + 0x134) + 0x3C) =
+        *(f32 *)((u8 *)obj + 0x1E4) * scale;
+    if (*(s8 *)((u8 *)obj + 0x1F3) == 4 || *(s8 *)((u8 *)obj + 0x1F3) == 5 || *(s8 *)((u8 *)obj + 0x1F3) == 6) {
+        s32 bounds;
+        bounds = lSzModel_GetGNode(arg1, 1, NULL);
+        if (bounds) {
+            f32 denominator;
+            f32 *o1 = &origin.f[1];
+            f32 *o2 = &origin.f[2];
+            denominator = *(f32 *)(*(u8 **)((u8 *)obj + 0x13C) + 0x54);
+            origin.f[0] = *(f32 *)((u8 *)bounds + 0x20) / denominator;
+            *o1 = *(f32 *)((u8 *)bounds + 0x24) / denominator;
+            *o2 = *(f32 *)((u8 *)bounds + 0x28) / denominator;
+            offset.f[0] = origin.f[0];
+            offset.f[1] = *o1;
+            offset.f[2] = *o2;
+            origin.f[0] *= -1.0f;
+            *o1 *= -1.0f;
+            *o2 *= -1.0f;
+        }
+        if (*(u8 *)((u8 *)obj + 0x1FF)) {
+            f32 blend = (f32)(u32)*(u8 *)((u8 *)obj + 0x1FF) / 32.0f;
+            f32 factor;
+            f32 remainder;
+            factor = 1.0f + (*(f32 *)((u8 *)obj + 0x1E8) - 1.0f) * blend;
+            *(f32 *)(*(u8 **)((u8 *)obj + 0x134) + 0x3C) *= factor;
+            remainder = 1.0f - blend;
+            *sx *= factor;
+            *sy *= factor;
+            *sz *= factor;
+            offset.f[0] *= remainder;
+            offset.f[2] *= remainder;
+        }
+        RhGeom_ScaleRotXYZTransMatrix(0, 0, (s32 *)&transform.extra, transform.position.f);
+        RhGeom_GetScaleRotXYZTransMatrix(&matrix, (f32 *)&transform.scale, transform.rotation, offset.f);
+        RhGeom_MulMatrix(0, &matrix);
+        RhGeom_GetTransMatrix(&matrix, origin.f);
+        RhGeom_MulMatrix(0, &matrix);
+        packet = RhModel_Draw((void *)arg0, &model);
+        if (*(u8 *)((u8 *)obj + 0x1FE) &&
+            ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
+            if (f0->b2 && GetAnyCoordinate(1, &matrix)) {
+                *(f32 *)((u8 *)obj + 0x80) = matrix.f[12];
+                *(f32 *)((u8 *)obj + 0x84) = matrix.f[13];
+                *(f32 *)((u8 *)obj + 0x88) = matrix.f[14];
+                *(f32 *)((u8 *)obj + 0x8C) = 1.0f;
+            } else {
+                RhView_GetWorldViewMatrix(&matrix);
+                RhGeom_InvertMatrix(&matrix, &matrix);
+                RhGeom_MulMatrixRev(0, (s32)&matrix);
+                RhGeom_MulMatrixVector(&obj->pad040[0x40], NULL, &obj->pad040[0x50]);
+            }
+            if (!D_0031BB00 && f0->b2) {
+                if (*(u8 *)((u8 *)obj + 0x1F0) < 0xFF &&
+                    GetAnyCoordinate(*(u8 *)((u8 *)obj + 0x1F0), obj->pad040)) {
+                    *(u16 *)((u8 *)obj + 0x1F0) |= 0x8000;
+                }
+                k = 0;
+                i = (s32)obj;
+                p = (u8 *)obj;
+                do {
+                    if (*(u8 *)(i + 0x1B0) < 0xFF &&
+                        GetAnyCoordinate(*(u8 *)(i + 0x1B0), &matrix)) {
+                        *(u16 *)(0x1B0 + i) |= 0x8000;
+                        *(f32 *)(p + 0xA0) = matrix.f[12];
+                        *(f32 *)(p + 0xA4) = matrix.f[13];
+                        *(f32 *)(0xA8 + p) = matrix.f[14];
+                        *(f32 *)(0xAC + p) = 1.0f;
+                    }
+                    k++;
+                    i += 2;
+                    p += 0x10;
+                } while (k < 8);
+            }
+            ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b5 = 1;
+        }
+    } else {
+        RhGeom_ScaleRotXYZTransMatrix(0, 0, (s32 *)&transform.extra, transform.position.f);
+        RhGeom_GetScaleRotXYZTransMatrix(&matrix, (f32 *)&transform.scale, transform.rotation, NULL);
+        RhGeom_MulMatrix(0, &matrix);
+        packet = RhModel_Draw((void *)arg0, &model);
+        if (((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
+            RhView_GetWorldViewMatrix(&matrix);
+            RhGeom_InvertMatrix(&matrix, &matrix);
+            RhGeom_MulMatrixRev(0, (s32)&matrix);
+            RhGeom_MulMatrixVector(&obj->pad040[0x40], NULL, &obj->pad040[0x50]);
+            ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b5 = 1;
+        }
+    }
+    RhGeom_PopMatrix();
+    *(s32 *)&model.depth = depth = Ex3d_GetSampleZ(&obj->pad040[0x40], 0.0f);
+    if (arg6 && !(arg6 & 0x80000000)) {
+        *(s32 *)arg6 = *(s32 *)&model.depth;
+        if (draw == 0 && *(s32 *)(*(u8 **)((u8 *)obj + 0x13C) + 0x1C) == 0) {
+            *(s32 *)arg6 = 0;
+        }
+    }
+    if (draw != 0) {
+        if (0x80000000 & arg6) {
+            depth = arg6 & 0x7FFFFFFF;
+        }
+        if (overlay) {
+            ((Header_001EE6C0 *)&sprite.header)->type = 6;
+            ((Header_001EE6C0 *)&sprite.header)->count = 3;
+            ((Header_001EE6C0 *)&sprite.header)->tag = 0x441;
+            ((Header_001EE6C0 *)&sprite.header)->pad04 = 0;
+            ExAssignAlpha(&sprite, ExGetAlphaVal(((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->overlay));
+            sprite.r = obj->pad040[0xF2];
+            sprite.g = obj->pad040[0xF1];
+            sprite.b = obj->pad040[0xF0];
+            sprite.a = func_001A23B0((f32)(u32)obj->pad040[0xF3] *
+                                         *(f32 *)((u8 *)obj + 0x128));
+            sprite.q = 1.0f;
+            (sv0 = (Xyzf_001EE6C0 *)&sprite.v0)->x = 0x6C00;
+            sprite.v0.y = 0x7200;
+            sv0->z = 0xFFFFFF;
+            sprite.v0.fog = 0;
+            (sv1 = (Xyzf_001EE6C0 *)&sprite.v1)->x = 0x9400;
+            sprite.v1.y = 0x8E00;
+            sv1->z = 0xFFFFFF;
+            sprite.v1.fog = 0;
+            packet = RhBase_MaskFBuffer((void *)ExSortPrim_Pipe((s32)RhBase_MaskFBuffer(packet, 0xFF000000), (s32)&sprite, 0, 0), 0);
+        }
+        if (arg_sp0) {
+            packet = ((void *(*)(void *))arg_sp0)(packet);
+        }
+        ((Header_001EE6C0 *)&primitive.header)->type = 0x26;
+        ((Header_001EE6C0 *)&primitive.header)->count = 5;
+        ((Header_001EE6C0 *)&primitive.header)->tag = 0x42421;
+        ((Header_001EE6C0 *)&primitive.header)->pad04 = 0;
+        ExAssignAlpha(&primitive, ExGetAlphaVal(((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->base));
+        primitive.r = obj->pad040[0xEE];
+        primitive.g = obj->pad040[0xED];
+        primitive.b = obj->pad040[0xEC];
+        primitive.a = obj->pad040[0xEF];
+        primitive.q = 1.0f;
+        (pv0 = (Xyzf_001EE6C0 *)&primitive.v0)->x = 0x6BF8;
+        primitive.v0.y = 0x71F8;
+        pv0->z = depth;
+        primitive.v0.fog = 0;
+        (pv1 = (Xyzf_001EE6C0 *)&primitive.v1)->x = 0x93F8;
+        primitive.v1.y = 0x8DF8;
+        pv1->z = depth;
+        primitive.v1.fog = 0;
+        primitive.s0 = 0.0f;
+        primitive.t0 = 0.0f;
+        primitive.s1 = 0.625f;
+        primitive.t1 = 0.875f;
+        pflags = (PrimitiveFlags_001EE6C0 *)&primitive.extra[2];
+        RhBase_GetTextureInfoForRender(&primitive.extra[1], pflags);
+        pflags->flag = pflags->type = 0;
+        packet = (void *)RhText_SetTextureFlush((s32)RhBase_DisableRenderFrame(packet));
+        if (enabled && RhView_PopStack()) {
+            RhView_GetCurView(&effect1);
+            RhView_Modify(&effect1);
+            packet = (void *)RhView_SendViewParameters((s32)packet);
+        }
+        RhBase_FreeRenderFrame();
+        if (arg5 != 0) {
+            *(Primitive_001EE6C0 *)arg5 = primitive;
+        } else {
+            packet = ExDitherMode_Pipe((void *)RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode((s32)ExDitherMode_Pipe(packet, 0), 0), (s32)&primitive, 0, 0), 1), 1);
+        }
+        if (1 != D_0031BB00) {
+            D_0031BB10 = 0;
+        }
+    }
+    return (s32)packet;
+}
+#pragma global_optimizer reset
 
 struct DotrExSortVec {
     float x, y, z, w;
