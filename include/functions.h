@@ -2973,6 +2973,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 
 s32 lSzDuel_DrawBuildDeck_Detail_Special_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 lSzDuel_DrawBuildDeck_GhostCard_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5);
 s32 lSzDuel_DrawBuildDeck_Ghost_Pipe(s32 arg0, s32 arg1, s32 arg2);
+s32 lSzDuel_DrawBuildDeck_Library_Pipe(s32 cursor, int x, int y);
 void lSzDuel_DrawBuildDeck_PasswordDone_Pipe(s32 arg0, s32 arg1, s32 arg2);
 void lSzDuel_DrawBuildDeck_PasswordFail_Pipe(s32 arg0, s32 arg1, s32 arg2);
 s32 lSzDuel_DrawBuildDeck_PasswordSuccess_Pipe(s32 arg0, s32 arg1, s32 arg2);
@@ -4954,6 +4955,7 @@ s32 func_001BD8A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5);
 s32 func_001BE5F0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001BF180(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 func_001BF2A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+s32 func_001BF710(s32 cursor, int x, int y);
 s32 func_001BFF00(s32 id, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001C02E0(s32 id, s32 arg1, s32 arg2, s32 arg3);
 void func_001C05F0(s32 arg0, s32 arg1, s32 arg2);

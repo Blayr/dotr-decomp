@@ -1954,7 +1954,158 @@ s32 lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 
 
 INCLUDE_ASM("asm/nonmatchings/main_040", lSzDuel_DrawBuildDeck_Detail_Ability_Pipe);
 
-INCLUDE_ASM("asm/nonmatchings/main_040", lSzDuel_DrawBuildDeck_Library_Pipe);
+extern u8 D_00290080[];
+extern char D_002BEF93[];
+
+#pragma optimization_level 3
+
+s32 lSzDuel_DrawBuildDeck_Library_Pipe(s32 cursor, int x, int y)
+{
+    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
+    extern s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32, u8 *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, u8);
+    extern s32 SzDuel_DrawWindow_Font_Pipe();
+    Duel_00317490 *c;
+    int side;
+    int show;
+    char *text;
+    char *back;
+    int i;
+    int j;
+    int row;
+    int col;
+    int id;
+    u8 *info;
+    unsigned char alpha;
+    int n;
+    int type;
+    int bx;
+    int ox;
+    int gx;
+    int gy;
+    int px;
+    int qx;
+    int qy;
+    int k;
+    int py;
+    s32 cur;
+    s32 icon;
+    s32 last;
+
+    c = &D_00317490;
+    show = 1;
+    side = c->s.player;
+    show = (c->s.mode == 0) ? show : 0;
+    text = D_002BEF93 + 0x30;
+    back = D_002BEF93 + 0;
+    bx = x - 640;
+    px = bx + 80;
+    py = y + 16;
+    cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 12, -1, 11, px, py, -192, -48, 1);
+    px = bx + 176;
+    py = y + 31;
+    cur = SzDuel_DrawWindow_Font_Pipe(cursor, px, py, 2, 3, strlen(text), text, 0);
+    px = bx + 16;
+    py = y + 16;
+    cur = lSzDuel_DrawWindow_Frame_Pipe(cur, 12, -1, 5, px, py, -64, -20, 1);
+    px = bx + 1746;
+    py = y + 1842;
+    icon = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 2030, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    px = bx + 39;
+    py = y + 20;
+    cur = SzDuel_DrawWindow_FontDigit_Pipe(icon, px, py, 1, 0, 4, SzData_GetBagCountAll(side));
+    px = bx + 16;
+    py = y + 36;
+    cur = lSzDuel_DrawWindow_ExBoard_Pipe(cur, 2, px, py, -64, -28, -1, 0);
+    if (show) {
+        px = bx + 1749;
+        py = y + 1869;
+        cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 2600, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    }
+    px = bx + 1772;
+    py = y + 1868;
+    cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 1960, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    px = bx + 8;
+    py = y + 64;
+    cur = lSzDuel_DrawWindow_Frame_Pipe(cur, 12, -1, 7, px, py, -288, -318, 1);
+    for (i = 0; i < 10; i++) {
+        cur = SzDuel_DrawWindow_FontDigit_Pipe(cur, bx + 55 + i * 24, y + 69, 1, 0, 1, i);
+    }
+    qx = bx + 15;
+    qy = y + 91;
+    for (k = 0; k < 10; k++) {
+        cur = SzDuel_DrawWindow_FontDigit_Pipe(cur, qx, qy, 1, 32, 3, (c->s.digit[0] + k) * 10);
+        qy += 28;
+    }
+    px = bx + 1778;
+    gy = y + 1907;
+    for (row = 0; row < 10; row++) {
+        gx = px;
+        for (col = 0; col < 10; col++, gx += 24) {
+            id = col + (c->s.digit[0] + row) * 10;
+            alpha = 0;
+            if (id == 671) {
+                if (SzData_GetLookFlag(side, id)) {
+                    cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 2200, gx, gy,
+                                             0, 1, 0, 0, 0, 0, 1, 0, -1, 48);
+                }
+                continue;
+            }
+            if ((info = SzDuel_GetCardConstInfo(id)) == 0) {
+                continue;
+            }
+            n = SzData_GetBagCount(side, id, -1);
+            if (n < 0) {
+                continue;
+            }
+            if (n > 0) {
+                alpha = 128;
+            } else if (SzData_GetLookFlag(side, id)) {
+                alpha = 48;
+            }
+            if (alpha) {
+                type = SzDuel_Kind2Type(info[0] >> 5);
+                if (type == 0 && *(u16 *)(info + 4) != 0xffff) {
+                    type = 4;
+                }
+                cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + (type + 220) * 10, gx,
+                                         gy, 0, 1, 0, 0, 0, 0, 1, 0, -1, alpha);
+            }
+        }
+        gy += 28;
+    }
+    px = bx + 45;
+    py = y + 78;
+    cur = lSzDuel_DrawWindow_Frame_Pipe(cur, -1, -1, 6, px + c->s.digit[1] * 24, py + c->s.digit[2] * 28, -24, -30, 1);
+    for (i = 0; i < 10; i++) {
+        cur = SzDuel_DrawWindow_FontDigit_Pipe(cur, bx + 55 + i * 24, y + 365, 1, 0, 1, i);
+    }
+    px = bx + 296;
+    py = y + 64;
+    cur = lSzDuel_DrawWindow_Frame_Pipe(cur, 12, -1, 12, px, py, 1, -318, 1);
+    px = bx + 296;
+    py = y + 80 + c->s.digit[0] * 238 / 76;
+    cur = lSzDuel_DrawWindow_Frame_Pipe(cur, -1, -1, 13, px, py, 1, 1, 1);
+    px = bx + 16;
+    py = y + 382;
+    cur = lSzDuel_DrawWindow_ExBoard_Pipe(cur, 2, px, py, -236, -50, -1, 0);
+    px = bx + 1772;
+    py = y + 2210;
+    cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 1970, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+    if (show) {
+        px = bx + 1749;
+        py = y + 2215;
+        cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 2610, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+        px = bx + 1751;
+        py = y + 2234;
+        last = lSzDuel_DrawWindow_ExIcon_Pipe(cur, D_00290080 + 2540, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, 128);
+        px = bx + 44;
+        py = y + 413;
+        cur = SzDuel_DrawWindow_Font_Pipe(last, px, py, 1, 0, strlen(back), back, 0);
+    }
+    return cur;
+}
+
+#pragma optimization_level reset
 
 s32 lSzDuel_DrawBuildDeck_BagCursor_Pipe(s32 id, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
