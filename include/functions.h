@@ -2284,7 +2284,7 @@ s32 Taku_Tyumoku_ido(void);
 s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3);
 s32 Taku_Tyumoku_ido1(s16 arg0, s16 arg1);
 s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1);
-s32 Taku_Tyumoku_ido_kettei(s32 arg0, s32 arg1, s16 arg2);
+s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2);
 void Taku_Vector_Set(void *arg0, void *arg1);
 s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, u16 depth, s32 unused, s16 alpha);
 void Taku_spline2(f32 *outX, f32 *outY, s16 *outCount, f32 *points, f32 *intervals, s32 count, s16 mode, f32 spacing);

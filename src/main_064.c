@@ -398,7 +398,7 @@ typedef struct State_00229140 {
 extern f32 D_00298BA0[];
 extern f32 D_00298BA8[];
 
-s32 Taku_Tyumoku_ido_kettei(s32 arg0, s32 arg1, s16 arg2) {
+s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2) {
     State_00229140 *state = (State_00229140 *)&D_00299E10;
     f32 startX;
     f32 startZ;

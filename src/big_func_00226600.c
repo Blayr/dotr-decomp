@@ -49,7 +49,6 @@ extern int func_002294B0_b(int side, int pick);
 extern void func_00217980_b(int n, int b);
 extern void func_00228940_b(int a, int b);
 extern void func_00228660_b(int side, int row, int value, short *list, int count);
-extern void Taku_Nagare2_set(int side, int row, short *list, int count, int flag);
 extern int func_00228F50_b(int side, int row);
 #define WB(o) (*(signed char *)(DOTR_CAMP_SYSTEM_BASE + (o)))
 #define WH(o) (*(short *)(DOTR_CAMP_SYSTEM_BASE + (o)))
@@ -64,6 +63,7 @@ extern int func_00228F50_b(int side, int row);
 
 void Taku_Camp_System(void)
 {
+    extern void Taku_Nagare2_set(int side, int row, short *list, int count, int flag);
     struct DotrCampSystemBoard *b = &D_00299E10_b;
     int side = b->b0;
     short sd;
