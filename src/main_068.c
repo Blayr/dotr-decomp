@@ -2666,7 +2666,6 @@ typedef struct Tail_0023F5A0 {
     s32 words[0x53];
 } Tail_0023F5A0;
 
-void TakuLoad_Name_Set(s32);
 extern u8 D_0029B1BE[];
 extern s32 *D_0034FAE8;
 extern Header_0023F5A0 D_0034FAF0;
@@ -2865,7 +2864,46 @@ s32 TakuLoad_card_file_open(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", TakuLoad_Name_Set);
+void TakuLoad_Name_Set(s32 side) {
+    extern volatile s32 D_002D19D8;
+    extern s32 D_002D19E0;
+    extern u16 D_002D49D4[];
+    s16 i;
+    u16 *dest;
+    s32 offset;
+    u8 *src;
+    u16 v;
+    s32 off2;
+
+    src = (u8 *)&D_00299E10;
+    if (side == 0) {
+        i = 0;
+        offset = 0;
+        while (i < 12) {
+            if (i == 0) {
+                dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset);
+                *dest = *(u16 *)(src + 0x24);
+            }
+            v = *(u16 *)(src + 0x24);
+            dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset + 4);
+            offset += 2;
+            *dest = v;
+            src += 2;
+            i++;
+        }
+    } else {
+        i = 0;
+        off2 = 0;
+        while (i < 12) {
+            v = *(u16 *)(src + 0x24);
+            dest = (u16 *)((u8 *)&D_002D49D4[D_002D19E0] + off2);
+            off2 += 2;
+            *dest = v;
+            src += 2;
+            i++;
+        }
+    }
+}
 
 typedef struct State_0023FCE0 {
     s32 field_0;
