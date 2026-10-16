@@ -302,3 +302,4 @@ func_00239E4C = 0x00239E4C; /* TkCamp_Act re-entry: the tutorial patch area (fun
 func_00239E64 = 0x00239E64; /* same, the other exit of func_00175E60 */
 abs_b = 0x00195070; /* TkCamp_Act calls abs() as a real call (Metrowerks would inline the builtin) */
 SzDuel_OpenOptionPopup_b = 0x001E3FF0; /* TkCamp_Act passes s32 arguments (no s16 narrowing at the call) */
+_stack = 0xFFFFFFFF; /* crt0 (func_00100008): la a1, _stack; -1 = the kernel puts the stack at the top of memory */
