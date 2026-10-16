@@ -1909,7 +1909,7 @@ s32 Ta_Do_EndPhase(s32 phase, s32 *res) {
             res[0] = 8;
             res[1] = 0;
             res[2] = player;
-            res[3] = 100;
+            res[3] = 50;
             return ((phase + 1) << 16) | 1;
         }
         return (phase + 1) << 16;

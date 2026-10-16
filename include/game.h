@@ -1090,4 +1090,6 @@ extern s32 D_0028DCB8;
 
 extern char D_002BE940[];
 
+s32 func_0012B000(s32 arg0);
+
 #endif

@@ -729,12 +729,12 @@ void Ta_GetStdTopDownView(void *arg0) {
     if (SzDuel_GetTurnOwner() == 0) {
         config->value = 0x1F4;
         config->flags = 0x3FFF;
-        config->limit = 0x3800;
+        config->limit = 0x4000;
         config->reserved = 0;
     } else {
         config->value = 0x2BC;
         config->flags = 0xBFFF;
-        config->limit = 0x3800;
+        config->limit = 0x4000;
         config->reserved = 0;
     }
 }

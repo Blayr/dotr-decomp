@@ -521,7 +521,7 @@ void TaLogic_GetUnitCtlLst(s32 arg0, u16 *arg1, s32 arg2, u8 arg3) {
         break;
     default:
         start = 1;
-        end = 6;
+        end = 11;
         break;
     }
     for (i = start; i < end; i++) {

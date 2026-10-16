@@ -2679,9 +2679,7 @@ s32 TaLogic_GetMinimumTask_TrapMission_0012AAC0(void *arg0, s32 arg1, void *arg2
     return 0;
 }
 
-void func_0012B000(void) {
-    func_0016B0F0_b();
-}
+INCLUDE_ASM("asm/nonmatchings/main_007", func_0012B000);
 
 s32 TaLogic_GetWarnHideLvl_0012B1B0(s32 arg0) {
     if (SzDuel_GetLP(arg0) > 0x4B0) {

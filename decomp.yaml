@@ -4,7 +4,7 @@ platform: ps2
 versions:
 - name: main
   fullname: SLUS_205.15
-  sha1: 077ac97a878d1bc3b7eb1c3e09bc7fef7becdf68
+  sha1: bee9fc13d12ab2818822d905d820320fc6427f23
   paths:
     target: assets/SLUS_205.15
     build_dir: build

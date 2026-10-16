@@ -1399,3 +1399,5 @@ s32 func_00178590(s32 arg0, void *tutorial) {
     }
     return 0;
 }
+
+INCLUDE_ASM("asm/nonmatchings/big_func_00178590", func_0017AA70);

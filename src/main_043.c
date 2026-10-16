@@ -779,7 +779,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     angle = (s32)(65536.0f * (func_001A6C18((f32)(z1 - z0), (f32)(x1 - x0)) / 6.2831855f));
     *(s32 *)(p + 0x1D0) = 0x96;
     *(s32 *)(p + 0x1D4) = (((angle + 0x80) >> 8) << 8) + 0x4000;
-    *(s32 *)(p + 0x1D8) = 0x3800;
+    *(s32 *)(p + 0x1D8) = 0x4000;
     cur = D_00317490.b + D_003181E4 * 0x350;
     SzView_IV2V(cur + 0x1D0, camera);
     pos[0] = (f32)((x0 + x1) >> 1);

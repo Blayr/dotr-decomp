@@ -970,7 +970,7 @@ s32 TaLogic011_GetSpecComboPlay(s32 arg0, void *arg1, void *arg2) {
                     (Ta_GetHandEnchant(*second, 0x320) >= 0) &&
                     (TaHand_IsCardSummon(arg0, *second) == 1)) {
                     if ((*second != 0x31B) && (*second != 0x31C)) {
-                        *((s8 *)arg1 + 6) = secondIndex;
+                        *((s8 *)arg1 + 7) = secondIndex;
                         SzDuel_InitCardInfo(arg2, cards[secondIndex]);
                         return TaHand_GetCardKind(cards[secondIndex]) >> 5;
                     }

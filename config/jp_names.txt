@@ -27,3 +27,17 @@ func_001747D0	L033
 func_00175FE0	L034
 func_00178590	L035
 func_0021C320	func
+func_0012B000	TaLogic006_IsBlackHoleCondition
+func_00172510	TaTuto_FocusUnit
+func_00175E60	TaTuto_DbgInit034
+func_00178320	TaTuto_SetDeck035
+func_0017AA70	L036
+func_0027F5B0	TaTuto_Init036
+func_0027F630	TaTuto_DrawFinger
+func_0027F890	TaTuto_ControlFade
+func_0027FA30	TaTuto_RestoreOriginalView
+func_0027FAB0	TaTuto_BkupOriginalView
+func_0027FB30	TaTuto_OpenMsgPopup
+func_0027FBA0	TaTuto_CloseMsgPopup
+func_0027FC20	TaTuto_OpenTutoMsg
+func_0027FDA0	TaTuto_GetCardNameMsgID

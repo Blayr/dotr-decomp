@@ -1,5 +1,5 @@
 name: dotr (SLUS_205.15)
-sha1: 077ac97a878d1bc3b7eb1c3e09bc7fef7becdf68
+sha1: bee9fc13d12ab2818822d905d820320fc6427f23
 options:
   basename: main
   target_path: assets/SLUS_205.15
@@ -69,7 +69,6 @@ segments:
       - [0x60C60, c, main_014]
       - [0x68E80, c, main_015]
       - [0x6FD20, c, main_016]
-      - [0x78E10, textbin, blob_func_00172510]
       - [0x791A0, c, big_func_001728A0]
       - [0x7AEF0, c, main_017]
       - [0x7C8E0, c, big_func_00175FE0]

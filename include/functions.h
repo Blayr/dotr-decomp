@@ -2484,7 +2484,6 @@ s32 func_00117C90(s32 arg0, void *arg1); /* JP: L001 */
 s32 func_0011C430(s32 arg0, void *arg1); /* JP: L003 */
 s32 func_00121630(s32 arg0, void *arg1); /* JP: L004 */
 s32 func_00126AB0(s32 arg0, void *arg1); /* JP: L005 */
-void func_0012B000(void);
 s32 func_0012B9A0(s32 arg0, void *arg1); /* JP: L006 */
 s32 func_00130E90(s32 arg0, void *arg1); /* JP: L007 */
 s32 func_00135060(s32 arg0, void *arg1); /* JP: L008 */

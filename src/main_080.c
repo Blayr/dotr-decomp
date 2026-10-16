@@ -17,17 +17,17 @@ s32 TaTuto_IsTuto(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_0027F890);
 
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027F8B4);
-
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027F8D8);
-
-INCLUDE_ASM("asm/nonmatchings/main_080", func_0027F8FC);
-
 INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FA30);
 
 INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FAB0);
 
+INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FB30);
+
+INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FBA0);
+
 INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FC20);
+
+INCLUDE_ASM("asm/nonmatchings/main_080", func_0027FDA0);
 
 void TaView_ReqHalfFarView(s32 arg0) {
     void *temp_s0;

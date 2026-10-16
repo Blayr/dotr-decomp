@@ -3963,3 +3963,5 @@ s32 func_00172370(s32 arg0, void *arg1) {
     }
     return cur & 0xFFFF;
 }
+
+INCLUDE_ASM("asm/nonmatchings/main_016", func_00172510);
