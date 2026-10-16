@@ -2116,7 +2116,48 @@ s32 TaLogic011_IsUseBindChain(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", TaLogic011_IsUseLifeHourGlass);
+#pragma opt_lifetimes off
+
+s32 TaLogic011_IsUseLifeHourGlass(s32 arg0) {
+    extern s32 SzDuel_GetGraveCount(s32);
+    u8 slots;
+    u32 side;
+    s32 i;
+    u8 count;
+
+    side = arg0;
+    count = 0;
+    slots = 0;
+    if (SzDuel_GetLP(side) < 0x4B0) {
+        return 0;
+    }
+    for (i = 0; i < SzDuel_GetGraveCount(side); i++) {
+        if ((s32)(TaHand_GetCardAPDP(SzDuel_InqGrave(side, i)) >> 16) > 2000) {
+            if ((TaHand_GetCardKind(SzDuel_InqGrave(side, i)) >> 5) == 0) {
+                count++;
+            }
+        }
+    }
+    for (i = 0; i < SzDuel_GetGraveCount(side == 0 ? 1 : 0); i++) {
+        if ((s32)(TaHand_GetCardAPDP(SzDuel_InqGrave(side == 0 ? 1 : 0, i)) >> 16) > 2000) {
+            if ((TaHand_GetCardKind(SzDuel_InqGrave(side == 0 ? 1 : 0, i)) >> 5) == 0) {
+                count++;
+            }
+        }
+    }
+    if (count >= 3) {
+        for (i = 0; i < 8; i++) {
+            if (Ta_GetSummonablePieceWithOrder(side, i, 1) >= 0) {
+                slots++;
+            }
+        }
+        if (slots >= 3 && 5 - SzDuel_GetUnitMonsterCount(side) >= 3) {
+            return 1;
+        }
+    }
+    return 0;
+}
+#pragma opt_lifetimes reset
 
 s32 TaLogic011_IsUseBraveHourGlass(s32 arg0) {
     if (SzDuel_GetLP(arg0) < 0x4B0) {

@@ -1398,6 +1398,7 @@ s32 TaLogic011_IsOpenMoveUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, 
 s32 TaLogic011_IsRefuseEmptyCombo(s32 arg0);
 s32 TaLogic011_IsUseBindChain(s32 arg0);
 s32 TaLogic011_IsUseBraveHourGlass(s32 arg0);
+s32 TaLogic011_IsUseLifeHourGlass(s32 arg0);
 s32 TaLogic011_IsUseReversalGoddess(s32 arg0);
 s32 TaLogic011_SetComboQue(s32 arg0, u8 *arg1, u8 *arg2);
 s32 TaLogic011_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2);
@@ -3915,6 +3916,7 @@ s32 func_00141B30(s32 arg0);
 s32 func_00141B90(s32 arg0, s32 arg1);
 s32 func_00141E30(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 s32 func_00141F30(s32 arg0);
+s32 func_00142040(s32 arg0);
 s32 func_00142220(s32 arg0);
 s32 func_00142280(s32 arg0);
 s32 func_001424B0(void *work, void *arg1, s32 arg2);
