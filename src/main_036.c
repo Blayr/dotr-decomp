@@ -2553,7 +2553,7 @@ f32 func_001A6B70(f32 x) {
 }
 
 s32 func_001A6BE8(s64 arg0, s32 arg1) {
-    return func_001A3130();
+    return ((s32 (*)(s64, s32))func_001A3130)(arg0, arg1);
 }
 
 f32 func_001A6C00(f32 x) {

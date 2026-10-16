@@ -206,6 +206,44 @@ perl -pi -e 's/^(\s+)li\.d\s+\$(\d+),\s*(\S+)\s*$/sprintf("%sdli\t\$%s,0x%016X\n
 # GCC's divide-by-zero trap is `break 7`; Sony's assembler put the 7 in the low code field
 # (0x000001CD, shown as `break 0, 7`), binutils in the high one (0x0007000D).
 sed -i -E 's/^([[:space:]]+)break([[:space:]]+)7[[:space:]]*$/\1break\20,7/' "$TMP/out.s"
+# The C library's assembler had an early form of Sony's R5900 short-loop fix (it keeps a label before a
+# hazard nop, as the 2.10-ee gas's fix does, but otherwise assembles like 2.9-ee-991111). At a backward
+# branch it filled itself (reorder mode) it counted the words from the target label to the end of the last
+# closed fragment (an alignment closes one; the fragment being filled counted as empty, where 2.10-ee
+# counts it), did not look for branches inside the loop, and put 5 - n nops before the branch when n <= 4,
+# after GCC's own short-loop nops. The one such branch is __ieee754_pow's `bgez $19` back to `move $2,$0;
+# b; ld` (GCC 4 nops + 2 here); every other 2.96 file compiles byte-identical with or without this.
+if [ "$DK_GCC" = 2.96 ]; then
+    perl -i -ne 'BEGIN { @st = (0); $w = 0; $unk = 0; %lab = (); @al = () }
+        my $t = $_; $t =~ s/#.*//;
+        my $br = qr/^(b|beqz?l?|bnez?l?|b[gl][et]zl?|bc1[tf]l?)$/;
+        if ($t =~ /^\s*\.set\s+push\b/) { push @st, $st[-1] }
+        elsif ($t =~ /^\s*\.set\s+pop\b/) { pop @st }
+        elsif ($t =~ /^\s*\.set\s+noreorder\b/) { $st[-1] = 1 }
+        elsif ($t =~ /^\s*\.set\s+reorder\b/) { $st[-1] = 0 }
+        elsif ($t =~ /^\s*\.(p2)?align\b/) { push @al, $w }
+        elsif ($t =~ /^([\$.\w]+):/) { $lab{$1} = $w }
+        elsif ($t =~ /^\s+(\.word|[a-z][a-z0-9.]*)\s*(.*?)\s*$/) {
+            my ($m, $o) = ($1, $2);
+            if (!$st[-1] && $m =~ $br && $o =~ /([\$.\w]+)$/ && exists $lab{$1} && $unk <= $lab{$1}) {
+                my $L = $lab{$1};
+                my @b = grep { $_ > $L && $_ <= $w } @al;
+                if (@b && $b[-1] - $L <= 4) {
+                    for (1 .. 5 - ($b[-1] - $L)) { print "\t.set\tpush\n\t.set\tnoreorder\n\tnop\n\t.set\tpop\n"; $w++ }
+                }
+            }
+            # words: one per instruction; a branch or jump left to the assembler (its delay slot),
+            # a macro (`li.d`, `dli`, `la`, `li`, `li.s`) or a load/store through a symbol: not counted exactly
+            my $s = 1; my $u = 0;
+            $s = scalar(split(/,/, $o)) if $m eq ".word";
+            $u = 1 if $m =~ /^(li\.d|dli|d?la|li|li\.s)$/
+                || $m =~ /^(l[bhwdq]u?|s[bhwdq]|l[wd]c1|s[wd]c1|l\.[sd]|s\.[sd])$/ && $o =~ /,\s*[A-Za-z_]/
+                || (!$st[-1] && ($m =~ $br || $m =~ /^(j|jal|jr|jalr)$/));
+            $w += $s;
+            $unk = $w + 1 if $u;
+        }
+        print' "$TMP/out.s"
+fi
 # GCC objects were linked 8-byte aligned; the linker script's SUBALIGN(4) is not, so the
 # file's last function keeps its padding here. The list's last file ends where Metrowerks
 # code starts, on a 16-byte boundary (main_036 -> main_037 at 0x1A6C80).
