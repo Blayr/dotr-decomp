@@ -167,7 +167,6 @@ typedef struct sm_FILE {
     u8 pad43[0x11];
     void *_data;
 } sm_FILE;
-void *func_0019A690(void *ptr, void *old, s32 size);
 
 s32 func_0019DA00(void *arg0) {
     sm_FILE *fp = arg0;

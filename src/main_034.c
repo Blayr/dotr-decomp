@@ -1692,7 +1692,249 @@ s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_034", func_0019A690);
+#define malloc_unlock(r) ((void (*)(s32))func_00198A88)(r)
+#define SIZE_SZ (sizeof(INTERNAL_SIZE_T))
+#define PREV_INUSE 0x1
+#define SIZE_BITS 0x3
+#define chunksize(p) ((p)->size & ~(SIZE_BITS))
+#define set_head(p, s) ((p)->size = (s))
+#define set_foot(p, s) (((mchunkptr)((char *)(p) + (s)))->prev_size = (s))
+#define chunk_at_offset(p, s) ((mchunkptr)(((char *)(p)) + (s)))
+#define bin_at(i) ((mchunkptr)((char *)&(D_0028FAA8[2 * (i) + 2]) - 2 * SIZE_SZ))
+#define top (bin_at(0)->fd)
+#define last_remainder (bin_at(1))
+#define binblocks (bin_at(0)->size)
+#define MAX_SMALLBIN_SIZE 512
+#define BINBLOCKWIDTH 4
+#define smallbin_index(sz) (((unsigned long)(sz)) >> 3)
+#define bin_index(sz)                                                                              \
+    ((((sz) >> 9) == 0)      ? ((sz) >> 3)                                                         \
+     : (((sz) >> 9) <= 4)    ? 56 + ((sz) >> 6)                                                    \
+     : (((sz) >> 9) <= 20)   ? 91 + ((sz) >> 9)                                                    \
+     : (((sz) >> 9) <= 84)   ? 110 + ((sz) >> 12)                                                  \
+     : (((sz) >> 9) <= 340)  ? 119 + ((sz) >> 15)                                                  \
+     : (((sz) >> 9) <= 1364) ? 124 + ((sz) >> 18)                                                  \
+                             : 126)
+#define idx2binblock(ix) ((unsigned long)1 << ((ix) / BINBLOCKWIDTH))
+#define mark_binblock(ii) (binblocks |= idx2binblock(ii))
+#define unlink(P, BK, FD)                                                                          \
+    {                                                                                              \
+        BK = P->bk;                                                                                \
+        FD = P->fd;                                                                                \
+        FD->bk = BK;                                                                               \
+        BK->fd = FD;                                                                               \
+    }
+#define link_last_remainder(P)                                                                     \
+    {                                                                                              \
+        last_remainder->fd = last_remainder->bk = P;                                               \
+        P->fd = P->bk = last_remainder;                                                            \
+    }
+#define frontlink(P, S, IDX, BK, FD)                                                               \
+    {                                                                                              \
+        if (S < MAX_SMALLBIN_SIZE) {                                                               \
+            IDX = smallbin_index(S);                                                               \
+            mark_binblock(IDX);                                                                    \
+            BK = bin_at(IDX);                                                                      \
+            FD = BK->fd;                                                                           \
+            P->bk = BK;                                                                            \
+            P->fd = FD;                                                                            \
+            FD->bk = BK->fd = P;                                                                   \
+        } else {                                                                                   \
+            IDX = bin_index(S);                                                                    \
+            BK = bin_at(IDX);                                                                      \
+            FD = BK->fd;                                                                           \
+            if (FD == BK) {                                                                        \
+                mark_binblock(IDX);                                                                \
+            } else {                                                                               \
+                while (FD != BK && S < chunksize(FD))                                              \
+                    FD = FD->fd;                                                                   \
+                BK = FD->bk;                                                                       \
+            }                                                                                      \
+            P->bk = BK;                                                                            \
+            P->fd = FD;                                                                            \
+            FD->bk = BK->fd = P;                                                                   \
+        }                                                                                          \
+    }
+#define MALLOC_ALIGNMENT 16
+#define MALLOC_ALIGN_MASK (MALLOC_ALIGNMENT - 1)
+#define MINSIZE (sizeof(struct malloc_chunk))
+#define chunk2mem(p) ((void *)((char *)(p) + 2 * SIZE_SZ))
+#define set_head_size(p, s) ((p)->size = (((p)->size & PREV_INUSE) | (s)))
+#define initial_top ((mchunkptr)(bin_at(0)))
+#define request2size(req)                                                                              (((long)((req) + (SIZE_SZ + MALLOC_ALIGN_MASK)) < (long)(MINSIZE + MALLOC_ALIGN_MASK))                  ? ((MINSIZE + MALLOC_ALIGN_MASK) & ~(MALLOC_ALIGN_MASK))                                           : (((req) + (SIZE_SZ + MALLOC_ALIGN_MASK)) & ~(MALLOC_ALIGN_MASK)))
+#define set_inuse_bit_at_offset(p, s) (((mchunkptr)(((char *)(p)) + (s)))->size |= PREV_INUSE)
+#define long_sub_size_t(x, y) ((x < y) ? -((long)(y - x)) : (x - y));
+#define mem2chunk(mem) ((mchunkptr)((char *)(mem) - 2 * SIZE_SZ))
+#define next_chunk(p) ((mchunkptr)(((char *)(p)) + ((p)->size & ~PREV_INUSE)))
+#define prev_chunk(p) ((mchunkptr)(((char *)(p)) - ((p)->prev_size)))
+#define inuse(p) ((((mchunkptr)(((char *)(p)) + ((p)->size & ~PREV_INUSE)))->size) & PREV_INUSE)
+#define prev_inuse(p) ((p)->size & PREV_INUSE)
+#define MALLOC_COPY(dest, src, nbytes) do {                                                                                                      INTERNAL_SIZE_T mcsz = (nbytes);                                                                   if (mcsz <= 9 * sizeof(mcsz)) {                                                                        INTERNAL_SIZE_T *mcsrc = (INTERNAL_SIZE_T *)(src);                                                 INTERNAL_SIZE_T *mcdst = (INTERNAL_SIZE_T *)(dest);                                                if (mcsz >= 5 * sizeof(mcsz)) {                                                                        *mcdst++ = *mcsrc++;                                                                               *mcdst++ = *mcsrc++;                                                                               if (mcsz >= 7 * sizeof(mcsz)) {                                                                        *mcdst++ = *mcsrc++;                                                                               *mcdst++ = *mcsrc++;                                                                               if (mcsz >= 9 * sizeof(mcsz)) {                                                                        *mcdst++ = *mcsrc++;                                                                               *mcdst++ = *mcsrc++;                                                                           }                                                                                              }                                                                                              }                                                                                                  *mcdst++ = *mcsrc++;                                                                               *mcdst++ = *mcsrc++;                                                                               *mcdst = *mcsrc;                                                                               } else                                                                                                 func_00198790(dest, src, mcsz);                                                            } while (0)
+
+/* _realloc_r (newlib 1.x mallocr.c) */
+
+void *func_0019A690(void *reent, void *oldmem, s32 bytes) {
+    INTERNAL_SIZE_T nb;
+    mchunkptr oldp;
+    INTERNAL_SIZE_T oldsize;
+    mchunkptr newp;
+    INTERNAL_SIZE_T newsize;
+    void *newmem;
+    mchunkptr next;
+    INTERNAL_SIZE_T nextsize;
+    mchunkptr prev;
+    INTERNAL_SIZE_T prevsize;
+    mchunkptr remainder;
+    INTERNAL_SIZE_T remainder_size;
+    mchunkptr bck;
+    mchunkptr fwd;
+
+    if (oldmem == 0)
+        return func_00197EB8((s32)reent, bytes);
+
+    func_00198A08((s32)reent);
+
+    newp = oldp = mem2chunk(oldmem);
+    newsize = oldsize = chunksize(oldp);
+
+    nb = request2size(bytes);
+
+    if ((long)(oldsize) < (long)(nb)) {
+        next = chunk_at_offset(oldp, oldsize);
+        if (next == top || !inuse(next)) {
+            nextsize = chunksize(next);
+
+            if (next == top) {
+                if ((long)(nextsize + newsize) >= (long)(nb + MINSIZE)) {
+                    newsize += nextsize;
+                    top = chunk_at_offset(oldp, nb);
+                    set_head(top, (newsize - nb) | PREV_INUSE);
+                    set_head_size(oldp, nb);
+                    malloc_unlock((s32)reent);
+                    return chunk2mem(oldp);
+                }
+            } else if (((long)(nextsize + newsize) >= (long)(nb))) {
+                unlink(next, bck, fwd);
+                newsize += nextsize;
+                goto split;
+            }
+        } else {
+            next = 0;
+            nextsize = 0;
+        }
+
+        if (!prev_inuse(oldp)) {
+            prev = prev_chunk(oldp);
+            prevsize = chunksize(prev);
+
+            if (next != 0) {
+                if (next == top) {
+                    if ((long)(nextsize + prevsize + newsize) >= (long)(nb + MINSIZE)) {
+                        unlink(prev, bck, fwd);
+                        newp = prev;
+                        newsize += prevsize + nextsize;
+                        newmem = chunk2mem(newp);
+                        MALLOC_COPY(newmem, oldmem, oldsize - SIZE_SZ);
+                        top = chunk_at_offset(newp, nb);
+                        set_head(top, (newsize - nb) | PREV_INUSE);
+                        set_head_size(newp, nb);
+                        malloc_unlock((s32)reent);
+                        return newmem;
+                    }
+                } else if (((long)(nextsize + prevsize + newsize) >= (long)(nb))) {
+                    unlink(next, bck, fwd);
+                    unlink(prev, bck, fwd);
+                    newp = prev;
+                    newsize += nextsize + prevsize;
+                    newmem = chunk2mem(newp);
+                    MALLOC_COPY(newmem, oldmem, oldsize - SIZE_SZ);
+                    goto split;
+                }
+            }
+
+            if (prev != 0 && (long)(prevsize + newsize) >= (long)nb) {
+                unlink(prev, bck, fwd);
+                newp = prev;
+                newsize += prevsize;
+                newmem = chunk2mem(newp);
+                MALLOC_COPY(newmem, oldmem, oldsize - SIZE_SZ);
+                goto split;
+            }
+        }
+
+        newmem = func_00197EB8((s32)reent, bytes);
+
+        if (newmem == 0) {
+            malloc_unlock((s32)reent);
+            return 0;
+        }
+
+        if ((newp = mem2chunk(newmem)) == next_chunk(oldp)) {
+            newsize += chunksize(newp);
+            newp = oldp;
+            goto split;
+        }
+
+        MALLOC_COPY(newmem, oldmem, oldsize - SIZE_SZ);
+        func_00196BE0((s32)reent, (s32)oldmem);
+        malloc_unlock((s32)reent);
+        return newmem;
+    }
+
+split:
+    remainder_size = long_sub_size_t(newsize, nb)
+
+    if (remainder_size >= (long)MINSIZE) {
+        remainder = chunk_at_offset(newp, nb);
+        set_head_size(newp, nb);
+        set_head(remainder, remainder_size | PREV_INUSE);
+        set_inuse_bit_at_offset(remainder, remainder_size);
+        func_00196BE0((s32)reent, (s32)chunk2mem(remainder));
+    } else {
+        set_head_size(newp, newsize);
+        set_inuse_bit_at_offset(newp, newsize);
+    }
+
+    malloc_unlock((s32)reent);
+    return chunk2mem(newp);
+}
+
+#undef malloc_unlock
+#undef SIZE_SZ
+#undef PREV_INUSE
+#undef SIZE_BITS
+#undef chunksize
+#undef set_head
+#undef set_foot
+#undef chunk_at_offset
+#undef bin_at
+#undef top
+#undef last_remainder
+#undef binblocks
+#undef MAX_SMALLBIN_SIZE
+#undef BINBLOCKWIDTH
+#undef smallbin_index
+#undef bin_index
+#undef idx2binblock
+#undef mark_binblock
+#undef unlink
+#undef link_last_remainder
+#undef frontlink
+#undef MALLOC_ALIGNMENT
+#undef MALLOC_ALIGN_MASK
+#undef MINSIZE
+#undef chunk2mem
+#undef set_head_size
+#undef initial_top
+#undef mem2chunk
+#undef request2size
+#undef set_inuse_bit_at_offset
+#undef long_sub_size_t
+#undef next_chunk
+#undef prev_chunk
+#undef inuse
+#undef prev_inuse
+#undef MALLOC_COPY
 
 s32 func_0019AC30(void *arg0) {
     if (((*(u16 *)((u8 *)arg0 + 0xC)) & 9) == 9) {

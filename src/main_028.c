@@ -557,7 +557,112 @@ void sceVpu0Reset(void) {
 
 __asm__(".space 12");
 
-INCLUDE_ASM("asm/nonmatchings/main_028", func_00188630);
+/* libmpeg: one macroblock's prediction setup (mpeg2decode-style): position from MBA, intra or
+   form_predictions (func_00188880), then the IPU buffer record's flags and reference pointer */
+
+typedef struct MpegRef_00188630 {
+    s32 base;
+    s32 unk4[3];
+    s32 width;
+} MpegRef_00188630;
+
+typedef struct MpegBuf_00188630 {
+    u8 unk0[0x128];
+    s32 p;
+    s32 n;
+    s32 intra;
+    s32 skipped;
+    s32 predicted;
+    s32 f13C;
+} MpegBuf_00188630;
+
+typedef struct MpegDec_00188630 {
+    u8 unk0[0x11C];
+    s32 error;
+    u8 unk120[0xC];
+    s32 mb_width;
+    u8 unk130[0x44];
+    s32 picture_structure;
+    u8 unk178[0x48];
+    MpegRef_00188630 *cur;
+    u8 unk1C4[0xC];
+    MpegRef_00188630 *cur_top;
+    u8 unk1D4[0xC];
+    MpegRef_00188630 *cur_bot;
+    u8 unk1E4[0x3AC];
+    MpegBuf_00188630 bufs[2];
+    s32 idx;
+} MpegDec_00188630;
+
+extern char D_002BC6A8[];
+extern void func_00188880(void *d, s32 bx, s32 by, s32 mb_type, s32 motion_type, s32 *pmv, s32 *mvfs,
+                          s32 *dmvector);
+
+#define IPU_BUSY_00188630() ((*(volatile u32 *)0x1000D400 >> 8) & 1)
+
+s32 func_00188630(void *arg0, s32 MBA, s32 MBAinc, s32 mb_type, s32 motion_type, void *pmv, s32 *mvfs,
+                  s32 *dmvector) {
+    MpegDec_00188630 *d = arg0;
+    s32 intra;
+    s32 mbx, mby;
+    s32 bx;
+    MpegDec_00188630 *dec;
+    s32 by;
+    MpegRef_00188630 *ref;
+    s32 *predicted, *skipped, *intra_p, *p;
+    s32 zero;
+
+    intra = mb_type & 1;
+    mbx = MBA % d->mb_width;
+    dec = d;
+    mby = MBA / d->mb_width;
+    bx = mbx * 16;
+    by = mby * 16;
+    if (intra) {
+        predicted = &d->bufs[0].predicted;
+        skipped = &d->bufs[0].skipped;
+        intra_p = &d->bufs[0].intra;
+        p = &d->bufs[0].p;
+    wait:
+        if (IPU_BUSY_00188630()) {
+            goto wait;
+        }
+        predicted[d->idx * 80] = 0;
+    } else {
+        if ((u32)(motion_type - 1) >= 3) {
+            func_0018F778((s32)d, D_002BC6A8, motion_type);
+            d->error = 1;
+            return 0;
+        }
+        func_00188880(d, bx, by, mb_type, motion_type, pmv, mvfs, dmvector);
+        do {
+            zero = 0;
+            predicted = &dec->bufs[zero].predicted;
+            skipped = &dec->bufs[zero].skipped;
+            intra_p = &dec->bufs[zero].intra;
+            p = &dec->bufs[zero].p;
+            while (IPU_BUSY_00188630()) {
+            }
+            func_0018D0C8(dec);
+            predicted[dec->idx * 80] = 1;
+        } while (0);
+    }
+    if (MBAinc == 1 && (mb_type & 2)) {
+        skipped[d->idx * 80] = MBAinc;
+    } else {
+        skipped[d->idx * 80] = zero;
+    }
+    intra_p[d->idx * 80] = intra;
+    if (d->picture_structure == 3) {
+        p[d->idx * 80] = d->cur->base + (mbx * d->cur->width + mby) * 0x180;
+    } else {
+        ref = d->picture_structure == 2 ? d->cur_bot : d->cur_top;
+        p[d->idx * 80] = ref->base + (mbx * ref->width + mby) * 0x180;
+    }
+    return 1;
+}
+
+#undef IPU_BUSY_00188630
 
 INCLUDE_ASM("asm/nonmatchings/main_028", _getAllRefs);
 

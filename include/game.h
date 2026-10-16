@@ -896,7 +896,6 @@ extern s32 D_002BC940;
 extern s32 D_002BCAC0;
 extern s32 D_002BCAE8;
 
-s32 func_00188630(void *, s32, s32, s32, s32, void *, s32 *, s32 *);
 extern s32 D_002BC808;
 
 extern s8 D_002BC2D8;
