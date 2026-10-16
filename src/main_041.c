@@ -2170,7 +2170,220 @@ s32 lSzDuel_DrawCustomDuel_Menu_CardDisp_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y) 
 
 INCLUDE_ASM("asm/nonmatchings/main_041", lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe);
 
-INCLUDE_ASM("asm/nonmatchings/main_041", lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001CB6B0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001CB6B0;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001CB6B0;
+
+typedef struct {
+    Color_001CB6B0 color;
+    Vertex_001CB6B0 xyz;
+} Point_001CB6B0;
+
+typedef struct {
+    u64 tag[2];
+    Point_001CB6B0 points[4];
+    u64 end;
+} Packet_001CB6B0;
+
+typedef struct {
+    u64 tag[2];
+    Color_001CB6B0 color;
+    Vertex_001CB6B0 xyz[2];
+    u64 end;
+} Rect_001CB6B0;
+
+typedef struct {
+    u8 b, g, r, a;
+} Source_001CB6B0;
+
+typedef struct {
+    u8 pad[0xFEA3];
+    u8 maps[5][7][7];
+} Maps_001CB6B0;
+
+static inline void set_color_001CB6B0(Color_001CB6B0 *a, Color_001CB6B0 *b,
+                                      Source_001CB6B0 *src) {
+    a->r = b->r = src->r;
+    a->g = b->g = src->g;
+    a->b = b->b = src->b;
+    a->a = b->a = src->a;
+    a->q = b->q = 1.0f;
+}
+
+static inline void set_xyz_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y, u8 *state) {
+    v->x = x << 4;
+    v->y = y << 4;
+    v->z = *(s32 *)(state + 0xC58);
+    v->fog = 0;
+}
+
+static inline void set_corner_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y) {
+    v->x = x << 4;
+    v->y = y << 4;
+    v->z = D_003180E8;
+    v->fog = 0;
+}
+
+s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s32 y) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern u8 D_00290080[];
+    extern u8 D_002BE8C0[];
+    extern char D_002BF074[];
+    extern char D_002BEF93[];
+    extern s32 D_002902C4;
+    extern s32 D_00290256;
+    extern s32 D_00290A58;
+    extern s32 D_00290A62;
+    extern s32 D_00290A6C;
+    s32 ret;
+    u8 *state = D_00317490.b;
+    u8 *save = (u8 *)0xA9C000;
+    Maps_001CB6B0 *maps;
+    s8 *text1;
+    s8 *text2;
+    s32 sel;
+    s32 hint = 0;
+    s32 tx;
+    s32 ty;
+    s32 i;
+    s32 j;
+    s32 row;
+    s32 count;
+    s32 n;
+    s32 hl;
+    u8 *board;
+    s32 px;
+    s32 py;
+    s32 w;
+    s32 h;
+    Rect_001CB6B0 rect __attribute__((aligned(8)));
+    Packet_001CB6B0 packet __attribute__((aligned(8)));
+
+    maps = func_002145E0(0);
+    text1 = D_002BF074;
+    text2 = D_002BEF93;
+    sel = (*(u8 *)0xA9C08C + 2) % *(u8 *)0xA9C08D;
+    id = func_001FD680(id, 1, 0x88, 0, 0x16);
+    id = func_0020F290(func_001FD680(id, 2, 0x8B, 0, 0x2C));
+    id = func_001B4780(id, 0xC, 3, 4, x + 0xBA, y, -0xD0, -0x20, 1);
+    id = func_001FE7D0(id, 1, x + 0x122 - (func_001FEAB0(1)[3] >> 1), y + 5, 0, SzMsg_DrawRect_Pipe);
+    func_001FEAF0(1);
+    py = y + 0x20;
+    id = func_001B4780(id, player, -1, 0xB, x, py, -0x244, -0xAA, 1);
+    py = y + 0x35;
+    id = func_001B4780(id, 0xC, -1, 6, x + 0x5D, py, -0xEC, -0x7C, 1);
+    px = x + 0x71D;
+    py = y + 0x789;
+    ((Tag_001CB6B0 *)rect.tag)->flags = 6;
+    ((Tag_001CB6B0 *)rect.tag)->count = 3;
+    ((Tag_001CB6B0 *)rect.tag)->registers = 0x441;
+    ((Tag_001CB6B0 *)rect.tag)->padding = 0;
+    rect.color.r = 0x80;
+    rect.color.g = 0;
+    rect.color.b = 0;
+    rect.color.a = 0x80;
+    rect.color.q = 1.0f;
+    set_corner_001CB6B0(&rect.xyz[0], px, py);
+    set_corner_001CB6B0(&rect.xyz[1], px + 0xF0, py + 0x18);
+    id = func_00207650(id, (s32)rect.tag, 0, 0);
+    py = y + 0x35;
+    id = func_001B4780(id, -1, -1, 6, x + 0x5D, py, -0xEC, -0x7C, hint != 0 ? 0 : 1);
+    for (i = 0; i < 5; i++) {
+        hl = (i == 2) ? 0 : (s32)D_002BE944;
+        n = (save[0x8C] + i) % save[0x8D];
+        id = func_001FE7D0(id, 2, x + 0x69, y + 0x3A + i * 0x18, hl, SzMsg_DrawRect_Pipe);
+        id = func_001B6CA0(id, x + 0x119, y + 0x3A + i * 0x18, 2, n, 0, 1, hl);
+    }
+    func_001FEAF0(2);
+    py = y + 0x78D;
+    id = func_001B3CC0(id, &D_002902C4, x + 0x71F, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    py = y + 0x78D;
+    id = func_001B3CC0(id, &D_002902C4, x + 0x803, py, 0, 1, 0, 0, 1, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    board = &maps->maps[sel][0][0];
+    px = x + 0x81C;
+    for (i = 0; i < 7; i++) {
+        for (j = 0; j < 7; j++) {
+            id = func_001B3CC0(id, D_00290080 + (board[i * 7 + j] + 0x10E) * 10, px + j * 16,
+                               y + 0x75C + i * 16, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        }
+    }
+    py = y + 0x35;
+    id = func_001B4780(id, -1, 1, 1, x + 0x155, py, -0x76, -0x76, 1);
+    py = y + 0x7C7;
+    id = func_001B3CC0(id, &D_00290256, x + 0x834, py, 0, 1, 0, 0, 0, 1, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    for (row = 0; row < 10; row++) {
+        count = 0;
+        for (i = 0; i < 7; i++) {
+            for (j = 0; j < 7; j++) {
+                if (row == board[i * 7 + j]) {
+                    count++;
+                }
+            }
+        }
+        id = func_001B3CC0(id, D_00290080 + (row + 0x10E) * 10, x + 0x89B, y + 0x745 + row * 16, 0, 1, 0,
+                           0, 0, 0, 1, 0, -1, 0x80);
+        id = func_001B4780(id, 0xD, -1, 5, x + 0x1EB, y + 0x25 + row * 16, -0x54, -0x10, 1);
+        px = x + 0x8AB;
+        py = y + 0x745 + row * 16;
+        w = (s32)((f32)count * 84.0f / 49.0f);
+        h = 8;
+        ((Tag_001CB6B0 *)packet.tag)->flags = 0x14;
+        ((Tag_001CB6B0 *)packet.tag)->count = 8;
+        ((Tag_001CB6B0 *)packet.tag)->registers = 0x41414141;
+        ((Tag_001CB6B0 *)packet.tag)->padding = 0;
+        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3]);
+        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3 + 1]);
+        set_xyz_001CB6B0(&packet.points[0].xyz, px, py, state);
+        set_xyz_001CB6B0(&packet.points[1].xyz, px + w, py, state);
+        set_xyz_001CB6B0(&packet.points[2].xyz, px, py + h, state);
+        set_xyz_001CB6B0(&packet.points[3].xyz, px + w, py + h, state);
+        id = func_00207650(id, (s32)packet.tag, 0, 0);
+        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3 + 1]);
+        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3 + 2]);
+        set_xyz_001CB6B0(&packet.points[0].xyz, px, py + h, state);
+        set_xyz_001CB6B0(&packet.points[1].xyz, px + w, py + h, state);
+        set_xyz_001CB6B0(&packet.points[2].xyz, px, py + h * 2, state);
+        set_xyz_001CB6B0(&packet.points[3].xyz, px + w, py + h * 2, state);
+        id = func_00207650(id, (s32)packet.tag, 0, 0);
+        id = func_001B4780(id, -1, -1, 5, x + 0x1EB, y + 0x25 + row * 16, -0x54, -0x10, 1);
+        id = func_001B6EA0(id, x + 0x215, y + 0x27 + row * 16, 0, 2, 2, count);
+    }
+    id = func_001B65F0(id, player, x + 6, y + 0x26, -0x4E, -0x9E, -1, 0);
+    py = y + 0x76E;
+    id = func_001B3CC0(id, &D_00290A62, x + 0x6CE, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    py = y + 0x77E;
+    ret = func_001B3CC0(id, &D_00290A58, x + 0x6CE, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    tx = x + 0x20;
+    ty = y + 0x58;
+    ret = func_001B6F70(ret, tx, ty, 1, 0, func_0019BEF0((char *)text1), text1,
+                       hint != 0 ? (s32)D_002BE944 : 0);
+    py = y + 0x7B7;
+    ret = func_001B3CC0(ret, &D_00290A6C, x + 0x6CE, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    tx = x + 0x20;
+    ty = y + 0x99;
+    return func_001B6F70(ret, tx, ty, 1, 0, func_0019BEF0((char *)text2), text2,
+                         hint != 0 ? (s32)D_002BE944 : 0);
+}
 
 void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);

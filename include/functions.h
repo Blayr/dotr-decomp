@@ -2951,6 +2951,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_LeaderAbility_Pipe(s32 arg0, u8 *arg1, s32 x, s3
 s32 lSzDuel_DrawCustomDuel_Menu_LifeSet_Pipe(s32 arg0, s32 player, s32 x, s32 y);
 s32 lSzDuel_DrawCustomDuel_Menu_Pipe(s32 arg0, u8 *arg1, s32 arg2, s32 arg3);
 s32 lSzDuel_DrawCustomDuel_Menu_SelectDeck_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y);
+s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s32 y);
 s32 lSzDuel_DrawCustomDuel_Menu_SummonCharge_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y);
 void lSzDuel_DrawCustomDuel_Title_Pipe(s32 arg0, s32 arg1, s32 arg2);
@@ -4942,6 +4943,7 @@ s32 func_001C92C0(s32 arg0, s32 player, s32 x, s32 y);
 s32 func_001C9C60(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001CA0E0(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001CA450(s32 arg0, u8 *arg1, s32 x, s32 y);
+s32 func_001CB6B0(s32 id, s32 player, s32 x, s32 y);
 void func_001CC380(s32 arg0, s32 arg1, s32 arg2);
 void func_001CC4B0(s32 arg0);
 void func_001CC610(void);
