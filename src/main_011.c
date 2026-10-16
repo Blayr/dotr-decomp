@@ -1308,7 +1308,104 @@ void TaLogic013_GetNearUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s3
     TaLogic_GetNearUnit(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, 0, 0x960, arg13);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_011", TaLogic013_CommandInvadeUnit);
+typedef struct {
+    u16 card;
+    u8 flag;
+    u8 pad3;
+} Slot_00147830;
+
+typedef struct {
+    u16 low;
+    u16 high;
+} DataHalves_00147830;
+
+typedef struct {
+    u16 coordinates;
+    u8 pad2[2];
+    u16 state;
+    u8 pad6[2];
+    union {
+        u32 word;
+        DataHalves_00147830 halves;
+    } data;
+} Entry_00147830;
+
+static inline s32 other_00147830(s32 side) {
+    return side == 0 ? 1 : 0;
+}
+
+#pragma opt_dead_assignments off
+
+void TaLogic013_CommandInvadeUnit(void *arg0) {
+    extern s32 TaLogic_IsRootOpen();
+    extern void TaLogic_InitIgnoreLst();
+    extern s32 TaLogic_GetNearUnit();
+    Entry_00147830 *entry = arg0;
+    s32 side;
+    s32 player;
+    s32 pos;
+    s32 other;
+    s32 otherPos;
+    s32 i;
+    s32 selection;
+    u8 work[0x70];
+    Slot_00147830 list[22];
+    s16 countA;
+    s16 countB;
+
+    if (SzDuel_GetUnit(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
+        side = Ta_GetCurrentSide(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        other = other_00147830(side) << 8;
+        pos = SzDuel_GetUnitLoc(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        otherPos = SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
+        player = SzDuel_GetUnit(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        TaLogic_InitIgnoreLst(work);
+        for (i = 0; i < 22; i++) {
+            list[i].card = 0xFFFF;
+            list[i].flag = 0xFF;
+        }
+        if (TaLogic_IsRootOpen(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
+                          other >> 8, other & 0xFF, otherPos & 0xFF, otherPos >> 8, 2) > 0) {
+            entry->state = 0x2FF;
+            entry->data.word = (other << 16) | entry->data.halves.low;
+            return;
+        }
+        countB = 0;
+        countA = 0;
+        i = 1;
+        while (1) {
+            selection = TaLogic_GetWarnHideLvl_0014B330(side);
+            switch (TaLogic_GetNearUnit(entry, 0, player, pos & 0xFF, pos >> 8,
+                                  other_00147830(Ta_GetCurrentSide(entry->coordinates >> 8, entry->coordinates & 0xFF)),
+                                  (u8)i, selection, list, 0,
+                                  &countA, &countB, 5, 0, 0x960, work)) {
+            case 3:
+                entry->state = 0x6FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            case 2:
+                entry->state = 0x3FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            case 1:
+                return;
+            case 0:
+                entry->state = 0x3FF;
+                entry->data.word = (pos << 16) | entry->data.halves.low;
+                return;
+            default:
+                break;
+            }
+            i++;
+            if (i > 5) {
+                break;
+            }
+        }
+        entry->state = 0x6FF;
+        entry->data.word = entry->data.halves.low | (TaLogic013_GetInvadePoint(side, pos & 0xFF, pos >> 8) << 16);
+    }
+}
+#pragma opt_dead_assignments reset
 
 typedef struct {
     u16 id;

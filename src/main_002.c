@@ -1123,7 +1123,17 @@ s32 GT4_BOX_IN__2DMAP(void *arg0, void *arg1, void *arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_002", R3D_RRR_XYZ);
+void R3D_RRR_XYZ(void *arg0, void *arg1, void *arg2) {
+    Vec4_00109830 a;
+    Vec4_00109830 b;
+
+    a = *(Vec4_00109830 *)arg1;
+    b = *(Vec4_00109830 *)arg2;
+    a.x = a.x - b.x;
+    ((Vec4_00109830 *)&a.y)->x = ((Vec4_00109830 *)&a.y)->x - b.y;
+    ((Vec4_00109830 *)&a.z)->x = ((Vec4_00109830 *)&a.z)->x - b.z;
+    *(Vec4_00109830 *)arg0 = a;
+}
 
 typedef struct Vec4_001098E0 {
     f32 x, y, z, w;

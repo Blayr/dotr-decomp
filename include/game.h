@@ -468,7 +468,6 @@ extern u64 D_00326180;
 
 
 
-extern void TaLogic013_CommandInvadeUnit(void *);
 
 
 
@@ -1082,5 +1081,7 @@ s32 Taku_Camp_BUN_DARE_b(s32, s8);
 s32 Taku_Camp_BOTAN_MATI_b(s32);
 
 extern s32 D_002BC858;
+
+typedef struct { f32 x, y, z, w; } Vec4_00109830;
 
 #endif
