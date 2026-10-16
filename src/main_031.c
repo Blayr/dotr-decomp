@@ -122,7 +122,82 @@ void _sequenceHeader(void *arg0) {
     _initSeq(*(void **)((u8 *)arg0 + 0x858));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_031", _initSeq);
+void _initSeq(void *arg0) {
+    u8 *d;
+    s32 dec;
+    s32 mbh;
+    s32 w;
+    s32 h;
+    u32 size;
+    u8 *top0;
+    u8 *top1;
+    u8 *top2;
+    u8 *bot0;
+    u8 *bot1;
+    u8 *bot2;
+    u8 *b2;
+    u8 *frame0;
+    u8 *frame1;
+    u8 *frame2;
+    u8 *f0;
+    u8 *f1;
+    u8 *f2;
+
+    d = *(u8 **)((u8 *)arg0 + 0x40);
+    dec = *(s32 *)(d + 0x848);
+    if (dec == 0) {
+        *(s32 *)(d + 0x13C) = 1;
+        *(s32 *)(d + 0x140) = 1;
+        *(s32 *)(d + 0x188) = 1;
+        *(s32 *)(d + 0x174) = 3;
+        *(s32 *)(d + 0x17C) = 1;
+        *(s32 *)(d + 0x144) = 5;
+    }
+    *(s32 *)(d + 0x12C) = (*(s32 *)(d + 0x124) + 0xF) >> 4;
+    if (dec != 0 && *(s32 *)(d + 0x13C) == 0) {
+        mbh = ((*(s32 *)(d + 0x128) + 0x1F) >> 5) * 2;
+    } else {
+        mbh = (*(s32 *)(d + 0x128) + 0xF) >> 4;
+    }
+    *(s32 *)(d + 0x130) = mbh;
+    h = mbh * 16;
+    w = *(s32 *)(d + 0x12C) * 16;
+    if (w != *(s32 *)arg0 || h != *(s32 *)((u8 *)arg0 + 4)) {
+        b2 = d + 0x528;
+        do { } while (0); /* empty loop: a scheduling barrier, the bot2 address comes first */
+        *(s32 *)((u8 *)arg0 + 4) = h;
+        *(s32 *)arg0 = w;
+        size = (u32)(w * 0x180 * h) >> 8;
+        f0 = d + 0x1E8;
+        f1 = d + 0x250;
+        f2 = d + 0x2B8;
+        _alalcFree(d + 0x108);
+        bot2 = b2;
+        frame0 = f0;
+        frame1 = f1;
+        frame2 = f2;
+        b2 = f0 = f1 = f2 = d; /* the early copies are done with */
+        *(s32 *)(d + 0xFC) = _alalcAlloc((s32)d, d + 0x108, size, 0x40);
+        *(s32 *)(d + 0x100) = _alalcAlloc((s32)d, d + 0x108, size, 0x40);
+        *(s32 *)(d + 0x104) = _alalcAlloc((s32)d, d + 0x108, size, 0x40);
+        top0 = d + 0x320;
+        top1 = d + 0x388;
+        top2 = d + 0x3F0;
+        bot0 = d + 0x458;
+        bot1 = d + 0x4C0;
+        _initRefImages(frame0, frame1, frame2, top0, top1, top2, bot0, bot1, bot2,
+                       *(s32 *)(d + 0xFC), *(s32 *)(d + 0x100), *(s32 *)(d + 0x104), w, h);
+        _RefImageInit(frame0, w, h);
+        _RefImageInit(frame1, w, h);
+        _RefImageInit(frame2, w, h);
+        _RefImageInit(top0, w, h >> 1);
+        _RefImageInit(top1, w, h >> 1);
+        _RefImageInit(top2, w, h >> 1);
+        _RefImageInit(bot0, w, h >> 1);
+        _RefImageInit(bot1, w, h >> 1);
+        _RefImageInit(bot2, w, h >> 1);
+    }
+}
 
 static inline int uncachedAddr_0018FCE8(int addr) {
     return (addr & 0x0FFFFFFF) | 0x20000000;
