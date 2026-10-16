@@ -2992,6 +2992,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
 s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y);
 s32 lSzDuel_DrawCustomDuel_Menu_SummonCharge_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y);
+s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void lSzDuel_DrawCustomDuel_Title_Pipe(s32 arg0, s32 arg1, s32 arg2);
 void lSzDuel_DrawFadeBoard_Pipe(s32 arg0, f32 *position, u8 alpha, f32 width, f32 height);
 s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y);
@@ -4997,6 +4998,7 @@ void func_001C7430(void);
 s32 func_001C7460(s32 arg0);
 s32 func_001C7790(s32 arg0);
 void func_001C7C00(s32 arg0, s32 arg1, s32 arg2);
+s32 func_001C7D20(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 func_001C8590(s32 arg0, u8 *arg1, s32 arg2, s32 arg3);
 s32 func_001C8690(s32 arg0, u8 *arg1, s32 x, s32 y);
 s32 func_001C8DC0(s32 arg0, u8 *arg1, s32 x, s32 y);

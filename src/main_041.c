@@ -2184,7 +2184,157 @@ void lSzDuel_DrawCustomDuel_Title_Pipe(s32 arg0, s32 arg1, s32 arg2) {
                   (s8 *)text2, hint != 0 ? (s32)D_002BE944 : 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", lSzDuel_DrawCustomDuel_PlayerInfo_Pipe);
+extern s32 D_002908E6;
+extern s32 D_00290A1C;
+extern char D_002BF051[];
+extern char D_002BF056[];
+
+extern u8 D_00290080[];
+extern u8 D_002908F0[];
+extern u8 D_0029099A[];
+
+typedef struct TextInfo_001C7D20 {
+    u8 pad[12];
+    s32 width;
+} TextInfo_001C7D20;
+
+static inline f32 scale_001C7D20(s32 index, s32 limit) {
+    extern void *func_001FEAB0();
+    s32 width = ((TextInfo_001C7D20 *)func_001FEAB0(index))->width;
+    if (width > limit) {
+        return (f32)limit / (f32)width;
+    }
+    return 1.0f;
+}
+
+static inline s32 wide_001C7D20(TextInfo_001C7D20 *text) {
+    return text->width > 200;
+}
+
+s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s64, s64, s64, s64, s64, s64);
+    extern s32 func_001B4540(s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001DE690();
+    extern s32 func_00215D30();
+    extern void *func_001FEAB0();
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    s32 ret;
+    s32 nx;
+    s32 ny;
+    s32 tx;
+    s32 px;
+    s32 py;
+    s32 ty;
+    u8 *spD0;
+    s32 spEC;
+    s32 frame_x;
+    s32 temp_v0;
+    s32 temp_s0;
+    s32 temp_s0_2;
+    s32 temp_s0_3;
+    s32 temp_s0_4;
+    s32 temp_s0_5;
+    s32 temp_s0_6;
+    s32 temp_s0_7;
+    s32 image_x;
+    s32 temp_v0_2;
+    s32 temp_s1;
+    s32 image_y;
+    s32 temp_s2;
+    s32 temp_s2_2;
+    s32 first_x;
+    s32 first_y;
+    s32 var_s3;
+    s8 *var_s7;
+    u8 *temp_fp;
+    s32 temp_fp_2;
+    s32 var_a2;
+    TextInfo_001C7D20 *first_text;
+    f32 first_scale;
+    s32 hint = 0;
+    s32 number_x;
+    s32 number_y;
+
+    spD0 = D_00317490.b;
+    temp_v0 = func_002158B0(arg1);
+    temp_v0_2 = func_002159D0(arg1, temp_v0);
+    temp_fp = func_001DD0E0(temp_v0_2);
+    if (*((u8 *)arg1 + 0xA9C00E) != 0) {
+        var_s7 = (s8 *)D_002BF051;
+    } else {
+        var_s7 = (s8 *)D_002BF056;
+    }
+    var_a2 = 3;
+    if (arg1 != 0) {
+        u8 mode = *(u8 *)0xA9C088;
+        switch (mode) {
+        case 0:
+            var_a2 = 4;
+            break;
+        default:
+            var_a2 = mode + 0x8C;
+            break;
+        }
+    }
+    arg0 = func_001FD680(arg0, 1, var_a2, 0, 0x16);
+    temp_s1 = func_0020F290(arg0);
+    tx = arg2 + 0x6C0 + ((arg1 != 0) ? 0x110 : 0);
+    temp_s1 = func_001B3CC0(temp_s1, D_00290080 + ((arg1 + 0xF3) * 10), tx, arg3 + 0x720, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    frame_x = arg2 + 0x20;
+    (void)frame_x; /* keeps the x add at its own statement: the original computes it before arg1 + 5 */
+    spEC = func_001B4780(temp_s1, arg1, arg1 + 5, 0xB, frame_x, arg3, -0xF0, -0x20, 1);
+    first_x = arg2 + 0x40;
+    first_y = arg3 + 5;
+    first_text = (TextInfo_001C7D20 *)func_001FEAB0(1);
+    if (wide_001C7D20(first_text)) {
+        first_scale = 200.0f / (f32)first_text->width;
+    } else {
+        first_scale = 1.0f;
+    }
+    temp_s2 = func_001FE660(spEC, 1, first_x, first_y, first_scale, 1.0f, 0, SzMsg_DrawRect_Pipe);
+    func_001FEAF0(1);
+    var_s3 = func_001B65F0(func_001B4780(temp_s2, arg1, -1, 4, arg2, arg3 + 0x20, -0x130, -0x80, 1), arg1, arg2 + 0xD, arg3 + 0x25, -0x116, -0x5E, -1, 0);
+    if (temp_fp != NULL) {
+        temp_s2_2 = *temp_fp & 0x1F;
+        temp_s1 = func_001DE210(temp_v0_2);
+        temp_fp_2 = func_00215D30(arg1, temp_v0_2);
+        var_s3 = func_001B3CC0(func_001B3CC0(func_001B3CC0(func_001B4780(func_0020F290(func_001FD680(func_001FD680(func_001FD680(var_s3, 1, temp_s1, 0, 0x16), 2, temp_s2_2 + 0x25, 0, 0x2C), 3, temp_fp_2 + 0x52, 0, 0x42)), 0xC, -1, 0xB, arg2 + 0x11, arg3 + 0x29, -0x6E, -0x56, 1), D_0029099A, arg2 + 0x6D9, arg3 + 0x751, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80), D_00290080 + ((temp_v0 + 0xE3) * 10), arg2 + 0x6E4, arg3 + 0x764, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80), D_002908F0, arg2 + 0x6E0, arg3 + 0x784, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        number_x = arg2 + 0x35;
+        number_y = arg3 + 0x65;
+        var_s3 = func_001B6EA0(var_s3, number_x, number_y, 0, hint != 0 ? 1 : 0, 4, func_00215F00(arg1, temp_v0));
+        image_x = arg2 + 0x4A;
+        image_y = arg3 + 0x2E;
+        temp_s0 = func_001B4780(func_001B7F90(var_s3, arg1, image_x, image_y, 0x30, 0x30, *(s32 *)(spD0 + 0xC58), 1), -1, -1, 4, image_x, image_y, 3, 6, 1);
+        temp_s0_2 = func_001FE660(temp_s0, 1, arg2 + 0x81, arg3 + 0x2B, scale_001C7D20(1, 156), 1.0f, 0, SzMsg_DrawRect_Pipe);
+        func_001FEAF0(1);
+        px = arg2 + 0x741;
+        py = arg3 + 0x767;
+        temp_s0_3 = func_001B3CC0(temp_s0_2, D_00290080 + (temp_s2_2 * 10), px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+        var_s3 = func_001FE660(temp_s0_3, 2, arg2 + 0x9B, arg3 + 0x47, scale_001C7D20(2, 138), 1.0f, 0, SzMsg_DrawRect_Pipe);
+        func_001FEAF0(2);
+        if (*(u8 *)0xA9C088 != 0 || *((u8 *)arg1 + 0xA9C00A) != 0) {
+            temp_s0_4 = func_001B4540(var_s3, arg2 + 0x81, arg3 + 0x65, temp_fp_2, 1, 0);
+            var_s3 = func_001FE660(temp_s0_4, 3, arg2 + 0x9B, arg3 + 0x65, scale_001C7D20(3, 138), 1.0f, 0, SzMsg_DrawRect_Pipe);
+        }
+        func_001FEAF0(3);
+    }
+    ret = func_001B3CC0(func_001B4780(var_s3, 0xC, -1, 5, arg2 + 0x14, arg3 + 0x86, -0x70, -0x14, 1), &D_00290A1C, arg2 + 0x6D6, arg3 + 0x7A8, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    nx = arg2 + 0x3E;
+    ny = arg3 + 0x8A;
+    ret = func_001B3CC0(func_001B4780(func_001B6EA0(ret, nx, ny, 0, hint != 0 ? 1 : 0, 4, func_001DF470(arg1)), 0xC, -1, 5, arg2 + 0x94, arg3 + 0x86, -0x3C, -0x14, 1), &D_002908E6, arg2 + 0x756, arg3 + 0x7A8, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    nx = arg2 + 0xAC;
+    ny = arg3 + 0x8A;
+    ret = func_001B6EA0(ret, nx, ny, 0, hint != 0 ? 1 : 0, 2, func_001DE690(arg1));
+    if (*(u8 *)0xA9C088 == 0) {
+        nx = arg2 + 0x100;
+        ny = arg3 + 0x8A;
+        ret = func_001B6F70(ret, nx, ny, 0, 2, func_0019BEF0((const char *)var_s7), var_s7, hint != 0 ? (s32)D_002BE944 : 0);
+    }
+    return ret;
+}
 
 s32 lSzDuel_DrawCustomDuel_Menu_Pipe(s32 arg0, u8 *arg1, s32 arg2, s32 arg3) {
     extern s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32, u8 *, s32, s32);
