@@ -14,16 +14,13 @@ This repository contains no game data. You need your own copy of the game to bui
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
   originals. A function counts as done only when its C is in that build and the check passes.
-- This executable is a revision whose tutorial code was patched after it was built (the tutorial functions at
-  0x27F5B0-0x27FDA0 cut down to stubs, their callers rewired). 23 compiled functions are therefore C plus a few
-  patched words (201 in all), applied by `tools/postpatch.py` from `config/postpatch.txt`; they are in the count above.
-  Functions this revision rewrote by hand stay assembly. Another revision of SLUS_205.15 (sha256 `1df7759b…`)
-  has the tutorial compiled in.
-- 22 main-program functions are kept as assembly on purpose (vector-unit code, code patched after the original
-  build). They count as not done. About 110 others, mostly Sony's system-call stubs and a few vector-unit
+- The target is the retail US release: `SLUS_205.15` sha256
+  `1df7759b68e6aee73d8deab2efd2e556ec553d952af00fe8bf0f499a57298719`, the same executable as the dotr-decomp
+  project. The code modules are the retail disc's `DATA/BMODULE.MRG`, `CMODULE.MRG` and `MMODULE.MRG`.
+- 3 main-program functions are kept as assembly on purpose (vector-unit code). They count as not done. About 110 others, mostly Sony's system-call stubs and a few vector-unit
   helpers, are written as assembly inside the C files and do count.
 - 87 of the main-program functions came from the dotr-decomp project's CC0 bundle (another team decompiling
-  the same game), adapted to this revision.
+  the same game).
 - Module functions repeat across modules; one C file per distinct function is renamed into every module that has
   a copy.
 
@@ -40,7 +37,7 @@ None of the compilers are included.
 
 ## Building
 
-1. Put your `SLUS_205.15` (sha1 `077ac97a878d1bc3b7eb1c3e09bc7fef7becdf68`) in `assets/`, and point `disc` in
+1. Put your `SLUS_205.15` (sha1 `bee9fc13d12ab2818822d905d820320fc6427f23`) in `assets/`, and point `disc` in
    `dk.json` at your disc image (the modules are read from it).
 2. `make split`, `make split-modules`, then `make check`.
 
