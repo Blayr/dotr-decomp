@@ -16,3 +16,4 @@ src/main_000.c
 src/main_052.c
 src/main_048.c
 src/big_func_0022F3C0.c
+src/main_067.c

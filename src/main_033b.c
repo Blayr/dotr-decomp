@@ -172,7 +172,7 @@ extern char D_002BD1D0[]; /* "Infinity" */
 extern char D_002BD1E0[]; /* "NaN" */
 extern char D_002BD1E8[]; /* "0" */
 extern double D_002BD350[]; /* bigtens */
-dtoa_Bigint *func_00199828(void *ptr, double d, int *e, int *bits); /* _d2b, still asm */
+dtoa_Bigint *func_00199828(void *ptr, double d, int *e, int *bits);
 #define __mprec_tens D_002BD288
 #define __mprec_bigtens D_002BD350
 #define _Bigint dtoa_Bigint
