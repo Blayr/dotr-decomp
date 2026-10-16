@@ -136,7 +136,6 @@ typedef struct ThreadParams_00242950 {
     s32 option;
 } ThreadParams_00242950;
 
-extern void vblankHandler(void);
 extern char D_0030F39A[];
 extern u8 D_00317EF0[];
 extern s32 D_00350730;

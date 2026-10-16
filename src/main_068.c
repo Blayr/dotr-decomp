@@ -4123,7 +4123,46 @@ void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     sceGifPkTerminate(&spB0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_068", vblankHandler);
+s32 vblankHandler(s32 val) {
+    extern volatile s32 D_00350348;
+    extern s32 D_00350360;
+    extern u8 D_00350420[];
+    extern u8 D_00350510[];
+    void *dmaGif;
+    s32 *tag;
+
+    dmaGif = (void *)sceDmaGetChan(2);
+    (&D_00350340)[6] = (*(volatile u64 *)0x12001000 >> 13) & 1;
+    if (D_00350340) {
+        D_00350348++;
+        D_00350360 = sceGsSyncPath(1, 0);
+        if (!D_00350360) {
+            tag = (s32 *)voBufGetTag(D_00350600);
+            if (!tag) {
+                D_003505F8++;
+                asm("sync"); asm("ei");
+                return 0;
+            }
+            sceGsSetHalfOffset(((&D_00350340)[6] & 1) ? (u8 *)(((u32)D_00350510 & 0x0FFFFFFF) | 0x20000000)
+                                                : (u8 *)(((u32)D_00350420 & 0x0FFFFFFF) | 0x20000000),
+                               0x800, 0x800, (&D_00350340)[6] ^ 1);
+            if ((&D_00350340)[6] == 0 && *tag == 2) {
+                sceGsSwapDBuff(D_003503C0, 0);
+                sceGsSyncPath(0, 0);
+                sceDmaSend(dmaGif, (u8 *)tag + 0x40);
+                *tag = 1;
+            } else if ((&D_00350340)[6] == 1 && *tag == 1) {
+                sceGsSwapDBuff(D_003503C0, 1);
+                sceGsSyncPath(0, 0);
+                sceDmaSend(dmaGif, (u8 *)tag + 0x26740);
+                *tag = 0;
+                D_00350350 = 1;
+            }
+        }
+    }
+    asm("sync"); asm("ei");
+    return 0;
+}
 
 s32 handler_endimage(void) {
     if (D_00350350 != 0) {

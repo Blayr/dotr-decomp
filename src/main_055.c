@@ -1774,7 +1774,6 @@ typedef union Vertex_00205630 {
     } bits;
 } Vertex_00205630;
 
-void RhGeom_MulMatrixVectorArray(s32, s32, s32, s32);
 
 s32 Ex3d_RotTransPersAuto(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     extern s64 func_001A23B0(f32);

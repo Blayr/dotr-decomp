@@ -1854,7 +1854,6 @@ typedef struct {
     void *textures[1];
 } Gfx_001DC790;
 
-void RhGeom_MulMatrixVectorArray(void *, s32, void *, s32);
 extern Points_001DC790 D_00291590;
 extern u8 D_00290000[];
 extern u8 D_003181C4;

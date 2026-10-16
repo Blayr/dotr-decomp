@@ -953,7 +953,6 @@ typedef union {
 
 static inline void tag_001E6F90(Header_001E6F90 *p, s32 first, s32 type, u64 value) { p->type = type; p->first = first; p->value = value; p->flags = 0; }
 #define MAX_001E6F90(a, b) ((a) > (b) ? (a) : (b))
-extern void RhGeom_MulMatrixVectorArray(void *, s32, void *, s32);
 
 
 #pragma opt_dead_assignments off
