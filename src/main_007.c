@@ -1541,7 +1541,6 @@ typedef struct {
     u8 pad3E[0x22];
 } Work_00127E30;
 
-s32 TaLogic006_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3);
 s32 TaLogic_GetNearCard2(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
                   s32 arg9);
 
@@ -1931,7 +1930,160 @@ s32 TaLogic006_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_007", TaLogic006_GetSummonPiece);
+typedef struct Nibbles_00128D40 {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00128D40;
+
+s32 TaLogic006_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+    extern s32 TaLogic_IsUnitWin4();
+    extern s32 TaLogic_GetInvadeRoot2();
+    extern s32 TaLogic_GetRoot2(s32, s32, s32, s32, s32, s32, u16, u8);
+    s32 best;
+    s32 bestCost;
+    s32 candidate;
+    Nibbles_00128D40 flags[12];
+    s32 i;
+    Nibbles_00128D40 *p;
+    u8 kind;
+
+    if (arg2 == NULL) {
+        return -1;
+    }
+    p = flags;
+    i = 0;
+    do {
+        p->low = p->high = 15;
+        p++;
+        i++;
+    } while (i < 12);
+
+    kind = *(u8 *)((u8 *)arg2 + 0x3E) >> 5;
+    if (kind == 0) {
+        if (arg3 >= 0) {
+            s32 y;
+            s32 x;
+            s32 index;
+            s32 originY;
+            s32 originX;
+            s32 origin;
+            s32 cost;
+
+            bestCost = 255;
+            best = 65535;
+            origin = SzDuel_GetUnitLoc(arg3 >> 8, arg3 & 255);
+            index = 0;
+            originY = origin >> 8;
+            originX = origin & 255;
+            do {
+                candidate = Ta_GetSommonPiecePreference(arg0, index);
+                if (candidate >= 0) {
+                    x = candidate & 255;
+                    y = candidate >> 8;
+                    if (SzDuel_GetField(x, y) != 8 &&
+                        (SzDuel_GetField(x, y) != 9 ||
+                         Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                        SzDuel_GetMapUnit(x, y) == 0) {
+                        if (TaLogic_IsUnitWin4(arg2, arg3, TaLogic_GetWarnHideLvl_0012B1B0(arg0),
+                                         originX, originY, 0) > 0) {
+                            cost = TaLogic_GetInvadeRoot2(arg2, flags, x, y,
+                                                originX, originY, arg3, 0,
+                                                5, (u16)TaLogic_GetWarnHideLvl_0012B1B0(arg0));
+                        } else {
+                            cost = TaLogic_GetRoot2((s32)arg2, (s32)flags, x, y,
+                                                originX, originY, arg3, 5);
+                        }
+                        if (TaLogic_GetMinGoalCount((u8 *)flags) > 0 && cost < bestCost) {
+                            bestCost = cost;
+                            best = candidate;
+                        }
+                    }
+                }
+                index++;
+            } while (index < 8);
+            if (best != 65535) {
+                return best;
+            }
+            best = -1;
+            return best;
+        }
+        {
+            s32 maxY;
+            s32 maxX;
+            s32 y;
+            s32 x;
+            s32 minY;
+            s32 minX;
+            s32 origin;
+
+            bestCost = 14;
+            best = -1;
+            i = 0;
+            do {
+                candidate = Ta_GetSommonPiecePreference(arg0, i);
+                if (candidate >= 0) {
+                    x = candidate & 255;
+                    y = candidate >> 8;
+                    if (SzDuel_GetField(x, y) != 8 &&
+                        (SzDuel_GetField(x, y) != 9 ||
+                         Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                        SzDuel_GetMapUnitID(x, y) < 0) {
+                        if (y < 3) {
+                            minY = y < 3 ? y : 3;
+                            maxY = y > 3 ? y : 3;
+                            minX = x < 1 ? x : 1;
+                            maxX = x > 1 ? x : 1;
+                            (void)maxX; /* a use between the clamp and the distance keeps maxX's temp, so y and x take s0/s1 as in the original */
+                            origin = (maxX - minX) + (maxY - minY);
+                        } else {
+                            minY = y < 5 ? y : 5;
+                            maxY = y > 5 ? y : 5;
+                            minX = x < 2 ? x : 2;
+                            maxX = x > 2 ? x : 2;
+                            (void)maxX; /* a use between the clamp and the distance keeps maxX's temp, so y and x take s0/s1 as in the original */
+                            origin = (maxX - minX) + (maxY - minY);
+                        }
+                        if (origin < bestCost && origin >= 0) {
+                            best = candidate;
+                            bestCost = origin;
+                        }
+                    }
+                }
+                i++;
+            } while (i < 8);
+            if (bestCost < 14) {
+                return best;
+            }
+        }
+    } else {
+        s32 y;
+        s32 x;
+        s32 index;
+        s32 last;
+        s32 candidate;
+
+        last = -1;
+        index = 0;
+        do {
+            candidate = Ta_GetSommonPiecePreference(arg0, index);
+            if (candidate >= 0) {
+                x = candidate & 255;
+                y = candidate >> 8;
+                if (SzDuel_GetField(x, y) != 8 &&
+                    (SzDuel_GetField(x, y) != 9 ||
+                     Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                    SzDuel_GetMapUnitID(x, y) < 0 && y < 8) {
+                    last = candidate;
+                }
+            }
+            index++;
+        } while (index < 8);
+        if (last >= 0) {
+            return last;
+        }
+    }
+    return -1;
+}
 
 typedef struct {
     u8 low : 4;
