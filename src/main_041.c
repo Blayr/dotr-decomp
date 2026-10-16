@@ -1023,7 +1023,221 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 #pragma opt_propagation reset
 
-INCLUDE_ASM("asm/nonmatchings/main_041", lSzDuel_DrawTrade_Card_Pipe);
+typedef struct {
+    u16 count;
+    u16 flags;
+    u32 padding;
+    u64 registers;
+} Tag_001C4B00;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Color_001C4B00;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+} Vertex_001C4B00;
+
+typedef struct {
+    u64 tag[2];
+    Color_001C4B00 color;
+    Vertex_001C4B00 vertex0;
+    Vertex_001C4B00 vertex1;
+    u64 end;
+} Box_001C4B00;
+
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_001C4B00;
+
+static inline s32 offset_001C4B00(s32 side, s32 left, s32 right) {
+    return side != 0 ? right : left;
+}
+
+extern u8 D_00290020[];
+extern u8 D_00290080[];
+extern u8 D_0029086E[];
+extern u8 D_00290878[];
+extern u8 D_002908BE[];
+extern u8 D_002908C8[];
+extern s32 D_002908E6;
+extern u8 D_002908F0[];
+extern u8 D_00290A12[];
+extern s8 D_002BF02D;
+extern char D_002BF030[];
+extern char D_002BE940[];
+extern char D_002BE948[];
+
+#pragma opt_dead_assignments off
+
+s32 lSzDuel_DrawTrade_Card_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s64, s64, s64, s64, s64, s64);
+    extern s32 func_001B4540(s32, s32, s32, s64, s32, s32);
+    extern s32 func_001B6EA0();
+    extern s32 func_001B6F70();
+    extern s32 func_001B65F0();
+    extern s32 func_001FEAB0();
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern s32 func_001DE090();
+    extern s64 func_00215D30();
+    s32 ret;
+    s32 id3;
+    u8 *state = D_00317490.b;
+    u8 *info;
+    s32 kind;
+    s32 style;
+    s32 attribute;
+    u8 *name;
+    u8 *own_counts;
+    u8 *counts;
+    u8 *other_counts;
+    s8 *text;
+    u8 mode;
+    u8 category;
+    s32 low;
+    f32 scale;
+    s32 px;
+    s32 x_position;
+    s32 py;
+    s32 ty;
+    u8 *count;
+    s32 width;
+    s32 id;
+    Box_001C4B00 box __attribute__((aligned(8)));
+    s32 value;
+    s32 hint = 0;
+
+    info = func_001DD0E0(arg2);
+    if (arg1 != 0) {
+        own_counts = *(u8 **)(state + 0x6E4);
+    } else {
+        own_counts = *(u8 **)(state + 0x6E0);
+    }
+    if (arg1 != 0) {
+        other_counts = *(u8 **)(state + 0x6E0);
+    } else {
+        other_counts = *(u8 **)(state + 0x6E4);
+    }
+    mode = state[arg1 + 0xCC0];
+    if (mode == 2) {
+        counts = other_counts;
+    } else {
+        counts = own_counts;
+    }
+    if (mode == 2) {
+        text = &D_002BF02D;
+    } else {
+        text = (s8 *)D_002BF030;
+    }
+    scale = 1.0f;
+    if (info == NULL) {
+        return func_001B4780(arg0, -1, -1, 9, arg3, arg4, -0x130, -0x36, 0);
+    }
+    category = info[0];
+    kind = (s32)category >> 5;
+    low = category & 0x1F;
+    if (kind == 0) {
+        name = D_00290080 + low * 10;
+    } else {
+        name = D_00290080 + (kind + 20) * 10;
+    }
+    style = func_001DE020(kind);
+    attribute = func_001DE090(style, info[2] & 0xF);
+    if (style == 0) {
+        if (*(u16 *)(info + 4) != 0xFFFF) {
+            style = 4;
+        }
+    }
+    id = func_001B4780(func_0020F290(func_001FD680(arg0, 1, func_001DE210(arg2), 0, 22)), style + 7, -1, 9, arg3, arg4, -0x130, -0x36, 0);
+    if (func_00216920(arg1, arg2) != 0) {
+        x_position = arg3 + 0x6C0 + (arg1 != 0 ? 0x108 : 8);
+        id = func_001B3CC0(id, D_00290A12, x_position, arg4 + 0x727, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    } else {
+        id = func_001B6EA0(id, arg3 + (arg1 != 0 ? 0x108 : 8), arg4 + 7, 1, 0, 3, arg2);
+    }
+    if (kind == 0) {
+        s64 leader = func_00215D30(arg1, arg2);
+        x_position = arg3 + offset_001C4B00(arg1, 0x28, 0xE8);
+        id = func_001B4540(id, x_position, arg4 + 3, leader, 0, offset_001C4B00(arg1, 0, 1));
+    }
+    x_position = arg3 + 0x6C0 + (arg1 != 0 ? 0x114 : 4);
+    id = func_001B3CC0(id, name, x_position, arg4 + 0x73A, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    x_position = arg3 + 0x6C0 + (arg1 != 0 ? 0xFA : 0x1E);
+    id = func_001B3CC0(id, D_00290020 + attribute * 10, x_position, arg4 + 0x73A, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    if (kind == 0) {
+        x_position = arg3 + 0x6C0 + (arg1 != 0 ? 0xCF : 0x38);
+        id = func_001B3CC0(id, &D_002908E6, x_position, arg4 + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+        id = func_001B6EA0(id, arg3 + (arg1 != 0 ? 0xCF : 0x38) + 0x16, arg4 + 0x25, 1, 0, 2, ((Nibbles_001C4B00 *)(info + 2))->high);
+        x_position = arg3 + 0x6C0 + (arg1 != 0 ? 3 : 0xF8);
+        id = func_001B3CC0(id, D_002908BE, x_position, arg4 + 0x723, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+        id = func_001B6EA0(id, arg3 + (arg1 != 0 ? 3 : 0xF8) + 0x10, arg4 + 5, 1, 0, 4, *(u16 *)(info + 8) & 0x1FFF);
+        x_position = arg3 + 0x6C0 + (arg1 != 0 ? 3 : 0xF8);
+        id = func_001B3CC0(id, D_002908C8, x_position, arg4 + 0x733, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+        id = func_001B6EA0(id, arg3 + (arg1 != 0 ? 3 : 0xF8) + 0x10, arg4 + 0x15, 1, 0, 4, *(u16 *)(info + 10) & 0x1FFF);
+    }
+    x_position = arg3 + 0x6C0 + (arg1 != 0 ? 0x96 : 0x68);
+    id = func_001B3CC0(id, D_002908F0, x_position, arg4 + 0x743, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    ret = func_001B6EA0(id, arg3 + (arg1 != 0 ? 0x96 : 0x68) + 0x16, arg4 + 0x25, 1, 0, 3, info[3]);
+    px = arg3 + 0x6C0 + (arg1 != 0 ? 0x66 : 0xAD);
+    py = arg4 + 0x743;
+    if (func_00216AC0(arg1, arg2, -1) < 9) {
+        ret = func_001B3CC0(ret, D_0029086E, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    } else {
+        ret = func_001B3CC0(ret, D_00290878, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
+    }
+    px = arg3 + (arg1 != 0 ? 0x66 : 0xAD) + 0x13;
+    py = arg4 + 0x25;
+    ret = func_001B6EA0(ret, px, py, 1, 0, 1, func_00216AC0(arg1, arg2, hint != 0 ? -1 : 3));
+    count = counts + arg2;
+    if (*count != 0) {
+        ty = arg4 + 0x25;
+        ret = func_001B4780(ret, 0xD, -1, 7, arg3 + offset_001C4B00(arg1, 0xE8, 0), arg4 + 0x23, -0x48, -0x10, 1);
+        px = arg3 + (arg1 != 0 ? 0 : 0xE8) + 0xC;
+        value = func_0019BEF0((char *)text);
+        ret = func_001B6F70(ret, px, ty, 1, 0, value, text, 0);
+        px = arg3 + (arg1 != 0 ? 0 : 0xE8) + 0x30;
+        ret = func_001B6EA0(ret, px, ty, 1, 0, 1, *count);
+    }
+    id3 = func_001B65F0(ret, style + 7, arg3 + (arg1 != 0 ? 0x38 : 0x48), arg4 + 3, -0xB0, -0x20, -1, 0);
+    width = *(s32 *)((u8 *)func_001FEAB0(1) + 0xC);
+    if (width > 168) {
+        scale = 168.0f / (f32)width;
+    }
+    id3 = func_001FE660(id3, 1, arg3 + offset_001C4B00(arg1, 0x48, 0x38) + 6, arg4 + 9, scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+    id3 = func_001FE660(id3, 1, arg3 + offset_001C4B00(arg1, 0x48, 0x38) + 5, arg4 + 8, scale, 1.0f, (s32)D_002BE944, SzMsg_DrawRect_Pipe);
+    id3 = func_001FE660(id3, 1, arg3 + offset_001C4B00(arg1, 0x48, 0x38) + 4, arg4 + 7, scale, 1.0f, (s32)D_002BE948, SzMsg_DrawRect_Pipe);
+    func_001FEAF0(1);
+    if (arg5 != 0) {
+        if (func_00216AC0(arg1, arg2, 3) <= 0) {
+            ((Tag_001C4B00 *)box.tag)->flags = 6;
+            ((Tag_001C4B00 *)box.tag)->count = 3;
+            ((Tag_001C4B00 *)box.tag)->registers = 0x441;
+            ((Tag_001C4B00 *)box.tag)->padding = 0;
+            func_002086D0(box.tag, func_00208D00(2));
+            box.color.r = 0x80;
+            box.color.g = 0x80;
+            box.color.b = 0x80;
+            box.color.a = 0x40;
+            box.color.q = 1.0f;
+            box.vertex0.x = (arg3 + 0x6C0) << 4;
+            box.vertex0.y = (arg4 + 0x720) << 4;
+            box.vertex0.z = *(s32 *)(state + 0xC58);
+            box.vertex0.fog = 0;
+            box.vertex1.x = (arg3 + 0x7F0) << 4;
+            box.vertex1.y = (arg4 + 0x756) << 4;
+            box.vertex1.z = *(s32 *)(state + 0xC58);
+            box.vertex1.fog = 0;
+            id3 = func_00207650(id3, (s32)box.tag, 0, 0);
+        }
+    }
+    return id3;
+}
+#pragma opt_dead_assignments reset
 
 s32 lSzDuel_DrawTrade_Cursor_Pipe(s32 id, s32 player, s32 arg2, s32 arg3, s32 arg4) {
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
