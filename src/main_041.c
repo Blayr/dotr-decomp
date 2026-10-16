@@ -2916,6 +2916,7 @@ typedef struct Object_001CD710 {
 s32 SzDuel_DrawHandCard_Pipe(s32);
 
 s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
+    extern s32 SzDuel_DrawHandCard_Pipe(s32);
     Vec4_001CD710 position;
     Command_001CD710 command;
     u8 *base = D_00317490.b;

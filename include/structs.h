@@ -80,4 +80,7 @@ struct TreeTag {
     struct TreeTag *pNextLink[4];
 };
 
+/* The hand-card node SzDuel_DrawHandCard_Pipe takes as its second parameter (main_038). */
+typedef struct CardNode_001AF180_s CardNode_001AF180;
+
 #endif
