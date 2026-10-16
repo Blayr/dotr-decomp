@@ -1,8 +1,102 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModel_DrawNormalMethod);
+typedef struct {
+    u8 pad[4];
+    u8 reserved4_0 : 1;
+    u8 flag4_1 : 1;
+    u8 flag4_2 : 1;
+    u8 reserved4_3 : 5;
+    u8 reserved5_0 : 2;
+    u8 flag5_2 : 1;
+    u8 flag5_3 : 1;
+    u8 reserved5_4 : 4;
+} Flags_0020F780;
 
-INCLUDE_ASM("asm/nonmatchings/main_059", lRhModel_DrawFastMethod);
+extern u8 D_0032A610[];
+
+void *lRhModel_DrawNormalMethod(void *arg0, s32 arg1) {
+    Flags_0020F780 *obj = arg0;
+    s32 flags;
+    s32 result;
+    u32 flag5;
+    u32 flag4;
+
+    flags = 1;
+    flag5 = obj->flag5_2 ? 0x40 : 0;
+    flag4 = (obj->flag4_1 != 0) ? 0x10 : 0;
+    flags |= flag4 | flag5;
+    flags |= arg1 ? 2 : 0;
+    RhGeomEx_SetMatrixForPointLight();
+    if (!obj->flag4_2) {
+        if (*(s32 *)0x700000B0 & 4) {
+            flags |= 0x20;
+        }
+        *(void **)0x700000C4 = RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, flags);
+    } else {
+        *(void **)0x700000C4 = RhVu1Mac_ReserveChangeDrawMethod(*(void **)0x700000C0);
+    }
+    lRhModel_DrawCommonPart(obj);
+    if (!(*(s32 *)0x700000B0 & 1)) {
+        return *(void **)0x700000C0;
+    }
+    if (*(s32 *)(*(u8 **)0x700000DC + 0x1C) > 0) {
+        if (obj->flag5_3) {
+            result = *(s32 *)0x700000D0;
+        } else {
+            RhMem_CopyMemory16(D_0032A610, (void *)0x70000000, 0x11);
+            result = RhBase_SetZBufferMode((s32)RhModelCpu_DrawAlpha(
+                (u8 *)RhBase_SetZBufferMode(*(s32 *)0x700000D0, 0),
+                *(s32 *)0x700000CC,
+                *(s32 *)(*(u8 **)0x700000DC + 0x1C),
+                obj->flag4_1), 1);
+            RhMem_CopyMemory16((void *)0x70000000, D_0032A610, 0x11);
+        }
+        *(s32 *)0x700000D4 = result;
+    } else {
+        *(s32 *)0x700000D4 = *(s32 *)0x700000C8;
+    }
+    if (*(s32 *)0x700000B0 & 4) {
+        flags |= 0x20;
+    } else if (arg1 == 0) {
+        RhView_GetViewScreenMatrix((void *)0x70000000);
+        lRhModel_ChangeL2VtoL2S(*(s32 *)0x700000B4 + 0x10, 0x70000000,
+                     ((*(s32 *)0x700000D8 - 0x10) >> 4) / 7);
+    }
+    if (*(void **)0x700000B4 == (void *)0x700000F0) {
+        RhMem_CopyMemory16(*(u8 **)0x700000C4 + 0x10, (void *)0x70000100,
+                     (*(s32 *)0x700000D8 - 0x10) >> 4);
+    }
+    if (obj->flag4_2) {
+        RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, flags);
+    }
+    return *(void **)0x700000D4;
+}
+
+typedef struct {
+    u8 pad[4];
+    u8 unused4_0 : 1;
+    u8 flag4 : 1;
+    u8 unused4_2 : 6;
+    u8 unused5_0 : 2;
+    u8 flag5 : 1;
+    u8 unused5_3 : 5;
+} Flags_0020FA10;
+
+void *lRhModel_DrawFastMethod(void *arg0) {
+    u32 mode = 1;
+    u32 flag5 = ((Flags_0020FA10 *)arg0)->flag5 ? 0x40 : 0;
+    u32 flag4 = (((Flags_0020FA10 *)arg0)->flag4 != 0) ? 0x10 : 0;
+    mode |= flag4 | flag5;
+    *(void **)0x700000C4 = RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, mode);
+    RhView_GetViewScreenMatrix((void *)0x70000000);
+    RhGeomEx_SetMatrixForStraightLight((void *)0x70000000);
+    lRhModel_DrawCommonPart(arg0);
+    if (*(u8 **)0x700000B4 == (u8 *)0x700000F0) {
+        RhMem_CopyMemory16(*(u8 **)0x700000C4 + 0x10, (void *)0x70000100, (*(s32 *)0x700000D8 - 0x10) >> 4);
+    }
+    *(void **)0x700000D4 = *(void **)0x700000C8;
+    return *(void **)0x700000D4;
+}
 
 typedef struct {
     u8 bit0 : 1;

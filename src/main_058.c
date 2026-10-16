@@ -1407,8 +1407,6 @@ typedef struct Transform_0020F4E0 {
     } vector;
 } Transform_0020F4E0;
 
-void *lRhModel_DrawNormalMethod(void *, s32);
-void *lRhModel_DrawFastMethod(void *);
 extern s32 D_0032A770;
 
 void *RhModel_Draw(void *arg0, void *arg1) {
