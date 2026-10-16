@@ -929,7 +929,173 @@ void func_0018C5F0(void *arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_029", func_0018C680);
+/* Sony libmpeg picture-buffer update (mpeg2decode Update_Picture_Buffers + the 'decoded' flags; returns
+ * whether the picture's references are complete). The do { } while (0) around the switch and the copy:
+ * GCC 2.9 counts every use inside a loop twice in global-alloc's priority, so p (17 uses there) takes t0
+ * over ps with p = 0 declared before ok = 0 (the order sched2 needs at the top). It opens after the if/else so
+ * the loop label is the 8-aligned switch label (no alignment nop). chatF, 16 Oct 2026. */
+
+typedef struct MpegFrame_0018C680 {
+    u8 unk0[0x18];
+    u64 f18;
+    u64 f20;
+    s32 decoded;
+    s32 ptype;
+    s32 pstruct;
+    s32 f34;
+    s32 f38;
+    s32 f3C;
+    s32 f40;
+    s32 f44;
+    s32 f48;
+    s32 f4C;
+    s32 f50;
+    s32 f54;
+    s32 f58;
+    s32 f5C;
+    s32 f60;
+} MpegFrame_0018C680;
+
+typedef struct MpegRef_0018C680 {
+    MpegFrame_0018C680 *fwd;
+    MpegFrame_0018C680 *bwd;
+    MpegFrame_0018C680 *cur;
+    MpegFrame_0018C680 *aux;
+} MpegRef_0018C680;
+
+typedef struct MpegDec_0018C680 {
+    u8 unk0[0xA0];
+    s32 fA0;
+    s32 fA4;
+    u8 unkA8[0x40];
+    s32 fE8;
+    u8 unkEC[0x50];
+    s32 f13C;
+    u8 unk140[8];
+    s32 f148;
+    s32 f14C;
+    s32 ptype;
+    u8 unk154[0x20];
+    s32 pstruct;
+    s32 f178;
+    u8 unk17C[8];
+    s32 f184;
+    s32 f188;
+    s32 f18C;
+    s32 f190;
+    s32 f194;
+    s32 f198;
+    s32 f19C;
+    s32 f1A0;
+    s32 f1A4;
+    s32 f1A8;
+    u8 unk1AC[0xC];
+    MpegRef_0018C680 ref[3];
+    u8 unk1E8[0x640];
+    u64 f828;
+    u64 f830;
+} MpegDec_0018C680;
+
+s32 func_0018C680(void *arg0, s32 second) {
+    MpegDec_0018C680 *d = arg0;
+    MpegFrame_0018C680 *other;
+    s32 ps = d->pstruct;
+    s32 pt = d->ptype;
+    MpegFrame_0018C680 *tmp;
+    MpegFrame_0018C680 *p = 0;
+    s32 ok = 0;
+    s32 n = (ps == 3) ? 2 : 4;
+
+    if (pt == 3) {
+        d->ref[0].cur = d->ref[0].aux;
+        d->ref[1].cur = d->ref[1].aux;
+        d->ref[2].cur = d->ref[2].aux;
+        if (d->fA0 + d->fA4 >= n) {
+            d->fE8 = 0;
+            d->f1A8 = 0;
+            d->f1A4 = 0;
+        }
+        if ((d->fE8 != 0 || d->f1A8 != 0) && d->f1A4 == 0) {
+            d->ref[0].fwd->decoded = 0;
+            d->ref[1].fwd->decoded = 0;
+            d->ref[2].fwd->decoded = 0;
+            ps = d->pstruct;
+        }
+        d->fE8 = 0;
+        d->f1A8 = 0;
+        if (ps == 3) {
+            if (d->ref[0].fwd->decoded == 1 || d->f1A4 != 0) {
+                if (d->ref[0].bwd->decoded == 1) {
+                    ok = 1;
+                }
+            }
+        } else {
+            if ((d->ref[1].fwd->decoded == 1 && d->ref[2].fwd->decoded == 1) || d->f1A4 != 0) {
+                if (d->ref[1].bwd->decoded == 1) {
+                    if (d->ref[2].bwd->decoded == 1) {
+                        ok = 1;
+                    }
+                }
+            }
+        }
+    } else {
+        if (!second) {
+            tmp = d->ref[0].fwd;
+            d->ref[0].fwd = d->ref[0].bwd;
+            d->ref[0].bwd = tmp;
+            tmp = d->ref[1].fwd;
+            d->ref[1].fwd = d->ref[1].bwd;
+            d->ref[1].bwd = tmp;
+            tmp = d->ref[2].fwd;
+            d->ref[2].fwd = d->ref[2].bwd;
+            d->ref[2].bwd = tmp;
+        }
+        d->ref[0].cur = d->ref[0].bwd;
+        d->ref[1].cur = d->ref[1].bwd;
+        d->ref[2].cur = d->ref[2].bwd;
+        if (ps == 3) {
+            if (pt != 2 || d->ref[0].fwd->decoded == 1) {
+                ok = 1;
+            }
+        } else {
+            other = (ps == 1) ? d->ref[2].bwd : d->ref[1].bwd;
+            if (pt != 2 || (second && other->decoded == 1) || (d->ref[1].fwd->decoded == 1 && d->ref[2].fwd->decoded == 1)) {
+                ok = 1;
+            }
+        }
+    }
+    do {
+        switch (ps) {
+        case 1:
+            p = d->ref[1].cur;
+            break;
+        case 2:
+            p = d->ref[2].cur;
+            break;
+        case 3:
+            p = d->ref[0].cur;
+            break;
+        }
+        p->decoded = 0;
+        p->f18 = d->f828;
+        p->ptype = d->ptype;
+        p->f20 = d->f830;
+        p->pstruct = d->pstruct;
+        p->f34 = d->f13C;
+        p->f38 = d->f188;
+        p->f3C = d->f178;
+        p->f40 = d->f184;
+        p->f44 = d->f18C;
+        p->f48 = d->f190;
+        p->f4C = d->f194;
+        p->f50 = d->f198;
+        p->f54 = d->f19C;
+        p->f58 = d->f1A0;
+        p->f5C = d->f148;
+        p->f60 = d->f14C;
+        return ok;
+    } while (0);
+}
 
 s32 func_0018C938(void *arg0, s32 *arg1) {
     s8 buf[0x100];
