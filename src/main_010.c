@@ -2652,7 +2652,47 @@ s32 TaLogic012_GetAgreeLineZ(void *arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", TaLogic012_GetEmptyLine);
+static inline u8 TaLogic012_CountLine_00143970(s32 line, s32 key) {
+    s32 i;
+    u8 count;
+    s32 card;
+
+    count = 0;
+    i = 0;
+    do {
+        card = SzDuel_GetMapUnitID(i, line);
+        if (card >= 0) {
+            if (key == Ta_IsUnitControl(card >> 8, card & 0xFF)) {
+                count++;
+            }
+        }
+        i++;
+    } while (i < 7);
+    return count;
+}
+
+s32 TaLogic012_GetEmptyLine(void *arg0) {
+    s32 row;
+    s32 delay;
+    s32 category;
+    s32 n;
+
+    category = Ta_IsUnitControl2(arg0);
+    row = 0;
+    do {
+        delay = 0;
+        do {
+            delay++;
+        } while (delay < 7);
+        if ((n = TaLogic012_CountLine_00143970(row, category)) == 0) {
+            if (CheckLandAgreement(SzDuel_GetField(0, row), arg0) == 1) {
+                return row;
+            }
+        }
+        row++;
+    } while (row < 7);
+    return -1;
+}
 
 s32 TaLogic012_IsLineEmpty(s32 arg0, s32 arg1) {
     u8 data[0x60];
