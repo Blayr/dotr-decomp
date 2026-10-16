@@ -2514,7 +2514,227 @@ s32 TaLogic_GetNextActiveUnit_00142B70(u16 *arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_010", TaLogic012_CommandLineUnit);
+typedef struct {
+    u8 low : 4;
+    u8 high : 4;
+} Nibbles_00142F50;
+
+typedef struct {
+    u16 id;
+    u8 value;
+    u8 unused;
+} Entry_00142F50;
+
+typedef struct {
+    u16 low;
+    u16 high;
+} Halves_00142F50;
+
+typedef struct {
+    u16 id;
+    u16 unused2;
+    u16 action;
+    u16 unused6;
+    union {
+        u32 word;
+        Halves_00142F50 halves;
+    } data;
+} State_00142F50;
+
+static inline s32 min_00142F50(s32 a, s32 b) {
+    if (a < b) {
+        return a;
+    }
+    return b;
+}
+
+static inline s32 max_00142F50(s32 a, s32 b) {
+    if (a < b) {
+        return b;
+    }
+    return a;
+}
+
+void TaLogic012_CommandLineUnit(void *arg0) {
+    extern s32 TaLogic_IsRootOpen();
+    extern s32 TaLogic_IsUnitWin4();
+    extern s32 TaLogic_GetInvadeRoot2();
+    State_00142F50 *st = arg0;
+    s32 otherPosition;
+    s32 position;
+    s32 side;
+    s32 bestScore;
+    s32 other;
+    s32 bestId;
+    s32 result;
+    u16 *walk;
+    s32 lowY;
+    s32 y;
+    s32 count;
+    s32 lowX;
+    s32 x;
+    s32 otherY;
+    s32 otherX;
+    s32 i;
+    s32 owner;
+    u16 *list;
+    s32 candidateX;
+    s32 secondCount;
+    Entry_00142F50 *entry;
+    s32 candidateY;
+    s32 maximum;
+    Nibbles_00142F50 *tile;
+    s32 candidatePosition;
+    Entry_00142F50 entries[22];
+    u16 candidates[7];
+    Nibbles_00142F50 tiles[12];
+
+    if (SzDuel_GetUnit(st->id >> 8, st->id & 0xFF) != 0) {
+        tile = tiles;
+        i = 0;
+        do {
+            tile->low = tile->high = 15;
+            i++;
+            tile++;
+        } while (i < 12);
+        side = Ta_GetCurrentSide(st->id >> 8, st->id & 0xFF);
+        other = (side == 0 ? 1 : 0) << 8;
+        position = SzDuel_GetUnitLoc(st->id >> 8, st->id & 0xFF);
+        otherX = other >> 8;
+        otherY = other & 0xFF;
+        otherPosition = SzDuel_GetUnitLoc(otherX, otherY);
+        owner = SzDuel_GetUnit(st->id >> 8, st->id & 0xFF);
+        bestId = -1;
+        bestScore = 7;
+        entry = entries;
+        i = 0;
+        do {
+            i++;
+            entry->id = 0xFFFF;
+            entry->value = 0xFF;
+            entry++;
+        } while (i < 22);
+        if (TaLogic_IsRootOpen(st->id >> 8, st->id & 0xFF, x = position & 0xFF, y = position >> 8, otherX, otherY,
+                               otherPosition & 0xFF, otherPosition >> 8, 2) > 0) {
+            st->action = 0x2FF;
+            st->data.word = (other << 16) | st->data.halves.low;
+        } else {
+            list = candidates;
+            i = 0;
+            {
+                u16 *fill = list;
+                do {
+                    i++;
+                    *fill = 0xFFFF;
+                    fill++;
+                } while (i < 7);
+            }
+            if (CheckLandAgreement(SzDuel_GetField(x, y), (void *)owner) != 1) {
+                st->action = 0x6FF;
+                result = TaLogic012_GetAgreeLineZ((void *)owner);
+                if (result >= 0) {
+                    st->data.word = st->data.halves.low | (((result << 8) | (position & 0xFF)) << 16);
+                } else {
+                    TaLogic012_CommandBtlUnit(st);
+                    return;
+                }
+                return;
+            } else {
+                count = TaLogic012_GetLineUnitLst((s16 *)candidates, y, side, 2) & 0xFF;
+                i = 0;
+                walk = list;
+                goto test1;
+            loop1:
+                candidatePosition = SzDuel_GetUnitLoc(*walk >> 8, *walk & 0xFF);
+                candidateX = candidatePosition & 0xFF;
+                if (TaLogic_IsUnitWin4(owner, *walk, TaLogic_GetWarnHideLvl_001461C0(side),
+                                       candidateX, candidateX, 0) >= 0) {
+                    result = TaLogic_GetInvadeRoot2(owner, tiles, x, y, candidateX, candidatePosition >> 8,
+                                                    *walk, 0, 5, (u16)TaLogic_GetWarnHideLvl_001461C0(side));
+                    if (result > 0 && bestScore < result) {
+                        bestId = *walk;
+                        bestScore = result;
+                    }
+                } else {
+                    candidateY = candidatePosition >> 8;
+                    lowY = min_00142F50(y, candidateY);
+                    candidateY = max_00142F50(candidateY, y);
+                    lowX = min_00142F50(x, candidateX);
+                    candidateX = max_00142F50(candidateX, x);
+                    if ((candidateX - lowX) + (candidateY - lowY) < 3) {
+                        st->action = 0x3FF;
+                        st->data.word = (position << 16) | st->data.halves.low;
+                        return;
+                    }
+                }
+                walk++;
+                i++;
+            test1:
+                if (i < count) {
+                    goto loop1;
+                }
+                if (bestId >= 0) {
+                    st->action = 0x2FF;
+                    st->data.word = (bestId << 16) | st->data.halves.low;
+                }
+                secondCount = TaLogic012_GetLineUnitLst((s16 *)candidates, GetCap(6, y - 1), side, 2) & 0xFF;
+                maximum = -1;
+                i = 0;
+                goto test2;
+            loop2:
+                candidateX = SzDuel_GetUnitLoc(*list >> 8, *list & 0xFF) & 0xFF;
+                result = TaLogic_IsUnitWin4(owner, *list, TaLogic_GetWarnHideLvl_001461C0(side),
+                                            candidateX, candidateX, 0);
+                if (result >= 0 && maximum < result) {
+                    maximum = result;
+                }
+                list++;
+                i++;
+            test2:
+                if (i < secondCount) {
+                    goto loop2;
+                }
+                if ((TaLogic012_GetLineUnitLst((s16 *)candidates, y, side, 1) & 0xFF) > 1) {
+                    result = TaLogic012_GetEmptyLine((void *)owner);
+                    if (result >= 0) {
+                        st->action = 0x6FF;
+                        st->data.word = st->data.halves.low | (((result << 8) | (position & 0xFF)) << 16);
+                    } else {
+                        TaLogic012_CommandBtlUnit(st);
+                    }
+                } else {
+                    switch ((st->action >> 8) & 0xFF) {
+                    case 16:
+                        if (x > 0) {
+                            st->data.word = (y << 24) | st->data.halves.low;
+                        } else {
+                            st->action = 0xFFF;
+                            st->data.word = (((y << 8) | 6) << 16) | st->data.halves.low;
+                        }
+                        break;
+                    case 15:
+                        if (x < 6) {
+                            st->data.word = (((y << 8) | 6) << 16) | st->data.halves.low;
+                        } else {
+                            st->action = 0x10FF;
+                            st->data.word = (y << 24) | st->data.halves.low;
+                        }
+                        break;
+                    default:
+                        if (func_0019A5C8() % 2 == 0) {
+                            st->action = 0x10FF;
+                            st->data.word = (y << 24) | st->data.halves.low;
+                        } else {
+                            st->action = 0xFFF;
+                            st->data.word = (((y << 8) | 6) << 16) | st->data.halves.low;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 typedef struct {
     u16 card;
