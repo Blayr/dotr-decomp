@@ -2852,6 +2852,7 @@ f32 func_001A6C30(f32 x, f32 y);
 f32 func_001A6C48(f32 y, f32 x);
 f32 func_001A6C60(f32 x);
 void func_001A6C80(void);
+s32 func_001BDAF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
 void func_001C5D70(int mode);
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4); /* JP: func */
 void func_0027F5B0(void); /* JP: TaTuto_Init036 */

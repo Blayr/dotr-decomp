@@ -1561,7 +1561,192 @@ s32 lSzDuel_DrawBuildDeck_GhostCard_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
     return ExSortPrim_Pipe(output, (s32)packet.tag, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_040", func_001BDAF0);
+static inline s32 frame_001BDAF0(s32 id, s32 color, u32 x, u32 y) {
+    extern s32 func_001B4780();
+
+    return func_001B4780(id, color, -1, 0, x - 0xD, y - 0xF, -0x116, -0x104, 1);
+}
+
+#pragma opt_propagation off
+
+s32 func_001BDAF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+    extern s32 *func_001FEAB0(s32);
+    extern s32 func_001FE660(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
+    extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
+    extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    extern s32 func_001B4780();
+    extern u8 *func_001DD0E0(s32);
+    extern s32 func_001BE5F0(s32, s32, s32, s32, s32);
+    extern s32 func_001BF180(s32, s32, s32, s32, s32);
+    extern s32 func_001BF2A0(s32, s32, s32, s32, s32, s32);
+    extern s32 func_001BF470(s32, s32, s32, s32, s32, s32);
+    extern char D_002BEFC3[];
+    extern char D_002BE940[];
+    extern char D_002BE944[];
+    extern char D_002BE948[];
+    extern char D_002BE94C[];
+    extern u8 D_00290ABC[];
+    extern u8 D_00290828[];
+    extern u8 D_00290AC6[];
+    extern u8 D_00290832[];
+    extern s32 D_00290A76;
+    u8 *data;
+    u8 *card;
+    s8 *text;
+    s32 xoff;
+    s32 color;
+    f32 scale;
+    s32 id;
+    s32 *info;
+    s32 bx;
+    s32 px;
+    u8 *sel;
+    s32 tx;
+    s32 ty;
+
+    data = D_00317490.b;
+    card = func_001DD0E0(arg1);
+    text = D_002BEFC3;
+    xoff = (arg4 != 0) ? 0x280 : -0x140;
+    color = 2;
+    if (card != NULL) {
+        scale = 1.0f;
+        color = func_001DE020(card[0] >> 5);
+        if (color == 0 && *(u16 *)(card + 4) != 0xFFFF) {
+            color = 4;
+        }
+        color += 7;
+        arg0 = func_001FD680(arg0, 1, func_001DE210(arg1), 0, 0x16);
+        id = func_0020F290(arg0);
+        bx = arg2 + xoff;
+        tx = bx + 0x14;
+        ty = arg3 + 0x2E;
+        id = frame_001BDAF0(id, color, tx, ty);
+        id = func_001B4780(id, color, -1, 4, bx + 0x27, arg3 + 0x10, -0xF0, -0x1E, 1);
+        info = func_001FEAB0(1);
+        if (info[3] > 0xE6) {
+            scale = 230.0f / (f32)info[3];
+        }
+        id = func_001FE660(id, 1, bx + 0xA1 - (s32)((f32)(info[3] >> 1) * scale), arg3 + 0x15, scale, 1.0f,
+                           (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        id = func_001FE660(id, 1, bx + 0xA0 - (s32)((f32)(info[3] >> 1) * scale), arg3 + 0x14, scale, 1.0f,
+                           (s32)D_002BE944, SzMsg_DrawRect_Pipe);
+        arg0 = func_001FE660(id, 1, bx + 0x9F - (s32)((f32)(info[3] >> 1) * scale), arg3 + 0x13, scale, 1.0f,
+                             (s32)D_002BE948, SzMsg_DrawRect_Pipe);
+        func_001FEAF0(1);
+    } else if (arg1 == 0x29F) {
+        scale = 1.0f;
+        color = 0;
+        color += 7;
+        id = func_0020F290(func_001FD680(arg0, 1, func_001DE210(arg1), 0, 0x16));
+        bx = arg2 + xoff;
+        tx = bx + 0x14;
+        ty = arg3 + 0x2E;
+        id = frame_001BDAF0(id, color, tx, ty);
+        id = func_001B4780(id, color, -1, 4, bx + 0x27, arg3 + 0x10, -0xF0, -0x1E, 1);
+        info = func_001FEAB0(1);
+        if (info[3] > 0xE6) {
+            scale = 230.0f / (f32)info[3];
+        }
+        id = func_001FE660(id, 1, bx + 0xA1 - (s32)((f32)(info[3] >> 1) * scale), arg3 + 0x15, scale, 1.0f,
+                           (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        id = func_001FE660(id, 1, bx + 0xA0 - (s32)((f32)(info[3] >> 1) * scale), arg3 + 0x14, scale, 1.0f,
+                           (s32)D_002BE944, SzMsg_DrawRect_Pipe);
+        arg0 = func_001FE660(id, 1, bx + 0x9F - (s32)((f32)(info[3] >> 1) * scale), arg3 + 0x13, scale, 1.0f,
+                             (s32)D_002BE948, SzMsg_DrawRect_Pipe);
+        func_001FEAF0(1);
+    }
+    id = func_0020F290(func_001FD680(func_001FD680(func_001FD680(func_001FD680(arg0, 2, 0xA3, 0, 0x2C),
+                                                                  3, 0xA4, 0, 0x42), 4, 0xA5, 0, 0x58), 5, 0xA6, 0, 0x6E));
+    if (arg7 != 0) {
+        if (data[0xD5D] == 0) {
+            id = func_001B65F0(id, 2, arg2 - 0x110, arg3 + 0x142, -0x40, -0x1C, -1, 0);
+            id = func_001B3CC0(id, D_00290ABC, arg2 + 0x5B5, arg3 + 0x86B, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            id = func_001B3CC0(id, D_00290828, arg2 + 0x5CC, arg3 + 0x86A, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            id = func_001B65F0(id, 2, arg2 - 0x110, arg3 + 0x190, -0x40, -0x1C, -1, 0);
+            id = func_001B3CC0(id, D_00290AC6, arg2 + 0x5B5, arg3 + 0x8B9, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            id = func_001B3CC0(id, D_00290832, arg2 + 0x5CC, arg3 + 0x8B4, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+        } else {
+            s32 cursor;
+
+            cursor = func_001B65F0(id, 2, arg2 - 0x114, arg3 + 0x161, -0x44, -0x2C, -1, 0);
+            id = cursor;
+            if (data[0xD5D] == 1) {
+                id = func_001B3CC0(cursor, &D_00290A76, arg2 + 0x5C6, arg3 + 0x886, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+            }
+            tx = arg2 - 0xF2;
+            ty = arg3 + 0x17B;
+            id = func_001B6F70(id, tx, ty, 1, 3, func_0019BEF0((char *)text), text, 0);
+        }
+    }
+    px = bx = arg2 + (((arg4 != 0) ? 0x280 : ((arg7 != 0) ? 0x24 : 0) - 0x140) + 0x4F);
+    ty = arg3 + 0x13E;
+    id = func_001B65F0(id, (arg6 != 0) ? color : -1, px, ty, -0xA0, -0x72, (arg6 != 0) ? color : -1, 0);
+    tx = bx + 0xA;
+    ty = arg3 + 0x142 + (arg4 + data)[0xCBC] * 26;
+    sel = arg4 + data + 0xCBC;
+    if (arg5 != 0) {
+        id = func_001B4780(id, -1, -1, 6, tx - 2, ty - 2, -0x8E, -0x1C, 1);
+    } else {
+        id = func_001B65F0(id, 2, tx, ty, -0x8E, -0x1C, -1, 0);
+    }
+    tx = bx + 0xE;
+    ty = arg3 + 0x145;
+    info = func_001FEAB0(2);
+    id = func_001FE660(id, 2, tx, ty, (info[3] >= 0x87) ? 134.0f / (f32)info[3] : 1.0f, 1.0f,
+                       (s32)D_002BE94C, SzMsg_DrawRect_Pipe);
+    ty = arg3 + 0x15F;
+    info = func_001FEAB0(3);
+    if (info[3] > 0x86) {
+        scale = 134.0f / (f32)info[3];
+    } else {
+        scale = 1.0f;
+    }
+    id = func_001FE660(id, 3, tx, ty, scale, 1.0f,
+                       (s32)D_002BE94C, SzMsg_DrawRect_Pipe);
+    ty = arg3 + 0x179;
+    info = func_001FEAB0(4);
+    if (info[3] > 0x86) {
+        scale = 134.0f / (f32)info[3];
+    } else {
+        scale = 1.0f;
+    }
+    id = func_001FE660(id, 4, tx, ty, scale, 1.0f,
+                       (s32)D_002BE94C, SzMsg_DrawRect_Pipe);
+    ty = arg3 + 0x193;
+    info = func_001FEAB0(5);
+    if (info[3] > 0x86) {
+        scale = 134.0f / (f32)info[3];
+    } else {
+        scale = 1.0f;
+    }
+    arg0 = func_001FE660(id, 5, tx, ty, scale, 1.0f,
+                         (s32)D_002BE94C, SzMsg_DrawRect_Pipe);
+    func_001FEAF0(2);
+    func_001FEAF0(3);
+    func_001FEAF0(4);
+    func_001FEAF0(5);
+    if (card != NULL || arg1 == 0x29F) {
+        switch (*sel) {
+        case 0:
+            arg0 = func_001BE5F0(arg0, arg1, arg2, arg3, arg4);
+            break;
+        case 1:
+            arg0 = func_001BF180(arg0, arg1, arg2, arg3, arg4);
+            break;
+        case 2:
+            arg0 = func_001BF2A0(arg0, arg1, arg2, arg3, arg4, color);
+            break;
+        case 3:
+            arg0 = func_001BF470(arg0, arg1, arg2, arg3, arg4, color);
+            break;
+        }
+    }
+    return arg0;
+}
+
+#pragma opt_propagation reset
 
 typedef struct Vertex_001BE5F0 {
     u64 x : 16;

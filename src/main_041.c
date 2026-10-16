@@ -568,7 +568,6 @@ typedef struct State_001C35A0 {
     u8 selection1;
 } State_001C35A0;
 
-s32 func_001BDAF0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern u16 D_0031811C;
 
 s32 SzDuel_DrawTrade_Pipe(s32 arg0) {
