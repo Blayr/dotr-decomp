@@ -636,7 +636,142 @@ s32 SzDuel_GetWindowTexture(s32 arg0) {
     return data->entries[arg0];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_038", SzDuel_DrawHandCard_Pipe);
+typedef struct {
+    s8 bit0 : 1;
+    s8 bit1 : 1;
+    s8 bit2 : 1;
+    s8 bit3 : 1;
+    s8 bit4 : 1;
+    s8 bit5 : 1;
+    s8 bit6 : 1;
+    s8 bit7 : 1;
+} Flags_001AF180;
+
+typedef struct {
+    u8 r, g, b, a;
+} Color_001AF180;
+
+typedef struct {
+    u8 pad00[4];
+    Color_001AF180 color;
+} Palette_001AF180;
+
+struct CardNode_001AF180_s {
+    f32 x, y;
+    u8 pad08[0x3C];
+    Color_001AF180 color;
+    u8 pad48[0x39];
+    Flags_001AF180 flags81;
+    u8 pad82;
+    Flags_001AF180 flags83;
+    u8 pad84[0xC];
+    s32 resource;
+};
+
+typedef struct {
+    CardNode_001AF180 *object;
+    u8 pad04[0xC];
+    u8 tracks[2][0x10];
+    u8 pad30[0x40];
+    f32 scale;
+    u8 pad74[0x24];
+    u16 duration;
+    u16 timer;
+    u8 pad9C[3];
+    Flags_001AF180 flags9F;
+} Actor_001AF180;
+
+s32 func_001D9F00(void *, s32);
+extern u16 D_00318118;
+
+static inline f32 abs_001AF180(f32 value) {
+    if (value < 0.0f) {
+        return -value;
+    }
+    return value;
+}
+
+s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
+    extern Palette_001AF180 D_002BE840[];
+    u8 *state = D_00317490.b;
+    s32 i;
+    s32 id;
+    Actor_001AF180 *actor;
+    s32 resource;
+
+    if (func_001AAF60(1) != 1) {
+        return arg0;
+    }
+    if (!((Flags_001AF180 *)(state + 0xD67))->bit2) {
+        if (state[0xD45] == 0 && state[0xD47] == 0 && state[0xD48] == 0) {
+            return arg0;
+        }
+    }
+    i = 5;
+    do {
+        id = state[0xD2C + i];
+        actor = func_001CDE70(id);
+        if (actor != NULL) {
+            object = actor->object;
+            if (object != NULL) {
+                resource = object->resource;
+                if (!object->flags83.bit6) {
+                    if (id != 0) {
+                        if (state[0xD47] == 0 && state[0xD4F] == id - 1) {
+                            object->color = D_002BE840[state[0xD3C]].color;
+                            object->color.a = D_00318118 >> 8;
+                        } else {
+                            object->color.a = 0;
+                        }
+                    }
+                    if (actor->flags9F.bit6) {
+                        s32 phase;
+                        f32 difference = actor->scale - 0.1f;
+                        u32 color;
+                        f32 progress;
+                        extern u32 Ex3d_GetSampleZ(f32, void *);
+                        difference = difference >= 0.0f ? difference : -difference;
+                        phase = difference <= 0.000001f ? 0 : 1;
+                        color = Ex3d_GetSampleZ(30.0f, actor->tracks[phase]);
+                        progress = (f32)(u32)actor->timer / (f32)(u32)actor->duration;
+                        if (phase != 0) {
+                            progress = 1.0f - progress;
+                        }
+                        func_001D9ED0((u32)((f32)color * (1.0f - progress) + 16777210.0f * progress));
+                    } else {
+                        func_001D9ED0(0xFFFFFA);
+                    }
+                    if (actor->flags9F.bit2) {
+                        func_001DA2B0(object, 1, object->x, object->y);
+                        arg0 = func_001DBC40(arg0, resource, object);
+                    } else {
+                        s32 result = func_001D9F00(object, 1);
+                        resource = result ? resource : 0;
+                        arg0 = func_001DBC40(arg0, resource, object);
+                        if (0 != id) {
+                            if (state[0xD47] != 0) {
+                                if (((Flags_001AF180 *)(state + 0xD67))->bit4) {
+                                    if (object->flags81.bit4 && result == 0) {
+                                        object->flags81.bit4 = 0;
+                                        object->flags81.bit6 = 0;
+                                    }
+                                } else {
+                                    if (!object->flags81.bit4 && result == 0) {
+                                        object->flags81.bit4 = 1;
+                                        object->flags81.bit6 = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    arg0 = func_0020A0B0(func_001DBD30(func_0020A0B0(arg0, 1), (s32)object), 0);
+                }
+            }
+        }
+        i--;
+    } while (i >= 0);
+    return arg0;
+}
 
 s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
     extern s32 SzGame_GetMode(s32);

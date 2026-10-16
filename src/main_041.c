@@ -569,7 +569,6 @@ typedef struct State_001C35A0 {
 } State_001C35A0;
 
 s32 lSzDuel_DrawTrade_Bag_Pipe(s32, s32, s32, s32);
-s32 lSzDuel_DrawTrade_Ready_Pipe(s32, s32, s32);
 s32 func_001BDAF0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern u16 D_0031811C;
 
@@ -774,7 +773,27 @@ s32 lSzDuel_DrawTrade_Cursor_Pipe(s32 id, s32 player, s32 arg2, s32 arg3, s32 ar
                          hint != 0 ? (s32)D_002BE944 : 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_041", lSzDuel_DrawTrade_Ready_Pipe);
+#pragma opt_propagation off
+
+s32 lSzDuel_DrawTrade_Ready_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+    extern char D_002BF03A[];
+    s8 *text = D_002BF03A;
+    s32 width;
+    s32 height;
+    s32 fx;
+    s32 fy;
+    s32 ty;
+
+    lSzDuel_GetFontSize(2, 3, strlen(text), text, &width, &height);
+    width += 0x18;
+    height += 0xC;
+    fx = arg1 + 0x140 - (width >> 1);
+    fy = arg2 + 0xE0 - (height >> 1);
+    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, 0xC, -1, 0xB, fx, fy, -width, -height, 1);
+    ty = arg2 + 0xE8 - (height >> 1);
+    return SzDuel_DrawWindow_Font_Pipe(arg0, arg1 + 0x140, ty, 2, 3, strlen(text), text, 0);
+}
+#pragma opt_propagation reset
 
 void lSzDuel_DrawTrade_Exit_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
@@ -3164,7 +3183,6 @@ typedef struct Object_001CD710 {
     Flags_001CD710 flags;
 } Object_001CD710;
 
-s32 SzDuel_DrawHandCard_Pipe(s32);
 
 s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
     extern s32 SzDuel_DrawHandCard_Pipe(s32);
