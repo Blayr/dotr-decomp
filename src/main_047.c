@@ -1055,7 +1055,7 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg
         camera.direction[0][0] *= -1.0f;
         camera.direction[0][1] *= -1.0f;
         camera.direction[0][2] *= -1.0f;
-        { f32 h = 448.0f, cy = 224.0f, d = 800.0f, w = 640.0f, cx = 320.0f; func_0020DF40(d, w, h, cx, cy); }
+        { f32 h = 448.0f, d = 800.0f, w = 640.0f, cy = 224.0f, cx = 320.0f; func_0020DF40(d, w, h, cx, cy); }
         func_0020E360(&camera);
         count = func_0020EC60((void *)packet);
         func_0020EBA0(matrix);
