@@ -1432,7 +1432,89 @@ s32 viBufPutTs(void *arg0, void *arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_069", viBufGetTs);
+typedef struct TimeStamp_00244DE0 {
+    s64 pts;
+    s64 dts;
+    s32 pos;
+    s32 len;
+} TimeStamp_00244DE0;
+
+typedef struct ViBuf_00244DE0 {
+    u32 data;
+    u32 tag;
+    s32 n;
+    s32 dmaStart;
+    s32 dmaN;
+    s32 readBytes;
+    s32 buffSize;
+    u32 d4madr;
+    u32 d4tadr;
+    u32 d4qwc;
+    u32 d4chcr;
+    u32 d3madr;
+    u32 d3qwc;
+    u32 d3chcr;
+    u32 ipubp;
+    u32 ipuctrl;
+    s32 sema;
+    s32 isActive;
+    s64 totalcount;
+    TimeStamp_00244DE0 *ts;
+    s32 n_ts;
+    s32 count_ts;
+    s32 wt_ts;
+} ViBuf_00244DE0;
+
+#pragma opt_dead_assignments off
+
+s32 viBufGetTs(void *arg0, void *arg1)
+{
+    ViBuf_00244DE0 *f;
+    s32 count;
+    u32 ipubp;
+    u32 d4madr;
+    s32 i;
+    s32 bp;
+    s32 datasize;
+    u32 fp;
+    u32 ifc;
+    TimeStamp_00244DE0 *ts;
+    s32 isEnd;
+    s32 wt;
+    s32 stop;
+    f = arg0;
+    ts = arg1;
+
+    d4madr = *(volatile u32 *)0x1000B410;
+    isEnd = 0;
+    ipubp = *(volatile u32 *)0x10002020;
+    bp = f->ipubp & 0x7F;
+    fp = (ipubp >> 16) & 3;
+    ifc = (ipubp >> 8) & 0xF;
+    datasize = f->n << 11;
+    WaitSema(f->sema);
+    stop = d4madr - ((fp + ifc) << 4);
+    ts->pts = -1;
+    ts->dts = -1;
+    count = f->count_ts;
+    stop = (stop + (bp >> 3) + datasize - f->data) % datasize;
+    wt = f->wt_ts;
+    for (i = 0; i < count && !isEnd; i++) {
+        s32 index;
+        index = (wt - count + f->n_ts + i) % f->n_ts;
+        if ((stop + datasize - f->ts[index].pos) % datasize < f->ts[index].len) {
+            ts->pts = f->ts[index].pts;
+            ts->dts = f->ts[index].dts;
+            f->ts[index].pts = -1;
+            f->ts[index].dts = -1;
+            isEnd = 1;
+            f->count_ts -= (f->count_ts <= 0) ? f->count_ts : 1;
+        }
+    }
+    SignalSema(f->sema);
+    return 1;
+}
+#pragma opt_dead_assignments reset
 
 s32 videoDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     sceMpegCreate(arg0, arg1, arg2);

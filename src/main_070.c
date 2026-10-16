@@ -171,7 +171,6 @@ typedef struct Entry_002455E0 {
     s32 size;
 } Entry_002455E0;
 
-s32 viBufGetTs(u8 *, void *);
 
 s32 mpegTS(s32 arg0, void *arg1) {
     Entry_002455E0 entry;
