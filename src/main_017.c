@@ -596,4 +596,32 @@ void TaTuto_FocusUnit_00175BA0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_017", func_00175E60);
+void func_00175E60(void) {
+    s32 i;
+    s32 n;
+
+    n = SzDuel_GetDeckCount(0);
+    for (i = 0; i < n; i++) {
+        SzDuel_DelDeck(0, i);
+    }
+    n = SzDuel_GetDeckCount(1);
+    for (i = 0; i < n; i++) {
+        SzDuel_DelDeck(1, i);
+    }
+    SzDuel_SetDeck(0, 0, 0x141);
+    SzDuel_SetDeck(0, 1, 0x11D);
+    SzDuel_SetDeck(0, 2, 0x9C);
+    SzDuel_SetDeck(0, 3, 0xF9);
+    SzDuel_SetDeck(0, 4, 0x1F9);
+    SzDuel_SetDeck(1, 0, 0x15);
+    SzDuel_SetDeck(1, 1, 0x1A7);
+    SzDuel_SetDeck(1, 2, 0x20A);
+    SzDuel_SetDeck(1, 3, 0xC);
+    SzDuel_SetDeck(1, 4, 0x1B1);
+    for (i = 0; i < 5; i++) {
+        SzDuel_DelHand(0, i);
+    }
+    for (i = 0; i < 5; i++) {
+        SzDuel_DelHand(1, i);
+    }
+}

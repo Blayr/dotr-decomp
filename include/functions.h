@@ -2505,10 +2505,14 @@ s32 func_00162F60(s32 arg0, void *arg1); /* JP: L019 */
 s32 func_001676E0(s32 arg0, void *arg1); /* JP: L020 */
 s32 func_0016B1F0(s32 arg0, void *arg1); /* JP: L021 */
 s32 func_00172370(s32 arg0, void *arg1); /* JP: L022 */
+s32 func_00172510(s32 arg0); /* JP: TaTuto_FocusUnit */
 s32 func_001728A0(s32 arg0, u8 *arg1); /* JP: L032 */
 s32 func_001747D0(s32 arg0, void *tutorial); /* JP: L033 */
+void func_00175E60(void); /* JP: TaTuto_DbgInit034 */
 s32 func_00175FE0(s32 arg0, void *tutorial); /* JP: L034 */
+void func_00178320(s32 arg0); /* JP: TaTuto_SetDeck035 */
 s32 func_00178590(s32 arg0, void *tutorial); /* JP: L035 */
+s32 func_0017AA70(s32 arg0, void *tutorial); /* JP: L036 */
 int func_0017BD50(void);
 void func_0017BD60(void);
 void func_0017BD70(void);

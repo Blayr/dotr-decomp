@@ -3964,4 +3964,78 @@ s32 func_00172370(s32 arg0, void *arg1) {
     return cur & 0xFFFF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main_016", func_00172510);
+s32 func_00172510(s32 arg0) {
+    s32 rot[4];
+    f32 pos[4];
+    s32 unit;
+    s32 a;
+    s32 d;
+
+    SzView_FreeRequest(0, 0);
+    switch (arg0) {
+    case 0x3C:
+        unit = SzDuel_GetUnit(0, 0);
+        SzEffect_GetModelRot2(0, rot);
+        rot[0] += 0x3F;
+        a = *(s32 *)((u8 *)unit + 0x30);
+        d = 0x47FF - a;
+        if (d < 0) {
+            d = 0x147FE - a;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, pos);
+        pos[0] += SzEffect_GetRadius2(0);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(0, 0), 0);
+        SzView_ReqCamera(0, 0, 4, 0, 0, pos);
+        break;
+    case 0:
+        unit = SzDuel_GetUnit(1, 0);
+        SzEffect_GetModelRot2(0x100, rot);
+        rot[0] += 0x3F;
+        a = *(s32 *)((u8 *)unit + 0x30);
+        d = 0x47FF - a;
+        if (d < 0) {
+            d = 0x147FE - a;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, pos);
+        pos[0] += SzEffect_GetRadius2(0x100);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(1, 0), 0);
+        SzView_ReqCamera(0, 0, 4, 0, 0, pos);
+        break;
+    case 0x9C:
+        unit = SzDuel_GetUnit(0, 1);
+        SzEffect_GetModelRot2(1, rot);
+        rot[0] += 0x3F;
+        a = *(s32 *)((u8 *)unit + 0x30);
+        d = 0xC7FF - a;
+        if (d < 0) {
+            d = 0x1C7FE - a;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, pos);
+        pos[0] += SzEffect_GetRadius2(1);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(0, 1), 0);
+        SzView_ReqCamera(0, 0, 4, 0, 0, pos);
+        break;
+    case 3:
+        unit = SzDuel_GetUnit(1, 1);
+        SzEffect_GetModelRot2(0x101, rot);
+        rot[0] += 0x3F;
+        a = *(s32 *)((u8 *)unit + 0x30);
+        d = 0x47FF - a;
+        if (d < 0) {
+            d = 0x147FE - a;
+        }
+        rot[1] += d;
+        rot[2] += 0x1000;
+        SzView_IV2V(rot, pos);
+        pos[0] += SzEffect_GetRadius2(0x101);
+        SzView_ReqCamera(0, 0, 7, 0, SzDuel_GetUnitModelID(1, 1), 0);
+        SzView_ReqCamera(0, 0, 4, 0, 0, pos);
+        break;
+    }
+}
