@@ -1724,7 +1724,6 @@ typedef struct {
 
 extern u8 D_00317472;
 
-s32 SzDuel_Act(void);
 void func_00237730(void);
 
 void SzGame_ModeAct(void) {

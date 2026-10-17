@@ -1912,4 +1912,3445 @@ s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
 
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/main_042", SzDuel_Act);
+typedef struct Vec4_001CEE60 {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} Vec4_001CEE60;
+
+typedef struct Flags8_001CEE60 {
+    s8 b0 : 1;
+    s8 b1 : 1;
+    s8 b2 : 1;
+    s8 b3 : 1;
+    s8 b4 : 1;
+    s8 b5 : 1;
+    s8 b6 : 1;
+    s8 b7 : 1;
+} Flags8_001CEE60;
+
+typedef struct Flags56_001CEE60 {
+    s8 b01 : 2;
+    s8 b23 : 2;
+    s8 b45 : 2;
+    s8 b67 : 2;
+} Flags56_001CEE60;
+
+typedef struct Object_001CEE60 {
+    u8 pad0[4];
+    u8 *view;
+    u8 pad8[0x2C];
+    s16 px;
+    s16 pz;
+    u8 pad38[4];
+    u16 id;
+    u8 pad3E[2];
+    u8 fromX;
+    u8 fromZ;
+    u8 pad42[2];
+    u8 x;
+    u8 z;
+    u8 model;
+    u8 pad47[8];
+    u8 flags4F;
+    u8 pad50;
+    u8 status51;
+    u8 pad52;
+    u8 progress;
+    u8 pad54[2];
+    Flags56_001CEE60 flags56;
+    Flags8_001CEE60 flags57;
+    Flags8_001CEE60 flags58;
+} Object_001CEE60;
+
+typedef struct UFlags8_001CEE60 {
+    u8 b0 : 1;
+    u8 b1 : 1;
+    u8 b2 : 1;
+    u8 b3 : 1;
+    u8 b4 : 1;
+    u8 b5 : 1;
+    u8 b6 : 1;
+    u8 b7 : 1;
+} UFlags8_001CEE60;
+
+
+
+extern Vec4_001CEE60 D_00291510;
+extern Vec4_001CEE60 D_00291520;
+extern Vec4_001CEE60 D_00291530;
+extern u16 D_002CDF4C[];
+
+s32 func_001E7F70(s32, s32, s32);
+
+extern u8 D_003181E7;
+extern u8 D_003181F3;
+
+#define DUEL duel
+#define DUEL_S16(off) (*(s16 *)(duel + (off)))
+#define MIN_001CEE60(a, b) ((a) < (b) ? (a) : (b))
+#define MAX_001CEE60(a, b) ((a) > (b) ? (a) : (b))
+#define ABS_001CEE60(x) ((x) >= 0 ? (x) : -(x))
+#define REC_S32(p, off) (*(s32 *)((u8 *)(p) + (off)))
+#define DUEL_U32(off) (*(u32 *)(duel + (off)))
+typedef struct { u8 pad[0xC64]; u32 c64; } C64_001CEE60;
+#define DUEL_DUO(off) (*(Object_001CEE60 **)(duel + (off)))
+#define F64 ((Flags8_001CEE60 *)(duel + 0xD64))
+#define F65 ((Flags8_001CEE60 *)(duel + 0xD65))
+#define F66 ((Flags8_001CEE60 *)(duel + 0xD66))
+#define F67 ((Flags8_001CEE60 *)(duel + 0xD67))
+#define U66 ((UFlags8_001CEE60 *)(duel + 0xD66))
+
+static inline s32 busy_001CEE60(Object_001CEE60 *p) {
+    return p != NULL && p->flags57.b4 && func_001F1300(p->model) && p->progress != p->status51;
+}
+
+static inline u8 *slot_001CEE60(s32 n) {
+    if (n < 0 || n >= 6) {
+        return NULL;
+    }
+    return D_0031A7C0 + n * 0xA0;
+}
+
+static inline void freeobj_001CEE60(u8 *obj) {
+    if (obj != NULL) {
+        func_001CD560(obj);
+        *(s32 *)(obj + 0x90) = 0;
+    }
+}
+
+static inline void freeslot_001CEE60(u8 *p) {
+    if (p != NULL) {
+        if (*(u8 **)p != NULL) {
+            freeobj_001CEE60(*(u8 **)p);
+        }
+        func_001CDD90(p);
+    }
+}
+
+static inline void drop_001CEE60(u8 *duel, s32 n) {
+    u8 *p;
+
+    if (n != 0) {
+        func_001DF2C0(duel[0xD54], n - 1);
+    }
+    if ((p = slot_001CEE60(n)) != NULL && *(u8 **)p != NULL) {
+        freeslot_001CEE60(p);
+    }
+}
+
+s32 SzDuel_Act(void) {
+    extern s32 func_001F48F0(s32, s32, s32, s32, s32);
+    extern s32 func_001E1D10();
+    extern s32 func_001F3910();
+    extern s32 func_001F13F0();
+    extern s32 func_001E19D0();
+    extern void func_001DDD80();
+    extern s32 func_001DE2A0();
+    extern s32 func_0024F780();
+    extern s32 func_0026EA00();
+    extern s32 func_001E17D0();
+    extern s32 func_001E1760();
+    extern s32 func_001E08F0();
+    extern s32 func_001A22C0(f32);
+    extern s32 func_001E24E0();
+    extern s32 func_002170A0();
+    extern u16 func_00203A40();
+    extern u16 func_001CECF0();
+    extern s32 func_001F19A0();
+    extern s32 func_00215D30();
+    extern void func_00228150(s8);
+    extern s32 func_0026EB10();
+    s32 j_F;
+    s32 i_F;
+    s32 nx_2969;
+    s32 card_2717;
+    s32 i_419;
+    s32 nx_F;
+    u8 *duel;
+    u8 *me;
+    u8 *cur;
+    s32 hand0;
+    s32 hand1;
+    u8 prev;
+    s32 picked;
+    s32 prevX;
+    s32 prevZ;
+    s32 fullA;
+    s32 bx_847;
+    s32 fullB;
+    s32 soloA;
+    s32 soloB;
+    s32 mDpad;
+    s32 mUD;
+    s32 mLR;
+    s32 mLR2;
+    s32 mR2;
+    s32 lifeA100;
+    s32 lifeB100;
+    s32 lifeA;
+    s32 lifeB;
+    s32 held;
+    s32 held16;
+    s32 mUp;
+    s32 mLeft;
+    u8 hpA;
+    u8 hpB;
+    s32 cam;
+    u8 *list;
+    s32 j;
+    s32 busy;
+    s32 v;
+    s32 h;
+    u8 *p;
+    Vec4_001CEE60 camv;
+    Vec4_001CEE60 pos;
+    Vec4_001CEE60 pos7;
+    Vec4_001CEE60 tgt;
+    Vec4_001CEE60 pos2;
+    Vec4_001CEE60 tgt2;
+    Vec4_001CEE60 spot;
+    Object_001CEE60 *obj;
+    s32 posA;
+    s32 posB;
+    s32 field;
+    s32 *anim;
+    s32 last;
+    u16 pad;
+    Vec4_001CEE60 look;
+    Vec4_001CEE60 eye;
+    Vec4_001CEE60 look2;
+    Vec4_001CEE60 eye2;
+    Vec4_001CEE60 look3;
+    Vec4_001CEE60 eye3;
+    s32 flip;
+    f32 *cpos;
+    f32 *cpos_847;
+    f32 hgt;
+    f32 dz;
+    f32 dx;
+    f32 lim;
+    s32 k;
+    s32 side;
+    u8 cx;
+    u8 cz;
+    u8 model;
+    s32 bz_847;
+    s32 i;
+    s32 t;
+    s32 bm;
+    s32 r;
+    s32 *rec;
+    s32 win;
+    s32 lose;
+    s32 slot;
+    s32 wonA;
+    s32 res;
+    s32 wonB;
+    s32 low;
+    u32 high;
+    u32 reply;
+    s32 from;
+    s32 to;
+    u8 *sl;
+    u8 *sub;
+    u16 rep;
+    s32 pressed;
+    u16 trig;
+    u16 swap;
+    u16 keys;
+    s32 inHand;
+    s32 busy_847;
+    s32 onField;
+    s32 x0;
+    s32 stickRX;
+    s32 stickRY;
+    s32 stickLY;
+    s32 angB_847;
+    s32 speed;
+    s32 moved;
+    s32 gx;
+    s32 tx;
+    s32 tz;
+    s32 angA_847;
+    s32 old;
+    s32 diff;
+    s32 n;
+    s32 card;
+    s32 scrollA;
+    s32 scrollB;
+    s32 lock;
+    s32 lim2;
+    s32 loops;
+    s32 nx;
+    s32 nz;
+    s32 port;
+    s32 z0;
+    s32 x1;
+    s32 z1;
+    s32 px;
+    s32 pz;
+    s32 step;
+    s32 lvl;
+    s32 ok;
+    s32 have;
+    s32 need;
+    s32 done_847;
+    s32 t2;
+    s8 bit;
+    Object_001CEE60 tmpo;
+
+    duel = D_00317490.b;
+    me = &D_00317490.b[D_003181E4 * 0x350];
+    list = me + 0x1D0;
+    cam = func_001F9AD0(0);
+    hand0 = func_001DF470(0);
+    hand1 = func_001DF470(1);
+    prev = D_003181E7;
+    hpA = func_001DE4E0(0);
+    hpB = func_001DE4E0(1);
+    lifeA = hpA;
+    if (lifeA >= 100) {
+        fullA = 1;
+    } else {
+        fullA = 0;
+    }
+    lifeB = hpB;
+    if (lifeB >= 100) {
+        fullB = 1;
+    } else {
+        fullB = 0;
+    }
+    soloB = 1;
+    if (DUEL[0xD54] == 0) {
+        soloA = 1;
+    } else {
+        soloA = 0;
+    }
+    if (DUEL[0xD54] == 1) {
+        soloB = 1;
+    } else {
+        soloB = 0;
+    }
+    picked = 0;
+    switch (DUEL[0xD57]) {
+    case 0:
+        if (me[0x33C] < 100) {
+            DUEL[0xD3A] = 0x80;
+        }
+        DUEL[0xD57] = 1;
+    case 1:
+        p = func_001F3EA0(0, 0x26C);
+        if (p == NULL || (*p & 7) < 2) {
+            return 0;
+        }
+        DUEL[0xD57] = 2;
+    case 2:
+        if (me[0x33C] < 100) {
+            if (func_001FF300() != 0) {
+                return 0;
+            }
+            DUEL[0xD34] = 0x80;
+            func_001E2340();
+            func_001D9820(1, DUEL[0xD52]);
+            DUEL[0xD57] = 0x15;
+            return 0;
+        }
+        DUEL[0xD57] = 3;
+    case 3:
+        pos = *(Vec4_001CEE60 *)func_001FAF60(0);
+        if (pos.x < 600.0f) {
+            pos.x += 20.0f;
+            func_001FB360(0, &pos.x);
+            return 0;
+        }
+        DUEL[0xD35] = 0;
+        DUEL[0xD57] = 4;
+    case 4:
+        if (DUEL[0xD35] != 0) {
+            DUEL[0xD35]--;
+            return 0;
+        }
+        DUEL[0xD57] = 5;
+    case 5:
+        v = func_001E2450(0, 0);
+        if (v < 0) {
+            v = MIN_001CEE60(v + 8, 0);
+            for (i = 0; i < 7; i++) {
+                for (j = 0; j < 7; j++) {
+                    func_001E23A0(j, i, (s16)v);
+                }
+            }
+            return 0;
+        }
+        DUEL[0xD35] = 0;
+        DUEL[0xD57] = 6;
+    case 6:
+        if (DUEL[0xD35] != 0) {
+            DUEL[0xD35]--;
+            return 0;
+        }
+        DUEL[0xD57] = 7;
+    case 7:
+        pos7 = *(Vec4_001CEE60 *)func_001FAF60(0);
+        func_001E10F0(me[0x33D], me[0x33E], 0, &tgt);
+        pos7.x = 150.0f;
+        func_001FA8A0(0, 0, 3, 0x1E, 0, &tgt);
+        func_001FA8A0(0, 0, 4, 0x1E, 0, &pos7);
+        DUEL[0xD35] = 0;
+        DUEL[0xD57] = 8;
+    case 8:
+        if (func_001FA6F0(0, 0) != NULL) {
+            return 0;
+        }
+        if (DUEL[0xD35] != 0) {
+            DUEL[0xD35]--;
+            return 0;
+        }
+        DUEL[0xD57] = 9;
+    case 9:
+        if (DUEL[0xD34] < 0x80) {
+            DUEL[0xD34] = MIN_001CEE60(DUEL[0xD34] + 8, 0x80);
+            return 0;
+        }
+        DUEL[0xD35] = 0;
+        DUEL[0xD57] = 10;
+    case 10:
+        if (DUEL[0xD35] != 0) {
+            DUEL[0xD35]--;
+            return 0;
+        }
+        DUEL[0xD57] = 11;
+    case 11:
+        pos2 = *(Vec4_001CEE60 *)func_001FAF60(0);
+        func_001E10F0(me[0x33D], me[0x33E], 0, &tgt2);
+        tgt2.y = *(s8 *)(me + 0x345);
+        pos2.x = 100.0f;
+        pos2.y = func_001A6C30(6.2831855f + (3.1415927f + pos2.y), 6.2831855f);
+        pos2.z = 0.58904862f;
+        func_001FA8A0(0, 0, 3, 0x1E, 0, &tgt2);
+        func_001FA8A0(0, 0, 4, 0x1E, 0, &pos2);
+        for (i_419 = 0, cur = duel; i_419 < 2; i_419++, cur += 0x350) {
+            if ((p = (u8 *)func_001DF540(i_419, 0)) != NULL) {
+                REC_S32(cur, 0x330) = func_001F48F0(0, 0x26C, 0, (p[0x41] << 8) | p[0x40], 0);
+            }
+            if (REC_S32(cur, 0x330) < 0) {
+                func_001E1C10(i_419, 0, 1, 0);
+            }
+        }
+        DUEL[0xD57] = 12;
+    case 12:
+        busy = 0;
+        for (i = 0; i < 2; i++) {
+            rec = &REC_S32(duel + i * 0x350, 0x330);
+            if ((h = *rec) >= 0) {
+                if ((v = func_001F52D0(h)) >= 0) {
+                    if (v == 2) {
+                        func_001E1C10(i, 0, 1, 0);
+                        *rec = -1;
+                    }
+                    busy = 1;
+                }
+            }
+        }
+        if (busy != 0) {
+            return 0;
+        }
+        DUEL[0xD57] = 13;
+    case 13:
+        if (func_001FA6F0(0, 0) != NULL) {
+            return 0;
+        }
+        for (i = 0; i < 2; i++) {
+            if (func_001E1D10(i, 0) < 0x80) {
+                return 0;
+            }
+        }
+        DUEL[0xD35] = 30;
+        DUEL[0xD57] = 14;
+    case 14:
+        if (DUEL[0xD35] != 0) {
+            DUEL[0xD35]--;
+            return 0;
+        }
+        if (func_001FF300() != 0) {
+            return 0;
+        }
+        DUEL[0xD57] = 15;
+    case 15:
+        DUEL[0xD57] = 16;
+    case 16:
+        DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 8, 0x40);
+        if (DUEL_S16(0xC9C) < 0x40) {
+            return 0;
+        }
+        DUEL[0xD57] = 17;
+    case 17:
+        DUEL[0xD57] = 18;
+        return 0;
+    case 18:
+        DUEL_S16(0xC9C) = MAX_001CEE60(DUEL_S16(0xC9C) - 8, 0);
+        if (DUEL_S16(0xC9C) > 0) {
+            return 0;
+        }
+        DUEL[0xCB2] = 0x18;
+        func_001D9820(1, DUEL[0xD52]);
+        DUEL[0xD57] = 0x15;
+    }
+    {
+        Duel_00317490_s *q = &D_00317490.s;
+        if (q->hold != 0) {
+            q->dirs.dir1 = 1;
+        }
+        q->wave1 = MIN_001CEE60(MAX_001CEE60(q->wave1 + (q->dirs.dir1 << 9), 0), 0x8000);
+        if ((q->wave1 == 0) || ((s32) q->wave1 >= 0x8000)) {
+            q->dirs.dir1 = (s8) -q->dirs.dir1;
+        }
+    }
+    {
+        Duel_00317490_s *q = &D_00317490.s;
+        s32 st = q->dirs.dir2 << 0xB;
+        q->wave2 = MIN_001CEE60(MAX_001CEE60(q->wave2 + st, 0), 0x8000);
+        if ((q->wave2 == 0) || ((s32) q->wave2 >= 0x8000)) {
+            q->dirs.dir2 = (s8) -q->dirs.dir2;
+        }
+    }
+    if (DUEL[0xD63] != 0) {
+        DUEL[0xD63]--;
+    }
+    if (F67->b2) {
+        u8 vol = 0x80 - ((DUEL[0xD45] << 6) >> 7);
+        func_001F6CE0(vol);
+        func_001F6CF0(vol);
+    }
+    if (DUEL[0xD57] == 0x18 && REC_S32(me, 0x1D4) != (DUEL[0xD3C] ? 0xC000 : 0x4000)) {
+        DUEL[0xD44] = MIN_001CEE60(DUEL[0xD44] + 0x10, 0x80);
+    } else {
+        DUEL[0xD44] = MAX_001CEE60(DUEL[0xD44] - 0x10, 0);
+    }
+    spot.y = *(s8 *)(me + 0x345);
+    for (i_F = 0; i_F < 7; i_F++) {
+        for (j_F = 0; j_F < 7; j_F++) {
+            obj = *(Object_001CEE60 **)func_001DCD00(j_F, i_F);
+            h = 0;
+            if (obj != NULL && obj->flags58.b0 == 0 && obj->z < 6 &&
+                (obj->z == 0 || obj->flags57.b2 != 0 || obj->flags56.b45 != 0)) {
+                if (func_001F1370(obj->model) != 0) {
+                    spot.x = (j_F - 3) * 50;
+                    spot.z = (i_F - 3) * 50;
+                    if (func_0020D100(&spot.x, (f32 *)cam) < 80.0f) {
+                        h = 1;
+                    }
+                    if (h) {
+                        if (obj->flags4F == 0 || obj->flags4F == 1) {
+                            obj->flags4F = 1;
+                            obj->flags56.b23 = 3;
+                        }
+                    } else if (obj->flags4F & 1) {
+                        if (obj->progress < obj->status51) {
+                            obj->flags56.b23 = 1;
+                        }
+                        if (obj->progress > obj->status51) {
+                            obj->flags56.b23 = 3;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (DUEL[0xD57] >= 0x54 || hand0 == 0 || hand1 == 0) {
+        F66->b7 = 0;
+        F67->b0 = F66->b7;
+    }
+    if (F64->b7) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F64->b7 = 0;
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC5C) != 0) {
+        switch (DUEL_U32(0xC5C) & 0xFFFF) {
+        case 5:
+            DUEL[0xD50] = DUEL[0xD54] ^ 1;
+            F66->b7 = 0;
+            F67->b0 = F66->b7;
+            DUEL[0xD51] = 3;
+            DUEL[0xD57] = 0x54;
+            DUEL_U32(0xC5C) = 0;
+            break;
+        case 8:
+            if (hand0 == hand1) {
+                DUEL[0xD50] = 2;
+            } else if (hand0 > hand1) {
+                DUEL[0xD50] = 0;
+            } else {
+                DUEL[0xD50] = 1;
+            }
+            F66->b7 = 0;
+            F67->b0 = F66->b7;
+            DUEL[0xD51] = 1;
+            DUEL[0xD57] = 0x54;
+            DUEL_U32(0xC5C) = 0;
+            break;
+        case 1:
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F64->b7 = 1;
+            DUEL_U32(0xC5C) = (DUEL_U32(0xC5C) & 0xFFFF0000) | 0x80;
+            break;
+        case 0x80:
+        case 0:
+            if ((DUEL_U32(0xC5C) >> 16) == 0xFF) {
+                DUEL_U32(0xC5C) = 0;
+            } else {
+                DUEL_U32(0xC5C) = func_002724F0(DUEL_U32(0xC5C) >> 16, (s32 *)(duel + 0x6E8));
+            }
+            break;
+        }
+        return 0;
+    }
+    if (F65->b0) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            switch (DUEL_U32(0xC60) & 0xFFFF) {
+            case 5:
+                func_00216C70(DUEL[0xD54], 0x29F, 1);
+                DUEL[0xD50] = DUEL[0xD54];
+                F66->b7 = 0;
+                F67->b0 = F66->b7;
+                DUEL[0xD51] = 2;
+                DUEL[0xD57] = 0x54;
+                DUEL_U32(0xC60) = 0;
+                F65->b0 = 0;
+                break;
+            case 1:
+                DUEL_U32(0xC60) = (DUEL_U32(0xC60) & 0xFFFF0000) | 0x80;
+                F65->b0 = 0;
+                break;
+            }
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC60) != 0) {
+        switch (DUEL_U32(0xC60) & 0xFFFF) {
+        case 1:
+        case 5:
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b0 = 1;
+            break;
+        case 0x80:
+        case 0:
+            if ((DUEL_U32(0xC60) >> 16) == 0xFF) {
+                DUEL_U32(0xC60) = 0;
+            } else {
+                DUEL_U32(0xC60) = func_00267C50(DUEL_U32(0xC60) >> 16, duel + 0x6E8);
+            }
+            break;
+        }
+        return 0;
+    }
+    if (DUEL[0xD38] != 0) {
+        switch (DUEL[0xD38] & 0xFF) {
+        case 1:
+            F67->b0 = 0;
+            DUEL[0xD3B] = 0x80;
+            DUEL[0xD3A] = MIN_001CEE60(DUEL[0xD3A] + 4, 0x80);
+            if (DUEL[0xD3A] < 0x80) {
+                break;
+            }
+            F67->b1 = 1;
+            DUEL[0xD3E] = 0x80;
+            func_001E3850(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, 0);
+            func_001E1C10(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, 0, 0x80);
+            func_001E19D0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, 0x80);
+            func_001E3850(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, 0);
+            func_001E1C10(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, 0, 0x80);
+            func_001E19D0(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, 0x80);
+            DUEL[0xD38]++;
+            break;
+        case 2:
+            posA = (DUEL_DUO(0x6C8)->x << 8) | DUEL_DUO(0x6C8)->z;
+            posB = (DUEL_DUO(0x6CC)->x << 8) | DUEL_DUO(0x6CC)->z;
+            field = func_001E22B0(me[0x33D], me[0x33E]);
+            if (func_001A82E0(0x16) != 0) {
+                func_001A8320(5, field);
+                func_001AAAF0(5, 1);
+            }
+            func_001A8BB0();
+            func_001E7F70(1, 0, 0);
+            func_001E7F70(2, field, 0);
+            func_001E4F00(field);
+            func_001E5260(0, posA);
+            func_001E5260(1, posB);
+            func_001F1070(DUEL_DUO(0x6C8)->model);
+            func_001F1070(DUEL_DUO(0x6CC)->model);
+            func_001F3910(0, 0x26D, 0);
+            func_001F7260(1);
+            DUEL[0xD38]++;
+        case 3:
+            if (func_001FF300() != 0) {
+                break;
+            }
+            func_001F7260(0);
+            if ((anim = (s32 *)func_001E5230()) != NULL) {
+                last = anim[3] - 1;
+                func_001FA8A0(0, 0, 8, 0, -1, anim);
+                func_001FB940(0, anim, last, 0, -1, 0);
+                func_001FA770(0, 0, 1);
+            } else {
+                func_001F9FE0(0, 0, 0);
+            }
+            DUEL[0xD38]++;
+        case 4:
+            DUEL[0xD3A] = MAX_001CEE60(DUEL[0xD3A] - 4, 0);
+            DUEL[0xD3B] = MAX_001CEE60(DUEL[0xD3B] - 4, 0);
+            if (DUEL[0xD3A] > 0) {
+                break;
+            }
+            if (DUEL[0xD3B] > 0) {
+                break;
+            }
+            func_00202CB0(4, -1, 1);
+            func_001FA770(0, 0, 0);
+            DUEL[0xD39] = 0;
+            DUEL[0xD38]++;
+        case 5:
+            pad = 0;
+            if (fullA != 0 && (soloA != 0 || fullB == 0)) {
+                pad |= func_00203A40(lifeA - 100, 0, 0xFFFF);
+            }
+            if (fullB != 0 && (soloB != 0 || fullA == 0)) {
+                pad |= func_00203A40(lifeB - 100, 0, 0xFFFF);
+            }
+            if (pad & 0x20) {
+                if (func_001A82E0(0x16) != 0) {
+                    func_001AAAF0(*(u16 *)(duel + 0xC84), 0);
+                }
+                DUEL[0xD38]++;
+            }
+            switch (DUEL[0xD39]) {
+            case 0:
+                if (func_001FA6F0(0, 0) != NULL) {
+                    break;
+                }
+                DUEL[0xD36] = 0;
+                DUEL[0xD39]++;
+            case 1:
+                hgt = func_001DE260(DUEL_DUO(0x6C8)->id);
+                look = D_00291510;
+                look.x = MAX_001CEE60(hgt, 50.0f);
+                func_001F2050(DUEL_DUO(0x6C8)->model, &eye);
+                func_001F9D80(0, &eye);
+                func_001FB360(0, &look.x);
+                DUEL[0xD35] = 0x3C;
+                DUEL[0xD39]++;
+            case 2:
+                func_001FC210(0, DUEL_DUO(0x6C8)->model, 0, 1, 1.0f);
+                if (DUEL[0xD35] != 0) {
+                    DUEL[0xD35]--;
+                    break;
+                }
+                DUEL[0xD39]++;
+            case 3:
+                high = func_001A23B0(func_001F1B50(DUEL_DUO(0x6C8)->model));
+                flip = 0;
+                if (high >= 2) {
+                    break;
+                }
+                if (D_002CDF4C[DUEL_DUO(0x6C8)->id] & 0x8000) {
+                    flip = (s32)(2.0f * ((f32)func_0019A5C8() / 2147483648.0f)) ? 1 : 0;
+                }
+                func_001F6C10(0);
+                func_001F6CA0(0);
+                func_001F1830(DUEL_DUO(0x6CC)->model, 0);
+                func_001F1A00(DUEL_DUO(0x6CC)->model, 1);
+                func_00202CB0(4, -1, 1);
+                func_001F0CD0(0, 1, flip);
+                DUEL[0xD39]++;
+            case 4:
+                if (func_001FA6F0(0, 1) != NULL) {
+                    break;
+                }
+                if (func_001F5240(1, -1) != 0) {
+                    extern s32 func_001DE2B0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
+                    break;
+                }
+                DUEL[0xD39] = (func_001DE2B0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z,
+                                             DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 0) == 3) ? 5 : 0xD;
+                break;
+            case 5:
+                cpos = func_001FAF60(0);
+                hgt = 20.0f + (f32)func_001DE260(DUEL_DUO(0x6CC)->id);
+                hgt = MAX_001CEE60(hgt, 50.0f);
+                dz = hgt - cpos[0];
+                func_001FC210(0, DUEL_DUO(0x6CC)->model, 0, 1, 1.0f);
+                lim = 2.0f;
+                dz = MIN_001CEE60(MAX_001CEE60(dz, -lim), lim);
+                func_001FB6A0(0, 0, 1, 0.0f, 0.0f, dz);
+                if (!(dz <= 1e-6f)) {
+                    break;
+                }
+                if (func_001F13F0(DUEL_DUO(0x6CC)->model) != 0) {
+                    break;
+                }
+                DUEL[0xD39]++;
+            case 6:
+                DUEL[0xD35] = 0x1E;
+                DUEL[0xD39]++;
+            case 7:
+                func_001FC210(0, DUEL_DUO(0x6CC)->model, 0, 1, 1.0f);
+                if (DUEL[0xD35] != 0) {
+                    DUEL[0xD35]--;
+                    break;
+                }
+                DUEL[0xD39]++;
+            case 8:
+                high = func_001A23B0(func_001F1B50(DUEL_DUO(0x6CC)->model));
+                flip = 0;
+                if (high >= 2) {
+                    break;
+                }
+                if (D_002CDF4C[DUEL_DUO(0x6CC)->id] & 0x8000) {
+                    flip = (s32)(2.0f * ((f32)func_0019A5C8() / 2147483648.0f)) ? 1 : 0;
+                }
+                func_001F6C10(0);
+                func_001F6CA0(0);
+                func_001F1830(DUEL_DUO(0x6C8)->model, 0);
+                func_001F1A00(DUEL_DUO(0x6C8)->model, 1);
+                func_00202CB0(4, -1, 1);
+                func_001F0CD0(1, 1, flip);
+                DUEL[0xD39]++;
+            case 9:
+                if (func_001FA6F0(0, 1) != NULL) {
+                    break;
+                }
+                if (func_001F5240(1, -1) != 0) {
+                    break;
+                }
+                DUEL[0xD39] = (func_001DE2B0(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z,
+                                             DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1) == 3) ? 0x12 : 0xC;
+                break;
+            case 10:
+                hgt = func_001DE260(DUEL_DUO(0x6CC)->id);
+                look2 = D_00291520;
+                look2.x = MAX_001CEE60(hgt, 50.0f);
+                func_001F2050(DUEL_DUO(0x6CC)->model, &eye2);
+                func_001FA8A0(0, 0, 3, 0x5A, 0, &eye2);
+                func_001FA8A0(0, 0, 4, 0x5A, 0, &look2);
+                DUEL[0xD39]++;
+            case 11:
+                if (func_001FA6F0(0, 0) != NULL) {
+                    break;
+                }
+                DUEL[0xD36] = 0x80;
+                DUEL[0xD39] = 0xD;
+            case 12:
+            case 13:
+                k = DUEL[0xD39] - 12;
+                /* record k's offset is the pointer operand: MWCC adds the pointer operand first (addu v1,v1,s1) */
+                *(s32 *)((u8 *)(k * 0x350) + (u32)duel + 0x330) = -1;
+                DUEL[0xD35] = 0;
+                DUEL[0xD39] = k + 14;
+            case 14:
+            case 15:
+            {
+                f32 ldz;
+                f32 ldx;
+
+                cpos_847 = func_001FAF60(0);
+                    side = DUEL[0xD39] - 14;
+                    bx_847 = side ? DUEL_DUO(0x6CC)->x : DUEL_DUO(0x6C8)->x;
+                    bz_847 = side ? DUEL_DUO(0x6CC)->z : DUEL_DUO(0x6C8)->z;
+                    bm = side ? DUEL_DUO(0x6CC)->model : DUEL_DUO(0x6C8)->model;
+                    hgt = 20.0f + (f32)func_001DE260(side ? DUEL_DUO(0x6CC)->id : DUEL_DUO(0x6C8)->id);
+                    hgt = MAX_001CEE60(hgt, 50.0f);
+                    ldx = hgt - cpos_847[0];
+                    ldz = 0.39269909f - cpos_847[2];
+                    res = func_001F13F0(bm);
+                    t = DUEL[0xD36];
+                    t = MIN_001CEE60(t, 0x80);
+                    angA_847 = (t << 7) >> 7;
+                    angB_847 = (t << 8) >> 7;
+                    lim = (2.0f * (f32)t) / 128.0f;
+                    done_847 = 0;
+                    func_001FC210(0, bm, 0, 1, 1.0f);
+                    ldx = MIN_001CEE60(MAX_001CEE60(ldx, -lim), lim);
+                    func_001FB6A0(0, 0, 1, -((3.1415927f * (f32)angB_847) / 32768.0f),
+                                  MIN_001CEE60(MAX_001CEE60(ldz, -((3.1415927f * (f32)angA_847) / 32768.0f)), (3.1415927f * (f32)angA_847) / 32768.0f), ldx);
+                    if (DUEL[0xD36] < 0xFF) {
+                        DUEL[0xD36]++;
+                    }
+                    if (side == 0) {
+                        if (func_001DE2B0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z,
+                                          DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1) == 4) {
+                            r = func_001F13F0(DUEL_DUO(0x6CC)->model);
+                            if (r != 4) {
+                                if (r == 0) {
+                                    func_001F1550(DUEL_DUO(0x6CC)->model, 4);
+                                }
+                                done_847 = 1;
+                            }
+                        }
+                    }
+                    if (res == 4) {
+                        rec = &REC_S32(duel + side * 0x350, 0x330);
+                        busy_847 = func_001F19A0(bm);
+                        t = func_001F27A0(bm);
+                        if (busy_847 != 0) {
+                            break;
+                        }
+                        if (*rec < 0) {
+                            *rec = func_001F48F0(0, 0x26D, 0, (bx_847 << 8) | bz_847, 0);
+                            break;
+                        }
+                        if (DUEL[0xD35] == 0) {
+                            if (func_001F52D0(*rec) == 2) {
+                                DUEL[0xD35]++;
+                            }
+                            break;
+                        }
+                        if (t > 0) {
+                            func_001F2800(bm, MAX_001CEE60(t - 1, 0));
+                            break;
+                        }
+                        if (func_001F51D0(*rec) != 0) {
+                            break;
+                        }
+                        if (DUEL[0xD35] < 0x1E) {
+                            DUEL[0xD35]++;
+                            break;
+                        }
+                        if (done_847 != 0) {
+                            break;
+                        }
+                    } else if (DUEL[0xD35] < 0x5A) {
+                        DUEL[0xD35]++;
+                        break;
+                    }
+                    if (side != 0) {
+                        r = func_001DE2B0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z,
+                                          DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1);
+                        if (r != func_001DE2B0(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z,
+                                               DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1)) {
+                            if (r == 4) {
+                                DUEL[0xD39] = 0x10;
+                                break;
+                            }
+                        }
+                    } else if (func_001DE2B0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z,
+                                             DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1) == 4) {
+                        if (func_001F19A0(DUEL_DUO(0x6CC)->model) != 0) {
+                            break;
+                        }
+                        DUEL[0xD39] = 0xA;
+                        break;
+                    }
+                    if (func_001A82E0(0x16) != 0) {
+                        func_001AAAF0(*(u16 *)(duel + 0xC84), 0);
+                    }
+                    DUEL[0xD38]++;
+                    break;
+            }
+            case 16:
+                flip = 0;
+                if (D_002CDF4C[DUEL_DUO(0x6C8)->id] & 0x4000) {
+                    flip = (s32)(2.0f * ((f32)func_0019A5C8() / 2147483648.0f)) ? 1 : 0;
+                }
+                func_001F1830(DUEL_DUO(0x6C8)->model, 0);
+                func_001F1A00(DUEL_DUO(0x6C8)->model, 1);
+                func_001F0E50(0, 1, flip);
+                if (func_001FA6F0(0, 1) != NULL) {
+                    func_001FC840(0, 0);
+                } else {
+                    hgt = func_001DE260(DUEL_DUO(0x6C8)->id);
+                    look3 = D_00291530;
+                    look3.x = MAX_001CEE60(hgt, 80.0f);
+                    func_001F2050(DUEL_DUO(0x6C8)->model, &eye3);
+                    func_001F9D80(0, &eye3);
+                    func_001FB360(0, &look3.x);
+                    func_001FC840(0, 1);
+                }
+                DUEL[0xD39]++;
+            case 17:
+                if (func_001FC7F0(0) == 1) {
+                    func_001FC210(0, DUEL_DUO(0x6C8)->model, 0, 1, 1.0f);
+                } else if (func_001FA6F0(0, 1) != NULL) {
+                    break;
+                }
+                if (func_001F13F0(DUEL_DUO(0x6C8)->model) != 0) {
+                    break;
+                }
+                func_001FC840(0, 0);
+                if (func_001A82E0(0x16) != 0) {
+                    extern void func_001AAAF0(int n, int b);
+                    extern s32 func_001FB6A0(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 fparg2);
+                    extern s32 func_001A82E0(s32 arg0);
+                    func_001AAAF0(*(u16 *)(duel + 0xC84), 0);
+                }
+                DUEL[0xD38]++;
+                break;
+            case 18:
+                break;
+            }
+            break;
+        case 6:
+            func_001FB6A0(0, 0, 1, -0.024543693f, 0.0f, 0.0f);
+            DUEL[0xD3A] = MIN_001CEE60(DUEL[0xD3A] + 4, 0x80);
+            DUEL[0xD3B] = MIN_001CEE60(DUEL[0xD3B] + 4, 0x80);
+            if (DUEL[0xD3A] < 0x80) {
+                break;
+            }
+            if (DUEL[0xD3B] < 0x80) {
+                break;
+            }
+            if (func_001A82E0(0x16) != 0) {
+                func_001AAAF0(*(u16 *)(duel + 0xC84), 1);
+            }
+            DUEL[0xD38]++;
+        case 7:
+            win = func_001DE2B0(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z,
+                                DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1);
+            lose = func_001DE2B0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z,
+                                 DUEL_DUO(0x6CC)->fromX, DUEL_DUO(0x6CC)->fromZ, 1);
+            slot = DUEL[0xD5B];
+            wonA = 0;
+            wonB = 0;
+            func_00202CB0(4, -1, 0);
+            func_00202D60(5, -1);
+            func_001F4E50(1, -1);
+            func_001F4E50(0, 0x26D);
+            func_001F7260(0);
+            func_001FA810(0, -1);
+            func_001F6C10(0);
+            func_001F6CA0(0);
+            func_001A86A0(0);
+            if (lose != 6) {
+                if (win == 4) {
+                    wonA = 1;
+                }
+            }
+            if (lose == 4) {
+                wonB = 1;
+            }
+            func_001E53C0(0, wonA);
+            func_001E53C0(1, wonB);
+            DUEL_DUO(0x6C8)->view[0x43] = 0;
+            DUEL_DUO(0x6CC)->view[0x43] = 0;
+            func_001E3900(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, 1);
+            func_001E3900(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, 1);
+            func_001A8BB0();
+            func_001DDD80(1, DUEL[0xD37]);
+            func_001ADA80(1);
+            func_001F6CE0(0);
+            func_001F6CF0(0);
+            func_001D91B0(0, duel[slot + 0xCCA], duel[slot + 0xCFB], duel[slot + 0xCCB], duel[slot + 0xCFC]);
+            DUEL[0xD38]++;
+        case 8:
+            if (func_001FF300() != 0) {
+                break;
+            }
+            DUEL[0xD3A] = MAX_001CEE60(DUEL[0xD3A] - 4, 0);
+            if (DUEL[0xD3A] > 0) {
+                break;
+            }
+            if (DUEL[0x706] != 0xFF) {
+                func_001F4F10(DUEL[0x706], 0);
+            }
+            F67->b1 = 0;
+            DUEL[0xD3B] = 0;
+            DUEL[0xD38] = 0;
+            break;
+        }
+        return 0;
+    }
+    if (F65->b1) {
+        switch (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1)) {
+        case 4:
+            if (func_001DE2A0(DUEL[0xD54]) != 0) {
+                DUEL[0xD38] = 1;
+                DUEL_S16(0xC84) = ((s32)(3.0f * ((f32)func_0019A5C8() / 2147483648.0f)) + 1) * 1000 + 1;
+                if (func_001A82E0(0x16) != 0) {
+                    func_001AAAF0(5, 0);
+                }
+                return 1;
+            }
+            break;
+        case 3:
+            F66->b5 = 1;
+            break;
+        case 0:
+            F65->b1 = 0;
+            break;
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC64) != 0 && !F66->b4 && !F66->b3) {
+        if (DUEL_DUO(0x6C8) != NULL && DUEL_DUO(0x6C8)->flags57.b4 && func_001F1300(DUEL_DUO(0x6C8)->model) &&
+            DUEL_DUO(0x6C8)->progress != DUEL_DUO(0x6C8)->status51) {
+            return 0;
+        }
+        if (DUEL_DUO(0x6CC) != NULL && DUEL_DUO(0x6CC)->flags57.b4 && func_001F1300(DUEL_DUO(0x6CC)->model) &&
+            DUEL_DUO(0x6CC)->progress != DUEL_DUO(0x6CC)->status51) {
+            return 0;
+        }
+        switch (DUEL_U32(0xC64) >> 16) {
+        case 6:
+            if (!F66->b5) {
+                DUEL[0xD57] = 0x37;
+                F66->b4 = 1;
+            }
+            DUEL_U32(0xC64) = (u16)DUEL_U32(0xC64) | 0x800000;
+            break;
+        case 4:
+            func_0026B430(duel + 0x6E8);
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b1 = 1;
+            DUEL_U32(0xC64) = (u16)DUEL_U32(0xC64) | 0x20000;
+            break;
+        case 2:
+            DUEL[0xD35] = DUEL[0xC51] & 0xF;
+            DUEL[0xD36] = DUEL[0xC51] >> 4;
+            if (DUEL[0xD36] < 2) {
+                DUEL[0xD36] |= 0x80;
+            } else {
+                DUEL[0xD36] = DUEL[0xD54];
+            }
+            if (DUEL[0xC50] == 0) {
+                DUEL[0xD57] = 0x2B;
+            } else {
+                DUEL[0xD57] = 0x2F;
+            }
+            F66->b3 = 1;
+            DUEL_U32(0xC64) = (u16)DUEL_U32(0xC64) | 0x10000;
+            break;
+        case 3:
+            func_0026B430(duel + 0x6E8);
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b1 = 1;
+            DUEL_U32(0xC64) = (u16)DUEL_U32(0xC64) | 0x10000;
+            break;
+        case 7:
+            DUEL_U32(0xC64) = (DUEL_U32(0xC64) & 0xFFFF) | 0x10000;
+        case 1:
+            *(Vec4_001CEE60 *)(duel + 0x6E8) = *(Vec4_001CEE60 *)(duel + 0xC40);
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b1 = 1;
+            DUEL_U32(0xC64) = (u16)DUEL_U32(0xC64) | 0x800000;
+            break;
+        case 0x80:
+        case 0:
+            reply = ((C64_001CEE60 *)duel)->c64;
+            low = (u16)reply;
+            if ((reply & 0xFF) == 0xE) {
+                if (low & 0x100) {
+                    DUEL_DUO(0x6C8) = NULL;
+                } else {
+                    (DUEL_DUO(0x6C8))->flags57.b7 = 0;
+                    (DUEL_DUO(0x6C8))->flags58.b0 = 0;
+                    (DUEL_DUO(0x6C8))->flags56.b23 = 1;
+                }
+                if (!(low & 0x200)) {
+                    (DUEL_DUO(0x6CC))->flags57.b7 = 0;
+                    (DUEL_DUO(0x6CC))->flags58.b0 = 0;
+                    (DUEL_DUO(0x6CC))->flags56.b23 = 1;
+                }
+                DUEL_U32(0xC64) = 0;
+            } else {
+                DUEL_U32(0xC64) = func_00249680(DUEL[0xD55], DUEL[0xD56], duel[DUEL[0xD5B] + 0xCCB], duel[DUEL[0xD5B] + 0xCFC],
+                                                duel + 0xC40, low);
+            }
+            break;
+        }
+        return 0;
+    }
+    if (F65->b6) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F65->b6 = 0;
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC6C) != 0 && !F66->b3) {
+        high = DUEL_U32(0xC6C) >> 16;
+        switch (DUEL_U32(0xC6C) & 0xFF) {
+        case 4:
+            func_0026B430(duel + 0x6E8);
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b6 = 1;
+            DUEL_U32(0xC6C) = (DUEL_U32(0xC6C) & ~0xFF) | 2;
+            break;
+        case 2:
+            DUEL[0xD35] = DUEL[0xC51] & 0xF;
+            DUEL[0xD36] = DUEL[0xC51] >> 4;
+            if (DUEL[0xD36] < 2) {
+                DUEL[0xD36] |= 0x80;
+            } else {
+                DUEL[0xD36] = DUEL[0xD54];
+            }
+            if (DUEL[0xC50] == 0) {
+                DUEL[0xD57] = 0x2B;
+            } else {
+                DUEL[0xD57] = 0x2F;
+            }
+            F66->b3 = 1;
+            DUEL_U32(0xC6C) = (DUEL_U32(0xC6C) & ~0xFF) | 1;
+            break;
+        case 1:
+            *(Vec4_001CEE60 *)(duel + 0x6E8) = *(Vec4_001CEE60 *)(duel + 0xC40);
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b6 = 1;
+            DUEL_U32(0xC6C) = (DUEL_U32(0xC6C) & ~0xFF) | 0x80;
+            break;
+        case 0x80:
+        case 0:
+            if (high != 0) {
+                DUEL_U32(0xC6C) = func_00252440(DUEL[0xD55], DUEL[0xD56], duel + 0xC40, high);
+            } else {
+                if (!(DUEL_U32(0xC6C) & 0x100)) {
+                    DUEL_DUO(0x6C8) = NULL;
+                }
+                DUEL_U32(0xC6C) = 0;
+            }
+            break;
+        }
+        return 0;
+    }
+    if (F65->b7) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F65->b7 = 0;
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC70) != 0) {
+        switch (DUEL_U32(0xC70) & 0xFF) {
+        case 1:
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b7 = 1;
+            DUEL_U32(0xC70) = (DUEL_U32(0xC70) & ~0xFF) | 0x80;
+            break;
+        case 0x80:
+        case 0:
+            high = DUEL_U32(0xC70) >> 16;
+            if (DUEL[0xD57] == 0x3D) {
+                k = 1;
+            } else {
+                k = 0;
+            }
+            k = DUEL[0xD5B] + k;
+            if (high != 0) {
+                DUEL_U32(0xC70) = func_0024B310(DUEL[0xD55], DUEL[0xD56], duel[k + 0xCCA], duel[k + 0xCFB], duel + 0x6E8, high);
+            } else {
+                if (DUEL_U32(0xC70) & 0x200) {
+                    F66->b2 = 1;
+                }
+                if (DUEL_U32(0xC70) & 0x100) {
+                    DUEL[0xD57] = 0x39;
+                    DUEL_U32(0xC70) = 0;
+                } else {
+                    DUEL_U32(0xC70) = 0;
+                    DUEL_U32(0xC68) = func_0024F780(DUEL[0xD55], DUEL[0xD56], duel[k + 0xCCA], duel[k + 0xCFB], duel + 0x6E8);
+                    if (DUEL_U32(0xC68) != 0) {
+                        return 1;
+                    }
+                }
+            }
+            break;
+        }
+        return 0;
+    }
+    if (F66->b0) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F66->b0 = 0;
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC74) != 0) {
+        switch (DUEL_U32(0xC74) & 0xFFFF) {
+        case 1:
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F66->b0 = 1;
+            DUEL_U32(0xC74) = (DUEL_U32(0xC74) & 0xFFFF0000) | 0x80;
+            break;
+        case 0x80:
+        case 0:
+            DUEL_U32(0xC74) = 0;
+            break;
+        }
+        return 0;
+    }
+    if (F65->b2) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F65->b2 = 0;
+        }
+        return 0;
+    }
+    if (DUEL_U32(0xC68) != 0) {
+        switch (DUEL_U32(0xC68) & 0xFFFF) {
+        case 1:
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b2 = 1;
+            DUEL_U32(0xC68) = (DUEL_U32(0xC68) & 0xFFFF0000) | 0x80;
+            break;
+        case 0x80:
+        case 0:
+            if ((DUEL_U32(0xC68) >> 16) != 0) {
+                DUEL[0xD57] = 0x16;
+            }
+            DUEL_U32(0xC68) = 0;
+            break;
+        }
+        return 0;
+    }
+    if (F65->b3) {
+        reply = func_0026EA00(duel + 0x6E8, duel + 0x700, -1);
+        switch (reply & 0xFFFF) {
+        case 2:
+            func_001D8CD0(DUEL[0xD54], duel[DUEL[0xD4B] + 0xD2C], reply >> 16, -0x7D, -8);
+            break;
+        case 0:
+            from = duel[DUEL[0xD4B] + 0xD2C];
+            to = duel[DUEL[0xD4C] + 0xD2C];
+            switch (DUEL_U32(0xC78) & 0xFFFF) {
+            case 1:
+                if ((DUEL_U32(0xC78) >> 16) != 0) {
+                    drop_001CEE60(duel, from);
+                    duel[DUEL[0xD4B] + 0xD2C] = 6;
+                    DUEL[0xD4B] = DUEL[0xD4C];
+                } else {
+                    drop_001CEE60(duel, to);
+                    duel[DUEL[0xD4C] + 0xD2C] = 6;
+                }
+                break;
+            case 0:
+                drop_001CEE60(duel, to);
+                duel[DUEL[0xD4C] + 0xD2C] = 6;
+                break;
+            case 2:
+                drop_001CEE60(duel, from);
+                duel[DUEL[0xD4B] + 0xD2C] = 6;
+                DUEL[0xD4B] = DUEL[0xD4C];
+                break;
+            }
+            if ((sl = slot_001CEE60(duel[DUEL[0xD4B] + 0xD2C])) != NULL && (sub = *(u8 **)sl) != NULL) {
+                ((Flags8_001CEE60 *)(sub + 0x83))->b6 = 0;
+                sub[0x43] = 0x80;
+                func_001D9030(sl, -0x7D, -8, -0x7D, -8, 0x80, 0x80);
+            }
+            DUEL[0xD4C]++;
+            DUEL_U32(0xC78) = (DUEL_U32(0xC78) & 0xFFFF0000) | 3;
+            F65->b3 = 0;
+            break;
+        }
+        return 0;
+    }
+    if ((s32)DUEL_U32(0xC78) >= 0) {
+        switch (DUEL_U32(0xC78) & 0xFFFF) {
+        case 0:
+        case 1:
+        case 2:
+            func_0026EA00(duel + 0x6E8, duel + 0x700, 0);
+            F65->b3 = 1;
+            break;
+        case 3:
+            for (i = DUEL[0xD4C] + 1, j = 1, k = 0x8D; i < DUEL[0xD4D]; k += 0x10, j++, i++) {
+                if ((sl = slot_001CEE60(duel[i + 0xD2C])) != NULL && *(u8 **)sl != NULL) {
+                    ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 0;
+                    func_001D9030(sl, k, -8, -0x7D, -8, 0, 0x80);
+                }
+            }
+            if (DUEL[0xD4C] >= DUEL[0xD4D]) {
+                DUEL[0xD57] = 0x4A;
+            }
+            DUEL_U32(0xC78) = -1;
+            break;
+        }
+        return 0;
+    }
+    if (F65->b4) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F65->b4 = 0;
+        }
+        return 0;
+    }
+    if (F65->b5) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            F65->b5 = 0;
+        }
+        return 0;
+    }
+    if (U66->b1) {
+        if (func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), -1) == 0) {
+            U66->b1 = 0;
+        }
+        return 0;
+    }
+    if (func_001F5240(0, -1) != 0) {
+        return 0;
+    }
+    if (!F67->b5 && DUEL[0xD57] == 0x18 && (hand0 == 0 || hand1 == 0)) {
+        if (hand0 == hand1) {
+            DUEL[0xD50] = 2;
+        } else if (hand0 > hand1) {
+            DUEL[0xD50] = 0;
+        } else {
+            DUEL[0xD50] = 1;
+        }
+        F66->b7 = 0;
+        F67->b0 = F66->b7;
+        DUEL[0xD51] = 0;
+        DUEL[0xD57] = 0x54;
+        return 0;
+    }
+    if (DUEL[0xD57] == 0x18 || DUEL[0xD57] == 0x1B || DUEL[0xD57] == 0x1D || DUEL[0xD57] == 0x21 ||
+        DUEL[0xD57] == 0x25 || DUEL[0xD57] == 0x29 || DUEL[0xD57] == 0x2D || DUEL[0xD57] == 0x30 ||
+        DUEL[0xD57] == 0x33 || DUEL[0xD57] == 0x35 || DUEL[0xD57] == 0x3E || DUEL[0xD57] == 0x43 ||
+        DUEL[0xD57] == 0x53 || DUEL[0xD57] == 0x46 || DUEL[0xD57] == 0x5C || DUEL[0xD57] == 0x61) {
+        sl = &D_00317490.b[DUEL[0xD54] * 0x350];
+        if (sl[0x33C] < 100 && *(s32 *)(sl + 0x334) != 0) {
+            func_0020B380((void *)0x3F0000, (void *) *(s32 *)(sl + 0x334), *(u16 *)(sl + 0x338) >> 4);
+            func_0017BB60(0);
+            func_0017B410(0x3F0000, *(u16 *)(sl + 0x338));
+        }
+        pressed = func_001CECF0(DUEL[0xD54], 1);
+        if (me[0x33C] >= 100) {
+            rep = func_001CECF0(DUEL[0xD54], 0);
+            trig = func_001CECF0(DUEL[0xD54], 2);
+            picked = func_00203BC0(me[0x33C] - 100);
+        } else {
+            DUEL_S16(0xC96) = 0;
+            trig = pressed;
+            rep = trig;
+        }
+        held = (u16)pressed;
+        if (DUEL[0xD54] == 1) {
+            swap = pressed & 0xFFFF0FFF;
+            if (held & 0x8000) {
+                swap |= 0x2000;
+            }
+            if (held & 0x2000) {
+                swap |= 0x8000;
+            }
+            if (held & 0x1000) {
+                swap |= 0x4000;
+            }
+            if (held & 0x4000) {
+                swap |= 0x1000;
+            }
+            held = swap;
+        }
+    } else {
+        pressed = 0;
+        rep = pressed;
+        DUEL_S16(0xC96) = 0;
+        trig = 0;
+        held = rep;
+    }
+    lifeA100 = lifeA - 100;
+    lifeB100 = lifeB - 100;
+    held16 = held & 0xFFFF;
+    mDpad = held16 & 0xF000;
+    mUD = trig & 0x5000;
+    mUp = trig & 0x1000;
+    mLR = trig & 0xA000;
+    mLeft = trig & 0x8000;
+    mLR2 = trig & 0xC;
+    mR2 = trig & 4;
+    for (;;) {
+        switch (DUEL[0xD57]) {
+        case 0x13:
+            func_00217710(0, 0x1D);
+            DUEL[0xD57] = 0x14;
+            DUEL_U32(0xC5C) = func_002724F0(0, (s32 *)(duel + 0x6E8));
+            if (DUEL_U32(0xC5C) != 0) {
+                return 1;
+            }
+        case 0x14:
+            func_001D9820(0, DUEL[0xD54] ^ 1);
+            me = duel + DUEL[0xD54] * 0x350;
+            DUEL_DUO(0x6C8) = (Object_001CEE60 *)func_001E36E0(me[0x33D], me[0x33E]);
+            DUEL[0xD57] = 0x15;
+        case 0x15:
+            F67->b0 = 0;
+            DUEL[0xD3A] = MAX_001CEE60(DUEL[0xD3A] - 4, 0);
+            if (DUEL[0xD3A] > 0) {
+                return 0;
+            }
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            DUEL[0xD57] = 0x16;
+            DUEL_U32(0xC60) = func_00267C50(0, duel + 0x6E8);
+        case 0x16:
+            F67->b1 = 0;
+            DUEL_DUO(0x6C8) = (Object_001CEE60 *)func_001E36E0(me[0x33D], me[0x33E]);
+            DUEL_DUO(0x6CC) = NULL;
+            DUEL[0xD59] = 0;
+            F64->b6 = 0;
+            F66->b4 = 0;
+            F66->b5 = 0;
+            DUEL[0xD57] = 0x17;
+        case 0x17:
+            if (DUEL_U32(0xC60) != 0) {
+                return 1;
+            }
+            DUEL[0xD57] = 0x18;
+            return 0;
+        case 0x18:
+            DUEL_DUO(0x6C8) = (Object_001CEE60 *)func_001E36E0(me[0x33D], me[0x33E]);
+            if (DUEL_DUO(0x6C8) != NULL) {
+                DUEL[0xD55] = DUEL_DUO(0x6C8)->x;
+                DUEL[0xD56] = DUEL_DUO(0x6C8)->z;
+                func_001DD990(DUEL[0xD55], DUEL[0xD56]);
+            } else {
+                DUEL_S16(0xC96) = 0;
+            }
+            keys = rep;
+            if (keys & 0x10) {
+                if (DUEL_DUO(0x6C8) != NULL) {
+                    v = 0;
+                    if (DUEL_DUO(0x6C8)->z > 0) {
+                        v = func_00267380((s32)DUEL_DUO(0x6C8), DUEL[0xD54]);
+                    }
+                    if (v == 0) {
+                        DUEL[0xCB3] = 0x11;
+                        DUEL[0xCBD] = 0;
+                        DUEL[0xD35] = 0x18;
+                        DUEL[0xD57] = 0x20;
+                        func_00217710(0, 0x10);
+                        return 0;
+                    }
+                }
+                func_00217710(0, 6);
+                return 0;
+            }
+            if (keys & 0x100) {
+                DUEL[0xD57] = 0x23;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (keys & 4) {
+                DUEL[0xD57] = 0x27;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (keys & 8) {
+                DUEL[0xD35] = 0;
+                DUEL[0xD36] = DUEL[0xD54];
+                DUEL[0xD57] = 0x2B;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (keys & 0xC0) {
+                if (DUEL_DUO(0x6C8) != NULL) {
+                    v = func_00250360(DUEL[0xD55], DUEL[0xD56]);
+                    if (DUEL[0xD54] != v) {
+                        func_00217710(0, 6);
+                        return 0;
+                    }
+                    if (DUEL[0xD56] == 0 && (keys & 0x80)) {
+                        inHand = func_001DE9C0(DUEL[0xD54]);
+                        onField = func_001DF110(DUEL[0xD54]);
+                        DUEL[0xD4E] = 0;
+                        DUEL[0xD4F] = 0;
+                        func_001DF330(DUEL[0xD54]);
+                        if (((Flags8_001CEE60 *)(me + 0x346))->b0) {
+                            if (inHand + onField <= 0) {
+                                func_00217710(0, 6);
+                                return 0;
+                            }
+                            func_001E2570(DUEL[0xD54], me[0x33D], me[0x33E]);
+                            DUEL[0xD59] = 0;
+                            DUEL[0xD63] = 0;
+                            duel[DUEL[0xD59] + 0xCCA] = me[0x33D];
+                            duel[DUEL[0xD59] + 0xCFB] = me[0x33E];
+                            DUEL[0xD59]++;
+                            DUEL[0xD57] = 0x3E;
+                            func_00217710(0, 4);
+                            return 0;
+                        }
+                        if (onField <= 0) {
+                            func_00217710(0, 6);
+                            return 0;
+                        }
+                        DUEL[0xD57] = 0x51;
+                        func_00217710(0, 4);
+                        return 0;
+                    }
+                    if (DUEL_DUO(0x6C8)->flags57.b0 == 0) {
+                        F66->b6 = (s8)func_001E17D0(DUEL[0xD55], DUEL[0xD56]);
+                        DUEL[0xD5A] = func_001E1760(DUEL[0xD55], DUEL[0xD56]);
+                        func_001E27D0(1, F66->b6, DUEL[0xD56] == 0, DUEL[0xD54], me[0x33D], me[0x33E], DUEL[0xD5A], NULL, NULL, 0);
+                        DUEL[0xD59] = 0;
+                        DUEL[0xD63] = 0;
+                        DUEL_DUO(0x6C8)->flags57.b6 = 1;
+                        DUEL[0xD57] = 0x19;
+                        DUEL[0xD58] = 0x1D;
+                        func_00217710(0, 4);
+                        return 0;
+                    }
+                }
+                func_00217710(0, 6);
+                return 0;
+            }
+            if (keys & 1) {
+                F66->b7 = F66->b7 ? 0 : 1;
+                F67->b0 = F66->b7;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (keys & 0x800) {
+                DUEL[0xD57] = 0x19;
+                DUEL[0xD58] = 0x13;
+                return 0;
+            }
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            if (picked != 0 || (me[0x33C] >= 0x20 && me[0x33C] < 100)) {
+                port = (picked != 0) ? me[0x33C] - 100 : 0;
+                stickRX = (func_00203C40(port, 3) & 0xFF) - 0x80;
+                stickRY = (func_00203C40(port, 2) & 0xFF) - 0x80;
+                stickLY = (func_00203C40(port, 1) & 0xFF) - 0x80;
+                func_00203C40(port, 0);
+                speed = 8;
+                moved = 0;
+                if (keys & 0x200) {
+                    *(s32 *)(list + 4) = 0x4000;
+                    *(s32 *)(list + 8) = 0x2000;
+                    speed = 0x1E;
+                    if (DUEL[0xD54] == 1) {
+                        *(s32 *)(list + 4) = *(s32 *)(list + 4) + 0x7FFF + 1;
+                    }
+                    moved = 1;
+                } else {
+                    if (ABS_001CEE60(stickRY) >= 0x30) {
+                        *(s32 *)(list + 4) = (*(s32 *)(list + 4) + 0x10000) % 0x10000;
+                        if (stickRY >= 0x30) {
+                            *(s32 *)(list + 4) = *(s32 *)(list + 4) - 0x1000;
+                        } else {
+                            *(s32 *)(list + 4) = *(s32 *)(list + 4) + 0x1000;
+                        }
+                        moved = 1;
+                    }
+                    if (ABS_001CEE60(stickRX) >= 0x30) {
+                        if (stickRX >= 0x30) {
+                            *(s32 *)(list + 8) = *(s32 *)(list + 8) - 0x800;
+                        } else {
+                            *(s32 *)(list + 8) = *(s32 *)(list + 8) + 0x800;
+                        }
+                        *(s32 *)(list + 8) = MIN_001CEE60(MAX_001CEE60(*(s32 *)(list + 8), 0x800), 0x4000);
+                        moved = 1;
+                    }
+                }
+                if (keys & 0x400) {
+                    *(s32 *)(list + 0) = 0xC8;
+                    speed = 0x1E;
+                    moved = 1;
+                } else if (ABS_001CEE60(stickLY) >= 0x30) {
+                    if (stickLY >= 0x30) {
+                        *(s32 *)(list + 0) = *(s32 *)(list + 0) + 0x32;
+                    } else {
+                        *(s32 *)(list + 0) = *(s32 *)(list + 0) - 0x32;
+                    }
+                    *(s32 *)(list + 0) = MIN_001CEE60(MAX_001CEE60(*(s32 *)(list + 0), 0x32), 0x1F4);
+                    moved = 1;
+                }
+                if (moved != 0) {
+                    func_001FC950(list, &camv);
+                    func_001FA8A0(0, 0, 4, (u16)speed, 0, &camv);
+                    DUEL_S16(0xC96) = 0;
+                }
+            }
+            if (mDpad == 0) {
+                break;
+            }
+            if (((held16 & 0x8000) && me[0x33D] <= 0) || ((held16 & 0x2000) && me[0x33D] >= 6)) {
+                held = (u16)(held & 0x5FFF);
+            }
+            if ((((u16)held & 0x1000) && me[0x33E] <= 0) || (((u16)held & 0x4000) && me[0x33E] >= 6)) {
+                held = (u16)(held & 0xAFFF);
+            }
+            DUEL[0xD63] = 0x3C;
+            if (F64->b6) {
+                if ((keys = held) & 0x5000) {
+                    held = (u16)(held & 0x5000);
+                } else {
+                    F64->b6 = 0;
+                }
+            }
+            if ((u16)held & 0xA000) {
+                if ((u16)held & 0x8000) {
+                    me[0x33D]--;
+                } else {
+                    me[0x33D]++;
+                }
+                if ((u16)held & 0x5000) {
+                    F64->b6 = 1;
+                }
+            } else if ((u16)held & 0x5000) {
+                if ((u16)held & 0x1000) {
+                    me[0x33E]--;
+                } else {
+                    me[0x33E]++;
+                }
+                F64->b6 = 0;
+            } else {
+                F64->b6 = 0;
+                return 0;
+            }
+            gx = (s32)(f32)((me[0x33D] - 3) * 50);
+            func_001D90E0(8, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+            func_00217710(0, 3);
+            return 0;
+        case 0x19:
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            DUEL[0xD57] = DUEL[0xD58];
+            break;
+        case 0x1A:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 8, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x1B;
+        case 0x1B:
+            if (!(rep & 0xFFFF & 0xF0)) {
+                break;
+            }
+            DUEL[0xD57] = 0x1C;
+            func_00217710(0, 4);
+            return 0;
+        case 0x1C:
+            DUEL_S16(0xC9C) = MAX_001CEE60(DUEL_S16(0xC9C) - 8, 0);
+            if (DUEL_S16(0xC9C) > 0) {
+                break;
+            }
+            DUEL[0xCB2] = 0x18;
+            DUEL_S16(0xC96) = 0;
+            DUEL[0xD57] = 0x18;
+            return 0;
+        case 0x1D:
+            DUEL_DUO(0x6CC) = (Object_001CEE60 *)func_001E36E0(me[0x33D], me[0x33E]);
+            if (DUEL_DUO(0x6CC) != NULL) {
+                func_001DD890(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z);
+            } else {
+                func_001DDAC0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, me[0x33D], me[0x33E]);
+            }
+            keys = rep;
+            DUEL_DUO(0x6C8)->pad42[0] = me[0x33D];
+            DUEL_DUO(0x6C8)->pad42[1] = me[0x33E];
+            if (keys & 0xC0) {
+                if (func_001E22B0(me[0x33D], me[0x33E]) == 8) {
+                    if (!F66->b6) {
+                        F66->b5 = 1;
+                    }
+                }
+                DUEL[0xD57] = 0x1E;
+                DUEL_U32(0xC74) = func_0026AE70(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6C8)->flags57.b3, duel + 0x6E8);
+                if (DUEL_U32(0xC74) != 0) {
+                    if ((DUEL_U32(0xC74) >> 16) != 0) {
+                        DUEL[0xD57] = 0x1F;
+                        DUEL_DUO(0x6C8)->flags57.b0 = 1;
+                    }
+                    return 1;
+                }
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            if (keys & 0x20) {
+                DUEL[0xD57] = 0x1F;
+                func_00217710(0, 5);
+                return 0;
+            }
+            if (mDpad != 0) {
+                tx = me[0x33D];
+                tz = me[0x33E];
+                if (((held16 & 0x8000) && tx <= 0) || ((held16 & 0x2000) && tx >= 6)) {
+                    held = (u16)(held & 0x5FFF);
+                }
+                if ((((u16)held & 0x1000) && tz <= 0) || (((u16)held & 0x4000) && tz >= 6)) {
+                    held = (u16)(held & 0xAFFF);
+                }
+                if (F64->b6) {
+                    if ((keys = held) & 0x5000) {
+                        held = (u16)(held & 0x5000);
+                    } else {
+                        F64->b6 = 0;
+                    }
+                }
+                if ((u16)held & 0xA000) {
+                    if ((u16)held & 0x8000) {
+                        tx--;
+                    } else {
+                        tx++;
+                    }
+                    if ((u16)held & 0x5000) {
+                        F64->b6 = 1;
+                    }
+                } else if ((u16)held & 0x5000) {
+                    if ((u16)held & 0x1000) {
+                        tz--;
+                    } else {
+                        tz++;
+                    }
+                    F64->b6 = 0;
+                } else {
+                    F64->b6 = 0;
+                    return 0;
+                }
+                for (i = 0; i < DUEL[0xD59] - 1; i++) {
+                    p = duel + i;
+                    if (p[0xCCA] == tx && p[0xCFB] == tz) {
+                        return 0;
+                    }
+                }
+                r = func_001E24E0(tx, tz);
+                lim2 = DUEL[0xD5A];
+                if (r > lim2) {
+                    return 0;
+                }
+                if (DUEL[0xD59] > 0 && tx == duel[DUEL[0xD59] + 0xCC9] && tz == duel[DUEL[0xD59] + 0xCFA]) {
+                    DUEL[0xD59]--;
+                } else if (DUEL[0xD59] < lim2) {
+                    duel[(DUEL[0xD59] & 0xFF) + 0xCCA] = me[0x33D];
+                    duel[DUEL[0xD59] + 0xCFB] = me[0x33E];
+                    DUEL[0xD59]++;
+                } else {
+                    return 0;
+                }
+                me[0x33D] = tx;
+                me[0x33E] = tz;
+                func_001E27D0(0, F66->b6, DUEL[0xD56] == 0, DUEL[0xD54], me[0x33D], me[0x33E], DUEL[0xD5A] - DUEL[0xD59],
+                              duel + 0xCCA, duel + 0xCFB, DUEL[0xD59]);
+                gx = (s32)(f32)((me[0x33D] - 3) * 50);
+                func_001D90E0(8, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+                if (DUEL_DUO(0x6C8)->flags57.b3) {
+                    DUEL_DUO(0x6C8)->flags57.b3 = 0;
+                    DUEL_DUO(0x6C8)->flags56.b67 = 3;
+                }
+                func_00217710(0, 3);
+                return 0;
+            }
+            if (DUEL[0xD56] == 0 || DUEL[0xD59] != 0 || !(keys & 0xF)) {
+                break;
+            }
+            if (keys & 0xC) {
+                old = DUEL_DUO(0x6C8)->flags57.b3;
+                if (keys & 4) {
+                    DUEL_DUO(0x6C8)->flags57.b3 = 0;
+                    DUEL_DUO(0x6C8)->flags56.b67 = 3;
+                } else {
+                    DUEL_DUO(0x6C8)->flags57.b3 = 1;
+                    DUEL_DUO(0x6C8)->flags56.b67 = 1;
+                }
+                if (DUEL_DUO(0x6C8)->flags57.b3 != old) {
+                    func_00217710(0, 9);
+                }
+            }
+            if (keys & 3) {
+                if (!DUEL_DUO(0x6C8)->flags57.b4) {
+                    old = DUEL_DUO(0x6C8)->flags57.b2;
+                    if (keys & 1) {
+                        DUEL_DUO(0x6C8)->flags57.b2 = 0;
+                        DUEL_DUO(0x6C8)->flags56.b45 = 3;
+                    } else {
+                        DUEL_DUO(0x6C8)->flags57.b2 = 1;
+                        DUEL_DUO(0x6C8)->flags56.b45 = 1;
+                    }
+                    if (DUEL_DUO(0x6C8)->flags57.b2 != old) {
+                        F66->b6 = (s8)func_001E17D0(DUEL[0xD55], DUEL[0xD56]);
+                        DUEL[0xD5A] = func_001E1760(DUEL[0xD55], DUEL[0xD56]);
+                        func_001E27D0(1, F66->b6, DUEL[0xD56] == 0, DUEL[0xD54], me[0x33D], me[0x33E], DUEL[0xD5A], NULL, NULL, 0);
+                        func_00217710(0, 9);
+                    }
+                }
+            }
+            return 0;
+        case 0x1E:
+            if (DUEL_DUO(0x6C8)->flags56.b67 != 0) {
+                break;
+            }
+            if (DUEL_DUO(0x6C8)->flags56.b45 != 0) {
+                break;
+            }
+            diff = DUEL_DUO(0x6C8)->flags57.b2 != DUEL_DUO(0x6C8)->flags57.b4;
+            if (diff) {
+                DUEL_DUO(0x6C8)->flags4F = 7;
+                DUEL_DUO(0x6C8)->status51 = 0x80;
+                DUEL_DUO(0x6C8)->flags56.b23 = 1;
+            }
+            F66->b2 = 0;
+            if (DUEL[0xD59] != 0) {
+                duel[(DUEL[0xD59] & 0xFF) + 0xCCA] = me[0x33D];
+                duel[DUEL[0xD59] + 0xCFB] = me[0x33E];
+                DUEL[0xD5B] = 0;
+                if (DUEL_DUO(0x6CC) != NULL) {
+                    DUEL[0xD57] = 0x36;
+                } else {
+                    DUEL[0xD57] = 0x37;
+                }
+            } else {
+                DUEL[0xD57] = 0x38;
+            }
+            return 0;
+        case 0x1F:
+            if (DUEL[0xD59] > 0) {
+                tz = ABS_001CEE60(me[0x33E] - DUEL[0xCFB]);
+                tx = ABS_001CEE60(me[0x33D] - DUEL[0xCCA]);
+                me[0x33D] = DUEL[0xCCA];
+                me[0x33E] = DUEL[0xCFB];
+                gx = (s32)(f32)((me[0x33D] - 3) * 50);
+                func_001D90E0((tx + tz) * 8, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+                DUEL[0xD59] = 0;
+            }
+            if (DUEL_DUO(0x6C8)->flags57.b2 != (bit = DUEL_DUO(0x6C8)->flags57.b4)) {
+                DUEL_DUO(0x6C8)->flags57.b2 = bit;
+                if (DUEL_DUO(0x6C8)->flags57.b4) {
+                    DUEL_DUO(0x6C8)->flags56.b45 = 1;
+                } else {
+                    DUEL_DUO(0x6C8)->flags56.b45 = 3;
+                }
+            }
+            diff = DUEL_DUO(0x6C8)->flags57.b3 != (bit = DUEL_DUO(0x6C8)->flags57.b5);
+            if (diff) {
+                DUEL_DUO(0x6C8)->flags57.b3 = bit;
+                if (DUEL_DUO(0x6C8)->flags57.b5) {
+                    DUEL_DUO(0x6C8)->flags56.b67 = 1;
+                } else {
+                    DUEL_DUO(0x6C8)->flags56.b67 = 3;
+                }
+            }
+            DUEL_DUO(0x6C8)->flags57.b6 = 0;
+            DUEL[0xD57] = 0x16;
+            return 0;
+        case 0x20:
+            DUEL[0xD3A] = MIN_001CEE60(DUEL[0xD3A] + 8, 0x40);
+            if (DUEL[0xD3A] < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x21;
+        case 0x21:
+            if (mUD != 0) {
+                if (mUp != 0) {
+                    DUEL[0xCBD] = (DUEL[0xCBD] + 3) % 4;
+                } else {
+                    DUEL[0xCBD] = (DUEL[0xCBD] + 5) % 4;
+                }
+                func_00217710(0, 0x13);
+            } else if ((DUEL[0xD35] == 0x43 || DUEL[0xD35] == 0x53) && mLR != 0) {
+                n = func_001DF110(DUEL[0xD54]);
+                old = DUEL[0xD4F];
+                if (mLeft != 0) {
+                    DUEL[0xD4F] = (old + n - 1) % n;
+                } else {
+                    DUEL[0xD4F] = (old + n + 1) % n;
+                }
+                if (DUEL[0xD4F] != old) {
+                    func_00217710(0, 0x13);
+                }
+            } else if (rep & 0xFFFF & 0x20) {
+                DUEL[0xD57] = 0x22;
+                func_00217710(0, 0x11);
+            }
+            break;
+        case 0x22:
+            DUEL[0xD3A] = MAX_001CEE60(DUEL[0xD3A] - 8, 0);
+            if (DUEL[0xD3A] > 0) {
+                break;
+            }
+            DUEL[0xCB3] = 0x18;
+            DUEL[0xD57] = DUEL[0xD35];
+            return 0;
+        case 0x23:
+            DUEL[0xCB2] = 8;
+            DUEL_S16(0xC9C) = 0;
+            DUEL_S16(0xC9A) = 0;
+            DUEL[0xD57] = 0x24;
+            DUEL[0xD35] = 0;
+        case 0x24:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 8, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x25;
+        case 0x25:
+            keys = rep;
+            if (keys & 0xA000) {
+                old = DUEL[0xD35];
+                if (keys & 0x8000) {
+                    DUEL[0xD35] = 1;
+                } else {
+                    DUEL[0xD35] = 0;
+                }
+                if (DUEL[0xD35] != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            if (keys & 0xC0) {
+                DUEL[0xD57] = 0x26;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            DUEL[0xD57] = 0x26;
+            func_00217710(0, 5);
+            DUEL[0xD35] = 0;
+            return 0;
+        case 0x26:
+            DUEL_S16(0xC9C) = MAX_001CEE60(DUEL_S16(0xC9C) - 8, 0);
+            if (DUEL_S16(0xC9C) > 0) {
+                break;
+            }
+            DUEL[0xCB2] = 0x18;
+            if (DUEL[0xD35] != 0) {
+                DUEL[0xD50] = DUEL[0xD54] ^ 1;
+                F66->b7 = 0;
+                F67->b0 = F66->b7;
+                DUEL[0xD51] = 0;
+                DUEL[0xD57] = 0x54;
+            } else {
+                DUEL[0xD57] = 0x18;
+            }
+            return 0;
+        case 0x27:
+            DUEL[0xCB2] = 7;
+            DUEL_S16(0xC9A) = 0;
+            DUEL_S16(0xC9C) = 0x200;
+            DUEL[0xD35] = 0;
+            DUEL[0xD36] = 0;
+            for (i = 0; i < 3; i++) {
+                if (func_00214D00(0, i) != 0) {
+                    v = 1;
+                } else {
+                    v = 0;
+                }
+                DUEL[0xD36] |= v << i;
+            }
+            DUEL[0xD57] = 0x28;
+        case 0x28:
+            DUEL_S16(0xC9C) = MAX_001CEE60(DUEL_S16(0xC9C) - 0x40, 0);
+            if (DUEL_S16(0xC9C) > 0) {
+                break;
+            }
+            DUEL[0xD57] = 0x29;
+        case 0x29:
+            keys = rep;
+            if (mUD != 0) {
+                old = DUEL[0xD35];
+                if (mUp != 0) {
+                    DUEL[0xD35] = (old + 1) % 2;
+                } else {
+                    DUEL[0xD35] = (old + 3) % 2;
+                }
+                if (DUEL[0xD35] != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            if (keys & 0xA000) {
+                old = DUEL[0xD36];
+                if (keys & 0x8000) {
+                    DUEL[0xD36] = old | (1 << (DUEL[0xD35] + 1));
+                } else {
+                    DUEL[0xD36] = old & ~(1 << (DUEL[0xD35] + 1));
+                }
+                if (DUEL[0xD36] != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            if (keys & 0xC0) {
+                for (j = 0; j < 3; j++) {
+                    func_00214BB0(0, j, DUEL[0xD36] & (1 << j));
+                    func_00214BB0(1, j, DUEL[0xD36] & (1 << j));
+                }
+                DUEL[0xD57] = 0x2A;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            DUEL[0xD57] = 0x2A;
+            func_00217710(0, 5);
+            return 0;
+        case 0x2A:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 0x40, 0x200);
+            if (DUEL_S16(0xC9C) < 0x200) {
+                break;
+            }
+            DUEL[0xCB2] = 0x18;
+            DUEL[0xD57] = 0x18;
+            return 0;
+        case 0x2B: {
+            u16 *buf;
+            u16 *buf2;
+            buf = (u16 *)0x01ED0000;
+            *(u16 **)(duel + 0x6D8) = buf;
+            buf2 = (u16 *)0x01ED00F0;
+            *(u16 **)(duel + 0x6DC) = buf2;
+            DUEL[0xD5E] = 0;
+            DUEL[0xD5F] = 0;
+            *(u16 *)(duel + 0xC8A) = 0;
+            *(u16 *)(duel + 0xC8E) = 0;
+            *(u16 *)(duel + 0xC8C) = 0;
+            *(u16 *)(duel + 0xC90) = 0;
+            for (i = 0; i < 0x78; i++) {
+                v = func_001DEE00(0, i);
+                if (v != 999 && func_00250000(0, i, DUEL[0xD35]) != 0) {
+                    buf[(*(u16 *)(duel + 0xC8C))++] = v;
+                }
+            }
+            for (n = *(u16 *)(duel + 0xC8C); n < 0x78; n++) {
+                buf[n] = 999;
+            }
+            for (i = 0; i < 0x78; i++) {
+                v = func_001DEE00(1, i);
+                if (v != 999 && func_00250000(1, i, DUEL[0xD35]) != 0) {
+                    buf2[(*(u16 *)(duel + 0xC90))++] = v;
+                }
+            }
+            for (n = *(u16 *)(duel + 0xC90); n < 0x78; n++) {
+                buf2[n] = 999;
+            }
+            DUEL[0xCB2] = 0xE;
+            DUEL_S16(0xC9C) = 0;
+            DUEL_S16(0xC9A) = 0;
+            DUEL[0xD57] = 0x2C;
+        }
+        case 0x2C:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 8, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x2D;
+        case 0x2D:
+            scrollA = 0;
+            lock = (DUEL[0xD36] & 0x80) ? 1 : 0;
+            side = DUEL[0xD36] & 0x7F;
+            scrollB = 0;
+            if (side == 0) {
+                old = DUEL[0xD5E];
+                if (mLR2 != 0) {
+                    if (mR2 != 0) {
+                        scrollA = -5;
+                    } else {
+                        scrollA = 5;
+                    }
+                } else {
+                    keys = rep;
+                    if (mUD != 0) {
+                        if (mUp != 0) {
+                            if (old > 0) {
+                                DUEL[0xD5E] = old - 1;
+                            } else {
+                                scrollA = -1;
+                            }
+                        } else {
+                            lim2 = MIN_001CEE60(*(u16 *)(duel + 0xC8C) - 1, 4);
+                            if (old < lim2) {
+                                DUEL[0xD5E]++;
+                            } else {
+                                scrollA = 1;
+                            }
+                        }
+                    } else if (keys & 0x2000) {
+                        if (!lock) {
+                            lim2 = MAX_001CEE60(*(u16 *)(duel + 0xC90) - 1, 0);
+                            DUEL[0xD36] = 1;
+                            DUEL[0xD5F] = MIN_001CEE60(DUEL[0xD5E], lim2);
+                            func_00217710(0, 3);
+                            return 0;
+                        }
+                    } else if (keys & 0xC0) {
+                        if (F66->b3) {
+                            if (*(u16 *)(duel + 0xC8C) != 0) {
+                                DUEL[0xD57] = 0x2E;
+                                DUEL_U32(0xC4C) = ((Duel_00317490_s *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
+                                func_00217710(0, 4);
+                            } else {
+                                func_00217710(0, 6);
+                            }
+                            return 0;
+                        }
+                    }
+                }
+                if (DUEL[0xD5E] != old) {
+                    func_00217710(0, 3);
+                    return 0;
+                }
+            } else if (side == 1) {
+                old = DUEL[0xD5F];
+                if (mLR2 != 0) {
+                    if (mR2 != 0) {
+                        scrollB = -5;
+                    } else {
+                        scrollB = 5;
+                    }
+                } else {
+                    keys = rep;
+                    if (mUD != 0) {
+                        if (mUp != 0) {
+                            if (old > 0) {
+                                DUEL[0xD5F] = old - 1;
+                            } else {
+                                scrollB = -1;
+                            }
+                        } else {
+                            lim2 = MIN_001CEE60(*(u16 *)(duel + 0xC90) - 1, 4);
+                            if (old < lim2) {
+                                DUEL[0xD5F]++;
+                            } else {
+                                scrollB = 1;
+                            }
+                        }
+                    } else if (keys & 0x8000) {
+                        if (!lock) {
+                            lim2 = MAX_001CEE60(*(u16 *)(duel + 0xC8C) - 1, 0);
+                            DUEL[0xD36] = 0;
+                            DUEL[0xD5E] = MIN_001CEE60(DUEL[0xD5F], lim2);
+                            func_00217710(0, 3);
+                            return 0;
+                        }
+                    } else if (keys & 0xC0) {
+                        if (F66->b3) {
+                            if (*(u16 *)(duel + 0xC90) != 0) {
+                                DUEL[0xD57] = 0x2E;
+                                DUEL_U32(0xC4C) = ((Duel_00317490_s *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]] | 0x10000;
+                                func_00217710(0, 4);
+                            } else {
+                                func_00217710(0, 6);
+                            }
+                            return 0;
+                        }
+                    }
+                }
+                if (DUEL[0xD5F] != old) {
+                    func_00217710(0, 3);
+                    return 0;
+                }
+            }
+            if (scrollA != 0) {
+                lim2 = MAX_001CEE60(*(u16 *)(duel + 0xC8C) - 5, 0);
+                old = *(u16 *)(duel + 0xC8A);
+                n = old + scrollA;
+                *(u16 *)(duel + 0xC8A) = MIN_001CEE60(MAX_001CEE60(n, 0), lim2);
+                if (*(u16 *)(duel + 0xC8A) != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            if (scrollB != 0) {
+                lim2 = MAX_001CEE60(*(u16 *)(duel + 0xC90) - 5, 0);
+                old = *(u16 *)(duel + 0xC8E);
+                *(u16 *)(duel + 0xC8E) = MIN_001CEE60(MAX_001CEE60(old + scrollB, 0), lim2);
+                if (*(u16 *)(duel + 0xC8E) != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            keys = rep;
+            if (keys & 0x10) {
+                if (side == 0) {
+                    if (*(u16 *)(duel + 0xC8C) != 0) {
+                        *(u16 *)(duel + 0xCAC) = ((Duel_00317490_s *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
+                    } else {
+                        func_00217710(0, 6);
+                        return 0;
+                    }
+                } else {
+                    if (*(u16 *)(duel + 0xC90) != 0) {
+                        *(u16 *)(duel + 0xCAC) = ((Duel_00317490_s *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]];
+                    } else {
+                        func_00217710(0, 6);
+                        return 0;
+                    }
+                }
+                DUEL[0xCB3] = 0x11;
+                DUEL[0xCBD] = 0;
+                DUEL[0xD35] = 0x2D;
+                DUEL[0xD57] = 0x20;
+                func_00217710(0, 0x10);
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            if (F66->b3) {
+                DUEL_U32(0xC4C) = 999;
+            }
+            DUEL[0xD57] = 0x2E;
+            func_00217710(0, 5);
+            return 0;
+        case 0x2E:
+            DUEL_S16(0xC9C) = MAX_001CEE60(DUEL_S16(0xC9C) - 8, 0);
+            if (DUEL_S16(0xC9C) > 0) {
+                break;
+            }
+            DUEL[0xCB2] = 0x18;
+            if (F66->b3) {
+                DUEL[0xD57] = 0x39;
+                F66->b3 = 0;
+            } else {
+                DUEL[0xD57] = 0x18;
+            }
+            return 0;
+        case 0x2F: {
+            u16 *buf;
+            s32 bpl;
+            loops = (DUEL[0xD36] & 0x80) ? 1 : 2;
+            prevX = me[0x33D];
+            prevZ = me[0x33E];
+            bpl = DUEL[0xD36] & 0x7F;
+            k = 0;
+            buf = (u16 *)0x01ED0000;
+            *(u16 **)(duel + 0x6D8) = buf;
+            DUEL[0xD5E] = 0;
+            *(u16 *)(duel + 0xC8C) = 0;
+            for (; k < loops; k++) {
+                if (DUEL[0xD35] == 0 || DUEL[0xD35] == 1) {
+                    for (i = 1; i < 6; i++) {
+                        if ((p = (u8 *)func_001DF540(bpl, i)) != NULL) {
+                            buf[(*(u16 *)(duel + 0xC8C))++] = (p[0x41] << 8) | p[0x40];
+                        }
+                    }
+                }
+                if (DUEL[0xD35] == 0 || DUEL[0xD35] == 2) {
+                    for (i = 6; i < 11; i++) {
+                        if ((p = (u8 *)func_001DF540(bpl, i)) != NULL) {
+                            buf[(*(u16 *)(duel + 0xC8C))++] = (p[0x41] << 8) | p[0x40];
+                        }
+                    }
+                }
+                bpl = (bpl + 1) & 2;
+            }
+            if (*(u16 *)(duel + 0xC8C) == 0) {
+                DUEL[0xD57] = 0x39;
+                F66->b3 = 0;
+                return 0;
+            }
+            me[0x33D] = *(u8 *)*(u16 **)(duel + 0x6D8);
+            me[0x33E] = **(u16 **)(duel + 0x6D8) >> 8;
+            tz = ABS_001CEE60(me[0x33E] - prevZ);
+            tx = ABS_001CEE60(me[0x33D] - prevX);
+            gx = (s32)(f32)((me[0x33D] - 3) * 50);
+            func_001D90E0((tx + tz) * 4, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+            DUEL[0xD57] = 0x30;
+        }
+        case 0x30:
+            obj = (Object_001CEE60 *)func_001E36E0(me[0x33D], me[0x33E]);
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            keys = rep;
+            if (keys & 0xF00C) {
+                tx = me[0x33D];
+                tz = me[0x33E];
+                if (keys & 0x3004) {
+                    DUEL[0xD5E] = (DUEL[0xD5E] + *(u16 *)(duel + 0xC8C) - 1) % *(u16 *)(duel + 0xC8C);
+                } else {
+                    DUEL[0xD5E] = (DUEL[0xD5E] + *(u16 *)(duel + 0xC8C) + 1) % *(u16 *)(duel + 0xC8C);
+                }
+                me[0x33D] = *(u8 *)&((Duel_00317490_s *)duel)->list[DUEL[0xD5E]];
+                me[0x33E] = ((Duel_00317490_s *)duel)->list[DUEL[0xD5E]] >> 8;
+                tz = ABS_001CEE60(me[0x33E] - tz);
+                tx = ABS_001CEE60(me[0x33D] - tx);
+                gx = (s32)(f32)((me[0x33D] - 3) * 50);
+                func_001D90E0((tx + tz) * 4, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+                func_00217710(0, 3);
+                return 0;
+            }
+            if (obj == NULL) {
+                break;
+            }
+            if (keys & 0x10) {
+                v = 0;
+                if (obj->z > 0) {
+                    v = func_00267380((s32)obj, DUEL[0xD54]);
+                }
+                if (v != 0) {
+                    func_00217710(0, 6);
+                } else {
+                    DUEL[0xCB3] = 0x11;
+                    *(u16 *)(duel + 0xCAC) = obj->id;
+                    DUEL[0xCBD] = 0;
+                    DUEL[0xD35] = 0x30;
+                    DUEL[0xD57] = 0x20;
+                    func_00217710(0, 0x10);
+                }
+                return 0;
+            }
+            if (keys & 0xC0) {
+                DUEL[0xD57] = 0x31;
+                DUEL_U32(0xC4C) = (obj->x << 8) | obj->z;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            DUEL[0xD57] = 0x31;
+            DUEL_U32(0xC4C) = -1;
+            func_00217710(0, 5);
+            return 0;
+        case 0x31:
+            DUEL[0xD57] = 0x39;
+            F66->b3 = 0;
+            return 0;
+        case 0x32:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 8, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x33;
+        case 0x33:
+            if (!(rep & 0xFFFF & 0xF0)) {
+                break;
+            }
+            DUEL[0xD57] = 0x34;
+            func_00217710(0, 4);
+            return 0;
+        case 0x34:
+            DUEL_S16(0xC9C) = MAX_001CEE60(DUEL_S16(0xC9C) - 8, 0);
+            if (DUEL_S16(0xC9C) > 0) {
+                break;
+            }
+            DUEL[0xCB2] = 0x18;
+            DUEL[0xD57] = DUEL[0xD35];
+            return 0;
+        case 0x36:
+            if (DUEL[0xD5B] + 1 >= DUEL[0xD59]) {
+                func_001D91B0(0x10, duel[DUEL[0xD5B] + 0xCCA], duel[DUEL[0xD5B] + 0xCFB], duel[DUEL[0xD5B] + 0xCCB],
+                              duel[DUEL[0xD5B] + 0xCFC]);
+                DUEL[0xD57] = 0x3C;
+                return 0;
+            }
+        case 0x37:
+            j = DUEL[0xD5B];
+            cx = duel[j + 0xCCB];
+            cz = duel[j + 0xCFC];
+            x0 = (s32)(f32)((duel[j + 0xCCA] - 3) * 50);
+            z0 = func_001A22C0((duel[j + 0xCFB] - 3) * 50);
+            x1 = (s32)(f32)((cx - 3) * 50);
+            z1 = (s32)(f32)((cz - 3) * 50);
+            px = x0 + DUEL_DUO(0x6C8)->px;
+            pz = z0 + DUEL_DUO(0x6C8)->pz;
+            if (x1 != px) {
+                if (px < x1) {
+                    step = x1 - px;
+                    step = (step > 5) ? 5 : step;
+                    px += step;
+                } else {
+                    step = px - x1;
+                    step = (step > 5) ? 5 : step;
+                    px -= step;
+                }
+            }
+            if (z1 != pz) {
+                if (pz < z1) {
+                    step = z1 - pz;
+                    step = (step > 5) ? 5 : step;
+                    pz += step;
+                } else {
+                    step = pz - z1;
+                    step = (step > 5) ? 5 : step;
+                    pz -= step;
+                }
+            }
+            DUEL_DUO(0x6C8)->px = px - x0;
+            DUEL_DUO(0x6C8)->pz = pz - z0;
+            if (x1 != px || z1 != pz) {
+                func_001DDAC0(DUEL[0xD55], DUEL[0xD56], cx, cz);
+                return 0;
+            }
+            func_001DFD50(DUEL[0xD55], DUEL[0xD56], cx, cz);
+            DUEL[0xD5B]++;
+            if (!F66->b4) {
+                DUEL_U32(0xC70) = func_0024B310(DUEL[0xD55], DUEL[0xD56], cx, cz, duel + 0x6E8, 0);
+                if (DUEL_U32(0xC70) == 0) {
+                    DUEL_U32(0xC68) = func_0024F780(DUEL[0xD55], DUEL[0xD56], cx, cz, duel + 0x6E8);
+                }
+            }
+            if (DUEL[0xD5B] < DUEL[0xD59]) {
+                return 0;
+            }
+            DUEL[0xD57] = 0x38;
+            if (DUEL_U32(0xC70) != 0 || DUEL_U32(0xC68) != 0) {
+                return 1;
+            }
+        case 0x38:
+            DUEL[0xD57] = 0x39;
+            if (!F66->b4 && !F66->b2 && DUEL_DUO(0x6C8)->flags57.b2) {
+                DUEL_U32(0xC6C) = func_00252440(DUEL[0xD55], DUEL[0xD56], duel + 0xC40, 0);
+                return 1;
+            }
+        case 0x39:
+            DUEL[0xD57] = 0x3A;
+            F66->b4 = 0;
+            if (DUEL_DUO(0x6C8) != NULL) {
+                DUEL_DUO(0x6C8)->flags57.b4 = DUEL_DUO(0x6C8)->flags57.b2;
+                DUEL_DUO(0x6C8)->flags57.b5 = DUEL_DUO(0x6C8)->flags57.b3;
+                DUEL_DUO(0x6C8)->flags57.b6 = 0;
+                DUEL_DUO(0x6C8)->flags57.b0 = 1;
+                if (DUEL_DUO(0x6C8)->flags57.b4) {
+                    DUEL_DUO(0x6C8)->status51 = 0x80;
+                }
+                if (me[0x33C] >= 100 && DUEL_DUO(0x6C8)->z == 0 && func_001E0C70(DUEL_DUO(0x6C8), 1, 0) != 0 &&
+                    func_00216EC0(DUEL[0xD54], DUEL[0xD37]) == 0) {
+                    n = func_00215D30(DUEL[0xD54], DUEL_DUO(0x6C8)->id);
+                    lvl = 0;
+                    if (n >= 7) {
+                        lvl = 2;
+                    } else if (n >= 4) {
+                        lvl = 1;
+                    }
+                    card = func_002170A0(DUEL[0xD37], DUEL_DUO(0x6C8)->fromX, DUEL_DUO(0x6C8)->fromZ, lvl);
+                    if (card != 999) {
+                        func_00216F80(DUEL[0xD54], DUEL[0xD37], 1);
+                        func_00216040(DUEL[0xD54], 0, card);
+                        DUEL[0xCB2] = 0xB;
+                        *(u16 *)(duel + 0xCAA) = card;
+                        DUEL_S16(0xC9C) = 0;
+                        DUEL_S16(0xC9A) = 0;
+                        DUEL[0xD57] = 0x32;
+                        DUEL[0xD35] = 0x3A;
+                        return 0;
+                    }
+                }
+            }
+            if (DUEL_U32(0xC64) != 0) {
+                return 0;
+            }
+        case 0x3A:
+            if (DUEL_DUO(0x6CC) != NULL) {
+                gx = (s32)(f32)((me[0x33D] - 3) * 50);
+                func_001D90E0(0x10, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+            }
+            DUEL[0xD57] = 0x3B;
+        case 0x3B:
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            DUEL[0xD57] = 0x16;
+            return 0;
+        case 0x3C:
+            if (func_001DD890(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z) != 0 ||
+                func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            if (func_001FF300() != 0) {
+                return 0;
+            }
+            DUEL[0xD57] = 0x3D;
+            DUEL_U32(0xC70) = func_0024B310(DUEL[0xD55], DUEL[0xD56], duel[DUEL[0xD5B] + 0xCCB], duel[DUEL[0xD5B] + 0xCFC],
+                                            duel + 0x6E8, 0);
+            if (DUEL_U32(0xC70) != 0) {
+                return 1;
+            }
+        case 0x3D:
+            DUEL[0xD57] = 0x39;
+            DUEL_U32(0xC64) = func_00249680(DUEL[0xD55], DUEL[0xD56], duel[DUEL[0xD5B] + 0xCCB], duel[DUEL[0xD5B] + 0xCFC],
+                                            duel + 0xC40, 0);
+            return 1;
+        case 0x3E:
+            DUEL_DUO(0x6CC) = (Object_001CEE60 *)func_001E36E0(me[0x33D], me[0x33E]);
+            if (DUEL_DUO(0x6CC) != NULL) {
+                func_001DD890(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z);
+            } else {
+                func_001DDAC0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, me[0x33D], me[0x33E]);
+            }
+            keys = rep;
+            if (keys & 0xC0) {
+                t2 = func_001DE9C0(DUEL[0xD54]) > 0;
+                ok = 0;
+                if (t2) {
+                    t2 = me[0x344] > 0;
+                }
+                if (t2) {
+                    if (!(me[0x344] & 0x80)) {
+                        ok = 1;
+                    }
+                }
+                if (func_001E24E0(me[0x33D], me[0x33E]) > 0) {
+                    func_00217710(0, 6);
+                    return 0;
+                }
+                DUEL[0xD57] = 0x3F;
+                func_00217710(0, 4);
+                if (ok != 0) {
+                    if (func_001DF110(DUEL[0xD54]) < 5) {
+                        func_0026F600(DUEL[0xD54], duel + 0x6E8);
+                        func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+                        U66->b1 = 1;
+                    }
+                }
+                return 0;
+            }
+            if (func_001FA6F0(-1, -1) != NULL) {
+                return 0;
+            }
+            if (keys & 0x20) {
+                if (DUEL[0xD59] > 0) {
+                    tx = ABS_001CEE60(me[0x33E] - DUEL[0xCFB]);
+                    tz = ABS_001CEE60(me[0x33D] - DUEL[0xCCA]);
+                    me[0x33D] = DUEL[0xCCA];
+                    me[0x33E] = DUEL[0xCFB];
+                    gx = (s32)(f32)((me[0x33D] - 3) * 50);
+                    func_001D90E0((tz + tx) * 8, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+                    DUEL[0xD59] = 0;
+                }
+                DUEL[0xD57] = 0x16;
+                func_00217710(0, 5);
+                return 0;
+            }
+            if (mDpad == 0) {
+                break;
+            }
+            tx = me[0x33D];
+            tz = me[0x33E];
+            if (((held16 & 0x8000) && tx <= 0) || ((held16 & 0x2000) && tx >= 6)) {
+                held = (u16)(held & 0x5FFF);
+            }
+            if ((((u16)held & 0x1000) && tz <= 0) || (((u16)held & 0x4000) && tz >= 6)) {
+                held = (u16)(held & 0xAFFF);
+            }
+            if (F64->b6) {
+                if ((keys = held) & 0x5000) {
+                    held = (u16)(held & 0x5000);
+                } else {
+                    F64->b6 = 0;
+                }
+            }
+            if ((u16)held & 0xA000) {
+                if ((u16)held & 0x8000) {
+                    tx--;
+                } else {
+                    tx++;
+                }
+                if ((u16)held & 0x5000) {
+                    F64->b6 = 1;
+                }
+            } else if ((u16)held & 0x5000) {
+                if ((u16)held & 0x1000) {
+                    tz--;
+                } else {
+                    tz++;
+                }
+                F64->b6 = 0;
+            } else {
+                F64->b6 = 0;
+                return 0;
+            }
+            me[0x33D] = tx;
+            me[0x33E] = tz;
+            if (DUEL[0xCCA] == tx && DUEL[0xCFB] == tz) {
+                DUEL[0xD59] = 0;
+            } else {
+                DUEL[0xD59] = 1;
+            }
+            duel[DUEL[0xD59] + 0xCCA] = me[0x33D];
+            duel[DUEL[0xD59] + 0xCFB] = me[0x33E];
+            DUEL[0xD59]++;
+            gx = (s32)(f32)((me[0x33D] - 3) * 50);
+            func_001D90E0(8, gx, (s32)(f32)((me[0x33E] - 3) * 50));
+            func_00217710(0, 3);
+            return 0;
+        case 0x3F:
+            F67->b2 = 1;
+            F67->b3 = 0;
+            DUEL[0xD45] = 0;
+            DUEL[0xD46] = 0;
+            F67->b4 = 0;
+            DUEL[0xD47] = 0;
+            DUEL[0xD48] = 0;
+            DUEL[0xD4B] = 0;
+            DUEL[0xD4C] = 0;
+            DUEL[0xD4D] = 0;
+            DUEL[0xD49] = func_001DF110(DUEL[0xD54]);
+            DUEL[0xD4A] = 0;
+            func_001D7D10(DUEL[0xD54], 1);
+            DUEL[0xD57] = 0x40;
+        case 0x40:
+            func_001D8880(DUEL[0xD54], 1);
+            if (DUEL_DUO(0x6CC) != NULL) {
+                func_001DD890(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z);
+            } else {
+                func_001DDAC0(DUEL_DUO(0x6C8)->x, DUEL_DUO(0x6C8)->z, me[0x33D], me[0x33E]);
+            }
+            if (F67->b3) {
+                DUEL[0xD45] = MAX_001CEE60(DUEL[0xD45] - 0x10, 0);
+                DUEL[0xD48] = MAX_001CEE60(DUEL[0xD48] - 0x10, 0);
+            } else {
+                DUEL[0xD45] = MIN_001CEE60(DUEL[0xD45] + 0x10, 0x80);
+                DUEL[0xD48] = MIN_001CEE60(DUEL[0xD48] + 0x10, 0x80);
+            }
+            for (i = 0; i < 5; i++) {
+                if ((sl = slot_001CEE60(i + 1)) != NULL && *(u8 **)sl != NULL) {
+                    *(s16 *)(sl + 0x9A) = (DUEL[0xD45] << 7) >> 7;
+                    func_001CDEB0(sl);
+                }
+            }
+            if (F67->b3) {
+                if (DUEL[0xD45] <= 0) {
+                    for (i = 1; i < 6; i++) {
+                        freeslot_001CEE60(slot_001CEE60(i));
+                    }
+                    F67->b2 = 0;
+                    DUEL[0xD57] = 0x3E;
+                }
+            } else if (DUEL[0xD45] >= 0x80) {
+                card = func_001DF0C0(DUEL[0xD54], DUEL[0xD49]);
+                if (card < 0) {
+                    card = 999;
+                } else {
+                    card &= 0xFFF;
+                }
+                if (DUEL[0xD49] < 5 && card != 999) {
+                    DUEL[0xD57] = 0x41;
+                } else {
+                    DUEL[0xD57] = 0x43;
+                }
+            }
+            return 0;
+        case 0x41:
+            sl = slot_001CEE60(DUEL[0xD49] + 1);
+            func_001D8880(DUEL[0xD54], 1);
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                func_001D8FB0(sl, 0x2EE, -8, DUEL[0xD49] * 125 - 250, -8, 0, 0x80);
+            }
+            DUEL[0xD46] = 0;
+            DUEL[0xD57] = 0x42;
+            func_00217710(0, 7);
+        case 0x42:
+            sl = slot_001CEE60(DUEL[0xD49] + 1);
+            func_001D8880(DUEL[0xD54], 1);
+            DUEL[0xD46] = MIN_001CEE60(DUEL[0xD46] + 6, 0x1E);
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                *(s16 *)(sl + 0x9A) = (DUEL[0xD46] << 7) / 30;
+                func_001CDEB0(sl);
+            }
+            if (DUEL[0xD46] < 0x1E) {
+                break;
+            }
+            card_2717 = func_001DF0C0(DUEL[0xD54], DUEL[0xD49] + 1);
+            if (card_2717 < 0) {
+                card_2717 = 999;
+            } else {
+                card_2717 &= 0xFFF;
+            }
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                func_001D8FB0(sl, DUEL[0xD49] * 125 - 250, 0x1C0, DUEL[0xD49] * 125 - 250, -8, 0x80, 0x80);
+            }
+            if (++DUEL[0xD49] < 5 && card_2717 != 999) {
+                DUEL[0xD57] = 0x41;
+            } else {
+                DUEL[0xD57] = 0x43;
+            }
+            return 0;
+        case 0x43:
+            have = func_001DE5C0(DUEL[0xD54]);
+            need = func_001E08F0(2, DUEL[0xD4F] + 1, 0);
+            func_001D8880(DUEL[0xD54], 1);
+            if (mLR != 0) {
+                n = func_001DF110(DUEL[0xD54]);
+                old = DUEL[0xD4F];
+                if (mLeft != 0) {
+                    DUEL[0xD4F] = (old + n - 1) % n;
+                } else {
+                    DUEL[0xD4F] = (old + n + 1) % n;
+                }
+                if (DUEL[0xD4F] != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            keys = rep;
+            if (mUD != 0) {
+                if (need <= have) {
+                    step = mUp ? 1 : -1;
+                    if (func_001DF370(DUEL[0xD54], DUEL[0xD4F], (step > 0) ? DUEL[0xD4E] + step : 0) != 0) {
+                        DUEL[0xD4E] += step;
+                        func_00217710(0, 9);
+                    }
+                }
+                return 0;
+            }
+            if (keys & 0x10) {
+                DUEL[0xCB3] = 0x11;
+                DUEL[0xCBD] = 0;
+                DUEL[0xD35] = 0x43;
+                DUEL[0xD57] = 0x20;
+                func_00217710(0, 0x10);
+                return 0;
+            }
+            if (keys & 0xC0) {
+                v = DUEL[0xD4E] != 0 ? func_0026E950() : need;
+                if (have < v) {
+                    func_00217710(0, 6);
+                    return 0;
+                }
+                DUEL[0xD57] = 0x44;
+                func_00217710(0, 4);
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            F67->b3 = 1;
+            DUEL[0xD57] = 0x40;
+            func_00217710(0, 5);
+            return 0;
+        case 0x44:
+            F67->b4 = 0;
+            DUEL[0xD47] = 0;
+            DUEL[0xD4A] = (DUEL_DUO(0x6CC) ? 1 : 0) + MAX_001CEE60(DUEL[0xD4E], 1);
+            func_001D82C0(DUEL[0xD54]);
+            DUEL[0xD57] = 0x45;
+        case 0x45:
+            if (F67->b4) {
+                DUEL[0xD47] = MAX_001CEE60(DUEL[0xD47] - 2, 0);
+                DUEL[0xD45] = MIN_001CEE60(DUEL[0xD45] + 0x10, 0x80);
+            } else {
+                DUEL[0xD47] = MIN_001CEE60(DUEL[0xD47] + 2, 0x1E);
+                DUEL[0xD45] = MAX_001CEE60(DUEL[0xD45] - 0x10, 0);
+            }
+            if (DUEL_DUO(0x6CC) != NULL && DUEL_DUO(0x6CC)->flags57.b4 && DUEL_DUO(0x6CC)->id < 0x2AB) {
+                func_001F2800(DUEL_DUO(0x6CC)->model, DUEL[0xD45]);
+                DUEL_DUO(0x6CC)->progress = DUEL[0xD45];
+            }
+            for (i = 0; i < 6; i++) {
+                if ((sl = slot_001CEE60(i)) != NULL && *(u8 **)sl != NULL) {
+                    *(s16 *)(sl + 0x9A) = (DUEL[0xD47] << 7) / 30;
+                    func_001CDEB0(sl);
+                }
+            }
+            if (F67->b4) {
+                if (DUEL[0xD47] <= 0) {
+                    func_001D8080(DUEL[0xD54]);
+                    DUEL[0xD57] = 0x43;
+                }
+            } else {
+                have = func_001E0150(DUEL[0xD54]);
+                need = func_001E01F0(DUEL[0xD54]);
+                card = func_001DF0C0(DUEL[0xD54], DUEL[0xD4F]) & 0xFFF;
+                if (DUEL_DUO(0x6CC) != NULL || DUEL[0xD4E] != 0) {
+                    tx = 999;
+                    tz = 999;
+                    if (DUEL_DUO(0x6CC) != NULL) {
+                        tx = DUEL_DUO(0x6CC)->id;
+                        if (tx < 0x2AB) {
+                            have--;
+                        } else {
+                            need--;
+                        }
+                        if (DUEL[0xD4E] == 0) {
+                            tz = card;
+                        }
+                    }
+                    card = func_0026EB10(DUEL[0xD54], tx, tz);
+                }
+                if (card < 0x2AB) {
+                    if (have >= 5) {
+                        func_001E42C0(8, 0, -200, 0x116);
+                    }
+                } else if (need >= 5) {
+                    func_001E42C0(8, 0, -200, 0x117);
+                }
+                if (DUEL[0xD47] >= 0x1E) {
+                    F67->b2 = 0;
+                    DUEL[0xD57] = 0x46;
+                }
+            }
+            return 0;
+        case 0x46:
+            keys = rep;
+            if (keys & 0xC0) {
+                v = func_001E08F0(2, DUEL[0xD4F] + 1, 0);
+                if (DUEL[0xD4E] != 0) {
+                    v = func_0026E950();
+                }
+                func_001DE5E0(DUEL[0xD54], 1, v);
+                if (DUEL[0xD4A] >= 2) {
+                    DUEL[0xD4B] = DUEL_DUO(0x6CC) ? 0 : 1;
+                    DUEL[0xD4C] = DUEL[0xD4B] + 1;
+                    DUEL[0xD4D] = DUEL[0xD4B] + DUEL[0xD4A];
+                    if (DUEL_DUO(0x6CC) != NULL) {
+                        if ((sl = D_0031A7C0) != NULL && *(u8 **)sl != NULL) {
+                            ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 0;
+                            ((Flags8_001CEE60 *)(sl + 0x9F))->b6 = 0;
+                            ((Flags8_001CEE60 *)(sl + 0x9F))->b5 = 0;
+                            func_00205CB0(sl + 0x10, -125.0f, -8.0f);
+                            func_00205CB0(sl + 0x20, -125.0f, -8.0f);
+                            *(s32 *)(sl + 0x30) = 0;
+                            *(s32 *)(sl + 0x34) = 0;
+                            *(s32 *)(sl + 0x38) = 0;
+                            *(s32 *)(sl + 0x3C) = 0;
+                            *(s32 *)(sl + 0x40) = 0;
+                            *(s32 *)(sl + 0x44) = 0x10000;
+                            *(s32 *)(sl + 0x48) = 0;
+                            *(s32 *)(sl + 0x4C) = 0;
+                            *(s16 *)(sl + 0x98) = 0x80;
+                            *(s16 *)(sl + 0x9A) = 0;
+                            func_001CDEB0(sl);
+                        }
+                        func_001DFBB0(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z);
+                        DUEL_DUO(0x6CC) = NULL;
+                    }
+                    DUEL[0xD57] = 0x47;
+                } else {
+                    DUEL[0xD4B] = 1;
+                    DUEL[0xD57] = 0x4C;
+                }
+                func_00217710(0, 4);
+                func_001E4530();
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            F67->b2 = 1;
+            F67->b4 = 1;
+            DUEL[0xD4B] = 0;
+            DUEL[0xD4C] = 0;
+            DUEL[0xD4D] = 0;
+            DUEL[0xD57] = 0x45;
+            func_00217710(0, 5);
+            func_001E4530();
+            return 0;
+        case 0x47:
+            nx = duel[DUEL[0xD4B] + 0xD2C];
+            nz = duel[DUEL[0xD4C] + 0xD2C];
+            DUEL_U32(0xC78) = func_0026E610(2, nx, 2, nz, duel + 0x6E8);
+            if ((s32)DUEL_U32(0xC78) < 0) {
+                DUEL_U32(0xC78) = 2;
+            }
+            if ((s32)DUEL_U32(0xC78) >= 0) {
+                if ((sl = slot_001CEE60(nx)) != NULL && *(u8 **)sl != NULL) {
+                    ((Flags8_001CEE60 *)(*(u8 **)sl + 0x83))->b6 = 1;
+                }
+                if ((sl = slot_001CEE60(nz)) != NULL && *(u8 **)sl != NULL) {
+                    ((Flags8_001CEE60 *)(*(u8 **)sl + 0x83))->b6 = 1;
+                }
+                return 1;
+            }
+            if ((sl = slot_001CEE60(nz)) != NULL && *(u8 **)sl != NULL) {
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 0;
+                func_001D9030(sl, 0x7D, -8, -0x7D, -8, 0, 0x80);
+            }
+            DUEL[0xD46] = 0;
+            DUEL[0xD57] = 0x48;
+        case 0x48:
+            sl = slot_001CEE60(duel[DUEL[0xD4C] + 0xD2C]);
+            DUEL[0xD46] = MIN_001CEE60(DUEL[0xD46] + 3, 0x1E);
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                *(s16 *)(sl + 0x9A) = (DUEL[0xD46] << 7) / 30;
+                func_001CDEB0(sl);
+            }
+            if (DUEL[0xD46] < 0x1E) {
+                break;
+            }
+            nx_F = duel[DUEL[0xD4B] + 0xD2C];
+            for (i = DUEL[0xD4C] + 1, j = 0, k = 0x7D; i < DUEL[0xD4D]; k += 0x10, j++, i++) {
+                if ((sl = slot_001CEE60(duel[i + 0xD2C])) != NULL && *(u8 **)sl != NULL) {
+                    ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 0;
+                    func_001D9030(sl, k, -8, -0x7D, -8, 0, 0x80);
+                }
+            }
+            if ((sl = slot_001CEE60(nx_F)) != NULL && *(u8 **)sl != NULL) {
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b5 = 0;
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b6 = 0;
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 1;
+                *(s32 *)(sl + 0x30) = 0;
+                *(s32 *)(sl + 0x34) = 0;
+                *(s32 *)(sl + 0x38) = 0;
+                *(s32 *)(sl + 0x3C) = 0;
+                *(s32 *)(sl + 0x40) = 0;
+                *(s32 *)(sl + 0x44) = 0;
+                *(s32 *)(sl + 0x48) = 0x30000;
+                *(s32 *)(sl + 0x4C) = 0;
+                func_001D9030(sl, -0x7D, -8, -0x177, -8, 0, 0x80);
+            }
+            DUEL[0xD46] = 0;
+            DUEL[0xD57] = 0x49;
+            return 0;
+        case 0x49:
+            nx_2969 = duel[DUEL[0xD4B] + 0xD2C];
+            sl = slot_001CEE60(nx_2969);
+            DUEL[0xD46] = MIN_001CEE60(DUEL[0xD46] + 3, 0x1E);
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                *(s16 *)(sl + 0x9A) = (DUEL[0xD46] << 7) / 30;
+                func_001CDEB0(sl);
+            }
+            if (DUEL[0xD46] < 0x1E) {
+                break;
+            }
+            if (nx_2969 != 0) {
+                func_001DF2C0(DUEL[0xD54], nx_2969 - 1);
+            }
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                freeslot_001CEE60(sl);
+            }
+            duel[DUEL[0xD4B] + 0xD2C] = 6;
+            DUEL[0xD4B] = DUEL[0xD4C];
+            if (++DUEL[0xD4C] >= DUEL[0xD4D]) {
+                DUEL[0xD57] = 0x4A;
+            } else {
+                DUEL[0xD57] = 0x47;
+            }
+            return 0;
+        case 0x4A:
+            if ((sl = slot_001CEE60(duel[DUEL[0xD4B] + 0xD2C])) != NULL && *(u8 **)sl != NULL) {
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 1;
+                func_001D9030(sl, -0x7D, -8, 0, -8, 0, 0x80);
+            }
+            DUEL[0xD46] = 0;
+            DUEL[0xD57] = 0x4B;
+        case 0x4B:
+            sl = slot_001CEE60(duel[DUEL[0xD4B] + 0xD2C]);
+            DUEL[0xD46] = MIN_001CEE60(DUEL[0xD46] + 3, 0x1E);
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                *(s16 *)(sl + 0x9A) = (DUEL[0xD46] << 7) / 30;
+                func_001CDEB0(sl);
+            }
+            if (DUEL[0xD46] < 0x1E) {
+                break;
+            }
+            DUEL[0xD57] = 0x4C;
+            return 0;
+        case 0x4C:
+            if ((sl = slot_001CEE60(duel[DUEL[0xD4B] + 0xD2C])) != NULL && (sub = *(u8 **)sl) != NULL) {
+                obj = *(Object_001CEE60 **)(sub + 0x90);
+                *(Vec4_001CEE60 *)(sl + 0x10) = *(Vec4_001CEE60 *)sub;
+                func_001E10F0(me[0x33D], me[0x33E], 0, sl + 0x20);
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 1;
+                *(s32 *)(sl + 0x30) = 0;
+                *(s32 *)(sl + 0x34) = 0x10000;
+                *(s32 *)(sl + 0x38) = 0x10000;
+                *(s32 *)(sl + 0x3C) = 0;
+                *(s32 *)(sl + 0x40) = 0x4000;
+                *(s32 *)(sl + 0x44) = 0;
+                *(s32 *)(sl + 0x48) = 0;
+                *(s32 *)(sl + 0x4C) = 0;
+                if (obj->flags57.b4) {
+                    *(s32 *)(sl + 0x48) = 0x8000;
+                }
+                if (obj->flags57.b5) {
+                    *(s32 *)(sl + 0x44) -= 0x4000;
+                }
+                if (DUEL[0xD54] == 0) {
+                    *(s32 *)(sl + 0x44) += 0x8000;
+                }
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b5 = 1;
+                func_00205C40((s32)(sl + 0x50));
+                *(s32 *)(sl + 0x60) = 0;
+                *(s32 *)(sl + 0x64) = 0;
+                *(s32 *)(sl + 0x68) = 0;
+                *(s32 *)(sl + 0x6C) = 0;
+                ((Flags8_001CEE60 *)(sl + 0x9F))->b6 = 1;
+                *(s32 *)(sl + 0x70) = 0x3EF00000;
+                *(s32 *)(sl + 0x74) = 0x3EFA6F4E;
+                *(s32 *)(sl + 0x78) = 0x3F800000;
+                *(s32 *)(sl + 0x7C) = 0;
+                *(s32 *)(sl + 0x80) = 0x3DCCCCCD;
+                *(s32 *)(sl + 0x84) = 0x3DCCCCCD;
+                *(s32 *)(sl + 0x88) = 0x3F800000;
+                *(s32 *)(sl + 0x8C) = 0;
+                *(s16 *)(sl + 0x98) = 0x80;
+                *(s16 *)(sl + 0x9A) = 0;
+                func_001CDEB0(sl);
+            }
+            DUEL[0xD46] = 0;
+            DUEL[0xD57] = 0x4D;
+        case 0x4D:
+            sl = slot_001CEE60(duel[DUEL[0xD4B] + 0xD2C]);
+            DUEL[0xD48] = MAX_001CEE60(DUEL[0xD48] - 0x10, 0);
+            DUEL[0xD46] = MIN_001CEE60(DUEL[0xD46] + 1, 0x1E);
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                *(s16 *)(sl + 0x9A) = (DUEL[0xD46] << 7) / 30;
+                func_001CDEB0(sl);
+            }
+            if (DUEL[0xD46] < 0x1E) {
+                break;
+            }
+            DUEL[0xD57] = 0x4F;
+            if (sl != NULL && *(u8 **)sl != NULL) {
+                card = (*(Object_001CEE60 **)(*(u8 **)sl + 0x90))->id;
+                have = func_001E0150(DUEL[0xD54]);
+                need = func_001E01F0(DUEL[0xD54]);
+                t = 0;
+                if (card < 0x2AB) {
+                    if (have >= 5) {
+                        t = 1;
+                    }
+                } else if (need >= 5) {
+                    t = 1;
+                }
+                if (t) {
+                    DUEL[0xD57] = 0x4E;
+                }
+            }
+            return 0;
+        case 0x4E:
+            func_0026EEA0(duel + 0x6E8, 2, duel[DUEL[0xD4B] + 0xD2C]);
+            func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+            F65->b5 = 1;
+            DUEL[0xD57] = 0x50;
+            return 0;
+        case 0x4F:
+            if ((sl = slot_001CEE60(duel[DUEL[0xD4B] + 0xD2C])) != NULL && (sub = *(u8 **)sl) != NULL) {
+                tmpo = **(Object_001CEE60 **)(sub + 0x90);
+                tmpo.view = NULL;
+                tmpo.flags57.b7 = 0;
+                tmpo.flags58.b0 = 0;
+                tmpo.flags58.b2 = 0;
+                freeslot_001CEE60(sl);
+                DUEL_DUO(0x6CC) = (Object_001CEE60 *)func_001DF5F0(DUEL[0xD54], me[0x33D], me[0x33E], &tmpo, 0);
+                if (DUEL_DUO(0x6CC) != NULL) {
+                    if (func_0024F520(DUEL_DUO(0x6CC)->x, DUEL_DUO(0x6CC)->z, DUEL_DUO(0x6CC)->fromX,
+                                      DUEL_DUO(0x6CC)->fromZ, duel + 0x6E8) == 1) {
+                        func_002550C0((u32 *)(duel + 0x6E8), (u16 *)(duel + 0x700), 0);
+                        F65->b4 = 1;
+                    }
+                    func_00217710(0, 8);
+                }
+            }
+            for (i = 0; i < 6; i++) {
+                freeslot_001CEE60(slot_001CEE60(i));
+            }
+            DUEL[0xD57] = 0x50;
+            return 0;
+        case 0x50:
+            if ((n = duel[DUEL[0xD4B] + 0xD2C]) != 0) {
+                func_001DF2C0(DUEL[0xD54], n - 1);
+            }
+            for (i = 0; i < 6; i++) {
+                freeslot_001CEE60(slot_001CEE60(i));
+            }
+            DUEL[0xD45] = 0;
+            DUEL[0xD46] = 0;
+            DUEL[0xD47] = 0;
+            DUEL[0xD48] = 0;
+            DUEL[0xD49] = 0;
+            DUEL[0xD4A] = 0;
+            ((Flags8_001CEE60 *)(me + 0x346))->b0 = 0;
+            DUEL[0xD57] = 0x16;
+            return 0;
+        case 0x51:
+            F67->b2 = 1;
+            F67->b3 = 0;
+            DUEL[0xD45] = 0;
+            DUEL[0xD46] = 0;
+            F67->b4 = 0;
+            DUEL[0xD47] = 0;
+            DUEL[0xD48] = 0;
+            DUEL[0xD4B] = 0;
+            DUEL[0xD4C] = 0;
+            DUEL[0xD4D] = 0;
+            DUEL[0xD49] = func_001DF110(DUEL[0xD54]);
+            DUEL[0xD4A] = 0;
+            func_001D7D10(DUEL[0xD54], 0);
+            DUEL[0xD57] = 0x52;
+        case 0x52:
+            if (F67->b3) {
+                DUEL[0xD45] = MAX_001CEE60(DUEL[0xD45] - 0x10, 0);
+            } else {
+                DUEL[0xD45] = MIN_001CEE60(DUEL[0xD45] + 0x10, 0x80);
+            }
+            for (i = 0; i < 5; i++) {
+                if ((sl = slot_001CEE60(i + 1)) != NULL && *(u8 **)sl != NULL) {
+                    *(s16 *)(sl + 0x9A) = (DUEL[0xD45] << 7) >> 7;
+                    func_001CDEB0(sl);
+                }
+            }
+            if (F67->b3) {
+                if (DUEL[0xD45] <= 0) {
+                    for (i = 1; i < 6; i++) {
+                        freeslot_001CEE60(slot_001CEE60(i));
+                    }
+                    F67->b2 = 0;
+                    DUEL[0xD57] = 0x16;
+                }
+            } else if (DUEL[0xD45] >= 0x80) {
+                DUEL[0xD57] = 0x53;
+            }
+            return 0;
+        case 0x53:
+            keys = rep;
+            if (mLR != 0) {
+                n = func_001DF110(DUEL[0xD54]);
+                old = DUEL[0xD4F];
+                if (mLeft != 0) {
+                    DUEL[0xD4F] = (old + n - 1) % n;
+                } else {
+                    DUEL[0xD4F] = (old + n + 1) % n;
+                }
+                if (DUEL[0xD4F] != old) {
+                    func_00217710(0, 3);
+                }
+                return 0;
+            }
+            if (keys & 0x10) {
+                DUEL[0xCB3] = 0x11;
+                DUEL[0xCBD] = 0;
+                DUEL[0xD35] = 0x53;
+                DUEL[0xD57] = 0x20;
+                func_00217710(0, 0x10);
+                return 0;
+            }
+            if (!(keys & 0x20)) {
+                break;
+            }
+            F67->b3 = 1;
+            DUEL[0xD57] = 0x52;
+            func_00217710(0, 5);
+            return 0;
+        case 0x54:
+            if ((fullA && fullB) || (!fullA && !fullB)) {
+                if (DUEL[0xD50] < 2) {
+                    DUEL[0xD35] = DUEL[0xD50] + 4;
+                    DUEL[0xD36] = DUEL[0xD50];
+                } else {
+                    DUEL[0xD35] = 6;
+                }
+            } else if (fullA) {
+                if (DUEL[0xD50] < 2) {
+                    if (DUEL[0xD50] == 0) {
+                        DUEL[0xD35] = 2;
+                    } else {
+                        DUEL[0xD35] = 3;
+                    }
+                } else {
+                    DUEL[0xD35] = 3;
+                }
+                DUEL[0xD36] = 0;
+            } else {
+                if (DUEL[0xD50] < 2) {
+                    if (DUEL[0xD50] == 1) {
+                        DUEL[0xD35] = 2;
+                    } else {
+                        DUEL[0xD35] = 3;
+                    }
+                } else {
+                    DUEL[0xD35] = 3;
+                }
+                DUEL[0xD36] = 1;
+            }
+            if (DUEL[0xD35] == 2U || DUEL[0xD35] == 4U || DUEL[0xD35] == 5U) {
+                if (func_001A82E0(0x16) != 0) {
+                    func_00217980(0x17, 0);
+                }
+            } else if (DUEL[0xD35] == 3) {
+                if (func_001A82E0(0x16) != 0) {
+                    func_00217980(0x2A, 0);
+                }
+            }
+            DUEL[0xD57] = 0x55;
+        case 0x55:
+            if (func_002179C0() != 0) {
+                break;
+            }
+            if (DUEL[0xD35] == 2U || DUEL[0xD35] == 4U || DUEL[0xD35] == 5U) {
+                if (func_001A82E0(0x16) != 0) {
+                    func_00217980(0x17, 1);
+                }
+            } else if (DUEL[0xD35] == 3) {
+                if (func_001A82E0(0x16) != 0) {
+                    func_00217980(0x2A, 1);
+                }
+            }
+            DUEL_DUO(0x6CC) = NULL;
+            DUEL_DUO(0x6C8) = NULL;
+            DUEL[0xD54] = DUEL[0xD36];
+            DUEL[0xCB2] = DUEL[0xD35];
+            DUEL_S16(0xC9C) = 0;
+            DUEL_S16(0xC9A) = 0;
+            DUEL[0xD57] = 0x56;
+        case 0x56:
+            if (DUEL[0xD3E] < 0x80) {
+                break;
+            }
+            DUEL[0xD35] = 0;
+            DUEL[0xD57] = 0x57;
+        case 0x57:
+            if (DUEL[0xD35] != 0) {
+                DUEL[0xD35]--;
+                return 0;
+            }
+            DUEL[0xD57] = 0x58;
+        case 0x58:
+            if (DUEL[0xCB2] == 2U || DUEL[0xCB2] == 4U || DUEL[0xCB2] == 5U) {
+                p = (u8 *)func_001DF540(DUEL[0xD54], 0);
+                gx = (s32)(f32)((p[0x40] - 3) * 50);
+                func_001D90E0(0x40, gx, (s32)(f32)((p[0x41] - 3) * 50));
+                DUEL[0xD57] = 0x59;
+            } else if (DUEL[0xCB2] == 3) {
+                DUEL[0xD57] = 0x5A;
+            } else {
+                DUEL[0xD57] = 0x5B;
+            }
+            DUEL[0xD3A] = 0;
+            return 1;
+        case 0x59:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 1, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            if (func_001FA6F0(-1, -1) != NULL) {
+                break;
+            }
+            DUEL[0xD57] = 0x5C;
+            return 1;
+        case 0x5A:
+            DUEL[0xD3A] = MIN_001CEE60(DUEL[0xD3A] + 2, 0x80);
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 1, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            if (DUEL[0xD3A] < 0x80) {
+                break;
+            }
+            DUEL[0xD57] = 0x5C;
+            return 1;
+        case 0x5B:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 1, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x5C;
+            return 1;
+        case 0x5C:
+            if (DUEL[0xCB2] == 2U || DUEL[0xCB2] == 4U || DUEL[0xCB2] == 5U) {
+                cpos = func_001FAF60(0);
+                dz = 0.39269908f - cpos[2];
+                dx = 100.0f - cpos[0];
+                dx = MIN_001CEE60(MAX_001CEE60(dx, -2.0f), 2.0f);
+                dz = MIN_001CEE60(MAX_001CEE60(dz, -0.012271847f), 0.012271847f);
+                func_001FB6A0(0, 0, 1, -0.024543693f, (f32)dz, dx);
+            }
+            if (fullA && (soloA || !fullB)) {
+                rep |= func_00203A40(lifeA100, 0, 0xFFFF);
+            }
+            if (fullB && (soloB || !fullA)) {
+                rep |= func_00203A40(lifeB100, 0, 0xFFFF);
+            }
+            keys = rep;
+            if (!(keys & 0xF0)) {
+                break;
+            }
+            DUEL[0xD57] = 0x5D;
+            func_00217710(0, 4);
+            return 0;
+        case 0x5D:
+            if (DUEL[0xCB2] == 2U || DUEL[0xCB2] == 4U || DUEL[0xCB2] == 5U) {
+                cpos = func_001FAF60(0);
+                dz = 0.39269908f - cpos[2];
+                dx = 100.0f - cpos[0];
+                dx = MIN_001CEE60(MAX_001CEE60(dx, -2.0f), 2.0f);
+                dz = MIN_001CEE60(MAX_001CEE60(dz, -0.012271847f), 0.012271847f);
+                func_001FB6A0(0, 0, 1, -0.024543693f, (f32)dz, dx);
+            }
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 1, 0x80);
+            DUEL[0xD3A] = MIN_001CEE60(DUEL[0xD3A] + 2, 0x80);
+            if (DUEL_S16(0xC9C) < 0x80) {
+                break;
+            }
+            if (DUEL[0xD3A] < 0x80) {
+                break;
+            }
+            DUEL[0xCB2] = 0x18;
+            func_00272CC0(DUEL[0xD50], DUEL[0xD51]);
+            if ((fullA && fullB) || (!fullA && !fullB)) {
+                func_001A8920();
+                break;
+            }
+            if (DUEL[0xD37] < 0x16) {
+                func_00228150(DUEL[0xD52] == DUEL[0xD50] ? 1 : 0);
+            }
+            DUEL[0xD57] = 0x5E;
+        case 0x5E: {
+            u16 *buf;
+            *(u16 *)(duel + 0xC8A) = 0;
+            *(u16 *)(duel + 0xC8C) = 0;
+            buf = (u16 *)0x01ED0000;
+            if (fullA && !fullB) {
+                for (n = 0; n < 0x356; n++) {
+                    tx = func_00215D30(0, n);
+                    tz = func_00215DE0(0, n);
+                    if (tz != tx && func_00200930(1, n) != NULL) {
+                        if (tx < tz) {
+                            v = n;
+                        } else {
+                            v = n | 0x4000;
+                        }
+                        buf[(*(u16 *)(duel + 0xC8C))++] = v;
+                    }
+                }
+            }
+            if (!fullA && fullB) {
+                for (n = 0; n < 0x356; n++) {
+                    tx = func_00215D30(1, n);
+                    tz = func_00215DE0(1, n);
+                    if (tz != tx && func_00200930(1, n) != NULL) {
+                        if (tx < tz) {
+                            v = n | 0x8000;
+                        } else {
+                            v = n | 0xC000;
+                        }
+                        buf[(*(u16 *)(duel + 0xC8C))++] = v;
+                    }
+                }
+            }
+            if (*(u16 *)(duel + 0xC8C) == 0) {
+                DUEL[0xD57] = 0x62;
+                break;
+            }
+            DUEL[0xCB2] = 9;
+            DUEL_S16(0xC9A) = 0;
+            DUEL_S16(0xC9C) = 0;
+            DUEL[0xD57] = 0x5F;
+            break;
+        }
+        case 0x5F:
+            *(u16 *)(duel + 0xCAA) = ((u16 *)0x01ED0000)[*(u16 *)(duel + 0xC8A)];
+            func_00217710(0, 4);
+            DUEL[0xD57] = 0x60;
+        case 0x60:
+            DUEL_S16(0xC9C) = MIN_001CEE60(DUEL_S16(0xC9C) + 8, 0x40);
+            if (DUEL_S16(0xC9C) < 0x40) {
+                break;
+            }
+            DUEL[0xD57] = 0x61;
+        case 0x61:
+            keys = rep;
+            if (keys & 0xF0) {
+                if (++*(u16 *)(duel + 0xC8A) >= *(u16 *)(duel + 0xC8C)) {
+                    DUEL[0xCB2] = 0x18;
+                    func_00217710(0, 4);
+                    DUEL[0xD57] = 0x62;
+                } else {
+                    DUEL[0xD57] = 0x5F;
+                }
+            }
+            return 0;
+        case 0x62:
+            if (((fullA && DUEL[0xD50] == 0) || (fullB && DUEL[0xD50] == 1)) &&
+                func_00251060(DUEL[0xD50] ^ 1, (void *)0x01ED0000) != 0) {
+                func_001A87C0(0xF, -1);
+            } else {
+                func_001A8920();
+            }
+            break;
+        }
+        if (prev == DUEL[0xD57]) {
+            break;
+        }
+        prev = DUEL[0xD57];
+    }
+    return 0;
+
+}
