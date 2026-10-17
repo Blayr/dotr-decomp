@@ -119,304 +119,237 @@ s32 SzDuel_GetPlayMotion(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     return result;
 }
 
-typedef struct {
-    u8 padding[0x33C];
-    u8 value;
-    u8 trailing_padding[0x13];
-} Record_001DE4E0;
-
-u8 SzDuel_GetPlayer(s32 arg0) {
-    return ((Record_001DE4E0 *)(duelState.b + arg0 * 0x350))->value;
+/* Who plays side `player` (DuelPlayer.duelistId). */
+u8 SzDuel_GetPlayer(s32 player) {
+    return DUEL_PLAYER(player)->duelistId;
 }
 
-void SzDuel_SetPlayer(s32 arg0, s32 arg1) {
-    u8 *entry;
+/* Sets who plays side `player`; only the low 7 bits are kept. */
+void SzDuel_SetPlayer(s32 player, s32 duelistId) {
+    DuelPlayer *side;
 
-    entry = duelState.b + (arg0 * 0x350);
-    if (entry[0x33C] != (arg1 & 0xFF)) {
-        arg1 &= 0x7F;
-        entry[0x33C] = arg1;
+    side = DUEL_PLAYER(player);
+    if (side->duelistId != (duelistId & 0xFF)) {
+        duelistId &= 0x7F;
+        side->duelistId = duelistId;
     }
 }
 
+/* The side whose turn it is (0 or 1). */
 s32 SzDuel_GetTurnOwner(void) {
-    return (s32) D_003181E4;
+    return (s32) duelState.s.turnOwner;
 }
 
+/* The side that took the first turn. */
 u8 SzDuel_GetTurnFirst(void) {
-    return D_003181E2;
+    return duelState.s.turnFirst;
 }
 
+/* How many turns have been played (capped at 255). */
 u8 SzDuel_GetTurnCount(void) {
-    return D_003181E3;
+    return duelState.s.turnCount;
 }
 
+/* A helper only so the clamp below compiles to the original's code. */
 static inline s32 nonnegative_001DE570(s32 value) {
     return value > 0 ? value : 0;
 }
 
-void SzDuel_SetTurnCount(s32 arg0) {
-    u8 *dest = duelState.b;
+/* Sets the turn count, clamped to 0..255. */
+void SzDuel_SetTurnCount(s32 count) {
+    DuelState *duel = DUEL_STATE;
 
-    dest[0xD53] = nonnegative_001DE570(arg0) < 0xFF
-        ? nonnegative_001DE570(arg0) : 0xFF;
+    duel->turnCount = nonnegative_001DE570(count) < 0xFF
+        ? nonnegative_001DE570(count) : 0xFF;
 }
 
-typedef struct {
-    u8 padding[0x341];
-    u8 value;
-    u8 trailing[0xE];
-} Entry_001DE5C0;
-
-s32 SzDuel_GetSummonPower(s32 arg0) {
-    return ((Entry_001DE5C0 *)(duelState.b + arg0 * 0x350))->value;
+/* Side `player`'s summon power (0..12). */
+s32 SzDuel_GetSummonPower(s32 player) {
+    return DUEL_PLAYER(player)->summonPower;
 }
 
-s32 SzDuel_CalcSummonPower(s32 index, s32 operation, s32 value) {
+/* Applies `operation` (DUEL_CALC_ADD/SUB/MUL/DIV/SET) with `value` to side `player`'s summon power, clamped
+   to 0..12. Returns 0 for an unknown operation, 1 otherwise. */
+s32 SzDuel_CalcSummonPower(s32 player, s32 operation, s32 value) {
     s32 current;
     s32 result;
-    u8 *entry;
+    DuelPlayer *side;
 
-    entry = duelState.b + index * 0x350;
-    current = entry[0x341];
+    side = DUEL_PLAYER(player);
+    current = side->summonPower;
     switch (operation) {
-    case 0:
+    case DUEL_CALC_ADD:
         result = current + value;
         break;
-    case 1:
+    case DUEL_CALC_SUB:
         result = current - value;
         break;
-    case 2:
+    case DUEL_CALC_MUL:
         result = current * value;
         break;
-    case 3:
+    case DUEL_CALC_DIV:
         result = current / value;
         break;
-    case 4:
+    case DUEL_CALC_SET:
         result = value;
         break;
     default:
         return 0;
     }
 
-    value = result;
+    value = result; /* this copy is kept for the match */
     value = (value > 0 ? value : 0) < 12 ? (value > 0 ? value : 0) : 12;
-    entry[0x341] = value;
+    side->summonPower = value;
     return 1;
 }
 
-typedef struct Entry_001DE690 {
-    u8 padding[0x342];
-    u8 value;
-    u8 tail[0xD];
-} Entry_001DE690;
-
-u8 SzDuel_GetSummonCharge(s32 arg0) {
-    return ((Entry_001DE690 *)(duelState.b + arg0 * 0x350))->value;
+/* Side `player`'s summon charge. */
+u8 SzDuel_GetSummonCharge(s32 player) {
+    return DUEL_PLAYER(player)->summonCharge;
 }
 
-typedef struct {
-    u8 padding[0x342];
-    s8 value;
-    u8 reserved[0xD];
-} Entry_001DE6B0;
-
-void SzDuel_SetSummonCharge(s32 arg0, s8 arg1) {
-    ((Entry_001DE6B0 *)(duelState.b + arg0 * 0x350))->value = arg1;
+void SzDuel_SetSummonCharge(s32 player, s8 charge) {
+    DUEL_PLAYER(player)->summonCharge = charge;
 }
 
-typedef struct {
-    u8 padding[0x346];
-    s8 flag : 1;
-    u8 tail[9];
-} Entry_001DE6D0;
-
-s32 SzDuel_InqHandPhase(s32 arg0) {
-    return ((Entry_001DE6D0 *) (duelState.b + arg0 * 0x350))->flag ? 1 : 0;
+/* Whether side `player` is in its hand phase (1) or not (0). */
+s32 SzDuel_InqHandPhase(s32 player) {
+    return DUEL_PLAYER(player)->flags346.handPhase ? 1 : 0;
 }
 
-typedef struct {
-    u8 pad0[0x346];
-    s8 enabled : 1;
-    s8 reserved : 7;
-    u8 pad347[9];
-} Flags_001DE700;
+void SzDuel_SetHandPhase(s32 player, s32 on) {
+    DuelPlayer *side = DUEL_PLAYER(player);
 
-void SzDuel_SetHandPhase(s32 arg0, s32 arg1) {
-    Flags_001DE700 *record = (Flags_001DE700 *)(duelState.b + arg0 * 0x350);
-
-    record->enabled = arg1 ? 1 : 0;
+    side->flags346.handPhase = on ? 1 : 0;
 }
 
-typedef struct {
-    u8 pad[0x344];
-    u8 field_344;
-    u8 tail[0xB];
-} Entry_001DE740;
-
-u8 SzDuel_InqDestinyFlag(s32 arg0) {
-    return ((Entry_001DE740 *)(duelState.b + arg0 * 0x350))->field_344;
+/* Side `player`'s destiny-draw flag. */
+u8 SzDuel_InqDestinyFlag(s32 player) {
+    return DUEL_PLAYER(player)->destinyFlag;
 }
 
-void SzDuel_SetDestinyFlag(s32 arg0, s8 arg1) {
-    *(s8 *)(duelState.b + arg0 * 0x350 + 0x344) = arg1;
+void SzDuel_SetDestinyFlag(s32 player, s8 flag) {
+    DUEL_PLAYER(player)->destinyFlag = flag;
 }
 
-typedef struct {
-    s8 unused : 7;
-    s8 enabled : 1;
-} Flags_001DE780;
-
-extern Flags_001DE780 D_003181F6;
-
+/* Whether the duel's info windows are shown. */
 s32 SzDuel_GetWindowDisp(void) {
-    return D_003181F6.enabled ? 1 : 0;
+    return duelState.s.f66.b7 ? 1 : 0;
 }
 
-typedef struct {
-    u8 padding[0xD66];
-    s8 : 7;
-    s8 enabled : 1;
-} Flags_001DE7A0;
+void SzDuel_SetWindowDisp(s32 on) {
+    DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
-void SzDuel_SetWindowDisp(s32 arg0) {
-    Flags_001DE7A0 *flags = (Flags_001DE7A0 *) duelState.b;
-
-    flags->enabled = (s8) (arg0 ? 1 : 0);
+    duel->f66.b7 = (s8) (on ? 1 : 0);
 }
 
-typedef struct {
-    s8 padding[0xD67];
-    s8 enabled : 1;
-    s8 reserved : 7;
-} Flags_001DE7E0;
+void SzDuel_SetWindowDraw(s32 on) {
+    DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
-void SzDuel_SetWindowDraw(s32 arg0) {
-    Flags_001DE7E0 *flags = (Flags_001DE7E0 *)duelState.b;
-
-    flags->enabled = (s8)(arg0 ? 1 : 0);
+    duel->f67.b0 = (s8)(on ? 1 : 0);
 }
 
-typedef struct Flags_001DE820 {
-    s8 unused : 1;
-    s8 enabled : 1;
-    s8 remaining : 6;
-} Flags_001DE820;
+void SzDuel_SetWindowBusy(s32 on) {
+    DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
-typedef struct State_001DE820 {
-    u8 padding[0xD67];
-    Flags_001DE820 flags;
-} State_001DE820;
-
-void SzDuel_SetWindowBusy(s32 arg0) {
-    State_001DE820 *state = (State_001DE820 *)duelState.b;
-
-    state->flags.enabled = (s8)(arg0 ? 1 : 0);
+    duel->f67.b1 = (s8)(on ? 1 : 0);
 }
 
-s32 SzDuel_SetPlayerCur(s32 arg0, s32 arg1, s32 arg2) {
-    u8 *entity;
+/* Moves side `player`'s board cursor to column x, row z (0..6) and points the camera there. Returns 0 if the
+   square is off the board. */
+s32 SzDuel_SetPlayerCur(s32 player, s32 x, s32 z) {
+    DuelPlayer *side;
     f32 saved[4];
     f32 position[3];
 
-    entity = duelState.b + arg0 * 0x350;
-    if (arg1 < 0 || arg1 >= 7 || arg2 < 0 || arg2 >= 7) {
+    side = DUEL_PLAYER(player);
+    if (x < 0 || x >= 7 || z < 0 || z >= 7) {
         return 0;
     }
-    SzView_IV2V(entity + 0x1D0, saved);
-    entity[0x33D] = arg1;
-    entity[0x33E] = arg2;
-    position[0] = (f32)((arg1 - 3) * 50);
-    position[2] = (f32)((arg2 - 3) * 50);
-    position[1] = (f32)*(s8 *)(entity + 0x345);
+    SzView_IV2V(side->cameraLookAt, saved);
+    side->cursorX = x;
+    side->cursorZ = z;
+    position[0] = (f32)((x - 3) * 50);
+    position[2] = (f32)((z - 3) * 50);
+    position[1] = (f32)side->cursorY;
     SzView_SetCP(0, position);
     SzView_SetLookSP(0, saved);
     return 1;
 }
 
-void SzDuel_InitDeck(s32 arg0) {
-    s16 *temp_a1;
-    s32 var_a2;
-    s16 *var_a3;
+/* Empties side `player`'s deck. */
+void SzDuel_InitDeck(s32 player) {
+    DuelDeck *deck;
+    s32 i;
+    u16 *slot;
 
-    var_a2 = 0;
-    temp_a1 = (s16 *)(duelState.b + (arg0 * 0x350) + 0x1E0);
-    var_a3 = temp_a1;
+    i = 0;
+    deck = &DUEL_PLAYER(player)->deck;
+    slot = deck->cards;
     do {
-        var_a2 += 1;
-        *var_a3 = 0x3E7;
-        var_a3++;
-    } while (var_a2 < 0x28);
-    *(u8 *)((u8 *)temp_a1 + 0x50) = 0;
+        i += 1;
+        *slot = CARD_NONE;
+        slot++;
+    } while (i < 40);
+    deck->count = 0;
 }
 
-typedef struct Record_001DE9C0 {
-    u8 padding[0x230];
-    u8 field230;
-} Record_001DE9C0;
-
-s32 SzDuel_GetDeckCount(s32 arg0) {
-    return ((Record_001DE9C0 *)(duelState.b + arg0 * 0x350))->field230;
+s32 SzDuel_GetDeckCount(s32 player) {
+    return DUEL_PLAYER(player)->deck.count;
 }
 
-s32 SzDuel_InqDeck(s32 arg0, s32 arg1) {
-    u16 *values = (u16 *)(duelState.b + arg0 * 0x350 + 0x1E0);
+/* The card in deck slot `slot` (CARD_NONE if empty), or -1 for a bad slot. */
+s32 SzDuel_InqDeck(s32 player, s32 slot) {
+    u16 *cards = DUEL_PLAYER(player)->deck.cards;
 
-    if ((arg1 < 0) || (arg1 >= 0x28)) {
+    if ((slot < 0) || (slot >= 40)) {
         return -1;
     }
-    return values[arg1];
+    return cards[slot];
 }
 
-typedef struct CardSlots_001DEA30 {
-    u16 cards[40];
-    u8 count;
-} CardSlots_001DEA30;
-
+/* Puts `card` into a random free slot of side `player`'s deck. Returns the slot, or -1 if the card id is bad
+   or the deck is full. */
 s32 SzDuel_AddDeck(s32 player, s32 card) {
-    extern s32 func_001A22C0(f32);
-    CardSlots_001DEA30 *slots;
+    extern s32 func_001A22C0(f32); /* declared here with a float parameter: needed for the match */
+    DuelDeck *deck;
     s32 index;
 
-    slots = (CardSlots_001DEA30 *)(duelState.b + player * 0x350 + 0x1E0);
-    if (card == 0x29F) {
-        card = 0x3E7;
+    deck = &DUEL_PLAYER(player)->deck;
+    if (card == CARD_STORED_AS_NONE) {
+        card = CARD_NONE;
     }
-    if (card < 0 || card >= 0x356) {
+    if (card < 0 || card >= CARD_COUNT) {
         return -1;
     }
-    if (slots->count >= 40) {
+    if (deck->count >= 40) {
         return -1;
     }
     do {
         index = (s32)func_001A22C0(40.0f * ((f32)func_0019A5C8() / 2147483648.0f));
-    } while (slots->cards[index] != 0x3E7);
-    slots->cards[index] = card;
-    slots->count++;
+    } while (deck->cards[index] != CARD_NONE);
+    deck->cards[index] = card;
+    deck->count++;
     return index;
 }
 
-typedef struct {
-    s16 cards[40];
-    u8 count;
-} CardList_001DEB20;
-
-void SzDuel_PackDeck(s32 arg0) {
-    CardList_001DEB20 list;
-    s16 *fill;
-    CardList_001DEB20 *dest;
+/* Moves the cards of side `player`'s deck to the front, keeping their order. */
+void SzDuel_PackDeck(s32 player) {
+    DuelDeck list;
+    u16 *fill;
+    DuelDeck *dest;
     s32 i;
     u16 *src;
     u16 card;
     s32 count;
 
-    dest = (CardList_001DEB20 *)(duelState.b + arg0 * 0x350 + 0x1E0);
+    dest = &DUEL_PLAYER(player)->deck;
     list.count = 0;
     i = 0;
     src = (u16 *)dest;
     do {
         card = *src;
-        if (card != 999) {
+        if (card != CARD_NONE) {
             list.cards[list.count++] = card;
         }
         i++;
@@ -427,159 +360,151 @@ void SzDuel_PackDeck(s32 arg0) {
         fill = &list.cards[count];
         do {
             count++;
-            *fill = 999;
+            *fill = CARD_NONE;
             fill++;
         } while (count < 40);
     }
     *dest = list;
 }
 
-typedef struct {
-    u16 slots[40];
-    u8 count;
-} SlotList_001DEC00;
+/* Puts `card` into deck slot `slot` if that slot is free. Returns 1 if it did. */
+s32 SzDuel_SetDeck(s32 player, s32 slot, s32 card) {
+    DuelDeck *deck;
+    u16 *entry;
 
-s32 SzDuel_SetDeck(s32 arg0, s32 arg1, s32 arg2) {
-    SlotList_001DEC00 *list;
+    deck = &DUEL_PLAYER(player)->deck;
+    if ((slot < 0) || (slot >= 40)) {
+        return 0;
+    }
+    if (card == CARD_STORED_AS_NONE) {
+        card = CARD_NONE;
+    }
+    if ((card < 0) || (card >= CARD_COUNT)) {
+        return 0;
+    }
+    if (deck->count >= 40) {
+        return 0;
+    }
+    entry = &deck->cards[slot];
+    if (*entry != CARD_NONE) {
+        return 0;
+    }
+    *entry = card;
+    deck->count++;
+    return 1;
+}
+
+/* Empties deck slot `slot`. Returns 1 if there was a card. */
+s32 SzDuel_DelDeck(s32 player, s32 slot) {
+    DuelDeck *deck;
+    u16 *entry;
+
+    deck = &DUEL_PLAYER(player)->deck;
+    if ((slot < 0) || (slot >= 40)) {
+        return 0;
+    }
+    entry = &deck->cards[slot];
+    if (*entry == CARD_NONE) {
+        return 0;
+    }
+    *entry = CARD_NONE;
+    deck->count--;
+    return 1;
+}
+
+/* Draws the top card of side `player`'s deck: returns it (CARD_NONE if the deck is empty) and packs the deck. */
+s32 SzDuel_DrawDeck(s32 player) {
+    s32 card;
+    DuelDeck *deck;
+    DuelPlayer *side;
+
+    side = DUEL_PLAYER(player);
+    card = side->deck.cards[0];
+    deck = &side->deck;
+    if (card < 0 || card >= CARD_NONE) {
+        return CARD_NONE;
+    }
+    if (deck->cards[0] != CARD_NONE) {
+        deck->cards[0] = CARD_NONE;
+        deck->count--;
+    }
+    SzDuel_PackDeck(player);
+    return card;
+}
+
+/* Empties side `player`'s graveyard. */
+void SzDuel_InitGrave(s32 player) {
+    DuelGrave *grave;
+    s32 count;
     u16 *slot;
 
-    list = (SlotList_001DEC00 *)(duelState.b + (arg0 * 0x350) + 0x1E0);
-    if ((arg1 < 0) || (arg1 >= 0x28)) {
-        return 0;
-    }
-    if (arg2 == 0x29F) {
-        arg2 = 0x3E7;
-    }
-    if ((arg2 < 0) || (arg2 >= 0x356)) {
-        return 0;
-    }
-    if (list->count >= 0x28) {
-        return 0;
-    }
-    slot = &list->slots[arg1];
-    if (*slot != 0x3E7) {
-        return 0;
-    }
-    *slot = arg2;
-    list->count++;
-    return 1;
-}
-
-s32 SzDuel_DelDeck(s32 arg0, s32 arg1) {
-    u8 *temp_a0;
-    u16 *temp_a1;
-
-    temp_a0 = duelState.b + (arg0 * 0x350) + 0x1E0;
-    if ((arg1 < 0) || (arg1 >= 0x28)) {
-        return 0;
-    }
-    temp_a1 = (u16 *)(temp_a0 + (arg1 * 2));
-    if (*temp_a1 == 0x3E7) {
-        return 0;
-    }
-    *temp_a1 = 0x3E7;
-    temp_a0[0x50]--;
-    return 1;
-}
-
-s32 SzDuel_DrawDeck(s32 arg0) {
-    s32 value;
-    u8 *field;
-    u8 *entry;
-
-    entry = duelState.b + (arg0 * 0x350);
-    value = *(u16 *)(entry + 0x1E0);
-    field = entry + 0x1E0;
-    if (value < 0 || value >= 0x3E7) {
-        return 0x3E7;
-    }
-    if (*(u16 *)field != 0x3E7) {
-        *(u16 *)field = 0x3E7;
-        field[0x50]--;
-    }
-    SzDuel_PackDeck(arg0);
-    return value;
-}
-
-void SzDuel_InitGrave(s32 arg0) {
-    u8 *base;
-    s32 count;
-    s16 *cursor;
-
     count = 0;
-    base = duelState.b + (arg0 * 0x350) + 0x232;
-    cursor = (s16 *)base;
+    grave = &DUEL_PLAYER(player)->grave;
+    slot = grave->cards;
     do {
         count += 1;
-        *cursor = 0x3E7;
-        cursor++;
-    } while (count < 0x78);
-    base[0xF0] = 0;
+        *slot = CARD_NONE;
+        slot++;
+    } while (count < 120);
+    grave->count = 0;
 }
 
-s32 SzDuel_InqGrave(s32 arg0, s32 arg1) {
-    u16 *entries = (u16 *)(duelState.b + (arg0 * 0x350) + 0x232);
+/* The card in graveyard slot `slot`, or -1 for a bad slot. */
+s32 SzDuel_InqGrave(s32 player, s32 slot) {
+    u16 *cards = DUEL_PLAYER(player)->grave.cards;
     s32 ret;
 
-    if ((arg1 < 0) || (arg1 >= 0x78)) {
+    if ((slot < 0) || (slot >= 120)) {
         ret = -1;
     } else {
-        ret = entries[arg1];
+        ret = cards[slot];
     }
     return ret;
 }
 
-u8 SzDuel_GetGraveCount(s32 arg0) {
-    return *(u8 *)(duelState.b + (arg0 * 0x350) + 0x322);
+u8 SzDuel_GetGraveCount(s32 player) {
+    return DUEL_PLAYER(player)->grave.count;
 }
 
-typedef struct {
-    s16 cards[120];
-    u8 count;
-} CardList_001DEE70;
+/* Adds `card` to the end of side `player`'s graveyard. Returns its slot, or -1 if the id is bad or the
+   graveyard is full. */
+s32 SzDuel_AddGrave(s32 player, s32 card) {
+    DuelGrave *grave;
 
-
-s32 SzDuel_AddGrave(s32 arg0, s32 arg1) {
-    CardList_001DEE70 *list;
-
-    list = (CardList_001DEE70 *)(duelState.b + arg0 * 0x350 + 0x232);
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    grave = &DUEL_PLAYER(player)->grave;
+    if (card == CARD_STORED_AS_NONE) {
+        card = CARD_NONE;
     }
-    if (arg1 < 0 || arg1 >= 0x356) {
+    if (card < 0 || card >= CARD_COUNT) {
         return -1;
     }
-    if (list->count >= 120) {
+    if (grave->count >= 120) {
         return -1;
     }
-    SzDuel_PackGrave(arg0);
-    list->cards[list->count] = arg1;
-    return list->count++;
+    SzDuel_PackGrave(player);
+    grave->cards[grave->count] = card;
+    return grave->count++;
 }
 
-typedef struct {
-    u16 entries[120];
-    u8 count;
-} List_001DEF20;
-
-void SzDuel_PackGrave(s32 arg0) {
-    List_001DEF20 list;
+/* Moves the cards of side `player`'s graveyard to the front, keeping their order. */
+void SzDuel_PackGrave(s32 player) {
+    DuelGrave list;
     s16 *copy;
     s32 remaining;
     s16 *dest;
     s32 i;
     u16 *src;
-    u16 entry;
+    u16 card;
     s32 fill;
 
-    dest = (s16 *)(duelState.b + arg0 * 0x350 + 0x232);
+    dest = (s16 *)&DUEL_PLAYER(player)->grave;
     list.count = 0;
     i = 0;
     src = (u16 *)dest;
     do {
-        entry = *src;
-        if (entry != 999) {
-            list.entries[list.count++] = entry;
+        card = *src;
+        if (card != CARD_NONE) {
+            list.cards[list.count++] = card;
         }
         i++;
         src++;
@@ -587,13 +512,15 @@ void SzDuel_PackGrave(s32 arg0) {
 
     fill = list.count;
     if (fill < 120) {
-        copy = (s16 *)&list.entries[fill];
+        copy = (s16 *)&list.cards[fill];
         do {
             fill++;
-            *copy++ = 999;
+            *copy++ = CARD_NONE;
         } while (fill < 120);
     }
 
+    /* copied back one halfword at a time (121 = the cards and the count), not as one struct assignment:
+       the original code does it this way */
     copy = (s16 *)&list;
     remaining = 121;
     do {
@@ -602,236 +529,231 @@ void SzDuel_PackGrave(s32 arg0) {
     } while (remaining > 0);
 }
 
-s32 SzDuel_DelGrave(s32 arg0, s32 arg1) {
-    s32 offset;
-    u8 *temp_a0;
-    u16 *temp_a1;
+/* Empties graveyard slot `slot`. Returns 1 if there was a card. */
+s32 SzDuel_DelGrave(s32 player, s32 slot) {
+    DuelGrave *grave;
+    u16 *entry;
 
-    offset = arg0 * 0x350;
-    temp_a0 = duelState.b + offset + 0x232;
-    if ((arg1 < 0) || (arg1 >= 0x78)) {
+    grave = &DUEL_PLAYER(player)->grave;
+    if ((slot < 0) || (slot >= 120)) {
         return 0;
     }
-    temp_a1 = (u16 *)(temp_a0 + (arg1 * 2));
-    if (*temp_a1 == 0x3E7) {
+    entry = &grave->cards[slot];
+    if (*entry == CARD_NONE) {
         return 0;
     }
-    *temp_a1 = 0x3E7;
-    temp_a0[0xF0]--;
+    *entry = CARD_NONE;
+    grave->count--;
     return 1;
 }
 
-void SzDuel_InitHand(s32 arg0) {
-    s16 *temp_a1;
-    s32 var_a2;
-    s16 *var_a3;
+/* Empties side `player`'s hand. */
+void SzDuel_InitHand(s32 player) {
+    DuelHand *hand;
+    s32 i;
+    u16 *slot;
 
-    var_a2 = 0;
-    temp_a1 = (s16 *)(duelState.b + (arg0 * 0x350) + 0x324);
-    var_a3 = temp_a1;
+    i = 0;
+    hand = &DUEL_PLAYER(player)->hand;
+    slot = hand->cards;
     do {
-        var_a2 += 1;
-        *var_a3 = 0x3E7;
-        var_a3++;
-    } while (var_a2 < 5);
-    *(s8 *)((u8 *)temp_a1 + 0xA) = 0;
+        i += 1;
+        *slot = CARD_NONE;
+        slot++;
+    } while (i < 5);
+    hand->count = 0;
 }
 
-s32 SzDuel_InqHand(s32 arg0, s32 arg1) {
-    u16 *values = (u16 *)(duelState.b + arg0 * 0x350 + 0x324);
+/* The raw hand entry in slot `slot` (card id + tag), or -1 for a bad slot. */
+s32 SzDuel_InqHand(s32 player, s32 slot) {
+    u16 *cards = DUEL_PLAYER(player)->hand.cards;
     s32 result;
 
-    if ((arg1 < 0) || (arg1 >= 5)) {
+    if ((slot < 0) || (slot >= 5)) {
         result = -1;
     } else {
-        result = values[arg1];
+        result = cards[slot];
     }
     return result;
 }
 
-typedef struct {
-    u8 pad[0x32E];
-    u8 value;
-    u8 pad_end[0x21];
-} Entry_001DF110;
-
-s32 SzDuel_GetHandCount(s32 arg0) {
-    return ((Entry_001DF110 *)(duelState.b + arg0 * 0x350))->value;
+s32 SzDuel_GetHandCount(s32 player) {
+    return DUEL_PLAYER(player)->hand.count;
 }
 
-typedef struct {
-    s16 cards[5];
-    u8 count;
-} Hand_001DF130;
+/* Adds `card` to the end of side `player`'s hand. Returns its slot, or -1 if the id is bad or the hand is
+   full. */
+s32 SzDuel_AddHand(s32 player, s32 card) {
+    DuelHand *hand;
 
-s32 SzDuel_AddHand(s32 arg0, s32 arg1) {
-    Hand_001DF130 *hand;
-
-    hand = (Hand_001DF130 *)(duelState.b + arg0 * 0x350 + 0x324);
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    hand = &DUEL_PLAYER(player)->hand;
+    if (card == CARD_STORED_AS_NONE) {
+        card = CARD_NONE;
     }
-    if (arg1 < 0 || arg1 >= 0x356) {
+    if (card < 0 || card >= CARD_COUNT) {
         return -1;
     }
     if (hand->count >= 5) {
         return -1;
     }
-    SzDuel_PackHand(arg0);
-    hand->cards[hand->count] = arg1 & 0xFFF;
+    SzDuel_PackHand(player);
+    hand->cards[hand->count] = card & 0xFFF;
     return hand->count++;
 }
 
-typedef struct {
-    u16 entries[5];
-    u8 count;
-} Hand_001DF1E0;
-
-void SzDuel_PackHand(s32 index) {
-    Hand_001DF1E0 hand;
-    Hand_001DF1E0 *dest;
+/* Moves the cards of side `player`'s hand to the front, keeping their order and tags. */
+void SzDuel_PackHand(s32 player) {
+    DuelHand list;
+    DuelHand *dest;
     s32 i;
     u16 *src;
     u16 entry;
     u16 *out;
     s32 count;
 
-    dest = (Hand_001DF1E0 *)(duelState.b + index * 0x350 + 0x324);
-    hand.count = 0;
+    dest = &DUEL_PLAYER(player)->hand;
+    list.count = 0;
     i = 0;
-    src = dest->entries;
+    src = dest->cards;
     do {
         entry = *src;
-        if ((entry & 0xFFF) != 0x3E7) {
-            hand.entries[hand.count++] = entry;
+        if ((entry & 0xFFF) != CARD_NONE) {
+            list.cards[list.count++] = entry;
         }
         i++;
         src++;
     } while (i < 5);
 
-    count = hand.count;
+    count = list.count;
     if (count < 5) {
-        out = &hand.entries[count];
+        out = &list.cards[count];
         do {
             count++;
-            *out++ = 0x3E7;
+            *out++ = CARD_NONE;
         } while (count < 5);
     }
 
-    *dest = hand;
+    *dest = list;
 }
 
-s32 SzDuel_DelHand(s32 arg0, s32 arg1) {
-    u8 *temp_a0;
-    u16 *temp_a1;
+/* Empties hand slot `slot`. Returns 1 if there was a card. */
+s32 SzDuel_DelHand(s32 player, s32 slot) {
+    DuelHand *hand;
+    u16 *entry;
 
-    temp_a0 = duelState.b + (arg0 * 0x350) + 0x324;
-    if ((arg1 < 0) || (arg1 >= 5)) {
+    hand = &DUEL_PLAYER(player)->hand;
+    if ((slot < 0) || (slot >= 5)) {
         return 0;
     }
-    temp_a1 = (u16 *)(temp_a0 + (arg1 * 2));
-    if ((*temp_a1 & 0xFFF) == 0x3E7) {
+    entry = &hand->cards[slot];
+    if ((*entry & 0xFFF) == CARD_NONE) {
         return 0;
     }
-    *temp_a1 = 0x3E7;
-    temp_a0[0xA]--;
+    *entry = CARD_NONE;
+    hand->count--;
     return 1;
 }
 
-s32 SzDuel_ClearHandTag(s32 arg0) {
-    s32 var_a0;
-    u16 *var_a1;
+/* Clears the pick-order tags of side `player`'s hand. */
+s32 SzDuel_ClearHandTag(s32 player) {
+    s32 i;
+    u16 *entry;
 
-    var_a1 = (u16 *)(duelState.b + (arg0 * 0x350) + 0x324);
-    var_a0 = 0;
+    entry = DUEL_PLAYER(player)->hand.cards;
+    i = 0;
     do {
-        var_a0 += 1;
-        *var_a1 &= 0xFFF;
-        var_a1++;
-    } while (var_a0 < 5);
+        i += 1;
+        *entry &= 0xFFF;
+        entry++;
+    } while (i < 5);
     return 1;
 }
 
-s32 SzDuel_SetHandTag(s32 arg0, s32 arg1, s32 arg2) {
-    s32 temp_a3;
-    s32 temp_v0_3;
-    s32 var_a2;
-    u16 *var_t0;
-    u16 *temp_t1;
-    s32 temp_v0;
-    s32 temp_v0_2;
+/* Tags hand slot `slot` with pick order `tag` (1..15), or with 0 removes its tag and moves the later tags down
+   one. Returns 1 if it did. */
+s32 SzDuel_SetHandTag(s32 player, s32 slot, s32 tag) {
+    s32 oldTag;
+    s32 otherTag;
+    s32 i;
+    u16 *entry;
+    u16 *target;
+    s32 value;
+    s32 other;
 
-    var_t0 = (u16 *)(duelState.b + (arg0 * 0x350) + 0x324);
-    if ((arg1 < 0) || (arg1 >= 5)) {
+    entry = DUEL_PLAYER(player)->hand.cards;
+    if ((slot < 0) || (slot >= 5)) {
         return 0;
     }
-    temp_t1 = var_t0 + arg1;
-    temp_v0 = *temp_t1;
-    if ((temp_v0 & 0xFFF) == 0x3E7) {
+    target = entry + slot;
+    value = *target;
+    if ((value & 0xFFF) == CARD_NONE) {
         return 0;
     }
-    temp_a3 = (s32) (temp_v0 & 0xF000) >> 0xC;
-    if (arg2 == 0) {
-        if (temp_a3 == 0) {
+    oldTag = (s32) (value & 0xF000) >> 0xC;
+    if (tag == 0) {
+        if (oldTag == 0) {
             return 0;
         }
-        *temp_t1 = temp_v0 & 0xFFF;
-        var_a2 = 0;
+        *target = value & 0xFFF;
+        i = 0;
         do {
-            temp_v0_2 = *var_t0;
-            if (var_a2 != arg1) {
-                if ((temp_v0_2 & 0xFFF) != 0x3E7) {
-                    temp_v0_3 = (s32) (temp_v0_2 & 0xF000) >> 0xC;
-                    if ((temp_v0_3 != 0) && (temp_a3 < temp_v0_3)) {
-                        *var_t0 = ((temp_v0_3 - 1) << 0xC) | (temp_v0_2 & 0xFFF);
+            other = *entry;
+            if (i != slot) {
+                if ((other & 0xFFF) != CARD_NONE) {
+                    otherTag = (s32) (other & 0xF000) >> 0xC;
+                    if ((otherTag != 0) && (oldTag < otherTag)) {
+                        *entry = ((otherTag - 1) << 0xC) | (other & 0xFFF);
                     }
                 }
             }
-            var_a2 += 1;
-            var_t0++;
-        } while (var_a2 < 5);
+            i += 1;
+            entry++;
+        } while (i < 5);
     } else {
-        if (temp_a3 != 0) {
+        if (oldTag != 0) {
             return 0;
         }
-        *temp_t1 = (arg2 << 0xC) | (temp_v0 & 0xFFF);
+        *target = (tag << 0xC) | (value & 0xFFF);
     }
     return 1;
 }
 
-s32 SzDuel_GetLP(s32 arg0) {
-    return *(u16 *)(duelState.b + arg0 * 0x350 + 0x33A);
+/* Side `player`'s life points. */
+s32 SzDuel_GetLP(s32 player) {
+    return DUEL_PLAYER(player)->lifePoints;
 }
 
-s32 SzDuel_CalcLP(s32 index, s32 operation, s32 value) {
+/* Applies `operation` (DUEL_CALC_ADD/SUB/MUL/DIV/SET) with `value` to side `player`'s life points, clamped to
+   0..9999. Returns 0 for an unknown operation, 1 otherwise. */
+s32 SzDuel_CalcLP(s32 player, s32 operation, s32 value) {
     s32 current;
     s32 result;
-    u8 *entry;
+    DuelPlayer *side;
 
-    entry = duelState.b + index * 0x350;
-    current = *(u16 *)(entry + 0x33A);
+    side = DUEL_PLAYER(player);
+    current = side->lifePoints;
     switch (operation) {
-    case 0:
+    case DUEL_CALC_ADD:
         result = current + value;
         break;
-    case 1:
+    case DUEL_CALC_SUB:
         result = current - value;
         break;
-    case 2:
+    case DUEL_CALC_MUL:
         result = current * value;
         break;
-    case 3:
+    case DUEL_CALC_DIV:
         result = current / value;
         break;
-    case 4:
+    case DUEL_CALC_SET:
         result = value;
         break;
     default:
         return 0;
     }
 
-    value = result;
-    value = (value > 0 ? value : 0) < 0x270F ? (value > 0 ? value : 0) : 0x270F;
-    *(u16 *)(entry + 0x33A) = value;
+    value = result; /* this copy is kept for the match */
+    value = (value > 0 ? value : 0) < 9999 ? (value > 0 ? value : 0) : 9999;
+    side->lifePoints = value;
     return 1;
 }

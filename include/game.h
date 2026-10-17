@@ -26,18 +26,43 @@ extern u8 D_1FE0000;
 
 /* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
    Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
+/* Card ids: 0..CARD_COUNT-1. CARD_NONE marks an empty deck, graveyard or hand slot; card id
+   CARD_STORED_AS_NONE (0x29F) is stored as CARD_NONE by SzDuel_AddDeck/SetDeck/AddGrave/AddHand. */
+#define CARD_COUNT 0x356
+#define CARD_NONE 999
+#define CARD_STORED_AS_NONE 0x29F
+
+/* The `operation` of SzDuel_CalcLP / SzDuel_CalcSummonPower. */
+#define DUEL_CALC_ADD 0
+#define DUEL_CALC_SUB 1
+#define DUEL_CALC_MUL 2
+#define DUEL_CALC_DIV 3
+#define DUEL_CALC_SET 4
+
+/* A side's deck: cards land in random free slots (SzDuel_AddDeck) and are drawn from cards[0]. */
+typedef struct DuelDeck {
+    u16 cards[40];
+    u8 count;
+} DuelDeck;
+
+/* A side's graveyard, packed to the front (SzDuel_PackGrave). */
+typedef struct DuelGrave {
+    u16 cards[120];
+    u8 count;
+} DuelGrave;
+
+/* A side's hand: card id in bits 0-11, a pick-order tag in bits 12-15 (SzDuel_SetHandTag). */
+typedef struct DuelHand {
+    u16 cards[5];
+    u8 count;
+} DuelHand;
+
 typedef struct DuelPlayer {
     u8 pad000[0x1D0];
     s32 cameraLookAt[4];           /* 0x1D0: where the camera looks while this side moves (SzView_IV2V) */
-    u16 deck[40];                  /* 0x1E0: shuffled on entry (SzDuel_AddDeck), drawn from [0] */
-    u8 deckCount;                  /* 0x230 */
-    u8 pad231;
-    u16 grave[120];                /* 0x232: the graveyard */
-    u8 graveCount;                 /* 0x322 */
-    u8 pad323;
-    u16 hand[5];                   /* 0x324: card id in bits 0-11, a pick-order tag in bits 12-15 */
-    u8 handCount;                  /* 0x32E */
-    u8 pad32F;
+    DuelDeck deck;                 /* 0x1E0 */
+    DuelGrave grave;               /* 0x232: the graveyard */
+    DuelHand hand;                 /* 0x324 */
     s32 unk330;                    /* 0x330: a handle SzDuel_Act opens per side (-1 = none) */
     u8 pad334[0x33A - 0x334];
     u16 lifePoints;                /* 0x33A: 0..9999 (SzDuel_CalcLP) */
@@ -91,7 +116,11 @@ typedef struct DuelState {
     u8 padD33[0xD35 - 0xD33];
     u8 prevMode;                   /* 0xD35 */
     u8 sel;                        /* 0xD36 */
-    u8 padD37[0xD57 - 0xD37];
+    u8 padD37[0xD52 - 0xD37];
+    u8 turnFirst;                  /* 0xD52: the side that took the first turn */
+    u8 turnCount;                  /* 0xD53: turns played, capped at 255 */
+    u8 turnOwner;                  /* 0xD54: the side whose turn it is (0 or 1) */
+    u8 padD55[0xD57 - 0xD55];
     u8 step;                       /* 0xD57 */
     u8 padD58[0xD5C - 0xD58];
     u8 player;                     /* 0xD5C */
@@ -148,7 +177,16 @@ typedef union DuelStateBytes {
     DuelState s;
 } DuelStateBytes;
 
-extern DuelStateBytes duelState; /* original: duelState */
+extern DuelStateBytes duelState; /* original: gSzDuel_dl */
+
+/* The duel state and side `i`'s record as pointers computed from the byte view. The original code forms the
+   address this way (base, then the field offset in the load or store); writing duelState.s.players[i].x
+   instead folds the offset into the address and changes the bytes. */
+#define DUEL_STATE ((DuelState *)duelState.b)
+#define DUEL_PLAYER(i) ((DuelPlayer *)(duelState.b + (i) * 0x350))
+
+/* duelState.s.turnOwner as a symbol of its own: SzDuel_Act only matches reading it this way. */
+extern u8 D_003181E4;
 
 
 typedef __int128 Q128_0020F290;
@@ -405,10 +443,7 @@ extern s32 D_0031810C;
 extern s8 D_0031747B;
 
 
-extern u8 D_003181E4;
-extern u8 D_003181E2;
 
-extern u8 D_003181E3;
 extern s8 D_00318144;
 extern s8 D_00318145;
 extern s32 D_0031AB90;

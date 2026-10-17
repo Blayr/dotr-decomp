@@ -742,7 +742,7 @@ void lSzDuel_LockCamera(s32 arg0, s32 arg1, s32 arg2) {
     f32 sp60[4];
     u8 *temp_s3;
 
-    temp_s3 = duelState.b + (D_003181E4 * 0x350);
+    temp_s3 = duelState.b + (duelState.s.turnOwner * 0x350);
     SzView_IV2V(temp_s3 + 0x1D0, sp50);
     sp60[0] = (f32) arg1;
     sp60[2] = (f32) arg2;
@@ -770,7 +770,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 angle;
     u8 *cur;
 
-    p = duelState.b + D_003181E4 * 0x350;
+    p = duelState.b + duelState.s.turnOwner * 0x350;
     saved = *(Vec4_001D91B0 *)(p + 0x1D0);
     x0 = (s32)(f32)((arg1 - 3) * 50);
     z0 = (s32)(f32)((arg2 - 3) * 50);
@@ -780,7 +780,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *(s32 *)(p + 0x1D0) = 0x96;
     *(s32 *)(p + 0x1D4) = (((angle + 0x80) >> 8) << 8) + 0x4000;
     *(s32 *)(p + 0x1D8) = 0x4000;
-    cur = duelState.b + D_003181E4 * 0x350;
+    cur = duelState.b + duelState.s.turnOwner * 0x350;
     SzView_IV2V(cur + 0x1D0, camera);
     pos[0] = (f32)((x0 + x1) >> 1);
     pos[2] = (f32)((z0 + z1) >> 1);
@@ -914,11 +914,11 @@ void SzDuel_InitTurn(s32 arg0, s32 arg1) {
     f32 pos[4];
     f32 saved[4];
 
-    D_003181E4 = arg1;
+    duelState.s.turnOwner = arg1;
     p = (Player_001D9820 *)(duelState.b + arg1 * 0x350);
     z = func_001A22C0((f32)((p->z - 3) * 50));
     x = func_001A22C0((f32)((p->x - 3) * 50));
-    cur = (Player_001D9820 *)(duelState.b + D_003181E4 * 0x350);
+    cur = (Player_001D9820 *)(duelState.b + duelState.s.turnOwner * 0x350);
     SzView_IV2V(cur->f1D0, saved);
     pos[0] = (f32)x;
     pos[2] = (f32)z;

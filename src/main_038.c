@@ -344,11 +344,11 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
     s32 brightness;
 
     state = duelState.b;
-    player = duelState.b + D_003181E4 * 0x350;
+    player = duelState.b + duelState.s.turnOwner * 0x350;
     mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     own = D_002910E0;
-    own.r = D_003181E4 == 1 ? 0x60 : 0;
+    own.r = duelState.s.turnOwner == 1 ? 0x60 : 0;
     own.g = state[0xD54] == 1 ? 0x60 : 0;
     own.b = state[0xD54] == 1 ? 0x60 : 0x80;
     own.a = alpha;
@@ -791,7 +791,7 @@ s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
 
     state = duelState.b;
     mode = SzGame_GetMode(1);
-    player = D_003181E4;
+    player = duelState.s.turnOwner;
     count = SzDuel_GetHandCount(player);
     if (mode != 1) {
         return arg0;
