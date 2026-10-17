@@ -15,7 +15,7 @@ typedef struct {
     u8 pad8[4];
 } Entry_0031C050;
 
-extern Entry_0031C050 gSzFade_fl[];
+extern Entry_0031C050 fadeSlots[]; /* original: gSzFade_fl */
 
 typedef struct {
     f32 x, y, z, w;

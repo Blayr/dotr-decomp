@@ -2,6 +2,7 @@
 
 static s32 lSzFile_NextRequest(void);
 
+/* Turns a path into the disc's form: upper case, back slashes, ";1" at the end. */
 void lSzFile_StrNormalize(s8 *p) {
     s32 network;
     s32 first;
@@ -26,6 +27,7 @@ void lSzFile_StrNormalize(s8 *p) {
     }
 }
 
+/* Whether any file read is still queued or running. */
 s32 SzFile_InqRequestEx(void) {
     s32 var_s0;
 
@@ -41,8 +43,9 @@ loop_1:
     goto loop_1;
 }
 
-s32 SzFile_InqRequest(s32 arg0) {
-    return SzFile_InqRequestX(arg0, 0);
+/* The first queued read of owner `owner` (-1 for any), or 0. */
+s32 SzFile_InqRequest(s32 owner) {
+    return SzFile_InqRequestX(owner, 0);
 }
 
 typedef struct Record_001FF360 {
@@ -53,16 +56,17 @@ typedef struct Record_001FF360 {
 
 extern Record_001FF360 D_00320370[];
 
-s32 SzFile_InqRequestX(s32 arg0, s32 arg1) {
+/* The first queued read of owner `owner` (-1 for any; `byGroup` compares owner >> 10), or 0. */
+s32 SzFile_InqRequestX(s32 owner, s32 byGroup) {
     Record_001FF360 *record;
     s32 remaining;
     s32 shift;
 
-    shift = arg1 ? 10 : 0;
+    shift = byGroup ? 10 : 0;
     record = D_00320370;
     for (remaining = 0x100; remaining--; record++) {
         if (record->status >= 0 &&
-            (arg0 < 0 || arg0 == (record->id >> shift))) {
+            (owner < 0 || owner == (record->id >> shift))) {
             return (s32) record;
         }
     }
@@ -70,6 +74,7 @@ s32 SzFile_InqRequestX(s32 arg0, s32 arg1) {
     return (s32) record;
 }
 
+/* Runs the file read queue for this frame. */
 void SzFile_DoRequest(void) {
     s32 start;
 
@@ -93,6 +98,7 @@ typedef struct Flags_001FF420 {
 } Flags_001FF420;
 
 
+/* Runs the file read queue until it is empty. */
 s32 SzFile_DoRequestS(void) {
     extern State_001FF420 fileQueue;
     extern Flags_001FF420 D_00322980;
@@ -147,7 +153,9 @@ extern Progress_001FF480 D_00293CB0;
 extern char D_002D0648[];
 extern char D_002D064D[];
 
-s32 lSzFile_DoRequestMain(s32 arg0) {
+/* Runs read request `index`: opens the file (by name, or by disc sector), allocates its buffer, reads it; 1 when
+   it finished. */
+s32 lSzFile_DoRequestMain(s32 index) {
     extern State_001FF480 fileQueue;
     extern s32 func_0019B648();
     char path[0x88];
@@ -159,10 +167,10 @@ s32 lSzFile_DoRequestMain(s32 arg0) {
     s32 count;
 
     state = &fileQueue;
-    if (arg0 < 0) {
+    if (index < 0) {
         return 0;
     }
-    entry = &state->entries[arg0];
+    entry = &state->entries[index];
     if (entry->length.flag) {
         if (state->flags.busy) {
             return 0;
@@ -176,7 +184,7 @@ s32 lSzFile_DoRequestMain(s32 arg0) {
         progress = D_00293CB0;
         if (entry->size.value != 0 && entry->buffer == 0) {
             if ((entry->buffer = SzMem_Alloc(entry->size.value)) == 0) {
-                lSzFile_TermRequest(arg0, 0);
+                lSzFile_TermRequest(index, 0);
                 return 0;
             }
             entry->offset.flag = 1;
@@ -197,25 +205,25 @@ s32 lSzFile_DoRequestMain(s32 arg0) {
             func_0019B648(path, D_002D0648, D_002D064D, entry->name);
             if (entry->size.value < 0) {
                 if ((entry->handle = func_0017FA98(path, 1)) < 0) {
-                    lSzFile_TermRequest(arg0, 0);
+                    lSzFile_TermRequest(index, 0);
                     return 0;
                 }
                 if ((entry->size.value = func_0017FEA0(entry->handle, 0, 2)) < 0) {
-                    lSzFile_TermRequest(arg0, 0);
+                    lSzFile_TermRequest(index, 0);
                     return 0;
                 }
                 func_0017FD20(entry->handle);
             }
             entry->handle = func_0017FA98(path, 0x8001);
             if (entry->handle < 0) {
-                lSzFile_TermRequest(arg0, 0);
+                lSzFile_TermRequest(index, 0);
                 return 0;
             }
             if (entry->size.value != 0) {
                 entry->size.value = (entry->size.value + 15) & ~15;
                 if (entry->buffer == 0) {
                     if ((entry->buffer = SzMem_Alloc(entry->size.value)) == 0) {
-                        lSzFile_TermRequest(arg0, 0);
+                        lSzFile_TermRequest(index, 0);
                         return 0;
                     }
                     entry->offset.flag = 1;
@@ -227,30 +235,30 @@ s32 lSzFile_DoRequestMain(s32 arg0) {
             entry->length.value = (entry->length.value + 15) & ~15;
             if (entry->offset.value != 0) {
                 if (func_0017FEA0(entry->handle, entry->offset.value, 0) < 0) {
-                    lSzFile_TermRequest(arg0, 0);
+                    lSzFile_TermRequest(index, 0);
                     return 0;
                 }
                 do {
                     if (func_00180608(entry->handle, 1, &status) < 0) {
-                        lSzFile_TermRequest(arg0, 0);
+                        lSzFile_TermRequest(index, 0);
                         return 0;
                     }
                 } while (status != 0);
             }
             FlushCache(0);
             if (func_001800D8(entry->handle, entry->buffer, entry->length.value) < 0) {
-                lSzFile_TermRequest(arg0, 0);
+                lSzFile_TermRequest(index, 0);
                 return 0;
             }
             entry->size.flag = 1;
         }
         if (func_00180608(entry->handle, 1, &status) < 0) {
-            lSzFile_TermRequest(arg0, 0);
+            lSzFile_TermRequest(index, 0);
             return 0;
         }
         if (status == 0) {
             FlushCache(0);
-            lSzFile_TermRequest(arg0, 1);
+            lSzFile_TermRequest(index, 1);
             return 1;
         }
     }
@@ -272,6 +280,7 @@ typedef struct {
     u16 count;
 } Queue_001FF9C0;
 
+/* The next read request to run, or -1. */
 static s32 lSzFile_NextRequest(void) {
     extern Queue_001FF9C0 fileQueue;
     Queue_001FF9C0 *queue = &fileQueue;
@@ -353,7 +362,9 @@ typedef struct State_001FFAC0 {
 } State_001FFAC0;
 
 
-void lSzFile_TermRequest(s32 arg0, s32 arg1) {
+/* Ends read request `index` (`ok` if it worked): calls its callback, closes the file, frees what it took, and its
+   group's callback when the group is done. */
+void lSzFile_TermRequest(s32 index, s32 ok) {
     extern State_001FFAC0 fileQueue;
     extern void *SzFile_InqGroup();
     extern void SzMem_Free();
@@ -362,9 +373,9 @@ void lSzFile_TermRequest(s32 arg0, s32 arg1) {
     Callback_001FFAC0 *callback;
 
     state = &fileQueue;
-    entry = &fileQueue.entries[arg0];
+    entry = &fileQueue.entries[index];
     if (entry->callback != NULL) {
-        entry->callback(entry, arg1);
+        entry->callback(entry, ok);
     }
     if (entry->handle >= 0) {
         if (entry->flags13.set == 0) {
@@ -376,7 +387,7 @@ void lSzFile_TermRequest(s32 arg0, s32 arg1) {
         SzMem_Free(entry->extra);
         entry->extra = NULL;
     }
-    if (arg1 == 0 && entry->flags0F.set != 0 && entry->allocation != NULL) {
+    if (ok == 0 && entry->flags0F.set != 0 && entry->allocation != NULL) {
         SzMem_Free(entry->allocation);
     }
     if (SzFile_InqRequestX(entry->id, 0) == 0) {
@@ -387,7 +398,7 @@ void lSzFile_TermRequest(s32 arg0, s32 arg1) {
             callback->handle = -1;
         }
     }
-    if (state->index == arg0 && state->count != 0) {
+    if (state->index == index && state->count != 0) {
         if (--state->count > 0) {
             state->index = (state->index + 1) % 256;
         }
@@ -402,7 +413,9 @@ typedef struct Entry_001FFC50 {
 
 extern Entry_001FFC50 D_00322770[];
 
-s32 SzFile_EntryGroup(s32 arg0, s32 arg1) {
+/* Registers read group `group` with callback `callback` (called when all its reads are done). Returns 0 if the
+   table is full. */
+s32 SzFile_EntryGroup(s32 group, s32 callback) {
     Entry_001FFC50 *entry;
     s32 remaining;
 
@@ -410,8 +423,8 @@ s32 SzFile_EntryGroup(s32 arg0, s32 arg1) {
     remaining = 0x40;
     while (remaining--) {
         if (entry->key < 0) {
-            entry->key = arg0;
-            entry->value = arg1;
+            entry->key = group;
+            entry->value = callback;
             return 1;
         }
         entry++;
@@ -419,8 +432,9 @@ s32 SzFile_EntryGroup(s32 arg0, s32 arg1) {
     return 0;
 }
 
-void SzFile_InqGroup(void *arg0) {
-    SzFile_InqGroupX(arg0, 0);
+/* The record of read group `group`, or NULL. */
+void SzFile_InqGroup(void *group) {
+    SzFile_InqGroupX(group, 0);
 }
 
 typedef struct Entry_001FFCC0 {
@@ -428,18 +442,19 @@ typedef struct Entry_001FFCC0 {
     s32 unknown;
 } Entry_001FFCC0;
 
-void *SzFile_InqGroupX(void *arg0, s32 arg1) {
+/* The record of read group `group` (-1 for any; `byGroup` compares >> 10), or NULL. */
+void *SzFile_InqGroupX(void *group, s32 byGroup) {
     extern struct Entry_001FFC50 D_00322770[];
     s32 shift;
     s32 count;
     Entry_001FFCC0 *entry;
 
-    shift = arg1 ? 10 : 0;
+    shift = byGroup ? 10 : 0;
     count = 64;
     entry = (Entry_001FFCC0 *)D_00322770;
     while (count--) {
         if (entry->value >= 0) {
-            if ((s32)arg0 < 0 || (s32)arg0 == (entry->value >> shift)) {
+            if ((s32)group < 0 || (s32)group == (entry->value >> shift)) {
                 return entry;
             }
         }
@@ -462,6 +477,7 @@ typedef struct {
     Flags_001FFD30 flags;
 } Queue_001FFD30;
 
+/* Runs the file read queue once (waiting for a read). */
 static inline s32 poll_001FFD30(void) {
     extern Queue_001FFD30 fileQueue;
     extern Flags_001FFD30 D_00322980;
@@ -478,13 +494,14 @@ static inline s32 poll_001FFD30(void) {
     return lSzFile_DoRequestMain(queue->handle);
 }
 
-s32 SzFile_Read(s32 arg0, s32 arg1, s32 arg2) {
+/* Reads file `path` to `address` (`size` bytes or -1 for all) and waits for it. Returns the request, or 0. */
+s32 SzFile_Read(s32 path, s32 address, s32 size) {
     extern Queue_001FFD30 fileQueue;
     extern s32 SzFile_ReadRequestParam();
     s32 result;
     Queue_001FFD30 *queue = &fileQueue;
 
-    result = SzFile_ReadRequestParam(0x1400, 0, arg0, arg1, arg2, 0, -1, lSzFile_ReadCB, (s64)0);
+    result = SzFile_ReadRequestParam(0x1400, 0, path, address, size, 0, -1, lSzFile_ReadCB, (s64)0);
     if (result == 0) {
         return 0;
     }
@@ -518,6 +535,7 @@ typedef struct {
     Flags_001FFE00 flags;
 } Queue_001FFE00;
 
+/* Queues a read request. */
 static inline void *enqueue_001FFE00(s32 arg0, s32 arg1, s32 arg2,
                                      s32 arg3, s32 arg4, s32 arg5) {
     extern Queue_001FFE00 fileQueue;
@@ -539,6 +557,7 @@ static inline void *enqueue_001FFE00(s32 arg0, s32 arg1, s32 arg2,
     return request;
 }
 
+/* Runs the file read queue once (waiting for a read). */
 static inline s32 poll_001FFE00(void) {
     extern Queue_001FFE00 fileQueue;
     extern Flags_001FFE00 D_00322980;
@@ -555,6 +574,7 @@ static inline s32 poll_001FFE00(void) {
     return lSzFile_DoRequestMain(queue->handle);
 }
 
+/* Queues a read and waits for it. Returns the request, or NULL. */
 void *SzFile_ReadParam(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                     s32 arg4, s32 arg5) {
     extern Queue_001FFE00 fileQueue;
@@ -582,10 +602,12 @@ typedef struct Flags_001FFF60 {
 
 extern Flags_001FFF60 D_00322980;
 
-void lSzFile_ReadCB(s32 arg0, s64 arg1) {
-    D_00322980.enabled = (s8)arg1;
+/* The callback of the blocking reads (nothing to do). */
+void lSzFile_ReadCB(s32 request, s64 ok) {
+    D_00322980.enabled = (s8)ok;
 }
 
+/* The folder files are read from. */
 u8 *SzFile_GetEnv(s32 unused0) {
     u8 *ret;
 
@@ -617,12 +639,13 @@ typedef struct Stat_001FFFC0 {
 } Stat_001FFFC0;
 
 extern char D_002D0657[];
-extern Module_001FFFC0 gSzFile_aIopList[];
+extern Module_001FFFC0 iopModuleList[]; /* original: gSzFile_aIopList */
 extern char D_002D0638[];
 extern File_001FFFC0 discFileMap[]; /* original: mapFile */
 extern char D_002D066F[];
 
 
+/* Starts the file system: CD, IOP modules, the read queue. */
 s32 RhFile_Init(void) {
     extern s32 RhFile_LoadIopModuleWrapper(s32, s32);
     extern s32 sceCdSearchFile(Stat_001FFFC0 *, s32);
@@ -648,7 +671,7 @@ s32 RhFile_Init(void) {
     sceFsReset();
     while (func_00191A58(0) != 2) {
     }
-    for (i = 0, mod = gSzFile_aIopList; mod->name != 0; i++) {
+    for (i = 0, mod = iopModuleList; mod->name != 0; i++) {
         if (RhFile_LoadIopModuleWrapper(mod->name, mod->arg) == 0) {
             return 0;
         }
@@ -686,11 +709,12 @@ typedef struct State_00200170 {
     Flags_00200170 flags;
 } State_00200170;
 
-void lRhFile_CdCallback(s32 arg0) {
+/* The CD's interrupt callback: a sector read has finished (`reason` 1), so the running request ends. */
+void lRhFile_CdCallback(s32 reason) {
     extern State_00200170 fileQueue;
     State_00200170 *state = &fileQueue;
 
-    if (arg0 == 1) {
+    if (reason == 1) {
         if (state->flags.active) {
             if (func_00191EF8() == 0) {
                 iFlushCache(0);
@@ -704,15 +728,18 @@ void lRhFile_CdCallback(s32 arg0) {
     asm("ei");
 }
 
+/* Ends the file system. */
 s32 RhFile_Term(void) {
     return 1;
 }
 
-void RhFile_LoadIopModuleWrapper(s32 arg0, s32 arg1) {
-    RhFile_LoadIopModuleWrapperEx(arg0, 0, 0, arg1);
+/* Loads IOP module `name`. */
+void RhFile_LoadIopModuleWrapper(s32 name, s32 argCount) {
+    RhFile_LoadIopModuleWrapperEx(name, 0, 0, argCount);
 }
 
-s32 RhFile_LoadIopModuleWrapperEx(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Loads IOP module `name` (from the disc's module folder) with its arguments, retrying until it loads. */
+s32 RhFile_LoadIopModuleWrapperEx(s32 name, s32 argCount, s32 args, s32 fromHost) {
     extern char fileQueue[];
     extern char D_002D0670[];
     extern char D_002D067D[];
@@ -720,25 +747,26 @@ s32 RhFile_LoadIopModuleWrapperEx(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern char *func_0019B9D0(char *, const char *);
     char *path = fileQueue;
 
-    lRhFile_StrUpper((s8 *)arg0);
-    if (arg3 != 0) {
+    lRhFile_StrUpper((s8 *)name);
+    if (fromHost != 0) {
         func_0019BDD8(path, D_002D0670);
     } else {
         func_0019BDD8(path, D_002D0670);
     }
-    func_0019B9D0(path, (char *)arg0);
+    func_0019B9D0(path, (char *)name);
     func_0019B9D0(path, D_002D067D);
     do {
 
-    } while (func_00183538(path, arg1, arg2) < 0);
+    } while (func_00183538(path, argCount, args) < 0);
     return 1;
 }
 
-void lRhFile_StrUpper(s8 *arg0) {
+/* Turns a string into upper case. */
+void lRhFile_StrUpper(s8 *str) {
     s8 *var_a0;
     s32 temp_a1;
 
-    var_a0 = arg0;
+    var_a0 = str;
     while ((temp_a1 = *var_a0) != 0) {
         if ((temp_a1 >= 0x61) && (temp_a1 < 0x7B)) {
             *var_a0 = temp_a1 - 0x20;
@@ -747,6 +775,7 @@ void lRhFile_StrUpper(s8 *arg0) {
     }
 }
 
+/* The file system's per-frame work (nothing to do). */
 void RhFile_VSyncProcess(void) {
 
 }
@@ -756,7 +785,8 @@ typedef struct State_00200360 {
     char *file;
 } State_00200360;
 
-s32 RhFile_OpenFile(s32 arg0) {
+/* Remembers file `name` (in the data folder) as the one RhFile_ReadAndBlock reads. */
+s32 RhFile_OpenFile(s32 name) {
     extern State_00200360 fileQueue;
     extern char D_002D0680[];
     extern char D_002D0686[];
@@ -770,7 +800,7 @@ s32 RhFile_OpenFile(s32 arg0) {
     if (directory == NULL) {
         directory = D_002D0655;
     }
-    func_0019B648(path, D_002D0686, directory, arg0);
+    func_0019B648(path, D_002D0686, directory, name);
     state->file = SzMem_StrDup(path);
     return 0;
 }
@@ -784,6 +814,7 @@ typedef struct {
     Flags_001FFE00 flags;
 } Queue_002003E0;
 
+/* Reads part of a file and waits for it. */
 static inline s32 wait_002003E0(s32 file, s32 arg1, s32 arg2, s32 arg3) {
     extern Queue_002003E0 fileQueue;
     extern s32 SzFile_ReadRequestParam();
@@ -804,14 +835,16 @@ check:
     return queue->flags.completed ? result : 0;
 }
 
-s32 RhFile_ReadAndBlock(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Reads `size` bytes at `offset` of the file RhFile_OpenFile chose into `buffer`, and waits. Returns 1 if it
+   worked. */
+s32 RhFile_ReadAndBlock(s32 handle, s32 buffer, s32 offset, s32 size) {
     extern Queue_002003E0 fileQueue;
     Queue_002003E0 *queue = &fileQueue;
 
-    if (arg0 < 0) {
+    if (handle < 0) {
         return 0;
     }
-    return wait_002003E0(queue->file, arg1, arg2, arg3) ? 1 : 0;
+    return wait_002003E0(queue->file, buffer, offset, size) ? 1 : 0;
 }
 
 typedef struct State_002004C0 {
@@ -819,11 +852,12 @@ typedef struct State_002004C0 {
     s32 handle;
 } State_002004C0;
 
-s32 RhFile_CloseFile(s32 arg0) {
+/* Forgets the file RhFile_OpenFile chose. */
+s32 RhFile_CloseFile(s32 handle) {
     extern State_002004C0 fileQueue;
     State_002004C0 *state = &fileQueue;
 
-    if (arg0 < 0) {
+    if (handle < 0) {
         return 0;
     }
     if (state->handle != 0) {
@@ -847,6 +881,7 @@ typedef struct {
     u16 count;
 } Queue_00200510;
 
+/* Queues a read of a named file. */
 static inline Request_00200510 *enqueue_00200510(s32 arg1, s32 arg2, s32 arg3, u8 *buf, s32 arg5, s32 arg6) {
     extern u8 fileQueue[];
     Queue_00200510 *queue = (Queue_00200510 *)fileQueue;
@@ -875,7 +910,8 @@ static inline Request_00200510 *enqueue_00200510(s32 arg1, s32 arg2, s32 arg3, u
     return slot;
 }
 
-s32 RhFile_ReadAndCallbackByFileName(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void (*arg4)(void), s32 arg5, s32 arg6) {
+/* Queues a read of file `name` (in the data folder) into `buffer`, calling `callback` when done. */
+s32 RhFile_ReadAndCallbackByFileName(s32 name, s32 buffer, s32 offset, s32 size, void (*callback)(void), s32 callbackArg, s32 flags) {
     extern Queue_00200510 fileQueue;
     extern u8 D_002D0680[];
     extern u8 D_002D0686[];
@@ -886,16 +922,16 @@ s32 RhFile_ReadAndCallbackByFileName(s32 arg0, s32 arg1, s32 arg2, s32 arg3, voi
     u8 *text;
     Request_00200510 *slot;
 
-    if (arg0 == 0) {
+    if (name == 0) {
         return 0;
     }
     text = getenv((s32)D_002D0680);
     if (text == NULL) {
         text = D_002D0655;
     }
-    func_0019B648(buf, D_002D0686, (s32)text, arg0);
-    queue->callback = arg4;
-    slot = enqueue_00200510(arg1, arg2, arg3, buf, arg5, arg6);
+    func_0019B648(buf, D_002D0686, (s32)text, name);
+    queue->callback = callback;
+    slot = enqueue_00200510(buffer, offset, size, buf, callbackArg, flags);
     return (slot != NULL) ? 1 : 0;
 }
 
@@ -907,15 +943,17 @@ typedef struct CallbackTable_00200680 {
 extern CallbackTable_00200680 fileQueue; /* original: gSzFile_fl */
 extern s32 D_00322970;
 
-void lRhFile_ReadCB(void *arg0) {
+/* A named-file read has finished: calls the caller's callback. */
+void lRhFile_ReadCB(void *request) {
     CallbackTable_00200680 *table = &fileQueue;
 
     if (D_00322970 != 0) {
-        table->callback(*(s32 *)((u8 *)arg0 + 0x1C), table);
+        table->callback(*(s32 *)((u8 *)request + 0x1C), table);
     }
 }
 
-s32 RhFile_ExistFile(s32 arg0) {
+/* Whether file `name` exists in the data folder. */
+s32 RhFile_ExistFile(s32 name) {
     extern char D_002D0680[];
     extern char D_002D0686[];
     extern u8 *getenv();
@@ -925,14 +963,14 @@ s32 RhFile_ExistFile(s32 arg0) {
     u8 *directory;
     s32 handle;
 
-    if (arg0 == 0) {
+    if (name == 0) {
         return 0;
     }
     directory = getenv(D_002D0680);
     if (directory == NULL) {
         directory = D_002D0655;
     }
-    func_0019B648(path, D_002D0686, directory, arg0);
+    func_0019B648(path, D_002D0686, directory, name);
     goto check;
 loop:
     poll_001FFE00();
@@ -960,14 +998,15 @@ typedef struct Record_002007D0 {
     s16 valueA;
 } Record_002007D0;
 
-extern struct Entry_002008A0 gSzText_aItem[];
+extern struct Entry_002008A0 textureItems[]; /* original: gSzText_aItem */
 
+/* Clears the texture item table. */
 void SzText_Init(void) {
     Record_002007D0 *record;
     s32 i;
 
-    record = (Record_002007D0 *)gSzText_aItem;
-    RhMem_FillMemory((s8 *)&gSzText_tl, 0, 6);
+    record = (Record_002007D0 *)textureItems;
+    RhMem_FillMemory((s8 *)&clutState, 0, 6);
     i = 0;
     do {
         record->value0 = 0;
@@ -989,22 +1028,23 @@ typedef struct Entry_002008A0 {
     s16 id;
 } Entry_002008A0;
 
-extern Entry_002008A0 gSzText_aItem[];
+extern Entry_002008A0 textureItems[]; /* original: gSzText_aItem */
 
-void *SzText_GetItem(s32 arg0, s32 arg1) {
+/* Texture item `id` of category `category` (0..9), loaded or not, or NULL. */
+void *SzText_GetItem(s32 category, s32 id) {
     Entry_002008A0 *entry;
     s32 i;
 
-    entry = gSzText_aItem;
-    if ((arg0 < 0) || (arg0 >= 10)) {
+    entry = textureItems;
+    if ((category < 0) || (category >= 10)) {
         return NULL;
     }
-    if (arg1 < 0) {
+    if (id < 0) {
         return NULL;
     }
     i = 0;
     do {
-        if (entry->occupied && (entry->category == arg0) && (entry->id == arg1)) {
+        if (entry->occupied && (entry->category == category) && (entry->id == id)) {
             return entry;
         }
         i++;
@@ -1013,11 +1053,12 @@ void *SzText_GetItem(s32 arg0, s32 arg1) {
     return NULL;
 }
 
+/* A texture item by category and id. */
 static inline Entry_002008A0 *find_00200930(s32 arg0, s32 arg1) {
     Entry_002008A0 *entry;
     s32 i;
 
-    entry = gSzText_aItem;
+    entry = textureItems;
     if ((arg0 < 0) || (arg0 >= 10)) {
         return NULL;
     }
@@ -1035,8 +1076,9 @@ static inline Entry_002008A0 *find_00200930(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-void *SzText_GetReadyItem(s32 arg0, s32 arg1) {
-    Entry_002008A0 *entry = find_00200930(arg0, arg1);
+/* Texture item `id` of category `category` if it has finished loading, or NULL. */
+void *SzText_GetReadyItem(s32 category, s32 id) {
+    Entry_002008A0 *entry = find_00200930(category, id);
 
     if (entry != NULL && !(entry->occupied & 0x80000000)) {
         return entry;

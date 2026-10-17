@@ -14,9 +14,10 @@ extern s8 D_002BD0C1[];
 extern char D_002D074B[];
 extern char D_002D0760[];
 
+/* A texture item by group and index. */
 static inline Entry_00202220 *find_00202220(s32 group, s32 index) {
-    extern Entry_00202220 gSzText_aItem[];
-    Entry_00202220 *entry = gSzText_aItem;
+    extern Entry_00202220 textureItems[];
+    Entry_00202220 *entry = textureItems;
     s32 i;
 
     if (group < 0 || group >= 10) {
@@ -36,9 +37,10 @@ static inline Entry_00202220 *find_00202220(s32 group, s32 index) {
     return NULL;
 }
 
+/* A free texture item record, or NULL. */
 static inline Entry_00202220 *empty_00202220(void) {
-    extern Entry_00202220 gSzText_aItem[];
-    Entry_00202220 *entry = gSzText_aItem;
+    extern Entry_00202220 textureItems[];
+    Entry_00202220 *entry = textureItems;
     s32 i = 0;
 
     do {
@@ -51,41 +53,43 @@ static inline Entry_00202220 *empty_00202220(void) {
     return NULL;
 }
 
-s32 SzText_LoadFileEx(s32 arg0, s32 arg1, char *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Starts loading texture file `name` as item `id` of category `category` (0..9), into `address` if given (else
+   allocated). */
+s32 SzText_LoadFileEx(s32 category, s32 id, char *name, s32 address, s32 size, s32 offset, s32 length) {
     Entry_00202220 *entry;
     char path[128];
     extern s32 SzFile_ReadRequestParam();
     extern void func_0019B648();
 
-    if (arg0 < 0 || arg0 >= 10) {
+    if (category < 0 || category >= 10) {
         return 0;
     }
-    if (arg1 < 0) {
+    if (id < 0) {
         return 0;
     }
-    if (find_00202220(arg0, arg1) != NULL) {
+    if (find_00202220(category, id) != NULL) {
         return 0;
     }
     entry = empty_00202220();
     if (entry == NULL) {
         return 0;
     }
-    if ((D_002BD0C1[*(s8 *)arg2] & 3) && ((s8 *)arg2)[1] == ':') {
-        func_0019BDD8(path, arg2);
+    if ((D_002BD0C1[*(s8 *)name] & 3) && ((s8 *)name)[1] == ':') {
+        func_0019BDD8(path, name);
     } else {
-        func_0019B648(path, D_002D0760, SzFile_GetEnv((s32)D_002D074B), arg2);
+        func_0019B648(path, D_002D0760, SzFile_GetEnv((s32)D_002D074B), name);
     }
-    if (SzFile_ReadRequestParam(arg0 | 0x1000, 0, (s32)path, arg3, arg4, arg5, arg6,
+    if (SzFile_ReadRequestParam(category | 0x1000, 0, (s32)path, address, size, offset, length,
                      (s32)lSzText_LoadFileCB, entry) == 0) {
         return 0;
     }
-    entry->name = SzMem_StrDup(arg2);
+    entry->name = SzMem_StrDup(name);
     entry->state = 0x80000000;
     entry->flag0 = 0;
     entry->flag1 = 0;
-    entry->flag2 = (s8)(arg3 != 0 ? 0 : 1);
-    entry->group = (s16)arg0;
-    entry->index = arg1;
+    entry->flag2 = (s8)(address != 0 ? 0 : 1);
+    entry->group = (s16)category;
+    entry->index = id;
     return 1;
 }
 
@@ -110,9 +114,10 @@ typedef struct Stream_002024D0 {
     Track_002024D0 *track;
 } Stream_002024D0;
 
-void lSzText_LoadFileCB(void *arg0, s32 arg1) {
+/* A texture file has loaded (`ok`): relocates its TIM2 pictures and marks the item ready. */
+void lSzText_LoadFileCB(void *request, s32 ok) {
     extern u16 D_002CE9FC[];
-    Stream_002024D0 *stream = arg0;
+    Stream_002024D0 *stream = request;
     Track_002024D0 *track = stream->track;
     u8 *block;
     s32 kind;
@@ -128,13 +133,13 @@ void lSzText_LoadFileCB(void *arg0, s32 arg1) {
     s16 mode;
     u16 *names;
 
-    if (arg1 != 0 && *stream->data != 0x324852) {
+    if (ok != 0 && *stream->data != 0x324852) {
         if (stream->owned) {
             SzMem_Free((s32)stream->data);
         }
-        arg1 = 0;
+        ok = 0;
     }
-    if (arg1 == 0) {
+    if (ok == 0) {
         if (track->buffer != 0) {
             SzMem_Free(track->buffer);
             track->buffer = 0;
@@ -240,6 +245,7 @@ typedef struct {
 } Slot_00202810;
 
 
+/* A texture item by category and id. */
 static inline void *find_00202810(s32 arg0, s32 arg1) {
     Slot_00202810 *entry = SzText_GetItem(arg0, arg1);
     if (entry != NULL && !(entry->data & 0x80000000)) {
@@ -248,12 +254,13 @@ static inline void *find_00202810(s32 arg0, s32 arg1) {
     return NULL;
 }
 
+/* A free texture item record, or NULL. */
 static inline void *alloc_00202810(void) {
-    extern Slot_00202810 gSzText_aItem[];
+    extern Slot_00202810 textureItems[];
     Slot_00202810 *entry;
     s32 i;
 
-    entry = gSzText_aItem;
+    entry = textureItems;
     i = 0;
     do {
         if (entry->data == 0) {
@@ -265,31 +272,32 @@ static inline void *alloc_00202810(void) {
     return NULL;
 }
 
-s32 SzText_AddFile(s32 arg0, s32 arg1, char *arg2, s32 arg3) {
+/* Registers texture data already in memory at `data` as item `id` of category `category` (replacing any). */
+s32 SzText_AddFile(s32 category, s32 id, char *name, s32 data) {
     Slot_00202810 *entry;
 
-    if (arg0 < 0 || arg0 >= 10) {
+    if (category < 0 || category >= 10) {
         return 0;
     }
-    if (arg1 < 0) {
+    if (id < 0) {
         return 0;
     }
-    entry = find_00202810(arg0, arg1);
+    entry = find_00202810(category, id);
     if (entry == NULL) {
         entry = alloc_00202810();
         if (entry == NULL) {
             return 0;
         }
     } else {
-        SzText_Free(arg0, arg1);
+        SzText_Free(category, id);
     }
-    entry->name = (arg2 != NULL) ? SzMem_StrDup(arg2) : NULL;
-    entry->data = arg3;
+    entry->name = (name != NULL) ? SzMem_StrDup(name) : NULL;
+    entry->data = data;
     entry->flag0 = 0;
     entry->flag1 = 0;
     entry->flag2 = 0;
-    entry->category = arg0;
-    entry->id = arg1;
+    entry->category = category;
+    entry->id = id;
     return 1;
 }
 
@@ -303,18 +311,19 @@ typedef struct {
     s16 id;
 } Slot_002029B0;
 
-s32 SzText_Free(s32 arg0, s32 arg1) {
-    extern Slot_002029B0 gSzText_aItem[];
+/* Frees the texture items of `category` and `id` (-1 for any). Returns whether any was freed. */
+s32 SzText_Free(s32 category, s32 id) {
+    extern Slot_002029B0 textureItems[];
     Slot_002029B0 *entry;
     s32 i;
     s32 result;
 
-    entry = gSzText_aItem;
+    entry = textureItems;
     result = 0;
     i = 0;
     do {
-        if (entry->data != 0 && (arg0 < 0 || entry->category == arg0) &&
-            (arg1 < 0 || entry->id == arg1) && !(entry->data & 0x80000000)) {
+        if (entry->data != 0 && (category < 0 || entry->category == category) &&
+            (id < 0 || entry->id == id) && !(entry->data & 0x80000000)) {
             if (entry->name != NULL) {
                 SzMem_Free((s32)entry->name);
                 entry->name = NULL;
@@ -333,10 +342,11 @@ s32 SzText_Free(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 SzText_DoRequest(s32 arg0, s32 arg1) {
+/* Sends the requested texture items of `category` to GS memory. */
+s32 SzText_DoRequest(s32 category, s32 address) {
     s32 sp3C;
 
-    RhBase_SetVifPacketArea(SzText_DoRequest_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, &sp3C));
+    RhBase_SetVifPacketArea(SzText_DoRequest_Pipe(RhBase_GetVifPacketArea(), category, address, &sp3C));
     return sp3C;
 }
 
@@ -357,29 +367,31 @@ typedef struct Record_00202B00 {
     s16 padding;
 } Record_00202B00;
 
-s32 SzText_DoRequest_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
-    extern Record_00202B00 gSzText_aItem[];
+/* Sends the requested texture items of `category` (-1 for all) to GS memory from `address`; the space used through
+   `outSize`. */
+s32 SzText_DoRequest_Pipe(s32 packet, s32 category, s32 address, s32 *outSize) {
+    extern Record_00202B00 textureItems[];
     Record_00202B00 *entry;
     s32 start;
     s32 i;
     s32 size;
 
-    entry = gSzText_aItem;
-    start = arg2;
+    entry = textureItems;
+    start = address;
     i = 0;
     do {
         if (entry->data != 0 && entry->state.flags.active && !entry->state.flags.excluded &&
-            (arg1 < 0 || entry->state.category.category == arg1)) {
-            arg0 = SzText_Load_Pipe(arg0, entry->data, arg2, (s32) &size);
-            arg2 += size;
+            (category < 0 || entry->state.category.category == category)) {
+            packet = SzText_Load_Pipe(packet, entry->data, address, (s32) &size);
+            address += size;
         }
         i++;
         entry++;
     } while (i < 0x400);
-    if (arg3 != NULL) {
-        *arg3 = arg2 - start;
+    if (outSize != NULL) {
+        *outSize = address - start;
     }
-    return arg0;
+    return packet;
 }
 
 typedef struct Entry_00202BF0 {
@@ -390,6 +402,7 @@ typedef struct Entry_00202BF0 {
     s8 other : 6;
 } Entry_00202BF0;
 
+/* A texture item by category and id. */
 static inline Entry_00202BF0 *lookup_00202BF0(s32 arg0, s32 arg1) {
     Entry_00202BF0 *entry;
 
@@ -400,16 +413,17 @@ static inline Entry_00202BF0 *lookup_00202BF0(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-s32 SzText_LoadRequest(s32 arg0, s32 arg1) {
+/* Asks for texture item `id` of category `category` to be sent to GS memory. Returns its data. */
+s32 SzText_LoadRequest(s32 category, s32 id) {
     Entry_00202BF0 *entry;
 
-    if ((arg0 < 0) || (arg0 >= 0xA)) {
+    if ((category < 0) || (category >= 0xA)) {
         return 0;
     }
-    if (arg1 < 0) {
+    if (id < 0) {
         return 0;
     }
-    entry = lookup_00202BF0(arg0, arg1);
+    entry = lookup_00202BF0(category, id);
     if (entry == NULL) {
         return 0;
     }
@@ -439,13 +453,14 @@ typedef struct Entry_00202CB0 {
     s16 id;
 } Entry_00202CB0;
 
+/* Excludes (`enabled` 0) or includes a requested texture item. */
 s32 SzText_SleepRequest(s32 category, s32 id, s32 enabled) {
-    extern Entry_00202CB0 gSzText_aItem[];
+    extern Entry_00202CB0 textureItems[];
     Entry_00202CB0 *entry;
     s32 i;
     s32 result;
 
-    entry = gSzText_aItem;
+    entry = textureItems;
     result = 0;
     i = 0;
     do {
@@ -470,20 +485,21 @@ typedef struct {
     s16 id;
 } Entry_00202D60;
 
-extern Entry_00202D60 gSzText_aItem[];
+extern Entry_00202D60 textureItems[]; /* original: gSzText_aItem */
 
-s32 SzText_FreeRequest(s32 arg0, s32 arg1) {
+/* Drops the request for texture item `id` of category `category`. */
+s32 SzText_FreeRequest(s32 category, s32 id) {
     Entry_00202D60 *var_t0;
     s32 var_t1;
     s32 var_v0;
 
-    var_t0 = gSzText_aItem;
+    var_t0 = textureItems;
     var_v0 = 0;
     var_t1 = 0;
     do {
         if (var_t0->data != 0 && var_t0->active != 0) {
-            if ((arg0 < 0 || var_t0->category == arg0) &&
-                (arg1 < 0 || var_t0->id == arg1)) {
+            if ((category < 0 || var_t0->category == category) &&
+                (id < 0 || var_t0->id == id)) {
                 var_v0 = 1;
                 var_t0->active = 0;
             }
@@ -494,9 +510,10 @@ s32 SzText_FreeRequest(s32 arg0, s32 arg1) {
     return var_v0;
 }
 
-u16 SzText_InitClutManage(s16 arg0, s32 arg1) {
-    gSzText_tl = arg0;
-    D_00322992 = (u16) ((s32) ((s32) (arg1 << 0xD) >> 6) >> 2);
+/* Starts handing out palette space at GS address `address`, `pages` pages of it. */
+u16 SzText_InitClutManage(s16 address, s32 pages) {
+    clutState = address;
+    D_00322992 = (u16) ((s32) ((s32) (pages << 0xD) >> 6) >> 2);
     D_00322994 = 0;
     return D_00322992;
 }
@@ -507,12 +524,13 @@ typedef struct Fields_00202E30 {
     u16 field42;
 } Fields_00202E30;
 
-s32 SzText_GetClutSize(void *arg0) {
+/* The palette size of a TIM2 picture. */
+s32 SzText_GetClutSize(void *header) {
     s32 multiplier;
     s32 shift;
     s32 result;
 
-    switch (((Fields_00202E30 *)arg0)->field40) {
+    switch (((Fields_00202E30 *)header)->field40) {
     case 0x14:
         shift = 4;
         break;
@@ -523,7 +541,7 @@ s32 SzText_GetClutSize(void *arg0) {
         return 0;
     }
 
-    switch (((Fields_00202E30 *)arg0)->field42) {
+    switch (((Fields_00202E30 *)header)->field42) {
     case 0:
         multiplier = 4;
         break;
@@ -545,20 +563,22 @@ typedef struct {
     u16 used;
 } Buffer_00202F00;
 
-s32 SzText_GetClutGsAddr(s32 arg0) {
+/* The GS address of palette page `index`. */
+s32 SzText_GetClutGsAddr(s32 index) {
     s32 temp_v0;
-    Buffer_00202F00 *buffer = (Buffer_00202F00 *)&gSzText_tl;
+    Buffer_00202F00 *buffer = (Buffer_00202F00 *)&clutState;
 
-    if (((u16) D_00322994 + arg0) > (s32) D_00322992) {
+    if (((u16) D_00322994 + index) > (s32) D_00322992) {
         return -1;
     }
     temp_v0 = buffer->base + buffer->used;
-    buffer->used += arg0;
+    buffer->used += index;
     return temp_v0;
 }
 
-void SzText_Load(s32 arg0, s32 arg1, s32 arg2) {
-    RhBase_SetVifPacketArea(SzText_Load_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2));
+/* Sends a TIM2 picture to GS memory. */
+void SzText_Load(s32 data, s32 address, s32 outSize) {
+    RhBase_SetVifPacketArea(SzText_Load_Pipe(RhBase_GetVifPacketArea(), data, address, outSize));
 }
 
 typedef struct Tex0_00202FB0 {
@@ -590,12 +610,13 @@ typedef struct Range_00202FB0 {
     u16 used;
 } Range_00202FB0;
 
-/* gSzText_tl starts a {base, size, used} record of three shorts. */
+/* Palette space of `size`, or -1. */
+/* clutState starts a {base, size, used} record of three shorts. */
 static inline s32 allocate_00202FB0(s32 size) {
-    Range_00202FB0 *range = (Range_00202FB0 *)&gSzText_tl;
+    Range_00202FB0 *range = (Range_00202FB0 *)&clutState;
     s32 base;
 
-    if ((u16)(&gSzText_tl)[2] + size > (u16)(&gSzText_tl)[1]) {
+    if ((u16)(&clutState)[2] + size > (u16)(&clutState)[1]) {
         return -1;
     }
     base = range->base + range->used;
@@ -603,40 +624,43 @@ static inline s32 allocate_00202FB0(s32 size) {
     return base;
 }
 
+/* Restarts the palette space. */
 static inline u16 reset_00202FB0(s16 base) {
-    gSzText_tl = base;
-    (&gSzText_tl)[1] = 0x20;
-    (&gSzText_tl)[2] = 0;
-    return (u16)(&gSzText_tl)[1];
+    clutState = base;
+    (&clutState)[1] = 0x20;
+    (&clutState)[2] = 0;
+    return (u16)(&clutState)[1];
 }
 
-s32 SzText_Load_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Sends the TIM2 picture at `data` to GS memory at `address` (its palette where there is space); the space used
+   through `outSize`. */
+s32 SzText_Load_Pipe(s32 out, s32 data, s32 address, s32 outSize) {
     extern s32 RhMem_CopyMemory16();
-    Header_00202FB0 *header = (Header_00202FB0 *)(arg1 + 0x10);
-    Packet_00202FB0 *packet = (Packet_00202FB0 *)arg0;
+    Header_00202FB0 *header = (Header_00202FB0 *)(data + 0x10);
+    Packet_00202FB0 *packet = (Packet_00202FB0 *)out;
     s32 clutSize;
     s32 clutBase;
-    s32 start = arg2;
+    s32 start = address;
     s32 count;
 
     clutBase = 0;
-    if (arg3 != 0) {
-        *(s32 *)arg3 = 0;
+    if (outSize != 0) {
+        *(s32 *)outSize = 0;
     }
-    if (arg1 == 0) {
-        return arg0;
+    if (data == 0) {
+        return out;
     }
 
     if ((clutSize = SzText_GetClutSize(header)) > 0) {
         clutBase = allocate_00202FB0(clutSize);
         if (clutBase < 0) {
-            arg2 += reset_00202FB0(arg2);
+            address += reset_00202FB0(address);
             clutBase = allocate_00202FB0(clutSize);
         }
     }
 
-    arg0 = RhMem_CopyMemory16((void *)arg0, (void *)(arg1 + header->dataOffset), header->dataSize >> 4);
-    header->tex0.base = arg2;
+    out = RhMem_CopyMemory16((void *)out, (void *)(data + header->dataOffset), header->dataSize >> 4);
+    header->tex0.base = address;
     header->tex0.clut = clutBase;
     count = header->packetCount;
     if (clutSize != 0) {
@@ -645,14 +669,14 @@ s32 SzText_Load_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         packet++;
     }
     while (count--) {
-        packet->base = arg2;
-        arg2 += 0x20;
+        packet->base = address;
+        address += 0x20;
         packet++;
     }
-    if (arg3 != 0) {
-        *(s32 *)arg3 = arg2 - start;
+    if (outSize != 0) {
+        *(s32 *)outSize = address - start;
     }
-    return arg0;
+    return out;
 }
 
 
@@ -670,19 +694,21 @@ typedef struct {
 extern u8 D_00325AC0;
 extern Port_002031F0 D_00325C75[];
 
+/* Starts the two pads. */
 void SzPad_Init(void) {
-    RhMem_FillMemory((s8 *) gSzPad_pl, 0, 0x2C0);
+    RhMem_FillMemory((s8 *) padStates, 0, 0x2C0);
     D_00325C75[-1].type = 0xA;
     D_00325C75[0].type = 0xA;
     D_00325C75[-1].mode.low = 4;
     D_00325C75[0].mode.low = 4;
     scePadInit(0);
-    scePadPortOpen(0, 0, gSzPad_pl);
+    scePadPortOpen(0, 0, padStates);
     scePadPortOpen(1, 0, &D_00325AC0);
 }
 
+/* Ends the pads. */
 void SzPad_Term(void) {
-    RhMem_FillMemory4(gSzPad_pl, 0, 0xB0);
+    RhMem_FillMemory4(padStates, 0, 0xB0);
 }
 
 extern s8 D_00325C19[];
@@ -693,14 +719,15 @@ typedef struct {
     s8 high : 4;
 } Flags_002032C0;
 
-void SzPad_SetParam(s32 arg0, s8 arg1, s64 arg2) {
+/* Sets pad `pad`'s key-repeat interval and its analog mode. */
+void SzPad_SetParam(s32 pad, s8 interval, s64 analog) {
     s32 offset;
     Flags_002032C0 *entry;
 
-    offset = arg0 * 0x5C;
-    D_00325C19[offset] = arg1;
-    entry = (Flags_002032C0 *)(gSzPad_pl + offset);
-    entry->low = arg2;
+    offset = pad * 0x5C;
+    D_00325C19[offset] = interval;
+    entry = (Flags_002032C0 *)(padStates + offset);
+    entry->low = analog;
 }
 
 typedef struct Pad_00203320 {
@@ -718,6 +745,7 @@ typedef struct Pad_00203320 {
     s8 ready : 1;
 } Pad_00203320;
 
+/* Clears a pad's state. */
 static inline void reset_00203320(Pad_00203320 *pad) {
     s32 i;
 
@@ -737,6 +765,7 @@ static inline void reset_00203320(Pad_00203320 *pad) {
     }
 }
 
+/* Reads both pads' state from libpad: connected, analog or not, buttons, sticks, pressures. */
 void SzPad_Status(void) {
     extern s32 scePadGetReqState();
     s32 port;
@@ -746,7 +775,7 @@ void SzPad_Status(void) {
     s32 id;
     s32 offs;
 
-    base = gSzPad_pl;
+    base = padStates;
     for (port = 0; port < 2; port++, base += 0x5C) {
         pad = (Pad_00203320 *)(base + 0x200);
         state = scePadGetState(port, 0);
@@ -838,6 +867,7 @@ typedef struct Flags_00203840 {
     s8 unused : 2;
 } Flags_00203840;
 
+/* Works out this frame's newly pressed, held and repeating buttons of both pads. */
 void SzPad_Act(void) {
     s32 var_a2;
     s32 var_a3;
@@ -847,7 +877,7 @@ void SzPad_Act(void) {
     u8 *var_t3;
     s32 temp_t4;
 
-    var_t3 = gSzPad_pl;
+    var_t3 = padStates;
     var_a2 = 0;
     do {
         temp_t0 = var_t3 + 0x200;
@@ -880,8 +910,9 @@ typedef struct Flags_002038F0 {
     s8 pressure : 1;
 } Flags_002038F0;
 
-extern u8 gSzPad_pl[];
+extern u8 padStates[]; /* original: gSzPad_pl */
 
+/* The pads' per-vertical-blank work. */
 s32 SzPad_VSync(void) {
     u8 data[20];
     u8 *pressure;
@@ -893,7 +924,7 @@ s32 SzPad_VSync(void) {
     u8 *pad;
     u8 *entry;
 
-    entry = gSzPad_pl;
+    entry = padStates;
     port = 0;
     do {
         pad = entry + 0x200;
@@ -940,59 +971,61 @@ typedef struct State_00203A40 {
     u8 padding5B;
 } State_00203A40;
 
-s32 SzPad_Check(s32 arg0, s32 arg1, s32 arg2) {
-    s32 var_a1;
-    State_00203A40 *temp_a3;
-    s32 temp_t0;
-    u8 *var_t1;
+/* Pad `pad`'s buttons in `wanted` that are newly pressed (`mode` 0), held (1), or newly pressed or repeating (2). */
+s32 SzPad_Check(s32 pad, s32 mode, s32 wanted) {
+    s32 bit;
+    State_00203A40 *buttons;
+    s32 bitMask;
+    u8 *counters;
     s32 mask;
-    s32 temp_t3;
-    s32 var_s0;
-    u8 *temp_v0;
+    s32 counter;
+    s32 result;
+    u8 *padState;
 
-    temp_v0 = gSzPad_pl + (arg0 * 0x5C);
-    temp_a3 = (State_00203A40 *)(temp_v0 + 0x200);
-    switch (arg1) {
+    padState = padStates + (pad * 0x5C);
+    buttons = (State_00203A40 *)(padState + 0x200);
+    switch (mode) {
     case 0:
-        return arg2 & (temp_a3->flags & ~temp_a3->disabled);
+        return wanted & (buttons->flags & ~buttons->disabled);
     case 2:
-        var_s0 = 0;
-        var_a1 = 0;
-        var_t1 = (u8 *)temp_a3;
-        mask = arg2 & 0xFFFF;
+        result = 0;
+        bit = 0;
+        counters = (u8 *)buttons;
+        mask = wanted & 0xFFFF;
         do {
-            temp_t0 = 1 << var_a1;
-            if (mask & temp_t0) {
-                temp_t3 = *(s32 *)(var_t1 + 0x18);
-                if ((temp_t3 >= 0) && ((temp_t3 % temp_a3->interval) == 0)) {
-                    var_s0 = (var_s0 | temp_t0) & 0xFFFF;
+            bitMask = 1 << bit;
+            if (mask & bitMask) {
+                counter = *(s32 *)(counters + 0x18);
+                if ((counter >= 0) && ((counter % buttons->interval) == 0)) {
+                    result = (result | bitMask) & 0xFFFF;
                 }
             }
-            var_a1 += 1;
-            var_t1 += 4;
-        } while (var_a1 < 0x10);
-        return var_s0 | SzPad_Check(arg0, 0, arg2);
+            bit += 1;
+            counters += 4;
+        } while (bit < 0x10);
+        return result | SzPad_Check(pad, 0, wanted);
     case 1:
-        return temp_a3->flags & arg2;
+        return buttons->flags & wanted;
     }
     return 0;
 }
 
-s32 SzPad_ResetCounter(s32 arg0, s32 arg1) {
-    u8 *temp_a0;
-    s32 var_a1;
-    u8 *var_a2;
+/* Restarts the key-repeat counters of pad `pad`'s buttons in `mask`. */
+s32 SzPad_ResetCounter(s32 pad, s32 mask) {
+    u8 *buttons;
+    s32 bit;
+    u8 *counters;
 
-    temp_a0 = gSzPad_pl + (arg0 * 0x5C) + 0x200;
-    var_a1 = 0;
-    var_a2 = temp_a0;
+    buttons = padStates + (pad * 0x5C) + 0x200;
+    bit = 0;
+    counters = buttons;
     do {
-        if (arg1 & 0xFFFF & (1 << var_a1)) {
-            *(s32 *)(var_a2 + 0x18) = -*(s8 *)(temp_a0 + 0x59);
+        if (mask & 0xFFFF & (1 << bit)) {
+            *(s32 *)(counters + 0x18) = -*(s8 *)(buttons + 0x59);
         }
-        var_a1 += 1;
-        var_a2 += 4;
-    } while (var_a1 < 0x10);
+        bit += 1;
+        counters += 4;
+    } while (bit < 0x10);
     return 0;
 }
 
@@ -1003,10 +1036,11 @@ typedef struct {
     s8 unused_high : 1;
 } Flags_00203BC0;
 
-extern u8 gSzPad_pl[];
+extern u8 padStates[]; /* original: gSzPad_pl */
 
-s32 SzPad_IsAnalog(s32 arg0) {
-    return ((Flags_00203BC0 *)(gSzPad_pl + arg0 * 0x5C))->flag ? 1 : 0;
+/* Whether pad `pad` is in analog mode. */
+s32 SzPad_IsAnalog(s32 pad) {
+    return ((Flags_00203BC0 *)(padStates + pad * 0x5C))->flag ? 1 : 0;
 }
 
 typedef struct {
@@ -1015,8 +1049,9 @@ typedef struct {
     s8 flag : 1;
 } Flags_00203C00;
 
-s32 SzPad_IsPress(s32 arg0) {
-    Flags_00203C00 *flags = (Flags_00203C00 *)(gSzPad_pl + arg0 * 0x5C);
+/* Whether pad `pad` reports button pressures. */
+s32 SzPad_IsPress(s32 pad) {
+    Flags_00203C00 *flags = (Flags_00203C00 *)(padStates + pad * 0x5C);
 
     return flags->flag ? 1 : 0;
 }
@@ -1026,12 +1061,14 @@ typedef struct Entry_00203C40 {
     u8 value;
 } Entry_00203C40;
 
-u8 SzPad_GetAnalogInfo(s32 arg0, s32 arg1) {
-    return ((Entry_00203C40 *)(gSzPad_pl + arg0 * 0x5C + arg1))->value;
+/* Analog byte `index` of pad `pad` (the sticks). */
+u8 SzPad_GetAnalogInfo(s32 pad, s32 index) {
+    return ((Entry_00203C40 *)(padStates + pad * 0x5C + index))->value;
 }
 
-void SzPad_SetAnalogInfo(s32 arg0, s32 arg1, s8 arg2) {
-    *(s8 *)(gSzPad_pl + arg0 * 0x5C + arg1 + 0x206) = arg2;
+/* Sets analog byte `index` of pad `pad` (the tutorial fakes stick input with it). */
+void SzPad_SetAnalogInfo(s32 pad, s32 index, s8 value) {
+    *(s8 *)(padStates + pad * 0x5C + index + 0x206) = value;
 }
 
 typedef struct {
@@ -1039,8 +1076,9 @@ typedef struct {
     u8 value;
 } Entry_00203CA0;
 
-u8 SzPad_GetPressInfo(s32 arg0, s32 arg1) {
-    return ((Entry_00203CA0 *)(arg1 + (gSzPad_pl + arg0 * 0x5C)))->value;
+/* The pressure of button `index` of pad `pad`. */
+u8 SzPad_GetPressInfo(s32 pad, s32 index) {
+    return ((Entry_00203CA0 *)(index + (padStates + pad * 0x5C)))->value;
 }
 
 typedef struct Flags_00203CD0 {
@@ -1065,32 +1103,33 @@ typedef struct State_00203CD0 {
     Flags_00203CD0 flags;
 } State_00203CD0;
 
-extern State_00203CD0 gSzDebug_dl;
+extern State_00203CD0 debugState; /* original: gSzDebug_dl */
 
+/* Starts the debug menus. */
 void SzDebug_Init(void) {
     extern s32 func_0019B648();
     extern u8 D_002D078C;
     extern u8 D_002D07F4[];
     extern u8 D_002D07FA[];
     extern u8 D_002D07FF[];
-    State_00203CD0 *state = &gSzDebug_dl;
+    State_00203CD0 *state = &debugState;
     u8 buffer[0x80];
 
-    RhMem_FillMemory((s8 *)&gSzDebug_dl, 0, 0x30);
-    gSzDebug_dl.f00 = 0;
-    gSzDebug_dl.f04 = D_002D078C;
-    gSzDebug_dl.f08 = 0;
-    gSzDebug_dl.f0C = 0;
-    gSzDebug_dl.f10 = 0;
-    gSzDebug_dl.f14 = 0;
-    gSzDebug_dl.f18 = 0;
-    gSzDebug_dl.f1C = 0;
-    gSzDebug_dl.f20 = 0;
-    gSzDebug_dl.f24 = 0;
-    gSzDebug_dl.f28 = 2;
-    gSzDebug_dl.flags.flag0 = 0;
-    gSzDebug_dl.flags.flag1 = 0;
-    gSzDebug_dl.flags.flag2 = 0;
+    RhMem_FillMemory((s8 *)&debugState, 0, 0x30);
+    debugState.f00 = 0;
+    debugState.f04 = D_002D078C;
+    debugState.f08 = 0;
+    debugState.f0C = 0;
+    debugState.f10 = 0;
+    debugState.f14 = 0;
+    debugState.f18 = 0;
+    debugState.f1C = 0;
+    debugState.f20 = 0;
+    debugState.f24 = 0;
+    debugState.f28 = 2;
+    debugState.flags.flag0 = 0;
+    debugState.flags.flag1 = 0;
+    debugState.flags.flag2 = 0;
     func_0019B648(buffer, D_002D07F4, SzFile_GetEnv((s32)D_002D07FA), D_002D07FF);
     if (getenv((s32)D_002D07FF) != 0) {
         state->flags.flag1 = 1;
@@ -1155,6 +1194,7 @@ extern void *func_001DF540_b(int a, int b);
 extern int func_001E18A0_b(int a, int b, int value);
 extern int func_001F33C0_b(int index, int value);
 
+/* Runs the debug menus on pad 1 (model, camera, light and frame-buffer tools). */
 void SzDebug_Act(void)
 {
     struct DotrSmallFlagsOwner *p = &D_00325C80_203e20;
@@ -1374,6 +1414,7 @@ extern struct DotrDebugDigits_2047f0 D_00293D38;
 extern struct DotrDebugDigits_2047f0 D_00293D48;
 int func_001F48F0_b(int a, int b, int c, int d, int e);
 
+/* Runs the debug effect player. */
 void lSzDebug_ActEffect(void)
 {
     struct DotrSmallFlagsOwner_2047f0 *p = &D_00325C80_2047f0;
@@ -1554,12 +1595,14 @@ void lSzDebug_ActEffect(void)
     }
 }
 
+/* The open debug menu. */
 s32 SzDebug_GetActiveMenu(void) {
-    return gSzDebug_dl.f00;
+    return debugState.f00;
 }
 
+/* The model slot the debug menu works on. */
 s32 SzDebug_GetActiveModel(void) {
-    return gSzDebug_dl.f04;
+    return debugState.f04;
 }
 
 typedef struct Flags_00205170 {
@@ -1574,9 +1617,10 @@ typedef struct State_00205170 {
     Flags_00205170 flags;
 } State_00205170;
 
+/* Whether the debug display is hidden. */
 s32 SzDebug_IsHide(void) {
     extern Flags_00205170 D_00325CAC;
-    State_00205170 *state = (State_00205170 *)&gSzDebug_dl;
+    State_00205170 *state = (State_00205170 *)&debugState;
 
     if (D_00325CAC.flag2 != 0) {
         return 1;
@@ -1588,10 +1632,11 @@ typedef struct {
     s8 enabled : 1;
 } Flags_002051C0;
 
-void SzDebug_SetHideFlag(s64 arg0) {
+/* Hides or shows the debug display. */
+void SzDebug_SetHideFlag(s64 on) {
     extern Flags_002051C0 D_00325CAC;
 
-    D_00325CAC.enabled = (s8)arg0;
+    D_00325CAC.enabled = (s8)on;
 }
 
 typedef struct {
@@ -1601,6 +1646,7 @@ typedef struct {
 
 extern Flags_002051F0 D_00325CAC;
 
+/* Whether the debug effect player is running. */
 s32 SzDebug_IsEffect(void) {
     return D_00325CAC.flag ? 1 : 0;
 }
@@ -1635,6 +1681,7 @@ extern u8 D_002D07FA[];
 extern u8 D_002D0806[];
 extern s32 nSaveCount;
 
+/* Debug: writes the frame buffer to a file on the host. */
 void SzDebug_OutputFrameBuffer(void) {
     u8 buffer[0x780];
     BitmapInfo_00205210 info;
@@ -1728,18 +1775,20 @@ typedef union {
 } Xyz_00205440;
 
 
-s32 Ex3d_RotTransPers(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
+/* Projects point `point` to the screen with `matrix` (or the world-screen one); its screen x, y and z through
+   `out` and `outZ`. Returns 0 off screen. */
+s32 Ex3d_RotTransPers(s32 point, void *matrix, u16 *out, s32 *outZ) {
     extern s64 func_001A23B0(f32);
     f32 mtx[16];
     Vec4_00205440 v;
     f32 inv;
 
-    v = *(Vec4_00205440 *)arg0;
-    if (arg1 == NULL) {
+    v = *(Vec4_00205440 *)point;
+    if (matrix == NULL) {
         RhView_GetWorldScreenMatrix(mtx);
-        arg1 = mtx;
+        matrix = mtx;
     }
-    RhGeom_PushMatrix((s32)arg1);
+    RhGeom_PushMatrix((s32)matrix);
     v.w = 1.0f;
     RhGeom_MulMatrixVector(&v, NULL, &v);
     RhGeom_PopMatrix();
@@ -1751,11 +1800,11 @@ s32 Ex3d_RotTransPers(s32 arg0, void *arg1, u16 *arg2, s32 *arg3) {
         v.y < 0.0f || !(v.y <= 4095.0f)) {
         return 0;
     }
-    ((Xyz_00205440 *)arg2)->xy.x = func_001A23B0(16.0f * v.x);
-    ((Xyz_00205440 *)arg2)->xy.y = func_001A23B0(16.0f * v.y);
-    ((Xyz_00205440 *)arg2)->bits.z = func_001A23B0(v.z);
-    if (arg3 != NULL) {
-        *(f32 *)arg3 = v.w;
+    ((Xyz_00205440 *)out)->xy.x = func_001A23B0(16.0f * v.x);
+    ((Xyz_00205440 *)out)->xy.y = func_001A23B0(16.0f * v.y);
+    ((Xyz_00205440 *)out)->bits.z = func_001A23B0(v.z);
+    if (outZ != NULL) {
+        *(f32 *)outZ = v.w;
     }
     return 1;
 }
@@ -1775,6 +1824,7 @@ typedef union Vertex_00205630 {
 } Vertex_00205630;
 
 
+/* Projects `count` points with `matrix` into a draw packet, working out each one's Q. */
 s32 Ex3d_RotTransPersAuto(s32 arg0, s32 arg1, s32 arg2, s32 arg3, f32 *arg4) {
     extern s64 func_001A23B0(f32);
     f32 matrix[4][4];
@@ -1842,6 +1892,7 @@ typedef struct Packed_002058D0 {
     u64 fog : 8;
 } Packed_002058D0;
 
+/* Projects points with `matrix` into `packet` with their Q (perspective) values. */
 s32 Ex3d_RotTransPersAutoCalcQ(void *src MW_ALIGN(16), f32 *vertices, s32 matrix, s32 packet, s32 average) {
     extern s64 func_001A23B0(f32);
     f32 local_matrix[16];
@@ -1921,25 +1972,29 @@ s32 Ex3d_RotTransPersAutoCalcQ(void *src MW_ALIGN(16), f32 *vertices, s32 matrix
     return 1;
 }
 
-f32 Ex3d_GetLookVector(s32 arg0) {
+/* The camera's look direction (view `view`). */
+f32 Ex3d_GetLookVector(s32 view) {
     f32 *temp_s0;
 
     temp_s0 = SzView_GetLook(0);
-    SzView_GetLookVector(0, arg0);
+    SzView_GetLookVector(0, view);
     return *temp_s0;
 }
 
-void Ex3d_GetLookMatrix(s32 arg0) {
-    SzView_GetLookMatrix(0, arg0);
+/* The camera's look matrix (view `view`). */
+void Ex3d_GetLookMatrix(s32 view) {
+    SzView_GetLookMatrix(0, view);
 }
 
-void Ex3d_GetLookMatrixWithRoll(s32 arg0) {
-    SzView_GetLookMatrixWithRoll(0, arg0);
+/* The camera's look matrix with its roll (view `view`). */
+void Ex3d_GetLookMatrixWithRoll(s32 view) {
+    SzView_GetLookMatrixWithRoll(0, view);
 }
 
-void Ex3d_GetPointOnScreen(void *arg0, f32 fparg0, f32 fparg1) {
+/* The 3D point under screen point (x, y) at the card distance into `out`. */
+void Ex3d_GetPointOnScreen(void *out, f32 fparg0, f32 fparg1) {
     f32 matrix[4][4];
-    f32 *vector = arg0;
+    f32 *vector = out;
 
     vector[0] = fparg0;
     vector[1] = fparg1;
@@ -1950,16 +2005,17 @@ void Ex3d_GetPointOnScreen(void *arg0, f32 fparg0, f32 fparg1) {
     RhGeom_MulMatrixVector(vector, matrix, vector);
 }
 
-s32 Ex3d_GetSampleZ(void *arg0, f32 fparg0) {
+/* The GS depth of point `point` (moved by `bias`). */
+s32 Ex3d_GetSampleZ(void *point, f32 bias) {
     f32 vector[4];
     f32 matrix1[4][4];
     f32 matrix2[4][4];
 
     RhView_GetWorldViewMatrix(matrix1);
     RhView_GetViewScreenMatrix(matrix2);
-    ((f32 *)arg0)[3] = 1.0f;
-    RhGeom_MulMatrixVector(vector, matrix1, arg0);
-    vector[2] -= fparg0;
+    ((f32 *)point)[3] = 1.0f;
+    RhGeom_MulMatrixVector(vector, matrix1, point);
+    vector[2] -= bias;
     RhGeom_MulMatrixVector(vector, matrix2, vector);
     if (vector[3] <= 0.0f) {
         return 0xFFFFF6;
@@ -1970,16 +2026,17 @@ s32 Ex3d_GetSampleZ(void *arg0, f32 fparg0) {
     return func_001A23B0(vector[2] / vector[3]);
 }
 
-f32 Ex3d_GetSampleW(void *arg0, f32 fparg0) {
+/* The perspective W of point `point` (moved by `bias`). */
+f32 Ex3d_GetSampleW(void *point, f32 bias) {
     f32 vector[4];
     f32 matrix1[4][4];
     f32 matrix2[4][4];
 
     RhView_GetWorldViewMatrix(matrix1);
     RhView_GetViewScreenMatrix(matrix2);
-    ((f32 *)arg0)[3] = 1.0f;
-    RhGeom_MulMatrixVector(vector, matrix1, arg0);
-    vector[2] -= fparg0;
+    ((f32 *)point)[3] = 1.0f;
+    RhGeom_MulMatrixVector(vector, matrix1, point);
+    vector[2] -= bias;
     RhGeom_MulMatrixVector(vector, matrix2, vector);
     return vector[3];
 }
@@ -1991,6 +2048,7 @@ typedef struct Vec4_00205E70 {
 extern Vec4_00205E70 D_00293D60;
 extern Vec4_00205E70 D_00293D70;
 
+/* The normal of the surface through `count` points into `normal`. */
 s32 Ex3d_GetSurfaceNormal(s32 count, void *arg1, f32 *normal) {
     Vec4_00205E70 *points = arg1;
     s32 i;
@@ -2036,9 +2094,10 @@ typedef struct Vec4_00206030 {
     f32 x, y, z, w;
 } Vec4_00206030;
 
-s32 Ex3d_GetPointsAverage(s32 count, void *arg1, void *arg2) {
-    Vec4_00206030 *src = arg1;
-    Vec4_00206030 *dst = arg2;
+/* The average of `count` points into `out`. */
+s32 Ex3d_GetPointsAverage(s32 count, void *points, void *out) {
+    Vec4_00206030 *src = points;
+    Vec4_00206030 *dst = out;
     s32 i;
     f32 divisor;
 
@@ -2064,6 +2123,7 @@ s32 Ex3d_GetPointsAverage(s32 count, void *arg1, void *arg2) {
     return 1;
 }
 
+/* The direction from `origin` to the average of `count` points into `out`. */
 s32 Ex3d_GetViewVector(f32 *origin, s32 count, f32 *points, f32 *out) {
     s32 i;
     f32 divisor;
@@ -2098,6 +2158,7 @@ typedef struct Point_002061F0 {
     u8 padding[0x24];
 } Point_002061F0;
 
+/* The direction from `origin` to the average of a node's `count` points into `out`. */
 s32 Ex3d_GetViewVectorForNode(f32 *origin, s32 count, void *src, f32 *out) {
     f32 divisor;
     s32 i;
@@ -2126,20 +2187,21 @@ s32 Ex3d_GetViewVectorForNode(f32 *origin, s32 count, void *src, f32 *out) {
     return 1;
 }
 
-void Ex3d_GetSurfaceC(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
-    arg3[0] = arg0[1] * (arg1[2] - arg2[2])
-            + arg1[1] * (arg2[2] - arg0[2])
-            + arg2[1] * (arg0[2] - arg1[2]);
-    arg3[1] = arg0[2] * (arg1[0] - arg2[0])
-            + arg1[2] * (arg2[0] - arg0[0])
-            + arg2[2] * (arg0[0] - arg1[0]);
-    arg3[2] = arg0[0] * (arg1[1] - arg2[1])
-            + arg1[0] * (arg2[1] - arg0[1])
-            + arg2[0] * (arg0[1] - arg1[1]);
-    arg3[3] = arg0[0] * (arg1[2] * arg2[1] - arg1[1] * arg2[2])
-            + arg0[1] * (arg1[0] * arg2[2] - arg1[2] * arg2[0])
-            + arg0[2] * (arg1[1] * arg2[0] - arg1[0] * arg2[1]);
-    arg3[4] = func_001A6C60(arg3[0] * arg3[0]
-                           + arg3[1] * arg3[1]
-                           + arg3[2] * arg3[2]);
+/* The constant term of the plane through three points into `out`. */
+void Ex3d_GetSurfaceC(f32 *a, f32 *b, f32 *c, f32 *out) {
+    out[0] = a[1] * (b[2] - c[2])
+            + b[1] * (c[2] - a[2])
+            + c[1] * (a[2] - b[2]);
+    out[1] = a[2] * (b[0] - c[0])
+            + b[2] * (c[0] - a[0])
+            + c[2] * (a[0] - b[0]);
+    out[2] = a[0] * (b[1] - c[1])
+            + b[0] * (c[1] - a[1])
+            + c[0] * (a[1] - b[1]);
+    out[3] = a[0] * (b[2] * c[1] - b[1] * c[2])
+            + a[1] * (b[0] * c[2] - b[2] * c[0])
+            + a[2] * (b[1] * c[0] - b[0] * c[1]);
+    out[4] = func_001A6C60(out[0] * out[0]
+                           + out[1] * out[1]
+                           + out[2] * out[2]);
 }

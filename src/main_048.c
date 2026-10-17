@@ -810,7 +810,7 @@ static inline f32 abs_001EE6C0(f32 x) {
 
 #pragma global_optimizer off
 
-/* Draws model slot `index` with draw callback `func`: its transform (plus `pos`, `rot`, `scale`), lights, fog,
+/* Draws model slot `index` with draw callback `func`: its transform (plus `pos`, `rot`, `scaleIn`), lights, fog,
    textures and render frame. */
 s32 SzModel_DrawWithFunc_Pipe(s32 out, s32 index, s32 pos, s32 rot, s32 scaleIn,
                  s32 headerIn, s32 flags, void (*func)(void), s32 arg_sp0) {

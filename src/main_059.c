@@ -2587,8 +2587,10 @@ typedef struct Save_00214290 {
     u8 padding3[3];
 } Save_00214290;
 
+/* Clears both save profiles (0xFFA0 bytes each): every card's trunk entries, the five special cards, the three
+   decks, the five edited maps (all field 7), the options. */
 void SzData_Initialize(void) {
-    extern Save_00214290 gSzData_All[2];
+    extern Save_00214290 saveProfiles[2];
     s32 card;
     s32 slot;
     s32 profile;
@@ -2611,8 +2613,8 @@ void SzData_Initialize(void) {
     s32 row;
     s32 column;
 
-    RhMem_FillMemory((s8 *)gSzData_All, 0, 0x1FF40);
-    save = gSzData_All;
+    RhMem_FillMemory((s8 *)saveProfiles, 0, 0x1FF40);
+    save = saveProfiles;
     profile = 0;
     do {
         card = 0;
@@ -2697,23 +2699,25 @@ void SzData_Initialize(void) {
     } while (profile < 2);
 }
 
-void SzData_SetRoseFlag(s32 arg0) {
-    extern u8 gSzData_bRoseFlag;
+/* Sets which duel side plays with save profile 0 (the other side gets profile 1). */
+void SzData_SetRoseFlag(s32 side) {
+    extern u8 profileZeroSide;
 
-    gSzData_bRoseFlag = arg0;
+    profileZeroSide = side;
 }
 
-void *SzData_GetData(s32 arg0) {
-    extern u8 gSzData_All[];
-    extern u8 gSzData_bRoseFlag;
-    s32 var_v1;
+/* The save profile of duel side `side`. */
+void *SzData_GetData(s32 side) {
+    extern u8 saveProfiles[];
+    extern u8 profileZeroSide;
+    s32 profile;
 
-    if (gSzData_bRoseFlag == arg0) {
-        var_v1 = 0;
+    if (profileZeroSide == side) {
+        profile = 0;
     } else {
-        var_v1 = 1;
+        profile = 1;
     }
-    return gSzData_All + (var_v1 * 0xFFA0);
+    return saveProfiles + (profile * 0xFFA0);
 }
 
 typedef struct {
@@ -2759,10 +2763,11 @@ typedef struct {
     u8 padding_ff9d[3];
 } State_00214620;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-void SzData_ClearData(s32 arg0) {
-    extern State_00214620 gSzData_All[2];
+/* Clears the save profile of duel side `side` (cards, decks, maps and options to their defaults). */
+void SzData_ClearData(s32 side) {
+    extern State_00214620 saveProfiles[2];
     s32 i;
     State_00214620 *state;
     Entry_00214620 *entry;
@@ -2784,7 +2789,7 @@ void SzData_ClearData(s32 arg0) {
     s32 n_rows;
     s32 n_cells;
 
-    state = &gSzData_All[gSzData_bRoseFlag == arg0 ? 0 : 1];
+    state = &saveProfiles[profileZeroSide == side ? 0 : 1];
     i = 0;
     entry = state->entries;
     do {
@@ -2867,14 +2872,15 @@ void SzData_ClearData(s32 arg0) {
     state->flags.flag5 = 0;
 }
 
-s32 SzData_GetConstDeck(s32 arg0, s32 arg1) {
-    if (arg0 < 0 || arg0 >= 51) {
+/* Card `slot` (0 = the leader, 1..40) of built-in deck `deck` (0..50), or -1. */
+s32 SzData_GetConstDeck(s32 deck, s32 slot) {
+    if (deck < 0 || deck >= 51) {
         return -1;
     }
-    if (arg1 < 0 || arg1 >= 41) {
+    if (slot < 0 || slot >= 41) {
         return -1;
     }
-    return D_002D0970[arg0][arg1] & 0xFFF;
+    return D_002D0970[deck][slot] & 0xFFF;
 }
 
 typedef struct {
@@ -2888,10 +2894,12 @@ typedef struct {
 
 extern s32 D_002D19D8;
 extern u16 D_002D49D4[];
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-void SzData_SetupFromConstDeck(s32 arg0, s32 arg1) {
-    extern State_00214990 gSzData_All[2];
+/* Gives side `side` built-in deck `deck`: a fresh trunk with its 41 cards, the leader and the deck set up, a new
+   profile id. */
+void SzData_SetupFromConstDeck(s32 side, s32 deckNo) {
+    extern State_00214990 saveProfiles[2];
     u16 *deck;
     s32 sum;
     s32 i;
@@ -2900,13 +2908,13 @@ void SzData_SetupFromConstDeck(s32 arg0, s32 arg1) {
     u16 value;
     State_00214990 *state;
 
-    state = &gSzData_All[gSzData_bRoseFlag == arg0 ? 0 : 1];
-    deck = D_002D0970[arg1];
-    if (!(arg1 >= 0 && arg1 < 51)) {
+    state = &saveProfiles[profileZeroSide == side ? 0 : 1];
+    deck = D_002D0970[deckNo];
+    if (!(deckNo >= 0 && deckNo < 51)) {
         return;
     }
-    SzData_ClearData(arg0);
-    if (arg1 < 17) {
+    SzData_ClearData(side);
+    if (deckNo < 17) {
         sum = 0;
         src = &D_002D49D4[D_002D19D8] + 2;
         while (1) {
@@ -2921,24 +2929,24 @@ void SzData_SetupFromConstDeck(s32 arg0, s32 arg1) {
             state->count = (sum + func_0019A5C8()) & 0x7FFFFFFF;
         } while (state->count == 0);
     } else {
-        state->count = arg1 + 0x40000000;
+        state->count = deckNo + 0x40000000;
     }
     i = 0;
     card = deck;
     do {
-        SzData_AddBag(arg0, 0, *card & 0xFFF);
+        SzData_AddBag(side, 0, *card & 0xFFF);
         i++;
         card++;
     } while (i < 41);
     for (i = 0; i < 5; i++) {
         state->values[i] = 999;
     }
-    SzData_SetRankDirect(arg0, *deck & 0xFFF, *deck >> 12);
-    SzData_PushDeckLeader(arg0, 0, *deck & 0xFFF);
+    SzData_SetRankDirect(side, *deck & 0xFFF, *deck >> 12);
+    SzData_PushDeckLeader(side, 0, *deck & 0xFFF);
     deck++;
     i = 1;
     do {
-        SzData_PushDeck(arg0, 0, *deck & 0xFFF);
+        SzData_PushDeck(side, 0, *deck & 0xFFF);
         i++;
         deck++;
     } while (i < 41);
@@ -2957,28 +2965,29 @@ typedef struct State_00214BB0 {
     u8 tail[3];
 } State_00214BB0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_SetOption(s32 arg0, s32 arg1, s32 arg2) {
-    extern State_00214BB0 gSzData_All[];
+/* Sets option `option` of side `side`'s profile: 0 and 1 the duel options, 2 the sound output (also applied). */
+s32 SzData_SetOption(s32 side, s32 option, s32 on) {
+    extern State_00214BB0 saveProfiles[];
     s32 index;
     State_00214BB0 *state;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         index = 0;
     } else {
         index = 1;
     }
-    state = &gSzData_All[index];
-    switch (arg1) {
+    state = &saveProfiles[index];
+    switch (option) {
     case 0:
-        state->flag2 = arg2 ? 1 : 0;
+        state->flag2 = on ? 1 : 0;
         break;
     case 1:
-        state->flag3 = arg2 ? 1 : 0;
+        state->flag3 = on ? 1 : 0;
         break;
     case 2:
-        state->flag4 = arg2 ? 1 : 0;
+        state->flag4 = on ? 1 : 0;
         SzSound_SetOutput(state->flag4);
         break;
     default:
@@ -2997,20 +3006,21 @@ typedef struct {
     u8 pad2[3];
 } Side_00214D00;
 
-extern Side_00214D00 gSzData_All[];
-extern u8 gSzData_bRoseFlag;
+extern Side_00214D00 saveProfiles[]; /* original: gSzData_All */
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_GetOption(s32 arg0, s32 arg1) {
+/* Option `option` (0..2) of side `side`'s profile, or -1. */
+s32 SzData_GetOption(s32 player, s32 option) {
     Side_00214D00 *side;
     s32 idx;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         idx = 0;
     } else {
         idx = 1;
     }
-    side = &gSzData_All[idx];
-    switch (arg1) {
+    side = &saveProfiles[idx];
+    switch (option) {
     case 0:
         return side->flag2 ? 1 : 0;
     case 1:
@@ -3022,7 +3032,8 @@ s32 SzData_GetOption(s32 arg0, s32 arg1) {
     }
 }
 
-void *SzData_CheckBag(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* The trunk entry of card `card` for side `side` of `type` with its flag set as `flag`, or NULL. */
+void *SzData_CheckBag(s32 player, s32 card, s32 arg2, s32 flag) {
     typedef struct {
         u32 id : 31;
         u32 active : 1;
@@ -3033,25 +3044,25 @@ void *SzData_CheckBag(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Entry_00214DD0 *entry;
     s32 count;
 
-    if (arg0 < 0 || arg0 >= 2) {
+    if (player < 0 || player >= 2) {
         return NULL;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if (arg1 < 0 || arg1 >= 0x356) {
+    if (card < 0 || card >= 0x356) {
         return NULL;
     }
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    entry = (Entry_00214DD0 *)((u8 *)gSzData_All + side * 0xFFA0 + arg1 * 0x4C);
+    entry = (Entry_00214DD0 *)((u8 *)saveProfiles + side * 0xFFA0 + card * 0x4C);
     count = 9;
     while (count--) {
         if (entry->id != 0 && entry->type == arg2 &&
-            (entry->active != 0) == (arg3 == 1)) {
+            (entry->active != 0) == (flag == 1)) {
             return entry;
         }
         entry++;
@@ -3059,27 +3070,28 @@ void *SzData_CheckBag(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return NULL;
 }
 
-void *SzData_GetCardInfo(s32 arg0, s32 arg1, s32 arg2) {
+/* Trunk entry `index` (0..8) of card `card` for side `side`, or NULL. */
+void *SzData_GetCardInfo(s32 side, s32 card, s32 index) {
     s32 bank;
     u8 *base;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         bank = 0;
     } else {
         bank = 1;
     }
-    base = (u8 *)gSzData_All + bank * 0xFFA0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    base = (u8 *)saveProfiles + bank * 0xFFA0;
+    if ((side < 0) || (side >= 2)) {
         return NULL;
     }
-    if ((arg2 < 0) || (arg2 >= 9)) {
+    if ((index < 0) || (index >= 9)) {
         return NULL;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return NULL;
     }
-    return base + arg1 * 0x4C + arg2 * 8;
+    return base + card * 0x4C + index * 8;
 }

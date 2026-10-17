@@ -464,7 +464,7 @@ s32 SzModel_GetScale(s32 index, void *out) {
     return 1;
 }
 
-/* Sets model slot `index`'s scale. */
+/* Sets model slot `idx`'s scale. */
 s32 SzModel_SetScale(s32 idx, void *src) {
     Obj_0031ABB0 *obj;
 

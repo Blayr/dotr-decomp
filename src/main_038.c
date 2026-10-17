@@ -1902,7 +1902,7 @@ typedef struct Card_001B22F0 {
 
 #pragma opt_propagation off
 
-/* Draws the info window of `card` on board square (column, row) for side `side` at (left, top): name, attribute,
+/* Draws the info window of `cardData` on board square (column, row) for side `side` at (left, top): name, attribute,
    rank, attack and defence with their field bonus. */
 s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 packet, void *cardData, s32 column, s32 row, s32 side, s32 left, s32 top, s32 drawMode, long frameKind, long highlight) {
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();

@@ -1659,7 +1659,7 @@ struct Draw_001DA7F0_s {
     u8 unused83b : 2;
 };
 
-/* Renders card `card` into its texture: frame, picture, name, attribute, level, attack and defence (or its back). */
+/* Renders card `arg1` into its texture: frame, picture, name, attribute, level, attack and defence (or its back). */
 s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
     extern s32 SzGame_GetMode();
     extern s32 *SzMsg_GetInfo(s32);

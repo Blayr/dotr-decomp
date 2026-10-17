@@ -28,10 +28,10 @@ typedef struct {
     Flags_00217A70 flags;
 } State_00217A70;
 
-extern State_00217A70 gSzSound_sl;
+extern State_00217A70 soundState; /* original: gSzSound_sl */
 
 s32 SzSound_SetOutput(s32 arg0) {
-    State_00217A70 *state = &gSzSound_sl;
+    State_00217A70 *state = &soundState;
 
     if (D_0034F6E8.enabled == 0) {
         return 0;

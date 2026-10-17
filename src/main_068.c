@@ -18,7 +18,8 @@ typedef struct Item_0023B1F0 {
     u8 pad0C[0x28];
 } Item_0023B1F0;
 
-void TkCamp_Act2(s32 arg0) {
+/* Runs the campaign map's second half of a frame: its windows, events and the move to a duel. */
+void TkCamp_Act2(s32 param) {
     extern u8 prim_data[];
     extern Item_0023B1F0 model_data[];
     extern s32 ACT2_Rock;
@@ -52,7 +53,7 @@ void TkCamp_Act2(s32 arg0) {
         side.x = 5.0f + item->pos.x;
         side.y = 8.65f + item->pos.y;
         side.z = item->pos.z;
-        if (arg0 != 0) {
+        if (param != 0) {
             show = 1;
         }
         if (*(s8 *)(work + 0x18C) != 0) {
@@ -201,6 +202,7 @@ typedef struct Copy_0023B920 {
 
 extern s8 HELP_flg;
 
+/* Ends the campaign map: frees its models, textures and windows. */
 void TkCamp_Term(void) {
     s32 a;
     s32 b;
@@ -256,44 +258,45 @@ void TkCamp_Term(void) {
     SzDuel_CloseMsgPopup();
 }
 
-void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
-    s32 var_s0;
-    s32 var_s1;
-    s32 var_s2;
+/* Starts practice duel `param` from the campaign: picks the opponent, deck and map for the current practice level. */
+void Taku_Camp_Go_Rensyu_Duel(s32 param) {
+    s32 opponent;
+    s32 deck0;
+    s32 deck1;
 
     switch (practiceDuelFlag) {
     case 0:
-        var_s0 = 0x20;
-        var_s1 = 0x11;
-        var_s2 = 0x12;
+        opponent = 0x20;
+        deck0 = 0x11;
+        deck1 = 0x12;
         break;
     case 1:
-        var_s0 = 0x21;
-        var_s1 = 0x13;
-        var_s2 = 0x14;
+        opponent = 0x21;
+        deck0 = 0x13;
+        deck1 = 0x14;
         break;
     case 2:
-        var_s0 = 0x22;
-        var_s1 = 0x15;
-        var_s2 = 0x16;
+        opponent = 0x22;
+        deck0 = 0x15;
+        deck1 = 0x16;
         break;
     case 3:
-        var_s0 = 0x23;
-        var_s1 = 0x17;
-        var_s2 = 0x18;
+        opponent = 0x23;
+        deck0 = 0x17;
+        deck1 = 0x18;
         break;
     case 4:
-        var_s0 = 0x24;
-        var_s1 = 0x19;
-        var_s2 = 0x1A;
+        opponent = 0x24;
+        deck0 = 0x19;
+        deck1 = 0x1A;
         break;
     }
     SzGame_SetMenuNum(1, 0);
     SzGame_SetMenuNum(2, 0);
-    SzGame_SetMenuNum(3, var_s0);
-    SzGame_SetMenuNum(4, var_s0);
-    SzData_SetupFromConstDeck(0, var_s1);
-    SzData_SetupFromConstDeck(1, var_s2);
+    SzGame_SetMenuNum(3, opponent);
+    SzGame_SetMenuNum(4, opponent);
+    SzData_SetupFromConstDeck(0, deck0);
+    SzData_SetupFromConstDeck(1, deck1);
     if (practiceDuelFlag < 3) {
         practiceDuelFlag += 1;
         if (practiceDuelFlag > 2) {
@@ -301,7 +304,7 @@ void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
             practiceDuelEnd = 1;
         }
     }
-    if (arg0 != 0) {
+    if (param != 0) {
         SzGame_Goto(1, 0);
     } else {
         SzGame_Push(1, 0);
@@ -314,6 +317,7 @@ typedef struct Copy_0023BC80 {
 
 extern s8 HELP_flg;
 
+/* Opens the campaign's help screen. */
 void Taku_Camp_Go_Help(void) {
     HELP_flg = 1;
     *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)SzData_GetData(0);
@@ -342,6 +346,7 @@ extern DotrHelpWord func_001B6F70_b(DotrHelpWord cursor, int x, int y, int a,
 extern DotrHelpWord func_0021C450_b(DotrHelpWord cursor, int index, int no, int x, int y,
                                      int unused, unsigned char *col, float sx, float sy);
 
+/* Draws the campaign's help window. */
 int Taku_Camp_Help_Window(int cursor)
 {
     signed char *st;
@@ -440,7 +445,8 @@ typedef struct Texture_0023BFF0 {
     u8 pad45[0x1B];
 } Texture_0023BFF0;
 
-void *Taku_Camp_Card_Get(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2) {
+/* Draws the card just won (card `card`) flying in at screen point (x, y). */
+void *Taku_Camp_Card_Get(void *packet, f32 x, s32 card, f32 y, s32 depth) {
     extern void SzDuel_ClearDrawCard();
     Texture_0023BFF0 texture;
     Draw_0023BFF0 draw;
@@ -453,28 +459,31 @@ void *Taku_Camp_Card_Get(void *arg0, f32 fparg0, s32 arg1, f32 fparg1, s32 arg2)
     draw.field30 = 0x3F000000;
     draw.field34 = 0x3F000000;
     SzDuel_InitCardInfo(&texture, 999);
-    texture.field44 = arg1;
+    texture.field44 = card;
     Ex3d_GetLookVector((s32)draw.vector20);
     draw.field10 = 0;
-    draw.field14 = arg2;
+    draw.field14 = depth;
     draw.field18 = 0;
     draw.field1C = 0;
-    arg0 = (void *)SzDuel_StartCardSession_Pipe((s32)arg0);
+    packet = (void *)SzDuel_StartCardSession_Pipe((s32)packet);
     SzDuel_SetCardDefPrioZ(0xFFFFFF);
-    Ex3d_GetPointOnScreen(&draw, fparg0, fparg1);
+    Ex3d_GetPointOnScreen(&draw, x, y);
     return (void *)SzDuel_FinishCardSessionX_Pipe(SzDuel_DrawCard_Pipe(
-        SzDuel_SetupCard2_Pipe((s32)arg0, (s32)(SzDuel_GetCardNode(&draw, 1) ? &texture : NULL), &draw),
+        SzDuel_SetupCard2_Pipe((s32)packet, (s32)(SzDuel_GetCardNode(&draw, 1) ? &texture : NULL), &draw),
         (s32)&draw));
 }
 
+/* Whether the fifth campaign duel's flag is set. */
 s32 Taku_Get_Duel5_flg(void) {
     return D_00299EDA;
 }
 
+/* Sets the fifth campaign duel's flag. */
 void Taku_Set_Duel5_flg(void) {
     D_00299EDA = 0;
 }
 
+/* How many campaign duels the player has won. */
 s32 Taku_Get_WinCount(void) {
     return (s32) D_00299E4E;
 }
@@ -539,7 +548,8 @@ typedef struct State_0023C170 {
 } State_0023C170;
 
 
-s32 TakuCard_inti(s32 arg0) {
+/* Resets the memory-card job state (`mode` picks the job). */
+s32 TakuCard_inti(s32 mode) {
     extern void *p_kaban_data;
     extern void *D_0034FAEC;
     extern s8 Taku_card_info;
@@ -608,7 +618,7 @@ s32 TakuCard_inti(s32 arg0) {
         out++;
     }
 
-    if (arg0 == 1 && (found[0] != 0 || found[1] != 0)) {
+    if (mode == 1 && (found[0] != 0 || found[1] != 0)) {
         return 1;
     }
     return 0;
@@ -640,12 +650,13 @@ typedef struct State_0023E610 {
 
 extern struct State_0023E610 D_0034FB00;
 
-s32 TkMc_Check_Main(s32 arg0) {
+/* Runs one frame of the memory-card check (`start` 1 starts it); returns its status, 0x100 when it is done. */
+s32 TkMc_Check_Main(s32 start) {
     State_0023C3F0 *state = (State_0023C3F0 *)&D_0034FB00;
-    s32 var_s1;
+    s32 result;
 
-    var_s1 = 0;
-    if (arg0 == 1) {
+    result = 0;
+    if (start == 1) {
         TakuCard_inti(0);
         state->result = 0;
     }
@@ -653,47 +664,49 @@ s32 TkMc_Check_Main(s32 arg0) {
     case 0:
     case 14:
     case 11:
-        var_s1 = TakuSave_card_kansi(1);
+        result = TakuSave_card_kansi(1);
         break;
     case 1:
-        var_s1 = TakuSave_card_filename_check(1);
+        result = TakuSave_card_filename_check(1);
         break;
     case 3:
-        var_s1 = TakuSave_card_kansi(1);
+        result = TakuSave_card_kansi(1);
         break;
     }
-    if (arg0 == 1) {
+    if (start == 1) {
         state->field34 = 0;
         state->field40 = 0;
         state->mode = 0;
     }
-    switch (var_s1) {
+    switch (result) {
     case 2:
     case 3:
     case 14:
     case 6:
     case 8:
     case 10:
-        var_s1 = 0x100;
+        result = 0x100;
         break;
     case 0:
         break;
     }
-    if (var_s1 != 0) {
-        state->result = var_s1;
+    if (result != 0) {
+        state->result = result;
     }
-    if (var_s1 == 0x100) {
+    if (result == 0x100) {
         return 0x100;
     }
     return state->result;
 }
 
-s16 TkMc_Save_Main(s32 arg0) {
+/* Runs one frame of saving the game to the memory card (`start` 1 starts it, 2 = the player confirmed); returns
+   its status (0x100 when done). */
+s16 TkMc_Save_Main(s32 start) {
     State_0023C170 *state = (State_0023C170 *)&D_0034FB00;
     s32 result;
 
     result = 0;
-    if (arg0 == 1) {
+    if (start == 1) {
         TakuCard_inti(0);
         state->field2BE = 0;
     }
@@ -727,7 +740,7 @@ s16 TkMc_Save_Main(s32 arg0) {
         break;
     case 11:
         result = TakuSave_card_kansi(0);
-        if (state->field2BE == 0xE && arg0 == 2) {
+        if (state->field2BE == 0xE && start == 2) {
             state->field30 = 0xA;
             state->field34 = 0;
             result = 0xB;
@@ -736,7 +749,7 @@ s16 TkMc_Save_Main(s32 arg0) {
         break;
     case 13:
         result = TakuSave_card_kansi(0);
-        if (state->field2BE == 1 && arg0 == 2) {
+        if (state->field2BE == 1 && start == 2) {
             state->field30 = 5;
             state->field34 = 0;
             result = 9;
@@ -748,7 +761,7 @@ s16 TkMc_Save_Main(s32 arg0) {
         if (result == 2) {
             result = 0xA;
         }
-        if (arg0 == 2) {
+        if (start == 2) {
             state->field30 = 0;
             state->field34 = 0;
             result = 0x700;
@@ -756,7 +769,7 @@ s16 TkMc_Save_Main(s32 arg0) {
         }
         break;
     }
-    if (arg0 == 1) {
+    if (start == 1) {
         state->field34 = 0;
         state->field40 = 0;
         state->field30 = 0;
@@ -783,48 +796,50 @@ typedef struct State_0023C770 {
 
 extern struct State_0023E610 D_0034FB00;
 
-s32 TkMc_Load_Main(s32 arg0) {
+/* Runs one frame of loading the game from the memory card (`start` 1 starts it); returns its status (0x100 when
+   done). */
+s32 TkMc_Load_Main(s32 start) {
     State_0023C770 *data = (State_0023C770 *)&D_0034FB00;
-    s32 var_s1;
+    s32 result;
 
-    var_s1 = 0;
-    if (arg0 == 1) {
+    result = 0;
+    if (start == 1) {
         TakuCard_inti(0);
         data->result = 0;
     }
     switch (data->state) {
     case 0:
-        var_s1 = TakuLoad_card_kansi(arg0);
-        if (var_s1 == 2) {
+        result = TakuLoad_card_kansi(start);
+        if (result == 2) {
             data->state = 0;
         }
         break;
     case 1:
-        var_s1 = TakuLoad_card_filename_check();
+        result = TakuLoad_card_filename_check();
         break;
     case 2:
-        var_s1 = TakuLoad_card_file_open();
+        result = TakuLoad_card_file_open();
         break;
     case 3:
-        var_s1 = TakuLoad_card_kansi(arg0);
-        if (var_s1 == 2) {
-            var_s1 = 0xA;
+        result = TakuLoad_card_kansi(start);
+        if (result == 2) {
+            result = 0xA;
         }
         break;
     }
-    if (arg0 == 1) {
+    if (start == 1) {
         data->field_34 = 0;
         data->field_40 = 0;
-        var_s1 = 0x10;
+        result = 0x10;
         data->state = 0;
     }
-    if (var_s1 == 3) {
-        var_s1 = 7;
+    if (result == 3) {
+        result = 7;
     }
-    if (var_s1 != 0) {
-        data->result = var_s1;
+    if (result != 0) {
+        data->result = result;
     }
-    if (var_s1 == 0x100) {
+    if (result == 0x100) {
         return 0x100;
     }
     return data->result;
@@ -846,49 +861,50 @@ typedef struct State_0023C8B0 {
 
 extern struct State_0023E610 D_0034FB00;
 
-s32 TkMc_Trade_Load_Main(s32 arg0) {
+/* Runs one frame of loading a trade partner's save from the memory card; returns its status (0x100 when done). */
+s32 TkMc_Trade_Load_Main(s32 start) {
     State_0023C8B0 *state = (State_0023C8B0 *)&D_0034FB00;
-    s32 var_s1;
+    s32 result;
 
-    var_s1 = 0;
-    if (arg0 == 1) {
+    result = 0;
+    if (start == 1) {
         TakuCard_inti(0);
         state->field2BE = 0;
     }
     switch (state->field30) {
     case 0:
-        var_s1 = TakuLoad_card_kansi(arg0);
-        if (var_s1 == 2) {
+        result = TakuLoad_card_kansi(start);
+        if (result == 2) {
             state->field30 = 0;
         }
         break;
     case 1:
-        var_s1 = TakuLoad_card_filename_check();
+        result = TakuLoad_card_filename_check();
         break;
     case 2:
-        var_s1 = TakuCustom_card_file_open();
+        result = TakuCustom_card_file_open();
         break;
     case 3:
-        var_s1 = TakuLoad_card_kansi(arg0);
-        if (var_s1 == 2) {
-            var_s1 = 0xA;
+        result = TakuLoad_card_kansi(start);
+        if (result == 2) {
+            result = 0xA;
         }
         break;
     }
-    if (arg0 == 1) {
+    if (start == 1) {
         state->field34 = 0;
         state->field40 = 0;
         state->field30 = 0;
-        var_s1 = 0x10;
+        result = 0x10;
         state->fieldC = 0;
     }
-    if (var_s1 == 3) {
-        var_s1 = 7;
+    if (result == 3) {
+        result = 7;
     }
-    if (var_s1 != 0) {
-        state->field2BE = var_s1;
+    if (result != 0) {
+        state->field2BE = result;
     }
-    if (var_s1 == 0x100) {
+    if (result == 0x100) {
         return 0x100;
     }
     if (state->field8 == 1) {
@@ -912,12 +928,13 @@ typedef struct State_0023CA10 {
     s16 field2BE;
 } State_0023CA10;
 
-s16 TkMc_Trade_Save_Main(s32 arg0) {
+/* Runs one frame of saving after a trade; returns its status (0x100 when done). */
+s16 TkMc_Trade_Save_Main(s32 start) {
     State_0023CA10 *state = (State_0023CA10 *)&D_0034FB00;
     s32 result;
 
     result = 0;
-    if (arg0 == 1) {
+    if (start == 1) {
         if (TakuCard_inti(1) != 0) {
             state->field58 = 1;
             return 0x600;
@@ -929,7 +946,7 @@ s16 TkMc_Trade_Save_Main(s32 arg0) {
     }
     switch (state->field30) {
     case 0:
-        result = TakuTrade_Save_card_kansi(arg0);
+        result = TakuTrade_Save_card_kansi(start);
         if (result == 2) {
             state->field30 = 0;
         }
@@ -953,8 +970,8 @@ s16 TkMc_Trade_Save_Main(s32 arg0) {
         result = TakuSave_card_format();
         break;
     case 11:
-        result = TakuTrade_Save_card_kansi(arg0);
-        if (state->field2BE == 0xE && arg0 == 2) {
+        result = TakuTrade_Save_card_kansi(start);
+        if (state->field2BE == 0xE && start == 2) {
             state->field30 = 0xA;
             state->field34 = 0;
             result = 0xB;
@@ -962,8 +979,8 @@ s16 TkMc_Trade_Save_Main(s32 arg0) {
         }
         break;
     case 13:
-        result = TakuTrade_Save_card_kansi(arg0);
-        if (state->field2BE == 1 && arg0 == 2) {
+        result = TakuTrade_Save_card_kansi(start);
+        if (state->field2BE == 1 && start == 2) {
             state->field30 = 5;
             state->field34 = 0;
             result = 9;
@@ -971,11 +988,11 @@ s16 TkMc_Trade_Save_Main(s32 arg0) {
         }
         break;
     case 14:
-        result = TakuTrade_Save_card_kansi(arg0);
+        result = TakuTrade_Save_card_kansi(start);
         if (result == 2) {
             result = 0xA;
         }
-        if (arg0 == 2) {
+        if (start == 2) {
             state->field30 = 0;
             state->field34 = 0;
             result = 0x700;
@@ -983,7 +1000,7 @@ s16 TkMc_Trade_Save_Main(s32 arg0) {
         }
         break;
     }
-    if (arg0 == 1) {
+    if (start == 1) {
         state->field34 = 0;
         state->field40 = 0;
         state->field30 = 0;
@@ -1000,20 +1017,21 @@ s16 TkMc_Trade_Save_Main(s32 arg0) {
     return state->field2BE;
 }
 
-s16 TkMc_Custom_Main(s32 arg0) {
+/* Runs one frame of loading the custom-duel opponent's save; returns its status (0x100 when done). */
+s16 TkMc_Custom_Main(s32 start) {
     extern struct State_0023E610 D_0034FB00;
     u8 *state = (u8 *)&D_0034FB00;
     s32 result;
 
     result = 0;
-    if (arg0 == 1) {
+    if (start == 1) {
         TakuCard_inti(0);
         *(s16 *)(state + 0x2BE) = 0;
     }
 
     switch (*(s16 *)(state + 0x30)) {
     case 0:
-        result = TakuCustom_card_kansi(arg0);
+        result = TakuCustom_card_kansi(start);
         if (result == 2) {
             *(s16 *)(state + 0x30) = 0;
         }
@@ -1025,14 +1043,14 @@ s16 TkMc_Custom_Main(s32 arg0) {
         result = TakuCustom_card_file_open();
         break;
     case 3:
-        result = TakuCustom_card_kansi(arg0);
+        result = TakuCustom_card_kansi(start);
         if (result == 2) {
             result = 0xA;
         }
         break;
     }
 
-    if (arg0 == 1) {
+    if (start == 1) {
         *(s16 *)(state + 0x34) = 0;
         *(s16 *)(state + 0x40) = 0;
         *(s16 *)(state + 0x30) = 0;
@@ -1090,7 +1108,9 @@ typedef struct State_0023CE40 {
 } State_0023CE40;
 
 
-s32 TakuSave_card_kansi(s32 arg0) {
+/* Watches the memory card in slot 1 for the save job: is it there, formatted, with room (`checkOnly` for the boot
+   check). */
+s32 TakuSave_card_kansi(s32 checkOnly) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 D_0034FB04;
     extern s32 D_0034FB08;
@@ -1121,7 +1141,7 @@ s32 TakuSave_card_kansi(s32 arg0) {
             state->retries = 0;
             return 0x700;
         default:
-            if (arg0 != 1) {
+            if (checkOnly != 1) {
                 state->state = 14;
                 state->timer = 0;
                 state->retries = 0;
@@ -1130,7 +1150,7 @@ s32 TakuSave_card_kansi(s32 arg0) {
         }
         switch (state->mode) {
         case 0:
-            if (arg0 == 1 && state->state == 14) {
+            if (checkOnly == 1 && state->state == 14) {
                 state->state = 14;
                 state->timer = 0;
                 state->retries = 0;
@@ -1185,7 +1205,7 @@ s32 TakuSave_card_kansi(s32 arg0) {
                             state->retries = 0;
                             return 5;
                         }
-                        if (arg0 == 1) {
+                        if (checkOnly == 1) {
                             state->timer = 0;
                             state->retries = 0;
                             state->state = 0;
@@ -1243,7 +1263,8 @@ extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
-s32 TakuSave_card_filename_check(s32 arg0) {
+/* Looks for the game's save file on the memory card. */
+s32 TakuSave_card_filename_check(s32 checkOnly) {
     extern struct State_0023E610 D_0034FB00;
     State_0023D170 *s = (State_0023D170 *)&D_0034FB00;
 
@@ -1308,7 +1329,7 @@ s32 TakuSave_card_filename_check(s32 arg0) {
                         return 2;
                     }
                 } else {
-                    if (arg0 == 1) {
+                    if (checkOnly == 1) {
                         s->state = 0;
                         s->retries = 0;
                         s->error = 0;
@@ -1353,6 +1374,7 @@ extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 extern struct State_0023E610 D_0034FB00;
 
+/* Opens (or creates) the save file on the memory card. */
 s32 TakuSave_card_file_open(void) {
     State_0023D400 *p = (State_0023D400 *)&D_0034FB00;
 
@@ -1540,6 +1562,7 @@ extern s16 D_0034FB34;
 extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
+/* Builds the save file in memory: the header, the icon, both profiles. */
 s32 TakuSave_make_file(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023D920 *state = (State_0023D920 *)&D_0034FB00;
@@ -1763,15 +1786,16 @@ typedef struct Tail_0023DE90 {
     s32 words[0x53];
 } Tail_0023DE90;
 
+/* Writes the save file to the memory card. */
 s32 TakuSave_card_file_kakikomi(void) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 *p_kaban_data;
     extern Header_0023DE90 Taku_card_info;
     Data_0023DE90 *data = (Data_0023DE90 *)&D_0034FB00;
     Header_0023DE90 *header;
-    s32 *var_v0;
+    s32 *saveData;
 
-    var_v0 = (s32 *)&save_data;
+    saveData = (s32 *)&save_data;
     switch (D_0034FB34) {
     case 0:
         data->ret = func_00193BA8(data->port, data->slot, D_0029B1BE, 2);
@@ -1877,7 +1901,7 @@ s32 TakuSave_card_file_kakikomi(void) {
         } while (count > 0);
         header = &((Buffer_0023DE90 *)0x01E10000)[data->port].header;
         *header = Taku_card_info;
-        *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)var_v0;
+        *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)saveData;
         LkCheckData((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
         FlushCache(0);
         data->ret = func_00194058(data->handles[data->port], &((Buffer_0023DE90 *)0x01E10000)[data->port], 0x100F0);
@@ -2003,6 +2027,7 @@ extern s32 D_0034FB0C;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
+/* Formats the memory card. */
 s32 TakuSave_card_format(void) {
     State_0023E610 *state = &D_0034FB00;
 
@@ -2022,6 +2047,7 @@ s32 TakuSave_card_format(void) {
     return 0;
 }
 
+/* Unformats the memory card (debug). */
 s32 TakuSave_card_unformat(void) {
     State_0023E610 *state = &D_0034FB00;
 
@@ -2080,6 +2106,7 @@ typedef struct IconSys_0023E7A0 {
     char del[0x40];
 } IconSys_0023E7A0;
 
+/* Builds the memory card icon files (icon.sys and the 3D icon). */
 s32 card_icon_tukuru(void) {
     extern struct State_0023E610 D_0034FB00;
     extern s16 D_0034FB36;
@@ -2419,7 +2446,8 @@ s32 card_icon_tukuru(void) {
     return 0;
 }
 
-s32 TakuLoad_card_kansi(s32 arg0) {
+/* Watches the memory card in slot 1 for the load job. */
+s32 TakuLoad_card_kansi(s32 mode) {
     extern s32 D_0034FB10;
     extern s32 D_0034FB14;
     extern s32 D_0034FB18;
@@ -2543,6 +2571,7 @@ extern u8 D_0029B100[];
 extern u8 D_0029B1BE[];
 
 
+/* Looks for the game's save file to load. */
 s32 TakuLoad_card_filename_check(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023F340 *state = (State_0023F340 *)&D_0034FB00;
@@ -2671,6 +2700,7 @@ extern s32 *p_kaban_data;
 extern Header_0023F5A0 Taku_card_info;
 extern s16 D_0034FB34;
 
+/* Reads the save file from the memory card and checks it. */
 s32 TakuLoad_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023F5A0 *state = (State_0023F5A0 *)&D_0034FB00;
@@ -2864,6 +2894,7 @@ s32 TakuLoad_card_file_open(void) {
     }
 }
 
+/* Copies the loaded player name into side `side`'s profile. */
 void TakuLoad_Name_Set(s32 side) {
     extern volatile s32 D_002D19D8;
     extern s32 D_002D19E0;
@@ -2933,17 +2964,19 @@ extern s32 D_0034FB18;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
+/* Resets a memory-card job's state words. */
 static inline void reset_0023FCE0(State_0023FCE0 *state, s32 value) {
     state->field_30 = value;
     state->field_34 = 0;
     state->field_40 = 0;
 }
 
-s32 TakuCustom_card_kansi(s32 arg0) {
+/* Watches the memory card for the custom-duel load. */
+s32 TakuCustom_card_kansi(s32 mode) {
     extern struct State_0023E610 D_0034FB00;
     State_0023FCE0 *state = (State_0023FCE0 *)&D_0034FB00;
-    s32 var_v0;
-    s32 var_v0_2;
+    s32 status;
+    s32 status2;
 
     *(s32 *)0x0034FB00 = func_00194380(D_0034FB08, D_0034FB0C, &D_0034FB10, &D_0034FB14, &D_0034FB18);
     D_0034FB04 = func_00194248(1, &D_0034FB20, &D_0034FB24);
@@ -2969,21 +3002,21 @@ s32 TakuCustom_card_kansi(s32 arg0) {
                 case 1:                             /* switch 2 */
                     reset_0023FCE0(state, 3);
                     if (state->field_8 == 1) {
-                        var_v0 = 0x400;
+                        status = 0x400;
                     } else {
-                        var_v0 = 4;
+                        status = 4;
                     }
-                    return var_v0;
+                    return status;
                 case 2:
                     break;
                 case 3:
                     reset_0023FCE0(state, 3);
                     if (state->field_8 == 1) {
-                        var_v0_2 = 0x500;
+                        status2 = 0x500;
                     } else {
-                        var_v0_2 = 4;
+                        status2 = 4;
                     }
-                    return var_v0_2;
+                    return status2;
                 default:                            /* switch 2 */
                     reset_0023FCE0(state, 3);
                     return 2;
@@ -3037,6 +3070,7 @@ typedef struct State_0023FF30 {
     s16 offset;
 } State_0023FF30;
 
+/* Reads the custom-duel opponent's save from the memory card. */
 s32 TakuCustom_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
     extern void *D_0034FAEC;
@@ -3298,7 +3332,8 @@ extern s32 D_0034FB18;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
-s32 TakuTrade_Save_card_kansi(s32 arg0) {
+/* Watches the memory card for the after-trade save. */
+s32 TakuTrade_Save_card_kansi(s32 mode) {
     State_002406C0 *state = (State_002406C0 *)&D_0034FB00;
     s32 ret;
 
@@ -3454,6 +3489,7 @@ typedef struct IOState_002409E0 {
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
+/* Writes the save file after a trade. */
 s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
     extern s32 func_00193DD0();
     extern s32 *p_kaban_data;
@@ -3712,23 +3748,24 @@ s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
     return 0;
 }
 
-s32 LkCheckData(u16 *arg0) {
+/* Checks a save file's checksum. */
+s32 LkCheckData(u16 *data) {
     u16 checksum;
     u16 saved;
     u16 i;
     u16 *p;
 
-    saved = arg0[1];
+    saved = data[1];
     checksum = 0;
     i = 0;
-    p = arg0;
-    arg0[1] = 0;
+    p = data;
+    data[1] = 0;
     while (i < 0x8078) {
         checksum ^= *p++;
         i++;
     }
     checksum ^= 0x4C6B;
-    arg0[1] = checksum;
+    data[1] = checksum;
     if (checksum == saved) {
         return 1;
     }
@@ -3748,6 +3785,7 @@ union DotrColorChannels {
 };
 extern struct DotrColorBytes D_0029B2B0;
 
+/* Converts a colour from RGB (0..max) to hue, lightness, saturation. */
 void SzColor_RGB2HLS(float *hls, int r, int g, int b, int max)
 {
     
@@ -3798,6 +3836,7 @@ void SzColor_RGB2HLS(float *hls, int r, int g, int b, int max)
 #define MIN_002413F0(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_002413F0(a, b) ((a) > (b) ? (a) : (b))
 
+/* Converts a colour from hue, lightness, saturation to RGB. */
 void SzColor_HLS2RGB(u8 *out, u8 value, f32 hue, f32 light, f32 sat) {
     f32 color[3];
     f32 frac;
@@ -3841,7 +3880,8 @@ typedef struct Vec_00241840 {
     f32 z;
 } Vec_00241840;
 
-void SzColor_RGB2SEP(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale) {
+/* Turns an RGB colour into a sepia tone of the same lightness. */
+void SzColor_RGB2SEP(u8 *color, s32 r, s32 g, s32 b, s32 unused, u8 max, f32 scale) {
     extern void SzColor_RGB2HLS(void *, s32, s32, s32, u8);
     Vec_00241840 vec;
     s32 flip;
@@ -3849,7 +3889,7 @@ void SzColor_RGB2SEP(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale
     s32 mode;
     u8 flags;
 
-    flags = arg4;
+    flags = unused;
     if (flags & 8) {
         flip = 1;
     } else {
@@ -3863,11 +3903,11 @@ void SzColor_RGB2SEP(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale
     }
     SzColor_RGB2HLS(&vec, r, g, b, max);
     if (mode < 7) {
-        arg4 &= 7;
+        unused &= 7;
         if (flip) {
-            arg4 = (u8)(((u8)arg4 + 3) % 6);
+            unused = (u8)(((u8)unused + 3) % 6);
         }
-        vec.x = (u32)arg4;
+        vec.x = (u32)unused;
     }
     if (isSix) {
         vec.z = 0.0f;
@@ -3885,16 +3925,17 @@ void SzColor_RGB2SEP(u8 *color, s32 r, s32 g, s32 b, s32 arg4, u8 max, f32 scale
     color[2] = (color[2] > 1) ? color[2] : 1;
 }
 
-s32 SzColor_CLUT2SEP(s32 arg0, s32 arg1, f32 scale) {
+/* Turns the `count` colours of palette `clut` into sepia tones. */
+s32 SzColor_CLUT2SEP(s32 clut, s32 count, f32 scale) {
     u8 color[4];
-    s32 temp_v1;
+    s32 entry;
 
-    temp_v1 = arg0 & 0xFFFF;
-    if (!(temp_v1 & 0xFFFF7FFF)) {
-        return arg0;
+    entry = clut & 0xFFFF;
+    if (!(entry & 0xFFFF7FFF)) {
+        return clut;
     }
-    SzColor_RGB2SEP(color, temp_v1 & 0x1F, (temp_v1 >> 5) & 0x1F, (temp_v1 >> 0xA) & 0x1F, arg1, 0x1F, scale);
-    return (arg0 & 0x8000) | (((color[2] & 0x1F) << 0xA) | ((color[0] & 0x1F) | ((color[1] & 0x1F) << 5)));
+    SzColor_RGB2SEP(color, entry & 0x1F, (entry >> 5) & 0x1F, (entry >> 0xA) & 0x1F, count, 0x1F, scale);
+    return (clut & 0x8000) | (((color[2] & 0x1F) << 0xA) | ((color[0] & 0x1F) | ((color[1] & 0x1F) << 5)));
 }
 
 typedef struct Buffer_00241A90 {
@@ -3904,14 +3945,16 @@ typedef struct Buffer_00241A90 {
     s32 field_50008;
 } Buffer_00241A90;
 
-void readBufCreate(void *arg0) {
-    Buffer_00241A90 *buffer = arg0;
+/* Sets up the movie player's read buffer. */
+void readBufCreate(void *buf) {
+    Buffer_00241A90 *buffer = buf;
 
     buffer->field_50004 = 0;
     buffer->field_50000 = 0;
     buffer->field_50008 = 0x50000;
 }
 
+/* Frees the movie read buffer (nothing to do). */
 void readBufDelete(void) {
 
 }
@@ -3923,11 +3966,12 @@ typedef struct Header_00241AD0 {
     s32 end;
 } Header_00241AD0;
 
-s32 readBufBeginPut(void *arg0, void **arg1) {
-    s32 size = ((Header_00241AD0 *)arg0)->end - ((Header_00241AD0 *)arg0)->start;
+/* Where the next read can go in the movie buffer, through `out`; returns how much room there is. */
+s32 readBufBeginPut(void *buffer, void **out) {
+    s32 size = ((Header_00241AD0 *)buffer)->end - ((Header_00241AD0 *)buffer)->start;
 
     if (size != 0) {
-        *arg1 = (u8 *)arg0 + ((Header_00241AD0 *)arg0)->offset;
+        *out = (u8 *)buffer + ((Header_00241AD0 *)buffer)->offset;
     }
     return size;
 }
@@ -3939,17 +3983,18 @@ typedef struct {
     s32 capacity;
 } Buffer_00241B10;
 
-s32 readBufEndPut(void *arg0, s32 arg1) {
-    Buffer_00241B10 *buffer = arg0;
+/* Marks `size` bytes as read into the movie buffer. */
+s32 readBufEndPut(void *buf, s32 size) {
+    Buffer_00241B10 *buffer = buf;
     s32 capacity;
     s32 available;
 
     capacity = buffer->capacity;
     available = capacity - buffer->count;
-    arg1 = (arg1 < available) ? arg1 : available;
-    buffer->position = (buffer->position + arg1) % capacity;
-    buffer->count = buffer->count + arg1;
-    return arg1;
+    size = (size < available) ? size : available;
+    buffer->position = (buffer->position + size) % capacity;
+    buffer->count = buffer->count + size;
+    return size;
 }
 
 typedef struct {
@@ -3959,26 +4004,28 @@ typedef struct {
     s32 capacity;
 } Buffer_00241B80;
 
-s32 readBufBeginGet(void *arg0, void **arg1) {
-    Buffer_00241B80 *buffer = arg0;
+/* Where the next unread data of the movie buffer is, through `out`; returns how much there is. */
+s32 readBufBeginGet(void *buf, void **out) {
+    Buffer_00241B80 *buffer = buf;
     s32 count;
     s32 capacity;
 
     count = buffer->count;
     if (count != 0) {
         capacity = buffer->capacity;
-        *arg1 = (u8 *)arg0 + ((capacity + (buffer->write_index - count)) % capacity);
+        *out = (u8 *)buf + ((capacity + (buffer->write_index - count)) % capacity);
     }
     return buffer->count;
 }
 
-s32 readBufEndGet(s32 *arg0, s32 arg1) {
+/* Marks `size` bytes of the movie buffer as used. */
+s32 readBufEndGet(s32 *buffer, s32 size) {
     s32 remaining;
 
-    remaining = arg0[0x14001];
-    arg1 = (arg1 < remaining) ? arg1 : remaining;
-    arg0[0x14001] -= arg1;
-    return arg1;
+    remaining = buffer[0x14001];
+    size = (size < remaining) ? size : remaining;
+    buffer[0x14001] -= size;
+    return size;
 }
 
 typedef struct {
@@ -4005,7 +4052,8 @@ typedef struct {
 
 
 
-void clearGsMem(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Clears a rectangle of GS memory to colour (r, g, b). */
+void clearGsMem(s32 red, s32 green, s32 blue, s32 width, s32 height) {
     void sceGsSetDefDrawEnv(void *, s32, s64, s64, s32, s32);
     void sceDmaSend(s32, s32);
     extern void sceGifPkInit();
@@ -4025,8 +4073,8 @@ void clearGsMem(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     D_00350410.eop = 1;
     D_00350410.nreg = 1;
     D_00350410.reg = 14;
-    sceGsSetDefDrawEnv(D_00350420, 0, (s64)(s16)arg3,
-                 (s64)(s16)(((((arg4 >> 1) + 31) >> 5) + ((arg4 + 31) >> 5)) << 6),
+    sceGsSetDefDrawEnv(D_00350420, 0, (s64)(s16)width,
+                 (s64)(s16)(((((height >> 1) + 31) >> 5) + ((height + 31) >> 5)) << 6),
                  0, 0);
     *(s64 *)D_00350440 = 0;
     FlushCache(0);
@@ -4037,7 +4085,7 @@ void clearGsMem(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     sceGifPkEnd(&packet, 0, 0, 0);
     sceGifPkOpenGifTag(&packet, *(__int128 *)&tag);
     sceGifPkAddGsAD(&packet, 0, 6);
-    sceGifPkAddGsAD(&packet, 1, ((s64)arg2 << 16) | ((s64)arg0 | ((s64)arg1 << 8)));
+    sceGifPkAddGsAD(&packet, 1, ((s64)blue << 16) | ((s64)red | ((s64)green << 8)));
     sceGifPkAddGsAD(&packet, 5, 0);
     sceGifPkAddGsAD(&packet, 5, ((s64)0xB400 << 16) | 0x2D00);
     sceGifPkCloseGifTag(&packet);
@@ -4055,7 +4103,8 @@ typedef struct {
 extern Tag_00241E80 D_0029B2D0;
 extern Tag_00241E80 D_0029B2E0;
 
-void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Builds the DMA tags that send a decoded movie picture to the GS. */
+void setImageTag(u64 tags, u8 *image, s32 width, s32 height, s32 dbp) {
     void sceGifPkRef(void *, u64, s32, s32, s32, s32);
     u8 spB0[16];
     Tag_00241E80 spC0;
@@ -4070,12 +4119,12 @@ void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     u64 *temp_v0;
 
     spC0 = D_0029B2D0;
-    temp_s7 = arg3 >> 4;
-    temp_s0 = arg4 >> 4;
+    temp_s7 = height >> 4;
+    temp_s0 = dbp >> 4;
     spD0 = D_0029B2E0;
-    sceGifPkInit(&spB0, (arg0 & 0x0FFFFFFF) | 0x20000000);
+    sceGifPkInit(&spB0, (tags & 0x0FFFFFFF) | 0x20000000);
     sceGifPkReset(&spB0);
-    if (arg2 == 0) {
+    if (width == 0) {
         sceGifPkCnt(&spB0, 0, 0, 0);
         sceGifPkOpenGifTag(&spB0, *(__int128 *) &spC0);
         sceGifPkAddGsAD(&spB0, 0x50, 0xC1B00ULL << 0x20);
@@ -4098,9 +4147,9 @@ void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
                         temp_v0 = sceGifPkReserve(&spB0, 4);
                         temp_v0[0] = 0x40 | (0x08000000ULL << 0x20);
                         temp_v0[1] = 0;
-                        sceGifPkRef(&spB0, (u64) (u32) arg1 & 0x0FFFFFFF, 0x40, 0, 0, 0);
+                        sceGifPkRef(&spB0, (u64) (u32) image & 0x0FFFFFFF, 0x40, 0, 0, 0);
                         var_s2 += 1;
-                        arg1 += 0x400;
+                        image += 0x400;
                         var_s3 += 0x10;
                     } while (var_s2 < temp_s0);
                 }
@@ -4117,12 +4166,13 @@ void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     sceGifPkAddGsAD(&spB0, 0, 0x116);
     sceGifPkAddGsAD(&spB0, 3, 0x80008);
     sceGifPkAddGsAD(&spB0, 5, 0x79006C00);
-    sceGifPkAddGsAD(&spB0, 3, (s64) ((arg3 * 0x10) + 8) | ((s64) ((arg4 * 0x10) + 8) << 0x10));
+    sceGifPkAddGsAD(&spB0, 3, (s64) ((height * 0x10) + 8) | ((s64) ((dbp * 0x10) + 8) << 0x10));
     sceGifPkAddGsAD(&spB0, 5, (0x8700ULL << 0x10) | 0x9400);
     sceGifPkCloseGifTag(&spB0);
     sceGifPkTerminate(&spB0);
 }
 
+/* The movie player's vertical-blank handler: flips to the next decoded picture. */
 s32 vblankHandler(s32 val) {
     extern volatile s32 vblankCount;
     extern s32 handler_error;
@@ -4164,6 +4214,7 @@ s32 vblankHandler(s32 val) {
     return 0;
 }
 
+/* The movie player's end-of-picture DMA handler. */
 s32 handler_endimage(void) {
     if (isFrameEnd != 0) {
         voBufDecCount(&voBuf);
@@ -4173,22 +4224,25 @@ s32 handler_endimage(void) {
     return 0;
 }
 
-void startDisplay(s32 arg0) {
+/* Starts showing movie pictures from the next vertical blank. */
+void startDisplay(s32 field) {
     do {
-    } while (arg0 == sceGsSyncV(0));
+    } while (field == sceGsSyncV(0));
     frd = 0;
     isCountVblank = 1;
     (&isCountVblank)[2] = 0;
 }
 
+/* Stops showing movie pictures. */
 void endDisplay(void) {
     isCountVblank = 0;
     frd = 0;
 }
 
-void movie_play(s32 arg0, s32 arg1, s32 arg2) {
-    isWithAudio = arg1;
-    isWithInter = arg2;
+/* Plays the movie file `path` (with audio `withAudio`, interlaced `interlaced`) in the movie memory area. */
+void movie_play(s32 path, s32 withAudio, s32 interlaced) {
+    isWithAudio = withAudio;
+    isWithInter = interlaced;
     clearGsMem(0, 0, 0, 0x280, 0x1C0);
     sceGsSetDefDBuff(D_003503C0, 0, 0x280, 0xE0, 0, 0, 1);
     FlushCache(0);
@@ -4202,5 +4256,5 @@ void movie_play(s32 arg0, s32 arg1, s32 arg2) {
     viBufData = 0x017EA680;
     videoDecStack = 0x0186A680;
     timeStamp = 0x0186E680;
-    movie(arg0);
+    movie(path);
 }

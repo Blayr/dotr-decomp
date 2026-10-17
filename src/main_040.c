@@ -1609,7 +1609,7 @@ static inline s32 frame_001BDAF0(s32 id, s32 color, u32 x, u32 y) {
 
 #pragma opt_propagation off
 
-/* Draws the card-detail window for `card` at (left, top): picture, name, stats, and its special, equip or ability
+/* Draws the card-detail window for `cardId` at (left, top): picture, name, stats, and its special, equip or ability
    page. */
 s32 func_001BDAF0(s32 packet, s32 cardId, s32 left, s32 top, s32 rightSide, s32 arg5, s32 arg6, s32 arg7) {
     extern s32 *func_001FEAB0(s32);

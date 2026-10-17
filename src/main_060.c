@@ -7,10 +7,11 @@ typedef struct {
     u8 flags : 2;
 } Flags_00214FD0;
 
-s32 SzData_ClearCardInfo(void *arg0) {
-    Flags_00214FD0 *flags = arg0;
+/* Clears a trunk entry. */
+s32 SzData_ClearCardInfo(void *entry) {
+    Flags_00214FD0 *flags = entry;
 
-    if (arg0 == NULL) {
+    if (entry == NULL) {
         return 0;
     }
     flags->value0 = 0;
@@ -43,42 +44,44 @@ typedef struct {
     s32 unknownFF9C;
 } Player_00215060;
 
-s32 SzData_CheckDup(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
-    extern u8 gSzData_bRoseFlag;
-    extern Player_00215060 gSzData_All[2];
+/* Whether side `side`'s trunk already holds the copy of card `card` from profile `owner` (0: its own) with serial
+   `serial`; -1 for a bad id. */
+s32 SzData_CheckDup(s32 sideIndex, s32 owner, u32 serial, s32 card) {
+    extern u8 profileZeroSide;
+    extern Player_00215060 saveProfiles[2];
     Entry_00215060 *entry;
     s32 n;
 
-    if (arg0 < 0 || arg0 >= 2) {
+    if (sideIndex < 0 || sideIndex >= 2) {
         return -1;
     }
-    if (arg1 == 0) {
+    if (owner == 0) {
         Player_00215060 *player;
         s32 side;
 
-        side = (gSzData_bRoseFlag == arg0) ? 0 : 1;
-        player = &gSzData_All[side];
-        arg1 = player->defaultCard;
+        side = (profileZeroSide == sideIndex) ? 0 : 1;
+        player = &saveProfiles[side];
+        owner = player->defaultCard;
     }
-    if (arg1 == 0) {
+    if (owner == 0) {
         return -1;
     }
-    if (arg3 == 0x29F) {
-        arg3 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if (arg3 < 0 || arg3 >= 0x356) {
+    if (card < 0 || card >= 0x356) {
         return -1;
     }
     {
         s32 side;
 
-        side = (gSzData_bRoseFlag == arg0) ? 0 : 1;
-        entry = (Entry_00215060 *)((u8 *)&gSzData_All[side] + arg3 * 0x4C);
+        side = (profileZeroSide == sideIndex) ? 0 : 1;
+        entry = (Entry_00215060 *)((u8 *)&saveProfiles[side] + card * 0x4C);
     }
     n = 9;
     while (n-- != 0) {
         if (entry->card != 0) {
-            if (entry->value == arg2) {
+            if (entry->value == serial) {
                 return 1;
             }
         }
@@ -98,26 +101,27 @@ typedef struct {
     u8 pad_FF8C[0x14];
 } SideData_002151D0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_CheckDeck(s32 arg0, s32 arg1, s32 arg2) {
-    extern SideData_002151D0 gSzData_All[];
+/* Whether deck `deck` of side `side` can use card `card` (it owns enough copies). */
+s32 SzData_CheckDeck(s32 player, s32 deck, s32 card) {
+    extern SideData_002151D0 saveProfiles[];
     s32 i;
     s32 side;
     u16 *entries;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    entries = (u16 *)(arg1 * 0x54 + (u8 *)&gSzData_All[side] + 0xFD94);
-    if (arg0 < 0 || arg0 >= 2) {
+    entries = (u16 *)(deck * 0x54 + (u8 *)&saveProfiles[side] + 0xFD94);
+    if (player < 0 || player >= 2) {
         return -1;
     }
     i = 0;
     do {
-        if (arg2 == *entries) {
+        if (card == *entries) {
             return i;
         }
         i++;
@@ -137,38 +141,39 @@ typedef struct {
 
 typedef u8 Slot_00215280[0x54];
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_PushDeckLeader(s32 arg0, s32 arg1, s32 arg2) {
-    extern u8 gSzData_All[];
+/* Makes card `card` the leader of deck `deck` of side `side`. */
+s32 SzData_PushDeckLeader(s32 side, s32 deck, s32 card) {
+    extern u8 saveProfiles[];
     s32 var_v1;
     u8 *temp_s2;
     Card_00215280 *temp_v0;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    temp_s2 = ((Slot_00215280 *)(gSzData_All + (var_v1 * 0xFFA0)))[arg1] + 0x7D9C + 0x7FF8;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    temp_s2 = ((Slot_00215280 *)(saveProfiles + (var_v1 * 0xFFA0)))[deck] + 0x7D9C + 0x7FF8;
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if (arg2 == 0x29F) {
-        arg2 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg2 < 0) || (arg2 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
     if (*(u16 *)(temp_s2 + 0x50) != 0x3E7) {
         return 0;
     }
-    temp_v0 = SzData_CheckBag(arg0, arg2, 3, 0);
+    temp_v0 = SzData_CheckBag(side, card, 3, 0);
     if (temp_v0 == NULL) {
         return 0;
     }
-    *(u16 *)(temp_s2 + 0x50) = (u16)arg2;
-    temp_v0->slot = arg1;
+    *(u16 *)(temp_s2 + 0x50) = (u16)card;
+    temp_v0->slot = deck;
     temp_v0->active = 1;
     return 1;
 }
@@ -194,29 +199,30 @@ typedef struct Card_002153D0 {
     u8 state : 2;
 } Card_002153D0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_PullDeckLeader(s32 arg0, s32 arg1) {
-    extern Side_002153D0 gSzData_All[];
+/* Takes the leader out of deck `deck` of side `side`. */
+s32 SzData_PullDeckLeader(s32 player, s32 deck) {
+    extern Side_002153D0 saveProfiles[];
     s32 side;
     u16 card;
     Slot_002153D0 *slot;
     Card_002153D0 *entry;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    slot = (Slot_002153D0 *)((u8 *)&gSzData_All[side] + arg1 * 0x54 + 0xFD94);
-    if (arg0 < 0 || arg0 >= 2) {
+    slot = (Slot_002153D0 *)((u8 *)&saveProfiles[side] + deck * 0x54 + 0xFD94);
+    if (player < 0 || player >= 2) {
         return 0;
     }
     card = slot->card;
     if (card == 999) {
         return 0;
     }
-    entry = SzData_CheckBag(arg0, card, arg1, 1);
+    entry = SzData_CheckBag(player, card, deck, 1);
     if (entry == NULL) {
         return 0;
     }
@@ -244,21 +250,22 @@ typedef struct {
     u8 deck : 2;
 } Entry_002154E0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
+/* How many copies of a card a deck holds. */
 static inline s32 count_002154E0(s32 player, s32 deck_index, s32 card_id) {
-    extern Side_002154E0 gSzData_All[];
+    extern Side_002154E0 saveProfiles[];
     s32 side;
     u16 *cards;
     s32 count;
     s32 i;
 
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    cards = (u16 *)((u8 *)&gSzData_All[side] + deck_index * 0x54 + 0xFD94);
+    cards = (u16 *)((u8 *)&saveProfiles[side] + deck_index * 0x54 + 0xFD94);
     count = 0;
     if (player < 0 || player >= 2) {
         return -1;
@@ -271,18 +278,19 @@ static inline s32 count_002154E0(s32 player, s32 deck_index, s32 card_id) {
     return count;
 }
 
+/* The slot of a card in a deck, or -1. */
 static inline s32 find_002154E0(s32 player, s32 deck_index, s32 card_id) {
-    extern Side_002154E0 gSzData_All[];
+    extern Side_002154E0 saveProfiles[];
     s32 side;
     u16 *cards;
     s32 i;
 
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    cards = (u16 *)((u8 *)&gSzData_All[side] + deck_index * 0x54 + 0xFD94);
+    cards = (u16 *)((u8 *)&saveProfiles[side] + deck_index * 0x54 + 0xFD94);
     if (player < 0 || player >= 2) {
         return -1;
     }
@@ -294,20 +302,21 @@ static inline s32 find_002154E0(s32 player, s32 deck_index, s32 card_id) {
     return -1;
 }
 
+/* Adds card `card_id` to deck `deck_index` of side `player` (if it owns another copy). */
 s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
-    extern Side_002154E0 gSzData_All[];
+    extern Side_002154E0 saveProfiles[];
     s32 side;
     Deck_002154E0 *deck;
     Entry_002154E0 *entry;
     u8 *card;
     s32 slot;
 
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    deck = (Deck_002154E0 *)((u8 *)&gSzData_All[side] + deck_index * 0x54 + 0xFD94);
+    deck = (Deck_002154E0 *)((u8 *)&saveProfiles[side] + deck_index * 0x54 + 0xFD94);
     if (player < 0 || player >= 2) {
         return 0;
     }
@@ -337,7 +346,7 @@ s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
     return 1;
 }
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
 typedef struct {
     u8 pad[7];
@@ -345,8 +354,9 @@ typedef struct {
     u8 state : 2;
 } Card_00215770;
 
-s32 SzData_PullDeck(s32 arg0, s32 arg1, s32 arg2) {
-    extern u8 gSzData_All[];
+/* Takes card `card` out of deck `deck` of side `side`. */
+s32 SzData_PullDeck(s32 player, s32 deck, s32 pullCard) {
+    extern u8 saveProfiles[];
     u8 *hand;
     Card_00215770 *card;
     u16 *slot;
@@ -354,21 +364,21 @@ s32 SzData_PullDeck(s32 arg0, s32 arg1, s32 arg2) {
     s32 side;
     u8 *info;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    hand = (u8 *)((u32)gSzData_All + side * 0xFFA0 + arg1 * 0x54) + 0x7D9C + 0x7FF8;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    hand = (u8 *)((u32)saveProfiles + side * 0xFFA0 + deck * 0x54) + 0x7D9C + 0x7FF8;
+    if ((player < 0) || (player >= 2)) {
         return 0;
     }
-    if ((arg2 < 0) || (arg2 >= 0x28)) {
+    if ((pullCard < 0) || (pullCard >= 0x28)) {
         return 0;
     }
-    slot = (u16 *)(hand + arg2 * 2);
+    slot = (u16 *)(hand + pullCard * 2);
     cardId = *slot;
-    if ((card = SzData_CheckBag(arg0, cardId, arg1, 0)) == NULL) {
+    if ((card = SzData_CheckBag(player, cardId, deck, 0)) == NULL) {
         return 0;
     }
     info = SzDuel_GetCardConstInfo(cardId);
@@ -387,26 +397,27 @@ typedef struct {
     u8 tail[3];
 } State_002158B0;
 
-extern State_002158B0 gSzData_All[];
-extern u8 gSzData_bRoseFlag;
+extern State_002158B0 saveProfiles[]; /* original: gSzData_All */
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_GetCurrentDeck(s32 arg0) {
+/* Which deck (0..2) side `side` uses. */
+s32 SzData_GetCurrentDeck(s32 side) {
     s32 var_v1;
     State_002158B0 *state;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    state = &gSzData_All[var_v1];
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    state = &saveProfiles[var_v1];
+    if ((side < 0) || (side >= 2)) {
         return -1;
     }
     return state->flags & 3;
 }
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
 typedef struct {
     u8 padding[0xFF9C];
@@ -414,23 +425,24 @@ typedef struct {
     u8 : 6;
 } Flags_00215920;
 
-s32 SzData_SetCurrentDeck(s32 arg0, s32 arg1) {
+/* Makes deck `deck` (0..2) the one side `side` uses. */
+s32 SzData_SetCurrentDeck(s32 side, s32 deck) {
     s32 var_v1;
     u8 *temp_a2;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    temp_a2 = (u8 *)gSzData_All + (var_v1 * 0xFFA0);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    temp_a2 = (u8 *)saveProfiles + (var_v1 * 0xFFA0);
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 3)) {
+    if ((deck < 0) || (deck >= 3)) {
         return 0;
     }
-    ((Flags_00215920 *)temp_a2)->mode = arg1;
+    ((Flags_00215920 *)temp_a2)->mode = deck;
     return 1;
 }
 
@@ -440,22 +452,24 @@ typedef struct {
     u8 padding_52[2];
 } Entry_002159D0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
+/* The save profile of a duel side. */
 static inline s32 side_002159D0(s32 player) {
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         return 0;
     }
     return 1;
 }
 
-s32 SzData_GetLeader(s32 arg0, s32 arg1) {
+/* The leader of deck `deck` of side `side` (CARD_NONE for none). */
+s32 SzData_GetLeader(s32 player, s32 deck) {
     u8 *side;
     Entry_002159D0 *entry;
 
-    side = (u8 *)gSzData_All + side_002159D0(arg0) * 0xFFA0;
-    entry = (Entry_002159D0 *)(side + arg1 * sizeof(Entry_002159D0) + 0xFD94);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    side = (u8 *)saveProfiles + side_002159D0(player) * 0xFFA0;
+    entry = (Entry_002159D0 *)(side + deck * sizeof(Entry_002159D0) + 0xFD94);
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
     return entry->value;
@@ -463,7 +477,7 @@ s32 SzData_GetLeader(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -478,25 +492,26 @@ typedef struct Side_00215A60 {
     u8 tail[0x14];
 } Side_00215A60;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_GetCardNo(s32 arg0, s32 arg1, s32 arg2) {
+/* Card `slot` (0..39) of deck `deck` of side `side`. */
+s32 SzData_GetCardNo(s32 side, s32 deck, s32 slot) {
     s32 var_v1;
     u16 *values;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    values = ((Side_00215A60 *)gSzData_All)[var_v1].rows[arg1].values;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    values = ((Side_00215A60 *)saveProfiles)[var_v1].rows[deck].values;
+    if ((side < 0) || (side >= 2)) {
         return -1;
     }
-    if ((arg2 < 0) || (arg2 >= 0x28)) {
+    if ((slot < 0) || (slot >= 0x28)) {
         return -1;
     }
-    return values[arg2];
+    return values[slot];
 }
 
 typedef struct Record_00215B10 {
@@ -504,7 +519,9 @@ typedef struct Record_00215B10 {
     u16 value;
 } Record_00215B10;
 
-s32 SzData_CalcExp(s32 arg0, s32 arg1, s32 operation, s32 value) {
+/* Applies `operation` (DUEL_CALC_*) with `value` to side `side`'s experience with card `card`, clamped to
+   0..0xFFFF. */
+s32 SzData_CalcExp(s32 sideIndex, s32 card, s32 operation, s32 value) {
     s32 side;
     u8 *player;
     Record_00215B10 *record;
@@ -512,20 +529,20 @@ s32 SzData_CalcExp(s32 arg0, s32 arg1, s32 operation, s32 value) {
     s32 result;
 
     side = 1;
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == sideIndex) {
         side = 0;
     }
-    player = (u8 *)&gSzData_All[side];
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    player = (u8 *)&saveProfiles[side];
+    if ((sideIndex < 0) || (sideIndex >= 2)) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
-    record = (Record_00215B10 *)(player + arg1 * 0x4C);
+    record = (Record_00215B10 *)(player + card * 0x4C);
     current = record->value;
     switch (operation) {
     case 0:
@@ -553,7 +570,8 @@ s32 SzData_CalcExp(s32 arg0, s32 arg1, s32 operation, s32 value) {
     return 1;
 }
 
-s32 SzData_CalcDeckCost(s32 arg0, s32 arg1) {
+/* Works out the deck cost of deck `deck` of side `side`. */
+s32 SzData_CalcDeckCost(s32 player, s32 deckNo) {
     typedef struct {
         u16 cards[40];
         u16 unk50;
@@ -565,13 +583,13 @@ s32 SzData_CalcDeckCost(s32 arg0, s32 arg1) {
     s32 side;
     u8 *data;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    deck = (Deck_00215C40 *)((u8 *)gSzData_All + side * 0xFFA0 + arg1 * sizeof(Deck_00215C40) + 0xFD94);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    deck = (Deck_00215C40 *)((u8 *)saveProfiles + side * 0xFFA0 + deckNo * sizeof(Deck_00215C40) + 0xFD94);
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
     deck->total = 0;
@@ -595,26 +613,27 @@ typedef struct Card_00215D30 {
     u64 rest : 48;
 } Card_00215D30;
 
-s64 SzData_GetRank(s32 arg0, s32 arg1) {
+/* Side `side`'s rank (leader level) for card `card` (cards below 0x2AB), or -1. */
+s64 SzData_GetRank(s32 player, s32 card) {
     s32 side;
     u8 *base;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    base = (u8 *)gSzData_All + side * 0xFFA0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    base = (u8 *)saveProfiles + side * 0xFFA0;
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x2AB)) {
+    if ((card < 0) || (card >= 0x2AB)) {
         return -1;
     }
-    return ((Card_00215D30 *)(base + arg1 * 0x4C))->rank;
+    return ((Card_00215D30 *)(base + card * 0x4C))->rank;
 }
 
 typedef struct Card_00215DE0 {
@@ -625,8 +644,9 @@ typedef struct Card_00215DE0 {
 } Card_00215DE0;
 
 extern u16 D_002D0868;
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
+/* Raises side `player`'s leader rank for card `index` from its experience. */
 s32 SzData_SetRank(s32 player, s32 index) {
     s32 side;
     u8 *base;
@@ -634,12 +654,12 @@ s32 SzData_SetRank(s32 player, s32 index) {
     s32 rank;
     u16 *threshold;
 
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    base = (u8 *)gSzData_All + side * 0xFFA0;
+    base = (u8 *)saveProfiles + side * 0xFFA0;
     if (player < 0 || player >= 2) {
         return -1;
     }
@@ -669,41 +689,44 @@ typedef struct {
     u16 value;
 } Entry_00215F00;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
+/* The save profile of a duel side. */
 static inline s32 side_00215F00(s32 player) {
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         return 0;
     }
     return 1;
 }
 
-s32 SzData_GetDeckCost(s32 arg0, s32 arg1) {
+/* The deck cost of deck `deck` of side `side`. */
+s32 SzData_GetDeckCost(s32 player, s32 deck) {
     u8 *side;
     Entry_00215F00 *entry;
 
-    side = (u8 *)gSzData_All + side_00215F00(arg0) * 0xFFA0;
-    entry = (Entry_00215F00 *)(side + arg1 * sizeof(Entry_00215F00) + 0xFD94);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    side = (u8 *)saveProfiles + side_00215F00(player) * 0xFFA0;
+    entry = (Entry_00215F00 *)(side + deck * sizeof(Entry_00215F00) + 0xFD94);
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
     return entry->value;
 }
 
-s32 SzData_GetDeckCount(s32 arg0, s32 arg1) {
+/* How many cards deck `deck` of side `side` holds. */
+s32 SzData_GetDeckCount(s32 player, s32 deck) {
     s32 i;
     s32 count;
     s32 side;
     u16 *card;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    card = (u16 *)((u8 *)gSzData_All + side * 0xFFA0 + arg1 * 0x54 + 0xFD94);
+    card = (u16 *)((u8 *)saveProfiles + side * 0xFFA0 + deck * 0x54 + 0xFD94);
     count = 0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
     i = 0;
@@ -741,54 +764,58 @@ typedef struct {
 } Player_00216040;
 
 
+/* The save profile of a duel side. */
 static inline s32 side_00216040(s32 player) {
-    extern u8 gSzData_bRoseFlag;
-    if (gSzData_bRoseFlag == player) {
+    extern u8 profileZeroSide;
+    if (profileZeroSide == player) {
         return 0;
     }
     return 1;
 }
 
+/* A side's save profile. */
 static inline Player_00216040 *data_00216040(s32 player, void *base) {
     return &((Player_00216040 *)base)[side_00216040(player)];
 }
 
+/* A random number. */
 static inline s64 random_value_00216040(void) {
     extern s64 func_0019A5C8();
     return (s32)func_0019A5C8() & ~0x40000000LL;
 }
 
-s32 SzData_AddBag(s32 arg0, s32 arg1, s32 arg2) {
+/* Adds a copy of card `card` to side `side`'s trunk, from profile `owner` (0: its own) with a new serial. */
+s32 SzData_AddBag(s32 side, s32 owner, s32 cardId) {
     Card_00216040 *card;
     Entry_00216040 *entry;
     s32 count;
 
-    if (arg0 < 0 || arg0 >= 2) {
+    if (side < 0 || side >= 2) {
         return 0;
     }
-    if (arg1 == 0) {
-        arg1 = data_00216040(arg0, gSzData_All)->defaultCard;
+    if (owner == 0) {
+        owner = data_00216040(side, saveProfiles)->defaultCard;
     }
-    if (arg1 == 0) {
+    if (owner == 0) {
         return 0;
     }
-    if (arg2 == 0x29F) {
-        arg2 = 0x3E7;
+    if (cardId == 0x29F) {
+        cardId = 0x3E7;
     }
-    if (arg2 < 0 || arg2 >= 0x356) {
+    if (cardId < 0 || cardId >= 0x356) {
         return 0;
     }
 
-    card = (Card_00216040 *)data_00216040(arg0, gSzData_All) + arg2;
+    card = (Card_00216040 *)data_00216040(side, saveProfiles) + cardId;
     entry = card->entries;
     for (count = 9; count-- != 0; entry++) {
         if (entry->card == 0) {
             do {
                 entry->value = random_value_00216040();
-            } while (SzData_CheckDup(arg0, arg1, entry->value, arg2) != 0);
-            entry->card = arg1;
+            } while (SzData_CheckDup(side, owner, entry->value, cardId) != 0);
+            entry->card = owner;
             card->assigned = 1;
-            SzData_PushBagNew(arg0, arg2);
+            SzData_PushBagNew(side, cardId);
             return 1;
         }
     }
@@ -819,50 +846,54 @@ typedef struct {
 } Player_00216280;
 
 
+/* The save profile of a duel side. */
 static inline s32 side_00216280(s32 player) {
-    extern u8 gSzData_bRoseFlag;
-    if (gSzData_bRoseFlag == player) {
+    extern u8 profileZeroSide;
+    if (profileZeroSide == player) {
         return 0;
     }
     return 1;
 }
 
+/* A side's save profile. */
 static inline Player_00216280 *data_00216280(s32 player, void *base) {
     return &((Player_00216280 *)base)[side_00216280(player)];
 }
 
-s32 SzData_AddBag2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Adds the copy of card `card` from profile `owner` (0: its own) with serial `serial` to side `side`'s trunk,
+   unless it is already there. */
+s32 SzData_AddBag2(s32 side, s32 owner, s32 serial, s32 cardId) {
     Card_00216280 *card;
     Entry_00216280 *entry;
     s32 count;
 
-    if (arg0 < 0 || arg0 >= 2) {
+    if (side < 0 || side >= 2) {
         return 0;
     }
-    if (arg1 == 0) {
-        arg1 = data_00216280(arg0, gSzData_All)->defaultCard;
+    if (owner == 0) {
+        owner = data_00216280(side, saveProfiles)->defaultCard;
     }
-    if (arg1 == 0) {
+    if (owner == 0) {
         return 0;
     }
-    if (arg3 == 0x29F) {
-        arg3 = 0x3E7;
+    if (cardId == 0x29F) {
+        cardId = 0x3E7;
     }
-    if (arg3 < 0 || arg3 >= 0x356) {
+    if (cardId < 0 || cardId >= 0x356) {
         return 0;
     }
-    if (SzData_CheckDup(arg0, arg1, arg2, arg3) != 0) {
+    if (SzData_CheckDup(side, owner, serial, cardId) != 0) {
         return 0;
     }
 
-    card = (Card_00216280 *)data_00216280(arg0, gSzData_All) + arg3;
+    card = (Card_00216280 *)data_00216280(side, saveProfiles) + cardId;
     entry = card->entries;
     for (count = 9; count-- != 0; entry++) {
         if (entry->card == 0) {
-            entry->value = arg2;
-            entry->card = arg1;
+            entry->value = serial;
+            entry->card = owner;
             card->assigned = 1;
-            SzData_PushBagNew(arg0, arg3);
+            SzData_PushBagNew(side, cardId);
             return 1;
         }
     }
@@ -877,6 +908,7 @@ typedef struct Flags_00216490 {
 } Flags_00216490;
 
 
+/* Clears a trunk entry. */
 static inline void clear_00216490(void *src) {
     Flags_00216490 *entry = (Flags_00216490 *)src;
 
@@ -888,19 +920,20 @@ static inline void clear_00216490(void *src) {
     }
 }
 
-s32 SzData_DelBag(s32 arg0, s32 arg1) {
+/* Takes one copy of card `card` out of side `side`'s trunk. */
+s32 SzData_DelBag(s32 side, s32 card) {
     Flags_00216490 *entry;
 
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
-    entry = SzData_CheckBag(arg0, arg1, 3, 0);
+    entry = SzData_CheckBag(side, card, 3, 0);
     if (entry == NULL) {
         return 0;
     }
@@ -915,7 +948,7 @@ typedef struct {
     unsigned char flags;
     unsigned char tail[3];
 } State_002158B0;
-extern State_002158B0 gSzData_All[];
+extern State_002158B0 saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -930,10 +963,11 @@ typedef struct {
     u8 count : 2;
 } Flags_00216580;
 
-extern Entry_00216580 aSpecialCard[];
-extern u8 gSzData_bRoseFlag;
+extern Entry_00216580 specialCards[]; /* original: aSpecialCard */
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_RollSpecial(s32 arg0, s32 arg1) {
+/* After side `side` gets card `card`, rolls for which of the five special cards it also unlocks. */
+s32 SzData_RollSpecial(s32 sideIndex, s32 card) {
     s32 i;
     State_002158B0 *player;
     Entry_00216580 *entry;
@@ -941,28 +975,28 @@ s32 SzData_RollSpecial(s32 arg0, s32 arg1) {
     s32 decodedCard;
     u8 *count;
 
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    if ((sideIndex < 0) || (sideIndex >= 2)) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == sideIndex) {
         side = 0;
     } else {
         side = 1;
     }
-    player = &gSzData_All[side];
-    entry = aSpecialCard;
+    player = &saveProfiles[side];
+    entry = specialCards;
     i = 0;
     do {
         decodedCard = SzDuel_Xax2New(entry->card & 0x3FFF);
-        if (decodedCard == arg1) {
+        if (decodedCard == card) {
             count = (u8 *)(i + (u32)player) + 0xFE90;
-            *count = (*count + 1) % (((Flags_00216580 *)&aSpecialCard[i])[1].count + 1);
+            *count = (*count + 1) % (((Flags_00216580 *)&specialCards[i])[1].count + 1);
             return 1;
         }
         i++;
@@ -985,8 +1019,8 @@ typedef struct {
     unsigned short field_4;
 } Entry_00216580;
 
-extern State_002158B0 gSzData_All[];
-extern Entry_00216580 aSpecialCard[];
+extern State_002158B0 saveProfiles[]; /* original: gSzData_All */
+extern Entry_00216580 specialCards[]; /* original: aSpecialCard */
 #endif
 
 
@@ -996,25 +1030,26 @@ typedef struct State_002166D0 {
     u8 unk_FEA0[0x100];
 } State_002166D0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
+/* The card side `side` actually holds for card `card`: a special card if it has unlocked one in its place. */
+s32 SzData_ExchSpecial(s32 player, s32 card) {
     State_002166D0 *state;
     Entry_00216580 *entry;
     s32 side;
     s32 replacement;
     s32 resolved;
 
-    if ((arg0 < 0) || (arg0 >= 2)) {
-        return arg1;
+    if ((player < 0) || (player >= 2)) {
+        return card;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
-        return arg1;
+    if ((card < 0) || (card >= 0x356)) {
+        return card;
     }
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
@@ -1022,15 +1057,15 @@ s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
     {
         s32 i;
 
-        state = (State_002166D0 *)gSzData_All + side;
-        entry = aSpecialCard;
+        state = (State_002166D0 *)saveProfiles + side;
+        entry = specialCards;
         i = 0;
         do {
             resolved = SzDuel_Xax2New(entry->card & 0x3FFF);
-            if (resolved == arg1) {
+            if (resolved == card) {
                 replacement = state->replacements[i];
                 if (replacement != 0) {
-                    arg1 = (&aSpecialCard[i].card)[replacement];
+                    card = (&specialCards[i].card)[replacement];
                 }
                 break;
             }
@@ -1038,12 +1073,12 @@ s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
             entry++;
         } while (i < 16);
     }
-    return arg1;
+    return card;
 }
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1053,30 +1088,31 @@ typedef struct Record_00216800 {
     u8 pad_end[0x20E];
 } Record_00216800;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_PushBagNew(s32 arg0, s32 arg1) {
+/* Marks card `card` as new in side `side`'s trunk. */
+s32 SzData_PushBagNew(s32 side, s32 card) {
     s32 record_index;
     s32 i;
     Record_00216800 *record;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         record_index = 0;
     } else {
         record_index = 1;
     }
-    record = &((Record_00216800 *)gSzData_All)[record_index];
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    record = &((Record_00216800 *)saveProfiles)[record_index];
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
     for (i = 0; i < 5; i++) {
-        if ((record->entries[i] == arg1) || (i + 1 >= 5)) {
+        if ((record->entries[i] == card) || (i + 1 >= 5)) {
             while (i > 0) {
                 record->entries[i] = record->entries[i - 1];
                 i--;
@@ -1084,13 +1120,13 @@ s32 SzData_PushBagNew(s32 arg0, s32 arg1) {
             break;
         }
     }
-    record->entries[0] = arg1;
+    record->entries[0] = card;
     return 1;
 }
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1099,31 +1135,32 @@ typedef struct {
     u16 card;
 } Entry_00216920;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_IsBagNew(s32 arg0, s32 arg1) {
+/* Whether card `card` is marked new in side `side`'s trunk. */
+s32 SzData_IsBagNew(s32 player, s32 card) {
     s32 side;
     s32 i;
     u8 *data;
 
-    if (arg0 < 0 || arg0 >= 2) {
+    if (player < 0 || player >= 2) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if (arg1 < 0 || arg1 >= 0x356) {
+    if (card < 0 || card >= 0x356) {
         return 0;
     }
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    data = (u8 *)gSzData_All + side * 0xFFA0;
+    data = (u8 *)saveProfiles + side * 0xFFA0;
     i = 0;
     do {
-        if (((Entry_00216920 *)data)->card == arg1) {
+        if (((Entry_00216920 *)data)->card == card) {
             return 1;
         }
         i++;
@@ -1134,7 +1171,7 @@ s32 SzData_IsBagNew(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1146,9 +1183,10 @@ typedef struct {
     u8 type : 2;
 } Entry_002169F0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_GetBagCountAll(s32 arg0) {
+/* How many cards side `side`'s trunk holds. */
+s32 SzData_GetBagCountAll(s32 player) {
     s32 rowIndex;
     Entry_002169F0 *entry;
     s32 remaining;
@@ -1156,10 +1194,10 @@ s32 SzData_GetBagCountAll(s32 arg0) {
     s32 side;
     u8 *row;
 
-    side = gSzData_bRoseFlag == arg0 ? 0 : 1;
-    row = (u8 *)gSzData_All + (side * 0xFFA0);
+    side = profileZeroSide == player ? 0 : 1;
+    row = (u8 *)saveProfiles + (side * 0xFFA0);
     count = 0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
     rowIndex = 0;
@@ -1182,7 +1220,7 @@ s32 SzData_GetBagCountAll(s32 arg0) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1194,8 +1232,9 @@ typedef struct {
     u8 category : 2;
 } Entry_00216AC0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
+/* How many copies of card `card` side `player` owns in `category` (-1 for any). */
 s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
     Entry_00216AC0 *entry;
     s32 remaining;
@@ -1211,12 +1250,12 @@ s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
     if ((card < 0) || (card >= 0x356)) {
         return -1;
     }
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         player = 0;
     } else {
         player = 1;
     }
-    entry = (Entry_00216AC0 *)((u8 *)gSzData_All + (player * 0xFFA0));
+    entry = (Entry_00216AC0 *)((u8 *)saveProfiles + (player * 0xFFA0));
     entry = (Entry_00216AC0 *)((u8 *)entry + (card * 0x4C));
     remaining = 9;
     while (remaining--) {
@@ -1232,7 +1271,7 @@ s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1242,31 +1281,32 @@ typedef struct Flags_00216BC0 {
     u8 unused2 : 1;
 } Flags_00216BC0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_GetLookFlag(s32 arg0, s32 arg1) {
+/* Whether side `side` has seen card `card` (the library). */
+s32 SzData_GetLookFlag(s32 side, s32 card) {
     extern s32 SD_iPreparePreBlockOnIOP();
     s32 var_v1;
     u8 *cards;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    cards = (u8 *)gSzData_All + var_v1 * 0xFFA0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    cards = (u8 *)saveProfiles + var_v1 * 0xFFA0;
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
-    return ((Flags_00216BC0 *)(cards + arg1 * 0x4C + 0x49))->active ? 1 : 0;
+    return ((Flags_00216BC0 *)(cards + card * 0x4C + 0x49))->active ? 1 : 0;
 }
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1278,27 +1318,29 @@ typedef struct Card_00216C70 {
     u8 padding4A[2];
 } Card_00216C70;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_SetLookFlag(s32 arg0, s32 arg1, s32 arg2) {
+/* Marks card `card` as seen by side `side`. */
+s32 SzData_SetLookFlag(s32 side, s32 cardId, s32 on) {
     s32 var_v1;
     Card_00216C70 *cards;
     Card_00216C70 *card;
 
-    var_v1 = (gSzData_bRoseFlag == arg0) ? 0 : 1;
-    cards = (Card_00216C70 *)((u8 *)gSzData_All + var_v1 * 0xFFA0);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    var_v1 = (profileZeroSide == side) ? 0 : 1;
+    cards = (Card_00216C70 *)((u8 *)saveProfiles + var_v1 * 0xFFA0);
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((cardId < 0) || (cardId >= 0x356)) {
         return 0;
     }
-    card = &cards[arg1];
-    card->selected = arg2 ? 1 : 0;
+    card = &cards[cardId];
+    card->selected = on ? 1 : 0;
     return 1;
 }
 
-s32 SzData_GetPassFlag(s32 arg0, s32 arg1) {
+/* Whether side `side` has used card password `card`. */
+s32 SzData_GetPassFlag(s32 player, s32 card) {
     typedef struct {
         u8 pad[0x49];
         u8 unused : 7;
@@ -1308,22 +1350,22 @@ s32 SzData_GetPassFlag(s32 arg0, s32 arg1) {
     s32 side;
     Card_00216D30 *cards;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    cards = (Card_00216D30 *)&gSzData_All[side];
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    cards = (Card_00216D30 *)&saveProfiles[side];
+    if ((player < 0) || (player >= 2)) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((card < 0) || (card >= 0x356)) {
         return 0;
     }
-    return cards[arg1].enabled ? 1 : 0;
+    return cards[card].enabled ? 1 : 0;
 }
 
 typedef struct {
@@ -1333,52 +1375,54 @@ typedef struct {
     u8 pad_4A[2];
 } Card_00216DF0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_SetPassFlag(s32 arg0, s32 arg1, s32 arg2) {
+/* Marks card password `card` as used by side `side`. */
+s32 SzData_SetPassFlag(s32 player, s32 cardId, s32 on) {
     s32 side;
     u8 *table;
     Card_00216DF0 *card;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    table = (u8 *)gSzData_All + side * 0xFFA0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    table = (u8 *)saveProfiles + side * 0xFFA0;
+    if ((player < 0) || (player >= 2)) {
         return 0;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (cardId == 0x29F) {
+        cardId = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x356)) {
+    if ((cardId < 0) || (cardId >= 0x356)) {
         return 0;
     }
-    card = (Card_00216DF0 *)(table + arg1 * 0x4C);
-    card->enabled = arg2 ? 1 : 0;
+    card = (Card_00216DF0 *)(table + cardId * 0x4C);
+    card->enabled = on ? 1 : 0;
     return 1;
 }
 
-s32 SzData_GetTreasureFlag(s32 arg0, s32 arg1) {
+/* Whether side `side` has found treasure `treasure`. */
+s32 SzData_GetTreasureFlag(s32 side, s32 treasure) {
     s32 index;
     u8 *data;
     s32 flags;
 
-    index = (gSzData_bRoseFlag == arg0) ? 0 : 1;
-    data = (u8 *)gSzData_All + index * 0xFFA0;
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    index = (profileZeroSide == side) ? 0 : 1;
+    data = (u8 *)saveProfiles + index * 0xFFA0;
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 0x16)) {
+    if ((treasure < 0) || (treasure >= 0x16)) {
         return 0;
     }
-    flags = data[0xFEA0 + (arg1 >> 3)];
-    return (flags & (1 << (arg1 % 8))) ? 1 : 0;
+    flags = data[0xFEA0 + (treasure >> 3)];
+    return (flags & (1 << (treasure % 8))) ? 1 : 0;
 }
 
 #ifndef GAME_H
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1387,19 +1431,21 @@ typedef struct PlayerState_00216F80 {
     u8 flags[0x100];
 } PlayerState_00216F80;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
+/* The save profile of a duel side. */
 static inline s32 player_index_00216F80(s32 player) {
-    if (gSzData_bRoseFlag == player) {
+    if (profileZeroSide == player) {
         return 0;
     }
     return 1;
 }
 
+/* Marks treasure `flag` as found by side `player`. */
 s32 SzData_SetTreasureFlag(s32 player, s32 flag, s32 enabled) {
     PlayerState_00216F80 *state;
 
-    state = &((PlayerState_00216F80 *)gSzData_All)[player_index_00216F80(player)];
+    state = &((PlayerState_00216F80 *)saveProfiles)[player_index_00216F80(player)];
     if (player < 0 || player >= 2) {
         return 0;
     }
@@ -1421,35 +1467,36 @@ typedef struct Entry_002170A0 {
     u16 value;
 } Entry_002170A0;
 
-extern Entry_002170A0 aTreasureData[];
+extern Entry_002170A0 treasureData[]; /* original: aTreasureData */
 extern u16 D_002D08D2[];
 
-u16 SzData_SearchTreasure(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* The treasure on campaign map square (x, y) of side `side`'s map `map`, if not found yet. */
+u16 SzData_SearchTreasure(s32 side, s32 map, s32 x, s32 y) {
     s32 i;
     Entry_002170A0 *entry;
     s32 dx;
     s32 dy;
 
-    if (arg3 <= 0) {
+    if (y <= 0) {
         return 999;
     }
-    if (arg0 < 0 || arg0 >= 22) {
+    if (side < 0 || side >= 22) {
         return 999;
     }
-    if (arg1 < 0 || arg1 >= 7 || arg2 < 0 || arg2 >= 7) {
+    if (map < 0 || map >= 7 || x < 0 || x >= 7) {
         return 999;
     }
 
-    entry = aTreasureData;
+    entry = treasureData;
     i = 0;
     do {
-        if (arg0 == entry->id) {
-            dx = entry->x - arg1;
+        if (side == entry->id) {
+            dx = entry->x - map;
             dx = dx >= 0 ? dx : -dx;
-            if (dx < arg3) {
-                dy = entry->y - arg2;
+            if (dx < y) {
+                dy = entry->y - x;
                 dy = dy >= 0 ? dy : -dy;
-                if (dy < arg3) {
+                if (dy < y) {
                     return D_002D08D2[i * 2];
                 }
             }
@@ -1468,7 +1515,7 @@ typedef struct {
     unsigned char flags;
     unsigned char tail[3];
 } State_002158B0;
-extern State_002158B0 gSzData_All[];
+extern State_002158B0 saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1479,19 +1526,20 @@ typedef struct Flags_002171B0 {
     u8 : 2;
 } Flags_002171B0;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_GetMapEditFlag(s32 arg0) {
+/* Whether side `side` has an edited map. */
+s32 SzData_GetMapEditFlag(s32 side) {
     s32 index;
     State_002158B0 *state;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         index = 0;
     } else {
         index = 1;
     }
-    state = &gSzData_All[index];
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    state = &saveProfiles[index];
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
     return ((Flags_002171B0 *)state)->active ? 1 : 0;
@@ -1499,7 +1547,7 @@ s32 SzData_GetMapEditFlag(s32 arg0) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char gSzData_All[];
+extern unsigned char saveProfiles[]; /* original: gSzData_All */
 #endif
 
 
@@ -1510,22 +1558,23 @@ typedef struct Flags_00217230 {
     u8 : 2;
 } Flags_00217230;
 
-extern u8 gSzData_bRoseFlag;
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_SetMapEditFlag(s32 arg0, s32 arg1) {
+/* Marks side `side` as having an edited map. */
+s32 SzData_SetMapEditFlag(s32 side, s32 on) {
     s32 var_v1;
     u8 *temp_a2;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == side) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    temp_a2 = (u8 *)gSzData_All + (var_v1 * 0xFFA0);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    temp_a2 = (u8 *)saveProfiles + (var_v1 * 0xFFA0);
+    if ((side < 0) || (side >= 2)) {
         return 0;
     }
-    ((Flags_00217230 *)temp_a2)->enabled = arg1 != 0 ? 1 : 0;
+    ((Flags_00217230 *)temp_a2)->enabled = on != 0 ? 1 : 0;
     return 1;
 }
 
@@ -1549,48 +1598,52 @@ typedef struct {
 } State_002158B0;
 #endif
 
-extern u16 gSzData_awExpTable[];
-extern u8 gSzData_bRoseFlag;
+extern u16 rankExpTable[]; /* original: gSzData_awExpTable */
+extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-s32 SzData_SetRankDirect(s32 arg0, s32 arg1, s32 arg2) {
-    extern State_002158B0 gSzData_All[];
+/* Sets side `side`'s rank for card `card` to `rank`. */
+s32 SzData_SetRankDirect(s32 player, s32 cardId, s32 rank) {
+    extern State_002158B0 saveProfiles[];
     s32 side;
     Card_002172D0 *base;
     Card_002172D0 *card;
 
-    if (gSzData_bRoseFlag == arg0) {
+    if (profileZeroSide == player) {
         side = 0;
     } else {
         side = 1;
     }
-    base = (Card_002172D0 *)((u8 *)gSzData_All + side * 0xFFA0);
-    if ((arg0 < 0) || (arg0 >= 2)) {
+    base = (Card_002172D0 *)((u8 *)saveProfiles + side * 0xFFA0);
+    if ((player < 0) || (player >= 2)) {
         return -1;
     }
-    if ((arg2 < 0) || (arg2 >= 0xD)) {
+    if ((rank < 0) || (rank >= 0xD)) {
         return -1;
     }
-    if (arg1 == 0x29F) {
-        arg1 = 0x3E7;
+    if (cardId == 0x29F) {
+        cardId = 0x3E7;
     }
-    if ((arg1 < 0) || (arg1 >= 0x2AB)) {
+    if ((cardId < 0) || (cardId >= 0x2AB)) {
         return -1;
     }
-    card = &base[arg1];
-    card->flags = arg2;
-    card->value = gSzData_awExpTable[arg2];
+    card = &base[cardId];
+    card->flags = rank;
+    card->value = rankExpTable[rank];
     return card->flags;
 }
 
+/* Starts the memory card system (nothing to do here). */
 s32 RhMemCard_Init(void) {
     func_00193808();
     return 1;
 }
 
+/* Ends the memory card system. */
 s32 RhMemCard_Term(void) {
     return 1;
 }
 
+/* The memory card system's per-frame work. */
 s32 RhMemCard_Act(void) {
     return 1;
 }
@@ -1602,16 +1655,17 @@ typedef struct State_00217410 {
     u8 padding[3];
 } State_00217410;
 
-extern State_00217410 gSzSound_sl;
+extern State_00217410 soundState; /* original: gSzSound_sl */
 extern u8 D_002D0930[];
 
+/* Starts the sound system: the IOP driver, the sound effect groups, the music. */
 void SzSound_Init(void) {
     extern u8 *getenv();
-    State_00217410 *state = &gSzSound_sl;
+    State_00217410 *state = &soundState;
     s16 *slot;
     s32 i;
 
-    RhMem_FillMemory((s8 *)&gSzSound_sl, 0, 0xC);
+    RhMem_FillMemory((s8 *)&soundState, 0, 0xC);
     state->enabled = getenv(D_002D0930) ? 1 : 0;
     if (state->enabled) {
         SD_Init(0x400000);
@@ -1638,10 +1692,11 @@ typedef struct State_002174D0 {
 struct State_00217410;
 
 
+/* Ends the sound system. */
 void SzSound_Term(void) {
-    extern struct State_00217410 gSzSound_sl;
+    extern struct State_00217410 soundState;
     extern Flags_002174D0 D_0034F6E8;
-    State_002174D0 *state = (State_002174D0 *)&gSzSound_sl;
+    State_002174D0 *state = (State_002174D0 *)&soundState;
 
     if (D_0034F6E8.active) {
         SD_Term();
@@ -1655,6 +1710,7 @@ typedef struct {
 
 extern Flags_00217530 D_0034F6E8;
 
+/* Whether the sound system is ready. */
 s32 SzSound_IsStandby(void) {
     return D_0034F6E8.active != 0 ? 1 : 0;
 }
@@ -1668,40 +1724,42 @@ typedef struct {
 extern Flags_00217530 D_0034F6E8;
 #endif
 
+/* The sound system's per-vertical-blank work. */
 void SzSound_VSync(void) {
     if (D_0034F6E8.active) {
         SD_CallEveryVSync();
     }
 }
 
-s32 SzSound_TransferSEGrp(s32 arg0, s32 arg1, s32 arg2) {
-    extern char *apchSEGrp[];
+/* Loads sound effect group `group` into channel `channel` (0..3), unless it is already there (`force` reloads). */
+s32 SzSound_TransferSEGrp(s32 channel, s32 group, s32 force) {
+    extern char *seGroupFileNames[];
     extern void func_0019B648();
     extern s32 SD_iTransferSEGrpToIop();
-    State_00217410 *state = &gSzSound_sl;
+    State_00217410 *state = &soundState;
     char text[0x80];
 
     if (!D_0034F6E8.active) {
         return 0;
     }
-    if (arg0 < 0 || arg0 >= 4) {
+    if (channel < 0 || channel >= 4) {
         return 0;
     }
-    if (arg2 == 0 && state->slots[arg0] == arg1) {
+    if (force == 0 && state->slots[channel] == group) {
         return 1;
     }
-    state->slots[arg0] = arg1;
-    SD_SEStop(arg0, -1);
-    switch (arg0) {
+    state->slots[channel] = group;
+    SD_SEStop(channel, -1);
+    switch (channel) {
     case 0:
     case 1:
-        func_0019B648(text, apchSEGrp[arg0], arg1);
+        func_0019B648(text, seGroupFileNames[channel], group);
         break;
     default:
-        func_0019B648(text, apchSEGrp[arg0], arg1, arg1);
+        func_0019B648(text, seGroupFileNames[channel], group, group);
         break;
     }
-    return SD_iTransferSEGrpToIop(arg0, text);
+    return SD_iTransferSEGrpToIop(channel, text);
 }
 
 #ifndef GAME_H
@@ -1711,6 +1769,7 @@ typedef struct {
 extern Flags_002176B0 D_0034F6E8;
 #endif
 
+/* Whether a sound effect is playing. */
 s32 SzSound_IsPlaySE(void) {
     extern s64 SD_iGetSDStatus();
 
@@ -1720,75 +1779,80 @@ s32 SzSound_IsPlaySE(void) {
     return !((s32)SD_iGetSDStatus() & 0x4000) ? 1 : 0;
 }
 
-s32 SzSound_PlaySE(s32 arg0, s32 arg1) {
+/* Plays sound effect `se` (bit 15: looping) of channel `channel` (0..3). */
+s32 SzSound_PlaySE(s32 channel, s32 se) {
     extern s64 SD_iGetSDStatus();
-    State_00217410 *state = &gSzSound_sl;
+    State_00217410 *state = &soundState;
 
     if (!D_0034F6E8.active) {
         return 0;
     }
-    if (arg0 < 0 || arg0 >= 4) {
+    if (channel < 0 || channel >= 4) {
         return 0;
     }
-    if (state->slots[arg0] < 0) {
+    if (state->slots[channel] < 0) {
         return 0;
     }
     if ((s32)SD_iGetSDStatus() & 0x4000) {
         return 0;
     }
-    SD_SEPlayOnlyOnce(arg0, arg1 & 0x7FFF, (arg1 & 0x8000) ? 1 : 0);
+    SD_SEPlayOnlyOnce(channel, se & 0x7FFF, (se & 0x8000) ? 1 : 0);
     return 1;
 }
 
-s32 SzSound_StereoPlaySE(s32 arg0, s32 arg1, s32 arg2) {
+/* Plays sound effect `se` of channel `channel` with stereo pan `pan`. */
+s32 SzSound_StereoPlaySE(s32 channel, s32 se, s32 pan) {
     extern s64 SD_iGetSDStatus();
-    State_00217410 *state = &gSzSound_sl;
+    State_00217410 *state = &soundState;
 
     if (!D_0034F6E8.active) {
         return 0;
     }
-    if (arg0 < 0 || arg0 >= 4) {
+    if (channel < 0 || channel >= 4) {
         return 0;
     }
-    if (state->slots[arg0] < 0) {
+    if (state->slots[channel] < 0) {
         return 0;
     }
     if ((s32) SD_iGetSDStatus() & 0x4000) {
         return 0;
     }
-    arg1 &= 0x7FFF;
-    arg2 &= 0x7FFF;
-    SD_SEPlay2(arg0, arg1, arg2);
+    se &= 0x7FFF;
+    pan &= 0x7FFF;
+    SD_SEPlay2(channel, se, pan);
     return 1;
 }
 
-s32 SzSound_StopSE(s32 arg0, s32 arg1) {
-    State_00217410 *state = &gSzSound_sl;
+/* Stops sound effect `se` (-1: all) of channel `channel`. */
+s32 SzSound_StopSE(s32 channel, s32 se) {
+    State_00217410 *state = &soundState;
 
     if (!D_0034F6E8.active) {
         return 0;
     }
-    if (arg0 < 0 || arg0 >= 4) {
+    if (channel < 0 || channel >= 4) {
         return 0;
     }
-    if (state->slots[arg0] < 0) {
+    if (state->slots[channel] < 0) {
         return 0;
     }
     if ((s64)SD_iGetSDStatus() & 0x4000) {
         return 0;
     }
-    SD_SEStop(arg0, arg1);
+    SD_SEStop(channel, se);
     return 1;
 }
 
-s32 SzSound_PlayBGM(s32 arg0, s32 arg1) {
+/* Starts music `bgm` (preloading it), with `mode`. */
+s32 SzSound_PlayBGM(s32 bgm, s32 mode) {
     if (D_0034F6E8.active == 0) {
         return 0;
     }
-    SD_BGMPreLoad(arg0, arg1);
+    SD_BGMPreLoad(bgm, mode);
     return 1;
 }
 
+/* Whether music is still loading. */
 s32 SzSound_IsLoadingBGM(void) {
     if (D_0034F6E8.active == 0) {
         return 0;

@@ -828,7 +828,7 @@ static inline s32 rectangle_001C3E20(s32 cursor, Packet_001C3E20 *packet,
 
 #pragma opt_propagation off
 
-/* Draws side `side`'s trade list at (left, top): title, counts, sort keys, cards and scroll bar. */
+/* Draws side `arg1`'s trade list at (left, top): title, counts, sort keys, cards and scroll bar. */
 s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 arg3) {
     extern s32 lSzDuel_DrawWindow_ExBoard_Pipe();
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
@@ -2532,7 +2532,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 packet, u8 *side, s32 x, s32 y) {
                          hint != 0 ? (s32)D_002BE944 : 0);
 }
 
-/* Where side `side`'s custom-duel settings are kept (0xA9C000 + side). */
+/* Where a side's custom-duel settings are kept (0xA9C000 + the side). */
 static inline u8 *save_001C8DC0(u8 *save) {
     return save + 0xA9C000;
 }

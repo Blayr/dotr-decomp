@@ -308,7 +308,7 @@ typedef struct Key_001FBE50 {
 } Key_001FBE50;
 
 /* The camera of a camera motion at frame `frame`, blended by `t`. */
-void lSzView_CalcInterpCameraMotion(void *out, void *motion, s32 frame, f32 fparg0) {
+void lSzView_CalcInterpCameraMotion(void *out, void *motion, s32 frame, f32 t) {
     f32 var_f0;
     f32 var_f0_2;
     f32 var_f0_3;
@@ -341,13 +341,13 @@ loop_2:
     temp_t1 = (u8 *)motion + (var_a3 * 16);
     temp_v0 = *(u32 *)((u8 *)temp_t1 + 16);
     var_f0_3 = (f32)temp_v0;
-    if (!(fparg0 < var_f0_3)) {
+    if (!(t < var_f0_3)) {
         var_a2 = var_a3;
         goto loop_2;
     }
     temp_v0_2 = *(u32 *)temp_t1;
     var_f0_4 = (f32)temp_v0_2;
-    if (fparg0 < var_f0_4) {
+    if (t < var_f0_4) {
         var_t0 = var_a3;
         goto loop_2;
     }
@@ -368,8 +368,8 @@ block_15:
     var_f3 = (f32)temp_v0_3;
     var_f0 = (f32)temp_a3;
     var_f0_2 = (f32)temp_a1;
-    weight = (var_f0 - fparg0) / var_f3;
-    weight2 = (fparg0 - var_f0_2) / var_f3;
+    weight = (var_f0 - t) / var_f3;
+    weight2 = (t - var_f0_2) / var_f3;
     ((f32 *)out)[0] = weight * temp_a2->value[0] + weight2 * next->value[0];
     ((f32 *)out)[1] = weight * temp_a2->value[1] + weight2 * next->value[1];
     ((f32 *)out)[2] = weight * temp_a2->value[2] + weight2 * next->value[2];
@@ -381,7 +381,7 @@ typedef struct Key_001FC050 {
 } Key_001FC050;
 
 /* One channel of a camera motion at frame `frame`, blended by `t`. */
-f32 lSzView_CalcInterpCameraMotion1(u8 *channel, s32 frame, f32 fparg0) {
+f32 lSzView_CalcInterpCameraMotion1(u8 *channel, s32 frame, f32 t) {
     f32 var_f0;
     f32 var_f0_2;
     f32 var_f0_3;
@@ -415,13 +415,13 @@ loop_2:
     temp_t1 = channel + (var_a3 * 8);
     temp_v0 = *(u32 *)((u8 *)temp_t1 + 8);
     var_f0_3 = (f32)temp_v0;
-    if (!(fparg0 < var_f0_3)) {
+    if (!(t < var_f0_3)) {
         var_a2 = var_a3;
         goto loop_2;
     }
     temp_v0_2 = *(u32 *)temp_t1;
     var_f0_4 = (f32)temp_v0_2;
-    if (fparg0 < var_f0_4) {
+    if (t < var_f0_4) {
         var_t0 = var_a3;
         goto loop_2;
     }
@@ -440,9 +440,9 @@ block_15:
     var_f3 = (f32)temp_v0_3;
     var_f0 = (f32)temp_a3;
     var_f0_2 = (f32)temp_a1;
-    weight = (var_f0 - fparg0) / var_f3;
+    weight = (var_f0 - t) / var_f3;
     result = weight * temp_a2->value;
-    weight = (fparg0 - var_f0_2) / var_f3;
+    weight = (t - var_f0_2) / var_f3;
     return result + weight * *(f32 *)(channel + 4);
 }
 
@@ -723,7 +723,7 @@ void SzFade_Init(void) {
     Entry_0031C050 *entry;
     s32 count;
 
-    entry = gSzFade_fl;
+    entry = fadeSlots;
     count = 2;
     while (count--) {
         entry->flag = 1;
@@ -749,7 +749,7 @@ typedef struct {
 s32 SzFade_Entry(s32 fade, s32 in, u8 step, u8 start, u8 length, void *color) {
     Entry_0031C050 *entry;
 
-    entry = &gSzFade_fl[fade];
+    entry = &fadeSlots[fade];
     if (entry->flag == 0) {
         return 0;
     }
@@ -775,7 +775,7 @@ s32 SzFade_Entry(s32 fade, s32 in, u8 step, u8 start, u8 length, void *color) {
 s32 SzFade_Destroy(s32 fade) {
     Entry_0031C050 *temp_a2;
 
-    temp_a2 = &gSzFade_fl[fade];
+    temp_a2 = &fadeSlots[fade];
     temp_a2->flag = 1;
     return 1;
 }
@@ -806,7 +806,7 @@ s32 SzFade_Disp(s32 fade) {
     if ((fade < 0) || (fade >= 2)) {
         return 0;
     }
-    entry = &gSzFade_fl[fade];
+    entry = &fadeSlots[fade];
     if (entry->flag != 0) {
         return 0;
     }
@@ -897,7 +897,7 @@ s32 SzFade_SetKillFlag(s32 fade) {
     if (fade < 0 || fade >= 2) {
         return 0;
     }
-    entry = &gSzFade_fl[fade];
+    entry = &fadeSlots[fade];
     if (entry->flag) {
         return 0;
     }
@@ -917,7 +917,7 @@ s32 SzFade_SetPauseFlag(s32 fade, s64 on) {
     if (fade < 0 || fade >= 2) {
         return 0;
     }
-    temp_a2 = &gSzFade_fl[fade];
+    temp_a2 = &fadeSlots[fade];
     if (temp_a2->flag != 0) {
         return 0;
     }
@@ -932,7 +932,7 @@ s32 SzFade_GetRestCount(s32 fade) {
     if (fade < 0 || fade >= 2) {
         return -1;
     }
-    e = &gSzFade_fl[fade];
+    e = &fadeSlots[fade];
     if (e->flag != 0) {
         return -1;
     }
@@ -946,7 +946,7 @@ static inline s32 calc_001FD220(s32 idx) {
     if (idx < 0 || idx >= 2) {
         return -1;
     }
-    e = &gSzFade_fl[idx];
+    e = &fadeSlots[idx];
     if (e->flag) {
         return -1;
     }

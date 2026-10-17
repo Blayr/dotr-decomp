@@ -8,7 +8,7 @@ typedef struct Slot_002009E0 {
     s16 type;
 } Slot_002009E0;
 
-extern Slot_002009E0 gSzText_aItem[0x400];
+extern Slot_002009E0 textureItems[0x400]; /* original: gSzText_aItem */
 extern char D_002D074B[];
 extern char D_002D0750[];
 extern char *gSzText_apchMerge;
@@ -30,7 +30,7 @@ static inline Slot_002009E0 *find_002009E0(s32 cat, s32 type) {
     Slot_002009E0 *p;
     s32 i;
 
-    p = gSzText_aItem;
+    p = textureItems;
     if (type < 0) {
         return NULL;
     }

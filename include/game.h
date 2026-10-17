@@ -223,7 +223,7 @@ extern s32 D_00317B6C;
 
 extern s32 D_0031BE98;
 
-extern u8 gSzPad_pl[];
+extern u8 padStates[]; /* original: gSzPad_pl */
 
 extern s32 D_0032618C;
 extern s32 D_00326190;
@@ -247,7 +247,7 @@ extern volatile s32 gSh_FaceMode;
 
 extern u8 D_0029D1F0[];
 
-extern s16 gSzText_tl;
+extern s16 clutState; /* original: gSzText_tl */
 extern u16 D_00322992;
 extern s16 D_00322994;
 

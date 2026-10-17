@@ -985,7 +985,7 @@ typedef struct Packet_001E6650 {
 #define RANDOM_001E6650(n) ((s32)((n) * (func_0019A5C8() / 2147483648.0f)))
 
 /* Draws model `model` mirrored on the water as a fake reflection. */
-s32 lSzBattle_DrawFakeMirror(s32 arg0, s32 arg1) {
+s32 lSzBattle_DrawFakeMirror(s32 arg0, s32 model) {
     extern Quad_001E6650 D_00292310;
     extern Vec3_001E6650 D_00292350;
     extern s16 sTrimX[4];
@@ -1071,7 +1071,7 @@ s32 lSzBattle_DrawFakeMirror(s32 arg0, s32 arg1) {
         out = func_0020EC60(out);
         out = (s32)func_00209F70((void *)out, 0xFFFFFF);
         out = func_0020A0B0(out, 0);
-        out = func_001EFA80(out, arg1, 0, 0, 0, 0, 0);
+        out = func_001EFA80(out, model, 0, 0, 0, 0, 0);
         out = (s32)func_00209F70((void *)out, 0xFF000000);
         out = func_0020A0B0(out, 1);
         {
@@ -1225,7 +1225,7 @@ static inline void tag_001E6F90(Header_001E6F90 *p, s32 first, s32 type, u64 val
 #pragma opt_dead_assignments off
 
 /* Draws model `model`'s fake shadow on the ground plane. */
-s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1) {
+s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 model, s32 arg2, f32 fparg0, f32 fparg1) {
     f32 delta;
     extern s32 func_002070F0(s32, s32, void *, s32, void *, s32, s32);
     extern void func_0020A470(s32, s32, s32);
@@ -1250,8 +1250,8 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg
 
     plane = D_00292380;
     plane.f[3] = -fparg0;
-    alpha = func_001F2980(arg1, &plane);
-    if (func_001F1370(arg1) == 0) {
+    alpha = func_001F2980(model, &plane);
+    if (func_001F1370(model) == 0) {
         return (s32)arg0;
     }
     if (func_001F96F0(0, alpha) == 0) {
@@ -1286,7 +1286,7 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg
         f32 height;
         u8 *scratchpad;
 
-        opacityScale = (func_001F27A0(arg1) << 6) >> 7;
+        opacityScale = (func_001F27A0(model) << 6) >> 7;
         scale = fparg1 / 800.0f;
         scratchpad = (u8 *)0x70000000;
         width = 320.0f * scale;
@@ -1316,7 +1316,7 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg
         packet = (s32)func_00208530((void *)arg0, 0);
         func_0020A470(0, 10, 0x31);
         packet = func_0020A870(func_0020A610((void *)packet), 0);
-        func_001F2050(arg1, position);
+        func_001F2050(model, position);
         camera.position[0] = position[0] + camera.direction[0][0] * fparg1;
         camera.position[1] = position[1] + camera.direction[0][1] * fparg1;
         camera.position[2] = position[2] + camera.direction[0][2] * fparg1;
@@ -1331,7 +1331,7 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg
         func_0020BAF0((s32)matrix);
         RhGeom_MulMatrixVectorArray((void *)(u32)&points, 0, (void *)(u32)&points, 8);
         func_0020BB50();
-        count = func_001EFA80(count, arg1, 0, 0, 0, 0, 0);
+        count = func_001EFA80(count, model, 0, 0, 0, 0, 0);
         func_0020AA30(saved, saved + 1);
         count = func_0020F290((s32)func_0020A760((void *)count));
         func_0020E4F0();

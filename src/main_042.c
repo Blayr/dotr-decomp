@@ -1894,7 +1894,7 @@ extern s8 practiceDuelFlag; /* original: Rensyu_flg */
 extern s8 practiceDuelEnd; /* original: Rensyu_END */
 
 /* The buttons side `side` presses this frame (`mode` = pad check mode): the pad, or the tutorial's scripted input. */
-s32 lSzDuel_GetControl(s32 side, s32 arg1) {
+s32 lSzDuel_GetControl(s32 side, s32 mode) {
     u8 *base = duelState.b;
     s32 ret = 0;
     Record_001CECF0 *record = (Record_001CECF0 *)(duelState.b + side * 0x350);
@@ -1903,10 +1903,10 @@ s32 lSzDuel_GetControl(s32 side, s32 arg1) {
 
     switch (record->kind) {
     case 0x64:
-        ret = SzPad_Check(0, arg1, 0xFFFF) & 0xFFFF;
+        ret = SzPad_Check(0, mode, 0xFFFF) & 0xFFFF;
         break;
     case 0x65:
-        ret = SzPad_Check(1, arg1, 0xFFFF) & 0xFFFF;
+        ret = SzPad_Check(1, mode, 0xFFFF) & 0xFFFF;
         break;
     default:
         if (record->kind < 0x64) {
