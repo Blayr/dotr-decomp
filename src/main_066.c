@@ -1,16 +1,17 @@
 #include "common.h"
 
+/* Starts the duel of the chosen campaign place. */
 void Taku_Camp_Set_Go_Duel(void) {
-    s16 temp_s0;
+    s16 place;
 
-    temp_s0 = D_00299ED4;
-    SzGame_SetMenuNum(1, (s32) temp_s0);
-    SzGame_SetMenuNum(2, (s32) save_data);
-    if (save_data == 0) {
+    place = D_00299ED4;
+    SzGame_SetMenuNum(1, (s32) place);
+    SzGame_SetMenuNum(2, (s32) campaignState);
+    if (campaignState == 0) {
         SzGame_SetMenuNum(3, 0x44C);
-        SzGame_SetMenuNum(4, temp_s0 + 0x3E8);
+        SzGame_SetMenuNum(4, place + 0x3E8);
     } else {
-        SzGame_SetMenuNum(3, temp_s0 + 0x3E8);
+        SzGame_SetMenuNum(3, place + 0x3E8);
         SzGame_SetMenuNum(4, 0x44C);
     }
     SzGame_Push(1, 0);
@@ -65,6 +66,7 @@ extern DotrDareWord func_001FE660_b(DotrDareWord cursor, int index, int x, int y
                                           float sx, float sy, void *e,
                                           void (*function)(void));
 
+/* Draws the speaker's name (dare: who) of a campaign text. */
 int Taku_Camp_BUN_DARE(int cursor)
 {
     short xx, yy;
@@ -203,9 +205,10 @@ int Taku_Camp_BUN_DARE(int cursor)
 #undef DOTR_DARE_LOOK1
 #undef DOTR_DARE_LOOK0
 
-void Taku_Camp_SINEMA_Init(s8 arg0) {
+/* Starts a campaign cut-scene (sinema) `scene`. */
+void Taku_Camp_SINEMA_Init(s8 scene) {
     *(s16 *)0x01ED001C = 0;
-    switch (arg0) {
+    switch (scene) {
     case 0:
         *(s16 *)0x01ED001A = 0;
         *(s16 *)0x01ED001E = 0;
@@ -272,6 +275,7 @@ extern struct DotrSinemaQuad tex_sinema_brack[2];
 #define DOTR_SINEMA_C1 (b->cut1 * 64 / 64)
 #define DOTR_SINEMA_C2 (b->cut2 * 116 / 116)
 
+/* Draws a campaign cut-scene picture with fade `fade`. */
 int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
 {
     struct DotrSinemaWork *b = DOTR_SINEMA_BLOCK;
@@ -482,7 +486,7 @@ struct DotrStWindowBoard {
     signed char kind;           
 };
 extern struct DotrStWindowBoard D_00299E10_b;
-extern struct DotrStWindowRec model_data[];
+extern struct DotrStWindowRec campaignPlaces[]; /* original: model_data */
 extern struct DotrStWindowWindow camp_window_My_data[];
 extern struct DotrStWindowItem tex_bara_data[];
 extern struct DotrStWindowItem tex_deck_data[];
@@ -516,6 +520,7 @@ extern int SzDuel_DrawWindow_Font_Pipe_b(int cursor, int x, int y, int a, int fl
 #define ST_DEPTH (*(short *)(DOTR_ST_WINDOW_BASE + 0x226))
 #define ST_COST (*(short *)(DOTR_ST_WINDOW_BASE + 0x5442))
 
+/* Draws the campaign status window. */
 int Taku_Camp_ST_WINDOW(int cursor)
 {
     struct DotrStWindowBoard *w;
@@ -547,7 +552,7 @@ int Taku_Camp_ST_WINDOW(int cursor)
     if (ST_MODE) {
         if (w->kind == 11) {
             if (ST_LOC11 < 2) { t = 1; } else { t = 0; }
-        } else if (model_data[w->kind].kind == 8) {
+        } else if (campaignPlaces[w->kind].kind == 8) {
             t = 0;
         } else {
             t = 1;
@@ -691,7 +696,8 @@ int Taku_Camp_ST_WINDOW(int cursor)
 #undef ST_DEPTH
 #undef ST_COST
 
-void *Taku_Camp_SYS_ICON(void *arg0) {
+/* Draws the campaign's system icons. */
+void *Taku_Camp_SYS_ICON(void *packet) {
     s16 coords[19];
     u8 *state;
     s64 alpha;
@@ -711,7 +717,7 @@ void *Taku_Camp_SYS_ICON(void *arg0) {
 
     alpha = (s16)(0x80 - ((*(s16 *)0x01ED0070 << 7) >> 8));
     state = (u8 *)0x01ED0000;
-    arg0 = Taku_G4_Set(arg0, D_002982F8, 0, alpha);
+    packet = Taku_G4_Set(packet, D_002982F8, 0, alpha);
     row = camp_sys_icon;
     y = (s16)alpha + 0x14F;
     i = 0;
@@ -743,7 +749,7 @@ void *Taku_Camp_SYS_ICON(void *arg0) {
                 }
             }
         }
-        arg0 = Taku_Obj_Set(arg0, coords, 0, alpha);
+        packet = Taku_Obj_Set(packet, coords, 0, alpha);
         mode = *(s8 *)(state + 0x7E);
         if (mode == 1 && i == *(s16 *)(state + 0x80) && mode != 0) {
             if (i == 0) {
@@ -759,19 +765,19 @@ void *Taku_Camp_SYS_ICON(void *arg0) {
                 text = D_0030F113;
                 length = 4;
             }
-            arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, 0x232, y, 1, 1, length, text, 0);
+            packet = SzDuel_DrawWindow_Font_Pipe(packet, 0x232, y, 1, 1, length, text, 0);
         }
         i++;
         row += 19;
         fade += 2;
     } while (i < 4);
     if (*(s8 *)0x01ED007E == 0) {
-        arg0 = Taku_Obj_Set(arg0, camp_sys_icon_botan, 0, alpha);
+        packet = Taku_Obj_Set(packet, camp_sys_icon_botan, 0, alpha);
     } else {
-        arg0 = Taku_Obj_Set(arg0, D_00298B76, 0, alpha);
+        packet = Taku_Obj_Set(packet, D_00298B76, 0, alpha);
     }
     if (*(s8 *)0x01ED007E == 0) {
-        arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, 0x232, y, 1, 1, 6, D_0030F118, 0);
+        packet = SzDuel_DrawWindow_Font_Pipe(packet, 0x232, y, 1, 1, 6, D_0030F118, 0);
     }
-    return arg0;
+    return packet;
 }

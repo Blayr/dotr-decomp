@@ -41,7 +41,7 @@ struct DotrTekiWindowRec {
     short h10;                  
     char unknown_12[34];
 };
-extern struct DotrTekiWindowRec model_data[];
+extern struct DotrTekiWindowRec campaignPlaces[]; /* original: model_data */
 struct DotrTekiWindowNames {
     char *s[22];
 };
@@ -96,6 +96,7 @@ extern struct DotrTekiWindowCard *func_001DD0E0_b(int id);
     } \
     SzMsg_Free(1);
 
+/* Draws the opponent (teki) window: name, face, leader, deck cost; sets up the opponent's deck. */
 int Taku_Camp_TEKI_WINDOW(int cursor)
 {
     struct DotrTekiWindowBoard *b = &D_00299E10_b;
@@ -128,7 +129,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         side = b->b0 ^ 1;
     } else if (b->b198 == 11) {
         side = b->b0 ^ 1;
-    } else if (model_data[b->b198].h10 == 8) {
+    } else if (campaignPlaces[b->b198].h10 == 8) {
         side = 0;
     } else {
         side = 1;

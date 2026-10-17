@@ -1,6 +1,7 @@
 #include "common.h"
 
-s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
+/* Draws the terrain (tikei) window of the campaign place under the cursor. */
+s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
     extern s32 Taku_Window_Set(s32, void *, s32, s32, u16, s32, s32, s32, s32);
     extern s32 Taku_Camp_TIKEI_Map_Hyouji(s32, u16, u16, s32);
     extern s32 Taku_Obj_Set();
@@ -26,7 +27,7 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
     s16 fade;
 
     baseX = D_00299ED4;
-    state = &save_data;
+    state = &campaignState;
     if (*(s8 *)0x01ED0066 != 0) {
         *(s16 *)0x01ED0068 += 2;
         if (*(s16 *)0x01ED0068 > 16) {
@@ -52,17 +53,17 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
         }
     }
     if (fade != 0) {
-        arg0 = Taku_Window_Set(arg0, camp_window_Map_data, (u16)(s8)side & 0xFFFF, 0,
+        packet = Taku_Window_Set(packet, camp_window_Map_data, (u16)(s8)side & 0xFFFF, 0,
                               alpha, 0, 0, 128, *(s16 *)0x01ED0228);
-        arg0 = Taku_Camp_TIKEI_Map_Hyouji(arg0, baseX, alpha, 0);
-        arg0 = Taku_Window_Set(arg0, D_00297B9A, (u16)(s8)side, 0,
+        packet = Taku_Camp_TIKEI_Map_Hyouji(packet, baseX, alpha, 0);
+        packet = Taku_Window_Set(packet, D_00297B9A, (u16)(s8)side, 0,
                               alpha, 0, 0, 128, 128);
-        arg0 = Taku_Window_Set(arg0, D_00297BA4, (u16)(state[0] ^ 1), 0,
+        packet = Taku_Window_Set(packet, D_00297BA4, (u16)(state[0] ^ 1), 0,
                               alpha, 0, 0, 128, 128);
         p = camp_window_tikei_partu;
         i = 0;
         do {
-            arg0 = Taku_Obj_Set(arg0, p, alpha, 0);
+            packet = Taku_Obj_Set(packet, p, alpha, 0);
             i++;
             p += 0x26;
         } while (i < 10);
@@ -72,17 +73,17 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
             q = camp_window_tikei_partu_gejiwaku;
             j = 0;
             do {
-                arg0 = Taku_Obj_Set(arg0, q, alpha, y);
+                packet = Taku_Obj_Set(packet, q, alpha, y);
                 j++;
                 q += 0x26;
             } while (j < 3);
             y = (s16)(y + 16);
             row++;
         } while (row < 10);
-        arg0 = Taku_FT4_Set(arg0, camp_window_tikei_iro_ue + (s8)side * 0x26, alpha, 0, 0);
-        arg0 = Taku_FT4_Set(arg0, camp_window_tikei_iro_sita + state[0] * 0x26, alpha, 0, 2);
+        packet = Taku_FT4_Set(packet, camp_window_tikei_iro_ue + (s8)side * 0x26, alpha, 0, 0);
+        packet = Taku_FT4_Set(packet, camp_window_tikei_iro_sita + state[0] * 0x26, alpha, 0, 2);
     }
-    return arg0;
+    return packet;
 }
 
 typedef struct Sprite_00236F90 {
@@ -96,6 +97,7 @@ typedef struct Work_00236F90 {
     s16 counts[10];
 } Work_00236F90;
 
+/* Draws (hyouji) the small terrain map of deck `deck`'s place at (x, y). */
 s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
     extern s32 Taku_G4_Set(s32, void *, s16, s16);
@@ -126,7 +128,7 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     u8 *cell;
     s32 k;
 
-    mode = &save_data;
+    mode = &campaignState;
     work = (Work_00236F90 *)0x01ED0000;
     card = D_0029AFA0;
     bar = D_0029AFD0;
@@ -227,13 +229,14 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     return gp;
 }
 
-extern u8 model_data[];
-extern u8 prim_data[];
+extern u8 campaignPlaces[]; /* original: model_data */
+extern u8 campaignCoord[]; /* original: prim_data */
 extern s32 D_0029A000;
 extern u8 D_0029A44C[];
 
 #pragma opt_strength_reduction off
 
+/* Builds the campaign map's 3D polygons (the ground and the routes). */
 void Taku_Camp_3D_Poly_Init(void) {
     s16 spB0;
     u8 *spC0;
@@ -251,7 +254,7 @@ void Taku_Camp_3D_Poly_Init(void) {
     u8 *var_s6;
     s16 var_s0_2;
 
-    spC0 = prim_data;
+    spC0 = campaignCoord;
     var_s6 = D_0029A44C;
     var_s1 = 0;
     Taku_Coord_Init(spC0);
@@ -300,7 +303,7 @@ void Taku_Camp_3D_Poly_Init(void) {
     }
     var_s0_2 = 0;
     for (; var_s0_2 < 16; var_s0_2++) {
-        Taku_Vector_Set(var_s6, model_data);
+        Taku_Vector_Set(var_s6, campaignPlaces);
         *(s32 *)(var_s6 + 0x20) = 0;
         var_s6[0x26] = 0;
         var_s6[0x2A] = 0;

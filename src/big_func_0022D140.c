@@ -1,5 +1,6 @@
 #include "common.h"
 
+/* Works out which campaign text (bun) to show next and when it ends (hantei: judgement). */
 s32 Taku_Camp_BUN_HANTEI(void) {
     extern s16 D_00299ED2;
     s32 player;
@@ -18,8 +19,8 @@ s32 Taku_Camp_BUN_HANTEI(void) {
     s16 temp_v1_5;
     s16 temp_a0_6;
 
-    player = save_data;
-    context = &save_data;
+    player = campaignState;
+    context = &campaignState;
     if (D_00299ED2 < 0xC8) {
         *(s8 *)0x01ED537E = 0;
         if ((s16)player == 0) {

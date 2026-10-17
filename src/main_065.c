@@ -7,9 +7,10 @@ typedef struct State_0022F1C0 {
 
 extern State_0022F1C0 D_0029ABC0;
 
-s32 Taku_Camp_BOTAN_MATI(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+/* Draws the "press a button" (botan mati) prompt. */
+s32 Taku_Camp_BOTAN_MATI(s32 packet, s32 arg1, s16 arg2, s16 arg3) {
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
-    s8 *slide = &save_data;
+    s8 *slide = &campaignState;
     State_0022F1C0 local;
     s32 flag;
     s32 step;
@@ -52,8 +53,8 @@ s32 Taku_Camp_BOTAN_MATI(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
         flag = 0;
     }
     if ((*(s8 *)0x01ED537B == 4 || *(s8 *)0x01ED53AC == 2) && flag != 0) {
-        arg0 = Taku_Obj_Set(arg0, &local, arg2, arg3);
+        packet = Taku_Obj_Set(packet, &local, arg2, arg3);
         *(u8 *)0x01ED53B2 += 1;
     }
-    return arg0;
+    return packet;
 }

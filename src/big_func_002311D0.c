@@ -96,6 +96,7 @@ typedef struct {
 
 #define W ((BunWork *)0x01ED0000)
 
+/* Draws (hyouji) the campaign text window: the speaker's face and the text line by line. */
 s32 Taku_Camp_BUN_HYOUJI(s32 p) {
     s16 flagB;
     s16 i;
@@ -117,7 +118,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
     msg = 0;
     flagB = 0;
     flagA = 0;
-    ctx = &save_data;
+    ctx = &campaignState;
     rect = D_0029AEB0;
     for (i = 0; i < 4; i++) {
         col[i][0] = col[i][1] = col[i][2] = 0x80;

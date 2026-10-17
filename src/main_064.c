@@ -24,7 +24,8 @@ struct DotrGlideSpot_228150 {
 };
 extern struct DotrGlideBoard D_00299E10_228150;
 extern struct DotrGlideSpot_228150 D_00298BA0_228150[];
-extern int ACT2_Rock;
+extern int campaignAct2Lock; /* original: ACT2_Rock */
+/* Whether the campaign result counts towards the place's score. */
 static inline short may_score(struct DotrGlideBoard *board)
 {
     if (board->unknown_01[0] != 0 && board->unknown_01[1] != 0) {
@@ -45,6 +46,7 @@ static inline short may_score(struct DotrGlideBoard *board)
     return 0;
 }
 
+/* Records a campaign duel's result (win if `side` is set): the win counts, the streak, and the place's new state. */
 void Taku_Camp_What_KATIMAKE(int side)
 {
     struct DotrGlideBoard *board = &D_00299E10_228150;
@@ -109,7 +111,7 @@ void Taku_Camp_What_KATIMAKE(int side)
             }
         }
     }
-    ACT2_Rock = 1;
+    campaignAct2Lock = 1;
 }
 
 /* Taku_Nagare2_set at optimisation level 3: the shape from the dotr_decomp project's near-miss drop
@@ -134,8 +136,9 @@ typedef struct {
 
 #pragma optimization_level 3
 
+/* Sets up the next flow (nagare) of the campaign for `player` on `side`: the places it opens. */
 void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
-    extern Side_00228460 model_data[];
+    extern Side_00228460 campaignPlaces[];
     Work_00228460 *work;
     s16 i;
 
@@ -151,7 +154,7 @@ void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
                 work = (Work_00228460 *)0x01ED0000;
                 for (i = 0; i < count; i++) {
                     if (work->paths[player][items[i]].value != 3) {
-                        work->paths[player][items[i]].value = model_data[side].slots[i];
+                        work->paths[player][items[i]].value = campaignPlaces[side].slots[i];
                     } else {
                         work->paths[player][items[i]].value = 3;
                     }
@@ -203,14 +206,15 @@ typedef struct {
     s16 saved;
 } Work_00228660;
 
-extern Card_00228660 root_no[][16];
+extern Card_00228660 campaignRoutes[][16]; /* original: root_no */
 extern s8 D_00299E13[];
 extern s8 D_00299ED7;
 
+/* Sets up the route marks (dodai) between campaign places for `player` on `side`. */
 void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
-    extern Side_00228660 model_data[];
+    extern Side_00228660 campaignPlaces[];
     Work_00228660 *work = (Work_00228660 *)0x01ED0000;
-    s8 *status = &save_data;
+    s8 *status = &campaignState;
     s16 i;
     s16 item;
     s16 id;
@@ -230,10 +234,10 @@ void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count)
 
     for (i = 0; i < count; i++) {
         item = items[i];
-        if (player == 0 && model_data[side].slots[i] == 2) {
-            id = root_no[player][item].special;
+        if (player == 0 && campaignPlaces[side].slots[i] == 2) {
+            id = campaignRoutes[player][item].special;
         } else {
-            id = root_no[player][item].normal;
+            id = campaignRoutes[player][item].normal;
         }
         if (status[id + 3] == 0) {
             s16 j;
@@ -265,17 +269,19 @@ void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count)
     }
 }
 
-void Taku_Fune_init(s16 arg0, s16 arg1) {
-    *(s16 *)0x01ED01A4 = arg0;
-    *(s16 *)0x01ED01B2 = arg1;
+/* Starts the ship (fune) moving from place `from` to place `to` on the campaign map. */
+void Taku_Fune_init(s16 from, s16 to) {
+    *(s16 *)0x01ED01A4 = from;
+    *(s16 *)0x01ED01B2 = to;
     *(s16 *)0x01ED01B0 = 0;
     *(s16 *)0x01ED01A6 = 0;
     *(s8 *)0x01ED01B4 = 1;
 }
 
+/* Moves the campaign camera's focus (tyumoku) towards its target by one step; 1 when it got there. */
 s32 Taku_Tyumoku_ido(void) {
-    s16 temp_v1;
-    s16 temp_v1_2;
+    s16 step;
+    s16 step2;
 
     if (*(s16 *)0x01ED0060 == 0) {
         *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
@@ -285,10 +291,10 @@ s32 Taku_Tyumoku_ido(void) {
     if (*(s16 *)0x01ED0060 >= 0x100) {
         *(s16 *)0x01ED0060 = 0x100;
     }
-    temp_v1 = *(s16 *)0x01ED0060;
-    *(f32 *)0x01ED0040 = ((*(f32 *)0x01ED0050 * (f32)(0x100 - temp_v1)) / 256.0f) + ((*(f32 *)0x01ED01B8 * (f32)temp_v1) / 256.0f);
-    temp_v1_2 = *(s16 *)0x01ED0060;
-    *(f32 *)0x01ED0048 = ((*(f32 *)0x01ED0058 * (f32)(0x100 - temp_v1_2)) / 256.0f) + ((*(f32 *)0x01ED01C0 * (f32)temp_v1_2) / 256.0f);
+    step = *(s16 *)0x01ED0060;
+    *(f32 *)0x01ED0040 = ((*(f32 *)0x01ED0050 * (f32)(0x100 - step)) / 256.0f) + ((*(f32 *)0x01ED01B8 * (f32)step) / 256.0f);
+    step2 = *(s16 *)0x01ED0060;
+    *(f32 *)0x01ED0048 = ((*(f32 *)0x01ED0058 * (f32)(0x100 - step2)) / 256.0f) + ((*(f32 *)0x01ED01C0 * (f32)step2) / 256.0f);
     if (*(s16 *)0x01ED0060 >= 0x100) {
         *(s16 *)0x01ED0060 = 0;
         *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
@@ -300,8 +306,9 @@ s32 Taku_Tyumoku_ido(void) {
     return 0;
 }
 
-s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
-    extern f32 model_data[];
+/* Moves the campaign camera's focus along the route from place `from` (first move). */
+s32 Taku_Tyumoku_ido0(s16 player, s16 from, s16 *route, s16 count) {
+    extern f32 campaignPlaces[];
     extern f32 D_00298BA8[];
     s16 *state;
     f32 divisor;
@@ -318,7 +325,7 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
     u8 *point;
     Side_00228660 *pt;
 
-    state = (s16 *)&save_data;
+    state = (s16 *)&campaignState;
     switch (*(s8 *)0x01ED5372) {
     case 1:
         if (*(s16 *)0x01ED0060 == 0) {
@@ -332,11 +339,11 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
         progress = *(s16 *)0x01ED0060;
         *(f32 *)0x01ED0040 =
             (*(f32 *)0x01ED0050 * (f32)(0x100 - progress)) / 256.0f +
-            ((f32)progress * model_data[arg1 * 13]) / 256.0f;
+            ((f32)progress * campaignPlaces[from * 13]) / 256.0f;
         progress = *(s16 *)0x01ED0060;
         *(f32 *)0x01ED0048 =
             (*(f32 *)0x01ED0058 * (f32)(0x100 - progress)) / 256.0f +
-            ((f32)progress * D_00298BA8[arg1 * 13]) / 256.0f;
+            ((f32)progress * D_00298BA8[from * 13]) / 256.0f;
         if (*(s16 *)0x01ED0060 >= 0x100) {
             *(s16 *)0x01ED0060 = 0;
             *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
@@ -348,33 +355,33 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
         if (*(s16 *)0x01ED0060 == 0) {
             sum_x = 0.0f;
             sum_z = 0.0f;
-            side = (s16)arg0;
+            side = (s16)player;
             *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
             skipped = 0;
             i = 0;
-            pt = &((Side_00228660 *)model_data)[(s16)arg1];
+            pt = &((Side_00228660 *)campaignPlaces)[(s16)from];
             *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
-            for (; i < arg3; i++) {
-                entry = *arg2;
+            for (; i < count; i++) {
+                entry = *route;
                 if (side == 0 && pt->slots[i] == 2) {
-                    location = root_no[side][(s16)entry].special;
+                    location = campaignRoutes[side][(s16)entry].special;
                 } else {
-                    location = root_no[side][(s16)entry].normal;
+                    location = campaignRoutes[side][(s16)entry].normal;
                 }
                 selected = (s16)location;
                 if (selected != 7) {
-                    point = (u8 *)model_data + selected * 0x34;
+                    point = (u8 *)campaignPlaces + selected * 0x34;
                     sum_x += *(f32 *)point;
                     sum_z += *(f32 *)(point + 8);
                 } else {
                     skipped = (s16)1;
                 }
-                arg2++;
+                route++;
             }
             if (skipped) {
-                arg3 = (s16)(arg3 - 1);
+                count = (s16)(count - 1);
             }
-            divisor = (f32)arg3;
+            divisor = (f32)count;
             *(f32 *)0x01ED01C8 = sum_x / divisor;
             *(f32 *)0x01ED01D0 = sum_z / divisor;
         }
@@ -401,18 +408,19 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
     return 0;
 }
 
-s32 Taku_Tyumoku_ido1(s16 arg0, s16 arg1) {
-    extern f32 model_data[];
+/* Moves the campaign camera's focus to place `place` of `player`; 1 when it got there. */
+s32 Taku_Tyumoku_ido1(s16 player, s16 place) {
+    extern f32 campaignPlaces[];
     extern f32 D_00298BA8[];
-    s16 sp1E;
+    s16 routeCount;
     s8 mode;
 
-    sp1E = 0;
+    routeCount = 0;
     mode = *(s8 *)0x01ED5372;
     switch (mode) {
     case 0:
         if (*(s16 *)0x01ED536C == 0) {
-            Taku_Dodai_Root_init(arg0, arg1, 3, &sp1E, 0);
+            Taku_Dodai_Root_init(player, place, 3, &routeCount, 0);
             *(s16 *)0x01ED536C += 1;
         }
         break;
@@ -422,9 +430,9 @@ s32 Taku_Tyumoku_ido1(s16 arg0, s16 arg1) {
             *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
         }
         *(f32 *)0x01ED0040 = (*(f32 *)0x01ED0050 * (f32)(0x100 - *(s16 *)0x01ED0060) / 256.0f) +
-                             ((f32)*(s16 *)0x01ED0060 * model_data[arg1 * 13] / 256.0f);
+                             ((f32)*(s16 *)0x01ED0060 * campaignPlaces[place * 13] / 256.0f);
         *(f32 *)0x01ED0048 = (*(f32 *)0x01ED0058 * (f32)(0x100 - *(s16 *)0x01ED0060) / 256.0f) +
-                             ((f32)*(s16 *)0x01ED0060 * D_00298BA8[arg1 * 13] / 256.0f);
+                             ((f32)*(s16 *)0x01ED0060 * D_00298BA8[place * 13] / 256.0f);
         *(s16 *)0x01ED0060 += 0x10;
         if (*(s16 *)0x01ED0060 > 0x100) {
             *(s16 *)0x01ED0060 = 0;
@@ -454,17 +462,18 @@ typedef struct State_00229140 {
     s8 snapshot;
 } State_00229140;
 
-extern f32 model_data[];
+extern f32 campaignPlaces[]; /* original: model_data */
 extern f32 D_00298BA8[];
 
-s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2) {
-    State_00229140 *state = (State_00229140 *)&save_data;
+/* The player chose a place (kettei): moves the focus there, then starts its duel; 1 when the move ended. */
+s32 Taku_Tyumoku_ido_kettei(s16 player, s16 place, s16 wait) {
+    State_00229140 *state = (State_00229140 *)&campaignState;
     f32 startX;
     f32 startZ;
     s32 index;
 
     if ((*(s8 *)0x01ED5372 == 0 &&
-         arg2 <= *(s16 *)0x01ED536C &&
+         wait <= *(s16 *)0x01ED536C &&
          *(s8 *)0x01ED537B != 0) ||
         state->levels[state->selection] >= 2 ||
         (state->selection == 15 && state->levels[16] == 0)) {
@@ -487,20 +496,20 @@ s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2) {
             startX = *(f32 *)0x01ED0050;
             *(f32 *)0x01ED0040 = startX +
                 ((f32)*(s16 *)0x01ED0060 *
-                 (model_data[state->selection * 13] - startX)) / 256.0f;
+                 (campaignPlaces[state->selection * 13] - startX)) / 256.0f;
             startZ = *(f32 *)0x01ED0058;
             *(f32 *)0x01ED0048 = startZ +
                 ((f32)*(s16 *)0x01ED0060 *
                  (D_00298BA8[state->selection * 13] - startZ)) / 256.0f;
             index = state->selection * 13;
-            if (*(f32 *)0x01ED0040 == model_data[index]) {
+            if (*(f32 *)0x01ED0040 == campaignPlaces[index]) {
                 if (*(f32 *)0x01ED0048 == D_00298BA8[index]) {
                     *(s16 *)0x01ED0060 = 256;
                 }
             }
             if (*(s16 *)0x01ED0060 >= 256) {
                 *(s16 *)0x01ED0060 = 0;
-                *(f32 *)0x01ED0040 = model_data[state->selection * 13];
+                *(f32 *)0x01ED0040 = campaignPlaces[state->selection * 13];
                 *(f32 *)0x01ED0048 = D_00298BA8[state->selection * 13];
                 *(s8 *)0x01ED5373 = 3;
                 if (state->selection == 15 && state->levels[16] == 0) {
@@ -519,6 +528,7 @@ s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2) {
     return 0;
 }
 
+/* Whether the chosen place is a special one. */
 static inline s16 isSpecial_002294B0(State_00229140 *state) {
     s16 result = 0;
 
@@ -556,18 +566,19 @@ static inline s16 isSpecial_002294B0(State_00229140 *state) {
     return result;
 }
 
-s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
-    State_00229140 *state = (State_00229140 *)&save_data;
+/* Moves the campaign camera's focus after a duel's result (katimake: win or lose). */
+s32 Taku_Tyumoku_ido_katimake(s32 won, s16 place) {
+    State_00229140 *state = (State_00229140 *)&campaignState;
 
-    *(s8 *)0x01ED53C0 = arg1;
+    *(s8 *)0x01ED53C0 = place;
     switch (*(s8 *)0x01ED537A) {
     case 0:
-        if (state->levels[arg1] == 0) {
-            state->levels[arg1] = 1;
+        if (state->levels[place] == 0) {
+            state->levels[place] = 1;
         }
         *(s8 *)0x01ED5375 = 1;
-        *(f32 *)0x01ED0040 = model_data[arg1 * 13];
-        *(f32 *)0x01ED0048 = D_00298BA8[arg1 * 13];
+        *(f32 *)0x01ED0040 = campaignPlaces[place * 13];
+        *(f32 *)0x01ED0048 = D_00298BA8[place * 13];
         *(s16 *)0x01ED0000 = 0x140;
         *(s16 *)0x01ED0002 = 0xBE;
         *(s16 *)0x01ED0070 = 0;
@@ -575,9 +586,9 @@ s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
         *(s8 *)0x01ED537B = 0;
         *(s8 *)0x01ED537D = 0;
         *(s8 *)0x01ED5440 = 100;
-        state->selection = arg1;
-        state->padC7 = arg1;
-        state->previous = arg1;
+        state->selection = place;
+        state->padC7 = place;
+        state->previous = place;
         *(s16 *)0x01ED01DA = 0;
         *(s16 *)0x01ED01DE = 0;
         *(s16 *)0x01ED01D8 = 0;
@@ -620,18 +631,19 @@ s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
     return 0;
 }
 
-void *Taku_Camp_2D(s32 arg0) {
+/* Draws the campaign map's 2D parts: place marks, routes, the cursor, the ship and the windows. */
+void *Taku_Camp_2D(s32 packet) {
     extern u8 D_002964A0[];
     extern u8 D_002964C6[];
     extern u8 D_002964EC[];
-    extern s32 tex_data[];
+    extern s32 campaignTextures[];
     extern s32 D_00299DD4;
     extern s16 D_00299ED2;
     extern s32 func_00202BF0();
     extern s32 func_00202E00();
     extern s32 func_00217CB0();
-    s32 *cards = tex_data;
-    u8 *state = (u8 *)&save_data;
+    s32 *cards = campaignTextures;
+    u8 *state = (u8 *)&campaignState;
     s32 sp7C;
     s32 temp_s2;
     s16 var_s3;
@@ -644,8 +656,8 @@ void *Taku_Camp_2D(s32 arg0) {
     temp_s2 = func_001D9EF0();
     sp7C = func_00209E50();
     var_s3 = 0;
-    temp_s4 = func_001AEFC0(arg0);
-    tex_data[0] = func_001AF140(7);
+    temp_s4 = func_001AEFC0(packet);
+    campaignTextures[0] = func_001AF140(7);
     D_00299DD4 = func_001AF140(6);
     switch (D_00299ED2) {                           /* irregular */
     case 0x2B0C:
@@ -765,14 +777,14 @@ void *Taku_Camp_2D(s32 arg0) {
     if (var_s3) {
         temp_s2 += func_00202E00(temp_s2, 2);
         temp_s5 = (s16)var_s3;
-        arg0 = func_00202B00(temp_s4, temp_s5, temp_s2, &sp7C);
+        packet = func_00202B00(temp_s4, temp_s5, temp_s2, &sp7C);
         var_s0 = 0;
         while (1) {
             func_00202D60(temp_s5, var_s0);
             var_s0++;
             if (var_s0 > 23) break;
         }
-        temp_s4 = func_0020F290(arg0);
+        temp_s4 = func_0020F290(packet);
     }
     result = (s32)func_002351A0((void *)temp_s4);
     if ((*(s8 *)0x01ED5374 == 0) && (*(s8 *)0x01ED5481 != 0) &&
@@ -812,7 +824,8 @@ typedef union {
 
 extern Rotation_0022A020 D_0029ABB0;
 
-s32 Taku_Camp_STON(s32 arg0) {
+/* Draws the stone in the middle of the campaign map, turning. */
+s32 Taku_Camp_STON(s32 packet) {
     Rotation_0022A020 rotation;
     s8 *state = (s8 *)0x01ED0000;
     s16 i;
@@ -822,17 +835,17 @@ s32 Taku_Camp_STON(s32 arg0) {
     for (i = 0; i <= 9; i++) {
         switch (state[0x53B3]) {
         case 1:
-            arg0 = SzModel_Draw_Pipe(arg0, i + 0x22, 0, (s32)&rotation, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, i + 0x22, 0, (s32)&rotation, 0, 0, 0);
             break;
         default:
-            arg0 = SzModel_Draw_Pipe(arg0, i + 0x22, 0, 0, 0, 0, 0);
+            packet = SzModel_Draw_Pipe(packet, i + 0x22, 0, 0, 0, 0, 0);
             break;
         }
     }
     for (i = 0; i < 2; i++) {
         SzModel_SetDrawFlag(i + 0x1E, 0);
     }
-    return arg0;
+    return packet;
 }
 
 extern s16 D_00299ED2;
@@ -854,7 +867,8 @@ typedef struct State_0022A140 {
     s16 value;
 } State_0022A140;
 
-s32 Taku_DECK_CARD_DISP(s32 arg0) {
+/* Draws the campaign's deck-card display. */
+s32 Taku_DECK_CARD_DISP(s32 packetIn) {
     s32 texture[24];
     s32 draw[36];
     State_0022A140 *progress;
@@ -865,7 +879,7 @@ s32 Taku_DECK_CARD_DISP(s32 arg0) {
     s16 id;
     s16 offset;
     s16 slot;
-    s8 *context = &save_data;
+    s8 *context = &campaignState;
 
     extern s32 SzDuel_StartCardSession_Pipe();
     extern void SzDuel_ClearDrawCard();
@@ -979,9 +993,9 @@ s32 Taku_DECK_CARD_DISP(s32 arg0) {
             }
             progress = (State_0022A140 *)((u8 *)progress + 2);
         }
-        arg0 = SzDuel_FinishCardSessionX_Pipe(packet);
+        packetIn = SzDuel_FinishCardSessionX_Pipe(packet);
     }
-    return arg0;
+    return packetIn;
 }
 
 typedef struct Item_0022A710 {
@@ -1028,15 +1042,16 @@ extern s16 D_00298DEC;
 extern s16 D_00298DEE;
 extern Item_0022A710 D_00298E10;
 
+/* Draws the campaign map in 3D: the ground, the castles, the leaders' models. */
 void Taku_Camp_3D(s32 packet) {
     extern s32 SzModel_Draw_Pipe();
-    extern f32 model_data[];
+    extern f32 campaignPlaces[];
     s16 side;
     s16 choice;
     s16 kind;
     s16 animating;
     Vector_0022A710 positions[32];
-    s8 *control = &save_data;
+    s8 *control = &campaignState;
     s16 i;
     Item_0022A710 *src;
     Vector_0022A710 *dst;
@@ -1054,7 +1069,7 @@ void Taku_Camp_3D(s32 packet) {
     packet = SzModel_Draw_Pipe(packet, 0x27, 0, 0, 0, 0, 0);
     packet = SzModel_Draw_Pipe(packet, D_00298DEC + 0x22, &D_00298DDC, 0, 0, 0, 0);
     packet = SzModel_Draw_Pipe(packet, D_00298DEE + 0x22, &D_00298DDC, 0, 0, 0, 0);
-    src = (Item_0022A710 *)model_data;
+    src = (Item_0022A710 *)campaignPlaces;
     dst = positions;
     i = 0;
     row = state;
@@ -1311,7 +1326,7 @@ struct DotrLeaderModelBoard {
 extern struct DotrLeaderModelBoard D_00299E10_b;
 #define DOTR_LEADER_FROM w[199]
 #define DOTR_LEADER_TO w[200]
-extern signed char Taku_Model_Y[];
+extern signed char cardModelHeights[]; /* original: Taku_Model_Y */
 struct DotrLeaderModelVec {
     float x, y, z, w;
 };
@@ -1331,6 +1346,7 @@ extern int func_001F2800_b(int index, int value);
 #define DOTR_LEADER_ANGLE(x, z) (func_001A22C0_b(65536.0f * (func_001A6C18(x, z) / 6.2831855f)) % 65536)
 #define DOTR_LEADER_SPOT D_00298BA0_22b060
 
+/* Draws the leaders' 3D models on the campaign map. */
 int Taku_Camp_3D_LeaderModel(int cursor)
 {
     struct DotrLeaderModelRot rot;
@@ -1353,7 +1369,7 @@ int Taku_Camp_3D_LeaderModel(int cursor)
     b = 5;
     fwd = 0;
     rev = 0;
-    lv = Taku_Model_Y[SzData_GetLeader(0, (short)SzData_GetCurrentDeck(0))];
+    lv = cardModelHeights[SzData_GetLeader(0, (short)SzData_GetCurrentDeck(0))];
     scale.x = 0.5f;
     scale.y = 0.5f;
     scale.z = 0.5f;
@@ -1626,8 +1642,9 @@ int Taku_Camp_3D_LeaderModel(int cursor)
 #undef DOTR_LEADER_ANGLE
 #undef DOTR_LEADER_SPOT
 
-s32 My_LedarModel_a_set(s32 arg0) {
-    switch (arg0) {
+/* Picks the player's leader model. */
+s32 My_LedarModel_a_set(s32 leader) {
+    switch (leader) {
     case 0:
         *(s16 *)0x01ED547C -= 4;
         if (*(s16 *)0x01ED547C <= 0) {
@@ -1653,6 +1670,7 @@ typedef struct PointList_0022C450 {
     u8 padding[8];
 } PointList_0022C450;
 
+/* Builds the smooth paths (splines) between the campaign places. */
 void Taku_spline_init(void) {
     f32 positions[64][2];
     f32 weights[64];
@@ -1668,7 +1686,7 @@ void Taku_spline_init(void) {
     f32 *position;
     f32 *weight;
 
-    bankLists = (PointList_0022C450 *)root_no;
+    bankLists = (PointList_0022C450 *)campaignRoutes;
     bank = 0;
     bankOutput = (u8 *)0x1ED0000;
     do {
@@ -1747,6 +1765,7 @@ extern struct DotrGlideSpot D_00298BA0_22c570[];
 extern struct DotrGlideList D_00299020_22c570[2][16];
 int func_001EE4B0_b(int cursor, int index, struct DotrGlideVector3 *position, void *d, int e, int f, int g);
 
+/* Draws the place markers (bou: poles) on the campaign map. */
 int Taku_Camp_3D_BOU(int cursor)
 {
     struct DotrGlideVector3 pos;
@@ -1907,7 +1926,8 @@ int Taku_Camp_3D_BOU(int cursor)
 }
 #undef DOTR_GLIDE_BANK
 
-s32 Taku_Camp_3D_FUNE(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
+/* Draws the ship (fune) moving between two places. */
+s32 Taku_Camp_3D_FUNE(s32 packet, s16 arg1, s16 arg2, s16 arg3) {
     extern s32 func_001A22C0(f32);
     extern s16 D_00299066[][16][38];
     f32 (*xData)[16][129] = (f32 (*)[16][129])0x01ED022C;
@@ -1958,7 +1978,7 @@ s32 Taku_Camp_3D_FUNE(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
     }
     *(s32 *)0x01ED01A8 = rotation[1];
     if (*(s8 *)0x01ED01B4 != 0) {
-        arg0 = SzModel_Draw_Pipe(arg0, arg3 + 0x22, 0x01ED01B8, (s32)rotation, 0, 0, 0);
+        packet = SzModel_Draw_Pipe(packet, arg3 + 0x22, 0x01ED01B8, (s32)rotation, 0, 0, 0);
     }
     if (*(s16 *)0x01ED01A4 > 0) {
         if (*(s16 *)0x01ED01A6 < 1024 && *(s16 *)0x01ED01B0 < countData[arg1][arg2][0]) {
@@ -1982,5 +2002,5 @@ s32 Taku_Camp_3D_FUNE(s32 arg0, s16 arg1, s16 arg2, s16 arg3) {
             }
         }
     }
-    return arg0;
+    return packet;
 }

@@ -6,12 +6,13 @@ typedef struct {
 
 extern Flags_00217A10 D_0034F6E8;
 
-s32 SzSound_StopBGM(s64 arg0) {
+/* Stops the music, fading it out over `fade` frames (0: at once). */
+s32 SzSound_StopBGM(s64 fade) {
     if (D_0034F6E8.enabled == 0) {
         return 0;
     }
-    if (arg0 > 0) {
-        SD_BGMFadeOut((s16) arg0);
+    if (fade > 0) {
+        SD_BGMFadeOut((s16) fade);
     } else {
         SD_BGMStop();
     }
@@ -30,41 +31,46 @@ typedef struct {
 
 extern State_00217A70 soundState; /* original: gSzSound_sl */
 
-s32 SzSound_SetOutput(s32 arg0) {
+/* Sets the sound output: stereo (`stereo` set) or mono. */
+s32 SzSound_SetOutput(s32 stereo) {
     State_00217A70 *state = &soundState;
 
     if (D_0034F6E8.enabled == 0) {
         return 0;
     }
-    state->flags.mode = (s8)(arg0 ? 1 : 0);
+    state->flags.mode = (s8)(stereo ? 1 : 0);
     SD_SetOutputType(state->flags.mode ? 0 : 1);
     return 1;
 }
 
+/* Starts the memory allocator (nothing to do). */
 void SzMem_Init(void) {
     func_00197C18(func_00197BC0(0x01FFEFF0 - (s32)&D_1FE0000));
 }
 
-s32 SzMem_Alloc(s32 arg0) {
-    return (s32)func_00197990(0x10, arg0);
+/* Allocates `size` bytes, 16-byte aligned. */
+s32 SzMem_Alloc(s32 size) {
+    return (s32)func_00197990(0x10, size);
 }
 
+/* Frees an allocation. */
 void SzMem_Free(s32 unused0) {
     func_00197C18(unused0);
 }
 
-char *SzMem_StrDup(char *arg0) {
-    char *temp_v0;
+/* A newly allocated copy of `str`, or 0. */
+char *SzMem_StrDup(char *str) {
+    char *copy;
 
-    if (arg0 == 0) {
+    if (str == 0) {
         return 0;
     }
-    temp_v0 = func_00197990(0x10, func_0019BEF0(arg0) + 1);
-    if (temp_v0 == 0) {
+    copy = func_00197990(0x10, func_0019BEF0(str) + 1);
+    if (copy == 0) {
         return 0;
     }
-    func_0019BDD8(temp_v0, arg0);
-    return temp_v0;
+    func_0019BDD8(copy, str);
+    return copy;
 }
 
 typedef struct {
@@ -87,13 +93,14 @@ typedef struct {
 void Taku_Prim_Set_SP1(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                    u8, u8, u8, u8, u8, u16, u8, s16);
 struct Sprite_00217CB0;
-extern struct Sprite_00217CB0 tex_uv_data[];
+extern struct Sprite_00217CB0 campaignSprites[]; /* original: tex_uv_data */
 
-void Taku_Obj_Set(s32 arg0, void *src, s16 dx, s16 dy) {
+/* Draws campaign sprite `src` (its picture from campaignSprites) moved by (dx, dy). */
+void Taku_Obj_Set(s32 packet, void *src, s16 dx, s16 dy) {
     Sprite_00217BD0 *sprite = src;
-    Entry_00217BD0 *entry = &((Entry_00217BD0 *)tex_uv_data)[sprite->index];
+    Entry_00217BD0 *entry = &((Entry_00217BD0 *)campaignSprites)[sprite->index];
 
-    Taku_Prim_Set_SP1(arg0, (s16)(sprite->x0 + dx), (s16)(sprite->y0 + dy),
+    Taku_Prim_Set_SP1(packet, (s16)(sprite->x0 + dx), (s16)(sprite->y0 + dy),
                    (s16)(sprite->x1 + dx), (s16)(sprite->y1 + dy),
                    entry->x, entry->y, entry->width, entry->height,
                    sprite->r, sprite->g, sprite->b, sprite->a,
@@ -124,16 +131,17 @@ typedef struct Source_00217CB0 {
     u16 sprite;
 } Source_00217CB0;
 
-extern Sprite_00217CB0 tex_uv_data[];
+extern Sprite_00217CB0 campaignSprites[]; /* original: tex_uv_data */
 
 void Taku_Prim_Set_SP1(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                    u8, u8, u8, u8, u8, u16, u8, s16);
 
-void Taku_Te_Set(s32 arg0, void *arg1, s16 x, s16 y) {
-    Source_00217CB0 *src = arg1;
-    Sprite_00217CB0 *sprite = &tex_uv_data[src->sprite];
+/* Draws campaign picture `srcIn` at (x, y) at its own size. */
+void Taku_Te_Set(s32 packet, void *srcIn, s16 x, s16 y) {
+    Source_00217CB0 *src = srcIn;
+    Sprite_00217CB0 *sprite = &campaignSprites[src->sprite];
 
-    Taku_Prim_Set_SP1(arg0, x, y, (s16)(x + sprite->width),
+    Taku_Prim_Set_SP1(packet, x, y, (s16)(x + sprite->width),
                    (s16)(y + sprite->height), sprite->u, sprite->v,
                    sprite->width, sprite->height, src->r, src->g, src->b,
                    src->a, src->flags0, sprite->texture, src->flags1, src->z);
@@ -162,11 +170,13 @@ typedef struct {
     u8 state[0x20];
 } Packet_00217D70;
 
-void Taku_Prim_Set_SP1(s32 arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+/* Draws a campaign sprite: screen rectangle (x0, y0)-(x1, y1) of texture `texture` at (u, v), in colour (r, g, b,
+   a), at `depth`. */
+void Taku_Prim_Set_SP1(s32 packetIn, s16 x0, s16 y0, s16 x1, s16 y1,
                    s16 u, s16 v, s16 width, s16 height,
                    u8 r, u8 g, u8 b, u8 a, u8 mode,
                    u16 texture, u8 flag, s16 depth) {
-    extern void *tex_data[];
+    extern void *campaignTextures[];
     extern void TAKU_SP_XYWH(void *, s16, s16, s16, s16, s32, s32);
     Packet_00217D70 packet __attribute__((aligned(8)));
 
@@ -186,9 +196,9 @@ void Taku_Prim_Set_SP1(s32 arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     ((Vertex_00217D70 *)packet.vertices)->v = (v * 16) + 8;
     ((Vertex_00217D70 *)(packet.vertices + 0x10))->u = ((u + width) * 16) + 8;
     ((Vertex_00217D70 *)(packet.vertices + 0x10))->v = ((v + height) * 16) + 8;
-    ExAssignTexture(packet.tag, tex_data[texture], 0);
+    ExAssignTexture(packet.tag, campaignTextures[texture], 0);
     ExAssignAlpha(packet.tag, 0x0000008000000044ULL);
-    ExSortPrim_Pipe(arg0, (s32)packet.tag, 0, 0);
+    ExSortPrim_Pipe(packetIn, (s32)packet.tag, 0, 0);
 }
 
 typedef struct {
@@ -205,8 +215,9 @@ typedef struct {
     Vertex_00217F90 second;
 } Packet_00217F90;
 
-void TAKU_SP_XYWH(void *arg0, s32 x, s32 y, s32 width, s32 height, s32 z, s32 f) {
-    Packet_00217F90 *packet = arg0;
+/* Sets a sprite's two corners from (x, y), width x height, at depth `z` and fog `f`. */
+void TAKU_SP_XYWH(void *sprite, s32 x, s32 y, s32 width, s32 height, s32 z, s32 f) {
+    Packet_00217F90 *packet = sprite;
 
     packet->first.x = (x + 0x6C0) * 0x10;
     packet->first.y = (y + 0x720) * 0x10;
@@ -240,10 +251,11 @@ void *Taku_Prim_Set_FT4_ST(void *, s16, s16, s16, s16, s16, s16, s16, s16,
                    s16, s16, s16, s16, s16, s16, s16, s16,
                    u8, u8, u8, u8, u8, u16, u8, s16);
 
+/* Draws campaign quad `src` (flat, textured) moved by (x, y), optionally flipped. */
 void *Taku_FT4_Set(void *packet, void *src, s16 x, s16 y, u16 flip) {
-    extern struct Sprite_00217CB0 tex_uv_data[];
+    extern struct Sprite_00217CB0 campaignSprites[];
     Sprite_00218020 *sprite = src;
-    Texture_00218020 *texture = &((Texture_00218020 *)tex_uv_data)[sprite->texture];
+    Texture_00218020 *texture = &((Texture_00218020 *)campaignSprites)[sprite->texture];
     s32 flip_u = 0;
     s32 flip_v = 0;
 
@@ -304,7 +316,8 @@ typedef struct {
     u8 state[0x20];
 } Packet_00218340;
 
-void *Taku_Prim_Set_FT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+/* Draws a flat textured quad with the four corners and texture coordinates given. */
+void *Taku_Prim_Set_FT4(void *packetIn, s16 x0, s16 y0, s16 x1, s16 y1,
                     s16 x2, s16 y2, s16 x3, s16 y3,
                     s16 u0, s16 v0, s16 u1, s16 v1,
                     s16 u2, s16 v2, s16 u3, s16 v3,
@@ -312,7 +325,7 @@ void *Taku_Prim_Set_FT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
                     u16 texture, u8 flag, s16 depth) {
     extern void TAKU_FT4_XYWH(void *, s16, s16, s32, u8, s16, s16, s32, u8,
                               s16, s16, s32, u8, s16, s16, s32, u8);
-    extern void *tex_data[];
+    extern void *campaignTextures[];
     Packet_00218340 packet __attribute__((aligned(8)));
     s32 z;
 
@@ -338,9 +351,9 @@ void *Taku_Prim_Set_FT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     ((Vertex_00218340 *)(packet.vertices + 0x20))->v = (v2 * 16) + 8;
     ((Vertex_00218340 *)(packet.vertices + 0x30))->u = (u3 * 16) + 8;
     ((Vertex_00218340 *)(packet.vertices + 0x30))->v = (v3 * 16) + 8;
-    ExAssignTexture(packet.tag, tex_data[texture], 0);
+    ExAssignTexture(packet.tag, campaignTextures[texture], 0);
     ExAssignAlpha(packet.tag, 0x0000008000000088ULL);
-    return (void *)ExSortPrim_Pipe((s32)arg0, (s32) packet.tag, 0, 0);
+    return (void *)ExSortPrim_Pipe((s32)packetIn, (s32) packet.tag, 0, 0);
 }
 
 typedef struct {
@@ -363,6 +376,7 @@ typedef struct {
     u8 padding[0x20];
 } Packet_002185E0;
 
+/* Fills a GIF tag. */
 static inline void init_002185E0(void *packet) {
     *(s16 *)((u8 *)packet + 2) = 0x24;
     *(s16 *)packet = 9;
@@ -370,20 +384,21 @@ static inline void init_002185E0(void *packet) {
     *(s32 *)((u8 *)packet + 4) = 0;
 }
 
-void *Taku_Prim_Set_FT4_ST(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+/* Draws a flat textured quad with the four corners and ST texture coordinates given. */
+void *Taku_Prim_Set_FT4_ST(void *packetIn, s16 x0, s16 y0, s16 x1, s16 y1,
                     s16 x2, s16 y2, s16 x3, s16 y3,
                     s16 u0, s16 v0, s16 u1, s16 v1,
                     s16 u2, s16 v2, s16 u3, s16 v3,
                     u8 r, u8 g, u8 b, u8 a,
                     u8 unused0, u16 texture, u8 unused1, s16 z) {
-    extern void *tex_data[];
+    extern void *campaignTextures[];
     extern void TAKU_FT4_XYWH(void *, s16, s16, s32, u8, s16, s16, s32, u8,
                               s16, s16, s32, u8, s16, s16, s32, u8);
     void **textures;
     Packet_002185E0 packet __attribute__((aligned(8)));
     s32 depth;
 
-    textures = tex_data;
+    textures = campaignTextures;
     ExGetMyOT();
     init_002185E0(&packet);
     packet.color.r = r;
@@ -404,7 +419,7 @@ void *Taku_Prim_Set_FT4_ST(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     packet.vertex[3].t = (0.5f + (f32)v3) / 256.0f;
     ExAssignTexture(&packet, textures[texture], 0);
     ExAssignAlpha(&packet, 0x8000000088LL);
-    return (void *)ExSortPrim_Pipe((s32)arg0, (s32)&packet, 0, 0);
+    return (void *)ExSortPrim_Pipe((s32)packetIn, (s32)&packet, 0, 0);
 }
 
 typedef struct {
@@ -420,11 +435,12 @@ typedef struct {
     Vertex_00218840 vertices[4];
 } Packet_00218840;
 
-void TAKU_FT4_XYWH(void *arg0, u16 x0, u16 y0, s32 z0, u8 f0,
+/* Sets a flat quad's four corners (x, y, depth, fog). */
+void TAKU_FT4_XYWH(void *prim, u16 x0, u16 y0, s32 z0, u8 f0,
                    u16 x1, u16 y1, s32 z1, u8 f1,
                    u16 x2, u16 y2, s32 z2, u8 f2,
                    u16 x3, u16 y3, s32 z3, u8 f3) {
-    Packet_00218840 *p = arg0;
+    Packet_00218840 *p = prim;
 
     p->vertices[0].x = (x0 + 0x6C0) * 0x10;
     p->vertices[0].y = (y0 + 0x720) * 0x10;
@@ -461,10 +477,11 @@ void Taku_Prim_Set_G4(void *, s16, s16, s16, s16, s16, s16, s16, s16,
                   u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u16,
                   s16);
 
-void Taku_G4_Set(void *arg0, void *src, s16 x, s16 y) {
+/* Draws campaign colour quad `src` moved by (x, y). */
+void Taku_G4_Set(void *packet, void *src, s16 x, s16 y) {
     Quad_00218970 *quad = (Quad_00218970 *)src;
 
-    Taku_Prim_Set_G4(arg0,
+    Taku_Prim_Set_G4(packet,
         quad->x0 + x, quad->y0 + y,
         quad->x1 + x, quad->y1 + y,
         quad->x2 + x, quad->y2 + y,
@@ -493,10 +510,11 @@ void Taku_Prim_Set_G4(void *, s16, s16, s16, s16, s16, s16, s16, s16,
                   u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u16,
                   s16);
 
-void Taku_G4_Set2(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
+/* Draws campaign colour quad `src` moved by (x, y) and stretched by (dx, dy). */
+void Taku_G4_Set2(void *packet, void *src, s16 x, s16 y, s16 dx, s16 dy) {
     Quad_00218AB0 *quad = (Quad_00218AB0 *)src;
 
-    Taku_Prim_Set_G4(arg0,
+    Taku_Prim_Set_G4(packet,
         quad->x0 + x, quad->y0 + y,
         dx + (quad->x1 + x), dy + (quad->y1 + y),
         quad->x2 + x, quad->y2 + y,
@@ -527,7 +545,8 @@ typedef struct {
     u64 end;
 } Packet_00218C10;
 
-void Taku_Prim_Set_G4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+/* Draws a Gouraud-shaded quad with the four corners and colours given. */
+void Taku_Prim_Set_G4(void *packetIn, s16 x0, s16 y0, s16 x1, s16 y1,
                    s16 x2, s16 y2, s16 x3, s16 y3,
                    u8 r0, u8 g0, u8 b0, u8 a0,
                    u8 r1, u8 g1, u8 b1, u8 a1,
@@ -584,7 +603,7 @@ void Taku_Prim_Set_G4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
         ExAssignAlpha(packet.tag, ExGetAlphaVal(0));
         break;
     }
-    ExSortPrim_Pipe((s32)arg0, (s32)packet.tag, 0, 0);
+    ExSortPrim_Pipe((s32)packetIn, (s32)packet.tag, 0, 0);
 }
 
 typedef struct {
@@ -594,11 +613,12 @@ typedef struct {
     u64 fog : 8;
 } Vertex_00218E80;
 
-void TAKU_G4_XYWH(void *arg0, u16 x0, u16 y0, s32 z0, u8 fog0,
+/* Sets a Gouraud quad's four corners (x, y, depth, fog). */
+void TAKU_G4_XYWH(void *prim, u16 x0, u16 y0, s32 z0, u8 fog0,
                    u16 x1, u16 y1, s32 z1, u8 fog1,
                    u16 x2, u16 y2, s32 z2, u8 fog2,
                    u16 x3, u16 y3, s32 z3, u8 fog3) {
-    Vertex_00218E80 *vertices = (Vertex_00218E80 *)((u8 *)arg0 + 0x18);
+    Vertex_00218E80 *vertices = (Vertex_00218E80 *)((u8 *)prim + 0x18);
 
     vertices[0].x = (x0 + 0x6C0) * 0x10;
     vertices[0].y = (y0 + 0x720) * 0x10;
@@ -652,13 +672,14 @@ void Taku_Prim_Set_GT4(void *, s16, s16, s16, s16, s16, s16, s16, s16,
                    u16, u8, s16);
 
 struct Sprite_00217CB0;
-extern struct Sprite_00217CB0 tex_uv_data[];
+extern struct Sprite_00217CB0 campaignSprites[]; /* original: tex_uv_data */
 
-void Taku_GT4_Set(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
+/* Draws campaign textured colour quad `src` moved by (x, y) and stretched by (dx, dy). */
+void Taku_GT4_Set(void *packet, void *src, s16 x, s16 y, s16 dx, s16 dy) {
     Quad_00218FB0 *quad = (Quad_00218FB0 *)src;
-    Entry_00218FB0 *entry = &((Entry_00218FB0 *)tex_uv_data)[quad->index];
+    Entry_00218FB0 *entry = &((Entry_00218FB0 *)campaignSprites)[quad->index];
 
-    Taku_Prim_Set_GT4(arg0,
+    Taku_Prim_Set_GT4(packet,
         quad->x0 + x, quad->y0 + y,
         dx + (quad->x1 + x), dy + (quad->y1 + y),
         quad->x2 + x, quad->y2 + y,
@@ -688,6 +709,7 @@ typedef struct {
     u8 padding[0x20];
 } Packet_00219180;
 
+/* Fills a GIF tag. */
 static inline void init_00219180(void *packet) {
     *(s16 *)((u8 *)packet + 2) = 0x34;
     *(s16 *)packet = 0xC;
@@ -695,7 +717,8 @@ static inline void init_00219180(void *packet) {
     *(s32 *)((u8 *)packet + 4) = 0;
 }
 
-void Taku_Prim_Set_GT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
+/* Draws a Gouraud-shaded textured quad with the four corners, texture coordinates and colours given. */
+void Taku_Prim_Set_GT4(void *packetIn, s16 x0, s16 y0, s16 x1, s16 y1,
                    s16 x2, s16 y2, s16 x3, s16 y3,
                    s16 u0, s16 v0, s16 u1, s16 v1,
                    s16 u2, s16 v2, s16 u3, s16 v3,
@@ -704,7 +727,7 @@ void Taku_Prim_Set_GT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
                    u8 r2, u8 g2, u8 b2, u8 a2,
                    u8 r3, u8 g3, u8 b3, u8 a3,
                    u8 unused0, u16 texture, u8 unused1, s16 z) {
-    extern void *tex_data[];
+    extern void *campaignTextures[];
     extern s32 SzDuel_TrimUnitDir2();
     void **textures;
     Packet_00219180 packet;
@@ -712,7 +735,7 @@ void Taku_Prim_Set_GT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     f32 height;
     s32 depth;
 
-    textures = tex_data;
+    textures = campaignTextures;
     ExGetMyOT();
     init_00219180(&packet);
     packet.vertex[0].r = r0;
@@ -758,7 +781,7 @@ void Taku_Prim_Set_GT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     packet.vertex[3].t = (0.5f + (f32)v3) / height;
     ExAssignTexture(&packet, textures[texture], 0);
     ExAssignAlpha(&packet, ExGetAlphaVal(0));
-    ExSortPrim_Pipe((s32)arg0, (s32)&packet, 0, 0);
+    ExSortPrim_Pipe((s32)packetIn, (s32)&packet, 0, 0);
 }
 
 typedef union {
@@ -787,11 +810,12 @@ typedef struct {
     XYZ_002194B0 v3;
 } Packet_002194B0;
 
-void TAKU_GT4_XYWH(void *arg0, s16 x0, s16 y0, s32 z0, u8 fog0,
+/* Sets a Gouraud textured quad's four corners (x, y, depth, fog). */
+void TAKU_GT4_XYWH(void *prim, s16 x0, s16 y0, s32 z0, u8 fog0,
                    s16 x1, s16 y1, s32 z1, u8 fog1,
                    s16 x2, s16 y2, s32 z2, u8 fog2,
                    s16 x3, s16 y3, s32 z3, u8 fog3) {
-    Packet_002194B0 *packet = arg0;
+    Packet_002194B0 *packet = prim;
 
     packet->v0.coords.x = (x0 + 0x6C0) * 0x10;
     packet->v0.coords.y = (y0 + 0x720) * 0x10;

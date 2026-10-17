@@ -1,7 +1,8 @@
 #include "common.h"
 
-void Taku_Coord_Init(void *arg0) {
-    f32 *values = arg0;
+/* Sets a campaign coordinate record to scale 1, no rotation, no move. */
+void Taku_Coord_Init(void *coord) {
+    f32 *values = coord;
 
     values[3] = 1.0f;
     values[2] = 1.0f;
@@ -22,33 +23,37 @@ typedef struct {
     f32 m[4][4];
 } Matrix_0021BB20;
 
-void Taku_Coord_Set(u8 *arg0) {
+/* Builds a campaign coordinate record's matrix: world-to-screen times its scale, rotation and position. */
+void Taku_Coord_Set(u8 *coord) {
     Matrix_0021BB20 matrix;
 
-    RhView_GetWorldScreenMatrix(arg0 + 0x30);
-    RhGeom_GetScaleRotXYZTransMatrix(&matrix, arg0, arg0 + 0x10, arg0 + 0x20);
-    RhGeom_MulMatrix((s32)(arg0 + 0x30), &matrix);
+    RhView_GetWorldScreenMatrix(coord + 0x30);
+    RhGeom_GetScaleRotXYZTransMatrix(&matrix, coord, coord + 0x10, coord + 0x20);
+    RhGeom_MulMatrix((s32)(coord + 0x30), &matrix);
 }
 
-void Taku_Vector_Set(void *arg0, void *arg1) {
-    ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
-    ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
-    ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
+/* Copies a 3-float vector. */
+void Taku_Vector_Set(void *dst, void *src) {
+    ((f32 *)dst)[0] = ((f32 *)src)[0];
+    ((f32 *)dst)[1] = ((f32 *)src)[1];
+    ((f32 *)dst)[2] = ((f32 *)src)[2];
 }
 
-void Taku_3D_2D_Set(s32 *arg0, s32 *arg1, s32 arg2) {
+/* The screen position of world point `point` on the campaign map into (outX, outY); -1 when off screen. */
+void Taku_3D_2D_Set(s32 *outX, s32 *outY, s32 point) {
     u16 projected[6];
     s32 depth;
 
-    if (Ex3d_RotTransPers(arg2, D_00299F90, projected, &depth) != 0) {
-        *arg0 = ((s32) projected[0] >> 4) - 0x6C0;
-        *arg1 = ((s32) projected[1] >> 4) - 0x720;
+    if (Ex3d_RotTransPers(point, D_00299F90, projected, &depth) != 0) {
+        *outX = ((s32) projected[0] >> 4) - 0x6C0;
+        *outY = ((s32) projected[1] >> 4) - 0x720;
     } else {
-        *arg0 = -1;
-        *arg1 = -1;
+        *outX = -1;
+        *outY = -1;
     }
 }
 
+/* Builds a smooth path through `count` points (a cubic spline), `spacing` apart, into outX / outY. */
 void Taku_spline2(f32 *outX, f32 *outY, s16 *outCount, f32 *points,
                    f32 *intervals, s32 count, s16 mode, f32 spacing) {
     f32 lower[64];
@@ -173,10 +178,12 @@ void Taku_spline2(f32 *outX, f32 *outY, s16 *outCount, f32 *points,
     }
 }
 
+/* The slope term of a cubic spline at a point from its neighbours and intervals. */
 f32 func_0021C320(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4) {
     return 3.0f * (((fparg4 * (fparg1 - fparg0)) / fparg3) + ((fparg3 * (fparg2 - fparg1)) / fparg4));
 }
 
+/* Solves a tridiagonal system of n equations (for the spline). */
 void tri_diag(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
     f32 gamma[64];
     f32 denominator;
@@ -194,14 +201,15 @@ void tri_diag(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
     }
 }
 
-s32 Taku_Bunsyou_Set(s32 arg0, s32 arg1, s32 arg2, s64 arg3, s64 arg4, s32 arg5, s32 arg6) {
+/* Draws message `msg` in text slot `slot` at (x, y) in colour `color` (loads, draws and frees it). */
+s32 Taku_Bunsyou_Set(s32 packet, s32 slot, s32 msg, s64 x, s64 y, s32 arg5, s32 color) {
     s32 result;
     s32 object;
 
-    object = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, arg1, arg2, 0, arg1 * 22));
-    SzMsg_GetInfo(arg1);
-    result = SzMsg_DrawRatioX_Pipe(object, arg1, (s16)arg3, (s16)arg4, 1.0f, 1.0f, arg6, SzMsg_DrawRect_Pipe);
-    SzMsg_Free(arg1);
+    object = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, slot, msg, 0, slot * 22));
+    SzMsg_GetInfo(slot);
+    result = SzMsg_DrawRatioX_Pipe(object, slot, (s16)x, (s16)y, 1.0f, 1.0f, color, SzMsg_DrawRect_Pipe);
+    SzMsg_Free(slot);
     return result;
 }
 
@@ -293,6 +301,8 @@ extern int func_001F93F0_b(int a, int b, int c, int d);
         board->seen[i] = 0; \
     }
 
+/* Starts the campaign map (`mode` says from where): loads its models, places the castles, the leaders and the
+   camera. */
 void TkCamp_Init(int mode)
 {
     
@@ -314,7 +324,7 @@ void TkCamp_Init(int mode)
     int flag;
     short m;
 
-    Move_END_flg = 0;
+    campaignMoveDone = 0;
     Taku_Camp_Data_Init();
     Taku_spline_init();
     Taku_Camp_3D_Poly_Init();
@@ -621,13 +631,14 @@ typedef struct Entry_0021D480 {
     u16 other[5];
 } Entry_0021D480;
 
-extern u16 DeckTab[];
-extern Entry_0021D480 DeckDat[];
-extern s8 HELP_flg;
+extern u16 campaignDeckTable[]; /* original: DeckTab */
+extern Entry_0021D480 campaignDecks[]; /* original: DeckDat */
+extern s8 campaignHelpFlag; /* original: HELP_flg */
 
+/* Sets up the campaign state from the save: the decks, the places, the help flag. */
 void Taku_Camp_Data_Init(void) {
     u8 *base = (u8 *)0x01ED0000;
-    u8 *record = (u8 *)&save_data;
+    u8 *record = (u8 *)&campaignState;
     f32 eye[4];
     f32 target[4];
     f32 up[4];
@@ -744,9 +755,9 @@ void Taku_Camp_Data_Init(void) {
         } while (clear_count < 32);
     }
 
-    if (HELP_flg != 0) {
+    if (campaignHelpFlag != 0) {
         *(Buffer_0021D480 *)SzData_GetData(0) = *(Buffer_0021D480 *)0x01E301E0;
-        HELP_flg = 0;
+        campaignHelpFlag = 0;
     }
     n = 0;
     total = 0;
@@ -759,9 +770,9 @@ void Taku_Camp_Data_Init(void) {
     shift = 0;
     halves = (u16 *)0x01ED0000;
     for (; j < 3; j++) {
-        halves[0x53F8 / 2] = ((s32)DeckTab[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
+        halves[0x53F8 / 2] = ((s32)campaignDeckTable[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
         shift += 5;
-        halves[0x53FE / 2] = DeckDat[halves[0x53F8 / 2]].value & 0x3FF;
+        halves[0x53FE / 2] = campaignDecks[halves[0x53F8 / 2]].value & 0x3FF;
         halves++;
     }
 }
@@ -772,23 +783,24 @@ typedef struct Coord_0021D850 {
     f32 z;
 } Coord_0021D850;
 
-extern u8 model_data[];
+extern u8 campaignPlaces[]; /* original: model_data */
 extern u8 D_00298BA8[];
 extern s8 D_00299ED6;
 extern s8 D_00299ED7;
-extern u8 prim_data;
+extern u8 campaignCoord; /* original: prim_data */
 
+/* Points the camera at the current place and works out every place's screen position. */
 void Taku_Screen_Init(void) {
-    s16 var_s0;
-    u8 *var_s1;
-    s32 *var_s2;
+    s16 place;
+    u8 *placeData;
+    s32 *screen;
     Coord_0021D850 pos;
 
-    Taku_Coord_Set(&prim_data);
-    *(f32 *)0x01ED0040 = *(f32 *)(model_data + D_00299ED6 * 0x34);
+    Taku_Coord_Set(&campaignCoord);
+    *(f32 *)0x01ED0040 = *(f32 *)(campaignPlaces + D_00299ED6 * 0x34);
     *(f32 *)0x01ED0044 = 0.0f;
     *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
-    *(f32 *)0x01ED0040 = *(f32 *)(model_data + D_00299ED7 * 0x34);
+    *(f32 *)0x01ED0040 = *(f32 *)(campaignPlaces + D_00299ED7 * 0x34);
     *(f32 *)0x01ED0044 = 0.0f;
     *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED7 * 0x34);
     *(f32 *)0x01ED0030 = *(f32 *)0x01ED0040;
@@ -796,24 +808,25 @@ void Taku_Screen_Init(void) {
     *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
     *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
     SzView_SetCamera(0, (void *)0x01ED0030, (void *)0x01ED0040);
-    var_s1 = model_data;
-    var_s0 = 0;
-    var_s2 = (s32 *)0x01ED0000;
-    while (var_s0 <= 0x15) {
-        pos.x = *(f32 *)var_s1;
-        pos.y = 8.65f + *(f32 *)(var_s1 + 4);
-        pos.z = *(f32 *)(var_s1 + 8);
-        Taku_3D_2D_Set((s32 *)((u8 *)var_s2 + 0x8C), (s32 *)((u8 *)var_s2 + 0x10C), (s32)&pos);
-        var_s1 += 0x34;
-        var_s2++;
-        var_s0++;
+    placeData = campaignPlaces;
+    place = 0;
+    screen = (s32 *)0x01ED0000;
+    while (place <= 0x15) {
+        pos.x = *(f32 *)placeData;
+        pos.y = 8.65f + *(f32 *)(placeData + 4);
+        pos.z = *(f32 *)(placeData + 8);
+        Taku_3D_2D_Set((s32 *)((u8 *)screen + 0x8C), (s32 *)((u8 *)screen + 0x10C), (s32)&pos);
+        placeData += 0x34;
+        screen++;
+        place++;
     }
     *(s16 *)0x01ED0000 = 0x140;
     *(s16 *)0x01ED0002 = 0xBE;
 }
 
+/* Draws the campaign map's 3D layer: the map, the clouds, the stone. */
 void TkCamp_Draw(void) {
-    if (Move_END_flg == 0) {
+    if (campaignMoveDone == 0) {
         RhBase_SetVifPacketArea(TkCamp_Draw_Pipe(RhBase_GetVifPacketArea()));
     }
 }
@@ -829,10 +842,12 @@ extern s16 D_00298ADA;
 extern Vec4_0021DAA0 D_0029A7B0;
 extern Vec4_0021DAA0 D_0029A7C0;
 
+/* A screen y moved by the scroll. */
 static inline s32 offset_y_0021DAA0(s32 y) {
     return (s16)y - 0x100;
 }
 
+/* Draws the campaign map's 2D layer: the windows, the opponent's model in its window, the won card. */
 void TkCamp_Draw_After(void) {
     extern void *Taku_G4_Set(void *, void *, s16, s16);
     Vec4_0021DAA0 sp80;
@@ -848,9 +863,9 @@ void TkCamp_Draw_After(void) {
     s8 temp_a1;
     void *var_s6;
 
-    state = &save_data;
+    state = &campaignState;
     angle = ((*(s16 *)0x01ED5478 << 10) >> 12) - 0x200;
-    if (Move_END_flg == 0) {
+    if (campaignMoveDone == 0) {
         var_s6 = Taku_Camp_2D(RhBase_GetVifPacketArea());
         temp_v0 = *(s16 *)0x01ED006C;
         if (temp_v0 != 0) {
@@ -896,50 +911,51 @@ void TkCamp_Draw_After(void) {
     }
 }
 
-s32 TkCamp_Draw_Pipe(s32 arg0) {
+/* Draws the campaign map into the packet. */
+s32 TkCamp_Draw_Pipe(s32 packet) {
     extern s16 D_00299ED2;
     extern s32 Taku_Camp_3D();
     extern s32 Taku_Camp_Kumo();
     u8 *rec;
     s32 v;
 
-    rec = (u8 *)&save_data;
+    rec = (u8 *)&campaignState;
     if (D_00299ED2 >= 0x2710) {
         v = *(s16 *)(rec + 0xC2);
         switch (v) {
         case 0x2B98:
             if (*(s16 *)0x01ED536C < 2) {
-                arg0 = Taku_Camp_3D(arg0);
+                packet = Taku_Camp_3D(packet);
             } else {
-                arg0 = Taku_Camp_STON(arg0);
+                packet = Taku_Camp_STON(packet);
             }
             break;
         case 0x2B9A:
             if (*(s16 *)0x01ED536C >= 9) {
-                arg0 = Taku_Camp_3D(arg0);
+                packet = Taku_Camp_3D(packet);
             } else {
-                arg0 = Taku_Camp_STON(arg0);
+                packet = Taku_Camp_STON(packet);
             }
             break;
         case 0x2BAC:
             if (*(s16 *)0x01ED536C >= 2) {
-                arg0 = Taku_Camp_STON(arg0);
+                packet = Taku_Camp_STON(packet);
             } else {
-                arg0 = Taku_Camp_3D(arg0);
+                packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2F64:
             if (*(s16 *)0x01ED536C < 0xA) {
-                arg0 = Taku_Camp_STON(arg0);
+                packet = Taku_Camp_STON(packet);
             } else {
-                arg0 = Taku_Camp_3D(arg0);
+                packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2F76:
             if (*(s16 *)0x01ED536C > 1) {
-                arg0 = Taku_Camp_STON(arg0);
+                packet = Taku_Camp_STON(packet);
             } else {
-                arg0 = Taku_Camp_3D(arg0);
+                packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2AF8:
@@ -950,23 +966,23 @@ s32 TkCamp_Draw_Pipe(s32 arg0) {
         case 0x2F78:
         case 0x2F7A:
         case 0x2F7C:
-            arg0 = Taku_Camp_STON(arg0);
+            packet = Taku_Camp_STON(packet);
             break;
         default:
             if (v < 0x2AF8) {
-                arg0 = Taku_Camp_STON(arg0);
+                packet = Taku_Camp_STON(packet);
             } else {
-                arg0 = Taku_Camp_3D(arg0);
+                packet = Taku_Camp_3D(packet);
             }
             break;
         }
     } else {
-        arg0 = Taku_Camp_3D(arg0);
+        packet = Taku_Camp_3D(packet);
     }
     if (*(s16 *)(rec + 0xC2) >= 0x2710) {
-        arg0 = Taku_Camp_Kumo(arg0);
+        packet = Taku_Camp_Kumo(packet);
     }
-    return arg0;
+    return packet;
 }
 
 typedef struct {
@@ -1022,6 +1038,7 @@ typedef struct {
     u8 pad84[0xC];
 } View_0021DFF0;
 
+/* Sets a sprite corner's texture coordinates. */
 static inline void set_uv_0021DFF0(UV_0021DFF0 *p, s32 u, s32 v) {
     p->u = u;
     p->v = v;
@@ -1034,6 +1051,7 @@ typedef struct {
     f32 w;
 } Vec4_0021DFF0;
 
+/* Draws the opponent's (teki) model `id` rendered into a texture at (x, y), w x h, with `alpha`. */
 void *Taku_Camp_Teki_Model_Disp(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha) {
     extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     View_0021DFF0 view;

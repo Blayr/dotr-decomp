@@ -279,7 +279,7 @@ extern u16 D_002CE4A4[];
 extern s64 alphaBlendModes[]; /* original: gExPrim_aqwAlpha */
 
 
-extern s8 Move_END_flg;
+extern s8 campaignMoveDone; /* original: Move_END_flg */
 extern s32 isWithAudio;
 extern u8 audioDec[];
 
@@ -376,7 +376,7 @@ extern s32 eventLoadedScene; /* original: gSzEvent_nSave */
 
 extern u8 D_003181EC;
 
-extern s8 save_data;
+extern s8 campaignState; /* original: save_data */
 extern s16 D_00299ED4;
 
 

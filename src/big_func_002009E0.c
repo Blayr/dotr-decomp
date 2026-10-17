@@ -26,6 +26,7 @@ extern s32 D_00293CC4;
 extern s32 D_00293CC8;
 extern s32 D_00293CCC;
 
+/* A texture item by category and type. */
 static inline Slot_002009E0 *find_002009E0(s32 cat, s32 type) {
     Slot_002009E0 *p;
     s32 i;
@@ -42,7 +43,9 @@ static inline Slot_002009E0 *find_002009E0(s32 cat, s32 type) {
     return NULL;
 }
 
-s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
+/* Loads the merged texture set `set` for game mode `mode` (card pictures of both decks, portraits, windows),
+   unless already loaded. */
+s32 SzText_LoadMerge(s32 set, s32 mode) {
     char name[0x80];
     u16 ids[41];
     u16 list[17];
@@ -66,25 +69,25 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
 
     dir = SzFile_GetEnv((s32)D_002D074B);
     result = 0;
-    if (arg0 < 0 || arg0 >= 18) {
+    if (set < 0 || set >= 18) {
         return 0;
     }
-    switch (arg0) {
+    switch (set) {
     case 0:
         func_0019B648(name, D_002D0750, dir, gSzText_apchMerge);
         if (find_002009E0(0, 0) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 1) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 5) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 6) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         for (i = 0; i < 5; i++) {
@@ -144,18 +147,18 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
     case 1:
         func_0019B648(name, D_002D0750, dir, D_00293CD4);
         if (find_002009E0(0, 1) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 0) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 5) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 6) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 0);
@@ -169,7 +172,7 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         break;
     case 2:
     case 3:
-        idx = arg0 - 2;
+        idx = set - 2;
         got = SzData_GetLeader(idx, SzData_GetCurrentDeck(idx));
         base = idx * 41 + 0xDF;
         func_0019B648(name, D_002D0750, dir, gSzText_apchMerge);
@@ -222,18 +225,18 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         }
         break;
     case 4:
-        result = SzText_LoadMerge(5, arg1);
-        result |= SzText_LoadMerge(6, arg1);
+        result = SzText_LoadMerge(5, mode);
+        result |= SzText_LoadMerge(6, mode);
         break;
     case 5:
     case 6:
-        idx = arg0 - 5;
+        idx = set - 5;
         got = SzData_GetLeader(idx, SzData_GetCurrentDeck(idx));
         func_0019B648(name, D_002D0750, dir, D_00293CD8);
         if (find_002009E0(2, idx) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(2, idx);
@@ -249,8 +252,8 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         result = SzText_LoadFileEx(2, idx, name, (s32)((s64)pos + 0xB19000), 0x1000, sector, 0x1000);
         break;
     case 7:
-        result = SzText_LoadMerge(8, arg1);
-        result |= SzText_LoadMerge(9, arg1);
+        result = SzText_LoadMerge(8, mode);
+        result |= SzText_LoadMerge(9, mode);
         break;
     case 8:
     case 9:
@@ -263,7 +266,7 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
             s32 SEC8;
             s32 K8;
 
-            IDX8 = arg0 - 8;
+            IDX8 = set - 8;
             func_0019B648(name, D_002D0750, dir, D_00293CD8);
             SzText_Free(0, 7);
             SzText_Free(0, 8);
@@ -286,9 +289,9 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
     case 11:
         func_0019B648(name, D_002D0750, dir, D_00293CDC);
         if (find_002009E0(0, 3) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 3);
@@ -298,9 +301,9 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
     case 12:
         func_0019B648(name, D_002D0750, dir, D_00293CE0);
         if (find_002009E0(0, 4) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 4);
@@ -310,15 +313,15 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
     case 13:
         func_0019B648(name, D_002D0750, dir, D_00293CE4);
         if (find_002009E0(0, 5) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 0) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 1) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 0);
@@ -331,15 +334,15 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
     case 14:
         func_0019B648(name, D_002D0750, dir, D_00293CE8);
         if (find_002009E0(0, 6) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 0) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 1) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         for (i = 0; i < 5; i++) {
@@ -372,15 +375,15 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         len = D_00293CC4 - off;
         func_0019B648(name, D_002D0750, dir, D_00293CEC);
         if (find_002009E0(0, 7) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 8) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 9) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 7);
@@ -394,15 +397,15 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         len = D_00293CC8 - off;
         func_0019B648(name, D_002D0750, dir, D_00293CF0);
         if (find_002009E0(0, 8) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 7) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 9) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 8);
@@ -416,15 +419,15 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         len = D_00293CCC - off;
         func_0019B648(name, D_002D0750, dir, D_00293CF4);
         if (find_002009E0(0, 9) == NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 7) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
         if (find_002009E0(0, 8) != NULL) {
-            arg1 = 1;
+            mode = 1;
         }
-        if (arg1 == 0) {
+        if (mode == 0) {
             return 1;
         }
         SzText_Free(0, 9);

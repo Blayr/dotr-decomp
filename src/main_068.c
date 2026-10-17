@@ -20,9 +20,9 @@ typedef struct Item_0023B1F0 {
 
 /* Runs the campaign map's second half of a frame: its windows, events and the move to a duel. */
 void TkCamp_Act2(s32 param) {
-    extern u8 prim_data[];
-    extern Item_0023B1F0 model_data[];
-    extern s32 ACT2_Rock;
+    extern u8 campaignCoord[];
+    extern Item_0023B1F0 campaignPlaces[];
+    extern s32 campaignAct2Lock;
     extern void Taku_3D_2D_Set();
     Vec4_0023B1F0 top;
     u8 *work;
@@ -40,11 +40,11 @@ void TkCamp_Act2(s32 param) {
     s32 sy;
     s32 radius;
 
-    state = &save_data;
+    state = &campaignState;
     work = (u8 *)0x01ED0000;
     result = 0;
-    Taku_Coord_Set(prim_data);
-    item = model_data;
+    Taku_Coord_Set(campaignCoord);
+    item = campaignPlaces;
     for (i = 0, spot = (s32 *)work; i <= 21; i++) {
         show = 0;
         top.x = item->pos.x;
@@ -75,7 +75,7 @@ void TkCamp_Act2(s32 param) {
             Taku_3D_2D_Set(&spot[0x23], &spot[0x43], &top);
             Taku_3D_2D_Set(&sx, &sy, &side);
             radius = sx - spot[0x23];
-            if (ACT2_Rock == 0) {
+            if (campaignAct2Lock == 0) {
                 if (*(s8 *)(work + 0x5373) != 0) {
                     *(s16 *)(work + 0x0) = *(s16 *)(work + 0x8C + state[0xC6] * 4);
                     *(s16 *)(work + 0x2) = *(s16 *)(work + 0x10C + state[0xC6] * 4);
@@ -200,7 +200,7 @@ typedef struct Copy_0023B920 {
     s32 words[0x3FE8];
 } Copy_0023B920;
 
-extern s8 HELP_flg;
+extern s8 campaignHelpFlag; /* original: HELP_flg */
 
 /* Ends the campaign map: frees its models, textures and windows. */
 void TkCamp_Term(void) {
@@ -211,7 +211,7 @@ void TkCamp_Term(void) {
     s32 x;
     s32 y;
 
-    if (HELP_flg != 0) {
+    if (campaignHelpFlag != 0) {
         *(Copy_0023B920 *)0x01E301E0 = *(Copy_0023B920 *)SzData_GetData(0);
         a = SzData_GetOption(0, 0);
         b = SzData_GetOption(0, 1);
@@ -315,11 +315,11 @@ typedef struct Copy_0023BC80 {
     s32 words[0x3FE8];
 } Copy_0023BC80;
 
-extern s8 HELP_flg;
+extern s8 campaignHelpFlag; /* original: HELP_flg */
 
 /* Opens the campaign's help screen. */
 void Taku_Camp_Go_Help(void) {
-    HELP_flg = 1;
+    campaignHelpFlag = 1;
     *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)SzData_GetData(0);
     SzGame_Push(1, 0);
 }
@@ -550,9 +550,9 @@ typedef struct State_0023C170 {
 
 /* Resets the memory-card job state (`mode` picks the job). */
 s32 TakuCard_inti(s32 mode) {
-    extern void *p_kaban_data;
+    extern void *memCardTrunkData;
     extern void *D_0034FAEC;
-    extern s8 Taku_card_info;
+    extern s8 memCardJob;
     extern State_0023C170 D_0034FB00;
     extern s32 func_00194248(s32, s32 *, s32 *);
     extern s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
@@ -561,9 +561,9 @@ s32 TakuCard_inti(s32 mode) {
     s16 i;
     s32 *out;
 
-    p_kaban_data = SzData_GetData(0);
+    memCardTrunkData = SzData_GetData(0);
     D_0034FAEC = SzData_GetData(1);
-    Taku_card_info = 1;
+    memCardJob = 1;
     func_00195108((s32)&D_0034FB00, 0x840);
     D_0034FB00.field30 = 0;
     D_0034FB00.field34 = 0;
@@ -1789,13 +1789,13 @@ typedef struct Tail_0023DE90 {
 /* Writes the save file to the memory card. */
 s32 TakuSave_card_file_kakikomi(void) {
     extern struct State_0023E610 D_0034FB00;
-    extern s32 *p_kaban_data;
-    extern Header_0023DE90 Taku_card_info;
+    extern s32 *memCardTrunkData;
+    extern Header_0023DE90 memCardJob;
     Data_0023DE90 *data = (Data_0023DE90 *)&D_0034FB00;
     Header_0023DE90 *header;
     s32 *saveData;
 
-    saveData = (s32 *)&save_data;
+    saveData = (s32 *)&campaignState;
     switch (D_0034FB34) {
     case 0:
         data->ret = func_00193BA8(data->port, data->slot, D_0029B1BE, 2);
@@ -1888,7 +1888,7 @@ s32 TakuSave_card_file_kakikomi(void) {
         s32 *dst;
         s32 *src;
 
-        src = p_kaban_data;
+        src = memCardTrunkData;
         count = 0x1FF4;
         dst = (s32 *)((Buffer_0023DE90 *)0x01E10000)[data->port].pairs;
         do {
@@ -1900,7 +1900,7 @@ s32 TakuSave_card_file_kakikomi(void) {
             dst += 2;
         } while (count > 0);
         header = &((Buffer_0023DE90 *)0x01E10000)[data->port].header;
-        *header = Taku_card_info;
+        *header = memCardJob;
         *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)saveData;
         LkCheckData((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
         FlushCache(0);
@@ -2696,15 +2696,15 @@ typedef struct Tail_0023F5A0 {
 } Tail_0023F5A0;
 
 extern u8 D_0029B1BE[];
-extern s32 *p_kaban_data;
-extern Header_0023F5A0 Taku_card_info;
+extern s32 *memCardTrunkData; /* original: p_kaban_data */
+extern Header_0023F5A0 memCardJob; /* original: Taku_card_info */
 extern s16 D_0034FB34;
 
 /* Reads the save file from the memory card and checks it. */
 s32 TakuLoad_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023F5A0 *state = (State_0023F5A0 *)&D_0034FB00;
-    s32 *destination = (s32 *)&save_data;
+    s32 *destination = (s32 *)&campaignState;
 
     switch (D_0034FB34) {
     case 0:
@@ -2843,7 +2843,7 @@ s32 TakuLoad_card_file_open(void) {
                     state->state = 0;
                     state->phase = 0;
                     state->retries = 0;
-                    dst = p_kaban_data;
+                    dst = memCardTrunkData;
                     count = 0x1FF4;
                     src = (s32 *)((Save_0023F5A0 *)0x1E10000)[state->index].pairs;
                     do {
@@ -2854,7 +2854,7 @@ s32 TakuLoad_card_file_open(void) {
                         dst[1] = second;
                         dst += 2;
                     } while (count > 0);
-                    Taku_card_info = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
+                    memCardJob = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((Save_0023F5A0 *)0x1E10000)[state->index].tail;
                     if (LkCheckData((u16 *)&((Save_0023F5A0 *)0x1E10000)[state->index]) != 0) {
                         TakuLoad_Name_Set(state->parameter);
@@ -2906,7 +2906,7 @@ void TakuLoad_Name_Set(s32 side) {
     u16 v;
     s32 off2;
 
-    src = (u8 *)&save_data;
+    src = (u8 *)&campaignState;
     if (side == 0) {
         i = 0;
         offset = 0;
@@ -3078,7 +3078,7 @@ s32 TakuCustom_card_file_open(void) {
     s32 *destination;
 
     state = (State_0023FF30 *)&D_0034FB00;
-    destination = (s32 *)&save_data;
+    destination = (s32 *)&campaignState;
     switch (D_0034FB34) {
     case 0:
         state->request = func_00193BA8(state->port, state->slot, D_0029B1BE, 1);
@@ -3218,7 +3218,7 @@ s32 TakuCustom_card_file_open(void) {
                             s32 *dst;
                             s32 *src;
 
-                            dst = (s32 *)p_kaban_data;
+                            dst = (s32 *)memCardTrunkData;
                             src = (s32 *)((u8 *)0x01E10004 + state->port * 0x100F0);
                             count = 0x1FF4;
                             do {
@@ -3230,7 +3230,7 @@ s32 TakuCustom_card_file_open(void) {
                                 dst += 2;
                             } while (count > 0);
                         }
-                        Taku_card_info = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                        memCardJob = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                         *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
                         if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
                             TakuLoad_Name_Set(state->port);
@@ -3262,7 +3262,7 @@ s32 TakuCustom_card_file_open(void) {
                             dst += 2;
                         } while (count > 0);
                     }
-                    Taku_card_info = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                    memCardJob = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
                     if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
                         TakuLoad_Name_Set(state->port);
@@ -3492,7 +3492,7 @@ extern s16 D_0034FB34;
 /* Writes the save file after a trade. */
 s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
     extern s32 func_00193DD0();
-    extern s32 *p_kaban_data;
+    extern s32 *memCardTrunkData;
     extern struct State_0023E610 D_0034FB00;
     s32 second;
     s32 first;
@@ -3603,7 +3603,7 @@ s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
         }
         return 0;
     case 2:
-        source = (&p_kaban_data)[io->slot];
+        source = (&memCardTrunkData)[io->slot];
         count = 0x1FF4;
         dest = (s32 *)((u8 *)0x01E10004 + io->slot * 0x100F0);
         do {

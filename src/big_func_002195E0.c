@@ -20,13 +20,14 @@ typedef struct {
     u8 pad12[2];
 } Tex_002195E0;
 
-extern Tex_002195E0 tex_uv_data[];
-extern u16 window_tex_no[][0x100];
+extern Tex_002195E0 campaignSprites[]; /* original: tex_uv_data */
+extern u16 windowTextureTable[][0x100]; /* original: window_tex_no */
 
+/* Draws one window piece. */
 static inline s32 sprite_002195E0(s32 p, Prim_002195E0 *s, s16 dx, s16 dy) {
     extern s32 func_00217D70(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                                u8, u8, u8, u8, u8, u16, u8, s16);
-    Tex_002195E0 *e = &tex_uv_data[s->index];
+    Tex_002195E0 *e = &campaignSprites[s->index];
 
     return func_00217D70(p, (s16)(s->x0 + dx), (s16)(s->y0 + dy),
                          (s16)(s->x1 + dx), (s16)(s->y1 + dy),
@@ -35,10 +36,11 @@ static inline s32 sprite_002195E0(s32 p, Prim_002195E0 *s, s16 dx, s16 dy) {
                          s->data[16], e->texture, s->flag, s->depth);
 }
 
+/* Draws one window piece mirrored. */
 static inline s32 flipped_002195E0(s32 p, Prim_002195E0 *s, s16 dx, s16 dy) {
     extern s32 func_00217D70(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                                u8, u8, u8, u8, u8, u16, u8, s16);
-    Tex_002195E0 *e = &tex_uv_data[s->index];
+    Tex_002195E0 *e = &campaignSprites[s->index];
 
     return func_00217D70(p, (s16)(s->x0 + dx), (s16)(s->y0 + dy),
                          (s16)(s->x1 + dx), (s16)(s->y1 + dy),
@@ -47,6 +49,7 @@ static inline s32 flipped_002195E0(s32 p, Prim_002195E0 *s, s16 dx, s16 dy) {
                          s->data[16], e->texture, s->flag, s->depth);
 }
 
+/* Draws one window quad. */
 static inline s32 quad_002195E0(s32 p, Prim_002195E0 *q, s16 x, s16 y) {
     extern s32 func_00218C10(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                                u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u8, u16,
@@ -64,6 +67,7 @@ static inline s32 quad_002195E0(s32 p, Prim_002195E0 *q, s16 x, s16 y) {
         q->data[16], q->depth);
 }
 
+/* Draws a campaign window frame for rectangle `rect_arg` in `style`, moved by (dx, dy), at `depth`, with `alpha`. */
 s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, u16 depth,
                     s32 unused, s16 alpha) {
     Rect_002195E0 *rect = rect_arg;
@@ -202,7 +206,7 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
             }
         }
         for (i = 0; i < 8; i++) {
-            q.index = window_tex_no[rect->kind][i];
+            q.index = windowTextureTable[rect->kind][i];
             q.data[0] = 0x80;
             q.data[1] = 0x80;
             q.data[2] = 0x80;
@@ -213,33 +217,33 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
             if (i <= 3) {
                 if (i == 0) {
                     x0 = rect->x0;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     y0 = rect->y0;
                     x1 = x0 + e->width;
                     y1 = y0 + e->height;
                 } else if (i == 1) {
                     y0 = rect->y0;
                     x1 = rect->x1;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x0 = x1 - e->width;
                     y1 = y0 + e->height;
                 } else if (i == 2) {
                     x0 = rect->x0;
                     y1 = rect->y1;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x1 = x0 + e->width;
                     y0 = y1 - e->height;
                 } else {
                     x1 = rect->x1;
                     y1 = rect->y1;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x0 = x1 - e->width;
                     y0 = y1 - e->height;
                 }
             } else {
-                c = window_tex_no[rect->kind][0];
+                c = windowTextureTable[rect->kind][0];
                 if (i == 4) {
-                    e = &tex_uv_data[c];
+                    e = &campaignSprites[c];
                     w = e->width;
                     x0 = rect->x0 + w;
                     x1 = rect->x1 - w;
@@ -247,19 +251,19 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
                     y1 = y0 + e->height;
                 } else if (i == 5) {
                     y1 = rect->y1;
-                    e = &tex_uv_data[c];
+                    e = &campaignSprites[c];
                     w = e->width;
                     x0 = rect->x0 + w;
                     x1 = rect->x1 - w;
                     y0 = y1 - e->height;
                 } else if (i == 6) {
                     x0 = rect->x0;
-                    e = &tex_uv_data[c];
+                    e = &campaignSprites[c];
                     x1 = x0 + e->width;
                     y0 = rect->y0 + e->height;
                     y1 = rect->y1 - e->height;
                 } else {
-                    e = &tex_uv_data[c];
+                    e = &campaignSprites[c];
                     x1 = rect->x1;
                     x0 = x1 - e->width;
                     y0 = rect->y0 + e->height;
@@ -275,7 +279,7 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
         break;
     case 3:
         for (i = 0; i < 3; i++) {
-            q.index = window_tex_no[rect->kind][i];
+            q.index = windowTextureTable[rect->kind][i];
             q.data[0] = r;
             q.data[1] = g;
             q.data[2] = b;
@@ -287,18 +291,18 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
                 if (i == 0) {
                     x0 = rect->x0;
                     y0 = rect->y0;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x1 = x0 + e->width;
                     y1 = y0 + e->height;
                 } else {
                     x1 = rect->x1;
                     y1 = rect->y1;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x0 = x1 - e->width;
                     y0 = y1 - e->height;
                 }
             } else {
-                w = tex_uv_data[(s16)window_tex_no[rect->kind][0]].width;
+                w = campaignSprites[(s16)windowTextureTable[rect->kind][0]].width;
                 x0 = rect->x0 + w;
                 y0 = rect->y0;
                 x1 = rect->x1 - w;
@@ -340,7 +344,7 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
         q.depth = depth;
         p = quad_002195E0(p, &q, dx, dy);
         for (i = 0; i < 4; i++) {
-            q.index = window_tex_no[rect->kind][i];
+            q.index = windowTextureTable[rect->kind][i];
             q.data[0] = 0x80;
             q.data[1] = 0x80;
             q.data[2] = 0x80;
@@ -352,17 +356,17 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
                 if (i == 0) {
                     x0 = rect->x0;
                     y0 = rect->y0;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x1 = x0 + e->width;
                     y1 = y0 + e->height;
                 } else if (i == 1) {
                     x1 = rect->x1;
                     y1 = rect->y1;
-                    e = &tex_uv_data[q.index];
+                    e = &campaignSprites[q.index];
                     x0 = x1 - e->width;
                     y0 = y1 - e->height;
                 } else {
-                    w = tex_uv_data[(s16)window_tex_no[rect->kind][0]].width;
+                    w = campaignSprites[(s16)windowTextureTable[rect->kind][0]].width;
                     y0 = rect->y0;
                     x0 = rect->x0 + w;
                     x1 = rect->x1 - w;
@@ -425,40 +429,40 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
             if (style == 0) {
                 if (i <= 1) {
                     if (i == 0) {
-                        q.index = window_tex_no[rect->kind][2];
+                        q.index = windowTextureTable[rect->kind][2];
                         y0 = rect->y0;
                         x0 = rect->x0;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x1 = x0 + e->width;
                         y1 = y0 + e->height;
                     } else {
-                        q.index = window_tex_no[rect->kind][3];
+                        q.index = windowTextureTable[rect->kind][3];
                         y0 = rect->y0;
                         x1 = rect->x1;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x0 = x1 - e->width;
                         y1 = y0 + e->height;
                     }
                 } else {
-                    c = window_tex_no[rect->kind][0];
+                    c = windowTextureTable[rect->kind][0];
                     if (i == 2) {
-                        q.index = window_tex_no[rect->kind][5];
+                        q.index = windowTextureTable[rect->kind][5];
                         y0 = rect->y0;
-                        e = &tex_uv_data[c];
+                        e = &campaignSprites[c];
                         w = e->width;
                         x0 = rect->x0 + w;
                         x1 = rect->x1 - w;
                         y1 = y0 + e->height;
                     } else if (i == 3) {
-                        q.index = window_tex_no[rect->kind][6];
+                        q.index = windowTextureTable[rect->kind][6];
                         x0 = rect->x0;
-                        e = &tex_uv_data[c];
+                        e = &campaignSprites[c];
                         x1 = x0 + e->width;
                         y0 = rect->y0 + e->height;
                         y1 = rect->y1;
                     } else {
-                        q.index = window_tex_no[rect->kind][7];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][7];
+                        e = &campaignSprites[c];
                         x1 = rect->x1;
                         x0 = x1 - e->width;
                         y0 = rect->y0 + e->height;
@@ -473,40 +477,40 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
             } else {
                 if (i <= 1) {
                     if (i == 0) {
-                        q.index = window_tex_no[rect->kind][0];
+                        q.index = windowTextureTable[rect->kind][0];
                         x0 = rect->x0;
                         y0 = rect->y0;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x1 = x0 + e->width;
                         y1 = y0 + e->height;
                     } else {
-                        q.index = window_tex_no[rect->kind][1];
+                        q.index = windowTextureTable[rect->kind][1];
                         y0 = rect->y0;
                         x1 = rect->x1;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x0 = x1 - e->width;
                         y1 = y0 + e->height;
                     }
                 } else {
-                    c = window_tex_no[rect->kind][0];
+                    c = windowTextureTable[rect->kind][0];
                     if (i == 2) {
-                        q.index = window_tex_no[rect->kind][4];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][4];
+                        e = &campaignSprites[c];
                         w = e->width;
                         x0 = rect->x0 + w;
                         x1 = rect->x1 - w;
                         y0 = rect->y0;
                         y1 = y0 + e->height;
                     } else if (i == 3) {
-                        q.index = window_tex_no[rect->kind][6];
+                        q.index = windowTextureTable[rect->kind][6];
                         x0 = rect->x0;
-                        e = &tex_uv_data[c];
+                        e = &campaignSprites[c];
                         x1 = x0 + e->width;
                         y0 = rect->y0 + e->height;
                         y1 = rect->y1;
                     } else {
-                        q.index = window_tex_no[rect->kind][7];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][7];
+                        e = &campaignSprites[c];
                         x1 = rect->x1;
                         x0 = x1 - e->width;
                         y0 = rect->y0 + e->height;
@@ -558,40 +562,40 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
             if (style == 0) {
                 if (i < 2) {
                     if (i == 0) {
-                        q.index = window_tex_no[rect->kind][0];
+                        q.index = windowTextureTable[rect->kind][0];
                         x0 = rect->x0;
                         y1 = rect->y1;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x1 = x0 + e->width;
                         y0 = y1 - e->height;
                     } else if (i == 1) {
-                        q.index = window_tex_no[rect->kind][1];
+                        q.index = windowTextureTable[rect->kind][1];
                         x1 = rect->x1;
                         y1 = rect->y1;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x0 = x1 - e->width;
                         y0 = y1 - e->height;
                     }
                 } else {
-                    c = window_tex_no[rect->kind][0];
+                    c = windowTextureTable[rect->kind][0];
                     if (i == 2) {
-                        q.index = window_tex_no[rect->kind][4];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][4];
+                        e = &campaignSprites[c];
                         w = e->width;
                         y1 = rect->y1;
                         x0 = rect->x0 + w;
                         x1 = rect->x1 - w;
                         y0 = y1 - e->height;
                     } else if (i == 3) {
-                        q.index = window_tex_no[rect->kind][6];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][6];
+                        e = &campaignSprites[c];
                         x0 = rect->x0;
                         y0 = rect->y0;
                         x1 = x0 + e->width;
                         y1 = rect->y1 - e->height;
                     } else {
-                        q.index = window_tex_no[rect->kind][7];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][7];
+                        e = &campaignSprites[c];
                         x1 = rect->x1;
                         y0 = rect->y0;
                         x0 = x1 - e->width;
@@ -606,40 +610,40 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
             } else {
                 if (i <= 1) {
                     if (i == 0) {
-                        q.index = window_tex_no[rect->kind][2];
+                        q.index = windowTextureTable[rect->kind][2];
                         x0 = rect->x0;
                         y1 = rect->y1;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x1 = x0 + e->width;
                         y0 = y1 - e->height;
                     } else {
-                        q.index = window_tex_no[rect->kind][3];
+                        q.index = windowTextureTable[rect->kind][3];
                         x1 = rect->x1;
                         y1 = rect->y1;
-                        e = &tex_uv_data[q.index];
+                        e = &campaignSprites[q.index];
                         x0 = x1 - e->width;
                         y0 = y1 - e->height;
                     }
                 } else {
-                    c = window_tex_no[rect->kind][0];
+                    c = windowTextureTable[rect->kind][0];
                     if (i == 2) {
-                        q.index = window_tex_no[rect->kind][5];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][5];
+                        e = &campaignSprites[c];
                         w = e->width;
                         y1 = rect->y1;
                         x0 = rect->x0 + w;
                         x1 = rect->x1 - w;
                         y0 = y1 - e->height;
                     } else if (i == 3) {
-                        q.index = window_tex_no[rect->kind][6];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][6];
+                        e = &campaignSprites[c];
                         x0 = rect->x0;
                         y0 = rect->y0;
                         x1 = x0 + e->width;
                         y1 = rect->y1 - e->height;
                     } else {
-                        q.index = window_tex_no[rect->kind][7];
-                        e = &tex_uv_data[c];
+                        q.index = windowTextureTable[rect->kind][7];
+                        e = &campaignSprites[c];
                         x1 = rect->x1;
                         y0 = rect->y0;
                         x0 = x1 - e->width;

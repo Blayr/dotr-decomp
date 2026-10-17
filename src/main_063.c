@@ -19,6 +19,7 @@ typedef struct {
     u8 r, g, b, a;
 } Color_002232F0;
 
+/* Draws a number in the campaign windows' digits. */
 s32 Taku_Camp_Kazu_Disp(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 SzMsg_GetInfo();
     extern s32 SzMsg_DrawRect_Pipe();
@@ -135,6 +136,7 @@ extern s8 D_0030F0B0[];
 #pragma conditional_move off
 #pragma opt_dead_assignments off
 
+/* Draws the campaign event window's title: the place's name, the opponent's name and portrait. */
 s32 Taku_Camp_Ivent_Name(s32 packet) {
     extern s32 SzDuel_DrawWindow_Font_Pipe();
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
@@ -640,9 +642,10 @@ typedef struct State_00224A40 {
     u16 values[3];
 } State_00224A40;
 
+/* Picks the texts of the campaign event window for the current place and opponent. */
 void Taku_Camp_Ivent_Name_Set(void) {
-    extern u16 DeckTab[];
-    extern u16 DeckDat[][6];
+    extern u16 campaignDeckTable[];
+    extern u16 campaignDecks[][6];
     extern Tables_00224A40 D_002D19D0;
     extern s32 D_002D19D8;
     extern u16 D_002D49D4[];
@@ -661,7 +664,7 @@ void Taku_Camp_Ivent_Name_Set(void) {
     u8 *code_ptr;
 
     state = (State_00224A40 *)0x01ED0000;
-    sum_ptr = (u8 *)&save_data;
+    sum_ptr = (u8 *)&campaignState;
     i = 0;
     offset = 0;
     out = sum_ptr;
@@ -714,9 +717,9 @@ void Taku_Camp_Ivent_Name_Set(void) {
     shift = 0;
     code_ptr = (u8 *)state;
     while (code_index < 3) {
-        *(u16 *)(code_ptr + 0x53F8) = ((s32)DeckTab[state->checksum] >> shift) & 0x1F;
+        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckTable[state->checksum] >> shift) & 0x1F;
         shift += 5;
-        *(u16 *)(code_ptr + 0x53FE) = DeckDat[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
+        *(u16 *)(code_ptr + 0x53FE) = campaignDecks[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
         code_index++;
         code_ptr += 2;
     }
@@ -775,8 +778,8 @@ extern Pair_00224E40 D_0029AAD0;
 extern Sprite_00224E40 D_0029AB20;
 extern Sprite_00224E40 D_0029AB50;
 extern Sprite_00224E40 tex_bara_data[];
-extern Tex_00224E40 tex_uv_data[];
-extern Code_00224E40 DeckDat[];
+extern Tex_00224E40 campaignSprites[]; /* original: tex_uv_data */
+extern Code_00224E40 campaignDecks[]; /* original: DeckDat */
 extern char D_0030F0BB[];
 extern char D_0030F0C7[];
 extern char D_0030F0D4[];
@@ -784,6 +787,7 @@ extern char D_0030F0E8[];
 
 #pragma opt_dead_assignments off
 
+/* Draws the campaign event window: the event's text, the opponent, the rewards and the duel choice. */
 s32 Taku_Camp_Ivent_Window(s32 arg0) {
     s16 ny;
     extern s32 Taku_Camp_Ivent_Name();
@@ -843,7 +847,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
     Frame_00224E40 frame;
     Color_00224E40 color;
 
-    ctx = (s8 *)&save_data;
+    ctx = (s8 *)&campaignState;
     state = (State_00224E40 *)0x01ED0000;
     frame = D_0029AA08;
     s100 = D_0029AA20;
@@ -972,11 +976,11 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             case 0x2757:
             case 0x2760:
                 for (n = 0; n < 3; n++) {
-                    hundreds[n] = DeckDat[state->codes[n]].number / 100;
-                    ones[n] = DeckDat[state->codes[n]].number % 100;
+                    hundreds[n] = campaignDecks[state->codes[n]].number / 100;
+                    ones[n] = campaignDecks[state->codes[n]].number % 100;
                     for (m = 0; m < 4; m++) {
-                        digits[n][m] = ((s32)DeckDat[state->codes[n]].digits >> (m * 3)) & 7;
-                        types[n][m] = (DeckDat[state->codes[n]].types >> (5 * m)) & 0x1F;
+                        digits[n][m] = ((s32)campaignDecks[state->codes[n]].digits >> (m * 3)) & 7;
+                        types[n][m] = (campaignDecks[state->codes[n]].types >> (5 * m)) & 0x1F;
                     }
                 }
                 if (*(s8 *)0x01ED5494 == 0) {
@@ -1006,8 +1010,8 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                     if (n < hundreds[cur]) {
                         arg0 = Taku_Obj_Set(arg0, &pair130.s[0], xx3, 0);
                     } else {
-                        tex_uv_data[pair130.s[1].index].width = (ones[cur] * 16) / 100;
-                        pair130.s[1].x1 = pair130.s[1].x0 + tex_uv_data[pair130.s[1].index].width;
+                        campaignSprites[pair130.s[1].index].width = (ones[cur] * 16) / 100;
+                        pair130.s[1].x1 = pair130.s[1].x0 + campaignSprites[pair130.s[1].index].width;
                         arg0 = Taku_Obj_Set(arg0, &pair130.s[1], xx3, 0);
                     }
                 }
@@ -1210,13 +1214,14 @@ typedef struct Packet_00226120 {
 } Packet_00226120;
 
 extern s16 D_00299ED2;
-extern u8 prim_data;
+extern u8 campaignCoord; /* original: prim_data */
 extern Packet_00226120 D_0029AB80;
 
-void *Taku_Camp_Kumo(void *arg0) {
+/* Draws the clouds drifting over the campaign map. */
+void *Taku_Camp_Kumo(void *packetIn) {
     extern void *Taku_G4_Set();
-    s8 *context = &save_data;
-    u8 *slot = &prim_data;
+    s8 *context = &campaignState;
+    u8 *slot = &campaignCoord;
     Packet_00226120 packet = D_0029AB80;
     s16 state;
     s16 i;
@@ -1317,12 +1322,12 @@ void *Taku_Camp_Kumo(void *arg0) {
         } else {
             packet.a0 = packet.a1 = packet.a2 = packet.a3 =
                 (*(s16 *)0x01ED53A4 << 7) >> 12;
-            arg0 = Taku_G4_Set(arg0, &packet, 0, 0);
+            packetIn = Taku_G4_Set(packetIn, &packet, 0, 0);
         }
     }
 
     Taku_Coord_Set(slot);
     for (i = 0; i < 16; i++) {
     }
-    return arg0;
+    return packetIn;
 }

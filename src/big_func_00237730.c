@@ -25,8 +25,9 @@ extern void SzDuel_OpenOptionPopup_b(s32 arg0, s32 arg1, s32 arg2);
 
 #pragma conditional_move off
 #pragma opt_dead_assignments off
+/* Runs one frame of the campaign map mode: input, the camera, pop-ups, the event and duel start, leaving. */
 void TkCamp_Act(void) {
-    s32 ctx = (s32) &save_data;
+    s32 ctx = (s32) &campaignState;
     s16 temp_s1;
     s16 temp_s2;
     s32 var_s3;
