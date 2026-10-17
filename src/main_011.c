@@ -902,10 +902,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of g_aLogFunc): the buttons it presses this frame. With an empty
+/* Computer duelist 12's controller (duelistControllers[12]): the buttons it presses this frame. With an empty
    input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
    after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_00146790(s32 wCursorPos, void *pCtl) {
+s32 duelistController12(s32 wCursorPos, void *pCtl) {
     Req_00146790 req;
     Work_00146790 *w;
     s32 i;
@@ -3094,10 +3094,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of g_aLogFunc): the buttons it presses this frame. With an empty
+/* Computer duelist 13's controller (duelistControllers[13]): the buttons it presses this frame. With an empty
    input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
    after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_0014B730(s32 wCursorPos, void *pCtl) {
+s32 duelistController13(s32 wCursorPos, void *pCtl) {
     Req_0014B730 req;
     Work_0014B730 *w;
     s32 i;

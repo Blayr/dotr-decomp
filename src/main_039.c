@@ -1247,26 +1247,26 @@ void lSzDuel_ReBuildBag(void) {
     player = duelState.s.player;
     state = &duelState.s;
     card = 0;
-    entry = duelState.s.list;
-    duelState.s.count = 0;
+    entry = duelState.s.trunkList;
+    duelState.s.trunkCount = 0;
     do {
         if (SzData_GetBagCount(player, card, -1) > 0) {
             *entry = card;
-            state->count++;
+            state->trunkCount++;
         } else {
             *entry = 999;
         }
         card++;
         entry++;
     } while (card < 0x356);
-    limit = nonnegative_001B8720(state->count - 5);
-    offset = state->offset;
+    limit = nonnegative_001B8720(state->trunkCount - 5);
+    offset = state->trunkTop;
     if (nonnegative_001B8720(offset) < limit) {
         offset = nonnegative_001B8720(offset);
     } else {
         offset = limit;
     }
-    state->offset = offset;
+    state->trunkTop = offset;
     lSzDuel_SortBag();
 }
 

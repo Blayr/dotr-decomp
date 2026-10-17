@@ -5,7 +5,7 @@
 - **Card ids** run 0..0x355 (854 cards, `CARD_COUNT`). Cards from 0x2AB on earn no leader rank (`SzData_GetRank`).
 - **Constant card data:** 20 bytes per card at `D_002BF080` (`SzDuel_GetCardConstInfo(card)`): kind in the
   top bits of byte 0, deck cost at byte 3, attack at +8 and defence at +0xA (13 bits each), level in a nibble
-  of byte 2. To be named as a struct in the card-rules batch.
+  of byte 2. Not a named struct yet.
 - **Card numbers vs ids:** the old card-list order maps to ids through `D_002CD8A0`
   (`SzDuel_Xax2New` / `SzDuel_New2Xax`).
 - **Names:** card `card`'s name is message `card + 0x140` (`SzDuel_GetMsgName`).
@@ -24,7 +24,9 @@
 ## Duelists
 
 - `DuelPlayer.duelistId` says who plays a side: 0..0x1F a computer duelist, 0x20..0x63 a tutorial script (both
-  play through `duelistControllers[id]`, JP `g_aLogFunc`), 100 + n the human on pad n.
+  play through `duelistControllers[id]`, JP `g_aLogFunc`: duelist N is `duelistControllerNN`, id 0
+  and the unused ids use `duelistControllerDefault`, 0x20..0x24 are `TaTuto_Lesson1..5`), 100 + n the
+  human on pad n.
 - Duelist portraits are texture items of category 2 (`lSzDuel_DrawWindow_PicMini_Pipe`).
 
 ## Maps

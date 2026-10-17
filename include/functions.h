@@ -2504,29 +2504,29 @@ void func_00100008(void);
 void func_001000B8(void);
 void func_001000C0(void);
 void func_00100610(s32 dim);
-s32 func_00110F00(s32 arg0, void *arg1); /* JP: L002 */
-s32 func_00117C90(s32 arg0, void *arg1); /* JP: L001 */
-s32 func_0011C430(s32 arg0, void *arg1); /* JP: L003 */
-s32 func_00121630(s32 arg0, void *arg1); /* JP: L004 */
-s32 func_00126AB0(s32 arg0, void *arg1); /* JP: L005 */
+s32 duelistController02(s32 arg0, void *arg1); /* JP: L002 */
+s32 duelistController01(s32 arg0, void *arg1); /* JP: L001 */
+s32 duelistController03(s32 arg0, void *arg1); /* JP: L003 */
+s32 duelistController04(s32 arg0, void *arg1); /* JP: L004 */
+s32 duelistController05(s32 arg0, void *arg1); /* JP: L005 */
 s32 func_0012B000(s32 side); /* JP: TaLogic006_IsBlackHoleCondition */
-s32 func_0012B9A0(s32 arg0, void *arg1); /* JP: L006 */
-s32 func_00130E90(s32 arg0, void *arg1); /* JP: L007 */
-s32 func_00135060(s32 arg0, void *arg1); /* JP: L008 */
-s32 func_001396C0(s32 arg0, void *arg1); /* JP: L009 */
-s32 func_0013DAD0(s32 arg0, void *arg1); /* JP: L010 */
-s32 func_001422E0(s32 arg0, void *arg1); /* JP: L011 */
-s32 func_00146790(s32 arg0, void *arg1); /* JP: L012 */
-s32 func_0014B730(s32 arg0, void *arg1); /* JP: L013 */
-s32 func_0014FB70(s32 arg0, void *arg1); /* JP: L014 */
-s32 func_00154040(s32 arg0, void *arg1); /* JP: L015 */
-void func_00154210(void); /* JP: L016 */
-s32 func_00158AB0(s32 arg0, void *arg1); /* JP: L017 */
-s32 func_0015D180(s32 arg0, void *arg1); /* JP: L018 */
-s32 func_00162F60(s32 arg0, void *arg1); /* JP: L019 */
-s32 func_001676E0(s32 arg0, void *arg1); /* JP: L020 */
-s32 func_0016B1F0(s32 arg0, void *arg1); /* JP: L021 */
-s32 func_00172370(s32 arg0, void *arg1); /* JP: L022 */
+s32 duelistController06(s32 arg0, void *arg1); /* JP: L006 */
+s32 duelistController07(s32 arg0, void *arg1); /* JP: L007 */
+s32 duelistController08(s32 arg0, void *arg1); /* JP: L008 */
+s32 duelistController09(s32 arg0, void *arg1); /* JP: L009 */
+s32 duelistController10(s32 arg0, void *arg1); /* JP: L010 */
+s32 duelistController11(s32 arg0, void *arg1); /* JP: L011 */
+s32 duelistController12(s32 arg0, void *arg1); /* JP: L012 */
+s32 duelistController13(s32 arg0, void *arg1); /* JP: L013 */
+s32 duelistController14(s32 arg0, void *arg1); /* JP: L014 */
+s32 duelistController15(s32 arg0, void *arg1); /* JP: L015 */
+void duelistController16(void); /* JP: L016 */
+s32 duelistController17(s32 arg0, void *arg1); /* JP: L017 */
+s32 duelistController18(s32 arg0, void *arg1); /* JP: L018 */
+s32 duelistController19(s32 arg0, void *arg1); /* JP: L019 */
+s32 duelistController20(s32 arg0, void *arg1); /* JP: L020 */
+s32 duelistController21(s32 arg0, void *arg1); /* JP: L021 */
+s32 duelistControllerDefault(s32 arg0, void *arg1); /* JP: L022 */
 s32 func_00172510(s32 arg0); /* JP: TaTuto_FocusUnit */
 s32 TaTuto_Lesson1(s32 arg0, u8 *arg1); /* JP: L032 */
 s32 TaTuto_Lesson2(s32 arg0, void *tutorial); /* JP: L033 */

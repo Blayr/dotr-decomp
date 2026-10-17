@@ -24,4 +24,5 @@ Notes:
   and the custom duel's computer side).
 - The memory-card file also holds the icon (`card_icon_tukuru`) and a checksum (`LkCheckData`).
 
-To be completed and checked when the save's struct is named (a later batch).
+Still open: the save is not a named struct yet, and the bytes after the edited maps (0xFEA3 + 0xF5)
+are only partly known.

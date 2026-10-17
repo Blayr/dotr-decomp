@@ -10,12 +10,14 @@ term (`SzGame_ModeTerm`). A duel is one of these modes; deck building, trade, cu
 
 ## Setting up
 
-`SzDuel_Init(stage, firstSide, newDuel)` (`src/main_038.c`) clears both sides' deck, graveyard and hand. A
-new duel then deals each side's current deck from its save profile (40 cards, shuffled into random free
-slots by `SzDuel_AddDeck`, or in order when the debug menu says so), places both leaders (side 0 at square
-(3, 6), side 1 at (3, 0)), resets the board's field colours and sets both sides' starting values: 4000 life
-points and summon charge 3 (stages below 0x16 only), summon power 4. `SzDuel_SetupMap(stage)` lays out the field types
-of the board from the built-in maps or the player's edited ones.
+`SzDuel_Init(stage, firstSide, newDuel)` (`src/main_038.c`) clears both sides' deck, graveyard and hand. A new
+duel then deals each side's current deck from its save profile (40 cards, shuffled into random free slots by
+`SzDuel_AddDeck`, or in order when the debug menu says so; campaign and custom duels ask for the shuffle by
+passing `duelistId + 1000` in debug items 3/4, practice duels pass plain ids and are dealt in order), places
+both leaders (side 0 at square (3, 6), side 1 at (3, 0)), resets the board's field colours and sets both
+sides' starting values: 4000 life points and summon charge 3 (stages below 0x16 only), summon power 4.
+`SzDuel_SetupMap(stage)` lays out the field types of the board from the built-in maps or the player's edited
+ones.
 
 ## The duel state
 

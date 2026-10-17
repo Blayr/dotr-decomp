@@ -93,9 +93,9 @@ void SzDuel_ActBuildDeck(void) {
         return;
     }
     if (SzPad_Check(0, 1, 0xFFFF) != 0) {
-        d->idle = 0x5A;
-    } else if (d->idle != 0) {
-        d->idle--;
+        d->idleTimer = 0x5A;
+    } else if (d->idleTimer != 0) {
+        d->idleTimer--;
     }
     switch (d->mode) {
     case 0:
@@ -199,10 +199,10 @@ void SzDuel_ActBuildDeck(void) {
         break;
     case 2:
     case 3:
-        card = d->list[d->offset + d->row];
+        card = d->trunkList[d->trunkTop + d->trunkRow];
         info = SzData_CheckDeck((s32) player, slot, (s32) card);
         held = (SzPad_Check(0, 1, 0x100) != 0) ? 1 : 0;
-        oldRow = d->row;
+        oldRow = d->trunkRow;
         if (SzPad_Check(0, 0, 0x200) != 0) {
             usable = SzData_GetBagCount((s32) player, (s32) card, 3);
             if (SzFile_InqRequestEx() != 0) {
@@ -241,31 +241,31 @@ void SzDuel_ActBuildDeck(void) {
                 }
             } else if (SzPad_Check(0, 2, 0x5000) != 0) {
                 if (SzPad_Check(0, 2, 0x1000) != 0) {
-                    if (d->row > 0) {
-                        d->row--;
+                    if (d->trunkRow > 0) {
+                        d->trunkRow--;
                     } else {
                         dx = -1;
                     }
-                } else if (d->row < 4) {
-                    d->row++;
+                } else if (d->trunkRow < 4) {
+                    d->trunkRow++;
                 } else {
                     dx = 1;
                 }
                 SzPad_ResetCounter(0, 0xA000);
             }
-            if (d->row != oldRow) {
+            if (d->trunkRow != oldRow) {
                 SzSound_PlaySE(0, 3);
             } else if (dx == 0) {
                 if (SzPad_Check(0, 0, 0x800) != 0) {
                     if (SzData_GetRank((s32) player, (s32) card) > 0) {
                         if (SzData_GetBagCount((s32) player, (s32) card, 3) > 0) {
-                            if (*d->list2 != 0x3E7) {
+                            if (*d->deckList != 0x3E7) {
                                 SzData_PullDeckLeader((s32) player, slot);
-                                *d->list2 = 0x3E7;
+                                *d->deckList = 0x3E7;
                             }
                             if (SzData_PushDeckLeader((s32) player, slot, (s32) card) != 0) {
-                                *d->list2 = card;
-                                lSzDuel_ReqGhostCard(card, (s32) d->row, 1, 0, 0);
+                                *d->deckList = card;
+                                lSzDuel_ReqGhostCard(card, (s32) d->trunkRow, 1, 0, 0);
                                 SzText_Free(2, (s32) player);
                                 d->dirty = 1U;
                             }
@@ -280,21 +280,21 @@ void SzDuel_ActBuildDeck(void) {
                     if (SzPad_Check(0, 2, 0x80) != 0) {
                         if (SzData_PullDeck((s32) player, slot, info) != 0) {
                             for (k = 0; k < 0x28; k++) {
-                                if (card == d->list2[k + 1]) {
-                                    d->list2[k + 1] = 0x3E7;
+                                if (card == d->deckList[k + 1]) {
+                                    d->deckList[k + 1] = 0x3E7;
                                     break;
                                 }
                             }
                             lSzDuel_SortDeck();
-                            lSzDuel_ReqGhostCard(card, (s32) d->row, 0, 0, 1);
+                            lSzDuel_ReqGhostCard(card, (s32) d->trunkRow, 0, 0, 1);
                             SzSound_PlaySE(0, 4);
                         } else {
                             SzSound_PlaySE(0, 6);
                         }
                     } else if (SzData_PushDeck((s32) player, slot, (s32) card) != 0) {
-                        d->list2[d->count2 - 1] = card;
+                        d->deckList[d->deckCount - 1] = card;
                         lSzDuel_SortDeck();
-                        lSzDuel_ReqGhostCard(card, (s32) d->row, 1, 0, 0);
+                        lSzDuel_ReqGhostCard(card, (s32) d->trunkRow, 1, 0, 0);
                         SzSound_PlaySE(0, 4);
                     } else {
                         SzSound_PlaySE(0, 6);
@@ -361,7 +361,7 @@ void SzDuel_ActBuildDeck(void) {
                             d->scrollTo = 0;
                         } else {
                             d->mode = 4U;
-                            d->row2 = (u8) d->row;
+                            d->deckRow = (u8) d->trunkRow;
                         }
                         SzSound_PlaySE(0, 0x12);
                     }
@@ -371,11 +371,11 @@ void SzDuel_ActBuildDeck(void) {
         break;
     case 4:
     case 5:
-        index = d->offset2 + d->row2;
-        card2 = d->list2[index];
+        index = d->deckTop + d->deckRow;
+        card2 = d->deckList[index];
         info2 = SzData_CheckDeck((s32) player, slot, (s32) card2);
         held = (SzPad_Check(0, 1, 0x100) != 0) ? 1 : 0;
-        oldRow2 = (s32) d->row2;
+        oldRow2 = (s32) d->deckRow;
         if (SzPad_Check(0, 2, 0xC) != 0) {
             if (SzPad_Check(0, 2, 4) != 0) {
                 dy = -5;
@@ -384,19 +384,19 @@ void SzDuel_ActBuildDeck(void) {
             }
         } else if (SzPad_Check(0, 2, 0x5000) != 0) {
             if (SzPad_Check(0, 2, 0x1000) != 0) {
-                if (d->row2 > 0) {
-                    d->row2--;
+                if (d->deckRow > 0) {
+                    d->deckRow--;
                 } else {
                     dy = -1;
                 }
-            } else if (d->row2 < 4) {
-                d->row2++;
+            } else if (d->deckRow < 4) {
+                d->deckRow++;
             } else {
                 dy = 1;
             }
             SzPad_ResetCounter(0, 0xA000);
         }
-        if (d->row2 != oldRow2) {
+        if (d->deckRow != oldRow2) {
             SzSound_PlaySE(0, 3);
         } else if (dy == 0) {
             if (SzPad_Check(0, 0, 0x800) != 0) {
@@ -411,17 +411,17 @@ void SzDuel_ActBuildDeck(void) {
                     player2 = duelState.s.player;
                     state = &duelState.s;
                     r2 = SzData_GetCurrentDeck(player2);
-                    entry = duelState.s.list2;
-                    duelState.s.count2 = 0;
+                    entry = duelState.s.deckList;
+                    duelState.s.deckCount = 0;
                     *entry = SzData_GetLeader(player2, r2);
                     entry++;
-                    duelState.s.count2++;
+                    duelState.s.deckCount++;
                     i = 0;
                     do {
                         *entry = SzData_GetCardNo(player2, r2, i);
                         i++;
                         entry++;
-                        state->count2++;
+                        state->deckCount++;
                     } while (i < 0x28);
                 }
                 lSzDuel_SortDeck();
@@ -434,26 +434,26 @@ void SzDuel_ActBuildDeck(void) {
                         SzSound_PlaySE(0, 6);
                     } else if (SzPad_Check(0, 2, 0x80) != 0) {
                         if (SzData_PullDeck((s32) player, slot, info2) != 0) {
-                            d->list2[index] = 0x3E7;
+                            d->deckList[index] = 0x3E7;
                             lSzDuel_SortDeck();
-                            lSzDuel_ReqGhostCard(card2, (s32) d->row2, 0, 0, 1);
+                            lSzDuel_ReqGhostCard(card2, (s32) d->deckRow, 0, 0, 1);
                             SzSound_PlaySE(0, 4);
                         } else {
                             SzSound_PlaySE(0, 6);
                         }
                     } else if (SzData_PushDeck((s32) player, slot, (s32) card2) != 0) {
-                        d->list2[d->count2 - 1] = card2;
+                        d->deckList[d->deckCount - 1] = card2;
                         lSzDuel_SortDeck();
-                        lSzDuel_ReqGhostCard(card2, (s32) d->row2, 1, 0, 0);
+                        lSzDuel_ReqGhostCard(card2, (s32) d->deckRow, 1, 0, 0);
                         SzSound_PlaySE(0, 4);
                     } else {
                         SzSound_PlaySE(0, 6);
                     }
                 } else if (SzPad_Check(0, 2, 0x80) != 0) {
-                    if (*d->list2 != 0x3E7) {
+                    if (*d->deckList != 0x3E7) {
                         SzData_PullDeckLeader((s32) player, slot);
-                        *d->list2 = 0x3E7;
-                        lSzDuel_ReqGhostCard(card2, (s32) d->row2, 0, 1, 0);
+                        *d->deckList = 0x3E7;
+                        lSzDuel_ReqGhostCard(card2, (s32) d->deckRow, 0, 1, 0);
                         SzText_Free(2, (s32) player);
                         d->dirty = 1U;
                         SzSound_PlaySE(0, 4);
@@ -515,7 +515,7 @@ void SzDuel_ActBuildDeck(void) {
                         d->scrollTo = 0;
                     } else {
                         d->mode = 3U;
-                        d->row = (u8) d->row2;
+                        d->trunkRow = (u8) d->deckRow;
                     }
                     SzSound_PlaySE(0, 0x12);
                 } else {
@@ -563,7 +563,7 @@ void SzDuel_ActBuildDeck(void) {
             }
         } else if (SzPad_Check(0, 0, 0xC0) != 0) {
             if (d->sel != 0) {
-                pickCard = d->list[d->offset + d->row];
+                pickCard = d->trunkList[d->trunkTop + d->trunkRow];
                 ids = d->pick->ids;
                 ids[0] = Ta_GetRecycle((s32) player, (s32) pickCard);
                 ids[1] = Ta_GetRecycle((s32) player, (s32) pickCard);
@@ -685,33 +685,33 @@ void SzDuel_ActBuildDeck(void) {
         }
     }
     if (dx != 0) {
-        limit = nonnegative_001B8840(d->count - 5);
-        oldOffset = d->offset;
+        limit = nonnegative_001B8840(d->trunkCount - 5);
+        oldOffset = d->trunkTop;
         offset = oldOffset + dx;
         if (nonnegative_001B8840(offset) < limit) {
             offset = nonnegative_001B8840(offset);
         } else {
             offset = limit;
         }
-        d->offset = offset;
-        if (d->offset != oldOffset) {
+        d->trunkTop = offset;
+        if (d->trunkTop != oldOffset) {
             SzSound_PlaySE(0, 3);
         }
-        d->idle = 0x5A;
+        d->idleTimer = 0x5A;
     }
     if (dy != 0) {
-        limit2 = nonnegative_001B8840(d->count2 - 5);
-        oldOffset2 = d->offset2;
+        limit2 = nonnegative_001B8840(d->deckCount - 5);
+        oldOffset2 = d->deckTop;
         offset2 = oldOffset2 + dy;
         if (nonnegative_001B8840(offset2) < limit2) {
             offset2 = nonnegative_001B8840(offset2);
         } else {
             offset2 = limit2;
         }
-        d->offset2 = offset2;
-        if (d->offset2 != oldOffset2) {
+        d->deckTop = offset2;
+        if (d->deckTop != oldOffset2) {
             SzSound_PlaySE(0, 3);
         }
-        d->idle = 0x5A;
+        d->idleTimer = 0x5A;
     }
 }

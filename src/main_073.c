@@ -516,7 +516,7 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     s32 var_s4;
     s32 temp_s5;
     s32 temp_s7;
-    s32 off;
+    s32 targets;
     s32 summonablePiece;
     s32 summonablePiece2;
     s32 summonablePiece3;
@@ -769,13 +769,13 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     case 0x41:                                      /* switch 1 */
         if ((u32) SzDuel_GetLP(nSide_1) > (temp_v0->value >> 0x10)) {
             temp_v0_9 = Ta_GetCurrentSide(nSide_1, nID_1);
-            off = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(0, 0, temp_v0_9, ((u32) temp_v0->flags >> 6) & 3, temp_v0->flags & 0x3F, 0xE), nSide_1, nID_1);
-            if (off == 0) {
+            targets = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(0, 0, temp_v0_9, ((u32) temp_v0->flags >> 6) & 3, temp_v0->flags & 0x3F, 0xE), nSide_1, nID_1);
+            if (targets == 0) {
                 return 0;
             }
             out[0] = 0x3B;
             out[1] = temp_v0_9;
-            out[2] = off;
+            out[2] = targets;
             out[3] = (s32) temp_v0->value;
             return 1;
         }

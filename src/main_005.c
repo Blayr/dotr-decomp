@@ -1310,10 +1310,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
-   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
-   after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_00117C90(s32 wCursorPos, void *pCtl) {
+/* Computer duelist 1's controller (duelistControllers[1]): the buttons it presses this frame. With an empty input
+   queue it plans its next task and turns it into buttons, then plays the queue back one button per frame; after
+   600 frames it gives up the turn (0x20, then 0x800). */
+s32 duelistController01(s32 wCursorPos, void *pCtl) {
     Req_00117C90 req;
     Work_00117C90 *w;
     s32 i;
@@ -1743,7 +1743,7 @@ void TaLogic003_CommandAtkLineUnit(void *pTask) {
     State_00118BC0 *state = pTask;
     s32 new_type;
     s32 temp_a1;
-    s32 locHi;
+    s32 locZ;
     s32 turnOwner;
     s32 emptyAtkLineStart;
     s32 loc;
@@ -1755,8 +1755,8 @@ void TaLogic003_CommandAtkLineUnit(void *pTask) {
     loc = SzDuel_GetUnitLoc((s32) id >> 8, id & 0xFF);
     emptyAtkLineStart = TaLogic003_GetEmptyAtkLineStart(turnOwner);
     emptyAtkLineEnd = TaLogic003_GetEmptyAtkLineEnd(turnOwner);
-    locHi = loc >> 8;
-    switch (locHi) {
+    locZ = loc >> 8;
+    switch (locZ) {
     case 0:
         if (loc == emptyAtkLineStart) {
             state->state = 0xFFF;
@@ -1776,7 +1776,7 @@ void TaLogic003_CommandAtkLineUnit(void *pTask) {
     default:
         temp_a1 = ((s32) state->state >> 8) & 0xFF;
         if ((temp_a1 != 0xF) && (temp_a1 != 0x10)) {
-            new_type = (locHi < 4) ? 0xF : 0x10;
+            new_type = (locZ < 4) ? 0xF : 0x10;
             state->state = (new_type << 8) | 0xFF;
             state->data.word = state->data.low | 0xFFFF0000;
         }
@@ -3304,10 +3304,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
-   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
-   after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_0011C430(s32 wCursorPos, void *pCtl) {
+/* Computer duelist 3's controller (duelistControllers[3]): the buttons it presses this frame. With an empty input
+   queue it plans its next task and turns it into buttons, then plays the queue back one button per frame; after
+   600 frames it gives up the turn (0x20, then 0x800). */
+s32 duelistController03(s32 wCursorPos, void *pCtl) {
     Req_0011C430 req;
     Work_0011C430 *w;
     s32 i;

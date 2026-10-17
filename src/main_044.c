@@ -246,28 +246,28 @@ void SzDuel_SetDestinyFlag(s32 player, s8 flag) {
 
 /* Whether the duel's info windows are shown. */
 s32 SzDuel_GetWindowDisp(void) {
-    return duelState.s.f66.b7 ? 1 : 0;
+    return duelState.s.f66.windowsShown ? 1 : 0;
 }
 
 /* Shows or hides the duel windows. */
 void SzDuel_SetWindowDisp(s32 on) {
     DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
-    duel->f66.b7 = (s8) (on ? 1 : 0);
+    duel->f66.windowsShown = (s8) (on ? 1 : 0);
 }
 
 /* Turns drawing of the duel windows on or off. */
 void SzDuel_SetWindowDraw(s32 on) {
     DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
-    duel->f67.b0 = (s8)(on ? 1 : 0);
+    duel->f67.windowsDraw = (s8)(on ? 1 : 0);
 }
 
 /* Marks the duel windows busy or free. */
 void SzDuel_SetWindowBusy(s32 on) {
     DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
-    duel->f67.b1 = (s8)(on ? 1 : 0);
+    duel->f67.windowsBusy = (s8)(on ? 1 : 0);
 }
 
 /* Moves side `player`'s board cursor to column x, row z (0..6) and points the camera there. Returns 0 if the

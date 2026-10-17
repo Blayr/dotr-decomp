@@ -1538,18 +1538,18 @@ s32 TaLogic009_GetRevoltObj(s32 nSide) {
 
 /* Whether side `nSide` should use the curse pot now (two or more targets, or a plain enemy monster in reach). */
 s32 TaLogic009_IsUseCurseDragonPot(s32 nSide) {
-    s32 unitIdLo;
-    s32 unitIdHi;
+    s32 unitSlot;
+    s32 unitSide;
     s32 unitId;
 
     if (Ta_GetUnitNumFrom22bitFlagList(SearchUnitByRange(0, 0, nSide, 2, 0, 14)) >= 2) {
         return 1;
     }
     unitId = Ta_GetUnitOwnerIDFromLstCount(SearchUnitByRange(0, 0, nSide, 3, 33, 14), 0);
-    unitIdHi = unitId >> 8;
-    unitIdLo = unitId & 0xFF;
-    if (nSide != Ta_IsUnitControl(unitIdHi, unitIdLo)) {
-        if (((SzDuel_GetUnitKind(unitIdHi, unitIdLo) >> 5) == 0) && !(SzDuel_GetUnitKind(unitIdHi, unitIdLo) & 0x1F)) {
+    unitSide = unitId >> 8;
+    unitSlot = unitId & 0xFF;
+    if (nSide != Ta_IsUnitControl(unitSide, unitSlot)) {
+        if (((SzDuel_GetUnitKind(unitSide, unitSlot) >> 5) == 0) && !(SzDuel_GetUnitKind(unitSide, unitSlot) & 0x1F)) {
             return 1;
         }
     }
@@ -1823,10 +1823,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
-   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
-   after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_001396C0(s32 wCursorPos, void *pCtl) {
+/* Computer duelist 9's controller (duelistControllers[9]): the buttons it presses this frame. With an empty input
+   queue it plans its next task and turns it into buttons, then plays the queue back one button per frame; after
+   600 frames it gives up the turn (0x20, then 0x800). */
+s32 duelistController09(s32 wCursorPos, void *pCtl) {
     Req_001396C0 req;
     Work_001396C0 *w;
     s32 i;

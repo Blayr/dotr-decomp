@@ -559,8 +559,8 @@ s32 Ta_ManageNaturalEffectInStandbyPhase2(s32 nSide, s32 nID, void *eInfo) {
     s32 unitFlags;
     s32 unitNumFrom22bitFlagList;
     s32 unitId;
-    s32 unitIdLo;
-    s32 unitIdHi;
+    s32 unitSlot;
+    s32 unitSide;
 
     unitEffect = Ta_GetUnitEffect(nSide, nID, 2);
     temp_s3 = *(u32 *)unitEffect;
@@ -576,10 +576,10 @@ s32 Ta_ManageNaturalEffectInStandbyPhase2(s32 nSide, s32 nID, void *eInfo) {
         if (0 < unitNumFrom22bitFlagList) {
             do {
                 unitId = Ta_GetUnitOwnerIDFromLstCount(unitFlags, i);
-                unitIdHi = unitId >> 8;
-                unitIdLo = unitId & 0xFF;
-                if (SzDuel_GetUnitSpellRest(unitIdHi, unitIdLo) == 0) {
-                    convUnitIDtoFlagList = ConvUnitIDtoFlagList(convUnitIDtoFlagList, unitIdHi, unitIdLo);
+                unitSide = unitId >> 8;
+                unitSlot = unitId & 0xFF;
+                if (SzDuel_GetUnitSpellRest(unitSide, unitSlot) == 0) {
+                    convUnitIDtoFlagList = ConvUnitIDtoFlagList(convUnitIDtoFlagList, unitSide, unitSlot);
                 }
                 i += 1;
             } while (i < unitNumFrom22bitFlagList);
@@ -1027,8 +1027,8 @@ s32 Ta_GetSummonCalcRevision(s32 nSide) {
     s32 i;
     s32 searchUncTypeNaturalEffectUserNum;
     s32 var_s2;
-    s32 searchUncTypeNaturalEffectUserLo;
-    s32 searchUncTypeNaturalEffectUserHi;
+    s32 userSlot;
+    s32 userSide;
     s32 searchUncTypeNaturalEffectUser;
     s32 temp_v1;
     u32 *unitEffect;
@@ -1038,15 +1038,15 @@ s32 Ta_GetSummonCalcRevision(s32 nSide) {
     var_s2 = 0;
     for (i = 0; i < searchUncTypeNaturalEffectUserNum; i++) {
             searchUncTypeNaturalEffectUser = Ta_SearchUncTypeNaturalEffectUser(0x56, i);
-            searchUncTypeNaturalEffectUserHi = searchUncTypeNaturalEffectUser >> 8;
-            searchUncTypeNaturalEffectUserLo = searchUncTypeNaturalEffectUser & 0xFF;
-            unitEffect = Ta_GetUnitEffect(searchUncTypeNaturalEffectUserHi, searchUncTypeNaturalEffectUserLo, 2);
+            userSide = searchUncTypeNaturalEffectUser >> 8;
+            userSlot = searchUncTypeNaturalEffectUser & 0xFF;
+            unitEffect = Ta_GetUnitEffect(userSide, userSlot, 2);
             if (unitEffect != NULL) {
                 temp_a0 = *unitEffect;
                 if ((temp_a0 >> 8) == 0x56) {
                     temp_v1 = (temp_a0 >> 6) & 3;
                     if (temp_v1 == 2) {
-                        if (nSide != Ta_GetCurrentSide(searchUncTypeNaturalEffectUserHi, searchUncTypeNaturalEffectUserLo)) {
+                        if (nSide != Ta_GetCurrentSide(userSide, userSlot)) {
                             var_s2 -= 1;
                         }
                     } else if (temp_v1 == 3) {
@@ -2238,7 +2238,7 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
     Packet_0026A0A0 *request = eInfo;
     State_0026A0A0 *state = Temp;
     s32 frame;
-    s32 locLo;
+    s32 locX;
     s32 temp_s4;
     s32 temp_s5;
     s32 temp_v0_10;
@@ -2315,8 +2315,8 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
         }
         temp_s4 = var_v0 & 0xFF;
         temp_s5 = (s32) var_v0 >> 8;
-        locLo = SzDuel_GetUnitLoc(temp_s5, temp_s4) & 0xFF;
-        if (Ta_IsLDRangeAvilityWithLocation(temp_s5, temp_s4, locLo, SzDuel_GetUnitLoc(temp_s5, temp_s4) >> 8, 0xB) == 0) {
+        locX = SzDuel_GetUnitLoc(temp_s5, temp_s4) & 0xFF;
+        if (Ta_IsLDRangeAvilityWithLocation(temp_s5, temp_s4, locX, SzDuel_GetUnitLoc(temp_s5, temp_s4) >> 8, 0xB) == 0) {
             if ((temp_v0_9 = Ta_IsActiveTrapB((s32) ((u32) request->data >> 0x10), 0x29)) >= 0) {
                 TaEffect_LoadModule(Temp, 0x25A);
                 if ((temp_v0_10 = Ta_IsActiveTrapB((s32) request->target, 0x2E)) >= 0) {
@@ -3947,44 +3947,44 @@ s32 Ta_RequestGravityReserve(s32 nX, s32 nZ, s32 Unit, s32 *Reserve) {
 
 /* The square unit `Unit` on (nX, nZ) is pulled to, for pull order `Order`. */
 s32 Ta_GetUnitGravityLoc(s32 nX, s32 nZ, s32 Unit, s32 Order) {
-    s32 locLo;
+    s32 locX;
     s32 temp_s1;
     s32 temp_s1_2;
-    s32 locHi;
+    s32 locZ;
     s32 locHi2;
     s32 loc;
     s32 var_v0;
     s32 var_v0_2;
 
     loc = SzDuel_GetUnitLoc(Unit >> 8, Unit & 0xFF);
-    locLo = loc & 0xFF;
-    if (nX < locLo) {
-        temp_s1 = locLo - 1;
+    locX = loc & 0xFF;
+    if (nX < locX) {
+        temp_s1 = locX - 1;
         locHi2 = loc >> 8;
         if (SzDuel_GetMapUnitID(temp_s1, locHi2) < 0) {
             if (Order == 0) {
                 var_v0_2 = (locHi2 << 8) | temp_s1;
             } else {
-                var_v0_2 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi2);
+                var_v0_2 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locX, locHi2);
             }
             return var_v0_2;
         }
-        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi2);
+        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locX, locHi2);
     }
-    if (locLo < nX) {
-        temp_s1_2 = locLo + 1;
-        locHi = loc >> 8;
-        if (SzDuel_GetMapUnitID(temp_s1_2, locHi) < 0) {
+    if (locX < nX) {
+        temp_s1_2 = locX + 1;
+        locZ = loc >> 8;
+        if (SzDuel_GetMapUnitID(temp_s1_2, locZ) < 0) {
             if (Order == 0) {
-                var_v0 = (locHi << 8) | temp_s1_2;
+                var_v0 = (locZ << 8) | temp_s1_2;
             } else {
-                var_v0 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi);
+                var_v0 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locX, locZ);
             }
             return var_v0;
         }
-        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi);
+        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locX, locZ);
     }
-    return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, loc >> 8);
+    return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locX, loc >> 8);
 }
 
 /* The free square a pulled unit stops on along its column (the names stay: no JP names known). */

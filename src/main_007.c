@@ -976,10 +976,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
-   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
-   after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_00126AB0(s32 wCursorPos, void *pCtl) {
+/* Computer duelist 5's controller (duelistControllers[5]): the buttons it presses this frame. With an empty input
+   queue it plans its next task and turns it into buttons, then plays the queue back one button per frame; after
+   600 frames it gives up the turn (0x20, then 0x800). */
+s32 duelistController05(s32 wCursorPos, void *pCtl) {
     Req_00126AB0 req;
     Work_00126AB0 *w;
     s32 i;
@@ -3142,8 +3142,8 @@ s32 TaLogic006_IsDoCerem(s32 nSide, s32 nCardNo) {
     s32 sp50[3];
     s32 i;
     s32 temp_v0;
-    s32 unitIdLo;
-    s32 unitIdHi;
+    s32 unitSlot;
+    s32 unitSide;
     s32 unitId;
     s32 loc;
 
@@ -3155,10 +3155,10 @@ s32 TaLogic006_IsDoCerem(s32 nSide, s32 nCardNo) {
     if (i < Ta_GetUnitNumFrom22bitFlagList(temp_v0)) {
         do {
             unitId = Ta_GetUnitOwnerIDFromLstCount(temp_v0, i);
-            unitIdHi = unitId >> 8;
-            unitIdLo = unitId & 0xFF;
-            loc = SzDuel_GetUnitLoc(unitIdHi, unitIdLo);
-            if (TaUtil_GetUnitAP(unitIdHi, unitIdLo, loc & 0xFF, loc >> 8) >= 0x7D0) {
+            unitSide = unitId >> 8;
+            unitSlot = unitId & 0xFF;
+            loc = SzDuel_GetUnitLoc(unitSide, unitSlot);
+            if (TaUtil_GetUnitAP(unitSide, unitSlot, loc & 0xFF, loc >> 8) >= 0x7D0) {
                 return 0;
             }
             i++;
@@ -3189,10 +3189,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
-   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
-   after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_0012B9A0(s32 wCursorPos, void *pCtl) {
+/* Computer duelist 6's controller (duelistControllers[6]): the buttons it presses this frame. With an empty input
+   queue it plans its next task and turns it into buttons, then plays the queue back one button per frame; after
+   600 frames it gives up the turn (0x20, then 0x800). */
+s32 duelistController06(s32 wCursorPos, void *pCtl) {
     Req_0012B9A0 req;
     Work_0012B9A0 *w;
     s32 i;

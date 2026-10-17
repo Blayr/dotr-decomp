@@ -1329,7 +1329,7 @@ s32 TaLogic002_IsMakeDefense(s32 nSide) {
     s32 controllingSide2;
     s32 i;
     s32 unitId2Lo;
-    s32 unitIdLo;
+    s32 unitSlot;
     u16 linePiece;
     s32 unitId;
     u16 linePiece2;
@@ -1344,9 +1344,9 @@ s32 TaLogic002_IsMakeDefense(s32 nSide) {
             linePiece = TaLogic002_GetLinePiece(nSide, i & 0xFF);
             unitId = SzDuel_GetMapUnitID(linePiece & 0xFF, linePiece >> 8);
             if (unitId >= 0) {
-                unitIdLo = unitId & 0xFF;
-                controllingSide = Ta_IsUnitControl(unitId >> 8, unitIdLo);
-                if ((controllingSide == SzDuel_GetTurnOwner()) && (unitIdLo != 0)) {
+                unitSlot = unitId & 0xFF;
+                controllingSide = Ta_IsUnitControl(unitId >> 8, unitSlot);
+                if ((controllingSide == SzDuel_GetTurnOwner()) && (unitSlot != 0)) {
                     var_s0 += 1;
                 }
             }
@@ -1969,10 +1969,10 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
-   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
-   after 600 frames it gives up the turn (0x20, then 0x800). */
-s32 func_00110F00(s32 wCursorPos, void *pCtl) {
+/* Computer duelist 2's controller (duelistControllers[2]): the buttons it presses this frame. With an empty input
+   queue it plans its next task and turns it into buttons, then plays the queue back one button per frame; after
+   600 frames it gives up the turn (0x20, then 0x800). */
+s32 duelistController02(s32 wCursorPos, void *pCtl) {
     Req_00110F00 req;
     Work_00110F00 *w;
     s32 i;

@@ -94,20 +94,20 @@ typedef struct DuelState {
         u16 ids[3];                /* 0x20: the three cards picked */
     } *pick;                       /* 0x6D0 */
     u8 pad6D4[0x6D8 - 0x6D4];
-    u16 *list;                     /* 0x6D8: the trunk list */
-    u16 *list2;                    /* 0x6DC: the deck list (40) */
+    u16 *trunkList;                /* 0x6D8: the deck-building screen's trunk list (card ids) */
+    u16 *deckList;                 /* 0x6DC: the deck-building screen's deck list (40 card ids) */
     u8 pad6E0[0xC58 - 0x6E0];
     s32 depth;                     /* 0xC58: GS z of the duel windows (SzDuel_SetWindowDefPrioZ) */
     u8 padC5C[0xC86 - 0xC5C];
     u16 wave1;                     /* 0xC86 */
     u16 wave2;                     /* 0xC88 */
-    u16 offset;                    /* 0xC8A */
-    u16 count;                     /* 0xC8C */
-    u16 offset2;                   /* 0xC8E */
-    u16 count2;                    /* 0xC90 */
+    u16 trunkTop;                  /* 0xC8A: first trunk entry on screen */
+    u16 trunkCount;                /* 0xC8C: how many entries the trunk list holds */
+    u16 deckTop;                   /* 0xC8E: first deck entry on screen */
+    u16 deckCount;                 /* 0xC90: how many cards the deck list holds */
     s16 scroll;                    /* 0xC92 */
     s16 scrollTo;                  /* 0xC94 */
-    u16 idle;                      /* 0xC96 */
+    u16 idleTimer;                 /* 0xC96: frames left of a 90-frame wait (reset on input) */
     u8 padC98[0xCB6 - 0xC98];
     u8 sort[3];                    /* 0xCB6 */
     u8 sort2[3];                   /* 0xCB9 */
@@ -129,8 +129,8 @@ typedef struct DuelState {
     u8 padD58[0xD5C - 0xD58];
     u8 player;                     /* 0xD5C */
     u8 mode;                       /* 0xD5D */
-    u8 row;                        /* 0xD5E */
-    u8 row2;                       /* 0xD5F */
+    u8 trunkRow;                   /* 0xD5E: cursor row in the trunk list (0..4) */
+    u8 deckRow;                    /* 0xD5F: cursor row in the deck list (0..4) */
     u8 digit[3];                   /* 0xD60 */
     u8 hold;                       /* 0xD63 */
     struct {
@@ -159,11 +159,11 @@ typedef struct DuelState {
         s8 b4 : 1;
         s8 b5 : 1;
         s8 b6 : 1;
-        s8 b7 : 1;                 /* SzDuel_GetWindowDisp returns it */
+        s8 windowsShown : 1;       /* the duel windows are shown (SzDuel_Get/SetWindowDisp) */
     } f66;                         /* 0xD66 */
     struct {
-        s8 b0 : 1;
-        s8 b1 : 1;
+        s8 windowsDraw : 1;        /* the duel windows are drawn (SzDuel_SetWindowDraw) */
+        s8 windowsBusy : 1;        /* the duel windows are busy (SzDuel_SetWindowBusy) */
         s8 b2 : 1;
         s8 b3 : 1;
         s8 b4 : 1;

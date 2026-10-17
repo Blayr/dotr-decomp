@@ -4107,7 +4107,7 @@ s32 SzDuel_Act(void) {
                         if (F66->b3) {
                             if (*(u16 *)(duel + 0xC8C) != 0) {
                                 DUEL[0xD57] = 0x2E;
-                                DUEL_U32(0xC4C) = ((DuelState *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
+                                DUEL_U32(0xC4C) = ((DuelState *)duel)->trunkList[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
                                 func_00217710(0, 4);
                             } else {
                                 func_00217710(0, 6);
@@ -4157,7 +4157,7 @@ s32 SzDuel_Act(void) {
                         if (F66->b3) {
                             if (*(u16 *)(duel + 0xC90) != 0) {
                                 DUEL[0xD57] = 0x2E;
-                                DUEL_U32(0xC4C) = ((DuelState *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]] | 0x10000;
+                                DUEL_U32(0xC4C) = ((DuelState *)duel)->deckList[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]] | 0x10000;
                                 func_00217710(0, 4);
                             } else {
                                 func_00217710(0, 6);
@@ -4194,14 +4194,14 @@ s32 SzDuel_Act(void) {
             if (keys & 0x10) {
                 if (side == 0) {
                     if (*(u16 *)(duel + 0xC8C) != 0) {
-                        *(u16 *)(duel + 0xCAC) = ((DuelState *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
+                        *(u16 *)(duel + 0xCAC) = ((DuelState *)duel)->trunkList[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
                     } else {
                         func_00217710(0, 6);
                         return 0;
                     }
                 } else {
                     if (*(u16 *)(duel + 0xC90) != 0) {
-                        *(u16 *)(duel + 0xCAC) = ((DuelState *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]];
+                        *(u16 *)(duel + 0xCAC) = ((DuelState *)duel)->deckList[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]];
                     } else {
                         func_00217710(0, 6);
                         return 0;
@@ -4292,8 +4292,8 @@ s32 SzDuel_Act(void) {
                 } else {
                     DUEL[0xD5E] = (DUEL[0xD5E] + *(u16 *)(duel + 0xC8C) + 1) % *(u16 *)(duel + 0xC8C);
                 }
-                me[0x33D] = *(u8 *)&((DuelState *)duel)->list[DUEL[0xD5E]];
-                me[0x33E] = ((DuelState *)duel)->list[DUEL[0xD5E]] >> 8;
+                me[0x33D] = *(u8 *)&((DuelState *)duel)->trunkList[DUEL[0xD5E]];
+                me[0x33E] = ((DuelState *)duel)->trunkList[DUEL[0xD5E]] >> 8;
                 tz = ABS_001CEE60(me[0x33E] - tz);
                 tx = ABS_001CEE60(me[0x33D] - tx);
                 gx = (s32)(f32)((me[0x33D] - 3) * 50);

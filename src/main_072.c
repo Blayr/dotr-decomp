@@ -1698,13 +1698,13 @@ u32 Ta_GetMinimumParamUnitFromFlagList(s32 eObj) {
 /* Unit (nSide, nID)'s attack plus defence. */
 s32 Ta_GetAPPlusDP(s32 nSide, s32 nID) {
     s32 loc;
-    s32 locLo;
+    s32 locX;
     s32 unitAP;
 
     loc = SzDuel_GetUnitLoc(nSide, nID);
-    locLo = loc & 0xFF;
-    unitAP = TaUtil_GetUnitAP(nSide, nID, locLo, locLo);
-    return unitAP + TaUtil_GetUnitDP(nSide, nID, locLo, loc >> 8);
+    locX = loc & 0xFF;
+    unitAP = TaUtil_GetUnitAP(nSide, nID, locX, locX);
+    return unitAP + TaUtil_GetUnitDP(nSide, nID, locX, loc >> 8);
 }
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
